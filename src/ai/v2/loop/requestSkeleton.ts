@@ -23,7 +23,7 @@ function nameFrom(words: string): string | undefined {
   while (parts.length > 1 && PARTICLE_TAIL.test(parts[0]!)) parts.shift();
   const name = parts.join(" ").trim();
   if (!name || name.length < 2 || PARTICLE_TAIL.test(name) && name.length < 3) return undefined;
-  if (parts.slice(0, -1).some((w) => /(?:이|가|을|를)$/u.test(w))) return undefined;
+  if (parts.slice(0, -1).some((w) => /(?:가|을|를)$/u.test(w))) return undefined;
   if (/^(방|곳|장면|마을|사람|사람들|주민|주인공|플레이어|그|이|저)$/u.test(name)) return undefined;
   return name;
 }
@@ -87,7 +87,12 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
   }
   // 확인 종류가 없거나 이름을 모델이 정하는 요소 — 카드에만.
   const remind = (re: RegExp, content: string) => { const m = re.exec(t); if (m) els.push({ content, from: m[0] }); };
-  remind(/동료로 합류|파티에 합류|동료가 되|합류하/u, "동료 합류(파티에 넣기 — 대사 뒤 changeParty)");
+  const join = /동료로 합류|파티에 합류|동료가 되|합류하|동료로 삼/u.exec(t);
+  if (join) {
+    const who = meets[0] ?? talkers[0];
+    if (who) els.push({ content: `${who} 동료 합류(대화 뒤 파티에 넣기)`, check: { kind: "party_join", name: who, ...f }, from: join[0] });
+    else els.push({ content: "동료 합류(파티에 넣기 — 대사 뒤 changeParty)", from: join[0] });
+  }
   remind(/(\S+(?:과|와) \S+) 사이에/u, "양 끝 두 곳과 각각 이어지는 이동");
   remind(/지금 마을과 이어|이어 줘|연결해/u, "지금 마을과 이어지는 이동(양방향)");
   remind(/가장 안쪽에/u, "기존 장소 가장 안쪽에서 이어지는 입구");
@@ -110,6 +115,7 @@ export function covers(items: readonly Pick<TodoItem, "check" | "content">[], el
       case "person": return k.kind === "person" && nameScore(c.name, k.name) > 0;
       case "talk": return k.kind === "talk" && nameScore(c.who, k.who) > 0;
       case "item": return k.kind === "item" && nameScore(c.name, k.name) > 0;
+      case "party_join": return k.kind === "party_join" && nameScore(c.name, k.name) > 0;
       default: return true;
     }
   });

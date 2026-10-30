@@ -396,6 +396,7 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "present_evidence": return checkPresent(project, sc, check.item, check.to);
     case "objective": return checkObjective(project, sc, check.text);
     case "reachable": return checkReachable(project, sc, check.target, check.from, ctx);
+    case "party_join": return checkPartyJoin(project, sc, ctx, check.name, check.map);
   }
 }
 
@@ -658,4 +659,25 @@ function checkReachable(project: Project, sc: Scope, target: string, from: strin
     return { pass: false, detail: `${at(map, ev)} 에 ${startLabel} 에서 걸어 닿지 못한다 — ${world.maps.has(map.id) ? "그 맵 안에서 막힌다(벽·물건·안 열리는 문)" : "그 맵으로 가는 이동 이벤트에 닿지 못한다"}`, evidence: evEvidence(map, ev) };
   }
   return { pass: false, detail: `${mapAt(p.map)} 에 ${startLabel} 에서 가는 길이 없다(닿는 맵: ${[...world.maps].map((id) => mapLabel(project.maps[id]!)).join(", ")})`, evidence: { mapId: p.map.id } };
+}
+
+/** 동료 합류: 파티에 넣는 명령(changeParty add)이 살아 있는 이벤트 페이지에 있고, 그 배우 이름이나 그 이벤트 이름이 name 에 맞고, 시작에서 그 이벤트에 걸어 닿는다. */
+function checkPartyJoin(project: Project, sc: Scope, ctx: TodoCheckContext, name: string, onMap?: string): CheckResult {
+  const actors = (project.database.actors ?? []) as unknown as Obj[];
+  const actorName = (id: unknown) => String(actors.find((a) => String(a.id) === String(id))?.name ?? id ?? "");
+  const scope = scopeMaps(project, onMap);
+  if (isResult(scope)) return scope;
+  const scan = scanLive(project, scope, (c) => c.kind === "changeParty" && c.action === "add");
+  const live = scan.hits.filter((h) => eventInScope(sc, h.map, h.ev));
+  const mine = eventBound(sc) ? live : live.filter((h) => nameScore(name, actorName(h.c.actorId)) > 0 || eventNameTiers(project, h.ev).primary.some((n) => nameScore(name, n) > 0) || nameScore(name, String(h.ev.name ?? "")) > 0);
+  if (!mine.length) {
+    const seen = live.length ? ` — 합류 명령은 있지만 다른 동료다: ${live.slice(0, 3).map((h) => `「${actorName(h.c.actorId)}」 ${at(h.map, h.ev)}`).join(", ")}` : scan.hits.length ? ` — 합류 명령은 ${scan.hits.slice(0, 2).map((h) => at(h.map, h.ev)).join(", ")} 에 있다(이번 턴 것이 아니다)` : "";
+    return { pass: false, detail: `「${name}」 을 파티에 넣는 명령(changeParty add)이 ${onMap ? `「${onMap}」 의 ` : ""}${freshOnly(sc) && !eventBound(sc) ? "이번 턴에 만든 " : ""}도는 이벤트에 없다${seen}${deadNote(scan.dead)} — 동료는 DB 배우(upsert_actor)로 두고 그 인물 대화 끝에 changeParty add` };
+  }
+  const world = walkWorld(project, startOf(project, ctx));
+  for (const h of mine) {
+    if (world.maps.has(h.map.id) && eventReached(h.map, world.reach.get(h.map.id), h.ev)) return { pass: true, detail: `동료 「${actorName(h.c.actorId)}」 합류 — ${at(h.map, h.ev)}, 시작에서 걸어 닿는다`, evidence: evEvidence(h.map, h.ev) };
+  }
+  const h = mine[0]!;
+  return { pass: false, detail: `${at(h.map, h.ev)} 에 합류 명령은 있지만 시작에서 걸어 닿지 못한다`, evidence: evEvidence(h.map, h.ev) };
 }

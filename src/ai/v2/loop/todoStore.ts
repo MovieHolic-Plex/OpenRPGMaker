@@ -69,6 +69,7 @@ export function checkLabel(check: TodoCheck | undefined): string {
     case "item": return `아이템 「${check.name}」${check.gives ? " 지급" : ""}`;
     case "present_evidence": return `증거 「${check.item}」 내밀기${check.to ? ` → ${check.to}` : ""}`;
     case "objective": return `목표 줄${check.text ? ` «${check.text}»` : ""}`;
+    case "party_join": return `동료 「${check.name}」 합류${check.map ? ` @${check.map}` : ""}`;
     case "reachable": return `「${check.target}」까지 걸어 닿음${check.from ? ` (from ${check.from})` : ""}`;
   }
 }

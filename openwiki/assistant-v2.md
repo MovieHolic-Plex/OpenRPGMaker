@@ -338,7 +338,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - 타입 `src/ai/v2/todo/types.ts`(`TodoItem`·`TodoCheck`·`CheckResult`, 모델 도구 인자 스키마 `TODO_CHECK_SCHEMA` = 평평한 객체 하나·oneOf·자유 키 없음, 인자 검사 `parseTodoCheck`).
 - 대상 고르기(감독 검토 반영): 항목의 `refs`(고리가 쓰기 동사 전후 차이로 채우는 mapIds·eventIds·itemIds·troopIds)가 있으면 그 id 만 판정하고, 묶인 id 가 사라지면 실패. refs 가 없으면 이름으로 찾되 `fresh`(모델 인자 기본 true)면 `ctx.changed`(이번 턴에 새로 생기거나 바뀐 것)만 후보 — 시작 저장본에 원래 있던 엔딩·보스전으로 새 요청 항목이 통과하지 않는다. 가장 잘 맞는 후보가 이름이 다른 둘 이상이면 「모호함」 실패(같은 이름 무리는 하나로 본다). 부분 일치는 같음이 없을 때만, 짧은 쪽 ≥ 긴 쪽 절반. detail·evidence 에 잡은 id 를 싣는다. `runTodoItemCheck(project, item, ctx)` 는 item.refs 를 얹어 부른다.
 - 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
-- kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · none(판정자 몫).
+- kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · party_join(changeParty add 가 살아 있는 이벤트에 있고 그 배우 이름이나 그 이벤트 이름이 맞고 시작에서 걸어 닿는다 — 배우 이름이 「강」이어도 「떠돌이 검사」 이벤트면 맞는다) · none(판정자 몫).
 - 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
 
@@ -388,11 +388,11 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 ```
 
 - **todo 동사**(`loop/todoTools.ts`): `init/start/done/drop/block/append/bind/view`. 항목 = `src/ai/v2/todo/types.ts` `TodoItem`(id·phase·content·status·check·dependsOn·blockedReason·attempts·source model|gate|critic|vqa).
-  `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·none), 판정은 `todo/checks.ts runTodoCheck`(순수, 프로젝트만 읽음).
+  `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·party_join·none), 판정은 `todo/checks.ts runTodoCheck`(순수, 프로젝트만 읽음).
   `done` 은 확인을 다시 돌려 ✗ 면 끝내지 않는다(실패 1회). 진행 중은 하나, `block` 은 기대는(dependsOn) 열린 항목도 막힘으로 닫는다.
   `block` 이유가 도구 거절이고 그 거절 글이 아직 안 쓴 다른 동사 이름을 일렀으면 한 번 되돌린다(terra boss-room: edit_place 거절 글의 make_place).
 - **id 묶기**(`loop/refs.ts`, 이름 오인 대책): 실행 시작 때 `indexProject`(맵(이벤트 뺀)·이벤트·아이템·적 그룹 지문)를 `store.baseline` 에 뜨고, 판정마다 기준선 대비 새로 생기거나 바뀐 것(`changed`)을 넘긴다 — `fresh`(기본) 항목은 원래 있던 것으로 ✓ 가 안 난다.
-  쓰기 동사가 성공하면 전후 차이를 진행 중 항목(또는 동사 인자 `todoId` 의 항목 — 감싸개가 모든 쓰기 동사 스키마에 더하고 동사에는 넘기지 않는다)의 `refs` 에 붙인다: 주 대상만(장소=맵, 인물·대사·엔딩·목표·증거 내밀기=이벤트, 전투=이벤트·적 그룹, 아이템=아이템, link·reachable 은 안 묶음).
+  쓰기 동사가 성공하면 전후 차이를 진행 중 항목(또는 동사 인자 `todoId` 의 항목 — 감싸개가 모든 쓰기 동사 스키마에 더하고 동사에는 넘기지 않는다)의 `refs` 에 붙인다: 주 대상만(장소=맵, 인물·대사·엔딩·목표·증거 내밀기·합류=이벤트, 전투=이벤트·적 그룹, 아이템=아이템, link·reachable 은 안 묶음).
   이벤트 항목에는 맵 짓는 동사(make_place·edit_place·stamp_object…)가 만든 이벤트와 이동만 든 이벤트를 묶지 않는다. 같은 종류에서 사라진 id 는 새로 붙일 때 뺀다(다시 짓기가 새 id).
   판정이 「모호함」이면 todo 결과·재주입 글에 `todo(op:"bind", task, mapId|eventId|itemId|troopId)` 를 이른다(모델이 묶으면 그 종류의 자동 묶음을 바꾼다). 앞 실행에서 이어 받은 refs 없는 항목은 changed 없이 본다. view·done 결과에 묶인 id 를 보인다.
 - **실패 세기**(`TodoStore.recordFailure`): 진행 중 항목에서 쓰기 동사가 거절·예외, 또는 done 확인 ✗ → 시도 +1. 3번째(`TODO_MAX_ATTEMPTS`)이거나 같은 실패 서명(도구+거절 글, 수 가림)이 2번 이어지면 함수가 막힘으로 닫는다.
@@ -421,7 +421,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
     모두 `options.v2` 가 있을 때만 걸린다 — 실행기 `getToolChoice` 우선은 v2 환경의 `preferToolNextTurn` 로만 서고, 문맥 정리는 `options.v2.stateCard` 가 있을 때만 돈다. v1·편집기 조수(옵션 v2 없음)는 그대로다.
   - H1 요청 뼈대(`loop/requestSkeleton.ts`): 요청 글에서 낱말 규칙으로 필수 요소를 뽑는다 — 「X가 말을 걸/나타나/경고/맞이」→인물+대사, 「X를 만나/심문」·「X와 흥정/대화」→인물+대사, 「X와 싸우/X를 쓰러뜨리」→인물, 싸우·전투·몬스터·관장전→전투(보스·관장전·마왕 상대면 boss, «쓰러뜨린 뒤»류 지난 일은 뺀다), 엔딩→엔딩(«X로 돌아와» 맵), 「X를 주는/받는」→지급.
     목록을 적기 전 호출에는 상태 카드로 뼈대를 보이고(`v2.hook.skeleton_card`), init(또는 자동 init) 뒤 모델 목록이 덮지 못한(같은 확인 종류+이름 맞음, 전투·엔딩은 종류만) 요소를 «요청 뼈대» 단계 gate 항목(열쇠 skeleton:…)으로 덧붙인다(`skeleton`). 다시 init 해 덮이면 그 항목은 뺀다.
-    장소·이동·합류·증거·갈림길·상자·다리·흥정처럼 이름을 모델이 정하거나 확인 종류가 없는 요소는 덧붙이지 않고 카드의 «잊지 말 것» 줄에만 둔다(동료 합류는 확인 종류가 없다).
+    장소·이동·합류·증거·갈림길·상자·다리·흥정처럼 이름을 모델이 정하거나 확인 종류가 없는 요소는 덧붙이지 않고 카드의 «잊지 말 것» 줄에만 둔다— 동료 합류는 이름(만나는·말 거는 인물)이 있으면 party_join 항목으로 덧붙인다.
   - H2 인자 검사·보정(`loop/argGuard.ts`, 감싸개가 모든 동사 실행 전에): 레지스트리 도구의 선택 칸 중 빈 글·빈 배열·null·잎이 다 기본값인 객체를 걷어 낸다(terra 는 스키마의 모든 칸을 기본값으로 채웠다 — patrol.directions:[]·graphic{…""}·members:[]·referencePurpose:"").
     규칙 표 `PRE_RULES`(도구 거절 글에서 뽑음): create_transfer_pair doorAt=출입구 칸 → 걸을 수 있는 쪽으로 doorAt=(x,y-1) 또는 출입구=(doorAt.x,doorAt.y+1), 둘 다 안 되면 doorAt 뺌 ·
     place_field_enemy 보초에 patrol 뺌 · upsert_troop 적이 비면 이름 맞는 적 하나(하나뿐일 때, 아니면 돌려보냄+후보) · 이벤트 id 가 그 맵에 없으면 다른 맵에 하나뿐일 때 맵을, 이벤트 이름이면 id 로(아니면 돌려보냄+그 맵 이벤트 목록) ·

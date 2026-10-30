@@ -51,7 +51,7 @@ function subjects(item: TodoItem): string[] {
   const c = item.check;
   const fromCheck = !c ? [] : c.kind === "place" || c.kind === "person" || c.kind === "item" ? [c.name]
     : c.kind === "talk" ? [c.who] : c.kind === "battle" ? [c.who ?? ""]
-    : c.kind === "link" ? [c.to] : c.kind === "present_evidence" ? [c.item] : c.kind === "reachable" ? [c.target] : c.kind === "ending" ? ["엔딩"] : [];
+    : c.kind === "link" ? [c.to] : c.kind === "present_evidence" ? [c.item] : c.kind === "reachable" ? [c.target] : c.kind === "party_join" ? [c.name] : c.kind === "ending" ? ["엔딩"] : [];
   return fromCheck.map((s) => s.trim()).filter((s) => s.length >= 2);
 }
 

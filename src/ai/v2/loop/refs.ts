@@ -44,7 +44,7 @@ export function changedSince(before: ProjectIndex, after: ProjectIndex): TodoCha
   return { mapIds: fresh(before.maps, after.maps), eventKeys: fresh(before.events, after.events), itemIds: fresh(before.items, after.items), troopIds: fresh(before.troops, after.troops) };
 }
 
-const EVENT_KINDS = new Set(["person", "talk", "ending", "objective", "present_evidence", "battle"]);
+const EVENT_KINDS = new Set(["person", "talk", "ending", "objective", "present_evidence", "battle", "party_join"]);
 /** 맵을 짓고 꾸미는 동사 — 이벤트 항목에는 이 동사가 만든 이벤트(문·계단·자동 마감)를 묶지 않는다. */
 const MAP_VERB = /^(make_place|edit_place|dress_room|stamp_object|fill_region|move_object|place_object|create_transfer_pair|link_|draw_|paint|tile_|erase_)/u;
 const kindsOf = (e: GameEvent) => (e.pages ?? []).flatMap((p) => (p.commands ?? []).map((c) => String((c as { kind?: string }).kind)));

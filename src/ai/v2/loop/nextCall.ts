@@ -138,6 +138,11 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
       if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<mapId>", eventId: `<${c.who ?? "보스"} 이벤트 id>`, pageIndex: 0, set: { commands: ["<원래 명령 그대로>", { kind: "battleProcessing", troopId: "<troop id>", canEscape: false }] } }, why: "대사 이벤트 끝에 전투 명령(원래 명령은 지우지 말고 이어 붙인다)" };
       return undefined;
     }
+    case "party_join": {
+      // 동료 합류: 배우(upsert_actor)가 있어야 하고, 그 인물 대화 끝에 changeParty add 를 붙인다(원래 명령은 그대로).
+      if (has("patch_event_page")) return { verb: "patch_event_page", args: { mapId: mapId(c.map) ?? "<그 인물이 있는 mapId>", eventId: `<${c.name} 이벤트 id>`, pageIndex: 0, set: { commands: ["<원래 명령 그대로>", { kind: "changeParty", actorId: `<${c.name} 배우 id — 없으면 upsert_actor 먼저>`, action: "add" }] } }, why: "대화 끝에 파티 합류 명령" };
+      return undefined;
+    }
     case "link": {
       if (!has("create_transfer_pair")) return undefined;
       return { verb: "create_transfer_pair", args: { a: { mapId: mapId(c.from) ?? `<${c.from} mapId>`, x: "<가장자리 길 끝 x>", y: "<y>" }, b: { mapId: mapId(c.to) ?? `<${c.to} mapId>`, x: "<입구 x>", y: "<y>" } }, why: "두 맵 잇기(doorAt 은 문 그림이 있을 때만, 출입구 바로 위 칸)" };

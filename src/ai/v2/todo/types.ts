@@ -22,6 +22,7 @@ export type TodoCheckBody =
   | { kind: "present_evidence"; item: string; to?: string }
   | { kind: "objective"; text?: string }
   | { kind: "reachable"; target: string; from?: string }
+  | { kind: "party_join"; name: string; map?: string }
   | { kind: "none" };
 
 export type TodoCheck = TodoCheckBody & TodoCheckCommon;
@@ -67,6 +68,7 @@ export const TODO_CHECK_KINDS = [
   "present_evidence",
   "objective",
   "reachable",
+  "party_join",
   "none",
 ] as const satisfies readonly TodoCheckKind[];
 
@@ -84,6 +86,7 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
   present_evidence: ["item"],
   objective: [],
   reachable: ["target"],
+  party_join: ["name"],
   none: [],
 };
 
@@ -95,15 +98,15 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
 export const TODO_CHECK_SCHEMA = {
   type: "object",
   description:
-    "이 할 일이 끝났는지 기계로 확인하는 방법. kind 별 필수 칸: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target. battle·ending·objective·none 은 필수 칸 없음. 기계로 볼 수 없으면 kind=none.",
+    "이 할 일이 끝났는지 기계로 확인하는 방법. kind 별 필수 칸: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name. battle·ending·objective·none 은 필수 칸 없음. 기계로 볼 수 없으면 kind=none.",
   properties: {
     kind: {
       type: "string",
       enum: [...TODO_CHECK_KINDS],
       description:
-        "place=그 이름의 장소(맵)가 있다, person=그 이름의 인물이 맵에 있다, talk=그 인물이 대사를 한다, battle=전투가 걸린다(boss=보스전), link=from 맵에서 to 맵으로 걸어가 이동한다, ending=엔딩에 닿는다(map=그 맵에서), item=그 아이템이 있다(gives=지급된다), present_evidence=그 증거를 내밀 수 있다, objective=목표 줄이 설정된다, reachable=시작(또는 from)에서 target 까지 걸어 닿는다, none=판정자가 눈으로 확인",
+        "place=그 이름의 장소(맵)가 있다, person=그 이름의 인물이 맵에 있다, talk=그 인물이 대사를 한다, battle=전투가 걸린다(boss=보스전), link=from 맵에서 to 맵으로 걸어가 이동한다, ending=엔딩에 닿는다(map=그 맵에서), item=그 아이템이 있다(gives=지급된다), present_evidence=그 증거를 내밀 수 있다, objective=목표 줄이 설정된다, reachable=시작(또는 from)에서 target 까지 걸어 닿는다, party_join=그 이름의 동료가 파티에 들어온다(changeParty 추가가 살아 있는 이벤트에 있고 걸어 닿는다), none=판정자가 눈으로 확인",
     },
-    name: { type: "string", description: "place·person·item 의 이름" },
+    name: { type: "string", description: "place·person·item 의 이름, party_join 의 동료(배우) 이름" },
     placeKind: { type: "string", enum: [...TODO_PLACE_KINDS], description: "place 의 종류(선택)" },
     map: { type: "string", description: "person·battle·ending 을 이 맵 이름으로 좁힘(선택) — ending 은 엔딩을 부르는 이벤트가 그 맵에 있어야 한다" },
     who: { type: "string", description: "talk·battle 의 인물 이름" },
@@ -162,6 +165,8 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
       return clean({ kind: k, text: str("text") });
     case "reachable":
       return clean({ kind: k, target: str("target")!, from: str("from") });
+    case "party_join":
+      return clean({ kind: k, name: str("name")!, map: str("map") });
     case "none":
       return { kind: k };
   } })();
