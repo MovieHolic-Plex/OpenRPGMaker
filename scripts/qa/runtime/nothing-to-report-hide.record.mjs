@@ -103,11 +103,16 @@ async function hold(key) {
 async function goTo(target, label) {
   mark('걷기 → ' + label);
   const d = bfs(target);
-  const end = Date.now() + 30000;
+  const end = Date.now() + 120000;
+  let lastCell = '', since = Date.now();
   while (Date.now() < end) {
     const s = await state();
     if (s.text) { await hold(null); await readThrough(); continue; }
     if (s.x === target.x && s.y === target.y) { await hold(null); return true; }
+    // 문은 밀어서 연다(#3973) — 한 칸에 오래 서 있으면 키를 뗐다 다시 누른다.
+    const cell = `${s.x},${s.y}`;
+    if (cell !== lastCell) { lastCell = cell; since = Date.now(); }
+    else if (Date.now() - since > 2500) { await hold(null); await delay(120); since = Date.now(); }
     let key = null, best = d.get(`${s.x},${s.y}`) ?? 99;
     for (const [k, dx, dy, bit] of DIRS) { if (!can(s.x, s.y, bit)) continue; const v = d.get(`${s.x + dx},${s.y + dy}`); if (v !== undefined && v < best) { best = v; key = k; } }
     await hold(key);
