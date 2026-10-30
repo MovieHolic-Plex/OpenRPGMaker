@@ -326,7 +326,13 @@ function executeM2Command(
   }
   if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     // fields.screen 은 선택 — 'monster-box' 면 메뉴 대신 보관함(PC) 화면을 연다. 생략하면 이전과 같은 단계 모양.
-    return pause("openMenuScreen", { kind: "openMenuScreen", ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}) });
+    const menuActorId = typeof command.fields.actorId === "string" ? command.fields.actorId.trim() : "";
+      return pause("openMenuScreen", {
+        kind: "openMenuScreen",
+        ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}),
+        // screen:"skills" — 스킬 장착 화면을 actorId(없으면 파티장) 로 바로 연다.
+        ...(command.fields.screen === "skills" ? { screen: "skills" as const, ...(menuActorId ? { actorId: menuActorId } : {}) } : {}),
+      });
   }
   if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("openLoadMenu", { kind: "openLoadMenu" });
