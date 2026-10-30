@@ -1,6 +1,7 @@
 import { jsonEqual } from "@/util/structuralJson";
 import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
-import { npcMoveDurationMs, npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { chaseCellMs } from "@/project/chaseTempo";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -32,7 +33,7 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
   BEAT_KIND_INFERRED_WARNING,
@@ -3107,9 +3108,9 @@ const placeTrap: ToolDefinition = {
 
 const CHASER_FREQUENCY = 8;
 
-/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (정본 표 @/project/characterMotion). */
+/** 런타임 추격 한 칸 — 정본은 chaseCellMs(@/project/chaseTempo): 예전 한 칸(걸음 + 결정 대기)을 2.2로 나눠 쉬지 않고 이어 걷는다. */
 function chaseStepMs(speed: number, frequency: number): number {
-  return npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency);
+  return chaseCellMs({ speed, frequency });
 }
 
 /**
@@ -3265,8 +3266,9 @@ function shortestWalk(project: Project, map: GameMap, from: Point, to: Point): D
  * 시야에 들면 쫓고, 놓치면 집 칸으로 돌아와 경로 처음부터 다시 돈다 — 이동 하나로(J54: 추격자가 제자리에 서 있었고,
  * 조수가 moveEvent 를 따로 돌려 두 이동이 서로 덮으며 덜덜 떨었다).
  */
-function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unknown, selfId: string): { route: MoveRoute; cells: Point[] } | undefined {
+function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unknown, selfId: string, stepMs = 0): { route: MoveRoute; cells: Point[]; pauses: number } | undefined {
   let dirs: Dir[] | null;
+  let waypoints: Point[] = [];
   if (raw === "auto" || raw === true || (raw && typeof raw === "object" && (raw as { mode?: unknown }).mode === "auto" && !(raw as { waypoints?: unknown }).waypoints && !(raw as { directions?: unknown }).directions)) {
     dirs = autoPatrolDirs(project, map, from, selfId);
     // 둘레가 막혔으면 추격자는 그대로 짓고 순찰만 뺀다 — 호출하는 쪽이 경고로 알린다.
@@ -3274,7 +3276,8 @@ function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unk
   } else if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     const spec = raw as { waypoints?: unknown; directions?: unknown };
     if (Array.isArray(spec.waypoints) && spec.waypoints.length > 0) {
-      dirs = waypointPatrolDirs(project, map, from, spec.waypoints.map((point, index) => pointFromRecord(point, `patrol.waypoints[${index}]`)));
+      waypoints = spec.waypoints.map((point, index) => pointFromRecord(point, `patrol.waypoints[${index}]`));
+      dirs = waypointPatrolDirs(project, map, from, waypoints);
     } else if (Array.isArray(spec.directions) && spec.directions.length >= 2) {
       if (!spec.directions.every((dir) => typeof dir === "string" && dir in PATROL_STEP)) throw new ToolError("patrol.directions 는 up|down|left|right 목록입니다.", { code: "invalid-args" });
       dirs = spec.directions as Dir[];
@@ -3288,7 +3291,35 @@ function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unk
   const blockers = patrolBlockers(map, cells, selfId);
   if (blockers.length) throw new ToolError(`순찰 경로가 다른 이벤트 칸을 지나갑니다: ${blockers.slice(0, 4).join(", ")} — 다른 칸으로 돌게 하세요.`, { code: "unsafe-patrol" });
   // 걸음마다 한 박자 쉰다 — 추격과 같은 결정 간격이라 안 쉬면 순찰이 추격만큼 빠르다(place_field_enemy 와 같은 모양).
-  return { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: "move" as const, dir }, { kind: "wait" as const }]) }, cells };
+  // 잠입 순찰(pauseBeats): 들를 칸(waypoints·출발 칸)에 닿으면 그만큼 박자를 서서 쉬고, lookAround 면 쉬는 동안 고개를 양옆으로 돌린다
+  // — 플레이어가 「끝에서 멈췄다 돌아선다」를 보고 건널 틈을 잴 수 있다.
+  const spec = raw && typeof raw === "object" && !Array.isArray(raw) ? raw as { pauseBeats?: unknown; lookAround?: unknown } : {};
+  const pauseBeats = spec.pauseBeats === undefined ? 0 : Number(spec.pauseBeats);
+  if (!Number.isInteger(pauseBeats) || pauseBeats < 0 || pauseBeats > 16) throw new ToolError("patrol.pauseBeats 는 0..16 박자입니다(한 박자 = 순찰 한 걸음 시간).", { code: "invalid-args" });
+  const stops = new Set<number>();
+  if (pauseBeats > 0) {
+    const marks = waypoints.length ? [...waypoints, from] : [from];
+    let next = 0;
+    cells.forEach((cell, index) => {
+      if (index === 0 || next >= marks.length) return;
+      if (cell.x === marks[next]!.x && cell.y === marks[next]!.y) { stops.add(index - 1); next += 1; }
+    });
+  }
+  // 한 박자 = 순찰 한 걸음 시간. 쉼(wait) 하나는 걸음 사이 짧은 틈이라, 한 박자를 채우도록 여러 개로 늘린다.
+  const perBeat = Math.max(1, Math.round(stepMs / Math.max(1, npcMoveIntervalMs(CHASER_FREQUENCY))));
+  const beats = pauseBeats * perBeat;
+  const pause = (dir: Dir): MoveCommand[] => {
+    if (spec.lookAround !== true) return Array.from({ length: beats }, () => ({ kind: "wait" as const }));
+    const third = Math.max(1, Math.floor(beats / 3));
+    const side: [Dir, Dir] = dir === "left" || dir === "right" ? ["up", "down"] : ["left", "right"];
+    return [
+      ...Array.from({ length: third }, () => ({ kind: "wait" as const })),
+      { kind: "turn" as const, dir: side[0] }, ...Array.from({ length: third }, () => ({ kind: "wait" as const })),
+      { kind: "turn" as const, dir: side[1] }, ...Array.from({ length: Math.max(1, beats - 2 * third) }, () => ({ kind: "wait" as const })),
+    ];
+  };
+  const moves: MoveCommand[] = dirs.flatMap((dir, index) => [{ kind: "move" as const, dir }, { kind: "wait" as const }, ...(stops.has(index) ? pause(dir) : [])]);
+  return { route: { repeat: true, skippable: false, moves }, cells, pauses: stops.size };
 }
 
 /** 이 맵의 시작 위치·체크포인트가 추격자 시야 안이면 경고한다(J61). 스위치로 깨우는 추격자는 시작에 없으니 시작 위치는 빼고 본다. */
@@ -3300,7 +3331,16 @@ function chaserSpawnWarnings(project: Project, mapId: string, chaserId: string, 
 }
 
 /** make_chase_scene caughtPenalty — 없는 적 그룹·맵·맵 밖 좌표는 거절. */
-function readCaughtPenalty(draft: Project, raw: unknown): { troopId?: string; text?: string; sendTo?: { mapId: string; x: number; y: number } } | undefined {
+type CaughtPenalty = { troopId?: string; text?: string; sendText?: string; sendTo?: { mapId: string; x: number; y: number }; checkpoint?: { switchId: string; sendTo: { mapId: string; x: number; y: number }; text?: string } };
+function readSendTo(draft: Project, raw: unknown, label: string): { mapId: string; x: number; y: number } {
+  const t = (raw ?? {}) as Record<string, unknown>;
+  const mapId = String(t.mapId ?? ""), x = Number(t.x), y = Number(t.y);
+  const target = draft.maps[mapId];
+  if (!target) throw new ToolError(`${label} 맵이 없습니다: ${mapId}`, { code: "map-not-found" });
+  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= target.width || y >= target.height) throw new ToolError(`${label} 좌표가 맵 밖입니다.`, { code: "invalid-args" });
+  return { mapId, x, y };
+}
+function readCaughtPenalty(draft: Project, raw: unknown): CaughtPenalty | undefined {
   if (raw === undefined || raw === null) return undefined;
   if (typeof raw !== "object") throw new ToolError("caughtPenalty 는 {troopId?, sendTo?:{mapId,x,y}, text?} 입니다.", { code: "invalid-args" });
   const r = raw as Record<string, unknown>;
@@ -3316,15 +3356,24 @@ function readCaughtPenalty(draft: Project, raw: unknown): { troopId?: string; te
     sendTo = { mapId, x, y };
   }
   const text = typeof r.text === "string" && r.text.trim() ? r.text.trim() : undefined;
+  let checkpoint: CaughtPenalty["checkpoint"];
+  if (r.checkpoint !== undefined && r.checkpoint !== null) {
+    const c = r.checkpoint as Record<string, unknown>;
+    const switchId = typeof c.switchId === "string" ? c.switchId.trim() : "";
+    if (!switchId) throw new ToolError("caughtPenalty.checkpoint.switchId 가 필요합니다 — 중간 지점에 닿으면 켜는 스위치.", { code: "invalid-args" });
+    if (!sendTo) throw new ToolError("caughtPenalty.checkpoint 는 sendTo(처음 끌려가는 곳)와 같이 씁니다.", { code: "invalid-args" });
+    checkpoint = { switchId, sendTo: readSendTo(draft, c.sendTo, "caughtPenalty.checkpoint.sendTo"), ...(typeof c.text === "string" && c.text.trim() ? { text: c.text.trim() } : {}) };
+  }
+  const sendText = typeof r.sendText === "string" && r.sendText.trim() ? r.sendText.trim() : undefined;
   if (!troopId && !sendTo && !text) return undefined;
-  return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}) };
+  return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}), ...(sendText && sendTo ? { sendText } : {}), ...(checkpoint ? { checkpoint } : {}) };
 }
 
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
     "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
-    "speed 는 이 엔진 기준이다(RPG Maker 의 4=보통과 다르다): 6=주인공 걷기의 2/3(기본·긴장감 있는 추격), 7=걷기와 같음, 5=절반쯤, 4 이하=걷기의 절반도 안 돼 추격이 되지 않는다. " +
+    "speed 는 쫓는 동안 한 칸 시간이다(쉬지 않고 이어 걷는다, 주인공 걷기 160ms): 1≈327 · 2≈255 · 3≈182ms(주인공보다 조금 느림) · 4≈145 · 5≈127 · 6(기본)·7·8≈115ms(주인공보다 빠름). 주인공보다 빠른 추격자는 12칸마다 숨을 고르고, 시야가 끊기면 잠깐 뒤 마지막 목격 자리와 달아난 방향을 뒤진다 — 은신처·시야를 끊는 벽·문을 꼭 둘 것. " +
     "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것. " +
     "activateSwitch 를 setSwitch value:false 로 끄면 추격자가 사라질 뿐 은신이 아니다. 숫자 암호·금고·열쇠는 compile_puzzle kind:password — answer 가 1~6자리 숫자면 inputNumber. 선택지 보기에 정답 숫자를 적지 말 것.",
   mode: "write",
@@ -3332,6 +3381,7 @@ const makeChaseScene: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
+      id: { type: "string", description: "추격자 이벤트 id(생략 시 자동) — 다른 이벤트·시험에서 이 추격자를 가리킬 때" },
       chaser: {
         type: "object",
         description: "{at:{x,y},graphic,speed?,sightRange?}",
@@ -3351,6 +3401,8 @@ const makeChaseScene: ToolDefinition = {
           mode: { type: "string", enum: ["auto"], description: "'auto' 면 둘레 고리를 스스로 찾는다" },
           waypoints: { type: "array", items: COORD_SCHEMA },
           directions: { type: "array", items: { type: "string", enum: ["up", "down", "left", "right"] } },
+          pauseBeats: { type: "integer", description: "잠입 순찰: 들를 칸(waypoints·출발 칸)에 닿을 때마다 이만큼 박자(한 박자 = 순찰 한 걸음 시간, 0..16) 서서 쉰다 — 끝에서 멈췄다 돌아서는 규칙적인 순찰이라 플레이어가 건널 틈을 잰다" },
+          lookAround: { type: "boolean", description: "쉬는 동안 고개를 양옆으로 돌린다(그쪽 숨을 자리도 살핀다)" },
         },
       },
       killOnTouch: { type: "boolean" },
@@ -3358,8 +3410,15 @@ const makeChaseScene: ToolDefinition = {
         type: "object",
         description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님, 끝나면 파티 회복) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
         properties: {
-          troopId: { type: "string" }, text: { type: "string" },
+          troopId: { type: "string" }, text: { type: "string", description: "붙잡힌 순간 한 줄(외침)" },
+          sendText: { type: "string", description: "sendTo 로 끌려가기 직전 한 줄(checkpoint 를 쓸 때 처음부터 다시인 쪽)" },
           sendTo: { type: "object", properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
+          checkpoint: {
+            type: "object",
+            description: "잠입 중간 지점: switchId 가 켜진 뒤(중간 지점 밟기 이벤트가 켠다) 붙잡히면 sendTo 대신 이 칸으로 끌려간다 — 처음부터 다시 하지 않게. text = 그때 한 줄(생략 가능).",
+            properties: { switchId: { type: "string" }, text: { type: "string" }, sendTo: { type: "object", properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] } },
+            required: ["switchId", "sendTo"],
+          },
         },
       },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
@@ -3386,7 +3445,9 @@ const makeChaseScene: ToolDefinition = {
       throw new ToolError(`추격자 위치가 맵 밖입니다: (${chaser.at.x}, ${chaser.at.y})`, { code: "chaser-out-of-bounds", mapId: map.id, x: chaser.at.x, y: chaser.at.y });
     }
     const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" }, { overrides: draft.charsetLabels });
-    const id = genId("ev_chaser");
+    const wantedId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
+    if (wantedId && map.events.some((event) => event.id === wantedId)) throw new ToolError(`이벤트 id '${wantedId}' 가 이 맵에 이미 있습니다 — 다른 id 를 주세요.`, { code: "invalid-args" });
+    const id = wantedId ?? genId("ev_chaser");
     // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
     const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
       kind: "character",
@@ -3430,9 +3491,24 @@ const makeChaseScene: ToolDefinition = {
           // 져도 게임 오버가 아니므로, 쓰러진 파티(HP 0)가 그대로 걸어 다니다 다음 싸움에서 곧장 끝나지 않게 되살린다(독립 플레이 판정 실측).
           { kind: "recoverAll" } as unknown as Command,
         ] : []),
-        ...(penalty.sendTo ? [{ kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command] : []),
+        ...(penalty.sendTo && penalty.checkpoint ? [{
+          kind: "fork", condition: { kind: "switch", switchId: penalty.checkpoint.switchId, value: true },
+          then: [
+            ...(penalty.checkpoint.text ? [{ kind: "text", body: penalty.checkpoint.text } as Command] : []),
+            { kind: "transfer", mapId: penalty.checkpoint.sendTo.mapId, x: penalty.checkpoint.sendTo.x, y: penalty.checkpoint.sendTo.y, direction: "up", fade: "black" } as Command,
+          ],
+          else: [
+            ...(penalty.sendText ? [{ kind: "text", body: penalty.sendText } as Command] : []),
+            { kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command,
+          ],
+        } as Command]
+          : penalty.sendTo ? [
+            ...(penalty.sendText ? [{ kind: "text", body: penalty.sendText } as Command] : []),
+            { kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command,
+          ] : []),
       ] : [];
-    const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);
+    if (penalty?.checkpoint) ensureNamedSwitch(draft, penalty.checkpoint.switchId, `추격 중간 지점: ${id}`);
+    const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id, paceMs);
     const event: GameEvent = {
       id,
       x: placement.x,
@@ -3485,13 +3561,13 @@ const makeChaseScene: ToolDefinition = {
       ...unwrittenSwitchGateWarnings(draft, event),
       ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
       ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
-      ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 6(걷기의 2/3), 같은 속도는 7.`] : []),
+      ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 3~4(주인공과 엇비슷), 주인공보다 빠르게는 5~6.`] : []),
       ...hiding.warnings,
       ...(args.patrol !== undefined && !patrolRoute ? [`추격자 자리 (${placement.x}, ${placement.y}) 둘레에 돌 수 있는 통로가 없어 순찰 없이 제자리에서 기다립니다 — patrol.waypoints 로 들를 칸을 주거나, 넓은 복도에 두거나, configure_npc_patrol{directions} 로 길을 직접 주세요.`] : []),
       ...chaserSpawnWarnings(draft, map.id, id, activateSwitch),
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${patrolRoute ? ` — 순찰 ${patrolRoute.cells.length - 1}걸음 고리(시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰)` : " — 순찰 없음(시야에 들 때까지 제자리, patrol:{mode:'auto'} 로 순찰)"}${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${patrolRoute ? ` — 순찰 ${patrolRoute.cells.length - 1}걸음 고리${patrolRoute.pauses ? `(멈춤 ${patrolRoute.pauses}곳)` : ""}(시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰)` : " — 순찰 없음(시야에 들 때까지 제자리, patrol:{mode:'auto'} 로 순찰)"}${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
       data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted, ...(patrolRoute ? { patrolCells: patrolRoute.cells } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -4638,6 +4714,72 @@ const patchEventPage: ToolDefinition = {
 };
 
 /**
+ * 이미 있는 이벤트에 조건 페이지 하나를 덧붙인다(퀘스트 진행에 따라 같은 문·사람이 다르게 반응). upsert_event 는 pages 배열을 통째로 받아
+ * 기존 페이지를 다시 써야 했고, 문 이벤트처럼 다른 도구가 만든 이벤트는 원래 페이지를 그대로 옮겨 적기 어려웠다(2026-10-29 폴른 스타 등불 퀘스트).
+ * 새 페이지는 copyFrom 페이지(기본 0)의 그림·발동·층·움직임을 물려받고, 준 칸만 바꾼다. 검증은 upsert_event 를 그대로 거친다.
+ */
+const addEventPage: ToolDefinition = {
+  name: "add_event_page",
+  description: "기존 이벤트에 페이지 하나를 덧붙인다 — 다른 페이지는 그대로 둔다. 새 페이지는 copyFrom 페이지(기본 첫 페이지)의 graphic·trigger·priority·movement 를 물려받고 page 에 준 칸(name·conditions·commands·graphic·trigger 등)만 바꾼다. " +
+    "런타임은 조건이 맞는 페이지 중 뒤쪽 것을 쓰므로, 퀘스트가 진행된 뒤의 반응(예: 스위치 sw_lamp 가 켜지면 「등이 걸린 문」)은 뒤에 붙인다(position 기본 end). 이벤트를 새로 만들 때는 upsert_event.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string" },
+      page: {
+        type: "object",
+        description: "새 페이지 칸. 예: {name:'등 걸기', conditions:[{kind:'switch',switchId:'sw_q4_taken',value:true}], commands:[{kind:'text',body:'문고리에 등을 건다.'}]}. id 를 생략하면 <eventId>_p<번호>.",
+        additionalProperties: true,
+      },
+      copyFrom: { type: "integer", minimum: 0, description: "그림·발동·층·움직임을 물려받을 페이지 번호(0부터). 기본 0" },
+      position: { type: "integer", minimum: 0, description: "넣을 자리(0부터). 생략하면 맨 뒤" },
+    },
+    required: ["mapId", "eventId", "page"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const eventId = String(args.eventId ?? "");
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (!event) throw new ToolError(`${map.name}에 이벤트 '${eventId}' 가 없습니다. find_events 로 id 를 확인하세요.`, { code: "event-not-found" });
+    const pages = event.pages ?? [];
+    if (pages.length === 0) throw new ToolError(`이벤트 '${eventId}' 에 페이지가 없습니다. upsert_event 로 pages 를 만드세요.`, { code: "invalid-args" });
+    const raw = args.page;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("page 는 페이지 칸 객체입니다.", { code: "invalid-args" });
+    const fields = raw as Record<string, unknown>;
+    const setMovementProblems = movementKeyProblems(fields.movement, "page.movement");
+    if (setMovementProblems.length) throw new ToolError(movementKeyRejectMessage(setMovementProblems), { code: "invalid-args" });
+    const keyFindings = pageKeyFindings(fields, "page");
+    if (keyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(keyFindings.reject), { code: "invalid-args" });
+    if (keyFindings.warn.length > 0) throw new ToolError(`page 에 알 수 없는 페이지 키가 있다: ${keyFindings.warn.join(", ")}. ${pageKeyWarning(keyFindings.warn.map((key) => key.replace(/^page\./u, "")))}`, { code: "invalid-args" });
+    const copyFrom = typeof args.copyFrom === "number" ? args.copyFrom : 0;
+    const base = pages[copyFrom];
+    if (!base) throw new ToolError(`copyFrom 페이지 ${copyFrom} 가 없습니다(페이지 ${pages.length}개).`, { code: "invalid-args" });
+    const usedIds = new Set(pages.map((page) => page.id));
+    let id = typeof fields.id === "string" && fields.id.trim() ? fields.id.trim() : "";
+    if (id && usedIds.has(id)) throw new ToolError(`페이지 id '${id}' 가 이미 있습니다. 바꾸려면 patch_event_page.`, { code: "invalid-args" });
+    for (let n = pages.length; !id; n += 1) if (!usedIds.has(`${eventId}_p${n}`)) id = `${eventId}_p${n}`;
+    const added = {
+      ...structuredClone(base),
+      name: "",
+      conditions: [],
+      commands: [],
+      ...structuredClone(fields),
+      id,
+    } as EventPage;
+    const position = typeof args.position === "number" ? Math.max(0, Math.min(pages.length, Math.trunc(args.position))) : pages.length;
+    const nextPages = [...pages.slice(0, position).map((page) => structuredClone(page)), added, ...pages.slice(position).map((page) => structuredClone(page))];
+    const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
+    return {
+      ...result,
+      summary: `이벤트 '${eventId}' 에 페이지 '${id}' 추가(${position}번째, 페이지 ${nextPages.length}개) — ${result.summary}`,
+      data: { ...(result.data as Record<string, unknown> | undefined), pageId: id, pageIndex: position },
+    };
+  },
+};
+
+/**
  * 한쪽 문의 착지 방향만 바꾸면 반대쪽 문과 어긋난다 — 「두 맵 사이 출입구 방향을 맞춰줘」에서 모델이 가는 문만 고치고
  * 끝냈다(실측 2026-10-13, 5회 중 4회). 방향이 바뀐 transfer 가 있으면, 그 목적지 맵에서 이 맵으로 돌아오는 문을 결과에 적는다.
  */
@@ -4688,6 +4830,7 @@ function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
   withReturnDoorNote(upsertEvent),
   withReturnDoorNote(patchEventPage),
+  addEventPage,
   placeNpc,
   setNpcSchedule,
   makeVillager,

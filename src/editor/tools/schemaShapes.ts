@@ -525,6 +525,12 @@ export const LIGHT_SOURCE_SCHEMA: JsonSchema = {
     intensity: { type: "number" },
     color: { type: "string" },
     flicker: { type: "boolean" },
+    cone: {
+      type: "object",
+      description: "부채꼴 빛(경비 등불 시야·손전등): {degrees:20~180, facing?}. at 이 이벤트면 그 이벤트가 바라보는 쪽으로 돌며 바닥에 시야 모양이 그대로 보인다. 칸·주인공 앵커는 facing(기본 down / 주인공은 보는 쪽).",
+      properties: { degrees: { type: "number" }, facing: { type: "string", enum: ["up", "down", "left", "right"] } },
+      required: ["degrees"],
+    },
   },
   required: ["id", "radius"],
   // at 을 'player' 문자열로 보내는 경로를 스키마가 막지 않도록 자유 필드를 허용한다.

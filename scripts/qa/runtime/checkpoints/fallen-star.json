@@ -3241,10 +3241,10 @@
   {
    "id": "act2-b1-ladder",
    "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
-   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (52,25)",
+   "note": "act2Opening.ts barracks ladder (26,3) — 앞 칸 (26,4)에서 조사 → fs2_hub_night (52,25)",
    "mapId": "fs2_barracks",
-   "x": 18,
-   "y": 6,
+   "x": 26,
+   "y": 4,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -3255,7 +3255,8 @@
     "sw_fs2_cell_key_found": true,
     "sw_fs2_cell_open": true,
     "sw_fs2_barracks_cleared": true,
-    "sw_fs2_barracks_entered": true
+    "sw_fs2_barracks_entered": true,
+    "sw_fs2_barracks_mid": true
    },
    "party": [
     {
@@ -3881,8 +3882,8 @@
   },
   {
    "id": "act2-b4-hole",
-   "label": "제2막 B4 — 성벽 밑 브람, 개구멍에서 들킨다 → 숲 어귀 추격 → 숲 그늘 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 forestEdgeChase(make_chase_scene 기사 둘, 경보 스위치, 놀람 1.4초·돌진 4칸@100ms) — 숲 그늘 줄 y=28(입구 위 10칸)",
+   "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 셋(뒤 왼쪽·앞 오른쪽·틈 어귀 가로 순찰 부채꼴), chaseStepMs 127 · 틈 y=23",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -3929,7 +3930,7 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -3940,7 +3941,7 @@
      "shot": true
     },
     {
-     "id": "hole",
+     "id": "pull",
      "ops": [
       {
        "kind": "repeatUntil",
@@ -3970,24 +3971,62 @@
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
       }
      ],
      "shot": true
     },
     {
-     "id": "field",
+     "id": "spotted",
      "ops": [
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
+       "kind": "repeatUntilMap",
+       "mapId": "map_field_north_1",
+       "maxRounds": 30,
        "ops": [
         {
          "kind": "key",
@@ -3996,14 +4035,9 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 900
         }
        ]
-      },
-      {
-       "kind": "waitForMap",
-       "mapId": "map_field_north_1",
-       "timeoutMs": 10000
       },
       {
        "kind": "hold",
@@ -4011,26 +4045,25 @@
        "ms": 300
       }
      ],
-     "shot": true
+     "shot": false
     },
     {
-     "id": "run",
+     "id": "dash",
      "ops": [
       {
-       "kind": "move",
+       "kind": "hold",
        "dir": "up",
-       "steps": 10
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 8000
+       "ms": 2000
       },
       {
        "kind": "hold",
-       "dir": null,
-       "ms": 1200
+       "dir": "right",
+       "ms": 330
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 1400
       }
      ],
      "shot": true
@@ -4039,10 +4072,21 @@
      "id": "confess",
      "ops": [
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 12,
+       "maxRounds": 14,
        "ops": [
         {
          "kind": "key",
@@ -4051,14 +4095,235 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 1100
+         "ms": 1500
         }
        ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1000
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b4-caught",
+   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 틈 어귀 야경꾼 부채꼴에 걸려 「!」 → 덮침 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
+   "note": "act2Opening.ts forestEdgeChase — 붙잡히면 광장 개구멍 앞(38,16), 개구멍 다시 조사 = ev_fs2_hub_hole_again",
+   "mapId": "map_field_north_1",
+   "x": 12,
+   "y": 38,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_b4_alarm": true,
+    "sw_fs2_b4_bram_out": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "beats": [
+    {
+     "id": "detour",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 7
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "caught",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_hub_night",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "retry",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "dash",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 2000
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 330
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 1400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "confess",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       }
      ],
      "shot": true
@@ -4068,10 +4333,10 @@
   {
    "id": "act2-b5-dogs",
    "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
-   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,20) — detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms)",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다",
    "mapId": "map_field_north_1",
-   "x": 16,
-   "y": 27,
+   "x": 15,
+   "y": 18,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4086,7 +4351,9 @@
     "sw_fs2_rohan_spear": true,
     "sw_fs2_bram_hole": true,
     "sw_fs2_b4_alarm": true,
-    "sw_fs2_b4_forest_edge": true
+    "sw_fs2_b4_forest_edge": true,
+    "sw_fs2_b4_bram_out": true,
+    "sw_fs2_b4_watch_gone": true
    },
    "party": [
     {
@@ -4105,7 +4372,27 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 8000
+       "ms": 1200
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 5
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 2
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6000
       }
      ],
      "shot": true
@@ -5303,6 +5590,33 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       }
      ],
      "shot": true
@@ -10423,6 +10737,28 @@
       {
        "kind": "hold",
        "dir": null,
+       "ms": 1800
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
        "ms": 1200
       }
      ],
@@ -11016,11 +11352,11 @@
    ]
   },
   {
-   "id": "act2-b1-patrol",
-   "label": "제2막 B1 — 막사 들어서면 엘레나의 귀띔 → 통로의 순찰 기사에게 붙잡히면 감방으로",
-   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "id": "act2-b1-caught",
+   "label": "제2막 B1 — 막사 잠입 실패 한 판: 남쪽 야경꾼 등불에 들어서면 「!」 → 덮침 → 감방으로",
+   "note": "act2Opening.ts barracks — caughtPenalty(중간 지점 전 = 감방)",
    "mapId": "fs2_barracks",
-   "x": 10,
+   "x": 3,
    "y": 13,
    "facing": "up",
    "switches": {
@@ -11030,7 +11366,8 @@
     "sw_fs2_act2_started": true,
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
-    "sw_fs2_cell_open": true
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_entered": true
    },
    "party": [
     {
@@ -11044,78 +11381,53 @@
    ],
    "beats": [
     {
-     "id": "look",
+     "id": "enter",
      "ops": [
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 20000
-      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       }
      ],
      "shot": true
     },
     {
-     "id": "hint-done",
+     "id": "step-in",
      "ops": [
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 16,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 700
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "caught",
-     "ops": [
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 9,
+       "y": 10,
+       "timeoutMs": 30000
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 2
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
-      },
+       "ms": 300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "spotted",
+     "ops": [
       {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 20000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 900
       }
      ],
      "shot": true
@@ -11136,14 +11448,14 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 700
+         "ms": 900
         }
        ]
       },
       {
        "kind": "waitForMap",
        "mapId": "fs2_cell",
-       "timeoutMs": 20000
+       "timeoutMs": 60000
       },
       {
        "kind": "hold",
@@ -11367,12 +11679,12 @@
    }
   },
   {
-   "id": "act2-b1-bells",
-   "label": "제2막 B1 — 막사 종 줄 둘(푸른 종 → 붉은 종) → 등불이 꺼지고 금고 → 사다리",
-   "note": "act2Opening.ts barracks make_chase_scene caughtPenalty (3,10)↔(15,10)",
+   "id": "act2-b1-sneak",
+   "label": "제2막 B1 — 막사 잠입 성공 한 판: 귀띔 → 남쪽 야경꾼 등 뒤로 왼벽 → 첫 알코브(중간 지점) → 침상 밑에 숨기 → 알코브 건너기 → 압수품 상자 → 사다리",
+   "note": "act2Opening.ts barracks — 야경꾼 둘(make_chase_scene patrol pauseBeats·lookAround, set_field_detection visionLight)",
    "mapId": "fs2_barracks",
-   "x": 11,
-   "y": 6,
+   "x": 3,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -11381,8 +11693,7 @@
     "sw_fs2_act2_started": true,
     "sw_fs2_bread_given": true,
     "sw_fs2_cell_key_found": true,
-    "sw_fs2_cell_open": true,
-    "sw_fs2_barracks_entered": true
+    "sw_fs2_cell_open": true
    },
    "party": [
     {
@@ -11396,8 +11707,182 @@
    ],
    "beats": [
     {
-     "id": "blue-bell",
+     "id": "enter",
      "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hints-done",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "south-back",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 4,
+       "y": 10,
+       "timeoutMs": 40000
+      },
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_s",
+       "mapId": "fs2_barracks",
+       "x": 8,
+       "y": 10,
+       "timeoutMs": 30000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "west-wall",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 9
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hide",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 800
+        }
+       ]
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "guard-looks",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 6,
+       "y": 7,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cross-nooks",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 12,
+       "y": 7,
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 6
+      },
       {
        "kind": "move",
        "dir": "up",
@@ -11413,30 +11898,133 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 800
       }
      ],
      "shot": true
     },
     {
-     "id": "blue-done",
+     "id": "cross-nooks-2",
      "ops": [
       {
-       "kind": "repeatUntil",
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 6,
+       "y": 7,
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 14,
+       "y": 7,
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wait-a3",
+     "ops": [
+      {
+       "kind": "waitForEventAt",
+       "eventId": "ev_fs2_barracks_watch_n",
+       "mapId": "fs2_barracks",
+       "x": 10,
+       "y": 7,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "chest",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
        "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 10,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 600
-        }
-       ]
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "chest-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "fn": "() => { const n=document.querySelector(\"[data-testid='runtime-state-json']\"); const f=(n&&n.dataset.liveFlags||'').split('|'); return f[3]==='true' && f[4]==='false'; }",
+       "key": "Enter",
+       "settleMs": 1000,
+       "maxPresses": 14
       },
       {
        "kind": "hold",
@@ -11447,22 +12035,12 @@
      "shot": true
     },
     {
-     "id": "red-bell",
+     "id": "ladder",
      "ops": [
       {
        "kind": "move",
-       "dir": "left",
-       "steps": 4
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 300
-      },
-      {
-       "kind": "move",
-       "dir": "left",
-       "steps": 4
+       "dir": "right",
+       "steps": 3
       },
       {
        "kind": "face",
@@ -11472,32 +12050,27 @@
        "kind": "action"
       },
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "red-done",
-     "ops": [
+       "ms": 1000
+      },
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 10,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 600
-        }
-       ]
+       "kind": "pressUntilJs",
+       "fn": "() => window.__oprnDebug?.readState?.().currentMapId === 'fs2_hub_night' ",
+       "key": "Enter",
+       "settleMs": 1000,
+       "maxPresses": 16
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_hub_night",
+       "timeoutMs": 20000
       },
       {
        "kind": "hold",
