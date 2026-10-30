@@ -73,19 +73,27 @@ img = lambda p: {"type": "image_url", "image_url": {"url": "data:image/png;base6
 msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT}, img(f"{TD}/terrain-raw.png"), img(f"{RUNS}/sheet.png")]}]
 
 def call(n):
-    body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high"}).encode()
+    # streaming keeps long high-reasoning calls alive through the local gateway (non-stream sol calls got 502)
+    body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high", "stream": True, "stream_options": {"include_usage": True}}).encode()
     t0 = time.time()
     for attempt in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=1500) as r: d = json.load(r)
+            text, u, mdl = "", {}, None
+            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=1800) as r:
+                for line in r:
+                    line = line.strip()
+                    if not line.startswith(b"data:") or line == b"data: [DONE]": continue
+                    ev = json.loads(line[5:]); mdl = ev.get("model") or mdl
+                    if ev.get("usage"): u = ev["usage"]
+                    for ch in ev.get("choices") or []: text += (ch.get("delta") or {}).get("content") or ""
+            if not text.strip(): raise RuntimeError("empty answer")
             break
         except Exception as e:
             print("retry", e, flush=True)
             if attempt == 2: raise
             time.sleep(20)
-    secs = round(time.time() - t0, 1); u = d.get("usage") or {}
-    text = d["choices"][0]["message"]["content"] or ""
-    json.dump({"secs": secs, "usage": u, "model": d.get("model"), "text": text}, open(f"{G}/call-{n}.json", "w"), ensure_ascii=False, indent=1)
+    secs = round(time.time() - t0, 1)
+    json.dump({"secs": secs, "usage": u, "model": mdl, "text": text}, open(f"{G}/call-{n}.json", "w"), ensure_ascii=False, indent=1)
     return text, secs, u
 
 def parse(text):
