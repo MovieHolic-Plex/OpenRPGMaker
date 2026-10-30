@@ -6,7 +6,7 @@ import {
   isTransparentColorKeySourceImage,
   rawChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
-import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
+import { activeTileGrafts, createGraftedTilesetCanvas, planGraftedTilesetSteps, type GraftedTilesetPlan } from "@/assets/tileGrafts";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
@@ -37,6 +37,33 @@ export function bakeTilesetTextureCanvas(
   return createGraftedTilesetCanvas(tileset, base, (sourceChipset) =>
     resolveGraftSourceImage(scene, sourceChipset)
   );
+}
+
+/**
+ * 워커 합성용 계획(이식이 있을 때만) — 조각으로 세운다(planGraftedTilesetSteps). 소스는 메인 스레드 합성과 같은
+ * 처리 완료본이다(투명색 키 캔버스 포함). 이식이 없으면(투명색만) 합성할 것이 없으므로 null.
+ */
+export function planTilesetTextureBakeSteps(
+  scene: Phaser.Scene,
+  tileset: TilesetDef,
+  baseKey: string
+): Generator<void, GraftedTilesetPlan<BakeSource>, void> | null {
+  if ((tileset.tileGrafts?.length ?? 0) === 0) return null;
+  const base = resolveBakeBase(scene, tileset, baseKey);
+  if (!base) return null;
+  return planGraftedTilesetSteps(tileset, base, (sourceChipset) => resolveGraftSourceImage(scene, sourceChipset));
+}
+
+/**
+ * 그림판 키만으로 세우는 계획 — 그림이 아직 안 실렸어도 된다(첫 맵 로딩과 겹쳐 워커가 파일을 직접 받는다).
+ * 소스 칸 좌표는 이식 항목의 기하만 쓰므로 그림 없이 정해진다. 투명색 키 시트는 처리본이 파일과 달라 쓰지 않는다(null).
+ */
+export function planTilesetTextureBakeStepsFromKeys(
+  tileset: TilesetDef,
+  baseKey: string
+): Generator<void, GraftedTilesetPlan<string>, void> | null {
+  if ((tileset.tileGrafts?.length ?? 0) === 0 || normalizeRgbHexColor(tileset.transparentColor ?? "")) return null;
+  return planGraftedTilesetSteps<string>(tileset, baseKey, (sourceChipset) => sourceChipset);
 }
 
 // 베이스 시트: 사용자 투명색이 있으면 raw 원본에 색상키 적용(기존 선례),

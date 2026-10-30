@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7672KB / 약 2,253,609 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7682KB / 약 2,256,790 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/asset-store.md` | 55KB | 18KB | 357 | ~16,316 |
+| `openwiki/asset-store.md` | 56KB | 19KB | 358 | ~16,627 |
 | `openwiki/assistant-v2.md` | 165KB | 46KB | 443 | ~50,425 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 231KB | 19KB | 1135 | ~70,177 |
@@ -41,7 +41,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
 | `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
-| `openwiki/runtime-pre-edit-routing.md` | 203KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1218 | ~60,382 |
+| `openwiki/runtime-pre-edit-routing.md` | 208KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1249 | ~61,933 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
@@ -104,6 +104,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-monster-art-v2.md` | 3 | `emerald-art-v2-register-npc.mjs`, `public/assets/emerald-monster/cast/uploaded-cast.json`, `verify-shots/emerald-art-v2-20261004/SUMMARY.md` |
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
+| `openwiki/field-enemy.md` | 1 | `chrono-bell.play.json` |
 | `openwiki/getting-started.ko.md` | 1 | `.oprn-local.json` |
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
@@ -299,7 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 55KB · 357줄 · ~16,316 토큰 · 통째읽기 잘림
+### `openwiki/asset-store.md` — 56KB · 358줄 · ~16,627 토큰 · 통째읽기 잘림
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -309,14 +310,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L73` 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
   - `L88` 음악 팩의 곡별 고르기 설명 (2026-10-25)
   - `L98` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
-- `L161` 게시기
-- `L191` 상태 확인
-- `L195` 에디터 첫 진입 화면 (2026-10-12)
-- `L202` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
-- `L227` 에디터에서 열기 링크 (2026-10-20)
-- `L244` 주인 초안 (D2, 2026-10-20)
-- `L252` 바로 플레이 게임 (2026-10-23)
-  - `L349` 조수와 평가 (2026-10-25)
+- `L162` 게시기
+- `L192` 상태 확인
+- `L196` 에디터 첫 진입 화면 (2026-10-12)
+- `L203` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L228` 에디터에서 열기 링크 (2026-10-20)
+- `L245` 주인 초안 (D2, 2026-10-20)
+- `L253` 바로 플레이 게임 (2026-10-23)
+  - `L350` 조수와 평가 (2026-10-25)
 
 ### `openwiki/assistant-v2.md` — 165KB · 443줄 · ~50,425 토큰 · 통째읽기 잘림
 
@@ -1508,7 +1509,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 14KB · 127줄 · ~4,259 토큰
+### `openwiki/field-enemy.md` — 18KB · 163줄 · ~5,578 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
@@ -1516,8 +1517,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 - `L70` 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
 - `L82` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
-- `L113` 안전 장치 (도구가 거절하는 것)
-- `L121` 알려진 한계
+- `L113` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
+- `L149` 안전 장치 (도구가 거절하는 것)
+- `L157` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 23KB · 305줄 · ~7,032 토큰
 
@@ -2893,44 +2895,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L329` 그림 컷 준비와 direction (2026-10-04)
 - `L337` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 203KB · 1218줄 · ~60,382 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 208KB · 1249줄 · ~61,933 토큰 · 통째읽기 잘림
 
-- `L1` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
-- `L47` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
-- `L54` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
-- `L63` 태양 지형 그림자 (2026-10-04)
-- `L69` ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
-- `L80` 도트 게임은 정수 배율로 보인다 (2026-10-30)
-- `L94` 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
-- `L125` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
-- `L142` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
-- `L723` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L750` 맵별 16/32/48px 좌표
-- `L754` ESC skill thumbnails (2026-09-06)
-- `L765` Recovered head emotes (2026-09-05)
-- `L771` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L779` 가구 밀기 애니메이션 (2026-09-05)
-- `L788` Recovered head emotes (2026-09-05)
-- `L794` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L815` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L844` 맵 배경 다중 레이어 (2026-09-21)
-- `L896` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
-- `L944` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
-- `L989` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
-- `L1016` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
-- `L1024` 8차 맵 진입 (2026-09-28)
-- `L1057` 화면 주변 타일 유지 (2026-10-01)
-- `L1086` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-- `L1098` Independent opening timelines
-- `L1102` Monster authoring dogfood (2026-10-03)
-- `L1113` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
-  - `L1120` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
-- `L1137` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
-- `L1168` 엔딩 카드 글자는 게임 언어 (2026-10-22)
-- `L1176` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
-  - `L1187` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
-- `L1199` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L1212` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
+- `L1` 큰 타일셋 이식 아틀라스는 워커에서 굽고 GPU 에 띠씩 올린다 (2026-10-30)
+- `L32` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
+- `L78` 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
+- `L85` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
+- `L94` 태양 지형 그림자 (2026-10-04)
+- `L100` ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
+- `L111` 도트 게임은 정수 배율로 보인다 (2026-10-30)
+- `L125` 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
+- `L156` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
+- `L173` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+- `L754` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L781` 맵별 16/32/48px 좌표
+- `L785` ESC skill thumbnails (2026-09-06)
+- `L796` Recovered head emotes (2026-09-05)
+- `L802` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L810` 가구 밀기 애니메이션 (2026-09-05)
+- `L819` Recovered head emotes (2026-09-05)
+- `L825` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L846` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L875` 맵 배경 다중 레이어 (2026-09-21)
+- `L927` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L975` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
+- `L1020` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
+- `L1047` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+- `L1055` 8차 맵 진입 (2026-09-28)
+- `L1088` 화면 주변 타일 유지 (2026-10-01)
+- `L1117` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+- `L1129` Independent opening timelines
+- `L1133` Monster authoring dogfood (2026-10-03)
+- `L1144` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+  - `L1151` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+- `L1168` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+- `L1199` 엔딩 카드 글자는 게임 언어 (2026-10-22)
+- `L1207` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+  - `L1218` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+- `L1230` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L1243` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
 ### `openwiki/runtime-project-schema.md` — 264KB · 1825줄 · ~74,678 토큰 · 통째읽기 잘림
 
