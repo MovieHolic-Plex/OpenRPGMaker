@@ -65,6 +65,8 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 3. `_cleared` — 스위치(clearSwitch) 켜짐. 투명·통과·항상 parallel. `respawnSec>0` 이면 N초 뒤 스위치를 꺼서 되돌린다
    (그 맵에 있을 때만 흐른다 — 맵을 떠나 있는 시간은 세지 않는다).
 
+**조사 단추로도 연다(2026-10-30)**: 정면 칸에 있는 닿기(eventTouch·playerTouch) 이벤트 중 페이지 명령에 `battleProcessing` 이 든 것은 조사(Enter·z)로도 부딪힌 것과 같이 실행한다 — RPG Maker MV 의 확인 단추 관례(`playSceneMovement.ts findFieldFoeFacing`, `performAction` 정면 찾기 끝). 전투 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다. 왜: 씬 벤치 omo-fr-t terra 숲길 r3 판정자가 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다. 확인 `scripts/qa/runtime/field-foe-action.scenario.mjs`(픽스처 `field-foe-action-fixture.mts --sqlite <판>/project.sqlite`).
+
 처치 상태는 스위치라서 저장·맵 재진입에서도 유지된다. 스위치 id 를 안 주면 도구가 새로 만든다(`clearSwitchId` 로 한 스위치에 여럿을 묶을 수 있다).
 
 ## 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)

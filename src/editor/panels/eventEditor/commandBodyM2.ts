@@ -168,7 +168,7 @@ const M2_INTENT_BY_TITLE: Readonly<Record<string, M2IntentCopy>> = {
   "Open Menu Screen": {
     testid: "m2-open-menu-screen-intent",
     title: "메뉴 화면 열기",
-    copy: "플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다.",
+    copy: "플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 「스킬 장착」을 고르면 그 배우의 스킬 장착 화면이 바로 열리고, 닫으면 이벤트가 이어집니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다.",
   },
   "Camera Control": {
     testid: "m2-camera-control-intent",

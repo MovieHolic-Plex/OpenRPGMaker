@@ -595,8 +595,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         }
       });
       game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
-      game.registry.set("openMenuScreen", (screen?: string) => openEventMenu(layout, () => {
+      game.registry.set("openMenuScreen", (screen?: string, actorId?: string) => openEventMenu(layout, () => {
         if (screen === "monster-box") { statusMenu.openMonsterBox(); return; }
+        if (screen === "skills") { statusMenu.openSkillScreen(actorId); return; }
         statusMenu.reset();
         statusMenu.renderMenu();
       }));

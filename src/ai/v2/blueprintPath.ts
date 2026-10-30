@@ -102,13 +102,13 @@ export interface PathStepText {
 export const BUILD_BLUEPRINT_PATH_SCHEMA = {
   type: "object",
   properties: {
-    steps: { type: "array", description: "(선택) 단계별 대사. 비우면 함수가 청사진 글로 채운다.", items: { type: "object", properties: {
-      id: { type: "string", description: "청사진 단계 id(s1…)" },
-      lines: { type: "array", items: { type: "string" }, description: "조건이 찼을 때 하는 말·보이는 글" },
-      lockedLines: { type: "array", items: { type: "string" }, description: "아직 조건이 안 찼을 때(무엇이 필요한지 힌트)" },
-      doneLines: { type: "array", items: { type: "string" }, description: "끝난 뒤 다시 조사하면" },
-      code: { type: "string", description: "이 단계를 숫자 자물쇠로 — 답(3자리 이상, 앞 단계 lines 에 적는다)" },
-      options: { type: "array", items: { type: "string" }, description: "code 를 고르기로(정답 포함)" },
+    steps: { type: "array", description: "(optional) per-step dialogue. Empty = the function fills it from the blueprint text.", items: { type: "object", properties: {
+      id: { type: "string", description: "blueprint step id (s1…)" },
+      lines: { type: "array", items: { type: "string" }, description: "what is said or shown when the condition is met" },
+      lockedLines: { type: "array", items: { type: "string" }, description: "when the condition is not met yet (a hint of what is needed)" },
+      doneLines: { type: "array", items: { type: "string" }, description: "when examined again after it is done" },
+      code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in the previous step's lines)" },
+      options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
     }, required: ["id"] } },
   },
