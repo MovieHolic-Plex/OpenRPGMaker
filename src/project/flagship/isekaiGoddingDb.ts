@@ -124,6 +124,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.crystal, name: "통신 수정구", price: 0, consumable: false,
     description: "피오가 빌려준 수정구. 여럿이 한꺼번에 말을 주고받을 수 있다. 민재는 이걸 단톡방이라고 부른다." } });
 
+  // ── 적 — 보스 HP 는 보통 플레이로 50초 안쪽(처음 하는 사람 검수: 교무부장 900 은 85초, 마왕 1100 은 3분 넘게 걸렸다). 공격력은 그대로 둔다.
   // ── 적 — 보상은 0 이 아니게(마왕 편의점 검수 8: 「EXP +0 · +0 G」 화면은 고장으로 읽힌다).
   const enemyOf = (id: string) => clone(project.database.enemies.find((x) => x.id === id) ?? project.database.enemies[0]!) as unknown as Record<string, unknown>;
   const act = (skillId: string, priority: number, condition: Record<string, unknown> = { kind: "always" }) =>
@@ -143,14 +144,15 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     [act("skill_attack", 6), act("skill_ig_goblin_poke", 7)], 150, 80, 9);
   enemy("enemy_ig_quiz", "출제 위원 해골", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
-  enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 900, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
+  enemy("enemy_ig_dean", "마왕군 교무부장", "generated-enemy-lich-frost", { maxHp: 520, maxMp: 50, attack: 70, defense: 38, mind: 60, agility: 40 },
     [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
-  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 1100, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
+  enemy("enemy_ig_maou", "재수생 마왕 벨제", "generated-enemy-demon-lord", { maxHp: 620, maxMp: 80, attack: 80, defense: 45, mind: 70, agility: 45 },
     [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
 
   const troop = (id: string, name: string, enemyIds: string[], background: string) =>
     exec("upsert_troop", { troop: { id, name, enemyIds, previewBackgroundResourceId: background } });
-  troop(TROOP.slime, "슬라임 셋", ["enemy_ig_slime", "enemy_ig_slime_red", "enemy_ig_slime"], backdrops.field);
+  // 첫 전투는 둘(처음 하는 사람 검수 4: 셋이면 첫 전투가 54초로 늘어졌다).
+  troop(TROOP.slime, "슬라임 둘", ["enemy_ig_slime", "enemy_ig_slime_red"], backdrops.field);
   troop(TROOP.goblin, "통행세 받는 고블린", ["enemy_ig_goblin", "enemy_ig_goblin_brute", "enemy_ig_goblin"], backdrops.village);
   troop(TROOP.quiz, "출제 위원", ["enemy_ig_quiz"], backdrops.castle);
   troop(TROOP.dean, "마왕군 교무부장", ["enemy_ig_dean"], backdrops.castle);

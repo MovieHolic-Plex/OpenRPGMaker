@@ -58,7 +58,7 @@ const ui = (page) => page.evaluate(() => ({
   ending: !!document.querySelector('[data-testid="ending-screen"]'),
   title: !!document.querySelector('[data-testid="title-screen"]'),
 }));
-const st = (page) => page.evaluate(() => { const s = window.__oprnDebug?.readState(); return s ? { map: s.currentMapId, x: s.x, y: s.y, v: s.variables, party: s.partyActorIds } : null; });
+const st = (page) => page.evaluate(() => { const s = window.__oprnDebug?.readState(); return s ? { map: s.currentMapId, x: s.x, y: s.y, v: s.variables, sw: s.switches, party: s.partyActorIds } : null; });
 const shots = [];
 const shot = (page, tag, delay = 0) => shots.push(page.waitForTimeout(delay).then(() => page.screenshot({ path: resolve(out, `native-${tag}.png`) })).catch(() => {}));
 
@@ -253,26 +253,35 @@ const B = {
     mark("title"); await page.waitForTimeout(3500); shot(page, "title");
     await page.waitForTimeout(2500);
     await page.keyboard.press("Enter"); mark("newgame");
+    // New Game 뒤 4:00 의 깽판 지수(처음 하는 사람 검수 8: 4분에 1/10). 녹화와 따로 표본만 뜬다.
+    const at4 = page.waitForTimeout(240_000).then(() => st(page)).then((s) => { seg.chaosAt4min = s?.v?.var_ig_chaos ?? 0; log("chaos@4:00", seg.chaosAt4min); shot(page, "chaos-4min"); }).catch(() => {});
+    seg.pending = at4;
     for (const [i, ms] of [[1, 3000], [2, 5000], [3, 5000]]) { await page.waitForTimeout(ms); shot(page, `opening-${i}`); }
     await ready(page); mark("runtime");
-    await play(page, seg, [1], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 1), { shotOn: /용사가 내려오셨다|모의고사|무릎/ }); mark("control");
+    // 소환 대사 한 줄 뒤 바로 조작 — 민재가 직접 옥좌로 걸어간다.
+    await play(page, seg, [], async (s) => s.box === null && !s.choices.length && (await st(page))?.sw?.sw_ig_arrived === true, { shotOn: /용사가 내려오셨다/ }); mark("control");
     shot(page, "hall-control", 300);
+    const king = evAt(M.hall, "ev_ig_h_king");
+    await walkTo(page, king.x, king.y + 2); mark("king");
+    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 1), { shotOn: /모의고사|대본이|무릎|깽판/ }); mark("hall-done");
+    shot(page, "hall-after", 300);
     await walkTo(page, hallExit.x, hallExit.y - 1); await walkTo(page, hallExit.x, hallExit.y);
     await waitMap(page, M.capital); await page.waitForTimeout(1500); mark("capital");
     shot(page, "capital", 400);
     await walkTo(page, capGuildDoor.x, capGuildDoor.y + 1); await faceAndAct(page, "up"); await step(page, "up");
     await waitMap(page, M.guild); mark("guild");
-    await play(page, seg, [0, 0, 1], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 2), { shotOn: /한 분씩|번호|돌멩이|일곱 번째|단톡방/ }); mark("fio-joined");
+    await play(page, seg, [0], quietAnd(async () => (await st(page))?.v?.var_ig_stage === 2), { shotOn: /한 분씩|히익|돌멩이|일곱 번|단톡방/ }); mark("fio-joined");
     shot(page, "guild-after", 300);
     await walkTo(page, guildExit.x, guildExit.y - 1); await walkTo(page, guildExit.x, guildExit.y);
     await waitMap(page, M.capital); await page.waitForTimeout(1200); mark("capital2");
     await walkTo(page, capEast.x - 1, capEast.y); await walkTo(page, capEast.x, capEast.y);
     await waitMap(page, M.forest); mark("forest");
-    await play(page, seg, [], async (s) => s.battle, { shotOn: /슬라임|점사/ }); mark("battle");
+    await play(page, seg, [0], async (s) => s.battle, { shotOn: /슬라임|점사|4장/ }); mark("battle");
     shot(page, "first-battle", 2500);
     await battle(page, seg, PLAN3); mark("battle-end");
     await play(page, seg, [], idle, { shotOn: /PC방|점액/ }); mark("after");
     shot(page, "forest-after", 300);
+    await seg.pending; delete seg.pending;
   },
   async goblin(page, seg, mark) {
     await walkTo(page, forestToGoblin.x, forestToGoblin.y);

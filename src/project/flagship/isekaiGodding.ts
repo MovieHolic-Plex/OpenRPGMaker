@@ -32,6 +32,7 @@ import type { FlagshipDemoBuildResult } from "./types";
 const V_STAGE = "var_ig_stage";
 const V_CHAOS = "var_ig_chaos";
 const V_DIPLO = "var_ig_diplo";
+const SW_ARRIVED = "sw_ig_arrived";
 const SW_LINE = "sw_ig_guild_line";
 const SW_CHILI_ASK = "sw_ig_chili_asked";
 const SW_CHILI = "sw_ig_chili_got";
@@ -85,8 +86,17 @@ const SE_CHAT = "cc0-se-osx-switch-01";
 // ── 작은 명령 ──
 const objective = (message: string): Command =>
   ({ kind: "m2Command", commandId: "m2-214-ui-command", fields: { surface: "objectiveChip", message, durationMs: 0 } } as Command);
-/** 대본을 어긴 선택 한 번 — 깽판 지수가 오른다. */
-const chaos = (): Command[] => [setVar(V_CHAOS, "+=", 1), emote("player", "sweat", 700)];
+const SE_CHAOS = "easyrpg-sound-chime2";
+/**
+ * 대본을 어긴 선택 한 번 — 깽판 지수가 오른다. 대화창을 잠깐 닫아 HUD 숫자가 오르는 것이 보이게 하고,
+ * 소리·번쩍·흔들림·토스트(「깽판 지수 +1 · 무엇」)로 행동의 결과임을 보여 준다(처음 하는 사람 검수 8: 지수가 1 에서 안 움직였다).
+ * 토스트는 같은 글을 한 번만 띄우므로 자리마다 label 을 다르게 준다.
+ */
+const chaos = (label: string): Command[] => [
+  setVar(V_CHAOS, "+=", 1), playSe(SE_CHAOS), flash("yellow", 250), shake(350, "3"), emote("player", "exclamation", 900),
+  { kind: "m2Command", commandId: "m2-214-ui-command", fields: { surface: "toast", message: `깽판 지수 +1 · ${label}`, durationMs: 2200 } } as Command,
+  wait(1100),
+];
 const join = (actorId: string, name: string): Command[] => [
   { kind: "changeParty", actorId, action: "add" } as Command, playSe(SE_JOIN), ...caption(`${withJosa(name, "이/가")} 동료가 되었다.`),
 ];
@@ -205,50 +215,70 @@ function buildHall(project: Project, b: Built): void {
   const me = b.hallStart;
   const kingAt = nearestFree(project, map, { x: 23, y: 5 });
   const priestAt = nearestFree(project, map, { x: 21, y: 8 }, [kingAt]);
-  const edelAt = nearestFree(project, map, { x: 25, y: 14 }, [kingAt, priestAt, me]);
+  // 에델은 옥좌 옆에 서 있다가 왕과 이야기가 끝나면 민재 곁으로 온다(멀리서 걸어오면 그만큼 기다린다).
+  const edelAt = nearestFree(project, map, { x: 25, y: 7 }, [kingAt, priestAt, me]);
   const KING = "ev_ig_h_king", PRIEST = "ev_ig_h_priest", EDEL = "ev_ig_h_edel";
 
+  // 소환 직후 대사는 한 줄 — 바로 조작을 넘기고, 민재가 직접 옥좌로 걸어가면 왕이 말을 건다(처음 하는 사람 검수 2: 조작까지 80초).
   const summon: Command[] = [
     bgm(BGM_HALL, 300),
     flash("white", 600), playSe(SE_SUMMON), wait(400),
-    ...say("priest", "surprised", "성공이다! 전설의 용사가 내려오셨다!"),
-    emote("player", "exclamation", 700),
-    ...say("king", "happy", "용사여, 아르벤 왕국에 온 것을 환영하오.\n부디 마왕을 쓰러뜨려 주시오."),
+    ...say("priest", "surprised", "성공이다! 전설의 용사가 내려오셨다!\n용사여, 폐하 앞으로!"),
+    emote("player", "question", 700),
+    setSw(SW_ARRIVED),
+    objective("옥좌의 왕에게 다가가기"),
+  ];
+  // 옥좌 앞 — 첫 선택지에서 바로 깽판(대본 찢기)을 칠 수 있다.
+  const kingTalk: Command[] = [
+    faceHero(KING),
+    ...say("king", "happy", "용사여, 이 「용사 대본」대로\n마왕을 쓰러뜨려 주시오."),
     ...say("minjae", "surprised", "잠깐만요. 저 내일 모의고사인데요."),
     ...say("king", "doubtful", "모의고사…? 그건 어느 마물이오?"),
     choices([
-      { text: "와이파이 비번이 뭐예요?", then: [
-        ...say("priest", "surprised", "와이…? 고대 주문이옵니까?"), ...chaos(),
+      { text: "용사 대본을 찢는다", then: [
+        playSe(SE_PAPER), ...chaos("용사 대본 찢기"),
+        ...say("king", "surprised", "내 대본이! 300년 된 대본이오!"),
+        ...say("minjae", "base", "뒷장은 제가 쓸게요."),
       ] },
-      { text: "계약서부터 보여 주세요", then: [
-        ...say("priest", "serious", "용사 대본이옵니다. 7장 3절,\n「용사는 마왕을 벤다」."),
-        ...say("minjae", "doubtful", "보수 칸이 비었는데요?"), ...chaos(),
+      { text: "와이파이 비번부터요", then: [
+        ...say("priest", "surprised", "와이…? 고대 주문이옵니까?"), ...chaos("와이파이 요구"),
       ] },
       { text: "집에 보내 주세요", then: [
         ...say("king", "sad", "돌려보내는 주문은 우리도 모르오."),
       ] },
     ]),
-    ...say("king", "serious", "귀환 주문서는 마왕성 꼭대기에 있소."),
-    ...say("minjae", "base", "마왕성만 가면 집에 간다는 거죠?\n오케이. 모의고사 전에 끝낸다."),
-    walkTo(EDEL, { x: me.x + 1, y: me.y }),
+    ...say("king", "serious", "…귀환 주문서는 마왕성 꼭대기에 있소.\n먼저 광장 앞 모험가 길드에 등록하시오."),
+    walkTo(EDEL, nearestFree(project, map, { x: kingAt.x + 1, y: kingAt.y + 2 }, [kingAt, priestAt])),
     ...say("edel", "determined", "기사 에델, 모시겠습니다!\n대본 1장 1절, 「용사는 왕께 무릎을 꿇는다」."),
     ...say("minjae", "base", "안 꿇는데요."),
     emote(EDEL, "exclamation", 700),
     setVar(V_STAGE, "=", 1),
     ...join(ACTOR.edel, "에델"),
-    ...say("king", "base", "먼저 광장 앞 모험가 길드에 등록하시오."),
     objective("왕도 광장 앞 모험가 길드에서 등록하기"),
   ];
   map.events.push(event("ev_ig_h_summon", "소환", { x: 0, y: 0 }, [
     gone("ev_ig_h_summon_off", []),
-    page("ev_ig_h_summon_on", [varIs(V_STAGE, 0)], summon, { trigger: "auto" }),
+    page("ev_ig_h_summon_on", [varIs(V_STAGE, 0), swOff(SW_ARRIVED)], summon, { trigger: "auto" }),
   ]));
   map.events.push(event(KING, "국왕 루드릭", kingAt, [
     page(`${KING}_p`, [], [faceHero(KING),
       ifCond(varAtLeast(V_STAGE, 2), [...say("king", "happy", "엘프 마법사까지 데려가시오? 대본 3장이 앞당겨졌군.")],
         [...say("king", "base", "길드부터 가시오. 대본 2장이오.")]),
     ], { who: "king" }),
+    page(`${KING}_talk`, [varIs(V_STAGE, 0), swOn(SW_ARRIVED)], kingTalk, { who: "king" }),
   ]));
+  // 옥좌 앞 두 줄을 밟아도 왕이 먼저 부른다(Z 를 몰라도 걸어가기만 하면 된다).
+  for (let dx = -2; dx <= 2; dx++) {
+    const cell = { x: kingAt.x + dx, y: kingAt.y + 2 };
+    if (!reachableCells(project, map, me).some((c) => c.x === cell.x && c.y === cell.y)) continue;
+    if (cell.x === priestAt.x && cell.y === priestAt.y) continue;
+    if (cell.x === edelAt.x && cell.y === edelAt.y) continue;
+    const id = `ev_ig_h_audience_${dx + 2}`;
+    map.events.push(event(id, "옥좌 앞", cell, [
+      gone(`${id}_off`, []),
+      page(`${id}_on`, [varIs(V_STAGE, 0), swOn(SW_ARRIVED)], kingTalk, { trigger: "playerTouch" }),
+    ]));
+  }
   map.events.push(event(PRIEST, "대신관 오르반", priestAt, [
     page(`${PRIEST}_p`, [], [faceHero(PRIEST),
       ...say("priest", "serious", "귀환 주문서는 마왕성 꼭대기에.\n마왕이 지키고 있사옵니다."),
@@ -257,7 +287,7 @@ function buildHall(project: Project, b: Built): void {
     ], { who: "priest" }),
   ]));
   map.events.push(event(EDEL, "에델", edelAt, [
-    page(`${EDEL}_p`, [varIs(V_STAGE, 0)], [], { who: "edel", dir: "up" }),
+    page(`${EDEL}_p`, [varIs(V_STAGE, 0)], [], { who: "edel", dir: "left" }),
     gone(`${EDEL}_gone`, [varAtLeast(V_STAGE, 1)]),
   ]));
 
@@ -268,7 +298,7 @@ function buildHall(project: Project, b: Built): void {
       ...caption("왕관 받침대 아래에 은화 자루가 쌓여 있다."),
       ...say("edel", "surprised", "용사님, 그건 국고입니다!"),
       choices([
-        { text: "한 줌만. 활동비야", then: [playSe(SE_COIN), gold(120), ...caption("은화 120닢을 챙겼다."), ...say("edel", "crying", "대본에 이런 장면은 없는데…"), ...chaos(), setSw(SW_TREASURY)] },
+        { text: "한 줌만. 활동비야", then: [playSe(SE_COIN), gold(120), ...caption("은화 120닢을 챙겼다."), ...say("edel", "crying", "대본에 이런 장면은 없는데…"), ...chaos("국고 털기"), setSw(SW_TREASURY)] },
         { text: "알았어, 안 만져", then: [...say("edel", "happy", "역시 용사님!")] },
       ]),
     ]),
@@ -312,7 +342,7 @@ function buildCapital(project: Project, b: Built): void {
         { text: "사장님, 단골할게요. 서비스로 주세요", then: [
           ...say("merchant", "surprised", "단골…? 처음 보는 얼굴인데?"),
           ...say("minjae", "happy", "내일부터 매일 올게요. 아마도."),
-          ...say("merchant", "happy", "하하, 배짱 좋네! 가져가!"), ...chaos(),
+          ...say("merchant", "happy", "하하, 배짱 좋네! 가져가!"), ...chaos("외상 흥정"),
         ] },
         { text: "은화 다섯 닢 낸다", then: [playSe(SE_COIN), { kind: "changeGold", op: "-=", amount: 5 } as Command, ...say("merchant", "happy", "정직한 손님이네! 한 줌 더 얹어 줄게.")] },
       ]),
@@ -351,42 +381,29 @@ function buildGuild(project: Project, _b: Built): void {
   const CLERK = "ev_ig_g_clerk", FIO = "ev_ig_g_fio", COOK = "ev_ig_g_cook";
   const advIds = crowd.map((_, i) => `ev_ig_g_adv${i}`);
 
+  // 처음 하는 사람 검수 2: 길드 장면이 74초였다 — 선택지 하나(줄 세우기 깽판)와 몇 줄로 줄인다.
   const scene: Command[] = [
     ...say("adventurer", "angry", "내가 먼저 왔다고!"),
     ...say("clerk", "crying", "한 분씩! 한 분씩요!"),
-    ...think("급식실 배식 5분 전이랑 똑같네."),
     ...say("edel", "worried", "용사님, 대본에는 「인파를 헤치고 나아간다」고…"),
-    ...say("minjae", "determined", "대본 말고, 급식 줄 세우기다."),
     choices([
-      { text: "번호표 뽑으세요!", then: [playSe(SE_PAPER), ...caption("민재는 수첩을 찢어 번호를 적어 나눠 줬다."), ...say("adventurer", "surprised", "…3번? 나 3번이다!")] },
-      { text: "레벨 낮은 순으로 서!", then: [...say("adventurer", "doubtful", "레벨이 뭔데?"), ...say("minjae", "annoyed", "그냥 키 순서로 서요!"), ...chaos()] },
-      { text: "새치기하면 맨 뒤로!", then: [shake(300, "1"), ...say("adventurer", "surprised", "히익, 알았어!"), ...chaos()] },
+      { text: "탁자 위에 올라가 「급식 줄 서!」", then: [
+        shake(300, "1"), ...chaos("길드 급식 줄 세우기"),
+        ...say("adventurer", "surprised", "히익, 알았어! 서면 되잖아!"),
+      ] },
+      { text: "번호표를 찢어 나눠 준다", then: [
+        playSe(SE_PAPER), ...say("adventurer", "surprised", "…3번? 나 3번이다!"),
+      ] },
     ]),
     ...advIds.map((id, i) => walkTo(id, line[i]!, i === advIds.length - 1)),
     playSe(SE_OK), emote(CLERK, "heart", 900),
-    ...say("clerk", "happy", "…처음으로 줄이 섰어요. 등록 도와드릴게요.\n직업을 적어 주세요."),
-    choices([
-      { text: "고등학생", then: [...say("clerk", "doubtful", "고등학생…? 처음 보는 직업이네요. 특기는요?"), ...say("minjae", "base", "급식 줄 세우기요. 방금 보셨잖아요.")] },
-      { text: "용사(임시)", then: [...say("clerk", "smile", "임시라니 겸손하시네요."), ...say("minjae", "base", "아뇨, 진짜 임시예요. 내일 모의고사라.")] },
-      { text: "무직", then: [...say("edel", "crying", "용사님!!"), ...chaos()] },
-    ]),
-    playSe(SE_PAPER), ...caption("길드 등록증을 받았다. 「등급: 돌멩이」."),
-    ...say("clerk", "worried", "…피오 씨, 또 우세요?"),
+    ...say("clerk", "happy", "…처음으로 줄이 섰어요! 등록증 드릴게요.\n등급은 「돌멩이」."),
     walkTo(FIO, { x: clerkAt.x + 1, y: clerkAt.y + 2 }),
-    ...say("fio", "crying", "마탑 승급 시험, 일곱 번째 떨어졌어요.\n파이어볼 주문은 다 외웠는데…"),
-    ...say("minjae", "doubtful", "외우기만 했어? 기출은 풀어 봤고?"),
-    ...say("fio", "surprised", "기, 기출…?"),
-    choices([
-      { text: "기출부터 풀어. 문제는 돌아온다", then: [...say("fio", "surprised", "작년 문제를… 올해 또 낸다고요?"), ...say("minjae", "base", "출제 위원도 사람이야. 바쁘거든.")] },
-      { text: "요점만 세 줄로 줄여", then: [...say("fio", "happy", "세 줄…! 마법 이론서가 300쪽인데!"), ...say("minjae", "base", "그러니까 세 줄.")] },
-      { text: "그냥 시험장 불 질러", then: [...say("fio", "surprised", "그건 범죄예요!"), ...say("edel", "crying", "그건 대본에도 없습니다!"), ...chaos()] },
-    ]),
-    ...say("fio", "determined", "따라갈게요. 마왕성 가는 길에 공부 좀 가르쳐 주세요!"),
-    ...say("minjae", "happy", "과외비는 마왕 잡고 받는다."),
+    ...say("fio", "crying", "저, 마탑 시험 일곱 번 떨어진 피오예요.\n줄 세우는 거 보고… 따라가도 돼요?"),
+    ...say("minjae", "base", "기출부터 풀자. 과외비는 마왕 잡고 받는다."),
     setVar(V_STAGE, "=", 2),
     ...join(ACTOR.fio, "피오"),
-    giveItem(ITEM.crystal), playSe(SE_OK), ...caption("피오에게 통신 수정구를 빌렸다.\n여럿이 한꺼번에 말할 수 있다고 한다."),
-    ...think("단톡방이네."),
+    giveItem(ITEM.crystal), playSe(SE_OK), ...caption("피오에게 통신 수정구를 빌렸다. 여럿이 한꺼번에 말할 수 있다.\n…단톡방이네."),
     setSw(SW_LINE),
     objective("동쪽 성문으로 나가 반반 마을로"),
   ];
@@ -445,9 +462,12 @@ function buildForest(project: Project, b: Built): void {
   const fight: Command[] = [
     walkTo(SL, { x: b.forest.entry.x + 2, y: b.forest.entry.y }),
     emote("player", "exclamation", 800),
-    ...say("fio", "surprised", "슬라임이에요! 셋이나!"),
+    ...say("fio", "surprised", "슬라임이에요! 둘이나!"),
     ...say("edel", "determined", "대본 4장, 「용사는 홀로 앞에 선다」!"),
-    ...say("minjae", "base", "아니. 하나만 다 같이 친다. 점사."),
+    choices([
+      { text: "대본 4장도 찢는다. 다 같이 점사!", then: [playSe(SE_PAPER), ...chaos("대본 4장 찢기"), ...say("edel", "crying", "4장까지…! 아, 알겠습니다, 점사!")] },
+      { text: "…홀로 앞에 선다", then: [...say("minjae", "annoyed", "는 무슨. 하나만 다 같이 친다. 점사.")] },
+    ]),
     ...battle(TROOP.slime,
       [setSw(SW_SLIME), ...say("edel", "surprised", "넷이 한 마리씩… 이렇게 빨리?"), ...say("minjae", "happy", "PC방에서 배웠어. 오더는 짧게.")],
       [setSw(SW_SLIME), ...caption("셋은 슬라임 점액을 뒤집어쓰고 겨우 일어났다."), ...say("minjae", "annoyed", "…다음엔 점사 오더부터 쓴다.")]),
@@ -508,13 +528,13 @@ function buildGoblin(project: Project, b: Built): void {
     ...chat("촌장", "닭부터 돌려주시오"),
     choices([
       { text: "공지: 밭은 울타리 안, 닭은 오늘 해 지기 전에 반납", then: [diplo(), ...chat("꾸르", "…울타리 안. 알았다"), ...chat("촌장", "해 지기 전이면 되오")] },
-      { text: "일단 다들 이모티콘 하나씩 보내", then: [diplo(), ...chaos(), ...chat("꾸르", "(웃는 고블린)"), ...chat("촌장", "(웃는 닭)"), ...say("fio", "happy", "분위기가 풀렸어요!")] },
+      { text: "일단 다들 이모티콘 하나씩 보내", then: [diplo(), ...chaos("이모티콘 외교"), ...chat("꾸르", "(웃는 고블린)"), ...chat("촌장", "(웃는 닭)"), ...say("fio", "happy", "분위기가 풀렸어요!")] },
       { text: "싸우는 사람 강퇴합니다", then: [...chat("꾸르", "강퇴?? 꾸르 방장 아니다??"), ...chat("촌장", "(나갔습니다)")] },
     ]),
     ...chat("고블린", "그래도 통행세는 받아야 한다. 길 우리가 닦았다"),
     choices([
       { text: "통행세 말고 마을 입장료. 반반 나눠", then: [diplo(), ...chat("촌장", "…그거 괜찮소"), ...chat("꾸르", "반반. 꾸르르. 좋다")] },
-      { text: "입장료 대신 떡볶이 레시피 공유", then: [diplo(), ...chaos(), ...chat("꾸르", "떡볶이 뭐냐"), ...chat("여관 주인(왕도)", "우리 가게 「용사 정식」. 와서 먹어")] },
+      { text: "입장료 대신 떡볶이 레시피 공유", then: [diplo(), ...chaos("떡볶이 외교"), ...chat("꾸르", "떡볶이 뭐냐"), ...chat("여관 주인(왕도)", "우리 가게 「용사 정식」. 와서 먹어")] },
       { text: "통행세 안 내. 비켜", then: [...chat("꾸르", "꾸르르르!!!")] },
     ]),
     ifCond(varAtLeast(V_DIPLO, 2), [
@@ -578,7 +598,7 @@ function buildCastle(project: Project, b: Built): void {
       { text: "11", then: [playSe(SE_WRONG), ...say("examiner", "angry", "오답. 체벌이다."),
         ...battle(TROOP.quiz, [...say("examiner", "sad", "…채점은 끝났다. 지나가라.")], [...caption("해골은 빨간 펜으로 동그라미를 하나 그려 주고 물러났다.")]), bgm(BGM_CASTLE, 600)] },
       { text: "답 말고 출제 의도부터 묻는다", then: [...say("examiner", "doubtful", "출제… 의도…?"), ...say("minjae", "base", "앞의 두 수를 더하라는 거죠? 그럼 13."),
-        ...say("examiner", "crying", "…15년 동안 의도를 물은 놈은 처음이다."), ...chaos()] },
+        ...say("examiner", "crying", "…15년 동안 의도를 물은 놈은 처음이다."), ...chaos("출제 의도 따지기")] },
     ]),
     setSw(SW_QUIZ),
   ];
