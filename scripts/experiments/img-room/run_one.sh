@@ -1,5 +1,5 @@
 #!/bin/bash
-# img-room-test 한 판: run_one.sh <boss|inn> <terra|opus> <A|B|G|T> <rep>   (G = B 와 같고 목업만 GPT Image, T = 칩셋에 묶인 GPT 목업 + 조각 표)
+# img-room-test 한 판: run_one.sh <boss|inn> <terra|sol|opus> <A|B|G|T|O> <rep>   (O = 자유 GPT 목업 + 없는 물건 object-gen → 판 프로젝트 칩셋에 공방 칸으로 구움 + 조각 표, 목업·조각은 과제마다 O-prep/<task> 하나를 같이 씀)   (G = B 와 같고 목업만 GPT Image, T = 칩셋에 묶인 GPT 목업 + 조각 표)
 #   A = 지금 v2 경로(요청 글만). B = 칩셋 조각 판(palette) → 이미지 모델 목업 → 목업을 첫 요청에 붙여 v2 가 짓는다.
 #   결과: $IMGROOM_RUNS/<cond><rep>/<arm>/<task>/ (기본 suite/rooms/runs-imgroom). run-room.sh 의 흐름을 따른다(준비→세션→after.json→measure-room).
 set -u
@@ -36,7 +36,12 @@ if [ $COND = T ] && [ ! -f $G/mockup.png ]; then
     FB=$(python3 -c "import json;print('; '.join(u.get('what','') for u in json.load(open('$G/mockup-try$try.check.json'))['unmatched']))" 2>/dev/null)
   done
 fi
-if [ $COND = B ] || [ $COND = G ] || [ $COND = T ]; then
+PREP=$RUNS/O-prep/$TASK
+if [ $COND = O ]; then
+  [ -f $PREP/OBJECTS.json ] || { echo "VOID: O-prep/$TASK 없음(og_run.py 먼저)" > $G/VOID.txt; exit 1; }
+  cp $PREP/mockup.png $G/mockup.png; cp $PREP/mockup.json $G/mockup.json; cp $PREP/missing.json $G/missing.json
+fi
+if [ $COND = B ] || [ $COND = G ] || [ $COND = T ] || [ $COND = O ]; then
   if [ ! -f $G/mockup.png ]; then
     for try in 1 2 3; do
       env $MOCK_ENV timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup.png > $G/mockup.json 2> $G/mockup.err && break
@@ -58,17 +63,36 @@ Step 2: build the room from your own table with make_place zones[].design, using
 Step 3: inspect the result and fix every group the finish gate reports as missing or misplaced."
     IMG_ENV="$IMG_ENV OPRN_EXPERIMENT_PIECE_TABLE=1"
   fi
+  if [ $COND = O ]; then
+    EXTRA=$(python3 - $PREP <<'PY'
+import json,sys,glob,os
+for f in sorted(glob.glob(sys.argv[1]+"/objects/*.json")):
+    o=json.load(open(f)); print(f"- workshop:{o['slug']} — {o['name']} ({o['w']}x{o['h']} cells, {o['anchor']}): {o['brief']}")
+PY
+)
+    TEXT="$(cat $REQ0)
+
+Build this room on the map with the hand-pixel interior chipset (make_place type interior, tileset atlas_biome_interior); match its structure, zones and landmark. The attached picture [mockup attached] is a mockup of this room.
+Objects in the mockup that the chipset lacked were drawn as new pieces and added to this project's atlas_biome_interior chipset. Use them where the mockup shows them (their ids go in zones[].design groups items and in piece_table like any other piece id):
+$EXTRA
+Step 1: call room_parts, then look at the mockup and call piece_table — the rooms/zones with approximate cell rects on your planned map, and every object group with its exact chipset piece id (including the workshop: pieces above), approximate x,y and count. This table is your design.
+Step 2: build the room from your own table with make_place zones[].design, using those piece ids and positions.
+Step 3: inspect the result and fix every group the finish gate reports as missing or misplaced."
+    IMG_ENV="$IMG_ENV OPRN_EXPERIMENT_PIECE_TABLE=1 OPRN_EXPERIMENT_LOG_MODEL=1"
+  fi
 fi
 [ -f $G/project/project.sqlite ] || bun src/harnesses/assistant-capability/node/wholeGamePrepare.ts $G "imgroom-$COND$REP-$ARM-$TASK" > $G/prepare.log 2>&1 || { echo "VOID: prepare 실패" > $G/VOID.txt; exit 1; }
+if [ $COND = O ] && [ ! -f $G/baked.json ]; then bun scripts/experiments/img-room/bake_objects.mts $G $PREP >> $G/RUN.txt 2>&1 || { echo "VOID: bake 실패" > $G/VOID.txt; exit 1; }; fi
 [ -f $G/before.json ] || node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/before.json'))" || exit 1
 case $ARM in
   terra) ENG="--ai-config $RUNS/aiconfig-terra-high.json" ;;
+  sol) ENG="--ai-config $RUNS/aiconfig-sol-high.json"; COMPAT=$RUNS/openai-compat-endpoints.sol.json ;;
   opus) ENG="--engine claude:claude-opus-5-5:medium" ;;
   *) echo "unknown arm"; exit 1 ;;
 esac
 echo "wt=$WT head=$(git rev-parse --short HEAD) arm=$ARM task=$TASK cond=$COND rep=$REP started=$(date -u +%FT%TZ)" >> $G/RUN.txt
 T0=$(date +%s)
-env $IMG_ENV HARNESS_HOST_LOG=$G/host.log OPRN_OPENAI_COMPAT_PATH=$HOME/.oprn-suite/openai-compat-endpoints.json OPRN_TURN_DIAG=1 HARNESS_DIST_DIR=dist setsid nohup node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir $G/project --out $G/session --v2 $ENG > $G/session-driver.log 2>&1 &
+env $IMG_ENV HARNESS_HOST_LOG=$G/host.log OPRN_OPENAI_COMPAT_PATH=${COMPAT:-$HOME/.oprn-suite/openai-compat-endpoints.json} OPRN_TURN_DIAG=1 HARNESS_DIST_DIR=dist setsid nohup node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir $G/project --out $G/session --v2 $ENG > $G/session-driver.log 2>&1 &
 DRV=$!
 printf '%s' "$TEXT" > $G/request.txt
 python3 - "$G/session" "$G/request.txt" 30 <<'PY'
@@ -99,5 +123,5 @@ kill -0 $DRV 2>/dev/null && kill $DRV
 echo "build_s=$(( $(date +%s) - T0 ))" >> $G/RUN.txt
 node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/after.json'))" || { echo "VOID: after.json 없음" > $G/VOID.txt; exit 1; }
 SUITE_WT=$WT timeout 600 bun $R/measure-room.mts $G > $G/measure.log 2>&1; echo "measure exit $?" >> $G/RUN.txt
-[ $COND = T ] && timeout 300 bun scripts/experiments/img-room/coverage.mts $G >> $G/RUN.txt 2>&1
+{ [ $COND = T ] || [ $COND = O ]; } && timeout 300 bun scripts/experiments/img-room/coverage.mts $G >> $G/RUN.txt 2>&1
 echo "done=$(date -u +%FT%TZ)" >> $G/RUN.txt

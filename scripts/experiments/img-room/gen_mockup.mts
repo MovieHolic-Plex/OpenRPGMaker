@@ -41,6 +41,18 @@ if (process.env.MOCKUP_BOUND === "1") {
     "Do not invent any material, furniture, decoration or effect that is not on the sheet — no extra statues, no flames, lava, water, plants, rugs, lights or props unless that exact piece is on the sheet. Floors and walls only from the floor:/wall: swatches. Plain doorways/doors in walls are fine (the builder adds them). " +
     `Allowed piece ids: ${ids.join(", ")}. Never reproduce the sheet itself or put loose pieces beside the room.${fb}` };
 }
+if (process.env.MOCKUP_FREE === "1") {
+  // 조건 O: 자유 목업 — 칩셋 판은 화풍·크기 기준일 뿐, 방에 필요한 물건은 칩셋에 없어도 같은 화풍으로 그린다(없는 물건은 object-gen 이 만든다).
+  const room = task === "boss"
+    ? "a dungeon BOSS ROOM deep under a demon lord's castle: an entrance from the south, an antechamber with side alcoves, then the main throne hall with a long carpet runner up the middle, columns on both sides, fire braziers, dramatic hazards or relics, and at the far north end the demon lord's throne as the landmark; one small side room with treasure. Roughly 30x24 cells."
+    : "the GROUND FLOOR OF A SMALL VILLAGE INN: entrance door on the south wall, the inn reception counter with a room-key board near the entrance, a dining hall with several dining tables, chairs and benches, a fireplace on the north wall as the landmark, a wooden staircase up in one corner, a small kitchen alcove behind a counter, and the cosy clutter a real inn has. Not a plain rectangle (L-shaped or two-part). Roughly 22x16 cells.";
+  PROMPTS[task] = { refs: [`${task}-pieces.png`], prompt:
+    `Design a mockup of ${room} ` +
+    "Style: 16px-per-tile SNES-era JRPG map, 3/4 top-down view (tops of objects visible, short front faces, no side faces), orthographic, crisp pixel art, whole room on a dark void, no people, no text, no labels, no UI, no grid lines in the output. " +
+    "The attached labelled sheet shows this game's chipset: use its floors, walls and pieces wherever they fit, at their exact size on the 16px grid and in the same colours. " +
+    "You are free to imagine: draw any other furniture, relics or set pieces this room needs to feel rich and specific, in exactly the same pixel style, palette, outline and scale (a chair is one cell, a person would be 1x2 cells). Keep every object grid-aligned and clearly separated so each can be redrawn as a chipset piece. " +
+    "Never reproduce the sheet itself or put loose pieces beside the room." };
+}
 const p = PROMPTS[task];
 if (!p) throw Error(`unknown task ${task}`);
 const t0 = Date.now();

@@ -129,6 +129,42 @@ function experimentUserImages(task: string): { type: "image"; mimeType: string; 
   } catch (error) { console.error(`[pi-agent] experiment image unreadable: ${(error as Error).message}`); return undefined; }
 }
 
+/**
+ * 실험(img-room-test, 2026-10-30): OPRN_EXPERIMENT_LOG_MODEL=1 이면 /chat/completions·/responses 응답이 밝힌 실제 모델을 호스트 로그에 남긴다
+ * (설정 이름이 아니라 서버가 돌려준 "model"). 응답 몸통은 clone 으로 읽어 본 몸통은 건드리지 않는다. 같은 모델은 한 번만 적는다.
+ */
+let modelLogInstalled = false;
+function installExperimentModelLog(): void {
+  if (modelLogInstalled || process.env.OPRN_EXPERIMENT_LOG_MODEL !== "1") return;
+  modelLogInstalled = true;
+  const seen = new Map<string, number>(); const orig = globalThis.fetch;
+  const wrapped = async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+    const res = await orig(input, init);
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request).url;
+    if (/\/(chat\/completions|responses)\b/u.test(url)) {
+      let requested = "";
+      try { requested = String(JSON.parse(String(init?.body ?? "{}")).model ?? ""); } catch { /* not json */ }
+      void (async () => {
+        try {
+          const reader = res.clone().body?.getReader(); if (!reader) return;
+          let text = ""; const dec = new TextDecoder();
+          for (let i = 0; i < 40 && text.length < 200_000; i++) {
+            const { value, done } = await reader.read(); if (done) break;
+            text += dec.decode(value, { stream: true });
+            const m = /"model"\s*:\s*"([^"]+)"/u.exec(text);
+            if (m) { const n = (seen.get(m[1]!) ?? 0) + 1; seen.set(m[1]!, n);
+              if (n === 1 || n % 10 === 0) console.error(`[pi-agent] experiment: response model=${m[1]} requested=${requested} (${n}x)`);
+              break; }
+          }
+          await reader.cancel().catch(() => undefined);
+        } catch { /* ignore */ }
+      })();
+    }
+    return res;
+  };
+  globalThis.fetch = Object.assign(wrapped, orig) as typeof fetch;
+}
+
 interface PiLoopDriver {
   subscribe(listener: (event: { type: string; [key: string]: unknown }) => void): () => void;
   prompt(text: string, images?: { type: "image"; mimeType: string; data: string }[]): Promise<void>;
@@ -1474,6 +1510,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   try {
     if (options.v2?.beforeFirstPrompt && v2Env) options.v2.beforeFirstPrompt(v2Env);
+    installExperimentModelLog();
     await promptResuming(request.task, experimentUserImages(request.task));
     // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
     // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.

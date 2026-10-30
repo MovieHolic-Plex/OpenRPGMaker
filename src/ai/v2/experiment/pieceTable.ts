@@ -3,6 +3,15 @@
 // 표와 맞대어 빠지거나 엉뚱한 곳에 놓인 묶음을 할 일(관문 항목)로 돌려준다. 배치는 하지 않는다.
 import type { GameMap, Project } from "@/project/types";
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { workshopHandObjects } from "@/project/workshopTiles";
+import type { TilesetDef } from "@/project/types";
+
+/** 칩셋 역할표 + 이 프로젝트에 구운 공방 조각(workshop:…, 조건 O 의 object-gen 조각) — build_hand_interior_room 의 specFor 와 같은 합집합. */
+export function specWithWorkshop(tileset: TilesetDef | undefined): HandInteriorSpec | undefined {
+  const S = roomSpecOf(tileset); if (!S) return undefined;
+  const ws = workshopHandObjects(tileset);
+  return Object.keys(ws).length ? { ...S, objects: { ...S.objects, ...ws } as HandInteriorSpec["objects"] } : S;
+}
 
 export interface PieceTableRoom { readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface PieceTableGroup { readonly name: string; readonly id: string; readonly x: number; readonly y: number; readonly count: number }
@@ -15,7 +24,7 @@ const int = (v: unknown): number | undefined => (typeof v === "number" && Number
 /** 표를 읽고 검사한다. 문제가 있으면 problems 를 돌려주고 표는 저장하지 않는다(모델이 고쳐 다시 낸다). */
 export function validatePieceTable(project: Project, raw: Record<string, unknown>, tilesetId = "atlas_biome_interior"): { table?: PieceTable; problems: string[] } {
   const problems: string[] = [];
-  const S = roomSpecOf(project.tilesets[tilesetId]);
+  const S = specWithWorkshop(project.tilesets[tilesetId]);
   if (!S) return { problems: [`tileset ${tilesetId} has no room kit`] };
   const W = int(raw.mapWidth), H = int(raw.mapHeight);
   if (!W || !H || W < 4 || H < 4 || W > 120 || H > 120) problems.push("mapWidth/mapHeight must be the planned map size in cells (4–120)");
@@ -68,7 +77,7 @@ export interface GroupVerdict { readonly group: PieceTableGroup; readonly near: 
 
 /** 표와 지은 맵을 맞댄다. 표 좌표는 대략이라 전체 평행 이동(±6칸) 하나를 먼저 맞추고, 묶음 자리 ±3칸 안의 같은 조각 수를 센다. */
 export function compareTableToMap(project: Project, mapId: string, table: PieceTable): { verdicts: GroupVerdict[]; coverage: number; offset: { dx: number; dy: number } } | undefined {
-  const map = project.maps[mapId]; const S = roomSpecOf(project.tilesets[map?.tilesetId ?? ""]);
+  const map = project.maps[mapId]; const S = specWithWorkshop(project.tilesets[map?.tilesetId ?? ""]);
   if (!map || !S) return undefined;
   const placed = findPlacedPieces(map, S, new Set(table.groups.map((g) => g.id)));
   const near = (g: PieceTableGroup, dx: number, dy: number) => placed.filter((p) => p.id === g.id && Math.max(Math.abs(p.x - (g.x + dx)), Math.abs(p.y - (g.y + dy))) <= 3).length;
