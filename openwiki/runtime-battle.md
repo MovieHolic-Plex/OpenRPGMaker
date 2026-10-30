@@ -1,3 +1,10 @@
+## 걷기 칩으로 서는 적 (2026-10-30)
+
+- `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.
+- 그림: `battleFieldDom.enemyButton` 의 첫 분기가 `appendWalkChipBattler(..., "right")` 를 부르고(`facing` 인자, 기본 `"left"` 라 파티 경로 불변) 스프라이트에 `battle-enemy-image` 를 함께 단다 — 적 HP·표적·쓰러짐·맞춤 규칙이 계속 그림을 찾는다. 포즈는 파티원과 같다(대기·접근/복귀 걸음·공격 한 걸음·피격·쓰러짐).
+- 준비 관문: `battleAssetPrefetch.troopImageUrls` 가 `walkChip.characterResourceId` 도 싣는다.
+- 편집기: 적 탭 「걷기 칩 (서 있는 적)」 선택기. 조수: `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}`(고정 속성), 지우기는 `clearFields:["walkChip"]`. 풀리지 않는 id 는 `enemy-reference-not-found` 로 거부하고 후보 id 를 알린다(`tex_*_charset_*` 는 `<계열>-charset-*` 로 바꿔 받는다). 헤드리스 `simulate_battle` 은 그림과 무관해 영향이 없다.
+
 ## 기술 목록에 기본 공격(skill_attack)을 싣지 않는다 (2026-10-29)
 
 `battleCommandDom.ts` `listedSkillIds` 는 사람 배우의 기술 목록에서 `skill_attack`(이름 「공격」)을 뺀다 — 「공격」 명령과 같은 것이다.
