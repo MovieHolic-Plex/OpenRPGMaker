@@ -7,6 +7,8 @@ export const WORLD_CANON_TONES = [
   "gothic",
   "fairytale",
   "mythic",
+  "horror",
+  "mystery",
 ] as const;
 
 export type WorldCanonTone = (typeof WORLD_CANON_TONES)[number];
