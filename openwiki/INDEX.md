@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7680KB / 약 2,256,026 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7680KB / 약 2,256,071 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -38,7 +38,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,096 |
+| `openwiki/jp-city.md` | 108KB | 14KB | 511 | ~32,141 |
 | `openwiki/runtime-battle.md` | 440KB | 32KB | 2417 | ~129,307 |
 | `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
 | `openwiki/runtime-pre-edit-routing.md` | 205KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1233 | ~60,998 |
@@ -2241,7 +2241,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L176` 조수 v2 가 짓는 길 (2026-10-28)
 - `L180` 한계
 
-### `openwiki/jp-city.md` — 108KB · 511줄 · ~32,096 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 108KB · 511줄 · ~32,141 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
