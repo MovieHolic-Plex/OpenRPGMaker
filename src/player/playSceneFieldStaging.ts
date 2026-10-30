@@ -464,10 +464,36 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
-  syncObjectiveMarkers(scene, now);
-  syncExamineMarkers(scene, now);
-  syncExitLabels(scene, now);
+  // 저자가 안내 표시를 껐으면(system.fieldGuides "off") 목표 빛무리·화살표, 자동 조사 ▼, 출구 목적지 글자를 그리지 않는다.
+  // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄).
+  if (store.getCurrent().system.fieldGuides === "off") clearFieldGuides(scene);
+  else {
+    syncObjectiveMarkers(scene, now);
+    syncExamineMarkers(scene, now);
+    syncExitLabels(scene, now);
+  }
   syncLiftRide(scene);
+}
+
+/** 안내 표시(목표 빛무리·화살표, 조사 ▼, 출구 글자)를 모두 걷는다 — system.fieldGuides "off". 왜(마왕 편의점 2026-10-30
+ *  「너무 친절함 … 너무 많은 화살표도 짜증남」): 장면이 스스로 갈 곳을 보여 주는 이야기 게임에서는 자동 안내가 화면을 덮고 발견을 빼앗는다. */
+function clearFieldGuides(scene: PlaySceneContext): void {
+  const objective = objectiveMarkerStates.get(scene);
+  if (objective) {
+    for (const parts of objective.parts.values()) destroyObjectiveMarker(parts);
+    objective.arrow?.destroy();
+    objectiveMarkerStates.delete(scene);
+  }
+  const examine = examineMarkerStates.get(scene);
+  if (examine) {
+    for (const marker of examine.markers.values()) marker.destroy();
+    examineMarkerStates.delete(scene);
+  }
+  const exits = exitLabelStates.get(scene);
+  if (exits) {
+    for (const label of exits.labels.values()) label.destroy();
+    exitLabelStates.delete(scene);
+  }
 }
 
 // ── 늘 빛나는 표지(page.glow) ────────────────────────────────────────────
