@@ -1,6 +1,7 @@
 import type { MessageWindowSettings } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { isConfirmKey } from "@/player/keyBindings";
+import { installConfirmPressTracker, isLeakedConfirmPress } from "@/player/confirmMashGuard";
 
 type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
@@ -219,6 +220,8 @@ export function showNumberInput(
         // 빈 칸 그대로(0) 입력창을 닫아 «철컥… 맞지 않는다»가 플레이어가 고르기도 전에 떴다(2026-10-29 vm3 flash escape 판정
         // «자동 입력»). 빈 값 확정은 확인 단추를 직접 누를 때만.
         if (event.repeat || !value) return;
+        // 선택지와 같은 규칙: 열린 직후·연타 중의 결정 키는 확정하지 않는다(숫자를 친 뒤의 결정은 연타가 아니다).
+        if (isLeakedConfirmPress(event, openedAt)) return;
         finish();
       }
     };
@@ -262,6 +265,8 @@ export function showNumberInput(
     );
 
     box.append(...children);
+    installConfirmPressTracker();
+    const openedAt = performance.now();
     document.addEventListener("keydown", onKey, true);
     overlay.append(box);
     syncSlots();

@@ -90,6 +90,7 @@ function troopImageUrls(project: Project, troop: TroopRecord): Set<string> {
     const enemy = project.database.enemies.find((entry) => entry.id === enemyId);
     if (!enemy) continue;
     add(enemy.monsterResourceId);
+    add(enemy.walkChip?.characterResourceId);
     add(enemy.speciesId ? project.database.monsterSpecies?.find((species) => species.id === enemy.speciesId)?.graphic?.monsterResourceId : undefined);
     for (const skillId of enemy.skillIds) addAnimation(project.database.skills.find((entry) => entry.id === skillId)?.animationId);
   }

@@ -102,6 +102,9 @@ import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { BOSS_FLOOR_STATS, type BossFloorStat, isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { closestDeclaredKey } from "./argRepair";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
 
@@ -625,6 +628,10 @@ const enemyRecordSchema = objectSchema({
   // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
   transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  walkChip: objectSchema({
+    characterResourceId: stringSchema("걷기 칩(CharSet 288×256) 리소스 id. 예: easyrpg-charset-actor1. search_resources kind:charset 으로 찾는다."),
+    characterIndex: integerSchema("칩 시트 안 인물 번호 0~7(4열×2행). 기본 0."),
+  }, "측면 전투에서 몬스터 그림 대신 걷기 칩 캐릭터(오른쪽 보기)로 서는 적 — 사람 적·결투 상대용. 대기·접근·공격 걸음·피격·쓰러짐 포즈를 파티원처럼 쓴다. 생략하면 기존 몬스터 그림."),
   lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
@@ -1477,6 +1484,13 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
     problems.push(`rewards.dropItemId: ${dropItemId}`);
     hints.push(`items: ${knownIds(draft.database.items, 5)} (드롭이 없으면 rewards.dropItemId 를 빼세요)`);
   }
+  const walkChip = record.walkChip;
+  const walkChipId = walkChip && typeof walkChip === "object" ? (walkChip as { characterResourceId?: unknown }).characterResourceId : undefined;
+  if (typeof walkChipId === "string" && walkChipId && !resolveAssetResourceUrl(walkChipId, { project: draft })) {
+    problems.push(`walkChip.characterResourceId: ${walkChipId}`);
+    const candidates = CHARSET_ASSETS.filter((asset) => /actor|people|hero/iu.test(asset.id)).slice(0, 8).map((asset) => asset.id);
+    hints.push(`걷기 칩 id 예: ${(candidates.length > 0 ? candidates : CHARSET_ASSETS.slice(0, 8).map((asset) => asset.id)).join(", ")} (search_resources kind:charset 로 더 찾기)`);
+  }
   const switchIds = new Set(draft.switches.map((entry) => entry.id));
   const missingSwitches = [...requestedSwitchIds].filter((switchId) => !switchIds.has(switchId));
   if (missingSwitches.length > 0) {
@@ -1779,7 +1793,7 @@ function skillDamagesFoe(project: Project, skillId: string): boolean {
 
 /** upsert_enemy.clearFields 로 지울 수 있는 선택 필드. id·name·stats·actions·그림(monsterResourceId)은 적의 뼈대라 뺀다. */
 const ENEMY_CLEARABLE_FIELDS = [
-  "speciesId", "level", "battleScalePercent", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
+  "speciesId", "level", "battleScalePercent", "walkChip", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
   "reactions", "stealItems", "stateRates", "elementRates", "damageTypeRates",
 ] as const;
 
@@ -1816,7 +1830,8 @@ const upsertEnemy: ToolDefinition = {
     "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩 중 **stats 에 주지 않은 값**에만 하한(기본값)을 채우고 모의전 결과를 경고로 돌려준다. stats 에 직접 준 값은 하한보다 낮아도 그대로 둔다(경고에 권장값을 적는다). " +
     "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
     "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위). " +
-    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다.",
+    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다. " +
+    "사람 적·결투 상대는 walkChip:{characterResourceId, characterIndex} 로 걷기 칩 캐릭터가 전투에 서게 한다(몬스터 그림 대신).",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 stats 에 주지 않은 능력치에 시작 파티 기준 위협 하한(기본값)을 채운다(직접 준 값은 그대로). 생략 시 id·이름의 boss/보스로 판정." },
@@ -1829,6 +1844,10 @@ const upsertEnemy: ToolDefinition = {
   run(draft, rawArgs): ToolExecResult {
     const repaired = repairRecordArgs("enemy", "enemy", rawArgs, enemyRecordSchema, upsertEnemy.parameters);
     const args = repaired.args;
+    {
+      const chip = (args.enemy as { walkChip?: { characterResourceId?: unknown } } | undefined)?.walkChip;
+      if (chip && typeof chip.characterResourceId === "string") chip.characterResourceId = heroCharacterResourceId(chip.characterResourceId.trim());
+    }
     validateEnemyCombatPatch(args.enemy);
     validateEnemyReactions(draft, args.enemy);
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");

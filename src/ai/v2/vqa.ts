@@ -242,17 +242,17 @@ export function vqaFixBrief(task: string, project: Project, defects: readonly Vq
     const map = project.maps[id];
     if (!map) return [];
     const events = (map.events ?? []).slice(0, 14).map((ev) => `${ev.name || ev.id}@${ev.x},${ev.y}`).join(", ");
-    return [`- 맵 «${map.name}» (mapId: ${id}, ${map.width}×${map.height}, 타일셋 ${map.tilesetId ?? "?"})${id === project.startMapId ? " · 시작 맵" : ""} — 이벤트 ${(map.events ?? []).length}개${events ? `: ${events}${(map.events ?? []).length > 14 ? " …" : ""}` : ""}`];
+    return [`- map «${map.name}» (mapId: ${id}, ${map.width}×${map.height}, tileset ${map.tilesetId ?? "?"})${id === project.startMapId ? " · start map" : ""} — ${(map.events ?? []).length} events${events ? `: ${events}${(map.events ?? []).length > 14 ? " …" : ""}` : ""}`];
   });
   const others = Object.values(project.maps).filter((m) => !mapIds.includes(m.id)).map((m) => `«${m.name}»(${m.id})`).slice(0, 12);
   return [
-    "[고치기 차례 — 앞 대화는 비웠다. 게임은 이미 지어져 있다. 아래 요청·결함·맵 요약만 보고, 필요한 것은 도구(show_map_region·get_event·inspect)로 다시 본다.]",
-    `사용자 요청(원문): «${task.slice(0, 1200)}»`,
-    `게임 제목: «${project.meta?.title ?? ""}»`,
-    ...(maps.length ? ["결함이 난 맵:", ...maps] : []),
-    ...(others.length ? [`다른 맵: ${others.join(", ")}`] : []),
+    "[Fix turn — the earlier conversation was cleared. The game is already built. Work from the request, defects and map summary below; look again with tools (show_map_region, get_event, inspect) as needed.]",
+    `User request (verbatim): «${task.slice(0, 1200)}»`,
+    `Game title: «${project.meta?.title ?? ""}»`,
+    ...(maps.length ? ["Maps with defects:", ...maps] : []),
+    ...(others.length ? [`Other maps: ${others.join(", ")}`] : []),
     // 최종 보고는 앞 보고를 대신한다 — 비운 대화에서도 무엇을 지었는지 다시 쓸 수 있게 앞 보고를 싣는다(잘라서).
-    ...(lastReport?.trim() ? [`앞 보고(이것을 고쳐 최종 보고로 쓴다):\n${lastReport.trim().slice(0, 2000)}${lastReport.trim().length > 2000 ? " …" : ""}`] : []),
+    ...(lastReport?.trim() ? [`Previous report (revise it into the final report; the report stays in Korean):\n${lastReport.trim().slice(0, 2000)}${lastReport.trim().length > 2000 ? " …" : ""}`] : []),
   ].join("\n");
 }
 

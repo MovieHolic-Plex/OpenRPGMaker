@@ -43,7 +43,7 @@ describe("v2 music routing", () => {
 
   it("the music card says a music-only request must not rebuild maps or add events", () => {
     expect(MUSIC_TIER.card).toContain("'ending'");
-    expect(MUSIC_TIER.card).toMatch(/맵을 다시 짓거나 이벤트·엔딩을 새로 만들지 않는다/u);
+    expect(MUSIC_TIER.card).toMatch(/must not rebuild maps or add events or endings/u);
   });
 });
 
