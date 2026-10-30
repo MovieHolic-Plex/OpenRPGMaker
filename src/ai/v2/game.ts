@@ -240,10 +240,11 @@ export function withTransferRelocation(tools: PiToolShape[]): PiToolShape[] {
       const tries = [sides.filter((k) => args[k as "a" | "b"]?.doorAt), withDoor].filter((t, i, all) => t.length && (i === 0 || t.join() !== all[0]!.join()));
       let second: Awaited<ReturnType<PiToolShape["execute"]>> | undefined;
       let drop: string[] = [];
+      // 같은 호출 id 로 다시 부른다 — 실행기 기록(tool_end)이 처음 거절이 아니라 옮겨 이은 성공을 싣게(2026-10-30 «이어졌는데 FAIL 로 기록»).
       for (const t of tries) {
         const retry: Record<string, unknown> = { ...args };
         for (const k of t) { const { doorAt: _d, ...rest } = args[k as "a" | "b"]!; retry[k] = rest; }
-        try { const r = await tool.execute(`${id}-relocate`, retry, signal); if (!failed(r)) { second = r; drop = t; break; } } catch { /* 다음 시도 */ }
+        try { const r = await tool.execute(id, retry, signal); if (!failed(r)) { second = r; drop = t; break; } } catch { /* 다음 시도 */ }
       }
       if (!second) return result;
       const note = `[자리 옮겨 이음] 처음 요청은 거절됐다(${why.replace(/^.*?실행 실패:\s*/u, "").slice(0, 160)}) — ${drop.map((k) => k.toUpperCase()).join("·")} 끝의 doorAt(문 칸)을 빼고 다시 불러, 걸어 닿는 가장 가까운 칸으로 옮겨 이었다(옮긴 자리는 위 결과). 문 그림이 필요하면 그 자리 위에 stamp_object 로 찍는다.`;

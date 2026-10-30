@@ -13,6 +13,8 @@ import { parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, ty
 import { checkLabel, isOpen, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
 import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./continuation";
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
+import { HookStats } from "./hookStats";
+import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -32,7 +34,9 @@ function readResult(result: PiToolExecResult | undefined): { text: string; faile
   const first = result?.content.find((c) => c.type === "text") as { text?: string } | undefined;
   const body = first?.text ?? "";
   let failed = false;
-  try { const parsed = JSON.parse(body) as { ok?: unknown }; failed = parsed?.ok === false; } catch { failed = /^\s*(실패|거절)|\bok\s*[:=]\s*false\b/u.test(body.slice(0, 200)); }
+  try { const parsed = JSON.parse(body) as { ok?: unknown; notFailure?: unknown }; failed = parsed?.ok === false && parsed?.notFailure !== true; } catch { failed = /^\s*(실패|거절)|\bok\s*[:=]\s*false\b/u.test(body.slice(0, 200)); }
+  // «아직 짓지 않았다(실패 아님)»(마을 땅 미리보기·굴 입구 되돌림)는 정상 흐름이다 — 항목 실패로 세지 않는다.
+  if (failed && /\(실패 아님\)/u.test(body.slice(0, 300))) failed = false;
   return { text: body, failed };
 }
 
@@ -257,7 +261,8 @@ function splitTodoId(raw: unknown): { params: unknown; todoId?: string } {
  * v2 동사 목록에 todo 를 더하고 나머지를 감싼다. loop 는 진척 판정용(성공한 쓰기 결과 지문).
  * 쓰기 요청인데 목록 없이 쓰기 동사를 부르면 두 번 되돌리고, 세 번째에는 요청 한 줄로 목록을 대신 적고 진행한다.
  */
-export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: TodoLoop, tools: readonly PiToolShape[]): PiToolShape[] {
+export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: TodoLoop, tools: readonly PiToolShape[], hooks: HookStats = new HookStats()): PiToolShape[] {
+  hooks.emit = env.emit;
   const writeRequest = isWriteRequest(env.request);
   const state: TodoToolsState = { failures: [], calledAt: new Map(), callNo: 0 };
   const verbNames = new Set(tools.map((t) => t.name));
@@ -292,17 +297,58 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       // 묶을 항목: 인자 todoId 의 항목, 없으면 진행 중 항목. 판정이 refs 를 쓰는 항목일 때만 전후 지문을 뜬다.
       const bindTo = write ? (todoId ? store.resolve(todoId) : undefined) ?? store.current() : undefined;
       const before = bindTo?.check && bindTo.check.kind !== "none" ? indexProject(env.ctx.project) : undefined;
+      // H2 실행 전 인자 검사·보정(argGuard.ts): 답이 하나뿐이면 고쳐 실행하고 결과에 «고침:», 아니면 실행하지 않고 고친 호출 예시를 돌려준다.
+      const fixNotes: string[] = [];
+      let callParams = params;
+      const pre = preCheck(tool.name, tool.parameters, params, env.ctx.project);
+      if (pre.kind === "reject") {
+        hooks.fire("arg_reject", `${tool.name}: ${pre.message}`, { tool: tool.name });
+        const summary = `[인자 검사 — 실행 안 함] ${pre.message}`;
+        env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: false, summary: summary.slice(0, 400) } });
+        if (write) state.failures.push({ name: tool.name, text: summary, at: state.callNo });
+        const why = write ? attributeFailure(env, store, `${tool.name}:arg:${maskVolatile(pre.message).slice(0, 120)}`, `${tool.name} 인자 거절: ${pre.message.slice(0, 200)}`) : undefined;
+        return text({ ok: false, summary: `${summary}${why ? `\n${why}` : ""}` });
+      }
+      if (pre.notes.length) {
+        callParams = pre.args;
+        fixNotes.push(...pre.notes);
+        hooks.fire("arg_fix", `${tool.name}: ${pre.notes.join(" · ")}`, { tool: tool.name });
+      }
+      // 실행 — 거절되면 결정적으로 고칠 수 있는 것만 같은 호출 id 로 다시 부른다(retryCandidates). 실패한 쓰기는 커밋되지 않는다.
+      const attempt = async (p: unknown): Promise<{ result?: PiToolExecResult; error?: unknown; failText?: string }> => {
+        try {
+          const r = await tool.execute(id, p, signal);
+          const rr = readResult(r);
+          return rr.failed ? { result: r, failText: rr.text } : { result: r };
+        } catch (error) { return { error, failText: error instanceof Error ? error.message : String(error) }; }
+      };
+      let outcome = await attempt(callParams);
+      if (outcome.failText !== undefined && !signal?.aborted && isRegistryTool(tool.name)) {
+        let candidates: ReturnType<typeof retryCandidates> = [];
+        try { candidates = retryCandidates(tool.name, tool.parameters, callParams, outcome.failText, env.ctx.project); } catch { candidates = []; }
+        for (const cand of candidates.slice(0, 4)) {
+          const again = await attempt(cand.args);
+          if (again.failText === undefined) {
+            hooks.fire("retry_fix", `${tool.name}: ${cand.note}`, { tool: tool.name });
+            fixNotes.push(cand.note);
+            outcome = again; callParams = cand.args;
+            break;
+          }
+        }
+      }
       let result: PiToolExecResult;
-      try { result = await tool.execute(id, params, signal); }
-      catch (error) {
+      if (outcome.error !== undefined) {
+        const error = outcome.error;
         const message = error instanceof Error ? error.message : String(error);
         if (write && !signal?.aborted) {
           state.failures.push({ name: tool.name, text: message, at: state.callNo });
           const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(message).slice(0, 160)}`, `${tool.name} 실패: ${message}`);
-          if (note) throw new Error(`${message}\n${note}`);
+          if (note || fixNotes.length) throw new Error([message, ...fixNotes.map((n) => `고침(실행 전): ${n}`), ...(note ? [note] : [])].join("\n"));
         }
         throw error;
       }
+      result = outcome.result!;
+      if (fixNotes.length) result = withNote(result, `고침: ${fixNotes.join(" · ")}`);
       const read = readResult(result);
       const notes: string[] = [];
       if (write) {

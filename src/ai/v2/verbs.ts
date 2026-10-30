@@ -64,6 +64,7 @@ import { buildsHandInterior, designMissingRooms } from "./designRooms";
 import { dropModelSeed } from "./modelSeed";
 import { TodoStore } from "./loop/todoStore";
 import { TodoLoop } from "./loop/continuation";
+import { HookStats } from "./loop/hookStats";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -85,6 +86,8 @@ export class V2Session {
   readonly todo = new TodoStore();
   /** 멈춤 재주입 고리의 연속·진척 상태(src/ai/v2/loop/continuation.ts). */
   readonly loop = new TodoLoop();
+  /** 할 일 고리 갈고리의 발화 수(src/ai/v2/loop/hookStats.ts) — v2.summary 에 싣는다. */
+  readonly hooks = new HookStats();
   readonly places = new Map<string, PlaceRecord>();
   readonly seen = new Map<string, Seen>();
   readonly content: { verb: string; result: ContentBuildResult }[] = [];

@@ -406,6 +406,15 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
 - **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
 - **대사 판정**(`todo/checks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
+- **갈고리(2026-10-30, 싼 모델 terra 기준 — `loop/hookStats.ts`, 발화마다 `v2.hook.<이름>` 상태, 끝 `v2.summary` data.hooks 에 수)**:
+  - H2 인자 검사·보정(`loop/argGuard.ts`, 감싸개가 모든 동사 실행 전에): 레지스트리 도구의 선택 칸 중 빈 글·빈 배열·null·잎이 다 기본값인 객체를 걷어 낸다(terra 는 스키마의 모든 칸을 기본값으로 채웠다 — patrol.directions:[]·graphic{…""}·members:[]·referencePurpose:"").
+    규칙 표 `PRE_RULES`(도구 거절 글에서 뽑음): create_transfer_pair doorAt=출입구 칸 → 걸을 수 있는 쪽으로 doorAt=(x,y-1) 또는 출입구=(doorAt.x,doorAt.y+1), 둘 다 안 되면 doorAt 뺌 ·
+    place_field_enemy 보초에 patrol 뺌 · upsert_troop 적이 비면 이름 맞는 적 하나(하나뿐일 때, 아니면 돌려보냄+후보) · 이벤트 id 가 그 맵에 없으면 다른 맵에 하나뿐일 때 맵을, 이벤트 이름이면 id 로(아니면 돌려보냄+그 맵 이벤트 목록) ·
+    stamp_object 입구 하나짜리 기물을 출입구 이벤트 2칸 안에 찍으면 입구 칸을 그 이벤트에 맞춤 · 맵 밖이면 맵 안 가장 가까운 자리 · 완성된 집·이동 도착 칸을 덮으면 4칸 안 가장 가까운(맵 안에 다 들어가는) 자리.
+    답이 하나면 고쳐 실행하고 결과에 «고침: …»(arg_fix), 아니면 실행하지 않고 «[인자 검사 — 실행 안 함]»+고친 호출 예시(arg_reject, 항목 실패로 셈).
+    거절 뒤(`RETRY_RULES`=retryCandidates, 같은 호출 id 로 다시 — 기록이 성공을 싣는다): «<칸> 은/는 …» 검증 거절의 칸이 선택 칸이고 기본값처럼 보이거나 «…에서만»류면 빼고 · «존재하지 않는 이벤트 'X'» 가 이름이면 id 로 · stamp_object 무결성·집 거절이면 가까운 자리로(retry_fix).
+    «(실패 아님)» 결과(마을 땅 미리보기·굴 입구 되돌림)는 항목 실패로 세지 않는다. 재생: `bun scripts/qa/assistant-v2/argGuardReplay.mts <판 폴더…>` — omo-loop-1030b terra 실패 28건 중 22건을 실행 전에 고친다.
+    `withTransferRelocation` 도 같은 호출 id 로 다시 부른다(옮겨 이었는데 tool_end 가 FAIL 로 남던 것).
 - 화면 검수 고치기 차례 상한(`vqaFixBudget.ts`)·도구 0회 고치기 재시도는 이 고리의 항목 시도·재주입 규칙이 대신한다(파일은 남았지만 실행기가 쓰지 않는다).
 - **최종 보고**(`finalReport.ts todoReport`): 「완료」는 열림 0·막힘 0·확인이 달린 항목 전부 ✓·고치기 상한 남은 문제 0 일 때만 — 조수 보고 뒤에 `[할 일 N/N ✓]` 표.
   아니면 「최종 보고(기계 확인 — 아직 완료 아님 …)」 + ✓/✗/막힘/뺌 표 + **보고와 다른 것**(조수 문장이 ✗ 항목의 이름과 «만들었다»류 낱말을 같이 쓰면 기계 결과로 고침) + 남은 문제·그림 없음·자동으로 지음 + 조수 보고(참고). 기록 `v2.todo.final`.
