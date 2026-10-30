@@ -177,6 +177,8 @@ export interface EventSpec {
   readonly afterPage?: number;
   /** 이 맵에 이미 있는 장면 이벤트 id — 그 자리·그 이벤트의 컷신 페이지를 새 비트로 다시 쓴다(새 이벤트를 하나 더 만들지 않는다). 장면 손질 검사가 짚은 장면을 고칠 때. */
   readonly redo?: string;
+  /** 함수끼리만(모델 스키마 밖): 맵마다 하나인 자동 장면 자리 id 를 따로 준다 — 엔딩 장면이 오프닝 자리를 덮지 않게. */
+  readonly hostId?: string;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }

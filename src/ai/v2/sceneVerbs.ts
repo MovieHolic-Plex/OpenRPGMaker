@@ -12,7 +12,8 @@
 //    언제: afterSwitchId(또는 after 낱말이 맞는 격파·처치 스위치)가 켜진 뒤 맵에 들어오면 자동, talkTo 가 있으면 그 인물에게 말 걸 때.
 //    둘 다 없으면 시작하자마자 끝나는 엔딩을 만들지 않으려고 거절한다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun, ContentBuildResult } from "./types";
+import type { BuildRun, ContentBuildResult, EventBeat } from "./types";
+import { buildEvent } from "./events";
 import { buildPeople, eventsOf } from "./people";
 import { ensureFoeTroop, enemyArtFor } from "./builders/dungeon";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
@@ -34,6 +35,8 @@ export interface BossEncounterSpec {
 export interface EndingSceneSpec {
   readonly mapId?: string;
   readonly title: string;
+  /** 장면을 무대로 — add_event 와 같은 비트(사람이 모여 걸어오고, 감정 표시, 음악). 있으면 lines 는 그 뒤 대사로 붙는다. */
+  readonly beats?: readonly EventBeat[];
   readonly lines: readonly (string | { readonly who?: string; readonly text: string })[];
   readonly epilogue?: readonly string[];
   readonly talkTo?: string;
@@ -168,6 +171,24 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   const cond = afterSw ? [{ kind: "switch", switchId: afterSw, value: true }] : [];
   let ev: GameEvent;
   let how: string;
+  // 무대 비트가 있으면(2026-10-31 씬 벤치 terra 엔딩: 대사 세 줄만 — 판정 「마을 사람들이 모여 축하하는 모습이 화면에 없다」) add_event 와 같은 무대 모의로
+  // 들어오면 도는 장면을 짓고, 그 장면 페이지에 엔딩 조건과 엔딩 부르기를 붙인다. 사람·걸음·감정 표시는 모델이 비트로 정한다.
+  if (spec.beats?.length && !talker) {
+    const said = new Set(spec.beats.filter((b) => b.do === "say").map((b) => (b as { text?: string }).text?.trim()));
+    const beats: EventBeat[] = [...spec.beats, ...lines.filter((l) => !said.has(l.text.trim())).map((l) => ({ do: "say", who: l.who ?? "", text: l.text.trim() } as EventBeat))];
+    const hostId = `ev_ending_${slug}`.slice(0, 60);
+    const built = buildEvent(run, { kind: "cutscene", mapId, when: "enter", hostId, beats });
+    warnings.push(...built.warnings.map((w) => `장면: ${w}`));
+    if (!built.ok) return result(false, run, first, `엔딩 장면 무대를 짓지 못했다 — ${String(built.summary).slice(0, 220)}`, warnings, [mapId]);
+    const host = run.ctx.project.maps[mapId]?.events?.find((e) => e.id === (built.eventIds?.[0]?.eventId ?? hostId));
+    if (!host) return result(false, run, first, "엔딩 장면 이벤트를 찾지 못했다", warnings, [mapId]);
+    const pages = (host.pages ?? []).map((pg, i) => i === (host.pages ?? []).findIndex((p) => p.name === "컷신") || ((host.pages ?? []).every((p) => p.name !== "컷신") && i === 0)
+      ? { ...structuredClone(pg), conditions: [...(pg.conditions ?? []), ...cond] as typeof pg.conditions, commands: [...(pg.commands ?? []), { kind: "triggerEnding", endingId }] as typeof pg.commands }
+      : structuredClone(pg));
+    run.ctx.project = replaceEvent(run.ctx.project, mapId, { ...host, pages } as GameEvent);
+    return result(true, run, first, `엔딩 「${title}」 [${endingId}] — ${afterSw ? `${afterSw} 켜진 뒤 ` : ""}${map.name} 에 들어오면 무대 장면(비트 ${beats.length}, ${built.summary.replace(/^컷신 '[^']*' /u, "").slice(0, 120)}) 뒤 엔딩(${host.id})${epilogue.length ? `, 에필로그 ${epilogue.length}줄` : ""}.`,
+      warnings, [mapId], [...(built.eventIds ?? [{ mapId, eventId: host.id }])]);
+  }
   if (talker) {
     // 그 인물의 새 맨 끝 페이지(조건이 맞으면 이 페이지가 이긴다).
     const base = (talker.pages ?? []).find((p) => triggerOf(talker, p) === "action") ?? (talker.pages ?? [])[0];

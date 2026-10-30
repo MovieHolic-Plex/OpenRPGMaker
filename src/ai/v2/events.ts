@@ -54,6 +54,8 @@ type Cell = { x: number; y: number };
 const HERO = /^(주인공|플레이어|용사|player|hero|protagonist)$/i;
 const ROAD = /^(길|도로|큰길|길가|길 ?위|마을 ?길|골목|거리|road|street|path|way)$/i;
 const PLAYER = "player";
+/** after 장면을 NPC 대화 끝에 이을 때 앞에 두는 표(라벨 명령, 런타임에서는 아무것도 안 한다) — 다시 이을 때 여기서 잘라 바꾼다. */
+const AFTER_SCENE_LABEL = "v2-after-scene";
 /** 「주인공 옆·앞·곁」 같은 자리 낱말 — 장면이 시작될 때 주인공이 선 칸 둘레. */
 const HERO_NEAR = /^(주인공|플레이어|용사|player|hero)\s*(의\s*)?(옆|앞|곁|근처|가까이|주변|맞은편|정면|beside|next|near|front)/iu;
 /** 연기와 함께 나타나는 초자연적인 등장인물 낱말. */
@@ -61,6 +63,7 @@ const UNCANNY = /마왕|환영|유령|망령|그림자|악마|악령|정령|마�
 /** 게임 시작 컷신 자리(맵마다 하나)와 그 컷신이 만든 사람의 id 머리 — 다시 부르면 이것들을 바꾼다. */
 const START_HOST_ID = "ev_v2cut_start";
 const START_ACTOR_PREFIX = "ev_v2cut_a_";
+const ENTER_HOST_ID = "ev_v2cut_enter";
 const MIN_WALK = 3;
 /** 장면에만 나오는 사람이 한 장면에서 걷는 걸음 상한(한 걸음 약 ¼초 — 24걸음이면 6초 남짓). */
 const SCENE_WALK_BUDGET = 24;
@@ -373,8 +376,12 @@ function findNpcByName(map: GameMap, name: string): GameEvent | undefined {
 /** after NPC 의 어느 페이지에 장면을 이을지. 말 걸기 페이지가 여럿인데 afterPage 가 없으면 problem(페이지 목록). */
 function afterPageChoice(npc: GameEvent, afterPage: number | undefined): { pick?: number; problem?: string } {
   const all = npc.pages ?? [];
-  const talkIdx = all.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return k === undefined || k === "action"; }).map(({ i }) => i);
-  if (typeof afterPage === "number" && all[afterPage]) return { pick: afterPage };
+  // 앞서 이 사람에게 이은 장면(라벨 표)이 있으면 그 페이지를 다시 고른다. 장면이 만든 「장면 뒤」 페이지는 고를 거리에서 뺀다.
+  const ownAfter = (pg: (typeof all)[number]): boolean => /\(장면 뒤\)$/u.test(String(pg.name ?? "")) && (pg.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+  const talkIdx = all.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return (k === undefined || k === "action") && !ownAfter(pg); }).map(({ i }) => i);
+  if (typeof afterPage === "number" && all[afterPage] && !ownAfter(all[afterPage]!)) return { pick: afterPage };
+  const marked = all.findIndex((pg) => (pg.commands ?? []).some((c) => (c as { kind?: string; name?: string }).kind === "label" && (c as { name?: string }).name === AFTER_SCENE_LABEL));
+  if (marked >= 0) return { pick: marked };
   if (talkIdx.length <= 1) return { pick: talkIdx[0] ?? 0 };
   const list = talkIdx.map((i) => {
     const pg = all[i]!;
@@ -420,6 +427,7 @@ function nearHero(sim: StageSim, hero: { cell: Cell; dir: string }, used: readon
   for (const d of [2, 3]) for (const [dx, dy] of dirs) {
     const c = { x: hero.cell.x + dx * d, y: hero.cell.y + dy * d };
     if (used.some((u) => u.x === c.x && u.y === c.y)) continue;
+    if (!isPassableCell(sim.project, sim.map, c.x, c.y)) continue;
     const steps = approachSteps(sim, c, hero.cell);
     if (steps !== undefined && steps <= d + 2) return c;
   }
@@ -444,7 +452,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     return fail(`redo: there is no event '${spec.redo}' on map '${mapId}'. Events with lines on this map: ${scenes.slice(0, 10).join(", ") || "none"}.`, [mapId]);
   }
   const redoTrigger = redoEv ? String(((redoEv.pages ?? []).find((pg) => pg.name === "컷신") ?? redoEv.pages?.[0])?.trigger?.kind ?? "") : "";
-  const redoWhen = redoTrigger === "action" ? "talk" : redoTrigger === "playerTouch" || redoTrigger === "eventTouch" ? "touch" : redoTrigger === "auto" && redoEv?.id === START_HOST_ID ? "game-start" : redoTrigger ? "touch" : undefined;
+  const redoWhen = redoTrigger === "action" ? "talk" : redoTrigger === "playerTouch" || redoTrigger === "eventTouch" ? "touch" : redoTrigger === "auto" && redoEv?.id === START_HOST_ID ? "game-start" : redoTrigger === "auto" ? "enter" : redoTrigger ? "touch" : undefined;
   // enter = 그 맵에 들어오면 한 번 저절로(맵마다 하나) — 안에서는 게임 시작 컷신과 같은 자리(맵의 자동 컷신)를 쓴다. 다른 점은 주인공이 서는 칸:
   // 시작 맵의 게임 시작은 시작 칸, 그 밖은 그 맵으로 들어오는 이동의 착지 칸이다(2026-10-31 마왕 등장 terra: «들어가면» 을 touch 칸 하나로 짓다 막혔다).
   const whenRaw = spec.after ? "talk" : spec.when ?? redoWhen ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
@@ -456,9 +464,12 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   }
 
   // 0) 게임 시작 컷신은 맵마다 하나 — 다시 부르면 앞 컷신이 만든 사람을 지우고 같은 자리 이벤트의 컷신 페이지를 바꾼다.
-  const hostId = when === "game-start" ? START_HOST_ID : undefined;
+  // 맵마다 하나인 자동 장면 자리: 게임 시작은 ev_v2cut_start, 들어오면(enter)은 ev_v2cut_enter — 시작 맵에서 둘이 서로를 지우지 않게.
+  // 함수끼리 부를 때(엔딩 장면)는 hostId 를 따로 준다(모델에게는 보이지 않는 칸).
+  const hostId = spec.hostId ?? (whenRaw === "enter" ? ENTER_HOST_ID : when === "game-start" ? START_HOST_ID : undefined);
+  const actorPrefix = hostId === START_HOST_ID ? START_ACTOR_PREFIX : `${hostId ?? "ev_v2cut"}_a_`;
   if (hostId && eventsOf(map).some((e) => e.id === hostId)) {
-    const old = eventsOf(map).filter((e) => e.id.startsWith(START_ACTOR_PREFIX));
+    const old = eventsOf(map).filter((e) => e.id.startsWith(actorPrefix));
     for (const e of old) run.call("remove_event", { mapId, eventId: e.id });
     warnings.push(`이 맵의 게임 시작 컷신을 새 비트로 바꿨다(앞 컷신이 세운 사람 ${old.length}명은 지우고 다시 세웠다).`);
     map = findMap(run.ctx.project, mapId) ?? map;
@@ -491,10 +502,11 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   if (afterNpc) start = resolveWhere(project(), map, undefined, { at: { x: afterNpc.x, y: afterNpc.y + 1 }, avoid: [{ x: afterNpc.x, y: afterNpc.y }] }).cell;
   // 밟으면 도는 장면: 주인공은 그 칸 위에 있다 — 무대 모의도 그 칸에서 시작한다. 전에는 맵 왼쪽 위 아무 칸에서 모의해 «주인공 옆»에 나타난
   // 사람이 장면 자리에서 스무 칸 떨어져 섰다(2026-10-31 씬 벤치 terra 마왕 등장: 「주인공과 3칸(안 보임)」 무대 문제 → 장면을 지우고 포기).
-  let earlyHost: { cell: Cell; note: string | undefined } | undefined;
+  let earlyHost: { cell: Cell; note?: string } | undefined;
   if (!afterNpc && when === "touch" && !redoEv && (spec.where || spec.at)) {
-    earlyHost = resolveWhere(project(), map, spec.where, { ...(spec.at ? { at: spec.at } : {}), avoid: [] });
-    start = earlyHost.cell;
+    const eh = resolveWhere(project(), map, spec.where, { ...(spec.at ? { at: spec.at } : {}), avoid: [] });
+    earlyHost = eh;
+    start = eh.cell;
   } else if (!afterNpc && when === "touch" && redoEv) start = { x: redoEv.x, y: redoEv.y };
   else if (!afterNpc && entering) start = arrivalCell(project(), map) ?? start;
   sim.actors.set(PLAYER, { cell: start, dir: "down", visible: true, name: "주인공" });
@@ -564,7 +576,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     const lines = Array.isArray(talk) ? talk.map((t) => String(t).trim()).filter(Boolean) : typeof talk === "string" && talk.trim() ? [talk.trim()] : leaves ? [] : defaultFollowUp(name, ab?.looks);
     if (lines.length) followUps.set(name, lines);
     const base: Record<string, unknown> = { mapId, name, x: cell.x, y: cell.y, movement: "fixed", pages: [{ name, lines }] };
-    if (hostId) base.id = `${START_ACTOR_PREFIX}${++actorSeq}`;
+    if (hostId) base.id = `${actorPrefix}${++actorSeq}`;
     const placed = placeNpcWithGraphic(run, map!, base, name, ab?.looks, name, warnings);
     if (!placed.result.ok) { warnings.push(`${name} 을(를) 놓지 못했다 — ${String(placed.result.summary).slice(0, 160)}`); return undefined; }
     const d = (placed.result.data ?? {}) as { eventId?: string; x?: number; y?: number };
@@ -854,7 +866,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   sim.snapshot("끝");
   // 말 걸기·밟기로 도는 장면이 새로 세운 «나타나는» 사람은 장면 전까지 맵에 서 있으면 안 된다(밤 그림자가 낮부터 보였다).
   // 그 사람의 페이지에 「장면 시작」 스위치 조건을 걸고, 장면 첫 명령으로 그 스위치를 켠다.
-  const gated = when === "game-start" ? [] : hiddenFromStart.filter((id) => createdActors.has(id));
+  // 게임 시작 장면만 곧바로 돌므로 숨김 스위치가 필요 없다. 들어오면(enter)·엔딩 장면은 그 전까지 한참 맵에 서 있게 되니 같이 가린다.
+  // 걸어서 다가오는 사람(처음부터 보이게 둔다)도 장면이 늦게 도는 엔딩·들어오면 장면에서는 그 전까지 맵에 서 있으면 안 된다 — 함께 가린다.
+  const gated = whenRaw === "game-start" && !spec.hostId ? [] : [...new Set([...hiddenFromStart, ...(whenRaw === "enter" || spec.hostId ? [...createdActors] : [])])].filter((id) => createdActors.has(id));
   let gateSwitch: string | undefined;
   if (gated.length > 0) {
     const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
@@ -929,13 +943,13 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 
   // 5) 컷신 이벤트 자리(보이지 않는 연출 이벤트) — 사람·주인공 칸을 피한 빈 칸.
   const trigger = when === "game-start" ? "auto" : when === "talk" ? "action" : "playerTouch";
-  const existingHost = hostId ? eventsOf(map!).find((e) => e.id === hostId) : redoEv ? eventsOf(map!).find((e) => e.id === redoEv.id) : undefined;
+  const existingHost = redoEv ? eventsOf(map!).find((e) => e.id === redoEv.id) : hostId ? eventsOf(map!).find((e) => e.id === hostId) : undefined;
   const hostCell = existingHost ? { cell: { x: existingHost.x, y: existingHost.y }, note: undefined as string | undefined }
     : earlyHost ?? resolveWhere(project(), map!, when === "game-start" ? undefined : spec.where, { ...(spec.at ? { at: spec.at } : {}), avoid: [...used, ...sim.walks.flatMap((w) => w.path)] });
   if (hostCell.note && when !== "game-start") warnings.push(`컷신 자리: ${hostCell.note}`);
   const args: Record<string, unknown> = {
     mapId, x: hostCell.cell.x, y: hostCell.cell.y, trigger, beats, skippable: true, mode: "replace",
-    once: when === "game-start" || when === "touch", ...(hostId ? { eventId: hostId } : existingHost ? { eventId: existingHost.id } : {}),
+    once: when === "game-start" || when === "touch", ...(existingHost ? { eventId: existingHost.id } : hostId ? { eventId: hostId } : {}),
   };
   // after NPC 의 페이지를 못 고르면 장면을 만들기 전에 멈춘다(장면 배우·투명 이벤트를 남기지 않는다).
   if (spec.after) {
@@ -996,9 +1010,23 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         talked.commands = [...(face ? [structuredClone(face)] : []), ...afterLines.map((body) => ({ kind: "text", speaker: npc.name, body }))] as typeof talked.commands;
       }
       delete (talked as { id?: string }).id;
-      const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
+      // 같은 사람에게 장면을 다시 이으면(고치기·다시 부르기) 앞 장면을 떼고 바꾼다 — 전에는 대화 끝에 장면이 두 번·네 번 쌓이고
+      // 「장면 뒤」 페이지도 늘어 같은 대사가 되풀이됐다(2026-10-31 씬 벤치 terra 배신 r1: add_event 네 번 → 판정 「같은 대사가 여러 번」).
+      const baseCmds = (p0.commands ?? []) as unknown as { kind?: string; name?: string }[];
+      const mark = baseCmds.findIndex((c) => c.kind === "label" && c.name === AFTER_SCENE_LABEL);
+      const original = mark >= 0 ? baseCmds.slice(0, mark) : baseCmds;
+      const srcPages = npc.pages.slice();
+      if (!afterLines.length) talked.commands = structuredClone(original) as unknown as typeof talked.commands;
+      if (mark >= 0) {
+        // 앞 장면의 「장면 뒤」 페이지(고른 페이지 바로 뒤, 셀프 스위치 D 조건)를 걷는다 — 새 것으로 바꾼다. 원래 대사는 그 페이지에서 되살린다.
+        const prevAfter = npc.pages[pick + 1];
+        const isAfter = !!prevAfter && /\(장면 뒤\)$/u.test(String(prevAfter.name ?? "")) && (prevAfter.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+        if (isAfter) srcPages.splice(pick + 1, 1);
+        warnings.push(`'${spec.after}' 에 이어 둔 앞 장면을 이 장면으로 바꿨다(겹쳐 쌓지 않는다).`);
+      }
+      const first = { ...structuredClone(p0), commands: [...structuredClone(original), { kind: "label", name: AFTER_SCENE_LABEL }, ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
       // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
-      const pages: unknown[] = npc.pages.map((pg) => structuredClone(pg));
+      const pages: unknown[] = srcPages.map((pg) => structuredClone(pg));
       pages.splice(pick, 1, first, talked);
       const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages } });
       if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
