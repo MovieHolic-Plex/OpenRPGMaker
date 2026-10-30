@@ -40,6 +40,8 @@ import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { SEASON_OPTIONS } from "@/editor/panels/eventEditor/conditionForm";
 import { characterListThumbnail } from "@/editor/panels/characterListThumbnail";
 import { characterDialogueCard } from "@/editor/panels/databaseCharacterDialogueCard";
+import { collectDialogueLines } from "@/editor/dialogue/dialogueIndex";
+import { normalizeSpeakerName } from "@/project/dialogueDesk";
 import { normalizeSpeakerDialogueProfile, type SpeakerDialogueProfile } from "@/project/dialogueStyles";
 import {
   characterIdExists,
@@ -62,6 +64,49 @@ const DELETE_CONFIRM_WINDOW_MS = 3000;
 const ORPHAN_HINT = "이벤트에서 쓰이는 characterId이지만 프로필이 없습니다. 표시 이름을 넣고 프로필을 만들 수 있습니다.";
 const USAGE_EMPTY_HINT = "이 characterId를 쓰는 맵 이벤트가 없습니다.";
 
+// ---------------------------------------------------------------------------
+// 대사 화자 이름으로 쓰이는 프로필
+// ---------------------------------------------------------------------------
+//
+// 대화창은 이벤트 characterId 가 없으면 대사 화자 이름과 같은 «표시 이름» 프로필을 쓴다(findSpeakerDialogueProfile).
+// 조수·빌더가 지은 게임은 characterId 를 거의 안 달고 화자 이름만 쓴다. 전에는 이 탭이 characterId 만 세어서,
+// 수백 줄을 말하는 인물도 전부 「미등장」·연결 경고로 떴다(폴른 스타 15명 전원, 2026-10-30).
+
+type SpeakerUse = { readonly lines: number; readonly maps: number };
+const NO_SPEAKER_USE: SpeakerUse = { lines: 0, maps: 0 };
+let speakerUseCache: { readonly project: Project; readonly byName: ReadonlyMap<string, SpeakerUse> } | null = null;
+
+function speakerUseByName(project: Project): ReadonlyMap<string, SpeakerUse> {
+  if (speakerUseCache?.project === project) return speakerUseCache.byName;
+  const lines = new Map<string, number>();
+  const maps = new Map<string, Set<string>>();
+  for (const line of collectDialogueLines(project)) {
+    if (line.kind !== "text" || !line.speaker) continue;
+    lines.set(line.speaker, (lines.get(line.speaker) ?? 0) + 1);
+    if (line.mapId) {
+      const set = maps.get(line.speaker) ?? new Set<string>();
+      set.add(line.mapId);
+      maps.set(line.speaker, set);
+    }
+  }
+  const byName = new Map<string, SpeakerUse>();
+  for (const [name, count] of lines) byName.set(name, { lines: count, maps: maps.get(name)?.size ?? 0 });
+  speakerUseCache = { project, byName };
+  return byName;
+}
+
+/** 이 프로필의 표시 이름으로 말하는 대사 줄 수. 이벤트 characterId 연결과 따로 센다. */
+function speakerUse(project: Project, entry: CharacterIdIndexEntry): SpeakerUse {
+  const name = normalizeSpeakerName(entry.profile?.displayName ?? "");
+  if (!name) return NO_SPEAKER_USE;
+  return speakerUseByName(project).get(name) ?? NO_SPEAKER_USE;
+}
+
+/** 이벤트로도 대사 화자 이름으로도 나오지 않는 프로필. */
+function isUnusedProfile(project: Project, entry: CharacterIdIndexEntry): boolean {
+  return entry.isUnusedProfile && speakerUse(project, entry).lines === 0;
+}
+
 let selectedCharacterId: string | undefined;
 let characterSearch = "";
 let restoreCharacterSearchFocus = false;
@@ -81,8 +126,10 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
     if (characterSearch && !matchesNameOrId(label, entry.characterId, characterSearch)) continue;
     const badges: string[] = [];
     if (entry.isOrphan) badges.push("연결만 있음");
-    if (entry.isUnusedProfile) badges.push("미등장");
+    const spoken = speakerUse(project, entry).lines;
+    if (isUnusedProfile(project, entry)) badges.push("미등장");
     if (entry.usageCount > 0) badges.push(`이벤트 ${entry.usageCount}`);
+    if (spoken > 0) badges.push(`대사 ${spoken}줄`);
     rows.push(listRow({
       name: label,
       // 한 줄 소개가 있으면 그것이 목록에서 누구인지 가장 잘 말해 준다. 배지는 툴팁으로.
@@ -154,9 +201,9 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
   const giftReady = project.system.giftSystem === true;
   const calendarReady = project.system.timeSystem?.enabled === true;
   const profileCount = entries.filter((entry) => entry.hasProfile).length;
-  const linkedCount = entries.filter((entry) => entry.usageCount > 0).length;
+  const linkedCount = entries.filter((entry) => entry.usageCount > 0 || speakerUse(project, entry).lines > 0).length;
   const orphans = entries.filter((entry) => !entry.hasProfile && entry.usageCount > 0);
-  const unused = entries.filter((entry) => entry.hasProfile && entry.usageCount === 0);
+  const unused = entries.filter((entry) => isUnusedProfile(project, entry));
   const issueCount = orphans.length + unused.length;
   const openSystem = (event: Event, section: "startup" | "time", focusTestId: string): void => {
     if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, "db-tab-system", {
@@ -206,7 +253,7 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
             icon: "people",
             label: "프로필",
             value: `${profileCount}명`,
-            detail: `${linkedCount}명이 맵 이벤트에 연결됨`,
+            detail: `${linkedCount}명이 이벤트나 대사에 등장`,
             state: profileCount > 0 ? "ready" : "needs-setup",
             data: { profiles: String(profileCount), linked: String(linkedCount) },
             action: {
@@ -227,7 +274,7 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
             icon: "warning",
             label: "연결",
             value: issueCount > 0 ? `${issueCount}건` : "문제 없음",
-            detail: issueCount > 0 ? `프로필 없음 ${orphans.length} · 미등장 ${unused.length}` : "모든 주민 프로필이 맵 이벤트에 연결되었습니다.",
+            detail: issueCount > 0 ? `프로필 없음 ${orphans.length} · 미등장 ${unused.length}` : "모든 주민 프로필이 이벤트나 대사에 등장합니다.",
             state: issueCount > 0 ? "needs-setup" : "ready",
             data: { orphans: String(orphans.length), unused: String(unused.length) },
             action: {
@@ -387,6 +434,9 @@ function characterDetail(entry: CharacterIdIndexEntry, index: number, project: P
         text: entry.hasProfile ? "프로필 있음" : "이벤트 연결만 있음",
       }),
       el("span", { class: "db-cx-status-chip", text: `이벤트 ${entry.usageCount} · 맵 ${entry.mapCount}` }),
+      ...(speakerUse(project, entry).lines > 0
+        ? [el("span", { class: "db-cx-status-chip", text: `대사 ${speakerUse(project, entry).lines}줄` })]
+        : []),
       el("code", {
         class: "db-cx-status-id",
         text: entry.characterId,
@@ -400,14 +450,14 @@ function characterDetail(entry: CharacterIdIndexEntry, index: number, project: P
     class: "db-ws-stack",
     children: entry.hasProfile
       ? [
-        spanning(characterOverview(entry, displayName)),
+        spanning(characterOverview(project, entry, displayName)),
         profileCards(entry.characterId, entry.profile ?? {}, project, rerender),
         spanning(usageCard(entry, project)),
       ]
       : [
         // 고아 ID 도 "몇 개 이벤트·몇 개 맵에서 쓰이는지"가 곧 복구 판단 근거다 —
         // 프로필이 없다고 요약을 숨기면 상세 창이 카드 두 장짜리 빈 판이 된다.
-        spanning(characterOverview(entry, displayName)),
+        spanning(characterOverview(project, entry, displayName)),
         orphanCreateCard(entry, rerender),
         usageCard(entry, project),
       ],
@@ -433,8 +483,9 @@ function heroThumbnail(project: Project, entry: CharacterIdIndexEntry): HTMLElem
   return thumb;
 }
 
-function characterOverview(entry: CharacterIdIndexEntry, displayName: string): HTMLElement {
+function characterOverview(project: Project, entry: CharacterIdIndexEntry, displayName: string): HTMLElement {
   const profile = entry.profile ?? {};
+  const spoken = speakerUse(project, entry);
   const giftCount = (profile.giftPrefs?.loved?.length ?? 0)
     + (profile.giftPrefs?.liked?.length ?? 0)
     + (profile.giftPrefs?.disliked?.length ?? 0);
@@ -449,9 +500,11 @@ function characterOverview(entry: CharacterIdIndexEntry, displayName: string): H
         testid: "db-character-overview-links",
         icon: "map",
         label: "등장 연결",
-        value: `${entry.usageCount}개 이벤트`,
-        detail: `${entry.mapCount}개 맵에서 사용`,
-        data: { events: String(entry.usageCount), maps: String(entry.mapCount) },
+        value: entry.usageCount === 0 && spoken.lines > 0 ? `대사 ${spoken.lines}줄` : `${entry.usageCount}개 이벤트`,
+        detail: spoken.lines > 0
+          ? `화자 이름으로 대사 ${spoken.lines}줄 · ${spoken.maps}개 맵`
+          : `${entry.mapCount}개 맵에서 사용`,
+        data: { events: String(entry.usageCount), maps: String(entry.mapCount), speakerLines: String(spoken.lines) },
       },
       {
         testid: "db-character-overview-gifts",
