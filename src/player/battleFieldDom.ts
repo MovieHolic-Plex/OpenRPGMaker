@@ -750,7 +750,9 @@ function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, posit
     const half = chrome.offsetWidth / 2 / unitX;
     return { left: Math.min(sprite.left, -half), right: Math.max(sprite.right, half), top: sprite.top, bottom: Math.max(sprite.bottom, drop) };
   });
-  const spread = spreadEnemyFormation(positions, boxes);
+  // 이름표가 상자에 들어가면 겹침 허용폭을 거의 없앤다 — 그림은 가장자리가 투명해 조금 겹쳐도 되지만 이름표 판은 모서리째 겹쳐 보인다.
+  const withPlates = snapshot.enemies.some((enemy) => group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`)?.dataset.plateDropPx !== undefined);
+  const spread = spreadEnemyFormation(positions, boxes, withPlates ? { allowed: 0 } : {});
   if (complete) {
     group.dataset.formationKey = key;
     group.dataset.formation = JSON.stringify(spread);
