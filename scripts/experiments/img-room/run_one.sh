@@ -74,5 +74,5 @@ for i in $(seq 1 60); do kill -0 $DRV 2>/dev/null || break; sleep 5; done
 kill -0 $DRV 2>/dev/null && kill $DRV
 echo "build_s=$(( $(date +%s) - T0 ))" >> $G/RUN.txt
 node -e "import('./src/harnesses/assistant-capability/node/editorDriver.mjs').then(m=>m.writeRuntimeProject('$G/project','$G/after.json'))" || { echo "VOID: after.json 없음" > $G/VOID.txt; exit 1; }
-(cd $R && SUITE_WT=$WT timeout 600 bun $R/measure-room.mts $G > $G/measure.log 2>&1); echo "measure exit $?" >> $G/RUN.txt
+SUITE_WT=$WT timeout 600 bun $R/measure-room.mts $G > $G/measure.log 2>&1; echo "measure exit $?" >> $G/RUN.txt
 echo "done=$(date -u +%FT%TZ)" >> $G/RUN.txt
