@@ -1136,7 +1136,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   add(off,
     door("ev_fl_w_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_elev", o.elevator, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
-    door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("옥상 문은 밤엔 잠겨 있다.")),
+    // 「밤엔 잠겨 있다」는 엔딩 B(그날 밤 옥상)와 어긋났다(r4 블라인드) — 잠금이 아니라 지금 갈 때가 아니라는 말로.
+    door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("지금은 옥상에 갈 때가 아니다.")),
     event("ev_fl_w_seoha", "윤서하", seat.chair, seatedPages("ws", [swOff("sw_fl_w_seoha_up")], "seoha") /* 수요일 밤 맵에만 있다 — 단계 조건을 걸면 단계가 넘어갈 때 «방 안에서 꺼진다»로 잡힌다 */),
     event("ev_fl_w_desk", "서하 자리", seat.chair, [
       page("wd", [stageIs(V_STAGE, S.WED)], think("다시 보낸 최종본. 파일 이름: ‘하루끝_리뉴얼_최종_진짜최종_서하’.", "…이름은 다음 주에 정리하자.")),
@@ -1684,7 +1685,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b", textSide: "left" },
     epilogue: [
-      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 앞 가로등 밑에서 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
+      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에 올라가 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },
