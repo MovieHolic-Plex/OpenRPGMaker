@@ -342,6 +342,11 @@ export interface MapBackgroundLayer {
   fit?: MapBackgroundFit;
   /** 카메라 따라가기 비율(깊이). 뜻은 MapBackground.cameraFollow 와 같다. */
   cameraFollow?: number;
+  /**
+   * 세로 자리(논리 px, + = 아래로). 지평선 띠(빌딩 숲·산 실루엣)를 맵의 바닥선(난간·절벽 끝) 바로 뒤에 앉힐 때 쓴다.
+   * 세로로 반복하지 않는 층(loopY:false)은 맵에 붙어 다니므로(도착 화면 기준) 한 번 앉히면 카메라가 움직여도 그 자리에 남는다.
+   */
+  offsetY?: number;
 }
 
 /** 맵 BGM 설정 — RM2003 BGM 탭 대응. */
