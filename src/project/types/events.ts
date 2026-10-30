@@ -836,16 +836,43 @@ export interface EventObjectInteraction {
   directions?: Dir[];
   /** pushable 전용: 밀기가 시작될 때 한 번 울리는 효과음 리소스 id(예: 바위 긁는 소리). 생략하면 무음. */
   sound?: string;
+  /** hiding 전용: 숨는 순간 한 번 울리는 효과음(사물함 문 닫히는 소리). 생략하면 무음. */
+  enterSe?: string;
+  /** hiding 전용: 나오는 순간 한 번 울리는 효과음. 생략하면 enterSe 를 한 번 더(없으면 무음). */
+  exitSe?: string;
+  /**
+   * hiding 전용: 숨어 있는 동안 반복해 깔리는 소리(심장 고동·숨소리). 맵 BGM·BGS 채널을 쓰지 않는 별도 고리라 그 둘을 끊지 않고,
+   * 나오거나 붙잡히거나 맵을 떠나면 멈춘다. 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
+   */
+  heldSe?: string;
   /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar). 생략 = 이름표로 추정. */
   style?: string;
   /** container 전용: 이미 뒤진 페이지. 켜져 있는 동안 칸에 뒤진 흔적을 그린다. */
   searched?: boolean;
 }
 
-/** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */
+/**
+ * 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용).
+ * emote null = 말풍선 없이 멈춤만(호러: 「!」 가 만화처럼 보여 첫 발각이 웃음이 된다).
+ */
 export interface ChaseSightAlert {
-  emote: EmoteKind;
+  emote: EmoteKind | null;
   holdMs: number;
+}
+
+/**
+ * 걷는 이벤트의 발소리 — 주인공과의 걸음 거리로 커지고 작아지며, 좌우로 갈라 들린다(호러 추격자·순찰 경비).
+ * 소리로 거리를 잰다: 멀리서 다가오는 발소리, 문 앞에서 멈춘 발소리.
+ */
+export interface EventFootsteps {
+  /** 효과음 리소스 id. */
+  se: string;
+  /** 몇 칸마다 한 번 울리나(1..8, 기본 2). */
+  everySteps?: number;
+  /** 들리는 거리(걸음 칸, 2..30, 기본 10). 벽 너머는 돌아가는 길 거리로 잰다. */
+  radius?: number;
+  /** 가장 가까울 때 음량(0..1, 기본 1). */
+  volume?: number;
 }
 
 export interface EventPageMovement {
@@ -868,6 +895,10 @@ export interface EventPageMovement {
   chaseStepMs?: number;
   /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
   sightAlert?: ChaseSightAlert;
+  /** chase 전용: 빠른 추격자가 숨을 고를 때 머리 위 땀 말풍선을 띄우지 않는다(멈춤은 남는다). */
+  quietBreath?: boolean;
+  /** 걸을 때 발소리(거리·방향에 따라). 추격자·순찰·생활 NPC 모두. */
+  footsteps?: EventFootsteps;
   /**
    * chase 전용 「덮치기」: 발견(sightAlert 멈춤이 끝난 순간) 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고 달려든다.
    * 그 뒤는 평소 추격 걸음. 주인공 걷기(랭크 6 = 160ms/칸)보다 빠르게 두면 피할 수 없으니 6 이하로 둔다.

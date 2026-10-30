@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7713KB / 약 2,265,628 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7717KB / 약 2,266,918 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/beodeul-city.md` | 231KB | 19KB | 1135 | ~70,177 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
-| `openwiki/editor-ai-tools.md` | 607KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3997 | ~178,134 |
+| `openwiki/editor-ai-tools.md` | 607KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3997 | ~178,266 |
 | `openwiki/editor-database.md` | 458KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,655 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 82KB | 32KB | 340 | ~22,909 |
@@ -104,7 +104,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-monster-art-v2.md` | 3 | `emerald-art-v2-register-npc.mjs`, `public/assets/emerald-monster/cast/uploaded-cast.json`, `verify-shots/emerald-art-v2-20261004/SUMMARY.md` |
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
-| `openwiki/field-enemy.md` | 1 | `chrono-bell.play.json` |
+| `openwiki/field-enemy.md` | 2 | `chrono-bell.play.json`, `docs/games/school/design.md` |
 | `openwiki/getting-started.ko.md` | 1 | `.oprn-local.json` |
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
@@ -789,7 +789,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4637` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4645` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 607KB · 3997줄 · ~178,134 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 607KB · 3997줄 · ~178,266 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L3` 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
 - `L13` 평면도대로 버들항 맵 칠하기 `paint_beodeul_plan` (2026-10-29)
@@ -1512,7 +1512,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 18KB · 163줄 · ~5,578 토큰
+### `openwiki/field-enemy.md` — 22KB · 188줄 · ~6,638 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
@@ -1521,8 +1521,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
 - `L82` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
 - `L113` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
-- `L149` 안전 장치 (도구가 거절하는 것)
-- `L157` 알려진 한계
+- `L149` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
+- `L174` 안전 장치 (도구가 거절하는 것)
+- `L182` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 23KB · 305줄 · ~7,032 토큰
 
@@ -2207,7 +2208,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L52` 에디터·조수
 - `L60` 2026-10-04 근거
 
-### `openwiki/horror-authoring.md` — 20KB · 194줄 · ~6,195 토큰
+### `openwiki/horror-authoring.md` — 20KB · 200줄 · ~6,293 토큰
 
 - `L8` 저작 표면
 - `L32` 데이터와 런타임
@@ -2217,6 +2218,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L158` 실내 제작과 검증
 - `L169` 검증 경로
 - `L183` 전체 게이트 후속 수정 (2026-09-05)
+- `L195` 소리로 하는 추격 (2026-10-30)
 
 ### `openwiki/i18n.md` — 7KB · 89줄 · ~2,196 토큰
 
