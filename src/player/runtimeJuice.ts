@@ -3,7 +3,8 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { store } from "@/project/store";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
-import type { SystemSeCue } from "@/project/systemAudioOverrides";
+import { isSystemSeCue, type SystemSeCue } from "@/project/systemAudioOverrides";
+import { projectSeCue } from "@/project/seCues";
 import { playAudioCommand } from "@/player/audio";
 import { animateStatusMenuFeedback } from "@/player/playerStatusMenuMotion";
 import { preparedRuntimeAudioUrl } from './runtimeAudioWarmup';
@@ -38,6 +39,11 @@ export type RuntimeJuiceOptions = {
   readonly session?: PlaySession;
   /** Optional SE override (e.g. titleScreen.sounds.cursor/confirm). */
   readonly soundResourceId?: string;
+  /**
+   * 이 사건이 먼저 찾아볼 효과음 자리(project.system.seCues). 비어 있으면 사건의 기본 자리(결정·취소 …)로 물러선다.
+   * 예: 저장 칸에 저장 → "save", 장비 → "equip". `@/project/seCues`.
+   */
+  readonly cue?: string;
 };
 
 const RUNTIME_JUICE_SPECS = {
@@ -61,12 +67,26 @@ const MENU_SE_CUE: Partial<Record<RuntimeJuiceEvent, SystemSeCue>> = {
   "menu-invalid": "buzzer", "menu-open": "confirm", "menu-select": "cursor",
 };
 
+/** 사건의 기본 자리 앞에 오는 자리(메뉴 열기 → menuOpen). */
+const EVENT_LEAD_CUE: Partial<Record<RuntimeJuiceEvent, string>> = { "menu-open": "menuOpen" };
+
 export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogEntry {
   const spec = RUNTIME_JUICE_SPECS[options.event];
   const cue = MENU_SE_CUE[options.event];
-  const authored = cue === 'cursor' || cue === 'confirm' || cue === 'cancel' ? options.project?.meta.oprnMenuSounds?.[cue] : undefined;
+  const projectForCue = options.project ?? store.getCurrent();
+  // 자리 사슬: 부른 쪽의 자리(save·equip …) → 사건의 앞 자리(menuOpen) → 사건의 기본 자리(confirm …).
+  // 자리마다 세션 덮어쓰기(시스템 효과음 13자리) → 프로젝트 자리 표 순으로 보고, 처음 걸린 하나를 쓴다.
+  let selected: { readonly resourceId: string; readonly volume: number } | undefined;
+  let table: string | undefined;
+  for (const id of [options.cue, EVENT_LEAD_CUE[options.event], cue]) {
+    if (!id) continue;
+    selected = isSystemSeCue(id) ? options.session?.systemAudioOverrides?.se?.[id] : undefined;
+    if (selected) break;
+    table = projectSeCue(projectForCue, id);
+    if (table) break;
+  }
+  const authored = table ?? (cue === 'cursor' || cue === 'confirm' || cue === 'cancel' ? options.project?.meta.oprnMenuSounds?.[cue] : undefined);
   const override = options.soundResourceId?.trim() || authored;
-  const selected = cue ? options.session?.systemAudioOverrides?.se?.[cue] : undefined;
   // 몬스터 수집 장르의 기본 UI 소리(원본 칩튠 합성). 저작된 소리(메뉴 소리·타이틀 소리·시스템 덮어쓰기)가 있으면 그쪽이 이긴다.
   const projectForSfx = options.project ?? store.getCurrent();
   const monsterCue = usesMonsterSfxSet(projectForSfx) ? MONSTER_SFX_UI_CUE[options.event] : undefined;

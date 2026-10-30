@@ -21,7 +21,7 @@ import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { musicAsked, musicOnly } from "./musicWords";
+import { musicAsked, musicOnly, soundOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -431,6 +431,16 @@ function audioBindingsChanged(before: Project, after: Project): boolean {
   return pick(before) !== pick(after);
 }
 
+/** 효과음 연결(자리 표·타이틀 메뉴 소리·패배/도주·지형 발소리)이 바뀌었나. */
+function seBindingsChanged(before: Project, after: Project): boolean {
+  const pick = (p: Project) => JSON.stringify([
+    p.system.seCues ?? null, p.system.titleScreen?.sounds ?? null,
+    p.system.battleDefeatSeResourceId ?? null, p.system.battleEscapeSeResourceId ?? null,
+    (p.database.terrains ?? []).map((t) => t.footstepSoundResourceId ?? null),
+  ]);
+  return pick(before) !== pick(after);
+}
+
 /** 데이터베이스에서 새로 생기거나 바뀐 레코드만 JSON 으로(기본 데이터의 독 기술 등이 섞이지 않게). */
 function changedRecordsJson(before: Project, after: Project): string {
   const out: unknown[] = [];
@@ -458,6 +468,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
+  if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio")) problems.push("[게임 검사 효과음] 요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se').");
   if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
   if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");

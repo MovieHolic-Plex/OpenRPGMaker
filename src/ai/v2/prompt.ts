@@ -14,11 +14,11 @@ import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
-import { GAME_CARD, MUSIC_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
+import { GAME_CARD, MUSIC_TIER, SOUND_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
-import { musicOnly } from "./musicWords";
+import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
 import type { TodoStore } from "./loop/todoStore";
 
 export const V2_CORE_PROMPT = [
@@ -64,7 +64,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(musicOnly(task) ? [`[Music-only request — only find, install and assign tracks. Do not change maps, events or objects (mention existing problems in the report as notes only)]\n${MUSIC_TIER.card}`] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : wantsMusicTools(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsTerrainTools(task) && !musicOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore): string[] {

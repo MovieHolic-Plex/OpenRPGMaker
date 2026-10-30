@@ -523,6 +523,18 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
   piApplySelect.addEventListener("change", () => persist(false));
+  // 완성 뒤 대사 윤문(src/ai/piAgent/dialoguePolishHook.ts) — 기본 켬. 끄면 요청에 dialoguePolish:false 가 실린다.
+  const dialoguePolishSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-dialogue-polish" },
+    children: [
+      el("option", { attrs: { value: "on" }, text: "켬" }),
+      el("option", { attrs: { value: "off" }, text: "끔" }),
+    ],
+  }) as HTMLSelectElement;
+  dialoguePolishSelect.value = config.dialoguePolishAfterBuild === false ? "off" : "on";
+  dialoguePolishSelect.addEventListener("change", () => persist(false));
+  const dialoguePolishRow = settingsRow("완성 뒤 대사 윤문", "게임을 다 지으면 새로 쓴 대사·설명을 윤문 규칙(general-good-writing)으로 검사하고, 걸린 줄을 조수가 한 번 더 다듬습니다. 직접 쓴 대사는 바꾸지 않고 「대사」 탭 제안으로 남깁니다.", dialoguePolishSelect);
   const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
@@ -651,6 +663,7 @@ export function renderAiSettingsForm(options: {
     autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
     piApply: normalizePiApplyMode(piApplySelect.value),
+    ...(dialoguePolishSelect.value === "off" ? { dialoguePolishAfterBuild: false } : {}),
     ...roleMatrixSlots(),
   });
   // 역할 배정 표(잔일·검토자) — 표가 아직 없으면(첫 collect) 저장값을 그대로 둔다.
@@ -1233,7 +1246,7 @@ export function renderAiSettingsForm(options: {
         settingsSection("behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다.",
           // The autonomy dial stays first: it is the only way to reach the read-only (ask)
           // rail now that the composer has no mode chips, so it must not be pushed down.
-          [autonomyRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
+          [autonomyRow, piApplyRow, dialoguePolishRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
         settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),

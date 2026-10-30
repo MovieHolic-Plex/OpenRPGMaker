@@ -61,6 +61,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
 import { grantEscapeGrace, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
 import { terrainRecordAt } from "@/project/terrainAt";
+import { playFootstep } from "@/player/footsteps";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { doorWalkInActive, isDoorstepPadInScene, tryEnterDoor, updateDoorEntryGuard } from "@/player/playSceneDoorEntry";
@@ -319,6 +320,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.
     const flying = boardedVehicleId(scene.session) === "airship";
     if (!flying) applyTerrainStepDamage(scene);
+    // 지형 발소리(지형 기록 → footstep-<표면> 자리). 하나도 걸려 있지 않으면 무음. 비행선·탈것은 땅을 밟지 않는다.
+    if (!flying && !boardedVehicleId(scene.session)) playFootstep(project, { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
     scene.moving = false;
     scene.player.x = footprintSpriteX(scene.tileX, footprint, mapTileSize(scene.map));
     scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));

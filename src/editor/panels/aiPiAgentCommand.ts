@@ -736,7 +736,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
         ...(options.polish ? { polish: options.polish } : {}),
-      }), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+      }), ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).

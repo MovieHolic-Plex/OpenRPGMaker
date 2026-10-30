@@ -8,7 +8,7 @@ import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 import { ENCOUNTER_ASK } from "./combatChecks";
-import { MUSIC_REQUEST_WORDS, musicOnly, wantsMusic } from "./musicWords";
+import { MUSIC_REQUEST_WORDS, SOUND_REQUEST_WORDS, audioOnly, wantsMusic, wantsSound } from "./musicWords";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./forestBrief";
 
@@ -27,7 +27,16 @@ export function wantsPuzzle(task: string): boolean {
 /** 음악 묶음 — 게임 요소 낱말이 없어도 음악 요청이면 이 묶음만 따로 싣는다(createGameTools). */
 export const MUSIC_TIER = { words: MUSIC_REQUEST_WORDS, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio", "get_database_records", "list_endings"], card: "· Background music, battle theme, boss theme, victory fanfare, title theme, ending theme: 1) look at tracks already in the project with recommend_bgm{scene, query (genre)} 2) if the candidates are only the built-in defaults (cc0-/rtp family, no music field) or you need a genre track (Joseon, wuxia, horror, 16-bit retro, piano…), use store_find_music{scene, query, mood, need} — put the user's words in query as written (keep game names: «크로노트리거 느낌», «투더문 같은», «파판 전투곡»); do not invent or swap the genre (the tool turns names into how they sound). Candidates come in score order and the first carries recommended:true with a reason (why) — use the recommended track unless the user picked another (fallback:true = a stand-in track outside the game's style). Do not call it that game's track («a track with that feel»). Art gallery, museum and mansion music is scene:'town' (not a dungeon). If the result has autoInstall:true (default), install the recommended track without asking via store_install{slug, assetIds:[assetId]}; if false (the user turned on «ask first») a card appears — do not install, end this turn 3) assign with set_game_audio: town/map = role:'maps'+mapIds (mapIds take the mapId= value from the [Current project] map list; if the user named no map, assign it to the start map (the map being viewed) — do not pick a map whose name merely sounds like the track's mood, e.g. a «gallery» track → a cave map), all battles = 'battle-default', boss battles only = 'boss' (+troopIds; empty = troops whose names contain boss/demon king/dragon), victory = 'victory' (loopable:false short track), title = 'title', ending/credits theme = 'ending' (+endingIds — empty assigns it to every ending and ending command; if there is no ending yet, just install the track and say so in the report). Chase music («when it chases», «Ao Oni-style chase») = find with store_find_music{scene:'chase'} and assign 'chase' (+mapIds — switches when the chaser appears and reverts after; if there is no chaser, just install the track and report it) — not the battle track (battle-default). «All the game's music» = per map (town, field, dungeon each) + battle + boss + victory + title, each a different track that fits the scene. Do not fake map BGM with an event's playAudio (only a brief in-scene change uses add_event's music beat). A music-only request («an upbeat track like X for the town», «a calm ending theme») only finds, installs and assigns tracks — it must not rebuild maps or add events or endings (if there is no place to assign the track, say so in the report)." } as const;
 export function wantsMusicTools(task: string): boolean {
-  return wantsMusic(task);
+  return wantsMusic(task) || wantsSound(task);
+}
+/** 효과음 묶음 — 음악 묶음의 짝. 효과음 낱말(효과음·SE·타격음·발소리…)이면 싣는다. */
+export const SOUND_TIER = { words: SOUND_REQUEST_WORDS, tools: ["store_find_sound", "store_install", "set_game_audio", "list_resources", "get_database_records"], card: "· 효과음(커서·결정·취소·타격·급소·회피·쓰러짐·마법·레벨 업·아이템 획득·저장·장비·문·상자·발소리 …): 효과음은 자리(cue) 표 project.system.seCues 에 건다 — 자리마다 소리 하나, 런타임이 그 자리에서 울린다(비운 자리는 예전 소리 그대로). "
+  + "1) 화풍 하나로 통째로(「효과음 전부 레트로로」「8비트 소리로」「현대적인 효과음으로 맞춰」) = set_game_audio{role:'sfx-style', style:'retro'|'modern'} 한 번 — 스토어 효과음 팩에서 자리마다 한 소리(기본 A안, variant 로 b·c)를 골라 넣고 다 건다. 자리를 좁히려면 cues:[…]. "
+  + "2) 자리 하나(「타격음 더 묵직하게」「레벨 업 소리 바꿔」) = store_find_sound{cue, style, mood, query(사용자 말 그대로)} → 결과 autoInstall:true 면 묻지 말고 recommended 소리를 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio{role:'se', cue, resourceId} 로 건다; false 면 카드가 뜨니 넣지 말고 턴을 끝낸다. 프로젝트에 이미 있는 효과음이면 list_resources{kind:'se'} 로 고르고 바로 set_game_audio role:'se'. "
+  + "자리 id: 적 피해 damage · 아군 피해 actorDamage · 급소 critical · 빗나감 miss · 적 쓰러짐 faint · 보스 쓰러짐 bossCollapse · 시전 cast · 속성 마법 magic-fire/ice/thunder/wind/earth/water/holy/dark(없으면 cast 로 물러선다) · 메뉴 열기 menuOpen · 장비 equip · 저장 save · 불러오기 load · 상점 shop · 아이템 사용 useItem · 획득 itemGet · 레벨 업 levelUp · 전투 시작 battleStart · 문 door · 상자 chest · 발소리 footstep-grass/stone/wood/sand/snow/water(지형 이름으로 고른다). 한국어 낱말도 도구가 자리로 바꾼다. "
+  + "효과음만 바라는 요청은 소리를 찾고·넣고·거는 일만 한다 — 맵을 다시 짓거나 이벤트를 새로 만들지 않는다. 장면 도중 한 번 울리는 소리만 add_event 의 playAudio(se) 로 넣는다." } as const;
+export function wantsSoundTools(task: string): boolean {
+  return wantsSound(task);
 }
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
@@ -206,8 +215,10 @@ export function gameToolNames(task: string): string[] {
  */
 export function v2ExtraToolNames(task: string): string[] {
   // 음악만 바라는 요청은 음악 묶음만 — 「추격」「엔딩」 낱말이 게임 도구(찍기·추격 장면·엔딩 정의)를 끌어오지 않게(2026-10-30 r12).
-  if (musicOnly(task)) return [...new Set([...MUSIC_TIER.tools, ...storeTierTools(task)])];
-  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : wantsMusicTools(task) ? MUSIC_TIER.tools : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
+  // 효과음만 바라는 요청도 같다(소리 묶음만) — 음악 낱말이 같이 있으면 음악 묶음도 싣는다.
+  if (audioOnly(task)) return [...new Set([...(wantsMusic(task) ? MUSIC_TIER.tools : []), ...(wantsSound(task) ? SOUND_TIER.tools : []), ...storeTierTools(task)])];
+  const audioTools = [...(wantsMusic(task) ? MUSIC_TIER.tools : []), ...(wantsSound(task) ? SOUND_TIER.tools : [])];
+  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task), ...(wantsSound(task) ? SOUND_TIER.tools : [])] : audioTools), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   return [...new Set(want)];
 }
 

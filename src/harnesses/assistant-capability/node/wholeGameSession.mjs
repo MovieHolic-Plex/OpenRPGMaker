@@ -227,6 +227,8 @@ try {
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
       advisor: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('v2.advisor')).map(e => ({ name: e.name, data: e.data })),
+      // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)의 실행기 기록 — 전/후 적중 수와 고친 줄 쌍.
+      dialoguePolish: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('dialogue_polish')).map(e => ({ name: e.name, summary: e.summary, data: e.data })),
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
