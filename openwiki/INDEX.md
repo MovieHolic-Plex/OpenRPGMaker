@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **188쪽 / 7641KB / 약 2,244,461 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **188쪽 / 7644KB / 약 2,245,245 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 594KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3955 | ~174,209 |
 | `openwiki/editor-database.md` | 457KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2680 | ~134,365 |
 | `openwiki/editor-event-authoring.md` | 185KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1136 | ~54,218 |
-| `openwiki/editor-event-commands.md` | 77KB | 32KB | 325 | ~21,407 |
+| `openwiki/editor-event-commands.md` | 77KB | 32KB | 326 | ~21,591 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,186 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 108KB | 14KB | 510 | ~31,925 |
 | `openwiki/runtime-battle.md` | 438KB | 32KB | 2415 | ~128,852 |
-| `openwiki/runtime-m2-flow-controls.md` | 52KB | 23KB | 342 | ~14,200 |
+| `openwiki/runtime-m2-flow-controls.md` | 54KB | 25KB | 346 | ~14,800 |
 | `openwiki/runtime-pre-edit-routing.md` | 200KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 1194 | ~59,363 |
 | `openwiki/runtime-project-schema.md` | 264KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1825 | ~74,678 |
 | `openwiki/runtime-sessions.md` | 166KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 922 | ~45,466 |
@@ -59,7 +59,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 6 | 1203, 1210, 1211, 1220, 1246, 1249 |
 | `openwiki/editor-event-authoring.md` | 16 | 549, 550, 553, 558, 559, 560, 561, 562 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 145, 158, 159, 161, 164, 165 |
+| `openwiki/editor-event-commands.md` | 6 | 146, 159, 160, 162, 165, 166 |
 | `openwiki/editor-pre-edit-routing.md` | 3 | 923, 933, 946 |
 
 ## 없는 파일을 가리키는 참조
@@ -1217,24 +1217,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 77KB · 325줄 · ~21,407 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 77KB · 326줄 · ~21,591 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
-- `L21` 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
-- `L31` 게임 오버 선택 (2026-09-23)
-- `L43` Move-route target repair (PR716, 2026-09-09)
-- `L62` 좌표로 이동 — 고정/변수 좌표와 실패 정책 (OPRN-OUT-013, 2026-09-10)
-- `L106` 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
-- `L112` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
-- `L125` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
-- `L137` Roguelike run control (2026-08-24)
-- `L177` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
-- `L218` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L285` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L292` Command picker, validation, and preview trust (2026-07-30)
-- `L301` 회상 스틸과 AI 그림 (2026-09-03)
-- `L312` Recovered native emote command (2026-09-05)
-- `L316` 패배·엔딩 저작 (2026-09-22)
+- `L22` 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
+- `L32` 게임 오버 선택 (2026-09-23)
+- `L44` Move-route target repair (PR716, 2026-09-09)
+- `L63` 좌표로 이동 — 고정/변수 좌표와 실패 정책 (OPRN-OUT-013, 2026-09-10)
+- `L107` 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
+- `L113` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
+- `L126` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L138` Roguelike run control (2026-08-24)
+- `L178` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
+- `L219` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L286` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L293` Command picker, validation, and preview trust (2026-07-30)
+- `L302` 회상 스틸과 AI 그림 (2026-09-03)
+- `L313` Recovered native emote command (2026-09-05)
+- `L317` 패배·엔딩 저작 (2026-09-22)
 
 ### `openwiki/editor-genre-packs.md` — 54KB · 358줄 · ~14,186 토큰 · 통째읽기 잘림
 
@@ -2871,24 +2871,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2389` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 - `L2406` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
 
-### `openwiki/runtime-m2-flow-controls.md` — 52KB · 342줄 · ~14,200 토큰 · 통째읽기 잘림
+### `openwiki/runtime-m2-flow-controls.md` — 54KB · 346줄 · ~14,800 토큰 · 통째읽기 잘림
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
 - `L22` Sound Layer audio controls (2026-09-06)
 - `L30` M2 Runtime Flow Controls
-- `L88` Storage chest authoring
-- `L94` Page 3 location/vehicle compatibility (2026-07-30)
-- `L98` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-- `L111` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
-  - `L170` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
-  - `L177` 맵 위를 흐르는 구름 그림자 (2026-09-14)
-  - `L251` Weather sound (2026-09-21)
-  - `L265` Map-wide atmosphere presets (2026-09-21)
-  - `L286` Genre ambience presets and sound pairing (2026-09-21)
-  - `L310` Thirty audiovisual presets — evidence (2026-09-21)
-  - `L325` 그림 컷 준비와 direction (2026-10-04)
-- `L333` 글자·장면 오프닝 연출 (2026-10-04)
+- `L92` Storage chest authoring
+- `L98` Page 3 location/vehicle compatibility (2026-07-30)
+- `L102` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+- `L115` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+  - `L174` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L181` 맵 위를 흐르는 구름 그림자 (2026-09-14)
+  - `L255` Weather sound (2026-09-21)
+  - `L269` Map-wide atmosphere presets (2026-09-21)
+  - `L290` Genre ambience presets and sound pairing (2026-09-21)
+  - `L314` Thirty audiovisual presets — evidence (2026-09-21)
+  - `L329` 그림 컷 준비와 direction (2026-10-04)
+- `L337` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 200KB · 1194줄 · ~59,363 토큰 · 통째읽기 잘림
 
