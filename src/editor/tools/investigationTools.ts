@@ -329,6 +329,15 @@ function onSolveCommands(
   ensureNamedSwitch(project, solveSwitchId, `퍼즐 해결: ${puzzleId}`);
   const commands: Command[] = [];
   if (typeof record.message === "string" && record.message.length > 0) commands.push({ kind: "text", body: record.message });
+  if (record.giveItems !== undefined) {
+    if (!Array.isArray(record.giveItems)) throw new ToolError(`${puzzleId}.onSolve.giveItems 는 아이템 id 배열이어야 합니다.`, { code: "puzzle-give-items" });
+    for (const raw of record.giveItems) {
+      const itemId = typeof raw === "string" ? raw.trim() : "";
+      if (!itemId) throw new ToolError(`${puzzleId}.onSolve.giveItems 에 빈 id 가 있습니다.`, { code: "puzzle-give-items" });
+      requireExistingItem(project, itemId, `${puzzleId}.onSolve.giveItems`);
+      commands.push({ kind: "changeItem", itemId, op: "+=", amount: 1 } as Command);
+    }
+  }
   commands.push(...compileBeats(project, map, eventIds, record.beats, `${puzzleId}.onSolve.beats`));
   commands.push({ kind: "setSwitch", switchId: solveSwitchId, value: true });
   return { solveSwitchId, commands };
@@ -495,9 +504,18 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
   };
 }
 
-function passwordWrongCommands(variableId: string | undefined, reset: boolean): Command[] {
+type PasswordWrong = { readonly message: string; readonly sound?: string };
+
+function passwordWrongOptions(args: RecordValue): PasswordWrong {
+  const message = typeof args.wrongMessage === "string" && args.wrongMessage.trim().length > 0 ? args.wrongMessage : "암호가 틀렸다.";
+  const sound = typeof args.wrongSound === "string" && args.wrongSound.trim().length > 0 ? args.wrongSound.trim() : undefined;
+  return { message, ...(sound ? { sound } : {}) };
+}
+
+function passwordWrongCommands(variableId: string | undefined, reset: boolean, wrong: PasswordWrong = { message: "암호가 틀렸다." }): Command[] {
   return [
-    { kind: "text", body: "암호가 틀렸다." },
+    ...(wrong.sound ? [{ kind: "playAudio", resourceId: wrong.sound, loop: false, channel: "se" } as Command] : []),
+    { kind: "text", body: wrong.message },
     ...(variableId && reset ? [{ kind: "setVariable", variableId, op: "=", value: 0 } as Command] : []),
   ];
 }
@@ -517,7 +535,7 @@ function passwordChoiceOptions(answer: string, position: number): string[] {
   return options;
 }
 
-function passwordChoiceCommands(answer: string, prompt: string, position: number, solveCommands: readonly Command[], reset: boolean): Command[] {
+function passwordChoiceCommands(answer: string, prompt: string, position: number, solveCommands: readonly Command[], reset: boolean, wrong?: PasswordWrong): Command[] {
   if (position >= answer.length) return [...solveCommands];
   const correct = answer[position] as string;
   return [
@@ -528,8 +546,8 @@ function passwordChoiceCommands(answer: string, prompt: string, position: number
       options: passwordChoiceOptions(answer, position).map((char) => ({
         text: char,
         branch: char === correct
-          ? passwordChoiceCommands(answer, prompt, position + 1, solveCommands, reset)
-          : passwordWrongCommands(undefined, reset),
+          ? passwordChoiceCommands(answer, prompt, position + 1, solveCommands, reset, wrong)
+          : passwordWrongCommands(undefined, reset, wrong),
       })),
     },
   ];
@@ -558,6 +576,7 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
   const eventId = uniqueEventId(usedIds, `ev_${segment}_password`);
   const solve = onSolveCommands(draft, map, puzzleId, args.onSolve, mapEventIds(map, [eventId]));
   const reset = args.reset !== false;
+  const wrong = passwordWrongOptions(args);
   let commands: Command[];
   let variableId: string | undefined;
   if (canUseInputNumber(answer)) {
@@ -570,11 +589,11 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
         kind: "fork",
         condition: { kind: "variable", variableId, op: "==", value: Number(answer) },
         then: [...solve.commands],
-        else: passwordWrongCommands(variableId, reset),
+        else: passwordWrongCommands(variableId, reset, wrong),
       },
     ];
   } else {
-    commands = passwordChoiceCommands(answer, prompt, 0, solve.commands, reset);
+    commands = passwordChoiceCommands(answer, prompt, 0, solve.commands, reset, wrong);
   }
   const event: GameEvent = {
     id: eventId,
@@ -633,6 +652,8 @@ function compileItemGate(draft: Project, map: GameMap, args: RecordValue): ToolE
   if (args.consumeItem === true) thenCommands.push({ kind: "changeItem", itemId: requiredItemId, op: "-=", amount: 1 });
   thenCommands.push(...solve.commands);
   const elseCommands: Command[] = [{ kind: "text", body: typeof args.lockedMessage === "string" && args.lockedMessage.length > 0 ? args.lockedMessage : "잠겨 있다." }];
+  // blocking:true — 풀기 전에는 그 칸을 막는다(문·쇠사슬·바리케이드). 기본은 예전처럼 지나갈 수 있는 조사 칸.
+  const blocking = args.blocking === true;
   const event: GameEvent = {
     id: eventId,
     x: placement.x,
@@ -644,6 +665,7 @@ function compileItemGate(draft: Project, map: GameMap, args: RecordValue): ToolE
         id: `${eventId}_active`,
         name,
         conditions: [{ kind: "switch", switchId: solve.solveSwitchId, value: false }],
+        ...(blocking ? { priority: "same" as const } : {}),
         commands: [
           {
             kind: "fork",
@@ -797,7 +819,9 @@ const compilePuzzle: ToolDefinition = {
   description:
     "선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. " +
     "kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. " +
-    "password 의 answer 가 1~6자리 숫자면 inputNumber 로 받는다. 선택지 보기에 정답 숫자를 적지 말 것.",
+    "password 의 answer 가 1~6자리 숫자면 inputNumber 로 받는다. 선택지 보기에 정답 숫자를 적지 말 것. " +
+    "password 는 wrongMessage·wrongSound 로 틀렸을 때를 바꾼다. 풀면 열쇠를 주는 상자는 onSolve.giveItems. " +
+    "문·쇠사슬처럼 몸으로 막아야 하는 item-gate 는 blocking:true.",
   mode: "write",
   parameters: {
     type: "object",
@@ -807,11 +831,12 @@ const compilePuzzle: ToolDefinition = {
       kind: { type: "string", enum: ["switch-sequence", "password", "item-gate", "push-switches"] },
       onSolve: {
         type: "object",
-        description: "{setSwitch?,beats?,message?}",
+        description: "{setSwitch?,beats?,message?,giveItems?} — giveItems 는 풀었을 때 하나씩 주는 기존 아이템 id. 푸는 소리는 beats 의 {kind:'music',action:'se',resourceId}.",
         properties: {
           setSwitch: { type: "string" },
           beats: { type: "array", items: CUTSCENE_BEAT_SCHEMA },
           message: { type: "string" },
+          giveItems: { type: "array", items: { type: "string" } },
         },
       },
       reset: { type: "boolean" },
@@ -833,6 +858,9 @@ const compilePuzzle: ToolDefinition = {
       consumeItem: { type: "boolean" },
       lockedMessage: { type: "string" },
       unlockedMessage: { type: "string" },
+      blocking: { type: "boolean", description: "item-gate: true 면 풀기 전까지 그 칸을 막는다(문·쇠사슬). 기본 false = 지나갈 수 있는 조사 칸" },
+      wrongMessage: { type: "string", description: "password: 틀렸을 때 문장. 기본 「암호가 틀렸다.」" },
+      wrongSound: { type: "string", description: "password: 틀렸을 때 효과음 resourceId" },
       plates: {
         type: "array",
         description: "{at:{x,y},name?}[] — push-switches 발판",
