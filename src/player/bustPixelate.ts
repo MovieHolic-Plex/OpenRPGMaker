@@ -16,7 +16,34 @@ const ALPHA_CUT = 128;
 const OUTLINE: readonly [number, number, number] = [0x20, 0x30, 0x28];
 
 const cache = new Map<string, Promise<RenderedBust | null>>();
+/** 다 풀린 흉상(그림 받기·도트 변환이 끝난 것). null = 실패했거나 해당 없음 — 원본을 그대로 쓴다. */
+const settled = new Map<string, RenderedBust | null>();
 type RenderedBust = { readonly dataUrl: string; readonly large: boolean };
+
+function taskFor(url: string): Promise<RenderedBust | null> {
+  let task = cache.get(url);
+  if (!task) {
+    task = render(url).catch(() => null).then((rendered) => {
+      settled.set(url, rendered);
+      return rendered;
+    });
+    cache.set(url, task);
+  }
+  return task;
+}
+
+/** 이 흉상을 곧바로 보일 수 있는가(받기·변환이 끝났다). */
+export function pixelBustSettled(url: string): boolean {
+  return settled.has(url);
+}
+
+/**
+ * 흉상을 미리 받아 둔다. 대사창이 이 약속을 기다린 뒤 열리면 이름표만 있는 빈 창이 먼저 보이지 않는다
+ * (2026-10-30 이세계 고딩: 첫 줄마다 이름표만 약 1초). 실패해도 resolve 한다.
+ */
+export function preloadPixelBust(url: string): Promise<void> {
+  return taskFor(url).then(() => undefined);
+}
 
 type Rgb = [number, number, number];
 
@@ -77,7 +104,11 @@ function nearest(palette: readonly Rgb[], r: number, g: number, b: number): Rgb 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
+    // 받은 뒤 디코드까지 끝내 둔다 — 대사창이 열리는 프레임에서 큰 초상을 디코드하느라 멈추지 않게.
+    image.onload = () => {
+      const decoded = typeof image.decode === "function" ? image.decode().catch(() => undefined) : Promise.resolve();
+      void decoded.then(() => resolve(image));
+    };
     image.onerror = () => reject(new Error("bust image load failed"));
     image.src = url;
   });
@@ -164,17 +195,21 @@ export function applyPixelBust(node: HTMLElement, url: string, onReady?: () => v
   // 칸 크기는 그림이 풀리기 전에 정한다 — 늦게 정하면 처음 뜰 때 88x92 칸이 128x128 로 한 번 커진다.
   if (LARGE_BUST_PATH.test(url)) node.dataset.bustLarge = "1";
   else delete node.dataset.bustLarge;
-  let task = cache.get(url);
-  if (!task) {
-    task = render(url).catch(() => null);
-    cache.set(url, task);
-  }
-  void task.then((rendered) => {
+  const apply = (rendered: RenderedBust | null): void => {
     if (rendered && node.dataset.bustSrc === url && node.closest('[data-monster-style="emerald"]')) {
       node.style.backgroundImage = `url("${rendered.dataUrl}")`;
       node.dataset.bustPixel = "1";
       if (rendered.large) node.dataset.bustLarge = "1";
       else delete node.dataset.bustLarge;
     }
-  }).finally(() => onReady?.());
+  };
+  // 이미 풀린 흉상은 마이크로태스크에서 붙인다 — 노드가 화면에 붙은 뒤(에메랄드 판정), 첫 페인트 전이라 숨은 프레임이 없다.
+  if (settled.has(url)) {
+    queueMicrotask(() => {
+      apply(settled.get(url) ?? null);
+      onReady?.();
+    });
+    return;
+  }
+  void taskFor(url).then(apply).finally(() => onReady?.());
 }

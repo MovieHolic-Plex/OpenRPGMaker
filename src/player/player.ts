@@ -107,6 +107,7 @@ import {
 import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { diagnosticToken } from "@/util/diagnosticObserver";
+import { eventMenuLocked } from "@/player/eventMenuLock";
 
 let teardownShell: (() => void) | null = null;
 
@@ -835,9 +836,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeStatusMenu(menu);
   };
 
-  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
+  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null, cue?: string): void => {
     emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']"),
-      project: store.getCurrent(), session: activeScene()?.session });
+      project: store.getCurrent(), session: activeScene()?.session, ...(cue ? { cue } : {}) });
   };
 
   const statusMenu = createPlayerStatusMenuController({
@@ -964,7 +965,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       // 이벤트가 도는 동안에는 메뉴를 열지 않는다(RM 관례). 적의 느낌표·대기 사이에 열린 메뉴 아래에서 전투가
       // 시작돼, 메뉴는 닫히지 않고 메뉴의 Enter 가 전투 명령(도주)으로 갔다(2026-10-29 vm5 argon jrpg).
       // 대기 중 걷기를 허락한 이벤트(allowEventMovementDuringWait)는 필드 조작이 열려 있으므로 막지 않는다.
-      if (!menu && scene?.running === true && sceneSession?.messageWindowSettings?.allowEventMovementDuringWait !== true) return;
+      // 이어지는 이벤트 사이 한두 프레임 틈도 잠근다(@/player/eventMenuLock).
+      if (!menu && eventMenuLocked(scene?.running, sceneSession ?? undefined, performance.now())) return;
       statusMenu.toggleMenu();
     }
   };

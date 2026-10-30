@@ -151,8 +151,9 @@ describe("status-only battle medicine messages", () => {
 
     const spoken = spokenLines(runtime, command, before, after).join(" ");
     expect(spoken).toContain("맑은 종");
-    expect(spoken).toContain("주인공의 공격 하락이 풀렸다");
-    expect(spoken).toContain("마도사의 공격 하락이 풀렸다");
+    // 같은 상태가 여럿에게서 잇달아 풀리면 한 줄로 묶일 수 있다(「주인공, 마도사의 공격 하락이 풀렸다.」) — 두 이름과 문장이 다 읽히면 된다.
+    expect(spoken).toMatch(/주인공(?:, 마도사)?의 공격 하락이 풀렸다/);
+    expect(spoken).toMatch(/(?:주인공, )?마도사의 공격 하락이 풀렸다/);
     expect(spoken).not.toContain("효과가 충분하지 않았다");
     expect(spoken).not.toContain("합계 0");
     expect(spoken).not.toMatch(/의 공격!/);

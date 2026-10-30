@@ -1,8 +1,9 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import type { PlaySession } from "@/project/session";
-import type { Project } from "@/project/types";
-import type { SystemSeCue } from "@/project/systemAudioOverrides";
+import type { Project, SkillRecord } from "@/project/types";
+import { isSystemSeCue } from "@/project/systemAudioOverrides";
+import { magicCueForElement, projectSeCue } from "@/project/seCues";
 import { playAudioCommand } from "@/player/audio";
 
 export type BattleAudioContext = { readonly project: Project; readonly session: PlaySession };
@@ -19,10 +20,14 @@ export type BattleJuiceEvent =
   | "command-cancel"
   | "attack-swing"
   | "hit-damage"
+  /** 아군이 맞는 소리(자리 actorDamage). 비어 있으면 hit-damage 의 소리로 물러선다. */
+  | "hit-actor"
   | "hit-critical"
   | "hit-miss"
   | "hit-heal"
   | "faint"
+  /** 보스(쓰러짐 연출 bossSink) 쓰러짐(자리 bossCollapse). 비어 있으면 faint 의 소리로 물러선다. */
+  | "boss-collapse"
   | "defend"
   | "escape"
   | "victory"
@@ -34,10 +39,12 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
   "command-cancel": "easyrpg-sound-cancel1",
   "attack-swing": "easyrpg-sound-attack1",
   "hit-damage": "easyrpg-sound-damage2",
+  "hit-actor": "easyrpg-sound-damage2",
   "hit-critical": "easyrpg-sound-blow4",
   "hit-miss": "easyrpg-sound-evade1",
   "hit-heal": "easyrpg-sound-recovery5",
   faint: "easyrpg-sound-collapse2",
+  "boss-collapse": "easyrpg-sound-collapse2",
   defend: "easyrpg-sound-barrier1",
   escape: "easyrpg-sound-escape",
   victory: "easyrpg-sound-chime1",
@@ -49,6 +56,7 @@ const SFX_FALLBACK: Partial<Record<BattleJuiceEvent, string>> = {
   "hit-miss": "easyrpg-sound-buzzer1",
   "hit-heal": "easyrpg-sound-recovery7",
   faint: "easyrpg-sound-fall1",
+  "boss-collapse": "easyrpg-sound-fall1",
   escape: "easyrpg-sound-cancel2",
   victory: "easyrpg-sound-item1",
 };
@@ -67,10 +75,12 @@ const SYNTH_VOICE: Record<BattleJuiceEvent, BattleSfxKind> = {
   "command-cancel": "cancel",
   "attack-swing": "cursor",
   "hit-damage": "hit",
+  "hit-actor": "hit",
   "hit-critical": "critical",
   "hit-miss": "miss",
   "hit-heal": "heal",
   faint: "faint",
+  "boss-collapse": "faint",
   defend: "confirm",
   escape: "escape",
   victory: "victory",
@@ -104,7 +114,7 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
   const motion =
     event === "hit-critical"
       ? "battle-juice-critical"
-      : event === "hit-damage"
+      : event === "hit-damage" || event === "hit-actor"
         ? "battle-juice-hit"
         : event === "hit-miss"
           ? "battle-juice-miss"
@@ -125,11 +135,39 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
  * 전투 사건 1개에 소리 1개. 프로젝트 샘플 → 대체 샘플 → 합성 보이스 순으로
  * **처음 성공한 하나만** 낸다. 호출자는 여기 말고 다른 오디오 경로를 겹치지 말 것.
  */
-const SE_CUE: Record<Exclude<BattleJuiceEvent, "victory">, SystemSeCue> = {
-  "command-select": "cursor", "command-confirm": "confirm", "command-cancel": "cancel",
-  "attack-swing": "attack", "hit-damage": "damage", "hit-critical": "critical",
-  "hit-miss": "miss", "hit-heal": "heal", faint: "faint", defend: "defend", defeat: "defeat", escape: "escape",
+/**
+ * 사건 → 효과음 자리(project.system.seCues 의 키, `@/project/seCues`). 앞이 먼저다 — 아군 피해(actorDamage)가 비면
+ * 적 피해(damage)로, 보스 쓰러짐(bossCollapse)이 비면 적 쓰러짐(faint)으로 물러선다.
+ */
+const SE_CUES: Record<Exclude<BattleJuiceEvent, "victory">, readonly string[]> = {
+  "command-select": ["cursor"], "command-confirm": ["confirm"], "command-cancel": ["cancel"],
+  "attack-swing": ["attack"], "hit-damage": ["damage"], "hit-actor": ["actorDamage", "damage"], "hit-critical": ["critical"],
+  "hit-miss": ["miss"], "hit-heal": ["heal"], faint: ["faint"], "boss-collapse": ["bossCollapse", "faint"],
+  defend: ["defend"], defeat: ["defeat"], escape: ["escape"],
 };
+
+/** 사건의 자리 목록(시험·QA 관찰용). */
+export function battleEventSeCues(event: BattleJuiceEvent): readonly string[] {
+  return event === "victory" ? [] : SE_CUES[event];
+}
+
+/**
+ * 사건 하나의 저작 소리: 세션 덮어쓰기(시스템 효과음 13자리) → 프로젝트 자리 표. 자리 목록 앞이 먼저다.
+ * 덮어쓰기에 빈 resourceId 가 있으면 「무음」이다 — null 을 돌려준다. 저작이 없으면 undefined.
+ */
+export function authoredBattleCue(
+  event: Exclude<BattleJuiceEvent, "victory">,
+  project: Pick<Project, "system"> | undefined,
+  session: Pick<PlaySession, "systemAudioOverrides"> | undefined,
+): { readonly resourceId: string; readonly volume?: number } | null | undefined {
+  for (const cue of SE_CUES[event]) {
+    const override = isSystemSeCue(cue) ? session?.systemAudioOverrides?.se?.[cue] : undefined;
+    if (override) return override.resourceId ? override : null;
+    const authored = projectSeCue(project, cue);
+    if (authored) return { resourceId: authored };
+  }
+  return undefined;
+}
 
 export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioContext, shape?: BattleCueShape): void {
   const project = context?.project ?? store.getCurrent();
@@ -137,9 +175,10 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   if (result) beginBattleResultAudio();
   const override = event === "victory"
     ? context?.session.systemAudioOverrides?.bgm?.victory
-    : context?.session.systemAudioOverrides?.se?.[SE_CUE[event]];
+    : authoredBattleCue(event, project, context?.session);
+  if (override === null) return;
   if (override) {
-    if (override.resourceId) playAudioCommand({ ...override, loop: false, channel: event === "victory" ? "me" : "se" }, project);
+    if (override.resourceId) playAudioCommand({ resourceId: override.resourceId, ...(override.volume === undefined ? {} : { volume: override.volume }), loop: false, channel: event === "victory" ? "me" : "se" }, project);
     return;
   }
   if (result && playAuthoredBattleResultCue(project, event)) return;
@@ -249,3 +288,27 @@ const SHAKE_RHYTHM: Readonly<Record<BattleHitIntensity, { readonly period: strin
   heavy: { period: "90ms", iterations: "3" },
   crushing: { period: "80ms", iterations: "4" },
 };
+
+/**
+ * 기술 시전 자리: 속성이 있으면 magic-<속성>(비면 cast), 속성이 없어도 마력 계열(statistic mind)·회복 기술이면 cast.
+ * 프로젝트 자리 표에 걸린 소리가 있을 때만 울리고 true — 없으면 아무것도 하지 않는다(예전 소리 그대로).
+ */
+export function skillSeCue(
+  project: Pick<Project, "database">,
+  skill: Pick<SkillRecord, "elementId" | "effect"> | undefined,
+): string | undefined {
+  if (!skill) return undefined;
+  const element = skill.elementId ? project.database.elements?.find((row) => row.id === skill.elementId) : undefined;
+  const magicCue = magicCueForElement(skill.elementId, element?.name);
+  if (magicCue) return magicCue;
+  const mindful = (skill.effect.kind === "damage" || skill.effect.kind === "healing") && skill.effect.statistic === "mind";
+  return mindful || element?.kind === "magical" ? "cast" : undefined;
+}
+
+export function playSkillCastCue(project: Project, skill: Pick<SkillRecord, "elementId" | "effect"> | undefined): boolean {
+  const cue = skillSeCue(project, skill);
+  const resourceId = cue ? projectSeCue(project, cue) : undefined;
+  if (!resourceId) return false;
+  playAudioCommand({ resourceId, loop: false, channel: "se" }, project);
+  return true;
+}

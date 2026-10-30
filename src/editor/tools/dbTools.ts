@@ -100,7 +100,7 @@ import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
-import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
+import { BOSS_FLOOR_STATS, type BossFloorStat, isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 import { closestDeclaredKey } from "./argRepair";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
@@ -1800,19 +1800,26 @@ function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clear
   return removed;
 }
 
+/** upsert_enemy 호출이 직접 준 능력치 — 보스 하한이 덮지 않는다. */
+function explicitBossStats(enemy: unknown): ReadonlySet<BossFloorStat> {
+  const stats = enemy && typeof enemy === "object" ? (enemy as { stats?: unknown }).stats : undefined;
+  if (!stats || typeof stats !== "object") return new Set();
+  return new Set(BOSS_FLOOR_STATS.filter(key => typeof (stats as Record<string, unknown>)[key] === "number"));
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
     "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
     "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
     "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
-    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
+    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩 중 **stats 에 주지 않은 값**에만 하한(기본값)을 채우고 모의전 결과를 경고로 돌려준다. stats 에 직접 준 값은 하한보다 낮아도 그대로 둔다(경고에 권장값을 적는다). " +
     "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
     "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위). " +
     "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다.",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
-    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 stats 에 주지 않은 능력치에 시작 파티 기준 위협 하한(기본값)을 채운다(직접 준 값은 그대로). 생략 시 id·이름의 boss/보스로 판정." },
     clearFields: {
       type: "array",
       items: { type: "string", enum: [...ENEMY_CLEARABLE_FIELDS] },
@@ -1876,15 +1883,22 @@ const upsertEnemy: ToolDefinition = {
         }
       }
     }
+    const existed = draft.database.enemies.some(entry => entry.id === record.id);
     const outcome = upsertById(draft.database.enemies, record);
     // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
-    const bossNote = isBossEnemy(record, args.role) && !species ? scaleBossToStartParty(draft, record).note : undefined;
+    // 하한은 기본값이다: 저자가 이번 호출에 준 능력치는 그대로 둔다(2026-10-30 이세계 고딩: maxHp 400 이 590 으로 덮였다).
+    // 이미 있는 적을 고칠 때는 role:"boss" 를 이번에 다시 준 경우에만 빠진 값에 하한을 건다 — 예전 호출의 명시값을 덮지 않는다.
+    const bossScaling = isBossEnemy(record, args.role) && !species && (!existed || args.role === "boss")
+      ? scaleBossToStartParty(draft, record, explicitBossStats(args.enemy))
+      : undefined;
+    const bossNote = bossScaling?.note;
+    const bossApplied = (bossScaling?.applied?.length ?? 0) > 0;
     if (bossNote) warnings.push(bossNote);
     // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
     const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
     if (firstTroop) warnings.push(...troopBalanceWarnings(draft, firstTroop.id));
     return {
-      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossNote ? " — 보스 위협 하한 적용(경고 참고)" : ""}`,
+      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossApplied ? ` — 보스 위협 하한을 기본값으로 적용: ${bossScaling!.applied!.join("·")}(경고 참고)` : bossNote ? " — 보스 능력치는 저자 값 유지(권장 하한은 경고 참고)" : ""}`,
       data: record,
       ...(warnings.length > 0 ? { warnings } : {}),
     };
