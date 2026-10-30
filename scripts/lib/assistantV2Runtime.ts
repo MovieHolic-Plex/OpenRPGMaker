@@ -16,6 +16,7 @@ import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts";
+import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
 import { splitPreexisting, syncGateItems } from "../../src/ai/v2/loop/gates.ts";
 import { TODO_MAX_ATTEMPTS, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
@@ -223,7 +224,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       return undefined;
     }
     reinjections += 1;
-    const prompt = continuationPrompt(store, { ...(pendingBrief ? { brief: pendingBrief } : {}), ...(batchNote ? { batchNote } : {}) });
+    // H7: 재주입의 「지금 할 것」에 그 항목의 다음 호출(실패 뒤 남긴 meta.nextCall, 없으면 항목 확인 종류에서 뽑은 동사+뼈대)을 붙인다.
+    const nextCallFor = (item: TodoItem): string | undefined => {
+      let text = store.meta.get(item.id)?.nextCall?.text;
+      if (!text) { try { const nc = nextForItem(item, env.ctx.project, toolNames); text = nc ? formatCall(nc) : undefined; } catch { text = undefined; } }
+      if (text) session.hooks.fire("reinject", `${item.id} «${item.content.slice(0, 60)}» → ${text.slice(0, 200)}`, { item: item.id });
+      return text;
+    };
+    const prompt = continuationPrompt(store, { ...(pendingBrief ? { brief: pendingBrief } : {}), ...(batchNote ? { batchNote } : {}), nextCallFor });
     pendingBrief = undefined;
     env.emit({ type: "execution_status", name: "v2.loop.continue", ok: true, summary: `할 일 재주입 ${d.n}/${8}(전체 ${reinjections}) — 열림 ${c.open}/${c.total}${batchNote ? ` · ${batchNote.slice(0, 80)}` : ""}`, data: { n: d.n, total: reinjections, open: c.open, items: c.total, prompt } });
     env.requireToolNextTurn?.();

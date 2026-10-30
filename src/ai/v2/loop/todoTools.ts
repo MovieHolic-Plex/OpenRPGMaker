@@ -405,6 +405,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           else { const next = suggestNext(tool.name, callParams, read.text); if (next) notes.push(next); }
         } else {
           loop.noteEffect(effectFingerprint(tool.name, params, read.text));
+          { const cur = bindTo ?? store.current(); const m = cur ? store.meta.get(cur.id) : undefined; if (m?.nextCall?.verb === tool.name) { const { nextCall: _n, ...rest } = m; store.meta.set(cur!.id, rest); } }
           if (bindTo && before) {
             const add = refsFromDiff(bindTo, tool.name, changedSince(before, indexProject(env.ctx.project)), env.ctx.project);
             const added = add ? bindRefs(bindTo, add, env.ctx.project) : [];
