@@ -126,6 +126,8 @@ export const STORE_FIXED_SHEETS: Readonly<Partial<Record<StoreAssetKind, { width
   charset: { width: 288, height: 256, label: "캐릭터 시트는 24×32 칸 12×8 = 288×256" },
   battleCharset: { width: 144, height: 384, label: "전투 그림은 48×48 칸 3×8 = 144×384" },
   battleWeapon: { width: 192, height: 512, label: "전투 무기는 64×64 칸 3×8 = 192×512" },
+  // 런타임은 시스템 그림을 창 9칸 그림으로만 쓴다(border-image 24 fill, systemGraphics.ts). RM2000 System.png(160×80)는 받지 않는다.
+  system: { width: 96, height: 96, label: "시스템(윈도스킨) 그림은 9칸 자르기 24px 창 그림 96×96" },
 };
 
 /** 크기 규격이 있는 종류인가. 얼굴·그림·배경은 크기가 자유다. */
