@@ -10,6 +10,7 @@ import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2BaselineGameKeys, v2GateProblems, V2_MAX_REPAIR_ROUNDS } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
+import { alignCodeClues } from "../../src/ai/v2/codeClues.ts";
 import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/v2/finalReport.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, vqaRepeated, vqaDefectLine, type VqaDefect, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
@@ -359,6 +360,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       afterMain: async (env) => {
         liveEnv = env;
         try {
+          // 번호 자물쇠 ↔ 단서 대사는 모델이 멈출 때마다 다시 맞춘다 — 끝맺음(code-clues 단계)은 한 번만 돌아, 그 뒤 모델이 대사·자물쇠를 고치면
+          // 어긋난 채 출하됐다(2026-10-31 meb1 terra 방탈출: 서랍 «4816» · 탈출문 정답 5937 → 엔딩 불가).
+          const codes = alignCodeClues(env.ctx.project);
+          if (codes.notes.length) {
+            env.ctx.project = codes.project;
+            await env.checkpoint("align_code_clues");
+            env.emit({ type: "execution_status", name: "v2.code_clues", ok: true, summary: `번호·단서 대사 다시 맞춤: ${codes.notes.join(" / ").slice(0, 300)}` });
+            autoNotes.push(`번호 자물쇠를 단서 대사에 다시 맞춤: ${codes.notes.join(" / ").slice(0, 300)}`);
+          }
           refreshChecks(env);
           // 끝맺음 뒤에 청사진이 처음 생겼거나 다시 끊겼으면 지금 짓는다.
           if (autoBuilt && lateBuildPending(env)) {
