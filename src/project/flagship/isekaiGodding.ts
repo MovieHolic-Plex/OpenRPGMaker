@@ -117,9 +117,11 @@ const setLight = (ambient: number, color: string, ms = 0): Command => ({ kind: "
 const throneForm = (): Command[] => [
   playSe(SE_BOOM), shake(700, "3"), tint("purple", 700), wait(700),
   ...caption("왕좌의 그림자가 배재민 위로 내려앉았다.\n15년 동안 앉아 있던 모양 그대로."),
+  // 화면 색조는 전투 전에 걷는다(v8d 녹화: 보랏빛이 전투 화면 전체에 남아 HP 칸까지 바랬다). 전투에선 몸 위 안개만 남는다.
+  tint("neutral", 300), wait(300),
 ];
 /** 전투 뒤 — 그림자가 걷히고 교복이 다시 보인다. */
-const formLifts = (): Command[] => [tint("neutral", 600), wait(600), ...caption("그림자가 걷혔다. 회색 교복이 다시 보였다.")];
+const formLifts = (): Command[] => [...caption("그림자가 걷혔다. 회색 교복이 다시 보였다.")];
 const custom = (map: GameMap, resourceId: string): void => { map.bgm = { mode: "custom", resourceId } as GameMap["bgm"]; };
 
 // ── 마왕성 장식 ──
