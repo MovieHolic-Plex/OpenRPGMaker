@@ -36,7 +36,7 @@ export interface SpaceRoomStat { floor: number; empty: number; emptyPct: number;
 export interface SpaceResult { readonly problems: string[]; readonly notes: string[]; readonly rooms: Record<string, SpaceRoomStat>; readonly emptyPct: number; readonly roomCV: number }
 
 /** 문턱 — 기준 방 실측 바로 위(위 주석). */
-export const SPACE = { roomEmptyPct: 25, roomEmptyMinFloor: 30, rectMinSide: 3, rectArea: 12, corridorEmptyPct: 30, bigHall: 80, hallFillPct: 20, hallFarPct: 10, rugBigRoom: 150 } as const;
+export const SPACE = { minDensity: 0.18, densityMinFloor: 30, roomEmptyPct: 25, roomEmptyMinFloor: 30, rectMinSide: 3, rectArea: 12, corridorEmptyPct: 30, bigHall: 80, hallFillPct: 20, hallFarPct: 10, rugBigRoom: 150 } as const;
 
 const N4: readonly (readonly [number, number])[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 const IDEAS: readonly [RegExp, string][] = [
@@ -124,6 +124,13 @@ export function spaceChecks(inp: SpaceInput): SpaceResult {
     else if (pct > SPACE.roomEmptyPct && fl.length >= SPACE.roomEmptyMinFloor) problems.push(`room "${r.id}": ${pct}% of its floor is empty (limit ${SPACE.roomEmptyPct}%; cells with nothing in or next to them; largest empty area ${rawTxt}). ${choices}`);
     else if (fl.length >= SPACE.bigHall && !isCorridor(r) && (fillPct < SPACE.hallFillPct || farPct > SPACE.hallFarPct))
       problems.push(`room "${r.id}" (${fl.length} floor cells) is too sparse away from its walkways: only ${fillPct}% of that floor is furnished (need ${SPACE.hallFillPct}%) and ${farPct}% has no furniture within 2 cells (limit ${SPACE.hallFarPct}%). The walkways between doors may stay open; fill the rest with purpose — ${ideasFor(`${r.id} ${r.purpose ?? ""}`.toLowerCase())} — or make the room smaller (move ${wallsTxt}).`);
+    // 기물 밀도: 서는 기물 수 / 바닥 칸. 흩어 놓은 기물 하나하나가 둘레 8칸을 «쓰는 칸»으로 만들어 빈 칸 검사는 성긴 방도 통과시켰다
+    // (6회차 terra-high 여관 홀 15개/121칸 = 0.12 — 빈 칸 5%). 6회차 opus 방(Opus 판정에서 기준 방을 11/13 이긴 쪽)은 방마다 0.19~0.35.
+    const dens = pieces / Math.max(1, fl.length);
+    if (!isCorridor(r) && fl.length >= SPACE.densityMinFloor && dens < SPACE.minDensity) {
+      const more = Math.ceil(SPACE.minDensity * fl.length) - pieces;
+      problems.push(`room "${r.id}" is under-furnished: ${pieces} standing pieces on ${fl.length} floor cells (${dens.toFixed(2)} per cell; furnished rooms here have at least ${SPACE.minDensity}). Add at least ${more} more standing pieces that serve the room (${what}) — not scattered one by one but as groups that belong together, e.g. ${ideasFor(`${r.id} ${r.purpose ?? ""}`.toLowerCase())}; find_pieces(category) lists every piece of a category. Or make the room smaller (move ${wallsTxt}) so its pieces fill it. Rugs, decals and wall-mounted pieces do not count.`);
+    }
     const cap = fl.length >= SPACE.rugBigRoom ? 2 : 1;
     if (rugs > cap) problems.push(`room "${r.id}" has ${rugs} rugs (carpets + round rug/runner) — at most ${cap} in a room of ${fl.length} floor cells. Remove ${rugs - cap}; vary the look with the room's floor instead (give rooms different floor ids). Rugs never count as furnishing.`);
   }
