@@ -77,11 +77,11 @@ function slowPan(project: Project, shotId: string, ms: number, from: Cell, to: C
 function shotGate(project: Project): void {
   const id = "nr_op_gate", ms = 6400;
   newShot(project, id, ms, { kind: "fade", durationMs: 1400 });
-  const view = mapBackground(project, id, M.yard, { x: 26, y: 24 }, 2);
+  // 교문(jp-school-gate-l (39,34) 8×3)과 그 앞 가로등 — 흙 운동장 한가운데를 잡으면 갈색 빈 판만 보인다(r1 오프닝 녹화).
+  const view = mapBackground(project, id, M.yard, { x: 43, y: 32 }, 2);
   night(project, id, 0.82);
-  glow(project, id, "lamp", cellCenter(view, { x: 42, y: 37 }), 110, "#ffc98a", { hz: 0.3, amount: 0.08 });
-  glow(project, id, "exit", cellCenter(view, { x: 11, y: 10 }), 26, "#3ee07a", { flicker: true, hz: 3, amount: 0.25 });
-  slowPan(project, id, ms, { x: 270, y: 150 }, { x: 230, y: 125 });
+  glow(project, id, "lamp", cellCenter(view, { x: 47, y: 33 }), 90, "#ffc98a", { hz: 0.3, amount: 0.08 });
+  slowPan(project, id, ms, { x: 250, y: 145 }, { x: 230, y: 130 });
   sfx(project, id, "wind", "easyrpg-sound-wind8", 0, ms, 0.5, 1200);
   captions(project, id, [{ atMs: 1400, text: "11월 7일 밤. 사쿠라자카 중학교." }]);
 }
@@ -121,9 +121,9 @@ function shotSailor(project: Project): void {
   newShot(project, id, ms, { kind: "cut", durationMs: 1 });
   const view = mapBackground(project, id, M.f3, { x: 7, y: 13 }, 2);
   night(project, id, 0.88);
-  glow(project, id, "cold", cellCenter(view, { x: 3, y: 13 }), 70, "#9fb8ff", { hz: 0.4, amount: 0.2 });
-  actor(project, id, "sayo", "oprn-charset-modern1", 5, chipAt(view, { x: 3, y: 13 }), "right", 2, { blend: "lighter", opacity: 0 });
-  patchLayer(project, id, "sayo", { keys: { opacity: [{ atMs: 800, value: 0 }, { atMs: 2600, value: 0.75 }, { atMs: 5200, value: 0.75 }, { atMs: 5800, value: 0 }] } } as Partial<AnimaticLayer>);
+  glow(project, id, "cold", cellCenter(view, { x: 3, y: 13 }), 44, "#9fb8ff", { hz: 0.4, amount: 0.12, inner: 0.1 });
+  actor(project, id, "sayo", "oprn-charset-modern1", 5, chipAt(view, { x: 3, y: 13 }), "right", 2, { blend: "screen", opacity: 0 });
+  patchLayer(project, id, "sayo", { keys: { opacity: [{ atMs: 800, value: 0 }, { atMs: 2600, value: 0.95 }, { atMs: 5200, value: 0.95 }, { atMs: 5800, value: 0 }] } } as Partial<AnimaticLayer>);
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, zoom: 1, keys: { zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.12, ease: "ease-in" }] } } });
   sfx(project, id, "dark", "easyrpg-sound-darkness4", 2400, 3200, 0.55, 1000);
   captions(project, id, [{ atMs: 2800, text: "이 학교 교복은, 이제 블레이저다." }]);
