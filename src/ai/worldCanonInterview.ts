@@ -43,7 +43,7 @@ export type InterviewTurn = {
   readonly done: boolean;
 };
 
-const TONE_IDS = ["hopeful", "grim", "comic", "political", "slice", "gothic", "fairytale", "mythic"] as const;
+const TONE_IDS = ["hopeful", "grim", "comic", "political", "slice", "gothic", "fairytale", "mythic", "horror", "mystery"] as const;
 
 const SYSTEM_PROMPT = [
   "You interview a Korean game author to fill in their world bible, one slot at a time.",
@@ -60,7 +60,7 @@ const SYSTEM_PROMPT = [
   "Schema for patch (all optional; omit what the author has not decided):",
   '- name: string, the world name (max 120 chars)',
   '- premise: string, one-sentence premise (max 280 chars)',
-  `- tones: subset of [${TONE_IDS.join(", ")}] (Korean meanings: 희망, 우울, 코믹, 정치, 일상, 고딕, 동화, 신화)`,
+  `- tones: subset of [${TONE_IDS.join(", ")}] (Korean meanings: 희망, 우울, 코믹, 정치, 일상, 고딕, 동화, 신화, 공포, 미스터리)`,
   '- era: string, era/setting (max 80 chars)',
   '- techCeiling: string, tech ceiling (max 80 chars)',
   '- absences: string[], things this world must NOT contain (max 32 items, 40 chars each). Partial-match warning: a short word also blocks longer words containing it.',
