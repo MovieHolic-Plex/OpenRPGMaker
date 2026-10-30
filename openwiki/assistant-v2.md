@@ -411,6 +411,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
   - **던전 다시 짓기는 거절하지 않는다**(`builders/dungeonRebuildCarry.ts`): 여러 맵·아래층에서 들어오는 문이 있어도 1층 문 하나는 다시 잇고 나머지는 남겨 다시 지은 층의 가까운 걸어 닿는 칸으로 다시 가리킨다. 짓기 도구 밖에서 붙은 이벤트(사람·컷신·상자 — id 가 `ev_<층>_` 가 아닌 것)는 같은 칸(막히면 가까운 칸)으로 옮겨 싣는다(rebuild:true 가 층 이벤트를 비워 해골 기사가 사라졌다).
   - **연출 비평의 «싸움이 안 보인다»**: 비평가는 지도 틀만 본다 — 컷신(또는 그 사람) 명령에 전투가 있으면 비평 글에 «전투 화면은 틀에 없다»를 싣고, 관문(`v2GateProblems`)은 지금 전투를 여는 컷신의 싸움 지적을 지난 일로 뺀다(전투를 patch_event_page 로 붙인 뒤에도 옛 비평이 항목으로 남았다).
   - **스키마 기본값 채움 정리**(`game.ts withSchemaFillCleanup`, v2 감싸개): upsert_troop 빈 members, place_field_enemy 의 patrol(patrol·chase 아닐 때)·빈 directions, upsert_item 회복약의 escapeTo·repelSteps(이름·설명에 탈출·퇴치 낱말이 없을 때, repelSteps 0), create_transfer_pair 의 x,y 와 같은 doorAt 을 «안 줬다»로 읽는다.
+  - 확인 판(omo-unfinished-1030 r1)에서 더 나온 것: place_field_enemy 의 기본값 graphic(빈 selectionId·query·textureKey)은 빼고, 그래도 «graphic 이 전투 그림과 다릅니다»면 graphic 을 빼고 한 번 다시 부른다. 사람·컷신 자리(`people.ts resolveWhere`)는 다른 맵에서 오는 이동의 도착 칸을 피한다(커밋 «transfer 목적지에 이벤트가 겹칩니다»). 관문 항목의 «고치는 도구» 낱말 찾기(`loop/gates.ts namedTools`)는 sw_·ev_·map_ 같은 id 를 도구 이름으로 읽지 않는다(깃발 항목이 «도구 없음»으로 막혔다).
   - **숲길 갈림길**: `author_forest_route` 결과 글이 샛길(nooks) 갈림길·막다른 끝 좌표와 빈터를 이른다(갈림길이 있는데 «빌더가 못 한다»며 막힘으로 닫았다).
 - **대사 판정**(`todo/checks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
 - **갈고리(2026-10-30, 싼 모델 terra 기준 — `loop/hookStats.ts`, 발화마다 `v2.hook.<이름>` 상태, 끝 `v2.summary` data.hooks 에 수)**:

@@ -489,6 +489,21 @@ export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: Per
   return cost;
 }
 
+/** 다른 맵(또는 같은 맵 다른 칸)에서 mapId 로 오는 이동 명령의 도착 칸들. */
+export function incomingLandings(project: Project, mapId: string): Cell[] {
+  const out: Cell[] = [];
+  const seen = new Set<string>();
+  const walk = (n: unknown): void => {
+    if (Array.isArray(n)) { n.forEach(walk); return; }
+    if (!n || typeof n !== "object") return;
+    const o = n as { kind?: unknown; mapId?: unknown; x?: unknown; y?: unknown };
+    if (o.kind === "transfer" && o.mapId === mapId && typeof o.x === "number" && typeof o.y === "number" && !seen.has(`${o.x},${o.y}`)) { seen.add(`${o.x},${o.y}`); out.push({ x: o.x, y: o.y }); }
+    for (const v of Object.values(n)) if (v && typeof v === "object") walk(v);
+  };
+  for (const m of Object.values(project.maps)) for (const ev of m.events ?? []) walk(ev.pages ?? []);
+  return out;
+}
+
 export function resolveWhere(
   project: Project,
   map: GameMap,
@@ -504,6 +519,9 @@ export function resolveWhere(
   const transfers = new Set(transferList.map((c) => c.y * w + c.x));
   const avoid = new Set((opts.avoid ?? []).map((c) => c.y * w + c.x));
   for (const c of opts.keepFree ?? []) avoid.add(c.y * w + c.x);
+  // 다른 맵에서 이 맵으로 오는 이동의 도착 칸에는 이벤트를 두지 않는다 — 커밋이 «월드 그래프 transfer 목적지에 이벤트가 겹칩니다»로 거절한다
+  // (2026-10-30 omo-unfinished terra boss-room: 「입구」 컷신 add_event 가 보스 방 도착 칸 (9,21)에 서서 한 번 실패).
+  for (const c of incomingLandings(project, map.id)) avoid.add(c.y * w + c.x);
   const playerStart = project.startMapId === map.id ? project.startPos : null;
   const fp = opts.footprint;
   const isObject = !!fp;

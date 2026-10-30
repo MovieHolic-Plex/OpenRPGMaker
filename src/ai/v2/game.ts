@@ -232,6 +232,9 @@ export function cleanSchemaFill(name: string, params: unknown): unknown {
     if (patrol && typeof patrol === "object" && Array.isArray(patrol.directions) && patrol.directions.length === 0) delete patrol.directions;
     if (patrol !== undefined && behavior !== "patrol" && behavior !== "chase") delete args.patrol;
     else if (behavior === "chase" && patrol && typeof patrol === "object" && patrol.directions === undefined && !(Number(patrol.length) > 1)) delete args.patrol;
+    // graphic{selectionId:"",query:"",textureKey:"",…} 기본값 채움 → «graphic 이 전투 그림과 다릅니다»(omo-unfinished-1030 forest 확인 판). 고른 그림이 없으면 뺀다 — 도구가 전투 그림에 맞춘다.
+    const g = args.graphic as Record<string, unknown> | undefined;
+    if (g && typeof g === "object" && !String(g.selectionId ?? "").trim() && !String(g.query ?? "").trim() && !String(g.textureKey ?? "").trim()) delete args.graphic;
   }
   if (name === "upsert_item" && args.item && typeof args.item === "object") {
     const it = args.item as Record<string, unknown>;
@@ -249,7 +252,19 @@ export function cleanSchemaFill(name: string, params: unknown): unknown {
 }
 export function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
   const names = new Set(["upsert_troop", "place_field_enemy", "upsert_item", "create_transfer_pair"]);
-  return tools.map((tool) => !names.has(tool.name) ? tool : { ...tool, execute: (id, params, signal) => tool.execute(id, cleanSchemaFill(tool.name, params) as typeof params, signal) });
+  return tools.map((tool) => !names.has(tool.name) ? tool : { ...tool, async execute(id, params, signal) {
+    const cleaned = cleanSchemaFill(tool.name, params) as typeof params;
+    const result = await tool.execute(id, cleaned, signal);
+    // 필드 적 그림이 전투 그림과 다르면 거절 대신 graphic 을 빼고 다시 — 도구가 «생략하면 자동으로 맞춘다»(같은 거절 두 번으로 전투 항목이 막혔다).
+    const body = (result.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
+    if (tool.name === "place_field_enemy" && /graphic 이 전투 그림과 다릅니다/u.test(body) && cleaned && typeof cleaned === "object" && "graphic" in (cleaned as object)) {
+      const { graphic: _g, ...rest } = cleaned as Record<string, unknown>;
+      const second = await tool.execute(`${id}-autograph`, rest as typeof params, signal);
+      const b2 = (second.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
+      if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[그림 맞춤] 준 graphic 이 전투 그림과 달라 graphic 을 빼고 다시 놓았다 — 필드 그림은 전투 그림(적 그룹 선두)에 맞췄다." }] } as typeof second;
+    }
+    return result;
+  } });
 }
 
 /**

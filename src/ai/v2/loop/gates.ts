@@ -22,7 +22,8 @@ function capReopened(store: TodoStore, items: readonly TodoItem[], what: string)
  */
 /** 문제 글이 고치는 법으로 이르는 도구 이름들(`configure_field_menu{…}`·`upsert_actor(…)` 모양). */
 export function namedTools(text: string): string[] {
-  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!))];
+  // 스위치·이벤트 id(«sw_kmt0gqg_k39y2je(「숲길 탐색」)»)는 도구 이름이 아니다 — 2026-10-30 omo-unfinished forest: 깃발 항목이 «고치는 도구가 없다»로 막혔다.
+  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !/^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u.test(n)))];
 }
 
 export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
