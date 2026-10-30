@@ -331,7 +331,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   });
   for (const at of [{ x: 7, y: 7 }, { x: 6, y: 7 }, { x: 12, y: 7 }]) {
     try {
-      exec(project, "place_savepoint", { mapId: FS2_FROST_INN_ID, x: at.x, y: at.y, id: "ev_fs2_frost_save", name: "별빛 결정", mode: "slot", objectId: SAVE_CRYSTAL, prompt: "기록할까요?", sparkleRadius: 2 });
+      exec(project, "place_savepoint", { mapId: FS2_FROST_INN_ID, x: at.x, y: at.y, id: "ev_fs2_frost_save", name: "별빛 결정", mode: "slot", objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
       break;
     } catch { /* 가구 칸 — 다음 자리 */ }
   }
@@ -512,7 +512,7 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
       { kind: "choices", prompt: "등 하나에 한 줄을 적어 띄울까?", options: [
         { text: "「잘 지내」라고 적는다", branch: [
           se("cc0-se-orp-inventory-cloth"),
-          narrate("카엘이 등에 「잘 지내」라고 적어 불을 붙인다.\n등이 바람을 타고 호수 위로 떠오른다."),
+          narrate("카엘이 등에 「잘 지내」라고 적고 불을 붙였다.\n등이 바람을 타고 호수 위로 떠올랐다."),
           flash("#ffc070", 700),
           say(ELENA, "…이리스한테 닿으면 좋겠다."),
           say(KAEL, "닿을 거야. 대답은 늦게라도 꼭 닿았어."),
@@ -597,13 +597,13 @@ function lanternNight(project: Project, exec: Exec): void {
           setSw(SW_VALEN_SWORD),
         ] },
         { text: "등을 같이 띄운다", branch: [
-          narrate("카엘이 등 하나에 불을 붙여\n발렌의 등 곁에 놓는다."),
+          narrate("카엘이 등 하나에 불을 붙여\n발렌의 등 곁에 띄웠다."),
           say(VALEN, "…둘이면 더 멀리 간다.\n어머니가 그러셨지."),
           setSw(SW_VALEN_LANTERN),
           { kind: "fork", condition: { kind: "item", itemId: FS2_CERT_ITEM, present: true }, then: [
             say(KAEL, "세린 씨도 그렇게 대답했을까요?"),
             say(VALEN, "…그 이름을 어디서 들었지."),
-            narrate("카엘이 반쯤 탄 정착 확인서를 내민다.\n발렌은 서명란에서 한참 눈을 떼지 못한다."),
+            narrate("카엘이 반쯤 탄 정착 확인서를 내밀었다.\n발렌은 서명란에서 한참 눈을 떼지 못했다."),
             say(VALEN, "「엄마 문 열어」… 내 글씨다."),
             setSw(SW_VALEN_SERIN),
           ] },
@@ -612,7 +612,7 @@ function lanternNight(project: Project, exec: Exec): void {
       // 쩌억 — 카메라가 북쪽 탑 문으로 올라가 빛기둥을 보여 주고 돌아온다.
       shake(6, 900),
       se("easyrpg-sound-ice2"),
-      narrate("쩌억. 발밑 깊은 데서 얼음 우는 소리가 난다.", { position: "bottom" }),
+      narrate("쩌억. 발밑 깊은 데서 얼음이 우는 소리가 났다.", { position: "bottom" }),
       panTo(L.gateDoor[0]!.x, 5, 1600),
       se("easyrpg-sound-holy3"),
       ...pillarLights,
@@ -624,7 +624,7 @@ function lanternNight(project: Project, exec: Exec): void {
       m2("m2-202-screen-effect", { effect: "tint", value: "neutral", durationMs: 380 }),
       wait(1500),
       // 자막은 화면 아래 — 주인공이 화면 밖이면 창이 위로 뛰어 탑을 가렸다(감독 r3).
-      narrate("절벽 위 탑 문 너머로 빛기둥이 솟는다!", { position: "bottom" }),
+      narrate("절벽 위 탑 문 너머로 빛기둥이 솟았다!", { position: "bottom" }),
       wait(500),
       panBack(1300),
       say(VALEN, "…렌즈가 벌써 열렸군. 늦었다."),
@@ -794,7 +794,7 @@ function towerReleaseStop(project: Project): void {
     page("ev_fs2_tower_stop_run", "판본 끝", [sw(SW_VALEN_MET)], [
       wait(400),
       say(SARAH, "…발렌 님은 벌써 위로 올라갔다.\n위에서 기계 소리가 나."),
-      say(KAEL, "이리스가 이 위에 있어. 가자."),
+      say(KAEL, "이리스는 이 위야. 가자."),
       fadeOut(900),
       { kind: "recoverAll" } as unknown as Command,
       narrate("제2막 「빌린 불」은 여기까지", { position: "center", context: "narration" }),

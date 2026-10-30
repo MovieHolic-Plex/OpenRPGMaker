@@ -366,7 +366,7 @@ function cellEvents(map: GameMap): void {
       say(RINO, "나는 오늘 밤 아무것도 못 봤다.\n…이름은 리노다. 이번엔 잊지 마라."),
       route(rinoId, [{ kind: "setThrough", enabled: true }, { kind: "turn", dir: "right" }, ...walk(["down", "down", "right", "right", "right", "right", "right", "right", "right", "up", "up", "up"]), { kind: "setThrough", enabled: false }]),
       setSw(SW_BREAD),
-      say(ELENA, "카엘, 이 빵… 무게가 이상해."),
+      say(ELENA, "카엘, 이 빵… 이상하게 무거워."),
       say(KAEL, "반죽이 또 안 부풀었나 봐."),
       cutLabel(),
       cutEnd(),
@@ -377,17 +377,17 @@ function cellEvents(map: GameMap): void {
   for (const [i, at] of [{ x: 2, y: 4 }, { x: 10, y: 4 }].entries()) {
     const id = `ev_fs2_cell_bed_${i}`;
     addEvent(map, id, "짚 침대", at, [
-      page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누울 곳은 아니다.")], { priority: "same" }),
+      page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누워 있을 데가 못 된다.")], { priority: "same" }),
       page(`${id}_bread`, "빵을 쪼갠다", [sw(SW_BREAD), sw(SW_KEY, false)], [
-        narrate("침대 모서리에 납작빵을 내리친다."),
+        narrate("납작빵을 침대 모서리에 힘껏 내리쳤다."),
         se("cc0-se-osx-wooded-box-open"),
         shake(1, 200),
-        narrate("빠각! 빵 속에서 쇠붙이가 튀어나온다."),
+        narrate("빠각! 갈라진 빵 속에서 쇠붙이가 튀어나왔다."),
         item(FS2_BREAD_ITEM, -1),
         item(FS2_CELL_KEY_ITEM, 1),
         setSw(SW_KEY),
         narrate("「빵 속 감방 열쇠」를 얻었다.", { context: "system" }),
-        say(ELENA, "토마 아저씨…!\n「꼭꼭 씹어라」가 이 소리였구나."),
+        say(ELENA, "토마 아저씨…!\n「꼭꼭 씹어라」가 이 뜻이었구나."),
         say(KAEL, "선생님 말씀이 맞았어.\n작은 일들이 먼저 대답을 해."),
       ], { priority: "same" }),
       page(`${id}_after`, "짚 침대", [sw(SW_KEY)], [narrate("빵 부스러기만 남았다.")], { priority: "same" }),
@@ -407,7 +407,7 @@ function cellEvents(map: GameMap): void {
       say(ELENA, "…리노가 「꼭꼭 씹어라」 그랬지.\n그 무거운 빵, 침대 모서리에 내리쳐 볼까?"),
     ]),
     page(`${gateId}_key`, "열쇠로 연다", [sw(SW_KEY), sw(SW_CELL_OPEN, false)], [
-      narrate("빵에서 나온 열쇠를 꽂아 돌린다. 딸깍."),
+      narrate("빵에서 나온 열쇠를 꽂고 돌렸다. 딸깍."),
       ...openGate(map, CELL.gate),
       setSw(SW_CELL_OPEN),
       item(FS2_CELL_KEY_ITEM, -1),
@@ -533,7 +533,7 @@ function barracks(project: Project, exec: Exec): void {
       page(`${id}_p`, "숨 고르기", [sw(SW_BARRACKS_MID, false)], [
         setSw(SW_BARRACKS_MID),
         se("cc0-se-orp-inventory-cloth"),
-        say(ELENA, "(속삭임) …휴. 여기 침상 그늘이면 안 보여.\n이제 알코브에서 알코브로 건너가자."),
+        say(ELENA, "(속삭임) …휴. 여기 침상 그늘이면 안 보여.\n침상에서 침상으로, 하나씩 건너가자."),
       ], { priority: "below", trigger: { kind: "playerTouch" } }),
     ]);
   });
@@ -555,7 +555,7 @@ function barracks(project: Project, exec: Exec): void {
     addEv(project, FS2_BARRACKS_ID, id, "압수품 상자", { x: BARRACKS.chest.x + dx, y: BARRACKS.chest.y }, [
       page(`${id}_shut`, "닫힘", [sw(SW_BARRACKS, false)], [
         se("cc0-se-osx-wooded-box-open"),
-        narrate("상자 뚜껑을 젖힌다."),
+        narrate("상자 뚜껑을 젖혔다."),
         item(FS2_GEAR_ITEM, 1),
         { kind: "changeGold", op: "+=", amount: 200 } as unknown as Command,
         se("cc0-se-orp-battle-sword-unsheathe"),
@@ -568,7 +568,7 @@ function barracks(project: Project, exec: Exec): void {
     ]);
     exec(project, "stage_map_reveal", {
       mapId: FS2_BARRACKS_ID, eventId: id, pageId: `${id}_shut`, tiles: openTiles,
-      afterText: "상자 뚜껑을 젖힌다.", theme: "magic", camera: false,
+      afterText: "상자 뚜껑을 젖혔다.", theme: "magic", camera: false,
     });
   });
   // 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
@@ -585,13 +585,13 @@ function barracks(project: Project, exec: Exec): void {
       narrate("「회복약」 5개, 「마력약」 2개,\n「만병통치약」 1개를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
       se("cc0-se-osx-wooded-box-open"),
-      narrate("사다리를 올라 뚜껑 문을 민다."),
+      narrate("사다리를 올라 뚜껑 문을 밀어 올렸다."),
       setSw(SW_OUT),
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
     ]),
     page(`${ladderId}_go2`, "오른다(다시)", [sw(SW_BARRACKS), sw(SW_MEDS)], [
       se("cc0-se-osx-wooded-box-open"),
-      narrate("사다리를 올라 뚜껑 문을 민다."),
+      narrate("사다리를 올라 뚜껑 문을 밀어 올렸다."),
       setSw(SW_OUT),
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
     ]),
@@ -638,7 +638,7 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
       bgm("cc0-bgm-rtp-mys-002"),
       narrate("광장은 캄캄하다. 집집마다 등불이 꺼졌다.\n야경꾼들 손등불만 흔들린다."),
       say(KAEL, "통금이야. 야경꾼들이 돌고 있어."),
-      say(ELENA, "눈에 띄면 바로 덤벼들 거야.\n그늘로만 가자."),
+      say(ELENA, "들키면 바로 덤벼들 거야.\n그늘로만 가자."),
       // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
       say(ELENA, "저기, 골목 왼쪽 위에 불빛 새는 틈 보여?\n그리로 빠져서 광장 서쪽 빵집,\n미레 아주머니한테 가자."),
     ], { trigger: { kind: "auto" } }),
@@ -726,12 +726,12 @@ function lampQuestDoors(project: Project, exec: Exec, doors: readonly GameEvent[
     })[0];
     exec(project, "add_event_page", { mapId: FS2_HUB_NIGHT_ID, eventId: door.id, page: {
       id: `${door.id}_q4_hang`, name: "등 걸기", conditions: [sw(SW_Q4_TAKEN)], commands: [
-        narrate("문고리에 꺼진 등을 건다."),
+        narrate("문고리에 꺼진 등을 걸었다."),
         item(FS2_UNLIT_LAMP, -1),
         setSw(lamp),
         se("cc0-se-ors-item-wood-01"),
-        ...(watcher ? [emote(watcher, "question", 900), wait(500), narrate("…달그락. 멀리서 손등불 하나가 이쪽을 비추다 지나간다.")] : []),
-        narrate("안에서 누가 가만히 두드린다. 똑, 똑, 똑.\n잠시 뒤, 창 안쪽에 작은 불이 켜진다."),
+        ...(watcher ? [emote(watcher, "question", 900), wait(500), narrate("…달그락. 멀리서 손등불 하나가 이쪽을 훑고 지나갔다.")] : []),
+        narrate("안에서 누가 문을 가만히 두드렸다. 똑, 똑, 똑.\n잠시 뒤, 창 안쪽에 작은 불이 켜졌다."),
       ] } });
     exec(project, "add_event_page", { mapId: FS2_HUB_NIGHT_ID, eventId: door.id, page: {
       id: `${door.id}_q4_hung`, name: "등이 걸린 문", conditions: [sw(lamp)], commands: [narrate("문고리에 꺼진 등이 걸려 있다.\n창 안쪽에 촛불 하나가 켜져 있다.")] } });
@@ -826,9 +826,9 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
           { text: "지금은 못 한다", branch: [say(MIRE, "그래, 너희 몸이 먼저지.")] },
         ] } as unknown as Command,
       ] },
-      { name: "꺼진 등(진행)", conditions: [sw(SW_Q4_TAKEN)], commands: [say(MIRE, "별지기 할아버지 댁, 약방, 리사네 집.\n셋 다 걸고 다시 오렴. 야경꾼 눈에 띄지 말고.")] },
+      { name: "꺼진 등(진행)", conditions: [sw(SW_Q4_TAKEN)], commands: [say(MIRE, "별지기 할아버지 댁, 약방, 리사네 집.\n셋 다 걸고 다시 오렴. 야경꾼한테 들키지 말고.")] },
       { name: "꺼진 등(다 걸었다)", conditions: [sw(`${SW_Q4_LAMP}0`), sw(`${SW_Q4_LAMP}1`), sw(`${SW_Q4_LAMP}2`)], commands: [
-        say(MIRE, "…봤어. 캄캄하던 창에 불이 들었더라.\n이제 다들 알 거야."),
+        say(MIRE, "…봤어. 캄캄하던 창에 불이 들었더라.\n다들 알아들었을 거야."),
         say(MIRE, "이거 가져가. 우리 토마가\n숨겨 둔 반죽으로 구운 거야."),
         se("cc0-se-orp-inventory-cloth"), item("fs_bread_starlight", 2),
         narrate("「별빛빵」 2개를 받았다.", { context: "system" }),
@@ -939,19 +939,19 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     ]);
   });
   addEv(project, FS2_SHAFT_ID, "ev_fs2_shaft_ladder", "우물로 오르는 사다리", SHAFT.ladderUse, [
-    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라간다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
+    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라갔다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
   ]);
   // 1막 지하 4층에서 탔던 승강 장치를 이번엔 서고 밑에서 탄다 — 오르면 천문대 서고, 내려오면 다시 여기.
   // 양쪽 다 도착 칸이 발판 위라, 밟으면 타는 방식이면 걸어 나가다 도로 탄다(QA 2026-10-26) — 발판 위에서 조사해야 탄다.
   // 오르는 거리 3칸 — 5칸이면 발판이 천장 벽을 다 넘어 맵 위 끝까지 솟았다(VQA: 승강기가 벽 위로 떠오른다). 짧게 올라가 어두워진다.
   exec(project, "place_lift", {
-    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 3, trigger: "action", text: "승강 장치에 올라탄다. 위는 천문대 서고다.",
+    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 3, trigger: "action", text: "승강 장치에 올라탔다. 위는 천문대 서고다.",
     toMapId: FS2_OBS_NIGHT_ID, toX: OBS.lift.x, toY: OBS.lift.y, toDirection: "right",
     // 승강구 쪽에도 천문대 쪽 발판 그림을 칠한다 — 그림이 없어 「어디서 타는지」 몰랐다.
     copyPlate: true,
   });
   exec(project, "place_lift", {
-    mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 3, trigger: "action", text: "승강 장치로 서고 밑으로 내려간다.",
+    mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 3, trigger: "action", text: "승강 장치를 타고 서고 밑으로 내려갔다.",
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
   // 정문 — 연금 중. 기사가 지킨다.
@@ -1041,7 +1041,7 @@ function northGate(project: Project, exec: Exec, smithyId: string): void {
   for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"], [SW_B4_ALARM, "B4: 개구멍 — 들켰다"], [SW_B4_EDGE, "B4: 숲 가장자리 — 브람의 고백"], [SW_B4_BRAM_OUT, "B4: 브람이 먼저 빠져나감"], [SW_B4_GONE, "B4: 등불들이 물러남"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_equipment", { equipment: {
     id: FS2_ROHAN_SPEAR, name: "로한의 별쇠 창", slot: "weapon", price: 0, iconResourceId: "cc0-jetrel-bronze-sword", imageResourceId: "cc0-jetrel-bronze-sword",
-    description: "공격 40, 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n손잡이 무늬가 새라의 창과 같다.",
+    description: "공격 40, 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n자루 무늬가 새라의 창과 같다.",
     statBonuses: { attack: 40, defense: 0, mind: 0, agility: 2 }, equippableActorIds: ["actor_hero", "actor_fs2_sarah"], equippableClassIds: ["class_hero", "class_guardian", "class_fs2_lancer"],
     attackElementIds: ["spear"], effectFlags: { ignoreDodge: true },
   } });
@@ -1085,7 +1085,7 @@ function northGateEvents(project: Project, exec: Exec): void {
       se("cc0-se-orp-inventory-cloth"),
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
       narrate("카엘이 「로한의 별쇠 창」을 받아 들었다.", { context: "system" }),
-      say(KAEL, "아저씨, 이거… 손잡이 무늬가 특이해요."),
+      say(KAEL, "아저씨, 이거… 자루 무늬가 특이해요."),
       say(ROHAN, "딸년 새라 창이랑 같은 무늬다.\n심문회 견습 창기사가 돼서\n지금 북방 관문 요새에 있지."),
       say(ROHAN, "…그 애를 보거든, 고개 들라고 해라."),
       say(ROHAN, "북문은 막혔다. 장터 북쪽 성벽 밑에서\n브람이 기다린다더군."),
@@ -1123,7 +1123,7 @@ function northGateEvents(project: Project, exec: Exec): void {
       cutBegin(),
       route("@player", [{ kind: "turn", dir: "up" }]),
       route("ev_fs2_hub_bram", [{ kind: "turn", dir: "up" }]),
-      narrate("브람이 성벽 돌 틈에 손가락을 건다."),
+      narrate("브람이 성벽 돌 틈에 손가락을 걸었다."),
       route("ev_fs2_hub_bram", [
         { kind: "setDirectionFix", enabled: true },
         // 제자리에서 두 번 버틴다 — jump 는 dx/dy 0 이면 바라보는 쪽으로 두 칸 뛴다(성벽 너머로 사라졌다, VQA 2026-10-30). dropIn 은 칸 이동이 없다.
@@ -1132,7 +1132,7 @@ function northGateEvents(project: Project, exec: Exec): void {
         { kind: "dropIn", heightPx: 4, durationMs: 220, se: "cc0-se-ors-item-stone-03", impact: false },
       ]),
       say(BRAM, "끄응……!"),
-      narrate("돌이 끌려 나온다."),
+      narrate("드르륵, 돌 하나가 끌려 나왔다."),
       // ← 여기에 stage_map_reveal(가까이 ×2·먼지·흔들림·구멍 칸)이 들어간다.
       se("cc0-se-ors-stones-02"),
       { kind: "changeTile", mapId: FS2_HUB_NIGHT_ID, layer: "upper", x: HOLE.rubble.x, y: HOLE.rubble.y, tile: HOLE_RUBBLE } as unknown as Command,
@@ -1158,7 +1158,7 @@ function northGateEvents(project: Project, exec: Exec): void {
     ]),
     // 붙잡혀 도로 끌려온 뒤 — 구멍은 이미 뚫려 있다. 조사하면 곧장 다시 기어 나간다(돌 빼기 연출을 되풀이하지 않는다).
     page("ev_fs2_hub_hole_again", "개구멍(다시)", [sw(SW_B4_ALARM)], [
-      narrate("등불이 아직 성벽 밖을 훑는다. 다시 기어 나간다."),
+      narrate("등불이 아직 성벽 밖을 훑고 있다. 숨을 죽이고 다시 기어 나갔다."),
       se("cc0-se-orp-inventory-cloth"),
       { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }, { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
       transfer(first!, { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 }, "up"),
@@ -1169,13 +1169,13 @@ function northGateEvents(project: Project, exec: Exec): void {
   if (holeMeta[HOLE_RUBBLE]?.label !== "버들항 장소 · 돌무더기") throw new Error("[fallen-star act2] 돌무더기 칸 번호가 칩셋과 어긋났다");
   // 돌을 빼면 성벽 밑에 어두운 구멍이 드러난다(공용 하수도 벽 아치 윗부분 둘 — 새 그림 없음). 카메라가 두 배로 다가가 먼지·흔들림과 함께.
   exec(project, "stage_map_reveal", {
-    mapId: FS2_HUB_NIGHT_ID, eventId: "ev_fs2_hub_hole", pageId: "ev_fs2_hub_hole_open", afterText: "돌이 끌려 나온다.",
+    mapId: FS2_HUB_NIGHT_ID, eventId: "ev_fs2_hub_hole", pageId: "ev_fs2_hub_hole_open", afterText: "드르륵, 돌 하나가 끌려 나왔다.",
     tiles: [{ x: HOLE.wall.x, y: HOLE.wall.y, layer: "upper", tile: HOLE_ARCH[0] }, { x: HOLE.wall.x + 1, y: HOLE.wall.y, layer: "upper", tile: HOLE_ARCH[1] }],
     theme: "stone", camera: true, zoom: 2,
   });
   forestEdgeChase(project, exec, first!, bramChip, FS2_NORTH_ROUTE.treeline);
   addEv(project, first!, "ev_fs2_north_back", "성벽 개구멍으로", FS2_NORTH_ROUTE.entry, [
-    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍을 기어 나가 광장으로 돌아간다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
+    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("개구멍으로 도로 기어 들어가 광장으로 돌아갔다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
   ]);
 }
 
@@ -1373,7 +1373,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다.
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.9, color: "#070b18", transitionMs: 1200 } as unknown as Command,
-    narrate("길돌을 지나 나무 그늘로 들어서자\n뒤쫓던 등불들이 멈춘다."),
+    narrate("길돌을 지나 나무 그늘로 들어서자\n뒤쫓던 등불들이 우뚝 멈췄다."),
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가. 돌아가자."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
@@ -1738,7 +1738,7 @@ function sarahKit(project: Project, exec: Exec): void {
   } });
   exec(project, "upsert_skill", { skill: {
     id: FS2_SKILL_HEADS_UP, name: "고개 들어라", scope: "ally", type: "normal", power: 0, variance: 0, hitRate: 100,
-    description: "동료 어깨를 툭 쳐 공격을 올린다.\n새라의 말버릇이다.\n익히면 카엘과 「쌍창 돌파」를 쓴다.",
+    description: "동료 어깨를 툭 치며 공격을 올린다.\n「고개 들어라」는 새라의 말버릇이다.\n익히면 카엘과 「쌍창 돌파」를 쓴다.",
     mpCost: { flat: 4, percentMax: 0 }, effect: { kind: "support" }, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }],
     animationId: "anim_gen_power_aura",
   } });
@@ -1917,7 +1917,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   } });
   exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
     id: "fs2_sarah_half", name: "새라 — 반", span: "battle", conditions: [{ kind: "enemyHpBelow", enemyId: FS2_SARAH_ENEMY, percent: 50 }],
-    commands: [say(SARAH, "…그 창, 아버지가 벼린 거지.\n손잡이 무늬가 내 창이랑 같아."), say(KAEL, "네. 아저씨가 새라 씨 걱정을 많이 하셨어요.")],
+    commands: [say(SARAH, "…그 창, 아버지가 벼린 거지.\n자루 무늬가 내 창이랑 같아."), say(KAEL, "네. 아저씨가 새라 씨 걱정을 많이 하셨어요.")],
   } });
   // 요새 바깥 안뜰(새벽샘 북쪽 길 → 남문) — 본채 문이 요새 안(아래 성 던전)으로 들어간다.
   fortCourt(project, exec);
@@ -2134,7 +2134,7 @@ function fortressEvents(project: Project, exec: Exec): void {
   ];
   const win: Command[] = [
     cutBegin(),
-    narrate("새라가 창을 내렸다. 개들이 그 발치에 엎드린다."),
+    narrate("새라가 창을 내렸다. 개들이 그 발치에 엎드렸다."),
     say(SARAH, "…졌다. 명령은 지켰고."),
     say(SARAH, "쇠 마차는 사흘 전에 여길 지나갔다.\n안에 탄 아이가 내내 뭘 쓰고 있더군. 공책에."),
     say(ELENA, "이리스 일지예요."),
@@ -2151,7 +2151,7 @@ function fortressEvents(project: Project, exec: Exec): void {
         narrate("카엘이 「로한의 별쇠 창」을 새라에게 건넸다.\n손에는 다시 쓰던 검을 쥐었다.", { context: "system" }),
         setSw(SW_SPEAR_BACK),
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
-        narrate("♥ 새라와의 유대가 깊어졌다.", { context: "system" }),
+        narrate("새라와의 유대가 깊어졌다.", { context: "system" }),
         { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
       ] },
       { text: "창을 맡아 둔다", branch: [
@@ -2260,7 +2260,7 @@ function snowPass(project: Project, exec: Exec): void {
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
       mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
-      hint: "새라가 틈 앞에서 창을 고쳐 쥔다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
+      hint: "새라가 틈 앞에서 창을 고쳐 쥐었다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
     });
   }));
   // 얼음 덩이 — 첫 틈을 건넌 뒤 좁은 눈길을 막는다. 엘레나의 불씨로 녹인다(계획 4-3 불씨 녹이기, 필드 기술 게이트).
@@ -2277,10 +2277,10 @@ function snowPass(project: Project, exec: Exec): void {
         mapId: maps[0]!.mapId, kind: "rock", x: g0.to.x + fwd.x * step, y: g0.to.y + fwd.y * step, fullWidth: true, direction: fwd.y !== 0 ? "right" : "down",
         tile: ICE_BLOCK.foot, tileAbove: ICE_BLOCK.head, requiresSkillId: FS2_SKILL_EMBER_MELT, skillName: "불씨 녹이기", machine: "none",
         id: "ev_fs2_snow_ice", name: "얼음 덩이",
-        hint: "엘레나가 얼음에 손바닥을 대 본다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
+        hint: "엘레나가 얼음에 손바닥을 대 봤다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
         blockedText: "길 한가운데 얼음 덩이가 솟아 있다.\n밀어도 꿈쩍 않는다.",
         // 녹이는 연출 — 불티·김이 오르고 잠시 뒤 얼음이 걷힌다(순간 교체였다, 감독 검수).
-        openEffect: { particles: ["fire", "smoke"], se: "cc0-se-ors-spell-fire-03", durationMs: 1600, text: "엘레나의 손바닥에서 불씨가 번진다.\n얼음이 김을 뿜으며 녹아내린다." },
+        openEffect: { particles: ["fire", "smoke"], se: "cc0-se-ors-spell-fire-03", durationMs: 1600, text: "엘레나의 손바닥에서 불씨가 번졌다.\n얼음이 김을 뿜으며 녹아내렸다." },
       });
       iced = true;
       break;
@@ -2307,7 +2307,7 @@ function snowPass(project: Project, exec: Exec): void {
       say(KAEL, "그러니까 데리러 가는 거야."),
       say(ELENA, "…불이라면 나도 있어. 손바닥만 한 거지만."),
       { kind: "learnSkill", actorId: "actor_fs_elena", skillId: FS2_SKILL_EMBER_MELT, action: "learn" } as unknown as Command,
-      narrate("이제 엘레나가 「불씨 녹이기」를 쓸 수 있다.\n길을 막은 얼음 덩이를 조사해 보자.", { context: "system" }),
+      narrate("엘레나가 「불씨 녹이기」를 익혔다.\n길을 막은 얼음 덩이를 조사해 보자.", { context: "system" }),
       setSw(SW_SNOW_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     // 뒤 페이지가 이긴다 — 한 번 본 뒤에는 멈춘다.
@@ -2328,7 +2328,7 @@ function snowPass(project: Project, exec: Exec): void {
       { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 망치를 쥐라고 했어. 난 창을 골랐고.\n…그 뒤로 서로 말을 잘 안 했지.", "발렌 님이 날 북문에 세우면서 그러더라.\n「고개 들어라」. …아버지가 하던 말인데."] },
     ],
     // 모닥불과 여관 밤(B8 여관 주인)이 같은 장면을 쓴다 — 어느 불가에도 맞는 한 줄.
-    intro: ["불가에 둘러앉는다. 장작이 탁 튄다."],
+    intro: ["불가에 둘러앉았다. 장작이 탁 튄다."],
     // 유대 3 — 듀얼 연계기 해금(계획 4-4). 새라는 창을 돌려줬으면(B6 +1)·모닥불·장작(Q6)·여관 밤으로 닿는다.
     unlocks: [
       { actorId: FS2_SARAH_ACTOR, atLeast: 3, comboTechId: FS2_COMBO_TWIN_LANCE, message: "새라가 「고개 들어라」를 익혔다!\n카엘과의 연계기 「쌍창 돌파」가 열렸다." },
@@ -2691,7 +2691,7 @@ function act2Quest(project: Project, exec: Exec): void {
   const steps: [string, string][] = [
     [SW_BREAD, "리노가 감방에 넣어 준 납작빵을 받는다"],
     [SW_CELL_OPEN, "감방 쇠살문을 연다. 유난히 무거운 빵이 수상하다"],
-    [SW_OUT, "등불과 순찰을 피해 막사 금고에서 짐을 되찾고, 북동쪽 사다리로 광장에 오른다"],
+    [SW_OUT, "야경꾼 등불을 피해 막사 무기고에서 짐을 되찾고, 북동쪽 사다리로 광장에 오른다"],
     [SW_MIRE, "광장 서쪽 빵집에서 미레 아주머니를 찾는다"],
     [SW_HANEL, "광장 우물 사다리로 천문대에 숨어 들어가 하넬 선생님을 만난다"],
     [SW_ROHAN, "대장간 뒷문으로 들어가 로한을 만난다"],

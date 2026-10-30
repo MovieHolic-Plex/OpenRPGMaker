@@ -217,7 +217,7 @@ const TOWER_FOES: { id: string; name: string; art: string; level: number; stats:
 function towerData(project: Project, exec: Exec): void {
   exec(project, "upsert_skill", { skill: {
     id: SKILL_MOTH_DUST, name: "인광 가루", scope: "enemy", type: "normal", power: 34, variance: 15, hitRate: 95,
-    description: "날개에서 푸른 인광 가루를 털어 낸다. 눈에 들어가면 앞이 안 보인다.",
+    description: "날개에서 푸른 인광 가루를 털어 낸다. 가루가 눈에 닿으면 앞이 안 보인다.",
     mpCost: { flat: 3, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" },
     stateEffects: [{ stateId: "state_blind", chance: 55, operation: "add" }], animationId: "anim_gen_power_aura",
   } });
@@ -338,7 +338,7 @@ function floorOne(project: Project, exec: Exec): void {
       camBack(700),
       say(SARAH, "기계가 기사를 쳤어.\n…저것들한텐 우리도 기사도 똑같나 봐."),
       say(ELENA, "벽 글자 봐. 천문대 지하 패널이랑 같아.\n이 탑도 그 사람들이 지었어."),
-      say(KAEL, "부딪히지 말고 돌아서 가자.\n이리스는 위에 있어."),
+      say(KAEL, "부딪히지 말고 돌아서 가자.\n이리스는 위층이야."),
       setSw(SW_T1_ARRIVE),
       cutLabel(),
       cutEnd(),
@@ -414,28 +414,28 @@ function floorTwo(project: Project, exec: Exec): void {
     ],
     levers: [
       { lever: T2.westLever, door: T2.eastDoor, doorHeight: 2, name: "동쪽 쇠창살",
-        text: "벽에 쇠 손잡이가 박혀 있다.\n쇠줄이 동쪽 벽 속으로 이어진다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
-        pullText: "끼긱. 손잡이가 내려가고 쇠줄이 감긴다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
+        text: "벽에 쇠 손잡이가 박혀 있다.\n쇠줄이 동쪽 벽 속으로 들어가 있다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
+        pullText: "끼긱. 손잡이가 내려가며 쇠줄이 감겼다.\n벽 너머 동쪽에서 쇠창살 올라가는 소리.",
         pullLines: [{ speaker: ELENA, text: "(벽 너머) 열렸어! 카엘, 들려?\n이쪽 창살이 올라갔어." }, { speaker: KAEL, text: "들려! 거울은?" }],
         doneText: "손잡이가 끝까지 내려가 있다.", doorText: "굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가에 있는 장치로 올리는 것 같다." },
       { lever: T2.eastLever, door: T2.westDoor, doorHeight: 2, name: "서쪽 쇠창살",
-        text: "벽에 박힌 손잡이다. 쇠줄이 천창 거울로 이어진다.\n내리면 빛이 꺾여 서쪽으로 갈 것 같다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
-        pullText: "거울이 돌아간다. 꺾인 빛줄기가 벽 틈으로 빠져나간다.\n서쪽에서 쇠창살 자물쇠가 철컥 풀리는 소리.",
+        text: "벽에 박힌 손잡이다. 쇠줄이 천창 거울까지 뻗어 있다.\n내리면 거울이 돌아 빛이 서쪽으로 꺾일 것 같다.", prompt: "손잡이를 내릴까?", pullLabel: "내린다",
+        pullText: "거울이 돌아갔다. 꺾인 빛줄기가 벽 틈으로 빠져나간다.\n서쪽에서 쇠창살 자물쇠가 철컥 풀리는 소리.",
         pullLines: [{ speaker: ELENA, text: "빛 갔어? 카엘, 그쪽 문에 닿았어?" }, { speaker: SARAH, text: "(벽 너머) 닿았다. 창살이 올라가." }],
         doneText: "거울이 서쪽을 향해 있다.", doorText: "굵은 쇠창살이 길을 막고 있다.\n반대편 어딘가의 장치로 올라갈 것 같다." },
     ],
     rejoin: T2.rejoin,
     splitLines: [{ speaker: ELENA, text: "바닥 돌판이 들썩여.\n…밑이 텅 빈 소리가 나." }],
-    splitText: "발밑 판이 덜컹 꺼진다! 양쪽 날개로 쇠창살이 내려꽂힌다.",
+    splitText: "발밑 판이 덜컹 꺼졌다! 양쪽 날개 사이로 쇠창살이 내리꽂혔다.",
     afterSplitLines: [
       { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
       { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
       { speaker: KAEL, text: "들려! 우리도 이쪽 손잡이를 내려 볼게.\n북쪽 벽에 손잡이가 있어." },
-      { text: "수정 받침을 조사하면 엘레나 쪽으로 조작을 바꿀 수 있다." },
+      { text: "수정 받침을 조사하면 엘레나 쪽으로 넘어간다." },
     ],
     switchIdleText: "수정 받침이 희미하게 울린다.\n벽 너머 동료의 숨소리가 들리는 것 같다.",
     rejoinText: "다시 모였다.",
-    rejoinLines: [{ speaker: ELENA, text: "거울이 진짜로 됐네. 빛이 그쪽까지 갔어." }, { speaker: SARAH, text: "기계보다 손발이 잘 맞는군.\n…올라가자." }],
+    rejoinLines: [{ speaker: ELENA, text: "거울, 진짜 됐네. 빛이 그쪽까지 갔어." }, { speaker: SARAH, text: "기계보다 손발이 잘 맞는군.\n…올라가자." }],
   });
   // 합류 칸 곁 칸 — 갈린 동안만 막아 합류 칸을 반드시 밟게 한다.
   addEv(project, FS2_T2, "ev_fs2_t2_rejoin_plug", "합류 길목", T2.rejoinPlug, [
@@ -477,12 +477,12 @@ function floorThree(project: Project, exec: Exec): void {
     reward: { itemId: "item_ether", gold: 150 },
     // 프리셋 문구는 「태양 성소」 말투다 — 탑의 렌즈 거울로(rewordLines·renameObjects).
     rewordLines: [
-      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아간다.\n천창 빛이 꺾여 북쪽 거울로 뻗는다." },
+      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아갔다.\n천창 빛이 꺾여 북쪽 거울로 뻗어 간다." },
       { from: "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.", to: "첫 거울이 천창 빛을 북쪽 거울로 보내고 있다." },
       { from: "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!", to: "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 서쪽 벽 계단에 꽂힌다." },
-      { from: "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!", to: "계단을 막던 빛 막이 걷힌다.\n위층으로 가는 길이 열렸다." },
-      { from: "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!", to: "거울 받침 밑에서 「마력약」과 150G를 찾았다." },
-      { from: "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.", to: "둘째 거울이다. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다." },
+      { from: "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!", to: "계단을 막던 빛 막이 걷혔다.\n위층으로 가는 길이 열렸다." },
+      { from: "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!", to: "거울 아래에서 「마력약」과 150G를 찾았다." },
+      { from: "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.", to: "계단 쪽 둘째 거울. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다." },
       { from: "제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.", to: "둘째 거울이 빛을 계단으로 모으고 있다." },
       { from: "태양 빛줄기로 정화된 대성소 마법진이다.", to: "빛 막이 걷힌 자리. 바닥 글자가 아직 따뜻하다." },
       { from: "이 통로는 '렌즈 거울' 장치를 먼저 풀어야 열립니다.", to: "계단 위에 희미한 빛 막이 쳐져 있다.\n거울로 빛을 보내야 걷힐 것 같다." },
@@ -499,7 +499,7 @@ function floorThree(project: Project, exec: Exec): void {
     page("ev_fs2_t3_arrive_idle", "대기", [], [], { priority: "below" }),
     page("ev_fs2_t3_arrive_run", "거울의 층", [sw(SW_T2_DONE)], [
       wait(400),
-      say(ELENA, "천장에 유리 창이 나 있어. 빛이 들어와.\n…여기 거울들, 렌즈 받침이랑 모양이 같아."),
+      say(ELENA, "천장에 유리창이 나 있어. 빛이 들어와.\n…여기 거울들, 천문대 렌즈 틀이랑 모양이 같아."),
       say(KAEL, "천문대 렌즈는 하늘을 봤는데,\n여기 거울은 서로를 비추네."),
       setSw(SW_T3_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
@@ -598,14 +598,14 @@ function floorFour(project: Project, exec: Exec): void {
   exec(project, "place_field_obstacle", {
     mapId: FS2_T4, x: T4.dark.x, y: T4.dark.y, kind: "dark", requiresSkillId: FS2_SKILL_FINGERLIGHT, skillName: "손끝 빛", machine: "none",
     id: "ev_fs2_t4_dark", name: "렌즈 대기실의 어둠", darkness: 0.62, blockCells: T4.alcovePlugs, litSwitchId: SW_IRIS_BACK,
-    hint: "이리스가 손끝을 들자 둘레가 환해진다.",
-    blockedText: "발밑이 안 보인다.\n판석이 끊겼는지 이어졌는지조차 모르겠다.",
+    hint: "이리스가 손끝을 들자 둘레가 환해졌다.",
+    blockedText: "발밑이 캄캄하다.\n한 발짝 앞이 바닥인지 낭떠러지인지 모르겠다.",
   });
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
   Object.assign(light, { name: "손끝 빛", description: "필드 기술. 손끝에 빛을 맺어 어둠을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
   const ce = project.commonEvents.find((c) => c.id === (light as unknown as Rec).fieldCommonEventId);
-  if (ce) ce.commands = [narrate("이리스가 손끝을 든다.\n작은 빛이 둘레로 번진다."), { kind: "setLighting", ambient: 0, transitionMs: 900 } as unknown as Command];
+  if (ce) ce.commands = [narrate("이리스가 손끝을 들었다.\n작은 빛이 둘레로 번져 나간다."), { kind: "setLighting", ambient: 0, transitionMs: 900 } as unknown as Command];
 
   // 들어서면 한 번 — 어둠 속 초록 불빛.
   addEv(project, FS2_T4, "ev_fs2_t4_arrive", "하늘탑 4층", { x: 0, y: 1 }, [
@@ -626,8 +626,8 @@ function floorFour(project: Project, exec: Exec): void {
       cutBegin(),
       se("cc0-se-osx-metal-03"),
       camTo("ev_fs2_t4_coffin", 1200, 2),
-      narrate("커다란 렌즈 앞에 석관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흐른다."),
-      say(ELENA, "은빛 알 안쪽이랑 같은 글자야.\n…저 안에 있어."),
+      narrate("커다란 렌즈 앞에 석관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흘러나온다."),
+      say(ELENA, "은빛 알 안쪽이랑 같은 글자야.\n…이리스는 저 안이야."),
       camBack(900, T4_ZOOM),
       setSw(SW_T4_ROOM),
       cutLabel(), cutEnd(), setSw(SW_T4_ROOM),
@@ -659,11 +659,11 @@ function floorFour(project: Project, exec: Exec): void {
     camTo("ev_fs2_t4_coffin", 1400, 2),
     say(KAEL, "이리스."),
     wait(900),
-    narrate("대답이 없다. 관 위 글자만 깜빡인다."),
+    narrate("관은 조용했다. 뚜껑 위로 초록 글자만 깜빡였다."),
     say(KAEL, "…열게."),
     se("cc0-se-osx-metal-03"), shake(1, 600),
     ...lidOpen,
-    narrate("무거운 뚜껑이 옆으로 밀려난다."),
+    narrate("카엘이 무거운 뚜껑을 힘껏 밀어젖혔다."),
     // 이리스는 관 속(오른쪽 칸)에서 일어나 관 밖으로 뛰어내린다 — 「원래 서 있던 사람」으로 읽혔다(적대 VQA 2026-10-30).
     m2("m2-040-set-event-location", { target: "ev_fs2_t4_iris", mapId: FS2_T4, x: T4.coffin.x + 1, y: T4.coffin.y }),
     fx("sparkle", T4.coffin.x + 1, T4.coffin.y, 1400),
@@ -685,7 +685,7 @@ function floorFour(project: Project, exec: Exec): void {
     say(IRIS, "…누구세요? 아니, 알아요.\n모르는데 알아요."),
     // 카엘이 관 곁으로 다가선다(이리스 바로 옆).
     route("@player", [{ kind: "move", dir: "right" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "right" }]),
-    narrate("이리스가 품에 안고 있던 일지를 펼친다."),
+    narrate("이리스가 품에 안고 있던 일지를 펼쳤다."),
     narrate("넘기는 쪽마다 글자가 하얗게 바래 간다."),
     say(IRIS, "일지에 당신 글씨가 있어요.\n그런데 읽으려니까 자꾸 지워져요."),
     say(ELENA, "탑이 이리스 기록을 걷어 가고 있어.\n…돌아가기 전에 싹 비우는 거야."),
@@ -694,7 +694,7 @@ function floorFour(project: Project, exec: Exec): void {
     // 둘을 한 화면에 — 천천히 당긴다.
     camTo("ev_fs2_t4_coffin", 2200, 3, 6),
     bgm(IRIS_BGM, 2500),
-    narrate("카엘이 바랜 쪽을 짚는다. 자기 글씨다."),
+    narrate("카엘이 바랜 쪽을 짚었다. 제 글씨였다."),
     say(KAEL, "「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」 …기억나?"),
     // 읽은 줄이 돌아오는 순간 — 렌즈와 수정 받침이 함께 맥박친다.
     // 빛이 약해 안 읽혔다(적대 VQA) — 렌즈·수정·이리스가 한 번에, 화면이 하얗게 한 번 숨 쉰다(초록 플래시는 화면이 통째로 초록이 됐다).
@@ -721,7 +721,7 @@ function floorFour(project: Project, exec: Exec): void {
     se("easyrpg-sound-recovery7"),
     { kind: "setLighting", ambient: 0, transitionMs: 1800 } as unknown as Command,
     camBack(1600, T4_ZOOM),
-    narrate("이리스의 손끝에 작은 빛이 맺힌다.\n그 빛이 층 전체로 번져 나간다."),
+    narrate("이리스의 손끝에 작은 빛이 맺혔다.\n빛은 금세 층 전체로 번져 나갔다."),
     fx("sparkle", T4.pageStar.x, T4.pageStar.y, 1600), fx("sparkle", T4.pageHand.x, T4.pageHand.y, 1600),
     camTo("ev_fs2_t4_page_star", 1200, T4_ZOOM),
     say(IRIS, "저기, 종이가 떨어져 있어요.\n…제 일지 쪽이에요."),
@@ -823,7 +823,7 @@ function floorFour(project: Project, exec: Exec): void {
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_hand", writer: "iris", date: "마차 사흘째", text: "엘레나가 손을 녹여 줬다. 손은 안 시린데, 좋았다.", learnActorId: IRIS_ID, learnSkillId: SKILL_RAPID },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_star", writer: "kael", date: "광장의 밤", text: "별 이름을 셋 알려 줬다. 이리스는 맨 끝 별이 제일 좋댔다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SNIPE },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_bread", writer: "kael", date: "이튿날", text: "오늘, 이리스가 빵을 먹었다. 따뜻했다고 했다.", learnActorId: IRIS_ID, learnSkillId: SKILL_SHOT },
-      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_first", writer: "kael", date: "별 떨어진 밤", text: "숲에 떨어진 아이가 깨어났다. 「잘 지내」라고 했더니 대답이 왔다." },
+      { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "품에 안고 있던 일지를"), action: "write", lineId: "fs2_first", writer: "kael", date: "별 떨어진 밤", text: "숲에 떨어진 아이가 깨어났다. 「잘 지내」라고 했더니 대답을 했다." },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "넘기는 쪽마다"), action: "erase", lineId: "fs2_hand" },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "넘기는 쪽마다"), action: "erase", lineId: "fs2_star" },
       { ...P("ev_fs2_t4_coffin", "ev_fs2_t4_coffin_p", "넘기는 쪽마다"), action: "erase", lineId: "fs2_bread" },
@@ -858,10 +858,10 @@ function towerCommon(project: Project, exec: Exec): void {
   const nodes = quest.nodes.map((n) => (JSON.stringify(n.completesWhen).includes(SW_STOP_B9_OLD) ? { ...n, completesWhen: { kind: "switch", switchId: SW_T1_ARRIVE, value: true } } : n));
   const more: [string, string][] = [
     ...(nodes.some((n) => JSON.stringify(n.completesWhen).includes(SW_T1_ARRIVE)) ? [] : [[SW_T1_ARRIVE, "하늘탑에 들어선다"] as [string, string]]),
-    [SW_T2_DONE, "2층에서 갈린 두 쪽이 서로 쇠창살을 열어 다시 만난다"],
+    [SW_T2_DONE, "2층에서 흩어진 일행이 서로 쇠창살을 열어 주고 다시 만난다"],
     [SW_T3_SOLVED, "3층 거울 두 개를 돌려 빛을 계단으로 보낸다"],
     [SW_IRIS_BACK, "4층 렌즈 대기실의 관에서 이리스를 찾는다"],
-    [FS2_SW_B12_DONE, "꼭대기 렌즈실에서 발렌을 막는다. 하넬이 서른 해 전 일을 말한다"],
+    [FS2_SW_B12_DONE, "꼭대기 렌즈실에서 발렌을 막는다. 하넬이 서른 해 전 일을 털어놓는다"],
     [FS2_SW_B13_WON, "탑 깊은 곳에서 올라온 재의 회수자를 쓰러뜨린다"],
     [FS2_SW_STOP_B13, "두 번째 렌즈에 손을 얹고 다시 대답한다"],
   ];
