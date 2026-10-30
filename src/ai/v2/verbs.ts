@@ -78,6 +78,8 @@ import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingSc
 export const V2_MAX_REPAIR_ROUNDS = 3;
 /** 칸 배치(spec.layout) 장소의 다시 짓기 상한 — 고침이 싸고 매번 검증되므로 자기 검토·고치기를 막지 않게 크게(2026-10-31 감독: 3바퀴가 목업 시험의 자기 검토 고침을 막았다). */
 export const LAYOUT_MAX_REBUILDS = 12;
+/** 칸 배치 없이 온 손 도트 실내를 돌려보내는 최대 횟수 — 그 뒤엔 옛 설계 길로 짓는다. */
+const LAYOUT_BOUNCES = 3;
 const repairCap = (spec?: PlaceSpec): number => (spec && hasLayout(spec) ? LAYOUT_MAX_REBUILDS : V2_MAX_REPAIR_ROUNDS);
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
@@ -108,7 +110,8 @@ export class V2Session {
   /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
   askBounced = false;
   /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
-  readonly designBounced = new Set<string>();
+  /** 칸 배치 없이 온 손 도트 실내를 돌려보낸 횟수(장소 이름별). */
+  readonly designBounced = new Map<string, number>();
   /** 장소 이름 → 칸 배치 거절 횟수(고치기 두 번까지). */
   readonly layoutRejects = new Map<string, number>();
   /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
@@ -778,12 +781,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 칸 배치(spec.layout)가 정본 경로다 — zones[].design 을 들고 와도 장소마다 한 번은 칸 배치로 돌려보낸다(2026-10-31 4회차: terra 가 design 으로 10×10 한 칸 서재를 지었다).
       // mapId 가 와도(엄격 스키마 모델은 지금 맵 id 를 채워 보낸다 — 4회차 terra 서재) 한 번은 돌려보낸다.
       if (spec.type === "interior" && !hasLayout(spec) && buildsHandInterior(run.ctx.project, spec)
-        && !session.designBounced.has(spec.name)) {
-        session.designBounced.add(spec.name);
+        && (session.designBounced.get(spec.name) ?? 0) < LAYOUT_BOUNCES) {
+        // 세 번까지 돌려보낸다 — 한 번만 돌려보내면 terra 가 같은 zones/design 을 다시 보내 옛 설계 길로 지어졌다(4회차 terra-high 12판 중 6판).
+        const bounces = (session.designBounced.get(spec.name) ?? 0) + 1;
+        session.designBounced.set(spec.name, bounces);
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         // 칩셋 목록 카드가 지시문에 없었으면(실내 낱말 없는 요청) 여기서 한 번 싣는다.
         const cardShown = INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
-        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell. Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
+        return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
           });
       }
       const builder = builderFor(spec);
