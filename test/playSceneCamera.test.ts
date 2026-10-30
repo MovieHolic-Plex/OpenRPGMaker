@@ -154,12 +154,12 @@ describe("playSceneCamera camera control", () => {
       target: { kind: "position", x: 2, y: 3 },
       offsetX: 4,
       offsetY: -2,
-      zoom: 1.5,
+      zoom: 2,
     };
 
     applyStoredCameraState(scene);
 
-    expect(scene.camera.zoom).toBe(1.5);
+    expect(scene.camera.zoom).toBe(2);
     expect(scene.camera.centerCalls.at(-1)).toEqual({ x: 44, y: 62 });
 
     const project = createBlankProject();
@@ -265,9 +265,10 @@ describe("타일 크기가 섞인 프로젝트의 카메라", () => {
     applyStoredCameraState(dungeon.scene);
     expect(dungeon.camera.zoom).toBe(1);
 
+    // 저작 1.5 는 도트 게임이라 정수 2 로 보인다(pixelSnappedCameraZoom) — 맵 보기 배율(32px 칸 ×1)은 그 위에 곱한다.
     dungeon.scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: 1.5 };
     applyStoredCameraState(dungeon.scene);
-    expect(dungeon.camera.zoom).toBe(1.5);
+    expect(dungeon.camera.zoom).toBe(2);
   });
 
   it("경계는 보이는 세계 크기 기준이다 — 작은 맵은 가운데, 여백은 배율로 나눈 값", () => {

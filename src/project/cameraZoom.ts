@@ -10,6 +10,7 @@
 // 봐야 «저장은 됐는데 플레이에서는 다른 배율» 이 안 생긴다. 런타임이 이 모듈을 import 한다.
 
 import type { SystemRecords } from "@/project/types";
+import { resolvePlayResolution } from "@/project/playResolution";
 
 /**
  * 카메라 배율 범위. 하한 0.25 는 멀리 보기, 상한 6 은 «고해상도 + 확대» 조합이다.
@@ -66,4 +67,41 @@ export function storeCameraZoom(system: SystemRecords, value: unknown): void {
   const normalized = normalizeCameraZoom(value, { keepDefault: keepsExplicitDefaultZoom(system) });
   if (normalized === undefined) delete system.cameraZoom;
   else system.cameraZoom = normalized;
+}
+
+/**
+ * 정수 배율 맞춤을 거는 최대 논리 해상도 높이. 이보다 높은 화면(1024×768 양쪽 전신, 1440×1080 + 4.5배
+ * 「고해상도 배경 1:1」 조합)은 소수 배율이 의도라 그대로 둔다.
+ */
+export const PIXEL_ZOOM_SNAP_MAX_HEIGHT = 540;
+
+/**
+ * 도트 게임의 **표시** 배율(2026-10-30). 1 이상인 소수 저작 배율(맵 cameraZoom·프로젝트 기본·카메라 명령)은
+ * 가장 가까운 정수(최소 1)로 맞춘다 — 480×270 에서 1.5배·1.25배면 세계 1px 이 캔버스 1px 과 2px 로 번갈아
+ * 그려져 도트 굵기가 들쭉날쭉해진다. 저장값은 바꾸지 않는다(옛 프로젝트 호환) — 보이는 배율만 맞춘다.
+ *
+ * 맞추지 않는 것: 1 미만(멀리 보기), 양쪽 전신 대화창(dual-fullbody-veil, 3.2배 기본),
+ * 논리 해상도 높이가 PIXEL_ZOOM_SNAP_MAX_HEIGHT 를 넘는 고해상도 화면. 맵 보기 배율(runtimeMapViewZoom)은
+ * 이 함수 밖에서 곱한다.
+ */
+export function pixelSnappedCameraZoom(
+  zoom: number,
+  system: Pick<SystemRecords, "dialogueStyle" | "playResolution"> | undefined,
+): number {
+  if (!Number.isFinite(zoom) || zoom < 1) return zoom;
+  if (Math.abs(zoom - Math.round(zoom)) < 1e-6) return Math.round(zoom);
+  if (system?.dialogueStyle === "dual-fullbody-veil") return zoom;
+  if (resolvePlayResolution(system).height > PIXEL_ZOOM_SNAP_MAX_HEIGHT) return zoom;
+  return Math.max(1, Math.round(zoom));
+}
+
+/** 저작 도구용 경고 — 표시 배율이 저작값과 달라지면 한국어 한 줄, 같으면 null. */
+export function pixelZoomWarning(
+  zoom: number,
+  system: Pick<SystemRecords, "dialogueStyle" | "playResolution"> | undefined,
+  label = "카메라 배율",
+): string | null {
+  const shown = pixelSnappedCameraZoom(zoom, system);
+  if (shown === zoom || Math.abs(shown - zoom) < 1e-6) return null;
+  return `${label} ${zoom} 은 정수가 아닙니다. 도트 게임은 1·2 같은 정수 배율을 써야 도트 굵기가 고르게 나옵니다 — 플레이에서는 ${shown}배로 보입니다.`;
 }

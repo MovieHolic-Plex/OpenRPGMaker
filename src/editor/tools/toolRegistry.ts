@@ -42,6 +42,7 @@ import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { MAP_DOOR_TOOLS } from "./mapDoorTools";
 import { BEODEUL_DOOR_TOOLS } from "./beodeulDoorTools";
 import { BEODEUL_HAMLET_TOOLS } from './beodeulHamletTools';
 import { BEODEUL_COURTYARD_TOOLS } from './beodeulCourtyardTools';
@@ -341,6 +342,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MAP_GEN_TOOLS, "map").map(retireEasyRpgGenerator),
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...MAP_DOOR_TOOLS,
   ...BEODEUL_DOOR_TOOLS,
   ...BEODEUL_GROUND_TOOLS,
   ...BEODEUL_LIGHT_TOOLS,

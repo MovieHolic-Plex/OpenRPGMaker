@@ -77,6 +77,20 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   충돌은 바꾸지 않는다 — 처마 밑 길·숲 가장자리처럼 일부러 뒤로 지나가는 칸이 막히기 때문. 계산은 주인공 칸이 바뀔 때만, 칸 불투명 비율은 텍스처·칸마다 한 번.
   QA 는 `scene.playerOcclusion`({body, head, weighted, ghost})과 이름 `player-occlusion-ghost` 스프라이트를 읽는다.
 
+## 도트 게임은 정수 배율로 보인다 (2026-10-30)
+
+- **규칙.** `cameraZoom.pixelSnappedCameraZoom` — 저작 배율(맵 `cameraZoom`·`system.cameraZoom`·카메라 명령 `zoom`)이 1 이상이고 정수가 아니면
+  가장 가까운 정수(최소 1)로 **보인다**. `applyCameraZoom` 이 클램프 뒤 이 값을 저작값으로 기억하고, 맵 보기 배율(`runtimeMapViewZoom`, 섞인 칸 크기)은
+  그 위에 곱한다 — 곱한 결과는 반올림하지 않는다. 저장값은 그대로다(스키마 변경 없음, 옛 프로젝트는 표시만 바뀐다).
+  왜: 480×270·16px 게임이 맵마다 2·1.5배, 오프닝 카메라 1.18·1.25배로 끝나 세계 1px 이 캔버스 1px·2px 로 번갈아 그려졌다.
+- **맞추지 않는 것.** 1 미만(멀리 보기), `dialogueStyle: "dual-fullbody-veil"`(3.2배 기본), 논리 해상도 높이 > `PIXEL_ZOOM_SNAP_MAX_HEIGHT`(540)
+  인 고해상도 화면(1440×1080 + 4.5배 「배경 1:1」 조합). Phaser 는 항상 `pixelArt: true` 라 「도트 게임」 판정은 이 예외 밖 전부다.
+  `smallMapFillZoom` 의 `integer` 판정은 맞춘 뒤의 base 를 보므로 보통 정수 맞춤이 된다.
+- **저작 도구.** `set_map_properties.zoom`·`set_project_settings.cameraZoom` 은 값을 그대로 저장하고, 표시 배율이 달라지면
+  `pixelZoomWarning` 한국어 경고(실제 보일 배율 포함)를 warnings·요약에 붙인다. `animate_opening_camera` 는 카메라 줌(기본값·zoom 키)에
+  정수 아닌 값이 있으면 `openingCameraZoomWarning` 으로 경고만 한다 — 애니메틱 렌더러는 바꾸지 않았다(1.04→1.14 같은 느린 줌이 사라지므로).
+  시험: `test/pixelCameraZoom.test.ts`.
+
 ## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
 
 - **작은 맵 맞춤 배율.** `playSceneCamera.smallMapFillZoom` = 맵 전체(북쪽 돌출 포함)가 화면에 다 들어가는 가장 큰 **정수 캔버스 배율**.
