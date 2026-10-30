@@ -3,7 +3,7 @@ import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS, pixelZoomWarning, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -344,6 +344,7 @@ const setProjectSettings: ToolDefinition = {
         additionalProperties: false,
       },
       startActorIds: { type: "array", items: { type: "string" } },
+      fieldGuides: { type: "string", enum: ["on", "off"], description: "off = 필드 자동 안내(목표 빛무리·화면 밖 목표 화살표, 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」 글자)를 끈다. 장면·대사가 갈 곳을 스스로 보여 주는 이야기 게임용 — 끄면 그만큼 장면에서 길이 보여야 한다. 저자가 단 page.glow·nearSparkle 은 남는다. on(기본) = 켜기" },
       saveAccess: { type: "string", enum: ["anywhere", "savePoints"], description: "savePoints = 메뉴 「저장」을 없애고 세이브 포인트에서만 저장(place_savepoint 로 마을·쉼터·던전에 둔다). anywhere(기본) = 메뉴에서 언제든" },
       dialogue: {
         type: "object",
@@ -430,6 +431,7 @@ const setProjectSettings: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const changed: string[] = [];
     const teamWarnings: string[] = [];
+    let zoomWarningArg = false;
     if (args.fonts !== undefined) {
       if (!args.fonts || typeof args.fonts !== "object" || Array.isArray(args.fonts)) {
         throw new ToolError("fonts는 역할별 글꼴 객체여야 합니다.", { code: "invalid-args" });
@@ -506,6 +508,10 @@ const setProjectSettings: ToolDefinition = {
       draft.system.chapter = next;
       changed.push(`장 표시=${Object.keys(next.labels).length}개`);
     }
+    if (args.fieldGuides === "off" || args.fieldGuides === "on") {
+      if (args.fieldGuides === "off") draft.system.fieldGuides = "off"; else delete draft.system.fieldGuides;
+      changed.push(args.fieldGuides === "off" ? "필드 안내 표시 끔" : "필드 안내 표시 켬");
+    }
     if (args.saveAccess === "savePoints" || args.saveAccess === "anywhere") {
       if (args.saveAccess === "savePoints") draft.system.saveAccess = "savePoints"; else delete draft.system.saveAccess;
       changed.push(args.saveAccess === "savePoints" ? "저장은 세이브 포인트에서만" : "어디서나 저장");
@@ -550,6 +556,7 @@ const setProjectSettings: ToolDefinition = {
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);
       changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
+      zoomWarningArg = true;
     }
     if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
       const resolution = args.playResolution as { width: number; height: number };
@@ -734,7 +741,11 @@ const setProjectSettings: ToolDefinition = {
       changed.push("초기 파티");
     }
     if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });
-    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed }, ...(teamWarnings.length > 0 ? { warnings: teamWarnings } : {}) };
+    // 해상도와 배율을 함께 바꿀 수 있으니 경고는 최종 system 으로 판정한다. 저장값은 그대로 둔다(옛 프로젝트 호환).
+    const zoomWarning = zoomWarningArg ? pixelZoomWarning(resolveCameraZoom(draft.system), draft.system, "프로젝트 카메라 배율") : null;
+    const settingWarnings = zoomWarning ? [zoomWarning, ...teamWarnings] : teamWarnings;
+    const summary = `프로젝트 설정 변경 — ${changed.join(", ")}${zoomWarning ? ` (경고: ${zoomWarning})` : ""}`;
+    return { summary, data: { changed }, ...(settingWarnings.length > 0 ? { warnings: settingWarnings } : {}) };
   },
 };
 

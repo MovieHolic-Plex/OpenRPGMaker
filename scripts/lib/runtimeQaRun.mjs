@@ -699,6 +699,17 @@ export async function applyOp(page, op, runState) {
       if (!(await testidMatches(page, op))) throw new Error(`repeatUntil: ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`);
       return;
     }
+    case "repeatUntilMap": {
+      // 하위 op 묶음을 그 맵에 들어설 때까지 되풀이한다 — 대사 줄 수·글자 흘림 속도에 기대지 않고 장면 전환까지 넘긴다.
+      const onMap = () => page.evaluate((mapId) => window.__oprnDebug?.readState?.()?.currentMapId === mapId, op.mapId);
+      const max = op.maxRounds ?? 20;
+      for (let round = 0; round < max; round += 1) {
+        if (await onMap()) return;
+        for (const inner of op.ops) await applyOp(page, inner, runState);
+      }
+      if (!(await onMap())) throw new Error(`repeatUntilMap: ${max}회 뒤에도 ${op.mapId} 에 들어서지 않았다`);
+      return;
+    }
     case "waitForStyleVar":
       // 인라인 CSS 사용자 속성(예: --battle-node-x) 값 대기 — 렌더된 위치를 좌표계 그대로 단정한다.
       await page.waitForFunction(

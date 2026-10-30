@@ -1,3 +1,15 @@
+## 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
+
+#3963 은 버들항처럼 큰 이식 타일셋을 워커(OffscreenCanvas)에서 굽고 GPU 에 띠씩 올렸다. 머지 뒤 폴른 스타 체크포인트에서
+**타일이 하나도 안 그려졌다**(act2-b5-dogs 숲 맵이 캐릭터만 검은 바탕에, 요새 감방도 같음). 띠 올리기(`addGLTexture`)로 등록한 텍스처는 비어 있었고,
+그보다 앞선 판(워커 비트맵을 `addImage`)은 엉뚱한 칸 그림이 들어갔다. 워커는 그림판을 **파일 주소로 다시 받아** 합성했는데,
+Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하지 않았다. 측정 때 검은 화면 길이만 재고 착지 화면을 눈으로 보지 않아 놓쳤다.
+
+- 지금: 굽기는 예전처럼 메인 스레드 `bakeTilesetTextureCanvas`, 등록만 `addCanvas` → `addImage`(캔버스 전체 `getImageData` 읽기 제거, 소프트웨어 GL 에서 0.3~0.9초 줄어듦).
+  원본은 캔버스 그대로라 `getPixel`·`drawImage` 읽기는 같다. `playSceneMapSkirt.ts` 는 칸 화소를 프레임 한 번 그려 읽는 `pixelAt` 을 쓴다.
+- 다시 시도하려면: 워커에는 **실린 텍스처에서 만든 비트맵**만 넘기고(파일 주소 금지), 착지 화면을 원본 경로와 픽셀 비교하는 검사를 먼저 둔다.
+  검은 화면 길이만으로 합격시키지 않는다.
+
 ## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
 
 - **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
@@ -27,6 +39,9 @@
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
+  그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
+  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -76,6 +91,20 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 - ①만 런타임에서 고친다: 몸 칸의 ★ 칸 불투명 비율 ≥ 0.35 이거나 몸·머리 칸 6:4 가중 ≥ 0.45 이면 주인공 그림을 반투명(0.5) 실루엣으로 ★ 그릇(250k) 바로 위에 한 번 더 그린다.
   충돌은 바꾸지 않는다 — 처마 밑 길·숲 가장자리처럼 일부러 뒤로 지나가는 칸이 막히기 때문. 계산은 주인공 칸이 바뀔 때만, 칸 불투명 비율은 텍스처·칸마다 한 번.
   QA 는 `scene.playerOcclusion`({body, head, weighted, ghost})과 이름 `player-occlusion-ghost` 스프라이트를 읽는다.
+
+## 도트 게임은 정수 배율로 보인다 (2026-10-30)
+
+- **규칙.** `cameraZoom.pixelSnappedCameraZoom` — 저작 배율(맵 `cameraZoom`·`system.cameraZoom`·카메라 명령 `zoom`)이 1 이상이고 정수가 아니면
+  가장 가까운 정수(최소 1)로 **보인다**. `applyCameraZoom` 이 클램프 뒤 이 값을 저작값으로 기억하고, 맵 보기 배율(`runtimeMapViewZoom`, 섞인 칸 크기)은
+  그 위에 곱한다 — 곱한 결과는 반올림하지 않는다. 저장값은 그대로다(스키마 변경 없음, 옛 프로젝트는 표시만 바뀐다).
+  왜: 480×270·16px 게임이 맵마다 2·1.5배, 오프닝 카메라 1.18·1.25배로 끝나 세계 1px 이 캔버스 1px·2px 로 번갈아 그려졌다.
+- **맞추지 않는 것.** 1 미만(멀리 보기), `dialogueStyle: "dual-fullbody-veil"`(3.2배 기본), 논리 해상도 높이 > `PIXEL_ZOOM_SNAP_MAX_HEIGHT`(540)
+  인 고해상도 화면(1440×1080 + 4.5배 「배경 1:1」 조합). Phaser 는 항상 `pixelArt: true` 라 「도트 게임」 판정은 이 예외 밖 전부다.
+  `smallMapFillZoom` 의 `integer` 판정은 맞춘 뒤의 base 를 보므로 보통 정수 맞춤이 된다.
+- **저작 도구.** `set_map_properties.zoom`·`set_project_settings.cameraZoom` 은 값을 그대로 저장하고, 표시 배율이 달라지면
+  `pixelZoomWarning` 한국어 경고(실제 보일 배율 포함)를 warnings·요약에 붙인다. `animate_opening_camera` 는 카메라 줌(기본값·zoom 키)에
+  정수 아닌 값이 있으면 `openingCameraZoomWarning` 으로 경고만 한다 — 애니메틱 렌더러는 바꾸지 않았다(1.04→1.14 같은 느린 줌이 사라지므로).
+  시험: `test/pixelCameraZoom.test.ts`.
 
 ## 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
 
@@ -147,6 +176,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - `runtimeEventViewById` 는 그 id 하나만 뷰로 만든다. 사각 질의(`findEventOverlappingRect`·`findBlocking*`)는
     앵커가 사각에 닿을 수 없는 이벤트를 뷰 없이 건너뛴다 — 몸 사각 상한(축 8)에서 파생한 범위라, 상한을 바꾸면
     `anchorMayOverlap` 이 따라 바뀐다.
+  - 매 프레임 병렬 이벤트(`activeRuntimeEvents("parallel")`)와 발견 조우(`updateDetectionEncounters`)는
+    활성 페이지가 그 질문과 맞을 수 있는 이벤트만 뷰로 만든다(`eventMayMatchTrigger`·`eventMayHaveDetectionEncounter`).
+    페이지가 있으면 그 페이지의 trigger·detectionEncounter 만 보고, 페이지가 없는 레거시 이벤트는 이벤트 trigger 를 본다.
+    지워졌거나 다른 맵으로 옮겨 간 이벤트는 예전과 같이 후보가 아니다.
   - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
@@ -168,6 +201,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - 시간 틴트는 색·알파·화면 크기가 같으면 Graphics 를 다시 비우고 칠하지 않는다(`timeTintPainted`).
     시계가 없거나 낮(알파 0)이라 이미 숨긴 틴트는 매 프레임 `clear` 하지 않는다. 위상 전환 중에는
     보간값이 바뀔 때만 다시 칠한다.
+  - 구역 안내 가림(`feedbackSuppressedByOverlay`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+    선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+    상점·전투·타이틀도 그대로 가린다. 줄의 글·hidden 은 값이 바뀔 때만 쓰고, 새 글·만료가 없는 프레임은
+    피드백 모델을 다시 만들지 않는다.
   - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
     맵 타일 표시는 아래 「화면 주변 타일 유지」로 바뀌었다(2026-10-01). Phaser Container 는 자식을 깊이로 정렬하지
@@ -186,6 +223,9 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
     - 디버그 패널 라이브 줄은 `readLive` 만 읽는다. 전체 `readState` 는 덤프를 펼쳤을 때만.
     - 전투 적 맞춤은 배율 1 이하면 레이아웃을 읽지 않는다(브라우저 실측 전투 진입 작업 51–110ms 의 주범).
     - 미니맵은 해안 렌더 패스로 그리고, 생성 세대 번호로 늦게 끝난 낡은 생성을 버린다.
+    - 미니맵 가림(`minimap.ts` `isSuppressed`)은 프레임마다 testid 마다 호스트와 문서를 훑지 않는다.
+      선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다. 떼어 낸 대사 호스트와 호스트 밖
+      상점·전투도 그대로 가린다. 점 좌표와 `display` 는 값이 바뀔 때만 쓴다.
     - 조사했지만 고치지 않은 것: 이벤트 층 전량 재생성(스프라이트 재사용은 이동 보간·패턴 override·그림자 계약이
       얽혀 별도 작업이었으며 아래 6차에서 해결), 대기 없는 라벨 루프(`gotoLabel` 선형 검색), 빈자리 없는 필드 스폰의 1초 재검사, 빈칸 조사의
       세션 복제(`farming.ts`). 각각 Node 에서 재현은 됐지만 사용자 맵에서 흔한 조건인지 확인되지 않았다.
@@ -496,6 +536,13 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   점유 기록(`session.occupiedLocationIds`, ID 만·optional)은 큐와 무관하게 즉시 갱신한다.
   새 스케줄러를 만들지 마라 — 이 트리거는 auto 와 같은 «사건 하나» 성질이다. 계약 전문은
   `openwiki/runtime-project-schema.md` 의 「구역 드나듦 트리거」 절.
+- **장소 이동의 검은 화면은 일한 시간만 남긴다 (2026-10-30):** `transferTo`(`src/player/playSceneMapCommands.ts`)는
+  새 맵 파일 받기를 페이드아웃과 **같이** 건다(`prefetchMapAssets`, 뒤의 `holdForMapAssets` 는 같은 받기를 기다릴 뿐).
+  화면 효과 층(z 27, 캔버스 위)이 이미 불투명하게 덮었거나 덮어 가는 중이면(`screenCoverRemainingMs`, 저작된
+  「화면 효과 fadeOut」 → 전투 패배 재시작·붙잡혀 끌려감) 카메라 페이드아웃 대신 그 덮개 트윈만 기다리고, 착지 뒤 카메라
+  페이드인은 기다리지 않고 걷는다(`fadeEffect.reset`) — 그 아래 카메라 페이드는 보이지 않는데 0.5초씩 검은 화면을 늘렸고,
+  도착 맵 자동 장면의 「fadeIn」도 그만큼 늦게 시작했다(폴른 2막 B6 패배 → 감방, 프레임 밝기 실측). 플래시는 덮개로 치지 않는다.
+  남은 검은 시간은 `loadMap`(첫 방문 타일셋의 이식 굽기 `ensureTilesetTexture` 가 1~2초)이다 — 줄이려면 굽기를 앞당겨야 한다.
 - **이벤트 명령 실동작 검토 (2026-09-05):** `docs/reviews/2026-09-05-event-runtime-audit.md`. 「철수의 기억」에서 강제 NPC 방향 전환이 `scene.running` 게이트에 막혀 30초 뒤에야 다음 명령으로 진행됐다. `updatePlayScene`은 NPC 업데이트를 호출하고 `updateAutonomousNPCs`가 대화 중 **명령 루트만** 허용한다. 배경 자율 이동과 병렬 이벤트는 기존 설정대로 정지한다. 직접 NPC updater만 호출하는 테스트로는 이 배선 결함을 잡지 못하므로 `test/runtimeMovementStability.test.ts`의 실제 프레임 디스패치 회귀를 유지한다. 저장된 M2 대화 설정의 강제 기본값 초기화도 수정했다(`test/persistedMessageSettings.test.ts`). `Wait Until`, `Pathfind Move`, 메뉴/로드 화면, 좌표 ID 조회, 저장된 M2 영화 명령의 후속 미구현·오연결도 수정했다. 실행 계약과 제한은 `openwiki/runtime-m2-flow-controls.md`의 2026-09-05 항목을 따른다. 카탈로그 배지나 최종 종료만으로 전체 명령을 검증했다고 보고하지 않는다.
 - **실내 화로 불 애니메이션:** `src/editor/tilesetImage.ts`의 `supportsChipsetTileAnimation(tileset,tile)`이 기존 마을 애니메이션과 실내 불 스트립 124/154/184/214만 허용한다. 플레이어 `playSceneMapRuntime.renderTile`과 편집기 `chipsetTileRender.createRawTileObject`가 공통 조건을 쓴다. `isDefaultTilesetTexture`를 넓히면 실내에 마을 길/나무 규칙까지 적용되므로 바꾸지 않는다. `stone_hearth_unlit`의 463은 정지, `stone_hearth_lit`의 아래 가운데 124는 4fps이다. `test/interiorFireRendering.test.ts`는 양 레이어의 실제 렌더 경로를 검사한다.
 - **Shipping pointer-exclusion contract (2026-08-28):** `.player-layout[data-play-input-owner="keyboard-only"]` is keyboard-only regardless of `navigator.webdriver`. The capture blocker rejects mouse, pointer, touch, wheel, context-menu, drag, selection, auxiliary, and native trusted-click channels; Phaser mouse/touch managers are disabled. The root prevents selection, dragging, canvas hit testing, browser scroll, and autoscroll. Exactly two pointer owners exist: `[data-play-input-owner="touch-controls"]`, mounted only by explicit `VITE_TOUCH_CONTROLS` / `OPENRPG_PLAYER_TOUCH_CONTROLS`, and `[data-play-input-owner="host-fullscreen"]`, mounted only when `hostFeatures` advertises fullscreen. Ownership never escapes those subtrees, and keyboard-only runtime content has no native `title` tooltips.
@@ -706,6 +753,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 - **벽면 ★ 예외(2026-10-22):** ★ 상층이라도 그 칸의 하층이 막혔고(×) 바로 아래 칸 하층이 밟는 칸이면(엘리베이터 문·벽에 박힌
   문틀의 맨 아래 줄) 고정 컨테이너가 아니라 root 에서 제 줄 + 0.5 로 캐릭터와 y 정렬한다(`playSceneMapRuntime.isWallFaceCell`).
   문턱에 선 사람의 머리가 문틀 밑에 짓눌려 보였다(첫사랑 사무실 승강기, #3231 리뷰). 같은 줄(문 안쪽 칸)은 타일이 이겨 문 안의 사람은 계속 가려진다.
+- **가구 위 ★ 예외(2026-10-30):** ★ 상층이라도 같은 칸 2~4층에 × 타일이 있으면(계산대 위 계산 단말 `10740`, 책상 위 스탠드처럼 막힌 가구에 얹은 탁상 기물)
+  같은 규칙으로 제 줄 + 0.5 에 y 정렬한다(`characterDepth.starRestsOnSolidFurniture`). 그 칸은 아무도 밟지 못해 「밑으로 지나가는」 ★ 의 뜻이 없고,
+  고정 상층이면 남쪽 칸에 선 사람의 머리(한 줄 위로 걸친다)를 덮어 계산대 앞 손님이 계산대 밑에 깔려 보였다(마왕 편의점). 주인공 실루엣(`playerOcclusionGhost`)과
+  `approach` 의 가려진 칸 판정도 이 칸을 덮개로 세지 않는다.
 - 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
 - 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
   재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
@@ -799,6 +850,8 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   (맵을 적기 전에 저장된 세이브)은 모든 맵에 적용한다. 맵을 다시 싣지 않고 명령이 들어오는
   경로가 있으므로 `updateMapBackground` 가 매 프레임 «해석 결과 ≠ 적용/로드 중 id» 를 보고
   그 자리에서 다시 건다 — 그 비교가 없으면 명령이 다음 맵 전환까지 아무 일도 안 한다.
+  해석(층 배열·서명)은 맵·배경 객체·오버라이드 기록이 같고 그 자리의 속도·반복·깊이·그림·맵 보기가
+  그대로일 때 재사용한다. 바뀌면 다음 프레임에 다시 만든다.
   형제 명령 둘은 **여전히 소비자가 없다** — 「타일셋 변경」(`map.tileset_override`)과
   「인카운터율 설정」(`map.encounter_rate`)은 같은 모양(`{mapId,x,y,value}`)으로 세션에만 적힌다.
   같은 방식으로 붙이려면 «어느 맵에 적용되는가» 를 먼저 정하라(배경은 명령 시점의 현재 맵으로 정했다).
@@ -972,6 +1025,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
   그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
   (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
+- **세로 한 장 층은 카메라 세로 이동을 따라간다 — `pinY` (2026-10-30)** (`playSceneMapBackground` extra 층 `loopY:false` → `pinY:true`): 화면 고정이던 지평선 띠가 대사 카메라 들림(`syncDialogueCameraLift`)·위아래 걷기에서 맵과 따로 놀아 옥상 난간 위 하늘 한가운데에 거리 띠가 떠 보였다(첫사랑 옥상). 이제 세로는 맵과 1:1 로 붙는다(가로 시차는 그대로). 층 `offsetY`(논리 px, + = 아래, ±2000, `normalizeMapBackgroundOffset`)로 지평선을 난간 높이에 앉힌다.
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
@@ -1126,6 +1180,18 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
 `DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
 `data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+### 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+
+- **이름표만 있는 빈 창.** 흉상은 그림(또는 에메랄드 도트 변환본)이 풀릴 때까지 `visibility:hidden` 이었다(`renderFace` → `applyPixelBust` onReady).
+  새 표정·새 인물 줄마다 그림을 처음 받는 동안 창은 이름표만 보였고(부하 없는 탐침에서도 줄마다 120~330ms, 부하 녹화에서는 약 1초), 본문 흘림도 같이 늦게 보였다.
+  이제 `showText` 가 창을 만들기 **전에** 그 줄의 초상(화자 `request.face`·표정 변형 `faceForDialogueEmotion`·`listenerFace`) 중 아직 안 받은 것을 기다린다
+  (`unsettledLinePortraits` → `waitForLinePortraits`, 흉상은 `bustPixelate.preloadPixelBust`(받기+`decode()`+변환), 48px 얼굴은 `imageWarmQueue.warmImageUrl`, 상한 1.5초·중단 신호 존중).
+  기다리는 동안 앞 줄의 창은 퇴장하지 않고 그대로 선다(`holdPendingExit` — 세션·듣는 사람 무대가 끊기지 않는다). 목소리도 창과 함께 시작한다.
+  이미 풀린 흉상은 `applyPixelBust` 가 마이크로태스크에서 붙여 첫 페인트부터 보인다. 단위 테스트(`import.meta.env.VITEST`)·그림을 못 받는 환경은 옛 동기 경로 그대로다.
+- **선택지가 듣는 사람 흉상을 덮음.** 오른쪽 흉상이 선 틀이면 선택지 칸이 왼쪽으로 비켰는데, 왼쪽에 듣는 사람 흉상이 있으면 그 사람을 덮었다.
+  틀에 양쪽 초상이 다 있으면(`.choices-frame.has-portrait-listener`) 선택지 칸은 가운데에 서고 폭은 양옆 흉상 자리(`--runtime-dialogue-bust-width` + 26px)만큼 비운다(`dialogue.css` 「고정 틀 선택지」).
+- 탐침(커밋 안 함): 구운 데모 + `qaCheckpoint` 로 옥좌 앞 대사·선택지를 돌리며 rAF 마다 이름표·얼굴 보임·본문 글자 수와 선택지/흉상 사각형을 적는다.
 
 ## 엔딩 카드 글자는 게임 언어 (2026-10-22)
 

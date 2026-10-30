@@ -619,6 +619,13 @@ export function createBattleSequencer(
       }, BATTLE_LOG_MS);
       return;
     }
+    // 같은 상태가 여러 대상에게 잇달아 붙거나 풀리면(차례 끝 만료·전투 끝 정리 등) 한 줄로 — 승리 뒤 「…의 공격 상승이 풀렸다.」가 넷 따로 2초 넘게 이어졌다.
+    const stateRun = collectStateRun(entries, entryOffset, snapshot);
+    if (stateRun && stateRun.rows.length >= 2) {
+      playGroupStates(stateRun.rows, snapshot, () =>
+        playTimelineEntries(entries, snapshot, done, firstDirector, stateRun.end, firstDirectorIndex));
+      return;
+    }
     if (entry.kind === "stateAdded" && entry.targetId) {
       // 상태 이름이 대상 위에 숫자 팝업처럼 잠깐 떠오른다(표시 전용 label 피드백).
       hooks.onDirectorState(directorBase);
@@ -652,6 +659,14 @@ export function createBattleSequencer(
     }
     // 광역기: 같은 행동이 둘 이상의 대상을 친 피해·회복·빗나감 엔트리는 한 번에 재생한다 — 연출 한 번, 숫자·깜빡임·HP 감소는
     // 같은 순간(대상마다 30ms), 격파 대사는 그 뒤 한 줄. 예전엔 대상마다 접근·히트스톱·격파 대사를 따로 돌아 「차례로」 맞았다.
+    // 광역 보조기(파티 전체 버프 등): 대상마다 「…을 사용했다!」 + 시전 동작 + 상태 문장을 따로 돌았다(2026-10-30 이세계 고딩: 넷 버프 4.2초).
+    // 선언 한 줄·시전 한 번, 상태는 같은 상태끼리 한 줄(「강민재, 에델, 피오의 공격이 올랐다!」)로 함께 건다.
+    const supportGroup = support ? collectSupportGroup(entries, entryOffset) : undefined;
+    if (supportGroup) {
+      playSupportGroup(supportGroup, snapshot, directorBase, () =>
+        playTimelineEntries(entries, snapshot, done, firstDirector, supportGroup.end, firstDirectorIndex));
+      return;
+    }
     const targetGroup = collectTargetGroup(entries, entryOffset);
     if (targetGroup) {
       playTargetGroup(targetGroup, entries, snapshot, directorBase, () =>
@@ -745,6 +760,88 @@ export function createBattleSequencer(
     if (new Set(members.map((row) => row.targetId)).size < 2) return undefined;
     // 마지막 타격 뒤에 붙은 상태만 묶는다 — 그 뒤 엔트리(다음 행동 등)는 원래 순서대로 간다.
     return { members, indexes, states, end };
+  }
+
+  /**
+   * entries[offset] 의 피해 0 보조 기술(action)이 **서로 다른 대상 둘 이상**에게 같은 행동으로 쓰였으면 그 묶음.
+   * 런타임은 대상마다 [action, 상태 부여…] 를 이어 적는다. 같은 행동 번호·사용자·기술의 action 과 그 사이 상태 부여·해제만 묶고,
+   * 다른 엔트리(특수 결과·피해·반격 등)가 끼면 거기서 끊는다 — 그 뒤는 원래 순서대로 간다.
+   */
+  function collectSupportGroup(entries: readonly BattleTimelineEntrySnapshot[], offset: number): TargetGroup | undefined {
+    const head = entries[offset];
+    if (!head || head.kind !== "action" || head.actionId === undefined || !head.targetId || head.aside !== undefined) return undefined;
+    if (emeraldNarrationActive()) return undefined;
+    const sameUse = (row: BattleTimelineEntrySnapshot): boolean => row.kind === "action" && row.side === head.side
+      && row.userRecordId === head.userRecordId && row.commandKind === head.commandKind
+      && (row.skillId ?? row.skillName) === (head.skillId ?? head.skillName) && row.hit !== false && (row.amount ?? 0) === 0;
+    const members: BattleTimelineEntrySnapshot[] = [];
+    const indexes: number[] = [];
+    const states: BattleTimelineEntrySnapshot[] = [];
+    let end = offset;
+    for (let i = offset; i < entries.length; i += 1) {
+      const row = entries[i]!;
+      if (row.actionId !== head.actionId) break;
+      if (row.targetId && row.aside === undefined && sameUse(row)) {
+        members.push(row);
+        indexes.push(i);
+        end = i + 1;
+        continue;
+      }
+      if ((row.kind === "stateAdded" || row.kind === "stateRemoved") && row.targetId) {
+        states.push(row);
+        end = i + 1;
+        continue;
+      }
+      break;
+    }
+    if (new Set(members.map((row) => row.targetId)).size < 2) return undefined;
+    return { members, indexes, states, end };
+  }
+
+  /** 광역 보조기 재생: 선언 한 줄·시전 연출 한 번, 상태 변화는 같은 상태끼리 한 줄, 아무것도 안 붙은 대상은 끝에 한 줄. */
+  function playSupportGroup(group: TargetGroup, snapshot: BattleSnapshot, directorBase: BattleDirectorState, next: () => void): void {
+    const head = group.members[0]!;
+    const declaration = { ...directorBase, lines: directorBase.lines.slice(0, 1) };
+    const { beats, animationOffsetMs } = planEntryBeats(head, undefined, undefined);
+    if (head.animation && animationOffsetMs > 0) {
+      hooks.onEntryAnimation?.(undefined);
+      delay(() => hooks.onEntryAnimation?.(head.animation), animationOffsetMs);
+    } else {
+      hooks.onEntryAnimation?.(head.animation);
+    }
+    // 상태가 하나도 바뀌지 않은 대상: 이미 걸려 있으면 「…은 이미 … 상태다」, 아니면 「…에게는 효과가 없었다」 — 대상끼리 한 줄로.
+    const changed = new Set(group.states.map((row) => row.targetId));
+    const unchanged = group.members.filter((row) => !changed.has(row.targetId));
+    const failLine = (): string | undefined => {
+      if (unchanged.length === 0) return undefined;
+      const skill = store.getCurrent().database.skills.find((record) => head.skillId ? record.id === head.skillId : record.name === head.skillName);
+      const adds = (skill?.stateEffects ?? []).filter((effect) => effect.operation !== "remove").map((effect) => effect.stateId);
+      if (adds.length === 0) return undefined;
+      const named = unchanged.map((row) => {
+        const peers = snapshot.enemies.some((enemy) => enemy.id === row.targetId) ? snapshot.enemies : snapshot.actors;
+        const target = peers.find((battler) => battler.id === row.targetId);
+        return { name: target ? disambiguatedBattlerName(target, peers) : "대상", already: Boolean(target && adds.every((stateId) => target.stateIds.includes(stateId))) };
+      });
+      const already = named.filter((row) => row.already).map((row) => row.name);
+      const none = named.filter((row) => !row.already).map((row) => row.name);
+      return [
+        already.length ? `${withJosa(already.join(", "), "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` : "",
+        none.length ? `${none.join(", ")}에게는 효과가 없었다.` : "",
+      ].filter(Boolean).join(" ");
+    };
+    playBeats(beats, declaration, () => {
+      hooks.onActionMotion?.(undefined);
+      playGroupStates(group.states, snapshot, () => {
+        const line = failLine();
+        if (!line) {
+          next();
+          return;
+        }
+        hooks.onDirectorState({ step: "acting", lines: [line], targetId: head.targetId });
+        hooks.onSyncView();
+        delay(next, BATTLE_STATE_LINE_MS);
+      });
+    });
   }
 
   /** 묶음을 착탄 차례(대상마다 n 번째 타)로 나눈다. 1타 광역기는 한 차례다. */
@@ -886,6 +983,30 @@ export function createBattleSequencer(
       else stampAndContinue();
     };
     playWave(0);
+  }
+
+  /** entries[offset] 부터 같은 종류·같은 상태·같은 행동 번호의 상태 부여/해제가 서로 다른 대상에게 잇달아 있으면 그 줄들(쓰러져 남은 대상의 해제는 말없이 건너뛴다). */
+  function collectStateRun(
+    entries: readonly BattleTimelineEntrySnapshot[],
+    offset: number,
+    snapshot: BattleSnapshot,
+  ): { readonly rows: readonly BattleTimelineEntrySnapshot[]; readonly end: number } | undefined {
+    const head = entries[offset];
+    if (!head || (head.kind !== "stateAdded" && head.kind !== "stateRemoved") || !head.targetId || head.aside !== undefined) return undefined;
+    if (emeraldNarrationActive()) return undefined;
+    const rows: BattleTimelineEntrySnapshot[] = [];
+    const seen = new Set<string>();
+    let end = offset;
+    for (let i = offset; i < entries.length; i += 1) {
+      const row = entries[i]!;
+      if (row.kind !== head.kind || row.stateId !== head.stateId || row.actionId !== head.actionId || !row.targetId || row.aside !== undefined) break;
+      if (seen.has(row.targetId)) break;
+      end = i + 1;
+      if (row.kind === "stateRemoved" && staysDown(entries, i, snapshot, row.targetId)) continue;
+      seen.add(row.targetId);
+      rows.push(row);
+    }
+    return { rows, end };
   }
 
   /** 이 대상이 지금 스냅숏에서 쓰러져 있고, 뒤 엔트리가 다시 건드리지 않는가(부활·회복 없음). */

@@ -73,6 +73,8 @@ export function canNpcMove(
   const self = moverPassSize(request);
   // RM2K3 same-as-characters: player and solid events occupy tiles and block non-through movers.
   if (isCharacterBlockedRect(request, self, request.to.x, request.to.y)) return false;
+  // 유령 추격자(chaseBrain ghost): 지형은 통과하고 캐릭터 몸만 막힌다.
+  if (request.mover.phaseWalls) return inBounds(request.scene.map, request.to.x, request.to.y);
   // 지나가는 차·버스 몸 칸에는 들어서지 않는다(주인공과 같은 규칙) — 횡단보도 행인이 차를 뚫지 않게.
   if (transitBlocksCell(request.scene as Parameters<typeof transitBlocksCell>[0], request.to.x, request.to.y)) return false;
   if (movement.x !== 0 && movement.y !== 0) {

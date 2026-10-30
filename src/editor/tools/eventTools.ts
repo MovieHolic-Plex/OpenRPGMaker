@@ -22,6 +22,7 @@ import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
+import { doorLine, recordDoorForGate } from "./mapDoorTools";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -2851,7 +2852,7 @@ const createTransferPair: ToolDefinition = {
     "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다."
-    + " 문이 있으면(doorAt, 또는 x,y 가 문·계단 그림 칸) 트리거는 **문 그림 칸 그 칸**에 선다 — 통행 칸이면 밟기, 막힌 칸이면 부딪힘(priority same). 반대쪽 착지는 문 바로 앞 칸, 도착 방향은 문을 등진 쪽(모든 transfer 에 direction 이 붙는다)."
+    + " 문이 있으면(doorAt, 또는 x,y 가 문·계단 그림 칸) 트리거는 **문 그림 칸 그 칸**에 선다 — 통행 칸이면 밟기, 막힌 칸이면 부딪힘(priority same). 문 앞 칸에 서기만 해서는 옮기지 않는다: 문 앞 칸에서 문 쪽으로 걸어 들어가면(또는 문을 보고 확인) 문이 열리고 주인공이 문간으로 한 걸음 들어간 뒤 옮긴다. 반대쪽 착지는 문 바로 앞 칸, 도착 방향은 문을 등진 쪽(모든 transfer 에 direction 이 붙는다) — 서 있어도 다시 들어가지 않는다."
     + " 옛 동작(문앞 칸 트리거)은 trigger:\"front\" — 문 그림이 트리거 칸이 될 수 없는 특수한 경우에만.",
   mode: "write",
   parameters: {
@@ -2977,6 +2978,12 @@ const createTransferPair: ToolDefinition = {
     }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA, kitDoorOpenCommands(draft, mapA, gateA)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB, kitDoorOpenCommands(draft, mapB, gateB)));
+    // 문 종류(자동문·미닫이·셔터·두 짝 문)를 그림에서 추론해 적고, 넓은 문이면 발판을 문 폭만큼 넓힌다(mapDoorTools) — 외짝 여닫이·키트 문은 그대로.
+    const doorNotes: string[] = [];
+    for (const [map, at] of (a.mapId === b.mapId ? [[mapA, gateA], [mapA, gateB]] : [[mapA, gateA], [mapB, gateB]]) as [GameMap, Point][]) {
+      const recorded = recordDoorForGate(draft, map, at);
+      if (recorded.door) doorNotes.push(`${map.name} 문 종류 ${doorLine(recorded.door)}${recorded.widened.length ? ` · 발판 ${recorded.widened.length}칸 더` : ""}`);
+    }
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
@@ -3002,7 +3009,7 @@ const createTransferPair: ToolDefinition = {
         : []),
     ];
     return {
-      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
+      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})${doorNotes.length ? ` · ${doorNotes.join(" · ")}(틀리면 set_map_door)` : ""}`,
       data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB, ...(bumpA || bumpB ? { bumpDoor: { a: bumpA, b: bumpB } } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

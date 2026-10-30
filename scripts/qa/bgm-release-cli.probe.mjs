@@ -68,7 +68,7 @@ try {
   assert.equal(await readFile(join(local(manual), 'unrelated.txt'), 'utf8'), 'preserve this');
   assert.deepEqual(await digestInstalled(manual), installed);
   await writeFile(join(evidence, 'published-cli.json'), JSON.stringify({ verifiedTracks: installed.length, archive: manifest.archive, records, preservedAfterCorruption: true, repaired: true, offlineRerun: true }, null, 2));
-  console.log('PUBLISHED_CLI_PASS: authenticated download, manual install, 281 hashes, offline rerun, corruption preservation and repair');
+  console.log('PUBLISHED_CLI_PASS: public download, manual install, 281 hashes, offline rerun, corruption preservation and repair');
 } finally {
   await rm(temp, { recursive: true, force: true });
   await writeFile(join(evidence, 'published-cli-cleanup.json'), JSON.stringify({ removed: temp, processesClosed: true }));

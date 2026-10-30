@@ -228,6 +228,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   - 확인은 실제 런타임 걸음으로: `WALKPATH='{…,"face":"up","action":true,"closeDialogue":true,"afterLegs":[["up",7]]}' node scripts/runtime-qa.mjs --scenario walkpath …` — `closeDialogue` 는 대화를 넘긴 뒤 바뀐 목표 줄·화살표 화면을 한 장 더, `afterLegs` 는 그 뒤 걸음(다음 맵 출구까지 따라가 보기). 전/후 그림: `suite/ledger/evidence/vm6-wayfind/`.
 - **출입 칸 목적지 이름**(`playSceneFieldStaging.syncExitLabels`, vm3 deepseek 탈출 «어느 빛이 어느 방으로 가는지 표시 없음»): 지금 페이지 맨 윗줄에
   다른 맵으로 가는 transfer 가 있는 이벤트 위에, 주인공이 3칸 안에 오면 「→ 목적지 맵 이름」 도트 글자(갈무리 12px, 정수 좌표)를 띄운다. 올라선 칸에서는 숨긴다.
+  자리 규칙은 `player/exitLabelPlacement.placeExitLabel` 하나다: 주인공이 오는 쪽의 반대편 → 몸에 겹치면 옆 → 그래도 겹치면 옅게. 맵에 적힌 문(`map.doors`)의 그림 사각형(문 칸 위 그림 칸까지)을 덮으면 문 아래·오른쪽·왼쪽·위 차례로 옮긴다(편의점 문 윗줄을 「→ 해피 마트 사쿠라자카점」이 덮었다, 2026-10-30). 문 정의 없는 옛 맵은 예전 자리 그대로.
   반짝이는 장식 타일(모닥불 등)과 조사 대상의 구분은 ▼ 표식으로 한다 — 장식 타일에는 ▼ 가 없다(terra jrpg 모닥불 (25,30) 확인).
 - **바닥 한가운데 이동 칸 → 벽에 난 문**(`exitDress.doorFloorTransfers`, 끝맺음 `clearLanes` 에서 `dressInteriorExits` 다음, vm3 deepseek 탈출 «희미한 빛 위를 걷는 방 이동»):
   실내 방 짓기 칩셋 맵에서 다른 맵으로 가는 투명 접촉 이동 칸이 문 그림·남쪽 틈 위가 아니면 — ① 층 이동(이름에 지하·층·다락…)이고 쓰이지 않은 계단 그림이 8칸 안에 있으면

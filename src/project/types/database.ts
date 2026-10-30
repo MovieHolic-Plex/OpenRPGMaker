@@ -2106,6 +2106,11 @@ export interface SystemRecords {
    * removalCondition 이 「전투 종료」인 상태만 풀린다).
    */
   clearStatesAfterBattle?: boolean;
+  /**
+   * "off" 면 필드 자동 안내 표시를 그리지 않는다 — 목표 대상 빛무리·화면 밖 목표 화살표, 이야기 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」 글자.
+   * 저자가 페이지에 단 늘 빛나는 표지(page.glow)·가까이 반짝임(nearSparkle)은 그대로다. 생략 = 켜기(기존).
+   */
+  fieldGuides?: "off";
   /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
   saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;

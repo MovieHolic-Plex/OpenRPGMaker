@@ -103,6 +103,19 @@ const isChaseCue=(c:Cmd|undefined,switchId:string)=>{
  * - 늘 있는 추격자(조건 없음) 또는 켜는 명령을 못 찾은 추격자: 그 맵이 곧 추격 무대이므로 맵 배경음을 추격 곡으로(맵을 나가면 다음 맵 곡으로 돌아온다).
  * 이미 걸려 있으면 곡만 바꾼다. 2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투(battle-default)에 걸렸다.
  */
+/**
+ * mapIds 가 틀렸을 때 고칠 수 있게 실제 맵 id·이름을 돌려준다. 2026-10-30 실조수: 타일셋 id(beodeul_city)를 mapIds 에 넣고
+ * 「실제 mapIds가 필요합니다」만 받았다. 시작 맵을 앞에 두고 표시한다 — 맵을 말하지 않은 음악 요청은 시작 맵에 건다.
+ */
+export function mapIdsError(p:Project,given:readonly unknown[]):string{
+  const bad=given.filter(m=>typeof m!=='string'||!p.maps[m]).map(m=>String(m));
+  const tilesets=bad.filter(m=>Object.hasOwn(p.tilesets??{},m));
+  const ids=Object.keys(p.maps);const start=p.startMapId&&p.maps[p.startMapId]?p.startMapId:undefined;
+  const ordered=start?[start,...ids.filter(id=>id!==start)]:ids;
+  const list=ordered.slice(0,24).map(id=>`${id}(${p.maps[id]!.name||id}${id===start?', 시작 맵':''})`).join(', ')+(ordered.length>24?` 외 ${ordered.length-24}개`:'');
+  const head=!given.length?'mapIds 가 비었다.':`없는 mapIds: ${bad.join(', ')}.`;
+  return `${head}${tilesets.length?` ${tilesets.join(', ')} 는 타일셋 id 다 — 맵 id 를 넣어라.`:''} 실제 맵: ${list||'없음'}. 사용자가 맵을 말하지 않았으면 시작 맵(지금 보는 맵)에 건다.`;
+}
 function setChaseMusic(p:Project,id:string,mapIds:readonly string[]){
   const scope=mapIds.length?mapIds:Object.keys(p.maps);
   const chasers:{mapId:string;eventId:string;switches:string[]}[]=[];
@@ -185,20 +198,20 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds, 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
+  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 목록의 mapId 값. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
     const role=String(args.role),id=text(args.resourceId);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
     const kind=['cursor','confirm','cancel','defeat'].includes(role)?'sound':'music';
     playable(p,id,kind);
     let maps:string[]=[];
     const mapList=Array.isArray(args.mapIds)?(args.mapIds as unknown[]):[];
     if(role==='chase'){
-      if(mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError('없는 mapIds: '+mapList.filter(m=>typeof m!=='string'||!p.maps[m]).join(', '),{code:'map-not-found'});
+      if(mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
       if(args.troopIds!==undefined||Array.isArray(args.endingIds)&&args.endingIds.length)throw new ToolError('chase 역할은 mapIds 만 받습니다.',{code:'invalid-args'});
       const done=setChaseMusic(p,id,[...new Set(mapList as string[])]);
       const viaSwitch=done.chasers.filter(c=>c.via==='switch').length;
       return {summary:`추격자 ${done.chasers.length}명에 추격 곡을 걸었습니다${viaSwitch?` — 추격 스위치를 켜는 곳 ${done.cues.filter(c=>c.at==='start').length}곳에서 곡을 바꾸고 끄는 곳 ${done.cues.filter(c=>c.at==='end').length}곳에서 되돌림, 켜진 동안 맵에 다시 들어오거나 다시 시작해도 추격 곡`:''}${done.mapBgm.length?` — 늘 있는 추격자의 맵 ${done.mapBgm.length}개는 맵 배경음을 추격 곡으로(맵을 나가면 돌아옴)`:''}.`,data:{role,resourceId:id,kind,...done,verificationScope:'authored-binding'}};
     }
-    if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError('실제 mapIds가 필요합니다.',{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
+    if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
     else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps·chase 역할에서만 사용합니다.',{code:'invalid-args'});
     if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
     const endingIds=Array.isArray(args.endingIds)?(args.endingIds as unknown[]).filter((e):e is string=>typeof e==='string'):[];

@@ -105,6 +105,12 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   (`scripts/lib/workerStore.ts` → `setWorkerStoreAccess`, `src/assetStore/storeAccess.ts`). 공개 목록·매니페스트·파일만 읽는다.
 - **`store_find_music`** (`src/editor/tools/storeTools.ts`): `scene`(town·field·dungeon·battle·boss·victory·sad·tense·chase·title·ending) + `query`(장르) + `mood` 로
   음악 팩 매니페스트를 받아 곡 단위로 순위를 매긴다(`src/assetStore/storeMusicPick.ts` `rankStoreMusic` — 장면이 먼저, 실제로 들리는 장르 `genreKo` 가 팩 줄보다 무겁고, 승리는 징글·그 밖은 루프).
+  공포 낱말(공포·호러·무서운·괴담·오싹·귀신·scary …)이 있으면 장면이 무엇이든 공포 계열 줄(`HORROR_FAMILY_LINES` horror·chase-horror·school-horror·dark-fairytale·eerie-minimal)이 +4, 그 밖의 줄은 사용자가 그 줄을 따로 말하지 않았으면(「공포 피아노」의 피아노) −8. 「게임」「배경음악」 같은 아무 곡에나 붙는 말은 점수 낱말이 아니다(`GENERIC_WORDS` — 「공포 게임」의 「게임」이 캐주얼 레이스 로비 곡의 결 「레트로 게임 감성」에 맞아 1위였다). 단위 `test/storeMusicFeel.test.ts` 「horror-word music requests」.
+  **팩 목록은 전부 본다**(2026-10-30, 실조수 e2e 14/16 → 수정): `listAllStoreMusicPacks` 가 `catalog{kind:music}` 첫 쪽의 `total`·`pageSize` 로 나머지 쪽을 두 쪽씩 받는다(상한 8쪽·120팩). 예전 16팩 자르기 때문에 18팩 중 호러·판타지 팩이 안 보였다.
+  목록은 스토어 주소마다 5분, 매니페스트는 `slug@판본`마다 세션 내내 캐시한다(곡 파일은 받지 않는다). 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾는다.
+  **1위 추천**: 후보에 `rank`·`why`(장면·게임 결 줄·맞은 낱말)를 붙이고 1위만 `recommended:true`. 게임 이름에서 줄을 읽었으면(`feelFrom.line`, 예: 파판 → symphonic-jrpg) 그 줄이 아닌 곡은 `fallback:true`. summary 는 1위 slug·assetId 를 적고 「사용자가 다른 곡을 말하지 않았으면 바꾸지 않는다」고 시킨다(「파판 전투곡」에 3위를 넣었다).
+  **미술관 = town**: 조수가 `scene:'dungeon'` 을 줘도 요청 말에 미술관·갤러리·박물관·저택이 있고 던전 낱말이 없으면 town 으로 읽는다(`townPlaceOverDungeon`).
+  **연결 자리**: 음악 카드(`MUSIC_TIER`)와 `set_game_audio` 설명이 「mapIds 에는 맵 목록의 mapId 값, 맵을 말하지 않았으면 시작 맵·지금 보는 맵, 곡과 이름이 비슷한 맵을 고르지 않는다」고 시킨다(「이브 같은 미술관 BGM」을 동굴 맵에 걸었다). 카드에 「타일셋 id」를 적지 않는다 — 부정문이 오히려 그 값을 떠올리게 한다. 조수 v2 맵 목록(`src/ai/v2/prompt.ts` `projectBrief`)은 `- mapId=map_x 「이름」 (칩셋 beodeul_city, 20×15) ← 시작 맵·지금 보는 맵` 꼴이다(2026-10-30 실조수: 칩셋 id 가 이름표 없이 맵 id 옆에 있어 7번 중 5번 mapIds 에 칩셋 id 를 넣었다; 단위 `test/v2ProjectBriefMapIds.test.ts`). 틀린 mapIds 는 `mapIdsError` 가 실제 맵 id(이름, 시작 맵 표시)와 「타일셋 id 다」를 돌려준다. 단위 `test/storeMusicPaging.test.ts`.
 - **기본은 바로 넣기 + 바꾸기 쪽지.** 사용자가 음악을 청하면 조수가 묻지 않고 가장 맞는 곡을 `store_install` 로 넣고 `set_game_audio` 로 잇는다(결과 `autoInstall:true`).
   턴 뒤 패널이 짧은 쪽지(`ai-store-music-note`: 「넣었어요: 곡 · 장면·분위기 (바꾸기)」)를 띄운다 — 「바꾸기」(`ai-store-music-swap`)는 같은 검색의 다른 후보를 미리 듣기와 「이걸로」(`ai-store-music-take`)로 펼치고,
   누르면 그 곡만 받아 「앞 곡이 연결된 자리를 이 곡으로 바꿔라」 후속 요청을 보낸다. 쪽지는 답을 기다리는 질문이 아니다(`isAutoMusicChoice`, `isStoreCardRequest` 는 false).
@@ -286,7 +292,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 첫 화면 목록(`scenePreload.ts` `firstPlayableUrls`): 타이틀·오프닝·system 글자·메뉴 효과음 + 엔진 부팅 텍스처(가짜 로더로 `loadBundledAssets` 를 그대로 받아 적음)
   + 시작 맵(타일셋·화자 얼굴·BGM) + 시작 파티. 소리는 받은 바이트를 blob 으로 쥐고 있다(`preloadedAudio.ts`, 큰 WAV 가 캐시에 안 남는 문제).
 - 시작한 뒤 뒤에서 **판본의 모든 파일**: 가까운 맵 → 코드 조각·스킬 효과 시트 → 나머지. 목록은 판본에 실린 `preload-files.json`(게시 때 생성).
-  맵 이동은 페이드 뒤에서 새 맵 파일을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
+  맵 이동은 페이드아웃과 함께 새 맵 파일 받기를 걸고(`prefetchMapAssets`), 페이드 뒤에서 남은 것을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
 - **그림 묶음**(`project/storeGamePacks.ts`·`player/preloadPacks.ts`): 512KB 이하 그림을 2MB 안팎 `packs/pNNN.json`({v:1, files:[[경로, base64]]})
   으로 묶어 싣고(첫 화면 파일 제외, 가까운 맵 순), `preload-files.json` 은 `{v:2, files, packs}`. 플레이어가 묶음을 풀어 Cache Storage
   `oprn-pack:/<slug>/<판본>/` 에 넣고, 판본 폴더 범위 서비스 워커 `preload-sw.js`(공식 파일, 신뢰 해시)가 그림 GET 만 캐시에서 준다.

@@ -11,7 +11,7 @@ import type {
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
 import { REF_DRAW_NOTE, refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  aspectOf, aspectSheet, kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, ogIsOrganic, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
@@ -60,9 +60,17 @@ export function createInteriorRunner(): WorkshopRunner {
     name: "atlas_biome_interior (손 도트 실내 v5)", floor: BACKGROUND,
     refs: anchors.map((anchor) => ({ label: `chipset object: ${anchor.title} (8x)`, url: shot(env, anchor.grid, paletteOf(anchor.itemKey, palette)) })),
   });
-  let anchorsPending: Promise<OgAnchors | null> | null = null;
-  const anchorsFor = (env: WorkshopEnv): Promise<OgAnchors | null> =>
-    (anchorsPending ??= loadAnchors(env).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending = null; return null; }));
+  // 견본 묶음은 물건마다 고른다: 자연물(나무·덤불·꽃·바위…)은 버들항 손 도트 나무(oprn-beodeul-organic), 나머지는 실내 v5 가구.
+  const anchorsPending = new Map<string, Promise<OgAnchors | null>>();
+  const anchorsFor = (env: WorkshopEnv, item: WorkshopItem): Promise<OgAnchors | null> => {
+    const set = ogStyleSetFor(item);
+    let pending = anchorsPending.get(set);
+    if (!pending) {
+      pending = loadAnchors(env, set).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending.delete(set); return null; });
+      anchorsPending.set(set, pending);
+    }
+    return pending;
+  };
   const og = (item: WorkshopItem) => item.isNew;
 
   const runner: WorkshopRunner = {
@@ -73,7 +81,7 @@ export function createInteriorRunner(): WorkshopRunner {
     // 새 기물(object-gen 흐름): 후보 A·B 두 장(directions), 참고 그림 2장, 그리기 + 다시 그리기 1번, 미리보기 고치기.
     referenceCount: (item) => (og(item) ? 2 : 1),
     referenceStyleNote: (item) => (og(item) ? kitValue("reference", "STYLE_NOTE") : undefined),
-    maxAttempts: (item) => (og(item) ? 2 : 3),
+    maxAttempts: (item) => (og(item) && !ogIsOrganic(item) ? 2 : 3),
     looks: (item) => (og(item) ? OG_LOOKS : 0),
     prepare(env) {
       if (prepared) return prepared;
@@ -138,7 +146,7 @@ export function createInteriorRunner(): WorkshopRunner {
       return out;
     },
     async drawMessages(ctx: DrawContext, env) {
-      if (og(ctx.item)) return ogDrawMessages(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env));
+      if (og(ctx.item)) return ogDrawMessages(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env, ctx.item));
       const parts: ContentPart[] = [label(drawBrief(ctx))];
       if (ctx.reference) parts.push(label(`참고 그림 (모양만 — 참고용, 설치 안 됨). ${REF_DRAW_NOTE}`), image(ctx.reference));
       if (!FLAT_KINDS.has(ctx.item.kind)) for (const example of EXAMPLES) parts.push(label(example.label), image(examples.get(example.file)!));
@@ -153,7 +161,7 @@ export function createInteriorRunner(): WorkshopRunner {
     },
     async review(ctx, env, ask) {
       if (!og(ctx.item)) return null;
-      return ogReview(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env), ask);
+      return ogReview(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env, ctx.item), ask);
     },
     async reviewMessages(ctx, env) {
       const parts: ContentPart[] = [label(reviewBrief(ctx))];
@@ -172,7 +180,7 @@ export function createInteriorRunner(): WorkshopRunner {
     // 새 기물 참고 그림 견본: object-gen 견본(손 도트 실내 v5 큰 가구)을 물체 비율 캔버스에(원본 exemplar_sheet aspect).
     async referenceAnchor(item, env) {
       if (!og(item)) return null;
-      const anchors = await anchorsFor(env);
+      const anchors = await anchorsFor(env, item);
       if (!anchors?.examples.length) return null;
       const cells = refCells(item);
       const sheet = aspectSheet(anchors.examples.map((anchor) => anchor.image), aspectOf(cells.w, cells.h), BACKGROUND);

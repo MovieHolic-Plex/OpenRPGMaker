@@ -464,3 +464,7 @@
 
 /* 대사가 떠 있는 동안 메뉴 단추는 아무 일도 하지 않는다(대사 중 Esc 는 메뉴를 열지 않는다) — 옅게 해 「눌렀는데 안 된다」를 막는다(2026-10-30). */
 .play-viewport[data-touch-layout]:has(.dialogue-overlay:not(:empty) .dialogue-box) > .touch-pad .touch-menu-btn { opacity: 0.35; }
+
+/* 이벤트(컷신·대사 줄)가 도는 동안 메뉴는 잠긴다(@/player/eventMenuLock — 기본, 「대기 중 이벤트 이동 허용」만 예외).
+   눌러도 열리지 않는 「메뉴」 단추는 숨긴다. 자리는 그대로 두어(visibility) 장면이 끝날 때 조작판이 출렁이지 않게. */
+.play-viewport[data-event-menu-locked] > .touch-pad .touch-menu-btn.touch-menu-btn { visibility: hidden; }

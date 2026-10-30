@@ -10,6 +10,7 @@ import { planPathfindMove } from "@/player/playScenePathfinding";
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
+import { doorEntryForTappedCell } from "@/project/doorEntries";
 import { currentTouchControls } from "@/player/touchControlSettings";
 import { inputTime, isTouchUiHost, TAP_MAX_MS as TOUCH_TAP_MAX_MS, TAP_MAX_MOVE as TOUCH_TAP_MAX_MOVE } from "@/player/touchTap";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -115,6 +116,25 @@ export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y:
     return "act";
   }
   const project = store.getCurrent();
+  // 문(문 그림 칸이나 옛 문 앞 발판)을 누르면 그 문 앞 칸까지 걸어가 문을 보고 들어간다(확인 엣지 → playSceneDoorEntry.tryEnterDoor).
+  // 문 앞 칸을 밟는 것만으로는 들어가지 않으므로, 문을 누른 뜻을 여기서 들어가기로 잇는다.
+  const doorEntry = doorEntryForTappedCell(project, scene.map, tile.x, tile.y);
+  if (doorEntry) {
+    lastTappedEventId = doorEntry.eventId;
+    const turn: MoveCommand = { kind: "turn", dir: doorEntry.dir };
+    if (from.x === doorEntry.step.x && from.y === doorEntry.step.y) {
+      if (scene.moving) return "busy-moving";
+      startPointerRoute(scene, [turn]);
+      pendingTapActions.add(scene);
+      return "approach";
+    }
+    const result = planPathfindMove(scene, { kind: "pathfindMove", target: "player", x: doorEntry.step.x, y: doorEntry.step.y, speed: 4, wait: false }, undefined);
+    if (result && result.moves.length > 0) {
+      startPointerRoute(scene, [...result.moves, turn]);
+      pendingTapActions.add(scene);
+      return "approach";
+    }
+  }
   const views = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions);
   const within = (view: (typeof views)[number], x: number, y: number): boolean =>
     x >= view.bodyRect.left && x <= view.bodyRect.right && y >= view.bodyRect.top && y <= view.bodyRect.bottom;

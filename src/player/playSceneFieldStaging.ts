@@ -28,6 +28,8 @@ import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { routeDetours, routeField, routeWaypoint } from "@/player/objectiveRoute";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
+import { doorPixelRect, placeExitLabel } from "@/player/exitLabelPlacement";
+import { paperPose, paperSheetDone, seededRandom, spawnPaperSheets, stepPaperSheet } from "@/player/paperFlutter";
 
 /** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
 const TINT_MODE_FILL = 1;
@@ -56,6 +58,7 @@ const TEX = {
   plus: "oprn-fx-plus",
   drop: "oprn-fx-drop",
   paper: "oprn-fx-paper",
+  paperBack: "oprn-fx-paper-back",
   petal: "oprn-fx-petal",
 } as const;
 
@@ -100,10 +103,15 @@ function ensureFxTextures(scene: PlaySceneContext): void {
     ctx.fillRect(2, 2, 3, 3);
   });
   // 종이 한 장(도트): 흰 면·아래 그늘·글줄 셋. 꽃잎: 연분홍 둥근 조각 + 짙은 끝.
-  canvasTexture(scene, TEX.paper, 7, (ctx) => {
-    ctx.fillStyle = "#c3c8d2"; ctx.fillRect(0, 0, 6, 7);
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 5, 6);
-    ctx.fillStyle = "#9aa1ad"; ctx.fillRect(1, 1, 3, 1); ctx.fillRect(1, 3, 3, 1); ctx.fillRect(1, 5, 2, 1);
+  // A4 낱장(가로 7 · 세로 9): 앞면은 흰 바탕에 글줄, 뒷면은 글줄 없이 그늘진 회청색(뒤집힐 때 면이 바뀌어 보인다).
+  canvasTexture(scene, TEX.paper, 9, (ctx) => {
+    ctx.fillStyle = "#aab1be"; ctx.fillRect(1, 0, 7, 9);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(1, 0, 6, 8);
+    ctx.fillStyle = "#8e96a4"; ctx.fillRect(2, 1, 4, 1); ctx.fillRect(2, 3, 4, 1); ctx.fillRect(2, 5, 3, 1);
+  });
+  canvasTexture(scene, TEX.paperBack, 9, (ctx) => {
+    ctx.fillStyle = "#9ca4b3"; ctx.fillRect(1, 0, 7, 9);
+    ctx.fillStyle = "#dfe4ec"; ctx.fillRect(1, 0, 6, 8);
   });
   canvasTexture(scene, TEX.petal, 4, (ctx) => {
     ctx.fillStyle = "#ffd1df"; ctx.fillRect(1, 0, 2, 1); ctx.fillRect(0, 1, 4, 2);
@@ -127,7 +135,7 @@ type ParticleRecipe = {
 };
 
 /** 수치는 16px 칸 기준 월드 px. s = 맵 세계 배율(칸이 큰 맵에서 같은 비율로 보이게). */
-const RECIPES: Record<ParticlePreset, ParticleRecipe> = {
+const RECIPES: Record<Exclude<ParticlePreset, "paper">, ParticleRecipe> = {
   sparkle: {
     texture: TEX.star, burst: false, count: 1,
     config: (s) => ({
@@ -196,17 +204,7 @@ const RECIPES: Record<ParticlePreset, ParticleRecipe> = {
       tint: [0xffffff, 0xffe060, 0xff8a30, 0xff3a18], blendMode: "ADD", emitting: false,
     }),
   },
-  // 부딪혀 떨군 서류 — 위로 확 흩어졌다가 천천히 회전하며 내려앉는다(낙하가 느려 «종이»로 읽힌다).
-  paper: {
-    texture: TEX.paper, burst: true, count: 9,
-    config: (s) => ({
-      x: { min: -6 * s, max: 6 * s }, y: { min: -18 * s, max: -10 * s },
-      speed: { min: 24 * s, max: 62 * s }, angle: { min: 200, max: 340 },
-      gravityY: 34 * s, lifespan: { min: 1500, max: 2300 },
-      rotate: { start: 0, end: 540 }, scale: { start: s, end: 0.9 * s }, alpha: { start: 1, end: 0.15 },
-      emitting: false,
-    }),
-  },
+  // paper(떨군 서류)는 이미터가 아니다 — playPaperFlutter(paperFlutter.ts).
   // 바람에 흩날리는 꽃잎 — 대상 위쪽에서 비스듬히 흘러내린다.
   petals: {
     texture: TEX.petal, burst: false, count: 1,
@@ -240,7 +238,6 @@ function targetSprite(scene: PlaySceneContext, target: ParticleStep["target"], c
 /** 파티클 한 번. 다 사라지면(뿜기 시간 + 수명) 이행되는 약속을 돌려준다 — wait 면 흐름이 기다린다. */
 export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, currentEventId?: string, depth: number = PARTICLE_DEPTH): Promise<void> {
   ensureFxTextures(scene);
-  const recipe = RECIPES[step.preset];
   // 크기(%)는 입자 그림과 퍼지는 거리를 함께 키운다(레시피 수치가 모두 s 배) — 1배 화면에서 서류·불티가 점으로 보이던 것을 키운다.
   const scale = runtimeMapWorldScale(scene) * ((step.sizePercent ?? 100) / 100);
   const sprite = targetSprite(scene, step.target, currentEventId);
@@ -248,12 +245,15 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   // 칸 대상은 칸 발밑 중앙(캐릭터 원점과 같은 기준)에 둔다.
   const x = sprite ? sprite.x : step.target.kind === "tile" ? (step.target.x + 0.5) * size : scene.player?.x ?? 0;
   const y = sprite ? sprite.y : step.target.kind === "tile" ? characterSpriteY(step.target.y, size) : scene.player?.y ?? 0;
+  // 서류는 이미터가 아니라 낱장 시뮬레이션이다 — 튀어 오르고, 흔들리며 내려와, 바닥에 눕는다(paperFlutter.ts).
+  if (step.preset === "paper") return playPaperFlutter(scene, x, y, scale, step.durationMs, depth);
+  const recipe = RECIPES[step.preset];
   // 따라가는 이미터는 원점(0,0)에 만든다. startFollow 는 입자를 대상의 월드 좌표에 뿌리는데 이미터 위치도
   // 그리기 변환에 더해져, 대상 자리에 만들면 좌표가 두 번 더해져 화면 밖에 그려졌다(2026-10-02 실측).
   const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
   emitter.setDepth(depth);
   if (sprite) emitter.startFollow(sprite);
-  const longestLife = step.preset === "paper" || step.preset === "petals" ? 2400 : 1500;
+  const longestLife = step.preset === "petals" ? 2400 : 1500;
   return new Promise((resolve) => {
     const finish = (): void => {
       emitter.destroy();
@@ -271,6 +271,46 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
     }
     scene.time.delayedCall(step.durationMs, () => emitter.stop());
     scene.time.delayedCall(step.durationMs + longestLife, finish);
+  });
+}
+
+/** 떨군 서류 낱장들. 바닥에 내려앉아 잠시 남았다가 사라지면 약속이 이행된다. 공중에서는 인물 위, 바닥에서는 인물 아래. */
+function playPaperFlutter(scene: PlaySceneContext, x: number, y: number, s: number, durationMs: number, depth: number): Promise<void> {
+  // 시간이 길면 더 많이 흩어진다(1.8초 = 9장).
+  const count = Math.max(4, Math.min(14, Math.round(durationMs / 200)));
+  const sheets = spawnPaperSheets(x, y, count, s, seededRandom(Math.round(x * 31 + y * 17 + scene.time.now)));
+  const images = sheets.map(() => scene.add.image(0, 0, TEX.paper).setDepth(depth));
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (): void => {
+      if (done) return;
+      done = true;
+      scene.events.off("update", tick);
+      scene.events.off("shutdown", finish);
+      for (const image of images) image.destroy();
+      resolve();
+    };
+    const tick = (_time: number, deltaMs: number): void => {
+      const dt = Math.min(0.05, Math.max(0, deltaMs) / 1000);
+      let alive = 0;
+      sheets.forEach((sheet, index) => {
+        stepPaperSheet(sheet, dt, s);
+        const image = images[index]!;
+        if (paperSheetDone(sheet)) { image.setVisible(false); return; }
+        alive += 1;
+        const pose = paperPose(sheet, s);
+        const key = pose.back ? TEX.paperBack : TEX.paper;
+        if (image.texture.key !== key) image.setTexture(key);
+        image.setPosition(Math.round(pose.x), Math.round(pose.y)).setAngle(pose.angle).setScale(pose.scaleX, pose.scaleY).setAlpha(pose.alpha);
+        // 내려앉은 종이는 바닥 그림이다 — 서 있는 인물 발밑에 깔린다.
+        if (pose.landed) image.setDepth(characterDepth("below", pose.y));
+      });
+      if (alive === 0) finish();
+    };
+    scene.events.on("update", tick);
+    scene.events.once("shutdown", finish);
+    // 장면이 멈춰 update 가 안 와도(창이 숨겨짐) 약속은 끝난다.
+    scene.time.delayedCall(12_000, finish);
   });
 }
 
@@ -463,10 +503,36 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
-  syncObjectiveMarkers(scene, now);
-  syncExamineMarkers(scene, now);
-  syncExitLabels(scene, now);
+  // 저자가 안내 표시를 껐으면(system.fieldGuides "off") 목표 빛무리·화살표, 자동 조사 ▼, 출구 목적지 글자를 그리지 않는다.
+  // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄).
+  if (store.getCurrent().system.fieldGuides === "off") clearFieldGuides(scene);
+  else {
+    syncObjectiveMarkers(scene, now);
+    syncExamineMarkers(scene, now);
+    syncExitLabels(scene, now);
+  }
   syncLiftRide(scene);
+}
+
+/** 안내 표시(목표 빛무리·화살표, 조사 ▼, 출구 글자)를 모두 걷는다 — system.fieldGuides "off". 왜(마왕 편의점 2026-10-30
+ *  「너무 친절함 … 너무 많은 화살표도 짜증남」): 장면이 스스로 갈 곳을 보여 주는 이야기 게임에서는 자동 안내가 화면을 덮고 발견을 빼앗는다. */
+function clearFieldGuides(scene: PlaySceneContext): void {
+  const objective = objectiveMarkerStates.get(scene);
+  if (objective) {
+    for (const parts of objective.parts.values()) destroyObjectiveMarker(parts);
+    objective.arrow?.destroy();
+    objectiveMarkerStates.delete(scene);
+  }
+  const examine = examineMarkerStates.get(scene);
+  if (examine) {
+    for (const marker of examine.markers.values()) marker.destroy();
+    examineMarkerStates.delete(scene);
+  }
+  const exits = exitLabelStates.get(scene);
+  if (exits) {
+    for (const label of exits.labels.values()) label.destroy();
+    exitLabelStates.delete(scene);
+  }
 }
 
 // ── 늘 빛나는 표지(page.glow) ────────────────────────────────────────────
@@ -886,7 +952,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
   const project = store.getCurrent();
   const size = mapTileSize(map);
   const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
-  const want = new Map<string, { text: string; x: number; y: number }>();
+  const want = new Map<string, { text: string; x: number; y: number; below: number }>();
   for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
     const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
     const dest = target ? project.maps[target] : undefined;
@@ -896,7 +962,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
     const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
     if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2 });
+    want.set(view.event.id, { text: `→ ${name}`, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2 });
   }
   // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
   // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
@@ -905,10 +971,12 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     const near = [...want].filter(([other, b]) => other !== id && b.text === at.text && Math.abs(b.x - at.x) <= size * 3.01 && Math.abs(b.y - at.y) <= size * 1.01);
     if (!near.length) continue;
     const all = [at, ...near.map(([, b]) => b)];
-    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)) });
+    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)), below: Math.max(...all.map((b) => b.below)) });
     for (const [other] of near) want.delete(other);
   }
   for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
+  // 맵에 적힌 문만 — 정의 없는 옛 맵은 예전 자리 그대로.
+  const doors = (map.doors ?? []).map((door) => doorPixelRect(door, size));
   for (const [id, at] of want) {
     let label = state.labels.get(id);
     if (!label) {
@@ -921,10 +989,14 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
       state.labels.set(id, label);
     }
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
-    // 맨 윗줄 출구는 칸 위에 둘 자리가 없으니 칸 아래에 둔다.
-    const mapW = map.width * size;
-    label.x = Math.round(Math.max(1, Math.min(mapW - label.displayWidth - 1, at.x - label.displayWidth / 2)));
-    label.y = Math.round(at.y - label.displayHeight < 0 ? at.y + size + 2 + label.displayHeight : at.y);
+    // 주인공이 오는 쪽의 반대편에 두고, 몸에 겹치면 옆으로 비키고, 맵에 적힌 문 그림(문 칸 위 그림 칸까지)은 덮지 않는다 — 규칙은 exitLabelPlacement.
+    const place = placeExitLabel({
+      anchorX: at.x, aboveY: at.y, belowY: at.below, width: label.displayWidth, height: label.displayHeight,
+      mapW: map.width * size, mapH: map.height * size, heroTileX: scene.tileX, heroTileY: scene.tileY, tileSize: size, doors,
+    });
+    label.x = place.x;
+    label.y = place.y;
+    label.setAlpha(place.alpha);
   }
 }
 
@@ -940,6 +1012,8 @@ export function examineMarkerIds(scene: PlaySceneContext): string[] {
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */
 export function particleRecipeFor(preset: ParticlePreset): { readonly burst: boolean; readonly count: number; readonly texture: string } {
+  // paper 는 낱장 시뮬레이션(한 번에 흩어진다) — 이미터 레시피가 없다.
+  if (preset === "paper") return { burst: true, count: 9, texture: TEX.paper };
   const recipe = RECIPES[preset];
   return { burst: recipe.burst, count: recipe.count, texture: recipe.texture };
 }

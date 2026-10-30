@@ -157,12 +157,15 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       tone({ freq: 320, type: "sawtooth", duration: 0.5, gain: 0.32, slideTo: 70 });
       return;
     case "victory": {
-      const notes = [523, 659, 784, 1046];
-      notes.forEach((freq, index) => {
-        tone({ freq, at: index * 0.11, duration: 0.12, gain: 0.3 });
-      });
-      tone({ freq: 784, at: 0.46, duration: 0.3, gain: 0.26 });
-      tone({ freq: 1046, at: 0.46, duration: 0.3, gain: 0.26 });
+      // 자료집에 승리 ME 가 없을 때의 기본 팡파레(약 2.4초). 예전 0.8초짜리 네 음은 「승리!」 띠와 결과 상자가 뜨는
+      // 6초 동안 거의 들리지 않아 승리가 무음처럼 느껴졌다(이세계 고딩 첫인상 리뷰 2026-10-30). 원작 멜로디를 따르지 않는 자작 진행.
+      // 오르는 아르페지오 → 으뜸화음 한 번 → 버금딸림 장식 → 길게 끄는 으뜸화음.
+      [392, 523, 659, 784].forEach((freq, index) => tone({ freq, at: index * 0.09, duration: 0.11, gain: 0.26 }));
+      [523, 659, 784, 1046].forEach((freq) => tone({ freq, at: 0.38, duration: 0.42, gain: 0.16 }));
+      tone({ freq: 131, type: "triangle", at: 0.38, duration: 0.42, gain: 0.3 });
+      [[880, 0.84], [784, 0.98], [698, 1.12], [784, 1.26]].forEach(([freq, at]) => tone({ freq, at, duration: 0.12, gain: 0.22 }));
+      [523, 659, 784, 1046].forEach((freq) => tone({ freq, at: 1.42, duration: 0.95, gain: 0.15 }));
+      [262, 392].forEach((freq) => tone({ freq, type: "triangle", at: 1.42, duration: 0.95, gain: 0.24 }));
       return;
     }
     case "escape":

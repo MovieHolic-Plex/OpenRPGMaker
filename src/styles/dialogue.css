@@ -401,6 +401,14 @@
   pointer-events: none;
 }
 
+/* 오른쪽 흉상이 말하면 이름표도 오른쪽에 붙는다. 왼쪽에 듣는 사람 흉상이 남아 있는데 이름표가 왼쪽이면
+   왕의 대사가 주인공 이름표 밑에 놓여 주인공 대사로 읽혔다(이세계 고딩 첫인상 리뷰 2026-10-30, 「국왕 루드릭」).
+   VN 꾸밈(vnLook.css)은 같은 규칙을 이미 갖고, 양쪽 전신 무대는 이름표를 따로 놓는다. */
+.dialogue-overlay:not([data-dialogue-stage]) .dialogue-box.bust-right .speaker.speaker-nameplate {
+  left: auto;
+  right: 10px;
+}
+
 .dialogue-content {
   align-items: start;
   display: grid;
@@ -1505,6 +1513,15 @@
 .dialogue-overlay.choices-active.choices-framed:has(> .choices-frame.bust-right) > .dialogue-box.choices {
   left: 10px;
   right: auto;
+}
+/* 틀 양쪽에 초상이 다 서 있으면(화자 + 듣는 사람) 어느 쪽으로 비켜도 한 사람을 덮는다 — 가운데에 세우고 양옆 초상 자리를 비운다
+   (2026-10-30 이세계 고딩: 오른쪽 국왕 흉상을 피해 왼쪽으로 간 선택지가 왼쪽 민재 흉상을 덮었다). */
+.dialogue-overlay.choices-active.choices-framed:has(> .choices-frame.has-portrait-listener) > .dialogue-box.choices {
+  left: 10px;
+  margin-inline: auto;
+  max-width: calc(100% - 2 * (var(--runtime-dialogue-bust-width) + 26px));
+  right: 10px;
+  width: fit-content;
 }
 /* 미연시 룩은 선택지를 가운데에 띄운다(카드·막대 선택지가 화면 가운데 줄에 서는 관례). 흉상은 양옆에 서므로 오른쪽 흉상이
    있어도 가운데를 지킨다 — 왼쪽으로 비키면 선택지마다 자리가 좌↔가운데로 튀고 왼쪽 듣는 흉상을 덮었다(첫사랑 VQA r21). */

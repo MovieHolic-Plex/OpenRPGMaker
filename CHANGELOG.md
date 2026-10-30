@@ -5,6 +5,158 @@
 
 <!-- releases -->
 
+## 0.373.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — walk into a door to enter it — doorstep no longer transfers on step (#3973) (`3c60f02`)
+
+### 수정
+
+- **runtime** — menu locked by default while events run — keyboard, touch button, hint (#3981) (`affb99b`)
+- **editor** — residents tab counts profiles used by dialogue speaker name, not only event characterId (#3985) (`a16fe56`)
+- **runtime** — one-sheet background layers follow the map vertically (pinY) + offsetY (#3980) (`585199b`)
+- **runtime** — paper particle falls like paper (#3979) (`41b5472`)
+
+## 0.372.2 — 2026-10-30
+
+### 수정
+
+- **export** — ship transit vehicle images with web export and store publish (#3978) (`b40b461`)
+- **assistant** — alley-nook lot props stay between building walls, never on the sidewalk (`118bd69`)
+
+## 0.372.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — revert the off-thread tileset atlas bake (#3963) — maps rendered without tiles (#3975) (`1a93552`)
+
+## 0.372.0 — 2026-10-30
+
+### 기능
+
+- **runtime** — system.fieldGuides off hides automatic field guide markers (`02a482e`)
+
+### 수정
+
+- **runtime** — star tiles resting on solid furniture y-sort with their row (`ff7d3e1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2caf26f`)
+
+## 0.371.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — compose_jp_city_street avoidProps skips unwanted street props (`a068e74`)
+
+### 수정
+
+- **ai** — label map ids in the v2 map list so mapIds stops getting tileset ids; horror words pull horror store music lines (`15f50ae`)
+
+### 문서
+
+- **readme** — refresh all four READMEs — playable demos, what's new since October, fresh editor/store/play screens (`8840ff0`)
+- **openwiki** — regenerate INDEX (`e310d0b`)
+
+### 잡무
+
+- retrigger ci (`3013a02`)
+
+## 0.370.0 — 2026-10-30
+
+### 기능
+
+- **chase** — smart chase AI — touch means battle, hearing, per-kind brains, pack perf (#3967) (`3aa7175`)
+
+### 성능
+
+- **runtime** — bake grafted tileset atlases in a worker, upload to the GPU in bands, prewarm neighbour maps (#3963) (`8b516cf`)
+
+## 0.369.0 — 2026-10-30
+
+### 기능
+
+- **ai** — official polish skill dialogue-polish (general-good-writing by code-yeongyu) + lint_dialogue (#3962) (`d47e34f`)
+
+## 0.368.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — exit destination label no longer covers authored door art (#3960) (`5f3d25b`)
+- **qa** — battle driver no longer 'presses' inert skill rows and waits out the op timeout (#3959) (`c30731f`)
+
+## 0.368.0 — 2026-10-30
+
+### 기능
+
+- **workshop** — natural objects drop geometric shapes — organic recipe, Beodeul exemplars, judge Q7, 12 crown checks (WIP: VQA not at 0 majors) (#3279) (`e5e0fd4`)
+- **runtime** — door kinds x footprint — auto glass, double, slide, shutter doors open with their own art (#3949) (`10cd5e0`)
+- **runtime** — snap non-integer camera zoom >= 1 to an integer for pixel games (#3950) (`b4fad37`)
+
+### 수정
+
+- **player** — follow-ups to lazy tileset definitions — stall-guarded fetch with progress, immutable json cache, build assertions (#3958) (`7027c93`)
+- **runtime** — first-timer review fixes — nameplate side, victory box, redundant buffs, enemy plates, exit labels (#3956) (`33ff457`)
+- **bgm** — install the public bgm-v1 pack without gh (#3565) (`85d334c`)
+- **editor** — 자료집 개요에 「이야기 구조」(퀘스트·엔딩 목록) 절 (#3954) (`9f3cde2`)
+- **runtime** — storefront door rect from the label column, not the clicked leaf (#3955) (`33e4bcb`)
+- **runtime** — cut dead black time on retry transfers (caught / battle-loss) (#3953) (`1fa4589`)
+- **openwiki** — regenerate the index (`996e8c6`)
+- **ai** — store music sees every pack, marks the recommended pick, wires gallery music to the start map (`6a06568`)
+
+### 성능
+
+- **player** — load only the bundled tileset definitions the game uses (52MB entry chunk → 7.6MB) (#3957) (`3684ce3`)
+- **player** — reuse life-calendar HUD lines between clock minutes (#3580) (`d2810c2`)
+- **player** — skip page resolution for events that cannot match the frame query (#3598) (`6310ab3`)
+- **player** — scan minimap overlays once per frame (#3675) (`28bdc74`)
+- **player** — reuse map background layers between frames (#3693) (`ddb563d`)
+- **player** — scan zone feedback overlays once per frame (#3735) (`bb7e72b`)
+
+## 0.367.0 — 2026-10-30
+
+### 기능
+
+- **assistant** — open-field ambushers + chasers go home together + qa repeatUntilMap (#3947) (`17b7340`)
+
+## 0.366.0 — 2026-10-30
+
+### 기능
+
+- **dungeon** — rooms carry height levels with village stone stairs, labyrinth follows the design, entrance from the arrival side, cross-formula bounce (`6052bd9`)
+- **village** — plain requests get one east-west tier band — no north-south tier slivers or mid-field stairs (`3fccf4f`)
+- **village** — code terrain round 2 — broken cliffs, swamp decks, fishing banks, ford-end reachability (`ece7fc1`)
+
+### 수정
+
+- **player,ai** — QA checkpoints carry the current objective line; scene starts pick the furthest objective already passed by the on-switches (`4869978`)
+- **player** — examine prompt names the page's speaker instead of an internal tile/event id (gym leader showed 'gyd_dais_gr…') (`2c459d6`)
+- **ai** — puzzle gates — two-way passage choices go to the far side of the way the player faces; note gates whose opening device is unreachable from the gate's outside (`e3a3012`)
+- **village** — built land matches the code-terrain preview (no salt terraces on code-terrain villages); requested house kinds win over nearer small fallbacks (`1ce3868`)
+- **village** — request direction exits (spec.exits) reach the map edge, crossing rivers by plank; exits-only layout keeps auto placement (`7e8d624`)
+- **ai,player** — chase music follows the chase switch; music-only requests stay music-only (`eb8ab92`)
+- **ai** — dungeon door falls back to the reachable row nearest the world-side edge when no road reaches the edge itself (`101a942`)
+- **ai** — one outside door per dungeon, on the world-side edge road cell of the village/street it is entered from (`a8ab983`)
+- **ai** — dungeon builder reads empty/object hints as not given (terra's village hints.layout object failed author_dungeon validation); spec.exits sets the entrance only when the design names neither side nor entrance spot (`ede7f80`)
+- **ai** — bossTalkBattles marked pages typed as a defined array (ci-fast TS2488) (`02fb614`)
+- **village** — drop model-added tier hints when the request names no landform; explicit flat also gets the east-west band (`97e7f20`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX for suite bundle 5 (`78312f8`)
+- **beodeul-city** — round 4 village verification (ab21-ab23, live b25/b26) (`6561b7f`)
+- **openwiki** — regenerate INDEX without local build output (`35b2aa3`)
+- **openwiki** — drop local-only probe path from asset-store page (`b77c71e`)
+- **openwiki** — regenerate INDEX (`cd0b4ec`)
+- **openwiki** — v2 drops model-added tier hints for plain requests; live runs after the fix (`142a618`)
+- **openwiki** — plain-request east-west band, ab20 results, rebase onto 0ba7f987fa (`a2eea95`)
+
+### 기타
+
+- **village** — round 3 — curved band, wide stone stairs, house kinds, orchards/props, rebuild under new id (`9797b40`)
+
 ## 0.365.0 — 2026-10-30
 
 ### 기능

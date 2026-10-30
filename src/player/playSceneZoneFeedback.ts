@@ -11,6 +11,7 @@ import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
 import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
 import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
+import { eventMenuLocked } from "@/player/eventMenuLock";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -35,6 +36,10 @@ const SUPPRESSING_TEST_IDS = [
   // 숫자 입력창 뒤로 목표 안내가 비쳐 두 창이 겹쳐 보였다(장부 hud #18·#37).
   "runtime-input-number",
 ] as const;
+
+// 매 프레임 불린다. 예전에는 가림 id 마다 호스트와 문서를 한 번씩 훑었다(빈 필드에서 최대 20번).
+// 선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다.
+const SUPPRESSING_SELECTOR = SUPPRESSING_TEST_IDS.map((id) => `[data-testid='${id}']`).join(",");
 
 // ── 씬 로컬 농사 안내 채널 ──
 // session.m2Runtime.ui 를 쓰면 안 된다: updateZoneFeedback 은 surface+message 로
@@ -159,9 +164,17 @@ export function syncPlaySceneZoneFeedback(
   // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
   if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
   if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+  // 이벤트가 메뉴를 잠근 동안(기본, @/player/eventMenuLock) 터치 「메뉴」 단추를 숨긴다 — 눌러도 열리지 않는 단추를 보이지 않게.
+  // 키보드 X·Esc 는 player.ts 가 같은 규칙으로 막는다. 매 프레임 불러 이어지는 이벤트 사이 틈 보정도 여기서 센다.
+  const menuLocked = eventMenuLocked(scene.running, scene.session, performance.now());
+  const viewport = host?.closest<HTMLElement>(".play-viewport");
+  if (viewport && (viewport.dataset.eventMenuLocked === "true") !== menuLocked) {
+    if (menuLocked) viewport.dataset.eventMenuLocked = "true";
+    else delete viewport.dataset.eventMenuLocked;
+  }
   if (host) {
     // 로딩 막이 걷히고 이벤트(도입 연출)가 끝나 실제로 움직일 수 있는 첫 순간부터 센다.
-    const controllable = !suppressed && !scene.running && !document.querySelector("[data-testid='play-loading-overlay']");
+    const controllable = !suppressed && !scene.running && !menuLocked && !document.querySelector("[data-testid='play-loading-overlay']");
     // 벽시계로 센다 — 게임 시간(elapsedMs)은 느린 기계에서 프레임 델타 상한 때문에 늘어져 2.8초 카드가 6초 떠 있었다.
     syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, update.view.objective, controllable, performance.now());
   }
@@ -408,7 +421,7 @@ function renderFeedback(
   setPromptLine(elements.prompt, view.prompt);
   const hasContent = Boolean(view.banner || view.toast || view.objective || view.prompt);
   if (view.suppressed || !hasContent) {
-    elements.root.remove();
+    if (elements.root.isConnected) elements.root.remove();
     return;
   }
   if (elements.root.parentElement !== host) host.append(elements.root);
@@ -434,8 +447,11 @@ function setPromptLine(element: HTMLElement, message: string | null): void {
 }
 
 function setLine(element: HTMLElement, message: string | null): void {
-  element.hidden = message === null;
-  element.textContent = message ?? "";
+  const hidden = message === null;
+  const text = message ?? "";
+  // 같은 글을 다시 대입하면 텍스트 노드가 바뀐다. 매 프레임 같은 안내를 다시 쓰지 않는다.
+  if (element.hidden !== hidden) element.hidden = hidden;
+  if (element.textContent !== text) element.textContent = text;
 }
 
 function dialogueHost(scene: Pick<ZoneFeedbackScene, "game">): HTMLElement | null {
@@ -445,10 +461,11 @@ function dialogueHost(scene: Pick<ZoneFeedbackScene, "game">): HTMLElement | nul
 
 export function feedbackSuppressedByOverlay(host: HTMLElement | null): boolean {
   if (!host) return true;
-  return SUPPRESSING_TEST_IDS.some((testId) =>
-    host.querySelector(`[data-testid='${testId}']`) !== null
-    || document.querySelector(`[data-testid='${testId}']`) !== null
-  );
+  // 호스트를 먼저 본다. 대사 호스트가 문서에서 떨어져 있어도 그 안의 창은 안내를 가린다.
+  if (host.querySelector(SUPPRESSING_SELECTOR)) return true;
+  // 상점·전투·타이틀은 대사 호스트 밖에 붙을 수 있다.
+  const doc = host.ownerDocument;
+  return Boolean(doc?.querySelector(SUPPRESSING_SELECTOR));
 }
 
 function cachedFacingPrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback): string | null {

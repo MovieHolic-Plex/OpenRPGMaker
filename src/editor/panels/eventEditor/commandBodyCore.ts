@@ -1170,7 +1170,7 @@ function displayTextSettingsBody(
       fieldControl("대기 중 이벤트 이동", allowMovement),
       el("p", {
         class: "event-command-settings-hint",
-        text: "가림 방지는 플레이어와 겹치면 창 위치를 자동 조정합니다. 이동 허용은 메시지 대기 중 다른 이벤트 이동을 허용합니다.",
+        text: "가림 방지는 플레이어와 겹치면 창 위치를 자동 조정합니다. 이동 허용을 켜면 이벤트가 도는 동안에도 다른 이벤트가 움직이고 플레이어가 메뉴(X·Esc)를 열 수 있습니다. 끄면(기본) 장면이 끝날 때까지 메뉴가 잠깁니다.",
       }),
     ])
   );

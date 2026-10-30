@@ -725,7 +725,7 @@ const authorEnemyPixelSheet: ToolDefinition = {
         additionalProperties: true,
         description: "적 레코드 패치(upsert_enemy 의 enemy 와 같다: id·name·stats·rewards·actions·elementRates…). 주면 monsterResourceId 를 이 시트로 잇는다.",
       },
-      role: { type: "string", enum: ["boss", "normal"], description: "enemy 와 함께: boss 면 시작 파티 기준 위협 하한을 맞춘다." },
+      role: { type: "string", enum: ["boss", "normal"], description: "enemy 와 함께: boss 면 enemy.stats 에 주지 않은 능력치에 시작 파티 기준 위협 하한(기본값)을 채운다." },
     },
   },
   invalidArgsExample: {
@@ -994,7 +994,10 @@ const editEnemyPixelSheet: ToolDefinition = {
             monsterResourceId: targetResourceId,
           };
           if (upgradeBoss && !patch.stats) {
-            patch.stats = {
+            // 거신 칸으로 키운 보스의 바닥값. 저자가 준 값이 아니므로 patch.stats 로 넘기지 않는다 —
+            // upsert_enemy 는 호출에 실린 stats 를 「저자 명시값」으로 보고 보스 하한을 걸지 않는다.
+            enemy.stats = {
+              ...enemy.stats,
               maxHp: Math.max(enemy.stats.maxHp, 1200),
               maxMp: Math.max(enemy.stats.maxMp, 100),
               attack: Math.max(enemy.stats.attack, 28),

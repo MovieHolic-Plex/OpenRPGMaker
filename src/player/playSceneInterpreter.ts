@@ -1,6 +1,6 @@
 import { playLiftRide } from "@/player/playSceneLiftRide";
 import { releaseOrphanedFadeOut } from "@/player/playSceneScreenEffects";
-import { sendPursuerHome } from "@/player/pursuitNavigation";
+import { sendMapPursuersHome, sendPursuerHome } from "@/player/pursuitNavigation";
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
@@ -21,6 +21,7 @@ import {
 } from "@/project/session";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
+import { walkIntoDoorway } from "@/player/playSceneDoorEntry";
 import { store } from "@/project/store";
 import { COMPANION_SCENE_FLAG, syncFollowerSceneVisibility } from "@/player/playSceneFollowers";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
@@ -86,6 +87,8 @@ import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characte
 import { resolveDialogueLook } from "@/project/dialogueStyles";
 import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
 import { reportEndingClear } from "@/player/playSceneOverlays";
+import { emitChaseNoise } from "@/player/chaseNoise";
+import { CHASE_NOISE_RADIUS } from "@/project/chaseBrain";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -95,6 +98,17 @@ export type RunCommandsOptions = {
   readonly onHandledFailure?: () => void;
   readonly continueAfterTransfer?: boolean;
 };
+
+/** 조사로 실행한 이벤트의 첫 단 명령이 스위치·셀프 스위치를 바꾸면 레버 소리, 효과음만 울리면 작은 소리. */
+function actionEventNoiseRadius(trigger: string, commands: readonly Command[]): number {
+  if (trigger !== "action") return 0;
+  let radius = 0;
+  for (const command of commands) {
+    if (command.kind === "setSwitch" || command.kind === "setSelfSwitch") return CHASE_NOISE_RADIUS.lever;
+    if (command.kind === "playAudio" && (command.channel === "se" || (command.channel === undefined && !command.loop))) radius = CHASE_NOISE_RADIUS.sound;
+  }
+  return radius;
+}
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
@@ -113,6 +127,9 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
   }
   const commands = page?.commands ?? event.commands;
   const session = scene.session;
+  // 레버·스위치·효과음을 울린 조사 이벤트는 소리를 낸다 — 곁의 추격자가 듣고 그 자리로 와서 뒤진다(@/player/chaseNoise).
+  const noise = actionEventNoiseRadius(view.trigger.kind, commands);
+  if (noise > 0) emitChaseNoise(session, scene.map.id, { x: view.x, y: view.y }, noise);
   const completionPageId = page?.detectionEncounter ? page.id : undefined;
   const options: RunCommandsOptions = completionPageId === undefined ? {} : {
     continueAfterTransfer: true,
@@ -570,13 +587,22 @@ async function consumeBlockingStep(
       }
       // 문 열림 연출: door 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만),
       // true = 켜기(주인공 앞 문 타일까지 찾는다), false = 끄기. 성문·통로·맵 가장자리·계단은 자동에서 연출이 없다.
+      // 문 앞 칸에서 문으로 들어가는 이동이면 문이 열린 뒤 주인공이 문간으로 한 걸음 들어가는 모습을 보이고 옮긴다(playSceneDoorEntry).
+      let walkedIn: { readonly mapId: string; readonly x: number; readonly y: number } | null = null;
       if (step.mapId !== scene.map.id && step.door !== false) {
         try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
+        const at = { mapId: scene.map.id, x: scene.player.x, y: scene.player.y };
+        try { if (await walkIntoDoorway(scene, currentEventId)) walkedIn = at; } catch (error) { console.warn("[player] door walk-in", error); }
       }
       // 추격자의 접촉 페이지가 주인공을 다른 맵으로 보내면(붙잡혀 끌려감) 그 추격자는 제자리로 — 돌아오자마자 재포획 방지.
-      if (step.mapId !== scene.map.id && currentEventId) sendPursuerHome(scene.session, currentEventId);
+      // 같은 맵의 다른 추격자도 같이 — 남은 하나가 길목에 서 있으면 재도전이 곧 재포획이다.
+      if (step.mapId !== scene.map.id && currentEventId && sendPursuerHome(scene.session, currentEventId)) sendMapPursuersHome(scene.session, scene.map.id);
       try { await scene.transferTo(step); }
-      finally { finishTransfer?.(); }
+      finally {
+        finishTransfer?.();
+        // 옮기지 못했으면(여행 제한 등) 문간에 들어간 그림을 제자리로.
+        if (walkedIn && scene.map.id === walkedIn.mapId) { scene.player.setPosition(walkedIn.x, walkedIn.y); scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing)); }
+      }
       return resumeAfterSurface(scene, interpreter);
     }
     case "changeTile":

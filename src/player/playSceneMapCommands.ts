@@ -1,3 +1,5 @@
+import { doorstepArrival } from "@/project/doorEntries";
+import { noteDoorArrival } from "@/player/playSceneDoorEntry";
 import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -14,7 +16,7 @@ import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
-import { holdScreenFlash } from "@/player/playSceneScreenEffects";
+import { holdScreenFlash, screenCoverRemainingMs } from "@/player/playSceneScreenEffects";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
@@ -28,7 +30,7 @@ import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneL
 import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
 import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace } from "@/player/chaseSpawnGrace";
-import { holdForMapAssets } from "@/player/scenePreload";
+import { holdForMapAssets, prefetchMapAssets } from "@/player/scenePreload";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
@@ -88,17 +90,26 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   const overlayTransition = usesOverlayTransition(transition);
   const host = overlayTransition ? dialogueHost(scene) : undefined;
   const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  // 새 맵 파일 받기는 페이드아웃과 같이 시작한다 — 다 어두워진 뒤에야 받기 시작하면 그만큼 검은 화면이 길어진다.
+  prefetchMapAssets(project, request.mapId);
   if (host) {
     await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
   } else if (fadeColor) {
-    await fadeCamera(scene, "out", fadeColor);
+    // 이벤트가 「화면 효과 fadeOut」으로 이미 화면을 덮었으면(전투 패배 → 감방, 붙잡힘 연출) 그 아래 카메라 페이드는
+    // 보이지 않는 채 시간만 쓴다 — 덮는 트윈이 끝나기만 기다린다.
+    const cover = screenCoverRemainingMs(scene);
+    if (cover === null) await fadeCamera(scene, "out", fadeColor);
+    else if (cover > 0) await new Promise<void>((done) => { setTimeout(done, cover); });
   }
   // 웹 판본: 새 맵 그림·소리가 다 오기 전에는 화면을 밝히지 않는다(어두운 채로 기다린다, scenePreload.ts).
   await holdForMapAssets(dialogueHost(scene), project, request.mapId);
   // Resolve once against destination runtime terrain and destination-scoped event positions.
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);
-  const destination = nearestPassableTile(project, destinationMap, request.x, request.y);
+  // 문으로 나오는 도착(project/doorEntries.ts): 문 앞 칸이면 문을 등지고 서고, 옛 도구가 문 앞 발판을 피해 한 칸 더 바깥에 내리던
+  // 도착이면(방금 나온 그 맵으로 가는 문) 문 앞 칸으로 올린다 — 문 앞 칸은 이제 밟아도 발동하지 않는다.
+  const doorArrival = request.mapId !== scene.map.id ? doorstepArrival(project, targetMap, request.x, request.y, scene.map.id) : null;
+  const destination = nearestPassableTile(project, destinationMap, doorArrival?.x ?? request.x, doorArrival?.y ?? request.y);
   // 저작한 도착 칸이 통행 불가일 때만 가까운 칸으로 물러선다(저작 검사 checkMapGraph 는 그 도착을
   // blocker `transfer-impassable` 로 이미 잡는다). 다만 조용히 옮기지는 않는다 — 예전에는 나무 밑동이
   // 도착 칸을 덮은 데모에서 (15,20)→(14,19) 로 아무 흔적 없이 밀려, 플레이어와 저자 모두 원인을 몰랐다
@@ -128,6 +139,9 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     removeFollowerFromSession(scene.session, { all: true });
   }
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
+  else if (doorArrival) scene.facing = doorArrival.facing;
+  // 문 앞 칸에 내렸으면 그 칸을 떠나거나 이동 입력을 놓을 때까지 그 문으로 다시 들어가지 않는다(나오며 누르던 키로 왕복하지 않게).
+  noteDoorArrival(scene);
   // 착지 방향이 정해진 뒤에 깐다 — 동료는 주인공이 바라보는 반대쪽(뒤)에 한 줄로 선다.
   resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions, {
     project, facing: scene.facing, blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, destinationMap, scene.session, scene.eventPositions, x, y) !== undefined,
@@ -147,7 +161,11 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   if (host) {
     await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);
   } else if (fadeColor) {
-    await fadeCamera(scene, "in", fadeColor);
+    // 화면 효과 층이 아직 불투명하면 카메라 페이드인은 보이지 않는다 — 기다리지 않고 바로 걷어,
+    // 도착 맵의 자동 장면(보통 「화면 효과 fadeIn」)이 곧장 이어받게 한다. 예전에는 이 0.5초 + 맵 짓기가
+    // 통째로 검은 화면이라 재도전이 멈춘 것처럼 보였다(2026-10-30 폴른 2막 B6 패배 → 요새 감방 1.6초).
+    if (screenCoverRemainingMs(scene) === 0) clearCameraFade(scene);
+    else await fadeCamera(scene, "in", fadeColor);
   }
   // 오토세이브 훅(PlayScene 경로 전용): 전이 좌표/맵이 세션에 커밋된 뒤, 도착 맵의
   // 자동 트리거가 상태를 바꾸기 전 시점을 굽는다. 정책(save 금지·디바운스·컷신)은 maybeAutosave 가 판정.
@@ -209,6 +227,11 @@ export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: 
     }
     scene.cameras.main.fadeIn(durationMs, color.red, color.green, color.blue);
   });
+}
+
+/** 카메라 페이드를 연출 없이 걷는다(검게 덮인 화면 효과 아래라 보이지 않을 때). */
+function clearCameraFade(scene: PlaySceneContext): void {
+  scene.cameras.main.fadeEffect.reset();
 }
 
 // Flash Screen: 카메라 전체를 지정 색상으로 깜빡인다. fadeCamera 와 동일한

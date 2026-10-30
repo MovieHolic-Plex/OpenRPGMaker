@@ -1,4 +1,5 @@
 import { FIELD_APPROACH_STYLES, isFieldApproachStyle } from "@/project/fieldApproachStyle";
+import { CHASE_BRAINS, isChaseBrain } from "@/project/chaseBrain";
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { isBlendModeName } from "@/project/blendMode";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
@@ -540,11 +541,14 @@ function validatePageShape(label: string, value: unknown): void {
     assert(Number.isInteger(steps) && steps >= 1 && steps <= 30 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~30 · speed 1~8`);
     if (lunge.stepMs !== undefined) {
       const stepMs = requireNumber(`${label}.movement.chaseLunge.stepMs`, lunge.stepMs);
-      assert(Number.isInteger(stepMs) && stepMs >= 60 && stepMs <= 400, `${label}: 덮치기 stepMs 는 60~400`);
+      assert(Number.isInteger(stepMs) && stepMs >= 30 && stepMs <= 400, `${label}: 덮치기 stepMs 는 30~400`);
     }
   }
   if (movement.approachStyle !== undefined) {
     assert(isFieldApproachStyle(movement.approachStyle), `${label}: 다가오는 방식은 ${FIELD_APPROACH_STYLES.join("|")}`);
+  }
+  if (movement.chaseBrain !== undefined) {
+    assert(isChaseBrain(movement.chaseBrain), `${label}: 추격 성격은 ${CHASE_BRAINS.join("|")}`);
   }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);

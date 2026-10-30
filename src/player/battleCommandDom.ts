@@ -21,6 +21,7 @@ import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor, predictSkillDamageFor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
+import { alreadyAppliedLabel, skillAddsNothingTo, skillAlreadyAppliedStateId } from "@/battle/battleSkillRedundancy";
 import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillResource2Cost, battleSkillUseFailure, battleSkillUseFailureLabel, battlerSkillIdsWithGrants, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { resource2Config } from "@/battle/battleGauges";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -197,7 +198,9 @@ function syncBattleSkillHintLine(host: HTMLElement, selected: HTMLElement | unde
   const text = skillHelpOneLiner(project, skill, actor ? { recordId: actor.recordId, maxMp: actor.maxMp, ...(actor.equipmentEffects ? { equipmentEffects: actor.equipmentEffects } : {}) } : undefined);
   hint.dataset.skillId = skill.id;
   hint.dataset.inert = inert ? "true" : "false";
-  hint.textContent = inert ? `${text} — ${inert}` : text;
+  // 막힌 기술은 사유가 먼저다 — 한 줄 창은 넘치면 끝을 말줄임하므로, 사유를 뒤에 붙이면 정작 「왜 못 쓰나」가 잘린다
+  // (2026-10-30 이세계 고딩: 「MP4 · 아군 전체 · 공격 상승 — 이미 공격 상승」이 창을 넘쳤다).
+  hint.textContent = inert ? `${inert} · ${text}` : text;
   hint.title = skill.description;
   windowNode.dataset.skillHint = "true";
 }
@@ -658,7 +661,11 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   for (const skillId of listedComboSkillIds(actor, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
+    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
+    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
+    const reason = failure && actor
+      ? battleSkillUseFailureLabel(failure, skill, actor, project)
+      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `+ ${partners}` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -762,7 +769,11 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   for (const skillId of listedSkillIds(actor, command, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
+    // 받을 수 있는 대상 모두에게 이미 걸린 순수 보조 기술은 쓰면 「이미 … 상태다」 한 줄로 차례만 사라진다 — 회색으로 막고 이유를 보인다.
+    const appliedStateId = !failure && skill && actor ? skillAlreadyAppliedStateId(skill, actor, snapshot.actors, snapshot.enemies) : undefined;
+    const reason = failure && actor
+      ? battleSkillUseFailureLabel(failure, skill, actor, project)
+      : failure ? "사용자가 없습니다." : appliedStateId ? alreadyAppliedLabel(project, appliedStateId) : undefined;
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `${withJosa(partners, "와/과")} 연계` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -1052,6 +1063,20 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
         ordinal.textContent = fullName.slice(target.name.length).trim();
         title.after(ordinal);
       }
+    }
+    // 고른 보조 기술이 이 대상에게 이미 다 걸려 있으면 미리 말한다(고를 수는 있다 — 막는 것은 기술 목록에서 전원일 때만).
+    const pendingCommand = snapshot.targetSelection?.command;
+    const pendingSkill = pendingCommand?.kind === "skill"
+      ? store.getCurrent().database.skills.find((record) => record.id === pendingCommand.skillId)
+      : undefined;
+    if (pendingSkill && snapshot.targetSelection?.side === "actor" && skillAddsNothingTo(pendingSkill, target)) {
+      const stateId = pendingSkill.stateEffects?.[0]?.stateId;
+      const note = document.createElement("small");
+      note.className = "battle-command-reason";
+      note.dataset.testid = `battle-target-${target.id}-already`;
+      note.textContent = stateId ? alreadyAppliedLabel(store.getCurrent(), stateId) : "이미 적용됨";
+      button.querySelector(".battle-command-text")?.append(note);
+      button.dataset.battleTargetAlreadyApplied = "true";
     }
     button.dataset.battleTargetable = "true";
     button.dataset.battleTargetId = target.id;

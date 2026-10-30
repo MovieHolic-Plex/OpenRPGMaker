@@ -8,12 +8,15 @@
  * - 검수(독립·블라인드)·3/4 관문 조언·굽기·스토어는 참고 그림을 보지 않는다. 칩셋에 들어가는 것은 모델이 찍은 격자뿐이다.
  * - 줄여 따라 그리기·화소 옮기기를 지시문에서 금한다(object-gen REFCOPY 와 같은 뜻).
  */
-import { sizeNote } from "./footprint";
+import { isOrganicObject, sizeNote } from "./footprint";
 import { kitConstant, kitText, objectGenKit } from "./genKits";
 
 // 원문은 gen-kits 생성물(object-gen reference.py, lock 고정 커밋)에서 읽는다 — 손 사본을 두지 않는다(2026-10-22).
 export const REF_VIEW = kitText(objectGenKit, "reference", "VIEW");
 export const REF_NEGATIVE = kitText(objectGenKit, "reference", "NEGATIVE");
+// 자연물(나무·덤불·화단·돌) 참고 그림 지시문 — 가구용 「넓은 평평한 윗면·좌우 수직」 문장이 사과나무를 공 모양으로 만들었다(object-gen L101).
+export const REF_ORGANIC_VIEW = kitText(objectGenKit, "reference", "ORGANIC_VIEW");
+export const REF_ORGANIC_NEGATIVE = kitText(objectGenKit, "reference", "ORGANIC_NEGATIVE");
 const TOP_WORDS = kitConstant<Readonly<Record<string, string>>>(objectGenKit, "reference", "TOP_WORDS");
 /** 참고 그림 지시문에 쓰면 안 되는 이름(대소문자 무시, 낱말 단위). 원본 목록 그대로. */
 export const REF_IP_TERMS = kitConstant<readonly string[]>(objectGenKit, "reference", "IP_TERMS");
@@ -37,7 +40,9 @@ export function refMinTop(gateKind: string | undefined): number {
 }
 
 /** 원본 prompt_for(high view). describe = 물건 설명(이름·생김새·배경·크기 비율). */
-export function refPrompt(describe: string, gateKind?: string, styleNote?: string, topWords?: string): string {
+export function refPrompt(describe: string, gateKind?: string, styleNote?: string, topWords?: string, name?: string): string {
+  // 원본 prompt_for: footprint.job_is_organic 이면 ORGANIC_VIEW·ORGANIC_NEGATIVE.
+  if (name !== undefined && isOrganicObject(name, gateKind ?? null)) return `${REF_ORGANIC_VIEW.replace("{d}", describe.trim())} Must NOT be: ${REF_ORGANIC_NEGATIVE}.${styleNote ? ` ${styleNote}` : ""}`;
   // topWords = 크기 결정(footprint)의 종류별 윗면 낱말(원본 run --top). 없으면 원본 기본값.
   const top = topWords?.trim() || TOP_WORDS[gateKind === "seat" ? "seat" : "default"]!;
   // styleNote = 원본 STYLE_NOTE(견본 묶음을 쓰는 흐름에서 원본 prompt_for 가 덧붙인다).

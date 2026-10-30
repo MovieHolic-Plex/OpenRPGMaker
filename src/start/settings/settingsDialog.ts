@@ -303,6 +303,16 @@ export function openSettingsDialog(options: {
       el("p", { class: "st-sub", text: "편집기는 SUL, 게임 런타임은 MIT 라이선스예요. 만든 게임은 자유롭게 배포할 수 있어요." }),
       el("a", { class: "st-link", attrs: { href: "https://github.com/MovieHolic-Plex/OpenRPGMaker", target: "_blank", rel: "noopener" }, text: "소스 코드 ↗" }),
     ] }),
+    el("section", { class: "st-sec", children: [
+      el("h3", { text: "크레딧" }),
+      el("p", { class: "st-sub", children: [
+        el("b", { text: "general-good-writing", attrs: { translate: "no" } }),
+        " — ",
+        el("span", { text: "코드 연규(code-yeongyu)", attrs: { translate: "no" } }),
+      ] }),
+      el("p", { class: "st-sub", text: "AI 조수의 공식 윤문 규칙과 윤문 린터를 이 프로젝트에서 가져왔어요." }),
+      el("a", { class: "st-link", attrs: { href: "https://github.com/code-yeongyu/general-good-writing", target: "_blank", rel: "noopener" }, text: "general-good-writing ↗" }),
+    ] }),
     el("div", { class: "st-foot", children: [closeButton] }),
   ];
 
