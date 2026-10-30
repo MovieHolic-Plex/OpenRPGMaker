@@ -38,6 +38,7 @@ import { ENEMY_PIXEL_SHEET_TOOLS } from "./enemyPixelSheetTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { LOCK_DOOR_TOOLS } from "./lockDoorTools";
 import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
 import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
@@ -361,6 +362,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(LOCK_DOOR_TOOLS, "event"),
   ...withDomain(MAP_VARIANT_TOOLS, "map"),
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),

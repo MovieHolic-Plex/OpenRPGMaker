@@ -381,6 +381,32 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - 남은 것: 편의점 점원이 마법 상점 직원 칩(terra), 기본 타이틀·판타지 오프닝을 그대로 둠(둘 다), 요청 없이 주인공 외형·시작 장비를 바꿈(둘 다), `patch_event_page` 의 「transfer 빠짐」 경고가 door:true 추가에도 뜨는지 확인.
 - 증거: http://mdc-server:18301/assistant-parity.html
 
+## 조수 대조 2회차 — 밤 숲 어귀 들개 추격 (2026-10-31 asst-parity p2-chase-opus·terra)
+
+폴른 스타 2막 B5(숲 어귀 굶은 들개, `place_field_enemy` chase·cone·checkpointOnEntry)와 같은 장면을 실제 입력창으로 요청했다.
+두 모델 모두 `author_forest_route` → `upsert_enemy`/`upsert_troop` → `place_field_enemy{behavior:'chase', vision:'cone', checkpointOnEntry}` → `set_encounter_table{encounterRate:0}` 로 맞게 골랐다(opus 10분·호출 45·실패 2, terra 4.5분·호출 26·실패 2).
+
+- **「무작위 조우는 없어」를 조우 요청으로 읽었다**(`combatChecks.asksForEncounters`·`withoutNegatedEncounters`): 끝맺음 검사가 「요청에 무작위 조우가 있는데 조우표가 안 바뀌었다」를 두 판 모두에 띄웠다. 같은 절에서 부정(없어·없이·빼·말고·끄·금지·no/without)이 뒤따르는 조우 낱말은 지우고 본다. `withEncountersOnlyWhenAsked`·조우 켬 검사·조우 요청 검사가 같은 함수를 쓴다.
+- **「밤의 숲길」이 거의 대낮**(`forestRouteTool` MOODS): 두 모델 모두 `moods:['dark']` 를 줬는데 dark 가 ambient 0.3(dim 0.55 보다 밝음)이었다. dim 0.3 · dark 0.55 · 새 `night` 0.62 남색(폴른 스타 2막 밤 맵 값) · darkfog 0.55 로 고쳤다. 영어 도구 설명에 「밤 숲은 night」.
+- **마을 비평가가 숲길 특징을 마을의 major 로 잡았다**(`verbs.see`·`critic.critique`): terra 판 마을 비평이 「어둡고 구불구불한 숲길이 안 보인다」를 세 번 내 고치기 항목이 막힘으로 끝났다. 비평가에게 프로젝트의 다른 맵 이름(최대 8)을 주고, 요청이 장소를 여럿 말하면 이 맵이 맡은 장소만 보라고 적는다.
+- 남은 것: 밤 숲 전투 배경은 두 판 모두 적 그룹 `previewBackgroundResourceId` 숲 + 밤 겹으로 맞음. 회복 수단(여관 주인·쉼터)을 요청 없이 더함(끝맺음 no-healing 관문 때문 — 의도된 동작).
+
+## 조수 대조 1회차 다시 재기 — 마왕 편의점 거리 (2026-10-31 asst-parity p1b-maou-opus, #4015·#4023 뒤)
+
+Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_city_interior`·`hints.avoidProps`·`add_street_walkers{query}` 를 바로 썼다. 남은 결함과 고친 것:
+
+- **「점장 NPC」 대사 검사 실패**(`todo/names.normName`): 할 일 이름 「점장 NPC」가 이벤트 「점장」과 맞지 않았다. NPC·엔피씨는 종류 표시라 이름 비교에서 뺀다.
+- **현대 거리 첫 사람이 판타지 RTP 칩**(`people.pickPersonGraphic`): 점장이 얼굴 짝이 있는 RTP 주민 칩으로 뽑혔고(맵 화풍 벌점 45 < 얼굴 없음 벌점 70), 첫 사람 칩이라 사람 칩 잠금이 RTP 로 걸려 뒤이은 행인 「여학생」 검색이 0개가 됐다. 맵 화풍 벌점을 120 으로 올렸다. 오류 글의 「장르 잠금 중이라 … 몬스터 수집 캐릭터 칩」 문구는 사람 칩 잠금에도 같이 뜬다(문구는 아직 그대로).
+- **「주부」 칩 0개**(`charsetQuery` SYNONYMS): 아주머니·주부·housewife 를 아줌마 줄에 더했다.
+- **자전거가 슈퍼마켓 그림에 박혀 남았다**(`jpCityStreetComposer` LANDMARK_BAKED_PROPS): avoidProps 는 따로 찍는 소품만 뺀다. bike 를 빼 달라면 자전거 줄이 그려진 슈퍼마켓 완성 건물을 고르지 않는다(씨앗 40개: 기본 3번 → 0번).
+- 촬영 도구(`sceneFilm.mjs`)가 오프닝 안내 「Esc · 탭 건너뛰기」를 못 알아봐 오프닝 중에 걸음을 보냈다 — 정규식을 넓혔다.
+
+## 조수 대조 4회차 — 오류 글과 일본 실내 가구 빼기 (2026-10-31 asst-parity 4)
+
+- **그림 검색 실패 글이 사람 칩 잠금을 장르 잠금으로만 설명했다**(`eventCompile.resolveGraphicQuery`): 처음 놓은 사람 칩 계열로 정해지는 사람 칩 잠금도 같은 거름이라 글이 둘을 같이 말한다.
+- **일본 실내에서 `move_object` 가 「위층·딸린 맵」으로 거절했다**(`verbs.moveObject`): jp-city 빌더의 기록 인자는 예제 구성(program)이라 가구 목록이 없고 mapId 도 없어 엉뚱한 거절 글로 빠졌다. jp-city 기록은 인자로 다시 짓지 않고 그림 칸 그대로 옮기기·빼기(`tileMoveObjects`)로 간다. 마왕 편의점 Opus 판에서 dress_room 이 더 놓은 계산대 둘을 빼려다 막혔다.
+- **`set_start_position` 이 막힌 칸만 알렸다**(`mapTools`): 4칸 안의 가장 가까운 걸을 수 있는 칸을 같이 알려 준다(모델이 칸을 짐작해 다시 부르던 왕복).
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).

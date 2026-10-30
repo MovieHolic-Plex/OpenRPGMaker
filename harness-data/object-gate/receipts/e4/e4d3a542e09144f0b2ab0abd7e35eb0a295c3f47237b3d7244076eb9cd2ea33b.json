@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4d3a542e09144f0b2ab0abd7e35eb0a295c3f47237b3d7244076eb9cd2ea33b",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs h1 w3 cut through a south-facing cliff face",
+ "label": "bbox-village-ramps/stairs-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "bbox-village-ramps",
+   "fallback": true,
+   "reason": "칩셋 bbox-village-ramps 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 14,
+  "darkV5": 65,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "cliff face below stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs show two light tread bands, at rows 0-4 and rows 8-12. Each ends in a lighter edge line (rows 8 and 12 in the column scan), then a dark riser or shadow band (rows 5-7 and 13-15). Below them the cliff face has a dark stone texture for 16 rows (16-31), so there is a clear front face. The grass and dirt strips at the left and right edges are only the cut's borders, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin strip: two pale horizontal bands between brown side posts, with a narrow green cap on top. Each material has only about 2-3 lightness steps. The bands are smooth, with none of the per-stone shading, grain or speckle that the paving reference has on every cobble. The dark edges are partly neutral (41% near-neutral) and read as a uniform sticker-like line, not a dark tone of the neighbouring material. The measured 6 visible tones per tile is above the grass reference (3) and just under the paving reference (7). The raw numbers (14 colours in total, 6 per tile) show a small, flat palette, and by eye the strip is much thinner and flatter than either reference. It also reads more like a rail or fence than steps cut into a cliff face, with no cliff rock or step depth. A careful artist would not accept it beside the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 30506
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "cliff face below stairs (cobbled stone)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass/dirt cut walls at left and right edges",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is 48 px wide with the full width opaque on every row. Two light stone tread bands (rows 0-4 and 8-12) each end in a front-edge line (a bright line at row 8 starts the lower one) and are followed by dark riser or eave-shadow bands (rows 5-7 and 13-15), so the steps show horizontal surfaces and vertical risers. Below that, rows 16-31 are a cobbled cliff face. The grass and dirt strips at the left and right edges are the cut banks. The treads are only 5 rows each, but the structure is tread, edge line, shadow, riser, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin horizontal strip, not a 4x3 ground patch like the references. It shows two pale stair bars with a thin green top edge and wooden posts at the ends, set on a flat dark grey-blue background. Visible tones per tile are 6, but they come from a very small area and the background is a flat fill. The measured near-flat coverage is 0%, yet by eye the dark background and the stair treads read as uniform flat colour with no grain, speckle or per-stone shading. Dark edge pixels are 41% neutral, so the outline is mixed: partly neutral, partly brown beside the posts. It has about 3 shading steps against 5-6 in the references. The stair is much simpler than the stone-by-stone paving and the tufted grass. It reads as a sticker-like, thin object, and it is not equal to the references in texture or density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 29537
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread (light stone band)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower step tread (light stone band)",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "cliff rock face below the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dirt side banks",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs show two light tread bands, rows 0-4 and rows 8-12. Each band has a front-edge line at its lower end and is followed by 3 rows of dark riser shadow, at rows 5-7 and 13-15. The bright row 8 reads as the highlight on the second tread's back edge. Below that, rows 16-31 are a tall vertical south cliff face of mottled rock, which gives a front face of 16 rows. The grass and dirt banks at the left and right edges are narrow and only on rows 0-15. No isometric receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin object. It has two pale horizontal step bars, a green strip along the top and a wooden post at each end. Each step bar is a pale body with a dark edge and almost no grain, so it reads as a flat sticker. The cobble paving reference has per-stone shading and highlights, and the grass reference has speckle and clumps in several greens. The candidate has nothing comparable: no stone-by-stone shading, no soil or grass grain, and only about 3 lightness steps on the main material. The measured numbers do not rescue it. It has 6 visible tones per tile against 7 for paving and 3 for grass, and 0% near-flat coverage. But 41% of its dark edge pixels are near-neutral, so the outline is partly a neutral dark line rather than a clearly tinted material tone. By eye it looks thinner, flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 25011
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stair tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower stair tread",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "cliff face below stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two stair treads are drawn as light, speckled bands (rows 0-4 and 8-12). Each starts with a bright top row (rows 0 and 8) and ends in a lighter front-edge line (rows 4 and 12). Each is followed by 3 rows of dark riser or eave shadow (rows 5-7 and 13-15). Below the stairs, rows 16-31 are a vertical rocky cliff face. Grass and dirt strips at the left and right edges (rows 0-15) frame the cut as a front-facing wall, so no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin 3x1 strip. It shows pale horizontal tread bars, two brown posts and a green top edge on a dark grey-blue backing. The treads and risers are close to flat bands with only about 3 readable lightness steps, against roughly 5 on the paving reference. There are no per-stone shading dots, grain or speckle like the cobble highlights on the paving or the tufts on the grass. About 41% of the dark edge pixels are neutral, so the outline is partly grey-black. The paving reference has per-stone dark-and-light edging, and the grass reference has tinted dark edges at 0% neutral. The measured 6 visible tones per tile is below the paving reference's 7 and above the grass reference's 3, and the 0% near-flat coverage is not a concern on its own. By eye the strip still reads as flatter and more sticker-like than the references. It also looks more like a rail or bridge than stairs cut through a cliff face. There is no cliff-face stone texture and no step depth shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 25494
+  }
+ ],
+ "decidedAt": "2026-10-30T17:24:52.051Z",
+ "cells": {
+  "16": [
+   "11909ff931e413cd",
+   "703e86967f16bb95",
+   "e29b13db33562a4c",
+   "ff4a00bfc0b62e99"
+  ],
+  "24": [
+   "1e77f34cd4c4b8b9",
+   "515b98370d9764b7",
+   "68a7de3df546406a",
+   "83d1cfdc41bfc026",
+   "85198b4ede3d2e4e",
+   "e0eb98ee6d927022",
+   "ec1690f0b65a77aa",
+   "ec85854ff8c693a5"
+  ],
+  "32": [
+   "2e91e24060594a7e",
+   "6267a7a3cb1cb552",
+   "78f2d5e9a22d5f55",
+   "812dc1a21afbad9b",
+   "acfb22300875c170",
+   "d8345b64c3df500f"
+  ],
+  "48": [
+   "2b6a70570164cad4",
+   "e536bd7495ab7027"
+  ]
+ }
+}

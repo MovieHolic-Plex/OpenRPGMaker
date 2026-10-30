@@ -369,6 +369,13 @@ async function see(env: PiAssistantV2Env, session: V2Session, task: string, type
       const map = project.maps[image.mapId]!;
       // 다른 층은 이름만 준다 — 그림까지 주면 층마다 비평가가 그림 3장을 읽어 한 번에 ~6초 더 걸렸다(72회 실측: 1장 23초 · 3장 29초 중앙값).
       const others = images.filter((o) => o.mapId !== image.mapId).map((o) => ({ name: project.maps[o.mapId]?.name ?? o.mapId, image: "" }));
+      // 요청 하나가 여러 장소를 말하면(마을 + 북쪽 밤 숲길) 마을 비평가가 숲길 특징을 마을 맵의 「빠진 것」으로 잡는다 — 이번 실행에 지은 다른 장소와
+      // 이미 있는 다른 맵 이름(최대 8)을 문맥으로 준다(「다른 맵에 있으면 빠진 것으로 세지 않는다」). 실측 2026-10-31 asst-parity 숲 추격 terra: 마을 비평이
+      // 「어둡고 구불구불한 숲길이 마을에 안 보인다」 major 를 세 번 내 고치기 항목이 막힘으로 끝났다(숲길은 따로 지은 「밤의 숲길」 맵).
+      for (const [id, m] of Object.entries(project.maps)) {
+        if (id === image.mapId || others.length >= 8 || images.some((o) => o.mapId === id)) continue;
+        others.push({ name: m.name ?? id, image: "" });
+      }
       try {
         const run = await critique({ task, type, map: { id: map.id, name: map.name, width: map.width, height: map.height }, image: image.dataUrl, others, sideChat: env.sideChat, ...(env.signal ? { signal: env.signal } : {}) });
         session.criticCalls++; session.criticMs += run.ms;
@@ -1378,9 +1385,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const state = record?.result.state as ArgsState | undefined;
       let base: { tilesetId: string; args: Record<string, unknown> } | undefined;
       let prev: ArgsState | undefined;
-      if (state?.args && !state.stampEdit && String(state.args.mapId ?? state.mapId) === p.mapId) { base = { tilesetId: state.tilesetId ?? map.tilesetId, args: state.args }; prev = state; }
+      // 일본 실내(jp-city 빌더)의 기록 인자는 예제 구성(program) 이라 가구 목록(objects)이 없다 — 인자로 다시 짓지 않고 아래 그림 칸 경로로 간다.
+      // 전에는 그 기록에 mapId 가 없어 「위층·딸린 맵」으로 잘못 거절했다(2026-10-31 asst-parity 마왕 편의점: dress_room 이 더 놓은 계산대 둘을 못 뺐다).
+      const argsRoom = !!state?.args && !state.stampEdit && record?.builder !== "jp-city";
+      if (argsRoom && String(state!.args!.mapId ?? state!.mapId) === p.mapId) { base = { tilesetId: state!.tilesetId ?? map.tilesetId, args: state!.args! }; prev = state; }
       else {
-        if (state?.args && !state.stampEdit && state.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
+        if (argsRoom && state!.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
         // 이 실행이 짓지 않은 방: 지금 그림과 똑같이 다시 지어지는 인자를 찾는다(못 찾으면 옮기지 않는다 — 방이 견본으로 바뀌면 안 된다).
         const exact = adoptExactInterior(run, p.mapId);
         if (!exact) {
