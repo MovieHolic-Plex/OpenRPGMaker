@@ -1,6 +1,6 @@
 import { cssMixBlendMode } from "@/project/blendMode";
 import type { BattleSnapshot } from "@/battle/runtime";
-import { activeTimingEffects, type ActiveTimingEffects } from "@/battle/animationTiming";
+import { activeTimingEffects, battleAnimationFrameAtUnits, battleAnimationFrameStartUnits, type ActiveTimingEffects } from "@/battle/animationTiming";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
@@ -307,7 +307,7 @@ export function battleAnimationImpactMs(animationId: string): number {
   const record = battleAnimationRecord(animationId);
   const impact = record ? impactFrameIndex(record) : undefined;
   if (!record || impact === undefined) return 0;
-  return impact * battleAnimationFrameDurationMs(record);
+  return battleAnimationFrameStartUnits(record, impact) * battleAnimationFrameDurationMs(record);
 }
 
 /**
@@ -322,8 +322,12 @@ export function battleAnimationLeadPlan(animationId: string, availableMs: number
   const impact = record ? impactFrameIndex(record) : undefined;
   if (!record || impact === undefined || impact <= 0) return { leadMs: 0, skipFrames: 0, skippedMs: 0 };
   const frameMs = battleAnimationFrameDurationMs(record);
-  const fit = Math.min(impact, Math.max(0, Math.floor(availableMs / frameMs)));
-  return { leadMs: fit * frameMs, skipFrames: impact - fit, skippedMs: (impact - fit) * frameMs };
+  // 프레임마다 hold(기본 프레임의 배수)가 있으면 착탄 프레임에서 거꾸로 세어 들어가는 만큼만 앞당겨 튼다.
+  const impactUnits = battleAnimationFrameStartUnits(record, impact);
+  let skipFrames = 0;
+  while (skipFrames < impact && (impactUnits - battleAnimationFrameStartUnits(record, skipFrames)) * frameMs > availableMs) skipFrames += 1;
+  const skippedMs = battleAnimationFrameStartUnits(record, skipFrames) * frameMs;
+  return { leadMs: impactUnits * frameMs - skippedMs, skipFrames, skippedMs };
 }
 
 /** 착탄 프레임 — 효과음·섬광·흔들림이 처음 붙은 프레임. 없으면 undefined. */
@@ -448,6 +452,8 @@ function scheduleFollowUps(
       startPlayback(host, follow, timers, context, behind);
     };
     const startFrame = followUp.startFrame - skipFrames;
+    // 본체 프레임에 hold 가 있으면 후속 시작 시각도 그만큼 늦다(기본 프레임 수로 센다).
+    const startUnits = battleAnimationFrameStartUnits(record, followUp.startFrame) - battleAnimationFrameStartUnits(record, skipFrames);
     if (startFrame <= 0) {
       start(false);
       continue;
@@ -455,9 +461,13 @@ function scheduleFollowUps(
     const timer = window.setTimeout(() => {
       timers.delete(timer);
       start(true);
-    }, startFrame * frameMs);
+    }, startUnits * frameMs);
     timers.add(timer);
   }
+}
+
+function battleAnimationFrameAtUnitsHold(record: BattleAnimationRecord, frameIndex: number): number {
+  return battleAnimationFrameStartUnits(record, frameIndex + 1) - battleAnimationFrameStartUnits(record, frameIndex);
 }
 
 function startPlayback(
@@ -474,7 +484,7 @@ function startPlayback(
       const timer = window.setTimeout(() => {
         timers.delete(timer);
         finishPlayback(host, context);
-      }, battleAnimationFrameMs(context.sceneRoot, record));
+      }, battleAnimationFrameMs(context.sceneRoot, record) * battleAnimationFrameAtUnitsHold(record, 0));
       timers.add(timer);
     }
     return;
@@ -486,7 +496,8 @@ function startPlayback(
   const startedAt = Date.now();
   let index = startIndex;
   const timer = window.setInterval(() => {
-    const due = startIndex + Math.floor((Date.now() - startedAt + 1) / frameMs);
+    // hold 가 있는 프레임은 기본 프레임 여러 칸 동안 머문다(없으면 due = startIndex + 흐른 칸 수, 예전과 같다).
+    const due = battleAnimationFrameAtUnits(record, startIndex, Math.floor((Date.now() - startedAt + 1) / frameMs));
     while (index < due) {
       index += 1;
       if (index >= frames.length) {

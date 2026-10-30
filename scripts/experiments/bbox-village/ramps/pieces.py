@@ -31,7 +31,7 @@ def h(x, y, k=0):  # deterministic hash noise 0..255
 
 CW = 4  # cheek width px
 
-def cheek(px, x_, y_, F, W, left):
+def cheek(px, x_, y_, F, W, left, rich=False):
     """the cut's side wall in the face's own soil: left one faces east (shade), right one faces west (lit).
     i = 0 outer edge (meets the face), CW-1 inner edge (meets the climb). Grass lip on top, dark foot line."""
     for j in range(CW):
@@ -41,6 +41,10 @@ def cheek(px, x_, y_, F, W, left):
             if left: c = W1 if j == 0 else (W2 if n > 50 else W1)
             else:
                 c = W2 if j == 0 else (W5 if j == CW - 1 else (W4 if n > 45 else W3))
+            if rich and 0 < j < CW - 1:                                                       # soil grain in a short cheek
+                q = h(X, Y, 71)
+                if left: c = W3 if q > 225 else (W0 if q < 30 else c)
+                else: c = W5 if q > 220 else (W2 if q < 40 else c)
             px[X, Y] = c
         lip = 2 + (1 if h(X, 0, 5) < 110 else 0) + (1 if j == 0 else 0)
         for Y in range(lip): px[X, Y] = G1 if Y < lip - 1 else G0
@@ -80,7 +84,7 @@ def ramp_surface(px, F, W, rise):
         px[X, 0] = S5; px[X, 1] = S5 if h(X, 1, 4) < 128 else S4    # crest
         px[X, F - 1] = S1 if h(X, F - 1, 11) < 128 else S2           # toe shadow
 
-def stair_surface(px, F, W, rise):
+def stair_surface(px, F, W, rise, rich=False):
     """cut-stone steps, 8 px a step (two per face row). Each step = a row of dressed slabs (5-8 px, joints staggered step to
     step): lit nosing, tread with a bevel highlight top-left and shade bottom-right, a few weathering pits; the riser below is
     the slab's front in darker stone with its own joints offset half a slab; a shadow line under the next nosing.
@@ -93,7 +97,7 @@ def stair_surface(px, F, W, rise):
         dk = 1 if k >= (n + 1) // 2 else 0                     # lower half of the flight one tone darker
         # slab edges for this step
         edges, x = [x0], x0 + (k * 3) % 5 + 3
-        while x < x1 - 3: edges.append(x); x += 5 + h(x, k, 41) % 4
+        while x < x1 - 3: edges.append(x); x += (3 + h(x, k, 41) % 3) if rich else (5 + h(x, k, 41) % 4)   # short flight: smaller stones
         edges.append(x1)
         rj = {(edges[i] + edges[i + 1]) // 2 for i in range(len(edges) - 1)}   # riser joints: half a slab over
         for X in range(x0, x1):
@@ -113,21 +117,37 @@ def stair_surface(px, F, W, rise):
                         q = h(X, Y, 43)
                         if q < 60: c = L[2 - dk]                                            # pit / grain
                         elif q > 225: c = L[4 - dk]                                         # fleck
+                    if rich and 1 <= d <= 3 and not first:                                    # short flight: dressed-stone grain on every tread
+                        q = h(X, Y, 61)
+                        if q < 45: c = L[max(0, 2 - dk - sv)]
+                        elif q < 70 and d == 2: c = L[1]
+                        elif q > 215: c = L[min(5, 4 - dk + (1 if d == 1 else 0))]
                 elif d == 4: c = L[2 - dk] if not first else L[1]                             # tread back edge
                 elif d <= 6:                                                                     # riser front
                     q = h(X, Y, 47)
                     c = L[0] if X in rj else ((L[2] if q < 150 else L[3 - dk]) if d == 5 else (L[1] if q < 170 else L[2]))
+                    if rich and X not in rj:                                                  # riser: chisel marks, lit top lip
+                        if d == 5 and q > 200: c = L[4 - dk]
+                        elif d == 6 and q < 40: c = L[0]
                 else: c = L[0]                                                                # shadow
                 if X == x0 and d > 0: c = L[1] if d <= 4 else L[0]                            # left end, cheek shade
                 if X == x1 - 1 and 0 < d <= 3: c = L[4]                                       # right end, lit
                 px[X, Y] = c
     for X in range(x0, x1): px[X, F - 1] = P0
+    if rich:                                                                                  # grass tufts hanging over the crest
+        for X in range(x0, x1):
+            q = h(X, 0, 81)
+            if q < 120: px[X, 0] = G2 if q < 50 else G3
+            if q < 40: px[X, 1] = G0
+            elif q > 235: px[X, 0] = G4
 
 def piece(kind, w, rise):
     W, F = w * 16, rise * 16
     im = Image.new("RGB", (W, F + 16)); px = im.load()
-    (ramp_surface if kind == "ramp" else stair_surface)(px, F, W, rise)
-    cheek(px, 0, 0, F, W, True); cheek(px, 0, 0, F, W, False)
+    rich = kind == "stairs" and rise == 1
+    if kind == "ramp": ramp_surface(px, F, W, rise)
+    else: stair_surface(px, F, W, rise, rich)
+    cheek(px, 0, 0, F, W, True, rich); cheek(px, 0, 0, F, W, False, rich)
     foot = FOOT[kind].load()
     for Y in range(16):
         for X in range(W): px[X, F + Y] = foot[X % 16, Y]
@@ -144,7 +164,7 @@ def main(out):
     os.makedirs(out, exist_ok=True)
     pieces, ims = {}, []
     for kind in ("ramp", "stairs"):
-        for rise in (1, 2, 3):
+        for rise in (1, 2, 3, 4):
             for w in (2, 3):
                 im = piece(kind, w, rise); check(im)
                 name = f"{kind}-h{rise}-w{w}"; im.save(f"{out}/{name}.png")
@@ -152,12 +172,12 @@ def main(out):
                 ims.append((name, im))
     json.dump(pieces, open(f"{out}/pieces.json", "w"))
     K, gap = 8, 12
-    Wt = sum(i.width * K + gap for _, i in ims[:6]) + gap
-    sheet = Image.new("RGB", (Wt, 2 * (4 * 16 * K + gap) + gap), (24, 24, 30))
+    Wt = sum(i.width * K + gap for _, i in ims[:8]) + gap
+    sheet = Image.new("RGB", (Wt, 2 * (5 * 16 * K + gap) + gap), (24, 24, 30))
     for row in range(2):
         x = gap
-        for name, i in ims[row * 6:(row + 1) * 6]:
-            sheet.paste(i.resize((i.width * K, i.height * K), Image.NEAREST), (x, gap + row * (4 * 16 * K + gap))); x += i.width * K + gap
+        for name, i in ims[row * 8:(row + 1) * 8]:
+            sheet.paste(i.resize((i.width * K, i.height * K), Image.NEAREST), (x, gap + row * (5 * 16 * K + gap))); x += i.width * K + gap
     sheet.save(f"{out}/sheet.png")
     print(len(pieces), "pieces ->", out)
 
