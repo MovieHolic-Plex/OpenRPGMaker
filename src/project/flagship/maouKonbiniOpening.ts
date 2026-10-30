@@ -150,7 +150,6 @@ function shotThrone(project: Project): void {
   const maou = cellCenter(view, { x: 23, y: 5 });
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 150, zoom: 1, keys: {
     y: [{ atMs: 0, value: 165 }, { atMs: ms, value: maou.y + 8, ease: "ease-in-out" }],
-    zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.25, ease: "ease-in-out" }],
   } } });
   actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 2, "monster");
   sfx(project, id, "dread", SFX.dread, 150, 5000, 0.9, 900);
@@ -215,15 +214,13 @@ function shotDeal(project: Project): void {
   // 마왕 쪽은 머리 위 말풍선이 레터박스에 잘리지 않게 마왕보다 조금 위를 가운데로 잡는다.
   const mY = cellCenter(view, { x: 23, y: 5 }).y - 14, hY = cellCenter(view, { x: 23, y: 9 }).y;
   const camY: { atMs: number; value: number; ease?: string }[] = [{ atMs: 0, value: 135 }];
-  const camZ: { atMs: number; value: number; ease?: string }[] = [{ atMs: 0, value: 1 }];
   for (const b of beats) {
-    const y = b.who === "maou" ? mY : hY, z = b.who === "maou" ? 1.3 : 1.22;
+    const y = b.who === "maou" ? mY : hY;
     camY.push({ atMs: b.at, value: camY[camY.length - 1]!.value }, { atMs: b.at + 260, value: y, ease: "ease-out" });
-    camZ.push({ atMs: b.at, value: camZ[camZ.length - 1]!.value }, { atMs: b.at + 260, value: z, ease: "ease-out" });
   }
-  camY.push({ atMs: ms, value: hY - 20 }); camZ.push({ atMs: ms, value: 1.12, ease: "ease-in-out" });
+  camY.push({ atMs: ms, value: hY - 20 });
   // 「거절한다!!」(6.3초) 두 번째 거절에 화면이 한 번 튄다 — 주석에만 있고 빠져 있던 박(2026-10-30 적대 VQA).
-  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY, zoom: camZ },
+  execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: { y: camY },
     shake: { atMs: 6300, durationMs: 420, amplitude: 4, frequency: 22, seed: 5 } } });
   // 배우는 카메라를 건 다음에 세운다(옥좌 위 마왕은 고정 무대로 치면 레터박스 위쪽이다). 층 순서는 빛 위·말풍선 아래.
   actor(project, id, "maou", MON2, 7, maouAt, "down", 2, "monster");
@@ -244,16 +241,16 @@ function shotDeal(project: Project): void {
 function shotPower(project: Project): void {
   const id = "mk_op_power", ms = 3800;
   newShot(project, id, ms, { kind: "flash", durationMs: 220, color: "#ffd8ff" });
-  const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 5 }, 3);
+  // 애니메틱 배경은 컷마다 같은 정수 배율(2)이다 — 3배였던 이 컷만 도트가 굵어 보였다(2026-10-30 해상도 검수).
+  const view = mapBackground(project, id, MAP_THRONE, { x: 23, y: 5 }, 2);
   execTool(project, "animate_opening_camera", { shotId: id, camera: { x: 240, y: 135, keys: {
-    zoom: [{ atMs: 0, value: 1 }, { atMs: ms, value: 1.18, ease: "ease-in" }],
     // 뿔이 레터박스에 잘리지 않게 마왕 머리 쪽으로 조금 올려 잡는다.
     y: [{ atMs: 0, value: 120 }, { atMs: ms, value: 110 }],
   }, shake: { atMs: 1700, durationMs: 1900, amplitude: 3, frequency: 18, seed: 9 } } });
   screenTint(project, id, "tint", "#5a0a2a", 0.5);
   const center = cellCenter(view, { x: 23, y: 5 });
   glowAt(project, id, "aura", { x: center.x, y: center.y - 20 }, 260, "#c040ff", { hz: 3, amount: 0.4, inner: 0.15 });
-  actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 3, "monster");
+  actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 2, "monster");
   execTool(project, "upsert_opening_layer", { shotId: id, layer: {
     id: "dark-sparks", kind: "particles", role: "effect", color: "#d070ff", blend: "lighter", opacity: 0.85,
     x: center.x - 200, y: center.y - 160, width: 400, height: 260, particles: { preset: "sparks", count: 70, seed: 41, speed: 16, size: 2 },
@@ -306,8 +303,7 @@ function setupThroneBattle(project: Project): void {
       ...say("leonF", "base", "또 절반 타령이냐! 안 넘어간다!"),
     ] } });
   pageOf("mk_castle_r2", "2합 동귀어진", 2, [
-    ...say("mira", "base", "레온, 연금이랑 휴가는 좀 탐나는데."),
-    ...say("leonF", "base", "미라!! …이 목숨을 걸겠다. 『동귀어진』!"),
+    ...say("leonF", "base", "이대로는 끝이 안 나…. 이 목숨을 걸겠다. 『동귀어진』!"),
     ...say("maouF", "base", "자, 잠깐! 연금은? 연금은 어떻게 되는 거냐!"),
     // 봉인의 빛 — 전투 화면이 하얗게 탄다(전투 색조 m2-046). 전투 색조는 필드로 이어지지 않으므로 필드 장면이 끝나자마자
     // 같은 흰빛을 다시 깐다(옥좌 맵은 전투 퇴장 0.3~0.5초만 비친다). 필드 색조를 전투 전에 깔면 전투 화면 전체가 하얗게 덮였다(r4 시도).
@@ -378,8 +374,9 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
 export function stageMaouRoomWake(project: Project): void {
   // 방 음악은 아주 느리게 들어오게 한다(8초). 옥좌에서 넘어오는 순간 눈뜨기 장면이 곧바로 음악을 끄는데, 그 사이 들어온 소리가
   // 들리지 않아야 「정적 → 형광등」이 산다(v3 녹화: 기본 곡이 0.7초 울렸다). 나중에 현관으로 들어올 때도 같은 곡이 천천히 깔린다.
-  // 16×12 칸 원룸은 배율 1 이면 480×270 화면 가운데 작은 섬으로 떠 미완성처럼 보였다(감독 검수 v10). 배율 2 면 15×8 칸 시야라 방이 화면을 채운다.
-  execTool(project, "set_map_properties", { mapId: MAP_ROOM, zoom: 2, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
+  // 도트 배율은 게임 전체가 1(16px 칸 = 화면 16px)이다. 원룸(16×12)은 화면(30×17칸)보다 작아 엔진이 둘레를 천장 무늬로 채운다(playSceneMapSkirt).
+  // 옛판은 배율 2 로 키웠는데, 거리·공원(1)·편의점(1.5)과 도트 크기가 장면마다 달라 보였다(2026-10-30 해상도 검수).
+  execTool(project, "set_map_properties", { mapId: MAP_ROOM, bgm: { mode: "custom", resourceId: BGM_ROOM, fadeInMs: 8000 } });
   const zs = (expr: "base" | "happy" | "surprised" | "sad" | "embarrassed", ...l: string[]) => say("zervas", expr, ...l);
   // 눈뜨자마자 조작을 넘긴다 — 안내문·잔고는 탁자에 놓인 물건(살펴보기), 우편함 소리와 전단지는 걷는 동안 병렬 이벤트가 낸다.
   const wakeScene: Command[] = [

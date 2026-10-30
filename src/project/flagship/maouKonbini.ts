@@ -1299,8 +1299,7 @@ export function createMaouKonbiniFlagshipDemo(): FlagshipDemoBuildResult {
   const links = buildMaps(project);
   const roomWake = buildRoom(project, links, { x: 0, y: 0 });
   const konbiniArrive = buildKonbini(project, links);
-  // 22칸 폭 편의점은 배율 1 이면 화면(30칸) 양옆과 아래가 빈 띠로 남았다(처음 하는 사람 검수 2). 1.5배면 20칸 시야라 매장이 화면을 채운다.
-  execTool(project, "set_map_properties", { mapId: M.konbini, zoom: 1.5 });
+
   // 원룸 침대 → 편의점 출근 자리를 채운다.
   for (const e of project.maps[M.room]!.events) for (const p of e.pages ?? []) for (const c of p.commands as unknown as Record<string, unknown>[]) {
     if (c.kind === "transfer" && c.mapId === M.konbini) { c.x = konbiniArrive.x; c.y = konbiniArrive.y; }
