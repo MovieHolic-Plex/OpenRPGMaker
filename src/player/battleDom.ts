@@ -3,7 +3,7 @@ import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { retroBattleIntro, retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -2194,7 +2194,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function beginBattle(): void {
     if (started) return;
     started = true;
-    if (options.introHold !== false) sequencer.startIntro(options.runtime.snapshot());
+    if (options.introHold !== false) {
+      sequencer.startIntro(options.runtime.snapshot());
+      // 16칸 도트 적 시트의 전투 시작 포효(intro 칸). startIntro 가 적 노드를 그린 뒤다.
+      if (retroMotion) retroBattleIntro(field);
+    }
   }
   if (options.deferStart) syncView();
   else if (options.introHold !== false) beginBattle();
