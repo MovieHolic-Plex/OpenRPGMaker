@@ -268,3 +268,11 @@ export function englishVerbFailureHead(tool: string, failText: string): string |
   const en = englishToolMessage(s);
   return en.startsWith("Tool said (Korean)") ? undefined : `Rejected: ${tool} — ${en}`;
 }
+
+/** 거절 본문(JSON·글)의 첫 이유를 영어 한 줄로 — 할 일 막힘 글(모델용)에 쓴다. */
+export function englishFailureLine(text: string, max = 200): string {
+  const p = parseFailure(text);
+  const first = p.issues[0];
+  const raw = first?.message ?? stripHead(p.summary);
+  return clip(oneLine(first ? englishToolMessage(first.message, first.code) : raw.startsWith("Rejected:") ? raw : englishToolMessage(raw)), max);
+}

@@ -332,7 +332,7 @@ export function withEncountersOnlyWhenAsked(tools: PiToolShape[], task: string):
       const args = (params && typeof params === "object" ? params : {}) as Record<string, unknown>;
       if (args.encounterRate !== undefined) return tool.execute(id, params, signal);
       const result = await tool.execute(id, { ...args, encounterRate: 0 }, signal);
-      const note = "요청에 무작위 조우가 없어 발생률 0(꺼짐)으로 두었다 — 걷다가 저절로 싸우지 않는다. 싸움은 보이는 적(place_field_enemy)·이벤트 전투로 두고, 정말 켜야 하면 encounterRate 를 숫자로 다시 준다(6~10 이 보통).";
+      const note = "[Encounters off] The request asks for no random encounters, so encounterRate was set to 0 (off) — the player never fights just by walking. Put fights in visible enemies (place_field_enemy) or event battles; if you really need random encounters, call again with encounterRate as a number (6-10 is typical).";
       return { ...result, content: [...result.content, { type: "text", text: note }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
     },
   });
@@ -353,9 +353,9 @@ export function withPictureSearchBudget(tools: PiToolShape[]): PiToolShape[] {
       const args = (params ?? {}) as { kind?: string; query?: string };
       const pictureLike = ["picture", "backdrop", "faceset"].includes(String(args.kind));
       if (pictureLike && misses >= PICTURE_SEARCH_MISSES) {
-        const summary = `그림 묶음에 맞는 그림이 없다(이미 ${misses}번 0개: ${tried.join(", ")}). 더 찾지 않는다 — ` +
-          "(1) 사용자에게 «꼭 맞는 그림이 없어요. 새로 그릴까요, 비슷한 일반 그림을 쓸까요?»라고 ask_user 로 묻거나, " +
-          "(2) 이미 찾은 것 중 가장 가까운 일반 그림(밤하늘·들판·실내 등)을 쓰고 보고에 «맞는 그림이 없어 일반 그림을 썼다»고 적는다.";
+        const summary = `[Picture search stopped] The picture bundle has no matching picture (already ${misses} searches with 0 results: ${tried.join(", ")}). Not searching again — ` +
+          "either (1) ask the user with ask_user, in Korean: «꼭 맞는 그림이 없어요. 새로 그릴까요, 비슷한 일반 그림을 쓸까요?», " +
+          "or (2) use the closest general picture you already found (night sky, field, interior…) and write in the report «맞는 그림이 없어 일반 그림을 썼다».";
         return { content: [{ type: "text", text: JSON.stringify({ ok: false, summary }) }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
       }
       const result = await tool.execute(id, params, signal);

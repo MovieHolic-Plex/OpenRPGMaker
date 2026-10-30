@@ -104,15 +104,15 @@ export function bindRefs(item: TodoItem, add: TodoRefs, project: Project, prune 
 
 const short = (id: string) => (id.length > 22 ? `${id.slice(0, 20)}…` : id);
 /** 사람이 읽는 묶음 한 줄(없으면 빈 글). */
-export function refsLabel(refs: TodoRefs | undefined): string {
+export function refsLabel(refs: TodoRefs | undefined, en = false): string {
   if (!refs) return "";
   const parts = [
-    refs.mapIds?.length ? `맵 ${refs.mapIds.map(short).join(",")}` : "",
-    refs.eventIds?.length ? `이벤트 ${refs.eventIds.map((e) => short(e.includes(":") ? e.slice(e.indexOf(":") + 1) : e)).join(",")}` : "",
-    refs.itemIds?.length ? `아이템 ${refs.itemIds.map(short).join(",")}` : "",
-    refs.troopIds?.length ? `적 그룹 ${refs.troopIds.map(short).join(",")}` : "",
+    refs.mapIds?.length ? `${en ? "map" : "맵"} ${refs.mapIds.map(short).join(",")}` : "",
+    refs.eventIds?.length ? `${en ? "event" : "이벤트"} ${refs.eventIds.map((e) => short(e.includes(":") ? e.slice(e.indexOf(":") + 1) : e)).join(",")}` : "",
+    refs.itemIds?.length ? `${en ? "item" : "아이템"} ${refs.itemIds.map(short).join(",")}` : "",
+    refs.troopIds?.length ? `${en ? "troop" : "적 그룹"} ${refs.troopIds.map(short).join(",")}` : "",
   ].filter(Boolean);
-  return parts.length ? `묶음 ${parts.join(" · ")}` : "";
+  return parts.length ? `${en ? "bound to" : "묶음"} ${parts.join(" · ")}` : "";
 }
 
 /**

@@ -328,14 +328,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           return card;
         }
         const cur = store.next();
-        const lines = [`[State card — this call only] ${store.view(0).split("\n")[0]}`];
+        const lines = [`[State card — this call only] ${store.view(0, true).split("\n")[0]}`];
         if (cur) {
           const m = store.meta.get(cur.id);
           let call = m?.nextCall?.text;
           if (!call) { try { const nc = nextForItem(cur, env.ctx.project, toolNames); call = nc ? formatCall(nc) : undefined; } catch { call = undefined; } }
-          lines.push(`Do now: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (check: ${checkLabel(cur.check)})` : ""}`);
+          lines.push(`Do now: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (check: ${checkLabel(cur.check, true)})` : ""}`);
           if (call) lines.push(`Next call: ${call.slice(0, 400)}`);
-          if (m?.lastCheck && !m.lastCheck.pass) lines.push(`Last check ✗: ${m.lastCheck.detail.slice(0, 240)}`);
+          if (m?.lastCheck && !m.lastCheck.pass) lines.push(`Last check ✗: ${(m.lastCheck.en ?? m.lastCheck.detail).slice(0, 240)}`);
         }
         const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${i.content.slice(0, 50)}»`);
         if (rest.length) lines.push(`Still open: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
@@ -366,7 +366,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             const note = await autoBuild(env);
             if (note) autoNotes.push(note);
             refreshChecks(env);
-            if (!loopStop && store.openCount()) { const prompt = reinject(env, "[함수 마감 뒤 기계 확인이 다시 열린 항목]"); if (prompt) return prompt; }
+            if (!loopStop && store.openCount()) { const prompt = reinject(env, "[Items reopened by the machine check after the function finish]"); if (prompt) return prompt; }
           }
           if (loopStop) return undefined;
           // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
@@ -383,7 +383,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           if (synced.closed.length || synced.capped.length) env.emit({ type: "execution_status", name: "v2.gate.sync", ok: true, summary: `관문 항목 — 사라져 닫음 ${synced.closed.length} · 상한 막힘 ${synced.capped.length}` });
           if (synced.opened.length) {
             env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });
-            const prompt = newBatch(env, synced.opened, `[끝맺음 관문 — 함수 검사·비평이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙였다. 고친 뒤 done, 고칠 수 없으면 block(이유)]`);
+            const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot]`);
             if (prompt) return prompt;
             return undefined;
           }
@@ -398,7 +398,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             const opened = store.append(advisorRuns === 1 ? "검토자" : "검토자 다시", blockers.map((n, i) => ({ content: `${n.what}${n.claim ? ` (보고: «${n.claim.slice(0, 60)}»)` : ""}`.slice(0, 220), key: `adv:${advisorRuns}:${i}` })), "critic");
             for (const item of opened) advisorItems.add(item.id);
             if (opened.length) {
-              const prompt = newBatch(env, opened, `[독립 검토자 막음 ${opened.length}건 — 보고 초안이 실제 변경과 맞지 않거나 요청을 빠뜨렸다. 고치거나, 고칠 수 없으면 block(이유)]`);
+              const prompt = newBatch(env, opened, `[Independent reviewer blocked ${opened.length} item(s) — the draft report does not match the actual changes or misses part of the request. Fix them, or block(reason) if you cannot]`);
               if (prompt) return prompt;
               return undefined;
             }
@@ -408,7 +408,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             const opened = await vqaStep(env);
             if (opened.length) {
               const r = vqaRounds.at(-1)!;
-              const prompt = newBatch(env, opened, `[화면 검수 ${r.round}판 — 다른 모델의 검수자(${r.reviewer})가 실제 그림에서 찾은 결함 ${opened.length}건을 할 일에 덧붙였다. 맵은 inspect 로 다시 보고 고친다]`);
+              const prompt = newBatch(env, opened, `[Screen review round ${r.round} — a reviewer on another model (${r.reviewer}) found ${opened.length} defect(s) in the actual rendered images; they were added to the todo list. Look at the map again with inspect and fix them]`);
               if (prompt) return prompt;
             }
           }

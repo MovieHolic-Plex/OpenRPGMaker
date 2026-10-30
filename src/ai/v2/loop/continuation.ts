@@ -90,8 +90,8 @@ export const STOP_REASON_KO: Record<Exclude<LoopDecision, { kind: "continue" }>[
 
 const failingLine = (store: TodoStore, item: TodoItem): string | undefined => {
   const m = store.meta.get(item.id);
-  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» machine check ✗ — ${m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → bind it with todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<candidate id>)` : ""}`;
-  if (m?.lastFail) return `- ${item.id} «${item.content}» last failure — ${m.lastFail}`;
+  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» machine check ✗ — ${m.lastCheck.en ?? m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → bind it with todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<candidate id>)` : ""}`;
+  if (m?.lastFail) return `- ${item.id} «${item.content}» last failure — ${m.lastFailEn ?? m.lastFail}`;
   return undefined;
 };
 
@@ -103,11 +103,11 @@ export function continuationPrompt(store: TodoStore, opts: { readonly brief?: st
   return [
     ...(opts.brief ? [opts.brief, ""] : []),
     ...(opts.batchNote ? [opts.batchNote] : []),
-    `[Todo loop] open items ${c.open}/${c.total}${next ? ` — Do now: ${next.id} «${next.content}»${next.check && next.check.kind !== "none" ? ` (machine check: ${checkLabel(next.check)})` : ""}` : ""}.`,
+    `[Todo loop] open items ${c.open}/${c.total}${next ? ` — Do now: ${next.id} «${next.content}»${next.check && next.check.kind !== "none" ? ` (machine check: ${checkLabel(next.check, true)})` : ""}` : ""}.`,
     // H7: 「지금 할 것」 바로 뒤에 그 항목의 다음 호출 한 개(동사+채운 인자 뼈대) — 추상 지시 대신 바로 부를 모양.
     ...(next && opts.nextCallFor ? (() => { const call = opts.nextCallFor!(next); return call ? [`Next call: ${call}`] : []; })() : []),
     "Continue with real tool calls, or if you cannot, mark it with todo(op:\"block\", task:<id>, reason:<one-line reason>) and go to the next item. Do not restate the plan. Mark finished items with todo(op:\"done\") — done re-runs the machine check. Marking an item completed while its machine check is ✗ is a false completion.",
     ...(failing.length ? ["Not done yet (machine record):", ...failing] : []),
-    store.view(),
+    store.view(40, true),
   ].join("\n");
 }

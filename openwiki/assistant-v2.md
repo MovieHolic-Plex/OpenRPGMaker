@@ -444,6 +444,8 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
     `Fixed call: <도구>({…})`(420자 넘으면 «같은 인자 + 아래 고친 곳») + `Changes: remove patrol · a.doorAt.y 7→6 · drop N empty/default optional fields — 이유`. 고친 호출은 `correctionFor`(argGuard preCheck → retryCandidates → nextAfterFailure 같은 도구) 가 결정적으로 고른다.
     도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`. 맵·인물 이름·대사는 그대로.
     H2 고침·돌려보냄, H3 `[Next call]`, H8 `[Change strategy]`, H7 재주입(`Do now: … Next call: …`)·상태 카드, `[Relocated and linked]`·`[Graphic matched]` 도 영어다. 기록·실패 세기(state.failures·서명)는 원래 글 그대로다.
+    할 일 고리 글도 모델 몫은 영어다: todo 도구 설명·스키마·op 결과(init/done ✓✗/block/bind…), `TODO_CHECK_SCHEMA`·`parseTodoCheck` 오류, H4 `[Auto-check ✓]`, H5 `[Verb scope — not run (not a failure)]`, `[Todo first]`·`[Repeated call blocked]`·`[Repeat warning]`·`[Todo auto-blocked]`, 요청 뼈대 카드, 재주입 머리말(관문·검토자·화면 검수·함수 마감), 화면 검수 고치기 차례 글(`vqaFixBrief`), 이어 받은 목록, 문맥 줄임 표시, 조우 꺼짐·그림 찾기 상한.
+    기계 확인은 두 언어로 돈다: `runTodoItemCheck` 가 `CheckResult.detail`(한국어 — 장부·최종 보고) 과 `.en`(모델) 을 함께 낸다(`checks.ts` 의 `t(ko,en)`). 목록은 `store.view(n, true)`, 실패 기록은 `lastFailEn`. 항목 내용·막힘 이유·상태 줄(emit)·최종 보고·v2 시스템 프롬프트 본문(`prompt.ts`·동사 카드)은 한국어 그대로다.
     재생: `bun scripts/qa/assistant-v2/failureTextReplay.mts <판 폴더 …>` — 판 저장본에서 실패 호출을 다시 돌려 예전 글/지금 글을 나란히 찍는다.
     tool_end 표시: «아직 짓지 않았다(실패 아님)»(make_place 설계 받기·땅 미리보기)와 H5 «실행 안 함(실패 아님)»은 ok:true(+notFailure)로 기록한다.
   - H3 거절 뒤 다음 호출(`loop/nextCall.ts nextAfterFailure`): 고쳐 다시 불러도 거절이면 분류해 «[다음 호출] 동사(채운 인자 뼈대) — 이유»를 결과에 싣는다 — create_transfer_pair 문앞 막힘 → 양끝 doorAt 뺀 같은 호출 ·

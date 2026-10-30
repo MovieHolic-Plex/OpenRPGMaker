@@ -15,6 +15,8 @@ export interface TodoMeta {
   failSig?: string;
   sigStreak?: number;
   lastFail?: string;
+  /** 같은 실패의 영어 한 줄(모델용 재주입 글). */
+  lastFailEn?: string;
   lastCheck?: CheckResult;
   /** 누가 닫았나 — model(조수의 done/drop/block) · auto(함수가 확인해 닫음). */
   closedBy?: "model" | "auto";
@@ -54,10 +56,13 @@ export const TODO_SAME_FAIL_STREAK = 2;
 
 export const isOpen = (status: TodoStatus): boolean => status === "pending" || status === "in_progress";
 const MARK: Record<TodoStatus, string> = { pending: "○", in_progress: "→", completed: "✓", blocked: "✗막힘", dropped: "–뺌" };
+const MARK_EN: Record<TodoStatus, string> = { pending: "○", in_progress: "→", completed: "✓", blocked: "✗blocked", dropped: "–dropped" };
 const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max)}…` : text);
 const norm = (text: string) => text.toLowerCase().replace(/\s+/gu, " ").trim();
 
-export function checkLabel(check: TodoCheck | undefined): string {
+/** 확인 종류 한 줄. en 이면 모델용 영어(이름·대사 낱말은 그대로). */
+export function checkLabel(check: TodoCheck | undefined, en = false): string {
+  if (en) return checkLabelEn(check);
   if (!check || check.kind === "none") return "눈 확인";
   switch (check.kind) {
     case "place": return `장소 「${check.name}」${check.placeKind ? `(${check.placeKind})` : ""}`;
@@ -71,6 +76,23 @@ export function checkLabel(check: TodoCheck | undefined): string {
     case "objective": return `목표 줄${check.text ? ` «${check.text}»` : ""}`;
     case "party_join": return `동료 「${check.name}」 합류${check.map ? ` @${check.map}` : ""}`;
     case "reachable": return `「${check.target}」까지 걸어 닿음${check.from ? ` (from ${check.from})` : ""}`;
+  }
+}
+
+function checkLabelEn(check: TodoCheck | undefined): string {
+  if (!check || check.kind === "none") return "visual check";
+  switch (check.kind) {
+    case "place": return `place "${check.name}"${check.placeKind ? ` (${check.placeKind})` : ""}`;
+    case "person": return `person "${check.name}"${check.map ? ` @${check.map}` : ""}`;
+    case "talk": return `"${check.who}" talks${check.says ? ` «${check.says}»` : ""}`;
+    case "battle": return `${check.boss ? "boss " : ""}battle${check.who ? ` "${check.who}"` : ""}${check.map ? ` @${check.map}` : ""}`;
+    case "link": return `"${check.from}" → "${check.to}" transfer`;
+    case "ending": return `ending reached${check.map ? ` @${check.map}` : ""}`;
+    case "item": return `item "${check.name}"${check.gives ? " given" : ""}`;
+    case "present_evidence": return `present evidence "${check.item}"${check.to ? ` → ${check.to}` : ""}`;
+    case "objective": return `objective line${check.text ? ` «${check.text}»` : ""}`;
+    case "party_join": return `companion "${check.name}" joins${check.map ? ` @${check.map}` : ""}`;
+    case "reachable": return `"${check.target}" reachable on foot${check.from ? ` (from ${check.from})` : ""}`;
   }
 }
 
@@ -254,12 +276,13 @@ export class TodoStore {
    * 진행 중 항목의 실패 하나를 센다(쓰기 도구 거절·예외, 기계 확인 ✗). 같은 항목 3회째이거나 같은 실패 서명이 이어지면 막힘으로 닫는다.
    * 돌려주는 값: 막힘으로 닫았으면 그 이유.
    */
-  recordFailure(item: TodoItem, sig: string, detail: string): string | undefined {
+  recordFailure(item: TodoItem, sig: string, detail: string, detailEn?: string): string | undefined {
     const m = this.metaOf(item.id);
     item.attempts += 1;
     m.sigStreak = m.failSig === sig ? (m.sigStreak ?? 1) + 1 : 1;
     m.failSig = sig;
     m.lastFail = clip(detail, 300);
+    m.lastFailEn = detailEn ? clip(detailEn, 300) : undefined;
     if (item.attempts >= TODO_MAX_ATTEMPTS) return `${item.attempts}번 실패 — 마지막: ${clip(detail, 160)}`;
     if ((m.sigStreak ?? 0) >= TODO_SAME_FAIL_STREAK) return `같은 실패가 ${m.sigStreak}번 이어짐 — ${clip(detail, 160)}`;
     return undefined;
@@ -277,7 +300,8 @@ export class TodoStore {
   }
 
   /** 사람이 읽는 짧은 체크리스트(조수에게도 이 글을 준다). */
-  view(maxItems = 40): string {
+  view(maxItems = 40, en = false): string {
+    if (en) return this.viewEn(maxItems);
     if (!this.items.length) return "할 일 목록이 비었다.";
     const c = this.counts();
     const lines = [`할 일 ${c.done}/${c.total} 끝 · 열림 ${c.open}${c.blocked ? ` · 막힘 ${c.blocked}` : ""}${c.dropped ? ` · 뺌 ${c.dropped}` : ""}`];
@@ -292,6 +316,28 @@ export class TodoStore {
       lines.push(` ${MARK[item.status]} ${item.id} ${item.content}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · 시도 ${item.attempts}` : ""}${why}`);
     }
     if (this.items.length > maxItems) lines.push(` …항목 ${this.items.length - maxItems}개 더`);
+    return lines.join("\n");
+  }
+
+  /**
+   * 모델이 받는 같은 체크리스트(영어). 항목 내용·막힘 이유는 쓴 글 그대로다(조수·사용자·검수가 쓴 글이라 옮기지 않는다).
+   * 판정 글은 영어판(lastCheck.en)이 있으면 그것.
+   */
+  viewEn(maxItems = 40): string {
+    if (!this.items.length) return "The todo list is empty.";
+    const c = this.counts();
+    const lines = [`Todo ${c.done}/${c.total} done · ${c.open} open${c.blocked ? ` · ${c.blocked} blocked` : ""}${c.dropped ? ` · ${c.dropped} dropped` : ""}`];
+    let phase = "";
+    for (const item of this.items.slice(0, maxItems)) {
+      if (item.phase !== phase) { phase = item.phase; lines.push(`[${phase}]`); }
+      const m = this.meta.get(item.id);
+      const check = item.check && item.check.kind !== "none" ? ` · check: ${checkLabel(item.check, true)}${m?.lastCheck ? (m.lastCheck.pass ? " ✓" : ` ✗ ${clip(m.lastCheck.en ?? m.lastCheck.detail, 90)}`) : ""}` : "";
+      const why = item.blockedReason ? ` — ${item.blockedReason}` : "";
+      const bound = refsLabel(item.refs, true);
+      const src = item.source === "model" ? "" : ` (${item.source === "gate" ? "function check" : item.source === "critic" ? "critic" : "screen review"})`;
+      lines.push(` ${MARK_EN[item.status]} ${item.id} ${item.content}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · attempts ${item.attempts}` : ""}${why}`);
+    }
+    if (this.items.length > maxItems) lines.push(` …${this.items.length - maxItems} more items`);
     return lines.join("\n");
   }
 

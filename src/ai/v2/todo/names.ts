@@ -83,7 +83,8 @@ export function nearestNames(want: string, names: Iterable<string>, n = 3): stri
   return scored.sort((x, y) => x.d - y.d).slice(0, n).map((s) => s.name);
 }
 
-export const hint = (want: string, names: Iterable<string>): string => {
+export const hint = (want: string, names: Iterable<string>, en = false): string => {
   const near = nearestNames(want, names);
+  if (en) return near.length ? ` Closest: ${near.map((x) => `"${x}"`).join(", ")}` : " There are no candidates at all.";
   return near.length ? ` 가까운 후보: ${near.map((x) => `「${x}」`).join(", ")}` : " 후보가 하나도 없다";
 };

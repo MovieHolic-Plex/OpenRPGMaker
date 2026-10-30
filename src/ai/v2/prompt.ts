@@ -62,6 +62,6 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다(2026-10-28). 게임 하나를 만드는 요청이면 청사진 카드도 싣는다.
   const whole = wantsWholeGame(task ?? "");
   // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
-  const carried = todo?.initialized && todo.items.length ? [`[앞 실행에서 이어 받은 할 일 — todo init 하지 말고 열린 항목부터 이어 간다]\n${todo.view()}`] : [];
+  const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
   return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[지식 카드]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
 }

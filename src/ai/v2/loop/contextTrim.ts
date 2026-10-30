@@ -27,10 +27,10 @@ export function trimContext(messages: readonly unknown[], card?: string): { mess
     if (!Array.isArray(msg.content)) return m;
     let changed = false;
     const parts = (msg.content as Part[]).map((p) => {
-      if (p?.type === "image") { changed = true; saved += String((p as { data?: string }).data ?? "").length; return { type: "text", text: "(앞 그림 — 생략)" }; }
+      if (p?.type === "image") { changed = true; saved += String((p as { data?: string }).data ?? "").length; return { type: "text", text: "(earlier image — omitted)" }; }
       if (p?.type === "text" && typeof p.text === "string" && p.text.length > CONTEXT_TRIM_CHARS) {
         changed = true; saved += p.text.length - CONTEXT_TRIM_CHARS;
-        return { ...p, text: `${p.text.slice(0, CONTEXT_TRIM_CHARS)}…(앞 결과 — 줄임, 필요하면 다시 읽는다)` };
+        return { ...p, text: `${p.text.slice(0, CONTEXT_TRIM_CHARS)}…(earlier result — trimmed; read it again if needed)` };
       }
       return p;
     });

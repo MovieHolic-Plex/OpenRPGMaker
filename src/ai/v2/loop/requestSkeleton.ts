@@ -127,8 +127,8 @@ export function skeletonCard(els: readonly SkeletonElement[]): string | undefine
   const checked = els.filter((e) => e.check);
   const remind = els.filter((e) => !e.check);
   return [
-    "[요청 뼈대 — 함수가 요청 글에서 뽑은 필수 요소. todo init 에 빠짐없이 넣는다(빠진 확인 요소는 고리가 덧붙인다)]",
+    "[Request skeleton — required elements a function extracted from the request text. Put every one into todo init (checked elements you leave out are appended by the loop)]",
     ...checked.map((e) => `- ${e.content} — check ${JSON.stringify(e.check)}`),
-    ...(remind.length ? [`잊지 말 것(기계 확인 없음): ${remind.map((e) => e.content).join(" · ")}`] : []),
+    ...(remind.length ? [`Do not forget (no machine check): ${remind.map((e) => e.content).join(" · ")}`] : []),
   ].join("\n");
 }

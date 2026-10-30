@@ -53,7 +53,10 @@ export interface TodoItem {
 
 export interface CheckResult {
   pass: boolean;
+  /** 사람이 보는 판정 글(한국어 — 최종 보고·장부). */
   detail: string;
+  /** 모델이 받는 같은 판정의 영어 글(runTodoItemCheck 가 채운다). */
+  en?: string;
   evidence?: { mapId?: string; eventId?: string; x?: number; y?: number };
 }
 
@@ -98,38 +101,38 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
 export const TODO_CHECK_SCHEMA = {
   type: "object",
   description:
-    "이 할 일이 끝났는지 기계로 확인하는 방법. kind 별 필수 칸: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name. battle·ending·objective·none 은 필수 칸 없음. 기계로 볼 수 없으면 kind=none.",
+    "How a machine checks that this todo is finished. Required fields per kind: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name. battle, ending, objective and none need no field. If a machine cannot see it, kind=none. Names are the in-game names (any language).",
   properties: {
     kind: {
       type: "string",
       enum: [...TODO_CHECK_KINDS],
       description:
-        "place=그 이름의 장소(맵)가 있다, person=그 이름의 인물이 맵에 있다, talk=그 인물이 대사를 한다, battle=전투가 걸린다(boss=보스전), link=from 맵에서 to 맵으로 걸어가 이동한다, ending=엔딩에 닿는다(map=그 맵에서), item=그 아이템이 있다(gives=지급된다), present_evidence=그 증거를 내밀 수 있다, objective=목표 줄이 설정된다, reachable=시작(또는 from)에서 target 까지 걸어 닿는다, party_join=그 이름의 동료가 파티에 들어온다(changeParty 추가가 살아 있는 이벤트에 있고 걸어 닿는다), none=판정자가 눈으로 확인",
+        "place=a place (map) with that name exists, person=a person with that name is on a map, talk=that person has dialogue, battle=a battle is triggered (boss=boss battle), link=you can walk from map `from` into map `to`, ending=an ending is reached (map=from that map), item=that item exists (gives=it is actually given), present_evidence=that evidence can be presented, objective=an objective line is set, reachable=target is reachable on foot from the start (or from), party_join=a companion with that name joins the party (a changeParty add in a live event reachable on foot), none=a reviewer checks by eye",
     },
-    name: { type: "string", description: "place·person·item 의 이름, party_join 의 동료(배우) 이름" },
-    placeKind: { type: "string", enum: [...TODO_PLACE_KINDS], description: "place 의 종류(선택)" },
-    map: { type: "string", description: "person·battle·ending 을 이 맵 이름으로 좁힘(선택) — ending 은 엔딩을 부르는 이벤트가 그 맵에 있어야 한다" },
-    who: { type: "string", description: "talk·battle 의 인물 이름" },
-    says: { type: "string", description: "talk 대사에 들어 있어야 할 낱말(선택)" },
-    boss: { type: "boolean", description: "battle 이 보스전이어야 하면 true" },
-    from: { type: "string", description: "link 의 출발 맵, reachable 의 출발 맵(선택)" },
-    to: { type: "string", description: "link 의 도착 맵, present_evidence 를 받을 인물(선택)" },
-    gives: { type: "boolean", description: "item 이 실제로 지급돼야 하면 true" },
-    item: { type: "string", description: "present_evidence 의 증거 아이템 이름" },
-    text: { type: "string", description: "objective 목표 줄에 들어 있어야 할 낱말(선택)" },
-    target: { type: "string", description: "reachable 의 목표(이벤트·인물·맵 이름)" },
-    fresh: { type: "boolean", description: "이번 요청으로 새로 만들거나 고쳐야 하는 것이면 true(기본 true) — 원래 있던 것으로는 통과하지 않는다. 이미 있는 것을 확인만 하면 false" },
+    name: { type: "string", description: "name for place/person/item; the companion (actor) name for party_join" },
+    placeKind: { type: "string", enum: [...TODO_PLACE_KINDS], description: "kind of place (optional)" },
+    map: { type: "string", description: "narrow person/battle/ending to this map name (optional) — for ending, the event that calls the ending must be on that map" },
+    who: { type: "string", description: "person name for talk/battle" },
+    says: { type: "string", description: "word that must appear in the talk dialogue (optional)" },
+    boss: { type: "boolean", description: "true if the battle must be a boss battle" },
+    from: { type: "string", description: "source map for link; start map for reachable (optional)" },
+    to: { type: "string", description: "destination map for link; the person receiving present_evidence (optional)" },
+    gives: { type: "boolean", description: "true if the item must actually be given" },
+    item: { type: "string", description: "evidence item name for present_evidence" },
+    text: { type: "string", description: "word that must appear in the objective line (optional)" },
+    target: { type: "string", description: "target for reachable (event, person or map name)" },
+    fresh: { type: "boolean", description: "true if this request must create or change it (default true) — something that already existed does not pass. false to only confirm something that exists" },
   },
   required: ["kind"],
 } as const;
 
 /** 모델이 보낸 인자를 TodoCheck 로. 틀리면 { error } — 모델이 고칠 수 있게 문장으로. */
 export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
-  if (!raw || typeof raw !== "object") return { error: "check 는 객체여야 한다" };
+  if (!raw || typeof raw !== "object") return { error: "check must be an object" };
   const r = raw as Record<string, unknown>;
   const kind = r.kind;
   if (typeof kind !== "string" || !(TODO_CHECK_KINDS as readonly string[]).includes(kind)) {
-    return { error: `check.kind 는 ${TODO_CHECK_KINDS.join("|")} 중 하나여야 한다 (받음: ${String(kind)})` };
+    return { error: `check.kind must be one of ${TODO_CHECK_KINDS.join("|")} (got: ${String(kind)})` };
   }
   const k = kind as TodoCheckKind;
   const str = (key: string): string | undefined => {
@@ -137,7 +140,7 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
     return typeof v === "string" && v.trim() ? v.trim() : undefined;
   };
   const missing = TODO_CHECK_REQUIRED[k].filter((key) => !str(key));
-  if (missing.length) return { error: `check.kind=${k} 에는 ${missing.join(", ")} 칸이 필요하다` };
+  if (missing.length) return { error: `check.kind=${k} needs the field(s) ${missing.join(", ")}` };
   const bool = (key: string): boolean | undefined => (typeof r[key] === "boolean" ? (r[key] as boolean) : undefined);
   const clean = <T extends object>(o: T): T =>
     Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
