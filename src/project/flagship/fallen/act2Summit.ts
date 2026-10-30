@@ -18,7 +18,8 @@ type Rec = Record<string, unknown>;
 
 export const FS2_TOP = "fs2_sky_tower_top";
 /** 꼭대기 기본 카메라 배율 — 렌즈실이 화면을 채운다(배율 1 은 둘레 허공이 많았다). */
-const TOP_ZOOM = 1.4;
+/** 꼭대기 기본 배율 1(정수만 — #3950). 32×27 방이 30×17칸 시야보다 커서 1배로도 화면이 찬다. 대사 근접은 camTo 2배. */
+const TOP_ZOOM = 1;
 const FS2_T4 = "fs2_sky_tower_f4";
 const VALEN = "발렌";
 const HANEL = "천문대장 하넬";
@@ -240,7 +241,7 @@ function summitScenes(project: Project): void {
     cutBegin(), letterbox(),
     { kind: "stopAudio", channel: "bgm", fadeOutMs: 1200 } as unknown as Command,
     player(walk(["up", "up", "up"])),
-    camTo("ev_fs2_top_valen", 1300, 1.8, 16),
+    camTo("ev_fs2_top_valen", 1300, 2, 16),
     se("cc0-se-osx-metal-03"),
     narrate("커다란 렌즈 앞, 발렌이 단말에 손을 얹고 있다.\n렌즈 속 글자가 붉게 흐른다."),
     say(VALEN, "반은 보냈다. 나머지 반만 넣으면\n달은 다시는 아이를 내려보내지 않는다."),
@@ -260,7 +261,7 @@ function summitScenes(project: Project): void {
     emote("ev_fs2_top_valen", "exclamation", 800),
     say(VALEN, "…선생님."),
     say(BRAM, "숨 차서 죽는 줄 알았다.\n하넬, 할 말 있으면 지금 해라."),
-    camTo("ev_fs2_top_hanel", 1000, 1.6, 12),
+    camTo("ev_fs2_top_hanel", 1000, 2, 12),
     say(HANEL, "거부를 보낸 건 나다, 발렌.\n회의가 시켰고, 나는 손을 떨지 않았다."),
     say(VALEN, "그럼 그 아이가 두드린 문은…\n선생님이 보낸 답장이었습니까."),
     say(HANEL, "그래. 그래서 나는 서른 해 동안\n너에게 별 이름만 가르쳤다."),
@@ -323,7 +324,7 @@ function summitScenes(project: Project): void {
     at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
     face("ev_fs2_top_valen", "left"),
     player(walk(["up", "up"])), player([{ kind: "turn", dir: "up" }]),
-    camTo("ev_fs2_top_valen", 1400, 1.8, 16),
+    camTo("ev_fs2_top_valen", 1400, 2, 16),
     say(IRIS, "거부 신호, 아직 반이 남아 있어요.\n…지울 수는 없어요. 덮을 수만 있어요."),
     say(KAEL, "그럼 덮자. 대답 하나 더 하면 되잖아."),
     narrate("카엘이 렌즈에 손을 얹는다."),
