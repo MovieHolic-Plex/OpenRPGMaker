@@ -1105,7 +1105,7 @@ retry a blocked absolute step indefinitely. Page patrols and command-route NPCs 
 preserveBlockedSteps; a player moveEvent rewinds that step. They cannot consume a blocked
 right step and later take its unmatched left step.
 Two such patrols blocking each other head-on used to stand forever (첫사랑 street walkers 1·3 face to face 20s+).
-Now a preserveBlockedSteps patrol blocked twice by another event takes a one-off detour (`playSceneAutonomous §routeDetour`,
+Now a preserveBlockedSteps patrol blocked twice by another event (or a standing player) takes a one-off detour (`playSceneAutonomous §routeDetour`,
 `commandRouteDetour.detourSegment`/`shortestPathAvoiding`) to the end of the blocked straight run, without rewriting `moves`;
 it waits instead if the blocker is already detouring. A 1×1 NPC standing inside a blocked tile (vanished into a door/stair with
 through on, then through off) may now walk out of it (`canNpcMove` leg `leavingWall`) — before, add_street_walkers walkers froze on the door cell and piled up.
