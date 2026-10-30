@@ -1,0 +1,673 @@
+{
+ "set": "nothing-to-report",
+ "query": {
+  "demo": "nothing-to-report",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 480,
+  "height": 270
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "nr-wake",
+   "label": "2-B 교실 — 깨어남(검은 화면·방송)",
+   "note": "",
+   "mapId": "map_nr_2f",
+   "x": 17,
+   "y": 7,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_nr_stage": 0
+   },
+   "items": {},
+   "beats": [
+    {
+     "id": "black",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pa",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-corridor",
+   "label": "2층 복도 — 손전등을 들고 처음 나선 순간",
+   "note": "",
+   "mapId": "map_nr_2f",
+   "x": 13,
+   "y": 14,
+   "facing": "down",
+   "switches": {
+    "sw_nr_flashlight": true
+   },
+   "variables": {
+    "var_nr_stage": 2
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "step",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 250
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "light",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2400
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-hide",
+   "label": "2층 — 도구함에 숨은 동안(사에키 순찰)",
+   "note": "",
+   "mapId": "map_nr_2f",
+   "x": 13,
+   "y": 11,
+   "facing": "left",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_saeki_2f": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "hide",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "mutter",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "mutter2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-caught",
+   "label": "2층 복도 — 사에키 정면에서 들킴",
+   "note": "",
+   "mapId": "map_nr_2f",
+   "x": 17,
+   "y": 17,
+   "facing": "right",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_saeki_2f": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "seen",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "caught",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-1f",
+   "label": "1층 — 계단에서 내려온 순간(현관 쇠사슬 쪽)",
+   "note": "",
+   "mapId": "map_nr_1f",
+   "x": 23,
+   "y": 13,
+   "facing": "left",
+   "switches": {
+    "sw_nr_flashlight": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 1800
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-chain",
+   "label": "1층 현관 — 쇠사슬 감긴 유리문(열쇠 없음)",
+   "note": "",
+   "mapId": "map_nr_1f",
+   "x": 12,
+   "y": 16,
+   "facing": "down",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_saeki_1f": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "locked",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "push",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-keybox",
+   "label": "1층 교무실 — 열쇠함 번호(1107)",
+   "note": "",
+   "mapId": "map_nr_1f",
+   "x": 8,
+   "y": 3,
+   "facing": "up",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_saeki_1f": true,
+    "sw_nr_saw_keynote": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "prompt",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "input",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-hunt",
+   "label": "1층 — 열쇠함을 연 뒤 사에키가 뛰어온다",
+   "note": "",
+   "mapId": "map_nr_1f",
+   "x": 8,
+   "y": 3,
+   "facing": "down",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_keybox_open": true,
+    "sw_nr_saeki_hunt": true
+   },
+   "variables": {
+    "var_nr_stage": 5
+   },
+   "items": {
+    "item_nr_flashlight": 1,
+    "item_nr_key_entrance": 1,
+    "item_nr_key_roof": 1
+   },
+   "beats": [
+    {
+     "id": "hunt",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 600
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-3f-ghost",
+   "label": "3층 — 세일러복 학생",
+   "note": "",
+   "mapId": "map_nr_3f",
+   "x": 12,
+   "y": 13,
+   "facing": "left",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_sayo": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "see",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "near",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-3f-card",
+   "label": "3층 도서실 — 『별의 지도』 대출 카드",
+   "note": "",
+   "mapId": "map_nr_3f",
+   "x": 11,
+   "y": 7,
+   "facing": "up",
+   "switches": {
+    "sw_nr_flashlight": true
+   },
+   "variables": {
+    "var_nr_stage": 3
+   },
+   "items": {
+    "item_nr_flashlight": 1
+   },
+   "beats": [
+    {
+     "id": "card",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "next",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-yard",
+   "label": "운동장 — 현관을 나선 뒤 교문까지",
+   "note": "",
+   "mapId": "map_nr_yard",
+   "x": 11,
+   "y": 13,
+   "facing": "down",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_chain_off": true
+   },
+   "variables": {
+    "var_nr_stage": 5
+   },
+   "items": {
+    "item_nr_flashlight": 1,
+    "item_nr_key_entrance": 1
+   },
+   "beats": [
+    {
+     "id": "out",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 3500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "nr-roof",
+   "label": "옥상 — 세 장을 모아 열쇠로 올라온 뒤",
+   "note": "",
+   "mapId": "map_nr_roof",
+   "x": 12,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_nr_flashlight": true,
+    "sw_nr_roof_open": true,
+    "sw_nr_keybox_open": true
+   },
+   "variables": {
+    "var_nr_stage": 5
+   },
+   "items": {
+    "item_nr_flashlight": 1,
+    "item_nr_page1": 1,
+    "item_nr_page2": 1,
+    "item_nr_page3": 1,
+    "item_nr_key_roof": 1
+   },
+   "beats": [
+    {
+     "id": "roof",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "scene",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
