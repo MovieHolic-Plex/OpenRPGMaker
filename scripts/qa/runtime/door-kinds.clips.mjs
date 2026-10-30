@@ -63,7 +63,8 @@ try {
       const audioPath = resolve(out, `${clip.key}-audio.webm`);
       await writeFile(audioPath, Buffer.from(sound.dataUrl.split(",")[1], "base64"));
       const offset = Math.max(0, (sound.record.startedAt - videoStart) / 1000).toFixed(2);
-      execFileSync("ffmpeg", ["-v", "error", "-y", "-i", resolve(out, `${clip.key}.webm`), "-itsoffset", offset, "-i", audioPath, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "copy", resolve(out, `${clip.key}-av.webm`)]);
+      // -itsoffset 는 webm 스트림 복사에서 무시돼 소리가 0초에 붙었다 — adelay 로 실제로 민다.
+      execFileSync("ffmpeg", ["-v", "error", "-y", "-i", resolve(out, `${clip.key}.webm`), "-i", audioPath, "-filter_complex", `[1:a]adelay=${Math.round(Number(offset) * 1000)}:all=1[a]`, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "libopus", "-b:a", "96k", resolve(out, `${clip.key}-av.webm`)]);
       seg.audio = { offset: Number(offset), media: sound.record.media.map((m) => m.src.split("/").pop()) };
     }
     facts.clips[clip.key] = seg;
