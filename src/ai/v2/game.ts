@@ -7,7 +7,7 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
-import { ENCOUNTER_ASK } from "./combatChecks";
+import { asksForEncounters } from "./combatChecks";
 import { MUSIC_REQUEST_WORDS, SOUND_REQUEST_WORDS, audioOnly, wantsMusic, wantsSound } from "./musicWords";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./forestBrief";
@@ -391,7 +391,7 @@ export function withTransferRelocation(tools: PiToolShape[]): PiToolShape[] {
  * 주지 않았으면 0(꺼짐)으로 넘긴다 — 표는 남아 나중에 켤 수 있다. 일부러 켜려면 encounterRate 를 숫자로 준다(끝맺음 검사가 보고를 요구한다).
  */
 export function withEncountersOnlyWhenAsked(tools: PiToolShape[], task: string): PiToolShape[] {
-  if (ENCOUNTER_ASK.test(task)) return tools;
+  if (asksForEncounters(task)) return tools;
   return tools.map((tool) => tool.name !== "set_encounter_table" ? tool : {
     ...tool,
     async execute(id, params, signal) {

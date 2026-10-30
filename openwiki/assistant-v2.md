@@ -365,6 +365,16 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - 남은 것: 편의점 점원이 마법 상점 직원 칩(terra), 기본 타이틀·판타지 오프닝을 그대로 둠(둘 다), 요청 없이 주인공 외형·시작 장비를 바꿈(둘 다), `patch_event_page` 의 「transfer 빠짐」 경고가 door:true 추가에도 뜨는지 확인.
 - 증거: http://mdc-server:18301/assistant-parity.html
 
+## 조수 대조 2회차 — 밤 숲 어귀 들개 추격 (2026-10-31 asst-parity p2-chase-opus·terra)
+
+폴른 스타 2막 B5(숲 어귀 굶은 들개, `place_field_enemy` chase·cone·checkpointOnEntry)와 같은 장면을 실제 입력창으로 요청했다.
+두 모델 모두 `author_forest_route` → `upsert_enemy`/`upsert_troop` → `place_field_enemy{behavior:'chase', vision:'cone', checkpointOnEntry}` → `set_encounter_table{encounterRate:0}` 로 맞게 골랐다(opus 10분·호출 45·실패 2, terra 4.5분·호출 26·실패 2).
+
+- **「무작위 조우는 없어」를 조우 요청으로 읽었다**(`combatChecks.asksForEncounters`·`withoutNegatedEncounters`): 끝맺음 검사가 「요청에 무작위 조우가 있는데 조우표가 안 바뀌었다」를 두 판 모두에 띄웠다. 같은 절에서 부정(없어·없이·빼·말고·끄·금지·no/without)이 뒤따르는 조우 낱말은 지우고 본다. `withEncountersOnlyWhenAsked`·조우 켬 검사·조우 요청 검사가 같은 함수를 쓴다.
+- **「밤의 숲길」이 거의 대낮**(`forestRouteTool` MOODS): 두 모델 모두 `moods:['dark']` 를 줬는데 dark 가 ambient 0.3(dim 0.55 보다 밝음)이었다. dim 0.3 · dark 0.55 · 새 `night` 0.62 남색(폴른 스타 2막 밤 맵 값) · darkfog 0.55 로 고쳤다. 영어 도구 설명에 「밤 숲은 night」.
+- **마을 비평가가 숲길 특징을 마을의 major 로 잡았다**(`verbs.see`·`critic.critique`): terra 판 마을 비평이 「어둡고 구불구불한 숲길이 안 보인다」를 세 번 내 고치기 항목이 막힘으로 끝났다. 비평가에게 프로젝트의 다른 맵 이름(최대 8)을 주고, 요청이 장소를 여럿 말하면 이 맵이 맡은 장소만 보라고 적는다.
+- 남은 것: 밤 숲 전투 배경은 두 판 모두 적 그룹 `previewBackgroundResourceId` 숲 + 밤 겹으로 맞음. 회복 수단(여관 주인·쉼터)을 요청 없이 더함(끝맺음 no-healing 관문 때문 — 의도된 동작).
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
