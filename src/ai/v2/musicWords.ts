@@ -18,7 +18,7 @@ const GAME_FEEL = String.raw`(?:${STORE_MUSIC_GAME_NAME_SOURCE})\s*(?:의\s*)?(?
 export const MUSIC_REQUEST_WORDS = new RegExp(`${PLAIN}|${GOK}|${GAME_FEEL}`, "iu");
 
 export function wantsMusic(task: string): boolean {
-  return MUSIC_REQUEST_WORDS.test(task);
+  return MUSIC_REQUEST_WORDS.test(withoutSoundWords(task));
 }
 
 const EXPLICIT = new RegExp(`${PLAIN}|${GOK}`, "iu");
@@ -29,7 +29,8 @@ const BUILD = /만들|지어|짓|그려|세워|build|make/iu;
  * 무언가를 짓는 요청이면 화풍을 말한 것일 수 있어 곡을 요구하지 않는다. 「테일즈런너처럼 신나는 거 깔아 줘」는 요구한다.
  */
 export function musicAsked(task: string): boolean {
-  return EXPLICIT.test(task) || (FEEL.test(task) && !BUILD.test(task));
+  const t = withoutSoundWords(task);
+  return EXPLICIT.test(t) || (FEEL.test(t) && !BUILD.test(t));
 }
 
 /** 곡 낱말과 바로 뒤 한 낱말(「곡 만들어」「음악 추가」) — 음악 일 자체의 동사라 «다른 일» 판정에서 뺀다. */
@@ -44,4 +45,33 @@ const OTHER_WORK = /만들|지어|짓|그려|세워|고쳐|추가|배치|놓아|
  */
 export function musicOnly(task: string): boolean {
   return musicAsked(task) && !OTHER_WORK.test(task.replace(MUSIC_PHRASE, " "));
+}
+
+/**
+ * 효과음 요청 낱말 — 효과음 도구(store_find_sound·set_game_audio role:'se'|'sfx-style')를 실을지. 음악 낱말의 짝이다.
+ * 「사운드」 혼자는 음악 낱말(PLAIN)에도 있어 음악 묶음이 같이 실린다 — 둘 다 실어도 된다.
+ * 「발소리」는 걷는 소리만(「발소리가 들리는 장면 만들어」처럼 장면을 짓는 말은 OTHER_WORK 가 음악·효과음만이 아닌 일로 가른다).
+ */
+const SOUND_PLAIN = String.raw`효과음|사운드\s*이펙트|사운드\s*효과|\bsfx\b|\bse\b|sound\s*effects?|타격음|피격음|발소리|발자국\s*소리|발걸음\s*소리|커서\s*소리|결정음|취소음|메뉴\s*소리|버튼\s*소리|레벨\s*업\s*소리|레벨업\s*소리|획득음|문\s*(?:여는|닫는)\s*소리|마법\s*소리|공격\s*소리|칼\s*소리|베는\s*소리|맞는\s*소리|때리는\s*소리|쓰러지는\s*소리`;
+export const SOUND_REQUEST_WORDS = new RegExp(SOUND_PLAIN, "iu");
+const SOUND_WORDS_G = new RegExp(SOUND_PLAIN, "giu");
+/** 효과음 낱말을 지운 요청 — 「사운드 이펙트」의 「사운드」가 음악 낱말로 잡히지 않게 음악 판정은 이걸 본다. */
+function withoutSoundWords(task: string): string {
+  return task.replace(SOUND_WORDS_G, " ");
+}
+
+export function wantsSound(task: string): boolean {
+  return SOUND_REQUEST_WORDS.test(task);
+}
+
+const SOUND_PHRASE = new RegExp(String.raw`(?:${SOUND_PLAIN})\S*\s*(?:을|를|이|가|도|만|좀|으로|로)?\s*(?:하나\s*|새로\s*|전부\s*|다\s*)?\S*`, "giu");
+
+/** 효과음만 바라는 요청(「타격음 더 묵직하게」「효과음 전부 레트로로」) — 음악만 바라는 요청과 같은 범위 규칙을 따른다. */
+export function soundOnly(task: string): boolean {
+  return wantsSound(task) && !OTHER_WORK.test(task.replace(SOUND_PHRASE, " ").replace(MUSIC_PHRASE, " "));
+}
+
+/** 소리(음악·효과음)만 바라는 요청 — 맵·이벤트 쓰기 도구를 싣지 않고, 검토자·관문의 소리 밖 지적은 참고로 낮춘다. */
+export function audioOnly(task: string): boolean {
+  return musicOnly(task) || soundOnly(task);
 }
