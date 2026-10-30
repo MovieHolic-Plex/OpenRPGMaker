@@ -106,6 +106,19 @@ export function settleDungeonGates(run: BuildRun, floors: readonly string[], isO
 
 const SIDE_WORD: Record<string, Side> = { north: "north", n: "north", 북: "north", 북쪽: "north", south: "south", s: "south", 남: "south", 남쪽: "south", east: "east", e: "east", 동: "east", 동쪽: "east", west: "west", w: "west", 서: "west", 서쪽: "west" };
 
+/** 요청 글에서 들어가는 장소(동굴·던전·광산…) 낱말 — 그림 한 장(draw_object)이 아니라 make_place 로 지을 장소다. */
+export const DUNGEON_PLACE_WORD = /동굴|동혈|굴\s*입구|던전|광산|갱도|미궁|지하\s*(?:묘지|감옥|수로)|cave|cavern|dungeon|\bmine\b/i;
+const KO_SIDE: Record<string, Side> = { 동: "east", 서: "west", 남: "south", 북: "north" };
+/** 「마을 서쪽 길 끝에 동굴」처럼 요청이 그 장소의 세계 방향을 말하면 그 쪽. 없으면 undefined(설계 입구 쪽을 쓴다). */
+export function requestedDungeonSide(task: string): Side | undefined {
+  const a = task.match(/(동|서|남|북)\s*쪽[^.!?\n]{0,16}?(?:동굴|동혈|굴|던전|광산|갱도|미궁)/);
+  if (a) return KO_SIDE[a[1]!];
+  const b = task.match(/(?:동굴|동혈|던전|광산|갱도|미궁)[^.!?\n]{0,8}?(동|서|남|북)\s*쪽/);
+  if (b) return KO_SIDE[b[1]!];
+  const c = task.match(/\b(north|south|east|west)(?:ern)?\b[^.!?\n]{0,24}?\b(?:cave|cavern|dungeon|mine)\b/i);
+  return c ? (c[1]!.toLowerCase() as Side) : undefined;
+}
+
 /** 설계의 입구 쪽 — entrance 낱말, 없으면 입구 방 자리(at)에서 가장 가까운 맵 끝(designLayout.normalizeDesign 과 같은 규칙). */
 export function entranceSideOf(design: { entrance?: unknown; rooms?: readonly { role?: unknown; at?: unknown }[] } | undefined): Side | undefined {
   if (!design) return undefined;

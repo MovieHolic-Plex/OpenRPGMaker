@@ -56,7 +56,8 @@ import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
-import { gateFor, settleDungeonGates } from "./dungeonGates";
+import { DUNGEON_PLACE_WORD, gateFor, requestedDungeonSide, settleDungeonGates } from "./dungeonGates";
+const OPP_SIDE = { north: "south", south: "north", east: "west", west: "east" } as const;
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, createDungeonPartsVerb, dungeonContext, dungeonParts, screenDungeonSpec } from "./dungeonParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { buildsHandInterior, designMissingRooms } from "./designRooms";
@@ -434,7 +435,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     // 바깥 마을·거리 → 던전 문은 하나, 던전이 놓인 세계 방향 가장자리의 길 칸에(dungeonGates.ts — 짓기 기본 출구·다시 짓기 재연결이 문을 둘 남겼다).
     if (builderId === "dungeon") {
-      const gates = settleDungeonGates(run, result.mapIds, outsideBuilt);
+      const gates = settleDungeonGates(run, result.mapIds, outsideBuilt, requestedDungeonSide(String(task ?? "")));
       if (gates.length) result = { ...result, warnings: [...result.warnings, ...gates] };
     }
     // 다시 짓기(edit_place) 뒤 바닥이 바뀌어 앞서 둔 사람이 문 곁·가구 접근 칸·큰 양탄자 위에 남을 수 있다 — 방 하나만 짓는 판은 끝맺음(clearLanes)이
@@ -694,8 +695,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const ar = arrivalEntrance(spec); spec = ar.spec;
         if (ar.note) keptNote = [keptNote, ar.note].filter(Boolean).join(" ");
         // 바깥 문: 지금 보는 맵이 이번에 지은 마을·거리면 던전이 놓인 쪽(설계 입구의 반대) 가장자리 길 칸과 짓기가 바로 잇는다(dungeonGates.ts).
-        const outside = env.ctx.currentMapId;
-        if (!spec.gate && outside && outsideBuilt(outside) && !(spec.mapId && session.places.has(spec.mapId))) { const g = gateFor(env.ctx.project, outside, spec.dungeonDesign); if (g) spec = { ...spec, gate: g }; }
+        // 지금 보는 맵이 이번에 지은 마을이 아니면(마을을 새 id 로 다시 지은 판 — 보는 맵은 옛 id 에 남는다) 이번에 지은 마지막 바깥 장소에 잇는다.
+        // 요청이 그 장소의 방향을 말하면(「서쪽 길 끝 동굴」) 설계 입구 쪽보다 그 방향을 먼저 쓴다(2026-10-30 실조수: 문이 강 동쪽 풀밭에 섰다).
+        const cur = env.ctx.currentMapId;
+        const outside = cur && outsideBuilt(cur) ? cur : [...session.places.keys()].filter((m) => outsideBuilt(m) && env.ctx.project.maps[m]).pop();
+        if (!spec.gate && outside && !(spec.mapId && session.places.has(spec.mapId))) { const g = gateFor(env.ctx.project, outside, spec.dungeonDesign, requestedDungeonSide(String(task ?? ""))); if (g) spec = { ...spec, gate: g }; }
       }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
@@ -747,6 +751,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (result.ok && builder.id === "village" && /주민|마을\s*사람|사람\s*몇|npc|villager|resident/i.test(String(task ?? ""))) {
         const mapId = result.mapIds[0]; const npcs = mapId ? (run.ctx.project.maps[mapId]?.events ?? []).length : 0;
         if (mapId && npcs < 2) result = { ...result, warnings: [...result.warnings, `요청에 주민이 있다 — 이 마을(${mapId})에는 아직 말을 걸 사람이 ${npcs}명이다. add_people 로 둘 이상(어부·주민 등 요청에 맞게, 모이는 곳·물가 곁) 둔다.`] };
+      }
+      // 요청에 들어가는 장소(「서쪽 길 끝에 동굴」)가 있는데 마을만 지었다 — 모델이 동굴을 앵커·그림 카드로 처리해 맵에 아무것도 서지 않았다(2026-10-30 실조수 opus:
+      // edit_place addAnchors 「동굴 입구」 → 거절, draw_object 「바위 동굴 입구」 → 대기 카드). 들어가는 장소는 던전 빌더가 짓고 바깥 문도 짓기가 잇는다 — 다음 할 일로 붙인다.
+      if (result.ok && builder.id === "village" && DUNGEON_PLACE_WORD.test(String(task ?? "")) && ![...session.places.values()].some((r) => r.builder === "dungeon")) {
+        const mapId = result.mapIds[0]; const side = requestedDungeonSide(String(task ?? ""));
+        const KO = { north: "북", south: "남", east: "동", west: "서" } as const;
+        if (mapId) result = { ...result, warnings: [...result.warnings, `요청에 들어가는 장소(동굴·던전)가 있다 — 그림 한 장(draw_object)이나 마을 앵커가 아니라 make_place type "cave"(또는 "dungeon")로 짓는다. 이 마을(${mapId})을 지은 뒤 바로 부르면 짓기가 마을${side ? ` ${KO[side]}쪽 가장자리 길 끝` : "의 그 방향 가장자리 길"} 칸에 바깥 문을 잇는다${side ? `(던전 설계 entrance 는 마을에서 들어오는 쪽 = ${OPP_SIDE[side]})` : ""}.`] };
       }
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
@@ -970,6 +981,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }, required: ["what"] } }, required: ["object"] },
     async execute(id, params) {
       const object = (params as { object: ObjectSpec }).object;
+      // 동굴·던전 입구는 물건이 아니라 들어가는 장소다 — 그림 카드로 미루면 맵에 아무것도 서지 않고 들어갈 곳도 없다(2026-10-30 실조수 opus 「서쪽 길 끝 동굴」).
+      // 이 실행에 던전을 아직 짓지 않았으면 그리지 않고 make_place 로 돌려보낸다. 지은 뒤 입구 꾸밈을 더 그리는 것은 막지 않는다.
+      if (DUNGEON_PLACE_WORD.test(`${object.what ?? ""} ${object.description ?? ""}`) && ![...session.places.values()].some((r) => r.builder === "dungeon")) {
+        const side = requestedDungeonSide(String(task ?? ""));
+        return text({ ok: false, notFailure: true, summary: `그리지 않았다(실패 아님) — 「${object.what}」은 그림 한 장이 아니라 들어가는 장소다. make_place type "cave"(또는 "dungeon")로 굴을 지으면 짓기가 지금 마을${side ? `의 ${({ north: "북", south: "남", east: "동", west: "서" } as const)[side]}쪽` : ""} 가장자리 길 끝 칸에 바깥 문(입구)을 잇는다. 굴을 지은 뒤에도 입구 꾸밈이 더 필요하면 그때 draw_object 를 부른다.` });
+      }
       const result: DrawObjectResult = drawObject(run, { ...object, ...(object.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }) });
       // 미리 정한 자리·크기를 기억한다 — 그림이 끝난 뒤 place_object 가 where·at 없이 불리면 이 자리에 놓는다.
       if (result.ok && result.plan) rememberObjectPlan(session, result.plan);
