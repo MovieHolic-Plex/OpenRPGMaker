@@ -316,7 +316,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 ## 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
 
-실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. `OPRN_V2_BBOX_PLACES=0` 이면 꺼지고 옛 경로만 탄다(측정 대조군).
+실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. **기본은 꺼짐 — `OPRN_V2_BBOX_PLACES=1` 일 때만 탄다.** 실제 v2 경로 측정(2026-10-31, terra-high·sol-high, Opus 판정)에서는 실험과 달리 칸 배치 던전이 지금 빌더에 직접 비교 0승 4패, 기준 그림 대비 8%(지금 빌더 59%)였다 — 판정자는 「빈 회색 상자 방의 나열」로 읽었다. 그래서 방마다 채움(걷는 칸 24마다 조각 하나)·한 줄 그래프 거절 검사를 더했고, 이기는 측정이 나오기 전에는 옵트인이다. 결과 쪽: http://mdc-server:18301/v2-bbox-places.html
 
 - **던전(type dungeon)**: 설계·배치 없이 온 `make_place` 는 장소마다 한 번 영어 카드로 되돌린다(`placeLayout.dungeonLayoutCard`) — 칩셋 메타에서 뽑은 조각 목록(`bboxFloor.bboxDungeonCatalog`: 던전 테마 role prop·벽걸이/바닥/무늬, 이름 = 키트 id 의 낱말)·견본 그림(사본 맵에 조각을 실제 벽·바닥 위에 찍어 1배 렌더, 목록에 sheet 좌표)·격자 규칙·형식. 모델이 `spec.dungeonLayout` 을 주면 `BBOX_DUNGEON_BUILDER`(id dungeon, 빌더 목록 맨 앞)가 받는다. 동굴(type cave)은 옛 경로.
   - 깔기: 쓰기 도구 `lay_dungeon_layout`(`editor/tools/bboxPlaceTools.ts`) → `layBboxDungeon`(검사) → `composeExactFloor`(compose.ts `spec.exact` — 배치·자리·장식 단계를 건너뛰고 칸 그대로 바닥·벽·물/용암/구덩이). 방 이름표(dungeon-room·bbox-room)·입구(gate:/land: 태그)·잠긴 문(쇠창살 이벤트)·배치 선언(이름표 태그 `bbox-layout`, note 에 조각·보스·적·상자 JSON).
