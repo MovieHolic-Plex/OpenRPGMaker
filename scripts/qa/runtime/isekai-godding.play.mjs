@@ -318,7 +318,8 @@ const B = {
   async ending(page, seg, mark, pick) {
     await walkTo(page, castleUp.x, castleUp.y);
     await waitMap(page, M.castle2); mark("top");
-    await play(page, seg, [], idle, { shotOn: /연필/ });
+    // 도착 자동 대사(「연필 긁는 소리」)가 늦게 뜨면 idle 판정이 앞질러 걷기가 대사창에 막혔다(부하 높을 때) — 스위치까지 기다린다.
+    await play(page, seg, [], quietAnd(async () => (await st(page))?.sw?.["sw_ig_k2_seen"] === true), { shotOn: /연필/ });
     const maou = evAt(M.castle2, "ev_ig_k2_maou");
     await walkTo(page, maou.x, maou.y + 1); await faceAndAct(page, "up"); mark("maou");
     if (process.env.IG_DEBUG) {
