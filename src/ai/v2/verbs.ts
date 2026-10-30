@@ -741,8 +741,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (!spec.gate && outside && !(spec.mapId && session.places.has(spec.mapId))) { const g = gateFor(env.ctx.project, outside, spec.dungeonDesign, requestedDungeonSide(String(task ?? ""))); if (g) spec = { ...spec, gate: g }; }
       }
       // 칸 배치 던전(2026-10-31): 설계·배치 없이 온 던전은 영어 카드(조각 목록·견본 그림·규칙·형식)로 되돌려 보낸다 — 모델이 칸 배치(spec.dungeonLayout)를 쓴다.
-      if (builder.id === "dungeon" && bboxDungeonSpec(spec) && !hasDungeonLayout(spec) && !spec.dungeonDesign && !spec.floorDesigns?.length && !(spec.mapId && session.places.has(spec.mapId)) && !session.dungeonBounced.has(spec.name)) {
-        session.dungeonBounced.add(spec.name);
+      // 옛 설계(dungeonDesign)를 먼저 채워 와도(terra 는 스키마 칸을 다 채운다) 카드는 장소마다 한 번 보여 준다 — 그다음에도 배치가 없으면 옛 빌더.
+      if (builder.id === "dungeon" && bboxDungeonSpec(spec) && !hasDungeonLayout(spec) && !(spec.mapId && session.places.has(spec.mapId)) && !layoutSession(session).cards.has(`dungeon:${spec.name}`)) {
+        layoutSession(session).cards.add(`dungeon:${spec.name}`); session.dungeonBounced.add(spec.name);
         return dungeonLayoutCard(env, spec, String(task ?? ""), dungeonContext(session.places.values(), spec.name));
       }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
@@ -766,14 +767,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
           const kept = session.villageTerrain.get(spec.name);
-          const hasLayout = (!!spec.hints?.layout && typeof spec.hints.layout === "object") || hasVillageLayout(spec);
+          // 칸 배치 마을: 카드를 장소마다 한 번은 보여 준다(옛 hints.layout 을 먼저 채워 와도). 그 뒤 villageLayout 없이 hints.layout 이면 옛 빌더.
+          const bboxCardDue = bboxVillageSpec(spec) && !hasVillageLayout(spec) && !layoutSession(session).cards.has(`village:${spec.name}`);
+          const hasLayout = !bboxCardDue && ((!!spec.hints?.layout && typeof spec.hints.layout === "object") || hasVillageLayout(spec));
           if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
             const [width, height] = villageMapSize(spec, va);
             const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
             const terrain = codeTerrainFor(vt, va, width, height, terrainSeed);
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
             // 칸 배치 마을(2026-10-31): 땅 그림·격자·요약·조각 목록(영어)을 주고 spec.villageLayout 을 받는다.
-            if (bboxVillageSpec(spec)) return villageLayoutCard(env, spec, String(task ?? ""), toBboxTerrain(terrain, vt));
+            if (bboxVillageSpec(spec)) { layoutSession(session).cards.add(`village:${spec.name}`); return villageLayoutCard(env, spec, String(task ?? ""), toBboxTerrain(terrain, vt)); }
             const res = text({ ok: false, notFailure: true,
               summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
                 + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,

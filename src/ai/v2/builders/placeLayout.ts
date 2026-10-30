@@ -51,10 +51,10 @@ export function bboxVillageSpec(spec: PlaceSpec): boolean {
 
 // ── 세션 상태(동사 사이) ──
 export interface LayoutPlaceState { kind: "dungeon" | "village"; name: string; critiqueRounds: number; rejects: number; lastErrors?: string[]; graph?: ReturnType<typeof bboxGraphShape> }
-const STATES = new WeakMap<object, { byMap: Map<string, LayoutPlaceState>; rejects: Map<string, number> }>();
+const STATES = new WeakMap<object, { byMap: Map<string, LayoutPlaceState>; rejects: Map<string, number>; cards: Set<string> }>();
 export function layoutSession(session: object) {
   let s = STATES.get(session);
-  if (!s) { s = { byMap: new Map(), rejects: new Map() }; STATES.set(session, s); }
+  if (!s) { s = { byMap: new Map(), rejects: new Map(), cards: new Set() }; STATES.set(session, s); }
   return s;
 }
 
