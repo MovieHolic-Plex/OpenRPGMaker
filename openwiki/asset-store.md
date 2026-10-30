@@ -70,6 +70,26 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 `applyPackToProject` 는 프로젝트를 건드리기 전에 그림 규격(캐릭터 시트 등)과 타일셋 칸이 그림 안에 드는지 본다.
 `validateManifest` 는 `__proto__`·`constructor`·`prototype` id, `count` 와 통행·층 배열 길이가 다른 타일셋, `--` 든 slug 를 받지 않는다.
 
+### 몬스터 전투 도트 시트 (2026-10-30)
+
+스토어 몬스터(`kind: "monster"`, 한 칸 PNG)는 전투에서 움직이는 3×3 시트를 함께 실을 수 있다. 계약은 프로젝트 공방 시트와 **같은**
+`meta.pixelEnemySheet`(`src/project/types/base.ts` `UploadedPixelEnemySheetMeta`)라 넣을 때 번역하지 않는다.
+
+```json
+"drake": { "kind": "monster", "blob": "<cell×cell PNG>", "meta": { "width": 64, "height": 64, "oprnBattler": { … },
+  "pixelEnemySheet": { "sheetResourceId": "drake-sheet", "cell": 64, "motion": "swoop", "idleFrameMs": 180, "skillCell": true } } },
+"drake-sheet": { "kind": "picture", "blob": "<(3·cell)×(3·cell) PNG>", "meta": { "width": 192, "height": 192, "frameWidth": 64, "frameHeight": 64, "frames": 9 } }
+```
+
+- 칸 배치·기준선은 번들 시트와 같다(`src/assets/pixelEnemySheets.ts` 머리 주석): 1행 idle a·b·c, 2행 windup·move·attack, 3행 recover(skillCell 이면 스킬 방출)·hit·dead, 오른쪽 보기, 가로 중심 cell/2, 바닥 y=cell−4. 초상은 idle_a 와 같은 그림.
+- `validateManifest`(`monsterSheetProblems`): 몬스터 에셋에만, `sheetResourceId` 는 같은 팩의 다른 picture PNG, `cell` 48·64·96, `motion` 은 `STORE_MONSTER_MOTIONS`(런타임 7종), `idleFrameMs` 60~2000 정수, `skillCell` 은 true 또는 없음.
+- 크기 검사 `storeMonsterSheetSizeProblems`(초상 cell×cell, 시트 3cell×3cell)는 바이트가 있는 곳에서 돈다: `applyPackToProject`(프로젝트를 건드리기 전)·`scripts/store/agentStore.mts` check/submit.
+- 넣기: `applyPackToProject` 가 `sheetResourceId` 를 `storeProjectId` 로 바꾼다. 그 뒤로는 전투(`projectPixelEnemySheet`)·자료집 미리보기·웹 내보내기(`collectUsedUploadedAssetIds` 가 meta 로 이어진 시트를 함께 싣는다)가 공방 시트와 같은 길을 탄다. 다른 종류 에셋에 붙은 표식은 넣을 때 버린다.
+- 올리기: `closeSelection` 이 몬스터의 시트 자산을 의존으로 딸려 보낸다.
+- 공방(`isAuthoredMonsterAsset`)은 출처(`origin`)가 있는 몬스터를 자기 저작물로 치지 않는다 — 스토어 그림을 레시피로 덮어 그리지 않는다.
+- 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
+- 테스트 `test/assetStoreMonsterMotion.test.ts`.
+
 ### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
 
 `content.characters[i].portraits` = `{ face?, bust?: {표정: 에셋 id}, full?: {표정: 에셋 id}, extra? }` — 같은 팩의
