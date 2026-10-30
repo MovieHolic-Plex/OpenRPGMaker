@@ -4333,7 +4333,7 @@
   {
    "id": "act2-b5-dogs",
    "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
-   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,18) — 숲 가장자리(23줄) 너머. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms)",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms)",
    "mapId": "map_field_north_1",
    "x": 15,
    "y": 21,
@@ -4372,7 +4372,17 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 8000
+       "ms": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6000
       }
      ],
      "shot": true
@@ -11079,18 +11089,8 @@
      "ops": [
       {
        "kind": "move",
-       "dir": "down",
-       "steps": 1
-      },
-      {
-       "kind": "move",
        "dir": "right",
        "steps": 3
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
       },
       {
        "kind": "face",
