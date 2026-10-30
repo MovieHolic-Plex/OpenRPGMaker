@@ -902,6 +902,11 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
       state.markers.set(id, scene.add.image(0, 0, EXAMINE_MARKER_TEX).setDepth(MAP_UPPER_LAYER_DEPTH + 900));
     }
   }
+  // 장면(컷신·대화)이 도는 동안은 숨긴다 — 출구 글자와 같은 규칙. 재회 컷신 내내 팀장·민호 머리 위에 노란 표식이 떠 있었다
+  // (첫사랑 처음 하는 사람 검수 2026-10-30). 끝나면 다음 프레임에 다시 보인다.
+  const hidden = scene.running === true;
+  for (const marker of state.markers.values()) if (marker.visible === hidden) marker.setVisible(!hidden);
+  if (hidden) return;
   const bob = Math.sin((now / 520) * Math.PI);
   for (const [id, marker] of state.markers) {
     const at = state.want.get(id);
@@ -930,9 +935,12 @@ type ExitLabelState = { mapId: string; labels: Map<string, Phaser.GameObjects.Te
 const exitLabelStates = new WeakMap<PlaySceneContext, ExitLabelState>();
 
 /** 이 페이지가 맨 윗줄에서 다른 맵으로 옮기면 그 맵 id. */
-function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here: string): string | undefined {
+function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here: string, talker = false): string | undefined {
   for (const c of page?.commands ?? []) {
     const r = c as { kind?: string; mapId?: unknown };
+    // 말을 거는 사람(그림 있는 조사 이벤트)이 대화 끝에 다음 장면으로 옮기는 것은 출구가 아니다 — 탕비실 지후 머리 위에
+    // 「→ 7층 · 금요일」이 떠 다음 장을 미리 알려 줬다(첫사랑 처음 하는 사람 검수 2026-10-30).
+    if (talker && (r.kind === "text" || r.kind === "choices")) return undefined;
     if (r.kind === "transfer" && typeof r.mapId === "string" && r.mapId !== here) return r.mapId;
   }
   return undefined;
@@ -972,7 +980,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
   const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
   const want = new Map<string, { text: string; x: number; y: number; below: number }>();
   for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
-    const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id);
+    const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id, !!view.sprite && view.trigger.kind === "action");
     const dest = target ? project.maps[target] : undefined;
     const name = String((dest as { displayName?: string } | undefined)?.displayName || dest?.name || "").trim();
     if (!name && !(options.arrowOnly && target)) continue;
