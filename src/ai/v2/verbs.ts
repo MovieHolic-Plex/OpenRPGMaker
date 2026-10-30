@@ -60,6 +60,7 @@ import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
+import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, placeLayoutProblems, toBboxTerrain, villageLayoutCard, type LayoutPlaceState } from "./builders/placeLayout";
 import { DUNGEON_PLACE_WORD, gateFor, innerDungeonParent, innerGateSpot, requestedDungeonSide, settleDungeonGates } from "./dungeonGates";
 const OPP_SIDE = { north: "south", south: "north", east: "west", west: "east" } as const;
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, createDungeonPartsVerb, dungeonContext, dungeonParts, screenDungeonSpec } from "./dungeonParts";
@@ -337,6 +338,7 @@ const PLACE_SPEC_SCHEMA = {
     hints: HINTS_SCHEMA,
     dungeonDesign: DUNGEON_DESIGN_SCHEMA,
     floorDesigns: { type: "array", items: DUNGEON_DESIGN_SCHEMA, description: "(multi-floor dungeon) a design per floor (bottom floor first)" },
+    ...(bboxPlacesOn() ? { dungeonLayout: DUNGEON_LAYOUT_SCHEMA, villageLayout: VILLAGE_LAYOUT_SCHEMA } : {}),
   },
   required: ["type", "name"],
 };
@@ -496,6 +498,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
   const outsideBuilt = (mapId: string): boolean => { const r = session.places.get(mapId); return !!r && isOutdoor(r.spec); };
+  /** 칸 배치로 지은 장소를 자기 비평·할 일 확인 목록에 올린다(placeLayout.ts). */
+  const noteLayoutPlace = (spec: PlaceSpec, result: PlaceBuildResult): void => {
+    const st = result.state as { bbox?: "dungeon" | "village"; graph?: LayoutPlaceState["graph"] } | undefined;
+    const mapId = result.mapIds[0];
+    if (!result.ok || !st?.bbox || !mapId || !env.ctx.project.maps[mapId]) return;
+    const ls = layoutSession(session); const prev = ls.byMap.get(mapId);
+    ls.byMap.set(mapId, { kind: st.bbox, name: spec.name, critiqueRounds: prev?.critiqueRounds ?? 0, rejects: ls.rejects.get(spec.name) ?? 0, ...(st.graph ? { graph: st.graph } : {}) });
+    env.emit({ type: "execution_status", name: "v2.bbox", ok: true, summary: `${spec.name}: ${st.bbox} laid from the model layout (critique ${prev?.critiqueRounds ?? 0}/${LAYOUT_CRITIQUE_ROUNDS}, rejects ${ls.rejects.get(spec.name) ?? 0})`, data: { mapId, kind: st.bbox, graph: st.graph ?? null, critiqueRounds: prev?.critiqueRounds ?? 0, rejects: ls.rejects.get(spec.name) ?? 0 } });
+  };
   const finishPlace = async (toolCallId: string, verb: string, args: unknown, spec: PlaceSpec, builderId: string, built: PlaceBuildResult, rounds: number,
     before?: { project: typeof env.ctx.project; record: PlaceRecord; seen: Map<string, Seen> }): Promise<PiToolExecResult> => {
     let result = built;
@@ -739,7 +750,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
-    description: "Build a place (interior, village, dungeon, cave, street, house) from one spec. Do not write cells, coordinates or tile numbers — the function builds it and returns the 1x picture, machine checks and an independent critique.",
+    description: "Build a place (interior, village, dungeon, cave, street, house) from one spec. Do not write cells, coordinates or tile numbers — the function builds it and returns the 1x picture, machine checks and an independent critique."
+      + (bboxPlacesOn() ? " Exception: for a dungeon floor (type dungeon) and a village on code terrain the first call returns a card asking for your exact cell layout (spec.dungeonLayout / spec.villageLayout) — then write it as the card says." : ""),
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
       const gate = await blueprintGate();
@@ -822,6 +834,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const outside = cur && outsideBuilt(cur) ? cur : [...session.places.keys()].filter((m) => outsideBuilt(m) && env.ctx.project.maps[m]).pop();
         if (!spec.gate && outside && !(spec.mapId && session.places.has(spec.mapId))) { const g = gateFor(env.ctx.project, outside, spec.dungeonDesign, requestedDungeonSide(String(task ?? ""))); if (g) spec = { ...spec, gate: g }; }
       }
+      // 칸 배치 던전(2026-10-31): 설계·배치 없이 온 던전은 영어 카드(조각 목록·견본 그림·규칙·형식)로 되돌려 보낸다 — 모델이 칸 배치(spec.dungeonLayout)를 쓴다.
+      // 옛 설계(dungeonDesign)를 먼저 채워 와도(terra 는 스키마 칸을 다 채운다) 카드는 장소마다 한 번 보여 준다 — 그다음에도 배치가 없으면 옛 빌더.
+      if (builder.id === "dungeon" && bboxDungeonSpec(spec) && !hasDungeonLayout(spec) && !(spec.mapId && session.places.has(spec.mapId)) && !layoutSession(session).cards.has(`dungeon:${spec.name}`)) {
+        layoutSession(session).cards.add(`dungeon:${spec.name}`); session.dungeonBounced.add(spec.name);
+        return dungeonLayoutCard(env, spec, String(task ?? ""), dungeonContext(session.places.values(), spec.name));
+      }
       if (builder.id === "dungeon" && !(spec.mapId && session.places.has(spec.mapId)) && !spec.dungeonDesign && !spec.floorDesigns?.length && !session.dungeonBounced.has(spec.name)) {
         session.dungeonBounced.add(spec.name);
         const parts = dungeonParts(`${spec.theme ?? ""} ${spec.name} ${spec.type}`, `${String(env.request.projectKey ?? run.ctx.project.meta.title ?? "")}|${session.nonce}`, dungeonContext(session.places.values(), spec.name));
@@ -843,12 +861,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (usesCodeTerrain(va, vt)) {
           const shape = JSON.stringify([va.theme, va.landform, va.terrain, va.water, va.high, va.tiers, spec.hints?.terrainSeed]);
           const kept = session.villageTerrain.get(spec.name);
-          const hasLayout = !!spec.hints?.layout && typeof spec.hints.layout === "object";
+          // 칸 배치 마을: 카드를 장소마다 한 번은 보여 준다(옛 hints.layout 을 먼저 채워 와도). 그 뒤 villageLayout 없이 hints.layout 이면 옛 빌더.
+          const bboxCardDue = bboxVillageSpec(spec) && !hasVillageLayout(spec) && !layoutSession(session).cards.has(`village:${spec.name}`);
+          const hasLayout = !bboxCardDue && ((!!spec.hints?.layout && typeof spec.hints.layout === "object") || hasVillageLayout(spec));
           if (!hasLayout && (!kept || (kept.shape !== shape && kept.previews < 3))) {
             const [width, height] = villageMapSize(spec, va);
             const terrainSeed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
             const terrain = codeTerrainFor(vt, va, width, height, terrainSeed);
             session.villageTerrain.set(spec.name, { terrainSeed, width, height, shape, previews: (kept?.previews ?? 0) + 1 });
+            // 칸 배치 마을(2026-10-31): 땅 그림·격자·요약·조각 목록(영어)을 주고 spec.villageLayout 을 받는다.
+            if (bboxVillageSpec(spec)) { layoutSession(session).cards.add(`village:${spec.name}`); return villageLayoutCard(env, spec, String(task ?? ""), toBboxTerrain(terrain, vt)); }
             const res = text({ ok: false, notFailure: true,
               summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 땅을 코드가 만들었다(${width}×${height}, terrainSeed ${terrainSeed}). 아래 그림(좌표 눈금: 위 x·왼쪽 y, 칸 단위)과 요약을 보고 `
                 + `마을 자리를 네가 고른다 — 같은 make_place 에 hints.layout 을 넣어 다시 부르면 이 땅 위에 짓는다. ${villageLayoutGuide(vt, va.fishing === true, va.form === "scatter")} 땅이 요청과 다르면 hints.landform·water·high 나 terrainSeed 를 바꿔 다시 부르면 새 땅을 보여 준다.`,
@@ -870,6 +892,18 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (hasLayout(spec)) spec = { ...spec, hints: { ...(spec.hints ?? {}), layoutRepairsLeft: 2 - layoutTries } };
       let result = builder.build(run, spec);
       if (hasLayout(spec)) { if (!result.ok && /^Rejected:/u.test(result.summary)) session.layoutRejects.set(spec.name, layoutTries + 1); else if (result.ok) session.layoutRejects.delete(spec.name); }
+      // 칸 배치가 거절되면 짓지 않고 문제 목록(칸 좌표)을 돌려준다 — 고칠 횟수가 다 차면 배치 없이 옛 빌더로 짓는다.
+      const bboxState = result.state as { bbox?: "dungeon" | "village"; rejected?: string[] } | undefined;
+      if (!result.ok && bboxState?.bbox && bboxState.rejected) {
+        const ls = layoutSession(session);
+        const n = (ls.rejects.get(spec.name) ?? 0) + 1; ls.rejects.set(spec.name, n);
+        if (n <= LAYOUT_REPAIRS) return layoutRejectText(bboxState.bbox, spec, bboxState.rejected, LAYOUT_REPAIRS - n);
+        const { dungeonLayout: _dl, villageLayout: _vl, ...plain } = spec;
+        spec = plain as PlaceSpec;
+        const fallback = builderFor(spec)!;
+        result = fallback.build(run, spec);
+        result = { ...result, warnings: [`Your ${bboxState.bbox} layout was rejected ${n} times (${bboxState.rejected.slice(0, 3).join(" | ")}) — built by the automatic builder instead.`, ...result.warnings] };
+      }
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
       if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
       // 요청에 주민이 있는데 마을만 짓고 끝냈다(2026-10-30 씬 벤치 「강가 마을」: 「주민 몇 명」 요청 → NPC 0명) — 마을 결과에 다음 할 일로 붙인다
@@ -884,7 +918,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const KO = { north: "북", south: "남", east: "동", west: "서" } as const;
         if (mapId) result = { ...result, warnings: [...result.warnings, `요청에 들어가는 장소(동굴·던전)가 있다 — 그림 한 장(draw_object)이나 마을 앵커가 아니라 make_place type "cave"(또는 "dungeon")로 짓는다. 이 마을(${mapId})을 지은 뒤 바로 부르면 짓기가 마을${side ? ` ${KO[side]}쪽 가장자리 길 끝` : "의 그 방향 가장자리 길"} 칸에 바깥 문을 잇는다${side ? `(던전 설계 entrance 는 마을에서 들어오는 쪽 = ${OPP_SIDE[side]})` : ""}.`] };
       }
-      return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
+      const placed = await finishPlace(id, "make_place", params, spec, builder.id, result, 0);
+      noteLayoutPlace(spec, result);
+      if (result.ok && result.mapIds[0] && (result.state as { bbox?: string } | undefined)?.bbox) attachLayoutCritique(placed, env, session, result.mapIds[0], spec, result.state);
+      return placed;
     },
   };
 
@@ -893,8 +930,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "Rebuild a built (or existing) place with the same builder, changing only part of its spec. Pass critic-major coordinates as addAnchors.near. 1 round per map (interiors laid from spec.layout: several rounds — layoutPatch or set.layout). For a room you designed with design, put the whole fixed design in patch.design (dressing is not for designed rooms).",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "map id to fix (inside patch)" },
-      set: { type: "object", properties: { layout: LAYOUT_SCHEMA, name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA, dungeonDesign: DUNGEON_DESIGN_SCHEMA, connections: CONNECTIONS_SCHEMA, entrance: { type: "string", description: "(interior room graph) entrance room id" } } },
+      set: { type: "object", properties: { layout: LAYOUT_SCHEMA, name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA, dungeonDesign: DUNGEON_DESIGN_SCHEMA, connections: CONNECTIONS_SCHEMA, entrance: { type: "string", description: "(interior room graph) entrance room id" }, ...(bboxPlacesOn() ? { dungeonLayout: DUNGEON_LAYOUT_SCHEMA, villageLayout: VILLAGE_LAYOUT_SCHEMA } : {}) } },
       zones: { type: "array", items: ZONE_SCHEMA, description: "(interior) the whole new zone list for this floor — replaces the old rooms (use it to re-plan a room graph; send set.connections with it)" },
+      ...(bboxPlacesOn() ? { layoutReview: { type: "string", description: "(place laid from your cell layout) finish one self-critique round without changes: what you checked and why it is good" } } : {}),
       addZones: { type: "array", items: ZONE_SCHEMA },
       removeZones: { type: "array", items: { type: "string" } },
       addAnchors: { type: "array", items: { type: "object", properties: { zone: { type: "string" }, what: { type: "string" }, near: POINT }, required: ["what"] } },
@@ -966,7 +1004,24 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= repairCap(record.spec)) return text({ ok: false, summary: `고치기 상한(${repairCap(record.spec)}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
-      const builder = builderFor(record.spec)!;
+      // 칸 배치 장소의 자기 비평: «고칠 것 없음»(layoutReview) 은 한 바퀴로 세고 다시 깔지 않는다. 고친 배치(set.dungeonLayout·villageLayout)는 한 바퀴로 세고 다시 깐다.
+      const layoutState = layoutSession(session).byMap.get(patch.mapId);
+      // 빈 배치(방 0개·길·건물 0개 — 스키마를 빈 값으로 채운 것)는 보내지 않은 것으로 본다. 그대로 두면 앞 배치가 지워져
+      // 옛 빌더가 그 자리에 다른 던전을 지었다(2026-10-31 terra-high 지하 묘지: 빈 dungeonLayout·dungeonDesign → sandpit 40×27).
+      if (patch.set?.dungeonLayout !== undefined && !hasDungeonLayout({ dungeonLayout: patch.set.dungeonLayout } as PlaceSpec)) { const { dungeonLayout: _d, ...rest } = patch.set; patch = { ...patch, set: rest }; }
+      if (patch.set?.villageLayout !== undefined && !hasVillageLayout({ villageLayout: patch.set.villageLayout } as PlaceSpec)) { const { villageLayout: _v, ...rest } = patch.set; patch = { ...patch, set: rest }; }
+      const newLayout = !!(patch.set?.dungeonLayout || patch.set?.villageLayout);
+      if (layoutState && (newLayout || patch.layoutReview)) layoutState.critiqueRounds += 1;
+      if (layoutState && patch.layoutReview && !newLayout) {
+        const res = text({ ok: true, summary: `Self-critique round ${layoutState.critiqueRounds} of ${LAYOUT_CRITIQUE_ROUNDS} recorded without changes for ${record.spec.name} (${patch.mapId}).${layoutState.critiqueRounds >= LAYOUT_CRITIQUE_ROUNDS ? " Self-critique is complete — continue with the rest of the request." : ""}` });
+        if (layoutState.critiqueRounds < LAYOUT_CRITIQUE_ROUNDS) {
+          const pic = await renderMap(env, patch.mapId);
+          if (pic) res.content.push({ type: "image", mimeType: "image/png", data: pic.slice(pic.indexOf(",") + 1) });
+          attachLayoutCritique(res, env, session, patch.mapId, record.spec, record.result.state);
+        }
+        return res;
+      }
+      const builder = builderFor(newLayout ? applyPatch(record.spec, patch) : record.spec)!;
       // 마을·던전·거리 빌더는 소품 하나하나·꾸밈 정도를 받지 않는다 — 그런 패치로 다시 지으면 같은 맵이 또 나오고 바퀴만 쓴다(2026-10-23 v2 실조수).
       if (builder.id !== interiorBuilder.id) {
         const effective = !!(patch.set || patch.variant !== undefined || patch.seed !== undefined || patch.addFeatures?.length || patch.removeFeatures?.length || patch.addZones?.length || patch.removeZones?.length
@@ -991,9 +1046,18 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const before = { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) };
       const built = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
       if (hasLayout(spec)) { if (!built.ok && /^Rejected:/u.test(built.summary)) session.layoutRejects.set(spec.name, layoutTries + 1); else if (built.ok) session.layoutRejects.delete(spec.name); }
+      const rejectedLayout = (built.state as { bbox?: "dungeon" | "village"; rejected?: string[] } | undefined);
+      if (!built.ok && rejectedLayout?.bbox && rejectedLayout.rejected) {
+        // 고친 배치가 거절되면 앞 장소를 그대로 둔다(바퀴는 셌다) — 문제 목록을 주고 다시 보내게.
+        return text({ ok: false, notFailure: true, summary: `Rejected: the checker found ${rejectedLayout.rejected.length} problem(s) in your corrected ${rejectedLayout.bbox}Layout — the place was NOT re-laid (the previous version stays). Fix every problem and call edit_place again with the full corrected layout, or finish the round with layoutReview.`, problems: rejectedLayout.rejected.slice(0, 40) });
+      }
       const notes = [...shellNote, ...(redesigned?.notes ?? [])];
       const result = notes.length ? { ...built, warnings: [...notes, ...built.warnings] } : built;
-      return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
+      const fixed = await finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
+      noteLayoutPlace(spec, result);
+      const laidMap = result.mapIds[0];
+      if (result.ok && laidMap && (result.state as { bbox?: string } | undefined)?.bbox) attachLayoutCritique(fixed, env, session, laidMap, spec, result.state);
+      return fixed;
     },
   };
 
@@ -1842,6 +1906,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — 장소는 edit_place·move_object·dress_room, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
   ];
+  // 칸 배치 장소(placeLayout.ts): 배치 항목이 맵에 있나·이어짐·보스 앞방·문앞 길·자기 비평 두 바퀴 — 지금 맵에서 다시 잰다.
+  if (env) problems.push(...placeLayoutProblems(env.ctx.project, session, (m) => (session.places.get(m)?.rounds ?? 0) < V2_MAX_REPAIR_ROUNDS));
   const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
   return { problems, leftovers, missing };
 }

@@ -229,7 +229,10 @@ export function authoredMonsterResourceId(enemyId: string | undefined, name: str
 
 /** 이 uploaded 자산이 공방이 만든 9칸 시트 초상인가. */
 export function isAuthoredMonsterAsset(project: Pick<Project, "assets">, resourceId: string): boolean {
-  return Object.hasOwn(project.assets.uploaded, resourceId) && project.assets.uploaded[resourceId]!.meta.pixelEnemySheet !== undefined;
+  if (!Object.hasOwn(project.assets.uploaded, resourceId)) return false;
+  const asset = project.assets.uploaded[resourceId]!;
+  // 스토어·생성 팩에서 받은 몬스터도 같은 시트 표식을 갖지만 공방 레시피가 없다 — 공방이 덮어 그리지 않게 저작물로 치지 않는다.
+  return asset.meta.pixelEnemySheet !== undefined && asset.origin === undefined;
 }
 
 /**
@@ -246,7 +249,8 @@ export function writeAuthoredMonsterAssets(
   for (const id of [resourceId, sheetResourceId]) {
     if (!Object.hasOwn(draft.assets.uploaded, id)) continue;
     const existing = draft.assets.uploaded[id]!;
-    const ours = id === resourceId ? existing.meta.pixelEnemySheet !== undefined : existing.generatedBy?.startsWith("monster-pixel-studio") === true;
+    const ours = existing.origin === undefined
+      && (id === resourceId ? existing.meta.pixelEnemySheet !== undefined : existing.generatedBy?.startsWith("monster-pixel-studio") === true);
     if (!ours) throw new ToolError(`uploaded 자산 '${id}' 가 이미 있고 도트 몬스터 공방이 만든 것이 아니다 — 다른 resourceId 를 주라.`, { code: "resource-id-taken" });
   }
   const { cells: _cells, ...recipeWithoutCells } = options.recipe;

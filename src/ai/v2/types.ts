@@ -86,6 +86,10 @@ export interface PlaceSpec {
   readonly dungeonDesign?: import("@/editor/dungeonKit/designLayout").DungeonDesign;
   /** (여러 층 던전) 층마다 설계(아래층부터). */
   readonly floorDesigns?: readonly import("@/editor/dungeonKit/designLayout").DungeonDesign[];
+  /** (던전, 칸 배치 bbox) 조수가 칸 단위로 쓴 층 배치 — 형식 src/editor/dungeonKit/bboxFloor.ts BBOX_DUNGEON_FORMAT. 함수는 검사하고 그대로 깐다. */
+  readonly dungeonLayout?: import("@/editor/dungeonKit/bboxFloor").BboxDungeonLayout;
+  /** (코드 지형 마을, 칸 배치 bbox) 조수가 칸 단위로 쓴 마을 배치 — 형식 src/editor/tools/bboxVillage.ts BBOX_VILLAGE_FORMAT. */
+  readonly villageLayout?: import("@/editor/tools/bboxVillage").BboxVillageLayout;
 }
 
 /** 고치기 패치 — edit_place 의 인자. 명세의 그 부분만 바꾼 뒤 같은 빌더로 다시 짓는다. */
@@ -111,6 +115,8 @@ export interface PlacePatch {
   readonly designZone?: string;
   /** (칸 배치 장소) 지금 배치에 적용할 고침 — 기물 빼기/더하기·칸 통째 바꾸기(interiorLayout.applyLayoutPatch). */
   readonly layoutPatch?: import("./interiorLayout").LayoutPatch;
+  /** (칸 배치 장소) 자기 비평 한 바퀴를 «고칠 것 없음»으로 마칠 때 — 무엇을 보고 왜 괜찮은지. 다시 깔지 않는다. */
+  readonly layoutReview?: string;
 }
 
 /** 빌더가 실제로 부른 v1 결정론 도구 하나. */

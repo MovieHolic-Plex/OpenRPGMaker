@@ -681,7 +681,7 @@ export function executeCommand(
       return pause("presentItem", {
         kind: "presentItem",
         prompt: command.prompt,
-        items: presentableItems(state.session, command),
+        items: presentableItems(state.session, command, state.project),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "planSchedule": {

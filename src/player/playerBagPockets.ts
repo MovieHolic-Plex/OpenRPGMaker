@@ -41,6 +41,25 @@ export function bagPocketOf(project: Project, item: ItemRecord): ItemBagPocket {
 
 const EQUIPMENT_TYPES: ReadonlySet<string> = new Set(["weapon", "shield", "body", "head", "accessory"]);
 
+/**
+ * 일반 장르(몬스터 수집이 아닌 게임) 가방의 「중요한 물건」: 저작자가 pocket "key" 로 정했거나,
+ * 어디서도 쓸 수 없고(occasion never) 팔 수 없는(가격 0) 물건 — 추리 증거·편지·열쇠 같은 이야기 물건.
+ * 장비 종류는 넣지 않는다(장비 칸이 따로 있다). 몬스터 게임은 bagPocketOf 를 쓴다.
+ */
+export function isKeyItem(item: ItemRecord): boolean {
+  if (item.pocket) return item.pocket === "key";
+  if (EQUIPMENT_TYPES.has(item.type)) return false;
+  return item.occasion === "never" && (item.price ?? 0) === 0;
+}
+
+/**
+ * 일반 가방이 「중요한 물건」 칸을 보이는가 — 플레이어가 중요한 물건을 하나라도 가졌을 때만.
+ * 기본 자료집에 공용 열쇠·편지가 늘 들어 있으므로 「자료집에 있다」로 정하면 모든 게임의 가방이 바뀐다.
+ */
+export function holdsKeyItems(project: Project, inventory: Readonly<Record<string, number>>): boolean {
+  return project.database.items.some((item) => (inventory[item.id] ?? 0) > 0 && isKeyItem(item));
+}
+
 /** 포켓별 보유 아이템 종류 수(수량이 아니라 줄 수). 자료집에 없는 id 는 중요한 물건에 센다(목록이 그 줄을 같은 곳에 둔다). 장비 id 는 몬스터 가방에 줄이 없다. */
 export function bagPocketCounts(project: Project, inventory: Readonly<Record<string, number>>): Record<ItemBagPocket, number> {
   const counts: Record<ItemBagPocket, number> = { items: 0, balls: 0, machines: 0, held: 0, key: 0 };

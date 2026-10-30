@@ -314,6 +314,22 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 빌더 경고: `builders/dungeon.ts` 가 `author_dungeon` 결과의 `diff.warnings` 를 읽지 않아 「고침:」 줄이 모델에게 한 번도 가지 않았다(지문의 고침 수 늘 0) — 고쳤다.
 - 시험: `bun scripts/qa/assistant-v2/dungeonDesign.mts <out> [theme…]`(예시 넷 + 설계 없음, 모델 없음). 실조수 판 검사 `bun scripts/qa/assistant-v2/dungeonLiveCheck.mts <판>…`(막힘·자동 플레이·던전 맵 도달(시작/이동 칸에서 이벤트 모두 닿는가)·열린 바닥 한가운데 외톨이 막힌 칸 수, `DLC_NOPLAY=1` 이면 자동 플레이 생략). 실조수 `suite/dungeon-live.sh <arm> <prompt> <batch>`(같은 요청 same1~3 + demon·crystal·goblin·volcano·forest), 지문은 `suite/dungeon-design-fp.py <batch> <out>` — mapvqa 렌더·거의 같음 규칙 + 구조 사인(방 수·방 종류·입구 쪽, 방 이름과 무관해서 mapvqa 「방 구성」 표지가 모델이 지은 이름으로 다양해 보이는 착시를 막는다). 결과 페이지 `~/claude-viz/dungeon-design-1029.html`.
 
+## 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
+
+실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. `OPRN_V2_BBOX_PLACES=0` 이면 꺼지고 옛 경로만 탄다(측정 대조군).
+
+- **던전(type dungeon)**: 설계·배치 없이 온 `make_place` 는 장소마다 한 번 영어 카드로 되돌린다(`placeLayout.dungeonLayoutCard`) — 칩셋 메타에서 뽑은 조각 목록(`bboxFloor.bboxDungeonCatalog`: 던전 테마 role prop·벽걸이/바닥/무늬, 이름 = 키트 id 의 낱말)·견본 그림(사본 맵에 조각을 실제 벽·바닥 위에 찍어 1배 렌더, 목록에 sheet 좌표)·격자 규칙·형식. 모델이 `spec.dungeonLayout` 을 주면 `BBOX_DUNGEON_BUILDER`(id dungeon, 빌더 목록 맨 앞)가 받는다. 동굴(type cave)은 옛 경로.
+  - 깔기: 쓰기 도구 `lay_dungeon_layout`(`editor/tools/bboxPlaceTools.ts`) → `layBboxDungeon`(검사) → `composeExactFloor`(compose.ts `spec.exact` — 배치·자리·장식 단계를 건너뛰고 칸 그대로 바닥·벽·물/용암/구덩이). 방 이름표(dungeon-room·bbox-room)·입구(gate:/land: 태그)·잠긴 문(쇠창살 이벤트)·배치 선언(이름표 태그 `bbox-layout`, note 에 조각·보스·적·상자 JSON).
+  - 적·보스·상자: 모델이 적은 칸 그대로 `place_field_enemy`·`place_chest`. 적 그룹은 옛 빌더와 같은 고르기(`planTroops`·`themedTroops`). 보스 칸을 안 적으면 보스방 가운데에 가장 가까운 빈 칸. 회복 길(`ensureHealingAccess`·`ensureBossRest`)은 옛 경로와 같다.
+  - 다시 깔기(edit_place)는 같은 맵 자리에서: 바깥에서 들어오는 문은 새 입구 착지로, 이 층의 바깥 문은 새 입구 계단 칸으로, 손으로 붙인 이벤트는 가까운 걷는 칸으로 옮긴다(`carryEvents`).
+- **마을(코드 지형을 쓰는 마을)**: 첫 `make_place` 는 코드가 땅(높이맵·강·단)을 만들고 영어 카드를 준다(`villageLayoutCard`) — 지형 그림(좌표 눈금)·한 칸 한 글자 격자·요약(단·물·평지 덩이·다리 자리)·조각 목록(`bboxVillage.bboxVillageCatalog`: role building 중 «검수 통과»·원본 집, 아래 줄 문 칸만 · 마을 묶음 소품 · bd-tree 나무)·견본 그림. 모델이 `spec.villageLayout` 을 주면 `BBOX_VILLAGE_BUILDER` 가 같은 땅(세션에 둔 씨앗·크기) 위에 `lay_village_layout` 으로 칠한다. hints.layout(옛 자리 고르기)을 주면 옛 빌더.
+  - 검사(`checkBboxVillage`, 실험 lay.mts 이식): 칸 하나에 주인 하나(길끼리·광장 위 소품만 겹침), 한 단 위에만, 물 위엔 배·잔교만, 계단은 남북·낮은 단에서 절벽에 붙여 높이 차+1, 길·광장·계단이 실제 걷기 규칙으로 한 덩이 + 마른 맵 끝 하나, 집 문앞 칸은 같은 단의 이어진 길, 울타리 문 밖은 길.
+- **거절**: 검사 문제는 칸 좌표가 붙은 영어 목록 + Fixed call 로 돌려준다(짓지 않음). 장소마다 `LAYOUT_REPAIRS`(2)번까지 — 넘으면 배치를 버리고 옛 빌더로 짓고 경고에 적는다.
+- **자기 비평 두 바퀴**(`attachLayoutCritique`): 지은 결과(1배 그림·기계 검사·독립 비평) 뒤에 배치 상자 그림(8px/칸, 방 색 = 목적, 문·상자·적·보스 / 마을은 지형 위 길·집·밭·숲)과 영어 비평 지시를 붙인다. 모델은 `edit_place {patch:{mapId, set:{dungeonLayout|villageLayout: 전체}}}` 로 다시 깔거나 `layoutReview` 로 «고칠 것 없음»을 적는다 — 둘 다 한 바퀴. 던전 방 그래프가 일자(고리·곁가지 0)면 비평 글이 짚는다.
+- **할 일 고리**: `v2GateProblems` 가 `placeLayoutProblems` 를 더한다 — 열쇠 `place:<맵>:layout-{items,connected,boss_gate,doors_roads,critique}`(배치 항목이 맵에 있나·입구에서 방에 걸어 닿나·보스방이 앞방을 거쳐야만 닿나·집 문앞이 마을 입구에서 닿나·비평 두 바퀴). 지금 맵에서 다시 재므로 뒤의 편집이 길을 막으면 다시 열린다.
+- **확장 자리**(다음 실험이 끼울 곳): `bboxFloor.BBOX_ROOM_SHAPES`(방 모양 → 칸 목록; 지금 rects) · `BBOX_ROOM_CHECKS`(방마다 검사) · `bboxVillage.BBOX_VILLAGE_CLIMBS`(단 오르기 종류; 지금 stairs). 검사·그리기는 칸 집합만 보므로 새 모양은 함수 하나로 들어온다.
+- 진행 상황은 `execution_status` `v2.bbox`(data: mapId·kind·graph{rooms,links,loops,branches,longestChain}·critiqueRounds·rejects)로 남는다 — 측정이 읽는다.
+
 ## 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
 
 씬 「숲길 탐색 구간」(버들마을↔마왕의 동굴, 갈림길·상자·약한 몬스터)은 v2 숲·들판 낱말 경로(`game.ts` words → `author_forest_route`, `editor/tools/forestRouteTool.ts`)를 탄다 — 던전 빌더가 아니다.
@@ -350,6 +366,20 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **대사의 「▼ 기록」「■ 기록」**: 게임 글이 아니다. 판정 도구(`assistant-whole-game/tools/hplay.mjs` ui())가 대사창 `.dialogue-box` 의 innerText 를 읽어 쪽 표시(`.dialogue-page-cursor` ▼ 다음 쪽 · ■ 끝)와 「기록」 단추(`.dialogue-log-button`) 글이 대사 끝에 붙었다. 도구가 조작 칸을 뺀 사본에서 글을 읽게 고쳤다(저장소 밖, `hplay.mjs.bak-1030` 옛 판). 확인: walkpath `dialogueDump`(창 전체 글과 뺀 글을 같이 파일로).
 - **잠기지 않은 출구에 자물쇠 문을 세우지 않는다**(`exitDress.doorPiece`): 손 도트 실내 칩셋(`atlas_biome_interior`)에는 사람이 드나드는 1칸 나무 문 조각이 없어 boss-room r2 새 방의 「→ 지하 던전」 출구가 `locked door`(큰 자물쇠 나무 문)로 섰다. 잠기지 않은 출구는 낱말 「door」 조각(「indoor well」·「trapdoor」·「doormat」 제외) → 같은 1×2 모양의 `iron gate open`(열린 쇠창살 문, 6423·6424) → `locked door` 순으로 고른다. 칩셋에 있는 다른 문 조각: 「둥근 문」(호빗 굴 2×2 장식 걸이)·「둥근 아치 문틀」(칸막이 틈에 거는 3×2) — 벽 발치 출구 모양이 아니다. 새 방 쪽 지하 던전 착지 칸은 문 그림 없는 이동 칸이다(잇기 `linkChild` 의 마지막 갈래).
 - 런타임 걸음 `walkpath` 에 `dialogueDump`·`vitals`(파티 HP, `e2eVitals=1` 쿼리를 단다)·`untilField`(Enter 로 넘겨 필드로 돌아올 때까지 + `stateDump` 위치 파일)를 더했다. 전/후 그림: `suite/ledger/evidence/vm7-wayfind/1030-*`.
+
+## 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
+
+`assistant-capability genre-run`(실제 입력창 Pi 경로, opus 5.5 medium · gpt-6.1-terra medium)으로 코딩 에이전트판(마왕 편의점 데모 브랜치의 maouKonbini 굽기)과 같은
+「일본 상점가 + 편의점 + 원룸」 요청을 돌려 비교했다. 두 판 모두 저장·재로드·lint 0 은 통과했지만 아래 결함이 있었다.
+
+- **「상점가」가 실내로 읽혔다**(`todo/checks.ts` KIND_WORDS): `상점` 이 interior 낱말이라 거리 할 일의 기계 검사가 실내를 찾아 실패했다. interior 는 `상점(?!가)`·`가게(?!\s*거리)`, street 에 상점가·시장·아케이드.
+- **문 잇기 도구가 v2 풀에 없었다**(`game.ts` FALLEN_TIERS 일본 거리 묶음): terra 가 `link_jp_city_interior` 를 불러 unknown tool, 둘 다 `create_transfer_pair` 로 손으로 이었다. 일본 거리 낱말이면 `link_jp_city_interior`·`list_map_locations`·`set_map_door`·`add_street_walkers` 를 싣고 카드에 「문마다 link_jp_city_interior」를 적는다.
+- **차임을 문 이벤트에 또 넣었다**(`mapDoorTools.doorLine`): 편의점 문은 이미 `chimeSe` 가 켜졌는데 두 모델 모두 `patch_event_page` 로 소리 명령을 넣다가 transfer 를 지웠다. 문 목록 줄에 「입점 차임 이미 켜짐 — 소리 명령을 따로 넣지 않는다」를 붙인다.
+- **「자전거 없이」를 빌더가 무시했다**(`builders/jpCity.ts` `jpAvoidProps`): 요청 낱말 중 부정형(없이·빼·말고·no/without)은 소품 낱말에서 빼고 `hints.avoidProps`(bike·vend·car·bench·planter·nobori·cone)를 `compose_jp_city_street` 의 avoidProps 로 넘긴다. opus 는 이걸 돌아가려고 15번쯤 불렀다.
+- **행인 검색어 「회사원」「행인」이 0건**(`charsetQuery.ts` SYNONYMS): 회사원·직장인·점원·행인 동의어를 더했다(회사원 → modern3 정장 칩). REFMAP 칩 자동 선택 문제와는 무관하다.
+- **`add_street_walkers` 의 {query} 칩이 칩 관문에 거절됐다**(`streetWalkersTool.ts`): query 로 도구가 고른 칩은 `noteToolChosenGraphic` 으로 적어 관문이 면제하고, 같은 맵에서 이미 쓴 칩을 피해(avoidKeys·seed) 행인끼리 같은 칩이 되지 않게 한다.
+- 남은 것: 편의점 점원이 마법 상점 직원 칩(terra), 기본 타이틀·판타지 오프닝을 그대로 둠(둘 다), 요청 없이 주인공 외형·시작 장비를 바꿈(둘 다), `patch_event_page` 의 「transfer 빠짐」 경고가 door:true 추가에도 뜨는지 확인.
+- 증거: http://mdc-server:18301/assistant-parity.html
 
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 

@@ -1153,6 +1153,11 @@ export interface TroopRecord {
   battleGuests?: TroopBattleGuest[];
   /** 결투 규칙(항복 HP·기권·라운드 제한·아이템 금지). 생략 = 일반 전투. */
   duel?: TroopDuelRules;
+  /**
+   * 이 적 그룹을 이겼을 때 화면 가운데 뜨는 승리 띠 글자(최대 40자). 생략·빈 문자열 = 프로젝트 용어
+   * terms.battleVictory → 기본 「승리!」. 정규화·해석은 project/terms.ts(resolveVictoryBannerText).
+   */
+  victoryBanner?: string;
 }
 
 export interface TroopBattleGuest {
