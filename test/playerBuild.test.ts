@@ -1,6 +1,6 @@
 import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { build, type Plugin } from "vite";
 import { describe, expect, it } from "vitest";
 
@@ -19,6 +19,17 @@ const FORBIDDEN_ARTIFACT_MARKERS = [
   { label: "editor-public-env", pattern: /VITE_(?:LLM|LEGACY_DB|YUNWU)/u },
   { label: "remote-api-endpoint", pattern: /api\.(?:anthropic|openai)\.com/iu },
 ] as const;
+/**
+ * 번들 타일셋 정의 JSON(src/assets/*Tileset.json, 지연 17종)에만 있는 글자. 플레이어 첫 로드(player.js 와 그 정적 import 청크)에
+ * 이게 보이면 정의가 다시 진입 청크로 들어온 것이다 — 2026-10-30 전에는 52MB 청크가 첫 프레임을 막았다.
+ */
+const TILESET_DEFINITION_MARKERS = [
+  /libraryEnd/u,
+  /버들항 v6 언덕\(저택·성당\) 성벽/u,
+  /조선 지형 동굴 천장\(벽 윗면\)/u,
+] as const;
+/** bundledJsonSources.lazy.ts 의 지연 키 수 — 각각 assets/<key>-<hash>.json 으로 따로 실린다. */
+const LAZY_TILESET_DEFINITION_COUNT = 17;
 
 type ScanFinding = {
   readonly label: string;
@@ -84,6 +95,12 @@ describe("player build output", () => {
       const files = await collectFiles(outputDir);
       const html = await readFile(join(outputDir, "player.html"), "utf8");
       const report = await scanPlayerArtifacts(outputDir);
+      const firstLoad = await staticEntryChunks(outputDir, html);
+      const firstLoadWithDefinitions = (await Promise.all(firstLoad.map(async (file) => {
+        const content = await readFile(file, "utf8");
+        return TILESET_DEFINITION_MARKERS.some((marker) => marker.test(content)) ? [relative(outputDir, file)] : [];
+      }))).flat();
+      const definitionAssets = files.filter((file) => /[\\/]assets[\\/][A-Za-z]+Tileset-[A-Za-z0-9_-]+\.json$/u.test(file));
       const forbiddenModules = transformedModuleIds.filter((id) =>
         /(?:\/src\/ai\/|legacyDbProject(?:Config|Sync)|tileMetadataDb)/iu.test(id),
       );
@@ -96,6 +113,9 @@ describe("player build output", () => {
       expect(forbiddenModules).toEqual([]);
       expect(report.findings).toEqual([]);
       expect(report.scannedFileCount).toBeGreaterThan(0);
+      expect(firstLoad.some((file) => file.endsWith("player.js"))).toBe(true);
+      expect(firstLoadWithDefinitions).toEqual([]);
+      expect(definitionAssets).toHaveLength(LAZY_TILESET_DEFINITION_COUNT);
     } finally {
       await rm(outputDir, { recursive: true, force: true });
     }
@@ -149,6 +169,22 @@ async function scanPlayerArtifacts(
 
   if (findings.length > 0) throw new PlayerArtifactScanError(findings);
   return { scannedFileCount: files.length, findings };
+}
+
+/** player.html 이 싣는 스크립트·modulepreload 와, 거기서 정적 import(`from"…js"`·`import"…js"`)로 닿는 청크 전부. 동적 import 는 뺀다. */
+async function staticEntryChunks(root: string, html: string): Promise<readonly string[]> {
+  const seen = new Set<string>();
+  const queue = [...html.matchAll(/<(?:script|link)\b[^>]*\b(?:src|href)="([^"]+\.js)"/gu)].map((match) => resolve(root, match[1]!.replace(/^\//u, "")));
+  while (queue.length > 0) {
+    const file = queue.shift()!;
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const code = await readFile(file, "utf8");
+    for (const match of code.matchAll(/(?:\bfrom|\bimport)\s*["']([^"']+\.js)["']/gu)) {
+      queue.push(resolve(dirname(file), match[1]!));
+    }
+  }
+  return [...seen].sort();
 }
 
 async function collectFiles(root: string): Promise<readonly string[]> {
