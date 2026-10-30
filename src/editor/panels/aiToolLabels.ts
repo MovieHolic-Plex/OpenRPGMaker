@@ -382,6 +382,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   compose_pirate_isles_map: build("해적 군도 맵 짜기", "map"),
   compose_sengoku_edo_map: build("전국·에도 맵 짜기", "map"),
   link_sengoku_edo_interior: world("전국·에도 실내 잇기", "door"),
+  link_joseon_interior: world("조선 실내 잇기", "door"),
+  list_joseon_doors: world("조선 건물 문 보기", "door"),
   compose_sky_island_map: build("하늘섬 맵 짜기", "map"),
   link_sky_island_interior: world("하늘섬 실내 잇기", "door"),
   compose_steampunk_city_map: build("스팀펑크 맵 짜기", "map"),
