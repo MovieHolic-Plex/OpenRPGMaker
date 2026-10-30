@@ -53,6 +53,7 @@ import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { flushPendingAutosave } from "@/player/autosave";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
+import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
@@ -704,6 +705,13 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "setThrough":
       route.through = command.enabled;
       return false;
+    // 같은 맵 안 순간 이동 — NPC 와 같은 명령. 예전엔 아래 default 로 조용히 건너뛰어, 「문간에 세우고 한 걸음 걸어 나온다」
+    // 컷신이 주인공을 시작 칸에 그대로 두고 그 뒤 걸음이 엉뚱한 칸에서 막혔다(첫사랑 옥상 r4: 서하가 지후에게 못 가고 문 옆에서 대화).
+    case "placeAt": {
+      const x = Math.round(command.x), y = Math.round(command.y);
+      if (inBounds(scene.map, x, y)) placePlayerOnCurrentMap(scene, x, y);
+      return false;
+    }
     case "exitVia":
     case "enterVia":
       // 주인공의 문 출입은 장소 이동(transfer)이다 — 문 연출 단계는 NPC 전용.
