@@ -1,4 +1,5 @@
 import { updateEventPage } from '@/editor/eventPages';
+import { CHASE_BRAINS, CHASE_BRAIN_LABELS, isChaseBrain } from '@/project/chaseBrain';
 import { EMOTE_KINDS, EMOTE_LABELS, isEmoteKind } from '@/project/emotes';
 import { defaultDetectionEncounter } from '@/project/npcBehavior';
 import type { DetectionEncounter, EventPage, MapId, NpcSight } from '@/project/types';
@@ -28,8 +29,24 @@ function sightFields(prefix: string, sight: NpcSight, change: (patch: Partial<Np
     label('벽과 물체가 시야를 가림', los), label('감지 방향', facing)];
 }
 
+const BRAIN_OPTIONS = CHASE_BRAINS.map((value) => ({ value, label: CHASE_BRAIN_LABELS[value] }));
+
+/** 추격 성격(movement.chaseBrain, @/project/chaseBrain). auto 는 필드를 지운다 — 옛 페이지와 같은 저장 모양. */
+function brainField(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+  const brain = selectWithOptions(BRAIN_OPTIONS, page.movement.chaseBrain ?? 'auto', 'event-npc-chase-brain');
+  brain.addEventListener('change', () => {
+    if (!isChaseBrain(brain.value)) return;
+    const { chaseBrain: _previous, ...rest } = page.movement;
+    updateEventPage(mapId, eventId, page.id, {
+      movement: brain.value === 'auto' ? rest : { ...rest, chaseBrain: brain.value },
+    }, '추격 성격 설정');
+  });
+  return label('추격 성격', brain);
+}
+
 export function renderMovementSight(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const wrap = el('div', { class: 'event-page-movement-stack' });
+  wrap.append(brainField(mapId, eventId, page));
   const sight = page.movement.sight;
   if (!sight) {
     wrap.append(el('p', { class: 'empty-hint', text: '명시적인 시야 설정이 없습니다. 기존 추격 감지를 유지합니다.' }));

@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.370.0 — 2026-10-30
+
+### 기능
+
+- **chase** — smart chase AI — touch means battle, hearing, per-kind brains, pack perf (#3967) (`3aa7175`)
+
+### 성능
+
+- **runtime** — bake grafted tileset atlases in a worker, upload to the GPU in bands, prewarm neighbour maps (#3963) (`8b516cf`)
+
 ## 0.369.0 — 2026-10-30
 
 ### 기능
