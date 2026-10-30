@@ -45,7 +45,7 @@ import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/r
 import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, settleBattleTopPads, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { battleAnimationSheetUrls, deferUntilBattleReady, whenBattleStageReady } from "@/player/battleReadiness";
-import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, playSkillCastCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -69,6 +69,7 @@ import {
 import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from "@/player/battleTimerScope";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
+import { resolveTerms } from "@/project/terms";
 import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldSurfaces";
@@ -650,6 +651,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
+        // 아군이 맞으면 「아군 피해」 자리(actorDamage, 비면 적 피해 소리로 물러선다).
+        const actorHit = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
         emitBattleJuice(
           feedback.miss
             ? "hit-miss"
@@ -657,7 +660,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
               ? "hit-critical"
               : feedback.healing
                 ? "hit-heal"
-                : "hit-damage",
+                : actorHit ? "hit-actor" : "hit-damage",
           targetNode,
           // 포켓몬 스킨: 같은 타격 샘플도 세기에 따라 크기·높이가 다르다(약하면 작고 높게, 세면 크고 낮게)
         );
@@ -665,13 +668,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
         // 공유 오디오 핸들을 만졌다(2026-09-16 실측: 전투 창 41개 중 2개가 파괴 뒤 발화).
         if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
+          // 보스(쓰러짐 연출 bossSink)는 「보스 쓰러짐」 자리(bossCollapse, 비면 적 쓰러짐 소리).
+          const bossFall = targetNode?.dataset.collapse === "bossSink";
           scheduleBattleTimer(() => {
             if (destroyed) return;
-            playBattleCue("faint");
+            playBattleCue(bossFall ? "boss-collapse" : "faint");
           }, 260);
         }
         if (intensity) {
-          const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
+          const hurt = actorHit;
           flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
           // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
           // 포켓몬 스킨은 저음층이 타격 세기를 따른다(4 피해와 15 피해가 같은 소리였다).
@@ -1708,7 +1713,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     stamp.setAttribute("aria-hidden", "true");
     const text = document.createElement("span");
     text.className = "battle-finale-stamp-text";
-    text.textContent = result === "victory" ? "승리!" : "전멸…";
+    // 승리 띠 글자는 자료집 용어(terms.battleVictory, 기본 「승리!」)를 따른다.
+    text.textContent = result === "victory" ? resolveTerms(store.getCurrent()).battleVictory : "전멸…";
     stamp.append(text);
     field.append(stamp);
     root.dataset.battleFinale = result;
@@ -1992,6 +1998,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     swingArmed = false;
     pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
+    // 저작한 시전 소리(자리 magic-<속성> → cast)가 있으면 확정 순간에 한 번 — 없으면 아무것도 하지 않는다(기술 애니메이션 소리는 그대로).
+    if (command.kind === "skill") playSkillCastCue(store.getCurrent(), skillRecord);
     if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || hasRetroSkillContract(skillRecord))) {
       swingArmed = false; // The recipe owns release SE; the old animation and generic swing are silent.
       return;

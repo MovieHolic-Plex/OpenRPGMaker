@@ -410,6 +410,8 @@ export interface DialogueSlot {
   readonly text: string;
   readonly drafted: boolean;
   write(next: string): void;
+  /** 대화창 이름표(화자 칸)가 있는 자리만 — 대사 명령 speaker, 에필로그 say 비트 speaker. 선택지·설명·퀘스트 글에는 없다. */
+  readonly speaker?: { readonly value: string; write(name: string): void };
 }
 
 /** 줄 id → 지금 그 자리의 글과 쓰기 손잡이. 자리가 없거나 종류가 안 맞으면 null. */
@@ -432,7 +434,10 @@ export function resolveDialogueSlot(project: Project, id: string): DialogueSlot 
   const field = parsed.field;
   switch (command.kind) {
     case "text":
-      return field === "body" ? { text: command.body ?? "", drafted: root.drafted, write(next) { command.body = next; } } : null;
+      return field === "body" ? {
+        text: command.body ?? "", drafted: root.drafted, write(next) { command.body = next; },
+        speaker: { value: command.speaker ?? "", write(name) { command.speaker = name; } },
+      } : null;
     case "choices": {
       if (field === "prompt") return { text: command.prompt ?? "", drafted: root.drafted, write(next) { command.prompt = next; } };
       const match = /^opt(\d+)$/u.exec(field);
@@ -488,13 +493,15 @@ function resolveRegistrySlot(project: Project, parsed: ParsedDialogueLineId): Di
     beats = depth < parsed.path.length - 1 ? (Array.isArray(beat.beats) ? beat.beats : undefined) : undefined;
   }
   if (!beat || beat.kind !== "say") return null;
-  if (parsed.field === "text") return slot(beat, "text");
+  const sayBeat = beat;
+  const speaker = { value: typeof sayBeat.speaker === "string" ? sayBeat.speaker : "", write(name: string) { sayBeat.speaker = name; } };
+  if (parsed.field === "text") { const text = slot(beat, "text"); return text ? { ...text, speaker } : null; }
   const line = /^line(\d+)$/u.exec(parsed.field);
   if (line && Array.isArray(beat.lines)) {
     const list = beat.lines as unknown[];
     const index = Number(line[1]);
     if (typeof list[index] !== "string") return null;
-    return { text: list[index] as string, drafted: false, write(next) { list[index] = next; } };
+    return { text: list[index] as string, drafted: false, write(next) { list[index] = next; }, speaker };
   }
   return null;
 }

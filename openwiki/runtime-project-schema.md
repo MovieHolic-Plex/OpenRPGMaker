@@ -1822,3 +1822,12 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 ## 상태의 부위 손실·전투 오라 (2026-10-27)
 
 `StateRecord.disablesEquipSlot`(이 상태인 동안 그 장비 칸의 능력치 보너스를 잃음)와 `battleAura`(몸 위 표시 프리셋 id, `"none"` = 끔)는 `normalizeStateRecord` 가 이미 보존한다. 자료집 상태 폼은 `updateDatabaseRecord("states", …)` 로 이 두 칸을 넣는데, 그 갱신 화이트리스트에 키가 없어 저장 전에 버려졌다. 빈 값(칸 없음·표시 기본)은 키를 지운다. 왕복은 `test/stateSlotAuraSave.test.ts`.
+
+## 효과음 자리 표 `system.seCues` (2026-10-30)
+
+`SystemRecords.seCues?: Record<자리 id, 리소스 id>` — 프로젝트에 저장되는 시스템 효과음. 자리 목록·묶음·가족 물러섬은 `src/project/seCues.ts`(`SE_CUE_SPECS`) 하나가 정한다. 자리 id 는 스토어 효과음 팩의 `meta.oprnSound.slots` 와 같은 id 다(제작자와 맞춘 목록 — 바꾸지 말 것): 시스템 13자리(`SYSTEM_SE_CUES`) + `menuOpen` `equip` `save` `load` `shop` `useItem` `itemGet` `levelUp` · `battleStart` `actorDamage` `bossCollapse` `cast` `attack-blunt|pierce|claw` · `magic-<fire|ice|thunder|wind|earth|water|holy|dark>` `buff` `debuff` `poison` `sleep` `paralyze` `reflect` `absorb` `revive` · `door` `doorClose` `chest` `key` `stairs` `switch` `water` `footstep-<grass|stone|wood|sand|snow|water>`.
+
+- **모르는 자리 id 도 저장한다**(꼴 `SE_CUE_ID_PATTERN`: camelCase 또는 kebab 가족 하나, 최대 128개). 새 스토어 자리에 코드 수정이 필요 없다 — 런타임이 그 자리를 부르는 곳이 생기면 그때 울린다. 자료집 표는 모르는 자리를 「그 밖의 자리」로 보여 비울 수 있게 한다.
+- 화이트리스트 정규화(`normalizeSystemRecords`)에 들어 있다. 빈 표·빈 값은 저장하지 않는다(옛 JSON 바이트 그대로) — 이주 없음. 형태 검사 `validateSystem`, 리소스 검사 `validateSystemResources`(`system.seCues.<자리>`), 오디오 삭제 막기(`resourceManagerAudioDelete`)가 이 표를 본다. 내보내기는 프로젝트 문자열 훑기로 표의 리소스를 싣는다(별도 목록 불필요).
+- 가족 물러섬 `seCueFallbacks`: `magic-*` → `cast`, `attack-*` → `attack`, `footstep-*` → 없음. 사건별 물러섬(아군 피해 → 적 피해 등)은 `runtime-battle.md` 「효과음 자리」.
+- 시험: `test/projectSeCues.test.ts`.

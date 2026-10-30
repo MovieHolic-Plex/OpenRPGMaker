@@ -62,6 +62,7 @@
 - `configure_companion_rules {sceneFormation: "nearest"|"abreast"}` → `system.companions.sceneFormation`. `display:"scenesOnly"` 의 장면에서 동료가 서는 자리다.
   `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
   옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
+- **보스 위협 하한은 기본값이다 (2026-10-30, 이세계 고딩 리뷰).** `upsert_enemy` 의 role boss(또는 id·이름의 boss/보스)는 `bossThreatScaling.scaleBossToStartParty(project, enemy, locked)` 로 시작 파티 기준 HP·공격·마력·민첩 하한을 건다. 이번 호출의 `enemy.stats` 에 직접 준 키(`explicitBossStats`)는 locked — 하한보다 낮아도 그대로 두고 경고에 「저자 값 유지 … maxHp 400(권장 600)」을 적는다(예전에는 저자가 짧은 보스전을 위해 준 400·430 을 590·560 으로 덮었다). 빠진 키만 올리고, 요약에 「보스 위협 하한을 기본값으로 적용: maxHp·attack…」처럼 **실제로 채운 키**를 밝힌다. 이미 있는 적을 고칠 때는 이번에 role:"boss" 를 다시 준 경우에만 하한을 건다(옛 호출의 명시값을 덮지 않음). `edit_enemy_pixel_sheet` 의 거신 칸 승격은 바닥값을 레코드에 직접 쓰고 stats 를 넘기지 않는다(명시값으로 잠기지 않게).
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
 - 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
 - 전투·저장·필드 규칙(같은 날, 사용자 7건):
@@ -105,6 +106,30 @@
 - **코딩 에이전트**: `node scripts/content/lint-game-text.mts <파일> [fiction] [--lang ko|en]` — 같은 린터, 원본 CLI 보고서 형식.
 - **크레딧**: 루트 `ATTRIBUTION.md`, 「설정 → 정보」의 「크레딧」 절(이름은 `translate="no"`, 설명 문장은 en/ja/zh 카탈로그).
 - **헤드리스 시험(2026-10-29)**: `node scripts/oprn-tools.mjs --assistant --new --project /tmp/p.json lint_dialogue '{"texts":["마왕은 그것이 아니라 품격이라고 생각했다 — 결국."]}'` → 적중 3건(부정재정의 「것이 아니라」·한줄요약 「결국」·기호 「—」). 게임 안 줄(`lineIds`)도 같은 결과 형식(id·hash 포함)으로 나온다.
+
+## 완성 뒤 대사 윤문 고리 — 실행기 단계 (2026-10-30)
+
+사용자: 「저 윤문을 ai 조수가, 게임을 완성한다고 판단한 이후의 hook 으로 넣어서 잘 윤문하게끔 했음 좋겠거든?」 지시문 한 줄이 아니라 **실행기 단계**다(모델이 안 불러도 돈다).
+
+- **자리**: `scripts/lib/piAgentRuntime.ts` `runPiAgent` 의 본 시도(try) 맨 끝 — 게임 전체 이어 짓기(`whole_game_rekick`)·v2 끝맺음/화면 검수(`options.v2.afterMain`)·오프닝/게임 시스템 완료 검사·1배 특징 확인·배치 권고·실내 완료 검사가 **다 끝난 뒤**(그 단계들도 글을 쓴다). 클로저 `runDialoguePolishHook`, 판정·글은 `src/ai/piAgent/dialoguePolishHook.ts`, 린트는 `src/editor/dialogue/dialoguePolishLint.ts`(`lint_dialogue` 와 같은 린터·같은 줄 매기기).
+- **언제 도나**: 설정 켬(기본) · 읽기 전용 아님 · 팀원 하위 실행 아님(`subscribeTeamMessages`) · 다듬기 모드(`request.polish`) 아님 · 앞에서 실행이 끊기지 않음. 그리고 «이번 실행이 쓴 줄» 이 있을 때 — 게임 전체 요청(`wantsWholeGame`)이면 1줄 이상, 아니면 `DIALOGUE_POLISH_MIN_NEW_LINES`(12) 이상(큰 덩어리). 팀 모드 팀장 마무리(`piTeamRuntime` finish)에는 아직 붙이지 않았다.
+- **«이번 실행이 쓴 줄»**: 대사 색인 `collectDialogueLines(includeDescriptions)`(「대사」 탭·`list_dialogue` 와 같은 색인 — 대사·선택지·자막·퀘스트·엔딩·아이템/장비/스킬 설명)에서 **실행 시작 프로젝트의 어떤 줄과도 글이 다른 줄**. 줄 id 는 명령 경로라 명령을 끼우면 밀리므로 id 가 아니라 펼친 글로 가른다.
+- **글 앞 「이름: 」 라벨은 실행기가 처리(2026-10-30 2차)**: 린트 전에 `src/editor/dialogue/dialogueSpeakerLabel.ts` 가 이번 실행이 쓴 줄 맨 앞의 「이름: 」(배우·이벤트 이름·이미 쓰인 화자, 또는 8자 이하 이름 — 「주의:」「힌트:」 같은 머리말 제외)을 찾아, 그 자리에 대화창 이름표 칸(`text` 명령 `speaker`, 에필로그 say `speaker`)이 비었거나 같은 이름이면 **이름을 화자 칸으로 옮기고 글에서 뗀다**. 내부 도구 `liftDialogueSpeakerLabelsTool` 을 `runToolDefinition` 으로 불러 다른 쓰기와 같은 초안·적용 검증을 지난다(레지스트리에 없음 — 모델에게 안 보인다). 화자 칸이 없는 자리(선택지·설명·퀘스트)나 다른 이름이 있는 줄은 그대로 두고, 그 콜론 적중(`typo-colon-line`)은 세지 않는다. 상태 `dialogue_polish.speaker_labels`, 쌍 `how:"label"`. 1차 실측에서 모델에게 맡기니 Opus 는 라벨을 지우기만 해 화자가 사라졌고 terra 는 「직원이 말한다. …」 서술로 바꿔 글이 나빠졌다. 윤문 차례 지시에도 «대사를 3인칭 서술·지문으로 바꾸지 않는다» 를 넣었다.
+- **린트(모델 없음)**: 고칠 계열 `DIALOGUE_POLISH_FAMILIES` = 번역투·모델틱(서사체 종결 포함)·부정재정의·은유명사·기호(em dash·가운뎃점·콜론 라벨)·사물의인화(추상명사 주어). 그 밖의 계열(한줄요약·상투구 …)은 전체 적중(`beforeAll`/`afterAll`)으로만 센다. 적중 0 이면 차례 없이 숫자만 남긴다.
+- **윤문 차례(최대 `DIALOGUE_POLISH_MAX_ROUNDS`=2)**: 도구 배열을 그 차례 동안 `DIALOGUE_POLISH_TOOLS`(read_assistant_skill·get_story_outline·read_story_script·get_dialogue_context·list_dialogue·lint_dialogue·rewrite_dialogue)로 갈아 끼우고(로컬 CLI 의 이름 폴백도 막는다), 적중 줄의 id·hash·꼬리표·화자 말투 메모·적중을 실은 지시(`dialoguePolishRoundPrompt`)로 한 차례 더 돈다.
+  - `rewrite_dialogue` 는 실행기가 감싼다: **스킬(`read_assistant_skill{id:'dialogue-polish'}` — 실행 안에서 한 번)과 장면 문맥(그 차례의 `read_story_script`·`get_dialogue_context`)을 읽기 전에는 거절**한다. edits 를 줄마다 갈라 **이번 실행이 쓴 줄은 `mode:'apply'`(바로 반영), 사람이 쓴 줄은 `mode:'propose'`(「대사」 탭 제안)** 로 부른다 — 모델이 고른 mode 와 무관.
+  - 예산: 한 차례 `DIALOGUE_POLISH_ROUND_TURNS`(10) 모델 차례·`DIALOGUE_POLISH_ROUND_TOKENS`(입력+출력 60만) — 넘으면 「멈추고 보고」 를 한 번 알리고 윤문 도구가 거절한다(실행을 끊지 않는다). 두 번째 차례는 첫 차례보다 적중이 줄었을 때만.
+  - 차례마다 실행기가 다시 린트한다(`dialogue_polish.relint`). 숫자는 모델 보고가 아니라 실행기가 센 값이다.
+  - **로컬 CLI 엔진(Claude Code 등)은 차례마다 새 대화로 연다**(`dialogue_polish.context_reset`, 스킬 관문도 다시 건다). CLI 는 MCP `tools/list` 를 대화 시작 때 받아 두므로 도구 배열만 바꾸면 옛 목록을 본다 — 고치기 전 opus 실측: 「대사를 고칠 수단이 주어지지 않았다」, 적중 21 → 21·호출 0. 같이 `localCliLoop.prompt` 가 요청 전에 바뀐 도구 목록을 알린다(`announceToolChanges`).
+- **보고**: 실행 기록 `execution_status` `dialogue_polish.lint` · `.round` · `.relint` · `dialogue_polish`(data = `DialoguePolishReport`: 전/후 적중·계열별·차례·바로 고친 줄·제안 수·전/후 줄 쌍 80개·토큰), `done.dialoguePolish`. 편집기는 마지막 보고 하나만 말풍선으로 보이므로, 짓기 보고를 지우지 않고 **짓기 보고 + 윤문 차례의 조수 보고 + 실행기 숫자 한 줄**을 합친 최종 보고를 다시 낸다.
+- **끄기**: AI 설정 「동작」 → 「완성 뒤 대사 윤문」(켬/끔, `AiConfig.dialoguePolishAfterBuild:false` → 요청 `dialoguePolish:false`). 시험용 `OPRN_DIALOGUE_POLISH_HOOK=0`.
+- **맵 소유권**: 같은 실행 안의 단계라 그 실행이 쥔 맵 예약을 그대로 쓴다(새 실행·새 예약 없음). 묶음 실행의 범위 검사(`piMapScopeGuard`)도 윤문 도구에 그대로 걸린다.
+- **하네스**: `wholeGameSession.mjs` 차례 기록에 `dialoguePolish`(이름·요약·data) 칸, `editorDriver.mjs` 가 `dialogue_polish*` 의 data 를 담는다.
+- **실모델 시험(2026-10-30, 실제 입력창 경로 `wholeGameSession --v2`, 「이세계 전생 개그 RPG 짧게 만들어 줘」 → 「끝까지 만들어 줘」)**: 증거 http://mdc-server:18301/polish-hook.html
+  - Opus 5.5 medium(로컬 Claude Code, CLI 새 대화 수정 뒤): 고칠 적중 14 → 0(새 글 28줄, 12줄 반영) · 5 → 0(7줄, 3줄). GPT 6.1-terra: 3 → 0(20줄) · 4 → 0(15줄). 모두 1차례, 「대사」 탭 제안 0(새 프로젝트라 사람 줄 없음 — 제안 갈래는 실모델 미확인).
+  - 수정 전 Opus: 21 → 21, 1 → 1(윤문 도구 호출 0 — 위 로컬 CLI 항목).
+  - 라벨 처리 뒤(최종, Opus 5.5 medium): 「이름:」 라벨 15줄을 실행기가 이름표로 옮김, 고칠 적중 6 → 0 · 2 → 0, 3인칭 서술 0줄. 출하 플레이어에서 여신 대화창 이름표 「여신」·본문 대사만 확인(증거 페이지 4절 그림). 1판 규칙에서 「상자에 쪽지:」를 이름표로 올리고 「여신(방송):」을 놓친 것을 고쳤다(모르는 여러 낱말 라벨 제외·괄호 꾸밈 허용·내레이션 자리표시는 빈 화자로).
+  - 하네스: 부하가 높으면 부팅 직후 로컬 CLI 연결 확인이 시간 초과로 캐시돼 입력칸이 잠긴다 — `editorDriver.mjs` 가 잠겨 있으면 90초 기다린 뒤 최대 2번 다시 읽는다(실측 1번 다시 읽어 풀림).
 
 ## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
 

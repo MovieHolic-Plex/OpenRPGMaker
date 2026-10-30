@@ -20,13 +20,13 @@ import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
 import { createObjectGenCard } from "./aiObjectGenCard";
-import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreMusicChoice, type StoreGamePostProposal, type StorePublishProposal, type StoreReviewReplyProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
+import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreMusicChoice, type StoreSoundChoice, type StoreGamePostProposal, type StorePublishProposal, type StoreReviewReplyProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
 import { storeGameProjectKey } from "@/project/storeGameRelease";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object", "store_find_music"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object", "store_find_music", "store_find_sound"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {
@@ -571,7 +571,69 @@ export function createStoreMusicNote(choices: readonly StoreMusicChoice[], follo
   });
 }
 
+/**
+ * 스토어 효과음 카드(「먼저 묻기」를 켠 사용자만 — 기본은 조수가 바로 넣는다). 소리마다 미리듣기와 「넣기」.
+ * 효과음 팩은 합성 소리라 AI 표시는 매니페스트의 aiGenerated 를 그대로 따른다(지금 팩은 false).
+ */
+function soundChoiceCard(choice: StoreSoundChoice, followUp: StoreCardFollowUp): HTMLElement {
+  const all: HTMLButtonElement[] = [];
+  let settled = false;
+  const auto = el("input", { attrs: { type: "checkbox", ...(storeAutoInstallEnabled() ? { checked: "" } : {}) }, dataset: { testid: "ai-store-sound-auto" } });
+  auto.addEventListener("change", () => setStoreAutoInstall(auto.checked));
+  const skip = button("넣지 않기", "ai-store-sound-skip", () => {
+    if (settled) return;
+    settled = true;
+    for (const node of all) node.disabled = true;
+    view.status.textContent = "넣지 않았어요.";
+    followUp(`[사용자 선택] 스토어 효과음을 넣지 않음: ${choice.need} 프로젝트에 있는 효과음(list_resources kind:se)으로 고르거나 그대로 두고, 무엇을 했는지 짧게 말하라.`);
+  });
+  all.push(skip);
+  const rows = choice.sounds.map((sound) => {
+    const add = button("넣기", "ai-store-sound-add", () => void (async () => {
+      if (settled) return;
+      for (const node of all) node.disabled = true;
+      view.status.textContent = `「${sound.title}」을(를) 받는 중…`;
+      try {
+        await addStoreItemToProject(sound.slug, { assetIds: [sound.assetId] });
+        settled = true;
+        view.status.textContent = `「${sound.title}」을(를) 프로젝트에 넣었어요.`;
+        followUp(`[사용자가 스토어에서 넣음] ${choice.need} ← 「${sound.title}」 리소스 id ${storeProjectId(sound.slug, sound.assetId)}. 원래 요청을 이어서 하라 — set_game_audio{role:'se', cue:'${choice.cue ?? sound.cue}', resourceId} 로 그 자리에 건다(새로 찾지 말 것).`);
+      } catch (error) {
+        for (const node of all) node.disabled = false;
+        view.status.textContent = `넣지 못했어요: ${storeFailure(error).message}`;
+      }
+    })(), true);
+    all.push(add);
+    const audio = el("audio", { attrs: { controls: "", preload: "none" }, dataset: { testid: "ai-store-sound-preview" } }) as HTMLAudioElement;
+    void storeBlobUrl(sound.blob).then((url) => { audio.src = url; }).catch(() => { audio.dataset.failed = "1"; });
+    return el("article", {
+      class: "ai-store-result ai-store-music",
+      dataset: { slug: sound.slug, asset: sound.assetId },
+      children: [
+        el("div", { class: "ai-store-result-text", children: [
+          el("strong", { text: sound.title }),
+          el("span", { text: [sound.cueLabel, sound.style === "retro" ? "레트로 칩" : sound.style === "modern" ? "현대" : "", sound.variant ? `${sound.variant.toUpperCase()}안` : "", sound.aiGenerated ? "AI 생성" : ""].filter(Boolean).join(" · ") }),
+          sound.summary ? el("small", { text: short(sound.summary) }) : null,
+        ].filter((node): node is HTMLElement => node !== null) }),
+        audio,
+        add,
+      ],
+    });
+  });
+  const view = shell("답변 필요", "스토어 효과음을 넣을까요?", "ai-store-sound-card", [
+    el("p", { class: "ai-tileset-change-reason", text: choice.need }),
+    el("div", { class: "ai-store-results", dataset: { testid: "ai-store-sound-results" }, children: rows }),
+    el("label", { class: "ai-store-agree", children: [auto, el("span", { text: "다음부터 묻지 않고 바로 넣기" })] }),
+  ], [skip]);
+  if (!storeBridge()) {
+    for (const node of all) node.disabled = true;
+    view.status.textContent = "스토어 효과음은 데스크톱 앱에서 넣을 수 있어요.";
+  }
+  return view.root;
+}
+
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
+  if (request.kind === "store-sound-choice") return soundChoiceCard(request, followUp);
   if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);
   if (request.kind === "store-music-choice") return musicChoiceCard([request], followUp);
