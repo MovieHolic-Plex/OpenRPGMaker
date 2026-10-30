@@ -58,7 +58,7 @@ export function applyNothingToReportLore(project: Project, exec: LoreExec = lore
     canon: {
       name: "사쿠라자카 중학교 (이상 없음)",
       premise: "11월 7일 밤, 잠긴 중학교에서 깨어난 2학년 하야세 린이 숙직 교사의 손전등을 피해 빠져나가려 한다. 열쇠함 번호는 30년 전 「그날」이다.",
-      tones: ["gothic", "grim"],
+      tones: ["horror", "gothic"],
       era: "현대 일본(지금, 그리고 30년 전 1995년)",
       techCeiling: "현대. 손전등, 교내 방송, 꺼진 휴대폰",
       absences: ["피와 살상 묘사", "괴물", "전투"],
