@@ -10919,9 +10919,16 @@
        "steps": 1
       },
       {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 800
       }
      ],
      "shot": true
@@ -10944,6 +10951,14 @@
        "x": 14,
        "y": 7,
        "timeoutMs": 90000
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
       },
       {
        "kind": "move",
