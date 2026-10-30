@@ -117,7 +117,7 @@ const setLight = (ambient: number, color: string, ms = 0): Command => ({ kind: "
 const MAOU_FORM_PIC = "pic_ig_maou_form";
 const MAOU_FORM_ART = "generated-enemy-demon-lord";
 const throneForm = (): Command[] => [
-  playSe(SE_BOOM), shake(700, "4"), flash("white", 250),
+  playSe(SE_BOOM), shake(700, "3"), flash("white", 250),
   { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 336, y: 30, scale: 100, opacity: 0, waitForPicture: false } as Command,
   { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 336, y: 30, scale: 100, opacity: 235, durationMs: 700, easing: "easeOut", waitForPicture: true } as Command,
   ...caption("왕좌의 그림자가 배재민 위로 내려앉았다.\n15년 동안 앉아 있던 모양 그대로."),

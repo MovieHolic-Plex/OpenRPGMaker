@@ -112,6 +112,8 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   fantasyActor(ACTOR.kkur, "꾸르", "고블린 족장 · 도로 보수 장부", CLASS.chief, "kkur", 6, "party-pixel-monster1-5");
   exec("set_session_start", { party: [ACTOR.minjae], gold: 0 });
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
+  // v8c: 기본 「승리!」 띠·「○○는 무엇을 할까?」(두 검수자: 아동용 기본 문구) — 왕국 행정 말투로.
+  exec("set_project_settings", { terms: { battleVictory: "결재 완료", battleCommandPrompt: "{name}의 차례." } });
   // 필드 화면을 전투 배경으로 깔지 않는다 — 위에서 본 맵 위에 옆모습 배틀러가 서면 어색했다(마왕 편의점 처음 하는 사람 검수 4).
   delete project.system.battleBackdrop;
 
