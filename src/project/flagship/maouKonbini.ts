@@ -117,7 +117,7 @@ function review(day: string, serviceHi: number, serviceMid: number, maouHi: numb
     { at: 0, line: "손님 응대  ★☆☆  「내일은 매뉴얼부터 읽고 와요.」" },
   ];
   const mao = [
-    { at: maouHi, line: "마왕력  ☠☠☠  「「그 이상한 신입」을 보러 오는 손님이 생겼어요…?」" },
+    { at: maouHi, line: "마왕력  ☠☠☠  「『그 이상한 신입』을 보러 오는 손님이 생겼어요…?」" },
     { at: maouMid, line: "마왕력  ☠☠☆  「손님들이 마오 군 말투를 따라 해요.」" },
     { at: 0, line: "마왕력  ☠☆☆  「아직은 평범한 신입.」" },
   ];
@@ -155,9 +155,9 @@ function setupDatabase(project: Project): void {
   cloneSkill("skill_holy", "skill_mk_nikuman", { name: "따끈한 고기만두", power: 120, mpCost: { flat: 8, percentMax: 0 }, description: "갓 쪄낸 고기만두를 건넨다. 화난 손님도 일단 받아 든다." });
   cloneSkill("skill_heal", "skill_mk_smile", { name: "0엔 스마일", power: 60, mpCost: { flat: 5, percentMax: 0 }, scope: "self", description: "매뉴얼 제3조. 손님께는 언제나 미소로. 자신을 다잡는다." });
   // 용사 레온(적) 기술
-  cloneSkill("skill_sword_slash", "skill_mk_holy_blade", { name: "성검 일섬", power: 85, mpCost: noMp, description: "용사의 검이 빛을 끌며 내려친다." });
+  cloneSkill("skill_sword_slash", "skill_mk_holy_blade", { name: "성검 일섬", power: 85, mpCost: noMp, description: "용사가 빛나는 검을 내리친다." });
   cloneSkill("skill_sword_slash", "skill_mk_umbrella", { name: "비닐우산 찌르기", power: 70, mpCost: noMp, description: "성검 대신 편의점 비닐우산(500엔)." });
-  cloneSkill("skill_holy", "skill_mk_brave_shout", { name: "용사의 외침", power: 90, mpCost: noMp, description: "「너만은 용서 못 해!」 정의감이 빛이 되어 날아온다." });
+  cloneSkill("skill_holy", "skill_mk_brave_shout", { name: "용사의 외침", power: 90, mpCost: noMp, description: "「너만은 용서 못 해!」 정의감을 빛으로 바꿔 쏘아 보낸다." });
 
   const actors = db.actors;
   const hero = actors.find((a) => a.id === DEFAULT_ACTOR_ID) ?? actors[0]!;
@@ -317,7 +317,7 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
     ...caption("탁자 위에 통장 한 권과 봉투 하나가 놓여 있다."),
     walkTo("@player", { x: 11, y: 6 }), face("@player", "right"),
     playSe(SE_PAPER),
-    ...note("「이세계 전생 관리국 안내문」", "귀하는 『동귀어진』 처리에 따라 일본에 전생되었습니다. 마력은 봉인되었습니다.", "생활비는 스스로 버십시오.  ※ 이 안내문은 읽은 뒤 분리수거해 주십시오."),
+    ...note("「이세계 전생 관리국 안내문」", "귀하는 『동귀어진』 처리에 따라 일본으로 전생했습니다. 마력은 봉인했습니다.", "생활비는 직접 버십시오.  ※ 이 안내문은 읽은 뒤 분리수거해 주십시오."),
     ...zs("embarrassed", "…분리수거가 뭐냐."),
     playSe(SE_PAPER),
     ...note("통장 잔고", "0엔"),
@@ -332,9 +332,9 @@ function buildRoom(project: Project, _links: Links, konbiniArrive: Cell): Cell {
   ];
   const flyer: Command[] = [
     playSe(SE_PAPER),
-    ...note("【아르바이트 급구】  해피 마트 사쿠라자카점", "시급 1,150엔 · 초보 환영 · 유니폼 지급 · 폐기 도시락 있음(?)", "이 건물 바로 왼쪽입니다!"),
-    ...zs("surprised", "폐기 도시락…? 무슨 뜻인지는 모르겠으나, 매혹적인 울림이다."),
-    ...zs("happy", "좋다. 이 몸이 직접 가 주마. 감격하며 맞이하도록 해라."),
+    ...note("【아르바이트 급구】  해피 마트 사쿠라자카점", "시급 1,150엔. 초보 환영. 유니폼 지급. 폐기 도시락 있음(?)", "이 건물 바로 왼쪽입니다!"),
+    ...zs("surprised", "폐기 도시락…? 뜻은 모르겠으나, 어쩐지 끌리는 말이다."),
+    ...zs("happy", "좋다. 이 몸이 직접 가 주마. 감지덕지하며 맞이하거라."),
     setVar(V_STAGE, "=", 2),
   ];
   map.events.push(event("ev_mk_room_wake", "눈뜸", { x: 0, y: 0 }, [
@@ -459,7 +459,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     ]),
     ...say("manager", "base", "마지막으로, 지원 동기는요?"),
     choices([
-      { text: "세계를 다시 손에 넣기 위함이오", then: [...say("manager", "happy", "꿈이 크시군요. 일단 이 가게 계산대부터 손에 넣어 봐요."), ...mp()] },
+      { text: "세계를 다시 차지하기 위함이오", then: [...say("manager", "happy", "꿈이 크시군요. 일단 이 가게 계산대부터 차지해 봐요."), ...mp()] },
       { text: "통장 잔고가 0엔이오", then: [...say("manager", "sad", "…솔직해서 좋아요. 저도 월말엔 그래요."), ...good()] },
       { text: "여기 고기만두가 맛있어 보였소", then: [...say("manager", "happy", "안목 있으시네. 그거 제가 직접 발주해요.")] },
     ]),
@@ -543,7 +543,7 @@ function buildKonbini(project: Project, links: Links): Cell {
     ...think("(바코드라는 마법진에 빛을 쏘면 값이 나온다. 이 세계의 마법은 편리하군.)"),
     choices([
       { text: "「데워 드릴까요?」", then: [...say("ol", "happy", "네, 부탁해요."), ...good()] },
-      { text: "「차갑게 드시오. 그것이 수행이오」", then: [wrong(), ...say("ol", "surprised", "…네?"), ...say("hina", "surprised", "마오. 「데워 드릴까요?」부터."), ...say("maou", "embarrassed", "…데워 드릴까요.")] },
+      { text: "「차갑게 드시오. 그 또한 수행이오」", then: [wrong(), ...say("ol", "surprised", "…네?"), ...say("hina", "surprised", "마오. 「데워 드릴까요?」부터."), ...say("maou", "embarrassed", "…데워 드릴까요.")] },
       { text: "「지옥의 업화로 데워 드리리다」", then: [flash("red", 260), playSe(SE_DARK), shake(300), wait(300), playSe(SE_BELL),
         ...say("ol", "surprised", "…방금 전자레인지에서 불기둥 나오지 않았어요?"), ...say("hina", "surprised", "500와트, 1분 30초. 버튼. 버튼만 누르면 돼."), ...say("maou", "embarrassed", "…버튼. 알겠네."), ...mp()] },
     ]),
@@ -708,7 +708,7 @@ function buildKonbini(project: Project, links: Links): Cell {
 
   // 분리수거(첫째 날)
   ev(event("ev_mk_trash", "분리수거함", TRASH, [
-    page("ev_mk_trash_p0", [], [...caption("타는 쓰레기, 플라스틱, 캔과 병. 문 셋이 이 몸을 시험한다.")], { priority: "same" }),
+    page("ev_mk_trash_p0", [], [...caption("타는 쓰레기, 플라스틱, 캔과 병. 구멍이 셋이나 있다. 시험이로군.")], { priority: "same" }),
     page("ev_mk_trash_p3", [varIs(V_STAGE, 3), swOff("sw_mk_t_trash1")], [
       ...caption("분리수거함 옆에 손님이 두고 간 컵라면 용기가 있다. 국물이 남아 있다."),
       choices([
@@ -735,7 +735,7 @@ function buildKonbini(project: Project, links: Links): Cell {
   ]));
   // 발주(둘째 날)
   ev(event("ev_mk_order", "발주 단말", PC, [
-    page("ev_mk_order_p0", [], [...caption("발주 단말. 내일 팔 물건의 수를 정하는 곳이다.")], { priority: "same" }),
+    page("ev_mk_order_p0", [], [...caption("발주 단말. 내일 팔 물건을 몇 개 들일지 정하는 기계다.")], { priority: "same" }),
     page("ev_mk_order_p5", [varIs(V_STAGE, 5), swOff("sw_mk_t_order2")], [
       ...caption("발주 단말. 「내일 최저 기온 4도, 비.」 오뎅 무, 몇 개?"),
       choices([
@@ -867,7 +867,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("leon", "sad", "…왜. 왜 반격을 안 하는 거야."),
     ...say("maou", "base", "매뉴얼 제3조. 「손님께는 언제나 미소로.」"),
     ...say("leon", "sad", "손님이라니… 난 너를 쓰러뜨리러 온 거라고."),
-    ...say("maou", "base", "문으로 들어왔으면 손님이오. 고기만두 식소. 드시오."),
+    ...say("maou", "base", "문으로 들어왔으면 손님이오. 고기만두 식겠소. 드시오."),
     ...caption("레온은 한참 고기만두를 내려다보다가, 한 입 베어 물었다."),
     ...say("leon", "sad", "……따뜻하다."),
     ...say("leon", "sad", "용사로 다시 태어났는데, 이 세계엔 마왕도 마물도 없어. 싸울 상대가 없으니까… 난 뭘 해야 할지 몰랐어."),
@@ -879,8 +879,8 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("hina", "happy", "직원 할인 10%."),
     ...say("leon", "happy", "할게요."),
     ...say("lily", "sad", "마, 마왕님… 세계 정복은 어찌 되옵니까…?"),
-    ...say("maou", "base", "리리스, 오늘 깨달았네. 세계를 손에 넣는 길은 여럿일세."),
-    ...say("maou", "happy", "우선은 이 사쿠라자카점부터. 다음 달 매출 1위를 정복하겠네."),
+    ...say("maou", "base", "리리스, 오늘 깨달았네. 세계를 차지하는 길은 여럿일세."),
+    ...say("maou", "happy", "우선은 이 사쿠라자카점부터. 다음 달엔 매출 1위를 차지하겠네."),
     ...say("lily", "happy", "…예! 마왕님 뜻이 그러하시다면!"),
   ];
   // 엔딩 장면 — 엔딩 그림(같은 편의점 맵을 그린 그림)을 깔고 그 위에서 에필로그를 대사로 흘린 뒤 엔딩 카드로 넘어간다.
@@ -905,7 +905,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...caption("야간에는 새 알바생 레온이 들어왔다. 고기만두를 하루에 세 개씩 먹는다."),
     ...say("hina", "happy", "마오, 레온. 둘 다 내 밑. 선배라고 불러."),
     ...caption("다나카 씨는 매일 아침 8시 12분에 온다. 마오는 리리네 찻집 단골이 되었고, 가르곤은 편의점 앞 벤치를 옥좌로 삼았다."),
-    ...say("maou", "base", "세계를 손에 넣는 길은 여럿이오. 우선은 이 동네부터."),
+    ...say("maou", "base", "세계를 차지하는 길은 여럿이오. 우선은 이 동네부터."),
   ]);
   const okScene = endingScene(END_ART.ok, END_OK, [
     ...caption("다음 날 아침. 마오는 평소처럼 줄무늬 조끼를 입었다."),
@@ -923,7 +923,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("maouF", "base", "…이 몸은 마왕이다. 마왕은 변상 따위…"),
     ...say("manager", "base", "시급 1,150엔으로 계산하면… 마오 군, 약 3,300시간."),
     ...say("hina", "happy", "…마오, 평생 여기서 일하겠네."),
-    ...caption("마왕은 힘을 되찾았다. 그 힘으로 손에 넣은 것은,", "줄무늬 조끼와 갚아야 할 380만 엔이었다."),
+    ...caption("마왕은 힘을 되찾았다. 그 힘으로 얻은 것은,", "줄무늬 조끼와 갚아야 할 380만 엔이었다."),
     ...say("leon", "sad", "…나도 반은 낼게. 같이 부쉈으니까."),
     ...say("maouF", "base", "…용사여. 세계의 절반 대신, 빚의 절반이라니."),
   ]);
@@ -1015,7 +1015,7 @@ function buildCrisis(project: Project, map: GameMap, at: { door: Cell; gate: Cel
     ...say("leon", "base", "덤벼라, 마왕! 이번엔 끝을 보자!"),
     emote(at.hinaId, "sweat"),
     ...say("hina", "sad", "…마오. 무슨 일인진 몰라도, 가게에서 싸우면 안 돼. 알지?"),
-    ...think("(마력이… 손끝에서 끓어오른다. 지금이라면 돌아간다. 마왕으로.)"),
+    ...think("(마력이… 손끝에서 끓어오른다. 지금이면 돌아갈 수 있겠다. 마왕으로.)"),
     ...think("(…그런데 이 몸은 지금, 줄무늬 조끼를 입고 있다.)"),
     choices([
       { text: "마왕의 힘을 해방한다", then: powerBattle },
@@ -1238,7 +1238,7 @@ function buildShrine(project: Project, backToStreet: Cell): Cell {
   map.events.push(event("ev_mk_sh_kuji", "오미쿠지", mustBlock(project, map, { x: 23, y: 15 }, "오미쿠지 상자"), [
     page("ev_mk_sh_kuji_p4", [], [
       ...caption("오미쿠지를 뽑았다."),
-      ...note("대흉", "직장  옛 원수와 다시 만난다 · 금전  0에서 시작했으니 오를 일만 남았다", "연애  선배를 공경하라"),
+      ...note("대흉", "일터에서 옛 원수와 다시 만난다. 돈은 0이니 오를 일만 남았다.", "선배를 공경하라. 인연은 그다음."),
       ...think("(…이 세계의 점술, 묘하게 정확하다.)"),
     ], { priority: "same" }),
     page("ev_mk_sh_kuji_p6", [varIs(V_STAGE, 6)], [
@@ -1263,10 +1263,10 @@ function defineEndings(project: Project): void {
   const credits = [
     "『전생한 마왕, 편의점 알바 시작하다』",
     "",
-    "이야기 · 연출   OPRN Flagship Studio",
-    "거리 · 가게 그림   OPRN 일본 도시 타일 · 현대 도시 타일 · 손 도트 실내 타일",
-    "인물   OPRN 현대 걷기 캐릭터 · 공용 흉상 · EasyRPG RTP",
-    "음악 · 효과음   CC0 음원 · EasyRPG RTP",
+    "이야기와 연출   OPRN Flagship Studio",
+    "거리와 가게 그림   OPRN 일본 도시 타일, 현대 도시 타일, 손 도트 실내 타일",
+    "인물   OPRN 현대 걷기 캐릭터, 공용 흉상, EasyRPG RTP",
+    "음악과 효과음   CC0 음원, EasyRPG RTP",
     "",
     "만든 도구   OPRN Studio",
     "",

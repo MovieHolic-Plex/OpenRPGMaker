@@ -153,7 +153,7 @@ function shotThrone(project: Project): void {
   } } });
   actor(project, id, "maou", MON2, 7, chipAt(view, { x: 23, y: 5 }), "down", 2, "monster");
   sfx(project, id, "dread", SFX.dread, 150, 5000, 0.9, 900);
-  captions(project, id, [{ atMs: 900, text: "마계력 999년. 세계의 절반을 손에 넣은 마왕 제르바스.", color: INK.narr }]);
+  captions(project, id, [{ atMs: 900, text: "마계력 999년. 세계의 절반을 차지한 마왕 제르바스.", color: INK.narr }]);
 }
 
 /** 컷 2 — 성문이 열리고 용사 일행이 붉은 융단을 걸어 올라온다. 카메라가 그들을 따라 옥좌 쪽으로 기울어 올라간다. */
@@ -405,8 +405,8 @@ export function stageMaouRoomWake(project: Project): void {
   const flyer: Command[] = [
     playSe(SE_PAPER),
     ...letter("아르바이트 급구! 해피 마트 사쿠라자카점\n시급 1,150엔. 초보 환영. 유니폼 지급.\n폐기 도시락 있음(?) 이 건물 바로 왼쪽입니다!"),
-    ...zs("base", "…이것이 이 세계의 마계 문서인가."),
-    ...zs("happy", "좋다. 이 몸이 직접 가 주마. 엎드려 반기도록 해라."),
+    ...zs("base", "…마계로 치면 모병 공고로군."),
+    ...zs("happy", "좋다. 이 몸이 직접 가 주마. 엎드려 반기거라."),
     bgm(BGM_ROOM, 1200),
     { kind: "stopAudio", channel: "bgs" } as Command,
     setVar(V_STAGE, "=", 2),
