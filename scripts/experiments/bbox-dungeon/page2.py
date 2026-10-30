@@ -10,6 +10,10 @@ res = json.load(open(f"{RUNS}/results.json")) if os.path.exists(f"{RUNS}/results
 res1 = {}
 for fn in ("results.json", "results-2.json"):
     if os.path.exists(f"{R1}/{fn}"): res1.update(json.load(open(f"{R1}/{fn}")))
+EXTRA = [(n, f"{S}/rooms/runs-bboxdungeon{n}", f"r{n-1}") for n in (3, 4) if os.path.isdir(f"{S}/rooms/runs-bboxdungeon{n}")]
+resN = {n: (json.load(open(f"{d}/results.json")) if os.path.exists(f"{d}/results.json") else {}) for n, d, _ in EXTRA}
+totN = {n: {"ref": [0, 0, 0, 0], "prev": [0, 0, 0, 0], "v2": [0, 0, 0, 0]} for n, _, _ in EXTRA}
+boxN = {n: [] for n, _, _ in EXTRA}; sparseN = {n: [] for n, _, _ in EXTRA}
 BR = {"crypt": "교회 밑 지하 묘지", "flooded": "물에 잠긴 동굴 신전", "demon": "마왕성 지하", "cave": "자연 동굴 (새 요청)"}
 def wdl(R, key, kind):
     vs = [v["verdict"] for k, v in R.items() if k.startswith(key + "|") and ((kind == "ref" and ":" not in v["vs"]) or (kind != "ref" and v["vs"].startswith(kind + ":")))]
@@ -46,18 +50,31 @@ for brief in BR:
             sk = ", ".join(f"{k} {n}" for k, n in (st.get("shapeKinds") or {}).items())
             right = fig(f"{g}/map.png", f"r2-{ar}-{brief}", f"2차 (모양 어휘) · 네모 방 비율 {st.get('boxRatio', 0):.0%} · 기준 대비 {fmt(a)} {'' if brief == 'cave' else f'· 1차 대비 {fmt(c)} '}· v2 대비 {fmt(v)}<br>모양 {sk} · 거친 가장자리 {st.get('roughEdges')} · 곡선 통로 {st.get('curves')} · 바위섬 {st.get('rocks')} · 물/용암/구덩이 {st.get('hazards')} · 다리 {st.get('bridges')} · 단 {st.get('ledges')}·계단 {st.get('stairs')} · 기물 {st.get('pieces')} · {r['secs']}초 · 고침 {r['repairs']}회")
         if brief != "cave": tot["r1-ref"] = add(tot["r1-ref"], wdl(res1, key, "ref"))
-        cards.append(f"<div class=card><h3>gpt-6.1-{arm} #{rep}</h3><div class=pair>{left}{right}</div></div>")
+        more = ""
+        for n, d, prev in EXTRA:
+            gN = f"{d}/{ar}/{brief}"; rN = json.load(open(f"{gN}/RUN.json")) if os.path.exists(f"{gN}/RUN.json") else None
+            if not rN: more += f"<figure class=empty><figcaption>{n}차 실행 중</figcaption></figure>"; continue
+            if not rN["ok"]: more += f"<figure class=empty><figcaption>{n}차 검증 실패: {html.escape('; '.join(rN.get('errors', [])[:2]))[:300]}</figcaption></figure>"; continue
+            sN = rN.get("stats") or {}; R = resN[n]
+            a3, p3, v3 = wdl(R, key, "ref"), wdl(R, key, prev), wdl(R, key, "v2")
+            totN[n]["ref"] = add(totN[n]["ref"], a3); totN[n]["prev"] = add(totN[n]["prev"], p3); totN[n]["v2"] = add(totN[n]["v2"], v3)
+            boxN[n].append(sN.get("boxRatio", 0)); sparseN[n].append(sN.get("sparseRooms", 0))
+            dec = sN.get("decorByRoom") or {}; davg = sum(dec.values()) / len(dec) if dec else 0
+            sk = ", ".join(f"{k} {v}" for k, v in (sN.get("shapeKinds") or {}).items())
+            more += fig(f"{gN}/map.png", f"r{n}-{ar}-{brief}", f"{n}차 · 네모 방 비율 {sN.get('boxRatio', 0):.0%} · 기준 대비 {fmt(a3)} · {prev[1:]}차 대비 {fmt(p3)} · v2 대비 {fmt(v3)}<br>장식 밀도 평균 {davg:.0%} (3% 미만 방 {sN.get('sparseRooms', 0)}) · 흩뿌린 기물 {sN.get('scattered')} · 모양 {sk}" + (f" · 새 기물 {sN.get('poolUsed')}" if sN.get("poolPieces") else "") + f" · {rN['secs']}초 · 고침 {rN['repairs']}회" + (" · 장식 보강 1회" if rN.get("softCall") else ""))
+        cards.append(f"<div class=card><h3>gpt-6.1-{arm} #{rep}</h3><div class=pair>{left}{right}{more}</div></div>")
 for v in ("solv2", "terrav2"): tot["v2-ref"] = add(tot["v2-ref"], wdl(res, f"{v}/cave", "ref"))
 avg = lambda l: f"{sum(l) / len(l):.0%}" if l else "-"
-page = f"""<!doctype html><meta charset=utf-8><title>bbox 던전 2차 — 모양 어휘</title>
+page = f"""<!doctype html><meta charset=utf-8><title>bbox 던전 2차·3차</title>
 <style>body{{background:#16161c;color:#ddd;font:14px/1.5 sans-serif;margin:20px}}h1{{font-size:20px}}h2{{font-size:17px;margin-top:28px;border-bottom:1px solid #444}}.v{{font-size:17px;color:#ffd866;margin:6px 0 4px}}
 .card{{background:#222230;border-radius:8px;padding:12px;margin:14px 0}}h3{{margin:0 0 8px;font-size:15px}}.pair{{display:flex;gap:12px;align-items:flex-start}}
 figure{{margin:0;flex:1 1 0;min-width:0}}img{{image-rendering:pixelated;width:100%;display:block}}figcaption{{font-size:12px;color:#aaa;margin-top:4px}}.empty{{background:#2a2a36;padding:30px;border-radius:6px}}</style>
 <h1>bbox 던전 2차 — 모델이 모양(타원·다각형·동굴 덩이·거친 가장자리·곡선 통로·바위섬·연못·단과 계단)을 고르고, 코드는 그대로 찍고 검사만 한다</h1>
 <p class=v>{html.escape(verdict)}</p>
-<p>왼쪽 = 1차(네모 칸 배치), 오른쪽 = 2차. 「자연 동굴」은 1차가 없어 왼쪽에 지금 v2 빌더 맵을 둔다. 판정 Opus 5.5 medium 쌍 비교(두 순서, 엇갈리면 무).<br>
+<p>왼쪽부터 1차(네모 칸 배치) · 2차(모양 어휘){' · ' + ' · '.join(f'{n}차' for n, _, _ in EXTRA) if EXTRA else ''}. 「자연 동굴」은 1차가 없어 왼쪽에 지금 v2 빌더 맵을 둔다. 판정 Opus 5.5 medium 쌍 비교(두 순서, 엇갈리면 무).<br>
 2차 대 기준 던전 5장 {fmt(tot['r2-ref'])} (1차는 {fmt(tot['r1-ref'])}) · 2차 대 1차 {fmt(tot['r2-r1'])} · 2차 대 v2 빌더 {fmt(tot['r2-v2'])} · 참고 v2 동굴 대 기준 {fmt(tot['v2-ref'])}<br>
 네모 방 비율(방 중 매끈한 직사각형 하나뿐인 방의 몫, 강제 아님): 1차 평균 {avg(box['r1'])} → 2차 평균 {avg(box['r2'])}</p>
+{"".join(f"<p><b>{n}차</b>: 기준 던전 5장 대비 {fmt(totN[n]['ref'])} · {n-1}차 대비 {fmt(totN[n]['prev'])} · v2 빌더 대비 {fmt(totN[n]['v2'])} · 네모 방 비율 평균 {avg(boxN[n])} · 장식 3% 미만 방 합계 {sum(sparseN[n])}</p>" for n, _, _ in EXTRA)}
 {''.join(cards)}"""
 open(f"{VIZ}/bbox-dungeon-2.html", "w").write(page)
 print("ok", tot, avg(box["r1"]), avg(box["r2"]))
