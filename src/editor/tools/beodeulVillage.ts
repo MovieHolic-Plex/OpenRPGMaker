@@ -296,7 +296,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 흩어진 농가(scatter)를 청했으면 코드 지형에서도 길은 모두 흙 들길로 — 포장 큰길·골목이면 읍내로 읽혔다(ab14 들판 농가 두 판 모두 A)
   const scatterWanted = !!codeT && form === "scatter";
   if (codeT) form = options.layout?.gather?.plaza === false ? "street" : "plaza";
-  const roofs = resolveRoofPalette(theme, seed, options.roofs);
+  let roofs = resolveRoofPalette(theme, seed, options.roofs);
   const water = resolveVillageWater(theme, seed, form, options.water);
   if (options.woods !== undefined && options.woods !== "" && !(BEODEUL_VILLAGE_WOODS as readonly string[]).includes(options.woods)) throw new ToolError(`woods 는 ${BEODEUL_VILLAGE_WOODS.join("·")} 중 하나다(받은 값: ${options.woods}).`, { code: "invalid-args" });
   const denseWoods = options.woods === "dense";
@@ -347,6 +347,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const lawnSet = new Set<number>(); // 오아시스 풀밭+못(나중에 나무·소품이 앉아도 가장자리 계산은 처음 모양으로)
 
   const kitIndex = new Map<string, Kit>();
+  const missingHouseKinds = new Set<string>(); // 조수가 houses[].kind 로 달라 했지만 이 지붕 무리에 그 폭의 집 그림이 없는 크기
   for (const k of ts.structureKits ?? []) {
     const ent = (k.parts ?? []).find((p) => p.kind === "entrance");
     // 허용 건물(bd-house-rv-*)의 문은 두 칸 높이(dy = 문 윗칸) — 문 앞 계산은 아랫칸 기준이라 아랫칸으로 맞춘다
@@ -356,6 +357,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const have = (ids: readonly string[]) => ids.filter((id) => kitIndex.has(id));
   const K = (id: string) => kitIndex.get(id)!;
   const doorAtBottom = (id: string) => { const d = K(id).door; return !!d && d.dy === K(id).h - 1; };
+  // 지붕을 정하지 않았는데 조수가 houses[].kind 로 보통·큰 집을 달라 했으면, 그 폭 그림이 없는 지붕 무리(청회색·이끼는 폭 4 집뿐)를 씨앗으로 고르지 않는다 —
+  // 고르면 medium·large 요청이 모두 작은 집이 되고 「작은 집만 늘어섰다」(2026-10-30 실조수 opus 강가 마을: 6채 모두 폭 4).
+  if (roofs && (options.roofs === undefined || options.roofs === "")) {
+    const wantKinds = new Set((options.layout?.houses ?? []).map((h) => (h as { kind?: string }).kind).filter((k): k is string => k === "medium" || k === "large"));
+    const ws = (r: BeodeulRoofPalette) => have([...ROOF_PALETTES[r].main, ...ROOF_PALETTES[r].accent]).map((id) => K(id).w).filter((w) => w <= 9);
+    const hasKind = (r: BeodeulRoofPalette, k: string) => ws(r).some((w) => (k === "medium" ? w >= 5 && w <= 6 : w >= 7));
+    if ([...wantKinds].some((k) => !hasKind(roofs!, k))) roofs = "red";
+  }
   const palette = roofs ? ROOF_PALETTES[roofs] : null;
   const houses = have(palette ? palette.main : spec.houses).filter(doorAtBottom);
   const accentHouses = palette ? have(palette.accent).filter(doorAtBottom) : [];
@@ -652,8 +661,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const fx = x + k.door.dx, fy = y + k.door.dy + 1; if (!inMap(fx, fy + 1)) return false; const f = idx(fx, fy);
       return (occ[f] === FREE || onBog(f)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W));
     };
-    const place = (role: CodeSpot["role"], ks: Kit[], want: LayoutPoint): CodeSpot | null => {
-      for (let r = 0; r <= 9; r += 1) {
+    const place = (role: CodeSpot["role"], ks: Kit[], want: LayoutPoint, maxR = 9): CodeSpot | null => {
+      for (let r = 0; r <= maxR; r += 1) {
         const ring: [number, number][] = [];
         for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) ring.push([dx, dy]);
         ring.sort((a, b) => Math.hypot(a[0], a[1] * 1.3) - Math.hypot(b[0], b[1] * 1.3));
@@ -669,6 +678,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           spots.push(sp); return sp;
         }
       }
+      if (maxR < 9) return null; // 먼저 보는 짧은 고리(요청 크기 무리만) — 실패로 적지 않는다
       report.failed.push(`${role}(${want.x},${want.y}) — 9칸 안에 한 단 평지 자리가 없다`);
       return null;
     };
@@ -706,7 +716,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const housePool = [...new Map([...houses, ...accentHouses].map(K).filter((k) => k.w <= 9).map((k) => [k.id, k] as const)).values()].sort((a, b) => a.w * a.h - b.w * b.h);
     // 크기 무리는 넓이 셋으로 나누면 4칸 폭 작은 집이 「보통」까지 차지했다(ab r11 포구: 작은 빨간 지붕 집 넷이 나란히) — 폭으로 나눈다.
     const classOf = (k: Kit): string => (k.w <= 4 ? "small" : k.w <= 6 ? "medium" : "large");
-    const kindPool = (kind: string | undefined) => { const p0 = kind ? housePool.filter((k) => classOf(k) === kind) : housePool; return p0.length ? p0 : housePool; };
+    const kindPool = (kind: string | undefined) => { const p0 = kind ? housePool.filter((k) => classOf(k) === kind) : housePool; if (kind && !p0.length) missingHouseKinds.add(kind); return p0.length ? p0 : housePool; };
     const classUse = new Map<string, number>();
     for (const want of (layout.houses ?? []).slice(0, given ? 12 : Number.isFinite(houseLimit) ? houseLimit : 24)) {
       const pool = kindPool((want as { kind?: string }).kind);
@@ -715,7 +725,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const first = order.slice(0, 6);
       // 큰 집(9×9·6×11)만 뽑히면 좁은 단에 하나도 못 앉았다(2026-10-30 다랑이 마을 8채 중 1채) — 가장 작은 집 셋을 뒤에 붙인다
       const small = [...housePool, ...have(spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
-      const sp = place("house", [...first, ...small], want);
+      // 고리 거리가 바깥 반복이라 거리 0 에 맞는 작은 대체 집이 거리 1 의 보통 집을 이겼다(2026-10-30 실조수 opus: medium·large 요청 6채가 모두 폭 4) —
+      // 요청 크기 무리만으로 4칸 안을 먼저 찾고, 없을 때만 작은 집까지 넣어 9칸까지 찾는다
+      const sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want);
       if (sp) { last.push(sp.k.id); if (last.length > 2) last.shift(); houseUse.set(sp.k.id, (houseUse.get(sp.k.id) ?? 0) + 1); classUse.set(classOf(sp.k), (classUse.get(classOf(sp.k)) ?? 0) + 1); }
     }
     // 길 — 단은 계단으로만(곧게 3칸 온 뒤 건너고 건넌 뒤 3칸 곧게), 두 단 넘는 낭떠러지는 못 건넌다. 강은 곧게 널다리로.
@@ -2259,7 +2271,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const rep = [...cnt].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]);
     const byW = new Map<string, number>(); for (const h of placedHouses) { const w = kitIndex.get(h.id)?.w ?? 0; const k = w <= 4 ? "small" : w <= 6 ? "medium" : "large"; byW.set(k, (byW.get(k) ?? 0) + 1); }
     const top = [...byW].sort((a, b) => b[1] - a[1])[0];
-    const same = top && placedHouses.length >= 4 && top[1] >= placedHouses.length * 0.7 ? ` · 집 ${placedHouses.length}채 중 ${top[1]}채가 ${top[0]} 크기 — 비슷한 집이 늘어서 보인다, layout.houses[].kind 를 섞는다` : "";
+    // kind 를 섞어 달라 했는데 지붕 무리(roofs)에 그 크기 그림이 없으면 「kind 를 섞어라」는 틀린 조언이다(2026-10-30 실조수 opus: 청회색 지붕 무리는 폭 4 집뿐, medium·large 요청이 작은 집으로)
+    const missing = missingHouseKinds.size ? ` · 요청한 집 크기 ${[...missingHouseKinds].join("·")} 그림이 이 지붕 무리에 없어 작은 집으로 대신했다 — 큰 집이 필요하면 hints.roofs 를 비우거나 바꿔 다시 부른다` : "";
+    const same = missing || (top && placedHouses.length >= 4 && top[1] >= placedHouses.length * 0.7 ? ` · 집 ${placedHouses.length}채 중 ${top[1]}채가 ${top[0]} 크기 — 비슷한 집이 늘어서 보인다, layout.houses[].kind 를 섞는다` : "");
     if ((!rep.length || placedHouses.length < 3)) return same;
     return same + ` · 같은 집 그림 반복 ${rep.slice(0, 3).map(([id, n]) => `${id.replace(/^bd-(house-)?/, "")}×${n}`).join(", ")}(그림 ${cnt.size}종) — 다르게 하려면 layout.houses[].kind 를 small·medium·large 로 섞어 다시 부른다`;
   };

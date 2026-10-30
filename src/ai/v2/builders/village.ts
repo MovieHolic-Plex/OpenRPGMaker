@@ -1,6 +1,7 @@
 // 조수 v2 마을 빌더 — PlaceSpec(village) → v1 author_beodeul_town 인자. 모델은 칸·좌표를 쓰지 않는다.
 // 명세의 낱말(size·theme·style·features·hints)만 도구 손잡이로 옮기고, 도구가 못 하는 것은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
+import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../buildRun";
 import { isPassable } from "@/project/collision";
@@ -162,7 +163,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 같은 요청 세 번이 같은 마을이 되지 않게(2026-10-23 다양성 검수: 강가 마을 세 판이 같은 강·다리·방앗간 자리 8/10).
   // 요청이 정하지 않은 땅 모양·숲 종류는 make_place 의 salt 로 고른다. 고치기는 명세에 남은 salt 로 같은 값을 다시 고른다.
   if (spec.salt !== undefined && (args.theme === undefined || args.theme === "river" || args.theme === "coast")) {
-    if (args.terrain === undefined && spec.salt % 3 === 0) args.terrain = "terraces";
+    // 코드 지형 마을은 땅을 미리보기(villageArgs 만으로 codeTerrainFor)에서 이미 정했다 — 여기서 terraces 를 덧붙이면 지은 땅이 미리본 땅과 달라지고
+    // 평지 요청에 세 단이 깔렸다(2026-10-30 실조수 opus 「강가의 평범한 시골 마을」: 미리본 동서 강 → 지은 맵은 서쪽 협곡 강·단 0/2/4, salt%3==0).
+    if (args.terrain === undefined && spec.salt % 3 === 0 && !usesCodeTerrain(args, String(args.theme ?? "river"))) args.terrain = "terraces";
     if (args.forestType === undefined) args.forestType = (["broadleaf", "conifer", "mixed"] as const)[Math.floor(spec.salt / 3) % 3];
     // 맵 크기가 블록 격자를 정한다 — 같은 형태라도 가로·세로가 다르면 집·광장·밭 자리가 달라진다.
     // 지형 먼저(평지·성벽이 아닌 마을)는 낮은 단·마을 단·높은 단이 세로로 쌓이므로 8줄 더
