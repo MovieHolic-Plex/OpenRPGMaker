@@ -14,11 +14,11 @@ import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec }
 
 /** v2 계획 모델에게 주는 일본 도시 지식(≤900자). */
 export const JP_CITY_CARD =
-  "[일본 현대 type:street|house, style jp-modern] street=거리 한 장. features 낱말: shops/상점가(상가)·houses/주택가·alley/골목(시타마치)·arcade(아케이드 상점가)·" +
-  "가게 konbini·izakaya·ramen·cafe·sento·bento·machiya·apartment·office·garage, 소품 vending/자판기·park/공원·crosswalk/횡단보도·signal·bus stop·post box·river/다리·bench·sakura·bicycle·car·lamp. " +
-  "한 맵=지역 하나: station/역전·school/학교·university·shrine/신사·temple/절·castle·rail crossing/건널목·danchi·onsen·harbor·beach·rice terraces·mountain trail·festival·museum·yokocho·office district·canal (넣으면 그 지역 문법). " +
-  "size small 40×28·medium 48×36·large 60×48. house=집·가게 실내 하나: 다다미/옛집(平屋)·단독주택(floors 2면 2층+계단)·원룸·맨션·편의점·라멘·이자카야·초밥·찻집·빵집·서점·약국·꽃집·센토·파출소·의원·우체국·학교·역·료칸·노래방… " +
-  "zones kind 로 방(ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study) 직접 지정 가능. 거리와 실내 잇기·사람·탑·지하철 노선은 못 함(보고됨). hints: variant·region·style·parkForest. 역전(station)은 짜임을 직접 고른다: hints.length short|medium|long, hints.plaza rotary|crossing|square, hints.landmark fountain|hachiko|clock|zelkova|kiosk, hints.shops 「books,cafe,…」(books·cafe·pharmacy·ramen·bakery·izakaya·sushi·soba·teishoku·flower·barber·cleaning·wagashi·conbini·parking·office 중 4~7곳 순서대로), hints.mirror — 요청이 정한 것만 넣는다(횡단보도는 어느 꼴에나 있다). 말하지 않은 손잡이는 비워 둔다 — 비우면 판마다 다르게 짜고, 채우면 같은 요청이 늘 같은 거리가 된다.";
+  "[Modern Japan type:street|house, style jp-modern] street = one street map. features words: shops/상점가 (shopping street) · houses/주택가 (residential) · alley/골목 (shitamachi) · arcade (covered shopping arcade) · " +
+  "shops konbini·izakaya·ramen·cafe·sento·bento·machiya·apartment·office·garage, props vending/자판기·park/공원·crosswalk/횡단보도·signal·bus stop·post box·river/다리 (bridge)·bench·sakura·bicycle·car·lamp. " +
+  "One map = one district: station/역전·school/학교·university·shrine/신사·temple/절·castle·rail crossing/건널목·danchi·onsen·harbor·beach·rice terraces·mountain trail·festival·museum·yokocho·office district·canal (adding one applies that district's grammar). " +
+  "size small 40×28 · medium 48×36 · large 60×48. house = one home or shop interior: tatami/old house (hiraya) · detached house (floors 2 = two floors + stairs) · studio · mansion flat · konbini · ramen · izakaya · sushi · tea house · bakery · bookstore · pharmacy · florist · sento · police box · clinic · post office · school · station · ryokan · karaoke… " +
+  "zones kind can set rooms directly (ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study). Linking street and interiors, people, towers and subway lines are not possible here (reported). hints: variant·region·style·parkForest. For a station front pick the layout yourself: hints.length short|medium|long, hints.plaza rotary|crossing|square, hints.landmark fountain|hachiko|clock|zelkova|kiosk, hints.shops «books,cafe,…» (4–7 in order from books·cafe·pharmacy·ramen·bakery·izakaya·sushi·soba·teishoku·flower·barber·cleaning·wagashi·conbini·parking·office), hints.mirror — set only what the request decided (every layout has a crosswalk). Leave unmentioned knobs empty — empty varies per run; filled makes the same request always give the same street.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);

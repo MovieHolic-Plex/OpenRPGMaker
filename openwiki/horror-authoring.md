@@ -191,3 +191,9 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 기존 공포 런타임/세이브 계약. 통합된 main 위에서도 관련 80개와 앱 타입 검사가 통과했다.
 
 - 가구 밀기 QA (`furniture-push.probe.mjs`)는 부하가 큰 호스트에서 실제 종료 좌표까지 최대 10초 기다린다. 중간 프레임 수·16px 접촉 간격·정확한 종료 좌표·가구 프레임 고정 assertion은 유지한다. 기준선 촬영은 기존 900ms다.
+
+## 소리로 하는 추격 (2026-10-30)
+
+추격자 발소리(`movement.footsteps`)·「!」/땀 말풍선 끄기(`emotes:"none"`)·숨기 소리(`interaction.enterSe/exitSe/heldSe`)는 `openwiki/field-enemy.md`
+「호러 추격: 말풍선 끄기·발소리·숨기 소리」. `horror-chase` 장르의 `make_chase_scene` 은 셋 다 기본으로 켠다.
+

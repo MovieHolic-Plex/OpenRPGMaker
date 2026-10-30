@@ -24,6 +24,7 @@
 import type { DesktopDisplayMode, DesktopExportPlatform } from "@/project/desktopGameExport";
 import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
 import { stickSector, stickSectorKeys } from "@/player/touchPad";
+import { markPlayerPadKey } from "@/player/confirmMashGuard";
 
 export interface DesktopShellBootConfig {
   readonly enabled?: boolean;
@@ -366,13 +367,14 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     // has target=window, so a text-field guard that looks at event.target let it through
     // while the player was typing. Battle then treated one A press as command + target.
     const target = document.activeElement instanceof HTMLElement ? document.activeElement : document.body;
-    target.dispatchEvent(new KeyboardEvent(type, {
+    // 패드 누름은 플레이어 입력이다 — 선택지의 연타 거르기(confirmMashGuard)가 키보드와 똑같이 본다.
+    target.dispatchEvent(markPlayerPadKey(new KeyboardEvent(type, {
       key,
       code,
       bubbles: true,
       cancelable: true,
       repeat,
-    }));
+    })));
   };
 
   const readConnectedGamepad = (): Gamepad | undefined => {

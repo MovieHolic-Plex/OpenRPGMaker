@@ -13,6 +13,7 @@ import type {
   EnemyReaction,
   DamageTypeRates,
   EnemyRecord,
+  EnemyWalkChip,
   EnemyRewards,
   EnemyStats,
   BattleFlow,
@@ -44,6 +45,15 @@ export function normalizeDamageTypeRates(value: unknown): DamageTypeRates | unde
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+export function normalizeEnemyWalkChip(raw: unknown): EnemyWalkChip | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const value = raw as Partial<EnemyWalkChip>;
+  const characterResourceId = typeof value.characterResourceId === "string" ? value.characterResourceId.trim() : "";
+  if (!characterResourceId) return undefined;
+  const index = typeof value.characterIndex === "number" && Number.isFinite(value.characterIndex) ? Math.round(value.characterIndex) : 0;
+  return { characterResourceId, characterIndex: Math.max(0, Math.min(7, index)) };
+}
+
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
 ): EnemyRecord {
@@ -63,6 +73,10 @@ export function normalizeEnemyRecord(
     ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
     ...(typeof record.lungeSpeedPercent === "number" && Number.isFinite(record.lungeSpeedPercent) && Math.round(record.lungeSpeedPercent) !== 100
       ? { lungeSpeedPercent: Math.round(Math.max(25, Math.min(300, record.lungeSpeedPercent))) } : {}),
+    ...(() => {
+      const walkChip = normalizeEnemyWalkChip(record.walkChip);
+      return walkChip ? { walkChip } : {};
+    })(),
     ...(() => {
       const rates = normalizeDamageTypeRates(record.damageTypeRates);
       return rates ? { damageTypeRates: rates } : {};

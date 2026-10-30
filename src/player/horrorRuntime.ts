@@ -59,6 +59,14 @@ export function isPlayerHiding(world: World): boolean {
   return false;
 }
 
+/** 지금 숨어 있는 은신처의 상호작용(소리 설정을 읽는다). 숨어 있지 않으면 undefined. */
+export function currentHidingInteraction(world: World): NonNullable<RuntimeEventView["page"]>["interaction"] | undefined {
+  const hiding = world.session.horror?.hiding;
+  if (!hiding || hiding.mapId !== world.map.id) return undefined;
+  const view = runtimeEventViewById(world.project, world.map, world.session, world.positions, hiding.eventId);
+  return view?.page?.interaction?.kind === 'hiding' ? view.page.interaction : undefined;
+}
+
 export function seesPlayer(world: World, view: RuntimeEventView): boolean {
   const authored: NpcSight = view.movement.sight ?? { range: view.movement.sightRange ?? 8, lineOfSight: true, facing: 'any' };
   if (view.movement.type !== 'chase') return npcSeesPoint(world, view, world.session, authored);
