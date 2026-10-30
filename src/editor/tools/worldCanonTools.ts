@@ -1,7 +1,7 @@
 import { compactWorldCanon, resolveWorldCanon, type WorldCanon, type WorldCanonLawKind, type WorldCanonStatus, type WorldCanonTone } from "@/project/world/canon";
 import { ToolError, type JsonSchema, type ToolDefinition } from "./types";
 
-const TONES: readonly WorldCanonTone[] = ["hopeful", "grim", "comic", "political", "slice", "gothic", "fairytale", "mythic"];
+const TONES: readonly WorldCanonTone[] = ["hopeful", "grim", "comic", "political", "slice", "gothic", "fairytale", "mythic", "horror", "mystery"];
 const LAWS: readonly WorldCanonLawKind[] = ["power", "gods", "death", "money"];
 
 const LAW_SCHEMA: JsonSchema = {
