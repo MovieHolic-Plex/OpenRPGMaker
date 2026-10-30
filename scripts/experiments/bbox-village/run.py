@@ -5,7 +5,7 @@ Out: $BBOX_RUNS/<arm><rep>/<brief>/ {prompt.txt, call-N.json, layout-N.json, che
 import base64, json, os, re, subprocess, sys, time, urllib.request
 brief, arm, rep = sys.argv[1], sys.argv[2], sys.argv[3]
 HOME = os.path.expanduser("~")
-RUNS = os.environ.get("BBOX_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxvillage")
+RUNS = os.environ.get("BBOX_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxramps")
 G = f"{RUNS}/{arm}{rep}/{brief}"; os.makedirs(G, exist_ok=True)
 MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
@@ -19,7 +19,7 @@ def terrain_text():
     cnt = Counter(lv[i] for i in range(W * H) if not wa[i])
     L = [f"# Terrain (made by code — you cannot change it). Map {W} x {H} cells, x to the right 0..{W-1}, y down 0..{H-1}.",
          f"Levels (height) present on dry land: " + ", ".join(f"level {k}: {v} cells" for k, v in sorted(cnt.items())) + ".",
-         "One terrace step = 2 levels. Where a higher area lies north of a lower one, the drop is drawn as a 2-cell-high cliff face on the south side.",
+         "One level = one cell of cliff face. Where a higher area lies north of a lower one, the drop is drawn as a cliff face on the south side, as many cells tall as the level difference (a 2-level step = a 2-cell-tall face).",
          "Water: " + ", ".join(n for n, v in (("river", 1), ("lake", 2), ("sea", 3)) if v in wa) + ". Nothing but piers/bridges (roads) and boats may be on water."]
     if T["river"]:
         a, b = T["river"][0], T["river"][-1]; L.append(f"River flows from ({a % W},{a // W}) to ({b % W},{b // W}). Good bridge spots (straight river, same level banks): " + " ".join(f"({k['x']},{k['y']},{k['dir']})" for k in T["crossings"][:6]))
@@ -32,7 +32,7 @@ def terrain_text():
         L.append(f"{y:3d} " + "".join({1: "~", 2: "o", 3: "="}.get(wa[y * W + x], str(lv[y * W + x])) for x in range(W)))
     return "\n".join(L)
 
-PROMPT = f"""You design one RPG village map as an exact cell layout on top of an existing terrain. Your JSON is executed cell by cell by code that only paints what you write — every road, plaza, stair, building, field, fence, forest, tree and prop you write is exactly what appears, and NOTHING else is added (no automatic trees, roads or decoration). Empty cells stay plain grass.
+PROMPT = f"""You design one RPG village map as an exact cell layout on top of an existing terrain. Your JSON is executed cell by cell by code that only paints what you write — every road, plaza, cut (ramp/stairs), building, field, fence, forest, tree and prop you write is exactly what appears, and NOTHING else is added (no automatic trees, roads or decoration). Empty cells stay plain grass.
 
 Village request: {B['en']}
 
@@ -48,9 +48,9 @@ Image 2 = the kit sheet: every building/prop/tree drawn at real size with its ex
 - Buildings, props, trees, fields, fences and plazas lie on ONE level each (no straddling a cliff) and on dry land. Boats lie fully on water.
 - Do not put a building where higher ground lies within the 2 rows just south of it.
 - Every building's door front cell (listed per kit) must be a road/track/plaza cell of the connected network, on the building's own level.
-- All road/track/pier/plaza/stair cells must form ONE connected network (walking rules), and at least one road must reach a dry map edge cell (the entrance).
-- Paths change level ONLY by stairs, and only north-south (there are no east-west stairs). Stairs rect: on the LOWER level, directly against the cliff, the row just beyond it (north for dir "north") is the higher level; h = level difference + 1 (a 2-level step needs h = 3); w = 1..3. The cells just above and just below the stairs must be road/track/plaza (the landings). Stair cells count as path; don't also list them as road.
-- Adjacent path cells on different levels without stairs between them are an error.
+- All road/track/pier/plaza/cut cells must form ONE connected network (walking rules), and at least one road must reach a dry map edge cell (the entrance).
+- Paths change level ONLY through a cliff cut (ramp or stairs, see the catalog), and only north-south. Pick the piece whose height equals the cliff's level difference there (ramp-h2-... for a 2-level step) and whose width matches the road (2 or 3). Place it by its foot: x,y = left cell of the lower-level row directly against the cliff; the row above (exit, higher level) and the row below (entry, lower level) must be road/track/plaza over the whole width. Prefer south-facing cliffs (higher level to the north, dir "north") — the 3/4 view shows those faces; north-facing cuts are hidden. Ramps suit tracks, stairs suit paved roads. Cut cells count as path; don't also list them as road.
+- Adjacent path cells on different levels without a cut between them are an error.
 - A road on a river is drawn as a plank bridge; only kind "pier" may go onto the sea (wooden piers from the shore).
 - Fence: the rect is the fence ring itself (border cells), with one gate cell on the ring (not a corner); the cell just outside the gate must be a road/track cell.
 
@@ -59,7 +59,7 @@ Image 2 = the kit sheet: every building/prop/tree drawn at real size with its ex
  "zones": [{{"name": "harbour", "purpose": "...", "x": X, "y": Y, "w": W, "h": H}}],
  "roads": [{{"kind": "main|lane|track|pier", "purpose": "...", "rects": [{{"x": X, "y": Y, "w": W, "h": H}}, ...]}}],
  "plazas": [{{"x": X, "y": Y, "w": W, "h": H, "purpose": "..."}}],
- "stairs": [{{"x": X, "y": Y, "w": W, "h": H, "dir": "north|south"}}],
+ "cuts": [{{"id": "<ramp-hN-wW or stairs-hN-wW>", "x": X, "y": Y, "dir": "north"}}],
  "buildings": [{{"id": "<building id>", "x": X, "y": Y, "purpose": "..."}}],
  "fields": [{{"crop": "wheat|barley|rye|vines|herbs|flowers", "x": X, "y": Y, "w": W, "h": H}}],
  "fences": [{{"x": X, "y": Y, "w": W, "h": H, "gate": [GX, GY]}}],
@@ -67,7 +67,7 @@ Image 2 = the kit sheet: every building/prop/tree drawn at real size with its ex
  "trees": [{{"id": "<tree id>", "x": X, "y": Y}}],
  "props": [{{"id": "<prop id>", "x": X, "y": Y}}]}}
 zones are labels only (the purpose of each part of the village: harbour, market, residential, farms, ...).
-Design a specific, lived-in village that fits the request and uses the terrain: a clear centre and landmark, distinct zones with purpose, roads that follow the land, stairs where the village climbs, and enough fields, woods, orchards (rows of trees) and props that no large area is empty grass. Use the whole map."""
+Design a specific, lived-in village that fits the request and uses the terrain: a clear centre and landmark, distinct zones with purpose, roads that follow the land, ramps or stairs cut into the cliffs where the village climbs, and enough fields, woods, orchards (rows of trees) and props that no large area is empty grass. Use the whole map."""
 open(f"{G}/prompt.txt", "w").write(PROMPT)
 img = lambda p: {"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(open(p, "rb").read()).decode()}}
 msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT}, img(f"{TD}/terrain-raw.png"), img(f"{RUNS}/sheet.png")]}]

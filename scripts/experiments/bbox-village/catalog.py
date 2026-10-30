@@ -52,6 +52,10 @@ def add(d, kind):
         if "ON WATER" in en: e["kind"] = "boat"
         kits[i] = e
 add(B, "building"); add(P, "prop"); add(T, "tree")
+# cliff cuts (ramps/stairs, experiment-local pieces from ramps/pieces.py): one id per kind x width x cliff height
+for ck, cen in (("ramp", "packed-earth ramp (fits a track)"), ("stairs", "cobble stone steps (fits a paved main road / lane)")):
+    for r in (1, 2, 3):
+        for w in (2, 3): kits[f"{ck}-h{r}-w{w}"] = {"kind": "cut", "cut": ck, "w": w, "rise": r, "en": cen}
 json.dump({"kits": kits}, open(f"{out}/catalog.json", "w"), indent=0)
 L = ["# Kit catalog (chipset beodeul_city, 16px cells). The attached sheet shows every kit drawn at its real size, labelled with its exact id.",
      "x,y of a kit = top-left cell of its footprint w x h. Footprints are the full rectangle (art may have transparent corners).", "",
@@ -65,11 +69,19 @@ for i, e in kits.items():
 L += ["", "## Trees  (id | w x h | description) — the footprint includes the crown"]
 for i, e in kits.items():
     if e["kind"] == "tree": L.append(f"{i} | {e['w']}x{e['h']} | {e['en']}")
+L += ["", "## Cliff cuts: ramps and stairs  (id | footprint w x cliff height | description)",
+      "A cut is drawn INTO a south-facing cliff face (higher level to the north) and is exactly as tall as that face: a cliff of",
+      "height 2 (level difference 2) needs an -h2- piece. Place it by its FOOT: x,y = the left cell of the row on the LOWER level",
+      "directly south of the cliff; it covers columns x..x+w-1. Entry = the row below (x..x+w-1, y+1), lower level; exit = the row above",
+      "(x..x+w-1, y-1), higher level; both rows must be road/track/plaza cells. dir is \"north\" (walk north to climb). The foot row",
+      "itself is path (do not list it as road). A cut through a north-facing cliff (dir \"south\") is allowed but hidden by the 3/4 view — avoid it."]
+for i, e in kits.items():
+    if e["kind"] == "cut": L.append(f"{i} | {e['w']} wide x {e['rise']} tall face | {e['en']}")
 L += ["", "## Surfaces (rects, not kits)",
       "road kind main = paved stone road, lane = paved lane, track = sandy dirt path, pier = wooden plank pier (the only road that may go onto the sea; on a river any road becomes a plank bridge)",
       "plaza = paved stone square (props may stand on it)",
       "field crop: wheat | barley | rye (1-cell crop tiles, any size >= 2x2) · vines (vineyard rows, size a multiple of 8x4) · herbs | flowers (2x2 beds, even sizes)",
       "forest = continuous tree canopy (blocks walking), any rects; overlapping rects merge into one wood",
-      "fence = wooden fence ring around a rect with one gate cell; stairs = stone stairs (see rules)"]
+      "fence = wooden fence ring around a rect with one gate cell; cuts = ramps/stairs through cliffs (see above)"]
 open(f"{out}/catalog.txt", "w").write("\n".join(L) + "\n")
 print(len(kits), "kits")

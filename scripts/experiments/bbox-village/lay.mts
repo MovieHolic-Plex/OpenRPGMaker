@@ -3,7 +3,7 @@
 // Prints {ok, errors[], warnings[], stats} (English, for the repair call). With --render and no errors: <out>/map.png (1x) + project.json.
 // The model decided every road, plaza, stair, building, field, fence, forest, tree and prop cell. This code only paints what was written:
 // materials by rect (fill_region exact cells), kits by stamp_object at the exact x,y, forest rects as the canopy autotile, fences as the
-// fence ring pieces, stairs as relief stair codes + chipset stair art, the code terrain (levels, water) as map.relief. It never adds or moves anything.
+// fence ring pieces, cuts (ramps/stairs) as one-row relief slopes drawn with experiment-local cut pieces, the code terrain (levels, water) as map.relief. It never adds or moves anything.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { ensureBundledTilesets } from "../../../src/project/defaults/defaultAssets.ts";
@@ -18,6 +18,8 @@ import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "../../../src
 import { createBeodeulGroundTileset } from "../../../src/project/defaults/beodeulGround.ts";
 import groundCatalog from "../../../src/assets/beodeulGroundCatalog.json";
 import type { ReliefData } from "../../../src/project/relief/types.ts";
+import { installPieces, STYLE } from "./ramps/install.mts";
+installPieces(JSON.parse(readFileSync(new URL("./ramps/pieces.json", import.meta.url), "utf8")));
 
 const [lf, tf, cf, outDir] = process.argv.slice(2);
 const render = process.argv.includes("--render");
@@ -71,31 +73,38 @@ arr("plazas").forEach((r, i) => {
   for (const c of cellsOf(r)) { if (water[c]) { errors.push(`plazas[${i}] cell ${P(c)} is on water.`); continue; } if (roadMat.has(c)) { roadMat.delete(c); owner[c] = ""; kind[c] = ""; } claim(c, "plaza", `plaza ${i}`); }
   const ls = new Set(cellsOf(r).map((c) => lv[c])); if (ls.size > 1) errors.push(`plazas[${i}] spans terrain levels ${[...ls].join("/")} — a plaza must lie on one level.`);
 });
-// stairs
+// cliff cuts (ramps / stairs): one foot row on the lower level against the cliff, as tall as the face (ramps/pieces.py)
 const ramps = new Array<number>(W * H).fill(0);
 const stairCells = new Set<number>();
-arr("stairs").forEach((s, i) => {
-  const tag = `stairs[${i}]`;
-  if (!rectOk(s, tag)) return;
-  if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" or "south" (the direction you walk to climb; there are no east-west stair pieces).`); return; }
-  if (s.w > 3) errors.push(`${tag} is ${s.w} wide — stairs are 1 to 3 cells wide.`);
-  const cs = cellsOf(s), lo = lv[cs[0]!]!;
-  if (cs.some((c) => lv[c] !== lo || water[c])) { errors.push(`${tag} (${s.x},${s.y},${s.w}x${s.h}): all stair cells must be dry land on the LOWER level (found levels ${[...new Set(cs.map((c) => lv[c]))].join("/")}).`); return; }
-  const hiY = s.dir === "north" ? s.y - 1 : s.y + s.h, loY = s.dir === "north" ? s.y + s.h : s.y - 1;
-  if (!inMap(s.x, hiY) || !inMap(s.x, loY)) { errors.push(`${tag}: needs a landing cell above and below inside the map.`); return; }
-  const his = new Set<number>(); for (let x = s.x; x < s.x + s.w; x += 1) his.add(lv[idx(x, hiY)]!);
+const cuts: { id: string; x: number; y: number; w: number; rise: number; cut: string; dir: string }[] = [];
+const cutId = (k: string, r: number, w: number) => `${k}-h${r}-w${w}`;
+arr("cuts").forEach((s, i) => {
+  const d = CAT[s?.id] as any, tag = `cuts[${i}] "${s?.id}"`;
+  if (!d || d.kind !== "cut") { errors.push(`${tag}: unknown cut id — use ramp-h<1..3>-w<2|3> or stairs-h<1..3>-w<2|3> from the catalog.`); return; }
+  if (!num(s.x) || !num(s.y)) { errors.push(`${tag}: needs integer x, y (the left foot cell on the lower level).`); return; }
+  if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" (preferred: climbs through a south-facing cliff) or "south".`); return; }
+  const w = d.w, north = s.dir === "north";
+  if (!rectOk({ x: s.x, y: s.y, w, h: 1 }, tag)) return;
+  const cs = cellsOf({ x: s.x, y: s.y, w, h: 1 }), lo = lv[cs[0]!]!;
+  if (cs.some((c) => lv[c] !== lo || water[c])) { errors.push(`${tag} at (${s.x},${s.y}): its ${w} foot cells must be dry land on ONE lower level (found ${[...new Set(cs.map((c) => lv[c]))].join("/")}).`); return; }
+  const hiY = north ? s.y - 1 : s.y + 1, loY = north ? s.y + 1 : s.y - 1;
+  if (!inMap(s.x, hiY) || !inMap(s.x, loY)) { errors.push(`${tag}: needs an entry row and an exit row inside the map.`); return; }
+  const his = new Set<number>(); for (let x = s.x; x < s.x + w; x += 1) his.add(lv[idx(x, hiY)]!);
   const hi = [...his][0]!;
-  if (his.size > 1 || hi <= lo) { errors.push(`${tag}: the row just ${s.dir} of it (y=${hiY}) must be ONE higher level than the stair cells (level ${lo}); it is level ${[...his].join("/")}. Put the stairs on the low side directly against the cliff.`); return; }
-  const need = hi - lo + 1;
-  if (hi - lo > 2) { errors.push(`${tag}: the cliff there is ${hi - lo} levels high — stairs climb at most 2 levels; choose another spot.`); return; }
-  if (s.h !== need) errors.push(`${tag}: a climb from level ${lo} to ${hi} needs a stair flight exactly ${need} cells long (h=${need}), got h=${s.h}.`);
-  for (let x = s.x; x < s.x + s.w; x += 1) {
+  if (his.size > 1 || hi <= lo) { errors.push(`${tag}: the row just ${s.dir} of its foot (y=${hiY}) must be ONE higher level across all ${w} columns (foot level ${lo}; found ${[...his].join("/")}). Put the foot directly ${north ? "south" : "north"} of a straight stretch of cliff.`); return; }
+  const rise = hi - lo;
+  if (rise > 3) { errors.push(`${tag}: the cliff there is ${rise} tall — cuts exist for heights 1-3 only; choose another spot.`); return; }
+  if (rise !== d.rise) errors.push(`${tag}: the cliff face there is ${rise} tall, so the piece must be ${cutId(d.cut, rise, w)} (a ${d.rise}-tall piece does not fit). Fixed: {"id": "${cutId(d.cut, rise, w)}", "x": ${s.x}, "y": ${s.y}, "dir": "${s.dir}"}.`);
+  if (!north) warnings.push(`${tag} climbs through a north-facing cliff — the 3/4 view hides that face and the cut; prefer a south-facing face (higher level to the north, dir "north").`);
+  for (let x = s.x; x < s.x + w; x += 1) {
     const top = idx(x, hiY), bot = idx(x, loY);
-    if (!["road", "track", "plaza"].includes(kind[top]!)) errors.push(`${tag}: upper landing ${P(top)} must be a road/path/plaza cell.`);
-    if (!["road", "track", "plaza"].includes(kind[bot]!) || lv[bot] !== lo) errors.push(`${tag}: lower landing ${P(bot)} must be a road/path/plaza cell on level ${lo}.`);
+    if (!["road", "track", "plaza"].includes(kind[top]!)) errors.push(`${tag}: exit cell ${P(top)} (level ${hi}) must be a road/track/plaza cell.`);
+    if (!["road", "track", "plaza"].includes(kind[bot]!) || lv[bot] !== lo) errors.push(`${tag}: entry cell ${P(bot)} must be a road/track/plaza cell on level ${lo}.`);
   }
-  for (const c of cs) { if (kind[c] === "road" || kind[c] === "track") { owner[c] = ""; kind[c] = ""; roadMat.delete(c); } claim(c, "stair", `stairs ${i}`); ramps[c] = rampCode(s.dir === "north" ? "n" : "s", true); stairCells.add(c); }
+  for (const c of cs) { if (kind[c] === "road" || kind[c] === "track") { owner[c] = ""; kind[c] = ""; roadMat.delete(c); } claim(c, "stair", `cut ${i}`); ramps[c] = rampCode(north ? "n" : "s", d.cut === "stairs"); stairCells.add(c); }
+  cuts.push({ id: s.id, x: s.x, y: s.y, w, rise, cut: d.cut, dir: s.dir });
 });
+if (arr("stairs").length) errors.push(`"stairs" is no longer a key — use "cuts" with a ramp-/stairs- piece id from the catalog.`);
 // kit placements
 type Placed = { id: string; x: number; y: number; w: number; h: number; k: string; who: string; door?: { dx: number; dy: number } };
 const placed: Placed[] = [];
@@ -180,7 +189,10 @@ for (let c = 0; c < W * H; c += 1) {
     if (!pathy(n) || lv[c] === lv[n] || stairCells.has(c) || stairCells.has(n)) continue;
     const key = `${Math.min(lv[c]!, lv[n]!)}-${dx}-${Math.floor(x / 3)}-${Math.floor(y / 3)}`; if (reported.has(key)) continue; reported.add(key);
     errors.push(dx ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across an east-west level change — paths cannot climb sideways; route the path north/south through stairs.`
-      : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a cliff without stairs — add a stairs rect there (on the low side, h = level difference + 1).`);
+      : (() => { const r = Math.abs(lv[c]! - lv[n]!), lowC = lv[c]! < lv[n]! ? c : n, northHigh = lowC === n;
+          const fx = lowC % W, fy = Math.floor(lowC / W);
+          return r > 3 ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff — too tall for a cut (max 3); route the path elsewhere.`
+            : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff without a cut. Fixed: add {"id": "ramp-h${r}-w2" (track) or "stairs-h${r}-w2" (paved; -w3 for a 3-wide road), "x": <left column>, "y": ${fy}, "dir": "${northHigh ? "north" : "south"}"} with its foot on the lower row y=${fy} (x=${fx} must be inside it)${northHigh ? "" : " — this face looks north and is hidden in 3/4 view; a south-facing crossing is better"}.`; })());
   }
 }
 const pathCells = [...Array(W * H).keys()].filter(pathy);
@@ -215,7 +227,7 @@ for (const g of gates) if (g.out < 0 || !net.has(g.out)) errors.push(`${g.who}: 
 const free = [...Array(W * H).keys()].filter((c) => !water[c] && !owner[c]).length, land = water.filter((v) => !v).length;
 if (free / land > 0.6) warnings.push(`${Math.round((free / land) * 100)}% of the dry land is still bare grass — consider more fields, forests, orchards or props.`);
 const stats = { W, H, buildings: placed.filter((p) => p.k === "building").length, props: placed.filter((p) => p.k === "prop" || p.k === "boat").length, trees: placed.filter((p) => p.k === "tree").length,
-  pathCells: pathCells.length, stairs: arr("stairs").length, fields: fieldCells.size, forest: forestSet.size, bareLandPct: Math.round((free / land) * 100) };
+  pathCells: pathCells.length, cuts: cuts.length, cutsSouthFacing: cuts.filter((q) => q.dir === "north").length, fields: fieldCells.size, forest: forestSet.size, bareLandPct: Math.round((free / land) * 100) };
 if (errors.length || !render) done({ stats });
 
 // ── 3. paint exactly ──
@@ -313,21 +325,13 @@ if (fenceAt.size) {
   let i = 0;
   for (const c of all) if (water[c] && roadMat.has(c) && mids.length) { map().lowerTiles[c] = mids[1 + (i % Math.max(1, mids.length - 1))] ?? mids[0]; for (const Lr of [2, 3, 4] as const) setLayerTileAt(map(), Lr, c, -1); i += 1; }
 }
-// relief + stair art (bd-mpart-stairs: width 1 = middle column, wider = left end / middle / right end, alternating rows from the bottom)
+// relief; cut art = experiment-local ramp/stair pieces installed into the style art (ramps/install.mts), drawn by the relief renderer
 {
   const m = map();
   if (lv.some((v) => v > 0)) {
-    m.relief = { width: W, height: H, levels: lv.slice(), ramps: ramps.slice(), style: T.theme === "river" || T.theme === "coast" ? "grass-steps" : "grass-steps" };
+    m.relief = { width: W, height: H, levels: lv.slice(), ramps: ramps.slice(), style: STYLE };
     invalidateReliefSlopes(m.relief);
-    const mp = kitDef("bd-mpart-stairs");
-    const tileAt = (col: number, row: number) => mp?.rows[row]?.tiles?.[col] ?? -1;
-    for (const s of arr("stairs")) {
-      for (let y = s.y; y < s.y + s.h; y += 1) for (let x = s.x; x < s.x + s.w; x += 1) {
-        const row = (s.y + s.h - 1 - y) % 2 === 0 ? 1 : 0;
-        const t = tileAt(s.w === 1 ? 2 : x === s.x ? 1 : x === s.x + s.w - 1 ? 3 : 2, row); if (t < 0) continue;
-        const c = idx(x, y); m.lowerTiles[c] = t; for (const Lr of [2, 3, 4] as const) setLayerTileAt(m, Lr, c, -1);
-      }
-    }
+    for (const c of stairCells) for (const Lr of [2, 3, 4] as const) setLayerTileAt(m, Lr, c, -1);
   }
 }
 const { renderMapPng } = await import("../../qa-game/render.mts");
