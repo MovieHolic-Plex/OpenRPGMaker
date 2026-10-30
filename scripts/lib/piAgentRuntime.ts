@@ -926,9 +926,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let forceToolTurn: boolean | string = false;
   // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
   let freshContextNext = false;
+  // H3 다음 호출 우선(src/ai/v2/loop/nextCall.ts): 코어의 SoftToolRequirement — 알림 한 번, 그래도 다른 도구면 그 도구를 강제(최대 2번).
+  // 코어는 강제 3번째에 실행을 던져 끝내므로 getToolChoice 가 3번 내준 뒤에는 내린다.
+  let softPref: { id: string; toolName: string; reminder: string; served: number } | undefined;
+  let softSeq = 0;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
     requireToolNextTurn: (toolName?: string) => { forceToolTurn = toolName ?? true; },
+    preferToolNextTurn: (toolName: string, reminder: string) => { softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
+    clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
@@ -1151,6 +1157,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
+      if (!forceToolTurn && softPref) {
+        // 이름 강제를 못 거는 호출(Anthropic 확장 생각)·없는 도구면 걸지 않는다.
+        const api = (model as { api?: string }).api;
+        if ((api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") || !tools.some((tool) => tool.name === softPref!.toolName)) { softPref = undefined; return undefined; }
+        softPref.served += 1;
+        if (softPref.served > 3) { softPref = undefined; return undefined; }
+        const want = softPref.toolName;
+        return { soft: true as const, id: softPref.id, toolName: want, reminder: [{ role: "user" as const, content: [{ type: "text" as const, text: softPref.reminder }], timestamp: Date.now() }],
+          satisfies: (call: { name: string }) => call.name === want || call.name === "todo" } as never;
+      }
       if (!forceToolTurn) return undefined;
       const want = forceToolTurn;
       forceToolTurn = false;

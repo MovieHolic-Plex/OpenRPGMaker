@@ -10,11 +10,12 @@ import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiAssistantV2Env } from "../env";
 import { parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
-import { checkLabel, isOpen, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
+import { checkLabel, isOpen, TODO_MAX_ATTEMPTS, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
 import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./continuation";
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
+import { formatCall, nextAfterFailure, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -88,11 +89,17 @@ export interface TodoToolsState {
 }
 
 /** 진행 중 항목의 실패를 세고, 막힘이면 닫는다. 돌려주는 값: 조수에게 덧붙일 한 줄. */
-function attributeFailure(env: PiAssistantV2Env, store: TodoStore, sig: string, detail: string): string | undefined {
+function attributeFailure(env: PiAssistantV2Env, store: TodoStore, sig: string, detail: string, strategy?: (item: TodoItem) => string | undefined): string | undefined {
   const item = store.current();
   if (!item) return undefined;
   const why = store.recordFailure(item, sig, detail);
   if (!why) return undefined;
+  // H8 같은 거절 두 번: 시도 상한 전이고 전략 글이 있으면 한 번은 막지 않고 전략을 준다(그다음 같은 거절은 막는다).
+  const meta = store.meta.get(item.id);
+  if (strategy && meta && !meta.strategyGiven && item.attempts < TODO_MAX_ATTEMPTS && why.startsWith("같은 실패")) {
+    const text = strategy(item);
+    if (text) { meta.strategyGiven = true; return text; }
+  }
   const cascaded = store.block(item, why, "auto");
   env.emit({ type: "execution_status", name: "v2.todo.auto_block", ok: false, summary: `할 일 ${item.id} «${item.content.slice(0, 60)}» 막힘으로 닫음 — ${why}${cascaded.length ? ` · 기대던 ${cascaded.map((c) => c.id).join(",")}도` : ""}`, data: { id: item.id, why, cascaded: cascaded.map((c) => c.id) } });
   const next = store.next();
@@ -238,6 +245,8 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           result = done("할 일 목록");
       }
       const parsed = JSON.parse((result.content[0] as { text: string }).text) as { ok: boolean; summary: string };
+      // 항목을 닫거나 뺐으면 그 항목을 위해 걸어 둔 «다음 호출 우선»(H3)을 내린다.
+      if (parsed.ok && (op === "block" || op === "drop" || op === "done" || op === "start")) env.clearToolPreference?.();
       env.record({ toolCallId: id, name: "todo", args: params, result: { ok: parsed.ok, summary: `todo ${op}: ${parsed.summary}`.slice(0, 300) } });
       return result;
     },
@@ -269,6 +278,40 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
   let firstWriteBounces = 0;
   let lastKey = "";
   let same = 0;
+  // H3 — 거절 뒤 다음 호출 우선: 고른 동사가 불리면 내린다. 거절 뒤로 부른 동사(같은 제안을 되풀이하지 않게).
+  let pendingPrefer: string | undefined;
+  const sinceFailure = new Set<string>();
+  const remember = (nc: NextCall) => {
+    const cur = store.current();
+    if (cur) store.meta.set(cur.id, { ...(store.meta.get(cur.id) ?? {}), nextCall: { verb: nc.verb, text: formatCall(nc) } });
+  };
+  const prefer = (nc: NextCall, line: string) => {
+    remember(nc);
+    if (!env.preferToolNextTurn) return;
+    env.preferToolNextTurn(nc.verb, line);
+    pendingPrefer = nc.verb;
+    hooks.fire("prefer", `다음 차례 ${nc.verb} 우선`, { verb: nc.verb });
+  };
+  /** H8 — 같은 항목에서 같은 거절 두 번: 전략 글(한 번). */
+  const strategyFor = (toolName: string, failText: string) => (item: TodoItem): string | undefined => {
+    const st = strategyAfterRepeat(toolName, failText, item, verbNames);
+    if (!st) return undefined;
+    hooks.fire("strategy", `${item.id} ${toolName}: ${st.text.slice(0, 160)}`, { item: item.id, tool: toolName });
+    const line = `${st.text}${st.call ? ` 다음 호출: ${formatCall(st.call)}` : ""}`;
+    if (st.call) prefer(st.call, line);
+    return line;
+  };
+  /** H3 — 거절 하나 뒤의 다음 호출 한 줄(막힘·전략 글이 없을 때). */
+  const suggestNext = (toolName: string, args: unknown, failText: string): string | undefined => {
+    let nc: NextCall | undefined;
+    try { nc = nextAfterFailure(toolName, args, failText, env.ctx.project, verbNames, sinceFailure); } catch { nc = undefined; }
+    sinceFailure.clear();
+    if (!nc) return undefined;
+    const line = `[다음 호출] ${formatCall(nc)} — ${nc.why}. 이 호출을 하거나, 할 수 없으면 todo block(이유).`;
+    hooks.fire("next_call", `${toolName} 거절 뒤 → ${formatCall(nc).slice(0, 200)}`, { tool: toolName, verb: nc.verb });
+    prefer(nc, line);
+    return line;
+  };
   const wrap = (tool: PiToolShape): PiToolShape => Object.assign(Object.create(Object.getPrototypeOf(tool)) as PiToolShape, tool, {
     ...(isReadVerb(tool.name) ? {} : { parameters: withTodoId(tool.parameters) }),
     execute: async (id: string, rawParams: unknown, signal?: AbortSignal): Promise<PiToolExecResult> => {
@@ -294,6 +337,8 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
         return text({ ok: false, summary: `[같은 호출 차단] ${tool.name} 를 같은 인자로 ${same}번째 부른다 — 실행하지 않았다. 결과는 앞과 같다. 인자를 바꾸거나 다른 동사를 쓰거나, 할 수 없으면 todo block(이유).${why ? `\n${why}` : ""}` });
       }
       state.calledAt.set(tool.name, state.callNo);
+      sinceFailure.add(tool.name);
+      if (pendingPrefer && tool.name === pendingPrefer) { env.clearToolPreference?.(); pendingPrefer = undefined; }
       // 묶을 항목: 인자 todoId 의 항목, 없으면 진행 중 항목. 판정이 refs 를 쓰는 항목일 때만 전후 지문을 뜬다.
       const bindTo = write ? (todoId ? store.resolve(todoId) : undefined) ?? store.current() : undefined;
       const before = bindTo?.check && bindTo.check.kind !== "none" ? indexProject(env.ctx.project) : undefined;
@@ -342,8 +387,9 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
         const message = error instanceof Error ? error.message : String(error);
         if (write && !signal?.aborted) {
           state.failures.push({ name: tool.name, text: message, at: state.callNo });
-          const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(message).slice(0, 160)}`, `${tool.name} 실패: ${message}`);
-          if (note || fixNotes.length) throw new Error([message, ...fixNotes.map((n) => `고침(실행 전): ${n}`), ...(note ? [note] : [])].join("\n"));
+          const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(message).slice(0, 160)}`, `${tool.name} 실패: ${message}`, strategyFor(tool.name, message));
+          const next = note ? undefined : suggestNext(tool.name, callParams, message);
+          if (note || next || fixNotes.length) throw new Error([message, ...fixNotes.map((n) => `고침(실행 전): ${n}`), ...(note ? [note] : []), ...(next ? [next] : [])].join("\n"));
         }
         throw error;
       }
@@ -354,8 +400,9 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       if (write) {
         if (read.failed) {
           state.failures.push({ name: tool.name, text: read.text.slice(0, 1200), at: state.callNo });
-          const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(read.text).slice(0, 160)}`, `${tool.name} 거절: ${read.text.slice(0, 240)}`);
+          const note = attributeFailure(env, store, `${tool.name}:${maskVolatile(read.text).slice(0, 160)}`, `${tool.name} 거절: ${read.text.slice(0, 240)}`, strategyFor(tool.name, read.text));
           if (note) notes.push(note);
+          else { const next = suggestNext(tool.name, callParams, read.text); if (next) notes.push(next); }
         } else {
           loop.noteEffect(effectFingerprint(tool.name, params, read.text));
           if (bindTo && before) {

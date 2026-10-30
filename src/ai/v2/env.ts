@@ -46,6 +46,13 @@ export interface PiAssistantV2Env {
    * Anthropic 확장 생각이 켜진 호출은 이름 지정 강제를 거절하므로 실행기가 그때는 걸지 않는다.
    */
   readonly requireToolNextTurn?: (toolName?: string) => void;
+  /**
+   * H3 다음 호출 우선(할 일 고리 갈고리): 다음 모델 호출부터 이 도구를 먼저 부르게 한다 — 코어의 SoftToolRequirement(알림 한 번 → 그래도 다른 도구면
+   * 실행하지 않고 그 도구를 강제). todo 는 같이 불러도 된다. 강제는 최대 2번, 그 도구가 불리면(clearToolPreference) 또는 3차례 지나면 내린다.
+   * 로컬 CLI 고리·Anthropic 확장 생각 호출은 무시한다(이름 강제를 못 건다).
+   */
+  readonly preferToolNextTurn?: (toolName: string, reminder: string) => void;
+  readonly clearToolPreference?: () => void;
   /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
   readonly freshContextNextTurn?: () => void;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
