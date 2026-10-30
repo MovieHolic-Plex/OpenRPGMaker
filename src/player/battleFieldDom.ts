@@ -1,3 +1,4 @@
+import { stateBadgeLabel } from "@/player/battleStatusLabel";
 import { enemyHidesHp } from "@/project/enemyHpVisibility";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
@@ -2226,6 +2227,10 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.testid = `battle-status-${battler.id}-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
+    // 배지 글자는 저작한 상태 이름(게임의 언어)을 쓴다 — 한국어 게임에서 마비가 「PAR」로 떴다(2026-10-30).
+    // 이름이 배지에 안 들어가는 영문 이름이면 CSS 의 3글자 약어(PSN·PAR…)로 남는다.
+    const label = entry.icon === "death" || entry.icon.endsWith("-up") || entry.icon.endsWith("-down") ? null : stateBadgeLabel(entry.name);
+    if (label) node.dataset.statusLabel = label;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);
