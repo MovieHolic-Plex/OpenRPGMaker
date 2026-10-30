@@ -2334,7 +2334,7 @@
 "가림 방지":"Anti-occlusion",
 "가림 방지 꺼짐":"Anti-occlusion off",
 "가림 방지 켜짐":"Anti-occlusion on",
-"가림 방지는 플레이어와 겹치면 창 위치를 자동 조정합니다. 이동 허용은 메시지 대기 중 다른 이벤트 이동을 허용합니다.":"Anti-occlusion adjusts window position when overlapping the player. Allow movement lets other events move while a message is waiting.",
+"가림 방지는 플레이어와 겹치면 창 위치를 자동 조정합니다. 이동 허용을 켜면 이벤트가 도는 동안에도 다른 이벤트가 움직이고 플레이어가 메뉴(X·Esc)를 열 수 있습니다. 끄면(기본) 장면이 끝날 때까지 메뉴가 잠깁니다.":"Anti-occlusion adjusts window position when overlapping the player. With Allow movement on, other events keep moving and the player can open the menu (X/Esc) while the event runs. Off (default): the menu stays locked until the scene ends.",
 "가마솥은 화덕 상판 위 upper, 선반은 wallFace":"Cauldron goes on the hearth top as upper; shelves go on wallFace",
 "가방 · 소지품":"Bag · Inventory",
 "가볍게":"Light",
