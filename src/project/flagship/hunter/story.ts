@@ -152,13 +152,13 @@ export function buildWorldStory(project: Project, s: Stage): void {
   ]));
   // 닫힌 두 곳 — 아이콘 성문 칸에 이유를 둔다(이 판본의 끝).
   for (const [id, at, lines] of [
-    ["ev_hc_harbor_closed", s.world.harborGate, ["버들항. 성문에서 통행세를 받는다. 은화 열.", "주머니에 그만한 돈이 없다. 늪 일부터 끝낸다."]],
+    ["ev_hc_harbor_closed", s.world.harborGate, ["버들항. 성문에서 통행세를 받는다. 은화 열.", "늪 일부터 끝낸다. 삯을 받고 온다."]],
     ["ev_hc_castle_closed", s.world.castleGate, ["회색봉으로 오르는 길. 비에 무너진 돌이 길을 막았다.", "리스크가 넘은 길이다. 지금은 못 넘는다."]],
   ] as const) {
     world.events.push(event(id, "닫힌 길", at, [
       page(`${id}_p`, [], [
         ...caption(lines[0]),
-        ifCond(varAtLeast(V.a, 5), [...caption("(이 판본은 갈대늪 계약까지입니다.)")], [...think(lines[1])]),
+        ...think(lines[1]),
       ], { trigger: "playerTouch", priority: "below" }),
     ]));
   }
@@ -172,7 +172,7 @@ export function buildChapterEnd(project: Project, s: Stage, endingId: string): v
     gone("ch1_wait", []),
     page("ch1_end", [{ kind: "switch", switchId: "sw_hc_a_paid", value: true } as never], [
       wait(300),
-      ifCond(varIs(V.aChoice, 1), [...say("villager", "smile", "사냥꾼 양반. 또 오시오. 다음엔 밥을 내겠소.")]),
+      ifCond(varIs(V.aChoice, 1), [...caption("물가에서 늪 사람 하나가 돌을 던졌다. 머리를 싼 거적이 있던 자리다.")]),
       ifCond(varIs(V.aChoice, 2), [...caption("물가에 짐을 진 사람들이 줄을 섰다. 버들항 쪽이다.")]),
       ifCond(varIs(V.aChoice, 3), [...caption("세나네 집 앞 물가에 밥그릇이 또 놓였다.")]),
       ...think("사본 한 장이 끝났다. 리스크는 여기서 무엇을 봤을까."),

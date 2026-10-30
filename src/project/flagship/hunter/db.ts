@@ -118,7 +118,7 @@ export function setupHunterDatabase(project: Project): void {
     battleCharacterResourceId: "", characterResourceId: CAST.doran.resource, characterIndex: CAST.doran.index,
     faceResourceId: `shared-${CAST.doran.stem}-expressions-bust-base`,
     initialEquipment: { ...(clone(base.initialEquipment ?? {}) as Record<string, unknown>), weapon: EQUIP.blade } } });
-  exec("set_session_start", { partyActorIds: [ACTOR.doran], gold: 30, inventory: { [ITEM.potion]: 2 } });
+  exec("set_session_start", { partyActorIds: [ACTOR.doran], gold: 11, inventory: { [ITEM.potion]: 2 } });
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
   exec("set_project_settings", { terms: { battleVictory: "끝났다", battleCommandPrompt: "{name}." } });
   delete project.system.battleBackdrop;
