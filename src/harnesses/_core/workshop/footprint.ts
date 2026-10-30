@@ -27,6 +27,12 @@ type KitClass = {
 const CLASSES = kitConstant<Readonly<Record<string, KitClass>>>(objectGenKit, "footprint", "CLASSES");
 const ORDER = kitConstant<readonly string[]>(objectGenKit, "footprint", "ORDER");
 const BUILDING = kitConstant<string>(objectGenKit, "footprint", "BUILDING");
+/** 머리 낱말만으로는 틀리는 합성어(「flower bed」는 침대가 아니다) — object-gen COMPOUNDS */
+const COMPOUNDS = kitConstant<readonly (readonly [string, string])[]>(objectGenKit, "footprint", "COMPOUNDS");
+/** 자연물(나무·덤불·식물·꽃·먹을거리 더미·동물·바위) — object-gen ORGANIC_*(2026-10-22, 도형으로 그린 사과나무 반려) */
+const ORGANIC_CLASSES = kitConstant<readonly string[]>(objectGenKit, "footprint", "ORGANIC_CLASSES");
+const ORGANIC_KINDS = kitConstant<readonly string[]>(objectGenKit, "footprint", "ORGANIC_KINDS");
+const ORGANIC_WORDS = kitConstant<string>(objectGenKit, "footprint", "ORGANIC_WORDS");
 /** 지시문 한 단락(object-gen GUIDE) */
 export const FOOTPRINT_GUIDE = kitConstant<string>(objectGenKit, "footprint", "GUIDE");
 export const SIZE_NOTE = kitConstant<string>(objectGenKit, "reference", "SIZE_NOTE");
@@ -59,10 +65,14 @@ export type FootprintDecision = {
   readonly measured: readonly string[];
   /** 참고 그림을 만들지(가는 기둥 lamp·banner·signpost 는 false, object-gen bcab2ed) */
   readonly reference: boolean;
+  /** 자연물(나무·덤불·식물·꽃·더미·동물·바위) — 도형 금지 지시문·버들항 나무 견본·GEOMETRIC 검사로 그린다 */
+  readonly organic: boolean;
 };
 
-/** 머리 낱말(이름 끝 낱말)이 먼저 — 「나무 벌통」은 나무가 아니다. 그다음 이름 전체, 그다음 설명. */
+/** 합성어가 먼저(「flower bed」는 식물), 그다음 머리 낱말(이름 끝 낱말) — 「나무 벌통」은 나무가 아니다. 그다음 이름 전체, 그다음 설명. */
 export function footprintClass(name: string, brief = ""): string | null {
+  const whole = (name ?? "").trim().toLowerCase();
+  if (whole) for (const [words, cls] of COMPOUNDS) if (pattern(words).test(whole)) return cls;
   const head = (name ?? "").trim().split(/[\s·,/()]+/u).filter(Boolean).at(-1) ?? "";
   for (const text of [head, name, brief]) {
     const low = (text ?? "").trim().toLowerCase();
@@ -70,6 +80,17 @@ export function footprintClass(name: string, brief = ""): string | null {
     for (const cls of ORDER) if (CLASSES[cls] && pattern(CLASSES[cls]!.words).test(low)) return cls;
   }
   return null;
+}
+
+/** object-gen footprint.is_organic: 3/4 관문 종류 organic, 크기 사전 tree·plant, 머리 낱말이 자연물, 자연물 더미(「돌무더기」·「rock pile」). 설명은 안 읽는다(「나무 아래 벤치」). */
+export function isOrganicObject(name: string, gateKind?: string | null, cls?: string | null): boolean {
+  if (gateKind && ORGANIC_KINDS.includes(gateKind)) return true;
+  if (ORGANIC_CLASSES.includes((cls === undefined ? footprintClass(name, "") : cls) ?? "")) return true;
+  const words = (name ?? "").trim().split(/[\s·,/()]+/u).filter(Boolean);
+  const head = (words.at(-1) ?? "").toLowerCase();
+  if (head && pattern(ORGANIC_WORDS).test(head)) return true;
+  if (head && CLASSES.pile && pattern(CLASSES.pile.words).test(head)) return words.slice(0, -1).some((w) => pattern(ORGANIC_WORDS).test(w.toLowerCase()));
+  return false;
 }
 
 export function isBuildingName(name: string): boolean {
@@ -128,6 +149,7 @@ export function decideFootprint(name: string, brief: string, ask: { readonly w?:
   const passage = [...Array.from({ length: over }, () => "*".repeat(w)), ...Array.from({ length: foot }, () => "X".repeat(w))];
   return {
     building: false, cls, w, foot, over, risePx, passage, top: c?.top ?? null, adjusted, measured: c?.measured.slice(0, 3) ?? [], reference: c?.reference ?? true,
+    organic: isOrganicObject(name, null, cls),
     reason: `${why}; ${w}×${foot + over}칸 = 발밑 ${foot}줄(막힘) + 위 ${over}줄(캐릭터 위에 그려짐)`,
   };
 }
