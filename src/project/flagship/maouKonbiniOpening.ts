@@ -20,8 +20,8 @@ import { openingMapViewCrop } from "@/project/openingMapView";
 import type { AnimaticLayer } from "@/project/openingAnimatic";
 import type { Command, GameMap, Project } from "@/project/types";
 import {
-  CAST, caption, type Cell, emote, event, execTool, fadeIn, fadeOut, flash, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
-  playSe, say, setSw, setVar, shake, stopBgm, thinkAs, transfer, varAtLeast, varIs, wait, bgm,
+  CAST, type Cell, emote, event, execTool, gone, letter, m2, mustBlock, mustWalk, nearestFree, page,
+  playSe, say, setSw, setVar, shake, stopBgm, thinkAs, varAtLeast, varIs, wait, bgm,
 } from "./maouKonbiniKit";
 
 // maouKonbini.ts 와 같은 id(순환 import 를 피하려고 문자열을 다시 적는다).
@@ -324,30 +324,27 @@ export function buildMaouThrone(project: Project, roomWake: Cell): Cell {
   const garetAt = nearestFree(project, map, { x: 22, y: 9 }, [leonAt]);
   const miraAt = nearestFree(project, map, { x: 24, y: 9 }, [leonAt, garetAt]);
   const L = "ev_mk_t_leon", G = "ev_mk_t_garet", R = "ev_mk_t_mira";
+  // 애니메틱의 마지막 컷이 하얗게 닫힌다 — 필드도 흰빛으로 덮은 채 전투에 들어가, 전투가 끝나면 옥좌 맵을 다시 보이지 않고
+  // 그 흰빛 위에서 곧장 「빛이 모든 것을 삼켰다」 → 원룸이 흰빛에서 걷혀 나온다(전환 한 번).
+  // r3 녹화: 전투 뒤 옥좌 2초 → 흰 화면 5초 → 검은 화면 2.5초 → 흰 화면 2초 → 원룸(약 10초). 감독 검수 7/10.
   const scene: Command[] = [
-    ...fadeIn(300),
+    m2("Screen Effect", { effect: "fadeIn", value: "", durationMs: 0 }),
+    fieldTint("255,255,255,1", 0),
     playSe(SFX.sword),
     { kind: "battleProcessing", troopId: "troop_mk_castle", canEscape: false, canLose: true, branchOnResult: false } as Command,
-    // 『동귀어진』 대사는 전투 2합 머리에서 이미 했다 — 전투가 끝나면 말 없이 곧장 하얗게 타 버린다.
-    emote(L, "exclamation", 600),
-    // 하얗게 타 버린다 — 화면 효과 「색조」로 흰빛을 채웠다가(맵 조명은 건드리지 않는다), 장엄한 음악을 그 순간 끊는다.
-    // 흰빛 → 정적 → 원룸까지 v13 은 12초(흰 화면·검정)였다 — 5초 안으로 줄인다(2026-10-30 적대 VQA).
-    playSe(SFX.vanish),
-    fieldTint("255,255,255,0.35", 500), shake(1400, "3"),
-    wait(600), flash("white", 250), wait(300),
-    fieldTint("255,255,255,1", 700), shake(700, "10"),
-    wait(500),
+    // 『동귀어진』 대사는 전투 2합 머리에서 이미 했다 — 전투가 끝나면 말 없이 흰빛 속에서 사라진다.
+    playSe(SFX.vanish), shake(700, "10"),
     stopBgm(),
-    wait(250),
-    ...caption("빛이 모든 것을 삼켰다."),
-    ...fadeOut(500),
-    wait(150),
+    wait(400),
+    // 흰 화면 위 내레이션 한 줄 — 화자 없는 중립 창, 한 번에 표시(타자기로 한 글자씩 나오면 「빛」만 찍힌 빈 창처럼 보였다).
+    { kind: "text", body: "빛이 모든 것을 삼켰다.", position: "center", context: "system" } as Command,
     setVar(V_STAGE, "=", 1),
     // 전생 — 파티가 현대의 몸(마오)으로 바뀐다.
     { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "add" } as Command,
     { kind: "changeParty", actorId: DEFAULT_ACTOR_ID, action: "lead" } as Command,
     { kind: "changeParty", actorId: MAOU_TRUE, action: "remove" } as Command,
-    transfer(MAP_ROOM, roomWake, "down"),
+    // 흰빛(색조)이 그대로 원룸으로 넘어간다 — 검은 암전 없이. 원룸 눈뜨기가 형광등 소리와 함께 흰빛을 걷는다.
+    { kind: "transfer", mapId: MAP_ROOM, x: roomWake.x, y: roomWake.y, direction: "down", fade: "none" } as Command,
   ];
   map.events.push(event("ev_mk_throne_scene", "최후의 결전", { x: 1, y: 1 }, [
     page("ev_mk_throne_scene_p", [varIs(V_STAGE, 0)], scene, { trigger: "auto" }),
@@ -386,10 +383,9 @@ export function stageMaouRoomWake(project: Project): void {
   // 눈뜨자마자 조작을 넘긴다 — 안내문·잔고는 탁자에 놓인 물건(살펴보기), 우편함 소리와 전단지는 걷는 동안 병렬 이벤트가 낸다.
   const wakeScene: Command[] = [
     stopBgm(),
-    wait(500),
     playSe(SFX.fluoro),
-    wait(250), flash("white", 90), wait(330), flash("white", 70), wait(220),
-    ...fadeIn(350),
+    // 옥좌에서 넘어온 흰빛을 형광등이 켜지듯 걷는다(전환 한 번, 약 1초).
+    fieldTint("", 900), wait(900),
     // 냉장고 웅웅·먼 차 소리는 한 번 울리는 효과음이면 다음 효과음(우편함)이 끊어 15초가 무음이었다(2026-10-30 r3 녹화 -120dB).
     // 환경음(bgs) 고리로 깔고, 전단지를 읽고 방 음악이 들어올 때 거둔다.
     { kind: "playAudio", resourceId: SFX.room, loop: true, channel: "bgs", fadeInMs: 800 } as Command,
