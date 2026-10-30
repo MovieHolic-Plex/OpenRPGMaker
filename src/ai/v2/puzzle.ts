@@ -369,7 +369,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     if (shown) warnings.push(shown);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && (l.lines ?? []).some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
