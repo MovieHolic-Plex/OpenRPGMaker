@@ -1367,7 +1367,7 @@ function enemyButton(
   const walkChip = record?.walkChip && !enemy.transformResourceId ? record.walkChip : undefined;
   const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
   if (walkChip && walkChipUrl) {
-    const sprite = appendWalkChipBattler(enemyNode, enemy.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl, "right");
+    const sprite = appendWalkChipBattler(enemyNode, enemy.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl, "right", true);
     sprite.classList.add("battle-enemy-image");
     sprite.dataset.testid = `battle-enemy-sprite-${enemy.id}`;
     sprite.style.setProperty("--breathe-delay", `-${index * 730}ms`);
