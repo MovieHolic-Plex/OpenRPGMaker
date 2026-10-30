@@ -136,9 +136,12 @@ describe("set_game_audio role chase", () => {
     // bgmResourceId 는 resourceId 의 다른 이름으로 받는다.
     must("set_game_audio", { role: "chase", bgmResourceId: id, mapIds: ["map_cellar"] });
     must("set_game_audio", { role: "chase", resourceId: id }); // 두 번 걸어도 겹치지 않는다
+    // 이미 켜져 있으면(금고를 다시 조사) 기억하지 않는다 — 추격 곡을 «평소 곡»으로 덮으면 끌 때 되돌아오지 않는다.
     expect(commandsOf(ctx.project, "ev_safe")).toEqual([
-      { kind: "m2Command", commandId: "m2-063-memorize-current-bgm", fields: {} },
-      { kind: "playAudio", resourceId: id, loop: true, channel: "bgm" },
+      { kind: "fork", condition: { kind: "switch", switchId: "sw_chase_on", value: false }, then: [
+        { kind: "m2Command", commandId: "m2-063-memorize-current-bgm", fields: {} },
+        { kind: "playAudio", resourceId: id, loop: true, channel: "bgm" },
+      ] },
       { kind: "setSwitch", switchId: "sw_chase_on", value: true },
     ]);
     expect(commandsOf(ctx.project, "ev_calm")).toEqual([

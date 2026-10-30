@@ -31,3 +31,17 @@ const BUILD = /만들|지어|짓|그려|세워|build|make/iu;
 export function musicAsked(task: string): boolean {
   return EXPLICIT.test(task) || (FEEL.test(task) && !BUILD.test(task));
 }
+
+/** 곡 낱말과 바로 뒤 한 낱말(「곡 만들어」「음악 추가」) — 음악 일 자체의 동사라 «다른 일» 판정에서 뺀다. */
+const MUSIC_PHRASE = new RegExp(String.raw`(?:${PLAIN}|곡)\S*\s*(?:을|를|이|가|도|만|좀|으로|로)?\s*(?:하나\s*|새로\s*)?\S*`, "giu");
+/** 음악 밖의 일을 시키는 말 — 짓기·고치기·이벤트·사람. */
+const OTHER_WORK = /만들|지어|짓|그려|세워|고쳐|추가|배치|놓아|놔\s*줘|옮겨|지워|없애|삭제|이벤트|퀘스트|대사|npc|\bbuild\b|\bmake\b|\bcreate\b|\badd\b/iu;
+/**
+ * 음악만 바라는 요청인가(「아오오니 느낌으로 추격 음악」「투더문처럼 잔잔하게 엔딩곡」「테일즈런너처럼 신나는 거 마을에 깔아 줘」).
+ * 이런 요청은 곡을 찾고·넣고·거는 일만 한다 — 맵·이벤트 쓰기 도구를 싣지 않고, 검토자·끝맺음 관문의 음악 밖 지적은 일감이 아니라 참고다.
+ * 왜(2026-10-30 실조수 e2e r12): 「추격 음악」 한 줄에 검토자의 «체크포인트가 추격자 시야 안» 우려가 관문 글로 넘어가 조수가 상자를 찍고
+ * make_chase_scene 을 부르려 했다. 「보스 만들고 보스곡 넣어 줘」처럼 다른 일이 섞이면 음악만이 아니다.
+ */
+export function musicOnly(task: string): boolean {
+  return musicAsked(task) && !OTHER_WORK.test(task.replace(MUSIC_PHRASE, " "));
+}

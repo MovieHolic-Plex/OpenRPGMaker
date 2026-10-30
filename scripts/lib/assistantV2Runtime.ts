@@ -9,6 +9,7 @@ import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
+import { musicOnly } from "../../src/ai/v2/musicWords.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
 import { assembledReport, isProviderErrorReply } from "../../src/ai/v2/finalReport.ts";
@@ -17,7 +18,7 @@ import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import { VqaFixBudget, vqaFixCapRefusal } from "../../src/ai/v2/vqaFixBudget.ts";
 import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
-import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
+import { adviseTurn, advisorFollowUp, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 
 /** 독립 검토자(src/ai/v2/advisor.ts). 끄려면 OPRN_V2_ADVISOR=0 — 비교 실행·장애 때만 쓴다. 읽기 전용 실행에는 돌지 않는다. */
 // 설정에서 검토자를 끈 경우(assistantRoles.advisor = "off")도 돌지 않는다. 검토자 모델은 env.advisorChat(따로 고른 칸) → 없으면 주 모델(sideChat).
@@ -276,7 +277,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           if (followFrom) followMs = Date.now() - followFrom;
           vqaPhase = "vqa";
           if (advisorEnabled(env.request) && advice) {
-            const recheck = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
+            const recheck = scopeAdviceToRequest(withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env)), env.request.task);
             advice = { ...recheck, ms: advice.ms + recheck.ms, inputChars: advice.inputChars + recheck.inputChars };
             env.emit({ type: "execution_status", name: "v2.advisor.recheck", ok: !recheck.notes.some((n) => n.level === "blocker"), summary: `다시 검토 — ${advisorSummary(recheck)}`, data: recheck });
           }
@@ -286,7 +287,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           // 남은 결함을 적은 최종 보고를 검토자가 실제 변경(diff)에 대어 본다 — 바꾸지 않은 것을 «고쳤다»고 쓴 보고는 막음 한 번으로 고치게 한다.
           vqaPhase = "done";
           if (!advisorEnabled(env.request)) return undefined;
-          const final = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
+          const final = scopeAdviceToRequest(withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env)), env.request.task);
           advice = advice ? { ...final, ms: advice.ms + final.ms, inputChars: advice.inputChars + final.inputChars } : final;
           env.emit({ type: "execution_status", name: "v2.advisor.final", ok: !final.notes.some((n) => n.level === "blocker"), summary: `화면 검수 뒤 최종 보고 검토 — ${advisorSummary(final)}`, data: final });
           return advisorFollowUp(final);
@@ -302,12 +303,13 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         const gate = autoPath ? (gate0 ? `${autoPath}\n\n${gate0}` : autoPath) : gate0;
         let text: string | undefined = gate;
         if (advisorEnabled(env.request)) {
-          advice = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
+          advice = scopeAdviceToRequest(withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env)), env.request.task);
           env.emit({ type: "execution_status", name: "v2.advisor", ok: !advice.notes.some((n) => n.level === "blocker"), summary: `${advisorSummary(advice)} · ${env.advisorModel ?? "주 모델"}`, data: { ...advice, model: env.advisorModel ?? "main" } });
           const blockerText = advisorFollowUp(advice);
           const softNotes = advice.notes.filter((n) => n.level !== "blocker");
           if (blockerText) { followFrom = Date.now(); text = gate ? `${gate}\n\n${blockerText}` : blockerText; }
-          else if (gate && softNotes.length) text = `${gate}\n\n[독립 검토자 참고 — 막지는 않음]\n${softNotes.map((n) => `- [${n.level}] ${n.what}`).join("\n")}`;
+          // 음악만 바라는 요청: 검토자 참고는 일감이 아니다 — 고치지 말고 보고에 참고로만 적게 한다(2026-10-30 r12).
+          else if (gate && softNotes.length) text = `${gate}\n\n${musicOnly(env.request.task) ? "[독립 검토자 참고 — 음악만 바라는 요청이라 고치지 않는다. 맵·이벤트·물건을 바꾸지 말고, 알릴 만하면 보고 끝에 «참고»로 한 줄씩만 적는다]" : "[독립 검토자 참고 — 막지는 않음]"}\n${softNotes.map((n) => `- [${n.level}] ${n.what}`).join("\n")}`;
           if (blockerText) { vqaPhase = "advisor-recheck"; return text; }
         }
         vqaPhase = "vqa";

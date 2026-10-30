@@ -113,6 +113,12 @@ export interface GameMap {
   worldmapSource?: WorldmapSource;
   /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
   bgm?: MapBgmSetting;
+  /**
+   * 스위치가 켜져 있는 동안 이 맵에 들어올 때(맵 진입·패배 복구) 대신 트는 곡. 앞쪽이 먼저(첫 번째로 켜진 것).
+   * 추격 곡(set_game_audio role:chase)이 쓴다 — 추격 스위치가 켜진 채 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어진다.
+   * `bgm` 과 따로 두어 맵 속성에서 BGM 을 바꿔도 지워지지 않는다. 해석은 project/mapMusic.ts `resolveMapBgm` 하나.
+   */
+  bgmWhileSwitch?: MapSwitchBgm[];
   /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
   battleBackground?: string;
   /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
@@ -339,6 +345,12 @@ export interface MapBackgroundLayer {
 }
 
 /** 맵 BGM 설정 — RM2003 BGM 탭 대응. */
+/** 스위치가 켜진 동안의 맵 진입 곡(GameMap.bgmWhileSwitch). */
+export interface MapSwitchBgm {
+  switchId: string;
+  resourceId: string;
+}
+
 export interface MapBgmSetting {
   /** "parent" = 상위 맵/프로젝트 기본, "none" = 무음, "custom" = 지정 곡. */
   mode: "parent" | "none" | "custom";
