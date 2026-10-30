@@ -5,6 +5,42 @@
 
 <!-- releases -->
 
+## 0.366.0 — 2026-10-30
+
+### 기능
+
+- **dungeon** — rooms carry height levels with village stone stairs, labyrinth follows the design, entrance from the arrival side, cross-formula bounce (`6052bd9`)
+- **village** — plain requests get one east-west tier band — no north-south tier slivers or mid-field stairs (`3fccf4f`)
+- **village** — code terrain round 2 — broken cliffs, swamp decks, fishing banks, ford-end reachability (`ece7fc1`)
+
+### 수정
+
+- **player,ai** — QA checkpoints carry the current objective line; scene starts pick the furthest objective already passed by the on-switches (`4869978`)
+- **player** — examine prompt names the page's speaker instead of an internal tile/event id (gym leader showed 'gyd_dais_gr…') (`2c459d6`)
+- **ai** — puzzle gates — two-way passage choices go to the far side of the way the player faces; note gates whose opening device is unreachable from the gate's outside (`e3a3012`)
+- **village** — built land matches the code-terrain preview (no salt terraces on code-terrain villages); requested house kinds win over nearer small fallbacks (`1ce3868`)
+- **village** — request direction exits (spec.exits) reach the map edge, crossing rivers by plank; exits-only layout keeps auto placement (`7e8d624`)
+- **ai,player** — chase music follows the chase switch; music-only requests stay music-only (`eb8ab92`)
+- **ai** — dungeon door falls back to the reachable row nearest the world-side edge when no road reaches the edge itself (`101a942`)
+- **ai** — one outside door per dungeon, on the world-side edge road cell of the village/street it is entered from (`a8ab983`)
+- **ai** — dungeon builder reads empty/object hints as not given (terra's village hints.layout object failed author_dungeon validation); spec.exits sets the entrance only when the design names neither side nor entrance spot (`ede7f80`)
+- **ai** — bossTalkBattles marked pages typed as a defined array (ci-fast TS2488) (`02fb614`)
+- **village** — drop model-added tier hints when the request names no landform; explicit flat also gets the east-west band (`97e7f20`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX for suite bundle 5 (`78312f8`)
+- **beodeul-city** — round 4 village verification (ab21-ab23, live b25/b26) (`6561b7f`)
+- **openwiki** — regenerate INDEX without local build output (`35b2aa3`)
+- **openwiki** — drop local-only probe path from asset-store page (`b77c71e`)
+- **openwiki** — regenerate INDEX (`cd0b4ec`)
+- **openwiki** — v2 drops model-added tier hints for plain requests; live runs after the fix (`142a618`)
+- **openwiki** — plain-request east-west band, ab20 results, rebase onto 0ba7f987fa (`a2eea95`)
+
+### 기타
+
+- **village** — round 3 — curved band, wide stone stairs, house kinds, orchards/props, rebuild under new id (`9797b40`)
+
 ## 0.365.0 — 2026-10-30
 
 ### 기능
