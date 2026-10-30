@@ -47,6 +47,7 @@ import { gameContentProblems, unaskedChanges } from "./gameChecks";
 import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { combatProblems } from "./combatChecks";
+import { fieldBattleStrain } from "./pathBattleBudget";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { restoreEventFromBefore } from "./restoreEvent";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
@@ -1608,6 +1609,8 @@ function gameProblemTexts(before: Project, after: Project, task: string): string
   try { game = [...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task)]; } catch { game = []; }
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
   try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
+  // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.
+  try { game.push(...fieldBattleStrain(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
   try { game.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ }
   return game;
