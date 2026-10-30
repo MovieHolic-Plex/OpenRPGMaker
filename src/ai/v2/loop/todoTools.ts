@@ -15,7 +15,7 @@ import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./conti
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
-import { formatCall, nextAfterFailure, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { formatCall, nextAfterFailure, nextForItem, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -409,6 +409,25 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
             const add = refsFromDiff(bindTo, tool.name, changedSince(before, indexProject(env.ctx.project)), env.ctx.project);
             const added = add ? bindRefs(bindTo, add, env.ctx.project) : [];
             if (added.length) env.emit({ type: "execution_status", name: "v2.todo.autobind", ok: true, summary: `할 일 ${bindTo.id} ← ${tool.name}: ${refsLabel(bindTo.refs)}`, data: { id: bindTo.id, verb: tool.name, refs: bindTo.refs } });
+          }
+          // H4 쓰기 성공 직후 즉시 검사: 묶인 항목의 기계 확인을 바로 돌린다 — ✓ 면 자동으로 끝내고 다음 항목을 올리고(todo done 호출 낭비를 줄인다),
+          // ✗ 면 그 이유를 이 결과에 바로 싣는다(끝에서야 알던 것을 지금). 실패로 세지 않는다.
+          if (bindTo && before && isOpen(bindTo.status)) {
+            const check = runCheck(env, store, bindTo);
+            if (check) {
+              hooks.fire("auto_check", `${bindTo.id} ${check.pass ? "✓" : "✗"} ← ${tool.name}: ${check.detail.slice(0, 160)}`, { item: bindTo.id, pass: check.pass });
+              if (check.pass) {
+                store.done(bindTo, check, "auto");
+                hooks.fire("auto_done", `${bindTo.id} «${bindTo.content.slice(0, 60)}» 자동 끝`, { item: bindTo.id });
+                env.emit({ type: "execution_status", name: "v2.todo.auto_done", ok: true, summary: `할 일 ${bindTo.id} 쓰기 직후 기계 확인 ✓ — 닫음: ${check.detail.slice(0, 120)}` });
+                const next = store.current();
+                const nc = next ? nextForItem(next, env.ctx.project, verbNames) : undefined;
+                notes.push(`[자동 확인 ✓] ${bindTo.id} «${bindTo.content}» 끝 — ${check.detail.slice(0, 200)}. ${next ? `다음: ${next.id} «${next.content}»${nc ? ` — 다음 호출: ${formatCall(nc)}` : ""} (todo done 은 부르지 않아도 된다)` : store.openCount() ? "" : "열린 항목 0."}`);
+              } else {
+                store.meta.set(bindTo.id, { ...(store.meta.get(bindTo.id) ?? {}), lastCheck: check });
+                notes.push(`[자동 확인] ${bindTo.id} «${bindTo.content.slice(0, 60)}» 아직 ✗ — ${check.detail.slice(0, 240)}${isAmbiguous(check) ? ` ${BIND_HINT(bindTo.id)}` : ""}`);
+              }
+            }
           }
         }
       }
