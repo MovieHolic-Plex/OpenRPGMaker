@@ -21,6 +21,7 @@ const COND_PROPS = {
   variableId: { type: "string" },
   op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
   value: { type: "number" },
+  timePhase: { type: "string", enum: ["morning", "day", "evening", "night"] },
 } as const;
 const DIRS: ReadonlyArray<{ readonly dir: Dir; readonly dx: number; readonly dy: number }> = [
   { dir: "up", dx: 0, dy: -1 },
@@ -118,7 +119,7 @@ const lockDoor: ToolDefinition = {
   description:
     "이미 있는 이동 문(create_transfer_pair · build_* 맵 빌더가 만든 transfer 이벤트)을 이야기 조건이 참일 때까지 잠근다 — 「이야기 진행 전엔 못 나가는 문」, 「연회 끝나야 복도 문이 열린다」."
     + " {mapId, x, y, unlockWhen|unlockWhenAny, lockedText, stepBack?, speaker?, unlock?} — (x,y)는 문 칸이거나 그 앞 칸(1칸 이내의 이동 이벤트를 찾고, 두 칸 폭 문은 맞닿은 반쪽까지 함께 잠근다)."
-    + " unlockWhen 은 {switchId}|{storyFlagId}|{variableId,op,value} 하나. 여럿 중 하나라도(OR)는 unlockWhenAny 에 [[AND 조건들],[AND 조건들]] 로 준다."
+    + " unlockWhen 은 {switchId}|{storyFlagId}|{variableId,op,value}|{timePhase} 하나 — 「밤에만 열리는 늪 길」은 {timePhase:\"night\"}(시간 시스템이 켜져 있어야 한다). 여럿 중 하나라도(OR)는 unlockWhenAny 에 [[AND 조건들],[AND 조건들]] 로 준다."
     + " 조건이 안 맞으면 lockedText(+speaker) 가 뜨고 stepBack(기본 true)이면 플레이어가 문 앞으로 한 걸음 물러난다. 알 수 없는 키는 거절한다."
     + " 같은 문에 다시 부르면 이전 잠금을 바꿔 끼운다(쌓이지 않음). unlock:true 는 잠금을 풀어 조건 없는 이동 페이지 하나로 되돌린다."
     + " 시간 문을 새로 만들 때는 create_time_gate 의 unlockWhen. 문 자체가 없으면 create_transfer_pair 로 먼저 만든다(no-door).",
@@ -131,7 +132,7 @@ const lockDoor: ToolDefinition = {
       y: { type: "integer", description: "문 칸 또는 문 앞 칸의 y" },
       unlockWhen: {
         type: "object",
-        description: "열리는 조건 하나: {switchId} | {storyFlagId} | {variableId, op(==,>=,<=,>,<,!=), value}",
+        description: "열리는 조건 하나: {switchId} | {storyFlagId} | {variableId, op(==,>=,<=,>,<,!=), value} | {timePhase(morning|day|evening|night)}",
         properties: COND_PROPS,
       },
       unlockWhenAny: {
