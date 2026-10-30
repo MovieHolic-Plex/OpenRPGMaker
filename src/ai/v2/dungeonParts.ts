@@ -3,12 +3,59 @@
 // 예시는 참고 — 카드가 「베끼지 않는다」고 적는다. 설계 형식은 src/editor/dungeonKit/designLayout.ts DungeonDesign.
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { DESIGN_FEATURES, DESIGN_SHAPES, type DungeonDesign } from "@/editor/dungeonKit/designLayout";
-export { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
+import { DUNGEON_DESIGN_SCHEMA as EDITOR_DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { GRAMMAR, inferDungeonType } from "@/editor/dungeonKit/grammar";
 import type { DungeonType } from "@/editor/dungeonKit/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "./buildRun";
 import type { PiAssistantV2Env } from "./env";
+
+// v2 shows the model English descriptions (cheap models read English better, 2026-10-30). The schema object is shared with the
+// v1 author_dungeon tool (src/editor/tools/dungeonTools.ts), whose Korean text must stay as is — so v2 maps a deep copy.
+// A description missing from this table stays as written (a schema change shows up as Korean in the v2 dump, scripts/qa/assistant-v2/dumpPrompt.mts).
+const DUNGEON_DESIGN_EN = new Map<string, string>([
+  ["(던전·동굴, 이 층을 직접 설계할 때) 방(역할·크기·모양·자리·물·특징)과 잇는 길·입구 쪽. 주면 빌더는 함수 배치 대신 이 설계대로 짓고, 겹침 밀기·길 잇기·도달·크기 모순만 고쳐 「고침:」으로 돌려준다. 어휘·예시 그림은 dungeon_parts.",
+   "(dungeon/cave, when you design this floor yourself) rooms (role, size, shape, spot, water, features), the paths linking them and the entrance side. When given, the builder builds this design instead of its own layout, fixing only overlap, path linking, reachability and size conflicts, and returns them as «고침:». Vocabulary and sample pictures in dungeon_parts."],
+  ["방 이름(links 가 가리킨다) — 예: 입구굴, 수정굴, 용의둥지",
+   "room name (links point to it) — e.g. 입구굴, 수정굴, 용의둥지"],
+  ["entrance 입구 · boss 보스 · treasure 보물 · lake 호수 · camp 야영·둥지 · shrine 제단 · forge 대장간(화산) · hall 넓은 굴 · grotto 곁굴",
+   "entrance · boss · treasure · lake · camp (camp/nest) · shrine (altar) · forge (volcano) · hall (wide cavern) · grotto (side cave)"],
+  ["small · medium · large · huge (또는 w·h)",
+   "small · medium · large · huge (or w·h)"],
+  ["(선택) 바닥 가로 칸 6~24",
+   "(optional) floor width 6–24 cells"],
+  ["(선택) 바닥 세로 칸 6~18",
+   "(optional) floor height 6–18 cells"],
+  ["blob 둥근 덩이 · cavern 여러 잎 큰 굴 · long 길쭉한 굴(dir) · shaft 좁고 긴 세로 굴 · ring 가운데 바위·못을 도는 고리 · twin 목으로 이은 두 잎",
+   "blob (round lump) · cavern (big multi-lobed cave) · long (elongated cave, dir) · shaft (narrow tall vertical cave) · ring (loop around a central rock/pool) · twin (two lobes joined by a neck)"],
+  ["(long·twin) ew 가로 · ns 세로",
+   "(long·twin) ew horizontal · ns vertical"],
+  ["맵 안 자리 — n·ne·e·se·s·sw·w·nw·center 또는 \"x,y\"(0~1, 왼쪽 위 0,0). 방마다 다른 자리를 준다",
+   "spot in the map — n·ne·e·se·s·sw·w·nw·center or \"x,y\" (0–1, top-left 0,0). Give each room a different spot"],
+  ["none · pool 웅덩이 · lake 호수 · stream 다음 방으로 흐르는 물줄기(다리로 건넌다). 테마 액체로 칠한다(동굴·숲·늪 물, 화산 용암, 마계 허공)",
+   "none · pool · lake · stream (water flowing into the next room, crossed by a bridge). Painted with the theme liquid (cave/forest/swamp water, volcano lava, otherworld void)"],
+  ["stalagmites 석순 · crystals 수정 · mushrooms 빛 버섯 · bones 뼈 더미 · pillars 부러진 돌기둥 · boulders 바위 · camp 모닥불 야영",
+   "stalagmites · crystals · mushrooms (glowing) · bones (piles) · pillars (broken) · boulders · camp (campfire)"],
+  ["높이 단 0(바닥, 기본) · 1 한 단 높은 굴 · 2 두 단 — 높이가 다른 방 사이 길에 돌계단을 놓는다(턱 위 제단·내려다보는 둥지·물 아래 낮은 굴)",
+   "height tier 0 (ground, default) · 1 one tier up · 2 two tiers — stone stairs are placed on paths between rooms of different height (altar on a ledge, overlooking nest, low cave below water)"],
+  ["방 2~12개(입구 하나·보스 하나 포함). 방 수·크기·자리는 네가 정한다",
+   "2–12 rooms (including one entrance and one boss). You decide the number, size and spots"],
+  ["winding 굽은 길(기본) · straight 곧은 길 · narrow 좁은 틈 · wide 넓은 길",
+   "winding (default) · straight · narrow (narrow gap) · wide"],
+  ["잇는 길(방 id 끼리). 고리(지름길)를 원하면 닫히는 길을 하나 더",
+   "linking paths (between room ids). For a loop (shortcut), add one more path that closes it"],
+  ["(links 를 안 줄 때) 방을 적은 순서로 잇는 모양: linear · branch · loop · hub",
+   "(when links are not given) how rooms are linked in listed order: linear · branch · loop · hub"],
+  ["입구가 맵의 어느 쪽 — 플레이어가 들어오는 길 쪽(마을 출구·세계 배치에 맞춘다): north · east · south · west",
+   "which side of the map the entrance is on — the side the player comes from (match the village exit and world layout): north · east · south · west"],
+]);
+function englishDescriptions(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(englishDescriptions);
+  if (!node || typeof node !== "object") return node;
+  return Object.fromEntries(Object.entries(node as Record<string, unknown>).map(([k, v]) =>
+    [k, k === "description" && typeof v === "string" ? DUNGEON_DESIGN_EN.get(v) ?? v : englishDescriptions(v)]));
+}
+export const DUNGEON_DESIGN_SCHEMA = englishDescriptions(EDITOR_DUNGEON_DESIGN_SCHEMA) as typeof EDITOR_DUNGEON_DESIGN_SCHEMA;
 import type { PlaceRecord } from "./types";
 
 /** 서로 다른 뼈대의 예시 — 한 공식(덩이+호수+아래 입구)을 되풀이하지 않게 입구 쪽·연결 모양·모양·물이 모두 다르다. */
@@ -113,6 +160,30 @@ export interface DungeonPartsOut {
   readonly note: string;
   /** 이 게임에서 이미 지은 장소의 출구(들어오는 길)·이미 지은 굴의 설계 한 줄 — 입구 쪽과 「다르게」의 근거. */
   readonly context?: string;
+  /** 이번 설계의 실마리 둘(세션마다 다르게 고른다) — 쓰거나 버리는 것은 모델. */
+  readonly angle: string;
+}
+
+/**
+ * 설계 실마리 — 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 opus 「보스 방」 3판이 모두 입구·회랑·보스 세 방 일자).
+ * 예시 순서·입구 낱말 순서는 게임 열쇠로만 돌려 같은 시작 저장본의 같은 요청이면 늘 같았다 — 세션마다 다른 덧값(V2Session.nonce)을 섞고, 실마리 둘을 고른다.
+ */
+const DESIGN_ANGLES = [
+  "보스 방이 높은 단(level 2) 위 — 바로 보이지만 돌아 올라가야 닿는다",
+  "물(lake·stream)이 굴을 가르고 좁은 곳으로 건넌다",
+  "고리(loop) — 두 갈래 길이 보스 앞에서 다시 만난다",
+  "큰 방 하나에서 곁굴 셋이 바퀴살처럼(hub) 갈라진다",
+  "긴 회랑 없이 큰 방 둘(twin)을 좁은 틈(narrow)으로 잇는다",
+  "보스 방이 입구의 반대쪽 끝이 아니라 옆 끝에 — 길이 꺾여 들어간다",
+  "보물 방이 보스 방 뒤 막다른 곳 — 보스를 지나야 닿는다",
+  "보스 앞에 쉬는 곳(camp)이나 제단(shrine) — 숨 고르고 들어간다",
+  "아래로 내려가는 굴 — 입구가 가장 높고(level 2) 보스가 가장 낮다",
+  "샛길 끝 숨은 곁굴(grotto) — 본길에서 안 보이는 막다른 곳",
+] as const;
+export function designAngles(key: string): string {
+  const h = [...`angle|${key}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 3);
+  const a = h % DESIGN_ANGLES.length; const b = (a + 1 + ((h >>> 8) % (DESIGN_ANGLES.length - 1))) % DESIGN_ANGLES.length;
+  return `이번 설계 실마리(쓰거나 버린다 — 요청이 우선): ${DESIGN_ANGLES[a]} / ${DESIGN_ANGLES[b]}.`;
 }
 
 /** 입구 쪽 낱말 순서를 게임마다 돌린다 — 늘 south 가 먼저 적혀 있어 맨 요청의 입구가 남쪽으로 쏠렸다(2026-10-30 지문: 13/16). */
@@ -201,6 +272,7 @@ export function dungeonParts(theme: string, gameKey = "", context = ""): Dungeon
     moreExamples: ex.slice(2).map((e) => e.ko).join(" / "),
     references: refs.map((r) => `${r.id}: ${r.idea}`).join(" / "),
     ...(context ? { context } : {}),
+    angle: designAngles(gameKey),
     note: "방 수는 굴의 크기·요청에 맞게 네가 정한다(작은 굴 3~4 · 보통 5~7 · 큰 굴 8~10 — 입구·보스 둘만 잇는 일자 굴은 걸을 거리가 없다). 예시·참고 그림은 구성 아이디어일 뿐 — 베끼지 말고 요청(무엇이 사는 굴인지·어디가 위험한지·무엇을 숨겼는지)에 맞게 방 수·자리·모양·물·길·입구 쪽을 새로 짠다. 검수는 예시·참고 그림과 거의 같은 맵, 그리고 흔한 십자 공식(입구 한쪽 끝 · 가운데 회랑 · 양옆 곁굴 · 반대쪽 끝 보스)을 반복으로 친다.",
   };
 }
@@ -219,14 +291,14 @@ async function examplePicture(env: PiAssistantV2Env, type: DungeonType, design: 
   try { env.ctx.project = scratch.project; return await env.render(mapId, 0, 0, m.width, m.height); } catch { return undefined; } finally { env.ctx.project = keep; }
 }
 
-export function createDungeonPartsVerb(env: PiAssistantV2Env, places?: () => Iterable<PlaceRecord>): PiToolShape {
+export function createDungeonPartsVerb(env: PiAssistantV2Env, places?: () => Iterable<PlaceRecord>, nonce = 0): PiToolShape {
   const pictures = new Map<string, string>();
   return {
     name: "dungeon_parts", label: "던전 재료 보기", concurrency: "shared",
-    description: "던전·동굴 층을 직접 설계(make_place spec.dungeonDesign)하기 전에 부른다. 그 테마의 방 모양·역할·물·특징·잇는 모양 어휘와, 뼈대가 서로 다른 설계 예시 넷(하나는 지금 빌더로 지은 그림과 함께), 사람이 고른 버들항 던전 참고 그림(구성 아이디어 — 베끼지 않는다)을 돌려준다. 예시는 참고일 뿐 — 요청에 맞게 방 수·자리·모양·길을 새로 짠다.",
-    parameters: { type: "object", properties: { theme: { type: "string", description: "던전 테마 낱말 — 예: 동굴, 화산, 마계, 숲, 지하묘지" } }, required: ["theme"] },
+    description: "Call before designing a dungeon/cave floor yourself (make_place spec.dungeonDesign). Returns that theme's vocabulary for room shapes, roles, water, features and link shapes; four sample designs with different skeletons (one with a picture built by the current builder); and human-picked Beodeul dungeon reference pictures (composition ideas — do not copy). Samples are only references — compose room count, spots, shapes and paths fresh for the request.",
+    parameters: { type: "object", properties: { theme: { type: "string", description: "dungeon theme word — e.g. 동굴 cave, 화산 volcano, 마계 demon realm, 숲 forest, 지하묘지 catacombs" } }, required: ["theme"] },
     async execute(_id, params) {
-      const gameKey = String(env.request.projectKey ?? env.ctx.project.meta.title ?? "");
+      const gameKey = `${String(env.request.projectKey ?? env.ctx.project.meta.title ?? "")}|${nonce}`;
       const out = dungeonParts(String((params as { theme?: string }).theme ?? "cave"), gameKey, places ? dungeonContext(places(), "") : "");
       const result = text({ ok: true, ...out, how: "make_place({spec:{type:'cave'|'dungeon', name, theme, dungeonDesign:{entrance, rooms:[{id, role, size, shape, dir?, at, water?, features?}], links:[{from,to,kind?}]}}}). 방마다 at 을 서로 다르게, 입구 하나·보스 하나. 함수는 겹침·길·도달·크기 모순만 고쳐 「고침:」으로 알린다." });
       // 그림은 한 장으로 합친다(참고 그림 둘 + 첫 예시를 지금 빌더로 지은 그림, 반 크기로 나란히).

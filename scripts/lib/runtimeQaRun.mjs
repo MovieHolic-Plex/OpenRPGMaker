@@ -391,6 +391,31 @@ export async function applyOp(page, op, runState) {
         await page.keyboard.press(op.key, { delay: op.holdMs ?? 0 });
       }
       return;
+    case "keyBurst": {
+      // page.keyboard.press 는 키마다 렌더러 처리를 기다려, 부하가 걸린 판에서는 「110ms 연타」가 300~1000ms 간격이 된다.
+      // 실제 키보드는 누른 시각을 OS 가 찍고 배달만 늦는다. 그 모양을 CDP timestamp 로 재현한다: 누른 시각은 intervalMs 간격,
+      // 배달은 렌더러가 따라오는 대로. 키는 Enter·Escape·Arrow*·한 글자만 지원한다. 끝나면 모든 키의 배달을 기다린다.
+      const cdp = await page.context().newCDPSession(page);
+      const named = { Enter: [13, "\r"], Escape: [27, ""], ArrowUp: [38, ""], ArrowDown: [40, ""], ArrowLeft: [37, ""], ArrowRight: [39, ""] };
+      // keys: 누를 키 차례(없으면 key 를 times 번).
+      const keys = op.keys ?? Array.from({ length: op.times ?? 1 }, () => op.key);
+      const start = Date.now() / 1000;
+      const sends = [];
+      for (const [i, key] of keys.entries()) {
+        const [vk, text] = named[key] ?? [key.toUpperCase().charCodeAt(0), key];
+        const code = named[key] ? key : /^[a-z]$/i.test(key) ? `Key${key.toUpperCase()}` : key;
+        const at = start + (i * (op.intervalMs ?? 110)) / 1000;
+        // 보내기는 실제 시계로 그 시각에(응답은 기다리지 않는다). 미래 시각을 미리 찍어 보내면 배달이 누른 시각보다 앞선다.
+        const wait = at * 1000 - Date.now();
+        if (wait > 0) await new Promise((done) => setTimeout(done, wait));
+        const base = { key, code, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk };
+        sends.push(cdp.send("Input.dispatchKeyEvent", { ...base, type: text ? "keyDown" : "rawKeyDown", text: text || undefined, timestamp: at }));
+        sends.push(cdp.send("Input.dispatchKeyEvent", { ...base, type: "keyUp", timestamp: at }));
+      }
+      await Promise.all(sends);
+      await cdp.detach().catch(() => undefined);
+      return;
+    }
     case "seed":
       await page.evaluate((seed) => window.__oprnDebug.setSeed(seed), op.seed);
       return;

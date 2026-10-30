@@ -199,6 +199,7 @@ export interface RunPiAgentOptions {
 
 export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+import { trimContext } from "../../src/ai/v2/loop/contextTrim.ts";
 
 /** public/ 아래 정적 그림을 data URL 로 — 저장소 public/ 먼저, 빌드 dist/ 다음. 경로 밖으로 나가는 이름은 거절. */
 export async function readPublicAssetDataUrl(path: string): Promise<string | undefined> {
@@ -931,13 +932,28 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof content === "string" ? content : "";
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
-  // 화면 검수 고치기 차례: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
-  let forceToolTurn = false;
+  // 재주입 차례·첫 요청: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
+  // 문자열이면 그 도구 하나(v2 첫 호출 todo init — omo first-turn), true 면 «required».
+  let forceToolTurn: boolean | string = false;
   // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
   let freshContextNext = false;
+  // H3 다음 호출 우선(src/ai/v2/loop/nextCall.ts): 코어의 SoftToolRequirement — 알림 한 번, 그래도 다른 도구면 그 도구를 강제(최대 2번).
+  // 코어는 강제 3번째에 실행을 던져 끝내므로 getToolChoice 가 3번 내준 뒤에는 내린다.
+  let lastContextTrim = 0;
+  let softPref: { id: string; toolName: string; reminder: string; served: number } | undefined;
+  let softSeq = 0;
+  // v2 필요할 때 싣는 도구(src/ai/v2/toolExposure.ts): 강제·우선할 도구나 load_tools 가 고른 도구를 다음 호출 전에 선언한다(in-place push).
+  const ensureV2Tool = (name: string): void => {
+    if (exposed.has(name)) return;
+    const lazy = options.v2?.lazyTool?.(name);
+    if (lazy) declare(wrapTool(lazy));
+  };
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
-    requireToolNextTurn: () => { forceToolTurn = true; },
+    requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
+    preferToolNextTurn: (toolName: string, reminder: string) => { ensureV2Tool(toolName); softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
+    declareTool: (tool: PiToolShape) => { if (!exposed.has(tool.name)) declare(wrapTool(tool)); },
+    clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
@@ -1128,6 +1144,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const resolveFallbackTool = (name: string) => {
     // 완성 뒤 윤문 차례에는 윤문 도구 밖의 이름을 풀지 않는다(dialoguePolishHook.ts — 그 차례는 글만 고친다).
     if (polishBudget && !DIALOGUE_POLISH_TOOLS.includes(name)) return undefined;
+    // v2: 필요할 때 싣는 사본(영어·같은 감싸개)을 먼저 — 이름으로 바로 부른 호출은 그 자리에서 싣고 실행한다. 없는 이름은 영어 거절 글.
+    if (options.v2) {
+      const lazy = options.v2.lazyTool?.(name);
+      if (lazy) { ensureV2Tool(name); return tools.find((tool) => tool.name === name); }
+      const v1 = shapeFor(name);
+      if (v1) { if (!exposed.has(name)) declare(v1); return v1; }
+      const text = options.v2.unknownToolText?.(name);
+      return text ? { name, label: name, description: text, parameters: { type: "object", additionalProperties: true }, async execute() { throw new Error(text); } } as PiToolShape : undefined;
+    }
     const shape = shapeFor(name);
     if (shape && !exposed.has(name)) declare(shape);
     return shape;
@@ -1164,13 +1189,38 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let lastAssistantText = "";
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
+      if (!forceToolTurn && softPref) {
+        // 이름 강제를 못 거는 호출(Anthropic 확장 생각)·없는 도구면 걸지 않는다.
+        const api = (model as { api?: string }).api;
+        if ((api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") || !tools.some((tool) => tool.name === softPref!.toolName)) { softPref = undefined; return undefined; }
+        softPref.served += 1;
+        if (softPref.served > 3) { softPref = undefined; return undefined; }
+        const want = softPref.toolName;
+        return { soft: true as const, id: softPref.id, toolName: want, reminder: [{ role: "user" as const, content: [{ type: "text" as const, text: softPref.reminder }], timestamp: Date.now() }],
+          satisfies: (call: { name: string }) => call.name === want || call.name === "todo" } as never;
+      }
       if (!forceToolTurn) return undefined;
+      const want = forceToolTurn;
       forceToolTurn = false;
-      return "required";
+      if (want === true) return "required";
+      // 이름 지정 강제: Anthropic 확장 생각과 같이 쓰면 제공자가 거절한다 — 그때는 걸지 않는다(todo 동사 감싸개가 첫 쓰기를 되돌린다).
+      const api = (model as { api?: string }).api;
+      if (api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") return undefined;
+      if (!tools.some((tool) => tool.name === want)) return "required";
+      return { type: "tool", name: want };
     },
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
-      return (imagesStripped && lastRequestHadImages ? stripImages(messages) : messages) as never;
+      let shaped = imagesStripped && lastRequestHadImages ? stripImages(messages) : messages;
+      // H6 v2 문맥 정리(src/ai/v2/loop/contextTrim.ts): 오래된 도구 결과 줄이기 + 그 호출에만 붙는 상태 카드.
+      if (options.v2?.stateCard && v2Env) {
+        let card: string | undefined;
+        try { card = options.v2.stateCard(v2Env); } catch { card = undefined; }
+        const trimmedCtx = trimContext(shaped, card);
+        if (trimmedCtx.trimmed > lastContextTrim) { lastContextTrim = trimmedCtx.trimmed; emit({ type: "execution_status", name: "v2.hook.context", ok: true, summary: `문맥 정리 — 오래된 도구 결과 ${trimmedCtx.trimmed}개 줄임(${Math.round(trimmedCtx.savedChars / 1000)}천 자)` }); }
+        shaped = trimmedCtx.messages;
+      }
+      return shaped as never;
     },
     initialState: {
       systemPrompt,
@@ -1285,8 +1335,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // A registry write can succeed but its publication can still be rejected.
       // In that case the core's failure must override the earlier draft receipt.
       const publicationFailed = event.isError && record?.ok;
+      // 모델이 실제로 받은 글(영어 거절·고리 메모 포함) — 요약(summary)은 화면·장부용 원문 한국어 400자라 «Fixed call 을 따랐나» 를 잴 수 없었다.
+      const modelText = ((event.result as { content?: Array<{ type?: string; text?: string }> } | undefined)?.content ?? [])
+        .filter((part) => part.type === "text" && typeof part.text === "string").map((part) => part.text!).join("\n").slice(0, 4000);
       emit({
         type: "tool_end",
+        ...(modelText ? { modelText } : {}),
         result: publicationFailed ? activityPayload(event.result) : record?.result ?? activityPayload(event.result),
         visuals: record?.visuals,
         ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
@@ -1556,6 +1610,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     return report;
   };
   try {
+    if (options.v2?.beforeFirstPrompt && v2Env) options.v2.beforeFirstPrompt(v2Env);
     await promptResuming(request.task);
     // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
     // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.
@@ -1576,8 +1631,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
       }
     }
-    // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
-    // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).
+    // v2 할 일 고리(src/ai/v2/loop): 모델이 멈출 때마다 afterMain 이 열린 항목·기계 확인 ✗·관문·비평·화면 검수를 보고 숨은 재주입 글을 돌려준다.
+    // 같은 대화로 이어 돈다(로컬 CLI 도 같은 세션). 멈춤 규칙(묶음당 8·진척 없음 2·서명 같음·ask_user)은 afterMain 안에 있다.
     for (let round = 0; options.v2?.afterMain && v2Env && round < (options.v2?.maxRounds ?? 2) && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
       const followUp = await options.v2.afterMain(v2Env, round);
       if (!followUp || fatal || rejected || options.signal?.aborted) break;
