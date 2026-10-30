@@ -34,8 +34,8 @@ tot = [sum(t[i] for t in tally.values()) for i in range(4)]
 summary = " · ".join(f"{k}: {v[0]}승 {v[1]}무 / {v[3]}" for k, v in tally.items())
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 배치 방 시험</title>
 <style>body{{background:#16161c;color:#ddd;font:14px/1.5 sans-serif;margin:20px}}h1{{font-size:20px}}.v{{font-size:17px;color:#ffd866;margin:6px 0 4px}}
-.card{{background:#222230;border-radius:8px;padding:12px;margin:14px 0}}h3{{margin:0 0 8px;font-size:15px}}.pair{{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}}
-figure{{margin:0}}img{{image-rendering:pixelated;max-width:100%;display:block}}figcaption{{font-size:12px;color:#999}}.meta{{margin:8px 0 0;color:#bbb}}</style>
+.card{{background:#222230;border-radius:8px;padding:12px;margin:14px 0}}h3{{margin:0 0 8px;font-size:15px}}.pair{{display:flex;gap:12px;align-items:flex-start}}
+figure{{margin:0;flex:1 1 0;min-width:0}}img{{image-rendering:pixelated;width:100%;display:block}}figcaption{{font-size:12px;color:#999}}.meta{{margin:8px 0 0;color:#bbb}}</style>
 <h1>bbox 배치 방 시험 — 모델이 칸 사각형 배치를 쓰고, 코드는 그대로 깐다</h1>
 <p class=v>{html.escape(verdict)}</p>
 <p>합계 {tot[0]}승 {tot[1]}무 / {tot[3]} ({summary}). 예전: 지금 경로(A) 0/14, GPT 목업(G) 3승 1무 /21. 판정자·프롬프트·기준 방은 img-room 시험과 같다(gpt-6.1-sol, 쌍 비교).</p>
