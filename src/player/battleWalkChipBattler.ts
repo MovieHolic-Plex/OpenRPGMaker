@@ -3,7 +3,7 @@
 // 걷기 칩에 대응하는 전투 시트(charset-battler-*)도, 저작한 전투 그림도 없는 배우(예: 현대 교복 칩 oprn-charset-modern1~3)는
 // 예전에는 자리 순서의 기본 도트(charset-battler-actor1-0 갈색 머리 검사 등)로 섰다 — 필드의 학생이 전투에서 낯선 검사가 됐다.
 // 이제 그 배우의 걷기 칩(RM2000 CharSet 288×256, 한 사람 3패턴×4방향, 24×32 칸)을 그대로 잘라 세운다.
-// 새 그림은 만들지 않는다: 왼쪽 보기 행(파티는 오른쪽에 서서 적을 본다)의 기존 세 칸과 정면 칸만 쓴다.
+// 새 그림은 만들지 않는다: 보는 방향 행(파티는 오른쪽에 서서 왼쪽 적을 보고, 걷기 칩으로 서는 적은 왼쪽에 서서 오른쪽을 본다)의 기존 세 칸과 정면 칸만 쓴다.
 //  - 대기 = 가운데 칸, 걸어 나가기·돌아오기 = 0→1→2→1 걸음 순환, 때리기·시전 = 내디딘 칸
 //  - 맞기 = 가운데 칸 + 기존 노드 흔들림·번쩍임, 쓰러짐 = 가운데 칸을 눕히고 흐리게, 승리 = 정면 가운데 칸
 // 크기: 전투 시트 도트는 걷기 칩과 같은 화소 밀도(사람 키 약 24px)라 같은 BATTLE_ASSET_PIXEL_SCALE 배로 그리면 키가 맞는다.
@@ -19,10 +19,20 @@ const WALK_CHIP_FOOT_GAP = 3 * BATTLE_ASSET_PIXEL_SCALE;
 /** 걸음 순환 한 칸 길이(ms). 필드 걷기와 비슷한 빠르기. */
 const WALK_CHIP_STEP_MS = 140;
 
+export type WalkChipFacing = "left" | "right";
+
 const walkAnimations = new WeakMap<HTMLElement, Animation>();
 
 /** 전투 노드에 걷기 칩 스프라이트를 붙인다. url 은 이미 푼 걷기 칩 시트 주소다. */
-export function appendWalkChipBattler(node: HTMLElement, name: string, characterResourceId: string, characterIndex: number, url: string): HTMLElement {
+export function appendWalkChipBattler(
+  node: HTMLElement,
+  name: string,
+  characterResourceId: string,
+  characterIndex: number,
+  url: string,
+  /** 서 있는 방향. 파티는 오른쪽에 서서 왼쪽을 보고(기본), 적은 왼쪽에 서서 오른쪽을 본다. */
+  facing: WalkChipFacing = "left",
+): HTMLElement {
   const scale = BATTLE_ASSET_PIXEL_SCALE;
   const width = CHARSET_FRAME_WIDTH * scale;
   const height = CHARSET_FRAME_HEIGHT * scale;
@@ -36,9 +46,10 @@ export function appendWalkChipBattler(node: HTMLElement, name: string, character
   sprite.dataset.testid = `battle-actor-walk-chip-${characterResourceId}-${characterIndex}`;
   sprite.dataset.rendering = "pixelated";
   sprite.dataset.walkChipIndex = String(characterIndex);
+  sprite.dataset.walkChipFacing = facing;
   sprite.setAttribute("role", "img");
   sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
-  applyCharsetFrameCrop(sprite, url, { characterIndex, direction: "left", pattern: 1 }, scale);
+  applyCharsetFrameCrop(sprite, url, { characterIndex, direction: facing, pattern: 1 }, scale);
   // 스킨 규칙(rm2000 등)이 이 변수로 상자를 잡는다 — 인라인 크기와 같은 값을 준다.
   sprite.style.setProperty("--battle-sprite-frame-width", `${width}px`);
   sprite.style.setProperty("--battle-sprite-frame-height", `${height}px`);
@@ -55,6 +66,7 @@ export function appendWalkChipBattler(node: HTMLElement, name: string, character
 /** applyBattlerPose 가 의미 포즈를 정한 뒤 부른다. 걷기 칩 칸만 고른다. */
 export function paintWalkChipBattler(node: HTMLElement, sprite: HTMLElement, pose: string): void {
   const characterIndex = Number(sprite.dataset.walkChipIndex) || 0;
+  const facing: WalkChipFacing = sprite.dataset.walkChipFacing === "right" ? "right" : "left";
   const scale = BATTLE_ASSET_PIXEL_SCALE;
   const at = (direction: CharsetDirection, pattern: number) => charsetFrameCropPosition({ characterIndex, direction, pattern }, scale);
   const beat = node.dataset.retroBeat;
@@ -68,8 +80,8 @@ export function paintWalkChipBattler(node: HTMLElement, sprite: HTMLElement, pos
     : "idle";
   node.dataset.battlePoseFrame = `walk_chip_${frame}`;
   sprite.style.backgroundPosition = frame === "victory" ? at("down", 1)
-    : frame === "step" ? at("left", 2)
-    : at("left", 1);
+    : frame === "step" ? at(facing, 2)
+    : at(facing, 1);
   // 쓰러짐: 같은 칸을 옆으로 눕히고 흐리게 한다(새 그림 없음). 발 쪽 축으로 돌려 발판 위에 눕는다.
   sprite.style.rotate = dead ? "-90deg" : "";
   sprite.style.transformOrigin = dead ? "50% 100%" : "";
@@ -79,7 +91,7 @@ export function paintWalkChipBattler(node: HTMLElement, sprite: HTMLElement, pos
   if (walking) {
     if (running) return;
     if (typeof sprite.animate !== "function") return;
-    const steps = [at("left", 0), at("left", 1), at("left", 2), at("left", 1)];
+    const steps = [at(facing, 0), at(facing, 1), at(facing, 2), at(facing, 1)];
     // 칸 사이를 미끄러지지 않게 키프레임마다 steps(1) 로 붙든다.
     const animation = sprite.animate(
       [...steps.map((backgroundPosition) => ({ backgroundPosition, easing: "steps(1, end)" })), { backgroundPosition: steps[0]! }],

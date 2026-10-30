@@ -63,6 +63,7 @@
   `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
   옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
 - **보스 위협 하한은 기본값이다 (2026-10-30, 이세계 고딩 리뷰).** `upsert_enemy` 의 role boss(또는 id·이름의 boss/보스)는 `bossThreatScaling.scaleBossToStartParty(project, enemy, locked)` 로 시작 파티 기준 HP·공격·마력·민첩 하한을 건다. 이번 호출의 `enemy.stats` 에 직접 준 키(`explicitBossStats`)는 locked — 하한보다 낮아도 그대로 두고 경고에 「저자 값 유지 … maxHp 400(권장 600)」을 적는다(예전에는 저자가 짧은 보스전을 위해 준 400·430 을 590·560 으로 덮었다). 빠진 키만 올리고, 요약에 「보스 위협 하한을 기본값으로 적용: maxHp·attack…」처럼 **실제로 채운 키**를 밝힌다. 이미 있는 적을 고칠 때는 이번에 role:"boss" 를 다시 준 경우에만 하한을 건다(옛 호출의 명시값을 덮지 않음). `edit_enemy_pixel_sheet` 의 거신 칸 승격은 바닥값을 레코드에 직접 쓰고 stats 를 넘기지 않는다(명시값으로 잠기지 않게).
+- **걷기 칩 적 (2026-10-30).** `upsert_enemy.enemy.walkChip {characterResourceId, characterIndex}` 는 몬스터 그림 대신 걷기 칩(오른쪽 보기)이 전투에 서게 한다 — 사람 적·결투 상대용. 풀리지 않는 id 는 후보 목록과 함께 거부(`enemy-reference-not-found`), 지우기는 `clearFields:["walkChip"]`. 상세 `openwiki/runtime-battle.md` 「걷기 칩으로 서는 적」.
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
 - 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
 - 전투·저장·필드 규칙(같은 날, 사용자 7건):
