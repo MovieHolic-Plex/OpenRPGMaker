@@ -35,6 +35,8 @@ export interface TimeSystemConfig {
   readonly startWeekday?: number;
   readonly forceSleep?: boolean;
   readonly onDayEnd?: string;
+  /** ESC 메뉴 「쉬기」 — 플레이어가 고른 시각까지 시간을 흘린다(project/restMenu.ts). 없으면 항목이 없다. */
+  readonly restMenu?: import("./restMenu").RestMenuConfig;
 }
 
 export interface ResolvedTimeSystemConfig {
