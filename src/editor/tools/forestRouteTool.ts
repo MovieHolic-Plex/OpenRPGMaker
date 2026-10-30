@@ -479,10 +479,10 @@ const authorForestRoute: ToolDefinition = {
       if (result.pockets.length < hidden) warnings.push(`${name}: 나무 사이 틈이 ${result.pockets.length}곳뿐이라 숨은 물건 ${result.pockets.length}개만 두었다.`);
       const c = spec.clearings?.[spec.clearings.length - 1];
       const clearingCell = built ? built.clearing : c ? { x: Math.round(c.cx), y: Math.round(c.cy) } : entry;
-      // 이 도구는 몬스터·조우를 깔지 않는다(전투 방식은 프로젝트마다 다르다) — 비었다고 알리고 겹치지 않는 적 자리를 준다.
+      // 이 도구는 몬스터·조우를 깔지 않는다(전투 방식은 프로젝트마다 다르다) — 요약·data 에 비었다고 적고 겹치지 않는 적 자리를 준다.
+      // 「몬스터가 있게」 요청을 지키게 하는 것은 v2 게임 검사(gameChecks 1i 「전투」)다 — 여기서 같은 말을 경고로 또 하지 않는다.
       const enemySpots = enemySpotsOf(draft, draft.maps[id]!, entry, [entry, ...(exit ? [exit] : []), clearingCell, ...(built?.deadEnds.map((e) => e.at) ?? []), ...spots]);
       const hasFoes = !!draft.maps[id]!.encounterTable?.length || draft.maps[id]!.events.some((e) => /enemy|foe|troop/iu.test(e.id));
-      if (!hasFoes) warnings.push(`${name}: 몬스터·무작위 조우가 아직 없다 — 「몬스터가 있는 숲」이면 data.maps[i].enemySpots(${enemySpots.map((p) => `(${p.x},${p.y})`).join(" ")})에 place_field_enemy 를 두거나 set_encounter_table 로 조우를 건다. clearing·deadEnds·출입구 칸에 적을 겹쳐 두지 않는다.`);
       const treeline = terrain === "edge" ? (side === "north" ? EDGE_MEADOW_V : side === "south" ? ALONG - 1 - EDGE_MEADOW_V : side === "west" ? EDGE_MEADOW_V : ALONG - 1 - EDGE_MEADOW_V) : undefined;
       // 샛길(nooks)은 큰길에서 갈라져 막다른 끝으로 가는 갈림길이다 — 결과에 좌표로 알린다(2026-10-30 omo-loop-1030b terra forest-path:
       // 갈림길이 이미 있는데 «숲길 빌더는 갈림길을 지정하지 못한다»며 항목을 막힘으로 닫았다). 모델 설계 맵은 deadEnds 가 갈림 끝이다.
