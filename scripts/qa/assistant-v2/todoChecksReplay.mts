@@ -13,7 +13,7 @@ import os from "node:os";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { runTodoCheck } from "../../../src/ai/v2/todo/checks.ts";
-import type { TodoCheck } from "../../../src/ai/v2/todo/types.ts";
+import type { TodoChanged, TodoCheck, TodoRefs } from "../../../src/ai/v2/todo/types.ts";
 import type { Project } from "../../../src/project/types.ts";
 
 const argv = process.argv.slice(2);
@@ -26,7 +26,11 @@ const ONLY = argv.includes("--only") ? opt("--only", "") : "";
 
 type Source = { sqlite: string } | { replayed: string } | { base: string };
 const REPLAY_DRIFT = "재구성 차이: 실판의 create_transfer_pair(지하 던전(20,7)↔해골 기사의 방)가 지금 코드 재구성에서 거절돼 이 저장본엔 그 출입구가 없다";
-interface Case { label: string; why: string; source: Source; mutate?: (p: Project) => void; checks: { check: TodoCheck; expect: boolean; note?: string }[] }
+// base: 이 판의 시작 저장본(bases/<장르>) — 그 대비 새로 생기거나 바뀐 맵·이벤트·아이템·적 그룹을 ctx.changed 로 넘긴다(고리가 넘길 것의 대리).
+//   재구성 판은 끝맺음 전(도구 호출만) 저장본과 비교한다 — 고리는 모델 쓰기 동사 전후만 잰다. 판정은 끝맺음 뒤 저장본으로.
+// refs: 고리가 묶을 id 의 대리(손으로 적거나 changed 에서 뽑는다).
+interface CheckRow { check: TodoCheck; expect: boolean; note?: string; refs?: TodoRefs | ((changed: TodoChanged) => TodoRefs) }
+interface Case { label: string; why: string; source: Source; base?: string; mutate?: (p: Project) => void; checks: CheckRow[] }
 
 type Obj = Record<string, unknown>;
 /** 명령 목록에서 kind 가 맞는 명령을 지운다(갈래 속까지). 변형 저장본 만들기용. */
@@ -51,7 +55,10 @@ const CASES: Case[] = [
     label: "sc-1031-b2 terra boss-room r1 (실패)",
     why: "「지하 던전 가장 안쪽에 보스 방…해골 기사가 말을 걸고 싸우는 장면」 — edit_place 거절·stamp_object 실패, 바뀐 건 자동 마감의 길 포석·이동 칸 앞 비움뿐. sceneToolReplay 재구성.",
     source: { replayed: "b2-terra-boss-r1" },
+    base: "fantasy",
     checks: [
+      { check: { kind: "battle", boss: true, fresh: true }, expect: false, note: "이름 없이 「보스전」만 — 원래 있던 마계의 군주 보스전으로 통과하면 안 된다" },
+      { check: { kind: "battle", boss: true }, expect: true, note: "fresh 를 끄면 원래 있던 보스전으로 통과한다(대조)" },
       { check: { kind: "place", name: "보스 방", placeKind: "dungeon" }, expect: false },
       { check: { kind: "person", name: "해골 기사" }, expect: false },
       { check: { kind: "talk", who: "해골 기사" }, expect: false },
@@ -63,7 +70,15 @@ const CASES: Case[] = [
     label: `sc-1031-b2 opus boss-room ${r} (성공)`,
     why: "판정자: 해골 기사가 먼저 말을 걸고 대사 뒤 전투가 열린다(r1~r3 모두 ok). sceneToolReplay 재구성.",
     source: { replayed: `b2-opus-boss-${r}` },
+    base: "fantasy",
     checks: [
+      { check: { kind: "place", name: "해골 기사의 방", placeKind: "dungeon", fresh: true }, expect: true },
+      { check: { kind: "battle", who: "해골 기사", boss: true, fresh: true }, expect: true },
+      { check: { kind: "talk", who: "해골 기사", fresh: true }, expect: true },
+      { check: { kind: "place", name: "보스 방", fresh: true }, expect: false, note: "이름이 다르고 refs 없음 → 못 찾음" },
+      { check: { kind: "place", name: "보스 방", fresh: true }, refs: (ch) => ({ mapIds: [...ch.mapIds].filter((id) => !["map_blank_start", "map_8955e7de-8328-4835-8edb-b5eef21238f3", "map_85651663-ca71-4a82-93bf-e8e56d96c3a3"].includes(id)) }), expect: true, note: "refs 로 새 맵 하나에 묶으면 이름이 달라도 그 맵을 판정" },
+      { check: { kind: "talk", who: "기사", fresh: true }, refs: (ch) => ({ eventIds: [...ch.eventKeys].filter((k) => k.endsWith("_boss") && !k.includes("8955e7de") && !k.includes("85651663")) }), expect: true, note: "refs 안에서는 「기사」 부분 일치로 고른다" },
+      { check: { kind: "talk", who: "해골 기사" }, refs: { eventIds: ["ev_gone_skeleton_knight"] }, expect: false, note: "묶인 이벤트가 사라짐" },
       { check: { kind: "place", name: "해골 기사의 방", placeKind: "dungeon" }, expect: true },
       { check: { kind: "person", name: "해골 기사", map: "해골 기사의 방" }, expect: true },
       { check: { kind: "talk", who: "해골 기사" }, expect: true },
@@ -78,7 +93,12 @@ const CASES: Case[] = [
     label: "sc-1031-b5 terra ending r1 (실패)",
     why: "「마왕을 쓰러뜨린 뒤 버들마을로 돌아와 마을 사람들에게 축하받는 엔딩」 — 판정자: 마왕전 뒤 컷신·대사·엔딩 화면 없음.",
     source: { replayed: "b5-terra-ending-r1" },
+    base: "fantasy",
     checks: [
+      { check: { kind: "ending", fresh: true }, expect: false, note: "새 엔딩 요청 — 조수가 엔딩 이벤트를 새로 만들거나 고치지 않았으니 원래 있던 마왕전 엔딩으로 통과하면 안 된다" },
+      { check: { kind: "ending", map: "버들마을", fresh: true }, expect: false },
+      { check: { kind: "reachable", target: "막힌" }, expect: false, note: "모호함: 「막힌 길」·「막힌 바위」" },
+      { check: { kind: "reachable", target: "막힌 바위" }, expect: true, note: "같은 이름 셋(11·12·13,27)은 한 무리" },
       { check: { kind: "ending" }, expect: true, note: "시작 저장본의 「마왕과의 결전」 엔딩(마왕 처치 뒤 조사)은 닿는다 — 요청한 «마을 엔딩»은 아래 map·talk 항목이 잡는다" },
       { check: { kind: "ending", map: "버들마을" }, expect: false },
       { check: { kind: "talk", who: "촌장", says: "축하" }, expect: false },
@@ -90,7 +110,9 @@ const CASES: Case[] = [
     label: "sc-1031-b3 terra interrogation r3 (실패)",
     why: "「용의자 상인 도윤 심문…증거를 내밀면 말이 바뀌게」 — 판정자: 도윤에게 말을 걸어도 선택지 없이 첫 진술만 반복.",
     source: { replayed: "b3-terra-interrogation-r3" },
+    base: "mystery",
     checks: [
+      { check: { kind: "present_evidence", item: "장화 자국", to: "도윤", fresh: true }, expect: true, note: "도윤 이벤트가 이번 턴에 바뀌었다" },
       { check: { kind: "person", name: "도윤" }, expect: true },
       { check: { kind: "talk", who: "도윤" }, expect: true },
       { check: { kind: "item", name: "장화 자국", gives: true }, expect: true },
@@ -102,23 +124,27 @@ const CASES: Case[] = [
     label: "sc-1030fr2 opus forest-path r1 (성공, 실저장본)",
     why: "「버들마을과 마왕의 동굴 사이 숲길…갈림길·보물 상자·약한 몬스터」 — 판정자 네 항목 모두 ok.",
     source: { sqlite: "sc-1030fr2/g/opus/forest-path/r1" },
+    base: "fantasy",
     checks: [
-      { check: { kind: "place", name: "숲길", placeKind: "field" }, expect: true },
-      { check: { kind: "battle", map: "숲길" }, expect: true },
-      { check: { kind: "link", from: "버들마을", to: "숲길" }, expect: true },
-      { check: { kind: "link", from: "숲길", to: "마왕의 동굴" }, expect: true },
-      { check: { kind: "reachable", target: "마왕의 동굴", from: "숲길" }, expect: true },
+      { check: { kind: "place", name: "숲길", placeKind: "field" }, expect: false, note: "「숲길」(2자)은 「동굴로 가는 숲길」(9자)의 절반이 안 돼 부분 일치로 안 잡는다" },
+      { check: { kind: "place", name: "숲길", placeKind: "field", fresh: true }, refs: (ch) => ({ mapIds: [...ch.mapIds].filter((id) => !["map_blank_start", "map_8955e7de-8328-4835-8edb-b5eef21238f3", "map_85651663-ca71-4a82-93bf-e8e56d96c3a3"].includes(id)) }), expect: true, note: "refs 로 새 맵에 묶으면 통과" },
+      { check: { kind: "place", name: "동굴로 가는 숲길", placeKind: "field", fresh: true }, expect: true },
+      { check: { kind: "battle", map: "동굴로 가는 숲길", fresh: true }, expect: true },
+      { check: { kind: "link", from: "버들마을", to: "동굴로 가는 숲길", fresh: true }, expect: true },
+      { check: { kind: "link", from: "동굴로 가는 숲길", to: "마왕의 동굴", fresh: true }, expect: true },
+      { check: { kind: "reachable", target: "마왕의 동굴", from: "동굴로 가는 숲길" }, expect: true },
     ],
   },
   {
     label: "sc-1030fr2 terra forest-path r3 (실패, 실저장본)",
     why: "판정자: 상자·몬스터·대사를 못 찾음, 동굴 입구에서 맵 전환 없음.",
     source: { sqlite: "sc-1030fr2/g/terra/forest-path/r3" },
+    base: "fantasy",
     checks: [
-      { check: { kind: "place", name: "숲길", placeKind: "field" }, expect: true },
-      { check: { kind: "battle", map: "숲길" }, expect: false },
-      { check: { kind: "link", from: "버들마을", to: "숲길" }, expect: true },
-      { check: { kind: "link", from: "숲길", to: "마왕의 동굴" }, expect: true, note: "밟으면 옮기는 칸(13,7)에 걸어 닿는다 — 판정자 「동굴 입구에서 위로 걸어도 전환 없음」은 입구 그림과 이동 칸 자리가 어긋난 표시 문제로 보이며 기계 검사 밖(VQA 몫). 출입구 그림 곁 판정을 넣어 봤으나 성공 판(opus r1)도 같이 걸려 뺐다" },
+      { check: { kind: "place", name: "버들 숲길", placeKind: "field", fresh: true }, expect: true },
+      { check: { kind: "battle", map: "버들 숲길", fresh: true }, expect: false },
+      { check: { kind: "link", from: "버들마을", to: "버들 숲길", fresh: true }, expect: true },
+      { check: { kind: "link", from: "버들 숲길", to: "마왕의 동굴", fresh: true }, expect: true, note: "밟으면 옮기는 칸(13,7)에 걸어 닿는다 — 판정자 「동굴 입구에서 위로 걸어도 전환 없음」은 입구 그림과 이동 칸 자리가 어긋난 표시 문제로 보이며 기계 검사 밖(VQA 몫). 출입구 그림 곁 판정을 넣어 봤으나 성공 판(opus r1)도 같이 걸려 뺐다" },
     ],
   },
   {
@@ -136,6 +162,32 @@ const CASES: Case[] = [
     checks: [{ check: { kind: "present_evidence", item: "장화 자국" }, expect: false }],
   },
 ];
+
+const baseCache = new Map<string, Project>();
+function baseProject(name: string): Project { let p = baseCache.get(name); if (!p) { p = readProjectSqlite(path.join(BASES, name, "project")); baseCache.set(name, p); } return p; }
+/** before → after 에서 새로 생기거나 바뀐 것. 맵은 이벤트를 뺀 나머지(타일·이름 등)가 바뀌었거나 새것. */
+function diffChanged(before: Project, after: Project): TodoChanged {
+  const out: TodoChanged = { mapIds: new Set(), eventKeys: new Set(), itemIds: new Set(), troopIds: new Set() };
+  for (const [id, m] of Object.entries(after.maps)) {
+    const old = before.maps[id];
+    const { events, ...rest } = m as unknown as Obj & { events?: { id: string }[] };
+    if (!old) out.mapIds.add(id);
+    else { const { events: _e, ...orest } = old as unknown as Obj; if (JSON.stringify(rest) !== JSON.stringify(orest)) out.mapIds.add(id); }
+    const olds = new Map((old?.events ?? []).map((e) => [e.id, JSON.stringify(e)]));
+    for (const e of events ?? []) if (olds.get(e.id) !== JSON.stringify(e)) out.eventKeys.add(`${id}:${e.id}`);
+  }
+  const by = (a: { id: string }[]) => new Map(a.map((x) => [x.id, JSON.stringify(x)]));
+  const oi = by(before.database.items as never), ot = by(before.database.troops as never);
+  for (const i of after.database.items) if (oi.get(i.id) !== JSON.stringify(i)) out.itemIds.add(i.id);
+  for (const t of after.database.troops) if (ot.get(t.id) !== JSON.stringify(t)) out.troopIds.add(t.id);
+  return out;
+}
+/** 재구성 판의 끝맺음 전 저장본(도구 호출만). 없으면 판정 저장본 그대로. */
+function preFinish(c: Case, judged: Project): Project {
+  if (!("replayed" in c.source)) return judged;
+  const f = path.join(REPLAYED, `${c.source.replayed}.json`);
+  return fs.existsSync(f) ? (JSON.parse(fs.readFileSync(f, "utf8")) as Project) : judged;
+}
 
 function load(c: Case): Project | string {
   const s = c.source;
@@ -157,14 +209,17 @@ for (const c of CASES) {
   const project = load(c);
   if (typeof project === "string") { rows.push(`| ${c.label} | — | — | 건너뜀 | | ${project} |`); continue; }
   if (c.mutate) c.mutate(project);
-  for (const { check, expect, note } of c.checks) {
+  const changed = c.base ? diffChanged(baseProject(c.base), preFinish(c, project)) : undefined;
+  if (changed) rows.push(`| ${c.label} | (changed: 맵 ${changed.mapIds.size} · 이벤트 ${changed.eventKeys.size} · 아이템 ${changed.itemIds.size} · 적 그룹 ${changed.troopIds.size}) | | | | |`);
+  for (const { check, expect, note, refs: refsRow } of c.checks) {
+    const refs = typeof refsRow === "function" ? (changed ? refsRow(changed) : undefined) : refsRow;
     const t0 = performance.now();
-    const r = runTodoCheck(project, check);
+    const r = runTodoCheck(project, check, { changed, refs });
     const ms = Math.round(performance.now() - t0);
     total++;
     const ok = r.pass === expect;
     if (!ok) bad++;
-    const { kind, ...rest } = check as TodoCheck & Obj;
+    const { kind, ...rest } = { ...(check as TodoCheck & Obj), ...(refs ? { refs } : {}) } as Obj;
     rows.push(`| ${c.label} | ${kind} ${JSON.stringify(rest).replace(/\|/gu, "/")} | ${expect ? "pass" : "fail"} | ${r.pass ? "pass" : "fail"}${ok ? "" : " ✗"} | ${ms} | ${(r.detail + (note ? ` (${note})` : "")).replace(/\|/gu, "/").replace(/\n/gu, " ").slice(0, 220)} |`);
   }
 }

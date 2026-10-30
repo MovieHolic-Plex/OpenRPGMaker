@@ -8,7 +8,10 @@ export type TodoStatus = "pending" | "in_progress" | "completed" | "blocked" | "
 
 export type TodoPlaceKind = "village" | "interior" | "dungeon" | "cave" | "field" | "street";
 
-export type TodoCheck =
+/** 「만들어 달라」 요청으로 쓴 항목이면 true — 이번 턴에 새로 생기거나 바뀐 대상(TodoCheckContext.changed)만 통과로 센다. */
+export interface TodoCheckCommon { fresh?: boolean }
+
+export type TodoCheckBody =
   | { kind: "place"; name: string; placeKind?: TodoPlaceKind }
   | { kind: "person"; name: string; map?: string }
   | { kind: "talk"; who: string; says?: string }
@@ -21,7 +24,17 @@ export type TodoCheck =
   | { kind: "reachable"; target: string; from?: string }
   | { kind: "none" };
 
-export type TodoCheckKind = TodoCheck["kind"];
+export type TodoCheck = TodoCheckBody & TodoCheckCommon;
+
+/** 항목이 가리키는 실제 대상 id — 고리가 쓰기 동사 전후 프로젝트 차이로 채운다(모델 기억에 기대지 않는다). eventIds 는 「mapId:eventId」 또는 eventId. */
+export interface TodoRefs { mapIds?: string[]; eventIds?: string[]; itemIds?: string[]; troopIds?: string[] }
+
+/** 이번 턴 기준선 대비 새로 생기거나 바뀐 것(고리가 넘긴다). eventKeys 는 「mapId:eventId」. */
+export interface TodoChanged { mapIds: Set<string>; eventKeys: Set<string>; itemIds: Set<string>; troopIds: Set<string> }
+
+export interface TodoCheckContext { startMapId?: string; changed?: TodoChanged; refs?: TodoRefs }
+
+export type TodoCheckKind = TodoCheckBody["kind"];
 
 export interface TodoItem {
   id: string;
@@ -32,6 +45,8 @@ export interface TodoItem {
   dependsOn?: string[];
   blockedReason?: string;
   attempts: number;
+  /** 고리가 자동으로 묶는 대상 id. 있으면 판정은 이 id 들만 본다. */
+  refs?: TodoRefs;
   source: "model" | "gate" | "critic" | "vqa";
 }
 
@@ -100,6 +115,7 @@ export const TODO_CHECK_SCHEMA = {
     item: { type: "string", description: "present_evidence 의 증거 아이템 이름" },
     text: { type: "string", description: "objective 목표 줄에 들어 있어야 할 낱말(선택)" },
     target: { type: "string", description: "reachable 의 목표(이벤트·인물·맵 이름)" },
+    fresh: { type: "boolean", description: "이번 요청으로 새로 만들거나 고쳐야 하는 것이면 true(기본 true) — 원래 있던 것으로는 통과하지 않는다. 이미 있는 것을 확인만 하면 false" },
   },
   required: ["kind"],
 } as const;
@@ -122,7 +138,7 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
   const bool = (key: string): boolean | undefined => (typeof r[key] === "boolean" ? (r[key] as boolean) : undefined);
   const clean = <T extends object>(o: T): T =>
     Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
-  switch (k) {
+  const body = ((): TodoCheckBody => { switch (k) {
     case "place": {
       const pk = str("placeKind");
       const placeKind = pk && (TODO_PLACE_KINDS as readonly string[]).includes(pk) ? (pk as TodoPlaceKind) : undefined;
@@ -148,5 +164,7 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
       return clean({ kind: k, target: str("target")!, from: str("from") });
     case "none":
       return { kind: k };
-  }
+  } })();
+  const fresh = bool("fresh");
+  return body.kind === "none" ? body : { ...body, fresh: fresh ?? true };
 }

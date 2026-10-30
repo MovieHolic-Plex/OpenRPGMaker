@@ -336,7 +336,8 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 ## 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
 
 - 타입 `src/ai/v2/todo/types.ts`(`TodoItem`·`TodoCheck`·`CheckResult`, 모델 도구 인자 스키마 `TODO_CHECK_SCHEMA` = 평평한 객체 하나·oneOf·자유 키 없음, 인자 검사 `parseTodoCheck`).
-- 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
+- 대상 고르기(감독 검토 반영): 항목의 `refs`(고리가 쓰기 동사 전후 차이로 채우는 mapIds·eventIds·itemIds·troopIds)가 있으면 그 id 만 판정하고, 묶인 id 가 사라지면 실패. refs 가 없으면 이름으로 찾되 `fresh`(모델 인자 기본 true)면 `ctx.changed`(이번 턴에 새로 생기거나 바뀐 것)만 후보 — 시작 저장본에 원래 있던 엔딩·보스전으로 새 요청 항목이 통과하지 않는다. 가장 잘 맞는 후보가 이름이 다른 둘 이상이면 「모호함」 실패(같은 이름 무리는 하나로 본다). 부분 일치는 같음이 없을 때만, 짧은 쪽 ≥ 긴 쪽 절반. detail·evidence 에 잡은 id 를 싣는다. `runTodoItemCheck(project, item, ctx)` 는 item.refs 를 얹어 부른다.
+- 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
 - kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · none(판정자 몫).
 - 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.

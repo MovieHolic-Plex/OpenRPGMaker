@@ -38,7 +38,7 @@ export function normName(raw: string | undefined | null, keepParens = false): st
   return t.length >= 2 ? t : s;
 }
 
-/** 두 이름이 같은 것을 가리키나: 0=아님, 2=포함, 3=같음. */
+/** 두 이름이 같은 것을 가리키나: 0=아님, 2=포함(짧은 쪽 ≥ 긴 쪽 절반), 3=같음. */
 export function nameScore(want: string, have: string | undefined | null): number {
   if (!have) return 0;
   let best = 0;
@@ -47,7 +47,8 @@ export function nameScore(want: string, have: string | undefined | null): number
     if (!a || !b) continue;
     if (a === b) return 3;
     const short = a.length <= b.length ? a : b, long = a.length <= b.length ? b : a;
-    if (short.length >= 2 && long.includes(short)) best = Math.max(best, 2);
+    // 부분 일치는 짧은 쪽이 긴 쪽 길이의 절반 이상일 때만 — 「기사」가 「견습 기사단장 훈련장」을 잡지 않게.
+    if (short.length >= 2 && short.length * 2 >= long.length && long.includes(short)) best = Math.max(best, 2);
   }
   return best;
 }
