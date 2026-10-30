@@ -367,6 +367,12 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
 - kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · party_join(changeParty add 가 살아 있는 이벤트에 있고 그 배우 이름이나 그 이벤트 이름이 맞고 시작에서 걸어 닿는다 — 배우 이름이 「강」이어도 「떠돌이 검사」 이벤트면 맞는다) · none(판정자 몫).
 - 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
+- **실내 구역 room_zones**(2026-10-30, mapvqa ③ 기준 방 쌍 비교에서 진 이유 = «한 칸짜리 방이라 조사할 곳 없음»·«같은 서가·식탁 줄 반복», 이긴 방 = 서로 다른 구역을 오가는 방):
+  설계 칸 `design.areas: [{name, purpose, focal(초점 기물 id), visit(오는 이유)}]` + 묶음 `area`(agent/fix-venues c863679d62 에서 가져옴)는 살리고, 그 커밋의 «칸이 비면 make_place·edit_place 가 되돌려 보냄»·설계 따로 묻기 재질문은 뺐다 —
+  대신 빌더가 구역과 실제로 놓인 자리를 맵 이름표로 기록하고(`src/editor/handInterior/designAreaRecord.ts`: 구역마다 `design-area`·`focal:`·`focal-at:x,y,w,h`|`focal-missing`, 방 이름표에 `objs:<id>*n;…`·`same-groups:n`) 할 일 검사가 맵 데이터만 읽어 판정한다.
+  `{kind:"room_zones", map, min?}` ✓ 조건: 겹침(작은 쪽 60%↑)·같은 초점을 하나로 센 구역이 min(기본 2) 이상 · 구역마다 초점 기물이 놓였고 둘레 칸에 걸어 닿음 · 구역마다 갈 이유(구역 상자에서 2칸 안, 가장 가까운 구역 하나에만 셈: 걸어 닿는 사람·살아 있는 조사(대사·선택지·아이템·증거·전투)·이동, 자동·병렬 실행 제외) · 반복 없음(앉는 기물 뺀 같은 기물 5개↑이 35% 초과, 같은 구성 묶음 3개↑이면 ✗).
+  todo 동사 설명이 실내 방을 지으면 place 다음에 room_zones 를 달라고 이르고(도구 계약), 관문 ③b(`loop/roomZones.ts syncRoomZoneItems`, 끝맺음 자동 짓기 뒤·④ 앞)가 이번 턴에 바뀐 모델 설계 실내 맵 가운데 room_zones 항목이 없는 맵마다 항목(출처 gate, 열쇠 `zones:<mapId>`, refs=그 맵, min 은 작은 방 요청·위층이면 1)을 덧붙이고 바로 확인해 ✓ 면 함수가 닫는다.
+  make_place·edit_place·add_event·add_people 결과에 같은 판정 줄 `zones: ["room_zones ✓|✗ …"]`(구역 상자 좌표·걸린 것)이 실린다. 함수는 가구를 고르거나 놓지 않는다(검사·보고만). 손 시험 `bun scripts/qa/assistant-v2/roomZonesProbe.mts <스냅숏> [out]`.
 - 재생 표: `bun scripts/qa/assistant-v2/todoChecksReplay.mts` — 씬 벤치 판(성공·실패)에 손으로 적은 항목을 돌려 기대와 대조. 판 저장본이 지워진 판은 `sceneToolReplay.mts`(+`finishReplay.mts --snapshot`)로 재구성한 것을 쓰고, 재구성 차이는 표 메모에 적는다. 기계 검사로 못 보는 것(입구 그림과 이동 칸 자리 어긋남, 판정자가 선택지를 못 본 일)은 VQA·판정자 몫이다.
 
 ## 켜는 법
@@ -408,6 +414,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
  ① 기계 확인 다시: 끝난 항목이 지금 ✗ → 다시 엶 / 막힌 항목이 지금 ✓ → 닫음
  ② 열린 항목 있음 → 숨은 재주입 «남은 항목 N/M — 지금 할 것: … — 도구로 진행하거나 block(이유)» (TodoLoop 규칙)
  ③ 끝맺음 자동 짓기 한 번(finish/stages — 결정적, 고리가 멈췄어도 돈다) → ① 다시
+ ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(조수가 안 달았으면 덧붙임, ✗ 면 → ②)
  ④ v2GateProblems(게임 검사·출하 차단·고칠 수 있는 장소 문제) → gate·critic 항목 덧붙임 → ②
  ⑤ 독립 검토자 막음 → critic 항목(처음 한 번 + 그 항목을 닫은 뒤 한 번) → ②
  ⑥ 화면 검수(게임 전체 요청만) 결함 → vqa 항목(판마다, 두 판 그대로면 막힘) → ②

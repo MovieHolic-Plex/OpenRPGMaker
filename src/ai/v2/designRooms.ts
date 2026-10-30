@@ -18,6 +18,7 @@ const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 import { interiorTilesetOf } from "./builders/interior";
 import { roomParts } from "./roomParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
+import { AREA_MAX, AREA_MIN, wantsSmallRoom } from "./designAreas";
 
 /** 이 명세가 손 도트 실내(v5)로 지어지나 — 설계는 이 칩셋에서만 쓴다. */
 export function buildsHandInterior(project: Project, spec: PlaceSpec): boolean {
@@ -56,7 +57,8 @@ function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[]
     ...need.map((i) => { const z = zones[i]!; return `- i=${i} kind=${z.kind} 용도=${z.purpose ?? z.kind}${(z.floor ?? 1) > 1 ? ` (${z.floor}층)` : ""}${z.anchors?.length ? ` 꼭 넣을 물건: ${z.anchors.join("·")}` : ""}`; }),
     ...(zones.some((z, i) => !need.includes(i) && z.design) ? [`이미 설계된 같은 장소 방: ${zones.filter((z, i) => !need.includes(i) && z.design).map((z) => `${z.kind} ${z.design!.shape ?? "rect"} ${z.design!.w ?? "?"}×${z.design!.h ?? "?"}`).join(", ")}`] : []),
     ...(builtRooms(project).length ? [`이 게임에 이미 선 방(모양·크기·배치를 이것과 다르게): ${builtRooms(project).join(", ")}`] : []),
-    "design 꼴: {shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}",
+    "design 꼴: {shape, corner?, w, h, door, floor, wall, areas:[{name, purpose, focal, visit}], groups:[{name, area, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}",
+    `- areas(필수): 방 안의 서로 다른 구역 ${AREA_MIN}~${AREA_MAX}개${wantsSmallRoom(spec, task) ? "(이 요청은 작은 방이라 하나도 된다)" : "(요청이 정말 작은 방일 때만 하나)"} — 구역마다 purpose(쓰임 한 줄)·focal(그 구역 초점 물건 = groups 에 넣은 기물 id)·visit(플레이어가 오는 이유 — 이 게임의 조사 지점·단서·잠긴 곳·계단·카운터·인물). 묶음은 area 로 구역에 잇는다. 1층 설계 방이 여럿이면 방 하나를 한 구역으로 센다.`,
     "- shape: rect 네모(작은 방) · L ㄱ자(corner 귀퉁이를 도려 냄) · U ㄷ자 · T ㅜ자 · bay 창가 돌출 · alcove 알코브(corner). 방 이야기에 맞는 모양을 네가 고른다.",
     ...(parts ? parts.shapes.map((s) => `  · ${s}`) : []),
     ...(need.some((i) => (zones[i]!.floor ?? 1) > 1) ? ["- 위층 방: 아래층에서 올라오는 계단통(3×2)이 위층 방 하나의 빈 바닥에 선다 — 위층 방 중 하나는 바닥 6×4 이상으로 비워 둘 자리를 둔다(복도·계단참을 따로 설계해도 된다)."] : []),

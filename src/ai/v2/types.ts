@@ -34,8 +34,17 @@ export interface ZoneSpec {
   readonly design?: RoomDesign;
   /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
   readonly floor?: number;
-  /** 고치기에서 가리킬 이름(생략하면 kind). */
+  /** 고치기에서 가리킬 이름(생략하면 kind). 방 그래프(PlaceSpec.connections)에서는 방 id. */
   readonly id?: string;
+  /** (실내 방 그래프) 이 방의 대략 왼쪽 위 칸(x 오른쪽·y 아래, 원점은 아무 데나) — 함수가 이웃 방과 칸막이 1칸으로 붙인다(roomGraph.ts). */
+  readonly x?: number;
+  readonly y?: number;
+  /** (실내 방 그래프) 이 방의 랜드마크 — design.groups 에 넣은 기물 id 하나(큰 여러 칸 기물 환영: great telescope·summoning circle·pulpit). */
+  readonly landmark?: string;
+  /** (실내 방 그래프) 이 방에 계단이 있다 — design.groups 에 계단 기물(stairs up wood·stairs down…)을 넣는다. 검사가 놓였는지·닿는지 본다. */
+  readonly stairs?: "up" | "down";
+  /** (실내 방 그래프) 방의 역할 낱말: main · side(곁방) · corridor · stairs. 검사·보고용. */
+  readonly role?: string;
   /** (빌더 내부) 이미 지어진 방을 고칠 때 원래 크기·재질을 지킨다 — 모델 스키마에는 없다. */
   readonly keep?: { readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string };
 }
@@ -60,6 +69,10 @@ export interface PlaceSpec {
   readonly features?: readonly string[];
   /** 층 수(던전·탑·집). */
   readonly floors?: number;
+  /** (실내 방 그래프) 방 쌍의 연결 — a·b 는 zones[].id, type door(문) · open(칸막이 없이 트임). 주면 방 배치를 함수가 고르지 않고 모델의 대략 자리를 조화만 한다. */
+  readonly connections?: readonly { readonly a: string; readonly b: string; readonly type?: string }[];
+  /** (실내 방 그래프) 남쪽 출구가 나는 방(zones[].id) — 가장 남쪽이어야 한다. */
+  readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */
@@ -77,6 +90,8 @@ export interface PlacePatch {
   readonly mapId: string;
   readonly set?: Partial<Omit<PlaceSpec, "type" | "zones">>;
   readonly addZones?: readonly ZoneSpec[];
+  /** (실내) 이 층의 구역 목록 전체 — 옛 방을 바꾼다(방 그래프 다시 짜기, set.connections 와 함께). */
+  readonly zones?: readonly ZoneSpec[];
   /** 구역 id 또는 kind. */
   readonly removeZones?: readonly string[];
   /** 구역(id·kind)에 주인공 물건을 더한다. near = 비평가가 짚은 칸 근처(선택). */

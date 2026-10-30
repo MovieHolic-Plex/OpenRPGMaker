@@ -76,6 +76,8 @@ export function checkLabel(check: TodoCheck | undefined, en = false): string {
     case "objective": return `목표 줄${check.text ? ` «${check.text}»` : ""}`;
     case "party_join": return `동료 「${check.name}」 합류${check.map ? ` @${check.map}` : ""}`;
     case "reachable": return `「${check.target}」까지 걸어 닿음${check.from ? ` (from ${check.from})` : ""}`;
+    case "room_zones": return `「${check.map}」 구역 ${check.min ?? 2}개+(초점·갈 이유·반복)`;
+    case "room_graph": return `「${check.map}」 방 그래프(방 수·연결·도달·계단·랜드마크)`;
   }
 }
 
@@ -93,6 +95,8 @@ function checkLabelEn(check: TodoCheck | undefined): string {
     case "objective": return `objective line${check.text ? ` «${check.text}»` : ""}`;
     case "party_join": return `companion "${check.name}" joins${check.map ? ` @${check.map}` : ""}`;
     case "reachable": return `"${check.target}" reachable on foot${check.from ? ` (from ${check.from})` : ""}`;
+    case "room_zones": return `"${check.map}" has ${check.min ?? 2}+ zones (focal part, reason to visit, no repeated rows)`;
+    case "room_graph": return `"${check.map}" built as the declared room graph (rooms, connections, reachability, stairs, landmarks)`;
   }
 }
 

@@ -35,7 +35,19 @@ export interface RoomDesignGroup {
   readonly x?: number; readonly y?: number;
   /** 묶음 밑 깔개 — "rug red|royal|blue|green|purple|brown" 또는 색 낱말. */
   readonly rug?: string;
+  /** 이 묶음이 속한 구역 이름(design.areas[].name). */
+  readonly area?: string;
   readonly items: readonly RoomDesignItem[];
+}
+/** 방 안의 구역 — 서로 다른 쓰임의 자리(2026-10-30 mapvqa: 판정자는 서로 다른 곳을 오가는 방을 이겼다고 봤다). 빌더는 배치에 쓰지 않고, 놓인 자리를 구역 이름표로 기록만 한다(designAreaRecord.ts → 할 일 검사 room_zones). */
+export interface RoomDesignArea {
+  readonly name: string;
+  /** 이 구역의 쓰임 한 줄. */
+  readonly purpose: string;
+  /** 이 구역의 초점 물건 — groups 의 기물 id 하나. */
+  readonly focal: string;
+  /** 플레이어가 이 구역에 오는 이유 — 게임 내용(조사 지점·단서·계단·카운터·잠긴 곳·인물)과 이어서. */
+  readonly visit: string;
 }
 export interface RoomDesign {
   /** 방 모양 — SHAPE_GUIDE 참고: rect 네모 · L ㄱ자 · U ㄷ자 · T ㅜ자 · bay 창가 돌출 · alcove 알코브. */
@@ -47,8 +59,12 @@ export interface RoomDesign {
   readonly door?: string | number;
   readonly floor?: string; readonly wall?: string;
   readonly groups?: readonly RoomDesignGroup[];
+  /** 구역 2~4개(요청이 정말 작은 방일 때만 하나) — 구역마다 쓰임·초점·오갈 이유. */
+  readonly areas?: readonly RoomDesignArea[];
 }
-export interface DesignRoomReport { placed: string[]; fixes: string[]; blockedShare: number; floor: number; items: number }
+/** 실제로 놓인 묶음 하나(맵 좌표, 상자는 끝 칸 미포함) — 구역 기록(design-area 이름표)과 할 일 검사 room_zones 가 읽는다. */
+export interface PlacedDesignGroup { readonly name: string; readonly area?: string; readonly items: readonly { readonly id: string; readonly box: readonly [number, number, number, number] }[] }
+export interface DesignRoomReport { placed: string[]; fixes: string[]; blockedShare: number; floor: number; items: number; groups: PlacedDesignGroup[] }
 export interface DesignFurnishResult { readonly input: HandInteriorInput; readonly perRoom: Record<string, DesignRoomReport> }
 
 /** 모델이 쓴 자리 낱말 → 자리(모르면 undefined). */
@@ -235,6 +251,7 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
     const design = designs[room.id];
     if (!design) continue;
     const fixes: string[] = [], placed: string[] = [];
+    const placedGroups: PlacedDesignGroup[] = [];
     const fy0 = room.y0 + 2;
     const fw = room.x1 - room.x0 + 1, fh = room.y1 - fy0 + 1;
     const nrs = (room.notches ?? []).map((n) => notchRect(room, n));
@@ -257,7 +274,7 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         if (wallItems.length) {
           fixes.push(`${label}: 벽 가구·걸이(${wallItems.map((it) => it.id).join("·")})는 북벽에만 서서 북벽 묶음으로 옮겼다`);
           groups.push({ g: { ...g, items: (g.items ?? []).filter((it) => !wallItems.includes(it)) }, label });
-          groups.push({ g: { name: `${g.name ?? `묶음 ${i + 1}`}(북벽)`, at: "north", pos: ga === "west" || ga === "sw" ? 0 : ga === "east" || ga === "se" ? 1 : g.pos ?? 0.5, items: wallItems.map((it) => ({ id: it.id, count: it.count })) }, label: `「${g.name ?? `묶음 ${i + 1}`}(북벽)」` });
+          groups.push({ g: { name: `${g.name ?? `묶음 ${i + 1}`}(북벽)`, ...(g.area ? { area: g.area } : {}), at: "north", pos: ga === "west" || ga === "sw" ? 0 : ga === "east" || ga === "se" ? 1 : g.pos ?? 0.5, items: wallItems.map((it) => ({ id: it.id, count: it.count })) }, label: `「${g.name ?? `묶음 ${i + 1}`}(북벽)」` });
           return;
         }
       }
@@ -354,12 +371,13 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
         blocked += new Set(sCells).size;
         return withRug;
       };
-      let done: [number, number] | undefined, firstWhy = "";
+      let done: [number, number] | undefined, firstWhy = "", stamped: InteriorTemplateItem[] | undefined;
       for (const [x, y] of spots) {
-        if (tryAt(x, y)) { done = [x, y]; break; }
+        stamped = tryAt(x, y);
+        if (stamped) { done = [x, y]; break; }
         if (!firstWhy) firstWhy = why;
       }
-      return { done, firstWhy, why, tx, ty };
+      return { done, firstWhy, why, tx, ty, stamped };
       };
       let local = local0;
       let got = attempt(local);
@@ -384,6 +402,7 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       const [dx, dy] = [done[0] - tx, done[1] - ty];
       if (dx || dy) fixes.push(`${label}: 바닥 (${tx - room.x0},${ty - fy0}) → (${done[0] - room.x0},${done[1] - fy0}) 로 ${Math.abs(dx) + Math.abs(dy)}칸 옮겼다(${firstWhy})`);
       placed.push(`${g.name ?? label} @${done[0] - room.x0},${done[1] - fy0}`);
+      placedGroups.push({ name: g.name ?? label, ...(g.area ? { area: g.area } : {}), items: (got.stamped ?? []).filter((it) => it.t === "o").map((it) => ({ id: it.id, box: box(it, S) })) });
     }
     // 묶음을 넘는 의자 방향: 다른 묶음의 책상·탁자와 맞닿은 의자도 그쪽을 보게(2026-10-29 flash: 「의자」를 따로 묶어 책상 북쪽에 두어 책장을 보고 앉았다).
     {
@@ -406,7 +425,7 @@ export function furnishFromDesign(base: HandInteriorInput, rooms: readonly Layou
       });
       input = { ...input, objects };
     }
-    perRoom[room.id] = { placed, fixes, blockedShare: floor ? Math.round(100 * blocked / floor) / 100 : 0, floor, items: itemCount };
+    perRoom[room.id] = { placed, fixes, blockedShare: floor ? Math.round(100 * blocked / floor) / 100 : 0, floor, items: itemCount, groups: placedGroups };
   }
   return { input, perRoom };
 }

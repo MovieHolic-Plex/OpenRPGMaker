@@ -21,6 +21,7 @@ import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
 import { requestSkeleton, skeletonCard } from "../../src/ai/v2/loop/requestSkeleton.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
 import { splitPreexisting, syncGateItems } from "../../src/ai/v2/loop/gates.ts";
+import { syncRoomZoneItems } from "../../src/ai/v2/loop/roomZones.ts";
 import { TODO_MAX_ATTEMPTS, checkLabel, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
 import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
@@ -379,6 +380,17 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             if (!loopStop && store.openCount()) { const prompt = reinject(env, "[Items reopened by the machine check after the function finish]"); if (prompt) return prompt; }
           }
           if (loopStop) return undefined;
+          // ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(구역·초점·갈 이유·반복) — 조수가 안 달았으면 함수가 덧붙인다(roomZones.ts).
+          {
+            let opened: TodoItem[] = [];
+            try { opened = syncRoomZoneItems(store, env.ctx.project, store.baseline ? changedSince(store.baseline, indexProject(env.ctx.project)) : undefined, env.request.task); }
+            catch (error) { env.emit({ type: "execution_status", name: "v2.zones.error", ok: false, summary: `실내 구역 항목 맞추기 실패: ${error instanceof Error ? error.message : String(error)}` }); }
+            if (opened.length) {
+              env.emit({ type: "execution_status", name: "v2.zones.items", ok: false, summary: `실내 구역 확인 ✗ ${opened.length}건을 할 일에 덧붙임`, data: { items: opened.map((i) => ({ id: i.id, content: i.content, check: i.check, refs: i.refs })) } });
+              const prompt = newBatch(env, opened, `[Interior rooms — ${opened.length} interior map(s) you built do not yet match the structure: declared rooms reachable, connections open, stairs and landmarks placed (room_graph), or distinct zones each with a focal part and a reason to go there (room_zones). Fix with edit_place (zones with x, y, design, landmark; connections), add_event (inspect points) and add_people inside those rooms. Then done; if you cannot, block(reason)]`);
+              if (prompt) return prompt;
+            }
+          }
           // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
           const gate = v2GateProblems(session, env);
           if (!baselineKeys) { try { baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { baselineKeys = new Set(); } }

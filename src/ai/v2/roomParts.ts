@@ -7,45 +7,45 @@ import { SHAPE_GUIDE, type RoomDesign } from "@/editor/handInterior/designRoom";
 
 /**
  * 모양 예시 — 모델이 모양을 «고를» 재료(2026-10-29 3c: 15판 설계 14개가 rect, 모양 어휘가 한 줄 이름뿐이라 고를 수 없었다).
- * 기물은 자리 보기용 서재 물건이다 — 네 방 용도의 기물로 바꾼다. 곁방 예시(two-room)는 zones 두 개(각자 design)다.
+ * 기물은 자리 보기용 서재 물건이다 — 네 방 용도의 기물로 바꾼다. 곁방 예시(two-room)는 zones 두 개(각자 design)다. 예마다 areas(구역·초점·오갈 이유 — designAreas.ts)를 보인다.
  */
 export const SHAPE_EXAMPLES: readonly { readonly shape: string; readonly ko: string; readonly zones: readonly { kind: string; purpose: string; design: RoomDesign }[] }[] = [
-  { shape: "L", ko: "ㄱ자", zones: [{ kind: "study", purpose: "ㄱ자 서재", design: { shape: "L", corner: "ne", w: 8, h: 5, door: "left", floor: "boards", wall: "plaster", groups: [
+  { shape: "L", ko: "ㄱ자", zones: [{ kind: "study", purpose: "ㄱ자 서재", design: { shape: "L", corner: "ne", w: 8, h: 5, door: "left", floor: "boards", wall: "plaster", areas: [{ name: "책장 벽", purpose: "주인의 책을 찾는 곳", focal: "bookshelf 3w", visit: "빠진 책 한 권이 단서" }, { name: "책상", purpose: "주인이 일하던 자리", focal: "desk 3x1", visit: "서랍의 쪽지를 조사" }, { name: "독서 구석", purpose: "손님을 맞는 자리", focal: "armchair", visit: "의자 밑 열쇠" }], groups: [
     { name: "책장 벽", at: "nw", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
     { name: "꺾인 벽 밑", at: "ne", items: [{ id: "globe" }, { id: "curtained window", dy: -2 }] },
     { name: "책상", at: "center", pos: 0.6, rug: "green", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
     { name: "독서 구석", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
     { name: "상자", at: "se", items: [{ id: "chest" }] }] } }] },
-  { shape: "U", ko: "ㄷ자", zones: [{ kind: "study", purpose: "ㄷ자 서재", design: { shape: "U", w: 9, h: 5, door: "center", floor: "dplank", wall: "goldwood", groups: [
+  { shape: "U", ko: "ㄷ자", zones: [{ kind: "study", purpose: "ㄷ자 서재", design: { shape: "U", w: 9, h: 5, door: "center", floor: "dplank", wall: "goldwood", areas: [{ name: "벽난로", purpose: "방의 중심", focal: "fireplace", visit: "재 속 타다 만 편지" }, { name: "책상", purpose: "일하는 자리", focal: "desk 3x1", visit: "장부를 읽음" }, { name: "손님 자리", purpose: "대화", focal: "armchair", visit: "인물과 이야기" }], groups: [
     { name: "서쪽 날개 책장", at: "nw", items: [{ id: "bookshelf 2w" }] },
     { name: "동쪽 날개 책장", at: "ne", items: [{ id: "bookshelf 2w" }] },
     { name: "들어간 벽 앞 벽난로", at: "north", pos: 0.5, items: [{ id: "fireplace" }] },
     { name: "책상", at: "center", rug: "royal", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
     { name: "손님 자리", at: "sw", items: [{ id: "armchair" }, { id: "plant", dx: 1 }] },
     { name: "지구본", at: "se", items: [{ id: "globe" }] }] } }] },
-  { shape: "bay", ko: "창가 돌출", zones: [{ kind: "study", purpose: "창가 돌출 서재", design: { shape: "bay", w: 9, h: 5, door: "center", floor: "parquet", wall: "plaster", groups: [
+  { shape: "bay", ko: "창가 돌출", zones: [{ kind: "study", purpose: "창가 돌출 서재", design: { shape: "bay", w: 9, h: 5, door: "center", floor: "parquet", wall: "plaster", areas: [{ name: "창가 책상", purpose: "바깥을 보며 쓰는 자리", focal: "desk 3x1", visit: "창밖 단서·일기" }, { name: "독서 구석", purpose: "쉬는 자리", focal: "armchair", visit: "탁자 위 책" }], groups: [
     { name: "돌출부 창가 책상", at: "north", pos: 0.5, items: [{ id: "curtained window", dx: 1, dy: -2 }, { id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
     { name: "서쪽 내려온 벽 책장", at: "nw", items: [{ id: "bookshelf 2w" }] },
     { name: "동쪽 내려온 벽 책장", at: "ne", items: [{ id: "bookshelf 2w" }] },
     { name: "독서 구석", at: "sw", rug: "red", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] },
     { name: "지구본", at: "se", items: [{ id: "globe" }] }] } }] },
-  { shape: "alcove", ko: "알코브", zones: [{ kind: "study", purpose: "알코브 서재", design: { shape: "alcove", corner: "nw", w: 8, h: 5, door: "right", floor: "boards", wall: "stone", groups: [
+  { shape: "alcove", ko: "알코브", zones: [{ kind: "study", purpose: "알코브 서재", design: { shape: "alcove", corner: "nw", w: 8, h: 5, door: "right", floor: "boards", wall: "stone", areas: [{ name: "알코브", purpose: "숨은 독서 자리", focal: "armchair", visit: "쌓인 책 속 메모" }, { name: "책상", purpose: "일하는 자리", focal: "desk 3x1", visit: "서랍 조사" }], groups: [
     { name: "알코브 독서 의자", at: "nw", rug: "red", items: [{ id: "armchair" }, { id: "book pile", dx: 1 }] },
     { name: "내려온 북벽 책장", at: "north", pos: 1, items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
     { name: "책상", at: "center", pos: 0.6, items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
     { name: "화분", at: "sw", items: [{ id: "plant" }] },
     { name: "상자", at: "se", items: [{ id: "chest" }] }] } }] },
-  { shape: "T", ko: "ㅜ자", zones: [{ kind: "study", purpose: "ㅜ자 서재", design: { shape: "T", w: 8, h: 5, door: "center", floor: "flag", wall: "stone", groups: [
+  { shape: "T", ko: "ㅜ자", zones: [{ kind: "study", purpose: "ㅜ자 서재", design: { shape: "T", w: 8, h: 5, door: "center", floor: "flag", wall: "stone", areas: [{ name: "책장 벽", purpose: "장서", focal: "bookshelf 3w", visit: "책 순서 퍼즐" }, { name: "책상", purpose: "일하는 자리", focal: "desk 3x1", visit: "잠긴 서랍" }], groups: [
     { name: "책장 벽", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }, { id: "bookshelf 3w" }] },
     { name: "책상", at: "center", rug: "blue", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
     { name: "서쪽 안락의자", at: "west", pos: 0.3, items: [{ id: "armchair" }] },
     { name: "동쪽 지구본", at: "east", pos: 0.3, items: [{ id: "globe" }] }] } }] },
   { shape: "two-room", ko: "곁방 딸린 2실(zones 둘)", zones: [
-    { kind: "study", purpose: "본 서재", design: { shape: "rect", w: 7, h: 5, door: "center", floor: "boards", wall: "plaster", groups: [
+    { kind: "study", purpose: "본 서재", design: { shape: "rect", w: 7, h: 5, door: "center", floor: "boards", wall: "plaster", areas: [{ name: "책상", purpose: "주인의 일터", focal: "desk 3x1", visit: "곁방 열쇠의 단서" }], groups: [
       { name: "책장 벽", at: "north", items: [{ id: "bookshelf 3w" }, { id: "bookshelf 2w" }] },
       { name: "책상", at: "center", rug: "red", items: [{ id: "desk 3x1" }, { id: "chair N", dx: 1, dy: 1 }] },
       { name: "안락의자", at: "sw", items: [{ id: "armchair" }, { id: "roundtable", dx: 1 }] }] } },
-    { kind: "storeroom", purpose: "곁방 서고", design: { shape: "rect", w: 4, h: 4, floor: "dplank", wall: "plaster", groups: [
+    { kind: "storeroom", purpose: "곁방 서고", design: { shape: "rect", w: 4, h: 4, floor: "dplank", wall: "plaster", areas: [{ name: "서고", purpose: "숨긴 기록을 두는 곳", focal: "chest", visit: "잠긴 상자를 연다" }], groups: [
       { name: "책장", at: "north", items: [{ id: "bookshelf 2w" }, { id: "bookshelf 1w" }] },
       { name: "상자", at: "sw", items: [{ id: "chest" }, { id: "crate", dx: 1 }] }] } }] },
 ];

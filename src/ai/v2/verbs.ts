@@ -65,6 +65,7 @@ import { dropModelSeed } from "./modelSeed";
 import { TodoStore } from "./loop/todoStore";
 import { TodoLoop } from "./loop/continuation";
 import { HookStats } from "./loop/hookStats";
+import { zoneStatusLines } from "./loop/roomZones";
 import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "./sceneVerbs";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
@@ -169,10 +170,19 @@ const ROOM_DESIGN_SCHEMA = {
     door: { type: "string", description: "south exit spot — left·center·right" },
     floor: { type: "string", description: "floor material id (floors in room_parts)" },
     wall: { type: "string", description: "wall-face material id (walls in room_parts)" },
+    areas: { type: "array", description: "(optional, 2–4 inside one big room) distinct zones of this room — each with its own use, focal part and a reason for the player to walk there. For several real rooms use one zone per room (x, y, connections) instead.", items: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "zone name: hearth · counter · locked stacks · ritual spot" },
+        purpose: { type: "string", description: "one line: what this zone is for" },
+        focal: { type: "string", description: "the zone's focal part — one part id from groups (fireplace · summoning circle · counter 3x1 · iron gate · altar)" },
+        visit: { type: "string", description: "why the player comes here — tied to this game (inspect point, clue, locked place, stairs, counter, a person)" },
+      }, required: ["name", "purpose", "focal", "visit"] } },
     groups: { type: "array", description: "(up to 16) furniture groups — parts used together (desk+chair, two armchairs+round table+lamp, a row of bookshelves). This list is everything placed (the function adds nothing).", items: {
       type: "object",
       properties: {
         name: { type: "string", description: "group name: desk spot · reading nook · bookshelf wall" },
+        area: { type: "string", description: "(optional) the areas[].name this group belongs to" },
         at: { type: "string", description: "(north·south·west·east·center·nw·ne·sw·se) where it goes (wall, corner, center). Bookshelves/display cases (wall furniture) and hangings (window, map, frame) stand only on north." },
         pos: { type: "number", description: "along that wall from 0 (west/north end) to 1 (east/south end). Default 0.5" },
         x: { type: "integer", description: "(optional) floor cell coordinate — the floor's top-left is 0,0. Takes precedence over at" },
@@ -199,10 +209,16 @@ const ZONE_SCHEMA = {
     size: SIZE,
     design: ROOM_DESIGN_SCHEMA,
     floor: { type: "number", description: "which floor (default 1)" },
-    id: { type: "string" },
+    id: { type: "string", description: "zone id — the room id in a room graph (connections, entrance)" },
+    x: { type: "integer", description: "(interior room graph) rough top-left cell of this room (x right, y down; the plan origin is free). The function snaps neighbours to a one-cell wall; it never chooses the arrangement for you" },
+    y: { type: "integer", description: "(interior room graph) see x" },
+    landmark: { type: "string", description: "(interior room graph) the one part this room is built around — a part id that is also in design.groups. Big multi-cell parts are welcome (great telescope · summoning circle · pulpit · long hearth 6 · fireplace · counter 3x1)" },
+    stairs: { type: "string", enum: ["up", "down"], description: "(interior room graph) this room has stairs — put a stairs part (stairs up wood · stairs up stone · stairs down · stairwell down) in design.groups" },
+    role: { type: "string", description: "(interior room graph) main · side (side room) · corridor · stairs" },
   },
   required: ["kind"],
 };
+const CONNECTIONS_SCHEMA = { type: "array", description: "(interior room graph) which rooms join — a and b are zones[].id; type door (a door in a one-cell wall) or open (no wall between them). With connections, the function does not pick the floor plan: it only snaps your rough positions, carves the doors and checks reachability, and rejects impossible geometry with a fixed call.", items: { type: "object", properties: { a: { type: "string" }, b: { type: "string" }, type: { type: "string", enum: ["door", "open"] } }, required: ["a", "b"] } };
 const HINTS_SCHEMA = {
   type: "object",
   description: "only builder knobs the card told you about. Leave out anything you do not know.",
@@ -261,6 +277,8 @@ const PLACE_SPEC_SCHEMA = {
     zones: { type: "array", items: ZONE_SCHEMA },
     features: { type: "array", items: { type: "string" } },
     floors: { type: "number" },
+    connections: CONNECTIONS_SCHEMA,
+    entrance: { type: "string", description: "(interior room graph) zones[].id of the room with the south exit — it must be the southernmost room" },
     exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } },
     mapId: { type: "string", description: "only to rebuild an existing map in place" },
     hints: HINTS_SCHEMA,
@@ -365,6 +383,8 @@ function adoptInterior(run: RecordingBuildRun, mapId: string): PlaceRecord | und
 export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): PlaceSpec {
   const removed = new Set(patch.removeZones ?? []);
   let zones = (spec.zones ?? []).filter((z) => !removed.has(z.id ?? z.kind) && !removed.has(z.kind));
+  // zones = 이 층의 구역 목록 전체를 바꾼다(방 그래프 다시 짜기). 다른 층 구역은 그대로.
+  if (patch.zones?.length) zones = [...zones.filter((z) => (z.floor ?? 1) !== floor), ...patch.zones.map((z) => (floor > 1 && !z.floor ? { ...z, floor } : z))];
   // 설계 방 고치기: 고친 설계 전체로 그 구역의 design 을 바꾼다. 같은 종류의 설계 구역을 addZones 로 다시 보낸 것도 «바꾸기»로 읽는다
   // (2026-10-29 flash 실조수: 고친 서재 설계를 addZones 로 보내 서재가 둘인 2실이 됐다).
   const designAt = (want?: string) => zones.findIndex((z) => (z.floor ?? 1) === floor && (want ? z.id === want || z.kind === want : !!z.design));
@@ -488,7 +508,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           next: keptRounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "더 작은 패치로 한 번 더 고친다 — 비평 major 중 좌표가 있는 것 하나·둘만 그 칸 범위로 고치고(바닥 전체·방 구조는 건드리지 않는다), 나머지는 보고한다." }, before.seen.get(oldIds[0]!));
       }
     }
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds, spec.dungeonDesign ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design)) }, seen);
+    // 설계 실내면 할 일 확인 room_zones 와 같은 판정을 결과에 싣는다(구역 수·초점·갈 이유·반복 — loop/roomZones.ts).
+    const zones = zoneStatusLines(env.ctx.project, result.mapIds, String(task ?? ""));
+    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, spec.dungeonDesign ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design)) }, seen);
   };
 
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
@@ -555,7 +577,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     const seen = mapIds.length ? await see(env, session, task, "content", mapIds, undefined, false) : undefined;
     const npcProblems = seen?.checks.filter((c) => !c.ok && (c.id === "npc-reachable" || c.id.startsWith("exit"))) ?? [];
-    return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
+    const zones = result.ok ? zoneStatusLines(env.ctx.project, mapIds, String(task ?? "")) : [];
+    return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds, ...(zones.length ? { zones } : {}),
       ...(seen ? { machineChecks: npcProblems.length ? npcProblems.map((c) => c.detail) : "사람·출입 검사 통과" } : {}),
       next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.")
         : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 비슷한 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
@@ -695,7 +718,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         const purpose = (spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ") || spec.name;
         const parts = roomParts(run.ctx.project, purpose);
-        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브 — parts.shapes·shapeExamples 를 보고 고른다, 곁방은 zones 둘)·w×h(바닥 칸)·door·floor·wall·groups[{name, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
+        return text({ ok: false, notFailure: true, summary: `아직 짓지 않았다(실패 아님) — 「${spec.name}」의 방은 네가 설계한다. 아래 parts(기물 이름표·바닥/벽면·깔개·견본 배치)를 보고 방마다 zones[].design 을 채워 make_place 를 바로 다시 부르면 지어진다: shape(rect·L ㄱ자·U ㄷ자·T ㅜ자·bay 창가 돌출·alcove 알코브 — parts.shapes·shapeExamples 를 보고 고른다, 곁방은 zones 둘)·w×h(바닥 칸)·door·floor·wall·areas[{name, purpose, focal, visit}](서로 다른 구역 2~4개 — 구역마다 쓰임 한 줄·초점 물건 id·플레이어가 오는 이유, 요청이 정말 작은 방일 때만 하나)·groups[{name, area, at(north·south·west·east·center·nw·ne·sw·se), pos, rug, items[{id, dx, dy, count}]}]. 무엇을 몇 개 어디에 놓을지는 네가 정하고 함수는 고친 것만 알린다. 견본은 참고 — 베끼지 않는다.`,
           ...(parts ? { parts: { shapes: parts.shapes, shapeExamples: parts.shapeExamples, floors: parts.floors, walls: parts.walls, rugs: parts.rugs, items: parts.items, references: parts.references } } : {}) });
       }
       const builder = builderFor(spec);
@@ -795,7 +818,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "Rebuild a built (or existing) place with the same builder, changing only part of its spec. Pass critic-major coordinates as addAnchors.near. 1 round per map. For a room you designed with design, put the whole fixed design in patch.design (dressing is not for designed rooms).",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "map id to fix (inside patch)" },
-      set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA, dungeonDesign: DUNGEON_DESIGN_SCHEMA } },
+      set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA, dungeonDesign: DUNGEON_DESIGN_SCHEMA, connections: CONNECTIONS_SCHEMA, entrance: { type: "string", description: "(interior room graph) entrance room id" } } },
+      zones: { type: "array", items: ZONE_SCHEMA, description: "(interior) the whole new zone list for this floor — replaces the old rooms (use it to re-plan a room graph; send set.connections with it)" },
       addZones: { type: "array", items: ZONE_SCHEMA },
       removeZones: { type: "array", items: { type: "string" } },
       addAnchors: { type: "array", items: { type: "object", properties: { zone: { type: "string" }, what: { type: "string" }, near: POINT }, required: ["what"] } },
@@ -819,7 +843,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
       const doorWord = /뒷문|출입문|back ?door|^문$|^door$/iu;
       const north = (patch.set?.exits ?? []).includes("north") || (patch.addAnchors ?? []).some((a) => doorWord.test(a.what.trim()));
-      const stampOnly = !patch.addZones?.length && !patch.removeZones?.length && patch.variant === undefined && patch.seed === undefined && !patch.addFeatures?.length && !patch.removeFeatures?.length
+      const stampOnly = !patch.addZones?.length && !patch.zones?.length && !patch.design && !patch.removeZones?.length && patch.variant === undefined && patch.seed === undefined && !patch.addFeatures?.length && !patch.removeFeatures?.length
         && Object.keys(patch.set ?? {}).every((k) => k === "exits");
       const prevStamp = record?.result.state as StampEditState | undefined;
       const existing = env.ctx.project.maps[patch.mapId];
@@ -1437,7 +1461,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const refPictures = new Map<string, string>();
   const roomPartsVerb: PiToolShape = {
     name: "room_parts", label: "방 재료 보기", concurrency: "shared",
-    description: "Call before designing a hand-pixel interior room yourself (make_place zones[].design). Returns the chipset part labels for that use (id, size, where it goes), floor/wall/rug ids, a summary of sample layouts for the same use, and composition idea pictures (1x). The pictures are only ideas about flow, focus and furniture groups — do not copy; compose shape, groups and spots fresh for the request.",
+    description: "Call before designing a hand-pixel interior room yourself (make_place zones[].design). Returns the chipset part labels for that use (id, size, where it goes), floor/wall/rug ids, a summary of sample layouts for the same use, and reference rooms players liked (structure summaries + a 1x picture: several rooms, stairs, side rooms, one big landmark per room). Borrow structure, not the plan — a plan that matches a reference's room count, sizes and positions is sent back. Compose rooms, connections, groups and spots fresh for the request.",
     parameters: { type: "object", properties: { purpose: { type: "string", description: "room use — e.g. 서재 study, 마법사의 서재 wizard's study, 침실 bedroom" }, query: { type: "string", description: "(optional) more part words to look up" } }, required: ["purpose"] },
     async execute(_id, params) {
       const p = params as { purpose: string; query?: string };
@@ -1446,18 +1470,19 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const slim = (env.roomPartsText ?? "slim") === "slim";
       const full = roomParts(env.ctx.project, String(p.purpose ?? ""), p.query, undefined, slim ? 40 : 90);
       if (!full) return text({ ok: false, summary: "손 도트 실내 칩셋이 이 프로젝트에 없다" });
-      const out = slim ? { ...full, references: full.references.slice(0, 2), referenceIds: full.referenceIds.slice(0, 2), shapeExamples: full.shapeExamples.slice(0, 1), more: "기물은 용도에 맞는 40줄만 보였다 — 더 찾으려면 query 에 낱말을 넣어 다시 부른다. 모양 예는 하나만 글로, 나머지 모양은 그림으로." } : full;
-      const result = text({ ok: true, ...out, how: "zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, groups:[{name, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. 먼저 모양을 고른다(shapes·shapeExamples 와 아래 모양 그림 — 바닥 60칸 넘는 네모는 ㅁ자로 짚힌다, 곁방은 zones 둘). 묶음마다 무엇을 몇 개 놓을지는 네가 정한다 — 함수는 더하지 않고 이름 맞춤·겹침·의자 방향·문 앞 통로·도달만 고쳐 알려 준다. 기물 줄의 좌표는 바닥 왼쪽 위 0,0, 걸이는 y -2. 벽 가구·걸이는 북벽 밑에 서고, 도려 내 내려온 북벽(ㄷ자 가운데·창가 돌출 양옆·알코브 옆) 밑에도 선다." });
+      const plans = roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3).map((x) => ({ id: x.id, structure: x.idea }));
+      const out = slim ? { ...full, references: full.references.slice(0, 2), referenceIds: full.referenceIds.slice(0, 2), shapeExamples: full.shapeExamples.slice(0, 1), more: "Only the 40 part lines that fit this use are shown — call again with words in query to look up more. One shape example as text; the other shapes are in the picture." } : full;
+      const result = text({ ok: true, ...out, referenceRooms: plans, how: "One room: zones:[{kind, purpose, design:{shape, corner?, w, h, door, floor, wall, areas?:[{name, purpose, focal, visit}], groups:[{name, area?, at, pos?, rug?, items:[{id, dx?, dy?, count?}]}]}}]. Several rooms (what the reference rooms players liked do — see referenceRooms and the picture): one zone per room, each with id, x, y (rough top-left cell), design (w, h, groups), landmark (one part id from its groups that the room is built around — big multi-cell parts are welcome), optional stairs:\"up\"|\"down\" and role (main · side · corridor); plus connections:[{a, b, type:\"door\"|\"open\"}] and entrance (the southernmost room; the exit is in its south wall). One map can hold several rooms even when the request asks for one place. You choose how many rooms, their sizes, rough positions and connections; the function only snaps neighbours to a one-cell wall, carves the doors and checks reachability, and rejects impossible geometry with a fixed call. Groups are everything placed (the function adds nothing; it fixes only name matching, overlap, chair facing, the aisle in front of doors and reachability). Part coordinates: the floor's top-left is 0,0; hangings use y -2. Wall furniture and hangings stand under the north wall (also under a lowered north wall)." });
       // 그림: 구성 아이디어(사용자가 실내 기준으로 고른 assistant-rooms-2 방 — 동선·초점·묶음만 보고 베끼지 않는다) + 모양 예시(shapeExamples 를 지금 빌더로 지은 것).
       // 옛 사람 견본 그림(견본을 지어 찍은 것)은 더 보여 주지 않는다 — 2026-10-29 감사에서 모델이 그 서재를 그대로 옮겨 방탈출 방이 다 같아졌다.
       // 기본은 한 장으로 합쳐 싣는다(env.roomPartsPictures): 2026-10-30 서재 3d 에서 그림 8장·글 1.3만 자 결과 뒤 Gemini 계열이 짓지 못한 판이 늘었다(인계 handoff-study.md).
       const mode = env.roomPartsPictures ?? "one";
       const panels: { label: string; url: string }[] = [];
-      if (mode !== "none" && env.readPublicAsset) for (const idea of roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`)) {
+      if (mode !== "none" && env.readPublicAsset) for (const idea of roomIdeasFor(`${p.purpose ?? ""} ${p.query ?? ""}`, 3)) {
         const key = `idea:${idea.id}`;
         let url = refPictures.get(key);
         if (!url) { try { url = await env.readPublicAsset(idea.file); } catch { url = undefined; } if (url) refPictures.set(key, url); }
-        if (url) panels.push({ label: `구성 아이디어 ${idea.id} — ${idea.idea}`, url });
+        if (url) panels.push({ label: `reference room ${idea.id}`, url });
       }
       if (mode !== "none" && env.render && out.tileset === HAND_INTERIOR_TILESET_ID) for (const ex of SHAPE_EXAMPLES) {
         const key = `shape:${ex.shape}`;
@@ -1474,15 +1499,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
             if (url) refPictures.set(key, url);
           }
         }
-        if (url) panels.push({ label: `모양 ${ex.shape}(${ex.ko}) 예시 — shapeExamples 의 설계로 지은 것`, url });
+        if (url) panels.push({ label: `shape ${ex.shape} example (built from shapeExamples)`, url });
       }
       const img = (url: string) => ({ type: "image" as const, mimeType: "image/png", data: url.slice(url.indexOf(",") + 1) });
-      if (panels.length && mode === "each") for (const x of panels) { result.content.push({ type: "text", text: `${x.label} 1배 그림:` }); result.content.push(img(x.url)); }
+      if (panels.length && mode === "each") for (const x of panels) { result.content.push({ type: "text", text: `${x.label} (1x):` }); result.content.push(img(x.url)); }
       else if (panels.length && mode === "one") {
         const sheet = env.combinePictures ? await env.combinePictures(panels.map((x) => x.url)).catch(() => undefined) : undefined;
         const first = sheet ?? panels[0]!.url;
         const shown = sheet ? panels : panels.slice(0, 1);
-        result.content.push({ type: "text", text: `그림 한 장(1배, 왼쪽 위부터 차례로 ${shown.length}칸): ${shown.map((x, i) => `${i + 1}) ${x.label}`).join(" / ")}. ${ROOM_IDEA_RULE}` });
+        result.content.push({ type: "text", text: `One picture (1x, ${shown.length} panels from the top left): ${shown.map((x, i) => `${i + 1}) ${x.label}`).join(" / ")}. ${ROOM_IDEA_RULE}` });
         result.content.push(img(first));
       }
       return result;

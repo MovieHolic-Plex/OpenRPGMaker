@@ -8,6 +8,7 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { openStartCell } from "@/editor/tools/startOnBuiltMap";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import { roomSpecOf } from "@/editor/handInterior/builder";
+import { roomBarePct } from "./builders/dressRoom";
 import type { GameMap, Project } from "@/project/types";
 
 export interface MachineCheck {
@@ -80,7 +81,19 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
       const bare = measureInteriorBareFloor(project, map);
       // 모델이 설계한 방은 함수가 채우지 않는다 — 고칠 말도 설계로(dress_room 은 설계 방을 거절한다).
       const designedMap = (map.locations ?? []).some((l) => (l.tags ?? []).includes("model-designed"));
-      if (bare && (bare.floorCells >= 40 || (designedMap && bare.floorCells >= 20))) {
+      // 설계 방이 여럿인 맵은 방마다 잰다(2026-10-30 2회차) — 맵 전체 비율은 «상자 전체를 줄여라»로 읽혀 모델이 방을 9×9 한 칸으로 줄였다
+      // (구역이 한 상자로 겹쳐 room_zones 가 1구역이 됐다). 복도(역할 corridor)는 원래 비어 있는 동선이라 뺀다. 고칠 말은 그 방만.
+      const roomLocs = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("hand-layout-room"));
+      const graphCorr = new Set((map.locations ?? []).filter((l) => (l.tags ?? []).includes("room-graph") && (l.tags ?? []).includes("role:corridor")).map((l) => (l.tags ?? []).find((t) => t.startsWith("room:"))?.slice(5)));
+      if (designedMap && roomLocs.length >= 2) {
+        const per = roomLocs.filter((l) => !/corridor|hall ?way|복도/iu.test(l.name) && !graphCorr.has((l.tags ?? []).find((t) => t.startsWith("room:"))?.slice(5)))
+          .map((l) => ({ l, pct: roomBarePct(project, map, { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 }) }));
+        const limit = INTERIOR_BARE_FLOOR_LIMIT + 5;
+        const over = per.filter((r) => r.pct > limit).sort((a, b) => b.pct - a.pct);
+        const worst = over[0];
+        checks.push({ id: "bare-floor", mapId, ok: !over.length, detail: `bare floor per room: ${per.map((r) => `${r.l.name} ${r.pct}%`).join(", ")} (limit ${limit}% each)${over.length ? ` — ${over.map((r) => `room "${r.l.name}" (${r.l.x},${r.l.y}) ${r.l.w}×${r.l.h}`).join(", ")} has open floor: add a group to that room's design or make that room smaller (that zone's design.w/h only) with edit_place; do not shrink the other rooms` : ""}`,
+          ...(worst ? { at: { x: worst.l.x + Math.floor(worst.l.w / 2), y: worst.l.y + Math.floor(worst.l.h / 2) } } : {}) });
+      } else if (bare && (bare.floorCells >= 40 || (designedMap && bare.floorCells >= 20))) {
         const big = [...bare.regions].sort((a, b) => b.w * b.h - a.w * a.h)[0];
         checks.push({ id: "bare-floor", mapId, ok: bare.pct <= INTERIOR_BARE_FLOOR_LIMIT + 5, detail: `맨바닥 덩이 ${bare.pct}%(기준 ${INTERIOR_BARE_FLOOR_LIMIT}%, 여유 5)${big ? ` — 가장 큰 덩이 (${big.x},${big.y}) ${big.w}×${big.h}` : ""}${bare.pct > INTERIOR_BARE_FLOOR_LIMIT + 5 && big ? (designedMap
           ? ` — 네가 설계한 방이다: design.w·h 를 줄이거나 그 자리에 묶음을 더해 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다(함수는 채우지 않는다)`
