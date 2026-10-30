@@ -23,7 +23,7 @@ import type { StoreReviewsPage } from "@/assetStore/bridgeTypes";
 import { briefReview, complaintThemes, mergeReviews, tallyText } from "@/editor/assetStore/reviewDigest";
 import { workerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
 import { briefStoreMusic, explainStoreMusicPick, expandStoreMusicQuery, inferStoreMusicScene, normalizeStoreMusicScene, projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
-import { briefStoreSound, explainStoreSoundPick, inferStoreSoundStyle, normalizeStoreSoundCue, planSoundStyle, rankStoreSounds, storeSoundTracks, subsetAudioManifest, type StoreSoundTrack } from "@/assetStore/storeSoundPick";
+import { briefStoreSound, explainStoreSoundPick, inferStoreSoundStyle, normalizeStoreSoundCue, planSoundStyle, rankStoreAmbience, rankStoreSounds, storeSoundTracks, subsetAudioManifest, type StoreSoundTrack } from "@/assetStore/storeSoundPick";
 import { readStoreSoundMeta, STORE_SOUND_STYLES, type StoreSoundStyle } from "@/assets/storeSoundMeta";
 import { SE_CUE_IDS } from "@/project/seCues";
 import { STORE_MUSIC_SCENES, type StoreMusicScene } from "@/assets/storeMusicMeta";
@@ -417,7 +417,8 @@ export async function loadStoreSounds(access: StoreReadAccess): Promise<StoreSou
 const styleOf = (args: Record<string, unknown>): StoreSoundStyle | null =>
   (STORE_SOUND_STYLES as readonly unknown[]).includes(args.style) ? args.style as StoreSoundStyle : inferStoreSoundStyle(args.style, args.query, args.mood, args.need);
 const cueOf = (args: Record<string, unknown>): string | null => normalizeStoreSoundCue(args.cue) ?? normalizeStoreSoundCue(args.query) ?? normalizeStoreSoundCue(args.need);
-const soundKey = (args: Record<string, unknown>): string => `sound:${cueOf(args) ?? ""}:${styleOf(args) ?? ""}:${String(args.query ?? "").trim()}:${String(args.mood ?? "").trim()}`;
+const ambientOf = (args: Record<string, unknown>): boolean => args.ambient === true || /환경음|배경\s*소리|앰비언트|ambien|\bbgs\b/iu.test(`${String(args.query ?? "")} ${String(args.need ?? "")}`);
+const soundKey = (args: Record<string, unknown>): string => `sound:${ambientOf(args) ? "bgs:" : ""}${cueOf(args) ?? ""}:${styleOf(args) ?? ""}:${String(args.query ?? "").trim()}:${String(args.mood ?? "").trim()}`;
 
 const storeFindSound: ToolDefinition = {
   name: "store_find_sound",
@@ -425,7 +426,8 @@ const storeFindSound: ToolDefinition = {
     + "자리 하나를 바꿀 때 쓴다(예: 「타격음 더 묵직하게」「레벨 업 소리」). 효과음을 화풍 하나로 통째로 맞추려면(「효과음 전부 레트로로」) 이 도구 대신 set_game_audio role:'sfx-style' 하나를 부른다. "
     + "후보는 점수 순이고 1위에 recommended:true 와 이유(why)가 붙는다 — 사용자가 다른 것을 고르지 않았으면 recommended 를 쓴다. "
     + "결과 autoInstall:true(기본)면 묻지 말고 recommended 소리를 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio{role:'se', cue, resourceId} 로 건다. "
-    + "false 면 사용자가 「먼저 묻기」를 켠 것이다 — 미리듣기 카드가 뜨니 넣지 말고 이 턴을 끝내라.",
+    + "false 면 사용자가 「먼저 묻기」를 켠 것이다 — 미리듣기 카드가 뜨니 넣지 말고 이 턴을 끝내라. "
+    + "환경음(BGS — 비·바람·파도·모닥불·동굴 물방울·마을 웅성임처럼 음악 밑에 계속 깔리는 루프)은 ambient:true + query(장소·날씨 낱말) — 결과를 store_install 로 넣고 set_game_audio{role:'bgs', mapIds, resourceId} 로 맵에 건다(cue 없음).",
   mode: "read",
   domains: ["core"],
   parameters: {
@@ -438,6 +440,7 @@ const storeFindSound: ToolDefinition = {
       mood: { type: "string", description: "분위기(예: 묵직한, 가벼운, 날카로운, 귀여운)" },
       need: { type: "string", description: "카드에 보여 줄 한 줄(예: 「보스 쓰러짐 소리」)" },
       limit: { type: "integer", minimum: 1, maximum: 6, description: "후보 수(기본 4)" },
+      ambient: { type: "boolean", description: "true 면 효과음 자리 대신 환경음(BGS 루프: 비·바람·동굴·마을 …)을 찾는다. query 에 장소·날씨 낱말" },
     },
     required: [],
     additionalProperties: false,
@@ -451,12 +454,13 @@ const storeFindSound: ToolDefinition = {
     });
   },
   run(_project, args): ToolExecResult {
-    const cue = cueOf(args);
-    const style = styleOf(args);
+    const ambient = ambientOf(args);
+    const cue = ambient ? null : cueOf(args);
+    const style = ambient ? null : styleOf(args);
     const got = take<{ tracks: StoreSoundTrack[]; autoInstall: boolean }>(soundKey(args));
     const limit = Math.min(6, Math.max(1, Number(args.limit) || 4));
     const want = { cue, style, query: String(args.query ?? ""), mood: String(args.mood ?? "") };
-    const picked = rankStoreSounds(got.tracks, want, limit);
+    const picked = ambient ? rankStoreAmbience(got.tracks, want, limit) : rankStoreSounds(got.tracks.filter((track) => !track.sound.ambient), want, limit);
     const choice: StoreSoundChoice = {
       kind: "store-sound-choice", need: String(args.need ?? "").trim().slice(0, 120) || `${cue ?? ""} 효과음`.trim(), cue, style, autoInstall: got.autoInstall,
       sounds: picked.map((track, index) => {
@@ -464,6 +468,18 @@ const storeFindSound: ToolDefinition = {
         return { ...briefStoreSound(track), version: track.version, blob: track.blob, rank: index + 1, ...(index === 0 ? { recommended: true } : {}), why: told.why, ...(told.fallback ? { fallback: true } : {}) };
       }),
     };
+    if (!picked.length && ambient) {
+      return { summary: `스토어 환경음 ${got.tracks.filter((track) => track.sound.ambient).length}개 중 「${want.query || want.mood}」에 맞는 루프가 없다. 다른 장소·날씨 낱말로 다시 찾거나 프로젝트 효과음(list_resources kind:se)에서 고르라.`, data: { ...choice, note: UNTRUSTED_NOTE } };
+    }
+    if (ambient) {
+      const top = choice.sounds[0]!;
+      return {
+        summary: choice.autoInstall
+          ? `스토어 환경음 ${picked.length}개를 찾았다(점수 순). 묻지 말고 1위 「${top.title}」(slug ${top.slug}, assetId ${top.assetId})를 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio{role:'bgs', mapIds, resourceId} 로 맵에 건다.`
+          : `사용자가 「먼저 묻기」를 켰다. 스토어 환경음 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라.`,
+        data: { ...choice, ambient: true, note: UNTRUSTED_NOTE },
+      };
+    }
     if (!picked.length) {
       return { summary: `스토어 효과음 ${got.tracks.length}개 중 ${cue ? `자리 ${cue} 에` : ""} 맞는 소리가 없다. 프로젝트에 있는 효과음(list_resources kind:se)으로 고르라.`, data: { ...choice, note: UNTRUSTED_NOTE } };
     }

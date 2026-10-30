@@ -81,6 +81,7 @@ import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import { applySideViewLanding, isSideViewMap, planSideViewTick, resolveSideViewSettings, sideViewGridFor, sideViewStateFor } from "@/player/sideViewPhysics";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -333,6 +334,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));
     updateCharacterDepth(scene.player, "same");
     if (hopState) {
+      // 착지(land 자리) — 자리가 비면 무음. 낙하 등장(countsAsStep:false)도 땅에 닿으면 같은 소리.
+      playProjectSeCue("land", project);
       scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
       finishHop(scene, PLAYER_SHADOW_KEY, scene.player, scene.player.x, scene.player.y, hopState.hop);
       scene.playerHop = null;
@@ -565,6 +568,7 @@ function tryStartLedgeHop(scene: PlaySceneContext, body: PlayerBody, dx: number,
   scene.dashing = false;
   beginPlayerStep(scene, landX, landY);
   scene.playerHop = { hop: jumpHop({}), elapsedFrames: 0, countsAsStep: true, via };
+  playProjectSeCue("jump");
   scene.lastActionTargetKey = "";
   return true;
 }
@@ -737,6 +741,7 @@ function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, 
   scene.dashing = false;
   beginPlayerStep(scene, nx, ny);
   scene.playerHop = { hop: jumpHop(command), elapsedFrames: 0, countsAsStep: true };
+  playProjectSeCue("jump");
   return true;
 }
 

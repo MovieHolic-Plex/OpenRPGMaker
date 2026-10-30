@@ -59,6 +59,7 @@ import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
 import { createDialogueVoice, type DialogueVoicePlayer as DialoguePlayerVoice } from "@/player/dialogueVoice";
+import { createTextBlipVoice } from "@/player/textBlipVoice";
 import { createMonsterDialogueTick } from "@/player/monsterSfx";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
@@ -207,7 +208,8 @@ export function dialogueSpeedDelayMs(value: number): number {
 function dialogueVoiceFor(look: DialogueLook, voiceUrl: string | null): DialoguePlayerVoice {
   if (voiceUrl) return createDialogueVoice({ ...look, voice: null });
   if (look.voice) return createDialogueVoice(look);
-  return createMonsterDialogueTick(store.getCurrent());
+  // 자리 표의 대사 글자음(textBlip)이 있으면 그것 — 없으면 몬스터 장르 기본(그 외 무음). 옛 게임은 자리가 비어 그대로다.
+  return createTextBlipVoice(store.getCurrent()) ?? createMonsterDialogueTick(store.getCurrent());
 }
 
 function dialoguePlaybackTokens(segments: readonly DialogueTextSegment[]): DialoguePlaybackToken[] {

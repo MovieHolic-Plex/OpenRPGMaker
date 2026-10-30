@@ -95,6 +95,7 @@ const tokens = (value: string | undefined): string[] =>
 export function scoreStoreSound(track: StoreSoundTrack, want: StoreSoundQuery): number {
   const s = track.sound;
   let score = 0;
+  if (want.cue && s.ambient) return -100;
   if (want.cue) {
     if (s.slots[0] === want.cue) score += 20;
     else if (s.slots.includes(want.cue)) score += 14;
@@ -102,7 +103,7 @@ export function scoreStoreSound(track: StoreSoundTrack, want: StoreSoundQuery): 
     else score -= 30;
   }
   if (want.style) score += s.style === want.style ? 8 : s.style ? -8 : 0;
-  const hay = [...s.mood, ...s.feelTags, s.summaryKo, ...s.extraSlots].join(" ").toLowerCase();
+  const hay = [...s.mood, ...s.feelTags, s.summaryKo, ...s.extraSlots, ...s.ambientTags].join(" ").toLowerCase();
   for (const word of new Set([...tokens(want.mood), ...tokens(want.query)])) if (hay.includes(word)) score += 2;
   if (s.variant === "a") score += 1;
   if (s.qaScore !== null) score += s.qaScore / 20;
@@ -122,7 +123,7 @@ export function explainStoreSoundPick(track: StoreSoundTrack, want: StoreSoundQu
   const s = track.sound;
   const direct = !want.cue || s.slots.includes(want.cue);
   const parts = [
-    want.cue ? (direct ? `자리 ${want.cue}` : `자리 ${want.cue} 대신 ${s.slots[0]}`) : `자리 ${s.slots[0]}`,
+    s.ambient ? `환경음${s.ambientTags.length ? ` ${s.ambientTags.slice(0, 3).join("·")}` : ""}` : want.cue ? (direct ? `자리 ${want.cue}` : `자리 ${want.cue} 대신 ${s.slots[0]}`) : `자리 ${s.slots[0]}`,
     s.style ? `${STORE_SOUND_STYLE_LABELS[s.style]}${want.style && want.style !== s.style ? "(다른 화풍)" : ""}` : "",
     s.variant ? `${s.variant.toUpperCase()}안` : "",
   ].filter(Boolean);
@@ -133,7 +134,8 @@ export function briefStoreSound(track: StoreSoundTrack) {
   const s = track.sound;
   return {
     slug: track.slug, assetId: track.assetId, title: track.name, pack: track.packTitle,
-    cue: s.slots[0], cueLabel: seCueSpec(s.slots[0]!)?.label ?? s.slots[0], slots: s.slots,
+    cue: s.ambient ? null : s.slots[0] ?? null, cueLabel: s.ambient ? "환경음" : seCueSpec(s.slots[0]!)?.label ?? s.slots[0], slots: s.slots,
+    ...(s.ambient ? { ambient: true, ambientTags: s.ambientTags, loopable: true } : {}),
     style: s.style, variant: s.variant, mood: s.mood, intensity: s.intensity, durationSec: s.durationSec,
     summary: s.summaryKo, license: track.license, aiGenerated: track.aiGenerated,
   };
@@ -155,7 +157,7 @@ export function planSoundStyle(
   options: { readonly variant?: "a" | "b" | "c"; readonly cues?: readonly string[] } = {},
 ): { readonly rows: readonly SoundStylePlanRow[]; readonly missing: readonly string[] } {
   const variant = options.variant ?? "a";
-  const own = tracks.filter((track) => track.sound.style === style);
+  const own = tracks.filter((track) => track.sound.style === style && !track.sound.ambient);
   const cues = options.cues?.length ? [...new Set(options.cues)] : [...new Set(own.flatMap((track) => track.sound.slots))];
   const rows: SoundStylePlanRow[] = [];
   const missing: string[] = [];
@@ -169,6 +171,32 @@ export function planSoundStyle(
     else missing.push(cue);
   }
   return { rows, missing };
+}
+
+/**
+ * 환경음(BGS) 고르기: 장소·날씨 낱말(ambientTags·분위기·느낌·설명)에 맞는 루프. 효과음 자리 소리는 후보가 아니다.
+ * 낱말 하나 맞을 때마다 ambientTags +5, 분위기·느낌 +2, 설명 +1. 화풍은 환경음에 없으므로 보지 않는다.
+ */
+export function rankStoreAmbience(tracks: readonly StoreSoundTrack[], want: { readonly query?: string; readonly mood?: string }, limit = 4): StoreSoundTrack[] {
+  const words = [...new Set([...tokens(want.query), ...tokens(want.mood)])];
+  return tracks
+    .filter((track) => track.sound.ambient)
+    .map((track) => {
+      const s = track.sound;
+      const place = s.ambientTags.map((t) => t.toLowerCase());
+      const feel = [...s.mood, ...s.feelTags].map((t) => t.toLowerCase());
+      let score = 0;
+      for (const word of words) {
+        if (place.some((tag) => tag.includes(word) || word.includes(tag))) score += 5;
+        if (feel.some((tag) => tag.includes(word))) score += 2;
+        if (s.summaryKo.toLowerCase().includes(word)) score += 1;
+      }
+      return { track, score };
+    })
+    .filter((row) => !words.length || row.score > 0)
+    .sort((a, b) => b.score - a.score || a.track.assetId.localeCompare(b.track.assetId))
+    .slice(0, limit)
+    .map((row) => row.track);
 }
 
 /**

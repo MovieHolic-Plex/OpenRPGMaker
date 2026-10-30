@@ -597,7 +597,7 @@ function soundChoiceCard(choice: StoreSoundChoice, followUp: StoreCardFollowUp):
         await addStoreItemToProject(sound.slug, { assetIds: [sound.assetId] });
         settled = true;
         view.status.textContent = `「${sound.title}」을(를) 프로젝트에 넣었어요.`;
-        followUp(`[사용자가 스토어에서 넣음] ${choice.need} ← 「${sound.title}」 리소스 id ${storeProjectId(sound.slug, sound.assetId)}. 원래 요청을 이어서 하라 — set_game_audio{role:'se', cue:'${choice.cue ?? sound.cue}', resourceId} 로 그 자리에 건다(새로 찾지 말 것).`);
+        followUp(`[사용자가 스토어에서 넣음] ${choice.need} ← 「${sound.title}」 리소스 id ${storeProjectId(sound.slug, sound.assetId)}. 원래 요청을 이어서 하라 — ${"ambient" in sound && sound.ambient ? "set_game_audio{role:'bgs', mapIds, resourceId} 로 맵 환경음에 건다" : `set_game_audio{role:'se', cue:'${choice.cue ?? sound.cue}', resourceId} 로 그 자리에 건다`}(새로 찾지 말 것).`);
       } catch (error) {
         for (const node of all) node.disabled = false;
         view.status.textContent = `넣지 못했어요: ${storeFailure(error).message}`;
