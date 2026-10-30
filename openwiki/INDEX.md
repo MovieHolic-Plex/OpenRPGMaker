@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7790KB / 약 2,288,768 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7789KB / 약 2,288,288 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 62KB | 19KB | 400 | ~18,486 |
-| `openwiki/assistant-v2.md` | 209KB | 46KB | 597 | ~63,596 |
+| `openwiki/assistant-v2.md` | 206KB | 46KB | 583 | ~62,813 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -43,7 +43,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 210KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1253 | ~62,400 |
 | `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,211 |
-| `openwiki/runtime-sessions.md` | 169KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 925 | ~46,414 |
+| `openwiki/runtime-sessions.md` | 171KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 936 | ~46,717 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 266KB | 48KB | 2413 | ~75,025 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
@@ -141,7 +141,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/i18n.md` | 1 | `docs/terminology/product-terminology.md` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 8 | `-x2.png`, `.css`, `.empty.json`, `scripts/tmp-jp-gen.mts`, `src/ai/modernTilesetPolicy.ts`, `town-x3.png`, `verify-shots/jp-city/editor-town-full.png`, `verify-shots/jp-city/town-1x.png` |
-| `openwiki/licensing.md` | 3 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md`, `node_modules/phaser/LICENSE.md` |
+| `openwiki/licensing.md` | 2 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md` |
 | `openwiki/location-layer-affordance-audit.md` | 2 | `src/styles/editor/map-location-layer.css`, `verify-shots/loc-draw-cta/SUMMARY.md` |
 | `openwiki/modern-campus-interior.md` | 1 | `modernCampusInteriorSpec.json` |
 | `openwiki/modern-campus.md` | 8 | `campus_layout.py`, `campus_props.py`, `mc_core.py`, `preview/_all-x4.png`, `props_a.py`, `props_b.py`, `props_c.py`, `src/assets/modernCampusLayouts.json` |
@@ -321,7 +321,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L295` 바로 플레이 게임 (2026-10-23)
   - `L392` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 209KB · 597줄 · ~63,596 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 206KB · 583줄 · ~62,813 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -338,15 +338,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L292` 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
 - `L317` 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
 - `L329` 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
-- `L354` 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
-- `L368` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L377` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
-- `L386` 켜는 법
-- `L393` 구조 — v1 실행기를 그대로 쓴다
-  - `L411` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
-- `L515` 빌더가 하는 것 / 못 하는 것
-- `L574` 시험
-- `L583` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L354` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
+- `L363` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+- `L372` 켜는 법
+- `L379` 구조 — v1 실행기를 그대로 쓴다
+  - `L397` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+- `L501` 빌더가 하는 것 / 못 하는 것
+- `L560` 시험
+- `L569` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
@@ -3061,7 +3060,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1822` 상태의 부위 손실·전투 오라 (2026-10-27)
 - `L1826` 효과음 자리 표 `system.seCues` (2026-10-30)
 
-### `openwiki/runtime-sessions.md` — 169KB · 925줄 · ~46,414 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 171KB · 936줄 · ~46,717 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -3089,25 +3088,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L418` Game menu designs and information ownership (2026-09-18)
   - `L448` Four era-inspired menu windows (2026-09-18 follow-up)
 - `L472` Player options, inventory views and honest shop services (feature16, 2026-09-21)
-- `L501` 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
-- `L530` 도트 창 통일 — ESC 메뉴·장비·아이템·여관·전투 결과 (2026-09-28)
-- `L564` Persistent battle reports and formation (2026-09-21)
-- `L572` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
-- `L582` 갤러리와 줄 음성 (2026-09-25)
-- `L594` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
-- `L615` 탈것 — 소형선·대형선·비행선 (2026-09-26) + 초코보·광산 수레·뗏목 (2026-10-15)
-- `L641` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
-- `L663` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
-- `L677` Original monster campaign journal and field menus (2026-10-03)
-- `L686` Monster party common UI dogfood follow-up (2026-10-03)
-- `L715` Collector supply shop (2026-10-04)
-- `L740` Emerald reference shop stages (2026-10-04)
-- `L782` Default camera zoom during new game and Continue (2026-10-04)
-- `L794` Authored sliding floors restored in the current engine (2026-10-04)
-  - `L838` Emerald shop confirmation backdrop and pending row (2026-10-04)
-- `L869` 몬스터 센터 회복 연출 (2026-10-16)
-- `L873` 몬스터 필드 아이템 사용과 가방 포켓 (2026-10-16, poke-sys-items)
-- `L879` 체감 속도 — 대사 흘림·엔딩 크레딧·엔딩 뒤 「이어하기」 (2026-10-29)
+- `L512` 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
+- `L541` 도트 창 통일 — ESC 메뉴·장비·아이템·여관·전투 결과 (2026-09-28)
+- `L575` Persistent battle reports and formation (2026-09-21)
+- `L583` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
+- `L593` 갤러리와 줄 음성 (2026-09-25)
+- `L605` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
+- `L626` 탈것 — 소형선·대형선·비행선 (2026-09-26) + 초코보·광산 수레·뗏목 (2026-10-15)
+- `L652` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
+- `L674` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
+- `L688` Original monster campaign journal and field menus (2026-10-03)
+- `L697` Monster party common UI dogfood follow-up (2026-10-03)
+- `L726` Collector supply shop (2026-10-04)
+- `L751` Emerald reference shop stages (2026-10-04)
+- `L793` Default camera zoom during new game and Continue (2026-10-04)
+- `L805` Authored sliding floors restored in the current engine (2026-10-04)
+  - `L849` Emerald shop confirmation backdrop and pending row (2026-10-04)
+- `L880` 몬스터 센터 회복 연출 (2026-10-16)
+- `L884` 몬스터 필드 아이템 사용과 가방 포켓 (2026-10-16, poke-sys-items)
+- `L890` 체감 속도 — 대사 흘림·엔딩 크레딧·엔딩 뒤 「이어하기」 (2026-10-29)
 
 ### `openwiki/schedule-planner.md` — 4KB · 35줄 · ~1,143 토큰
 
