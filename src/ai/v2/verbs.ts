@@ -19,7 +19,6 @@ import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTow
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
-import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
 import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
@@ -1580,7 +1579,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const escalate = (tool: PiToolShape): PiToolShape => !PATH_LOW_LEVEL.has(tool.name) ? tool : { ...tool, escalateHint: () => env.ctx.project.gameBlueprint
     ? `[상위 동사로] ${tool.name} 로 청사진 경로(단계 이벤트·조건·엔딩 호출)를 하나씩 맞추지 않는다 — build_blueprint_path 를 한 번 부르면 청사진 단계대로 함수가 짓는다(대사만 steps[{id,lines}]). 이 도구는 경로 밖의 작은 수정에만 쓴다.`
     : undefined };
-  return wantsGameTools(t) || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))]) : verbs;
+  // 설명 걷기(schemaDedupe)·영어 사본·필요할 때 싣기는 노출 단계(toolExposure.ts exposeV2Tools)가 한다 — 처음부터 싣는 도구만 기준으로 걷어야
+  // 나중에 싣는 도구를 가리키는 «같은 모양» 표시가 생기지 않는다. 게임 요청은 v2 도구 묶음 전부(v2ToolPool)를 같은 감싸개로 만들어 둔다.
+  const pool = wantsGameTools(t) && !musicOnly(t);
+  return wantsGameTools(t) || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
 }
 
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */

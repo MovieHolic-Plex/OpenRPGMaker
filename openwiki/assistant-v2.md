@@ -59,6 +59,15 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 음악 낱말(음악·배경음·브금·BGM·팡파르·사운드트랙·OST)이 있으면 `FALLEN_TIERS` 음악 단이 `recommend_bgm`·`store_find_music`·`store_install`·`set_game_audio`·`get_database_records` 를 싣는다.
 맵·시스템 음악 연결이 바뀌었으면 마감 검사가 「playAudio 이벤트」를 더 요구하지 않는다(`gameChecks.ts` `audioBindingsChanged`). 기본은 조수가 묻지 않고 스토어 곡을 넣어 잇고, 걸지 않았으면 마감 검사가 `set_game_audio`(필요하면 `store_find_music` → `store_install`)를 요구한다. 사용자가 「먼저 묻기」를 켰을 때만 음악 카드가 질문으로 세져 관문이 재촉하지 않는다. 스토어 음악 길은 `openwiki/asset-store.md` 「조수가 스토어 음악을 찾아 넣는다」.
 
+### 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
+
+게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
+- **처음부터 싣는 도구** = 이 요청 묶음(`v2ExtraToolNames`) ∩ `V2_UP_FRONT`. `V2_UP_FRONT` 는 기록된 실행(turns/*.json `toolArgs` = 모델이 직접 부른 호출)에서 세션 수 terra ≥10 또는 opus ≥20 인 도구다.
+- **필요할 때 싣는 도구** = 묶음의 나머지 + `v2ToolPool()`(모든 v2 낱말 묶음의 합). `load_tools{names}` 가 다음 호출부터 선언하고(실행기 `env.declareTool` → in-place push), 이름으로 바로 부르면 실행기 `resolveFallbackTool` → `options.v2.lazyTool` 이 그 자리에서 싣고 실행한다. 할 일 고리가 강제·우선하는 도구도 먼저 싣는다. 없는 이름은 영어 거절 글(`unknownToolText`).
+- **영어 사본**: `src/ai/v2/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
+- **같은 모양 걷기**: 설명 뺀 모양이 400자 이상인 하위 스키마가 앞(처음부터 싣는 도구)에 있으면 v1 도구는 느슨한 자리표시(«Same shape as 도구 경로»)로, v2 동사는 설명만 걷는다(동사는 광고 스키마가 곧 검증기라서). v1 도구의 실제 검증은 레지스트리 `validateArgs` 가 원래 스키마로 한다.
+- 측정 `bun scripts/qa/assistant-v2/dumpPrompt.mts`(도구 글), 기록 재생 `bun scripts/qa/assistant-v2/toolExposureReplay.mts`(닿음·인자 검증 회귀 0 이어야 한다).
+
 ## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
 
 사람 판정자가 엔딩에 못 닿는 게임이 자동 플레이로는 통과했다(연애 j90: 투명 「집 현관」, 장난감 가게 j90: 오프닝이 옮긴 인형).

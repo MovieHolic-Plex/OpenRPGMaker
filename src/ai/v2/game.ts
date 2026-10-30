@@ -206,8 +206,20 @@ export function v2ExtraToolNames(task: string): string[] {
   return [...new Set(want)];
 }
 
-export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
-  const names = v2ExtraToolNames(task).filter((name) => getTool(name));
+/**
+ * v2 가 어느 요청에서든 내놓는 v1 도구 전부(낱말 묶음의 합). 게임 요청은 이 중 기록에서 자주 쓴 것만 처음부터 싣고 나머지는
+ * load_tools 로(또는 이름으로 바로 불러) 싣는다(toolExposure.ts) — 묶음 낱말을 못 맞춘 요청도 필요한 도구에 닿는다.
+ */
+export function v2ToolPool(): string[] {
+  return [...new Set([
+    ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
+    ...V2_TERRAIN_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object",
+  ])].filter((name) => getTool(name));
+}
+
+/** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
+export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
+  const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
   return withSchemaFillCleanup(withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task)));
 }
 

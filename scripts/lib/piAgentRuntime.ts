@@ -932,10 +932,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let lastContextTrim = 0;
   let softPref: { id: string; toolName: string; reminder: string; served: number } | undefined;
   let softSeq = 0;
+  // v2 필요할 때 싣는 도구(src/ai/v2/toolExposure.ts): 강제·우선할 도구나 load_tools 가 고른 도구를 다음 호출 전에 선언한다(in-place push).
+  const ensureV2Tool = (name: string): void => {
+    if (exposed.has(name)) return;
+    const lazy = options.v2?.lazyTool?.(name);
+    if (lazy) declare(wrapTool(lazy));
+  };
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
-    requireToolNextTurn: (toolName?: string) => { forceToolTurn = toolName ?? true; },
-    preferToolNextTurn: (toolName: string, reminder: string) => { softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
+    requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
+    preferToolNextTurn: (toolName: string, reminder: string) => { ensureV2Tool(toolName); softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
+    declareTool: (tool: PiToolShape) => { if (!exposed.has(tool.name)) declare(wrapTool(tool)); },
     clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
@@ -1125,6 +1132,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
   // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
   const resolveFallbackTool = (name: string) => {
+    // v2: 필요할 때 싣는 사본(영어·같은 감싸개)을 먼저 — 이름으로 바로 부른 호출은 그 자리에서 싣고 실행한다. 없는 이름은 영어 거절 글.
+    if (options.v2) {
+      const lazy = options.v2.lazyTool?.(name);
+      if (lazy) { ensureV2Tool(name); return tools.find((tool) => tool.name === name); }
+      const v1 = shapeFor(name);
+      if (v1) { if (!exposed.has(name)) declare(v1); return v1; }
+      const text = options.v2.unknownToolText?.(name);
+      return text ? { name, label: name, description: text, parameters: { type: "object", additionalProperties: true }, async execute() { throw new Error(text); } } as PiToolShape : undefined;
+    }
     const shape = shapeFor(name);
     if (shape && !exposed.has(name)) declare(shape);
     return shape;

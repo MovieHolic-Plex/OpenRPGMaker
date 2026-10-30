@@ -55,6 +55,11 @@ export interface PiAssistantV2Env {
   readonly clearToolPreference?: () => void;
   /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
   readonly freshContextNextTurn?: () => void;
+  /**
+   * 도구 하나를 이 실행의 도구 목록에 더한다 — 다음 모델 호출부터 선언된다(load_tools, src/ai/v2/toolExposure.ts). 실행기가 감싸개(wrapTool)를 씌운다.
+   * 없으면(시험·덤프) load_tools 는 도구 글만 돌려준다.
+   */
+  readonly declareTool?: (tool: PiToolShape) => void;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }
@@ -72,6 +77,13 @@ export interface PiAssistantV2Hooks {
    * 돌려준 글은 그 호출의 마지막 메시지에만 붙고 대화 기록에는 남지 않는다. 오래된 도구 결과 줄이기도 이 갈고리가 있을 때만 한다.
    */
   readonly stateCard?: (env: PiAssistantV2Env) => string | undefined;
+  /**
+   * 목록에 없는 이름을 모델이 불렀을 때 — 필요할 때 싣는 v2 사본(toolExposure.ts)을 돌려주면 실행기가 그 자리에서 선언하고 실행한다.
+   * undefined 면 unknownToolText 로 영어 거절 글을 준다.
+   */
+  readonly lazyTool?: (name: string) => PiToolShape | undefined;
+  /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글. */
+  readonly unknownToolText?: (name: string) => string;
   /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }

@@ -16,6 +16,7 @@ import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts";
+import { exposeV2Tools, unknownToolText, type V2ToolExposure } from "../../src/ai/v2/toolExposure.ts";
 import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
 import { requestSkeleton, skeletonCard } from "../../src/ai/v2/loop/requestSkeleton.ts";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../../src/ai/v2/loop/continuation.ts";
@@ -305,6 +306,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     return note;
   };
   const lateBuildPending = (env: PiAssistantV2Env) => finishBuildPending(env, session);
+  let exposure: V2ToolExposure | undefined;
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store),
@@ -316,7 +318,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     // 존재하지 않는 이름 하나 — 레지스트리 도구를 하나도 고르지 않고, 이름 지정 실행이라 v1 확인표·작가 도구도 꺼진다.
     toolNames: ["__assistant_v2__"],
     v2: {
-      tools: (env) => { const tools = withTodoLoop(env, store, session.loop, createV2Tools(env, session), session.hooks); for (const t of tools) toolNames.add(t.name); return tools; },
+      // 처음부터 싣는 도구 + 필요할 때 싣는 도구(load_tools·이름 호출) — src/ai/v2/toolExposure.ts. 다음 호출 제안(nextCall)은 둘 다 부를 수 있다.
+      tools: (env) => {
+        const all = withTodoLoop(env, store, session.loop, createV2Tools(env, session), session.hooks);
+        for (const t of all) toolNames.add(t.name);
+        exposure = exposeV2Tools(env, all);
+        return exposure.tools;
+      },
+      lazyTool: (name) => exposure?.lazy.get(name),
+      unknownToolText: (name) => unknownToolText(name, exposure?.lazy ?? new Map()),
       // H6 상태 카드(src/ai/v2/loop/contextTrim.ts 와 함께): 호출마다 마지막 메시지 끝에만 붙는 짧은 카드 — 진척 줄·지금 할 것+다음 호출·그 항목의 마지막 ✗.
       // 오래된 도구 결과가 줄어도 할 일과 마지막 실패는 매 호출 눈앞에 있다. 대화 기록에는 남지 않는다.
       stateCard: (env) => {

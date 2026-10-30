@@ -6,6 +6,7 @@ import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
 import { createV2Tools, V2Session } from "../../../src/ai/v2/verbs.ts";
 import { buildV2SystemPrompt, V2_CORE_PROMPT, V2_CARDS } from "../../../src/ai/v2/prompt.ts";
 import { withTodoLoop } from "../../../src/ai/v2/loop/todoTools.ts";
+import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";
 import { MONSTER_TOWN_CARD } from "../../../src/ai/v2/builders/monsterTown.ts";
 import { JOSEON_CARD } from "../../../src/ai/v2/builders/joseon.ts";
 import { WIZARDING_CARD } from "../../../src/ai/v2/builders/wizarding.ts";
@@ -19,6 +20,7 @@ import type { ToolContext } from "../../../src/editor/tools/types.ts";
 const TASKS = [
   "아늑한 선술집을 만들어 줘. 바 카운터와 벽난로가 있어야 해.",
   "공포 게임 하나 만들어 줘 — 폐교 탐험, 단서와 금고, 보스 전투, 엔딩, 상점, 퀘스트, 배경음악, 강과 다리, 스토어 그림.",
+  "판타지 RPG 게임 하나 만들어 줘.",
 ];
 const out: string[] = [];
 const hr = (t: string) => out.push(`\n================ ${t} ================`);
@@ -57,7 +59,10 @@ for (const task of TASKS) {
     ctx, request: { task, provider: "local-cli:claude", mapIds: [], project } as never,
     emit: () => {}, record: () => {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {},
   };
-  const tools = withTodoLoop(env, session.todo, session.loop, createV2Tools(env, session), session.hooks);
+  // 실행기와 같은 모양: 할 일 고리 → 노출(처음부터 싣는 도구 + load_tools, 나머지는 필요할 때) — scripts/lib/assistantV2Runtime.ts.
+  const exposure = exposeV2Tools(env, withTodoLoop(env, session.todo, session.loop, createV2Tools(env, session), session.hooks));
+  const tools = exposure.tools;
+  stats.push(`on-demand tools (${exposure.lazy.size}) [${task.slice(0, 20)}…]: ${[...exposure.lazy.keys()].join(", ")}`);
   hr(`TOOLS (${tools.length}) for task: ${task}`);
   const v2Text: string[] = []; const v1Text: string[] = [];
   for (const t of tools) {
