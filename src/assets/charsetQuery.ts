@@ -57,7 +57,7 @@ const SYNONYMS: readonly {
 }[] = [
   { terms: ["old woman", "elder woman", "할머니", "노파"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
   { terms: ["old man", "elder man", "할아버지", "노인 남성"], gender: "male", age: "elder", tags: ["노인", "남성"] },
-  { terms: ["아줌마"], gender: "female", age: "middle", tags: ["여성", "중년"] },
+  { terms: ["아줌마", "아주머니", "주부", "housewife"], gender: "female", age: "middle", tags: ["여성", "중년"] },
   { terms: ["아저씨"], gender: "male", age: "middle", tags: ["남성", "중년"] },
   { terms: ["소녀", "girl"], gender: "female", age: "child", tags: ["소녀", "아이", "어린이"] },
   { terms: ["소년", "boy"], gender: "male", age: "child", tags: ["소년", "아이", "어린이"] },

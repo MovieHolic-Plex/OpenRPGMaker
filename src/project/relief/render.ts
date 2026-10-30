@@ -43,6 +43,8 @@ export interface ReliefRenderOptions {
    * 켜면 경사로 면은 타일 위(over)로 가고, 층 밝기 곱·발치 반투명 그늘 대신 칩셋 색만 쓴다 — 곱한 색은 칩셋에 없는 색이 되어 튄다.
    */
   rampArt?: ReliefRampArt;
+  /** 경사로 번호(slopes 순서)마다 통째 조각(ReliefRampArt.pieces 에서 고른 것). 조각이 있는 경사로는 화면 사각형에 그대로 찍는다. */
+  slopeArt?: readonly (ReliefArtPatch | null | undefined)[];
   /**
    * 다리 판 칸(선택, r3 2026-09-29): 칸 번호마다 0 = 다리 아님, n > 0 = 다리이고 그 밑 골짜기 바닥이 n - 1 단(relief.ramps 코드 9, walk.ts reliefBridgeMask). 그 칸과 둘레 한 칸은 네모 가장자리
    * (대각선으로 깎지 않는다), 다리 칸 가장자리에는 뒤·옆 턱(rim)을 그리지 않는다 — 판자 타일이 윗면을 덮고, 옆으로는 골짜기 바닥이 보인다.
@@ -78,7 +80,15 @@ export interface ReliefRenderWindow {
 }
 
 export interface ReliefArtPatch { readonly w: number; readonly h: number; readonly rgba: ArrayLike<number> }
-export interface ReliefRampArt { readonly lit: ReliefArtPatch; readonly shade: ReliefArtPatch; readonly side: ReliefArtPatch }
+export interface ReliefRampArt {
+  readonly lit: ReliefArtPatch; readonly shade: ReliefArtPatch; readonly side: ReliefArtPatch;
+  /**
+   * 통째 조각(선택): 매끈한 경사로 하나를 반복 무늬 대신 한 장 그림으로 칠한다. 키 = `<ramp|stairs>:<dir>:<w>x<h>:<단 차>`
+   * (screen.ts reliefRenderOptions 가 경사로마다 고른다). 조각 크기 = 그 경사로가 화면에 차지하는 사각형
+   * (북쪽 오르막 w 칸 × (h 칸 + 단 차) 줄) — 절벽 면 높이와 같은 줄 수의 깎인 길 + 발치. 없으면 그림이 예전과 같다.
+   */
+  readonly pieces?: Readonly<Record<string, ReliefArtPatch>>;
+}
 
 /**
  * 칸 사각형 [x, x+w) × [y, y+h) 안에서 높이가 dir 쪽으로 lo → hi 로 오른다.
@@ -935,7 +945,29 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       rgba[o] *= light; rgba[o + 1] *= light; rgba[o + 2] *= light;
     }
   }
+  if (opt.slopeArt?.some(Boolean)) paintSlopePieces(opt.slopeArt, gslopes, { rgba, ssl, PW, SH, ox, oy, pad });
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(opt.ground ? { nativeGround: true } : {}), ...(overSlope ? { overSlope } : {}) };
+}
+
+/**
+ * 통째 경사로 조각(ReliefRenderOptions.slopeArt): 그 경사로 화소에 조각을 화면 사각형 기준으로 찍는다(반복 없음).
+ * 북쪽 오르막 사각형 = x [s.x, s.x+w) 칸, 화면 y [s.y·T + pad − hi·U, (s.y+h)·T + pad − lo·U). 다른 방향은 조각을 쓰지 않는다.
+ */
+function paintSlopePieces(
+  art: readonly (ReliefArtPatch | null | undefined)[], slopes: ReliefSlope[],
+  r: { rgba: Uint8ClampedArray; ssl: Int16Array; PW: number; SH: number; ox: number; oy: number; pad: number },
+) {
+  const { rgba, ssl, PW, SH, ox, oy, pad } = r;
+  for (let i = 0; i < PW * SH; i++) {
+    const sid = ssl[i]; if (!sid) continue;
+    const p = art[sid - 1], s = slopes[sid - 1];
+    if (!p || !s || s.dir !== "n") continue;
+    const x = (i % PW) + ox - s.x * T, y = Math.floor(i / PW) + oy - (s.y * T + pad - s.hi * U);
+    if (x < 0 || y < 0 || x >= p.w || y >= p.h) continue;
+    const q = (y * p.w + x) * 4;
+    if (!p.rgba[q + 3]) continue;
+    rgba[i * 4] = p.rgba[q]!; rgba[i * 4 + 1] = p.rgba[q + 1]!; rgba[i * 4 + 2] = p.rgba[q + 2]!; rgba[i * 4 + 3] = 255;
+  }
 }
 
 /** 주변 땅의 팔레트로 칠하는 연속 비탈. 가운데는 닳은 흙, 양옆과 양끝은 풀로 부드럽게 잇는다. */

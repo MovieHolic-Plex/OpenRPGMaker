@@ -1,0 +1,341 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5cdeb64df7c4cddfa4bfb70dbc8c8240a954a9cee2356839e8b0a69f3b49242",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp h1 w3 cut through a south-facing cliff face",
+ "label": "bbox-village-ramps/ramp-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "bbox-village-ramps",
+   "fallback": true,
+   "reason": "칩셋 bbox-village-ramps 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 14,
+  "darkV5": 81,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope (dirt, darker shaded band between the cliff cuts)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat dirt ground in front of the ramp",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cliff cut walls (narrow 4px columns with grass caps at rows 0-3)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x32 rectangle (width 48 on every row). The main body is a speckled dirt texture covering rows 0-31: a slightly darker ramp band at rows 0-14 and flat ground at rows 15-31. No south-facing vertical face of 3 or more rows is drawn across the body. Only the two narrow 4px side columns (x 0-3 and 44-47) show brown cliff wall faces, with grass at rows 0-3 and a dark base line at row 14-15. The ramp is a continuous textured plane, so it reads as a flat top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tan/brown dirt ramp with a green lip along the top and darker brown edge and step lines. It shows about 5 lightness steps, close to the references' 5-6. Its dark edge pixels are 0% neutral, so the outline leans brown beside the soil and green beside the grass, which is the dark material tone and not a black sticker line. It has 7 visible tones per tile, equal to the paving reference and above the grass reference's 3, with 0% near-flat coverage and no 5x5 flat fills. By eye the surface is calmer and more banded than the references, with only about 15 colours in total against the grass's 80. Grain is present but sparse, so density is slightly lower, though still within what an artist would accept next to the references. I judged this from a very small crop, so I am not fully certain, but the measured facts and the visible structure both support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24392
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope plane between the cliff cheeks",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat dirt ground in front of the ramp",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cliff cheek walls, narrow strips with grass tops",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x32 opaque dirt texture. Rows 0-15 show a slightly darker ramp band between two narrow cliff cheeks (dark brown on the left, orange on the right, both grass-topped at rows 0-3). The cheeks end in a dark base line at row 15, and only that line separates the band from the flat dirt floor at rows 16-31. The ramp band has no vertical south face of its own, no eave shadow and no height step. The only vertical faces are the two thin side cheeks, so the tile reads as a flat top-down dirt surface rather than a 3/4 block with a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate shows 7 visible tones per tile, the same as the paving reference and above the grass reference's 3. Near-flat coverage is 0%, so there are no large flat fills, and the dirt body carries grain dots and banded steps from a lighter top lip down to darker rows. 0% of the dark edge pixels are neutral, so the outlines lean brown or green rather than being a black sticker line. The piece is simple and the tile palette is small (15 colours in total), but per-tile density matches the references and nothing reads as thinner or flatter than the paving. Texture is moderate rather than lavish.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24590
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp / ground surface (dirt, full width)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff-edge wall (brown vertical face, grass cap at rows 0-3)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff-edge wall (lit vertical face, grass cap at rows 0-3)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x32 rectangle. The main body is a dirt ramp surface with a mottled texture across rows 0-31. Rows 0-14 are slightly darker, as if shaded, and there is a faint dark band near rows 11-14. No front-edge line or eave shadow crosses the ramp, and no south face of 3 or more rows is drawn for it. The only vertical faces are the narrow cliff-edge walls at the far left and right, rows 4-14 with a dark base at row 15, which are not the main body. The ramp reads as a flat, top-down walkable surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate reads as a soil/earth ramp with a dark brown edge, horizontal grain streaks, and a green grass lip. Its dark edge pixels are 0% neutral, so the outline is tinted brown rather than a black sticker line. It shows 7 visible tones per tile, matching the paving reference (7) and exceeding the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. The streaks are somewhat regular and the palette is small (15 colours in total), so the texture is only moderate rather than rich. Overall it is at or near the reference level on the primary facts, with tinted outlines and visible grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22471
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left cliff wall grass cap",
+      "rows": "0-1",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff wall front face (brown, shaded)",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall grass cap",
+      "rows": "0-1",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall front face (tan)",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp slope, dirt texture between the walls",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "ground at the foot of the ramp",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a 48x32 terrain tile, not a standing object. The dirt ramp surface is a textured plane across all 32 rows. Rows 0-14 are slightly darker, as a slope. Rows 16-31 are lighter ground at the foot. The two flanking cliff walls (x about 0-3 and 44-47) have grass caps on rows 0-1 and vertical faces on rows 2-14. Each wall ends in a dark front-edge line on row 15. The walls read as a 3/4 cliff cut with the ramp between them. Interior columns show faint darker and lighter marks on rows 11-12 and 21, which are texture noise, not a distinct face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a soil ramp with horizontal step bands, a dark brown edge and a green grass strip along the bottom. It shows 7 visible tones per tile, equal to the paving reference and above the grass reference's 3. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, meaning they lean brown or green and match the adjacent material instead of forming a black sticker line. The soil carries grain dots and the bands have lighter lips, giving about 5 lightness steps. The ramp reads as a coherent ground piece next to the references. It is somewhat simpler and more banded than the grass, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25462
+  }
+ ],
+ "decidedAt": "2026-10-30T17:24:51.821Z",
+ "cells": {
+  "16": [
+   "0e4614b287d6173e",
+   "1f9a95aa875979c1",
+   "61e5dae9ac219aea",
+   "8dd6249a06b109e7",
+   "9c067340a87924dc",
+   "be166ae4160b8206"
+  ],
+  "24": [
+   "1e65c169b7080207",
+   "7e206bd4389e9a8e",
+   "a25cf1a7f20d4edf",
+   "b1b1ae77e94986c3",
+   "cc6bbb7cc3cfcb69",
+   "e43bd3d646ea0a8b",
+   "e55b20e23b8ca9d9",
+   "f647785b527d38c2"
+  ],
+  "32": [
+   "4965d848ffc508d9",
+   "63085e67d9da4b10",
+   "88eedab1ee3a9f9d",
+   "ce9b63aa93d2e3af",
+   "e100c53aed037688",
+   "f63846048d50f42c"
+  ],
+  "48": [
+   "7886db8258f4c1e2",
+   "7b6f4cd7d2d68f04"
+  ]
+ }
+}
