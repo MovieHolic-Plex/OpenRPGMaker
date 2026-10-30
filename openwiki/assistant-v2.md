@@ -351,6 +351,20 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 - **잠기지 않은 출구에 자물쇠 문을 세우지 않는다**(`exitDress.doorPiece`): 손 도트 실내 칩셋(`atlas_biome_interior`)에는 사람이 드나드는 1칸 나무 문 조각이 없어 boss-room r2 새 방의 「→ 지하 던전」 출구가 `locked door`(큰 자물쇠 나무 문)로 섰다. 잠기지 않은 출구는 낱말 「door」 조각(「indoor well」·「trapdoor」·「doormat」 제외) → 같은 1×2 모양의 `iron gate open`(열린 쇠창살 문, 6423·6424) → `locked door` 순으로 고른다. 칩셋에 있는 다른 문 조각: 「둥근 문」(호빗 굴 2×2 장식 걸이)·「둥근 아치 문틀」(칸막이 틈에 거는 3×2) — 벽 발치 출구 모양이 아니다. 새 방 쪽 지하 던전 착지 칸은 문 그림 없는 이동 칸이다(잇기 `linkChild` 의 마지막 갈래).
 - 런타임 걸음 `walkpath` 에 `dialogueDump`·`vitals`(파티 HP, `e2eVitals=1` 쿼리를 단다)·`untilField`(Enter 로 넘겨 필드로 돌아올 때까지 + `stateDump` 위치 파일)를 더했다. 전/후 그림: `suite/ledger/evidence/vm7-wayfind/1030-*`.
 
+## 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
+
+`assistant-capability genre-run`(실제 입력창 Pi 경로, opus 5.5 medium · gpt-6.1-terra medium)으로 코딩 에이전트판(`flagship/maouKonbini.ts`)과 같은
+「일본 상점가 + 편의점 + 원룸」 요청을 돌려 비교했다. 두 판 모두 저장·재로드·lint 0 은 통과했지만 아래 결함이 있었다.
+
+- **「상점가」가 실내로 읽혔다**(`todo/checks.ts` KIND_WORDS): `상점` 이 interior 낱말이라 거리 할 일의 기계 검사가 실내를 찾아 실패했다. interior 는 `상점(?!가)`·`가게(?!\s*거리)`, street 에 상점가·시장·아케이드.
+- **문 잇기 도구가 v2 풀에 없었다**(`game.ts` FALLEN_TIERS 일본 거리 묶음): terra 가 `link_jp_city_interior` 를 불러 unknown tool, 둘 다 `create_transfer_pair` 로 손으로 이었다. 일본 거리 낱말이면 `link_jp_city_interior`·`list_map_locations`·`set_map_door`·`add_street_walkers` 를 싣고 카드에 「문마다 link_jp_city_interior」를 적는다.
+- **차임을 문 이벤트에 또 넣었다**(`mapDoorTools.doorLine`): 편의점 문은 이미 `chimeSe` 가 켜졌는데 두 모델 모두 `patch_event_page` 로 소리 명령을 넣다가 transfer 를 지웠다. 문 목록 줄에 「입점 차임 이미 켜짐 — 소리 명령을 따로 넣지 않는다」를 붙인다.
+- **「자전거 없이」를 빌더가 무시했다**(`builders/jpCity.ts` `jpAvoidProps`): 요청 낱말 중 부정형(없이·빼·말고·no/without)은 소품 낱말에서 빼고 `hints.avoidProps`(bike·vend·car·bench·planter·nobori·cone)를 `compose_jp_city_street` 의 avoidProps 로 넘긴다. opus 는 이걸 돌아가려고 15번쯤 불렀다.
+- **행인 검색어 「회사원」「행인」이 0건**(`charsetQuery.ts` SYNONYMS): 회사원·직장인·점원·행인 동의어를 더했다(회사원 → modern3 정장 칩). REFMAP 칩 자동 선택 문제와는 무관하다.
+- **`add_street_walkers` 의 {query} 칩이 칩 관문에 거절됐다**(`streetWalkersTool.ts`): query 로 도구가 고른 칩은 `noteToolChosenGraphic` 으로 적어 관문이 면제하고, 같은 맵에서 이미 쓴 칩을 피해(avoidKeys·seed) 행인끼리 같은 칩이 되지 않게 한다.
+- 남은 것: 편의점 점원이 마법 상점 직원 칩(terra), 기본 타이틀·판타지 오프닝을 그대로 둠(둘 다), 요청 없이 주인공 외형·시작 장비를 바꿈(둘 다), `patch_event_page` 의 「transfer 빠짐」 경고가 door:true 추가에도 뜨는지 확인.
+- 증거: http://mdc-server:18301/assistant-parity.html
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
