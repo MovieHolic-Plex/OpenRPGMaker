@@ -457,7 +457,7 @@ if (req) {
 // empty floor: floor cells with nothing in them or next to them (8 neighbours: no wall, face, piece or rail), not on a circulation path
 const solidAt = (x: number, y: number) => !inMap(x, y) || !A.isFloor(x, y) || block[idx(x, y)] === 1;
 const roomStats: Record<string, { floor: number; empty: number; emptyPct: number; rect: number[] | null; rugs: number }> = {};
-let floorAll = 0, emptyAll = 0;
+let floorAll = 0, emptyAll = 0, emptyRawAll = 0;
 roomList.forEach(([c, r], k) => {
   const fl = comps[c]!.filter((i) => A.isFloor(i % W, Math.floor(i / W)));
   // circulation: shortest free-floor paths between this room's doors (entrance, doorways, stair entries), widened to 3 cells, are not "empty"
@@ -475,10 +475,11 @@ roomList.forEach(([c, r], k) => {
     for (let b = a + 1; b < P0.length; b++) { let i = P0[b]!; if (prev[i] === -2) continue;
       while (i >= 0) { const x = i % W, y = (i - x) / W; circ[i] = 1; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (inMap(x + dx!, y + dy!)) circ[idx(x + dx!, y + dy!)] = 1; i = prev[i]!; } }
   }
-  const dead = new Uint8Array(W * H); let nd = 0;
-  for (const i of fl) { const x = i % W, y = (i - x) / W; if (block[i] || circ[i]) continue; let ok = true;
+  const dead = new Uint8Array(W * H); let nd = 0, ndRaw = 0;
+  for (const i of fl) { const x = i % W, y = (i - x) / W; if (block[i]) continue; let ok = true;
     for (let b = -1; b <= 1 && ok; b++) for (let a = -1; a <= 1; a++) if (solidAt(x + a, y + b)) { ok = false; break; }
-    if (ok) { dead[i] = 1; nd++; } }
+    if (ok) { ndRaw++; if (!circ[i]) { dead[i] = 1; nd++; } } }
+  emptyRawAll += ndRaw;
   // largest all-dead rectangle (histogram)
   let best = 0, br: number[] | null = null; const hh = new Array<number>(W).fill(0);
   for (let y = 0; y < H; y++) { for (let x = 0; x < W; x++) hh[x] = dead[idx(x, y)] ? hh[x]! + 1 : 0;
@@ -526,7 +527,7 @@ const wallGrid = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (
 const roomGrid = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => ch(roomAt[idx(x, y)]!)).join(""));
 errors.push(...late);
 extra = { stats: { w: W, h: H, plan, wallGrid, roomGrid, wallIds: walls.map((w) => w.id), roomIds: roomList.map(([, r]) => r.id), rooms: roomReport, walls: walls.map((w) => ({ id: w.id, outer: w.outer, cells: w.cells.length })), doors: doors.length, objects: objs.length, floorCells: built.floorCells,
-  measure: { shell: shellStats, emptyPct: Math.round((100 * emptyAll) / Math.max(1, floorAll)), rooms: roomStats, rugs: Object.values(roomStats).reduce((a, b) => a + b.rugs, 0), maxRugs: Math.max(0, ...Object.values(roomStats).map((r) => r.rugs)),
+  measure: { shell: shellStats, emptyPctAll: Math.round((100 * emptyRawAll) / Math.max(1, floorAll)), emptyPct: Math.round((100 * emptyAll) / Math.max(1, floorAll)), rooms: roomStats, rugs: Object.values(roomStats).reduce((a, b) => a + b.rugs, 0), maxRugs: Math.max(0, ...Object.values(roomStats).map((r) => r.rugs)),
     stairs: stairStats, types: types.size, typeList: [...types].sort(), poolUsed: [...types].filter((t) => poolIds.has(t)), floors: [...new Set([...roomList.map(([, r]) => r.floor), ...zoneList.filter((z) => z.floor).map((z) => z.floor)])] } } };
 if ((errors.length && !process.argv.includes("--force-render")) || !render) done();
 
