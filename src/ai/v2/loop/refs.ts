@@ -2,7 +2,7 @@
 //   - 기준선: 쓰기 턴 시작 때 맵·이벤트·아이템·적 그룹마다 지문. 판정에는 기준선 대비 새로 생기거나 바뀐 것(changed)을 넘긴다
 //     — 「만들어 달라」 항목(fresh)은 시작 저장본에 원래 있던 것으로 통과하지 못한다(sc-1031-b5 엔딩: 원래 있던 엔딩으로 ✓).
 //   - 자동 묶기: 쓰기 동사 전후 차이를 그때 진행 중인 항목(또는 인자 todoId 의 항목)의 refs 에 붙인다. 모델 기억에 기대지 않는다.
-//     항목의 「주 대상」만: 장소=맵, 인물·대사·엔딩·목표·증거 내밀기=이벤트, 전투=이벤트·적 그룹, 아이템=아이템. link·reachable 은 이름으로 찾는다.
+//     항목의 「주 대상」만: 장소·실내 구역(room_zones)=맵, 인물·대사·엔딩·목표·증거 내밀기=이벤트, 전투=이벤트·적 그룹, 아이템=아이템. link·reachable 은 이름으로 찾는다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { runTodoItemCheck } from "../todo/checks";
 import type { CheckResult, TodoChanged, TodoItem, TodoRefs } from "../todo/types";
@@ -54,7 +54,7 @@ const transferOnly = (e: GameEvent) => { const k = kindsOf(e); return k.length >
 export function refsFromDiff(item: Pick<TodoItem, "check">, verb: string, diff: TodoChanged, project: Project): TodoRefs | undefined {
   const kind = item.check?.kind;
   if (!kind || kind === "none" || kind === "link" || kind === "reachable") return undefined;
-  if (kind === "place") return diff.mapIds.size ? { mapIds: [...diff.mapIds] } : undefined;
+  if (kind === "place" || kind === "room_zones" || kind === "room_graph" || kind === "layout_built" || kind === "layout_review") return diff.mapIds.size ? { mapIds: [...diff.mapIds] } : undefined;
   if (kind === "item") return diff.itemIds.size ? { itemIds: [...diff.itemIds] } : undefined;
   if (!EVENT_KINDS.has(kind)) return undefined;
   const refs: TodoRefs = {};
