@@ -68,6 +68,7 @@ import {
   harvestFindToolsNames,
   resolvePiToolShape,
   type PiToolCallRecord,
+  type PiToolExecResult,
   type PiToolShape,
 } from "../../src/ai/piAgent/toolAdapter.ts";
 import { buildToolCapabilityIndex } from "../../src/ai/toolCapabilityIndex.ts";
@@ -81,6 +82,10 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
+import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
+import { resolveDialogueEditLine } from "../../src/editor/tools/dialogueTools.ts";
+import { collectDialogueLines } from "../../src/editor/dialogue/dialogueIndex.ts";
+import { readDialogueDesk } from "../../src/project/dialogueDesk.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -493,7 +498,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
   let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
+  // 완성 뒤 대사 윤문 고리(dialoguePolishHook.ts)의 관문 상태 — 스킬을 읽었나는 실행 전체에서, 장면 문맥은 윤문 차례 안에서 센다.
+  const dialoguePolishState = { skillRead: false, contextRead: false };
   const recordCall = (record: PiToolCallRecord): void => {
+    noteDialoguePolishCall(dialoguePolishState, record.name, record.args, record.result.ok);
     openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
     gameSystemProduction.record(record.name, record.result, ctx.project);
     monsterGameProduction.record(record.name, record.result, ctx.project);
@@ -1116,6 +1124,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
   // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
   const resolveFallbackTool = (name: string) => {
+    // 완성 뒤 윤문 차례에는 윤문 도구 밖의 이름을 풀지 않는다(dialoguePolishHook.ts — 그 차례는 글만 고친다).
+    if (polishBudget && !DIALOGUE_POLISH_TOOLS.includes(name)) return undefined;
     const shape = shapeFor(name);
     if (shape && !exposed.has(name)) declare(shape);
     return shape;
@@ -1148,6 +1158,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let stallRetries = 0;
   // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
   let answered = false;
+  /** 모델이 마지막으로 낸 글 — 완성 뒤 윤문 고리가 짓기 보고를 지우지 않고 그 뒤에 윤문 결과를 붙인 최종 보고를 낸다. */
+  let lastAssistantText = "";
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
       if (!forceToolTurn) return undefined;
@@ -1192,6 +1204,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let toolCalls = 0;
   let toolErrors = 0;
   let usage: PiAgentUsage | undefined;
+  /** 완성 뒤 윤문 차례가 도는 동안만 있다 — 그 차례의 시작 차례 수·토큰과 예산 초과 여부. */
+  let polishBudget: { startTurns: number; startTokens: number; over: boolean } | undefined;
+  let dialoguePolishReport: DialoguePolishReport | undefined;
   let fatal: string | undefined;
   // 제공자 스트림이 도중에 끊긴 오류. 실행을 끝내지 않고 같은 기록 위에서 이어 가기 턴을 연다(providerRetry.ts).
   let resumeAfter: string | undefined;
@@ -1230,6 +1245,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "turn_start") {
       turns += 1;
       emit({ type: "turn", index: turns });
+      // 윤문 차례 예산(dialoguePolishHook.ts) — 넘으면 윤문 도구가 거절하고, 한 번 «멈추고 보고» 를 알린다. 실행을 끊지는 않는다.
+      if (polishBudget && !polishBudget.over && (turns - polishBudget.startTurns > DIALOGUE_POLISH_ROUND_TURNS
+        || (usage ? usage.input + usage.output : 0) - polishBudget.startTokens > DIALOGUE_POLISH_ROUND_TOKENS)) {
+        polishBudget.over = true;
+        agent.steer({ role: "user", content: [{ type: "text", text: "[윤문 예산] 이 윤문 차례의 예산을 다 썼다. 도구를 더 부르지 말고 지금까지 고친 것과 남긴 것을 두세 줄로 보고하고 끝낸다." }], timestamp: Date.now() });
+      }
       // 읽기 전용 턴(계획·질문)은 턴 상한에 걸리면 아무 말도 못 하고 죽는다(2026-10-12: 계획 턴이 읽기만 30번 하다 첫 제작 전체가 중단).
       // 상한 가까이에서 한 번 «지금 쓰라» 고 알린다 — 읽은 것은 이미 모델의 기록에 있다.
       if (request.readOnly && maxTurns >= 10 && turns === Math.floor(maxTurns * 0.75)) {
@@ -1314,7 +1335,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)
         .join("");
-      if (text.trim()) { emit({ type: "assistant", text }); answered = true; }
+      if (text.trim()) { emit({ type: "assistant", text }); answered = true; lastAssistantText = text.trim(); }
       usage = addPiAgentUsage(usage, message.usage);
       // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
       // 로컬 CLI 는 도구 호출 블록·사용량 결과를 내용 없는 message_end 로 알린다 — 빈 답으로 보지 않는다(끝에 보고가 없으면 아래 run.no_answer).
@@ -1403,6 +1424,118 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "error", message: fatal });
       resumeAfter = undefined;
     }
+  };
+  // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts). 지시가 아니라 실행기 단계다:
+  // 린트·전후 계수는 모델 없이 여기서, 윤문 차례에는 윤문 도구만 남기고, 쓰기는 «이번 실행이 쓴 줄 = 바로 고침 / 사람이 쓴 줄 = 제안» 으로 실행기가 가른다.
+  const runDialoguePolishHook = async (): Promise<DialoguePolishReport> => {
+    const t0 = Date.now();
+    // 편집기는 마지막 보고 하나만 말풍선으로 보인다 — 짓기 보고를 남겨 두었다가 윤문 결과를 붙여 다시 낸다.
+    const buildReport = lastAssistantText;
+    const tokensNow = () => (usage ? usage.input + usage.output : 0);
+    const tokens0 = tokensNow();
+    const baseTexts = baseDialogueTexts(base);
+    const written = runWrittenDialogueLines(ctx.project, baseTexts);
+    if (!dialoguePolishWanted(written.length, wantsWholeGame(request.task))) {
+      const report = emptyPolishReport(`새로 쓴 글 ${written.length}줄 — 게임 완성·큰 덩어리가 아니라 건너뜀`, written.length);
+      emit({ type: "execution_status", name: "dialogue_polish.skip", ok: true, summary: report.reason!, data: report });
+      return report;
+    }
+    let lint: Awaited<ReturnType<typeof lintPolishLines>>;
+    try { lint = await lintPolishLines(written); }
+    catch (error) {
+      const report = emptyPolishReport(`윤문 린터를 불러오지 못해 건너뜀(${error instanceof Error ? error.message.slice(0, 160) : String(error)})`, written.length, Date.now() - t0);
+      emit({ type: "execution_status", name: "dialogue_polish", ok: false, summary: report.reason!, data: report });
+      emit({ type: "assistant", text: [buildReport, dialoguePolishReportText(report)].filter(Boolean).join("\n\n") });
+      return report;
+    }
+    const first = lint;
+    const linesAtStart = new Map(collectDialogueLines(ctx.project, { includeDescriptions: true }).map((line) => [line.id, line]));
+    const proposalsAtStart = new Set(readDialogueDesk(ctx.project).proposals.map((proposal) => proposal.id));
+    emit({ type: "execution_status", name: "dialogue_polish.lint", ok: lint.target === 0,
+      summary: `완성 뒤 대사 윤문: 새로 쓴 글 ${written.length}줄 린트 — 고칠 적중 ${lint.target}건(${Object.entries(lint.byFamily).map(([k, v]) => `${k} ${v}`).join(", ") || "없음"}) · 전체 적중 ${lint.all}건`,
+      data: { newLines: written.length, target: lint.target, all: lint.all, byFamily: lint.byFamily, families: DIALOGUE_POLISH_FAMILIES } });
+    // 윤문 차례의 도구 — 레지스트리 정의를 이름으로 직접 푼다(v2·이름 지정 실행도 같은 도구). 예산을 넘으면 거절한다.
+    const budgetGuard = (shape: PiToolShape): PiToolShape => ({ ...shape, async execute(id, params, signal) {
+      if (polishBudget?.over) throw new Error("윤문 예산을 다 썼다 — 도구를 더 부르지 말고 지금까지 고친 것과 남긴 것을 보고한다.");
+      return shape.execute(id, params, signal);
+    } });
+    const splitRewrite = (shape: PiToolShape): PiToolShape => ({ ...shape, async execute(id, params, signal) {
+      const gate = dialoguePolishRewriteGate(dialoguePolishState);
+      if (gate) throw new Error(gate);
+      const args = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      const edits = Array.isArray(args.edits) ? args.edits : [];
+      const owned: unknown[] = [], human: unknown[] = [];
+      for (const edit of edits) {
+        const line = edit && typeof edit === "object" ? resolveDialogueEditLine(ctx.project, edit as Record<string, unknown>) : undefined;
+        (line && !isRunWrittenText(line.text, baseTexts) ? human : owned).push(edit);
+      }
+      const parts: PiToolExecResult[] = [], errors: string[] = [];
+      for (const [group, mode, suffix] of [[owned, "apply", ""], [human, "propose", ":human"]] as const) {
+        if (!group.length) continue;
+        try {
+          parts.push(await shape.execute(`${id}${suffix}`, { ...args, edits: group, mode, ...(mode === "propose" && !args.instruction ? { instruction: "완성 뒤 대사 윤문(자동 단계)" } : {}) }, signal));
+        } catch (error) {
+          if (signal?.aborted) throw error;
+          errors.push(error instanceof Error ? error.message : String(error));
+        }
+      }
+      if (!parts.length) throw new Error(errors.join(" / ") || "고칠 줄이 없다.");
+      const note = [
+        ...(human.length ? [`실행기: 사람이 쓴 줄 ${human.length}개는 바꾸지 않고 「대사」 탭 제안으로 남겼다. 이번 실행이 쓴 줄 ${owned.length}개는 바로 고쳤다.`] : []),
+        ...errors.map((message) => `일부 거절: ${message.slice(0, 400)}`),
+      ].join("\n");
+      return { content: [...parts.flatMap((part) => part.content), ...(note ? [{ type: "text" as const, text: note }] : [])], details: parts[0]!.details };
+    } });
+    const polishTools = DIALOGUE_POLISH_TOOLS.flatMap((name) => {
+      const shape = resolvePiToolShape(ctx, name, { toolNames: [name], onCall: recordCall, referenceGate, charsetGate, ...scopeGuard });
+      return shape ? [wrapTool(budgetGuard(name === "rewrite_dialogue" ? splitRewrite(shape) : shape))] : [];
+    });
+    let rounds = 0;
+    let stopReason: string | undefined;
+    const saved = tools.slice();
+    try {
+      for (let round = 1; round <= DIALOGUE_POLISH_MAX_ROUNDS && lint.target > 0; round++) {
+        if (fatal || rejected || options.signal?.aborted || turns >= maxTurns - 1) { stopReason = "턴 상한·중단으로 더 돌지 않음."; break; }
+        if (!polishTools.some((tool) => tool.name === "rewrite_dialogue")) { stopReason = "rewrite_dialogue 도구를 찾지 못함."; break; }
+        tools.splice(0, tools.length, ...polishTools);
+        dialoguePolishState.contextRead = false;
+        // 로컬 CLI(Claude Code 등)는 MCP tools/list 를 대화 시작 때 받아 둔다 — 배열만 바꾸면 CLI 는 옛 목록을 보고
+        // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 새 대화로 열어 윤문 도구 목록을 다시 받게 한다.
+        // 새 대화라 앞서 읽은 스킬 글도 없으므로 스킬 관문도 다시 건다. 차례 지시는 줄·장면·말투를 스스로 담는다.
+        if (localLoop) {
+          await localLoop.resetSession();
+          dialoguePolishState.skillRead = false;
+          emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
+        }
+        polishBudget = { startTurns: turns, startTokens: tokensNow(), over: false };
+        emit({ type: "execution_status", name: "dialogue_polish.round", ok: true, summary: `완성 뒤 대사 윤문 ${round}/${DIALOGUE_POLISH_MAX_ROUNDS}차례 — 고칠 적중 ${lint.target}건, 줄 ${lint.rows.length}개를 조수에게 맡김(윤문 도구만)` });
+        const previous = lint;
+        await promptResuming(dialoguePolishRoundPrompt(ctx.project, lint, round, DIALOGUE_POLISH_MAX_ROUNDS, round > 1 ? first : undefined));
+        rounds = round;
+        const overBudget = polishBudget.over;
+        polishBudget = undefined;
+        tools.splice(0, tools.length, ...saved);
+        lint = await lintPolishLines(runWrittenDialogueLines(ctx.project, baseTexts));
+        emit({ type: "execution_status", name: "dialogue_polish.relint", ok: lint.target === 0, summary: `윤문 ${round}차례 뒤 다시 린트(실행기): 고칠 적중 ${previous.target} → ${lint.target}건` });
+        if (overBudget) { stopReason = `윤문 차례 예산(${DIALOGUE_POLISH_ROUND_TURNS}차례·${DIALOGUE_POLISH_ROUND_TOKENS}토큰)에 닿아 멈춤.`; break; }
+        if (lint.target >= previous.target) { stopReason = "앞 차례보다 줄지 않아 더 돌지 않음."; break; }
+      }
+    } finally {
+      tools.splice(0, tools.length, ...saved);
+      polishBudget = undefined;
+    }
+    const proposals = readDialogueDesk(ctx.project).proposals.filter((proposal) => !proposalsAtStart.has(proposal.id));
+    const pairs = dialoguePolishPairs(linesAtStart, ctx.project, proposals);
+    const report: DialoguePolishReport = {
+      ran: true, ...(first.target === 0 ? { reason: "고칠 적중이 없어 윤문 차례를 돌리지 않음." } : stopReason ? { reason: stopReason } : {}),
+      newLines: written.length, before: first.target, after: lint.target, beforeByFamily: first.byFamily, afterByFamily: lint.byFamily,
+      beforeAll: first.all, afterAll: lint.all, rounds, applied: pairs.filter((pair) => pair.how === "apply").length, proposed: proposals.length,
+      pairs: pairs.slice(0, 80), ms: Date.now() - t0, tokens: tokensNow() - tokens0,
+    };
+    emit({ type: "execution_status", name: "dialogue_polish", ok: report.after === 0, summary: dialoguePolishReportText(report), data: report });
+    const polishReply = rounds && lastAssistantText !== buildReport ? lastAssistantText : "";
+    emit({ type: "assistant", text: [buildReport, polishReply ? `[대사 윤문 차례의 조수 보고]\n${polishReply}` : "", dialoguePolishReportText(report)].filter(Boolean).join("\n\n") });
+    return report;
   };
   try {
     await promptResuming(request.task);
@@ -1690,6 +1823,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
       await agent.prompt('실내 완료 검사에서 다음 문제가 남았습니다. 완료라고 말하지 말고 실제 타일을 직접 수정하세요. 요청 조건을 줄이거나 가구로 빈칸만 메우지 마세요. 수정 후 같은 요구조건으로 inspect_interior_layout과 전체 show_map_region을 다시 호출하세요. 이 메시지는 오류 진단이며 정답 배치가 아닙니다.\n' + signature);
     }
+    // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts) — 다른 완료 검사·고치기가 다 끝난 맨 끝에서 돈다(그 단계들도 글을 쓴다).
+    if (!fatal && !rejected && !options.signal?.aborted && dialoguePolishHookEnabled({
+      requested: request.dialoguePolish, readOnly: request.readOnly || options.readOnlyTools, teamMember: !!options.subscribeTeamMessages,
+      featurePolish: !!polish, env: process.env.OPRN_DIALOGUE_POLISH_HOOK,
+    })) {
+      dialoguePolishReport = await runDialoguePolishHook();
+    }
   } finally {
     unsubscribeTeamMessages?.();
     clearTimeout(timer);
@@ -1727,6 +1867,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
     type: "done",
+    ...(dialoguePolishReport ? { dialoguePolish: dialoguePolishReport } : {}),
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? (() => { const local = localLoop.stats(); return { engine: local.engine, billing: local.billing, ...(local.costUsd !== undefined ? { costUsd: local.costUsd } : {}),

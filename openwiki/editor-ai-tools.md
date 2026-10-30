@@ -106,6 +106,29 @@
 - **크레딧**: 루트 `ATTRIBUTION.md`, 「설정 → 정보」의 「크레딧」 절(이름은 `translate="no"`, 설명 문장은 en/ja/zh 카탈로그).
 - **헤드리스 시험(2026-10-29)**: `node scripts/oprn-tools.mjs --assistant --new --project /tmp/p.json lint_dialogue '{"texts":["마왕은 그것이 아니라 품격이라고 생각했다 — 결국."]}'` → 적중 3건(부정재정의 「것이 아니라」·한줄요약 「결국」·기호 「—」). 게임 안 줄(`lineIds`)도 같은 결과 형식(id·hash 포함)으로 나온다.
 
+## 완성 뒤 대사 윤문 고리 — 실행기 단계 (2026-10-30)
+
+사용자: 「저 윤문을 ai 조수가, 게임을 완성한다고 판단한 이후의 hook 으로 넣어서 잘 윤문하게끔 했음 좋겠거든?」 지시문 한 줄이 아니라 **실행기 단계**다(모델이 안 불러도 돈다).
+
+- **자리**: `scripts/lib/piAgentRuntime.ts` `runPiAgent` 의 본 시도(try) 맨 끝 — 게임 전체 이어 짓기(`whole_game_rekick`)·v2 끝맺음/화면 검수(`options.v2.afterMain`)·오프닝/게임 시스템 완료 검사·1배 특징 확인·배치 권고·실내 완료 검사가 **다 끝난 뒤**(그 단계들도 글을 쓴다). 클로저 `runDialoguePolishHook`, 판정·글은 `src/ai/piAgent/dialoguePolishHook.ts`, 린트는 `src/editor/dialogue/dialoguePolishLint.ts`(`lint_dialogue` 와 같은 린터·같은 줄 매기기).
+- **언제 도나**: 설정 켬(기본) · 읽기 전용 아님 · 팀원 하위 실행 아님(`subscribeTeamMessages`) · 다듬기 모드(`request.polish`) 아님 · 앞에서 실행이 끊기지 않음. 그리고 «이번 실행이 쓴 줄» 이 있을 때 — 게임 전체 요청(`wantsWholeGame`)이면 1줄 이상, 아니면 `DIALOGUE_POLISH_MIN_NEW_LINES`(12) 이상(큰 덩어리). 팀 모드 팀장 마무리(`piTeamRuntime` finish)에는 아직 붙이지 않았다.
+- **«이번 실행이 쓴 줄»**: 대사 색인 `collectDialogueLines(includeDescriptions)`(「대사」 탭·`list_dialogue` 와 같은 색인 — 대사·선택지·자막·퀘스트·엔딩·아이템/장비/스킬 설명)에서 **실행 시작 프로젝트의 어떤 줄과도 글이 다른 줄**. 줄 id 는 명령 경로라 명령을 끼우면 밀리므로 id 가 아니라 펼친 글로 가른다.
+- **린트(모델 없음)**: 고칠 계열 `DIALOGUE_POLISH_FAMILIES` = 번역투·모델틱(서사체 종결 포함)·부정재정의·은유명사·기호(em dash·가운뎃점·콜론 라벨)·사물의인화(추상명사 주어). 그 밖의 계열(한줄요약·상투구 …)은 전체 적중(`beforeAll`/`afterAll`)으로만 센다. 적중 0 이면 차례 없이 숫자만 남긴다.
+- **윤문 차례(최대 `DIALOGUE_POLISH_MAX_ROUNDS`=2)**: 도구 배열을 그 차례 동안 `DIALOGUE_POLISH_TOOLS`(read_assistant_skill·get_story_outline·read_story_script·get_dialogue_context·list_dialogue·lint_dialogue·rewrite_dialogue)로 갈아 끼우고(로컬 CLI 의 이름 폴백도 막는다), 적중 줄의 id·hash·꼬리표·화자 말투 메모·적중을 실은 지시(`dialoguePolishRoundPrompt`)로 한 차례 더 돈다.
+  - `rewrite_dialogue` 는 실행기가 감싼다: **스킬(`read_assistant_skill{id:'dialogue-polish'}` — 실행 안에서 한 번)과 장면 문맥(그 차례의 `read_story_script`·`get_dialogue_context`)을 읽기 전에는 거절**한다. edits 를 줄마다 갈라 **이번 실행이 쓴 줄은 `mode:'apply'`(바로 반영), 사람이 쓴 줄은 `mode:'propose'`(「대사」 탭 제안)** 로 부른다 — 모델이 고른 mode 와 무관.
+  - 예산: 한 차례 `DIALOGUE_POLISH_ROUND_TURNS`(10) 모델 차례·`DIALOGUE_POLISH_ROUND_TOKENS`(입력+출력 60만) — 넘으면 「멈추고 보고」 를 한 번 알리고 윤문 도구가 거절한다(실행을 끊지 않는다). 두 번째 차례는 첫 차례보다 적중이 줄었을 때만.
+  - 차례마다 실행기가 다시 린트한다(`dialogue_polish.relint`). 숫자는 모델 보고가 아니라 실행기가 센 값이다.
+  - **로컬 CLI 엔진(Claude Code 등)은 차례마다 새 대화로 연다**(`dialogue_polish.context_reset`, 스킬 관문도 다시 건다). CLI 는 MCP `tools/list` 를 대화 시작 때 받아 두므로 도구 배열만 바꾸면 옛 목록을 본다 — 고치기 전 opus 실측: 「대사를 고칠 수단이 주어지지 않았다」, 적중 21 → 21·호출 0. 같이 `localCliLoop.prompt` 가 요청 전에 바뀐 도구 목록을 알린다(`announceToolChanges`).
+- **보고**: 실행 기록 `execution_status` `dialogue_polish.lint` · `.round` · `.relint` · `dialogue_polish`(data = `DialoguePolishReport`: 전/후 적중·계열별·차례·바로 고친 줄·제안 수·전/후 줄 쌍 80개·토큰), `done.dialoguePolish`. 편집기는 마지막 보고 하나만 말풍선으로 보이므로, 짓기 보고를 지우지 않고 **짓기 보고 + 윤문 차례의 조수 보고 + 실행기 숫자 한 줄**을 합친 최종 보고를 다시 낸다.
+- **끄기**: AI 설정 「동작」 → 「완성 뒤 대사 윤문」(켬/끔, `AiConfig.dialoguePolishAfterBuild:false` → 요청 `dialoguePolish:false`). 시험용 `OPRN_DIALOGUE_POLISH_HOOK=0`.
+- **맵 소유권**: 같은 실행 안의 단계라 그 실행이 쥔 맵 예약을 그대로 쓴다(새 실행·새 예약 없음). 묶음 실행의 범위 검사(`piMapScopeGuard`)도 윤문 도구에 그대로 걸린다.
+- **하네스**: `wholeGameSession.mjs` 차례 기록에 `dialoguePolish`(이름·요약·data) 칸, `editorDriver.mjs` 가 `dialogue_polish*` 의 data 를 담는다.
+- **실모델 시험(2026-10-30, 실제 입력창 경로 `wholeGameSession --v2`, 「이세계 전생 개그 RPG 짧게 만들어 줘」 → 「끝까지 만들어 줘」)**: 증거 http://mdc-server:18301/polish-hook.html
+  - Opus 5.5 medium(로컬 Claude Code, CLI 새 대화 수정 뒤): 고칠 적중 14 → 0(새 글 28줄, 12줄 반영) · 5 → 0(7줄, 3줄). GPT 6.1-terra: 3 → 0(20줄) · 4 → 0(15줄). 모두 1차례, 「대사」 탭 제안 0(새 프로젝트라 사람 줄 없음 — 제안 갈래는 실모델 미확인).
+  - 수정 전 Opus: 21 → 21, 1 → 1(윤문 도구 호출 0 — 위 로컬 CLI 항목).
+  - 한계: 「기호」 적중 대부분이 대사 글 안의 「이름: 대사」 라벨이다. Opus 는 라벨을 지우기만 하고 화자 칸으로 옮기지 않았고, terra 는 일부를 따옴표 없는 서술(「직원이 말한다. …」)로 바꿨다 — 린터 0건이 글맛 개선을 뜻하지는 않는다. 다음 손볼 곳은 라벨을 화자 칸으로 옮기는 갈래.
+  - 하네스: 부하가 높으면 부팅 직후 로컬 CLI 연결 확인이 시간 초과로 캐시돼 입력칸이 잠긴다 — `editorDriver.mjs` 가 잠겨 있으면 90초 기다린 뒤 최대 2번 다시 읽는다(실측 1번 다시 읽어 풀림).
+
 ## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
 
 파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.

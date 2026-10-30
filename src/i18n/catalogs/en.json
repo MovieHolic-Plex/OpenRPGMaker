@@ -2848,6 +2848,8 @@
 "결과 원문":"Result source text",
 "결과 저장 변수: {0}":"Result storage variable: {0}",
 "결과 적용":"Apply result",
+"완성 뒤 대사 윤문":"Polish dialogue after building",
+"게임을 다 지으면 새로 쓴 대사·설명을 윤문 규칙(general-good-writing)으로 검사하고, 걸린 줄을 조수가 한 번 더 다듬습니다. 직접 쓴 대사는 바꾸지 않고 「대사」 탭 제안으로 남깁니다.":"When a game is finished, newly written dialogue and descriptions are checked against the writing-polish rules (general-good-writing) and the assistant revises flagged lines once more. Lines you wrote yourself are not changed; they stay as suggestions in the Dialogue tab.",
 "결과 추가":"Add result",
 "결과 확인":"Check result",
 "결과1":"Result 1",

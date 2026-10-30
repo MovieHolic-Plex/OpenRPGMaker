@@ -135,7 +135,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
-                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck'].includes(event.name)?event.data:undefined,
+                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});
@@ -188,6 +188,21 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
   const restore = page.getByTestId('ai-collapsed-restore');
   if (await restore.isVisible().catch(()=>false)) await restore.click();
   await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
+  // 로컬 CLI 엔진: 부팅 직후 첫 연결 확인이 부하로 시간 초과하면 그 결과(unreachable)를 캐시해 입력칸이 끝까지 잠긴다
+  // (2026-10-30 실측, 부하 80: 「Claude Code (내 PC) 연결 확인 필요」 → fill 120초 초과). 워커는 그사이 데워지므로 다시 읽어 확인을 새로 받는다(최대 2번).
+  const inputLocked=()=>page.getByTestId('ai-input').evaluate(el=>el.getAttribute('aria-disabled')==='true').catch(()=>false);
+  for(let retry=0;retry<2;retry++){
+    const until=Date.now()+90000;
+    while(await inputLocked()&&Date.now()<until)await page.waitForTimeout(3000);
+    if(!await inputLocked())break;
+    console.error(`[editorDriver] ai-input still locked after boot — reload ${retry+1}/2`);
+    await page.reload({waitUntil:'domcontentloaded',timeout:120000});
+    await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
+    await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
+    const again=page.getByTestId('ai-collapsed-restore');
+    if (await again.isVisible().catch(()=>false)) await again.click();
+    await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
+  }
   return { page,context,loads };
 }
 async function saveThroughUi(page) {
