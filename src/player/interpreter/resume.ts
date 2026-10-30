@@ -43,7 +43,7 @@ export function advanceResume(
   } else if (pending === "presentItem") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "presentItem") {
-      if (!pushFrame(state, presentItemBranch(state.session, command, value))) frame.pc += 1;
+      if (!pushFrame(state, presentItemBranch(state.session, command, value, state.project))) frame.pc += 1;
     } else {
       frame.pc += 1;
     }

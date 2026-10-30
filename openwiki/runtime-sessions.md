@@ -488,6 +488,17 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
   Unknown positive stacks remain visible in all/other. Controls survive empty results;
   the controller clamps the cursor and retains the activated control across list rebuilds.
   All twelve skins share these buttons, item targeting and keyboard ownership.
+- Key items in non-monster genres (2026-10-30, Joseon mystery demo 「해원」: ten evidence items sat in one list with
+  mugwort tonics). `isKeyItem` (`src/player/playerBagPockets.ts`) = `pocket === "key"`, or no pocket, not equipment,
+  `occasion: "never"` and price 0 (`author_mystery_case` evidence already matches). When the player holds any key
+  item (`holdsKeyItems` — not "the database has one": every default project ships shared keys and letters),
+  `inventory-filter` cycles all / 중요한 물건 / usable / equipment / other (default view stays all), and key items
+  leave the 「기타」 filter. Otherwise the old four filters stay; a stored `key` view falls back to all.
+  `presentItem` with `itemIds` omitted and every `options[].itemId` a key item (an evidence prompt) lists only held
+  key items (`presentableItems(session, command, project)` — stop and resume pass the same `state.project`); a gift
+  prompt with an ordinary item among its options, or no options, lists the whole inventory as before. Editor item basics card: toggle
+  「중요한 물건」 (`db-field-item-key`, writes `pocket: "key"` / clears it). Assistant: `upsert_item.pocket`
+  description and recipe `key-items`.
 - The split shop no longer duplicates buy/sell navigation with fake upgrade/exchange actions.
   Existing real `shop-tab-buy` / `shop-tab-sell` handle supported modes; buy-only and sell-only
   shops cannot show the other service. No crafting, cart, transaction or save schema was added.
