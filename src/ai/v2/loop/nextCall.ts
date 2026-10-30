@@ -46,6 +46,7 @@ export function skeletonFor(verb: string, mapId?: string, extra: Obj = {}): Obj 
     case "add_event": return { event: { kind: "cutscene", mapId: m, when: "touch", beats: [{ do: "say", who: "<speaker>", text: "<line>" }] }, ...extra };
     case "get_event": return { mapId: m, eventId: "<eventId>", ...extra };
     case "inspect": return { mapId: m, ...extra };
+    case "list_npc_graphics": return { query: "<the look you want, e.g. 'skeleton knight'>", ...extra };
     default: return { ...(mapId ? { mapId } : {}), ...extra };
   }
 }
@@ -59,6 +60,13 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
   const body = failure.replace(/^[^:]*실행 실패:\s*/u, "");
   const mapId = mapOf(a);
   const has = (v: string) => available.has(v);
+  // 캐릭터 칩 관문: 칩 칸·pattern 을 손으로 고친 쓰기가 되돌려졌다 — 그림 고르기는 list_npc_graphics 로 실제 그림을 보고 그 줄을 그대로 옮기는 것뿐이다.
+  const look = /캐릭터 그림 선택을 되돌렸습니다: \S+?의 실제 칩은 「(.*?)」/u.exec(body);
+  if (look && has("list_npc_graphics")) {
+    const copy = tool === "upsert_actor" ? "that row's selectionId charset:<sheet>:<slot> as characterResourceId:'<sheet>', characterIndex:<slot>"
+      : tool === "place_field_enemy" ? "that row's selectionId into graphic.selectionId" : "that row's nativeGraphic into graphic (patch_event_page set.graphic)";
+    return { verb: "list_npc_graphics", args: { query: look[1] }, why: `choose the look from the real pictures, then copy ${copy} — never type slot or pattern numbers` };
+  }
   // 이동 칸 잇기 — 문앞이 막힘: doorAt 을 빼고 부르면 도구가 걸어 닿는 가장 가까운 칸으로 옮겨 잇는다.
   if (tool === "create_transfer_pair" && /안전한 출입구를 만들 수 없|봉쇄|겹칩니다|doorAt/u.test(body)) {
     const strip = (e: unknown) => { if (!isObj(e)) return e; const { doorAt: _d, ...rest } = e; return rest; };

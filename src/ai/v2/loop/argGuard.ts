@@ -311,6 +311,12 @@ export function retryCandidates(toolName: string, schema: unknown, args: unknown
       out.push({ args: holderKey ? { ...args, [holderKey]: rest } : rest, note: `${field} was rejected — called again without the optional field ${holderKey ? `${holderKey}.` : ""}${top}` });
     }
   }
+  // ①-b 캐릭터 칩 관문(「캐릭터 그림 선택을 되돌렸습니다」): 페이지 고치기에 그림 말고 다른 칸도 있으면 그림만 빼고 다시 — 나머지는 저장된다.
+  //   그림만 바꾸려던 호출은 고칠 수 없다(본 적 없는 칩) — 다음 호출 list_npc_graphics 는 nextCall.ts nextAfterFailure 가 준다. (2026-10-30 scenes-duel terra 재실패 1위)
+  if (/캐릭터 그림 선택을 되돌렸습니다/u.test(body) && toolName === "patch_event_page" && isObj(args.set) && "graphic" in args.set && Object.keys(args.set).length > 1) {
+    const { graphic: _g, ...set } = args.set;
+    out.push({ args: { ...args, set }, note: "the graphic was not picked from a list_npc_graphics result you have seen — saved the other page fields and left the graphic as it was" });
+  }
   // ② 「존재하지 않는 이벤트 'X'」·「이벤트를 찾을 수 없습니다: X」: X 가 이벤트 이름이고 하나뿐이면 인자 속 X 를 id 로 바꿔 다시.
   const ghost = /존재하지 않는 이벤트 '([^']+)'|이벤트를 찾을 수 없습니다:\s*([^\s(]+)/u.exec(body);
   const ghostName = ghost?.[1] ?? ghost?.[2];
