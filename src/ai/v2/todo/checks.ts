@@ -462,6 +462,14 @@ function checkTalk(project: Project, sc: Scope, who: string, says?: string): Che
   const ids = r.picked.map((p) => p.id).slice(0, 4).join(", ");
   const first = r.picked[0]!.t;
   if (!lines.length) return { pass: false, detail: `「${r.matched}」(${ids}) 에 도는 대사 명령이 없다${deadNote(dead)}`, evidence: evEvidence(first.map, first.ev) };
+  // refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라진다 — 그때는 그 이벤트 대사에 「who」 가 말하는 줄(speaker 또는 「who: …」 머리)이 있어야 한다.
+  // 2026-10-30 omo-loop-1030 terra boss-room r3: 이름이 id 뿐인 컷신 하나에 묶여 「해골 기사」 대사로 통과했다.
+  if (!r.picked.some((p) => scoreNamed(who, p).s > 0)) {
+    const w = normName(who, true);
+    const speaking = lines.filter((l) => normName(l.body, true).startsWith(w));
+    if (!speaking.length) return { pass: false, detail: `묶인 이벤트 ${ids} 에 「${who}」 가 말하는 줄이 없다(이름·speaker·「${who}: …」 머리 없음) — 대사의 speaker 를 「${who}」로 쓰거나 그 인물 이벤트에 묶는다(todo bind)`, evidence: evEvidence(first.map, first.ev) };
+    lines.splice(0, lines.length, ...speaking);
+  }
   if (says) {
     const want = normName(says, true);
     const hit = lines.find((l) => normName(l.body, true).includes(want));
