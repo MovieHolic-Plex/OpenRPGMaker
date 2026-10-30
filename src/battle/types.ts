@@ -136,8 +136,6 @@ export interface BattleTeamSnapshot {
 export interface BattleDuelSnapshot {
   /** 이 전투 부대가 결투 규칙을 가진다 — 보상이 0이면 결과 화면이 「결투 종료」 한 줄로 바뀐다. */
   readonly duelTroop?: true;
-  /** 이 전투 부대가 결투 규칙을 가진다 — 보상이 0이면 결과 화면이 「결투 종료」 한 줄로 바뀐다. */
-  readonly duelTroop?: true;
   /** 도주 명령이 「기권」 으로 바뀌고 항상 성공한다. */
   readonly forfeit?: true;
   /** 아이템 명령이 숨겨진다. */

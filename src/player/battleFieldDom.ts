@@ -851,7 +851,18 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     if (!authored && !node.classList.contains("defeated")) spawnDeathShards(node);
   }
   node.classList.toggle("defeated", presented.defeated);
+  // 결투 항복(TroopDuelRules.yieldAtPercent): 걷기 칩은 정면 가운데 칸으로 무릎 꿇고(paintWalkChipBattler), 그림 적은 멈추고 살짝 어두워진다.
+  const yielded = enemy.yielded === true && !presented.defeated;
+  if (yielded) node.dataset.battleYielded = "true";
+  else delete node.dataset.battleYielded;
   applyBattlerPose(node, presented.pose);
+  if (!node.dataset.walkChipBattler) {
+    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
+    if (image) {
+      image.style.animationPlayState = yielded ? "paused" : "";
+      image.style.filter = yielded ? "brightness(0.82)" : "";
+    }
+  }
   node.dataset.battleTargetable = targetable ? "true" : "false";
   if (targetable) node.dataset.battleTargetId = enemy.id;
   else delete node.dataset.battleTargetId;
