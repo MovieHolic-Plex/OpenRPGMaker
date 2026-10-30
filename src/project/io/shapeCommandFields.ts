@@ -27,6 +27,9 @@ function validateCommandShape(label: string, value: unknown): void {
         const record = requireRecord(`${label}.options[${index}]`, option);
         requireString(`${label}.options[${index}].text`, record.text);
         validateCommandArray(`${label}.options[${index}].branch`, record.branch);
+        if (record.showWhen !== undefined) validateConditionShape(`${label}.options[${index}].showWhen`, record.showWhen);
+        if (record.enableWhen !== undefined) validateConditionShape(`${label}.options[${index}].enableWhen`, record.enableWhen);
+        if (record.disabledText !== undefined) requireString(`${label}.options[${index}].disabledText`, record.disabledText);
       }
       if (command.cancelBehavior !== undefined) requireChoiceCancelBehavior(`${label}.cancelBehavior`, command.cancelBehavior);
       if (command.cancelBranch !== undefined) validateCommandArray(`${label}.cancelBranch`, command.cancelBranch);
@@ -289,6 +292,16 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.label !== undefined) requireString(`${label}.label`, command.label);
       return;
     case "openSaveMenu":
+      return;
+    case "planSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotCount !== undefined) {
+        assert(Number.isInteger(command.slotCount) && (command.slotCount as number) >= 1, `${label}.slotCount 는 1 이상의 정수여야 합니다.`);
+      }
+      return;
+    case "runSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotVariableId !== undefined) requireString(`${label}.slotVariableId`, command.slotVariableId);
       return;
     case "spawnFieldEnemy": {
       const spawn = requireRecord(`${label}.spawn`, command.spawn) as { id?: unknown; troopId?: unknown; area?: unknown };

@@ -127,6 +127,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.battleVictoryMeResourceId", system.battleVictoryMeResourceId, resourceIds);
   validateOptionalResource("system.battleDefeatSeResourceId", system.battleDefeatSeResourceId, resourceIds);
   validateOptionalResource("system.battleEscapeSeResourceId", system.battleEscapeSeResourceId, resourceIds);
+  for (const [cue, id] of Object.entries(system.seCues ?? {})) validateOptionalResource(`system.seCues.${cue}`, id, resourceIds);
   validateOptionalResource("system.titleScreen.backgroundResourceId", system.titleScreen?.backgroundResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.musicResourceId", system.titleScreen?.musicResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.sounds.cursorSeResourceId", system.titleScreen?.sounds?.cursorSeResourceId, resourceIds);

@@ -791,6 +791,13 @@ export interface DatabaseStateEffect {
   operation: "add" | "remove";
 }
 
+export interface EnemyWalkChip {
+  /** 캐릭터 칩 시트 resourceId(assets.uploaded 키 또는 번들 칩). */
+  characterResourceId: string;
+  /** 시트 안 캐릭터 번호 0~7(4열 x 2행). */
+  characterIndex: number;
+}
+
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
@@ -804,6 +811,11 @@ export interface EnemyRecord {
    * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
    */
   lungeSpeedPercent?: number;
+  /**
+   * 걷기 칩(RM2000 CharSet 288x256, 24x32 프레임)으로 서는 적. 지정하면 monsterResourceId 대신 이 칩의 오른쪽 방향 줄로 전투에 선다
+   * (적은 왼쪽에 서서 오른쪽을 본다). 생략 = 기존 몬스터 그림. `player/battleWalkChipBattler` · `battleFieldDom.enemyButton`.
+   */
+  walkChip?: EnemyWalkChip;
   /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
@@ -1088,6 +1100,23 @@ export interface TroopTrainerSprite {
   backThrow?: string;
 }
 
+/**
+ * 결투 규칙 — 목숨을 걸지 않는 대련·시합용. 모두 선택이고, 없으면 기존 전투 그대로다.
+ * 런타임은 battle/duelRules.ts, 모델 정규화는 project/databaseEnemyTroopRecordModel.ts.
+ */
+export interface TroopDuelRules {
+  /** 적 HP 가 이 퍼센트(1~100) 이하가 되면 그 적은 항복한다(무릎 꿇는 자세, 더는 행동·피격 대상 아님). 전부 항복·쓰러지면 승리. */
+  yieldAtPercent?: number;
+  /** 아군 전원의 HP 가 이 퍼센트(1~100) 이하면 패배로 끝난다. canLose 와 상관없이 게임 오버 없이 전투 뒤 분기로 간다. */
+  playerYieldAtPercent?: number;
+  /** true 면 도주 명령이 「기권」이 되고 반드시 성공해 escapeBranch 로 간다. */
+  forfeit?: boolean;
+  /** 이 라운드 수가 지나면 남은 HP 비율 합이 큰 쪽이 이긴다(같으면 escape). 정수 1 이상. */
+  roundLimit?: number;
+  /** true 면 아이템 명령을 숨기고 쓸 수 없게 한다. */
+  noItems?: boolean;
+}
+
 export interface TroopRecord {
   id: TroopId;
   name: string;
@@ -1122,6 +1151,13 @@ export interface TroopRecord {
    * (경험치·전리품 몫도 없다). 생략·빈 목록 = 없음. 런타임은 battle/battleEvents.ts · battle/runtime.ts.
    */
   battleGuests?: TroopBattleGuest[];
+  /** 결투 규칙(항복 HP·기권·라운드 제한·아이템 금지). 생략 = 일반 전투. */
+  duel?: TroopDuelRules;
+  /**
+   * 이 적 그룹을 이겼을 때 화면 가운데 뜨는 승리 띠 글자(최대 40자). 생략·빈 문자열 = 프로젝트 용어
+   * terms.battleVictory → 기본 「승리!」. 정규화·해석은 project/terms.ts(resolveVictoryBannerText).
+   */
+  victoryBanner?: string;
 }
 
 export interface TroopBattleGuest {
@@ -1632,7 +1668,38 @@ export interface SkillChoreographyRecord {
   sourceId?: string;
 }
 
+/** 주간 일정표(G4). `planSchedule` 이 슬롯별로 활동을 고르고 `runSchedule` 이 활동의 공용 이벤트를 차례로 부른다. */
+export interface ScheduleSlotRecord {
+  label: string;
+}
+
+export type ScheduleActivityIcon =
+  | { kind: "item"; itemId: ItemId }
+  | { kind: "tile"; tilesetId: string; tileId: number };
+
+export interface ScheduleActivityRecord {
+  id: string;
+  label: string;
+  description: string;
+  hint?: string;
+  icon?: ScheduleActivityIcon;
+  /** 거짓이면 카드를 숨긴다. */
+  condition?: Condition;
+  /** 이 횟수에 닿으면 카드가 흐려지고 고를 수 없다. 없음 = 무제한. */
+  maxUses?: number;
+  commonEventId: string;
+}
+
+export interface ScheduleRecord {
+  id: string;
+  title: string;
+  slots: ScheduleSlotRecord[];
+  activities: ScheduleActivityRecord[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** 주간 일정표. 없음 = 일정표 없음(기본 DB 에 넣지 않는다 — 기존 JSON 바이트 동일). */
+  schedules?: ScheduleRecord[];
   /** 스킬 연출 레코드. 없음 = 빈 배열(스키마 변경 없이 덧붙는 옵셔널 컬렉션). */
   skillChoreographies?: SkillChoreographyRecord[];
   characterAppearances?: CharacterAppearanceRecord[];
@@ -2077,6 +2144,11 @@ export interface SystemRecords {
   battleDefeatSeResourceId?: string;
   /** 도주 시 효과음. 비우면 기본 도주음. */
   battleEscapeSeResourceId?: string;
+  /**
+   * 효과음 자리 표(자리 id → 리소스 id). 커서·결정·타격·장비·저장·발소리(footstep-grass)·마법(magic-fire) 등.
+   * 알려진 자리와 가족 물러섬은 `@/project/seCues`. 모르는 자리 id 도 저장한다(새 스토어 자리). 생략 = 내장 기본 소리.
+   */
+  seCues?: Record<string, string>;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   /** gauge 흐름 전용. active 면 명령 메뉴가 열려 있어도 적 게이지가 차고 적이 행동한다. 생략 = wait. */
@@ -2110,7 +2182,7 @@ export interface SystemRecords {
    * "off" 면 필드 자동 안내 표시를 그리지 않는다 — 목표 대상 빛무리·화면 밖 목표 화살표, 이야기 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」 글자.
    * 저자가 페이지에 단 늘 빛나는 표지(page.glow)·가까이 반짝임(nearSparkle)은 그대로다. 생략 = 켜기(기존).
    */
-  fieldGuides?: "off";
+  fieldGuides?: "off" | "arrows";
   /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
   saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;

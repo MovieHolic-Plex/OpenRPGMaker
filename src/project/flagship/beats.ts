@@ -1,7 +1,7 @@
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { FlagshipBeat, FlagshipBeatManifest, FlagshipDemoId, FlagshipStyleLock } from "./types";
 
-const BANNED_IP_PROPER_NOUNS = [
+export const BANNED_IP_PROPER_NOUNS = [
   "마르",
   "루카",
   "트루스",

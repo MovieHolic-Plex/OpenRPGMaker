@@ -9,14 +9,19 @@ function object(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
 }
 
+function selectionIdFor(project: Project, resource: string, slot: number): string | undefined {
+  const asset = findCharsetAsset(resource);
+  const textureKey = asset?.textureKey ?? (project.assets.uploaded[resource]?.kind === 'charset' ? resource : undefined);
+  return textureKey ? `charset:${textureKey}:${slot}` : undefined;
+}
+
 /** Track identities by stable event/page/actor IDs; moving/deleting a page is not a new selection. */
 function graphics(project: Project): Map<string, string> {
   const found = new Map<string, string>();
   const add = (path: string, resource: unknown, slot: number) => {
     if (typeof resource !== 'string') return;
-    const asset = findCharsetAsset(resource);
-    const textureKey = asset?.textureKey ?? (project.assets.uploaded[resource]?.kind === 'charset' ? resource : undefined);
-    if (textureKey) found.set(path, `charset:${textureKey}:${slot}`);
+    const id = selectionIdFor(project, resource, slot);
+    if (id) found.set(path, id);
   };
   const visit = (value: unknown, path: string) => {
     if (Array.isArray(value)) { value.forEach((item, index) => visit(item, `${path}/${String(object(item)?.id ?? index)}`)); return; }
@@ -73,14 +78,20 @@ export class PiCharsetSelectionGate {
     this.delivered.clear();
     return received;
   }
-  afterWrite(before: Project, after: Project): ToolResult | null {
+  /** toolChosen: 이 호출에서 도구가 모델 대신 스스로 고른 칩(noteToolChosenGraphic) — 모델의 선택이 아니므로 면제한다. */
+  afterWrite(before: Project, after: Project, toolChosen: ReadonlyArray<{ resource: string; pattern: number }> = []): ToolResult | null {
     const old = graphics(before);
+    const chosenByTool = new Set<string>();
+    for (const row of toolChosen) {
+      const id = selectionIdFor(after, row.resource, decodeCharsetFrameIndex(row.pattern).characterIndex);
+      if (id) chosenByTool.add(id);
+    }
     // 같은 이벤트(또는 같은 배우)가 이미 쓰던 칩을 새 페이지에 그대로 옮기는 것은 새 선택이 아니다.
     // 실측(2026-10-24 v2 새 12 사례): 대장장이에게 조건 페이지를 더하며 원래 칩을 복사했는데 「새 페이지 경로」라 거절돼 gift·party 에서 같은 거절이 9~11번 났다.
     const owner = (path: string) => /^(maps\/[^/]+\/events\/[^/]+|database\/actors\/[^/]+|commonEvents\/[^/]+)/u.exec(path)?.[1] ?? path;
     const ownedBefore = new Set([...old].map(([path, id]) => `${owner(path)}|${id}`));
     for (const [path, selectionId] of graphics(after)) {
-      if (old.get(path) === selectionId || this.viewed.has(selectionId) || ownedBefore.has(`${owner(path)}|${selectionId}`)) continue;
+      if (old.get(path) === selectionId || this.viewed.has(selectionId) || chosenByTool.has(selectionId) || ownedBefore.has(`${owner(path)}|${selectionId}`)) continue;
       const match = /^charset:(.+):(\d+)$/u.exec(selectionId)!;
       const label = findCharsetSemantic(match[1]!, Number(match[2]))?.label ?? selectionId;
       return { ok: false, summary: `캐릭터 그림 선택을 되돌렸습니다: ${path}의 실제 칩은 「${label}」(${selectionId})입니다. `

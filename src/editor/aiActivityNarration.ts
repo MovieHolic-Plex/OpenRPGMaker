@@ -147,7 +147,7 @@ addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.askMissingTiles, "ask_missing_tiles");
 addFamily(ACTIONS.objectGen, "generate_missing_object");
-addFamily(ACTIONS.storeSearch, "store_search store_find_music store_my_items store_game_changes store_game_reviews");
+addFamily(ACTIONS.storeSearch, "store_search store_find_music store_find_sound store_my_items store_game_changes store_game_reviews");
 addFamily(ACTIONS.storeInstall, "store_install");
 addFamily(ACTIONS.storePropose, "store_publish store_set_visibility store_game_post store_review_reply");
 addFamily(ACTIONS.opening, "set_opening edit_opening");

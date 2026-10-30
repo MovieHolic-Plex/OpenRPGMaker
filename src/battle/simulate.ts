@@ -75,6 +75,8 @@ export interface BattlePhaseCoverage {
 
 export interface SimulateBattleResult {
   readonly winRate: number;
+  /** 결투 규칙(TroopRecord.duel) 부대만: 판별 결과 횟수 — 항복·판정패는 defeat, 기권·동점 판정은 escape 로 센다. */
+  readonly outcomes?: { readonly victory: number; readonly defeat: number; readonly escape: number; readonly undecided: number };
   readonly avgTurns: number; // 아군 행동 결정 횟수 평균(≈ 처치까지 걸린 타)
   readonly avgPotionsUsed: number;
   readonly avgHpRemaining: number; // 종료 시 파티 총 HP 평균
@@ -112,6 +114,7 @@ function tallyChargeBreaks(timeline: readonly BattleTimelineEntrySnapshot[], int
 
 interface SingleRunResult {
   readonly victory: boolean;
+  readonly result: BattleSnapshot["result"];
   readonly turns: number;
   readonly potionsUsed: number;
   readonly hpRemaining: number;
@@ -213,6 +216,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
     return {
       victory: final.result === "victory",
+      result: final.result,
       turns,
       potionsUsed,
       hpRemaining,
@@ -275,6 +279,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   const n = Math.max(1, input.n ?? 50);
   const rng = mulberry32(input.seed ?? 1);
   let wins = 0;
+  const outcomes = { victory: 0, defeat: 0, escape: 0, undecided: 0 };
   let totalTurns = 0;
   let totalPotions = 0;
   let totalHp = 0;
@@ -293,6 +298,10 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   for (let i = 0; i < n; i += 1) {
     const run = runSingleBattle(input, rng);
     if (run.victory) wins += 1;
+    if (run.result === "victory") outcomes.victory += 1;
+    else if (run.result === "defeat") outcomes.defeat += 1;
+    else if (run.result === "escape") outcomes.escape += 1;
+    else outcomes.undecided += 1;
     totalTurns += run.turns;
     totalPotions += run.potionsUsed;
     totalHp += run.hpRemaining;
@@ -339,6 +348,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   });
   return {
     winRate: wins / n,
+    ...(troopRecord?.duel ? { outcomes } : {}),
     avgTurns: totalTurns / n,
     avgPotionsUsed: totalPotions / n,
     avgHpRemaining: totalHp / n,

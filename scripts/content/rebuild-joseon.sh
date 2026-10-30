@@ -45,6 +45,7 @@ python3 scripts/content/prepare-joseon-baram-references.py
 rm -rf "${JOSEON_SAVE_DIR:-/tmp/oprn-joseon-baram-proof}"
 JOSEON_EXPORT_RELOADED="$RELOADED" NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=7000}" node scripts/content/save-joseon-baram.mjs
 node scripts/content/prepare-joseon-regions.mjs "$RELOADED"
+python3 scripts/content/prepare-joseon-doors.py   # link_joseon_interior 의 문 표(src/project/defaults/joseonDoors.json)
 # 목록 축소본(catalog-thumbs) — 없으면 장소·칩셋 목록이 원본으로 넘어가며 오류 로그를 남긴다. build-catalog-thumbs.py 와 같은 함수를 쓴다.
 python3 - <<'PY'
 from importlib.machinery import SourceFileLoader

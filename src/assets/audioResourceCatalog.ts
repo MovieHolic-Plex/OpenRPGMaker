@@ -17,6 +17,7 @@ import { GENERATED_ASSET_PLAN } from "./oprnGeneratedAssetPlan";
 import { moodTagsForAsset } from "./resourceMoodTags";
 import { SE_CATALOG } from "./seCatalog";
 import { readStoreMusicMeta, storeMusicDescription, storeMusicTags } from "./storeMusicMeta";
+import { readStoreSoundMeta, storeSoundDescription, storeSoundTags } from "./storeSoundMeta";
 
 export function isCatalogBgmAvailable(resourceId: string): boolean {
   const bgm = findBgmRuntimeEntry(resourceId);
@@ -154,7 +155,10 @@ export function listAudioResources(
     if (uploaded.kind !== kind) continue;
     // 스토어 음악 팩은 곡마다 들어 보고 적은 장면·분위기를 싣는다(storeMusicMeta.ts).
     const music = kind === "music" ? readStoreMusicMeta(uploaded.meta) : null;
+    // 스토어 효과음 팩은 소리마다 자리(cue)·화풍·분위기를 싣는다(storeSoundMeta.ts). 절차 합성이라 「적은 설명」(metadata-derived)이다.
+    const sound = kind === "sound" ? readStoreSoundMeta(uploaded.meta) : null;
     if (music) add(id, uploaded.name, { tags: storeMusicTags(music), description: storeMusicDescription(music), descriptionSource: "ai-listening" });
+    else if (sound) add(id, uploaded.name, { tags: storeSoundTags(sound), description: storeSoundDescription(sound), descriptionSource: "metadata-derived" });
     else add(id, uploaded.name);
   }
 

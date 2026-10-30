@@ -1,3 +1,5 @@
+import { normalizeSeCues } from "@/project/seCues";
+import { normalizeScheduleRecords } from "./schedule";
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
@@ -89,6 +91,7 @@ import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footpr
 import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeRestMenu } from "@/project/restMenu";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
@@ -144,7 +147,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies" | "schedules"
 >>;
 
 /**
@@ -192,6 +195,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     ...(database.skillChoreographies !== undefined
       ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
       : {}),
+    ...(database.schedules !== undefined ? { schedules: normalizeScheduleRecords(database.schedules) } : {}),
   };
 }
 
@@ -303,6 +307,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   records.battleVictoryMeResourceId = cleanOptionalId(system.battleVictoryMeResourceId);
   records.battleDefeatSeResourceId = cleanOptionalId(system.battleDefeatSeResourceId);
   records.battleEscapeSeResourceId = cleanOptionalId(system.battleEscapeSeResourceId);
+  // 효과음 자리 표 — 화이트리스트라 여기 없으면 저장 왕복 1회에 사라진다. 비면 저장하지 않는다(옛 JSON 바이트 유지).
+  const seCues = normalizeSeCues(system.seCues);
+  if (seCues) records.seCues = seCues;
   records.initialTroopId = cleanOptionalId(system.initialTroopId);
   records.battleFlow = normalizeBattleFlow(system.battleFlow);
   // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
@@ -416,7 +423,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
   if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
   // 필드 안내 끄기 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
-  if (system.fieldGuides === "off") records.fieldGuides = "off";
+  if (system.fieldGuides === "off" || system.fieldGuides === "arrows") records.fieldGuides = system.fieldGuides;
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;
@@ -459,6 +466,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
   const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
   const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
   const onDayEnd = cleanOptionalId(config.onDayEnd);
+  const restMenu = normalizeRestMenu(config.restMenu);
   const daysPerSeason = clampInteger(
     typeof config.daysPerSeason === "number" && Number.isFinite(config.daysPerSeason)
       ? config.daysPerSeason
@@ -474,6 +482,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
     daysPerSeason,
     forceSleep: config.forceSleep === true,
     ...(onDayEnd ? { onDayEnd } : {}),
+    ...(restMenu ? { restMenu } : {}),
   };
 }
 

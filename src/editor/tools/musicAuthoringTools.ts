@@ -5,6 +5,9 @@ import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver
 import { listAudioResources } from '@/assets/audioResourceCatalog';
 import { MUSIC_VOICES, MUSIC_SCORE_LIMITS, renderMusicScore, musicDataUrl, type MusicScore } from '@/project/musicScore';
 import type { Project } from '@/project/types';
+import { SE_CUE_IDS, seCueSpec } from '@/project/seCues';
+import { STORE_SOUND_STYLES } from '@/assets/storeSoundMeta';
+import { normalizeStoreSoundCue } from '@/assetStore/storeSoundPick';
 const str:JsonSchema={type:'string'},obj:JsonSchema={type:'object'};
 const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema=>({type:'object',additionalProperties:false,properties,required});
 const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run,preservesAuthoredRaster:true});
@@ -28,7 +31,28 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
   }else if(/\.(mid|midi)(?:[?#]|$)/i.test(url))throw new ToolError('브라우저가 재생하지 못하는 MIDI입니다.',{code:'invalid-audio'});
   return url;
 }
-const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','chase','ending'] as const;
+const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','chase','ending','se','sfx-style'] as const;
+/** 효과음 자리 하나(role:'se'+cue)·화풍 통째(role:'sfx-style') — 자리 표 project.system.seCues(`@/project/seCues`). */
+const SOUND_ROLES=new Set(['cursor','confirm','cancel','defeat','se']);
+
+/**
+ * 맵 범위 역할(maps)에 mapIds 가 없을 때 고르는 맵: 지금 보는 맵(실행기가 채운 currentMapId) → 시작 맵 → 맵이 하나뿐이면 그 맵.
+ * 고른 까닭을 같이 돌려준다(결과 요약에 적는다). 못 고르면 undefined.
+ */
+export function defaultAudioMap(p:Project,currentMapId:unknown):{mapId:string;why:'current'|'start'|'only'}|undefined{
+  if(typeof currentMapId==='string'&&p.maps[currentMapId])return {mapId:currentMapId,why:'current'};
+  if(p.startMapId&&p.maps[p.startMapId])return {mapId:p.startMapId,why:'start'};
+  const ids=Object.keys(p.maps);
+  return ids.length===1?{mapId:ids[0]!,why:'only'}:undefined;
+}
+const DEFAULT_MAP_WHY={current:'지금 보는 맵',start:'시작 맵',only:'하나뿐인 맵'} as const;
+
+/** 자리 표에 하나 건다(빈 id = 비우기). */
+function setSeCue(p:Project,cue:string,resourceId:string|undefined):void{
+  const next={...(p.system.seCues??{})};
+  if(resourceId)next[cue]=resourceId;else delete next[cue];
+  if(Object.keys(next).length)p.system.seCues=next;else delete p.system.seCues;
+}
 
 /** 보스전 이름 낱말 — troopIds 를 주지 않았을 때 보스 부대를 고른다. */
 const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|대장|관장|군주|lord|king|queen|ボス/i;
@@ -159,6 +183,25 @@ function setChaseMusic(p:Project,id:string,mapIds:readonly string[]){
   }
   return {chasers:chasers.map(c=>({mapId:c.mapId,eventId:c.eventId,via:c.switches.some(sw=>on.has(sw))?'switch':'map-bgm'})),cues,mapBgm,whileOn};
 }
+/**
+ * set_game_audio 에 효과음 화풍 통째 걸기(role:'sfx-style')를 더한다 — 그 역할만 스토어에서 팩을 받는 준비 단계가 있다(storeTools prepareSfxStyle).
+ * 맵 범위 역할(maps)이 mapIds 없이 오면 실행기가 채운 지금 보는 맵(currentMapId)을 쓴다.
+ */
+function withSfxStyle(def:ToolDefinition):ToolDefinition{
+  return {
+    ...def,
+    fillsCurrentMapIdAs:'currentMapId',
+    async prepare(args,project){if(args.role==='sfx-style'){const {prepareSfxStyle}=await import('./storeTools');await prepareSfxStyle(args,project);}},
+    run(draft,args){
+      if(args.role!=='sfx-style')return def.run(draft,args);
+      if(!sfxStyleApply)throw new ToolError("sfx-style 은 스토어 팩을 받는 비동기 실행 경로에서만 쓴다.",{code:'store-unavailable'});
+      return sfxStyleApply(draft,args);
+    },
+  };
+}
+/** storeTools 가 읽힐 때 채운다(정적 import 순환을 피한다 — storeTools 는 무거운 스토어 의존을 끌고 온다). */
+let sfxStyleApply:((draft:Project,args:Record<string,unknown>)=>import('./types').ToolExecResult)|undefined;
+export function registerSfxStyleApply(fn:typeof sfxStyleApply):void{sfxStyleApply=fn;}
 export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('get_music_composer','새 음악을 실제 WAV로 만드는 악보·악기·루프 계약. 기존 BGM 선택과 구분.','read',schema({},[]),()=>({summary:'음표를 저작해 독립된 실제 스테레오 WAV를 만들 수 있습니다.',data:{
     method:'Original symbolic score, deterministic local synthesis; not remote studio/vocal generation. Notes are the actual audible composition, not labels or copied game music.',
@@ -198,11 +241,20 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 목록의 mapId 값. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
-    const role=String(args.role),id=text(args.resourceId);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
-    const kind=['cursor','confirm','cancel','defeat'].includes(role)?'sound':'music';
+  withSfxStyle(tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 목록의 mapId 값. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다. 효과음 자리 하나는 role:se+cue(confirm·damage·actorDamage·critical·faint·bossCollapse·equip·save·levelUp·itemGet·magic-fire·footstep-grass … — 프로젝트 전체, mapIds 없음). 효과음을 화풍 하나로 통째로(「효과음 전부 레트로로」) 맞추려면 role:sfx-style+style(retro|modern, variant 기본 a, cues 로 자리 좁히기) 한 번 — 스토어 팩에서 자리마다 한 소리를 골라 넣고 자리 표에 건다(store_install·store_find_sound 불필요). 마법 자리(magic-<속성>)는 그 속성 기술을 쓸 때 울린다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,cue:{type:'string',description:"role:'se' 의 효과음 자리(confirm·damage·equip·levelUp·magic-fire·footstep-grass … — set_game_audio 결과·store_find_sound 의 cue). 알려진 자리: "+SE_CUE_IDS.join(', ')},style:{type:'string',enum:[...STORE_SOUND_STYLES],description:"role:'sfx-style' 의 화풍(retro 레트로 칩 · modern 현대)"},variant:{type:'string',enum:['a','b','c'],description:"role:'sfx-style' 에서 자리마다 고를 안(기본 a)"},cues:{type:'array',items:str,description:"role:'sfx-style' 에서 이 자리만 건다(비우면 그 화풍 팩이 가진 모든 자리)"},userAsked:{type:'boolean',description:"role:'sfx-style': 사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 true"},mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str},currentMapId:{type:'string',description:'(실행기가 채운다 — 넣지 않는다) 사용자가 지금 보는 맵'}},['role']),(p,args)=>{
+    const role=String(args.role);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
+    const id=text(args.resourceId);
+    const kind=SOUND_ROLES.has(role)?'sound':'music';
     playable(p,id,kind);
+    if(role==='se'){
+      const cue=normalizeStoreSoundCue(args.cue);
+      if(!cue)throw new ToolError(`효과음 자리(cue)가 필요합니다. 알려진 자리: ${SE_CUE_IDS.join(', ')}`,{code:'invalid-args'});
+      if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('효과음 자리는 프로젝트 전체에 걸린다 — mapIds 를 쓰지 않는다(지형 발소리는 footstep-<표면> 자리).',{code:'invalid-args'});
+      setSeCue(p,cue,id);
+      return {summary:`효과음 자리 「${seCueSpec(cue)?.label??cue}」(${cue})에 소리를 걸었습니다.`,data:{role,cue,resourceId:id,kind,verificationScope:'authored-binding'}};
+    }
     let maps:string[]=[];
+    let mapNote='';
     const mapList=Array.isArray(args.mapIds)?(args.mapIds as unknown[]):[];
     if(role==='chase'){
       if(mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
@@ -211,7 +263,17 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       const viaSwitch=done.chasers.filter(c=>c.via==='switch').length;
       return {summary:`추격자 ${done.chasers.length}명에 추격 곡을 걸었습니다${viaSwitch?` — 추격 스위치를 켜는 곳 ${done.cues.filter(c=>c.at==='start').length}곳에서 곡을 바꾸고 끄는 곳 ${done.cues.filter(c=>c.at==='end').length}곳에서 되돌림, 켜진 동안 맵에 다시 들어오거나 다시 시작해도 추격 곡`:''}${done.mapBgm.length?` — 늘 있는 추격자의 맵 ${done.mapBgm.length}개는 맵 배경음을 추격 곡으로(맵을 나가면 돌아옴)`:''}.`,data:{role,resourceId:id,kind,...done,verificationScope:'authored-binding'}};
     }
-    if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
+    if(role==='maps'){
+      // mapIds 를 안 주면 지금 보는 맵 → 시작 맵에 건다(사용자가 맵을 말하지 않은 음악 요청). 준 mapIds 가 틀리면 실제 맵을 알려 주고 거절한다.
+      if(!mapList.length){
+        const fallback=defaultAudioMap(p,args.currentMapId);
+        if(!fallback)throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
+        maps=[fallback.mapId];mapNote=` mapIds 를 주지 않아 ${DEFAULT_MAP_WHY[fallback.why]} 「${p.maps[fallback.mapId]!.name||fallback.mapId}」(${fallback.mapId})에 걸었습니다.`;
+      }else{
+        if(mapList.length>256||mapList.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
+        maps=[...new Set(mapList as string[])];
+      }
+    }
     else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps·chase 역할에서만 사용합니다.',{code:'invalid-args'});
     if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
     const endingIds=Array.isArray(args.endingIds)?(args.endingIds as unknown[]).filter((e):e is string=>typeof e==='string'):[];
@@ -248,7 +310,9 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       default:
         p.meta.oprnMenuSounds={...p.meta.oprnMenuSounds,[role]:id};
         if(p.system.titleScreen)p.system.titleScreen.sounds={...p.system.titleScreen.sounds,[role+'SeResourceId']:id};
+        // 자리 표에도 같이 건다 — 전투 명령 메뉴·상점·메뉴의 같은 자리가 같은 소리를 낸다.
+        setSeCue(p,role,id);
     }
-    return {summary:'실제 리소스를 지정한 게임 오디오 역할에 연결했습니다.',data:{role,resourceId:id,kind,mapIds:maps,verificationScope:'authored-binding',runtimePrecedence:'Session/M2 battle overrides may take precedence over battle-default; existing trainer events keep their authored cue.'}};
-  }),
+    return {summary:'실제 리소스를 지정한 게임 오디오 역할에 연결했습니다.'+mapNote,data:{role,resourceId:id,kind,mapIds:maps,verificationScope:'authored-binding',runtimePrecedence:'Session/M2 battle overrides may take precedence over battle-default; existing trainer events keep their authored cue.'}};
+  })),
 ];

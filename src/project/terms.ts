@@ -1,5 +1,7 @@
 import { defaultTerms } from "@/project/defaults/defaultDatabase";
 import type { Project, Terms } from "@/project/types";
+import { withJosa } from "@/util/josa";
+import { normalizeTroopVictoryBanner } from "@/project/databaseEnemyTroopRecordModel";
 
 export const TERM_KEYS = [
   "attack",
@@ -8,6 +10,8 @@ export const TERM_KEYS = [
   "capture",
   "defend",
   "escape",
+  "battleVictory",
+  "battleCommandPrompt",
   "back",
   "target",
   "shopGreeting",
@@ -45,4 +49,31 @@ export function resolveTermOverrides(terms: Terms | undefined): ResolvedTerms {
 
 export function defaultTermValue(key: TermKey): string {
   return defaultTerms()[key];
+}
+
+/**
+ * 승리 띠 글자. 우선순위: 이 전투 적 그룹의 victoryBanner → 프로젝트 용어 terms.battleVictory → 기본 「승리!」.
+ * 빈 문자열은 어느 단계에서도 「없음」으로 보고 다음 단계로 넘어간다.
+ */
+export function resolveVictoryBannerText(project: Pick<Project, "meta" | "database">, troopId: string | undefined): string {
+  const troop = troopId ? project.database.troops.find((entry) => entry.id === troopId) : undefined;
+  const override = normalizeTroopVictoryBanner(troop?.victoryBanner);
+  if (override) return override;
+  const term = resolveTerms(project).battleVictory;
+  return term.trim() ? term : defaultTermValue("battleVictory");
+}
+
+const NAME_PLACEHOLDER = /\{name(은|이|을)?\}/gu;
+const JOSA_PAIRS = { 은: "은/는", 이: "이/가", 을: "을/를" } as const;
+
+/**
+ * 전투 명령 질문 줄(terms.battleCommandPrompt)을 채운다. `{name}` 은 이름 그대로,
+ * `{name은}`·`{name이}`·`{name을}` 은 받침에 맞춘 조사를 붙인다.
+ * lineBreakAfterName(포켓몬 화면)이면 이름 자리표시자 바로 뒤 첫 빈칸 하나를 줄바꿈으로 바꾼다 —
+ * 기본 문구에서는 예전 「○○는\n무엇을 할까?」와 글자 하나까지 같다.
+ */
+export function formatBattleCommandPrompt(template: string, name: string, lineBreakAfterName = false): string {
+  const source = lineBreakAfterName ? template.replace(/(\{name(?:은|이|을)?\}) /u, "$1\n") : template;
+  return source.replace(NAME_PLACEHOLDER, (_match, particle: keyof typeof JOSA_PAIRS | undefined) =>
+    particle ? withJosa(name, JOSA_PAIRS[particle]) : name);
 }

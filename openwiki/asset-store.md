@@ -50,6 +50,10 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 `REFMAP_CREDIT` 이 있어야 한다. 공식 게시기·에이전트 제출만 쓴다 — 편집기 올리기 화면과 조수 도구는 이 라이선스를 고를 수 없고, 사용자 올리기
 경로(`pack.ts`)는 refmap 이름을 계속 막는다. 다른 제3자 이름(Rasak·PAW·RPG Maker·RTP)은 이 라이선스에서도 막힌다. 스토어 상품은 무료다.
 
+2026-10-31 (사용자: 「REFMAP 은 수정된 것들은 전부 허용」): 게임 게시(`store:publish-game`)도 고친 REFMAP 칩을 막지 않는다.
+`storeGameThirdParty.ts` 가 RefmapDoll 자원을 `REFMAP-MODIFIED` 로 보고 「refmap」 낱말만 풀며, 게임이 쓰는 시트만 판본에 싣고 쓰지 않는 시트는 뺀다.
+쓰면 게임 크레딧에 `REFMAP_CREDIT` 줄을 자동으로 단다. REFMAP 원본 이름·다른 제3자 이름은 그대로 막는다(실측: 폴른 스타 1.25 의 꼬마 토비 = RefmapDoll121 이 이 관문에 막혔다).
+
 | 지점 | 무엇을 보나 |
 |---|---|
 | `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
@@ -158,6 +162,24 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   2026-10-25 스테이징 실조수(v2·Argon, 판타지·몬스터 자동 넣기 + 조선 카드): 첫 판 14자리 중 9자리 적합(Argon 청취) → 고친 뒤 새 프로젝트 11요청 15자리 중 11자리.
   모든 곡이 `assets/` 파일·저장 뒤 재로드 유지, 출하 플레이어에서 타이틀·마을·던전·전투·보스·승리 15자리 모두 재생 확인. 남은 빗나감은 곡 자체(조선 팩 마을·전투·보스가 조선풍으로 안 들림, 몬스터 타이틀).
   고친 것: 위 점수 규칙·카드 묶기·boss 자동 고르기, 그리고 v2 가 음악 요청을 다 건 뒤에도 「실패」로 끝나던 것(v1 의 게임 시스템 검토 검사 `PiGameSystemProduction` 을 v2 에서 끈다 — v2 에는 그 검토 도구가 없다).
+
+### 효과음 팩과 조수 (2026-10-30)
+
+- 팩: kind `sound`, OGG, 소리마다 `meta.oprnSound`(판 1 — `slots`(1..4, 첫째가 주 자리)·`group`·`style` retro|modern·`set`·`variant` a|b|c·`mood`·`intensity`·`durationSec`·`loopable`·`pairWith`·`summaryKo`·`feelTags`, 참고용 `qa`).
+  지금 팩 8개 = retro·modern × UI·전투·마법·필드. 절차 합성이라 `aiGenerated:false`·크레딧 「OPRN 합성 효과음」 — AI 표시가 붙지 않는다. 에셋 id 는 `oprn-sfx-<style>-<cue>-<a|b|c>`.
+- 읽기 `src/assets/storeSoundMeta.ts` `readStoreSoundMeta`: 자리 id 는 `@/project/seCues` 목록. 옛 이름 별칭(collapse→faint, evasion→miss …)을 풀고,
+  아는 자리가 하나도 없으면 null, 모르는 새 자리 id 는 버리지 않고 `extraSlots`(태그)로 넘긴다. 프로젝트에 넣은 소리는 `audioResourceCatalog` 가 이 값으로 태그·설명을 단다.
+- 고르기 `src/assetStore/storeSoundPick.ts`: 점수 = 주 자리 +20 / 다른 자리 +14 / 가족 기본 자리(magic-fire 를 원하는데 cast) +6 / 안 맞으면 −30, 화풍 ±8, 분위기 낱말 +2, A안 +1, qa 는 /20 동점 깨기.
+  `planSoundStyle` 은 한 화풍으로 자리마다 한 소리(기본 A안). `subsetAudioManifest` 가 곡·소리 몇 개만 남긴 매니페스트를 만든다(음악과 공용).
+- 조수 도구(`src/editor/tools/storeTools.ts`): `store_find_sound{cue, style, mood, query}` — 효과음 팩 목록 전부(쪽 넘김·캐시 `sound|주소`) → 매니페스트(slug@판본 캐시)만 읽고 소리 단위로 줄 세운다,
+  1위에 recommended·why. `autoInstall:false`(「먼저 묻기」)면 `store-sound-choice` 카드(`aiStoreCard.ts` soundChoiceCard, 미리듣기·넣기). 넣은 뒤 `set_game_audio{role:'se', cue, resourceId}`.
+  화풍 통째는 `set_game_audio{role:'sfx-style', style, variant?, cues?}` 한 번 — prepare 가 팩마다 고른 소리 파일만 받고, run 이 넣고 `system.seCues` 를 채운다(먼저 묻기면 거절).
+- `set_game_audio` 의 다른 변화: `role:'maps'` 에 mapIds 가 없으면 지금 보는 맵 → 시작 맵 → 하나뿐인 맵에 걸고 결과 글에 그렇다고 쓴다(틀린 mapIds 는 여전히 거절).
+  `role:'se'` 는 프로젝트 전체 자리라 mapIds 를 받지 않는다. 메뉴 역할(cursor·confirm·cancel)도 자리 표에 같이 건다.
+- v2 낱말 길(`src/ai/v2/musicWords.ts`): `wantsSound`(효과음·SE·SFX·사운드 이펙트·타격음·발소리…) → `SOUND_TIER` 묶음·카드. `soundOnly` 는 `musicOnly` 의 짝 —
+  맵·이벤트 동사를 싣지 않고 검토자·끝맺음 관문의 소리 밖 지적은 참고로 낮춘다(`audioOnly`). 「사운드 이펙트」의 「사운드」는 음악 낱말로 세지 않는다.
+  끝맺음 검사 `[게임 검사 효과음]`: 효과음만 바라는 요청에 효과음 연결(seCues·타이틀 소리·패배/도주·지형 발소리)이 그대로면 짚는다.
+- 시험: `test/storeSoundPick.test.ts`(매니페스트 사본 `test/fixtures/oprn-sfx-*-battle.manifest.json` — 실제 팩에서 소리 6개만 남김, 소리 파일 없음). 런타임 쪽은 `openwiki/runtime-battle.md` 「효과음 자리」.
 
 ## 게시기
 
@@ -312,7 +334,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·「스토어에 올리기」.
   다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
-  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player` — `dist/export-player` 가 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(2026-10-30 마왕 편의점 스테이징 1.5·1.6 이 아침 묶음으로 나간 사고, 우회는 `--allow-stale-player`). 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
 - 제3자 이름 자원(2026-10-30): 판본은 프로젝트 자원 목록 전체를 싣는데, 기본 목록에는 쓰지 않는 「RefmapDoll · REFMAP 변형 인물」 걷기 칩 321장이 딸려 왔다.
   `store:publish-game` 은 `splitStoreGameThirdPartyProfiles`(`src/assetStore/storeGameThirdParty.ts`)로 스토어가 막는 이름(`storeThirdPartyName`)의 자원을
   게임이 쓰지 않으면 빼고, 쓰면(assetId 가 자원 목록 밖에 나오면) 게시를 멈춘다. 공개 라이선스 카탈로그(`cc0-`·`easyrpg-`)는 「rtp」 낱말이 있어도 막지 않는다.

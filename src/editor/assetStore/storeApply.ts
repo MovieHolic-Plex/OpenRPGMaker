@@ -4,7 +4,7 @@
  * 문서에는 내용 주소와 출처(origin)만 남긴다. 같은 상품의 새 판본은 같은 id 를 덮어써 맵 참조가 유지된다.
  */
 import type { StorePackManifest } from "@/assetStore/format";
-import { subsetMusicManifest } from "@/assetStore/storeMusicPick";
+import { subsetAudioManifest } from "@/assetStore/storeSoundPick";
 import { applyPackToProject, packAssetTargets, type ApplyContext, type ApplyResult } from "@/assetStore/pack";
 import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -36,10 +36,10 @@ export interface PreparedStoreItem {
 export async function prepareStoreItem(slug: string, options: { readonly assetIds?: readonly string[] } = {}): Promise<PreparedStoreItem> {
   const bridge = storeBridge();
   if (!bridge) throw new Error("스토어는 데스크톱 앱에서만 쓸 수 있습니다.");
-  // 음악 팩에서 곡만 고르면 팩을 통째로 받지 않고 매니페스트와 그 곡 파일만 받는다(조수 음악 카드·store_install assetIds).
+  // 음악·효과음 팩에서 곡·소리만 고르면 팩을 통째로 받지 않고 매니페스트와 그 곡 파일만 받는다(조수 음악 카드·store_install assetIds).
   if (options.assetIds?.length && bridge.manifest) {
     const item = await bridge.item({ slug });
-    const manifest = subsetMusicManifest(await bridge.manifest({ slug, version: item.latestVersion }), options.assetIds);
+    const manifest = subsetAudioManifest(await bridge.manifest({ slug, version: item.latestVersion }), options.assetIds);
     const blobs = new Map<string, Uint8Array>();
     for (const ref of manifest.blobs) blobs.set(ref.sha256, await bridge.blob({ sha256: ref.sha256 }));
     const storeUrl = (await bridge.status()).url;
@@ -56,7 +56,7 @@ export async function prepareStoreItem(slug: string, options: { readonly assetId
   if (!(await bridge.installed()).some((item) => item.slug === slug)) await bridge.install({ slug });
   const pkg = await bridge.package({ slug });
   // 음악 팩에서 곡만 고르면 그 곡만 넣는다(조수 음악 카드·store_install assetIds).
-  const manifest = options.assetIds?.length ? subsetMusicManifest(pkg.manifest, options.assetIds) : pkg.manifest;
+  const manifest = options.assetIds?.length ? subsetAudioManifest(pkg.manifest, options.assetIds) : pkg.manifest;
   return prepareManifestItem(manifest, {
     slug,
     version: pkg.version,
