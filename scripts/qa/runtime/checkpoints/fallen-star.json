@@ -7627,7 +7627,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 10,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -7649,7 +7649,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 6,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -8062,8 +8062,8 @@
     "sw_fs2_t1_arrive": true,
     "fs2t2_split": true,
     "fs2t2_done": true,
-    "sw_fs2_t2_split_talk": true,
-    "sw_fs2_t3_arrive": true
+    "sw_fs2_t3_arrive": true,
+    "fs2t2_after_split": true
    },
    "party": [
     {
@@ -8332,7 +8332,7 @@
    "note": "act2Tower.ts floorFour (configure_story_journal · place_field_obstacle dark)",
    "mapId": "fs2_sky_tower_f4",
    "x": 15,
-   "y": 10,
+   "y": 12,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -8360,11 +8360,11 @@
     "sw_fs2_t1_arrive": true,
     "fs2t2_split": true,
     "fs2t2_done": true,
-    "sw_fs2_t2_split_talk": true,
     "sw_fs2_t3_arrive": true,
     "sw_fs2_t3_mirror_solved": true,
     "sw_fs2_t4_arrive": true,
-    "sw_fs2_t4_coffin_seen": true
+    "sw_fs2_t4_coffin_seen": true,
+    "fs2t2_after_split": true
    },
    "party": [
     {
@@ -8878,13 +8878,13 @@
     "sw_fs2_t1_arrive": true,
     "fs2t2_split": true,
     "fs2t2_done": true,
-    "sw_fs2_t2_split_talk": true,
     "sw_fs2_t3_arrive": true,
     "sw_fs2_t3_mirror_solved": true,
     "sw_fs2_t4_arrive": true,
     "sw_fs2_t4_coffin_seen": true,
     "sw_fs2_iris_wake": true,
-    "sw_fs2_iris_back": true
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true
    },
    "party": [
     {
@@ -9126,6 +9126,955 @@
    ]
   },
   {
+   "id": "act2-b11-stair",
+   "label": "제2막 B11→B12 — 이리스와 4층 계단을 올라 하늘탑 꼭대기에 닿는다",
+   "note": "act2Summit.ts gateSummitStair · ev_fs2_top_arrive",
+   "mapId": "fs2_sky_tower_f4",
+   "x": 12,
+   "y": 8,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "sw_fs2_iris_wake": true,
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 13
+    }
+   ],
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1,
+       "stepTimeoutMs": 4000
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_sky_tower_top",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "top",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b12-confession",
+   "label": "제2막 B12 — 꼭대기 렌즈실: 발렌의 거부 신호, 하넬의 고백, 회수 기구 기동",
+   "note": "act2Summit.ts confession",
+   "mapId": "fs2_sky_tower_top",
+   "x": 16,
+   "y": 17,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "sw_fs2_iris_wake": true,
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true,
+    "sw_fs2_top_arrive": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 13
+    }
+   ],
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 2,
+       "stepTimeoutMs": 4000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "valen",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hanel",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "confess",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "serin",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "alarm",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rise",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b13-boss",
+   "label": "제2막 B13 — 재의 회수자: 발렌을 함께 세우고 싸운다(넷 연계 「네 번째 대답」)",
+   "note": "act2Summit.ts fight · troop_fs2_ash_collector",
+   "mapId": "fs2_sky_tower_top",
+   "x": 16,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "sw_fs2_iris_wake": true,
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true,
+    "sw_fs2_top_arrive": true,
+    "sw_fs2_top_hanel_come": true,
+    "sw_fs2_b12_confession": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 13
+    }
+   ],
+   "beats": [
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 30,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "won",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "untilEnd": true,
+       "timeoutMs": 900000,
+       "plan": {
+        "actor_fs_elena": [
+         "skill_mage_blizzard",
+         "skill_mage_blizzard",
+         "skill_heal@0",
+         "skill_mage_blizzard",
+         "skill_mage_blizzard",
+         "skill_heal@0",
+         "skill_mage_blizzard",
+         "skill_mage_blizzard"
+        ],
+        "actor_fs_iris": [
+         "skill_gunner_shot",
+         "skill_gunner_shot",
+         "skill_gunner_shot",
+         "skill_gunner_shot",
+         "skill_gunner_shot",
+         "skill_gunner_shot"
+        ]
+       }
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorSkillIds": {
+     "actor_fs_iris": [
+      "skill_gunner_shot",
+      "skill_gunner_rapid_fire",
+      "skill_gunner_snipe"
+     ]
+    }
+   }
+  },
+  {
+   "id": "act2-b13-answer",
+   "label": "제2막 B13 끝 — 모두 렌즈에 손을 얹고 다시 대답한다 → 막 끝·저장",
+   "note": "act2Summit.ts ending",
+   "mapId": "fs2_sky_tower_top",
+   "x": 16,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "sw_fs2_iris_wake": true,
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true,
+    "sw_fs2_top_arrive": true,
+    "sw_fs2_top_hanel_come": true,
+    "sw_fs2_b12_confession": true,
+    "sw_fs2_b13_collector_down": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 13
+    }
+   ],
+   "beats": [
+    {
+     "id": "settle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hands",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "valen",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "terminal",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "moon",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "card",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "main-menu",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "act2-b9-stop",
    "label": "제2막 판본 끝 — 하늘탑 4층 꼭대기 계단: 막 카드·회복·저장",
    "note": "act2Tower.ts floorFour ev_fs2_t4_stair_up (FS2_RELEASE_STOP null)",
@@ -9159,13 +10108,13 @@
     "sw_fs2_t1_arrive": true,
     "fs2t2_split": true,
     "fs2t2_done": true,
-    "sw_fs2_t2_split_talk": true,
     "sw_fs2_t3_arrive": true,
     "sw_fs2_t3_mirror_solved": true,
     "sw_fs2_t4_arrive": true,
     "sw_fs2_t4_coffin_seen": true,
     "sw_fs2_iris_wake": true,
-    "sw_fs2_iris_back": true
+    "sw_fs2_iris_back": true,
+    "fs2t2_after_split": true
    },
    "party": [
     {

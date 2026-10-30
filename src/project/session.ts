@@ -302,6 +302,8 @@ export interface PlaySession {
   /** 놓아주기·교환·합성으로 지운 개체 번호 중 가장 큰 값. 새 개체 id 가 지운 id 를 다시 쓰지 않게 한다. 생략 = 지운 적 없음. */
   retiredMonsterInstanceSeq?: number;
   actorSkillIds: Record<ActorId, SkillId[]>;
+  /** 「잊기」로 지운 스킬(배우별). 직업·배우 레벨 습득으로 생기는 스킬도 여기 있으면 모른다. 다시 배우면 빠진다. 생략 = 없음. */
+  actorForgottenSkillIds?: Record<ActorId, SkillId[]>;
   /** Remaining Gen1 PP for the legacy actor-party fallback path. */
   actorSkillPp?: Record<ActorId, Record<SkillId, number>>;
   // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
@@ -801,10 +803,15 @@ export function changeActorSkill(
     : [actorId];
   for (const id of targets) {
     const learned = session.actorSkillIds[id] ?? [];
+    const forgotten = session.actorForgottenSkillIds?.[id] ?? [];
     if (action === "forget") {
       session.actorSkillIds[id] = learned.filter((entry) => entry !== skillId);
+      // 직업·배우 레벨이 주는 스킬은 세션 목록에 없어도 계속 생긴다 — 잊은 목록에 남겨 그것까지 지운다.
+      session.actorForgottenSkillIds ??= {};
+      if (!forgotten.includes(skillId)) session.actorForgottenSkillIds[id] = [...forgotten, skillId];
       continue;
     }
+    if (forgotten.includes(skillId) && session.actorForgottenSkillIds) session.actorForgottenSkillIds[id] = forgotten.filter((entry) => entry !== skillId);
     if (!learned.includes(skillId)) session.actorSkillIds[id] = [...learned, skillId];
   }
 }
