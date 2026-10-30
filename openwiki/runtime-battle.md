@@ -41,8 +41,14 @@
 (`BATTLE_GROUP_IMPACT_STAGGER_MS = 0` — 30ms 타이머 간격은 부하에서 49~144ms 로 벌어져 차례로 맞는 것처럼 보였다).
 메시지는 「적 N체에게 합계 X 피해! 약점을 찔렀다!」 한 줄, 쓰러짐은 「A, B, C을 쓰러뜨렸다!」 한 줄, 상태는 종류별 한 줄(`playGroupStates`).
 `battleDom` 은 `onImpactGroup` 으로 맞는 대상 전체를 `hitTargetIds` 로 표시하고 히트스톱 해제 때 모두 깜빡인다.
-**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)와
-보조형 광역(「action」 항목)은 묶지 않는다(차례 재생, 알려진 한계).
+**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)는 묶지 않는다.
+
+**광역 보조기 묶음 (2026-10-30, 이세계 고딩 리뷰).** 파티 전체 버프처럼 피해 0 보조 기술(「action」 항목)은 런타임이 대상마다
+`[action, stateAdded…]` 를 적어서, 대상마다 「…을 사용했다!」·시전 동작·상태 문장이 따로 돌았다(넷 버프 약 4.2초).
+`collectSupportGroup` 이 같은 행동(actionId·쪽·사용자·명령·기술, 피해 0·명중)의 action 이 서로 다른 대상 둘 이상이면 그 사이의 상태 부여·해제까지 한 묶음으로 잡고,
+`playSupportGroup` 이 선언 한 줄·시전 박자 한 번 → `playGroupStates` 로 같은 상태끼리 한 줄(「강민재, 에델, 피오의 공격이 올랐다!」, 대상 위 글자는 함께) →
+아무것도 안 붙은 대상만 끝에 한 줄(「…은 이미 공격 상승 상태다.」/「…에게는 효과가 없었다.」)로 돈다. 특수 결과(special)·피해가 끼면 묶음을 거기서 끊는다.
+보조기 밖에서도 같은 행동의 같은 상태 부여·해제가 서로 다른 대상에 연달아 오면(`collectStateRun`, 쓰러진 대상의 해제는 건너뜀) 한 줄로 묶는다 — 승리 직후 「강민재, 에델, 피오, 꾸르의 공격 상승이 풀렸다.」가 대상마다 네 줄로 돌던 것.
 
 **숫자 꼬리표 (`battleFieldDom.showDamageFeedback`).** 팝업 앞에 `.battle-damage-popup-tag` — 치명타! · 약점! · 저항 · 무효 · 무기↑.
 `data-effectiveness` 로 약점(주황)·저항 색. 레트로 스킨 덮어쓰기는 `27-retro-motion.css`.
@@ -836,6 +842,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
   이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). gen1 주요 상태가 서로 달라 안 붙었으면(화상 중에 마비 등) 「…은 이미 화상 상태다.」— 「효과가 없었다」로 읽히면 기술이 빗나간 것처럼 보인다. 피해 기술의 부가 실패는 이 문장을 쓰지 않는다. 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
   명령 대사가 그 엔트리를 차지해 결과가 사라졌다 → 명령 줄 뒤에 special 줄을 따로 읽힌다(`specialAfterCommand`).
+  **막힌 기술의 한 줄 도움말 (2026-10-30):** 질문 줄 자리의 한 줄 도움말(`syncBattleSkillHintLine`)은 막힌 기술이면 사유를 **앞에** 둔다 — 「이미 공격 상승 · MP4 · 아군 전체 · 공격 상승」. 사유를 뒤에 붙이면 창을 넘쳐 말줄임으로 「왜 못 쓰나」가 잘렸다.
   **헛차례 막기 (2026-10-30, 이세계 고딩 첫인상 리뷰):** 상태 부여는 이미 걸린 상태의 지속 차례를 늘리지 않으므로(`applyStateEffects`) 위 문장이 나오는 차례는 그냥 사라진다. 순수 보조 기술(효과 support·상태 add 만·능력치 단계/날씨/기믹 없음)이 고를 수 있는 모든 대상에게 이미 다 걸려 있으면 기술 메뉴가 회색(inert)+사유 「이미 공격 상승」으로 막고, 아군 대상 행에도 같은 메모가 붙으며, 자동 전투의 남는 기술 고르기(`fallbackLearnedSkill`)도 건너뛴다 — 판정 `src/battle/battleSkillRedundancy.ts`.
   **결과 상자·적 이름표 자리 (같은 날):** 결과 상자는 가운데에 뜨되 아군 몸통을 덮으면 적 쪽으로 `translate` 만큼 비킨다(`battleResultPlacement.ts`, 측면 대각선의 뒷줄 주인공이 사라져 보였다). 저작 승리 ME 가 없을 때 합성 팡파레는 약 2.4초. 적 이름표(`.battle-enemy-chrome`)는 도트 측면 진형 벌리기 상자에 함께 들어가고(겹침 허용 0), 이름표 아래끝이 전장 보이는 아래끝 4px 위에 오도록 적을 올린다(`enemyPlateFloors`, 노드마다 한 번 재서 `data-plate-drop-px` 에 적는다).
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
