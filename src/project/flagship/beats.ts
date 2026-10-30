@@ -233,7 +233,7 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
 const HUNTER_CONTRACT_BEATS: readonly FlagshipBeat[] = [
   { id: "hc-00", atMinute: 0, act: "오프닝", mapKey: "opening_stage_480x270", sceneTitle: "게임 맵 그대로 5컷", playerFeel: "비 오는 산길, 빈 침낭, 사본 세 장, 갈대늪, 세 곳의 지도", mechanics: ["place_opening_background(mapId)", "set_opening_caption"], sharedAssets: ["easyrpg-charset-actor2"] },
   { id: "hc-01", atMinute: 1, act: "줄기", mapKey: "hc_world", sceneTitle: "사본 세 장", playerFeel: "세계 지도에서 늪으로 걸어간다. 일지에 사본이 적힌다", mechanics: ["journal-line", "objectiveChip"], sharedAssets: [] },
-  { id: "hc-02", atMinute: 3, act: "계약 A", mapKey: "hc_swamp_inn", sceneTitle: "게시판과 의뢰인", playerFeel: "게시판에서 계약을 보고 마르타에게 조건과 선금을 받는다", mechanics: ["choices", "changeGold"], sharedAssets: ["shared-people1-old-woman-expressions-bust-base"] },
+  { id: "hc-02", atMinute: 3, act: "계약 A", mapKey: "hc_swamp_inn", sceneTitle: "게시판과 의뢰인", playerFeel: "게시판에서 계약을 보고 하그네에게 조건과 선금을 받는다", mechanics: ["choices", "changeGold"], sharedAssets: ["shared-people1-old-woman-expressions-bust-base"] },
   { id: "hc-03", atMinute: 5, act: "계약 A", mapKey: "hc_swamp", sceneTitle: "조사", playerFeel: "뱃사공·시체·끈 자국·세나 중 둘이면 다음으로 넘어간다", mechanics: ["nearSparkle", "journal-line"], sharedAssets: [] },
   { id: "hc-04", atMinute: 10, act: "계약 A", mapKey: "hc_nest", sceneTitle: "밤 사냥", playerFeel: "기름을 바르고 밤에만 열리는 둥지로 들어가 익사귀와 어미를 쓰러뜨린다", mechanics: ["timePhase", "place_field_enemy", "battleProcessing"], sharedAssets: ["generated-enemy-ghoul-grave"] },
   { id: "hc-05", atMinute: 14, act: "계약 A", mapKey: "hc_nest", sceneTitle: "반지", playerFeel: "어미의 정체를 알고 삯·폭로·침묵 중 고른다", mechanics: ["choices", "triggerEnding"], sharedAssets: [] },
@@ -344,7 +344,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     thumb: "/assets/generated/welcome/slide-04.png",
     cast: [
       { id: "actor_hero", name: "도르반", role: "주인공 · 떠돌이 사냥꾼", assetId: "easyrpg-charset-actor2" },
-      { id: "npc_hc_marta", name: "마르타", role: "갈대늪 촌장 · 의뢰인", assetId: "easyrpg-charset-people1" },
+      { id: "npc_hc_marta", name: "하그네", role: "갈대늪 촌장 · 의뢰인", assetId: "easyrpg-charset-people1" },
       { id: "npc_hc_boatman", name: "뱃사공 오그", role: "셋째 날 밤을 아는 사람", assetId: "easyrpg-charset-people1" },
       { id: "enemy_hc_mother", name: "물에 잠긴 어미", role: "계약 A 보스", assetId: "generated-enemy-ghoul-grave" },
     ],

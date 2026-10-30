@@ -32,7 +32,7 @@ const RTP = (sheet: string) => ({ tex: `tex_easyrpg_charset_${sheet}`, resource:
 export const CAST: Readonly<Record<Who, CastMember>> = {
   doran: { name: "도르반", stem: "bearded-bandana", ...RTP("actor2"), index: 4, side: "left" },
   risk: { name: "리스크", stem: "green-scholar", ...RTP("actor2"), index: 2, side: "right" },
-  marta: { name: "마르타", stem: "people1-old-woman", ...RTP("people1"), index: 7, side: "right" },
+  marta: { name: "하그네", stem: "people1-old-woman", ...RTP("people1"), index: 7, side: "right" },
   boatman: { name: "뱃사공 오그", stem: "people1-old-man", ...RTP("people1"), index: 6, side: "right" },
   widow: { name: "어부의 아내 세나", stem: "people1-village-woman", ...RTP("people1"), index: 5, side: "right" },
   keeper: { name: "여관 주인 베일", stem: "people1-mustache", ...RTP("people1"), index: 4, side: "right" },

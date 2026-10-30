@@ -22,7 +22,7 @@ const ENTRIES: readonly CodexEntry[] = [
     body: "칼을 스무 해 갈았다. 말이 짧고 값을 먼저 묻는다. 도제 리스크를 찾아 사본 세 장을 따라간다. 남은 은화는 열한 닢에서 시작한다.", tags: ["인물", "주인공"], refs: [{ kind: "actor", id: "actor_hero" }] },
   { id: "hc_char_risk", type: "character", name: "리스크", summary: "도르반의 도제. 석 달 전 회색봉 계약을 혼자 받아 나갔다.",
     body: "계약서 사본을 세 장 남겼다. 귀퉁이마다 메모를 적는 버릇이 있다(갈대늪 사본에는 「셋째 날」).", tags: ["인물", "도제"] },
-  { id: "hc_char_marta", type: "character", name: "마르타", summary: "갈대늪 촌장. 익사자 처리 계약을 냈다.",
+  { id: "hc_char_marta", type: "character", name: "하그네", summary: "갈대늪 촌장. 익사자 처리 계약을 냈다.",
     body: "늪 여관에 묵는다. 손가락이 앙상하고 반지 자국만 굵다. 「삯은 머리를 가져오면 준다. 반은 지금. 나머지는 냄새가 빠지고 나서.」", tags: ["인물", "갈대늪"], refs: [{ kind: "map", id: "hc_swamp_inn" }] },
   { id: "hc_char_boatman", type: "character", name: "뱃사공 오그", summary: "갈대늪의 늙은 뱃사공. 셋째 날 밤 규칙을 안다.",
     body: "물이 무거우면 배를 안 띄운다. 떠돌이들을 누가 늪 길로 데려갔는지 묻지 않는다.", tags: ["인물", "갈대늪"], refs: [{ kind: "map", id: "hc_swamp" }] },
@@ -35,7 +35,7 @@ const ENTRIES: readonly CodexEntry[] = [
   { id: "hc_place_swamp", type: "place", name: "갈대늪", summary: "늪 위 수상 마을. 두 해째 굶는다.",
     body: "널판 길과 수상 가옥. 광장 서쪽 둔덕이 장례 마당이다. 남쪽 물가 너머가 늪 깊은 곳이다. 낮에는 물이 허리까지 찬다.", tags: ["장소", "마을"], refs: [{ kind: "map", id: "hc_swamp" }] },
   { id: "hc_place_inn", type: "place", name: "갈대늪 여관", summary: "늪 마을의 여관. 벽에 게시판이 있다.",
-    body: "게시판에 익사자 처리 계약이 붙어 있다. 촌장 마르타가 창가 탁자에 앉아 있다. 짚 침대에서 밤까지 쉴 수 있다.", tags: ["장소", "실내"], refs: [{ kind: "map", id: "hc_swamp_inn" }] },
+    body: "게시판에 익사자 처리 계약이 붙어 있다. 촌장 하그네가 창가 탁자에 앉아 있다. 짚 침대에서 밤까지 쉴 수 있다.", tags: ["장소", "실내"], refs: [{ kind: "map", id: "hc_swamp_inn" }] },
   { id: "hc_place_nest", type: "place", name: "늪 깊은 곳", summary: "익사귀 둥지. 밤에만 들어갈 수 있다.",
     body: "둔덕과 웅덩이 사이로 익사귀가 셋 돌아다닌다. 가장 안쪽 웅덩이에 물에 잠긴 어미가 있다.", tags: ["장소", "던전"], refs: [{ kind: "map", id: "hc_nest" }] },
   { id: "hc_place_harbor", type: "place", name: "버들항", summary: "성벽 두른 항구 도시. 하수도에서 사람이 사라진다.",
@@ -49,7 +49,7 @@ const ENTRIES: readonly CodexEntry[] = [
   { id: "hc_item_copies", type: "item", name: "계약서 사본 세 장", summary: "리스크가 남긴 사본. 갈대늪·버들항·회색봉.",
     body: "셋째 장의 의뢰인 이름은 지워져 있다. 세 계약의 봉랍은 같은 도장이다.", tags: ["아이템", "줄기"], refs: [{ kind: "item", id: "item_hc_copy_reed" }] },
   { id: "hc_secret_mother", type: "event", name: "물에 잠긴 어미", summary: "갈대늪 익사귀의 어미.",
-    body: "굶은 해에 마을이 아이 셋을 물에 보냈다. 어미가 따라 들어갔다. 익사귀는 그 아이들이다. 그 뒤로 마을은 떠돌이를 물가에 세워 어미를 먹였다. 반지 안쪽에 마르타의 이름이 있다.", tags: ["비밀", "계약 A"], visibility: "ai-hidden" },
+    body: "굶은 해에 마을이 아이 셋을 물에 보냈다. 어미가 따라 들어갔다. 익사귀는 그 아이들이다. 그 뒤로 마을은 떠돌이를 물가에 세워 어미를 먹였다. 반지 안쪽에 하그네의 이름이 있다.", tags: ["비밀", "계약 A"], visibility: "ai-hidden" },
   { id: "hc_secret_osben", type: "event", name: "셋째 장의 이름", summary: "세 계약의 공통 의뢰인.",
     body: "버들항 상인 조합의 오스벤. 회색봉 성 아래 은광맥을 노린다. 세 괴물은 사람을 쫓아내려고 일부러 풀어 둔 것이다. 리스크는 망령 성주 편에 섰다.", tags: ["비밀", "결말"], visibility: "ai-hidden" },
 ];
@@ -69,7 +69,7 @@ const RELATIONS: readonly CodexRelation[] = [
 
 const PROFILES = [
   { characterId: "doran", displayName: "도르반", note: "떠돌이 사냥꾼. 도제를 찾는다.", nameColor: "#c9a86a" },
-  { characterId: "marta", displayName: "마르타", note: "갈대늪 촌장. 의뢰인.", nameColor: "#9a8fb8" },
+  { characterId: "marta", displayName: "하그네", note: "갈대늪 촌장. 의뢰인.", nameColor: "#9a8fb8" },
   { characterId: "boatman", displayName: "뱃사공 오그", note: "갈대늪 뱃사공.", nameColor: "#7fa0a8" },
   { characterId: "sena", displayName: "어부의 아내 세나", note: "갈대늪 사람.", nameColor: "#a8907a" },
   { characterId: "veil", displayName: "여관 주인 베일", note: "갈대늪 여관 주인.", nameColor: "#8a9a6a" },

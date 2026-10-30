@@ -164,7 +164,7 @@ export function buildWorldStory(project: Project, s: Stage): void {
   }
 }
 
-/** 갈대늪 끝 — 마르타에게 마무리를 들은 뒤 여관 문을 나서면 1장이 끝난다. */
+/** 갈대늪 끝 — 하그네에게 마무리를 들은 뒤 여관 문을 나서면 1장이 끝난다. */
 export function buildChapterEnd(project: Project, s: Stage, endingId: string): void {
   const swamp = project.maps[M.swamp]!;
   const at = { x: s.swamp.innDoor.x, y: s.swamp.innDoor.y + 2 };

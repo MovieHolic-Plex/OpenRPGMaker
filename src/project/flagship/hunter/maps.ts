@@ -105,7 +105,7 @@ export function buildMaps(project: Project): Stage {
     catch (e) { if (process.env.HC_WARN) console.warn(`[hunter] 늪 높이 ${h} 거절: ${String((e as Error).message).slice(0, 300)}`); }
   }
 
-  // 실내 — 늪 여관(촌장 마르타가 묵는다). 손 도트 v5 선술집.
+  // 실내 — 늪 여관(촌장 하그네가 묵는다). 손 도트 v5 선술집.
   const inn = execTool(project, "build_hand_interior_room", { mapId: M.inn, name: "갈대늪 여관", replace: true, layout: { program: "tavern", seed: 3, furnish: true } });
   const innData = inn.data as { entrance: Cell[] };
   const innEntry = innData.entrance[0] ?? { x: 7, y: 17 };
@@ -150,7 +150,7 @@ export function buildMaps(project: Project): Stage {
   const path = shortestPath(project, project.maps[M.swamp]!, funeral, south);
   const trail = [path[Math.floor(path.length * 0.3)]!, path[Math.floor(path.length * 0.6)]!, path[Math.max(0, path.length - 2)]!];
 
-  // ── 늪 여관 — 주인 베일(카운터 뒤), 게시판(벽), 마르타(창가 탁자).
+  // ── 늪 여관 — 주인 베일(카운터 뒤), 게시판(벽), 하그네(창가 탁자).
   const innMap = project.maps[M.inn]!;
   const keeper = nearestFree(project, innMap, { x: 4, y: 11 }, [innEntry]);   // 카운터 뒤
   const board = nearestFree(project, innMap, { x: 3, y: 10 }, [innEntry, keeper]);

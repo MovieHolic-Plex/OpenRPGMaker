@@ -105,7 +105,7 @@ export function setupHunterDatabase(project: Project): void {
   exec("upsert_item", { item: { ...itemOf("item_potion"), id: ITEM.potion, name: "쓴 약초 물", price: 20,
     description: "늪 약초를 달였다. 맛은 나쁘고 상처는 닫힌다." } });
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.copy1, name: "계약서 사본 (갈대늪)", price: 0, consumable: false, occasion: "never",
-    description: "리스크의 글씨. 「갈대늪, 익사자 처리. 의뢰인 마르타.」 귀퉁이에 「셋째 날」이라고 적었다." } });
+    description: "리스크의 글씨. 「갈대늪, 익사자 처리. 의뢰인 하그네.」 귀퉁이에 「셋째 날」이라고 적었다." } });
   exec("upsert_item", { item: { ...itemOf("item_old_key"), id: ITEM.ring, name: "뼈 반지", price: 0, consumable: false, occasion: "never",
     description: "어미의 손가락에서 빠졌다. 아이 손가락에 맞는 크기다." } });
 

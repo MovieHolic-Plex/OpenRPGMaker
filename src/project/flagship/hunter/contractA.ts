@@ -2,7 +2,7 @@
  * 주 계약 A — 「셋째 날 밤에 오는 것」(갈대늪, 설계 3.1). 작업자 W 가 M2 를 앞당겨 지었다.
  *
  * 흐름(변수 var_hc_a 하나가 쥔다):
- *   0 게시판 앞 → 1 마르타에게 조건을 들음 → 2 단서 둘 이상(뱃사공·장례 마당·끈 자국·세나) → 3 밤 사냥 준비 끝(밤 + 둥지 입장)
+ *   0 게시판 앞 → 1 하그네에게 조건을 들음 → 2 단서 둘 이상(뱃사공·장례 마당·끈 자국·세나) → 3 밤 사냥 준비 끝(밤 + 둥지 입장)
  *   → 4 어미를 쓰러뜨림 → 5 선택 끝(a_choice 1·2·3).
  *
  * 엔진 공백 우회(공백마다 함수 하나 — main PR 이 머지되면 그 함수만 바꿔 끼운다):
@@ -106,14 +106,14 @@ export function buildContractA(project: Project, s: Stage): void {
   inn.bgm = { mode: "custom", resourceId: BGM.inn } as typeof inn.bgm;
   nest.bgm = { mode: "custom", resourceId: BGM.nest } as typeof nest.bgm;
 
-  // ── 늪 여관: 게시판 · 주인 베일 · 마르타 · 침대
+  // ── 늪 여관: 게시판 · 주인 베일 · 하그네 · 침대
   inn.events.push(event("ev_hc_a_board", "게시판", s.inn.board, [
     page("board_new", [], [
       playSe(SE.paper),
-      ...note("익사자 처리. 머리 하나에 은화 30.", "셋째 날 밤 전에 끝낼 것.", "여관에 묻는다. 마르타."),
+      ...note("익사자 처리. 머리 하나에 은화 30.", "셋째 날 밤 전에 끝낼 것.", "여관에 묻는다. 하그네."),
       ...think("리스크의 사본과 같은 글이다. 글씨만 다르다."),
-      ifCond(varIs(V.a, 0), [setVar(V.a, "=", 1), objective("의뢰인 마르타를 찾는다."),
-        journal("hc_a_board", "갈대늪 여관 게시판. 익사자 처리, 머리 하나에 은화 30. 의뢰인 마르타.")]),
+      ifCond(varIs(V.a, 0), [setVar(V.a, "=", 1), objective("의뢰인 하그네를 찾는다."),
+        journal("hc_a_board", "갈대늪 여관 게시판. 익사자 처리, 머리 하나에 은화 30. 의뢰인 하그네.")]),
     ], { priority: "below" }),
     page("board_taken", [varAtLeast(V.a, 5)], [...caption("게시판에서 종이가 떼어졌다. 못 자국만 남았다.")], { priority: "below" }),
   ]));
@@ -146,7 +146,7 @@ export function buildContractA(project: Project, s: Stage): void {
   ]));
 
   const MARTA = "ev_hc_a_marta";
-  inn.events.push(event(MARTA, "마르타", s.inn.marta, [
+  inn.events.push(event(MARTA, "하그네", s.inn.marta, [
     page("marta_wait", [], [
       ...say("marta", "base", "사냥꾼이오? 앉으시오. 일어나기 힘들어서."),
       ...think("늪 촌장. 손가락이 앙상하다. 반지 자국만 굵다."),
@@ -161,7 +161,7 @@ export function buildContractA(project: Project, s: Stage): void {
       gold(15), playSe(SE.coin), ...caption("은화 열다섯을 받았다."),
       setVar(V.a, "=", 1), setSw("sw_hc_a_terms"),
       objective("뱃사공과 장례 마당, 이웃들에게 묻는다."),
-      journal("hc_a_terms", "마르타. 보름에 넷. 떠돌이들이라 한다. 선금 열다섯."),
+      journal("hc_a_terms", "하그네. 보름에 넷. 떠돌이들이라 한다. 선금 열다섯."),
     ], { who: "marta", dir: "left" }),
     page("marta_after_terms", [swOn("sw_hc_a_terms")], [
       ...say("marta", "base", "머리를 가져오시오. 그 전에는 할 말이 없소."),
@@ -308,7 +308,7 @@ export function buildContractA(project: Project, s: Stage): void {
       bgm(BGM.sorrow, 900), wait(600),
       ...caption("어미가 물에 가라앉는다. 손가락에서 뼈 반지가 빠졌다."),
       giveItem(ITEM.ring), playSe(SE.paper),
-      ...caption("반지 안쪽에 이름이 셋 긁혀 있다. 하나는 「마르타」."),
+      ...caption("반지 안쪽에 이름이 셋 긁혀 있다. 하나는 「하그네」."),
       ...think("굶은 해에 누가 아이들을 물에 버렸다.\n어미가 따라 들어갔다. 아이들이 올라온다."),
       ...think("떠돌이들은 길을 몰라 빠진 게 아니다.\n누가 데려와 물가에 세웠다. 해마다."),
       ...caption("물가에 보리 한 줌과 생선 꼬리가 놓여 있다."),
@@ -319,16 +319,16 @@ export function buildContractA(project: Project, s: Stage): void {
           ...caption("머리를 거적에 쌌다. 무거웠다.")] },
         { text: "반지를 들고 가 마을에 보인다", then: [setVar(V.aChoice, "=", 2), setVar(V.mercy, "+=", 1), setSw(SW.refugees),
           ...caption("어미를 물에 두었다. 반지만 챙겼다.")] },
-        { text: "반지를 마르타에게 돌려주고 두 배를 받는다", then: [setVar(V.aChoice, "=", 3), setSw(SW.offering),
+        { text: "반지를 하그네에게 돌려주고 두 배를 받는다", then: [setVar(V.aChoice, "=", 3), setSw(SW.offering),
           ...caption("반지를 주머니 깊이 넣었다. 값이 오를 물건이다.")] },
       ]),
       setVar(V.a, "=", 5), setSw(SW.aDone), setVar(V.contracts, "+=", 1),
-      objective("여관으로 돌아가 마르타를 만난다."),
+      objective("여관으로 돌아가 하그네를 만난다."),
     ], { trigger: "auto", priority: "below" }),
     gone("truth_done", [varAtLeast(V.a, 5)]),
   ]));
 
-  // 마르타의 마무리(선택마다) — 여관.
+  // 하그네의 마무리(선택마다) — 여관.
   const marta = inn.events.find((e) => e.id === MARTA)!;
   marta.pages!.splice(marta.pages!.length - 1, 1,
     page("marta_end", [varIs(V.a, 5), swOff("sw_hc_a_paid")], [
@@ -358,7 +358,7 @@ export function buildContractA(project: Project, s: Stage): void {
       setVar(V.stage, "=", 2),
     ], { who: "marta", dir: "left" }),
     page("marta_gone", [swOn("sw_hc_a_paid")], [
-      ifCond(varIs(V.aChoice, 2), [...caption("마르타는 창밖 물만 본다. 말이 없다.")],
+      ifCond(varIs(V.aChoice, 2), [...caption("하그네는 창밖 물만 본다. 말이 없다.")],
         [...say("marta", "base", "가시오. 늪은 사냥꾼한테 좋은 데가 아니오.")]),
     ], { who: "marta", dir: "left" }),
   );
