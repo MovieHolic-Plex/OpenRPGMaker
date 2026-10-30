@@ -1529,7 +1529,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let scCurrent: { round: number; texts: string[]; todos: unknown[] } | undefined;
   let scBusy = false;
   const scFlush = () => { if (selfCheck && scCurrent) selfCheck.record(scCurrent.round, scCurrent.texts.filter(Boolean).join("\n\n"), scCurrent.todos); };
-  selfCheck && agent.subscribe((event) => {
+  if (selfCheck) agent.subscribe((event) => {
     if (event.type === "tool_execution_start" && String(event.toolName ?? "") === "todo") scCurrent?.todos.push(event.args);
     if (event.type === "message_end") {
       const m = event.message as { role?: string; content?: Array<{ type?: string; text?: string }> } | undefined;
@@ -1548,7 +1548,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         } catch (error) { console.error(`[pi-agent] experiment self-check failed: ${(error as Error).message}`); } finally { scBusy = false; }
       })();
     }
-  }) : undefined;
+  });
   /** 차례가 끝났는데 맵이 지난 검사 뒤로 바뀌었으면 새 차례로 한 번 더 묻는다(남은 판 수 안에서). */
   const runExperimentSelfCheck = async (): Promise<void> => {
     if (!selfCheck || fatal || rejected || options.signal?.aborted || turns >= maxTurns) return;
