@@ -78,6 +78,7 @@ import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
 import { resolveBattleStaging } from "@/project/battleStaging";
+import { keepResultPanelOffParty } from "@/player/battleResultPlacement";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -1740,6 +1741,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
+      keepResultPanelOffParty(root, created);
       // 키보드 전용 런타임 — 확인 버튼이 포커스를 받아야 :focus-visible 링과 보조기술 안내가 산다.
       created.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
       // 뒤늦게 살아있는 데미지 팝업이 결과 화면 위로 새지 않도록 정리하고, 결과 연출을 1회 발화.
