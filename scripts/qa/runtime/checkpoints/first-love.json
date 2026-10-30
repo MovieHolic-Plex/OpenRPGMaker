@@ -695,8 +695,8 @@
        "kind": "pressUntilJs",
        "key": "z",
        "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
-       "maxPresses": 4,
-       "settleMs": 500
+       "maxPresses": 12,
+       "settleMs": 900
       },
       {
        "kind": "hold",
