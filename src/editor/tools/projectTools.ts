@@ -14,7 +14,7 @@ import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_REV
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
-import { FIELD_HUD_THEMES, HUD_ANCHORS, HUD_CONDITIONS, HUD_KINDS, HUD_MENUS, HUD_PANELS, HUD_SHAPES, HUD_SOURCES, HUD_WIDGET_LIMIT, normalizeHudWidget } from "@/project/fieldHud";
+import { FIELD_HUD_THEMES, HUD_ANCHORS, HUD_FONTS, HUD_CONDITIONS, HUD_KINDS, HUD_MENUS, HUD_PANELS, HUD_SHAPES, HUD_SOURCES, HUD_WIDGET_LIMIT, normalizeHudWidget } from "@/project/fieldHud";
 import {
   BATTLE_LOOK_COMMAND_IDS,
   BATTLE_LOOK_COMMAND_LABELS,
@@ -381,6 +381,7 @@ const setProjectSettings: ToolDefinition = {
           + " widgets 를 주면 기존 위젯을 통째로 바꾼다.",
         properties: {
           theme: { type: "string", enum: Object.keys(FIELD_HUD_THEMES) },
+          font: { type: "string", enum: Object.keys(HUD_FONTS), description: "HUD 글꼴(위젯과 「현재 목표」 줄). auto = 테마 권장, pixel = 갈무리 9, round = Neo둥근모, clean = 기본 UI 고딕." },
           menuStyle: { type: "string", enum: Object.keys(HUD_MENUS), description: "ESC 메뉴 모양. project = 프로젝트 메뉴 설정을 따른다." },
           objective: { type: "boolean", description: "화면 오른쪽 위 「현재 목표」 줄. 이벤트의 목표 칩(UI 명령 surface objectiveChip)이 바꾸는 글이 여기에 뜬다 — 목표 칩을 쓰면 켠다. widgets 를 줘도 이 값은 따로 지킨다." },
           widgets: {
@@ -471,10 +472,11 @@ const setProjectSettings: ToolDefinition = {
       changed.push(`강하게 다시 하기=${next?.enabled ? "켬" : "끔"}`);
     }
     if (args.fieldHud !== undefined) {
-      const hud = args.fieldHud as { theme?: string; menuStyle?: string; objective?: unknown; widgets?: unknown[] };
+      const hud = args.fieldHud as { theme?: string; font?: string; menuStyle?: string; objective?: unknown; widgets?: unknown[] };
       const prev = draft.system.fieldHud;
       const next = { theme: "minimal", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, ...(prev ?? {}) } as NonNullable<typeof prev>;
       if (hud.theme !== undefined) { if (!Object.hasOwn(FIELD_HUD_THEMES, hud.theme)) throw new ToolError(`알 수 없는 HUD 테마: ${hud.theme}`, { code: "invalid-args" }); next.theme = hud.theme as typeof next.theme; }
+      if (hud.font !== undefined) { if (typeof hud.font !== "string" || !Object.hasOwn(HUD_FONTS, hud.font)) throw new ToolError(`알 수 없는 HUD 글꼴: ${String(hud.font)} (${Object.keys(HUD_FONTS).join("·")})`, { code: "invalid-args" }); next.font = hud.font as typeof next.font; }
       if (hud.menuStyle !== undefined) { if (!Object.hasOwn(HUD_MENUS, hud.menuStyle)) throw new ToolError(`알 수 없는 메뉴 모양: ${hud.menuStyle}`, { code: "invalid-args" }); next.menuStyle = hud.menuStyle as typeof next.menuStyle; }
       if (hud.widgets !== undefined) {
         if (!Array.isArray(hud.widgets)) throw new ToolError("fieldHud.widgets 는 배열입니다.", { code: "invalid-args" });
@@ -493,6 +495,7 @@ const setProjectSettings: ToolDefinition = {
       draft.system.fieldHud = next;
       changed.push(next.widgets?.length === 0 ? "HUD=끔" : `HUD 위젯 ${next.widgets?.length ?? "기본"}개`);
       if (hud.objective !== undefined) changed.push(`현재 목표 줄 ${next.objective ? "켬" : "끔"}`);
+      if (hud.font !== undefined) changed.push(`HUD 글꼴=${next.font}`);
     }
     if (args.chapter !== undefined) {
       if (typeof args.chapter !== "object" || args.chapter === null || Array.isArray(args.chapter)) {
