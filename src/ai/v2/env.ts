@@ -40,8 +40,12 @@ export interface PiAssistantV2Env {
   /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
   readonly checkpoint: (label: string) => Promise<void>;
   readonly signal?: AbortSignal;
-  /** 다음 지시의 첫 모델 호출에 tool_choice «required» 를 건다(한 번만). 화면 검수 고치기 차례가 글만 쓰고 끝나지 않게. 로컬 CLI 고리는 무시한다. */
-  readonly requireToolNextTurn?: () => void;
+  /**
+   * 다음 지시의 첫 모델 호출에 tool_choice 를 건다(한 번만) — 이름을 주면 그 도구 하나(첫 호출 todo init), 없으면 «required».
+   * 재주입 차례가 글만 쓰고 끝나지 않게. 로컬 CLI 고리는 무시한다(그쪽은 todo 동사 감싸개가 첫 쓰기를 되돌린다).
+   * Anthropic 확장 생각이 켜진 호출은 이름 지정 강제를 거절하므로 실행기가 그때는 걸지 않는다.
+   */
+  readonly requireToolNextTurn?: (toolName?: string) => void;
   /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
   readonly freshContextNextTurn?: () => void;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
@@ -49,12 +53,14 @@ export interface PiAssistantV2Env {
 }
 export interface PiAssistantV2Hooks {
   readonly tools: (env: PiAssistantV2Env) => PiToolShape[];
+  /** 첫 지시(사용자 요청)를 보내기 직전에 한 번 — 첫 호출 todo 강제 같은 준비. */
+  readonly beforeFirstPrompt?: (env: PiAssistantV2Env) => void;
   /**
-   * 주 지시가 끝난 뒤 — 글을 돌려주면 그 글로 한 차례 더 돈다(완료 조건 미충족 보고 등). round 0 이 첫 부름이고,
-   * round 0 이 글을 돌려줘 한 차례 더 돈 뒤에 round 1 로 한 번 더 부른다(새 최종 보고를 다시 대어 보는 자리). 최대 2차례.
+   * 모델이 도구 없이 멈춘 뒤마다 — 글을 돌려주면 그 글(숨은 재주입)로 같은 대화를 한 차례 더 돈다. undefined 면 실행이 끝난다.
+   * v2 는 여기서 할 일 고리를 돌린다(열린 항목·기계 확인 ✗·관문·비평·화면 검수 → 재주입, 상한·진척 규칙은 src/ai/v2/loop/continuation.ts).
    */
   readonly afterMain?: (env: PiAssistantV2Env, round: number) => Promise<string | undefined> | string | undefined;
-  /** afterMain 이 몇 차례까지 돌 수 있나(기본 2 — 검토자 후속·재검토). 화면 검수 고리가 켜진 실행은 더 늘린다. */
+  /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }
 

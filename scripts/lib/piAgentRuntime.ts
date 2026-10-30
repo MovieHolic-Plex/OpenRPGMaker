@@ -921,13 +921,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof content === "string" ? content : "";
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
-  // 화면 검수 고치기 차례: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
-  let forceToolTurn = false;
+  // 재주입 차례·첫 요청: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
+  // 문자열이면 그 도구 하나(v2 첫 호출 todo init — omo first-turn), true 면 «required».
+  let forceToolTurn: boolean | string = false;
   // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
   let freshContextNext = false;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
-    requireToolNextTurn: () => { forceToolTurn = true; },
+    requireToolNextTurn: (toolName?: string) => { forceToolTurn = toolName ?? true; },
     freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
@@ -1151,8 +1152,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
       if (!forceToolTurn) return undefined;
+      const want = forceToolTurn;
       forceToolTurn = false;
-      return "required";
+      if (want === true) return "required";
+      // 이름 지정 강제: Anthropic 확장 생각과 같이 쓰면 제공자가 거절한다 — 그때는 걸지 않는다(todo 동사 감싸개가 첫 쓰기를 되돌린다).
+      const api = (model as { api?: string }).api;
+      if (api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") return undefined;
+      if (!tools.some((tool) => tool.name === want)) return "required";
+      return { type: "tool", name: want };
     },
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
@@ -1405,6 +1412,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
   };
   try {
+    if (options.v2?.beforeFirstPrompt && v2Env) options.v2.beforeFirstPrompt(v2Env);
     await promptResuming(request.task);
     // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
     // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.
@@ -1425,8 +1433,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
       }
     }
-    // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
-    // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).
+    // v2 할 일 고리(src/ai/v2/loop): 모델이 멈출 때마다 afterMain 이 열린 항목·기계 확인 ✗·관문·비평·화면 검수를 보고 숨은 재주입 글을 돌려준다.
+    // 같은 대화로 이어 돈다(로컬 CLI 도 같은 세션). 멈춤 규칙(묶음당 8·진척 없음 2·서명 같음·ask_user)은 afterMain 안에 있다.
     for (let round = 0; options.v2?.afterMain && v2Env && round < (options.v2?.maxRounds ?? 2) && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
       const followUp = await options.v2.afterMain(v2Env, round);
       if (!followUp || fatal || rejected || options.signal?.aborted) break;
