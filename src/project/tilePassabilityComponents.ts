@@ -120,6 +120,15 @@ export function armTerrainComponents(project: Project, map: GameMap, scannedCell
   rebuildIndex(project, map);
 }
 
+/**
+ * 이 맵에 성분 색인이 (낡았든 아니든) 있는가 — 지문을 검증하지 않는 O(1) 확인. 실패한 추격 탐색마다 armTerrainComponents 를
+ * 부르면 그때마다 지문(타일셋 통행 정의 전부)을 검증했다. 큰 번들 타일셋에 추격자 20마리면 그것만 갱신 시간의 70% 였다
+ * (2026-10-30 프로파일). 색인이 이미 있으면 만들 필요가 없고, 낡았는지는 질의(terrainReachFilter)가 «도달 불가»를 말하기 직전에 검증한다.
+ */
+export function hasTerrainComponents(map: GameMap): boolean {
+  return indexByMap.has(map);
+}
+
 /** 캐시를 버린다. 지문이 이미 막아주지만, 타일을 고친 자리에서 뜻을 밝혀 두는 값이 있다. */
 export function invalidateTilePassabilityComponents(map: GameMap): void {
   indexByMap.delete(map);
