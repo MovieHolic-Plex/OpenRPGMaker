@@ -17,7 +17,7 @@ import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
-import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -233,7 +233,15 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
             if (alternatives.length && !meta.blockBounced) {
               meta.blockBounced = true; store.meta.set(item.id, meta);
               env.emit({ type: "execution_status", name: "v2.todo.block_bounce", ok: false, summary: `할 일 ${item.id} 막힘 되돌림 — ${recent!.name} 거절 글이 이른 ${alternatives.join(", ")} 를 아직 안 씀` });
-              result = done(`Not blocked yet — the earlier ${recent!.name} rejection named ${alternatives.join(", ")}, which you have not tried: «${recent!.text.slice(0, 240)}». Try ${alternatives[0]} first; block again only if that fails too.`, false);
+              // 되돌릴 때는 «무엇을 부를지»를 채운 호출 하나로 준다(H7 뼈대) — 2026-10-30 ce04 판: 막힘 되돌림이 판당 0.33, 모델은 같은 막힘을 다시 보냈다.
+              // 그 항목의 다음 호출이 대안 동사면 그것, 아니면 첫 대안 동사의 뼈대. 다음 차례 상태 카드가 그 호출을 보인다(H3 강제는 걸지 않는다 — 대안이 여럿이면 다른 대안도 맞다). 두 번째 막힘은 받는다(blockBounced).
+              const fromItem = nextForItem(item, env.ctx.project, verbNames);
+              const alt = alternatives[0]!;
+              const call: NextCall = fromItem && alternatives.includes(fromItem.verb) ? fromItem
+                : { verb: alt, args: skeletonFor(alt, /\b(map_[\w-]+)/u.exec(`${item.content} ${recent!.text}`)?.[1]), why: `the ${recent!.name} rejection names ${alt}` };
+              const callText = formatCall(call);
+              store.meta.set(item.id, { ...meta, nextCall: { verb: call.verb, text: callText } });
+              result = done(`Not blocked yet — ${englishFailureLine(recent!.text, 220)} That ${recent!.name} rejection points to ${alternatives.join(", ")}, which you have not tried for ${item.id}. Next call: ${callText}. If that also fails, send todo block again with the reason — the second block is accepted.`, false);
               break;
             }
             const cascaded = store.block(item, reason, "model");
