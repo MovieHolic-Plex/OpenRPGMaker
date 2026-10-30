@@ -92,7 +92,7 @@ export type StepResult =
     }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
-  | { kind: "openMenuScreen"; screen?: "monster-box" }
+  | { kind: "openMenuScreen"; screen?: "monster-box" | "skills"; actorId?: string }
   | { kind: "openLoadMenu" }
   | {
       kind: "pathfindMove";
