@@ -392,6 +392,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     options.emitMenuJuice("menu-open", renderMenu(undefined, "monsters"));
   };
 
+  /** 이벤트의 「메뉴 화면 열기」(screen:skills): 스킬 장착 화면을 그 배우(기본 파티장)로 바로 연다. */
+  const openSkillScreen = (actorId?: string): void => {
+    reset();
+    mode = "function";
+    selectedCommand = "skills";
+    const party = options.getActiveScene()?.getSession().partyActorIds ?? [];
+    skillActorId = actorId && party.includes(actorId) ? actorId : party[0];
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "skills"));
+  };
+
   const openLifeRecoveryLedger = (): void => {
     if (!options.getActiveScene()) return;
     lifeLedgerTab = "recovery";
@@ -1345,7 +1355,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openMonsterBox, openLifeRecoveryLedger, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {
