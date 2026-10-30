@@ -166,7 +166,9 @@ export const LAY_VILLAGE_LAYOUT_TOOL: ToolDefinition = {
     const data = res.data as { mapId: string; entrance: Pt | null; doors: unknown[]; stats: unknown };
     const map = draft.maps[data.mapId]!;
     map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(BBOX_DECL_TAG));
-    writeLayoutDecl(map, "village", { doors: data.doors, entrance: data.entrance, stats: data.stats });
+    const T = args.terrain as { W: number; H: number; levels: number[]; water: number[] };
+    // 지형도 싣는다(한 칸 한 글자) — 배치 상자 그림·측정이 같은 땅을 다시 그린다.
+    writeLayoutDecl(map, "village", { doors: data.doors, entrance: data.entrance, stats: data.stats, terrain: { W: T.W, H: T.H, levels: T.levels.join(""), water: T.water.join("") } });
     const notes = [...(res.warnings ?? [])];
     // 다시 깐 마을: 손으로 붙인 이벤트(사람·문)는 가까운 걷는 칸으로, 다른 맵에서 오는 문은 마을 입구로.
     if (old.length && data.entrance) carryEvents(draft, map, old, undefined, data.entrance, notes);
