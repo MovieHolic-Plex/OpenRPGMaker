@@ -14,7 +14,7 @@ import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export type Side = "north" | "south" | "east" | "west";
-type Mood = "normal" | "dim" | "dark" | "fog" | "darkfog";
+type Mood = "normal" | "dim" | "dark" | "night" | "fog" | "darkfog";
 export const ACROSS = 32, ALONG = 40;
 
 export function call(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
@@ -345,9 +345,13 @@ export function link(project: Project, a: { mapId: string } & Cell, b: { mapId: 
   }
 }
 
+// ambient 은 어둠의 양이다(0 밝음 · 1 암전). 예전 값은 dim 0.55 · dark 0.3 으로 「어두운 숲」이 「조금 흐린 숲」보다 밝았고
+// 밤이 없어 「밤의 숲길」 요청이 거의 대낮으로 나왔다(2026-10-31 asst-parity 숲 추격 opus — moods:['dark'] 가 0.3).
+// 밤 값은 폴른 스타 2막 밤 맵(0.55~0.7, 남색)에 맞췄다.
 const MOODS: Record<Mood, { ambient?: number; color?: string; fog?: number }> = {
-  normal: {}, dim: { ambient: 0.55, color: "#3a5a44" }, dark: { ambient: 0.3, color: "#24402f" },
-  fog: { fog: 0.55 }, darkfog: { ambient: 0.3, color: "#24402f", fog: 0.6 },
+  normal: {}, dim: { ambient: 0.3, color: "#3a5a44" }, dark: { ambient: 0.55, color: "#1c3226" },
+  night: { ambient: 0.62, color: "#0b1230" },
+  fog: { fog: 0.55 }, darkfog: { ambient: 0.55, color: "#1c3226", fog: 0.6 },
 };
 
 const authorForestRoute: ToolDefinition = {
@@ -355,7 +359,7 @@ const authorForestRoute: ToolDefinition = {
   description:
     "숲(또는 terrain:'field' 트인 들판)을 구불구불한 길 맵 여러 장(1~5)으로 지어 시작 맵의 한쪽 가장자리(north·south·east·west)와 줄줄이 잇는다 — 폴른 스타 속삭이는 숲과 같은 "
     + "B1 활엽수 화가(곡선 숲길·빈터·나무 섬·나무 사이 틈). 「마을 북쪽에 숲을 맵 3개로 나눠 이어 줘」「숲 두 개, 두 번째는 어둡고 안개」의 정본. "
-    + "moods[i] = normal·dim·dark·fog·darkfog(실제 조명·안개). hiddenPerMap 개수만큼 나무 사이 틈에 숨은 물건(조사하면 한 번, 그림 없음)을 둔다. "
+    + "moods[i] = normal·dim·dark·night·fog·darkfog(실제 조명·안개, 「밤」은 night). hiddenPerMap 개수만큼 나무 사이 틈에 숨은 물건(조사하면 한 번, 그림 없음)을 둔다. "
     + "terrain:'edge' = 숲 어귀 — 들어오는 쪽 절반이 트인 풀밭(나무 섬 둘)이고 그 너머 들쭉날쭉한 나무 벽 틈으로 숲길이 들어간다(성벽 밑을 빠져 숲으로 달아나는 추격·「숲 가장자리」 장면). "
     + "terrains[i] 로 맵마다 따로 줄 수 있다(예: ['edge','field']). "
     + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 숲·들판 길 모양은 네가 designs[i] 로 설계한다(edge 맵은 어귀 틀 그대로) — 굽이 수·휘는 폭·들어오고 나가는 자리·길 폭·갈림길(at·toward·length·end)·빈터. "
@@ -369,7 +373,7 @@ const authorForestRoute: ToolDefinition = {
       side: { type: "string", enum: ["north", "south", "east", "west"] },
       count: { type: "integer", description: "숲 맵 수 1~5" },
       names: { type: "array", items: { type: "string" }, description: "맵 이름(생략 = '숲 1'…)" },
-      moods: { type: "array", items: { type: "string", enum: ["normal", "dim", "dark", "fog", "darkfog"] } },
+      moods: { type: "array", items: { type: "string", enum: ["normal", "dim", "dark", "night", "fog", "darkfog"] } },
       hiddenPerMap: { type: "integer", description: "맵마다 숨은 물건 수 0~3(기본 0)" },
       hiddenItemIds: { type: "array", items: { type: "string" }, description: "숨은 물건 아이템 id(돌아가며 쓴다, 없으면 돈)" },
       terrain: { type: "string", enum: ["forest", "field", "edge"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무) · edge=숲 어귀(들어오는 쪽 풀밭 → 나무 벽 틈으로 숲길)" },

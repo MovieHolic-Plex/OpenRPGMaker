@@ -10,7 +10,7 @@
 // 같은 리소스 id 의 일반 이미지/다른 스킨은 pixelEnemyPortraits.ts 의 idle_a 한 칸을 그린다.
 // 옛 통짜 그림은 폐기했다. retro2003 에서만 이 3×3 포즈 시트를 직접 읽는다.
 // 프로젝트 저작 시트(에디터 「도트 몬스터 공방」·author_enemy_pixel_sheet): project.assets.uploaded[resourceId] 가 한 칸 초상이고
-// 그 meta.pixelEnemySheet.sheetResourceId 자산이 같은 계약의 3×3 시트다. pixelEnemySheet() 는 현재 프로젝트
+// 그 meta.pixelEnemySheet.sheetResourceId 자산이 같은 계약의 3×3 시트다. 스토어 몬스터 팩도 같은 표식을 싣고 넣을 때 id 만 바뀐다(src/assetStore/pack.ts). pixelEnemySheet() 는 현재 프로젝트
 // (setPixelEnemySheetProjectSource — 편집기·플레이어 store 가 등록)의 저작 시트를 번들 항목보다 먼저 찾는다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -282,6 +282,17 @@ export function projectPixelEnemySheet(resourceId: string | undefined, project: 
   };
   projectSheetCache.set(sheetAsset, { meta, sheet });
   return sheet;
+}
+
+/**
+ * 이 몬스터 소재가 전투에서 3×3 도트 시트로 움직이면 그 이동 방식(hop·swoop …), 아니면 undefined(번쩍임·흔들림만).
+ * 프로젝트 업로드가 같은 id 를 덮으면 그 업로드의 시트만 본다(battleFieldDom applyPixelEnemySheet 와 같은 규칙).
+ */
+export function monsterBattleMotion(project: PixelEnemySheetProject, resourceId: string): PixelEnemyMotion | undefined {
+  const authored = projectPixelEnemySheet(resourceId, project);
+  if (authored) return authored.motion;
+  if (Object.hasOwn(project.assets.uploaded, resourceId)) return undefined;
+  return bundledPixelEnemySheet(resourceId)?.motion;
 }
 
 /** 저작 시트가 있으면 그것, 없으면 번들 시트. */

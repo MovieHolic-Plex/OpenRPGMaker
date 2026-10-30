@@ -10,7 +10,9 @@
 import { crosswalkCells, laneCells } from "@/ai/v2/placementRules";
 import { isPassable } from "@/project/collision";
 import type { Dir, EventPage, GameEvent, GameMap, MoveCommand, Project } from "@/project/types";
-import { charsetGraphic, resolveGraphic } from "./eventCompile";
+import { charsetGraphic, resolveGraphic, usedCharsetGraphicKeysOnMap } from "./eventCompile";
+import { noteToolChosenGraphic } from "./toolChosenGraphics";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -161,6 +163,7 @@ export const ADD_STREET_WALKERS_TOOL: ToolDefinition = {
     if (args.replace === true) map.events = (map.events ?? []).filter((e) => !e.id.startsWith(WALKER_ID_PREFIX) || !names.has(e.name ?? ""));
     const occupied = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
     const lanes = carLaneCells(draft, map);
+    const usedKeys = usedCharsetGraphicKeysOnMap(map);
     for (const [i, w] of list.entries()) {
       const name = String(w.name ?? "").trim() || `행인 ${i + 1}`;
       const stops = (Array.isArray(w.stops) ? w.stops : []) as WalkerStop[];
@@ -174,7 +177,13 @@ export const ADD_STREET_WALKERS_TOOL: ToolDefinition = {
       const frequency = 3, intervalMs = Math.max(80, 1040 - frequency * 160);
       const moves = walkerRoute(draft, map, stops, intervalMs, lanes);
       if (!moves) throw new ToolError(`${name}: 들를 곳 사이에 보도·횡단보도로 걸어갈 길이 없다 — 칸을 보도로 옮기거나 횡단보도가 있는 쪽으로 잇는다`, { code: "invalid-args", mapId });
-      const graphic = resolveGraphic(w.graphic as never);
+      // {query} 로 받은 칩은 도구가 고른 것이다 — 칩 선택 관문 면제로 적고, 같은 거리의 행인끼리 같은 칩이 되지 않게 피한다.
+      // 실측(2026-10-30 asst-parity 마왕 편의점): opus·terra 둘 다 query 칩이 관문에 거절돼 2~4번 다시 불렀고, terra 행인 3명은 한 칩이었다.
+      const spec = w.graphic as Record<string, unknown> | undefined;
+      const byQuery = !!spec && typeof spec.query === "string" && !("selectionId" in spec);
+      const graphic = resolveGraphic(w.graphic as never, byQuery ? { avoidKeys: usedKeys, seed: `${mapId}:${name}:${i}`, overrides: draft.charsetLabels } : undefined);
+      if (byQuery) noteToolChosenGraphic(graphic);
+      if (graphic.sprite?.id) usedKeys.add(`${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex}`);
       if (!("sprite" in graphic) || !graphic.sprite) throw new ToolError(`${name}: 사람 그림이 필요하다(graphic)`, { code: "graphic-not-found", mapId });
       const start = stops[0]!;
       if (occupied.has(`${start.x},${start.y}`)) throw new ToolError(`${name}: 시작 칸 (${start.x},${start.y}) 에 이미 이벤트가 있다`, { code: "invalid-args", mapId });

@@ -78,7 +78,8 @@ export function bindGateToDoor(project: Project, map: GameMap, gate: Cell, doorA
 }
 
 export function doorLine(door: InferredMapDoor): string {
-  return `${door.kind}(${door.rect.w}×${door.rect.h}, (${door.rect.x},${door.rect.y}))`;
+  // 차임이 이미 걸렸으면 적는다 — 「들어갈 때 차임」 요청에 모델이 문 이벤트를 patch_event_page 로 덮어 transfer 를 지웠다(2026-10-30 asst-parity 마왕 편의점, opus·terra 둘 다).
+  return `${door.kind}(${door.rect.w}×${door.rect.h}, (${door.rect.x},${door.rect.y}))${door.def?.chimeSe ? " +입점 차임(이미 켜짐 — 문 이벤트에 소리 명령을 따로 넣지 않는다)" : ""}`;
 }
 
 const KIND_KO: Record<DoorKind, string> = {
