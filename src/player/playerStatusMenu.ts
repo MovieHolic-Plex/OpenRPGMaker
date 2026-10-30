@@ -114,6 +114,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onInventoryViewChange: options.actions.onInventoryViewChange,
     onOptionsChanged: options.actions.onOptionsChanged,
     onToggleWait: options.actions.onToggleWait,
+    onRest: options.actions.onRest,
     targetItemId: options.targetItemId,
     skillActorId: options.skillActorId,
     selectedSkillId: options.selectedSkillId,
@@ -391,6 +392,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "journal": return "✎";
     case "save": return "↓";
     case "load": return "↑";
+    case "rest": return "☾";
     case "wait": return "Ⅱ";
     case "to-title": return "⌂";
   }
@@ -426,6 +428,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "journal": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
+    case "rest": return "clock";
     case "wait": return "clock";
     case "to-title": return "boot";
   }
@@ -446,6 +449,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     // 「전투 대기」는 목록에서 고르는 순간 값을 뒤집지 않는다 — 화면을 열고 그 화면의 행에서 바꾼다
     // (열기만 해도 값이 뒤집히고 화면 안에서는 못 바꾸던 결함, 2026-10-23).
     case "wait":
+    case "rest":
     case "items":
     case "skills":
     case "equipment":
