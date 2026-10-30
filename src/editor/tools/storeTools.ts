@@ -484,6 +484,14 @@ const storeFindSound: ToolDefinition = {
       return { summary: `스토어 효과음 ${got.tracks.length}개 중 ${cue ? `자리 ${cue} 에` : ""} 맞는 소리가 없다. 프로젝트에 있는 효과음(list_resources kind:se)으로 고르라.`, data: { ...choice, note: UNTRUSTED_NOTE } };
     }
     const top = choice.sounds[0]!;
+    if ("event" in top && top.event) {
+      return {
+        summary: choice.autoInstall
+          ? `스토어 이벤트 소리 ${picked.length}개를 찾았다(점수 순). 시스템 자리에 거는 소리가 아니다 — 1위 「${top.title}」(slug ${top.slug}, assetId ${top.assetId})를 store_install{slug, assetIds:[assetId]} 로 넣고 이벤트의 효과음 재생 명령에 그 리소스 id 를 쓴다.`
+          : `사용자가 「먼저 묻기」를 켰다. 스토어 이벤트 소리 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라.`,
+        data: { ...choice, note: UNTRUSTED_NOTE },
+      };
+    }
     const head = cue ? "" : "자리를 못 읽어 화풍·분위기로만 골랐다 — cue 를 주면 더 정확하다. ";
     return {
       summary: head + (choice.autoInstall

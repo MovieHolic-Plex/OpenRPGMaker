@@ -38,6 +38,8 @@ export interface StoreSoundMeta {
   readonly loopable: boolean;
   /** 환경음(BGS) — group ambient + loopable. 자리(slots)가 비어 있을 수 있다. */
   readonly ambient: boolean;
+  /** 이벤트 소리 — 시스템 자리 없이 묶음·자기 이름(extraSlots)만 있다(괴물 울음·레이저 …). 자리에 걸지 않고 이벤트 효과음 재생으로 쓴다. */
+  readonly event: boolean;
   /** 환경음의 장소·날씨 낱말(비·바람·동굴·rain·cave …). 효과음에는 빈 배열. */
   readonly ambientTags: readonly string[];
   readonly pairWith: readonly string[];
@@ -70,7 +72,9 @@ export function readStoreSoundMeta(meta: unknown): StoreSoundMeta | null {
   const slots = all.filter(isKnownSeCue);
   const group = (STORE_SOUND_GROUPS as readonly unknown[]).includes(raw.group) ? raw.group as StoreSoundGroup : null;
   const ambient = group === "ambient" && raw.loopable === true;
-  if (!slots.length && !ambient) return null;
+  // 이벤트 소리(2026-10-31): 시스템 자리는 없지만 묶음과 자기 자리 이름(cry-small·laser …)이 있는 소리 — 이벤트의 효과음 재생으로 쓴다.
+  const event = !slots.length && !ambient && group !== null && all.length > 0;
+  if (!slots.length && !ambient && !event) return null;
   const style = (STORE_SOUND_STYLES as readonly unknown[]).includes(raw.style) ? raw.style as StoreSoundStyle : null;
   const variant = raw.variant === "a" || raw.variant === "b" || raw.variant === "c" ? raw.variant : null;
   const qa = isRecord(raw.qa) ? [raw.qa.clapFit, raw.qa.tech, raw.qa.ear].map((v) => number(v, 0, 10)).filter((v): v is number => v !== null) : [];
@@ -85,6 +89,7 @@ export function readStoreSoundMeta(meta: unknown): StoreSoundMeta | null {
     durationSec: number(raw.durationSec, 0, 600),
     loopable: raw.loopable === true,
     ambient,
+    event,
     ambientTags: ambient ? words(raw.ambientTags, 12, 24) : [],
     pairWith: words(raw.pairWith, 8, 120),
     summaryKo: text(raw.summaryKo, 200),
@@ -107,7 +112,8 @@ export function storeSoundTags(sound: StoreSoundMeta): string[] {
 /** 조수가 읽는 한 줄 설명. */
 export function storeSoundDescription(sound: StoreSoundMeta): string {
   const facts = [
-    sound.ambient ? `환경음(BGS 루프)${sound.ambientTags.length ? ` ${sound.ambientTags.slice(0, 4).join("·")}` : ""}` : `자리 ${sound.slots.join("·")}`,
+    sound.ambient ? `환경음(BGS 루프)${sound.ambientTags.length ? ` ${sound.ambientTags.slice(0, 4).join("·")}` : ""}`
+      : sound.event ? `이벤트 소리 ${sound.extraSlots.join("·")}` : `자리 ${sound.slots.join("·")}`,
     sound.style ? `화풍 ${STORE_SOUND_STYLE_LABELS[sound.style]}` : "",
     sound.variant ? `${sound.variant.toUpperCase()}안` : "",
     sound.mood.length ? `분위기 ${sound.mood.join("·")}` : "",

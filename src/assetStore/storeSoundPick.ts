@@ -123,7 +123,7 @@ export function explainStoreSoundPick(track: StoreSoundTrack, want: StoreSoundQu
   const s = track.sound;
   const direct = !want.cue || s.slots.includes(want.cue);
   const parts = [
-    s.ambient ? `환경음${s.ambientTags.length ? ` ${s.ambientTags.slice(0, 3).join("·")}` : ""}` : want.cue ? (direct ? `자리 ${want.cue}` : `자리 ${want.cue} 대신 ${s.slots[0]}`) : `자리 ${s.slots[0]}`,
+    s.ambient ? `환경음${s.ambientTags.length ? ` ${s.ambientTags.slice(0, 3).join("·")}` : ""}` : s.event ? `이벤트 소리 ${s.extraSlots[0]}` : want.cue ? (direct ? `자리 ${want.cue}` : `자리 ${want.cue} 대신 ${s.slots[0]}`) : `자리 ${s.slots[0]}`,
     s.style ? `${STORE_SOUND_STYLE_LABELS[s.style]}${want.style && want.style !== s.style ? "(다른 화풍)" : ""}` : "",
     s.variant ? `${s.variant.toUpperCase()}안` : "",
   ].filter(Boolean);
@@ -134,8 +134,9 @@ export function briefStoreSound(track: StoreSoundTrack) {
   const s = track.sound;
   return {
     slug: track.slug, assetId: track.assetId, title: track.name, pack: track.packTitle,
-    cue: s.ambient ? null : s.slots[0] ?? null, cueLabel: s.ambient ? "환경음" : seCueSpec(s.slots[0]!)?.label ?? s.slots[0], slots: s.slots,
+    cue: s.ambient || s.event ? null : s.slots[0] ?? null, cueLabel: s.ambient ? "환경음" : s.event ? "이벤트 소리" : seCueSpec(s.slots[0]!)?.label ?? s.slots[0], slots: s.slots,
     ...(s.ambient ? { ambient: true, ambientTags: s.ambientTags, loopable: true } : {}),
+    ...(s.event ? { event: true, eventSlots: s.extraSlots } : {}),
     style: s.style, variant: s.variant, mood: s.mood, intensity: s.intensity, durationSec: s.durationSec,
     summary: s.summaryKo, license: track.license, aiGenerated: track.aiGenerated,
   };

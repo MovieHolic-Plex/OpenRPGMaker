@@ -242,6 +242,8 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   `jump` `land` `explosion` `teleport` `notify` · 징글 `questComplete` `partyJoin` `innRest` `chapterStart`. 징글 자리는 `seCueChannel` 이 `me` 채널로 보낸다(levelUp 은 기존 팩 때문에 se).
   런타임 고리: 대사 글자마다 textBlip(`src/player/textBlipVoice.ts`, 화자 목소리·녹음이 먼저, 둘에 하나·55ms 간격), showEmote → emote-<종류>, 점프 시작 jump·착지 land, 여관 숙박 innRest,
   파티에 새로 들면 partyJoin, 퀘스트 완료 스위치(sw_<key>_done)가 켜지면 questComplete. 자리가 비면 모두 무음 — 옛 게임 그대로. 고리 없는 자리(explosion·teleport·notify·chapterStart)도 조수가 이벤트용으로 고를 수 있다.
+- **이벤트 소리**: 시스템 자리는 없고 `group` 과 자기 이름 slots(`cry-small`·`laser`·`horror-sting` …)만 있는 소리. `readStoreSoundMeta` 가 `event:true` 로 읽는다(묶음이 없으면 예전처럼 null).
+  자리 순위·화풍 통째 걸기에는 안 끼고, `store_find_sound{query}` 로 찾아 넣은 뒤 이벤트의 효과음 재생 명령에 리소스 id 를 쓴다.
 - 시험: `test/audioCues.test.ts`.
 
 ## 게시기

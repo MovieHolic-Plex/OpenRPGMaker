@@ -50,6 +50,21 @@ describe("환경음 meta", () => {
   });
 });
 
+describe("이벤트 소리", () => {
+  it("시스템 자리 없이 묶음과 자기 이름만 있는 소리는 이벤트 소리로 읽고, 자리 고르기·화풍 걸기에는 끼지 않는다", () => {
+    const meta = readStoreSoundMeta({ oprnSound: { version: 1, slots: ["cry-small"], group: "field", style: "retro", variant: "a", mood: ["cute"], feelTags: ["creature"] } })!;
+    expect(meta.event).toBe(true);
+    expect(meta.slots).toEqual([]);
+    expect(meta.extraSlots).toEqual(["cry-small"]);
+    expect(readStoreSoundMeta({ oprnSound: { version: 1, slots: ["cry-small"] } })).toBeNull();
+    const cry = track("cry", { oprnSound: { version: 1, slots: ["cry-small"], group: "field", style: "retro", variant: "a" } });
+    const hit = track("hit", { oprnSound: { version: 1, slots: ["damage"], group: "battle", style: "retro", variant: "a" } });
+    expect(rankStoreSounds([cry, hit], { cue: "damage" }).map((t) => t.assetId)).toEqual(["hit"]);
+    expect(rankStoreSounds([cry, hit], { query: "cry-small" })[0]!.assetId).toBe("cry");
+    expect(planSoundStyle([cry, hit], "retro").rows.map((r) => r.assetId)).toEqual(["hit"]);
+  });
+});
+
 describe("새 자리", () => {
   it("대사·감정·몸 동작·징글 자리가 알려진 자리다", () => {
     for (const id of ["textBlip", "emote-exclamation", "emote-heart", "footstep-metal", "footstep-ice", "jump", "land", "explosion", "teleport", "notify", "questComplete", "partyJoin", "innRest", "chapterStart"]) {
