@@ -347,12 +347,14 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
   };
   const hits = (x?: number, y?: number) => x === undefined || y === undefined ? [] : objs.filter((p) => { const { w, h } = fp(p.id); return x >= p.x && x < p.x + w && y >= p.y && y < p.y + h; });
   const who = (x?: number, y?: number) => { const h = hits(x, y); return h.length ? ` [${h.map((p) => `"${p.id}"@${P(p.x, p.y)}`).join(", ")}]` : ""; };
+  const stuck: string[] = [];
   for (const i of built.issues) {
     const at = i.x !== undefined ? ` at ${P(i.x, i.y!)}` : "";
     if (i.severity === "error") { errors.push((EN[i.code] ?? i.code) + at + who(i.x, i.y)); for (const p of hits(i.x, i.y)) if (p.src >= 0) badObjects.add(p.src); }
-    else if (i.code === "unreachable-piece") warnings.push(`a piece has no reachable free side${at}${who(i.x, i.y)}`);
+    else if (i.code === "unreachable-piece") { const m = /\(([^()]+)\) @\((\d+),(\d+)\)/u.exec(i.message) ?? /@\((\d+),(\d+)\)/u.exec(i.message); stuck.push(m ? (m.length === 4 ? `"${m[1]}"@(${m[2]},${m[3]})` : `a table @(${m[1]},${m[2]})`) : `a piece${at}${who(i.x, i.y)}`); }
     else if (i.code === "too-many-layers") warnings.push(`too many stacked pieces${at}${who(i.x, i.y)}`);
   }
+  if (stuck.length) warnings.push(`${stuck.length} piece${stuck.length === 1 ? " has" : "s have"} no free side you can walk up to (each needs one reachable floor cell beside it — a seat beside it counts): ${stuck.slice(0, 12).join(", ")}${stuck.length > 12 ? ", …" : ""}.`);
   // 방마다 입구에서 닿아야 한다(문짝은 지나갈 수 있는 문으로 친다)
   const block = new Uint8Array(W * H);
   for (const p of objs) { const d = S.objects[p.id]; if (d && (d.kind === "hang" || d.kind === "flat")) continue; if (isDoorPiece(p.id)) continue;

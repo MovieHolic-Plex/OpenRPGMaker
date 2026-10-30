@@ -85,7 +85,15 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
       // (구역이 한 상자로 겹쳐 room_zones 가 1구역이 됐다). 복도(역할 corridor)는 원래 비어 있는 동선이라 뺀다. 고칠 말은 그 방만.
       const roomLocs = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("hand-layout-room"));
       const graphCorr = new Set((map.locations ?? []).filter((l) => (l.tags ?? []).includes("room-graph") && (l.tags ?? []).includes("role:corridor")).map((l) => (l.tags ?? []).find((t) => t.startsWith("room:"))?.slice(5)));
-      if (designedMap && roomLocs.length >= 2) {
+      // 칸 배치(spec.layout)로 지은 실내는 짓기 검사(interiorSpace.ts — 문 사이 통로 3칸 폭은 빈 칸에서 뺀다)가 정본이다. 같은 맵을 다른 잣대(통로 포함 20%)로
+      // 다시 재면 두 검사가 엇갈려 모델이 통로를 막는 채우기를 보내고 되돌려졌다(2026-10-31 6회차 opus 여관: 홀 33% «통로를 막아 되돌림»).
+      const layoutDecl = (map.locations ?? []).find((l) => (l.tags ?? []).includes("interior-layout") && (l.tags ?? []).includes("decl"));
+      let layoutSpace: { emptyPct?: number; open?: number; rooms?: Record<string, { emptyPct?: number; floor?: number }> } | undefined;
+      try { layoutSpace = layoutDecl?.note ? (JSON.parse(layoutDecl.note) as { space?: typeof layoutSpace }).space : undefined; } catch { layoutSpace = undefined; }
+      if (layoutSpace) {
+        const rooms = Object.entries(layoutSpace.rooms ?? {});
+        checks.push({ id: "bare-floor", mapId, ok: !(layoutSpace.open ?? 0), detail: `empty floor per room off the door-to-door walkways: ${rooms.map(([k, v]) => `${k} ${v.emptyPct ?? 0}%`).join(", ")}${layoutSpace.open ? ` — ${layoutSpace.open} space problem(s) still open from the layout checks (see the build warnings): shrink those rooms' walls or add purposeful groups with review_layout` : ""}` });
+      } else if (designedMap && roomLocs.length >= 2) {
         const per = roomLocs.filter((l) => !/corridor|hall ?way|복도/iu.test(l.name) && !graphCorr.has((l.tags ?? []).find((t) => t.startsWith("room:"))?.slice(5)))
           .map((l) => ({ l, pct: roomBarePct(project, map, { name: l.name, x0: l.x, y0: l.y, x1: l.x + l.w - 1, y1: l.y + l.h - 1 }) }));
         const limit = INTERIOR_BARE_FLOOR_LIMIT + 5;
