@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.368.1 — 2026-10-30
+
+### 수정
+
+- **runtime** — exit destination label no longer covers authored door art (#3960) (`5f3d25b`)
+- **qa** — battle driver no longer 'presses' inert skill rows and waits out the op timeout (#3959) (`c30731f`)
+
 ## 0.368.0 — 2026-10-30
 
 ### 기능

@@ -28,6 +28,7 @@ import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { routeDetours, routeField, routeWaypoint } from "@/player/objectiveRoute";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
+import { doorPixelRect, placeExitLabel } from "@/player/exitLabelPlacement";
 
 /** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
 const TINT_MODE_FILL = 1;
@@ -909,6 +910,8 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
     for (const [other] of near) want.delete(other);
   }
   for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
+  // 맵에 적힌 문만 — 정의 없는 옛 맵은 예전 자리 그대로.
+  const doors = (map.doors ?? []).map((door) => doorPixelRect(door, size));
   for (const [id, at] of want) {
     let label = state.labels.get(id);
     if (!label) {
@@ -921,31 +924,14 @@ function syncExitLabels(scene: PlaySceneContext, now: number): void {
       state.labels.set(id, label);
     }
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
-    // 맨 윗줄 출구는 칸 위에 둘 자리가 없으니 칸 아래에 둔다.
-    const mapW = map.width * size;
-    const mapH = map.height * size;
-    label.x = Math.round(Math.max(1, Math.min(mapW - label.displayWidth - 1, at.x - label.displayWidth / 2)));
-    // 글자는 주인공이 오는 쪽의 **반대편**에 둔다. 방 아래쪽 문 바로 위에 선 주인공 머리 위에 「→ 왕도 아르벤」이 덮여
-    // 문 앞의 주인공이 안 보였다(이세계 고딩 첫인상 리뷰 2026-10-30). 위에서 다가오면 문 아래, 아래에서 오면 문 위.
-    const heroTop = (scene.tileY - 0.75) * size;
-    const heroBottom = (scene.tileY + 1) * size;
-    const aboveFits = at.y - label.displayHeight >= 0;
-    const belowFits = at.below + label.displayHeight <= mapH;
-    const heroAboveExit = heroBottom <= at.y + 2;
-    const placeBelow = !aboveFits || (heroAboveExit && belowFits);
-    label.y = Math.round(placeBelow ? at.below + label.displayHeight : at.y);
-    // 아래에 둘 자리가 없어(맨 아랫줄 문) 그래도 몸에 겹치면 주인공 옆으로 비킨다(오른쪽, 안 되면 왼쪽).
-    // 옆으로도 못 비키면 글자를 옅게 — 주인공이 위에 보인다.
-    const heroLeft = scene.tileX * size;
-    const overlapsHero = (): boolean => label.x < heroLeft + size && label.x + label.displayWidth > heroLeft
-      && label.y - label.displayHeight < heroBottom && label.y > heroTop;
-    if (overlapsHero()) {
-      const right = heroLeft + size + 2;
-      const left = heroLeft - 2 - label.displayWidth;
-      if (right + label.displayWidth <= mapW - 1) label.x = Math.round(right);
-      else if (left >= 1) label.x = Math.round(left);
-    }
-    label.setAlpha(overlapsHero() ? 0.35 : 1);
+    // 주인공이 오는 쪽의 반대편에 두고, 몸에 겹치면 옆으로 비키고, 맵에 적힌 문 그림(문 칸 위 그림 칸까지)은 덮지 않는다 — 규칙은 exitLabelPlacement.
+    const place = placeExitLabel({
+      anchorX: at.x, aboveY: at.y, belowY: at.below, width: label.displayWidth, height: label.displayHeight,
+      mapW: map.width * size, mapH: map.height * size, heroTileX: scene.tileX, heroTileY: scene.tileY, tileSize: size, doors,
+    });
+    label.x = place.x;
+    label.y = place.y;
+    label.setAlpha(place.alpha);
   }
 }
 
