@@ -356,7 +356,11 @@ export function placementProblems(project: Project, map: GameMap, eventIds?: Rea
       const to = transferTargets(ev).map((id) => project.maps[id]).find((m) => m && (m as unknown as { mapRole?: string }).mapRole === "dungeon");
       const outdoor = (map as unknown as { mapRole?: string; climate?: { mode?: string } }).mapRole !== "dungeon" && (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
       const art = [0, -1, 1].some((dy) => isDoorArtCell(project, map, ev.x, ev.y + dy) || [...labelsAt(project, map, ev.x, ev.y + dy)].some((l) => GATE_ART.test(l) && !/길|path|road|모랫길|흙길/iu.test(l)));
-      if (to && outdoor && !art) out.push({ kind: "door-bare", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `「${to.name ?? to.id}」(던전)으로 들어가는 출입구 (${ev.x},${ev.y}) 에 굴 입구·문·계단 그림이 없다 — 맨땅·풀밭에서 갑자기 동굴로 들어간다` });
+      // 맵 가장자리 출구는 길 끝이 맡는다 — 맵 밖으로 이어지는 길이 곧 입구다(caveGates.dressBareCaveGates·edgeExitRoads 와 같은 규칙).
+      // 가장자리 칸 위에는 굴 입구를 찍을 자리도 없다: 2026-10-30 omo-loop-1030b 미완료 5판이 버들마을 (0,23)·(21,0) 출구에 갱구를 찍다
+      // «transfer 목적지가 통행 불가»·«완성된 집 보호 영역»으로 거절되고 항목이 막힘으로 끝났다.
+      const edge = ev.x === 0 || ev.y === 0 || ev.x === map.width - 1 || ev.y === map.height - 1;
+      if (to && outdoor && !art && !edge) out.push({ kind: "door-bare", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `「${to.name ?? to.id}」(던전)으로 들어가는 출입구 (${ev.x},${ev.y}) 에 굴 입구·문·계단 그림이 없다 — 맨땅·풀밭에서 갑자기 동굴로 들어간다` });
       continue;
     }
     // 조사 이벤트(결정 키, 그림 없음) — 이름이 말하는 물건 위에 있어야 한다.

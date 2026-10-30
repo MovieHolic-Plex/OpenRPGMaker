@@ -175,6 +175,6 @@ export const WIZARDING_BUILDER: PlaceBuilder = {
   build,
 };
 
-export const WIZARDING_CARD = "[마법 학교 style:wizarding] 마법 학교·기숙사·호그와트풍 요청은 style 에 wizarding 을 넣는다(판타지 실내로 짓지 않는다). " +
-  "interior 의 zones 하나가 방 하나: 대연회장·입학 홀·휴게실·기숙사 침실·복도·마법약 교실(교실·수업)·도서관(서재·연구실)·병동·온실·부엉이 탑·천문탑(시계탑 기어실)·우체국·지팡이 가게·과자점 창고. " +
-  "첫 방에 다른 방이 셋까지 문(북·동·서)으로 이어진다. 주인공 물건은 이 세트 기물로 찾고, 없으면(망원경·별자리표) 가장 가까운 기물로 바꿔 경고한다. village=숲 마차 승차장·호수 보트 창고·퀴디치 경기장(이름 낱말).";
+export const WIZARDING_CARD = "[Magic school style:wizarding] For magic school, dormitory or Hogwarts-style requests put wizarding in style (do not build a fantasy interior). " +
+  "Each interior zone is one room: 대연회장 (great hall) · 입학 홀 (entrance hall) · 휴게실 (common room) · 기숙사 침실 (dormitory) · 복도 (corridor) · 마법약 교실 (potions classroom; 교실·수업) · 도서관 (library; 서재·연구실) · 병동 (hospital wing) · 온실 (greenhouse) · 부엉이 탑 (owlery) · 천문탑 (astronomy tower; 시계탑 기어실 clock gear room) · 우체국 (post office) · 지팡이 가게 (wand shop) · 과자점 창고 (sweet shop storeroom). " +
+  "Up to three more rooms connect to the first room by doors (north, east, west). Hero objects are looked up in this set's parts; missing ones (telescope, star chart) are swapped for the nearest part with a warning. village = 숲 마차 승차장 (forest carriage stop) · 호수 보트 창고 (lake boathouse) · 퀴디치 경기장 (quidditch pitch) (by name word).";
