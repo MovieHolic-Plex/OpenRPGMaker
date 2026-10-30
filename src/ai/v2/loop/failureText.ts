@@ -74,6 +74,24 @@ const EN_RULES: readonly Rule[] = [
   { re: /^출입구 ([AB]) \((-?\d+),(-?\d+)\) 는 기존 출입구 (.*?) 이\(가\) 봉쇄된다/u, en: (m) => `Entrance ${m[1]} at (${m[2]},${m[3]}) would seal the existing entrance ${m[4]}, and no free cell was found nearby. Move the existing door (move_event) or pick another free cell.` },
   { re: /^문앞 \((-?\d+),(-?\d+)\)에 안전한 출입구를 만들 수 없습니다/u, en: (m) => `No safe entrance can be made at the door front (${m[1]},${m[2]}) (it must be reachable from the start or another entrance, with a free landing cell next to it). Omit doorAt so the tool picks the nearest walkable cell, or pick another cell.` },
   { re: /^출입구 자리를 찾지 못했습니다\.\s*(.*)$/su, en: (m) => `No usable entrance cell was found. Move the entrance coordinates. Tool said (Korean): ${clip(oneLine(m[1] ?? ""), 220)}` },
+  // ── v2 동사(편집기 도구가 아닌 것)의 거절 — 2026-10-30 scenes-duel·scenes 판에서 센 것부터 ──
+  { re: /dungeonDesign\.rooms 에 방이 둘 이상 있어야 한다/u, en: () => "dungeonDesign.rooms needs at least two rooms (an entrance room and a boss room included). Send rooms:[{id, role:'entrance', size, at}, …, {id, role:'boss', size, at}] with links between them — or omit dungeonDesign to keep the current layout." },
+  { re: /^이 방은 네가 design 으로 설계한 방이라/u, en: () => "This room is one you designed with design, so dress_room does not pick furniture for it. If the floor is too empty, shrink design w/h or add groups (what, how many, where) and rebuild with edit_place({patch:{mapId, design:<the whole fixed design>}})." },
+  { re: /^(\S+) 는 손 도트 실내가 아니다/u, en: (m) => `${m[1]} is not a hand-pixel interior — dress_room only fills hand-pixel interior rooms. Do not call dress_room for this map; stamp props with stamp_object, or rebuild with edit_place.` },
+  { re: /^고치기 상한\((\d+)(?:바퀴|번)\)에 닿았다/u, en: (m) => `Repair limit (${m[1]} round${m[1] === "1" ? "" : "s"}) reached for this place. Do not call edit_place for it again — put the remaining problems in your report (or todo block(reason)).` },
+  { re: /^고친 결과의 문제\((\d+)\)가 앞\((\d+)\)보다 많아 앞 상태로 되돌렸다/u, en: (m) => `The rebuild had more problems (${m[1]}) than before (${m[2]}), so the place was restored and this patch dropped. If rounds remain, try one smaller patch (one or two critic majors with coordinates, within those cells); otherwise report.` },
+  { re: /^엔딩이 언제 열리는지 없다.*?지금 스위치: (.*)$/u, en: (m) => `The ending has no trigger — as it is, the game would end right at the start. Give afterSwitchId (e.g. the boss-defeated switch), after (a word for that event, e.g. «마왕»), or talkTo (a person on that map to talk to). Switches now: ${clip(m[1]!, 360)}` },
+  { re: /^엔딩이 언제 열리는지 없다/u, en: () => "The ending has no trigger — as it is, the game would end right at the start. Give afterSwitchId (e.g. the boss-defeated switch), after (a word for that event), or talkTo (a person on that map to talk to)." },
+  { re: /^「([^」]+)」 인물이 (.+?) 에 없다$/u, en: (m) => `Person «${m[1]}» is not on ${m[2]} (talkTo takes a person's name or event id on that map).` },
+  { re: /^고친 결과가 더 나빠\(문제 (\d+)→(\d+)\) 되돌렸다/u, en: (m) => `The rebuild made it worse (problems ${m[1]}→${m[2]}), so it was reverted. If rounds remain, try one smaller patch (one or two critic majors with coordinates); otherwise report.` },
+  { re: /^(\S+) 의 가구 옮기기 상한\((\d+)번\)에 닿았다/u, en: (m) => `Furniture-move limit (${m[2]}) reached on ${m[1]}. Do not call move_object there again — report the remaining problems.` },
+  { re: /^그렇게 놓으면 바닥 (\d+)칸에 갈 수 없게 돼 되돌렸다/u, en: (m) => `Placing it there would cut off ${m[1]} floor cells from the door, so it was reverted. Pick a cell that does not block the walkway (against a wall, out of the path).` },
+  { re: /^직렬화 왕복 실패: (\S+?): 알 수 없는 trigger "([^"]+)"\. 허용: (.*)$/u, en: (m) => `Save round-trip failed: ${m[1]} has an unknown trigger "${m[2]}". Allowed: ${clip(m[3]!, 120)}` },
+  { re: /^(\S+) 빌더는 소품 하나하나·꾸밈\(dressing\)/u, en: (m) => `The ${m[1]} builder does not take individual props, dressing, daises or sarcophagi — only variant (another layout), features, size and floors can change. This rejection counted as a round. Do not try to fix majors those four cannot; report them.` },
+  { re: /^(\S+) 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다/u, en: (m) => `${m[1]} has no v2 build record and its room layout could not be read, so edit_place cannot rebuild it. Build anew in place with make_place({spec:{…, mapId:'${m[1]}'}}), make local changes with move_event / stamp_object, or report it.` },
+  { re: /^맵이 없습니다: (\S+)/u, en: (m) => `Map ${m[1]} does not exist. Use a mapId from the [Current project] list (or the result of the tool that built the place).` },
+  { re: /^'([^']+)' 인자 검증 실패/u, en: (m) => `${m[1]} refused the arguments (validation failed) — check the field names and types in the schema; send only the fields you need.` },
+  { re: /^요청 전 프로젝트에 「([^」]+)」 이벤트가 없다\(맵 (\S+?)\)/u, en: (m) => `There was no event «${m[1]}» on ${m[2]} before this request, so there is nothing to restore.` },
   { re: /^필수 인자 누락: (\S+)/u, en: (m) => `Missing required argument: ${m[1]}.` },
   { re: /^허용되지 않은 인자: (\S+) — 이 도구가 받는 인자: (.*)$/u, en: (m) => `Unknown argument: ${m[1]} — this tool accepts: ${m[2]}.` },
 ];
@@ -278,4 +296,106 @@ export function englishFailureLine(text: string, max = 200): string {
   const first = p.issues[0];
   const raw = first?.message ?? stripHead(p.summary);
   return clip(oneLine(first ? englishToolMessage(first.message, first.code) : raw.startsWith("Rejected:") ? raw : englishToolMessage(raw)), max);
+}
+
+// ───────────── v2 동사 거절 ─────────────
+
+/** v2 동사 요약 머리(«던전 짓기 실패: 'author_dungeon' 실행 실패: …», «add_ending_scene 실패: 적용 실패(commit-rejected): …»)를 걷는다. */
+const VERB_HEAD = /^(?:'[^']+'\s*(?:실행|후처리) 실패|적용 실패\([\w-]+\)|실행 실패\(인자 검증 또는 예외\)|[A-Za-z_]+ 실패|[가-힣]+(?: [가-힣]+)? 실패)\s*:\s*|^컷신을 만들지 못했다\s*—\s*/u;
+export function stripVerbHead(s: string): string {
+  let t = s.trim();
+  for (let i = 0; i < 4; i += 1) { const n = stripHead(t).replace(VERB_HEAD, ""); if (n === t) break; t = n; }
+  return t;
+}
+
+/** dungeonDesign 방을 둘 이상으로 — 보낸 방은 남기고 입구·보스 중 빠진 것만 더한다(함수가 설계를 고르지 않는다: 자리·크기는 모델이 다시 정할 자리표시). */
+function twoRoomDesign(design: unknown): Obj {
+  const d = isObj(design) ? design : {};
+  const rooms = (Array.isArray(d.rooms) ? d.rooms : []).filter(isObj);
+  const has = (re: RegExp) => rooms.some((r) => re.test(String(r.role ?? "")));
+  const out: Obj[] = [...rooms];
+  if (!has(/entrance|입구/u)) out.unshift({ id: "entrance", role: "entrance", size: "small", at: "s" });
+  if (!has(/boss|보스/u)) out.push({ id: "boss", role: "boss", size: "large", at: "n" });
+  const ids = out.map((r) => String(r.id ?? ""));
+  const links = (Array.isArray(d.links) ? d.links : []).filter(isObj).filter((l) => ids.includes(String(l.from)) && ids.includes(String(l.to)));
+  const linked = links.length ? links : ids.slice(1).map((to, i) => ({ from: ids[i]!, to }));
+  return { ...(typeof d.entrance === "string" && d.entrance ? { entrance: d.entrance } : { entrance: "south" }), rooms: out, links: linked };
+}
+
+/** v2 동사 거절의 결정적 고친 호출 — 표에 있는 것만. show = 모델에게 보일 호출 글(인자가 길면 바뀐 칸만 담은 짧은 호출). */
+export function verbCorrection(tool: string, sent: unknown, core: string): { args: Obj; show: string; why: string } | undefined {
+  if (!isObj(sent)) return undefined;
+  if (/dungeonDesign\.rooms 에 방이 둘 이상/u.test(core)) {
+    if (tool === "edit_place" && isObj(sent.patch)) {
+      const patch = sent.patch as Obj;
+      const set = isObj(patch.set) ? patch.set : {};
+      const design = twoRoomDesign(set.dungeonDesign);
+      const args: Obj = { patch: { mapId: patch.mapId ?? sent.mapId, set: { dungeonDesign: design } } };
+      return { args, show: `edit_place(${JSON.stringify(args)})`, why: "dungeonDesign with an entrance and a boss room linked; replace the placeholder sizes/spots (at: s|n|e|w|c or 'x,y' 0–1) with your design — or omit dungeonDesign to keep the layout" };
+    }
+    if (tool === "make_place" && isObj(sent.spec)) {
+      const spec = sent.spec as Obj;
+      const design = twoRoomDesign(spec.dungeonDesign);
+      const args: Obj = { ...sent, spec: { ...spec, dungeonDesign: design } };
+      const body = JSON.stringify(args);
+      return { args, show: body.length <= FULL_CALL_MAX ? `make_place(${body})` : `make_place({spec:{…the same spec…, dungeonDesign:${JSON.stringify(design)}}})`, why: "dungeonDesign with an entrance and a boss room linked; replace the placeholder sizes/spots with your design" };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * v2 동사(편집기 레지스트리 밖: edit_place·make_place·dress_room·add_ending_scene…)의 거절을 편집기 도구와 같은 꼴로 — Rejected / You sent / Fixed call.
+ * 동사 결과의 warnings·next(한국어 문장, 장소 이름이 많다)는 «Tool notes (Korean)»로 짧게 남긴다(«고침:»·형식 예시가 거기 있다).
+ */
+const HANGUL_RE = /[ㄱ-ㆎ가-힣]/u;
+/** v2 동사 결과의 next(한국어 고정 문장, verbs.ts) → 영어. */
+const NEXT_EN: readonly (readonly [RegExp, string])[] = [
+  [/^명세를 고쳐 다시 부르거나 못 하는 것을 보고한다/u, "fix the spec and call again, or report what you cannot do."],
+  [/^명세를 바꿔 다시 하거나\(다른 type·style\)/u, "change the spec (another type or style) and try again, or tell the user as it is."],
+  [/^더 작은 패치로 한 번 더 고친다/u, "one more, smaller patch — only one or two critic majors with coordinates, within those cells (leave the whole floor and room structure alone); report the rest."],
+  [/^고치기 상한/u, "repair limit reached — report the remaining problems."],
+];
+/** 영어로 옮기지 못한 글: 한국어면 «Tool said (Korean): …», 영어면 그대로. */
+const plainOrKorean = (en: string, raw: string) => (en.startsWith("Tool said (Korean): ") && !HANGUL_RE.test(raw) ? raw : en);
+
+export function formatV2VerbFailure(tool: string, sent: unknown, failText: string, budget = 1400): string {
+  const lines0 = failText.split("\n");
+  let body: Obj = {};
+  try { const p = JSON.parse(lines0[0]!.trim()); if (isObj(p)) body = p; } catch { body = { summary: lines0[0] ?? "" }; }
+  const parsed = parseFailure(failText);
+  const core = oneLine(withoutExample(stripVerbHead(String(body.summary ?? parsed.summary))));
+  const issues = parsed.issues.filter((i) => i.message.trim());
+  const head = plainOrKorean(englishToolMessage(core), core);
+  const out: string[] = [`Rejected: ${tool} — ${clip(head, 560)}`];
+  if (issues.length > 1 || (issues.length === 1 && oneLine(issues[0]!.message) !== core)) {
+    out.push(`Blocking issues (${issues.length}):`);
+    issues.slice(0, 6).forEach((i, k) => out.push(`${k + 1}. ${i.code ? `[${i.code}] ` : ""}${clip(englishToolMessage(i.message, i.code), 200)}`));
+  }
+  const off = offendingArgs(sent, [core, ...issues.map((i) => i.message)]);
+  if (off.length) out.push(`You sent: ${off.map((o) => `${o.path}=${o.path === "x,y" ? String(o.value) : show(o.value)}`).join(" · ")}`);
+  const fix = verbCorrection(tool, sent, core);
+  if (fix) out.push(`Fixed call: ${fix.show}`, `Changes: ${clip(fix.why, 240)}`);
+  // 동사 결과의 덧붙임: 같은 문장을 되풀이하지 않고, 형식 예시는 영어 머리로.
+  const warnings = (Array.isArray(body.warnings) ? body.warnings : []).map((w) => oneLine(String(w))).filter((w) => w && oneLine(withoutExample(w)) !== core);
+  // «알 수 없는 hints.X 는 무시했다» 줄은 한 줄로 묶는다(빈 기본값을 채워 보낸 판에서 열 줄 넘게 나왔다).
+  const ignored = warnings.map((w) => /^알 수 없는 (hints\.\S+) 는 무시했다$/u.exec(w)?.[1]).filter((x): x is string => !!x);
+  const notes = [
+    ...(ignored.length ? [`ignored unknown ${ignored.join(", ")}`] : []),
+    ...warnings.filter((w) => !/^알 수 없는 hints\.\S+ 는 무시했다$/u.test(w)).map((w) => { const en = englishToolMessage(w); return en.startsWith("Tool said (Korean): ") ? en.slice("Tool said (Korean): ".length) : en; }),
+  ];
+  const left = Math.max(200, budget - out.join("\n").length);
+  if (notes.length) out.push(`Tool notes${notes.some((n) => HANGUL_RE.test(n)) ? " (partly Korean)" : ""}: ${clip(notes.join(" · "), Math.floor(left * 0.7))}`);
+  if (typeof body.next === "string" && body.next.trim() && !fix) {
+    const next = oneLine(body.next);
+    const en = NEXT_EN.find(([re]) => re.test(next))?.[1];
+    out.push(en ? `Next: ${en}` : `Tool's next step${HANGUL_RE.test(next) ? " (Korean)" : ""}: ${clip(next, Math.floor(left * 0.3))}`);
+  }
+  // 그 밖의 칸(후보 목록·mapIds 등)은 버리지 않는다 — 짧게 JSON 으로.
+  const known = new Set(["ok", "summary", "warnings", "missingArt", "next", "machineChecks", "issues", "notFailure"]);
+  const others = Object.fromEntries(Object.entries(body).filter(([k, v]) => !known.has(k) && v !== undefined && !(Array.isArray(v) && !v.length)));
+  if (Object.keys(others).length) out.push(`Other result fields: ${clip(JSON.stringify(others), 500)}`);
+  const extra = lines0.slice(1).filter((l) => l.trim());
+  if (extra.length) out.push(...extra);
+  return out.join("\n");
 }

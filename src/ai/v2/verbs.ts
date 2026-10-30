@@ -809,7 +809,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
       const { seed: _seed, ...rawPatch } = (raw.patch ?? {}) as PlacePatch;
       const patch0: PlacePatch = { ...rawPatch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
-      const patch: PlacePatch = patch0.set?.hints && "seed" in patch0.set.hints ? { ...patch0, set: { ...patch0.set, hints: Object.fromEntries(Object.entries(patch0.set.hints).filter(([k]) => k !== "seed")) } } : patch0;
+      const patch1: PlacePatch = patch0.set?.hints && "seed" in patch0.set.hints ? { ...patch0, set: { ...patch0.set, hints: Object.fromEntries(Object.entries(patch0.set.hints).filter(([k]) => k !== "seed")) } } : patch0;
+      // 방이 둘 미만인 dungeonDesign(스키마를 기본값으로 채운 빈 껍데기 {rooms:[], links:[]})은 «설계를 바꾸지 않는다»로 읽는다 — make_place(screenDungeonSpec)와 같다.
+      // 2026-10-30 scenes-duel terra boss-room: edit_place 가 이 껍데기로 «dungeonDesign.rooms 에 방이 둘 이상» 거절을 받았다(terra v2 동사 거절 1위).
+      const shellDesign = !!patch1.set?.dungeonDesign && !(Array.isArray(patch1.set.dungeonDesign.rooms) && patch1.set.dungeonDesign.rooms.length >= 2);
+      const patch: PlacePatch = shellDesign ? { ...patch1, set: (({ dungeonDesign: _d, ...rest }) => rest)(patch1.set!) } : patch1;
+      const shellNote = shellDesign ? ["고침: patch.set.dungeonDesign 에 방이 둘 미만이라(빈 설계) 설계는 그대로 두고 나머지만 고쳤다 — 층 설계를 바꾸려면 rooms 를 둘 이상(입구·보스 포함) 보낸다."] : [];
       let record = session.places.get(patch.mapId);
       // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
       const doorWord = /뒷문|출입문|back ?door|^문$|^door$/iu;
@@ -875,7 +880,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       env.emit({ type: "execution_status", name: "v2.repair", ok: true, summary: `${spec.name} 고치는 중(${record.rounds + 1}바퀴)` });
       const before = { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) };
       const built = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
-      const result = redesigned?.notes.length ? { ...built, warnings: [...redesigned.notes, ...built.warnings] } : built;
+      const notes = [...shellNote, ...(redesigned?.notes ?? [])];
+      const result = notes.length ? { ...built, warnings: [...notes, ...built.warnings] } : built;
       return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
     },
   };

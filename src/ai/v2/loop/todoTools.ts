@@ -15,7 +15,7 @@ import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./conti
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
 import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
-import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure } from "./failureText";
+import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure, formatV2VerbFailure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
 
@@ -447,7 +447,8 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
       // 편집기 도구 거절을 모델이 바로 고칠 수 있는 글로(failureText.ts): 막은 이유 전부·걸린 인자의 보낸 값·고친 호출.
       // 기록·실패 세기(state.failures·attributeFailure)는 원래 글 그대로 쓴다 — 같은 거절인지 가르는 서명이 바뀌지 않게.
       const forModel = (failText: string): string => {
-        if (!isRegistryTool(tool.name)) { const head = englishVerbFailureHead(tool.name, failText); return head ? `${head}\n${failText}` : failText; }
+        // v2 동사 거절도 같은 꼴(Rejected / You sent / Fixed call)로 — 2026-10-30 벤치: 모델이 받는 거절의 절반이 날 한국어 JSON 이었다(edit_place·dress_room·add_ending_scene).
+        if (!isRegistryTool(tool.name)) { try { return formatV2VerbFailure(tool.name, callParams, failText); } catch { const head = englishVerbFailureHead(tool.name, failText); return head ? `${head}\n${failText}` : failText; } }
         try {
           const correction = correctionFor(tool.name, tool.parameters, callParams, failText, env.ctx.project, new Set(triedFixes.map((t) => JSON.stringify(t.args))));
           return formatV2Failure({ tool: tool.name, sent: callParams, failText, ...(correction ? { correction } : {}), tried: triedFixes });

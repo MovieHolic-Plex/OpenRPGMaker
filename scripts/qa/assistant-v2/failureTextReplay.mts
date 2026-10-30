@@ -1,6 +1,8 @@
 // v2 거절 글 재생 — 씬 벤치 판의 실패한 편집기 도구 호출(turns/*.json toolCalls·toolArgs)을 판 저장본(project/)에서 다시 실행해
 // 모델이 받던 글(toolAdapter.formatPiToolFailure — 예전 그대로)과 v2 가 이제 싣는 글(loop/failureText.ts)을 나란히 찍는다. 모델 없음.
-//   bun scripts/qa/assistant-v2/failureTextReplay.mts [--limit N] <판 폴더 …>   (예: …/runs/omo-loop-1030b/g/terra/*/r*) — tsx 는 편집기 도구가 끌어오는 .css 를 못 읽어 bun 으로 돈다(argGuardReplay 와 같다)
+// v2 동사(edit_place·dress_room·add_ending_scene…)도: 기록의 modelText(모델이 실제로 받은 글)를 before, formatV2VerbFailure 를 after 로 찍는다
+//   (scenes-duel 판은 project/ 가 없어도 된다 — v2 동사 줄만 나온다). --verbs 면 v2 동사만.
+//   bun scripts/qa/assistant-v2/failureTextReplay.mts [--limit N] [--verbs] <판 폴더 …>   (예: …/runs/omo-loop-1030b/g/terra/*/r*) — tsx 는 편집기 도구가 끌어오는 .css 를 못 읽어 bun 으로 돈다(argGuardReplay 와 같다)
 // 저장본은 판이 끝난 뒤 상태라 같은 호출이 이제는 통과할 수 있다 — 그때는 기록된 요약(잘린 한 줄)을 거절 본문으로 쓰고 «재현 안 됨»이라 적는다.
 // «이제»의 고친 호출은 모델이 보낸 원래 인자에서 계산한다(실행 중에는 H2 가 같은 고침을 실행 전에 이미 적용해 거절 자체가 안 난다).
 import fs from "node:fs";
@@ -9,7 +11,7 @@ import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
 import { runTool } from "../../../src/editor/tools/toolRunner.ts";
 import { formatPiToolFailure } from "../../../src/ai/piAgent/toolAdapter.ts";
-import { correctionFor, englishVerbFailureHead, formatV2Failure } from "../../../src/ai/v2/loop/failureText.ts";
+import { correctionFor, formatV2Failure, formatV2VerbFailure } from "../../../src/ai/v2/loop/failureText.ts";
 import { withTransferRelocation } from "../../../src/ai/v2/game.ts";
 import type { PiToolShape } from "../../../src/ai/piAgent/toolAdapter.ts";
 import type { Project } from "../../../src/project/types.ts";
@@ -17,16 +19,19 @@ import type { Project } from "../../../src/project/types.ts";
 const argv = process.argv.slice(2);
 const li = argv.indexOf("--limit");
 const limit = li >= 0 ? Number(argv[li + 1]) : 12;
-const dirs = argv.filter((a, i) => a !== "--limit" && i !== li + 1);
+const verbsOnly = argv.includes("--verbs");
+const dirs = argv.filter((a, i) => a !== "--limit" && a !== "--verbs" && (li < 0 || i !== li + 1));
 const seen = new Set<string>();
 let shown = 0;
 outer: for (const dir of dirs) {
   const turnsDir = path.join(dir, "session", "turns");
   if (!fs.existsSync(turnsDir)) continue;
-  let project: Project;
-  try { project = (await readProjectSqlite(path.join(dir, "project"))) as Project; } catch (error) { console.log(`# ${dir}: 저장본 못 읽음 ${String(error).slice(0, 80)}`); continue; }
+  let project: Project | undefined;
+  if (!verbsOnly && fs.existsSync(path.join(dir, "project"))) {
+    try { project = (await readProjectSqlite(path.join(dir, "project"))) as Project; } catch (error) { console.log(`# ${dir}: 저장본 못 읽음 ${String(error).slice(0, 80)}`); }
+  }
   for (const f of fs.readdirSync(turnsDir).filter((n) => n.endsWith(".json")).sort()) {
-    const turn = JSON.parse(fs.readFileSync(path.join(turnsDir, f), "utf8")) as { toolCalls?: { type?: string; name: string; ok: boolean; summary: string }[]; toolArgs?: { name: string; args: unknown }[] };
+    const turn = JSON.parse(fs.readFileSync(path.join(turnsDir, f), "utf8")) as { toolCalls?: { type?: string; name: string; ok: boolean; summary: string; modelText?: string }[]; toolArgs?: { name: string; args: unknown }[] };
     const ends = (turn.toolCalls ?? []).filter((c) => c.type === "tool_end");
     const args = turn.toolArgs ?? [];
     for (let i = 0; i < ends.length; i++) {
@@ -34,19 +39,26 @@ outer: for (const dir of dirs) {
       const tool = getTool(c.name);
       if (c.ok || c.name === "todo") continue;
       if (!tool) {
-        // v2 동사(edit_place 등): 표에 있는 거절만 영어 머리를 단다.
-        const sig = `${c.name}:${c.summary.replace(/\d+/gu, "#").replace(/(ev|map)_[\w-]+/gu, "@").slice(0, 40)}`;
-        if (seen.has(sig)) continue;
+        // v2 동사(edit_place 등): 모델이 받은 글(modelText, 없으면 기록 요약)과 이제 싣는 글(formatV2VerbFailure).
+        const sig = `${c.name}:${c.summary.replace(/\d+/gu, "#").replace(/「[^」]*」/gu, "…").replace(/(ev|map)_[\w-]+/gu, "@").slice(0, 60)}`;
+        if (seen.has(sig) || /\(실패 아님\)/u.test(c.summary)) continue;
         seen.add(sig);
-        const before = JSON.stringify({ ok: false, summary: c.summary });
-        const head = englishVerbFailureHead(c.name, before);
+        const recorded = c.modelText ?? JSON.stringify({ ok: false, summary: c.summary });
+        // 예전 판의 modelText 는 영어 머리(«Rejected: …») 뒤에 JSON 을 실었다 — JSON 줄부터를 도구 본문으로.
+        const lines = recorded.split("\n");
+        const at = lines.findIndex((l) => l.trim().startsWith("{"));
+        const raw = at >= 0 ? lines.slice(at).join("\n") : recorded;
+        const nth = ends.slice(0, i).filter((e) => e.name === c.name).length;
+        const sent = args.filter((x) => x.name === c.name)[nth]?.args;
+        const after = formatV2VerbFailure(c.name, sent, raw);
         shown += 1;
-        console.log(`\n=== ${shown}. ${path.basename(path.dirname(dir))}/${path.basename(dir)} ${c.name} (v2 verb — recorded summary)`);
-        console.log(`--- before (${before.length} chars)\n${before}`);
-        console.log(`--- after${head ? "" : " (unchanged — no rule)"}\n${head ? `${head}\n${before}` : before}`);
+        console.log(`\n=== ${shown}. ${path.basename(path.dirname(path.dirname(dir)))}/${path.basename(path.dirname(dir))}/${path.basename(dir)} ${c.name} (v2 verb${c.modelText ? "" : " — recorded summary"})`);
+        console.log(`--- before (${recorded.length} chars)\n${recorded}`);
+        console.log(`--- after (${after.length} chars)\n${after}`);
         if (shown >= limit) break outer;
         continue;
       }
+      if (verbsOnly || !project) continue;
       const a = args[i]?.name === c.name ? args[i]!.args : undefined;
       if (!a || typeof a !== "object") continue;
       const { todoId: _t, ...sent } = a as Record<string, unknown>;

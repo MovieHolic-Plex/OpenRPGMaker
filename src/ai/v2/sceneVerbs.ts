@@ -182,8 +182,9 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
     let at: Pt = { x: 0, y: 0 };
     for (let i = 0; i < map.width * map.height; i++) { const x = i % map.width, y = Math.floor(i / map.width); if ((!reach || reach[i]) && !taken.has(`${x},${y}`)) { at = { x, y }; break; } }
     const id = `ev_ending_${slug}`.slice(0, 60);
-    ev = { id, name: `엔딩 — ${title}`, x: at.x, y: at.y, trigger: { kind: "autorun" }, commands: [],
-      pages: [{ id: `${id}_p0`, name: "엔딩", conditions: cond, graphic: { transparent: true }, trigger: { kind: "autorun" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands }] } as unknown as GameEvent;
+    // 트리거 이름은 "auto"(events.ts Trigger). "autorun" 은 저장 왕복에서 거부돼 add_ending_scene 이 늘 commit-rejected 였다(2026-10-30 scenes-duel 14건).
+    ev = { id, name: `엔딩 — ${title}`, x: at.x, y: at.y, trigger: { kind: "auto" }, commands: [],
+      pages: [{ id: `${id}_p0`, name: "엔딩", conditions: cond, graphic: { transparent: true }, trigger: { kind: "auto" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands }] } as unknown as GameEvent;
     how = `${afterSw} 켜진 뒤 ${map.name} 에 들어오면 자동으로`;
   }
   run.ctx.project = replaceEvent(run.ctx.project, mapId, ev);
