@@ -1,0 +1,492 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2ce0ab1bca163d54288e34b1f71ffd38e21ae48614fa3c821fcc0fdb2950992",
+ "width": 80,
+ "height": 64,
+ "kind": "structure",
+ "name": "wall gatehouse",
+ "label": "beodeul_city/wave-places/mountain-fortress/wall_gatehouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 37,
+  "darkV5": 39,
+  "nearBlackEdge": 0.09,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall-top parapet/walkway band",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "machicolation/corbel course with dark slots",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall face with arched gate and portcullis",
+      "rows": "16-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cobbled threshold/ground strip",
+      "rows": "54-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top 9 rows (1-9) form a tan, cobble-textured band with a light front-edge line at row 10. Dark corbel slots and shadow follow in rows 11-12, so the band reads as a horizontal wall-top surface seen from above. Below it, rows 11-53 are a vertical stone face with an arched portcullis gate, about 40+ rows of front face. This is a close call: the band could also be read as a flat frieze, but its paving-like texture and the edge line plus shadow point to a top surface. Nothing in the drawing shows an isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density and texture are on par with the references. The candidate has 13 visible tones per tile against 12 and 10, and 6% near-flat coverage against 0%. The stone blocks carry per-stone speckle and the portcullis bars are readable. Two things hold it below the bar. First, the measured near-neutral share of dark edge pixels is 100% (references 7% and 9%), and by eye the dark lines around the arch, the crenellations and the block seams are neutral grey-black with no tint. That is the uniform sticker-style outline, not a dark tone of the adjacent material, so I report near_black. Second, the grey stone ramp has about 4 distinct steps (highlight, light, mid, dark), while the references carry 5-6 steps per material, with warm-shadowed tiles and plaster. The gatehouse has no roof ramp, so its shading is shallower overall. Because the outline fails against the standard, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20376
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice / frieze band (tan brick pattern)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "machicolation-style block row with dark slots",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall face with arched portcullis opening and threshold",
+      "rows": "16-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat, face-on elevation. Rows 0-9 are a tan brick-pattern strip with a light line at row 10. It reads as a front-facing frieze or cornice, not a receding roof plane: it has no ellipse, no sloped tile or stripe rows, and no darker eave-shadow band under a front-edge line. The dark slots in rows 11-14 are notches in the vertical block row. The wall (rows 16-63) is a vertical face with a stone-block arch, a portcullis and a threshold. The silhouette is a full-width rectangle (80 px) with no visible roof or lintel top slope, no side face, and no horizontal surface anywhere. That makes it a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per tile against 12 and 10 for the references, and only 6% near-flat coverage (references 0%). The stone is shaded block by block, with light and dark speckle, a lighter cap course, crenellations and highlighted arch voussoirs, so it reads as 5 or so lightness steps on the stone against about 6 on the references. The 100% near-neutral share of dark edge pixels would normally mean a near-black outline. Here the adjacent material is itself neutral grey stone, so the dark edges are mostly the dark grey tone of that stone, used between blocks rather than as a uniform sticker line around the whole shape. The one truly black area is the portcullis opening, which is a shadowed interior. I therefore rate the outline 'mixed' rather than a shallow sticker outline. There are no large flat fills, and a careful artist would accept it next to the references without it looking thinner or flatter. It is slightly less varied in material than the references, since it has no roof or timber, but that does not make it shallow.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20312
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / parapet walk (tan brick-pattern band)",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "stone gate wall with machicolation notches",
+      "rows": "11-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arched gate opening with portcullis (recessed)",
+      "rows": "21-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band in rows 1-9 has a tan brick pattern that differs from the grey stone below. It ends in a light front-edge line at row 10 (L=200 at x=20, 40 and 59). Row 11 is a dark shadow row with notches (width drops to 50), which acts as eave shadow. That gives a top surface of about 9 rows. Below it is a 53-row south face of stone courses with a dark arched opening and portcullis. No side face is drawn. The top is weak and could be read as a front-facing cornice, but the edge line and shadow below it support evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per tile against 12 and 10 for the references, and 6% near-flat coverage against 0%. The 6% is small and comes mostly from the dark arch interior. Stone blocks are shaded one by one with light tops and darker joints, there is a crenellated cap, and the portcullis bars sit in a dark arch. The stone ramp has about 4 visible steps, slightly fewer than Beodeul's 5-6. The 100% near-neutral dark-edge share is much higher than the references' 7-9%, but the candidate's own material is grey stone, so a dark grey edge is naturally colourless. The dark pixels also come mostly from the arch interior and joints, not from a uniform black line around every shape. Forms are separated by value, so I read the outline as mixed and not the sticker look. Overall the candidate is roughly on par with the references for density and texture, with slightly shallower shading ramps and no roof to compare against.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21666
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frieze band (tan brick-pattern cornice)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "machicolation blocks with dark slots under the cornice",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "stone wall face with arched gate and portcullis",
+      "rows": "16-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole gatehouse is drawn face-on. Rows 0-9 are a tan brick-pattern frieze with dark mortar rectangles, which reads as a vertical cornice strip, not a receding roof or walkway plane. Row 10 is a light line, but only the small slots at rows 11-13 are dark under it, so there is no continuous eave shadow. Below that come crenellation-like blocks (rows 10-15), then the stone wall (rows 16-53) with a dark arched opening and portcullis bars, and a cobbled threshold at rows 54-63. The width profile is constant at 80 (row 11 is 50), with no widening or narrowing that would suggest an ellipse or sloped roof. No roof slope, no visible top surface and no side face, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey stone gatehouse with a portcullis arch. Stones carry some per-block shading and speckle, and the measured 13 visible tones per tile is at or above the references (12 and 10) with only 6% near-flat coverage. The outline is the weak point: 100% of dark edge pixels are near-neutral, against 7-9% for the references. The dark lines around the arch, the portcullis bars and the battlement gaps read as neutral black/grey, not as a dark tint of the neighbouring stone. This is the 'sticker' look the Beodeul standard avoids, where the references separate forms with tinted dark tones and value alone. Shading is also shallower, about 4 steps on the stone ramp against 5-6 for the references. The stone courses are fairly uniform, and the dark interior of the arch is a large near-flat dark mass. Density is close to the references on the numbers, but the neutral outline and the shallower ramps keep it below Beodeul quality.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16219
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.012Z",
+ "cells": {
+  "16": [
+   "1306b45892813a2a",
+   "13ce6ca584bf871a",
+   "21495601ca71874f",
+   "231559eb5b0ec112",
+   "35542acd09b7de84",
+   "6f247cd1b6c8390d",
+   "727c7a05aeb0bddb",
+   "787a2d07417485aa",
+   "7d693306768a999f",
+   "85bcfc2d48311fa8",
+   "a74c832bbf4377b1",
+   "b865aa77999b9fb9",
+   "b8f2830cb074f5ba",
+   "bd7ffebc2fa12686",
+   "d9069d52de53345b",
+   "eb908c1ecfb51a2a",
+   "fe20b73d3d126120",
+   "fff3c6fda4782a7b"
+  ],
+  "24": [
+   "034fb31b56ef75ee",
+   "068d9b50e13c899e",
+   "08d7328eb9e9ae2a",
+   "0c3e34375d47f6d6",
+   "0e59c337273eb2c2",
+   "11aa06232979c2f3",
+   "17787eb07f41e570",
+   "18f231115a19a6c6",
+   "192082eba57eb390",
+   "1bca8769a0fb02fd",
+   "1d60a2ba98178a2c",
+   "20007e4a447e29af",
+   "25c317ac4fd03922",
+   "2f742b13e0b18357",
+   "3635c6ec74423e71",
+   "36acb48ac2a8dae8",
+   "404507458a780b99",
+   "4085f3036f3eafe5",
+   "4220d3b58a827817",
+   "447881bf53a41ae0",
+   "4875ed73567631ae",
+   "4dd41dc2ec6b7cf8",
+   "5000aa4d31c991d5",
+   "514b98e35f7d0e01",
+   "5336497a6aac8d49",
+   "55f7b618030c2fe7",
+   "58a7542120ac2ada",
+   "5e049b5ad19e2736",
+   "5e8e9f80ed35cf5d",
+   "5f85e617924191d7",
+   "6152f34709135a05",
+   "6324122d0b5889e2",
+   "69a24adf9ea71c86",
+   "70ff8ae6125870c8",
+   "7a747c46116c09b0",
+   "7c80637203b3ab41",
+   "7d810b9da9a4e0cc",
+   "850c0c6142269a1d",
+   "861555208d0cd83a",
+   "8db08f15f630fc05",
+   "8ed49746be615e6c",
+   "92b594c36a9187a1",
+   "9351354a8a55605c",
+   "9be725f53b7733f4",
+   "9cd6922c3e610d57",
+   "9d43408af9b4d08d",
+   "9e340475c9ef266e",
+   "9e85ba6db52ed874",
+   "9fa70b512e3e97f1",
+   "a6d15a912fc139f1",
+   "a79dffaad79a44e7",
+   "b5370ebc62d2923d",
+   "b5e47a9ed6a047ec",
+   "b9de37d94ce570aa",
+   "bbf784156d551e7c",
+   "c3c95b7d907c0184",
+   "c6ca0c1f063324fe",
+   "ce8596b7be223b6b",
+   "d84be6595b850371",
+   "dd0e27ddf264b5f2",
+   "e203a38853afa557",
+   "f1c002a497592857",
+   "f2ac54e4409ee706",
+   "fa80d7524a58b529",
+   "fbdd730639d7e7b4",
+   "fd7d036177ce2b05",
+   "fe31f5601d83fbb8",
+   "fe7d62e6b3a9c8a8"
+  ],
+  "32": [
+   "0136fe85319427ce",
+   "350f47d4c2a97f89",
+   "45444aff795b0d3e",
+   "4b57f7982a924eb2",
+   "4f4100201998fb0f",
+   "50ad9a73623d87dd",
+   "679398bff8acf61c",
+   "6eb1b908b2e1b648",
+   "830e6522417f3d80",
+   "92529dfe058ebd4a",
+   "933d79e458f3b1b7",
+   "9674bf9e65e92147",
+   "9781d1df22d84713",
+   "981d50a41ecd606f",
+   "b966cc22f3084994",
+   "d24bfed5afecc729",
+   "d52edd240fc8ce55",
+   "d7b68e5db2994a1c"
+  ],
+  "48": [
+   "022417a7c7db4aca",
+   "05cd39b52dab6d3f",
+   "1221521e541e63a4",
+   "1e6a08c12c6d3dda",
+   "27204f4a6d11fed2",
+   "2b1477df452bde74",
+   "3672e0689a04dea0",
+   "387278db3686baf2",
+   "3b831c74ea0cc273",
+   "499ad4b340ef2ac7",
+   "4a4b34673e2c9851",
+   "4ba757251f00bec0",
+   "54d797bcf450c913",
+   "5f0af708c707f124",
+   "75c5d2de0bce74b8",
+   "7720dd4a1598da7d",
+   "858673cb519cf996",
+   "8d256cb64b9c4ea4",
+   "b88aba4161433e13",
+   "c525d795614f0a8f",
+   "d371cd3c9d20505c",
+   "d47e021cc70f35a5",
+   "dc93420485334032",
+   "f01fa3c56f8b9443"
+  ]
+ }
+}

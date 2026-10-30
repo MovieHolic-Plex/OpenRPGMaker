@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "131972b85138fe56a07e6dce3fc952945185904737ac3374b6008616b3dba531",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "pave hole",
+ "label": "beodeul_city/wave-places/ruined-village/pave_hole",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt patch / hole ellipse",
+      "rows": "2-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widens from 10px at row 2 to 27px at row 8, then narrows to 7px at row 13. That is a single flat ellipse spanning rows 2-13. The brown dirt fill has a few green specks and a dark outline at the top. A light/white lip runs along the lower edge at rows 12-13 and acts as the front rim. There is no vertical south face, since the rows below the ellipse are transparent, so the object is a flat ground decal with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny oval blob of roughly 20x8 source pixels on a dark background. It is nowhere near a 4x3-tile ground patch, so it reads as a sticker rather than a ground surface. The measured 88% near-neutral dark edge pixels and the visible dark grey rim confirm a near-black outline. The paving reference's 80% is a different case: it is a dark mortar-joint pattern, not a sticker outline. The rim is also uniform, where Beodeul uses the dark tone of the adjacent material. Inside there are only about 4 lightness steps (tan, light brown, grey rubble, dark rim) with a few speckle dots. That is shallower than the 6-7 tones of the paving reference, whose stones are shaded one by one. Its 11 visible tones and 0% flat coverage come from a very small area and do not amount to the grain and clump variety of the references. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16771
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt hole patch (elliptical)",
+      "rows": "2-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white pavement rubble edge",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The width profile runs 10, 15, 23, 24, 25, 26, 27, 25, 23, 22, 20, 7. It widens to a maximum at row 8 and then narrows again, so the silhouette is a flat elliptical patch of brown earth with a dark back rim at rows 2-4. The only light pixels are a 1-2 row white rubble edge along the bottom (rows 12-13), which is a lip and not a vertical face. No front face of 3 or more rows is drawn. This is a flat top-down decal, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small isolated oval mound of about 22x8 source pixels on a flat dark background. It is not a 4x3-tile ground surface that fills its area the way the grass and paving references do. It reads as a sticker-like object rather than a tileable paving patch. Its dark edge pixels are 88% near-neutral, so the outline is a grey/black rim, not a dark tint of the adjacent material. The reference paving has a similar neutral share (80%), but its stones are shaded one by one with light edges and dark joints. The candidate shows only about 4 lightness steps (pale rim, tan fill, a few dark dots, dark base). The 11 visible tones per tile and 0% flat coverage are measured on a tiny shape and do not make up for the lack of structure, stone-by-stone shading or tile coverage. By eye it is thinner and flatter than the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13295
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt hole oval with rubble rim",
+      "rows": "2-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widens from 10px at row 2 to 27px at row 8, then narrows to 7px at row 13. This is a flat oval seen from above. The brown fill (rows 3-12) is the hole opening, with a few green specks. The white pixels at rows 12-13 are a 1-2 row rubble rim at the bottom edge, not a vertical face. No front face of 3 or more rows is drawn, and there are no legs or eave. This matches the flat-decal kind and reads as a top-down plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small oval blob of roughly 20x10 source pixels on a dark backdrop. It does not read as a 4x3-tile ground patch like the grass and paving references, which fill whole tiles with continuous texture. The numbers look fine (11 visible tones, 0% flat), but by eye the oval has only about 4 lightness steps, a mostly tan interior and a few speckles. 88% of its dark edge pixels are neutral, so it has the dark sticker rim rather than a tinted material edge. The paving reference also has neutral edges (80%), but it carries about 6 steps, per-stone highlights and a tiling structure. The candidate looks thinner and more sticker-like than that reference, and it does not cover its tile footprint, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13507
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt/pave hole oval patch",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat oval patch (width profile 10,15,23,...,27,...,20,7 over rows 2-13) seen from above, with a white edge strip at rows 12-13 along the bottom. It has no vertical front face and no eave or edge-line structure. That fits a flat floor decal, so it reads as a top-down slab, which is expected for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small isolated oval blob of about 1.5 by 0.5 tiles on a dark background. It is not a 4x3-tile ground patch that tiles like the grass and paving references. Its edge is a dark neutral outline (88% near-neutral dark edge pixels, against 0% on the grass reference). That is the sticker-style silhouette, not a dark tone of the neighbouring material. Shading is only about 4 steps (tan, light, a dark rim and a few speckles), against 5-6 steps with per-stone shading on the paving. The 11 tones per tile and 0% flat coverage are measured over a tiny area and are padded by the outline and background. They do not show the richness of a full ground surface. As a ground tile it carries far less visible information than the references, and the near-black outline and sticker look make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10867
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.445Z",
+ "cells": {
+  "16": [
+   "356e16bc42382eaa",
+   "e7a0ac5a0a6b2a00"
+  ],
+  "24": [
+   "0e811a1830b228d4",
+   "2311fba593de4e57",
+   "44b761ad2d1b2d33",
+   "48dfa5c06a0bdd4c",
+   "4f5b2172cfde302e",
+   "7759c66d49a0c7c4",
+   "7b4ad6db52d9d3e7",
+   "a0b8e58e0243c088",
+   "b40603094b243edf",
+   "d4bb7244d95e5900",
+   "e68ee7cbf87953c6",
+   "ed965d57c6983428"
+  ],
+  "32": [
+   "6f4d98383aa4555f",
+   "d1ef9f961dc1cac1"
+  ],
+  "48": [
+   "3bb4c4bcbffd47db",
+   "69612fc5ef619cef",
+   "6999b45fb9d85ad6",
+   "9904a674d0d6d8b2",
+   "ee697701d6b71273",
+   "fb03773044427dda"
+  ]
+ }
+}

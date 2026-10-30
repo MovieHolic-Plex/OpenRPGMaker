@@ -72,6 +72,7 @@ const TEXTURE_KEYS: Readonly<Record<string, BundledJsonKey>> = {
   tex_desert_east: "desertEastTileset",
   tex_prehistoric: "prehistoricTileset",
   tex_sky_island: "skyIslandTileset",
+  tex_beodeul_wave_places: "beodeulWavePlacesTileset",
 };
 
 /** 번들 텍스처 키에 딸린 정의 JSON 키(없으면 undefined). */

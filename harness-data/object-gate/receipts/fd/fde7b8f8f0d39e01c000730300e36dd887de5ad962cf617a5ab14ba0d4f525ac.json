@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fde7b8f8f0d39e01c000730300e36dd887de5ad962cf617a5ab14ba0d4f525ac",
+ "width": 64,
+ "height": 80,
+ "kind": "debris",
+ "name": "smoke column",
+ "label": "beodeul_city/wave-places/volcano-field/smoke_column",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 8,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 5
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper smoke puff mass",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tapering smoke puffs",
+      "rows": "39-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is an irregular, organic cloud of smoke: a large lumpy mass at rows 4-38 that tapers into smaller puffs down to row 66. There is no flat horizontal top band, front-edge line, eave shadow, ellipse, or roof plane, and no distinct vertical front face with a base. Shading is mottled and lumpy, with a dark underside at the lower right. It is not scattered debris on the floor (bones, rubble, shards or papers) but a single vertical plume, so the kind does not match. It reads as neither a three-quarter box nor a flat slab, so it is classed as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The smoke is built from stacked puffs, each shaded in about 5 grey steps from a pale highlight to a deep shadow. The shadows sit on the lower right of each puff, so the form reads as volume rather than a flat sticker. There is no uniform black outline: 0% of dark edge pixels are near-neutral, so the dark edges lean toward the material tone, as with the hedge reference (0%). Near-flat coverage is only 2% (hedge 0%, cheese stall 13%), so there are no big flat fills, and the puff clumps and speckled edges give some texture. At 6 visible tones per tile it is below the hedge (9), cheese stall (17) and roofed well (20), which is slightly lower, but a soft smoke column has less material variety than those props. It does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13633
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper smoke billow (large puffy mass)",
+      "rows": "4-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower smoke puffs tapering to the bottom",
+      "rows": "40-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a single tall, irregular, cloud-like smoke plume (rows 4-66) with a mottled grey fill and a drop shadow on the right edge. It is not a collection of scattered debris on the floor. It has no horizontal top surface and no front-edge line with eave shadow. The silhouette widens smoothly from 13 px at row 4 to 37 px at row 15, then tapers to 6 px at row 66, with no ellipse. There is no distinct vertical south face either; the shading is organic blobs. It reads as a vertical, upright shape with no 3/4 structure, so it fits none of the listed categories well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The smoke column is drawn as clumped puffs with about 5 grey lightness steps (highlight, light, mid, shadow, deep), so its shading depth is close to the Beodeul references. The measured facts support this: 6 visible tones per tile, 2% near-flat coverage, and 0% neutral dark edge pixels. The outline is a tinted dark grey-violet that follows the smoke's own tone rather than a uniform black sticker line, and the puffs are separated mostly by value. Each puff carries some internal dither and clump variation, so it is not a flat fill. Density is a little below the richer references (hedge 9, stall 17, well 20 tones) but in line with the sparse, simple props. For a soft, airy smoke object this is acceptable next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10231
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper smoke billow (main mass)",
+      "rows": "4-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tapering smoke puffs",
+      "rows": "40-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is an amorphous rounded smoke plume (a blobby cloud that tapers downward) with mottled grey shading. It has no front-edge line, no eave shadow, no ellipse rim and no distinct vertical front face. The silhouette widens smoothly from row 4 (13px) to a maximum at rows 15-23 (about 37px), then narrows irregularly to row 66. It does not look like scattered debris lying on the floor, since it is a single tall, connected mass rather than separate bones, rubble or shards. It has no horizontal top plane and no 3/4-view structure, so I classify it as 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The smoke column is built from stacked puffs with about 5 grey steps: a light highlight on the upper left, mid tones, and a darker underside on the lower right. The edges are a dark, slightly tinted grey-violet, and 0% of dark edge pixels are near-neutral, so this is not a black sticker outline. Several puffs are separated by value alone. Near-flat coverage is only 2%, and the puffs carry speckle and clump variation instead of flat blobs. It has 6 visible tones per tile, which is below the hedge (9), stall (17) and well (20). Smoke is a soft, simple subject, and the shading is still structured, so I rate density as slightly lower rather than much lower. A careful artist would accept it next to the references, though it is a little thinner than the richest ones.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13202
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper smoke billow",
+      "rows": "4-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle puff",
+      "rows": "37-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tail puff",
+      "rows": "55-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 63,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is an irregular, cloud-like plume of stacked rounded puffs running from row 4 to row 66. The width profile grows smoothly from 13 to 37 px and then tapers to about 9 px. There is no front-edge line, no eave shadow and no ellipse. The scan shows only mottled light and dark patches, with a darker shade on the lower right. Nothing reads as a horizontal top surface, so the whole mass is a face-on elevation. It is a single vertical column, not scattered floor debris, so the debris kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The smoke column is a grey puffy cloud with roughly 5 lightness steps (pale highlight, light grey, mid, dark, deep) and clumped puff shapes with some inner dither/speckle. Its edge pixels are tinted (0% near-neutral), a dark purple-grey rather than black, so it avoids the sticker look. Near-flat coverage is 2%, so there are no big flat fills. Visible tones per tile are 6, which is below the richer references (stall 17, well 20, hedge 9) but not flat. As a thin effect-like prop it is comparable to the sparse references. The puffs are fairly smooth and uniform, with less grain and per-clump variation than the hedge or well, and it looks a bit thinner than the references. The 5-step shading, tinted outline and low flat coverage keep it near the reference standard, though density is slightly lower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13398
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.197Z",
+ "cells": {
+  "16": [
+   "1844f069bfd2804c",
+   "479b95c236a66c17",
+   "48c08f4e0e464612",
+   "90b80d2459309478",
+   "96f98e4b837f9cd7",
+   "b0b3e9ee48736c93",
+   "ba9136e1ce72b4cb",
+   "c0925c1374941742",
+   "cd584ab6c5176148",
+   "d359726e028ba779",
+   "ddd16f34b61a8543",
+   "de00d6a55efabb6a",
+   "e1e9dd6d59d3e394"
+  ],
+  "24": [
+   "0013069240490369",
+   "01745535e6b77ec5",
+   "0a4a302c655053f7",
+   "1192a6cd0cd57df8",
+   "146d9d3360eb5ff7",
+   "17c2db6e14a55b6b",
+   "18896830df1c2cc2",
+   "1a65acfa7aad3335",
+   "1c8790aaf5f475f2",
+   "2aa1b4a9e4e89554",
+   "3456da7d57c56be7",
+   "345c04a55fbd2499",
+   "40777f725a538aab",
+   "436c749e1420719a",
+   "4399f369f9113ad4",
+   "44fcc6cda8b182b5",
+   "4a4aeb4933adabc4",
+   "4c34a512f984ee65",
+   "4c57b8aadb7bedac",
+   "538c90098b5989d6",
+   "572f91439d57120c",
+   "6233712dcbb27ac6",
+   "6392add506abd2ac",
+   "69712015b7448f56",
+   "6ce89ec4368fd482",
+   "6f453844efffb3de",
+   "7a16fe4c75d430af",
+   "7c2e23d4969ea43d",
+   "8744dbcfabd32c38",
+   "89f0fbe411bc4c31",
+   "8a553ad868482538",
+   "8d5dd4642777810d",
+   "9536ad7724fcfc97",
+   "a43eeabd25ae00fc",
+   "a536e0b916ea5fcf",
+   "b5532f58dc9389cb",
+   "b6570f92ccb5fa05",
+   "ba227dba4fa63218",
+   "bc6ac7c97b6d604b",
+   "bd20f4e263ab2eca",
+   "be7271354ca54464",
+   "c3533a02edefe8fa",
+   "da01909af212836e",
+   "dd7d42016f087d7e",
+   "e76214a00f7fd4ce",
+   "e8dc93cfb41525f4",
+   "ec4922c256459906",
+   "f720cb3f0b072c81"
+  ],
+  "32": [
+   "076fcdbf55772cb2",
+   "254b771a38c49a38",
+   "26c17278838f2052",
+   "34eee201549e31da",
+   "54716c5ce988a93f",
+   "5699e07c41c09d66",
+   "887365b8c3f95ae7",
+   "95854a4a5c3beb28",
+   "968c2617d137667b",
+   "c84051230282babb",
+   "cce22135dd8c9fe1",
+   "f6ad6503f3ad5739"
+  ],
+  "48": [
+   "1b63b5ae9d361ebb",
+   "1e08a64a2abedb57",
+   "23758b9c6cef4ecf",
+   "2a7a5c5f00ad93a6",
+   "457e794969dbdf80",
+   "489b1089d03220b7",
+   "5387d422c41ee483",
+   "7b488903d0626e2d",
+   "974b9bacd09f3b60",
+   "9d473364514b7d2c",
+   "a1d8a6abbe6170a7",
+   "a88fcdf7629eaf09",
+   "b45dea9951843a50",
+   "cf1eeaaa750dddca",
+   "d69b3a07b59911b2",
+   "e07436a33035878e",
+   "e3e20a1499f9acc9",
+   "e57a046a1c6b3d3f",
+   "fcceb2f542f10da2"
+  ]
+ }
+}

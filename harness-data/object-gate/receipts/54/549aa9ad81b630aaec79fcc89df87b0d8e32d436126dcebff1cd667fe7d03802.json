@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "549aa9ad81b630aaec79fcc89df87b0d8e32d436126dcebff1cd667fe7d03802",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "wall 4a",
+ "label": "beodeul_city/wave-places/mountain-fortress/wall_4a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 30,
+  "darkV5": 47,
+  "nearBlackEdge": 0.24,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tan top band / coping with mottled paving-like texture",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "crenel-like corbel notches under the band",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone brick wall face",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall is 64 px wide and drawn straight on from the south. The top band (rows 1-9) is tan and mottled, a different material from the grey stone below, and reads as a coping or walkway top. It ends in a light edge line at row 10 (L=200 at x=16 and x=32). Dark notches and shadow follow in rows 11-14, where the width profile drops to 40 at row 11. Below that, the front face is a grey brick pattern with mortar courses (rows 15-47), well over 3 rows. The top band could also be read as a front-facing frieze, so this call is moderately uncertain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a low grey stone wall band with dark slot notches, not a whole building with roof, walls and door. The references are houses with tiled roofs, so the kind comparison is only loose. On the primary facts it matches the references: 15 visible tones per tile against 12 and 10, and 1% near-flat coverage against 0%. By eye the blocks have a light top edge, a mid face and a dark mortar line, which gives about 4 steps against the references' 5-6, and few per-stone speckle dots. The outline is the weak point. 100% of its dark edge pixels are near-neutral, against 7% and 9% for the references, and the dark lines between blocks and around the slots read as neutral grey-black rather than a tinted dark tone of the stone. That gives the grey 'sticker' look instead of the references' tinted outlines such as dark brown beside wood and dark red-brown beside tiles. The shallower ramp, the neutral outline and the kind mismatch together mean it would look thinner than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21983
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "decorative frieze/cornice band at top",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel notches with shadow under the band",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "stone brick wall face",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat, face-on wall. Rows 0-9 are a tan patterned frieze with dark dividers, drawn as a front-facing strip. It has no front-edge line and no receding plane, so it does not read as a sloped roof or a horizontal top. Rows 11-14 show dark corbel or notch shapes (row 11 is only 40 px wide), but they sit under the band as small details. Rows 15-47 are stone courses with mortar lines and two dark vertical slits. No ellipse, no visible contents and no side face are drawn. The top is a front-facing cornice, so the piece reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a stone wall segment with a crenellated cap, not a whole building with roof, walls and door/windows, so it does not match the reference kind. It shows about 4 grey steps: light block face, mid, dark joint and a darker cap. The measured facts say 100% of its dark edge pixels are neutral, against 7-9% for the references, and by eye the dark joints and slits are neutral grey-black with no tint. That is the sticker-like near_black outline, while Beodeul uses dark tones of the neighbouring material. Visible tones per tile (15) are above the references (12 and 10), and near-flat coverage is 1%, so it is not a flat fill. The blocks carry some speckle but are shaded more uniformly than the references' per-tile tile highlights and plaster grain. Because of the neutral outline and shallower ramps, it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15461
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tan patterned top band / coping",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "stone wall front face with notched upper course and brick courses",
+      "rows": "10-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a tan, tile-like band with a staggered brick pattern that differs from the grey wall below. Row 10 is a lighter 1-row line (L=200 at x=16 and x=32) that works as a front-edge line. Row 11 narrows to 40 px and rows 11-12 carry dark notch shadows, which read as eave shadow. Below that, rows 10-47 are the front face, drawn as grey stone brick courses separated by dark mortar lines. This is 37 rows, well over 3. There is no side face. The top band could also be read as a front-facing frieze, so this call is borderline, but the edge line plus the shadow below it meet evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat stone wall segment (grey blocks with a crenellated cap and dark slits), not a whole building with roof, walls and door/windows, so the reference kind does not match. Measured facts: 15 visible tones per tile (above the references' 12 and 10), 1% near-flat coverage, but 100% of dark edge pixels are near-neutral (references 7-9%). That confirms a neutral black/grey outline around each block and the cap, which is the sticker look; Beodeul tints its outlines to the adjacent material. Stone blocks show only about 4 grey steps (light, mid, dark, near-black joints) against 5-6 per material in the references. Texture is limited to light speckle on the blocks. Tone count and flat coverage are fine, but the neutral outlines and shallow ramps put it below the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23639
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tan tiled/brick-pattern cap band on top of wall",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "corbel/crenel notches under the cap",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone brick front face",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 1-9) is a tan cap with a brick/tile pattern, clearly different from the grey stone face below. It ends in a light front-edge line at row 10 (L=200 at x=16 and x=32). Dark notch/shadow shapes follow at rows 11-15, with the width dipping to 40 at row 11. This reads as a top surface with an eave shadow. Below it is a tall grey stone-brick front face (rows 11-47) with mortar lines and two dark vertical slits. The tan band could be read as a front-facing frieze, which would make the top surface doubtful, but the edge line plus the shadow row supports a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat grey stone wall strip, not a whole building with roof, walls and door. The references are houses, so the kinds do not match and the comparison is only approximate. Measured: 15 visible tones per tile, above the references' 12 and 10. Near-flat coverage is 1%, so there are no large flat fills. But 100% of the dark edge pixels are near-neutral, against 7-9% for the references. By eye, the dark joints and slot marks are neutral grey-black with no tint, so this is the sticker-style outline the Beodeul standard avoids. Each block has only about 3-4 lightness steps (light top edge, mid face, dark joint) and little per-stone grain. The references use 5-6 steps with tinted dark-material outlines and per-tile highlights. The piece reads as clean and regular but flatter and more uniform than a reference stone wall, and its neutral outline fails the style check.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15795
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.999Z",
+ "cells": {
+  "16": [
+   "05a673a41b703446",
+   "15299697aed3a72e",
+   "2f97f219b81f9a26",
+   "62038f9fe4d814fd",
+   "62e56a35105d843e",
+   "727c7a05aeb0bddb",
+   "85427e8f2d33d98f",
+   "a74c832bbf4377b1",
+   "b42a51cded5a9297",
+   "c1df365bef3bf5fe",
+   "caed247f182848dc",
+   "fff3c6fda4782a7b"
+  ],
+  "24": [
+   "17f95ddf8fa7c820",
+   "2219fd99e084e8e3",
+   "28e7527dca45a7e0",
+   "2ed049a4d9b3eb74",
+   "3ae5dea7c1a58631",
+   "650bd315c22108ae",
+   "68d269af8e865dc1",
+   "72182bf55ea5a2db",
+   "7cb3342eaee413d8",
+   "7ff37b1bb7b229e0",
+   "82622f899a21b9c9",
+   "b2ba8629919b9b93",
+   "be8d0942d00d214c",
+   "c1c2341fd47e8448",
+   "e872f752189aec53",
+   "ec5359a900a0cfb7",
+   "ed5fcd5d7b8fe01d",
+   "efa718d13662a42b"
+  ],
+  "32": [
+   "1c4146d6e32dca05",
+   "35fbf9c395c7bdcb",
+   "3d1448771aa9094d",
+   "6f67a29f723ce739",
+   "902db46236ca9aee",
+   "a4b3933c5afe3f31",
+   "deeaf97e5718b59c",
+   "e5dc70360b96c510"
+  ],
+  "48": [
+   "3c105169aad5d727",
+   "4d332bac0518190d",
+   "4f680394b2f6adf8",
+   "57e4ef396efe0356",
+   "908c2a571cfca86f",
+   "c542d2e6b1924c1b"
+  ]
+ }
+}

@@ -1,0 +1,430 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08435738bc9b3da4bbe53ec1fa072b780d64169d7c971a958c76cb84fbedc182",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "ice bridge",
+ "label": "beodeul_city/wave-places/ice-age-field/ice_bridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (4/4)",
+  "3/4: 앞면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (4/4)",
+   "앞면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 10,
+  "darkV5": 68,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 15
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice deck (whole bridge slab)",
+      "rows": "2-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frost fringe at bottom edge",
+      "rows": "76-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 74,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a tall, nearly uniform rectangle of light-blue ice (#6cb4d8), about 37-39 px wide, from row 2 to row 76. The column scans show only small highlight and crack marks across this span. There is no front-edge line, no eave shadow and no change in lightness that would mark a top surface meeting a vertical south face. The bottom rows 76-79 are a white frosty fringe that narrows from width 38 to 8. That is a 2-3 row outline, not a front face of 3+ rows. The left edge is white and dark blue, and the right edge is a darker blue strip about 4 columns wide with a cast shadow. These read as rim and bank edges, not a receding side face. The whole piece looks like a flat top-down slab, with no front face under the walking surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a plain vertical slab of ice with a pale highlight edge and a few snow speckles along the top and bottom. It has about 3 main blue steps, against 5-6 on the reference roofs, plaster and stone. Measured: 7 visible tones per tile vs 12 and 10 for the references, and 45% near-flat coverage vs 0% for both references, so large areas are flat fills. The dark edge pixels are tinted blue (0% neutral), so the outline is a dark material tone and not a sticker line. Even so, the interior is mostly one flat blue with little grain, cracks or per-facet shading. The references show per-tile scallops, plaster speckle and stones shaded one by one. The candidate looks flatter and thinner than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15269
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "ice deck (whole bridge span, seen from above)",
+      "rows": "1-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frost fringe at south end",
+      "rows": "76-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 77,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a tall rectangle of flat ice texture, 37-39 px wide for rows 4-77. It has crack lines, sparkle dots and a pale left edge. The darker blue strip down the right edge (x about 42-47) is a shaded edge and does not read as a front face. The only thing at the south end is a 2-3 row frost fringe (rows 76-79), which is under 3 rows and has no front-edge line, eave shadow or vertical face. It is a plan view of a walkway with no 3/4 front face. No roof, lintel or structure shows a top-and-front pair, so it does not read as a large structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a flat vertical slab of blue ice with a lighter blue top edge, a few speckle dots and snow tufts at the base. It has about 3 visible lightness steps on the ice body, against 5-6 on the references' roof tiles, plaster and stone. Its outline is a tinted dark blue, so it is not near-black (0% neutral dark edge pixels, matching the references' tinted edges). The measured facts agree it is shallow: 7 visible tones per tile against 12 and 10 for the references, and 45% near-flat coverage against 0% for both. The large central ice area is a flat fill with only sparse dots, and it has no per-tile or per-stone shading or grain like the references. A careful artist would see it as thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12424
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice bridge deck (whole sprite)",
+      "rows": "1-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frosty bottom edge",
+      "rows": "76-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 75,
+    "front_face_rows": 2,
+    "side_face_visible": true,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a tall rectangle about 38 px wide and 79 rows high. It is filled with one flat light-blue ice tone (#6cb4d8) with sparse highlights and cracks. The silhouette stays 36-39 px wide on every row, so there is no ellipse and no widening or narrowing. There is no front-edge line followed by eave shadow, and no roof or arch. The only vertical structure is a dark-blue strip 3-4 columns wide down the right side, with a lighter frost strip on the left. At the bottom, rows 76-79 are a 2-3 row frosty lip that narrows to 8 px, not a south face of 3 or more rows. The whole sprite is a plan-view deck with no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat blue ice slab with snow caps and a few speckle dots, not a building with roof, walls and door, so it barely matches the reference kind. It has about 4 blue steps (pale highlight, light, mid, deeper edge) against roughly 6 on the reference roofs and walls. The edge pixels are blue-tinted (0% neutral), so the outline reads as dark material tone, which is good. Measured facts: 7 visible tones per tile against 10-12 for the references, and 45% near-flat coverage against 0% for both references. The broad mid-blue face is a large flat fill with little grain or per-plank variation, while the references have tile scallops, plaster speckle and stone-by-stone shading. Density and texture are clearly below the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12816
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice deck (whole bridge surface)",
+      "rows": "2-75",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frost lip at south end",
+      "rows": "76-78",
+      "evidence": "none",
+      "front_edge_line_row": 76,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker right-hand edge strip",
+      "rows": "4-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 74,
+    "front_face_rows": 2,
+    "side_face_visible": true,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a tall rectangle about 38 px wide and 79 rows tall. The column scan is almost all one uniform ice blue (L=163) from row 6 to row 75, with small highlight and crack specks. This is a flat deck seen from straight above. There is no front-edge line followed by eave shadow, and no vertical south face under the deck. Only a 2-3 row white frost lip at rows 76-78 closes the bottom, which is less than the 3 rows needed for a front face. A darker blue strip runs the full height of the right edge, like a side wall seen in plan, and there is a drop shadow to the right. The result matches the 'top-down slab (no front)' red example in the guide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tall, narrow ice slab with snow caps, not a whole building with roof, walls and door, so it does not match the reference kind well. It has about 7 visible tones per tile against 10-12 in the references. Its near-flat coverage is 45% against 0% in both references, and the picture shows large areas of a single blue with only sparse speckle dots. It has roughly 3-4 blue steps where Beodeul uses 5-6 per material. The edges lean blue and are not neutral black, which is good (0% near-neutral), but the interior is flat and the form is simple. There are no per-element highlights or grain comparable to the roof tiles, the timber-and-plaster speckle or the shaded stones in the references. Overall it is shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13738
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.703Z",
+ "cells": {
+  "16": [
+   "0973081e946e5167",
+   "1739975930fbed1b",
+   "40ff4f4dd75a3bcf",
+   "43102ad75181752c",
+   "517685d7c4db0fd8",
+   "67f34f490362aad5",
+   "883f39e1e78f52b2",
+   "a2cece0d196bb652",
+   "afc4e719947318a4",
+   "b154eff95ce6203c",
+   "b4ad636db6d2d0c5",
+   "c62c106ca8f682ad",
+   "d80bbc1d8356e713",
+   "e2513e063ccf78f8",
+   "fdb7079e2ec78af5"
+  ],
+  "24": [
+   "0af64bcaefb6bd67",
+   "24c87daafe4be595",
+   "29c1120f74757041",
+   "2c5e1c75fec95d91",
+   "3120df6e604ba7cc",
+   "48fe5f490d4c4c64",
+   "5892566b45529522",
+   "5d80d69c27bf3094",
+   "6d4519b08eeed3bc",
+   "7b550e011477d9b7",
+   "8194f03448e40f5d",
+   "856415a965b7864f",
+   "930d64a58d3c22fb",
+   "a8612ccafe032f65",
+   "da7d2ec17c81ec44",
+   "e1f9a2e3180f69e2"
+  ],
+  "32": [
+   "045684d58d86891c",
+   "079a3d3c17913f22",
+   "0bd375755b549293",
+   "1262c5e4c71c87b7",
+   "156eac29b7aeef23",
+   "1b5773d946449c13",
+   "4897f7dee06aa707",
+   "48efd3f6efbfc2cf",
+   "55743710216a6cbc",
+   "5604ce59b535bf4b",
+   "60932e538b039e4d",
+   "7018a6a9bf1ec382",
+   "79714a1b7c6ad235",
+   "7b053b9eb66522e5",
+   "7c99f018c1e6df7a",
+   "7d7a83920f8126b0",
+   "8317d3e1c00633f1",
+   "8e9f3b494a4e3cf6",
+   "94d7474054b710db",
+   "955f57883a735a0d",
+   "9d0c446ced405268",
+   "a1b57fbd75d8ec7c",
+   "a843ff4b7c30ae68",
+   "b450f969919031d7",
+   "c15f1d9f3de03c53",
+   "c1a75a7dcf2740e1",
+   "c292642148d0b0c6",
+   "c4863504b6ebf5e2",
+   "cd6dd984b25dbb45",
+   "cf8cb2b8ac65a064",
+   "da77f4124444c60e",
+   "db0c1c1bd5f4bac8",
+   "dbe0961714b00814",
+   "dc2877ff60c692c0",
+   "dd3a9aa7b7effdc1",
+   "ecdbb28089252ad8"
+  ],
+  "48": [
+   "570bc57af1707385",
+   "af4c5c55d5cac7fc",
+   "be4ccbd6397744c6",
+   "c68f288cfe327c05"
+  ]
+ }
+}

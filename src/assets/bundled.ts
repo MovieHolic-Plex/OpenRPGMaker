@@ -20,6 +20,7 @@ import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import pirateIslesSheet from "./pirateIslesSheet.json";
 import sengokuEdoSheet from "./sengokuEdoSheet.json";
 import skyIslandSheet from "./skyIslandSheet.json";
+import beodeulWavePlacesSheet from "./beodeulWavePlacesSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
@@ -171,6 +172,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 하늘섬(2026-10) — 하늘섬 전용 팔레트 손 도트(풀·구름 섬 가장자리와 밑면 바위·구름 바닥·밧줄/돌다리·잔교·폭포·건물·섬 소품·비공정·실내 방 넷)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/sky-island/bake_si.py (object-gate 통과 조각만), 정의는 project/defaults/skyIsland.ts, openwiki/sky-island.md.
   {textureKey:"tex_sky_island",path:"assets/sky-island/sky-island-chipset.png",name:"하늘섬 (손 도트)"},
+  // 재생성: tiledata/beodeul-variants/_revive/bake.py — 버들항 웨이브 장소 넷의 원본 그림 칸(2026-10-29 되살림), 정의 project/defaults/beodeulWavePlaces.ts.
+  {textureKey:"tex_beodeul_wave_places",path:"assets/beodeul-wave-places/beodeul-wave-places-chipset.png",name:"버들항 웨이브 장소 (원본 그림 칸)"},
   // 스팀펑크 도시(2026-10) — 자체 잠금 팔레트 손 도트 야외(공장·보일러실·시계탑·연립·가게·배관 도랑·선로·증기 열차·기중기·급수탑·비행선 정박장·운하)와
   // 실내(공방·보일러실·기관실·연구실·여관·선술집)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/steampunk-city/bake_sp.py (object-gate 통과 조각만), 정의는 project/defaults/steampunkCity.ts, openwiki/steampunk-city.md.
@@ -235,6 +238,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_pirate_isles") return pirateIslesSheet.count;
   if (key === "tex_sengoku_edo") return sengokuEdoSheet.count;
   if (key === "tex_sky_island") return skyIslandSheet.count;
+  if (key === "tex_beodeul_wave_places") return beodeulWavePlacesSheet.count;
   if (key === "tex_steampunk_city") return steampunkCitySheet.count;
   if (key === "tex_modern_campus") return modernCampusSheet.count;
   if (key === "tex_sf_station") return sfStationSheet.count;

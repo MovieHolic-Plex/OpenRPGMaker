@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f4988cd9404fcbe6ae1bc77e0d805b859946396da65b442d8a5769c3081fa47",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "fur pile",
+ "label": "beodeul_city/wave-places/ice-age-field/fur_pile",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 30,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fur heap top (pale mound highlight)",
+      "rows": "4-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face (brown and grey fur layers)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low mound that widens from 8 px at row 4 to 13 px at rows 11-13. Rows 4-6 are a pale, near-white band that works as the heap's upper surface. Row 7 is a darker line (#665a52 / #4a403a) followed by dark row 8 (#302824), which acts as a front-edge line with shadow. Below that, rows 9-14 are a brown band, a light grey band and a dark base. These read as the front face of the heap, about 8 rows tall. The top is short and the layering is stripe-like, so this is borderline, but the pale top band with an edge line and shadow gives a top surface plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny pile, roughly 11x8 source pixels, much smaller than the references. It reads as a grey-white mound with a dark rim and a few light and brown banding strokes, so I count about 3 lightness steps against 5-6 on the well roof, hedge and stall. 89% of its dark edge pixels are near-neutral, so the outline is a near-black sticker line. The references that use tinted outlines (hedge 0%, stall 1%) show the dark-material-tone craft this piece lacks. The tile-based facts are 0 because the piece is under one tile, so I judged by eye. It has no per-clump fur strands, tonal clusters or grain like the hedge's leaf clumps, and it looks thinner and flatter than the hedge or well at the same scale. It is not a flat-fill failure only because the area is small. The shallow shading, neutral outline and low richness together make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16978
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white fur heap on top of the pile",
+      "rows": "4-6",
+      "evidence": "d",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "brown pelt layer, front face",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey/cream pelt layer with its own edge line and shadow",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette grows from 8 px wide at row 4 to 13 px at rows 11-13, a mound shape. Rows 4-6 are a white fur heap that ends at a lighter grey edge at row 6, then dark shadow at rows 7-8 (L=93, 42-66). Below that is a front face of about 7 rows (8-14). It is brown at rows 9-11 and has a light edge line at row 12 with darker rows 13-14 under it. This is a heap with a visible top and a front face, so I read it as three_quarter. The top is small at 3-4 rows and the stacked layers are only weakly separated."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny pile (about 20x14 px, smaller than one tile) of grey-white and brown layers, so the per-tile tone facts are 0 and I judged by eye. It shows about 3 lightness steps: a light top, a mid band and a dark base. There is no per-fur grain, tuft, or clump variation like the hedge's leaf clumps or the well's stones. 89% of its dark edge pixels are near-neutral, so the outline is a near-black rim, close to the sticker look. The references use tinted dark tones (hedge 0% neutral, stall 1%). Next to the hedge, stall and well, the pile looks thinner and flatter, with much less information per area. It is small but not rich, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15744
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white fur tuft on top of the mound",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown fur layer",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey and dark fur base",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a mound that widens steadily from 8 px wide at row 4 to 13 px at rows 11-13, then narrows to 11 px at row 14. The column scan shows horizontal colour bands stacked down the face: white at rows 5-6, dark brown and orange-brown at rows 7-11, a light grey line at row 12, and dark grey at rows 13-14. These bands read as a side view of layered fur. No back-to-front ellipse or widening-then-narrowing top plane is visible. There is also no front-edge line with eave shadow beneath it. The white rows at the top are only 1-2 rows tall and look like a highlight on the crest, not a horizontal surface. The object is mostly a front face of about 9 rows, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny pile, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged density by eye. It reads as a pale top, a mid tone and a dark base, about 3 visible steps, against roughly 5-6 on the well roof and stall awning. It has 17 raw colours, which is not much for its size, and some speckle on the top. 89% of its dark edge pixels are near-neutral, so the outline is a grey-black line around the whole shape, the sticker look. The hedge and stall references have 0-1% neutral edges, and the well has 33%. The lamp's 100% is a thin pole, so it is not a fair comparison. Next to the richer references (well, stall, hedge) it looks thinner and flatter, so a careful artist would not accept it as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16968
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fur heap top (white/grey fur mound)",
+      "rows": "4-7",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "middle brown fur layer, front face",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower grey-brown fur layer, front face",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8 px at row 4 to 13 px at rows 11-13, then narrows to 11 px at row 14, which gives a mound shape. Rows 4-6 are a light white/grey fur heap top. Row 7 is a darker line (L about 66-93) that acts as the front edge, and row 8 is dark shadow (L about 42). Below that, rows 8-14 are the front face, made of a brown band at rows 9-11 and a grey-brown band at rows 12-14. This gives a top plus a front face of about 7 rows. The top is a loose heap with no hard edges, so the call is borderline, but it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny pile, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged density by eye. It has 17 distinct colours in total. The pile reads as a light top over a darker body, so I count about 3 usable lightness steps on the fur ramp. The references (bench, well, stall) show 5-6 steps. 89% of its dark edge pixels are near-neutral, which points to a grey/black sticker-style outline. The tinted references (hedge 0%, stall 1%) lean toward the material instead. The bench is also small but has a tinted outline (44% neutral) and wood grain. Fur has no clump or strand texture and no per-tuft highlights. The measured facts show no flat fills, but the piece is still thinner and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17980
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.649Z",
+ "cells": {
+  "16": [
+   "7707e2d784289ef6"
+  ],
+  "24": [
+   "0cbe52254fe9a365",
+   "127792fc90b583b0",
+   "2d17fc4929886cc0",
+   "3963218435a0217c",
+   "51f9dc73db9a4376",
+   "f2d8f20e8290e119"
+  ],
+  "32": [
+   "2d29fb27c5a78e3e",
+   "487c0c0734959d68",
+   "4a6c914cd073408c",
+   "670a581d28b0c58b",
+   "a66f8944845a796c",
+   "c771fdec6cb3e772"
+  ],
+  "48": [
+   "2627137c45905074",
+   "327da01304c84529",
+   "3d82dc2f872ff9f0",
+   "a16d310e5b772cb7",
+   "aef1f09949575a1c",
+   "fa48921a664c2757"
+  ]
+ }
+}

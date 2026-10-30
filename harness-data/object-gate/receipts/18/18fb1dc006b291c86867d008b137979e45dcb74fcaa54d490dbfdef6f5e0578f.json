@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18fb1dc006b291c86867d008b137979e45dcb74fcaa54d490dbfdef6f5e0578f",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "hide rack fur",
+ "label": "beodeul_city/wave-places/ice-age-field/hide_rack_fur",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 23,
+  "darkV5": 36,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with snow cap",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "stretched hide panel (face-on)",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top beam is covered with snow. Rows 3-5 are the snow and brown top, and rows 6-7 are a dark edge and eave shadow, so the top surface is only about 3 rows deep. Below it is a front face about 23 rows tall. The hide is a flat face-on panel, and the posts are vertical. They end at narrow feet (width 6, rows 26-30) with no horizontal top or base beam drawn. Only the top beam shows a top surface, and it is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 19 visible tones per 16x16 tile, level with the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Only 21% of its dark edge pixels are near-neutral, so the outlines mostly lean dark brown beside the wood posts and beam rather than black, as the references do. The wood frame has several brown steps, the stretched hide has mottled grain and fur-edge variation, and the top beam has highlight dots. Structure and shading are comparable to the stall and well references, not a flat sticker. The hide could carry slightly more grain, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25733
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with snow cap",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "beam front face / lashings",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stretched fur hide panel",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top beam has a snow-covered band at rows 3-5 (white at rows 4-5) that ends in a front edge at row 5. Rows 6-7 are dark brown eave shadow, and the beam's front face lies below. Below that is a front face of about 22 rows: two vertical posts with the fur hide stretched between them (rows 9-25). The hide and posts are vertical faces, and the feet at rows 26-30 are narrow (6 px) with no base top. No receding side face is drawn. The top surface is thin (3 rows) but has an edge line and shadow, so it reads as three-quarter, though borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden frame with a stretched hide and a pale top beam, the same kind of standing prop as the references. It measures 19 visible tones per 16x16 tile, level with prop-well-roofed (20) and prop-stall-cheese (17) and well above prop-hedge (9). Near-flat coverage is 0%, so the hide and the posts carry grain and variation rather than large flat fills. Only 21% of its dark edge pixels are near-neutral, so the outline leans toward tinted dark brown beside the wood, as in the references, and is not a uniform black sticker line. The wood and hide ramps show roughly 5 steps. That is slightly fewer than the references' 5-6, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17504
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with snow",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "stretched fur hide panel",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top beam is snow-covered. Rows 3-5 form a light band (white snow on a brown rim) and end at a dark brown front-edge line at row 6. Row 7 is dark eave shadow (L about 23-30 at x=9 and x=22). Row 8 is mostly transparent, so the hide hangs below the beam. That gives about 3 rows of top surface, which is thin but is evidence (a). The hide panel (rows 9-25) and the posts (rows 8-30) are vertical faces about 23 rows tall. No separate base beam is drawn, and the hide's lower edge at row 25 has only a dark shadow line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the richer references. Near-flat coverage is 0%, so the hide panel is not a flat fill. Only 21% of its dark edge pixels are near-neutral, so the outline leans brown (dark wood tone) and is not a uniform black sticker line. The wooden posts, the fur-trimmed top bar with dotted highlights, and the stretched hide with a darker frame and grain give about 5 lightness steps. The hide panel is slightly softer and simpler than the stall's detail, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24400
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with snow cover",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "beam front face",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stretched hide panel between posts",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top beam is a band at rows 3-5 (snow-covered, white at rows 4-5). It ends in a darker brown front-edge line at row 6, followed by an eave shadow at row 7 (L=30 at x=9 and x=22). The beam's front face is only 2 rows. Below it, the hide panel (rows 9-25) and the posts are a vertical front face about 17 rows tall. The bottom edge at row 25 is a dark outline with no base top. The snow-covered beam is the only horizontal surface that needs a top, and it has one, though a modest one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so the stretched hide and the top bar carry speckle and grain rather than flat fills. Only 21% of dark edge pixels are neutral, so the outlines lean toward the brown of the wood frame instead of forming a uniform black sticker line. The frame posts, the white-capped top beam and the hide each show about 4-5 value steps, slightly fewer than the references' 5-6. The shape is simple but reads clearly, and a careful artist would accept it beside the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16649
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.692Z",
+ "cells": {
+  "16": [
+   "0efc7d3df3a1a71d",
+   "67ac521382f63e48",
+   "be37b026b84bd68a",
+   "f4fb9619550241b2"
+  ],
+  "24": [
+   "0067f582f9805079",
+   "0a92534cd4b7aa4d",
+   "1043af272d9a2fac",
+   "116d2005066d6579",
+   "194d43aef6b5b04d",
+   "19cdc5cae4306506",
+   "1a56c81d178b9ca3",
+   "2292fe81b468c899",
+   "2e0eb1f2ddd041aa",
+   "327ee0e8431d87fb",
+   "38279699f4ce3aa5",
+   "38b25e78884efdfc",
+   "45a9c2f42b4bf265",
+   "4b191b9aa95e8e10",
+   "57c1706e57db24ec",
+   "668083cd12687ec3",
+   "7dea245bd9569750",
+   "90711b37a2a52ed9",
+   "b0ccc80291ddc45a",
+   "b8d914cc5744bfe5",
+   "c0cb44f87f757f12",
+   "e865811895c7a0a9",
+   "ec1ec57d68ca4b14",
+   "ee5f28e3f63953f1"
+  ],
+  "32": [
+   "d399dcd35fdc6911"
+  ],
+  "48": [
+   "28d20802cac5d428",
+   "3111bfbe529df8fe",
+   "3460870daee068cc",
+   "6f65f5d680c859d2",
+   "d9acc6856d503a4c",
+   "f5a1d33abf65e230"
+  ]
+ }
+}

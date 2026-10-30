@@ -9,7 +9,7 @@
 // 모자란 뒤쪽 칸(이식 2550~ 등)만 붙인다. 이미 다른 그림이 앉은 칸이 하나라도 있으면 덮지 않고 사본 타일셋을 따로 둔다.
 import { ensureJpCityTileset } from "@/project/defaults/jpCity";
 import { regionReference } from "./regionReferences";
-import { preloadRegionReference, regionReferenceSnapshotScene } from "./regionReferenceSnapshots";
+import { preloadRegionReference, regionReferenceSnapshotReady, regionReferenceSnapshotScene } from "./regionReferenceSnapshots";
 import { EXTRA_LAYER_KEYS, type ExtraLayerFields } from "./mapLayers";
 import { bundledChipsetFrameCount } from "@/assets/bundled";
 import type { GameEvent, GameMap, MapId, Project, TileGraft, TilesetDef, TilesetId } from "./types";
@@ -143,7 +143,17 @@ export function preloadRegionReferenceScene(id: string): Promise<RegionReference
 export function regionReferenceScene(id: string): RegionReferenceScene {
   const scene = scenes.get(id);
   if (scene) return scene;
-  if (!regionReference(id)) throw new Error(`Unknown region reference: ${id} — read_region_reference 를 id 없이 불러 목록을 보세요`);
+  const reference = regionReference(id);
+  if (!reference) throw new Error(`Unknown region reference: ${id} — read_region_reference 를 id 없이 불러 목록을 보세요`);
+  // 내려받기 원본이 없는 장소이고 스냅숏이 이미 메모리에 있으면(primeRegionReferenceSnapshot) 기다리지 않는다 — loadSceneRaw 의 스냅숏 갈래와 같은 장면.
+  if (!("projectDownload" in reference && typeof reference.projectDownload === "string") && regionReferenceSnapshotReady(id)) {
+    const snapshot = regionReferenceSnapshotScene(id);
+    if (snapshot) {
+      const ready = currentBundledTileset({ referenceId: id, name: reference.name, map: snapshot.map, tileset: snapshot.tileset, assets: snapshot.assets ?? {}, source: "snapshot" });
+      scenes.set(id, ready);
+      return ready;
+    }
+  }
   const failure = failures.get(id);
   void preloadRegionReferenceScene(id).catch(() => undefined);
   throw new Error(failure

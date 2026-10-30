@@ -1,0 +1,46 @@
+[
+ {
+  "id": "bd-wave-places",
+  "name": "beodeul_wave_places · 웨이브 장소 원본 그림 칸",
+  "description": "화산 지대 필드·재의 들판·폐허 마을·빙하기 설원·산악 요새 — import_region_reference 로 통째로 가져오는 장소 맵.",
+  "documents": [
+   {
+    "id": "bd-wave-howto",
+    "name": "버들항 웨이브 장소 · 쓰는 법(먼저 읽는다)",
+    "markdown": "# 버들항 웨이브 장소 — 원본 그림 칸 (먼저 읽는다)\n\ntilesetId `beodeul_wave_places` · 시트 `public/assets/beodeul-wave-places/beodeul-wave-places-chipset.png`(텍스처 `tex_beodeul_wave_places`, **15770칸**, 16px, 한 줄 128칸). 계열 `oprn-atlas-wave` — 버들항 도시(beodeul_city) 칸 번호와 섞지 않는다.\n\n이 칩셋은 낱칸을 골라 까는 재료가 아니다. 2026-10 장르 웨이브에서 손 도트로 그린 장소의 **원본 그림을 칸으로 자른 것**이고, 칸 하나하나가 그 장소의 한 자리다.\n장소를 쓰려면 `import_region_reference({id})` 로 맵을 통째로 가져온다. 가져온 뒤 이벤트(문·출구·NPC·적)를 놓는다. 그림을 고치려면 칸을 지우지 말고 위층에 다른 칩셋 물건을 얹지도 말 것(칩셋이 다르다).\n\n## 칸 규칙\n- 아래층 = 원본 칸 그대로(불투명). 위층 = 키 큰 물체(나무 수관·건물·바위 기둥)의 화소만.\n- 걷는 칸의 위층 = ★(사람 위에 그려진다 — 수관 밑을 지나면 가려진다). 막힌 칸의 위층 = 막힌 물체(y 정렬).\n- 통행은 칸마다 4방향. 단(높이)이 다른 칸 사이는 계단 칸으로만 오르내린다. 맵 가장자리는 열려 있다(출구 자리).\n\n## 장소\n- `bd-wave-ash-plain` 재의 들판 72×21 — 화산 지대 필드의 남쪽 재 평원만 자른 들판(용암 강 남쪽, 용암 강·신전·분화구 없음). 그을린 고목 숲·짐승 뼈·주상절리·흑요석·유황 분기공 벌판, 잿빛 오솔길이 남쪽 입구에서 북쪽 끝(출구)까지 이어진다. 입구 칸 (35,20), 걷는 칸 1387, 입구에서 닿는 칸 1387.\n- `bd-wave-volcano-field` 화산 지대 필드 72×52 — 화산 지대 필드 전체: 남쪽 입구 → 재 평원 → 현무암 다리로 용암 강 건넘 → 절벽 돌계단 → 화산 신전 입구, 곁길 징검돌 → 화산 동굴 입구. 입구 칸 (35,51), 걷는 칸 2940, 입구에서 닿는 칸 2940.\n- `bd-wave-ruined-village` 폐허 마을 (새벽샘 터) 64×48 — 불타고 버려진 마을: 무너진 예배당과 종탑, 판석 광장(마른 우물·찢긴 천막 가판·넘어진 수레), 반쯤 무너진 집 여섯, 묘지와 지하 묘소 입구, 말라 죽은 밭과 허수아비, 남쪽 문기둥. 입구 칸 (31,47), 걷는 칸 2636, 입구에서 닿는 칸 2627.\n- `bd-wave-ice-age-field` 빙하기 설원 (얼음 호수) 72×52 — 빙하기 설원: 북쪽 빙벽과 얼음 굴 입구·언 폭포·얼음 속 짐승 그림자, 가운데 언 호수와 물길(얼음 다리로 건넘), 서쪽 눈 전나무 숲·설동, 남쪽 모피 천막 야영지(모닥불·움막·엄니 문), 동쪽 거대 짐승 뼈 벌판. 입구 칸 (35,51), 걷는 칸 2073, 입구에서 닿는 칸 2000.\n- `bd-wave-mountain-fortress` 산악 요새 (관문 요새) 72×56 — 산악 요새 정문 앞: 남쪽 산길 입구 → 지그재그 오르막(돌계단 둘) → 골짜기 위 도개교 → 성벽 성문 통로 → 앞뜰(대장간·창고 마당) → 거대 석문. 서·동 갈래 출구. 입구 칸 (14,55), 걷는 칸 1617, 입구에서 닿는 칸 1464.\n"
+   }
+  ],
+  "images": [
+   {
+    "id": "bd-wave-ash-plain-map",
+    "name": "bd-wave-ash-plain.png",
+    "caption": "재의 들판 — 칸으로 다시 짠 그림(원본과 화소 차이 0).",
+    "dataUrl": "/assets/region-references/bd-wave-ash-plain.png"
+   },
+   {
+    "id": "bd-wave-volcano-field-map",
+    "name": "bd-wave-volcano-field.png",
+    "caption": "화산 지대 필드 — 칸으로 다시 짠 그림(원본과 화소 차이 0).",
+    "dataUrl": "/assets/region-references/bd-wave-volcano-field.png"
+   },
+   {
+    "id": "bd-wave-ruined-village-map",
+    "name": "bd-wave-ruined-village.png",
+    "caption": "폐허 마을 (새벽샘 터) — 칸으로 다시 짠 그림(원본과 화소 차이 0).",
+    "dataUrl": "/assets/region-references/bd-wave-ruined-village.png"
+   },
+   {
+    "id": "bd-wave-ice-age-field-map",
+    "name": "bd-wave-ice-age-field.png",
+    "caption": "빙하기 설원 (얼음 호수) — 칸으로 다시 짠 그림(원본과 화소 차이 0).",
+    "dataUrl": "/assets/region-references/bd-wave-ice-age-field.png"
+   },
+   {
+    "id": "bd-wave-mountain-fortress-map",
+    "name": "bd-wave-mountain-fortress.png",
+    "caption": "산악 요새 (관문 요새) — 칸으로 다시 짠 그림(원본과 화소 차이 0).",
+    "dataUrl": "/assets/region-references/bd-wave-mountain-fortress.png"
+   }
+  ]
+ }
+]

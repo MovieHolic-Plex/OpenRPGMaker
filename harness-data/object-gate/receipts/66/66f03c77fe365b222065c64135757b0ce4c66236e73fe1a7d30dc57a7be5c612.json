@@ -1,0 +1,417 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66f03c77fe365b222065c64135757b0ce4c66236e73fe1a7d30dc57a7be5c612",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "fir laden",
+ "label": "beodeul_city/wave-places/ice-age-field/fir_laden",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 46,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tier snow and fir cap",
+      "rows": "0-6",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second tier snow and boughs",
+      "rows": "7-13",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "third tier snow and boughs",
+      "rows": "15-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "fourth tier snow and boughs",
+      "rows": "23-31",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31"
+     },
+     {
+      "part": "bottom tier snow and boughs",
+      "rows": "32-40",
+      "evidence": "c",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40"
+     },
+     {
+      "part": "trunk",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a stacked, snow-covered fir. Each tier's silhouette widens downward (bottom tier 4→30 px over rows 32-39). Each tier has a light snow slope on top, a green bough skirt below, and a darker eave line at its bottom edge (rows 13, 22, 31, 40). The bottom tier's snow slope is rows 33-38. Its green skirt and the trunk (rows 41-45) form the front face. The trunk is a narrow vertical part under the canopy. The tiers read as sloped surfaces seen from above, not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small snow-covered fir with stacked tiers, much smaller than the broadleaf references and under one full 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has about 23 colours in total. Each tier shows only 2-3 green steps plus white snow, where the references show 5-6 steps with leaf clumps in several greens. The outline looks dark and slightly tinted green, but it is applied uniformly around each tier, which gives a sticker-like silhouette instead of value-separated forms. Texture is limited to a few snow highlights and no leaf or needle clumping, and the trunk is a tiny, plain brown stub. Next to the references it looks thinner, flatter and simpler, so I fail it. It is small and simple, but shallow shading and uniform outlines still make it fall below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14490
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tier snow and boughs",
+      "rows": "0-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "second tier snow and boughs",
+      "rows": "15-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "third tier snow and boughs",
+      "rows": "23-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "bottom tier snow and boughs (main body)",
+      "rows": "32-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "38-40"
+     },
+     {
+      "part": "trunk",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Four stacked tiers. Each has a snow-covered sloped top plane (e.g. bottom tier rows 33-37, widening 10 to 22 px) above a darker green skirt that ends in a dark edge line (rows 13, 22, 31, 40). These skirts act as eaves and give a foreshortened top surface plus a front face. The trunk (rows 41-45) is a small vertical part. The bottom tier's snow top is about 5 rows, and the skirt plus trunk give about 8 front rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small snowy fir, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has 23 distinct colours in total, against 567 for tree-d43edd. The fir is built from stacked tiers with a white snow cap, a mid green and a dark green underside, so each material has only about 3 steps. The references show 5-6 steps with leaf clumps in several greens and shaded trunk roots. The canopy tiers are smooth, with no leaf clump texture or needle dots, and the trunk is a tiny, nearly flat stub. The dark edge pixels measure 0% neutral, so the outline is tinted, but it is not clearly a dark tone of each adjacent material. The result is simpler and flatter than either reference and looks like a sticker beside them, so I rate it much lower on density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16491
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top fir tier (snow and green skirt)",
+      "rows": "0-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "second tier",
+      "rows": "15-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "third tier",
+      "rows": "23-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "bottom tier, the largest (snow cap over green skirt)",
+      "rows": "32-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "38-40"
+     },
+     {
+      "part": "trunk",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tree is a stack of four snow-laden tiers. Each tier is a wide sloped plane (a canopy) whose silhouette widens downward, for example rows 32-40 go 4,10,14,16,18,22,26,30,22. Each tier ends in a dark green edge row with eave shadow below it, and the next tier starts under it. The bottom tier's snow and slope run about rows 33-38, with the dark skirt edge at rows 39-40. Below the canopy, the trunk (rows 41-45, 4px wide) is a vertical front face of 5 rows. The snow caps and sloped tiers read as surfaces seen from above, with front faces underneath, so the tree has a 3/4 view and is not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small snow-covered fir, about 1 tile wide and under 2 tiles tall, so the per-tile tone measure is 0 and I judged it by eye. Its tiers show only about 3 tones each: dark green, mid green and white snow, with a faint blue-grey shadow on the snow. The two references show far richer canopies. One has 7 visible tones per tile and the other 29, with layered leaf clumps in 5-6 greens and a trunk shaded in several browns. The fir's tiers are simple stacked wedges with little leaf-clump texture, and the snow caps are close to flat white with few shading dots. The outline is a dark green-black that leans slightly toward the material, but it is nearly uniform around the tiers, which gives a sticker-like look. The trunk is tiny and barely shaded. The fir is cleanly drawn but visibly thinner, flatter and less textured than either reference, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15498
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tier snow-covered fir layer",
+      "rows": "0-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "second tier snow-covered layer",
+      "rows": "15-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "third tier snow-covered layer",
+      "rows": "23-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "bottom tier snow-covered layer (main body)",
+      "rows": "32-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "38-40"
+     },
+     {
+      "part": "trunk",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tree is a stack of four conical tiers. Each tier has a white snow slope (for example rows 33-38 on the bottom tier) that widens downward (width 10 to 26) and ends in a dark green drooping skirt (rows 38-40, widest at 30 px). The skirts act as eave and edge lines and show a sloped top plane for every tier. A brown trunk (rows 41-45, 4 px wide) is the front face below the canopy. The canopy is the tree's own structure, not decor. The tree is symmetric, so it has no specific facing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-laden fir, about 15x25 source pixels, so it is smaller than one full tile. Its tile-level facts are 0 and cannot be used against it. Judged by eye against the references, it has a stacked-tier silhouette with ragged edges. Each tier has a snow cap in a highlight and a cool shadow tone. The greens run light to mid to dark, and the trunk is a darker brown. That is about 5 steps against roughly 6 on the references. Its 23 distinct colours exceed tree-1a786c's 10, though not tree-d43edd's 567. The outline is not a uniform black line: the measured near-neutral share of dark edge pixels is 0%, and the edges lean dark green or dark material tone, matching the references. There are no large flat fills (0% near-flat coverage), and the clumpy snow and needle edges give some texture. It is somewhat simpler and sparser than the large leafy canopies, as expected for a conifer, but a careful artist would accept it next to the reference without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21386
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.601Z",
+ "cells": {
+  "16": [
+   "0a64e9dd923289ec",
+   "61334ab3e9ed99fc",
+   "aecdecadc835a9f8",
+   "b2d08f996a086203",
+   "bc6ccdc9d6bd8083",
+   "d431adf83d630290"
+  ],
+  "24": [
+   "171ba7af234c1bc2",
+   "1cb525b25cb6c0f8",
+   "25389b5aa4b93a7e",
+   "4bb4b4bbed61f818",
+   "7840cce2d39d12f1",
+   "7cef7242f8d3e0b7",
+   "8a73603027603fa8",
+   "9d50a947482c059d",
+   "b74d59ca0ce94e07",
+   "d45e45b8233a4d60",
+   "df0c0a46f080391e",
+   "e522d868099036a3"
+  ],
+  "32": [
+   "1345eb96a302db0d",
+   "3e2f72d76d674cca",
+   "5dd22f65f84a4f6d",
+   "9b19291cd9e6462e"
+  ],
+  "48": [
+   "054f6d438cb6490f",
+   "38bd949203dd96c0",
+   "46211aac09b18e7d"
+  ]
+ }
+}

@@ -20,6 +20,7 @@ import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWo
 import { PIRATE_ISLES_TEXTURE, createPirateIslesTileset, ensurePirateIslesReferences, ensurePirateIslesTileset, pirateIslesBundledReferenceDocuments } from "./pirateIsles";
 import { SENGOKU_EDO_TEXTURE, createSengokuEdoTileset, ensureSengokuEdoReferences, ensureSengokuEdoTileset, sengokuEdoBundledReferenceDocuments } from "./sengokuEdo";
 import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, ensureSkyIslandTileset, skyIslandBundledReferenceDocuments } from "./skyIsland";
+import { BEODEUL_WAVE_PLACES_TEXTURE, beodeulWavePlacesBundledReferenceDocuments, createBeodeulWavePlacesTileset, ensureBeodeulWavePlacesReferences, ensureBeodeulWavePlacesTileset } from "./beodeulWavePlaces";
 import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset, steampunkCityBundledReferenceDocuments } from "./steampunkCity";
 import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset, modernCampusBundledReferenceDocuments } from "./modernCampus";
 import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset, sfStationBundledReferenceDocuments } from "./sfStation";
@@ -192,6 +193,7 @@ const REFERENCE_DOCS_WITHOUT_DEFINITION: Readonly<Record<string, () => TilesetRe
   [DESERT_EAST_TEXTURE]: desertEastBundledReferenceDocuments,
   [PREHISTORIC_TEXTURE]: prehistoricBundledReferenceDocuments,
   [SKY_ISLAND_TEXTURE]: skyIslandBundledReferenceDocuments,
+  [BEODEUL_WAVE_PLACES_TEXTURE]: beodeulWavePlacesBundledReferenceDocuments,
 };
 
 /**
@@ -288,6 +290,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === SKY_ISLAND_TEXTURE) {
         changed = ensureSkyIslandTileset(project.tilesets[id]) || changed;
         changed = ensureSkyIslandReferences(project.tilesets[id]) || changed;
+      }
+      // 버들항 웨이브 장소 (원본 그림 칸, 되살림 2026-10-29): 칸 표·`bd-wave-` 참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === BEODEUL_WAVE_PLACES_TEXTURE) {
+        changed = ensureBeodeulWavePlacesTileset(project.tilesets[id]) || changed;
+        changed = ensureBeodeulWavePlacesReferences(project.tilesets[id]) || changed;
       }
       // 스팀펑크 도시 (steampunk_city 굽기): 번들 칸 표·`sp-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) {
@@ -501,6 +508,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === PIRATE_ISLES_TEXTURE) return createPirateIslesTileset();
   if (asset.textureKey === SENGOKU_EDO_TEXTURE) return createSengokuEdoTileset();
   if (asset.textureKey === SKY_ISLAND_TEXTURE) return createSkyIslandTileset();
+  if (asset.textureKey === BEODEUL_WAVE_PLACES_TEXTURE) return createBeodeulWavePlacesTileset();
   if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) return createSteampunkCityTileset();
   if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();

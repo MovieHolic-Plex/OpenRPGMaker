@@ -1,0 +1,459 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56079abdd7c2978ac18e6cc5cf6b4b2bb8f7905c2091b20e394df8c58eaa620d",
+ "width": 48,
+ "height": 112,
+ "kind": "structure",
+ "name": "gate tower a",
+ "label": "beodeul_city/wave-places/mountain-fortress/gate_tower_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 31,
+  "darkV5": 50,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brown tile or walkway band at the top of the parapet",
+      "rows": "0-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crenellated merlons, vertical faces",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "stone brick wall shaft with string courses and a small window",
+      "rows": "16-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 104,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower is a 42-wide, 112-row stone wall seen almost entirely from the front. Rows 0-7 form a brown tile-textured band at the top. Column x=35 shows a lighter edge-line row at row 7, then merlons at rows 8-13 and a dark base or eave shadow at rows 14-15. This band is the only top surface, and it is small relative to the 104-row front face, so this call is borderline. It reads as a roof or parapet top above a tall front face. The stone courses and the window below are vertical face detail. The darker outer columns are shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The tile density matches the references on the numbers: 12 visible tones per tile against 12 and 10, and 1% near-flat coverage. The structure is shallower than the references. The stone ramp has about 4 grey steps, where the references' roofs and walls carry 5-6. The dark edge pixels are 100% near-neutral, against 7% and 9% for the references, and the tower silhouette and every block joint are traced with a uniform neutral dark line. That is the sticker-style outline, not a dark tone of the adjacent material. The stone blocks have some speckle and per-block variation, but they repeat evenly in rows and show less one-by-one shading than the reference stone wall. The tower has no roof, door or varied materials, which makes it simpler than the references and less rich in clusters and grain. The neutral outline and the shallower ramp count against it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19390
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled parapet or roof band at top of tower",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "crenellation merlons, vertical faces",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall front face with brick courses, window slit and ledges",
+      "rows": "14-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 98,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a tall stone tower seen face-on, 42 px wide and 112 rows. The only candidate top is a pinkish-brown tile band at rows 2-7 with alternating tile colours. Row 8 is a light line (L=200 at x=12 and x=35), and rows 9-10 are dark gaps between merlons that act as eave shadow. A dark ledge at rows 14-15 follows, then the brick wall front runs from row 16 to row 111. Horizontal string-course ledges at rows 40-42 and 72-74 are front-facing strips with no top depth. The top surface is a thin roof or parapet band, and the evidence for it is weak, so this reading is borderline. The rest of the tower is a front elevation with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone tower with brick-like block courses and a crenellated top. It has about 4 grey steps (light, mid, dark, near-black mortar), against roughly 6 per material on the references (roof highlight through deep, shaded plaster, stones shaded one by one). Tile tones match the references (12 vs 12 and 10), and flat coverage is low (1%). But 100% of its dark edge pixels are near-neutral, against 7-9% for the references, which carry dark brown or red-brown tints. This matches the picture: a uniform neutral dark outline and mortar lines around every block and the whole tower, which is the sticker look rather than Beodeul's material-tone outlines. The blocks are regular and repeated, without the per-stone shading and speckle of the stone reference, and the wall is a flat grey column with little tonal variation across it. The neutral outline is the deciding weakness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16964
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "battlement walkway / parapet top (tan-brown band behind merlons)",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "merlons (front faces) with dark cornice line",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "string-course ledges",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "string-course ledges",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 104,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower is a tall, uniform 42px-wide stone wall (rows 0-111) with a drawn front face of about 104 rows: brick courses, a small arched window at rows 48-58, and iron straps. At the top, rows 2-7 are a tan-brown band with brick pattern. It ends in a lighter and darker edge-line row at row 7 (#918178), and the merlon fronts below it (rows 8-13) are followed by a dark cornice/eave shadow at rows 14-15. This is a weak but present top surface on the battlement. The silhouette stays constant in width, so no side face is shown. The ledges at rows 40-42 and 72-74 are thin front-facing courses."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a gray stone tower with brick-like blocks. It has about 4 grey steps on the stone: light, mid, dark, and a mortar line. The reference roofs and walls use 5-6 steps. The measured visible tones per tile are 12 for the candidate against 12 and 10 for the references, and near-flat coverage is 1% against 0%, so the density numbers match the references. The outline is the problem. The dark edge pixels are 100% near-neutral, against 7% and 9% for the references, and the picture shows black/grey lines around the tower silhouette, block joints and window. That is the neutral 'sticker' outline, not a dark tone of the adjacent material. The block pattern is also repetitive and uniform, with no per-stone shading or speckle like the stone reference's cobbles. The tower reads as a clean, shallow, outlined drawing next to the richer references, so it fails on outline and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17856
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "battlement walkway top behind merlons (tan tile pattern)",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "merlons / parapet front",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ledge band",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "stone ledge band",
+      "rows": "72-74",
+      "evidence": "none",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "73-74"
+     },
+     {
+      "part": "arrow-slit window",
+      "rows": "47-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 98,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower is a tall brick wall seen from the south, about 98 rows of front face. At the top, rows 2-7 are a distinct pinkish-tan tiled band. The merlons begin at row 8 with a light edge line (L=200 at x=12 and x=35), and rows 14-15 are a dark band, read here as eave shadow, below them. That gives a thin top surface of about 6 rows over a very tall front face. The mid-height ledges at rows 40-42 and 72-74 are only 1-row edge lines with shadow, so they add no extra top surface. No isometric side face is drawn; the dark columns at the left and right edges are outline/shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone tower. Its stone blocks have light and mid tones with some shading, and the measured visible tones per tile (12) match the references (12 and 10). Near-flat coverage is 1%, so there are no big flat fills. The weak point is the outline: 100% of its dark edge pixels are near-neutral, against 7-9% on the references. The picture agrees, with a uniform dark grey/black line around the tower and its blocks, which gives the sticker look instead of dark material-tone edges. Shading is also shallower, about 4 steps of grey against 5-6 on the references. The blocks repeat in a regular pattern with little per-stone variation, and the dark slits and crenellations are drawn as flat shapes. The neutral outline is the main reason it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16125
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.910Z",
+ "cells": {
+  "16": [
+   "086a209d49dcc537",
+   "09d5a44d331835a2",
+   "154742316c51b85c",
+   "246f9247be62781a",
+   "24f66a9bdb322926",
+   "313c14d8638fb2be",
+   "314de5587784d2c6",
+   "3b120a9993c59ed9",
+   "4700a31879971e2e",
+   "717e853527c26380",
+   "73212c0184e2389f",
+   "75ce5cbdf9bce4fc",
+   "83b4d63f1c3c3110",
+   "a9ae80f2689b485d",
+   "ab14d70d636a9c8c",
+   "adf55bbbe2e65b63",
+   "b08b5c368501104d",
+   "b210593eda273f22",
+   "c332d1488536b5ea",
+   "dd38c8343eccda70",
+   "f5de8dc3e888da7f"
+  ],
+  "24": [
+   "0a58e85fa1923b87",
+   "2a30d4abfadcd4a2",
+   "41ea15bd44b102f2",
+   "42ec999e216b200b",
+   "53be3ca430d831c2",
+   "5681df477056f032",
+   "56e975b7efcaf48b",
+   "6b19471b854b78a8",
+   "70a115373f2b042f",
+   "7c1ea7004bbfbd91",
+   "7d845a5f6b7d4718",
+   "82b13f0f2a38969c",
+   "8b7da06cf725fa38",
+   "a7323b57d770ad16",
+   "b785ea07aee53fb2",
+   "bb73def5e6ba2083",
+   "e0bd6c5bfd02a73e",
+   "e5a81df5378b4f2f",
+   "e9539b1678f59377",
+   "ffc2628099dfa782"
+  ],
+  "32": [
+   "00cc21777ee4ba05",
+   "178b858bb361d0c7",
+   "18c93e0dd40c94db",
+   "19296d501c17bfe9",
+   "1ecdb70a5cbdb790",
+   "227074a332b8d7e6",
+   "2846f3f799111e5d",
+   "3801d910a25dfb3f",
+   "3b47ece7a2b68ed0",
+   "4d3ec127f8fb6fdb",
+   "4fb4180977f518d5",
+   "4fe1736e6e3f1315",
+   "5425fe89f7598ee0",
+   "54408bed5ec4ccfe",
+   "5a7568e118186818",
+   "5eb0f1b687f9a26c",
+   "68ad056031f62f72",
+   "6bcac78436a2c2fa",
+   "6c31b02eddcf8850",
+   "73142c9c73404451",
+   "7696d2cf182cd614",
+   "79403ee4526bc853",
+   "79f5ed7a1c5f2e0a",
+   "7b0cf00238de57ba",
+   "81ccea9d4dea92a2",
+   "870bc3e682910620",
+   "8933d10bab1e98da",
+   "912d6ec364fb8c52",
+   "91f9228db6027f96",
+   "92c00fd840a0746e",
+   "94143162f666ffad",
+   "9757a1b3cec43542",
+   "995c39b83e2bd510",
+   "aa86c60a2d03b1f6",
+   "ab7f29a367fc6b45",
+   "b47c3f368c3e7009",
+   "c187718ba2a9cd1a",
+   "c2066f006b925fb7",
+   "c7422f62feb07ad7",
+   "cb44c9a2078127aa",
+   "d33801a38a850b16",
+   "db257b8853e9edaf",
+   "e0e6e0890956e131",
+   "eb5e2ec7f87fdbce",
+   "eedeee4c19d71faa",
+   "f468ccc3ef26a930",
+   "f867a72a1dd1266b",
+   "ff25fcc5720c56e8"
+  ],
+  "48": [
+   "02dc08579ed88525",
+   "26fb634b9928eea9",
+   "9cc6fb4939e0e673",
+   "9f3cb9b883835329",
+   "afce1ca8e5a66878",
+   "ec32121577a479eb"
+  ]
+ }
+}

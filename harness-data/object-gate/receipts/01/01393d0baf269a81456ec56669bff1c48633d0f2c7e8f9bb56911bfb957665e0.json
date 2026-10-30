@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01393d0baf269a81456ec56669bff1c48633d0f2c7e8f9bb56911bfb957665e0",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "obsidian spire",
+ "label": "beodeul_city/wave-places/volcano-field/obsidian_spire",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 12,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tall spire",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left shorter spire",
+      "rows": "14-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small spire",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette tapers from 2 px wide at row 3 to 13 px wide at rows 21-29. It is a cluster of pointed crystal shafts, with lighter facet streaks (x=8 rows 9-13) and dark facets drawn as vertical faces. No row band ends in a front-edge line, there is no eave shadow, no ellipse, and no widening-then-narrowing width profile. The tips narrow steadily to points, so no horizontal top surface is visible. The tall front face runs from about row 3 to row 30, and the width falls from 13 to 11 at row 30 (the base). The shape reads as a front elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The spire is a small cluster of dark purple crystal shards with faceted light and dark planes. The facts support it: 9 visible tones per full tile against 7 for tree-1a786c and 29 for tree-d43edd, 0% near-flat coverage, and 0% neutral dark edge pixels, so the edges lean toward purple instead of a black sticker line. It has about 12 colours in total, close to tree-1a786c's 10, and shows roughly 5 lightness steps across the facets and edge highlights. It is still plainly less rich than tree-d43edd, and its texture is limited to facet shading with no grain or speckle. That is acceptable for a small mineral prop, and a careful artist would accept it next to the simpler reference. It is not a plant, but the style comparison is still valid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16804
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal spire",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small crystal shard",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small crystal shard",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The spire is a cluster of tapering crystal shards drawn as vertical faces. The width profile narrows steadily from 13 px at the base (rows 21-29) up to a 2 px point at rows 3-4. There is no widening-then-narrowing ellipse, no front-edge line with eave shadow, and no horizontal surface. Highlight streaks (x=8 rows 9-13) are vertical facet lighting, not a top. Row 30 is the base outline. The main body shows only a front face, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny dark-violet crystal spire, less than one tile wide, next to two large, richly clumped tree canopies. The measured facts are acceptable: 9 visible tones per tile (tree-1a786c has 7, tree-d43edd has 29), 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is therefore tinted, not a black sticker line. By eye, though, the shading is only about 4 steps (a pale facet highlight, mid, dark, deep), against roughly 5-6 on the references. The facets are large and smooth, with little grain, chipped-edge texture or per-facet variation. It reads thinner and flatter than tree-d43edd, and only matches the simpler tree-1a786c on the numbers. With so few pixels and such simple faceting, a careful artist would likely want more tonal steps and surface texture beside the references, so on the when-in-doubt rule it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15856
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall spire",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small crystal",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small crystal",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The spire is a tapering crystal cluster drawn as vertical faceted faces with highlight streaks (column x=8 rows 9-13 light, then dark). The silhouette narrows steadily from 13 wide at the base (rows 21-29) to 2 wide at the tip (rows 3-4). There is no horizontal top band, front-edge line, eave shadow or ellipse. The pointed tips are not flat tops. This is an organic crystal so a missing flat top is natural, but by the rule it reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small faceted obsidian crystal cluster, much smaller than the two reference trees. It reads as about 5 lightness steps: a deep base, dark facets, mid purple-grey facets and a few light edge highlights. The facet planes are split by value rather than by a drawn line. The edge pixels lean purple and are not neutral, which matches the measured 0% near-neutral share, so the outline is a dark tint of the material and not a sticker line. Measured facts: 9 visible tones per tile, above tree-1a786c at 7 and below tree-d43edd at 29. Near-flat coverage is 0%, so there are no large flat fills. A smooth glassy crystal needs less grain than leaves, and there are some highlight dots along the facets. It is sparser than the lush canopies, but it is not flatter or thinner than the simpler reference, and a careful artist would accept it beside the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17300
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main central spire (crystal shard)",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small shard",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small shard",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The obsidian spire is a cluster of pointed crystal shards that taper to a point at the top (width 2-3 at rows 3-7, widening to 13 at rows 21-29). The shards are drawn as vertical faces with light highlight streaks (x=8, rows 9-13) and dark facets. There is no horizontal top surface: no ellipse, no front-edge line followed by eave shadow, and no visible contents. The silhouette just narrows to a tip. It is an organic crystal form, so the pointed apex is a natural shape, but under the rules it still shows no top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of dark crystal spikes about one tile in size. By eye I count roughly 4-5 lightness steps: a deep base, mid facets, a lighter facet edge and a few glint pixels. The facets are separated by value rather than by a black line. Edge pixels are 0% near-neutral, so the outline leans purple-blue like the stone and is a dark material tone, not a sticker line. It has 9 visible tones per tile against 7 for tree-1a786c, with 0% near-flat coverage, so there are no flat fills. It is well below the very rich tree-d43edd (29 tones), but that is a full canopy tree, and a single crystal spire is naturally simpler. It is not thinner or flatter than the weaker reference, and a careful artist would accept it beside the references. Density is slightly lower than the best reference but acceptable for a small, sparse object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14858
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.179Z",
+ "cells": {
+  "16": [
+   "4cb0c04975705f3d",
+   "b2eaf7c8e0f0bad7"
+  ],
+  "24": [
+   "0d44cf06d463d849",
+   "262c2130047c7147",
+   "28b6360ea4893ffa",
+   "7a1c8a6c70ddf418",
+   "916a3e8f1324d761",
+   "980b84fee894b0de",
+   "aeb8ea9f3b011b13",
+   "e5c37ec0a4ad2f92",
+   "e7d783bd2aefac6e",
+   "e86ef8f978c6b44c",
+   "e928c21bdb4e537e",
+   "f37804aa5e613602"
+  ],
+  "32": [
+   "27b8cbc06670c04d",
+   "9c42a135193f035d",
+   "fffd949f24433cfd"
+  ],
+  "48": [
+   "1bc17d569bcb67b1",
+   "2ebba33d5d3f2e54",
+   "2f41ec2955dc6dff",
+   "31d8a6ecae458d1f",
+   "a8414426da638e0d",
+   "a88cfc0be1b9d2fe"
+  ]
+ }
+}

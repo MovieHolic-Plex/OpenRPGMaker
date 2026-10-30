@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "087ec385afd716635689ed44657908a8e688dea1cf7b6bd8a1d32e43de04bf0a",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "boulders",
+ "label": "beodeul_city/wave-places/mountain-fortress/boulders",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left pale boulder",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark boulder",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right pale boulder",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green moss tufts on top of left and middle boulders",
+      "rows": "3-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three rounded rock masses with a dome silhouette: the width grows from 3 at row 2 to 30 at row 9, then narrows to 17 at row 14. The left boulder (x=8) is one flat pale tone over rows 5-12, with no band ending in an edge line and no eave shadow. The middle boulder (x=16) is a uniform dark gray from row 7 to 11. The right boulder (x=23) is pale over rows 8-11, with a 1-row darker transition at row 12 and shade at rows 13-14, which reads as the bottom of a vertical face and not a horizontal top. No part has an ellipse, a roof plane or visible contents. The only top-side detail is the green moss pixels at the upper left, counted as decor. The rocks read as shaded front faces with a rounded outline and no distinct top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small cluster of grey boulders with a little moss, set against two full-size trees. It is smaller than a tree, so it doesn't really match the kind. It has roughly 3-4 lightness steps per stone, which is shallow next to the references' 5-6. The measured near-neutral share of dark edge pixels is 100%, against 0% for both references, so the outline is a neutral near-black line rather than a dark tone of the adjacent material. That is the sticker look. The 11 visible tones per tile and 11% near-flat coverage are not clearly below the references, but they count mostly the rock's own grey and the outline. The grey stones show little per-stone shading or grain, and the moss clumps are tiny. By eye the piece is thinner and flatter than either tree, so I fail it, chiefly because of the neutral outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14023
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left light boulder (with moss patch)",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark boulder",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small light boulder",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scan shows three rounded rock masses. Column x=8 runs from a 1-row outline (row 2-3) through a moss pixel (row 4) into one flat light fill (rows 5-12). Row 13 is a shade row and row 14 is the dark base. No front-edge line or eave shadow separates a top band from the face. Column x=16 has a highlight at row 5 and a dark row at row 6, then uniform fill (rows 7-11), so the dark middle boulder is also a plain dome with no top plane. Column x=23 shows the same pattern on the right boulder. The width profile grows steadily from 3 to 30 over rows 2-9 and then narrows, which is a rounded silhouette and not an ellipse top over a face. At most 1-2 rows of rounded upper highlight read as a top. The remaining roughly 9 rows are a lit face with a dark base shadow, so the shapes read as elevation views with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small cluster of grey boulders with a little moss, so it is not a tree, bush or canopy and does not really match the reference kind. It is far smaller than the trees and fills less than one full tile, which makes the tile-density numbers unreliable, so I judged by eye. The stones show only about 3 lightness steps (light top, mid grey, dark underside), well short of the 5-6 steps in the references. The measured near-neutral share of dark edge pixels is 100%, and the references are at 0%. That fits a neutral dark outline around each rock, the sticker look, instead of a dark tone of the neighbouring material. The stones are not shaded one by one with grain or speckle, and the moss is only a few green dots. The 11% flat coverage is higher than the references' 0%. The piece is much thinner and flatter than the references and would look sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21611
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left light boulder",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark boulder",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small light boulder",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green moss tufts on the left boulder",
+      "rows": "3-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three rounded boulders drawn as blob silhouettes whose width grows steadily from row 2 (3px) to row 9 (30px) and then shrinks to row 14. Each boulder is shaded as one continuous face. The left boulder is a single light run at rows 5-12, the middle one a uniform dark run at rows 7-11, and the right one a light run at rows 8-11. There is no top band ending in a front-edge line, no eave shadow and no ellipse. The 1-row lighter line at row 12 on the right boulder is bottom shading, not a top-surface edge. Only a thin highlight at the upper edge hints at a top. The rocks read as upright front-facing lumps, not as a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny grey boulder cluster, much smaller than the tree references and under one full tile in places. Its dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted dark material tone. The references are tinted at 0% neutral. The stones show only about 3 lightness steps (light top, mid grey, dark underside) with a little green moss. The references show 6 or more steps, with leaf clumps in several greens. The measured 11 tones per tile and 11% flat coverage look better than the 7-tone reference, but that is inflated by the moss and by the small piece filling little of each tile. By eye, the stones are flat and sticker-like, and each rock is a smooth blob with little grain, cracks or per-stone shading. That is much thinner than the richer reference (29 tones, 0% flat), so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16276
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left light boulder",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark boulder",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right light boulder",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green moss tufts on top",
+      "rows": "3-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three rounded rock blobs sit on a dark ground shadow at rows 13-14. The column scans show one uniform light run (x=8, rows 5-12; x=23, rows 8-11) and one uniform dark run (x=16, rows 7-11). Each ends in a darker base row. No band ends in a front-edge line, no eave shadow follows one, and no ellipse widens and narrows in the width profile. The silhouette just widens steadily from 3 px at row 2 to 30 px at row 9 and then tapers. Only a 1-2 row highlight/outline rim and the green moss tufts appear at the top. The rocks read as shaded front views with no distinct horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of grey boulders with a bit of moss, far smaller than the tree references and under one full tile in most places. The boulders show about 3 grey steps (light top, mid, dark underside) with little per-stone grain. The dark edge pixels are 100% near-neutral, which matches the neutral black/grey sticker-style outline rather than the dark material tone outlines Beodeul uses beside each material. The 11 visible tones per tile look higher than reference 1a786c (7), but they come from the outline and moss pixels, not from rich shading. Reference d43edd carries 29 tones with 0% neutral edges. Compared with the references, the candidate looks thinner, flatter and more sticker-like, with a neutral outline and shallow stone ramps, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13199
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.820Z",
+ "cells": {
+  "16": [
+   "5d2d7b1d7c575a46",
+   "e29ed4c02b610dd2"
+  ],
+  "24": [
+   "0bf6464b46b83382",
+   "20ae5d9d99faf7bd",
+   "4ae72321a34a4dbd",
+   "5f5610467f990baf",
+   "92bf9993a0fd91d1",
+   "a1d1137b79fd3565",
+   "ac55873d91d4fe96",
+   "ba31ae5a9e032b89",
+   "c6954cd7b4a526e8",
+   "d7e708ecee73f604",
+   "df9d689423b9334a",
+   "e3da0c41a1a72746"
+  ],
+  "32": [
+   "05dc8e53fcea8b1b",
+   "2fd018ae2177c880"
+  ],
+  "48": [
+   "4ba8535954f92bdd",
+   "630f0eb175d28789",
+   "6b06c9f3cd2f4861",
+   "7d03cacff0b5002d",
+   "d49a7250f797f414",
+   "d7d138e38f02c806"
+  ]
+ }
+}

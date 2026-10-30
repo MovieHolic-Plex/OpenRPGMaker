@@ -1,0 +1,48 @@
+# 새로 찍은 조각 — 화산 지대 필드 (volcano-field)
+
+- `parts/crater_mountain.png` (288x192 px) — 분화구 산: 멀리 솟은 화산(18x12): 등고선 따라 휜 현무암·응회암·재 지층, 위에서 갈라지는 골, 붉게 빛나는 분화구와 앞쪽 테두리 틈에서 흘러내린 용암 줄기, 튀는 불씨. / 18x12칸
+- `parts/smoke_column.png` (64x80 px) — 화산 연기 기둥: 분화구 위로 피어오르는 연기 뭉치(4x4), 밑동이 분화구 빛을 받아 붉다. / 4x5칸
+- `parts/temple_gate.png` (96x80 px) — 화산 신전 입구: 산 밑동을 깎아 세운 현무암 신전 문(6x5): 윗면 보이는 들보와 응회암 띠·불꽃 원반 새김, 붉은 머리돌 네모 기둥 둘, 붉은 빛 새는 깊은 문간, 앞 돌계단 세 단. 양옆은 거친 바위로 산에 이어진다. / 6x5칸
+- `parts/temple_brazier.png` (16x32 px) — 신전 화로: 네모 받침 위 현무암 기둥과 쇠 대야, 활활 타는 불(1x2). / 1x2칸
+- `parts/fire_guardian.png` (32x48 px) — 화염 수호 석상: 마름돌 받침 위 두건 쓴 사제상이 불 그릇을 가슴에 받쳐 든 석상(2x3, 얼굴은 두건 그늘). / 2x3칸
+- `parts/cave_mouth.png` (48x48 px) — 화산 동굴 입구: 절벽 앞면에 뚫린 거친 아치 굴(3x3): 안은 어둡고 바닥에서 붉은 열기가 샌다, 둘레는 모난 현무암 덩이. / 3x3칸
+- `parts/basalt_bridge.png` (48x96 px) — 현무암 다리: 용암 강을 남북으로 건너는 마름돌 판석 다리(3x6), 양옆 낮은 난간 돌, 용암에 박힌 육각 교각 머리, 동쪽에 비친 그림자. / 3x6칸
+- `parts/basalt_step.png` (16x16 px) — 현무암 징검돌: 용암에서 솟은 육각 기둥 머리(1칸), 밑동이 붉게 달아올랐다. / 1x1칸
+- `parts/stairs_basalt.png` (48x48 px) — 절벽 돌계단: 절벽 앞면 세 줄을 깎아 낸 현무암 돌계단(3x3), 양옆 낮은 옆벽. / 3x3칸
+- `parts/lava_fall.png` (32x48 px) — 용암 폭포: 절벽 앞면 꼭대기에서 넘친 용암이 세 줄 높이로 떨어져 발치에서 튄다(2x3). / 2x3칸
+- `parts/lava_pool.png` (48x32 px) — 작은 용암 웅덩이: 현무암 물가 안에서 끓는 둥근 용암 웅덩이(3x2), 껍질 균열·거품. / 3x2칸
+- `parts/basalt_columns.png` (32x48 px) — 현무암 주상절리: 높이가 다른 육각 기둥 다섯이 선 무리(2x3), 윗면에 재. / 2x3칸
+- `parts/basalt_columns_low.png` (32x32 px) — 낮은 주상절리: 무릎 높이 육각 기둥 그루터기 무리(2x2). / 2x2칸
+- `parts/basalt_boulder.png` (32x32 px) — 현무암 큰 바위: 모난 큰 바위, 기공 구멍, 윗면에 앉은 재(2x2). / 2x2칸
+- `parts/lava_bomb.png` (16x16 px) — 화산탄: 굴러 떨어진 둥근 바위, 갈라진 틈이 아직 붉다(1칸). / 1x1칸
+- `parts/obsidian_spire.png` (16x32 px) — 흑요석 뾰족돌: 유리처럼 빛나는 검보라 흑요석 바늘 셋(1x2). / 1x2칸
+- `parts/obsidian_cluster.png` (32x32 px) — 흑요석 무리: 높이가 다른 흑요석 바늘 다섯 무리(2x2). / 2x2칸
+- `parts/charred_tree_a.png` (32x48 px) — 그을린 마른 나무: 잎 없이 타 버린 줄기와 꺾인 가지, 가지 윗면에 재, 껍질 틈의 불씨(2x3). / 2x3칸
+- `parts/charred_tree_b.png` (48x64 px) — 그을린 고목: 굵은 줄기가 갈라진 채 선 큰 고목, 드러난 뿌리(3x4). / 3x4칸
+- `parts/charred_snag.png` (16x32 px) — 부러진 그을린 줄기: 위가 꺾여 날카롭게 남은 밑동(1x2), 잘린 면에 불씨. / 1x2칸
+- `parts/charred_log.png` (32x16 px) — 쓰러진 그을린 통나무: 숯이 된 통나무, 잘린 끝 나이테가 붉다(2x1). / 2x1칸
+- `parts/charred_stump.png` (16x16 px) — 그을린 그루터기: 윗면 나이테가 붉게 탄 그루터기(1칸). / 1x1칸
+- `parts/sulfur_vent.png` (16x16 px) — 유황 구멍: 노란 유황 딱지가 둘린 땅 구멍, 김이 조금 샌다(1칸). / 1x1칸
+- `parts/sulfur_vent_big.png` (32x32 px) — 큰 분기공: 유황이 굳은 낮은 둔덕 꼭대기 구멍에서 김이 뿜어 오른다(2x2). / 2x2칸
+- `parts/steam_wisp.png` (16x32 px) — 피어오르는 김: 반투명 가는 김 뭉치(1x2). / 1x2칸
+- `parts/sulfur_crystals.png` (16x16 px) — 유황 결정: 노란 바늘 결정 무리(1칸). / 1x1칸
+- `parts/fumarole_crack.png` (16x16 px) — 달아오른 땅 틈: 재 땅이 갈라져 붉은 빛이 비친다(1칸). / 1x1칸
+- `parts/ember_scatter.png` (16x16 px) — 흩어진 불씨: 재 위 붉은 숯 알갱이(1칸). / 1x1칸
+- `parts/cooled_lava.png` (32x32 px) — 식은 용암 껍질: 물가에 굳은 작은 용암 혀(2x2): 모난 현무암 덩이, 틈 일부가 붉다, 앞 끝은 어두운 턱. / 2x2칸
+- `parts/ash_mound.png` (32x16 px) — 재 둔덕: 바람에 쌓인 고운 재 더미(2x1). / 2x1칸
+- `parts/basalt_rocks.png` (16x16 px) — 잔 현무암 돌: 작은 돌 서너 개(1칸). / 1x1칸
+- `parts/pumice_scatter.png` (16x16 px) — 부석 조각: 밝고 구멍 숭숭한 가벼운 돌(1칸). / 1x1칸
+- `parts/burnt_grass.png` (16x16 px) — 타다 남은 마른 풀: 끝이 검게 탄 마른 풀 포기(1칸). / 1x1칸
+- `parts/beast_ribs.png` (64x48 px) — 거대 짐승 갈비뼈: 재에 반쯤 묻힌 등뼈와 하늘로 휜 갈비뼈들(4x3). / 4x3칸
+- `parts/beast_skull.png` (32x32 px) — 짐승 머리뼈: 옆으로 누운 긴 머리뼈, 이빨 난 주둥이와 뒤로 휜 뿔(2x2). / 2x2칸
+- `parts/pilgrim_cairn.png` (16x32 px) — 순례 돌무더기: 현무암 돌을 쌓고 붉은 천을 맨 막대를 꽂은 길 표지(1x2). / 1x2칸
+- `parts/ground-ash.png` (48x48 px) — 화산재 땅: 칩셋 점박이 흙 결을 어두운 회흑 재로(3x3 표본, 이음새 없음). / 3x3칸
+- `parts/ground-fineash.png` (48x48 px) — 고운 재 둔덕: 밝은 고운 재와 가로로 휜 바람 물결(3x3 표본). / 3x3칸
+- `parts/ground-lavafield.png` (48x48 px) — 식은 용암 벌판: 모난 현무암 덩이, 틈 일부가 붉은 아아 용암(3x3 표본). / 3x3칸
+- `parts/ground-basaltflag.png` (48x48 px) — 현무암 판석: 버들항 성 마름돌 결의 현무암 판석, 틈에 재(3x3 표본). / 3x3칸
+- `parts/face_basalt.png` (48x64 px) — 현무암 절벽 앞면: 고원 가장자리 앞면 세 줄(3칸 폭 표본): 버들항 절벽 갈빗대 결 + 출렁이는 응회암 띠 + 재층, 위는 재 턱. / 3x4칸
+- `parts/autotile-lava.png` (64x64 px) — 용암 ↔ 재 가장자리: 현무암 덩이 물가(바깥 모서리 둥글게)와 밝은 띠·껍질 균열·거품 점의 흐르는 용암 16변형(위1·오른2·아래4·왼8). / 4x4칸
+- `parts/autotile-heat.png` (64x64 px) — 열기 번짐: 땅 위에 덧그리는 투명 붉은 체커 디더 + 불티 점, 가장자리로 갈수록 옅어진다(16변형). / 4x4칸
+- `parts/autotile-ashpath.png` (64x64 px) — 재 오솔길: 밟아 다진 밝은 고운 재 길, 가장자리에 부석·붉은 자갈 테(16변형, 투명 덧그림). / 4x4칸
+
+합계: 44 조각

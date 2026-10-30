@@ -1,0 +1,410 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46ef6f82a26d70cf4708faaa900edf6489cd8becdd3a41ed2bc5393468f48793",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "stairs rock",
+ "label": "beodeul_city/wave-places/mountain-fortress/stairs_rock",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "repeating step treads (light bands, 10 steps)",
+      "rows": "13-62",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "step risers (dark 2-row bands)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right dark side strips",
+      "rows": "13-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a plain 32px-wide rectangle from rows 13 to 63. Inside it, a 5-row cycle repeats ten times: a 1-row highlight (L=223), a 2-row light tread (L=197), then a 2-row dark band (L=63). Each light band is a tread ending in a dark riser, but the risers are only 2 rows and there is no tall front face. The whole object reads as a flat top-down staircase pattern or striped slab, with narrow darker strips down both edges. It has no rock volume, no organic outline and no single top-plus-front block, so the stated kind (organic rock) does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The references are leafy trees, but the candidate is a grey stone staircase, so the kind does not match. It is drawn as a rounded rectangle with evenly spaced horizontal bars, each a light top band over a mid grey band. That gives about 4 grey steps, with no per-stone shading, grain or speckle. The outline is a uniform neutral dark grey/black line around the whole shape, and 100% of its dark edge pixels are near-neutral. The references show 0%, so their outlines carry a tint of the material. The 9 visible tones per tile are mostly just repeated grey bands. The strips are regular and unvaried, so they read as flat fills rather than the clump-by-clump texture of the tree references, especially tree-d43edd with 29 tones. It has the sticker look, with no dark-material-tone outline and no organic texture, so it is below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18198
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "step treads (about 10 repeated bands, e.g. rows 13-15, 18-20, 23-25)",
+      "rows": "13-15",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "step risers (dark bands, e.g. rows 16-17, 21-22)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side strips (dark vertical walls, columns 1-3 and 29-31)",
+      "rows": "13-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a plain 32-wide rectangle spanning rows 13-63. The column scan repeats every 5 rows at x=8, 16 and 23. Each cycle is 1 light row (edge line, e.g. row 13), 2 mid-light rows (tread, rows 14-15), then 2 dark rows (riser or shadow, rows 16-17). So each step has a 3-row tread and a 2-row riser, and a step on its own has a front face under 3 rows. The whole object reads as a flight of stairs seen from above-front, not a single rock mass. Nothing in it looks organic or rock-like: no irregular outline, no shading, no texture. Because of that, kind 'organic' (rock) does not plausibly match, and I chose 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a grey stone staircase block (horizontal grey bands with a dark frame), not a tree, bush or other plant, so it does not match the reference kind. It has about 4 grey steps, shallow next to the references' 5-6 per material. The dark edge pixels are 100% near-neutral, so the outline is a black/grey line, while both references have 0% neutral edges and use tinted material-tone outlines. The tile has 9 visible tones, above tree-1a786c (7) but far below tree-d43edd (29). Those tones come from regular, repeated step bands rather than organic clumps, grain or per-form shading, so the piece reads as a clean sticker-like icon next to the leafy, clumped trees. Texture is limited to evenly spaced stripes with no speckle or grain. Not accepted next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18621
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "repeating step treads (light bands, 3 rows each, e.g. 13-15, 18-20, 23-25 and so on down to about row 60)",
+      "rows": "13-62",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "dark risers between treads (2 rows each)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right edge strips (vertical, about 3-4 columns wide)",
+      "rows": "13-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a 32 px wide, 50 row tall rectangle of horizontal stripes. The stripes repeat every 5 rows: 1 bright edge row (L=223), 2 light rows (L=197), then 2 dark rows (L=63). Each step has a 3-row tread and a 2-row riser, which is too short to count as a front face (under 3 rows). The whole drawing reads as a flat top-down view of a staircase, or a ladder-like striped panel. It has no distinct front face, no rock silhouette and no organic outline. The silhouette is a plain rectangle, constant width 32 for rows 13-63, so it does not match the organic 'rock' kind. Short side strips at the left and right edges are flat vertical bands, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a grey stone staircase of about 8 horizontal bars, not a tree or plant, so the references are a poor match for it. Judged on craft alone, it has about 4 grey steps: a light top edge, a mid grey face and a dark bar shadow on each step. It has no per-stone shading, speckle or grain, and the bars repeat identically. The measured near-neutral share of dark edge pixels is 100%, and by eye the frame is a uniform neutral dark-grey/black line, which gives the sticker look. The references have 0% neutral edge pixels, with tinted green/brown dark tones. The 9 visible tones per tile are mostly the same grey repeated across identical bars. That is only slightly above tree-1a786c (7) and far below tree-d43edd (29), which has leaf clumps and many greens. Overall it is shallower and flatter than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19022
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "step tread (repeats every 5 rows: 13-17, 18-22, ... to 63)",
+      "rows": "13-15",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "step riser, dark band (repeats)",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side rails, 3-4 px wide vertical strips",
+      "rows": "13-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The sprite is a 32-wide, 51-row rectangle (rows 13-63) with no rock silhouette. Columns x=8, 16 and 23 all show the same 5-row cycle: 1 row of #dee0dd, 2 rows of #c4c6c3, then 2 rows of dark #3e403d. That reads as a flight of steps seen from the front, each with a 3-row light tread and a 2-row dark riser, flanked by side rails. It is not a rock mass and is not organic, so the kind does not match. Each tread has a top surface, but each riser is only 2 rows, and the silhouette has no distinct south face or rounded volume. It does not cleanly fit three_quarter, front_elevation or top_down_slab, so I report other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a grey stone staircase: horizontal stripes of light and dark grey inside a dark neutral frame. It is not a tree, bush or plant, so it does not match the reference kind. The step bands use about 3 lightness steps (light, mid, dark), against 5-6 for the references' leaf ramps. The outline is neutral near-black/grey, and the measured near-neutral share of dark edge pixels is 100% against 0% for both references, which is the sticker-style outline. Each band is a smooth flat strip with little grain, speckle or per-stone shading. The 9 visible tones per tile beat tree-1a786c (7) but sit far below tree-d43edd (29), and they come mostly from repeating stripes rather than varied texture. Overall it is shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18202
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.968Z",
+ "cells": {
+  "16": [
+   "2fbae45d7628c164",
+   "348994e12aa39d4a",
+   "4ebe7cd082d2a003",
+   "5ef3bad32cec7621",
+   "6bf91debd58ff17b",
+   "a13b71b6a9e205af",
+   "e0592c07e7b26426",
+   "fa0bb9b8c5a10051"
+  ],
+  "24": [
+   "0bd1fdea5ee384af",
+   "186630202b9a2f80",
+   "2587d3e0671fdb17",
+   "2cfdbed6172ed42e",
+   "3321febbaf54c182",
+   "35a9f5aece418183",
+   "528179e7338ad1cd",
+   "5eccd9f28dd1e22c",
+   "61da7e1e35a96503",
+   "64fb2a22288f2108",
+   "66d868e4d055f4a3",
+   "69f4acb60d8dd119",
+   "73621be4b9e5f964",
+   "75843bd2df2c4606",
+   "78a44396be3f3fe9",
+   "7b1b21e59f849a50",
+   "7d9d7e2b719b3baa",
+   "840fd8d5a2de1e52",
+   "92ab0849fb2ec8eb",
+   "9c1cd25176b4855d",
+   "a5282e83de96f0e7",
+   "a58005cc07c73d02",
+   "a6235e08ee5dc30b",
+   "ade14dc242f27513",
+   "b1a81afc1e8a59af",
+   "b8942f695eb184a0",
+   "b8abdd17c8f9b16a",
+   "ca9ff7e78026e926",
+   "d28a58ef1d222218",
+   "d81306e33d4bae0e",
+   "dde0c3d791630f60",
+   "df74c3599e17fd26",
+   "dfbbc915a41f8c5e",
+   "f055598e3291bc60",
+   "f31f58aa3e9fc5c3",
+   "f7329dee38b1ddcb"
+  ],
+  "32": [
+   "2617be8de920f87b",
+   "ba6010de4b734bd9"
+  ],
+  "48": [
+   "1248d0c3e2c58f86",
+   "1580a02c15cba647",
+   "36d32085a15938b7",
+   "3ada3e955a3462e5",
+   "42cce1b992c5825c",
+   "496615b0258af6de",
+   "55d8d921ed85e071",
+   "812ff099724aefd0",
+   "8f6f14544caf8faf",
+   "d231353c41f0f7a7",
+   "d88efb7c22c3e7d4",
+   "e3747c9591dc8282"
+  ]
+ }
+}

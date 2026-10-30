@@ -1,0 +1,351 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff82f95c67132bcd3be699d7a94a0b8a95be6caed7b3042d32d5229d113f26c8",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "stall collapsed",
+ "label": "beodeul_city/wave-places/ruined-village/stall_collapsed",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 0.31,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning/canvas draped over the stall",
+      "rows": "7-16",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "wooden stall body front face",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crates/baskets under the stall",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken pole at upper right",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main mass is a striped canvas awning plane (rows 7-16, light and red stripes). It ends in a darker grey/red band at rows 17-20 that acts as the front edge and eave shadow. Below it is a wooden front face (rows 17-25), and two woven crates sit below that at rows 26-30. The silhouette widens from 2px at row 3 to 46px at rows 16-19, so the awning is a sloped plane over a front face. The crates are small and drawn as front faces. Each part reads as a lump rather than a flat slab. The object is a big stall-shaped heap rather than scattered debris, but it is plausibly debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a collapsed striped awning with broken poles. Its dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown beside the cloth and wood, not a sticker line. It has 13 visible tones per 16x16 tile, above the hedge (9) and a bit below the cheese stall (17) and roofed well (20). Near-flat coverage is 11%, close to the cheese stall's 13%, so large flat fills are not a problem. The cloth has fold shading and the stripes alternate in light and dark values, with about 4 steps per material against the references' 5-6. Only 15 distinct colours are used in total, versus 40 for the cheese stall, so it is slightly leaner and less textured, mainly on the wood and cloth. A careful artist would still accept it next to the references: it does not read as thinner, flatter or more sticker-like than the hedge, and it is close to the stall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17615
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning canopy lying over the stall",
+      "rows": "7-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "brown wooden stall front/body",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small woven crates under the stall",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken pole at upper right",
+      "rows": "3-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a collapsed stall with a red and white striped awning (rows 7-16) as a sloped canopy plane. A grey, darker band at rows 16-19 acts as the front edge and eave shadow. Below it a brown plank front face runs rows 17-25 (about 9 rows). Small crates at rows 26-30 show 2-row lighter tops. The silhouette widens from 18 px at row 7 to 46 px at rows 16-19, so it reads as a volume with a top and a front rather than a flat slab. It looks more like a tilted stall than scattered debris, but the debris kind plausibly fits a collapsed stall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a collapsed striped canvas awning over broken wooden poles. Its dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown next to the cloth and wood, not a black sticker line. The red stripes show about 4 steps (highlight, mid, dark, deep) and the white stripes about 3, with fold shading. The reference stall has about 5-6 steps per material. Visible tones per tile are 13, against 17 for the cheese stall, 20 for the well and 9 for the hedge. Near-flat coverage is 11%, close to the cheese stall's 13%, and there are no large flat fills. Texture is only moderate, with no per-thread grain or speckle. It is slightly lower than the cheese stall on tones and texture but in the same range, so a careful artist would accept it next to the references. Verdict: pass, with limited margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18035
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "collapsed striped awning/canopy lying over the stall frame",
+      "rows": "7-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "wooden stall frame / broken front boards",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small crates with checkered tops under the front",
+      "rows": "26-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken pole at right",
+      "rows": "3-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from row 7 (18 px) to row 9 (42 px) and holds 44-46 px through row 21. The red/white striped awning fills rows 7-19 as a sloped canopy plane. Its lower rows 17-19 turn grey and dark, which works as the front edge and shadow. Below it, rows 20-25 are a brown wooden front face with vertical plank divisions, and two small crates and debris bits sit at rows 26-31. The awning plane has a top surface and a front face of 3+ rows, so it reads as three-quarter. The object is a large, fairly intact-looking heap rather than scattered debris, but it is plausibly a collapsed stall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a collapsed red-and-white striped awning with brown wood poles. Its outlines are dark red-brown beside the cloth and brown beside the wood, and 0% of its dark edge pixels are neutral, so there is no sticker-like black line. It has 13 visible tones per tile, between the hedge (9) and the cheese stall (17), and 11% near-flat coverage, close to the cheese stall's 13%. The cloth has about 3-4 steps per stripe colour, with fold shading and some wood grain, against about 5-6 on the references. Its total of 15 distinct colours is well below the cheese stall's 40, so it is a little shallower in ramp depth. There are no big flat fills, and the collapsed form reads clearly. A careful artist would likely accept it next to the references, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19134
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen striped awning/roof plane",
+      "rows": "7-18",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "brown wooden stall body front face",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow crates under the stall",
+      "rows": "26-31",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole at right",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a striped awning with a sloped roof plane (rows 7-18). Its width grows from 18 px at row 7 to 46 px at rows 16-19, and the red/cream stripes run across it. The column at x=24 has cream stripe rows 7-16, then a greyer shadow band at rows 17-20 acting as the front-edge line and eave shadow. Below it is a brown wooden front face at rows 19-25, about 7 rows tall. Two small crates sit at rows 26-31, each with a lighter top row above a darker face. A thin pole rises at the right. The overall shape is a stall with a roof and a front face, so it reads as three-quarter view, though the subject is a collapsed stall rather than loose scattered debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_flats": false,
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The collapsed striped awning has dark red-brown outlines beside the cloth and dark brown beside the wood. 0% of its dark edge pixels are neutral, so this is not a sticker outline. Shading is a little shallower than the cheese stall: about 3-4 steps on the red and cream stripes against 5-6 on the reference awning. The fold, sag and broken-pole shapes still carry shading and variation. Measured facts sit between the references: 13 visible tones per tile (hedge 9, cheese stall 17, well 20), 11% near-flat coverage (cheese stall 13%), and tinted outlines. The total of 15 distinct colours is low, so the density is slightly lower, but the piece would sit acceptably beside the stall reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18972
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.491Z",
+ "cells": {
+  "16": [
+   "17681762269ec10c",
+   "542a39f6bccc057d",
+   "9a63987e9e40fcc5",
+   "c5192e61e3c32ae5",
+   "cfa8a34ee9fe5f87",
+   "e66503ca1de7b80d"
+  ],
+  "24": [
+   "175a9b1a2764615b",
+   "481e8ef8c3b6c87e",
+   "a1fe9ff36edbb649",
+   "ad4c31ec50a5e66c",
+   "b5e11e8c403c8d36",
+   "e5ffd3695062881b",
+   "ecfc15c7b7b5619f",
+   "f502e77bb40f9e14"
+  ],
+  "32": [
+   "17163a6d597cbcfe",
+   "6b5b9834c4c245fc",
+   "a0ec735198b31f78",
+   "b4f5dc523fcfe3e8",
+   "c57e2c2feddba7c9",
+   "e8b2109fbcd5718f"
+  ],
+  "48": [
+   "07f9c756b2d8a7ed",
+   "77378ac199137347"
+  ]
+ }
+}

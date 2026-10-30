@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4956cd2385c52ea575132068493e816388dc1f8a20b96cad2a1a9f30d5209ba2",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "crate broken",
+ "label": "beodeul_city/wave-places/ruined-village/crate_broken",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 32,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "open crate mouth (dark interior)",
+      "rows": "3-6",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front plank face",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is one compact square crate, 12-13 px wide and filling rows 3-14. It is not scattered debris, so the kind does not match. The column scan shows a dark interior at rows 4-6, which is 4 rows with the row-3 rim. This reads as the open mouth of the crate seen from above. Below it, rows 7-13 are wood planks, with a darker base line at row 14, forming a front face of about 7-8 rows. There is no receding side face. The top reading is weak because the interior is a flat dark fill with no visible contents and no distinct front-edge line, but the wide dark opening above a plank face reads as an open container."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile crate, about 11x14 px, with broken planks and a darker interior. Measured facts: 11 visible tones per tile, against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is tinted dark brown, not a black sticker line. It has 12 distinct colours in total, close to the hedge (11) and bench (14), which are comparable simple props. It shows about 4 wood steps (highlight, mid, dark, deep) with plank grain and gaps, slightly fewer than Beodeul's 5-6, and it reads a little simpler than the stall and well. A careful artist would accept it next to the simple props (hedge, bench, lamp) without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17903
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "open crate mouth (dark interior seen from above)",
+      "rows": "4-6",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front plank face with broken gap",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is one compact 12-wide box (rows 3-13, with row 14 at 13 wide), not scattered debris, so the debris kind fits poorly. Row 3 is a light rim. Rows 4-6 are a dark band across the whole width, which reads as the open crate mouth with dark interior (evidence d). Row 7 is a lighter edge line, and the plank front face runs rows 7-14 (about 8 rows). A dark hole at x=8 in rows 8-9 and a dark strip down the right side to row 9 show the breakage. The top reading is weak, because the dark band may also be a front-facing gap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile crate with a broken-plank silhouette. The picture is tiny, so I lean on the measured facts. It has 11 visible tones per tile, above prop-hedge (9) and close to the larger props. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. By eye, the planks show a few wood steps (about 5) with grain and a broken edge. This is a bit less ramped than the stall or well, but it is not thinner or flatter than the hedge reference.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14872
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "crate top rim and dark opening band",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate front planks",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a single upright crate filling a 12-13 px square, not scattered debris, so the kind fits poorly. Row 3 is a 1-row lighter rim. Rows 4-6 are a dark purple band between the left and right wooden posts. The band has no visible contents or heap, and no front-edge line or eave shadow below it. It reads as a dark gap or opening on the face, not a horizontal top. Rows 7-14 are the vertical plank face, with a dark hole at rows 8-9 in the middle and a darker bottom row at 14. No ellipse and no receding side face are present, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small dark crate with broken slats. By eye the wood has about 5 lightness steps (highlight, light, mid, dark, deep) plus gaps between planks, so it is slightly shallower than the 5-6 steps of the references. The measured facts support it: 11 visible tones per 16x16 tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. Only 0% of its dark edge pixels are neutral, so the outline leans brown, like the hedge (0%) and the cheese stall (1%), and is not a sticker-style black line. The bench and lamp read 0 tones per tile only because they are thin objects, so that fact is not used against them. It has less texture than the stall or well, but at this size and density a careful artist would accept it beside them, and it does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18876
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "open crate mouth with dark interior",
+      "rows": "4-6",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front plank face",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 12-13px wide crate from rows 3 to 14. Row 3 is a lighter rim line. Rows 4-6 are a dark interior opening, which shows the inside of an open container (evidence d). Row 7 is a plank edge, and rows 7-13 below it are a wooden front face of about 7 rows, ending in a dark base row 14. On the right, the dark area runs down to row 9, which reads as a broken or missing plank. The top is only about 3 rows deep, but the open interior plus the front face reads as a box seen from above, not a flat front elevation. It looks like a mostly intact crate with a damaged corner rather than scattered debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden crate, about one tile in size, so it is judged against the hedge and bench references. Measured facts: 11 visible tones per 16x16 tile, above the hedge's 9 and below the stall's 17 and the well's 20. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans dark brown beside the wood rather than black. On the board, the plank faces seem to step through roughly 5 wood tones with lighter edges and darker gaps, which matches the broken-slat look. Texture is moderate rather than rich, because the piece is small and uses only 12 colours, but this is comparable to the hedge reference (11 colours). It does not look thinner or more sticker-like than the references of the same size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18256
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.317Z",
+ "cells": {
+  "16": [
+   "2858e04d4c2014cc"
+  ],
+  "24": [
+   "105d1dd7ce8fd342",
+   "341c3a6aed2a66d3",
+   "37f305adfe035e75",
+   "61e3a7a98750c9da",
+   "dca68210a4fcccdb",
+   "de8c806858ea2de9"
+  ],
+  "32": [
+   "04d55beba9f63356",
+   "5da9ff7231921f3a",
+   "725e35b06a206c35",
+   "78f9b5cb940dc6a6",
+   "dbf9581edaabd2ca",
+   "dc7bf6db51267f74"
+  ],
+  "48": [
+   "372370ee06f213ee",
+   "3f62bfa57e4b5e1c",
+   "7b4744a8bc25efef",
+   "a03b1751aa34860f",
+   "c6ef99eb724b03cc",
+   "f4187af9b39d4687"
+  ]
+ }
+}

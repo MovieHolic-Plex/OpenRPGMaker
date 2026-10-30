@@ -1,0 +1,360 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "405767ed04f0c24a4a6fc0f6722a3d2e710aac621e96e450b1a7a064ad906147",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "pilgrim cairn",
+ "label": "beodeul_city/wave-places/volcano-field/pilgrim_cairn",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 21,
+  "nearBlackEdge": 0.46,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flag and pole rising from the top stone",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top stone",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle stone",
+      "rows": "20-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom stone",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a stack of three lumpy stones in rows 15-28, widening from 5-8 px at the top to 14 px at the base. Each stone has only a 1-row light highlight at its upper edge (rows 16, 20-21 and 25 in the column scans). Each highlight sits directly on a darker face with no front-edge line, no eave shadow and no ellipse. The width profile just steps outward (8, 10, 12, 14), which makes a stepped mound silhouette and not a horizontal top surface. The pole and red flag in rows 3-14 are decor. The stones read as front-facing rounded shapes with at most a 1-row rim of top, so the body counts as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny stack of three stones with a thin pole and a red flag, roughly 9x15 source pixels, so it is smaller than one tile. Each stone has only about 3 lightness steps (a light top, a mid body, a dark underside) and a dark outline. The measured 28% neutral dark edge pixels, with the rest tinted, makes the outline mixed rather than clearly material-toned. Several stones read as separate dark-outlined blobs, which leans toward the sticker look. The measured 10 visible tones and 0% near-flat coverage are better than tree-1a786c (7 tones) but far below tree-d43edd (29 tones). The references show clumped multi-tone foliage and a grained trunk, while the cairn has little per-stone grain, no speckle, and no cracks or moss. This is a sparse object, so density is judged by eye. Next to the references it looks thinner and flatter, with shallow shading, so it does not match the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17492
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flag and pole on top of the cairn",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top stone",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle stone tier",
+      "rows": "20-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom stone tier",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a stack of three rounded stone tiers (rows 15-28). The silhouette widens stepwise: 5, 8, 10, 8, 12, 14, 12, 8. Each tier has a single light highlight row at its upper edge (x=8: row 16 L=148, row 21 and row 25 L=114) that fades darker going down. That is a shading gradient on a vertical face, not a top plane. There is no front-edge line with eave shadow and no ellipse. The ledges at rows 20 and 24-25 are only 1-2 rows deep. The pole and red flag (rows 3-14) are decor. The stones read as a front elevation with at most a rim-like top of 1-2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stacked-stone cairn with a pole and red flag, so it is not the same kind as the two leafy canopy-and-trunk tree references. The measured facts do not condemn it: 10 visible tones per tile is above tree-1a786c (7) but well below tree-d43edd (29), and near-flat coverage is 0%. By eye, though, the stones read as only about 3 lightness steps (light top edge, mid grey-blue, dark base) with little per-stone grain or speckle. The dark edges are partly neutral (28%) and look like a fairly uniform dark line around each stone, close to the sticker look rather than the tinted, selective outlines of the references. The pole and flag are thin and have almost no shading. Next to the richly clumped, multi-step references it looks thinner and flatter, and the doubt resolves to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18533
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pole and red flag",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked stone cairn (main body)",
+      "rows": "15-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a stack of three rounded stones in rows 15-28. Width grows steadily from 5 to 8, 10 and 14 with no widen-then-narrow ellipse. Each stone has a 1-row light highlight at its top (rows 16, 20 and 25 in the column scans), which is only a rim or highlight. There is no band ending in a front-edge line with eave shadow, and no visible horizontal top plane. The stones read as face-on, so the top is about 2 rows. The pole and flag (rows 3-14) are decor and not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cairn of three or four stacked stones with a thin pole and a red flag. The references are large, richly clumped tree canopies, so the comparison is imperfect. By the numbers it holds up: 10 visible tones per tile against 7 for tree-1a786c, and 0% near-flat coverage. But by eye each stone has only about 3-4 value steps (highlight, mid, shadow, dark edge), with little per-stone grain or speckle. Beodeul stones and foliage are shaded piece by piece with 5-6 steps. 28% of the dark edge pixels are neutral, so the outline is partly a dark grey line around each stone rather than a consistent dark tone of the neighbouring material. The result looks a bit sticker-like and thinner than the references. Because it is a sparse prop and the evidence is borderline, I fail it on the 'when in doubt' rule. It needs more steps per stone, per-stone texture dots, and tinted outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16818
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flag pole and red pennant",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top stone of cairn",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "middle stone",
+      "rows": "20-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom stone",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is three stacked rounded stones, rows 15-28. Each stone has only a 1-row light highlight along its upper edge (x=8 at rows 16, 21 and 25, L=148 or 114) and then darkens straight down. The width profile (5, 8, 10, 8, 12, 14, 12, 8) is an outline of lumpy stones, not an ellipse that widens then narrows to show a horizontal surface. No stone has a band of top rows ending in a front-edge line with eave shadow, so the highlights read as rims. The pole and red pennant at rows 3-14 are decor and have no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cairn is a small prop: stacked grey stones, a thin dark pole and a red flag. The numbers are acceptable. It has 10 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd, and 0% near-flat coverage. By eye it is still flatter and more sticker-like than the references. Each stone reads as about 3-4 lightness steps (a highlight, a mid tone and a dark underside), where the references use 5-6 with clumped texture. The dark edges are partly neutral (28% near-neutral, against 0% in both references), which fits a mixed outline. The dark outline separates the stones instead of letting value changes do that work. There is little per-stone grain or speckle. Next to the richly shaded canopy and trunk of tree-d43edd it looks thinner, so a careful artist would probably not accept it as equal. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17866
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.185Z",
+ "cells": {
+  "16": [
+   "68f671f207047f29",
+   "ac57de9b1c377f00"
+  ],
+  "24": [
+   "05e62b973e05e661",
+   "074c41f88e78ab5f",
+   "0afb8c62ee36cdf9",
+   "6b46b919971522ff",
+   "71f6202b6969bff9",
+   "75cc42a4beba36f3",
+   "9d2934add2cc9c53",
+   "a20814d56cf9761c",
+   "ae42a896fb9da0fc",
+   "d9e4027f00a9bfbc",
+   "e2e69eaad84bdea5",
+   "f0d207a27ee21341"
+  ],
+  "32": [
+   "16c830fd4bdef022",
+   "593805b6dbbd233a",
+   "c6064c5e27d4367f"
+  ],
+  "48": [
+   "1c092c7835f2e24a",
+   "636bd63dc14f80a3",
+   "6e3cf5f7daeffc7f",
+   "76864e737534590e",
+   "b8c77b6fb6c84231",
+   "de297401fe2a8295"
+  ]
+ }
+}

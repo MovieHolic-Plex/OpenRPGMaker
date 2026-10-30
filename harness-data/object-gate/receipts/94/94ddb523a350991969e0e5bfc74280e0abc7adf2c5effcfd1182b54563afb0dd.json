@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94ddb523a350991969e0e5bfc74280e0abc7adf2c5effcfd1182b54563afb0dd",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "dead tree large",
+ "label": "beodeul_city/wave-places/ruined-village/dead_tree_large",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "14-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "2-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "58-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a vertical trunk (8-9 px wide, rows 33-63) that forks into thin branches, drawn entirely as a front view. The trunk has no ellipse, no cut-off top, and no edge line or eave shadow, and the branch tips just taper off. The base at rows 58-63 widens into grass tufts, which are decor. Nothing in the drawing shows a horizontal surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bare trunk with forked branches, a knothole and a small grass tuft at the base. It shows about 13 visible tones per full tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, the same as both references. The trunk has roughly 5 brown steps, from a light highlight on the left through mid browns to a deep shadow on the right, plus bark grain. Outline pixels are a dark brown tint (0% near-neutral edge pixels), so the outline follows the adjacent material rather than a black sticker line. It is thinner and simpler than the lush canopy references because a dead tree has no foliage mass. Even so, it is no flatter than tree-1a786c on the numbers and carries a similar amount of shading and texture, so a careful artist would accept it next to the references. The branches are thin and slightly less textured than the trunk, which keeps the score at 7 rather than 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11522
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "2-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "58-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a vertical trunk 7-9 px wide with thin branches forking upward. Both the trunk and the branches are shown only as vertical faces, and no ellipse, edge line or eave shadow marks a top surface. The trunk ends in branch tips, and the column scan shows a steady brown value from row 14 to row 62. The base has a small flared patch of grass tufts, which counts as decor. The tree is drawn as a flat front elevation with no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a bare dead tree: a trunk with forked branches, a knot hole and a small grass tuft at the base. It has no canopy, so the reference match is on tree structure only. The trunk is modelled with about 5 brown steps, lit on the left and shaded on the right, with bark grain streaks and a dark knot hole. Outlines lean dark brown and are not neutral black, which agrees with the 0% near-neutral edge share. The 13 visible tones per tile are well above tree-1a786c (7) and below the rich tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. Because the object is thin and sparse, density is judged by eye, and it is slightly lower than the richest reference. It would sit acceptably beside the references and does not look like a flat sticker, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11576
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "14-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "2-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "59-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a vertical trunk (width 7-9 px, rows 33-58) forking into thin branches that end in pointed tips. There is no horizontal top surface, no ellipse and no front-edge line anywhere. The trunk and branches are drawn only as front-facing vertical shapes. The base (rows 59-63) widens with grass tufts and flat shading but shows no ground-plane ellipse, so the tree has a front face and no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a bare trunk with forked branches, a knothole and grass tufts at the base. The trunk has about 5 brown steps (dark edge, mid, light streaks, highlight) with bark grain running down it, and no large flat areas (0% near-flat). The outline is dark brown beside the wood, and the measured 0% near-neutral dark edge pixels agrees. Its 13 visible tones per tile sit above tree-1a786c (7) and below tree-d43edd (29). A leafless tree is naturally sparser than a full canopy, so it reads slightly lower than the richest reference by eye. It still looks like it belongs beside the references and not like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11127
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "10-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "58-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk is a tall vertical column 7-9 px wide, running from roughly row 10 to row 63. It has no horizontal top surface, no ellipse and no edge line. Branches are thin diagonal strokes that end in tips, with no top planes. The base has grass tufts and a root flare (rows 58-63) with no top face. The whole object is a flat front-view silhouette. A dead tree is naturally thin, but it shows no top-surface evidence by any criterion (a)-(d)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The dead tree's trunk and branches carry about 5 brown steps: a lit orange-brown side, a mid tone, a dark side and a deep brown for the knothole and branch undersides. Vertical bark grain lines run down the trunk, and a small grass tuft at the base adds variation. Outlines are dark brown, tinted toward the wood, not neutral black; the near-neutral edge share is 0%, matching both references. Near-flat coverage is 0%, so there are no flat fills. At 13 visible tones per tile it is above tree-1a786c (7) and below the richer tree-d43edd (29). That is reasonable for a thin leafless silhouette with no canopy clumps, where far fewer pixels carry detail. By eye, a careful artist would accept it next to the references without it looking like a flat sticker, although it is a little simpler than the leafy trees.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12555
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.348Z",
+ "cells": {
+  "16": [
+   "0f46f80b46432bab",
+   "391d7930e727b41a",
+   "3df20c74e1fe52de",
+   "69713e95027d5874",
+   "6bbdbc36c47dda98",
+   "762007e53020261c",
+   "8620f762fb0bdcc4",
+   "a24c041317ea769d",
+   "b387ebdc814c9217",
+   "d961fac02a6fe312"
+  ],
+  "24": [
+   "06bc8d5455bdacfc",
+   "0c753ae458ff7df6",
+   "2d924c440b004e0d",
+   "3be465f1283dc82e",
+   "9a999aef2e6c6275",
+   "aa1ca29a7b00cedd",
+   "aa93a0c518fff004",
+   "aeaaded6628fc3e6",
+   "d2bd10b04640b53d",
+   "d851c5798df189a9",
+   "f8d9ef7e429f72a5",
+   "f9076f1d6d06dbef"
+  ],
+  "32": [
+   "284d9bcb5119e427",
+   "4f7d1c021c019b5d",
+   "503d1b6ec5a09bd7",
+   "676af10683440962",
+   "848147691c11fbf4",
+   "8bd4d0813bafc6cd",
+   "900f9d13b6e3cb34",
+   "a9be1e08ff73e63c",
+   "adfa4bba0b8b55bc",
+   "d296a0c23d7cc663",
+   "f2578b9a298ddf05",
+   "f5b31004131c7cdb"
+  ],
+  "48": [
+   "40bd09818fc5bdab",
+   "565f485a77108988",
+   "9962fed106da79e6",
+   "a1880913d947d18f"
+  ]
+ }
+}

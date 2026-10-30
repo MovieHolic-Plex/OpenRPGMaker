@@ -1,6 +1,7 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
+import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { resolveTransferEndpoint, upsertEventIntoMap } from "./eventTools";
 import { assertDoorExitWidths, transferGatesStayApproachable } from './transferReachability';
 import { COORD_SCHEMA } from './schemaShapes';
@@ -329,7 +330,7 @@ export function linkMapsInDraft(
     x: landingB.x,
     y: landingB.y,
     fade: options.fade,
-  }));
+  }, kitDoorOpenCommands(draft, fromMap, gateA)));
   let changedEvents = outcomeA === "added" ? 1 : 0;
   let eventIdB: string | undefined;
   if (options.bidirectional && landingA) {
@@ -340,7 +341,7 @@ export function linkMapsInDraft(
       x: landingA.x,
       y: landingA.y,
       fade: options.fade,
-    }));
+    }, kitDoorOpenCommands(draft, toMap, gateB)));
     if (outcomeB === "added") changedEvents += 1;
   }
   for (const map of fromMap.id === toMap.id ? [fromMap] : [fromMap, toMap]) {
@@ -485,7 +486,8 @@ function ensureGraphNodesForMaps(
   return [...byId.values()];
 }
 
-function transferGateEvent(id: string, point: Point, target: Command): GameEvent {
+/** opens = 들어가기 전 문 열기(닫힘/열림 키트 문이면 kitDoorOpenCommands — 그 문 그림으로 열고 열린 채 남긴다). */
+function transferGateEvent(id: string, point: Point, target: Command, opens: readonly Command[] = []): GameEvent {
   return {
     id,
     x: point.x,
@@ -502,7 +504,7 @@ function transferGateEvent(id: string, point: Point, target: Command): GameEvent
         priority: "below",
         overlapForbidden: false,
         movement: PASSIVE,
-        commands: [target],
+        commands: [...opens, target],
       },
     ],
   };

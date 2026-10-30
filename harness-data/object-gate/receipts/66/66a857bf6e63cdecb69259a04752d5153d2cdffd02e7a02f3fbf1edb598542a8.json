@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66a857bf6e63cdecb69259a04752d5153d2cdffd02e7a02f3fbf1edb598542a8",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "lava fall",
+ "label": "beodeul_city/wave-places/volcano-field/lava_fall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 18,
+  "nearBlackEdge": 0.63,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "lava stream face (falling lava)",
+      "rows": "2-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top glowing band at the source (flat yellow strip)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava pool at the base (checkered bright surface)",
+      "rows": "39-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a vertical sheet of falling lava (rows 2-38) with dark and bright streaks, drawn as a front-facing face. Rows 0-3 form a flat yellow strip at the top with no front-edge line or eave shadow, so it reads as the lip of the fall, not a top surface. A bright checkered pool at rows 39-47 is a horizontal surface, but it is only about 9 rows of full-width pattern with no ellipse or receding edge, and it is a small base next to the 38-row vertical face. The width is a constant 32 across all rows, so there is no silhouette that widens and narrows. The object is a flat elevation of falling lava, with no top for the main body. Kind 'organic' fits poorly, since this is a liquid or terrain effect."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a lava column with orange, red and yellow streaks and a bubbly base, and it has no flat fills (0% near-flat coverage). It shows 11 visible tones per tile, above tree-1a786c (7) but well below tree-d43edd (29). The ramp is about 5 steps, a little short of Beodeul's 5-6. The main problem is the outline. 91% of its dark edge pixels are near-neutral, and the board shows a uniform dark grey-black frame around the whole piece. Both references have 0% neutral edge pixels and use dark tones tinted to the neighbouring material, so the candidate has the 'sticker' look. The streaks are also fairly regular vertical stripes, without the clustered per-clump shading of the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 11893
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lip of the fall (bright yellow band over an orange edge)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "falling lava sheet (vertical front face)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava pool at the foot (checkerboard of bright yellow and orange, a horizontal liquid surface)",
+      "rows": "39-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a tall vertical lava sheet with a front face of about 35 rows (rows 4-38). Its upper end has a 4-row bright lip with an orange edge line at row 3. At the foot, rows 39-47 form a bright checkered pool, a horizontal liquid surface seen from above. The whole object is a constant 32 px wide. No receding side face is drawn. The pool is the main top surface, so the object reads as a front face with a top surface, not a flat elevation. The top lip is thin and ambiguous, so this reading rests mostly on the pool."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a rectangular lava column framed by a dark border. It is not a tree with a canopy and trunk, so it matches the reference kind only loosely. Its orange/yellow ramp has about 5 steps, with vertical streaks and a checkered dotted base, so texture is present and there are no flat fills (0% near-flat). It carries 11 visible tones per tile, more than tree-1a786c (7) but well below tree-d43edd (29). The weak point is the outline. 91% of its dark edge pixels are near-neutral, so it is a uniform near-black frame, the 'sticker' look. Both references have 0% neutral edges, with outlines tinted to the adjacent material. The shading is decent but the shape is a stiff, boxed block, with no value-only separation and no tinted outline. That is below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14935
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "lava stream top lip",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava falling sheet",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava pool at base",
+      "rows": "39-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a vertical sheet of falling lava (rows 4-38) seen face-on. Its width is constant at 32 across rows 0-47, with no ellipse or sloped plane. Rows 0-3 are a bright band with a lighter edge row at the top (rows 0-1 L=224, rows 2-3 L=183), but this reads as the glowing source lip, not a foreshortened top surface. Rows 39-47 are a checkered bright pool at the base. It could be read as a surface seen from above (contents/heap), but it is only about 9 rows of dithered texture with no back or front rim and sits below the fall rather than topping the main body. The main body therefore has no clear top surface and reads as a front elevation. The kind 'organic' fits poorly for a lava feature."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a vertical lava fall in a dark frame, not a tree, so it is only loosely comparable to the canopy references. It shows about 11 visible tones per tile, which is above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, with streaky orange and yellow flame-like variation and a dotted checker band at the bottom, so there is no flat fill. The shading ramp has roughly 5 steps from pale yellow through orange and red to dark brown. The outline is the problem: 91% of dark edge pixels are neutral, and the frame reads as a uniform near-black border, unlike the references' tinted dark-material outlines (0% neutral). This gives the sticker-like boxed look. The interior is decent but simple, with limited clumping and grain compared with the richer reference, and the black frame lowers the craft level.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 11945
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lip of the lava source",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava fall face (vertical flowing streams)",
+      "rows": "4-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lava pool at the base (checkered bright surface seen from above)",
+      "rows": "39-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 32 px wide in every row, so there is no ellipse. The main body is the vertical lava face in rows 4-38, with streaks running down the columns, so the front face is about 35 rows. A bright checkered pool in rows 39-47 reads as a horizontal lava surface seen from above, so I counted it as the top surface (evidence d). Rows 0-3 are a yellow-to-orange lip band with an edge at row 3. The pool is a weak top surface, since it sits at the base in front of the fall rather than on top of it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The lava fall has about 5 lightness steps (pale yellow, yellow, orange, red-orange, dark red) in vertical streaks, with a speckled pale base. That gives some texture and no flat fills (0% near-flat coverage). Measured density is 11 visible tones per tile. That is above tree-1a786c (7) but well below tree-d43edd (29), so it is mid-range and I rate it slightly lower than the richer reference. The main problem is the outline. 91% of the dark edge pixels are near-neutral, so the piece is framed in a uniform black/grey border. Both references have 0% neutral edge pixels and use dark tones tinted by the adjacent material. This is the shallow sticker look the Beodeul standard avoids. The border also boxes the fall in as a rectangle, where the references separate forms by value and tinted dark tones. The candidate is also a flat vertical slab with little form variation or clustered detail. Because the outline fails and the density is not clearly equal, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17771
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.167Z",
+ "cells": {
+  "16": [
+   "501eee63cc914bd3",
+   "601c04fe30e258d8",
+   "65970e1d5e5430f9",
+   "757359a42d9b4fdd",
+   "a8ebd00ea122e965",
+   "f05cc099a708b2ff"
+  ],
+  "24": [
+   "01ce62773247a7ed",
+   "0dfbb8aa72e3650e",
+   "1d96c9777ef06db8",
+   "4accb93131b7bedb",
+   "530a0bf8d204439e",
+   "72a3566c03d7c3bc",
+   "8a63f965e2a149c4",
+   "a272328363e42b40",
+   "a740df5bb2f805e5",
+   "c1f88a121451562e",
+   "cd8d0e05d1670af7",
+   "e765c35e412d6877"
+  ],
+  "32": [
+   "19b0dffd403eaca9",
+   "23f4da15d8c8ee10",
+   "b5345fbeea367597",
+   "efa431baa62ad0f2"
+  ],
+  "48": [
+   "036e664341598118",
+   "bcf61f3c47d32a9a",
+   "c16c239780f599b7"
+  ]
+ }
+}

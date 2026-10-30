@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff6a1884a978af381181943c70f93ed9a5666ef7bacdc33fa5494630a6fe72b4",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "ivy ground",
+ "label": "beodeul_city/wave-places/ruined-village/ivy_ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ivy leaf patch ground decal",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin, irregular ivy and leaf decal about 8 rows tall (rows 6-13) and 20 px wide. It is made of light and dark green leaf pixels with no vertical south face, no front-edge line, no eave shadow and no raised body. It lies flat on the ground and is seen from above, which fits the flat kind. With no front face of 3 or more rows, it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny strip of a few green leaves, about 40x10 px, sitting on an empty dark-grey background. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 4 distinct colours, roughly 3 green steps, against about 5 steps in the grass reference and 7 visible tones in the paving. It has no continuous ground surface, no grass tufts, no soil grain and no per-tile variation. The leaves have no real outline, and the area around them is empty. Next to the references it looks thin, flat and sticker-like, and it does not cover the 4x3 tile area a ground patch needs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8166
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ivy leaf patch lying on the ground",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette spans rows 6-13 and is irregular, with widths 3, 9, 19, 19, 16, 20, 17 and 10. It is a scattered patch of light green leaves (L about 126-149) over dark green shadow strokes (L 62). The column scans show only 1-2 row alternations of leaf and shadow, with no front-edge line, no eave shadow and no vertical face. This is a flat ground decal seen from above with no front face, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny sprite, roughly 50x10 px, of a thin green ivy strand sitting on a flat dark background, and it is smaller than one 16x16 tile. The tile facts are therefore 0 and give no evidence either way. By eye it uses only about 3-4 greens (4 distinct colours in total) with no soil or grass grain, and it covers no ground area. The references fill the whole tile area with grass tufts at about 3 visible tones and paving at about 7 visible tones. The candidate is far thinner and flatter than either, and it does not work as a ground surface. Its outline cannot be judged because it has no real outline, so I report none.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10802
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ivy leaf patch lying on the ground",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular, scattered patch of light-green leaf pixels (#58a035, #73b83e) with dark green (#205030) shadow pixels, spanning rows 6-13 with a widest row of 20 px. There is no front-edge line, no eave shadow, no ellipse rim and no vertical south face. The width profile (3, 9, 19, 19, 16, 20, 17, 10) is a ragged blob, not a standing volume. The whole shape is a flat decal seen from above, so it has no front face and reads as a top-down slab. That fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny sliver of green ivy leaves, about 40x10 px, sitting on a flat dark grey background. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 4 distinct colours, about 3 green steps, and no outline, grain or soil texture. The references are full tiled surfaces: grass with several greens, tufts and clumps, and paving with 7 tones and stones shaded one by one. The candidate covers none of the ground area, so it looks thinner and flatter than either reference. Most of the image is a flat uniform fill.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11417
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ivy patch (leaf clusters with dark vine lines)",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat, irregular ivy decal of light-green leaf pixels and dark vine strokes spanning rows 6-13, up to 20 px wide. It has no vertical front face, no front-edge line, no eave shadow and no raised volume. The dark rows (8, 9, 12, 13) are vine shading inside the patch, not a south face. This matches a ground decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a tiny sliver of ivy leaves (about 4 distinct colours in total) floating on a flat dark background, smaller than a single 16x16 tile. That is why the per-tile facts read 0, and the sparseness is not the reason for the fail. By eye, the leaves show about 3 green steps, with no soil, grass grain or tufts, and the surface is nothing like the references. The grass reference carries about 3 visible tones per tile with clumped texture across the whole patch, and the paving reference carries about 7 tones with per-stone shading. The candidate covers none of the area a ground patch needs and has much less information than either reference. It would look thinner and more sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9176
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.417Z",
+ "cells": {
+  "16": [
+   "5bbafe18ec85fc89",
+   "761dbb2d9b2a6f00"
+  ],
+  "24": [
+   "0069535120aac3c6",
+   "3a3bd98bbfd6059f",
+   "4c9cbead86ffb925",
+   "5671f5a279321c99",
+   "6114b3f4a20cd6eb",
+   "a1d3245a206c01d2",
+   "aed9dea6a5052fd4",
+   "bf5ebc4022939339",
+   "c1f7b45fda7648bd",
+   "d68e3ea235c64c10",
+   "e094ce33a9ceadec",
+   "fb89c261b70dbd06"
+  ],
+  "32": [
+   "1e7548cce842693b",
+   "8b648d4bd679690f"
+  ],
+  "48": [
+   "5caea2b8f1be4245",
+   "6b011b61f02adf1c",
+   "9158c3573cb099d2",
+   "a11ed3ced74b5d13",
+   "cc27887f76e7f2c2",
+   "f3e0c3bff62d24d9"
+  ]
+ }
+}

@@ -4419,11 +4419,11 @@
   },
   {
    "id": "act2-b5-field",
-   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
-   "note": "act2Opening.ts dawnwell foes map_field_north_2 — 재의 들판 평면도(act2Places ASH_FIELD_PLAN), 도깨비 (18,23)",
+   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 12칸 밖에서 알아보고 순식간에 덮친다",
+   "note": "act2Opening.ts DETECTION_PROFILES troop_fs2_ash_wisps — 사방 시야 12·벽 무시·알아챔 0·50ms/칸 돌진 30칸. 도깨비 (26,11)",
    "mapId": "map_field_north_2",
-   "x": 17,
-   "y": 28,
+   "x": 33,
+   "y": 19,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4455,7 +4455,17 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 7000
+       "ms": 600
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
       }
      ],
      "shot": true
@@ -4483,10 +4493,10 @@
   {
    "id": "act2-b5-door",
    "label": "제2막 B5 — 새벽샘 터: 바깥에서 잠긴 집, 정착 확인서 「엄마 문 열어」",
-   "note": "act2Opening.ts dawnwellEvents door (29,7) — 북동쪽 남은 통나무집(DAWN_SPOTS.kept)",
+   "note": "act2Opening.ts — 새벽샘 터(bd-wave-ruined-village) 광장 남동쪽 지붕 남은 돌집, 문 (44,38)",
    "mapId": "fs2_dawnwell",
-   "x": 29,
-   "y": 8,
+   "x": 44,
+   "y": 39,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4585,11 +4595,11 @@
   },
   {
    "id": "act2-b6-enter",
-   "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새 남문 밖",
-   "note": "act2Opening.ts fortCourt — 새벽샘 북쪽 ↔ 요새 안뜰 남문 create_transfer_pair",
+   "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새 남쪽 산길",
+   "note": "act2Opening.ts fortCourt — 새벽샘 북쪽 (39,0) ↔ 관문 요새(bd-wave-mountain-fortress) 남쪽 산길 (14,55)",
    "mapId": "fs2_dawnwell",
-   "x": 17,
-   "y": 2,
+   "x": 39,
+   "y": 3,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4650,13 +4660,8 @@
      "ops": [
       {
        "kind": "move",
-       "dir": "down",
-       "steps": 2
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 6
+       "dir": "up",
+       "steps": 3
       },
       {
        "kind": "hold",
@@ -4678,11 +4683,11 @@
   {
    "id": "act2-b6-sarah",
    "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
-   "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
-   "x": 22,
-   "y": 10,
-   "facing": "left",
+   "x": 17,
+   "y": 15,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4698,7 +4703,8 @@
     "sw_fs2_dawn_mem_0": true,
     "sw_fs2_dawn_mem_1": true,
     "sw_fs2_dawn_mem_2": true,
-    "sw_fs2_serin_form": true
+    "sw_fs2_serin_form": true,
+    "sw_fs2_fort_on_wall": true
    },
    "party": [
     {
@@ -4718,9 +4724,6 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -4926,11 +4929,11 @@
   {
    "id": "act2-b6-lose",
    "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
-   "note": "act2Opening.ts fortressEvents defeatBranch → ev_fs2_fort_cell_wake — 바깥 북쪽 성벽 위(fs2_fort_court)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
-   "x": 22,
-   "y": 10,
-   "facing": "left",
+   "x": 17,
+   "y": 15,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4946,7 +4949,8 @@
     "sw_fs2_dawn_mem_0": true,
     "sw_fs2_dawn_mem_1": true,
     "sw_fs2_dawn_mem_2": true,
-    "sw_fs2_serin_form": true
+    "sw_fs2_serin_form": true,
+    "sw_fs2_fort_on_wall": true
    },
    "party": [
     {
@@ -4966,9 +4970,6 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -5059,7 +5060,7 @@
   },
   {
    "id": "act2-b6-lever",
-   "label": "제2막 B6 — 요새 2층 레버를 당겨 성벽 위 쇠창살을 연다",
+   "label": "제2막 B6 — 2층 레버: 당기면 쇠사슬 소리에 순찰 기사가 곧장 달려온다",
    "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버 바로 밑 칸(15,19)에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
    "mapId": "fs2_fortress_f2",
    "x": 15,
@@ -5151,27 +5152,12 @@
      "shot": true
     },
     {
-     "id": "gate",
+     "id": "alarm",
      "ops": [
-      {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "left",
-       "steps": 7
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 6
-      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 6000
       }
      ],
      "shot": true
@@ -5187,12 +5173,12 @@
   },
   {
    "id": "act2-b6-court",
-   "label": "제2막 B6 — 요새 안뜰: 남문으로 들어서면 순찰 기사가 보자마자 달려든다",
-   "note": "act2Opening.ts northFortress — 안뜰 순찰 기사(본채 앞, detection 돌진)",
+   "label": "제2막 B6 — 도개교 앞 눈 턱: 순찰 기사가 보자마자 달려든다",
+   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (28,28)",
    "mapId": "fs2_fort_court",
-   "x": 18,
-   "y": 40,
-   "facing": "up",
+   "x": 22,
+   "y": 28,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -5225,19 +5211,9 @@
      "id": "approach",
      "ops": [
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 6
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 3
-      },
-      {
        "kind": "hold",
        "dir": null,
-       "ms": 5000
+       "ms": 6000
       }
      ],
      "shot": true
@@ -5264,7 +5240,7 @@
   },
   {
    "id": "act2-b6-wall",
-   "label": "제2막 B6 — 2층 성주 홀 북쪽 문 → 바깥 성벽 위(하늘·눈·벼랑)",
+   "label": "제2막 B6 — 2층 성벽 문 → 성벽 위: 새라가 바로 앞을 막아서고 그 자리에서 전투",
    "note": "act2Opening.ts fortressEvents ev_fs2_fort_wall_door",
    "mapId": "fs2_fortress_f2",
    "x": 25,
@@ -5320,17 +5296,48 @@
      "shot": true
     },
     {
-     "id": "walk",
+     "id": "sarah",
      "ops": [
       {
-       "kind": "move",
-       "dir": "left",
-       "steps": 2
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
       },
       {
        "kind": "hold",
        "dir": null,
        "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 20,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
       }
      ],
      "shot": true
@@ -5774,9 +5781,9 @@
    ]
   },
   {
-   "id": "act2-b8-arrive",
-   "label": "제2막 B8 — 눈보라 고개 끝 → 서리나루 도착",
-   "note": "frostford.ts — 설원 길 출구 ↔ 마을 남쪽 어귀, 광장·징발 창고·기슭 길·동쪽 집을 돌아 큰 부두 끝 하르마 앞까지(마을 한 바퀴)",
+   "id": "act2-b7-icelake",
+   "label": "제2막 B7→B8 — 눈보라 고개 끝 → 얼음 호수(언 호수 얼음 다리 건너 빙벽 얼음 굴까지)",
+   "note": "act2Opening.ts iceLake — 설원 길 출구 ↔ 얼음 호수(bd-wave-ice-age-field) 남쪽 (35,51), 얼음 굴 (45,10) ↔ 서리나루",
    "mapId": "map_snow_north_2",
    "x": 10,
    "y": 2,
@@ -5823,6 +5830,343 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_ice_lake",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cross",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_frostford",
+       "timeoutMs": 90000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-arrive",
+   "label": "제2막 B8 — 얼음 호수 빙벽 얼음 굴 → 서리나루 도착",
+   "note": "frostford.ts + act2Opening.ts iceLake — 얼음 굴 (45,10) ↔ 마을 남쪽 어귀, 광장·징발 창고·기슭 길·동쪽 집을 돌아 하르마 앞까지",
+   "mapId": "fs2_ice_lake",
+   "x": 45,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
       },
       {
        "kind": "move",
@@ -11548,8 +11892,8 @@
    "label": "제2막 B5 재의 들판부터 대화형 플레이(독립 판정 구간)",
    "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
    "mapId": "map_field_north_2",
-   "x": 16,
-   "y": 24,
+   "x": 35,
+   "y": 19,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -12085,9 +12429,9 @@
   {
    "id": "act2-b5-north",
    "label": "제2막 B5 — 재의 들판 북쪽 길 끝(두 칸 폭 어디로 나가도) → 새벽샘 터",
-   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "note": "act2Opening.ts dawnwell — 재의 들판 북쪽 끝 오솔길 (35,0) ↔ 새벽샘 터 남쪽 문기둥 (31,47)",
    "mapId": "map_field_north_2",
-   "x": 15,
+   "x": 35,
    "y": 3,
    "facing": "up",
    "switches": {

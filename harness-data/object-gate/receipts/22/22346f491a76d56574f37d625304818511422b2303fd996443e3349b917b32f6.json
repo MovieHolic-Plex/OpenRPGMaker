@@ -1,0 +1,344 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22346f491a76d56574f37d625304818511422b2303fd996443e3349b917b32f6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "tomb cracked",
+ "label": "beodeul_city/wave-places/ruined-village/tomb_cracked",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 28,
+  "tileColorsP90": 28,
+  "darkV5": 42,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gravestone slab, rounded top with a crack and a cross mark",
+      "rows": "1-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts at the base",
+      "rows": "9-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 10,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "This is an upright tombstone drawn face-on, not a plate lying on the floor. The width profile is 4, 8, then a constant 10 for rows 3-12, so the top is only a rounded upper edge on a shaft of equal width (a dome, not an ellipse). The column scans show a single stone-coloured face from rows 2-13 with a dark crack at row 6 and no front-edge line or eave shadow. Moss patches and grass tufts at rows 9-15 are decor. There is no horizontal top surface, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate on the board is a small upright tombstone sprite on a dark backdrop, not a 4x3 ground patch that tiles like the grass and paving references. It does not read as a cracked tomb floor surface, so the kind does not match. The measured facts are 25 visible tones per tile with 0% near-flat coverage, which beat the references (grass 3, paving 7), but they do not match what the image shows. The sprite is under one tile in size and the dark backdrop pads the count. Its outline is mostly neutral: 82% of dark edge pixels are near-neutral, against 0% for the tinted grass reference, so it has the sticker look. The grey stone body has about 3-4 shading steps, fewer than the references' 5-6. A ground patch with seamless cracks and per-stone shading was expected and is not present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14374
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gravestone slab with rounded upper edge",
+      "rows": "1-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dirt at base",
+      "rows": "13-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is an upright headstone seen face-on, not a flat plate. The width profile is 4, 8, then 10 for rows 3-12, so rows 1-2 are only a rounded top edge. Column x=6 and x=9 show a uniform light stone face (L~200) from row 2 to row 12, with one dark crack line at row 6 and green moss at rows 9 and 12. There is no front-edge line, no eave shadow and no ellipse. Rows 13-15 are a narrow base of grass and dirt. The drawing has a large vertical front face and no horizontal top surface, so it reads as front elevation and does not fit a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small upright gravestone with a bit of grass and moss, roughly one tile or less in size. It is not a 4x3 ground patch, so it does not match the reference kind (grass and paving surfaces). The measured 25 tones per tile is inflated by the sprite's own small area and cannot be compared with tileable ground. The grey stone has about 3-4 value steps and a visible dark outline. 82% of the dark edge pixels are near-neutral, close to the paving reference (80%) but unlike the tinted grass reference (0%), which points to a sticker-like black or grey line instead of a dark material tone. The tomb-crack ground surface itself (cracked soil or paving with tile-to-tile variation) is not shown. Without a ground patch to compare, it cannot be accepted next to the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13503
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upright cracked gravestone slab (rounded head, cross-shaped crack)",
+      "rows": "1-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts and dirt at the base",
+      "rows": "13-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from 4 to 8 to 10 px over rows 1-3 and then stays 10 px wide to row 12. That is a gravestone with a rounded head, seen face-on. The face is a pale stone with a dark vertical and horizontal crack (a cross at rows 3-12 and row 6). The rim at rows 1-2 is only the outline of the rounded head. There is no band ending in a front-edge line, no eave shadow and no ellipse, so no horizontal top surface shows. The object is a standing vertical slab, not a plate lying on the ground seen from above, so it does not match the flat kind. Grass and dirt tufts at rows 9-15 are ground decoration."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small cracked-tombstone sprite, about one tile wide, sitting on a dark empty background. It is not a 4x3-tile ground patch like the grass and paving references, so the kind does not match. It does not cover a surface and has no tileable ground texture. The measured 25 visible tones per tile and 0% flat coverage come from the tiny sprite's own pixels and do not show ground richness. 82% of its dark edge pixels are near-neutral, which matches the reference paving's neutral outlines (80%) but not Beodeul's tinted material-tone outlines. The sprite has only about 3 shading steps on the stone, against 5-6 on the references. Next to the grass and paving references it looks thin and sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15093
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tombstone slab face with crack and cross mark",
+      "rows": "1-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dirt tufts at base",
+      "rows": "9-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is an upright gravestone: width goes 4, 8, then a constant 10 for rows 3-12, which is a rounded top on a flat-sided slab. Its face (light grey, L about 200, with a dark crack at row 6 and column x=6) runs from row 2 to row 13 and is a vertical face. There is no front-edge line and no eave shadow, and no band that reads as a horizontal surface. Rows 1-2 are only the rounded outline. Rows 14-15 are small base tufts. The object stands up and is seen face-on, so it does not match the flat kind (a plate seen from above) and has no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate does not look like the requested ground patch. On the board it is a tiny upright tombstone sprite on a small grass tuft, about one tile in size. A 4x3 tile ground surface would be roughly 64x48 source pixels and fill the area to the right of the bar, as the grass and paving references do. The 25 visible tones per tile are measured on a single small, busy sprite, not a tiling surface, so they say little here. The dark edge pixels are 82% near-neutral, which matches the paving reference's own 80% but not the tinted outlines of the grass reference. Together with the thin dark outline around the stone, that reads as a neutral black 'sticker' outline instead of a dark material tone. The stone has only about 3 lightness steps, against 5-6 in Beodeul. There is no cracked-tomb floor with crack lines, slab-by-slab shading or soil grain, and nothing that tiles across 4x3. It fails on kind mismatch and on shallow shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15917
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.518Z",
+ "cells": {
+  "16": [
+   "5a6842d3aac28b9c"
+  ],
+  "24": [
+   "3b636f83c227869b",
+   "4b7a5a5dad51afa8",
+   "61eb982f081fdfbd",
+   "88102e76f595ada5",
+   "962e3a520292c55d",
+   "b769a5b58c1d452f"
+  ],
+  "32": [
+   "39bcd44703c44216",
+   "86bb2db0a0e79729",
+   "a1e77da803312c1e",
+   "c1a6a4d8e29ce3e5",
+   "d43029a26810951d",
+   "edbdc430ead15ecd"
+  ],
+  "48": [
+   "1a961a8d8eb7dfa7",
+   "1fd4f5be51514176",
+   "5110531efffd5772",
+   "5fbfe240e3077c1e",
+   "64f3fe06284c2088",
+   "cd97f360da2e9f43"
+  ]
+ }
+}

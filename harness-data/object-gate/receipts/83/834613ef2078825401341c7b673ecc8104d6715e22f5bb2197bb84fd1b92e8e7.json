@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "834613ef2078825401341c7b673ecc8104d6715e22f5bb2197bb84fd1b92e8e7",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "ice crack",
+ "label": "beodeul_city/wave-places/ice-age-field/ice_crack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 140,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice crack decal (jagged blue line with pale highlight, lying flat)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a thin jagged zig-zag line, 1-2 px thick, with a dark blue row (#24548c) over a pale highlight row (#cff4f8). It spans rows 4-13 with no volume, no front face and no standing structure. The column scans show only 2-row dark/light pairs. It is a flat floor decal seen from above, which matches the flat kind. It has no front face, so it reads as top-down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a thin light-blue crack line, drawn in only 3 colours, on a flat dark slate background. It is not a 4x3-tile ground patch and has no ramp of shading steps, just a line and one or two tints. The measured visible tones per tile are 0 because the piece is smaller than a tile, so I judged by eye. The reference grass shows about 3 visible tones with tufts and speckle, and the paving shows about 7 tones with stones shaded one by one. Next to them the candidate's ground is a flat, grainless fill with no dots, tufts or variation, so it looks much thinner and flatter. There is no outline, so no dark material-tone edging is present. The crack itself is a sparse object, so I did not fail it on sparseness alone. I fail it because the surrounding surface has no texture or shading comparable to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8327
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice crack decal (thin jagged line lying on ground)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a jagged 2-row line (dark blue #24548c over light #cff4f8) running across rows 4-13, with a branch descending at the right and left. It is a flat floor decal with no standing volume, no front face of 3+ rows, no eave, and no ellipse. Column scans show only 1-row runs. Silhouette widths peak at 20 px on row 8 and narrow to 1 px, which is a crack outline, not a body. It reads as a flat top-down decal, which fits the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a small, thin light-blue crack squiggle on a flat dark slate background, with only 3 distinct colours in total. It has no ground surface, no tile structure and no shading ramp: just a bright line, a slightly lighter highlight and the flat base. The measured tones per tile are 0 because the piece is smaller than one tile, so I judged by eye. Against the grass reference (about 3 visible tones with clumps and grain) and the paving reference (7 tones with per-stone shading), the candidate is far flatter and sparser. Nearly the whole area is one flat fill with no grain or variation. There is no outline to judge, since the crack is just a line. This reads as a sticker-like overlay and not a ground patch that a careful artist would accept next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8925
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "jagged crack line decal lying on the ground",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin zigzag crack decal (dark blue #24548c line with a pale highlight #cff4f8 line under it), drawn as a flat floor mark from rows 4-13. The column scans show only 1-row dark and 1-row light pairs, with no front face, no edge line or eave shadow, and no ellipse. It is a flat decal seen from above, so it has no front face (fewer than 3 rows) and reads as a flat top-down piece, which matches the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a thin, jagged light-blue crack line on a flat slate-grey background. It has only 3 distinct colours: background, crack, and a highlight. The background is one flat colour across the whole patch, with no grain, speckle or tonal variation. The reference grass shows about 3 visible tones per tile with tufts and mottling, and the paving shows about 7 tones with stones shaded one by one. The candidate's measured per-tile figures are 0, since the crack fills little of any tile. Even judged by eye as a sparse object, it looks much thinner and flatter than either reference. There is no ramp, no texture and no ice surface shading such as facets, frost speckle or depth. It would read as a sticker line on a flat fill next to the references. The outline is not applicable, since the crack is a bare line with no material outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9937
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice crack decal (jagged blue/white line)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin jagged crack drawn as a 2-row line (dark blue #24548c over light #cff4f8) that zigzags across rows 4-13. It is a flat floor decal seen from above, with no standing volume, no front face, no edge line, no eave shadow and no ellipse. The width profile (1,4,9,14,20,16,5,2,2,1) just follows the zigzag path of the crack. It has no front face of 3 or more rows, so it reads as a flat top-down plate, which is what the flat kind describes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a thin light-blue crack line (3 distinct colours in total) on a flat dark slate-grey background. It is not a 4x3 tile ground patch like the references: it covers less than one tile and has no surface texture, grain or per-tile variation. The measured visible tones per tile are 0 because the piece is smaller than a tile. By eye there are only 2-3 tones, a flat background plus a crack line, against the grass reference's roughly 3 visible tones with grain and the paving reference's 7 with shaded stones. There is no ramp shading, no outline in the Beodeul sense, and the large background area is one flat colour. It is thinner and flatter than either reference, so it does not hold up beside them. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9600
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.710Z",
+ "cells": {
+  "16": [
+   "718bf718a46d74e5",
+   "ad3aec49a2d0bbf3"
+  ],
+  "24": [
+   "130459a54545739e",
+   "2edb11d88acbc695",
+   "3b9a294693dacb70",
+   "45191b455fb0d578",
+   "6678555cef4ccf3c",
+   "83d4e59cf1ce44d2",
+   "87e83c3131e52132",
+   "9230cb51780f7761",
+   "9eb44b18e0ca23dd",
+   "b00dd3485d0dd5ba",
+   "b02567406568611d",
+   "cec5b478f782bc2e"
+  ],
+  "32": [
+   "133bb55a4fef2b21",
+   "efc66d61bcbdc2b0"
+  ],
+  "48": [
+   "1db2caec7ff42ee2",
+   "35145017bdf0d85e",
+   "917eca7626812861",
+   "98f2e40c8005c6d4",
+   "b0adf8cb1ec56ee3",
+   "c84ed8c6c99f8c31"
+  ]
+ }
+}

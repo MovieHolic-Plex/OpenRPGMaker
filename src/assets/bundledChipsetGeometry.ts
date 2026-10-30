@@ -8,6 +8,7 @@ import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import pirateIslesSheet from "./pirateIslesSheet.json";
 import sengokuEdoSheet from "./sengokuEdoSheet.json";
 import skyIslandSheet from "./skyIslandSheet.json";
+import beodeulWavePlacesSheet from "./beodeulWavePlacesSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
@@ -76,6 +77,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_pirate_isles") return pirateIslesSheet.tilesPerRow;
   if (key === "tex_sengoku_edo") return sengokuEdoSheet.tilesPerRow;
   if (key === "tex_sky_island") return skyIslandSheet.tilesPerRow;
+  if (key === "tex_beodeul_wave_places") return beodeulWavePlacesSheet.tilesPerRow;
   if (key === "tex_steampunk_city") return steampunkCitySheet.tilesPerRow;
   if (key === "tex_modern_campus") return modernCampusSheet.tilesPerRow;
   if (key === "tex_sf_station") return sfStationSheet.tilesPerRow;

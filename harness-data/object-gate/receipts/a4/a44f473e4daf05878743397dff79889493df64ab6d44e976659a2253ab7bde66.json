@@ -1,0 +1,453 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a44f473e4daf05878743397dff79889493df64ab6d44e976659a2253ab7bde66",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "temple gate",
+ "label": "beodeul_city/wave-places/volcano-field/temple_gate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 14,
+  "darkV5": 18,
+  "nearBlackEdge": 0.59,
+  "opaqueTiles": 30
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stone cap band of the gate",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "brick lintel face",
+      "rows": "13-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone gate piers and door opening",
+      "rows": "21-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "threshold and entrance steps",
+      "rows": "64-68",
+      "evidence": "a",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "69-71"
+     },
+     {
+      "part": "flame emblem on lintel",
+      "rows": "10-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 3-9 is speckled stone and ends in a lighter front-edge line at row 10. Two dark eave-shadow rows (11-12) follow, and the brick lintel and stone piers sit below as the front face. The stairs at the bottom repeat the pattern: a light edge line at row 64, tread rows 65-68, then dark riser rows 69-71 and a second tread/riser pair. The dark edge columns are the gate's own piers and are not receding side faces. The silhouette is symmetric and front-facing. The top surface is only 7 rows, but it has a clear edge line and shadow, so it counts as a top surface under evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark stone gate with a glowing doorway. It has some stone block shading and speckle on the lintel, but the main material ramps hold about 3-4 steps, against 5-6 on the references' roofs and walls. Visible tones per tile are 7, against 10-12 for the references, which is lower but not far off. Near-flat coverage is 13%, against 0% for both references, so there are some flat areas, mainly the dark doorway interior and the stone pillars. Dark edge pixels are 52% neutral, against 7-9% for the references. The outline is therefore partly near-black and partly tinted, which reads as mixed and leans toward the sticker look. Stones are shaded as blocks, but the shading is less varied than the reference tile scallops and plaster speckle. The piece is cleanly drawn and coherent, but a careful artist would see it as flatter and thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15073
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stone slab / roof cap of gate",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "brown lintel beam with emblem (front-facing strip)",
+      "rows": "13-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone platform / threshold at base",
+      "rows": "64-68",
+      "evidence": "a",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "69-71"
+     },
+     {
+      "part": "stair steps",
+      "rows": "72-79",
+      "evidence": "a",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "74-76"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate's top slab (rows 3-9, speckled stone) ends in a lighter front-edge line at row 10 (L=148 against 85 above), followed by shadow rows below it (rows 11-12 at x=24, dark at x=71). That gives a 7-row top surface. Below it is a front face of about 53 rows (rows 11-63) containing the lintel, the brick pillars and the dark doorway. The base has a platform top (rows 64-68) with its front edge, then a shadow band and the steps. The side pillars are only vertical column shapes, not receding side faces. The structure therefore reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone gate with a dark interior, and its building kind matches the references. The measured 7 visible tones per tile is below the references' 12 and 10. Its near-flat coverage is 13%, against 0% for both references, so some areas are flat, such as the dark doorway and the lintel slab. Its dark edge pixels are 52% near-neutral, against 7-9% for the references, so the outline is partly a neutral dark line and partly tinted stone. The stone blocks have some per-block shading and speckle, and the lava glow and torch add variation. Each material ramp has about 3-4 steps (grey stone, brown wood band), where the references have 5-6 on their tile roofs and plaster. Overall it is cleanly drawn but shallower and flatter than the references, with a more sticker-like edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15023
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone lintel/roof slab",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "wooden beam band with brick pattern",
+      "rows": "13-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base platform and steps",
+      "rows": "64-68",
+      "evidence": "a",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "69-71"
+     },
+     {
+      "part": "flame ornament over the doorway",
+      "rows": "10-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top slab (rows 3-9, speckled stone) ends in a lighter front-edge line at row 10 (L=148). Dark eave-shadow rows 11-12 follow, then the front face: wood beam, stone pillars and the dark doorway, down to row 63. A platform top at rows 64-68 has its own edge line at row 64, and the steps below have shadow bands at rows 69-76. The main body therefore shows a top surface of about 7 rows over a front face of 50+ rows. The gate is otherwise drawn flat on its south face, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone gate with a lintel, pillars, a dark doorway with a red glow, and steps. It has some stone-block shading and speckle on the lintel. Measured visible tones per tile are 7 against 10-12 for the references, which is lower but not far below. Near-flat coverage is 13% against 0% for both references, so some flat fills remain, mainly in the doorway interior and the pillar faces. About 52% of dark edge pixels are neutral, against 7-9% for the references, so the outline leans toward near-black grey in places and is only partly tinted. Main material ramps have about 3-4 steps against the references' 5-6. There are no per-tile highlights or grain like the roof-tile scallops and plaster speckle in the references. It is clean and coherent, but it is flatter and more outlined than Beodeul, and I would not accept it next to the references without it looking thinner. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14182
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel/roof top band (speckled stone)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "lintel front face (brick band)",
+      "rows": "13-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "threshold and step treads",
+      "rows": "64-68",
+      "evidence": "a",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "69-71"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-9 form a speckled stone top band 7 rows tall. It ends in a light front-edge line at row 10 (#8e94a8, against the L=85 band above), followed by darker eave shadow at rows 11-12. Below that is the front face: a brick lintel band at rows 13-20, then the arched dark opening and the stone pillars, running to about row 63. The step treads at rows 64-68 also show a light edge line at row 64 and dark riser shadow at rows 69-71. The width profile is a constant 90-96 across the body, so there is no receding isometric side face. The dark lumps at the left and right edges are separate side decorations, not a side face of the gate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone gate with a dark doorway and a red glow, and it has a reasonable stone-block structure with a speckled lintel. However, the measured facts show 7 visible tones per tile against 10-12 for the references. Near-flat coverage is 13% against 0% for both references, so there are real flat areas: the dark doorway interior, the pillar faces and the steps. The dark edge pixels are 52% near-neutral against 7-9% for the references, so the outlines lean toward neutral black/grey rather than the tinted dark material tone Beodeul uses. The stone ramp has about 4 steps against the 5-6 steps per material in the references, and the individual blocks are not shaded one by one as richly as the stone reference. Overall it is cleaner and more sticker-like than the references and falls short of the Beodeul standard on outline tint, flat fills and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14446
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.232Z",
+ "cells": {
+  "16": [
+   "040296744a7e3adc",
+   "08e82a777ccc1c27",
+   "09eb6a0581d81b15",
+   "0a03a4141821e778",
+   "0f7948449dfacbcb",
+   "1251f27139165931",
+   "17086e159093ddcf",
+   "1742a74c521050c7",
+   "22fedd87d5365030",
+   "2cfad7d3ab805962",
+   "311be9a8077948a3",
+   "47266f4291985723",
+   "48fdd55f186b4a7c",
+   "4acb6348728b979b",
+   "588f9bcb6a8c57ea",
+   "643b5c836a2b91a6",
+   "740b5aa2bda94b78",
+   "853607b8f125e7d0",
+   "85582e997da0c70f",
+   "85bd50eb7a6f9c64",
+   "8e9edfb3e44d1866",
+   "90fa25161bfb371d",
+   "94e968364829fb2f",
+   "9a6b2204dc8f1ad5",
+   "a65661dfc8fff0b6",
+   "a6f0b575c3588011",
+   "a9363455468963f2",
+   "b82937fcdd625a57",
+   "d5f1b3df5224bdf2",
+   "f09dbb511ea12d10"
+  ],
+  "24": [
+   "084b36b79f8cf353",
+   "0a28de75daf2e171",
+   "0bc4b2de2c8f92a4",
+   "0c3f02dbcdb179c3",
+   "0e3326c88a7f0f9c",
+   "142d379561287179",
+   "1beeda4cfac6e060",
+   "3484b057af7cf8f0",
+   "3825aff0d421cc58",
+   "394c6fea9e65df66",
+   "3aeb311196ae380f",
+   "3f553218316d8d83",
+   "4bbc77951a62514b",
+   "57568d82c9365808",
+   "68a91ba3ddc93e34",
+   "73c582d8fa813cab",
+   "81699a3cb152edbb",
+   "84d569d5460cafe0",
+   "8a2ef3bec9898c8b",
+   "97642e139c67de8d",
+   "97e92d4026859c5e",
+   "9d574fe017cd495a",
+   "a66a5f32bda0bac4",
+   "a6cd58510fa318b5",
+   "a774e75572b87720",
+   "a961114751065fd9",
+   "b1820fa3c74b11b2",
+   "d18d25422c8f1b75",
+   "d472236cf1059b55",
+   "f60901f432f990ec",
+   "f79110e152914803",
+   "fd1056be9f4ee382"
+  ],
+  "32": [
+   "167a29b632edcced",
+   "259e7a84f2845933",
+   "41e30892af08507a",
+   "4af3293cc72166f0",
+   "52d81c59530227f1",
+   "563ad33e1bf7af81",
+   "6ac0e8f4fd60d671",
+   "71ea965da0c90094",
+   "85cf1ccaa47ade24",
+   "8b5f6049064d59ad",
+   "9eb83fda887c6dea",
+   "a06e6d0558e05f6d",
+   "a41b1b60d40260f0",
+   "b86b5f87690e88f5",
+   "d90fa2227ddb9660",
+   "fbdc7863e59ce39c",
+   "fdeb7780310be5cb",
+   "ff4c03c7a0af9d02"
+  ],
+  "48": [
+   "0441fb92cdc39b27",
+   "364387fe1e5669b6",
+   "4eff8dc2eed9ab09",
+   "502e48819eb18ca8",
+   "75dffce2c11ea7a0",
+   "78bb6fed6a7aa36d",
+   "a77300af4f4915ed",
+   "c5343cff54886e12"
+  ]
+ }
+}

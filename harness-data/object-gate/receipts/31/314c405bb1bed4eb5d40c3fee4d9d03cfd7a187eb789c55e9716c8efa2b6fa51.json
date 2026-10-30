@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "314c405bb1bed4eb5d40c3fee4d9d03cfd7a187eb789c55e9716c8efa2b6fa51",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "fumarole crack",
+ "label": "beodeul_city/wave-places/volcano-field/fumarole_crack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.46,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fumarole crack (glowing fissure lines on ground)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a thin Y/V-shaped crack with dark outline pixels and orange/red glowing fill, seen from above and lying flat on the ground. Silhouette widths are 2-10 px per row over rows 5-15, with no vertical face, no front-edge line, no eave shadow and no ellipse. Column scans show only 3-row runs (dark outline, bright orange, dark red) that are the crack's own shading, not a front face. This is a flat decal, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny orange zigzag of about 15x10 px on a plain background. It is smaller than one 16x16 tile, not the 4x3-tile ground patch the kind requires, and it has no surrounding ground surface at all. It has only 5 distinct colours and about 2 lightness steps (bright orange core, darker red edge), against 3 visible tones per tile for the grass and 7 for the paving. Its dark edge pixels are 100% near-neutral, which points to a neutral dark outline rather than a tinted material tone, though at this size the evidence is thin. No grain, speckle or per-element shading is visible, so it reads as a sticker-like icon. The references carry dense grass tufts and individually shaded paving stones across full tiles. The candidate does not approach that richness or coverage.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11156
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crack of glowing lava lines forming a branching Y/V shape, drawn as a flat decal on the ground",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin branching crack with dark outline and orange/red glowing pixels, seen from above as a floor decal. Silhouette widths run 2, 5, 7, 10, 10, 7, then a 2-px stem down to 1 px at row 15. There is no vertical front face, no front-edge line, no eave shadow, and no ellipse; it is a flat ground marking, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny sprite, smaller than one 16x16 tile, showing a thin orange zigzag crack on a dark grey background. The references are full ground tiles (grass, paving). It uses only 5 distinct colours in total, which is about 2-3 shading steps against the references' 5-6. The dark edge pixels are 100% near-neutral, so the outline reads as grey/black rather than a tinted material tone. The surrounding area is a flat dark fill with no grain or texture, unlike the grass tufts and per-stone shading in the references. The tile-density measure is 0 only because the piece is smaller than one tile. By eye it is far thinner and flatter than either reference, and it would not sit next to them as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 8247
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fumarole crack (branching glowing fissure drawn as a flat decal)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin branching crack with a dark outline and an orange-to-red glowing core. It is drawn seen from above as a flat floor decal, 1-3 px wide per row, with a Y-shaped silhouette (width 2 to 10 to 7 to 2 to 1). It has no front face, no front-edge line, no eave shadow and no vertical face. This is consistent with the flat kind. Its whole body (rows 5-15) is the flat top plate and no front face is drawn, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny orange zigzag crack icon on a flat dark grey field, not a 4x3-tile ground patch like the grass and paving references. It is smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged by eye. It uses only 5 distinct colours in total, about 3 lightness steps (dark red, orange, yellow-orange). The references have about 3 visible grass tones and 7 paving tones per tile, with tufts, speckle and shaded stones. The surrounding grey is an almost uniform fill with no grain or variation, so the surface carries no ground texture. The dark edge pixels are 100% near-neutral, which matches the neutral grey/black sticker look rather than the tinted material-tone outlines of Beodeul grass. The piece reads as a thin, flat sticker sitting on empty ground and does not deliver a textured ground surface, so it is much thinner than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10233
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fumarole crack (glowing fissure lines)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a thin branching crack seen from above, 1-2 px wide lines with dark outline, orange glow and red shade, spanning rows 5-15. It has no front face, no vertical faces and no eave or edge line. For a flat floor decal this is expected: it lies on the ground and is seen from above, so it reads as a flat top-down plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, about one tile in size, showing a small orange zigzag crack on a dark background. It is not a 4x3-tile ground patch, so it cannot be compared to the grass and paving references as the same kind. It has only 5 distinct colours and 0 visible tones per full tile because it is smaller than a tile. The orange crack has about 3 steps, and the dark edge pixels are 100% near-neutral, so the outline is near-black rather than a tinted material tone. There is no grain, tile scalloping or texture variation like the grass tufts (3 visible tones per tile) or the paving stones shaded one by one (7 tones). It looks thinner, flatter and more sticker-like than either reference, and it does not cover a ground surface at all. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 8860
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.152Z",
+ "cells": {
+  "16": [
+   "df3cb4d61c3bb57a"
+  ],
+  "24": [
+   "051e4aba022eba76",
+   "0ebef90a471be97b",
+   "1db1bff6793ce80c",
+   "b0476183ad1823e7",
+   "d4ba03aa7a3c82bb",
+   "e0eb329b42c90cee"
+  ],
+  "32": [
+   "82b04f2885285066",
+   "8981605477b1d734",
+   "9b5e6c024793180a",
+   "b4e4391e5288dbdf",
+   "cdb1967928bf3742",
+   "fc3942f6f4325b9d"
+  ],
+  "48": [
+   "01a181223f0951e6",
+   "3f50c852c37b988f",
+   "576939d4ad72d571",
+   "5a5ad9fdce4b531a",
+   "b25f13e84ecabe84",
+   "ca89d5d045943859"
+  ]
+ }
+}

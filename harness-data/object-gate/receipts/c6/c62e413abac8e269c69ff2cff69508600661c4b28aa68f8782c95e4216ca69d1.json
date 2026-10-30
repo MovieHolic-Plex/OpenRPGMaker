@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c62e413abac8e269c69ff2cff69508600661c4b28aa68f8782c95e4216ca69d1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "nettles",
+ "label": "beodeul_city/wave-places/ruined-village/nettles",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "nettle clump (upright leaf blades and stems)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a plant clump seen from the side. Thin blades and stems rise from row 3 and widen to a 15px base at rows 11-15. The column scan shows only vertical dark-to-light green strokes, such as x=5 at rows 9-15 and x=8 and x=12 at rows 11-15. There is no horizontal band, front-edge line, eave shadow, ellipse or any other plate-like surface seen from above. A flat object should read as a plate lying on the ground, and this is an upright standing plant, so the kind does not match and no top surface is shown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of a few green blades, smaller than one 16x16 tile. It is not a 4x3-tile ground patch like the grass and paving references. The measured facts give 0 visible tones per tile because the piece is under one tile, so I judged by eye. It has only 5 distinct colours in total, against 80 for the reference grass. It shows about 3 green steps with a dark green edge tint (0% neutral edge pixels). There is no ground base, no soil or grass grain and no clump variation. The references carry about 3 visible tones per tile on grass and 7 on paving, with full-surface texture. The candidate reads as a thin sparse sprite, not a surface, and would look much thinner and flatter than the references beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13099
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "nettle leaf clump (blades and stalks, drawn upright)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from 1px at row 3 to 15px at rows 12-15. It is made of upright vertical blades and stalks with pointed tips (rows 3-9), standing on a denser mass (rows 10-15). The column scan shows vertical runs of the same colour (x=8 and x=12 are one dark run at rows 11-15) and no horizontal band, edge line, eave shadow or ellipse. Nothing shows a horizontal surface seen from above. It is a front-facing view of upright plants, not a flat plate lying on the ground, so the 'flat' kind does not match the drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny tuft of grass blades, well under one 16x16 tile, on a dark background. It is not a 4x3-tile ground patch like the grass and paving references, so the per-tile facts read 0 and I judged by eye. It has only 5 distinct colours, about 3 green steps, and no outline. The references show 3 to 7 visible tones per tile with grain, speckle and clumps across the whole surface. The candidate has no ground coverage, no soil or grass grain, and no tileable surface. It looks thinner and less shaded than either reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12315
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "nettle clump (blades and dense leaf mass)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a clump of upright plant blades seen from the front, not a flat plate lying on the ground. The silhouette widens from 1 px at row 3 to 15 px at rows 12-15. Spiky blades fill rows 3-10, and a dense leaf mass fills rows 11-15. No band ends in a front-edge line, no eave shadow appears, and no ellipse or horizontal surface is visible. The column scan shows only vertical green runs (x=5 rows 9-15, x=8 and x=12 rows 11-15). It is a standing front-view sprite with no top surface, so it does not fit the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of a few grass blades, smaller than one 16x16 tile, on a dark backdrop. It is not a 4x3-tile ground patch, so it does not match the reference kind of grass and paving surfaces. Its measured tones per tile are 0 because it is under a tile, and it has only 5 distinct colours in total. The grass reference has 80 colours and about 3 visible tones per tile, and the paving reference has about 7. The blades show roughly 3 green steps against about 5 in the references. There is no real outline and no soil grain, no tufts spread across a surface, and no ground coverage. Near-flat coverage of 0% only reflects how little there is to measure. By eye it is much sparser and flatter than either reference, and it reads as a sticker-like icon, not a ground texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13255
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "nettle clump, upright blades rising from a wider base",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from a 1px tip at row 3 to 15px at rows 12-15. It is drawn as upright vertical blades with dark and light stripes (x=5 runs rows 9-15, x=8 and x=12 run rows 11-15). No band ends in a front-edge line, there is no eave shadow, no ellipse, and no top surface seen from above. The clump stands up in front elevation rather than lying flat as a plate seen from above, so it is not a flat top-down decal, and the 'flat' kind does not describe it well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single small tuft of green blades, only about 20x25 source pixels, on a flat dark background. It is not a 4x3-tile ground patch like the grass and paving references, so the kind does not match. It has no full 16x16 tile, so the tile facts read 0 and I judged by eye. It uses only 5 distinct colours in total, against 80 for the grass reference. That gives about 3 green steps on the blades, and the blades are thin and flat-shaded with no grain, soil, tufts in several greens or per-clump shading. Outlines are absent or slightly tinted, not near-black, but the piece lacks the ground-surface density and texture of the references (about 3 visible tones for grass, about 7 for paving). It would look much thinner and flatter than the reference next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11867
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.425Z",
+ "cells": {
+  "16": [
+   "27429b3ace42b563"
+  ],
+  "24": [
+   "05733a3e2459440e",
+   "3ff96e25132ea207",
+   "4dc6f4cfe884948d",
+   "825e7566122bae7d",
+   "9816d100b2d71183",
+   "9a9ff23ab99c786e"
+  ],
+  "32": [
+   "27243e3d7146bf59",
+   "4c15c687a0d5145b",
+   "6124a4a65938d964",
+   "a3d48c4887159835",
+   "e4cbc32cd65d1c97",
+   "ef416d766ca40457"
+  ],
+  "48": [
+   "01dcc4edd3f9d1c2",
+   "5b8e780374e02552",
+   "79ac9d820eb220bd",
+   "79e6cc3add3bb5e0",
+   "8e0c599bf2ddbcc6",
+   "ead2a880804e8491"
+  ]
+ }
+}

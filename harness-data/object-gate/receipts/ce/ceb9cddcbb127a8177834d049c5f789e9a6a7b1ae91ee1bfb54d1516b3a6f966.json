@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ceb9cddcbb127a8177834d049c5f789e9a6a7b1ae91ee1bfb54d1516b3a6f966",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "bone scatter",
+ "label": "beodeul_city/wave-places/ice-age-field/bone_scatter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 110,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bone fragments scattered flat on the floor",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse set of small, thin shapes (rows 3-14, widths 2-9 px) lying flat on the floor. It has no standing volume: no front face of 3+ rows, no front-edge line, no eave shadow, no ellipse and no roof or awning. The upper cluster (rows 3-6) is a small bone with a light highlight. The lower cluster (rows 8-13) is a few bone shafts with dark shading. Row 14 is a pale blue-grey strip. It reads as flat debris seen from above. For debris this is the expected form, so there is no bulky body that needs a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey-white bone scatter, smaller than one 16x16 tile, with only 8 distinct colours in total. It reads as a pale sprite of about 2-3 light tones on a dark background. It has no tinted outline, no grain, no per-bone shading and no clustered texture. The references (hedge, well, stall) carry 5-6 shading steps, material-toned outlines and dense texture dots. The tile-based measured facts are 0 because the piece is sub-tile, so I judged by eye. It is a sparse prop, but it is still thinner and flatter than the references and looks more like a sticker or icon than a shaded Beodeul prop. It does not pass at this scale next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9187
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull/bone cluster upper",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scattered bones lying on floor",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom strip of pale bluish bone/shard",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of small, flat pieces (rows 3-14) with gaps between them, such as a skull-like blob at rows 3-6 and elongated bones at rows 8-14. No piece has a front-edge line, eave shadow, ellipse or a vertical face of 3 or more rows. The pieces lie flat on the floor, as expected for debris, so no body has a top and a front face. This reads as a flat top-down layout with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse grey-white scatter of bones, about 8 distinct colours in total and smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It reads as roughly 2-3 lightness steps (a light bone tone and a grey shadow) with no per-bone shading and no material-tone outline. It looks like a thin pale sticker next to the references, which carry 5-6 steps, tinted outlines and grain (hedge 9 tones per tile, stall 17, well 20). The sparseness alone would not fail it, but a careful artist would not accept it beside the references: it is flatter and thinner, with no texture, no cracks or ends on the bones, and no soil or ground shading to anchor it. Its outline is effectively absent, with the dark edge share at 0%, so it cannot count as a material-tone outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10048
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bone pieces scattered flat on floor (upper small cluster and lower wider cluster)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse, irregular scatter of small light bone fragments lying flat on the floor (silhouette widths 2-9 px, with gaps at rows 7 and 15). There is no band ending in a front-edge line, no ellipse, no roof or canopy, and no contents in an open container. No part has a vertical front face of 3 or more rows, so it reads as a flat top-down debris layout. The bluish row 14 is a flat strip of fragments. The kind is debris, so a flat scatter is plausible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of about 8 distinct colours, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It looks like a grey-white bone pile with only 2-3 lightness steps and no visible outline, and it shows no grain, clumping or per-bone shading. The references (well, stall, hedge) carry 5-6 steps, 9-20 visible tones per tile, tinted dark outlines and texture dots. Next to them the candidate looks thin, flat and sticker-like. Its small size and sparse nature excuse some of this, but the shading depth and texture are well below the reference standard, so it does not pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11603
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bone fragment upper (small bone/skull piece)",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main bone scatter cluster (flat bones lying on floor)",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom strip (floor-level bone/shard)",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a loose scatter of small flat pieces lying on the floor, 3-9 px wide, with gaps between them. Rows 3-6 hold a small blob (width 2-4), rows 8-13 hold irregular elongated bone shapes (width 3-8), and row 14 is a single thin 9px strip. There is no band ending in a front-edge line, no eave shadow, no ellipse, and no vertical front face of 3 or more rows. The pieces are flat and seen from above, which is normal for floor debris, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey-white bone scatter, about 25x20 px at 2x, with only 8 distinct colours in total. It shows roughly 2-3 lightness steps (pale bone plus a grey shadow) and no visible material-tone outline. The shapes are small, sparse, and read as a flat sticker-like glyph with no grain, per-bone shading, or ground interaction. The references (hedge, well, cheese stall) carry 5-6 shading steps, tinted dark outlines, and clear texture (9-20 visible tones per tile). The measured facts give no usable tile density because the piece is smaller than one tile, so I judged by eye: it is clearly thinner and flatter than the references, such as the well and stall. It is sparse, but a careful artist would not accept it next to the references without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10107
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.540Z",
+ "cells": {
+  "16": [
+   "a84751c81baaa89f"
+  ],
+  "24": [
+   "669d776a0a572eff",
+   "90f6236d3d5e3754",
+   "bea99215abe9374d",
+   "cfdf417f347dbf26",
+   "d0a046ef3d397ad2",
+   "e1129e1bdcd2c5b1"
+  ],
+  "32": [
+   "7d48ab811bbb6ad5",
+   "888c4be7d912ef34",
+   "be29d05d24671f9a",
+   "c380df08332d6fac",
+   "e4e284d777475466",
+   "e912bcb738f754d1"
+  ],
+  "48": [
+   "05e6a360ebc0c3f6",
+   "1a73deaef80e7c8a",
+   "72b6bc3bdd6cf5f2",
+   "7a1b4fc5f1375020",
+   "b245125e26607f8d",
+   "f9d7831f6984b30d"
+  ]
+ }
+}

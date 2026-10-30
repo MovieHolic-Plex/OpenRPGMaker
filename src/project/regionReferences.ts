@@ -3,6 +3,7 @@ import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
 import { MODERN_CITY_PLACE_REFERENCES } from "./modernCityPlaceReferences";
 import { JP_CITY_PLACE_REFERENCES } from "./jpCityPlaceReferences";
 import { WIZARDING_PLACE_REFERENCES } from "./wizardingPlaceReferences";
+import { BEODEUL_WAVE_PLACE_REFERENCES } from "./beodeulWavePlaceReferences";
 
 // 2026-10-07 사용자 결정(저작권): 직접 만든 칩셋(코드·손 도트) 위 장소만 배송한다. EasyRPG·그 재칠(숲마을·기후·던전·배·월드맵)·
 // Tibo 실내·OpenGameArt 성채 위 등록 장소와 스냅숏·미리보기는 전부 지웠다. 지역(완성 맵) 사례는 남은 것이 없다.
@@ -11,7 +12,7 @@ import { WIZARDING_PLACE_REFERENCES } from "./wizardingPlaceReferences";
 export const REGION_REFERENCES: readonly SharedRegionReference[] = [];
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...MODERN_CITY_PLACE_REFERENCES, ...JP_CITY_PLACE_REFERENCES, ...WIZARDING_PLACE_REFERENCES, ...JOSEON_PLACE_REFERENCES];
+export const PLACE_REFERENCES = [...MODERN_CITY_PLACE_REFERENCES, ...JP_CITY_PLACE_REFERENCES, ...WIZARDING_PLACE_REFERENCES, ...JOSEON_PLACE_REFERENCES, ...BEODEUL_WAVE_PLACE_REFERENCES];
 
 
 export function regionReference(id: string) {

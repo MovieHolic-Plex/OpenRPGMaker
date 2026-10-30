@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc10c50f093b6cef7c70f683f5b39bbcc3d0f5d96b1c68c25700779537f5913f",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "barrel tipped",
+ "label": "beodeul_city/wave-places/ruined-village/barrel_tipped",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 3 (3/4)",
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 3 (3/4)",
+   "투영이 3/4 아님(side_profile_no_top) (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 27,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrel body lying on its side, with staves and two vertical hoops",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark inset panel or bung opening in the centre, drawn as a vertical face",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small ground shadow or stub below the body",
+      "rows": "13-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a flat rectangle, 22-23 px wide and 10 rows tall (rows 3-12). Row 3 is the outline and row 4 is a 1-row highlight, which is only a rim. No band ends in a front-edge line with eave shadow below it. No ellipse widens and narrows, so there is no lid or cap. The dark rectangle at rows 5-8 is a vertical face, not visible contents. The rest is vertical staves with two dark hoops, so the barrel is a lying side profile with no horizontal top surface. The 5 px row at row 13 is a ground shadow, not a surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small tipped barrel, under one tile in size, so the per-tile tone count is 0 and I judged density by eye against the bench, the closest reference in size and simplicity. It has 15 distinct colours against the bench's 14. The measured near-flat coverage is 0%, so there are no flat fills. Only 4% of its dark edge pixels are neutral, so the outline is a dark brown that follows the wood rather than a black sticker line. It shows about 5 wood steps, with plank highlights, darker hoops and a shaded end cap, which is comparable to the bench's wood ramp. It is slightly simpler than the larger props, but a careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17339
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrel body lying on its side (stave surface with highlight band)",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark opening / band in the middle",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a flat rectangle, 22-23 px wide across rows 3-12, with a 1-row outline at row 3. Below it, at x=11 and x=17, there is a 1-2 row highlight (rows 4-5, L=98) that works as a rim at most. At x=24 rows 4-11 are one flat tone with no highlight, so there is no band ending in a front-edge line and no eave shadow. No ellipse is visible, because the end of the barrel is not drawn as an ellipse and the width profile never widens then narrows. The hoops are vertical strips and the dark window is a vertical face. The barrel is drawn as a side elevation lying on its side, with only a thin highlight at the top and a front face of about 9 rows (rows 4-12). Compared with the reference pairs, it matches the red 'barrel: lid 2px' example, not the green 'ellipse top' example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The barrel is smaller than one tile, so the per-tile tone count is 0 and I judged by eye against the bench and other small props. It has 15 distinct colours, level with the bench's 14. Only 4% of its dark edge pixels are neutral, so the outline leans dark brown beside the wood, not black. The staves show light, mid and dark wood steps, with darker hoops and a shaded end cap. That gives about 5 steps against the references' 5-6. There are no flat fills (0% near-flat coverage), and the stave grain and hoop highlights give some texture. It is a little simpler than the richer props (stall, well), but a careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17213
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrel body lying on its side (staves, two vertical hoops)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rectangular panel or opening in the middle of the body",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "end cap on the right",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The barrel is drawn as a horizontal cylinder in side profile. The silhouette is a flat rectangle 22-23 px wide over rows 3-12. Column scans show only a 1-row outline at row 3, a light highlight at rows 4-5, and shade bands below, with no front-edge line or eave shadow. The dark panel at rows 5-8 reads as a vertical face, not as contents seen inside an open container. There is no ellipse lid and no widening-then-narrowing width profile. Row 13 is a 5 px shadow stub. No horizontal top surface is visible, so this is a flat side elevation with a body about 10 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The tipped barrel is a small, simple prop, about the size of the bench reference. It has 15 distinct colours against the bench's 14, and no flat 5x5 areas (0%). Only 4% of its dark edge pixels are neutral, so the outline leans dark brown and follows the wood rather than forming a black sticker line. By eye it shows roughly 5 wood steps: dark outline, shadow, mid, light stave highlights and darker hoops. There is stave grain and hoop separation, though less texture than the bench or the larger props. The per-tile measures are 0 because the piece is smaller than a tile, so I judged by eye. A careful artist would accept it next to the bench, though it is slightly lower in fine texture and tone count.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20272
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrel body lying on its side (stave body with two hoops)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark opening or plaque band in the middle",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The barrel lies on its side and is drawn as a flat rectangle, 22-23 px wide and rows 3-12. The only top-like feature is the 1-row outline at row 3 and a highlight at row 4, which is a rim, not a top surface. Column x=17 runs highlight (row 4), dark band (rows 5-8), body (rows 9-10), then shadow (rows 11-12). There is no band ending in a front-edge line with eave shadow, no ellipse, and no visible contents. The width profile is a constant rectangle (22, 23, 22) with no widening and narrowing. The row 13 pixels (width 5) look like a small detached shadow or stray mark. This is a side elevation with no horizontal top surface, like the 'barrel: lid 2px' reference marked BAD."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tipped barrel, similar in scale and form to the thin bench reference, so it is judged by eye. The per-tile facts are 0 for both because the piece is smaller than one tile. Only 4% of its dark edge pixels are near-neutral, so the outlines are tinted dark brown beside the wood, not a black sticker line. It has 15 distinct colours against 14 for the bench. I count about 5 steps: dark outline, shadow, mid wood, light stave, and hoop highlights. The staves and hoops give grain and banding, and there are no flat 5x5 fills (0% near-flat). It is not as rich as the large stall or well, but a careful artist would accept it beside the bench without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16527
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.254Z",
+ "cells": {
+  "16": [
+   "fa29571e91c51cd2",
+   "ff261cc16fb887dc"
+  ],
+  "24": [
+   "1535decf90cd26de",
+   "1ae21d47e29170ee",
+   "201e757073311ebf",
+   "231ed21b2ffd32db",
+   "494b905f793bec86",
+   "6e73efe95b4d084c",
+   "71f97e8ffb1eebbd",
+   "7ae4bb0e9411dd22",
+   "81085085b872a6a8",
+   "c0a400a00cf8043a",
+   "c297322fd6ac9c50",
+   "dd7528c6049e4054"
+  ],
+  "32": [
+   "394636c873a7ebac",
+   "bc9cd7c4c1c0f555"
+  ],
+  "48": [
+   "29a0f227ce8876e2",
+   "2e178f29ddfa7915",
+   "4de74c568c5f6c41",
+   "9386f9caf8b92d97",
+   "d71dee429fbb5d3c",
+   "dbd9d0674d43004f"
+  ]
+ }
+}

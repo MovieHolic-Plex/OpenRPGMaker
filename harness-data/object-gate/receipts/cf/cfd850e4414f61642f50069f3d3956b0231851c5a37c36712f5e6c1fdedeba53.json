@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfd850e4414f61642f50069f3d3956b0231851c5a37c36712f5e6c1fdedeba53",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "frost snag",
+ "label": "beodeul_city/wave-places/ice-age-field/frost_snag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk and branches",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at base",
+      "rows": "42-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow caps on branch tips",
+      "rows": "6-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a vertical trunk with branches drawn as a flat front-facing silhouette (rows 3-41). The trunk and branches have no horizontal top surface, no front-edge line and no eave shadow, and no ellipse. Only the snow mound at the base (rows 42-47, widening to 18 px) suggests a heap, but it is a small base detail, not the main body. The main body is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bare snag with a thin brown trunk, a few branches and snow patches. It is far smaller than both references and has no canopy. Its trunk is about 2-3 px wide with roughly 3 brown tones (light, mid, dark), against the references' 5-6 step ramps and clustered leaf masses. Its 13 distinct colours are spread over the whole piece, and the tile facts read 0 because it is smaller than a tile. Judged by eye, the trunk has little grain and no bark texture, and the snow cap and base are near-flat white/blue blobs with only one or two shades. The dark edge pixels carry no neutral share (0%), so the outline is tinted, but it is thin and applied uniformly around the trunk, which gives a slightly sticker-like look. Next to the references it looks thinner, flatter and less detailed, with no root flare, bark detail or shaded volume. A careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9135
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead trunk with forked branches",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow caps on branch tips and trunk edge",
+      "rows": "6-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at base",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a bare tree trunk with branches, drawn as a flat vertical silhouette. Column x=14 runs brown from rows 4 to 41 with no horizontal band, front-edge line or eave shadow, and the trunk narrows to a plain stump bottom at rows 34-41 (width 6-8). Snow patches sit on the branch tips and trunk edge, but they are small white highlights, not a horizontal top surface. The snow mound at rows 42-47 (width 12 at row 42, then 18) is a low, flat white heap at the base. It does not give the trunk a top plane. No top surface is visible on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bare snag, smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It has only 13 distinct colours. The trunk and branches look like a thin brown shape with 2-3 tones and little bark grain or per-branch shading. The snow caps and base are mostly white with one or two blue-grey shades, so they read as flat. The dark edge pixels carry a tint (0% neutral), but the outline is a uniform dark line around the thin shapes, which looks sticker-like. The references have 5-6 shading steps per material, clustered foliage, and bark and root detail (tree-d43edd shows 29 visible tones per tile). Even allowing for a sparse, leafless object, the candidate looks thinner, flatter and less shaded than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12932
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare tree trunk with branches",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at base",
+      "rows": "42-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is drawn as a flat vertical silhouette: a trunk (rows 32-41, about 6-8 px wide) with branches splitting off above. The branch tips have small snow caps, but there is no band ending in a front-edge line, no ellipse and no eave shadow on the trunk or branches. The only horizontal surface is the snow mound at the base (rows 42-47, width 12-18), which is a small base heap and not the main body. The main body has no visible top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small bare snag with a thin brown trunk, a few branches, snow dabs and a snow mound. It is much smaller and sparser than the references, which are full canopied trees. It has only about 3 trunk tones (dark brown, mid brown, light) plus white snow, so its ramps are shallow against the references' 5-6 steps. The trunk and branches are mostly 1-2 px wide with no bark grain or clumped texture. The snow base is nearly flat white-blue. The measured tile facts are 0 because the piece is smaller than one tile, so I judged by eye. Its dark edge pixels are tinted brown rather than neutral, so the outline is dark_material_tone. Even allowing for a thin, sparse object, it looks flatter and thinner than the references and would read as a sticker-like sprite beside them. Only 13 distinct colours versus 567 in the richer reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9831
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead tree trunk and branches",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at base",
+      "rows": "42-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a bare trunk (rows 3-41) with branches, drawn as a vertical face in front elevation. Snow caps sit on the branch tops as small patches, not as horizontal surfaces. The trunk does not end in an ellipse or a top plane with a front-edge line. The snow mound at the base (rows 42-47, width 18) is a small heap, not the main body. The tree is organic and its forked silhouette is plausible for a snag, so the kind matches, but the main body shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small bare snag with a thin brown trunk, a few forked branches and a snow patch at the base and on the branches. It is much smaller and sparser than the two references, which have full leafy canopies with 5-6+ greens and clumped leaf texture. The trunk has about 2-3 brown steps and the snow about 2 tones, with little grain or bark texture. The measured per-tile tone count is 0 because the piece is smaller than one tile, so I judged by eye. The candidate has only 13 distinct colours against 567 for tree-d43edd. The outline is dark and brownish on the trunk but looks nearly black in places beside the snow, so I call it mixed. Even allowing for a thin, sparse object, it looks flatter and more sticker-like than the references. A careful artist would not accept it next to them without more bark shading, more branch detail and more snow shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10146
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.612Z",
+ "cells": {
+  "16": [
+   "0671fa5f2d3d5d21",
+   "12ecd9b98113d5d9",
+   "5b48b17b69e45197",
+   "a68c0dd3434eed34",
+   "a83a8f7ce1911793",
+   "ece6387bb672b653"
+  ],
+  "24": [
+   "1b6a049c212de8f0",
+   "2f2aeeba18c7980f",
+   "44007f62cda3f4e3",
+   "4656bb86355b39f0",
+   "505d7d2344730405",
+   "746072ee93a874c1",
+   "8e5780db8089336d",
+   "ce7efabda4bf8913",
+   "e0f972a895b5df8c",
+   "e5ac1e0d6092aabc",
+   "fabcbbb3d3b05f1e",
+   "fcbdde70123c2b0b"
+  ],
+  "32": [
+   "3b4cd2afc96422f4",
+   "64c5161df83b4da4",
+   "a466b8c8bc0fd585",
+   "fe604720948dc631"
+  ],
+  "48": [
+   "30f1e8d18ef50b7d",
+   "4a01089952b3647e",
+   "d558e85ceca5876e"
+  ]
+ }
+}

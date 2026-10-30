@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14bc1ae28b211ebd4f14164ff253b3b50ace1facc4c12603f33d09cd4dfd05c1",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "sulfur crystals",
+ "label": "beodeul_city/wave-places/volcano-field/sulfur_crystals",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 54,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crystal spike",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle crystal spike",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right crystal spike and base cluster",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a small cluster of pointed crystal spikes at rows 7-14, widening from 2 px at the tips to 10 px at row 12. Each column scan runs from a light tip pixel down through yellow faces to a dark base (x=6: rows 7-12, x=9: rows 9-13, x=11: rows 10-12). This is a vertical shading gradient, not a horizontal band. There is no front-edge line, eave shadow, ellipse, or visible contents. The pointed tips and the 1 px light highlight at the top of each spike are tips, not top planes. The cluster reads as a front elevation of upright crystals with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of yellow crystal spikes, far smaller than any reference prop (under one 16x16 tile), so the per-tile facts read 0 and I judged by eye. It has only 9 distinct colours in total, against 11-40 for the references. I see about 3 lightness steps on the crystals (a light yellow, a mid yellow and a dark base), while Beodeul props show 5-6 per material. The outline looks like a thin dark olive/brown, but the piece is too small to tell whether it is truly tinted, so I call it mixed. There is no visible grain, facet highlight or per-crystal shading, and the spikes read as flat shapes with a single dark edge, which is the sticker look. Next to the hedge, stall and well, it looks thinner and flatter. A careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11947
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster shards",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Small cluster of yellow crystal shards spanning rows 7-14, widest at row 12 (10 px). The shards are pointed vertical spikes with a light highlight at the tip and darker bases (rows 12-13). The width profile grows steadily from 2 to 10 and then narrows, with no band ending in a front-edge line, no eave shadow, no ellipse and no contents. Each shard is drawn only as a vertical face, so no top surface is visible. As scattered debris it is a loose pile, but it is drawn in elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of yellow crystals, well under one 16x16 tile, with only 9 distinct colours. That gives 0 visible tones per tile, so the density fact cannot be used and I judged by eye. By eye it shows about 3 yellow steps (light, mid, dark) and no clear tinted outline, so the forms rely on a few pixels of value change. There is no visible grain, facet highlight set or base soil/rock texture. Next to the references it looks much thinner and flatter. The well, the cheese stall and the hedge all carry 9-20 visible tones per tile, with 5-6 shading steps per material and clustered texture. Even the simple bench and lamp show more structure. The candidate is also much smaller than the references, so it reads as a sparse sticker-like prop rather than a standing prop of comparable richness. A careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9461
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crystal spike",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle crystal spike",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right crystal spike",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster spans rows 7-14 and is at most 10 px wide. It is three pointed vertical crystal spikes. The width profile grows from 2 to 4 to 8 to 10 and then narrows to 8 and 4 at the base. The column scans show a light highlight at the top of each spike, then yellow faces, then dark base rows (x=6: rows 7-12, x=9: rows 9-13, x=11: rows 10-12). No band ends in a front-edge line, there is no eave shadow and no ellipse, and no crystal shows a flat horizontal facet. Each crystal is a vertical face ending in a point, so there is no top surface. The pieces are small and scattered, which fits the debris kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of yellow crystal spikes, only about 9 distinct colours in total, and it fills well under one 16x16 tile, so the per-tile facts are 0 and I judged it by eye. Beside the references it reads as a small, sparse sprite. The hedge, stall and well each show 9-20 visible tones per tile and 5-6 shading steps per material. The crystals show roughly 3 steps (a light yellow, a mid yellow and a dark shade) with no per-facet highlight, no grain, and no clustering of tones that would suggest crystal faces. The edges look like a thin dark line with little material-tone shading, so it looks closer to a sticker than to Beodeul's selective outlines. It is not plainly flat-filled, but it is clearly thinner and shallower than every reference of the same kind, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10946
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sulfur crystal cluster (spiky shards)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Small scattered cluster of yellow crystal shards, rows 7-14, width growing from 2 at the tips to 10 at row 12, then narrowing to 4. Each shard is a vertical faceted strip with a pale top-left highlight fading to dark at the bottom (columns x=6, 9, 11 show light-to-dark gradients). There is no band ending in a front-edge line, no eave shadow, no ellipse, and no visible contents. The shards read as upright faces seen head-on, so there is no horizontal top surface. The pieces are pointed spikes with no flat top, which is plausible for debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of yellow crystal spikes, far smaller than the references and under one 16x16 tile, so the per-tile facts read 0 and I judged it by eye. It has only 9 distinct colours in total, against 38-40 for the stall and well. The crystals show roughly 2-3 lightness steps (a yellow body, a lighter tip and a dark base), with no per-facet highlight ramp or grain. The dark edge pixels are tinted rather than neutral (0% near-neutral), but the outline is thin and inconsistent, with no clear dark-material-tone separation. Next to the bench, hedge and well, the piece looks thinner, flatter and more sticker-like. A careful artist would not accept it beside the references without more facet shading and texture. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16327
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.212Z",
+ "cells": {
+  "16": [
+   "e0514227936d49d5"
+  ],
+  "24": [
+   "1a7615b144d5b2e6",
+   "24751cbd249fd5fb",
+   "a6c96a6a1973dd2b",
+   "c1f204968652e96a",
+   "dedf1d4acae50a0b",
+   "f5906939b2baeb52"
+  ],
+  "32": [
+   "1c4960a0ce365ecb",
+   "31b83cfbd76419f7",
+   "6f122063ec6279df",
+   "914a80f6de0b6a53",
+   "a7dd7f03331a2216",
+   "e1928677cc65b53f"
+  ],
+  "48": [
+   "1abb34222997e841",
+   "410c5d4cb1d644f0",
+   "46e4a1a41c2bd62d",
+   "89115c44f05a0735",
+   "a41536318d19e478",
+   "ce334d0eed9fc631"
+  ]
+ }
+}

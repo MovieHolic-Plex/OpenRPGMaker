@@ -1,0 +1,338 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c14c2b850e420b3172363f457f4b805929b7df5c448678d95d57f64485ae3f3",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "fence fallen",
+ "label": "beodeul_city/wave-places/ruined-village/fence_fallen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 30,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen fence rails and posts (dark brown planks lying scattered)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at bottom edge",
+      "rows": "14-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a scatter of thin brown planks lying roughly horizontally, each about 2 rows tall (rows 7-8, 11-12, 8-9, 12-13 in the column scan), with a dark lower row under a lighter upper row. They read as flat boards lying on the floor, with no band ending in a front-edge line, no ellipse, and no tall front face. Two thin vertical stubs (rows 4-6 at x~9 and x~24) are post fragments. Only a flat sprite of scattered debris is drawn, which fits the debris kind. There is no 3+ row front face on any part and no clear top surface, so it reads as flat top-down debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse fallen fence: a few broken brown rails and posts with small green grass tufts at the base. The measured facts give no density signal because the piece is under one tile (0 tones per tile, 0% near-flat). Its dark edge pixels are 0% neutral, so the outline is tinted brown and not a black sticker line. The 11 distinct colours are fewer than the bench's 14 and far fewer than the stall's 40 and the well's 38. By eye the wood has only about 3 lightness steps (dark, mid, light), where the bench and well show 5 or more with per-plank highlights and grain. The rails look thin and flat next to the bench, with little grain or per-piece shading. A careful artist would likely see it as thinner and flatter than the references, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12541
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen fence rails and posts (broken wooden planks lying flat)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at bottom",
+      "rows": "14-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a scatter of thin brown planks (rails 2-3 rows tall, rows 7-13) and a few thin diagonal posts (rows 4-6) lying on the floor, with grass tufts at rows 14-15. Each plank is a 1-3 row strip with a light top row (#543719) over a dark row (#3d220c). There is no band that ends in a front-edge line with a deep front face below, no ellipse, and no contents. It reads as flat debris seen from above, with no front face of 3 or more rows. It matches the debris kind as scattered, flat-lying pieces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse fallen fence of broken rails and posts with a few grass tufts. The tile-based facts are 0 because the piece is smaller than one tile, so I judged by eye against prop-bench-wood, the closest thin reference. The outline is tinted: 0% near-neutral dark edge pixels, and the dark pixels read as brown beside wood and green beside grass. It uses only 11 colours in total, against 14 for the bench and lamp. The wood rails look like roughly 3 steps (mid, dark, a light edge), while the bench shows about 5 with grain and highlights on each plank. The grass tufts add some variation, but the wood is flat and plank-like with little grain or per-board shading. Next to the references it looks thinner and flatter, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12901
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper broken plank/rail with a post stub at right",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle plank lying flat",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank lying flat",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at bottom",
+      "rows": "14-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a scatter of thin brown planks, each 2-3 rows tall. The column scan at x=16 shows one light row (#543719) over one dark row (#3d220c) per plank, i.e. a 1-row face and a 1-row edge line. No plank has a front face of 3 or more rows, and no plank has an ellipse, a roof or visible contents. The planks read as flat strips seen from above. The grass tufts at rows 14-15 are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, sparse broken fence lying in grass. Its measured facts (0 visible tones per tile, 0% flat coverage, 0% neutral dark edges, 11 colours) show only that the piece is smaller than one tile and has tinted outlines. They do not show richness. By eye, the wood rails and posts carry about 3 lightness steps, against roughly 5 on the bench reference. There is little plank grain, no per-board highlights and little visible shading along the rails. The thin grass tufts at the base add a few greens but read as sparse, not clumped. The brownish outline tint is fine and does not look like a sticker. Next to the bench and the other references, though, the piece looks thinner and flatter, and a careful artist would not accept it as equal. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14409
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen fence planks and rails (brown boards lying scattered)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at bottom edge",
+      "rows": "14-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The drawing is scattered thin brown planks and rails lying at angles across rows 4-13, with a few grass tufts at rows 14-15. Each board is a 2-row strip (a lighter row over a darker row) and there is no bulk body, so there is no top surface, front face, ellipse or roof to measure. It reads as flat debris lying on the floor, which fits the debris kind. The 2-row strips are board thickness, not a top and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, sparse fallen fence of broken rails with a few grass tufts. Its edge pixels are 0% near-neutral, so the outline is tinted dark brown or green rather than a black sticker line. The measured facts give no density evidence either way: the piece is thin, so visible tones per tile is 0, as for the bench and lamp references, and near-flat coverage is 0%. By eye, the wood rails show only about 3 tones (a light edge, a mid brown and a dark brown) with little grain or per-board highlighting. The bench reference carries about 5 wood steps, with clear plank highlights and shadow undersides. The grass tufts add a little variation, but the whole piece looks thinner and flatter than the bench and the hedge. With only 11 distinct colours and shallow wood ramps, a careful artist would likely see it as slightly below the Beodeul bar, so it fails on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12101
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.362Z",
+ "cells": {
+  "16": [
+   "066d01759de68bd4",
+   "b4b700f83a047d0b"
+  ],
+  "24": [
+   "000bcc3d86aaf25d",
+   "098101247c618b2f",
+   "48582f08654c1276",
+   "6c0a72df22cdcb6f",
+   "8129d5a3ef58bc21",
+   "8750b52d612aaacb",
+   "9b463b03fcfcf41e",
+   "b1e650ca0d3b30dd",
+   "cc8e7df04a96c275",
+   "d4f658099d1bed92",
+   "fdf61eb7b1f1e6db",
+   "feb1c5c97796652c"
+  ],
+  "32": [
+   "c7cc2c491e943385",
+   "eb601718a1e92f6f"
+  ],
+  "48": [
+   "3a064dc08e6ee7e5",
+   "c646ac3b91fde3e0",
+   "c7dba5c98344308b",
+   "ce275f0de74b1937",
+   "e0cb7286a44150cb",
+   "ee89cccaf99fa09c"
+  ]
+ }
+}

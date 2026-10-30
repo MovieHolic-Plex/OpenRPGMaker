@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ba30f8911c17819df8e99d712a55cb4696e0608fb2f979b2c549f284a682beb",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "basalt rocks",
+ "label": "beodeul_city/wave-places/volcano-field/basalt_rocks",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 29,
+  "nearBlackEdge": 0.48,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper small rock",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lower rock cluster",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tiny cluster of rocks spanning rows 6-13 and up to 12 px wide. Each column scan shows the same sequence: a darker top pixel, one lighter highlight row (x=7 row 7, x=10 row 11), a mid-tone row, a darker row, and then a near-black outline row (L=27). The highlight is a single row, so it is a rim and not a top plane. There is no ellipse, no front-edge line followed by eave shadow, and no open contents. The silhouette is a lumpy mound with 3-4 rows of vertical face under the highlight, so no horizontal top surface of 3 or more rows can be pointed at."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of grey basalt rocks, well under one 16x16 tile (about 14x10 px), next to two large trees with canopy and trunk. The kind does not match well: these are rocks, not a plant, so the reference comparison is only approximate. The measured tones per tile are 0 because the piece is smaller than a tile, so I judged by eye. It has only 10 distinct colours and about 3 visible grey steps (light top, mid, dark base). The shading looks shallow. The rocks read as a few blobs with little stone-by-stone shading, grain or highlight clusters, unlike the references' multi-tone leaf clumps and bark texture. Only 6% of dark edge pixels are neutral, so the outline is mostly tinted rather than a pure black line, but at this size it is hard to call it a deliberate dark-material-tone outline. It is clearly thinner and simpler than either reference at the same scale. A careful artist would not accept it next to the references without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13190
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left rock",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper middle rock",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right rock",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is a few small rock blobs, rows 6-13 and at most 12 px wide. In each column scan the pattern is the same: a 1-row outline or top edge, then a 1-row highlight (x=7 row 7, x=10 row 11), then 1-2 rows of mid-tone, then a dark base row (L=27). That is a rim or highlight on a vertical face, with no front-edge line, eave shadow, ellipse or visible contents. The width profile (4,6,4,6,12,12,10,6) is a lumpy silhouette with no horizontal plane. The rocks read as front-facing shapes with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of rocks, roughly 7x6 source pixels, far smaller than one 16x16 tile. The references are full tree canopies with trunks. The tile-based facts are 0 for the candidate, so I judged density by eye. Only about 3 lightness steps are visible on the stones, against 6-7 or more on the reference canopies, and it carries no clumped texture or per-stone grain. Its dark edge pixels are only 6% neutral, so the outline is tinted, which is a point in its favour. There are no flat fills simply because the piece is too small to hold any. It looks thinner and flatter than either reference and is closer to a sticker than to a fully shaded piece. The references are trees, not rocks, so the kind comparison is weak. With no solid evidence of reference-level craft, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15124
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper small rock",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower rock cluster",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is only 8 rows tall (rows 6-13) and at most 12 px wide, drawn as a lumpy silhouette. In the scan, columns x=7 and x=10 each show a single highlight row (row 7 and row 11, L=114) just under a 1-row top edge. Below that comes a mid-dark body row and then a near-black outline row (row 9 and row 13). That highlight is a 1-row lit edge, not a flat top with a front-edge line and eave shadow, and there is no ellipse or band. The left part of the lower rock (x=4) is a 3-row flat-toned face (rows 9-11) closed by an outline at row 12. With no horizontal top surface of 3+ rows and only a short face, it reads as a front-facing blob."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of grey basalt rocks, roughly 10x8 px, much smaller than one 16x16 tile. The references are full trees with canopy and trunk, so the kind does not really match. By eye the rocks show only about 3 grey steps, with a small highlight and a dark base. There is no per-stone grain or texture, and the piece looks thin and sticker-like beside the references (7 and 29 visible tones per tile). The measured tones per tile are 0 because the piece is sub-tile, so that fact does not count against it. Only 10 distinct colours are used in total. The dark edge pixels are 6% neutral, which suggests tinted outlines, but the piece is too small to judge this reliably. A careful artist would not accept it next to the references: it is flatter and shallower, with fewer shading steps than the 5-6 per material that Beodeul uses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13419
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left basalt rock, small lump",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main rock cluster, wide lower mass",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a tiny cluster of lumpy rocks, rows 6-13 and at most 12 px wide. In the column scans, the sequence is the same at x=7 and x=10. A mid-dark top row (L=71) is followed by one light highlight row (L=114, rows 7 and 11), then a mid-dark row, then a near-black outline row (L=27). The 1-2 row highlight acts as a lit rim or edge, not a horizontal plane. There is no front-edge line followed by eave shadow, no ellipse, and no visible contents. The silhouette widens from 4 to 6 to 12 px and tapers back to 6 px at row 13, which is a blobby boulder outline, not a top plane over a front face. The lower mass (rows 10-13) shows only a short vertical face, with no distinct top band above it. This reads as front-lit rock lumps with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of grey rocks, roughly 10x8 source pixels and smaller than one 16x16 tile. The references are full canopy-and-trunk trees, so the kinds do not match and there is no like-for-like comparison. The measured tones per tile are 0 because of the size, so I judged by eye. It has about 10 distinct colours in total. The rocks show only about 3 grey-blue lightness steps (light top, mid, dark base), against 6 or more in the references, and there is little per-stone shading or grain. The edge tint is hard to read at this size (6% neutral dark edge pixels, so mostly tinted), but the piece is too small to show selective outlining or texture. Next to the references it looks thin and shallow, and a careful artist would not accept it as equally rich. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16794
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.060Z",
+ "cells": {
+  "16": [
+   "5c86f89d438b2a12"
+  ],
+  "24": [
+   "16f1032d3af97513",
+   "57c6cb8c227d1925",
+   "77911438b38d3fd5",
+   "7dab5be68a25b2dc",
+   "c7d1a56f1086b688",
+   "f6e48f801fdf5789"
+  ],
+  "32": [
+   "82e5d210efa6e24a",
+   "83c79ebbbc1af914",
+   "bfd5a3b6d13f3e14",
+   "c77bbf390eef57b4",
+   "d5f0f6a02a3b3229",
+   "e342642118d2ae5c"
+  ],
+  "48": [
+   "0006842876671324",
+   "3ff0c513ae49cf14",
+   "903af2dcf34a56b8",
+   "921dfc225bc93a95",
+   "af34419f6e9eb49b",
+   "c06549cf42547580"
+  ]
+ }
+}

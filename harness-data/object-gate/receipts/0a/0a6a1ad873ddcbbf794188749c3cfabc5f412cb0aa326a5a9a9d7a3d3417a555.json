@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a6a1ad873ddcbbf794188749c3cfabc5f412cb0aa326a5a9a9d7a3d3417a555",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "scree a",
+ "label": "beodeul_city/wave-places/mountain-fortress/scree_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 76,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered scree pebbles (flat decal)",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a loose scatter of small pebble clusters across rows 6-15, with widths between 1 and 7 px. Each cluster has a light top row, a mid row and a dark bottom row (for example x=8: rows 13-15 go #c7c4b8, #7e7f7a, #43474c). These read as shading on flat ground pieces, not as a standing volume. There is no continuous front face of 3 or more rows, no eave line, no ellipse and no side face. This fits a flat ground decal seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, on a dark background. It does not read as a 4x3 tile ground patch like the grass and paving references, which fill whole tiles. It shows only a few light grey pixels, 5 distinct colours in total, and no visible tones per tile. The dark edge pixels are 100% near-neutral, so the outline is near-black and untinted. It has no grain, tufts or per-stone shading, while the references show 3 and 7 visible tones per tile with continuous texture. It is far thinner and flatter than either reference and cannot be accepted next to them as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9896
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered scree pebbles (about 5 small separate chips, no single body)",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a sparse scatter of separate 2-7 px wide chips spread over rows 6-15, with no connected body. Each chip's column scan runs light, mid, dark over 3 rows (e.g. x=8 rows 13-15, x=11 rows 12-14, x=5 rows 6-8). That is a tiny shading gradient on a flat pebble, not a top surface with a front-edge line, eave shadow or ellipse. There is no vertical front face of 3 or more rows, so it reads as flat ground debris, which fits a flat decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite of a few pixels in the dark right panel, far smaller than a 4x3-tile ground patch (measured tones per tile = 0, only 5 distinct colours). It shows no ground surface, no tiling and no texture. Its dark edge pixels are 100% near-neutral, versus a tinted outline in the grass reference. It looks like a small scattered-pebble or stone-fragment prop, not a ground patch, so it cannot be compared against the grass or paving references, which fill whole tiles with 3-7 visible tones. It is much sparser and flatter than either, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11116
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered scree pebbles (several small separate stones, each shaded light, mid, dark over 3 rows)",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of tiny stones spread over rows 6-15, with a silhouette only 1-7 px wide per row and gaps between the stones. Each stone has a 3-row light-to-dark gradient (columns x=5, 8 and 11 show #c7c4b8, then #7e7f7a, then #43474c). That reads as a highlight and shadow on a flat ground decal, not as a standing volume. There is no top band with a front-edge line, no ellipse, and no vertical front face of 3 or more rows. It is a flat top-down ground decal, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse sprite (a few pale scattered pixels on a dark grey background) that is smaller than one 16x16 tile, so it does not read as a 4x3-tile ground patch at all. It has only 5 distinct colours, about 2 lightness steps, and its dark edge pixels are 100% neutral, so there is no material-tinted outline. Both references show 3-7 visible tones per tile with grain, tufts and per-stone shading, and the candidate shows no comparable surface texture or ground coverage. It looks thinner and flatter than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10674
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered scree pebbles",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of small stones across rows 6-15, with a silhouette width of at most 7 px. Each stone is a 3-row light-to-mid-to-dark gradient (#c7c4b8, #7e7f7a, #43474c) in columns x=5, 8 and 11. These are tiny shaded pebbles with no continuous front face of 3 or more rows, no eave shadow and no side face. That matches a flat ground decal seen from above, so it reads as a top-down slab, which is consistent with the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, much smaller than one 16x16 tile, about 12x8 px, in the dark right-hand area. It is not a 4x3 tile ground patch, so it does not match the reference kind. It has only 5 distinct colours in total and 0 measured tones per tile, because it is smaller than a tile. By eye it looks like a few light dashes on a dark background, with about 2 tones. That is far below the grass (about 3 visible tones, 80 colours) and the paving (7 tones, with grain and per-stone shading). Its dark edge pixels are 100% near-neutral, which suggests a neutral dark line with no material tint. It has no surface grain, clumping or per-element shading, and it would look thinner and flatter than either reference. It would not be accepted next to the Beodeul ground tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11590
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.950Z",
+ "cells": {
+  "16": [
+   "7119b2bcfa1adb39"
+  ],
+  "24": [
+   "010cc55289f28396",
+   "465d3c57f375bc73",
+   "56b58b45b4ad0e79",
+   "83278659d94bb745",
+   "92b8c18d5a743032",
+   "f51a8effa66c1d22"
+  ],
+  "32": [
+   "2a8a57da3d6494b0",
+   "70c4b3e2a2c0e4f8",
+   "7daac451ec35d6c0",
+   "a6be8ce96440709f",
+   "b3dc39e4d6894bb0",
+   "ffa9159d26051087"
+  ],
+  "48": [
+   "2ba61a90961b315e",
+   "83dce79a25714d40",
+   "a3ec0b9c815eacc7",
+   "b6b012d5626d674e",
+   "bbb9cf0db547c2be",
+   "bc3ef6cdf8bd7bff"
+  ]
+ }
+}

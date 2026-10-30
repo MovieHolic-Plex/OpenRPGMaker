@@ -1,0 +1,439 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37739f73219ded90abd5dce2b97252f459532836affa8ea1c30cef52a9dd466c",
+ "width": 48,
+ "height": 48,
+ "kind": "frame",
+ "name": "stall tattered",
+ "label": "beodeul_city/wave-places/ruined-village/stall_tattered",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 0.4,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (sloped roof plane, tattered scalloped lower edge)",
+      "rows": "3-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top strip",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on counter (small orange/brown items)",
+      "rows": "25-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The awning spans rows 3-19 as a sloped canopy plane. Its stripes run from the light upper rows (4-11) to the darker lower rows (12-18), and a dark outline at row 19 closes it as the front edge. That is evidence (c). The counter below has a front face at rows 30-44 (about 15 rows) with plank lines and a door opening. Its top is only a 2-row lighter strip at rows 28-29, which is a rim and not a real top surface. The posts at the sides are vertical faces. There is no isometric side face. Because the awning gives a large top surface above a tall front face, the drawing reads as three_quarter, although the counter top is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a market stall with a red/white striped awning, a dark counter and a dark interior opening. It is the same kind as prop-stall-cheese. Measured facts: 9 visible tones per tile against 17 for the cheese stall and 20 for the well. Near-flat coverage is 21% against 13% and 0%, so it is flatter than the same-kind reference. Dark edge pixels are 0% neutral, so the outline is tinted dark red-brown rather than a black sticker line, which is good. Shading is shallow: the awning stripes carry about 3 tones, and the wood counter and dark interior are mostly flat blocks of 1-2 tones. They lack the per-plank grain, the hanging goods and the clutter that the cheese stall has. The stripes and some tattered edge detail give it some character. Overall it is acceptable in structure but noticeably flatter and sparser than the cheese stall, with larger flat areas in the dark opening and the counter front, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17904
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning/canopy",
+      "rows": "4-18",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top lip",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front face with planks and dark doorway",
+      "rows": "30-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "18-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on counter",
+      "rows": "25-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red and white striped awning spans rows 4-18 and ends in a dark scalloped edge at row 19, so it reads as a sloped canopy plane (evidence c). Below it is an open gap with the posts, then the counter. The counter top is only a 2-row lighter band at rows 28-29 with no clear edge line, so it is a rim and not a real top. The counter front face (rows 30-43) is a full vertical face of 14 rows. The awning gives a top surface, but the counter, a major horizontal part, shows only a rim, so not all major parts have a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a stall of the right kind, with a red/white striped awning over a dark brown counter. It has about 9 visible tones per tile against 17 for the cheese stall, the closest reference, and 20 distinct colours against 40. Near-flat coverage is 21% against 13% for the cheese stall and 0% for the well and hedge. The dark counter body and the awning stripes read as large, mostly flat fields with little grain, per-plank shading or goods on display, so each material ramp has only about 3-4 steps against 5-6 in the references. Outlines are tinted (0% near-neutral dark edge pixels), a dark brown or red-brown beside each material, so there is no black sticker line. That is a point in its favour. Overall it is flatter and sparser than the cheese stall, with less clutter and fewer detail clusters, so it would look thinner next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19493
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (tattered canopy)",
+      "rows": "3-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on counter",
+      "rows": "25-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front face with door",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "18-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The striped awning fills rows 3-19, about 16 rows wide at 44 px, with a dark outline edge at row 19. It is a sloped canopy plane and counts as a top surface under rule (c). Below it is an open gap at rows 20-26, then the counter. The counter top is only a 2-3 row band (row 27 outline, rows 28-29 lighter brown), which is a rim and not a real top surface. The counter's front face runs rows 30-44 with plank lines and a dark doorway. The goods at rows 25-27 are decor. The posts are drawn only as vertical faces, and the counter has no proper top, so not all major parts show a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is a dark brown/red-brown tint, and the 0% near-neutral share of dark edge pixels agrees, so it is not a sticker line. The shading is shallower than the closest references (prop-stall-cheese, prop-well-roofed). The red and white awning has about 2-3 steps per colour, and the dark brown body and counter are mostly one or two tones with little plank grain or per-board highlights. Near-flat coverage is 21% against 13% for the cheese stall and 0% for the well, hedge and bench, so there are visible flat fills on the body and the dark opening. The candidate has 9 visible tones per tile against 17 for the cheese stall and 20 for the well, and only 20 distinct colours against 38-40. That is roughly half the visible information of the same-kind stall. It is cleanly drawn and reads as a stall, but beside prop-stall-cheese it looks flatter and thinner in texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18379
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (top slope)",
+      "rows": "4-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "awning valance, tattered front flaps",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "27-29",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "goods on counter",
+      "rows": "25-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The striped awning is a roof or canopy plane at rows 4-11 (evidence c). Its lower rows 12-19 are the hanging valance, ending in an outline at row 19. The wood counter has a lighter top band at rows 28-29 under an outline at row 27, then 14 rows of plank front face at rows 30-43. The counter top is a shallow strip of only 2-3 rows. The awning does carry a real top surface, and the posts at the sides show only their vertical faces. The gap at rows 20-26 shows background between the awning and the counter. Overall the object reads as three-quarter view, though the counter top is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The closest reference is prop-stall-cheese: 17 visible tones per tile, 13% near-flat, about 40 distinct colours. The candidate has 9 visible tones, 21% near-flat and 20 colours, so it carries roughly half the information. Its outlines are tinted dark red-brown with 0% neutral edge pixels, which is correct and not a sticker line. The weakness is shading depth and texture. The striped awning is built from flat red and white bands with little per-stripe highlight, shadow or fold. The dark counter and back panel are large, nearly uniform dark areas, with only a small amount of grain. Each material has about 3 steps against the reference's 5-6, and the cheese stall's hanging goods, wood grain and awning trim are mostly missing. The candidate is clean and readable but shallower and flatter than the reference, so a careful artist would not accept it beside the cheese stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19862
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.494Z",
+ "cells": {
+  "16": [
+   "117db3c0e63684db",
+   "49d83a054f7fc047",
+   "4c7b293ae6c7e83c",
+   "4ff7956e655f1e96",
+   "583c3da8f8b3c51d",
+   "59b21b778766d329",
+   "d0180a4fb01bb5f2",
+   "e536c37dc2a35a31",
+   "e5e12995c635190b"
+  ],
+  "24": [
+   "2dc6d338b9bd38be",
+   "751f5e0a9de2eaf8",
+   "9f7d4c2840698f5e",
+   "b56e04bfe0e7961f"
+  ],
+  "32": [
+   "010008b6dd3da1a7",
+   "0d65e7a4cd5f139d",
+   "0f81f646d4959e34",
+   "12c080cebb55154a",
+   "1860cf88fea76c7f",
+   "1e7ffddb679807bd",
+   "2ec6f684c1c41164",
+   "37aabcebbf6939e8",
+   "390f2bca64aa56b6",
+   "41f8eb6fbd0fda18",
+   "54d88fd93e6ce044",
+   "6dd66474770a6a6d",
+   "75b2d7556e8ad214",
+   "9168a8f4a70bf775",
+   "98e52aa48004b5c8",
+   "a3675afe6c1d50d0",
+   "a459d450c3819754",
+   "ac1035ca94ccc430",
+   "af0117cd854a4aa9",
+   "d59f14511420c386",
+   "d859a05cd7c67566",
+   "df990ccef2ed2ac9",
+   "e82cf7bd8cadfbfb",
+   "f8be71bcbbdf8f52"
+  ],
+  "48": [
+   "a020f853f8eeee67"
+  ]
+ }
+}
