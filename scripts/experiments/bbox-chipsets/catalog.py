@@ -19,6 +19,8 @@ for o in D["objects"]:
 for k in ("floors", "walls", "tables", "lines", "daises"):
     for f in D[k]:
         if want(f"{k[0]}:{f['id']}", f["ko"]): todo[f"{k[0]}:{f['id']}"] = f["ko"]
+for g in D.get("grounds", []):
+    if want("g:" + g["id"], g["ko"]): todo["g:" + g["id"]] = g["ko"]
 for k, v in D["rooms"].items():
     if want("r:" + k, v["ko"]): todo["r:" + k] = v["ko"] + " / " + ", ".join(v["alias"])
 if todo:
@@ -43,9 +45,17 @@ RULE = {"floor": "floor (stands on floor cells, blocks walking)",
         "flat": "floor decal (walkable, may lie under furniture)",
         "door": "door: x,y = a 1-cell opening in a HORIZONTAL solid wall (solid left and right, a room above, floor for two rows below)",
         "sidedoor": "side door: x,y = the bottom (walkable) cell of a 3-cell-tall opening in a VERTICAL solid wall"}
+OUT = D.get("mode") == "outdoor"
 L = [f"# Tileset catalog — {place} (chipset {ts}, 16px cells). The attached sheet shows every piece and the floor/wall swatches, labelled with exact ids, on a 16px grid.",
      "id | footprint w x h cells | placement rule | what it is"]
-for o in D["objects"]:
+if OUT:
+    L = [f"# Tileset catalog — {place} (chipset {ts}, 16px cells, OUTDOOR). The attached sheet shows every piece and ground swatch, labelled with exact ids, on a 16px grid.",
+         "Pieces are stamped whole: x,y = the top-left cell of the piece's art box. 'cells' gives the art box row by row, top to bottom: X = blocks walking, o = drawn but walkable (roof/canopy you walk behind, or flat ground art), . = not drawn (keeps the ground under it).",
+         "id | art box w x h | cells | role | what it is"]
+    for o in D["objects"]: L.append(f"{o['id']} | {o['w']}x{o['h']} | {'/'.join(o['grid'])} | {o['role']} | {en('o:' + o['id'], o['id'])}")
+    L += ["", "# Grounds (map 'base' and 'grounds' rect ids; edges of autotile grounds are drawn automatically)"]
+    L += [f"{g['id']} | {'walkable' if g['walk'] else 'NOT walkable (water)'}{' | autotile edges' if g['autotile'] else ''} | {en('g:' + g['id'], g['id'])}" for g in D["grounds"]]
+for o in ([] if OUT else D["objects"]):
     rule = RULE[o["kind"]]
     if o["kind"] == "floor" and o["h"] == 0: rule = "no footprint: an overlay drawn with its top-left art cell at x,y over whatever is there (tabletop item on a table/bench top cell, or an item on a wall face)"
     if o["stairs"] == "up" and o["kind"] == "wall": rule = "stairs up: against-wall at the north wall (first floor row), climbs into the wall"
@@ -54,7 +64,7 @@ for o in D["objects"]:
     fp = f"{o['w']}x1 on the wall face" if o["kind"] == "hang" else ("overlay" if o["h"] == 0 and o["kind"] == "floor" else f"{o['w']}x{o['h']}{tall}")
     if o["kind"] in ("door", "sidedoor", "flat") and o["h"] == 0: fp = "1 cell"
     L.append(f"{o['id']} | {fp} | {rule} | {en('o:' + o['id'], o['id'])}")
-L += ["", "# Floors (region 'floor' id) — " + "; ".join(f"{f['id']} = {en('f:' + f['id'], f['id'])}" for f in D["floors"]),
+if not OUT: L += ["", "# Floors (region 'floor' id) — " + "; ".join(f"{f['id']} = {en('f:' + f['id'], f['id'])}" for f in D["floors"]),
       "# Walls (region 'wall' id) — " + "; ".join(f"{f['id']} = {en('w:' + f['id'], f['id'])}" for f in D["walls"])]
 if D["tables"]:
     L += ["", "# Sized pieces (any size: put them in 'objects' with the size in the id, e.g. '<id> 3x2'; one-row ones only Wx1)"]
@@ -80,6 +90,8 @@ def card(label, cells):   # cells: (dx, dy, tile, layer)
     cv = Image.new("RGBA", (max(im.width, tw), im.height + 14), (30, 30, 36, 255)); cv.alpha_composite(im, (0, 0))
     ImageDraw.Draw(cv).text((2, im.height + 1), label, fill=(255, 255, 255), font=F)
     cards.append(cv)
+for g in D.get("grounds", []):
+    card("ground:" + g["id"], [(x, y, g["tiles"][(y * 2 + x) % len(g["tiles"])] if not g["autotile"] else g["tiles"][0], 1) for y in range(2) for x in range(2)])
 for f in D["floors"]:
     card("floor:" + f["id"], [(x, y, f["tiles"][((y % f["rows"]) * f["cols"] + x % f["cols"]) * 4], 1) for y in range(2) for x in range(2)])
 for w in D["walls"]:

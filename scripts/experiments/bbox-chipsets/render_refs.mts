@@ -1,5 +1,5 @@
 // bbox-chipsets: render each place's judge anchors = that chipset's own existing example maps, with the same review renderer as the runs.
-//   bun render_refs.mts <base dir> <out dir> <tilesetId> <src>...     src = jpx:<name> | mcx:<name> (HandInteriorInput example files) | wzr:<name> (regionReferences map snapshot)
+//   bun render_refs.mts <base dir> <out dir> <tilesetId> <src>...     src = jpx:<name> | mcx:<name> (HandInteriorInput example files) | wzr:<name> | jbr:<map key in joseon-village.json> (map snapshots)
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildHandInteriorLayers } from "../../../src/editor/handInterior/builder";
@@ -17,7 +17,10 @@ for (const src of srcs) {
   const [kind, name] = src.split(":") as [string, string];
   const id = `ref-${name}`;
   let m: any;
-  if (kind === "wzr") {
+  if (kind === "jbr") {
+    const snap = JSON.parse(readFileSync("src/project/regionReferences/joseon-village.json", "utf8")).maps[name];
+    m = { ...proto, ...snap, id, events: [], tilesetId: TS };
+  } else if (kind === "wzr") {
     const snap = JSON.parse(readFileSync(`src/project/regionReferences/${name}.json`, "utf8")).map;
     m = { ...proto, ...snap, id, events: [], tilesetId: TS };
   } else {

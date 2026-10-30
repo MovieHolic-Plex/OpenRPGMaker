@@ -11,5 +11,5 @@ PLACES = {
                  "rooms": "", "query": "교실 마법약 책상 칠판 솥 교탁 책 의자 classroom desk", "max": 60,
                  "kind": "실내 방 하나", "anchors": ["wzr:wz-space-potions", "wzr:wz-space-library", "wzr:wz-space-shared-common"]},
     "joseon-yard": {"tileset": "joseon_baram", "request": "조선 양반가의 안마당을 만들어 줘. 대문으로 들어와 사랑채와 안채가 마당을 둘러싼 집이야.",
-                    "rooms": "", "query": "", "max": 60, "kind": "야외 장소 하나", "anchors": []},
+                    "mode": "outdoor", "rooms": "", "query": "기와 대문 담 마당 장독 우물 나무 정자 사당 연못 꽃 화분 돌 판석 풀 흙길 행랑 항아리 평상 굴뚝", "max": 70, "kind": "야외 장소 하나", "anchors": ["crop:jv20-compound", "crop:jv20-compound-wide"]},
 }

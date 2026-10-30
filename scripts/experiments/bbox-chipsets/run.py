@@ -43,6 +43,28 @@ User request (Korean): {REQ}
  "objects": [{{"id": "<catalog id>", "x": X, "y": Y, "repeat": {{"count": 4, "dx": 2, "dy": 0}}, "purpose": "..."}}]}}
 x,y of a piece = the top-left cell of its footprint. "repeat" is optional (count copies, each shifted by dx,dy). carpets/daises only if the catalog lists them. Sized pieces go in "objects" with the size in the id (e.g. "<id> 3x2").
 Design a specific, lived-in room that fits the request: not a plain rectangle — use several regions (side rooms, alcoves, an L or two-part shape), a clear landmark, distinct functional zones, and enough furniture and decoration that no large floor area is empty."""
+if P.get("mode") == "outdoor":
+    PROMPT = f"""You design one RPG outdoor place as an exact cell layout. Your JSON is laid onto the map cell by cell by code that only executes it — every ground cell and every piece you write is exactly what appears, nothing is added.
+
+User request (Korean): {REQ}
+
+{catalog}
+# Grid rules (16px cells, x to the right, y down, origin top-left, 3/4 top-down view: buildings show roof and front wall, the door is on the front (south) side)
+- The whole map is first filled with the 'base' ground, then each 'grounds' rect is painted in order (later rects win). Autotile grounds draw their own edges.
+- A piece is stamped whole at x,y = top-left of its art box. Two pieces may not both draw the same cell (only '.' cells of a piece may share a cell with another piece).
+- X cells block walking; o cells are walkable (eaves/canopy you walk behind, or flat art). Pieces must lie inside the map.
+- Every building needs a walkable approach to the cell right below its door (the bottom row of its art box). Walls are built from small wall pieces placed cell by cell (use "repeat").
+- The entrance is one walkable cell on the map edge (usually the bottom row), where the player arrives. Keep walking paths from the entrance to every area and building door.
+
+# Output: one JSON object only, no prose
+{{"map": {{"w": W, "h": H}},
+ "base": "<ground id>",
+ "grounds": [{{"id": "<ground id>", "x": X, "y": Y, "w": W, "h": H, "purpose": "..."}}],
+ "landmark": {{"id": "...", "x": X, "y": Y, "purpose": "..."}},
+ "entrance": {{"x": X, "y": H-1}},
+ "objects": [{{"id": "<catalog id>", "x": X, "y": Y, "repeat": {{"count": 4, "dx": 1, "dy": 0}}, "purpose": "..."}}]}}
+"repeat" is optional (count copies, each shifted by dx,dy). Do not repeat the landmark inside "objects".
+Design a specific, lived-in place that fits the request: a clear landmark, distinct functional zones, enclosing walls where they belong, and enough pieces that no large ground area is empty."""
 open(f"{G}/prompt.txt", "w").write(PROMPT)
 IMG = "data:image/png;base64," + base64.b64encode(open(f"{RUNS}/cat/palette-{task}.png", "rb").read()).decode()
 msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT}, {"type": "image_url", "image_url": {"url": IMG}}]}]
@@ -70,7 +92,7 @@ def parse(text):
 def lay(n, layout, render=False):
     f = f"{G}/layout-{n}.json"; json.dump(layout, open(f, "w"), indent=1)
     out = f"{G}/lay-{n}" if not render else G
-    p = subprocess.run(["bun", "scripts/experiments/bbox-chipsets/lay.mts", TS, f, out, f"{RUNS}/base"] + (["--render"] if render else []),
+    p = subprocess.run(["bun", "scripts/experiments/bbox-chipsets/" + ("lay_outdoor.mts" if P.get("mode") == "outdoor" else "lay.mts"), TS, f, out, f"{RUNS}/base"] + (["--render"] if render else []),
                        capture_output=True, text=True, env=dict(os.environ, OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite"))
     try: return json.loads(p.stdout.strip().splitlines()[-1])
     except Exception: return {"ok": False, "errors": ["painter crashed: " + (p.stderr or p.stdout)[-500:]], "warnings": []}

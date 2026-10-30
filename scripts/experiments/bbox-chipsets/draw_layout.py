@@ -16,6 +16,10 @@ for i, r in enumerate(L.get("regions", [])):
     d.rectangle([x, y, x + w - 1, y + h - 1], fill=col(i, 55), outline=col(i), width=2)
     d.rectangle([x, y, x + w - 1, y + 2 * C - 1], fill=(0, 0, 0, 70))   # wall-face rows
     d.text((x + 4, y + h - 16), f"{r.get('id','')}: {r.get('floor')}/{r.get('wall')}", fill=col(i), font=FB)
+for i, r in enumerate(L.get("grounds", [])):
+    x, y, w, h = r["x"] * C, r["y"] * C, r["w"] * C, r["h"] * C
+    d.rectangle([x, y, x + w - 1, y + h - 1], fill=col(i + 3, 45), outline=col(i + 3), width=2)
+    d.text((x + 4, y + h - 16), f"ground {r.get('id')}", fill=col(i + 3), font=FB)
 for o in L.get("openings", []):
     d.rectangle([o["x"] * C, o["y"] * C, (o["x"] + o.get("w", 1)) * C - 1, (o["y"] + o.get("h", 1)) * C - 1], fill=(120, 220, 120, 140))
 e = L.get("entrance")
