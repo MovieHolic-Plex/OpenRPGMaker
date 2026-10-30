@@ -41,7 +41,7 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   fio: { name: "피오", stem: "green-cap-blonde", tex: "tex_easyrpg_charset_actor2", resource: "easyrpg-charset-actor2", index: 7, side: "right" },
   kkur: { name: "꾸르", stem: "monster-green-scar", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 5, side: "right" },
   clerk: { name: "접수원 리나", stem: "people1-blonde-woman", tex: "tex_easyrpg_charset_people1", resource: "easyrpg-charset-people1", index: 3, side: "right" },
-  goblin: { name: "고블린", stem: "monster-pig", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 2, side: "right" },
+  goblin: { name: "고블린", stem: "monster-red-demon", tex: "tex_easyrpg_charset_monster1", resource: "easyrpg-charset-monster1", index: 1, side: "right" },
   // v8 톤 검수: 판타지 미형 흉상으로는 「3학년 7반 배재민」 명찰 폭로가 그림으로 증명되지 않았다 — 15년 입은 회색 교복 그대로.
   maou: { name: "마왕", stem: "uni-boy-grey", modern: true, tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 1, side: "right" },
   /** 명찰을 읽은 뒤의 같은 사람. */

@@ -133,7 +133,7 @@ function shotGlow(project: Project, classMap: string): void {
   sfx(project, id, "hum", SE.hum, 1500, 3600, 0.7);
   captions(project, id, [
     { atMs: 300, text: "바닥에 원이 번진다. 테두리에 작은 글씨.", color: INK.narr },
-    { atMs: 2700, text: "민재 「…이것도 끝까지 읽어야 되나.」", color: INK.minjae },
+    { atMs: 2700, text: "민재 「…테두리에 날짜? 「2009. 11. 11」.」", color: INK.minjae },
   ]);
 }
 
@@ -150,7 +150,7 @@ function shotFlash(project: Project, classMap: string): void {
   screenTint(project, id, "white", "#ffffff", 1, "source-over", [{ atMs: 0, value: 0 }, { atMs: 1600, value: 0.25 }, { atMs: 3200, value: 1, ease: "ease-in" }]);
   sfx(project, id, "summon", SE.summon, 900, 1500, 0.9);
   sfx(project, id, "boom", SE.boom, 2900, 700, 0.6);
-  captions(project, id, [{ atMs: 200, text: "민재 「「…일곱 번째」?」", color: INK.minjae }]);
+  captions(project, id, [{ atMs: 200, text: "민재 「15년 전 날짜가 왜 여기…」", color: INK.minjae }]);
 }
 
 export function buildIsekaiOpening(project: Project, classMap: string): void {

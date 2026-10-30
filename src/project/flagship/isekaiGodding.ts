@@ -25,7 +25,7 @@ import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { ACTOR, BACKDROP, ITEM, setupIsekaiDatabase, TROOP } from "./isekaiGoddingDb";
 import {
   bgm, caption, type Cell, choices, emote, event, execTool, faceHero, fadeIn, fadeOut, flash, gone, ifCond, m2, mustReach,
-  mustBlock, mustWalk, nearestFree, note, page, playSe, reachableCells, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, varAtLeast, varIs, wait, walkTo,
+  mustBlock, mustWalk, nearestFree, note, page, playSe, reachableCells, say, setSw, setVar, shake, stopBgm, swOff, swOn, think, tint, varAtLeast, varIs, wait, walkTo,
 } from "./isekaiGoddingKit";
 import { applyIsekaiGoddingLore } from "./isekaiGoddingLore";
 import { buildIsekaiOpening, DESK, setupIsekaiTitle } from "./isekaiGoddingOpening";
@@ -111,21 +111,15 @@ const battle = (troopId: string, victory: Command[], defeat: Command[], music = 
 ];
 const setLight = (ambient: number, color: string, ms = 0): Command => ({ kind: "setLighting", ambient, color, transitionMs: ms } as Command);
 /**
- * 왕좌의 꼴 — 배재민이 전투에서 악마 그림이 되는 이유를 화면에 먼저 보인다(v8b 두 검수자: 대화는 교복 소년, 전투는 기성 악마라
- * 같은 사람으로 안 읽혔다). 전투와 같은 그림(generated-enemy-demon-lord)을 픽처로 띄웠다 지운다. 새 그림·생성 인물 없음.
+ * 왕좌의 꼴 — v8c 두 검수자: 기성 악마·리치 그림은 「같은 사람」으로 안 읽혔다. 새 그림 없이, 전투에서도 걷기 칩의
+ * 배재민을 두 배로 세우고 검은 안개(state_ig_shadow · dark-fog)를 두른다. 여기서는 화면을 보랏빛으로 눌러 그 안개를 먼저 보인다.
  */
-const MAOU_FORM_PIC = "pic_ig_maou_form";
-const MAOU_FORM_ART = "generated-enemy-demon-lord";
 const throneForm = (): Command[] => [
-  playSe(SE_BOOM), shake(700, "3"), flash("white", 250),
-  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 152, y: 0, scale: 100, opacity: 0, waitForPicture: false } as Command,
-  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 152, y: 0, scale: 100, opacity: 235, durationMs: 700, easing: "easeOut", waitForPicture: true } as Command,
+  playSe(SE_BOOM), shake(700, "3"), tint("40,12,64,0.5", 700), wait(700),
   ...caption("왕좌의 그림자가 배재민 위로 내려앉았다.\n15년 동안 앉아 있던 모양 그대로."),
-  { kind: "showPicture", pictureId: MAOU_FORM_PIC, resourceId: MAOU_FORM_ART, x: 152, y: 0, scale: 100, opacity: 0, durationMs: 300, waitForPicture: true } as Command,
-  { kind: "erasePicture", pictureId: MAOU_FORM_PIC } as Command,
 ];
 /** 전투 뒤 — 그림자가 걷히고 교복이 다시 보인다. */
-const formLifts = (): Command[] => [...caption("그림자가 걷혔다. 회색 교복이 다시 보였다.")];
+const formLifts = (): Command[] => [tint("neutral", 600), wait(600), ...caption("그림자가 걷혔다. 회색 교복이 다시 보였다.")];
 const custom = (map: GameMap, resourceId: string): void => { map.bgm = { mode: "custom", resourceId } as GameMap["bgm"]; };
 
 // ── 마왕성 장식 ──
@@ -360,9 +354,11 @@ function buildHall(project: Project, b: Built): void {
     ]),
     ...say("king", "serious", "귀환 주문서는 마왕성 꼭대기에 있소.\n먼저 광장 앞 모험가 길드에 등록하시오."),
     walkTo(EDEL, nearestFree(project, map, { x: kingAt.x + 1, y: kingAt.y + 2 }, [kingAt, priestAt])),
-    ...say("edel", "serious", "기사 에델입니다.\n용사님 호위는 이번이 일곱 번째입니다."),
-    ...say("minjae", "doubtful", "앞의 여섯 분은요?"),
+    ...say("edel", "serious", "기사 에델입니다.\n용사님 호위를 맡았습니다."),
+    ...say("minjae", "doubtful", "앞의 용사님들은요?"),
     emote(EDEL, "ellipsis", 900),
+    ...say("edel", "worried", "마지막 분은 15년 전에 오셨습니다.\n회색 교복 차림이셨다고 들었습니다."),
+    ...think("교복? 15년 전이면… 바닥 원에 있던 날짜."),
     ...say("edel", "worried", "길드부터 가시지요."),
     setVar(V_STAGE, "=", 1),
     ...join(ACTOR.edel, "에델"),
@@ -521,11 +517,11 @@ function buildGuild(project: Project, _b: Built): void {
     walkTo(FIO, { x: clerkAt.x + 1, y: clerkAt.y + 2 }),
     ...say("fio", "shy", "앞자리 드릴게요. 저는 매일 오거든요."),
     ...say("minjae", "doubtful", "매일?"),
-    ...say("fio", "sad", "마탑 필기에 일곱 번 떨어졌어요.\n일곱 번 떨어지면 길드 등록만 돼요. 오늘이에요."),
+    ...say("fio", "sad", "마탑 필기에 또 떨어졌어요.\n이제 길드 등록밖에 안 남았어요. 오늘이에요."),
     ...say("minjae", "base", "왜 떨어졌는데?"),
-    ...say("fio", "worried", "실기는 다 만점인데요.\n필기는… 문제를 끝까지 안 읽는대요."),
+    ...say("fio", "worried", "실기는 다 만점인데요.\n필기는… 문제를 반만 읽고 고른대요."),
     ...say("fio", "shy", "용사 파티에 들면 마탑 추천서가 나와요.\n데려가 주실래요?"),
-    ...say("minjae", "base", "끝까지 읽는 거, 가는 길에 연습하자."),
+    ...say("minjae", "base", "그거 나도 그래. 가는 길에 같이 고치자."),
     ...say("clerk", "base", "용사 등록 끝났어요. 등급은 맨 아래, 「견습」."),
     setVar(V_STAGE, "=", 2),
     ...join(ACTOR.fio, "피오"),
@@ -635,8 +631,8 @@ function buildGoblin(project: Project, b: Built): void {
   const diplo = (): Command => setVar(V_DIPLO, "+=", 1);
   const kkurJoins: Command[] = [
     ...say("minjae", "base", "마왕성 가는 길, 알아요?"),
-    ...say("kkur", "serious", "안다. 보수 기록에 있다. 북쪽 숲 위."),
-    ...say("kkur", "serious", "문 앞에 시험관이 있다. 앞 용사 여섯, 다 통과했다.\n그다음이 문제였다."),
+    ...say("kkur", "serious", "안다. 도로 보수 기록에 올라 있다. 북쪽 숲 너머다."),
+    ...say("kkur", "serious", "성문 앞에 시험관이 있다. 앞의 용사들은 다 통과했다.\n문제는 그다음이었다."),
     ...say("fio", "worried", "시험이요…"),
     setVar(V_STAGE, "=", 4),
     ...join(ACTOR.kkur, "꾸르"),
@@ -650,36 +646,36 @@ function buildGoblin(project: Project, b: Built): void {
     walkTo(CHIEF, { x: g.entry.x + 3, y: g.entry.y + 1 }),
     ...say("chief", "worried", "죄송합니다, 여행자님.\n이 길은 사람이랑 고블린이 반반 쓰는 길인데…"),
     walkTo(KKUR, { x: g.entry.x + 4, y: g.entry.y + 1 }),
-    ...say("kkur", "angry", "길은 우리가 닦았다. 삼십 년.\n너희는 한 푼도 안 냈다."),
+    ...say("kkur", "angry", "이 길은 우리가 닦았다. 삼십 년 동안.\n보수비는 한 푼도 들어오지 않았다."),
     ...say("chief", "annoyed", "그 대신 밭을 내줬잖소."),
-    ...say("kkur", "serious", "밭 내준 건 장부에 없다."),
+    ...say("kkur", "serious", "밭을 내준 기록은 장부에 없다."),
     ...think("둘 다 장부 얘기만 하네."),
     ...say("minjae", "base", "장부 보여 주세요. 둘 다."),
     playSe(SE_PAPER),
     ...caption("고블린 장부엔 30년 치 도로 보수가, 마을 장부엔 30년 치 밭 세가 적혀 있다.\n두 합계는 은화 열두 닢 차이다."),
     ...say("fio", "surprised", "거의 같아요."),
     choices([
-      { text: "받을 돈이 서로 같네요. 열두 닢만 정산하죠", then: [diplo(), ...say("kkur", "doubtful", "계산은 맞다."), ...say("chief", "sad", "30년을 싸웠는데, 열두 닢이오?")] },
-      { text: "앞으로는 입장료를 받아서 반반 나누죠", then: [diplo(), ...say("chief", "base", "그거 괜찮소."), ...say("kkur", "serious", "셈은 내가 한다.")] },
+      { text: "받을 돈이 서로 같네요. 열두 닢만 정산하죠", then: [diplo(), ...say("kkur", "doubtful", "계산은 맞다. 이의 없다."), ...say("chief", "sad", "30년을 싸웠는데, 열두 닢이오?")] },
+      { text: "앞으로는 입장료를 받아서 반반 나누죠", then: [diplo(), ...say("chief", "base", "그거 괜찮소."), ...say("kkur", "serious", "정산은 내가 맡겠다.")] },
       { text: "원래 왕궁이 냈어야죠. 왕도 길이잖아요", then: [diplo(), ...chaos(),
-        ...say("kkur", "doubtful", "왕궁. 맞다. 왕궁 길이다."), ...say("chief", "worried", "청구서는 누가 쓰오?"), ...say("minjae", "base", "제가요. 받는 사람, 국왕 루드릭.")] },
+        ...say("kkur", "doubtful", "왕궁 소유 도로라. 맞는 말이다."), ...say("chief", "worried", "청구서는 누가 쓰오?"), ...say("minjae", "base", "제가요. 받는 사람, 국왕 루드릭.")] },
     ]),
     ...say("goblin", "base", "그럼 오늘 몫은? 셋이면 아홉 닢."),
     choices([
       { text: "오늘 건 낸다", then: [diplo(), playSe(SE_COIN), ...caption("에델이 자기 지갑에서 은화 아홉 닢을 셌다."), ...say("edel", "serious", "의전비로 처리하겠습니다.")] },
       { text: "왕궁 앞으로 달아 두세요", then: [diplo(), ...chaos(), ...say("goblin", "base", "왕궁 앞. 적었다.")] },
-      { text: "안 낸다. 비켜", then: [...say("kkur", "angry", "그럼 길도 없다.")] },
+      { text: "안 낸다. 비켜", then: [...say("kkur", "angry", "그러면 통행은 불허한다.")] },
     ]),
     ifCond(varAtLeast(V_DIPLO, 2), [
       playSe(SE_OK),
       ...say("chief", "content", "30년 만에 셈을 맞춰 봤소. 진작 할걸."),
-      ...say("kkur", "content", "너, 끝까지 읽는다. 드문 인간이다."),
+      ...say("kkur", "content", "정산 완료. 인간 쪽 장부까지 다 읽은 자는 처음이다."),
       ...kkurJoins,
     ], [
-      ...say("kkur", "angry", "말로 안 되면 말뚝으로 한다."),
+      ...say("kkur", "angry", "말로 안 되면 말뚝으로 받아 내겠다."),
       ...battle(TROOP.goblin,
-        [...say("kkur", "surprised", "너 약한데 안 도망간다."), ...say("minjae", "annoyed", "말로 했으면 더 빨랐어요.")],
-        [...caption("민재 일행은 흙바닥에 뒹굴었다. 꾸르도 숨이 찼다."), ...say("kkur", "doubtful", "너 약한데 안 도망간다. 이상한 인간이다.")]),
+        [...say("kkur", "surprised", "약한데 도망가지 않는군."), ...say("minjae", "annoyed", "말로 했으면 더 빨랐어요.")],
+        [...caption("민재 일행은 흙바닥에 뒹굴었다. 꾸르도 숨이 찼다."), ...say("kkur", "doubtful", "약한데 도망가지 않는다. 장부에 적어 두겠다.")]),
       bgm(BGM_GOBLIN, 600),
       ...kkurJoins,
     ]),
@@ -697,7 +693,7 @@ function buildGoblin(project: Project, b: Built): void {
   ]));
   map.events.push(event("ev_ig_v_kid", "꼬마 고블린", kidAt, [
     page("ev_ig_v_kid_p", [], [faceHero("ev_ig_v_kid"),
-      ...say("goblin", "worried", "마왕성 문 앞 해골, 문제를 낸다.\n틀리면 맞는다."),
+      ...say("goblin", "worried", "마왕성 문 앞 해골이 문제를 내요.\n틀리면 맞아요."),
     ], { who: "goblin" }),
   ]));
 }
@@ -728,7 +724,7 @@ function buildCastle(project: Project, b: Built): void {
     ...battle(TROOP.quiz, [...say("examiner", "base", "채점 끝. ③을 골랐어야 했다. 지나가라.")], [...caption("해골은 빨간 펜으로 ③에 동그라미를 치고 물러났다.")]), bgm(BGM_CASTLE, 600)];
   const quiz: Command[] = [
     emote(EX, "exclamation", 700), playSe("easyrpg-sound-darkness3"), shake(300, "1"),
-    ...say("examiner", "base", "멈춰라. 마왕성 출입 시험이다.\n문제를 끝까지 들어라."),
+    ...say("examiner", "base", "멈춰라. 마왕성 출입 시험이다.\n한 문제. 틀리면 맞는다."),
     ...say("examiner", "base", "다음 중 옳지 않은 것은?\n① 마왕은 꼭대기에 있다. ② 귀환 주문서는 한 장이다."),
     ...say("examiner", "base", "③ 앞 용사 여섯은 대본대로 해서 이겼다."),
     ...say("fio", "surprised", "②요! 주문서가 한 장일 리가 없어요."),
@@ -775,8 +771,8 @@ function buildCastle(project: Project, b: Built): void {
     ...battle(TROOP.dean,
       [...say("dean", "base", "졌소. 그래도 보고서엔 「용사 낙오」로 적겠소.\n양식에 「승리」 칸이 없소."),
         ...say("edel", "sad", "여섯 분 다 「낙오」로 적혀 있었습니다."),
-        ...say("minjae", "base", "일곱 번째 보고서는 에델 씨가 써요."),
-        ...say("kkur", "serious", "거짓으로 적는 놈이다.")],
+        ...say("minjae", "base", "이번 보고서는 에델 씨가 써요."),
+        ...say("kkur", "serious", "허위 기재다. 정정을 요구한다.")],
       [...caption("감독관은 쓰러진 일행을 「낙오」로 적고 돌아갔다.\n한참 뒤에 일행이 일어났다.")], BGM_BOSS),
     bgm(BGM_CASTLE, 600),
     setSw(SW_DEAN), setVar(V_STAGE, "=", 5),
@@ -925,8 +921,8 @@ function endingHome(): Command[] {
   return [
     ...say("jaemin", "base", "가자. 이번엔 도망 안 간다."),
     ...say("edel", "serious", "대본 뒷장은 제가 쓰겠습니다.\n이번엔 이름을 제대로 적겠습니다."),
-    ...say("fio", "content", "문제, 끝까지 읽을게요."),
-    ...say("kkur", "serious", "보호자 동반. 적었다."),
+    ...say("fio", "content", "필기 다시 볼게요. 「않은」까지 읽고요."),
+    ...say("kkur", "serious", "보호자 동반. 기록했다."),
     flash("white", 700), playSe(SE_SUMMON), ...fadeOut(800),
     stopBgm(), setSw(SW_HOME),
     { kind: "transfer", mapId: M.class, x: room.x, y: room.y, direction: "up", fade: "white" } as Command,
@@ -970,7 +966,7 @@ function endingStayArrive(): Command[] {
     ...caption("한 달 뒤. 길드 주방에 새 일꾼이 들어왔다."),
     ...say("cook", "base", "떡볶이 둘. 순대는 아직 연구 중."),
     ...say("jaemin", "base", "어서 오십시오."),
-    ...say("kkur", "serious", "오늘 매출, 적었다."),
+    ...say("kkur", "serious", "오늘 매출, 기록했다."),
     ...caption("주방 벽에 2010학년도 수능 시간표가 붙어 있다. 아무도 떼지 않는다."),
     ...think("주문서는 아직 가방에 있다. 둘 다 아직 안 썼다."),
     ...endingCommon(END_STAY),
@@ -1011,7 +1007,7 @@ function endingChaosArrive(): Command[] {
     ], [
       ...caption("왕국 연대기에 한 줄이 남았다.\n「일곱 번째 용사 강민재. 대본 일부 이탈. 생존.」"),
     ]),
-    ...say("kkur", "serious", "장부에 적었다. 생존, 다섯."),
+    ...say("kkur", "serious", "장부에 기록했다. 생존 다섯."),
     ...endingCommon(END_CHAOS),
   ];
 }

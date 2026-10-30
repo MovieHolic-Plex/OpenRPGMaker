@@ -36,6 +36,8 @@ export const BACKDROP = {
   throne: throneBackdrop.resource.id,
 };
 
+/** 마왕 전투 첫 차례에 걸리는 검은 안개(오라만 있고 능력치는 그대로). */
+export const STATE_SHADOW = "state_ig_shadow";
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP = BACKDROP): void {
@@ -55,13 +57,13 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   skill("skill_hero_war_cry", "skill_ig_focus_fire", { name: "점사 지시", mpCost: mp(4), description: "「저거 하나만. 다 같이.」 파티 모두 공격이 오른다. 대본 4장과 정반대다." });
   skill("skill_sleep_mist", "skill_ig_lunch_line", { name: "줄 세우기", mpCost: mp(5), scope: "allEnemies", successRate: 70,
     description: "「번호 부르면 오세요.」 적이 제 차례를 기다린다(잠듦). 길드에서 먹힌 방법이다." });
-  skill("skill_weaken", "skill_ig_ping", { name: "약점 짚기", mpCost: mp(2), description: "문제를 끝까지 읽으면 보이는 곳. 적 하나의 방어가 내려간다." });
+  skill("skill_weaken", "skill_ig_ping", { name: "약점 짚기", mpCost: mp(2), description: "작은 글씨에 적힌 곳. 적 하나의 방어가 내려간다." });
   skill("skill_cleric_mass_heal", "skill_ig_share_snack", { name: "소보로빵 반 쪼개기", mpCost: mp(8), description: "야자 때 먹으려던 빵. 넷이 나누면 한 입씩이다. 파티 모두 회복." });
   // ── 에델(기사) — 의전
-  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "용사 앞을 막는 의전용 자세. 여섯 번 했고, 이번엔 진짜로 막는다. 파티 모두 방어가 오른다." });
+  skill("skill_guard_iron_wall", "skill_ig_protocol_wall", { name: "의전 방패", mpCost: mp(4), description: "용사 앞을 막는 의전용 자세. 연습만 해 봤고, 이번엔 진짜로 막는다. 파티 모두 방어가 오른다." });
   skill("skill_hero_cross_slash", "skill_ig_royal_slash", { name: "왕실 정식 베기", mpCost: mp(5), description: "대본 3장 2절에 그림까지 실린 검술. 그림이 틀렸다." });
   // ── 피오(엘프 마법사) — 기출 변형
-  skill("skill_fire", "skill_ig_exam_fireball", { name: "실기 파이어볼", mpCost: mp(5), power: 95, description: "실기는 일곱 번 다 만점이었다. 시험관만 없으면 정확하다." });
+  skill("skill_fire", "skill_ig_exam_fireball", { name: "실기 파이어볼", mpCost: mp(5), power: 95, description: "실기는 늘 만점이었다. 시험관만 없으면 정확하다." });
   skill("skill_mage_chain_lightning", "skill_ig_summary_bolt", { name: "연쇄 번개", mpCost: mp(9), description: "필기 시험 단골 문항. 쓰는 법은 알고, 문제는 끝까지 안 읽었다. 적 모두를 친다." });
   // ── 꾸르(고블린 족장 · 도로 보수 장부)
   skill("skill_scout_knife_storm", "skill_ig_group_call", { name: "보수 인부 소집", mpCost: mp(6), description: "30년 동안 길을 닦은 인부들이다. 일당은 장부에 달아 둔다. 적 모두를 친다." });
@@ -107,7 +109,7 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
       characterResourceId: CAST[who].resource, characterIndex: CAST[who].index, faceResourceId: `shared-${CAST[who].stem}-expressions-bust-base`,
       ...(battle ? { battleCharacterResourceId: battle } : {}), learnedSkills: [], parameterCurves: STATS[who],
     } });
-  fantasyActor(ACTOR.edel, "에델", "왕국 기사 · 일곱 번째 용사 호위", CLASS.knight, "edel", 6, "charset-battler-actor1-3");
+  fantasyActor(ACTOR.edel, "에델", "왕국 기사 · 용사 호위", CLASS.knight, "edel", 6, "charset-battler-actor1-3");
   fantasyActor(ACTOR.fio, "피오", "엘프 마법사 · 마탑 필기 7회 낙방", CLASS.mage, "fio", 5, "charset-battler-actor2-7");
   fantasyActor(ACTOR.kkur, "꾸르", "고블린 족장 · 도로 보수 장부", CLASS.chief, "kkur", 6, "party-pixel-monster1-5");
   exec("set_session_start", { party: [ACTOR.minjae], gold: 0 });
@@ -142,6 +144,14 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
     exec("upsert_enemy", { enemy: { id, name, monsterResourceId: art, stats, actions, skillIds: actions.map((a) => a.skillId), level,
       rewards: { ...(base.rewards as Record<string, unknown>), exp, gold, dropRatePercent: 0 }, ...extra }, clearFields: ["speciesId"] });
   };
+  // v8c 검수(두 검수자): 「보스 HP 가 파티원보다 낮다」·「줄 세우기로 마왕이 잠든다」 — 보스는 잠들지 않는다(E = 0%).
+  // 보스 그림(v8c 「흔한 리치·마왕 그림」): 새 그림 없이 그 사람의 걷기 칩을 두 배로 세운다 — 필드에서 본 같은 사람이다.
+  // 보스 HP 는 파티원 최대(L9 꾸르 736)보다 높게 보이고(감독관 950 · 마왕 1000), 받는 피해를 230% 로 둬 길이·위협은 그대로다
+  // (simulate_battle 30판: 감독관 5.9타·파티 HP 55% 손실, 마왕 6.3타·58% — 400·430 일 때 5.7·6.2 와 같다).
+  const BOSS_DAMAGE_TAKEN = { physical: 230, magic: 230 };
+  const BOSS_STATE_RATES = { ...(enemyOf("enemy_slime").stateRates as Record<string, string>), state_sleep: "E" };
+  exec("upsert_state", { state: { id: STATE_SHADOW, name: "15년의 그림자", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", clearOnBattleEnd: true,
+    description: "왕좌에 15년 앉아 있던 모양이 몸 위에 내려앉았다." } });
   enemy("enemy_ig_slime", "들슬라임", "generated-enemy-slime-green", { maxHp: 180, maxMp: 0, attack: 88, defense: 10, mind: 10, agility: 75 },
     [act("skill_attack", 7)], 40, 25, 3);
   enemy("enemy_ig_slime_red", "붉은 슬라임", "generated-enemy-slime-red", { maxHp: 220, maxMp: 0, attack: 100, defense: 12, mind: 12, agility: 80 },
@@ -153,14 +163,16 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   enemy("enemy_ig_quiz", "성문 시험관", "generated-enemy-skeleton-knight", { maxHp: 600, maxMp: 0, attack: 66, defense: 40, mind: 30, agility: 36 },
     [act("skill_attack", 6), act("skill_ig_pop_quiz", 8)], 160, 90, 10);
   enemy("enemy_ig_dean", "대본 감독관", "generated-enemy-lich-frost", { maxHp: 400, maxMp: 50, attack: 160, defense: 38, mind: 60, agility: 90 },
-    [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12, { role: "boss" });
+    [act("skill_ig_pop_quiz", 7), act("skill_ig_mock_exam", 8, { kind: "turn", start: 2, interval: 3 })], 260, 150, 12,
+    { role: "boss", walkChip: { characterResourceId: CAST.dean.resource, characterIndex: CAST.dean.index }, battleScalePercent: 200, stateRates: BOSS_STATE_RATES, damageTypeRates: BOSS_DAMAGE_TAKEN });
   enemy("enemy_ig_maou", "마왕", "generated-enemy-demon-lord", { maxHp: 430, maxMp: 80, attack: 170, defense: 45, mind: 70, agility: 92 },
-    [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15, { role: "boss" });
+    [act("skill_attack", 5), act("skill_ig_retake", 8), act("skill_ig_mock_exam", 9, { kind: "turn", start: 2, interval: 3 })], 500, 300, 15,
+    { role: "boss", walkChip: { characterResourceId: CAST.maou.resource, characterIndex: CAST.maou.index }, battleScalePercent: 200, stateRates: BOSS_STATE_RATES, damageTypeRates: BOSS_DAMAGE_TAKEN });
 
   // upsert_enemy 는 role:boss 에 「보스 위협 하한」(scaleBossToStartParty)을 걸어 HP 를 590·560 으로 되올린다.
   // 이 데모는 짧은 보스전(50초 안쪽)이 의도라 HP 만 저자 값으로 되돌린다(공격·민첩 하한은 그대로 둔다).
   // v8 톤 검수(두 검수자): 보스전에서 파티 HP 가 거의 안 깎여 「15년 원한의 결판」이 연습 전투보다 쉬웠다 — 공격력·기술 위력을 올렸다(HP 는 그대로).
-  for (const [id, hp] of [["enemy_ig_dean", 400], ["enemy_ig_maou", 430]] as const) {
+  for (const [id, hp] of [["enemy_ig_dean", 950], ["enemy_ig_maou", 1000]] as const) {
     const boss = project.database.enemies.find((e) => e.id === id);
     if (!boss) throw new Error(`[isekai-godding] 보스 ${id} 없음`);
     boss.stats = { ...boss.stats, maxHp: hp };
@@ -175,4 +187,10 @@ export function setupIsekaiDatabase(project: Project, backdrops: typeof BACKDROP
   troop(TROOP.dean, "대본 감독관", ["enemy_ig_dean"], backdrops.castle);
   troop(TROOP.maouExam, "마왕과 마지막 시험", ["enemy_ig_maou"], backdrops.throne);
   troop(TROOP.maouBrawl, "마왕과 7장", ["enemy_ig_maou"], backdrops.throne);
+  // 마왕 = 걷기 칩의 배재민 그대로 + 검은 안개(새 그림 없음). 첫 차례에 걸고 전투가 끝나면 풀린다.
+  for (const id of [TROOP.maouExam, TROOP.maouBrawl]) {
+    exec("upsert_troop_battle_page", { troopId: id, page: { id: `${id}_shadow`, name: "왕좌의 그림자", span: "battle", runOnce: true,
+      conditions: [{ kind: "onRound", round: 1 }],
+      commands: [{ kind: "m2Command", commandId: "m2-100-change-enemy-state", fields: { target: "enemy_ig_maou", operation: "add", value: STATE_SHADOW } }] } });
+  }
 }
