@@ -216,6 +216,8 @@ export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[]
  *  - upsert_item 회복약에 escapeTo:"entrance"·repelSteps:0(열거 첫 값·0) → «repelSteps 는 1 이상» 거절, 다시 보내자 회복약이 «던전 탈출» 아이템으로 저장됐다.
  *    이름·설명에 탈출·퇴치 낱말이 없으면 escapeTo·repelSteps·repelBelowLead 를 뺀다. repelSteps 0 은 늘 뺀다.
  *  - create_transfer_pair 끝의 doorAt 이 그 끝 x,y 와 같은 칸이면(문앞=문) doorAt 을 뺀다(terra 5/5판이 이 모양으로 처음 거절됐다).
+ * 할 일 고리 갈고리 H2(loop/argGuard.ts)가 이보다 먼저 돈다 — 빈 칸 걷기는 H2 의 일반 규칙(스키마 기반)이 하고, 여기는 낱말로만 가르는 것
+ * (회복약의 탈출·퇴치 칸)과 거절 뒤 그림 빼고 다시가 남는다. 문앞=문은 H2 가 먼저 걸을 수 있는 쪽으로 옮기고, 못 옮기면 여기서 뺀다. 겹쳐도 무해하다.
  */
 const ESCAPE_ITEM_WORD = /탈출|귀환|되돌아|입구로|escape|rope|로프|밧줄/iu;
 const REPEL_ITEM_WORD = /퇴치|기피|쫓|피하|성수|향|repel|ward/iu;
@@ -259,7 +261,7 @@ export function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
     const body = (result.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
     if (tool.name === "place_field_enemy" && /graphic 이 전투 그림과 다릅니다/u.test(body) && cleaned && typeof cleaned === "object" && "graphic" in (cleaned as object)) {
       const { graphic: _g, ...rest } = cleaned as Record<string, unknown>;
-      const second = await tool.execute(`${id}-autograph`, rest as typeof params, signal);
+      const second = await tool.execute(id, rest as typeof params, signal); // 같은 호출 id — 기록(tool_end)이 다시 놓은 성공을 싣게
       const b2 = (second.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
       if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[그림 맞춤] 준 graphic 이 전투 그림과 달라 graphic 을 빼고 다시 놓았다 — 필드 그림은 전투 그림(적 그룹 선두)에 맞췄다." }] } as typeof second;
     }
