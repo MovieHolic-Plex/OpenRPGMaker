@@ -24,8 +24,8 @@ const CANON_TONES: Record<WelcomeGenrePresetId, readonly WorldCanonTone[]> = {
   "partner-raise": ["hopeful", "slice"],
   "farm-life": ["slice", "hopeful"],
   "adventure-jrpg": ["hopeful", "mythic"],
-  "horror-gallery": ["gothic", "grim"],
-  "school-horror": ["grim", "slice"],
+  "horror-gallery": ["horror", "gothic"],
+  "school-horror": ["horror", "slice"],
   "story-cutscene": ["grim", "political"],
 };
 
