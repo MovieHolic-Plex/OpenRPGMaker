@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.369.0 — 2026-10-30
+
+### 기능
+
+- **ai** — official polish skill dialogue-polish (general-good-writing by code-yeongyu) + lint_dialogue (#3962) (`d47e34f`)
+
 ## 0.368.1 — 2026-10-30
 
 ### 수정
