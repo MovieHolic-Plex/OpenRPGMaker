@@ -204,7 +204,52 @@ export function v2ExtraToolNames(task: string): string[] {
 
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
   const names = v2ExtraToolNames(task).filter((name) => getTool(name));
-  return withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task);
+  return withTransferRelocation(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task));
+}
+
+/**
+ * 문 칸(doorAt)을 단 create_transfer_pair 가 문앞이 막혀(상자·벽·봉쇄) 또는 doorAt·x,y 모양이 어긋나 거절되면, 그 끝의 doorAt 을 빼고 한 번 더 부른다 —
+ * 편집기 도구는 doorAt 없는 끝을 시작 위치·다른 입구에서 걸어 닿는 가장 가까운 칸으로 옮겨 잇는다.
+ * 2026-10-30 omo-loop-1030 terra boss-room r1~r3: 던전 안쪽 (24,7) 문앞이 막혀 세 판 모두 link 가 막힘으로 끝났다(문 그림은 없던 자리).
+ * 옮긴 자리는 결과 글에 남고, 문 그림이 필요하면 그 자리에 stamp_object 로 찍는다.
+ */
+export function withTransferRelocation(tools: PiToolShape[]): PiToolShape[] {
+  type End = { mapId?: string; x?: number; y?: number; doorAt?: { x: number; y: number } };
+  const failed = (result: Awaited<ReturnType<PiToolShape["execute"]>>): string | undefined => {
+    const first = result.content.find((c) => c.type === "text") as { text?: string } | undefined;
+    const body = first?.text ?? "";
+    let ok = true;
+    try { ok = (JSON.parse(body) as { ok?: unknown }).ok !== false; } catch { ok = !/실행 실패/u.test(body); }
+    return ok ? undefined : body;
+  };
+  return tools.map((tool) => tool.name !== "create_transfer_pair" ? tool : {
+    ...tool,
+    async execute(id, params, signal) {
+      const args = (params && typeof params === "object" ? params : {}) as { a?: End; b?: End } & Record<string, unknown>;
+      let result: Awaited<ReturnType<PiToolShape["execute"]>>;
+      let why: string | undefined;
+      try { result = await tool.execute(id, params, signal); why = failed(result); }
+      catch (error) { why = error instanceof Error ? error.message : String(error); result = { content: [{ type: "text", text: JSON.stringify({ ok: false, summary: why }) }] } as Awaited<ReturnType<PiToolShape["execute"]>>; }
+      if (!why || signal?.aborted || !/doorAt|안전한 출입구를 만들 수 없습니다|봉쇄|겹칩니다/u.test(why)) return result;
+      // 어느 끝이 거절됐나: «A:»/«B:» 머리, 아니면 «문앞 (x,y)» 좌표가 맞는 끝, 아니면 doorAt 이 있는 끝 모두.
+      const at = /문앞 \((\d+),(\d+)\)/u.exec(why);
+      const hit = (e: End | undefined) => !!e?.doorAt && (at ? e.x === Number(at[1]) && e.y === Number(at[2]) : true);
+      const sides = /(^|[^A-Za-z])A:/u.test(why) ? ["a"] : /(^|[^A-Za-z])B:/u.test(why) ? ["b"] : (["a", "b"] as const).filter((k) => hit(args[k]));
+      // 먼저 거절된 끝만, 그래도 안 되면(도착 칸이 다른 이벤트와 겹침 등) 두 끝 모두 doorAt 을 뺀다.
+      const withDoor = (["a", "b"] as const).filter((k) => args[k]?.doorAt);
+      const tries = [sides.filter((k) => args[k as "a" | "b"]?.doorAt), withDoor].filter((t, i, all) => t.length && (i === 0 || t.join() !== all[0]!.join()));
+      let second: Awaited<ReturnType<PiToolShape["execute"]>> | undefined;
+      let drop: string[] = [];
+      for (const t of tries) {
+        const retry: Record<string, unknown> = { ...args };
+        for (const k of t) { const { doorAt: _d, ...rest } = args[k as "a" | "b"]!; retry[k] = rest; }
+        try { const r = await tool.execute(`${id}-relocate`, retry, signal); if (!failed(r)) { second = r; drop = t; break; } } catch { /* 다음 시도 */ }
+      }
+      if (!second) return result;
+      const note = `[자리 옮겨 이음] 처음 요청은 거절됐다(${why.replace(/^.*?실행 실패:\s*/u, "").slice(0, 160)}) — ${drop.map((k) => k.toUpperCase()).join("·")} 끝의 doorAt(문 칸)을 빼고 다시 불러, 걸어 닿는 가장 가까운 칸으로 옮겨 이었다(옮긴 자리는 위 결과). 문 그림이 필요하면 그 자리 위에 stamp_object 로 찍는다.`;
+      return { ...second, content: [...second.content, { type: "text", text: note }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
+    },
+  });
 }
 
 /**
