@@ -51,18 +51,37 @@ export interface IconCandidate {
   readonly meta: StoreIconMeta;
 }
 
-const ELEMENT_WORDS: readonly (readonly [string, RegExp])[] = [
-  ["fire", /불|화염|화상|열|용암|fire|flame|burn|blaze|inferno/iu], ["ice", /얼음|빙|서리|냉기|눈보라|ice|frost|freeze|blizzard|snow/iu],
-  ["thunder", /번개|뇌|전기|thunder|lightning|spark|shock|electric/iu], ["water", /물|파도|수|water|aqua|wave|tide/iu],
-  ["wind", /바람|질풍|돌풍|wind|gust|tornado|air/iu], ["earth", /땅|대지|바위|돌|지진|earth|stone|rock|quake/iu],
-  ["light", /빛|성|신성|홀리|축복|light|holy|bless|sacred|sun/iu], ["dark", /어둠|암흑|저주|그림자|dark|shadow|curse|death/iu],
-  ["poison", /독|poison|venom|toxic/iu],
+// 속성 낱말. 한 글자 낱말(불·빙·뇌·물·독·빛·땅·돌)은 낱말 전체이거나 낱말 첫 글자일 때만 맞는다 — 「열쇠」의 열, 「돌아가는」의 돌,
+// 「속성」의 성을 속성으로 잘못 읽지 않게(2026-10-31 실측: 낡은 열쇠 → 석탄, 귀환 주문서 → 대지의 결정).
+const ELEMENT_WORDS: readonly (readonly [string, readonly string[], readonly string[]])[] = [
+  ["fire", ["화염", "화상", "용암", "불꽃", "fire", "flame", "burn", "blaze", "inferno"], ["불"]],
+  ["ice", ["얼음", "빙결", "빙하", "서리", "냉기", "눈보라", "ice", "frost", "freeze", "blizzard", "snow"], ["빙"]],
+  ["thunder", ["번개", "낙뢰", "뇌전", "전기", "thunder", "lightning", "spark", "shock", "electric"], ["뇌"]],
+  ["water", ["파도", "물대포", "해일", "water", "aqua", "wave", "tide"], ["물"]],
+  ["wind", ["바람", "질풍", "돌풍", "회오리", "wind", "gust", "tornado"], []],
+  ["earth", ["대지", "바위", "암석", "지진", "earth", "stone", "rock", "quake"], ["땅"]],
+  ["light", ["신성", "성광", "성수", "홀리", "축복", "light", "holy", "bless", "sacred"], ["빛"]],
+  ["dark", ["어둠", "암흑", "저주", "그림자", "dark", "shadow", "curse"], []],
+  ["poison", ["맹독", "독침", "해독", "poison", "venom", "toxic"], ["독"]],
 ];
 
-/** 이름·설명·속성 글에서 속성 id 를 짐작한다. */
+/** 이름·설명·속성 글에서 속성 id 를 짐작한다(낱말 단위). 속성 id 자체(fire …)도 맞는다. */
 export function inferIconElement(...texts: readonly (string | undefined)[]): string {
-  const value = texts.filter(Boolean).join(" ");
-  return ELEMENT_WORDS.find(([, re]) => re.test(value))?.[0] ?? "";
+  const words = texts.filter(Boolean).flatMap((value) => tokens(value!));
+  for (const [id, long, short] of ELEMENT_WORDS) {
+    if (words.some((word) => word === id || long.some((w) => word.startsWith(w)) || short.some((s) => word === s || (word.length === 2 && word[0] === s && PARTICLES.includes(word[1]!))))) return id;
+  }
+  return "";
+}
+
+/** 한 글자 속성 낱말 뒤에 붙어도 되는 조사(불의·물로·독을). 「물약」「불안」은 속성이 아니다. */
+const PARTICLES = "의을를이가로에은는과와도";
+const HANGUL = /^[\p{Script=Hangul}]+$/u;
+/** 한국어 합성어 짝: 머리 낱말(호밀빵 ↔ 빵)이나 앞 두 글자(해독초 ↔ 해독제)가 같으면 부분으로 맞는다. */
+function hangulPartial(word: string, tag: string): boolean {
+  if (!HANGUL.test(word) || !HANGUL.test(tag)) return false;
+  if (word.length > tag.length ? word.endsWith(tag) : tag.endsWith(word)) return true;
+  return word.length >= 2 && tag.length >= 2 && word.slice(0, 2) === tag.slice(0, 2);
 }
 
 /** 무엇의 아이콘인가 → 맞는 분류. 장비는 weapon·armor·eastern·modern 모두 볼 수 있다. */
@@ -90,7 +109,7 @@ export function scoreStoreIcon(icon: StoreIconMeta, want: StoreIconWant): number
   const words = [...new Set([...tokens(want.name), ...tokens(want.description ?? "").slice(0, 24)])];
   for (const word of words) {
     if (haystack.has(word)) score += tokens(want.name).includes(word) ? 6 : 2;
-    else if (word.length >= 2 && [...haystack].some((tag) => tag.length >= 2 && (tag.includes(word) || word.includes(tag)))) score += tokens(want.name).includes(word) ? 3 : 1;
+    else if ([...haystack].some((tag) => (word.length >= 2 && tag.length >= 2 && (tag.includes(word) || word.includes(tag))) || hangulPartial(word, tag))) score += tokens(want.name).includes(word) ? 3 : 1;
   }
   const kind = want.itemType ?? "";
   if (kind && icon.itemType === kind) score += 4;
@@ -98,7 +117,8 @@ export function scoreStoreIcon(icon: StoreIconMeta, want: StoreIconWant): number
   else if (want.target === "equipment" && kind === "weapon" && icon.category === "weapon") score += 2;
   else if (want.target === "equipment" && kind && icon.itemType && icon.itemType !== kind && (icon.itemType === "weapon" || ARMOR_SLOTS.has(icon.itemType))) score -= 3;
   const element = (want.element ?? "").toLowerCase() || inferIconElement(want.name, want.description);
-  if (element) score += icon.element === element ? 3 : icon.element ? -1 : 0;
+  // 마법 기술은 속성이 곧 모양이다(「암석 파쇄」 = 땅 마법 아이콘) — 기술은 속성만 맞아도 자신 있는 짝이 된다.
+  if (element) score += icon.element === element ? (want.target === "skill" ? 5 : 3) : icon.element ? -1 : 0;
   return Math.max(0, score);
 }
 

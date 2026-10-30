@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { STORE_ICON_SIZE, storeImageSizeProblem, storeProjectId, validateManifest, type StorePackManifest } from "@/assetStore/format";
 import { applyPackToProject } from "@/assetStore/pack";
 import { subsetAudioManifest } from "@/assetStore/storeSoundPick";
-import { planIconAssignments, rankStoreIcons, readStoreIconMeta, projectStoreIcons } from "@/assetStore/storeIconPick";
+import { inferIconElement, planIconAssignments, rankStoreIcons, readStoreIconMeta, projectStoreIcons } from "@/assetStore/storeIconPick";
 import { addStoreProfiles } from "@/editor/assetStore/storeProfiles";
 import { uploadedMatchesKind } from "@/editor/resourceOptions";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
@@ -102,6 +102,16 @@ describe("store icon kind", () => {
     expect(rankStoreIcons(icons, { target: "skill", name: "불꽃", element: "fire" })[0]?.id).toBe(storeProjectId(SLUG, "magic-fire-1"));
     expect(rankStoreIcons(icons, { target: "item", name: "독" }).some((icon) => icon.id === storeProjectId(SLUG, "st-poison"))).toBe(false);
     expect(rankStoreIcons(icons, { target: "state", name: "독 poison" })[0]?.id).toBe(storeProjectId(SLUG, "st-poison"));
+  });
+
+  it("reads elements by whole words only (열쇠 is not fire, 돌아가는 is not earth)", () => {
+    expect(inferIconElement("낡은 열쇠", "오래된 문을 열 수 있을 것 같은 열쇠입니다.")).toBe("");
+    expect(inferIconElement("귀환 주문서", "마을이나 안전 지점으로 돌아가는 아이템입니다.")).toBe("");
+    expect(inferIconElement("물약")).toBe("");
+    expect(inferIconElement("암석 파쇄", "대지 속성으로 적을 짓누릅니다.")).toBe("earth");
+    expect(inferIconElement("성광", "신성 속성으로 적을 정화합니다.")).toBe("light");
+    expect(inferIconElement("불의 화살")).toBe("fire");
+    expect(inferIconElement("독")).toBe("poison");
   });
 
   it("upsert_* auto-picks a confident store icon and leaves others empty", () => {
