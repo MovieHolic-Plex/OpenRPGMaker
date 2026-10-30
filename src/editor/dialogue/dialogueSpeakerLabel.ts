@@ -18,7 +18,9 @@ const NOT_SPEAKERS = new Set([
   "주의", "경고", "참고", "힌트", "팁", "목표", "보상", "획득", "알림", "메모", "안내", "공지", "결과", "정답", "조건", "비용", "효과", "설명", "위치", "시간", "날짜",
   "note", "tip", "hint", "warning", "goal", "reward", "info",
 ]);
-const NAME_PART = String.raw`[^\s:：.!?。,、…「」『』"'()（）\[\]\\<>]`;
+const NAME_PART = String.raw`[^\s:：.!?。,、…「」『』"'\[\]\\<>]`;
+/** 화자 칸에 들어 있어도 «이름이 비었다» 로 보는 자리표시 — 해설·내레이션 칸에 「여신(방송): …」 처럼 이름을 글로 적은 꼴. */
+const NARRATOR_PLACEHOLDERS = new Set(["내레이션", "나레이션", "해설", "narrator", "narration"]);
 const LABEL = new RegExp(String.raw`^\s*(${NAME_PART}{1,12}(?: ${NAME_PART}{1,10})?)\s*[:：][ \t]*(\S[\s\S]*)$`, "u");
 /** 이름으로 모르는 라벨은 이 길이까지만 이름으로 본다. */
 const UNKNOWN_NAME_MAX = 8;
@@ -46,7 +48,10 @@ export function parseSpeakerLabel(text: string, known: ReadonlySet<string>): Spe
   const name = normalizeSpeakerName(match[1]!);
   const rest = match[2]!;
   if (!/\p{L}/u.test(name) || NOT_SPEAKERS.has(name.toLowerCase())) return undefined;
-  if (!known.has(name) && [...name].length > UNKNOWN_NAME_MAX) return undefined;
+  // 모르는 이름은 한 낱말·짧은 것만 — 「상자에 쪽지:」 같은 머리말을 이름표로 올리지 않는다(2026-10-30 실측).
+  if (!known.has(name) && ([...name].length > UNKNOWN_NAME_MAX || name.includes(" "))) return undefined;
+  // 괄호는 «여신(방송)» 처럼 이름 뒤 꾸밈으로만 — 짝이 맞아야 한다.
+  if ((name.match(/[(（]/gu)?.length ?? 0) !== (name.match(/[)）]/gu)?.length ?? 0)) return undefined;
   return { name, rest };
 }
 
@@ -66,12 +71,13 @@ export function liftSpeakerLabels(project: Project, lineIds: readonly string[], 
     const label = parseSpeakerLabel(slot.text, known);
     if (!label) continue;
     if (!slot.speaker) { out.push({ id, action: "kept", name: label.name, reason: "no-speaker-field" }); continue; }
-    const current = normalizeSpeakerName(slot.speaker.value);
+    const written = normalizeSpeakerName(slot.speaker.value);
+    const current = NARRATOR_PLACEHOLDERS.has(written.toLowerCase()) ? "" : written;
     if (current && current !== label.name) { out.push({ id, action: "kept", name: label.name, reason: "other-speaker" }); continue; }
     const before = slot.text;
     if (!current) slot.speaker.write(label.name);
     slot.write(label.rest);
-    out.push({ id, action: "lifted", name: label.name, before, after: label.rest, speakerWas: current });
+    out.push({ id, action: "lifted", name: label.name, before, after: label.rest, speakerWas: written });
   }
   return out;
 }
