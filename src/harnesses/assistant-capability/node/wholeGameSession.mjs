@@ -189,6 +189,12 @@ try {
       }
       // --snapshots: the stored project before each typed turn (advisor replay needs before/after; after = next turn's before or live.json).
       if (argv.includes('--snapshots')) { try { mkdirSync(resolve(out, 'snapshots'), { recursive: true }); writeRuntimeProject(projectDir, resolve(out, 'snapshots', `${step}-before.json`)); } catch (error) { log(`snapshot failed: ${error.message}\n`); } }
+      // 부하가 큰 박스에서 로컬 CLI 엔진의 첫 연결 확인(워커 기동 + `claude auth status`)이 편집기 6초 제한을 넘으면
+      // 입력칸이 「AI 연결 후」로 잠긴 채 다시 묻지 않는다(2026-10-30 img-room-test opus 판 4번 연속). 잠금 막을 눌러 다시 확인시킨다.
+      for (let i = 0; i < 30 && await page.getByTestId('ai-input').getAttribute('aria-disabled') === 'true'; i++) {
+        await page.evaluate(() => document.querySelector('[data-testid="ai-lock-scrim"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+        await sleep(8000);
+      }
       await page.getByTestId('ai-input').fill(body);
       await page.getByTestId('ai-send').click();
       log(`\n## ${step} USER (${new Date().toISOString()})\n${body}\n`);

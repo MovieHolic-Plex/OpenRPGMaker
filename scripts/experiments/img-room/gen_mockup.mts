@@ -30,6 +30,27 @@ const PROMPTS: Record<string, { prompt: string; refs: string[] }> = {
 const p = PROMPTS[task];
 if (!p) throw Error(`unknown task ${task}`);
 const t0 = Date.now();
+if (process.env.MOCKUP_PROVIDER === "gpt") {
+  // GPT Image: god-tibo-imagen 과 같은 Codex /responses 호출(scripts/lib/codexImageRuntime.ts 와 같은 요청)을 직접 해서
+  // 응답이 밝힌 모델(response.model · tools[].model · image_generation_call)을 그대로 남긴다 — 앱 경로는 설정 이름만 돌려준다.
+  const { buildResponsesRequest, extractImageGeneration, loadCodexSession, parseSseText, resolveConfig } = await import("god-tibo-imagen");
+  const config = resolveConfig(); const s = await loadCodexSession(config);
+  if (!s?.accessToken) throw Error("codex login 없음");
+  const req = buildResponsesRequest({ baseUrl: config.baseUrl, session: { accessToken: s.accessToken, accountId: s.accountId, installationId: s.installationId }, prompt: p.prompt,
+    model: config.defaultModel, originator: config.defaultOriginator, images: p.refs.map((f) => `data:image/png;base64,${png(f).data}`), size: "auto", imageModel: config.defaultImageModel });
+  const r = await fetch(req.url, { method: "POST", headers: req.headers, body: JSON.stringify(req.body), signal: AbortSignal.timeout(300_000) });
+  const text = await r.text();
+  if (!r.ok) throw Error(`codex HTTP ${r.status}`);
+  const parsed = parseSseText(text);
+  const b64 = extractImageGeneration(parsed).resultBase64;
+  const done = (parsed.events as any[]).find((e) => e?.data?.type === "response.completed")?.data?.response ?? {};
+  const call = (parsed.items as any[]).find((i) => i?.type === "image_generation_call") ?? {};
+  const buf = Buffer.from(b64, "base64"); writeFileSync(out, buf);
+  console.log(JSON.stringify({ ms: Date.now() - t0, model: (done.tools ?? []).find((t: any) => t.type === "image_generation")?.model ?? "?", provider: "openai-codex (god-tibo-imagen /responses)",
+    requested: { model: config.defaultModel, imageModel: config.defaultImageModel }, responseModel: done.model, imageCall: { size: call.size, quality: call.quality, revised_prompt: call.revised_prompt },
+    imageTokens: done.tool_usage?.image_gen, bytes: buf.length, prompt: p.prompt }));
+  process.exit(0);
+}
 const img = await headlessGenerateImage({ prompt: p.prompt, referenceImages: p.refs.map(png) });
 const buf = Buffer.from(img.dataUrl.slice(img.dataUrl.indexOf(",") + 1), "base64");
 writeFileSync(out, buf);

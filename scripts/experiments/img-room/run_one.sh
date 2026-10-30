@@ -1,5 +1,5 @@
 #!/bin/bash
-# img-room-test 한 판: run_one.sh <boss|inn> <terra|opus> <A|B> <rep>
+# img-room-test 한 판: run_one.sh <boss|inn> <terra|opus> <A|B|G> <rep>   (G = B 와 같고 목업만 GPT Image)
 #   A = 지금 v2 경로(요청 글만). B = 칩셋 조각 판(palette) → 이미지 모델 목업 → 목업을 첫 요청에 붙여 v2 가 짓는다.
 #   결과: $IMGROOM_RUNS/<cond><rep>/<arm>/<task>/ (기본 suite/rooms/runs-imgroom). run-room.sh 의 흐름을 따른다(준비→세션→after.json→measure-room).
 set -u
@@ -21,10 +21,11 @@ cd $WT; [ -f dist/index.html ] || { echo "no dist"; exit 1; }
 mkdir -p $G/session/inbox
 [ -d $REFS ] || python3 scripts/experiments/img-room/gen_refs.py $REFS
 IMG_ENV=""
-if [ $COND = B ]; then
+MOCK_ENV=""; [ $COND = G ] && MOCK_ENV="MOCKUP_PROVIDER=gpt"
+if [ $COND = B ] || [ $COND = G ]; then
   if [ ! -f $G/mockup.png ]; then
     for try in 1 2 3; do
-      timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup.png > $G/mockup.json 2> $G/mockup.err && break
+      env $MOCK_ENV timeout 600 bun scripts/experiments/img-room/gen_mockup.mts $TASK $REFS $G/mockup.png > $G/mockup.json 2> $G/mockup.err && break
       echo "mockup try $try failed: $(tail -c 300 $G/mockup.err)" >> $G/RUN.txt; sleep 30
     done
   fi

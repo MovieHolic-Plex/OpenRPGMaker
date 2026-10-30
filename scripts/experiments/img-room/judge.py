@@ -18,7 +18,7 @@ Answer JSON only: {"outline":0-10,"zones":0-10,"landmark":0-10,"overall":0-10,"w
 
 def runs():
     out = []
-    for g in sorted(glob.glob(f"{RUNS}/[AB][0-9]/*/*")):
+    for g in sorted(glob.glob(f"{RUNS}/[ABG][0-9]/*/*")):
         cond, arm, task = g.split("/")[-3:]
         png = f"{g}/room/map.png"
         out.append(dict(dir=g, cond=cond[0], rep=int(cond[1:]), arm=arm, task=task, png=png if os.path.exists(png) else None,
