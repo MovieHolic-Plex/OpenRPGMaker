@@ -22,7 +22,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, faceEachOther, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTintUnderBlack, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, drawnOverActor, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -428,8 +428,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
-    // 서류는 크게(180%) — 기본 크기는 1배 화면에서 흰 점 몇 개로 보였다(Sonnet op5).
-    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, sizePercent: 180, wait: false }),
+    // 서류는 크게 — 기본 크기는 1배 화면에서 흰 점 몇 개로 보였다(Sonnet op5). 다만 배율 2 화면에서 180% 는 낱장이 칸보다 커져
+    // 기울어진 흰 삼각 조각(깨진 유리)처럼 읽혔다(r4 블라인드) — 110% 로 줄이고 장 수도 줄인다(1.2초 = 6장).
+    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1200, sizePercent: 110, wait: false }),
     quiet(SE_PAPER, 0.7),
     wait(380),
     m2("Screen Effect", { effect: "freeze", value: "warm", durationMs: 500 }),
@@ -965,7 +966,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   );
   add(bc, event("ev_fl_flashback", "회상", { x: 1, y: 1 }, [page("fb", [swOn("sw_fl_flashback"), stageIs(V_STAGE, S.KONBINI)], [
     hidePlayer(),
-    memoryTint(0),
+    memoryTintUnderBlack(),
+    wait(150),
     ...fadeIn(1200),
     { kind: "playAudio", resourceId: BGM_MEMORY, loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
     ...caption("10년 전. 성하고등학교 방송실."),
