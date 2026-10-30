@@ -73,6 +73,8 @@ export function createHunterContractFlagshipDemo(): FlagshipDemoBuildResult {
   for (const id of Object.values(M)) { const m = project.maps[id]!; if (!m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] }; }
   execTool(project, "set_map_properties", { mapId: M.inn, zoom: 2 });
 
+  // 빈 시드 맵은 남기지 않는다(맵 트리 밖 고아).
+  for (const id of Object.keys(project.maps)) if (!(Object.values(M) as string[]).includes(id)) delete project.maps[id];
   project.startMapId = M.world;
   project.startPos = { x: stage.world.start.x, y: stage.world.start.y };
   project.mapTree = { mapId: M.world, children: [M.swamp, M.inn, M.nest].map((mapId) => ({ mapId, children: [] })) };

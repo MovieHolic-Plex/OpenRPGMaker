@@ -24,8 +24,19 @@ await withTsModule("electron/local-store/store.ts", "hunter-contract-store.mjs",
     const a = s.loadSnapshot();
     const got = JSON.parse(JSON.stringify(a.project));
     // The store's load migrates the legacy opening scene shape (image → animatic); everything else must be byte-identical.
+    // 번들 타일셋(bundledTilesetDiff 로 저장된 것)은 불러오면 번들 정의로 되살아난다 — 저장한 차이 키만 같으면 된다.
+    for (const [id, saved] of Object.entries(project.tilesets ?? {})) {
+      if (!saved?.bundledTilesetDiff || !got.tilesets?.[id]) continue;
+      got.tilesets[id] = Object.fromEntries(Object.keys(saved).filter((k) => k !== "bundledTilesetDiff").map((k) => [k, got.tilesets[id][k]]));
+      project.tilesets[id] = Object.fromEntries(Object.entries(saved).filter(([k]) => k !== "bundledTilesetDiff"));
+    }
     for (const key of ["maps", "database", "tilesets", "mapTree", "startMapId", "startPos", "assets"]) {
-      assert(isDeepStrictEqual(got[key], project[key]), `Reload differs in ${key}`);
+      if (!isDeepStrictEqual(got[key], project[key])) {
+        const d = [];
+        const w = (x, y, path) => { if (d.length > 8 || isDeepStrictEqual(x, y)) return; if (x && y && typeof x === "object" && typeof y === "object") { for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) w(x[k], y[k], path + "." + k); } else d.push(path + " saved=" + JSON.stringify(y)?.slice(0, 80) + " reloaded=" + JSON.stringify(x)?.slice(0, 80)); };
+        w(got[key], project[key], key);
+        assert.fail(`Reload differs in ${key}:\n${d.join("\n")}`);
+      }
     }
     const strip = (p) => ({ ...p, system: { ...p.system, opening: undefined } });
     if (!isDeepStrictEqual(strip(got), strip(project))) {

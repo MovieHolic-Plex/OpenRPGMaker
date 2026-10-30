@@ -1,0 +1,997 @@
+{
+ "set": "hunter-contract",
+ "query": {
+  "demo": "hunter-contract"
+ },
+ "viewport": {
+  "width": 960,
+  "height": 540
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "m0-world",
+   "label": "세계 지도 첫 걸음 (P0 산길 독백)",
+   "note": "stage 0: ev_hc_p0 auto at start",
+   "mapId": "hc_world",
+   "x": 24,
+   "y": 14,
+   "facing": "down",
+   "variables": {
+    "var_hc_stage": 0
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "p0-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk-sw",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-swamp-arrive",
+   "label": "갈대늪 도착",
+   "mapId": "hc_swamp",
+   "x": 1,
+   "y": 19,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 12
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-board",
+   "label": "여관 게시판 → 마르타",
+   "mapId": "hc_swamp_inn",
+   "x": 2,
+   "y": 10,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "read",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "read-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-marta",
+   "label": "의뢰인 마르타 조건",
+   "mapId": "hc_swamp_inn",
+   "x": 11,
+   "y": 12,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 1
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "mid",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-clues",
+   "label": "단서 — 뱃사공·시체·끈 자국",
+   "mapId": "hc_swamp",
+   "x": 40,
+   "y": 19,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 1
+   },
+   "switches": {
+    "sw_hc_a_terms": true
+   },
+   "beats": [
+    {
+     "id": "boat",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "boat-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-body",
+   "label": "장례 마당 시체",
+   "mapId": "hc_swamp",
+   "x": 37,
+   "y": 22,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 1
+   },
+   "switches": {
+    "sw_hc_a_terms": true
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "body",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "body-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-nest-day",
+   "label": "낮의 늪 깊은 곳 입구(막힘)",
+   "mapId": "hc_swamp",
+   "x": 38,
+   "y": 30,
+   "facing": "down",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 2
+   },
+   "beats": [
+    {
+     "id": "push",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 600
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-night-hunt",
+   "label": "밤 — 둥지 안 익사귀",
+   "mapId": "hc_nest",
+   "x": 10,
+   "y": 35,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 3
+   },
+   "items": {
+    "item_hc_ember_oil": 0
+   },
+   "sessionPatch": {
+    "gameTime": {
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 10
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk2",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 6
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-boss",
+   "label": "물에 잠긴 어미 (기름 바른 칼)",
+   "mapId": "hc_nest",
+   "x": 19,
+   "y": 10,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 3
+   },
+   "switches": {
+    "sw_hc_blade_oiled": true
+   },
+   "sessionPatch": {
+    "gameTime": {
+     "hour": 22,
+     "minute": 0
+    }
+   },
+   "beats": [
+    {
+     "id": "touch",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 900
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-choice-1",
+   "label": "진실 → 선택 1 → 마르타 마무리",
+   "mapId": "hc_nest",
+   "x": 19,
+   "y": 12,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 4
+   },
+   "switches": {
+    "sw_hc_a_boss": true
+   },
+   "sessionPatch": {
+    "gameTime": {
+     "hour": 23,
+     "minute": 0
+    }
+   },
+   "beats": [
+    {
+     "id": "truth",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "picked",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-end-1",
+   "label": "마르타 마무리 1",
+   "mapId": "hc_swamp_inn",
+   "x": 11,
+   "y": 12,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 5,
+    "var_hc_a_choice": 1
+   },
+   "switches": {
+    "sw_hc_a_done": true
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-choice-2",
+   "label": "진실 → 선택 2 → 마르타 마무리",
+   "mapId": "hc_nest",
+   "x": 19,
+   "y": 12,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 4
+   },
+   "switches": {
+    "sw_hc_a_boss": true
+   },
+   "sessionPatch": {
+    "gameTime": {
+     "hour": 23,
+     "minute": 0
+    }
+   },
+   "beats": [
+    {
+     "id": "truth",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "picked",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 200
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-end-2",
+   "label": "마르타 마무리 2",
+   "mapId": "hc_swamp_inn",
+   "x": 11,
+   "y": 12,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 5,
+    "var_hc_a_choice": 2
+   },
+   "switches": {
+    "sw_hc_a_done": true
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-choice-3",
+   "label": "진실 → 선택 3 → 마르타 마무리",
+   "mapId": "hc_nest",
+   "x": 19,
+   "y": 12,
+   "facing": "up",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 4
+   },
+   "switches": {
+    "sw_hc_a_boss": true
+   },
+   "sessionPatch": {
+    "gameTime": {
+     "hour": 23,
+     "minute": 0
+    }
+   },
+   "beats": [
+    {
+     "id": "truth",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "picked",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 200
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 200
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-end-3",
+   "label": "마르타 마무리 3",
+   "mapId": "hc_swamp_inn",
+   "x": 11,
+   "y": 12,
+   "facing": "right",
+   "variables": {
+    "var_hc_stage": 1,
+    "var_hc_a": 5,
+    "var_hc_a_choice": 3
+   },
+   "switches": {
+    "sw_hc_a_done": true
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "a-ch1-end",
+   "label": "여관을 나서며 제1장 끝",
+   "mapId": "hc_swamp",
+   "x": 45,
+   "y": 13,
+   "facing": "down",
+   "variables": {
+    "var_hc_stage": 2,
+    "var_hc_a": 5,
+    "var_hc_a_choice": 1
+   },
+   "switches": {
+    "sw_hc_a_done": true,
+    "sw_hc_a_paid": true
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "note",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "ending",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "note": "ev_hc_ch1_end auto on sw_hc_a_paid (swamp, inn door +2)"
+  }
+ ]
+}
