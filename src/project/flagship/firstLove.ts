@@ -566,14 +566,14 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
       ...say("minho", "base", "…근데요. 아까 강 선임님 볼 때 표정이 좀. 혹시 아는 사이예요?"),
       choices([
-        { text: "고등학교 선배야. …였던 것 같아.", then: [
+        { text: "고등학교 선배예요. …였던 것 같아요.", then: [
           setSw(SW_TOLD_MINHO, true),
           { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
           ...say("minho", "surprised", "에? 근데 선임님은 처음 뵙겠다고…"),
-          ...say("seoha", "sad", "그러게. 나도 그게 궁금해."),
+          ...say("seoha", "sad", "그러게요. 저도 그게 궁금해요."),
           ...say("minho", "base", "음. 사람마다 사정이 있겠죠. 걱정 마요, 입은 무거운 편이에요. 진짜로."),
         ] },
-        { text: "아니. 닮은 사람이 있어서.", then: [
+        { text: "아니요. 닮은 사람이 있어서요.", then: [
           ...say("minho", "base", "흠. 그래요?"),
           ...think("민호 씨는 더 묻지 않았다. 대신 커피를 한 잔 더 내렸다. 눈치가 빠른 사람이다."),
         ] },
@@ -648,6 +648,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     // 지후가 서하 앞에 서면 서하도 그를 본다 — 선택지 「처음 뵙겠습니다」는 마주 선 채로 뜬다.
     face("@player", dirToward(heroMeet, jihuMeetStop)),
     stopBgm(),
+    // 재회가 1배 먼 화면이라 밋밋했다(r4 블라인드) — 금요일 만남처럼 두 사람 사이로 배율 2 까지 다가간다. 선택지가 끝나면 돌아온다.
+    panTo(Math.round((heroMeet.x + jihuMeetStop.x) / 2), Math.round((heroMeet.y + jihuMeetStop.y) / 2), 1100, 2),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
     ...think("금요일 점심, 방송실 창가. 스피커에서 흘러나오던 그 목소리."),
@@ -676,6 +678,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...like(1, "ev_fl_jihu_meet"),
       ] },
     ]),
+    panBack(900),
     face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 옆이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
@@ -1339,6 +1342,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_f_minho", dirToward(minhoSpot, heroAside)),
     ...sayAt("minho", "left", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
     ...clientOut.end,
+    // 오후 3시 발표 뒤 곧장 「9시 21분」 질주가 떠 여섯 시간이 사라졌다(r4 리뷰) — 뒷정리가 밤까지 이어졌다는 자막으로 잇는다.
+    ...caption("…발표 뒷정리는 밤 아홉 시가 넘어서야 끝났다."),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "move", dir: dirToward(heroAside, o.meetingSeat) }, { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     face("@player", dirToward(o.meetingSeat, leadSpot)),
     ifCond(swOff(SW_HONEST), [
@@ -1474,8 +1479,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
     quiet(SE_PULSE, 0.8), wait(700), quiet(SE_PULSE, 0.8),
-    // 발표(오후 3시) 뒤 곧장 9시 21분이 떠 여섯 시간이 사라졌다(r3 리뷰) — 남은 마감을 붙들고 있었다는 한 줄로 잇는다.
-    ...caption("오후 9시 21분. 남은 마감을 붙들고 있다 시계를 봤다. 9시 40분 열차까지 19분."),
+    // 「남은 마감을 붙들고 있다」는 「먼저 가 볼게요!」와 어긋났다(r4 리뷰) — 시각만 센다. 시간의 빈칸은 회의실 자막이 잇는다.
+    ...caption("오후 9시 21분. 9시 40분 열차까지, 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
   ]));
@@ -1670,7 +1675,7 @@ function defineEndings(project: Project): void {
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
       { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
       { kind: "say", speaker: "서하", text: "…또 실명 안 썼네, 이 사람." },
-      { kind: "say", text: "열 번째 봄이 지나고, 첫사랑은 다시 시작됐다." },
+      { kind: "say", text: "10년이 지나, 첫사랑은 다시 시작됐다." },
     ],
   });
   execTool(project, "define_ending", {
@@ -1679,7 +1684,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b", textSide: "left" },
     epilogue: [
-      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에서 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
+      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 앞 가로등 밑에서 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },
@@ -1691,7 +1696,7 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "비 오는 금요일", // 「우리 팀의 봄」인데 팀은 나오지 않고 서하 혼자 비 속에 섰다(VQA r23)
     conditions: [],
-    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c", textSide: "right" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c", textSide: "right", particles: "none" },
     epilogue: [
       { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
       { kind: "say", text: "오후 9시 40분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },

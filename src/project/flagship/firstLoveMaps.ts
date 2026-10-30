@@ -444,7 +444,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
     // 밤 10시대 사무실이 낮과 같은 밝기로 읽혔다(VQA r16) — 한 단계 더 어둡게, 책상 불은 그대로.
-    ambient: 0.42, color: "#18183a",
+    // 0.42 도 «낮 사무실»로 읽혔다(r4 블라인드) — 0.58 까지, 책상·탕비실 불은 그대로 남긴다.
+    ambient: 0.58, color: "#18183a",
     sources: [
       light("fl_desk_hero", anchors.office.heroDesk, 5, "#ffe6b8"), light("fl_desk_jihu", anchors.office.jihuDesk, 5, "#ffe6b8"),
       light("fl_pantry", anchors.office.pantry, 5, "#fff2d0"), light("fl_meeting", anchors.office.meetingSeat, 5, "#ffeecc", 0.8),
