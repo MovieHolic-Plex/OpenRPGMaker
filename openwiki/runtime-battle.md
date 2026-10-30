@@ -1,3 +1,10 @@
+## 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
+
+`BattleAnimationFrame.hold?`(1~16 정수, 생략 = 1)는 그 프레임을 기본 프레임 시간(120ms, 번들 생성 이펙트 75ms)의 몇 배 동안 보이는가다. 1 은 저장하지 않아 옛 레코드는 바이트·타이밍이 그대로다.
+산식은 `src/battle/animationTiming.ts` 한 곳: `battleAnimationFrameStartUnits`(프레임 시작까지의 기본 프레임 수), `battleAnimationFrameAtUnits`(흐른 칸 → 프레임).
+길이·후속 길이·착탄 ms(`battleAnimationImpactMs`)·앞당겨 틀기(`battleAnimationLeadPlan`)·후속 시작·재생 루프(`battleAnimationDom.ts`)와 자료집 미리보기가 이것을 쓴다.
+맵 `showAnimation`(`playSceneMapAnimations.ts`)과 이벤트 편집기 미리보기는 아직 hold 를 무시한다(프레임마다 같은 간격). 스토어 애니메이션 팩이 이 칸을 싣는다(`openwiki/asset-store.md`).
+
 ## 걷기 칩으로 서는 적 (2026-10-30)
 
 - `EnemyRecord.walkChip?: { characterResourceId: string; characterIndex: number }`(0~7). 있으면 측면 전투에서 몬스터 그림 대신 걷기 칩(CharSet 288×256, 24×32)이 **오른쪽 보기** 행으로 선다. 없으면 기존 경로 그대로(바이트 동일). 정규화는 `normalizeEnemyWalkChip`(`databaseEnemyTroopRecordModel.ts`): 빈 id 는 버리고 칸은 반올림해 0~7 로 자른다. 변신(`transformResourceId`)한 적이나 id 가 풀리지 않는 칩은 옛 경로로 떨어진다.
@@ -664,6 +671,12 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 2026-10-02부터 일반 이미지 소비자는 같은 id의 native idle_a 초상을 쓴다. 옛 통짜 그림은 폐기했다([공용 몬스터 폐기](native-enemy-retirement.md)).
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, cell×2 px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy`가 모션 7종을 고른다(아래 확장 설명). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
     - **프로젝트·스토어 시트:** 번들 id 말고도 `project.assets.uploaded[resourceId].meta.pixelEnemySheet`(공방 저작 시트, 스토어 몬스터 팩 — [에셋 스토어](asset-store.md) 「몬스터 전투 도트 시트」)가 있으면 `projectPixelEnemySheet` 가 그 3×3 시트를 번들보다 먼저 쓴다. 이 시트가 없는 업로드 몬스터는 같은 id 의 번들 시트를 쓰지 않고 번쩍임·흔들림만 한다. 조수·자료집용 판정은 `monsterBattleMotion(project, id)`.
+    - **16칸 시트(`grid: "4x4"`, 2026-10-31):** 칸 번호·빠진 칸 계약은 [에셋 스토어](asset-store.md) 「16칸(4×4) 시트」. 노드에 `data-pixel-grid="4x4"`, 배경 400%, 대기 루프 `retro-pixel-enemy-idle-16`. 칸 위치는 `pixelEnemyBackgroundPosition`. 3×3 시트(번들·공방)는 그대로다.
+      - 통상 공격: windup → **attack_mid**(근접은 다가가기 끝 82%, 제자리 공격은 다가가기 뒤쪽) → attack (`withAttackMid`).
+      - 몬스터 기술: `retroMonsterSkillCellKind` — 공격력 피해는 9칸 그대로, 그 밖(마력 피해·회복·상태)은 windup→**cast_charge**, 방출→**cast_release**, 방어를 올리는 자기 지원 기술(단단해지기)은 방출을 **guard** 로(`retroSkillChoreography` `monsterSheetCell`).
+      - 막기: 적은 방어 명령이 없어 `data-battler-guarded`(방어 명령 또는 `runtimeEffects.defenseMultiplier>1` 상태)가 기준이다. 막는 중 맞으면 guard 160ms → hit. 쉬는 칸은 방어 명령 중(`data-battler-defending`)일 때 guard.
+      - 빈사: HP≤25%(`data-battler-weak`) 대기는 weak ↔ idle_b 를 번갈아(`retro-pixel-enemy-weak-16`, 감속 모드는 weak 정지).
+      - 등장: `retroBattleIntro` 가 인트로 시작에 적마다 140ms 엇갈려 intro 칸을 520ms(보스 = 쓰러짐 연출 bossSink 는 900ms) 보인다. 감속 모드는 하지 않는다.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.
     - stomp는 두 걸음 후 두 팔 내려찍기, dash는 낮은 질주 후 물기, float는 부드러운 접근과 복귀. shoot/breath는 통상 공격이어도 ranged이며 접근·착탄·복귀 전체가 제자리다. 이동 소리는 각각 Earth2/Wind8/Magic2, 방출 소리는 Shot1/Fire1이며 실제 RTP 파일만 쓴다. 방출음은 빗나감의 0ms impact에서도 발생하고 감속 모드에서는 모두 억제한다. 타이머는 기존 비트 세대·씬 수명을 따른다.

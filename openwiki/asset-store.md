@@ -94,6 +94,35 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 - 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
 - 테스트 `test/assetStoreMonsterMotion.test.ts`.
 
+#### 16칸(4×4) 시트 (2026-10-31)
+
+`pixelEnemySheet.grid: "4x4"`(생략 = `"3x3"`)이면 시트는 4cell×4cell, 시트 그림 meta `frames: 16`. 칸 번호는 격자 폭과 무관한 **행 우선 번호**다:
+0 idle_a · 1 idle_b · 2 idle_c · 3 windup · 4 move · 5 attack · 6 recover · 7 hit · 8 dead(0~8 = 3×3 과 같은 이름·순서) ·
+9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
+
+```json
+"pixelEnemySheet": { "sheetResourceId": "slime-sheet", "cell": 64, "motion": "hop", "idleFrameMs": 220, "skillCell": true, "grid": "4x4", "missingCells": [12, 13] }
+```
+
+- `missingCells`(선택, 9~14 만, 중복 금지, grid 4x4 에만): 그리지 못한 확장 칸. 0~8 은 비울 수 없다.
+- 검사: `monsterSheetProblems`(grid·missingCells·frames 9/16), `storeMonsterSheetSizeProblems`(시트 n·cell), 칸 채움 `storeMonsterSheetCellProblems`(0~8·적지 않은 9~14 는 그려져 있어야, 15·missingCells 는 알파 0). 칸 채움은 PNG 를 풀 수 있는 곳에서 돈다 — 스토어 서버 `checkBlobs`(`src/png.ts decodePng`), `scripts/store/agentStore.mts`(pngjs), 편집기 넣기 `prepareManifestItem`(`createImageBitmap`, 못 풀면 건너뜀).
+- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·weak·intro → 그 동작을 하지 않는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
+- 조수: 16칸 소재에 `battleCells: 16` 이 더 붙는다(`monsterBattleCells`), `store_install` 요약이 16칸 수를 센다.
+- 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
+- 테스트 `test/enemyPixelSheet16.test.ts`.
+
+### 전투 애니메이션 팩 (2026-10-31)
+
+종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
+검사(`format.ts` `battleAnimationProblems`): 시트는 같은 팩의 `battle` PNG 에셋, `sheet` = `{frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8}`,
+프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋 또는 내장 `cc0-se-*`, 후속은 같은 목록의 다른 id.
+시트 기하(`storeBattleAnimationSizeProblems`: 가로 = columns×frameWidth, 세로 = frameHeight 배수, pattern < 칸 수)는 바이트가 있는 쪽 — 편집기 넣기와 스토어 서버 받기 — 가 본다.
+
+넣기(`applyPackBattleAnimations`): `database.battleAnimations` 에 `store_<slug>__anim-<id>`(`storeAnimationId`)로, 시트·소리·후속 id 를 바꿔 넣는다.
+**같은 id 레코드가 이미 있으면 덮지 않는다** — 넣은 뒤 저자가 고친 이름·타이밍이 남고, 다시 넣기는 레코드에 아무것도 하지 않는다(새 판본의 레코드 변경도 반영 안 됨, 지우고 다시 넣어야 한다).
+되돌리기·빼기(`storeUndo.ts`)는 레코드도 함께 다룬다. 기술이 쓰고 있으면 빼기가 막힌다. 조수 `store_install` 결과 `animations[]` 의 id 를 `upsert_skill`·`upsert_item` 의 `animationId` 로 건다.
+웹 내보내기는 레코드의 `resourceId`·소리 id 문자열로 시트·소리를 싣는다(`collectUsedUploadedAssetIds`). 시험 `test/assetStoreBattleAnimations.test.ts`.
+
 ### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
 
 `content.characters[i].portraits` = `{ face?, bust?: {표정: 에셋 id}, full?: {표정: 에셋 id}, extra? }` — 같은 팩의
@@ -309,8 +338,15 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
   html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
   스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- **나라별 출처(2026-10-31).** 한국 밖 방문자는 판본 파일을 **`games-cdn.openrpgmaker.com`**(R2 버킷 `oprn-games` 사용자 도메인, Cloudflare 엣지 캐시)에서 받는다.
+  한국(`CF-IPCountry: KR`)과 나라를 모르는 요청은 지금처럼 games-kr. 고르는 곳은 play 화면(`/games/<slug>/play`) 하나 —
+  응답 머리 `x-oprn-game-origin` 이 고른 출처. 게시하면 스토어가 디스크 판본 폴더를 바이트 그대로(서버가 쓴 index.html·CSP 해시 포함) 사본 버킷에 올리고,
+  다 놓인 판본만 사본으로 보낸다. 세이브가 갈라지지 않게 고른 출처는 게임마다 쿠키에 남고, 사본을 켜기 전에 그 게임을 플레이한 사람은 games-kr 에 남는다.
+  사본 쪽 머리(nosniff·`frame-ancestors`·HSTS)와 경로 제한(GET 만, `_files/`·index 아닌 html 막음)은 Cloudflare 규칙이 붙인다. play CSP `frame-src` 는 두 출처.
+  플레이어 쪽 바꿀 것은 없다: `storeGame.embedders`(play)와 클라우드 세이브 다리(`event.origin` = iframe 출처)는 출처마다 그대로 돈다.
+  되돌리기는 스토어 env `STORE_GAMES_MIRROR_SERVE=off` + 재시작 한 줄. 상세·채우기 명령: 스토어 저장소 `deploy/README.md` 「게임 판본 해외 사본」.
 - 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
-  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처(games-kr·games-cdn)만.
 - 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
   상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).

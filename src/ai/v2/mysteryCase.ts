@@ -184,6 +184,23 @@ function pickCulprit(project: Project, texts: readonly string[], taken: Readonly
   return undefined;
 }
 
+/**
+ * 마지막 단계 글이 가게·여관 주인을 범인으로 부르는데(「여관 주인의 고백」「여관 주인에게 진실을 묻는다」) 맵에 「주인」이 서 있지 않으면 그 주인을 범인으로 세운다.
+ * 주인이 서 있으면 의뢰인이라 범인으로 쓰지 않는다(ROLE 머리말).
+ * 왜(2026-10-31 meb2 terra 추리): 단서(우산 실·장부)는 여관 주인을 가리키는데 주인이 ROLE 에 없어 풀에서 「하녀 로자」를 범인으로 세웠고,
+ * 고르기에는 주인이 없는데 엔딩은 주인이 고백했다 — 판정 major 「범인 논리가 모순」.
+ */
+function ownerSuspect(project: Project, texts: readonly string[], taken: ReadonlySet<string>, seed: number): Suspect | undefined {
+  const m = texts.map((t) => /((?:여관|주점|객잔|가게|상점|저택|하숙집|찻집|빵집)\s*)?주인(?![공장])/u.exec(t)).find(Boolean);
+  if (!m) return undefined;
+  const ownerStanding = Object.values(project.maps).some((map) => (map.events ?? []).some((e) => nameOf(e).includes("주인") && visiblePerson(e)));
+  if (ownerStanding) return undefined;
+  const role = `${m[1]?.trim() ?? ""} 주인`.trim();
+  const given = ["한나", "오언", "마르타", "베른"].filter((g) => !taken.has(`${role} ${g}`));
+  if (!given.length) return undefined;
+  return { role, name: `${role} ${given[seed % given.length]}`, looks: "man", place: "카운터 뒤" };
+}
+
 /** 조사만(괄호로 감싼 이름 뒤에 붙일 때). */
 const jo = (word: string, pair: "이/가" | "을/를" | "은/는" | "와/과"): string => withJosa(word, pair).slice(word.length);
 const KEY_ITEM = /열쇠|키\b|key|출입증|통행증/iu;
@@ -1246,7 +1263,8 @@ function stageCase(run: BuildRun): string[] {
   // 고르기의 범인은 풀에서 뽑은 「악사 리노」가 됐다(2026-10-29 vm3 deepseek 추리).
   const namedAny = pickCulprit(run.ctx.project, culpritTexts, new Set());
   const standing = namedAny ? Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).filter((e) => nameOf(e) === namedAny.name && visiblePerson(e)).map((e) => ({ mapId: m.id, ev: e })))[0] : undefined;
-  const culprit = (standing ? namedAny : undefined) ?? pickCulprit(run.ctx.project, culpritTexts, taken) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
+  const fromText = (standing ? namedAny : undefined) ?? pickCulprit(run.ctx.project, culpritTexts, taken);
+  const culprit = fromText ?? ownerSuspect(run.ctx.project, culpritTexts, taken, seed) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
   const innocents = POOL.filter((p) => p.name !== culprit.name && p.role !== culprit.role && !taken.has(p.name));
   if (innocents.length < 2) return notes;
   const a = innocents[seed % innocents.length]!;

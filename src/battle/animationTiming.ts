@@ -11,11 +11,34 @@ export function battleAnimationFrameDurationMs(record: BattleAnimationRecord | u
   return generatedEffectFrameDurationMs(record?.resourceId) ?? BATTLE_ANIMATION_FRAME_MS;
 }
 
+/** 프레임 하나가 보이는 기본 프레임 수(hold, 1~16). 없거나 이상하면 1 — 옛 레코드의 길이는 그대로다. */
+export function battleAnimationFrameHold(record: BattleAnimationRecord | undefined, frameIndex: number): number {
+  const hold = record?.frames?.[frameIndex]?.hold;
+  return typeof hold === "number" && Number.isFinite(hold) && hold >= 1 ? Math.min(16, Math.floor(hold)) : 1;
+}
+
+/** 0번 프레임부터 `frameIndex` 번 프레임이 시작될 때까지의 기본 프레임 수(hold 합). hold 가 없으면 frameIndex 그대로. */
+export function battleAnimationFrameStartUnits(record: BattleAnimationRecord | undefined, frameIndex: number): number {
+  const count = Math.max(0, Math.min(frameIndex, record?.frames?.length ?? 0));
+  let units = 0;
+  for (let index = 0; index < count; index += 1) units += battleAnimationFrameHold(record, index);
+  return units + Math.max(0, frameIndex - count);
+}
+
+/** 흐른 기본 프레임 수 → 그때 보이는 프레임(startIndex 부터 재생한 경우). 끝을 지나면 frames.length. */
+export function battleAnimationFrameAtUnits(record: BattleAnimationRecord | undefined, startIndex: number, elapsedUnits: number): number {
+  const frameCount = record?.frames?.length ?? 0;
+  const target = battleAnimationFrameStartUnits(record, startIndex) + Math.max(0, elapsedUnits);
+  let index = startIndex;
+  while (index < frameCount && battleAnimationFrameStartUnits(record, index + 1) <= target) index += 1;
+  return index;
+}
+
 export function battleAnimationDurationMs(record: BattleAnimationRecord | undefined): number {
   const frameCount = Math.max(0, record?.frames?.length ?? 0);
   if (frameCount === 0) return DEFAULT_BATTLE_ANIMATION_DURATION_MS;
   const frameDurationMs = battleAnimationFrameDurationMs(record);
-  return Math.max(frameDurationMs, frameCount * frameDurationMs);
+  return Math.max(frameDurationMs, battleAnimationFrameStartUnits(record, frameCount) * frameDurationMs);
 }
 
 /**
@@ -32,7 +55,7 @@ export function battleAnimationChainDurationMs(
   for (const followUp of record?.followUps ?? []) {
     const follow = records.find((entry) => entry.id === followUp.animationId);
     if (!follow) continue;
-    total = Math.max(total, followUp.startFrame * frameMs + battleAnimationDurationMs(follow));
+    total = Math.max(total, battleAnimationFrameStartUnits(record, followUp.startFrame) * frameMs + battleAnimationDurationMs(follow));
   }
   return total;
 }

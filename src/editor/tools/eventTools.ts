@@ -413,12 +413,14 @@ const OBJECT_HEAD_NOUNS = new Set([
   "영역", "구역", "지점", "트리거", "입구", "출구", "계단", "사다리", "구멍", "통로",
   "거울", "촛대", "양초", "등불", "램프", "등", "화로", "난로", "벽난로", "우산", "석상", "동상", "조각상", "액자", "사진", "그림", "초상화",
   "책", "일기", "일기장", "편지", "쪽지", "메모", "수첩", "서류", "노트",
+  // 추리 단서 물건 — 2026-10-31 mef1 terra 추리: 단서 단계 「여관 장부」가 주민 칩(people1 #73)으로 서서 판정자가 「장부에게 말을 걸라」는 목표를 읽었다.
+  "장부", "기록", "기록부", "명부", "출입부", "숙박부", "발자국", "흔적", "자국", "얼룩", "핏자국", "조각", "천", "손수건", "장갑", "단추", "깃털", "보관함", "현장",
   "책상", "탁자", "식탁", "의자", "침대", "시계", "괘종시계", "우물", "무덤", "제단", "꽃병", "화분", "기둥", "수정", "분수", "기념비", "오르간", "피아노",
 ]);
 /** 숨은 장치·투명 구역 — 그림을 세우면 안 된다(이름이 숨겼다고 말한다). */
 const HIDDEN_WORDS = /숨은|숨겨진|감춰진|보이지 ?않는|투명|hidden|invisible|secret/iu;
 /** 대사가 아니라 서술(「잠겨 있다」「~라고 적혀 있다」)인 본문 — 사물을 조사한 결과다. */
-const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
+const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어|묻어|찍혀|남아|흩어져) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
 /** 1인칭·말 건네기 — 누군가 말하고 있다. */
 const FIRST_PERSON = /(^|[\s「"'“])(나|내|난|날|저|제|전|우리|이몸|본인|자네|너|네가|당신|그대|젊은이|여행자|손님)(는|가|도|를|의|에게|한테|요|야|,|\s|!|\?|$)|어서 ?오|안녕|반갑|고맙|부탁|[요죠네게지나]\s*[.!?~…]*\s*$|[까냐니][?？]\s*$|구먼|일세|하게|하오|습니다|ㅂ니다/u;
 
@@ -3479,12 +3481,13 @@ const makeChaseScene: ToolDefinition = {
       id: { type: "string", description: "추격자 이벤트 id(생략 시 자동) — 다른 이벤트·시험에서 이 추격자를 가리킬 때" },
       chaser: {
         type: "object",
-        description: "{at:{x,y},graphic,speed?,sightRange?}",
+        description: "{at:{x,y},graphic,speed?,sightRange?,blendMode?}",
         properties: {
           at: COORD_SCHEMA,
           graphic: GRAPHIC_SPEC_SCHEMA,
           speed: { type: "integer" },
           sightRange: { type: "integer" },
+          blendMode: { type: "string", enum: ["add", "screen", "multiply"], description: "칩을 아래 화면과 섞는 방식. 유령·빛나는 것은 add(사람 걷기 칩을 그대로 쓰고 희미하게 빛나게), 그림자는 multiply. 생략 = 보통" },
         },
         required: ["at"],
       },
@@ -3501,6 +3504,9 @@ const makeChaseScene: ToolDefinition = {
         },
       },
       killOnTouch: { type: "boolean" },
+      onTouch: { type: "array", items: CUTSCENE_BEAT_SCHEMA, description: "닿았을 때 게임 오버 대신 도는 장면(CutsceneBeat[]) — 죽이지 않는 추격자(유령의 차가운 손 → 화면이 하얘지고 계단 앞으로 transfer, 스위치로 추격 끄기). killOnTouch·caughtPenalty 와 같이 쓸 수 없다" },
+      caughtText: { type: "string", maxLength: 80, description: "killOnTouch 로 붙잡힌 순간 게임 오버 앞에 뜨는 한 줄(기본 「붙잡혔다.」). 추격자의 말로 — 예 숙직 선생 「찾았다.」, 짐승은 비우거나 「…」" },
+      characterId: { type: "string", description: "추격자의 인물 프로필 id(upsert_character_profile). 주면 그 프로필 이름이 이벤트 이름이 되고, 그 이름을 화자로 쓴 bark(text container:\"bark\") 혼잣말이 이 추격자 머리 위에 붙는다 — 층마다 다른 추격자 이벤트여도 같은 인물로 묶인다" },
       caughtPenalty: {
         type: "object",
         description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님, 끝나면 파티 회복) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
@@ -3520,7 +3526,7 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
-      footsteps: { type: "object", description: "추격자 발소리 — 주인공과 걸음 거리로 커지고 좌우로 갈린다(소리로 거리를 재는 호러). {se?(생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?}. 공포 장르(horror-chase)는 생략해도 기본 발소리를 단다 — false 면 끈다", properties: { se: { type: "string" }, everySteps: { type: "integer" }, radius: { type: "integer" }, volume: { type: "number" } } },
+      footsteps: { type: "object", description: "추격자 발소리 — 주인공과 걸음 거리로 커지고 좌우로 갈린다(소리로 거리를 재는 호러). {se?(생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?}. 공포 장르(horror-chase)는 생략해도 기본 발소리를 단다 — {off:true} 면 끈다(유령·발소리 없는 추격자)", properties: { se: { type: "string" }, everySteps: { type: "integer" }, radius: { type: "integer" }, volume: { type: "number" }, off: { type: "boolean", description: "true 면 발소리를 뗀다" } } },
       emotes: { type: "string", enum: ["none", "default"], description: "none = 알아챈 「!」·숨 고르기 땀 말풍선을 띄우지 않는다(호러 기본). default = 띄운다" },
       hidingSound: { type: "object", description: "은신처 소리 — {enterSe?(숨을 때, 생략 = 사물함 문 소리), exitSe?, heartbeat?(true 면 숨어 있는 동안 심장 고동 고리, 공포 장르 기본 true)}. false 면 무음", properties: { enterSe: { type: "string" }, exitSe: { type: "string" }, heartbeat: { type: "boolean" } } },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
@@ -3580,7 +3586,12 @@ const makeChaseScene: ToolDefinition = {
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const penalty = readCaughtPenalty(draft, args.caughtPenalty);
     if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
-    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }]
+    if (args.onTouch !== undefined && (args.killOnTouch === true || penalty)) throw new ToolError("onTouch 는 killOnTouch·caughtPenalty 와 같이 쓸 수 없습니다 — 닿았을 때 하나만 고르세요.", { code: "invalid-args" });
+    const touchCommands = args.onTouch === undefined ? undefined : compileChaserTouch(draft, map, id, args.onTouch);
+    const caughtText = typeof args.caughtText === "string" && args.caughtText.trim() ? args.caughtText.trim() : "붙잡혔다.";
+    const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
+    const commands: Command[] = touchCommands ? touchCommands
+      : args.killOnTouch === true ? [{ kind: "killPlayer", message: caughtText }]
       : penalty ? [
         { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
         { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
@@ -3609,6 +3620,7 @@ const makeChaseScene: ToolDefinition = {
     const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id, paceMs);
     const event: GameEvent = {
       id,
+      ...(characterId ? { characterId, ...(draft.characters?.[characterId]?.displayName ? { name: draft.characters[characterId]!.displayName } : {}) } : {}),
       x: placement.x,
       y: placement.y,
       trigger: { kind: "eventTouch" },
@@ -3618,7 +3630,7 @@ const makeChaseScene: ToolDefinition = {
           id: `${id}_chase`,
           name: "추격자",
           conditions: activateSwitch ? [{ kind: "switch", switchId: activateSwitch, value: true }] : [],
-          graphic,
+          graphic: chaser.blendMode && !graphic.transparent ? { ...graphic, blendMode: chaser.blendMode } : graphic,
           trigger: { kind: "eventTouch" },
           priority: "same",
           overlapForbidden: true,
@@ -4087,17 +4099,41 @@ function chaseSpec(value: unknown): {
   readonly graphic?: unknown;
   readonly speed?: number;
   readonly sightRange?: number;
+  readonly blendMode?: "add" | "screen" | "multiply";
 } {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?} 객체여야 합니다.", { code: "chaser-spec" });
+    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?,blendMode?} 객체여야 합니다.", { code: "chaser-spec" });
   }
-  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown };
+  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown; blendMode?: unknown };
+  if (record.blendMode !== undefined && record.blendMode !== "add" && record.blendMode !== "screen" && record.blendMode !== "multiply") {
+    throw new ToolError("chaser.blendMode 는 add|screen|multiply 입니다.", { code: "chaser-spec" });
+  }
   return {
     at: pointFromRecord(record.at, "chaser.at"),
     graphic: record.graphic,
     speed: typeof record.speed === "number" ? record.speed : undefined,
     sightRange: typeof record.sightRange === "number" ? record.sightRange : undefined,
+    ...(record.blendMode ? { blendMode: record.blendMode as "add" | "screen" | "multiply" } : {}),
   };
+}
+
+/** 죽이지 않는 추격자의 «닿음» 장면 — script_cutscene 과 같은 비트 검증을 거친다. */
+function compileChaserTouch(draft: Project, map: GameMap, chaserId: string, beats: unknown): Command[] {
+  if (!Array.isArray(beats) || beats.length === 0) throw new ToolError("onTouch 는 비어 있지 않은 CutsceneBeat 배열이어야 합니다.", { code: "invalid-args" });
+  try {
+    return compileCutscene(beats as CutsceneBeat[], {
+      context: {
+        eventIds: new Set([...map.events.map((event) => event.id), chaserId]),
+        resourceIds: collectResourceIds(draft),
+        mapIds: new Set(Object.keys(draft.maps)),
+        switchIds: new Set((draft.switches ?? []).map((sw) => sw.id)),
+        endingIds: new Set((draft.endings ?? []).map((ending) => ending.id)),
+      },
+    });
+  } catch (cause) {
+    if (cause instanceof CutsceneValidationError) throw new ToolError(`onTouch 검증 실패: ${cause.reasons.join(" / ")}`, { code: "cutscene-validation", mapId: map.id });
+    throw cause;
+  }
 }
 
 function rectFromRecord(value: unknown, label: string): { x: number; y: number; w: number; h: number } {

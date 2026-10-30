@@ -3,7 +3,7 @@
  * 받은 스토어 상품을 지금 프로젝트에 넣는다. 그림·소리는 프로젝트 저장소(데스크톱은 assets/)에 먼저 넣고,
  * 문서에는 내용 주소와 출처(origin)만 남긴다. 같은 상품의 새 판본은 같은 id 를 덮어써 맵 참조가 유지된다.
  */
-import type { StorePackManifest } from "@/assetStore/format";
+import { storeMonsterSheetCellProblems, type StorePackManifest } from "@/assetStore/format";
 import { subsetAudioManifest } from "@/assetStore/storeSoundPick";
 import { applyPackToProject, packAssetTargets, type ApplyContext, type ApplyResult } from "@/assetStore/pack";
 import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
@@ -96,6 +96,9 @@ export async function prepareManifestItem(
   applyPackToProject({
     tilesets: probeTilesets, assets: { uploaded: {} }, charsetLabels: [], database: { characterAppearances: [] },
   } as unknown as Project, manifest, context);
+  // 16칸(4x4) 전투 도트 시트의 칸 채움(missingCells·15번 투명). 서버도 같은 계약으로 막지만, 바꾼 스토어 주소·로컬 묶음도 여기서 거른다.
+  const cellProblems = storeMonsterSheetCellProblems(manifest, await decodeMonsterSheets(manifest, blob));
+  if (cellProblems.length > 0) throw new Error(cellProblems[0]);
   if (repository.supportsAssetRefs) {
     for (const { id, asset } of packAssetTargets(manifest, slug)) {
       const bytes = blob(asset.blob);
@@ -112,6 +115,30 @@ export async function prepareManifestItem(
   }
   return { manifest, version: meta.version, context };
 }
+/** 4x4 전투 도트 시트 PNG 만 미리 풀어 둔다(칸 채움 검사는 동기 함수라). 풀 수 없는 환경이면 null — 크기 검사에 맡긴다. */
+async function decodeMonsterSheets(manifest: StorePackManifest, blob: (sha: string) => Uint8Array): Promise<(sha: string) => { width: number; height: number; data: Uint8Array } | null> {
+  const decoded = new Map<string, { width: number; height: number; data: Uint8Array }>();
+  if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") return () => null;
+  for (const asset of Object.values(manifest.content.assets)) {
+    const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
+    const sheetAsset = sheet?.grid === "4x4" && Object.hasOwn(manifest.content.assets, sheet.sheetResourceId) ? manifest.content.assets[sheet.sheetResourceId] : undefined;
+    if (!sheetAsset || decoded.has(sheetAsset.blob)) continue;
+    try {
+      const bitmap = await createImageBitmap(new Blob([blob(sheetAsset.blob) as BlobPart], { type: "image/png" }), { premultiplyAlpha: "none", colorSpaceConversion: "none" });
+      const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+      const context2d = canvas.getContext("2d");
+      if (!context2d) continue;
+      context2d.drawImage(bitmap, 0, 0);
+      const pixels = context2d.getImageData(0, 0, bitmap.width, bitmap.height).data;
+      decoded.set(sheetAsset.blob, { width: bitmap.width, height: bitmap.height, data: new Uint8Array(pixels.buffer, pixels.byteOffset, pixels.byteLength) });
+      bitmap.close();
+    } catch {
+      // 못 풀면 칸 검사를 건너뛴다(크기 검사는 applyPackToProject 가 이미 했다).
+    }
+  }
+  return (sha) => decoded.get(sha) ?? null;
+}
+
 /** 준비한 판본을 문서에 넣는다(동기). 패널은 store.update 안에서, 조수 도구는 draft 에서 부른다. */
 export function applyPreparedStoreItem(project: Project, prepared: PreparedStoreItem): ApplyResult {
   const result = applyPackToProject(project, prepared.manifest, prepared.context);
