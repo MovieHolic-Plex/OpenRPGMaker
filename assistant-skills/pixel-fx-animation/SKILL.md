@@ -8,6 +8,12 @@ description: "Hand-pixel each frame of battle magic, hits, projectiles and summo
 동봉된 [pixel-dot-authoring](../pixel-dot-authoring/SKILL.md)을 읽고 각 프레임의 픽셀을 직접 저작한다.
 프로젝트 전용 격자 도구가 없으면 그 스킬의 `scripts/pixelgrid.py`를 사용한다. 두 스킬을 같은 스킬 폴더에 설치한다.
 
+## 먼저: 이미 있는 코드 효과로 되는가 (OPRN 편집기)
+
+OPRN 프로젝트에는 코드로 그리는 픽셀 효과 232종(pixelfx, MIT)이 들어 있다 — 불·폭발·물·얼음·번개·근접 베기·타격·투사체·비전·신성·어둠·상태·날씨·횃불/모닥불 같은 장소 효과.
+새로 찍기 전에 `list_pixel_fx` 로 찾고 `preview_pixel_fx` 로 장면을 본다. 맞으면 `attach_pixel_fx`(기술·아이템·직업 공격, 또는 `target:"animation"` 으로 필드 한 번 효과 id),
+`set_event_pixel_fx`/`place_pixel_fx`(상시 효과)로 단다. 색은 `color`(한 색 → 6단 띠)·`palette` 로 맞춘다. 이 효과들로 속성·크기·박자가 맞지 않을 때만 아래 절차로 직접 찍는다.
+
 ## 연출을 정한다
 
 - 대상 그림, 시전자/착탄 앵커, 화면의 실제 표시 크기, 재생 간격과 피해가 들어가는 시점을 먼저 확인한다. 상자 가운데와 몸/손/발의 실제 위치는 다르다.

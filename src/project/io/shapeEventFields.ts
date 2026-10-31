@@ -1,4 +1,5 @@
 import { FIELD_APPROACH_STYLES, isFieldApproachStyle } from "@/project/fieldApproachStyle";
+import { isPixelFxEffectIdFormat } from "@/project/pixelFxSpec";
 import { CHASE_BRAINS, isChaseBrain } from "@/project/chaseBrain";
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { isBlendModeName } from "@/project/blendMode";
@@ -349,6 +350,11 @@ function validateCharacterFootprintFields(label: string, page: Record<string, un
     for (const key of ["offsetX", "offsetY"] as const) {
       assert(glow[key] === undefined || (typeof glow[key] === "number" && Math.abs(glow[key] as number) <= 4), `${label}.glow.${key} 는 -4~4 칸입니다.`);
     }
+  }
+  if (page.pixelFx !== undefined) {
+    // 형식만 본다(잘못된 색·범위 밖 숫자는 런타임 normalizeEventPixelFx 가 버린다). 효과 id 가 틀리면 저자가 알 수 있게 막는다.
+    const fx = requireRecord(`${label}.pixelFx`, page.pixelFx);
+    assert(isPixelFxEffectIdFormat(fx.effectId), `${label}.pixelFx.effectId 는 "분류/이름"(예 fire/torch) 입니다.`);
   }
   if (page.nearSparkle !== undefined) {
     const near = requireRecord(`${label}.nearSparkle`, page.nearSparkle);

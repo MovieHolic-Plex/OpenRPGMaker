@@ -1,4 +1,6 @@
 // Page 3 native command rich forms (맵·연출): lighting, weather, animation, picture, tile.
+import { pixelFxAnimationPickButton } from "@/editor/panels/pixelFxPicker";
+import { mountPixelFxDom } from "@/pixelfx/domPlayer";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { EASING_LABELS, EASING_NAMES, normalizeEasing } from "@/project/easing";
@@ -871,6 +873,20 @@ export function showAnimationBody(
     "show-animation-position-field"
   );
 
+  const pixelFxButton = pixelFxAnimationPickButton({
+    testid: "show-animation-pixel-fx",
+    currentAnimationId: cmd.animationId,
+    onAnimationId: (animationId) => {
+      context.actions.replaceCommand(context.path, {
+        kind: "showAnimation",
+        target: showAnimationTargetFromControls(target.select.value, eventId.value, x.value, y.value),
+        animationId,
+        ...(wait.select.value === "true" ? { wait: true } : {}),
+      });
+    },
+  });
+  animation.root.append(pixelFxButton);
+
   const commit = () => {
     context.actions.replaceCommand(context.path, {
       kind: "showAnimation",
@@ -899,8 +915,17 @@ export function showAnimationBody(
       class: "page3-preview-stage page3-preview-animation page3-anim-stage",
       dataset: { testid: "show-animation-preview-stage" },
     });
-    const source = showAnimationPlaybackSource(anim, project);
-    if (source) {
+    const source = anim?.pixelFx ? undefined : showAnimationPlaybackSource(anim, project);
+    if (anim?.pixelFx) {
+      // 코드 픽셀 효과(pixelfx) — 런타임과 같은 그리기로 계속 돈다(게임 1화소 = 미리보기 2px, 원점 = 대상 발밑).
+      playHost.replaceChildren();
+      stage.style.position = "relative";
+      stage.style.overflow = "hidden";
+      const fx = mountPixelFxDom(anim.pixelFx, { pixelScale: 2, repeat: true });
+      fx.element.style.left = "50%";
+      fx.element.style.top = "72%";
+      stage.append(el("span", { class: "page3-preview-stage-label", text: "픽셀 효과" }), fx.element);
+    } else if (source) {
       const cells = el("div", {
         class: "db-animation-stage-cells page3-anim-cells",
         dataset: { testid: "show-animation-frame-layer" },
