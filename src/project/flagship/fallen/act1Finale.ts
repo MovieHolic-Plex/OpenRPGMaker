@@ -20,6 +20,7 @@ import { FS_NAMES, FS_PREFIX } from "../fallenStarStory";
 import { build, lightRoom } from "../fallenStarRooms";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX } from "../fallenValenChip";
 import { B3, B3_ROOM, B4, B4_ROOM, FS_B3_ID, FS_B3_NAME, FS_B4_ID, FS_B4_NAME } from "./vaultLabyrinthRooms";
+import { applyFallenVaultCombat, FS_INQ, FS_INQ_CHIPS, FS_VAULT_TROOPS } from "./vaultCombat";
 
 const SAVE_PROMPT = "기록하시겠습니까?";
 
@@ -50,6 +51,14 @@ const SW_WEST_LEVER = "sw_fs_b3_west_lever";
 const SW_SUN_LEVER = "sw_fs_b3_sun_lever";
 const SW_MOON_LEVER = "sw_fs_b3_moon_lever";
 const SW_ALARM = "sw_fs_b3_alarm_rung";
+const SW_ALARM_RUSH = "sw_fs_b3_alarm_rush";
+const SW_ALARM_DONE = "sw_fs_b3_alarm_done";
+const SW_PATROL_ON = "sw_fs_b3_patrol_on";
+const SW_PATROL_DONE = "sw_fs_b3_patrol_done";
+const SW_LEDGE_ON = "sw_fs_b3_ledge_on";
+const SW_LEDGE_DONE = "sw_fs_b3_ledge_done";
+const SW_PRISONER_ON = "sw_fs_b2_prisoner_on";
+const SW_PRISONER_DONE = "sw_fs_b2_prisoner_done";
 const SW_DRAGON_MET = "sw_fs_dragon_met";
 const SW_DRAGON_DOWN = "sw_fs_dragon_down";
 const SW_DRAGON_CRACK = "sw_fs_dragon_crack";
@@ -289,6 +298,8 @@ function database(project: Project): void {
   } as unknown as TroopRecord);
 
   valenCrash(project, text);
+  // 지하 미궁의 심문회 무리·달빛의 용 다시 짜기(fallen/vaultCombat.ts) — 용 트룹 위에 덮는다.
+  applyFallenVaultCombat(project);
 }
 
 // ── 추락지 발렌 — 두 전투(1: 심문회 병사 넷 · 2: 발렌 → 골렘 → 금단의 주술·기계) ─────────
@@ -703,6 +714,84 @@ function vaultSeal(project: Project, vaultId: string): void {
   });
 }
 
+// ── 지하 2층 · 옛 별지기의 방 — 곁방 셋의 무리를 바꾸고, 가짜 포로 매복을 둔다 ───────────────
+function vaultB2(project: Project, vault: GameMap): void {
+  const T = FS_VAULT_TROOPS;
+  const plan: Record<string, { troop: string; chip: [string, number]; shout: [string, string] }> = {
+    [`ev_${FS_PREFIX}_vault_foe1`]: { troop: T.b2Kitchen, chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, shout: ["채찍 고행자", "피가 흐를수록 신께 가까워진다.\n너희 피도 보태라!"] },
+    [`ev_${FS_PREFIX}_vault_foe2`]: { troop: T.b2Crypt, chip: FS_INQ_CHIPS[FS_INQ.shield]!, shout: ["심문회 방패병", "설교 중이시다.\n이 방패 뒤로는 한 발짝도 못 온다."] },
+    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: T.b2Library, chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, shout: ["심문회 석궁수", "책장 사이로 다 보인다.\n움직이면 쏜다."] },
+  };
+  let changed = 0;
+  for (const event of vault.events) {
+    const spec = plan[event.id];
+    if (!spec) continue;
+    event.name = spec.shout[0];
+    for (const p of event.pages ?? []) {
+      if (p.graphic?.sprite) {
+        const direction = (p.graphic.direction ?? "down") as Dir;
+        p.graphic = { ...p.graphic, ...chip(spec.chip[0], spec.chip[1], direction) } as EventPage["graphic"];
+      }
+      eachList(p.commands as Command[], (list) => {
+        for (const c of list) {
+          const r = c as unknown as Rec;
+          if (r.kind === "battleProcessing") { r.troopId = spec.troop; changed += 1; }
+          if (r.kind === "text" && r.speaker) { r.speaker = spec.shout[0]; r.body = spec.shout[1]; }
+        }
+      });
+    }
+  }
+  if (changed < 3) throw new Error(`[fallen-star act1] 지하 2층 곁방 셋 중 ${changed}곳만 바꿨다`);
+
+  // 매복 ③ 가짜 포로 — 남서쪽 작은 서재 구석에 사슬에 묶인 사람이 있다. 풀어 주든 두든, 그는 교단의 첩자다.
+  ensureSwitch(project, SW_PRISONER_ON, `${vault.name}: 가짜 포로 정체`);
+  ensureSwitch(project, SW_PRISONER_DONE, `${vault.name}: 가짜 포로 이김`);
+  const PRISONER = "포로";
+  const spyChip = FS_INQ_CHIPS[FS_INQ.spy]!;
+  const pid = `ev_${FS_PREFIX}_b2_prisoner`;
+  const foes: AmbushFoe[] = [
+    { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 5, y: 24 }, to: { x: 6, y: 23 } },
+    { name: "교단 광신도", chip: FS_INQ_CHIPS["enemy_fs_fanatic"]!, from: { x: 14, y: 23 }, to: { x: 10, y: 23 } },
+  ];
+  const ids = ambushFoes(vault, "b2_prisoner", SW_PRISONER_ON, SW_PRISONER_DONE, foes);
+  const stage: AmbushStage = {
+    cue: [], bark: [PRISONER, "별지기 쥐새끼는 마음이 약해서 좋아.\n형제들, 문 막아!"], troopId: FS_VAULT_TROOPS.b2Prisoner,
+    after: [say(IRIS, "그 사람… 처음부터 사슬이 헐거웠어요."), say(KAEL, "다음엔 사슬부터 볼게.")],
+  };
+  const turn: Command[] = [
+    cutBegin(),
+    emote(pid, "ellipsis", 900),
+    se("cc0-se-ors-chain-02"),
+    narrate("사슬이 저절로 스르륵 풀려 바닥에 떨어진다."),
+    look(pid, { tint: "red", opacity: 100 }),
+    se("cc0-se-orp-battle-sword-unsheathe"),
+    shake(3, 450),
+    emote("player", "exclamation", 700),
+    setSw(SW_PRISONER_ON),
+    ...foeEntrances(project, vault, ids, foes),
+    say(stage.bark[0], stage.bark[1]),
+    look(pid, { reset: true }),
+    cutLabel(),
+    cutEnd(),
+    textBox("bottom"),
+    ...ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
+  ];
+  const prisonerGfx = { graphic: chip(spyChip[0], spyChip[1], "right"), overlapForbidden: true, animationType: "fixedGraphic" };
+  addEvent(vault, pid, PRISONER, { x: 7, y: 22 }, [
+    page(`${pid}_p0`, "사슬에 묶인 포로", [sw(SW_PRISONER_DONE, false)], [
+      textBox("top"), // 포로는 맵 남쪽 끝 — 아래 대화창이 포로와 문간을 가린다(QA 영상 실측)
+      say(PRISONER, "…거기 누구요? 별지기 사람이오?\n교단 놈들이 날 여기 묶어 두고 갔소."),
+      say(PRISONER, "사슬만 좀 풀어 주시오.\n물 한 모금 못 마셨소."),
+      { kind: "choices", prompt: "사슬을 풀어 줄까?", cancelBehavior: "branch", options: [
+        { text: "사슬을 풀어 준다", branch: [narrate("카엘이 녹슨 사슬에 손을 뻗는다."), say(PRISONER, "…고맙군.")] },
+        { text: "그냥 둔다", branch: [say(ELENA, "…카엘, 저 사람 손목. 사슬이 안 조여 있어."), say(PRISONER, "…눈치 하나는 빠르군.")] },
+      ], cancelBranch: [say(PRISONER, "…가지 마시오.")] } as unknown as Command,
+      ...turn,
+    ], prisonerGfx),
+    page(`${pid}_gone`, "사라짐", [sw(SW_PRISONER_DONE)], []),
+  ]);
+}
+
 // ════════════════════════════════════════════════════════════════════
 // 4. 지하 3층 · 가라앉은 회랑
 // ════════════════════════════════════════════════════════════════════
@@ -768,6 +857,7 @@ function foe(project: Project, map: GameMap, template: GameEvent, key: string, a
   let json = JSON.stringify(template).split(template.id).join(id);
   const event = JSON.parse(json) as GameEvent & Rec;
   event.x = at.x; event.y = at.y;
+  event.name = shout[0];
   ensureSwitch(project, `sw_${id}_clear`, `${map.name}: ${shout[0]} 쓰러짐`);
   // 순찰: 좌우 두 칸이 막혔으면 위아래, 그것도 막혔으면 제자리.
   const free = (dx: number, dy: number) => isPassable(project, map, at.x + dx, at.y + dy) && isPassable(project, map, at.x + 2 * dx, at.y + 2 * dy);
@@ -881,6 +971,16 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     page(`ev_${FS_PREFIX}_b3_lever_sun_p1`, "당긴 해 손잡이", [sw(SW_SUN_LEVER)], [narrate("해 손잡이는 이미 누워 있다.")]),
   ]);
   const ambushTemplate = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_foe1`);
+  // 경종 증원 — 순서를 어기면 종이 울리고, 동쪽 홀 쪽 통로로 사냥개지기와 사슬 참회자가 뛰어든다(한 번만).
+  const alarmRush = rushIn(project, map, "b3_alarm", SW_ALARM_RUSH, SW_ALARM_DONE, [
+    { name: "사냥개지기", chip: FS_INQ_CHIPS[FS_INQ.handler]!, from: { x: 39, y: 23 }, to: { x: 40, y: 27 } },
+    { name: "사슬 참회자", chip: FS_INQ_CHIPS[FS_INQ.penitent]!, from: { x: 40, y: 23 }, to: { x: 39, y: 28 } },
+  ], {
+    cue: [se("cc0-se-orp-npc-misc-wolfman"), narrate("동쪽 통로에서 개 짖는 소리와\n쇠사슬 끌리는 소리가 몰려온다.")],
+    bark: ["사냥개지기", "경종이다! 순서도 모르는 쥐새끼들,\n물어뜯어 줘라!"],
+    troopId: FS_VAULT_TROOPS.b3Alarm,
+    after: [narrate("사슬 참회자가 무릎을 꿇고 웃음을 멈춘다.\n종소리가 잦아든다.")],
+  });
   leverEvent(map, "b3_lever_moon", "달 손잡이", B3.moonLever, [
     page(`ev_${FS_PREFIX}_b3_lever_moon_p0`, "달 손잡이", [], [
       narrate("초승달 문양이 새겨진 손잡이다."),
@@ -903,9 +1003,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
           se("cc0-se-osx-bell-02"),
           shake(2, 600),
           setSw(SW_ALARM),
-          emote("player", "exclamation", 700),
-          say(FANATIC, "경종이다! 별지기 쥐새끼들이\n순서도 모르고 손잡이를 건드렸군."),
-          battle("troop_fs_fanatic_cell", false, true),
+          ...alarmRush,
           narrate("철컥. 손잡이가 제자리로 돌아간다."),
         ], [narrate("철컥. 손잡이가 제자리로 돌아간다.")]),
       ]),
@@ -919,13 +1017,128 @@ function floorB3(project: Project, vault: GameMap): GameMap {
 
   // 광신도 넷 — 지하 2층 견본(추격·도망·쓰러진 자리 페이지)을 그대로 복제.
   if (!ambushTemplate) throw new Error("[fallen-star act1] 광신도 견본(ev_fs_vault_foe1)이 없다");
-  const ACTOR3: [string, number] = ["tex_easyrpg_charset_actor3", 2];
-  const PEOPLE2: [string, number] = ["tex_easyrpg_charset_people2", 2];
-  foe(project, map, ambushTemplate, "b3_foe_gallery", B3.foes.gallery!, "troop_fs_fanatics", ACTOR3, [FANATIC, "이 회랑은 교단 땅이다.\n꺼져라, 별지기 쥐새끼들!"]);
-  foe(project, map, ambushTemplate, "b3_foe_west", B3.foes.west!, "troop_fs_fanatic_sermon", PEOPLE2, ["광신도 설교자", "달의 방에 손대지 마라.\n그 손잡이는 심문관님 몫이다."]);
-  foe(project, map, ambushTemplate, "b3_foe_east", B3.foes.east!, "troop_fs_fanatic_cell", ACTOR3, [FANATIC, "동쪽 문이 열렸다고?\n네놈들이 서쪽 손잡이를 당겼구나!"]);
-  foe(project, map, ambushTemplate, "b3_foe_levers", B3.foes.levers!, "troop_fs_fanatic_sermon", PEOPLE2, ["광신도 설교자", "해와 달의 순서는\n믿는 자만 안다."]);
+  // 층마다 다른 무리(fallen/vaultCombat.ts) — 필드에 선 사람이 그 무리의 앞장이다.
+  const T = FS_VAULT_TROOPS;
+  foe(project, map, ambushTemplate, "b3_foe_gallery", B3.foes.gallery!, T.b3Gallery, FS_INQ_CHIPS[FS_INQ.shield]!, ["심문회 방패병", "방패 줄 앞이다.\n별지기 쥐새끼들은 여기서 멈춘다."]);
+  foe(project, map, ambushTemplate, "b3_foe_west", B3.foes.west!, T.b3West, FS_INQ_CHIPS[FS_INQ.priest]!, ["심문 사제", "기도 중이다.\n달의 방에 들어온 죄부터 씻어 주마."]);
+  foe(project, map, ambushTemplate, "b3_foe_east", B3.foes.east!, T.b3East, FS_INQ_CHIPS[FS_INQ.handler]!, ["사냥개지기", "냄새가 나더라니.\n얘들아, 저녁거리다."]);
+  foe(project, map, ambushTemplate, "b3_foe_levers", B3.foes.levers!, T.b3Levers, FS_INQ_CHIPS[FS_INQ.penitent]!, ["사슬 참회자", "…아프다. 좋다.\n너희도 같이 참회하자."]);
+
+  // 매복 ① 순찰대 — 서쪽 손잡이로 동쪽 쇠살문이 열린 뒤 그 문 앞에 서면, 문 너머 초소에서 순찰대가 문을 박차고 나온다.
+  ambush(project, map, {
+    key: "b3_patrol", on: SW_PATROL_ON, done: SW_PATROL_DONE, requires: [sw(SW_WEST_LEVER)],
+    triggers: [{ x: 32, y: 17 }, { x: 32, y: 18 }, { x: 33, y: 17 }, { x: 33, y: 18 }],
+    foes: [
+      { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 38, y: 17 }, to: { x: 34, y: 17 }, steps: ["left", "left", "left", "left"] },
+      { name: "심문회 방패병", chip: FS_INQ_CHIPS[FS_INQ.shield]!, from: { x: 38, y: 18 }, to: { x: 34, y: 18 }, steps: ["left", "left", "left", "left"] },
+      { name: "심문회 석궁수", chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, from: { x: 40, y: 18 }, to: { x: 36, y: 18 }, steps: ["left", "left", "left", "left"] },
+    ],
+    cue: [se("cc0-se-osx-door-01"), shake(3, 450), narrate("쾅! 쇠살문 너머에서 군홧발이 몰려온다.")],
+    bark: ["심문회 방패병", "문을 연 놈들이 여기 있다!\n방패 세워, 한 놈도 못 지나간다!"],
+    troopId: FS_VAULT_TROOPS.b3Patrol,
+    after: [say(KAEL, "…순찰이 돌고 있었어.\n문을 열면 저쪽도 우리를 알아."), say(IRIS, "초소 홀에 더 있어요.\n발소리가 아직 들려요.")],
+  });
+  // 매복 ② 난간 위 — 달의 문을 지나 계단통 방에 들어서면, 문지기 석상 뒤 난간에서 고행자들이 뛰어내린다.
+  ambush(project, map, {
+    key: "b3_ledge", on: SW_LEDGE_ON, done: SW_LEDGE_DONE, requires: [sw(SW_MOON_LEVER)],
+    triggers: [{ x: 21, y: 25 }, { x: 22, y: 25 }, { x: 21, y: 26 }, { x: 22, y: 26 }],
+    foes: [
+      { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 19, y: 27 }, to: { x: 19, y: 27 }, drop: true },
+      { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 24, y: 26 }, to: { x: 24, y: 26 }, drop: true },
+      { name: "심문 사제", chip: FS_INQ_CHIPS[FS_INQ.priest]!, from: { x: 25, y: 29 }, to: { x: 23, y: 28 } },
+    ],
+    cue: [se("cc0-se-ors-stones-02"), fx("dust", 19, 25, 900), fx("dust", 24, 25, 900), narrate("머리 위에서 돌가루가 후드득 떨어진다.")],
+    bark: ["심문 사제", "달의 문을 연 자는 아래로 못 간다.\n형제들, 내려와 정화하라!"],
+    troopId: FS_VAULT_TROOPS.b3Ledge,
+    after: [say(ELENA, "위에서 계속 보고 있었던 거야.\n…계단 아래는 조용하면 좋겠다.")],
+  });
   return map;
+}
+
+/** 대화창 위치 — 장면이 화면 아래쪽에서 벌어질 때 위로 올리고, 끝나면 되돌린다. */
+function textBox(position: "top" | "bottom"): Command {
+  return { kind: "displayTextSettings", format: "normal", position, preventObscuringPlayer: false, allowEventMovementDuringWait: false } as unknown as Command;
+}
+
+// ── 매복·증원 장면 ─────────────────────────────────────────────────────
+/** steps: 굽는 때는 닫혀 있다가 장면 중에 열리는 문(쇠살문)을 지나는 걸음 — 길 찾기 대신 그대로 걷는다. */
+type AmbushFoe = { name: string; chip: [string, number]; from: Cell; to: Cell; drop?: boolean; steps?: Dir[] };
+type AmbushStage = { cue: Command[]; bark: [string, string]; troopId: string; after: Command[] };
+
+/** 매복 인물(보이지 않다가 on 스위치에 나타나고, done 이면 사라진다). */
+function ambushFoes(map: GameMap, key: string, on: string, done: string, foes: AmbushFoe[]): string[] {
+  return foes.map((f, i) => {
+    const id = `ev_${FS_PREFIX}_${key}_foe${i + 1}`;
+    addEvent(map, id, f.name, f.from, [
+      page(`${id}_hidden`, "숨어 있음", [], [], { priority: "below" }),
+      page(`${id}_on`, "덮친다", [sw(on), sw(done, false)], [], { graphic: chip(f.chip[0], f.chip[1], "down"), priority: "same", overlapForbidden: true, animationType: "normal" }),
+    ]);
+    return id;
+  });
+}
+/** 나타난 인물이 제 자리로 — 걸어 들어오거나(문·통로) 위에서 떨어진다(난간). */
+function foeEntrances(project: Project, map: GameMap, ids: string[], foes: AmbushFoe[]): Command[] {
+  return foes.map((f, i) => {
+    const id = ids[i]!;
+    if (f.drop) return route(id, [{ kind: "dropIn", heightPx: 64, durationMs: 420, se: "cc0-se-osx-hit-03", impact: true }, { kind: "turnTowardPlayer" }], i === foes.length - 1);
+    let dirs: Dir[] = f.steps ?? [];
+    if (!f.steps) try { dirs = pathTo(project, map, f.from, f.to); } catch { dirs = []; }
+    return route(id, [...walk(dirs), { kind: "turnTowardPlayer" }], i === foes.length - 1);
+  });
+}
+/** 싸움과 뒤처리 — 이기면 done, 지면 몸을 빼 물러서고(게임 오버 없음) 다시 그 자리에 서면 또 덮친다. */
+function ambushFight(on: string, done: string, stage: AmbushStage): Command[] {
+  return [
+    battleBgm("cc0-bgm-rtp-btl-002"),
+    battle(stage.troopId, true),
+    battleBgmReset(),
+    won([setSw(done), ...stage.after], [
+      { kind: "recoverAll" } as unknown as Command,
+      ...["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((actorId) => ({ kind: "changeActorHp", actorId, op: "=", amount: 30, amountMode: "percent" } as unknown as Command)),
+      narrate("간신히 몸을 빼 어둠 속으로 물러선다.\n저들도 쫓아오지는 않는다."),
+      setSw(on, false),
+    ]),
+  ];
+}
+
+/** 밟으면 터지는 매복 — 소리·흔들림 → 「!」 → 적이 나타나 막아선다 → 한 줄 → 전투 → 뒤처리. 한 번만(이길 때까지). */
+function ambush(project: Project, map: GameMap, spec: AmbushStage & { key: string; on: string; done: string; requires: Condition[]; triggers: Cell[]; foes: AmbushFoe[] }): void {
+  ensureSwitch(project, spec.on, `${map.name}: 매복 ${spec.key} 나타남`);
+  ensureSwitch(project, spec.done, `${map.name}: 매복 ${spec.key} 이김`);
+  const ids = ambushFoes(map, spec.key, spec.on, spec.done, spec.foes);
+  const run: Command[] = [
+    cutBegin(),
+    ...spec.cue,
+    emote("player", "exclamation", 700),
+    setSw(spec.on),
+    ...foeEntrances(project, map, ids, spec.foes),
+    say(spec.bark[0], spec.bark[1]),
+    cutLabel(),
+    cutEnd(),
+    ...ambushFight(spec.on, spec.done, spec),
+  ];
+  spec.triggers.forEach((c, i) => {
+    const tid = `ev_${FS_PREFIX}_${spec.key}_trip_${i}`;
+    addEvent(map, tid, "매복 자리", c, [
+      page(`${tid}_on`, "밟으면 덮친다", [...spec.requires, sw(spec.on, false), sw(spec.done, false)], run, { priority: "below", trigger: { kind: "playerTouch" } }),
+      page(`${tid}_off`, "지남", [sw(spec.done)], [], { priority: "below" }),
+    ]);
+  });
+}
+
+/** 이미 돌고 있는 장면(레버 등) 안에 끼우는 증원 — 인물을 깔고 명령 묶음을 돌려준다. */
+function rushIn(project: Project, map: GameMap, key: string, on: string, done: string, foes: AmbushFoe[], stage: AmbushStage): Command[] {
+  ensureSwitch(project, on, `${map.name}: ${key} 나타남`);
+  ensureSwitch(project, done, `${map.name}: ${key} 이김`);
+  const ids = ambushFoes(map, key, on, done, foes);
+  return [
+    ...stage.cue,
+    emote("player", "exclamation", 700),
+    setSw(on),
+    ...foeEntrances(project, map, ids, foes),
+    say(stage.bark[0], stage.bark[1]),
+    ...ambushFight(on, done, stage),
+  ];
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -1424,6 +1637,7 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
   const vault = M(project, ids.vault);
   shells(project, exec, vault);
   vaultSeal(project, ids.vault);
+  vaultB2(project, M(project, ids.vault)); // shells() 의 도구 실행이 맵 객체를 바꿔 끼우므로 다시 읽는다
   floorB3(project, vault);
   floorB4(project);
   // 「승강 장치가 드러났다」를 지도 위에 실제로 — 패널 옆 바닥에 화물 승강구가 솟는다(조수 도구 stage_map_reveal).
