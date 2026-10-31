@@ -13525,8 +13525,8 @@
    "label": "제2막 B10~B13 하늘탑 1층부터 대화형 플레이(독립 판정 구간)",
    "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다. 파티 Lv11(서리 가도 Lv9 + 서리나루 몇 판)",
    "mapId": "fs2_sky_tower",
-   "x": 29,
-   "y": 19,
+   "x": 34,
+   "y": 17,
    "facing": "left",
    "switches": {
     "sw_fs_main_started": true,

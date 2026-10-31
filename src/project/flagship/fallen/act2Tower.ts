@@ -870,10 +870,8 @@ function floorFour(project: Project, exec: Exec): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// 층마다 둥근 계단방 꾸미기 — author_dungeon 은 1~3층 둥근 방(벽 계단 링 키트)마다 같은 자리에 같은 책장 둘을 놓아
-// 「층을 복사해 붙인 탑」으로 읽혔다(첫 플레이 검수 2026-10-31). 책장을 걷고 그 층 이야기에 맞는 기물로 바꾼다.
-//   1층 기사와 기계의 싸움터 — 무너진 돌무더기·부러진 기둥·밸브 · 2층 박쥐가 든 회랑 — 뼈·부서진 통·돌 부스러기
-//   3층 거울의 층 — 받침 수정·얼음 수정(빛을 모으는 층) · 4층은 렌즈·석관이 이미 차지한다.
+// 둥근 계단방 꾸미기 — author_dungeon 은 링 계단방마다 같은 자리에 같은 책장 둘을 놓아 「층을 복사해 붙인 탑」으로 읽혔다
+// (첫 플레이 검수 2026-10-31). 2층(박쥐가 든 회랑)은 책장을 걷고 뼈·부서진 통·돌 부스러기로, 4층은 렌즈·석관이 이미 차지한다.
 // ════════════════════════════════════════════════════════════════════
 
 const BOOKSHELF_KITS = ["bd-pick-dungeon-theme-bookshelf", "bd-pick-dungeon-theme-bookshelf-tall"];
@@ -889,7 +887,8 @@ function redressRing(project: Project, exec: Exec, mapId: string, swaps: { kit: 
   const shelf = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && shelfTiles.has(up[y * map.width + x]!);
   const anchors: Cell[] = [];
   for (let y = 0; y < Math.min(map.height, 16); y += 1) for (let x = 0; x < map.width; x += 1) if (shelf(x, y) && !shelf(x - 1, y) && !shelf(x, y - 1)) anchors.push({ x, y });
-  if (anchors.length !== swaps.length) throw new Error(`[fallen-star tower] ${mapId} 둥근 방 책장이 ${anchors.length}개다(기대 ${swaps.length})`);
+  // 생성기 판이 바뀌어 책장 수가 다르면(다른 방 책장까지 잡을 수 있다) 건드리지 않는다 — 굽기를 멈출 일은 아니다.
+  if (anchors.length !== swaps.length) { console.warn(`[fallen-star tower] ${mapId} 둥근 방 책장이 ${anchors.length}개다(기대 ${swaps.length}) — 꾸미기를 건너뛴다`); return; }
   // 걷기: 덩이마다 책장 칸을 비운다(아래층 바닥이 드러난다).
   for (const a of anchors) for (let y = a.y; shelf(a.x, y) || shelf(a.x + 1, y); y += 1) for (const x of [a.x, a.x + 1]) if (shelf(x, y)) up[y * map.width + x] = -1;
   anchors.forEach((a, i) => {
@@ -898,17 +897,10 @@ function redressRing(project: Project, exec: Exec, mapId: string, swaps: { kit: 
 }
 
 export function ringRooms(project: Project, exec: Exec): void {
-  redressRing(project, exec, FS2_T1, [
-    [{ kit: "bd-pick-castle-catacombs-anvil-table", dx: 0, dy: 0 }],
-    [{ kit: "bd-pick-aqueduct-sewer-valve-wheel", dx: 0, dy: 0 }, { kit: "bd-pick-volcano-cave-pillar-broken-a", dx: 1, dy: 0 }],
-  ]);
+  // main #4125 뒤로 1·3층 계단방은 팔각 홀·서쪽 방으로 바뀌어 저마다 다르다. 링 계단방은 2층(과 렌즈·석관이 차지한 4층)만 남았다.
   redressRing(project, exec, FS2_T2, [
     [{ kit: "bd-pick-dungeon-cave-broken-pillar", dx: 0, dy: 0 }, { kit: "bd-pick-aqueduct-sewer-bones", dx: 1, dy: 1 }],
     [{ kit: "bd-pick-shipwreck-reef-broken-barrel", dx: 0, dy: 1 }, { kit: "bd-pick-castle-catacombs-rubble", dx: 1, dy: 0 }],
-  ]);
-  redressRing(project, exec, FS2_T3, [
-    [{ kit: "bd-pick-dungeon-theme-crystal-pedestal", dx: 0, dy: 0 }],
-    [{ kit: "bd-pick-dungeon-theme-ice-crystal", dx: 0, dy: 0 }, { kit: "bd-pick-dungeon-theme-crystal-pedestal", dx: 1, dy: 0 }],
   ]);
 }
 
