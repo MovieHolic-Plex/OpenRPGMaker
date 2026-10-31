@@ -18,7 +18,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
-import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SOURCE } from "./dawnwellAshSheet";
+import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -1415,11 +1415,12 @@ const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] 
  *   숯덩이 골렘+도깨비(Lv7, 피할 수 있는 정예) 100%·68% / 100%·회복약 4.0
  * 경험치 — 한 번씩 다 싸우면(들개·까마귀·도깨비·재뱀·마을 도깨비) 935 → Lv6 바닥 1145 + 935 = 2080 ≥ Lv8 문턱 2070.
  */
-const ASH_FOES: { id: string; name: string; art: string; level: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp: number; fireLast?: boolean }[] = [
+const ASH_FOES: { id: string; name: string; art: string; level: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp: number }[] = [
   // 잿불 도깨비 — 불의 정령. 얼음 구체가 아니라 불(화염)을 쓴다(VQA: 도깨비가 얼음 기술).
   // 그림은 도깨비불(작은 불꽃 덩이, wisp-blue) — 불 해마(spirit-fire)는 다른 짐승으로 읽혔다(2026-10-31 첫 플레이 검수).
-  // 밸런스(같은 검수): 셋이 화염을 거푸 쏘면 공격만 해도 전멸했다 — 마력 90→60, 체력 170→130, 화염은 기본 공격보다 드물게(fireLast).
-  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-wisp-blue", level: 7, style: "float", stats: { maxHp: 130, maxMp: 40, attack: 54, defense: 20, mind: 60, agility: 48 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_fire"], exp: 70, fireLast: true },
+  // 밸런스(감독 2차, 2026-10-31): 「공격만 누르면 아슬아슬하게 이기거나 가끔 진다, 회복·방어를 쓰면 넉넉」 —
+  //   모의전 n=200 카엘+엘레나: 공격만·회복약 없음 Lv6 70%/Lv7 80%, 공격+회복약 셋 91%/97%, 기술 자동 전투 100%.
+  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-wisp-blue", level: 7, style: "float", stats: { maxHp: 200, maxMp: 40, attack: 66, defense: 20, mind: 96, agility: 48 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_fire"], exp: 70 },
   { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", level: 6, style: "swoop", stats: { maxHp: 130, maxMp: 0, attack: 76, defense: 18, mind: 20, agility: 78 }, skills: ["skill_attack"], exp: 55 },
   { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", level: 8, style: "lumber", stats: { maxHp: 700, maxMp: 0, attack: 118, defense: 72, mind: 60, agility: 30 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"], exp: 280 },
   { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", level: 6, style: "dash", stats: { maxHp: 150, maxMp: 0, attack: 74, defense: 20, mind: 20, agility: 66 }, skills: ["skill_attack"], exp: 55 },
@@ -1446,7 +1447,7 @@ function ashFoes(project: Project, exec: Exec): void {
     const rec = JSON.parse(JSON.stringify(base)) as Rec;
     Object.assign(rec, {
       id: f.id, name: f.name, level: f.level, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
-      actions: f.skills.map((skillId, i) => ({ skillId, priority: f.fireLast ? (i === 0 ? 8 : 5) : (i === 0 ? 7 : 8), condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
+      actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
       rewards: { exp: f.exp, gold: 14, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
       ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
     });
@@ -1459,40 +1460,23 @@ function ashFoes(project: Project, exec: Exec): void {
 }
 
 /**
- * 새벽샘 터 북쪽 출구로 가는 길(2026-10-31 첫 플레이 검수: 보이는 길은 동쪽 묘지로만 가고, 북쪽 출구는 나무 틈으로만 지났다).
- * 예배당 동쪽 세로 흙길의 칸(같은 맵, 같은 그림)을 네 줄 주기로 위로 이어 붙이고, 길 자리의 고목 한 그루와 그 그림자를 걷는다.
- */
-function extendDawnNorthRoad(map: GameMap): void {
-  const r = DAWN_SPOTS.northRoad, W = map.width;
-  const at = (x: number, y: number) => y * W + x;
-  // 길 둘레의 맨땅 칸 — 고목·그림자를 걷은 자리에 깐다(길 서쪽 아래 빈 땅에서 같은 줄 주기로 가져온다).
-  const bare = (x: number, y: number): number => map.lowerTiles[at(33 + ((x + y) % 2), 6 + (y % 2))]!;
-  for (let y = r.clear.y0; y <= r.clear.y1; y += 1) for (let x = r.clear.x0; x <= r.clear.x1; x += 1) {
-    map.upperTiles[at(x, y)] = -1;
-    if (map.upperOverlayTiles) map.upperOverlayTiles[at(x, y)] = -1;
-    if (!r.xs.includes(x)) map.lowerTiles[at(x, y)] = bare(x, y);
-  }
-  const span = r.sample.y1 - r.sample.y0 + 1;
-  for (let y = r.fromY; y <= r.toY; y += 1) for (const x of r.xs) {
-    const sy = r.sample.y0 + (((y - r.sample.y0) % span) + span) % span;
-    map.lowerTiles[at(x, y)] = map.lowerTiles[at(x, sy)]!;
-    map.upperTiles[at(x, y)] = -1;
-    if (map.lowerOverlayTiles) map.lowerOverlayTiles[at(x, y)] = -1;
-  }
-}
-
-/**
- * 「불탄」 새벽샘 — 웨이브 장소 「폐허 마을」은 초록 풀밭이라 「마을은 불탔다」는 글과 어긋났다(2026-10-31 첫 플레이 검수).
- * 같은 칩셋의 「재의 들판」 땅 색으로 다시 칠한 시트(dawnwellAshSheet.ts, 새 그림 없음 — 화소 위치·윤곽은 원본 그대로)를
- * 이 맵 전용 타일셋으로 넣고 칸 번호를 옮긴다. 통행·층은 원래 칸 값을 그대로 쓴다.
+ * 「불탄」 새벽샘 — 웨이브 장소 「폐허 마을」은 초록 풀밭에 멀쩡한 집이라 「마을은 불탔다」는 글과 어긋났다(2026-10-31 첫 플레이·감독 검수).
+ * scripts/content/fallen-dawnwell-ash/recolor.py 가 원본 칸 화소를 옮기고 칠만 바꾼 시트를 만든다(새 그림 없음):
+ *   땅·풀 → 재의 들판 밝기의 중립 회색, 흙길 → 밝은 잿빛 흙(땅과 대비), 지붕 → 숯, 벽 → 그을음,
+ *   광장 둘레 집 넷은 지붕이 내려앉음(잘린 가장자리 숯·불씨, 벽에 흘러내린 그을음), 바깥에서 잠긴 집만 지붕이 남는다(이야기 그대로),
+ *   북쪽 출구까지 이어진 흙길(길 자리 고목 한 그루 걷음), 서쪽 길 한가운데 시커먼 잿더미(기억 셋째).
+ * 그 시트를 이 맵 전용 타일셋으로 넣고 1층·3층을 생성 배열로 바꾼다. 통행·층은 각 시트 칸이 온 원래 칸 값을 그대로 쓴다.
  */
 const FS2_DAWN_ASH_TILESET = "fs2_dawnwell_ash";
 function ashDawnwell(project: Project, map: GameMap): void {
   const wave = project.tilesets[map.tilesetId];
   if (!wave) throw new Error(`[fallen-star act2] ${map.id}: 타일셋 ${map.tilesetId} 이 없다`);
+  if (map.width !== DAWNWELL_ASH_SIZE.width || map.height !== DAWNWELL_ASH_SIZE.height) {
+    throw new Error(`[fallen-star act2] 새벽샘 재 시트(${DAWNWELL_ASH_SIZE.width}×${DAWNWELL_ASH_SIZE.height})와 맵(${map.width}×${map.height}) 크기가 다르다 — recolor.py 를 다시 돌릴 것`);
+  }
   const cols = DAWNWELL_ASH_COLS;
-  const count = Math.ceil(DAWNWELL_ASH_SOURCE.length / cols) * cols;
-  const src = (i: number): number => DAWNWELL_ASH_SOURCE[i] ?? -1;
+  const count = Math.ceil(DAWNWELL_ASH_PASS.length / cols) * cols;
+  const src = (i: number): number => DAWNWELL_ASH_PASS[i] ?? -1;
   project.assets.uploaded[FS2_DAWN_ASH_TILESET] ??= { id: FS2_DAWN_ASH_TILESET, name: "새벽샘 터 · 재 (웨이브 폐허 마을 다시 칠함)", kind: "tileset", dataUrl: DAWNWELL_ASH_PNG, meta: { tileSize: 16 } } as never;
   const open = { up: true, down: true, left: true, right: true };
   project.tilesets[FS2_DAWN_ASH_TILESET] = {
@@ -1501,19 +1485,12 @@ function ashDawnwell(project: Project, map: GameMap): void {
     passability: Array.from({ length: count }, (_, i) => structuredClone(src(i) >= 0 ? wave.passability[src(i)] ?? open : open)),
     priority: Array.from({ length: count }, (_, i) => (src(i) >= 0 ? wave.priority[src(i)] ?? "lower" : "lower")),
     terrain: Array.from({ length: count }, (_, i) => (src(i) >= 0 ? wave.terrain[src(i)] ?? 0 : 0)),
-    tileMeta: Array.from({ length: count }, () => ({ label: "새벽샘 터 · 재", description: "웨이브 폐허 마을 칸을 재의 들판 색으로 다시 칠함" })),
+    tileMeta: Array.from({ length: count }, () => ({ label: "새벽샘 터 · 재", description: "웨이브 폐허 마을 칸을 불탄 마을로 다시 칠함" })),
   } as unknown as Project["tilesets"][string];
-  const to = new Map(DAWNWELL_ASH_SOURCE.map((t, i) => [t, i]));
-  for (const layer of [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles]) {
-    if (!layer) continue;
-    for (let i = 0; i < layer.length; i += 1) {
-      const t = layer[i]!;
-      if (t < 0) continue;
-      const n = to.get(t);
-      if (n === undefined) throw new Error(`[fallen-star act2] 새벽샘 재 시트에 웨이브 칸 ${t} 이 없다 — scripts/content/fallen-dawnwell-ash/recolor.py 를 다시 돌릴 것`);
-      layer[i] = n;
-    }
-  }
+  map.lowerTiles = [...DAWNWELL_ASH_LOWER];
+  map.upperTiles = [...DAWNWELL_ASH_UPPER];
+  map.lowerOverlayTiles = map.lowerTiles.map(() => -1);
+  map.upperOverlayTiles = map.lowerTiles.map(() => -1);
   map.tilesetId = FS2_DAWN_ASH_TILESET;
 }
 
@@ -1528,7 +1505,6 @@ function dawnwell(project: Project, exec: Exec): void {
   // 새벽샘 터 — 되살린 버들항 웨이브 장소 「폐허 마을」을 그대로 가져온다(무너진 예배당·마른 우물 광장·반쯤 무너진 집 여섯).
   // 바깥에서 잠긴 집은 광장 남동쪽 돌집 — 지붕이 남은 단 한 채. 칸 좌표는 act2Places.ts DAWN_SPOTS.
   importWavePlace(project, exec, WAVE_RUINED_VILLAGE, FS2_DAWNWELL_ID, "새벽샘 터");
-  extendDawnNorthRoad(M(project, FS2_DAWNWELL_ID));
   ashDawnwell(project, M(project, FS2_DAWNWELL_ID));
   DAWN.kept = { ...DAWN_SPOTS.kept };
   DAWN.front = { ...DAWN_SPOTS.front };
@@ -1582,8 +1558,6 @@ function dawnwell(project: Project, exec: Exec): void {
   exec(project, "place_chest", { mapId: field!, x: ASH_SPOTS.chest.x, y: ASH_SPOTS.chest.y, contents: { itemId: "item_hi_potion", gold: 150 }, name: "타다 남은 짐 상자", id: "ev_fs2_ash_chest" });
   // 마을 터 — 서쪽 무너진 집들 사이 길목에 도깨비 한 무리.
   foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", DAWN_SPOTS.wisps.x, DAWN_SPOTS.wisps.y, "float");
-  // 길 한가운데 잿더미(기억 셋째) — 보이는 숯 더미를 찍고 그 칸에 조사 이벤트를 둔다(dawnwellEvents).
-  exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-volcano-cave-coal-pile", mapId: FS2_DAWNWELL_ID, x: DAWN_SPOTS.mems[2]!.x, y: DAWN_SPOTS.mems[2]!.y });
   // 별빛 결정 — 마을 터 입구 곁. 웨이브 칩셋에는 버들항 받침 수정 조각이 없어 기본 크리스탈 칩으로 세운다.
   exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: DAWN_SPOTS.save.x, y: DAWN_SPOTS.save.y, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
     prompt: "기록하시겠습니까?", sparkleRadius: 2 });
