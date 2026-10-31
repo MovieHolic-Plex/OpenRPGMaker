@@ -595,8 +595,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         }
       });
       game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
-      game.registry.set("openMenuScreen", (screen?: string) => openEventMenu(layout, () => {
+      game.registry.set("openMenuScreen", (screen?: string, actorId?: string) => openEventMenu(layout, () => {
         if (screen === "monster-box") { statusMenu.openMonsterBox(); return; }
+        if (screen === "skills") { statusMenu.openSkillScreen(actorId); return; }
         statusMenu.reset();
         statusMenu.renderMenu();
       }));
@@ -836,9 +837,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeStatusMenu(menu);
   };
 
-  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
+  const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null, cue?: string): void => {
     emitRuntimeJuice({ event, target: target ?? layout.querySelector<HTMLElement>("[data-testid='main-menu']"),
-      project: store.getCurrent(), session: activeScene()?.session });
+      project: store.getCurrent(), session: activeScene()?.session, ...(cue ? { cue } : {}) });
   };
 
   const statusMenu = createPlayerStatusMenuController({

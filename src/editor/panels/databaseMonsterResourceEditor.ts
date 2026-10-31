@@ -133,7 +133,7 @@ class MonsterResourceEditor {
     this.status.textContent = resource ? "게임 속 몬스터 이름·능력치는 바뀌지 않습니다." : "등록된 소재가 없습니다.";
     this.identity.replaceChildren();
     if (resource) this.identity.append(
-      monsterResourcePreview(resource, store.getCurrent()),
+      monsterResourcePreview(resource, store.getCurrent(), { animate: true }),
       el("code", { text: resource.resourceId, dataset: { testid: "db-monster-resource-id" } }),
       el("p", { text: monsterResourceStatus(resource), dataset: { testid: "db-monster-resource-origin", origin: resource.origin, reviewStatus: resource.reviewStatus } }),
       el("p", { text: `이름: ${MONSTER_METADATA_SOURCE_LABELS[resource.sources.name]} · 태그: ${MONSTER_METADATA_SOURCE_LABELS[resource.sources.tags]} · 설명: ${MONSTER_METADATA_SOURCE_LABELS[resource.sources.description]}`, dataset: { testid: "db-monster-resource-sources", ...resource.sources } }),

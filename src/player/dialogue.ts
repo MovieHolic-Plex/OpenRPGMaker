@@ -18,7 +18,8 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import { applyPixelBust } from "@/player/bustPixelate";
+import { applyPixelBust, pixelBustSettled, preloadPixelBust } from "@/player/bustPixelate";
+import { warmImageUrl } from "@/assets/imageWarmQueue";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitNativeGaze, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -53,11 +54,14 @@ import {
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
 import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
+import { installConfirmPressTracker, isLeakedConfirmPress, isPlayerKeyInput, OPEN_GRACE_MS } from "@/player/confirmMashGuard";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
 import { createDialogueVoice, type DialogueVoicePlayer as DialoguePlayerVoice } from "@/player/dialogueVoice";
+import { createTextBlipVoice } from "@/player/textBlipVoice";
 import { createMonsterDialogueTick } from "@/player/monsterSfx";
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   DIALOGUE_TAG_COLORS,
   isNonBlockingContainer,
@@ -153,8 +157,6 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
-/** 선택지가 열린 직후 결정 키를 받지 않는 시간 — 앞 대사를 넘기던 연타가 선택을 대신하지 않게. */
-const CHOICE_CONFIRM_GRACE_MS = 300;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
 const WHEEL_OPEN_WINDOW_MS = 300;
@@ -175,7 +177,8 @@ export function isDialogueLogKey(key: string, code?: string): boolean {
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly prompt?: string;
-  readonly options: { text: string }[];
+  /** disabled 줄은 흐리게 보이고 커서는 갈 수 있지만 고를 수 없다(결정하면 경고음). disabledText 는 그 줄 아래 이유 한 줄. */
+  readonly options: { text: string; disabled?: boolean; disabledText?: string }[];
   readonly cancelBehavior?: ChoiceCancelBehavior;
   readonly signal?: AbortSignal;
 };
@@ -205,7 +208,8 @@ export function dialogueSpeedDelayMs(value: number): number {
 function dialogueVoiceFor(look: DialogueLook, voiceUrl: string | null): DialoguePlayerVoice {
   if (voiceUrl) return createDialogueVoice({ ...look, voice: null });
   if (look.voice) return createDialogueVoice(look);
-  return createMonsterDialogueTick(store.getCurrent());
+  // 자리 표의 대사 글자음(textBlip)이 있으면 그것 — 없으면 몬스터 장르 기본(그 외 무음). 옛 게임은 자리가 비어 그대로다.
+  return createTextBlipVoice(store.getCurrent()) ?? createMonsterDialogueTick(store.getCurrent());
 }
 
 function dialoguePlaybackTokens(segments: readonly DialogueTextSegment[]): DialoguePlaybackToken[] {
@@ -544,6 +548,7 @@ export function createDialogueUI(
   stampEmeraldSurface(overlay, store.getCurrent(), "dialogue");
   stampEmeraldSurface(scrim, store.getCurrent(), "dialogue-scrim");
   host.append(scrim, overlay);
+  installConfirmPressTracker();
 
   // 퇴장 예약. 상자를 즉시 파괴하지 않고 이만큼 미뤄 두기 때문에 퇴장 연출이 재생된다.
   let pendingExit: { readonly cancelTimer: () => void; readonly finish: () => void } | null = null;
@@ -610,6 +615,15 @@ export function createDialogueUI(
     const cancelTimer = schedule(finish, exitMs);
     // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
     if (!settled) pendingExit = { cancelTimer, finish };
+  };
+
+  /** 다음 줄이 초상을 기다리는 동안 앞 줄의 퇴장을 멈추고 창을 그대로 세워 둔다(세션이 끊기지 않게 — 화자·듣는 사람 무대를 잇는다). */
+  const holdPendingExit = (): void => {
+    if (!pendingExit) return;
+    pendingExit.cancelTimer();
+    pendingExit = null;
+    const exiting = overlay.querySelector<HTMLElement>('.dialogue-box[data-dialogue-phase="exit"]');
+    if (exiting) exiting.dataset.dialoguePhase = "shown";
   };
 
   /** 변환(진입 연출)을 뺀 레이아웃 윗변 — 화면 좌표. 연출 도중의 값이 섞이면 미끄러짐의 출발점이 틀어진다. */
@@ -899,17 +913,41 @@ export function createDialogueUI(
     const activeProjectForRequest = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
     const voiceFile = request.voiceResourceId?.trim();
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
-    if (voiceUrl) playLineVoice(voiceUrl);
-    else stopLineVoice();
     const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, {
       speaker: resolveDialogueSpeakerName(request.speaker, request.textContext) ?? request.speaker,
       emotion: request.emotion,
     });
+    const startVoice = (): void => {
+      if (voiceUrl) playLineVoice(voiceUrl);
+      else stopLineVoice();
+    };
     if (isNonBlockingContainer(requestedLook.container)) {
+      startVoice();
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
       return Promise.resolve();
     }
+    // 초상이 아직 안 받아졌으면 받을 때까지(상한 있음) 창을 열지 않는다 — 이름표만 있는 빈 창이 먼저 뜨고
+    // 초상·본문이 약 1초 뒤에 따라오던 결함(2026-10-30 이세계 고딩). 그동안 앞 줄의 창은 퇴장하지 않고 그대로 선다.
+    const waiting = unsettledLinePortraits(request, requestedLook, activeProjectForRequest);
+    if (waiting.length > 0) {
+      holdPendingExit();
+      return waitForLinePortraits(waiting, request.signal).then(() => {
+        if (request.signal?.aborted) throw new DOMException("Text cancelled", "AbortError");
+        startVoice();
+        return presentText(request, requestedLook, voiceUrl, system);
+      });
+    }
+    startVoice();
+    return presentText(request, requestedLook, voiceUrl, system);
+  }
+
+  function presentText(
+    request: DialogueTextRequest,
+    requestedLook: DialogueLook,
+    voiceUrl: string | null,
+    system: ReturnType<typeof systemFor>,
+  ): Promise<void> {
     const wasOpen = takeOverOverlay();
     return new Promise<void>((resolve, reject) => {
       let settled = false;
@@ -1353,7 +1391,7 @@ export function createDialogueUI(
         // ▼ 다음 쪽이 있다 / ■ 이 대사가 끝이다. 바로 뒤에 선택지가 오는 글은 끝 쪽도 ▼ — 결정 키 한 번이면 선택지가 이어진다.
         // 이 글은 스스로 닫지 않고 자기 결정 키를 기다린다(RPG 메이커 2000 과 같다). 2026-10-29 에 다 나오자마자 닫히게 했더니
         // 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA).
-        // 그 결정 키 자체·누른 채 반복은 showChoices 의 CHOICE_CONFIRM_GRACE_MS·repeat 거르기가 버린다.
+        // 그 결정 키 자체·누른 채 반복은 showChoices 의 isLeakedConfirmPress·repeat 거르기가 버린다.
         const endsHere = last && request.beforeChoices !== true;
         cursor.textContent = endsHere ? "■" : "▼";
         cursor.classList.toggle("is-end", endsHere);
@@ -1845,7 +1883,16 @@ export function createDialogueUI(
         beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
       };
-      let selectedIndex = 0;
+      // 흐린 줄(조건 enableWhen 이 거짓)은 커서가 머물 수 있지만 고르면 경고음만 난다. 이유는 그 줄 아래에 이미 보인다.
+      const pick = (index: number): void => {
+        if (request.options[index]?.disabled) {
+          if (settled) return;
+          emitRuntimeJuice({ event: "menu-invalid", target: buttons[index] });
+          return;
+        }
+        finish(index);
+      };
+      let selectedIndex = Math.max(0, request.options.findIndex((option) => !option.disabled));
       const buttons: HTMLButtonElement[] = [];
       const setSelected = (nextIndex: number): void => {
         selectedIndex = nextIndex;
@@ -1871,10 +1918,12 @@ export function createDialogueUI(
         const key = keyboardEventKey(e);
         if (key === "Process" || key === "Unidentified") return;
         if (e.isComposing && key === e.key) return;
-        // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
-        // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
-        // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
-        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(key) || /^[1-9]$/.test(key))) {
+        // 앞 대사를 넘기던 결정 키 연타가 선택지를 고르지 않게 한다(confirmMashGuard): 열리기 전·열린 뒤 300ms 안에 누른 결정 키,
+        // 바로 앞 결정 키에서 450ms 안에 이어 누른 결정 키는 버린다. 손을 멈췄다 새로 누르거나 커서를 옮긴 뒤의 결정만 받는다.
+        // 첫사랑 r11·r8(선택지 등장과 Enter 가 같은 0.1초), 회귀 벤치 ebfe-sl 방탈출·추리 A8 「Enter 10번」(연타 간격 250~400ms).
+        // 숫자 키(바로 고르기)도 열린 직후에는 버린다. 플레이어 입력(실제 키·패드)만 막는다 — 단위 테스트 합성 키는 지나간다.
+        if (isLeakedConfirmPress(e, openedAt)
+          || (isPlayerKeyInput(e) && e.timeStamp - openedAt < OPEN_GRACE_MS && /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }
@@ -1887,7 +1936,7 @@ export function createDialogueUI(
         if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
           e.stopPropagation();
-          finish(n - 1);
+          pick(n - 1);
           return;
         }
         // 취소는 X/Esc 둘 다. 선택지에서 X 만 죽어 있던 결함(적대 리뷰 5).
@@ -1912,28 +1961,33 @@ export function createDialogueUI(
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
         if (isConfirmKey(key)) {
           e.preventDefault();
-          finish(selectedIndex);
+          pick(selectedIndex);
         }
       };
 
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
-          class: "choice-btn",
-          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui" },
+          class: opt.disabled ? "choice-btn is-disabled" : "choice-btn",
+          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui", ...(opt.disabled ? { "aria-disabled": "true" } : {}) },
           dataset: { testid: `runtime-choice-${idx}` },
         });
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
+        if (opt.disabled && opt.disabledText) {
+          const reason = el("span", { class: "choice-disabled-reason", dataset: { testid: `runtime-choice-${idx}-reason` } });
+          renderDialogueSegments(reason, parseDialogueText(opt.disabledText, request.textContext));
+          btn.append(reason);
+        }
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
         btn.addEventListener("click", (event) => {
           if (event.isTrusted && event.detail === 0 && !sawKeyDown && performance.now() - openedAt < 400) return;
-          finish(idx);
+          pick(idx);
         });
         buttons.push(btn);
         choicesEl.append(btn);
       });
       choicesEl.setAttribute("role", "listbox");
-      setSelected(0);
+      setSelected(selectedIndex);
 
       cancelActiveChoice = abort;
       request.signal?.addEventListener("abort", abort, { once: true });
@@ -2710,6 +2764,62 @@ function effectivePosition(model: {
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";
   return model.settings.position;
+}
+
+/** 초상을 기다리는 상한. 넘으면 예전처럼 창을 먼저 열고 초상은 받는 대로 보인다. */
+const LINE_PORTRAIT_WAIT_MAX_MS = 1500;
+/** 받아 둔 작은 얼굴(48px) 그림 주소. 흉상은 bustPixelate 가 따로 센다. */
+const settledFaceUrls = new Set<string>();
+
+function runningUnderTest(): boolean {
+  const env = import.meta.env as { readonly VITEST?: boolean; readonly MODE?: string } | undefined;
+  return env?.VITEST === true || env?.MODE === "test";
+}
+
+type PendingLinePortrait = { readonly url: string; readonly kind: "bust" | "face" };
+
+/**
+ * 이 줄이 그릴 초상(화자·표정 변형·듣는 사람) 중 아직 받지 않은 것. 비면 창을 바로 연다.
+ * 단위 테스트(happy-dom 은 그림을 받지 않는다)와 그림을 받을 수 없는 환경에서는 늘 비어 있다 — 옛 동기 경로 그대로.
+ */
+function unsettledLinePortraits(request: DialogueTextRequest, look: DialogueLook, project: Project): PendingLinePortrait[] {
+  if (runningUnderTest() || typeof window === "undefined" || typeof Image === "undefined") return [];
+  if (look.hideFace || look.container === "balloon") return [];
+  const faces: FaceGraphic[] = [];
+  if (request.face?.resourceId) {
+    faces.push(request.face);
+    const variant = faceForDialogueEmotion(project, request.face.resourceId, look.emotion, look.expressionFace);
+    if (variant && variant !== request.face.resourceId) faces.push({ ...request.face, resourceId: variant });
+  }
+  if (request.listenerFace?.resourceId) faces.push(request.listenerFace);
+  const pending: PendingLinePortrait[] = [];
+  for (const face of faces) {
+    const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
+    if (!url || pending.some((entry) => entry.url === url)) continue;
+    const kind = dialoguePortraitMode(face) === "face" ? "face" : "bust";
+    if (kind === "bust" ? pixelBustSettled(url) : settledFaceUrls.has(url)) continue;
+    pending.push({ url, kind });
+  }
+  return pending;
+}
+
+function waitForLinePortraits(pending: readonly PendingLinePortrait[], signal: AbortSignal | undefined): Promise<void> {
+  const loads = Promise.all(pending.map((entry) => entry.kind === "bust"
+    ? preloadPixelBust(entry.url)
+    : warmImageUrl(entry.url).then(() => { settledFaceUrls.add(entry.url); })));
+  return new Promise<void>((resolve) => {
+    let done = false;
+    const finish = (): void => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
+      signal?.removeEventListener("abort", finish);
+      resolve();
+    };
+    const timer = window.setTimeout(finish, LINE_PORTRAIT_WAIT_MAX_MS);
+    signal?.addEventListener("abort", finish, { once: true });
+    void loads.then(finish, finish);
+  });
 }
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {

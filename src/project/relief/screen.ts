@@ -8,6 +8,7 @@ import { RELIEF_TILE, type ReliefData } from "./types";
 import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
 import { reliefRampArt } from "./styles";
+import { cutPieceFor } from "./cutPieces";
 import { reliefState } from "./revision";
 
 export interface ReliefLiftField {
@@ -67,7 +68,13 @@ export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: n
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
 export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOptions["ground"]): ReliefRenderOptions {
   const bridges = reliefBridgeMask(relief);
-  return { transparentGround: !ground, ground, slopes: reliefSlopes(relief), style: relief.style, rampArt: reliefRampArt(relief.style), ...(bridges ? { bridges } : {}) };
+  const slopes = reliefSlopes(relief), rampArt = reliefRampArt(relief.style);
+  // 통째 조각(rampArt.pieces): 경사로마다 종류(코드 1~4 경사로·5~8 계단)·방향·크기·단 차로 고른다(겹친 계단은 정본 나눔으로 이어 붙임, cutPieces.ts)
+  const slopeArt = rampArt?.pieces ? slopes.map((s) => {
+    const code = relief.ramps?.[s.y * relief.width + s.x] ?? 0;
+    return cutPieceFor(rampArt.pieces!, code > 4 ? "stairs" : "ramp", s.dir, s.w, s.h, s.hi - s.lo);
+  }) : undefined;
+  return { transparentGround: !ground, ground, slopes, style: relief.style, rampArt, ...(slopeArt?.some(Boolean) ? { slopeArt } : {}), ...(bridges ? { bridges } : {}) };
 }
 
 /**

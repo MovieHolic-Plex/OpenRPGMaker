@@ -1,0 +1,548 @@
+{
+ "round": 3,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "Per piece: (1) cut height equals face height and meets upper ground at the top and the road at the foot; (2) no seams against the native face, lip or road, including walking-surface colour; (3) style matches the cliff; (4) reads as a recessed 3/4 cut, not a front elevation; (5) reads as a way up at 1x; (6) no glyph-like texture noise. MAJOR = a careful player or art lead would reject it.",
+ "images": [
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/sand-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/snow-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/peat-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/cave-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r3/ref-grass-ramp-h2-w2.png"
+ ],
+ "pieces": {
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevron surface is a little paler/lower-contrast than the darker road column at 8x (avg 225 vs 235); hardly visible at 1x",
+    "Lit right cheek is a smooth strip, not the strata of the native face"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads use cliff-brown, far darker than the tan road above/below (stone steps, so acceptable)",
+    "Top step shows a row of vertical joints that reads a little like a railing/comb",
+    "Thin 2px cheeks: the recess depth is carried by stripes, not side walls"
+   ]
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface is slightly pinker/lighter than the taupe road (202 vs 193) and has dark speckles",
+    "Lit right cheek is a smooth blue-grey spire, not the brick texture of the native face"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are snow-white against a cleared taupe road, a deliberate snow look but a visible colour break at top and foot",
+    "Thin cheeks; reads partly as a striped panel"
+   ]
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Chevrons add green highlight pixels not present in the road; surface a little darker than the road (136 vs 151)"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top step has no grass fringe while the native face lip does, so there is a small lip discontinuity at the top",
+    "Thin cheeks"
+   ]
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)",
+    "At rise 1 the tapered cheeks take a large share of the width, so the notch is small"
+   ]
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Surface slightly darker than the floor (143 vs 153)"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Dense vertical joints read as a grate/bookshelf at 8x; at 1x reads as a ladder-like stair",
+    "Cut-stone bricks against a cobbled-rock face: a slight style shift, still plausible as carved steps"
+   ]
+  }
+ },
+ "verdict": "PASS",
+ "summary": "All 64 pass. In every probe (rise 1-4, w2/w3, both alts) the cuts match the face height exactly and meet the lip and the road. Ramps follow the accepted grass construction (tapered strata cheeks, chevron tread), and their mean colour is within about 10 of the road. Stairs read as steps at 1x. Minors: stair treads differ in colour from the road (sand brown, snow white); cheeks are thin, so stairs look partly like a flat striped panel; cave/sand top steps have comb-like vertical joints; snow/sand lit ramp cheeks are smooth rather than textured; peat stairs have no lip fringe."
+}

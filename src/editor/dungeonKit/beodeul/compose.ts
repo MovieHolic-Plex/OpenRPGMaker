@@ -124,7 +124,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const specT: DungeonSpec = { ...spec, type };
   // 방+통로 문법에 조수 설계가 오면 rooms 로 옮긴다(designLayout.ts) — 고친 것은 notes 로 warnings 에 실린다.
   const designed = profile.grammar === "rooms" && spec.design && !spec.rooms?.length ? designToRooms(spec.design, type, profile) : undefined;
-  const layout = profile.grammar === "maze" ? (spec.design ? layoutDesignedMaze(specT, profile, spec.design) : layoutMaze(specT)) : profile.grammar === "blob" ? layoutBlob(specT, profile)
+  // 모델이 칸 단위로 쓴 층(spec.exact, 조수 v2 bbox 던전): 배치·정착·꾸미기 없이 열린 칸 그대로 — 벽·천장·바닥·액체 그림만 끌어낸다.
+  const exact = spec.exact;
+  const layout = exact ? exact.layout : profile.grammar === "maze" ? (spec.design ? layoutDesignedMaze(specT, profile, spec.design) : layoutMaze(specT)) : profile.grammar === "blob" ? layoutBlob(specT, profile)
     : designed ? (() => { const l = layoutDungeon({ ...specT, rooms: designed.rooms, ...(designed.loop ? { layout: "loop" as const } : {}) }); return { ...l, notes: [...designed.fixes, ...l.notes] }; })()
     : layoutDungeon(specT);
   // 방+통로 문법: 설계한 높이 단을 지은 방 id 에 옮긴다
@@ -492,6 +494,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (!liquid[idx(x, y)] || !isFloor(x, y)) continue;
     liquidCells += 1;
+    if (exact) {
+      const kind = exact.liqKind[idx(x, y)]!;
+      let m = 0;
+      const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+      for (const [dx, dy, bit] of bits) if (inb(x + dx, y + dy) && (liquid[idx(x + dx, y + dy)] || bridge[idx(x + dx, y + dy)]) && exact.liqKind[idx(x + dx, y + dy)] === kind) m |= bit;
+      if (kind === 3) { lower[idx(x, y)] = (groups.length ? ceilingTile(groups[0]!, m) : undefined) ?? voidTile; continue; }
+      if (kind === 2) { lower[idx(x, y)] = gapLava ? autoCell(gapLava, m, x, y) : tileOf(LAVA_KIT, x, y); continue; }
+      lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile; continue;
+    }
     if (voidLiquid) continue;   // 허공은 천장 오토타일이 이미 칠했다
     if (profile.bank && (profile.liquid !== "lava" || !gapLava)) bankCells.push(idx(x, y));   // 용암은 gap 용암 오토타일이 식은 껍질 테두리를 그리면 둑을 얹지 않는다
     if (profile.bank && profile.liquid !== "lava" && canal) {
@@ -562,6 +573,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
   }
 
+  if (exact) return { exactOut: { lower, upper, wallB, W, H } } as unknown as DungeonCompose;   // composeExactFloor 가 읽는다
   const counts: Record<string, number> = {};
   // ---- 높이 단(설계한 rooms[].level, reliefPlan.ts): 통로 높이 채우기 + 경계마다 곧은 돌계단 한 줄. 계단·층계참 칸은 장식·이벤트 자리에서 뺀다. ----
   const reliefPlan = !voidLiquid && !rings.length ? planDungeonRelief(W, H, floorMask, roomAt, liquid, bridge, doorstep, rooms, outdoor ? 0 : WR) : undefined;
@@ -851,6 +863,37 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const inset = r.w >= 8 && r.h >= 7 ? 2 : 1;
     return placeHole(decalLast(holeCands(r, inset, true).sort((a, b) => score(a[0], a[1]) - score(b[0], b[1]))), (x, y) => ({ x, y: y + 1 }));
   };
+  /** 계단 도착 칸: 남쪽이 서는 바닥이면 남쪽, 아니면 서는 이웃(옛 1×1 계단은 아무 쪽에서나 밟는다). */
+  const standFront = (x: number, y: number) => [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => ({ x: x + dx!, y: y + dy! })).find((q) => isWalk(q.x, q.y) && !blocked[idx(q.x, q.y)] && !bridge[idx(q.x, q.y)]) ?? null;
+  /** 둘레 조건 없이 그림 칸만 비어 있는 바닥(물건·위층 그림·다리·문턱 없음) + 서는 이웃이 있는 칸 — 마지막 자리. */
+  const looseHoleCands = (r: PlacedRoom): [number, number][] => {
+    const def = kit(wideDown ? CAVE_STAIRS.down : K.stairsDown);
+    const free = (x: number, y: number) => isWalk(x, y) && !bridge[idx(x, y)] && !doorstep[idx(x, y)] && !blocked[idx(x, y)] && upper[idx(x, y)]! < 0;
+    return floorCells(r).filter(([x, y]) => y > r.y
+      && Array.from({ length: def.height }, (_, dy) => dy).every((dy) => Array.from({ length: def.width }, (_, dx) => dx).every((dx) => free(x + dx, y + dy)))
+      && standFront(x, y + def.height - 1) !== null)
+      .sort((a, b) => Number(a[1] <= r.y + 1) - Number(b[1] <= r.y + 1));   // 벽 바로 밑 줄은 맨 뒤
+  };
+  /**
+   * 층 잇는 바닥 계단을 반드시 놓는다(2026-10-30): 처음 고른 방·자리가 장식으로 꽉 차 후보가 없으면 말없이 계단을 빠뜨려
+   * 여러 층 던전의 위·아래층이 끊겼다(성 2층 시드 4·9·11 = 1층 나가는 계단 없음). 방 순서대로 안쪽 자리 → 둘레 조건 없는 자리를 차례로 본다.
+   */
+  const holeSomewhere = (order: readonly PlacedRoom[], first: (x: number, y: number) => { x: number; y: number } | null = standFront): DungeonStairCell | null => {
+    const seenRooms = new Set<PlacedRoom>();
+    for (const r of order) {
+      if (seenRooms.has(r)) continue;
+      seenRooms.add(r);
+      const st = placeHole(decalLast(holeCands(r, 1, false)), first) ?? placeHole(decalLast(looseHoleCands(r)), first);
+      if (st) return st;
+    }
+    return null;
+  };
+  /** 방 순서: 고른 방 → 깊은 방부터 나머지(입구 방은 맨 끝). */
+  const roomsFrom = (pick: PlacedRoom | null): PlacedRoom[] => [
+    ...(pick ? [pick] : []),
+    ...[...rooms].filter((r) => r !== pick && r.kind !== "entrance").sort((a, b) => b.depth - a.depth),
+    ...rooms.filter((r) => r !== pick && r.kind === "entrance"),
+  ];
 
   rooms.forEach((r, i) => {
     const rs = rng(seed * 7 + i * 101 + 3);
@@ -871,7 +914,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         // 탑 위층: 아래층에서 올라온 계단(바닥 내려가는 계단) — 입구 방 위쪽 가운데.
         // 둥근 탑 층: 내려가는 계단은 방 한가운데가 아니라 벽 곁(층마다 좌우를 바꾼다) — 「계단이 바닥 한가운데 박혔다」(2026-10-23 VQA).
         const wallSide = r.shape === "round" ? (seed % 2 === 0 ? r.x + 1 : r.x + r.w - 2) : null;
-        entryStair = floorHole(r, wallSide !== null ? (x, y) => Math.abs(x - wallSide) * 3 + Math.abs(y - (r.y + Math.floor(r.h / 2))) : (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3);
+        entryStair = floorHole(r, wallSide !== null ? (x, y) => Math.abs(x - wallSide) * 3 + Math.abs(y - (r.y + Math.floor(r.h / 2))) : (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3)
+          ?? holeSomewhere([r]);
         if (entryStair) counts["stairs-down"] = (counts["stairs-down"] ?? 0) + 1;
         else warnings.push("입구 방 바닥에 내려가는 계단을 놓을 자리가 없다.");
       } else {
@@ -886,7 +930,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         if (!s) {
           // 북쪽 벽이 울퉁불퉁해 계단·문을 걸 평평한 벽이 없으면 입구 방 바닥 계단으로 — 바깥 출구가 아예 없는 던전이 나왔다
           // (2026-10-27 themes audit: cave·ice·otherworld 시드 2 가 출구 0개).
-          entryStair = floorHole(r, (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3);
+          entryStair = floorHole(r, (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3) ?? holeSomewhere([r]);
           if (entryStair) counts["stairs-down"] = (counts["stairs-down"] ?? 0) + 1;
           else warnings.push(`입구 방 북쪽 벽에 ${entryKind === "door" ? "문" : "올라가는 계단"}을 놓을 평평한 벽도, 바닥 계단 자리도 없다.`);
         }
@@ -905,7 +949,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     } else if (exitKind === "up" && r === deepRoomPre && r.kind !== "entrance") {
       const q = flatWall(r, centerFirst);
       if (q) { exitStair = wallStairs(q); counts["stairs-up"] = (counts["stairs-up"] ?? 0) + 1; }
-      else warnings.push(`${r.id} 북쪽 벽에 다음 층으로 올라가는 계단을 놓을 평평한 벽이 없다.`);
+      // 없으면 장식 뒤에 다른 방 북쪽 벽에서 다시 찾는다(아래)
     }
     if (sideRoom && r === sideRoom && !sideDoor) {
       const q = flatWall(r, [...centerFirst].reverse());
@@ -1097,7 +1141,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   });
 
   // 내려가는 계단: 보스방(없으면 가장 깊은 방) 안쪽 구석 쪽 바닥 칸.
-  const deepRoom = deepRoomPre;
+  // 방이 하나뿐인 층도 내려가는 계단은 놓는다(층이 끊기지 않게).
+  const deepRoom = deepRoomPre ?? rooms[0] ?? null;
   if (deepRoom && exitKind === "down") {
     // 바닥 한가운데 쪽(둘레가 모두 바닥, 벽 바로 밑 줄 제외)에서 들어온 문과 가장 먼 칸 — 벽에 붙으면 벽으로 들어가는 계단처럼 보인다.
     const doors = corridors.filter((c) => c.a === deepRoom.id || c.b === deepRoom.id).map((c) => [c.rect.x + c.rect.w / 2, c.rect.y + c.rect.h / 2] as const);
@@ -1105,12 +1150,25 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const doorDist = (x: number, y: number) => Math.min(...doors.map(([dx, dy]) => Math.abs(dx - x) + Math.abs(dy - y)), 99);
     const far = decalLast(holeCands(deepRoom, inset, false).sort((a, b) => doorDist(b[0], b[1]) - doorDist(a[0], a[1])));
     // 도착 칸: 남쪽이 바닥이면 남쪽, 아니면 걸을 수 있는 이웃(계약: 옛 1×1 계단은 아무 쪽에서나 밟는다)
-    const st = placeHole(far, (x, y) => [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => ({ x: x + dx!, y: y + dy! })).find((q) => isWalk(q.x, q.y) && !blocked[idx(q.x, q.y)]) ?? null);
+    const front = (x: number, y: number) => [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => ({ x: x + dx!, y: y + dy! })).find((q) => isWalk(q.x, q.y) && !blocked[idx(q.x, q.y)]) ?? null;
+    // 깊은 방이 장식(보스 옥좌·제단)으로 차 자리가 없으면 다른 방으로 — 층이 끊기는 것보다 낫다.
+    const st = placeHole(far, front) ?? holeSomewhere(roomsFrom(deepRoom), front);
+    if (!st) warnings.push(`${deepRoom.id} 와 다른 방 어디에도 다음 층으로 내려가는 계단을 놓을 바닥이 없다 — 층이 이어지지 않는다.`);
     if (st) {
       stairsDown = { x: st.x, y: st.y };          // 계단 칸은 이벤트 자리로 비워 둔다(blocked 유지 — spots 에 들지 않게)
       exitStair = st;
       counts["stairs-down"] = (counts["stairs-down"] ?? 0) + 1;
     }
+  }
+
+  // 올라가는 계단(탑): 깊은 방 북쪽 벽이 울퉁불퉁하면 다른 방 북쪽 벽에서 — 말없이 빠뜨리면 위층이 끊긴다(2026-10-30).
+  if (exitKind === "up" && !exitStair) {
+    for (const r of roomsFrom(deepRoomPre)) {
+      const cx = r.x + Math.floor(r.w / 2);
+      const q = flatWall(r, [...wallSlots(r)].sort((a, b) => Math.abs(a.x - cx) - Math.abs(b.x - cx) || a.x - b.x));
+      if (q) { exitStair = wallStairs(q); counts["stairs-up"] = (counts["stairs-up"] ?? 0) + 1; break; }
+    }
+    if (!exitStair) warnings.push(`${deepRoomPre?.id ?? "깊은 방"} 와 다른 방 북쪽 벽 어디에도 다음 층으로 올라가는 계단을 놓을 평평한 벽이 없다 — 층이 이어지지 않는다.`);
   }
 
   // ---- 검사 1: 같은 규칙(groundSupport)으로 자기 결과를 본다. 어긋나면 맵을 만들지 않는다.
@@ -1224,4 +1282,11 @@ function drawPicture(W: number, H: number, isFloor: (x: number, y: number) => bo
     rows.push(line);
   }
   return rows;
+}
+
+/** 모델이 칸 단위로 쓴 층의 그림(조수 v2 bbox 던전): 열린 칸(grid.floor)·방 번호(grid.roomAt)·액체·다리에서 벽 앞면·천장·바닥·액체만 그린다.
+ *  wallB[i] ≥ 0 = 벽 앞면 칸(벽걸이 조각 자리). 벽이 너무 얇으면(열린 칸 위 1~3줄에 또 열린 칸) composeDungeon 이 던진다. */
+export function composeExactFloor(ts: TilesetDef, type: DungeonType, layout: DungeonLayout, liqKind: Uint8Array): { lower: number[]; upper: number[]; wallB: Int8Array } {
+  const out = composeDungeon(ts, { type, seed: 7, exact: { layout, liqKind } }) as unknown as { exactOut: { lower: number[]; upper: number[]; wallB: Int8Array } };
+  return out.exactOut;
 }

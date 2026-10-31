@@ -50,6 +50,11 @@ export interface DungeonRoomInput {
 }
 
 export interface DungeonSpec {
+  /**
+   * 모델이 칸 단위로 쓴 층(2026-10-31 조수 v2 bbox 던전, `composeExactFloor`): 열린 칸 격자·방을 그대로 쓰고 배치·정착·꾸미기를 건너뛴다.
+   * 벽·천장·바닥·액체 그림만 열린 칸에서 끌어낸다. liqKind: 칸마다 0 없음 · 1 물 · 2 용암 · 3 구덩이.
+   */
+  readonly exact?: { readonly layout: DungeonLayout; readonly liqKind: Uint8Array };
   /** 방 목록. 생략하면 size(기본 medium)로 방 구성을 정한다(입구 → … → 보스방, 곁방 갈래). */
   readonly rooms?: readonly DungeonRoomInput[];
   /** 던전 종류. 생략하면 style(옛 인자) → catacomb. */

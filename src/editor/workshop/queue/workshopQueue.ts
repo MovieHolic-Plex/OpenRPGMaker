@@ -271,25 +271,35 @@ class WorkshopQueue {
    * 호스트에서 도는 생성기 작업을 줄에 세우고 바로 보낸다(지형은 칩셋 그림이 커서 줄에 저장하지 않고 보낼 때만 만든다).
    * 다 그리면 묶음을 받아 알아서 넣는다 — 지형은 지금 맵 칩셋에 합치고, 캐릭터는 캐릭터 목록에 들어간다.
    */
-  async enqueueRemote(input: { kind: "char-gen" | "tile-gen"; text: string; count?: number; mode?: string; targetTilesetId?: string }): Promise<WorkshopJob> {
+  async enqueueRemote(input: {
+    kind: "char-gen" | "tile-gen"; text: string; count?: number; mode?: string; targetTilesetId?: string;
+    /** 캐릭터: 넣은 칩을 이 외형의 걷기 칩으로 건다 */
+    appearanceId?: string;
+    /** 캐릭터 사진(data URL) — 호스트에 보낼 때만 쓰고 줄(IndexedDB)에는 저장하지 않는다 */
+    photo?: string;
+    /** 줄에 보일 이름(없으면 text) */
+    title?: string;
+    source?: "assistant" | "oneclick";
+  }): Promise<WorkshopJob> {
     await this.ensure();
     const remote: RemoteGen = {
       kind: input.kind, text: input.text, ...(input.count ? { count: input.count } : {}), ...(input.mode ? { mode: input.mode } : {}),
-      ...(input.targetTilesetId ? { targetTilesetId: input.targetTilesetId } : {}), jobId: null, status: null,
+      ...(input.targetTilesetId ? { targetTilesetId: input.targetTilesetId } : {}),
+      ...(input.appearanceId ? { appearanceId: input.appearanceId, autoPick: true } : {}), jobId: null, status: null,
     };
     const job: WorkshopJob = {
-      id: newJobId(), projectKey: this.projectKey, generator: input.kind, source: "oneclick", title: input.text, createdAt: now(), remote, autoPick: true,
+      id: newJobId(), projectKey: this.projectKey, generator: input.kind, source: input.source ?? "oneclick", title: input.title ?? input.text, createdAt: now(), remote, autoPick: true,
       roundId: null, startedAt: null, finishedAt: null, pause: null, cancelled: false, installWait: null, installed: null, error: null, calls: 0,
       timeline: [{ at: now(), state: "queued" }],
     };
     this.jobs.set(job.id, job);
     await this.persist(job);
     this.emit();
-    await this.startRemote(job);
+    await this.startRemote(job, input.photo);
     return job;
   }
 
-  private async startRemote(job: WorkshopJob): Promise<void> {
+  private async startRemote(job: WorkshopJob, photo?: string): Promise<void> {
     const remote = job.remote;
     if (!remote) return;
     try {
@@ -299,7 +309,10 @@ class WorkshopQueue {
         const { terrainTilesetInput } = await import("../oneClick/remoteInput");
         tileset = await terrainTilesetInput(remote.targetTilesetId ?? "");
       }
-      remote.jobId = await startHostGen({ generator: remote.kind, text: remote.text, ...(remote.count ? { count: remote.count } : {}), ...(remote.mode ? { mode: remote.mode } : {}), ...(tileset ? { tileset } : {}) });
+      remote.jobId = await startHostGen({
+        generator: remote.kind, text: remote.text, ...(remote.count ? { count: remote.count } : {}), ...(remote.mode ? { mode: remote.mode } : {}), ...(tileset ? { tileset } : {}),
+        ...(photo ? { photo } : {}), ...(remote.autoPick ? { autoPick: true, title: job.title } : {}),
+      });
       remote.status = { state: "running", stage: "starting", progress: 0 };
       job.startedAt = now();
       this.mark(job, "drawing", remote.kind === "char-gen" ? "캐릭터 그리기 시작" : "지형 그리기 시작");

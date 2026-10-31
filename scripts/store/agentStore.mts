@@ -25,7 +25,7 @@ import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { PNG } from "pngjs";
 import {
-  STORE_GENERATION_METHODS, STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, storePackGeneration, STORE_TILE_SIZE, storeImageSizeProblem, storeThirdPartyName, validateManifest,
+  STORE_GENERATION_METHODS, STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, storePackGeneration, STORE_TILE_SIZE, storeImageSizeProblem, storeMonsterSheetCellProblems, storeMonsterSheetSizeProblems, storeThirdPartyName, validateManifest,
   type StoreAssetKind, type StoreBlobMime, type StoreGeneration, type StoreGenerationMethod, type StoreItemKind, type StoreLicense, type StorePackManifest,
 } from "../../src/assetStore/format";
 import { basicTilesetFor } from "../../src/assetStore/pack";
@@ -151,6 +151,13 @@ function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { prob
     if (mime !== ref.mime) problems.push(`blobs/${ref.sha256.slice(0, 12)} 의 실제 형식(${mime ?? "알 수 없음"})이 매니페스트(${ref.mime})와 다릅니다.`);
   }
   if (problems.length > 0) return { problems, notes };
+  // 몬스터 전투 도트 시트: 초상 cell×cell, 시트 3cell×3cell 또는 4cell×4cell(편집기 넣기와 같은 검사), 4x4 는 칸 채움(missingCells·15번 투명)까지.
+  problems.push(...storeMonsterSheetSizeProblems(manifest, (sha) => { const bytes = blobs.get(sha); return bytes ? pngSize(bytes) : null; }));
+  problems.push(...storeMonsterSheetCellProblems(manifest, (sha) => {
+    const bytes = blobs.get(sha);
+    if (!bytes) return null;
+    try { const png = PNG.sync.read(Buffer.from(bytes)); return { width: png.width, height: png.height, data: png.data }; } catch { return null; }
+  }));
   // 그림 규격 + 3/4 관문. 관문은 영수증만 본다(모델 호출 없음) — 받는 법은 object-gate review.
   const baseline = readBaseline();
   let passing: ReturnType<typeof passingCellIndex> | null = null;

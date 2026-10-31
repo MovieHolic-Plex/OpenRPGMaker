@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { existsSync, mkdirSync, rmSync, unlinkSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readFileSync, rmSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
@@ -166,6 +166,11 @@ export type LocalProjectStore = {
   putAsset(bytes: Uint8Array, input: LocalAssetInput): Promise<UploadedAssetRef>;
   assetBytes(sha256: string): Promise<Uint8Array>;
   listAssets(): readonly LocalAssetRow[];
+  /**
+   * One registered asset row. A content-addressed file already in assets/ whose bytes hash to `sha256`
+   * but has no row (a folder copied or restored without its DB rows) is adopted first, so refs to it resolve.
+   */
+  findAsset(sha256: string): LocalAssetRow | null;
   pruneUnusedAssets(referenced: readonly string[]): Promise<readonly string[]>;
   separateInlineMedia(project: Project): Promise<LocalMediaSeparationResult>;
   importHistory(tables: {
@@ -407,6 +412,39 @@ function writeAssetBytes(
        original_name = excluded.original_name, kind = excluded.kind`,
   ).run([sha256, input.mime, bytes.byteLength, input.extension, input.originalName ?? null, input.kind ?? null, now]);
   return { sha256, mime: input.mime, bytes: bytes.byteLength, extension: input.extension };
+}
+
+/** Media types an orphaned assets/ file may be adopted as, by file extension. Matches the store blob allowlist. */
+const ADOPTABLE_ASSET_MIME: Readonly<Record<string, string>> = {
+  png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif",
+  ogg: "audio/ogg", mp3: "audio/mpeg", wav: "audio/wav", m4a: "audio/mp4",
+};
+
+/**
+ * Register a verified `<sha256>.<ext>` file that sits in assets/ without a DB row. Only a file whose bytes
+ * hash to the requested sha256 is adopted; anything else stays unknown.
+ */
+function adoptOrphanAssetFile(projectDir: string, driver: Driver, sha256: string, now: string): boolean {
+  if (!/^[a-f0-9]{64}$/.test(sha256)) return false;
+  const assetsDir = join(projectDir, ASSETS_DIR);
+  for (const [extension, mime] of Object.entries(ADOPTABLE_ASSET_MIME)) {
+    const path = join(assetsDir, assetFileName(sha256, extension));
+    if (!existsSync(path)) continue;
+    let bytes: Uint8Array;
+    try {
+      if (!lstatSync(path).isFile()) continue;
+      bytes = readFileSync(path);
+    } catch {
+      continue;
+    }
+    if (sha256HexOfBytes(bytes) !== sha256) continue;
+    driver.prepare(
+      `INSERT INTO assets (sha256, mime, bytes, extension, original_name, kind, created_at)
+       VALUES (?, ?, ?, ?, NULL, NULL, ?) ON CONFLICT(sha256) DO NOTHING`,
+    ).run([sha256, mime, bytes.byteLength, extension, now]);
+    return true;
+  }
+  return false;
 }
 
 function sqlLiteral(value: string): string {
@@ -807,7 +845,10 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return Promise.resolve(writeAssetBytes(options.projectDir, driver, bytes, input, clock()));
     },
     async assetBytes(sha256: string): Promise<Uint8Array> {
-      const row = driver.prepare("SELECT extension,bytes FROM assets WHERE sha256 = ?").get([sha256]);
+      let row = driver.prepare("SELECT extension,bytes FROM assets WHERE sha256 = ?").get([sha256]);
+      if (!row && adoptOrphanAssetFile(options.projectDir, driver, sha256, clock())) {
+        row = driver.prepare("SELECT extension,bytes FROM assets WHERE sha256 = ?").get([sha256]);
+      }
       if (!row) throw new LocalStoreError("asset", `asset ${sha256} is not registered`);
       return readVerifiedAsset(join(options.projectDir, ASSETS_DIR), sha256, String(row.extension), Number(row.bytes));
     },
@@ -824,6 +865,23 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
           kind: nullableText(row.kind),
           createdAt: nullableText(row.created_at) ?? "",
         }));
+    },
+    findAsset(sha256: string): LocalAssetRow | null {
+      const select = () => driver
+        .prepare("SELECT sha256, mime, bytes, extension, original_name, kind, created_at FROM assets WHERE sha256 = ?")
+        .get([sha256]);
+      let row = select();
+      if (!row && adoptOrphanAssetFile(options.projectDir, driver, sha256, clock())) row = select();
+      if (!row) return null;
+      return {
+        sha256: String(row.sha256),
+        mime: String(row.mime),
+        bytes: Number(row.bytes),
+        extension: String(row.extension),
+        originalName: nullableText(row.original_name),
+        kind: nullableText(row.kind),
+        createdAt: nullableText(row.created_at) ?? "",
+      };
     },
     pruneUnusedAssets(referenced: readonly string[]): Promise<readonly string[]> {
       const keep = new Set(referenced);

@@ -36,6 +36,7 @@ import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
+import { charsetBattler, charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
@@ -99,11 +100,16 @@ import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
 import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
-import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
-import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
+import { BATTLE_BACKDROP_ID_HINT, unknownSceneryIdMessage } from "@/assets/battleSceneryCatalog";
+import { BOSS_FLOOR_STATS, type BossFloorStat, isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { closestDeclaredKey } from "./argRepair";
+import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_SCORE, type StoreIconWant } from "@/assetStore/storeIconPick";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
+import { itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 
 const DATABASE_RECORD_COLLECTIONS = [
   "actors",
@@ -544,6 +550,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   forcedAction: { type: "string", enum: ["attackRandom", "rage"], description: "attackRandom=버서크(명령 없이 무작위 상대 통상 공격), rage=폭주(폭주 기술이 정한 몬스터의 행동 표대로 자동 행동). 폭주 기본 상태 id state_rage" },
   grantSkillIds: stringArraySchema("트랜스·변신 — 이 상태인 동안만 전투 명령 목록에 더해지는 기술 id(최대 12). 리미트 기술(limitSkill)로 이 상태를 걸면 FF6 트랜스"),
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
+  attackElementId: stringSchema("칼 기름·속성 부여 — 이 상태인 동안 통상 공격이 이 속성 id 로 친다(무기 속성 대신, 예 fire). 적의 속성 등급·피해 예외가 그대로 먹는다. 「다음 싸움 한 번만」은 상태의 releaseAfterBattles:1 과 같이 쓰고, 바르는 것은 아이템 stateEffects add"),
   incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
   damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
   counterChance: numberSchema("반격 % 0~100 — 물리 공격(통상·attack 계열)에 맞으면 이 확률로 통상 공격을 되돌린다. 반격끼리는 이어지지 않는다"),
@@ -611,7 +618,7 @@ const itemRecordSchema = objectSchema({
   captureProfile: captureProfileSchema,
   careProfile: careProfileSchema,
   heldEffect: heldEffectSchema,
-  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
+  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "가방 칸. key = 「중요한 물건」(모든 장르): 추리 증거·편지·열쇠 같은 이야기 물건은 key 로 둔다 — 일반 장르 가방에 「중요한 물건」 분류가 생기고, 정답이 모두 중요한 물건이고 후보(itemIds)를 생략한 presentItem 은 소지한 중요한 물건만 띄운다(occasion never·가격 0 이면 생략해도 중요한 물건). 몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
   repelSteps: integerSchema("벌레퇴치류: 쓰면 이 걸음 수(1~9999) 동안 야생 조우가 나오지 않는다. 필드 메뉴(가방)에서 쓰고 occasion 은 field, scope 는 none. 쓸 때 문장이 뜨고 걸음이 다하면 「효과가 사라졌다」 문장이 뜬다. 몬스터 수집(포켓몬류) 게임용"),
   repelBelowLead: booleanSchema("repelSteps 와 함께: true 면 파티 선두 몬스터보다 레벨이 낮은 야생만 막는다(포켓몬식). 생략 = 전부 막는다"),
   escapeTo: { type: "string", enum: ["entrance"], description: "탈출 로프류: entrance = 던전·동굴(맵 mapRole dungeon)에서 쓰면 마지막으로 들어온 입구 밖(없으면 시작 지점)으로 나간다. occasion 은 field, scope 는 none. 던전 밖에서는 「효과가 없다」, 전투 중에는 못 쓴다" },
@@ -625,6 +632,10 @@ const enemyRecordSchema = objectSchema({
   // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
   transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  walkChip: objectSchema({
+    characterResourceId: stringSchema("걷기 칩(CharSet 288×256) 리소스 id. 예: easyrpg-charset-actor1. search_resources kind:charset 으로 찾는다."),
+    characterIndex: integerSchema("칩 시트 안 인물 번호 0~7(4열×2행). 기본 0."),
+  }, "측면 전투에서 몬스터 그림 대신 걷기 칩 캐릭터(오른쪽 보기)로 서는 적 — 사람 적·결투 상대용. 대기·접근·공격 걸음·피격·쓰러짐 포즈를 파티원처럼 쓴다. 생략하면 기존 몬스터 그림."),
   lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
@@ -684,6 +695,14 @@ const troopRecordSchema = objectSchema({
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   teamSwapCost: { type: "string", enum: ["free", "gauge", "turn"], description: "이 적 그룹 전투만의 팀 교대 비용(set_project_settings battle.teams 가 있을 때). free = 들어온 팀 바로 행동 · gauge = 게이지 0(기본) · turn = 적이 한 번 행동할 때까지 쉼. 생략 = 시스템 설정" },
+  duel: objectSchema({
+    yieldAtPercent: integerSchema("적 항복선 1~100(%). 적 HP 가 행동 뒤 이 % 이하이면 그 적이 항복(무릎)한다. 모든 적이 항복·쓰러지면 승리. 생략 = 항복 없음"),
+    playerYieldAtPercent: integerSchema("아군 항복선 1~100(%). 파티 전원이 이 % 이하이면 패배(게임 오버 없이 패배 분기로). canLose 와 무관. 생략 = 없음"),
+    forfeit: booleanSchema("true = 도망 명령이 「기권」이 되고 항상 성공(결과 = 도망 분기)"),
+    roundLimit: integerSchema("라운드 제한(1 이상). N 라운드가 지나면 남은 HP 비율 합이 높은 쪽 승리, 같으면 도망(무승부) 분기"),
+    noItems: booleanSchema("true = 아이템(가방) 명령 숨김"),
+  }, "결투 규칙(모두 선택, 없으면 기존 전투 그대로). 연습 대련·결투·시험처럼 죽지 않는 전투에 쓴다. 보상이 0 이면 결과 화면이 「결투 종료」 한 줄로 나온다. 지우려면 clearFields:[\"duel\"]"),
+  victoryBanner: stringSchema("이 적 그룹을 이겼을 때 화면 가운데 뜨는 큰 승리 띠 글자(최대 40자). 예: 보스전 「봉인 해제!」. 생략 = 그대로 · 빈 문자열 = 지움(프로젝트 용어 set_project_settings terms.battleVictory, 그것도 없으면 「승리!」). 에메랄드 화면에는 띠가 없다"),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
   // 조건 kind 오타·빈 commands·무한 반복이 무검증으로 저장된다. upsert_troop_battle_page /
   // author_boss_phases 가 페이지 단위로 검증해서 쓴다(아래 run 의 리다이렉트 참고).
@@ -770,8 +789,9 @@ const actorRecordSchema = objectSchema({
   characterResourceId: stringSchema(),
   characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
-  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* 등). 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
+  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* · 스토어로 넣은 store_* 시트). 고를 시트는 list_resources{kind:'battler', query:'도끼 전사'} 로 찾는다(낱말마다 맞아야 한다). 무기·직업을 바꿔 전투에서도 그 무기를 든 모습이 필요한데 맞는 시트가 없으면 store_search{kind:'battler'} 로 스토어를 찾는다. 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
   battleScalePercent: integerSchema("측면 전투 표시 크기(%). 50~300, 기본 100. 파티원 몬스터 도트 시트(party-pixel-*)에 적용 — 마왕처럼 사람보다 큰 파티원."),
+  loadoutSlots: { type: "integer", minimum: 0, maximum: 12, description: "스킬 장착 칸 수(0~12). 0 = 장착 제한 없음(배운 스킬 전부 사용). 1 이상이면 ESC 메뉴 스킬 장착 화면에서 고른 스킬만 전투에서 쓴다. 이벤트에서 m2 「메뉴 화면 열기」 screen:\"skills\" 로 그 화면을 바로 열 수 있다." },
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
   parameterCurves: parameterCurvesSchema,
   expCurve: expCurveSchema,
@@ -796,6 +816,7 @@ const skillRecordSchema = objectSchema({
   },
   power: integerSchema(),
   animationId: stringSchema(),
+  iconResourceId: stringSchema("메뉴·전투 기술 목록 아이콘(그림 id). 생략하면 프로젝트에 넣은 스토어 아이콘 중 이름이 맞는 것을 자동으로 붙인다"),
   description: stringSchema(),
   type: { type: "string", enum: ["normal", "teleport", "escape", "switch"] },
   mpCost: recoverySchema,
@@ -1052,6 +1073,7 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
+  iconResourceId: stringSchema("전투 상태 배지 아이콘(그림 id). 생략하면 프로젝트에 넣은 스토어 아이콘 중 이름이 맞는 것을 자동으로 붙인다"),
   gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
   volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
@@ -1073,6 +1095,7 @@ const stateRecordSchema = objectSchema({
   }, "감정 상태. 배틀러는 감정을 하나만 가진다. 계열 상성은 set_battle_settings 의 emotionCycle"),
   fieldStepInterval: integerSchema(),
   releaseAfterSteps: integerSchema(),
+  releaseAfterBattles: integerSchema("전투를 이만큼(1~99) 치르면 풀린다 — 칼 기름·축복처럼 「다음 싸움 N번」. 전투 종료 규칙(clearOnBattleEnd·clearStatesAfterBattle)과 달리 전투 밖으로 이어지고 N번째 전투가 끝날 때 풀린다"),
   fieldStepCanKill: { type: "boolean" },
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
@@ -1287,6 +1310,19 @@ function resolveIconResourceId(project: Project, record: { iconResourceId?: stri
   );
 }
 
+/**
+ * 아이콘을 주지 않은 새 레코드에 프로젝트의 스토어 아이콘(kind icon, meta.oprnIcon) 중 이름이 맞는 것을 붙인다.
+ * 자신 있는 짝(STORE_ICON_CONFIDENT_SCORE 이상)만 쓰고, 붙였으면 경고 줄로 알린다(바꾸려면 iconResourceId 를 주면 된다).
+ * 아이콘 팩을 안 넣은 프로젝트는 아무 일도 없다.
+ */
+function autoStoreIcon(project: Project, record: { iconResourceId?: string }, want: StoreIconWant, label: string, warnings: string[]): void {
+  if (record.iconResourceId) return;
+  const [best] = rankStoreIcons(projectStoreIcons(project), want, 1);
+  if (!best || best.score < STORE_ICON_CONFIDENT_SCORE) return;
+  record.iconResourceId = best.id;
+  warnings.push(`${label} 아이콘을 스토어 아이콘 「${best.meta.nameKo || best.meta.nameEn}」(${best.id})로 붙였습니다. 다른 그림을 쓰려면 iconResourceId 를 주세요.`);
+}
+
 /** captureProfile.condition 을 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 허용 값을 담아 거절한다. */
 function validateItemCaptureCondition(draft: Project, raw: unknown, record: ItemRecord): void {
   if (raw === undefined || raw === null) return;
@@ -1362,7 +1398,12 @@ const upsertItem: ToolDefinition = {
     coerceSwitchItem(record, warnings);
     coerceMonsterFieldItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
+    // 칼 기름처럼 상태만 거는 물건을 필드 가방에서 쓰려면 종류가 special 이어야 한다 — 다른 종류면 「필드에서 사용할 수 없는 아이템」으로 조용히 막혔다.
+    if ((record.occasion === "field" || record.occasion === "always") && record.stateEffects.some((effect) => effect.operation === "add") && !itemAllowsFieldMenu(draft, record)) {
+      warnings.push(`'${record.name}' 은 상태를 거는 물건인데 type '${record.type}' 이라 필드 가방에서 쓸 수 없습니다 — 바르는 기름·축복 부적처럼 쓰게 하려면 type:"special" 로 주세요(skillId·activateSkillId 없이).`);
+    }
     resolveIconResourceId(draft, record, "item", warnings);
+    autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
@@ -1476,6 +1517,13 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
   if (typeof dropItemId === "string" && dropItemId && !draft.database.items.some((item) => item.id === dropItemId)) {
     problems.push(`rewards.dropItemId: ${dropItemId}`);
     hints.push(`items: ${knownIds(draft.database.items, 5)} (드롭이 없으면 rewards.dropItemId 를 빼세요)`);
+  }
+  const walkChip = record.walkChip;
+  const walkChipId = walkChip && typeof walkChip === "object" ? (walkChip as { characterResourceId?: unknown }).characterResourceId : undefined;
+  if (typeof walkChipId === "string" && walkChipId && !resolveAssetResourceUrl(walkChipId, { project: draft })) {
+    problems.push(`walkChip.characterResourceId: ${walkChipId}`);
+    const candidates = CHARSET_ASSETS.filter((asset) => /actor|people|hero/iu.test(asset.id)).slice(0, 8).map((asset) => asset.id);
+    hints.push(`걷기 칩 id 예: ${(candidates.length > 0 ? candidates : CHARSET_ASSETS.slice(0, 8).map((asset) => asset.id)).join(", ")} (search_resources kind:charset 로 더 찾기)`);
   }
   const switchIds = new Set(draft.switches.map((entry) => entry.id));
   const missingSwitches = [...requestedSwitchIds].filter((switchId) => !switchIds.has(switchId));
@@ -1779,9 +1827,29 @@ function skillDamagesFoe(project: Project, skillId: string): boolean {
 
 /** upsert_enemy.clearFields 로 지울 수 있는 선택 필드. id·name·stats·actions·그림(monsterResourceId)은 적의 뼈대라 뺀다. */
 const ENEMY_CLEARABLE_FIELDS = [
-  "speciesId", "level", "battleScalePercent", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
+  "speciesId", "level", "battleScalePercent", "walkChip", "lungeSpeedPercent", "collapseEffect", "hideHp", "criticalHit", "attackOptions",
   "reactions", "stealItems", "stateRates", "elementRates", "damageTypeRates",
 ] as const;
+
+/** upsert_troop.clearFields 로 지울 수 있는 선택 필드. */
+const TROOP_CLEARABLE_FIELDS = ["duel", "victoryBanner"] as const;
+
+/** 병합된 트룹에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다. */
+function clearTroopFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
+  if (clearFields === undefined) return [];
+  if (!Array.isArray(clearFields)) throw new ToolError("clearFields 는 필드 이름 배열이어야 합니다.", { code: "invalid-clear-fields" });
+  const allowed = new Set<string>(TROOP_CLEARABLE_FIELDS);
+  const given = patch && typeof patch === "object" ? patch as Record<string, unknown> : {};
+  const removed: string[] = [];
+  for (const field of clearFields) {
+    if (typeof field !== "string" || !allowed.has(field)) {
+      throw new ToolError(`clearFields '${String(field)}' 는 지울 수 없는 필드입니다. 지울 수 있는 필드: ${TROOP_CLEARABLE_FIELDS.join(", ")}`, { code: "invalid-clear-fields" });
+    }
+    if (field in given) throw new ToolError(`'${field}' 를 troop 에 주면서 clearFields 로 지우라고 했습니다 — 한쪽만 주세요.`, { code: "invalid-clear-fields" });
+    if (field in merged) { delete merged[field]; removed.push(field); }
+  }
+  return removed;
+}
 
 /** 병합된 적에서 clearFields 를 지운다. 실제로 지운 필드 이름을 돌려준다(없던 필드는 조용히 넘어간다). */
 function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clearFields: unknown): string[] {
@@ -1800,19 +1868,27 @@ function clearEnemyFields(merged: Record<string, unknown>, patch: unknown, clear
   return removed;
 }
 
+/** upsert_enemy 호출이 직접 준 능력치 — 보스 하한이 덮지 않는다. */
+function explicitBossStats(enemy: unknown): ReadonlySet<BossFloorStat> {
+  const stats = enemy && typeof enemy === "object" ? (enemy as { stats?: unknown }).stats : undefined;
+  if (!stats || typeof stats !== "object") return new Set();
+  return new Set(BOSS_FLOOR_STATS.filter(key => typeof (stats as Record<string, unknown>)[key] === "number"));
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
     "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
     "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
     "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
-    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
+    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩 중 **stats 에 주지 않은 값**에만 하한(기본값)을 채우고 모의전 결과를 경고로 돌려준다. stats 에 직접 준 값은 하한보다 낮아도 그대로 둔다(경고에 권장값을 적는다). " +
     "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
     "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위). " +
-    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다.",
+    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다. " +
+    "사람 적·결투 상대는 walkChip:{characterResourceId, characterIndex} 로 걷기 칩 캐릭터가 전투에 서게 한다(몬스터 그림 대신).",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
-    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 stats 에 주지 않은 능력치에 시작 파티 기준 위협 하한(기본값)을 채운다(직접 준 값은 그대로). 생략 시 id·이름의 boss/보스로 판정." },
     clearFields: {
       type: "array",
       items: { type: "string", enum: [...ENEMY_CLEARABLE_FIELDS] },
@@ -1822,6 +1898,10 @@ const upsertEnemy: ToolDefinition = {
   run(draft, rawArgs): ToolExecResult {
     const repaired = repairRecordArgs("enemy", "enemy", rawArgs, enemyRecordSchema, upsertEnemy.parameters);
     const args = repaired.args;
+    {
+      const chip = (args.enemy as { walkChip?: { characterResourceId?: unknown } } | undefined)?.walkChip;
+      if (chip && typeof chip.characterResourceId === "string") chip.characterResourceId = heroCharacterResourceId(chip.characterResourceId.trim());
+    }
     validateEnemyCombatPatch(args.enemy);
     validateEnemyReactions(draft, args.enemy);
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
@@ -1876,15 +1956,22 @@ const upsertEnemy: ToolDefinition = {
         }
       }
     }
+    const existed = draft.database.enemies.some(entry => entry.id === record.id);
     const outcome = upsertById(draft.database.enemies, record);
     // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
-    const bossNote = isBossEnemy(record, args.role) && !species ? scaleBossToStartParty(draft, record).note : undefined;
+    // 하한은 기본값이다: 저자가 이번 호출에 준 능력치는 그대로 둔다(2026-10-30 이세계 고딩: maxHp 400 이 590 으로 덮였다).
+    // 이미 있는 적을 고칠 때는 role:"boss" 를 이번에 다시 준 경우에만 빠진 값에 하한을 건다 — 예전 호출의 명시값을 덮지 않는다.
+    const bossScaling = isBossEnemy(record, args.role) && !species && (!existed || args.role === "boss")
+      ? scaleBossToStartParty(draft, record, explicitBossStats(args.enemy))
+      : undefined;
+    const bossNote = bossScaling?.note;
+    const bossApplied = (bossScaling?.applied?.length ?? 0) > 0;
     if (bossNote) warnings.push(bossNote);
     // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
     const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
     if (firstTroop) warnings.push(...troopBalanceWarnings(draft, firstTroop.id));
     return {
-      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossNote ? " — 보스 위협 하한 적용(경고 참고)" : ""}`,
+      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossApplied ? ` — 보스 위협 하한을 기본값으로 적용: ${bossScaling!.applied!.join("·")}(경고 참고)` : bossNote ? " — 보스 능력치는 저자 값 유지(권장 하한은 경고 참고)" : ""}`,
       data: record,
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -1918,9 +2005,16 @@ function troopWarningSummary(warnings: readonly string[]): string {
 
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
-  description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
+    "죽지 않는 결투·대련은 troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems} 로 규칙을 준다(simulate_battle 도 같은 규칙으로 돈다).",
   mode: "write",
-  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }),
+  parameters: parametersForRecord("troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, {
+    clearFields: {
+      type: "array",
+      items: { type: "string", enum: [...TROOP_CLEARABLE_FIELDS] },
+      description: "기존 트룹에서 지울 필드(병합은 필드를 지우지 못한다). 결투 규칙을 통째로 없애려면 [\"duel\"], 승리 띠 글자는 [\"victoryBanner\"](빈 문자열과 같다). 같은 필드를 troop 에도 주면 오류",
+    },
+  }),
   run(draft, args): ToolExecResult {
     // 전투 이벤트 페이지는 이 툴의 계약이 아니다. 일반 unknown-field 오류로 떨어지면 모델은 필드를
     // 그냥 빼버리고 "보스 연출을 넣었다"고 보고한다 — 어디로 가야 하는지 명시적으로 알려준다.
@@ -1932,12 +2026,15 @@ const upsertTroop: ToolDefinition = {
         { code: "use-battle-page-tool" },
       );
     }
+    const badScenery = unknownSceneryIdMessage((args.troop as Record<string, unknown> | undefined)?.previewBackgroundResourceId);
+    if (badScenery) throw new ToolError(badScenery, { code: "unknown-battle-backdrop" });
     const troopArg = withEnemyIdsFromMembers(args.troop);
     const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
     const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
     if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
+    const clearedTroop = clearTroopFields(merged as Record<string, unknown>, args.troop, args.clearFields);
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
     if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });
@@ -1949,7 +2046,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${troopWarningSummary(warnings)}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${clearedTroop.length ? ` (지운 필드: ${clearedTroop.join(", ")})` : ""}${troopWarningSummary(warnings)}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
@@ -2230,6 +2327,7 @@ const upsertActor: ToolDefinition = {
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
     reconcileActorFace(record, actorPatch, warnings);
+    reconcileActorBattler(record, actorPatch, warnings);
     validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
     if (record.battleCommandIds) {
@@ -2265,6 +2363,25 @@ const upsertActor: ToolDefinition = {
     };
   },
 };
+
+/**
+ * 걷기 그림만 바꾸면 전투 시트도 따라간다. 지금 전투 시트가 **다른 걷기 칩의 짝**(charset-battler-actor1-0 등 — 기본 주인공이 물려받은 검사)이면
+ * 새 칩의 짝 시트로, 짝 시트가 없으면 지워서 걷기 칩 한 칸으로 서게 한다. 칩 짝이 아닌 시트(직업·스토어·저작 시트)는 작가가 고른 것이라 둔다.
+ * 해원(2026-10-31): 주인공을 푸른 도포 Actor1#6 으로 바꿨는데 전투에서는 물려받은 붉은 머리 검사(actor1-0)가 섰다.
+ */
+function reconcileActorBattler(record: ActorRecord, patch: Record<string, unknown>, warnings: string[]): void {
+  if ("battleCharacterResourceId" in patch) return;
+  if (!("characterResourceId" in patch) && !("characterIndex" in patch)) return;
+  const current = record.battleCharacterResourceId;
+  const pair = charsetBattler(current);
+  if (!current || !pair?.characterResourceId) return;
+  const index = record.characterIndex ?? 0;
+  if (pair.characterResourceId === record.characterResourceId && pair.characterIndex === index) return;
+  const next = charsetBattlerForCharacter(record.characterResourceId, index);
+  if (next) record.battleCharacterResourceId = next;
+  else delete record.battleCharacterResourceId;
+  warnings.push(`액터 '${record.name}': 걷기 그림을 바꿔 전투 시트를 ${next ? `새 짝 ${next}` : "비움(짝 시트가 없어 걷기 칩 한 칸으로 선다)"} 으로 맞췄습니다(이전 ${current}).`);
+}
 
 /**
  * 배우 얼굴을 걷기 그림의 짝과 맞춘다(reconcileFaceWithCharset). 두 경우를 본다:
@@ -2309,6 +2426,9 @@ const upsertSkill: ToolDefinition = {
     }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
+    resolveIconResourceId(draft, record, "skill", warnings);
+    autoStoreIcon(draft, record, { target: "skill", name: record.name, description: record.description,
+      element: draft.database.elements?.find((element) => element.id === record.elementId)?.name ?? record.elementId }, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
     const auto = autoChoreographyNote(draft, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2378,6 +2498,8 @@ const upsertEquipment: ToolDefinition = {
       warnings.push("apGrants 는 설정했지만 AP 를 주는 적이 없습니다 — upsert_enemy 의 rewards.ap 를 정해야 마석이 자랍니다(승리 시 트룹 합계를 받음).");
     }
     resolveIconResourceId(draft, record, "equipment", warnings);
+    autoStoreIcon(draft, record, { target: "equipment", name: record.name, description: record.description, itemType: record.slot,
+      element: draft.database.elements?.find((element) => element.id === record.attackElementIds[0])?.name ?? record.attackElementIds[0] }, "equipment", warnings);
     dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2538,11 +2660,26 @@ const upsertState: ToolDefinition = {
         throw new ToolError(`runtimeEffects.grantSkillIds '${skillId}' 는 없는 기술입니다 — 먼저 upsert_skill 로 만든 뒤 다시 부르세요.`);
       }
     }
+    const enchant = record.runtimeEffects?.attackElementId?.trim();
+    if (enchant && !(draft.database.elements ?? []).some((element) => element.id === enchant)) {
+      throw new ToolError(`runtimeEffects.attackElementId '${enchant}' 는 없는 속성입니다. 있는 속성: ${(draft.database.elements ?? []).map((element) => element.id).join(", ")}`);
+    }
+    if (record.releaseAfterBattles !== undefined) {
+      const n = Math.trunc(Number(record.releaseAfterBattles));
+      if (!Number.isFinite(n) || n < 1 || n > 99) throw new ToolError(`releaseAfterBattles 는 1~99 정수입니다(받은 값 ${String(record.releaseAfterBattles)}). 전투 수로 풀지 않으려면 빼세요.`);
+      record.releaseAfterBattles = n;
+      if (record.clearOnBattleEnd === true) warnings.push("clearOnBattleEnd:true 면 첫 전투가 끝날 때 풀립니다 — releaseAfterBattles 로 세려면 clearOnBattleEnd 를 빼세요.");
+    }
+    if (enchant && !record.releaseAfterBattles && !record.releaseAfterSteps && record.clearOnBattleEnd !== true) {
+      warnings.push(`attackElementId '${enchant}' 상태가 풀리는 조건이 없습니다 — 칼 기름이면 releaseAfterBattles:1(다음 싸움 한 번)을 주세요.`);
+    }
     if ((record.volatileStatus || record.gen1MajorStatus) && draft.system.battleModel !== "gen1") {
       warnings.push(`${record.volatileStatus ? "volatileStatus(혼란)" : "gen1MajorStatus"} 는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다 — 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 이 상태는 일반 상태처럼만 동작합니다.`);
     }
     if (record.gen1MajorStatus === "toxic") warnings.push("맹독(toxic)은 차례 말마다 1/16 × (1,2,3…15) 피해가 커지고 교체하면 처음부터 셉니다. runtimeEffects.hpDamagePercentPerTurn 을 따로 주지 마세요(이중 피해). 보통 독은 gen1MajorStatus:\"poison\"(고정 1/16).");
     if (record.volatileStatus === "confusion") warnings.push("혼란(volatileStatus:\"confusion\")은 주요 상태와 겹쳐 걸리고 2~5 행동 지속, 행동마다 절반이 위력 40 자해로 행동을 잃으며 교체·전투 종료로 풀립니다. removalCondition 은 '전투 종료' 로 두세요.");
+    resolveIconResourceId(draft, record, "state", warnings);
+    autoStoreIcon(draft, record, stateIconWant(record), "state", warnings);
     if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

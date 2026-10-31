@@ -29,10 +29,10 @@ export interface SceneSpec {
 }
 
 export const SCENE_CARD =
-  "두 선택 대화 장면(연애·고백·속마음·선택지로 반응이 갈리는 짧은 대화): add_scene {partner:상대 이름, role?:관계(소꿉친구), looks?:외형(여학생·교복), mapId?, where?, " +
-  "opening:[상대의 도입 대사 1~6줄], choices:[{label, reaction:그 선택에 대한 상대 반응, revisit:그 뒤 다시 말 걸면 할 말}×2], closing?:주인공이 끝맺는 한 줄}. " +
-  "줄마다 8자 이상, 상대가 직접 하는 말만(서술·화자 이름 금지), 두 반응·두 재대화는 서로 다르게. 확정 연애 기획(계약)이 있으면 상대·장소·선택 문구는 계약 그대로 쓰인다. " +
-  "함수가 짝 얼굴 있는 그림으로 세우고 두 선택을 실제 런타임으로 돌려 검사한다. 무대 맵이 이미 있으면 다시 짓지 않는다.";
+  "Two-choice dialogue scene (romance, confession, inner feelings — a short talk whose reaction branches on a choice): add_scene {partner:partner name, role?:relationship (소꿉친구 childhood friend), looks?:appearance (여학생 schoolgirl · 교복 uniform), mapId?, where?, " +
+  "opening:[partner's opening lines, 1–6], choices:[{label, reaction:the partner's reaction to that choice, revisit:what they say when talked to again}×2], closing?:one closing line by the hero}. " +
+  "Each line at least 8 characters, only what the partner says aloud (no narration, no speaker names), the two reactions and the two revisits must differ. If a confirmed romance plan (contract) exists, partner, place and choice text follow the contract. " +
+  "The function stands the partner up with art that has a matching face and checks both choices in the real runtime. If the stage map already exists it is not rebuilt.";
 
 export const SCENE_SCHEMA = {
   type: "object",

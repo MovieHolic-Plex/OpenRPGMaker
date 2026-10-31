@@ -8,6 +8,8 @@ import type {
   EquipmentRecord,
   ItemRecord,
   Project,
+  SkillRecord,
+  StateRecord,
   SystemRecords,
 } from "../types";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
@@ -104,6 +106,14 @@ export function validateEquipmentResources(equipment: EquipmentRecord, resourceI
   validateOptionalResource(`equipment ${equipment.id}: iconResourceId`, equipment.iconResourceId, resourceIds);
 }
 
+export function validateSkillResources(skill: SkillRecord, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`skill ${skill.id}: iconResourceId`, skill.iconResourceId, resourceIds);
+}
+
+export function validateStateResources(state: StateRecord, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`state ${state.id}: iconResourceId`, state.iconResourceId, resourceIds);
+}
+
 export function validateEnemyResources(enemy: EnemyRecord, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource(`enemy ${enemy.id}: monsterResourceId`, enemy.monsterResourceId, resourceIds);
 }
@@ -127,6 +137,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.battleVictoryMeResourceId", system.battleVictoryMeResourceId, resourceIds);
   validateOptionalResource("system.battleDefeatSeResourceId", system.battleDefeatSeResourceId, resourceIds);
   validateOptionalResource("system.battleEscapeSeResourceId", system.battleEscapeSeResourceId, resourceIds);
+  for (const [cue, id] of Object.entries(system.seCues ?? {})) validateOptionalResource(`system.seCues.${cue}`, id, resourceIds);
   validateOptionalResource("system.titleScreen.backgroundResourceId", system.titleScreen?.backgroundResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.musicResourceId", system.titleScreen?.musicResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.sounds.cursorSeResourceId", system.titleScreen?.sounds?.cursorSeResourceId, resourceIds);

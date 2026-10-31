@@ -9,6 +9,7 @@ import { assert, commandKinds, requireArray, requireBoolean, requireNumber, requ
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
 import { m2CommandById, M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { SCRIPT_COMPILED_LIMIT, SCRIPT_SOURCE_LIMIT } from "@/project/script/types";
 
 import { isRelationshipState } from "@/project/relationshipState";
 export function validateCommandArray(label: string, value: unknown): void {
@@ -27,6 +28,9 @@ function validateCommandShape(label: string, value: unknown): void {
         const record = requireRecord(`${label}.options[${index}]`, option);
         requireString(`${label}.options[${index}].text`, record.text);
         validateCommandArray(`${label}.options[${index}].branch`, record.branch);
+        if (record.showWhen !== undefined) validateConditionShape(`${label}.options[${index}].showWhen`, record.showWhen);
+        if (record.enableWhen !== undefined) validateConditionShape(`${label}.options[${index}].enableWhen`, record.enableWhen);
+        if (record.disabledText !== undefined) requireString(`${label}.options[${index}].disabledText`, record.disabledText);
       }
       if (command.cancelBehavior !== undefined) requireChoiceCancelBehavior(`${label}.cancelBehavior`, command.cancelBehavior);
       if (command.cancelBranch !== undefined) validateCommandArray(`${label}.cancelBranch`, command.cancelBranch);
@@ -290,6 +294,30 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "openSaveMenu":
       return;
+    case "planSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotCount !== undefined) {
+        assert(Number.isInteger(command.slotCount) && (command.slotCount as number) >= 1, `${label}.slotCount 는 1 이상의 정수여야 합니다.`);
+      }
+      return;
+    case "runSchedule":
+      requireString(`${label}.scheduleId`, command.scheduleId);
+      if (command.slotVariableId !== undefined) requireString(`${label}.slotVariableId`, command.slotVariableId);
+      return;
+    case "script": {
+      const source = requireString(`${label}.source`, command.source);
+      const compiled = requireString(`${label}.compiled`, command.compiled);
+      assert(source.length <= SCRIPT_SOURCE_LIMIT, `${label}.source 는 ${SCRIPT_SOURCE_LIMIT}자 이하여야 합니다.`);
+      assert(compiled.length <= SCRIPT_COMPILED_LIMIT, `${label}.compiled 는 ${SCRIPT_COMPILED_LIMIT}자 이하여야 합니다.`);
+      for (const key of ["name", "summary", "sourceHash"] as const) {
+        if (command[key] !== undefined) requireString(`${label}.${key}`, command[key]);
+      }
+      if (command.apiVersion !== undefined) {
+        assert(Number.isInteger(command.apiVersion), `${label}.apiVersion 는 정수여야 합니다.`);
+      }
+      if (command.effects !== undefined) requireRecord(`${label}.effects`, command.effects);
+      return;
+    }
     case "spawnFieldEnemy": {
       const spawn = requireRecord(`${label}.spawn`, command.spawn) as { id?: unknown; troopId?: unknown; area?: unknown };
       requireString(`${label}.spawn.id`, spawn.id);
@@ -555,7 +583,8 @@ function validateM2CommandShape(label: string, command: Record<string, unknown>)
         requireString(`${label}.fields.${spec.key}`, value);
         break;
     }
-    if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)) {
+    if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)
+      && !(spec.allowHex && /^#[0-9a-f]{6}$/iu.test(value))) {
       throw new ProjectFormatError(`${label}.fields.${spec.key} 값이 카탈로그 옵션에 없습니다: ${value} — 고를 수 있는 값: ${spec.options.map((o) => o.value).join(", ")}.`);
     }
   }

@@ -94,5 +94,7 @@ for (const f of fs.readdirSync(DIR).filter((n) => n.endsWith("-steps.png")).sort
   const cutH = (x0, w, h) => { const rgba = []; for (let y = 0; y < h; y++) for (let x = x0; x < x0 + w; x++) { const o = (y * png.width + x) * 4; rgba.push(png.data[o], png.data[o + 1], png.data[o + 2], png.data[o + 3]); } return { w, h, rgba }; };
   out[f.replace(/\.png$/, "")] = { lit: cutH(0, 16, 32), shade: cutH(18, 16, 32), side: cutH(36, 3, 16) };
 }
+// 통째 조각(pieces)은 이 스크립트가 만들지 않는다 — 관문을 거쳐 굽는 scripts/content/bake-relief-cut-pieces.py 의 몫이라 그대로 옮긴다
+if (fs.existsSync(OUT)) { const prev = JSON.parse(fs.readFileSync(OUT, "utf8")); for (const [k, v] of Object.entries(prev)) if (v?.pieces && out[k]) out[k].pieces = v.pieces; }
 fs.writeFileSync(OUT, JSON.stringify(out) + "\n");
 console.log(JSON.stringify({ styles: Object.keys(out), out: OUT }));

@@ -100,7 +100,7 @@ export const DIALOGUE_STYLES: Readonly<Record<DialogueStyleId, DialogueStyleDefi
   },
   classic: {
     id: "classic", label: "고전 · 윈도스킨", defaultVoice: "none",
-    description: "자료집 → 시스템 그래픽의 윈도스킨 그림으로 틀과 바탕을 그립니다. 스킨을 바꾸면 대화창도 같이 바뀝니다.",
+    description: "자료집 → 시스템 그래픽의 윈도스킨 그림으로 틀과 바탕을 그립니다. 스킨을 바꾸면 대화창·메뉴·상점·타이틀 메뉴 창이 같이 바뀝니다.",
     fit: "2000년대 PC 고전 RPG 느낌, 직접 만든 윈도스킨 그림을 쓰고 싶을 때.",
   },
   "retro-black": {

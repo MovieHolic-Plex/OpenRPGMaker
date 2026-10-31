@@ -1,0 +1,536 @@
+{
+ "round": 1,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "(1) cut height equals cliff face height, top meets upper ground and foot meets road; (2) no seams against native face, lip or road; (3) colours/texture match that cliff style (strata, snow cap, peat rim, cave lip); (4) reads as a recessed cut seen from 3/4 above, not a flat front-elevation wall; (5) reads as a way up at 1x. MAJOR = a defect a careful player or art lead would reject the piece for; minor = cosmetic.",
+ "images": [
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/ref-grass-ramp-h2-w2.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/sand-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/snow-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/peat-steps-nocut.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-probe-alt.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-probe-alt-3x.png",
+  "/home/main/claude-viz/stairs-vqa/fwd-r1/cave-steps-nocut.png"
+ ],
+ "pieces": {
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "right (lit) wall nearly vanishes in the upper half"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright tread highlight lines are slightly hotter than any sand-strata highlight"
+   ]
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "blue-grey stone ramp body between beige road above and below gives a colour band, but matches the cliff stone"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "grey noise on the white treads reads like garbled lettering / signboards at 8x; at 1x reads as snowy steps"
+   ]
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "stray dark notch on the right wall mid-height"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "right wall only 1-2 px wide at top"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are close in value to the road; risers carry the read"
+   ]
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "rise-1 side walls are tiny wedges; cut reads mostly as a short dip"
+   ]
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp floor tapers to ~half the road width at the foot (same construction as passed grass reference)",
+    "downward chevron texture reads slightly like a V gully rather than an incline; acceptable at 1x",
+    "right wall barely visible in-engine; floor abuts the native face almost straight"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "stairs are dressed masonry while the cave face is rounded cobble; plausible as carved steps"
+   ]
+  }
+ },
+ "verdict": "PASS",
+ "summary": "All 64 pieces pass. In every probe the cut tops sit exactly on the native lip for rise 1-4, feet meet the road, and the side walls continue the native face colours (sand strata, snow-capped stone, peat logs with grass rim, cave rock). Stairs read clearly as steps at 1x; ramps read as recessed light wedges with shaded walls like the grass reference. Minors: ramp floors taper to ~half road width at the foot, chevron texture reads a bit like a gully, thin/vanishing right walls on some h3-h4 w3 ramps, snow tread noise looks like lettering, cave stairs are masonry vs cobble face."
+}

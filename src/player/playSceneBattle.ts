@@ -1,6 +1,7 @@
 import { recordEncounteredMonsters, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { appendBattleReport } from "@/project/battleReports";
+import { recordBestiaryBattle } from "@/project/bestiary";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -24,6 +25,7 @@ import { applyBattleTimerWrites } from "@/player/playSceneTimers";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
+import { battleStepCanLose } from "@/player/battleDuel";
 import { markBattleEntry } from "@/app/perfMetrics";
 import { BATTLE_READY_TIMEOUT_MS, BATTLE_SCENERY_GRACE_MS, deferUntilBattleReady } from "@/player/battleReadiness";
 import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
@@ -35,6 +37,7 @@ import { monsterSkillIds, previewMonsterEvolution, replacePendingMonsterSkill } 
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { playEmeraldMoveLearns, type EmeraldMoveLearnDecision } from "@/player/emeraldMoveLearnScene";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -121,7 +124,7 @@ export async function playBattle(
       project,
       troopId: step.troopId,
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
-      canLose: step.canLose,
+      canLose: battleStepCanLose(project, step, scene.session),
       battleFlow: step.battleFlow,
       atbMode: getPlayerPreferences().atbMode,
       formation: step.formation,
@@ -244,7 +247,10 @@ export async function playBattle(
         : createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
       const entryTransition = newTransition();
       // 몬스터 장르: 야생 조우 전환음(소리 세트가 없는 장르는 예전처럼 무음).
-      if (playMonsterSfx(project, "encounter")) {
+      // 저작한 「전투 시작」 자리가 있으면 그 소리 하나(몬스터 장르 전환음 대신).
+      if (playProjectSeCue("battleStart", project)) {
+        // 저작 소리가 이긴다.
+      } else if (playMonsterSfx(project, "encounter")) {
         // 전환음(약 0.9초)이 끝난 뒤 전투 시작 짧은 팡파레.
         window.setTimeout(() => { playMonsterSfx(project, "battle-start"); }, 950);
       }
@@ -409,6 +415,8 @@ export async function playBattle(
                   if (replaced.ok) session.monsterInstances[decision.instanceId] = replaced.instance;
                 }
                 appendBattleReport(session, project, snapshot, result);
+                // 괴물 도감 — 만난 적·쓰러뜨린 적. 새로 열린 칸 알림은 필드로 돌아온 뒤(refreshRuntimeSurfaces) 띄운다.
+                recordBestiaryBattle(project, session, snapshot.enemies, result);
                 // 전투를 연 이벤트가 승리 뒤 명령(처치 스위치 등)을 마친 다음에 굽는다 — autosave.ts.
                 if (result === "victory") requestAutosaveWhenIdle(session, "battleVictory");
                 settled = true;

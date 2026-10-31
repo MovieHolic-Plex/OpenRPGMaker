@@ -1,0 +1,106 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "bbox-village-ramps",
+ "title": "bbox 마을 절벽 경사로·계단 16종 (r7)",
+ "explainImage": "bbox-village-ramps-explain.png",
+ "explainText": "언덕 마을에서 길이 단을 오를 때 절벽 면을 깎아 낸 경사로(흙길)와 계단(포장길) 조각. 높이 = 절벽 면 줄 수, 마지막 줄은 그 길 자체. 겹친 계단은 낱조각 둘을 이어 붙인다. 허용하면 rampArt.json(grass-steps)에 구워져 편집기·게임이 이 그림으로 그린다.",
+ "createdAt": "2026-10-31T03:16:49.358Z",
+ "items": [
+  {
+   "sha": "8e76c8b568a33d0554794e95807f73eb60b7e8012a32c342f8c5fc1eb81fb494",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h1-w2.png"
+  },
+  {
+   "sha": "13ecf6b5a9591aa69dcd70f5d228f8e8bb9ab9dcedc02c8eacea5dc8fd8c8c9a",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h1-w3.png"
+  },
+  {
+   "sha": "93eb0660fccd0d8cae6db5a14fb33e5dc868a7f99618daddf7eb0f8e94217f71",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h2-w2.png"
+  },
+  {
+   "sha": "e977d55da8f573e922c4e197b470ed49bce4ce5292a142129cf94ec22f237146",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h2-w3.png"
+  },
+  {
+   "sha": "1d82708a26a2bff1b3b369faff5e116d838a1c172db3f5047b6148ef5311a0ee",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h3-w2.png"
+  },
+  {
+   "sha": "b2c7b92023cfa12b79ced01b79fa6dd85eeff93967879d0964d6fe526ea19c3c",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h3-w3.png"
+  },
+  {
+   "sha": "0fe6bea1196bced95ef1d0e9d9fbdf02c647121131b173dd83fd342905dc2078",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h4-w2.png"
+  },
+  {
+   "sha": "693cd70265b1824c55c7acd07efeb5647cfee68670ed1ab661718118aba98c5a",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/ramp-h4-w3.png"
+  },
+  {
+   "sha": "b58322c1796efae3e15fdea1997834c8241eb9bc715ae353df6781070fc694e3",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h1-w2.png"
+  },
+  {
+   "sha": "393185749d50ab0591c3eb720c07cc14e0e84ee0c5629f91d5a819245244bc3b",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h1-w3.png"
+  },
+  {
+   "sha": "42c567a02fb807a939af6e4086e6463f835cfeb685aace28ba91f5a728822d56",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h2-w2.png"
+  },
+  {
+   "sha": "e433c62df1857db575cb3ea2f817a3e760afb0f472ec8e74626a61c5c2dacc14",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h2-w3.png"
+  },
+  {
+   "sha": "5f32d7bd3c275eaa206b865e36e84f66d7f748fb154d927677853bc4564284c3",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h3-w2.png"
+  },
+  {
+   "sha": "ef20bfe4a04bfcd0a5adf020cf6dd611fb621dd2ca9efa468dbbc3c4b54817d1",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h3-w3.png"
+  },
+  {
+   "sha": "b9d110771168030dc416a66b5a756daf50d2b9017cf4e2596f0bc05796f7d08d",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h4-w2.png"
+  },
+  {
+   "sha": "999a87b766464eadb69780e7182c1f68ca05480467b8f3259498241e507cfebf",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/ramps/png/stairs-h4-w3.png"
+  }
+ ]
+}

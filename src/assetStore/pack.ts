@@ -2,7 +2,7 @@
  * 팩 만들기(프로젝트 → 매니페스트 + blob)와 넣기(매니페스트 + blob → 프로젝트), 크레딧.
  * 순수 함수다. 바이트 읽기·해시는 호출하는 쪽이 넘긴다(렌더러는 crypto.subtle, 서버는 node:crypto).
  */
-import type { CharacterAppearanceRecord, CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
+import type { BattleAnimationRecord, CharacterAppearanceRecord, CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
 import {
   STORE_ASSET_KINDS,
   STORE_BLOB_MIMES,
@@ -13,6 +13,8 @@ import {
   placeholderSha,
   storeImageHasSpec,
   storeImageSizeProblem,
+  storeBattleAnimationSizeProblems,
+  storeMonsterSheetSizeProblems,
   storeThirdPartyName,
   storeProjectId,
   tilesetUploadedAssetIds,
@@ -72,6 +74,11 @@ export function closeSelection(project: Project, selection: PackSelection): { ti
   const uploaded = new Set(Object.keys(project.assets.uploaded));
   const assetIds = new Set<string>(selection.assetIds);
   for (const id of tilesetIds) for (const assetId of tilesetUploadedAssetIds(project.tilesets[id]!, uploaded)) assetIds.add(assetId);
+  // 몬스터 초상의 전투 도트 시트(meta.pixelEnemySheet)는 meta 로만 이어진 그림이라 따로 딸려 보낸다.
+  for (const id of [...assetIds]) {
+    const sheetId = uploaded.has(id) ? project.assets.uploaded[id]!.meta.pixelEnemySheet?.sheetResourceId : undefined;
+    if (sheetId) assetIds.add(sheetId);
+  }
   for (const id of assetIds) if (!uploaded.has(id)) missing.push(`에셋 ${id}`);
   return { tilesetIds: [...tilesetIds], assetIds: [...assetIds].filter((id) => uploaded.has(id)), missing };
 }
@@ -292,11 +299,23 @@ export interface ApplyContext {
 export interface ApplyResult {
   readonly assetIds: string[];
   readonly tilesetIds: string[];
+  /** 팩의 전투 애니메이션이 프로젝트에서 받은 id(이미 있던 것 포함 — 이번에 새로 넣은 것은 addedAnimationIds). */
+  readonly animationIds?: string[];
+  readonly addedAnimationIds?: string[];
   /** 이미 넣은 판본을 새 판본으로 바꿨으면 true. */
   readonly replaced: boolean;
 }
 
 const dataUrlOf = (bytes: Uint8Array, mime: string): string => `data:${mime};base64,${bytesToBase64(bytes)}`;
+
+/** 팩 에셋 meta → 프로젝트 meta. 전투 도트 시트의 시트 id 를 프로젝트 id 로 바꾼다(번들 id 와 겹치지 않게). */
+function packMetaForProject(packAsset: StorePackAsset, assetIdMap: ReadonlyMap<string, string>): UploadedAsset["meta"] {
+  const meta: UploadedAsset["meta"] = { ...packAsset.meta };
+  const sheet = packAsset.kind === "monster" ? meta.pixelEnemySheet : undefined;
+  if (sheet) meta.pixelEnemySheet = { ...sheet, sheetResourceId: assetIdMap.get(sheet.sheetResourceId) ?? sheet.sheetResourceId };
+  else delete meta.pixelEnemySheet;
+  return meta;
+}
 
 /**
  * 팩을 프로젝트에 넣는다. id 는 storeProjectId 로 바꾸고, 자리표시는 data URL 로 되돌리고, 에셋마다 출처를 남긴다.
@@ -338,6 +357,12 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     const problem = size ? storeImageSizeProblem(packAsset.kind, size.width, size.height) : null;
     if (problem) throw new Error(`${packAsset.name}: ${problem}`);
   }
+  // 전투 도트 시트: 초상 cell×cell, 시트 3cell×3cell. 크기가 틀리면 전투가 엉뚱한 칸을 잘라 그린다.
+  const sheetProblems = storeMonsterSheetSizeProblems(manifest, (sha) => pngSize(context.blob(sha)));
+  if (sheetProblems.length > 0) throw new Error(sheetProblems[0]);
+  // 전투 애니메이션 시트: 가로 = columns×frameWidth, 세로 = frameHeight 배수, 패턴이 칸 안.
+  const animationProblems = storeBattleAnimationSizeProblems(manifest, (sha) => pngSize(context.blob(sha)));
+  if (animationProblems.length > 0) throw new Error(animationProblems[0]);
   for (const tileset of Object.values(manifest.content.tilesets)) {
     const image = tileset.image.type === "uploaded" && Object.hasOwn(manifest.content.assets, tileset.image.id) ? manifest.content.assets[tileset.image.id] : undefined;
     const size = image?.mime === "image/png" ? pngSize(context.blob(image.blob)) : null;
@@ -356,7 +381,7 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
       name: packAsset.name,
       kind: packAsset.kind,
       ...(ref ? { ref } : { dataUrl: dataUrlOf(bytes, mime) }),
-      meta: { ...packAsset.meta },
+      meta: packMetaForProject(packAsset, assetIdMap),
       origin: { ...origin },
     };
   }
@@ -423,7 +448,44 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     }
     project.tilesets[tileset.id] = tileset;
   }
-  return { assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced };
+  const animations = applyPackBattleAnimations(project, manifest, slug, assetIdMap);
+  return {
+    assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced,
+    ...(animations.animationIds.length ? animations : {}),
+  };
+}
+
+/** 팩 전투 애니메이션이 프로젝트에서 받는 id. 에셋 id 와 섞이지 않게 anim- 을 붙인다. */
+export const storeAnimationId = (slug: string, packId: string): string => storeProjectId(slug, `anim-${packId}`);
+
+/**
+ * content.battleAnimations → database.battleAnimations. 시트·소리·후속 id 를 프로젝트 id 로 바꾼다.
+ * 같은 id 의 레코드가 이미 있으면 덮지 않는다 — 넣은 뒤 저자가 고친 타이밍·이름을 지키고, 다시 넣기는 아무것도 바꾸지 않는다.
+ */
+function applyPackBattleAnimations(project: Project, manifest: StorePackManifest, slug: string, assetIdMap: ReadonlyMap<string, string>): { animationIds: string[]; addedAnimationIds: string[] } {
+  const source = manifest.content.battleAnimations ?? [];
+  const animationIds: string[] = [];
+  const addedAnimationIds: string[] = [];
+  if (source.length === 0) return { animationIds, addedAnimationIds };
+  const list = project.database.battleAnimations ?? (project.database.battleAnimations = []);
+  const existing = new Set(list.map((record) => record.id));
+  for (const raw of source) {
+    const id = storeAnimationId(slug, raw.id);
+    animationIds.push(id);
+    if (existing.has(id)) continue;
+    const record: BattleAnimationRecord = structuredClone(raw);
+    record.id = id;
+    record.resourceId = raw.resourceId ? assetIdMap.get(raw.resourceId) ?? raw.resourceId : undefined;
+    if (record.timings) {
+      record.timings = record.timings.map((timing) => (timing.soundResourceId && assetIdMap.has(timing.soundResourceId)
+        ? { ...timing, soundResourceId: assetIdMap.get(timing.soundResourceId)! } : timing));
+    }
+    if (record.followUps) record.followUps = record.followUps.map((follow) => ({ ...follow, animationId: storeAnimationId(slug, follow.animationId) }));
+    list.push(record);
+    existing.add(id);
+    addedAnimationIds.push(id);
+  }
+  return { animationIds, addedAnimationIds };
 }
 
 /** 스토어 캐릭터 칸이 만드는 외형 id. */

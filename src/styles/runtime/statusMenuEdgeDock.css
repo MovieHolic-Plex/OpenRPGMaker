@@ -70,6 +70,10 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  /* 행 높이 = 남은 세로 길이를 명령 수로 나눈 값(최대 23px, 최소 12px — 7px 글자 한 줄 + 테두리).
+     % 는 쓰는 자리(행의 flex-basis·커서 막대 height)에서 레일 높이로 풀린다. 명령이 많아도 레일이 도움말 줄(.status-menu-footer)을
+     넘지 않는다. 23px 고정이던 때는 8명령(240px 판)이 레일 밖으로 넘쳤다. */
+  --status-menu-rail-row: max(12px, min(23px, calc((100% - (var(--status-menu-rail-count, 1) - 1) * 3px) / var(--status-menu-rail-count, 1))));
   left: 15px;
   overflow: visible;
   padding: 0 7px 0 0;
@@ -89,12 +93,12 @@
   color: var(--status-edge-muted);
   cursor: default;
   display: flex;
-  flex: 0 0 23px;
+  flex: 0 0 var(--status-menu-rail-row, 23px);
   font: 600 7px/1.4 var(--runtime-ui-font);
   gap: 5px;
   margin: 0;
   min-height: 0;
-  padding: 2px 5px;
+  padding: 0 5px;
   position: relative;
   text-shadow: none;
   white-space: nowrap;
@@ -402,16 +406,18 @@
   .oprn-status-menu *, .oprn-status-menu { transition: none; }
 }
 /* This marker keeps its DOM owner when changing pages. */
+/* 막대 상자는 레일 한 행과 같은 높이이고, 칠은 위아래 4px 를 남긴다(23px 행에서 예전과 같은 15px 막대).
+   translateY 의 % 는 이 상자 자신의 높이 = 행 높이라서 index × (행 + 간격) 으로 움직인다. */
 .oprn-status-menu .status-menu-primary-dock::after {
-  background: var(--status-edge-amber);
+  background: linear-gradient(var(--status-edge-amber), var(--status-edge-amber)) center / 100% calc(100% - 8px) no-repeat;
   border-radius: 1px;
   content: "";
-  height: 15px;
+  height: var(--status-menu-rail-row, 23px);
   left: 0;
   pointer-events: none;
   position: absolute;
-  top: 4px;
-  transform: translateY(var(--status-menu-cursor-y, 0px));
+  top: 0;
+  transform: translateY(calc(var(--status-menu-cursor-index, 0) * (100% + 3px)));
   transition: transform 80ms cubic-bezier(.2,.8,.2,1);
   width: 2px;
 }

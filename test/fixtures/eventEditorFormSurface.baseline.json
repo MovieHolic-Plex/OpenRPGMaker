@@ -22512,5 +22512,63 @@
   },
   "testidCount": 4,
   "controlCount": 2
+ },
+ "script": {
+  "testids": [
+   "event-command-edit-summary",
+   "script-api-reference",
+   "script-compile-status",
+   "script-diagnostics",
+   "script-help",
+   "script-name-input",
+   "script-source-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "rich-command-form",
+   "rich-form-row",
+   "script-api-group",
+   "script-api-list",
+   "script-api-reference",
+   "script-command-form",
+   "script-compile-status",
+   "script-diagnostics",
+   "script-editor-source"
+  ],
+  "controls": {
+   "script-name-input": "input[text]{}",
+   "script-source-input": "textarea{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "game API 목록"
+  ],
+  "tags": {
+   "code": 56,
+   "details": 1,
+   "div": 15,
+   "input": 1,
+   "li": 56,
+   "span": 63,
+   "summary": 1,
+   "textarea": 1,
+   "ul": 13
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "script-api-reference": "details",
+   "script-compile-status": "div",
+   "script-diagnostics": "ul",
+   "script-help": "span",
+   "script-name-input": "input",
+   "script-source-input": "textarea"
+  },
+  "texts": {
+   "event-command-edit-summary": "스크립트 (TypeScript)"
+  },
+  "testidCount": 7,
+  "controlCount": 2
  }
 }

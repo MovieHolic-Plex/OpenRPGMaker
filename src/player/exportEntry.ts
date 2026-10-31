@@ -39,6 +39,7 @@ import { dropOtherVersionPackCaches, loadPacks, startPackServiceWorker, type Pre
 import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { warmPlayGameRuntime } from "@/player/createPlayGame";
+import { preloadScriptEngine, projectUsesScripts } from "@/player/script/engine";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -197,6 +198,8 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
     ...fonts.map((face) => face.load().catch(() => undefined).finally(() => { fontsDone += 1; report(); })),
     // 엔진 코드(Phaser·PlayScene 조각)도 시작 전에 받아 둔다 — 「새 게임」 뒤 기다림을 없앤다.
     warmPlayGameRuntime().catch(() => undefined),
+    // Script sandbox (QuickJS wasm) — only for games that use `script` commands.
+    projectUsesScripts(project) ? preloadScriptEngine().catch(() => undefined) : undefined,
   ]);
   // QA 계측 부팅·데스크톱 셸(자동 재생 제한 없음)은 누르기를 기다리지 않는다.
   if (!autoStart) await loader.waitForStart();

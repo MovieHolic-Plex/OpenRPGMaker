@@ -10,9 +10,11 @@ import type {
   EnemyActionSwitchEffect,
   EnemyCritical,
   EnemyOptions,
+  TroopDuelRules,
   EnemyReaction,
   DamageTypeRates,
   EnemyRecord,
+  EnemyWalkChip,
   EnemyRewards,
   EnemyStats,
   BattleFlow,
@@ -44,6 +46,15 @@ export function normalizeDamageTypeRates(value: unknown): DamageTypeRates | unde
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+export function normalizeEnemyWalkChip(raw: unknown): EnemyWalkChip | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const value = raw as Partial<EnemyWalkChip>;
+  const characterResourceId = typeof value.characterResourceId === "string" ? value.characterResourceId.trim() : "";
+  if (!characterResourceId) return undefined;
+  const index = typeof value.characterIndex === "number" && Number.isFinite(value.characterIndex) ? Math.round(value.characterIndex) : 0;
+  return { characterResourceId, characterIndex: Math.max(0, Math.min(7, index)) };
+}
+
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
 ): EnemyRecord {
@@ -63,6 +74,10 @@ export function normalizeEnemyRecord(
     ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
     ...(typeof record.lungeSpeedPercent === "number" && Number.isFinite(record.lungeSpeedPercent) && Math.round(record.lungeSpeedPercent) !== 100
       ? { lungeSpeedPercent: Math.round(Math.max(25, Math.min(300, record.lungeSpeedPercent))) } : {}),
+    ...(() => {
+      const walkChip = normalizeEnemyWalkChip(record.walkChip);
+      return walkChip ? { walkChip } : {};
+    })(),
     ...(() => {
       const rates = normalizeDamageTypeRates(record.damageTypeRates);
       return rates ? { damageTypeRates: rates } : {};
@@ -125,6 +140,16 @@ const SKY_PANORAMA_BATTLEBACK_IDS = new Set([
   "easyrpg-backdrop-planet3",
 ]);
 
+/** 적 그룹별 승리 띠 글자의 최대 길이. 띠는 화면 가운데 한 줄이라 길면 넘친다. */
+export const TROOP_VICTORY_BANNER_MAX_LENGTH = 40;
+
+/** 적 그룹의 victoryBanner 정규화 — 앞뒤 빈칸을 걷고, 비면 undefined(키 없음), 길면 자른다. */
+export function normalizeTroopVictoryBanner(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? Array.from(trimmed).slice(0, TROOP_VICTORY_BANNER_MAX_LENGTH).join("") : undefined;
+}
+
 export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">): TroopRecord {
   const members = normalizeMembers(record.members, record.enemyIds);
   return {
@@ -167,7 +192,39 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
       const battleGuests = normalizeTroopBattleGuests(record.battleGuests);
       return battleGuests.length > 0 ? { battleGuests } : {};
     })(),
+    // 결투 규칙. 하나도 켜지 않았으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const duel = normalizeTroopDuel(record.duel);
+      return duel ? { duel } : {};
+    })(),
+    // 이 그룹만의 승리 띠 글자. 비면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const victoryBanner = normalizeTroopVictoryBanner(record.victoryBanner);
+      return victoryBanner ? { victoryBanner } : {};
+    })(),
   };
+}
+
+function clampDuelPercent(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.min(100, Math.max(1, Math.round(value)));
+}
+
+/** 결투 규칙. 퍼센트는 1~100 정수, 라운드 한도는 1 이상 정수, 불리언은 true 일 때만 남긴다. 비면 undefined. */
+export function normalizeTroopDuel(value: unknown): TroopDuelRules | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const raw = value as Partial<TroopDuelRules>;
+  const yieldAtPercent = clampDuelPercent(raw.yieldAtPercent);
+  const playerYieldAtPercent = clampDuelPercent(raw.playerYieldAtPercent);
+  const roundLimit = typeof raw.roundLimit === "number" && Number.isFinite(raw.roundLimit) && raw.roundLimit >= 1 ? Math.floor(raw.roundLimit) : undefined;
+  const duel: TroopDuelRules = {
+    ...(yieldAtPercent !== undefined ? { yieldAtPercent } : {}),
+    ...(playerYieldAtPercent !== undefined ? { playerYieldAtPercent } : {}),
+    ...(raw.forfeit === true ? { forfeit: true } : {}),
+    ...(roundLimit !== undefined ? { roundLimit } : {}),
+    ...(raw.noItems === true ? { noItems: true } : {}),
+  };
+  return Object.keys(duel).length > 0 ? duel : undefined;
 }
 
 const GUEST_TACTICS = new Set(["attackAll", "healFirst", "conserveMp"]);

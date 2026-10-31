@@ -25,6 +25,8 @@ import {
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
+  validateSkillResources,
+  validateStateResources,
   isKnownResourceId,
   validateOptionalResource,
   validateSystemResources,
@@ -219,6 +221,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     switchIds,
     variableIds,
     commonEventIds,
+    scheduleIds: new Set((project.database.schedules ?? []).map((record) => record.id)),
     endingIds,
     gameOverIds: new Set((project.system.gameOvers ?? []).map(row => row.id)),
     mapIds,
@@ -245,6 +248,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   check(() => validateFarmAnimalReferences(project, itemIds, issues));
   check(() => validateSpatialReferences(project, itemIds, resourceIds, issues));
   check(() => validateTroopRecords(project, enemyIds, context, issues));
+  check(() => validateScheduleReferences(project, context, issues));
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
     check(() => validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds));
@@ -636,7 +640,9 @@ function validateSkillRecords(project: Project, skillIds: ReadonlySet<string>, a
     if (skill.elementId && !elementIdExists(project, skill.elementId)) issues.push(`skill ${skill.id}: elementId does not exist.`);
     for (const effect of skill.stateEffects ?? []) if (!stateIdExists(project, effect.stateId)) issues.push(`skill ${skill.id}: stateId does not exist.`);
     if (skill.effect.kind === "switch" && skill.effect.switchId && !context.switchIds.has(skill.effect.switchId)) issues.push(`skill ${skill.id}: switchId does not exist.`);
+    capture(issues, () => validateSkillResources(skill, context.resourceIds));
   }
+  for (const state of project.database.states) capture(issues, () => validateStateResources(state, context.resourceIds));
   void skillIds;
 }
 
@@ -1204,6 +1210,21 @@ function isMapPositionInBounds(x: number, y: number, width: number, height: numb
     && y >= 0
     && x < width
     && y < height;
+}
+
+function validateScheduleReferences(project: Project, context: ReferenceContext, issues: string[]): void {
+  for (const [index, schedule] of (project.database.schedules ?? []).entries()) {
+    for (const [activityIndex, activity] of schedule.activities.entries()) {
+      const label = `database.schedules[${index}].activities[${activityIndex}]`;
+      if (!context.commonEventIds.has(activity.commonEventId)) issues.push(`${label}.commonEventId does not exist: ${activity.commonEventId}`);
+      if (activity.icon?.kind === "item" && !context.itemIds.has(activity.icon.itemId)) issues.push(`${label}.icon.itemId does not exist: ${activity.icon.itemId}`);
+      const condition = activity.condition;
+      if (condition) {
+        capture(issues, () => validateCondition(condition, context.switchIds, context.variableIds));
+        capture(issues, () => validateMonsterSpeciesReferences(condition, context));
+      }
+    }
+  }
 }
 
 function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, context: ReferenceContext, issues: string[]): void {

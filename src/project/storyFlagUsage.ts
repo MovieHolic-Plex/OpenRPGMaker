@@ -225,6 +225,9 @@ function scanCommand(
     case "getFriendship":
       add("write", "variable", command.variableId, { ...owner, commandPath, detail: "getFriendship result" });
       break;
+    case "runSchedule":
+      if (command.slotVariableId) add("write", "variable", command.slotVariableId, { ...owner, commandPath, detail: "runSchedule slot index" });
+      break;
     case "fork":
       addConditionReads(command.condition, add, { ...owner, commandPath: `${commandPath}.condition`, detail: "conditional branch" });
       scanCommands(command.then, add, owner, `${commandPath}.then`);
@@ -233,6 +236,8 @@ function scanCommand(
     case "choices":
       if (!Array.isArray(command.options)) break;
       for (const [optionIndex, option] of command.options.entries()) {
+        addConditionReads(option.showWhen, add, { ...owner, commandPath: `${commandPath}.options[${optionIndex}].showWhen`, detail: "choice shown when" });
+        addConditionReads(option.enableWhen, add, { ...owner, commandPath: `${commandPath}.options[${optionIndex}].enableWhen`, detail: "choice enabled when" });
         scanCommands(option.branch, add, owner, `${commandPath}.options[${optionIndex}].branch`);
       }
       if (command.cancelBranch) scanCommands(command.cancelBranch, add, owner, `${commandPath}.cancelBranch`);

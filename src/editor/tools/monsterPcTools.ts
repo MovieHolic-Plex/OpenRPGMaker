@@ -1,6 +1,6 @@
 // editor/tools/monsterPcTools.ts
 // place_monster_pc — 몬스터 보관함(PC) 이벤트 한 칸. 말을 걸면 「PC를 켰다」 뒤 보관함 화면(상자 격자)이 열리고,
-// 닫으면 이벤트가 이어진다. 새 명령이 아니다: 「메뉴 화면 열기」(m2-078) 에 fields.screen='monster-box' 를 실은 한 줄이다.
+// 닫으면 이벤트가 이어진다. 새 명령이 아니다: 「메뉴 화면 열기」(m2-078) 에 fields.screen='monster-box' 를 실은 한 줄이다.  (스킬 장착 화면은 같은 명령에 fields.screen="skills" + 선택 actorId.)
 // 그림은 새로 만들지 않는다 — 맵에 이미 있는 컴퓨터·단말 그림 칸 위에 투명 이벤트로 얹는다(벽 위 허용, 이웃 한 칸은 걸을 수 있어야 한다).
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { genId } from "@/util/id";

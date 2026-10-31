@@ -8,6 +8,7 @@ import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
+import { joseonDoorsOfMap } from "@/editor/tools/joseonInteriorLink";
 import { WIZARDING_WORDS } from "./wizarding";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
@@ -53,6 +54,13 @@ const requestKeyOf = (spec: PlaceSpec): number => typeof spec.hints?.requestKey 
 /** 방 낱말 하나 → 등록 방(없으면 undefined). */
 function roomFor(text: string): Pick | undefined {
   return ROOMS.find(([re]) => re.test(text))?.[1];
+}
+
+/** 마을 구역 → 들어갈 방. 「집·방」 같은 일반 낱말(주민 집들)은 방을 가져오지 않는다 — 민가 안은 이름으로 말할 때만. */
+function villageRoomFor(zone: { readonly kind: string; readonly purpose?: string }): Pick | undefined {
+  const text = `${zone.kind} ${zone.purpose ?? ""}`;
+  const room = roomFor(text);
+  return room && (room !== HOUSE || /민가|집\s*안|house interior/iu.test(text)) ? room : undefined;
 }
 
 /** 명세 → 가져올 등록 장소. 이름만 먼저 보고, 없으면 테마·방 종류까지. */
@@ -180,12 +188,33 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     run.call("set_start_position", { mapId, x: ent.x, y: ent.y });
   }
   const missingArt: string[] = [];
+  const extraIds: string[] = [];
   if ((spec.type === "village" || spec.type === "street") && MARKET.test(textOf(spec))) {
     const market = run.call("dress_joseon_market", { mapId });
     if (!market.ok) warnings.push(`장터 좌판을 앉히지 못했다: ${String(market.summary ?? "").slice(0, 160)}`);
   }
+  // 마을·도성의 구역이 방을 말하면(주막·관아·약방·서당…) 등록 방을 가져와 건물 문과 link_joseon_interior 로 잇는다.
+  // 문은 조각 이름이 방과 맞는 건물(주막 → 초가 jumak, 서당 → 기와 seodang, 관아 → 가장 큰 기와집) 먼저, 없으면 남은 문 차례로.
+  const linked: string[] = [];
+  if (spec.type === "village" || spec.type === "street") {
+    const doors = [...joseonDoorsOfMap(run.ctx.project.maps[mapId]!)];
+    const used = new Set<string>();
+    const prefer: Record<string, RegExp> = { "joseon-in-inn-22x16": /jumak|inn/u, "joseon-in-school-16x14": /seodang|seowon/u, "joseon-in-office-17x15": /gwanah|giwa_house_6|giwa_house_5/u, "joseon-in-smith-12x10": /smith/u };
+    for (const zone of spec.zones ?? []) {
+      const room = villageRoomFor(zone);
+      if (!room) continue;
+      const free = doors.filter((d) => !used.has(`${d.door[0]},${d.door[1]}`));
+      const door = free.find((d) => prefer[room.id]?.test(d.piece)) ?? free[0];
+      if (!door) { warnings.push(`「${zone.purpose ?? zone.kind}」을 이을 건물 문이 남지 않았다`); continue; }
+      used.add(`${door.door[0]},${door.door[1]}`);
+      const link = run.call("link_joseon_interior", { mapId, door: { x: door.door[0], y: door.door[1] }, place: room.id, name: `${spec.name} · ${zone.purpose?.trim() || room.label}` });
+      const roomId = (link.data as { interiorMapId?: string } | undefined)?.interiorMapId;
+      if (!link.ok || !roomId) { warnings.push(`「${room.label}」 잇기 실패: ${String(link.summary ?? "").slice(0, 160)}`); continue; }
+      extraIds.push(roomId);
+      linked.push(`${door.name} 문 (${door.door[0]},${door.door[1]}) → ${room.label}`);
+    }
+  }
   // 방 여러 개(주막 + 뒷방): 둘째 구역부터 등록 방을 새 맵으로 가져와 첫 방 안쪽 자리와 create_transfer_pair 로 잇는다.
-  const extraIds: string[] = [];
   const rooms: string[] = [pick.label];
   if (spec.type === "interior" && (spec.zones?.length ?? 0) > 1) {
     const main = run.ctx.project.maps[mapId]!;
@@ -214,7 +243,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     ok: true,
     mapIds: [mapId, ...extraIds],
     entrance,
-    summary: `${spec.name}: 조선 칩셋(joseon_baram) 등록 장소 「${pick.label}」 (${map.width}×${map.height})${extraIds.length ? ` + 이어진 방 ${rooms.slice(1).join(", ")}` : ""}`,
+    summary: `${spec.name}: 조선 칩셋(joseon_baram) 등록 장소 「${pick.label}」 (${map.width}×${map.height})${rooms.length > 1 ? ` + 이어진 방 ${rooms.slice(1).join(", ")}` : ""}${linked.length ? ` + 들어갈 수 있는 집 ${linked.join(", ")}` : ""}`,
     warnings,
     missingArt,
     calls: run.calls.slice(first),
@@ -226,11 +255,13 @@ export const JOSEON_BUILDER: PlaceBuilder = {
   id: "joseon",
   accepts: (spec) => /joseon/iu.test(spec.style ?? ""),
   prepare: async (spec) => {
-    const ids = new Set([joseonPlaceFor(spec).id, ...(spec.type === "interior" ? (spec.zones ?? []).slice(1).map((z) => (roomFor(`${z.kind} ${z.purpose ?? ""}`) ?? HOUSE).id) : [])]);
+    const rooms = spec.type === "interior" ? (spec.zones ?? []).slice(1).map((z) => (roomFor(`${z.kind} ${z.purpose ?? ""}`) ?? HOUSE).id)
+      : spec.type === "village" || spec.type === "street" ? (spec.zones ?? []).flatMap((z) => villageRoomFor(z)?.id ?? []) : [];
+    const ids = new Set([joseonPlaceFor(spec).id, ...rooms]);
     await Promise.all([...ids].map((id) => prepareTool("import_region_reference", { id })));
   },
   build,
 };
 
-export const JOSEON_CARD = "[조선 style:joseon] 조선·한양·사극·고려 배경은 style 에 joseon 을 넣는다(버들항 유럽 마을·판타지 실내로 짓지 않는다). " +
-  "village/street=조선 마을 20호(초가·기와집·논·다리, 이름·테마에 저잣거리·장터면 좌판을 앉힌다) · interior=등록 방 한 장: 주막·관아(포도청·동헌)·대장간·약방·서당·민가·궁 어좌전·침전·회랑·서고(이름 낱말로 고른다, 방은 하나씩) · cave=조선 동굴 · 이름에 사냥터·들판이면 사냥터.";
+export const JOSEON_CARD = "[Joseon style:joseon] For Joseon, Hanyang, historical-drama or Goryeo settings put joseon in style (do not build a Beodeul European village or a fantasy interior). " +
+  "village/street = a Joseon village of 20 households (thatched and tiled houses, paddies, bridges; stalls are added when name or theme says 저잣거리/장터 market street; list 주막·관아·약방·서당·대장간·민가 in zones and each room is imported and linked to a building door — say enterable houses through zones) · interior = one registered room: 주막 (tavern) · 관아 (포도청·동헌, government office) · 대장간 (smithy) · 약방 (apothecary) · 서당 (village school) · 민가 (commoner house) · 궁 어좌전 (throne hall) · 침전 (royal bedchamber) · 회랑 (cloister) · 서고 (archive) (chosen by name word, one room per call) · cave = Joseon cave · a name with 사냥터/들판 gives a hunting ground.";

@@ -302,6 +302,8 @@ export interface SkillRecord {
   animationId?: BattleAnimationId;
   description: string;
   type: "normal" | "teleport" | "escape" | "switch";
+  /** 메뉴·전투 기술 목록에 그릴 아이콘(아이템 iconResourceId 와 같은 그림 id, 예: 스토어 아이콘 팩). 생략 = 전투 애니메이션 첫 칸(기존 동작). */
+  iconResourceId?: string;
   /**
    * 필드 능력(명작 공백 #5, 2026-09-27): 메뉴 스킬 목록에서 쓰면 MP 를 내고 이 공통 이벤트를 실행한다.
    * 실행 전에 주인공 정면 칸의 이벤트 id 를 문자열 변수 `fieldAbilityTarget` 에, 정면 좌표를 변수
@@ -791,6 +793,13 @@ export interface DatabaseStateEffect {
   operation: "add" | "remove";
 }
 
+export interface EnemyWalkChip {
+  /** 캐릭터 칩 시트 resourceId(assets.uploaded 키 또는 번들 칩). */
+  characterResourceId: string;
+  /** 시트 안 캐릭터 번호 0~7(4열 x 2행). */
+  characterIndex: number;
+}
+
 export interface EnemyRecord {
   id: EnemyId;
   name: string;
@@ -804,6 +813,11 @@ export interface EnemyRecord {
    * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
    */
   lungeSpeedPercent?: number;
+  /**
+   * 걷기 칩(RM2000 CharSet 288x256, 24x32 프레임)으로 서는 적. 지정하면 monsterResourceId 대신 이 칩의 오른쪽 방향 줄로 전투에 선다
+   * (적은 왼쪽에 서서 오른쪽을 본다). 생략 = 기존 몬스터 그림. `player/battleWalkChipBattler` · `battleFieldDom.enemyButton`.
+   */
+  walkChip?: EnemyWalkChip;
   /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
@@ -1088,6 +1102,23 @@ export interface TroopTrainerSprite {
   backThrow?: string;
 }
 
+/**
+ * 결투 규칙 — 목숨을 걸지 않는 대련·시합용. 모두 선택이고, 없으면 기존 전투 그대로다.
+ * 런타임은 battle/duelRules.ts, 모델 정규화는 project/databaseEnemyTroopRecordModel.ts.
+ */
+export interface TroopDuelRules {
+  /** 적 HP 가 이 퍼센트(1~100) 이하가 되면 그 적은 항복한다(무릎 꿇는 자세, 더는 행동·피격 대상 아님). 전부 항복·쓰러지면 승리. */
+  yieldAtPercent?: number;
+  /** 아군 전원의 HP 가 이 퍼센트(1~100) 이하면 패배로 끝난다. canLose 와 상관없이 게임 오버 없이 전투 뒤 분기로 간다. */
+  playerYieldAtPercent?: number;
+  /** true 면 도주 명령이 「기권」이 되고 반드시 성공해 escapeBranch 로 간다. */
+  forfeit?: boolean;
+  /** 이 라운드 수가 지나면 남은 HP 비율 합이 큰 쪽이 이긴다(같으면 escape). 정수 1 이상. */
+  roundLimit?: number;
+  /** true 면 아이템 명령을 숨기고 쓸 수 없게 한다. */
+  noItems?: boolean;
+}
+
 export interface TroopRecord {
   id: TroopId;
   name: string;
@@ -1122,6 +1153,13 @@ export interface TroopRecord {
    * (경험치·전리품 몫도 없다). 생략·빈 목록 = 없음. 런타임은 battle/battleEvents.ts · battle/runtime.ts.
    */
   battleGuests?: TroopBattleGuest[];
+  /** 결투 규칙(항복 HP·기권·라운드 제한·아이템 금지). 생략 = 일반 전투. */
+  duel?: TroopDuelRules;
+  /**
+   * 이 적 그룹을 이겼을 때 화면 가운데 뜨는 승리 띠 글자(최대 40자). 생략·빈 문자열 = 프로젝트 용어
+   * terms.battleVictory → 기본 「승리!」. 정규화·해석은 project/terms.ts(resolveVictoryBannerText).
+   */
+  victoryBanner?: string;
 }
 
 export interface TroopBattleGuest {
@@ -1172,6 +1210,8 @@ export interface BattleBackdropLayer {
 export interface StateRecord {
   id: StateId;
   name: string;
+  /** 전투 상태 배지·메뉴에 그릴 아이콘(그림 id, 예: 스토어 아이콘 팩). 생략 = 글자 배지(기존 동작). */
+  iconResourceId?: string;
   /** Gen1 persistent major status semantics, independent of authored state id/name. */
   gen1MajorStatus?: "poison" | "toxic" | "burn" | "sleep" | "freeze" | "paralysis";
   /**
@@ -1204,6 +1244,11 @@ export interface StateRecord {
   fieldStepCanKill?: boolean;
   /** 이 걸음 수를 걸으면 상태가 풀린다(필드 N걸음 지속). 생략 = 걸음으로 풀리지 않음. */
   releaseAfterSteps?: number;
+  /**
+   * 전투를 이만큼 치르면 풀린다(1~99). 칼 기름·축복처럼 «다음 싸움 N번»만 가는 상태 — 전투가 끝날 때마다 센다.
+   * 전투 종료로 풀리는 상태(clearOnBattleEnd)와 달리 전투 밖으로 이어지고, N번째 전투가 끝나면 풀린다. 생략 = 전투 수로 풀리지 않음.
+   */
+  releaseAfterBattles?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
@@ -1260,6 +1305,11 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /**
+   * 칼 기름·속성 부여(인챈트): 이 상태인 동안 통상 공격이 이 속성(속성 id)으로 친다 — 무기의 공격 속성 대신.
+   * 대상의 속성 등급(elementRates)·피해 계열 예외(damageTypeRates.elements)가 그대로 적용된다. 여러 상태면 나중에 걸린 것.
+   */
+  attackElementId?: string;
   /**
    * 이 상태인 동안 피해 계열별 받는 피해 %를 **바꿔 쓴다**(더하거나 곱하지 않는다 — 적의 기본 damageTypeRates 를 대신한다).
    * 여러 상태가 같은 계열을 정하면 가장 큰 값. 예: 「관통상」 { magic: 300 } — 마법 무효인 용도 이 상태 동안은 마법 피해 ×3.
@@ -1348,6 +1398,11 @@ export interface BattleAnimationSheet {
 
 export interface BattleAnimationFrame {
   cells: BattleAnimationCell[];
+  /**
+   * 이 프레임을 기본 프레임 시간의 몇 배 동안 보이는가(1~16 정수, 2026-10-31). 생략 = 1 — 옛 애니메이션은 그대로다.
+   * 착탄 직후 한 컷을 길게 멈추는 「히트 홀드」 같은 연출용. 길이·착탄 시각·후속 시작은 battle/animationTiming 이 이것을 더해 센다.
+   */
+  hold?: number;
 }
 
 export interface BattleAnimationCell {
@@ -1632,7 +1687,38 @@ export interface SkillChoreographyRecord {
   sourceId?: string;
 }
 
+/** 주간 일정표(G4). `planSchedule` 이 슬롯별로 활동을 고르고 `runSchedule` 이 활동의 공용 이벤트를 차례로 부른다. */
+export interface ScheduleSlotRecord {
+  label: string;
+}
+
+export type ScheduleActivityIcon =
+  | { kind: "item"; itemId: ItemId }
+  | { kind: "tile"; tilesetId: string; tileId: number };
+
+export interface ScheduleActivityRecord {
+  id: string;
+  label: string;
+  description: string;
+  hint?: string;
+  icon?: ScheduleActivityIcon;
+  /** 거짓이면 카드를 숨긴다. */
+  condition?: Condition;
+  /** 이 횟수에 닿으면 카드가 흐려지고 고를 수 없다. 없음 = 무제한. */
+  maxUses?: number;
+  commonEventId: string;
+}
+
+export interface ScheduleRecord {
+  id: string;
+  title: string;
+  slots: ScheduleSlotRecord[];
+  activities: ScheduleActivityRecord[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** 주간 일정표. 없음 = 일정표 없음(기본 DB 에 넣지 않는다 — 기존 JSON 바이트 동일). */
+  schedules?: ScheduleRecord[];
   /** 스킬 연출 레코드. 없음 = 빈 배열(스키마 변경 없이 덧붙는 옵셔널 컬렉션). */
   skillChoreographies?: SkillChoreographyRecord[];
   characterAppearances?: CharacterAppearanceRecord[];
@@ -2077,6 +2163,11 @@ export interface SystemRecords {
   battleDefeatSeResourceId?: string;
   /** 도주 시 효과음. 비우면 기본 도주음. */
   battleEscapeSeResourceId?: string;
+  /**
+   * 효과음 자리 표(자리 id → 리소스 id). 커서·결정·타격·장비·저장·발소리(footstep-grass)·마법(magic-fire) 등.
+   * 알려진 자리와 가족 물러섬은 `@/project/seCues`. 모르는 자리 id 도 저장한다(새 스토어 자리). 생략 = 내장 기본 소리.
+   */
+  seCues?: Record<string, string>;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   /** gauge 흐름 전용. active 면 명령 메뉴가 열려 있어도 적 게이지가 차고 적이 행동한다. 생략 = wait. */
@@ -2110,7 +2201,7 @@ export interface SystemRecords {
    * "off" 면 필드 자동 안내 표시를 그리지 않는다 — 목표 대상 빛무리·화면 밖 목표 화살표, 이야기 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」 글자.
    * 저자가 페이지에 단 늘 빛나는 표지(page.glow)·가까이 반짝임(nearSparkle)은 그대로다. 생략 = 켜기(기존).
    */
-  fieldGuides?: "off";
+  fieldGuides?: "off" | "arrows";
   /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
   saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;
@@ -2192,6 +2283,8 @@ export interface SystemRecords {
     readonly enabled: boolean;
     readonly label?: string;
   };
+  /** 괴물 도감(일반 RPG): 항목마다 칸(외형·습성·약점…)이 만남·처치·약점·조건으로 열린다. ESC 메뉴 「도감」. project/bestiary.ts · 저작 define_bestiary_entry. */
+  bestiary?: import("@/project/bestiary").BestiaryConfig;
   /** 클리어 후 타이틀의 "강하게 다시 하기". 생략 = 없음. */
   newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
   /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */

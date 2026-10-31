@@ -396,7 +396,7 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   }
   layer.append(textNode("div", "ending-cg-grade", ""), textNode("div", "ending-cg-bokeh", ""));
   const petals = textNode("div", "ending-cg-petals", "");
-  for (let i = 0; i < ENDING_PETAL_COUNT; i += 1) {
+  for (let i = 0; i < (presentation?.particles === "none" ? 0 : ENDING_PETAL_COUNT); i += 1) {
     const petal = textNode("span", "ending-cg-petal", "");
     petal.style.setProperty("--petal-x", `${(i * 37 + 11) % 100}%`);
     petal.style.setProperty("--petal-y", `${(i * 53 + 7) % 90}%`);
@@ -477,7 +477,7 @@ function creditsCopy(credits: string | undefined, project: Project): string | un
   return title && !PLACEHOLDER_CREDIT_TITLES.has(title) ? title : copy;
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo, epiloguePlayed = false): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -489,6 +489,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const cg = isEmeraldMonsterStyle(store.getCurrent()) ? undefined : buildEndingCg(terminal, store.getCurrent(), presentation, endingId);
     if (cg) {
       terminal.root.dataset.endingCg = cg.mode;
+      // 장면 엔딩의 글 판을 한쪽 기둥으로(그림의 인물을 반대편 삼분선에 비운다). 초상 엔딩은 이미 글이 오른쪽이다.
+      if (cg.mode === "scene" && (presentation?.textSide === "left" || presentation?.textSide === "right")) terminal.root.dataset.textSide = presentation.textSide;
       terminal.root.prepend(cg.layer);
     } else addBackground(terminal, presentation?.backgroundResourceId);
     playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
@@ -521,7 +523,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       heading.append(document.createTextNode(part));
     });
     epilogue.append(heading);
-    const body = message || cg?.epilogue;
+    // 에필로그 글을 방금 대사창으로 다 보였으면 카드는 배지·제목만 — 같은 글을 요약으로 한 번 더 실으면 두 번 읽힌다(첫사랑 r5 엔딩 A).
+    const body = message || (epiloguePlayed ? "" : cg?.epilogue);
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
     if (cg) {
@@ -592,7 +595,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
     terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
-    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
+    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : continueTo ? "ending.creditsSkipNext" : "ending.creditsSkip"));
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };

@@ -1741,6 +1741,11 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   return trace(goal.label, true, "완료", driver, visit.where);
 }
 
+/** 스위치 켜기 도달 목표 — 엔딩 대신 결과 스위치를 켜는 장(chapter) 판정(추리 verdict.mode chapter)을 엔딩처럼 따라간다. */
+export function switchOnGoal(visit: CommandVisit, switchId: string, label = `스위치 ${switchId} 켜기`): Goal {
+  return { label, visit, done: (session) => session.switches[switchId] === true };
+}
+
 export function endingGoal(visit: CommandVisit): Goal {
   const endingId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
   const title = typeof visit.command.title === "string" ? visit.command.title : undefined;

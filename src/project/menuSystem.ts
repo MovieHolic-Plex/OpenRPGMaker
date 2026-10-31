@@ -12,8 +12,8 @@ import type { Project } from "./types";
 export const FIELD_MENU_DEFAULT_LABELS: Readonly<Record<FieldMenuCommand, string>> = {
   items: "소지품", skills: "스킬", equipment: "장비", monsters: "동료", save: "저장", load: "불러오기", status: "상태", row: "열 바꾸기",
   formation: "진형", "monster-dex": "도감", "region-map": "지도", "campaign-progress": "배지·목표", "trainer-card": "원정 수첩",
-  "battle-reports": "전투 기록", quests: "일정", journal: "일지", relationships: "호감도", gallery: "갤러리", endings: "엔딩", "life-ledger": "생활 장부",
-  backlog: "백로그", options: "설정", wait: "전투 대기", "to-title": "타이틀로",
+  "battle-reports": "전투 기록", bestiary: "도감", quests: "일정", journal: "일지", relationships: "호감도", gallery: "갤러리", endings: "엔딩", "life-ledger": "생활 장부",
+  backlog: "백로그", options: "설정", rest: "쉬기", wait: "전투 대기", "to-title": "타이틀로",
 };
 
 /** 화면에서 항목을 고를 때 보이는 한 줄 설명. */
@@ -21,9 +21,9 @@ export const FIELD_MENU_COMMAND_HELP: Readonly<Record<FieldMenuCommand, string>>
   items: "가진 물건을 보고 씁니다.", skills: "주인공의 스킬을 봅니다.", equipment: "장비를 갈아입힙니다.", monsters: "함께 다니는 몬스터를 봅니다.",
   save: "진행을 저장 칸에 저장합니다.", load: "저장한 진행을 불러옵니다.", status: "능력치와 상태를 봅니다.", row: "전열·후열을 바꿉니다.",
   formation: "파티 진형을 바꿉니다.", "monster-dex": "만난 몬스터 도감.", "region-map": "지역 지도.", "campaign-progress": "배지와 진행 목표.",
-  "trainer-card": "주인공 원정 수첩.", "battle-reports": "최근 전투 기록.", quests: "받은 임무·일정.", journal: "이야기 일지(이벤트가 한 줄씩 적는다).", relationships: "인물과의 호감도.",
+  "trainer-card": "주인공 원정 수첩.", "battle-reports": "최근 전투 기록.", bestiary: "괴물 도감(만난 적의 외형·습성·약점, 칸마다 조건으로 열린다).", quests: "받은 임무·일정.", journal: "이야기 일지(이벤트가 한 줄씩 적는다).", relationships: "인물과의 호감도.",
   gallery: "본 그림(CG)을 다시 봅니다.", endings: "엔딩 목록과 달성 체크리스트.", "life-ledger": "출하·수집·박물관 기록.",
-  backlog: "지난 대사를 다시 읽습니다.", options: "음량·대사 속도 등 기기 설정.", wait: "전투 중 시간 정지 설정.", "to-title": "타이틀 화면으로 돌아갑니다(항상 맨 끝).",
+  backlog: "지난 대사를 다시 읽습니다.", options: "음량·대사 속도 등 기기 설정.", rest: "고른 시각(아침·정오·저녁·자정)까지 쉰다(시간 시스템의 쉬기를 켠 게임).", wait: "전투 중 시간 정지 설정.", "to-title": "타이틀 화면으로 돌아갑니다(항상 맨 끝).",
 };
 
 export type MenuSystemIssue = {
@@ -49,6 +49,14 @@ export function menuSystemIssues(project: Project): readonly MenuSystemIssue[] {
   if (entries && vn?.endings.enabled && !has("endings")) out.push({ id: "endings-on-no-entry", ui: "엔딩 목록은 켜져 있지만 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. 메뉴에 「엔딩」을 추가하세요.", tool: "엔딩 목록은 켜져 있지만 저작된 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. configure_field_menu {preset:\"custom\", add:[{command:\"endings\",label:\"엔딩\"}]} 로 넣으세요." });
   if (vn?.endings.enabled && (project.endings ?? []).length === 0) out.push({ id: "endings-none", ui: "엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 만드세요.", tool: "엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 저작하세요." });
   if (vn?.saveCards.enabled && !backlog) out.push({ id: "savecard-no-backlog", ui: "저장 카드는 켜져 있지만 대사창의 백로그가 꺼져 있어 저장 칸의 마지막 대사 한 줄이 비어 보입니다(날짜만 나옵니다). 백로그를 켜세요.", tool: "세이브 카드는 켜져 있지만 대사 백로그가 꺼져 있어 저장 칸에 마지막 대사 한 줄이 비어 보입니다(날짜만 나옵니다). set_dialogue_system {backlog:true} 로 켜세요." });
+  // 쉬기(2026-10-30): 켰는데 저작 메뉴에 항목이 없으면 열 곳이 없다. 항목만 있고 꺼져 있으면 조용히 숨는다.
+  const restOn = project.system.timeSystem?.enabled === true && project.system.timeSystem.restMenu?.enabled === true;
+  if (has("rest") && !restOn) out.push({ id: "rest-entry-off", ui: "ESC 메뉴에 쉬기 항목이 있지만 시간 시스템의 쉬기가 꺼져 있어 항목이 보이지 않습니다. 「시스템 → 시간」에서 쉬기를 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 쉬기 항목이 있지만 쉬기가 꺼져 있어 항목이 보이지 않습니다. configure_time_system {enabled:true, restMenu:{enabled:true}} 로 켜거나 메뉴에서 빼세요." });
+  if (restOn && menu && !has("rest")) out.push({ id: "rest-on-no-entry", ui: "쉬기는 켜져 있지만 ESC 메뉴에 쉬기 항목이 없어 열 수 없습니다. 메뉴에 「쉬기」를 추가하세요.", tool: "쉬기는 켜져 있지만 저작된 ESC 메뉴에 쉬기 항목이 없어 열 수 없습니다. configure_field_menu {preset:\"custom\", add:[{command:\"rest\",label:\"쉬기\"}]} 로 넣으세요." });
+  // 괴물 도감(2026-10-31): 쉬기와 같은 꼴 — 켰는데 저작 메뉴에 항목이 없으면 열 곳이 없다.
+  const bestiaryOn = project.system.bestiary?.enabled === true;
+  if (has("bestiary") && !bestiaryOn) out.push({ id: "bestiary-entry-off", ui: "ESC 메뉴에 도감 항목이 있지만 괴물 도감이 꺼져 있어 항목이 보이지 않습니다. 「이야기 → 괴물 도감」에서 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 도감 항목이 있지만 괴물 도감이 꺼져 있어 항목이 보이지 않습니다. define_bestiary_entry 로 항목을 만들면 켜집니다(또는 메뉴에서 빼세요)." });
+  if (bestiaryOn && menu && !has("bestiary")) out.push({ id: "bestiary-on-no-entry", ui: "괴물 도감은 켜져 있지만 ESC 메뉴에 도감 항목이 없어 열 수 없습니다. 메뉴에 「도감」을 추가하세요.", tool: "괴물 도감은 켜져 있지만 저작된 ESC 메뉴에 도감 항목이 없어 열 수 없습니다. configure_field_menu {preset:\"custom\", add:[{command:\"bestiary\",label:\"도감\"}]} 로 넣으세요." });
   // 옛 저작 메뉴(갤러리 항목 없음)에서는 갤러리를 열 수 없다 — 열 내용(CG 칸·본 엔딩 회상)이 있을 때만 짚는다(2026-10-17 리뷰 C1·조합 O).
   if (entries && vn?.gallery.enabled && !has("gallery") && (listGallerySlots(project).length > 0 || (project.endings ?? []).length > 0)) out.push({ id: "gallery-on-no-entry", ui: "갤러리는 켜져 있지만 ESC 메뉴에 갤러리 항목이 없어 열 수 없습니다. 메뉴에 「갤러리」를 추가하세요.", tool: "갤러리는 켜져 있지만 저작된 ESC 메뉴에 갤러리 항목이 없어 열 수 없습니다. configure_field_menu {preset:\"custom\", add:[{command:\"gallery\",label:\"갤러리\"}]} 로 넣으세요." });
   // 연애 기본 구성(저작 없음)은 CG 없이도 정상이다 — 갤러리 항목이 비면 스스로 숨는다. 작가가 갤러리를 직접 켠 경우에만 짚는다(리뷰 C1).

@@ -16,15 +16,15 @@ import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./placementRules";
 
 export const PEOPLE_CARD =
-  "사람(people) 명세: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
-  "role=문지기·촌장·상인 같은 역할(그림 고르기에도 쓴다 — 마을 사람에게 몬스터·해골 그림은 안 쓰고 짝 얼굴 있는 칩을 먼저 고른다). looks=외형 낱말(경비병·노인·소녀·old woman). " +
-  "where 낱말: 입구·성문(길이 맵 밖으로 나가는 곳의 길가, 길 쪽을 봄) / 광장·가운데 / 문 앞 / «X 옆·앞·뒤»(카운터·바·벽난로·우물 — 칩셋 이름표로 찾음) / " +
-  "한쪽·벽 쪽 / 북쪽 벽(남·동·서) / 구석 / 창가 — 방 낱말(홀·부엌·침실)을 붙이면 그 방 안(«홀 한쪽», «부엌 화덕 옆») / 생략(시작 지점 근처). " +
-  "at:{x,y} 는 정말 필요할 때만 — 막힌 칸이면 가까운 걸어 닿는 칸으로 옮긴다. " +
-  "firstTalk=처음 말 걸 때 대사(배열), laterTalk=그 뒤 두 번째부터 대사(배열, 생략하면 같은 말 반복). " +
-  "movement: still(기본, 제자리) · wander(배회 — 출구 길목·차도 가까이면 제자리로 바꾼다) · patrol(제자리로 처리). " +
-  "빌더가 길을 막지 않는 자리만 고르고, 놓은 뒤 길찾기로 확인한다. 사람은 차도·선로 한가운데에 세우지 않는다 — 보도·가게 안·벤치·카운터 뒤·문 앞에 선다. " +
-  "가게 주인·점원은 where 를 «카운터 뒤»로 — 카운터 북쪽(주인 쪽)에 세운다(카운터 앞은 손님 자리).";
+  "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
+  "role = a role like 문지기 (gatekeeper) · 촌장 (village chief) · 상인 (merchant) (also used to pick art — villagers never get monster or skeleton art; chips with a matching face come first). looks = appearance words (경비병 guard · 노인 old man · 소녀 girl · old woman). " +
+  "where words: 입구·성문 (entrance/gate — roadside where the road leaves the map, facing the road) / 광장·가운데 (square/center) / 문 앞 (in front of the door) / «X 옆·앞·뒤» (beside/in front of/behind X: counter, bar, fireplace, well — found by chipset labels) / " +
+  "한쪽·벽 쪽 (one side/by the wall) / 북쪽 벽 (north wall; also 남·동·서) / 구석 (corner) / 창가 (by the window) — add a room word (홀 hall · 부엌 kitchen · 침실 bedroom) to stay inside that room («홀 한쪽», «부엌 화덕 옆») / omit (near the start point). English words (entrance, center, behind the counter) also work. " +
+  "at:{x,y} only when really needed — a blocked cell moves to the nearest walkable cell. " +
+  "firstTalk = lines the first time you talk (array), laterTalk = lines from the second time on (array; omit to repeat the same lines). " +
+  "movement: still (default, stays put) · wander (roams — switched to still near exit throats or roads) · patrol (treated as still). " +
+  "The builder picks only spots that do not block paths and checks them with pathfinding after placing. Never stand people in the middle of a road or rail track — sidewalk, inside a shop, bench, behind a counter or by a door. " +
+  "Shopkeepers and clerks get where «카운터 뒤» (behind the counter) — they stand on the counter's north (owner) side; in front of the counter is the customer spot.";
 
 type Cell = { x: number; y: number };
 const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
@@ -358,6 +358,8 @@ function parseWhere(map: GameMap, word: string | undefined): WhereIntent {
   }
   if (/구석|모퉁이|corner/.test(w)) return { kind: "corner", ...base };
   if (/창가|창문|window/.test(w)) return { kind: "window", ...base };
+  // 바깥 맵의 「광장 한쪽」 은 광장이다 — 「한쪽」 이 먼저 잡히면 맵 테두리(벽 없음)에 붙는다(2026-10-31 jb1a terra: 촌장이 (0,20) 서쪽 끝 한 칸에 서서 판정자가 한참 찾았다).
+  if (!room && /광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
   if (/한\s*쪽|한\s*켠|가장자리|벽\s*쪽|벽가|벽\s*앞|벽\s*옆|\bside\b|edge|along the wall/.test(w)) return { kind: "side", ...base };
   if (/가운데|중앙|한가운데|center|centre|middle/.test(w)) return room ? { kind: "center", ...base } : { kind: "plaza", ...base };
   if (/광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
@@ -489,6 +491,21 @@ export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: Per
   return cost;
 }
 
+/** 다른 맵(또는 같은 맵 다른 칸)에서 mapId 로 오는 이동 명령의 도착 칸들. */
+export function incomingLandings(project: Project, mapId: string): Cell[] {
+  const out: Cell[] = [];
+  const seen = new Set<string>();
+  const walk = (n: unknown): void => {
+    if (Array.isArray(n)) { n.forEach(walk); return; }
+    if (!n || typeof n !== "object") return;
+    const o = n as { kind?: unknown; mapId?: unknown; x?: unknown; y?: unknown };
+    if (o.kind === "transfer" && o.mapId === mapId && typeof o.x === "number" && typeof o.y === "number" && !seen.has(`${o.x},${o.y}`)) { seen.add(`${o.x},${o.y}`); out.push({ x: o.x, y: o.y }); }
+    for (const v of Object.values(n)) if (v && typeof v === "object") walk(v);
+  };
+  for (const m of Object.values(project.maps)) for (const ev of m.events ?? []) walk(ev.pages ?? []);
+  return out;
+}
+
 export function resolveWhere(
   project: Project,
   map: GameMap,
@@ -504,6 +521,9 @@ export function resolveWhere(
   const transfers = new Set(transferList.map((c) => c.y * w + c.x));
   const avoid = new Set((opts.avoid ?? []).map((c) => c.y * w + c.x));
   for (const c of opts.keepFree ?? []) avoid.add(c.y * w + c.x);
+  // 다른 맵에서 이 맵으로 오는 이동의 도착 칸에는 이벤트를 두지 않는다 — 커밋이 «월드 그래프 transfer 목적지에 이벤트가 겹칩니다»로 거절한다
+  // (2026-10-30 omo-unfinished terra boss-room: 「입구」 컷신 add_event 가 보스 방 도착 칸 (9,21)에 서서 한 번 실패).
+  for (const c of incomingLandings(project, map.id)) avoid.add(c.y * w + c.x);
   const playerStart = project.startMapId === map.id ? project.startPos : null;
   const fp = opts.footprint;
   const isObject = !!fp;
@@ -584,7 +604,8 @@ export function resolveWhere(
 
   // 도움 함수: 방 안 칸의 벽 쪽(이웃이 방 밖이거나, 가구 아닌 못 가는 칸·벽 그림).
   const wallish = (x: number, y: number, room: RoomRect | undefined): boolean => {
-    if (x < 0 || y < 0 || x >= w || y >= map.height) return true;
+    // 바깥 맵의 테두리는 벽이 아니다 — 맵 끝 한 칸에 사람을 세우면 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(jb1a terra 촌장 (0,20)).
+    if (x < 0 || y < 0 || x >= w || y >= map.height) return indoor || !!room;
     if (room && !inRoom(room, { x, y })) return true;
     const c = { x, y };
     if (isPassable(project, map, x, y)) return false;
@@ -855,7 +876,9 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const row = sharedCharsetRow(e.textureKey, e.characterIndex);
       const face = row?.status === "mapped" && row.faceResourceId ? row.faceResourceId : undefined;
       const key = `${e.textureKey}#${e.characterIndex}`;
-      const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 45)
+      // 맵 화풍과 다른 계열은 얼굴 짝(70)보다 무겁게 친다 — 현대 편의점 점장이 얼굴 있는 판타지 RTP 주민 칩으로 뽑혔고, 첫 사람 칩이라 사람 칩 잠금이
+      // RTP 로 걸려 뒤이은 행인의 현대 칩 검색(여학생)이 0 개가 됐다(2026-10-31 asst-parity 마왕 편의점 opus 후).
+      const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 120)
         + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : 0)
         + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
