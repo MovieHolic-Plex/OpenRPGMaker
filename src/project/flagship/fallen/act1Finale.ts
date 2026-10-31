@@ -773,11 +773,13 @@ function vaultB2(project: Project, vault: GameMap): void {
     look(pid, { reset: true }),
     cutLabel(),
     cutEnd(),
+    textBox("bottom"),
     ...ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
   ];
   const prisonerGfx = { graphic: chip(spyChip[0], spyChip[1], "right"), overlapForbidden: true, animationType: "fixedGraphic" };
   addEvent(vault, pid, PRISONER, { x: 7, y: 22 }, [
     page(`${pid}_p0`, "사슬에 묶인 포로", [sw(SW_PRISONER_DONE, false)], [
+      textBox("top"), // 포로는 맵 남쪽 끝 — 아래 대화창이 포로와 문간을 가린다(QA 영상 실측)
       say(PRISONER, "…거기 누구요? 별지기 사람이오?\n교단 놈들이 날 여기 묶어 두고 갔소."),
       say(PRISONER, "사슬만 좀 풀어 주시오.\n물 한 모금 못 마셨소."),
       { kind: "choices", prompt: "사슬을 풀어 줄까?", cancelBehavior: "branch", options: [
@@ -1051,6 +1053,11 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     after: [say(ELENA, "위에서 계속 보고 있었던 거야.\n…계단 아래는 조용하면 좋겠다.")],
   });
   return map;
+}
+
+/** 대화창 위치 — 장면이 화면 아래쪽에서 벌어질 때 위로 올리고, 끝나면 되돌린다. */
+function textBox(position: "top" | "bottom"): Command {
+  return { kind: "displayTextSettings", format: "normal", position, preventObscuringPlayer: false, allowEventMovementDuringWait: false } as unknown as Command;
 }
 
 // ── 매복·증원 장면 ─────────────────────────────────────────────────────
