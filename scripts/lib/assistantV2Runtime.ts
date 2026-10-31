@@ -181,6 +181,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // → ③ 끝맺음 자동 짓기(한 번, 결정적) → ④ 끝맺음 관문 문제를 gate·critic 항목으로 → ⑤ 독립 검토자 막음을 critic 항목으로
   // → ⑥ 화면 검수 결함을 vqa 항목으로(게임 전체 요청만). ④~⑥ 이 항목을 덧붙이면 같은 고리로 ② 부터 다시. 아무것도 없으면 끝 — 최종 보고는 기계 표.
   let autoBuilt = false;
+  let noTodoKicks = 0;
   const autoNotes: string[] = [];
   let loopStop: string | undefined;
   let advisorRuns = 0;
@@ -361,6 +362,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       afterMain: async (env) => {
         liveEnv = env;
         try {
+          // 쓰기 요청인데 할 일 목록이 끝내 안 생겼다 — 도구를 하나도 안 부르고 글로 끝낸 것이다. 2026-11-01 cheap r5 flash:
+          // 첫 답에 todo 호출을 ```tool_call``` 글 묶음으로 «써» 놓고 멈춰 아무것도 안 지은 채 끝났다(목록이 없으니 재주입도 없었다).
+          if (writeRequest && !store.initialized && noTodoKicks < 2) {
+            noTodoKicks += 1;
+            env.requireToolNextTurn?.("todo");
+            env.emit({ type: "execution_status", name: "v2.no_todo", ok: false, summary: `할 일 목록 없이 멈춤 — 실제 todo 호출을 다시 요청(${noTodoKicks}/2)` });
+            return "[No tool ran] Nothing was built: your todo list does not exist yet. A tool call written as text (for example a ```tool_call``` block or a JSON object in your reply) is NOT executed. Make the real `todo` tool call now (op \"init\" with the items), then build with the tools.";
+          }
           // 번호 자물쇠 ↔ 단서 대사는 모델이 멈출 때마다 다시 맞춘다 — 끝맺음(code-clues 단계)은 한 번만 돌아, 그 뒤 모델이 대사·자물쇠를 고치면
           // 어긋난 채 출하됐다(2026-10-31 meb1 terra 방탈출: 서랍 «4816» · 탈출문 정답 5937 → 엔딩 불가).
           const codes = alignCodeClues(env.ctx.project);
