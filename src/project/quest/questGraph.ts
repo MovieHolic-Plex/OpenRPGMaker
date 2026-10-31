@@ -166,10 +166,12 @@ export function lintQuestGraph(project: Project, quest: QuestGraphDef): QuestLin
       seenTargets.add(targetKey);
       const writes = usageBucketFor(index, condition.kind, condition.targetId).writes;
       if (writes.length > 0) continue;
+      // 스크립트가 계산된 id 로 쓰면 write site 가 안 보일 뿐일 수 있다 — 막지 않고 안내만 남긴다.
+      const scriptMayWrite = index.scriptDynamic[condition.kind].write;
       issues.push({
-        severity: "error",
+        severity: scriptMayWrite ? "info" : "error",
         code: "quest-graph:dead-end-node",
-        message: `데드엔드 노드: ${quest.id}/${node.id} 완료 조건 ${formatResolvedCondition(project, condition)}에 write site가 없습니다.`,
+        message: `데드엔드 노드: ${quest.id}/${node.id} 완료 조건 ${formatResolvedCondition(project, condition)}에 write site가 없습니다.${scriptMayWrite ? " (스크립트가 계산된 id 로 쓰므로 검사기가 볼 수 없는 write 가 있을 수 있습니다)" : ""}`,
       });
     }
   }

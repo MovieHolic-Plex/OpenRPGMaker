@@ -117,6 +117,8 @@ const EXTERNAL_CONTROL_TRANSFER_KINDS: ReadonlySet<Command["kind"]> = new Set([
   "callCommonEvent",
   "callMapEvent",
   "battleProcessing",
+  // game.setSelfSwitch(key, …) writes any key and is not recorded in script effects — the write set is unknown.
+  "script",
 ]);
 
 // 진짜 커맨드 트리는 수십 단계를 넘지 않는다. 상한을 두는 이유는 깊이가 아니라 **순환**이다 —

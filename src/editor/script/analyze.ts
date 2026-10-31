@@ -8,6 +8,7 @@ import { SCRIPT_API_BY_NAME, type ScriptApiEntry } from "@/project/script/apiSpe
 import type { ScriptDynamicRef, ScriptEffects, ScriptRef, ScriptRefKind } from "@/project/script/types";
 import type { Project } from "@/project/types";
 import { libraryIdFromSpecifier } from "@/project/script/library";
+import { SCRIPT_CMD_ID_FIELDS as CMD_ID_FIELDS, scriptCmdAccess } from "@/project/script/effects";
 import type { TypeScriptApi } from "./tsEnv";
 import type * as TS from "typescript5";
 
@@ -32,24 +33,6 @@ export interface ScriptAnalysis {
   /** API names called, in first-call order. */
   readonly apis: string[];
 }
-
-/** game.cmd object fields that name ids. */
-const CMD_ID_FIELDS: Readonly<Record<string, ScriptRefKind>> = {
-  switchId: "switch",
-  variableId: "variable",
-  stringVariableId: "string",
-  itemId: "item",
-  actorId: "actor",
-  skillId: "skill",
-  commonEventId: "commonEvent",
-  mapId: "map",
-  troopId: "troop",
-  eventId: "event",
-  animationId: "animation",
-  resourceId: "resource",
-};
-const CMD_CALL_KINDS = new Set(["callCommonEvent", "callMapEvent", "transfer", "battleProcessing", "tacticsBattle"]);
-const CMD_READ_KINDS = new Set(["fork", "presentItem", "shop", "playAudio", "showAnimation", "showPicture", "moveEvent"]);
 
 function literalText(ts: TypeScriptApi, node: TS.Node | undefined): string | undefined {
   if (!node) return undefined;
@@ -203,7 +186,7 @@ export function analyzeScript(
       if (name === "kind") kind = literalText(ts, property.initializer);
       else fields.push([name, property.initializer]);
     }
-    const access: "read" | "write" | "call" = kind && CMD_CALL_KINDS.has(kind) ? "call" : kind && CMD_READ_KINDS.has(kind) ? "read" : "write";
+    const access = scriptCmdAccess(kind);
     for (const [name, initializer] of fields) {
       const refKind = CMD_ID_FIELDS[name];
       if (!refKind) continue;

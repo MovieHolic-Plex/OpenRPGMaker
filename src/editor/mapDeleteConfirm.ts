@@ -15,6 +15,7 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   if (impact.isStartMap) lines.push("· 시작 맵이므로 삭제 후 다른 맵이 시작 맵이 됩니다.");
   if (impact.treeChildCount > 0) lines.push(`· 하위 맵 ${impact.treeChildCount}개가 있습니다. 기본: 하위 맵은 상위 레벨로 이동(보존). "하위 포함 삭제" 선택 시 함께 삭제됩니다.`);
   if (impact.incomingCommandCount > 0) lines.push(`· 이 맵으로 이동하는 명령 ${impact.incomingCommandCount}개가 제거됩니다.`);
+  if ((impact.incomingScriptCount ?? 0) > 0) lines.push(`· 이 맵으로 이동하는 스크립트 ${impact.incomingScriptCount}개는 그대로 남습니다 — 실행하면 없는 맵 오류가 납니다. 스크립트를 고치세요.`);
   if (impact.connectionCount > 0) lines.push(`· 맵 연결 ${impact.connectionCount}개가 제거됩니다.`);
   if (impact.worldRefCount > 0) lines.push(`· 세계관 참조 ${impact.worldRefCount}개가 함께 정리됩니다.`);
   if (impact.worldGraphEdgeCount > 0) lines.push(`· 월드 그래프 노드/간선 ${impact.worldGraphEdgeCount}개가 함께 정리됩니다.`);
