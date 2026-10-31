@@ -10,7 +10,7 @@ CRIT = int(sys.argv[sys.argv.index("--critique") + 1]) if "--critique" in sys.ar
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BW_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxwalls7")
 G = f"{RUNS}/{arm}{rep}/{task}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra"}[arm]
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "astra": "gpt-6-astra"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
 REQ = {"inn": "Build the ground floor of a small village inn: a common hall where guests are greeted at the reception counter and eat at tables, a kitchen, a staircase up, and two guest rooms.",
        "library": "Build an old town library: a hall of tall book stacks and a quiet reading room, plus whatever small rooms fit (an archive, the librarian's office).",
