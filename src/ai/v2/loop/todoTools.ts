@@ -245,6 +245,18 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
               result = done(`Not blocked yet — ${englishFailureLine(recent!.text, 220)} That ${recent!.name} rejection points to ${alternatives.join(", ")}, which you have not tried for ${item.id}. Next call: ${callText}. If that also fails, send todo block again with the reason — the second block is accepted.`, false);
               break;
             }
+            // 아무 도구도 거절하지 않았는데 막힘으로 닫으면 한 번 되돌린다 — 2026-10-31 asst-parity 사냥꾼 계약 terra: 시작 자리·게시판·단서 집계·일지를
+            // 한 번도 시도하지 않고(또는 성공한 호출 하나 뒤) 6.6분 만에 할 일 7개를 막힘으로 닫았다. 같은 장면을 Opus 는 set_start_position·stamp_object·
+            // 조건 페이지·공통 이벤트로 다 지었다. 두 번째 막힘은 받는다.
+            if (!meta.blockBounced && item.attempts === 0 && !recent && isOpen(item.status)) {
+              store.meta.set(item.id, { ...meta, blockBounced: true });
+              let nc: NextCall | undefined;
+              try { nc = nextForItem(item, env.ctx.project, verbNames); } catch { nc = undefined; }
+              if (nc) store.meta.set(item.id, { ...meta, blockBounced: true, nextCall: { verb: nc.verb, text: formatCall(nc) } });
+              env.emit({ type: "execution_status", name: "v2.todo.block_bounce", ok: false, summary: `할 일 ${item.id} 막힘 되돌림 — 거절된 호출 없이 막힘 요청${nc ? ` → ${nc.verb}` : ""}` });
+              result = done(`Not blocked yet — no tool has refused ${item.id} «${item.content.slice(0, 80)}». Block is for when a tool refused the work (quote the refusal) or the needed art is still missing after searching with other words. ${nc ? `Next call: ${formatCall(nc)}. ` : ""}Verbs that usually do it: set_start_position (start spot) · list_spatial_designs then stamp_object, and upsert_event with an action trigger on that cell (an examinable board, sign, coffin or corpse) · upsert_event pages with switch/variable conditions (a line only after the player heard X; count a clue only once) · upsert_common_event (open something when a count reaches N). Call load_tools first if a verb is not in your list. If the attempt is refused, send todo block again with the refusal — the second block is accepted.`, false);
+              break;
+            }
             const cascaded = store.block(item, reason, "model");
             env.emit({ type: "execution_status", name: "v2.todo.block", ok: false, summary: `할 일 ${item.id} 막힘 — ${reason.slice(0, 160)}${cascaded.length ? ` · 기대던 ${cascaded.map((c) => c.id).join(",")}도` : ""}` });
             const next = store.current();
