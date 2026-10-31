@@ -127,7 +127,7 @@ const setSceneMood: ToolDefinition = {
       },
       lighting: {
         type: "object",
-        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다.",
+        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다. An object, never a bare word: night = {ambient:0.8, color:'#0a1030', sources:[{at:{x,y}, radius:3, color:'#ffb060', flicker:true}]} (one source per torch).",
         additionalProperties: true,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },

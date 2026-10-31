@@ -52,6 +52,7 @@ import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
 import { flatGroundIssues } from "./mapEmptiness";
 import { areaUseIssues } from "./mapAreaUse";
+import { deadEndExitIssues } from "./interiorExitLint";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
@@ -558,7 +559,8 @@ function jrpgHeroesHintForNpcList(project: Project, query: string | undefined): 
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다. battleSheet:true 인 칸은 옆모습 전투 그림이 있는 인물이라 주인공·동료(파티 배우)로 먼저 고른다 — query \"전투 그림\" 으로 찾는다.",
+  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다. battleSheet:true 인 칸은 옆모습 전투 그림이 있는 인물이라 주인공·동료(파티 배우)로 먼저 고른다 — query \"전투 그림\" 으로 찾는다. "
+    + "이름 있는 새 인물인데 보여준 칸 중 요청한 생김새(머리 색·길이, 수염, 머리쓰개, 옷 색)와 맞는 것이 없으면 가장 가까운 칸으로 놓고 find_tools 로 generate_walk_chip 을 찾아 불러 그 인물의 걷기 칩을 만든다(수 분, 기다리지 않는다).",
   mode: "read",
   parameters: {
     type: "object",
@@ -610,7 +612,7 @@ const listNpcGraphics: ToolDefinition = {
         matches,
         ...(personGhost ? { ghostHint: "유령인 사람이다: 위 사람 칩(외형이 맞는 것)을 고르고 그 이벤트 페이지 graphic 에 blendMode:'add' 를 더해 반투명 빛으로 그린다. 흰 시트 유령 몬스터 칩(easyrpg monster1 「유령」)은 만화풍 이불 유령이라 사람 유령에 쓰지 않는다." } : {}),
         ...(partial
-          ? { partial: `모든 낱말이 맞는 칸이 없어 가장 많이 맞는 칸을 보였다 — 각 칸의 appearance 를 읽고 고르며, 보고에 «맞는 그림 없음, 가장 가까운 것 사용»을 적는다.` } : {}),
+          ? { partial: `모든 낱말이 맞는 칸이 없어 가장 많이 맞는 칸을 보였다 — 각 칸의 appearance 를 읽고 가장 가까운 것을 놓는다. 이름 있는 인물이면 그다음 find_tools 로 generate_walk_chip 을 찾아 그 생김새 설명으로 부른다(외형을 만들어 잇고 수 분 뒤 새 걷기 칩으로 바꾼다 — 기다리지 않는다). 보고에 «맞는 그림 없음 — 걷기 칩 만드는 중»을 적는다.` } : {}),
         ...(matches.length === 0 && query && query.trim().length > 0
           ? { hint: "0건이다. 검색어는 낱말 하나로(예: 여학생, 남학생, 카페 점원, 교수, 정장) 줄이거나 query 를 생략해 기본 후보를 본다. 여러 낱말을 공백으로 이으면 모두 맞아야 한다." }
           : jrpgHeroesHintForNpcList(project, query)),
@@ -823,6 +825,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...verifyPlacedTiles(project),
     ...flatGroundIssues(project),
     ...areaUseIssues(project),
+    ...deadEndExitIssues(project),
     ...lintScenePolish(project),
     ...lintOriginalIpNames(project),
   ];
@@ -847,6 +850,7 @@ const runLint: ToolDefinition = {
     "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
     + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)과 장면 다듬기 경고 scene-*(문 아닌 칸의 이동·짝 안 맞는 착지·제자리 사라짐·대화창 위치 섞임·BGM 없는 맵·움직이는 교통·겹쳐 선 인물 — read_assistant_skill game-scene-polish)다. "
     + "warning map-area-unused flags maps where much of the area is blank void or lies far from every event — shrink with shift_map + resize_map or give the band a purpose. "
+    + "warning map-exit-leads-nowhere flags a south exit gap with no transfer on it — connect it with create_transfer_pair or close it. "
     + "원작 IP 고유명(해리포터풍 학교·기숙사 이름 등)이 플레이어에게 보이는 글에 있으면 warning original-ip-name 으로 알린다 — 공개·판매용이면 일반 낱말로 바꾼다. "
     + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",

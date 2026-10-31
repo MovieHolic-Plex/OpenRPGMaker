@@ -349,6 +349,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   read_assistant_skill: inspect("조수 스킬 읽기", "book"),
   read_ai_doc: inspect("AI 문서 읽기", "book"),
   generate_character_appearance: build("캐릭터 그림 만들기", "user"),
+  generate_walk_chip: build("걷기 칩 만들기", "user"),
   // ── 2026-10-18 감사: activeTools() 에 있었지만 사전에 없던 툴 ──
   list_authoring_presets: inspect("제작 프리셋 찾기", "list"),
   read_authoring_preset: inspect("제작 프리셋 읽기", "book"),
