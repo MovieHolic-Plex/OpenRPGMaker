@@ -17,9 +17,8 @@ import {
   type ScriptCompileResult,
 } from "@/editor/script/compile";
 import { commandsToScript } from "@/editor/script/eventToScript";
-import { createInterpreter, type StepResult } from "@/player/interpreter";
+import { DRY_RUN_DEFAULT_STEPS, DRY_RUN_MAX_STEPS, dryRunCommands, dryRunTranscript } from "@/editor/script/dryRun";
 import { preloadScriptEngine, scriptEngineModule } from "@/player/script/engine";
-import { onScriptLog } from "@/player/script/scriptLog";
 import { buildGameApiDts, scriptApiCheatSheet, scriptDtsIds } from "@/project/script/dts";
 import { findScriptModule } from "@/project/script/library";
 import {
@@ -28,7 +27,6 @@ import {
   scriptCompiledIsFresh,
   type ScriptModule,
 } from "@/project/script/types";
-import { startSession } from "@/project/session";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -298,66 +296,11 @@ const editScript: ToolDefinition = {
 
 // ── dry_run_script ───────────────────────────────────────────────────────────
 
-const DRY_RUN_DEFAULT_STEPS = 200;
-const DRY_RUN_MAX_STEPS = 1000;
-
-interface Snapshot {
-  readonly switches: Record<string, boolean>;
-  readonly variables: Record<string, number>;
-  readonly strings: Record<string, string>;
-  readonly selfSwitches: Record<string, Partial<Record<string, boolean>>>;
-  readonly gold: number;
-  readonly items: Record<string, number>;
-}
-
-function snapshot(session: ReturnType<typeof startSession>): Snapshot {
-  return structuredClone({
-    switches: session.switches ?? {},
-    variables: session.variables ?? {},
-    strings: session.stringVariables ?? {},
-    selfSwitches: session.selfSwitches ?? {},
-    gold: session.gold ?? 0,
-    items: session.inventory ?? {},
-  });
-}
-
-function diffRecord<T>(before: Record<string, T>, after: Record<string, T>, fallback: T): Record<string, { from: T; to: T }> {
-  const out: Record<string, { from: T; to: T }> = {};
-  for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
-    if (key.startsWith("__script")) continue;
-    const from = before[key] ?? fallback;
-    const to = after[key] ?? fallback;
-    if (JSON.stringify(from) !== JSON.stringify(to)) out[key] = { from, to };
-  }
-  return out;
-}
-
-function changesOf(before: Snapshot, after: Snapshot): Record<string, unknown> {
-  const selfSwitches: Record<string, { from: boolean; to: boolean }> = {};
-  for (const eventId of new Set([...Object.keys(before.selfSwitches), ...Object.keys(after.selfSwitches)])) {
-    for (const [key, change] of Object.entries(diffRecord(before.selfSwitches[eventId] ?? {}, after.selfSwitches[eventId] ?? {}, false as boolean | undefined))) {
-      selfSwitches[`${eventId}.${key}`] = { from: change.from === true, to: change.to === true };
-    }
-  }
-  const out: Record<string, unknown> = {};
-  const switches = diffRecord(before.switches, after.switches, false);
-  const variables = diffRecord(before.variables, after.variables, 0);
-  const strings = diffRecord(before.strings, after.strings, "");
-  const items = diffRecord(before.items, after.items, 0);
-  if (Object.keys(switches).length) out.switches = switches;
-  if (Object.keys(variables).length) out.variables = variables;
-  if (Object.keys(strings).length) out.textVariables = strings;
-  if (Object.keys(selfSwitches).length) out.selfSwitches = selfSwitches;
-  if (Object.keys(items).length) out.items = items;
-  if (before.gold !== after.gold) out.gold = { from: before.gold, to: after.gold };
-  return out;
-}
-
 const BATTLE_RESULTS = ["victory", "defeat", "escape"] as const;
 
 const dryRunScript: ToolDefinition = {
   name: "dry_run_script",
-  description: "Run a script headless on a COPY of the project (nothing is saved) and report a transcript (messages, choices, battles, transfers, waits), the final switch/variable/gold/item changes, script log lines and errors. Give source to test unsaved code, or address an existing script (commandPath/name), or give only the target to run the whole page. Answer prompts in order with choices / numbers / battleResults (defaults: choice 0, number 0, victory). Preset state with switches / variables / gold / items.",
+  description: "Run a script headless on a COPY of the project (nothing is saved) and report a transcript (messages, choices, battles, transfers, waits), the final switch/variable/gold/item changes, script log lines and errors. Give source to test unsaved code, or address an existing script (commandPath/name), or give only the target to run the whole page. Answer prompts in order with choices / numbers / battleResults (defaults: choice 0, number 0, victory). Preset state with switches / variables / gold / items / hour.",
   mode: "read",
   parameters: {
     type: "object",
@@ -385,6 +328,8 @@ const dryRunScript: ToolDefinition = {
         description: "Inventory counts to set before running.",
         items: { type: "object", properties: { id: { type: "string" }, count: { type: "integer", minimum: 0 } }, required: ["id", "count"], additionalProperties: false },
       },
+      hour: { type: "integer", minimum: 0, maximum: 23, description: "In-game clock hour before running (Set Time), for time-of-day logic." },
+      minute: { type: "integer", minimum: 0, maximum: 59, description: "In-game clock minute (with hour)." },
       maxSteps: { type: "integer", minimum: 1, maximum: DRY_RUN_MAX_STEPS, description: `Stop after this many interpreter steps (default ${DRY_RUN_DEFAULT_STEPS}).` },
     },
     required: [],
@@ -426,90 +371,25 @@ const dryRunScript: ToolDefinition = {
       throw new ToolError("Give source, or a target (mapId+eventId or commonEventId) with an optional commandPath/name.", { code: "invalid-args" });
     }
 
-    const session = startSession(project, 1);
-    let eventId: string | undefined;
-    if (mapId && project.maps[mapId]) {
-      session.currentMapId = mapId;
-      const event = target?.eventId ? project.maps[mapId]!.events.find((entry) => entry.id === target.eventId) : undefined;
-      if (event) {
-        eventId = event.id;
-        session.x = event.x;
-        session.y = Math.min(project.maps[mapId]!.height - 1, event.y + 1);
-      }
-    }
-    for (const entry of (args.switches as { id: string; value: boolean }[] | undefined) ?? []) session.switches[entry.id] = entry.value;
-    for (const entry of (args.variables as { id: string; value: number }[] | undefined) ?? []) session.variables[entry.id] = Math.trunc(entry.value);
-    for (const entry of (args.items as { id: string; count: number }[] | undefined) ?? []) session.inventory[entry.id] = entry.count;
-    if (typeof args.gold === "number") session.gold = Math.max(0, Math.trunc(args.gold));
-
-    const choices = [...((args.choices as number[] | undefined) ?? [])];
-    const numbers = [...((args.numbers as number[] | undefined) ?? [])];
-    const battles = [...((args.battleResults as string[] | undefined) ?? [])];
-    const maxSteps = typeof args.maxSteps === "number" ? Math.max(1, Math.min(DRY_RUN_MAX_STEPS, Math.trunc(args.maxSteps))) : DRY_RUN_DEFAULT_STEPS;
-    const before = snapshot(session);
-    const transcript: string[] = [];
-    const log: string[] = [];
-    const errors: string[] = [];
-    const stop = onScriptLog((entry) => {
-      (entry.level === "error" ? errors : log).push(entry.message);
+    const setup = {
+      ...(Array.isArray(args.switches) ? { switches: args.switches as { id: string; value: boolean }[] } : {}),
+      ...(Array.isArray(args.variables) ? { variables: args.variables as { id: string; value: number }[] } : {}),
+      ...(Array.isArray(args.items) ? { items: args.items as { id: string; count: number }[] } : {}),
+      ...(typeof args.gold === "number" ? { gold: args.gold } : {}),
+      ...(typeof args.hour === "number" ? { hour: Math.max(0, Math.min(23, Math.trunc(args.hour))) } : {}),
+      ...(typeof args.minute === "number" ? { minute: Math.max(0, Math.min(59, Math.trunc(args.minute))) } : {}),
+      ...(Array.isArray(args.choices) ? { choices: args.choices as number[] } : {}),
+      ...(Array.isArray(args.numbers) ? { numbers: args.numbers as number[] } : {}),
+      ...(Array.isArray(args.battleResults) ? { battleResults: args.battleResults as ("victory" | "defeat" | "escape")[] } : {}),
+    };
+    const result = dryRunCommands(project, commands, {
+      mapId,
+      eventId: target?.eventId,
+      setup,
+      ...(typeof args.maxSteps === "number" ? { maxSteps: args.maxSteps } : {}),
     });
-    let endedBy: "done" | "transfer" | "maxSteps" | "exception" = "done";
-    try {
-      const interpreter = createInterpreter(commands, session, project, eventId ? { currentEventId: eventId } : undefined);
-      let step: StepResult = interpreter.start();
-      let count = 0;
-      while (step.kind !== "done") {
-        if (count >= maxSteps) { endedBy = "maxSteps"; break; }
-        count += 1;
-        let answer: unknown;
-        switch (step.kind) {
-          case "text":
-            if (step.body.startsWith("[Script error")) transcript.push(`ERROR ${step.body}`);
-            else transcript.push(`message${step.speaker ? ` (${step.speaker})` : ""}: ${step.body}`);
-            break;
-          case "choices": {
-            const given = choices.shift();
-            const pick = typeof given === "number" ? given : 0;
-            answer = pick;
-            const picked = pick >= 0 ? step.options[pick]?.text ?? "?" : "cancel";
-            transcript.push(`choices${step.prompt ? ` "${step.prompt}"` : ""}: [${step.options.map((option) => option.text).join(" | ")}] → ${pick} (${picked})${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "inputNumber": {
-            const given = numbers.shift();
-            answer = typeof given === "number" ? given : 0;
-            transcript.push(`number input${step.prompt ? ` "${step.prompt}"` : ""} (${step.digits} digits) → ${String(answer)}${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "battleProcessing": {
-            const given = battles.shift();
-            const result = given === "defeat" || given === "escape" ? given : "victory";
-            session.battleResult = result;
-            answer = result;
-            transcript.push(`battle ${step.troopId} (canLose ${step.canLose}) → ${result}${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "transfer":
-            transcript.push(`transfer → ${step.mapId} (${step.x}, ${step.y})`);
-            endedBy = "transfer";
-            break;
-          case "wait":
-            transcript.push(`wait ${step.ms}ms`);
-            break;
-          default:
-            transcript.push(step.kind);
-        }
-        step = interpreter.resume(answer as never);
-      }
-    } catch (cause) {
-      endedBy = "exception";
-      errors.push(cause instanceof Error ? cause.message : String(cause));
-    } finally {
-      stop();
-    }
-    for (const line of transcript) if (line.startsWith("ERROR ") && !errors.some((error) => line.includes(error))) errors.push(line.slice(6));
-    const changes = changesOf(before, snapshot(session));
-    const ok = errors.length === 0 && endedBy !== "maxSteps";
+    const transcript = dryRunTranscript(result.steps);
+    const { endedBy, changes, log, errors, ok } = result;
     return {
       summary: `Dry run of ${what}: ${transcript.length} step(s), ended by ${endedBy}${errors.length ? `, ${errors.length} error(s)` : ""}. Nothing was saved.`,
       ...(warnings.length ? { warnings } : {}),

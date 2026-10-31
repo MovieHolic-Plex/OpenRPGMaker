@@ -316,6 +316,7 @@ function validateCommandShape(label: string, value: unknown): void {
         assert(Number.isInteger(command.apiVersion), `${label}.apiVersion 는 정수여야 합니다.`);
       }
       if (command.effects !== undefined) requireRecord(`${label}.effects`, command.effects);
+      if (command.explanation !== undefined) requireRecord(`${label}.explanation`, command.explanation);
       return;
     }
     case "spawnFieldEnemy": {
