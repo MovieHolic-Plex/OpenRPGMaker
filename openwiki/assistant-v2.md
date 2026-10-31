@@ -478,6 +478,11 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   그것도 없으면 번호 고리는 이름에 자물쇠·금고·lock 이 든 이벤트(하나뿐일 때)에 붙인다 — Flash r8 은 자리를 맨 위에 세 번 바꿔 주고 다 거절돼 자물쇠가 끝내 없었다.
   단서 `learn` 이 없으면 고리·이벤트 이름으로 달고, 뒤 고리의 `needs` 는 앞 고리의 learn·이름·이벤트 이름, 또는 **앞서 따로 지은 사슬이 선언하고 실제로 켜는 깃발**(「…「이름」…」)·그 이름 이벤트가 켜는 스위치로도 찾는다(DeepSeek r9 은 단서를 사슬 하나씩 지어 자물쇠 사슬이 거절됐다).
   번호 고리의 `lines` 는 입력 전 안내다 — 성공 글(풀렸다·맞물린다·철컥)만 있고 reward.lines 가 비면 성공 대사로 옮긴다(r9 DeepSeek: 「다이얼이 맞물린다」가 번호 입력 전에 나왔다). `declare_story_flag` 의 description 이 없으면 id 로 채운다.
+  r10 뒤: role 없는 고리는 칸으로 채우고(code → code/ending, learn·lines → clue, reward.item → pickup), `needAny`·`need` 오타와 `reward.endingId` 를 고친다.
+  조건 없는 단서 고리는 앞으로 모으고(Flash 가 자물쇠를 첫 고리로 줬다), **조건이 하나도 없는 번호 고리는 같은 사슬 단서 중 하나를 본 뒤에만 시도**한다 —
+  r10 Flash 는 `needAny` 오타로 조건이 빠져 단서 전에도 번호를 받았고 「아직 아무 단서도 없다」가 안 나왔으며 틀린 횟수가 하나 밀렸다.
+  조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)를 자리별로 겹쳐 답이 되면 «답이 단서에 없다» 경고를 내지 않는다(맞는 단서를 고쳐 쓰게 만들었다).
+  `patch_event_page` 에서 `set` 없이 맨 위에 둔 페이지 칸(commands·trigger…)은 set 으로 감싸고, todo done/block 의 `item`·`id` 는 `task` 로 고친다.
 - **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
