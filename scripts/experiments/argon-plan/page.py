@@ -31,7 +31,7 @@ def cap(x, arm, r, t):
     sv = ld(f"{R}/{arm}{r}/{t}/salvage.json")
     anc = [vv["verdict"] for k, vv in res.items() if k.startswith(f"{arm}{r}/{t}|")]
     s = f"{'검증 통과' if x.get('ok') else '<b class=bad>검증 실패</b>'} · 수리 {x.get('repairs')}회 · 방당 서로 다른 물건 {v.get('distinctPerRoom', '—')} · 종류 {m.get('types', '—')} · 네모 방 {v.get('boxRoomRatio', '—')} · 기준 방 대비 {wdl(anc)}"
-    if sv.get("rendered"): s += f" · <span class=err>그림은 검증 실패 배치({sv.get('from')})에서 잘못 놓인 물건 {len(sv.get('dropped') or [])}개를 빼고 그린 것</span>"
+    if sv.get("rendered"): s += f" · <span class=err>그림은 검증 실패 배치({sv.get('from') or 'layout.json'})에서 잘못 놓인 물건 {len(sv.get('dropped') or [])}개를 빼고 그린 것</span>"
     elif sv: s += " · <span class=err>벽 구조 오류로 그릴 수 없음</span>"
     if not x.get("ok") and x.get("errors"): s += f"<br><span class=err>남은 오류 {len(x['errors'])}: {html.escape(x['errors'][0][:160])}</span>"
     return s
@@ -47,7 +47,7 @@ for t in TASKS:
         for jd in (hv.get("judges") or {}).values():
             w = jd.get("why") or []; why = html.escape(" / ".join(w[:2]) if isinstance(w, list) else str(w))[:400]
         f = lambda p, c: f"<div class=col><h4>{c}</h4>" + (f"<a href='{p}'><img src='{p}'></a>" if p else "<div class=none>없음</div>") + "</div>"
-        cards.append(f"<div class=card><h3>{KO[t]} #{r} — 맞대결(B 대 A, 두 순서): <b>{hs}</b></h3><div class=row>{f(pb, 'B ① Argon 이 그린 평면도 (SVG → PNG)')}{f(mb, 'B ② 그 그림을 보고 쓴 JSON → 깐 맵')}{f(ma, 'A 바로 JSON → 깐 맵')}</div>"
+        cards.append(f"<div class=card><h3>{KO[t]} #{r} — 맞대결(B 대 {hv.get("a", "A") if hv else "A"}, 두 순서): <b>{hs}</b></h3><div class=row>{f(pb, 'B ① Argon 이 그린 평면도 (SVG → PNG)')}{f(mb, 'B ② 그 그림을 보고 쓴 JSON → 깐 맵')}{f(ma, 'A 바로 JSON → 깐 맵')}</div>"
                      f"<p class=meta>B: {cap(b, 'argonB', r, t)}</p><p class=meta>A: {cap(a, 'argonA', r, t)}</p>" + (f"<p class=meta>판정 이유: {why}</p>" if why else "") + "</div>")
     secs.append(f"<h2>{KO[t]}</h2>" + "".join(cards))
 page = f"""<!doctype html><meta charset=utf-8><title>Argon 평면도 먼저 vs 바로 배치</title>
