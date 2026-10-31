@@ -321,7 +321,7 @@ function build2F(project: Project): void {
     mapId: NR_MAP.f2, id: "ev_nr_saeki_2f",
     chaser: { at: F2.patrolEast, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 6 },
     patrol: { waypoints: [F2.patrolEast, { x: 13, y: 17 }, F2.patrolWest, { x: 13, y: 16 }], pauseBeats: 3, lookAround: true },
-    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 6000, onLost: "return" },
+    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 6000, onLost: "return", tracking: "lastSeen" },
     killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_SAEKI_2F, emotes: "none",
     footsteps: {}, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F2.lockerA }, { ...F2.lockerB }, { ...F2.lockerHall }],
@@ -461,7 +461,7 @@ function build1F(project: Project): void {
     mapId: NR_MAP.f1, id: "ev_nr_saeki_1f",
     chaser: { at: { x: 2, y: 13 }, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 6 },
     patrol: { waypoints: [{ x: 2, y: 13 }, F1.loopStaff, { x: 6, y: 8 }, F1.loopStaff, F1.loopNurse, { x: 15, y: 8 }, F1.loopNurse, F1.loopNE, F1.loopNurse], pauseBeats: 3, lookAround: true },
-    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 7000, onLost: "return" },
+    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 7000, onLost: "return", tracking: "lastSeen" },
     killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_SAEKI_1F, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F1.nurseCurtain }, { ...F1.nurseBed2 }, { ...F1.staffHide }, { ...F1.toilet }],
   });
@@ -543,7 +543,7 @@ function build3F(project: Project): void {
   exec(project, "make_chase_scene", {
     mapId: NR_MAP.f3, id: "ev_nr_sayo",
     chaser: { at: F3.sayoAt, graphic: { textureKey: SAYO.tex, characterIndex: SAYO.index }, speed: 2, sightRange: 5 },
-    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 3000, onLost: "wait" },
+    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 3000, onLost: "wait", tracking: "lastSeen" },
     killOnTouch: true, characterId: "sayo", activateSwitch: SW_SAYO, emotes: "none", footsteps: { off: true }, hidingSound: { heartbeat: true },
     hidingSpots: [{ ...F3.hideCounter }, { ...F3.hideBench }, { ...F3.hideBench2 }],
     checkpointOnEntry: true,
@@ -714,7 +714,7 @@ function buildYard(project: Project): void {
   exec(project, "make_chase_scene", {
     mapId: NR_MAP.yard, id: "ev_nr_saeki_yard",
     chaser: { at: { x: 6, y: 12 }, graphic: { textureKey: SAEKI.tex, characterIndex: SAEKI.index }, speed: 3, sightRange: 8 },
-    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "return" },
+    pursuit: { scope: "map", doorDelayMs: 0, searchMs: 4000, onLost: "return", tracking: "lastSeen" },
     killOnTouch: true, characterId: "saeki", caughtText: "찾았다.", activateSwitch: SW_YARD_SAEKI, emotes: "none", footsteps: {}, hidingSound: { heartbeat: true }, hidingSpots: [],
   });
   exec(project, "set_field_detection", {
