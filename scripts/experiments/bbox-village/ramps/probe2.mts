@@ -1,5 +1,5 @@
 // bbox-village ramps r3: h4 cliffs and stacked flights (a one-row strip of a middle level = the landing) on a synthetic map,
-// rendered with the experiment-local pieces (single pieces + stacked art composed from them, as lay.mts does).
+// rendered with the single pieces; the renderer composes stacks in the canonical split (src/project/relief/cutPieces.ts).
 //   bun scripts/experiments/bbox-village/ramps/probe2.mts <pieces.json> <out.png>
 import { readFileSync, writeFileSync } from "node:fs";
 import { ensureBundledTilesets } from "../../../../src/project/defaults/defaultAssets.ts";
@@ -27,19 +27,14 @@ const Z: [number, number, string][] = [[0, 11, "h4"], [11, 23, "s22"], [23, 34, 
 const S: [number, number, "ramp" | "stairs", string][] = [[2, 2, "ramp", "h4"], [6, 3, "stairs", "h4"], [13, 3, "stairs", "s22"], [18, 2, "ramp", "s22"], [25, 2, "stairs", "s12"], [29, 3, "ramp", "s12"]];
 for (const [x0, x1, z] of Z) for (let x = x0; x < x1; x++) for (let y = 0; y < CLIFF; y++)
   lv[y * W + x] = z === "h4" ? 4 : z === "s22" ? (y === CLIFF - 1 ? 2 : 4) : (y === CLIFF - 1 ? 1 : 3);
-const stacked: Record<string, { w: number; h: number; rgba: number[] }> = {};
 const report: string[] = [];
 for (const [x0, w, kind, z] of S) {
   const mat = kind === "ramp" ? "버들항 모랫길" : "버들항 길 포석";
-  f({ x: x0, y: 1, w, h: z === "h4" ? CLIFF - 1 : CLIFF - 2 }, mat); f({ x: x0, y: CLIFF + 1, w, h: H - CLIFF - 2 }, mat);
+  f({ x: x0, y: 1, w, h: CLIFF - 1 }, mat); f({ x: x0, y: CLIFF, w, h: H - CLIFF - 1 }, mat);
   const code = rampCode("n", kind === "stairs");
   if (z === "h4") { for (let x = x0; x < x0 + w; x++) ramps[CLIFF * W + x] = code; continue; }
-  const [r1, r2] = z === "s22" ? [2, 2] : [1, 2];
   for (let x = x0; x < x0 + w; x++) { ramps[CLIFF * W + x] = code; ramps[(CLIFF - 1) * W + x] = code; lv[(CLIFF - 1) * W + x] = 0; }
-  const parts = [P[`${kind}:n:${w}x1:${r2}`]!, P[`${kind}:n:${w}x1:${r1}`]!];
-  stacked[`${kind}:n:${w}x2:${r1 + r2}`] = { w: parts[0]!.w, h: parts[0]!.h + parts[1]!.h, rgba: parts.flatMap((p) => p.rgba) };
 }
-installPieces(stacked);
 f({ x: 0, y: H - 2, w: W, h: 1 }, "버들항 모랫길");
 const m = proj.maps[mapId];
 m.relief = { width: W, height: H, levels: lv, ramps, style: "grass-steps" };

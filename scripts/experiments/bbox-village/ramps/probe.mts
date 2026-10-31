@@ -29,7 +29,7 @@ const S: [number, number, number, "ramp" | "stairs", string][] = [
 const rise = (x: number) => (x < 11 ? 1 : x < 22 ? 2 : 3);
 for (let y = 0; y < CLIFF; y++) for (let x = 0; x < W; x++) lv[y * W + x] = rise(x);
 for (const [x0, w, r, kind, mat] of S) {
-  f({ x: x0, y: 1, w, h: CLIFF - 1 }, mat); f({ x: x0, y: CLIFF + 1, w, h: H - CLIFF - 2 }, mat);
+  f({ x: x0, y: 1, w, h: CLIFF - 1 }, mat); f({ x: x0, y: CLIFF, w, h: H - CLIFF - 1 }, mat);
   for (let x = x0; x < x0 + w; x++) ramps[CLIFF * W + x] = rampCode("n", kind === "stairs");
 }
 f({ x: 0, y: H - 2, w: W, h: 1 }, "버들항 모랫길");
