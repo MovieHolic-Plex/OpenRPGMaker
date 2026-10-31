@@ -43,7 +43,7 @@ import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
-import { polishFallenCrashClearing } from "./fallen/act1MapPolish";
+import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -52,6 +52,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
+import { applyFallenMobBalance } from "./fallen/mobBalance";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
 const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
@@ -2480,6 +2481,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
   // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
   polishFallenCrashClearing(project, ids.forest);
+  // 떨어진 별 — 관 그림 둘레 어디서든, 브람 전·퀘스트 전에도 조사된다(fallen/act1MapPolish.ts, 1.26 사용자 신고).
+  makeFallenPodExaminable(project, ids.forest);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
@@ -2508,6 +2511,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenAreaEncounters(project);
   // 랜덤 조우 끄기·보이는 적 채우기·덮치기·자동 전투 없음·전투 뒤 상태 해제·세이브 포인트 전용(fallen/act1Finale.ts, 조수 도구).
   applyFallenFieldRules(project, execTool);
+  // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
+  applyFallenMobBalance(project, execTool);
 
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.

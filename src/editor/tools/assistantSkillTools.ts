@@ -8,6 +8,7 @@
 
 import bundle from "@/assets/assistantSkills.json";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { SCRIPT_SKILL_ID, assistantScriptsOn } from "@/ai/scriptsSwitch";
 
 export interface AssistantSkill {
   readonly id: string;
@@ -38,9 +39,14 @@ const PAGE = 6000;
 
 export const ASSISTANT_SKILLS: readonly AssistantSkill[] = (bundle as { skills: AssistantSkill[] }).skills;
 
+/** 조수에게 보이는 스킬 — OPRN_V2_SCRIPTS=0 이면 event-scripts 를 뺀다(src/ai/scriptsSwitch.ts). */
+function visibleSkills(): readonly AssistantSkill[] {
+  return assistantScriptsOn() ? ASSISTANT_SKILLS : ASSISTANT_SKILLS.filter((skill) => skill.id !== SCRIPT_SKILL_ID);
+}
+
 export function assistantSkillById(id: string): AssistantSkill | undefined {
   const key = id.trim().toLowerCase();
-  return ASSISTANT_SKILLS.find((skill) => skill.id.toLowerCase() === key);
+  return visibleSkills().find((skill) => skill.id.toLowerCase() === key);
 }
 
 const listAssistantSkills: ToolDefinition = {
@@ -53,7 +59,7 @@ const listAssistantSkills: ToolDefinition = {
   parameters: { type: "object", properties: {}, additionalProperties: false },
   invalidArgsExample: {},
   run(): ToolExecResult {
-    const skills = ASSISTANT_SKILLS.map((skill) => ({ id: skill.id, description: skill.description, characters: skill.body.length }));
+    const skills = visibleSkills().map((skill) => ({ id: skill.id, description: skill.description, characters: skill.body.length }));
     return { summary: `조수 스킬 ${skills.length}개`, data: { skills } };
   },
 };
@@ -81,7 +87,7 @@ const readAssistantSkill: ToolDefinition = {
     const id = typeof args.id === "string" ? args.id : "";
     const skill = assistantSkillById(id);
     if (!skill) {
-      throw new ToolError(`조수 스킬 없음 — ${id}. 있는 id: ${ASSISTANT_SKILLS.map((s) => s.id).join(", ")}`, { code: "invalid-args" });
+      throw new ToolError(`조수 스킬 없음 — ${id}. 있는 id: ${visibleSkills().map((s) => s.id).join(", ")}`, { code: "invalid-args" });
     }
     const partId = typeof args.part === "string" ? args.part.trim().replace(/^references\//, "").replace(/\.md$/, "") : "";
     let text: string;

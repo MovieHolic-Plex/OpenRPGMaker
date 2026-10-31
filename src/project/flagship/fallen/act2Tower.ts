@@ -266,7 +266,11 @@ function towerData(project: Project, exec: Exec): void {
 // 1. 1층 「기사와 기계의 싸움터」
 // ════════════════════════════════════════════════════════════════════
 
-const T1 = { arrive: { x: 29, y: 19 }, machine: { x: 19, y: 19 }, knight: { x: 21, y: 20 }, knightEnd: { x: 24, y: 21 }, stair: { x: 11, y: 7 } };
+// 2026-10-31 main #4125(탑 층마다 계단방 윤곽·표지) 뒤 1층 배치(seed 91 cross): 동쪽 성문 날개 → 가운데 홀(마법진 (20,19)) → 서쪽 계단방(마법진 바닥)·북쪽 막다른 연금 공방·남쪽 서고(마법진 짝).
+// 장면은 가운데 홀과 서쪽 계단방 사이 목(x13~15 y18~20) — place_field_enemy 는 순찰 칸이 입구·마법진 착지(성문 (34,16)·홀 (20,19)(20,20)·
+// 2층에서 내려온 (7,16))에서 6칸 안이면 거절한다. 성문 쪽 목에 두면 들어서자마자 붙잡혔다(QA 2026-11-01).
+// 기계는 계단방 앞 목에서 세로로 오가고, 쳐 내진 기사는 가운데 홀로 물러나 앉는다.
+const T1 = { arrive: { x: 34, y: 17 }, machine: { x: 13, y: 18 }, knight: { x: 15, y: 19 }, knightEnd: { x: 18, y: 20 }, stair: { x: 7, y: 15 } };
 
 function floorOne(project: Project, exec: Exec): void {
   for (const [id, name] of [[SW_T1_ARRIVE, "B10: 하늘탑 1층 — 기계가 기사를 쳐 냄"], [SW_T1_KNIGHT, "B10: 다친 기사에게 들음"], [SW_T1_LOG, "B10: 관측 일지를 읽음"]] as const) ensureSwitch(project, id, name);
@@ -293,7 +297,7 @@ function floorOne(project: Project, exec: Exec): void {
   }
   const machineLook = (ev(project, FS2_T1, machineId).pages ?? []).map((p) => p.graphic as Rec | undefined).find((g) => g && (g as { sprite?: unknown }).sprite);
   if (!machineLook) throw new Error("[fallen-star tower] 파수 기계 그림이 없다");
-  // 다친 기사 — 새라의 견습 동기. 장면 기사가 물러난 칸(24,21)에 같이 서므로 목록에서 먼저 둔다(조사는 앞 이벤트가 받는다). 발렌이 위로 갔다는 것, 회복약 둘.
+  // 다친 기사 — 새라의 견습 동기. 장면 기사가 물러난 칸(T1.knightEnd)에 같이 서므로 목록에서 먼저 둔다(조사는 앞 이벤트가 받는다). 발렌이 위로 갔다는 것, 회복약 둘.
   addEv(project, FS2_T1, "ev_fs2_t1_knight", KNIGHT, T1.knightEnd, [
     page("ev_fs2_t1_knight_none", "없음", [], [], { priority: "below" }),
     page("ev_fs2_t1_knight_p", "다친 기사", [sw(SW_T1_ARRIVE)], [
@@ -306,7 +310,7 @@ function floorOne(project: Project, exec: Exec): void {
       setSw(SW_T1_KNIGHT), setSelf("A"),
     ], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
     page("ev_fs2_t1_knight_after", "다친 기사(뒤)", [sw(SW_T1_ARRIVE), selfSw("A")], [
-      say(KNIGHT, "가운데 홀 기계는 피해서 가라.\n느려도 한 대 맞으면 뼈가 나간다."),
+      say(KNIGHT, "계단방 앞 기계는 피해서 가라.\n느려도 한 대 맞으면 뼈가 나간다."),
     ], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
   ]);
 
@@ -327,7 +331,8 @@ function floorOne(project: Project, exec: Exec): void {
       wait(500),
       se("cc0-se-osx-metal-03"), shake(1, 300),
       say(SARAH, "…쇳소리다. 안쪽 홀에서."),
-      camTo("ev_fs2_t1_stage_knight", 1300),
+      // 1배로는 기사·기계가 손톱만 해서 「쳐 낸다」가 안 읽혔다(첫 플레이 검수 2026-11-01) — 2배로 당겨 본다.
+      camTo("ev_fs2_t1_stage_knight", 1300, 2),
       wait(300),
       route("ev_fs2_t1_stage_knight", [{ kind: "move", dir: "left" }]),
       se("cc0-se-osx-metal-03"), flash("white", 200),
@@ -341,7 +346,7 @@ function floorOne(project: Project, exec: Exec): void {
       // 기계가 홀 가운데 자리(필드 적이 서는 칸)로 한 걸음 물러나 선다 — 장면이 끝나고 필드 적으로 바뀔 때 칸이 튀지 않게.
       route("ev_fs2_t1_stage_machine", [{ kind: "move", dir: "up" }, { kind: "turn", dir: "down" }]),
       wait(400),
-      camBack(700),
+      camBack(700, 1),
       say(SARAH, "기계가 기사를 쳤어.\n…저것들한텐 우리도 기사도 똑같나 봐."),
       say(ELENA, "벽 글자 봐. 천문대 지하 패널이랑 같아.\n이 탑도 그 사람들이 지었어."),
       say(KAEL, "부딪히지 말고 돌아서 가자.\n이리스는 위층이야."),
@@ -354,29 +359,29 @@ function floorOne(project: Project, exec: Exec): void {
   ]);
 
   // 별빛 결정 — 들어온 문 곁(동쪽 날개).
-  const save = firstOk([{ x: 33, y: 19 }, { x: 32, y: 19 }, { x: 34, y: 20 }, { x: 26, y: 19 }], (c) => exec(project, "place_savepoint", {
+  const save = firstOk([{ x: 37, y: 17 }, { x: 36, y: 17 }, { x: 38, y: 18 }, { x: 31, y: 17 }], (c) => exec(project, "place_savepoint", {
     mapId: FS2_T1, x: c.x, y: c.y, id: "ev_fs2_t1_save", name: "별빛 결정", mode: "slot", objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2,
   }));
   if (!save) throw new Error("[fallen-star tower] 1층 별빛 결정 자리가 없다");
 
-  // 남쪽 막다른 방 — 태엽나방 떼가 지키는 기계 부품 상자.
-  const chest = firstOk([{ x: 15, y: 33 }, { x: 16, y: 32 }, { x: 14, y: 32 }, { x: 17, y: 31 }], (c) => exec(project, "place_chest", {
+  // 북쪽 막다른 방(연금 공방) — 태엽나방 떼가 지키는 기계 부품 상자.
+  const chest = firstOk([{ x: 21, y: 8 }, { x: 22, y: 8 }, { x: 23, y: 9 }, { x: 17, y: 9 }], (c) => exec(project, "place_chest", {
     mapId: FS2_T1, x: c.x, y: c.y, contents: { itemId: "item_hi_potion", gold: 180 }, name: "녹슨 부품 상자", id: "ev_fs2_t1_chest",
   }));
   if (!chest) throw new Error("[fallen-star tower] 1층 남쪽 상자 자리가 없다");
-  const moths = firstOk([{ x: 15, y: 29 }, { x: 14, y: 30 }, { x: 16, y: 30 }, { x: 15, y: 27 }], (c) => exec(project, "place_field_enemy", {
+  const moths = firstOk([{ x: 20, y: 10 }, { x: 19, y: 10 }, { x: 21, y: 10 }, { x: 20, y: 11 }], (c) => exec(project, "place_field_enemy", {
     mapId: FS2_T1, x: c.x, y: c.y, troopId: T_MOTHS, behavior: "chase", patrol: { length: 2, axis: "horizontal" },
     sightRange: 6, vision: "cone", pace: "normal", approachStyle: "float", respawnSec: 120, checkpointOnEntry: true,
   }));
   if (!moths) throw new Error("[fallen-star tower] 1층 태엽나방 자리가 없다");
 
-  // 서쪽 서고(마법진으로도 닿는다) — 독서대 위 관측 일지: 「4층 대기실 — 회수 대상 보관」.
-  const lectern = firstOk([{ x: 4, y: 20 }, { x: 5, y: 20 }, { x: 6, y: 20 }, { x: 7, y: 20 }], (c) => {
+  // 남쪽 서고(가운데 홀 마법진으로도 닿는다) — 독서대 위 관측 일지: 「4층 대기실 — 회수 대상 보관」.
+  const lectern = firstOk([{ x: 18, y: 27 }, { x: 22, y: 27 }, { x: 18, y: 29 }, { x: 22, y: 29 }], (c) => {
     if (!freeOfEvents(project, FS2_T1, c) || !walkable(project, FS2_T1, c) || !walkable(project, FS2_T1, { x: c.x, y: c.y + 1 })) throw new Error("x");
     if (!stamp(project, exec, FS2_T1, "bd-pick-dungeon-theme-lectern", { x: c.x, y: c.y - 1 })) throw new Error("x");
     return true;
   });
-  const logAt = lectern?.at ?? { x: 4, y: 21 };
+  const logAt = lectern?.at ?? { x: 18, y: 28 };
   addEv(project, FS2_T1, "ev_fs2_t1_log", "관측 일지", logAt, [
     page("ev_fs2_t1_log_p", "관측 일지", [], [
       narrate("(펼친 관측 일지) 「4층 대기실 ── 회수 대상 한 기 보관.\n귀환선이 내려오기 전에 현지 기록을 정리할 것.」"),
@@ -386,7 +391,7 @@ function floorOne(project: Project, exec: Exec): void {
     ], { priority: "same" }),
   ]);
   // 1층 칸 장식 — 장치 문법: 홀 벽 앞 밸브 바퀴·구리 관(자리 없으면 건너뛴다).
-  for (const [kit, c] of [["bd-pick-aqueduct-sewer-valve-wheel", { x: 19, y: 17 }], ["bd-pick-aqueduct-sewer-valve-wheel", { x: 25, y: 17 }], ["bd-pick-aqueduct-sewer-crate-stack", { x: 35, y: 21 }]] as const) {
+  for (const [kit, c] of [["bd-pick-aqueduct-sewer-valve-wheel", { x: 18, y: 15 }], ["bd-pick-aqueduct-sewer-valve-wheel", { x: 23, y: 15 }], ["bd-pick-aqueduct-sewer-crate-stack", { x: 38, y: 20 }]] as const) {
     if (freeOfEvents(project, FS2_T1, { x: c.x, y: c.y + 1 })) stamp(project, exec, FS2_T1, kit, c);
   }
   void machineId;
@@ -435,7 +440,8 @@ function floorTwo(project: Project, exec: Exec): void {
     splitText: "발밑 판이 덜컹 꺼졌다! 양쪽 날개 사이로 쇠창살이 내리꽂혔다.",
     afterSplitLines: [
       { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
-      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
+      // 해법(「내가 거울을 돌릴게, 빛이 그쪽 문에 닿으면」)을 먼저 말해 퍼즐이 지시가 됐다(적대 검수 2026-11-01) — 갇혔다는 것만.
+      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 이쪽도 창살에 막혔어.\n벽에 뭔가 장치가 있긴 한데…" },
       { speaker: KAEL, text: "들려! 우리도 이쪽에서\n열 방법을 찾아볼게." },
       { text: "수정 받침을 조사하면 엘레나 쪽으로 넘어간다." },
     ],
@@ -483,16 +489,17 @@ function floorTwo(project: Project, exec: Exec): void {
 function floorThree(project: Project, exec: Exec): void {
   ensureSwitch(project, SW_T3_ARRIVE, "B10: 하늘탑 3층 도착");
   ensureSwitch(project, SW_T3_SOLVED, "B10: 거울 빛줄기로 4층 계단을 엶");
-  const done = firstOk([{ x: 16, y: 11 }, { x: 15, y: 11 }, { x: 17, y: 12 }, { x: 16, y: 20 }], (c) => exec(project, "author_map_puzzle", {
+  // #4125 뒤 3층 계단방은 북서 팔각 홀(계단 (7,5)) — 닻 (9,9) 이면 첫 거울 (7,12)·둘째 (9,11)·빛 막 글 (11,12).
+  const done = firstOk([{ x: 9, y: 9 }, { x: 10, y: 8 }, { x: 12, y: 10 }, { x: 19, y: 11 }], (c) => exec(project, "author_map_puzzle", {
     mapId: FS2_T3, presetId: "mirror_beam_refraction", puzzleId: "fs2_t3_mirror", x: c.x, y: c.y,
     gateEventId: "ev_fs2_sky_tower_f3_stair_next", solveSwitchId: SW_T3_SOLVED, title: "렌즈 거울",
     hintText: "(바닥 글) 첫 거울은 천창의 빛을 받고, 둘째 거울은 그 빛을 계단으로 보낸다.",
     reward: { itemId: "item_ether", gold: 150 },
     // 프리셋 문구는 「태양 성소」 말투다 — 탑의 렌즈 거울로(rewordLines·renameObjects).
     rewordLines: [
-      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아갔다.\n천창 빛이 꺾여 북쪽 거울로 뻗어 간다." },
-      { from: "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.", to: "첫 거울이 천창 빛을 북쪽 거울로 보내고 있다." },
-      { from: "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!", to: "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 서쪽 벽 계단에 꽂힌다." },
+      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아갔다.\n천창 빛이 꺾여 둘째 거울로 뻗어 간다." },
+      { from: "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.", to: "첫 거울이 천창 빛을 둘째 거울로 보내고 있다." },
+      { from: "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!", to: "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 북쪽 벽 계단에 꽂힌다." },
       { from: "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!", to: "계단을 막던 빛 막이 걷혔다.\n위층으로 가는 길이 열렸다." },
       { from: "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!", to: "거울 아래에서 「마력약」과 150G를 찾았다." },
       { from: "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.", to: "계단 쪽 둘째 거울. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다." },
@@ -518,17 +525,17 @@ function floorThree(project: Project, exec: Exec): void {
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_t3_arrive_done", "끝", [sw(SW_T3_ARRIVE)], [], { priority: "below" }),
   ]);
-  // 적 — 아래 방 결정 거미, 가운데 방 회로뱀.
-  const spiders = firstOk([{ x: 12, y: 30 }, { x: 13, y: 29 }, { x: 10, y: 30 }, { x: 14, y: 31 }], (c) => exec(project, "place_field_enemy", {
+  // 적 — 아래 방(동쪽 끝) 결정 거미, 가운데 서고 회로뱀.
+  const spiders = firstOk([{ x: 17, y: 21 }, { x: 16, y: 20 }, { x: 18, y: 21 }, { x: 15, y: 22 }], (c) => exec(project, "place_field_enemy", {
     mapId: FS2_T3, x: c.x, y: c.y, troopId: T_SPIDERS, behavior: "chase", patrol: { length: 2, axis: "horizontal" },
     sightRange: 6, vision: "cone", pace: "normal", approachStyle: "pounce", respawnSec: 120, checkpointOnEntry: true,
   }));
-  const snakes = firstOk([{ x: 16, y: 21 }, { x: 17, y: 20 }, { x: 15, y: 22 }, { x: 18, y: 21 }], (c) => exec(project, "place_field_enemy", {
+  const snakes = firstOk([{ x: 18, y: 12 }, { x: 17, y: 12 }, { x: 19, y: 13 }, { x: 20, y: 13 }], (c) => exec(project, "place_field_enemy", {
     mapId: FS2_T3, x: c.x, y: c.y, troopId: T_SNAKES, behavior: "chase", patrol: { length: 1, axis: "horizontal" },
     sightRange: 5, vision: "cone", pace: "normal", approachStyle: "slither", respawnSec: 120, checkpointOnEntry: true,
   }));
   if (!spiders || !snakes) throw new Error("[fallen-star tower] 3층 적 자리가 없다");
-  firstOk([{ x: 3, y: 30 }, { x: 3, y: 31 }, { x: 4, y: 29 }, { x: 5, y: 32 }], (c) => exec(project, "place_chest", {
+  firstOk([{ x: 5, y: 21 }, { x: 5, y: 22 }, { x: 6, y: 20 }, { x: 8, y: 24 }], (c) => exec(project, "place_chest", {
     mapId: FS2_T3, x: c.x, y: c.y, contents: { itemId: "item_hi_potion" }, name: "녹슨 상자", id: "ev_fs2_t3_chest",
   }));
 }
@@ -560,17 +567,22 @@ const T4 = {
   stair: { x: 12, y: 7 },
 };
 
-/** 3층 둥근 방의 벽 계단 칸을 4층 같은 자리에 옮긴다(4층 둥근 방은 계단 없는 링이다). */
+/**
+ * 링 계단방의 벽 계단 칸을 4층 같은 자리에 옮긴다(4층 둥근 방은 계단 없는 링이다).
+ * main #4125(2026-10-31) 뒤로 링 계단방은 한 층 걸러 온다 — 꼭대기(4층)가 링이면 3층은 팔각 홀, 2층이 링이다. 2층 링 방은 4층 링과 같은 칸(x11~20 y6~14)에 선다.
+ */
 function copyStair(project: Project): void {
-  const from = M(project, FS2_T3), to = M(project, FS2_T4);
-  if (from.width !== to.width) throw new Error("[fallen-star tower] 3·4층 폭이 달라 계단을 못 옮긴다");
+  const from = M(project, FS2_T2), to = M(project, FS2_T4);
+  const stairAt = (mapId: string) => M(project, mapId).events.find((e) => e.id === `ev_${mapId}_stair_next`);
+  const src = stairAt(FS2_T2);
+  if (!src || src.x !== T4.stair.x || src.y !== T4.stair.y) throw new Error(`[fallen-star tower] 2층 링 계단(${src?.x},${src?.y})이 4층 계단 자리(${T4.stair.x},${T4.stair.y})와 다르다`);
   const layers = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
-  // 3층 둥근 방 서쪽(계단 x11~13 y5~8 + 4층 서쪽 책장이 서 있던 x13~14 y7~10 바닥)을 통째로 — 책장 반쪽이 남지 않게.
+  // 2층 둥근 방 서쪽(계단 x11~13 y5~8 + 4층 서쪽 책장이 서 있던 x13~14 y7~10 바닥)을 통째로 — 책장 반쪽이 남지 않게.
   for (let y = 4; y <= 10; y += 1) for (let x = 10; x <= 14; x += 1) {
-    const i = y * from.width + x;
+    const i = y * from.width + x, j = y * to.width + x;
     for (const l of layers) {
       const a = (from as unknown as Record<string, number[] | undefined>)[l], b = (to as unknown as Record<string, number[] | undefined>)[l];
-      if (a && b) b[i] = a[i]!;
+      if (a && b) b[j] = a[i]!;
     }
   }
 }
@@ -618,6 +630,12 @@ function floorFour(project: Project, exec: Exec): void {
     hint: "이리스가 손끝을 들자 둘레가 환해졌다.",
     blockedText: "발밑이 캄캄하다.\n한 발짝 앞이 바닥인지 낭떠러지인지 모르겠다.",
   });
+  // 도구의 어둠 자동 페이지는 4층에 들어설 때마다(체크포인트·계단 왕복 포함) 「발밑이 캄캄하다 … 손끝 빛을 쓸 줄 아는 동료가 있으면」을 띄웠다 —
+  // 도착 대사(엘레나·새라)보다 먼저 답(누가 밝히는지)을 말하고, 드나들 때마다 되풀이됐다(첫 플레이 검수 2026-11-01). 들어설 때는 말없이 어둡게만 둔다.
+  // 골방 길목(blockCells)을 조사하면 여전히 「발밑이 캄캄하다」 한 줄이 나온다.
+  for (const pg of ev(project, FS2_T4, "ev_fs2_t4_dark").pages ?? []) {
+    for (const c of pg.commands) if (c.kind === "fork") (c as unknown as { else: Command[] }).else = [];
+  }
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
   Object.assign(light, { name: "손끝 빛", description: "필드 기술. 손끝에 빛을 맺어 어둠을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
@@ -853,6 +871,41 @@ function floorFour(project: Project, exec: Exec): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 둥근 계단방 꾸미기 — author_dungeon 은 링 계단방마다 같은 자리에 같은 책장 둘을 놓아 「층을 복사해 붙인 탑」으로 읽혔다
+// (첫 플레이 검수 2026-10-31). 2층(박쥐가 든 회랑)은 책장을 걷고 뼈·부서진 통·돌 부스러기로, 4층은 렌즈·석관이 이미 차지한다.
+// ════════════════════════════════════════════════════════════════════
+
+const BOOKSHELF_KITS = ["bd-pick-dungeon-theme-bookshelf", "bd-pick-dungeon-theme-bookshelf-tall"];
+
+function redressRing(project: Project, exec: Exec, mapId: string, swaps: { kit: string; dx: number; dy: number }[][]): void {
+  const map = M(project, mapId);
+  const ts = project.tilesets.beodeul_city as unknown as { structureKits?: { id: string; width: number; height: number; rows: { upperTiles?: number[] }[] }[] } | undefined;
+  const shelfTiles = new Set<number>();
+  for (const id of BOOKSHELF_KITS) for (const r of ts?.structureKits?.find((k) => k.id === id)?.rows ?? []) for (const t of r.upperTiles ?? []) if (t >= 0) shelfTiles.add(t);
+  if (!shelfTiles.size) throw new Error("[fallen-star tower] 책장 키트 그림이 없다");
+  const up = map.upperTiles as number[];
+  // 책장 덩이(왼쪽 위 칸) — 위·왼쪽이 책장이 아닌 책장 칸.
+  const shelf = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && shelfTiles.has(up[y * map.width + x]!);
+  const anchors: Cell[] = [];
+  for (let y = 0; y < Math.min(map.height, 16); y += 1) for (let x = 0; x < map.width; x += 1) if (shelf(x, y) && !shelf(x - 1, y) && !shelf(x, y - 1)) anchors.push({ x, y });
+  // 생성기 판이 바뀌어 책장 수가 다르면(다른 방 책장까지 잡을 수 있다) 건드리지 않는다 — 굽기를 멈출 일은 아니다.
+  if (anchors.length !== swaps.length) { console.warn(`[fallen-star tower] ${mapId} 둥근 방 책장이 ${anchors.length}개다(기대 ${swaps.length}) — 꾸미기를 건너뛴다`); return; }
+  // 걷기: 덩이마다 책장 칸을 비운다(아래층 바닥이 드러난다).
+  for (const a of anchors) for (let y = a.y; shelf(a.x, y) || shelf(a.x + 1, y); y += 1) for (const x of [a.x, a.x + 1]) if (shelf(x, y)) up[y * map.width + x] = -1;
+  anchors.forEach((a, i) => {
+    for (const s of swaps[i]!) if (!stamp(project, exec, mapId, s.kit, { x: a.x + s.dx, y: a.y + s.dy })) throw new Error(`[fallen-star tower] ${mapId} (${a.x + s.dx},${a.y + s.dy}) 에 ${s.kit} 를 못 놓았다`);
+  });
+}
+
+export function ringRooms(project: Project, exec: Exec): void {
+  // main #4125 뒤로 1·3층 계단방은 팔각 홀·서쪽 방으로 바뀌어 저마다 다르다. 링 계단방은 2층(과 렌즈·석관이 차지한 4층)만 남았다.
+  redressRing(project, exec, FS2_T2, [
+    [{ kit: "bd-pick-dungeon-cave-broken-pillar", dx: 0, dy: 0 }, { kit: "bd-pick-aqueduct-sewer-bones", dx: 1, dy: 1 }],
+    [{ kit: "bd-pick-shipwreck-reef-broken-barrel", dx: 0, dy: 1 }, { kit: "bd-pick-castle-catacombs-rubble", dx: 1, dy: 0 }],
+  ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 /** 탑 공통 — 전투 배경·같은 음악(층마다 곡이 바뀌던 것을 하나로)·알아채기·임무 줄기. */
 function towerCommon(project: Project, exec: Exec): void {
@@ -894,6 +947,7 @@ function towerCommon(project: Project, exec: Exec): void {
 export function applyFallenAct2Tower(project: Project, exec: Exec): void {
   EXEC = exec;
   towerData(project, exec);
+  ringRooms(project, exec);
   floorOne(project, exec);
   floorTwo(project, exec);
   floorThree(project, exec);

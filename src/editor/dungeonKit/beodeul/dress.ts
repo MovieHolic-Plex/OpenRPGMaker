@@ -1186,7 +1186,12 @@ function dressTower(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null
       if (mid.length) { const [x, y] = mid[Math.floor(mid.length / 2)]!; stand(c, lectern, x, y); stand(c, candles, x + 2, y); }
       stand(c, r.kind === "library" ? DS("rug") : WZ("starmap"), cx - 1, r.y + r.h - 2);
       if (r.kind === "hall" && !ring) { stand(c, WZ("orrery"), r.x + 1, r.y + r.h - 2); stand(c, WZ("armillary"), r.x + r.w - 3, r.y + r.h - 1); }
-      if (r.kind === "hall" && ring) { stand(c, WZ("orrery"), r.x + r.w - 3, r.y + r.h - 3); }
+      if (r.kind === "hall" && ring) {
+        // 링 관측실(2026-10-31 탑 층 표지): 혼천의·천구의를 둘레에 — 서고 링과 한눈에 달라 보이게.
+        stand(c, WZ("orrery"), r.x + r.w - 3, r.y + r.h - 3);
+        const arm = WZ("armillary"), dh = c.hasKit(arm) ? c.kit(arm).height - 1 : 0;
+        for (const [x, y] of c.shuffle(rs, c.floorCells(r, 0).filter(([x, y]) => c.upper[c.idx(x, y)]! < 0))) if (lonely(c, x, y + dh, 1) && stand(c, arm, x, y + dh)) break;
+      }
       ringRim(4);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);
       return true;

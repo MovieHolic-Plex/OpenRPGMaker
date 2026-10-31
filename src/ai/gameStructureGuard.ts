@@ -9,6 +9,7 @@
 import { isPassable } from "@/project/collision";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import { buildMapGraph } from "@/qa/gameCheck/mapGraph";
+import { projectScriptMentionsCmdKind } from "@/project/script/effects";
 import { visitAllCommands } from "@/qa/gameCheck/walk";
 import type { GameMap, Project } from "@/project/types";
 
@@ -63,7 +64,8 @@ export function gameStructureProblems(project: Project): string[] {
   // 시작을 고쳐야 하는 경우엔 고칠 시작 맵 기준으로 도달성을 다시 센다.
   const reachable = startId === project.startMapId ? graph.reachable : reachFrom(graph.edges, startId, project);
   const stranded = maps.filter((map) => map.id !== startId && !reachable.has(map.id));
-  if (stranded.length > 0) {
+  // 스크립트가 계산된 맵 id 로 game.transfer 하면 도달성을 증명할 수 없다 — 막지 않는다(qa:game 은 info 로 남긴다).
+  if (stranded.length > 0 && !graph.dynamicScriptTransfers) {
     const anchor = project.maps[startId]!;
     const anchorCell = firstStandableCell(project, anchor);
     const lines = stranded.slice(0, 6).map((map) => {
@@ -77,7 +79,8 @@ export function gameStructureProblems(project: Project): string[] {
   // 3) 엔딩 — 정의가 없거나 부르는 이벤트가 없다.
   let triggers = 0;
   visitAllCommands(project, ({ command }) => { if (command.kind === "triggerEnding" || command.kind === "ending") triggers += 1; });
-  if (triggers === 0) {
+  // 스크립트의 game.cmd({kind:"triggerEnding"}) 도 엔딩 호출이다(effects 에는 명령 종류가 남지 않아 글로 본다).
+  if (triggers === 0 && !projectScriptMentionsCmdKind(project, "triggerEnding") && !projectScriptMentionsCmdKind(project, "ending")) {
     const endings = project.endings ?? [];
     problems.push(
       endings.length > 0

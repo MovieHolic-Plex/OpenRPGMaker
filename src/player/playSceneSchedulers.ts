@@ -21,7 +21,7 @@ import { assertNever } from "@/player/playSceneTypes";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { clampNpcSetting, npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
-import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
+import { applyTimerStep, timerConditionPages, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewById } from "@/project/runtimeEventState"
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
@@ -517,6 +517,23 @@ function stopCommandMovement(scene: PlaySceneContext): void {
   scene.playerSlideKind = null;
 }
 
+/**
+ * 타이머를 깎고, 보이는 초가 바뀌면 타이머 조건 페이지를 다시 고른다.
+ * 왜(2026-10-31 script-ab sab-1031 A dungeon-2): 페이지 선택·자동 실행(fireAutoTriggers)은 이벤트가 끝나거나 맵이 바뀔 때만 돌아,
+ * 「타이머 0 → 철창 닫힘」 자동 페이지가 0초에 돌지 않고 레버를 다시 건드린 20초 뒤에야 돌았다(출하 플레이어 재현:
+ * scripts/qa/runtime/timer-zero-page.scenario.mjs). 맵에 타이머 조건 페이지가 있을 때만, 1초에 한 번 이벤트 층을 다시 고른다.
+ * 자동 페이지는 맵 안에서 한 번만 돈다(autoStartedKeys) — 타이머 자동 페이지는 꺼져 있는 동안 그 표를 지워, 타이머를 다시 걸면 또 돈다.
+ */
 export function updateTimers(scene: PlaySceneContext, deltaMs: number): void {
-  updateRuntimeTimers(scene, deltaMs);
+  if (!updateRuntimeTimers(scene, deltaMs)) return;
+  const pages = timerConditionPages(scene.map);
+  if (!pages.length) return;
+  const autoPages = pages.filter((page) => page.auto);
+  if (autoPages.length) {
+    const mapId = scene.getMapId();
+    const active = new Set(scene.activeRuntimeEvents("auto").map((view) => `${view.event.id}:${view.pageId ?? "legacy"}`));
+    for (const page of autoPages) if (!active.has(`${page.eventId}:${page.pageId}`)) scene.autoStartedKeys.delete(`${mapId}:${page.eventId}:${page.pageId}`);
+  }
+  // 이벤트가 도는 중이면 그 이벤트가 끝날 때 refreshRuntimeSurfaces 가 같은 일을 한다.
+  if (!scene.running) scene.refreshRuntimeEntities();
 }

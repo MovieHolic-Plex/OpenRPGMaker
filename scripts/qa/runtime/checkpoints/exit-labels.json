@@ -1,0 +1,56 @@
+{
+ "set": "exit-labels",
+ "query": {
+  "demo": "fallen-star",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 480,
+  "height": 270
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 2500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "lbl-barracks",
+   "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
+   "note": "출구 앞에 「→ 목적지」 글자·화살표가 없어야 한다 — 2026-11-01 사용자 요청으로 삭제(폴른 스타 1.26). 예전엔 2026-10-31 2막 B1 이름표 크기 확인용.",
+   "mapId": "fs2_barracks",
+   "x": 4,
+   "y": 13,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_barracks_entered": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ]
+  }
+ ]
+}
