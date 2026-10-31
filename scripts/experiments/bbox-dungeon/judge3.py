@@ -23,7 +23,9 @@ for g in sorted(glob.glob(f"{RUNS}/*/*/map.png")):
     run = "/".join(g.split("/")[-3:-1]); armrep, brief = run.split("/")
     opp = [(a["id"], a["png"]) for a in anchors]
     if "v2" not in armrep:
-        opp += [(f"{PREVTAG}:{armrep}", f"{PREV}/{armrep}/{brief}/map.png")]
+        pp = f"{PREV}/{armrep}/{brief}/map.png"
+        if not os.path.exists(pp) and armrep.endswith("2"): pp = f"{PREV}/{armrep[:-1]}1/{brief}/map.png"   # argon has one previous-round baseline run
+        opp += [(f"{PREVTAG}:{armrep}", pp)]
         opp += [(f"v2:{v}", v2png(v, brief)) for v in ("solv2", "terrav2")]
     for oid, png in opp:
         k = f"{run}|{oid}"

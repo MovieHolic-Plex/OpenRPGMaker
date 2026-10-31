@@ -97,13 +97,17 @@ msgs = [{"role": "user", "content": content}]
 def call(n):
     body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high"}).encode()
     t0 = time.time()
-    for attempt in range(3):
+    tries = 12
+    for attempt in range(tries):
         try:
             with urllib.request.urlopen(urllib.request.Request(OCX, body, HDR), timeout=1500) as r: d = json.load(r)
+            # an empty completion (0 output tokens) is a transport failure of the route, not a model answer — retry it
+            if not (d.get("choices") and (d["choices"][0]["message"].get("content") or "").strip()): raise RuntimeError("empty completion")
             break
-        except Exception:
-            if attempt == 2: raise
-            time.sleep(20)
+        except Exception as x:
+            print(f"transport retry {attempt + 1}/{tries}: {str(x)[:120]}", flush=True)
+            if attempt == tries - 1: raise
+            time.sleep(60)
     secs = round(time.time() - t0, 1); u = d.get("usage") or {}
     text = d["choices"][0]["message"]["content"] or ""
     json.dump({"secs": secs, "usage": u, "model": d.get("model"), "text": text}, open(f"{G}/call-{n}.json", "w"), ensure_ascii=False, indent=1)
