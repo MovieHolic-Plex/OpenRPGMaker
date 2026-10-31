@@ -1658,6 +1658,623 @@
    ]
   },
   {
+   "id": "b2-prisoner",
+   "label": "지하 2층 가짜 포로 — 사슬을 풀자 첩자가 정체를 드러내고 형제들이 문을 막는다",
+   "note": "act1Finale.ts vaultB2 ev_fs_b2_prisoner (7,22) → troop_fs_inq_false_prisoner",
+   "mapId": "fs_vault",
+   "x": 8,
+   "y": 22,
+   "facing": "left",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": false
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 7
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "turn",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b3-patrol",
+   "label": "지하 3층 순찰대 매복 — 서쪽 손잡이로 열린 쇠살문 앞, 고행자·방패병·석궁수가 문을 박차고 나온다",
+   "note": "act1Finale.ts ambush b3_patrol 밟는 칸 (32~33,17~18) → troop_fs_inq_patrol",
+   "mapId": "fs_vault_b3",
+   "x": 31,
+   "y": 17,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true
+   },
+   "selfSwitches": {
+    "ev_fs_b3_arrive": {
+     "A": true
+    }
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4
+   },
+   "beats": [
+    {
+     "id": "trip",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rush",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fight",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b3-ledge",
+   "label": "지하 3층 난간 매복 — 달의 문 너머 계단통, 고행자 둘이 뛰어내리고 사제가 막아선다",
+   "note": "act1Finale.ts ambush b3_ledge 밟는 칸 (21~22,25~26) → troop_fs_inq_ledge",
+   "mapId": "fs_vault_b3",
+   "x": 21,
+   "y": 24,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true
+   },
+   "selfSwitches": {
+    "ev_fs_b3_arrive": {
+     "A": true
+    }
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4
+   },
+   "beats": [
+    {
+     "id": "trip",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "drop",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "b4-rest",
    "label": "지하 4층 쉼터",
    "note": "act1Finale.ts floorB4 결정·샘·다친 광신도",
@@ -1793,6 +2410,372 @@
        "kind": "hold",
        "dir": null,
        "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fight",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
       }
      ],
      "shot": true
@@ -1966,7 +2949,7 @@
       {
        "kind": "pressUntilJs",
        "key": "Enter",
-       "fn": "(()=>{const b=document.querySelector(\"[data-testid='dialogue-box']\");return !!b&&(b.textContent||'').includes(\"\\uc62c\\ub77c\\uc654\\ub2e4\")})",
+       "fn": "(()=>{const b=document.querySelector(\"[data-testid='dialogue-box']\");return !!b&&(b.textContent||'').includes(\"\\uc62c\\ub77c\\uc628\\ub2e4\")})",
        "maxPresses": 20,
        "settleMs": 700
       },
