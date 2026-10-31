@@ -66,3 +66,15 @@ describe("script explanation", () => {
     expect(command.explanation?.sourceHash).not.toBe(command.sourceHash);
   });
 });
+
+describe("dryRunCommands sound and screen steps", () => {
+  it("records sounds and shakes so audio-only edits show in example results", () => {
+    const project = createBlankProject();
+    const source = 'await game.playSe("se_creak");\nawait game.shake(4, 20);';
+    const command = scriptCommandFields(source, compileScript(source, { project }));
+    const result = dryRunCommands(structuredClone(project), [command]);
+    const transcript = dryRunTranscript(result.steps);
+    expect(transcript).toContain("sound se se_creak");
+    expect(transcript).toContain("screen shake");
+  });
+});
