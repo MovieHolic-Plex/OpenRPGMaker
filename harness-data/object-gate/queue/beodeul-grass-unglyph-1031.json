@@ -1,0 +1,23 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-grass-unglyph-1031",
+ "title": "버들항 풀밭 737 글자 무늬 제거 (r2 바탕)",
+ "note": "LEDGER J124: 옛 737 바탕의 짙은 점 무리가 16px 마다 「Sng」 글자처럼 읽힘. r2 = 홀로 선 점·세로 풀잎. 같은 자리 화소 바꿈으로 시트 3장 3,106칸(버들항 2,982·ground 46·nature 78). AI 조언 2/2 PASS(미보정 프로필). 사람 허용 필요 — 서명 안 함.",
+ "explainImage": "explain-grass-before-after.png",
+ "explainText": "왼쪽이 지금 마을 바닥(글자처럼 보이는 무늬 반복), 오른쪽이 고친 바닥. 같은 색·비슷한 결의 점만 남겼다.",
+ "createdAt": "2026-10-31T02:39:27.656Z",
+ "items": [
+  {
+   "sha": "38230cbfc383302a5842bf625e67cdc1d9bac967560b575dfff5b2707647a5c9",
+   "kind": "terrain",
+   "label": "beodeul_city/grass-737-r2",
+   "source": "/tmp/grassfix/gate/beodeul-grass-737-field.png"
+  },
+  {
+   "sha": "0c6db994c0c02002d3c27a270b0fff38ad42b5cb67cc10d6e894933e7699fa10",
+   "kind": "terrain",
+   "label": "beodeul_city/grass-variants-r2",
+   "source": "/tmp/grassfix/gate/beodeul-grass-variants.png"
+  }
+ ]
+}
