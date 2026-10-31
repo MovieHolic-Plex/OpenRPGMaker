@@ -219,7 +219,7 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   const title = String(spec.title ?? "").trim() || "엔딩";
   const lines = (spec.lines ?? []).map((l) => typeof l === "string" ? (/^([^:：]{1,12})[:：]\s*(.+)$/u.exec(l) ? { who: /^([^:：]{1,12})[:：]/u.exec(l)![1]!.trim(), text: l.replace(/^[^:：]{1,12}[:：]\s*/u, "") } : { text: l }) : { who: l.who, text: String(l.text ?? "") })
     .filter((l) => l.text.trim()).slice(0, 16);
-  if (!lines.length) return result(false, run, first, "lines(엔딩 장면 대사 1줄 이상, 「이름: 대사」 또는 {who,text})가 필요하다", warnings, []);
+  if (!lines.length && !(spec.beats ?? []).some((b) => b.do === "say")) return result(false, run, first, "lines(엔딩 장면 대사 1줄 이상, 「이름: 대사」 또는 {who,text}) 또는 say 비트가 필요하다", warnings, []);
   const mapId = findMapId(run.ctx.project, spec.mapId) ?? (spec.mapId && run.ctx.project.maps[spec.mapId] ? spec.mapId : run.ctx.currentMapId);
   if (!mapId || !run.ctx.project.maps[mapId]) return result(false, run, first, `맵 「${spec.mapId ?? ""}」 을 찾지 못했다 — mapId(또는 맵 이름)를 준다`, warnings, []);
   const map = run.ctx.project.maps[mapId]!;
@@ -243,7 +243,9 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   // 들어오면 도는 장면을 짓고, 그 장면 페이지에 엔딩 조건과 엔딩 부르기를 붙인다. 사람·걸음·감정 표시는 모델이 비트로 정한다.
   if (spec.beats?.length && !talker) {
     const said = new Set(spec.beats.filter((b) => b.do === "say").map((b) => (b as { text?: string }).text?.trim()));
-    const beats: EventBeat[] = [...spec.beats, ...lines.filter((l) => !said.has(l.text.trim())).map((l) => ({ do: "say", who: l.who ?? "", text: l.text.trim() } as EventBeat))];
+    // 끝의 암전(fade out)은 뺀다 — 엔딩 화면 전환이 그 일을 하고, 컷신 검증은 암전으로 끝나는 장면을 거절한다.
+    const staged = [...spec.beats]; while (staged.length && staged.at(-1)!.do === "fade" && (staged.at(-1) as { dir?: string }).dir === "out") staged.pop();
+    const beats: EventBeat[] = [...staged, ...lines.filter((l) => !said.has(l.text.trim())).map((l) => ({ do: "say", who: l.who ?? "", text: l.text.trim() } as EventBeat))];
     const hostId = `ev_ending_${slug}`.slice(0, 60);
     const built = buildEvent(run, { kind: "cutscene", mapId, when: "enter", hostId, beats });
     warnings.push(...built.warnings.map((w) => `장면: ${w}`));

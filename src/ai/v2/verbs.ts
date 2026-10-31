@@ -1192,7 +1192,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       afterSwitchId: { type: "string", description: "only after this switch is on (optional)" },
       after: { type: "string", description: "word for what it follows («마왕», «해골 기사») — finds the defeat switch (optional)" },
       beats: { type: "array", items: BEAT_ITEM, description: "stage the ending like add_event beats — people walk in and gather (appear/walk), react (emote), music swells, the hero answers. Without beats the ending is text boxes over a still screen; an ending is the payoff, so show the changed world and the people the hero saved. lines are appended after the beats (skip lines you already wrote as say beats). Not used with talkTo." },
-    }, required: ["title", "lines"] },
+    }, required: ["title"] },
     async execute(id, params) {
       return finishContent(id, "add_ending_scene", params, buildEndingScene(run, params as EndingSceneSpec));
     },
