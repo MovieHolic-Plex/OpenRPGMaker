@@ -99,7 +99,10 @@ export const BBOX_VILLAGE_FORMAT = `{"name": "...",
  "trees": [{"id": "<tree id>", "x": X, "y": Y}],
  "props": [{"id": "<prop id>", "x": X, "y": Y}]}`;
 
+/** 마른 땅 가운데 빈 풀밭의 상한(검사가 거절한다). */
+export const BBOX_VILLAGE_MAX_BARE = 0.55;
 export const BBOX_VILLAGE_RULES: readonly string[] = [
+  "Fill the land: at most 55% of the dry land may stay bare grass (cells with no road, plaza, building, prop, tree, field, fence or forest) — use forests at the edges, trees, orchards, fields and props.",
   "Coordinates are cells. A rect {x,y,w,h} covers x..x+w-1, y..y+h-1. Kits are placed by their top-left cell. The terrain (levels, water) is fixed — you cannot change it.",
   "Nothing may overlap, except: roads may cross/join other roads; props may stand on a plaza. Kits, fields, fences and forests must not cover road cells.",
   "Buildings, props, trees, fields, fences and plazas lie on ONE level each (no straddling a cliff) and on dry land. Boats lie fully on water. Do not put a building where higher ground lies within the 2 rows just south of it.",
@@ -305,7 +308,8 @@ export function checkBboxVillage(cat: readonly VillageKit[], L: BboxVillageLayou
   }
   for (const g of gates) if (g.out < 0 || !net.has(g.out)) errors.push(`${g.who}: the cell just outside the gate ${g.out >= 0 ? P(g.out) : ""} must be a connected road/path cell.`);
   const free = [...Array(W * H).keys()].filter((c) => !water[c] && !owner[c]).length, land = water.filter((v) => !v).length;
-  if (land && free / land > 0.6) warnings.push(`${Math.round((free / land) * 100)}% of the dry land is still bare grass — consider more fields, forests, orchards or props.`);
+  // 빈 풀밭 상한: 실험에서 이긴 마을은 31~58%, 실제 v2 첫 마을 판(terra-high 언덕 농촌)은 73% 로 기준 마을보다 휑했다(2026-10-31).
+  if (land && free / land > BBOX_VILLAGE_MAX_BARE) errors.push(`${Math.round((free / land) * 100)}% of the dry land is bare grass — at most ${Math.round(BBOX_VILLAGE_MAX_BARE * 100)}%: add forests, trees, orchards, fields, gardens or props (or yards around houses) until the land reads as lived-in.`);
   const stats = { W, H, buildings: placed.filter((p) => p.k === "building").length, props: placed.filter((p) => p.k === "prop" || p.k === "boat").length, trees: placed.filter((p) => p.k === "tree").length,
     pathCells: pathCells.length, stairs: arr("stairs").length, fields: fieldList.length, forest: forestSet.size, bareLandPct: land ? Math.round((free / land) * 100) : 0 };
   if (errors.length) return { ok: false, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
