@@ -10,7 +10,7 @@ CRIT = int(sys.argv[sys.argv.index("--critique") + 1]) if "--critique" in sys.ar
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BW_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-argonplan")
 G = f"{RUNS}/{arm}{rep}/{task}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "astra": "gpt-6-astra", "argon": "gemini-4-argon-high", "argonA": "gemini-4-argon-high", "argonB": "gemini-4-argon-high"}[arm]
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "astra": "gpt-6-astra", "argon": "gemini-4-argon-high", "argonA": "gemini-4-argon-high", "argonB": "gemini-4-argon-high", "argonG": "gemini-4-argon-high", "argonJ": "gemini-4-argon-high"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
 REQ = {"inn": "Build the ground floor of a small village inn: a common hall where guests are greeted at the reception counter and eat at tables, a kitchen, a staircase up, and two guest rooms.",
        "library": "Build an old town library: a hall of tall book stacks and a quiet reading room, plus whatever small rooms fit (an archive, the librarian's office).",
@@ -253,8 +253,101 @@ if arm == "argonB":
         else:
             msgs.append({"role": "assistant", "content": text or ""}); msgs.append({"role": "user", "content": "Return the floor plan as one SVG only (<svg ...>...</svg>)."})
     print(f"{arm}{rep}/{task} picture: {'ok' if PIC else 'FAILED'}", flush=True)
-PIC_NOTE = ("\n\n# Your floor-plan picture\nThe attached picture (first image) is the floor plan you drew for this building, 32 px per cell with a grid. Realise it: read your shell, walls, doors, rooms and pieces off the picture cell by cell and write them as the layout JSON. Keep its design; change it only where the rules above require.") if PIC else ""
-PIC_IMG = [{"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(open(PIC, "rb").read()).decode()}}] if PIC else []
+# ---- round 2 (arms G and J): a cell-grid plan with a fixed legend, checked by code (<= 3 repairs) before step 2 ----
+GRID_TXT = None
+if arm in ("argonG", "argonJ"):
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import gridplan
+    GW, GH = {"inn": (22, 20), "library": (24, 22), "jail": (20, 18), "manor": (28, 24)}[task]
+    FLOORS = re.findall(r"^floor:(\w+) \|", catalog, re.M)
+    TEACH = f"""You design one RPG interior map (16px cells, 3/4 top-down view). This turn you only draw its FLOOR PLAN on a cell grid; next turn you turn the plan into the exact layout.
+
+User request: {REQ}
+Map size: exactly {GW} x {GH} cells. x = 0..{GW - 1} to the right, y = 0..{GH - 1} down, origin top-left.
+
+{catalog}
+# The 3/4 wall model (read carefully: the plan must draw walls the way the game draws them)
+The camera looks down at the building from the south at an angle, so a wall shows its top and, on one side only, its front:
+- Every wall, outer or inner, is a line exactly 1 cell thick of CEILING: the dark top of the wall seen from above. Ceiling lines are your walls; they must close every room and run unbroken around the whole building.
+- A wall's front faces the viewer only on its south side. Under every ceiling cell that has room below it, the wall FACE is visible: exactly 2 rows of WALLFACE directly below the ceiling. Wallface is not walkable; windows, shelves, pictures and signs hang on it, and against-wall furniture (beds, cupboards, the kitchen range, the fireplace, stairs up) stands on the first floor row right below it.
+- A vertical (north-south) wall shows only its ceiling line: its sides face east and west, away from the camera. The south outer wall shows no face either (its face points out of the map).
+- Doors cut through the wall. In a horizontal wall a door replaces the ceiling cell and the 2 face cells below it (a 1-wide, 3-tall opening; 2 wide is fine). In a vertical wall a door is 3 cells of the ceiling line: the top 2 show the face of the wall above it (draw them as wallface), the bottom one is the walkable door.
+- The entrance is a door in the outer ceiling line on the bottom row y={GH - 1}.
+Why: the game draws exactly these cells. A face drawn without a ceiling above floats; a ceiling with floor right below it would show a face you did not plan; a gap in a ceiling line is a hole in the wall.
+
+Tiny example ('#' ceiling, '=' wallface, 'W' window on the face, '.' floor, 'D' door). Left: a horizontal inner wall with a door. Right: a vertical inner wall with a door.
+    #######        #########
+    #=W===#        #===#===#
+    #=====#        #===#===#
+    #.....#        #...#...#
+    ###D###        #...=...#
+    #==D==#        #...=...#
+    #==D==#        #...D...#
+    #.....#        #...#...#
+    ###D###        ####D####
+(The vertical wall in the right example runs as ceiling through the north wall's face rows, so each room has its own face; the bottom row door is the entrance.)
+
+# Legend (the only classes allowed)
+- ceiling: wall top, 1 cell thick lines
+- wallface: the 2 rows directly below a ceiling run that has room below it
+- floor-<material>: the room floor, one of: {", ".join("floor-" + f for f in FLOORS)}
+- door: a cut through a wall (see above)
+- window: on a wallface cell of the outer wall
+- object:<catalog id>: a piece, covering exactly its catalog footprint (e.g. object:armchair 1x1, object:dining 3x2 3x2 cells, object:stairs up wood 3x3 over the 2 face rows + the first floor row of a north wall). Wall-mounted pieces sit on wallface rows.
+- label: room names
+Later shapes paint over earlier ones: draw floors first, then ceiling lines, wallface, doors, windows, then objects.
+
+Plan the whole building in this one plan: its shaped outline, every room the request needs with its floor, the doors, windows on the outer walls, and the furniture of every room (several distinct pieces per room, from the catalog).{JAIL}
+"""
+    if arm == "argonG":
+        OUT = f"""
+# Output
+Below is the SVG skeleton: {GW}x{GH} cells, 16 px per cell, grid drawn, coordinates on the edges. Return it with your shapes added inside <g id="plan"> — only
+  <rect class="..." x="16*i" y="16*j" width="16*k" height="16*m"/>   (x, y, width, height are whole multiples of 16)
+  <text class="label" x="..." y="...">room name</text>
+No other attributes or elements are needed (colours come from the class). Return only the SVG.
+
+{gridplan.skeleton(GW, GH)}"""
+    else:
+        OUT = f"""
+# Output
+Return one JSON object only, in cells (not pixels):
+{{"map": {{"w": {GW}, "h": {GH}}}, "cells": [{{"class": "floor-plank", "x": 1, "y": 3, "w": 6, "h": 5}}, {{"class": "ceiling", "x": 0, "y": 0, "w": {GW}, "h": 1}}, {{"class": "object:armchair", "x": 2, "y": 4, "w": 1, "h": 1}}, ...],
+ "labels": [{{"x": 2, "y": 5, "text": "common hall"}}]}}
+Each entry paints the rectangle x..x+w-1, y..y+h-1 with its class; later entries paint over earlier ones."""
+    gp = TEACH + OUT; open(f"{G}/prompt-grid.txt", "w").write(gp)
+    msgs = [{"role": "user", "content": [{"type": "text", "text": gp}] + IMGS}]
+    grid_hist = []; plan_g = None
+    for n in range(4):   # first plan + at most 3 repairs
+        text, secs, u = call(f"grid{n}"); msgs.append({"role": "assistant", "content": text or ""})
+        if arm == "argonG":
+            m = re.search(r"<svg\b.*?</svg>", text or "", re.S)
+            rects, labels = gridplan.parse_svg(m.group(0)) if m else ([], [])
+            if m: open(f"{G}/grid-{n}.svg", "w").write(m.group(0))
+            ok_parse = bool(m)
+        else:
+            dj = parse(text or ""); rects, labels = gridplan.parse_json(dj) if dj else ([], [])
+            if dj: json.dump(dj, open(f"{G}/grid-{n}.json", "w"), indent=1)
+            ok_parse = bool(dj)
+        if not ok_parse:
+            grid_hist.append({"call": n, "errors": ["unparseable"]})
+            msgs.append({"role": "user", "content": "That was not one " + ("SVG (<svg ...>...</svg>)" if arm == "argonG" else "JSON object") + ". Return the plan only."}); continue
+        plan_g, gerr = gridplan.validate(rects, GW, GH, catalog, FLOORS, as_json=(arm == "argonJ"))
+        gridplan.render(plan_g, labels, GW, GH, f"{G}/grid-{n}.png")
+        grid_hist.append({"call": n, "errors": gerr}); last_labels = labels; last_rects = rects
+        print(f"{arm}{rep}/{task} grid {n}: {len(rects)} shapes, {len(gerr)} errors", flush=True)
+        if not gerr: break
+        if n < 3: msgs.append({"role": "user", "content": "Rejected: the plan checker found these problems. Apply every Fixed call (exact cells) and fix the rest, then return the full corrected plan only (same format).\n- " + "\n- ".join(gerr)})
+    json.dump(grid_hist, open(f"{G}/grid-check.json", "w"), indent=1)
+    if plan_g:
+        gridplan.render(plan_g, last_labels, GW, GH, f"{G}/plan-picture.png")
+        if arm == "argonG": PIC = f"{G}/plan-picture.png"
+        else: GRID_TXT = json.dumps({"map": {"w": GW, "h": GH}, "cells": [dict(cls=r["cls"], x=int(r["x"] // 16), y=int(r["y"] // 16), w=int(r["w"] // 16), h=int(r["h"] // 16)) for r in last_rects], "labels": [{"x": a, "y": b, "text": t} for a, b, t in last_labels]}).replace('"cls"', '"class"')
+    GRID_OK = bool(grid_hist and not grid_hist[-1]["errors"])
+    REALISE = f" The map is {GW} x {GH} cells. Realise the plan: its ceiling lines are your walls (outer rim = shell, inner lines = partitions), its door cells are your doors and entrance, its floor classes are your room floors, its objects are your objects at the same x,y (wall-mounted and against-wall ones go in wall_items). Keep its design; change it only where the layout rules above require."
+    PIC_NOTE_G = ("\n\n# Your floor plan\nThe attached picture (first image) is the floor plan you drew and the checker accepted" + ("" if GRID_OK else " (it still had problems)") + ": 32 px per cell, coordinates on the edges; dark = ceiling, brown = wallface, green = door, light blue bars = windows, boxes = objects with their ids." + REALISE) if PIC else ""
+    PIC_NOTE_J = ("\n\n# Your floor plan (cells)\nThis is the grid plan you wrote" + ("" if GRID_OK else " (it still had problems)") + ":\n" + GRID_TXT + "\n" + REALISE) if GRID_TXT else ""
+PIC_NOTE = PIC_NOTE_G if arm == "argonG" else PIC_NOTE_J if arm == "argonJ" else ("\n\n# Your floor-plan picture\nThe attached picture (first image) is the floor plan you drew for this building, 32 px per cell with a grid. Realise it: read your shell, walls, doors, rooms and pieces off the picture cell by cell and write them as the layout JSON. Keep its design; change it only where the rules above require.") if PIC else ""
+PIC_IMG = [] if arm == "argonJ" else [{"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(open(PIC, "rb").read()).decode()}}] if PIC else []
 msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT_PLAN + PIC_NOTE}] + PIC_IMG + strip_imgs(["floors", "walls"] + STRUCT)}]
 calls, layout, chk = [], None, None
 plan, pinfo = None, {"secs": 0, "tokens": 0}
