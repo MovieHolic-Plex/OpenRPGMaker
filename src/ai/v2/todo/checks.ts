@@ -954,7 +954,7 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
 }
 
 const LAYOUT_TAG = "interior-layout";
-interface LayoutDeclJson { regions: { id: string; x: number; y: number; w: number; h: number; cells?: number }[]; objects: { id: string; x: number; y: number; w: number; h: number }[]; landmark?: { id: string; x: number; y: number; w: number; h: number }; entrance: { x: number; y: number } }
+interface LayoutDeclJson { regions: { id: string; x: number; y: number; w: number; h: number; cells?: number }[]; objects: { id: string; x: number; y: number; w: number; h: number }[]; landmark?: { id: string; x: number; y: number; w: number; h: number }; entrance: { x: number; y: number }; required?: { ask: string; ok: boolean; why?: string }[] }
 
 /** 칸 배치로 지은 맵: 선언한 방(영역)과 기물이 지금 맵에 있나 — 방 칸이 막힌 칸이 아니고, 기물 발자국에 그림이 있다. 랜드마크는 걸어 닿아야 한다. */
 function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
@@ -976,6 +976,9 @@ function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
   if (lostRooms.length) problems.push(t(`선언한 방이 맵에 없다: ${lostRooms.map((r) => q(r.id)).join(", ")}`, `declared regions are gone from the map: ${lostRooms.map((r) => q(r.id)).join(", ")}`));
   const lostObjs = decl.objects.filter((o) => { for (let y = o.y; y < o.y + Math.max(1, o.h); y++) for (let x = o.x; x < o.x + o.w; x++) if (art(x, y)) return false; return true; });
   if (lostObjs.length) problems.push(t(`선언한 기물 ${lostObjs.length}개가 맵에 없다: ${lostObjs.slice(0, 8).map((o) => `${o.id}@${o.x},${o.y}`).join(", ")}`, `${lostObjs.length} declared pieces are not on the map: ${lostObjs.slice(0, 8).map((o) => `${o.id}@${o.x},${o.y}`).join(", ")}`));
+  // 요청 물건(layout.required): 고치기를 다 쓰고도 남은 것 — 덧그림으로만 보이거나 놓지 않은 것(interiorRoomChecks.requiredCheck)
+  const unmet = (decl.required ?? []).filter((r) => !r.ok);
+  if (unmet.length) problems.push(t(`요청 물건이 안 보인다: ${unmet.map((r) => `${q(r.ask)}(${r.why ?? ""})`).join(", ")}`, `requested items not shown: ${unmet.map((r) => `${q(r.ask)} (${r.why ?? "unmet"})`).join(", ")} — place a standing piece for each with review_layout`));
   if (!decl.landmark) problems.push(t("랜드마크가 없다", "no landmark"));
   else {
     const reach = mapReach(project, m);

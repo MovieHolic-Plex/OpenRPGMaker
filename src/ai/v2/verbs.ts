@@ -295,7 +295,7 @@ const LAYOUT_SCHEMA = {
     outer_wall: { type: "object", description: "closed ring of wall around the building: corner points, straight segments", properties: { material: { type: "string" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } } }, required: ["material", "path"] },
     walls: { type: "array", description: "partition walls, each running wall to wall", items: { type: "object", properties: { id: { type: "string" }, material: { type: "string" }, thickness: { type: "integer" }, stub: { type: "boolean" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } }, purpose: { type: "string" } }, required: ["id", "material", "path"] } },
     doors: { type: "array", description: "openings on partition walls (vertical wall: 3 tall, x,y = bottom cell)", items: { type: "object", properties: { wall: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, width: { type: "integer" }, piece: { type: "string" }, purpose: { type: "string" } }, required: ["wall", "x", "y"] } },
-    rooms: { type: "array", description: "one label per space closed by walls", items: { type: "object", properties: { id: { type: "string" }, at: { type: "array", items: { type: "integer" } }, floor: { type: "string" }, purpose: { type: "string" }, role: { type: "string" }, landmark: { type: "string" }, stairs: { type: "string", enum: ["none", "up", "down"] } }, required: ["id", "at", "floor"] } },
+    rooms: { type: "array", description: "one label per space closed by walls", items: { type: "object", properties: { id: { type: "string" }, at: { type: "array", items: { type: "integer" } }, floor: { type: "string" }, purpose: { type: "string" }, role: { type: "string" }, landmark: { type: "string" }, stairs: { type: "string", enum: ["none", "up", "down"] }, repeat: { type: "boolean", description: "a truly repeated room (guest room, cell)" }, jo: { type: "integer", description: "tatami rooms only: number of 1x2 mats" } }, required: ["id", "at", "floor"] } },
     wall_items: { type: "array", description: "wall-mounted (h) and against-wall (w) pieces, each with its wall", items: { type: "object", properties: { ...LAYOUT_OBJECT.properties, wall: { type: "string" } }, required: ["id", "x", "y", "wall"] } },
     rails: { type: "array", items: { type: "object", properties: { id: { type: "string" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } } }, required: ["id", "path"] } },
     regions: { type: "array", description: "older rectangle form (use outer_wall/walls/doors/rooms instead): rooms/areas as rectangles (top two rows of each are its north wall face)", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS,
@@ -304,8 +304,10 @@ const LAYOUT_SCHEMA = {
     openings: { type: "array", description: "cells carved through solid walls between regions (1 cell in a horizontal wall, 3 tall in a vertical wall)", items: { type: "object", properties: { ...RECT_PROPS, purpose: { type: "string" } }, required: ["x", "y"] } },
     entrance: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "one cell on the bottom map row, under a region" },
     carpets: { type: "array", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS }, required: ["id", "x", "y", "w", "h"] } },
-    daises: { type: "array", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS }, required: ["id", "x", "y", "w", "h"] } },
+    daises: { type: "array", description: "raised walkable platforms (dais ids)", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS }, required: ["id", "x", "y", "w", "h"] } },
+    floor_zones: { type: "array", description: "a second floor inside one room (entry, kitchen tiles, wet area)", items: { type: "object", properties: { floor: { type: "string" }, ...RECT_PROPS, purpose: { type: "string" } }, required: ["floor", "x", "y", "w", "h"] } },
     objects: { type: "array", items: LAYOUT_OBJECT },
+    required: { type: "array", description: "each thing the request names and the ids you placed for it (standing pieces), or why nothing fits", items: { type: "object", properties: { ask: { type: "string" }, ids: { type: "array", items: { type: "string" } }, missing: { type: "string" } }, required: ["ask"] } },
   },
 };
 /** 실내형 장소 낱말(감옥·여관·가게·서재…) — 요청이 던전을 분명히 말하지 않으면 실내 길로 짓는다. */
@@ -318,9 +320,9 @@ const LAYOUT_PATCH_SCHEMA = { type: "object", description: "applied to your curr
   add_objects: { type: "array", items: LAYOUT_OBJECT },
   remove_wall_items: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"] } },
   add_wall_items: { type: "array", items: { type: "object", properties: { ...LAYOUT_OBJECT.properties, wall: { type: "string" } }, required: ["id", "x", "y", "wall"] } },
-  replace: { type: "object", description: "each key replaces that whole field of the layout (the complete new value): map, landmark, outer_wall, walls, doors, entrance, rooms, wall_items, objects, carpets, rails", properties: {
+  replace: { type: "object", description: "each key replaces that whole field of the layout (the complete new value): map, landmark, outer_wall, walls, doors, entrance, rooms, wall_items, objects, carpets, rails, daises, floor_zones, required", properties: {
     map: LAYOUT_SCHEMA.properties.map, landmark: LAYOUT_SCHEMA.properties.landmark, outer_wall: LAYOUT_SCHEMA.properties.outer_wall, walls: LAYOUT_SCHEMA.properties.walls, doors: LAYOUT_SCHEMA.properties.doors,
-    entrance: LAYOUT_SCHEMA.properties.entrance, rooms: LAYOUT_SCHEMA.properties.rooms, wall_items: LAYOUT_SCHEMA.properties.wall_items, objects: LAYOUT_SCHEMA.properties.objects, carpets: LAYOUT_SCHEMA.properties.carpets } },
+    entrance: LAYOUT_SCHEMA.properties.entrance, rooms: LAYOUT_SCHEMA.properties.rooms, wall_items: LAYOUT_SCHEMA.properties.wall_items, objects: LAYOUT_SCHEMA.properties.objects, carpets: LAYOUT_SCHEMA.properties.carpets, rails: LAYOUT_SCHEMA.properties.rails, daises: LAYOUT_SCHEMA.properties.daises, floor_zones: LAYOUT_SCHEMA.properties.floor_zones, required: LAYOUT_SCHEMA.properties.required } },
 } };
 const PLACE_SPEC_SCHEMA = {
   type: "object",
