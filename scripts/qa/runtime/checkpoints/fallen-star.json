@@ -9137,8 +9137,8 @@
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower",
-       "x": 32,
-       "y": 18
+       "x": 18,
+       "y": 19
       },
       {
        "kind": "hold",

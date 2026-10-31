@@ -267,9 +267,10 @@ function towerData(project: Project, exec: Exec): void {
 // ════════════════════════════════════════════════════════════════════
 
 // 2026-10-31 main #4125(탑 층마다 계단방 윤곽·표지) 뒤 1층 배치(seed 91 cross): 동쪽 성문 날개 → 가운데 홀(마법진 (20,19)) → 서쪽 계단방(마법진 바닥)·북쪽 막다른 연금 공방·남쪽 서고(마법진 짝).
-// 장면은 성문 날개와 가운데 홀 사이 목(x25~27 y17~19) — place_field_enemy 는 순찰 칸이 입구·마법진 착지(성문 (34,16)·홀 (20,19)(20,20))에서
-// 6칸 안이면 거절한다. 기계는 목에서 세로로 오가고, 쳐 내진 기사는 동쪽 날개로 물러나 앉는다.
-const T1 = { arrive: { x: 34, y: 17 }, machine: { x: 27, y: 17 }, knight: { x: 29, y: 18 }, knightEnd: { x: 32, y: 19 }, stair: { x: 7, y: 15 } };
+// 장면은 가운데 홀과 서쪽 계단방 사이 목(x13~15 y18~20) — place_field_enemy 는 순찰 칸이 입구·마법진 착지(성문 (34,16)·홀 (20,19)(20,20)·
+// 2층에서 내려온 (7,16))에서 6칸 안이면 거절한다. 성문 쪽 목에 두면 들어서자마자 붙잡혔다(QA 2026-11-01).
+// 기계는 계단방 앞 목에서 세로로 오가고, 쳐 내진 기사는 가운데 홀로 물러나 앉는다.
+const T1 = { arrive: { x: 34, y: 17 }, machine: { x: 13, y: 18 }, knight: { x: 15, y: 19 }, knightEnd: { x: 18, y: 20 }, stair: { x: 7, y: 15 } };
 
 function floorOne(project: Project, exec: Exec): void {
   for (const [id, name] of [[SW_T1_ARRIVE, "B10: 하늘탑 1층 — 기계가 기사를 쳐 냄"], [SW_T1_KNIGHT, "B10: 다친 기사에게 들음"], [SW_T1_LOG, "B10: 관측 일지를 읽음"]] as const) ensureSwitch(project, id, name);
@@ -309,7 +310,7 @@ function floorOne(project: Project, exec: Exec): void {
       setSw(SW_T1_KNIGHT), setSelf("A"),
     ], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
     page("ev_fs2_t1_knight_after", "다친 기사(뒤)", [sw(SW_T1_ARRIVE), selfSw("A")], [
-      say(KNIGHT, "가운데 홀 기계는 피해서 가라.\n느려도 한 대 맞으면 뼈가 나간다."),
+      say(KNIGHT, "계단방 앞 기계는 피해서 가라.\n느려도 한 대 맞으면 뼈가 나간다."),
     ], { graphic: chip(KNIGHT_CHIP[0], KNIGHT_CHIP[1], "left") }),
   ]);
 
