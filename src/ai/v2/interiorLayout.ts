@@ -59,10 +59,12 @@ export const LAYOUT_FORMAT = `{"map":{"w":W,"h":H},
  "walls":[{"id":"w_kitchen","material":"<wall id>","thickness":1,"path":[[x,y],[x,y]],"purpose":"..."}],
  "doors":[{"wall":"w_kitchen","x":X,"y":Y,"piece":null,"purpose":"..."}],
  "entrance":{"x":X,"y":H-1},
- "rooms":[{"id":"hall","at":[x,y],"floor":"<floor id>","purpose":"...","role":"main|side|corridor|stairs","stairs":"up|down|none","repeat":false}],
+ "rooms":[{"id":"hall","at":[x,y],"floor":"<floor id>","purpose":"...","role":"main|side|corridor|stairs","stairs":"up|down|none","repeat":false,"jo":N}],
+ "floor_zones":[{"floor":"<floor id>","x":X,"y":Y,"w":W,"h":H,"purpose":"..."}], "daises":[{"id":"<dais id>","x":X,"y":Y,"w":W,"h":H}],
  "wall_items":[{"id":"<catalog id>","wall":"outer","x":X,"y":Y,"purpose":"..."}],
  "objects":[{"id":"<catalog id>","x":X,"y":Y,"repeat":{"count":2,"dx":3,"dy":0},"purpose":"..."}],
- "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "rails":[{"id":"bars","path":[[x,y],[x,y]]}]}`;
+ "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "rails":[{"id":"bars","path":[[x,y],[x,y]]}],
+ "required":[{"ask":"<a thing the request names>","ids":["<catalog ids you placed for it>"]}]}`;
 
 export const LAYOUT_GRID_RULES = [
   "Cells are 16px, x to the right, y down, origin top-left. A wall is a line of solid cells (seen from above as a dark cap).",
@@ -70,7 +72,7 @@ export const LAYOUT_GRID_RULES = [
   "wall_items: wall-mounted pieces (h: windows, shelves, signs, pictures) hang on the UPPER face row y = wall row + 1; against-wall pieces (w: fireplace, bookshelves, beds, cupboards, stairs up, kitchen range) stand on y = wall row + 3. Each names its \"wall\". Windows only on the outer wall.",
   "outer_wall: a closed ring of corner points (straight segments, back to the first point) around the whole building; outside it is void. Its south side runs along the bottom row y=H-1 where the entrance is. Notches (L, T, U shapes) are fine.",
   "walls: partitions, each a path of corner points, thickness 1 (or 2), a material. A partition runs from wall to wall (both ends touch another wall or the ring) so every room is closed; \"stub\": true allows a freestanding piece.",
-  "doors: {wall, x, y} on a partition cell. Horizontal wall: a 1-cell gap (\"width\" 2–3 allowed) joining the rooms north and south. Vertical wall: 3 cells tall — (x,y) is the walkable bottom cell and (x,y-1),(x,y-2) must also be cells of that wall. Optional \"piece\": \"locked door\" | \"iron gate\" | \"iron gate open\".",
+  "doors: {wall, x, y} on a partition cell. Horizontal wall: a 1-cell gap (\"width\" 2–3 allowed) joining the rooms north and south. Vertical wall: 3 cells tall — (x,y) is the walkable bottom cell and (x,y-1),(x,y-2) must also be cells of that wall. Optional \"piece\": \"locked door\" | \"iron gate\" | \"iron gate open\" — only on a horizontal-wall door: a door leaf is drawn facing south, so a vertical-wall doorway stays open (no piece).",
   "entrance: one cell of the outer wall on the bottom row with a room cell directly above; the only opening in the ring.",
   "rooms: every space closed by walls needs exactly one entry {id, at:[x,y] any cell inside, floor, purpose}; two labels in one space means a wall is not closed.",
   "objects: floor pieces, x,y = top-left of the footprint, optional repeat {count,dx,dy}. Footprints must not overlap and must be on floor cells (not face rows). Keep every doorway and the cells in front of it free so every room and the landmark are reachable from the entrance. Tall art draws upward; keep that space free of other tall pieces. Carpets and decals are walkable.",
@@ -78,6 +80,10 @@ export const LAYOUT_GRID_RULES = [
   "Stairs up (su) are a KIT 3 wide x 3 tall: they cover the 2 face rows of a NORTH wall plus the first floor row under it. Put them in wall_items with that wall, x,y = the LEFT cell of the floor row (y = wall row + 3); all 3 columns must be under one straight stretch of that wall (no door or corner), and the 3 cells south of them (y+1) must stay free floor — that is where the player walks in. Stairs down (sd) are a hole in the floor (WxH as listed) entered from the south: keep the row under them free. A room with \"stairs\": \"up\"|\"down\" must contain those stairs.",
   "Size each room to its content. Empty floor = a floor cell with nothing on it or next to it (wall, face, furniture). A room is rejected when it has an empty area of 3x4 or more off its door-to-door walkways, or more than 25% of its floor is empty; a hall of 80+ floor cells needs 20% of the floor off its walkways furnished. Every room of 30+ floor cells (corridors aside) needs at least 0.18 standing pieces per floor cell (a 120-cell hall: 22+ pieces), set as groups that serve the room. Walkways (shortest paths between doors, entrance and stair entries, 3 cells wide) are never counted as empty. Rugs, carpets and decals do not count as furnishing; at most 1 rug per room (2 in a room of 150+ floor cells). Fix an empty room by moving its walls in or by adding a purposeful group of standing pieces.",
   "Size rooms by importance: main hall > dining or drawing room > bedrooms > closets and storage. Rooms of the same size side by side should be truly repeated rooms (guest rooms, cells — mark them \"repeat\": true).",
+  "Shape important rooms by their use where it serves (not every room; storage and cells stay simple): an alcove or niche = a short wall with \"stub\": true that pinches a recess off the room (a bed alcove, a reading nook, a shrine niche); columns = column pieces in a row, or a pair framing an entrance; a half-wall = a \"fence\" or \"altar rail\" rail that divides without closing (a bar corner, a gallery edge); a raised dais = \"daises\" (a stage for the high table, a throne, a teacher's desk) — walkable, furniture may stand on it.",
+  "Floors: each room has one \"floor\". floor_zones lays a second floor inside ONE room where its use changes (an entry floor, kitchen tiles, a wet area) — a real area, never a single cell; at most one per room. Tatami: give that room \"jo\": N (number of mats); code lays whole 1x2-cell mats along the walls, so its tatami floor (below the face rows) must be an even rectangle of 2N cells — 6 jo = 4x3, 8 jo = 4x4, 12 jo = 4x6 or 6x4.",
+  "A prison cell is shut by iron bars so the guard sees in: its door is in a horizontal wall with \"piece\": \"iron gate\", or its corridor side is a \"bars\" rail with a 1-cell gap holding an \"iron gate\" object.",
+  "required: for every thing the request names (equipment, furniture, a counter, cells …), one entry {\"ask\", \"ids\"} with the catalog ids you placed for it. It must show as a standing piece the player sees — not only an overlay drawn over another piece (a footprint of 0 rows). Only if the chipset truly has nothing for it: {\"ask\", \"missing\": \"why nothing fits\"}.",
 ];
 
 export const LAYOUT_FORMAT_REGIONS = `{"map":{"w":W,"h":H}, "landmark":{"id":"<object id>","x":X,"y":Y,"purpose":"..."},
@@ -111,7 +117,9 @@ export interface LayoutCheck {
   /** 공간 문제(빈 바닥·큰 빈 사각형·복도 폭·큰 방 채움·깔개 상한) — 고치기가 남았으면 거절 글로, 다 썼으면 경고로 깐다(interiorSpace.ts). */
   readonly soft?: string[];
   /** 공간 실측(방마다 빈 칸 %·가장 큰 빈 사각형·깔개 수·기물 수) — 선언에 남겨 측정에 쓴다. */
-  readonly space?: { emptyPct: number; roomCV: number; rooms: Record<string, import("./interiorSpace").SpaceRoomStat> };
+  readonly space?: { emptyPct: number; roomCV: number; rooms: Record<string, import("./interiorSpace").SpaceRoomStat>; islands?: number; tatamiMats?: number; distinctPerRoom?: number; repetition?: number; cellFronts?: { barred: number; open: number }; daises?: number };
+  /** 요청 물건(layout.required) 검사 결과 — 선언에 남겨 할 일 검사 layout_built 가 읽는다. */
+  readonly required?: readonly import("./interiorRoomChecks").RequiredResult[];
 }
 
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[], outer_wall:{path:[]}})를 채워 보내는 모델이 있다. */
@@ -288,7 +296,7 @@ export interface LayoutPatch {
   readonly add_wall_items?: readonly (LayoutObject & { wall?: string })[];
   readonly replace?: Readonly<Record<string, unknown>>;
 }
-const REPLACEABLE = new Set(["map", "landmark", "outer_wall", "walls", "doors", "entrance", "rooms", "wall_items", "objects", "carpets", "rails", "regions", "openings", "daises"]);
+const REPLACEABLE = new Set(["map", "landmark", "outer_wall", "walls", "doors", "entrance", "rooms", "wall_items", "objects", "carpets", "rails", "regions", "openings", "daises", "floor_zones", "required"]);
 export function layoutPatchIsEmpty(p: LayoutPatch | undefined): boolean {
   if (!p) return true;
   const real = (v: unknown) => Array.isArray(v) ? v.some((o) => o && typeof o === "object" && typeof (o as { id?: unknown }).id === "string" && (o as { id: string }).id !== "") : false;
