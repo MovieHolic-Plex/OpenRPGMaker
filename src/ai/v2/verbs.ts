@@ -1,6 +1,7 @@
 // 조수 v2 동사 — 모델이 부르는 도구는 이 열 개 안팎뿐이다. 동사마다: 명세 → 결정론 빌더 → 1배 그림 + 기계 검사 → 독립 비평가.
 // 고치기는 모델이 비평 결과(칸 좌표 major)를 보고 edit_place 패치로 한다(맵당 V2_MAX_REPAIR_ROUNDS 바퀴 상한). 끝맺음 관문(afterMain)이
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
+import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { shipBlockers, wantsWholeGame } from "./shipChecks";
@@ -164,7 +165,7 @@ export class V2Session {
       ];
       if (problems.length) out.push({ mapId, name: record.spec.name, rounds: record.rounds, problems });
     }
-    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event 를 같은 kind·when 으로 다시)`, rounds: st.rounds, problems: st.problems });
+    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event redo:${st.eventIds?.[0] ?? "<장면 id>"})`, rounds: st.rounds, problems: st.problems });
     return out;
   }
 }
@@ -646,7 +647,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         round: rounds,
         next: clean ? "통과 — 무대 검사·연출 비평 major 0. 다른 요청 부분이 남았으면 이어서, 아니면 보고한다."
           : rounds >= V2_MAX_REPAIR_ROUNDS ? `고치기 상한(${V2_MAX_REPAIR_ROUNDS}번)에 닿았다 — 남은 문제를 보고한다.`
-          : "문제가 있다 — add_event 를 같은 kind·when 으로 다시 부르면 앞 컷신(과 그 컷신이 세운 사람)을 바꾼다(겹쳐 쌓이지 않는다). 걷는 곳 낱말·appear where·비트 순서를 고쳐 한 번에 다시 부른다. 칸 좌표는 비평이 짚은 칸이 꼭 필요할 때만.",
+          : `Problems found — fix them in ONE more add_event call with redo:'${result.eventIds?.[0]?.eventId ?? "<scene event id>"}' (rewrites this scene in place; the people it stood up are reused). Change the spot words, appear where and beat order the problems point at. Cell numbers only where the critic gave a cell.`,
       };
       const shots: Seen = { checks: [...stage.checks], critics, images: frames.map((f) => ({ mapId: stage.mapId, dataUrl: f.image })) };
       return withImages(payload, shots.images.length ? shots : seen, 3);
@@ -1169,6 +1170,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       return finishContent(id, "add_boss_encounter", params, buildBossEncounter(run, params as BossEncounterSpec));
     },
   };
+  const BEAT_ITEM = { type: "object", properties: {
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "emote", "camera", "look", "vanish", "choose"] },
+        who: { type: "string" }, to: { type: "string", description: "spot word (or 'x,y')" }, text: { type: "string" },
+        where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
+        tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
+        weather: { type: "string", enum: ["rain", "storm", "snow", "fog", "none"] }, intensity: { type: "number" },
+        strength: { type: "string", enum: ["weak", "medium", "strong"] }, axis: { type: "string", enum: ["both", "horizontal", "vertical"] }, color: { type: "string" },
+        action: { type: "string", enum: ["bgm", "se", "bgs", "stop", "fade"] },
+        options: { type: "array", description: "choose: 2–4 answers the player picks from; each branch says its own reply and can move gold (negative = the player pays; not enough gold → the branch ends with a short refusal) or give an item by DB item name", items: { type: "object", properties: { label: { type: "string" }, lines: { type: "array", items: { type: "string" }, description: "reply lines after this pick — «이름: 대사» or a line by the choose who" }, gold: { type: "number" }, item: { type: "string" }, count: { type: "number" } }, required: ["label"] } }, emote: { type: "string", description: "emote: ! ? ♥ 땀 화 … zzz 반짝 전구 or exclamation·question·heart·sweat·anger·ellipsis·sleep·sparkle·idea·music·smile" }, query: { type: "string", description: "music: word to find the sound (festival·battle·town·sad·boss·door…; horror 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps)" },
+      }, required: ["do"] };
   const addEndingScene: PiToolShape = {
     name: "add_ending_scene", label: "엔딩 장면", concurrency: "exclusive",
     description: "Build an ending scene in one go — the ending definition (epilogue, final title) and an event on that map that calls the ending after its lines. When: automatically on entering the map after afterSwitchId (or the after word — «마왕» means the demon-king-defeated switch) is on; with talkTo, when talking to that person. Do not assemble it from lower tools (define_ending, patch_event_page).",
@@ -1180,7 +1191,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       talkTo: { type: "string", description: "ending when talking to this person (optional)" },
       afterSwitchId: { type: "string", description: "only after this switch is on (optional)" },
       after: { type: "string", description: "word for what it follows («마왕», «해골 기사») — finds the defeat switch (optional)" },
-    }, required: ["title", "lines"] },
+      beats: { type: "array", items: BEAT_ITEM, description: "stage the ending like add_event beats — people walk in and gather (appear/walk), react (emote), music swells, the hero answers. Without beats the ending is text boxes over a still screen; an ending is the payoff, so show the changed world and the people the hero saved. lines are appended after the beats (skip lines you already wrote as say beats). Not used with talkTo." },
+    }, required: ["title"] },
     async execute(id, params) {
       return finishContent(id, "add_ending_scene", params, buildEndingScene(run, params as EndingSceneSpec));
     },
@@ -1188,22 +1200,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "Make a cutscene or dialogue event as a list of beats (walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish). The function decides walkable paths and spots and checks with a preview probe.",
+    description: "Make a cutscene or dialogue event as a list of beats (walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish/choose). choose = the player picks an answer and each branch replies differently (haggling, persuading, confessing) — use it instead of hand-writing choices with patch_event_page. The function decides walkable paths and spots and checks with a preview probe.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
-      when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
+      when: { type: "string", enum: ["game-start", "enter", "touch", "talk"], description: "game-start = once when the game starts (start map) · enter = once when the player enters this map (arrival spot) · touch = when the player steps on the scene cell (where/at) · talk = when talked to" }, where: { type: "string" }, at: POINT,
       after: { type: "string", description: "play right after talking with this NPC name ends (appended to the end of that NPC's talk, once only)" },
       afterTalk: { type: "array", items: { type: "string" }, description: "what that NPC says when talked to again after the after scene (if the situation changed, like night falling or after an incident). Omitted = the original lines" },
       afterPage: { type: "integer", description: "when the after NPC has several talk pages, the page number (from 0) to attach the scene to. If pages split like day/night, the page where the scene happens — if unsure leave it empty and the call returns the page list" },
-      beats: { type: "array", items: { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "emote", "camera", "look", "vanish"] },
-        who: { type: "string" }, to: { type: "string", description: "spot word (or 'x,y')" }, text: { type: "string" },
-        where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
-        tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
-        weather: { type: "string", enum: ["rain", "storm", "snow", "fog", "none"] }, intensity: { type: "number" },
-        strength: { type: "string", enum: ["weak", "medium", "strong"] }, axis: { type: "string", enum: ["both", "horizontal", "vertical"] }, color: { type: "string" },
-        action: { type: "string", enum: ["bgm", "se", "bgs", "stop", "fade"] }, emote: { type: "string", description: "emote: ! ? ♥ 땀 화 … zzz 반짝 전구 or exclamation·question·heart·sweat·anger·ellipsis·sleep·sparkle·idea·music·smile" }, query: { type: "string", description: "music: word to find the sound (festival·battle·town·sad·boss·door…; horror 비명 scream · 심장 heartbeat · 삐걱 creak · 물방울 drip · 웅웅 hum · 속삭임 whisper · 쾅 bang · 발소리 footsteps)" },
-      }, required: ["do"] } },
+      redo: { type: "string", description: "id of a scene event already on this map: rewrite that scene in place with these beats (same spot, same trigger) instead of adding another event — use it to fix a scene the checks pointed at" },
+      beats: { type: "array", items: BEAT_ITEM },
     }, required: ["kind", "beats"] } }, required: ["event"] },
     async execute(id, params) {
       const event = (params as { event: EventSpec }).event;
@@ -1212,10 +1217,26 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const asPoint = (v: unknown) => typeof v === "string" && /^\s*\d+\s*,\s*\d+\s*$/u.test(v) ? { x: Number(v.split(",")[0]), y: Number(v.split(",")[1]) } : v;
         return { ...raw, ...(raw.to !== undefined ? { to: asPoint(raw.to) } : {}), ...(raw.where !== undefined ? { where: asPoint(raw.where) } : {}) } as unknown as EventSpec["beats"][number];
       });
-      const result = buildEvent(run, { ...event, ...(event.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }), beats });
-      return finishContent(id, "add_event", params, result);
+      const mapId = event.mapId || env.ctx.currentMapId || env.ctx.project.startMapId;
+      // 같은 장면을 다시 부르면(고치기) 그 자리 장면을 다시 쓴다 — 밟기·말 걸기 장면은 부를 때마다 새 이벤트가 생겨 같은 대사가 두 번 돌았다
+      // (2026-10-31 씬 벤치 terra 회상·마왕 등장: 2칸 옆에 같은 장면 둘). 같은 맵·같은 언제·자리가 3칸 안이면 redo 로 본다.
+      let redo = event.redo;
+      const when = event.when ?? (event.kind === "talk" ? "talk" : event.kind === "trigger" ? "touch" : "game-start");
+      if (!redo && !event.after && (when === "touch" || when === "talk")) {
+        const map = env.ctx.project.maps[mapId];
+        const prev = [...sceneHosts].reverse().find((h) => h.mapId === mapId && h.when === when && (map?.events ?? []).some((e) => e.id === h.eventId)
+          && (event.at ? Math.abs(event.at.x - h.x) + Math.abs(event.at.y - h.y) <= 3 : event.where ? event.where === h.where : true));
+        if (prev) redo = prev.eventId;
+      }
+      const result = buildEvent(run, { ...event, mapId, ...(redo ? { redo } : {}), beats });
+      const host = result.ok ? result.eventIds?.[0] : undefined;
+      const hostEv = host ? env.ctx.project.maps[host.mapId]?.events?.find((e) => e.id === host.eventId) : undefined;
+      if (host && hostEv && !event.after) sceneHosts.push({ mapId: host.mapId, when, eventId: host.eventId, x: hostEv.x, y: hostEv.y, ...(event.where ? { where: event.where } : {}) });
+      const out = redo && !event.redo && result.ok ? { ...result, warnings: [...result.warnings, `같은 자리 장면(${redo})을 다시 불러 그 장면을 이 비트로 바꿨다(새 이벤트를 더 만들지 않았다).`] } : result;
+      return finishContent(id, "add_event", params, out);
     },
   };
+  const sceneHosts: { mapId: string; when: string; eventId: string; x: number; y: number; where?: string }[] = [];
 
   const addScene: PiToolShape = {
     name: "add_scene", label: "두 선택 대화 장면", concurrency: "exclusive",
@@ -1869,6 +1890,8 @@ function gameProblemTexts(before: Project, after: Project, task: string): string
   try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.
   try { game.push(...fieldBattleStrain(before, after, task)); } catch { /* 검사 실패는 무시 */ }
+  // 장면 손질(2026-10-31 서사): 새로 쓴 장면의 반복 대사·대사 속 이름·한두 줄짜리 장면·멈춘 화면·혼잣말 대화·제자리 못 찾는 사람.
+  try { game.push(...sceneCraftProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
   try { game.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ }
   return game;
