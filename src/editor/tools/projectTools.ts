@@ -359,7 +359,7 @@ const setProjectSettings: ToolDefinition = {
           style: {
             type: "string",
             enum: [...DIALOGUE_STYLE_IDS],
-            description: `게임 톤에 맞춰 하나 고른다:\n${dialogueStyleGuideLines().join("\n")}`,
+            description: `사용자가 창 테두리·창 모양(「한지풍 창」 등)을 말하면 먼저 list_resources{kind:'windowskin'} 로 프로젝트의 창 그림(스토어로 넣은 윈도스킨 포함)을 찾는다 — 맞는 것이 있으면 resources.systemResourceId 에 그 id, 이 칸은 'classic'. 아래 프리셋은 맞는 창 그림이 없을 때 게임 톤에 맞춰 하나 고른다:\n${dialogueStyleGuideLines().join("\n")}`,
           },
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
