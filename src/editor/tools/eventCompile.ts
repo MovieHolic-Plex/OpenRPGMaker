@@ -213,7 +213,7 @@ export function compactGraphicSpec(spec: unknown): GraphicSpec | undefined {
     if (key === "transparent" && value !== true) continue;
     out[key] = value;
   }
-  if (!["selectionId", "textureKey", "resourceId", "spriteId", "id"].some((key) => key in out)) delete out.characterIndex;
+  if (!["selectionId", "textureKey", "resourceId", "spriteId", "id", "sprite"].some((key) => key in out)) delete out.characterIndex;
   return out as GraphicSpec;
 }
 
@@ -231,6 +231,7 @@ export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQue
   const spec = compactGraphicSpec(spec0)!;
   // 빈 칸뿐인 지정은 예전처럼 「그림 없음」(생략과 같다) — 도구마다 생략 기본값이 다르므로 그 판단은 graphicSpecArg 를 쓰는 호출자가 한다.
   if ("transparent" in spec || Object.keys(spec).length === 0) return { transparent: true };
+  const looseSpec = spec as unknown as Record<string, unknown>;
   if ('selectionId' in spec) {
     const selected = parseCharsetSearchId(spec.selectionId);
     if (!selected || selected.characterIndex < 0 || selected.characterIndex > 7) throw new ToolError('selectionId는 칩 검색 결과의 charset:<시트>:<칸>이어야 합니다.', { code: 'graphic-not-found' });
