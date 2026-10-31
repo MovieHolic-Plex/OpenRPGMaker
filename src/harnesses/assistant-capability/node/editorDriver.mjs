@@ -12,9 +12,22 @@ import { isDeepStrictEqual } from 'node:util';
 // Capture the actual rendered pixels even when an unrelated web font request
 // never settles. The reviewer still checks text and chip visibility in the PNG.
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = '1';
+// 편집기 부팅 대기 상한(밀리초). 부하가 높은 박스에서는 HARNESS_WAIT_MS 로 늘린다(기본 120초).
+const HARNESS_WAIT_MS = Number(process.env.HARNESS_WAIT_MS ?? 120000);
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 export const digest = value => createHash('sha256').update(value).digest('hex');
+/**
+ * 조수가 사용자에게 한 보고. 편집기의 곁가지 모델 호출(의도 선언·Ultrabrain 조화 검수·선호 정리 …)도
+ * /v1/chat/completions 로 가서 위 가로채기가 'assistant'(source:'chat')로 적는다. 에이전트 실행(/v1/agent/run)이
+ * 있었던 턴에서는 그것들을 답으로 치지 않는다 — 검수 JSON 이 마지막 답으로 기록됐다(2026-10-31 스토어 검증 003턴).
+ * 에이전트 실행이 없던 읽기 전용 질문은 채팅 응답이 곧 답이다.
+ */
+export function assistantReports(events) {
+  const all = events.filter(e => e.type === 'assistant' && (e.text ?? '').trim());
+  const agent = all.filter(e => e.source !== 'chat');
+  return (agent.length ? agent : all).map(e => e.text.trim());
+}
 export function stored(projectDir) {
   const db = new DatabaseSync(resolve(projectDir, 'project.sqlite'), { readOnly: true });
   try {
@@ -66,7 +79,7 @@ export async function startHost(projectDir, dir) {
   // HARNESS_HOST_LOG=<file>: 진단용으로 호스트 출력을 그 파일(0600)에 남긴다. 제공자 오류에 자격 정보가 섞일 수 있으니 저장소·증거 폴더에 두지 말 것.
   if (process.env.HARNESS_HOST_LOG) { const fd = openSync(process.env.HARNESS_HOST_LOG, 'a', 0o600); const tee = data => writeSync(fd, data); child.stdout.on('data', tee); child.stderr.on('data', tee); }
   const url=await new Promise((done, fail)=>{
-    const timer=setTimeout(()=>fail(Error('Project host startup deadline')),180000);
+    const timer=setTimeout(()=>fail(Error('Project host startup deadline')),Math.max(180000,HARNESS_WAIT_MS));
     child.on('error', error=>{clearTimeout(timer);fail(error);});
     child.on('exit', code=>{clearTimeout(timer);fail(Error(`Project host exited ${code}: ${log.slice(-1000)}`));});
     child.stdout.on('data', ()=>{if(log.includes('OPRN 로컬 편집기:')){clearTimeout(timer);done(`http://127.0.0.1:${port}`);}});
@@ -89,7 +102,7 @@ export async function startHost(projectDir, dir) {
   } };
 }
 export async function newEditor(browser, url, projectDir, config, captureOptions={}) {
-  const {onPage,bootTimeoutMs=360000,...contextOptions}=captureOptions;
+  const {onPage,bootTimeoutMs=Number(process.env.OPRN_CAP_BOOT_TIMEOUT_MS)||360000,...contextOptions}=captureOptions;
   const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...contextOptions });
   const page=await context.newPage();
   await onPage?.(page,context);
@@ -133,9 +146,9 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
             // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
-              text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
+              text:event.type==='assistant'?event.text:undefined,summary:event.summary,modelText:event.type==='tool_end'?event.modelText:undefined,message:event.message,args:event.args,
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
-                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck'].includes(event.name)?event.data:undefined,
+                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip','dialogue_polish.speaker_labels'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});
@@ -158,12 +171,12 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             if(!payload||payload==='[DONE]')continue;
             try{
               const outer=JSON.parse(payload), text=outer?.choices?.[0]?.message?.content ?? outer?.choices?.[0]?.delta?.content;
-              if(typeof text==='string'&&text.length){window.__capEvents.push({type:'assistant',text,at:Date.now()});emitted=true;}
+              if(typeof text==='string'&&text.length){window.__capEvents.push({type:'assistant',source:'chat',text,at:Date.now()});emitted=true;}
             }catch{/* provider returned a non-JSON stream line */}
           }
           if(!emitted){try{
             const body=JSON.parse(raw), text=body?.choices?.[0]?.message?.content;
-            if(typeof text==='string')window.__capEvents.push({type:'assistant',text,at:Date.now()});
+            if(typeof text==='string')window.__capEvents.push({type:'assistant',source:'chat',text,at:Date.now()});
           }catch{/* provider returned a non-JSON error body */}}
           window.__capEvents.push({type:'chat_done',at:Date.now()});
           window.__capEvents.push({type:'stream_closed',at:Date.now()});
@@ -172,27 +185,42 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       return response;
     };
   },{...(config??{}),hideStartMarker:process.env.HARNESS_START_MARKER!=='1'});
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});
+  await page.goto(url,{waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS});
   if(await page.locator('#access-code').count()) {
     await page.locator('#access-code').fill(readFileSync(resolve(projectDir,'.oprn-host-access'),'utf8').trim());
-    await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);
+    await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS}),page.locator('form[action="/__oprn/login"] button').click()]);
   }
   await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
   // Companion readiness precedes canvas construction in a fresh context.
   // Wait for the editor's own rendered tile residency before taking evidence.
-  await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
+  await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:HARNESS_WAIT_MS});
   const welcome=page.getByTestId('editor-welcome-skip');if(await welcome.isVisible().catch(()=>false))await welcome.click();
   // A fresh editor now starts with the conversation folded. Open it through
   // the visible restore control before using the actual input/settings UI.
   const restore = page.getByTestId('ai-collapsed-restore');
   if (await restore.isVisible().catch(()=>false)) await restore.click();
-  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
+  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
+  // 로컬 CLI 엔진: 부팅 직후 첫 연결 확인이 부하로 시간 초과하면 그 결과(unreachable)를 캐시해 입력칸이 끝까지 잠긴다
+  // (2026-10-30 실측, 부하 80: 「Claude Code (내 PC) 연결 확인 필요」 → fill 120초 초과). 워커는 그사이 데워지므로 다시 읽어 확인을 새로 받는다(최대 2번).
+  const inputLocked=()=>page.getByTestId('ai-input').evaluate(el=>el.getAttribute('aria-disabled')==='true').catch(()=>false);
+  for(let retry=0;retry<2;retry++){
+    const until=Date.now()+90000;
+    while(await inputLocked()&&Date.now()<until)await page.waitForTimeout(3000);
+    if(!await inputLocked())break;
+    console.error(`[editorDriver] ai-input still locked after boot — reload ${retry+1}/2`);
+    await page.reload({waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS});
+    await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
+    await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
+    const again=page.getByTestId('ai-collapsed-restore');
+    if (await again.isVisible().catch(()=>false)) await again.click();
+    await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
+  }
   return { page,context,loads };
 }
 async function saveThroughUi(page) {
   await page.getByTestId('toolbar-save').click();
-  await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:120000});
+  await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:HARNESS_WAIT_MS});
   const kind=await page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
   if(!['idle','saved'].includes(kind))throw Error(`Actual editor save failed: ${kind}`);
   return {kind,dirty:false};
@@ -262,7 +290,7 @@ export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
       console.log(`${entry.id}: polish ${JSON.stringify(polish)}`);
     }
     const events=await page.evaluate(()=>window.__capEvents);
-    const answer=events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n');
+    const answer=assistantReports(events).join('\n');
     writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start,...(polish?{polish}:{})},null,2));
     phase='save';
     const flush=await saveThroughUi(page);

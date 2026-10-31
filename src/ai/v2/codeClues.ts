@@ -113,7 +113,10 @@ export function alignCodeClues(project0: Project): { project: Project; notes: st
     const builder = all.filter((c) => BUILDER_NOTE.test(String(c.body)));
     const code = String(lock.code).padStart(lock.digits, "0");
     const mentioned = model.some((c) => (String(c.body).match(re) ?? ([] as string[])).includes(code));
-    const others = [...new Set(model.filter((c) => CODE_TALK.test(String(c.body)) || RESULT_TALK.test(String(c.body))).flatMap((c) => String(c.body).match(re) ?? ([] as string[])).filter((n) => n !== code && !otherCodes.has(n) && !choiceNums.has(n)))];
+    // 이 자물쇠를 풀면 나오는 번호(«안쪽에 긁힌 숫자 4816»)는 다음 자물쇠의 답이지 이 자물쇠의 경쟁 번호가 아니다 — 다른 쪽(«문에 입력할 숫자는 4816»)에
+    // 다시 적혀도 이 자물쇠 답으로 고쳐 쓰지 않는다(2026-10-31 meb1 terra 방탈출: 서랍 7392 가 그 줄을 «7392»로 바꿀 뻔했다).
+    const revealed = new Set([...own].flatMap((c) => String(c.body).match(re) ?? ([] as string[])));
+    const others = [...new Set(model.filter((c) => CODE_TALK.test(String(c.body)) || RESULT_TALK.test(String(c.body))).flatMap((c) => String(c.body).match(re) ?? ([] as string[])).filter((n) => n !== code && !otherCodes.has(n) && !choiceNums.has(n) && !revealed.has(n)))];
     if (!mentioned && others.length === 1) {
       const adopt = others[0]!;
       (lock.fork.condition as { value: number }).value = Number(adopt);

@@ -3,6 +3,7 @@ import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
 import { isParticlePreset, normalizeParticleDurationMs, normalizeParticleSizePercent, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
@@ -46,7 +47,10 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
+import { executeScriptCommand } from "@/player/interpreter/scriptCommand";
+import { choiceView, choicesHaveConditions, MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { presentableItems } from "@/player/interpreter/presentItem";
+import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
 import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
@@ -324,7 +328,13 @@ function executeM2Command(
   }
   if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     // fields.screen 은 선택 — 'monster-box' 면 메뉴 대신 보관함(PC) 화면을 연다. 생략하면 이전과 같은 단계 모양.
-    return pause("openMenuScreen", { kind: "openMenuScreen", ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}) });
+    const menuActorId = typeof command.fields.actorId === "string" ? command.fields.actorId.trim() : "";
+      return pause("openMenuScreen", {
+        kind: "openMenuScreen",
+        ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}),
+        // screen:"skills" — 스킬 장착 화면을 actorId(없으면 파티장) 로 바로 연다.
+        ...(command.fields.screen === "skills" ? { screen: "skills" as const, ...(menuActorId ? { actorId: menuActorId } : {}) } : {}),
+      });
   }
   if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("openLoadMenu", { kind: "openLoadMenu" });
@@ -492,6 +502,8 @@ const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
 const ENDING_CONTINUE_COMMANDS = new WeakMap<Command, import("@/project/types").EndingContinueTo>();
 // 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
 const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
+// 에필로그 글을 대사창으로 보인 뒤에 오는 엔딩 명령 — 카드가 그 글을 요약으로 한 번 더 싣지 않게(첫사랑 r5: 엔딩 A 글이 두 번).
+const ENDING_AFTER_EPILOGUE = new WeakSet<Command>();
 
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
   return ending.conditions.every((condition) => condition.kind === "newGamePlus"
@@ -533,6 +545,7 @@ function triggerEnding(
   for (const epilogueCommand of epilogueCommands) {
     if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
   }
+  if (epilogueCommands.some((epilogueCommand) => epilogueCommand.kind === "text")) ENDING_AFTER_EPILOGUE.add(finalCommand);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
@@ -644,21 +657,61 @@ export function executeCommand(
         ...(command.calling === true ? { calling: true } : {}),
       });
     }
-    case "choices":
+    case "choices": {
+      // 조건 붙은 줄(showWhen·enableWhen)은 지금 세션으로 한 번 평가해 굳힌다 — 재개는 이 표로 원래 번호를 찾는다.
+      const view = choicesHaveConditions(command)
+        ? choiceView(command, (condition) => evalCondition(
+          state.session,
+          condition,
+          conditionReadsSocialHost(condition) ? resolveSocialHost(state) ?? state.currentEventId : state.currentEventId,
+          locationEvalContext(state),
+        ))
+        : undefined;
+      // 보일 줄이 하나도 없으면 창을 띄우지 않고 지나간다(빈 선택지 창에 갇히지 않게).
+      if (view && view.options.length === 0) {
+        state.choiceView = undefined;
+        return resumeNext(frame);
+      }
+      state.choiceView = view;
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.slice(0, 5).map((option) => ({ text: playerChoiceText(option.text) })),
+        options: view ? view.options : command.options.slice(0, MAX_SHOWN_CHOICES).map((option) => ({ text: playerChoiceText(option.text) })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
-        cancelBehavior: command.cancelBehavior,
+        cancelBehavior: view ? view.cancelBehavior : command.cancelBehavior,
       });
+    }
     case "presentItem":
       return pause("presentItem", {
         kind: "presentItem",
         prompt: command.prompt,
-        items: presentableItems(state.session, command),
+        items: presentableItems(state.session, command, state.project),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
+    case "planSchedule": {
+      const view = buildSchedulePlanView(state.project, state.session, command);
+      if (!view) {
+        console.warn(`[interpreter] 일정표 없음(또는 슬롯 0): ${command.scheduleId}`);
+        return resumeNext(frame);
+      }
+      return pause("planSchedule", { kind: "planSchedule", view });
+    }
+    case "runSchedule": {
+      // 슬롯 하나를 실행할 때마다 이 명령으로 되돌아온다. 자식 프레임이 끝나면 부모 pc 가 +1 되므로
+      // (advanceCompletedFrame) 미리 -1 해 두어 같은 명령이 다시 실행되게 한다. 진행 위치는 session.scheduleRun —
+      // 공용 이벤트가 맵을 옮겨도 맵 진입 경로가 같은 명령으로 이어 간다.
+      for (;;) {
+        const commonEventId = advanceScheduleRun(state.project, state.session, command);
+        if (commonEventId === undefined) return resumeNext(frame);
+        const commonEvent = (state.session.commonEvents ?? state.project?.commonEvents)?.find((entry) => entry.id === commonEventId);
+        if (commonEvent?.commands.length && pushFrame(state, commonEvent.commands)) {
+          frame.pc -= 1;
+          return { kind: "continue" };
+        }
+        state.onUnverified?.(`Unsupported missing common event: ${commonEventId}`);
+        console.warn(`[interpreter] 일정 활동의 공통 이벤트 없음: ${commonEventId}`);
+      }
+    }
     case "fork": {
       // 소셜 host(characterId) 는 호감도·관계 조건만 읽는다. 나머지는 event id 만 쓰므로 프로젝트 전체 이벤트를
       // 뒤지지 않는다 — 병렬 이벤트의 조건 분기마다 이벤트 수만큼 선형 탐색하던 비용(8,000개 ≈ 550ms/틱)이다.
@@ -674,6 +727,10 @@ export function executeCommand(
       // 몬스터 장르: 캠페인 배지 스위치가 새로 켜지면 배지 획득 팡파레.
       if (next && !wasOn && state.project && monsterCampaign(state.project)?.badges.some((badge) => badge.switchId === command.switchId)) {
         playMonsterSfx(state.project, "badge-get");
+      }
+      // 퀘스트 완료 스위치(sw_<퀘스트>_done, quest/questDef questFlagIds)가 새로 켜지면 퀘스트 완료 징글(questComplete 자리, ME). 자리가 비면 무음.
+      if (next && !wasOn && state.project && /^sw_.+_done$/u.test(command.switchId) && (state.project.quests ?? []).some((quest) => "key" in quest && `sw_${quest.key}_done` === command.switchId)) {
+        playProjectSeCue("questComplete", state.project);
       }
       return resumeNext(frame);
     }
@@ -949,6 +1006,7 @@ export function executeCommand(
         ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
         ...(continueTo ? { continueTo } : {}),
+        ...(ENDING_AFTER_EPILOGUE.has(command) ? { epiloguePlayed: true } : {}),
       });
     }
     case "returnToTitle":
@@ -1022,7 +1080,8 @@ export function executeCommand(
         : state.session.variables[command.amount.id] ?? 0;
       const gained = changeItem(state.session, command.itemId, command.op, amount);
       // 몬스터 장르: 아이템을 얻었을 때(=, += 로 늘었고 amount>0) 획득 소리.
-      if (gained && state.project && command.op !== "-=" && amount > 0) playMonsterSfx(state.project, "item-get");
+      // 아이템을 얻었을 때(=, += 로 늘었고 amount>0): 저작한 「아이템 획득」 자리 → 몬스터 장르 획득 소리.
+      if (gained && state.project && command.op !== "-=" && amount > 0 && !playProjectSeCue("itemGet", state.project)) playMonsterSfx(state.project, "item-get");
       return resumeNext(frame);
     }
     case "craftRecipe": {
@@ -1086,10 +1145,14 @@ export function executeCommand(
     case "getFriendship":
       setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, resolveSocialHost(state)));
       return resumeNext(frame);
-    case "changeParty":
+    case "changeParty": {
+      const joined = command.action === "add" && !state.session.partyActorIds.includes(command.actorId);
       changeParty(state.session, command.actorId, command.action, state.project);
+      // 동료 합류 징글(partyJoin 자리, ME 채널) — 실제로 새로 들어왔을 때만. 자리가 비면 무음.
+      if (joined && state.project && state.session.partyActorIds.includes(command.actorId)) playProjectSeCue("partyJoin", state.project);
       if (state.project) syncPartyFollowers(state.project, state.session as PlaySession);
       return resumeNext(frame);
+    }
     case "giveMonster":
       if (state.project) giveMonster(state.project, state.session as PlaySession, command);
       return resumeNext(frame);
@@ -1209,6 +1272,8 @@ export function executeCommand(
       state.session.flags.fuseMonstersSuccess = result.ok;
       return resumeNext(frame);
     }
+    case "script":
+      return executeScriptCommand(state, frame, command, executeCommand);
     default:
       console.warn("[interpreter] 알 수 없는 command kind, 이벤트 중단");
       return { kind: "done" };

@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75d5b1f7a16c698d3993f9fa2c2f07abc919f8d981a73da6f1b4aaf2c572d828",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 1 w3 cut through a south-facing peat cliff face (climbs north)",
+ "label": "relief-cuts-fwd/peat-steps/ramp-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 14,
+  "darkV5": 38,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope with chevron texture, climbing north between the cut walls",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat peat ground in front of the ramp",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cut-wall wedges at the left and right edges of the ramp",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide and fully opaque for all 32 rows. Rows 0-15 show a sloped ramp with chevron texture, and only the narrow dark wedges at the left and right edges (rows 2-15) suggest cut walls. The centre columns (x=24, x=35) show only soft tone bands (rows 11-13 and 7-8 darker), not a front-edge line with a vertical face below. Rows 16-31 are uniform flat olive ground (L=136) with no vertical face, no lip and no shadow. There is no south-facing vertical cliff face of 3 or more rows across the body. The whole tile reads as a flat top-down surface with a ramp texture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a ramp with a dark brown peat cliff band at the top and a large khaki-olive slope below. The cliff band has a few diagonal grain lines and about 3-4 tones. The whole lower half is one nearly flat colour with almost no grain, tufts or soil speckle. The measured near-flat coverage is 50%, against 0% for both references, which confirms large flat fills. The 7 visible tones per tile come mostly from the cliff band and the edge transitions, not from texture across the surface. The dark edge pixels are only 16% neutral, so the outline is a tinted dark brown and reads as dark material tone, which is fine. The grass reference carries clumped tufts in several greens and the paving reference shades each stone, and this ramp surface has neither. It would look flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16632
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface cut into cliff (olive peat ground with V-shaped lighter/darker diagonal ridges)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground below the ramp (uniform olive fill)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain tile, not a standing object. Rows 0-15 show a ramp surface with diagonal ridge lines and dark brown cliff wedges at the left and right edges (rows 2-15). Rows 16-31 are a uniform flat olive fill. No horizontal top band ends in a front-edge line with eave shadow, and no ellipse is visible. The column scans show only small dark ridge marks (x=12 row 4 and rows 13-15, x=24 rows 11-13, x=35 rows 7-8 and 12-15), not a front face. There is no vertical south face of 3 or more rows, so the tile reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured facts put the candidate at 7 visible tones per tile, which matches the paving reference and beats the grass reference's 3. But near-flat coverage is 50% against 0% for both references. In the picture, the whole lower half of the patch is one flat tan fill with no grain, speckle or soil dots. The upper cliff-face band has some streaky grain and wedge shading, but it is only about 4 lightness steps against the references' 5-6. Only 16 distinct colours are used across the whole patch. The dark edge pixels are only 16% neutral, so the outline leans brown and reads as a dark material tone, which is acceptable. The large flat areas and thin texture would look flatter and more sticker-like than the Beodeul grass and paving next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12467
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope cut into peat cliff (olive-tan ground with V-shaped shading lines)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground below ramp (uniform olive)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a terrain block with no standing volume. Rows 0-15 show a ramp surface with V-shaped crease lines and dark peat cliff wedges on the left (rows 2-15) and right (rows 4-15). Rows 16-31 are a flat uniform olive ground fill. There is no front face of 3 or more rows, no front-edge line with eave shadow, and no ellipse. The column scan shows only brief darker bands, at rows 4, 11-13 and 7-8, which are crease shading and not an edge line. The ramp climbs north and reads as a flat top-down surface, so it is a slab without a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has 7 visible tones per tile, which matches the paving reference and beats the grass reference. However, 50% of it is near-flat, against 0% for both references. The lower half of the ramp is a large, uniform tan fill with almost no grain, speckle or per-pixel variation. The peat cliff band at the top is a dark brown wedge with only a few diagonal streaks. The main material ramp is about 3 steps (dark, mid, tan) against 5-6 in Beodeul. Only 16% of the dark edge pixels are neutral, so the outline is tinted dark brown, which is acceptable. The flat fills and thin texture would still look flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12574
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface cut into peat cliff (V-shaped diagonal texture bands, rows 0-15)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground below the ramp (uniform olive fill, rows 16-31)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain tile, not a standing object. Rows 0-15 show a ramp or slope with a V-shaped diagonal texture, with dark peat cliff wedges at the left and right edges (rows 2-15) that taper toward the middle. Rows 16-31 are a uniform flat olive ground fill. The silhouette is 48 wide on every row, so there is no standing-object outline. The column scan shows only a few darker shading rows (x=24 rows 11-13, x=35 rows 7-8, x=12 row 4 and rows 13-15), which are texture lines, not front-edge lines with eave shadow. No vertical front face of 3 or more rows is drawn. The tile reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate's visible tones per tile (7) match the paving reference and beat the grass (3), and its dark edge pixels are tinted (only 16% neutral), so the outline reads as dark material tone rather than a black sticker line. The structure is still weak. Near-flat coverage is 50%, against 0% for both references. The lower half of the ramp is a large, almost uniform olive/tan fill with no grain, speckle or per-tone variation. The cliff face and ramp wedge at the top use only about 4 lightness steps with a few streaks, short of the 5-6 steps Beodeul gives each material. Neither the peat soil nor the ramp surface has the dotted texture, tufts or stone-by-stone shading of the references. A careful artist would find it flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11772
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.849Z",
+ "cells": {
+  "16": [
+   "1b54e95873873d60",
+   "4aa32a350548d034",
+   "a4d50ada077faed2",
+   "d831aa14e679bd71"
+  ],
+  "24": [
+   "25968e8e3323e659",
+   "386ba204ae34dfc7",
+   "5077d9c3bfd9ca5b",
+   "50bed686a9efa279",
+   "7b128958286f9a96",
+   "83ebdd3a9107b4cc",
+   "e9db1a7f9f803073"
+  ],
+  "32": [
+   "1c8b8e98579c98a6",
+   "1dc34afc375d1ed4",
+   "734daca171149e5e",
+   "87ef51d4634e0537",
+   "c82712e2eb8823b6",
+   "ddde8bba7079e398"
+  ],
+  "48": [
+   "d8a639268587e961",
+   "e47d723b288030e8"
+  ]
+ }
+}

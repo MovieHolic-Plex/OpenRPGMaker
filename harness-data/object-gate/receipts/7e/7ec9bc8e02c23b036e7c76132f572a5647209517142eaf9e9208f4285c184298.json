@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ec9bc8e02c23b036e7c76132f572a5647209517142eaf9e9208f4285c184298",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 3 w2 reverse cut through a north-facing cave cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/cave-steps/ramp-h3-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface with step treads, seen from above descending away from the viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark side cliff edges at left and right, 1-2 px wide",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32-wide, 32-row sloped ground surface. Horizontal tread bands are separated by 1-row darker step lines at rows 6, 10, 19, 23 and 27, and a darker lip sits at row 0. The lighter treads at rows 20-22, 24-26 and 28-31 get lighter toward the bottom. There is no vertical south face of 3 or more rows. The only vertical elements are the 1-2 px dark cliff edges along the left and right sides from row 8 down. The tile reads as a top-down view of a descending ramp, so it is a slab, which suits a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has about 7 visible tones per tile, the same as the paving reference (7) and well above the grass reference (3). Near-flat coverage is 2%, so there are no large flat fills; the planks are broken up by grain lines and tone shifts between boards. The 65% neutral share of dark edge pixels is close to the paving reference's 80%, but the picture shows a brown lean on the plank edges, so I call the outline mixed rather than a pure black sticker line. Weaknesses: only 11 distinct colours in total, and the plank texture dots are sparser than the stone-by-stone shading in the paving. That puts it slightly below the references on richness, but a careful artist would still accept it next to the paving, which is built from just as few colours.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21716
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface seen from above, with horizontal step lines",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32x32 ramp surface viewed from above. The column scan shows near-uniform mid-brown runs, with thin darker lines at rows 6, 19, 23 and 27 that mark steps or treads. There is no vertical south face of 3 or more rows, and no eave or front-edge band that would separate a top from a front. Narrow dark strips at the left and right edges (from about row 8 down) read as the cut walls of the ramp. This reads as a flat terrain surface with no front elevation, which suits a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ramp of horizontal plank or step bands. Each band has a light top edge, a mid face and a dark underside, giving about 5 lightness steps. It also has some grain and speckle. Measured facts: 7 visible tones per tile, equal to the paving reference (7) and well above the grass reference (3). Near-flat coverage is 2% against 0% for both references, so there are no real flat fills. The dark edge pixels are 65% near-neutral, which is mixed. The paving reference is at 80%, and the candidate's lines look slightly brown-leaning rather than a uniform black sticker outline. It is somewhat simpler than the references, with only 11 colours in total. That fits a small ramp patch drawn with a locked palette, and it carries about the same visible information per tile as the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16868
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface with step lines, descending away from viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x32 square (width 32 on rows 0-31). The column scans show only thin darker step lines at rows 6, 10, 19, 23 and 27, with lighter tread bands between them. These are horizontal step edges across a ramp seen from above. There is no tall vertical south face of 3 or more rows, and no front-edge line followed by eave shadow. The dark pixels at the left and right edges from row 8 downward are narrow cut walls. The whole tile reads as a flat, top-down sloped surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a banded, plank-like ramp with a light top edge, mid bands, dark separator lines and a few grain specks. It reads as about 5 lightness steps against about 6 in the references. The measured facts match the paving reference: 7 visible tones per tile against 7, and 2% near-flat coverage against 0%, so there are no large flat fills. Raw colour counts are low (8 per tile), which is expected for a locked palette. 65% of dark edge pixels are neutral, which is close to the paving reference at 80%. By eye the edges lean slightly brown, so I call the outline mixed rather than a uniform black sticker line. The rows are somewhat regular and less individually shaded than the paving stones, so density is slightly below the reference, but a careful artist would still accept it next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19225
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface (full tile, stepped bands descending away from viewer)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x32 tile, 32 px wide in every row. The column scan shows one continuous earthy ramp surface. It is crossed by thin darker step lines at about rows 6, 10, 19, 23 and 27, with lighter tread bands of 3-4 rows between them (rows 20-22, 24-26, 28-31). These read as tread edges seen from above on a ramp that descends away from the viewer. No vertical south face of 3 or more rows is drawn, and there is no riser, eave or ellipse. The only dark verticals are 1-2 px edge strips on the left and right from about row 7 down, which are cut-wall edges and not a receding side face. This is a flat top-down terrain slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden plank ramp made of stacked horizontal steps. Each step has a light top edge, a mid plank body and a dark underside, which gives about 5 lightness steps. The measured facts match the paving reference: 7 visible tones per tile against 7 for paving and 3 for grass, and 2% near-flat coverage against 0%. The edge is a dark brown-grey line. It is partly neutral (65% near-neutral dark edge pixels, against 80% for the paving reference) but still leans brown beside the wood, so I call it mixed rather than a pure black sticker outline. Grain is modest: plank seams and a few speckles, with no large flat 5x5 fills. It is simpler than the grass reference's clumps, but it is as dense as the paving reference and I would accept it next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19822
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.606Z",
+ "cells": {
+  "16": [
+   "411c4e0961a308b9",
+   "8111898a6889f66b",
+   "f36f0f19d3db7245",
+   "f5daf76e5bf8f1e9"
+  ],
+  "24": [
+   "05c03ecfb80109fa",
+   "0e739800b1db0cf7",
+   "17cd947110f9370e",
+   "2505494a2f14e6cb",
+   "2f8cb9052cad8b3c",
+   "2fc714af145da43f",
+   "336e928c0e1374f7",
+   "51cc9fbfb1689c5a",
+   "70d37504eb2dd9ca",
+   "711d7046a310ea9f",
+   "746171274d724c20",
+   "7571328340819409",
+   "783403af289d6027",
+   "786e8f7fd68d3b6a",
+   "85ecbd99cede6c1a",
+   "91d67917387e9b31",
+   "9714a92a47b876ec",
+   "9e985d71daf0f4bb",
+   "c156541398710383",
+   "d897c5b8b1f742f0",
+   "eb05aff04011e365",
+   "f0d339139e77acee",
+   "f11e156df7daf400",
+   "fcc5db394e005afe"
+  ],
+  "32": [
+   "bdb960fba4dbba7f"
+  ],
+  "48": [
+   "1e8a7c1b902f4c98",
+   "57ef9bddf9da572a",
+   "6733690a7910de58",
+   "69b544a1fb03e7d2",
+   "a07a863c23299092",
+   "cc1117518964713e"
+  ]
+ }
+}

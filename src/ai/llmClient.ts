@@ -95,6 +95,11 @@ export interface AiConfig {
   piApply?: PiApplyMode;
   piApplyPolicyVersion?: 1;
   /**
+   * 완성 뒤 대사 윤문(src/ai/piAgent/dialoguePolishHook.ts) — 게임을 다 지은 실행의 끝에 실행기가 새로 쓴 대사를 윤문 린터로 재고
+   * 조수에게 한 차례 고치게 한다. 기본 켬(undefined). false 만 저장한다.
+   */
+  dialoguePolishAfterBuild?: boolean;
+  /**
    * 역할 모델 정책 버전. 1 = 2026-09-26 이동 이후 저장분.
    *
    * 왜 필요한가(리뷰 R3 N5): 옛 모달이 적어 둔 «폴백 모양(providerId·liteModel·high)» 과 사용자가
@@ -444,6 +449,7 @@ function loadStoredAiConfig(): AiConfig {
         ? DEFAULT_PI_APPLY : normalizePiApplyMode(parsed.piApply),
       piApplyPolicyVersion: 1,
       roleModelsPolicyVersion: 1,
+      ...(parsed.dialoguePolishAfterBuild === false ? { dialoguePolishAfterBuild: false } : {}),
     };
   } catch {
     return defaultAiConfig();

@@ -114,6 +114,11 @@ export interface GameMap {
   /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
   bgm?: MapBgmSetting;
   /**
+   * 맵 환경음(BGS) — BGM 밑에 계속 깔리는 루프(비·바람·동굴 물방울). 없으면 지금 흐르는 환경음을 그대로 둔다(옛 맵·이벤트가 튼 환경음 유지).
+   * custom = 이 맵에 들어오면 그 루프(같은 루프면 끊지 않음), none = 이 맵에서는 환경음을 끈다. 해석은 project/mapMusic.ts `resolveMapBgs`.
+   */
+  bgs?: MapBgsSetting;
+  /**
    * 스위치가 켜져 있는 동안 이 맵에 들어올 때(맵 진입·패배 복구) 대신 트는 곡. 앞쪽이 먼저(첫 번째로 켜진 것).
    * 추격 곡(set_game_audio role:chase)이 쓴다 — 추격 스위치가 켜진 채 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어진다.
    * `bgm` 과 따로 두어 맵 속성에서 BGM 을 바꿔도 지워지지 않는다. 해석은 project/mapMusic.ts `resolveMapBgm` 하나.
@@ -354,6 +359,15 @@ export interface MapBackgroundLayer {
 export interface MapSwitchBgm {
   switchId: string;
   resourceId: string;
+}
+
+export interface MapBgsSetting {
+  /** "custom" = 지정 환경음, "none" = 환경음 끔. */
+  mode: "none" | "custom";
+  /** mode="custom"일 때 리소스 ID(kind sound 루프). */
+  resourceId?: string;
+  /** 크기(0~100, 생략 = 100). 환경음 채널은 음악 볼륨 그룹을 따른다. */
+  volume?: number;
 }
 
 export interface MapBgmSetting {
@@ -626,6 +640,11 @@ export interface FieldSpawnDef {
   persistKill?: boolean;
   /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
   onKillSwitchId?: string;
+  /**
+   * 이 시간대에만 나온다(시간 시스템이 켜졌을 때). 시간대를 벗어나면 살아 있던 무리도 사라지고, 다시 들어오면 새로 나온다.
+   * 생략하거나 시간 시스템이 꺼져 있으면 늘 나온다. 시간대 구분은 gameTime.timePhaseFor(아침 6~10·낮 10~17·저녁 17~20·밤).
+   */
+  timePhases?: import("../gameTime").TimePhase[];
 }
 
 export interface RoguelikeRoomDef {
@@ -850,6 +869,11 @@ export interface Project {
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** 조수가 게임 하나를 짓기 전에 쓰는 청사진(목표·핵심 경로·엔딩). 출하 검사가 이 경로를 걸어 본다. project/gameBlueprint.ts */
   gameBlueprint?: import("../gameBlueprint").GameBlueprint;
+  /**
+   * 조수 v2 의 할 일 목록(마지막 실행 — src/ai/v2/loop/todoStore.ts AssistantTodoState). «계속» 요청이 열린 항목을 이어 받는다.
+   * 게임 실행에는 쓰지 않는다. 모양은 조수 쪽이 검사한다(여기서는 느슨하게 둔다 — 프로젝트 층이 조수 모듈에 기대지 않게).
+   */
+  assistantTodo?: { readonly version: 1; readonly task: string; readonly at: number; readonly items: readonly unknown[]; readonly meta?: Readonly<Record<string, unknown>> };
   /** Prompt library and dialogue review preferences, saved with this project. */
   aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */
@@ -938,6 +962,8 @@ export interface Project {
   monsterMetadata?: MonsterMetadataOverrides;
   /** 「대사」 책상 — 화자별 말투 메모와 조수 윤문 제안(project/dialogueDesk.ts). optional이라 마이그레이션 불필요. */
   dialogueDesk?: import("../dialogueDesk").DialogueDesk;
+  /** Shared TypeScript helper modules scripts import as `@lib/<id>` (openwiki/script-sandbox.md). Optional; no migration. */
+  scriptLibrary?: import("../script/types").ScriptModule[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

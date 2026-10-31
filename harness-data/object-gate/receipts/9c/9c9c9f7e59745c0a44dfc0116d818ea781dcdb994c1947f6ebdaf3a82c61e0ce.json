@@ -1,0 +1,292 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c9c9f7e59745c0a44dfc0116d818ea781dcdb994c1947f6ebdaf3a82c61e0ce",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 4 w3 reverse cut through a north-facing snow cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/snow-steps/ramp-h4-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 9,
+  "darkV5": 91,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow terrace top / upper ramp surface",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp slope with step lines descending",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48px rectangle for all 32 rows, with no silhouette change. Rows 0-8 are a pale blue-grey snow band, and row 9 is a dark line (L=127) marking the lip. Rows 10-31 are a pinkish ramp with repeating horizontal step lines every 3 rows (rows 12, 15, 18, 21, 24, 27), which fits a ramp descending away from the viewer. There is no standing south face: no vertical front face of 3+ rows and no eave shadow. The whole tile is a ground-plane view from above, so it reads as a top-down slab. As terrain, this matches the brief of a ramp seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 6 visible tones per tile against 3 for the grass reference and 7 for the paving reference, so it is at or above the references on tone count. Near-flat coverage is 0%, matching the references. Its dark edge pixels are 0% neutral, so any edge colour is tinted. By eye there is no uniform black sticker outline, because forms are separated by value alone, as in Beodeul. The surface is pale snow with horizontal tread bands and speckle in about 5 lightness steps. It is slightly regular and mechanical next to the hand-clustered grass, and it uses only 9 colours in total. It reads as a stepped ramp with enough grain, not as a flat fill. Balancing this, a careful artist would accept it next to the references, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14755
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip snow surface",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp treads (stepped, descending)",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 48x32 terrain tile seen almost straight down. Rows 0-8 are pale snow terrace. Rows 9-31 are a tan ramp with a thin blue-gray line every 3 rows (rows 12, 15, 18, 21, 24, 27), which reads as step treads receding away from the viewer. No vertical south face of 3 or more rows is drawn. Rows 28-31 only brighten to snow at the bottom. The dark column at the left edge is an outline, not a receding side face. The tile is a flat top-down surface with no front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a pale snow ramp with horizontal step bands, a blue-grey shadow line under each step, and speckle between the bands. I read about 5 lightness steps. Measured facts put it at 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference, with 0% near-flat coverage. That is above grass and close to paving, so the surface is not flat-filled. The paving reference also uses only 7 raw colours, so the candidate's 9 total colours are not shallow for this kind. No dark outline is drawn. Forms are separated by value alone, which matches Beodeul practice, and the 0% neutral edge share confirms there is no black sticker line. The weak points are that the banding is fairly regular and the grain is less clustered than in the grass reference, so it sits slightly below the references. It is still acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20087
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snowy terrace lip (upper ground)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface with step or tread lines descending away from the viewer",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x32 opaque block that is entirely horizontal ground seen from above. Rows 0-8 are pale snow-grey terrace. Row 9 is a darker (L=127) line across it, which marks the lip where the ramp starts. Rows 10-31 are a pinkish-brown ramp surface crossed by a regular series of thin horizontal lines (rows 12, 15, 18, 21, 24, 27 in the scans), which read as tread lines. The bottom rows 28-31 lighten to near-white snow. There is no vertical south face of 3 or more rows, and no front-edge line followed by an eave shadow and a face below it. The narrow dark strip on the left is an edge or outline, not a receding side face. This is a plan-view ramp, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pale snow ramp patch with horizontal tread banding and speckle in tinted blue and pink-white tones. It has about 5 lightness steps. The measured facts support this: 6 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage, the same as both references. There is no black sticker outline, and the dark edge pixels carry a tint (0% neutral). The texture is regular and low-contrast, so it is less varied than the grass clumps, but no 5x5 area is a flat fill. Density is on par with the references, so I pass it, though not strongly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18774
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow terrace lip (flat top at the head of the ramp)",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface with repeated step lines, descending away from the viewer",
+      "rows": "10-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide for all 32 rows. Rows 0-8 are pale blue-grey snow, closed off by a dark edge line at row 9 (L=127). Rows 10-31 are a brownish ramp surface with a thin blue-grey line every 3 rows (rows 12, 15, 18, 21, 24, 27). Those lines are tread or step marks seen from above, not a vertical south face. The ramp has no front face of 3 or more rows. The dark strips at the left and right edges are only side borders, not a receding side face. The whole tile is a plan view of a sloped surface, so it reads as a top-down slab, which is expected for terrain seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate shows 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Its near-flat coverage is 0%, the same as both references, so no 5x5 area is a flat fill. There is no black sticker outline: the dark-edge pixels are 0% neutral, so they carry a tint, and forms are separated by value, which matches Beodeul practice. The surface is a pale snow ramp built from stepped horizontal bands with light and dark lines, roughly 5 lightness steps. That reads as a descending ramp and has structure. The weak points are that it is low in contrast, the banding is fairly regular, and it has little per-pixel grain compared with the grass. On the measured facts it is at the level of the references, and the paving reference is also a small-palette piece (7 colours). I rate it acceptable but not outstanding, and the verdict is a marginal pass because of the low contrast and regular banding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20701
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.430Z",
+ "cells": {
+  "16": [
+   "076aab9fdb3f63da",
+   "1f071f1023472034",
+   "81f5d42ef8ad327e",
+   "90321d204b94e86b",
+   "a80045b187523a41",
+   "d5ade11b0b5751f1"
+  ],
+  "24": [
+   "0506376ee8726b6c",
+   "572a7bda3a673aa4",
+   "77004fd113fb5815",
+   "9191cdd76b2f48ea",
+   "96eac6dea4288552",
+   "b1c63c064492710e",
+   "b211eb7e9deb66f3",
+   "d17631973e4f481a"
+  ],
+  "32": [
+   "038f3230e7096375",
+   "43ccd92a435c548c",
+   "457bf55eaefbf222",
+   "56d78939e0b8eda3",
+   "57011d58e2b3dd14",
+   "cb8b70e36fa5450a"
+  ],
+  "48": [
+   "7bceaf140f09182f",
+   "dc8c9d4e4dec5716"
+  ]
+ }
+}

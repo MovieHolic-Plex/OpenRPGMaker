@@ -389,6 +389,28 @@ defineCommand({
 });
 
 defineCommand({
+  kind: "planSchedule",
+  family: "map",
+  label: "일정표 짜기",
+  fields: {
+    scheduleId: f.record("일정표", "schedule"),
+    slotCount: f.number("사용할 칸 수 (비우면 전부)", { min: 1, max: 14, optional: true }),
+  },
+  summary: (c, l) => `${l.recordName(str(c.scheduleId))} 짜기`,
+});
+
+defineCommand({
+  kind: "runSchedule",
+  family: "map",
+  label: "일정표 실행",
+  fields: {
+    scheduleId: f.record("일정표", "schedule"),
+    slotVariableId: f.variable("칸 번호를 담을 변수", { optional: true }),
+  },
+  summary: (c, l) => `${l.recordName(str(c.scheduleId))} 실행`,
+});
+
+defineCommand({
   kind: "callMapEvent",
   family: "map",
   label: "맵 위 이벤트 부르기",

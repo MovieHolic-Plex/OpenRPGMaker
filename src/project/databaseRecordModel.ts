@@ -1,3 +1,5 @@
+import { normalizeSeCues } from "@/project/seCues";
+import { normalizeScheduleRecords } from "./schedule";
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
@@ -6,6 +8,7 @@ import { normalizeHeldItemEffect } from "@/battle/heldItems";
 import { ESCAPE_GRACE_STEPS_MAX, normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeBestiary } from "./bestiary";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
 import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
@@ -89,6 +92,7 @@ import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footpr
 import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeRestMenu } from "@/project/restMenu";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
@@ -105,6 +109,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   return {
     id: record.id,
     name: record.name,
+    ...(cleanOptionalId(record.iconResourceId) ? { iconResourceId: cleanOptionalId(record.iconResourceId) } : {}),
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
@@ -122,6 +127,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.mpReleaseStep !== undefined ? { mpReleaseStep: optionalNumber(record.mpReleaseStep) } : {}),
     ...(record.fieldStepInterval !== undefined ? { fieldStepInterval: optionalNumber(record.fieldStepInterval) } : {}),
     ...(record.releaseAfterSteps !== undefined ? { releaseAfterSteps: optionalNumber(record.releaseAfterSteps) } : {}),
+    ...(record.releaseAfterBattles !== undefined ? { releaseAfterBattles: optionalNumber(record.releaseAfterBattles) } : {}),
     ...(record.fieldStepCanKill !== undefined ? { fieldStepCanKill: record.fieldStepCanKill === true } : {}),
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
@@ -144,7 +150,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies" | "schedules"
 >>;
 
 /**
@@ -192,6 +198,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     ...(database.skillChoreographies !== undefined
       ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
       : {}),
+    ...(database.schedules !== undefined ? { schedules: normalizeScheduleRecords(database.schedules) } : {}),
   };
 }
 
@@ -303,6 +310,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   records.battleVictoryMeResourceId = cleanOptionalId(system.battleVictoryMeResourceId);
   records.battleDefeatSeResourceId = cleanOptionalId(system.battleDefeatSeResourceId);
   records.battleEscapeSeResourceId = cleanOptionalId(system.battleEscapeSeResourceId);
+  // 효과음 자리 표 — 화이트리스트라 여기 없으면 저장 왕복 1회에 사라진다. 비면 저장하지 않는다(옛 JSON 바이트 유지).
+  const seCues = normalizeSeCues(system.seCues);
+  if (seCues) records.seCues = seCues;
   records.initialTroopId = cleanOptionalId(system.initialTroopId);
   records.battleFlow = normalizeBattleFlow(system.battleFlow);
   // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
@@ -400,6 +410,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 파티원 유대(옵트인) — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
   { const partyBonds = normalizePartyBonds(system.partyBonds); if (partyBonds) records.partyBonds = partyBonds; }
   if (gallery) records.gallery = gallery;
+  // 괴물 도감 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const bestiary = normalizeBestiary(system.bestiary); if (bestiary && (bestiary.enabled || bestiary.entries.length)) records.bestiary = bestiary; }
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;
   if (vehicles) records.vehicles = vehicles;
@@ -416,7 +428,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
   if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
   // 필드 안내 끄기 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
-  if (system.fieldGuides === "off") records.fieldGuides = "off";
+  if (system.fieldGuides === "off" || system.fieldGuides === "arrows") records.fieldGuides = system.fieldGuides;
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;
@@ -459,6 +471,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
   const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
   const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
   const onDayEnd = cleanOptionalId(config.onDayEnd);
+  const restMenu = normalizeRestMenu(config.restMenu);
   const daysPerSeason = clampInteger(
     typeof config.daysPerSeason === "number" && Number.isFinite(config.daysPerSeason)
       ? config.daysPerSeason
@@ -474,6 +487,7 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
     daysPerSeason,
     forceSleep: config.forceSleep === true,
     ...(onDayEnd ? { onDayEnd } : {}),
+    ...(restMenu ? { restMenu } : {}),
   };
 }
 
@@ -784,6 +798,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     scope: isSkillScope(record.scope) ? record.scope : "enemy",
     power: clampInteger(record.power ?? 10, -9999, 9999),
     animationId: cleanOptionalId(record.animationId),
+    ...(cleanOptionalId(record.iconResourceId) ? { iconResourceId: cleanOptionalId(record.iconResourceId) } : {}),
     description: record.description ?? "",
     type: record.type ?? "normal",
     mpCost: normalizeMpCost(record.mpCost),

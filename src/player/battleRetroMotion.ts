@@ -6,7 +6,7 @@ import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
-import type { PartyPixelCell, PixelEnemyCell, RetroMonsterCell } from "@/assets/pixelEnemySheets";
+import { pixelEnemyHasCell, pixelEnemySheet, type PartyPixelCell, type PixelEnemyExtraCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
 import { enemyLungeOwnFactor, pixelEnemyLungeProfile, resolveBattleStaging } from "@/project/battleStaging";
 import { retroRosterClass } from "@/assets/retroRoster";
@@ -221,6 +221,12 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
       node.classList.add("defeated");
       if (node.classList.contains("battle-enemy")) beginEnemyCollapse(node);
     }
+    // 16칸 시트가 방어 중(방어 명령·방어 상승 상태)에 맞으면: 짧게 막는 칸(guard) → 맞은 칸. 막타는 막지 못한다.
+    const guarded = node.dataset.battlerDefending === "true" || node.dataset.battlerGuarded === "true";
+    if (!lethal && node.dataset.pixelEnemy && guarded && nodeHasCell(node, "guard")) {
+      transientSequence(node, [["guard", 160], ["hit", 220]]);
+      return;
+    }
     transientPose(node, "hit", lethal ? 200 : 380);
     return;
   }
@@ -387,6 +393,45 @@ function transientPose(node: HTMLElement, frame: Pose, duration: number): void {
     delete node.dataset.retroTransient;
     if (node.isConnected) paint(node, "idle");
   }, duration);
+}
+
+/** 짧은 칸 여러 개를 차례로(16칸 시트의 막기 → 맞음). 다음 transientPose 가 오면 끊긴다. */
+function transientSequence(node: HTMLElement, steps: readonly (readonly [string, number])[]): void {
+  const generation = (transientGenerations.get(node) ?? 0) + 1;
+  transientGenerations.set(node, generation);
+  let at = 0;
+  for (const [frame, duration] of steps) {
+    const show = () => {
+      if (transientGenerations.get(node) !== generation) return;
+      node.dataset.retroTransient = frame;
+      if (node.isConnected) paint(node, "idle");
+    };
+    if (at === 0) show();
+    else scheduleBattleTimer(show, at);
+    at += duration;
+  }
+  scheduleBattleTimer(() => {
+    if (transientGenerations.get(node) !== generation) return;
+    delete node.dataset.retroTransient;
+    if (node.isConnected) paint(node, "idle");
+  }, at);
+}
+
+/**
+ * 전투 시작 포효(16칸 시트의 intro 칸). 적마다 엇갈려 한 번, 보스(쓰러짐 연출 bossSink)는 더 길게.
+ * 감속 모드·intro 칸이 빠진 시트는 하지 않는다. 행동 비트가 시작되면 비트 칸이 이긴다(retroPixelEnemyCell 순서는 transient 가 먼저라
+ * 첫 행동 전에 끝나도록 짧게 둔다).
+ */
+export function retroBattleIntro(field: HTMLElement): void {
+  if (reduced()) return;
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-grid=\"4x4\"]:not(.defeated)")]
+    .filter((node) => nodeHasCell(node, "intro"));
+  enemies.forEach((node, index) => {
+    const boss = node.dataset.collapse === "bossSink";
+    scheduleBattleTimer(() => {
+      if (node.isConnected && !node.classList.contains("defeated") && !node.dataset.retroBeat) transientSequence(node, [["intro", boss ? 900 : 520]]);
+    }, 120 + index * 140);
+  });
 }
 
 function extendedMotionPose(node: HTMLElement, pose: Pose): Pose {
@@ -796,8 +841,33 @@ export function retroPixelEnemyCell(node: HTMLElement): RetroMonsterCell | "idle
   // 모습부터 다시 시작해 「죽었다 살아나 다시 죽는」 것처럼 읽혔다(2026-10-02 영상). 연출 캔버스가 그림을 숨길 때까지 맞은 칸.
   if (node.classList.contains("defeated")) return transient === "hit" || node.dataset.collapse ? "hit" : "dead";
   if (transient === "hit") return "hit";
+  // 16칸 시트: 방어 중 맞으면 잠깐 막는 칸, 전투 시작 포효. 그 칸이 없는 시트는 이 표식을 달지 않는다(pixelEnemyRestCell).
+  if (transient === "guard" || transient === "intro") return transient;
   const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
-  return (cell as RetroMonsterCell | undefined) ?? "idle";
+  return (cell as RetroMonsterCell | undefined) ?? pixelEnemyRestCell(node);
+}
+
+/** 이 노드의 도트 적 시트(16칸 판정용). */
+function nodePixelSheet(node: HTMLElement): PixelEnemySheet | undefined {
+  return pixelEnemySheet(node.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet);
+}
+
+/** 16칸 시트가 그 확장 칸을 그렸는가. 3×3 시트·빠진 칸(missingCells)은 false — 그 동작은 일어나지 않는다. */
+function nodeHasCell(node: HTMLElement, cell: PixelEnemyExtraCell): boolean {
+  return node.dataset.pixelGrid === "4x4" && pixelEnemyHasCell(nodePixelSheet(node), cell);
+}
+
+/**
+ * 행동하지 않는 동안의 칸. 16칸 시트만 바뀐다: 방어 중 → guard, HP 25% 이하 → weak 와 idle_b 를 번갈아(숨이 가쁜 대기),
+ * 그 밖은 CSS 대기 루프("idle"). weak 번갈이는 data-pixel-weak 가 CSS 로 돈다(27-retro-motion.css).
+ */
+function pixelEnemyRestCell(node: HTMLElement): RetroMonsterCell | "idle" {
+  if (node.dataset.pixelGrid !== "4x4") return "idle";
+  if (node.dataset.battlerDefending === "true" && nodeHasCell(node, "guard")) return "guard";
+  const weak = node.dataset.battlerWeak === "true" && nodeHasCell(node, "weak");
+  if (weak) node.dataset.pixelWeak = "true";
+  else delete node.dataset.pixelWeak;
+  return "idle";
 }
 
 /**
@@ -931,7 +1001,7 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   const dx = Number.isFinite(parsedDx) ? parsedDx : 18;
   const dy = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dy")) || 0;
   const cues: [number, MotionCue][] = [];
-  let cells: readonly [number, PixelEnemyCell][];
+  let cells: readonly [number, RetroMonsterCell][];
   let path: readonly PathPoint[];
   if (stationary) {
     // The authored neck/bow changes supply the motion. Feet and node remain planted, including recover.
@@ -1018,6 +1088,7 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     if (fraction === 0) play();
     else if (length > 0) scheduleBattleTimer(play, Math.min(length - 1, Math.round(length * fraction)));
   }
+  cells = withAttackMid(node, beat, cells, melee, stationary);
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
   pixelAnimations.get(node)?.cancel();
   pixelAnimations.delete(node);
@@ -1038,6 +1109,16 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     if (fraction === 0) draw();
     else scheduleBattleTimer(() => { if (node.isConnected) draw(); }, Math.min(length - 1, Math.round(length * fraction)));
   }
+}
+
+/**
+ * 16칸 시트의 통상 공격: windup → attack_mid → attack. 근접은 다가가기 끝(마지막 18%)에, 제자리 공격(쏘기·숨·반 걸음)은
+ * 다가가기 비트 뒤쪽 절반에 attack_mid 를 둔다. attack_mid 가 빠진 시트·3×3 시트·파티원은 그대로(windup 에서 바로 attack).
+ */
+function withAttackMid(node: HTMLElement, beat: BattleActionBeat, cells: readonly [number, RetroMonsterCell][], melee: boolean, stationary: boolean): readonly [number, RetroMonsterCell][] {
+  if (beat.kind !== "approach" || node.dataset.pixelParty !== undefined || !nodeHasCell(node, "attack_mid")) return cells;
+  const at = melee ? 0.82 : stationary ? 0.7 : 0.5;
+  return [...cells.filter(([fraction]) => fraction < at), [at, "attack_mid"]];
 }
 
 function characterApproachStyle(profile:CharacterMotionProfile):RetroApproachStyle {

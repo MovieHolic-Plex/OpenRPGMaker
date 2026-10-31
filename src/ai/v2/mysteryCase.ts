@@ -184,6 +184,23 @@ function pickCulprit(project: Project, texts: readonly string[], taken: Readonly
   return undefined;
 }
 
+/**
+ * 마지막 단계 글이 가게·여관 주인을 범인으로 부르는데(「여관 주인의 고백」「여관 주인에게 진실을 묻는다」) 맵에 「주인」이 서 있지 않으면 그 주인을 범인으로 세운다.
+ * 주인이 서 있으면 의뢰인이라 범인으로 쓰지 않는다(ROLE 머리말).
+ * 왜(2026-10-31 meb2 terra 추리): 단서(우산 실·장부)는 여관 주인을 가리키는데 주인이 ROLE 에 없어 풀에서 「하녀 로자」를 범인으로 세웠고,
+ * 고르기에는 주인이 없는데 엔딩은 주인이 고백했다 — 판정 major 「범인 논리가 모순」.
+ */
+function ownerSuspect(project: Project, texts: readonly string[], taken: ReadonlySet<string>, seed: number): Suspect | undefined {
+  const m = texts.map((t) => /((?:여관|주점|객잔|가게|상점|저택|하숙집|찻집|빵집)\s*)?주인(?![공장])/u.exec(t)).find(Boolean);
+  if (!m) return undefined;
+  const ownerStanding = Object.values(project.maps).some((map) => (map.events ?? []).some((e) => nameOf(e).includes("주인") && visiblePerson(e)));
+  if (ownerStanding) return undefined;
+  const role = `${m[1]?.trim() ?? ""} 주인`.trim();
+  const given = ["한나", "오언", "마르타", "베른"].filter((g) => !taken.has(`${role} ${g}`));
+  if (!given.length) return undefined;
+  return { role, name: `${role} ${given[seed % given.length]}`, looks: "man", place: "카운터 뒤" };
+}
+
 /** 조사만(괄호로 감싼 이름 뒤에 붙일 때). */
 const jo = (word: string, pair: "이/가" | "을/를" | "은/는" | "와/과"): string => withJosa(word, pair).slice(word.length);
 const KEY_ITEM = /열쇠|키\b|key|출입증|통행증/iu;
@@ -700,24 +717,68 @@ function evidenceOnThing(run: BuildRun): string[] {
   return notes;
 }
 
+/** 막힌 칸의 가구 이름(「카운터」「의자」) — 바닥·벽·문 같은 것은 빈 글. */
+function furnitureAt(project: Project, map: GameMap, x: number, y: number): string {
+  const w = map.width;
+  if (x < 0 || y < 0 || x >= w || y >= map.height || isPassable(project, map, x, y)) return "";
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  for (const key of ["upperTiles", "upperOverlayTiles"]) {
+    const t = m[key]?.[y * w + x];
+    if (typeof t !== "number" || t < 0) continue;
+    const label = tileLabel(project, map, t).replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
+    const named = thingWords(label);
+    if (named && !/바닥|벽|깔개|러그|그림자|공허|천장|창|문|floor|wall|rug|shadow|ceiling|void|door/iu.test(named)) return named;
+  }
+  return "";
+}
+
+/** 바닥 칸의 자리 말 — 곁 가구가 있으면 「가운데 카운터 옆」, 없으면 방위(「북서쪽」). evidenceOnThing 이 대사에 쓰는 말과 같은 규칙. */
+function floorPhrase(project: Project, map: GameMap, x: number, y: number): string {
+  const near = [[0, -1], [-1, 0], [1, 0], [0, 1]].map(([dx, dy]) => furnitureAt(project, map, x + dx!, y + dy!)).find(Boolean);
+  return near ? `${mapRegion(map, x, y)} ${near} 옆` : mapRegion(map, x, y);
+}
+
+/**
+ * 증거 물건 칸(`<사람 id>_evidence`)이 옮겨지면 대사의 자리 말을 지금 칸에 다시 맞춘다 — 모델이 멈출 때마다 돈다(되풀이 안전).
+ * 자리 말은 사람의 귀띔(「…<자리> 바닥에서 뭔가 반짝이던데」), 칸 대사(「<자리> 바닥에 『X』」), 범인 진술(「<자리>엔 간 적도 없소」),
+ * 지목 증명(「『X』는 <맵> <자리>에서 나왔다」)에 같은 글로 들어간다. 칸 대사의 옛 말을 찾아 그 틀 안에서만 바꾼다.
+ * 왜(2026-10-31 mef3 terra 추리 32.3점, 엔딩 못 봄): 「게임 검사 보임」에 쫓겨 모델이 증거 칸을 (10,5)→(9,4)→…→(4,3) 로 일곱 번 옮겼는데
+ * 대사는 처음 자리 「가운데 카운터 옆」을 그대로 말했다. 판정자는 카운터 둘레만 뒤지다 증거를 못 찾고 은시계에서 막혔다.
+ */
+export function realignEvidencePlaces(project: Project): { project: Project; notes: string[] } {
+  const notes: string[] = [];
+  let next = project;
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (!ev.id.endsWith("_evidence") || visiblePerson(ev)) continue;
+    const old = /"body":"([^"]+?) 바닥에 『/u.exec(JSON.stringify(ev.pages ?? []))?.[1];
+    if (!old) continue;
+    const now = floorPhrase(project, map, ev.x, ev.y);
+    if (!now || now === old) continue;
+    const esc = old.replace(/[.*+?^$()|[\]\\{}]/gu, "\\$&");
+    const re = new RegExp(`${esc}(?=( 바닥| 근처|엔 |에서 |에 떨어져))`, "gu");
+    const maps = { ...next.maps };
+    let hits = 0;
+    for (const [id, m] of Object.entries(next.maps)) {
+      const text = JSON.stringify(m.events ?? []);
+      const swapped = text.replace(re, () => { hits += 1; return now; });
+      if (swapped !== text) maps[id] = { ...m, events: JSON.parse(swapped) as GameEvent[] };
+    }
+    const items = JSON.stringify(next.database.items);
+    const itemsSwapped = items.replace(re, () => { hits += 1; return now; });
+    if (!hits) continue;
+    next = { ...next, maps, database: { ...next.database, items: JSON.parse(itemsSwapped) as typeof next.database.items } };
+    notes.push(`증거 「${nameOf(ev)}」 칸 (${ev.x},${ev.y}) — 대사의 자리 말 「${old}」 → 「${now}」 (${hits}곳)`);
+  }
+  return { project: next, notes };
+}
+
 /** 증거가 떨어진 바닥 칸 — 사람 둘레 2~7걸음, 걸어 닿는 빈 바닥(이벤트·이동 칸 없음), 가구 곁이면 먼저. 가구 이름을 같이 준다. */
 function evidenceCell(run: BuildRun, map: GameMap, giver: GameEvent): { x: number; y: number; near?: string } | undefined {
   const project = run.ctx.project;
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
   const w = map.width;
-  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
-  const furniture = (x: number, y: number): string => {
-    if (x < 0 || y < 0 || x >= w || y >= map.height || isPassable(project, map, x, y)) return "";
-    for (const key of ["upperTiles", "upperOverlayTiles"]) {
-      const t = m[key]?.[y * w + x];
-      if (typeof t !== "number" || t < 0) continue;
-      const label = tileLabel(project, map, t).replace(/\s*\((?:-?\d+,\s*-?\d+)\)\s*$/u, "").replace(/^.*·\s*/u, "").replace(/\s*\d+[×x]\d+$/u, "").replace(/\s+[NSEW]$/u, "").trim();
-      const named = thingWords(label);
-      if (named && !/바닥|벽|깔개|러그|그림자|공허|천장|창|문|floor|wall|rug|shadow|ceiling|void|door/iu.test(named)) return named;
-    }
-    return "";
-  };
+  const furniture = (x: number, y: number): string => furnitureAt(project, map, x, y);
   const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
   const start = project.startMapId === map.id ? project.startPos : undefined;
   let best: { x: number; y: number; near?: string; score: number } | undefined;
@@ -1246,7 +1307,8 @@ function stageCase(run: BuildRun): string[] {
   // 고르기의 범인은 풀에서 뽑은 「악사 리노」가 됐다(2026-10-29 vm3 deepseek 추리).
   const namedAny = pickCulprit(run.ctx.project, culpritTexts, new Set());
   const standing = namedAny ? Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).filter((e) => nameOf(e) === namedAny.name && visiblePerson(e)).map((e) => ({ mapId: m.id, ev: e })))[0] : undefined;
-  const culprit = (standing ? namedAny : undefined) ?? pickCulprit(run.ctx.project, culpritTexts, taken) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
+  const fromText = (standing ? namedAny : undefined) ?? pickCulprit(run.ctx.project, culpritTexts, taken);
+  const culprit = fromText ?? ownerSuspect(run.ctx.project, culpritTexts, taken, seed) ?? POOL.filter((p) => !taken.has(p.name))[seed % POOL.length]!;
   const innocents = POOL.filter((p) => p.name !== culprit.name && p.role !== culprit.role && !taken.has(p.name));
   if (innocents.length < 2) return notes;
   const a = innocents[seed % innocents.length]!;

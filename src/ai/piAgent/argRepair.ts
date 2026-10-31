@@ -180,3 +180,24 @@ export function refusalLoopRefusal(toolName: string, signature: string, times: n
     + (call ? `${call} 을(를) 먼저 하거나, ` : "")
     + `다른 도구·다른 자리로 하거나, 못 하는 것이면 최종 보고에 남은 일로 적는다.`;
 }
+
+/**
+ * 「expected object, received string」 같은 모양 오류에, 그 칸의 스키마 설명(모양이 적혀 있다)을 첫 실패부터 붙인다.
+ * 2026-10-31 조수 대조 8회차(FS2 감방, Opus): set_scene_mood 에 lighting:"night" 를 세 번 보냈고, 세 번째에야 최소 예시를 받았다 —
+ * 그 예시도 필수 칸(mapId)뿐이라 lighting 모양은 끝내 몰랐다. 설명에 이미 {ambient, color, sources} 모양이 있다.
+ */
+export function wrongTypeFieldHint(schema: unknown, message: string): string {
+  const root = objectSchema(schema as Schema);
+  if (!root?.properties) return "";
+  const lines: string[] = [];
+  for (const m of message.matchAll(/^\s*-\s*([\w.[\]]+):\s*expected (object|array), received (\w+)/gmu)) {
+    const path = m[1]!.split(".").filter((p) => !/^\d+$|\[/u.test(p));
+    let s: Schema | undefined = root;
+    for (const key of path) s = objectSchema(s)?.properties?.[key] ?? arrayItemObject(s)?.properties?.[key];
+    const desc = (s as { description?: unknown } | undefined)?.description;
+    const shape = typeof desc === "string" && desc.trim() ? desc.trim().slice(0, 400) : JSON.stringify(requiredShapeExample(s));
+    lines.push(`"${m[1]}" takes ${m[2] === "array" ? "a list" : "an object"}, not a ${m[3]} (a bare word such as "night" is not accepted). Its shape: ${shape}`);
+    if (lines.length >= 3) break;
+  }
+  return lines.length ? `\n\n${lines.join("\n")}` : "";
+}

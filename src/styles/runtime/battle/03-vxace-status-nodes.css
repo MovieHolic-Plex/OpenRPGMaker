@@ -225,6 +225,12 @@
   content: attr(data-status-icon);
 }
 
+/* 저작 상태 이름에서 뽑은 배지 글자(battleFieldDom.stateBadgeLabel)가 있으면 아래 토큰별 영문 약어보다 먼저다 —
+   한국어 게임에서 마비가 「PAR」로 떴다(2026-10-30). 속성 선택자 하나만큼 명시도가 높아 토큰 규칙을 이긴다. */
+.battle-status-icon[data-status-label]::before {
+  content: attr(data-status-label);
+}
+
 .battle-status-icon-poison {
   --battle-status-icon-bg: #8a3fa0;
 }

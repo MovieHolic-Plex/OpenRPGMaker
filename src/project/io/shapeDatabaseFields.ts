@@ -1,3 +1,5 @@
+import { REST_ALLOW_ON_MAPS, REST_TARGETS, isRestTarget } from "@/project/restMenu";
+import { isSeCueId } from "@/project/seCues";
 import { validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { validateMonsterCampaign } from "./shapeMonsterCampaign";
 import { parseCinematicPresentation } from '@/project/cinematicPresentation';
@@ -35,6 +37,9 @@ import { GOLD_MAX } from "@/project/economyValues";
 import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT, GAME_OVER_DEFINITION_LIMIT } from "@/project/cinematicSettings";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
+import { validateConditionShape } from "./shapeCommandFields";
+import { BESTIARY_ENTRY_LIMIT, BESTIARY_SECTION_LIMIT, isBestiaryUnlock } from "@/project/bestiary";
+import { SCHEDULE_ACTIVITY_LIMIT, SCHEDULE_MAX_USES_LIMIT, SCHEDULE_RECORD_LIMIT, SCHEDULE_SLOT_LIMIT } from "@/project/schedule";
 import { validateCharacterAppearances } from "./characterAppearanceValidation";
 
 export function validateDatabase(value: unknown): void {
@@ -89,6 +94,7 @@ export function validateDatabase(value: unknown): void {
   if (database.fishSpecies !== undefined) validateFishSpecies(database.fishSpecies);
   if (database.farmBuildingTypes !== undefined) validateFarmBuildingTypes(database.farmBuildingTypes);
   if (database.homeDecorationTypes !== undefined) validateHomeDecorationTypes(database.homeDecorationTypes);
+  if (database.schedules !== undefined) validateSchedules(database.schedules);
   // 연출 레코드는 정규화가 잘못된 층·시트를 버리므로 형태(배열·행이 객체)만 확인한다.
   if (database.skillChoreographies !== undefined) {
     for (const [index, raw] of requireArray("database.skillChoreographies", database.skillChoreographies).entries()) requireRecord(`database.skillChoreographies[${index}]`, raw);
@@ -191,6 +197,7 @@ export function validateSystem(value: unknown): void {
     if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);
     if (gallery.label !== undefined) requireString("system.gallery.label", gallery.label);
   }
+  if (system.bestiary !== undefined) validateBestiaryShape(system.bestiary);
   if (system.newGamePlus !== undefined) {
     const newGamePlus = requireRecord("system.newGamePlus", system.newGamePlus);
     if (newGamePlus.enabled !== undefined) requireBoolean("system.newGamePlus.enabled", newGamePlus.enabled);
@@ -256,7 +263,14 @@ export function validateSystem(value: unknown): void {
       requireString(`system.partyBonds.members[${index}].variableId`, member.variableId);
     }
   }
-  if (system.fieldGuides !== undefined) assert(system.fieldGuides === "off", "system.fieldGuides 는 off(생략 = 켜기)");
+  if (system.seCues !== undefined) {
+    const cues = requireRecord("system.seCues", system.seCues);
+    for (const [key, value] of Object.entries(cues)) {
+      assert(isSeCueId(key), `system.seCues 의 자리 id 꼴이 아닙니다: ${key}`);
+      requireString(`system.seCues.${key}`, value);
+    }
+  }
+  if (system.fieldGuides !== undefined) assert(system.fieldGuides === "off" || system.fieldGuides === "arrows", "system.fieldGuides 는 off·arrows(생략 = 켜기)");
   if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {
@@ -350,6 +364,37 @@ export function validateGameOverSettings(value: unknown, label = "system.gameOve
     assert((settings.kicker as string).length <= 24, `${label}.kicker is too long.`);
   }
   if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
+}
+
+/** 괴물 도감(project/bestiary.ts). 항목·칸 모양과 칸의 열림 조건을 본다. */
+function validateBestiaryShape(value: unknown): void {
+  const bestiary = requireRecord("system.bestiary", value);
+  requireOnlyFields("system.bestiary", bestiary, ["enabled", "title", "entries"]);
+  requireBoolean("system.bestiary.enabled", bestiary.enabled);
+  if (bestiary.title !== undefined) requireString("system.bestiary.title", bestiary.title);
+  const entries = requireArray("system.bestiary.entries", bestiary.entries);
+  assert(entries.length <= BESTIARY_ENTRY_LIMIT, `system.bestiary.entries must contain at most ${BESTIARY_ENTRY_LIMIT} entries.`);
+  for (const [index, raw] of entries.entries()) {
+    const label = `system.bestiary.entries[${index}]`;
+    const entry = requireRecord(label, raw);
+    requireOnlyFields(label, entry, ["id", "name", "enemyIds", "pictureResourceId", "sections"]);
+    requireString(`${label}.id`, entry.id);
+    requireString(`${label}.name`, entry.name);
+    for (const [enemyIndex, enemyId] of requireArray(`${label}.enemyIds`, entry.enemyIds).entries()) requireString(`${label}.enemyIds[${enemyIndex}]`, enemyId);
+    if (entry.pictureResourceId !== undefined) requireString(`${label}.pictureResourceId`, entry.pictureResourceId);
+    const sections = requireArray(`${label}.sections`, entry.sections);
+    assert(sections.length <= BESTIARY_SECTION_LIMIT, `${label}.sections must contain at most ${BESTIARY_SECTION_LIMIT} sections.`);
+    for (const [sectionIndex, rawSection] of sections.entries()) {
+      const sectionLabel = `${label}.sections[${sectionIndex}]`;
+      const section = requireRecord(sectionLabel, rawSection);
+      requireOnlyFields(sectionLabel, section, ["id", "title", "text", "unlock", "unlockWhen"]);
+      requireString(`${sectionLabel}.id`, section.id);
+      requireString(`${sectionLabel}.title`, section.title);
+      requireString(`${sectionLabel}.text`, section.text);
+      if (section.unlock !== undefined) assert(isBestiaryUnlock(section.unlock), `${sectionLabel}.unlock is invalid.`);
+      if (section.unlockWhen !== undefined) validateConditionShape(`${sectionLabel}.unlockWhen`, section.unlockWhen);
+    }
+  }
 }
 
 function requireOnlyFields(label: string, value: Record<string, unknown>, fields: readonly string[]): void {
@@ -686,6 +731,20 @@ function validateTimeSystem(value: unknown): void {
   if (timeSystem.startWeekday !== undefined) requireNumber("system.timeSystem.startWeekday", timeSystem.startWeekday);
   if (timeSystem.forceSleep !== undefined) requireBoolean("system.timeSystem.forceSleep", timeSystem.forceSleep);
   if (timeSystem.onDayEnd !== undefined) requireString("system.timeSystem.onDayEnd", timeSystem.onDayEnd);
+  if (timeSystem.restMenu !== undefined) {
+    const rest = requireRecord("system.timeSystem.restMenu", timeSystem.restMenu);
+    requireBoolean("system.timeSystem.restMenu.enabled", rest.enabled);
+    if (rest.allowOnMaps !== undefined) {
+      const allow = requireString("system.timeSystem.restMenu.allowOnMaps", rest.allowOnMaps);
+      assert((REST_ALLOW_ON_MAPS as readonly string[]).includes(allow), `system.timeSystem.restMenu.allowOnMaps must be one of ${REST_ALLOW_ON_MAPS.join(", ")}.`);
+    }
+    if (rest.targets !== undefined) {
+      for (const [index, target] of requireArray("system.timeSystem.restMenu.targets", rest.targets).entries()) {
+        assert(isRestTarget(target), `system.timeSystem.restMenu.targets[${index}] must be one of ${REST_TARGETS.join(", ")}.`);
+      }
+    }
+    if (rest.recoverHp !== undefined) requireBoolean("system.timeSystem.restMenu.recoverHp", rest.recoverHp);
+  }
 }
 
 export function validateSession(value: unknown): void {
@@ -772,6 +831,55 @@ function validateHomeDecorationTypes(value: unknown): void {
       validateOrientationGraphicIds(`${label}.orientationGraphicResourceIds`, record.orientationGraphicResourceIds);
     }
     if (record.allowedMapIds !== undefined) validateUniqueStringArray(`${label}.allowedMapIds`, record.allowedMapIds, SPATIAL_DEFINITION_LIMIT);
+  }
+}
+
+function validateSchedules(value: unknown): void {
+  const rows = requireArray("database.schedules", value);
+  assert(rows.length <= SCHEDULE_RECORD_LIMIT, `database.schedules must contain at most ${SCHEDULE_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.schedules[${index}]`;
+    const record = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, record.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireString(`${label}.title`, record.title);
+    const slots = requireArray(`${label}.slots`, record.slots);
+    assert(slots.length <= SCHEDULE_SLOT_LIMIT, `${label}.slots must contain at most ${SCHEDULE_SLOT_LIMIT} slots.`);
+    for (const [slotIndex, rawSlot] of slots.entries()) {
+      const slot = requireRecord(`${label}.slots[${slotIndex}]`, rawSlot);
+      requireString(`${label}.slots[${slotIndex}].label`, slot.label);
+    }
+    const activities = requireArray(`${label}.activities`, record.activities);
+    assert(activities.length <= SCHEDULE_ACTIVITY_LIMIT, `${label}.activities must contain at most ${SCHEDULE_ACTIVITY_LIMIT} activities.`);
+    const seenActivities = new Set<string>();
+    for (const [activityIndex, rawActivity] of activities.entries()) {
+      const activityLabel = `${label}.activities[${activityIndex}]`;
+      const activity = requireRecord(activityLabel, rawActivity);
+      const activityId = requireNonBlankString(`${activityLabel}.id`, activity.id);
+      assert(!seenActivities.has(activityId), `${activityLabel}.id is duplicated: ${activityId}`);
+      seenActivities.add(activityId);
+      requireString(`${activityLabel}.label`, activity.label);
+      requireString(`${activityLabel}.description`, activity.description);
+      if (activity.hint !== undefined) requireString(`${activityLabel}.hint`, activity.hint);
+      requireNonBlankString(`${activityLabel}.commonEventId`, activity.commonEventId);
+      if (activity.maxUses !== undefined) {
+        const maxUses = requireNumber(`${activityLabel}.maxUses`, activity.maxUses);
+        assert(Number.isInteger(maxUses) && maxUses >= 1 && maxUses <= SCHEDULE_MAX_USES_LIMIT,
+          `${activityLabel}.maxUses must be an integer from 1 to ${SCHEDULE_MAX_USES_LIMIT}.`);
+      }
+      if (activity.condition !== undefined) validateConditionShape(`${activityLabel}.condition`, activity.condition);
+      if (activity.icon !== undefined) {
+        const icon = requireRecord(`${activityLabel}.icon`, activity.icon);
+        assert(icon.kind === "item" || icon.kind === "tile", `${activityLabel}.icon.kind must be item or tile.`);
+        if (icon.kind === "item") requireNonBlankString(`${activityLabel}.icon.itemId`, icon.itemId);
+        else {
+          requireNonBlankString(`${activityLabel}.icon.tilesetId`, icon.tilesetId);
+          assertSafeInteger(`${activityLabel}.icon.tileId`, icon.tileId);
+        }
+      }
+    }
   }
 }
 
@@ -967,8 +1075,10 @@ export function validateEndingContinueTo(value: unknown, label = "ending.continu
 
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits", "textSide", "particles"]);
   if (settings.portraits !== undefined) assert(settings.portraits === "auto" || settings.portraits === "none", `${label}.portraits is invalid.`);
+  if (settings.textSide !== undefined) assert(settings.textSide === "center" || settings.textSide === "left" || settings.textSide === "right", `${label}.textSide is invalid.`);
+  if (settings.particles !== undefined) assert(settings.particles === "petals" || settings.particles === "none", `${label}.particles is invalid.`);
   for (const key of ["kicker", "badge", "finalTitle"] as const) {
     if (settings[key] === undefined) continue;
     requireString(`${label}.${key}`, settings[key]);

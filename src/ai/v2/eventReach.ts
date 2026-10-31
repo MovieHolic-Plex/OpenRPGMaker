@@ -455,6 +455,21 @@ export function transferLaneCells(project: Project, map: GameMap): Set<number> {
 }
 
 /** 이동 칸 앞을 막는(또는 컷신에서 다가가 막게 되는) 이벤트를 옆으로 옮긴다. */
+/** 이벤트 칸(또는 그 둘레의 닿는 칸)에서 닿는 칸들(free)을 걸어 몇 걸음인가 — 못 가면 -1. */
+export function walkSteps(map: GameMap, free: Uint8Array, from: Cell): Int32Array {
+  const w = map.width, h = map.height;
+  const out = new Int32Array(w * h).fill(-1);
+  const queue: number[] = [];
+  const seed = (x: number, y: number, d: number) => { if (x < 0 || y < 0 || x >= w || y >= h) return; const i = y * w + x; if (out[i] !== -1 || !free[i]) return; out[i] = d; queue.push(i); };
+  seed(from.x, from.y, 0);
+  if (!queue.length) for (const [dx, dy] of DIRS) seed(from.x + dx, from.y + dy, 1);
+  for (let q = 0; q < queue.length; q++) {
+    const i = queue[q]!, x = i % w, y = Math.floor(i / w);
+    for (const [dx, dy] of DIRS) seed(x + dx, y + dy, out[i]! + 1);
+  }
+  return out;
+}
+
 export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
   const moved: string[] = [];
   const stuck: string[] = [];
@@ -487,10 +502,14 @@ export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
     const anchorSet = new Set(anchors.map((a) => a.y * w + a.x));
     const okOthers = (reach: Uint8Array) => others.every((o) => (!free[o.y * w + o.x] && !nextTo(map, free, o)) || nextTo(map, reach, o) || !!reach[o.y * w + o.x]);
     const cands: { c: Cell; s: number }[] = [];
+    // 가까움은 걸음 수로 잰다 — 칸 거리(맨해튼)면 벽 너머 옆방 칸이 같은 방 칸보다 가깝다(2026-10-31 meb1 opus 추리: 「객실 발자국」이
+    // 로엘의 객실 (8,3)에서 벽 건너 부엌 (6,3)으로 옮겨져, 목표 글 「북동쪽 로엘의 객실」을 따라간 판정자가 끝내 못 찾았다).
+    const steps = walkSteps(map, free, ev);
     for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) {
       const i = y * w + x;
       if (!free[i] || taken.has(i) || anchorSet.has(i) || lanes.has(i)) continue;
-      cands.push({ c: { x, y }, s: Math.abs(x - ev.x) + Math.abs(y - ev.y) });
+      const manhattan = Math.abs(x - ev.x) + Math.abs(y - ev.y);
+      cands.push({ c: { x, y }, s: steps[i]! >= 0 ? steps[i]! : 10_000 + manhattan });
     }
     cands.sort((a, b) => a.s - b.s);
     const target = cands.slice(0, 120).find(({ c }) => {

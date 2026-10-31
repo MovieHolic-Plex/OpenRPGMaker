@@ -1,3 +1,4 @@
+import type { SchedulePlanView } from "@/player/interpreter/schedule";
 import type { BlendModeName } from "@/project/blendMode";
 import type { ParticlePreset, ShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import type { EasingName } from "@/project/easing";
@@ -40,7 +41,8 @@ export type StepResult =
   | {
       kind: "choices";
       prompt?: string;
-      options: { text: string }[];
+      /** 화면에 보일 줄(showWhen 이 거짓인 줄은 이미 빠졌다). disabled 줄은 흐리게 보이고 고를 수 없다. */
+      options: { text: string; disabled?: true; disabledText?: string }[];
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
@@ -50,6 +52,11 @@ export type StepResult =
       /** 소지한 후보. 비어 있으면 UI 는 prompt 뒤 닫힘(취소)으로 재개한다. */
       items: readonly { readonly itemId: string; readonly count: number }[];
       settings: MessageWindowSettings;
+    }
+  | {
+      kind: "planSchedule";
+      /** 일정표를 풀어 둔 뷰(조건이 거짓인 활동은 이미 빠져 있다). */
+      view: SchedulePlanView;
     }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
@@ -92,7 +99,7 @@ export type StepResult =
     }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
-  | { kind: "openMenuScreen"; screen?: "monster-box" }
+  | { kind: "openMenuScreen"; screen?: "monster-box" | "skills"; actorId?: string }
   | { kind: "openLoadMenu" }
   | {
       kind: "pathfindMove";
@@ -230,9 +237,9 @@ export type StepResult =
       branchOnNotEnoughGold?: boolean;
     }
   | { kind: "gameOver"; message?: string; gameOverId?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo };
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo; /** 에필로그 글을 대사창으로 이미 다 보였다 — 엔딩 카드가 같은 글을 다시 싣지 않는다. */ epiloguePlayed?: boolean };
 
-export type ResumeValue = number | boolean | string | undefined | void | "failed";
+export type ResumeValue = number | boolean | string | readonly string[] | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";
 export type ResumeAdvance = "continue" | "done";
 
@@ -268,12 +275,16 @@ export interface InterpreterState {
   faceSinceText?: boolean;
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
+  /** 지금 떠 있는 조건 붙은 선택지의 화면 번호 표(choiceView.ts). 조건 없는 선택지면 없다. */
+  choiceView?: import("@/project/choiceView").ChoiceView;
   onFactionStanceChanged?: () => void;
   onFriendshipChanged?: (npcKey: string, delta: number) => void;
   // 루프 무한 반복 가드의 상한. 실제 카운트는 루프 프레임마다 따로 센다(Frame.loopOwner.iterations).
   maxLoopIterations: number;
   instructionsExecuted: number;
   maxInstructions: number;
+  /** Live script sandboxes, one per frame that is inside a `script` command (scriptCommand.ts). Disposed on finish. */
+  scriptRuns?: Map<Frame, import("@/player/script/scriptRun").ScriptRun>;
 }
 
 export interface InterpreterOptions {

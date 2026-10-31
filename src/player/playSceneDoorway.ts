@@ -13,6 +13,7 @@ import {
   findBlockingEventOverlappingRect, moveRuntimeEventPosition, runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView,
 } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
+import { projectSeCue } from "@/project/seCues";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { chebyshev, DIR_DELTA, planApproach, type StageCell } from "@/project/staging/approach";
 import { crowdedCells } from "@/player/playSceneApproach";
@@ -109,7 +110,12 @@ function doorFrames(door: Doorway, opening: boolean, se: string): MoveCommand[] 
 
 function soundFor(door: Doorway, explicit: string | undefined, fallback: string): string {
   if (explicit !== undefined) return explicit.trim();
-  return door.isDoor ? fallback : "";
+  return door.isDoor ? doorSe(fallback === DOOR_CLOSE_SE ? "doorClose" : "door", fallback) : "";
+}
+
+/** 기본 문 소리: 저작한 자리(door·doorClose, project.system.seCues)가 있으면 그것, 없으면 내장 소리. */
+export function doorSe(cue: "door" | "doorClose", fallback: string): string {
+  return projectSeCue(store.getCurrent(), cue) ?? fallback;
 }
 
 /** exitVia 펼치기: 문 칸 앞까지 걸음 → 여는 소리·프레임 → 통과 켜고 문 칸으로 한 걸음 → 사라짐 → 닫는 소리·프레임. */

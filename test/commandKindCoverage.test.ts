@@ -32,6 +32,8 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeFace: { kind: "changeFace", resourceId: "res1", position: "left", flipHorizontally: false },
   choices: { kind: "choices", options: [{ text: "a", branch: [] }] },
   presentItem: { kind: "presentItem", options: [{ itemId: "item1", branch: [] }] },
+  planSchedule: { kind: "planSchedule", scheduleId: "sched1" },
+  runSchedule: { kind: "runSchedule", scheduleId: "sched1" },
   fork: { kind: "fork", condition: { kind: "switch", switchId: "sw1", value: true }, then: [], else: [] },
   wait: { kind: "wait", ms: 100 },
   inputWait: { kind: "inputWait" },
@@ -123,6 +125,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
   tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
   fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
+  script: { kind: "script", source: "", compiled: "" },
 };
 
 // kind별 최소 유효 Condition 인스턴스. 라운드트립 테스트에서는 참조 검증까지 통과해야 하므로

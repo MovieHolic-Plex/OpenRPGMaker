@@ -223,7 +223,7 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return (collection === "items" && ((command.itemIds ?? []).includes(id) || command.options.some((option) => option.itemId === id)))
         || presentItemBranchLists(command).some((branch) => commandListReferences(branch, collection, id));
     case "choices":
-      return command.options.some((option) => commandListReferences(option.branch, collection, id)) || commandListReferences(command.cancelBranch ?? [], collection, id);
+      return command.options.some((option) => conditionReferencesDatabase(option.showWhen, collection, id) || conditionReferencesDatabase(option.enableWhen, collection, id) || commandListReferences(option.branch, collection, id)) || commandListReferences(command.cancelBranch ?? [], collection, id);
     case "fork":
       return conditionReferencesDatabase(command.condition, collection, id) || commandListReferences(command.then, collection, id) || commandListReferences(command.else ?? [], collection, id);
     case "loop":
@@ -366,7 +366,7 @@ function commandListReferencesSwitchVariable(commands: readonly Command[], kind:
 function commandReferencesSwitchVariable(command: Command, kind: "switch" | "variable", id: string): boolean {
   switch (command.kind) {
     case "choices":
-      return command.options.some((option) => commandListReferencesSwitchVariable(option.branch, kind, id)) || commandListReferencesSwitchVariable(command.cancelBranch ?? [], kind, id);
+      return command.options.some((option) => conditionReferencesSwitchVariable(option.showWhen, kind, id) || conditionReferencesSwitchVariable(option.enableWhen, kind, id) || commandListReferencesSwitchVariable(option.branch, kind, id)) || commandListReferencesSwitchVariable(command.cancelBranch ?? [], kind, id);
     case "presentItem":
       return presentItemBranchLists(command).some((branch) => commandListReferencesSwitchVariable(branch, kind, id));
     case "fork":

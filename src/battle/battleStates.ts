@@ -445,6 +445,16 @@ export function resolveDamageTypeRate(rates: { readonly physical?: number; reado
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
+/** 칼 기름·속성 부여 — 걸린 상태 중 runtimeEffects.attackElementId 가 있는 마지막 것(통상 공격 속성을 무기 대신 정한다). 없으면 undefined. */
+export function stateAttackElementId(project: Project, battler: { readonly stateIds: readonly string[] }): string | undefined {
+  let elementId: string | undefined;
+  for (const stateId of battler.stateIds) {
+    const id = project.database.states.find((entry) => entry.id === stateId)?.runtimeEffects?.attackElementId?.trim();
+    if (id) elementId = id;
+  }
+  return elementId;
+}
+
 export function stateElementRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, elementId: string): string | undefined {
   let grade: string | undefined;
   for (const stateId of battler.stateIds) {

@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-store-pack/1",
+ "title": "OPRN SFX — Modern Soft Battle Hits Vol.1",
+ "summary": "45 modern soft sound effects for RPG battle hits — 15 cues, up to 3 variants, loudness-matched OGG.",
+ "description": "45 sound effects (15 cues, up to 3 variants each) in a consistent soft, polished modern game sounds: mallets, bells, filtered noise, light room reverb. Silence-trimmed, loudness-matched per cue, peaks at -1 dBFS, OGG Vorbis 44.1 kHz.\nEvery sound is tagged with the engine cue it is made for (meta.oprnSound.slots), so the editor assistant can wire a whole set in one step.\n\nCues: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast\n\nMade by code-based procedural synthesis — no samples, no recordings. OPRN procedural SFX.\n\nLicense summary: free to use, modify and ship in any game, commercial included; no resale or redistribution of the raw files as a sound library.",
+ "tags": [
+  "sfx",
+  "sound",
+  "효과음",
+  "procedural",
+  "modern",
+  "battle",
+  "hit",
+  "전투",
+  "부드러운",
+  "모던"
+ ],
+ "kind": "sound",
+ "license": "OPRN-GAME",
+ "aiGenerated": false,
+ "credits": "OPRN 합성 효과음 (OPRN procedural SFX)",
+ "content": {
+  "assets": {
+   "oprn-sfx-modern-damage-a": {
+    "id": "oprn-sfx-modern-damage-a",
+    "name": "적 피해 A (모던 소프트)",
+    "kind": "sound",
+    "blob": "17a808b9200c4ba390baee4291f52a49e34100ec4d3cab6e5e673cc4295833eb",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "damage"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "a",
+      "mood": [
+       "punchy",
+       "impact"
+      ],
+      "intensity": 3,
+      "durationSec": 0.654,
+      "loopable": false,
+      "pairWith": [
+       "attack"
+      ],
+      "lufs": -15.0,
+      "summaryKo": "적 피해 — 모던 소프트 A안, 0.65초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "적 피해",
+       "punchy",
+       "impact"
+      ],
+      "qa": {
+       "clapFit": 9.8,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-modern-damage-b": {
+    "id": "oprn-sfx-modern-damage-b",
+    "name": "적 피해 B (모던 소프트)",
+    "kind": "sound",
+    "blob": "e5a52cc2998c5d95c718ecd3957c46d8cb346c23afb017e287f6d16803874cb5",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "damage"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "b",
+      "mood": [
+       "punchy",
+       "impact"
+      ],
+      "intensity": 3,
+      "durationSec": 0.694,
+      "loopable": false,
+      "pairWith": [
+       "attack"
+      ],
+      "lufs": -15.0,
+      "summaryKo": "적 피해 — 모던 소프트 B안, 0.69초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "적 피해",
+       "punchy",
+       "impact"
+      ],
+      "qa": {
+       "clapFit": 9.8,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-modern-actorDamage-a": {
+    "id": "oprn-sfx-modern-actorDamage-a",
+    "name": "아군 피해 A (모던 소프트)",
+    "kind": "sound",
+    "blob": "5276423a4294323253bf6ad64d0f8ca8d7d704500c091931cdbfecf06591991d",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "actorDamage"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "a",
+      "mood": [
+       "heavy",
+       "painful"
+      ],
+      "intensity": 3,
+      "durationSec": 0.753,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -15.0,
+      "summaryKo": "아군 피해 — 모던 소프트 A안, 0.75초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "아군 피해",
+       "heavy",
+       "painful"
+      ],
+      "qa": {
+       "clapFit": 9.7,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-modern-miss-a": {
+    "id": "oprn-sfx-modern-miss-a",
+    "name": "빗나감·회피 A (모던 소프트)",
+    "kind": "sound",
+    "blob": "942e77e22f78765b779894ad6e20d0de6e3183113d2d6a33c17f4ee1aaa9a881",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "miss",
+       "evasion"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "a",
+      "mood": [
+       "light",
+       "swift"
+      ],
+      "intensity": 2,
+      "durationSec": 0.749,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -18.0,
+      "summaryKo": "빗나감·회피 — 모던 소프트 A안, 0.75초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "빗나감·회피",
+       "light",
+       "swift"
+      ],
+      "qa": {
+       "clapFit": 9.0,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-modern-faint-a": {
+    "id": "oprn-sfx-modern-faint-a",
+    "name": "적 쓰러짐 A (모던 소프트)",
+    "kind": "sound",
+    "blob": "f240f75937c403899faee4838d9562f6903dfddbfe186239d3f247b8c2a5379c",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "faint",
+       "collapse"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "a",
+      "mood": [
+       "fading",
+       "defeat"
+      ],
+      "intensity": 3,
+      "durationSec": 1.245,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -16.0,
+      "summaryKo": "적 쓰러짐 — 모던 소프트 A안, 1.25초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "적 쓰러짐",
+       "fading",
+       "defeat"
+      ],
+      "qa": {
+       "clapFit": 8.6,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   },
+   "oprn-sfx-modern-cast-a": {
+    "id": "oprn-sfx-modern-cast-a",
+    "name": "스킬 시전 A (모던 소프트)",
+    "kind": "sound",
+    "blob": "ddba30026cff481d235c35248b5c6cd4327f1d70f64fcef8e3f767ae1391badf",
+    "mime": "audio/ogg",
+    "meta": {
+     "oprnSound": {
+      "version": 1,
+      "slots": [
+       "cast"
+      ],
+      "group": "battle",
+      "style": "modern",
+      "set": "oprn-sfx-modern",
+      "variant": "a",
+      "mood": [
+       "magical",
+       "rising"
+      ],
+      "intensity": 3,
+      "durationSec": 1.257,
+      "loopable": false,
+      "pairWith": [],
+      "lufs": -18.0,
+      "summaryKo": "스킬 시전 — 모던 소프트 A안, 1.26초.",
+      "feelTags": [
+       "부드러운",
+       "모던",
+       "잔향",
+       "soft",
+       "스킬 시전",
+       "magical",
+       "rising"
+      ],
+      "qa": {
+       "clapFit": 9.2,
+       "tech": 10.0,
+       "ear": null
+      }
+     }
+    },
+    "generation": {
+     "method": "procedural",
+     "engine": "OPRN SFX synth v2 (numpy, code-authored)"
+    }
+   }
+  },
+  "tilesets": {},
+  "characters": [],
+  "objects": []
+ },
+ "previews": [],
+ "blobs": [
+  {
+   "sha256": "17a808b9200c4ba390baee4291f52a49e34100ec4d3cab6e5e673cc4295833eb",
+   "mime": "audio/ogg",
+   "bytes": 16254
+  },
+  {
+   "sha256": "e5a52cc2998c5d95c718ecd3957c46d8cb346c23afb017e287f6d16803874cb5",
+   "mime": "audio/ogg",
+   "bytes": 17187
+  },
+  {
+   "sha256": "5276423a4294323253bf6ad64d0f8ca8d7d704500c091931cdbfecf06591991d",
+   "mime": "audio/ogg",
+   "bytes": 17903
+  },
+  {
+   "sha256": "942e77e22f78765b779894ad6e20d0de6e3183113d2d6a33c17f4ee1aaa9a881",
+   "mime": "audio/ogg",
+   "bytes": 18423
+  },
+  {
+   "sha256": "f240f75937c403899faee4838d9562f6903dfddbfe186239d3f247b8c2a5379c",
+   "mime": "audio/ogg",
+   "bytes": 26570
+  },
+  {
+   "sha256": "ddba30026cff481d235c35248b5c6cd4327f1d70f64fcef8e3f767ae1391badf",
+   "mime": "audio/ogg",
+   "bytes": 25573
+  }
+ ],
+ "locales": {
+  "ko": {
+   "title": "OPRN 효과음 — 모던 소프트 전투 타격 1집",
+   "summary": "RPG 전투 타격 효과음 45개(15칸, 칸마다 최대 3안). 칸마다 엔진 신호 이름을 달아 에디터 조수가 한 번에 연결합니다.",
+   "description": "부드럽고 다듬은 모던 게임 소리 — 말렛·벨·걸러낸 잡음·옅은 방 잔향. 같은 화풍 한 벌이라 섞어 써도 결이 맞습니다. 앞뒤 무음을 자르고 칸마다 음량을 맞췄습니다(피크 -1dB, OGG).\n에디터 조수에게 「메뉴 효과음 레트로로 바꿔줘」처럼 말하면 이 팩의 칸 이름으로 찾아 연결합니다.\n\n- 전투 시작 (battleStart) × 3\n- 공격(베기) (attack) × 3\n- 공격(타격) (attack-blunt) × 3\n- 공격(찌르기·화살) (attack-pierce) × 3\n- 공격(할퀴기) (attack-claw) × 3\n- 적 피해 (damage) × 3\n- 아군 피해 (actorDamage) × 3\n- 치명타 (critical) × 3\n- 빗나감·회피 (miss) × 3\n- 방어 (defend) × 3\n- 적 쓰러짐 (faint) × 3\n- 보스 쓰러짐 (bossCollapse) × 3\n- 도망 (escape) × 3\n- 전멸·패배 (defeat) × 3\n- 스킬 시전 (cast) × 3\n\n코드 합성으로 만든 OPRN 합성 효과음입니다(녹음·샘플 없음). 게임 안에서는 상업용 포함 자유롭게 쓸 수 있고, 소리 파일만 따로 다시 파는 것은 안 됩니다."
+  },
+  "en": {
+   "title": "OPRN SFX — Modern Soft Battle Hits Vol.1",
+   "summary": "45 modern soft RPG sound effects (15 cues, up to 3 variants), tagged with engine cue names for one-step wiring.",
+   "description": "soft, polished modern game sounds: mallets, bells, filtered noise, light room reverb. One consistent set, silence-trimmed and loudness-matched (OGG, -1 dBFS peak). Cues: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast. Code-synthesized OPRN procedural SFX (no samples). Free to use in games; no resale of the raw files."
+  },
+  "ja": {
+   "title": "OPRN 効果音 — モダンソフト バトル打撃 Vol.1",
+   "summary": "RPG用効果音45個（15種、各最大3案）。エンジンの合図名付きで、エディタのアシスタントが一度に設定できます。",
+   "description": "統一された一式の効果音です。前後の無音を削り、音量をそろえました（OGG、ピーク-1dB）。合図: battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast。コード合成によるOPRN合成効果音（サンプル不使用）。ゲーム内では商用含め自由に使えます。音源単体の再配布・販売は不可。"
+  },
+  "zh": {
+   "title": "OPRN 音效 — 现代柔和 战斗打击 第1辑",
+   "summary": "RPG 音效 45 个（15 种，每种最多 3 版），标注引擎信号名，编辑器助手可一步接好。",
+   "description": "风格统一的一套音效，已去除首尾静音并统一响度（OGG，峰值 -1dB）。信号：battleStart, attack, attack-blunt, attack-pierce, attack-claw, damage, actorDamage, critical, miss, defend, faint, bossCollapse, escape, defeat, cast。代码合成的 OPRN 合成音效（无采样）。可在游戏中免费使用（含商用），不得单独转售或再分发音频文件。"
+  }
+ }
+}

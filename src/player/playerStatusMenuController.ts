@@ -68,6 +68,8 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { restUntilTarget } from "@/player/restMenuRuntime";
+import type { RestTarget } from "@/project/restMenu";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
   let selectedCommand: StatusMenuRailId = "items";
@@ -90,6 +92,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
+  let bestiaryEntryId: string | undefined;
   let campaignSpeciesId: string | undefined;
   let dexPage: MonsterDexPage = "info";
   let monsterInstanceId: string | undefined;
@@ -137,6 +140,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     battleReportIndex = undefined;
+    bestiaryEntryId = undefined;
     campaignSpeciesId = undefined;
     dexPage = "info";
     monsterInstanceId = undefined;
@@ -200,6 +204,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       battleReportIndex,
+      bestiaryEntryId,
       campaignSpeciesId,
       dexPage,
       monsterInstanceId,
@@ -312,6 +317,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           battleReportIndex = index;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "battle-reports"));
         },
+        onSelectBestiaryEntry: (entryId) => {
+          if (entryId) rememberDetailCursorFromTestId(`status-menu-bestiary-${entryId}`);
+          bestiaryEntryId = entryId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "bestiary"));
+        },
         onSelectFormationActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-formation-actor-${actorId}`);
           formationActorId = actorId;
@@ -356,6 +366,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice(ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "life-ledger"));
         },
         onToggleWait: toggleWaitMode,
+        onRest: restFromMenu,
         onToTitle: confirmToTitle,
       },
     });
@@ -390,6 +401,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     monsterView = "box";
     pcMode = true;
     options.emitMenuJuice("menu-open", renderMenu(undefined, "monsters"));
+  };
+
+  /** 이벤트의 「메뉴 화면 열기」(screen:skills): 스킬 장착 화면을 그 배우(기본 파티장)로 바로 연다. */
+  const openSkillScreen = (actorId?: string): void => {
+    reset();
+    mode = "function";
+    selectedCommand = "skills";
+    const party = options.getActiveScene()?.getSession().partyActorIds ?? [];
+    skillActorId = actorId && party.includes(actorId) ? actorId : party[0];
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "skills"));
   };
 
   const openLifeRecoveryLedger = (): void => {
@@ -596,7 +617,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
       return;
     }
-    options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"));
+    options.emitMenuJuice("menu-confirm", renderMenu(`${slot}번 저장 칸에 저장했습니다`, "save"), "save");
     justSaved = true;
     // 마우스로 다른 것을 만지면 「저장 직후」가 아니다 — 그 뒤 Esc 는 평소처럼 한 단계만 닫는다.
     document.addEventListener("pointerdown", () => { justSaved = false; }, { capture: true, once: true });
@@ -604,14 +625,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function loadSlot(slot: SaveSlotIndex): void {
     rememberDetailCursorFromTestId(`load-slot-${slot}`);
-    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.emitMenuJuice("menu-confirm", currentMenu(), "load");
     options.loadSlot(slot, false);
   }
 
   function loadAutosave(): void {
     if (!options.loadAutosave) return;
     rememberDetailCursorFromTestId("load-slot-auto");
-    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.emitMenuJuice("menu-confirm", currentMenu(), "load");
     options.loadAutosave(false);
   }
 
@@ -641,7 +662,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
-    emitMutationResult(result, panel);
+    emitMutationResult(result, panel, "useItem");
     // 진화의 돌·이상한 사탕으로 진화했으면 3세대 진화 장면(모습이 바뀐다 → 축하 문장)을 메뉴 위에 보인다. 끝나면 새 모습으로 다시 그린다.
     if (result.kind === "used" && result.evolutions?.length && isEmeraldMonsterStyle(store.getCurrent())) void playItemEvolutions(result.evolutions, result.message);
   }
@@ -723,7 +744,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId(`status-menu-equipment-item-${equipmentId}`);
     const result = equipStatusMenuItem(scene, actorId, slotId, equipmentId);
     if (result.kind === "used") equipmentSlotId = undefined;
-    emitMutationResult(result, renderMenu(result.message, "equipment"));
+    emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
   function unequipItem(actorId: string, slotId: keyof ActorInitialEquipment): void {
@@ -732,7 +753,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId("status-menu-equipment-item-none");
     const result = unequipStatusMenuItem(scene, actorId, slotId);
     if (result.kind === "used") equipmentSlotId = undefined;
-    emitMutationResult(result, renderMenu(result.message, "equipment"));
+    emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
   function optimizeEquipment(actorId: string): void {
@@ -1020,11 +1041,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "options":
       // 「전투 대기」도 다른 명령처럼 화면을 열기만 한다 — 값은 그 화면의 행에서 바꿉니다.
       case "wait":
+      case "rest":
       case "load":
       case "status":
       case "row":
       case "formation":
       case "battle-reports":
+      case "bestiary":
       case "quests":
       case "relationships":
       case "gallery":
@@ -1039,6 +1062,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       default:
         assertNever(commandId);
     }
+  }
+
+  // 「쉬기」 — 메뉴를 닫고 페이드 속에서 고른 시각까지 시간을 흘린다. 거절 사유는 행의 unavailableReason 이 먼저 막는다.
+  function restFromMenu(target: RestTarget): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-rest-${target}`);
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.closeMenu();
+    void restUntilTarget(scene as unknown as PlaySceneContext, target).then((result) => {
+      if (!result.ok) void runCommands(scene as unknown as PlaySceneContext, [{ kind: "text", body: result.message }]);
+    });
   }
 
   function toggleWaitMode(): void {
@@ -1148,6 +1183,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "battle-reports":
         if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
         return false;
+      case "bestiary":
+        if (bestiaryEntryId !== undefined) { bestiaryEntryId = undefined; return true; }
+        return false;
       case "trainer-card":
       case "options":
       case "load":
@@ -1162,6 +1200,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "to-title":
       case "wait":
+      case "rest":
         return false;
     }
   }
@@ -1238,8 +1277,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return true;
   }
 
-  function emitMutationResult(result: StatusMenuMutationResult, target?: HTMLElement | null): void {
-    options.emitMenuJuice(result.kind === "used" ? "menu-confirm" : "menu-invalid", target ?? currentMenu());
+  function emitMutationResult(result: StatusMenuMutationResult, target?: HTMLElement | null, cue?: string): void {
+    options.emitMenuJuice(result.kind === "used" ? "menu-confirm" : "menu-invalid", target ?? currentMenu(), result.kind === "used" ? cue : undefined);
   }
 
   function rememberDetailCursorFromTestId(testId: string): void {
@@ -1306,6 +1345,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}${monsterRenameId ? ":rename" : ""}` : monsterSwapSourceId ? "swap" : boxMoveSourceId ? "boxmove" : "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
+      case "bestiary":
+        return `bestiary:${bestiaryEntryId ?? "list"}`;
       case "save":
       case "trainer-card":
       case "options":
@@ -1321,6 +1362,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "status":
       case "to-title":
       case "wait":
+      case "rest":
         if (selectedCommand !== "life-ledger") return selectedCommand;
         const scene = options.getActiveScene();
         const project = store.getCurrent();
@@ -1345,7 +1387,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openMonsterBox, openLifeRecoveryLedger, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

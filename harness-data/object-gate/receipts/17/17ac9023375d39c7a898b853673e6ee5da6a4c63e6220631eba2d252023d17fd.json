@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17ac9023375d39c7a898b853673e6ee5da6a4c63e6220631eba2d252023d17fd",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 2 w3 reverse cut through a north-facing snow cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/snow-steps/ramp-h2-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (1/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (1/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 9,
+  "darkV5": 99,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace snow surface at the lip",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface with step lines at rows 8, 14, 21 and 27",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a plan view of a ramp seen from above, not a standing object. Rows 0-7 are a pale blue-grey terrace surface, ending at an edge line at row 8 (L=127-161). Rows 8-31 are a beige ramp surface with horizontal step lines at rows 8, 14, 21 and 27. A snowy lighter band at rows 28-31 marks the bottom of the ramp. The left and right edges have a narrow dark strip from row 6 down, which is the cut side wall. The silhouette is a constant 48 px wide on every row. There is no vertical south face of 3 or more rows, so it reads as a flat top-down slab, which is expected for a descending ramp tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are decent: 6 visible tones per tile against 3 for the grass reference, 6% near-flat coverage, and 0% neutral dark edges, so there is no sticker outline. By eye, though, the candidate reads as a pale slab of snow with a few horizontal step lines and a soft gradient. The only variation is the banding. It has no per-pixel speckle, grain, crust clumps or drift texture like the reference's grass tufts and cobble-by-cobble shading. It also has only 9 distinct colours in total (the grass reference has 80), and the bands between the lines are close to flat. The tones come from the few stripe lines and not from shaded material, so it looks thinner and flatter than the references. A careful artist would not accept it next to them without more grain and ramp steps, and with the doubt this raises, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21067
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip snow strip",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp slope surface with step lines",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom light snow edge",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a ramp seen from above. Rows 0-7 are a pale blue-grey snow terrace lip, and rows 8-29 are a beige slope crossed by thin blue-grey step lines at rows 8, 14, 21 and 27. Dark 1-2 px side edges run along the left and right columns, and rows 30-31 are a pale bottom edge. The silhouette is a constant 48 px wide, with no vertical south face of 3 or more rows. The whole tile is a horizontal or sloped surface with no front elevation, so it reads as a flat top-down slab, which is expected for a terrain ramp tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a pale snow ramp with horizontal step bands, light speckle between the bands, and cool-tinted edge lines, so there is no sticker outline. Measured facts: 6 visible tones per tile, above the grass reference (3) and just under the paving reference (7). Near-flat coverage is 6%, against 0% for both references, so there are no big flat fills. 0% of dark edge pixels are neutral, which confirms the tinted outlines. Weaknesses: only 9 distinct colours overall, and the grain is sparse and mostly banded. It reads a little smoother and simpler than the grass reference's clumps. That fits a snow ramp, and the measured tone count meets the reference bar, so I judge it acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18047
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow terrace lip",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface descending away",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow strip at bottom edge",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x32 block of flat, noisy ground texture. The snow lip (rows 0-7) is a lighter blue-grey and the ramp (rows 8-29) is a pinkish-tan. Faint horizontal blue-grey lines at rows 8, 14, 21 and 27 mark the ramp steps. They are not front-edge lines with eave shadow. The silhouette is a constant 48 wide with no ellipse. No vertical south face of 3 or more rows is drawn. The thin dark and light columns at the left and right edges are cut-wall borders, not a receding side face. The view is a top-down plan of a ramp, so it reads as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a pale snow ramp built from a few horizontal bands (about 4 lightness steps) with thin step lines and only faint speckle. It has just 9 distinct colours in total, against 80 for the grass reference. The measured 6 visible tones per tile beat the grass (3) and nearly match the paving (7). By eye, though, those tones come mostly from the stripe lines. The surface between them is broad, smooth, near-uniform fill with no clumps, grain or per-tile highlights, so it looks flatter and thinner than either reference at the same scale. There is no real outline (0% neutral dark edge pixels), so it does not read as a sticker. The shallow banding and lack of grain still make it a weak match for the Beodeul bar, and the call is a fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17926
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip snow surface",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface with step lines descending away from viewer",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 48 px wide for all 32 rows. The column scans show a light blue-grey snow band at rows 0-7, then a pinkish-tan ramp surface at rows 8-31. Thin blue-grey lines at rows 8, 14, 21 and 27 are step or tread lines across the slope, not front-edge lines with eave shadow. No vertical south face of 3 or more rows is drawn. The thin dark columns at the left and right edges are cut-wall edges only 1-2 px wide. The lighter rows 28-31 at the bottom are a flat ground or landing, not a front face. The whole tile is a flat plan view of a descending ramp, which fits terrain, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The measured facts favour the candidate. It has 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 6%, so it has few flat fills. Its dark edge pixels are 0% neutral, so any edge carries a tint and there is no black sticker line. By eye it is a pale snow ramp with horizontal step bands, each with a light lip and a darker underside, plus faint speckle. That gives about 5 lightness steps and some texture. It is simpler than the grass reference's clumps and less crisp than the paving's stone-by-stone shading, and it has only 9 distinct colours in total. That is consistent with a locked palette, and it matches the paving reference's 7 colours. It holds up as snow ground next to the references, though it sits near the lower edge of acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30848
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.408Z",
+ "cells": {
+  "16": [
+   "0f7797f9c12ff2bc",
+   "12f6e17b51fc742e",
+   "7f0af1dceba72e75",
+   "9a6509f8bfbd8b97",
+   "c57c053d69b7d825",
+   "ef0e8beeee5a4575"
+  ],
+  "24": [
+   "09c0e67550a48dc5",
+   "42734bea669b30a7",
+   "644c5d5ff707aaa7",
+   "86e3c8be88f81c07",
+   "8fcd939394421167",
+   "af6812b41b58d283",
+   "d85a4bb25392b610",
+   "de34eb6bc98e18c2"
+  ],
+  "32": [
+   "03e16a930aff7146",
+   "2765b164aeb8074c",
+   "3dcc6ba2592b9942",
+   "746b90c5c4339dd4",
+   "85cf74ecf5bf4f6c",
+   "8ed56a0ecd99eb85"
+  ],
+  "48": [
+   "b72c3a0a6ba49bc4",
+   "d3cc0c932b378e33"
+  ]
+ }
+}

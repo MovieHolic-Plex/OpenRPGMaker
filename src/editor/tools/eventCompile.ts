@@ -191,17 +191,47 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
       `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". 다른 그림으로 대체하지 않습니다. ` +
         `사람이면 list_npc_graphics 로 고르고, 물건이면 그 칸에 place_props·paint_tiles 로 물건 타일을 깔고 graphic:{transparent:true} 를 주세요. ` +
         `charset 라벨 예시: ${examples}.` +
-        (npcGraphicCatalogIsFiltered() ? " 장르 잠금 중이라 이 프로젝트의 허용 칩(몬스터 수집 캐릭터 칩)만 검색한다 — 사람은 query:\"villager\"·\"트레이너\" 같은 일반 말로 허용 사람 칩이 골라진다." : ""),
+        // 필터는 장르 잠금(몬스터 수집·현대 연애)일 수도, 사람 칩 잠금(처음 놓은 사람 칩의 계열)일 수도 있다 — 현대 거리에서 「몬스터 수집 칩만」이라고 적어
+        // 모델이 헷갈렸다(2026-10-31 asst-parity 마왕 편의점 opus 후: 사람 칩 잠금 RTP 에서 「여학생」 0개).
+        (npcGraphicCatalogIsFiltered() ? " 이 프로젝트는 캐릭터 칩 잠금(장르 잠금 또는 처음 놓은 사람 칩 계열로 정해진 사람 칩 잠금)이 걸려 허용 계열 칩만 검색한다 — list_npc_graphics 로 허용 칩 안에서 고르거나, 「villager」 같은 일반 말로 다시 부른다." : ""),
       { code: "graphic-not-found" }
     );
   }
   return charsetGraphic(entry.textureKey, entry.characterIndex);
 }
 
+/**
+ * 모델이 graphic 의 모든 칸을 빈 값으로 채워 보내는 일을 걷어 낸다: 빈 문자열·null 칸, transparent:false, 시트가 없는 characterIndex.
+ * GPT 계열은 선택 칸을 다 채운다 — `{selectionId:"", query:"wolf", textureKey:"", characterIndex:0, transparent:false}` 가 와서
+ * `"transparent" in spec` 이 참이 되어 그 필드 적이 투명 이벤트로 저장됐다(2026-10-31 asst-parity 숲 추격 terra: 들개 무리가 안 보였다).
+ */
+export function compactGraphicSpec(spec: unknown): GraphicSpec | undefined {
+  if (!spec || typeof spec !== "object" || Array.isArray(spec)) return spec as GraphicSpec | undefined;
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(spec as Record<string, unknown>)) {
+    if (value === null || value === undefined || (typeof value === "string" && !value.trim())) continue;
+    if (key === "transparent" && value !== true) continue;
+    out[key] = value;
+  }
+  if (!["selectionId", "textureKey", "resourceId", "spriteId", "id", "sprite"].some((key) => key in out)) delete out.characterIndex;
+  return out as GraphicSpec;
+}
+
+/** 빈 칸을 걷어 낸 뒤 아무 지정도 남지 않으면 undefined — 「graphic 생략」과 같게 다룬다. */
+export function graphicSpecArg(spec: unknown): GraphicSpec | undefined {
+  const compact = compactGraphicSpec(spec);
+  return compact && typeof compact === "object" && Object.keys(compact).length > 0 ? compact : undefined;
+}
+
 // GraphicSpec을 EventPageGraphic으로 변환.
-export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
-  if (!spec) return { transparent: true };
-  if ("transparent" in spec) return { transparent: true };
+export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
+  if (!spec0) return { transparent: true };
+  // transparent 는 값이 true 일 때만 투명이다(compactGraphicSpec 이 transparent:false 를 걷어 낸다). 이벤트 페이지 graphic 을 그대로 베껴 온
+  // {sprite, pattern, transparent:false} 가 키만 보고 투명이 되어 용의자·지목 NPC 가 보이지 않던 결함(해원 2026-10-31: author_mystery_case 용의자 셋이 모두 투명).
+  const spec = compactGraphicSpec(spec0)!;
+  // 빈 칸뿐인 지정은 예전처럼 「그림 없음」(생략과 같다) — 도구마다 생략 기본값이 다르므로 그 판단은 graphicSpecArg 를 쓰는 호출자가 한다.
+  if ("transparent" in spec || Object.keys(spec).length === 0) return { transparent: true };
+  const looseSpec = spec as unknown as Record<string, unknown>;
   if ('selectionId' in spec) {
     const selected = parseCharsetSearchId(spec.selectionId);
     if (!selected || selected.characterIndex < 0 || selected.characterIndex > 7) throw new ToolError('selectionId는 칩 검색 결과의 charset:<시트>:<칸>이어야 합니다.', { code: 'graphic-not-found' });
@@ -212,16 +242,23 @@ export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQuer
   }
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
   // 모델이 textureKey 대신 resourceId·spriteId 로 적는 일이 잦다(같은 칩 id). 별칭으로 받고, 문자열이 아니면 도구 예외 대신 인자 오류로 알린다(2026-10-16 잠금 누수 감사 #12: `input.trim` TypeError).
-  const loose = spec as unknown as Record<string, unknown>;
-  const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+  const loose = looseSpec;
+  // 이벤트 페이지 graphic 모양({sprite:{id}, pattern}) — 다른 이벤트의 외형을 베껴 온 경우. 칩 칸은 pattern 에서 읽는다.
+  const sprite = loose.sprite && typeof loose.sprite === "object" ? (loose.sprite as Record<string, unknown>) : undefined;
+  const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id, sprite?.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
   if (textureKey === undefined) {
     throw new ToolError(
       `graphic 은 {query:"…"} 또는 {textureKey:"<시트>", characterIndex:0~7} 이어야 합니다 — 받은 모양: ${JSON.stringify(spec).slice(0, 120)}. 칩 id 는 textureKey 칸에 문자열로 적고, 그림을 고르려면 list_npc_graphics 로 허용 칩을 보세요.`,
       { code: "invalid-args" },
     );
   }
-  const index = typeof spec.characterIndex === "number" ? spec.characterIndex : typeof loose.characterIndex === "number" ? loose.characterIndex : undefined;
-  return charsetGraphic(textureKey, index);
+  const fromPattern = sprite && typeof loose.pattern === "number" ? decodeCharsetFrameIndex(loose.pattern).characterIndex : undefined;
+  const index = typeof loose.characterIndex === "number" ? loose.characterIndex : fromPattern;
+  const graphic = charsetGraphic(textureKey, index);
+  const direction = loose.direction;
+  return sprite && (direction === "up" || direction === "down" || direction === "left" || direction === "right")
+    ? { ...graphic, direction, pattern: charsetFrameIndex({ characterIndex: decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex, direction, pattern: 1 }) }
+    : graphic;
 }
 
 /** 맵 이벤트에 이미 쓰인 charset 슬롯 키 집합. */
@@ -641,6 +678,9 @@ export function compileSimplePage(
           `${path}.choices[${choiceIndex}].commands`,
           options.warnings,
         ),
+        ...(choice.showWhen !== undefined ? { showWhen: normalizeCondition(choice.showWhen, `${path}.choices[${choiceIndex}].showWhen`, options.warnings) } : {}),
+        ...(choice.enableWhen !== undefined ? { enableWhen: normalizeCondition(choice.enableWhen, `${path}.choices[${choiceIndex}].enableWhen`, options.warnings) } : {}),
+        ...(typeof choice.disabledText === "string" && choice.disabledText.trim() ? { disabledText: choice.disabledText.trim() } : {}),
       })),
       cancelBehavior: "choice2",
     });

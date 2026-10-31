@@ -23,7 +23,7 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
   칸·확인 색은 대사 글자색(currentColor)에서 뽑는다(종이 창 대비). 입력창이 떠 있는 동안 목표 안내는 숨는다(`SUPPRESSING_TEST_IDS`). 오버레이는 내용 높이로 자란다(`playSurface.css`).
 - **타이틀 복귀 상세**: 항목은 늘 있다. 첫 결정은 확인 대기(「진행을 버리고 타이틀로 · 확인」), 둘째가 돌아간다. 빈 상세 문구(「준비하지 못했습니다」)는 없앴다.
 - **메뉴 첫 화면 현재 목표**: `playerStatusMenu.withObjectiveCard` 가 개요 밑에 `zoneFeedback.currentObjectiveText` 를 붙인다(목표가 없으면 없음).
-- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」). 대사 창이 떠 있어도 두 번째 Esc 에서 바로 건너뛴다 — `playSceneInterpreter` text 단계가 `showText` 와 `skipController.waitForSkip()` 을 경주시키고, 건너뛰면 `dialogue.close()`(2026-10-29; 전에는 창이 닫힐 때까지 기다려 Esc 를 아무리 눌러도 첫 줄 그대로였다).
+- 컷신 건너뛰기 안내는 「Esc 두 번: 컷신 건너뛰기」(터치는 「B 두 번」). 대사 창이 떠 있어도 두 번째 Esc 에서 바로 건너뛴다 — `playSceneInterpreter` text 단계가 `showText` 와 `skipController.waitForSkip()` 을 경주시키고, 건너뛰면 `dialogue.close()`(2026-10-29; 전에는 창이 닫힐 때까지 기다려 Esc 를 아무리 눌러도 첫 줄 그대로였다). 컷신이 연 전투 동안에는 안내를 내린다(`battleProcessing` 걸음) — 전투 화면 오른쪽 위 배속 표시와 안내 띠를 덮었다(2026-10-31).
 - 목표창은 `activeRuntimeEvents("action")` 발자국(보이지 않는 조사 지점 포함)도 피한다.
 - **맵 바깥 여백 우선**: 맵을 조금이라도 덮는 자리는 고정 벌점(+4)이라, 여백에 통째로 들어가는 자리가 있으면 늘 그쪽이다.
   옆 띠는 폭을 띠에 맞춰 줄이고(글자 크기 그대로), 위아래 띠는 띠 높이에 들어갈 때까지 넓힌다(`max-width` 를 그때만 풂).
@@ -42,6 +42,15 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
 - **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
   그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
   `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
+  **중간값 `"arrows"`(2026-10-30 사용자 「화살표만 남겨줘도 충분히 친절」):** 목표 빛무리·화살표와 ▼ 는 끄고(`clearFieldGuides(scene,{keepExits:true})`),
+  출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
+  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
+  `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
+  arrows 의 건물 문 화살표는 글자 자리 규칙(문 그림 비키기) 대신 문 그림 가운데 바로 위에 둔다.
+  **출구가 아닌 것(2026-10-30 첫사랑 검수):** 그림 있는 조사(action) 이벤트가 대사·선택지 뒤에 옮기는 페이지는 「다음 장면으로 넘어가는 대화」라 출구 글자를 달지 않는다
+  (`exitTargetOf(page, here, talker)` — 탕비실 지후 머리 위 「→ 7층 · 금요일」이 다음 장을 미리 알렸다). 조사 ▼ 표식(`syncExamineMarkers`)도 출구 글자처럼 `scene.running` 동안 숨긴다
+  (재회 컷신 내내 팀장·민호 머리 위에 떠 있었다).
+  조사(action) 이벤트가 **선택지** 뒤에 옮기는 페이지도 출구가 아니다(그림 없어도) — 편의점 냉장고에 「→ 그날의 방송실」이 떠 회상을 미리 알렸다(2026-10-31 첫사랑 r5). talker 규칙은 #4001 병합에서 빠졌다가 되살렸다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -757,6 +766,8 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   같은 규칙으로 제 줄 + 0.5 에 y 정렬한다(`characterDepth.starRestsOnSolidFurniture`). 그 칸은 아무도 밟지 못해 「밑으로 지나가는」 ★ 의 뜻이 없고,
   고정 상층이면 남쪽 칸에 선 사람의 머리(한 줄 위로 걸친다)를 덮어 계산대 앞 손님이 계산대 밑에 깔려 보였다(마왕 편의점). 주인공 실루엣(`playerOcclusionGhost`)과
   `approach` 의 가려진 칸 판정도 이 칸을 덮개로 세지 않는다.
+  × 는 ★ 보다 **아래 층**이어야 한다 — 거리 건물처럼 ★ 그림 위 층에 충돌만 막는 × 덮개(jp_city `851`)를 얹은 칸은 건물 몸이라 고정 상층 그대로다.
+  (이걸 세면 건물 뒤 통로를 걷는 행인의 머리가 벽 위로 튀어나왔다, r7.)
 - 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
 - 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
   재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
@@ -1138,8 +1149,8 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
 - **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
 - **선택지.** (2026-10-22 고정 틀로 대체) 선택지는 같은 세션이면 바로 앞 대사 상자의 자리(`lastBoxPosition`)에 선다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
-- **질문 없는 선택지 앞 글은 자기 결정 키를 기다린다 (2026-10-29).** 인터프리터 text 단계가 바로 다음 명령이 `prompt` 없는 `choices` 인지 보고(`commandCatalog.textLeadsIntoChoices`) `beforeChoices` 를 싣는다. `showText` 는 그 글의 끝 쪽 커서를 ■ 대신 ▼ 로 그리고(선택지가 이어진다는 표시, VQA mt3 terra 197 「▼ 만 보이고 선택지가 없어 보인다」에 대한 답), 결정 키를 받으면 선택지가 그 글을 틀에 남긴 채 뜬다(RPG 메이커 2000 과 같다). **글이 다 나오자마자 스스로 닫히게 하지 말 것** — 같은 날 그렇게 했더니 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA). 글을 닫은 그 키·누른 채 반복은 `showChoices` 의 `CHOICE_CONFIRM_GRACE_MS`(300ms)·`e.repeat` 거르기·키보드발 클릭(detail 0) 거르기가 버린다.
-- **선택지 입력 유예 (2026-10-21, 첫사랑).** `showChoices` 는 열린 뒤 `CHOICE_CONFIRM_GRACE_MS`(300ms) 동안 **실제(isTrusted)** 결정·숫자 키를 버리고, 그 사이 키보드발 클릭(detail 0)도 버린다. 앞 대사를 넘기던 Enter 연타가 선택지가 그려진 바로 그 순간 닿아 플레이어가 읽지 못한 0번이 골라지고, 이어진 연타가 엔딩·타이틀을 넘겨 「새 게임으로 리셋」처럼 보이던 결함의 수정이다(재현 로그: 선택지 등장과 Enter 가 같은 0.1초). 단위 테스트의 합성 이벤트는 isTrusted 가 거짓이라 영향이 없다.
+- **질문 없는 선택지 앞 글은 자기 결정 키를 기다린다 (2026-10-29).** 인터프리터 text 단계가 바로 다음 명령이 `prompt` 없는 `choices` 인지 보고(`commandCatalog.textLeadsIntoChoices`) `beforeChoices` 를 싣는다. `showText` 는 그 글의 끝 쪽 커서를 ■ 대신 ▼ 로 그리고(선택지가 이어진다는 표시, VQA mt3 terra 197 「▼ 만 보이고 선택지가 없어 보인다」에 대한 답), 결정 키를 받으면 선택지가 그 글을 틀에 남긴 채 뜬다(RPG 메이커 2000 과 같다). **글이 다 나오자마자 스스로 닫히게 하지 말 것** — 같은 날 그렇게 했더니 「계속」 하려고 누른 Enter/Z 가 이미 열린 선택지의 0번을 골라 엔딩 분기가 틀어졌다(마왕 편의점 데모 QA). 글을 닫은 그 키·누른 채 반복은 `showChoices` 의 `isLeakedConfirmPress`(`confirmMashGuard.ts`)·`e.repeat` 거르기·키보드발 클릭(detail 0) 거르기가 버린다.
+- **선택지 입력 유예 (2026-10-21, 첫사랑 → 2026-10-30 연타 거르기).** 판정은 `src/player/confirmMashGuard.ts` 하나다. 선택지(`showChoices`)와 숫자 입력(`dialogueNumberInput`)이 같은 규칙을 쓴다: ① 창이 열리기 전·열린 뒤 `OPEN_GRACE_MS`(300ms) 안에 **누른**(event.timeStamp — 늦게 배달된 키도 누른 시각으로) 결정 키, ② 바로 앞 결정 키에서 `MASH_GAP_MS`(450ms) 안에 이어 누른 결정 키는 버린다. 버린 키도 다음 판단의 「바로 앞」이라 연타가 이어지는 동안은 고르지 않고, 손을 멈췄다 새로 누른 결정만 받는다. 그 사이 다른 키(방향·숫자)를 눌렀으면 연타가 아니다(↓ 뒤 바로 Enter 는 받는다). 선택지는 열린 직후 숫자 키(바로 고르기)도 버린다. 누른 채 반복(`e.repeat`)은 각 창이 버린다. 판정 대상은 플레이어 입력뿐 — 실제 키(isTrusted)와 게임패드(`desktopShellBridge`)·가상 패드(`touchPad`)가 `markPlayerPadKey` 로 표시한 합성 키. 단위 테스트의 합성 키는 표시가 없어 지나간다. **대사 넘기기에는 걸지 않는다**(연타로 빨리 넘기는 것은 정상, 지연 없음). 결함 이력: 첫사랑(선택지 등장과 Enter 가 같은 0.1초), 회귀 벤치 ebfe-sl 방탈출·추리 sl3 terra 판정자 A8 「Enter 10번」(부하로 연타 간격 250~400ms → 300ms 유예만으로는 0번 오답이 골라졌다). QA: `npm run qa:runtime -- --scenario choice-mash --netns`(픽스처 생성 명령은 시나리오 머리말).
 - **호감 변화 알림 (2026-10-21).** `changeFriendship` 은 인터프리터 훅 `onFriendshipChanged` 를 부르고, 관계 메뉴를 쓰는 게임(`usesRelationshipMenu`)에서만 `playSceneRelationshipPulse.ts` 가 오른쪽 위에 「♥ 이름 · 호감이 올랐다/내려갔다」를 3.2초 띄운다(대사 진행을 막지 않음, 스타일 `playSurface.css`). 관계 메뉴 행은 `project.characters[key].note` 한 줄 소개를 함께 보인다.
 - **오른쪽 흉상 이름표 (2026-10-21, 첫사랑 r2).** 미연시 룩(`[data-vn-look]`)에서 말하는 흉상이 오른쪽이면(`.bust-right`) 이름표도 오른쪽(`vnLook.css`). 앞 화자 흉상이 왼쪽 「듣는 사람」으로 남는 두 사람 장면에서 왼쪽 이름표가 듣는 사람 이름처럼 읽히던 결함.
 - **창이 위아래로 뛰지 않게 (첫사랑 r2).** 「주인공을 가리지 않게」(`preventObscuringPlayer`)가 켜져 있으면 흉상 없는 줄·선택지가 주인공 위치에 따라 위로 뛴다. 고정하려면 줄마다 `position: "bottom"` 과 시작 장면의 `displayTextSettings`(아래·`preventObscuringPlayer:false` — 선택지 창은 줄 위치가 아니라 세션 설정을 따른다) 둘 다. 장소·시각 자막은 같은 자리에서 `context: "narration"`(테두리 없는 짙은 띠·가운데 기울임)으로 모양만 다르게.
@@ -1181,6 +1192,18 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
 `data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
 
+### 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+
+- **이름표만 있는 빈 창.** 흉상은 그림(또는 에메랄드 도트 변환본)이 풀릴 때까지 `visibility:hidden` 이었다(`renderFace` → `applyPixelBust` onReady).
+  새 표정·새 인물 줄마다 그림을 처음 받는 동안 창은 이름표만 보였고(부하 없는 탐침에서도 줄마다 120~330ms, 부하 녹화에서는 약 1초), 본문 흘림도 같이 늦게 보였다.
+  이제 `showText` 가 창을 만들기 **전에** 그 줄의 초상(화자 `request.face`·표정 변형 `faceForDialogueEmotion`·`listenerFace`) 중 아직 안 받은 것을 기다린다
+  (`unsettledLinePortraits` → `waitForLinePortraits`, 흉상은 `bustPixelate.preloadPixelBust`(받기+`decode()`+변환), 48px 얼굴은 `imageWarmQueue.warmImageUrl`, 상한 1.5초·중단 신호 존중).
+  기다리는 동안 앞 줄의 창은 퇴장하지 않고 그대로 선다(`holdPendingExit` — 세션·듣는 사람 무대가 끊기지 않는다). 목소리도 창과 함께 시작한다.
+  이미 풀린 흉상은 `applyPixelBust` 가 마이크로태스크에서 붙여 첫 페인트부터 보인다. 단위 테스트(`import.meta.env.VITEST`)·그림을 못 받는 환경은 옛 동기 경로 그대로다.
+- **선택지가 듣는 사람 흉상을 덮음.** 오른쪽 흉상이 선 틀이면 선택지 칸이 왼쪽으로 비켰는데, 왼쪽에 듣는 사람 흉상이 있으면 그 사람을 덮었다.
+  틀에 양쪽 초상이 다 있으면(`.choices-frame.has-portrait-listener`) 선택지 칸은 가운데에 서고 폭은 양옆 흉상 자리(`--runtime-dialogue-bust-width` + 26px)만큼 비운다(`dialogue.css` 「고정 틀 선택지」).
+- 탐침(커밋 안 함): 구운 데모 + `qaCheckpoint` 로 옥좌 앞 대사·선택지를 돌리며 rAF 마다 이름표·얼굴 보임·본문 글자 수와 선택지/흉상 사각형을 적는다.
+
 ## 엔딩 카드 글자는 게임 언어 (2026-10-22)
 
 `showEndingScreen`(`playSceneOverlays.ts`)의 배지(HAPPY·NORMAL·BAD·CHARACTER ENDING, 막·장 끝은 「다음 이야기에 계속」)·마지막 장(끝 / 「제1막 끝」)·
@@ -1188,6 +1211,12 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 게임 언어(`vnExtrasLanguage`: 저작 vnExtras > `meta.oprnDialogueSystem.language` > ko, auto 는 기기 언어). 막·장 끝 판정은 엔딩 id 의
 `act<n>`/`chapter<n>`(`endingSegmentOf`). 엔딩마다 덮기: `EndingPresentation.badge`·`finalTitle`(각 40자, `kicker` 도 40자 상한)
 — 엔딩 정의 presentation 과 ending 명령 presentation 둘 다, 검증 `validateEndingPresentation`, 조수 `define_ending` 스키마. 게임 오버 화면 글자는 이번 범위 밖이다.
+
+**에필로그는 한 번만 읽힌다 (2026-10-31).** 엔딩 CG 카드(`buildEndingCg`)는 저작 메시지가 비면 `define_ending.epilogue` 의 say 비트를
+요약(`endingSummaryText`)으로 싣는다. 그런데 `triggerEnding` 은 그 에필로그를 먼저 대사창으로 한 줄씩 보인 뒤 카드를 띄우므로 같은 글이
+두 번 나왔다(첫사랑 r5 엔딩 A). 에필로그에 글(text 명령)이 있으면 인터프리터가 마지막 `ending` 명령을 `ENDING_AFTER_EPILOGUE` WeakSet 으로
+표시하고, `returnToTitle` 단계의 `epiloguePlayed` → `showEndingScreen(…, epiloguePlayed)` 로 넘겨 카드는 배지·kicker·제목만 남긴다.
+에필로그가 그림뿐이거나 검증에 실패해 대사가 하나도 안 나왔으면 예전처럼 요약을 싣는다. 저작 `message` 는 늘 싣는다.
 
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 
@@ -1222,6 +1251,7 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 - **함정(실측).** 갤러리 상세는 `grid-template-rows` 가 없어 큰 그림 칸(`status-menu-showcase-frame` height:100%)이 높이 0 으로 접혀 그림이 안 보이는 기존 결함이 있었다 — `galleryMenu.css` 에서 첫 줄을 `minmax(0,1fr)` 로 고쳤다(옛 갤러리에도 적용됨). 로컬 파일 대신 런타임 QA 에는 `scenario.localStorageSeed`(키의 `{ns}` = 세이브 이름 공간)로 「이 기기에 이미 본 엔딩」을 심는다(`scripts/lib/runtimeQaRun.mjs`).
 - **기기 기록 (수리 PR, 2026-10-17).** 엔딩 달성(`{namespace}:clear-record:v1`)과 열린 CG(`{namespace}:gallery-record:v1`, `{version:1, ids:[...]}`, 상한 1000)는 **저장 칸이 아니라 이 기기**에 남는다. 코드는 `src/player/deviceRecords.ts`: `syncSessionWithDeviceRecords` 가 부팅(`player.ts`)과 `PlayScene.applySession`(ESC 불러오기·체크포인트 복원·패배 복구·자동 저장 읽기 모두 통과)에서 `session.clearHistory` 를 기기 기록으로 다시 채우고, CG 는 「기기 기록 ∪ 세션의 칸별 해금」 합집합으로 올려 옛 저장·옛 프로젝트의 칸별 해금을 이관한다(읽기만으로는 쓰지 않고 달라졌을 때만 기록). `showPicture recordInGallery` 는 세션과 기기 양쪽에 기록한다. 세션 상한 200 을 넘으면 지금 프로젝트의 갤러리 칸에 없는 해금부터 버린다(`recordGalleryUnlock(session,id,liveIds)`). **불러오기·새 게임은 열린 그림·본 엔딩을 줄이지 않는다.** 힌트 문구(`gallery.hint`)가 이를 밝힌다.
 - **수리 PR 묶음(vn-review-2).** 엔딩 목록 상세는 커서 없는 정보 목록이라 ↑↓ 가 `.status-menu-detail-list` 를 스크롤한다(`moveSelectedDetailAction`). 체크리스트 칸은 그 인물 자신의 엔딩만으로 채우고 공통 엔딩은 「공통」 행으로 따로 둔다(이름 못 찾은 인물은 「???」). 연애 기본 ESC 메뉴 낱말(호감도·일정·소지품·저장·불러오기·설정·타이틀로)과 저장·로드 화면 글자는 `vnUiText` 로 저작 언어를 따른다(기본 메뉴·미연시 프로젝트만; 작가가 쓴 라벨과 몬스터 수집 쇼케이스는 그대로 — 한 화면에 한국어가 섞이는 부분은 알려진 한계). `review_game_systems`: 저작 없는 연애 기본 구성의 「CG 0」 경고는 뺐고(저작으로 켠 경우만), 저작 메뉴에 갤러리 항목이 없으면 짚는다. `configure_field_menu` 는 작가가 저작한 `oprnVnExtras` 의 꺼짐을 되돌리지 않고 알린다. `set_vn_extras {}` 는 아무것도 쓰지 않고, `preset:"default"` 는 함께 준 칸을 무시한다고 알린다. `GAME_SYSTEM_REQUEST_PATTERN` 은 맨 「갤러리」·「gallery」·「저장 칸」을 빼고 VN 낱말(`CG 갤러리`·`갤러리 화면`·`gallery screen` …)만 받는다. `normalizeSceneLine`/`saveSceneLine` 은 BiDi 제어문자를 지우고 글자 묶음(grapheme) 단위로 자른다. `listGallerySlots` 캐시는 맵·이벤트 배열 참조·길이가 달라지면 무효다.
+- **레일 행 높이는 남은 세로 길이로(2026-10-31).** workbench 계열 ESC 메뉴(classic·journal 등 `status-menu-primary-dock` 를 그대로 쓰는 스킨) 명령 행이 23px 고정이라 240px 판에서 8명령이 레일 밖으로 넘쳐 「설정」이 도움말 줄을 덮고 「타이틀로」가 화면 밖에 나갔다. 레일에 `--status-menu-rail-count` 를 심고 `statusMenuEdgeDock.css` 의 `--status-menu-rail-row = max(12px, min(23px, (100% − (n−1)·3px) / n))` 로 행·커서 막대를 같이 줄인다(커서 막대는 행 높이 상자 + `translateY(index × (100% + 3px))`). 23px 가 들어가면 예전과 같은 화면이다. 12px 하한이면 240px 판에 10명령까지 들어간다. 재현은 `--scenario ui-fit`(`UIFIT_MENU_SKIN=workbench` 로 커서 막대 확인).
 - **휠 스크롤과 QA.** ESC 메뉴는 `.play-stage` 아래 전부 `pointer-events:none` 이고 `installPlayPointerBlocker` 가 휠을 삼켜, 넘치는 상세 목록이 휠로 안 움직였다. 키보드 전용 플레이에서만 `.status-menu-detail-list` 상자가 포인터를 받고(행은 계속 안 받음) 차단기는 그 목록 위 휠만 통과시킨다(`statusMenuEdgeDock.css` 맨 아래, `playInputBlocker.ts`). 대화 기록·백로그(`.dialogue-log-list`, `.dialogue-backlog-list`)도 같은 이유로 휠만 통과한다 — 백로그 안내가 휠 스크롤을 약속한다. 시험: `bun scripts/qa/runtime/romance-vn-ui4-fixture.mts output/qa/vn4 [ko|en]` → `node scripts/runtime-qa.mjs --scenario romance-vn-ui4 --project output/qa/vn4/project.json` (저장→CG 해금→ESC 불러오기→갤러리·엔딩 유지, 12명 체크리스트 키보드·휠 스크롤, 뷰어 닫기). 하네스에 `wheel` op(`{testid|selector, deltaY}`)을 더했다. ESC 메뉴 커서는 마지막 항목을 기억하니 시나리오는 절대 위치가 아니라 상대 이동으로 짠다.
 - **시각 QA.** `bun scripts/qa/runtime/romance-vn-ui2-fixture.mts output/qa/vn2 [ko|en]` 후 `unshare -rn node scripts/runtime-qa.mjs --scenario romance-vn-ui2 --project output/qa/vn2/project.json`. 증거 `verify-shots/runtime-qa/romance-vn-ui2{,-en}/`.
 

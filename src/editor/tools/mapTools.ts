@@ -104,7 +104,7 @@ import {
   roadRepairWarnings,
   withWidthCells,
 } from "./roadObstacles";
-import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
+import { BATTLE_BACKDROP_ID_HINT, unknownSceneryIdMessage } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { emptyMapNextStep } from "./mapEmptiness";
 import { THEME_SCENES, parseThemeScene, runThemedMap, themeSceneCatalogLines } from "./themeScenes";
@@ -1386,7 +1386,14 @@ const setStartPosition: ToolDefinition = {
     const y = args.y as number;
     if (!inMapBounds(map, x, y)) throw new ToolError(`시작 위치가 맵 밖입니다: (${x}, ${y})`, { code: "start-out-of-bounds", mapId: map.id, x, y });
     if (!isPassable(draft, map, x, y)) {
-      throw new ToolError(`시작 위치가 통행 불가 타일입니다: (${x}, ${y})`, { code: "start-impassable", mapId: map.id, x, y });
+      // 가까운 걸을 수 있는 칸을 같이 알려 준다 — 모델이 칸을 짐작해 다시 부르던 왕복을 줄인다(2026-10-31 asst-parity 원룸 시작 (5,4)).
+      let near: { x: number; y: number } | undefined;
+      for (let r = 1; r <= 4 && !near; r++) for (let dy = -r; dy <= r && !near; dy++) for (let dx = -r; dx <= r && !near; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const nx = x + dx, ny = y + dy;
+        if (inMapBounds(map, nx, ny) && isPassable(draft, map, nx, ny)) near = { x: nx, y: ny };
+      }
+      throw new ToolError(`시작 위치가 통행 불가 타일입니다: (${x}, ${y})${near ? ` — 가까운 걸을 수 있는 칸: (${near.x}, ${near.y})` : ""}`, { code: "start-impassable", mapId: map.id, x, y });
     }
     const previous = draft.maps[draft.startMapId];
     draft.startMapId = map.id;
@@ -1750,6 +1757,12 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     spawn.passRows = passRows;
   }
   if (input.persistKill !== undefined) spawn.persistKill = booleanField(input, "persistKill", label);
+  if (input.timePhases !== undefined) {
+    if (!Array.isArray(input.timePhases) || input.timePhases.length === 0 || !input.timePhases.every(isTimePhase)) {
+      throw new ToolError(`${label}.timePhases 는 morning|day|evening|night 중 하나 이상입니다.`, { code: "invalid-time-phase", mapId: map.id });
+    }
+    spawn.timePhases = TIME_PHASES.filter((phase) => (input.timePhases as unknown[]).includes(phase));
+  }
   if (input.onKillSwitchId !== undefined) {
     const onKillSwitchId = stringField(input, "onKillSwitchId", label).trim();
     if (!onKillSwitchId) throw new ToolError(`${label}.onKillSwitchId는 비울 수 없습니다.`, { code: "invalid-kill-switch", mapId: map.id });
@@ -2394,6 +2407,8 @@ const setMapProperties: ToolDefinition = {
       delete map.battleBackground;
       changed.push("전투배경=기본");
     } else if (typeof args.battleBackground === "string" && args.battleBackground.trim()) {
+      const badScenery = unknownSceneryIdMessage(args.battleBackground);
+      if (badScenery) throw new ToolError(badScenery.replace("add backdropLayers on the troop", "add backdropLayers on the troops fought there (upsert_troop)"), { code: "unknown-battle-backdrop" });
       map.battleBackground = args.battleBackground.trim();
       changed.push(`전투배경=${map.battleBackground}`);
     }
@@ -2547,6 +2562,11 @@ const makeHuntingGround: ToolDefinition = {
       passRows: { type: "integer" },
       persistKill: { type: "boolean" },
       onKillSwitchId: { type: "string" },
+      timePhases: {
+        type: "array",
+        items: { type: "string", enum: ["morning", "day", "evening", "night"] },
+        description: "이 시간대에만 나온다(시간 시스템이 켜졌을 때). 아침 6~10시·낮 10~17시·저녁 17~20시·밤 그 밖. 벗어나면 무리가 사라지고 돌아오면 다시 나온다. 예: 밤에만 나오는 익사귀 [\"night\"]. 시간 시스템이 꺼져 있으면 늘 나오므로 configure_time_system 도 켜라.",
+      },
       encounterEntries: { type: "array", items: encounterEntrySchema },
       encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
@@ -2574,8 +2594,12 @@ const makeHuntingGround: ToolDefinition = {
       ...(args.passRows !== undefined ? { passRows: args.passRows } : {}),
       ...(args.persistKill !== undefined ? { persistKill: args.persistKill } : {}),
       ...(args.onKillSwitchId !== undefined ? { onKillSwitchId: args.onKillSwitchId } : {}),
+      ...(args.timePhases !== undefined ? { timePhases: args.timePhases } : {}),
     }, "fieldSpawn");
     map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
+    const phaseWarnings = spawn.timePhases && !draft.system.timeSystem?.enabled
+      ? [`timePhases(${spawn.timePhases.join(",")}) 는 시간 시스템이 켜져야 듣는다. 지금은 늘 나온다 — configure_time_system {enabled:true} 로 켜라.`]
+      : [];
     if (combat && combat.mode !== "random") {
       map.actionCombat = combat.mode === "action";
       if (combat.mode === "action") draft.system.actionCombat = { ...draft.system.actionCombat, enabled: true };
@@ -2584,6 +2608,7 @@ const makeHuntingGround: ToolDefinition = {
       return {
         summary: `${map.name} — 보이는 몬스터 배치 (${combat.mode === "action" ? "맵 위 직접 전투" : "접촉 시 전투 화면"})`,
         data: { mapId: map.id, fieldSpawn: spawn, encounterRate: 0, combatMode: combat.mode, sourceId: combat.sourceId },
+        ...(phaseWarnings.length ? { warnings: phaseWarnings } : {}),
       };
     }
     const entries = args.encounterEntries !== undefined
@@ -2595,6 +2620,7 @@ const makeHuntingGround: ToolDefinition = {
     return {
       summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개${rateNote === undefined ? "" : ` — ${rateNote}`}`,
       data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries, encounterRate: map.encounterRate ?? 0 },
+      ...(phaseWarnings.length ? { warnings: phaseWarnings } : {}),
     };
   },
 };
@@ -2664,7 +2690,7 @@ const createFarmPlot: ToolDefinition = {
 // 맵 크기 변경(좌상단 기준 유지, 확장부 아래층은 가장자리 바탕 타일 연장). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라. 완성된 집(마을 시공기 집)의 보호 칸을 자르는 축소도 거부되며, 오류가 지킬 수 있는 가장 작은 너비·높이를 알려 준다. 마을 맵의 빈 바닥 띠(아래쪽 물·들판)는 메우지 말고 이 도구로 줄인다.`,
   mode: "write",
   parameters: {
     type: "object",

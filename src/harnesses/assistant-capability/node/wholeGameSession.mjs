@@ -19,7 +19,7 @@ import { resolve, dirname } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { isDeepStrictEqual } from 'node:util';
 import { firefox } from 'playwright';
-import { stored, writeRuntimeProject, newEditor, startHost } from './editorDriver.mjs';
+import { stored, writeRuntimeProject, newEditor, startHost, assistantReports } from './editorDriver.mjs';
 import { readOAuthClientsFromPiAi } from '../../../../scripts/lib/oauthClients.mjs';
 import { installStoreBridge } from './storeBridgeShim.mjs';
 
@@ -215,16 +215,20 @@ try {
     if (outcome !== 'awaiting-answer') saveKind = await save().catch(error => `save-failed: ${error.message.slice(0, 200)}`);
     const snap = stored(projectDir);
     // 편집기는 마지막 보고 하나만 말풍선으로 보인다(aiPiAgentCommand lastAssistantText). 끝맺음 관문 앞의 초안은 따로 남긴다(G32).
-    const reports = events.filter(e => e.type === 'assistant').map(e => (e.text ?? '').trim()).filter(Boolean);
+    const reports = assistantReports(events);
     const answer = reports.at(-1) ?? '';
     const draftReports = reports.slice(0, -1);
-    const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined }));
+    const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined,
+      // 모델이 받은 글 그대로(영어 거절·Fixed call·고리 메모, 최대 4000자). summary 는 화면·장부용 원문 요약이다.
+      ...(typeof e.modelText === 'string' ? { modelText: e.modelText.slice(0, 4000) } : {}) }));
     const turn = { step, kind, input: body, outcome, elapsedMs: Date.now() - startedAt, saveKind, revision: snap.revision, sha256: snap.sha256,
       requests: requests.slice(requestMark), errors: events.filter(e => ['error', 'stream_error'].includes(e.type)).map(e => e.message),
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
       advisor: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('v2.advisor')).map(e => ({ name: e.name, data: e.data })),
+      // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)의 실행기 기록 — 전/후 적중 수와 고친 줄 쌍.
+      dialoguePolish: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('dialogue_polish')).map(e => ({ name: e.name, summary: e.summary, data: e.data })),
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);

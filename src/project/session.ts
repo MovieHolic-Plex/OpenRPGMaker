@@ -443,12 +443,22 @@ export interface PlaySession {
   teleportPoints?: import("./teleportPoints").TeleportPoint[];
   /** 미니게임 최고 점수(id → 점수). 세이브에 들어간다. */
   highScores?: Record<string, number>;
+  /** 주간 일정표(G4): `planSchedule` 이 저장한 계획(scheduleId → 슬롯 순서의 활동 id). 세이브에 들어간다. project/schedule.ts */
+  schedulePlans?: import("./schedule").SchedulePlans;
+  /** 일정표 활동 사용 횟수(scheduleId → activityId → 횟수). `maxUses` 판정에 쓴다. 세이브에 들어간다. */
+  scheduleUses?: import("./schedule").ScheduleUses;
+  /** 진행 중인 `runSchedule`. 활동이 맵을 옮겨도 다음 슬롯을 이어 돌리는 대기열. 끝나면 지운다. 세이브에 들어간다. */
+  scheduleRun?: import("./schedule").ScheduleRunState;
   /** 이야기 일지 줄(«Journal Line» 이 쌓고 ESC 메뉴 「일지」 가 읽는다). 세이브에 들어간다. project/storyJournal.ts */
   storyJournal?: import("./storyJournal").JournalLine[];
+  /** 괴물 도감 기록(만난 적·쓰러뜨린 수·알린 칸). 세이브에 들어간다. project/bestiary.ts */
+  bestiary?: import("./bestiary").BestiarySessionState;
   /** Key Poll 이 읽는 지금 눌린 키(필드 씬이 매 프레임 쓴다). 세이브에 넣지 않는다. */
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   /** 상태별 필드 걸음 카운터(actorId → stateId → 걸음). 걸음 상태 효과(#25)가 쓴다. */
   stateStepCounts?: Record<string, Record<string, number>>;
+  /** 상태별 치른 전투 수(actorId → stateId → 전투). releaseAfterBattles(칼 기름 「싸움 N번」)가 쓴다. 세이브에 들어간다. */
+  stateBattleCounts?: Record<string, Record<string, number>>;
   /**
    * 이 기기의 회차 기록 사본(부팅 때 clearRecord 에서 채운다, 세이브에 넣지 않는다).
    * 회차는 세이브 슬롯이 아니라 기기에 속한다 — 예전 세이브를 불러도 '이미 본 엔딩' 은 남는다.

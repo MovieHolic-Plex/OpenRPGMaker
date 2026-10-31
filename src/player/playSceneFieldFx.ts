@@ -14,7 +14,8 @@
 import type Phaser from "phaser";
 import { playSoundEffect } from "@/player/audio";
 import { characterDepth, characterSpriteY } from "@/player/characterDepth";
-import { applyDoorCue, DOOR_OPEN_SE } from "@/player/playSceneDoorway";
+import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
+import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
 import { applyMapOverrides, rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -208,7 +209,7 @@ export async function playDoorOpenBeforeTransfer(
   const kit = kitDoorForTransfer(scene, project, eventId, options.mode);
   if (kit) {
     if (kit.state === "open") return false;
-    if (!options.silent) playSe(DOOR_OPEN_SE);
+    if (!options.silent) playSe(doorSe("door", DOOR_OPEN_SE));
     await Promise.race([openKitDoor(scene, kit, "transfer"), sleep(scene, DOOR_LEAD_MS)]);
     return true;
   }
@@ -233,12 +234,12 @@ export async function playDoorOpenBeforeTransfer(
     const target = eventId!;
     animation = (async () => {
       for (const frame of [1, 2, 3]) {
-        applyDoorCue(scene as unknown as Parameters<typeof applyDoorCue>[0], { kind: "doorCue", target, frame, ms: DOOR_FRAME_MS, ...(frame === 1 && !options.silent ? { se: DOOR_OPEN_SE } : {}) }, playSe);
+        applyDoorCue(scene as unknown as Parameters<typeof applyDoorCue>[0], { kind: "doorCue", target, frame, ms: DOOR_FRAME_MS, ...(frame === 1 && !options.silent ? { se: doorSe("door", DOOR_OPEN_SE) } : {}) }, playSe);
         await sleep(scene, DOOR_FRAME_MS);
       }
     })();
   } else {
-    if (!options.silent) playSe(DOOR_OPEN_SE);
+    if (!options.silent) playSe(doorSe("door", DOOR_OPEN_SE));
     animation = swingDoorOpen(scene, plan);
   }
   await Promise.race([animation, sleep(scene, DOOR_LEAD_MS)]);
@@ -607,7 +608,8 @@ function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: Phaser.GameObject
 
 export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
   const spec = CONTAINER_FX[style];
-  playSe(spec.se);
+  // 궤짝은 저작한 「상자」 자리(chest)가 있으면 그 소리.
+  playSe(style === "chest" ? projectSeCue(store.getCurrent(), "chest") ?? spec.se : spec.se);
   shakeCell(scene, cell, spec.shakePx, spec.shakes);
   if (spec.lid) await liftLid(scene, cell);
   burstParticles(scene, cell, style);
@@ -659,7 +661,7 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       break;
     case "popupItem": {
       const name = store.getCurrent().database.items?.find((item) => item.id === fx.itemId)?.name ?? fx.itemId;
-      playLootPopup(scene, cell, `+ ${name}`, "#fff3c4", POPUP_ITEM_SE);
+      playLootPopup(scene, cell, `+ ${name}`, "#fff3c4", projectSeCue(store.getCurrent(), "itemGet") ?? POPUP_ITEM_SE);
       break;
     }
     case "popupGold":
@@ -670,11 +672,11 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       const kit = runtimeKitDoor(scene, project, cell);
       if (kit) {
         if (kit.state === "closed") {
-          playSe(DOOR_OPEN_SE);
+          playSe(doorSe("door", DOOR_OPEN_SE));
           await openKitDoor(scene, kit, "event");
         }
       } else if (doorTileAt(project, scene.map, cell.x, cell.y)) {
-        playSe(DOOR_OPEN_SE);
+        playSe(doorSe("door", DOOR_OPEN_SE));
         const textureKey = tilesetTextureKeyFor(scene, project, scene.map);
         const plan = textureKey ? tileDoorPlan(scene, project, scene.map, cell, textureKey, mapTileSize(scene.map)) : null;
         if (plan?.kind === "tile") void swingDoorOpen(scene, plan);

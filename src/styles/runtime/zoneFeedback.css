@@ -99,7 +99,8 @@
   position: absolute;
   text-align: center;
   text-shadow: 1px 1px 0 var(--runtime-window-shadow);
-  top: 38%;
+  /* 카메라는 주인공을 화면 가운데에 둔다 — 38% 에 걸린 세 줄 카드가 주인공 머리를 덮었다(폴른 스타 1막 VQA 2026-10-31). */
+  top: 26%;
   transform: translate(-50%, -50%);
   z-index: 31;
 }
@@ -124,6 +125,12 @@
   font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
   opacity: 0.85;
   padding-top: calc(var(--space-1) * var(--play-ui-scale, 1));
+}
+
+/* 목표 없이 조작 안내만 뜨면 위에 가를 줄이 없다 — 빈 칸 위에 금만 그어져 있었다. */
+.objective-card-controls:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 @keyframes objective-card-in {

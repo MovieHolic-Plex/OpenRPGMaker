@@ -15,6 +15,7 @@ import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons }
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
@@ -198,7 +199,9 @@ function syncBattleSkillHintLine(host: HTMLElement, selected: HTMLElement | unde
   const text = skillHelpOneLiner(project, skill, actor ? { recordId: actor.recordId, maxMp: actor.maxMp, ...(actor.equipmentEffects ? { equipmentEffects: actor.equipmentEffects } : {}) } : undefined);
   hint.dataset.skillId = skill.id;
   hint.dataset.inert = inert ? "true" : "false";
-  hint.textContent = inert ? `${text} — ${inert}` : text;
+  // 막힌 기술은 사유가 먼저다 — 한 줄 창은 넘치면 끝을 말줄임하므로, 사유를 뒤에 붙이면 정작 「왜 못 쓰나」가 잘린다
+  // (2026-10-30 이세계 고딩: 「MP4 · 아군 전체 · 공격 상승 — 이미 공격 상승」이 창을 넘쳤다).
+  hint.textContent = inert ? `${inert} · ${text}` : text;
   hint.title = skill.description;
   windowNode.dataset.skillHint = "true";
 }
@@ -324,6 +327,8 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     overrideCommandIds,
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
+    // 결투 규칙 noItems — 아이템 명령은 메뉴에서 뺀다(런타임도 같은 규칙으로 거부).
+    if (command.kind === "item" && snapshot.duel?.noItems) continue;
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
     // 「연계」는 기술 명령 바로 뒤에 선다 — 연계기를 쓸 수 있는 동료가 참전 중일 때만.
     if (command.kind === "skill" && !command.skillId && !menu.querySelector("[data-testid='actor-command-combo']")) {
@@ -336,7 +341,46 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     if (combo) menu.append(combo);
   }
   if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
+  // 붙은 뒤(마이크로태스크) 못 쓰는 명령의 사유가 메뉴 오른쪽 끝을 넘는지 재서 맞춘다 — attachScrollCue 와 같은 시점.
+  queueMicrotask(() => fitInertReasons(menu));
   return menu;
+}
+
+/**
+ * 루트 명령의 거절 사유(「이 싸움에서는 도주할 수 없습니다.」)는 버튼 안 한 줄이라 2열 메뉴에서 버튼·메뉴 폭을 넘으면
+ * 메뉴의 overflow 에 그냥 잘렸다(2026-10-31 jb3a jrpg 보스전 「…도주할 수 없」). 사유가 메뉴 안쪽 오른쪽 끝을 넘을 때만
+ * 실제 남은 폭을 재서 그 폭으로 두 줄까지 감싸고, 그래도 넘치면 끝을 말줄임한다. 넘치지 않으면 손대지 않는다.
+ * 전투 장면은 transform 으로 축소·확대되므로 화면 px 를 레이아웃 px 로 되돌려 쓴다.
+ */
+function fitInertReasons(menu: HTMLElement): void {
+  if (!menu.isConnected) return;
+  const reasons = Array.from(menu.querySelectorAll<HTMLElement>(".battle-command-reason"));
+  if (reasons.length === 0) return;
+  const menuRect = menu.getBoundingClientRect();
+  if (menu.offsetWidth <= 0 || menuRect.width <= 0) return;
+  const scale = menuRect.width / menu.offsetWidth;
+  const menuStyle = getComputedStyle(menu);
+  const innerRight = menuRect.right - (Number.parseFloat(menuStyle.paddingRight) || 0) * scale
+    - (Number.parseFloat(menuStyle.borderRightWidth) || 0) * scale;
+  for (const reason of reasons) {
+    if (reason.offsetParent === null) continue;
+    const rect = reason.getBoundingClientRect();
+    if (rect.right <= innerRight + 0.5 && reason.scrollWidth <= reason.clientWidth + 1) continue;
+    const room = Math.floor((innerRight - rect.left) / scale) - 2;
+    if (room <= 0) continue;
+    reason.dataset.reasonFit = "wrap";
+    // 스킨 규칙(한 줄·inline-block)은 특이도가 높아 인라인으로 덮는다. 두 줄을 넘으면 끝을 말줄임.
+    reason.style.setProperty("display", "-webkit-box");
+    reason.style.setProperty("-webkit-box-orient", "vertical");
+    reason.style.setProperty("-webkit-line-clamp", "2");
+    reason.style.setProperty("white-space", "normal");
+    reason.style.setProperty("word-break", "keep-all");
+    reason.style.setProperty("overflow-wrap", "anywhere");
+    reason.style.setProperty("overflow", "hidden");
+    reason.style.setProperty("line-height", "1.15");
+    reason.style.setProperty("max-width", `${room}px`);
+    reason.style.setProperty("width", "max-content");
+  }
 }
 
 function isPokemonMonsterActor(
@@ -360,17 +404,17 @@ function pokemonRootCommands(
       options.setSubmenu({ kind: "pokemonFight" });
       options.render();
     }, targetMode),
-    commandButton("가방", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
+    ...(snapshot.duel?.noItems ? [] : [commandButton("가방", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
       if (targetMode || items.length + balls.length === 0) return;
       options.setSubmenu({ kind: "item" });
       options.render();
-    }, targetMode || items.length + balls.length === 0),
+    }, targetMode || items.length + balls.length === 0)]),
     commandButton("몬스터", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
       if (targetMode || switches.length === 0) return;
       options.setSubmenu({ kind: "switch" });
       options.render();
     }, targetMode || switches.length === 0),
-    commandButton("도망간다", "actor-command-run", "boot", "", () => {
+    commandButton(snapshot.duel?.forfeit ? "기권" : "도망간다", "actor-command-run", "boot", "", () => {
       if (!targetMode) options.runActorCommand({ kind: "escape" });
     }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot)),
   ];
@@ -384,7 +428,9 @@ function commandControl(
   targetMode: boolean
 ): HTMLElement {
   const terms = resolveTerms(store.getCurrent());
-  const label = battleCommandKindLabel(command, terms);
+  const label = command.kind === "escape" && snapshot.duel?.forfeit
+    ? "기권"
+    : battleCommandKindLabel(command, terms);
   switch (command.kind) {
     case "attack": {
       // gen1 모델에서 사용 가능한 기술이 남아 있으면 통상 공격은 런타임이 거부한다
@@ -779,6 +825,7 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason, hint);
     button.dataset.skillHelpId = skillId;
+    setCommandIconImage(button, skill?.iconResourceId);
     appendSkillTypeBadge(button, project, skill?.elementId);
     nodes.push(button);
   }
@@ -977,9 +1024,11 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     // 수량은 aria-label(hint)에도 남겨 보조기술이 읽는다.
     const countLabel = `x${item.count}`;
     const hintText = [countLabel, hint].filter(Boolean).join(" · ");
-    nodes.push(commandButton(item.name, `actor-item-${item.itemId}`, "bag", countLabel, () => {
+    const button = commandButton(item.name, `actor-item-${item.itemId}`, "bag", countLabel, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
-    }, false, undefined, hintText || `${terms.item} 사용`));
+    }, false, undefined, hintText || `${terms.item} 사용`);
+    setCommandIconImage(button, record?.iconResourceId ?? record?.imageResourceId);
+    nodes.push(button);
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {
@@ -1132,6 +1181,23 @@ function keyPrompts(): HTMLElement {
   prompt.className = "battle-key-prompts";
   prompt.textContent = BATTLE_KEY_PROMPT;
   return prompt;
+}
+
+/**
+ * 기술·아이템 행 이름 앞에 레코드 그림(iconResourceId, 예: 스토어 아이콘 팩)을 붙인다. 스킨이 글리프 칸(.battle-command-icon)을
+ * 서브메뉴에서 숨기므로 이름(strong) 안에 넣는다. 그림이 없으면 아무것도 붙이지 않는다 — 기존 화면 그대로.
+ */
+function setCommandIconImage(button: HTMLElement, resourceId: string | undefined): void {
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
+  const title = button.querySelector<HTMLElement>(".battle-command-text strong");
+  if (!url || !title || !resourceId) return;
+  const icon = document.createElement("span");
+  icon.className = "battle-command-record-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.iconResource = resourceId;
+  icon.style.backgroundImage = `url("${url}")`;
+  title.prepend(icon);
+  button.dataset.recordIcon = "true";
 }
 
 function commandButton(

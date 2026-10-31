@@ -176,6 +176,15 @@ function landingsInto(project: Project, mapId: string): { x: number; y: number }
 }
 
 /** 지면 안 되는 이벤트 전투에 지면 그 맵 입구(보스 방 앞)로 돌아오게. 한 일 글. */
+/** 도망칠 수 없는 전투(보스)가 든 명령인가. */
+function hasBossBattle(node: unknown): boolean {
+  if (Array.isArray(node)) return node.some(hasBossBattle);
+  if (!node || typeof node !== "object") return false;
+  const r = node as Obj;
+  if (r.kind === "battleProcessing" && r.canEscape !== true) return true;
+  return Object.values(r).some((v) => v && typeof v === "object" && hasBossBattle(v));
+}
+
 export function bossDefeatReturns(run: BuildRun): string[] {
   const project = run.ctx.project;
   const system = project.system as unknown as { gameOver?: Obj & { outcome?: string; presentation?: string; recovery?: { mapId?: string } }; gameOvers?: { id: string; name: string; settings: Obj }[]; defaultGameOverId?: string };
@@ -189,7 +198,10 @@ export function bossDefeatReturns(run: BuildRun): string[] {
   let changed = false;
   for (const map of Object.values(project.maps)) {
     if (map.id === backTo || map.id === project.startMapId) continue;
-    const battleEvents = (map.events ?? []).filter((ev) => JSON.stringify(ev.pages ?? []).includes('"battleProcessing"'));
+    // 도망칠 수 있는 전투(필드 적·잡몹)는 보스가 아니다 — 그대로 둔다. 왜(2026-10-31 sc-1031-b4 opus party-join r1~r3): 손대지 않은
+    // 시작 저장본의 지하 던전 필드 적(…_foe1·v2foe1·v2foe2, canEscape true)까지 다시 써서 장면 판정이 그 적을 «바뀐 이벤트»로 골라
+    // 시작점을 적 위에 세웠다.
+    const battleEvents = (map.events ?? []).filter((ev) => hasBossBattle(ev.pages ?? []));
     if (!battleEvents.length) continue;
     const id = `go_back_${map.id}`.slice(0, 80);
     let def = defs.find((g) => g.id === id);
@@ -219,7 +231,7 @@ export function bossDefeatReturns(run: BuildRun): string[] {
         const out: unknown[] = [];
         for (let i = 0; i < node.length; i++) {
           const r0 = node[i] as Obj | null;
-          if (r0 && typeof r0 === "object" && r0.kind === "battleProcessing" && r0.canLose !== true && !(Array.isArray(r0.defeatBranch) && (r0.defeatBranch as unknown[]).length)) {
+          if (r0 && typeof r0 === "object" && r0.kind === "battleProcessing" && r0.canEscape !== true && r0.canLose !== true && !(Array.isArray(r0.defeatBranch) && (r0.defeatBranch as unknown[]).length)) {
             const r = patch({ ...r0, __skip: true }) as Obj;
             delete r.__skip;
             const rest = node.slice(i + 1).map(patch);
