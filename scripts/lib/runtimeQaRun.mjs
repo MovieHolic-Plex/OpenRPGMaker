@@ -427,6 +427,10 @@ export async function applyOp(page, op, runState) {
       // 실물 게임의 진행 스위치(예: 공포판 추격자 등장 sw_0001)를 퍼즐을 다 풀지 않고 켠다(__oprnDebug.setSwitch — 실제 세션).
       await page.evaluate(([switchId, value]) => window.__oprnDebug.setSwitch(switchId, value), [op.switchId, op.value ?? true]);
       return;
+    case "setClock":
+      // 게임 안 시계(시간대 반응 이벤트 — 예: 밤에만 막는 경비병). Set Time 명령과 같은 경로(__oprnDebug.setClock).
+      await page.evaluate(([hour, minute]) => window.__oprnDebug.setClock(hour, minute), [op.hour, op.minute ?? 0]);
+      return;
     case "setVitals":
       await page.evaluate(
         ([hp, mp, actorIds]) => {

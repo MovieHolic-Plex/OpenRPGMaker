@@ -122,9 +122,9 @@ Never write `{kind:"script"}` by hand in `upsert_event` / `patch_event_page` / `
 - game.fadeOut(): Promise<void> — Fade the screen to black (stays black until fadeIn).
 - game.fadeIn(): Promise<void> — Fade the screen back in.
 - game.showAnimation(target: AnimTarget, animationId: AnimationId, options?: { wait?: boolean }): Promise<void> — Play a battle animation on 'player', an event id, or {x, y}.
-- game.showEmote(target: 'player' | EventId, emote: EmoteName, frames?: number): Promise<void> — Show an emote balloon ('exclamation', 'question', 'heart', …) above someone.
+- game.showEmote(target: 'player' | 'this' | EventId, emote: EmoteName, frames?: number): Promise<void> — Show an emote balloon ('exclamation', 'question', 'heart', … see EmoteName) above 'player', 'this' event or an event id.
 ### Queries
-- game.player(): PlayerInfo — Player map id, tile x/y and facing.
+- game.player(): PlayerInfo — Player map id, tile x/y and direction ('up' | 'down' | 'left' | 'right' — the field is `direction`).
 - game.mapId(): MapId — Current map id.
 - game.eventId(): EventId | undefined — Id of the event running this script (undefined in common events started without an event).
 - game.events(): EventInfo[] — Visible events on the current map (id, name, x, y).

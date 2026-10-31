@@ -4,7 +4,7 @@
 대등한 수단이다(2026-10-31 결정: 「AI NATIVE 에디터로 탈바꿈」 — 실험 게이트 없이 도입). 조수(Opus 등)는 조건·공식·
 반복이 얽힌 로직(조합 퍼즐, 할인 공식, 시간대 반응)을 명령 수십 줄 대신 스크립트 한 덩이로 쓴다.
 
-읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → 검증기 → API 행 추가 절차 → 조수 도구 → 알려진 한계.
+읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → 검증기 → API 행 추가 절차 → 조수 도구 → 실조수 데모 → 알려진 한계.
 
 ## TL;DR
 
@@ -180,9 +180,24 @@
 - 테스트: `test/scriptTools.test.ts`.
 - 한계: `dry_run_script` 는 게임 시각을 미리 놓지 못한다(프로젝트 시작 시각). `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
 
+## 실조수 데모 (2026-10-31)
+
+빈 프로젝트(`wholeGamePrepare`)에 v2 조수(Opus 5.5 medium, 로컬 CLI 엔진, `wholeGameSession --v2`)가 자연어 세 줄로 지었다 —
+요청에 「스크립트」라는 말은 없었다.
+
+- 레버 4개 조합 퍼즐: 레버마다 `author_script`(같은 판정 코드, `N` 만 다름) → `run_scene_test` 33/33.
+- 포션 상인: `upsert_script_module{id:"pricing"}` + `import { discountedPrice } from "@lib/pricing"` → `dry_run_script` 세 번(평판 0·10·50, 돈 부족).
+- 경비병: 시간대는 페이지 조건(`timePhase`)으로, 밤의 밀어내기·비켜서기는 `game.event`/`game.passable`/`game.moveEvent` 스크립트로.
+  첫 시도는 `game.player().facing` 으로 컴파일 오류 → 진단을 보고 고쳐 다시 넣었다(필드는 `direction` — 치트시트에 타입 절을 붙인 이유).
+
+출하 플레이어 QA: `node scripts/runtime-qa.mjs --scenario ts-sandbox-demo --browser firefox --netns --whole-game <project>` —
+21비트 통과(틀린 순서 원위치·진행 0, 맞는 순서 스위치·평판 10, 창고·상자, 80G 안내·220G, 07/18/22시 반응·한 칸 밀림·비켜섬).
+시계는 새 op `setClock`(`__oprnDebug.setClock(hour, minute)` = Set Time 명령 경로)으로 옮긴다.
+
 ## 알려진 한계 / 다음 단계
 
 - 스크립트 라이브러리(`@lib`) 전용 편집 화면은 없다 — 조수 도구 `upsert_script_module`·`list_script_modules` 로 만든다. 명령 편집 칸(코드·진단·요약·4개 언어)은 있다.
 - 셀프 스위치 쓰기(`game.setSelfSwitch`)와 명령 kind(`game.cmd({kind:"triggerEnding"})`)는 effects 에 남지 않는다 — 셀프 스위치는 판정을 생략하고, 엔딩은 소스 글을 본다(주석에도 속는 어림셈, 검사기가 조용해지는 쪽으로만 틀린다).
 - 컴파일 결과의 줄 번호는 TS 원본과 대체로 같지만 정확히 같지는 않다(오류는 `compiled line N`). 소스맵은 없다.
 - 라이브러리 모듈은 최상위 `await` 를 못 쓴다(동기 `new Function` 으로 평가).
+- 끝맺음 게임 검사(`src/ai/v2/gameChecks.ts`)는 흔들기·번쩍·효과음·BGM 을 스크립트 소스의 `game.shake/flash/playSe/playBgm` 호출로도 인정한다(글 검색 — 주석에도 속는다).
