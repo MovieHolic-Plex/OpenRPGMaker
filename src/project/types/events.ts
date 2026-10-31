@@ -20,6 +20,7 @@ import type { FieldSpawnDef } from "./project";
 import type { RoguelikeRunCondition } from "../roguelikeRun";
 import type { RelationshipCondition, RelationshipState } from "../relationshipState";
 import type { EmoteKind } from "@/project/emotes";
+import type { PixelFxSpec } from "./database";
 
 
 /**
@@ -1004,8 +1005,19 @@ export interface EventPage {
    * 빛 알갱이. 화면 끝에서도 눈에 띄게 하려고 칸보다 크게 번진다. 그리기는 player/playSceneFieldStaging(syncEventGlows).
    */
   glow?: EventGlow;
+  /**
+   * 이 페이지가 켜져 있는 동안 이벤트 자리에서 계속 도는 코드 픽셀 효과(pixelfx — 횃불·모닥불·반딧불·폭포·날씨, 2026-10-31).
+   * 반복 효과는 끝없이 돌고, 한 번 효과는 끝나면 다시 튼다. 원점은 이벤트 칸 바닥 가운데. 뒤 층은 캐릭터 뒤, 앞 층은 앞에 y 정렬된다.
+   * 그리기는 player/playScenePixelFx.
+   */
+  pixelFx?: EventPixelFx;
   movement: EventPageMovement;
   commands: Command[];
+}
+
+export interface EventPixelFx extends PixelFxSpec {
+  /** "auto"(효과의 뒤·앞 층을 캐릭터와 y 정렬, 기본) · "back"(통째로 캐릭터 뒤 — 바닥 무늬) · "front"(통째로 위 — 날씨·안개). */
+  layer?: "auto" | "back" | "front" | "screen";
 }
 
 export interface EventGlow {

@@ -1070,7 +1070,7 @@
   {
    "id": "defeat",
    "label": "추락지 발렌에게 짐 — 브람의 기습으로 이야기가 이어진다",
-   "note": "act1Finale.ts crashSite 패배 갈래 rescue: sw_fs_valen_lost·체력 25%·브람 연막·회로 획득",
+   "note": "act1Finale.ts crashSite 패배 갈래 rescue: sw_fs_valen_lost·체력 25%·브람 연막·회로 획득. 1전(병사 넷)을 이긴 뒤(squad_down·soldiers_gone)에서 시작해 2전 발렌 본전에서 진다 — 1전에서 지면 rescue 가 아니라 pushedBack(물러서!)이다",
    "mapId": "fs_forest",
    "x": 15,
    "y": 9,
@@ -1082,7 +1082,9 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_crash_on": true
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_squad_down": true,
+    "sw_fs_valen_soldiers_gone": true
    },
    "variables": {
     "var_fs_main_progress": 2
@@ -5766,10 +5768,10 @@
   {
    "id": "act2-b6-sarah",
    "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
-   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,14) 바로 앞 새라(19,14)·경비견(20,14) — y15 는 망루 지붕·장작더미 줄, 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
    "x": 17,
-   "y": 15,
+   "y": 14,
    "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
@@ -6006,10 +6008,10 @@
   {
    "id": "act2-b6-lose",
    "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
-   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,14) 바로 앞 새라(19,14)·경비견(20,14) — y15 는 망루 지붕·장작더미 줄, 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
    "x": 17,
-   "y": 15,
+   "y": 14,
    "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
@@ -6138,9 +6140,9 @@
   {
    "id": "act2-b6-lever",
    "label": "제2막 B6 — 2층 레버: 당기면 쇠사슬 소리에 순찰 기사가 곧장 달려온다",
-   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버 바로 밑 칸(15,19)에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
+   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버(13,18) 바로 밑 칸(13,19) — 2층을 다시 그리며 레버가 (13,18)로 옮겨졌는데 시작 칸이 (15,19)라 벽을 누르고 있었다에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
    "mapId": "fs2_fortress_f2",
-   "x": 15,
+   "x": 13,
    "y": 19,
    "facing": "up",
    "switches": {

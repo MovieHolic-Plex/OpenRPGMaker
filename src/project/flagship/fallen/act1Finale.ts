@@ -739,7 +739,7 @@ function vaultB2(project: Project, vault: GameMap): void {
   const plan: Record<string, { troop: string; chip: [string, number]; shout: [string, string] }> = {
     [`ev_${FS_PREFIX}_vault_foe1`]: { troop: T.b2Kitchen, chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, shout: ["채찍 고행자", "피가 흐를수록 신께 가까워진다.\n너희 피도 보태라!"] },
     [`ev_${FS_PREFIX}_vault_foe2`]: { troop: T.b2Crypt, chip: FS_INQ_CHIPS[FS_INQ.shield]!, shout: ["심문회 방패병", "설교 중이시다.\n이 방패 뒤로는 한 발짝도 못 온다."] },
-    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: T.b2Library, chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, shout: ["심문회 석궁수", "책장 사이로 다 보인다.\n움직이면 쏜다."] },
+    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: T.b2Library, chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, shout: ["심문회 궁수", "책장 사이로 다 보인다.\n움직이면 쏜다."] },
   };
   let changed = 0;
   for (const event of vault.events) {
@@ -793,7 +793,6 @@ function vaultB2(project: Project, vault: GameMap): void {
     cutLabel(),
     cutEnd(),
     textBox("bottom"),
-    ...ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
   ];
   const prisonerGfx = { graphic: chip(spyChip[0], spyChip[1], "right"), overlapForbidden: true, animationType: "fixedGraphic" };
   addEvent(vault, pid, PRISONER, { x: 7, y: 22 }, [
@@ -807,6 +806,9 @@ function vaultB2(project: Project, vault: GameMap): void {
       ], cancelBranch: [say(PRISONER, "…가지 마시오.")] } as unknown as Command,
       ...turn,
     ], prisonerGfx),
+    // 싸움은 정체가 드러난 뒤의 자동 페이지에서 — 대화 페이지에 전투 명령이 있으면 다가가자마자 「Z 전투」 안내가 떠 함정이 들킨다.
+    page(`${pid}_fight`, "정체를 드러냄", [sw(SW_PRISONER_ON), sw(SW_PRISONER_DONE, false)], ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
+      { ...prisonerGfx, trigger: { kind: "auto" } }),
     page(`${pid}_gone`, "사라짐", [sw(SW_PRISONER_DONE)], []),
   ]);
 }
@@ -1053,7 +1055,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     foes: [
       { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 38, y: 17 }, to: { x: 34, y: 17 }, steps: ["left", "left", "left", "left"] },
       { name: "심문회 방패병", chip: FS_INQ_CHIPS[FS_INQ.shield]!, from: { x: 38, y: 18 }, to: { x: 34, y: 18 }, steps: ["left", "left", "left", "left"] },
-      { name: "심문회 석궁수", chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, from: { x: 40, y: 18 }, to: { x: 36, y: 18 }, steps: ["left", "left", "left", "left"] },
+      { name: "심문회 궁수", chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, from: { x: 40, y: 18 }, to: { x: 36, y: 18 }, steps: ["left", "left", "left", "left"] },
     ],
     cue: [se("cc0-se-osx-door-01"), shake(3, 450), narrate("쾅! 쇠살문 너머에서 군홧발이 몰려온다.")],
     bark: ["심문회 방패병", "문을 연 놈들이 여기 있다!\n방패 세워, 한 놈도 못 지나간다!"],
