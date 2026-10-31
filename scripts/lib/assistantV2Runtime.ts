@@ -11,6 +11,7 @@ import { createV2Tools, V2Session, v2BaselineGameKeys, v2GateProblems, V2_MAX_RE
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
 import { alignCodeClues } from "../../src/ai/v2/codeClues.ts";
+import { realignEvidencePlaces } from "../../src/ai/v2/mysteryCase.ts";
 import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/v2/finalReport.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, vqaRepeated, vqaDefectLine, type VqaDefect, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
@@ -368,6 +369,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             await env.checkpoint("align_code_clues");
             env.emit({ type: "execution_status", name: "v2.code_clues", ok: true, summary: `번호·단서 대사 다시 맞춤: ${codes.notes.join(" / ").slice(0, 300)}` });
             autoNotes.push(`번호 자물쇠를 단서 대사에 다시 맞춤: ${codes.notes.join(" / ").slice(0, 300)}`);
+          }
+          // 증거 물건 칸의 자리 말도 같다 — 모델이 칸을 옮기면 귀띔·진술·지목 대사가 옛 자리를 가리켰다(2026-10-31 mef3 terra 추리).
+          const places = realignEvidencePlaces(env.ctx.project);
+          if (places.notes.length) {
+            env.ctx.project = places.project;
+            await env.checkpoint("align_evidence_places");
+            env.emit({ type: "execution_status", name: "v2.evidence_places", ok: true, summary: places.notes.join(" / ").slice(0, 300) });
+            autoNotes.push(`증거 자리 대사를 지금 칸에 다시 맞춤: ${places.notes.join(" / ").slice(0, 300)}`);
           }
           refreshChecks(env);
           // 끝맺음 뒤에 청사진이 처음 생겼거나 다시 끊겼으면 지금 짓는다.
