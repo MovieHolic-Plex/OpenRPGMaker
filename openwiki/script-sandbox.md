@@ -4,7 +4,7 @@
 대등한 수단이다(2026-10-31 결정: 「AI NATIVE 에디터로 탈바꿈」 — 실험 게이트 없이 도입). 조수(Opus 등)는 조건·공식·
 반복이 얽힌 로직(조합 퍼즐, 할인 공식, 시간대 반응)을 명령 수십 줄 대신 스크립트 한 덩이로 쓴다.
 
-읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → 검증기 → API 행 추가 절차 → 조수 도구 → 실조수 데모 → 알려진 한계.
+읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → 검증기 → API 행 추가 절차 → 조수 도구 → 스크립트 → 명령(명령으로 풀기) → 실조수 데모 → 알려진 한계.
 
 ## TL;DR
 
@@ -37,6 +37,9 @@
 | `src/editor/script/analyze.ts` | 읽기/쓰기 추출·dynamic 기록·경고(모르는 id+제안, await 누락, transfer 뒤 호출)·한 줄 요약 |
 | `src/editor/script/tsEnv.ts` | TypeScript 5(`typescript5` 별칭 — 저장소 `typescript` 는 JS API 없는 TS7)와 ES2022 lib 지연 로드 |
 | `src/editor/script/tsLibSources.generated.ts` | lib.es2022 참조 폐포 57파일을 문자열로 담은 생성 모듈(약 470KB, `node scripts/content/generate-script-ts-libs.mjs`). 편집기·Bun 컴파일 조수 워커(node_modules 없음)·테스트가 같은 방법으로 읽는다 |
+| `src/editor/script/eventToScript.ts` | 명령 → TypeScript(`commandsToScript`, `read_event_as_script`) |
+| `src/editor/script/scriptToEvent.ts` | **스크립트 → 명령**(`scriptToCommands`, `scriptUnwrapProblemText`) — 동작이 같을 때만. 아래 「스크립트 → 명령」 절 |
+| `src/editor/tools/scriptUnwrapTool.ts` | 조수 도구 `write_script_as_commands` |
 
 부팅 시 미리 받기: `createPlayGame`(편집기 플레이·내보낸 플레이어 공통), `exportEntry.prepareFirstScreen`, 도구
 `play_walkthrough`·`run_scene_test` 의 `prepare`. 늦게 실행되면 `script` 명령이 16ms `wait` 로 최대 약 10초 기다린다.
@@ -152,7 +155,7 @@
 
 ## 조수 도구 (Assistant tools)
 
-`src/editor/tools/scriptTools.ts` 의 9개(도메인 event). 모델에게 가는 글(설명·결과·오류)은 영어다. 컴파일러와 QuickJS 는 각 도구의
+`src/editor/tools/scriptTools.ts` 의 9개 + `scriptUnwrapTool.ts` 의 1개(도메인 event). 모델에게 가는 글(설명·결과·오류)은 영어다. 컴파일러와 QuickJS 는 각 도구의
 `prepare` 가 기다린다(`run` 은 동기) — 실행기(`prepareTool`·Pi `toolAdapter`)가 `run` 앞에서 부른다.
 
 | 도구 | 모드 | 하는 일 |
@@ -166,6 +169,7 @@
 | `list_script_modules` | read | 모듈 id·import 경로·export 이름·fresh, `includeSource` |
 | `read_event_as_script` | read | 페이지 명령 목록 → TypeScript(`src/editor/script/eventToScript.ts`). 대사·선택지·단순 조건 분기·스위치/변수/돈/아이템(+=)·대기(프레임 정수)·이동·전투(결과 분기)·공통 이벤트·loop/breakLoop 는 직접 호출, 나머지와 추가 필드가 붙은 명령은 `await game.cmd({…정확한 JSON…})`. 출력은 그대로 컴파일된다(테스트 고정) |
 | `write_event_as_script` | write | 페이지(또는 공통 이벤트) 명령 전체를 스크립트 하나로 교체. `confirm:true` 필수, 컴파일 오류면 거부 |
+| `write_script_as_commands` | write | 스크립트 명령 **하나**를 같은 동작의 일반 명령으로 제자리 교체(아래 절). 주소는 `edit_script` 와 같다. `confirm:true` 필수, 못 풀면 `ToolError`(코드 `script-not-convertible`) + 영어 문제 목록(`L줄: 이유 — 줄 글`), 프로젝트 불변 |
 
 - **손으로 쓴 `{kind:"script"}` 거부**: 일반 이벤트 도구의 단일 관문 `validateLowLevelCommandArray`(`src/editor/tools/commandArgs.ts`,
   `upsert_event`·`patch_event_page`·`add_event_page`·`upsert_common_event`·트룹 페이지)가 모든 깊이의 `script` 명령에
@@ -176,11 +180,88 @@
   `game.ts` `SCRIPT_TIER`(로직 낱말: 레버·비밀번호·조합·공식·할인·확률·시간대…)가 맞으면 `get_script_api`·`check_script`·`author_script`·
   `dry_run_script` 를 처음부터 싣고(`V2_UP_FRONT`), 나머지는 `load_tools`/이름 호출. `GAME_CARD` 와 v1 시스템 지시문에
   「조건·계산·반복·여러 갈래 로직은 스크립트 하나로, 단순 대사는 명령」 규칙, 확률은 `game.random` 스크립트로.
-- **끄기 스위치(시험 전용)**: 조수 루프 프로세스 env `OPRN_V2_SCRIPTS=0` 이면 조수에게 스크립트 도구 9개(`getTool`·`activeTools` 에서 빠짐 — 이름으로 불러도 없다)·스킬 `event-scripts`·v1/v2 지시 줄·`SCRIPT_TIER` 카드를 모두 숨기고, GAME_CARD 난수 줄은 스크립트 이전 글(순서 돌리기)로 돌아간다(`src/ai/scriptsSwitch.ts`). 런타임·편집기의 `script` 명령은 그대로. 스크립트 켬/끔 A/B 용 — 제품 설정 칸이 아니다. 확인: `OPRN_V2_SCRIPTS=0 bun scripts/qa/script-ab/exposure.mts`.
+- **끄기 스위치(시험 전용)**: 조수 루프 프로세스 env `OPRN_V2_SCRIPTS=0` 이면 조수에게 스크립트 도구 10개(`getTool`·`activeTools` 에서 빠짐 — 이름으로 불러도 없다)·스킬 `event-scripts`·v1/v2 지시 줄·`SCRIPT_TIER` 카드를 모두 숨기고, GAME_CARD 난수 줄은 스크립트 이전 글(순서 돌리기)로 돌아간다(`src/ai/scriptsSwitch.ts`). 런타임·편집기의 `script` 명령은 그대로. 스크립트 켬/끔 A/B 용 — 제품 설정 칸이 아니다. 확인: `OPRN_V2_SCRIPTS=0 bun scripts/qa/script-ab/exposure.mts`.
 - 스킬: `assistant-skills/event-scripts/SKILL.md`(언제 쓰나·API 표·규칙·고리·레버 퍼즐/할인 상점(@lib)/시간대 경비 예제) →
   `npm run assistant-skills:bundle` 로 `src/assets/assistantSkills.json`.
 - 테스트: `test/scriptTools.test.ts`.
 - 한계: `dry_run_script` 는 게임 시각을 미리 놓지 못한다(프로젝트 시작 시각). `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
+
+## 스크립트 → 명령 (명령으로 풀기)
+
+`scriptToCommands(source, { project? })`(`src/editor/script/scriptToEvent.ts`) — `commandsToScript` 의 역. **동작이 완전히 같을 때만**
+`{ ok: true, commands }`, 아니면 `{ ok: false, problems: [{ line, code, snippet }] }`. 추측하지 않는다. 기존 이벤트는 사용자가 시키기 전에는 안 바뀐다.
+
+- **동기, 단 TypeScript 파서가 필요하다**: 먼저 `await prepareScriptCompiler()`(`compile.ts`/`tsEnv.ts`). 안 하면 `scriptTs()` 가 던진다.
+- `project` 를 주면 스위치·변수 **이름 → id**(런타임 `resolveDefId` 와 같다), 공통 이벤트 존재, 시간 시스템(`timePhase "day"`)을 본다.
+- 이유 글: `scriptUnwrapProblemText(problem, "ko" | "en")` — ko 는 코드마다 고정 글(카탈로그 en/ja/zh 에 있다), en 은 모델용.
+- 같은 동작의 근거: 리터럴 인자의 `game.X(...)` 는 **진짜 `HOST_API` 행**을 가짜 문맥으로 부른다 — 기다리는 호출은 그 명령 계획을,
+  동기 쓰기는 `runNow` 가 실행하려던 명령을 가로챈다. 그래서 `game.addGold(-5)` 는 스크립트가 실행했을 바로 그 `changeGold -= 5` 다.
+  결과값을 쓰는 모양(선택지·전투 결과 분기·조건)만 손으로 대응시킨다.
+
+### 풀리는 모양
+
+| 스크립트 | 명령 |
+|---|---|
+| `await game.showMessage(t, { speaker })` | `text` |
+| `const c = await game.showChoices([...], { prompt, cancel })` + **바로 뒤** `if (c === i) … else if (c === -1)` 사슬 | `choices`(가지마다 `branch`, 빈 가지 `[]`). `cancel:"cancel"` → `cancelBehavior:"branch"`+`cancelBranch`, `cancel: n` → `choice{n+1}`, 없으면 cancelBehavior 없음(= disallow). 사슬 끝의 맨 `else`·범위 밖 번호·중복 번호는 거절 |
+| `if (조건) … else if … else …` | `fork`(else-if 는 else 안의 fork) |
+| `while (true) { … break; }` | `loop` + `breakLoop` |
+| `game.setSwitch(id, bool)` / `game.setSwitch(id, !game.getSwitch(id))` | `setSwitch` / `value:"toggle"`(같은 id 만) |
+| `game.setSelfSwitch(key, bool)`(이 이벤트) | `setSelfSwitch` |
+| `game.setVar(id, n)` · `game.addVar(id, ±n)` · `game.setVar(id, game.getVar(id) * n)` · 값 자리 `game.getVar(y)` / `-(game.getVar(y))` | `setVariable` `=` / `+=`·`-=`(음수 리터럴은 `-=` 양수) / `*=`(같은 id, 정수 n 또는 변수) / `{kind:"var"}` |
+| `game.addGold(±n)` · `game.addItem(id, n)` · `addToParty`·`removeFromParty`·`gainExp`·`setLevel`·`setHp`·`setMp`·`recoverAll`·`learnSkill` | `HOST_API` 가 실행할 명령 그대로 |
+| `await game.wait(f)` · `transfer` · `playBgm`·`playSe`·`stopBgm` · `shake`·`flash`·`fadeOut`·`fadeIn` · `showAnimation`·`showEmote`(대상이 'this' 아님) · `moveEvent`('this' → `eventId:""`) · `setTile`(`options.mapId` 있을 때) | `HOST_API` 의 명령 계획 그대로 |
+| `await game.callCommonEvent(id)` | `callCommonEvent`(project 가 있으면 존재 확인) |
+| `const r = await game.battle(t, opts)` + 바로 뒤 `if (r === "victory") … else if …` | `battleProcessing` + `branchOnResult:true` + 있는 가지만. 사슬 없으면 결과 분기 없음 |
+| `await game.cmd({ …JSON 리터럴… })` | 그 명령 그대로(`validateCommandArray` 통과, `script` 금지) |
+| `{ // script … }` 블록(`commandsToScript` 가 인라인한 스크립트) | 펼친다 |
+| 최상위·블록 안 `const NAME = <숫자·글·불 리터럴>` | 쓰는 자리에 접어 넣는다(블록 범위) |
+| 주석, `${}` 없는 템플릿 글, `as`/`!`/괄호, 타입 선언 | 무시·그대로 |
+
+조건: `game.getSwitch(id)`(`=== true/false` 도) · `game.getVar(id) <op> 수` · `game.gold() <op> 수` · `game.getSelfSwitch(key)`(이 이벤트) ·
+`game.hasItem(id)`/`hasItem(id, 1)` · `game.itemCount(id) > 0`(`>= 1`/`!= 0`, 반대는 `=== 0`/`< 1`/`<= 0`) · `game.party().includes(id)` ·
+`game.time().phase === / !== "morning|evening|night"`(`"day"` 는 **시간 시스템이 켜진 project 를 줄 때만** — 시간 시스템이 없으면
+스크립트는 늘 "day", 명령 조건은 늘 거짓이라 다르다) · 리터럴은 어느 쪽이든(`3 < x` → `x > 3`) · `&&`/`||` → `all`/`any`(같은 연산자는 평평하게,
+괄호는 묶음 유지) · `!game.getSwitch`/`!getSelfSwitch`/`!hasItem`/`!party().includes` → `value:false`/`present:false`, 나머지 `!(…)` → `not`.
+
+`game.transfer` 는 명령 Transfer 처럼 이벤트를 끝낸다 — 뒤 문장도 그대로 옮기므로 두 형태가 같은 곳에서 멈춘다(`continueAfterTransfer` 실행기도 둘 다 이어 간다).
+
+### 못 푸는 것 — 문제 코드
+
+| code | 뜻(ko 고정 글) |
+|---|---|
+| `syntax` | 문법 오류 |
+| `import` | `@lib` 가져오기 |
+| `function` | 함수·화살표 함수·클래스 |
+| `local-variable` | `let`/`var`, 리터럴이 아닌 `const`, 대입·`++`, 모르는 이름 |
+| `array` | 배열 `const`(레버 ORDER 등)·칸 읽기·펼치기 |
+| `formula` | 계산식(`+`·삼항 등), 다른 id 를 곱하는 setVar |
+| `condition` | 명령 조건으로 못 옮기는 조건(`hasItem(id, 3)`, 시간 시스템 없는 `"day"`, 변수끼리 비교 …) |
+| `loop-form` | `for`/`for…of`/`do`/조건 있는 `while`, 반복 밖 `break`, 라벨 break |
+| `control-flow` | `switch`·`try`·`throw`·`continue`·라벨 |
+| `return` | 중간 `return` |
+| `dynamic-id` | 계산한 id |
+| `template-substitution` | `${…}` 글 |
+| `unsupported-call` | 같은 명령이 없는 호출(`removeItem` — 모자라면 아무것도 안 함, `setText`, `log`, `inputNumber`, `Math.*` …) |
+| `random` | `game.random`·`Math.random` |
+| `state-read` | 게임 상태를 값으로 읽기(`const g = game.gold()`, `game.time().hour` …) |
+| `choice-use` | 선택지·전투 결과를 바로 뒤 if 사슬 밖에서 씀, 사슬 끝 맨 else |
+| `other-event-self-switch` | `setSelfSwitch`/`getSelfSwitch` 의 eventId 인자 |
+| `missing-await` | 기다리는 호출을 await 없이 |
+| `invalid-argument` | `HOST_API` 가 실행 때 던질 인자(음수 addItem, 없는 공통 이벤트 …) |
+| `invalid-command` | `game.cmd` 객체가 검증 실패이거나 `script` |
+| `this-target` | 'this' 대상의 `showAnimation`·`showEmote`(명령에 자기 대상 없음) |
+| `implicit-map` | `mapId` 없는 `setTile`(지금 맵에 따라 다름) |
+| `other` | 그 밖의 문장 |
+
+- 명령 저장은 커밋 관문의 참조 검사를 거친다 — 스크립트는 정의 안 된 스위치·변수 id 를 써도 돌지만 명령은 거부된다
+  (`write_script_as_commands` 가 「참조 검증 실패」로 끝나고 아무것도 안 바뀐다). 타입 검사를 통과한 스크립트는 보통 해당 없음.
+- 왕복 정규화(테스트에 적힘): 선택지 가지는 늘 `branch`(빈 `[]`), cancelBehavior `disallow` = 없음, fork 의 빈 `else` 는 빠짐,
+  자식 하나인 all/any = 그 자식, `+=` 음수 리터럴 = `-=` 양수, 비어 있지 않은 가지 없는 `branchOnResult` = 결과 분기 없음, 인라인 스크립트 = 그 명령들.
+- 테스트: `test/scriptToEvent.test.ts` — (a) 명령 → 스크립트 → 명령 왕복, (b) 원래 스크립트와 푼 명령을 `dry_run_script` 로 돌려
+  transcript·변화(스위치·변수·셀프 스위치·돈·아이템)가 같다(스위치 뒤집기 NPC, 고정 가격 선택지 상점, 반복·곱하기·아이템 조건),
+  (c) 못 푸는 예(레버 퍼즐 ORDER 배열 등)의 코드·줄, 도구의 confirm·거절·불변.
+- 조수 도구 라벨(`src/editor/panels/aiToolLabels.ts`)은 이 변경에 없다 — 편집기 화면 작업과 겹쳐 따로 넣는다.
 
 ## 실조수 데모 (2026-10-31)
 
