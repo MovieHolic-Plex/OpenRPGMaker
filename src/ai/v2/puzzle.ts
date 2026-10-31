@@ -360,7 +360,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     // 2026-11-01 cheap r8 flash: 자물쇠 고리에 자리를 안 주고 eventId·at·name 을 사슬 맨 위에 세 번 바꿔 줬다 — 세 번 다 거절돼 자물쇠가 끝내 안 지어졌다.
     // 자리 없는 고리가 이 하나뿐이면 맨 위 eventId → at → 맨 위 name 과 같은 이름의 이벤트를 그 고리의 자리로 쓴다.
     const hostless = (l: ChainLink): boolean => !l.eventId && !l.name && !l.at;
-    const top = (() => {
+    const top = ((): { ev?: (typeof map.events)[number]; at?: { x: number; y: number } } | undefined => {
       if (byId || byName || inferred || atEv || !hostless(link) || args.links.filter(hostless).length !== 1) return undefined;
       const ev = (args.eventId ? map.events.find((e) => e.id === args.eventId) : undefined) ?? (args.at ? map.events.find((e) => e.x === args.at!.x && e.y === args.at!.y) : undefined) ?? map.events.find((e) => e.name === args.name);
       if (ev && !claimedIds.has(ev.id)) return { ev };
