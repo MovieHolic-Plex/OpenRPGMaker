@@ -174,6 +174,408 @@
    ]
   },
   {
+   "id": "jw-c1-search",
+   "label": "마을 탐문 — 짚신·모래 섞인 쌀·칠복·월화·정 서방의 거짓말",
+   "mapId": "map_jw_village",
+   "x": 38,
+   "y": 28,
+   "facing": "up",
+   "variables": {
+    "var_jw_stage": 2
+   },
+   "items": {
+    "item_mystery_c1_autopsy": 1
+   },
+   "beats": [
+    {
+     "id": "sandal",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /끈이 끊어졌다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "sandal-got",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_sandal && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "rice",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_village",
+       "x": 38,
+       "y": 37
+      },
+      {
+       "kind": "face",
+       "dir": "right"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /모래가 굴러/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rice-got",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_rice && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "chilbok",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_village",
+       "x": 36,
+       "y": 25
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "click",
+       "testid": "runtime-choice-2",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /심부름/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "chilbok-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_jumo && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "wolhwa",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_village",
+       "x": 5,
+       "y": 23
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "click",
+       "testid": "runtime-choice-2",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /손톱이 깨끗/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wolhwa-done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_wolhwa_nails && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "jeong-lie",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_village",
+       "x": 34,
+       "y": 38
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "click",
+       "testid": "runtime-choice-0",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /아무도 없었소/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "jeong-present",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\") && !document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "click",
+       "testid": "runtime-choice-3",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "click",
+       "testid": "present-item-item_mystery_c1_rice",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /이방 어른 곳간 쌀/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "jeong-scratch",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\") && !document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "click",
+       "testid": "runtime-choice-2",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /손톱 자국 셋/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "done",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_scratch && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "jw-c1-accuse",
    "label": "지목 — 이방 앞에서 정 서방을 고한다",
    "mapId": "map_jw_office",
