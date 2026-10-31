@@ -89,6 +89,28 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
     });
     return touched ? { ...args, items } : args;
   },
+  // author_puzzle_chain 고리 role 별칭 — 2026-11-01 cheap r8 flash 가 role:"lock" 을 보내 스키마에서 거절됐다.
+  // 번호 고리는 엔딩을 부르면(endingId·reward.ending) ending, 아니면 code.
+  author_puzzle_chain(args, changes) {
+    if (!Array.isArray(args.links)) return args;
+    let touched = false;
+    const links = args.links.map((l, i) => {
+      if (!isObj(l) || typeof l.role !== "string") return l;
+      const r = l.role.trim().toLowerCase();
+      if (["clue", "code", "door", "pickup", "ending"].includes(r)) return l;
+      const reward = isObj(l.reward) ? l.reward : undefined;
+      const to = /lock|keypad|password|combination|pin|safe|code|answer/u.test(r) ? (l.endingId !== undefined || isObj(reward?.ending) ? "ending" : "code")
+        : /hint|note|examine|inspect|read|memo|clue/u.test(r) ? "clue"
+        : /item|take|get|pick|key/u.test(r) ? "pickup"
+        : /exit|gate|door|open/u.test(r) ? "door"
+        : /end|escape|finish|goal|win/u.test(r) ? "ending" : undefined;
+      if (!to) return l;
+      touched = true;
+      changes.push(`links[${i}].role: "${l.role}" → "${to}" (roles are clue | code | door | pickup | ending)`);
+      return { ...l, role: to };
+    });
+    return touched ? { ...args, links } : args;
+  },
   declare_story_flag(args, changes) {
     const out = { ...args };
     const text = [out.description, out.meaning, out.name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
