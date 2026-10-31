@@ -73,6 +73,12 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
   },
   // todo 항목의 짧은 확인 표기 {talk:"책상"} → check:{kind:"talk", who:"책상"} (r7 argon: 확인 없는 항목이 되어 거짓 done 이 통과했다).
   todo(args, changes) {
+    // done/block 에 항목을 «item» 칸으로 준 호출 → task(r10 flash: «Item «» not found»).
+    if (typeof args.op === "string" && ["start", "done", "drop", "block"].includes(args.op) && args.task === undefined) {
+      for (const k of ["id", "taskId", "item", "todo", "name", "content", "text"]) {
+        if (typeof args[k] === "string" && (args[k] as string).trim()) { const { [k]: v, ...rest } = args; changes.push(`${k} → task (the item id or exact content goes in "task")`); return { ...rest, task: v }; }
+      }
+    }
     if (!Array.isArray(args.items)) return args;
     let touched = false;
     const items = args.items.map((it, i) => {
@@ -108,7 +114,8 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
       if (typeof l.role !== "string" || !l.role.trim()) {
         // role 없음(r10 flash 첫 사슬) — 칸으로 정해지면 채운다.
         const to = typeof l.code === "string" || typeof l.code === "number" ? (l.endingId !== undefined || isObj((l.reward as Obj | undefined)?.ending) ? "ending" : "code")
-          : typeof l.learn === "string" ? "clue" : isObj(l.reward) && ((l.reward as Obj).item !== undefined) ? "pickup" : undefined;
+          : typeof l.learn === "string" ? "clue" : isObj(l.reward) && ((l.reward as Obj).item !== undefined) ? "pickup"
+          : Array.isArray(l.lines) && l.lines.length ? "clue" : undefined;
         if (!to) return l;
         touched = true;
         changes.push(`links[${i}].role: missing → "${to}" (roles are clue | code | door | pickup | ending)`);
