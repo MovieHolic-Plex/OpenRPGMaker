@@ -162,9 +162,9 @@
 
 | 도구 | 모드 | 하는 일 |
 |---|---|---|
-| `check_script` | read | 컴파일·타입 검사만. `ok`, `formatScriptDiagnostics` 진단(`L줄:열 error: …`), effects, 요약 |
-| `author_script` | write | 대상(`mapId`+`eventId`+`pageIndex?` 또는 `commonEventId`) 최상위 목록의 `index`(기본 끝)에 새 `script` 명령. 컴파일 오류면 `ToolError`(코드 `script-compile-error`) + 영어 진단, 프로젝트 불변. 경고는 `warnings` |
-| `edit_script` | write | 기존 스크립트를 `commandPath`(다른 이벤트 도구와 같은 `[index, branch, index…]`) 또는 `name` 으로 찾아 소스 교체·재컴파일. 페이지에 하나뿐이면 주소 생략 가능 |
+| `check_script` | read | 컴파일·타입 검사만. `ok`, `formatScriptDiagnostics` 진단(`L줄:열 error: …`), effects, 요약. author/edit 앞에 부를 필요 없다(같은 진단으로 거절) |
+| `author_script` | write | 대상(`mapId`+`eventId`+`pageIndex?` 또는 `commonEventId`) 최상위 목록의 `index`(기본 끝)에 새 `script` 명령. 컴파일 오류면 `ToolError`(코드 `script-compile-error`) + 영어 진단, 프로젝트 불변. 경고는 `warnings`. **한 번에**: `explain`(쉬운 말 1~4문장) → `explanation{sourceHash, lines, examples}` 저장, `examples`(label + dry_run 과 같은 답·미리 놓기, `hour`/`minute` 포함) → 넣은 뒤 예시마다 사본에서 `dryRunCommands`(그 스크립트 명령 하나, 이벤트 맥락) 실행 결과를 `data.examples` 로(전사 12줄·줄 160자 상한, 빈 칸 생략, 실패만 `ok:false`). **묶음** `scripts:[{…같은 칸…}]`: 항목마다 쓰거나 거절(실패 항목은 아무것도 안 씀, `data.results[i].error`), 전부 실패면 `ToolError` |
+| `edit_script` | write | 기존 스크립트를 `commandPath`(다른 이벤트 도구와 같은 `[index, branch, index…]`) 또는 `name` 으로 찾아 소스 교체·재컴파일. 페이지에 하나뿐이면 주소 생략 가능. 새 `explain`/`examples` 는 옛것을 바꾼다. `explain` 을 안 주면 옛 문장을 **옛 해시 그대로** 두고(카드에 「옛 코드 기준」) 소스가 바뀌었으면 경고 한 줄로 다시 쓰라고 한다. 예시는 준 것, 없으면 저장된 것을 다시 돌려 결과를 같이 준다 |
 | `dry_run_script` | read | 프로젝트 **사본**에서 헤드리스 실행(`startSession` + `createInterpreter`, 이벤트면 `currentEventId`·맵·좌표). `source`(즉석 컴파일) / 주소로 기존 스크립트 / 대상만 주면 페이지 전체. 답: `choices`·`numbers`·`battleResults`(기본 0·0·victory), 미리 놓기: `switches`·`variables`(닫힌 `{id,value}` 배열)·`gold`·`items`, `maxSteps`(기본 200, 최대 1000). 결과 `transcript`·`changes`(스위치·변수·글 변수·셀프 스위치·돈·아이템 전후)·`log`(`onScriptLog`)·`errors`·`endedBy` |
 | `get_script_api` | read | `buildGameApiDts(scriptDtsIds(project, mapId))` — 이 프로젝트 id 가 리터럴 타입인 `.d.ts`. `format:'cheatsheet'` 는 `scriptApiCheatSheet()` |
 | `upsert_script_module` | write | `@lib/<id>` 공용 모듈 만들기·교체(`libraryId` 로 컴파일). 바꾼 모듈을 import 하는 스크립트 목록을 경고로 |
@@ -179,14 +179,20 @@
   로 거부하고 author_script/edit_script/write_event_as_script 를 안내한다. 빈 스크립트(소스·코드 둘 다 없음)는 통과,
   `get_event` 로 읽은 스크립트를 그대로 다시 보내는 것도 통과(해시가 맞는다).
 - 노출: 레지스트리·별칭(`스크립트·타입스크립트·코드로·공식·퍼즐 로직…`)·라벨·능력 색인 레시피 `event-scripts`. v2 는
-  `game.ts` `SCRIPT_TIER`(로직 낱말: 레버·비밀번호·조합·공식·할인·확률·시간대…)가 맞으면 `get_script_api`·`check_script`·`author_script`·
-  `dry_run_script` 를 처음부터 싣고(`V2_UP_FRONT`), 나머지는 `load_tools`/이름 호출. `GAME_CARD` 와 v1 시스템 지시문에
-  「조건·계산·반복·여러 갈래 로직은 스크립트 하나로, 단순 대사는 명령」 규칙, 확률은 `game.random` 스크립트로.
+  `game.ts` `SCRIPT_TIER`(로직 낱말: 레버·비밀번호·조합·공식·할인·확률·시간대…)가 맞으면 `author_script`·`edit_script` 둘만 처음부터 싣고
+  (`V2_UP_FRONT`), 나머지 여덟은 `load_tools`/이름 호출. 카드에 API 한 문단(`scriptApiQuickRef()`)이 붙어 `get_script_api` 없이 흔한 호출을 쓴다.
+- **정책(2026-10-31 A/B 뒤)**: 대사·이동·연출·단순 스위치는 명령, 스크립트는 로직(여러 조건·공식·카운터·타이머·퍼즐 규칙·시간대 규칙)만.
+  이벤트마다 **한 번 정하고 바꾸지 않는다**(사용자가 시킬 때만 스크립트↔명령). 기존 명령은 자동으로 옮기지 않는다. 스크립트는 목록의 한 줄이고 둘레 대사는 명령으로 둔다.
+  쓰기는 `author_script` 한 번(explain + examples) — 쓰기→검사→시험 실행 왕복을 하지 않는다. 같은 꼴 여러 개는 `scripts:[…]`.
+  `GAME_CARD`·v1 시스템 지시문·능력 색인 정책·스킬이 같은 글이다. 확률은 `game.random` 스크립트로.
+  왜: 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 켠 쪽이 논리는 더 맞았지만 get_script_api·check_script·dry_run_script 왕복과
+  스크립트↔명령 갈아 끼우기로 모델 호출 136 vs 102, 비용 중앙값 $41.9 vs $23.3 이었다(방탈출 두 판은 스크립트를 짰다가 명령으로 되돌려 최종 0개).
 - **끄기 스위치(시험 전용)**: 조수 루프 프로세스 env `OPRN_V2_SCRIPTS=0` 이면 조수에게 스크립트 도구 10개(`getTool`·`activeTools` 에서 빠짐 — 이름으로 불러도 없다)·스킬 `event-scripts`·v1/v2 지시 줄·`SCRIPT_TIER` 카드를 모두 숨기고, GAME_CARD 난수 줄은 스크립트 이전 글(순서 돌리기)로 돌아간다(`src/ai/scriptsSwitch.ts`). 런타임·편집기의 `script` 명령은 그대로. 스크립트 켬/끔 A/B 용 — 제품 설정 칸이 아니다. 확인: `OPRN_V2_SCRIPTS=0 bun scripts/qa/script-ab/exposure.mts`.
 - 스킬: `assistant-skills/event-scripts/SKILL.md`(언제 쓰나·API 표·규칙·고리·레버 퍼즐/할인 상점(@lib)/시간대 경비 예제) →
   `npm run assistant-skills:bundle` 로 `src/assets/assistantSkills.json`.
 - 테스트: `test/scriptTools.test.ts`.
-- `dry_run_script` 는 `hour`/`minute` 로 게임 시각을 미리 놓는다(시간 체계가 꺼진 프로젝트는 `game.time()` 이 늘 enabled:false 라 효과 없음).
+- `dry_run_script`·예시는 `hour`/`minute` 로 게임 시각을 미리 놓는다(시간 체계가 꺼진 프로젝트는 `game.time()` 이 늘 enabled:false 라 효과 없음).
+- 할 일 고리(`src/ai/v2/todo/*`)는 모델 없는 프로젝트 검사라 시험 실행을 요구하지 않는다 — 스크립트 예시 결과로 대신할 칸이 없다(그대로 둠).
 - 한계: `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
 
 ## 스크립트 → 명령 (명령으로 풀기)
