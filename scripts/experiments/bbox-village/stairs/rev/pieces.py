@@ -64,7 +64,7 @@ M = {
         shade=3.0,
         flank=R("#5a3e22", "#7a5630", "#98703f", "#cfa566"),
         road=R("#b58a50", "#cfa566", "#dcaf6c", "#e8c282", "#eccb86", "#f5d090"), road_base=4, road_mix=(2, 4),
-        crest=R("#f5d090", "#ffefa5", "#fff9b4"),
+        crest=R("#f5d090", "#f5d090", "#fff9b4"),   # (VQA r1 minor: ffefa5 dots along the brow read as a sill)
         stone=R("#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282", "#f5d090"),
         curb=R("#5a3e22", "#98703f", "#b58a50", "#e8c282"), curbw=3),
     "snow-steps": dict(
@@ -74,14 +74,14 @@ M = {
         crest=R("#dccfca", "#ecf3fa", "#ffffff"),
         stone=R("#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8", "#d6e4f1"),
         snow=R("#93aecb", "#b7cde3", "#d6e4f1", "#ecf3fa", "#ffffff"),
-        curb=R("#566479", "#93a3bb", "#b9c6d8", "#ffffff"), curbw=3),
+        curb=R("#93a3bb", "#93a3bb", "#b9c6d8", "#ffffff"), curbw=1, flank_st=R("#93a3bb", "#b8c0c8", "#b8c0c8", "#dccfca")),
     "peat-steps": dict(
         shade=2.4,
         flank=R("#1a1510", "#2a2118", "#3a2d1f", "#5b4930"),
         road=R("#5f5a2e", "#6b6534", "#77703a", "#887e44", "#978c4c", "#a69a54"), road_base=4, road_mix=(3, 5),
         crest=R("#a69a54", "#b5a85b", "#b5a85b"),
         wood=R("#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"),
-        curb=R("#1a1510", "#3a2d1f", "#4a3a27", "#5b4930"), curbw=0),   # log steps on a trail: no stringers, log ends show,
+        curb=R("#1a1510", "#3a2d1f", "#4a3a27", "#5b4930"), curbw=0, flank_st=R("#5b4930", "#6e5a3c", "#6e5a3c", "#887e44")),  # log steps on a trail: no stringers, log ends show
     "cave-steps": dict(
         shade=2.4,
         flank=R("#30242a", "#463a3a", "#604e48", "#806a5d"),
@@ -141,13 +141,13 @@ def ramp(style, w, rise):
     else: flank(px, W, m)
     return im
 
-def flank(px, W, m, outside=None, maxw=3):
+def flank(px, W, m, outside=None, maxw=3, stairs=False):
     """the cut's side flanks: the slope stands out of the low ground, so each side shows a sliver of its flank in the cliff's own
     material, widest where the cut leaves the terrace (bottom) and running out to nothing at the far foot (top) — the wedge is
     what says the height falls away from the viewer. Counted outward from the surface edge: lit/shade rim next to the surface,
     a dark outline outermost. outside=(x0, x1): grow out into the margin beside a track; None: eat inward from the piece edges.
     (self VQA r2: an outline that started at a fixed outer column stood apart from the track like fence posts.)"""
-    Fc = m["flank"]
+    Fc = m["flank"] if stairs is False or "flank_st" not in m else m["flank_st"]
     for Y in range(32):
         fw = round(maxw * (Y - 2) / 29) if Y > 2 else 0
         for k in range(fw):
@@ -188,16 +188,18 @@ def stairs(style, w, rise):
     # foot (row 0): the low road just beyond the last riser, in its shadow
     # (self VQA r4: the darkest stone here closed the flight into a framed box; the shadow lies on the low ROAD, so road tones)
     F = m["stone"][1:3] if style == "grass-steps" else m["road"][0:2]
+    if style in ("snow-steps", "peat-steps"):                         # VQA r1: road tones so the seam with the low road is continuous
+        F = [m["road"][3], m["road"][2]]
     for X in range(x0, x1): px[X, 0] = F[0] if h(X, 0, 31) < 200 else F[1]
     curbs(px, W, m, lambda Y: 1 - Y / 31)
-    flank(px, W, m)
+    flank(px, W, m, stairs=True)
     return im
 
 def painter_crest(px, m, style, x0, x1):
     S = m.get("stone") or m["wood"]
     for X in range(x0, x1):
-        if style == "peat-steps": c = S[5] if h(X, 31, 3) < 170 else S[4]
-        elif style == "snow-steps": c = m["snow"][4] if h(X, 31, 3) < 150 else m["snow"][3]
+        if style == "peat-steps": c = m["crest"][1] if h(X, 31, 3) < 170 else m["crest"][0]   # lit log crown at the terrace edge
+        elif style == "snow-steps": c = R("#dccfca")[0] if h(X, 31, 3) < 150 else m["snow"][3]
         else: c = S[-1] if h(X, 31, 3) < 160 else S[-2]
         px[X, 31] = c
 
@@ -246,44 +248,46 @@ def tread_stone(px, m, x0, x1, y0, y1, j, f, rise):
         if 0 < r < ht - 1: px[x0, Y] = S[1]
 
 def tread_snow(px, m, x0, x1, y0, y1, j, f, rise):
-    """blue-grey stone tread with snow lying on it: bare lit stone nosing, a clean drift filling the tread behind it with a gently
-    scalloped edge, blue shadow at the riser foot. One snow tone per tread (far treads one tone bluer), no flecks (self VQA r3:
-    random drift depths and flecks read as noise, not snow)."""
-    tread_stone(px, m, x0, x1, y0, y1, j, f, rise)
-    Sn = m["snow"]; ht = y1 - y0
-    tone = 3 if f < 0.5 else 2
-    for X in range(x0 + 1, x1 - 1):
-        lip = (ht // 2 if ht >= 10 else 2) if ht >= 6 else 1             # bare stone under the nosing (deep treads: front half)
-        if ht >= 6 and h(X // 4, j, 71) < 110: lip += 1                   # scalloped drift edge, 4 px scallops
-        for Y in range(y0 + lip, y1 - 1):
-            px[X, Y] = Sn[tone] if Y > y0 + lip or ht < 6 else Sn[tone - 1]
-        St = m["stone"]
-        px[X, y1 - 1] = St[2] if ht >= 3 else px[X, y1 - 1]               # cold shadow at the riser foot (stone shows through)
-        if ht >= 6: px[X, y1 - 2] = Sn[tone - 1]
-        if 2 <= lip < 4: px[X, y0 + 1] = St[4]                                # bare stone under the lit nosing
-
-def tread_log(px, m, x0, x1, y0, y1, j, f, rise):
-    """log step: a round log laid across the path (its top lit = the nosing), packed peat path behind it, the next log's shadow."""
-    Wd, T = m["wood"], m["road"]; ht = y1 - y0
-    d = 0 if f < 0.34 else (1 if f < 0.75 else 2)
-    lg = 2 if ht <= 5 else (3 if ht < 12 else 4)                          # log thickness on screen
+    """VQA r1 (independent) failed the snow-covered version: a navy frame round near-white treads with dark slat lines read as a
+    shutter, and the white clashed with the taupe road. Now the same construction as the passing stone stairs: per tread a bright
+    nosing (snow-capped, broken), a blue-grey stone body one tone deeper toward the far end, a short mid-blue crease where the next
+    step's riser hides (not navy), snow only as a broken cap on each nosing and drifts against deep risers (corner snow made white side bars: dropped)."""
+    St, Sn = m["stone"], m["snow"]; ht = y1 - y0
+    d = round(1.2 * f)
     for X in range(x0, x1):
         for Y in range(y0, y1):
             r = Y - y0
-            if r < lg:                                                     # the log, seen from above: lit crown, darker flank
-                c = Wd[5 - d] if r == 0 else (Wd[4 - d] if r == 1 and lg >= 3 else Wd[3 - d])
-                if h(X, Y, 81) < 40: c = Wd[max(0, 3 - d)]                 # bark grain
-                if r == lg - 1: c = Wd[2 - min(d, 1)]
-            elif r == ht - 1: c = Wd[0] if h(X, Y, 83) < 210 else Wd[1]     # shadow under the higher log
+            if r == 0: c = Sn[4] if h(X, j, 101) < 150 else Sn[3]                 # snow-capped nosing, bright
+            elif r == ht - 1 and ht >= 3: c = St[2] if h(X, Y, 103) < 210 else St[3]   # crease: the hidden riser's shadow
+            elif r == 1 and ht >= 4: c = St[5 - d]                                 # lit stone just under the nosing
             else:
-                b = 4 - d - (1 if r == ht - 2 else 0)                          # packed path behind the log
-                q = h(X, Y, 85)
-                c = T[b] if q < 180 else T[max(0, b - 1)]
-                if q > 245: c = T[min(5, b + 1)]
+                c = St[4 - d] if h(X, Y, 105) < 215 else St[3 - d]                 # blue-grey stone tread
+                if ht >= 8 and r >= ht - 3 and h(X // 3, j, 107) < 120: c = Sn[2 - min(d, 1)]   # snow drifted against the riser
             px[X, Y] = c
-    # log ends: end grain poking out over the sides of the path
-    for Y in range(y0, min(y1, y0 + lg)):
-        px[x0, Y] = Wd[4] if Y == y0 else Wd[2]
+
+def tread_log(px, m, x0, x1, y0, y1, j, f, rise):
+    """log step on a peat trail, descending: the log's lit crown is the nosing (top row of the band, mossy highlight), one row of
+    log flank in mid wood, the packed path behind, and only a single dark crease row at the band's bottom where the next log's riser
+    hides. VQA r1 (independent) failed the old version: black line + dark log band below it read as a visible riser (forward stairs
+    going away), h3/h4 read as a vent, and the dark top bar on h1 as a log lying across the road."""
+    Wd, T = m["wood"], m["road"]; ht = y1 - y0
+    d = round(1.2 * f)
+    MOSSL = R("#6e944f", "#8db266")
+    for X in range(x0, x1):
+        for Y in range(y0, y1):
+            r = Y - y0
+            if r == 0:                                                         # log crown: lit, a little moss
+                q = h(X, j, 111)
+                c = T[5 - d] if q < 150 else (MOSSL[1 - d] if q < 200 else Wd[5])
+            elif r == 1 and ht >= 4: c = Wd[5] if h(X, Y, 113) < 160 else Wd[4]   # log flank, mid wood (not a dark band)
+            elif r == ht - 1 and ht >= 3: c = Wd[3] if h(X, Y, 115) < 200 else Wd[4]   # crease where the next riser hides (not black)
+            else:
+                b = 4 - d; q = h(X, Y, 117)
+                c = T[b] if q < 190 else T[b - 1]
+                if q > 248: c = T[min(5, b + 1)]
+            px[X, Y] = c
+    for Y in range(y0, min(y1, y0 + 2)):                                        # log ends: end grain at the trail's edge
+        px[x0, Y] = Wd[4] if Y == y0 else Wd[3]
         px[x1 - 1, Y] = Wd[5] if Y == y0 else Wd[3]
 
 # ---------------------------------------------------------------- output

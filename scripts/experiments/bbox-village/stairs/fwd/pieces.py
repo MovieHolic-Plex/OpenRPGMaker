@@ -79,7 +79,33 @@ RAMP = {
     "cave-steps": (["#30242a", "#463a3a", "#604e48", "#6c5c54", "#806a5d", "#8d7766", "#988472", "#b6a28c"], 6, 0.10, 7, 0.6),
 }
 
+def snow_ramp_surface(px, F, W):
+    """VQA r2: the snow ramp's lower half shaded into the cliff's blue-grey stone and read as an ice chute with a blue/beige seam
+    at the foot. The walking surface now stays in the snow road's own tones top to toe. The road has only two (#dccfca lit,
+    #c0b0aa body) and no darker tone anywhere in the render, so the slope reads by the light fading out: a lit brow, lit tone
+    thinning down the climb to the plain road body at the toe (= the foot, no seam), chevron ridges in the lit tone, grey grit
+    (#686c70, the render's own grey) a little thicker toward the toe, and a few snow-white flecks at the sides."""
+    LIT, BODY, GRIT, SNOW = X("#dccfca"), X("#c0b0aa"), X("#686c70"), X("#ffffff")
+    x0, x1 = 2, W - 2
+    cx, hw = (x0 + x1 - 1) / 2, (x1 - x0) / 2
+    for Y in range(F):
+        f = Y / max(1, F - 1)
+        for Xp in range(x0, x1):
+            q = blob(Xp, Y)
+            lit = (0.85 - 1.05 * f) + (h(Xp, Y, 117) / 255 - 0.5) * 0.5 + (0.25 if q < 0.25 else 0)
+            c = LIT if lit > 0.3 else BODY
+            if Y < 2 and h(Xp, Y, 119) < 200: c = LIT                              # lit brow, broken
+            u = abs(Xp - cx) / max(1, hw)
+            t = Y - round(0.45 * (x1 - x0) * (1 - u) * (0.6 + 0.4 * f))
+            if 3 <= Y < F - 1 and h(Xp, Y // 3, 113) < 215:
+                if t % 6 == 5: c = LIT                                             # chevron ridge, lit
+                elif t % 6 == 0 and f < 0.55: c = BODY                             # its shaded side, upper climb
+            if h(Xp, Y, 101) > 252 - round(6 * f): c = GRIT                        # grit, thicker toward the toe
+            if u > 0.75 and h(Xp, Y, 131) < 14: c = SNOW                           # snow fleck at the side
+            px[Xp, Y] = c
+
 def ramp_surface(px, F, W, st, cw):
+    if st.name == "snow-steps": return snow_ramp_surface(px, F, W)
     """the road material climbing the cut: the road's own cluster mix (blob) so crest and toe meet the road without a seam,
     a clear fade from a lit brow to a shaded toe (dithered so no row is a hard line), chevron contours that dip deeper toward the
     middle lower down (soft: a lit lip over a two-tone-darker line, broken)."""
@@ -108,7 +134,8 @@ def cheek_wedge(px, F, W, st, face, left, crease=None):
     """ramp cheek: the face itself, thin at the crest and widening to full at the toe; shade side a tone down, cut edge
     darkest on the left. VQA r1: on tall 3-wide ramps the lit right cheek melted into the ramp's own toe tones (same browns), so
     the right cheek is now at least 3 px, its face lifted a tone, the face's dark knots kept out of it (a stray dark notch), and
-    the ramp gets a one-pixel crease in its own shade tone where it meets the lit rim."""
+    the ramp gets a one-pixel crease in its own shade tone where it meets the lit rim. VQA r2: the peat wall's lightest tone
+    (#6e5a3c) is darker than the bog road, so its lit rim dissolved at 1x; the peat rim is the render's own lit olive #a69a54."""
     fp = face.load()
     for Y in range(F):
         f = Y / max(1, F - 1)
@@ -118,8 +145,8 @@ def cheek_wedge(px, F, W, st, face, left, crease=None):
             Xp = j if left else W - 1 - j
             c = st.shift(fp[Xp, Y], -1 if left else 1)
             if not left and Y < F - 1 and c in st.wall and st.wall.index(c) < 3: c = st.wall[3]
-            if j == wd - 1: c = st.wall[0] if left else st.wall[5]
-            elif j == wd - 2 and not left and c in st.wall: c = st.wall[4]
+            if j == wd - 1: c = st.wall[0] if left else (X("#a69a54") if st.name == "peat-steps" else st.wall[5])
+            elif j == wd - 2 and not left and c in st.wall: c = st.wall[4] if st.name != "peat-steps" else st.wall[5]
             px[Xp, Y] = c
         if not left and crease and 2 <= Y < F - 1: px[W - 1 - wd, Y] = crease
 
