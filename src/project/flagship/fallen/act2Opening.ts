@@ -1219,8 +1219,8 @@ function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: C
   const meadow = (x: number, y: number) => y > wallY && y < H - 1 && x >= 1 + side(y, 1.3) && x <= W - 2 - side(y, 4.1);
   paintWoodlandOnto(project, map, {
     id: mapId, name: map.name, width: W, height: H, seed: 4211,
-    // 길은 벽 틈(두 칸)에서만 — 풀밭엔 길이 없다. 틈 → 숲 속을 살짝 굽어 북쪽 출구.
-    paths: [{ pts: [{ x: gapX + 0.5, y: wallY + 0.5 }, { x: gapX + 0.5, y: wallY - 3 }, { x: gapX - 1.5, y: wallY - 6 }, { x: (gapX + nx) / 2, y: 2.5 }, { x: nx, y: 0 }], w: [1.7, 2.3] }],
+    // 길은 벽 틈 뒤 한 줄부터 — 풀밭·길돌 사이엔 흙길이 없다(길돌 사이로 흙길이 지나면 틈이 큰길 어귀로 읽혔다, VQA r7). 숲 속을 살짝 굽어 북쪽 출구.
+    paths: [{ pts: [{ x: gapX + 0.5, y: wallY - 2 }, { x: gapX + 0.5, y: wallY - 3 }, { x: gapX - 1.5, y: wallY - 6 }, { x: (gapX + nx) / 2, y: 2.5 }, { x: nx, y: 0 }], w: [1.7, 2.3] }],
     exits: [entry, exit],
     open: (x, y) => meadow(x, y) || (y >= wallY - 1 && y <= wallY && x >= gapX - 1 && x <= gapX + 2),
     // 벽 네 줄(틈 어귀 줄 포함)은 길 두 칸만 — 길섶이 벌어지면 틈이 큰길로 읽힌다. 어귀 줄 양옆 한 칸은 길돌 자리.
@@ -1245,7 +1245,8 @@ function meadowDecor(project: Project, mapId: string, meadow: (x: number, y: num
     .filter((k) => k.width === 1 && k.height === 1 && re.test(k.id))
     .map((k) => k.rows[0]?.upperTiles?.[0] ?? -1)
     .filter((t) => t >= 0 && (() => { const ps = ts.passability[t]; return !ps || ps.up || ps.down || ps.left || ps.right; })());
-  const green = pool(/^bd-pick-deep-forest-path-(fern|wild)-/), small = pool(/^bd-pick-deep-forest-path-(toadstools|stones)-/);
+  // fern-a·b 는 네모난 덤불 덩이로 보여 뺀다(VQA r7 「한 칸짜리 연두 사각 덤불」).
+  const green = pool(/^bd-pick-deep-forest-path-(fern-c|wild-)/), small = pool(/^bd-pick-deep-forest-path-(toadstools|stones)-/);
   if (!green.length) throw new Error("[fallen-star act2] 풀밭 덤불 소품이 칩셋에 없다");
   const rng = mulberry32(0xb4d3c0);
   const clusters = [[4, wallY + 9], [W - 5, wallY + 10], [8, wallY + 20], [W - 10, wallY + 22], [13, wallY + 4], [W - 12, wallY + 14], [3, H - 4], [W - 4, H - 3], [15, wallY + 16], [W - 7, wallY + 4], [20, H - 6], [5, wallY + 14]];
@@ -1499,16 +1500,17 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const confess: Command[] = [
     cutBegin(),
     setSw(SW_B4_EDGE),
+    // 길돌 앞에서 곧바로 두 걸음 물러선 뒤에 멈칫한다 — 일행 바로 옆에 선 채로 「?」·조명 전환을 기다리면 경계가 안 읽혔다(VQA r4·r7).
+    ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
+      { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], i === allIds.length - 1)),
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다. 위 순찰은 틈 아래 띠를 돌므로 이때 화면 안에 있다.
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.86, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
-    // 길돌 앞에서 먼저 두 걸음 물러선 뒤에 말한다 — 일행 바로 옆 틈 안에 선 채로 「못 들어간다」 하면 경계가 안 읽혔다(VQA r4).
-    ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
-      { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], i === allIds.length - 1)),
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
-      ...[0, 1, 2].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -85 }])], i === allIds.length - 1)),
+      // 다섯 걸음 — 등불이 화면 아래로 빠질 만큼(세 걸음이면 「멀어졌다」 뒤에도 등불 둘이 화면 아래 그대로 떠 있었다, VQA r7).
+      ...[0, 1, 2, 3, 4].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -51 }])], i === allIds.length - 1)),
     setSw(SW_B4_GONE),
     narrate("등불들이 하나씩 풀밭 너머로 멀어졌다."),
     say(BRAM, "야경꾼 놈들은 숲에 못 들어온다.\n여기까진 아직 내 숲이니까."),
