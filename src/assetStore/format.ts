@@ -36,11 +36,11 @@ export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "REFMAP-MODIFIED": "REFMAP 약관(고친 그림) — 게임에 자유, 출처·「고침」 표기, 원본 재배포 금지",
 };
 
-export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "music", "sound", "animation", "pack"] as const;
+export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "icon", "music", "sound", "animation", "pack"] as const;
 export type StoreItemKind = (typeof STORE_ITEM_KINDS)[number];
 export const STORE_KIND_LABELS: Readonly<Record<StoreItemKind, string>> = {
   tileset: "타일셋", character: "캐릭터", face: "얼굴", battler: "전투 그림",
-  picture: "그림", music: "음악", sound: "효과음", animation: "전투 애니메이션", pack: "묶음",
+  picture: "그림", icon: "아이콘", music: "음악", sound: "효과음", animation: "전투 애니메이션", pack: "묶음",
 };
 
 /** 스토어가 지원하는 언어(편집기 i18n 과 같은 넷). zh 는 간체. */
@@ -54,6 +54,7 @@ export const STORE_KIND_NAMES: Readonly<Record<StoreItemKind, Readonly<Record<St
   face: { ko: "얼굴·초상", en: "Faces & portraits", ja: "顔グラ・立ち絵", zh: "头像与立绘" },
   battler: { ko: "전투 그림", en: "Battlers", ja: "バトラー", zh: "战斗图" },
   picture: { ko: "그림", en: "Pictures", ja: "ピクチャー", zh: "图片" },
+  icon: { ko: "아이콘", en: "Icons", ja: "アイコン", zh: "图标" },
   music: { ko: "음악", en: "Music", ja: "音楽", zh: "音乐" },
   sound: { ko: "효과음", en: "Sound effects", ja: "効果音", zh: "音效" },
   animation: { ko: "전투 애니메이션", en: "Battle animations", ja: "戦闘アニメーション", zh: "战斗动画" },
@@ -113,7 +114,7 @@ export const STORE_LIMITS = {
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
 export const STORE_ASSET_KINDS = [
   "tileset", "sprite", "chipset", "charset", "faceset", "battle", "battleCharset", "battleWeapon",
-  "backdrop", "monster", "picture", "title", "gameOver", "system", "system2", "music", "sound",
+  "backdrop", "monster", "picture", "icon", "title", "gameOver", "system", "system2", "music", "sound",
 ] as const;
 export type StoreAssetKind = (typeof STORE_ASSET_KINDS)[number];
 
@@ -122,12 +123,16 @@ export type StoreAssetKind = (typeof STORE_ASSET_KINDS)[number];
  * 에디터는 규격이 다른 캐릭터 시트를 말없이 건너뛰므로(bundled.ts registerUploadedCharsetTextures), 올릴 때 막는다.
  */
 export const STORE_TILE_SIZE = 16;
+/** 아이콘 한 장의 크기(가로·세로). 메뉴·상점·전투 목록이 이 그림을 줄여 그린다. */
+export const STORE_ICON_SIZE = 32;
 export const STORE_FIXED_SHEETS: Readonly<Partial<Record<StoreAssetKind, { width: number; height: number; label: string }>>> = {
   charset: { width: 288, height: 256, label: "캐릭터 시트는 24×32 칸 12×8 = 288×256" },
   battleCharset: { width: 144, height: 384, label: "전투 그림은 48×48 칸 3×8 = 144×384" },
   battleWeapon: { width: 192, height: 512, label: "전투 무기는 64×64 칸 3×8 = 192×512" },
   // 런타임은 시스템 그림을 창 9칸 그림으로만 쓴다(border-image 24 fill, systemGraphics.ts). RM2000 System.png(160×80)는 받지 않는다.
   system: { width: 96, height: 96, label: "시스템(윈도스킨) 그림은 9칸 자르기 24px 창 그림 96×96" },
+  // 아이템·장비·스킬·상태 아이콘(2026-10-31): 아이콘 하나에 PNG 하나. iconResourceId 가 그대로 가리킨다(번들 아이콘·AI 아이콘과 같은 32px).
+  icon: { width: STORE_ICON_SIZE, height: STORE_ICON_SIZE, label: `아이콘은 ${STORE_ICON_SIZE}×${STORE_ICON_SIZE} 투명 PNG 한 장` },
 };
 
 /** 크기 규격이 있는 종류인가. 얼굴·그림·배경은 크기가 자유다. */

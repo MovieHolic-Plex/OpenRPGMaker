@@ -8,6 +8,8 @@ import type {
   EquipmentRecord,
   ItemRecord,
   Project,
+  SkillRecord,
+  StateRecord,
   SystemRecords,
 } from "../types";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
@@ -102,6 +104,14 @@ export function validateItemResources(item: ItemRecord, resourceIds: ReadonlySet
 export function validateEquipmentResources(equipment: EquipmentRecord, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource(`equipment ${equipment.id}: imageResourceId`, equipment.imageResourceId, resourceIds);
   validateOptionalResource(`equipment ${equipment.id}: iconResourceId`, equipment.iconResourceId, resourceIds);
+}
+
+export function validateSkillResources(skill: SkillRecord, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`skill ${skill.id}: iconResourceId`, skill.iconResourceId, resourceIds);
+}
+
+export function validateStateResources(state: StateRecord, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`state ${state.id}: iconResourceId`, state.iconResourceId, resourceIds);
 }
 
 export function validateEnemyResources(enemy: EnemyRecord, resourceIds: ReadonlySet<string>): void {

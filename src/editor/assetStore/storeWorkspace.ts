@@ -422,7 +422,7 @@ function openInPalette(tilesetId: string, title: string): void {
   toast(`「${title}」 타일로 새 맵을 열었어요. 왼쪽 팔레트에서 골라 칠해 보세요.`, "ok");
 }
 
-const RESOURCE_KIND_OF: Record<string, ResourceKind> = { charset: "charset", faceset: "faceset", music: "music", sound: "sound", picture: "picture", battle: "battle", battleCharset: "battleCharset", backdrop: "backdrop", monster: "monster" };
+const RESOURCE_KIND_OF: Record<string, ResourceKind> = { charset: "charset", faceset: "faceset", music: "music", sound: "sound", picture: "picture", icon: "icon", battle: "battle", battleCharset: "battleCharset", backdrop: "backdrop", monster: "monster" };
 
 function openResources(assetIds: readonly string[]): void {
   const kind = assetIds.map((id) => store.getCurrent().assets.uploaded[id]?.kind ?? "").map((k) => RESOURCE_KIND_OF[k]).find(Boolean);

@@ -487,6 +487,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const at = (layer: unknown) => Array.isArray(layer) ? Number(layer[i]) : -1;
       // 도구가 만든 장면 받침(ev_cutscene_*·호위 목적지)은 빼고, 그 칸이나 바로 위(북쪽) 칸에 물건 타일·건물 도장이 있으면 «그 물건 앞»이라 본다.
       if (/^ev_(cutscene|escort)_/u.test(ev.id)) continue;
+      // 바닥에 떨어진 증거(evidenceOnThing `<사람 id>_evidence`)는 그림 대신 가까이 오면 반짝인다(nearSparkle) — 맨땅이 아니다.
+      // 이 칸에 「물건을 찍거나 옮겨라」를 내면 모델이 칸을 일곱 번 옮기고 대사의 자리 말과 어긋났다(2026-10-31 mef3 terra 추리).
+      if (pages.filter((pg) => obj(pg.trigger)?.kind === "action").every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
       const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
       let near = false;
       for (const [dx, dy] of [[0, 0], [0, -1]] as const) {

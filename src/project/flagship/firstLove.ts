@@ -22,7 +22,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, faceEachOther, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTintUnderBlack, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, drawnOverActor, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -262,12 +262,31 @@ function walkRoute(project: Project, mapId: string, eventId: string, from: Cell,
  * 말 걸기 대화에서 주인공이 위·아래에서 다가오면 두 사람이 한 열로 쌓여 말풍선·대화창에 가린다.
  * 주인공이 보는 방향(= 다가온 쪽)으로 갈라, 위·아래였다면 상대 옆 칸으로 걸어가 나란히 서서 마주 본다.
  */
-function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell): Command[] {
+function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell, preferLeft = false): Command[] {
   const map = project.maps[mapId]!;
   const free = (c: Cell): boolean => isPassable(project, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y);
-  const side = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].find(free);
-  if (!side) return [faceHero(npcId)];
+  // 바로 옆으로 돌아 설 수 있는 쪽(옆 칸 아래·위가 비어 있는 쪽)을 먼저 — 왼쪽 아래가 탁자면 맵을 한 바퀴 돌아갔다(탕비실 카운터, 2026-10-30).
+  const sides = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].filter(free);
+  const short = (c: Cell): boolean => free({ x: c.x, y: npc.y + 1 }) || free({ x: c.x, y: npc.y - 1 });
+  // preferLeft: 흉상은 맵 위 자리를 따른다(bustSide stage) — 서하가 상대 오른쪽에 서면 흉상이 다른 장면과 좌우가 뒤집혔다(r5 블라인드: 탕비실).
+  const left = sides.find((c) => c.x < npc.x);
+  const right = sides.find((c) => c.x > npc.x);
   const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
+  // 왼쪽 칸이 막힌 데로만 돌아가야 하면(탕비실: 왼쪽 아래가 탁자 → 12걸음 우회, r5 재검수) 상대가 오른쪽으로 한 칸 비키고 주인공이 그 자리로 든다.
+  if (preferLeft && left && !short(left) && right) {
+    const swap = (dir: "up" | "down"): Command[] => [
+      walk(npcId, ["right"]),
+      walk("@player", [dir]),
+      face("@player", "right"),
+    ];
+    return [
+      ifCond({ kind: "facing", subject: "player", dir: "up" } as Parameters<typeof ifCond>[0], swap("up"),
+        [ifCond({ kind: "facing", subject: "player", dir: "down" } as Parameters<typeof ifCond>[0], swap("down"))]),
+      faceHero(npcId),
+    ];
+  }
+  const side = (preferLeft && left) ? left : sides.find(short) ?? sides[0];
+  if (!side) return [faceHero(npcId)];
   const go = (dir: "up" | "down"): Command[] => [
     walkRoute(project, mapId, "@player", from(dir), side, [npc]),
     face("@player", dirToward(side, npc)),
@@ -374,9 +393,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 차례로 나와 횡단보도를 건너 늘봄 빌딩 문으로 들어간다.
   const crowd = [
     { id: "ev_fl_crowd_1", tex: "tex_oprn_charset_modern3", index: 0, delay: 0, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 6, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 12, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 18, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 4, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 8, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 12, exit: "ev_fl_office_door" },
   ];
   for (const c of crowd) {
     // 처음엔 화면 밖 구석(맵 맨 윗줄)에 둔다 — 계단 칸에 세워 두면 차례가 늦은 사람이 경로가 닿을 때까지 계단에 보였다(Argon op4).
@@ -386,13 +405,16 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     pg.graphic = { sprite: { type: "bundled", id: c.tex }, direction: "down", pattern: charsetFrameIndex({ characterIndex: c.index, direction: "down", pattern: 1 }), transparent: false };
     pg.priority = "same"; pg.overlapForbidden = false; pg.movement = { type: "fixed", speed: 4, frequency: 3 };
   }
+  const crowdLane: Cell = { x: rushStop.x + 1, y: 22 };
   // 계단 칸에 숨어 있다가 차례로 나타나 내려선다(enterVia) → 각자 갈 곳으로.
   const crowdRoute = (c: (typeof crowd)[number]): Command => ({ kind: "moveEvent", eventId: c.id, route: { moves: [
     { kind: "changeOpacity", delta: -255 },
     ...Array.from({ length: c.delay }, () => ({ kind: "wait" })),
     { kind: "enterVia", x: s.subway.x, y: s.subway.y, dir: "down", se: "", closeSe: "" },
     // 모두 세로 횡단보도로 길을 건너 늘봄 빌딩으로 — 동쪽 보도 끝으로 가던 사람은 차도에 멈춰 섰다(Argon op3).
-    { kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" },
+    // 인파는 횡단보도 오른쪽 줄(x 22)로 — 남자가 뛰어 내려오는 x 21 줄을 같이 쓰면 부딪히는 두 사람 사이에 행인이 끼어 서서
+    // 「남자」 대사의 화자처럼 읽혔다(r5 블라인드). 차례 간격도 줄여 서하가 출발하기 전에 다 건너게 한다.
+    { kind: "approach", x: crowdLane.x, y: 22, distance: 0 }, { kind: "approach", x: crowdLane.x, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" },
   ], repeat: false, wait: false, skippable: true } } as unknown as Command);
   add(street, event("ev_fl_rusher", "서두르는 남자", rusher, [
     page("rusher_p", [stageIs(V_STAGE, S.START)], [], { who: "jihu", dir: "down" }),
@@ -425,8 +447,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
-    // 서류는 크게(180%) — 기본 크기는 1배 화면에서 흰 점 몇 개로 보였다(Sonnet op5).
-    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, sizePercent: 180, wait: false }),
+    // 서류는 크게 — 기본 크기는 1배 화면에서 흰 점 몇 개로 보였다(Sonnet op5). 다만 배율 2 화면에서 180% 는 낱장이 칸보다 커져
+    // 기울어진 흰 삼각 조각(깨진 유리)처럼 읽혔다(r4 블라인드) — 110% 로 줄이고 장 수도 줄인다(1.2초 = 6장).
+    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1200, sizePercent: 110, wait: false }),
     quiet(SE_PAPER, 0.7),
     wait(380),
     m2("Screen Effect", { effect: "freeze", value: "warm", durationMs: 500 }),
@@ -525,26 +548,52 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("minho_desk", [stageIs(V_STAGE, S.STREET)], [], { who: "minho", dir: "up" }),
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
       ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
-      ...say("minho", "happy", "왔어요? 이 커피 머신, 버튼 두 개를 같이 누르면 라떼가 돼요. 우리 회사 최대 기밀."),
-      // 커피 머신 앞의 작은 시연 — 돌아서서 두 단추를 같이 누르고, 기계가 울리면 잔을 들고 돌아선다.
+      // 사용자 2026-10-30 「탕비실 — 커피 머신 쓰는 법 알려 준다더니 안 알려 줌」: 예전엔 민호가 등을 돌려 혼자 누르고 끝났다(머신 그림도 없었다).
+      // 이제 탕비실 카운터에 머신이 있고(firstLoveRooms.json ox-coffee-counter), 민호가 버튼을 짚어 준 뒤 서하가 직접 누른다.
+      ...say("minho", "happy", "왔어요? 커피 머신 쓰는 법 알려 준다고 했죠. 이거 우리 회사 최대 기밀이에요."),
       face("ev_fl_minho", "up"),
-      quiet(SE_BUTTON, 0.5), wait(120), quiet(SE_BUTTON, 0.5), wait(700),
-      quiet("cc0-se-osx-dishes-02", 0.5), wait(500),
+      ...say("minho", "base", "왼쪽 버튼은 아메리카노, 오른쪽은 우유 거품. 여기까진 다 알아요."),
       faceHero("ev_fl_minho"),
-      ...think("고소한 냄새. …진짜 라떼다."),
+      ...say("minho", "happy", "직접 해 봐요. 컵은 놔뒀어요. 라떼 마시고 싶으면, 뭘 누를까요?"),
+      face("@player", "up"),
+      choices([
+        { text: "왼쪽 버튼(아메리카노)", then: [
+          quiet(SE_BUTTON, 0.5), wait(200), quiet("cc0-se-osx-machine-02", 0.45), wait(900),
+          ...think("새까만 아메리카노가 졸졸 나왔다. …라떼는 아니다."),
+          ...say("minho", "happy", "그건 그냥 아메리카노죠. 기밀은 지금부터예요. 두 개를 같이, 꾹."),
+        ] },
+        { text: "오른쪽 버튼(우유 거품)", then: [
+          quiet(SE_BUTTON, 0.5), wait(200), quiet("cc0-se-orp-inventory-bubble", 0.5), wait(900),
+          ...think("우유 거품만 잔에 한가득 부풀어 올랐다."),
+          ...say("minho", "happy", "거품 한 잔 나왔네요. 기밀은 지금부터예요. 두 개를 같이, 꾹."),
+        ] },
+        { text: "두 버튼을 같이 꾹", then: [
+          { kind: "changeFriendship", npcKey: "minho", delta: 50 } as Command,
+          ...say("minho", "surprised", "오, 감 좋은데요? 맞아요, 같이 꾹."),
+        ] },
+      ]),
+      // 두 버튼을 동시에 — 딸깍 두 번이 한 번처럼 겹치고, 기계가 웅 돌고, 김이 오른다.
+      ...think("왼쪽과 오른쪽 버튼에 손가락을 하나씩 올리고, 같이 꾹 눌렀다."),
+      quiet(SE_BUTTON, 0.55), wait(40), quiet(SE_BUTTON, 0.45), wait(250),
+      quiet("cc0-se-osx-machine-02", 0.5),
+      m2("Particle Effect", { preset: "smoke", target: "tile", x: o.coffee.x, y: o.coffee.y, durationMs: 1600, sizePercent: 70, wait: false }),
+      wait(1100), quiet("cc0-se-orp-inventory-bubble2", 0.45), wait(700),
+      faceHero("ev_fl_minho"),
+      ...think("고소한 냄새. 우유 거품 위에 갈색 에스프레소가 천천히 번진다. …진짜 라떼다."),
+      ...say("minho", "happy", "그게 기밀이에요. 메뉴에는 없는 라떼."),
       ...say("seoha", "happy", "그런 걸 첫날에 알려 줘도 돼요?"),
       ...say("minho", "happy", "동기잖아요. 기밀은 동기끼리 나누는 거죠."),
       { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
       ...say("minho", "base", "…근데요. 아까 강 선임님 볼 때 표정이 좀. 혹시 아는 사이예요?"),
       choices([
-        { text: "고등학교 선배야. …였던 것 같아.", then: [
+        { text: "고등학교 선배예요. …였던 것 같아요.", then: [
           setSw(SW_TOLD_MINHO, true),
           { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
           ...say("minho", "surprised", "에? 근데 선임님은 처음 뵙겠다고…"),
-          ...say("seoha", "sad", "그러게. 나도 그게 궁금해."),
+          ...say("seoha", "sad", "그러게요. 저도 그게 궁금해요."),
           ...say("minho", "base", "음. 사람마다 사정이 있겠죠. 걱정 마요, 입은 무거운 편이에요. 진짜로."),
         ] },
-        { text: "아니. 닮은 사람이 있어서.", then: [
+        { text: "아니요. 닮은 사람이 있어서요.", then: [
           ...say("minho", "base", "흠. 그래요?"),
           ...think("민호 씨는 더 묻지 않았다. 대신 커피를 한 잔 더 내렸다. 눈치가 빠른 사람이다."),
         ] },
@@ -567,13 +616,28 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ], { who: "minho", dir: "up" }),
   ]));
 
+  // 탕비실 커피 머신 — 민호가 알려 준 뒤로는 서하도 혼자 라떼를 내릴 수 있다(배운 것을 직접 다시 해 본다).
+  add(office, event("ev_fl_coffee", "커피 머신", o.coffee, [
+    page("coffee_before", [stageBelow(V_STAGE, S.PANTRY)], [
+      ...think("커피 머신이다. 버튼이 두 개 — 왼쪽은 아메리카노, 오른쪽은 우유 거품.", "민호 씨가 쓰는 법을 알려 준다고 했다."),
+    ], { priority: "same" }),
+    page("coffee_after", [stageAtLeast(V_STAGE, S.PANTRY)], [
+      ...think("두 버튼을 같이, 꾹."),
+      quiet(SE_BUTTON, 0.55), wait(40), quiet(SE_BUTTON, 0.45), wait(250), quiet("cc0-se-osx-machine-02", 0.5),
+      m2("Particle Effect", { preset: "smoke", target: "tile", x: o.coffee.x, y: o.coffee.y, durationMs: 1400, sizePercent: 70, wait: false }),
+      wait(1200),
+      ...think("메뉴에 없는 라떼 한 잔. 민호 씨의 기밀이다."),
+    ], { priority: "same" }),
+  ]));
+
   // 만남 장면 — 엘리베이터에서 내리자마자.
   const elev = elevDoor(o.elevator);
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
     // 승강기 안에서 도착: 닫힌 문 뒤 → 딩 → 문이 열리고 → 걸어 나온다 → 등 뒤에서 문이 닫힌다.
     ...doorFx(elev, false, 1),
+    // 승강기 칸에서 시작한다(placeAt) — 도착 칸이 한 칸만 달라도 «두 걸음 내려오기»가 서하를 지후 바로 위 칸에 세워 둘이 위아래로 겹쳤다(r4 검수).
     { kind: "moveEvent", eventId: "@player", route: { moves: [
-      { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+      { kind: "setThrough", enabled: true }, { kind: "placeAt", x: o.elevator.x, y: o.elevator.y }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     ...fadeIn(500),
     ...caption("스튜디오 늘봄, 7층."),
@@ -604,6 +668,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     // 지후가 서하 앞에 서면 서하도 그를 본다 — 선택지 「처음 뵙겠습니다」는 마주 선 채로 뜬다.
     face("@player", dirToward(heroMeet, jihuMeetStop)),
     stopBgm(),
+    // 재회가 1배 먼 화면이라 밋밋했다(r4 블라인드) — 금요일 만남처럼 두 사람 사이로 배율 2 까지 다가간다. 선택지가 끝나면 돌아온다.
+    panTo(Math.round((heroMeet.x + jihuMeetStop.x) / 2), Math.round((heroMeet.y + jihuMeetStop.y) / 2), 1100, 2),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
     ...think("금요일 점심, 방송실 창가. 스피커에서 흘러나오던 그 목소리."),
@@ -632,6 +698,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...like(1, "ev_fl_jihu_meet"),
       ] },
     ]),
+    panBack(900),
     face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 옆이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
@@ -918,7 +985,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   );
   add(bc, event("ev_fl_flashback", "회상", { x: 1, y: 1 }, [page("fb", [swOn("sw_fl_flashback"), stageIs(V_STAGE, S.KONBINI)], [
     hidePlayer(),
-    memoryTint(0),
+    memoryTintUnderBlack(),
+    wait(150),
     ...fadeIn(1200),
     { kind: "playAudio", resourceId: BGM_MEMORY, loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
     ...caption("10년 전. 성하고등학교 방송실."),
@@ -1026,7 +1094,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ]),
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
-        ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry),
+        ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry, true),
         ...say("jihu", "base", "물 부었어요. 3분."),
         ...say("seoha", "base", "회사에서 이렇게 늦게까지 있는 거, 자주 해요?"),
         ...say("jihu", "base", "발표 주간엔요. …그리고 이번이 마지막이라."),
@@ -1089,7 +1157,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   add(off,
     door("ev_fl_w_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_elev", o.elevator, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
-    door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("옥상 문은 밤엔 잠겨 있다.")),
+    // 「밤엔 잠겨 있다」는 엔딩 B(그날 밤 옥상)와 어긋났다(r4 블라인드) — 잠금이 아니라 지금 갈 때가 아니라는 말로.
+    door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("지금은 옥상에 갈 때가 아니다.")),
     event("ev_fl_w_seoha", "윤서하", seat.chair, seatedPages("ws", [swOff("sw_fl_w_seoha_up")], "seoha") /* 수요일 밤 맵에만 있다 — 단계 조건을 걸면 단계가 넘어갈 때 «방 안에서 꺼진다»로 잡힌다 */),
     event("ev_fl_w_desk", "서하 자리", seat.chair, [
       page("wd", [stageIs(V_STAGE, S.WED)], think("다시 보낸 최종본. 파일 이름: ‘하루끝_리뉴얼_최종_진짜최종_서하’.", "…이름은 다음 주에 정리하자.")),
@@ -1295,6 +1364,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_f_minho", dirToward(minhoSpot, heroAside)),
     ...sayAt("minho", "left", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
     ...clientOut.end,
+    // 오후 3시 발표 뒤 곧장 「9시 21분」 질주가 떠 여섯 시간이 사라졌다(r4 리뷰) — 뒷정리가 밤까지 이어졌다는 자막으로 잇는다.
+    ...caption("…본부장 배웅, 2차 일정 회의. 회의실 불은 밤 아홉 시가 넘어서야 꺼질 참이었다."),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "move", dir: dirToward(heroAside, o.meetingSeat) }, { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     face("@player", dirToward(o.meetingSeat, leadSpot)),
     ifCond(swOff(SW_HONEST), [
@@ -1430,7 +1501,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
     quiet(SE_PULSE, 0.8), wait(700), quiet(SE_PULSE, 0.8),
-    ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
+    // 「남은 마감을 붙들고 있다」는 「먼저 가 볼게요!」와 어긋났다(r4 리뷰) — 시각만 센다. 시간의 빈칸은 회의실 자막이 잇는다.
+    ...caption("오후 9시 21분. 9시 40분 열차까지, 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
   ]));
@@ -1452,7 +1524,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   // 3/4 시점에서 승강장(북)에서 열차로 걸어 내려가면 지붕 위로 올라섰다(VQA r19·r26·r28 중대), 검은 화면에 사라지기만 하면
   // 「문도 안 열리고 사라졌다」였다(r28). 짧게 어두워진 사이 지후를 열린 문 안(차량 옆면 칸, 위 층)에 세우고, 밝아지면 문간에서
   // 서하 쪽을 보고 서 있다가 문이 닫히는 순간 사라진다 — 문이 닫히고 열차가 떠난다.
-  const boardX = 38;
+  // 열차는 두 사람 바로 앞(아래)에 선다 — 몸 가운데 x=37(firstLoveMaps centerX), 문 하나가 x=37 에 온다(r4: 열차가 왼쪽 옆에 섰다).
+  const boardX = jihuSpot.x;
   const edge = { x: boardX, y: 9 };
   const inDoor = { x: boardX, y: 11 };
   const jihuBoards = (): Command[] => [
@@ -1485,6 +1558,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     walk("@player", route(project, FL_MAP.platformPm, p.exitOut, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
+    // 클라이맥스는 두 사람에게 다가간다 — 배율 1 의 먼 화면에서 작은 두 사람이 고백했다(r4 검수). 두 사람 아래로 선로가 보이게 조금 아래를 잡는다.
+    panTo(jihuSpot.x, jihuSpot.y + 1, 1400, 2),
     ...emote("ev_fl_p_jihu", "exclamation", 1300),
     ...say("jihu", "surprised", "…서하야?"),
     ...think("처음이다. 회사에서 만나고, ‘씨’를 떼고 부른 건."),
@@ -1537,6 +1612,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
           ...jihuBoards(),
           ...fadeOut(1200),
+          panBack(0), // 승강장 배율(2)을 엔딩 그림으로 들고 가지 않는다
           stopBgm(),
           ...endingOpen("oprn-first-love-ending-a"),
           { kind: "triggerEnding", endingId: END_A } as Command,
@@ -1612,24 +1688,25 @@ function defineEndings(project: Project): void {
     id: END_A,
     name: "다시, 첫사랑",
     conditions: [],
-    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a" },
+    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a", textSide: "left" },
     epilogue: [
-      // 타이틀 그림(다른 남자)이 아니라 게임 속 두 사람(서하·지후 공용 초상)이 노을 아래 선 카드(VQA r25).
+      // 노을 옥상 난간 앞에 나란히 선 서하·지후 — 게임과 같은 도트(걷기 칩·옥상 맵·노을 파노라마)로 지은 장면(r3, bake_ending_cards.py).
+      // 인물은 오른쪽 삼분선, 카드 글 판은 왼쪽 기둥(textSide, r4) — 가운데 판이 인물을 덮지 않는다.
       epiloguePicture("oprn-first-love-ending-a"),
       { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
-      { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
+      { kind: "say", text: "‘이번 금요일에도 서울로 갈게요. 약속대로. 급식 줄은 이제 안 서도 돼요.’" },
       { kind: "say", speaker: "서하", text: "…또 실명 안 썼네, 이 사람." },
-      { kind: "say", text: "열 번째 봄이 지나고, 첫사랑은 다시 시작됐다." },
+      { kind: "say", text: "10년이 지나, 첫사랑은 다시 시작됐다." },
     ],
   });
   execTool(project, "define_ending", {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b" },
+    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b", textSide: "left" },
     epilogue: [
-      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라와 밤하늘을 봤다. 연두색 편지지 뒤에, 낯익은 글씨." },
+      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에 올라가 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },
@@ -1641,11 +1718,11 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "비 오는 금요일", // 「우리 팀의 봄」인데 팀은 나오지 않고 서하 혼자 비 속에 섰다(VQA r23)
     conditions: [],
-    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c", textSide: "right", particles: "none" },
     epilogue: [
       { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
-      { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
-      { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
+      { kind: "say", text: "오후 9시 40분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
+      { kind: "say", text: "익명으로 온 사연. 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
       { kind: "say", speaker: "서하", text: "…답장만 하고 가 버리면, 어떡해요." },
       { kind: "say", text: "다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
@@ -1689,7 +1766,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   }
 
   const exec = (name: string, args: Record<string, unknown>) => execTool(project, name, args);
-  const anchors = buildFirstLoveMaps(project, exec);
+  const anchors = buildFirstLoveMaps(project, exec)
   // 조명이 없는 맵은 들어오기 전 맵의 조명을 이어 받는다 — 밤거리에서 편의점에 들어가면 편의점이 어두워진다. 모든 맵의 조명을 못 박는다.
   for (const id of Object.values(FL_MAP)) {
     const m = project.maps[id];
