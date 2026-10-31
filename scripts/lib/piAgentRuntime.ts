@@ -1290,7 +1290,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         return { soft: true as const, id: softPref.id, toolName: want, reminder: [{ role: "user" as const, content: [{ type: "text" as const, text: softPref.reminder }], timestamp: Date.now() }],
           satisfies: (call: { name: string }) => call.name === want || call.name === "todo" } as never;
       }
-      if (!forceToolTurn) return undefined;
+      if (!forceToolTurn) {
+        // v2 할 일이 열려 있는 동안은 도구 호출을 계속 강제한다(Anthropic 확장 생각은 강제를 못 받는다).
+        const api = (model as { api?: string }).api;
+        let keep = false;
+        try { keep = !!(options.v2?.keepToolsOn && v2Env && options.v2.keepToolsOn(v2Env)); } catch { keep = false; }
+        return keep && !(api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") ? "required" : undefined;
+      }
       const want = forceToolTurn;
       forceToolTurn = false;
       if (want === true) return "required";

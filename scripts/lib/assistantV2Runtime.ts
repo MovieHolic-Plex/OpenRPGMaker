@@ -182,6 +182,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // → ⑥ 화면 검수 결함을 vqa 항목으로(게임 전체 요청만). ④~⑥ 이 항목을 덧붙이면 같은 고리로 ② 부터 다시. 아무것도 없으면 끝 — 최종 보고는 기계 표.
   let autoBuilt = false;
   let noTodoKicks = 0;
+  let forcedSig = "", forcedCalls = 0;
   const autoNotes: string[] = [];
   let loopStop: string | undefined;
   let advisorRuns = 0;
@@ -359,6 +360,14 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       beforeFirstPrompt: (env) => { if (writeRequest && !store.initialized) env.requireToolNextTurn?.("todo"); },
       // 할 일 고리는 스스로 멈춘다(묶음당 8·진척 없음 2·서명 같음·ask_user). 이 수는 안전 상한일 뿐이다.
       maxRounds: 64,
+      // 열린 항목이 있는 동안 도구 호출을 강제한다 — 다만 항목이 하나도 닫히지 않은 채 연속 12번이면 풀어 모델이 멈추고 고리(afterMain)가 판정하게 한다.
+      keepToolsOn: () => {
+        if (!writeRequest || !store.initialized || loopStop || store.openCount() === 0) return false;
+        const c = store.counts(); const sig = `${c.done}/${c.blocked}/${c.dropped}/${c.total}`;
+        if (sig !== forcedSig) { forcedSig = sig; forcedCalls = 0; }
+        forcedCalls += 1;
+        return forcedCalls <= 12;
+      },
       afterMain: async (env) => {
         liveEnv = env;
         try {
