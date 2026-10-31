@@ -7,7 +7,7 @@ import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterDepth, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
-import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
+import { runtimeLogicalTextScale, runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
 import { syncFreezeFrame } from "@/player/playSceneFreezeFrame";
@@ -977,7 +977,7 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
   state.nextCheck = now + 200;
   const project = store.getCurrent();
   const size = mapTileSize(map);
-  const zoom = Math.max(1, Math.round(scene.cameras?.main?.zoom || 1));
+  const textScale = runtimeLogicalTextScale(scene, scene.cameras?.main?.zoom || 1);
   const want = new Map<string, { text: string; x: number; y: number; below: number; door?: { left: number; top: number; right: number; bottom: number } }>();
   for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
     const examine = view.trigger.kind === "action";
@@ -1010,12 +1010,13 @@ function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOn
   for (const [id, at] of want) {
     let label = state.labels.get(id);
     if (!label) {
-      // 글자 텍스처는 카메라 배율과 같은 해상도, 정수 좌표 — 떠오르는 「+ 이름」 글자(playSceneFieldFx.playLootPopup)와 같은 규칙.
+      // 글자는 논리 화면 12px(runtimeLogicalTextScale) — 떠오르는 「+ 이름」 글자(playSceneFieldFx.playLootPopup)와 같은 규칙.
+      // 밀도 2 캔버스에서 1/카메라 배율로 그리면 480×270 에서 6px 로 줄었다(폴른 스타 2막 첫 플레이 2026-10-31).
       label = scene.add.text(0, 0, at.text, {
         fontFamily: EXIT_LABEL_FONT, fontSize: `${EXIT_LABEL_PX}px`, color: "#fff4c8",
         // 어두운 받침 — 홀의 의자·탁자 그림 위에서도 글자가 묻히지 않게(첫 캡처에서 「→ 서재」가 안락의자 무늬에 묻혔다).
         backgroundColor: "rgba(26,16,6,0.82)", padding: { x: 3, y: 1 },
-      }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
+      }).setResolution(textScale.resolution).setScale(textScale.scale).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
       state.labels.set(id, label);
     } else if (label.text !== at.text) label.setText(at.text);
     // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
