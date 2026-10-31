@@ -419,6 +419,7 @@ terra 마왕 편의점 다시 재기: 4 → 7점, 호출 46 → 43, 실패 3 →
 
 - **GPT 계열이 graphic 의 모든 칸을 빈 값으로 채워 필드 적이 투명하게 저장됐다**(`eventCompile.compactGraphicSpec`·`graphicSpecArg`): terra 숲 추격의 `place_field_enemy` 가 `graphic:{selectionId:"", query:"wolf", textureKey:"", characterIndex:0, transparent:false}` 를 보냈다. 인자 정리 훅이 빈 문자열만 걷어 내 `transparent:false` 가 남았고, `resolveGraphic` 은 `"transparent" in spec` 만 보고 투명 이벤트를 만들었다(들개 무리가 숲에서 안 보였다). 이제 빈 칸·`transparent:false`·시트 없는 `characterIndex` 를 먼저 걷어 내고, 빈 칸뿐이면 「graphic 생략」과 같다. `place_field_enemy` 는 `query` 만 남은 그림이면 전투 그림(대응 걷기 칩 또는 생성 몬스터 도트)을 따르고, 그래도 투명이면 `field-enemy-invisible` 로 거절한다. terra 판의 정확한 인자를 그 판 저장본에 다시 돌리면 `generated-enemy-wolf-grey` 도트가 선다.
 - **아무 거절도 없이 할 일을 막힘으로 닫았다**(`loop/todoTools` todo block): terra 사냥꾼 계약은 6.6분·호출 22번에 할 일 7개를 막힘으로 닫았다 — 시작 자리는 `set_start_position` 을 한 번도 부르지 않았고, 단서 집계·일지는 플래그 하나만 선언했다. 같은 장면을 Opus 는 `set_start_position`·`stamp_object`+조사 이벤트·조건 페이지·공통 이벤트로 다 지었다. 이제 그 항목에 거절된 호출이 없으면(`attempts 0`, 최근 쓰기 실패 없음) 첫 막힘을 한 번 되돌리고 그 항목의 다음 호출과 흔한 동사를 영어로 준다. 두 번째 막힘은 받는다(`blockBounced` 한 번).
+- **따옴표로 준 대사를 「인물 있음」으로만 확인했다**(`loop/requestSkeleton`): 같은 판에서 terra 는 뱃사공·어부의 아내를 `person` 확인으로만 적어, 단서 대사 없이(「늪물은 믿을 게 못 되오.」) ✓ 로 닫혔다. 요청 뼈대가 `X는 "…"고 말해`·`X를 조사하면 "…"`·`X가 있고, 조사하면 「…」` 를 읽어 `talk{who, says:<앞 두 낱말>}` 요소로 덧붙이고, 모델 항목이 `says` 없는 `talk` 이면 덮은 것으로 치지 않는다. 제목·이름·문구 같은 낱말 뒤의 인용은 대사로 보지 않는다.
 
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 

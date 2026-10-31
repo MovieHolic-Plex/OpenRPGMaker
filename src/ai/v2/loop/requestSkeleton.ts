@@ -38,6 +38,19 @@ const WITH = new RegExp(`(?<=^|\\s)((?:${W} )?${W}?)(?:와|과) (?:[가-힣]+ )?
 const FIGHTS = new RegExp(`(?<=^|\\s)((?:${W} )?${W}?)(?:와|과|을|를) (?:싸우|싸울|결투|쓰러뜨리|물리치)`, "gu");
 /** 「X를 주는/받는/얻는」 — 지급. */
 const GIVES = new RegExp(`(?<=^|\\s)(${W})(?:을|를) (?:주는|주게|준다|주고|줘|받는|받게|얻는|얻게)`, "gu");
+/** 「X는 "…"고 말해/털어놔」 — 인용한 대사(말하는 인물). */
+const QUOTE_SAYS = new RegExp(`(?<=^|\\s)((?:${W} )?${W}?)(?:은|는|이|가) (?:${W} ){0,2}?["“「]([^"”」]{4,80})["”」]`, "gu");
+/** 「X를 조사하면 "…"」·「X가 있고, 조사하면 「…」」 — 조사하면 뜨는 글(조사 대상 이벤트). */
+const QUOTE_EXAMINE = new RegExp(`(?<=^|\\s)(${W}?)(?:을|를|이|가) (?:[^\\s"“「]+ ){0,3}?조사하면,? ["“「]([^"”」]{4,80})["”」]`, "gu");
+/** 인용 대사 → 확인에 쓸 앞 두 낱말(모델이 끝말을 바꿔도 걸리게). */
+function saysFragment(quote: string): string | undefined {
+  const words = quote.replace(/[.,!?…。·~]+/gu, " ").trim().split(/\s+/u).filter(Boolean);
+  const head = words.slice(0, 2);
+  if (head.length === 2 && head[1]!.length >= 3) head[1] = head[1]!.replace(/(?:이|가|은|는|을|를|의|도)$/u, "");
+  const frag = head.join(" ");
+  return frag.length >= 3 ? frag : undefined;
+}
+
 /** 「X로 돌아와」 — 엔딩 맵. */
 const RETURN_TO = new RegExp(`(${W})(?:로|으로) 돌아`, "u");
 
@@ -66,6 +79,17 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
   for (const who of meets) if (!talkers.some((x) => nameScore(x, who) > 0)) {
     els.push({ content: `${who} 두기`, check: { kind: "person", name: who, ...f }, from: who });
     els.push({ content: `${who}와(과) 대화(대사)`, check: { kind: "talk", who, ...f }, from: who });
+  }
+  // 요청이 따옴표로 준 대사는 그 줄이 실제로 나와야 한다 — 2026-10-31 asst-parity 사냥꾼 계약 terra: 뱃사공·어부의 아내를 「인물 있음」 확인으로만 적어
+  // 단서 대사 없이 ✓ 로 닫혔다. 조사 글(「시체를 조사하면 "…"」)은 그 물건 이벤트의 대사로 확인한다.
+  const quoted = new Set<string>();
+  for (const [re, kind] of [[QUOTE_EXAMINE, "examine"], [QUOTE_SAYS, "say"]] as const) {
+    for (const m of t.matchAll(re)) {
+      const who = nameFrom(m[1] ?? ""), says = saysFragment(m[2] ?? "");
+      if (!who || !says || quoted.has(says) || /^(제목|이름|타이틀|게임|맵|장소|문구|글|글귀|말|대사|텍스트|메시지|선택지|자막)$/u.test(who.split(" ").at(-1) ?? who)) continue;
+      quoted.add(says);
+      els.push({ content: kind === "examine" ? `${who} 조사 글 「${m[2]!.trim().slice(0, 40)}」` : `${who} 대사 「${m[2]!.trim().slice(0, 40)}」`, check: { kind: "talk", who, says, ...f }, from: m[0] });
+    }
   }
   // 「마왕을 쓰러뜨린 뒤 …」·「이긴 뒤」 처럼 지난 일을 말하는 전투 낱말은 떼고 본다.
   const tb = t.replace(/\S+ (?:쓰러뜨린|이긴|물리친) 뒤|(?:쓰러뜨린|이긴|물리친) 뒤/gu, "");
@@ -113,7 +137,8 @@ export function covers(items: readonly Pick<TodoItem, "check" | "content">[], el
     if (!k || k.kind !== c.kind) return false;
     switch (c.kind) {
       case "person": return k.kind === "person" && nameScore(c.name, k.name) > 0;
-      case "talk": return k.kind === "talk" && nameScore(c.who, k.who) > 0;
+      // 인용 대사 요소(says)는 모델 항목도 그 대사를 확인해야 덮는다 — 「인물이 말한다」만으로는 단서 줄을 묻지 않는다.
+      case "talk": return k.kind === "talk" && nameScore(c.who, k.who) > 0 && (!c.says || !!k.says);
       case "item": return k.kind === "item" && nameScore(c.name, k.name) > 0;
       case "party_join": return k.kind === "party_join" && nameScore(c.name, k.name) > 0;
       default: return true;
