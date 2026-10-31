@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "352128a1493635286f4f41d9cb4ddf8ca4faec0aae1ef5edf62d1251e46e33ec",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 4 w2 reverse cut through a north-facing grass cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/grass-steps/ramp-h4-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface seen from above, descending away from viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass strips on left and right sides",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 32-row view from above of a dirt ramp cut between grass banks. The width is constant at 32 for rows 0-31. The column scans show a gradual lightening of the dirt and thin lighter step lines at rows 16, 19, 22, 25, 28 and 30-31, which are tread edges on the slope. There is no vertical south face of 3+ rows. The ramp is a horizontal or sloped ground surface, which suits terrain viewed top-down, but there is no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow earthen ramp with stepped treads. Each tread has a light lip, a mid face and a dark riser, giving about 5 brown steps plus grain dots. The side edges are dark brown, tinted by the neighbouring material, and not neutral black. The measured facts back this up: 0% neutral dark-edge pixels, 0% near-flat coverage, and 11 visible tones per tile against 7 for the paving and 3 for the grass reference. Its raw palette is small (13 colours), but the visible tonal variety is at or above both references. The piece is small and simple, with some repetition across the treads, and I see no large flat fills or sticker-style outline. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 3
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp upper dirt surface",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp lower stepped slope",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "grass verges on both sides",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is 32 px wide on every row from 0 to 31, so this is a tile that fills the whole cell. The ramp is seen from above, running away from the viewer. Rows 0-15 are a plain dirt surface (L about 106) with a dark edge line at row 0 and dark side edges. Rows 16-31 have thin lighter lines (L=140) at rows 16, 19, 22, 25, 28 and 30-31, each followed by darker rows. These read as tread edges on a slope, not as a tall front face. There is no vertical south face of 3 or more rows. The grass verges and dark borders run straight down the sides with no receding side face. Overall it is a flat top-down terrain surface with step lines, which is expected for a ramp seen from the terrace lip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ramp reads as stepped earth or wood treads, each with a light lip, a mid face and a dark riser, so about 5 lightness steps. The side edges are dark brown or green-brown and tinted, not neutral black; the measured near-neutral share of dark edge pixels is 0%, the same as the grass reference. Visible tones per tile are 11, against 3 for the grass reference and 7 for the paving reference. Near-flat 5x5 coverage is 0%, so there are no flat fills. Texture is only moderate: the treads are fairly clean bands with little grain, and the total palette is small (13 colours). That is still not thinner or more sticker-like than the references, so it passes."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 4
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ramp surface descending away from viewer, seen from above",
+      "rows": "1-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass terrace strips on both sides",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32-wide, 32-row view looking down a dirt ramp cut through the cliff. The column scan shows a uniform brown earth texture with horizontal lighter step lines at rows 16, 19, 22, 25, 28 and 30-31. These are tread edges seen from above, not a vertical south face. Dark cliff-edge lines run down both sides with grass beyond. No vertical front face of 3 or more rows is drawn, so it reads as a flat top-down surface, which fits a terrain ramp viewed from the terrace lip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ramp of brown earth steps with a grass/dark-brown edge. Each step band has a light lip and a darker riser, which gives about 5 lightness steps. The dark edge pixels are tinted brown, not neutral (0% near-neutral), so the outline is a dark material tone. Measured facts: 11 visible tones per tile against 3 for the reference grass and 7 for the reference paving, and 0% near-flat coverage, so there are no large flat fills. The total palette is small (13 colours) but the visible tone count is at or above both references. Texture is grain on the steps and the edge, which is more modest than the grass tufts or the individually shaded stones in the references, so it counts as 'some'. A careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 4
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper dirt ramp surface (flat, textured)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stepped ramp surface with light step-edge lines",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass verges on both sides",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 32px-wide, 32-row block. The ramp is a dirt strip between dark edge lines with grass on either side, seen straight down from the terrace lip. Rows 0-15 are a continuous textured dirt surface with no edge line or eave shadow. Rows 16-31 add light 1-row lines (#9e8b64) at rows 16, 19, 22, 25, 28 and 30-31, roughly every 3 rows. These read as step or tread lines on the descending ramp, not as a vertical front face. No south-facing vertical face of 3 or more rows is drawn, so the tile reads as a flat top-down slab, which is expected for a ramp seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an earthen ramp with stepped treads, flanked by dark brown side walls and a grassy lip at the top. Its main earth ramp reads as about 5 lightness steps: a light tread highlight, mid tan, a darker brown riser, a deep shadow and a dark edge. The edges are tinted dark brown, and the measured near-neutral dark-edge share is 0%, so this is not a black sticker outline. It carries 11 visible tones per tile, against 3 for the grass reference and 7 for the paving reference, and near-flat coverage is 0%, so there are no flat 5x5 fills. Texture is moderate: treads have banding and speckle but fewer per-pixel grain clusters than the grass reference's tufts. It is a ground transition piece and fits next to the grass and paving references. Structure and density are at or above the references, with no sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 3
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.222Z",
+ "cells": {
+  "16": [
+   "5ae236a1f0eb9ef9",
+   "7095139b554aecc8",
+   "8885a838a28ad55c",
+   "9253642c66d54a5d"
+  ],
+  "24": [
+   "1fa2f51b3bf60e2c",
+   "22751767b09ddcf1",
+   "25f155c9f18f7b63",
+   "4ccd91ee18a25c58",
+   "50155e8b586d4f6f",
+   "56c616807149846d",
+   "57925e57f8ff609e",
+   "5a559e88267840d3",
+   "64a3be7f7a51a241",
+   "73f48b97c65f918f",
+   "7b04c331819eaee9",
+   "7c88a301ecc4396f",
+   "82c3b83e2b4bd88c",
+   "83b36519f656b761",
+   "85574bc2c5244baf",
+   "8611e2d9b81b9e41",
+   "a18df269eca7bc63",
+   "a981360aa9ace363",
+   "b98eb4377f088360",
+   "c1322642b12b58f3",
+   "c770b8836e5a3133",
+   "ca4c93a120d93adf",
+   "cfec0c252fffdec1",
+   "dfc4827578b1e462"
+  ],
+  "32": [
+   "d82736c77d809576"
+  ],
+  "48": [
+   "44a1025378fb308e",
+   "4b16354bd986e02d",
+   "5d406537d096e45b",
+   "ab0d94e7389b06c3",
+   "d6d65ac322460579",
+   "d9c3c035d4a1218f"
+  ]
+ }
+}

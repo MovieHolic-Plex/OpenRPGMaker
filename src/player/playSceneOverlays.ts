@@ -595,7 +595,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
     terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
-    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
+    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : continueTo ? "ending.creditsSkipNext" : "ending.creditsSkip"));
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };

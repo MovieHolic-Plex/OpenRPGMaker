@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3ab6cd9835e0f7d9189216c8dad43af10751fa35c117d9f0463a644d0c11760",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 1 w2 cut through a south-facing snow cliff face (climbs north)",
+ "label": "relief-cuts-fwd/snow-steps/stairs-h1-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 76,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow tread of stairs",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower snow tread of stairs",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "stair risers (vertical south faces)",
+      "rows": "5-7, 13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south-facing cliff face",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 and 8-12 are light snow treads seen from above, each ending in a dark front-edge line (rows 5 and 13) followed by dark riser or shadow rows (5-7 and 13-15). That gives two foreshortened steps climbing north. Rows 16-31 are a flat brown-grey vertical cliff face, 16 rows tall. The silhouette is 32 wide in every row, with no receding side face. It reads as a 3/4-view stair cut into a cliff."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has 9 visible tones per tile, above the grass reference (3) and the paving reference (7). Its 39% near-flat coverage is far above both references (0%), and the picture shows why. The lower beige/pink block is one nearly flat colour with no grain, speckle or per-stone variation. The snow band and the steps read as only about 3 lightness steps (white, pale blue, grey-blue), where Beodeul materials carry 5-6. The 0% neutral dark edge share means the outlines are tinted, not near-black, which is a point in its favour. Even so, the large flat fills and the shallow ramps leave it flatter and more sticker-like than the references, which have grain on every area. A careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 22962
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower snow tread",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "brown cliff face below the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 and 8-12 are light snow treads (horizontal surfaces), each followed by a dark riser/shadow band (rows 5-7 and 13-15). Row 12 is a white front-edge highlight over the dark riser at rows 13-15. Rows 16-31 are a flat brown cliff face, 16 rows tall, which gives a clear front face. The stairs therefore read as stepped treads and risers with a cliff face below, not as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has 9 visible tones per tile, above the grass reference (3) and the paving reference (7), and its dark edge pixels are tinted (0% neutral), so the outline reads as a cool dark material tone rather than sticker black. The picture still looks shallow next to the references. The lower part is a large flat beige-pink fill with no grain, speckle or per-stone shading. The measured 39% near-flat coverage against 0% for both references confirms this. The steps and snow band carry only about 3 lightness steps, with a few bright and dark bands and no texture dots, snow clumping or per-step edge variation. The references have grain, tufts and individually shaded stones. The tone count is inflated by a few separate bands, not by texture richness, so the piece looks flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16047
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower snow tread",
+      "rows": "8-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "brown cliff face below the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 are a light snow tread that ends in a dark riser and shadow at rows 5-7. Rows 8-11 are a second tread, with a bright edge line at row 12 and a dark riser at rows 13-15. Below, rows 16-31 are a flat brown cliff face, a vertical south face 16 rows tall. The stair treads read as horizontal surfaces seen from above, with south-facing risers, so this is a 3/4 view and not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured 9 visible tones per tile is above the grass reference (3) and the paving reference (7), and the 0% neutral dark edge share means the outline is tinted, not a black sticker line. The picture still shows a flat look. The lower beige-pink ground is a large area of one colour with no grain, speckle or per-stone shading. That fits the 39% near-flat coverage, against 0% for both references. The stair/cliff band at the top has only about 3 lightness steps (white, pale blue, grey-blue), with little tread-by-tread shading and no snow clumps or texture dots. The references have grass tufts, soil grain and individually shaded stones. The tone count mostly comes from the thin stair strip, not from texture spread across the tiles. Next to the references this reads as flatter and simpler.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14994
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "lower snow tread",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "cliff face below stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 are a light snow tread that ends in a dark riser at rows 5-7. Rows 8-11 are a second snow tread with a white front-edge line at row 12. Rows 13-15 are dark shadow and riser below it. Rows 16-31 are the brown vertical cliff face. The stairs read as two treads with risers cut into the cliff, so the top surfaces and front faces are both visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small snow-stair graphic: a pale white/blue step block above a flat beige-pink area. Visible tones per tile are 9, above the references' 3 and 7, but the candidate's near-flat coverage is 39% against 0% for both references. The lower half is one large flat fill with no grain or speckle. The snow steps have only about 3 lightness steps and none of the per-stone shading or tufted texture of the references. Dark edge pixels are tinted (0% neutral), so the outline is not a pure black sticker line, but it is thin and uneven. The piece reads as flat and simple next to the dense grass and paving references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13504
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.803Z",
+ "cells": {
+  "16": [
+   "c774380dfc9aafe5",
+   "dd884f58a3a95a13",
+   "ef24af5612b71492"
+  ],
+  "24": [
+   "0144bafcbdfb171e",
+   "0e42b66c69365784",
+   "12438d362c056eea",
+   "20eeaa599bc176fe",
+   "2661f876d8bd7bf8",
+   "27b8a41c0050a748",
+   "27ea6b338d99ffd9",
+   "28259e5b3cbaf3ee",
+   "31e03dda6e5d82be",
+   "35dee6e41e2f81d7",
+   "3f6457a27b33e985",
+   "4038dc4dae407778",
+   "4a104616300f6d13",
+   "59b28297255088eb",
+   "6551800846dfb76a",
+   "7057b6ebf04c5240",
+   "8ddad9f4cf34dcdb",
+   "9709c01db902d617",
+   "9c0fe426034c1a12",
+   "bcfdb223bf6cfb10",
+   "c5caf50a553fbbc0",
+   "d70659d78c47752a",
+   "ece494c2c1315fee",
+   "f5ff8ad0d9cd0baa"
+  ],
+  "32": [
+   "6b788ab167d1f80e"
+  ],
+  "48": [
+   "08690f12972a3dc6",
+   "3248a76ac07863c8",
+   "6e30361615df28b2",
+   "7edfaef6367144f9",
+   "89887790a9971ef6",
+   "f33f0551dc168a74"
+  ]
+ }
+}

@@ -1,0 +1,651 @@
+{
+ "round": 2,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "Per piece: (1) exact 2-row extent lip->low road, (2) seams, (3) style match with cliff/road, (4) reads as a way between levels at 1x (not panel/shutter/grate/mat/crate), (5) reads as descending away (no visible risers), (6) no glyph-like texture. Any major => FAIL.",
+ "images": [
+  "sheet-*.png",
+  "*-probe.png",
+  "*-probe-3x.png",
+  "*-forward-cliff.png",
+  "opus1-rev-1x/3x.png",
+  "opus3-rev-1x/3x.png"
+ ],
+ "pieces": {
+  "grass-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam"
+   ]
+  },
+  "grass-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "grass-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "thin darker band where road dirt meets ramp top reads as a faint seam",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "grass-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "block texture has dark L/J/T ticks that look faintly rune-like at 8x"
+   ]
+  },
+  "grass-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "block texture has dark L/J/T ticks that look faintly rune-like at 8x"
+   ]
+  },
+  "grass-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "block texture has dark L/J/T ticks that look faintly rune-like at 8x"
+   ]
+  },
+  "grass-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "block texture has dark L/J/T ticks that look faintly rune-like at 8x"
+   ]
+  },
+  "grass-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "6-8 thin treads trend toward a striped/shutter look, but stone colour and lightening toward viewer keep it reading as descending steps"
+   ]
+  },
+  "grass-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "6-8 thin treads trend toward a striped/shutter look, but stone colour and lightening toward viewer keep it reading as descending steps"
+   ]
+  },
+  "grass-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "6-8 thin treads trend toward a striped/shutter look, but stone colour and lightening toward viewer keep it reading as descending steps"
+   ]
+  },
+  "grass-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving stairs much lighter than the dark cobble road they join",
+    "6-8 thin treads trend toward a striped/shutter look, but stone colour and lightening toward viewer keep it reading as descending steps"
+   ]
+  },
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "ramp surface paler than the darker sand road band, so road colour breaks across the cut (reads a bit like a pale inset box)",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": [
+    "block texture forms letter-like ㄱ/ㅓ/L marks when zoomed"
+   ]
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": [
+    "block texture forms letter-like ㄱ/ㅓ/L marks when zoomed"
+   ]
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": [
+    "block texture forms letter-like ㄱ/ㅓ/L marks when zoomed"
+   ]
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": [
+    "block texture forms letter-like ㄱ/ㅓ/L marks when zoomed"
+   ]
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": []
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": []
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": []
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "tread tops drawn dark brown with dark frame posts on pale sand: reads at 1x as a wooden crate/chest of drawers (h1-2) or slatted pallet (h3-4), not a cut down; lit horizontal treads should be sand-valued; mismatches the pale forward sand stairs"
+   ],
+   "minors": []
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "dashed blue strata lines look ruled/regular at zoom",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark slate slab with white dash marks on tan road reads as a framed dark panel/vent; dashes read as Morse/glyph strokes; tread tops not snow-valued"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark slate slab with white dash marks on tan road reads as a framed dark panel/vent; dashes read as Morse/glyph strokes; tread tops not snow-valued"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark slate slab with white dash marks on tan road reads as a framed dark panel/vent; dashes read as Morse/glyph strokes; tread tops not snow-valued"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark slate slab with white dash marks on tan road reads as a framed dark panel/vent; dashes read as Morse/glyph strokes; tread tops not snow-valued"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "navy treads with stark white bars read at 1x as a metal roller shutter/vent rather than steps; clashes with tan road"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "navy treads with stark white bars read at 1x as a metal roller shutter/vent rather than steps; clashes with tan road"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "navy treads with stark white bars read at 1x as a metal roller shutter/vent rather than steps; clashes with tan road"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "navy treads with stark white bars read at 1x as a metal roller shutter/vent rather than steps; clashes with tan road"
+   ],
+   "minors": []
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "very low contrast vs road; slope reads only from side posts and top shadow",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "no lit nosings, only thin dark lines with green flecks on road-coloured olive: at 1x reads as a flat ribbed mat/doormat, neither up nor down; fails to read as a way between levels"
+   ],
+   "minors": []
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "2-row strip spans lip to low road exactly (probe); no gap/overlap",
+    "pale inset box look; side walls carry most of the read",
+    "rise-4 slope compressed into 32px; side walls stop ~6px below top, slight flare"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": [
+    "block marks look glyph-like (Γ, J) when zoomed"
+   ]
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": [
+    "block marks look glyph-like (Γ, J) when zoomed"
+   ]
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": [
+    "block marks look glyph-like (Γ, J) when zoomed"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": [
+    "block marks look glyph-like (Γ, J) when zoomed"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": []
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": []
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": []
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "dark brown framed box on pale cave floor reads at 1x as a crate/bookshelf (h1-2) or slatted pallet (h3-4); no road/ground continuity"
+   ],
+   "minors": []
+  }
+ },
+ "verdict": "FAIL",
+ "summary": "Geometry is correct everywhere: every probe strip spans lip to low road with no gap or overlap, and no risers show. All 40 ramps pass, as do all 8 grass stairs (opus3 village reads well). 32 stairs fail. Sand and cave: dark-brown framed boxes that read as crates/drawers/pallets. Snow: dark slate panels with white dashes, or shutters at h3-4. Peat: flat ribbed mats with no lit nosings. Tread tops should be valued like the ground they cut into."
+}

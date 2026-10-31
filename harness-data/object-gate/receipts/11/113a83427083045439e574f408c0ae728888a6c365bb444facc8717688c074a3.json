@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "113a83427083045439e574f408c0ae728888a6c365bb444facc8717688c074a3",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 2 w2 reverse cut through a north-facing sand cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/sand-steps/ramp-h2-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 90,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark side walls of cut at left and right edges",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32-wide opaque block of sand tones, seen almost straight down. Faint horizontal step lines sit at rows 8, 14, 19-21 and 27, and the sand gets lighter toward the bottom, which suggests a ramp descending away. Dark 1-2 px vertical strips along both edges from about row 7 down are the cut walls. There is no south-facing vertical face of 3 or more rows, no eave shadow and no ellipse. The whole tile is one sloped ground plane drawn top-down, so it has no separate front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate does not read as a 4x3 ground patch. It is a small, isolated tan block with a darker rim and horizontal banding, closer to a plank or crate than a ramp cut through a sand cliff, and it sits on a dark backdrop. The measured facts are acceptable: 7 visible tones per tile (equal to the paving reference, above the grass reference's 3), 4% near-flat coverage, and 0% neutral dark edges, so the outline is tinted brown rather than near-black. Against that, the whole piece has only 9 distinct colours and about 4 lightness steps on the sand ramp, versus about 5-6 in Beodeul materials. It has no sand grain, speckle or per-stone shading, only a few stripe lines. The dark rim around a flat-looking form gives a mild sticker feel, and the piece lacks the surface variation of the references. Because of the kind mismatch and the shallow shading and texture, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 1
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip band at top",
+      "rows": "0-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface with stepped tread lines (rows 14, 19, 21, 25, 27)",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a plan view of a sand ramp descending away from the viewer. The full 32-row width is one horizontal surface, and the rows only get lighter toward the bottom. Row 0 is a dark outline, rows 1-7 are the terrace lip, and row 8 is a darker line. The ramp below is divided by thin darker tread lines at rows 14, 19, 21, 25 and 27. The dark 1-3 px columns at the left and right edges are the cliff cut walls, and they widen toward the bottom. There is no vertical south face of 3 or more rows and no eave shadow, so this is a flat top-down slab. It is not a standing object with a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a small, plank-like sand-coloured panel with a few horizontal bands. It does not read as a 4x3-tile ground patch descending a ramp cut through a cliff. The measured facts are acceptable: 7 visible tones per tile matches the paving reference, near-flat coverage is only 4%, and the dark edge pixels are 0% neutral, so the outline is tinted (dark sand-brown) rather than black. By eye, though, only about 4 lightness steps carry the material, and the bands are broad and regular with little grain, speckle or per-pixel variation. There are only 9 distinct colours in total, against 80 for the grass reference. The surface looks cleaner and flatter than either reference, which have scattered tufts and stones shaded one by one. The ramp slope and the cliff-cut structure are not legible. Because it looks thinner and more sticker-like than the references and misses the ground kind, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 2
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip band at top",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface descending with step lines",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark side cut walls (1-2 px columns at left and right edges)",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32-wide opaque block of sand colors. Row 8 is a darker line (#b58a50) separating a terrace band (rows 0-7) from the ramp below. The ramp has only faint 1-row step lines at rows 14, 19-21, 25 and 27, and it lightens toward the bottom (L 195 to 210), as expected for a surface seen from above. The only dark parts are thin vertical wall strips at the left and right edges, which are the cut sides. There is no south-facing vertical face of 3 or more rows, so the whole tile is a horizontal or sloped plane seen from above. That is acceptable for a terrain tile but is not a 3/4 top-plus-front structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 7 visible tones per tile, matching the paving reference and above the grass reference's 3. It has 4% near-flat coverage and 0% neutral dark edges, so the outline is a tinted dark brown rather than black. By eye, though, it reads as a small, boxed sand panel with a few horizontal bands, like a plank or sign, not a ground patch. The ramp rise is not convincing from above. Only 9 distinct colours across the whole piece gives about 4-5 shading steps. Grain is sparse, with no per-tile stone or sand speckle and no clumps. The bands are wide and fairly uniform, and the dark border gives it a sticker look. This is thinner and flatter than the grass and paving references, which have scattered tufts and stones shaded one by one. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface, upper terrace lip band",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface, middle sloped run",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramp surface, lower sloped run with step lines",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32-row, 32-wide sand-colored surface seen from above, a ramp descending away from the viewer. The rows are horizontal bands separated by 1-row darker lines at rows 8, 14, 19-21 and 27. These lines mark the slope's steps or contour, not the front edge of a standing volume. No vertical south face of 3 or more rows is drawn. Only thin dark strips 1-2 px wide run down the left and right edges from about row 7, and they read as the cut walls seen edge-on. As terrain, the tile shows a ground plane with no front elevation, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine on paper: 7 visible tones per tile (equal to the paving reference, above the grass reference's 3), 4% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted dark brown rather than black. By eye, though, the patch is a pale sand slab with a dark rim and a few evenly spaced horizontal bands, and only 9 colours in total (the references have 80 and 7, with the paving's 7 spread across clearly varied stone shapes). It has no sand speckle, grain, per-step highlights or scattered pebbles, so it does not read as a worked sand surface. The bands look like a plank or sign more than a ramp cut through a cliff. Each material ramp shows about 4 steps against 5-6 in Beodeul. It looks thinner and more sticker-like than the references, and with the doubt rule that means fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 2
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.308Z",
+ "cells": {
+  "16": [
+   "4ca34ec06be9dc8d",
+   "9bf473faee83f3f5",
+   "ac31e878cb9d4055",
+   "db1936fba7d35fb6"
+  ],
+  "24": [
+   "19cd19c364061ad2",
+   "1def0e1b25553e67",
+   "2022c3f512e2eb40",
+   "40be014346a09c65",
+   "45687f0f2c6f2a4a",
+   "47a830c5a0aded45",
+   "4bde9ca9aa2f2481",
+   "4c7834a5d74fba9a",
+   "71d399949c64f4a4",
+   "73a06eee91398513",
+   "83fbac303cab9057",
+   "8d5b8d7ba437427f",
+   "8f58d8dea3e0a4ec",
+   "96d52b80ffcd03d0",
+   "9d4355f80baf54b0",
+   "9db8168b91f13ef7",
+   "a60356451527d5fa",
+   "acf7864b3730bf24",
+   "b76f1bab9df34e51",
+   "d0186676d866f3ab",
+   "dabd37043e83e78c",
+   "df6d58de8570618a",
+   "edb44b2cc519d818",
+   "fedf6ebdc9205b89"
+  ],
+  "32": [
+   "44c2152be6cfcb43"
+  ],
+  "48": [
+   "02000ddc06340dfa",
+   "1468f0278aaa97e2",
+   "6382ad68d09ba463",
+   "7d366b5932f71a1e",
+   "b13edd824df94ac1",
+   "fa87fecef5dec04c"
+  ]
+ }
+}

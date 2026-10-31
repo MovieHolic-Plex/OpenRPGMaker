@@ -36,6 +36,7 @@ import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinemat
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import { BATTLE_BACKDROP_TOOL } from "@/editor/tools/battleBackdropTools";
+import { WALK_CHIP_TOOL } from "@/editor/tools/walkChipTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -5317,6 +5318,11 @@ export class AssistantSession {
                   : { ...linked, summary: `그림 ${art.resourceId} 는 등록했지만 타이틀 연결에 실패했습니다: ${linked.summary}` };
               }
             }
+          } else if (name === WALK_CHIP_TOOL) {
+            // 외형 만들기·잇기는 보통 쓰기 도구로, 걷기 칩 생성은 공방 작업 줄(호스트 char-gen)로 — 다 되면 줄이 외형 칩을 바꾼다.
+            const linked = runTool(this.ctx, name, args, { dryRun: false });
+            const { startWalkChipFromAssistant } = await operation.wait(import("@/editor/walkChipGeneration"));
+            toolResult = await operation.wait(startWalkChipFromAssistant(linked));
           } else if (name === APPEARANCE_GENERATION_TOOL) {
             const { startAppearanceGenerationFromAssistant } = await operation.wait(import("@/editor/characterAppearanceGeneration"));
             const handoff = await operation.wait(startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal));

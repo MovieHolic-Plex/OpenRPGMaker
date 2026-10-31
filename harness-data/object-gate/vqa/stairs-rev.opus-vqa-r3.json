@@ -1,0 +1,639 @@
+{
+ "round": 3,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "Per piece: extent exactly 2 rows lip-to-low-road with no gap/overlap; no seams vs lip/ground/road; style match with that cliff and road; reads at 1x as a way down between levels (not flat road/panel/crate/mat/shutter/grate); no visible risers (must read as descending away); no glyph-like texture. Any MAJOR (would be rejected by careful art lead) = FAIL.",
+ "images": [
+  "sheet-grass-steps.png",
+  "sheet-sand-steps.png",
+  "sheet-snow-steps.png",
+  "sheet-peat-steps.png",
+  "sheet-cave-steps.png",
+  "grass-steps-probe.png",
+  "sand-steps-probe.png",
+  "snow-steps-probe.png",
+  "peat-steps-probe.png",
+  "cave-steps-probe.png",
+  "*-steps-probe-3x.png",
+  "*-steps-forward-cliff.png",
+  "opus1-rev-1x/3x.png",
+  "opus3-rev-1x/3x.png"
+ ],
+ "pieces": {
+  "grass-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "grass-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "grass-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "grass-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "grass-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "grass-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "grass-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "grass-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "grass-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark mortar blocks in the paving tread form small glyph-like squares at zoom"
+   ]
+  },
+  "grass-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark mortar blocks in the paving tread form small glyph-like squares at zoom"
+   ]
+  },
+  "grass-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "grass-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x",
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x",
+    "bright cream nosing lines are high-contrast vs the sand road"
+   ]
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": []
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "pale white/ice-blue treads boxed by a light frame (side lines + white bottom bar with corner tick) inset into a brown packed-snow road: reads at 1x as a framed white panel / venetian blind, and clashes with both the brown road and the slate-blue forward-cliff stairs of the same style"
+   ],
+   "minors": [
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it",
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it",
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)"
+   ]
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight line against the ragged road edge; cut reads slightly as an inset rectangle",
+    "bank cheeks asymmetric (dark left, light/short right)",
+    "dense horizontal grain lines approach a ribbed/stepped look"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "h1 stairs: the far (top) tread is a flat, untextured solid band with no speckle/grain, unlike the textured near tread and the road; at 1x it reads as a dark mat/sill stripe laid across the road, not as a step down"
+   ],
+   "minors": []
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it"
+   ]
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it",
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "light right/bottom border line gives a slight boxed/shutter feel, esp. in cave where no road flanks it",
+    "8 thin treads at 4px each read close to a grate/louvre at 1x"
+   ]
+  }
+ },
+ "verdict": "FAIL",
+ "summary": "14/80 FAIL. Geometry is correct everywhere: all cuts span exactly 32px from lip to low road with no gap/overlap, no risers shown, nosings on the far edge. All 40 ramps pass. Failures: all 8 snow stairs (white framed panel/blind look, palette clashes with brown road and slate forward stairs); sand/peat/cave stairs h1 w2+w3 (far tread is a flat untextured band reading as a mat/sill). Grass stairs and the two village renders read well. Minors: ramp hard top edge, asymmetric cheeks, h4 louvre look, peat/cave stair edge frame."
+}

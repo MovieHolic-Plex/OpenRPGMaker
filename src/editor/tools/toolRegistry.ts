@@ -150,6 +150,7 @@ import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
+import { WALK_CHIP_TOOLS } from "./walkChipTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
 import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
@@ -479,6 +480,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // View focus is domain-independent.
   ...VIEW_FOCUS_TOOLS,
   ...withDomain(CHARACTER_APPEARANCE_TOOLS, "database"),
+  ...withDomain(WALK_CHIP_TOOLS, "database"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
   // 웹 검색은 UI 상태로 예측할 수 없다 — "최신 정보가 필요하다" 는 도메인이 아니라 요청의 성질이다.

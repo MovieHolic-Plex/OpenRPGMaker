@@ -334,8 +334,11 @@ export async function runCommands(
     // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       const step = result;
+      // 컷신 안에서 연 전투 동안에는 「Esc 두 번: 컷신 건너뛰기」를 내린다 — 전투 화면 오른쪽 위 배속 표시 자리를 덮고
+      // 전투 안내 띠와 겹쳤다(폴른 스타 1막 VQA 2026-10-31). 전투가 끝나 다음 걸음이 오면 다시 뜬다.
+      if (step.kind === "battleProcessing") scene.clearRuntimeOverlay("cutscene-skip-hint");
+      else if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;

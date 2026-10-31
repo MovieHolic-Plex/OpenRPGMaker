@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03f1794e89da0878a5424563efd470c5b2254718c755e5ea018d17b00da7fe83",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 4 w3 reverse cut through a north-facing snow cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/snow-steps/stairs-h4-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 187,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow stair treads (6 steps, repeating about every 5 rows)",
+      "rows": "1-30",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light-blue riser or shade strips under the treads",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide across all 32 rows and has no silhouette change. It is a stack of horizontal bands, each ending in a dark blue edge line at rows 5, 10, 15, 20, 25 and 30. Each step has 2 rows of white tread, then either 2 more tread rows or 2 rows of pale-blue riser, then the line. Rows 3-4 and 8-9 are the only pale-blue strips, and each is only 2 rows tall. Rows 11-14, 21-24 and similar stretches are plain white, so no tall vertical south face is drawn. This matches stairs seen from above descending away from the viewer, where only treads show. It is a flat stepped surface with no standing front face of 3 or more rows, so it reads as top-down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate reads as four stacked pale horizontal bands, closer to planks than to snow-cut stairs. Each tread has a light top, a white face and a thin blue-grey riser line, which gives about 4 lightness steps against 5-6 in the references. The measured facts look healthy (8 visible tones per tile, 0% near-flat, 0% neutral dark edges). By eye, though, the surface is smooth and gradient-like. It has no snow grain, no speckle, no per-step chipping and no side-wall or edge shading. The paving reference shades every stone individually and carries more texture. The candidate has no true dark outline, only tinted pale-blue riser lines, so it is not a sticker look. It still looks thinner and flatter than the references, and the stair structure (tread depth, cut sides) is weakly conveyed. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22180
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow stair treads (repeating steps, 6 edge lines)",
+      "rows": "0-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "3-4, 8-9, 18-19, 28-29 (partial, bluish shade)"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide for all 32 rows. It is a repeating stack of snow treads, each 4-5 rows tall and ending in a dark blue edge line at rows 5, 10, 15, 20, 25 and 30. Rows 0 and 31 are a thin tan border. The treads are white (L about 245). The only shaded rows are 3-4 and 8-9, and in some steps 18-19 and 28-29, at L about 225-232. They read as tread shading, not as a vertical riser. Rows 11-14, 16-17, 21-24 and 26-27 are plain white with no riser band under the edge line. No step shows a vertical south face of 3 or more rows, so this is a plan view of descending stairs with no front elevation. It reads as a top-down slab, not a standing three-quarter object. For terrain stairs seen from above this is consistent with the intended view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is four near-identical horizontal bands, each with a white top, a pale-blue face and a blue-grey edge. The outline is a tinted blue-grey, not neutral black, which matches the 0% neutral edge fact and counts as material-tone. The measured facts are acceptable: 8 visible tones per tile against 7 for the paving reference, and 0% near-flat coverage. By eye the piece is still shallow. It has about 4 lightness steps and only 10 colours in total. The surface has no snow grain, speckle or per-step variation, and no cut-in edges or side walls to say it is a stair cut through a cliff. Every step is the same repeated stripe, so it reads as a clean, thin, sticker-like pattern next to the reference's stone-by-stone shading and tufted grass. A careful artist would not accept it beside the reference without more texture and shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23332
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step tread 1",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "step tread 2",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "step tread 3",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 4",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18-19 (x=35 only)"
+     },
+     {
+      "part": "step tread 5",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 6",
+      "rows": "26-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "28-29 (x=35 only)"
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The full 48-px width is filled with six stacked horizontal bands, each about 4 rows of white or pale-blue snow tread followed by a 1-row darker blue edge line (rows 5, 10, 15, 20, 25, 30). The stairs descend away from the viewer, so only the treads are seen from above. No vertical riser or front face of 3+ rows is drawn. Rows 3-4 and 8-9 are slightly bluer, as a shadow tint on the tread, not a face. The tile is a flat top-down terrain slab with step lines, not a standing 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate reads as four stacked stair treads in pale snow. Each tread has a bright lip highlight, a light face, a mid band and a bluish shadow edge, about 5 lightness steps. The outlines are tinted blue-grey rather than black, and the measured near-neutral share of dark edge pixels is 0%. Measured density is 8 visible tones per tile, above the paving reference (7) and the grass reference (3), and near-flat coverage is 0%, the same as both references. The paving reference itself has only 7 raw colours, so the candidate's 10 total colours are comparable. Weaknesses: there is little grain or speckle on the treads, so texture is only 'some', and the horizontal banding is fairly regular. Neither is enough to look flatter or more sticker-like than the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22150
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads, steps 1-6 (white tread plus a darker blue band, each closed by a dark edge line)",
+      "rows": "1-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "3-4, 8-9, 18-19, 28-29"
+     },
+     {
+      "part": "earth/rock lip strip at top and bottom",
+      "rows": "0-0, 31-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px opaque block over 32 rows. It is made of repeating horizontal bands: 2 rows of white and 2 rows of pale blue, then a 1-row darker blue line at rows 5, 10, 15, 20, 25 and 30. Each band is a tread seen from above, and the dark lines are step edges. The stairs descend away from the viewer, so the risers are hidden and no vertical south face of 3 or more rows is drawn. Row 0 and row 31 are thin tan/pink strips of terrain at the edges. There is no side face. The whole tile reads as a top-down view of the stair flight, with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a stack of smooth, pale horizontal bands, each with a white top highlight, a pale blue body and a blue-grey lower edge. That gives about 4 lightness steps per material, against 5-6 in the Beodeul grass and paving. There is almost no grain, speckle, per-stone shading or cracking, so the snow and ice steps read as clean vector-like slabs rather than hand-textured pixel art. The edge pixels are tinted blue-grey (0% neutral), so the outline is not a black sticker line. The measured facts are 8 visible tones per tile and 0% near-flat coverage. That is above the grass reference (3) and about level with the paving (7), but the tones come from a few smooth gradient bands. The candidate has only 10 distinct colours in total, against 80 for the grass, and shows none of its tufts or varied clumps. The slab edges are uniform and repeated, with no irregular snow-crust breakup, and the cut-through-cliff stair form reads weakly. Overall it is thinner and flatter than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21127
+  }
+ ],
+ "decidedAt": "2026-10-31T07:18:01.656Z",
+ "cells": {
+  "16": [
+   "1861e9cd990c457d",
+   "2f36594473527138",
+   "5d161fd194e2039c",
+   "8b3520aec62441a8",
+   "c5d324793bc48fc7",
+   "daa27eab372e419e"
+  ],
+  "24": [
+   "05270fd7a71b16ad",
+   "090077f15b6d5828",
+   "2cd8d08849eb8da0",
+   "4acf57d9854164f2",
+   "6d21564b62319c61",
+   "8f00b56c497316e6",
+   "e3d660a7b2cf3f0e",
+   "ef0bc03eb83193e8"
+  ],
+  "32": [
+   "8492e0f0bb332144",
+   "894123ace717095e",
+   "ad5a196d8e878b02",
+   "c0aebe6ca6d0b413",
+   "e84ae4d5bc423d85",
+   "fdedef1c737e59e0"
+  ],
+  "48": [
+   "1d8675f81a8116fd",
+   "5d681d488b617c6f"
+  ]
+ }
+}

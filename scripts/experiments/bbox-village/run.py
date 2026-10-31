@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """bbox-village, one run: the model writes a cell-exact village layout on a code terrain; lay.mts validates (max 2 repairs) and paints it.
-  python3 scripts/experiments/bbox-village/run.py <port|hill> <sol|terra> <rep>     (run from the worktree root)
+  python3 scripts/experiments/bbox-village/run.py <port|hill> <sol|terra|opus|argon> <rep>     (run from the worktree root)
 Out: $BBOX_RUNS/<arm><rep>/<brief>/ {prompt.txt, call-N.json, layout-N.json, check-N.json, layout.json, map.png, RUN.json}"""
 import base64, json, os, re, subprocess, sys, time, urllib.request
 brief, arm, rep = sys.argv[1], sys.argv[2], sys.argv[3]
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BBOX_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxramps")
 G = f"{RUNS}/{arm}{rep}/{brief}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra"}[arm]
-OCX = "http://127.0.0.1:10200/v1/chat/completions"
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "opus": "claude-opus-5-5", "argon": "gemini-4-argon"}[arm]
+OCX, HDR = "http://127.0.0.1:10200/v1/chat/completions", {"content-type": "application/json"}
+if arm in ("opus", "argon"):   # the suite's 8318 relay (key in ~/.oprn-suite, not in the repo); Opus 5.5 = medium
+    _ep = json.load(open(f"{HOME}/.oprn-suite/openai-compat-endpoints.json"))["endpoints"]["openai-compat:proxy8318"]
+    OCX = _ep["baseUrl"].rstrip("/") + "/chat/completions"; HDR = {**HDR, "Authorization": f"Bearer {_ep['apiKey']}", **(_ep.get("headers") or {})}
 B = json.load(open("scripts/experiments/bbox-village/briefs.json"))[brief]
 TD = f"{RUNS}/terrain-{brief}"; T = json.load(open(f"{TD}/terrain.json")); W, H = T["W"], T["H"]
 catalog = open(f"{RUNS}/catalog.txt").read()
@@ -19,7 +22,7 @@ def terrain_text():
     cnt = Counter(lv[i] for i in range(W * H) if not wa[i])
     L = [f"# Terrain (made by code — you cannot change it). Map {W} x {H} cells, x to the right 0..{W-1}, y down 0..{H-1}.",
          f"Levels (height) present on dry land: " + ", ".join(f"level {k}: {v} cells" for k, v in sorted(cnt.items())) + ".",
-         "One level = one cell of cliff face. Where a higher area lies north of a lower one, the drop is drawn as a cliff face on the south side, as many cells tall as the level difference (a 2-level step = a 2-cell-tall face).",
+         "One level = one cell of cliff face. Where a higher area lies north of a lower one, the drop is drawn as a cliff face on the south side, as many cells tall as the level difference (a 2-level step = a 2-cell-tall face). Where the higher area lies SOUTH of the lower one, the face looks away from the viewer: only the terrace lip shows. Either face can be climbed with a cut (see the catalog: dir north / reverse dir south).",
          "Water: " + ", ".join(n for n, v in (("river", 1), ("lake", 2), ("sea", 3)) if v in wa) + ". Nothing but piers/bridges (roads) and boats may be on water."]
     if T["river"]:
         a, b = T["river"][0], T["river"][-1]; L.append(f"River flows from ({a % W},{a // W}) to ({b % W},{b // W}). Good bridge spots (straight river, same level banks): " + " ".join(f"({k['x']},{k['y']},{k['dir']})" for k in T["crossings"][:6]))
@@ -74,12 +77,20 @@ msgs = [{"role": "user", "content": [{"type": "text", "text": PROMPT}, img(f"{TD
 
 def call(n):
     # streaming keeps long high-reasoning calls alive through the local gateway (non-stream sol calls got 502)
-    body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high", "stream": True, "stream_options": {"include_usage": True}}).encode()
+    body = json.dumps({"model": MODEL, "messages": msgs, **({} if arm == "opus" else {"reasoning_effort": "high"}), "stream": True, "stream_options": {"include_usage": True}}).encode()
     t0 = time.time()
     for attempt in range(3):
         try:
             text, u, mdl = "", {}, None
-            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=1800) as r:
+            if arm == "argon":   # the 8318 relay hangs on streamed Argon answers: plain request
+                # and it drops content arrays (images included: prompt_tokens 13, empty answer) — send the text only (the terrain grid and
+                # the catalog sizes are in the text; the two images are not)
+                tm = [{"role": m["role"], "content": m["content"] if isinstance(m["content"], str) else "\n".join(c["text"] for c in m["content"] if c.get("type") == "text")} for m in msgs]
+                j = json.load(urllib.request.urlopen(urllib.request.Request(OCX, json.dumps({"model": MODEL, "messages": tm, "reasoning_effort": "high"}).encode(), HDR), timeout=1800))
+                text, u, mdl = (j["choices"][0]["message"].get("content") or ""), j.get("usage") or {}, j.get("model")
+                if not text.strip(): raise RuntimeError("empty answer")
+                break
+            with urllib.request.urlopen(urllib.request.Request(OCX, body, HDR), timeout=1800) as r:
                 for line in r:
                     line = line.strip()
                     if not line.startswith(b"data:") or line == b"data: [DONE]": continue
