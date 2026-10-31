@@ -11,12 +11,14 @@ echo "arm=$ARM prompt=$PID rep=$REP wt=$WT dist=$(cat dist/.built-from) started=
 [ -f $G/project/project.sqlite ] || bun src/harnesses/assistant-capability/node/wholeGamePrepare.ts $G "sab-$ARM-$PID-$REP" > $G/prepare.log 2>&1 || { echo prepare-failed >> $G/RUN.txt; exit 1; }
 [ -f $HOME/.oprn-suite/claude-env.sh ] && . $HOME/.oprn-suite/claude-env.sh
 if [ "$ARM" = B ]; then export OPRN_V2_SCRIPTS=0; else unset OPRN_V2_SCRIPTS; fi
+# Hard cap per run (supervisor 2026-10-31): the session aborts the running turn at the deadline; no follow-up after it.
+CAP_MIN=${SAB_CAP_MIN:-35}; DEADLINE_MS=$(( $(date +%s) * 1000 + (CAP_MIN - 2) * 60000 )); echo "deadline_ms=$DEADLINE_MS cap_min=$CAP_MIN" >> $G/RUN.txt
 OPRN_OPENAI_COMPAT_PATH=$HOME/.oprn-suite/openai-compat-endpoints.json OPRN_TURN_DIAG=1 HARNESS_DIST_DIR=dist setsid nohup node src/harnesses/assistant-capability/node/wholeGameSession.mjs \
-  --project-dir $G/project --out $G/session --v2 --snapshots --engine claude:claude-opus-5-5:medium >> $G/session-driver.log 2>&1 < /dev/null &
+  --project-dir $G/project --out $G/session --v2 --snapshots --engine claude:claude-opus-5-5:medium --deadline-ms $DEADLINE_MS >> $G/session-driver.log 2>&1 < /dev/null &
 echo $! > $G/driver.pid
-python3 - "$G/session" "$PID" "$HERE/prompts.json" <<'PY'
+python3 - "$G/session" "$PID" "$HERE/prompts.json" "$DEADLINE_MS" <<'PY'
 import json,sys,time,os
-S,pid,pf=sys.argv[1:4]
+S,pid,pf,deadline=sys.argv[1:5]; deadline=int(deadline)/1000
 P=json.load(open(pf)); proto=P["protocol"]; text=[p["text"] for p in P["prompts"] if p["id"]==pid][0]
 inbox=f"{S}/inbox"; log=open(f"{S}/../steps.log","a"); n=0
 def state():
@@ -35,11 +37,13 @@ time.sleep(30); cards=0
 for t in proto["turns"]:
     body=text if t=="prompt" else proto[t]
     s=wait_idle()
+    if t!="prompt" and time.time()>deadline-8*60:
+        log.write(f"{time.strftime('%T')} cap: skip {t} (less than 8 min left)\n"); break
     while s.get("phase")=="awaiting-answer" and cards<proto["maxCardAnswers"]:
         cards+=1; send("txt",proto["card"]); s=wait_idle()
     send("txt",body)
 s=wait_idle()
-while s.get("phase")=="awaiting-answer" and cards<proto["maxCardAnswers"]:
+while s.get("phase")=="awaiting-answer" and cards<proto["maxCardAnswers"] and time.time()<deadline:
     cards+=1; send("txt",proto["card"]); s=wait_idle()
 send("stop",""); log.write("done\n")
 PY

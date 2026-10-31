@@ -10,12 +10,14 @@ Per run (<root>/<arm>/<prompt>-<rep>/session/turns/NNN.json, operator-sent reque
 """
 import json, os, sys, glob, re
 
+SCRIPT_TOOLS = {"get_script_api", "check_script", "author_script", "edit_script", "dry_run_script",
+                "read_event_as_script", "write_event_as_script", "upsert_script_module", "list_script_modules"}
 FAMILIES = [
-    ("script", re.compile(r"script")),
+    ("script", re.compile(r"^(" + "|".join(sorted(SCRIPT_TOOLS)) + r")$")),
+    ("map", re.compile(r"^(make_place|edit_place|review_layout|move_object|build_blueprint_path|stamp_|fill_|paint|build_|edit_map|remove_map|link_)")),
     ("validate", re.compile(r"^(run_scene_test|simulate_battle|play_walkthrough|check_|validate|lint_|inspect_|verify|game_check|dry_run)")),
     ("event-read", re.compile(r"^(get_event|find_events|get_database_records|get_story_state|find_switch_usage|list_endings|read_npc_layout|list_|read_|get_)")),
     ("event-write", re.compile(r"^(upsert_event|patch_event_page|add_event_page|remove_event|move_event|upsert_common_event|declare_story_flag|define_ending|place_|set_|upsert_|add_|create_|configure_|author_|make_)")),
-    ("map", re.compile(r"^(make_place|stamp_|fill_|paint|build_|edit_map|remove_map|link_)")),
     ("todo", re.compile(r"^(todo|load_tools|write_blueprint|report|finish)")),
 ]
 
@@ -55,7 +57,7 @@ def run_metrics(d):
             m["byFamily"][fam] = m["byFamily"].get(fam, 0) + 1
             if n == "get_event":
                 m["getEvent"] += 1
-            if "script" in n:
+            if n in SCRIPT_TOOLS:
                 m["scriptCalls"] += 1
             ok = c.get("ok") is not False
             if not ok:

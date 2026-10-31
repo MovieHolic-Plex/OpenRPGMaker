@@ -50,6 +50,7 @@ function findEvent(id) {
 // ---------- browser ----------
 const browser = await firefox.launch({ firefoxUserPrefs: { "network.notify.changed": false, "network.notify.IPv6": false } });
 const viewport = { width: 960, height: 720 };
+const videoT0 = Date.now();
 const context = await browser.newContext({ viewport, ...(video ? { recordVideo: { dir: join(out, "video"), size: viewport } } : {}) });
 const page = await context.newPage();
 const errors = [];
@@ -105,9 +106,9 @@ const logSince = (n) => page.evaluate((k) => window.__sabLog.slice(k).map((r) =>
  * Advance whatever the game shows until the field is free again: Enter through messages, answer choices from
  * plan.choices (index or RegExp source), type plan.numbers into number input. Returns the texts shown meanwhile.
  */
-async function drain(plan = {}, { maxMs = 45_000 } = {}) {
+async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
   const choices = [...(plan.choices ?? [])], numbers = [...(plan.numbers ?? [])];
-  const start = await logLen();
+  const start = from ?? await logLen();
   const t0 = Date.now(); let freeSince = null;
   while (Date.now() - t0 < maxMs) {
     if (await endingVisible()) break;
@@ -166,7 +167,7 @@ async function talk(id, plan = {}, side) {
     await page.evaluate((d) => window.__oprnInput.face(d), OPP[sd]); await sleep(150);
     const before = await logLen();
     await page.evaluate(() => window.__oprnInput.action()); await sleep(400);
-    const texts = await drain(plan);
+    const texts = await drain(plan, { start: before });
     if (texts.length || (await logLen()) > before || plan.silentOk) return texts;
   }
   return [];
@@ -174,13 +175,18 @@ async function talk(id, plan = {}, side) {
 /** Walk onto a cell from a neighbour (touch / step triggers). from = side the player comes from. */
 async function stepOn(mapId, x, y, from = "down", plan = {}) {
   await toField();
-  const [dx, dy] = DIRS[from];
-  await teleport(mapId, x + dx, y + dy);
-  const before = await logLen();
-  await page.evaluate((d) => window.__oprnInput.dir(d), OPP[from]); await sleep(420);
-  await page.evaluate(() => window.__oprnInput.dir(null)); await sleep(500);
-  const texts = await drain(plan);
-  return { texts: texts.length ? texts : await logSince(before), at: await st() };
+  for (const side of [from, "down", "up", "left", "right"].filter((v, i, a) => a.indexOf(v) === i)) {
+    const [dx, dy] = DIRS[side];
+    await teleport(mapId, x + dx, y + dy);
+    const s = await st();
+    if (s?.currentMapId !== mapId || s.x !== x + dx || s.y !== y + dy) continue;
+    const before = await logLen();
+    await page.evaluate((d) => window.__oprnInput.dir(d), OPP[side]); await sleep(420);
+    await page.evaluate(() => window.__oprnInput.dir(null)); await sleep(500);
+    const texts = await drain(plan, { start: before });
+    return { texts: texts.length ? texts : await logSince(before), at: await st() };
+  }
+  return { texts: [], at: await st() };
 }
 /** Try to walk `tiles` cells in `dir` from a cell. Returns the final state (map, x, y). */
 async function tryWalk(mapId, x, y, dir, tiles = 2) {
@@ -196,7 +202,8 @@ const dbg = (fn, ...a) => page.evaluate(([f, args]) => window.__oprnDebug[f](...
 
 // ---------- checks ----------
 const checks = [];
-const check = (id, pass, note, texts = []) => { checks.push({ id, pass: Boolean(pass), note, texts: texts.slice(-8) }); console.log(`${pass ? "PASS" : "FAIL"} ${id} — ${note}`); };
+let lastCheckAt = Date.now();
+const check = (id, pass, note, texts = []) => { const now = Date.now(); checks.push({ id, pass: Boolean(pass), note, texts: texts.slice(-8), startSec: (lastCheckAt - videoT0) / 1000, endSec: (now - videoT0) / 1000 }); lastCheckAt = now; console.log(`${pass ? "PASS" : "FAIL"} ${id} — ${note}`); };
 const joined = (t) => t.join(" / ");
 const t0 = Date.now();
 

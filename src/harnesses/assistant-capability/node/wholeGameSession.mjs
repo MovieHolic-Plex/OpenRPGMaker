@@ -48,6 +48,8 @@ const assistantEngine = engineSpec ? (() => { const [cli, model, effort] = engin
 // 없으면 제품 기본(계정 Argon). 이 줄이 빠지면 스위트의 모델별 비교가 전부 기본 모델로 조용히 돈다(2026-10-28 실측).
 const aiConfigOverride = option('ai-config') ? JSON.parse(readFileSync(resolve(option('ai-config')), 'utf8')) : {};
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
+// --deadline-ms <epoch ms>: 판 전체 상한(시험 묶음용). 그 시각을 넘기면 도는 턴을 턴 상한처럼 끊고(abort) 기록한다.
+const deadlineMs = Number(option('deadline-ms') ?? 0);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
 for (const sub of ['inbox', 'done', 'turns']) mkdirSync(resolve(out, sub), { recursive: true });
@@ -107,7 +109,7 @@ async function cards(selector = CARD_SELECTOR) {
 async function waitSettle(mark, startedAt, graceMs = 20000) {
   // A turn is over when the stream closed after the mark and the bridge is idle, or a card waits for an answer.
   for (;;) {
-    if (Date.now() - startedAt > turnTimeoutMs) return 'timeout';
+    if (Date.now() - startedAt > turnTimeoutMs || (deadlineMs && Date.now() > deadlineMs)) return 'timeout';
     const value = await page.evaluate(m => ({ events: (window.__capEvents ?? []).slice(m), busy: Boolean(window.__oprnAiBridge?.status().turnBusy) }), mark).catch(() => null);
     if (value) {
       const closed = value.events.some(e => ['stream_closed', 'error', 'stream_error'].includes(e.type));
