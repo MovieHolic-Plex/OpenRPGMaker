@@ -341,7 +341,46 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     if (combo) menu.append(combo);
   }
   if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
+  // 붙은 뒤(마이크로태스크) 못 쓰는 명령의 사유가 메뉴 오른쪽 끝을 넘는지 재서 맞춘다 — attachScrollCue 와 같은 시점.
+  queueMicrotask(() => fitInertReasons(menu));
   return menu;
+}
+
+/**
+ * 루트 명령의 거절 사유(「이 싸움에서는 도주할 수 없습니다.」)는 버튼 안 한 줄이라 2열 메뉴에서 버튼·메뉴 폭을 넘으면
+ * 메뉴의 overflow 에 그냥 잘렸다(2026-10-31 jb3a jrpg 보스전 「…도주할 수 없」). 사유가 메뉴 안쪽 오른쪽 끝을 넘을 때만
+ * 실제 남은 폭을 재서 그 폭으로 두 줄까지 감싸고, 그래도 넘치면 끝을 말줄임한다. 넘치지 않으면 손대지 않는다.
+ * 전투 장면은 transform 으로 축소·확대되므로 화면 px 를 레이아웃 px 로 되돌려 쓴다.
+ */
+function fitInertReasons(menu: HTMLElement): void {
+  if (!menu.isConnected) return;
+  const reasons = Array.from(menu.querySelectorAll<HTMLElement>(".battle-command-reason"));
+  if (reasons.length === 0) return;
+  const menuRect = menu.getBoundingClientRect();
+  if (menu.offsetWidth <= 0 || menuRect.width <= 0) return;
+  const scale = menuRect.width / menu.offsetWidth;
+  const menuStyle = getComputedStyle(menu);
+  const innerRight = menuRect.right - (Number.parseFloat(menuStyle.paddingRight) || 0) * scale
+    - (Number.parseFloat(menuStyle.borderRightWidth) || 0) * scale;
+  for (const reason of reasons) {
+    if (reason.offsetParent === null) continue;
+    const rect = reason.getBoundingClientRect();
+    if (rect.right <= innerRight + 0.5 && reason.scrollWidth <= reason.clientWidth + 1) continue;
+    const room = Math.floor((innerRight - rect.left) / scale) - 2;
+    if (room <= 0) continue;
+    reason.dataset.reasonFit = "wrap";
+    // 스킨 규칙(한 줄·inline-block)은 특이도가 높아 인라인으로 덮는다. 두 줄을 넘으면 끝을 말줄임.
+    reason.style.setProperty("display", "-webkit-box");
+    reason.style.setProperty("-webkit-box-orient", "vertical");
+    reason.style.setProperty("-webkit-line-clamp", "2");
+    reason.style.setProperty("white-space", "normal");
+    reason.style.setProperty("word-break", "keep-all");
+    reason.style.setProperty("overflow-wrap", "anywhere");
+    reason.style.setProperty("overflow", "hidden");
+    reason.style.setProperty("line-height", "1.15");
+    reason.style.setProperty("max-width", `${room}px`);
+    reason.style.setProperty("width", "max-content");
+  }
 }
 
 function isPokemonMonsterActor(
