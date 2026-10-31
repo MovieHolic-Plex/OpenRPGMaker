@@ -1738,11 +1738,11 @@
   {
    "id": "p-car-stopline",
    "label": "p-car-stopline",
-   "note": "STREET 2: player taps 5 cells down from (29,35) onto the far crosswalk of the 23-28 junction in the eastbound lane (row 40) and stands 16 s; eastbound cars must wait at the stop line (body ends at x<=23), not on the near crosswalk or in the box, then go again after the player steps back",
+   "note": "STREET 2: player taps 3 cells right from the west kerb (21,43) onto the south crosswalk of the 23-28 junction (24,43) and stands 16 s; southbound cars must wait at the north stop line instead of entering the box and stopping on top of the crossing, then go again after the player steps back",
    "mapId": "fl_street",
-   "x": 29,
-   "y": 35,
-   "facing": "down",
+   "x": 21,
+   "y": 43,
+   "facing": "right",
    "switches": {
     "sw_fl_bumped": true
    },
@@ -1766,7 +1766,7 @@
      "ops": [
       {
        "kind": "hold",
-       "dir": "down",
+       "dir": "right",
        "ms": 120
       },
       {
@@ -1776,7 +1776,7 @@
       },
       {
        "kind": "hold",
-       "dir": "down",
+       "dir": "right",
        "ms": 120
       },
       {
@@ -1786,27 +1786,7 @@
       },
       {
        "kind": "hold",
-       "dir": "down",
-       "ms": 120
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 350
-      },
-      {
-       "kind": "hold",
-       "dir": "down",
-       "ms": 120
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 350
-      },
-      {
-       "kind": "hold",
-       "dir": "down",
+       "dir": "right",
        "ms": 120
       },
       {
@@ -1847,7 +1827,7 @@
       },
       {
        "kind": "hold",
-       "dir": "up",
+       "dir": "left",
        "ms": 120
       },
       {
@@ -1857,7 +1837,7 @@
       },
       {
        "kind": "hold",
-       "dir": "up",
+       "dir": "left",
        "ms": 120
       },
       {
@@ -1867,27 +1847,7 @@
       },
       {
        "kind": "hold",
-       "dir": "up",
-       "ms": 120
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 350
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
-       "ms": 120
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 350
-      },
-      {
-       "kind": "hold",
-       "dir": "up",
+       "dir": "left",
        "ms": 120
       },
       {
@@ -1899,6 +1859,93 @@
        "kind": "hold",
        "dir": null,
        "ms": 8000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-run-dbg",
+   "label": "p-run-dbg",
+   "note": "FRI 11 run scene on fl_street_pm: overlay of blocked vehicles and autonomous NPCs (pos, activeMove, visible, opacity) when a car stands on the crosswalk next to a frozen pedestrian",
+   "mapId": "fl_street_pm",
+   "x": 9,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dbg",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000c;color:#0f0;font:10px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } const npcs = []; if (s && s.autonomousNPCs) for (const [id, m] of s.autonomousNPCs.entries()) { const pos = s.eventPositions && s.eventPositions[id]; const am = m.activeMove; npcs.push([id.replace('ev_fl_',''), pos ? [pos.x, pos.y] : null, am ? [am.fromX, am.fromY, am.toX, am.toY, am.dir] : null, s.eventSprites && s.eventSprites.get(id) ? s.eventSprites.get(id).visible : 'nosprite', m.opacity]); } el.textContent = JSON.stringify({ p: s ? [s.tileX, s.tileY] : null, v: t ? t.vehicles.filter(v => v.blockedSec > 0.5).map(v => [v.route, v.rect.x.toFixed(1), v.rect.y.toFixed(1), v.rect.w, v.rect.h, v.blockedSec]) : null, npcs }); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-run-trace",
+   "label": "p-run-trace",
+   "note": "FRI 11 run scene: 100 ms log of walkers and nearby vehicles; dumps the frames around the first car-body/walker-cell overlap",
+   "mapId": "fl_street_pm",
+   "x": 9,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "inst",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { if (window.__qaLog) return true; const log = window.__qaLog = []; const t0 = performance.now(); setInterval(() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; if (!t || !s) return; const ws = []; for (const [id, m] of s.autonomousNPCs.entries()) { const pos = s.eventPositions[id]; if (!pos) continue; const am = m.activeMove; ws.push([id.slice(-1), pos.x, pos.y, am ? [am.fromX, am.fromY, am.toX, am.toY] : 0]); } const cs = t.vehicles.filter(v => Math.abs(v.rect.x - 26) < 6 && Math.abs(v.rect.y - 15) < 7).map(v => [v.route.slice(0, 14), +v.rect.x.toFixed(2), +v.rect.y.toFixed(2), v.rect.w, v.rect.h, v.blockedSec]); log.push([Math.round(performance.now() - t0), s.running ? 1 : 0, ws, cs]); if (log.length > 400) log.shift(); }, 100); return true; }",
+       "maxPresses": 1,
+       "settleMs": 50
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "dump",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const log = window.__qaLog || []; const hit = log.findIndex(e => e[3].some(c => e[2].some(w => w[1] >= Math.floor(c[1]+1e-6) && w[1] < Math.ceil(c[1]+c[3]-1e-6) && w[2] >= Math.floor(c[2]+1e-6) && w[2] < Math.ceil(c[2]+c[4]-1e-6)))); const seg = hit < 0 ? log.slice(-12) : log.slice(Math.max(0, hit - 14), hit + 3); let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000e;color:#0f0;font:9px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } el.textContent = 'hit=' + hit + '\\n' + seg.map(e => JSON.stringify(e)).join('\\n'); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
       }
      ],
      "shot": true
