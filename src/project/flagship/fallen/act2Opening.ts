@@ -1286,7 +1286,7 @@ function requireReach(project: Project, mapId: string, from: Cell, targets: Reco
  *  · 맵은 숲 어귀 — 남쪽 달빛 풀밭, 맵 폭 전체를 막는 나무 벽, 그 틈 하나로 숲길(reshapeForestEdge 가 다시 칠함).
  *  · 틈 양옆에 숲 길돌(룬 선돌) 둘 + 브람의 등불 — 처음 화면 위쪽 끝에서부터 「저기까지」가 보인다.
  *  · 그늘 칠 없음 — 달빛은 풀밭에만, 북쪽으로 갈수록 조명만으로 차츰 어두워진다(2026-10-31: 네모 그늘 띠·틈 안 검은 판·북쪽 회색 자갈 계단을 걷어 냄).
- *  · 야경꾼 셋, 손등불: 등 뒤 양옆(성벽 쪽)에서 둘이 깨어 몰아오고, 나무 벽 앞을 가로로 도는 하나는 앞쪽 부채꼴로 길목을 지킨다.
+ *  · 야경꾼 둘, 손등불: 등 뒤 양옆(성벽 밑 양 끝)에서 깨어 주인공보다 빨리 몰아온다. 곧장 뛰면 틈 앞에서 뒤꿈치, 머뭇대면 붙잡힌다.
  *  · 틈에 닿으면 등불들이 멈칫 → 「숲지기 땅이다」 → 뒤로 물러나며 꺼진다. 브람의 고백.
  * 붙잡히면 전투 없이 개구멍 안쪽(광장)으로 도로 기어든다 — 개구멍을 다시 조사하면 곧장 다시 시작.
  */
@@ -1339,16 +1339,19 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const spots: { at: Cell; patrol?: Cell[] }[] = [];
   // 몰아오는 둘은 등 뒤 양옆(성벽 쪽)에서 — 곧장 틈으로 뛰면 뒤꿈치까지 따라붙고, 머뭇대거나 돌아가면 붙잡힌다.
   // 앞쪽 옆구리에 세웠던 판(독립 VQA 2026-10-31)은 길목에서 정면으로 막아 이기고 지는 게 운이었다. 앞을 막는 몫은 가로 순찰 하나뿐 — 부채꼴을 보고 지나갈 때를 고른다.
-  const behindL = pick({ x: arrive.x - 10, y: arrive.y });
+  // 개구멍에서 막 나온 직후(화면이 밝아지는 동안) 손이 닿지 않게 도착 칸에서 열다섯 걸음 넘게 — 같은 줄 아홉 칸 옆이면 다시 나오자마자 붙잡혔다.
+  const behindL = pick({ x: 1, y: arrive.y });
   if (behindL) spots.push({ at: behindL });
-  const aheadR = pick({ x: arrive.x + 14, y: arrive.y - 2 }, spots.map((s) => s.at));
+  const aheadR = pick({ x: map.width - 2, y: arrive.y }, spots.map((s) => s.at));
   if (aheadR) spots.push({ at: aheadR });
   // 나무 벽 틈 어귀 앞(도착선 네 줄 아래)을 가로로 도는 야경꾼 — 좌우 끝에서 멈춰 둘러본다. 서쪽 끝에서 출발해 동쪽으로.
   // 곧장 틈으로 내달리면 등 뒤를 스치고 지나가지만, 서쪽으로 돌아가면 그 부채꼴에 걸린다(추격 시뮬레이션 /tmp/fs2front/sim, 2026-10-29).
   const sweepY = edgeY + 4;
   const sweepRow = row(sweepY);
   const sweepL = sweepRow.find((c) => c.x >= 4), sweepR = [...sweepRow].reverse().find((c) => c.x <= map.width - 6);
-  if (sweepL && sweepR) spots.push({ at: { x: sweepL.x, y: sweepY }, patrol: [{ x: sweepR.x, y: sweepY }] });
+  // 틈 어귀 가로 순찰은 세우지 않는다(2026-10-31) — 경보가 울린 채 들어오면 순찰도 곧장 달려와 길목 정면에서 막았다: 곧장 뛰어도 붙잡히는 운 싸움(독립 VQA, 브라우저 녹화 두 판).
+  // 이제 위협은 등 뒤에서 더 빨리 따라붙는 둘뿐 — 머뭇대거나 돌아가면 붙잡히고, 길 따라 곧장 뛰면 틈 앞에서 뒤꿈치까지 따라붙는다.
+  void sweepL; void sweepR;
   const knightIds: string[] = [];
   const sweeperIds: string[] = [];
   let why = "후보 없음";
