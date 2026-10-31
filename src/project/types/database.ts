@@ -1371,6 +1371,38 @@ export interface BattleAnimationRecord {
    * 만들어서, 안쪽 셀에 섞기를 걸면 투명한 자기 상자와만 섞인다. 노드 자체에 걸어야 무대와 섞인다.
    */
   blendMode?: "add" | "screen" | "multiply";
+  /**
+   * 코드 픽셀 효과(pixelfx, 2026-10-31). 있으면 시트(resourceId·sheet·frames)를 쓰지 않고 이 효과를 전투 무대 해상도에서
+   * 직접 그린다. 앵커는 위 `position`·`scope` 를 그대로 쓰고, 효과의 원점(발·착탄점)이 앵커에 온다. timings 의 소리·플래시·흔들림도 그대로 난다.
+   * 정규화·검사는 project/pixelFxSpec, 그리기는 pixelfx/(전투 DOM · 필드 Phaser 공용).
+   */
+  pixelFx?: PixelFxSpec;
+}
+
+/**
+ * pixelfx 효과 하나를 어떻게 틀지(2026-10-31). 효과 목록은 src/vendor/pixelfx/catalog.json(MIT, patch-gg/pixelfx).
+ * 전투 애니메이션 레코드(`BattleAnimationRecord.pixelFx`)와 이벤트 페이지 상시 효과(`EventPage.pixelFx`)가 같이 쓴다.
+ */
+export interface PixelFxSpec {
+  /** "<분류>/<이름>" — 예 "fire/torch", "ice/frost-nova". */
+  effectId: string;
+  /** 주 색 띠(어두운→밝은 #hex, 2~12개). 생략 = 효과 기본색. 길이가 달라도 효과가 다시 나눠 쓴다. */
+  palette?: string[];
+  /** 좌우 뒤집기. 방향 있는 효과는 오른쪽을 본다. 생략 = 전투는 대상 쪽을 향해 자동, 필드는 그대로. */
+  flip?: boolean;
+  /** 회전(도, -360~360). 생략 = 0. */
+  angle?: number;
+  /** 무작위 씨앗(정수). 같은 씨앗이면 같은 모양. 생략 = 효과 기본. */
+  seed?: number;
+  /** 화면 배율(1~4 정수). 생략 = 1 — 게임 한 화소 = 효과 한 화소. */
+  scale?: number;
+  /** 빛(더하기 층) 세기 0~2. 생략 = 1. */
+  light?: number;
+  /** 재생 속도 0.25~4. 생략 = 1. */
+  speed?: number;
+  /** 원점 밀기(게임 화소, -64~64). 필드는 칸 바닥 가운데, 전투는 position 앵커 기준. */
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export interface BattleAnimationFollowUp {

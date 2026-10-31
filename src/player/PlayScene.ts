@@ -1,4 +1,5 @@
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
+import { updatePixelFx } from "@/player/playScenePixelFx";
 import { syncPlayerOcclusionGhost } from "@/player/playerOcclusionGhost";
 import { setCharacterBaseOrigin } from "./characterOrigin";
 import { restoreRuntimeTimers } from "@/player/playSceneTimers";
@@ -448,6 +449,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateScreenDistortion(this);
     updateMode7(this, deltaMs);
     updateFieldStaging(this);
+    updatePixelFx(this, deltaMs);
     this.dialogueCameraLifted = syncDialogueCameraLift(
       this,
       this.game.registry.get("dialogueHost") as HTMLElement | undefined,

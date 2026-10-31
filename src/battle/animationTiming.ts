@@ -2,6 +2,7 @@
 // 플레이어 층의 `battleAnimationPlayback.ts` 는 여기를 재수출한다(기존 import 경로 유지).
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
 import { generatedEffectFrameDurationMs } from "@/assets/generatedEffectSheets";
+import pixelFxTiming from "@/vendor/pixelfx/timing.json";
 
 export const BATTLE_ANIMATION_FRAME_MS = 120;
 export const DEFAULT_BATTLE_ANIMATION_DURATION_MS = 360;
@@ -34,7 +35,27 @@ export function battleAnimationFrameAtUnits(record: BattleAnimationRecord | unde
   return index;
 }
 
+/** 전투에서 pixelfx 효과가 차례를 붙잡는 최대 길이. 연기·불티 꼬리는 다음 행동과 겹쳐 사라진다(battleAnimationDom). */
+export const PIXEL_FX_BATTLE_HOLD_MS = 1600;
+/** 반복 효과(투사체 비행·오라)를 전투에서 한 번 틀 때의 길이. */
+export const PIXEL_FX_BATTLE_LOOP_MS = 1200;
+
+/** pixelfx 효과의 원래 길이(ms)와 반복 여부. 목록에 없으면 undefined. */
+export function pixelFxEffectTiming(effectId: string | undefined): { readonly durationMs: number; readonly loop: boolean } | undefined {
+  const entry = effectId ? (pixelFxTiming as Record<string, readonly number[]>)[effectId] : undefined;
+  return entry ? { durationMs: entry[0] ?? 1000, loop: entry[1] === 1 } : undefined;
+}
+
+/** pixelfx 레코드가 전투 차례를 붙잡는 길이(속도 반영, 상한 PIXEL_FX_BATTLE_HOLD_MS). */
+export function pixelFxBattleDurationMs(record: BattleAnimationRecord): number {
+  const timing = pixelFxEffectTiming(record.pixelFx?.effectId);
+  const speed = record.pixelFx?.speed && record.pixelFx.speed > 0 ? record.pixelFx.speed : 1;
+  const raw = timing ? (timing.loop ? PIXEL_FX_BATTLE_LOOP_MS : timing.durationMs / speed) : DEFAULT_BATTLE_ANIMATION_DURATION_MS;
+  return Math.round(Math.min(PIXEL_FX_BATTLE_HOLD_MS, Math.max(BATTLE_ANIMATION_FRAME_MS, raw)));
+}
+
 export function battleAnimationDurationMs(record: BattleAnimationRecord | undefined): number {
+  if (record?.pixelFx) return pixelFxBattleDurationMs(record);
   const frameCount = Math.max(0, record?.frames?.length ?? 0);
   if (frameCount === 0) return DEFAULT_BATTLE_ANIMATION_DURATION_MS;
   const frameDurationMs = battleAnimationFrameDurationMs(record);

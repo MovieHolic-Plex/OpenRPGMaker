@@ -1,3 +1,9 @@
+## pixelfx 코드 효과 애니메이션 (2026-10-31)
+
+`BattleAnimationRecord.pixelFx?: PixelFxSpec` 가 있으면 셀·시트 대신 pixelfx 코드 효과(232종, MIT)를 앵커에 2배로 튼다(`battleAnimationDom.ts` `startPixelFxPlayback`).
+길이는 `pixelFxBattleDurationMs`(한 번 효과 = 효과 길이, 반복 = 1.2초, 박자 상한 1.6초), 대상이 무대 왼쪽 반이면 자동 뒤집기, 도트 측면 스킨에서도 보인다.
+계약·파일·실측은 `openwiki/pixelfx-effects.md`.
+
 ## 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
 
 `BattleAnimationFrame.hold?`(1~16 정수, 생략 = 1)는 그 프레임을 기본 프레임 시간(120ms, 번들 생성 이펙트 75ms)의 몇 배 동안 보이는가다. 1 은 저장하지 않아 옛 레코드는 바이트·타이밍이 그대로다.

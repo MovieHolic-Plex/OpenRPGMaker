@@ -4,7 +4,7 @@
 /** EventPage(types/events.ts) 의 모든 키. 필드를 더하면 여기도 더한다. */
 export const EVENT_PAGE_KEYS: ReadonlySet<string> = new Set([
   "id", "name", "conditions", "graphic", "trigger", "priority", "overlapForbidden", "animationType",
-  "footprint", "passRows", "interaction", "detectionEncounter", "nearSparkle", "movement", "commands",
+  "footprint", "passRows", "interaction", "detectionEncounter", "nearSparkle", "pixelFx", "movement", "commands",
 ]);
 
 /** EventPageMovement(types/events.ts) 의 키 — 필드를 더하면 여기도 더한다. */
