@@ -18,7 +18,7 @@ done
 mkdir -p $L/walk
 # 2. walk
 todo=""; for d in $L/opus/* $L/haiku/*; do [ -f $d/.pulled ] || continue; a=$(basename $(dirname $d)); r=$(basename $d); [ -f $L/walk/$a-$r/walk.json ] || todo="$todo $a:$r"; done
-echo $todo | tr ' ' '\n' | grep . | xargs -r -P 3 -I{} bash -c 'IFS=: read a r <<< "{}"; m=${r%-*}; cd '$REPO' && timeout 1800 node scripts/qa/script-ab/hard/walk-hard.mjs --project-dir '$L'/$a/$r/project --mech $m --out '$L'/walk/$a-$r --video --netns > '$L'/walk/$a-$r.log 2>&1; echo "walk $a-$r: $(tail -1 '$L'/walk/$a-$r.log)"'
+echo $todo | tr ' ' '\n' | grep . | xargs -r -P 3 -I{} bash -c 'IFS=: read a r <<< "{}"; m=${r%-*}; cd '$REPO' && timeout 1800 node scripts/qa/script-ab/hard/walk-hard.mjs --project-dir '$L'/$a/$r/project --mech $m --stage-root '$L'/checkpoints --out '$L'/walk/$a-$r --video --netns > '$L'/walk/$a-$r.log 2>&1; echo "walk $a-$r: $(tail -1 '$L'/walk/$a-$r.log)"'
 # 3. fidelity judge
 for w in $L/walk/*/walk.json; do t=$(basename $(dirname $w)); [ -f $L/judge/$t.json ] || echo $t; done | xargs -r -P 4 -I{} bash -c 'IFS=- read a m r <<< "{}"; python3 '$H'/judge-hard.py '$L' $a $m $r 2>> '$L'/judge.err'
 # 4. readability (event list shots with this checkout's editor, then the Opus judge)

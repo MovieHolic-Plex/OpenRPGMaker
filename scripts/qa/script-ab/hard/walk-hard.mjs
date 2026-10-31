@@ -253,7 +253,11 @@ async function fightBoss() {
 }
 
 // ---------- battery helpers ----------
-const evId = (name) => { const v = byName(name); if (!v) throw new Error(`no event named «${name}»`); return v; };
+// A run may rename a stage event (page names change with new pages): fall back to the stage checkpoint's id for that name.
+const stageMaps = (() => { const root = opt("stage-root"); if (!root) return [];
+  const stage = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "prompts.json"), "utf8")).mechanics.find((m) => m.id === request)?.stage; const f = join(root, stage ?? "-", "check", "project.json"); try { const p = JSON.parse(readFileSync(f, "utf8")); const d = p.project ?? p; return Array.isArray(d.maps) ? d.maps : Object.values(d.maps ?? {}); } catch { return []; } })();
+const stageId = (name) => stageMaps.flatMap((m) => m.events ?? []).find((e) => (e.name ?? e.pages?.[0]?.name ?? "").trim() === name)?.id;
+const evId = (name) => { let v = byName(name); if (!v) { const sid = stageId(name); if (sid && mapList.some((m) => (m.events ?? []).some((e) => e.id === sid))) v = sid; } if (!v) throw new Error(`no event named «${name}»`); return v; };
 const T = (name, plan = {}, side) => talk(evId(name), plan, side);
 const evPos = async (name) => { const ev = findEvent(evId(name)); const l = livePos(await st(), ev.event.id); return { mapId: l?.mapId ?? ev.mapId, x: l?.x ?? ev.x, y: l?.y ?? ev.y, dir: (await st())?.eventLocations?.[ev.event.id]?.direction ?? null }; };
 const dist = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
