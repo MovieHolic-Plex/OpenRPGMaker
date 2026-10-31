@@ -50,6 +50,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
 import { flatGroundIssues } from "./mapEmptiness";
+import { areaUseIssues } from "./mapAreaUse";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
@@ -792,6 +793,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...lintTilesetPalettes(project),
     ...verifyPlacedTiles(project),
     ...flatGroundIssues(project),
+    ...areaUseIssues(project),
     ...lintScenePolish(project),
     ...lintOriginalIpNames(project),
   ];
@@ -815,6 +817,7 @@ const runLint: ToolDefinition = {
   description:
     "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
     + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)과 장면 다듬기 경고 scene-*(문 아닌 칸의 이동·짝 안 맞는 착지·제자리 사라짐·대화창 위치 섞임·BGM 없는 맵·움직이는 교통·겹쳐 선 인물 — read_assistant_skill game-scene-polish)다. "
+    + "warning map-area-unused flags maps where much of the area is blank void or lies far from every event — shrink with shift_map + resize_map or give the band a purpose. "
     + "원작 IP 고유명(해리포터풍 학교·기숙사 이름 등)이 플레이어에게 보이는 글에 있으면 warning original-ip-name 으로 알린다 — 공개·판매용이면 일반 낱말로 바꾼다. "
     + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",
