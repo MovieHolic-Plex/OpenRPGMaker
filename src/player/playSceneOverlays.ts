@@ -477,7 +477,7 @@ function creditsCopy(credits: string | undefined, project: Project): string | un
   return title && !PLACEHOLDER_CREDIT_TITLES.has(title) ? title : copy;
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo, epiloguePlayed = false): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -523,7 +523,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       heading.append(document.createTextNode(part));
     });
     epilogue.append(heading);
-    const body = message || cg?.epilogue;
+    // 에필로그 글을 방금 대사창으로 다 보였으면 카드는 배지·제목만 — 같은 글을 요약으로 한 번 더 실으면 두 번 읽힌다(첫사랑 r5 엔딩 A).
+    const body = message || (epiloguePlayed ? "" : cg?.epilogue);
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
     if (cg) {

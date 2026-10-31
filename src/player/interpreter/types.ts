@@ -237,7 +237,7 @@ export type StepResult =
       branchOnNotEnoughGold?: boolean;
     }
   | { kind: "gameOver"; message?: string; gameOverId?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo };
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo; /** 에필로그 글을 대사창으로 이미 다 보였다 — 엔딩 카드가 같은 글을 다시 싣지 않는다. */ epiloguePlayed?: boolean };
 
 export type ResumeValue = number | boolean | string | readonly string[] | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";
