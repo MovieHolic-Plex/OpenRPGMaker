@@ -358,7 +358,13 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   }
   if (!withRiders) {
     // 빈 발판은 바닥 가구처럼 내려앉는다 — 사람이 그 위로 걸어 들어가면 사람이 발판 위에 그려진다.
-    state.platform.setDepth(characterDepth("below", state.top + state.depthPx));
+    // 바닥 구멍은 발판이 덮었으니 걷고 벽면 갱도 틈만 남긴다(구멍 그림이 발판보다 위 깊이라 검은 네모만 보였다).
+    const base = characterDepth("below", state.top + state.depthPx);
+    state.pit.clear();
+    if (Number.isFinite(state.clipTop) && state.clipTop < state.top) drawShaftSlot(state.pit, state.left, state.clipTop, state.widthPx, state.top, u);
+    state.pit.setDepth(base - 0.2);
+    state.rails.setDepth(base - 0.1);
+    state.platform.setDepth(base);
   }
 }
 
