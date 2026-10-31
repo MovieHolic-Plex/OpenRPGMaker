@@ -33,6 +33,7 @@ const LOOP_BUDGET_MS = 4;
 const BIG_LOOP_AREA = 128 * 128;
 const FRAME_CACHE_PER_LOOP = 24 * 1024 * 1024;
 const FRAME_CACHE_TOTAL = 64 * 1024 * 1024;
+const LOAD_HIGH_MS = 6;
 const FADE_MS = 300;
 const PAGE_RECHECK_MS = 300;
 
@@ -102,6 +103,8 @@ interface SceneFxState {
   ambient: Map<string, AmbientFx>;
   loops: Map<string, SharedLoop>;
   cacheBytes: number;
+  /** 최근 틱 비용 이동 평균(ms). LOAD_HIGH_MS 를 넘으면 한 번 효과를 반 fps 로 그린다. */
+  loadMs: number;
   oneShots: OneShot[];
   nextCheck: number;
   clock: number;
@@ -117,7 +120,7 @@ function stateFor(scene: PlaySceneContext): SceneFxState {
   let state = states.get(scene);
   if (!state) {
     state = {
-      mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), cacheBytes: 0, oneShots: [], nextCheck: 0, clock: 0, serial: 0,
+      mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), cacheBytes: 0, loadMs: 0, oneShots: [], nextCheck: 0, clock: 0, serial: 0,
       stats: { draws: 0, ms: 0, paintMs: 0, uploadMs: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0 },
     };
     states.set(scene, state);
@@ -213,6 +216,7 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
     if (shot.live.renderer.done()) finishOneShot(scene, state, shot);
   }
   state.stats.ms = performance.now() - started;
+  state.loadMs = state.loadMs * 0.9 + state.stats.ms * 0.1;
   state.stats.ambient = state.ambient.size;
   state.stats.oneShots = state.oneShots.length;
   state.stats.visible = visible;
@@ -336,8 +340,9 @@ function drawLive(
 ): boolean {
   live.renderer.advance(deltaMs / 1000);
   if (!onScreen(view, at.x, at.y, live.renderer.layout, s, at.spec)) { hideSprites(sprites); return false; }
-  // 효과 fps(대개 30)로만 다시 그린다 — 60Hz 화면에서 그리기·텍스처 올리기가 반이다.
-  const frame = Math.floor(live.renderer.time * live.renderer.fps);
+  // 효과 fps(대개 30)로만 다시 그린다 — 60Hz 화면에서 그리기·텍스처 올리기가 반이다. 틱 비용이 높으면 반 fps.
+  const fps = state.loadMs > LOAD_HIGH_MS ? live.renderer.fps / 2 : live.renderer.fps;
+  const frame = Math.floor(live.renderer.time * fps);
   if (frame !== live.shownFrame) {
     live.shownFrame = frame;
     const layers = (["back", "front"] as const).filter((layer) => live.textures[`${layer}-color`]);
