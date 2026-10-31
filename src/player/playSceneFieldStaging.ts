@@ -7,7 +7,7 @@ import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterDepth, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
-import { runtimeLogicalTextScale, runtimeMapWorldScale } from "@/player/runtimeViewScale";
+import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
 import { syncFreezeFrame } from "@/player/playSceneFreezeFrame";
@@ -28,7 +28,6 @@ import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { routeDetours, routeField, routeWaypoint } from "@/player/objectiveRoute";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
-import { doorPixelRect, placeExitLabel } from "@/player/exitLabelPlacement";
 import { paperPose, paperSheetDone, seededRandom, spawnPaperSheets, stepPaperSheet } from "@/player/paperFlutter";
 
 /** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
@@ -503,25 +502,21 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
   syncEventGlows(scene, now);
-  // 저자가 안내 표시를 껐으면(system.fieldGuides "off") 목표 빛무리·화살표, 자동 조사 ▼, 출구 목적지 글자를 그리지 않는다.
-  // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄).
-  // "arrows"(2026-10-30 마왕 편의점 사용자 「화살표만 남겨줘도 충분히 친절」): 목표 표시·▼ 는 끄고 출구에는 맵 밖을 가리키는 화살표만, 목적지 이름은 뺀다.
+  // 저자가 안내 표시를 껐으면(system.fieldGuides "off"·"arrows") 목표 빛무리·화살표와 자동 조사 ▼ 를 그리지 않는다.
+  // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄). 출구 앞 「→ 목적지」 글자·화살표는 2026-11-01 사용자 요청
+  // (폴른 스타 1.26 「문앞이나 이동하는 곳 앞에서 다음 위치뜨는거 … 진짜 별로다. 삭제해줘」)으로 기능째 지웠다 — "arrows" 는 저장본 호환용으로 "off" 와 같다.
   const guides = store.getCurrent().system.fieldGuides;
-  if (guides === "off") clearFieldGuides(scene);
-  else if (guides === "arrows") {
-    clearFieldGuides(scene, { keepExits: true });
-    syncExitLabels(scene, now, { arrowOnly: true });
-  } else {
+  if (guides === "off" || guides === "arrows") clearFieldGuides(scene);
+  else {
     syncObjectiveMarkers(scene, now);
     syncExamineMarkers(scene, now);
-    syncExitLabels(scene, now);
   }
   syncLiftRide(scene);
 }
 
-/** 안내 표시(목표 빛무리·화살표, 조사 ▼, 출구 글자)를 모두 걷는다 — system.fieldGuides "off". 왜(마왕 편의점 2026-10-30
+/** 안내 표시(목표 빛무리·화살표, 조사 ▼)를 모두 걷는다 — system.fieldGuides "off". 왜(마왕 편의점 2026-10-30
  *  「너무 친절함 … 너무 많은 화살표도 짜증남」): 장면이 스스로 갈 곳을 보여 주는 이야기 게임에서는 자동 안내가 화면을 덮고 발견을 빼앗는다. */
-function clearFieldGuides(scene: PlaySceneContext, options: { keepExits?: boolean } = {}): void {
+function clearFieldGuides(scene: PlaySceneContext): void {
   const objective = objectiveMarkerStates.get(scene);
   if (objective) {
     for (const parts of objective.parts.values()) destroyObjectiveMarker(parts);
@@ -532,11 +527,6 @@ function clearFieldGuides(scene: PlaySceneContext, options: { keepExits?: boolea
   if (examine) {
     for (const marker of examine.markers.values()) marker.destroy();
     examineMarkerStates.delete(scene);
-  }
-  const exits = options.keepExits ? undefined : exitLabelStates.get(scene);
-  if (exits) {
-    for (const label of exits.labels.values()) label.destroy();
-    exitLabelStates.delete(scene);
   }
 }
 
@@ -917,130 +907,6 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
     const lift = at.person ? -size * 0.75 : size * 0.22;
     marker.setPosition(at.x + ox, at.y + oy + lift + bob * size * 0.08).setDisplaySize(size * 0.62, size * 0.62).setAlpha(0.92);
   }
-}
-
-// ── 출입 칸 목적지 이름 ───────────────────────────────────────────────────
-// 2026-10-29 vm3 deepseek 탈출 판정(major): 「방 이동은 바닥의 희미한 빛 위를 걷는 방식이라 출입구인지 알기 어렵다, 어느 빛이 어느 방으로
-// 가는지 표시 없음」 — 홀 남쪽 바닥에 응접실·서재·지하실로 가는 투명 접촉 칸 셋이 나란히 있었다.
-// 다른 맵으로 옮기는(transfer) 이벤트의 지금 페이지 위에, 주인공이 EXIT_LABEL_RADIUS 칸 안에 오면 「→ 목적지 이름」 도트 글자를 띄운다.
-const EXIT_LABEL_RADIUS = 3;
-const EXIT_LABEL_FONT = '"Galmuri11 Regular", "Galmuri9", monospace';
-const EXIT_LABEL_PX = 12;
-type ExitLabelState = { mapId: string; labels: Map<string, Phaser.GameObjects.Text>; nextCheck: number };
-const exitLabelStates = new WeakMap<PlaySceneContext, ExitLabelState>();
-
-/**
- * 이 페이지가 맨 윗줄에서 다른 맵으로 옮기면 그 맵 id. 출구가 아닌 것:
- * - 말을 거는 사람(그림 있는 조사 이벤트)이 대사·선택지 뒤에 옮기는 페이지 — 탕비실 지후 머리 위에 「→ 7층 · 금요일」이
- *   떠 다음 장을 미리 알렸다(#4002, 첫사랑 처음 하는 사람 검수 2026-10-30. #4001 병합에서 빠져 되살림).
- * - 조사(action) 이벤트가 선택지 뒤에 옮기는 페이지 — 고르는 장면이지 통로가 아니다. 편의점 냉장고(그림 없는 조사)에
- *   「→ 그날의 방송실」이 떠 회상을 미리 알렸다(첫사랑 r5 블라인드). 그림 없는 문이 «안내 한 줄 → 옮기기»인 경우는 그대로 출구.
- */
-function exitTargetOf(page: { commands?: readonly unknown[] } | undefined, here: string, talker = false, examine = false): string | undefined {
-  for (const c of page?.commands ?? []) {
-    const r = c as { kind?: string; mapId?: unknown };
-    if (talker && (r.kind === "text" || r.kind === "choices")) return undefined;
-    if (examine && r.kind === "choices") return undefined;
-    if (r.kind === "transfer" && typeof r.mapId === "string" && r.mapId !== here) return r.mapId;
-  }
-  return undefined;
-}
-
-/** 출구가 맵 밖으로 향하는 쪽의 화살표 — 맵 가장자리에 붙은 출구는 그 가장자리 쪽, 건물 문(map.doors 위 칸)은 늘 ↑(문 앞 칸에서 위로 밀어 들어간다, #3973),
- *  그 밖의 맵 안 출구는 주인공에게서 출구 쪽 — 위아래가 다르면 위아래가 먼저다(옆에서 다가와도 문 화살표가 옆을 가리키지 않게). */
-export function exitArrowGlyph(rect: { left: number; right: number; top: number; bottom: number }, mapW: number, mapH: number, heroX: number, heroY: number, onDoor = false): string {
-  if (rect.bottom >= mapH - 1) return "↓";
-  if (rect.top <= 0) return "↑";
-  if (rect.left <= 0) return "←";
-  if (rect.right >= mapW - 1) return "→";
-  if (onDoor) return "↑";
-  const dy = (rect.top + rect.bottom) / 2 - heroY;
-  if (dy !== 0) return dy > 0 ? "↓" : "↑";
-  return (rect.left + rect.right) / 2 < heroX ? "←" : "→";
-}
-
-function syncExitLabels(scene: PlaySceneContext, now: number, options: { arrowOnly?: boolean } = {}): void {
-  const map = scene.map;
-  if (!map || !scene.session || !scene.add) return;
-  let state = exitLabelStates.get(scene);
-  if (!state || state.mapId !== map.id) {
-    for (const t of state?.labels.values() ?? []) t.destroy();
-    state = { mapId: map.id, labels: new Map(), nextCheck: 0 };
-    exitLabelStates.set(scene, state);
-  }
-  // 이벤트(대사·나레이션·컷신)가 도는 동안은 숨긴다 — 바닥 근처에 뜬 「→ 사쿠라자카 상점가」가 나레이션이 가리키는 분리수거함을 덮었다
-  // (마왕 편의점 처음 하는 사람 검수 2026-10-29). 다 끝나면 다음 검사(200ms) 안에 다시 그린다.
-  const hidden = scene.running === true;
-  for (const t of state.labels.values()) if (t.visible === hidden) t.setVisible(!hidden);
-  if (hidden) return;
-  if (now < state.nextCheck) return;
-  state.nextCheck = now + 200;
-  const project = store.getCurrent();
-  const size = mapTileSize(map);
-  const textScale = runtimeLogicalTextScale(scene, scene.cameras?.main?.zoom || 1);
-  const want = new Map<string, { text: string; x: number; y: number; below: number; door?: { left: number; top: number; right: number; bottom: number } }>();
-  for (const view of runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions)) {
-    const examine = view.trigger.kind === "action";
-    const target = exitTargetOf(view.page as { commands?: readonly unknown[] } | undefined, map.id, examine && !!view.sprite, examine);
-    const dest = target ? project.maps[target] : undefined;
-    const name = String((dest as { displayName?: string } | undefined)?.displayName || dest?.name || "").trim();
-    if (!name && !(options.arrowOnly && target)) continue;
-    const rect = view.bodyRect;
-    const dx = Math.max(rect.left - scene.tileX, 0, scene.tileX - rect.right);
-    const dy = Math.max(rect.top - scene.tileY, 0, scene.tileY - rect.bottom);
-    if (Math.max(dx, dy) > EXIT_LABEL_RADIUS || (dx === 0 && dy === 0)) continue;
-    const doorDef = (map.doors ?? []).find((door) => rect.left < door.x + door.w && rect.right >= door.x && rect.top < door.y + door.h && rect.bottom >= door.y);
-    const onDoor = !!doorDef;
-    const text = options.arrowOnly ? exitArrowGlyph(rect, map.width, map.height, scene.tileX, scene.tileY, onDoor) : `→ ${name}`;
-    want.set(view.event.id, { text, x: ((rect.left + rect.right + 1) / 2) * size, y: rect.top * size - 2, below: (rect.bottom + 1) * size + 2, ...(options.arrowOnly && doorDef ? { door: doorPixelRect(doorDef, size) } : {}) });
-  }
-  // 같은 목적지로 옮기는 붙은 칸들(두 칸 폭 길 끝 출구와 그 길 폭 사본 — ai/v2 widenRoadExits)은 글자 하나를 가운데에 —
-  // 칸마다 띄우면 「→ 강가 어촌」 둘이 반 칸 어긋나 겹쳐 「→ →강가 어촌」으로 읽혔다(2026-10-30 씬 벤치 river-village 재현).
-  for (const [id, at] of [...want]) {
-    if (!want.has(id)) continue;
-    const near = [...want].filter(([other, b]) => other !== id && b.text === at.text && Math.abs(b.x - at.x) <= size * 3.01 && Math.abs(b.y - at.y) <= size * 1.01);
-    if (!near.length) continue;
-    const all = [at, ...near.map(([, b]) => b)];
-    want.set(id, { text: at.text, x: all.reduce((sum, b) => sum + b.x, 0) / all.length, y: Math.min(...all.map((b) => b.y)), below: Math.max(...all.map((b) => b.below)), ...(at.door ? { door: at.door } : {}) });
-    for (const [other] of near) want.delete(other);
-  }
-  for (const [id, t] of state.labels) if (!want.has(id)) { t.destroy(); state.labels.delete(id); }
-  // 맵에 적힌 문만 — 정의 없는 옛 맵은 예전 자리 그대로.
-  const doors = (map.doors ?? []).map((door) => doorPixelRect(door, size));
-  for (const [id, at] of want) {
-    let label = state.labels.get(id);
-    if (!label) {
-      // 글자는 논리 화면 12px(runtimeLogicalTextScale) — 떠오르는 「+ 이름」 글자(playSceneFieldFx.playLootPopup)와 같은 규칙.
-      // 밀도 2 캔버스에서 1/카메라 배율로 그리면 480×270 에서 6px 로 줄었다(폴른 스타 2막 첫 플레이 2026-10-31).
-      label = scene.add.text(0, 0, at.text, {
-        fontFamily: EXIT_LABEL_FONT, fontSize: `${EXIT_LABEL_PX}px`, color: "#fff4c8",
-        // 어두운 받침 — 홀의 의자·탁자 그림 위에서도 글자가 묻히지 않게(첫 캡처에서 「→ 서재」가 안락의자 무늬에 묻혔다).
-        backgroundColor: "rgba(26,16,6,0.82)", padding: { x: 3, y: 1 },
-      }).setResolution(textScale.resolution).setScale(textScale.scale).setOrigin(0, 1).setDepth(MAP_UPPER_LAYER_DEPTH + 901);
-      state.labels.set(id, label);
-    } else if (label.text !== at.text) label.setText(at.text);
-    // 가장자리 출구(2026-10-29 vm3 argon jrpg «마을 가장자리가 어디로도 이어지지 않아 보임»): 글자가 맵 밖으로 반쯤 나가 잘리지 않게 맵 안으로 민다.
-    // 주인공이 오는 쪽의 반대편에 두고, 몸에 겹치면 옆으로 비키고, 맵에 적힌 문 그림(문 칸 위 그림 칸까지)은 덮지 않는다 — 규칙은 exitLabelPlacement.
-    // 화살표만(fieldGuides "arrows")인 건물 문 — 문 그림 가운데 바로 위에 둔다. 글자 자리 규칙(문 그림 비키기)을 따르면 문 옆 진열창에 붙었다(r7 2026-10-30).
-    if (at.door) {
-      label.x = Math.round((at.door.left + at.door.right) / 2 - label.displayWidth / 2);
-      label.y = Math.max(Math.round(label.displayHeight), Math.round(at.door.top) - 1);
-      label.setAlpha(1);
-      continue;
-    }
-    const place = placeExitLabel({
-      anchorX: at.x, aboveY: at.y, belowY: at.below, width: label.displayWidth, height: label.displayHeight,
-      mapW: map.width * size, mapH: map.height * size, heroTileX: scene.tileX, heroTileY: scene.tileY, tileSize: size, doors,
-    });
-    label.x = place.x;
-    label.y = place.y;
-    label.setAlpha(place.alpha);
-  }
-}
-
-/** QA: 지금 목적지 글자가 붙은 이동 이벤트 id. */
-export function exitLabelIds(scene: PlaySceneContext): string[] {
-  return [...(exitLabelStates.get(scene)?.labels.keys() ?? [])];
 }
 
 /** QA: 지금 조사 표식이 붙은 이벤트 id. */

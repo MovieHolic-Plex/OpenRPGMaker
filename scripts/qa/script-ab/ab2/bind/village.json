@@ -1,0 +1,1 @@
+{"grandma": "@약초꾼 할머니", "shop": "@상점 주인", "chief": "@촌장", "gate": {"walks": [["map_blank_start", 35, 32, "right", 3], ["map_blank_start", 36, 32, "right", 2]]}, "herbs": ["@약초 1", "@약초 2", "@약초 3", "@약초 4"], "herbItem": ["item_herb", "item_quest_herb", "item_herb_green", "item_gen_herb_bundle"], "repVar": ["var_0002", "var_0001"]}

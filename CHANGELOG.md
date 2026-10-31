@@ -5,6 +5,54 @@
 
 <!-- releases -->
 
+## 0.381.0 — 2026-11-01
+
+### 기능
+
+- **editor** — 스크립트 줄에서 삼항식을 「(a 이면 b, 아니면 c)」로 읽기 (`c143709`)
+- **event-editor** — script commands read like event lines in the list; card/flow/AI box off the default UI (`bde2805`)
+- **script** — events first — scripts only as 1-3 line fragments the surrounding commands read (`6cdef07`)
+- **event-editor** — script card — plain summary, chips, tunables, live examples, flow view, AI edit box, convert both ways (`008c7ff`)
+- **script** — author_script runs examples, stores explain, batches scripts — cut assistant script round trips (`a9141d8`)
+- **script** — shared headless dry run with clock preset, stored plain-language explanation on script commands (`c5b3267`)
+- **script** — 스크립트 → 이벤트 명령 역변환 (명령으로 풀기) + write_script_as_commands (`9022252`)
+
+### 수정
+
+- **assistant** — count Claude Code cost per turn, not cumulative (`766114d`)
+- **event-editor** — drop unused param (`003e657`)
+- **event-editor** — open a wide script flow on its top node (`4aeea21`)
+- **event-editor** — wide script flow scrolls from the left edge (`87ee2c9`)
+- **pixelfx** — 필드 화면 층 효과를 칸 배율로 바둑판 깔기 (#4139) (`8564589`)
+- **qa-game** — script-gated autoplay failures are unknown, not blocked (`4ceddd7`)
+- **player** — re-pick timer-condition pages when the shown second changes (`ca50ca2`)
+- **ai-v2** — path troop copies remap their battle-page enemy ids (`d8dfe2a`)
+
+### 문서
+
+- **openwiki** — INDEX 재생성 (`7ae8cff`)
+- **openwiki** — regenerate INDEX (`3bfdd0a`)
+- **openwiki** — regenerate INDEX (without local dist) (`34b1ae9`)
+
+### 테스트
+
+- **qa** — runtime QA move op 에 held — 방향키를 누른 채 n칸, 멈추면 1.5초 뒤 뗀다 (#4135) (`0b6bc12`)
+
+### 잡무
+
+- **qa** — script A/B 2 — readability capture + judge, None-score filter, walk player pinned to 4b65b60 (`ccde9fd`)
+- **qa** — script A/B 2 — launch-arm worktree per commit (`cb9e331`)
+- **qa** — script A/B 2 — v1 arm label, changed-events per run (readability input), one pinned walk player (`b7e3681`)
+- **qa** — script A/B 2 — frozen stage checkpoints, 3 arms, one-command launch (`8d4890f`)
+- **qa** — script A/B 2 — bring PoC harness (run cap, walk, judge, metrics) (`6c1403f`)
+
+## 0.380.1 — 2026-10-31
+
+### 수정
+
+- **faces** — stop borrowing other sheets' faces for 8 chips (wrong dialogue busts) (#4133) (`e2b78c6`)
+- **runtime** — Lift Ride shaft clipping + riders:none, zoom-independent Shake Screen (#4132) (`8a8449a`)
+
 ## 0.380.0 — 2026-10-31
 
 ### 기능

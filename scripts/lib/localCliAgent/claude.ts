@@ -49,6 +49,14 @@ function userLine(text: string, images: readonly LocalCliImage[] = []): string {
   ] } });
 }
 
+/**
+ * Claude Code 의 result.total_cost_usd 는 그 프로세스(대화)의 «누적» 값이다 — 차례마다 그대로 더하면 앞 차례 비용을 거듭 센다.
+ * 2026-11-01 실측: 스크립트 A/B 기록의 costUsd 가 토큰 정가 계산의 2~9배였다(차례가 많을수록 더 부풀었다). 이 차례 몫만 낸다.
+ */
+export function claudeTurnCost(totalCostUsd: number, previousTotal: number): number {
+  return Math.max(0, totalCostUsd - previousTotal);
+}
+
 function usageOf(raw: unknown, calls: number): LocalCliUsage | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const u = raw as Record<string, unknown>;
@@ -60,10 +68,10 @@ function blocksOf(content: unknown): LocalCliBlock[] {
   if (!Array.isArray(content)) return [];
   const out: LocalCliBlock[] = [];
   for (const part of content) {
-    const p = part as { type?: string; text?: string; thinking?: string; name?: string };
+    const p = part as { type?: string; text?: string; thinking?: string; name?: string; input?: { name?: unknown } };
     if (p.type === "text" && typeof p.text === "string") out.push({ type: "text", text: p.text });
     else if (p.type === "thinking" && typeof p.thinking === "string") out.push({ type: "thinking", text: p.thinking });
-    else if (p.type === "tool_use" && typeof p.name === "string") out.push({ type: "tool_use", name: p.name });
+    else if (p.type === "tool_use" && typeof p.name === "string") out.push({ type: "tool_use", name: p.name, ...(typeof p.input?.name === "string" ? { callee: p.input.name } : {}) });
   }
   return out;
 }
@@ -86,8 +94,10 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
   let calls = 0;
   let closed = false;
   let lastResultError: string | undefined;
+  // 이 프로세스가 지금까지 보고한 누적 비용(claudeTurnCost). 새 프로세스(start)마다 0 부터.
+  let reportedCost = 0;
   let heldFailure: Extract<Parameters<LocalCliSessionOptions["onEvent"]>[0], { kind: "result" }> | undefined;
-  const start = (): SpawnedLines => spawnJsonLines({
+  const start = (): SpawnedLines => { reportedCost = 0; return spawnJsonLines({
     binary: options.binary ?? "claude",
     args: buildClaudeArgs(configPath, systemPromptPath, { tools: toolsEnabled, ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}) }),
     cwd: work.dir,
@@ -112,11 +122,13 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
       } else if (line.type === "result") {
         const usage = usageOf(line.usage, calls);
         calls = 0;
+        const turnCost = typeof line.total_cost_usd === "number" ? claudeTurnCost(line.total_cost_usd, reportedCost) : undefined;
+        if (typeof line.total_cost_usd === "number") reportedCost = Math.max(reportedCost, line.total_cost_usd);
         const event = {
           kind: "result" as const, ok: line.is_error !== true,
           ...(line.is_error === true ? { error: String(line.result ?? line.subtype ?? "Claude Code 실행 실패") } : {}),
           ...(usage ? { usage } : {}),
-          ...(typeof line.total_cost_usd === "number" ? { costUsd: line.total_cost_usd } : {}),
+          ...(turnCost !== undefined ? { costUsd: turnCost } : {}),
           ...(typeof line.session_id === "string" ? { sessionId: line.session_id } : {}),
         };
         // 실패는 prompt() 가 다시 보낼지 정한 뒤에 낸다 — 중간 실패가 루프의 오류로 새지 않게.
@@ -125,7 +137,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
       }
     },
     onStderr: (text) => options.onEvent({ kind: "stderr", text }),
-  });
+  }); };
   const abort = () => proc?.kill();
   options.signal?.addEventListener("abort", abort, { once: true });
   return {

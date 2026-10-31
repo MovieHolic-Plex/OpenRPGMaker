@@ -83,7 +83,7 @@ export type LocalCliEvent =
 export type LocalCliBlock =
   | { readonly type: "text"; readonly text: string }
   | { readonly type: "thinking"; readonly text: string }
-  | { readonly type: "tool_use"; readonly name: string };
+  | { readonly type: "tool_use"; readonly name: string; /** call_tool 이면 안쪽 도구 이름(기록용). */ readonly callee?: string };
 
 export interface LocalCliSessionOptions {
   readonly mcpUrl: string;
