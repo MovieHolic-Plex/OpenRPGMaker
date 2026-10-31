@@ -101,16 +101,17 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
   // author_puzzle_chain 고리 role 별칭 — 2026-11-01 cheap r8 flash 가 role:"lock" 을 보내 스키마에서 거절됐다.
   // 번호 고리는 엔딩을 부르면(endingId·reward.ending) ending, 아니면 code.
   author_puzzle_chain(args, changes) {
-    if (!Array.isArray(args.links)) return args;
+    const linksIn = args.links;
+    if (!Array.isArray(linksIn)) return args;
     // 사슬 이름은 이름표(깃발 설명·엔딩 이름) — 없으면 자물쇠/마지막 고리 이름으로(r11 flash: name 없음으로 거절).
     if (typeof args.name !== "string" || !args.name.trim()) {
-      const last = [...args.links].reverse().find((l) => isObj(l) && typeof l.name === "string" && l.name.trim()) as Obj | undefined;
+      const last = [...linksIn].reverse().find((l) => isObj(l) && typeof l.name === "string" && l.name.trim()) as Obj | undefined;
       const nm = last ? `${String(last.name)} puzzle` : "puzzle";
       changes.push(`name: missing → "${nm}" (the chain name is a label)`);
       args = { ...args, name: nm };
     }
     let touched = false;
-    const links = args.links.map((l0, i) => {
+    const links = linksIn.map((l0: unknown, i: number) => {
       if (!isObj(l0)) return l0;
       let l: Obj = l0;
       // 칸 이름 오타·다른 이름(r10 flash: needAny → 무시돼 단서 없이 번호를 넣을 수 있었다).
