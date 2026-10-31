@@ -1734,6 +1734,176 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "p-car-stopline",
+   "label": "p-car-stopline",
+   "note": "STREET 2: player taps 5 cells down from (29,35) onto the far crosswalk of the 23-28 junction in the eastbound lane (row 40) and stands 16 s; eastbound cars must wait at the stop line (body ends at x<=23), not on the near crosswalk or in the box, then go again after the player steps back",
+   "mapId": "fl_street",
+   "x": 29,
+   "y": 35,
+   "facing": "down",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "flow",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "in-lane",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 16000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dbg",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; const p = s ? [s.tileX, s.tileY] : null; let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000c;color:#0f0;font:11px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } el.textContent = JSON.stringify({hasT: !!t, p, v: t ? t.vehicles.filter(v => v.rect.y >= 36 && v.rect.y <= 42).map(v => [v.route, v.rect, v.blockedSec, v.dir]) : null}); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "back",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { document.getElementById('qa-tr')?.remove(); return true; }",
+       "maxPresses": 1,
+       "settleMs": 50
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 8000
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }

@@ -393,9 +393,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 차례로 나와 횡단보도를 건너 늘봄 빌딩 문으로 들어간다.
   const crowd = [
     { id: "ev_fl_crowd_1", tex: "tex_oprn_charset_modern3", index: 0, delay: 0, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 6, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 12, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 18, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 4, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 8, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 12, exit: "ev_fl_office_door" },
   ];
   for (const c of crowd) {
     // 처음엔 화면 밖 구석(맵 맨 윗줄)에 둔다 — 계단 칸에 세워 두면 차례가 늦은 사람이 경로가 닿을 때까지 계단에 보였다(Argon op4).
@@ -405,13 +405,16 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     pg.graphic = { sprite: { type: "bundled", id: c.tex }, direction: "down", pattern: charsetFrameIndex({ characterIndex: c.index, direction: "down", pattern: 1 }), transparent: false };
     pg.priority = "same"; pg.overlapForbidden = false; pg.movement = { type: "fixed", speed: 4, frequency: 3 };
   }
+  const crowdLane: Cell = { x: rushStop.x + 1, y: 22 };
   // 계단 칸에 숨어 있다가 차례로 나타나 내려선다(enterVia) → 각자 갈 곳으로.
   const crowdRoute = (c: (typeof crowd)[number]): Command => ({ kind: "moveEvent", eventId: c.id, route: { moves: [
     { kind: "changeOpacity", delta: -255 },
     ...Array.from({ length: c.delay }, () => ({ kind: "wait" })),
     { kind: "enterVia", x: s.subway.x, y: s.subway.y, dir: "down", se: "", closeSe: "" },
     // 모두 세로 횡단보도로 길을 건너 늘봄 빌딩으로 — 동쪽 보도 끝으로 가던 사람은 차도에 멈춰 섰다(Argon op3).
-    { kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" },
+    // 인파는 횡단보도 오른쪽 줄(x 22)로 — 남자가 뛰어 내려오는 x 21 줄을 같이 쓰면 부딪히는 두 사람 사이에 행인이 끼어 서서
+    // 「남자」 대사의 화자처럼 읽혔다(r5 블라인드). 차례 간격도 줄여 서하가 출발하기 전에 다 건너게 한다.
+    { kind: "approach", x: crowdLane.x, y: 22, distance: 0 }, { kind: "approach", x: crowdLane.x, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" },
   ], repeat: false, wait: false, skippable: true } } as unknown as Command);
   add(street, event("ev_fl_rusher", "서두르는 남자", rusher, [
     page("rusher_p", [stageIs(V_STAGE, S.START)], [], { who: "jihu", dir: "down" }),
