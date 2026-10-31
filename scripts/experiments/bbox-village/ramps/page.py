@@ -88,6 +88,19 @@ def tally(rx):
 R1, R2, R3 = r"(sol|terra)[12]", r"(sol|terra)2[123]", r"(sol|terra)3[123]"
 v2line = sys.argv[2] if len(sys.argv) > 2 else ""
 v3line = sys.argv[3] if len(sys.argv) > 3 else ""
+v4line = sys.argv[4] if len(sys.argv) > 4 else ""
+# round 4 (bake): adversarial VQA rounds, final pieces, runtime QA video
+def vqa_rows():
+    rows = ""
+    for f in sorted(glob.glob(f"{HOME}/z-project/rpg-zzu-bboxramps/harness-data/object-gate/vqa/bbox-village-ramps.opus-vqa-r*.json"), key=lambda p: int(re.search(r"r(\d+)\.json$", p).group(1))):
+        d = json.load(open(f)); P = d.get("pieces", {})
+        fails = [k for k, v in P.items() if v.get("verdict") != "PASS"]
+        rows += f"<tr><td>{d.get('round')}</td><td>{d.get('verdict')}</td><td>{len(P) - len(fails)}/{len(P)}</td><td>{(d.get('stacked') or {}).get('verdict', '—')}</td><td class=why>{html.escape(', '.join(fails) or '—')}</td><td class=why>{html.escape((d.get('summary') or '')[:500])}</td></tr>"
+    return "<table><tr><th>판</th><th>판정</th><th>조각 통과</th><th>겹친 계단</th><th>떨어진 조각</th><th>요지</th></tr>" + rows + "</table>"
+final_r = strip(["ramp-h1-w2", "ramp-h2-w3", "ramp-h3-w2", "ramp-h4-w3"], f"{HERE}/png", "final-ramps.png")
+final_s = strip(["stairs-h1-w3", "stairs-h2-w2", "stairs-h3-w3", "stairs-h4-w2"], f"{HERE}/png", "final-stairs.png")
+R4 = r"(sol|terra)4[12]"
+video = "bbox-village-ramps/qa-walk.webm" if os.path.exists(f"{IMG}/qa-walk.webm") else ""
 # round 3: h1 stairs before/after, h4 pieces, probe2 (h4 + stacked flights) with crops, stacked crop on the hill
 def strip(names, src, out):
     ims = [Image.open(f"{src}/{n}.png") for n in names]; Wt = sum(i.width + 6 for i in ims) + 6; Ht = max(i.height for i in ims) + 12
@@ -131,5 +144,13 @@ img{{image-rendering:pixelated;max-width:100%}}img.wide{{width:100%}}.row{{displ
 <p>새 4칸 조각(8배): 경사로 w2·w3, 계단 w2·w3.</p><div class=row><figure class=pc><img src='{h4}'></figure></div>
 <p>겹친 계단: 한 줄짜리 가운데 단 띠가 층계참이 된다. 모델은 같은 x 에 조각 둘을 놓고(아래 것 발치 = 아래 단, 위 것 발치 = 띠), 각 조각은 제 절벽 높이에 맞춘다. 그림은 낱조각 둘을 이어 붙인 것(새 화소 없음)이고, 엔진에는 h=2 경사로 한 개로 들어가 걷기 규칙이 그대로 통한다.</p>
 {probe2}
-{tally(R3)}{village_cards(R3, False)}"""
+{tally(R3)}{village_cards(R3, False)}
+<h2>6. 굽기 — 독립 Opus 적대 검수 · 다시 그림 · 게임 안 걷기</h2>
+<p class=v>{html.escape(v4line)}</p>
+{f"<p>게임(출하 플레이어)에서 깎은 길마다 아래에서 올라갔다 내려오는 1배 영상:</p><video src='{video}' controls loop autoplay muted style='max-width:100%;image-rendering:pixelated'></video>" if video else ""}
+<p>독립 Opus 5.5 적대 검수(판마다 새 검수자, 앞 판 점수를 모름):</p>{vqa_rows()}
+<p>마지막 조각(8배): 경사로 — 길의 흙이 그대로 이어지고, 가운데로 꺾이는 등고선과 아래로 넓어지는 옆벽이 오르막을 보인다. 계단 — 돌 디딤판. 발치 줄은 실제 길이 곧게 이어지는 모습을 렌더에서 뜬 것.</p>
+<div class=row><figure class=pc><img src='{final_r}'></figure><figure class=pc><img src='{final_s}'></figure></div>
+<p>겹친 계단 정본 나눔: 아래 = floor(전체/2), 위 = 나머지 (1+1 · 1+2 · 2+2 · 2+3 · 3+3 · 3+4 · 4+4). 렌더러가 낱조각 둘을 이어 붙인다. 다른 나눔과 절벽이 꺾이는 자리의 깎은 길은 깔 때 거절한다.</p>
+{tally(R4)}{village_cards(R4, False)}"""
 open(f"{VIZ}/bbox-village-ramps.html", "w").write(page); print("ok")

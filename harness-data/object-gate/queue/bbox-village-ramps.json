@@ -1,55 +1,55 @@
 {
  "schema": "oprn-object-gate-queue/1",
  "id": "bbox-village-ramps",
- "title": "bbox 마을 절벽 깎은 경사로·계단 16 (h1-h4 x w2/w3)",
+ "title": "bbox 마을 절벽 경사로·계단 16종 (r7)",
  "explainImage": "bbox-village-ramps-explain.png",
  "explainText": "언덕 마을에서 길이 단을 오를 때 절벽 면을 깎아 낸 경사로(흙길)와 계단(포장길) 조각. 높이 = 절벽 면 줄 수, 마지막 줄은 그 길 자체. 겹친 계단은 낱조각 둘을 이어 붙인다. 허용하면 rampArt.json(grass-steps)에 구워져 편집기·게임이 이 그림으로 그린다.",
  "createdAt": "2026-10-31T03:16:49.358Z",
  "items": [
   {
-   "sha": "0363ba8d876604d7e631fc24fb3fa2ba4e9bb934ac8d1897af2e7b9c07511816",
+   "sha": "8e76c8b568a33d0554794e95807f73eb60b7e8012a32c342f8c5fc1eb81fb494",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h1-w2",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h1-w2.png"
   },
   {
-   "sha": "4380c59a3bb3d902cc19831dff04805fd92ca73345500531e11938561b46b367",
+   "sha": "13ecf6b5a9591aa69dcd70f5d228f8e8bb9ab9dcedc02c8eacea5dc8fd8c8c9a",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h1-w3",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h1-w3.png"
   },
   {
-   "sha": "dd2f0e8fbc2a9eaed60f664ecc9bf55c8db8d56ea80743693b19ba61080fb292",
+   "sha": "93eb0660fccd0d8cae6db5a14fb33e5dc868a7f99618daddf7eb0f8e94217f71",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h2-w2",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h2-w2.png"
   },
   {
-   "sha": "f6afb04f5114c412d0a002273d79593f55c8e48347031eed34884ad5651c6533",
+   "sha": "e977d55da8f573e922c4e197b470ed49bce4ce5292a142129cf94ec22f237146",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h2-w3",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h2-w3.png"
   },
   {
-   "sha": "cc1defd787d811ef438eafb91eb7da4a3158c08153d26aed04fb53708754263c",
+   "sha": "1d82708a26a2bff1b3b369faff5e116d838a1c172db3f5047b6148ef5311a0ee",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h3-w2",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h3-w2.png"
   },
   {
-   "sha": "0ac2da73a5940a869e3a6f78a6d72f736808d75b0ddc2c011db16777834ebae6",
+   "sha": "b2c7b92023cfa12b79ced01b79fa6dd85eeff93967879d0964d6fe526ea19c3c",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h3-w3",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h3-w3.png"
   },
   {
-   "sha": "db525e3beee1ecbabdad9fabd9d7026d9f842388b3308f9c221a854ed1754db5",
+   "sha": "0fe6bea1196bced95ef1d0e9d9fbdf02c647121131b173dd83fd342905dc2078",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h4-w2",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h4-w2.png"
   },
   {
-   "sha": "9ee924bbc8dbe34c8fb811b9a26a4380b54b0bfb6e3142cb5c6690ba6602cd0d",
+   "sha": "693cd70265b1824c55c7acd07efeb5647cfee68670ed1ab661718118aba98c5a",
    "kind": "terrain",
    "label": "bbox-village-ramps/ramp-h4-w3",
    "source": "scripts/experiments/bbox-village/ramps/png/ramp-h4-w3.png"

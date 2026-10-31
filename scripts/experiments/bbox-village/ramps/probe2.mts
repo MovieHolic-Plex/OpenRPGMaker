@@ -44,6 +44,7 @@ for (const [x0, , kind, z] of S) {
   let ok = true; for (let y = CLIFF + 1; y > 0; y--) ok &&= reliefAllowsStep(m.relief, x0, y, x0, y - 1);
   report.push(`${kind} ${z} x=${x0}: walk ${ok ? "ok" : "BLOCKED"}`);
 }
+if (process.env.PROBE_PROJECT) { const { mkdirSync } = await import("node:fs"); mkdirSync(process.env.PROBE_PROJECT, { recursive: true }); writeFileSync(`${process.env.PROBE_PROJECT}/project.json`, JSON.stringify({ project: proj, mapId })); }
 const { renderMapPng } = await import("../../../qa-game/render.mts");
 writeFileSync(out!, renderMapPng(proj, m).png);
 writeFileSync(out!.replace(/\.png$/, ".json"), JSON.stringify({ W, H, CLIFF, sections: S, report }));

@@ -36,6 +36,7 @@ f({ x: 0, y: H - 2, w: W, h: 1 }, "버들항 모랫길");
 const m = proj.maps[mapId];
 m.relief = { width: W, height: H, levels: lv, ramps, style: "grass-steps" };
 invalidateReliefSlopes(m.relief);
+if (process.env.PROBE_PROJECT) { const { mkdirSync } = await import("node:fs"); mkdirSync(process.env.PROBE_PROJECT, { recursive: true }); writeFileSync(`${process.env.PROBE_PROJECT}/project.json`, JSON.stringify({ project: proj, mapId })); }
 const { renderMapPng } = await import("../../../qa-game/render.mts");
 writeFileSync(out!, renderMapPng(proj, m).png);
 writeFileSync(out!.replace(/\.png$/, ".json"), JSON.stringify({ W, H, CLIFF, sections: S }));

@@ -74,16 +74,19 @@ def ramp_surface(px, F, W, rise):
     cx, hw = (x0 + x1 - 1) / 2, (x1 - x0) / 2
     for Y in range(F):
         f = Y / max(1, F - 1)                                     # 0 crest .. 1 toe
-        lit = 0.30 * (min(1, f / 0.25) if f < 0.25 else max(0, 1 - (f - 0.25) / 0.75))   # lit upper slope, fades in from the crest
-        hi_p, lo_p = 0.18 + lit, 0.90 - 0.40 * f                  # S5 share / S3 threshold
+        # r7 (r5 VQA: "reads as a level track"): a clear fade from a lit brow to a shaded toe, dithered so no row is a hard line
+        g = 1.0 - 2.2 * f                                          # +1 .. -1.2 tone shift down the climb
         for X in range(x0, x1):
             q = blob(X, Y)
-            i = 6 if q < hi_p else (4 if q > lo_p else 5)
+            base = 6 if q < 0.25 else (4 if q > 0.85 else 5)       # the track's own mix
+            sh = g + (h(X, Y, 117) / 255 - 0.5) * 0.9              # ordered-ish dither of the shift
+            i = max(1, min(6, base + (1 if sh > 0.5 else (-1 if sh < -0.5 else 0)) + (-1 if sh < -1.2 else 0)))
+            if Y < 2 and h(X, Y, 119) < 200: i = 6                 # lit brow, broken
             if h(X, Y, 101) > 248: i = 0 if h(X, Y, 103) & 1 else 2
             u = abs(X - cx) / max(1, hw)
             t = Y - round(0.45 * (x1 - x0) * (1 - u) * (0.6 + 0.4 * f)) # chevron, dipping deeper lower down (it comes nearer)
-            if Y >= 3 and Y < F - 1 and h(X, Y // 3, 113) < 200:
-                if t % 6 == 0: i = max(2, i - 1)                     # contour, one tone down
+            if Y >= 3 and Y < F - 1 and h(X, Y // 3, 113) < 215:
+                if t % 6 == 0: i = max(1, i - 2)                     # contour, two tones down
                 elif t % 6 == 5: i = min(6, i + 1)                   # its lit lip
             px[X, Y] = SEQ[i]
 
@@ -92,7 +95,7 @@ def ramp_cheek(px, F, W, left):
     shaded left, lit on the right; a couple of cobble lumps like the face; grass lip on top."""
     for Y in range(F):
         f = Y / max(1, F - 1)
-        wd = 3 + round(3 * f) + (1 if h(3 if left else 5, Y // 2, 3) < 70 else 0)
+        wd = 2 + round(6 * f) + (1 if h(3 if left else 5, Y // 2, 3) < 70 else 0)
         for j in range(wd):
             X = j if left else W - 1 - j
             n = h(X, Y, 3)

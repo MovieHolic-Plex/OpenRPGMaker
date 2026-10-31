@@ -1,4 +1,4 @@
-// bbox-ramps.scenario.mjs 의 픽스처 — bbox 언덕 마을(lay.mts 가 쓴 project.json) 여러 장을 한 프로젝트로 묶고,
+// bbox-ramps.scenario.mjs 의 픽스처 — bbox 언덕 마을·시험 맵(lay.mts·probe*.mts 가 쓴 project.json) 여러 장을 한 프로젝트로 묶고,
 // 남향 절벽 깎은 길(경사로·계단, 겹친 계단 포함)마다 「아래 입구 → 위 출구」 걷기 좌표를 옆 JSON 에 적는다.
 // 조각 그림은 번들 rampArt.json 의 것(굽기 뒤)을 플레이어가 그대로 쓴다 — 실험용 설치(ramps/install.mts)는 여기 안 탄다.
 //
@@ -8,6 +8,7 @@
 import fs from "node:fs";
 import { serializePretty } from "../../../src/project/io.ts";
 import type { Project } from "../../../src/project/types.ts";
+import { reliefSlopes } from "../../../src/project/relief/walk.ts";
 
 const args = process.argv.slice(2);
 const oi = args.indexOf("--out"); const OUT = oi >= 0 ? args[oi + 1]! : "/tmp/bbox-ramps/hill.json";
@@ -16,18 +17,15 @@ let project: Project | null = null;
 const walks: { mapId: string; x: number; from: number; to: number; id: string }[] = [];
 for (const [k, run] of runs.entries()) {
   const { project: p, mapId } = JSON.parse(fs.readFileSync(`${run}/project.json`, "utf8")) as { project: Project; mapId: string };
-  const L = JSON.parse(fs.readFileSync(`${run}/layout.json`, "utf8")) as { cuts?: { id: string; x: number; y: number; dir: string }[] };
   const id = `bbox-hill-${k + 1}`;
-  const map = { ...p.maps[mapId]!, id, name: `${run.split("/").slice(-2, -1)[0]} hill` };
+  const map = { ...p.maps[mapId]!, id, name: `${run.split("/").filter(Boolean).slice(-2).join("/")}` };
   if (!project) { project = p; project.maps = {}; }
   project.maps[id] = map;
-  // 남향 깎은 길: 발치 y, 아래 입구 y+1 → 위 출구 y-1 (겹친 계단은 위 계단 발치가 아래 계단 출구 줄 → 맨 위 출구까지 한 번에)
-  const cuts = (L.cuts ?? []).filter((c) => c.dir === "north");
-  const tops = new Set(cuts.map((c) => `${c.x},${c.y}`));
-  for (const c of cuts) {
-    if (tops.has(`${c.x},${c.y + 1}`)) continue;                       // 겹친 계단의 위 계단 — 아래 것에서 함께 걷는다
-    let top = c.y - 1; while (tops.has(`${c.x},${top}`)) top -= 1;
-    walks.push({ mapId: id, x: c.x, from: c.y + 1, to: top, id: `${c.id}@${c.x},${c.y}${top < c.y - 1 ? " (stacked)" : ""}` });
+  // 남향 깎은 길 = 북쪽 오르막 경사로(겹친 계단은 h=2 하나): 아래 입구(발치 아래 줄) → 위 출구(맨 위 줄 위), 경사로 왼쪽 열을 걷는다
+  for (const sl of reliefSlopes(map.relief!)) {
+    if (sl.dir !== "n") continue;
+    const code = map.relief!.ramps?.[sl.y * map.width + sl.x] ?? 0;
+    walks.push({ mapId: id, x: sl.x, from: sl.y + sl.h, to: sl.y - 1, id: `${code > 4 ? "stairs" : "ramp"} w${sl.w} rise ${sl.hi - sl.lo}${sl.h > 1 ? ` (stacked ${sl.h})` : ""} @${sl.x},${sl.y}` });
   }
 }
 if (!project) throw new Error("run dir 가 없다");
