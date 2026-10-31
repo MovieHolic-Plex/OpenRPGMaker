@@ -97,8 +97,6 @@ def vqa_rows():
         fails = [k for k, v in P.items() if v.get("verdict") != "PASS"]
         rows += f"<tr><td>{d.get('round')}</td><td>{d.get('verdict')}</td><td>{len(P) - len(fails)}/{len(P)}</td><td>{(d.get('stacked') or {}).get('verdict', '—')}</td><td class=why>{html.escape(', '.join(fails) or '—')}</td><td class=why>{html.escape((d.get('summary') or '')[:500])}</td></tr>"
     return "<table><tr><th>판</th><th>판정</th><th>조각 통과</th><th>겹친 계단</th><th>떨어진 조각</th><th>요지</th></tr>" + rows + "</table>"
-final_r = strip(["ramp-h1-w2", "ramp-h2-w3", "ramp-h3-w2", "ramp-h4-w3"], f"{HERE}/png", "final-ramps.png")
-final_s = strip(["stairs-h1-w3", "stairs-h2-w2", "stairs-h3-w3", "stairs-h4-w2"], f"{HERE}/png", "final-stairs.png")
 R4 = r"(sol|terra)4[12]"
 video = "bbox-village-ramps/qa-walk.webm" if os.path.exists(f"{IMG}/qa-walk.webm") else ""
 # round 3: h1 stairs before/after, h4 pieces, probe2 (h4 + stacked flights) with crops, stacked crop on the hill
@@ -110,6 +108,8 @@ def strip(names, src, out):
 h1old = strip(["stairs-h1-w2", "stairs-h1-w3"], "/tmp/ramps/old2", "h1-round2.png") if os.path.exists("/tmp/ramps/old2/stairs-h1-w2.png") else ""
 h1new = strip(["stairs-h1-w2", "stairs-h1-w3"], f"{HERE}/png", "h1-round3.png")
 h4 = strip(["ramp-h4-w2", "ramp-h4-w3", "stairs-h4-w2", "stairs-h4-w3"], f"{HERE}/png", "h4.png")
+final_r = strip(["ramp-h1-w2", "ramp-h2-w3", "ramp-h3-w2", "ramp-h4-w3"], f"{HERE}/png", "final-ramps.png")
+final_s = strip(["stairs-h1-w3", "stairs-h2-w2", "stairs-h3-w3", "stairs-h4-w2"], f"{HERE}/png", "final-stairs.png")
 probe2 = ""
 if os.path.exists(f"{NEW}/probe2.png"):
     pim = Image.open(f"{NEW}/probe2.png").convert("RGB"); pj = json.load(open(f"{NEW}/probe2.json")); pad = pim.height - pj["H"] * 16
@@ -147,7 +147,8 @@ img{{image-rendering:pixelated;max-width:100%}}img.wide{{width:100%}}.row{{displ
 {tally(R3)}{village_cards(R3, False)}
 <h2>6. 굽기 — 독립 Opus 적대 검수 · 다시 그림 · 게임 안 걷기</h2>
 <p class=v>{html.escape(v4line)}</p>
-{f"<p>게임(출하 플레이어)에서 깎은 길마다 아래에서 올라갔다 내려오는 1배 영상:</p><video src='{video}' controls loop autoplay muted style='max-width:100%;image-rendering:pixelated'></video>" if video else ""}
+{f"<p>게임(출하 플레이어)에서 깎은 길마다 아래에서 올라갔다 내려오는 1배속 영상(13길, 길 사이는 순간 이동; 녹화기가 화면을 0.625배로 줄였다):</p><video src='{video}' controls loop autoplay muted style='max-width:100%;image-rendering:pixelated'></video>" if video else ""}
+<div class=row><figure class=pc><img src='bbox-village-ramps/qa-stacked.png'><figcaption>게임 안: 겹친 계단·경사로(시험 맵)</figcaption></figure><figure class=pc><img src='bbox-village-ramps/qa-hill.png'><figcaption>게임 안: 언덕 마을 겹친 경사로(terra32 고침판)</figcaption></figure></div>
 <p>독립 Opus 5.5 적대 검수(판마다 새 검수자, 앞 판 점수를 모름):</p>{vqa_rows()}
 <p>마지막 조각(8배): 경사로 — 길의 흙이 그대로 이어지고, 가운데로 꺾이는 등고선과 아래로 넓어지는 옆벽이 오르막을 보인다. 계단 — 돌 디딤판. 발치 줄은 실제 길이 곧게 이어지는 모습을 렌더에서 뜬 것.</p>
 <div class=row><figure class=pc><img src='{final_r}'></figure><figure class=pc><img src='{final_s}'></figure></div>
