@@ -53,6 +53,7 @@ import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { flushPendingAutosave } from "@/player/autosave";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
+import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
@@ -81,6 +82,7 @@ import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import { applySideViewLanding, isSideViewMap, planSideViewTick, resolveSideViewSettings, sideViewGridFor, sideViewStateFor } from "@/player/sideViewPhysics";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -333,6 +335,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));
     updateCharacterDepth(scene.player, "same");
     if (hopState) {
+      // 착지(land 자리) — 자리가 비면 무음. 낙하 등장(countsAsStep:false)도 땅에 닿으면 같은 소리.
+      playProjectSeCue("land", project);
       scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
       finishHop(scene, PLAYER_SHADOW_KEY, scene.player, scene.player.x, scene.player.y, hopState.hop);
       scene.playerHop = null;
@@ -565,6 +569,7 @@ function tryStartLedgeHop(scene: PlaySceneContext, body: PlayerBody, dx: number,
   scene.dashing = false;
   beginPlayerStep(scene, landX, landY);
   scene.playerHop = { hop: jumpHop({}), elapsedFrames: 0, countsAsStep: true, via };
+  playProjectSeCue("jump");
   scene.lastActionTargetKey = "";
   return true;
 }
@@ -710,6 +715,13 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "setThrough":
       route.through = command.enabled;
       return false;
+    // 같은 맵 안 순간 이동 — NPC 와 같은 명령. 예전엔 아래 default 로 조용히 건너뛰어, 「문간에 세우고 한 걸음 걸어 나온다」
+    // 컷신이 주인공을 시작 칸에 그대로 두고 그 뒤 걸음이 엉뚱한 칸에서 막혔다(첫사랑 옥상 r4: 서하가 지후에게 못 가고 문 옆에서 대화).
+    case "placeAt": {
+      const x = Math.round(command.x), y = Math.round(command.y);
+      if (inBounds(scene.map, x, y)) placePlayerOnCurrentMap(scene, x, y);
+      return false;
+    }
     case "exitVia":
     case "enterVia":
       // 주인공의 문 출입은 장소 이동(transfer)이다 — 문 연출 단계는 NPC 전용.
@@ -737,6 +749,7 @@ function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, 
   scene.dashing = false;
   beginPlayerStep(scene, nx, ny);
   scene.playerHop = { hop: jumpHop(command), elapsedFrames: 0, countsAsStep: true };
+  playProjectSeCue("jump");
   return true;
 }
 

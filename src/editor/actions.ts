@@ -52,7 +52,7 @@ export {
   paintRelief,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapBgsSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 
@@ -375,6 +375,17 @@ export function setMapBgm(mapId: MapId, bgm: MapBgmSetting | null): void {
     if (!map) return;
     if (bgm) map.bgm = { ...bgm };
     else delete map.bgm;
+  }, { scope: "map", mapId });
+}
+
+/** 맵 환경음(BGS). null = 설정 없음(앞 환경음을 이어 간다). */
+export function setMapBgs(mapId: MapId, bgs: MapBgsSetting | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (bgs) map.bgs = { ...bgs };
+    else delete map.bgs;
   }, { scope: "map", mapId });
 }
 
