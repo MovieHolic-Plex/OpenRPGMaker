@@ -353,6 +353,7 @@ export interface PlaySessionLike {
   scheduleUses?: import("./schedule").ScheduleUses;
   scheduleRun?: import("./schedule").ScheduleRunState;
   storyJournal?: import("./storyJournal").JournalLine[];
+  bestiary?: import("./bestiary").BestiarySessionState;
   /** 키 폴링(Key Poll) 이 매 프레임 쓰는 현재 입력. 세이브에 넣지 않는다. */
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   clearHistory?: { count: number; endingIds: string[] };
