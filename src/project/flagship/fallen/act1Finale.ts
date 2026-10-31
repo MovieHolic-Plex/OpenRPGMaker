@@ -1363,6 +1363,8 @@ function ending(project: Project): void {
     { kind: "say", speaker: KAEL, text: "잘 지내. …오늘은." },
     { kind: "say", speaker: IRIS, text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
   ];
+  // 끝 카드는 「제1막 끝」 머리글 아래 큰 제목이 「제1막 / 떨어진 별」이라 「제1막」을 두 번 읽었다(1막 VQA) — 이름은 막 이름만.
+  (end as Rec).name = "떨어진 별";
   end.presentation = {
     ...(end.presentation ?? {}),
     kicker: "제1막 끝",
