@@ -438,6 +438,29 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **윤문이 사용자가 따옴표로 준 대사를 바꿨다**(`dialoguePolishHook.runWrittenDialogueLines(…, request)`): 요청의 「카엘, 이 빵… 무게가 이상해.」 가 윤문 뒤 「들어 보니까 이상해」 가 됐다. 요청 글의 따옴표 대사(4글자 이상, 띄어쓰기·부호 무시)를 담은 줄은 윤문 대상에서 뺀다.
 - **닫힌 감방을 「벽 틈 우회」로 막았다**(`puzzleChecks.lockBypasses`): 잠긴 쇠살문 양쪽이 «어느 앵커에서든» 닿으면 우회로 봤다. 시작 칸은 감방 안, 막사에서 돌계단으로 돌아오는 착지는 복도라 벽이 닫혔는데도 양쪽이 닿아 보였고, 조수는 없는 틈을 메우려 fill_region 참고문서 읽기 관문(158건)에 막혀 10분을 쓰고 「우회로가 남았다」고 보고했다. 이제 문 칸을 막고 한쪽 이웃에서 걸어 다른 쪽에 닿을 때만 우회다.
 
+## 값싼 모델(Flash·DeepSeek·Argon) 자물쇠 대조 — 인자 모양·거짓 끝·호출 기록 (2026-11-01)
+
+같은 서재 체크포인트에 자물쇠 요청 하나(단서 셋·4자리·3번째 오답 힌트)를 모델별로 보내 출하 플레이어로 끝까지 걸어 봤다(`scripts/qa/script-ab/walk.mjs`, 10검사).
+수리 전 Opus·Haiku 10/10, DeepSeek 7/10, Flash 3/10. Flash 는 도구 23번 중 14번이 인자 검증 실패였고 할 일 5개를 저장 없이 done 했다.
+
+- **인자 맞추기 `src/ai/piAgent/argCoerce.ts`**(실행기 `withArgRepair` 가 검증 전에 부른다): 스키마가 답을 하나로 정할 때만 고치고 고친 것을
+  영어 `[Fixed call: …]` 로 결과 앞에 붙인다. 다른 이름(`text`→`content`·`action`→`kind`·`meaning`→`description`), 열거값 하나 → 객체(`check:"talk"`→`{kind:"talk"}`),
+  낱값 → 목록, 숫자 글 ↔ 숫자, **RPG Maker MV 습관**(trigger 0~4·priority 0~2·direction 2/4/6/8·페이지 조건 `switch1Valid`·`list:[{code,…}]` 명령 코드)을
+  우리 모양으로. MV `list` 는 아는 코드(101/401 글·121 스위치·122 변수·103 숫자 입력·111/411/412 분기·201 이동·230 대기·108 주석)만 바꾸고,
+  모르는 코드(355 스크립트 등)가 있으면 실행하지 않고 영어로 commands 모양과 author_puzzle_chain 을 알려 준다 — 전에는 `list` 가 검증을 지나 조용히 버려져 명령 없는 이벤트가 저장됐다.
+  도구별 이름표 채우기는 `declare_story_flag` 의 id·kind 하나뿐이다(이름표라 어떤 값이든 동작이 같다).
+- **upsert_event id 없음**(`argGuard` `event-new-id`): 같은 이름 이벤트가 그 맵에 하나면 그 id, 없고 좌표가 있으면 새 id.
+- **쓰기 요청 판정**(`isWriteRequest`): 「…「아직 아무 단서도 없다」고 **알려 줘**」를 질문으로 읽어 요청 뼈대·첫 쓰기 관문이 모든 모델에서 꺼져 있었다. 「넣어 줘·만들어…」가 있으면 쓰기다.
+- **번호 자물쇠 확인 `code_lock`**(`todo/checks.ts`): 살아 있는 이벤트가 숫자를 받고(inputNumber) 그 변수 == 정답 분기가 무엇을 열고(스위치·이동·엔딩),
+  hintAfter 면 틀린 횟수(+1)와 그 횟수에 힌트 대사가 있어야 ✓. 요청 뼈대가 「비밀번호 NNNN」에서 뽑아 덧붙인다 — Flash 가 할 일을 «목표 줄» 확인으로 적어 자물쇠 없이 ✓ 로 닫던 구멍.
+  다음 호출 제안은 `author_puzzle_chain` 한 번(단서 → `role:"ending"|"code"` + `needsAny`·`hintAfter`·`hintLines`).
+- **author_puzzle_chain**: `needsAny`(단서 중 하나라도 봤으면 시도, 없으면 lockedLines), `hintAfter`+`hintLines`(틀린 횟수 변수를 세어 그 횟수부터 힌트), 스키마에 `ending` 역할·`endingId` 를 드러냈다.
+- **저장 없는 done 거절**(`todoTools` done): 기계 확인 없는 항목은 지난 done 뒤로 성공한 쓰기가 없고 (그사이 쓰기가 거절됐거나 이 판 성공 쓰기가 0) 이면 받지 않는다.
+- **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
+  8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
+- 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
+- 결과 페이지 `~/claude-viz/cheap-model-check.html`.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).

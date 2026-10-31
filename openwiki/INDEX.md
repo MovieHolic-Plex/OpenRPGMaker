@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7944KB / 약 2,334,535 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7948KB / 약 2,335,643 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,485 |
-| `openwiki/assistant-v2.md` | 258KB | 48KB | 734 | ~78,487 |
+| `openwiki/assistant-v2.md` | 262KB | 48KB | 757 | ~79,595 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,376 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -141,7 +141,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/i18n.md` | 1 | `docs/terminology/product-terminology.md` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 8 | `-x2.png`, `.css`, `.empty.json`, `scripts/tmp-jp-gen.mts`, `src/ai/modernTilesetPolicy.ts`, `town-x3.png`, `verify-shots/jp-city/editor-town-full.png`, `verify-shots/jp-city/town-1x.png` |
-| `openwiki/licensing.md` | 2 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md` |
+| `openwiki/licensing.md` | 3 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md`, `node_modules/phaser/LICENSE.md` |
 | `openwiki/location-layer-affordance-audit.md` | 2 | `src/styles/editor/map-location-layer.css`, `verify-shots/loc-draw-cta/SUMMARY.md` |
 | `openwiki/modern-campus-interior.md` | 1 | `modernCampusInteriorSpec.json` |
 | `openwiki/modern-campus.md` | 8 | `campus_layout.py`, `campus_props.py`, `mc_core.py`, `preview/_all-x4.png`, `props_a.py`, `props_b.py`, `props_c.py`, `src/assets/modernCampusLayouts.json` |
@@ -325,7 +325,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L356` 바로 플레이 게임 (2026-10-23)
   - `L460` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 258KB · 734줄 · ~78,487 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 262KB · 757줄 · ~79,595 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -351,15 +351,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L418` 조수 대조 6회차 — 안 보이는 필드 적과 이른 막힘 (2026-10-31 asst-parity p2b-chase-terra·p3-hunter-terra)
 - `L424` 조수 대조 7회차 — Argon 2차 모델·지어낸 전투 배경 id (2026-10-31 asst-parity p2a-chase-argon)
 - `L432` 조수 대조 8회차 — 빈 검토 바퀴·모양 오류 칸 설명·요청 대사 지키기 (2026-10-31 asst-parity p4-cell-opus)
-- `L441` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L453` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
-- `L498` 켜는 법
-- `L505` 구조 — v1 실행기를 그대로 쓴다
-  - `L523` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
-- `L631` 빌더가 하는 것 / 못 하는 것
-- `L690` 시험
-- `L699` 토큰 비용 재기 (2026-11-01)
-- `L720` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L441` 값싼 모델(Flash·DeepSeek·Argon) 자물쇠 대조 — 인자 모양·거짓 끝·호출 기록 (2026-11-01)
+- `L464` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
+- `L476` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+- `L521` 켜는 법
+- `L528` 구조 — v1 실행기를 그대로 쓴다
+  - `L546` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+- `L654` 빌더가 하는 것 / 못 하는 것
+- `L713` 시험
+- `L722` 토큰 비용 재기 (2026-11-01)
+- `L743` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
