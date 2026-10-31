@@ -192,6 +192,14 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M6.2 8.6h2.6M6.2 11.2h2.6" } },
   ],
 
+  // 괴물 도감 — 뿔 달린 머리 윤곽
+  bestiary: [
+    { tag: "path", attrs: { d: "M6 8.4C4.6 6.8 4.4 4.9 5 3.6c1.3 1.1 2.4 2.3 3 3.6" } },
+    { tag: "path", attrs: { d: "M16 8.4c1.4-1.6 1.6-3.5 1-4.8-1.3 1.1-2.4 2.3-3 3.6" } },
+    { tag: "path", attrs: { d: "M5.4 11c0-2.6 2.5-4.4 5.6-4.4s5.6 1.8 5.6 4.4c0 3.6-2.6 6.6-5.6 6.6s-5.6-3-5.6-6.6z" } },
+    { tag: "path", attrs: { d: "M8.6 11.2h.6M12.8 11.2h.6M9.4 14.6c1 .6 2.2.6 3.2 0" } },
+  ],
+
   // ── 맵 ──
   // 타일셋(통행) — 3×3 격자
   tilesets: [

@@ -1,0 +1,34 @@
+/* 자료집 「이야기 → 괴물 도감」(databaseBestiaryView.ts). */
+.database-modal-body .db-bestiary-view { display: grid; gap: 12px; }
+.database-modal-body .db-bestiary-head { align-items: start; display: flex; gap: 12px; justify-content: space-between; }
+.database-modal-body .db-bestiary-intro { color: var(--text-2); font-size: 12px; line-height: 1.5; margin: 0; max-width: 64ch; }
+.database-modal-body .db-bestiary-add {
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  color: rgb(255 255 255);
+  cursor: pointer;
+  flex: none;
+  font-weight: 600;
+  padding: 6px 12px;
+}
+.database-modal-body .db-bestiary-settings { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.database-modal-body .db-bestiary-enemies { display: flex; flex-wrap: wrap; gap: 4px 10px; max-height: 96px; overflow: auto; }
+.database-modal-body .db-bestiary-enemy { align-items: center; display: inline-flex; font-size: 12px; gap: 4px; }
+.database-modal-body .db-bestiary-section { border: 1px dashed var(--border-default); border-radius: 6px; display: grid; gap: 6px; margin-top: 8px; padding: 8px; }
+.database-modal-body .db-bestiary-section textarea { min-height: 52px; resize: vertical; width: 100%; }
+.database-modal-body .db-bestiary-condition { border-left: 2px solid var(--border-default); padding-left: 8px; }
+.database-modal-body .db-bestiary-note { color: var(--text-2); font-size: 11px; margin: 0; }
+.database-modal-body .db-bestiary-row-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.database-modal-body .db-bestiary-remove,
+.database-modal-body .db-bestiary-add-section {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  justify-self: start;
+  padding: 3px 10px;
+}
+.database-modal-body .db-bestiary-add-section:disabled { cursor: not-allowed; opacity: 0.5; }
