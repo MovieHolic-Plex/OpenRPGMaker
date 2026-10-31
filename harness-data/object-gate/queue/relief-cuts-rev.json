@@ -245,49 +245,49 @@
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h4-w3.png"
   },
   {
-   "sha": "e7c63df8e5e94d45871fb8b23c9e54486fcb21dae517766bcabc9df99819cc42",
+   "sha": "c546e6382e6e41e8683872df2407e94c3c16426de14358933d60a1cfd502b1cf",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h1-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w2.png"
   },
   {
-   "sha": "8ccd6aff24ed64301609f3c5e827cbce7a2cbf00e3638bdad975ff7cb8d75434",
+   "sha": "522ab3f967704e966a72a7248c55c770afea493e1f5b08988a12a4381b0ac3b4",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h1-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w3.png"
   },
   {
-   "sha": "a9c2b08c8eb26867a8054e4d3602e5b78ea8fd80e0c87e49b862b9b350ea8c9c",
+   "sha": "69063c345fcaf59e157a4393873bcd528cfa83deef92982d246d9a76bd7505ce",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h2-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h2-w2.png"
   },
   {
-   "sha": "c8e3fd7d407bedaf4cf6f35e522bb36152369e5d8ba9289da2495d3002103cca",
+   "sha": "050ae09393d82baa9e9f6a7fff9e2b9127a83d455bd1b90405a5233426ad2248",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h2-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h2-w3.png"
   },
   {
-   "sha": "1526385c69fe222db8f9020fdfae187a0cd16c6f6c6c6b05b092815978ec85b7",
+   "sha": "d0fa48195db06ca736cacc406b2cb85704787455e02db794f56873ae9928dc16",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h3-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h3-w2.png"
   },
   {
-   "sha": "f2b3d795fd8bf6464c41277ffd6bb42bf1ff5e4874993b4fda3cebc6fb09eefd",
+   "sha": "a044685ec5f785ee7ca11a8ee5030615dd46df97475b7a3263c54e1b6fbcd129",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h3-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h3-w3.png"
   },
   {
-   "sha": "57576e7d0c4ad77631075958454be9a77d85a2a091a6a2f338baf29e7e400048",
+   "sha": "b416ca179fbf95cb18f1b976177c17d371fd8a3f1091202c5fe7f4dc5034374f",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h4-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h4-w2.png"
   },
   {
-   "sha": "1e0041bb026cf515f9e86a231e68fe3d9a259f6daf72bf7aba82355410ca107f",
+   "sha": "03f1794e89da0878a5424563efd470c5b2254718c755e5ea018d17b00da7fe83",
    "kind": "terrain",
    "label": "relief-cuts-rev/snow-steps/stairs-h4-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h4-w3.png"
@@ -341,13 +341,13 @@
    "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h4-w3.png"
   },
   {
-   "sha": "7e0e6ef57e7c4c8ff175de4f2e491feeaf02fb07106f338a2f0d01587d1b4ab3",
+   "sha": "b4eb5a454e07c234408e810513b2bd7d960b684f7e46ef5fdfe0fdf98aaa63fa",
    "kind": "terrain",
    "label": "relief-cuts-rev/peat-steps/stairs-h1-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w2.png"
   },
   {
-   "sha": "0b62cae286ae659bacdd581892404f49d27e7f3e56a61bbfe61104d63fb429cf",
+   "sha": "67f57984c0b420ddab34b7f1d7c9a20e83084e89c3872362118b37c7e0805149",
    "kind": "terrain",
    "label": "relief-cuts-rev/peat-steps/stairs-h1-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w3.png"
@@ -437,13 +437,13 @@
    "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h4-w3.png"
   },
   {
-   "sha": "a61f16488983c27ce98208641b211145960ba4f85a358d2240c2b2ac993099c1",
+   "sha": "be402dc79bc3d0f9c8d929c26736e65f9bbedf702511582850cb1b9f6394451a",
    "kind": "terrain",
    "label": "relief-cuts-rev/cave-steps/stairs-h1-w2",
    "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w2.png"
   },
   {
-   "sha": "3817cb42f17602742cb9358c22c1b5d878b150114c8190aa441c499aa120aacf",
+   "sha": "63f0f27f864b1ce1c1463a6059fa8322fccd6b079f108a2028b6dba6ba70cbc5",
    "kind": "terrain",
    "label": "relief-cuts-rev/cave-steps/stairs-h1-w3",
    "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w3.png"
