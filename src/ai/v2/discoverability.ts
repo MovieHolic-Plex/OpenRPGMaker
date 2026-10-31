@@ -504,17 +504,19 @@ export function placeWord(map: GameMap, x: number, y: number): string {
 
 /**
  * 맵 안 한 칸을 눈에 띄는 것에 기대어 부르는 말 — 「회복의 샘 서쪽」「「떠돌이 상인」 옆」「처음 선 자리 북쪽」, 없으면 placeWord.
- * 기댈 것: 그림이 보이는 이름 있는 이벤트(사람·물건, 단계 대상 자신·막힌 길 표지·잠긴 집 문 제외), 회복의 샘·상인(이름 없는 기본 id), 시작 자리.
+ * 기댈 것: 그림이 보이는 이름 있는 이벤트(사람·물건, 단계 대상 자신·막힌 길 표지·잠긴 집 문 제외), 회복의 샘·상인·쉼터 결정(이름 없는 기본 id), 시작 자리.
  * 6칸 안 가장 가까운 것. 2칸 안이면 「옆」.
  * 왜(2026-10-29 vm8 flash jrpg): 동굴 문은 「동굴 열쇠가 있어야 한다」만 말했고, 열쇠는 처음 선 자리 곁 회복의 샘 옆 (7,11)이었다 —
  * 판정자는 마을을 30분 가까이 돌았다. 「서쪽」 같은 방위 한 낱말로는 못 찾는다.
  */
-export function landmarkWord(project: Project, map: GameMap, x: number, y: number, exceptId?: string): string {
+export function landmarkWord(project: Project, map: GameMap, x: number, y: number, exceptId?: string | readonly string[]): string {
+  const except = new Set(typeof exceptId === "string" ? [exceptId] : exceptId ?? []);
   const KNOWN: Record<string, string> = { ev_heal_spring: "회복의 샘", ev_supply_shop: "떠돌이 상인" };
   const cands: { name: string; x: number; y: number; quote: boolean }[] = [];
   for (const ev of map.events ?? []) {
-    if (ev.id === exceptId || /^ev_(dead_end|locked_door|objective|world_gate)/u.test(ev.id) || ev.id.includes("__")) continue;
-    const known = KNOWN[ev.id];
+    if (except.has(ev.id) || /^ev_(dead_end|locked_door|objective|world_gate)/u.test(ev.id) || ev.id.includes("__")) continue;
+    // 보스 앞 「쉼터 결정」(ensureBossRest·던전 빌더 `ev_<맵>_rest`)은 이름 없이 저장되기도 하지만 빛나는 결정이라 눈에 잘 띈다.
+    const known = KNOWN[ev.id] ?? (/^ev_.+_rest$/u.test(ev.id) ? "쉼터 결정" : undefined);
     const name = known ?? String((ev as { name?: string }).name ?? "").trim();
     if (!name || /^ev_/u.test(name)) continue;
     const g = ((ev.pages ?? [])[0]?.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown };
