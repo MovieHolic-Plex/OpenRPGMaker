@@ -247,6 +247,9 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
     const staged = [...spec.beats]; while (staged.length && staged.at(-1)!.do === "fade" && (staged.at(-1) as { dir?: string }).dir === "out") staged.pop();
     const beats: EventBeat[] = [...staged, ...lines.filter((l) => !said.has(l.text.trim())).map((l) => ({ do: "say", who: l.who ?? "", text: l.text.trim() } as EventBeat))];
     const hostId = `ev_ending_${slug}`.slice(0, 60);
+    // 같은 엔딩을 다시 부르면(비트 없이 한 번 → 비트로 한 번) 앞 이벤트를 지우고 새로 짓는다 — 그대로 두면 옛 «대사 줄» 쪽과 새 무대 쪽이 한 이벤트에
+    // 같이 남아 같은 대사가 두 번 돌았다(2026-10-31 sc-narr-a1 엔딩: 판정 「촌장 대사도 겹쳐 두 번」).
+    if ((map.events ?? []).some((e) => e.id === hostId)) run.call("remove_event", { mapId, eventId: hostId });
     const built = buildEvent(run, { kind: "cutscene", mapId, when: "enter", hostId, beats });
     warnings.push(...built.warnings.map((w) => `장면: ${w}`));
     if (!built.ok) return result(false, run, first, `엔딩 장면 무대를 짓지 못했다 — ${String(built.summary).slice(0, 220)}`, warnings, [mapId]);
