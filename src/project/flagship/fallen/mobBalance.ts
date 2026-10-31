@@ -44,7 +44,7 @@ export const FS_MOB_STATS: Readonly<Record<string, { readonly from: Partial<Reco
   // 심문회 방패병 — 둘이 방패 벽을 세우면(방어 72·보호) 「공격」만으로는 끝이 안 났다(지하 3층 방진 0%).
   enemy_fs2_ash_crow: { from: { maxHp: 130, attack: 76, mind: 20 }, to: { maxHp: 120, attack: 70, mind: 18 } },
   enemy_fs2_ash_snake: { from: { maxHp: 180, attack: 78, mind: 30 }, to: { maxHp: 220, attack: 93, mind: 36 } },
-  enemy_fs2_ash_wisp: { from: { maxHp: 130, attack: 54, mind: 60 }, to: { maxHp: 190, attack: 82, mind: 92 } },
+  enemy_fs2_ash_wisp: { from: { maxHp: 200, attack: 66, mind: 96 }, to: { maxHp: 190, attack: 82, mind: 92 } },
   enemy_fs2_circuit_snake: { from: { maxHp: 260, attack: 94, mind: 60 }, to: { maxHp: 800, attack: 285, mind: 182 } },
   enemy_fs2_crystal_spider: { from: { maxHp: 300, attack: 104, mind: 40 }, to: { maxHp: 370, attack: 128, mind: 50 } },
   enemy_fs2_fort_crossbow: { from: { maxHp: 180, attack: 82, mind: 10 }, to: { maxHp: 220, attack: 99, mind: 12 } },
@@ -128,7 +128,8 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_ash_wisps_pair: 4.4, // 새벽샘 마을 터 도깨비 둘(Lv8) — 둘뿐이라 하나하나가 세다
   troop_fs2_frost_bats: 0.87,
   troop_fs2_frost_wolves_lake: 1.06,
-  troop_fs2_tower_snakes: 1.1,
+  troop_fs2_tower_snakes: 0.96,
+  troop_fs2_fort_crossbows: 0.93,
 };
 
 // ── 우두머리 ──────────────────────────────────────────────────────────

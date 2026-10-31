@@ -17,7 +17,7 @@ const ELITE_TARGET = Number(process.env.ELITE_TARGET ?? 0.6);
 const only = process.env.ONLY ? new Set(process.env.ONLY.split(",")) : undefined;
 
 const project: Project = deserialize(readFileSync(args[0]!, "utf8"));
-applyFallenMobStats(project);
+if (!process.env.NOAPPLY) applyFallenMobStats(project); // NOAPPLY=1 = 이미 구운 판(값이 들어간 판)에서 잰다
 const db = project.database;
 const eliteIds = new Set(FS_ELITES.map((e) => e.id));
 const rows = runTable(project, { n: 1, potions: false }).filter((r) => r.kind === "mob" || r.kind === "elite");
