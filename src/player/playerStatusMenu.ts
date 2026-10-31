@@ -128,6 +128,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     formationActorId: options.formationActorId,
     battleReportIndex: options.battleReportIndex,
     onSelectBattleReport: options.actions.onSelectBattleReport,
+    bestiaryEntryId: options.bestiaryEntryId,
+    onSelectBestiaryEntry: options.actions.onSelectBestiaryEntry,
     campaignSpeciesId: options.campaignSpeciesId,
     onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
     dexPage: options.dexPage,
@@ -387,6 +389,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "campaign-progress": return "◆";
     case "trainer-card": return "▤";
     case "battle-reports": return "▤";
+    case "bestiary": return "✦";
     case "quests": return "✓";
     case "relationships": return "∞";
     case "gallery": return "▣";
@@ -423,6 +426,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "campaign-progress": return "shield";
     case "trainer-card": return "book-magic";
     case "battle-reports": return "book-magic";
+    case "bestiary": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
     case "gallery": return "map";
@@ -468,6 +472,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "row":
     case "formation":
     case "battle-reports":
+    case "bestiary":
     case "quests":
     case "relationships":
     case "gallery":
