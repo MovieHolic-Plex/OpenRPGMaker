@@ -3,6 +3,7 @@ import {
   deterministicFlickerFactor,
   effectiveDarkness,
   lightConeAngle,
+  LIGHT_FALLOFF,
   lightSourceIntensity,
   normalizeLightingState,
   PLAYER_PRESENCE_LIGHT,
@@ -134,9 +135,9 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
       light.radiusPx
     );
     const alpha = clamp01(light.intensity);
-    gradient.addColorStop(0, `rgba(0,0,0,${alpha})`);
-    gradient.addColorStop(0.7, `rgba(0,0,0,${alpha * 0.65})`);
-    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    // 빛은 가운데서 바깥으로 꾸준히 사위어야 한다. 예전 곡선(0.7 까지 65% 유지 후 급락)은 반지름 끝까지 거의 다 걷어 내
+    // 흰 눈·얼음 위에서 등불마다 테두리 선명한 하얀 원판이 떴다(폴른 스타 서리나루 해 질 녘·밤, 2026-10-31).
+    for (const [at, k] of LIGHT_FALLOFF) gradient.addColorStop(at, `rgba(0,0,0,${alpha * k})`);
     context.fillStyle = gradient;
     fillLight(context, light);
   }
@@ -158,16 +159,19 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     if (!rgb || light.radiusPx <= 0 || light.intensity <= 0) continue;
     const alpha = clamp01(light.intensity) * LIGHT_TINT_STRENGTH * params.ambient;
     const gradient = context.createRadialGradient(light.centerX, light.centerY, 0, light.centerX, light.centerY, light.radiusPx);
-    gradient.addColorStop(0, `rgba(${rgb},${alpha})`);
-    gradient.addColorStop(0.6, `rgba(${rgb},${alpha * 0.45})`);
-    gradient.addColorStop(1, `rgba(${rgb},0)`);
+    // 색은 걷어 낸 만큼 같은 곡선으로 얹는다 — 걷힌 자리가 맨바닥(흰 눈)으로 비치지 않고 그 불빛 색으로 물든다.
+    for (const [at, k] of LIGHT_FALLOFF) gradient.addColorStop(at, `rgba(${rgb},${alpha * k})`);
     context.fillStyle = gradient;
     fillLight(context, light);
   }
   context.restore();
 }
 
-const LIGHT_TINT_STRENGTH = 0.4;
+/**
+ * 빛 색을 얹는 세기(어둠 × 광원 세기에 곱한다). 0.4 는 걷어 낸 자리의 맨바닥이 그대로 비쳐, 밝은 바닥(눈·얼음·흰 돌) 위
+ * 따뜻한 등불이 흰 원으로 읽혔다(2026-10-31). 걷어 낸 양의 대부분을 불빛 색이 다시 채운다.
+ */
+const LIGHT_TINT_STRENGTH = 0.8;
 
 /** 둥근 빛은 사각을, 부채꼴 빛(경비 등불 시야)은 그 부채꼴만 칠한다 — 바닥에 시야가 그대로 보인다. */
 function fillLight(context: CanvasRenderingContext2D, light: LightGradientParam): void {
