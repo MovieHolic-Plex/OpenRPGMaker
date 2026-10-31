@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""argon-image-dungeon page → ~/claude-viz/argon-image-dungeon.html (images in ~/claude-viz/argon-image-dungeon/).
+"""argon-image-dungeon page → ~/claude-viz/argon-image-dungeon-layout.html (images in ~/claude-viz/argon-image-dungeon/).
 Row per dungeon: generated picture | Argon dots from it | Argon direct | Opus r4; then the grid-picture variant. Summary table on top.
   python3 page.py "<one-line verdict>"   (run from the worktree root)"""
 import json, os, sys, glob, html, shutil
@@ -69,5 +69,5 @@ table{{border-collapse:collapse}}.sum td,.sum th{{border:1px solid #444;padding:
 <h2>격자를 넣은 그림으로 다시 (그림을 덜 닮아서 해 본 것)</h2>
 <table class=grid><tr><th></th><th>격자 그림</th><th>Argon 도트</th><th></th><th></th></tr>
 {''.join(grows)}</table>"""
-open(f"{VIZ}/argon-image-dungeon.html", "w").write(page)
+open(f"{VIZ}/argon-image-dungeon-layout.html", "w").write(page)   # the earlier layout experiment; the object page owns argon-image-dungeon.html
 print("ok", {a: (passes(a), tot.get(a)) for a in ("img", "img-r2", "img-r3", "img-grid-r3", "direct", "direct-r2", "direct-r3")}, opus_pass, opus_ref)
