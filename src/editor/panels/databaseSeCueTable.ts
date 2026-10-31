@@ -5,7 +5,7 @@ import { SE_CUE_SPECS, isKnownSeCue, type SeCueGroup } from "@/project/seCues";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-const GROUP_LABEL: Readonly<Record<SeCueGroup, string>> = { ui: "메뉴·화면", battle: "전투", magic: "마법·상태", field: "필드·문" };
+const GROUP_LABEL: Readonly<Record<SeCueGroup, string>> = { ui: "메뉴·화면", battle: "전투", magic: "마법·상태", field: "필드·문", dialogue: "대사·감정", jingle: "짧은 효과 음악" };
 
 type UpdateSystem = (mutator: (draft: Project) => void, snapshotKey?: string) => void;
 type Picker = typeof resourcePickerControl;

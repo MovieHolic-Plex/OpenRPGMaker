@@ -11,7 +11,7 @@
 // - 우선순위: 세션 덮어쓰기(m2 「시스템 효과음 바꾸기」) → 이 표 → 옛 저작 칸(메뉴 소리·타이틀 소리·패배/도주 SE) → 내장 기본.
 // - 가족 물러섬: magic-fire 가 비면 cast, footstep-snow 가 비면 footstep(지형 발소리) → 없음. seCueFallbacks 가 순서를 정한다.
 
-export type SeCueGroup = "ui" | "battle" | "magic" | "field";
+export type SeCueGroup = "ui" | "battle" | "magic" | "field" | "dialogue" | "jingle";
 
 export interface SeCueSpec {
   readonly id: string;
@@ -30,6 +30,9 @@ const ui = (id: string, label: string): SeCueSpec => ({ id, group: "ui", label }
 const battle = (id: string, label: string): SeCueSpec => ({ id, group: "battle", label });
 const magic = (id: string, label: string): SeCueSpec => ({ id, group: "magic", label });
 const field = (id: string, label: string): SeCueSpec => ({ id, group: "field", label });
+const dialogue = (id: string, label: string): SeCueSpec => ({ id, group: "dialogue", label });
+/** 짧은 효과 음악(ME 채널로 울린다 — seCueChannel). 승리 팡파르는 음악(oprnMusic victory)이라 여기 없다. */
+const jingle = (id: string, label: string): SeCueSpec => ({ id, group: "jingle", label });
 
 /**
  * 알려진 자리. 순서 = 편집기 표와 조수 결과의 순서. 스토어 효과음 제작자와 맞춘 목록(2026-10-30, oprnSound v1)이다 — id 를 바꾸지 말 것.
@@ -53,7 +56,25 @@ export const SE_CUE_SPECS: readonly SeCueSpec[] = [
   field("stairs", "계단"), field("switch", "스위치"), field("water", "물"),
   field("footstep-grass", "발소리(풀)"), field("footstep-stone", "발소리(돌)"), field("footstep-wood", "발소리(나무)"),
   field("footstep-sand", "발소리(모래)"), field("footstep-snow", "발소리(눈)"), field("footstep-water", "발소리(물)"),
+  // 2026-10-31 판 1 확장(audio-cues): 발소리 표면 넷, 몸 동작·필드 효과, 대사·감정 표시, 짧은 효과 음악.
+  field("footstep-metal", "발소리(금속)"), field("footstep-carpet", "발소리(카펫)"), field("footstep-mud", "발소리(진흙)"), field("footstep-ice", "발소리(얼음)"),
+  field("jump", "점프"), field("land", "착지"), field("explosion", "폭발"), field("teleport", "순간이동"),
+  ui("notify", "알림"),
+  dialogue("textBlip", "대사 글자음"),
+  dialogue("emote-exclamation", "감정(놀람)"), dialogue("emote-question", "감정(물음)"), dialogue("emote-heart", "감정(하트)"),
+  dialogue("emote-sweat", "감정(땀)"), dialogue("emote-anger", "감정(화남)"), dialogue("emote-music", "감정(노래)"),
+  dialogue("emote-ellipsis", "감정(말줄임)"), dialogue("emote-sleep", "감정(졸음)"), dialogue("emote-idea", "감정(생각)"),
+  jingle("questComplete", "퀘스트 완료"), jingle("partyJoin", "동료 합류"), jingle("innRest", "여관 휴식"), jingle("chapterStart", "장 시작"),
 ];
+
+/** ME(효과 음악) 채널로 울리는 자리 — 짧은 곡처럼 들리는 팡파르·징글. 나머지 자리는 효과음 채널. */
+// levelUp 은 넣지 않는다 — 이미 게시된 효과음 팩(342개)의 레벨 업 소리가 효과음 채널·볼륨을 전제로 만들어졌다.
+export const SE_CUE_ME_IDS: ReadonlySet<string> = new Set(["questComplete", "partyJoin", "innRest", "chapterStart"]);
+
+/** 자리 소리를 낼 채널. levelUp·퀘스트 완료 같은 징글은 me(음악 볼륨 그룹, 효과음과 섞이지 않음), 나머지는 se. */
+export function seCueChannel(id: string): "me" | "se" {
+  return SE_CUE_ME_IDS.has(id) ? "me" : "se";
+}
 
 export const SE_CUE_IDS: readonly string[] = SE_CUE_SPECS.map((spec) => spec.id);
 const KNOWN = new Set(SE_CUE_IDS);
@@ -69,7 +90,14 @@ export function seCueSpec(id: string): SeCueSpec | undefined {
 /** 가족 물러섬: 자기 → (kebab 가족이면) 가족의 기본 자리. magic-* → cast, attack-* → attack, footstep-* → 없음(지형 칸). */
 const FAMILY_BASE: Readonly<Record<string, string | undefined>> = { magic: "cast", attack: "attack", footstep: undefined };
 
+/** 새 발소리 표면이 비면 가까운 옛 표면으로 — 「얼음」 지형은 전에 footstep-snow 를 냈다(옛 프로젝트 소리 유지). */
+const SURFACE_FALLBACK: Readonly<Record<string, string>> = {
+  "footstep-ice": "footstep-snow", "footstep-mud": "footstep-water", "footstep-metal": "footstep-stone", "footstep-carpet": "footstep-wood",
+};
+
 export function seCueFallbacks(id: string): readonly string[] {
+  const near = SURFACE_FALLBACK[id];
+  if (near) return [id, near];
   const dash = id.indexOf("-");
   if (dash < 0) return [id];
   const base = FAMILY_BASE[id.slice(0, dash)];
@@ -129,8 +157,13 @@ export function magicCueForElement(elementId: string | undefined, elementName?: 
 
 /** 지형 이름 → 발소리 자리(풀·돌·나무·모래·눈·물). 모르면 undefined — 그때는 지형 칸의 발소리만 쓴다. */
 const SURFACE_WORDS: readonly (readonly [string, RegExp])[] = [
-  ["footstep-water", /물|얕은|늪|water|swamp|shallow/iu],
-  ["footstep-snow", /눈|얼음|설원|snow|ice/iu],
+  // 새 표면(금속·카펫·진흙·얼음)이 먼저 — 비어 있으면 seCueFallbacks 가 옛 표면(돌·나무·물·눈)으로 물러선다.
+  ["footstep-metal", /금속|철판|강철|쇠|metal|steel|iron|grate/iu],
+  ["footstep-carpet", /카펫|융단|양탄자|carpet|rug/iu],
+  ["footstep-mud", /진흙|진창|늪|mud|swamp|bog/iu],
+  ["footstep-ice", /얼음|빙판|ice|frozen/iu],
+  ["footstep-water", /물|얕은|water|shallow/iu],
+  ["footstep-snow", /눈|설원|snow/iu],
   ["footstep-sand", /모래|사막|해변|sand|desert|beach/iu],
   ["footstep-wood", /나무|마루|다리|목재|wood|plank|bridge/iu],
   ["footstep-stone", /돌|바위|자갈|포장|석|stone|rock|cobble|paved/iu],

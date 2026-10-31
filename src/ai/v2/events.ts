@@ -19,6 +19,8 @@ import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { searchResources } from "@/assets/resourceSearch";
 import { horrorSoundFor } from "./horrorSounds";
+import { readStoreSoundMeta } from "@/assets/storeSoundMeta";
+import { rankStoreAmbience } from "@/assetStore/storeSoundPick";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
 import {
@@ -824,10 +826,18 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
             }
           }
           const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]], [/wind|바람/u, ["wind"]]];
+          // 환경음: 프로젝트에 이미 넣은 스토어 환경음(oprnSound group ambient)을 장소·날씨 낱말로 먼저 고른다 — store_find_sound{ambient} 와 같은 순위.
+          if (!resourceId && action === "bgs") {
+            const installed = Object.values(project().assets.uploaded ?? {}).flatMap((a) => {
+              const sound = a.kind === "sound" ? readStoreSoundMeta(a.meta) : null;
+              return sound?.ambient ? [{ slug: "", version: 0, assetId: a.id, name: a.name, packTitle: "", blob: "", license: "", aiGenerated: false, credits: "", sound }] : [];
+            });
+            resourceId = rankStoreAmbience(installed, { query: q }, 1)[0]?.assetId;
+          }
           const tries = [q, ...(SYN.find(([re]) => re.test(q))?.[1] ?? [])];
           const kind = action === "bgm" ? "bgm" : "se";
           if (!resourceId) for (const t of tries) { const hit = searchResources(kind, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
-          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
+          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — ${action === "bgs" ? "store_find_sound{ambient:true, query} 로 환경음을 넣거나 " : ""}list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
         }
         out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: resourceId! });
         effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : action === "bgs" ? `a looping '${b.query}' ambient sound starts under the music (stays after the scene)` : "the music stops");

@@ -1,0 +1,1956 @@
+{
+ "set": "first-love-probe",
+ "query": {
+  "demo": "first-love"
+ },
+ "viewport": {
+  "width": 960,
+  "height": 540
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "p-cold-x",
+   "label": "p-cold-x",
+   "note": "START 0: ev_fl_cold_open auto in fl_street; startPos = main exit step (3,34); crowd pours out, bump at the crosswalk, paper + freeze",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 0
+   },
+   "beats": [
+    {
+     "id": "probe",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/cold-x-init.json",
+       "fn": "() => { if (window.__flRec) return 1; window.__flRec = []; const t0 = performance.now(); setInterval(() => { const s = window.__oprnHooksScene; const tr = window.__oprnTransit?.(); const card = document.querySelector(\"[data-testid='objective-card']\"); const tm = document.querySelector('.touch-menu-btn'); window.__flRec.push({ t: Math.round(performance.now()-t0), running: !!s?.running, menu: !!document.querySelector(\"[data-testid='main-menu'],[data-testid='status-menu-command-rail']\"), dlg: !!document.querySelector(\"[data-testid='dialogue-box']\"), card: card ? !card.hidden : false, cardText: card && !card.hidden ? card.textContent : '', touchMenu: tm ? getComputedStyle(tm).display !== 'none' && !tm.hidden : null, veh: tr ? tr.vehicles.length : -1, stuck: tr ? tr.vehicles.filter(v=>v.blockedSec>3).map(v=>v.id+'@'+Math.round(v.rect.x)+','+Math.round(v.rect.y)+':'+Math.round(v.blockedSec)) : [], player: s ? [s.tileX, s.tileY] : null, walkers: s ? [...(s.autonomousNPCs?.keys?.() ?? [])].map(id => id+':'+JSON.stringify(s.eventPositions?.[id])) : [] }); }, 250); return 1; }"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "key",
+       "key": "x"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/cold-x.json",
+       "fn": "() => window.__flRec"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-street",
+   "label": "p-street",
+   "note": "STREET 2 after the cold open (bump done); walk to the office door",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
+   "facing": "down",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "probe",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/street-init.json",
+       "fn": "() => { if (window.__flRec) return 1; window.__flRec = []; const t0 = performance.now(); setInterval(() => { const s = window.__oprnHooksScene; const tr = window.__oprnTransit?.(); const card = document.querySelector(\"[data-testid='objective-card']\"); const tm = document.querySelector('.touch-menu-btn'); window.__flRec.push({ t: Math.round(performance.now()-t0), running: !!s?.running, menu: !!document.querySelector(\"[data-testid='main-menu'],[data-testid='status-menu-command-rail']\"), dlg: !!document.querySelector(\"[data-testid='dialogue-box']\"), card: card ? !card.hidden : false, cardText: card && !card.hidden ? card.textContent : '', touchMenu: tm ? getComputedStyle(tm).display !== 'none' && !tm.hidden : null, veh: tr ? tr.vehicles.length : -1, stuck: tr ? tr.vehicles.filter(v=>v.blockedSec>3).map(v=>v.id+'@'+Math.round(v.rect.x)+','+Math.round(v.rect.y)+':'+Math.round(v.blockedSec)) : [], player: s ? [s.tileX, s.tileY] : null, walkers: s ? [...(s.autonomousNPCs?.keys?.() ?? [])].map(id => id+':'+JSON.stringify(s.eventPositions?.[id])) : [] }); }, 250); return 1; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/street.json",
+       "fn": "() => window.__flRec"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-street-pm",
+   "label": "p-street-pm",
+   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive officeOut (9,13) down",
+   "mapId": "fl_street_pm",
+   "x": 9,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "probe",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/street-pm-init.json",
+       "fn": "() => { if (window.__flRec) return 1; window.__flRec = []; const t0 = performance.now(); setInterval(() => { const s = window.__oprnHooksScene; const tr = window.__oprnTransit?.(); const card = document.querySelector(\"[data-testid='objective-card']\"); const tm = document.querySelector('.touch-menu-btn'); window.__flRec.push({ t: Math.round(performance.now()-t0), running: !!s?.running, menu: !!document.querySelector(\"[data-testid='main-menu'],[data-testid='status-menu-command-rail']\"), dlg: !!document.querySelector(\"[data-testid='dialogue-box']\"), card: card ? !card.hidden : false, cardText: card && !card.hidden ? card.textContent : '', touchMenu: tm ? getComputedStyle(tm).display !== 'none' && !tm.hidden : null, veh: tr ? tr.vehicles.length : -1, stuck: tr ? tr.vehicles.filter(v=>v.blockedSec>3).map(v=>v.id+'@'+Math.round(v.rect.x)+','+Math.round(v.rect.y)+':'+Math.round(v.blockedSec)) : [], player: s ? [s.tileX, s.tileY] : null, walkers: s ? [...(s.autonomousNPCs?.keys?.() ?? [])].map(id => id+':'+JSON.stringify(s.eventPositions?.[id])) : [] }); }, 250); return 1; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/street-pm.json",
+       "fn": "() => window.__flRec"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-street-view",
+   "label": "p-street-view",
+   "note": "STREET 2 after the cold open (bump done); walk to the office door",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
+   "facing": "down",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "view",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "evalToFile",
+       "out": "/tmp/fl-r3/probe/view-pan.json",
+       "fn": "() => { const s = window.__oprnHooksScene; const c = s.cameras.main; c.stopFollow(); c.centerOn(20*16, 14*16); return 1; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 45000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-pantry-full",
+   "label": "p-pantry-full",
+   "note": "MET 3: ev_fl_minho talk at the coffee machine (5,4); Seoha steps beside him and presses the buttons herself",
+   "mapId": "fl_office",
+   "x": 5,
+   "y": 5,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 3
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "full",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-roof-real",
+   "label": "p-roof-real",
+   "note": "PANTRY 4: walk into the office elevator (16,3) -> rooftop, ev_fl_roof plays from a real transfer",
+   "mapId": "fl_office",
+   "x": 16,
+   "y": 4,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 4
+   },
+   "beats": [
+    {
+     "id": "ride",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 14000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walked",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 40,
+       "settleMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-car-yield",
+   "label": "p-car-yield",
+   "note": "STREET 2: player taps 5 cells down from (14,35) into the eastbound lane (rows 40-41) and stands 16 s; cars must stop short of the player, then go again after the player steps back to the kerb",
+   "mapId": "fl_street",
+   "x": 14,
+   "y": 35,
+   "facing": "down",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "flow",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "in-lane",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 16000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dbg",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; const p = s ? [s.tileX, s.tileY] : null; let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000c;color:#0f0;font:11px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } el.textContent = JSON.stringify({hasT: !!t, p, v: t ? t.vehicles.filter(v => v.rect.y >= 36 && v.rect.y <= 42).map(v => [v.route, v.rect, v.blockedSec, v.dir]) : null}); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "back",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { document.getElementById('qa-tr')?.remove(); return true; }",
+       "maxPresses": 1,
+       "settleMs": 50
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 8000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-car-stopline",
+   "label": "p-car-stopline",
+   "note": "STREET 2: player taps 3 cells right from the west kerb (21,43) onto the south crosswalk of the 23-28 junction (24,43) and stands 16 s; southbound cars must wait at the north stop line instead of entering the box and stopping on top of the crossing, then go again after the player steps back",
+   "mapId": "fl_street",
+   "x": 21,
+   "y": 43,
+   "facing": "right",
+   "switches": {
+    "sw_fl_bumped": true
+   },
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "flow",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "in-lane",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 16000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dbg",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; const p = s ? [s.tileX, s.tileY] : null; let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000c;color:#0f0;font:11px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } el.textContent = JSON.stringify({hasT: !!t, p, v: t ? t.vehicles.filter(v => v.rect.y >= 36 && v.rect.y <= 42).map(v => [v.route, v.rect, v.blockedSec, v.dir]) : null}); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "back",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { document.getElementById('qa-tr')?.remove(); return true; }",
+       "maxPresses": 1,
+       "settleMs": 50
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 120
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 350
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 8000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-run-dbg",
+   "label": "p-run-dbg",
+   "note": "FRI 11 run scene on fl_street_pm: overlay of blocked vehicles and autonomous NPCs (pos, activeMove, visible, opacity) when a car stands on the crosswalk next to a frozen pedestrian",
+   "mapId": "fl_street_pm",
+   "x": 9,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dbg",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000c;color:#0f0;font:10px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } const npcs = []; if (s && s.autonomousNPCs) for (const [id, m] of s.autonomousNPCs.entries()) { const pos = s.eventPositions && s.eventPositions[id]; const am = m.activeMove; npcs.push([id.replace('ev_fl_',''), pos ? [pos.x, pos.y] : null, am ? [am.fromX, am.fromY, am.toX, am.toY, am.dir] : null, s.eventSprites && s.eventSprites.get(id) ? s.eventSprites.get(id).visible : 'nosprite', m.opacity]); } el.textContent = JSON.stringify({ p: s ? [s.tileX, s.tileY] : null, v: t ? t.vehicles.filter(v => v.blockedSec > 0.5).map(v => [v.route, v.rect.x.toFixed(1), v.rect.y.toFixed(1), v.rect.w, v.rect.h, v.blockedSec]) : null, npcs }); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "p-run-trace",
+   "label": "p-run-trace",
+   "note": "FRI 11 run scene: 100 ms log of walkers and nearby vehicles; dumps the frames around the first car-body/walker-cell overlap",
+   "mapId": "fl_street_pm",
+   "x": 9,
+   "y": 13,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "inst",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { if (window.__qaLog) return true; const log = window.__qaLog = []; const t0 = performance.now(); setInterval(() => { const t = window.__oprnTransit && window.__oprnTransit(); const s = window.__oprnHooksScene; if (!t || !s) return; const ws = []; for (const [id, m] of s.autonomousNPCs.entries()) { const pos = s.eventPositions[id]; if (!pos) continue; const am = m.activeMove; ws.push([id.slice(-1), pos.x, pos.y, am ? [am.fromX, am.fromY, am.toX, am.toY] : 0]); } const cs = t.vehicles.filter(v => Math.abs(v.rect.x - 26) < 6 && Math.abs(v.rect.y - 15) < 7).map(v => [v.route.slice(0, 14), +v.rect.x.toFixed(2), +v.rect.y.toFixed(2), v.rect.w, v.rect.h, v.blockedSec]); log.push([Math.round(performance.now() - t0), s.running ? 1 : 0, ws, cs]); if (log.length > 400) log.shift(); }, 100); return true; }",
+       "maxPresses": 1,
+       "settleMs": 50
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "dump",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "() => { const log = window.__qaLog || []; const hit = log.findIndex(e => e[3].some(c => e[2].some(w => w[1] >= Math.floor(c[1]+1e-6) && w[1] < Math.ceil(c[1]+c[3]-1e-6) && w[2] >= Math.floor(c[2]+1e-6) && w[2] < Math.ceil(c[2]+c[4]-1e-6)))); const seg = hit < 0 ? log.slice(-12) : log.slice(Math.max(0, hit - 14), hit + 3); let el = document.getElementById('qa-tr'); if (!el) { el = document.createElement('pre'); el.id='qa-tr'; el.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#000e;color:#0f0;font:9px monospace;max-width:960px;white-space:pre-wrap;margin:0'; document.body.appendChild(el); } el.textContent = 'hit=' + hit + '\\n' + seg.map(e => JSON.stringify(e)).join('\\n'); return true; }",
+       "maxPresses": 1,
+       "settleMs": 100
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
