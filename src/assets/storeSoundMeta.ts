@@ -8,11 +8,14 @@
 // - 자리 id 는 `@/project/seCues` 의 SE_CUE_SPECS. 옛 이름 별칭(collapse → faint, evasion → miss)을 받는다.
 // - 아는 자리가 하나도 없으면 null(고르기에 쓸 수 없다). 모르는 새 자리 id 는 버리지 않고 extraSlots 로 넘긴다(태그·미래 자리).
 // - qa 는 참고용(제작자 자체 점수) — 순위에는 아주 작은 동점 깨기로만 쓴다.
+// - 환경음(BGS, 2026-10-31): group "ambient" + loopable:true 면 자리 없이도 읽는다(slots 는 비어도 된다). 어디·무슨 날씨의 소리인지는
+//   ambientTags(≤12: 비·바람·동굴·마을·rain·cave …)에 싣는다. 런타임은 맵 BGS(GameMap.bgs)·이벤트 bgs 채널로 루프 재생한다.
+//   환경음은 효과음 자리 표(seCues)·화풍 통째 걸기(sfx-style)에 들어가지 않는다.
 import { isKnownSeCue, isSeCueId } from "@/project/seCues";
 
 export const STORE_SOUND_STYLES = ["retro", "modern"] as const;
 export type StoreSoundStyle = (typeof STORE_SOUND_STYLES)[number];
-export const STORE_SOUND_GROUPS = ["ui", "battle", "magic", "field"] as const;
+export const STORE_SOUND_GROUPS = ["ui", "battle", "magic", "field", "dialogue", "jingle", "ambient"] as const;
 export type StoreSoundGroup = (typeof STORE_SOUND_GROUPS)[number];
 
 /** 옛 이름 → 지금 자리 id. 팩이 두 이름을 같이 싣는다(["faint","collapse"]). */
@@ -33,6 +36,12 @@ export interface StoreSoundMeta {
   readonly intensity: number | null;
   readonly durationSec: number | null;
   readonly loopable: boolean;
+  /** 환경음(BGS) — group ambient + loopable. 자리(slots)가 비어 있을 수 있다. */
+  readonly ambient: boolean;
+  /** 이벤트 소리 — 시스템 자리 없이 묶음·자기 이름(extraSlots)만 있다(괴물 울음·레이저 …). 자리에 걸지 않고 이벤트 효과음 재생으로 쓴다. */
+  readonly event: boolean;
+  /** 환경음의 장소·날씨 낱말(비·바람·동굴·rain·cave …). 효과음에는 빈 배열. */
+  readonly ambientTags: readonly string[];
   readonly pairWith: readonly string[];
   readonly summaryKo: string;
   readonly feelTags: readonly string[];
@@ -55,14 +64,17 @@ export function normalizeStoreSoundSlot(value: unknown): string | null {
   return isSeCueId(aliased) ? aliased : null;
 }
 
-/** meta.oprnSound 를 읽는다. 아는 자리가 하나도 없으면 null. */
+/** meta.oprnSound 를 읽는다. 아는 자리가 하나도 없으면 null — 환경음(group ambient + loopable)은 자리 없이도 읽는다. */
 export function readStoreSoundMeta(meta: unknown): StoreSoundMeta | null {
   const raw = isRecord(meta) ? meta.oprnSound : undefined;
   if (!isRecord(raw)) return null;
   const all = Array.isArray(raw.slots) ? [...new Set(raw.slots.slice(0, 8).map(normalizeStoreSoundSlot).filter((slot): slot is string => slot !== null))] : [];
   const slots = all.filter(isKnownSeCue);
-  if (!slots.length) return null;
   const group = (STORE_SOUND_GROUPS as readonly unknown[]).includes(raw.group) ? raw.group as StoreSoundGroup : null;
+  const ambient = group === "ambient" && raw.loopable === true;
+  // 이벤트 소리(2026-10-31): 시스템 자리는 없지만 묶음과 자기 자리 이름(cry-small·laser …)이 있는 소리 — 이벤트의 효과음 재생으로 쓴다.
+  const event = !slots.length && !ambient && group !== null && all.length > 0;
+  if (!slots.length && !ambient && !event) return null;
   const style = (STORE_SOUND_STYLES as readonly unknown[]).includes(raw.style) ? raw.style as StoreSoundStyle : null;
   const variant = raw.variant === "a" || raw.variant === "b" || raw.variant === "c" ? raw.variant : null;
   const qa = isRecord(raw.qa) ? [raw.qa.clapFit, raw.qa.tech, raw.qa.ear].map((v) => number(v, 0, 10)).filter((v): v is number => v !== null) : [];
@@ -76,6 +88,9 @@ export function readStoreSoundMeta(meta: unknown): StoreSoundMeta | null {
     intensity: number(raw.intensity, 1, 5),
     durationSec: number(raw.durationSec, 0, 600),
     loopable: raw.loopable === true,
+    ambient,
+    event,
+    ambientTags: ambient ? words(raw.ambientTags, 12, 24) : [],
     pairWith: words(raw.pairWith, 8, 120),
     summaryKo: text(raw.summaryKo, 200),
     feelTags: words(raw.feelTags, 12),
@@ -89,14 +104,16 @@ export function storeSoundTags(sound: StoreSoundMeta): string[] {
     ...sound.slots, ...sound.extraSlots,
     ...(sound.style ? [sound.style, STORE_SOUND_STYLE_LABELS[sound.style]] : []),
     ...(sound.group ? [sound.group] : []),
-    ...sound.mood, ...sound.feelTags,
+    ...sound.mood, ...sound.feelTags, ...sound.ambientTags,
+    ...(sound.ambient ? ["bgs", "환경음", "ambient", "루프"] : []),
   ].filter(Boolean))];
 }
 
 /** 조수가 읽는 한 줄 설명. */
 export function storeSoundDescription(sound: StoreSoundMeta): string {
   const facts = [
-    `자리 ${sound.slots.join("·")}`,
+    sound.ambient ? `환경음(BGS 루프)${sound.ambientTags.length ? ` ${sound.ambientTags.slice(0, 4).join("·")}` : ""}`
+      : sound.event ? `이벤트 소리 ${sound.extraSlots.join("·")}` : `자리 ${sound.slots.join("·")}`,
     sound.style ? `화풍 ${STORE_SOUND_STYLE_LABELS[sound.style]}` : "",
     sound.variant ? `${sound.variant.toUpperCase()}안` : "",
     sound.mood.length ? `분위기 ${sound.mood.join("·")}` : "",

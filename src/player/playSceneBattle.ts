@@ -1,6 +1,7 @@
 import { recordEncounteredMonsters, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { appendBattleReport } from "@/project/battleReports";
+import { recordBestiaryBattle } from "@/project/bestiary";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -414,6 +415,8 @@ export async function playBattle(
                   if (replaced.ok) session.monsterInstances[decision.instanceId] = replaced.instance;
                 }
                 appendBattleReport(session, project, snapshot, result);
+                // 괴물 도감 — 만난 적·쓰러뜨린 적. 새로 열린 칸 알림은 필드로 돌아온 뒤(refreshRuntimeSurfaces) 띄운다.
+                recordBestiaryBattle(project, session, snapshot.enemies, result);
                 // 전투를 연 이벤트가 승리 뒤 명령(처치 스위치 등)을 마친 다음에 굽는다 — autosave.ts.
                 if (result === "victory") requestAutosaveWhenIdle(session, "battleVictory");
                 settled = true;

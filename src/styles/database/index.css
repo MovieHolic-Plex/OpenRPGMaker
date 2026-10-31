@@ -120,6 +120,7 @@
 @import "./modern/village.css" layer(database);
 @import "./growth-tree.css" layer(database);
 @import "./combo-techs.css" layer(database);
+@import "./bestiary.css" layer(database);
 @import "./quick-battle-modal.css" layer(database);
 @import "./region-reference.css" layer(database);
 

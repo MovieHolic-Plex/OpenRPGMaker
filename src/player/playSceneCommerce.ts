@@ -15,6 +15,7 @@ import { el } from "@/util/dom";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 export { playShop } from "@/player/playSceneShop";
 
@@ -73,6 +74,8 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
         });
         clearRestEndedStates(scene);
         scene.syncRuntimeState();
+        // 여관 휴식 징글(innRest 자리, ME 채널). 자리가 비면 예전처럼 연출만.
+        playProjectSeCue("innRest");
         void playInnRest(scene, overlay, step, text, () => resolve("stayed"));
       },
       "inn-stay"
