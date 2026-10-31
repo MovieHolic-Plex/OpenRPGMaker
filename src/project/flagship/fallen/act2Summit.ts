@@ -383,5 +383,6 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   lensRoom(project, exec);
   summitScenes(project);
   // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
-  //   Lv14 넷, 회복약 6, n=40 — 발렌 없이 승률 72.5%·행동 48·회복약 4.2 / 발렌 손님 95%·행동 38. 「재의 회수」 63회 중 42회 끊김.
+  //   2026-10-31 완화(HP 5200→4900, 회수 132→118, 끊김 피해 650→520, 흩뿌리기 46→42) — scripts/qa/runtime/fs2-boss-sim.mts, Lv14 넷, 회복약 6, n=60:
+  //   기술 쓰는 판 발렌 없이 85%·행동 46 / 발렌 손님 98%·행동 38. 「공격」만 누르는 판은 여전히 0% — 회수(힘 모으기)를 얼음·큰 기술로 끊어야 이긴다.
 }
