@@ -300,6 +300,27 @@
 - `explanation`(모델이 쓴 요약, sourceHash 에 묶임)은 명령에 그대로 저장되고 목록 줄 끝에 ` — 첫 문장` 으로만 붙는다(최신일 때).
 - 테스트: `test/scriptLines.test.ts`(풀리는 스크립트 = 명령 줄, 안 풀리면 「계산」·「조건 분기」 줄), `test/scriptInsight.test.ts`(낱말·기호 읽기, 풀기 어댑터).
 
+### 가독성 2차 (2026-11-01)
+
+사용자 판정 「스크립트로 바꾼 건 좋은데 가독성이 여전히 별로」 → 코드 식별자·긴 이름·`{price}`·「조건이 맞을 때」 겹들여쓰기를 걷었다.
+저장 데이터·런타임은 그대로다(읽기 화면만 바뀐다).
+
+- **이름표는 스크립트 주석에 둔다**(`src/editor/script/scriptLabels.ts`, 런타임은 주석을 무시):
+  `const pct = …; // 할인율`(선언 줄 꼬리 주석, 여러 선언은 쉼표로 하나씩), `// @label A: 이미 당김`(셀프 스위치·아무 식별자),
+  `/** @label 할인율 */`(도움 함수 — `@lib` 모듈 안에서도 읽는다), 한 줄 단독 주석 `// 가격 계산` = 목록의 단계 제목.
+  이름표가 없으면 식별자를 낱말 사전으로 읽고(`discountedPrice` → 「할인된 가격」, `ev_lever1` → 「레버 1」), 모르는 낱말이 하나라도 있으면 식별자 그대로.
+  이름 없는 이벤트 id 도 같은 사전으로 읽는다. `game.player()`·`game.event(game.eventId())`·변수 읽기는 「주인공」·「이 이벤트」·변수 이름으로 바뀌고 줄을 따로 쓰지 않는다.
+- **짧은 이름**(`src/editor/shortRecordName.ts`): 스위치·변수 이름에서 괄호 속 글을 지우고 첫 ` — ` / `. ` / `: ` / ` = ` / `, ` 뒤 설명을 뗀다(「레버 퍼즐 진행 단계(0~4, …)」 → 「레버 퍼즐 진행 단계」).
+  일반 명령 요약(`commandSummary.ts` `recordName`)도 짧은 이름을 쓰고, 전체 이름은 그 토큰의 `hint` → 목록에서 `title`(브라우저 호버)이다. 지연 툴팁 롤아웃(아이콘 컨트롤 전용)에는 넣지 않았다.
+- **조건은 문장**: 스크립트 분기 노드에 `sentence`(「돈이 총액보다 적으면」, 「이 이벤트에서 이미 했으면」, 「3번이 지금 차례면」 — `순서` 목록 `ORDER[진행] === N`, 「「1병 산다」나 「3병 산다」를 골랐으면」). 받침은 `scriptLabels.josa/hasBatchim`.
+  `head`(「돈 < 총액」)는 남겼다. 일반 `fork` 줄도 한국어 화면에서는 「만약 「…」이 켜져 있으면」(`forkSentenceParts` — `commandSummary()` 문자열은 「조건 분기: …」 그대로라 도구·검색·차이 보기는 안 바뀐다). 다른 언어는 카탈로그가 있는 옛 문구.
+- **겹 줄이기**: 분기 머리 줄이 곧 조건 문장이고 「아니면」 한 줄만 붙는다. `else if` 사슬은 같은 깊이에 「아니고 …면」으로 편다. 일반 명령의 분기 머리 줄은 「그러면 / 아니면」(`shortArmLabel`, 목록만 — `eventCommandBranches` 라벨은 그대로).
+- **값 자리**: 메시지 템플릿 구멍은 «이름» 칩(`${price}` → «할인된 가격», 상수는 값 그대로). 일반 대사의 `\V[12]`·`\V[var_id]` 도 목록에서 «변수 짧은 이름» 칩(`commandList.ts` `resolveTextCodes`).
+- **분류 표시**: 줄마다 붙던 낱말 알약(대화·흐름·시스템)을 14~16px 아이콘만으로 줄였다(스크립트 줄은 인라인, 일반 줄은 `command-list-4.css` 끝 규칙 — 낱말은 `title`·`data-label` 에 남는다). 돈·아이템 쓰기는 `changeGold`·`changeItem` 분류(이전엔 「흐름」).
+- **접기**: 이름 없는 코드 줄이 셋 이상 이어지면 「계산 N줄 — 펼치기」 한 줄. 「+ 이 분기에 명령 추가」는 목록 위에 포인터가 있을 때만 보인다.
+- **조수 짝**: `assistant-skills/event-scripts/SKILL.md` 「Name things for the reader」 — 모든 `const`/`let` 꼬리에 한국어 이름, 셀프 스위치 `@label`, 블록마다 한 줄 제목, 스위치·변수 이름은 짧게.
+- 측정·전후 그림: `~/claude-viz/event-readability.html`. 테스트: `test/eventReadability.test.ts`(짧은 이름·이름표·읽기·조사), `test/scriptInsight.test.ts`·`test/scriptLines.test.ts`(문장·제목·칩·접기·else-if).
+
 ## 실조수 데모 (2026-10-31)
 
 빈 프로젝트(`wholeGamePrepare`)에 v2 조수(Opus 5.5 medium, 로컬 CLI 엔진, `wholeGameSession --v2`)가 자연어 세 줄로 지었다 —
