@@ -2149,6 +2149,12 @@ function buffIconToken(stateId: string): string | null {
   return null;
 }
 
+function stateIconImage(stateId: string): string | null {
+  const project = store.getCurrent();
+  const resourceId = project.database.states.find((state) => state.id === stateId)?.iconResourceId;
+  return resourceId ? resolveAssetResourceUrl(resourceId, { project }) : null;
+}
+
 function stateName(stateId: string): string {
   return store.getCurrent().database.states.find((state) => state.id === stateId)?.name ?? stateId;
 }
@@ -2243,8 +2249,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   cluster.dataset.hasStages = battler.statStages && !battler.defeated ? "true" : "false";
   // 에메랄드 HP 상자: 쓰러진 칸에는 화상·혼란 알약을 남기지 않는다 — 「전투불능」 하나로 충분하고 알약이 빈 HP 바 앞 「HP」 글자를 덮는다(D26).
   const hideStatesWhenDefeated = battler.defeated && isEmeraldMonsterStyle(store.getCurrent());
-  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
-  const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
+  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId), image: stateIconImage(stateId) }));
+  const entries: { icon: string; name: string; image?: string | null }[] = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
   // 능력치 단계 알약(ATK↑2·SPE↓1): 쓰러진 배틀러는 단계를 보이지 않는다. 상태 알약 뒤에 붙고 같은 클러스터 안이라 스킨별 배치 규칙을 그대로 탄다.
   const stagePills = battler.defeated ? [] : STAT_STAGE_KEYS.flatMap((stat) => {
     const stage = battler.statStages?.[stat] ?? 0;
@@ -2262,6 +2268,11 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     // 이름이 배지에 안 들어가는 영문 이름이면 CSS 의 3글자 약어(PSN·PAR…)로 남는다.
     const label = entry.icon === "death" || entry.icon.endsWith("-up") || entry.icon.endsWith("-down") ? null : stateBadgeLabel(entry.name);
     if (label) node.dataset.statusLabel = label;
+    // 상태 아이콘 그림(StateRecord.iconResourceId)이 있으면 글자 배지 대신 그림을 보인다. 없으면 기존 배지 그대로.
+    if (entry.image) {
+      node.classList.add("battle-status-icon-image");
+      node.style.backgroundImage = `url("${entry.image}")`;
+    }
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);
