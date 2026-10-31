@@ -2273,6 +2273,8 @@ export interface SystemRecords {
     readonly enabled: boolean;
     readonly label?: string;
   };
+  /** 괴물 도감(일반 RPG): 항목마다 칸(외형·습성·약점…)이 만남·처치·약점·조건으로 열린다. ESC 메뉴 「도감」. project/bestiary.ts · 저작 define_bestiary_entry. */
+  bestiary?: import("@/project/bestiary").BestiaryConfig;
   /** 클리어 후 타이틀의 "강하게 다시 하기". 생략 = 없음. */
   newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
   /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */

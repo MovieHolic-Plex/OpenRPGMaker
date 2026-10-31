@@ -118,6 +118,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["함정", "trap", "spike"], tools: ["place_trap"], label: "함정" },
   { terms: ["제한 시간 탈출", "무너지는 얼음", "갈라지는 얼음", "무너지는 탑", "가라앉는 다리", "갈라지는 바닥", "timed escape", "collapsing floor", "countdown escape"], tools: ["make_timed_escape"], label: "제한 시간 탈출" },
   { terms: ["이야기 일지", "일지", "story journal", "journal line"], tools: ["configure_story_journal"], label: "이야기 일지" },
+  { terms: ["괴물 도감", "몹 도감", "적 도감", "괴물 기록", "사냥꾼 도감", "bestiary", "monster codex"], tools: ["define_bestiary_entry", "list_bestiary"], label: "괴물 도감" },
   { terms: ["공통 이벤트", "common event", "field skill", "필드 스킬", "필드 기술", "field ability"], tools: ["upsert_common_event", "upsert_skill", "upsert_event"], label: "공통 이벤트·필드 스킬" },
   // ── 시스템·검사·기타 ──
   { terms: ["검사", "점검", "린트", "lint", "validate", "check"], tools: ["run_lint", "check_reachability", "evaluate_game_quality", "check_export_readiness"], label: "검사" },
