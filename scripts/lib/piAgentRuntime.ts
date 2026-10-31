@@ -43,7 +43,7 @@ import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewToo
 import { critiqueCutscene } from './cutsceneCritic.ts';
 import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
 import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
-import { readFileSync as readBundledAsset } from 'node:fs';
+import { appendFileSync, readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { setDotTextChat } from '../../src/ai/dotTextArt';
@@ -59,6 +59,7 @@ import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
+import { coerceToolArgs } from "../../src/ai/piAgent/argCoerce.ts";
 import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
@@ -657,10 +658,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
     const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
     let valid: unknown;
+    // 작은 모델의 모양 습관(다른 이름·MV 숫자/명령 코드·낱값↔객체/목록) — src/ai/piAgent/argCoerce.ts. 검증 전에 한 번 맞춘다:
+    // MV `list` 처럼 검증은 지나가지만 조용히 버려지는 칸도 있어서다. 고친 것은 영어로 결과에 붙인다.
+    const pre = coerceToolArgs(tool.parameters, params, tool.name);
+    if (pre.problems.length) {
+      emit({ type: 'execution_status', name: 'tool.args.unsupported', ok: false, summary: `${tool.name}: ${pre.problems[0]!.slice(0, 160)}` });
+      throw new Error(pre.problems.join("\n"));
+    }
+    let fixedNotes: string[] = [...pre.changes];
+    if (pre.changes.length) emit({ type: 'execution_status', name: 'tool.args.coerced', ok: true, summary: `${tool.name}: ${pre.changes.slice(0, 4).join(" · ").slice(0, 300)}`, data: { toolCallId: id, tool: tool.name, changes: pre.changes } });
+    params = pre.args as typeof params;
     try {
       valid = check(params);
     } catch (error) {
-      const repaired = repairToolArgs(tool.parameters, params);
+      const shaped = repairToolArgs(tool.parameters, params);
+      // 작은 모델의 모양 습관(다른 이름·MV 숫자/명령 코드·낱값↔객체/목록) — src/ai/piAgent/argCoerce.ts. 고친 것은 영어로 결과에 붙인다.
+      const coerced = coerceToolArgs(tool.parameters, shaped.args);
+      const repaired = { args: coerced.args, changes: [...shaped.changes, ...coerced.changes] };
+      fixedNotes = [...fixedNotes, ...(shaped.changes.length ? ["moved top-level fields into the object the tool expects"] : []), ...coerced.changes];
       let fixed: unknown;
       let repairedError: unknown;
       if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
@@ -687,7 +702,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
     }
     shapeFailures.delete(tool.name);
-    return executeCountingRefusals(tool, id, valid, signal);
+    const ran = await executeCountingRefusals(tool, id, valid, signal);
+    // 고친 모양을 모델에게 알린다 — 다음 호출부터 맞는 모양을 쓰게(조용히 고치기만 하면 같은 실수를 계속 한다).
+    return fixedNotes.length ? { ...ran, content: [{ type: "text" as const, text: `[Fixed call: ${fixedNotes.slice(0, 6).join("; ")}${fixedNotes.length > 6 ? `; +${fixedNotes.length - 6} more` : ""}]` }, ...ran.content] } : ran;
   } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
@@ -1163,6 +1180,35 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 실측(2026-09-26): "off" 를 보내면 HTTP 200 스트림에 error 이벤트 `Thinking effort off is not supported by
   // google-antigravity/gemini-3.8-flash. Supported efforts: minimal, low, medium, high` 가 실려 첫 턴에서 끝난다.
   const thinkingLevel = localCli ? undefined : normalizePiThinkingLevel(request.provider, request.thinkingLevel);
+  // 모델 호출 기록(OPRN_CALL_LOG=<jsonl 경로>) — 사용량을 돌려주지 않는 중계기(8318 등)의 토큰 추정과 호출별 지연을 재려고(2026-11-01 값싼 모델 대조).
+  // 한 줄 = 한 호출: 보낸 본문 글자 수(지시문·도구 목록·대화), 받은 글자 수(글·생각·도구 인자), 걸린 시간, 제공자가 준 사용량(있으면).
+  const callLog = (() => {
+    let pending: { at: number; systemChars: number; toolsChars: number; messagesChars: number; totalChars: number; messages: number } | undefined;
+    const len = (v: unknown) => (v === undefined ? 0 : typeof v === "string" ? v.length : JSON.stringify(v).length);
+    return {
+      request(payload: unknown) {
+        try {
+          const p = (payload ?? {}) as { system?: unknown; tools?: unknown; messages?: unknown[]; contents?: unknown[]; systemInstruction?: unknown };
+          const msgs = (p.messages ?? p.contents ?? []) as Array<{ role?: string }>;
+          const sys = p.system ?? p.systemInstruction ?? msgs.filter((m) => m?.role === "system" || m?.role === "developer");
+          pending = { at: Date.now(), systemChars: len(sys), toolsChars: len(p.tools), messagesChars: len(msgs.filter((m) => m?.role !== "system" && m?.role !== "developer")), totalChars: len(payload), messages: msgs.length };
+        } catch { pending = undefined; }
+      },
+      response(message: { content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string }) {
+        if (!pending) return;
+        const out = { text: 0, thinking: 0, toolArgs: 0, calls: 0 };
+        for (const b of (message.content ?? []) as Array<{ type?: string; text?: string; thinking?: string; arguments?: unknown }>) {
+          if (b?.type === "text") out.text += (b.text ?? "").length;
+          else if (b?.type === "thinking") out.thinking += (b.thinking ?? "").length;
+          else if (b?.type === "toolCall") { out.toolArgs += len(b.arguments); out.calls += 1; }
+        }
+        const line = { ts: new Date().toISOString(), model: String((model as { id?: string }).id ?? request.model ?? ""), provider: request.provider, ms: Date.now() - pending.at, ...pending, at: undefined,
+          out, usage: message.usage ?? null, stop: message.stopReason, ...(message.errorMessage ? { error: String(message.errorMessage).slice(0, 200) } : {}) };
+        pending = undefined;
+        try { appendFileSync(process.env.OPRN_CALL_LOG!, `${JSON.stringify(line)}\n`); } catch { /* 기록 실패는 실행을 바꾸지 않는다 */ }
+      },
+    };
+  })();
   const onPayload = (payload: unknown) => {
     const outgoing = request.provider === "google-antigravity"
       ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
@@ -1171,6 +1217,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     charsetGate.payload(outgoing);
     // 로컬 CLI 는 요청 본문을 우리가 못 본다 — 관문에 넘기는 것은 «모델에게 넘어간 도구 결과»뿐이라 프롬프트 검사로 내보내지 않는다.
     if (localCli) return outgoing;
+    if (process.env.OPRN_CALL_LOG) callLog.request(outgoing);
     // Observe the actual provider payload after normalization, not a rebuilt prompt.
     try {
       emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
@@ -1426,6 +1473,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
+      if (process.env.OPRN_CALL_LOG && !localLoop) callLog.response(message);
       referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       const receivedCharsets = charsetGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       if (receivedCharsets.length) emit({ type: 'execution_status', name: 'charset.image.received', ok: true,

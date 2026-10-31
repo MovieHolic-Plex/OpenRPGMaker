@@ -29,6 +29,8 @@ export type TodoCheckBody =
   | { kind: "room_graph"; map: string }
   | { kind: "layout_built"; map: string }
   | { kind: "layout_review"; map: string }
+  /** 번호 자물쇠: 숫자 입력 → 그 변수 == code 분기(맞으면 무엇이 열림), hintAfter 면 틀린 횟수를 세어 그 횟수에 힌트 대사. */
+  | { kind: "code_lock"; code: string; hintAfter?: number; on?: string }
   | { kind: "none" };
 
 export type TodoCheck = TodoCheckBody & TodoCheckCommon;
@@ -82,6 +84,7 @@ export const TODO_CHECK_KINDS = [
   "room_graph",
   "layout_built",
   "layout_review",
+  "code_lock",
   "none",
 ] as const satisfies readonly TodoCheckKind[];
 
@@ -104,6 +107,7 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
   room_graph: ["map"],
   layout_built: ["map"],
   layout_review: ["map"],
+  code_lock: ["code"],
   none: [],
 };
 
@@ -115,13 +119,13 @@ export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
 export const TODO_CHECK_SCHEMA = {
   type: "object",
   description:
-    "How a machine checks that this todo is finished. Required fields per kind: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name, room_zones=map, room_graph=map, layout_built=map, layout_review=map. battle, ending, objective and none need no field. If a machine cannot see it, kind=none. Names are the in-game names (any language).",
+    "How a machine checks that this todo is finished. Required fields per kind: place=name, person=name, talk=who, link=from+to, item=name, present_evidence=item, reachable=target, party_join=name, room_zones=map, room_graph=map, layout_built=map, layout_review=map, code_lock=code. battle, ending, objective and none need no field. If a machine cannot see it, kind=none. Names are the in-game names (any language).",
   properties: {
     kind: {
       type: "string",
       enum: [...TODO_CHECK_KINDS],
       description:
-        "place=a place (map) with that name exists, person=a person with that name is on a map, talk=that person has dialogue, battle=a battle is triggered (boss=boss battle), link=you can walk from map `from` into map `to`, ending=an ending is reached (map=from that map), item=that item exists (gives=it is actually given), present_evidence=that evidence can be presented, objective=an objective line is set, reachable=target is reachable on foot from the start (or from), party_join=a companion with that name joins the party (a changeParty add in a live event reachable on foot), room_zones=that interior map has min distinct zones, each with its focal part placed and reachable and a reason to go there (person, inspect point, stairs), without rows of the same furniture, layout_built=that interior map still holds the regions and pieces of the spec.layout it was laid from, landmark reachable, layout_review=you looked at that laid interior as a player and sent review_layout rounds (2 by default, an empty patch when nothing is wrong), room_graph=that interior map was built as the room graph you declared (room count, connections, every room reachable, declared stairs and side rooms present, each room's landmark placed and reachable), none=a reviewer checks by eye",
+        "place=a place (map) with that name exists, person=a person with that name is on a map, talk=that person has dialogue, battle=a battle is triggered (boss=boss battle), link=you can walk from map `from` into map `to`, ending=an ending is reached (map=from that map), item=that item exists (gives=it is actually given), present_evidence=that evidence can be presented, objective=an objective line is set, reachable=target is reachable on foot from the start (or from), party_join=a companion with that name joins the party (a changeParty add in a live event reachable on foot), room_zones=that interior map has min distinct zones, each with its focal part placed and reachable and a reason to go there (person, inspect point, stairs), without rows of the same furniture, layout_built=that interior map still holds the regions and pieces of the spec.layout it was laid from, landmark reachable, layout_review=you looked at that laid interior as a player and sent review_layout rounds (2 by default, an empty patch when nothing is wrong), room_graph=that interior map was built as the room graph you declared (room count, connections, every room reachable, declared stairs and side rooms present, each room's landmark placed and reachable), code_lock=a number lock: a live event asks for a number (inputNumber), the right code opens something (switch, transfer or ending), and with hintAfter the wrong tries are counted and a hint line shows at that count, none=a reviewer checks by eye",
     },
     name: { type: "string", description: "name for place/person/item; the companion (actor) name for party_join" },
     placeKind: { type: "string", enum: [...TODO_PLACE_KINDS], description: "kind of place (optional)" },
@@ -136,6 +140,9 @@ export const TODO_CHECK_SCHEMA = {
     item: { type: "string", description: "evidence item name for present_evidence" },
     text: { type: "string", description: "word that must appear in the objective line (optional)" },
     target: { type: "string", description: "target for reachable (event, person or map name)" },
+    code: { type: "string", description: "code_lock: the right number (digits)" },
+    hintAfter: { type: "number", description: "code_lock: wrong tries before the hint line shows (optional)" },
+    on: { type: "string", description: "code_lock: in-game name of the event that holds the lock, e.g. the safe or keypad the request names (optional)" },
     fresh: { type: "boolean", description: "true if this request must create or change it (default true) — something that already existed does not pass. false to only confirm something that exists" },
   },
   required: ["kind"],
@@ -193,6 +200,11 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
     case "layout_built":
     case "layout_review":
       return clean({ kind: k, map: str("map")! });
+    case "code_lock": {
+      const code = str("code")!.replace(/\D/gu, "");
+      const n = typeof r.hintAfter === "number" && Number.isFinite(r.hintAfter) ? Math.max(1, Math.min(9, Math.round(r.hintAfter))) : undefined;
+      return clean({ kind: k, code, hintAfter: n, on: str("on") });
+    }
     case "none":
       return { kind: k };
   } })();
