@@ -303,7 +303,7 @@ LIGHT = {
     # Now the forward snow stairs' stone: blue-grey stone tread tops, snow caps only on the nosings, road tones at the seams.
     # VQA r4: slate tops with heavy speckle read as gravel (h1) and 8 dark/white stripes as a vent (h4). Now snow-white tops like the
     # forward snow stairs, stone only where it peeks through the nosing caps, soft blue-grey creases, light grain only.
-    "snow-steps": dict(nos=R("#ffffff", "#ecf3fa"), under=R("#ecf3fa")[0], body=R("#ecf3fa", "#e6f0fa", "#d6e4f1"), speck=R("#d6e4f1")[0], crease=R("#b7cde3", "#93aecb"),
+    "snow-steps": dict(nos=R("#ffffff", "#ecf3fa"), under=R("#ecf3fa")[0], body=R("#ecf3fa", "#e6f0fa", "#d6e4f1"), speck=R("#d6e4f1")[0], crease=R("#93aecb", "#93a3bb"),   # r5: one tone darker crease
                        foot=R("#c0b0aa", "#b8c0c8"), crest=R("#dccfca", "#c0b0aa"), cap_break=R("#b9c6d8")[0]),
     "peat-steps": dict(nos=R("#b5a85b", "#a69a54"), under=R("#a69a54")[0], body=R("#978c4c", "#887e44", "#837b40"), speck=R("#887e44")[0], crease=R("#5f5a2e", "#655f31"), end=R("#6e5a3c")[0]),
 }
@@ -363,7 +363,15 @@ def stairs_light(style, w, rise):
     for X in range(W):
         px[X, 31] = C[0] if h(X, 31, 127) < 200 else C[1]                                              # crest: the terrace edge, lit
         px[X, 0] = Fo[0] if h(X, 0, 31) < 200 else Fo[1]                                               # foot: crease on the low road
-    if rise == 1 and style in ("peat-steps", "cave-steps"):
+    if rise == 1 and style == "snow-steps":
+        # VQA r5: a 1 px line did not separate the two deep treads; a 3 px blue-grey riser-shadow band at the foot of the far
+        # tread (like the forward snow stairs' risers) carries the step down.
+        (fy0, fy1, _) = bands(n)[0]
+        for X in range(W):
+            px[X, fy1 - 3] = R("#b9c6d8")[0] if h(X, 141, 3) < 200 else R("#d6e4f1")[0]
+            px[X, fy1 - 2] = R("#93a3bb")[0] if h(X, 143, 3) < 210 else R("#b9c6d8")[0]
+            px[X, fy1 - 1] = R("#71819a")[0] if h(X, 145, 3) < 200 else R("#93a3bb")[0]
+    if rise == 1 and style in ("peat-steps", "cave-steps", "snow-steps"):
         # VQA r4: the near tread's lit flank rims and lit crest framed it as a mat. Edge to edge: no flank, near edge darker.
         for X in range(W): px[X, 31] = L["crease"][1] if h(X, 31, 139) < 150 else L["body"][2]
         return im
