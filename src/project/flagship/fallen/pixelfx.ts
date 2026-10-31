@@ -6,9 +6,9 @@
 //
 // 1. 기술: 원래 애니메이션 레코드의 소리·흔들림을 효과의 터지는 박자로 옮긴 pixelfx 레코드(anim_pfx_fs_*)로 바꾼다.
 //    직업 연출 계약이 있는 기술(십자베기 등)은 연출이 제 소리를 내므로 소리를 옮기지 않는다(두 번 울린다).
-// 2. 필드: 벽난로·대장간 화덕·우물 밑 횃불·성문 촛대·광장 모닥불에 불꽃, 서리나루 눈, 북쪽 숲 어귀(밤) 반딧불, 우물 밑 물방울.
-//    16px 칩셋 위라 효과 상자가 크다 — 불꽃은 받침이 없는 spirit-flame 을 불색으로 칠해 쓴다(횃불·모닥불 효과는 제 받침을 그려
-//    칩셋 그림과 겹친다). 낮 맵에는 반딧불을 두지 않는다.
+// 2. 필드: 서리나루 광장 모닥불, 서리나루 눈·밤 오로라, 북쪽 숲 어귀(밤) 반딧불, 우물 밑 물방울.
+//    16px 칩셋에는 효과 불꽃이 크다(spirit-flame 은 두 칸 반) — 벽난로·화덕·벽 촛대에 얹어 보니 아궁이 밖으로 솟아 뺐다
+//    (2026-10-31 실화면). 벽 촛대는 상층 벽 칸 밑에 가려 보이지도 않았다. 낮 맵에는 반딧불을 두지 않는다.
 // 3. 이야기: 성벽 개구멍 먼지, 하늘탑 마법진 순간이동.
 import type { BattleAnimationRecord, BattleAnimationTiming, Command, EventPage, EventPixelFx, GameEvent, GameMap, PixelFxSpec, Project, SkillRecord } from "@/project/types";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
@@ -119,31 +119,17 @@ interface FieldFx {
   readonly note: string;
 }
 
-const flame = (offsetX: number, offsetY: number, light = 0.7, seed = 1): EventPixelFx =>
-  ({ effectId: "fire/spirit-flame", palette: [...PAL.hearth], light, offsetX, offsetY, seed, layer: "auto" });
-
 export const FALLEN_FIELD_FX: readonly FieldFx[] = [
-  // 벽난로·화덕 — 칩셋의 불 그림 위에 움직이는 불꽃과 빛.
-  { map: "fs_inn", key: "hearth_a", at: { x: 12, y: 11 }, fx: flame(8, -2, 0.6, 3), note: "별빛 여관 벽난로(위층 거실)" },
-  { map: "fs_inn", key: "hearth_b", at: { x: 15, y: 17 }, fx: flame(8, -2, 0.6, 5), note: "별빛 여관 벽난로(홀)" },
-  { map: "fs_smithy", key: "forge", at: { x: 17, y: 3 }, fx: flame(8, -1, 0.9, 7), note: "로한의 대장간 화덕" },
-  { map: "fs2_smithy_night", key: "forge", at: { x: 17, y: 3 }, fx: flame(8, -1, 0.9, 7), note: "대장간 화덕(통금의 밤)" },
-  { map: "fs2_frostford_inn", key: "hearth", at: { x: 2, y: 2 }, fx: flame(8, -2, 0.6, 9), note: "얼음등 여관 벽난로" },
-  { map: "fs2_obs_night", key: "hearth", at: { x: 26, y: 17 }, fx: flame(8, -2, 0.6, 11), note: "천문대 서재 벽난로(연금의 밤)" },
-  // 우물 밑 — 벽 횃불 둘, 바닥 물웅덩이에 떨어지는 물방울.
-  { map: "fs2_well_shaft", key: "torch_w", at: { x: 5, y: 1 }, fx: flame(0, -4, 0.8, 13), note: "우물 밑 벽 횃불(서)" },
-  { map: "fs2_well_shaft", key: "torch_e", at: { x: 9, y: 1 }, fx: flame(0, -4, 0.8, 17), note: "우물 밑 벽 횃불(동)" },
+  // 서리나루 광장 모닥불 — 칩셋의 작은 모닥불 자리에 장작·불꽃·연기·불티가 움직이는 모닥불을 얹는다(눈밭에 따뜻한 빛).
+  { map: "fs2_frostford", key: "bonfire", at: { x: 19, y: 45 }, fx: { effectId: "fire/campfire", light: 0.9, offsetX: 6, offsetY: -2, seed: 29, layer: "auto" }, note: "서리나루 광장 모닥불" },
+  // 우물 밑 — 천장에서 바닥 물웅덩이로 떨어지는 물방울.
   { map: "fs2_well_shaft", key: "drip", at: { x: 3, y: 6 }, fx: { effectId: "water/drip", light: 0.6, offsetY: -4, layer: "back" }, note: "우물 밑 물방울" },
-  // 서리나루 — 성문 촛대 둘, 광장 모닥불.
-  { map: "fs2_frostford", key: "gate_w", at: { x: 18, y: 6 }, fx: flame(-2, -6, 0.7, 19), note: "서리나루 성문 촛대(서)" },
-  { map: "fs2_frostford", key: "gate_e", at: { x: 21, y: 6 }, fx: flame(2, -6, 0.7, 23), note: "서리나루 성문 촛대(동)" },
-  { map: "fs2_frostford", key: "bonfire", at: { x: 19, y: 45 }, fx: flame(0, -4, 1, 29), note: "서리나루 광장 모닥불" },
-  { map: "fs2_frostford_night", key: "gate_w", at: { x: 18, y: 6 }, fx: flame(-2, -6, 0.7, 19), note: "얼음 위의 밤 성문 촛대(서)" },
-  { map: "fs2_frostford_night", key: "gate_e", at: { x: 21, y: 6 }, fx: flame(2, -6, 0.7, 23), note: "얼음 위의 밤 성문 촛대(동)" },
-  // 화면 층 — 날씨·반딧불.
+  // 화면 층 — 날씨·반딧불·오로라.
   { map: "fs2_frostford", key: "snow", at: { x: 1, y: 0 }, fx: { effectId: "weather/snow", layer: "screen", seed: 2 }, note: "서리나루 눈(화면 층)" },
   { map: "fs2_frostford_night", key: "snow", at: { x: 1, y: 0 }, fx: { effectId: "weather/snow", layer: "screen", seed: 4 }, note: "얼음 위의 밤 눈(화면 층)" },
-  { map: "map_field_north_1", key: "fireflies", at: { x: 1, y: 0 }, fx: { effectId: "weather/fireflies", layer: "screen", light: 0.8, seed: 3 }, note: "북쪽 숲 어귀(밤) 반딧불(화면 층)" },
+  { map: "fs2_frostford_night", key: "aurora", at: { x: 2, y: 0 }, fx: { effectId: "weather/aurora", layer: "screen", light: 0.6, seed: 5 }, note: "얼음 위의 밤 오로라(화면 층)" },
+  // 반딧불 효과의 앞 층에는 풀잎 한 줄이 화면 아래에 깔린다 — 화면 밖으로 밀어 낸다.
+  { map: "map_field_north_1", key: "fireflies", at: { x: 1, y: 0 }, fx: { effectId: "weather/fireflies", layer: "screen", light: 1.4, offsetY: 24, seed: 3 }, note: "북쪽 숲 어귀(밤) 반딧불(화면 층)" },
 ];
 
 function fxPage(id: string, name: string, pixelFx: EventPixelFx): EventPage {
@@ -207,7 +193,7 @@ function applyStoryFx(project: Project, report: { applied: string[]; skipped: st
   const holeAt = hole?.commands.findIndex((c) => textOf(c).includes("돌 하나가 끌려 나왔다")) ?? -1;
   if (hole && holeAt >= 0) {
     const anim = ensureFxRecord(project, "anim_pfx_fs_hole_dust", "개구멍 돌가루 · pixelfx spawn/poof", { effectId: "spawn/poof", palette: [...PAL.dust], offsetY: -6 });
-    hole.commands.splice(holeAt, 0, { kind: "showAnimation", target: { eventId: "ev_fs2_hub_hole" }, animationId: anim, wait: false } as unknown as Command);
+    hole.commands.splice(holeAt + 1, 0, { kind: "showAnimation", target: { eventId: "ev_fs2_hub_hole" }, animationId: anim, wait: false } as unknown as Command);
     report.applied.push("이야기 B4 성벽 개구멍 돌 빼기 → spawn/poof(흙먼지 색)");
   } else report.skipped.push("이야기 B4 성벽 개구멍 — ev_fs2_hub_hole_open 의 「돌 하나가 끌려 나왔다」 줄을 못 찾음");
 
