@@ -7,7 +7,7 @@
 //            배율 그대로(칸과 같은 배율) 시야에 바둑판으로 깔려야 한다 — 눈송이가 칸 하나만큼 커지면 회귀다.
 //   battle : editor-authored-demo-v3 + 도트 측면(retro2003) — 주인공 기술 「서리 폭발」(ice/frost-nova)과 통상 공격(melee/sword-slash).
 //
-// 사용: node scripts/qa/runtime/pixelfx.capture.mjs --out /tmp/pixelfx-qa [--mode field,stress,battle,screen] [--stress 16] [--screen-fx weather/snow,weather/aurora] [--viewport 960x720]
+// 사용: node scripts/qa/runtime/pixelfx.capture.mjs --out /tmp/pixelfx-qa [--mode field,stress,battle,screen] [--stress 16] [--screen-fx weather/snow,weather/aurora] [--viewport 960x720] [--resolution 400x225]
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import { join, resolve } from "node:path";
@@ -27,6 +27,8 @@ const modes = arg("mode", "field,stress,battle").split(",");
 const stressCount = Number(arg("stress", "16"));
 const screenEffects = arg("screen-fx", "weather/snow,weather/aurora").split(",");
 const [viewW, viewH] = arg("viewport", "960x720").split("x").map(Number);
+/** screen 모드: 게임 논리 해상도(예: 400x225 — 효과 캔버스 320 보다 넓어 가로 바둑판·거울 이음매를 본다). 없으면 프로젝트 값. */
+const screenResolution = arg("resolution", "");
 
 const pfx = (effectId, extra = {}) => ({
   id: `anim_pfx_${effectId.replace(/[/-]/g, "_")}`, name: `pixelfx ${effectId}`, scope: "singleTarget", position: "feet",
@@ -95,6 +97,10 @@ async function screenProject(effectId) {
   const map = project.maps[project.startMapId];
   const { x, y } = project.startPos;
   map.events.push(ambientEvent("ev_pfx_screen", x, y - 3, { effectId, layer: "screen" }));
+  if (screenResolution) {
+    const [width, height] = screenResolution.split("x").map(Number);
+    project.system.playResolution = { width, height };
+  }
   return JSON.stringify(project);
 }
 
