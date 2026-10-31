@@ -400,11 +400,12 @@ function cellEvents(map: GameMap): void {
       narrate("굵은 쇠살문이 잠겨 있다."),
       say(KAEL, "열쇠 구멍은 있는데…"),
     ]),
-    // 빵을 받고도 문만 두드리면 엘레나가 길을 짚는다(독립 플레이 판정: 180걸음 동안 문 앞에서 맴돌았다).
+    // 빵을 받고도 문만 두드리면 엘레나가 리노의 말을 되짚는다(독립 플레이 판정: 180걸음 동안 문 앞에서 맴돌았다).
+    // 해법(침대에 내리친다)은 말하지 않는다 — 첫 플레이 검수(2026-10-31): 정답을 불러 줘 퍼즐이 사라졌다.
     page(`${gateId}_hint`, "잠김(빵 힌트)", [sw(SW_BREAD), sw(SW_KEY, false)], [
       narrate("굵은 쇠살문이 잠겨 있다."),
       say(KAEL, "열쇠 구멍은 있는데…"),
-      say(ELENA, "…리노가 「꼭꼭 씹어라」 그랬지.\n그 무거운 빵, 침대 모서리에 내리쳐 볼까?"),
+      say(ELENA, "…리노는 왜 「꼭꼭 씹어라」를\n두 번이나 말했을까."),
     ]),
     page(`${gateId}_key`, "열쇠로 연다", [sw(SW_KEY), sw(SW_CELL_OPEN, false)], [
       narrate("빵에서 나온 열쇠를 꽂고 돌렸다. 딸깍."),
@@ -515,14 +516,13 @@ function barracks(project: Project, exec: Exec): void {
     coneDegrees: 90, alertMs: 450, rush: true, rushSteps: 5, rushStepMs: 90, chaseStepMs: 130, searchMs: 1800,
     visionLight: { color: "#ffd27a", intensity: 0.85 },
   });
-  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 등불 부채꼴·멈췄다 돌아서는 순찰·침상 밑·목표.
+  // 처음 들어서면 엘레나가 한 줄만 — 짐을 찾자, 등불을 피하자. 길(왼쪽 벽·침상 밑)은 말하지 않는다(첫 플레이 검수 2026-10-31: 해법을 통째로 불렀다).
+  // 목표는 무기고 상자의 노란 불빛, 위험은 바닥의 등불 부채꼴이 보여 준다.
   const hintId = "ev_fs2_barracks_enter";
   addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
     page(`${hintId}_p`, "막사 규칙", [sw("sw_fs2_barracks_entered", false)], [
       setSw("sw_fs2_barracks_entered"),
-      say(ELENA, "(속삭임) 저기, 오른쪽 위 무기고.\n불빛 새는 상자에 우리 짐이 있어. 사다리도 그 옆이야."),
-      say(ELENA, "(속삭임) 야경꾼 둘이 돌아. 손등불이 비추는\n바닥은 밟지 마. 끝까지 가면 멈췄다가 돌아서."),
-      say(ELENA, "(속삭임) 등 돌렸을 때 왼쪽 벽을 타고 올라가자.\n침상 앞에서 조사하면 밑으로 숨을 수 있어."),
+      say(ELENA, "(속삭임) 우리 짐, 여기 어딘가 있을 거야.\n…야경꾼 등불에만 걸리지 말자."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
@@ -533,7 +533,7 @@ function barracks(project: Project, exec: Exec): void {
       page(`${id}_p`, "숨 고르기", [sw(SW_BARRACKS_MID, false)], [
         setSw(SW_BARRACKS_MID),
         se("cc0-se-orp-inventory-cloth"),
-        say(ELENA, "(속삭임) …휴. 여기 침상 그늘이면 안 보여.\n침상에서 침상으로, 하나씩 건너가자."),
+        say(ELENA, "(속삭임) …휴. 침상 그늘이면 안 보여."),
       ], { priority: "below", trigger: { kind: "playerTouch" } }),
     ]);
   });
