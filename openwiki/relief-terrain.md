@@ -315,6 +315,13 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - 구조 검사기: `scripts/content/lib/relief-check.mjs`(`checkRelief`) — 얇은 벽·계단 양옆·층계참·다리 판·도달 오류 코드(목록은 runtime-project-schema 의 r3 항목).
 - 양식 견본: `vite-node scripts/content/relief-style-sheet.mts [out.png]`(작은 지형을 모든 양식으로).
 - 경사로 도트 재생성: `node scripts/content/build-relief-ramp-art.mjs`(`tiledata/relief-art/*.png` → `rampArt.json`).
+- **절벽 깎은 경사로·계단 통째 조각(2026-10-31, #4031·#4036 뒤 굽기):** `rampArt.json["grass-steps"].pieces` — 키 `<ramp|stairs>:n:<w>x1:<단 차>`(w 2·3, 단 차 1~4), 조각 = w×16 × (단 차+1)×16, 위 단 차 줄이 남향 절벽 면을 정확히 대신하고 마지막 줄은 그 길(흙길·포장길)이 곧게 이어지는 모습이다.
+  그림 원본 `scripts/experiments/bbox-village/ramps/pieces.py`(코드 손 도트, 버들항 색 잠금, 발치 줄은 `sample_foot.py` 가 실제 렌더에서 뜬 길 조각).
+  굽기는 `python3 scripts/content/bake-relief-cut-pieces.py` 하나 — 16장 모두 object-gate 를 통과(서명된 사람·위임 허용 포함)해야만 쓴다. `build-relief-ramp-art.mjs` 는 이 `pieces` 를 그대로 옮긴다.
+  렌더러는 `screen.ts reliefRenderOptions` → `cutPieces.ts cutPieceFor` 로 고르고 `render.ts paintSlopePieces` 가 찍는다. 그 양식에서 남향(북쪽 오르막) 한 줄 경사로는 모두 이 조각으로 그린다.
+  **겹친 계단(한 줄 띠 = 층계참):** 엔진에는 h=2 경사로 하나다(띠 칸이 아래 단으로 내려간다). 렌더러는 전체 단 차만 알므로 **정본 나눔**을 하나로 정했다 —
+  아래 = floor(전체/2), 위 = 나머지(1+1·1+2·2+2·2+3·3+3·3+4·4+4). 그림은 낱조각 둘을 이어 붙여 그 자리에서 만든다(새 화소 없음, 관문은 낱조각 16장).
+  그 밖의 나눔(3+1 등)과 세 단 이상 겹침은 깔 때 거절한다(`lay.mts`). 깎은 길 양옆 칸의 절벽은 같은 면(같은 아래·위 단)이어야 한다 — 절벽이 꺾이는 자리에 놓으면 옆벽이 풀밭에 선다.
 - 게임 화면: `scripts/qa/runtime/relief.scenario.mjs` + `relief-fixture.mts`(출하 플레이어 경로). **픽스처는 콘텐츠 카탈로그(r3 브랜치의 fantasy-500 catalog.json, 15MB)를 읽는다 — 이 통합에는 넣지 않았다.** `RELIEF_CATALOG=<경로>` 로 지정한다
   (`git show agent/r3-relief-stairs:tiledata/fantasy-500/catalog.json > .omo/runtime-qa/fantasy-500-catalog.json` — 읽기 전용 추출). 그 맵은 정글 시트(r3 에서 4590칸으로 확장)를 쓰므로 main 의 시트(3900칸)에서는 일부 칸이 비어 보일 수 있다 — 걷기·들림·가림 판정이 목적이다.
 - 편집기 화면: `scripts/qa/relief-editor-capture.mjs <픽스처.json> <출력.png>`(vite 개발 서버를 직접 띄운다 — 워크트리에서는 `VITE_CACHE_DIR` 를 따로 줘라).

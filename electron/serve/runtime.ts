@@ -486,7 +486,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         const assetKey = `asset:${randomUUID()}`;
         const assetSession = await sessions.open(assetKey, await projectPath(project), team);
         try {
-          const asset = assetSession.store.listAssets().find((row) => row.sha256 === sha256);
+          const asset = sha256 ? assetSession.store.findAsset(sha256) : null;
           if (!asset) {
             response.writeHead(404).end("unknown asset");
             return;
