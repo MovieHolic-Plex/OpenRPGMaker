@@ -27,7 +27,7 @@ import {
 // 날씨는 Phaser 전용 레이어가 소유하며 이 경로에서는 다루지 않는다.
 // 색조는 tintDurationMs 가 있으면 목표 색으로 점진 트윈(requestAnimationFrame)한다.
 // 일회형 효과(flash/shake)는 Phaser 카메라 API 로 별도 처리되며 여기서 다루지 않는다.
-type FlashHold = { readonly color: Rgba; readonly until: number };
+type FlashHold = { readonly color: Rgba; readonly peakUntil: number; readonly until: number };
 const flashHolds = new WeakMap<HTMLElement, FlashHold>();
 
 /** 화면 위 DOM 층(색조·레터박스)이 붙는 무대. */
@@ -64,9 +64,34 @@ export function syncCutsceneHudVisibility(scene: PlaySceneContext): void {
 export function holdScreenFlash(scene: PlaySceneContext, color: Rgba, durationMs: number): void {
   const host = overlayHost(scene);
   if (!host) return;
-  const until = nowMs() + Math.max(80, durationMs);
-  flashHolds.set(host, { color, until });
+  // 플래시는 번쩍이고 걷혀야 한다. 예전에는 전체 시간(호출자가 최소 800ms 로 늘린다) 내내 85% 단색으로 덮었다가
+  // 한 번에 꺼져, 300ms 짜리 빨강 플래시가 0.8초 동안 화면 전체를 빨간 판으로 바꿨다(폴른 스타 하늘탑 녹화 2026-11-01).
+  // 처음 잠깐(전체의 1/5, 60~160ms) 그 색으로 덮고, 남은 시간 동안 투명해진다. 첫 프레임은 그대로라 Test Play 캡처에도 남는다.
+  const total = Math.max(80, durationMs);
+  const start = nowMs();
+  const hold: FlashHold = { color, peakUntil: start + flashPeakMs(total), until: start + total };
+  flashHolds.set(host, hold);
   setImmediateColor(host, color, "screen-flash");
+  if (typeof requestAnimationFrame !== "function") return;
+  const tick = (): void => {
+    if (flashHolds.get(host) !== hold) return;
+    const now = nowMs();
+    if (now >= hold.until) return;
+    setImmediateColor(host, flashColorAt(hold, now), "screen-flash");
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+/** 플래시가 꽉 찬 색으로 머무는 시간 — 전체의 1/5, 60~160ms. */
+export function flashPeakMs(totalMs: number): number {
+  return Math.min(totalMs, Math.max(60, Math.min(160, Math.round(totalMs * 0.2))));
+}
+
+function flashColorAt(hold: FlashHold, now: number): Rgba {
+  if (now <= hold.peakUntil) return hold.color;
+  const left = Math.max(0, 1 - (now - hold.peakUntil) / Math.max(1, hold.until - hold.peakUntil));
+  return { ...hold.color, a: hold.color.a * left };
 }
 
 /**
@@ -94,7 +119,7 @@ export function syncScreenEffects(scene: PlaySceneContext): void {
 
   const flash = flashHolds.get(host);
   if (flash && nowMs() < flash.until) {
-    setImmediateColor(host, flash.color, "screen-flash");
+    setImmediateColor(host, flashColorAt(flash, nowMs()), "screen-flash");
     return;
   }
   if (flash) flashHolds.delete(host);

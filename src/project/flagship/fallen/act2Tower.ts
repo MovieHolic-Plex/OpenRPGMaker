@@ -332,7 +332,8 @@ function floorOne(project: Project, exec: Exec): void {
       wait(500),
       se("cc0-se-osx-metal-03"), shake(1, 300),
       say(SARAH, "…쇳소리다. 안쪽 홀에서."),
-      camTo("ev_fs2_t1_stage_knight", 1300),
+      // 1배로는 기사·기계가 손톱만 해서 「쳐 낸다」가 안 읽혔다(첫 플레이 검수 2026-11-01) — 2배로 당겨 본다.
+      camTo("ev_fs2_t1_stage_knight", 1300, 2),
       wait(300),
       route("ev_fs2_t1_stage_knight", [{ kind: "move", dir: "left" }]),
       se("cc0-se-osx-metal-03"), flash("white", 200),
@@ -346,7 +347,7 @@ function floorOne(project: Project, exec: Exec): void {
       // 기계가 홀 가운데 자리(필드 적이 서는 칸)로 한 걸음 물러나 선다 — 장면이 끝나고 필드 적으로 바뀔 때 칸이 튀지 않게.
       route("ev_fs2_t1_stage_machine", [{ kind: "move", dir: "up" }, { kind: "turn", dir: "down" }]),
       wait(400),
-      camBack(700),
+      camBack(700, 1),
       say(SARAH, "기계가 기사를 쳤어.\n…저것들한텐 우리도 기사도 똑같나 봐."),
       say(ELENA, "벽 글자 봐. 천문대 지하 패널이랑 같아.\n이 탑도 그 사람들이 지었어."),
       say(KAEL, "부딪히지 말고 돌아서 가자.\n이리스는 위층이야."),
@@ -440,7 +441,8 @@ function floorTwo(project: Project, exec: Exec): void {
     splitText: "발밑 판이 덜컹 꺼졌다! 양쪽 날개 사이로 쇠창살이 내리꽂혔다.",
     afterSplitLines: [
       { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
-      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
+      // 해법(「내가 거울을 돌릴게, 빛이 그쪽 문에 닿으면」)을 먼저 말해 퍼즐이 지시가 됐다(적대 검수 2026-11-01) — 갇혔다는 것만.
+      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 이쪽도 창살에 막혔어.\n벽에 뭔가 장치가 있긴 한데…" },
       { speaker: KAEL, text: "들려! 우리도 이쪽에서\n열 방법을 찾아볼게." },
       { text: "수정 받침을 조사하면 엘레나 쪽으로 넘어간다." },
     ],
@@ -629,6 +631,12 @@ function floorFour(project: Project, exec: Exec): void {
     hint: "이리스가 손끝을 들자 둘레가 환해졌다.",
     blockedText: "발밑이 캄캄하다.\n한 발짝 앞이 바닥인지 낭떠러지인지 모르겠다.",
   });
+  // 도구의 어둠 자동 페이지는 4층에 들어설 때마다(체크포인트·계단 왕복 포함) 「발밑이 캄캄하다 … 손끝 빛을 쓸 줄 아는 동료가 있으면」을 띄웠다 —
+  // 도착 대사(엘레나·새라)보다 먼저 답(누가 밝히는지)을 말하고, 드나들 때마다 되풀이됐다(첫 플레이 검수 2026-11-01). 들어설 때는 말없이 어둡게만 둔다.
+  // 골방 길목(blockCells)을 조사하면 여전히 「발밑이 캄캄하다」 한 줄이 나온다.
+  for (const pg of ev(project, FS2_T4, "ev_fs2_t4_dark").pages ?? []) {
+    for (const c of pg.commands) if (c.kind === "fork") (c as unknown as { else: Command[] }).else = [];
+  }
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
   Object.assign(light, { name: "손끝 빛", description: "필드 기술. 손끝에 빛을 맺어 어둠을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
@@ -865,6 +873,41 @@ function floorFour(project: Project, exec: Exec): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 둥근 계단방 꾸미기 — author_dungeon 은 링 계단방마다 같은 자리에 같은 책장 둘을 놓아 「층을 복사해 붙인 탑」으로 읽혔다
+// (첫 플레이 검수 2026-10-31). 2층(박쥐가 든 회랑)은 책장을 걷고 뼈·부서진 통·돌 부스러기로, 4층은 렌즈·석관이 이미 차지한다.
+// ════════════════════════════════════════════════════════════════════
+
+const BOOKSHELF_KITS = ["bd-pick-dungeon-theme-bookshelf", "bd-pick-dungeon-theme-bookshelf-tall"];
+
+function redressRing(project: Project, exec: Exec, mapId: string, swaps: { kit: string; dx: number; dy: number }[][]): void {
+  const map = M(project, mapId);
+  const ts = project.tilesets.beodeul_city as unknown as { structureKits?: { id: string; width: number; height: number; rows: { upperTiles?: number[] }[] }[] } | undefined;
+  const shelfTiles = new Set<number>();
+  for (const id of BOOKSHELF_KITS) for (const r of ts?.structureKits?.find((k) => k.id === id)?.rows ?? []) for (const t of r.upperTiles ?? []) if (t >= 0) shelfTiles.add(t);
+  if (!shelfTiles.size) throw new Error("[fallen-star tower] 책장 키트 그림이 없다");
+  const up = map.upperTiles as number[];
+  // 책장 덩이(왼쪽 위 칸) — 위·왼쪽이 책장이 아닌 책장 칸.
+  const shelf = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && shelfTiles.has(up[y * map.width + x]!);
+  const anchors: Cell[] = [];
+  for (let y = 0; y < Math.min(map.height, 16); y += 1) for (let x = 0; x < map.width; x += 1) if (shelf(x, y) && !shelf(x - 1, y) && !shelf(x, y - 1)) anchors.push({ x, y });
+  // 생성기 판이 바뀌어 책장 수가 다르면(다른 방 책장까지 잡을 수 있다) 건드리지 않는다 — 굽기를 멈출 일은 아니다.
+  if (anchors.length !== swaps.length) { console.warn(`[fallen-star tower] ${mapId} 둥근 방 책장이 ${anchors.length}개다(기대 ${swaps.length}) — 꾸미기를 건너뛴다`); return; }
+  // 걷기: 덩이마다 책장 칸을 비운다(아래층 바닥이 드러난다).
+  for (const a of anchors) for (let y = a.y; shelf(a.x, y) || shelf(a.x + 1, y); y += 1) for (const x of [a.x, a.x + 1]) if (shelf(x, y)) up[y * map.width + x] = -1;
+  anchors.forEach((a, i) => {
+    for (const s of swaps[i]!) if (!stamp(project, exec, mapId, s.kit, { x: a.x + s.dx, y: a.y + s.dy })) throw new Error(`[fallen-star tower] ${mapId} (${a.x + s.dx},${a.y + s.dy}) 에 ${s.kit} 를 못 놓았다`);
+  });
+}
+
+export function ringRooms(project: Project, exec: Exec): void {
+  // main #4125 뒤로 1·3층 계단방은 팔각 홀·서쪽 방으로 바뀌어 저마다 다르다. 링 계단방은 2층(과 렌즈·석관이 차지한 4층)만 남았다.
+  redressRing(project, exec, FS2_T2, [
+    [{ kit: "bd-pick-dungeon-cave-broken-pillar", dx: 0, dy: 0 }, { kit: "bd-pick-aqueduct-sewer-bones", dx: 1, dy: 1 }],
+    [{ kit: "bd-pick-shipwreck-reef-broken-barrel", dx: 0, dy: 1 }, { kit: "bd-pick-castle-catacombs-rubble", dx: 1, dy: 0 }],
+  ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 /** 탑 공통 — 전투 배경·같은 음악(층마다 곡이 바뀌던 것을 하나로)·알아채기·임무 줄기. */
 function towerCommon(project: Project, exec: Exec): void {
@@ -906,6 +949,7 @@ function towerCommon(project: Project, exec: Exec): void {
 export function applyFallenAct2Tower(project: Project, exec: Exec): void {
   EXEC = exec;
   towerData(project, exec);
+  ringRooms(project, exec);
   floorOne(project, exec);
   floorTwo(project, exec);
   floorThree(project, exec);

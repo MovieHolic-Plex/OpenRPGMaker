@@ -95,19 +95,19 @@ export function gateSummitStair(project: Project, exec: Exec, irisBackSwitch: st
 function summitData(project: Project, exec: Exec): void {
   const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID } = towerKit;
   const skill = (s: Rec): void => { exec(project, "upsert_skill", { skill: { type: "normal", variance: 15, hitRate: 100, successRate: 100, stateEffects: [], ...s } }); };
-  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 42, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
+  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 38, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_blind", chance: 35, operation: "add" }], animationId: "anim_gen_power_aura" });
   skill({ id: SK_GATHER_FIRE, name: "불 거두기", scope: "enemy", power: 58, drainPercent: 50, description: "거두는 눈이 붙잡은 상대의 기운을 빨아들인다. 준 피해의 절반을 회복.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_power_aura" });
-  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 118, chargeTurns: 1,
+  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 104, chargeTurns: 1,
     description: "한 차례 불을 모았다가 모두를 태워 거둔다. 모으는 동안 크게 때리거나 얼음을 맞히면 끊긴다.",
     chargeBreak: { damage: 520, elementIds: ["ice"], message: "…회수, 중단. 재점화 필요.", stagger: true },
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "fire", animationId: "anim_gen_critical_burst" });
   skill({ id: SK_GAZE, name: "붙잡는 눈길", scope: "enemy", power: 30, description: "가만히 바라본다. 맞으면 몸이 굳는다.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_paralysis", chance: 25, operation: "add" }] });
-  skill({ id: SK_HEAT_RAY, name: "열선", scope: "enemy", power: 64, description: "눈동자에서 가는 불줄기를 쏜다. 불 속성.",
+  skill({ id: SK_HEAT_RAY, name: "열선", scope: "enemy", power: 56, description: "눈동자에서 가는 불줄기를 쏜다. 불 속성.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "fire", stateEffects: [{ stateId: "fs_state_burn", chance: 30, operation: "add" }] });
-  skill({ id: SK_EMBER_BURST, name: "새벽샘의 불", scope: "allEnemies", power: 54, description: "삼켰던 불이 터져 나온다. 아군 전체 불 피해.",
+  skill({ id: SK_EMBER_BURST, name: "새벽샘의 불", scope: "allEnemies", power: 46, description: "삼켰던 불이 터져 나온다. 아군 전체 불 피해.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "fire", stateEffects: [{ stateId: "fs_state_burn", chance: 40, operation: "add" }] });
 
   const base = project.database.enemies.find((e) => e.id === "enemy_fs_wolf");
@@ -126,7 +126,7 @@ function summitData(project: Project, exec: Exec): void {
   };
   // 몸통 — 큰 재 두건. 불은 안 듣고(삼킨다) 얼음·빛에 약하다. 「불 거두기」는 거두는 눈, 「재의 회수」는 태우는 눈이 살아 있어야 쓴다.
   foe({ id: E_COLLECTOR, name: "재의 회수자", art: "generated-enemy-wraith-dark", level: 15, scale: 190, hideHp: true,
-    stats: { maxHp: 4900, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
+    stats: { maxHp: 4600, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
     actions: [actRow("skill_attack", 4), actRow(SK_ASH_SCATTER, 5), { ...actRow(SK_GATHER_FIRE, 5), requiresPart: "grab" }, { ...actRow(SK_RECALL, 4), requiresPart: "furnace" }],
     rates: { fire: "E", ice: "A", holy: "A", dark: "D" }, exp: 1800, gold: 600,
     drops: [{ itemId: "item_potion", ratePercent: 100, quantity: 3, condition: { kind: "always" } }] });
@@ -137,7 +137,7 @@ function summitData(project: Project, exec: Exec): void {
     stats: { maxHp: 1100, maxMp: 40, attack: 96, defense: 44, mind: 92, agility: 64 },
     actions: [actRow("skill_attack", 4), actRow(SK_HEAT_RAY, 6)], rates: { fire: "E", ice: "A" }, exp: 240, gold: 60 });
   foe({ id: E_EMBER, name: "삼킨 불", art: "generated-enemy-spirit-fire", level: 14, scale: 110,
-    stats: { maxHp: 900, maxMp: 60, attack: 90, defense: 36, mind: 100, agility: 76 },
+    stats: { maxHp: 700, maxMp: 60, attack: 90, defense: 36, mind: 100, agility: 76 },
     actions: [actRow("skill_attack", 4), actRow(SK_EMBER_BURST, 5)], rates: { fire: "E", ice: "A", water: "A" }, exp: 200, gold: 0 });
   // 꼭대기는 밤하늘 아래 돌 옥상이다 — 동굴 배경(battle-scenery-cave)이면 「탑 꼭대기」가 아니라 굴속에서 싸운다(2026-10-31 첫 플레이 검토).
   // 손 도트 배경 backdrops/draw_sky_summit.py → sky-summit.json. 낮 빛줄기(lightRays)는 밤과 안 맞아 뺐다.
@@ -162,9 +162,11 @@ function summitData(project: Project, exec: Exec): void {
   const hero = project.database.actors.find((a) => a.id === HERO);
   if (!hero?.parameterCurves || !hero.expCurve) throw new Error("[fallen-star summit] 카엘 곡선이 없다");
   const hc = hero.parameterCurves as unknown as Record<string, number[]>;
-  const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.15), attack: (v) => v + 8, defense: (v) => v + 6, mind: (v) => v + 10 };
+  // 발렌은 거들 뿐 — 암흑기사 직업의 그라비티(적 모두 남은 체력 1/4)가 한 방 846(보스 HP 의 18%)으로 판을 끝내
+  // 「손님이 이긴 싸움」으로 읽혔다(적대 검수 2026-11-01). 심문회 지휘관답게 장군 직업(지휘 검·격려·방진)으로 거들게 한다.
+  const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.15), attack: (v) => v + 4, defense: (v) => v + 6, mind: (v) => Math.round(v * 0.75) };
   exec(project, "upsert_actor", { actor: {
-    id: VALEN_ACTOR, name: VALEN, nickname: "심문관", classId: "class_dark_knight", initialLevel: 15, maxLevel: 99,
+    id: VALEN_ACTOR, name: VALEN, nickname: "심문관", classId: "class_general", initialLevel: 15, maxLevel: 99,
     faceResourceId: "easyrpg-faceset-actor1-04", characterResourceId: "easyrpg-charset-actor1", characterIndex: 4,
     battleCharacterResourceId: "charset-battler-fs-valen",
     parameterCurves: Object.fromEntries(Object.entries(hc).map(([k, arr]) => [k, arr.map((v) => (tweak[k] ?? ((x: number) => x))(v))])), expCurve: hero.expCurve,
@@ -201,7 +203,8 @@ function lensRoom(project: Project, exec: Exec): void {
   placed("bd-pick-wizard-tower-starmap", [{ x: 13, y: 4 }, { x: 18, y: 4 }, { x: 13, y: 5 }]);
   const pt = (c: Cell | null, dx: number, dy: number): Rec | null => (c ? { x: c.x + dx, y: c.y + dy } : null);
   const sources = [
-    { id: "lens", at: { x: TOP.lens.x + 1, y: TOP.lens.y + 2 }, radius: 5, intensity: 1, color: "#e8fff6", flicker: false },
+    // 렌즈는 거부 신호를 보내는 중이다 — 도착 대사(「위에서 붉은 빛이 새어 나와」)·고백(「렌즈 속 글자가 붉게 흐른다」)과 달리 하얗게 빛났다(첫 플레이 검수 2026-11-01).
+    { id: "lens", at: { x: TOP.lens.x + 1, y: TOP.lens.y + 2 }, radius: 5, intensity: 1, color: "#ff9a84", flicker: true },
     { id: "ob_w", at: pt(obW, 0, 1), radius: 2, intensity: 0.6, color: "#a8c8ff", flicker: false },
     { id: "ob_e", at: pt(obE, 0, 1), radius: 2, intensity: 0.6, color: "#a8c8ff", flicker: false },
     { id: "orrery", at: pt(orrery, 1, 1), radius: 2, intensity: 0.55, color: "#ffd890", flicker: true },
@@ -389,4 +392,9 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
   //   2026-10-31 완화(HP 5200→4900, 회수 132→118, 끊김 피해 650→520, 흩뿌리기 46→42) — scripts/qa/runtime/fs2-boss-sim.mts, Lv14 넷, 회복약 6, n=60:
   //   기술 쓰는 판 발렌 없이 85%·행동 46 / 발렌 손님 98%·행동 38. 「공격」만 누르는 판은 여전히 0% — 회수(힘 모으기)를 얼음·큰 기술로 끊어야 이긴다.
+  //   2026-11-01 실제 도착 레벨로 다시(서리 가도 Lv9 → 탑 입구 Lv11 → 탑 다섯 판 뒤 Lv12): 그대로면 Lv12 발렌 없이 48%·발렌 85%.
+  //   HP 4600·회수 104·흩뿌리기 38 → Lv12 발렌 없이 70%·발렌 93%(n=40, FS_LV=12). 「공격」만은 여전히 0%.
+  //   그런데 출하 플레이어 QA(Lv14·발렌·계획대로 블리자드)에서 졌다 — 2막(삼킨 불)의 전체 불 피해가 모의전보다 아프다.
+  //   삼킨 불 HP 900→700·새벽샘의 불 54→46·열선 64→56 → Lv12 발렌 없이 83%·발렌 100%.
+  //   발렌 직업 암흑기사→장군(그라비티 빠짐) → 발렌 손님 95%·행동 42(발렌 없이 83% 그대로).
 }
