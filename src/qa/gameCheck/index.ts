@@ -9,7 +9,7 @@ import { runDeadlineAutoPlay } from "./deadline";
 import { briefTextOf, checkBriefConformance } from "./brief";
 import { checkCommands } from "./commands";
 import { diffLoadNormalization } from "./loadDiff";
-import { buildMapGraph, checkLightingLeak, checkMapGraph, summarizeMaps } from "./mapGraph";
+import { buildMapGraph, checkLightingLeak, checkMapGraph, checkHugeLightRadius, checkStoryLightingReset, summarizeMaps } from "./mapGraph";
 import { checkProgression, companionJoins } from "./progression";
 import { BOSS_CHECK_LEVEL, checkJrpg, partyRoster } from "./jrpg";
 import { allPages, visitPageCommands } from "./walk";
@@ -44,6 +44,8 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
   const findings: Finding[] = [
     ...checkMapGraph(project, graph),
     ...checkLightingLeak(project, graph),
+    ...checkStoryLightingReset(project, graph),
+    ...checkHugeLightRadius(project),
     ...checkCommands(project),
     ...checkProgression(project),
     ...checkBriefConformance(project, options.briefText ?? briefTextOf(project), graph),

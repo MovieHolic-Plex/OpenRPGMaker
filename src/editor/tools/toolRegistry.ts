@@ -177,6 +177,7 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { REVEAL_TOOLS } from "./revealTools";
 import { PARTY_SPLIT_TOOLS } from "./partySplitTools";
 import { STORY_JOURNAL_TOOLS } from "./storyJournalTools";
+import { BESTIARY_TOOLS } from "./bestiaryTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
@@ -284,6 +285,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...REVEAL_TOOLS,
   ...PARTY_SPLIT_TOOLS,
   ...STORY_JOURNAL_TOOLS,
+  ...BESTIARY_TOOLS,
   ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),

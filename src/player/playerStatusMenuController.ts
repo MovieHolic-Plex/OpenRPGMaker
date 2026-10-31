@@ -92,6 +92,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
+  let bestiaryEntryId: string | undefined;
   let campaignSpeciesId: string | undefined;
   let dexPage: MonsterDexPage = "info";
   let monsterInstanceId: string | undefined;
@@ -139,6 +140,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     battleReportIndex = undefined;
+    bestiaryEntryId = undefined;
     campaignSpeciesId = undefined;
     dexPage = "info";
     monsterInstanceId = undefined;
@@ -202,6 +204,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       battleReportIndex,
+      bestiaryEntryId,
       campaignSpeciesId,
       dexPage,
       monsterInstanceId,
@@ -313,6 +316,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onSelectBattleReport: (index) => {
           battleReportIndex = index;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "battle-reports"));
+        },
+        onSelectBestiaryEntry: (entryId) => {
+          if (entryId) rememberDetailCursorFromTestId(`status-menu-bestiary-${entryId}`);
+          bestiaryEntryId = entryId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "bestiary"));
         },
         onSelectFormationActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-formation-actor-${actorId}`);
@@ -1039,6 +1047,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "row":
       case "formation":
       case "battle-reports":
+      case "bestiary":
       case "quests":
       case "relationships":
       case "gallery":
@@ -1173,6 +1182,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return false;
       case "battle-reports":
         if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
+        return false;
+      case "bestiary":
+        if (bestiaryEntryId !== undefined) { bestiaryEntryId = undefined; return true; }
         return false;
       case "trainer-card":
       case "options":
@@ -1333,6 +1345,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}${monsterRenameId ? ":rename" : ""}` : monsterSwapSourceId ? "swap" : boxMoveSourceId ? "boxmove" : "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
+      case "bestiary":
+        return `bestiary:${bestiaryEntryId ?? "list"}`;
       case "save":
       case "trainer-card":
       case "options":

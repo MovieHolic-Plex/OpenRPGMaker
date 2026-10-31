@@ -9,6 +9,8 @@ import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
 import { prepareDoorFx, syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
 import { evalCondition } from "@/project/session";
+import { takeBestiaryNotices } from "@/project/bestiary";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey } from "@/assets/bundled";
 import { ensureTilesetStripAnimation } from "@/assets/uploadedTilesets";
@@ -1176,7 +1178,18 @@ export function refreshRuntimeSurfaces(scene: PlaySceneContext): void {
   // «어떤 구역에 들어왔는가» 가 도착 맵 전역 연출보다 국지적이고, 자동 이벤트가 먼지 돌아
   // running 을 썼으면 드나듦이 또 밀린다.
   drainPendingLocationTransitions(scene);
+  noteBestiaryUnlocks(scene);
   void fireAutoTriggers(scene);
+}
+
+/** 괴물 도감에 새로 열린 칸이 있으면 화면 구석 알림 한 줄(칸마다 한 번). 이벤트·전투가 끝나는 자리마다 본다. */
+function noteBestiaryUnlocks(scene: PlaySceneContext): void {
+  const notices = takeBestiaryNotices(store.getCurrent(), scene.session);
+  if (notices.length === 0) return;
+  const ui = ensureM2Runtime(scene.session).ui;
+  // 여럿이 한꺼번에 열리면 마지막 하나만 남는다 — 첫 칸 이름과 「외 N칸」으로 한 줄에 접는다.
+  const message = notices.length === 1 ? notices[0]!.message : `${notices[0]!.message} 외 ${notices.length - 1}칸`;
+  ui.push({ surface: "toast", message, durationMs: 2400 });
 }
 
 /**

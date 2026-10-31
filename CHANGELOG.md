@@ -5,6 +5,56 @@
 
 <!-- releases -->
 
+## 0.376.0 — 2026-10-31
+
+### 기능
+
+- **runtime** — 괴물 도감 — system.bestiary, ESC 도감, 조수 도구 (#4074) (`b96e5d1`)
+- **assistant** — run_scene_test 가 전투 이벤트 선택지에 답한다 (battleChoice 스텝) (#4060) (`1089e93`)
+- **v2 bbox** — 마을 배치 검사 — 빈 풀밭 55% 넘으면 거절 (`dbf5fc1`)
+
+### 수정
+
+- **ai** — make_chase_scene — a patrolling chaser woken by a switch must see the hero (no default persistent tracking) (#4062) (`e534100`)
+- **ai** — log-roof villages pick their landmark and anchor from the log palette (#4065) (`2968b35`)
+- **assistant-v2** — a scene attached after a shop NPC's talk runs before the shop window, the shop stays on later talks (`bd34f9e`)
+
+### 문서
+
+- **openwiki** — v2 칸 배치 장소 2차 측정 결과 (`014a8b2`)
+- **openwiki** — after-scene on a shop NPC (`ab8cbd0`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`3e66eee`)
+
+## 0.375.0 — 2026-10-31
+
+### 기능
+
+- **first-love** — r3+r4 — pantry lesson, rooftop, pixel ending cards & memory, last-train staging, night lighting (#3998) (`d004f10`)
+- **store** — event sounds (group + own slot name, no system cue) readable and findable; SE cue table labels for dialogue/jingle (`2b8c7a4`)
+- **audio** — ambient BGS loops in store sound packs, map BGS, new SE cues with runtime hooks (`6aadbc2`)
+
+### 수정
+
+- **assistant** — find installed party battle sheets; store_search works in the Pi worker (`9101359`)
+- **assistant-v2** — scene craft checks stop flagging gate notices and copied lines; re-calling add_ending_scene rebuilds instead of stacking (`3cd4c6d`)
+- **transit** — clear cars the warm-up left on top of people at map load (#4067) (`1ef8af0`)
+
+### 문서
+
+- **openwiki** — scene craft scope (scene-verb events only, new lines only) (`39712e2`)
+
+### 테스트
+
+- **qa** — audio-cues runtime proof capture against the built export player; regenerate openwiki INDEX (`7df2e7e`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`5174cff`)
+- **openwiki** — regenerate INDEX as CI sees it (`207cd5c`)
+
 ## 0.374.0 — 2026-10-31
 
 ### 기능
