@@ -1,6 +1,6 @@
 import { jsonEqual } from "@/util/structuralJson";
 import { clearChildren, el } from "@/util/dom";
-import { t } from "@/i18n";
+import { getLocale, t } from "@/i18n";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
@@ -8,10 +8,11 @@ import { handleCommandShortcut, openCommandContextMenu } from "./commandListCont
 import { readEventCommandsClipboard } from "./commandClipboard";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
-import { renderScriptLines } from "./scriptLines";
+import { renderScriptLines, richLineText, shortArmLabel } from "./scriptLines";
 import { renderEditorIcon } from "./editorIcons";
 import { brokenCommandDigest } from "./storyboardView";
-import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
+import { commandSummaryParts, forkSentenceParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
+import { shortRecordName } from "@/editor/shortRecordName";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   CHARSET_FRAME_HEIGHT,
@@ -519,9 +520,27 @@ function renderBrokenCommandRow(cmd: Command, path: number[], actions: CommandLi
   return item;
 }
 
+/** `\V[n]` / `\V[var_id]` in a message reads as the variable's «short name» chip in the list. */
+function resolveTextCodes(text: string): string {
+  if (!text.includes("\\V[") && !text.includes("\\v[")) return text;
+  const variables = store.getCurrent().variables;
+  return text.replace(/\\[Vv]\[([^\]]+)\]/gu, (whole, ref: string) => {
+    const key = ref.trim();
+    // \V[12] is slot var_0012 (player/dialogue.ts resolveVariable); \V[var_price] is the id itself
+    const id = /^\d+$/u.test(key) ? `var_${key.padStart(4, "0")}` : key;
+    const record = variables.find((entry) => entry.id === id || entry.id === key);
+    const name = record?.name?.trim();
+    return name ? `«${shortRecordName(name)}»` : whole;
+  });
+}
+
 function renderCommandSummary(cmd: Command): HTMLElement {
   const summary = el("span", { class: "cmd-kind" });
-  for (const part of commandSummaryParts(cmd)) {
+  // Fork rows read as a sentence in the list: 「만약 돈이 35 이상이면」 (commandSummary text stays 「조건 분기: …」).
+  // Korean only — the sentence is built from parts the DOM translator cannot match, so other locales keep the
+  // catalogued 「조건 분기: …」 wording.
+  const parts = cmd.kind === "fork" && getLocale() === "ko" ? forkSentenceParts(cmd) : commandSummaryParts(cmd);
+  for (const part of parts) {
     // 아이콘 토큰은 텍스트 대신 16px 이미지로 렌더. URL 을 못 찾으면 조용히 생략한다.
     if (isSummaryIconPart(part)) {
       const icon = renderSummaryIcon(part.resourceId);
@@ -534,7 +553,12 @@ function renderCommandSummary(cmd: Command): HTMLElement {
       if (visual) summary.append(visual);
       continue;
     }
-    summary.append(el("span", { class: `cmd-summary-token ${part.tone}`, text: part.text }));
+    const hint = "hint" in part ? part.hint : undefined;
+    const text = resolveTextCodes(part.text);
+    const token = el("span", { class: `cmd-summary-token ${part.tone}`, ...(hint ? { attrs: { title: hint } } : {}) });
+    if (text.includes("«")) token.append(...Array.from(richLineText(text).childNodes));
+    else token.textContent = text;
+    summary.append(token);
   }
   return summary;
 }
@@ -641,7 +665,8 @@ function* appendCommandChildren(
   // «주소를 못 매기는» 분기였다 — 런타임은 실행하는데 목록에는 줄이 안 났다.
   for (const branch of eventCommandBranches(cmd)) {
     const branchPath = [...path, branch.branchIndex];
-    appendCommandNode(host, renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
+    // 「조건이 맞을 때 / 맞지 않을 때」 → 「그러면 / 아니면」 (list wording only; the branch data and other views keep theirs)
+    appendCommandNode(host, renderBranchDropLine(shortArmLabel(branch.label), depth, branch.tone, branchPath, actions));
     yield;
     if (branch.commands.length === 0) {
       appendCommandNode(host, renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));

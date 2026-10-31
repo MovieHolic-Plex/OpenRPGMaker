@@ -27,7 +27,8 @@ Use a script ONLY for a short fragment that commands express badly:
 
 How a fragment looks:
 
-- **1-3 lines, one job.** Named consts for the numbers (`const BASE = 120, MAX_OFF = 30;`).
+- **1-3 lines, one job.** Named consts for the numbers, each with its name in a comment
+  (`const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인`).
 - **Result into a variable or switch.** The commands around it read that value: `\V[var_price]` inside a
   Show Text, a fork on the variable or switch, `changeGold` with `amount: {kind:"var", id:"var_price"}`.
 - **No dialogue inside the script** unless the line depends on the computed value and cannot use `\V[...]`.
@@ -36,12 +37,25 @@ How a fragment looks:
 The pattern — a merchant page (top to bottom):
 
 ```
-script "price"   const BASE = 120, MAX_OFF = 30;
+script "price"   const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인
                  game.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));
 Show Text        "A potion is \V[var_price] G."
 Show Choices     Buy / No
   Buy →          fork gold … → changeGold -= {kind:"var", id:"var_price"}, changeItem +1, Show Text "Thanks!"
 ```
+
+**Name things for the reader.** The event list shows a script as plain lines, never as code, so every name
+in it must be readable in the user's language (Korean for a Korean project). The runtime ignores comments; the
+list reads these:
+
+- a trailing comment on every `const`/`let` = its name: `const pct = discountPercent(rep); // 할인율`.
+  Several declarators: one name each, comma separated: `const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인`.
+- a self switch you read or write: `// @label A: 이미 당김` (also `// @label LEVERS: 레버들` for any identifier).
+- a helper function (in the script or an `@lib` module): `/** @label 할인율 */` right above it.
+- a comment on its own line above each logical block = a step heading in the list: `// 가격 계산`,
+  `// 틀린 순서: 원위치`. One short line (under ~20 characters); skip it for a 1-2 line fragment.
+
+Keep switch and variable NAMES short (「레버 진행 단계」); put the meaning in `declare_story_flag`, not in the name.
 
 **Decide once per event and keep it.** Never write a script and then convert it to commands (or the
 reverse). Never turn existing commands into scripts unless the user asks. If a fragment misbehaves, fix it with
@@ -184,7 +198,7 @@ Never write `{kind:"script"}` by hand in `upsert_event` / `patch_event_page` / `
 Script `price`, before the merchant's Show Text:
 
 ```ts
-const BASE = 120, MAX_OFF = 30; // base price, max discount in %
+const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인
 game.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));
 ```
 
@@ -202,8 +216,8 @@ Each lever is its own event: commands (play a sound, Show Text "Clunk.") around 
 The script for lever N (here N = 1):
 
 ```ts
-const ORDER = [3, 1, 4, 2], N = 1; // correct order of lever numbers; this lever's number
-const step = game.getVar("var_lever_step");
+const ORDER = [3, 1, 4, 2], N = 1; // 정답 순서, 이 레버 번호
+const step = game.getVar("var_lever_step"); // 진행 단계
 game.setVar("var_lever_step", ORDER[step] === N ? step + 1 : 0);
 ```
 
@@ -217,8 +231,8 @@ uses `sw_vault_open` as its condition. Write all four in ONE call:
 Script before the guard's dialogue:
 
 ```ts
-const CLOSE = 20, OPEN = 6;
-const hour = game.time().hour;
+const CLOSE = 20, OPEN = 6; // 문 닫는 시각, 문 여는 시각
+const hour = game.time().hour; // 지금 시각
 game.setSwitch("sw_curfew", hour >= CLOSE || hour < OPEN);
 ```
 
