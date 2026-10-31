@@ -3,6 +3,7 @@ import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
+import { disposeScriptRuns } from "@/player/interpreter/scriptCommand";
 import { advanceCompletedFrame, gotoLabel, topFrame, withLabelIndexPass, invalidateLabelIndexPass } from "@/player/interpreter/stack";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type {
@@ -49,6 +50,7 @@ export function createInterpreter(
 
   function finish(): StepResult {
     done = true;
+    disposeScriptRuns(state);
     return { kind: "done" };
   }
 

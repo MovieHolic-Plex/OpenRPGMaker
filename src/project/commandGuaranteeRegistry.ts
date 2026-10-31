@@ -319,6 +319,8 @@ export const COMMAND_GUARANTEES = {
   removeMonster: guarantee("monster"),
   tradeMonster: guarantee("monster"),
   fuseMonsters: guarantee("monster"),
+  // Sandboxed TypeScript (openwiki/script-sandbox.md): map/common run it to the end; battle events do not run scripts.
+  script: guarantee("controlFlow", { completion: "dynamic", support: { map: "full", common: "full", troop: "partial" } }),
 } satisfies Record<CommandKind, CommandGuarantee>;
 
 export function commandGuarantee(kind: CommandKind): CommandGuarantee {

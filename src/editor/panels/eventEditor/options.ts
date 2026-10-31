@@ -66,6 +66,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "callMapEvent", label: "맵 위 이벤트 부르기" },
   { value: "planSchedule", label: "일정표 짜기" },
   { value: "runSchedule", label: "일정표 실행" },
+  { value: "script", label: "스크립트 (TypeScript)" },
   { value: "battleProcessing", label: "전투" },
   { value: "learnSkill", label: "스킬 배우기" },
   { value: "changeExp", label: "경험치 변경" },

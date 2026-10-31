@@ -689,6 +689,29 @@ export type Command =
     }
   | {
       /**
+       * Sandboxed TypeScript logic (openwiki/script-sandbox.md). The game runs only `compiled` inside QuickJS;
+       * the script talks to the engine through the typed `game` API (src/project/script/apiSpec.ts).
+       * Awaitable calls (dialogue, waits, battles, any `game.cmd(command)`) run through this interpreter as
+       * ordinary commands. A save taken mid-script does not resume the script on load — same rule as events.
+       */
+      kind: "script";
+      /** TypeScript as authored. */
+      source: string;
+      /** JavaScript compiled from `source` at save time (CommonJS-style body; `@lib/*` imports become `require`). */
+      compiled: string;
+      /** Optional label shown instead of the generated summary. */
+      name?: string;
+      /** One-line plain-language summary for non-coders (generated at save). */
+      summary?: string;
+      /** Ids the script reads/writes, extracted at save — validators read these. */
+      effects?: import("../script/types").ScriptEffects;
+      /** Hash of `source` when `compiled` was produced (stale-compile detection). */
+      sourceHash?: string;
+      /** `game` API version the script was compiled against. */
+      apiVersion?: number;
+    }
+  | {
+      /**
        * 전술(격자) 전투. 파티와 적 그룹을 작은 격자 양 끝에 세우고 이동력(칸) 안 이동 + 인접 공격을
        * 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 세션 battleResult 와 victoryBranch/defeatBranch 로 이어진다.
        * canLose=false 인데 지면 게임 오버. player/tacticsBattle.ts.
