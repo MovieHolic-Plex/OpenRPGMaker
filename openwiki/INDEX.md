@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7849KB / 약 2,306,141 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7846KB / 약 2,305,491 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/asset-store.md` | 72KB | 19KB | 466 | ~21,343 |
+| `openwiki/asset-store.md` | 69KB | 19KB | 450 | ~20,573 |
 | `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,122 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
@@ -38,11 +38,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 110KB | 14KB | 511 | ~32,750 |
+| `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~32,956 |
 | `openwiki/runtime-battle.md` | 455KB | 32KB | 2498 | ~133,693 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 211KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1263 | ~62,895 |
-| `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,297 |
+| `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,211 |
 | `openwiki/runtime-sessions.md` | 172KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 938 | ~47,203 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 266KB | 48KB | 2413 | ~75,025 |
@@ -300,7 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 72KB · 466줄 · ~21,343 토큰 · 통째읽기 잘림
+### `openwiki/asset-store.md` — 69KB · 450줄 · ~20,573 토큰 · 통째읽기 잘림
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -313,16 +313,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L141` 음악 팩의 곡별 고르기 설명 (2026-10-25)
   - `L151` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
   - `L215` 효과음 팩과 조수 (2026-10-30)
-  - `L233` 환경음(BGS)·대사·감정·징글 자리 (2026-10-31)
-  - `L249` 아이콘 팩과 조수 (2026-10-31)
-- `L263` 게시기
-- `L293` 상태 확인
-- `L297` 에디터 첫 진입 화면 (2026-10-12)
-- `L304` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
-- `L329` 에디터에서 열기 링크 (2026-10-20)
-- `L346` 주인 초안 (D2, 2026-10-20)
-- `L354` 바로 플레이 게임 (2026-10-23)
-  - `L458` 조수와 평가 (2026-10-25)
+  - `L233` 아이콘 팩과 조수 (2026-10-31)
+- `L247` 게시기
+- `L277` 상태 확인
+- `L281` 에디터 첫 진입 화면 (2026-10-12)
+- `L288` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L313` 에디터에서 열기 링크 (2026-10-20)
+- `L330` 주인 초안 (D2, 2026-10-20)
+- `L338` 바로 플레이 게임 (2026-10-23)
+  - `L442` 조수와 평가 (2026-10-25)
 
 ### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,122 토큰 · 통째읽기 잘림
 
@@ -2264,7 +2263,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L180` 건물 문 ↔ 방 잇기 `link_joseon_interior` (2026-10-30)
 - `L192` 한계
 
-### `openwiki/jp-city.md` — 110KB · 511줄 · ~32,750 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 111KB · 511줄 · ~32,956 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
@@ -2964,7 +2963,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1244` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 - `L1257` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
-### `openwiki/runtime-project-schema.md` — 266KB · 1834줄 · ~75,297 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 266KB · 1834줄 · ~75,211 토큰 · 통째읽기 잘림
 
 - `L3` 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
 - `L14` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
