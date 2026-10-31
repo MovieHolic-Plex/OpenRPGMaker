@@ -720,7 +720,7 @@ export function doorFloorTransfers(run: BuildRun, mapId: string): string[] {
         plans.push({ kind: "stairs", gate, landing, dir: "down", d: -1, apply: () => true });
       }
     }
-    // 멀리 옮기지 않는다 — 방 반대편 벽으로 끌고 가면 원래 동선(대사·목표 «남동쪽 → …»)과 어긋난다. 가까운 벽이 없으면 그대로 두고 런타임 목적지 글자에 맡긴다.
+    // 멀리 옮기지 않는다 — 방 반대편 벽으로 끌고 가면 원래 동선(대사·목표 «남동쪽 → …»)과 어긋난다. 가까운 벽이 없으면 그대로 둔다.
     const far = (p: Plan) => Math.abs(p.gate.x - ev.x) + Math.abs(p.gate.y - ev.y) > (p.kind === "stairs" ? 8 : 4);
     for (let i = plans.length - 1; i >= 0; i--) if (far(plans[i]!)) plans.splice(i, 1);
     plans.sort((a, b) => a.d - b.d || (a.kind === "south" ? 1 : 0) - (b.kind === "south" ? 1 : 0));

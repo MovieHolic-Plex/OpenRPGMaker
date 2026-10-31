@@ -66,6 +66,90 @@ export interface ScriptModule {
   apiVersion?: number;
 }
 
+/**
+ * One example situation for a script's plain-language card. Only the SETUP is stored; the editor computes
+ * the outcome by running the script headless (src/editor/script/dryRun.ts), so results never drift from code.
+ */
+export interface ScriptExample {
+  /** Short situation label in the author's language (e.g. "평판 10", "밤 22시"). */
+  readonly label: string;
+  readonly switches?: readonly { readonly id: string; readonly value: boolean }[];
+  readonly variables?: readonly { readonly id: string; readonly value: number }[];
+  readonly gold?: number;
+  readonly items?: readonly { readonly id: string; readonly count: number }[];
+  /** In-game clock before the run (Set Time). */
+  readonly hour?: number;
+  readonly minute?: number;
+  /** Answers for choice windows in order (0-based; -1 = cancel). */
+  readonly choices?: readonly number[];
+  readonly numbers?: readonly number[];
+  readonly battleResults?: readonly ("victory" | "defeat" | "escape")[];
+}
+
+/**
+ * Plain-language explanation of a script, written by a model (assistant or the editor's AI box) for
+ * non-coders. Bound to the source it describes: when `sourceHash` differs from `scriptSourceHash(source)` the
+ * editor shows it as stale ("옛 코드 기준"). Chips, tunables and flow are extracted mechanically and need no hash.
+ */
+export interface ScriptExplanation {
+  readonly sourceHash: string;
+  /** 1-4 short sentences in the author's language. */
+  readonly lines: readonly string[];
+  readonly examples?: readonly ScriptExample[];
+}
+
+export const SCRIPT_EXPLANATION_LINE_LIMIT = 6;
+export const SCRIPT_EXAMPLE_LIMIT = 8;
+
+/** Lenient normalizer for stored/model-written explanations; drops anything malformed. */
+export function normalizeScriptExplanation(raw: unknown): ScriptExplanation | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const record = raw as Record<string, unknown>;
+  if (typeof record.sourceHash !== "string" || !record.sourceHash) return undefined;
+  const lines = Array.isArray(record.lines)
+    ? record.lines.filter((line): line is string => typeof line === "string" && line.trim().length > 0).map((line) => line.trim().slice(0, 400)).slice(0, SCRIPT_EXPLANATION_LINE_LIMIT)
+    : [];
+  if (!lines.length) return undefined;
+  const examples = Array.isArray(record.examples)
+    ? record.examples.map(normalizeScriptExample).filter((entry): entry is ScriptExample => !!entry).slice(0, SCRIPT_EXAMPLE_LIMIT)
+    : [];
+  return { sourceHash: record.sourceHash, lines, ...(examples.length ? { examples } : {}) };
+}
+
+const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+
+export function normalizeScriptExample(raw: unknown): ScriptExample | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.label !== "string" || !r.label.trim()) return undefined;
+  const pairs = <V>(value: unknown, key: "value" | "count", ok: (v: unknown) => v is V) =>
+    Array.isArray(value)
+      ? value.filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === "object" && typeof (entry as Record<string, unknown>).id === "string" && ok((entry as Record<string, unknown>)[key]))
+          .map((entry) => ({ id: entry.id as string, [key]: entry[key] as V }))
+      : [];
+  const switches = pairs(r.switches, "value", (v): v is boolean => typeof v === "boolean") as { id: string; value: boolean }[];
+  const variables = pairs(r.variables, "value", finite) as { id: string; value: number }[];
+  const items = pairs(r.items, "count", finite) as { id: string; count: number }[];
+  const ints = (value: unknown): number[] => (Array.isArray(value) ? value.filter(finite).map((v) => Math.trunc(v)) : []);
+  const choices = ints(r.choices);
+  const numbers = ints(r.numbers);
+  const battleResults = Array.isArray(r.battleResults)
+    ? r.battleResults.filter((v): v is "victory" | "defeat" | "escape" => v === "victory" || v === "defeat" || v === "escape")
+    : [];
+  return {
+    label: r.label.trim().slice(0, 80),
+    ...(switches.length ? { switches } : {}),
+    ...(variables.length ? { variables } : {}),
+    ...(finite(r.gold) ? { gold: Math.max(0, Math.trunc(r.gold)) } : {}),
+    ...(items.length ? { items } : {}),
+    ...(finite(r.hour) ? { hour: Math.max(0, Math.min(23, Math.trunc(r.hour))) } : {}),
+    ...(finite(r.minute) ? { minute: Math.max(0, Math.min(59, Math.trunc(r.minute))) } : {}),
+    ...(choices.length ? { choices } : {}),
+    ...(numbers.length ? { numbers } : {}),
+    ...(battleResults.length ? { battleResults } : {}),
+  };
+}
+
 export const SCRIPT_LIBRARY_ID_PATTERN = /^[a-z][a-z0-9_-]{0,39}$/u;
 /** Source and compiled-code size caps (characters). Store uploads also cap project.json as a whole. */
 export const SCRIPT_SOURCE_LIMIT = 64_000;

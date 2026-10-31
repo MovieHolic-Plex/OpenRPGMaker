@@ -58,6 +58,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
+import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
 import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
@@ -991,6 +992,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
     preferToolNextTurn: (toolName: string, reminder: string) => { ensureV2Tool(toolName); softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
     declareTool: (tool: PiToolShape) => { if (!exposed.has(tool.name)) declare(wrapTool(tool)); },
+    // 로컬 CLI 는 대화 중 도구 목록을 고정한다(cliToolFreeze.ts) — 실은 도구는 call_tool 로 부른다.
+    ...(localCli && cliToolFreezeOn() ? { lazyToolsVia: CLI_CALL_TOOL } : {}),
     clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
@@ -1199,7 +1202,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     cli: localCli,
     systemPrompt: [
       "너는 OPRN 에디터(RPG 제작 도구)의 조수다. 프로젝트는 oprn MCP 서버의 도구로만 읽고 고친다. 파일·셸·웹 도구는 없다.",
-      "find_tools 로 찾은 도구는 다음 단계부터 도구 목록에 나타난다(이름 앞에 CLI 가 붙이는 접두가 있을 수 있다). 끝나면 사용자에게 한국어로 무엇을 바꿨는지 짧게 보고한다.",
+      cliToolFreezeOn()
+        ? `${CLI_LAZY_TOOLS_LINE} When done, briefly tell the user in Korean what you changed.`
+        : "find_tools 로 찾은 도구는 다음 단계부터 도구 목록에 나타난다(이름 앞에 CLI 가 붙이는 접두가 있을 수 있다). 끝나면 사용자에게 한국어로 무엇을 바꿨는지 짧게 보고한다.",
       ...systemPrompt,
     ],
     tools, onPayload, resolveFallbackTool,

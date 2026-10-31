@@ -2232,6 +2232,12 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
       if (end >= 0) {
         const rawIndex = value.slice(i + 3, end).trim();
         const index = Number(rawIndex);
+        // \V[var_price] — 이름 id 변수(조수·스크립트가 쓰는 id). 숫자 칸 \V[12] 는 아래 그대로.
+        if (control === "v" && !Number.isInteger(index) && /^[A-Za-z_][\w-]{0,63}$/u.test(rawIndex)) {
+          buffer += String(context?.session.variables[rawIndex] ?? 0);
+          i = end;
+          continue;
+        }
         if (Number.isInteger(index)) {
           if (control === "v") {
             buffer += String(resolveVariable(context, index));

@@ -8251,16 +8251,11 @@
     },
     {
      "id": "night",
+     "note": "여관 대화(오사 → 동료 대화 → 해가 지고)와 밤 도착 대사가 한 줄기로 이어져 ask 의 Enter 가 도착 대사까지 넘길 때가 있다 — 이미 지나갔으면 기다리지 않는다(2026-11-01).",
      "ops": [
       {
        "kind": "waitForMap",
        "mapId": "fs2_frostford_night",
-       "timeoutMs": 15000
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
        "timeoutMs": 15000
       },
       {
@@ -9094,8 +9089,8 @@
    "label": "제2막 B10 — 하늘탑 1층: 파수 기계가 심문회 기사를 쳐 낸다 → 다친 기사",
    "note": "act2Tower.ts floorOne",
    "mapId": "fs2_sky_tower",
-   "x": 29,
-   "y": 19,
+   "x": 34,
+   "y": 17,
    "facing": "left",
    "switches": {
     "sw_fs_main_started": true,
@@ -9237,8 +9232,8 @@
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower",
-       "x": 24,
-       "y": 20
+       "x": 18,
+       "y": 19
       },
       {
        "kind": "hold",
@@ -9821,9 +9816,9 @@
    "label": "제2막 B10 — 하늘탑 3층: 렌즈 거울 둘로 빛을 계단에 → 4층 어둠",
    "note": "act2Tower.ts floorThree (author_map_puzzle mirror_beam_refraction)",
    "mapId": "fs2_sky_tower_f3",
-   "x": 16,
-   "y": 12,
-   "facing": "up",
+   "x": 7,
+   "y": 11,
+   "facing": "down",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -9944,8 +9939,8 @@
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower_f3",
-       "x": 16,
-       "y": 8
+       "x": 9,
+       "y": 10
       },
       {
        "kind": "hold",
@@ -9954,7 +9949,7 @@
       },
       {
        "kind": "face",
-       "dir": "up"
+       "dir": "down"
       },
       {
        "kind": "action"
@@ -10051,8 +10046,8 @@
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower_f3",
-       "x": 12,
-       "y": 8
+       "x": 7,
+       "y": 6
       },
       {
        "kind": "hold",

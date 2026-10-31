@@ -40,14 +40,13 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
-- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼, 출구 「→ 목적지」 글자를
+- **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼ 를
   그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
-  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다.
-  **중간값 `"arrows"`(2026-10-30 사용자 「화살표만 남겨줘도 충분히 친절」):** 목표 빛무리·화살표와 ▼ 는 끄고(`clearFieldGuides(scene,{keepExits:true})`),
-  출구에는 `syncExitLabels(...,{arrowOnly:true})` 로 목적지 이름 없이 화살표 글자 하나만 띄운다. 방향은 `exitArrowGlyph` —
-  맵 가장자리에 붙은 출구는 그 가장자리 쪽(↓↑←→), 건물 문(`map.doors` 위 칸)은 늘 ↑, 그 밖의 맵 안 출구는 주인공에게서 출구 쪽(위아래 먼저 — 옆에서 다가와도 문 화살표가 ←가 되지 않게). 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`)와
-  `set_project_settings({fieldGuides:"on"|"arrows"|"off"})` 가 같은 값을 쓴다.
-  arrows 의 건물 문 화살표는 글자 자리 규칙(문 그림 비키기) 대신 문 그림 가운데 바로 위에 둔다.
+  `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다. 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`, 켜기/끄기)와
+  `set_project_settings({fieldGuides:"on"|"off"})` 가 같은 값을 쓴다.
+- **출구 목적지 글자·화살표는 없다(2026-11-01 삭제):** 문·맵 출구 앞에 「→ 목적지」 글자나 화살표를 띄우던 `syncExitLabels`·`exitLabelPlacement`·`exitArrowGlyph` 를
+  사용자 요청(폴른 스타 1.26 「문앞이나 이동하는 곳 앞에서 다음 위치뜨는거 … 진짜 별로다. 삭제해줘」)으로 기능째 지웠다. 되살리지 말 것 — 길은 장면(문 그림·길·표지판·목표 빛무리)으로 보인다.
+  옛 중간값 `fieldGuides: "arrows"`(출구 화살표만)는 저장본 호환으로 타입·검사에 남았고 런타임에서 `"off"` 와 같다. 편집기·조수는 더는 그 값을 쓰지 않는다(조수가 보내면 `"off"` 로 적는다).
   **출구가 아닌 것(2026-10-30 첫사랑 검수):** 그림 있는 조사(action) 이벤트가 대사·선택지 뒤에 옮기는 페이지는 「다음 장면으로 넘어가는 대화」라 출구 글자를 달지 않는다
   (`exitTargetOf(page, here, talker)` — 탕비실 지후 머리 위 「→ 7층 · 금요일」이 다음 장을 미리 알렸다). 조사 ▼ 표식(`syncExamineMarkers`)도 출구 글자처럼 `scene.running` 동안 숨긴다
   (재회 컷신 내내 팀장·민호 머리 위에 떠 있었다).

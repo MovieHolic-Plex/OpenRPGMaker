@@ -179,7 +179,12 @@ export function formatScriptDiagnostics(diagnostics: readonly ScriptDiagnostic[]
 }
 
 /** Fields to store on a `script` command after a successful compile. */
-export function scriptCommandFields(source: string, result: ScriptCompileResult, name?: string): Extract<import("@/project/types").Command, { kind: "script" }> {
+export function scriptCommandFields(
+  source: string,
+  result: ScriptCompileResult,
+  name?: string,
+  explanation?: import("@/project/script/types").ScriptExplanation,
+): Extract<import("@/project/types").Command, { kind: "script" }> {
   return {
     kind: "script",
     source,
@@ -189,5 +194,7 @@ export function scriptCommandFields(source: string, result: ScriptCompileResult,
     effects: result.effects,
     sourceHash: result.sourceHash,
     apiVersion: result.apiVersion,
+    // Kept even when the source changed: the card shows it as stale (hash differs) until it is rewritten.
+    ...(explanation ? { explanation } : {}),
   };
 }

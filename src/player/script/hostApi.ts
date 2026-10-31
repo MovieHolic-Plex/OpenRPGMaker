@@ -465,14 +465,15 @@ export const HOST_API: HostApiTable = {
   },
   fadeOut: () => ({ commands: [m2("m2-044-hide-screen", {})] }),
   fadeIn: () => ({ commands: [m2("m2-045-show-screen", {})] }),
-  showAnimation: (_ctx, args) => {
+  showAnimation: (ctx, args) => {
     const raw = args[0];
     let target: "player" | { eventId: string } | { x: number; y: number };
     if (raw === "player") target = "player";
+    else if (raw === "this") target = { eventId: ctx.state.currentEventId ?? "" };
     else if (typeof raw === "string" && raw) target = { eventId: raw };
     else if (raw && typeof raw === "object" && Number.isFinite((raw as { x?: unknown }).x) && Number.isFinite((raw as { y?: unknown }).y)) {
       target = { x: Math.trunc((raw as { x: number }).x), y: Math.trunc((raw as { y: number }).y) };
-    } else fail("showAnimation", "target must be 'player', an event id or {x, y}");
+    } else fail("showAnimation", "target must be 'player', 'this', an event id or {x, y}");
     const wait = options("showAnimation", args, 2).wait !== false;
     return { commands: [{ kind: "showAnimation", target, animationId: str("showAnimation", args, 1, "animationId"), wait }] };
   },
