@@ -464,13 +464,16 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     ["child", "ev_fs_crowd_e", "눈사람 만드는 아이", ["이 눈사람, 탑 문 기사 아저씨야.\n코가 빨개!", "밤에 등 띄우는 거 보러 갈 거야.\n할머니가 같이 가 준댔어."]],
     ["net", "ev_fs_crowd_c", "그물 깁는 어부", ["썰매가 없으니 그물만 기워.\n고기는 구멍에서 한 마리씩 낚고.", "섬까지는 장대를 따라가.\n장대 밖 얼음은 믿지 마."]],
     ["wood", "ev_fs_crowd_f", "장작 패는 청년", ["남은 통나무는 이게 다예요.\n징발대가 창고째 잠갔거든요."]],
-    ["icefisher", "ev_fs_crowd_c", "얼음낚시 노인", ["쉿, 고기 놀란다.\n…오늘 등 띄우는 날인 거 알지?", "띄운 등은 섬 사당까지 흘러가.\n거기서 누가 꼭 받아 주더라고."]],
+    // 얼음낚시 노인 — 그물 깁는 어부와 같은 붉은 두건 칩이었다(같은 빨간 망토가 여럿, 첫 플레이 검수 2026-10-31). 흰머리 노인 칩(People3 #4).
+    ["icefisher", "rtp:tex_easyrpg_charset_people3#4", "얼음낚시 노인", ["쉿, 고기 놀란다.\n…오늘 등 띄우는 날인 거 알지?", "띄운 등은 섬 사당까지 흘러가.\n거기서 누가 꼭 받아 주더라고."]],
   ];
   for (const [spot, chipId, name, lines] of people) {
     const at = L.people[spot];
     if (!at) continue;
     let c: { textureKey: string; characterIndex: number };
-    try { c = chipOf(project, chipId, hubId); } catch { c = chipOf(project, "ev_fs_crowd_a", hubId); }
+    const rtp = /^rtp:(.+)#(\d+)$/u.exec(chipId);
+    if (rtp) c = { textureKey: rtp[1]!, characterIndex: Number(rtp[2]) };
+    else try { c = chipOf(project, chipId, hubId); } catch { c = chipOf(project, "ev_fs_crowd_a", hubId); }
     FS2_FROST.people[spot] = placeNpc(project, exec, FS2_FROST_ID, at, { id: `ev_fs2_frost_${spot}`, name, graphic: c,
       pages: [{ name: "이야기", commands: lines.map((l) => say(name, l)) }] });
   }
@@ -494,11 +497,13 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 
 /** 「대답의 등」 — 해 질 녘 기슭 등불. 첫 등에서 한 줄을 적어 띄운다(B9 밤 장면의 예고). */
 function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
+  // 해 질 녘 — 「해가 기운다」인데 0.4 보랏빛 막은 흰 눈 위에서 한낮으로 읽혔다(첫 플레이 검수 2026-10-31; 조명 막이 카메라 줌 3 배로 부풀던 엔진 결함 #4131 도 겹쳤다).
+  // 장밋빛 노을 막을 짙게, 등불은 켜되 작게 — 반경 3 이면 등불 줄이 하얀 띠로 이어졌다.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.4, color: "#2a1838",
+    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.56, color: "#4a2440",
     sources: [
-      ...L.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y - 2 }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true })),
-      { id: "bonfire", at: { x: L.bonfire.x, y: L.bonfire.y }, radius: 4, intensity: 0.9, color: "#ffb060", flicker: true },
+      ...L.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y - 2 }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true })),
+      { id: "bonfire", at: { x: L.bonfire.x, y: L.bonfire.y }, radius: 3.2, intensity: 0.9, color: "#ffb060", flicker: true },
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.3, color: "#ffd8a0" },
     ],
@@ -566,19 +571,21 @@ function lanternNight(project: Project, exec: Exec): void {
     if (L.island.has(key(b)) || !far) continue;
     if (turn || i % 7 === 0) routeLights.push(b);
   }
+  // 밤 — 0.5 남색 막은 흰 얼음 위에서 대낮처럼 밝았고, 눈발 띠가 구름 그림자처럼 화면을 어지럽혔다(첫 플레이 검수 2026-10-31).
+  // 짙은 밤(0.8)에 눈은 그친다. 길은 굽이마다 차가운 빛(routeLights)과 사당·등불이 짚는다.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.5, color: "#0d1736",
+    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.8, color: "#060c24",
     sources: [
       { id: "valen", at: { x: L.valen.x, y: L.valen.y }, radius: 3, intensity: 0.9, color: "#ffd27a", flicker: true },
       ...L.shrineLights.map((c, i) => ({ id: `shrine_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       ...L.lamps.map((l, i) => ({ id: `lamp${i}`, at: { x: l.x, y: l.y - 2 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.8, color: "#ffc070", flicker: true })),
       // 탈출길 — 지그재그 굽이마다 차가운 빛(밝은 얼음): 어디가 안전한지 밤에도 읽힌다.
-      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 2.2, intensity: 0.75, color: "#d6ecff" })),
-      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.6, color: "#d6ecff" })),
+      { id: "player", at: { kind: "player" }, radius: 2.4, intensity: 0.55, color: "#9fb4ff" },
     ],
   });
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 } });
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "none" } });
 
   // 발렌 — 섬 사당 앞, 등 하나를 든 채.
   const vc = chipOf(project, "ev_fs_valen");
@@ -633,7 +640,8 @@ function lanternNight(project: Project, exec: Exec): void {
       cutLabel(),
       cutEnd(),
       say(ELENA, "카엘, 발밑!"),
-      say(SARAH, "큰 금은 못 건넌다! 서쪽으로 돌아서\n동쪽 끝으로, 다시 계단까지 달려!"),
+      // 길은 불러 주지 않는다 — 굽이마다 밝은 얼음(routeLights)이 보여 준다(첫 플레이 검수 2026-10-31: 탈출로를 통째로 말했다).
+      say(SARAH, "금 간 데는 못 버틴다!\n계단까지 달려!"),
       setSw(SW_ICE_RUN),
     ], { graphic: chip(vc.textureKey, vc.characterIndex, "down"), priority: "same" }),
     page("ev_fs2_lake_valen_gone", "떠남", [sw(SW_VALEN_MET)], [], { graphic: { transparent: true }, priority: "below" }),

@@ -15,10 +15,12 @@ import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 import { canMove, isPassable } from "@/project/collision";
+import { paintWoodlandOnto } from "./woodland";
+import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
-import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SOURCE } from "./dawnwellAshSheet";
+import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -401,11 +403,12 @@ function cellEvents(map: GameMap): void {
       narrate("굵은 쇠살문이 잠겨 있다."),
       say(KAEL, "열쇠 구멍은 있는데…"),
     ]),
-    // 빵을 받고도 문만 두드리면 엘레나가 길을 짚는다(독립 플레이 판정: 180걸음 동안 문 앞에서 맴돌았다).
+    // 빵을 받고도 문만 두드리면 엘레나가 리노의 말을 되짚는다(독립 플레이 판정: 180걸음 동안 문 앞에서 맴돌았다).
+    // 해법(침대에 내리친다)은 말하지 않는다 — 첫 플레이 검수(2026-10-31): 정답을 불러 줘 퍼즐이 사라졌다.
     page(`${gateId}_hint`, "잠김(빵 힌트)", [sw(SW_BREAD), sw(SW_KEY, false)], [
       narrate("굵은 쇠살문이 잠겨 있다."),
       say(KAEL, "열쇠 구멍은 있는데…"),
-      say(ELENA, "…리노가 「꼭꼭 씹어라」 그랬지.\n그 무거운 빵, 침대 모서리에 내리쳐 볼까?"),
+      say(ELENA, "…리노는 왜 「꼭꼭 씹어라」를\n두 번이나 말했을까."),
     ]),
     page(`${gateId}_key`, "열쇠로 연다", [sw(SW_KEY), sw(SW_CELL_OPEN, false)], [
       narrate("빵에서 나온 열쇠를 꽂고 돌렸다. 딸깍."),
@@ -516,14 +519,13 @@ function barracks(project: Project, exec: Exec): void {
     coneDegrees: 90, alertMs: 450, rush: true, rushSteps: 5, rushStepMs: 90, chaseStepMs: 130, searchMs: 1800,
     visionLight: { color: "#ffd27a", intensity: 0.85 },
   });
-  // 처음 들어서면 엘레나가 방의 규칙을 짚는다 — 등불 부채꼴·멈췄다 돌아서는 순찰·침상 밑·목표.
+  // 처음 들어서면 엘레나가 한 줄만 — 짐을 찾자, 등불을 피하자. 길(왼쪽 벽·침상 밑)은 말하지 않는다(첫 플레이 검수 2026-10-31: 해법을 통째로 불렀다).
+  // 목표는 무기고 상자의 노란 불빛, 위험은 바닥의 등불 부채꼴이 보여 준다.
   const hintId = "ev_fs2_barracks_enter";
   addEv(project, FS2_BARRACKS_ID, hintId, "막사에 들어섬", { x: 0, y: 0 }, [
     page(`${hintId}_p`, "막사 규칙", [sw("sw_fs2_barracks_entered", false)], [
       setSw("sw_fs2_barracks_entered"),
-      say(ELENA, "(속삭임) 저기, 오른쪽 위 무기고.\n불빛 새는 상자에 우리 짐이 있어. 사다리도 그 옆이야."),
-      say(ELENA, "(속삭임) 야경꾼 둘이 돌아. 손등불이 비추는\n바닥은 밟지 마. 끝까지 가면 멈췄다가 돌아서."),
-      say(ELENA, "(속삭임) 등 돌렸을 때 왼쪽 벽을 타고 올라가자.\n침상 앞에서 조사하면 밑으로 숨을 수 있어."),
+      say(ELENA, "(속삭임) 우리 짐, 여기 어딘가 있을 거야.\n…야경꾼 등불에만 걸리지 말자."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_barracks_entered", "B1: 막사에 처음 들어섬(규칙 귀띔)");
@@ -534,7 +536,7 @@ function barracks(project: Project, exec: Exec): void {
       page(`${id}_p`, "숨 고르기", [sw(SW_BARRACKS_MID, false)], [
         setSw(SW_BARRACKS_MID),
         se("cc0-se-orp-inventory-cloth"),
-        say(ELENA, "(속삭임) …휴. 여기 침상 그늘이면 안 보여.\n침상에서 침상으로, 하나씩 건너가자."),
+        say(ELENA, "(속삭임) …휴. 침상 그늘이면 안 보여."),
       ], { priority: "below", trigger: { kind: "playerTouch" } }),
     ]);
   });
@@ -640,8 +642,9 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
       narrate("광장은 캄캄하다. 집집마다 등불이 꺼졌다.\n야경꾼들 손등불만 흔들린다."),
       say(KAEL, "통금이야. 야경꾼들이 돌고 있어."),
       say(ELENA, "들키면 바로 덤벼들 거야.\n그늘로만 가자."),
-      // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 나갈 틈과 첫 목적지를 짚는다.
-      say(ELENA, "저기, 골목 왼쪽 위에 불빛 새는 틈 보여?\n그리로 빠져서 광장 서쪽 빵집,\n미레 아주머니한테 가자."),
+      // 독립 판정: 뚜껑 문 골목이 캄캄하고 출구가 한 칸이라 40분을 헤맸다 — 골목 틈은 불빛이 짚고(alley_gap 광원), 엘레나는 누구를 찾을지만.
+      // 길(어느 틈으로, 어느 쪽으로)은 말하지 않는다 — 첫 플레이 검수(2026-10-31): 안내대로 나가면 3걸음 만에 붙잡혔다.
+      say(ELENA, "미레 아주머니라면 뭔가 알 거야.\n서쪽 빵집이었지."),
     ], { trigger: { kind: "auto" } }),
   ]);
   ensureSwitch(project, "sw_fs2_hub_arrived", "B1: 통금의 밤 광장에 나옴");
@@ -661,7 +664,8 @@ const SW_MIRE = "sw_fs2_mire_well";
  * 서쪽 빵집(미레) 길과 남쪽 여관(마르타) 길은 비워 둔다 — 순찰을 피하는 길이 늘 하나는 있게(VQA 2차: 넷이 모든 길목을 막았다).
  */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
-  { at: { x: 44, y: 21 }, axis: "horizontal", length: 4 },
+  // 북쪽 성벽 밑을 돈다 — 도착 칸·골목 틈(49,24)에서 7칸 밖이라, 나오자마자(3걸음 안) 잡히지 않고 광장을 건널 때 시야를 재게 된다.
+  { at: { x: 43, y: 17 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
 ];
 /** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
@@ -1000,6 +1004,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     page("ev_fs2_obs_call_wait", "대기", [], [], { priority: "below" }),
     page("ev_fs2_obs_call_run", "부른다", [sw(SW_HANEL, false)], [
       wait(400),
+      // 발판에서 한 걸음 내려선다 — 도착 칸이 승강 발판(조사로 탄다)이라, 대사를 넘기는 Enter 가 승강 장치를 다시 태웠다
+      // (첫 플레이 검수 2026-10-31: 몇 번씩 오르내렸다).
+      route("@player", [{ kind: "move", dir: "right" }, { kind: "turn", dir: "up" }]),
       say(HANEL, "거기 누구냐. …카엘이냐?"),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { trigger: { kind: "auto" } }),
@@ -1057,9 +1064,10 @@ function northGate(project: Project, exec: Exec, smithyId: string): void {
     // 첫 장은 숲 어귀(성벽 밑 풀밭 → 나무 벽 틈으로 숲길, B4 추격 무대), 둘째 장은 트인 들판(재의 들판, B5 가 다시 칠한다).
     fromMapId: FS2_HUB_NIGHT_ID, side: "north", count: 2, terrains: ["edge", "field"], linkFrom: false,
     names: ["북쪽 숲 어귀", "재의 들판"], moods: ["dark", "fog"], seed: 211,
-  }) as { maps?: { mapId: string; entry: Cell; treeline?: number }[] } | undefined;
+  }) as { maps?: { mapId: string; entry: Cell; exit: Cell | null; treeline?: number }[] } | undefined;
   const maps = route?.maps ?? [];
   if (maps.length !== 2) throw new Error("[fallen-star act2] 북쪽 들판이 두 장이 아니다");
+  reshapeForestEdge(project, maps[0]!.mapId, maps[0]!.entry, maps[0]!.exit);
   FS2_NORTH_ROUTE.mapIds = maps.map((m) => m.mapId);
   FS2_NORTH_ROUTE.entry = maps[0]!.entry;
   FS2_NORTH_ROUTE.entries = maps.map((m) => m.entry);
@@ -1180,6 +1188,43 @@ function northGateEvents(project: Project, exec: Exec): void {
   ]);
 }
 
+/**
+ * B4 숲 어귀를 다시 칠한다 — 남쪽 절반은 달빛 풀밭(나무 섬 둘), 그 북쪽 끝은 맵 폭 전체를 막는 나무 벽, 벽에 난 틈 하나로 숲길이 들어가
+ * 틈 바로 안쪽에 작은 숲 빈터(브람 자리), 그 너머는 빽빽한 숲 사이 좁은 길뿐.
+ * 숲길 도구(terrain:'edge')가 지은 판은 벽 너머가 넓은 풀밭(길섶·샛길 주머니)이라 길돌 둘이 「벽의 틈」이 아니라 빈터 어귀의 표지로 읽혔고
+ * 맵 북쪽 절반이 장면에 안 쓰였다(독립 VQA 5/10, 2026-10-31). 도구는 조수 공용이라 그대로 두고 이 맵만 같은 숲 화가(paintWoodlandOnto)로 다시 칠한다.
+ * 출입 칸(도구의 문 이벤트)은 그대로 쓴다.
+ */
+function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: Cell | null): void {
+  const map = M(project, mapId);
+  const W = map.width, H = map.height;
+  if (!exit || exit.y !== 0 || entry.y !== H - 1) throw new Error(`[fallen-star act2] 숲 어귀 출입 칸이 북·남 가장자리가 아니다(${JSON.stringify({ entry, exit })})`);
+  map.lowerTiles = Array.from({ length: W * H }, () => BEODEUL_PLAIN_GRASS);
+  map.upperTiles = Array.from({ length: W * H }, () => -1);
+  delete map.lowerTileStacks;
+  delete map.upperTileStacks;
+  if (map.lowerOverlayTiles) map.lowerOverlayTiles = Array.from({ length: W * H }, () => -1);
+  if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: W * H }, () => -1);
+  if (map.shadowBits) map.shadowBits = Array.from({ length: W * H }, () => 0);
+  const gapX = Math.round(W / 2);
+  const ex = entry.x + 0.5, nx = exit.x + 0.5;
+  paintWoodlandOnto(project, map, {
+    id: mapId, name: map.name, width: W, height: H, seed: 4211,
+    // 길: 개구멍 밑 → 풀밭을 살짝 굽어 → 벽 틈(gapX, 24) → 틈 안 빈터 → 숲 사이로 북쪽 출구.
+    paths: [{ pts: [{ x: ex, y: H - 1 }, { x: ex - 1.5, y: H - 6 }, { x: (ex + gapX) / 2, y: 29 }, { x: gapX, y: 24.5 }, { x: gapX, y: 20 }, { x: gapX - 2.5, y: 13 }, { x: (gapX + nx) / 2, y: 6 }, { x: nx, y: 0 }], w: [1.7, 2.4] }],
+    exits: [entry, exit],
+    clearings: [
+      // 달빛 풀밭 — 맵 폭 거의 전체, 위쪽 끝(y≈25)이 들쭉날쭉한 나무 벽 밑.
+      { cx: W / 2 - 0.5, cy: 33, rx: W / 2 - 1.5, ry: 7.6 },
+      // 틈 안쪽 작은 숲 빈터 — 브람이 등을 들고 서는 자리, 야경꾼이 멈춰 서는 문턱.
+      { cx: gapX, cy: 20.5, rx: 2.8, ry: 1.7 },
+    ],
+    // 풀밭의 나무 섬 둘 — 몸을 숨기거나 돌아가는 덩이.
+    groves: [{ cx: 6, cy: 31.5, rx: 2.3, ry: 1.9 }, { cx: W - 7, cy: 34, rx: 2.3, ry: 1.9 }],
+    undergrowth: 0.6,
+  }, () => true);
+}
+
 /** 걸어서 닿는 칸까지의 걸음 수(문·이벤트는 무시) — 장면 자리를 맵 모양에서 고른다. */
 function walkSteps(project: Project, map: GameMap, from: Cell): Map<string, number> {
   const dist = new Map<string, number>([[`${from.x},${from.y}`, 0]]);
@@ -1244,10 +1289,10 @@ function requireReach(project: Project, mapId: string, from: Cell, targets: Reco
  * B4 숲 어귀 추격 — 개구멍을 빠지자 광장 순찰에 들켰다. 성벽 밑 풀밭(맵 남쪽 절반)을 가로질러 북쪽 숲 벽 틈까지 뛰는 장면.
  * 사용자 지적(2026-10-29): 「숲 그늘도 이상하고 … 추격씬도 이상함」 — 트인 들판 한복판에 그림자 띠만 칠해 「숲 그늘」이라 불렀고,
  * 기사 둘은 뒤에서 느리게 따라와 몇 초 만에 끝났다. 이제:
- *  · 맵 자체가 숲 어귀(author_forest_route terrain:'edge') — 남쪽 풀밭, 북쪽 들쭉날쭉한 나무 벽, 그 틈으로 숲길.
+ *  · 맵은 숲 어귀 — 남쪽 달빛 풀밭, 맵 폭 전체를 막는 나무 벽, 그 틈 하나로 숲길(reshapeForestEdge 가 다시 칠함).
  *  · 틈 양옆에 숲 길돌(룬 선돌) 둘 + 브람의 등불 — 처음 화면 위쪽 끝에서부터 「저기까지」가 보인다.
- *  · 나무 벽 아래 풀밭에 수관 그늘(paint_shadow), 달빛은 풀밭에만 — 북쪽으로 갈수록 화면이 차츰 어두워진다.
- *  · 야경꾼 셋, 큰 손등불: 뒤 왼쪽·오른쪽 앞에서 둘이 깨어 몰아오고, 풀밭 가운데를 가로로 도는 하나는 앞쪽 부채꼴로 길목을 지킨다.
+ *  · 그늘 칠 없음 — 달빛은 풀밭에만, 북쪽으로 갈수록 조명만으로 차츰 어두워진다(2026-10-31: 네모 그늘 띠·틈 안 검은 판·북쪽 회색 자갈 계단을 걷어 냄).
+ *  · 야경꾼 둘, 손등불: 등 뒤 양옆(성벽 밑 양 끝)에서 깨어 주인공보다 빨리 몰아온다. 곧장 뛰면 틈 앞에서 뒤꿈치, 머뭇대면 붙잡힌다.
  *  · 틈에 닿으면 등불들이 멈칫 → 「숲지기 땅이다」 → 뒤로 물러나며 꺼진다. 브람의 고백.
  * 붙잡히면 전투 없이 개구멍 안쪽(광장)으로 도로 기어든다 — 개구멍을 다시 조사하면 곧장 다시 시작.
  */
@@ -1264,25 +1309,32 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const edge = row(edgeY);
   FS2_B4.edge = edge;
   const gapL = edge[0]!.x, gapR = edge[edge.length - 1]!.x, gapC = Math.round((gapL + gapR) / 2);
-  // 수관 그늘 — 숲(못 가는 칸) 바로 아래 풀밭 칸은 위 절반~통째로, 두 칸 아래는 띄엄띄엄 1/4 칸. 나무 섬 아래도 같은 규칙.
-  const shade: Rec[] = [];
-  for (let y = edgeY; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
-    if (!open(x, y)) continue;
-    const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
-    if (!open(x, y - 1)) shade.push(h % 3 === 0 ? { x, y, bits: 15 } : { x, y, quarters: ["tl", "tr"] });
-    else if (y >= 2 && !open(x, y - 2) && h % 2 === 0) shade.push({ x, y, quarters: [h % 4 < 2 ? "tl" : "tr"] });
-  }
-  // 틈 안쪽(숲지기 땅) — 도착선과 그 북쪽 두 줄은 통째로 그늘.
-  for (let y = edgeY - 2; y <= edgeY; y += 1) for (const c of row(y)) shade.push({ x: c.x, y: c.y, bits: 15 });
-  exec(project, "paint_shadow", { mapId, cells: shade, mode: "add" });
-  // 숲 길돌 — 틈 어귀 양옆(풀밭 쪽 첫 줄). 서른 해 전 브람이 세운 「여기부터 숲지기 땅」 표지.
-  const mouth = row(edgeY + 1);
+  // 그늘 칠(paint_shadow)은 하지 않는다 — 트인 풀밭 위에 네모 그늘 띠·틈 안 검은 판만 떠서 「숲 그늘」이 얼룩으로 보였다(VQA 2026-10-31).
+  // 나무 키트가 이미 제 낙하 그림자를 얹는다. 북쪽으로 어두워지는 건 아래 조명(달빛은 풀밭에만)이 맡는다.
+  void open;
+  // 숲 길돌 — 틈 양 끝 칸(도착선 줄)에 하나씩, 문기둥처럼. 서른 해 전 브람이 세운 「여기부터 숲지기 땅」 표지. 자리가 막히면 가까운 칸으로.
+  // 한 칸만 시도하던 판은 오른쪽 길돌이 도장에 거절당해 하나만 섰다 — 가까운 칸부터 차례로 시도한다.
   const stones: Cell[] = [];
-  for (const want of [gapL - 1, gapR + 1]) {
-    const at = mouth.filter((c) => c.y === edgeY + 1).sort((a, b) => Math.abs(a.x - want) - Math.abs(b.x - want))[0];
-    if (!at || Math.abs(at.x - gapC) < 2) continue;
-    try { exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-dungeon-theme-waystone", mapId, x: at.x, y: at.y - 1 }); stones.push(at); } catch { /* 그 칸 거절 — 길돌 하나만 */ }
+  for (const want of [gapL, gapR]) {
+    const cands = [...row(edgeY), ...row(edgeY + 1), ...row(edgeY + 2), ...row(edgeY + 3)]
+      .filter((c) => Math.abs(c.x - (gapL + gapR) / 2) >= 1.5 && (want === gapL ? c.x <= gapL + 1 : c.x >= gapR - 1))
+            .sort((a, b) => Math.abs(a.x - want) + Math.abs(a.y - edgeY) * 3 - (Math.abs(b.x - want) + Math.abs(b.y - edgeY) * 3));
+    const why: string[] = [];
+    for (const at of cands.slice(0, 14)) {
+      // 길섶 덤불·고사리(걸을 수 있는 3층 장식)가 길돌 두 칸에 있으면 도장이 거절한다 — 걷어 낸다. 나무(못 걷는 칸)는 그대로.
+      const m = M(project, mapId);
+      const ts = project.tilesets[m.tilesetId];
+      for (const yy of [at.y - 1, at.y]) {
+        const i = yy * m.width + at.x;
+        const t = m.upperTiles[i] ?? -1;
+        const ps = t >= 0 ? ts?.passability[t] : undefined;
+        if (t >= 0 && (!ps || ps.up || ps.down || ps.left || ps.right) && !(ts?.tileMeta?.[t]?.tags ?? []).includes("tree")) m.upperTiles[i] = -1;
+      }
+      try { exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-dungeon-theme-waystone", mapId, x: at.x, y: at.y - 1 }); stones.push(at); break; } catch (e) { why.push(`(${at.x},${at.y}) ${String((e as Error).message).slice(0, 120)}`); }
+    }
+    if (why.length) console.warn(`[fallen-star act2] 길돌(${want}) 거절: ${why.slice(0, 3).join(" | ")}`);
   }
+  if (stones.length < 2) throw new Error(`[fallen-star act2] 숲 어귀 길돌이 ${stones.length}개만 섰다 — 틈 ${gapL}~${gapR}@${edgeY}, 줄 ${[edgeY, edgeY + 1, edgeY + 2].map((y) => row(y).map((c) => c.x).join(".")).join(" / ")}`);
   // 야경꾼 셋 — 광장에서 본 은빛 갑옷 칩. 경보(SW_B4_ALARM)가 켜진 채 들어오므로 도착하자마자 움직인다.
   const knight = { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` };
   const meadowMid = Math.round((arrive.y + edgeY) / 2);
@@ -1291,16 +1343,21 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       .filter((c) => c.y > edgeY + 2 && !avoid.some((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) < 3))
       .sort((a, b) => Math.abs(a.x - want.x) + Math.abs(a.y - want.y) - (Math.abs(b.x - want.x) + Math.abs(b.y - want.y)))[0];
   const spots: { at: Cell; patrol?: Cell[] }[] = [];
-  const behindL = pick({ x: arrive.x - 9, y: arrive.y - 1 });
+  // 몰아오는 둘은 등 뒤 양옆(성벽 쪽)에서 — 곧장 틈으로 뛰면 뒤꿈치까지 따라붙고, 머뭇대거나 돌아가면 붙잡힌다.
+  // 앞쪽 옆구리에 세웠던 판(독립 VQA 2026-10-31)은 길목에서 정면으로 막아 이기고 지는 게 운이었다. 앞을 막는 몫은 가로 순찰 하나뿐 — 부채꼴을 보고 지나갈 때를 고른다.
+  // 개구멍에서 막 나온 직후(화면이 밝아지는 동안) 손이 닿지 않게 도착 칸에서 열다섯 걸음 넘게 — 같은 줄 아홉 칸 옆이면 다시 나오자마자 붙잡혔다.
+  const behindL = pick({ x: 1, y: arrive.y });
   if (behindL) spots.push({ at: behindL });
-  const aheadR = pick({ x: arrive.x + 13, y: arrive.y - 8 }, spots.map((s) => s.at));
+  const aheadR = pick({ x: map.width - 2, y: arrive.y }, spots.map((s) => s.at));
   if (aheadR) spots.push({ at: aheadR });
   // 나무 벽 틈 어귀 앞(도착선 네 줄 아래)을 가로로 도는 야경꾼 — 좌우 끝에서 멈춰 둘러본다. 서쪽 끝에서 출발해 동쪽으로.
   // 곧장 틈으로 내달리면 등 뒤를 스치고 지나가지만, 서쪽으로 돌아가면 그 부채꼴에 걸린다(추격 시뮬레이션 /tmp/fs2front/sim, 2026-10-29).
   const sweepY = edgeY + 4;
   const sweepRow = row(sweepY);
   const sweepL = sweepRow.find((c) => c.x >= 4), sweepR = [...sweepRow].reverse().find((c) => c.x <= map.width - 6);
-  if (sweepL && sweepR) spots.push({ at: { x: sweepL.x, y: sweepY }, patrol: [{ x: sweepR.x, y: sweepY }] });
+  // 틈 어귀 가로 순찰은 세우지 않는다(2026-10-31) — 경보가 울린 채 들어오면 순찰도 곧장 달려와 길목 정면에서 막았다: 곧장 뛰어도 붙잡히는 운 싸움(독립 VQA, 브라우저 녹화 두 판).
+  // 이제 위협은 등 뒤에서 더 빨리 따라붙는 둘뿐 — 머뭇대거나 돌아가면 붙잡히고, 길 따라 곧장 뛰면 틈 앞에서 뒤꿈치까지 따라붙는다.
+  void sweepL; void sweepR;
   const knightIds: string[] = [];
   const sweeperIds: string[] = [];
   let why = "후보 없음";
@@ -1346,23 +1403,24 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   ]);
   // 밤 숲 조명 — 짙은 밤(0.82). 달빛은 성벽 밑 풀밭에만 셋으로 고르게 깔리고 나무 벽 쪽으로 옅어진다 — 북쪽으로 갈수록 화면이 차츰 어두워진다.
   // 야경꾼 손등불은 크게(반지름 4) — 다가오는 게 멀리서도 보인다. 브람의 등은 틈 안에서 작게 깜빡인다(가야 할 곳).
-  const moonY = Math.min(map.height - 2, meadowMid + 3);
-  const moonR = Math.max(6, Math.round((arrive.y - edgeY) / 2) + 2);
+  const moonY = Math.min(map.height - 2, meadowMid + 1);
+  const moonR = Math.max(6, Math.round((arrive.y - edgeY) / 2) + 4);
   exec(project, "set_lighting_volume", {
     mapId, applyMode: "map", ambient: 0.82, color: "#0a1024",
     sources: [
-      ...[0.2, 0.5, 0.8].map((f, i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f), y: moonY }, radius: moonR, intensity: 0.5, color: "#c4d2ff" })),
+      ...[0.2, 0.5, 0.8].map((f, i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f), y: moonY }, radius: moonR, intensity: 0.36, color: "#c4d2ff" })),
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
-      ...knightIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 4, intensity: 1, color: "#ffb050", flicker: true })),
+      // 손등불은 작고 흔들리지 않게 — 반지름 4·세기 1·깜빡임이면 풀밭이 한낮처럼 밝아지고 화면 밝기가 떨렸다(독립 VQA 2026-10-31).
+      ...allIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 3.2, intensity: 0.7, color: "#ffb050" })),
       { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 3.5, intensity: 0.9, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
   // 조명 뒤에 감지 — visionLight(부채꼴 손등불)는 지금 맵 조명에 덧붙는다(먼저 걸면 위 조명이 덮어쓴다).
-  // 몰아오는 둘 — 「거기 서라!」 0.3초 뒤 움직이고, 칸당 0.127초(추격 엔진 개편 #3907 의 「빠름」 — 주인공 걷기 0.16초보다 빠르다, 12칸마다 숨 고름), 네 칸 안이면 0.09초로 덮친다.
-  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 300, chaseStepMs: 127, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 3000, giveUpRange: 20 });
-  // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 그 부채꼴이 손등불 빛으로 바닥에 깔린다. 틈 어귀를 막는 몫이라 덮치지 않고 칸당 0.15초(주인공과 거의 같은 빠르기) —
+  // 몰아오는 둘 — 「거기 서라!」 1.1초 뒤 움직이고, 칸당 0.175초·돌진 없음 — 주인공 걷기(0.16초)보다 조금 느리다. 0.127초+돌진이었을 땐 길 따라 곧장 달려도 (12,32) 근처에서 등 뒤 야경꾼에게 따라잡혔다(체크포인트 녹화 2026-10-31). 멈칫하거나 돌아가면 잡힌다.
+  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 1100, chaseStepMs: 175, rush: false, searchMs: 3000, giveUpRange: 20 });
+  // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 부채꼴 빛(visionLight)은 깔지 않는다 — 풀밭을 자로 그은 듯한 빛 쐐기가 화면을 가르고 깜빡였다(독립 VQA 2026-10-31). 등불은 다른 야경꾼과 같은 둥근 손등불. 틈 어귀를 막는 몫이라 덮치지 않고 칸당 0.15초(주인공과 거의 같은 빠르기) —
   // 곧장 뛰는 주인공을 틈 바로 앞에서 덮치던 판(브라우저 녹화, 2026-10-30)은 「성공 길」이 없었다. 돌아가는 길(서쪽)에선 여전히 부채꼴에 걸린다.
-  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 150, rush: false, searchMs: 2500, visionLight: { color: "#ffc070", intensity: 0.9 } });
+  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 150, rush: false, searchMs: 2500 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of allIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
@@ -1373,7 +1431,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     setSw(SW_B4_EDGE),
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다.
     ...allIds.map((id) => emote(id, "question", 700)),
-    { kind: "setLighting", ambient: 0.9, color: "#070b18", transitionMs: 1200 } as unknown as Command,
+    { kind: "setLighting", ambient: 0.85, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
     narrate("길돌을 지나 나무 그늘로 들어서자\n뒤쫓던 등불들이 우뚝 멈췄다."),
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가. 돌아가자."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
@@ -1415,11 +1473,12 @@ const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] 
  *   숯덩이 골렘+도깨비(Lv7, 피할 수 있는 정예) 100%·68% / 100%·회복약 4.0
  * 경험치 — 한 번씩 다 싸우면(들개·까마귀·도깨비·재뱀·마을 도깨비) 935 → Lv6 바닥 1145 + 935 = 2080 ≥ Lv8 문턱 2070.
  */
-const ASH_FOES: { id: string; name: string; art: string; level: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp: number; fireLast?: boolean }[] = [
+const ASH_FOES: { id: string; name: string; art: string; level: number; stats: Rec; style: string; elementRates?: Rec; skills: string[]; exp: number }[] = [
   // 잿불 도깨비 — 불의 정령. 얼음 구체가 아니라 불(화염)을 쓴다(VQA: 도깨비가 얼음 기술).
   // 그림은 도깨비불(작은 불꽃 덩이, wisp-blue) — 불 해마(spirit-fire)는 다른 짐승으로 읽혔다(2026-10-31 첫 플레이 검수).
-  // 밸런스(같은 검수): 셋이 화염을 거푸 쏘면 공격만 해도 전멸했다 — 마력 90→60, 체력 170→130, 화염은 기본 공격보다 드물게(fireLast).
-  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-wisp-blue", level: 7, style: "float", stats: { maxHp: 130, maxMp: 40, attack: 54, defense: 20, mind: 60, agility: 48 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_fire"], exp: 70, fireLast: true },
+  // 밸런스(감독 2차, 2026-10-31): 「공격만 누르면 아슬아슬하게 이기거나 가끔 진다, 회복·방어를 쓰면 넉넉」 —
+  //   모의전 n=200 카엘+엘레나: 공격만·회복약 없음 Lv6 70%/Lv7 80%, 공격+회복약 셋 91%/97%, 기술 자동 전투 100%.
+  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-wisp-blue", level: 7, style: "float", stats: { maxHp: 200, maxMp: 40, attack: 66, defense: 20, mind: 96, agility: 48 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_fire"], exp: 70 },
   { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", level: 6, style: "swoop", stats: { maxHp: 130, maxMp: 0, attack: 76, defense: 18, mind: 20, agility: 78 }, skills: ["skill_attack"], exp: 55 },
   { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", level: 8, style: "lumber", stats: { maxHp: 700, maxMp: 0, attack: 118, defense: 72, mind: 60, agility: 30 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"], exp: 280 },
   { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", level: 6, style: "dash", stats: { maxHp: 150, maxMp: 0, attack: 74, defense: 20, mind: 20, agility: 66 }, skills: ["skill_attack"], exp: 55 },
@@ -1428,6 +1487,8 @@ const ASH_FOES: { id: string; name: string; art: string; level: number; stats: R
 /** 무리 — 숲 어귀(밤 숲)의 들개·까마귀는 밤 겹, 재의 들판·마을 터의 도깨비·뱀·골렘은 잿빛 연기 겹. 배경 그림(숲·들판)은 맵 battleBackground 가 정한다. */
 const ASH_TROOPS: { id: string; name: string; members: string[]; night?: boolean }[] = [
   { id: "troop_fs2_ash_wisps", name: "잿불 도깨비 떼", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
+  // 마을 터 길목은 둘 — 들판 셋을 공격만으로 겨우 넘기면(엘레나가 쓰러진 채) 곧바로 다시 셋을 만나 꼼짝없이 졌다(2026-10-31 실측).
+  { id: "troop_fs2_ash_wisps_pair", name: "잿불 도깨비 둘", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
   { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"], night: true },
   { id: "troop_fs2_cinder_golem", name: "숯덩이 골렘", members: ["enemy_fs2_cinder_golem", "enemy_fs2_ash_wisp"] },
   { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog", "enemy_fs2_starved_dog"], night: true },
@@ -1446,7 +1507,7 @@ function ashFoes(project: Project, exec: Exec): void {
     const rec = JSON.parse(JSON.stringify(base)) as Rec;
     Object.assign(rec, {
       id: f.id, name: f.name, level: f.level, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
-      actions: f.skills.map((skillId, i) => ({ skillId, priority: f.fireLast ? (i === 0 ? 8 : 5) : (i === 0 ? 7 : 8), condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
+      actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
       rewards: { exp: f.exp, gold: 14, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
       ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
     });
@@ -1459,40 +1520,23 @@ function ashFoes(project: Project, exec: Exec): void {
 }
 
 /**
- * 새벽샘 터 북쪽 출구로 가는 길(2026-10-31 첫 플레이 검수: 보이는 길은 동쪽 묘지로만 가고, 북쪽 출구는 나무 틈으로만 지났다).
- * 예배당 동쪽 세로 흙길의 칸(같은 맵, 같은 그림)을 네 줄 주기로 위로 이어 붙이고, 길 자리의 고목 한 그루와 그 그림자를 걷는다.
- */
-function extendDawnNorthRoad(map: GameMap): void {
-  const r = DAWN_SPOTS.northRoad, W = map.width;
-  const at = (x: number, y: number) => y * W + x;
-  // 길 둘레의 맨땅 칸 — 고목·그림자를 걷은 자리에 깐다(길 서쪽 아래 빈 땅에서 같은 줄 주기로 가져온다).
-  const bare = (x: number, y: number): number => map.lowerTiles[at(33 + ((x + y) % 2), 6 + (y % 2))]!;
-  for (let y = r.clear.y0; y <= r.clear.y1; y += 1) for (let x = r.clear.x0; x <= r.clear.x1; x += 1) {
-    map.upperTiles[at(x, y)] = -1;
-    if (map.upperOverlayTiles) map.upperOverlayTiles[at(x, y)] = -1;
-    if (!r.xs.includes(x)) map.lowerTiles[at(x, y)] = bare(x, y);
-  }
-  const span = r.sample.y1 - r.sample.y0 + 1;
-  for (let y = r.fromY; y <= r.toY; y += 1) for (const x of r.xs) {
-    const sy = r.sample.y0 + (((y - r.sample.y0) % span) + span) % span;
-    map.lowerTiles[at(x, y)] = map.lowerTiles[at(x, sy)]!;
-    map.upperTiles[at(x, y)] = -1;
-    if (map.lowerOverlayTiles) map.lowerOverlayTiles[at(x, y)] = -1;
-  }
-}
-
-/**
- * 「불탄」 새벽샘 — 웨이브 장소 「폐허 마을」은 초록 풀밭이라 「마을은 불탔다」는 글과 어긋났다(2026-10-31 첫 플레이 검수).
- * 같은 칩셋의 「재의 들판」 땅 색으로 다시 칠한 시트(dawnwellAshSheet.ts, 새 그림 없음 — 화소 위치·윤곽은 원본 그대로)를
- * 이 맵 전용 타일셋으로 넣고 칸 번호를 옮긴다. 통행·층은 원래 칸 값을 그대로 쓴다.
+ * 「불탄」 새벽샘 — 웨이브 장소 「폐허 마을」은 초록 풀밭에 멀쩡한 집이라 「마을은 불탔다」는 글과 어긋났다(2026-10-31 첫 플레이·감독 검수).
+ * scripts/content/fallen-dawnwell-ash/recolor.py 가 원본 칸 화소를 옮기고 칠만 바꾼 시트를 만든다(새 그림 없음):
+ *   땅·풀 → 재의 들판 밝기의 중립 회색, 흙길 → 밝은 잿빛 흙(땅과 대비), 지붕 → 숯, 벽 → 그을음,
+ *   광장 둘레 집 넷은 지붕이 내려앉음(잘린 가장자리 숯·불씨, 벽에 흘러내린 그을음), 바깥에서 잠긴 집만 지붕이 남는다(이야기 그대로),
+ *   북쪽 출구까지 이어진 흙길(길 자리 고목 한 그루 걷음), 서쪽 길 한가운데 시커먼 잿더미(기억 셋째).
+ * 그 시트를 이 맵 전용 타일셋으로 넣고 1층·3층을 생성 배열로 바꾼다. 통행·층은 각 시트 칸이 온 원래 칸 값을 그대로 쓴다.
  */
 const FS2_DAWN_ASH_TILESET = "fs2_dawnwell_ash";
 function ashDawnwell(project: Project, map: GameMap): void {
   const wave = project.tilesets[map.tilesetId];
   if (!wave) throw new Error(`[fallen-star act2] ${map.id}: 타일셋 ${map.tilesetId} 이 없다`);
+  if (map.width !== DAWNWELL_ASH_SIZE.width || map.height !== DAWNWELL_ASH_SIZE.height) {
+    throw new Error(`[fallen-star act2] 새벽샘 재 시트(${DAWNWELL_ASH_SIZE.width}×${DAWNWELL_ASH_SIZE.height})와 맵(${map.width}×${map.height}) 크기가 다르다 — recolor.py 를 다시 돌릴 것`);
+  }
   const cols = DAWNWELL_ASH_COLS;
-  const count = Math.ceil(DAWNWELL_ASH_SOURCE.length / cols) * cols;
-  const src = (i: number): number => DAWNWELL_ASH_SOURCE[i] ?? -1;
+  const count = Math.ceil(DAWNWELL_ASH_PASS.length / cols) * cols;
+  const src = (i: number): number => DAWNWELL_ASH_PASS[i] ?? -1;
   project.assets.uploaded[FS2_DAWN_ASH_TILESET] ??= { id: FS2_DAWN_ASH_TILESET, name: "새벽샘 터 · 재 (웨이브 폐허 마을 다시 칠함)", kind: "tileset", dataUrl: DAWNWELL_ASH_PNG, meta: { tileSize: 16 } } as never;
   const open = { up: true, down: true, left: true, right: true };
   project.tilesets[FS2_DAWN_ASH_TILESET] = {
@@ -1501,19 +1545,12 @@ function ashDawnwell(project: Project, map: GameMap): void {
     passability: Array.from({ length: count }, (_, i) => structuredClone(src(i) >= 0 ? wave.passability[src(i)] ?? open : open)),
     priority: Array.from({ length: count }, (_, i) => (src(i) >= 0 ? wave.priority[src(i)] ?? "lower" : "lower")),
     terrain: Array.from({ length: count }, (_, i) => (src(i) >= 0 ? wave.terrain[src(i)] ?? 0 : 0)),
-    tileMeta: Array.from({ length: count }, () => ({ label: "새벽샘 터 · 재", description: "웨이브 폐허 마을 칸을 재의 들판 색으로 다시 칠함" })),
+    tileMeta: Array.from({ length: count }, () => ({ label: "새벽샘 터 · 재", description: "웨이브 폐허 마을 칸을 불탄 마을로 다시 칠함" })),
   } as unknown as Project["tilesets"][string];
-  const to = new Map(DAWNWELL_ASH_SOURCE.map((t, i) => [t, i]));
-  for (const layer of [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles]) {
-    if (!layer) continue;
-    for (let i = 0; i < layer.length; i += 1) {
-      const t = layer[i]!;
-      if (t < 0) continue;
-      const n = to.get(t);
-      if (n === undefined) throw new Error(`[fallen-star act2] 새벽샘 재 시트에 웨이브 칸 ${t} 이 없다 — scripts/content/fallen-dawnwell-ash/recolor.py 를 다시 돌릴 것`);
-      layer[i] = n;
-    }
-  }
+  map.lowerTiles = [...DAWNWELL_ASH_LOWER];
+  map.upperTiles = [...DAWNWELL_ASH_UPPER];
+  map.lowerOverlayTiles = map.lowerTiles.map(() => -1);
+  map.upperOverlayTiles = map.lowerTiles.map(() => -1);
   map.tilesetId = FS2_DAWN_ASH_TILESET;
 }
 
@@ -1528,7 +1565,6 @@ function dawnwell(project: Project, exec: Exec): void {
   // 새벽샘 터 — 되살린 버들항 웨이브 장소 「폐허 마을」을 그대로 가져온다(무너진 예배당·마른 우물 광장·반쯤 무너진 집 여섯).
   // 바깥에서 잠긴 집은 광장 남동쪽 돌집 — 지붕이 남은 단 한 채. 칸 좌표는 act2Places.ts DAWN_SPOTS.
   importWavePlace(project, exec, WAVE_RUINED_VILLAGE, FS2_DAWNWELL_ID, "새벽샘 터");
-  extendDawnNorthRoad(M(project, FS2_DAWNWELL_ID));
   ashDawnwell(project, M(project, FS2_DAWNWELL_ID));
   DAWN.kept = { ...DAWN_SPOTS.kept };
   DAWN.front = { ...DAWN_SPOTS.front };
@@ -1581,12 +1617,11 @@ function dawnwell(project: Project, exec: Exec): void {
   foe(field!, "troop_fs2_cinder_golem", ASH_SPOTS.golem.x, ASH_SPOTS.golem.y, "lumber", 0);
   exec(project, "place_chest", { mapId: field!, x: ASH_SPOTS.chest.x, y: ASH_SPOTS.chest.y, contents: { itemId: "item_hi_potion", gold: 150 }, name: "타다 남은 짐 상자", id: "ev_fs2_ash_chest" });
   // 마을 터 — 서쪽 무너진 집들 사이 길목에 도깨비 한 무리.
-  foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", DAWN_SPOTS.wisps.x, DAWN_SPOTS.wisps.y, "float");
-  // 길 한가운데 잿더미(기억 셋째) — 보이는 숯 더미를 찍고 그 칸에 조사 이벤트를 둔다(dawnwellEvents).
-  exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-volcano-cave-coal-pile", mapId: FS2_DAWNWELL_ID, x: DAWN_SPOTS.mems[2]!.x, y: DAWN_SPOTS.mems[2]!.y });
-  // 별빛 결정 — 마을 터 입구 곁. 웨이브 칩셋에는 버들항 받침 수정 조각이 없어 기본 크리스탈 칩으로 세운다.
+  foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps_pair", DAWN_SPOTS.wisps.x, DAWN_SPOTS.wisps.y, "float");
+  // 별빛 결정 — 마을 터 입구 곁. 들판 도깨비불(공격만이면 아슬아슬)을 넘긴 뒤 숨 고르는 자리라 파티를 회복한다 —
+  // 쓰러진 엘레나를 일으킬 길이 없던 채 마을 길목 도깨비불을 만나 지던 것(2026-10-31 실측). 웨이브 칩셋에는 버들항 받침 수정 조각이 없어 기본 크리스탈 칩으로 세운다.
   exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: DAWN_SPOTS.save.x, y: DAWN_SPOTS.save.y, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
-    prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+    prompt: "기록하시겠습니까?", sparkleRadius: 2, heal: true });
 }
 /** 버들항 구역 키트 가운데 칸 — 그을린 바닥 칠하기용. */
 function kitCenterTile(project: Project, tilesetId: string, kitId: string): number {
@@ -1599,7 +1634,7 @@ function kitCenterTile(project: Project, tilesetId: string, kitId: string): numb
 /**
  * 재의 들판 — 들불이 숲 사이 빈터를 태웠다. 숲 덩이(두 겹 수관·줄기)는 그대로 두고, 나무가 없는 빈터 땅만 그을린 흙·잿빛 마당 얼룩으로,
  * 풀꽃·고사리는 덩어리 진 곳에서만 불씨 자국·자갈로(나머지는 지운다), 빈터 가장자리에 마른 고목 덩이 몇(고목 + 그루터기·숯더미).
- * 북쪽 숲 어귀는 숲 그늘 줄(B4 도착선) 너머 북쪽만 태운다 — 그 줄과 남쪽 개구멍 빈터가 브람의 「아직은 내 숲」이다.
+ * 북쪽 숲 어귀는 바닥을 태우지 않는다(2026-10-31) — 마른 고목 덩이는 자리가 나는 빈터에만(지금 판은 0곳). 불탄 땅은 재의 들판(B5)이 맡는다.
  * (v1.25 1차 시도: 마을용 그을림 도구를 숲길 맵에 그대로 썼더니 위층 나무만 걷혀 수관 사이에 통나무·숯더미가 박혔다 — 그래서 빈터만 다룬다.)
  */
 function scorchAshFields(project: Project, exec: Exec): void {
@@ -1632,21 +1667,9 @@ function scorchAshFields(project: Project, exec: Exec): void {
       if (!layers.some((l) => isTreeish(l?.[i])) && lo !== undefined && lo >= 0 && (tags(lo).includes("grass") || grafts.get(lo) === "tex_beodeul_ground")) openMask[i] = 1;
     }
     const open = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height && openMask[y * W + x] === 1;
-    for (let y = 0; y < yMax; y += 1) for (let x = 0; x < W; x += 1) {
-      const i = y * W + x;
-      // 모랫길 오토타일은 풀 테두리가 그려져 있다 — 잿빛 땅 위 연두 줄이 되므로 자갈 흙길로 바꾼다.
-      if (tags(map.lowerTiles[i]).includes("sand")) map.lowerTiles[i] = gravel;
-      if (open(x, y)) {
-        // 마당 흙 얼룩은 경계 오토타일이 없어 네모 판으로 보였다 — 탄 흙 한 가지로 깐다.
-        map.lowerTiles[i] = base;
-        if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
-      }
-      // 풀꽃·고사리·버섯 장식 — 6×6 묶음 셋 중 하나쯤에만 불씨·자갈로 남긴다.
-      const up = map.upperTiles[i] ?? -1;
-      if (up >= 0 && tags(up).includes("decal") && /들꽃|고사리|버섯|헤더|풀/.test(meta[up]?.label ?? "")) {
-        map.upperTiles[i] = hash(Math.floor(x / 6), Math.floor(y / 6), seed + 7) < 36 && embers.length ? embers[hash(x, y, seed) % embers.length]! : -1;
-      }
-    }
+    // 바닥은 칠하지 않는다(2026-10-31) — 모랫길을 자갈로, 빈터를 탄 흙으로 바꾸던 판은 경계 오토타일이 없어 회색 계단·갈색 네모 판이
+    // 숲 한가운데 박혔다(사용자: 「엉망진창」). 들불 자국은 북쪽 출구 가까이 마른 고목 덩이로만 예고하고, 재의 들판은 다음 맵(B5)이 맡는다.
+    void base; void gravel; void embers;
     // 마른 고목 덩이 — 빈터 가장자리(숲에서 한두 칸) 세 곳, 서로 8칸 넘게 떨어뜨린다.
     const anchors: Cell[] = [];
     const spots: Cell[] = [];
@@ -2068,9 +2091,9 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     }
     if (count === 0) throw new Error(`[fallen-star act2] ${mapId} 에 보초를 하나도 못 세웠다(${roomIds.join("·")}): ${why}`);
   };
-  // 바깥 순찰 기사 — 도개교 앞 눈 턱을 가로로 오간다. 성문으로 가려면 이 기사를 지나야 한다.
+  // 바깥 순찰 기사 — 도개교 들머리를 세로로 오간다(양옆 가로등 사이). 성문으로 가려면 이 기사를 지나야 한다.
   exec(project, "place_field_enemy", { mapId: FS2_FORT_COURT_ID, x: COURT_SPOTS.knight.x, y: COURT_SPOTS.knight.y, graphic: knight, troopId: FS2_KNIGHT_TROOP_OUT, behavior: "chase",
-    patrol: { length: 3, axis: "horizontal" }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", alert: "exclamation",
+    patrol: { length: 2, axis: "vertical" }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", alert: "exclamation",
     respawnSec: 0, clearSwitchId: "sw_fs2_fort_knight_court_down", checkpointOnEntry: true });
   post(FS2_FORTRESS_ID, FORT.rooms, ["yard", "stair"], 2, (n) => ({
     troopId: FS2_KNIGHT_TROOP, behavior: "chase", patrol: { length: 2, axis: n % 2 ? "vertical" : "horizontal" },
@@ -2328,7 +2351,7 @@ function snowPass(project: Project, exec: Exec): void {
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
       mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
-      hint: "새라가 틈 앞에서 창을 고쳐 쥐었다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
+      hint: "새라가 틈 앞에서 창을 고쳐 쥐었다.\n「…이 정도 폭이면.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
     });
   }));
   // 얼음 덩이 — 첫 틈을 건넌 뒤 좁은 눈길을 막는다. 엘레나의 불씨로 녹인다(계획 4-3 불씨 녹이기, 필드 기술 게이트).
@@ -2345,7 +2368,7 @@ function snowPass(project: Project, exec: Exec): void {
         mapId: maps[0]!.mapId, kind: "rock", x: g0.to.x + fwd.x * step, y: g0.to.y + fwd.y * step, fullWidth: true, direction: fwd.y !== 0 ? "right" : "down",
         tile: ICE_BLOCK.foot, tileAbove: ICE_BLOCK.head, requiresSkillId: FS2_SKILL_EMBER_MELT, skillName: "불씨 녹이기", machine: "none",
         id: "ev_fs2_snow_ice", name: "얼음 덩이",
-        hint: "엘레나가 얼음에 손바닥을 대 봤다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
+        hint: "엘레나가 얼음에 손바닥을 대 봤다.\n「…손바닥만 한 불이라도.」",
         blockedText: "길 한가운데 얼음 덩이가 솟아 있다.\n밀어도 꿈쩍 않는다.",
         // 녹이는 연출 — 불티·김이 오르고 잠시 뒤 얼음이 걷힌다(순간 교체였다, 감독 검수).
         openEffect: { particles: ["fire", "smoke"], se: "cc0-se-ors-spell-fire-03", durationMs: 1600, text: "엘레나의 손바닥에서 불씨가 번졌다.\n얼음이 김을 뿜으며 녹아내렸다." },
@@ -2375,7 +2398,7 @@ function snowPass(project: Project, exec: Exec): void {
       say(KAEL, "그러니까 데리러 가는 거야."),
       say(ELENA, "…불이라면 나도 있어. 손바닥만 한 거지만."),
       { kind: "learnSkill", actorId: "actor_fs_elena", skillId: FS2_SKILL_EMBER_MELT, action: "learn" } as unknown as Command,
-      narrate("엘레나가 「불씨 녹이기」를 익혔다.\n길을 막은 얼음 덩이를 조사해 보자.", { context: "system" }),
+      narrate("엘레나가 「불씨 녹이기」를 익혔다.", { context: "system" }),
       setSw(SW_SNOW_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     // 뒤 페이지가 이긴다 — 한 번 본 뒤에는 멈춘다.
@@ -2490,10 +2513,10 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     }
   };
   /** 입구→출구 걸음 비율 t 근처(본길 위)에서 무리를 세운다 — 거절되면 이웃 걸음으로. */
-  const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[]): Cell | null => {
+  const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[], quiet: (c: Cell) => boolean = () => true): Cell | null => {
     const total = Math.max(...[...route].map((k) => dist.get(k) ?? 0));
     const want = Math.round(total * t);
-    const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5))
+    const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5) && quiet(c))
       .sort((a, b) => Math.abs((dist.get(`${a.x},${a.y}`) ?? 0) - want) - Math.abs((dist.get(`${b.x},${b.y}`) ?? 0) - want));
     // 입구 시야(매복 금지)·이벤트 곁은 도구가 거절한다 — 가까운 걸음부터 넉넉히 시도한다.
     if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fs2-frost] ${mapId} ${troopId} route=${route.size} total=${total} want=${want} first=${JSON.stringify(cands.slice(0, 4))}`);
@@ -2531,6 +2554,8 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     }
     const nooks = [...offRoute.entries()].filter(([k, d]) => d >= 3 && (dist.get(k) ?? 0) > 6).sort((a, b) => b[1] - a[1]).map(([k]) => cellOf(k));
     const avoid: Cell[] = [start, ...(i === 1 ? [fire] : [])];
+    // 모닥불 둘레는 넓게 비운다 — 정담이 끝나자마자 늑대가 덮쳐 여운이 사라졌다(첫 플레이 검수 2026-10-31). 불에서 12걸음 안엔 무리를 안 세운다.
+    const fireQuiet = (c: Cell): boolean => i !== 1 || Math.abs(c.x - fire.x) + Math.abs(c.y - fire.y) > 12;
     if (i === 0) {
       // 서리 가도 — 첫 굽이 늑대 둘, 막다른 빈터 보물 + 그 앞 박쥐 떼.
       const w = onRoute(m.mapId, dist, route, 0.3, "troop_fs2_frost_wolves", "dash", avoid);
@@ -2550,9 +2575,9 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     } else {
       // 눈보라 고개 — 갈림 고리(본길에서 먼 칸)에 늑대+박쥐, 고개 위(본길 70%)에 늑대 둘.
       let mixed = false;
-      for (const at of nooks.slice(0, 40)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); mixed = true; break; }
-      if (!mixed) { const at = onRoute(m.mapId, dist, route, 0.4, "troop_fs2_frost_mixed", "dash", avoid); if (at) avoid.push(at); }
-      onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid);
+      for (const at of nooks.slice(0, 40)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && fireQuiet(at) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); mixed = true; break; }
+      if (!mixed) { const at = onRoute(m.mapId, dist, route, 0.4, "troop_fs2_frost_mixed", "dash", avoid, fireQuiet); if (at) avoid.push(at); }
+      onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid, fireQuiet);
     }
   });
   for (const m of maps) {
@@ -2705,7 +2730,7 @@ function iceLake(project: Project, exec: Exec): void {
   }
   // 별빛 결정 — 야영지 모닥불 곁(서리나루 앞 마지막 쉼).
   exec(project, "place_savepoint", { mapId: FS2_ICE_LAKE_ID, x: ICE_SPOTS.save.x, y: ICE_SPOTS.save.y, id: "ev_fs2_ice_lake_save", name: "별빛 결정", mode: "slot",
-    prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+    prompt: "기록하시겠습니까?", sparkleRadius: 2, heal: true });
   // 처음 들어서면 한 번.
   addEv(project, FS2_ICE_LAKE_ID, "ev_fs2_ice_lake_arrive", "얼음 호수", { x: 1, y: 0 }, [
     page("ev_fs2_ice_lake_arrive_idle", "대기", [], [], { priority: "below" }),
@@ -2733,7 +2758,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
   northGateEvents(project, exec);
-  // 숲 그늘 줄(B4)이 정해진 뒤에 그 북쪽만 태운다.
+  // B4 도착선이 정해진 뒤에 — 그 너머 빈터에만 마른 고목(바닥은 칠하지 않는다).
   scorchAshFields(project, exec);
   dawnwellEvents(project);
   northFortress(project, exec, ids.hub);
@@ -2831,7 +2856,7 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
   // 잿불 도깨비(B5) — 트인 재 들판의 매복꾼(2026-10-30 사용자: 「10칸 넘게 밖에서 알아보고 3배 이상 빨리, 닿는 순간 전투」).
   // 사방을 보고(allRound) 바위·고목이 시선을 안 가린다(lineOfSight:false). 알아챔 멈춤 없이 35ms/칸으로 끝까지 덮친다(예전 부유 110~170ms/칸의 3~5배).
-  { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
+  { troops: ["troop_fs2_ash_wisps", "troop_fs2_ash_wisps_pair"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
   { troops: ["troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
   // 요새 바깥 순찰 기사(B6) — 도개교 앞 눈 턱에서 멀리 보고 곧장 달려든다(사용자: 「더 빨리 알아보고 멀리서 덤비게」).
   { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, allRound: true, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },

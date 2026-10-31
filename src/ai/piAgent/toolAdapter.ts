@@ -5,6 +5,7 @@ import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptional
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
+import { pixelFxPreviewImages } from '@/pixelfx/previewSheet';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
 import { pixelArtPreview } from '@/editor/tools/pixelArtTools';
@@ -362,6 +363,10 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'preview_choreography') for (const image of await retroChoreographyPreviewImages(result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'preview_pixel_fx') for (const image of await pixelFxPreviewImages(result.data)) {
+        content.push({ type: 'text', text: image.label });
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       return { content, details: result };

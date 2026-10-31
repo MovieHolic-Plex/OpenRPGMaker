@@ -18,6 +18,7 @@
   산출 JS 청크마다 `LICENSE-RUNTIME.md`의 MIT 전문을 `/*! … */`로 붙인다(압축 뒤 `generateBundle`). 문구를 플러그인에 다시 적지 말 것.
   런타임에 실리는 외부 패키지는 Phaser(MIT) 하나다. 같은 플러그인이 플레이어 빌드의 `phaser.min` 자산과, Phaser 를 묶는
   단일 HTML 빌드 청크에 Phaser 고지(`node_modules/phaser/LICENSE.md`)를 붙인다. 외부 패키지가 늘면 여기에 고지를 더한다.
+  vendor 로 들인 pixelfx(MIT, `src/vendor/pixelfx`)도 런타임에 실린다 — 같은 플러그인이 그 모듈을 담은 청크마다 `src/vendor/pixelfx/LICENSE` 전문을 붙인다(2026-10-31, `openwiki/pixelfx-effects.md`). 원본 갤러리 글꼴은 MIT 가 아니라 들이지 않는다.
 - **내보낸 게임에 실리는 것은 전부 MIT로 공개되는 셈이다.** 플레이어 import 그래프(`src/player/exportEntry.ts`에서 시작)에
   에디터·하네스·프롬프트 코드를 끌어들이지 말 것. 실측(2026-10-07): `src/project/gameDesignBrief.ts`가
   `harnesses/_core/registry`를 import해서 `interior-props` 러너(약 243KB)와 공방 object-gen 키트(`api.openai.com` 주소 포함)가

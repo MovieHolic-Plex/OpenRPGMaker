@@ -10,6 +10,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { GameMap, Project } from "@/project/types";
 import { fallenBakeryStock, fallenSmithyStock } from "./fallen/townLife";
 import { isPassable } from "@/project/collision";
+import { FS_INN_SPEC, FS_SMITHY_SPEC } from "./fallen/townRoomSpecs";
 
 type Cell = { x: number; y: number };
 type Run = { ok: boolean; summary?: string; issues?: unknown; data?: unknown };
@@ -21,7 +22,9 @@ type Home = {
   readonly mapId: string;
   readonly name: string;
   /** build_hand_interior_room 의 layout — 집마다 쓰임에 맞춘 방 구성(rooms·seed·variant). 화면(30×17칸)을 거의 채우는 크기로 고른다. */
-  readonly layout: Record<string, unknown>;
+  readonly layout?: Record<string, unknown>;
+  /** 칸을 손으로 정한 명시 배치(rooms·connect·exit·objects·goods) — 있으면 layout·dress 대신 쓴다(fallen/townRoomSpecs.ts). */
+  readonly spec?: Record<string, unknown>;
   /** 빈 마루를 쓰임에 맞게 채우는 가구(키트 id, x, y) — 방 배치가 seed 로 고정이라 칸을 정해 둔다. 못 놓이면 건너뛴다. */
   readonly dress?: readonly (readonly [string, number, number])[];
   readonly bgm: string;
@@ -72,14 +75,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
       // seed 5 배치는 손님방 셋이 홀과 떨어진 1칸 골방이고 그 아래가 큰 어둠이었다(VQA r20 minor, 화면 17% 허공) —
       // 손님방이 위 왼쪽에 모이고 부엌이 아래 왼쪽에 붙는 seed 1 배치로 바꾼다. 홀 위쪽 빈 마루에 식탁 두 벌·술통 걸이.
-      layout: { program: "inn", seed: 1, variant: 1, styleVariant: "A" },
-      dress: [["dining 2x1", 15, 8], ["chair S", 15, 7], ["chair S", 16, 7], ["chair N", 15, 9], ["chair N", 16, 9],
-        ["dining 2x1", 20, 8], ["chair S", 20, 7], ["chair S", 21, 7], ["chair N", 20, 9], ["chair N", 21, 9], ["keg rack", 14, 16],
-        // 홀 오른쪽 아래가 빈 마루였다(VQA r28) — 둥근 술상 하나(문 x16 길은 비운다).
-        ["roundtable", 22, 16], ["stool", 21, 16], ["stool", 23, 16],
-        // 홀 오른쪽 아래가 빈 마루로 남았다(VQA r33) — 손님 식탁 한 벌 더. 동쪽 막다른 통로는 술집 짐을 쌓는 뒷광으로 쓴다(입구 줄 y10 은 비운다).
-        ["dining 2x1", 25, 15], ["chair S", 25, 14], ["chair S", 26, 14], ["chair N", 25, 16], ["chair N", 26, 16],
-        ["crate", 30, 6], ["crate", 31, 6], ["sack", 31, 7], ["barrel", 30, 16], ["barrel", 31, 16], ["crate", 31, 15]],
+      // 홀이 16×15 로 너무 넓었다(fs-act1-vqa) — 홀 13×9 + 동쪽 창고, 막다른 복도 제거(townRoomSpecs.ts).
+      spec: FS_INN_SPEC,
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
@@ -90,13 +87,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         {
           id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성", chip: ["tex_easyrpg_charset_people2", 0],
           // 벽난로 앞 — 자동 자리는 짐을 쌓은 뒷광 통로 입구(30,10)에 서서 길을 막았다.
-          at: { x: 27, y: 8 },
+          at: { x: 13, y: 18 },
           lines: ["별 떨어진 밤 노래를 짓고 있소.\n「북쪽 숲에 은빛 알이 내려앉았네」…\n운이 영 안 맞는구려."],
           after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n걱정 마시오. 교단 앞에선 안 부르리다."],
         },
         {
           id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people4", 3],
-          at: { x: 14, y: 5 },
+          at: { x: 17, y: 6 },
           lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소.\n새벽부터 교단 기사들이 성문을 지키더군."],
           after: ["심문관 발렌이 숲으로 갔다더군.\n떨어진 별을 찾는다는데…\n찾아서 어쩔 셈인지 모르겠소."],
         },
@@ -199,7 +196,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 29, y: 42 }, mapId: "fs_smithy", name: "아스텔 · 대장간", bgm: "cc0-bgm-rtp-caf-001",
       // 무기 진열 가게(검·창 걸이·계산대) + 불 때는 대장간 방(모루·화로).
-      layout: { rooms: [{ kind: "weapon_shop", w: 14, h: 6 }, { kind: "forge" }], seed: 33, variant: 0, styleVariant: "A" },
+      // 가게 마루 6할이 비었다(fs-act1-vqa) — 가게를 x5..14 로 줄이고 무기·방패·활·갑옷 진열을 한 벌씩(townRoomSpecs.ts).
+      spec: FS_SMITHY_SPEC,
       people: [
         {
           id: "ev_fs_smith", name: "대장장이 로한", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 0], behindCounter: true,
@@ -218,7 +216,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     if (!doors.some((d) => d.x === home.door.x && d.y === home.door.y)) throw new Error(`[fallen-town-interiors] 집 문이 아니다: ${home.name} (${home.door.x},${home.door.y})`);
     // 천장은 나무 들보(wood) — 검은 천장·벽 속 허공이 들어서는 화면의 3할 가까이를 덮어 「빈 검은 여백」으로 읽혔다(VQA r29).
     // 방 사이 벽 속(공허)도 같은 들보 덩이로 채워 지붕 아래 목조 뼈대로 읽히게 한다.
-    const room = run(project, "build_hand_interior_room", { mapId: home.mapId, name: home.name, layout: home.layout, ceiling: "wood" });
+    const room = run(project, "build_hand_interior_room", home.spec
+      ? { mapId: home.mapId, name: home.name, ...home.spec, ceiling: "wood" }
+      : { mapId: home.mapId, name: home.name, layout: home.layout, ceiling: "wood" });
     {
       const im = project.maps[home.mapId]!;
       const metaC = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
@@ -279,7 +279,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         for (let i = 0; i < layer.length; i += 1) if (layer[i]! >= 0 && drop.test(metaX[layer[i]!]?.label ?? "")) layer[i] = -1;
       }
     }
-    for (const [kit, x, y] of [...(home.dress ?? []), ...(EXTRA_STORAGE[home.mapId] ?? [])]) {
+    for (const [kit, x, y] of [...(home.spec ? [] : home.dress ?? []), ...(EXTRA_STORAGE[home.mapId] ?? [])]) {
       const ctx = { project, assistantRun: false };
       try {
         // 방 배치가 바뀌면 고정 좌표 가구가 벽 너머 어둠(천장·허공)에 찍혔다(VQA r12 major, 약방 바구니·별지기 침실 찻상) —
@@ -580,7 +580,7 @@ const EXTRA_STORAGE: Record<string, readonly (readonly [string, number, number])
   // 리사: 옷방 상자(60G) · 오스본: 침실 여행 가방(80G) · 여관: 지하 창고 상자(은수저 단서).
   fs_lisa_home: [["chest", 25, 14]],
   fs_stargazer_home: [["luggage trunk", 26, 4]],
-  fs_inn: [["chest", 3, 4]],
+  fs_inn: [["chest", 17, 21]],
 };
 
 /**

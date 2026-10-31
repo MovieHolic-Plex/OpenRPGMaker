@@ -11,6 +11,7 @@
  */
 import type { Command, Project } from "@/project/types";
 import { towerKit } from "./act2Tower";
+import skySummitBackdrop from "./backdrops/sky-summit.json";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };
@@ -56,8 +57,11 @@ export const TOP = {
   valen: { x: 16, y: 10 },           // 렌즈 앞 단말에 선 발렌
   kael: { x: 16, y: 12 },            // 장면에서 카엘이 서는 칸
   hanelStart: { x: 15, y: 21 }, bramStart: { x: 17, y: 21 },
-  hanel: { x: 15, y: 16 }, bram: { x: 17, y: 16 },
-  hanelLens: { x: 14, y: 10 }, bramLens: { x: 18, y: 11 }, valenLens: { x: 17, y: 10 },
+  // 하넬·브람이 서는 칸 — 일행(12줄 횡대) 두 줄 아래 양옆. 예전 (15,16)·(17,16)은 통로 안이라 대화창 밑·화면 밖에서 말했다(첫 플레이 검수 2026-10-31).
+  hanel: { x: 14, y: 14 }, bram: { x: 18, y: 14 },
+  // 끝 장면 — 렌즈 앞 한 줄. 카엘(16,10)이 위를 보면 동료가 (15,10)·(17,10)·(14,10)에 횡대로 선다. 그 칸을 비워야 동료가 카엘 밑에 겹치지 않는다
+  // (예전엔 발렌 17,10·하넬 14,10 이 그 칸을 막아 여덟 명이 한 덩이로 뭉쳤다). 하넬은 왼쪽 끝, 발렌·브람은 오른쪽.
+  hanelLens: { x: 13, y: 10 }, bramLens: { x: 19, y: 10 }, valenLens: { x: 18, y: 10 },
 };
 
 const ROOMS = [
@@ -89,15 +93,15 @@ export function gateSummitStair(project: Project, exec: Exec, irisBackSwitch: st
 }
 
 function summitData(project: Project, exec: Exec): void {
-  const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID, TOWER_LAYERS } = towerKit;
+  const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID } = towerKit;
   const skill = (s: Rec): void => { exec(project, "upsert_skill", { skill: { type: "normal", variance: 15, hitRate: 100, successRate: 100, stateEffects: [], ...s } }); };
-  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 46, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
+  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 42, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_blind", chance: 35, operation: "add" }], animationId: "anim_gen_power_aura" });
   skill({ id: SK_GATHER_FIRE, name: "불 거두기", scope: "enemy", power: 58, drainPercent: 50, description: "거두는 눈이 붙잡은 상대의 기운을 빨아들인다. 준 피해의 절반을 회복.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_power_aura" });
-  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 132, chargeTurns: 1,
+  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 118, chargeTurns: 1,
     description: "한 차례 불을 모았다가 모두를 태워 거둔다. 모으는 동안 크게 때리거나 얼음을 맞히면 끊긴다.",
-    chargeBreak: { damage: 650, elementIds: ["ice"], message: "…회수, 중단. 재점화 필요.", stagger: true },
+    chargeBreak: { damage: 520, elementIds: ["ice"], message: "…회수, 중단. 재점화 필요.", stagger: true },
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "fire", animationId: "anim_gen_critical_burst" });
   skill({ id: SK_GAZE, name: "붙잡는 눈길", scope: "enemy", power: 30, description: "가만히 바라본다. 맞으면 몸이 굳는다.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_paralysis", chance: 25, operation: "add" }] });
@@ -122,7 +126,7 @@ function summitData(project: Project, exec: Exec): void {
   };
   // 몸통 — 큰 재 두건. 불은 안 듣고(삼킨다) 얼음·빛에 약하다. 「불 거두기」는 거두는 눈, 「재의 회수」는 태우는 눈이 살아 있어야 쓴다.
   foe({ id: E_COLLECTOR, name: "재의 회수자", art: "generated-enemy-wraith-dark", level: 15, scale: 190, hideHp: true,
-    stats: { maxHp: 5200, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
+    stats: { maxHp: 4900, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
     actions: [actRow("skill_attack", 4), actRow(SK_ASH_SCATTER, 5), { ...actRow(SK_GATHER_FIRE, 5), requiresPart: "grab" }, { ...actRow(SK_RECALL, 4), requiresPart: "furnace" }],
     rates: { fire: "E", ice: "A", holy: "A", dark: "D" }, exp: 1800, gold: 600,
     drops: [{ itemId: "item_potion", ratePercent: 100, quantity: 3, condition: { kind: "always" } }] });
@@ -135,9 +139,12 @@ function summitData(project: Project, exec: Exec): void {
   foe({ id: E_EMBER, name: "삼킨 불", art: "generated-enemy-spirit-fire", level: 14, scale: 110,
     stats: { maxHp: 900, maxMp: 60, attack: 90, defense: 36, mind: 100, agility: 76 },
     actions: [actRow("skill_attack", 4), actRow(SK_EMBER_BURST, 5)], rates: { fire: "E", ice: "A", water: "A" }, exp: 200, gold: 0 });
+  // 꼭대기는 밤하늘 아래 돌 옥상이다 — 동굴 배경(battle-scenery-cave)이면 「탑 꼭대기」가 아니라 굴속에서 싸운다(2026-10-31 첫 플레이 검토).
+  // 손 도트 배경 backdrops/draw_sky_summit.py → sky-summit.json. 낮 빛줄기(lightRays)는 밤과 안 맞아 뺐다.
+  exec(project, "upsert_resource", { resource: skySummitBackdrop.resource });
   exec(project, "upsert_troop", { troop: {
     id: FS2_TROOP_COLLECTOR, name: "재의 회수자", autoAlign: false,
-    previewBackgroundResourceId: "battle-scenery-cave", backdropLayers: TOWER_LAYERS,
+    previewBackgroundResourceId: skySummitBackdrop.resource.id, backdropLayers: [{ preset: "glow", opacity: 35 }],
     members: [
       { enemyId: E_COLLECTOR, x: 120, y: 120 },
       { enemyId: E_EYE_GRAB, x: 48, y: 70, partOf: 0, partTag: "grab" },
@@ -254,10 +261,12 @@ function summitScenes(project: Project): void {
     // 하넬·브람 — 아래 계단에서 올라온다.
     setSw(SW_HANEL_COME),
     at("ev_fs2_top_hanel", TOP.hanelStart), at("ev_fs2_top_bram", TOP.bramStart),
-    camBack(700, TOP_ZOOM),
+    // 한 화면에 — 발렌(10줄)·일행(12줄)·올라오는 둘(14줄)이 대화창 위에 다 보이게 1배로 물러나 조금 내려 잡는다.
+    camTo("ev_fs2_top_valen", 900, 1, 32),
+    route("ev_fs2_top_hanel", [...walk(["up", "up", "up", "up", "up", "up", "up", "left"]), { kind: "turn", dir: "up" }], false),
+    route("ev_fs2_top_bram", [...walk(["up", "up", "up", "up", "up", "up", "up", "right"]), { kind: "turn", dir: "up" }]),
+    wait(200),
     say(HANEL, "발렌."),
-    route("ev_fs2_top_hanel", walk(["up", "up", "up", "up", "up"]), false),
-    route("ev_fs2_top_bram", walk(["up", "up", "up", "up", "up"])),
     emote("ev_fs2_top_valen", "exclamation", 800),
     say(VALEN, "…선생님."),
     say(BRAM, "숨 차서 죽는 줄 알았다.\n하넬, 할 말 있으면 지금 해라."),
@@ -322,7 +331,7 @@ function summitScenes(project: Project): void {
     narrate("재가 가라앉았다.\n렌즈의 붉은 글자가 하나씩 꺼져 간다."),
     // 렌즈 앞을 비운다 — 발렌은 동쪽으로 한 칸, 하넬·브람은 양옆. 카엘이 렌즈 바로 앞(발렌이 섰던 칸)까지 걸어간다.
     at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
-    face("ev_fs2_top_valen", "left"),
+    face("ev_fs2_top_valen", "left"), face("ev_fs2_top_hanel", "up"), face("ev_fs2_top_bram", "up"),
     player(walk(["up", "up"])), player([{ kind: "turn", dir: "up" }]),
     camTo("ev_fs2_top_valen", 1400, 2, 16),
     say(IRIS, "거부 신호, 아직 반이 남아 있어요.\n…지울 수는 없어요. 덮을 수만 있어요."),
@@ -378,5 +387,6 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   lensRoom(project, exec);
   summitScenes(project);
   // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
-  //   Lv14 넷, 회복약 6, n=40 — 발렌 없이 승률 72.5%·행동 48·회복약 4.2 / 발렌 손님 95%·행동 38. 「재의 회수」 63회 중 42회 끊김.
+  //   2026-10-31 완화(HP 5200→4900, 회수 132→118, 끊김 피해 650→520, 흩뿌리기 46→42) — scripts/qa/runtime/fs2-boss-sim.mts, Lv14 넷, 회복약 6, n=60:
+  //   기술 쓰는 판 발렌 없이 85%·행동 46 / 발렌 손님 98%·행동 38. 「공격」만 누르는 판은 여전히 0% — 회수(힘 모으기)를 얼음·큰 기술로 끊어야 이긴다.
 }

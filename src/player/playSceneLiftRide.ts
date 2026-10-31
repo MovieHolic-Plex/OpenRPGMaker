@@ -1,11 +1,12 @@
 import Phaser from "phaser";
 import type { StepResult } from "@/player/interpreter/types";
-import { characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { characterDepth, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { playSoundEffect } from "@/player/audio";
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
+import { isPassable } from "@/project/collision";
 
 /**
  * 승강 장치 타기(«Lift Ride») — 발판 · 레일 · 사슬을 그리고 파티를 태워 위/아래로 움직인다.
@@ -20,6 +21,11 @@ import { store } from "@/project/store";
  * - mode "arrive": 반대쪽에서 출발해 지금 자리로 들어온다(이동 직후 도착 맵 첫 명령).
  * - mode "move": 같은 맵 안 다른 층으로 — 끝나면 주인공이 그 칸에 실제로 선다.
  * 맵이 바뀌면 그림·상태를 걷는다.
+ *
+ * 갱도 자르기(depart·arrive): 레일·사슬·발판·탄 사람은 승강 칸 위 벽면(두 줄)까지만 보이고 그 위 천장·윗방 바닥에서 잘린다 —
+ * 사슬이 위층 방 바닥을 뚫고 지나가 보였다(2026-10-31 폴른 스타 VQA). 벽면에는 시커먼 갱도 틈을 그린다.
+ * 아래에서 들어오는 발판(arrive 위로)은 바닥 구멍 밑에서 잘려 구멍에서 솟아오른다. move(같은 맵 다른 층)는 자르지 않는다.
+ * riders "none": 빈 발판만 움직인다(장치가 드러나는 연출) — 끝나면 발판은 바닥 높이로 내려앉아 사람이 그 위에 그려진다.
  */
 
 type LiftStep = Extract<StepResult, { kind: "liftRide" }>;
@@ -39,6 +45,9 @@ type LiftState = {
   depthPx: number;
   /** 사슬 꼭대기(월드 y) — 화면 밖까지. */
   chainTop: number;
+  /** 보이는 갱도 범위(월드 y). 이 밖의 발판·사슬·탄 사람은 잘린다. */
+  clipTop: number;
+  clipBottom: number;
   offset: number;
   jitter: number;
   riding: boolean;
@@ -73,6 +82,7 @@ const C = {
 function clearLift(scene: PlaySceneContext): void {
   const state = states.get(scene);
   if (!state) return;
+  uncropRiders(state);
   state.platform.destroy();
   state.rails.destroy();
   state.pit.destroy();
@@ -80,11 +90,22 @@ function clearLift(scene: PlaySceneContext): void {
 }
 
 /** 16px 도트 결 — 한 «화소» 는 칸 크기의 1/16. */
-function drawPlatform(g: Phaser.GameObjects.Graphics, w: number, h: number, u: number, postsTall: boolean): void {
+/** 그래픽 안(지역 좌표) 세로 자르기 — [lo, hi) 밖은 그리지 않는다. */
+type Clip = { readonly lo: number; readonly hi: number };
+const NO_CLIP: Clip = { lo: -Infinity, hi: Infinity };
+
+function clippedRect(g: Phaser.GameObjects.Graphics, clip: Clip, x: number, y: number, w: number, h: number): void {
+  const y0 = Math.max(y, clip.lo);
+  const y1 = Math.min(y + h, clip.hi);
+  if (y1 <= y0 || w <= 0) return;
+  g.fillRect(x, y0, w, y1 - y0);
+}
+
+function drawPlatform(g: Phaser.GameObjects.Graphics, w: number, h: number, u: number, postsTall: boolean, clip: Clip = NO_CLIP): void {
   g.clear();
   const px = (x: number, y: number, pw: number, ph: number, color: number): void => {
     g.fillStyle(color, 1);
-    g.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(pw)), Math.max(1, Math.round(ph)));
+    clippedRect(g, clip, Math.round(x), Math.round(y), Math.max(1, Math.round(pw)), Math.max(1, Math.round(ph)));
   };
   const lipH = 3 * u;
   // 발판 몸통
@@ -108,20 +129,21 @@ function drawPlatform(g: Phaser.GameObjects.Graphics, w: number, h: number, u: n
   }
 }
 
-function drawChains(g: Phaser.GameObjects.Graphics, w: number, u: number, fromY: number, toY: number): void {
-  // 사슬은 발판 기둥 꼭대기에서 위로 화면 밖까지. 고리는 발판에 붙어 함께 움직인다(fromY 기준으로 찍는다).
+function drawChains(g: Phaser.GameObjects.Graphics, w: number, u: number, fromY: number, toY: number, clip: Clip = NO_CLIP): void {
+  // 사슬은 발판 기둥 꼭대기에서 위로 갱도 끝까지. 고리는 발판에 붙어 함께 움직인다(fromY 기준으로 찍는다).
+  const r = (x: number, y: number, rw: number, rh: number) => clippedRect(g, clip, x, y, rw, rh);
   for (const cx of [u, w - 2 * u]) {
     for (let y = fromY, i = 0; y > toY; y -= 3 * u, i += 1) {
       g.fillStyle(C.chainDark, 1);
       if (i % 2 === 0) {
-        g.fillRect(cx - u, y - 3 * u, 3 * u, 3 * u);
+        r(cx - u, y - 3 * u, 3 * u, 3 * u);
         g.fillStyle(C.chain, 1);
-        g.fillRect(cx - u, y - 3 * u, u, 2 * u);
-        g.fillRect(cx + u, y - 3 * u, u, 2 * u);
+        r(cx - u, y - 3 * u, u, 2 * u);
+        r(cx + u, y - 3 * u, u, 2 * u);
       } else {
-        g.fillRect(cx, y - 3 * u, u, 3 * u);
+        r(cx, y - 3 * u, u, 3 * u);
         g.fillStyle(C.chain, 1);
-        g.fillRect(cx, y - 3 * u, u, u);
+        r(cx, y - 3 * u, u, u);
       }
     }
   }
@@ -143,12 +165,44 @@ function drawRails(g: Phaser.GameObjects.Graphics, left: number, w: number, u: n
   }
 }
 
-function drawPit(g: Phaser.GameObjects.Graphics, left: number, top: number, w: number, h: number, u: number): void {
-  g.clear();
+function drawPit(g: Phaser.GameObjects.Graphics, left: number, top: number, w: number, h: number, u: number, keep = false): void {
+  if (!keep) g.clear();
   g.fillStyle(C.pitEdge, 1);
   g.fillRect(left, top, w, h);
   g.fillStyle(C.pit, 1);
   g.fillRect(left + u, top + 2 * u, w - 2 * u, h - 3 * u);
+}
+
+/** 승강 칸 위 벽면에 뚫린 갱도 틈 — 레일·사슬이 이 틈으로 사라진다. */
+function drawShaftSlot(g: Phaser.GameObjects.Graphics, left: number, top: number, w: number, bottom: number, u: number): void {
+  if (bottom - top <= 0) return;
+  g.fillStyle(C.pitEdge, 1);
+  g.fillRect(left - 4 * u, top, w + 8 * u, bottom - top);
+  g.fillStyle(C.pit, 1);
+  g.fillRect(left - 3 * u, top + u, w + 6 * u, bottom - top - u);
+}
+
+/**
+ * 갱도가 보이는 세로 범위(월드 y). 위: 승강 칸 위로 걸을 수 있는 줄을 지나 처음 막힌 줄부터 벽면 두 줄까지(그 위 천장·윗방은 자른다).
+ * 아래: 아래에서 들어오는 도착이면 승강 칸 바닥 줄 끝(바닥 구멍에서 솟는다), 아니면 자르지 않는다.
+ */
+function shaftClip(scene: PlaySceneContext, cellX: number, cellY: number, width: number, depth: number, size: number, fromBelow: boolean): { top: number; bottom: number } {
+  const project = store.getCurrent();
+  const map = scene.map;
+  const rowOpen = (y: number): boolean => {
+    if (!project || !map) return false;
+    for (let x = cellX; x < cellX + width; x += 1) if (isPassable(project, map, x, y)) return true;
+    return false;
+  };
+  let y = cellY - 1;
+  while (y >= 0 && rowOpen(y)) y -= 1;
+  let faces = 0;
+  while (y - faces >= 0 && faces < 2 && !rowOpen(y - faces)) faces += 1;
+  const topRow = y < 0 ? 0 : y - faces + 1;
+  return {
+    top: y < 0 ? -Infinity : topRow * size,
+    bottom: fromBelow ? (cellY + depth) * size : Infinity,
+  };
 }
 
 function riderCells(scene: PlaySceneContext, cellX: number, cellY: number, width: number, depth: number): Array<{ x: number; y: number }> {
@@ -200,6 +254,10 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   const widthPx = opts.width * size;
   const depthPx = opts.depth * size;
   const project = store.getCurrent();
+  const withRiders = opts.riders !== "none";
+  const clip = opts.mode === "move"
+    ? { top: -Infinity, bottom: Infinity }
+    : shaftClip(scene, cellX, cellY, opts.width, opts.depth, size, opts.mode === "arrive" && sign < 0);
 
   const pit = scene.add.graphics().setDepth(PIT_DEPTH);
   const rails = scene.add.graphics().setDepth(RAIL_DEPTH);
@@ -209,14 +267,18 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
   const endOffset = opts.mode === "arrive" ? 0 : travel;
   const pathTop = Math.min(top + startOffset, top + endOffset);
   const pathBottom = Math.max(top + startOffset, top + endOffset) + depthPx;
-  const chainTop = pathTop - 12 * size;
-  drawRails(rails, left, widthPx, u, chainTop, pathBottom);
-  if (opts.mode !== "arrive") drawPit(pit, left, top, widthPx, depthPx, u);
+  const chainTop = Math.max(pathTop - 12 * size, clip.top);
+  drawRails(rails, left, widthPx, u, chainTop, Math.min(pathBottom, clip.bottom));
+  pit.clear();
+  if (Number.isFinite(clip.top) && clip.top < top) drawShaftSlot(pit, left, clip.top, widthPx, top, u);
+  // 바닥 구멍 — 출발 칸, 또는 아래에서 솟는 도착 칸.
+  if (opts.mode !== "arrive" || Number.isFinite(clip.bottom)) drawPit(pit, left, top, widthPx, depthPx, u, true);
   const state: LiftState = {
     mapId: scene.map.id,
     platform, rails, pit,
     riders: [],
     left, top, widthPx, depthPx, chainTop,
+    clipTop: clip.top, clipBottom: clip.bottom,
     offset: startOffset,
     jitter: 0,
     riding: true,
@@ -226,7 +288,7 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
 
   // ① 파티를 발판에 모은다. 주인공은 이미 발판 위(밟아서 탄다). 동료는 빈 칸으로 짧게 걸어 온다.
   const cells = riderCells(scene, cellX, cellY, opts.width, opts.depth);
-  const followers = [...(scene.followerSprites?.values() ?? [])].filter((sprite) => sprite.visible);
+  const followers = withRiders ? [...(scene.followerSprites?.values() ?? [])].filter((sprite) => sprite.visible) : [];
   const gathers: Array<{ sprite: Phaser.GameObjects.Sprite; fromX: number; fromY: number; toX: number; toY: number }> = [];
   followers.forEach((sprite, index) => {
     const cell = cells[index % Math.max(1, cells.length)] ?? { x: cellX, y: cellY };
@@ -234,7 +296,7 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
     const toY = characterSpriteY(cell.y, size);
     gathers.push({ sprite, fromX: sprite.x, fromY: sprite.y, toX, toY });
   });
-  if (scene.player) {
+  if (scene.player && withRiders) {
     state.riders.push({ sprite: scene.player, baseX: scene.player.x, baseY: scene.player.y });
   }
   if (opts.mode === "arrive") {
@@ -290,18 +352,38 @@ export async function playLiftRide(scene: PlaySceneContext, step: LiftStep): Pro
     redrawPlatform(state, u);
   } else if (opts.mode === "arrive") {
     clearRidersOnly(state);
+    // 다 올라왔으면 바닥 구멍·갱도 아래 자르기는 걷는다(발판이 구멍을 덮고 선다).
+    state.clipBottom = Infinity;
+    redrawPlatform(state, u);
+  }
+  if (!withRiders) {
+    // 빈 발판은 바닥 가구처럼 내려앉는다 — 사람이 그 위로 걸어 들어가면 사람이 발판 위에 그려진다.
+    // 바닥 구멍은 발판이 덮었으니 걷고 벽면 갱도 틈만 남긴다(구멍 그림이 발판보다 위 깊이라 검은 네모만 보였다).
+    const base = characterDepth("below", state.top + state.depthPx);
+    state.pit.clear();
+    if (Number.isFinite(state.clipTop) && state.clipTop < state.top) drawShaftSlot(state.pit, state.left, state.clipTop, state.widthPx, state.top, u);
+    state.pit.setDepth(base - 0.2);
+    state.rails.setDepth(base - 0.1);
+    state.platform.setDepth(base);
   }
 }
 
 function clearRidersOnly(state: LiftState): void {
+  uncropRiders(state);
   state.riders = [];
+}
+
+function uncropRiders(state: LiftState): void {
+  for (const rider of state.riders) if (rider.sprite.active) rider.sprite.setCrop();
 }
 
 function redrawPlatform(state: LiftState, u: number): void {
   const g = state.platform;
-  drawPlatform(g, state.widthPx, state.depthPx, u, true);
-  drawChains(g, state.widthPx, u, -4 * u, state.chainTop - (state.top + state.offset));
-  g.setPosition(state.left, state.top + state.offset + state.jitter);
+  const y = state.top + state.offset + state.jitter;
+  const clip: Clip = { lo: state.clipTop - y, hi: state.clipBottom - y };
+  drawPlatform(g, state.widthPx, state.depthPx, u, true, clip);
+  drawChains(g, state.widthPx, u, -4 * u, state.chainTop - (state.top + state.offset), clip);
+  g.setPosition(state.left, y);
 }
 
 function applyRiders(state: LiftState): void {
@@ -309,7 +391,24 @@ function applyRiders(state: LiftState): void {
   for (const rider of state.riders) {
     rider.sprite.x = rider.baseX;
     rider.sprite.y = rider.baseY + dy;
+    cropToShaft(rider.sprite, state.clipTop, state.clipBottom);
   }
+}
+
+/** 탄 사람 그림을 갱도 범위로 자른다(벽면 위·바닥 구멍 밑은 안 보이게). */
+function cropToShaft(sprite: Phaser.GameObjects.Sprite, clipTop: number, clipBottom: number): void {
+  if (!Number.isFinite(clipTop) && !Number.isFinite(clipBottom)) return;
+  const frameH = sprite.frame?.realHeight ?? sprite.height;
+  const frameW = sprite.frame?.realWidth ?? sprite.width;
+  const scaleY = Math.abs(sprite.scaleY) || 1;
+  const topWorld = sprite.y - sprite.displayOriginY * scaleY;
+  const cutTop = Math.max(0, Math.min(frameH, (clipTop - topWorld) / scaleY));
+  const cutBottom = Math.max(0, Math.min(frameH, (topWorld + frameH * scaleY - clipBottom) / scaleY));
+  if (cutTop <= 0 && cutBottom <= 0) {
+    if (sprite.isCropped) sprite.setCrop();
+    return;
+  }
+  sprite.setCrop(0, cutTop, frameW, Math.max(0, frameH - cutTop - cutBottom));
 }
 
 /** 매 프레임(updateFieldStaging): 발판 위치를 맞추고 탄 사람을 발판에 붙인다(동료 걷기 보간이 덮어쓰지 못하게). */

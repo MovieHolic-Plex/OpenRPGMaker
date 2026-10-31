@@ -95,15 +95,22 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     resolveAnchor: (anchor, source) => resolveLightAnchor(scene, anchor, source),
     mapBounds: mapWorldBounds(scene),
   });
-  const signature = lightingMaskSignature(params);
-  if (signature === scene.lightingMaskSignature) return;
-
-  if (texture.width !== params.width || texture.height !== params.height) {
+  const resized = texture.width !== params.width || texture.height !== params.height;
+  if (resized) {
     texture.setSize(params.width, params.height);
+    overlay.setSizeToFrame();
   }
+  // 오버레이는 화면 고정(scrollFactor 0)이어도 카메라 줌을 받는다 — 화면 크기 마스크가 화면 가운데를 축으로 줌 배만큼 커져,
+  // 줌 3·6 맵(폴른 스타 서리여울·하늘 탑)에서 불빛이 3·6배로 부풀고 「캄캄하다」는 밤이 환했다(2026-10-31).
+  // 날씨·맵 배경 층(playSceneWeather·playSceneMapBackground)과 같이 줌을 되돌려 화면 px 그대로 덮는다.
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  overlay.setPosition((params.width / 2) * (1 - 1 / zoom), (params.height / 2) * (1 - 1 / zoom));
+  overlay.setDisplaySize(params.width / zoom, params.height / zoom);
+  const signature = lightingMaskSignature(params);
+  if (!resized && signature === scene.lightingMaskSignature) return;
+
   drawLightingMask(texture.canvas, params);
   texture.refresh();
-  overlay.setDisplaySize(params.width, params.height);
   overlay.setVisible(params.ambient > 0);
   scene.lightingMaskSignature = signature;
 }
