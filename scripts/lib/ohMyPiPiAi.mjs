@@ -56,6 +56,16 @@ const WORKER_KEY_REFRESH_MS = 5 * 60_000;
  * 시작 때 한 번 푼 키는 15분 남짓만 보장된다 — 팀 실행이 그보다 길면 실행 중간에 「OAuth token expired before request」로
  * 에이전트가 죽었다(2026-10-05 스트레스 실측, 18분 40초째). 본문이 끝나거나 취소되면 멈춘다.
  */
+/** OPRN_V2_SPLIT 의 리드 계정(`lead:<계정>/<모델>[@강도]`). 로컬 CLI 리드(`lead:claude:…`)·없음은 undefined — 키를 찾을 일이 없다. */
+function splitLeadProvider(raw) {
+  const m = /(?:^|,)\s*lead\s*[:=]\s*([^,]+)/u.exec(String(raw ?? ""));
+  if (!m) return undefined;
+  const spec = m[1].trim().replace(/@(low|medium|high)$/u, "");
+  if (/^(claude|codex|gemini):/u.test(spec)) return undefined;
+  const slash = spec.lastIndexOf("/");
+  return slash > 0 ? spec.slice(0, slash) : undefined;
+}
+
 function keepWorkerKeysFresh(port, providerApiKeys, body, signal) {
   if (!body) return body;
   const providers = Object.keys(providerApiKeys).filter((provider) => providerApiKeys[provider]);
@@ -312,10 +322,13 @@ export async function createOhMyPiAdapters() {
       const apiKey = String(provider).startsWith("local-cli:") ? undefined : await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
       // 사용자 지정 엔드포인트: 역할 넷 중 하나라도 쓰면 주소·헤더를 워커에 싣는다(없는 엔드포인트는 여기서 404 로 끝낸다).
+      // 리드(OPRN_V2_SPLIT, src/ai/v2/split.ts — v2 만): 계정 모델 리드면 그 엔드포인트·키도 싣는다. 로컬 CLI 리드는 키가 없다.
+      const leadProvider = body.assistantVersion === "v2" ? splitLeadProvider(process.env.OPRN_V2_SPLIT) : undefined;
       const compat = await resolveOpenAiCompatRun([
         provider,
         ...["deep", "writer", "vision", "build"].map((role) => body.roleModels?.[role]?.provider),
         ...["smol", "advisor"].map((role) => body.assistantRoles?.[role]?.provider),
+        leadProvider,
       ].filter((id) => typeof id === "string"));
       for (const role of ["vision", "build"]) {
         const selected = body.roleModels?.[role];
@@ -334,6 +347,10 @@ export async function createOhMyPiAdapters() {
         }
       }
       // 잔일·검토자(src/ai/assistantRoles.ts)도 선택 역할이다 — 계정이 없으면 실행기가 주 모델로 물러난다(작문과 같은 관례).
+      if (leadProvider && !(leadProvider in providerApiKeys)) {
+        if (leadProvider in compat.endpoints) providerApiKeys[leadProvider] = compat.keys[leadProvider];
+        else { try { providerApiKeys[leadProvider] = await resolveRequestApiKey(leadProvider); } catch { providerApiKeys[leadProvider] = undefined; } }
+      }
       for (const role of ["smol", "advisor"]) {
         const selected = body.assistantRoles?.[role];
         const roleProvider = selected && typeof selected === "object" ? selected.provider : undefined;
