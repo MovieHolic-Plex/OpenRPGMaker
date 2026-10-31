@@ -1221,9 +1221,10 @@ function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: C
     // 길은 벽 틈(두 칸)에서만 — 풀밭엔 길이 없다. 틈 → 숲 속을 살짝 굽어 북쪽 출구.
     paths: [{ pts: [{ x: gapX + 0.5, y: wallY + 0.5 }, { x: gapX + 0.5, y: wallY - 3 }, { x: gapX - 1.5, y: wallY - 6 }, { x: (gapX + nx) / 2, y: 2.5 }, { x: nx, y: 0 }], w: [1.7, 2.3] }],
     exits: [entry, exit],
-    open: (x, y) => meadow(x, y) || (y === wallY && x >= gapX - 1 && x <= gapX + 2),
+    open: (x, y) => meadow(x, y) || (y >= wallY - 1 && y <= wallY && x >= gapX - 1 && x <= gapX + 2),
     // 벽 네 줄(틈 어귀 줄 포함)은 길 두 칸만 — 길섶이 벌어지면 틈이 큰길로 읽힌다. 어귀 줄 양옆 한 칸은 길돌 자리.
-    closed: (x, y) => y >= wallY - 3 && y <= wallY && !(x >= gapX && x <= gapX + 1) && !(y === wallY && (x === gapX - 1 || x === gapX + 2)),
+    // 길돌은 두 칸 높이(밑동 wallY, 머리 wallY-1)라 그 두 칸도 비운다.
+    closed: (x, y) => y >= wallY - 3 && y <= wallY && !(x >= gapX && x <= gapX + 1) && !(y >= wallY - 1 && (x === gapX - 1 || x === gapX + 2)),
     undergrowth: 0,
     look: { loose: { every: 1, reach: 99, at: [{ x: 5, y: wallY + 6 }, { x: W - 7, y: wallY + 5 }, { x: 10, y: wallY + 13 }, { x: 6, y: H - 4 }, { x: W - 7, y: H - 4 }] } },
   }, () => true);
@@ -1246,7 +1247,7 @@ function meadowDecor(project: Project, mapId: string, meadow: (x: number, y: num
   const green = pool(/^bd-pick-deep-forest-path-(fern|wild)-/), small = pool(/^bd-pick-deep-forest-path-(toadstools|stones)-/);
   if (!green.length) throw new Error("[fallen-star act2] 풀밭 덤불 소품이 칩셋에 없다");
   const rng = mulberry32(0xb4d3c0);
-  const clusters = [[4, wallY + 9], [W - 5, wallY + 10], [8, wallY + 20], [W - 10, wallY + 22], [13, wallY + 4], [W - 12, wallY + 14], [3, H - 4], [W - 4, H - 3], [15, wallY + 16]];
+  const clusters = [[4, wallY + 9], [W - 5, wallY + 10], [8, wallY + 20], [W - 10, wallY + 22], [13, wallY + 4], [W - 12, wallY + 14], [3, H - 4], [W - 4, H - 3], [15, wallY + 16], [W - 7, wallY + 4], [20, H - 6], [5, wallY + 14]];
   for (const [cx, cy] of clusters) {
     const r = 1.2 + rng() * 1.0;
     for (let y = Math.floor(cy! - 3); y <= cy! + 3; y += 1) for (let x = Math.floor(cx! - 3); x <= cx! + 3; x += 1) {
