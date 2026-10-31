@@ -3,8 +3,10 @@
 // The model writes TypeScript against the generated `game` API (.d.ts with this project's ids). Every write
 // compiles first and rejects on errors with English diagnostics, so the model fixes and retries; only
 // compiled scripts reach the project (the generic event tools refuse hand-written `{kind:"script"}`).
-// `dry_run_script` runs a script headless on a copy of the project with scripted answers and reports what
-// happened. Compiler and QuickJS are lazy: every tool awaits them in `prepare` because `run` is synchronous.
+// author_script / edit_script also store a plain-language explanation and run example situations in the same
+// call (2026-10-31 A/B: separate get_script_api / check_script / dry_run_script round trips made scripts cost
+// more than commands). `dry_run_script` runs a script headless on a copy of the project with scripted answers
+// and reports what happened. Compiler and QuickJS are lazy: every tool awaits them in `prepare` because `run` is synchronous.
 //
 // Model-facing text is English. Skill: assistant-skills/event-scripts/SKILL.md.
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
@@ -17,18 +19,21 @@ import {
   type ScriptCompileResult,
 } from "@/editor/script/compile";
 import { commandsToScript } from "@/editor/script/eventToScript";
-import { createInterpreter, type StepResult } from "@/player/interpreter";
+import { DRY_RUN_DEFAULT_STEPS, DRY_RUN_MAX_STEPS, dryRunCommands, dryRunTranscript, type DryRunChanges } from "@/editor/script/dryRun";
 import { preloadScriptEngine, scriptEngineModule } from "@/player/script/engine";
-import { onScriptLog } from "@/player/script/scriptLog";
 import { buildGameApiDts, scriptApiCheatSheet, scriptDtsIds } from "@/project/script/dts";
 import { findScriptModule } from "@/project/script/library";
 import {
   SCRIPT_LIBRARY_ID_PATTERN,
+  SCRIPT_EXAMPLE_LIMIT,
   SCRIPT_LIBRARY_LIMIT,
+  normalizeScriptExample,
+  normalizeScriptExplanation,
   scriptCompiledIsFresh,
+  type ScriptExample,
+  type ScriptExplanation,
   type ScriptModule,
 } from "@/project/script/types";
-import { startSession } from "@/project/session";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -200,7 +205,7 @@ const COMMAND_PATH: JsonSchema = {
 
 const checkScript: ToolDefinition = {
   name: "check_script",
-  description: "Type-check a TypeScript event script against this project's game API without changing anything. Returns ok, diagnostics (line:col), what it reads/writes and a one-line summary. Use before author_script when unsure; get_script_api shows the API.",
+  description: "Type-check a TypeScript event script against this project's game API without changing anything. Returns ok, diagnostics (line:col), what it reads/writes and a one-line summary. Not needed before author_script/edit_script: they compile first and reject with the same diagnostics.",
   mode: "read",
   parameters: {
     type: "object",
@@ -229,43 +234,244 @@ const checkScript: ToolDefinition = {
   },
 };
 
+// ── examples & explanation (shared by author_script / edit_script) ───────────
+
+const BATTLE_RESULTS = ["victory", "defeat", "escape"] as const;
+
+/** Preset state + scripted answers — the same fields in dry_run_script and in author/edit_script examples. */
+const SETUP_PROPS: Record<string, JsonSchema> = {
+  choices: { type: "array", items: { type: "integer" }, description: "Answers for choice windows in order (0-based index; -1 = cancel)." },
+  numbers: { type: "array", items: { type: "integer" }, description: "Answers for number inputs in order." },
+  battleResults: { type: "array", items: { type: "string", enum: [...BATTLE_RESULTS] }, description: "Results of battles in order." },
+  switches: {
+    type: "array",
+    description: "Switch values to set before running.",
+    items: { type: "object", properties: { id: { type: "string" }, value: { type: "boolean" } }, required: ["id", "value"], additionalProperties: false },
+  },
+  variables: {
+    type: "array",
+    description: "Variable values to set before running.",
+    items: { type: "object", properties: { id: { type: "string" }, value: { type: "number" } }, required: ["id", "value"], additionalProperties: false },
+  },
+  gold: { type: "integer", minimum: 0, description: "Party gold before running." },
+  items: {
+    type: "array",
+    description: "Inventory counts to set before running.",
+    items: { type: "object", properties: { id: { type: "string" }, count: { type: "integer", minimum: 0 } }, required: ["id", "count"], additionalProperties: false },
+  },
+  hour: { type: "integer", minimum: 0, maximum: 23, description: "In-game clock hour before running (Set Time), for time-of-day logic." },
+  minute: { type: "integer", minimum: 0, maximum: 59, description: "In-game clock minute (with hour)." },
+};
+
+const EXAMPLES_PROP: JsonSchema = {
+  type: "array",
+  maxItems: SCRIPT_EXAMPLE_LIMIT,
+  description: "Situations to run right after writing (on a copy — nothing is saved) and to store as the script card's examples. "
+    + "Give the normal case and one edge (2-4 items). Each result comes back in this same call, so no dry_run_script is needed.",
+  items: {
+    type: "object",
+    properties: { label: { type: "string", description: "Short situation name in the user's language (e.g. '맞는 순서', '평판 10', '밤 22시')." }, ...SETUP_PROPS },
+    required: ["label"],
+    additionalProperties: false,
+  },
+};
+
+const EXPLAIN_PROP: JsonSchema = {
+  type: "array",
+  items: { type: "string" },
+  maxItems: 4,
+  description: "1-4 short sentences in the user's language saying what the script does, for someone who cannot read code. Stored on the script card.",
+};
+
+/** Example results are capped: the model reads them on every following call. */
+const EXAMPLE_TRANSCRIPT_CAP = 12;
+const EXAMPLE_LINE_CAP = 160;
+const EXAMPLE_LOG_CAP = 5;
+
+function explainLines(raw: unknown): string[] {
+  const list = typeof raw === "string" ? [raw] : Array.isArray(raw) ? raw : [];
+  return list.filter((line): line is string => typeof line === "string" && line.trim().length > 0).map((line) => line.trim());
+}
+
+/** Normalized examples + a warning for each dropped one. undefined = the key was not given. */
+function readExamples(raw: unknown, warnings: string[]): ScriptExample[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) {
+    warnings.push("examples must be an array of {label, …presets/answers}; ignored.");
+    return [];
+  }
+  const out: ScriptExample[] = [];
+  raw.forEach((entry, index) => {
+    const example = normalizeScriptExample(entry);
+    if (example) out.push(example);
+    else warnings.push(`examples[${index}] has no label; skipped.`);
+  });
+  if (out.length > SCRIPT_EXAMPLE_LIMIT) warnings.push(`Only the first ${SCRIPT_EXAMPLE_LIMIT} examples were kept.`);
+  return out.slice(0, SCRIPT_EXAMPLE_LIMIT);
+}
+
+const clip = (line: string): string => (line.length > EXAMPLE_LINE_CAP ? `${line.slice(0, EXAMPLE_LINE_CAP - 1)}…` : line);
+
+interface ExampleRun {
+  readonly label: string;
+  /** Present only when the run failed (errors, or it hit the step cap). */
+  readonly ok?: false;
+  /** Omitted when the script showed nothing (a pure calculation fragment). */
+  readonly transcript?: string[];
+  readonly changes?: DryRunChanges;
+  readonly endedBy?: string;
+  readonly log?: string[];
+  readonly errors?: string[];
+}
+
+/** Runs each example on a fresh copy of the project with only this script command. Compact, empty fields omitted. */
+function runExamples(project: Project, command: ScriptCommand, examples: readonly ScriptExample[], mapId: string | undefined, eventId: string | undefined): ExampleRun[] {
+  if (!examples.length) return [];
+  if (!scriptEngineModule()) {
+    return examples.map((example) => ({ label: example.label, ok: false as const, errors: ["The script engine (QuickJS) did not load; examples were not run. Call dry_run_script."] }));
+  }
+  return examples.map((example) => {
+    const { label, ...setup } = example;
+    const result = dryRunCommands(structuredClone(project), [command], { mapId, eventId, setup });
+    const lines = dryRunTranscript(result.steps);
+    const transcript = lines.slice(0, EXAMPLE_TRANSCRIPT_CAP).map(clip);
+    if (lines.length > EXAMPLE_TRANSCRIPT_CAP) transcript.push(`… ${lines.length - EXAMPLE_TRANSCRIPT_CAP} more step(s)`);
+    const changed = Object.keys(result.changes).length > 0;
+    return {
+      label,
+      ...(result.ok ? {} : { ok: false as const }),
+      ...(transcript.length ? { transcript } : {}),
+      ...(changed ? { changes: result.changes } : {}),
+      ...(result.endedBy !== "done" ? { endedBy: result.endedBy } : {}),
+      ...(result.log.length ? { log: result.log.slice(0, EXAMPLE_LOG_CAP).map(clip) } : {}),
+      ...(result.errors.length ? { errors: result.errors.map(clip) } : {}),
+    };
+  });
+}
+
+function exampleLine(runs: readonly ExampleRun[]): string {
+  if (!runs.length) return "";
+  const failed = runs.filter((run) => run.ok === false).length;
+  return failed ? ` | Examples: ${runs.length - failed}/${runs.length} ran clean, ${failed} had errors (see examples).` : ` | Examples: ${runs.length}/${runs.length} ran clean.`;
+}
+
+const hasExamples = (args: Record<string, unknown>): boolean =>
+  Array.isArray(args.examples) && args.examples.length > 0
+  || Array.isArray(args.scripts) && (args.scripts as unknown[]).some((item) => !!item && typeof item === "object" && Array.isArray((item as Record<string, unknown>).examples) && ((item as Record<string, unknown>).examples as unknown[]).length > 0);
+
+/** Compiler always; QuickJS too when examples will run (edit_script also re-runs stored examples, so it always loads both). */
+const prepareForAuthor = async (args: Record<string, unknown>): Promise<void> => {
+  await (hasExamples(args) ? prepareCompilerAndEngine() : prepareCompiler());
+};
+
 // ── author_script / edit_script ──────────────────────────────────────────────
+
+interface AuthoredItem {
+  readonly summary: string;
+  readonly warnings: string[];
+  readonly data: Record<string, unknown>;
+}
+
+function authorOne(draft: Project, args: Record<string, unknown>): AuthoredItem {
+  const target = resolveTarget(draft, args);
+  const source = typeof args.source === "string" ? args.source : "";
+  const result = compileOrThrow(draft, source, target.mapId);
+  const warnings = nonErrors(result);
+  const examples = readExamples(args.examples, warnings) ?? [];
+  const lines = explainLines(args.explain);
+  const explanation = lines.length ? normalizeScriptExplanation({ sourceHash: result.sourceHash, lines, examples }) : undefined;
+  const command = scriptCommandFields(source, result, str(args.name) || undefined, explanation);
+  const index = typeof args.index === "number" ? Math.max(0, Math.min(target.commands.length, Math.trunc(args.index))) : target.commands.length;
+  target.commands.splice(index, 0, command);
+  const runs = runExamples(draft, command, examples, target.mapId, target.eventId);
+  return {
+    summary: `Added script${command.name ? ` "${command.name}"` : ""} to ${target.label} at index ${index}. ${result.summary}`.trim() + exampleLine(runs),
+    warnings,
+    data: {
+      commandPath: [index],
+      ...(target.mapId ? { mapId: target.mapId, eventId: target.eventId } : {}),
+      ...(target.mapId ? {} : { commonEventId: str(args.commonEventId) }),
+      ...(command.name ? { name: command.name } : {}),
+      summary: result.summary,
+      ...(runs.length ? { examples: runs } : {}),
+    },
+  };
+}
+
+const SINGLE_PROPS: Record<string, JsonSchema> = {
+  ...TARGET_PROPS,
+  source: { type: "string", description: "TypeScript script body. Always await awaitable calls (showMessage, showChoices, wait, battle, transfer, cmd …)." },
+  name: { type: "string", description: "Short label shown in the event list (e.g. 'lever puzzle')." },
+  index: { type: "integer", minimum: 0, description: "Insert position in the top-level command list (put it right before the commands that read its result). Default: append at the end." },
+  explain: EXPLAIN_PROP,
+  examples: EXAMPLES_PROP,
+};
 
 const authorScript: ToolDefinition = {
   name: "author_script",
-  description: "Insert a NEW `script` command (TypeScript using the game API) into an event page or common event. It compiles first: on errors nothing changes and you get the diagnostics to fix. Prefer one script over long command lists for logic with conditions, math, loops or many branches (puzzles, formulas, time/inventory checks). Then test it with dry_run_script.",
+  description: "Insert a NEW small `script` command (TypeScript using the game API) among an event page's or common event's commands. Event commands stay the readable part (dialogue, cutscenes, branches, choices, switch/variable/gold/item changes, movement, effects); a script is only for what they express badly — a formula, a loop over a list, an ordered-sequence check, a timer — kept to 1-3 lines with one job and named consts, writing its result to a variable or switch the surrounding commands read (\\V[var_id] in Show Text, a fork). "
+    + "One call does it all: it compiles (on errors nothing changes and you get line:col diagnostics to fix), stores explain (plain-language card) and runs every example on a copy, returning each transcript and state change. "
+    + "So check_script and dry_run_script are not needed afterwards. Several scripts at once (e.g. 4 levers): scripts:[{…same fields…}] — each item is written or rejected on its own.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
-      ...TARGET_PROPS,
-      source: { type: "string", description: "TypeScript script body. Always await awaitable calls (showMessage, showChoices, wait, battle, transfer, cmd …)." },
-      name: { type: "string", description: "Short label shown in the event list (e.g. 'lever puzzle')." },
-      index: { type: "integer", minimum: 0, description: "Insert position in the top-level command list. Default: append at the end." },
+      ...SINGLE_PROPS,
+      scripts: {
+        type: "array",
+        description: "Batch: several scripts in one call, each with the same fields as a single call (target, source, name, index, explain, examples). Use instead of source.",
+        items: { type: "object", properties: SINGLE_PROPS, required: ["source"], additionalProperties: false },
+      },
     },
-    required: ["source"],
+    required: [],
     additionalProperties: false,
   },
-  prepare: prepareCompiler,
+  prepare: prepareForAuthor,
   run(draft, args): ToolExecResult {
-    const target = resolveTarget(draft, args);
-    const source = typeof args.source === "string" ? args.source : "";
-    const result = compileOrThrow(draft, source, target.mapId);
-    const command = scriptCommandFields(source, result, str(args.name) || undefined);
-    const index = typeof args.index === "number" ? Math.max(0, Math.min(target.commands.length, Math.trunc(args.index))) : target.commands.length;
-    target.commands.splice(index, 0, command);
-    const warnings = nonErrors(result);
+    if (!Array.isArray(args.scripts)) {
+      if (typeof args.source !== "string") throw new ToolError("Give source (one script) or scripts:[…] (several).", { code: "invalid-args" });
+      const one = authorOne(draft, args);
+      return { summary: one.summary, ...(one.warnings.length ? { warnings: one.warnings } : {}), data: one.data };
+    }
+    if (typeof args.source === "string" && args.source.trim()) {
+      throw new ToolError("Give either source (one script) or scripts:[…] (several), not both.", { code: "invalid-args" });
+    }
+    const items = args.scripts as unknown[];
+    if (!items.length) throw new ToolError("scripts is empty.", { code: "invalid-args" });
+    const results: Record<string, unknown>[] = [];
+    const warnings: string[] = [];
+    const failures: string[] = [];
+    items.forEach((raw, index) => {
+      const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
+      const label = `scripts[${index}]${str(item.name) ? ` "${str(item.name)}"` : ""}`;
+      try {
+        const one = authorOne(draft, item);
+        results.push({ index, ok: true, ...one.data });
+        for (const warning of one.warnings) warnings.push(`${label}: ${warning}`);
+      } catch (cause) {
+        if (!(cause instanceof ToolError)) throw cause;
+        failures.push(`${label} was NOT written — error in data.results[${index}].error; resend only this item.`);
+        results.push({ index, ok: false, error: cause.message });
+      }
+    });
+    if (failures.length === items.length) {
+      const errors = results.map((entry) => `scripts[${String(entry.index)}]: ${String(entry.error)}`);
+      throw new ToolError(`No script was written.\n${errors.join("\n")}`, { code: "script-compile-error" });
+    }
+    const written = items.length - failures.length;
+    const exampleRuns = results.flatMap((entry) => (entry.examples as ExampleRun[] | undefined) ?? []);
     return {
-      summary: `Added script${command.name ? ` "${command.name}"` : ""} to ${target.label} at index ${index}. ${result.summary}`.trim(),
-      ...(warnings.length ? { warnings } : {}),
-      data: { commandPath: [index], ...(target.mapId ? { mapId: target.mapId, eventId: target.eventId } : {}), summary: result.summary, effects: result.effects },
+      summary: `Wrote ${written}/${items.length} script(s).${failures.length ? ` ${failures.length} failed (nothing written for them) — fix and resend only those items.` : ""}${exampleLine(exampleRuns)}`,
+      ...(failures.length || warnings.length ? { warnings: [...failures, ...warnings] } : {}),
+      data: { results },
     };
   },
 };
 
 const editScript: ToolDefinition = {
   name: "edit_script",
-  description: "Replace the source of an existing `script` command (addressed by commandPath or name; if the page has one script it is found automatically). Recompiles; on errors nothing changes and you get the diagnostics.",
+  description: "Replace the source of an existing `script` command (addressed by commandPath or name; if the page has one script it is found automatically). Recompiles (on errors nothing changes), then runs the examples — the given ones, or the stored ones — and returns their results in this call. "
+    + "Pass explain again when the behaviour changed; without it the old explanation is kept but marked as describing the old code.",
   mode: "write",
   parameters: {
     type: "object",
@@ -275,89 +481,49 @@ const editScript: ToolDefinition = {
       name: { type: "string", description: "Find the script by its name (when commandPath is not given)." },
       source: { type: "string", description: "The full new TypeScript source." },
       rename: { type: "string", description: "New label for the script. Omit to keep it." },
+      explain: { ...EXPLAIN_PROP, description: "New plain-language explanation (replaces the old). Omit to keep the old one (then it is shown as describing the old code)." },
+      examples: { ...EXAMPLES_PROP, description: "New example situations (replace the stored ones). Omit to re-run the stored examples." },
     },
     required: ["source"],
     additionalProperties: false,
   },
-  prepare: prepareCompiler,
+  prepare: prepareCompilerAndEngine,
   run(draft, args): ToolExecResult {
     const target = resolveTarget(draft, args);
     const found = findScript(target, args);
     const source = typeof args.source === "string" ? args.source : "";
     const result = compileOrThrow(draft, source, target.mapId);
     const name = str(args.rename) || found.command.name;
-    found.list[found.index] = scriptCommandFields(source, result, name);
     const warnings = nonErrors(result);
+    const old = normalizeScriptExplanation(found.command.explanation);
+    const given = readExamples(args.examples, warnings);
+    const examples = given ?? [...(old?.examples ?? [])];
+    const lines = explainLines(args.explain);
+    let explanation: ScriptExplanation | undefined;
+    if (lines.length) {
+      explanation = normalizeScriptExplanation({ sourceHash: result.sourceHash, lines, examples });
+    } else if (old) {
+      // Keep the old sentences bound to the OLD hash: the card shows them as stale until explain is resent.
+      explanation = normalizeScriptExplanation({ ...old, examples });
+      if (old.sourceHash !== result.sourceHash) warnings.push("The stored explanation still describes the old code — pass explain (1-4 sentences) to refresh it.");
+    }
+    const command = scriptCommandFields(source, result, name, explanation);
+    found.list[found.index] = command;
+    const runs = runExamples(draft, command, examples, target.mapId, target.eventId);
     return {
-      summary: `Updated script${name ? ` "${name}"` : ""} in ${target.label}. ${result.summary}`.trim(),
+      summary: `Updated script${name ? ` "${name}"` : ""} in ${target.label}. ${result.summary}`.trim() + exampleLine(runs),
       ...(warnings.length ? { warnings } : {}),
-      data: { summary: result.summary, effects: result.effects },
+      data: { summary: result.summary, ...(runs.length ? { examples: runs } : {}) },
     };
   },
 };
 
 // ── dry_run_script ───────────────────────────────────────────────────────────
 
-const DRY_RUN_DEFAULT_STEPS = 200;
-const DRY_RUN_MAX_STEPS = 1000;
-
-interface Snapshot {
-  readonly switches: Record<string, boolean>;
-  readonly variables: Record<string, number>;
-  readonly strings: Record<string, string>;
-  readonly selfSwitches: Record<string, Partial<Record<string, boolean>>>;
-  readonly gold: number;
-  readonly items: Record<string, number>;
-}
-
-function snapshot(session: ReturnType<typeof startSession>): Snapshot {
-  return structuredClone({
-    switches: session.switches ?? {},
-    variables: session.variables ?? {},
-    strings: session.stringVariables ?? {},
-    selfSwitches: session.selfSwitches ?? {},
-    gold: session.gold ?? 0,
-    items: session.inventory ?? {},
-  });
-}
-
-function diffRecord<T>(before: Record<string, T>, after: Record<string, T>, fallback: T): Record<string, { from: T; to: T }> {
-  const out: Record<string, { from: T; to: T }> = {};
-  for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
-    if (key.startsWith("__script")) continue;
-    const from = before[key] ?? fallback;
-    const to = after[key] ?? fallback;
-    if (JSON.stringify(from) !== JSON.stringify(to)) out[key] = { from, to };
-  }
-  return out;
-}
-
-function changesOf(before: Snapshot, after: Snapshot): Record<string, unknown> {
-  const selfSwitches: Record<string, { from: boolean; to: boolean }> = {};
-  for (const eventId of new Set([...Object.keys(before.selfSwitches), ...Object.keys(after.selfSwitches)])) {
-    for (const [key, change] of Object.entries(diffRecord(before.selfSwitches[eventId] ?? {}, after.selfSwitches[eventId] ?? {}, false as boolean | undefined))) {
-      selfSwitches[`${eventId}.${key}`] = { from: change.from === true, to: change.to === true };
-    }
-  }
-  const out: Record<string, unknown> = {};
-  const switches = diffRecord(before.switches, after.switches, false);
-  const variables = diffRecord(before.variables, after.variables, 0);
-  const strings = diffRecord(before.strings, after.strings, "");
-  const items = diffRecord(before.items, after.items, 0);
-  if (Object.keys(switches).length) out.switches = switches;
-  if (Object.keys(variables).length) out.variables = variables;
-  if (Object.keys(strings).length) out.textVariables = strings;
-  if (Object.keys(selfSwitches).length) out.selfSwitches = selfSwitches;
-  if (Object.keys(items).length) out.items = items;
-  if (before.gold !== after.gold) out.gold = { from: before.gold, to: after.gold };
-  return out;
-}
-
-const BATTLE_RESULTS = ["victory", "defeat", "escape"] as const;
-
 const dryRunScript: ToolDefinition = {
   name: "dry_run_script",
-  description: "Run a script headless on a COPY of the project (nothing is saved) and report a transcript (messages, choices, battles, transfers, waits), the final switch/variable/gold/item changes, script log lines and errors. Give source to test unsaved code, or address an existing script (commandPath/name), or give only the target to run the whole page. Answer prompts in order with choices / numbers / battleResults (defaults: choice 0, number 0, victory). Preset state with switches / variables / gold / items.",
+  description: "Run a script headless on a COPY of the project (nothing is saved) and report a transcript (messages, choices, battles, transfers, waits), the final switch/variable/gold/item changes, script log lines and errors. "
+    + "author_script / edit_script already run their examples — use this only for a situation they did not cover, or to run a whole page (give only the target). Give source to test unsaved code, or address an existing script (commandPath/name). Answer prompts in order with choices / numbers / battleResults (defaults: choice 0, number 0, victory). Preset state with switches / variables / gold / items / hour.",
   mode: "read",
   parameters: {
     type: "object",
@@ -366,25 +532,7 @@ const dryRunScript: ToolDefinition = {
       source: { type: "string", description: "TypeScript to run (compiled on the fly). Omit to run an existing script or the whole page." },
       commandPath: COMMAND_PATH,
       name: { type: "string", description: "Run the existing script with this name." },
-      choices: { type: "array", items: { type: "integer" }, description: "Answers for choice windows in order (0-based index; -1 = cancel)." },
-      numbers: { type: "array", items: { type: "integer" }, description: "Answers for number inputs in order." },
-      battleResults: { type: "array", items: { type: "string", enum: [...BATTLE_RESULTS] }, description: "Results of battles in order." },
-      switches: {
-        type: "array",
-        description: "Switch values to set before running.",
-        items: { type: "object", properties: { id: { type: "string" }, value: { type: "boolean" } }, required: ["id", "value"], additionalProperties: false },
-      },
-      variables: {
-        type: "array",
-        description: "Variable values to set before running.",
-        items: { type: "object", properties: { id: { type: "string" }, value: { type: "number" } }, required: ["id", "value"], additionalProperties: false },
-      },
-      gold: { type: "integer", minimum: 0, description: "Party gold before running." },
-      items: {
-        type: "array",
-        description: "Inventory counts to set before running.",
-        items: { type: "object", properties: { id: { type: "string" }, count: { type: "integer", minimum: 0 } }, required: ["id", "count"], additionalProperties: false },
-      },
+      ...SETUP_PROPS,
       maxSteps: { type: "integer", minimum: 1, maximum: DRY_RUN_MAX_STEPS, description: `Stop after this many interpreter steps (default ${DRY_RUN_DEFAULT_STEPS}).` },
     },
     required: [],
@@ -426,90 +574,25 @@ const dryRunScript: ToolDefinition = {
       throw new ToolError("Give source, or a target (mapId+eventId or commonEventId) with an optional commandPath/name.", { code: "invalid-args" });
     }
 
-    const session = startSession(project, 1);
-    let eventId: string | undefined;
-    if (mapId && project.maps[mapId]) {
-      session.currentMapId = mapId;
-      const event = target?.eventId ? project.maps[mapId]!.events.find((entry) => entry.id === target.eventId) : undefined;
-      if (event) {
-        eventId = event.id;
-        session.x = event.x;
-        session.y = Math.min(project.maps[mapId]!.height - 1, event.y + 1);
-      }
-    }
-    for (const entry of (args.switches as { id: string; value: boolean }[] | undefined) ?? []) session.switches[entry.id] = entry.value;
-    for (const entry of (args.variables as { id: string; value: number }[] | undefined) ?? []) session.variables[entry.id] = Math.trunc(entry.value);
-    for (const entry of (args.items as { id: string; count: number }[] | undefined) ?? []) session.inventory[entry.id] = entry.count;
-    if (typeof args.gold === "number") session.gold = Math.max(0, Math.trunc(args.gold));
-
-    const choices = [...((args.choices as number[] | undefined) ?? [])];
-    const numbers = [...((args.numbers as number[] | undefined) ?? [])];
-    const battles = [...((args.battleResults as string[] | undefined) ?? [])];
-    const maxSteps = typeof args.maxSteps === "number" ? Math.max(1, Math.min(DRY_RUN_MAX_STEPS, Math.trunc(args.maxSteps))) : DRY_RUN_DEFAULT_STEPS;
-    const before = snapshot(session);
-    const transcript: string[] = [];
-    const log: string[] = [];
-    const errors: string[] = [];
-    const stop = onScriptLog((entry) => {
-      (entry.level === "error" ? errors : log).push(entry.message);
+    const setup = {
+      ...(Array.isArray(args.switches) ? { switches: args.switches as { id: string; value: boolean }[] } : {}),
+      ...(Array.isArray(args.variables) ? { variables: args.variables as { id: string; value: number }[] } : {}),
+      ...(Array.isArray(args.items) ? { items: args.items as { id: string; count: number }[] } : {}),
+      ...(typeof args.gold === "number" ? { gold: args.gold } : {}),
+      ...(typeof args.hour === "number" ? { hour: Math.max(0, Math.min(23, Math.trunc(args.hour))) } : {}),
+      ...(typeof args.minute === "number" ? { minute: Math.max(0, Math.min(59, Math.trunc(args.minute))) } : {}),
+      ...(Array.isArray(args.choices) ? { choices: args.choices as number[] } : {}),
+      ...(Array.isArray(args.numbers) ? { numbers: args.numbers as number[] } : {}),
+      ...(Array.isArray(args.battleResults) ? { battleResults: args.battleResults as ("victory" | "defeat" | "escape")[] } : {}),
+    };
+    const result = dryRunCommands(project, commands, {
+      mapId,
+      eventId: target?.eventId,
+      setup,
+      ...(typeof args.maxSteps === "number" ? { maxSteps: args.maxSteps } : {}),
     });
-    let endedBy: "done" | "transfer" | "maxSteps" | "exception" = "done";
-    try {
-      const interpreter = createInterpreter(commands, session, project, eventId ? { currentEventId: eventId } : undefined);
-      let step: StepResult = interpreter.start();
-      let count = 0;
-      while (step.kind !== "done") {
-        if (count >= maxSteps) { endedBy = "maxSteps"; break; }
-        count += 1;
-        let answer: unknown;
-        switch (step.kind) {
-          case "text":
-            if (step.body.startsWith("[Script error")) transcript.push(`ERROR ${step.body}`);
-            else transcript.push(`message${step.speaker ? ` (${step.speaker})` : ""}: ${step.body}`);
-            break;
-          case "choices": {
-            const given = choices.shift();
-            const pick = typeof given === "number" ? given : 0;
-            answer = pick;
-            const picked = pick >= 0 ? step.options[pick]?.text ?? "?" : "cancel";
-            transcript.push(`choices${step.prompt ? ` "${step.prompt}"` : ""}: [${step.options.map((option) => option.text).join(" | ")}] → ${pick} (${picked})${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "inputNumber": {
-            const given = numbers.shift();
-            answer = typeof given === "number" ? given : 0;
-            transcript.push(`number input${step.prompt ? ` "${step.prompt}"` : ""} (${step.digits} digits) → ${String(answer)}${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "battleProcessing": {
-            const given = battles.shift();
-            const result = given === "defeat" || given === "escape" ? given : "victory";
-            session.battleResult = result;
-            answer = result;
-            transcript.push(`battle ${step.troopId} (canLose ${step.canLose}) → ${result}${given === undefined ? " [default]" : ""}`);
-            break;
-          }
-          case "transfer":
-            transcript.push(`transfer → ${step.mapId} (${step.x}, ${step.y})`);
-            endedBy = "transfer";
-            break;
-          case "wait":
-            transcript.push(`wait ${step.ms}ms`);
-            break;
-          default:
-            transcript.push(step.kind);
-        }
-        step = interpreter.resume(answer as never);
-      }
-    } catch (cause) {
-      endedBy = "exception";
-      errors.push(cause instanceof Error ? cause.message : String(cause));
-    } finally {
-      stop();
-    }
-    for (const line of transcript) if (line.startsWith("ERROR ") && !errors.some((error) => line.includes(error))) errors.push(line.slice(6));
-    const changes = changesOf(before, snapshot(session));
-    const ok = errors.length === 0 && endedBy !== "maxSteps";
+    const transcript = dryRunTranscript(result.steps);
+    const { endedBy, changes, log, errors, ok } = result;
     return {
       summary: `Dry run of ${what}: ${transcript.length} step(s), ended by ${endedBy}${errors.length ? `, ${errors.length} error(s)` : ""}. Nothing was saved.`,
       ...(warnings.length ? { warnings } : {}),
@@ -522,7 +605,7 @@ const dryRunScript: ToolDefinition = {
 
 const getScriptApi: ToolDefinition = {
   name: "get_script_api",
-  description: "Get the typed game API scripts are checked against: the .d.ts with this project's switch/variable/item/actor/map/event ids as literal types. Read it once before writing scripts. format:'cheatsheet' gives a shorter one-line-per-call list.",
+  description: "Get the typed game API scripts are checked against: the .d.ts with this project's switch/variable/item/actor/map/event ids as literal types. The API itself is in the event-scripts skill and the instructions — call this only when unsure of a project id. format:'cheatsheet' gives a shorter one-line-per-call list.",
   mode: "read",
   parameters: {
     type: "object",

@@ -1,45 +1,103 @@
 ---
 name: event-scripts
-description: Write event logic as one sandboxed TypeScript `script` command (game API) instead of long command lists — when to choose a script, the API, the rules, the author → check → dry-run loop and worked examples (lever puzzle, discount shop with a library module, time-of-day guard). Use for combination locks, order puzzles, price formulas, time/inventory checks, random outcomes.
+description: Small sandboxed TypeScript `script` fragments inside ordinary event command lists — what stays commands (almost everything), the few jobs a script does better (formulas, loops over lists, ordered-sequence checks, timers, chance), keeping each script 1-3 lines, the one-call author_script with explain + examples, batching, the API and worked examples (discount price, lever order, curfew hour).
 ---
 
 # Event scripts (TypeScript)
 
 An event page can hold a `script` command: TypeScript that drives the game through one object, `game`.
-It runs in a sandbox (no DOM, network, storage, timers or Node), next to ordinary event commands — a page
-can mix both. Awaited calls (messages, choices, waits, battles, transfers, `game.cmd`) run as real event
-commands, so pausing, saving and staging behave exactly like hand-built pages.
+It runs in a sandbox (no DOM, network, storage, timers or Node) as ONE line in the event's command list.
+Awaited calls (messages, choices, waits, battles, transfers, `game.cmd`) run as real event commands, so
+pausing, saving and staging behave exactly like hand-built pages.
 
 Source: `assistant-skills/event-scripts/SKILL.md`. Design and limits: `openwiki/script-sandbox.md`.
 
-## When to choose a script
+## Events first — a script is a small fragment
 
-Use ONE script when the logic has any of:
+People READ the event command list; the assistant does the editing. So everything readable is ordinary
+commands: dialogue, cutscenes, branches (forks), choices, switch / variable / gold / item changes, movement,
+effects, battles, transfers.
 
-- conditions that combine (`A and (B or C)`), comparisons, or more than 2–3 branches;
-- math: prices, discounts, damage, scores, counters, ranges;
-- loops or retries: "pull levers until the order is right", "ask again";
-- multi-step state: combination locks, order puzzles, a quest with several stages read from variables;
-- reactions to time of day, inventory, party members or random chance (`game.random(n)`).
+Use a script ONLY for a short fragment that commands express badly:
 
-Keep plain commands for plain dialogue, a single condition page, a cutscene (use the cutscene tools), shops
-and inns that need no formula. Do not wrap a 3-line conversation in a script.
+- a formula — a price after a discount, damage, a score;
+- a loop over a list — "count the party members above level 10", "sum the gem values";
+- an ordered-sequence check — levers or bells that must be used in a set order;
+- a timer or countdown rule, an exact time-of-day rule ("20:00 to 06:00"), a random roll.
 
-## The loop
+How a fragment looks:
 
-1. `get_script_api` once (add `mapId` to get that map's event ids). It returns the `.d.ts` the script is
-   type-checked against: this project's switch / variable / item / actor / map / troop ids are literal types.
-2. Optional: `check_script{source, mapId}` to try code without changing anything.
-3. `author_script{mapId, eventId, pageIndex?, source, name}` (or `commonEventId`). It compiles first. On an
-   error nothing changes and the result lists `L<line>:<col> error: …` — fix exactly those lines and call again.
-   Warnings (unknown id, missing `await`) do not block, but read them: an unknown id is usually a typo.
-4. `dry_run_script{same target, name | commandPath, choices, numbers, battleResults, switches, variables, gold, items}`
-   runs it on a copy of the project. Read `transcript` (what the player sees), `changes` (switches, variables,
-   gold, items) and `errors`. Run the success path AND one failure path before you report.
-5. To change it: `edit_script{target, name | commandPath, source}`. To turn a tangled page into code:
-   `read_event_as_script` → rewrite → `write_event_as_script{…, confirm:true}` (replaces every command on that page).
-6. Helpers several events share (a price formula, a puzzle check) go in a library module:
-   `upsert_script_module{id, source}`, imported as `import { fn } from "@lib/<id>"`. `list_script_modules` shows them.
+- **1-3 lines, one job.** Named consts for the numbers, each with its name in a comment
+  (`const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인`).
+- **Result into a variable or switch.** The commands around it read that value: `\V[var_price]` inside a
+  Show Text, a fork on the variable or switch, `changeGold` with `amount: {kind:"var", id:"var_price"}`.
+- **No dialogue inside the script** unless the line depends on the computed value and cannot use `\V[...]`.
+- Put it right before the commands that read its result (`index` = that position).
+
+The pattern — a merchant page (top to bottom):
+
+```
+script "price"   const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인
+                 game.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));
+Show Text        "A potion is \V[var_price] G."
+Show Choices     Buy / No
+  Buy →          fork gold … → changeGold -= {kind:"var", id:"var_price"}, changeItem +1, Show Text "Thanks!"
+```
+
+**Name things for the reader.** The event list shows a script as plain lines, never as code, so every name
+in it must be readable in the user's language (Korean for a Korean project). The runtime ignores comments; the
+list reads these:
+
+- a trailing comment on every `const`/`let` = its name: `const pct = discountPercent(rep); // 할인율`.
+  Several declarators: one name each, comma separated: `const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인`.
+- a self switch you read or write: `// @label A: 이미 당김` (also `// @label LEVERS: 레버들` for any identifier).
+- a helper function (in the script or an `@lib` module): `/** @label 할인율 */` right above it.
+- a comment on its own line above each logical block = a step heading in the list: `// 가격 계산`,
+  `// 틀린 순서: 원위치`. One short line (under ~20 characters); skip it for a 1-2 line fragment.
+
+Keep switch and variable NAMES short (「레버 진행 단계」); put the meaning in `declare_story_flag`, not in the name.
+
+**Decide once per event and keep it.** Never write a script and then convert it to commands (or the
+reverse). Never turn existing commands into scripts unless the user asks. If a fragment misbehaves, fix it with
+`edit_script`. Only when the user asks to turn a script back into commands:
+`write_script_as_commands{target, name | commandPath, confirm:true}` (it refuses, changing nothing, when the
+script is not exactly expressible as commands — then keep the script).
+
+## One call: author_script with explain + examples
+
+```
+author_script{
+  mapId, eventId, pageIndex?            // or commonEventId
+  index,                                // right before the commands that read the result
+  source, name,
+  explain: ["1-2 short sentences in the user's language, for someone who cannot read code"],
+  examples: [                           // normal case + one edge (2-4 items)
+    { label: "평판 10", variables: [{ id: "var_rep", value: 10 }] },
+    { label: "평판 50 (상한)", variables: [{ id: "var_rep", value: 50 }] },
+  ]
+}
+```
+
+- It compiles first. On an error nothing changes and the result lists `L<line>:<col> error: …` — fix exactly
+  those lines and call again. Warnings (unknown id, missing `await`) do not block; an unknown id is usually a typo,
+  or a new switch/variable that the script creates.
+- Then it inserts the command, stores `explain` + `examples` on it (the event card shows them) and runs every
+  example on a copy of the project. Each result (`examples[i]`) has `changes` (switches, variables, gold, items),
+  the `transcript` if the script itself showed anything, and `errors` / `ok:false` when something broke.
+- **When the example results match the request, the fragment is done.** Do not call `check_script` or
+  `dry_run_script` to re-test what the examples already showed.
+- Example fields: `label` + presets `switches:[{id,value}]` / `variables:[{id,value}]` / `gold` /
+  `items:[{id,count}]` / `hour` / `minute`, and answers `choices` (0-based, -1 = cancel) / `numbers` / `battleResults`.
+- **Several similar fragments in one call:** `author_script{scripts:[{mapId,eventId,index,source,name,explain,examples}, …]}`
+  (4 levers, 3 statues). Each item is written or rejected on its own; resend only the failed items.
+- Change a fragment: `edit_script{target, name | commandPath, source, explain?, examples?}`. It re-runs the given
+  examples, or the stored ones when you omit them. Pass `explain` again when the behaviour changed.
+- A formula several events share can go in a library module: `upsert_script_module{id, source}`, imported as
+  `import { fn } from "@lib/<id>"`. `list_script_modules` shows them.
+- Ids are the project's own string ids (`"var_price"`, `"sw_vault_open"`, `"item_potion"`, event ids).
+  `get_script_api{mapId}` prints the full `.d.ts` with this project's ids — call it only when unsure of an id.
+- `dry_run_script` remains for a situation the examples did not cover, or to run a whole page (target only).
+- `read_event_as_script` / `write_event_as_script` turn a page into code — only when the user asks for that.
 
 Never write `{kind:"script"}` by hand in `upsert_event` / `patch_event_page` / `add_event_page` /
 `upsert_common_event`: those tools reject a script that was not compiled from its source.
@@ -135,95 +193,53 @@ Never write `{kind:"script"}` by hand in `upsert_event` / `patch_event_page` / `
 - game.time(): GameClock — In-game clock: enabled, hour, minute, day, season, year and phase ('morning' | 'day' | 'evening' | 'night'). enabled=false when the project has no time system (then hour is 12).
 - game.playTime(): number — Seconds played in this save.
 
-## Example 1 — four-lever combination lock (order check and reset)
+## Example 1 — discount price (formula)
 
-One panel event. The player pulls levers through a choice window; a wrong lever resets everything and counts a failure.
-The open state lives in a switch, so the vault stays open after a save.
-
-```ts
-const ORDER = [2, 0, 3, 1]; // correct order: lever 3, 1, 4, 2 (put the clue somewhere in the room)
-const LEVERS = ["Lever 1", "Lever 2", "Lever 3", "Lever 4"];
-if (game.getSwitch("sw_vault_open")) {
-  await game.showMessage("The levers are locked in place.");
-} else {
-  const pulled: number[] = [];
-  while (pulled.length < ORDER.length) {
-    const pick = await game.showChoices([...LEVERS, "Step away"], { prompt: `Pulled ${pulled.length}/4`, cancel: 4 });
-    if (pick === 4) break;
-    if (pulled.includes(pick)) { await game.showMessage("That lever is already down."); continue; }
-    pulled.push(pick);
-    if (pick !== ORDER[pulled.length - 1]) {
-      await game.shake(4, 20);
-      await game.showMessage("Clunk. Every lever snaps back up.");
-      game.addVar("var_lever_fails", 1);
-      break;
-    }
-  }
-  if (pulled.length === ORDER.length && pulled.every((lever, i) => lever === ORDER[i])) {
-    game.setSwitch("sw_vault_open", true);
-    await game.showMessage("A deep rumble. The vault door slides open.");
-  }
-}
-```
-
-Test both paths:
-`dry_run_script{mapId, eventId:"ev_panel", name:"levers", choices:[2,0,3,1]}` → `changes.switches.sw_vault_open` false → true;
-`choices:[2,1]` → shake, reset message, `var_lever_fails` +1, switch unchanged. The vault door page uses the switch as its condition.
-
-## Example 2 — shop with a reputation discount (library module)
-
-`upsert_script_module{id:"pricing", source}`:
+Script `price`, before the merchant's Show Text:
 
 ```ts
-/** Price after the reputation discount: 1% per point, at most 30%. */
-export function discounted(base: number, reputation: number): number {
-  const rate = Math.min(30, Math.max(0, reputation)) / 100;
-  return Math.max(1, Math.round(base * (1 - rate)));
-}
+const BASE = 120, MAX_OFF = 30; // 기본 가격, 최대 할인
+game.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));
 ```
 
-The merchant's script (`author_script`):
+Commands after it: Show Text `"A potion is \V[var_price] G."`, Show Choices Buy / No, and in Buy a fork on gold,
+`changeGold` `-=` `{kind:"var", id:"var_price"}`, `changeItem` +1. explain: `["평판 1점마다 1% 싸지고, 최대 30%까지 깎인다."]`,
+examples `{label:"평판 10", variables:[{id:"var_rep", value:10}]}` → `var_price` 108;
+`{label:"평판 50", variables:[{id:"var_rep", value:50}]}` → 84 (capped).
+
+If the gold check needs the price, add one line to the same script —
+`game.setSwitch("sw_can_afford", game.gold() >= game.getVar("var_price"));` — and fork on that switch.
+
+## Example 2 — four levers in a set order (ordered-sequence check)
+
+Each lever is its own event: commands (play a sound, Show Text "Clunk.") around one small script, then a fork.
+The script for lever N (here N = 1):
 
 ```ts
-import { discounted } from "@lib/pricing";
-const price = discounted(120, game.getVar("var_reputation"));
-const pick = await game.showChoices([`Buy a potion (${price} G)`, "No thanks"], { cancel: 1 });
-if (pick === 0) {
-  if (game.gold() < price) {
-    await game.showMessage("You don't have enough gold.", { speaker: "Merchant" });
-  } else {
-    game.addGold(-price);
-    game.addItem("item_potion");
-    await game.showMessage(`Pleasure doing business. That's ${price} G.`, { speaker: "Merchant" });
-  }
-}
+const ORDER = [3, 1, 4, 2], N = 1; // 정답 순서, 이 레버 번호
+const step = game.getVar("var_lever_step"); // 진행 단계
+game.setVar("var_lever_step", ORDER[step] === N ? step + 1 : 0);
 ```
 
-`dry_run_script{…, choices:[0], variables:[{id:"var_reputation", value:25}], gold:100}` → price 90, gold 100 → 10, item +1.
-Run again with `gold:50` to see the "not enough gold" line. Other merchants import the same `discounted`.
-For a full buy/sell menu keep the shop command: `await game.cmd({ kind: "shop", itemIds: ["item_potion"], allowSell: true })`.
+After it, ordinary commands: fork `var_lever_step >= 4` → setSwitch `sw_vault_open` on + Show Text "The vault
+door slides open."; else fork `var_lever_step == 0` → Show Text "Every lever snaps back up." The vault door page
+uses `sw_vault_open` as its condition. Write all four in ONE call:
+`author_script{scripts:[{mapId, eventId:"ev_lever1", index:1, name:"order check", source:<N = 1>, explain:[…], examples:[{label:"첫 순서 맞음", variables:[{id:"var_lever_step", value:1}]}, {label:"틀림", variables:[{id:"var_lever_step", value:0}]}]}, …levers 2-4…]}`.
 
-## Example 3 — gate guard who reacts to the time of day
+## Example 3 — curfew from 20:00 to 06:00 (exact time rule)
+
+Script before the guard's dialogue:
 
 ```ts
-const clock = game.time();
-const hasPass = game.hasItem("item_night_pass");
-if (clock.phase === "night" && !hasPass) {
-  await game.showMessage("The gate is shut until morning.", { speaker: "Guard" });
-  await game.moveEvent("player", ["down"]);
-} else if (clock.phase === "night") {
-  await game.showMessage("A night pass. Go ahead, quietly.", { speaker: "Guard" });
-} else if (clock.phase === "evening") {
-  await game.showMessage("Closing soon. Make it quick.", { speaker: "Guard" });
-} else {
-  await game.showMessage("Welcome to town.", { speaker: "Guard" });
-}
+const CLOSE = 20, OPEN = 6; // 문 닫는 시각, 문 여는 시각
+const hour = game.time().hour; // 지금 시각
+game.setSwitch("sw_curfew", hour >= CLOSE || hour < OPEN);
 ```
 
-`game.time().enabled` is false when the project has no time system (then the phase is "day"); turn it on with
-`configure_time_system`. A dry run starts at the project's start time, so it shows the daytime line unless the
-time system starts at night — check the night branch by reading the code, or temporarily test a copy of the
-condition with `check_script`.
+Commands after it: fork `sw_curfew` → (fork item `item_night_pass` → "Go ahead, quietly." / else "The gate is
+shut until morning." + move player down) / else "Welcome to town." `game.time().enabled` is false when the
+project has no time system (then the hour is 12) — turn it on with `configure_time_system` first.
+Examples set the clock: `{label:"밤 22시", hour:22}`, `{label:"새벽 5시", hour:5}`, `{label:"낮", hour:12}`.
 
 ## Reading existing pages as code
 

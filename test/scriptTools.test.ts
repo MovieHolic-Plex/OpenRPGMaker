@@ -90,6 +90,105 @@ describe("author_script", () => {
   }, 30_000);
 });
 
+describe("author_script / edit_script — examples, explanation, batch", () => {
+  type ExampleRun = { label: string; ok?: false; transcript: string[]; changes?: Record<string, Record<string, { from: unknown; to: unknown }>>; errors?: string[] };
+  type ScriptCmd = Extract<Command, { kind: "script" }>;
+
+  it("runs the examples in the same call and stores the explanation bound to the source hash", async () => {
+    const { ctx, mapId } = contextWithPanel();
+    const result = await runToolAsync(ctx, "author_script", {
+      mapId, eventId: "ev_panel", source: LEVERS, name: "levers",
+      explain: ["레버 넷을 순서대로 당기면 금고가 열린다."],
+      examples: [{ label: "맞는 순서", choices: [2, 0, 3, 1] }, { label: "틀린 순서", choices: [2, 1] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("Examples: 2/2 ran clean");
+    const runs = (result.data as { examples: ExampleRun[] }).examples;
+    expect(runs.map((run) => run.label)).toEqual(["맞는 순서", "틀린 순서"]);
+    expect(runs[0]!.ok).toBeUndefined();
+    expect(runs[0]!.changes?.switches?.sw_vault_open).toEqual({ from: false, to: true });
+    expect(runs[0]!.transcript.length).toBeLessThanOrEqual(13);
+    expect(runs[1]!.changes?.variables?.var_lever_fails).toEqual({ from: 0, to: 1 });
+    expect(runs[1]!.changes?.switches).toBeUndefined();
+
+    const script = pageCommands(ctx, mapId)[0] as ScriptCmd;
+    expect(script.explanation?.sourceHash).toBe(script.sourceHash);
+    expect(script.explanation?.lines).toEqual(["레버 넷을 순서대로 당기면 금고가 열린다."]);
+    expect(script.explanation?.examples).toEqual([{ label: "맞는 순서", choices: [2, 0, 3, 1] }, { label: "틀린 순서", choices: [2, 1] }]);
+  }, 30_000);
+
+  it("puts a small calculation fragment before the commands that read it, with compact example results", async () => {
+    const { ctx, mapId } = contextWithPanel([{ kind: "text", body: "A potion is \\V[var_price] G." }]);
+    const source = `const BASE = 120, MAX_OFF = 30;\ngame.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));`;
+    const result = await runToolAsync(ctx, "author_script", {
+      mapId, eventId: "ev_panel", index: 0, name: "price", source,
+      explain: ["평판 1점마다 1% 싸지고, 최대 30%까지 깎인다."],
+      examples: [{ label: "평판 10", variables: [{ id: "var_rep", value: 10 }] }, { label: "평판 50", variables: [{ id: "var_rep", value: 50 }] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(pageCommands(ctx, mapId).map((command) => command.kind)).toEqual(["script", "text"]);
+    const runs = (result.data as { examples: ExampleRun[] }).examples;
+    // A pure calculation shows nothing: no transcript key, only the changes.
+    expect(runs[0]).toEqual({ label: "평판 10", changes: { variables: { var_price: { from: 0, to: 108 } } } });
+    expect(runs[1]!.changes?.variables?.var_price).toEqual({ from: 0, to: 84 });
+  }, 30_000);
+
+  it("writes a batch item by item: a compile error drops only that item", async () => {
+    const { ctx, mapId } = contextWithPanel();
+    const result = await runToolAsync(ctx, "author_script", {
+      scripts: [
+        { mapId, eventId: "ev_panel", source: `game.setVar("var_count", 4);`, name: "good", examples: [{ label: "once" }] },
+        { mapId, eventId: "ev_panel", source: `const n: number = "no";`, name: "bad" },
+        { mapId, eventId: "ev_panel", source: `game.setSwitch("sw_done", true);`, name: "also good" },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("Wrote 2/3");
+    const results = (result.data as { results: { index: number; ok: boolean; error?: string; examples?: ExampleRun[] }[] }).results;
+    expect(results.map((entry) => entry.ok)).toEqual([true, false, true]);
+    expect(results[1]!.error).toMatch(/L1:\d+ error/u);
+    expect(results[0]!.examples?.[0]?.changes?.variables?.var_count).toEqual({ from: 0, to: 4 });
+    expect(JSON.stringify(result)).toContain("scripts[1]");
+    expect(pageCommands(ctx, mapId).map((command) => (command as ScriptCmd).name)).toEqual(["good", "also good"]);
+  }, 30_000);
+
+  it("rejects a batch where every item fails and changes nothing", async () => {
+    const { ctx, mapId } = contextWithPanel([{ kind: "text", body: "hello" }]);
+    const result = await runToolAsync(ctx, "author_script", { scripts: [{ mapId, eventId: "ev_panel", source: `const n: number = "no";` }] });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("No script was written");
+    expect(pageCommands(ctx, mapId).map((command) => command.kind)).toEqual(["text"]);
+  }, 30_000);
+
+  it("edit_script keeps the old explanation as stale with a warning, re-runs stored examples, and refreshes it on explain", async () => {
+    const { ctx, mapId } = contextWithPanel();
+    const authored = await runToolAsync(ctx, "author_script", {
+      mapId, eventId: "ev_panel", source: LEVERS, name: "levers",
+      explain: ["old sentence"], examples: [{ label: "right", choices: [2, 0, 3, 1] }],
+    });
+    expect(authored.ok, authored.summary).toBe(true);
+    const changed = LEVERS.replace("The vault door slides open.", "The vault door grinds open.");
+
+    const edited = await runToolAsync(ctx, "edit_script", { mapId, eventId: "ev_panel", name: "levers", source: changed });
+    expect(edited.ok, edited.summary).toBe(true);
+    expect(JSON.stringify(edited)).toContain("still describes the old code");
+    const rerun = (edited.data as { examples: ExampleRun[] }).examples;
+    expect(rerun[0]!.label).toBe("right");
+    expect(rerun[0]!.transcript.at(-1)).toContain("grinds open");
+    let script = pageCommands(ctx, mapId)[0] as ScriptCmd;
+    expect(script.explanation?.lines).toEqual(["old sentence"]);
+    expect(script.explanation?.sourceHash).not.toBe(script.sourceHash);
+
+    const refreshed = await runToolAsync(ctx, "edit_script", { mapId, eventId: "ev_panel", name: "levers", source: changed, explain: ["new sentence"] });
+    expect(refreshed.ok, refreshed.summary).toBe(true);
+    expect(JSON.stringify(refreshed)).not.toContain("still describes the old code");
+    script = pageCommands(ctx, mapId)[0] as ScriptCmd;
+    expect(script.explanation?.lines).toEqual(["new sentence"]);
+    expect(script.explanation?.sourceHash).toBe(script.sourceHash);
+    expect(script.explanation?.examples).toEqual([{ label: "right", choices: [2, 0, 3, 1] }]);
+  }, 30_000);
+});
+
 describe("dry_run_script", () => {
   it("reports the transcript and the state changes of the right and the wrong lever order", async () => {
     const { ctx, mapId } = contextWithPanel();

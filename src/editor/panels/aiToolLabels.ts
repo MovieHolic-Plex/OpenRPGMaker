@@ -530,6 +530,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_script_modules: inspect("스크립트 공용 모듈 보기", "book"),
   read_event_as_script: inspect("이벤트를 코드로 읽기", "scroll"),
   write_event_as_script: build("이벤트를 코드로 바꾸기", "scroll"),
+  write_script_as_commands: build("스크립트를 명령으로 풀기", "scroll"),
   set_speaker_voice: people("말투 정하기", "user"),
   set_scene_summaries: system("장면 요약 정하기", "book"),
   list_combo_techs: inspect("연계기 목록 보기", "spark"),

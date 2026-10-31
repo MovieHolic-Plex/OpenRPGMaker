@@ -210,6 +210,27 @@ function clamp(min: number, max: number, value: number): number {
 }
 
 /**
+ * 빛 곡선 [반지름 비율, 가운데 대비 세기] — 가운데 1, 반지름 절반에서 약 0.45, 끝에서 0. 게임 마스크(player/lighting.ts)의
+ * 걷어 내기·빛 색, 화면 검수 그림(ai/v2/vqaLighting.ts)이 같이 쓴다. 예전 곡선(0.7 까지 65% 유지 후 급락)은 반지름 끝까지 거의 다
+ * 걷어 내 흰 눈·얼음 위 등불마다 테두리 선명한 하얀 원판이 떴다(폴른 스타 서리나루, 2026-10-31).
+ */
+export const LIGHT_FALLOFF: readonly (readonly [number, number])[] = [[0, 1], [0.25, 0.8], [0.5, 0.45], [0.75, 0.15], [1, 0]];
+
+/** 빛 곡선을 t(0~1, 반지름 비율)에서 잇는다. */
+export function lightFalloffAt(t: number): number {
+  if (!(t > 0)) return 1;
+  if (t >= 1) return 0;
+  for (let i = 1; i < LIGHT_FALLOFF.length; i += 1) {
+    const [t1, k1] = LIGHT_FALLOFF[i]!;
+    if (t <= t1) {
+      const [t0, k0] = LIGHT_FALLOFF[i - 1]!;
+      return k0 + ((k1 - k0) * (t - t0)) / (t1 - t0);
+    }
+  }
+  return 0;
+}
+
+/**
  * 어둠 막의 색이 이보다 밝으면(상대 밝기 0~1) 「어둠」이 아니라 「색조」로 읽는다(2026-10-28).
  *
  * 왜: 조명 마스크는 ambient 만큼 color 를 화면 위에 덮는다(어둠 막). 조수가 아늑한 서재를 원해 color '#f6dfbd'(밝은 베이지)·

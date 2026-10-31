@@ -58,6 +58,8 @@ export interface FrostLayout {
   startRow: { x: number; y: number; width: number; height: number };
   /** 불빛 자리 — 광장 모닥불, 성문 양옆 횃불, 사당 양옆 등. */
   bonfire: Cell; gateLights: Cell[]; shrineLights: Cell[];
+  /** 광장 동·서 골목 길가 등 — 등불 머리 칸. */
+  streetLamps: Cell[];
 }
 
 const hash01 = (x: number, y: number, s: number): number => {
@@ -356,7 +358,8 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   must("bd-pick-coast-cliff-road-shrine", shrine.x, shrine.y);
   const valen = { x: 19, y: 26 }, shrineFront = { x: 19, y: 27 };
   for (const [x, y] of [[18, 26], [19, 26], [20, 26], [18, 27], [19, 27], [20, 27], [17, 26], [21, 26]] as const) keepClear.add(idx(x, y));
-  const shrineLights = [{ x: 16, y: 22 }, { x: 21, y: 22 }];
+  // 장대 등 불빛은 등 머리 칸(밑동 23 → 머리 24). 22 에 두면 등보다 두 칸 위 빈 눈밭에 빛 덩이가 떴다(2026-10-31).
+  const shrineLights = [{ x: 16, y: 24 }, { x: 21, y: 24 }];
   stamp("bd-pick-swamp-stilt-lantern", 21, 23);
   stamp("bd-pick-swamp-stilt-lantern", 16, 23);
   stamp(SNOW("pine"), 14, 21);
@@ -433,7 +436,8 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     for (let y0 = b + 1; y0 <= b + 2; y0 += 1) if (stamp(SNOW("lamp"), x, y0)) { lamps.push({ x, y: y0 + 2 }); break; }
   }
   // 길가 등 — 광장 서쪽 골목·동쪽 골목.
-  stamp(SNOW("lamp"), 10, 42); stamp(SNOW("lamp"), 27, 42);
+  const streetLamps: Cell[] = [];
+  for (const x of [10, 27]) if (stamp(SNOW("lamp"), x, 42)) streetLamps.push({ x, y: 42 });
   // 징발 창고(작은 부두 곁) 앞 썰매·장작 상자, 병사는 썰매 곁.
   const sled = { x: 6, y: 43 };
   must(SNOW("sled"), sled.x, sled.y);
@@ -549,7 +553,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   return {
     width: W, height: H, entry, gateDoor, gateFront, stairsTop, stairsBottom, ice, cracks, island, shrine, valen, shrineFront,
     houses, holes, lamps, pierHead, sled, soldier, people, iceRoad, crackTiles, problems,
-    preCracks, escapePath, startRow, bonfire, gateLights: [{ x: GATE_X - 1, y: 5 }, { x: GATE_X + 4, y: 5 }], shrineLights,
+    preCracks, escapePath, startRow, bonfire, gateLights: [{ x: GATE_X - 1, y: 5 }, { x: GATE_X + 4, y: 5 }], shrineLights, streetLamps,
   };
 }
 

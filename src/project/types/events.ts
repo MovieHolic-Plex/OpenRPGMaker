@@ -710,6 +710,8 @@ export type Command =
       sourceHash?: string;
       /** `game` API version the script was compiled against. */
       apiVersion?: number;
+      /** Model-written plain-language card text + example setups, bound to a source hash (stale when it differs). */
+      explanation?: import("../script/types").ScriptExplanation;
     }
   | {
       /**
