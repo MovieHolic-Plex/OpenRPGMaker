@@ -4,6 +4,7 @@
 // 「심부름 퀘스트」「새 무기를 상점에서」「보스 전투 뒤 감사」를 옮길 길이 없었다. 이 층은 이미 검증된 v1 결정론 도구를
 // 그대로 내놓는다(스키마·검증·저장 계약이 v1 과 같다). 요청에 게임 낱말이 있을 때만 싣는다 — 맵 요청의 첫 턴을 무겁게 하지 않는다.
 import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
+import { assistantScriptsOn } from "@/ai/scriptsSwitch";
 import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
@@ -86,7 +87,8 @@ export function fallenTierTools(task: string): string[] {
 }
 /** 맞는 묶음의 사용법 한 줄씩(게임 카드 끝에 붙는다) — 도구만 싣고 쓰는 법을 안 주면 조수가 손으로 조립한다. */
 export function fallenTierCard(task: string): string {
-  const lines = [...new Set(FALLEN_TIERS.filter((tier) => tier.card && tier.words.test(task)).map((tier) => tier.card!))];
+  const scriptsOn = assistantScriptsOn();
+  const lines = [...new Set(FALLEN_TIERS.filter((tier) => tier.card && tier.words.test(task) && (scriptsOn || tier !== SCRIPT_TIER)).map((tier) => tier.card!))];
   return lines.length ? `[Tools for this request — use these instead of assembling by hand]\n${lines.join("\n")}` : "";
 }
 
@@ -158,6 +160,15 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
   · Forest and field nature objects (rocks, mossy stones, fallen logs, stumps, mushrooms, ferns, wildflowers, bushes, silver grass, mossy shrine stones): use the «버들항 자연 · …» objects (bd-org-*) from list_spatial_designs{kind:'object', query:'버들항 자연'} — desert, snowfield and sea-cave rocks are for other places. Scatter them in clumps away from paths, door fronts and event cells (not in a line).
 - Removing maps: delete unused maps and maps built twice for the same role with remove_map{mapId} (transfers into that map are cleaned up too, and a user confirmation card appears before it applies). Move the start map first with set_start_position. Never hand it off as «delete it by hand».
 - If a tool rejects, read the reason, fix and call again. After the same rejection twice, change approach. Put what you cannot do in the report.`;
+
+/** GAME_CARD — OPRN_V2_SCRIPTS=0 이면 스크립트 이전 글(스크립트 줄 없음, 난수는 순서 돌리기)로 돌려준다(src/ai/scriptsSwitch.ts). */
+export function gameCard(): string {
+  if (assistantScriptsOn()) return GAME_CARD;
+  return GAME_CARD.replace(`${SCRIPT_CARD_LINE}\n`, "").replace(SCRIPT_RANDOM_LINE, PRE_SCRIPT_RANDOM_LINE);
+}
+const SCRIPT_CARD_LINE = GAME_CARD.split("\n").find((line) => line.startsWith("- Logic with conditions, math, loops")) ?? "";
+const SCRIPT_RANDOM_LINE = GAME_CARD.split("\n").find((line) => line.startsWith("- Event commands have no random-number command")) ?? "";
+const PRE_SCRIPT_RANDOM_LINE = "- The engine has no random-number command (setVariable value is a number or {kind:'var',id} only) — do not keep trying; use an outcome that rotates in order (e.g. fails one time in three) and write «order instead of chance» in the report.";
 
 /**
  * 2026-10-30 polish-hook-1030: 「이세계 전생 개그 RPG 짧게 만들어 줘」는 GAME_WORDS 에 걸리지 않아 v2 동사만 실렸고,
