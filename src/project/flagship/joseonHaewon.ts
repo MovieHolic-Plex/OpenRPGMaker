@@ -60,6 +60,8 @@ const CHIP = {
   jumo: { tex: "tex_easyrpg_charset_people4", resource: "easyrpg-charset-people4", index: 4 },
 } as const satisfies Record<string, Chip>;
 
+/** 사건 도구(place_npc 경로)에 넘기는 외형 — 도구의 GraphicSpec 모양. */
+const specOf = (chip: Chip) => ({ textureKey: chip.tex, characterIndex: chip.index });
 const graphicOf = (chip: Chip, dir: Dir = "down") => ({
   sprite: { type: "bundled", id: chip.tex }, direction: dir,
   pattern: charsetFrameIndex({ characterIndex: chip.index, direction: dir, pattern: 1 }), transparent: false,
@@ -185,6 +187,7 @@ export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
   hero.nickname = "감영 검률";
   hero.characterResourceId = CHIP.hero.resource;
   hero.characterIndex = CHIP.hero.index;
+  hero.battleCharacterResourceId = "charset-battler-actor1-6"; // 같은 칩의 짝 전투 시트(물려받은 검사 actor1-0 대신)
   delete hero.faceResourceId;
 
   // 맵: 등록 장소 그대로.
@@ -323,14 +326,14 @@ function buildCase1(project: Project): void {
     culprit: "jeong",
     suspects: [
       {
-        id: "chilbok", name: "칠복", at: at(V.chilbok), graphic: graphicOf(CHIP.chilbok),
+        id: "chilbok", name: "칠복", at: at(V.chilbok), graphic: specOf(CHIP.chilbok),
         greeting: ["……검률 나리요. 분이 일 때문이오?"],
         alibi: ["그 밤은 주막 뒤에서 장작을 팼소. 주모가 시킨 일이오. 새벽닭 울 때까지 팼소."],
         motive: ["사람들이 나랑 분이가 정분났다고 하는 거 아오. 정분은 무슨…… 밥 한 술 나눠 먹은 게 다요."],
         testimony: ["분이는 밤이면 방앗간 쪽으로 심부름을 다녔소. 정 서방이 품삯을 쳐준다고."],
       },
       {
-        id: "jeong", name: "정 서방", at: at(V.jeong), graphic: graphicOf(CHIP.jeong),
+        id: "jeong", name: "정 서방", at: at(V.jeong), graphic: specOf(CHIP.jeong),
         greeting: ["방앗간 정가요. 무슨 일로 오셨소."],
         alibi: ["그 밤엔 방아 찧고 일찍 잤소."],
         motive: ["분이요? 심부름이나 하던 아이요. 내가 그 아이를 왜."],
@@ -342,7 +345,7 @@ function buildCase1(project: Project): void {
         },
       },
       {
-        id: "wolhwa", name: "월화 만신", at: at(V.wolhwaDay), graphic: graphicOf(CHIP.wolhwa),
+        id: "wolhwa", name: "월화 만신", at: at(V.wolhwaDay), graphic: specOf(CHIP.wolhwa),
         greeting: ["검률 나리시구려. 우리 분이를 보러 오셨소."],
         alibi: ["그 밤엔 신당에서 혼자 정화수를 떠 놓고 있었소. 누가 봤겠소."],
         motive: ["물귀신이라고 먼저 말한 게 나요. 굿값을 바란다고들 하지요.", "울어 주는 값은 쌀 한 되요. 우리 분이는 내가 공으로 울어 줘야지."],
@@ -383,7 +386,7 @@ function buildCase1(project: Project): void {
     ],
     requiredClues: ["autopsy", "rice", "jumo", "wolhwa_nails", "scratch"],
     accuser: {
-      name: "이방 최득량", at: at(OFFICE.ibang, JW_MAP.office), graphic: graphicOf(CHIP.ibang),
+      name: "이방 최득량", at: at(OFFICE.ibang, JW_MAP.office), graphic: specOf(CHIP.ibang),
       intro: ["분이 일이오? 귀신 짓이라니까 그러시오."],
       hint: ["검률 나리, 이 고을은 귀신 하나쯤 품고 삽니다. 장부까지 들춰서 누구 좋으라고 그러시오.", "사람을 짚으시려면 그만한 걸 가져오시오."],
       ready: ["……그래서, 누구라는 거요."],
@@ -422,6 +425,14 @@ function buildCase1(project: Project): void {
     },
   });
   lastCase1VerificationScene = (authored.data as { verificationScene?: unknown } | undefined)?.verificationScene;
+
+  // 지목 뒤: 정 서방은 옥에 들고, 낮의 월화는 밤 우물가로 옮겨 간다. 칠복은 남아 한마디 한다.
+  const village = project.maps[JW_MAP.village]!;
+  const suspect = (id: string) => village.events.find((e) => e.id === `ev_mystery_c1_suspect_${id}`);
+  for (const id of ["jeong", "wolhwa"]) suspect(id)?.pages?.push(page(`p_${id}_gone`, [stageAtLeast(S.C1_ACCUSED)], []));
+  suspect("chilbok")?.pages?.push(page("p_chilbok_after", [stageAtLeast(S.C1_ACCUSED)], [
+    ...say("칠복", "정 서방이 옥에 들었다지요.", "……분이가 그 밤에 뭘 봤는지, 이제 다들 알게 됐소."),
+  ], { chip: CHIP.chilbok, dir: "down" }));
 }
 
 // ── 주막 — 방 잡기·쉬기 ──
