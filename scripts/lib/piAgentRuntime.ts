@@ -58,7 +58,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
-import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
+import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -679,7 +679,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const message = repairedError
           ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
           : error instanceof Error ? error.message : String(error);
-        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : message);
+        const fieldHint = wrongTypeFieldHint(tool.parameters, message);
+        throw new Error(failures >= 2 ? `${message}${fieldHint}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : `${message}${fieldHint}`);
       }
       valid = fixed;
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
@@ -1507,7 +1508,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const tokensNow = () => (usage ? usage.input + usage.output : 0);
     const tokens0 = tokensNow();
     const baseTexts = baseDialogueTexts(base);
-    let written = runWrittenDialogueLines(ctx.project, baseTexts);
+    let written = runWrittenDialogueLines(ctx.project, baseTexts, request.task);
     if (!dialoguePolishWanted(written.length, wantsWholeGame(request.task))) {
       const report = emptyPolishReport(`새로 쓴 글 ${written.length}줄 — 게임 완성·큰 덩어리가 아니라 건너뜀`, written.length);
       emit({ type: "execution_status", name: "dialogue_polish.skip", ok: true, summary: report.reason!, data: report });
@@ -1525,7 +1526,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "dialogue_polish.speaker_labels", ok: lifted.ok,
         summary: lifted.ok ? `글 앞 「이름:」 라벨 ${labelIds.length}줄 — 화자 칸으로 옮김 ${moved}, 화자 칸이 없거나 다른 이름이라 그대로 둠 ${labelOutcomes.length - moved}(세지 않음)` : `라벨 옮기기 실패: ${lifted.summary}`,
         data: { outcomes: labelOutcomes } });
-      written = runWrittenDialogueLines(ctx.project, baseTexts);
+      written = runWrittenDialogueLines(ctx.project, baseTexts, request.task);
     }
     try { lint = await lintPolishLines(written, knownSpeakerNames(ctx.project)); }
     catch (error) {
@@ -1601,7 +1602,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const overBudget = polishBudget.over;
         polishBudget = undefined;
         tools.splice(0, tools.length, ...saved);
-        lint = await lintPolishLines(runWrittenDialogueLines(ctx.project, baseTexts), knownSpeakerNames(ctx.project));
+        lint = await lintPolishLines(runWrittenDialogueLines(ctx.project, baseTexts, request.task), knownSpeakerNames(ctx.project));
         emit({ type: "execution_status", name: "dialogue_polish.relint", ok: lint.target === 0, summary: `윤문 ${round}차례 뒤 다시 린트(실행기): 고칠 적중 ${previous.target} → ${lint.target}건` });
         if (overBudget) { stopReason = `윤문 차례 예산(${DIALOGUE_POLISH_ROUND_TURNS}차례·${DIALOGUE_POLISH_ROUND_TOKENS}토큰)에 닿아 멈춤.`; break; }
         if (lint.target >= previous.target) { stopReason = "앞 차례보다 줄지 않아 더 돌지 않음."; break; }

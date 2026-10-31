@@ -101,11 +101,33 @@ export function baseDialogueTexts(base: Project): ReadonlySet<string> {
   return new Set(collectDialogueLines(base, { includeDescriptions: true }).map((line) => norm(line.text)).filter(Boolean));
 }
 
-/** 이번 실행이 쓰거나 바꾼 줄 — 시작 프로젝트에 같은 글이 없는 줄. 빈 글·서식 글은 뺀다. */
-export function runWrittenDialogueLines(project: Project, baseTexts: ReadonlySet<string>): DialogueLine[] {
+/** 글자·숫자만 남긴 비교용 글(띄어쓰기·문장부호·말줄임표 차이를 지운다). */
+function bare(text: string): string {
+  return norm(text).replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+/** 요청 글에서 따옴표로 준 대사(4글자 이상) — 사용자가 글자 그대로 정한 줄. */
+export function userQuotedLines(request: string | undefined): string[] {
+  if (!request) return [];
+  const out: string[] = [];
+  for (const m of request.matchAll(/"([^"\n]{2,240})"|“([^”\n]{2,240})”|「([^」\n]{2,240})」/gu)) {
+    const q = bare(m[1] ?? m[2] ?? m[3] ?? "");
+    if (q.length >= 4) out.push(q);
+  }
+  return out;
+}
+
+/**
+ * 이번 실행이 쓰거나 바꾼 줄 — 시작 프로젝트에 같은 글이 없는 줄. 빈 글·서식 글은 뺀다.
+ * request 를 주면 사용자가 따옴표로 준 대사를 담은 줄도 뺀다 — 윤문이 사용자가 정한 글을 바꾸면 안 된다
+ * (2026-10-31 조수 대조 8회차 FS2 감방: 요청의 「카엘, 이 빵… 무게가 이상해.」 를 윤문이 「들어 보니까 이상해」 로 바꿨다).
+ */
+export function runWrittenDialogueLines(project: Project, baseTexts: ReadonlySet<string>, request?: string): DialogueLine[] {
+  const quoted = userQuotedLines(request);
   return collectDialogueLines(project, { includeDescriptions: true })
     .filter((line) => !line.drafted)
-    .filter((line) => { const text = norm(line.text); return text.length >= 2 && !baseTexts.has(text); });
+    .filter((line) => { const text = norm(line.text); return text.length >= 2 && !baseTexts.has(text); })
+    .filter((line) => { if (!quoted.length) return true; const b = bare(line.text); return !quoted.some((q) => b.includes(q) || (b.length >= 4 && q.includes(b))); });
 }
 
 export function isRunWrittenText(text: string, baseTexts: ReadonlySet<string>): boolean {
