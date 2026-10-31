@@ -1457,14 +1457,16 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   ]);
   // 밤 숲 조명 — 손등불 빛이 또렷이 떠야 「어디가 보이는 자리인지」 읽힌다.
   // 순찰 손등불 반지름 = 시야(3칸, 맨해튼) + 0.6 — 빛 웅덩이 밖이면 안 보인다. 흔들리지 않는다(깜빡이면 경계가 안 읽힌다).
-  // 뒤쫓는 둘은 작은 등불(이미 쫓는 중이라 경계 표시가 아니다), 브람의 등은 틈 안에서 작게(가야 할 곳은 길돌·나무 벽 틈이 말한다).
-  // 달빛 웅덩이는 깔지 않는다 — 큰 흐린 원들이 손등불 빛과 섞여 「어디가 빛인지」 흐려졌다(r2 녹화). 풀밭 전체를 고른 어둠(0.78)으로.
+  // 뒤쫓는 둘도 같은 등불(아래 주석), 브람의 등은 틈 안에서 작게(가야 할 곳은 길돌·나무 벽 틈이 말한다).
+  // 달빛 웅덩이는 깔지 않는다 — 큰 흐린 원들이 손등불 빛과 섞여 「어디가 빛인지」 흐려졌다(r2 녹화). 풀밭 전체를 고른 어둠으로.
   exec(project, "set_lighting_volume", {
-    mapId, applyMode: "map", ambient: 0.78, color: "#0a1024",
+    // 0.78 은 1배 화면에서 풀밭 꽃·돌·나무가 거의 안 보였다(VQA r8) — 엄폐로 쓸 나무가 읽히게 조금 밝힌다.
+    mapId, applyMode: "map", ambient: 0.66, color: "#0a1024",
     sources: [
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
-      ...chaserIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 1.8, intensity: 0.55, color: "#ffb050" })),
-      ...patrolIds.map((eventId, i) => ({ id: `patrol_lamp${i}`, at: { eventId }, radius: 3.6, intensity: 1, color: "#ffc468" })),
+      // 야경꾼 넷 모두 같은 등불 — 빛이 두 가지면 「작은 빛은 안전」으로 읽혀, 등불 밖에서 뒤의 추격꾼에게 붙잡히는 게 규칙 위반처럼 보였다(VQA r8).
+      // 세기 0.7 — 1 이면 빛 한가운데 야경꾼 그림이 하얗게 날아가 사람으로 안 보였다.
+      ...[...chaserIds, ...patrolIds].map((eventId, i) => ({ id: `watch_lamp${i}`, at: { eventId }, radius: 3.6, intensity: 0.7, color: "#ffc468" })),
       { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 2.4, intensity: 0.75, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
@@ -1498,7 +1500,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       se("cc0-se-osx-metal-01"),
       ...chaserIds.map((id) => emote(id, "exclamation", 700)),
       emote("player", "exclamation", 500),
-      say("야경꾼", "거기, 성벽 밑! 누구냐!"),
+      say("야경꾼", "저기, 풀밭에 누가 있다! 거기 서라!"),
       say(ELENA, "뛰어!"),
       setSw(SW_B4_SPOTTED),
       setSw(SW_B4_RUN),
@@ -1513,7 +1515,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], i === allIds.length - 1)),
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다. 위 순찰은 틈 아래 띠를 돌므로 이때 화면 안에 있다.
     ...allIds.map((id) => emote(id, "question", 700)),
-    { kind: "setLighting", ambient: 0.86, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
+    { kind: "setLighting", ambient: 0.8, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
