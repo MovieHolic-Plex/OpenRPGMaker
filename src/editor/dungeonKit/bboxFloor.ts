@@ -53,6 +53,8 @@ export const BBOX_ROOM_SHAPES: Record<string, BboxRoomShapeCells> = {
 /** 방마다 더 거는 검사(확장 자리: 빈 바닥 넓이·깔개 수 같은 것). 칸 집합과 놓인 조각을 받아 영어 문제 글을 돌려준다. */
 export type BboxRoomCheck = (room: { id: string; purpose: string; cells: ReadonlySet<number>; W: number; H: number }) => string[];
 export const BBOX_ROOM_CHECKS: BboxRoomCheck[] = [];
+/** 방 채움: 걸을 수 있는 칸 이만큼마다 조각 하나(최소 2). */
+export const BBOX_CELLS_PER_PIECE = 24;
 
 export type BboxPlacement = "wall" | "floor" | "decal";
 export interface BboxPiece { readonly name: string; readonly kitId: string; readonly w: number; readonly h: number; readonly place: BboxPlacement; readonly family: string }
@@ -148,7 +150,8 @@ export const BBOX_DUNGEON_RULES: readonly string[] = [
   "Entrance: exactly one \"stairs up\" piece on the entrance room's north wall face (its 2 cells are the 2 wall rows just above the room's top floor row; the floor cell right below it is where the player arrives).",
   "Boss gating: every walking route from the entrance into the boss room passes through the antechamber. boss {x,y} = where the boss stands, a walkable cell in the boss room. enemies = cells where visible enemies stand (outside the boss room) — a dungeon floor has enemies: at least max(2, rooms - 3) of them, spread over the rooms on the way (guard rooms first).",
   "Pieces: x,y = top-left cell of the piece. Every room has one landmark piece. Floor pieces need walkable floor under their bottom row and must not overlap other pieces; wall-mounted pieces only on wall face. Pieces with solid bases block walking — keep paths open. Chests {x,y} on walkable floor, reachable.",
-  "Shape the walk: rooms of different sizes and shapes, a route with choices — at least one loop or side branch, not a single line of rooms — hazards that shape the path, and a clear climax at the boss.",
+  "Shape the walk: rooms of different sizes and shapes, a route with choices — at least one loop (a second route between two rooms) or two side branches, never a single line of rooms — hazards that shape the path, and a clear climax at the boss.",
+  "Furnish every room: at least one piece per 24 walkable cells (min 2, the landmark counts) whose base (or, for a wall piece, the cell below it) is in that room — pieces that show what the room is for. A big empty room is rejected; make it smaller or fill it.",
 ];
 
 // ── 검사 + 깔기 ────────────────────────────────────────────────────────────────────────────────────────────────
@@ -367,6 +370,16 @@ export function layBboxDungeon(ts: TilesetDef, L: BboxDungeonLayout): BboxDungeo
     }
     if (pc.name === "stairs down") stairsDownAt.push({ x: p.x, y: p.y });
   }
+  // 방마다 채움: 빈 상자 방의 사슬로 읽히지 않게 방 넓이에 맞는 조각 수를 요구한다(2026-10-31 v2 측정: 판정자가 칸 배치 던전을
+  // 「빈 회색 상자 방의 나열」로 읽어 기준 그림 대비 10%, 지금 빌더 60%). 조각은 발밑(또는 벽 조각 바로 아래) 칸이 그 방에 있으면 그 방 것이다.
+  for (const r of roomRegions) {
+    const walk = [...r.cells].filter((c) => !liqKind[c] || bridge[c] === 1).length;
+    const need = Math.max(2, Math.ceil(walk / BBOX_CELLS_PER_PIECE));
+    const have = stamped.filter((s) => { for (let dx = 0; dx < s.w; dx += 1) for (const yy of [s.y + s.h - 1, s.y + s.h]) if (r.cells.has(idx(s.x + dx, yy))) return true; return false; }).length;
+    if (have < need) errors.push(`room "${r.id}" (${r.purpose}, ${walk} walkable cells) has ${have} piece(s) — it needs at least ${need} (one per ${BBOX_CELLS_PER_PIECE} walkable cells, min 2): add pieces that show what the room is for, or make the room smaller.`);
+  }
+  const shape = bboxGraphShape(L);
+  if (shape.loops < 1 && shape.branches < 2) errors.push(`the room graph is a single line (${shape.rooms} rooms, ${shape.loops} loop(s), ${shape.branches} branching room(s)) — add a loop (a second route between two rooms) or at least two side branches.`);
   const evCells = new Set<number>();
   const putEvent = (c: { x: number; y: number } | undefined, what: string, room?: Region): boolean => {
     if (!c || !num(c.x) || !num(c.y) || !isWalkFloor(c.x, c.y)) { errors.push(`${what} ${c ? P(c.x, c.y) : ""} must be on walkable floor.`); return false; }

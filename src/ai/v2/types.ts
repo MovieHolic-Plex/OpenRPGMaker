@@ -192,7 +192,7 @@ export interface EventSpec {
   readonly kind: "cutscene" | "talk" | "trigger";
   readonly mapId?: string;
   /** 언제: 게임 시작 자동 재생 / 칸을 밟으면 / 말을 걸면. */
-  readonly when?: "game-start" | "touch" | "talk";
+  readonly when?: "game-start" | "enter" | "touch" | "talk";
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
   /** 이 NPC(이름)와 대화가 끝나면 이어서 재생 — 그 NPC 의 말 걸기 끝에 붙는다(한 번만). */
@@ -201,6 +201,10 @@ export interface EventSpec {
   readonly afterTalk?: readonly string[];
   /** after NPC 의 어느 말 걸기 페이지에 이을지(0부터). 말 걸기 페이지가 여럿이면 꼭 고른다. */
   readonly afterPage?: number;
+  /** 이 맵에 이미 있는 장면 이벤트 id — 그 자리·그 이벤트의 컷신 페이지를 새 비트로 다시 쓴다(새 이벤트를 하나 더 만들지 않는다). 장면 손질 검사가 짚은 장면을 고칠 때. */
+  readonly redo?: string;
+  /** 함수끼리만(모델 스키마 밖): 맵마다 하나인 자동 장면 자리 id 를 따로 준다 — 엔딩 장면이 오프닝 자리를 덮지 않게. */
+  readonly hostId?: string;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }
@@ -228,7 +232,19 @@ export type EventBeat =
   /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
   /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
   | { readonly do: "emote"; readonly who: string; readonly emote: string }
-  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string };
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string }
+  /** 플레이어가 고르는 말 — 갈래마다 대답 대사와 결과(돈·물건). 흥정·설득·고백처럼 고른 말에 따라 반응이 달라야 할 때. */
+  | { readonly do: "choose"; readonly who?: string; readonly text?: string; readonly options: readonly ChooseOption[] };
+export interface ChooseOption {
+  readonly label: string;
+  /** 고른 뒤 대사 — 「이름: 대사」 또는 그냥 대사(choose 의 who 가 말한다). */
+  readonly lines?: readonly string[];
+  /** 돈 — 음수는 낸다(-25), 양수는 받는다. 낼 돈이 모자라면 그 갈래는 «돈이 모자란다» 대사로 끝난다. */
+  readonly gold?: number;
+  /** 받는 물건 이름(DB 아이템 이름) · 개수. */
+  readonly item?: string;
+  readonly count?: number;
+}
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {

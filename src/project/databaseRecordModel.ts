@@ -108,6 +108,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   return {
     id: record.id,
     name: record.name,
+    ...(cleanOptionalId(record.iconResourceId) ? { iconResourceId: cleanOptionalId(record.iconResourceId) } : {}),
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
@@ -793,6 +794,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     scope: isSkillScope(record.scope) ? record.scope : "enemy",
     power: clampInteger(record.power ?? 10, -9999, 9999),
     animationId: cleanOptionalId(record.animationId),
+    ...(cleanOptionalId(record.iconResourceId) ? { iconResourceId: cleanOptionalId(record.iconResourceId) } : {}),
     description: record.description ?? "",
     type: record.type ?? "normal",
     mpCost: normalizeMpCost(record.mpCost),
