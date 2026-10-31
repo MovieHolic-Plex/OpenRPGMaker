@@ -1429,6 +1429,8 @@ const ASH_FOES: { id: string; name: string; art: string; level: number; stats: R
 /** 무리 — 숲 어귀(밤 숲)의 들개·까마귀는 밤 겹, 재의 들판·마을 터의 도깨비·뱀·골렘은 잿빛 연기 겹. 배경 그림(숲·들판)은 맵 battleBackground 가 정한다. */
 const ASH_TROOPS: { id: string; name: string; members: string[]; night?: boolean }[] = [
   { id: "troop_fs2_ash_wisps", name: "잿불 도깨비 떼", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
+  // 마을 터 길목은 둘 — 들판 셋을 공격만으로 겨우 넘기면(엘레나가 쓰러진 채) 곧바로 다시 셋을 만나 꼼짝없이 졌다(2026-10-31 실측).
+  { id: "troop_fs2_ash_wisps_pair", name: "잿불 도깨비 둘", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
   { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"], night: true },
   { id: "troop_fs2_cinder_golem", name: "숯덩이 골렘", members: ["enemy_fs2_cinder_golem", "enemy_fs2_ash_wisp"] },
   { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog", "enemy_fs2_starved_dog"], night: true },
@@ -1557,10 +1559,11 @@ function dawnwell(project: Project, exec: Exec): void {
   foe(field!, "troop_fs2_cinder_golem", ASH_SPOTS.golem.x, ASH_SPOTS.golem.y, "lumber", 0);
   exec(project, "place_chest", { mapId: field!, x: ASH_SPOTS.chest.x, y: ASH_SPOTS.chest.y, contents: { itemId: "item_hi_potion", gold: 150 }, name: "타다 남은 짐 상자", id: "ev_fs2_ash_chest" });
   // 마을 터 — 서쪽 무너진 집들 사이 길목에 도깨비 한 무리.
-  foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", DAWN_SPOTS.wisps.x, DAWN_SPOTS.wisps.y, "float");
-  // 별빛 결정 — 마을 터 입구 곁. 웨이브 칩셋에는 버들항 받침 수정 조각이 없어 기본 크리스탈 칩으로 세운다.
+  foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps_pair", DAWN_SPOTS.wisps.x, DAWN_SPOTS.wisps.y, "float");
+  // 별빛 결정 — 마을 터 입구 곁. 들판 도깨비불(공격만이면 아슬아슬)을 넘긴 뒤 숨 고르는 자리라 파티를 회복한다 —
+  // 쓰러진 엘레나를 일으킬 길이 없던 채 마을 길목 도깨비불을 만나 지던 것(2026-10-31 실측). 웨이브 칩셋에는 버들항 받침 수정 조각이 없어 기본 크리스탈 칩으로 세운다.
   exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: DAWN_SPOTS.save.x, y: DAWN_SPOTS.save.y, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
-    prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+    prompt: "기록하시겠습니까?", sparkleRadius: 2, heal: true });
 }
 /** 버들항 구역 키트 가운데 칸 — 그을린 바닥 칠하기용. */
 function kitCenterTile(project: Project, tilesetId: string, kitId: string): number {
@@ -2679,7 +2682,7 @@ function iceLake(project: Project, exec: Exec): void {
   }
   // 별빛 결정 — 야영지 모닥불 곁(서리나루 앞 마지막 쉼).
   exec(project, "place_savepoint", { mapId: FS2_ICE_LAKE_ID, x: ICE_SPOTS.save.x, y: ICE_SPOTS.save.y, id: "ev_fs2_ice_lake_save", name: "별빛 결정", mode: "slot",
-    prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+    prompt: "기록하시겠습니까?", sparkleRadius: 2, heal: true });
   // 처음 들어서면 한 번.
   addEv(project, FS2_ICE_LAKE_ID, "ev_fs2_ice_lake_arrive", "얼음 호수", { x: 1, y: 0 }, [
     page("ev_fs2_ice_lake_arrive_idle", "대기", [], [], { priority: "below" }),
@@ -2805,7 +2808,7 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: ["troop_fs2_starved_dogs", "troop_fs2_ash_crows", "troop_fs2_fort_dogs", "troop_fs2_frost_wolves", "troop_fs2_frost_mixed"], args: { sightRange: 7, coneDegrees: 110, alertMs: 150, rush: true, rushSteps: 4, rushStepMs: 100, chaseStepMs: 160 } },
   // 잿불 도깨비(B5) — 트인 재 들판의 매복꾼(2026-10-30 사용자: 「10칸 넘게 밖에서 알아보고 3배 이상 빨리, 닿는 순간 전투」).
   // 사방을 보고(allRound) 바위·고목이 시선을 안 가린다(lineOfSight:false). 알아챔 멈춤 없이 35ms/칸으로 끝까지 덮친다(예전 부유 110~170ms/칸의 3~5배).
-  { troops: ["troop_fs2_ash_wisps"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
+  { troops: ["troop_fs2_ash_wisps", "troop_fs2_ash_wisps_pair"], args: { sightRange: 12, allRound: true, lineOfSight: false, alertMs: 0, rush: true, rushSteps: 30, rushStepMs: 35, chaseStepMs: 90, searchMs: 3000, giveUpRange: 22 } },
   { troops: ["troop_fs2_frost_bats"], args: { sightRange: 7, coneDegrees: 120, alertMs: 200, rush: true, rushSteps: 3, rushStepMs: 110, chaseStepMs: 170 } },
   // 요새 바깥 순찰 기사(B6) — 도개교 앞 눈 턱에서 멀리 보고 곧장 달려든다(사용자: 「더 빨리 알아보고 멀리서 덤비게」).
   { troops: [FS2_KNIGHT_TROOP_OUT], args: { sightRange: 12, allRound: true, alertMs: 100, rush: true, rushSteps: 16, rushStepMs: 70, chaseStepMs: 110, searchMs: 6000, giveUpRange: 22 } },
