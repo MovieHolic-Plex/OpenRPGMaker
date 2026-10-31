@@ -497,12 +497,13 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 
 /** 「대답의 등」 — 해 질 녘 기슭 등불. 첫 등에서 한 줄을 적어 띄운다(B9 밤 장면의 예고). */
 function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
-  // 해 질 녘 — 「해가 기운다」인데 0.4 보랏빛 막은 흰 눈 위에서 한낮으로 읽혔다(첫 플레이 검수 2026-10-31). 장밋빛 노을 막을 짙게, 등불은 켠다.
+  // 해 질 녘 — 「해가 기운다」인데 0.4 보랏빛 막은 흰 눈 위에서 한낮으로 읽혔다(첫 플레이 검수 2026-10-31; 조명 막이 카메라 줌 3 배로 부풀던 엔진 결함 #4131 도 겹쳤다).
+  // 장밋빛 노을 막을 짙게, 등불은 켜되 작게 — 반경 3 이면 등불 줄이 하얀 띠로 이어졌다.
   exec(project, "set_lighting_volume", {
     mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.56, color: "#4a2440",
     sources: [
-      ...L.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y - 2 }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true })),
-      { id: "bonfire", at: { x: L.bonfire.x, y: L.bonfire.y }, radius: 4, intensity: 0.9, color: "#ffb060", flicker: true },
+      ...L.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y - 2 }, radius: 2, intensity: 0.75, color: "#ffc070", flicker: true })),
+      { id: "bonfire", at: { x: L.bonfire.x, y: L.bonfire.y }, radius: 3.2, intensity: 0.9, color: "#ffb060", flicker: true },
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.3, color: "#ffd8a0" },
     ],
