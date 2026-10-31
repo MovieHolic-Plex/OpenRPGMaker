@@ -1020,19 +1020,19 @@ function displayFilterField(project: Project): HTMLElement {
   ]);
 }
 
-/** 필드 안내 표시(system.fieldGuides) — 목표 빛무리·화살표, 인물·조사 ▼, 출구 「→ 목적지」 글자. 화살표만 = 출구 화살표만 남긴다. */
+/** 필드 안내 표시(system.fieldGuides) — 목표 빛무리·화살표, 인물·조사 ▼. 옛 "arrows" 저장본은 끄기와 같아 끄기로 보인다. */
 function fieldGuidesField(project: Project): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-field-guides" } }) as HTMLSelectElement;
-  for (const [value, label] of [["on", "모두 켜기"], ["arrows", "출구 화살표만"], ["off", "끄기"]] as const) select.append(el("option", { text: label, attrs: { value } }));
-  select.value = project.system.fieldGuides ?? "on";
+  for (const [value, label] of [["on", "켜기"], ["off", "끄기"]] as const) select.append(el("option", { text: label, attrs: { value } }));
+  select.value = project.system.fieldGuides ? "off" : "on";
   select.addEventListener("change", () => {
     updateSystem((draft) => {
-      if (select.value === "off" || select.value === "arrows") draft.system.fieldGuides = select.value;
+      if (select.value === "off") draft.system.fieldGuides = "off";
       else delete draft.system.fieldGuides;
     }, "system:field-guides");
   });
   return rm2k3Fieldset("필드 안내 표시", [
-    el("p", { class: "db-system-resolution-help", text: "갈 곳을 알려 주는 자동 표시입니다. 모두 켜기 = 목표 빛과 화살표, 인물·조사 대상 위 ▼, 출구 앞 「→ 목적지」. 출구 화살표만 = 출구 앞에 맵 밖을 가리키는 화살표만 둡니다. 끄기 = 아무것도 그리지 않습니다." }),
+    el("p", { class: "db-system-resolution-help", text: "갈 곳을 알려 주는 자동 표시입니다. 켜기 = 목표 빛과 화살표, 인물·조사 대상 위 ▼. 끄기 = 아무것도 그리지 않습니다." }),
     field("안내", select),
   ]);
 }
