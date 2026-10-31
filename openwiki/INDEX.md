@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **190쪽 / 7889KB / 약 2,318,016 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **190쪽 / 7890KB / 약 2,318,365 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -629,7 +629,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L61` 화면별 여백·끌기 (여기가 어긋나기 쉽다)
 - `L77` 실측 (이 저장소 Linux, xvfb + xfwm4, Electron 44.7.0)
 
-### `openwiki/dungeon-themes.md` — 22KB · 127줄 · ~6,601 토큰
+### `openwiki/dungeon-themes.md` — 23KB · 133줄 · ~6,950 토큰
 
 - `L6` 무엇이 바뀌었나
 - `L12` 종류 (`DUNGEON_TYPES`, `src/editor/dungeonKit/types.ts`)
@@ -638,10 +638,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L47` 게임 참고 (`inspiration`, `DUNGEON_REFERENCES` in `grammar.ts`)
 - `L53` 주제 장치 (`gimmick`, `src/editor/tools/dungeonGimmicks.ts`)
 - `L69` gap 조각 배선 (#3283 꼬리 29568~30847)
-- `L85` 주제 그림 꼬리 (30848~, `bake_theme.py`)
-- `L100` 조수 실경로 수리 (dt r2 VQA, 2026-10-23)
-- `L110` 주제 적 (`dungeonThemeTroops.ts`)
-- `L122` 시험
+- `L91` 주제 그림 꼬리 (30848~, `bake_theme.py`)
+- `L106` 조수 실경로 수리 (dt r2 VQA, 2026-10-23)
+- `L116` 주제 적 (`dungeonThemeTroops.ts`)
+- `L128` 시험
 
 ### `openwiki/editor-ai-panel.md` — 718KB · 4650줄 · ~211,017 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
