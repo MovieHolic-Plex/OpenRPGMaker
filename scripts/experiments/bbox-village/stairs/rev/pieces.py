@@ -301,17 +301,19 @@ LIGHT = {
     "cave-steps": dict(nos=R("#b6a28c", "#b69e89"), under=R("#a7917d")[0], body=R("#a7917d", "#988472", "#8d7766"), speck=R("#8d7766")[0], crease=R("#6c5c54", "#7a6a5b")),
     # VQA r3: the white/ice treads in a light frame read as a panel/blind and clashed with the road and the slate forward stairs.
     # Now the forward snow stairs' stone: blue-grey stone tread tops, snow caps only on the nosings, road tones at the seams.
-    "snow-steps": dict(nos=R("#ffffff", "#ecf3fa"), under=R("#d6e4f1")[0], body=R("#93a3bb", "#93a3bb", "#71819a"), speck=R("#b9c6d8")[0], crease=R("#566479", "#71819a"),
+    # VQA r4: slate tops with heavy speckle read as gravel (h1) and 8 dark/white stripes as a vent (h4). Now snow-white tops like the
+    # forward snow stairs, stone only where it peeks through the nosing caps, soft blue-grey creases, light grain only.
+    "snow-steps": dict(nos=R("#ffffff", "#ecf3fa"), under=R("#ecf3fa")[0], body=R("#ecf3fa", "#e6f0fa", "#d6e4f1"), speck=R("#d6e4f1")[0], crease=R("#b7cde3", "#93aecb"),
                        foot=R("#c0b0aa", "#b8c0c8"), crest=R("#dccfca", "#c0b0aa"), cap_break=R("#b9c6d8")[0]),
     "peat-steps": dict(nos=R("#b5a85b", "#a69a54"), under=R("#a69a54")[0], body=R("#978c4c", "#887e44", "#837b40"), speck=R("#887e44")[0], crease=R("#5f5a2e", "#655f31"), end=R("#6e5a3c")[0]),
 }
 # VQA r3: the deep h1 treads (15 px) were flat bands that read as a mat/sill stripe. Deep treads (>= 10 px) get the material's
 # grain: sandstone strata streaks, peat path grit, cave rock speckle, stone grain on snow steps. (Only h1 treads are that deep.)
 GRAIN = {"sand-steps": ("streak", R("#dcaf6c", "#f5d090", "#cfa566")), "peat-steps": ("grit", R("#887e44", "#a69a54", "#77703a")),
-         "cave-steps": ("speck", R("#8d7766", "#a7917d", "#7a6a5b")), "snow-steps": ("speck", R("#71819a", "#b9c6d8", "#566479"))}
+         "cave-steps": ("speck", R("#8d7766", "#a7917d", "#7a6a5b")), "snow-steps": ("grit", R("#d6e4f1", "#ffffff", "#d6e4f1"))}   # light grain only
 
 LIGHT_FLANK = {"sand-steps": R("#dcaf6c", "#e8c282", "#e8c282", "#f5d090"), "cave-steps": R("#7a6a5b", "#8d7766", "#8d7766", "#a7917d"),
-               "snow-steps": R("#71819a", "#93a3bb", "#93a3bb", "#93a3bb"), "peat-steps": R("#6b6534", "#887e44", "#887e44", "#a69a54")}
+               "snow-steps": R("#93a3bb", "#b9c6d8", "#b9c6d8", "#d6e4f1"), "peat-steps": R("#6b6534", "#887e44", "#887e44", "#a69a54")}
 
 def grain(px, kind, G, x0, x1, y0, y1, j, f):
     d = 1 if f > 0.5 else 0
@@ -353,6 +355,7 @@ def stairs_light(style, w, rise):
     L = LIGHT[style]; W = w * 16
     im = Image.new("RGB", (W, 32)); px = im.load()
     n = 2 * rise
+    if style == "snow-steps": n = {1: 2, 2: 4, 3: 5, 4: 6}[rise]          # VQA r4: h4 at 8 treads read as a vent -> fewer, broader treads
     for (y0, y1, j) in bands(n):
         tread_light(px, L, 0, W, y0, y1, j, j / max(1, n - 1))
         if y1 - y0 >= 10: grain(px, *GRAIN[style], 0, W, y0, y1, j, j / max(1, n - 1))
@@ -360,6 +363,10 @@ def stairs_light(style, w, rise):
     for X in range(W):
         px[X, 31] = C[0] if h(X, 31, 127) < 200 else C[1]                                              # crest: the terrace edge, lit
         px[X, 0] = Fo[0] if h(X, 0, 31) < 200 else Fo[1]                                               # foot: crease on the low road
+    if rise == 1 and style in ("peat-steps", "cave-steps"):
+        # VQA r4: the near tread's lit flank rims and lit crest framed it as a mat. Edge to edge: no flank, near edge darker.
+        for X in range(W): px[X, 31] = L["crease"][1] if h(X, 31, 139) < 150 else L["body"][2]
+        return im
     flank(px, W, dict(flank=LIGHT_FLANK[style]), full=rise == 4)
     return im
 
@@ -389,6 +396,15 @@ def main(out=HERE):
                 sheet.paste(i.resize((i.width * K, i.height * K), Image.NEAREST), (x, gap + row * (32 * K + gap))); x += i.width * K + gap
         sheet.save(f"{out}/sheet-{style}.png")
     json.dump(allp, open(f"{out}/pieces.json", "w"))
+    with open(f"{out}/items-all.jsonl", "w") as fh:                       # object-gate manifest (scripts/content/bake-relief-cut-pieces.py)
+        for style in STYLES:
+            for kind in ("ramp", "stairs"):
+                for rise in (1, 2, 3, 4):
+                    for w in (2, 3):
+                        nm = f"{kind}-h{rise}-w{w}"
+                        fh.write(json.dumps({"png": f"{style}/{nm}.png", "kind": "terrain", "styleKind": "ground",
+                            "name": f"{kind} rise {rise} w{w} reverse cut through a north-facing {style.split('-')[0]} cliff, seen from above descending away from the viewer from the terrace lip",
+                            "label": f"relief-cuts-rev/{style}/{nm}"}) + "\n")
     print(sum(len(v) for v in allp.values()), "pieces ->", out)
 
 if __name__ == "__main__":
