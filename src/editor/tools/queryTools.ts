@@ -428,7 +428,36 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset"];
+const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset" | "battler")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset", "battler"];
+
+/**
+ * 아군 측면 전투 도트 시트(battleCharset) 검색 — 공용 시트와 스토어로 넣은 시트(무기별 전사 팩 등)를 함께 본다.
+ * 예전엔 이 종류가 list_resources 에 없어서, 스토어로 「전사 - 전투 도끼」 시트를 넣어 두고도 조수가 charset 만 뒤지다
+ * 「전투용 도끼 그림 없음」이라 보고했다(2026-10-31 스토어 검증). 낱말마다 이름·id·시트 태그 중 하나에 맞아야 한다.
+ */
+function searchPartyBattlers(project: Project, query: string): Pick<ResourceSearchResult, "id" | "label" | "description">[] {
+  const needle = query.trim().toLocaleLowerCase();
+  const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
+  const terms = needle.split(/\s+/u).filter(Boolean);
+  const rows = listDatabaseResourceOptions("battleCharset", project).map((option) => {
+    const meta = project.assets.uploaded?.[option.id]?.meta as unknown as { oprnBattler?: { role?: string; tags?: readonly string[]; nameEn?: string } } | undefined;
+    const battler = meta?.oprnBattler;
+    const store = option.id.startsWith("store_");
+    const words = [option.id, option.name, ...(option.searchTerms ?? []), battler?.role ?? "", battler?.nameEn ?? "", ...(battler?.tags ?? [])];
+    return {
+      id: option.id,
+      label: option.name,
+      description: `${store ? "스토어로 넣은 " : ""}아군 측면 전투 시트 — upsert_actor 의 battleCharacterResourceId 에 이 id 를 그대로 쓴다.${battler?.tags?.length ? ` 태그: ${battler.tags.join(", ")}` : ""}`,
+      store,
+      haystack: words.join(" ").toLocaleLowerCase(),
+    };
+  });
+  return rows
+    .filter((row) => browse || terms.every((term) => row.haystack.includes(term)))
+    // 사용자가 받아 둔 스토어 시트가 먼저 보이게 한다.
+    .sort((a, b) => Number(b.store) - Number(a.store))
+    .map(({ id, label, description }) => ({ id, label, description }));
+}
 
 /**
  * 얼굴 검색. 번들 얼굴은 공용 대응표의 사람 말 라벨("금발 여성")과 **짝 걷기 그림**을 함께 준다.
@@ -564,7 +593,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book), battler(아군 측면 전투 도트 시트 — 스토어로 넣은 무기별 전사·직업 시트 포함, 결과 id 를 upsert_actor 의 battleCharacterResourceId 로. 「도끼 든 전사」처럼 전투 모습을 바꿀 때 먼저 찾는다) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
@@ -603,6 +632,8 @@ const listResources: ToolDefinition = {
     if (kind === "faceset") {
       all = searchFacesets(project, args.query);
       if (args.portraitMode !== undefined) all = all.filter((face) => facePresentationForResource(face.id) === args.portraitMode);
+    } else if (kind === "battler") {
+      all = searchPartyBattlers(project, args.query);
     } else if (kind === "picture") {
       // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
