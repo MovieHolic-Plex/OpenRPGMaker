@@ -4,12 +4,12 @@
   python3 scripts/experiments/bbox-dungeon/run4.py cave <sol|terra> v2                              baseline for the new cave brief (v2 builder)
 Out: $BBOX_RUNS4/<arm><rep>/<brief>/ {prompt.txt, call-N.json, layout-N.json, check-N.json, layout.json, map.png, RUN.json}
 Model: gpt-6.1-sol / gpt-6.1-terra high via local opencodex, one call + at most 2 repairs."""
-import base64, json, os, re, subprocess, sys, time, urllib.request
+import base64, shutil, json, os, re, subprocess, sys, time, urllib.request
 brief, arm, rep = sys.argv[1], sys.argv[2], sys.argv[3]
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BBOX_RUNS4", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxdungeon4")
 G = f"{RUNS}/{arm}{rep}/{brief}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "argon": "gemini-4-argon"}[arm]
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "argon": "gemini-4-argon", "opus": "teamclaude/claude-opus-5-5"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
 HDR = {"content-type": "application/json"}
 if arm == "argon":   # the suite's argon route: proxy8318 (key read from the suite endpoints file, never printed)
@@ -95,7 +95,37 @@ content = [{"type": "text", "text": PROMPT}]
 if rep != "v2": content.append({"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(open(f"{RUNS}/palette.png", "rb").read()).decode()}})
 msgs = [{"role": "user", "content": content}]
 
+def call_omp(n):
+    """opus arm: the teamclaude route via omp (Opus 5.5, thinking medium). The turns so far are flattened into one prompt; the palette is attached."""
+    d = f"{G}/omp-{n}"; os.makedirs(d, exist_ok=True)
+    parts = [msgs[0]["content"][0]["text"]]
+    for m in msgs[1:]:
+        parts.append(("YOUR PREVIOUS ANSWER:\n" if m["role"] == "assistant" else "USER:\n") + (m["content"] if isinstance(m["content"], str) else m["content"][0]["text"]))
+    open(f"{d}/prompt.md", "w").write("\n\n".join(parts))
+    imgs = []
+    if rep != "v2": shutil.copy(f"{RUNS}/palette.png", f"{d}/palette.png"); imgs = ["@palette.png"]
+    t0 = time.time()
+    for attempt in range(12):
+        p = subprocess.run(["timeout", "1500", "omp", "-p", "--mode", "json", "--model", MODEL, "--thinking", "medium", "--no-session", "--no-extensions", "--no-skills", "--no-rules",
+                            "--no-tools", "--cwd", d, "@prompt.md", *imgs, "Answer the design request in prompt.md" + (" (palette.png attached)." if imgs else ".")],
+                           cwd=d, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+        text, tok = "", 0
+        for line in p.stdout.splitlines():
+            try: ev = json.loads(line)
+            except Exception: continue
+            if ev.get("type") == "agent_end":
+                for m in ev.get("messages", []):
+                    if m.get("role") != "assistant": continue
+                    tok += (m.get("usage") or {}).get("totalTokens", 0)
+                    text = "".join(c.get("text", "") for c in m.get("content", []) if c.get("type") == "text") or text
+        if text.strip(): break
+        print(f"transport retry {attempt + 1}/12: {(p.stderr or p.stdout)[-200:]}", flush=True); time.sleep(60)
+    secs = round(time.time() - t0, 1)
+    json.dump({"secs": secs, "usage": {"total_tokens": tok}, "model": MODEL + "@medium", "text": text}, open(f"{G}/call-{n}.json", "w"), ensure_ascii=False, indent=1)
+    return text, secs, {"total_tokens": tok}
+
 def call(n):
+    if arm == "opus": return call_omp(n)
     body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high"}).encode()
     t0 = time.time()
     tries = 12

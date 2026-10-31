@@ -24,6 +24,7 @@ for g in sorted(glob.glob(f"{RUNS}/*/*/map.png")):
     opp = [(a["id"], a["png"]) for a in anchors]
     if "v2" not in armrep:
         pp = f"{PREV}/{armrep}/{brief}/map.png"
+        if armrep.startswith("opus"): pp = f"{PREV}/sol{armrep[4:]}/{brief}/map.png"   # opus stands in for sol in round 4 → compare with the previous round's sol run
         if not os.path.exists(pp) and armrep.endswith("2"): pp = f"{PREV}/{armrep[:-1]}1/{brief}/map.png"   # argon has one previous-round baseline run
         opp += [(f"{PREVTAG}:{armrep}", pp)]
         opp += [(f"v2:{v}", v2png(v, brief)) for v in ("solv2", "terrav2")]
