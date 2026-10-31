@@ -43,6 +43,39 @@ export const V2_CORE_PROMPT = [
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
 /**
+ * 장소 짓기 지식 카드는 지시문에 늘 싣지 않고 필요할 때 준다(2026-11-01 비용 분석 — openwiki/assistant-v2.md 「토큰 비용 재기」).
+ * 실내·마을·던전·거리·사람·그리기 카드와 실내 칩셋 목록이 지시문의 약 1.9만 토큰(앞부분의 1/4)이었는데, 지은 맵에 로직만 넣는 요청은
+ * 한 번도 쓰지 않으면서 호출마다 다시 읽었다. 이제 지시문에는 색인 한 줄만 두고, read_specs 나 그 종류의 첫 짓기 호출이 카드를 기록(캐시 뒤쪽)으로 준다.
+ * 끄기: OPRN_V2_LEAN_PROMPT=0 (A/B 측정용).
+ */
+export function leanPromptOn(): boolean {
+  const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
+  return env?.OPRN_V2_LEAN_PROMPT !== "0";
+}
+export const PLACE_SPEC_KINDS = ["interior", "village", "dungeon", "street", "people", "draw_object"] as const;
+export type PlaceSpecKind = (typeof PLACE_SPEC_KINDS)[number];
+export const PLACE_SPEC_INDEX = "[Place specs — read on demand] The specs for building places are not in this prompt. Before your first make_place / edit_place / review_layout / add_people / draw_object of a kind in this conversation, call read_specs{names:[…]} for the kinds you will build — interior (inns, shops, studies, jails, houses inside; with the interior chipset catalog), village, dungeon (also caves), street (modern Japan/Korea streets and houses), people (NPCs), draw_object. Read them together with your todo init. A build verb whose spec you have not read returns the spec instead of building (not a failure) — then call it again following the spec. Changing only events, logic, dialogue or the database on existing maps needs none of them.";
+/** 장소 종류(make_place type) → 지식 카드 종류. */
+export function placeSpecKindOf(type: string | undefined): PlaceSpecKind | undefined {
+  if (type === "interior") return "interior";
+  if (type === "village") return "village";
+  if (type === "dungeon" || type === "cave") return "dungeon";
+  if (type === "street" || type === "house") return "street";
+  return undefined;
+}
+/** 한 종류의 카드 글(실내는 칩셋 목록까지). */
+export function placeSpecCards(kind: PlaceSpecKind, project?: Project, currentMapId?: string, task = ""): string[] {
+  switch (kind) {
+    case "interior": return [INTERIOR_CARD, interiorCatalogCard(project, currentMapId, task)];
+    case "village": return [VILLAGE_CARD];
+    case "dungeon": return [DUNGEON_CARD];
+    case "street": return [JP_CITY_CARD, MODERN_KR_CARD];
+    case "people": return [PEOPLE_CARD];
+    case "draw_object": return [DRAW_OBJECT_CARD];
+  }
+}
+
+/**
  * 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵.
  * 2026-10-30 실조수 e2e: 「map_blank_start 「버들 마을」 beodeul_city 20×15」처럼 칩셋 id 가 이름표 없이 맵 id 옆에 있어
  * 7번 중 5번 set_game_audio mapIds 에 칩셋 id 를 넣었다. 맵 id 는 `mapId=` 로, 칩셋은 괄호 안 `칩셋 …` 으로 이름을 붙인다.
@@ -74,12 +107,13 @@ export function interiorCatalogCard(project?: Project, currentMapId?: string, ta
   catalogCard ??= chipsetCatalog({ id: HAND_INTERIOR_TILESET_ID } as never, task) ?? `[Interior catalog — chipset ${HAND_INTERIOR_TILESET_ID}] (no spec)`;
   return catalogCard;
 }
-export function conditionalCards(project: Project, currentMapId?: string, task = ""): string[] {
+export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false): string[] {
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
-  const interior = INTERIOR_WORDS.test(task) || tileset?.id === HAND_INTERIOR_TILESET_ID;
+  // 가벼운 지시문이면 실내 칩셋 목록은 interior 카드와 함께 필요할 때 준다(placeSpecCards).
+  const interior = !lean && (INTERIOR_WORDS.test(task) || tileset?.id === HAND_INTERIOR_TILESET_ID);
   return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [gameCard(), ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
@@ -88,5 +122,7 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   const whole = wantsWholeGame(task ?? "");
   // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
   const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
-  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...V2_CARDS, ...conditionalCards(project, currentMapId, task), projectBrief(project, currentMapId)];
+  const lean = leanPromptOn();
+  const cards = lean ? [EVENT_CARD, PLACE_SPEC_INDEX] : V2_CARDS;
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean), projectBrief(project, currentMapId)];
 }

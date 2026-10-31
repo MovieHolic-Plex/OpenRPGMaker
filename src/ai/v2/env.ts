@@ -65,6 +65,8 @@ export interface PiAssistantV2Env {
    * load_tools 는 매개변수 모양을 결과 글로 주고, 모델은 call_tool{name, args} 로 부른다.
    */
   readonly lazyToolsVia?: "call_tool";
+  /** 모델 대화가 비워질 때마다(새 CLI 대화·기록 비우기) 하나씩 오르는 수. 기록으로 준 지식 카드(read_specs)를 다시 줘야 하는지 본다. 없으면 0. */
+  readonly contextEpoch?: () => number;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }
