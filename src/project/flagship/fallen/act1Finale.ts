@@ -592,9 +592,23 @@ function crashSite(project: Project, forestId: string): void {
   ];
   // 병사 넷 — 발렌 뒤를 따라 올라와 길을 막는다(전투의 병사 여덟 중 앞줄). 전투에 이기면 사라진다.
   const soldierWalks: Command[] = [];
-  const soldierSpots: Cell[] = [{ x: stop.x - 1, y: stop.y + 1 }, { x: stop.x, y: stop.y + 2 }, { x: stop.x - 1, y: stop.y + 3 }, { x: stop.x, y: stop.y + 4 }];
+  // 지그재그 한 줄(길 위 세로 줄)은 패배 뒤 병사가 「한 줄로 정렬」해 선 것으로 읽혔다(fs-act1-vqa) — 발렌을 꼭짓점으로 한 쐐기 대열.
+  // 앞줄 둘은 발렌 양 어깨 한 칸 뒤, 뒷줄 둘은 한 칸 더 벌린다. 막힌 칸이면 같은 줄 안쪽으로 당긴다.
+  const free = (c: Cell) => isPassable(project, forest, c.x, c.y) && !forest.events.some((e) => e.x === c.x && e.y === c.y);
+  const wedge = (dx: number, dy: number): Cell => {
+    for (const k of [0, -Math.sign(dx)]) { const c = { x: stop.x + dx + k, y: stop.y + dy }; if (free(c)) return c; }
+    return { x: stop.x + dx, y: stop.y + dy };
+  };
+  const soldierSpots: Cell[] = [wedge(-1, 1), wedge(1, 1), wedge(-2, 2), wedge(2, 2)];
+  const usedFrom = new Set<string>();
   soldierSpots.forEach((spot, i) => {
-    const from: Cell = { x: spot.x, y: Math.min(forest.height - 1, spot.y + 6) };
+    // 숲길 아래에서 올라온다 — 출발 칸은 같은 열 여섯 칸 아래의 걸을 수 있는 칸(없으면 길 쪽으로 옮긴다). 넷이 한 칸에 겹쳐 서지 않게.
+    let from: Cell = { x: spot.x, y: Math.min(forest.height - 1, spot.y + 6) };
+    search: for (const dy of [6, 5, 7, 4]) for (const dx of [0, -1, 1, -2, 2, -3, 3]) {
+      const c = { x: spot.x + dx, y: Math.min(forest.height - 1, spot.y + dy) };
+      if (free(c) && !usedFrom.has(`${c.x},${c.y}`)) { from = c; break search; }
+    }
+    usedFrom.add(`${from.x},${from.y}`);
     let dirs: Dir[];
     try { dirs = pathTo(project, forest, from, spot); } catch { return; }
     const sid = `ev_${FS_PREFIX}_valen_soldier_${i + 1}`;

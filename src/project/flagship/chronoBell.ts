@@ -42,6 +42,7 @@ import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
+import { polishFallenCrashClearing } from "./fallen/act1MapPolish";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -2475,6 +2476,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenAct1Finale(project, execTool, ids);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
+  // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
+  polishFallenCrashClearing(project, ids.forest);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
