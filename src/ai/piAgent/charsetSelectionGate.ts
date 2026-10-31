@@ -51,9 +51,16 @@ export class PiCharsetSelectionGate {
   payload(value: unknown): void {
     this.delivered.clear();
     const results = new Set<string>(), images = new Set<string>();
+    // A tool message can carry more than the result envelope: openai-completions joins every text part with "\n", and the v2
+    // context trim appends its status card to the last tool result. Parsing the whole string then failed and the model's
+    // just-viewed chips were refused (2026-10-31 asst-parity terra konbini: list_npc_graphics → add_street_walkers reverted).
+    // JSON.stringify never emits a raw newline, so each "{" line is tried on its own.
     const text = (value: unknown): void => {
       if (typeof value !== 'string') return;
-      try { const row = JSON.parse(value); if (row.ok === true && !row.dataTruncated) results.add(JSON.stringify(row.data)); } catch { /* ordinary text */ }
+      for (const chunk of [value, ...(value.includes('\n') ? value.split('\n') : [])]) {
+        if (!chunk.trimStart().startsWith('{')) continue;
+        try { const row = JSON.parse(chunk); if (row.ok === true && !row.dataTruncated) { results.add(JSON.stringify(row.data)); return; } } catch { /* ordinary text */ }
+      }
     };
     const visit = (value: unknown): void => {
       if (Array.isArray(value)) { value.forEach(visit); return; }
