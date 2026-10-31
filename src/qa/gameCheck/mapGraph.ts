@@ -175,6 +175,35 @@ export function checkStoryLightingReset(project: Project, graph: MapGraph): Find
   return findings;
 }
 
+/** 이보다 큰 광원 반경(칸)은 픽셀로 잘못 쓴 값으로 본다 — 해원 밤 장면에서 손등불 72·우물 40 이 화면 전체를 밝혀 밤이 보이지 않았다. */
+const HUGE_LIGHT_RADIUS_TILES = 24;
+
+/** 광원 반경은 칸 단위다. 픽셀처럼 큰 값이면 어둠 막 전체가 뚫려 setLighting·기본 조명의 밤이 안 보인다. */
+export function checkHugeLightRadius(project: Project): Finding[] {
+  const findings: Finding[] = [];
+  const flag = (radius: unknown, id: unknown, where: CommandWhere) => {
+    const r = Number(radius);
+    if (!(r > HUGE_LIGHT_RADIUS_TILES)) return;
+    findings.push({
+      severity: "warning",
+      code: "light-radius-huge",
+      message: `광원 ${String(id ?? "?")} 반경이 ${r}칸입니다 — 반경은 픽셀이 아니라 칸 단위라 화면 전체가 밝아져 어둠(밤·암전)이 보이지 않습니다. 손등불은 3~4, 방 하나는 6~8칸으로 줄이세요.`,
+      where,
+    });
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const source of map.defaultLighting?.sources ?? []) flag(source.radius, source.id, { mapId: map.id, mapName: map.name });
+  }
+  for (const page of allPages(project)) {
+    visitPageCommands(page, ({ command, where }) => {
+      if (command.kind !== "addLight") return;
+      const source = command.source as { radius?: unknown; id?: unknown } | undefined;
+      flag(source?.radius, source?.id, where);
+    });
+  }
+  return findings;
+}
+
 export function summarizeMaps(project: Project, graph: MapGraph): MapSummary[] {
   return Object.values(project.maps).map((map) => ({
     id: map.id, name: map.name, width: map.width, height: map.height, events: map.events?.length ?? 0,
