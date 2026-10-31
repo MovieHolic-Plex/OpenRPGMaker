@@ -483,6 +483,11 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   r10 Flash 는 `needAny` 오타로 조건이 빠져 단서 전에도 번호를 받았고 「아직 아무 단서도 없다」가 안 나왔으며 틀린 횟수가 하나 밀렸다.
   조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)를 자리별로 겹쳐 답이 되면 «답이 단서에 없다» 경고를 내지 않는다(맞는 단서를 고쳐 쓰게 만들었다).
   `patch_event_page` 에서 `set` 없이 맨 위에 둔 페이지 칸(commands·trigger…)은 set 으로 감싸고, todo done/block 의 `item`·`id` 는 `task` 로 고친다.
+- **r11 에서 본 새 실패 모양**(r12 수리): MV 코드 `commands`(101/401…)는 스키마가 느슨한 자리(patch_event_page 의 `set`, upsert_event 의 `pages`)까지 어디서든 우리 명령으로 바꾼다.
+  기존 이벤트에 **페이지 수가 같은** pages 를 통째로 다시 보낸 upsert_event 는 페이지마다 바뀐 `commands` 만 적용하고 나머지 칸(그림·조건·트리거)은 둔다(`assistantRewriteGuard`) —
+  Flash 는 단서 대사 하나를 고치려고 MV 모양 페이지를 세 번 보냈고 세 번 다 거절돼(한국어 문구) 자물쇠가 끝내 없었다. 페이지 수가 다르면 영어로 거절한다.
+  MV 명령 이름(`controlSelfSwitch`·`controlSwitches`·`controlVariables`·`showChoices`)은 `eventCompile` 별칭으로, todo 항목의 `machineCheck` 는 `check` 로, 사슬 `name` 이 없으면 마지막 고리 이름으로 채운다.
+- **할 일은 기계 확인 있는 항목부터 올린다**(`todoStore.promote/next`): DeepSeek 이 스스로 적은 확인 없는 「서재 확인」「물건을 보이게 배치」가 맨 앞이라 10분 내내 가구만 찍고(82번 호출) 단서·자물쇠를 하나도 못 지었다. 확인 없는 항목은 확인 있는 항목이 다 끝난 뒤에 올라온다.
 - **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
