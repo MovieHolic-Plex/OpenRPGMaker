@@ -661,7 +661,8 @@ const SW_MIRE = "sw_fs2_mire_well";
  * 서쪽 빵집(미레) 길과 남쪽 여관(마르타) 길은 비워 둔다 — 순찰을 피하는 길이 늘 하나는 있게(VQA 2차: 넷이 모든 길목을 막았다).
  */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
-  { at: { x: 44, y: 21 }, axis: "horizontal", length: 4 },
+  // 북쪽 성벽 밑을 돈다 — 도착 칸·골목 틈(49,24)에서 7칸 밖이라, 나오자마자(3걸음 안) 잡히지 않고 광장을 건널 때 시야를 재게 된다.
+  { at: { x: 43, y: 17 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
 ];
 /** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
