@@ -64,6 +64,28 @@ describe("scriptFlow", () => {
   });
 });
 
+describe("scriptFlow ternary wording", () => {
+  it("reads one a ? b : c as 「(a 이면 b, 아니면 c)」 and leaves strings, objects and ?? alone", () => {
+    const src = [
+      'const pick = game.getVar("var_rep");',
+      "const count = pick === 0 ? 1 : 3;",
+      "let bonus = 0;",
+      "bonus = pick >= 10 ? 5 : 0;",
+      "const total = 2 + (pick > 5 ? 1 : 0);",
+      'const msg = pick > 5 ? "a: b" : "c?";',
+      "const o = { a: 1 };",
+      'const n = game.getVar("var_rep") ?? 0;',
+    ].join("\n");
+    const lines = steps(scriptFlow(src, project()));
+    expect(lines).toContain("count = (변수 「평판」 = 0 이면 1, 아니면 3)");
+    expect(lines).toContain("bonus = (변수 「평판」 ≥ 10 이면 5, 아니면 0)");
+    expect(lines).toContain("total = 2 + (변수 「평판」 > 5 이면 1, 아니면 0)");
+    expect(lines).toContain('msg = (변수 「평판」 > 5 이면 "a: b", 아니면 "c?")');
+    expect(lines).toContain("o = { a: 1 }");
+    expect(lines).toContain("n = 변수 「평판」 ?? 0");
+  });
+});
+
 describe("unwrapScriptForEditor", () => {
   it("round-trips a converted event page and refuses code with a reason and line", () => {
     const p = project();
