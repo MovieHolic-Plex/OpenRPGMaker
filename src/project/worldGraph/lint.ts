@@ -15,6 +15,7 @@ import type {
   WorldGraphSide,
 } from "./types";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { forEachProjectScript, scriptCalls, scriptHasDynamic } from "@/project/script/effects";
 
 interface BoundaryProfile {
   readonly side: WorldGraphSide;
@@ -60,6 +61,18 @@ function checkTransferEdge(project: Project, edge: WorldGraph["edges"][number], 
 
   const transfers = transferCommandsFromMap(fromMap).filter((command) => command.mapId === toMap.id);
   if (transfers.length === 0) {
+    // 스크립트의 game.transfer 도 이 간선이다. 착지 좌표는 정적으로 모르므로 좌표 검사는 건너뛴다.
+    const scripted = scriptTransfersFromMap(project, fromMap.id);
+    if (scripted.targets.has(toMap.id)) return;
+    if (scripted.dynamic) {
+      issues.push({
+        severity: "info",
+        code: "world-transfer-missing",
+        mapId: fromMap.id,
+        message: `월드 그래프 transfer edge에 대응하는 transfer 이벤트가 보이지 않지만, 이 맵의 스크립트가 계산된 맵 id 로 이동합니다: ${fromMap.id} -> ${toMap.id}`,
+      });
+      return;
+    }
     const entry = isPointRef(edge.to.entry) ? edge.to.entry : undefined;
     if (entry) validateTransferDestination(project, toMap, entry.x, entry.y, "world-transfer-entry", issues);
     issues.push({
@@ -253,6 +266,18 @@ function oppositeSide(side: WorldGraphSide): WorldGraphSide {
     case "east": return "west";
     case "west": return "east";
   }
+}
+
+/** Maps the scripts on `mapId`'s events transfer to, and whether any of them uses a computed map id. */
+function scriptTransfersFromMap(project: Project, mapId: string): { readonly targets: ReadonlySet<string>; readonly dynamic: boolean } {
+  const targets = new Set<string>();
+  let dynamic = false;
+  forEachProjectScript(project, (command, owner) => {
+    if (owner.mapId !== mapId) return;
+    for (const id of scriptCalls(command, "map", project)) targets.add(id);
+    if (scriptHasDynamic(command, "map", { access: "call", library: project.scriptLibrary })) dynamic = true;
+  });
+  return { targets, dynamic };
 }
 
 function transferCommandsFromMap(map: GameMap): Extract<Command, { kind: "transfer" }>[] {

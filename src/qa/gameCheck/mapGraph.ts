@@ -2,6 +2,7 @@
 // 못 가는 맵, 연결도 이벤트도 없는 빈 껍데기 맵, 없는 맵·맵 밖·통행 불가 칸으로 가는 문을 찾는다.
 
 import { isPassableLanding, inBounds } from "@/project/collision";
+import { isScriptCommand, projectScriptUsage, scriptCalls, SCRIPT_DYNAMIC_NOTE } from "@/project/script/effects";
 import type { Project } from "@/project/types";
 import { allPages, visitPageCommands } from "./walk";
 import type { CommandWhere, Finding, MapSummary } from "./types";
@@ -12,19 +13,26 @@ export interface MapEdge {
   readonly x: number;
   readonly y: number;
   readonly where: CommandWhere;
-  readonly via: "transfer" | "connection";
+  /** `script` = game.transfer("맵", …) in a script. Its landing x/y are not known statically (NaN). */
+  readonly via: "transfer" | "connection" | "script";
 }
 
 export interface MapGraph {
   readonly edges: readonly MapEdge[];
   readonly reachable: ReadonlySet<string>;
   readonly inbound: ReadonlyMap<string, number>;
+  /** Some script transfers to a computed map id — reachability may be understated. */
+  readonly dynamicScriptTransfers: boolean;
 }
 
 export function buildMapGraph(project: Project): MapGraph {
   const edges: MapEdge[] = [];
   for (const page of allPages(project)) {
     visitPageCommands(page, ({ command, where }) => {
+      if (isScriptCommand(command)) {
+        for (const to of scriptCalls(command, "map", project)) edges.push({ from: page.map?.id ?? null, to, x: Number.NaN, y: Number.NaN, where, via: "script" });
+        return;
+      }
       if (command.kind !== "transfer" || typeof command.mapId !== "string") return;
       edges.push({ from: page.map?.id ?? null, to: command.mapId, x: Number(command.x), y: Number(command.y), where, via: "transfer" });
     });
@@ -49,7 +57,7 @@ export function buildMapGraph(project: Project): MapGraph {
   }
   const inbound = new Map<string, number>();
   for (const edge of edges) if (edge.from !== edge.to) inbound.set(edge.to, (inbound.get(edge.to) ?? 0) + 1);
-  return { edges, reachable, inbound };
+  return { edges, reachable, inbound, dynamicScriptTransfers: projectScriptUsage(project).dynamic("map", "call") };
 }
 
 export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
@@ -61,6 +69,10 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
     findings.push({ severity: "blocker", code: "start-position-blocked", message: `시작 위치 (${project.startPos.x},${project.startPos.y}) 가 맵 밖이거나 통행할 수 없는 칸입니다.`, where: { mapId: start.id, mapName: start.name, x: project.startPos.x, y: project.startPos.y } });
   }
   for (const edge of graph.edges) {
+    if (edge.via === "script" && !project.maps[edge.to]) {
+      findings.push({ severity: "warning", code: "script-transfer-missing-map", message: `스크립트가 없는 맵 \`${edge.to}\` 으로 이동합니다(game.transfer).`, where: edge.where });
+      continue;
+    }
     if (edge.via !== "transfer") continue;
     const target = project.maps[edge.to];
     if (!target) {
@@ -93,7 +105,7 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
         where,
       });
     } else if (!graph.reachable.has(map.id) && !seedLeftBehind) {
-      findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}. 고치기: create_transfer_pair({a:{mapId:<시작 맵에서 닿는 맵>,x,y}, b:{mapId:"${map.id}",x,y}}) — 시대 사이면 create_time_gate.`, where });
+      findings.push({ severity: graph.dynamicScriptTransfers ? "info" : events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}${graph.dynamicScriptTransfers ? ` (${SCRIPT_DYNAMIC_NOTE} — 스크립트의 game.transfer 가 이 맵으로 갈 수도 있습니다)` : ""}. 고치기: create_transfer_pair({a:{mapId:<시작 맵에서 닿는 맵>,x,y}, b:{mapId:"${map.id}",x,y}}) — 시대 사이면 create_time_gate.`, where });
     }
   }
   return findings;
