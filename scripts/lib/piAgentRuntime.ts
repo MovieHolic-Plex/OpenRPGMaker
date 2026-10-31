@@ -828,8 +828,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             let started: { ok: boolean; note: string };
             try {
               if (!options.renderToolImage) throw new Error('편집기 연결이 없다');
-              const jobId = await options.renderToolImage(ctx.project, 'generate_walk_chip', { appearanceId: want.appearanceId, description: want.description, name }, signal ?? options.signal);
-              started = { ok: true, note: `편집기 공방 작업 줄에서 걷기 칩을 만드는 중이다(작업 ${jobId}, 보통 5~12분). 다 되면 외형 칩이 저절로 바뀜고 이은 배우·이벤트도 함께 바뀐다 — 기다리지 말고 다음 작업을 계속한다.` };
+              await options.renderToolImage(ctx.project, 'generate_walk_chip', { appearanceId: want.appearanceId, description: want.description, name }, signal ?? options.signal);
+              started = { ok: true, note: `편집기 공방 작업 줄에서 걷기 칩을 만들기 시작했다(보통 5~12분). 다 되면 외형 칩이 저절로 바뀜고 이은 배우·이벤트도 함께 바뀐다 — 기다리지 말고 다음 작업을 계속한다.` };
             } catch (error) {
               started = { ok: false, note: `걷기 칩 생성은 시작하지 못했다(${error instanceof Error ? error.message : String(error)}). 외형에는 지금 칩이 그대로 있다 — 사용자에게 알린다.` };
             }

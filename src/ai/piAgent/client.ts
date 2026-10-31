@@ -169,9 +169,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           still = await generateMapPanoramaLayer(event.data as Record<string, unknown>, { signal: options.signal });
           if (!still.ok) { issue = still.summary; still = undefined; }
         } else if (event.toolName === 'generate_walk_chip') {
-          // 조수 generate_walk_chip — 공방 작업 줄에 char-gen 작업을 세우고 작업 id 를 돌려준다(그림은 없다, 수 분 뒤 줄이 외형 칩을 바꾼다).
-          const { startWalkChipJob } = await import('../../editor/walkChipGeneration');
-          png = await startWalkChipJob(event.data as { appearanceId: string; description: string; name?: string });
+          // 조수 generate_walk_chip — 공방 작업 줄에 char-gen 작업을 세운다(그림은 없다, 수 분 뒤 줄이 외형 칩을 바꾼다).
+          // 기다리지 않고 바로 답한다: 줄·호스트 준비를 기다리다 워커의 응답 시한(45초)을 넘기면 연결이 끊겨 그 턴의 쓰기가 통째로 사라졌다.
+          // 시작 실패는 공방 작업 줄에 「못 그림」으로 남는다.
+          void import('../../editor/walkChipGeneration').then(({ startWalkChipJob }) => startWalkChipJob(event.data as { appearanceId: string; description: string; name?: string }))
+            .catch((error: unknown) => console.warn('[walk-chip] 공방 작업을 세우지 못했습니다:', error));
+          png = 'queued';
         } else if (event.toolName === 'generate_opening_image') {
           const { generateOpeningStill } = await import('../../editor/openingImageGeneration');
           still = await generateOpeningStill(event.data as Record<string, unknown>, { project: draft, signal: options.signal });

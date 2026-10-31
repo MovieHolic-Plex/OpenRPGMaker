@@ -41,7 +41,7 @@ try {
     localStorage.setItem("oprn:ai-panel-collapsed", "0");
     localStorage.setItem("oprn:assistant-engine", engineJson);
   }, JSON.stringify(engine));
-  await page.goto(`${base}/?blankProject=1`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${base}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 240000 });
   await page.getByTestId("ai-input").waitFor({ state: "attached", timeout: 180000 });
   // 로컬 CLI 연결 확인은 실제 왕복 한 번이라 다른 작업이 CLI 를 쓰는 동안 닿지 못함으로 남을 수 있다 — 잠기면 다시 확인한다.
   for (let i = 0; ; i++) {
@@ -52,7 +52,14 @@ try {
     await page.waitForTimeout(10000);
   }
   await page.screenshot({ path: `${out}/01-before.png` });
-  await page.getByTestId("ai-input").fill(request);
+  for (let i = 0; ; i++) {
+    const enabled = await page.getByTestId("ai-input").evaluate((n) => n.getAttribute("aria-disabled") !== "true" && n.getClientRects().length > 0);
+    if (enabled) { await page.getByTestId("ai-input").fill(request, { timeout: 5000 }).then(() => true, () => false).then((ok) => { if (!ok) throw new Error("retry"); }).catch(() => null); }
+    if (enabled && (await page.getByTestId("ai-input").inputValue()) === request) break;
+    if (i >= 18) throw new Error("조수 입력창이 계속 잠겨 있다(AI 연결 확인 실패)");
+    await page.evaluate(async () => (await import("/src/editor/panels/aiConnectionStatus.ts")).refreshAiConnectionStatus());
+    await page.waitForTimeout(10000);
+  }
   await page.getByTestId("ai-send").click();
   console.log("ASSISTANT_SENT");
   const started = Date.now();
