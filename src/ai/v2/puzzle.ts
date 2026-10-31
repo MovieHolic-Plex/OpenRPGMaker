@@ -388,11 +388,12 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       // endingId 가 없으면 엔딩이 하나뿐일 때 그것을, 없으면 사슬 이름으로 하나 만든다 — 2026-11-01 cheap r4 flash 가 「endingId 가 없다」로
       // 사슬 전체를 한 번 날렸고, r6 deepseek 은 ending 대신 code 고리로 스위치만 켜고 엔딩 없이 끝났다.
       let endingId = link.endingId;
-      if (!endingId) {
-        const endings = (run.ctx.project.endings ?? []) as { id: string }[];
-        if (endings.length === 1) endingId = endings[0]!.id;
+      const endings = (run.ctx.project.endings ?? []) as { id: string }[];
+      // 준 endingId 가 아직 없으면(define_ending 이 거절됐거나 안 불렀다) 그 id 로 만든다 — 없는 id 의 triggerEnding 은 무결성 검사가 사슬 전체를 거절했다(r6 flash).
+      if (!endingId || !endings.some((e) => e.id === endingId)) {
+        if (!endingId && endings.length === 1) endingId = endings[0]!.id;
         else {
-          endingId = `ending_${chainKey}`;
+          endingId = endingId ?? `ending_${chainKey}`;
           if (!endings.some((e) => e.id === endingId)) {
             const made = run.call("define_ending", { id: endingId, name: args.name, conditions: [], epilogue: (link.reward?.lines ?? []).filter((l) => l.trim()).map((text) => ({ kind: "say", text })) });
             if (!made.ok) return fail(`link ${index + 1} (ending): no endingId given and making one failed: ${String(made.summary).slice(0, 200)}`);

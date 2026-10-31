@@ -85,6 +85,20 @@ export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string
   problems = [];
   const fill = toolName ? TOOL_FILLS[toolName] : undefined;
   if (fill && isObj(args)) args = fill(args, changes);
+  // 맨 위에 있어야 할 필수 칸이 안쪽 객체 하나에만 있으면 위로 올린다(upsert_event({event:{mapId,…}}) — 2026-11-01 cheap r6 flash).
+  const top = schema as Schema | undefined;
+  if (isObj(args) && Array.isArray(top?.required) && top?.properties) {
+    let lifted: Record<string, unknown> | undefined;
+    for (const req of top.required) {
+      if ((args as Record<string, unknown>)[req] !== undefined) continue;
+      const holders = Object.entries(args as Record<string, unknown>).filter(([, v]) => isObj(v) && (v as Record<string, unknown>)[req] !== undefined && (typeof (v as Record<string, unknown>)[req] !== "object"));
+      if (holders.length !== 1) continue;
+      lifted ??= { ...(args as Record<string, unknown>) };
+      lifted[req] = (holders[0]![1] as Record<string, unknown>)[req];
+      changes.push(`${req}: copied from ${holders[0]![0]}.${req} (it belongs at the top level)`);
+    }
+    if (lifted) args = lifted;
+  }
   const out = coerce(schema as Schema, args, "", changes);
   const found = problems; problems = [];
   return changes.length ? { args: out, changes, problems: found } : { args, changes, problems: found };
