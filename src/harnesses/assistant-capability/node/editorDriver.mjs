@@ -17,6 +17,17 @@ const HARNESS_WAIT_MS = Number(process.env.HARNESS_WAIT_MS ?? 120000);
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 export const digest = value => createHash('sha256').update(value).digest('hex');
+/**
+ * 조수가 사용자에게 한 보고. 편집기의 곁가지 모델 호출(의도 선언·Ultrabrain 조화 검수·선호 정리 …)도
+ * /v1/chat/completions 로 가서 위 가로채기가 'assistant'(source:'chat')로 적는다. 에이전트 실행(/v1/agent/run)이
+ * 있었던 턴에서는 그것들을 답으로 치지 않는다 — 검수 JSON 이 마지막 답으로 기록됐다(2026-10-31 스토어 검증 003턴).
+ * 에이전트 실행이 없던 읽기 전용 질문은 채팅 응답이 곧 답이다.
+ */
+export function assistantReports(events) {
+  const all = events.filter(e => e.type === 'assistant' && (e.text ?? '').trim());
+  const agent = all.filter(e => e.source !== 'chat');
+  return (agent.length ? agent : all).map(e => e.text.trim());
+}
 export function stored(projectDir) {
   const db = new DatabaseSync(resolve(projectDir, 'project.sqlite'), { readOnly: true });
   try {
@@ -160,12 +171,12 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             if(!payload||payload==='[DONE]')continue;
             try{
               const outer=JSON.parse(payload), text=outer?.choices?.[0]?.message?.content ?? outer?.choices?.[0]?.delta?.content;
-              if(typeof text==='string'&&text.length){window.__capEvents.push({type:'assistant',text,at:Date.now()});emitted=true;}
+              if(typeof text==='string'&&text.length){window.__capEvents.push({type:'assistant',source:'chat',text,at:Date.now()});emitted=true;}
             }catch{/* provider returned a non-JSON stream line */}
           }
           if(!emitted){try{
             const body=JSON.parse(raw), text=body?.choices?.[0]?.message?.content;
-            if(typeof text==='string')window.__capEvents.push({type:'assistant',text,at:Date.now()});
+            if(typeof text==='string')window.__capEvents.push({type:'assistant',source:'chat',text,at:Date.now()});
           }catch{/* provider returned a non-JSON error body */}}
           window.__capEvents.push({type:'chat_done',at:Date.now()});
           window.__capEvents.push({type:'stream_closed',at:Date.now()});
@@ -279,7 +290,7 @@ export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
       console.log(`${entry.id}: polish ${JSON.stringify(polish)}`);
     }
     const events=await page.evaluate(()=>window.__capEvents);
-    const answer=events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n');
+    const answer=assistantReports(events).join('\n');
     writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start,...(polish?{polish}:{})},null,2));
     phase='save';
     const flush=await saveThroughUi(page);
