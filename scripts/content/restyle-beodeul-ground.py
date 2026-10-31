@@ -78,7 +78,7 @@ def grass_body(base, taken):
         return c
     pal = {"b": base, **{k: tone(k) for k in ("d1", "l1", "l2")}}
     # r2 (2026-10-31): r1 의 흐린 잡음 문턱 무리가 16px 마다 글자(「Sng」)처럼 읽혀(LEDGER J124) 손 도트 행 문자열로 바꿨다.
-    #   홀로 선 점·세로 2~3화소 풀잎뿐(8-이웃 무리 최대 3화소, 세로 한 줄). 이미 구운 시트는 beodeul-grass-unglyph.py 가 같은 자리에서 바꾼다.
+    #   흩뿌린 점·세로 2~3화소 풀잎뿐(8-이웃 무리 최대 3화소, 3화소는 세로 풀잎만). 이미 구운 시트는 beodeul-grass-unglyph.py 가 같은 자리에서 바꾼다.
     rows = json.loads((ROOT / "scripts/content/beodeul-foliage/grass-body-r2.json").read_text())["rows"]
     px = [[{".": "b", "a": "d1", "b": "l1", "c": "l2"}[ch] for ch in row] for row in rows]
     return np.array([[pal[k] for k in row] for row in px], np.uint8)
