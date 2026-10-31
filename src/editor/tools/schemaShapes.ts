@@ -544,8 +544,8 @@ export const LIGHT_SOURCE_SCHEMA: JsonSchema = {
       description: "광원 자리(객체). 플레이어를 따라가는 빛(손전등) = {kind:'player'}, 칸 = {x,y}, 이벤트 = {eventId}.",
       properties: { kind: { type: "string", enum: ["player"], description: "플레이어를 따라가는 빛" }, x: { type: "integer" }, y: { type: "integer" }, eventId: { type: "string" } },
     },
-    radius: { type: "number" },
-    intensity: { type: "number" },
+    radius: { type: "number", description: "빛 반경, 칸(타일) 단위 — 손등불 3~4, 방 하나 6~8. 픽셀 값(48·72)을 넣으면 맵 전체가 밝아져 어둠이 사라진다." },
+    intensity: { type: "number", description: "0~1" },
     color: { type: "string" },
     flicker: { type: "boolean" },
     cone: {
