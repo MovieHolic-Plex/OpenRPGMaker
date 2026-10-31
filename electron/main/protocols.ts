@@ -159,7 +159,7 @@ export function registerAssetProtocol(sessions: SessionRegistry): void {
     const session = sessions.findByProjectId(url.hostname);
     if (!session) return new Response("unknown project", { status: 404 });
     const sha256 = url.pathname.replace(/^\//, "");
-    const row = session.store.listAssets().find((asset) => asset.sha256 === sha256);
+    const row = session.store.findAsset(sha256);
     if (!row) return new Response("unknown asset", { status: 404 });
     const bytes = await session.store.assetBytes(sha256);
     return new Response(bytes, {
