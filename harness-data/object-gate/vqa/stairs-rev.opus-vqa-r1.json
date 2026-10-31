@@ -1,0 +1,629 @@
+{
+ "round": 1,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "Reverse cut on a north-facing cliff: 2-row strip directly north of the terrace lip, bottom meets terrace top, top meets low road; must read at 1x as a way DOWN going away from the viewer (stairs: tread tops with bright nosings, risers hidden, 2 treads per level; ramp: shaded foreshortened slope). MAJOR = extent/seam error, style clash with cliff/road, reads as panel/doormat/grate, or reads as climbing up (forward cut). Checked sheets at 8x, per-row luminance profiles of every piece, probes at 1x/3x/5x, forward cliffs, and the two model villages.",
+ "images": [
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sheet-grass-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sheet-sand-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sheet-snow-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sheet-peat-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sheet-cave-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/grass-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/grass-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/grass-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sand-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sand-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/sand-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/snow-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/snow-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/snow-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/peat-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/peat-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/peat-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/cave-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/cave-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/cave-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/opus1-rev-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/opus2-rev-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/opus1-rev-1x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r1/opus2-rev-1x.png"
+ ],
+ "pieces": {
+  "grass/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "side bank walls only in the lower 3/4; top corners carry grass shoulders, so the upper edge blends into the road (acceptable)",
+    "rises differ only by stripe density; slope steepness barely changes at 1x"
+   ]
+  },
+  "grass/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "grass/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "paving is lighter and flatter than the dark cobble road; intended but a visible material change",
+    "h1 treads are chunky blocks"
+   ]
+  },
+  "sand/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright highlight dots along the bottom row read slightly as a separate sill at the lip",
+    "rises differ only by stripe density"
+   ]
+  },
+  "sand/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "sand/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark outline on all four sides makes it a little crate-like at 1x"
+   ]
+  },
+  "snow/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "blue-gray top band is a little cold against the taupe road",
+    "rises differ only by stripe density"
+   ]
+  },
+  "snow/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "snow/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "full dark navy frame around near-white treads with dark slat lines reads at 1x as a framed shutter or window-blind panel, not a path; white-blue treads also break from the taupe road on both seams"
+   ],
+   "minors": []
+  },
+  "peat/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "rises differ only by stripe density; descent cue is a gentle top-dark gradient only"
+   ]
+  },
+  "peat/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent",
+    "h1 top dark bar spans the full width like a log/beam laid across the road"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent",
+    "h1 top dark bar spans the full width like a log/beam laid across the road"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "peat/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "each tread is preceded by a 1px black line and a dark gradient band directly below the next-farther tread, i.e. a visible riser face: the [tread][riser] rhythm reads as forward stairs climbing away, not descending; no bright nosing; at h3-h4 the dense dark bands read as a grate/vent"
+   ],
+   "minors": []
+  },
+  "cave/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "no road in the probe, so at 1x the cut reads as a shallow alcove more than a path; descent cue is weak but present"
+   ]
+  },
+  "cave/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  },
+  "cave/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low contrast; dark outlined box reads a little like a wooden crate at 1x"
+   ]
+  }
+ },
+ "verdict": "FAIL",
+ "summary": "64/80 PASS. All 40 ramps pass: extent lip-to-road correct in every probe, bottom row matches road colour, top-dark gradient plus bank walls reads as a cut going down (confirmed in both villages). Grass, sand and cave stairs pass: [far tread][dark crease][bright nosing][near tread] rhythm reads as descending. Snow stairs (8) fail: dark-framed white slats read as window blinds and clash with the taupe road. Peat stairs (8) fail: dark band below each tread reads as a visible riser, i.e. climbing up/grate."
+}

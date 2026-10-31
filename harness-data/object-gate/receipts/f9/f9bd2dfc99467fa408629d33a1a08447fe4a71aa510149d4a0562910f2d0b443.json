@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9bd2dfc99467fa408629d33a1a08447fe4a71aa510149d4a0562910f2d0b443",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 1 w3 reverse cut through a north-facing snow cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/snow-steps/stairs-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 188,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace top / snow surface",
+      "rows": "1-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower snow face / stair run below the lip",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a 14-row band at rows 1-14 (L about 225, #d6e4f1). It ends in a darker 1-row edge line at row 15 (#93aecb / #b7cde3). Below the line is a lighter, whiter band at rows 16-29 (L about 237-245) that reads as the vertical face or descending run, with a darker bottom border at rows 30-31. The width is a constant 48 on every row, so this is a full-width terrain tile. Individual step treads and risers are not clearly drawn, but the top band, edge line and lower face structure matches the three-quarter pattern."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a pale blue-white slab with a lighter top band and a slightly darker lower band, plus a few sparse speckles. The step risers and treads of a descending cut stair are not clearly drawn, so the shading ramp is only about 3-4 steps against the references' 5-6. Large areas are one flat colour: near-flat coverage is 28% against 0% in both references. The measured 9 tones per tile look higher than the references, but the eye sees mostly two or three broad bands, so the figure is probably inflated by faint near-identical shades. The edges are tinted, not neutral black (0% near-neutral), so this is not a sticker outline, but there is almost no material-tone edge definition either. Overall it is flatter and less textured than the grass and paving references, which have per-stone shading and grass tufts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17867
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper terrace snow",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step/landing snow",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is drawn as two flat snow fields seen from above. Rows 1-14 are the upper terrace and rows 16-29 are the lower step. They are separated by a single 1-row edge line at row 15 (x=35 L=169). Row 30 is another 1-row edge line, and row 31 is a brownish base strip. There is no vertical face of 3 or more rows anywhere, because each step riser is only a 1-row line. The silhouette is a constant 48 px wide in every row, so the tile has no ellipse or cap. The sides show only a thin dark border column, not a receding side face. Nothing reads as a standing 3/4 body with a front face, so this is a flat top-down slab. The staircase is shown only as horizontal bands."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a pale blue-white slab with a lighter top band, a slightly darker middle band and a sparse speckled bottom. It has only about 3 visible lightness steps on the snow ramp, against about 5-6 in Beodeul. The measured 28% near-flat coverage is high, while both references are at 0%, and the large uniform areas show this by eye. There are no step treads, risers or per-step highlight/shadow pairs, so it does not read as a descending reverse-cut stair, only as a flat panel. There is no real outline, and the dark edge pixels are tinted rather than neutral (0% near-neutral), so it is not a sticker look. The 9 visible tones per tile are above the grass reference (3) and the paving reference (7), but they come from a few banding tones rather than grain and clustered texture. The paving reference has stones shaded one by one with grain, and the candidate looks flatter and simpler than that.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18851
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper terrace snow surface",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower snow slope / stair run",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px rectangle on every row (rows 0-31). It has two flat snow fields: rows 1-14 (#d6e4f1, with white speckles) and rows 16-29 (lighter, nearly white). A 1-row darker blue edge line at row 15 separates them. A similar darker line sits at rows 30-31 at the bottom. Neither field has a distinct vertical south face: there is no eave shadow, no change of material and no step risers. The stairs are not drawn as risers and treads. The image reads as a flat top-down view of terrace and lower snow, with a thin dark wall column at the left edge from row 8 to 30. This is a top-down terrain tile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured tone count is 9 per tile, above the grass (3) and close to the paving (7). The picture does not match that number. The candidate reads as a pale snow slab with a lighter top band and a few speckles near the bottom. I count about 3 distinct lightness steps on the main snow ramp, against 5-6 in the references. 28% of its pixels sit in flat 5x5 blocks, while both references have 0%. The large pale areas are single flat colours with no grain or per-step shading. The dark edge pixels are 0% neutral, so the outline is not a near-black sticker line. There is hardly any outline, and forms are separated by faint value shifts only. The stairs themselves (treads, risers, cut walls, descent direction) are not readable, so the piece lacks the structural craft of the Beodeul tiles. A careful artist would not accept it next to the references: it looks flatter and thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19523
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow tread / terrace plane",
+      "rows": "1-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower snow tread (next step down), speckled flat snow",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px rectangle, rows 0-31, with no change in silhouette width. Rows 1-14 are a flat pale-blue snow plane (L about 225). Row 15 is a single darker line (#93aecb / #b7cde3) and divides it from rows 16-29, a lighter speckled snow plane (L about 240-245). Row 30 is a blue edge line, and row 31 is a brownish outline. Both bands carry the same scattered snow-speckle texture, with no vertical shading, no eave shadow and no drop face of 3 or more rows. They read as two flat treads seen from above, separated by one step line, so the tile is a top-down terrain slab with no front face. The 14-row upper band ends in a front-edge line at row 15, but no vertical face follows it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured tones per tile are 9, against 3 for the grass and 7 for the paving, so the candidate is not short of tones. The picture still looks shallow. Near-flat coverage is 28%, while both references are at 0%. The upper half is a large, nearly uniform pale-blue field, and the lower white band has only sparse speckle. The stairs read as two or three broad horizontal bands, with no clear per-step highlight, riser or shadow ramp, so the cut-through-cliff form is weak. The ramp is about 4 light-to-dark steps against 5-6 in Beodeul. Edge pixels are 0% neutral, so the outline is tinted (cool, material-toned) and not a black sticker line. The texture is lighter than the references, which have grain on every tile. On balance it sits below the references in structure and texture despite the tone count, and with 28% flat fill it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 23712
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.439Z",
+ "cells": {
+  "16": [
+   "3cd451b05d252739",
+   "418733bd18d5c478",
+   "521d08ed0652f897",
+   "69fa53fafcf705e1",
+   "aff3ebd7250a5a30",
+   "ddbeba50423a4e05"
+  ],
+  "24": [
+   "093b1105bb8d35d4",
+   "3459377ba31efeaf",
+   "46b68468a7746e6d",
+   "7a876975da9d540d",
+   "973899d355d0aff4",
+   "ad72be2c2bbce3a4",
+   "ba8554abff92e27d",
+   "fffb60f74c2df461"
+  ],
+  "32": [
+   "1603958ce9a0f3d2",
+   "2df32bbec034a8f3",
+   "9af76f1660b4bd19",
+   "a4925c28ee2bf8a2",
+   "c123a4e29ee24863",
+   "c81fe86586aeb23c"
+  ],
+  "48": [
+   "1d8ecbed81afd07d",
+   "20e3bca280a54259"
+  ]
+ }
+}

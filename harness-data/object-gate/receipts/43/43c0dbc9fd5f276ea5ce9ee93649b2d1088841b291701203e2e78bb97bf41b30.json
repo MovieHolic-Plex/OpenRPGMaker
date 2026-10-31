@@ -1,0 +1,421 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43c0dbc9fd5f276ea5ce9ee93649b2d1088841b291701203e2e78bb97bf41b30",
+ "width": 32,
+ "height": 80,
+ "kind": "terrain",
+ "name": "ramp rise 4 w2 cut through a south-facing sand cliff face (climbs north)",
+ "label": "relief-cuts-fwd/sand-steps/ramp-h4-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 95,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 10
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp slope (chevron-textured walkable plane)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cut cliff wall (banded dark brown, vertical side face)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cut cliff wall (banded sand/brown strip)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand ground at foot of ramp",
+      "rows": "64-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 32 px wide and 80 rows tall. Rows 0-63 show a sand ramp plane with a V/chevron texture, flanked by banded cut-cliff walls: dark brown on the left (x about 0-7) and a thin strip on the right. The walls are seen as vertical side strips, and the left wall's inner edge is a dark outline that steps inward toward the bottom. The ramp has no south-facing front face. Its lower end at rows 62-63 only has a thin dark line under the walls and then runs straight into flat sand ground at rows 64-79. The ramp plane is the only large horizontal-ish surface and has no front-edge line or eave shadow. With no front face of 3 or more rows, it reads as a flat top-down slab with side walls rather than a three-quarter block."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 5 sand steps: a pale highlight, light sand, mid sand, a tan-brown shadow, and a dark brown edge. Layered chevron strata run down the ramp with per-layer highlights, and the sand run-out at the bottom carries speckle dots. The dark edge pixels are brown-tinted (0% near-neutral), so the outline is a dark sand/brown tone rather than a black sticker line. It shows 7 visible tones per tile, equal to the paving reference and above the grass reference's 3. Near-flat coverage is 18%, higher than the references' 0% but limited to the pale ramp centre and the sand strip, so there are no large dead fills. Total palette is small (9 colours) but is used with structure, which suits a locked palette. It is somewhat simpler than the paving reference, but a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22121
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp surface (V-chevron sloped plane between the cliff walls)",
+      "rows": "0-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff wall (banded strata, south face)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall (banded strata, south face)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand ground in front of the cliff",
+      "rows": "64-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central sand ramp (rows 0-63) is a large sloped plane. Its V-shaped chevron texture narrows toward the south, and a dark line at row 63 marks its front edge where it meets the flat ground below. The left and right cliff walls are drawn as horizontally banded vertical south faces, with dark outline columns along the ramp edges. Rows 64-79 are plain flat ground. The ramp is a foreshortened top surface and the cliff walls are the front face, so this fits the 3/4 view. The ramp reads somewhat as a slope seen from above, which makes the classification less certain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a sand ramp with a chevron or scallop banding pattern on the cliff cut. It reads as about 4 sand steps (highlight, light, mid, dark brown-tan edge), against 5-6 in the references. The dark edge pixels are tinted tan/brown (0% neutral), so the outline is a dark material tone and not a black sticker line. It has 7 visible tones per tile, which matches the paving reference and is above the grass reference's 3. But the raw count is only 7 colours per tile and 9 in total, versus 26 and 80 for grass. Near-flat coverage is 18%, against 0% for both references. The flat areas are visible in the plain sand at the bottom landing and in the wide bands of the ramp. The landing has only sparse speckle dots, with no grain or per-clump variation. Beodeul pieces show texture all over, so the candidate's texture is only partial, and I judge it a little shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15738
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp surface (sloped plane with chevron texture, climbs north)",
+      "rows": "0-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff wall flanking the cut (horizontally banded strata, dark outline on its inner edge)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall flanking the cut (horizontally banded strata)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand ground at the foot of the ramp",
+      "rows": "64-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 64,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-63 hold a sloped sand ramp plane. It is textured with chevron/V dither and ends at a dark front edge line at row 63 where it meets the flat sand ground (rows 64-79). The ramp is flanked on both sides by banded cliff-wall strips, which are vertical strata faces. The left strip's inner edge steps outward from about x=2 at the top to x=10 at the bottom, so the cut walls read as receding side faces. The ramp is a visible sloped surface and the cliff walls give a front face of well over 3 rows, so this is not a flat slab. The surface has no distinct front-edge/eave pair beyond the bottom edge at row 63, so this reading is a judgement call."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 5 sand lightness steps: a pale highlight, light sand, mid tan, a darker ochre for the chevron scallop bands and ramp edges, and a deep brown-tan for the cut edges. It measures 7 visible tones per 16x16 tile, which equals the paving reference (7) and beats the grass reference (3). Its dark edge pixels are 0% neutral, so the outlines lean brown and follow the sand material rather than forming a black sticker line. The stacked chevron scallops in the cliff face give real structure and texture. Near-flat coverage is 18% against 0% for both references. That comes from the ramp's central lane and the pale sand strip at the bottom, which are the weakest areas and carry little grain. The shading is cleaner and less speckled than the references, but it is not shallow or sticker-like. This is a borderline pass: tone count and tinted outlines match the references, but the flat patches are a mild weakness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23629
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp surface (V-shaped chevron texture climbing north)",
+      "rows": "0-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff cut wall (banded strata)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff cut wall (banded strata)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand ground at base",
+      "rows": "64-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 16,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the sand ramp, a sloped plane spanning rows 0-63 with chevron shading, flanked by cliff-cut walls of horizontal dark-brown strata that widen toward the south (left wall about 4 px at row 0, about 10 px at rows 54-62). A dark edge line at row 63 closes the ramp, and rows 64-79 are flat sand ground. The ramp reads as a top surface seen from above with the vertical cut cliff walls beside it, so it is three_quarter. The 16 'front face' rows are the base ground strip, not a vertical face of the ramp, so this call is only moderately certain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's chevron strata on the ramp have a tan-to-ochre ramp of about 4-5 steps. They read as a scalloped cliff face, and the edges are a tinted brown rather than black (0% neutral dark edges), so the outline is fine. It has only 9 distinct colours in total. Its near-flat coverage is 18%, against 0% for both references. That coverage comes from the lower sand band and the wedge sides, which are large areas of one colour with only a few sparse dots. The references have grain or per-stone shading across every tile. Visible tones per tile (7) match the paving reference and beat the grass (3). Even so, the flat lower band and the shallow palette make it look flatter than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20368
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.706Z",
+ "cells": {
+  "16": [
+   "7761674a51866d82",
+   "84fcdb895b8a0afb",
+   "904269b95e6e0faf",
+   "a2837d835df7f0a7",
+   "a4275f569fa0bdcd",
+   "bfb394037717208b",
+   "d4958e212b608e4c",
+   "d631208d026e9eb8",
+   "e4e2c26b69e7834a"
+  ],
+  "24": [
+   "049b1435baeebabf",
+   "114c68d469f61815",
+   "16fdb2fc34d42e23",
+   "18c75fb2a00f9bd8",
+   "1c90f3116ae1f5d7",
+   "1e5e3fcf2f175328",
+   "254538090dc8d5d7",
+   "33e7ee656a6d9957",
+   "3547dd43911e9c22",
+   "36b6a4c397e6d8af",
+   "3bb39986f4a87941",
+   "41f3b3c40f2229b9",
+   "421d9a006f0691a8",
+   "57a34536f25da598",
+   "57c62a0fce02bb89",
+   "5fd1625bd638c020",
+   "666e0b27cb849e31",
+   "6813b8ccedf54c9b",
+   "7a47819d7175f57f",
+   "7d996bcecc05d78e",
+   "80d37627ffac63d4",
+   "834dc062472437de",
+   "90a8ace61af218ac",
+   "914239c43226d7dd",
+   "93437e4b02524f3c",
+   "93e362c6ba11af50",
+   "a428c32dbc22879f",
+   "a45bc30e3edfbfe7",
+   "a549ce1883b858bb",
+   "b3011a52d9a973af",
+   "b37bd4eb75242f13",
+   "b40ea04ad30a09f8",
+   "bbc4825c40ffcb3a",
+   "bc43ef0010d070ca",
+   "bf005c405a91d191",
+   "c26c3b931ef74932",
+   "c5f9bf529a9a7829",
+   "cd4c75719c5a5910",
+   "cd74271644e0ffe2",
+   "cde125437a98dd87",
+   "cf302ce56646cd90",
+   "d2fecb1170a631a5",
+   "d65f322ee861877b",
+   "db066afa98321d79",
+   "dbdc0725fb84e3bc",
+   "e2611c232eeaae85",
+   "f43566d89d6f250a",
+   "fefa8ea5c4740372"
+  ],
+  "32": [
+   "31a26ba8b78b7db1",
+   "385cd4a1d2372cca",
+   "5e9dc7dd507ce0f6",
+   "9c79123e604e77a6",
+   "aac14545372fe699",
+   "f643aaec2f3cb3a0"
+  ],
+  "48": [
+   "125a03c927d41ab8",
+   "2e3c11309d6d9dfc",
+   "3beb4bd009e9d2ba",
+   "529a3afa399635a7",
+   "61f681636faf9f0e",
+   "8bd400783f4b5d8a",
+   "98dd04a4407f80db",
+   "b694a9976d0e1b74",
+   "c0151e478a826a5a",
+   "c2da89fce6baaf00",
+   "e9a09e6db3ec30de",
+   "f470abfa57609461"
+  ]
+ }
+}
