@@ -467,8 +467,8 @@ function buildRitual(project: Project): void {
     page("p_dusk", [stageIs(S.C1_ACCUSED)], [
       ...fadeOut(900),
       { kind: "setLighting", ambient: 0.78, color: "#0b1530", transitionMs: 0 } as Command,
-      { kind: "addLight", source: { id: "lt_jw_hand", at: "player", radius: 72, intensity: 0.9, color: "#ffcf8a", flicker: true } } as Command,
-      { kind: "addLight", source: { id: "lt_jw_well", at: { x: V.well.x, y: V.well.y }, radius: 40, intensity: 0.5, color: "#9fc4ff", flicker: true } } as Command,
+      { kind: "addLight", source: { id: "lt_jw_hand", at: "player", radius: 3.5, intensity: 0.85, color: "#ffcf8a", flicker: true } } as Command,
+      { kind: "addLight", source: { id: "lt_jw_well", at: { x: V.well.x, y: V.well.y }, radius: 2, intensity: 0.45, color: "#9fc4ff", flicker: true } } as Command,
       bgm(BGM.night, 1400),
       setSw(SW.c1Night),
       ...caption("그날 밤."),
@@ -488,7 +488,7 @@ function buildRitual(project: Project): void {
       wait(800),
       // 귀신은 몸으로 나오지 않는다 — 우물의 찬 빛이 부풀고, 물소리·방울 소리·물안개만.
       se("cc0-se-osx-bell-01"),
-      { kind: "addLight", source: { id: "lt_jw_well", at: { x: V.well.x, y: V.well.y }, radius: 64, intensity: 0.85, color: "#9fc4ff", flicker: true } } as Command,
+      { kind: "addLight", source: { id: "lt_jw_well", at: { x: V.well.x, y: V.well.y }, radius: 3.5, intensity: 0.9, color: "#9fc4ff", flicker: true } } as Command,
       m2("Particle Effect", { preset: "smoke", target: "tile", x: V.well.x, y: V.well.y, durationMs: 2400, sizePercent: 120, wait: false }),
       wait(700),
       se("cc0-se-osx-splash-02"),
@@ -595,6 +595,10 @@ function buildBattle(project: Project): void {
     id: "troop_jw_buni", name: "우물의 원귀",
     enemyIds: ["enemy_jw_buni", "enemy_jw_wisp", "enemy_jw_wisp"],
   } });
+  // 퇴마는 그 자리에서 한다 — 전투 배경은 밤 우물가 필드 화면 그대로(새 배경 그림 없이), 그 위에 옅은 물안개 한 겹.
+  project.system.battleBackdrop = "field";
+  const troop = project.database.troops.find((t) => t.id === "troop_jw_buni");
+  if (troop) troop.backdropLayers = [{ preset: "mist", opacity: 35 }];
   exec(project, "upsert_troop_battle_page", { troopId: "troop_jw_buni", page: {
     id: "bp_jw_open", name: "시작", span: "battle", conditions: [{ kind: "onRound", round: 1 }],
     commands: caption("손을 대도 닿지 않는다. 진상을 고해야 한다."),
