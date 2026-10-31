@@ -16,10 +16,7 @@ export function guardWholeRecordRewrite(
   name: string,
   args: Record<string, unknown>,
 ): { readonly args: Record<string, unknown>; readonly warnings: readonly string[] } {
-  if (name === "upsert_event") {
-    rejectWholePagesRewrite(project, args);
-    return { args, warnings: [] };
-  }
+  if (name === "upsert_event") return reduceWholePagesRewrite(project, args);
   if (name.startsWith("upsert_")) return reduceEchoedDatabaseRecord(project, name, args);
   return { args, warnings: [] };
 }
@@ -28,22 +25,45 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-function rejectWholePagesRewrite(project: Project, args: Record<string, unknown>): void {
+/**
+ * 기존 이벤트의 pages 를 통째로 다시 보낸 upsert_event.
+ * 페이지 수가 같으면 페이지마다 바뀐 commands 만 적용하고 나머지 페이지 칸(그림·조건·트리거)은 기존 값을 둔다 —
+ * 2026-11-01 cheap r11 flash 가 단서 대사 하나를 바꾸려고 MV 모양 페이지(trigger:0, graphic.tileId:0, conditions:{})를
+ * 세 번 보냈고 세 번 다 거부돼 단서가 끝내 안 들어갔다. 대사(commands)가 그 호출의 뜻이고, 나머지 칸은 읽은 값을 MV 습관으로 다시 적은 것이다.
+ * 페이지 수가 다르거나 바뀐 commands 가 없으면 전처럼 거부한다(영어).
+ */
+function reduceWholePagesRewrite(project: Project, args: Record<string, unknown>): { readonly args: Record<string, unknown>; readonly warnings: readonly string[] } {
   const event = isRecord(args.event) ? args.event : undefined;
-  if (args.replacePages === true || event?.replacePages === true) return;
-  if (!event || typeof event.id !== "string" || !Array.isArray(event.pages)) return;
+  if (args.replacePages === true || event?.replacePages === true) return { args, warnings: [] };
+  if (!event || typeof event.id !== "string" || !Array.isArray(event.pages)) return { args, warnings: [] };
   const sent: unknown[] = event.pages;
   const map = typeof args.mapId === "string" ? project.maps[args.mapId] : undefined;
   const existing = map?.events.find(entry => entry.id === event.id);
-  if (!existing || !(existing.pages?.length)) return;
+  if (!existing || !(existing.pages?.length)) return { args, warnings: [] };
   const changed = existing.pages
     .map((page, index) => ({ index, same: jsonEqual(sent[index], page) }))
     .filter(entry => !entry.same).map(entry => entry.index);
+  if (sent.length === existing.pages.length) {
+    const cmdChanged: number[] = [];
+    const pages = existing.pages.map((page, index) => {
+      const got = sent[index];
+      const cmds = isRecord(got) && Array.isArray(got.commands) ? got.commands : undefined;
+      if (!cmds || jsonEqual(cmds, page.commands)) return page;
+      cmdChanged.push(index);
+      return { ...page, commands: cmds as typeof page.commands };
+    });
+    if (cmdChanged.length) {
+      return {
+        args: { ...args, event: { ...event, pages, replacePages: true } },
+        warnings: [`upsert_event resent all pages of existing event '${event.id}' — applied only the changed commands of page ${cmdChanged.join(", ")} and kept every other page field as it was. To change other page fields use patch_event_page{mapId, eventId, pageIndex, set:{only the fields to change}}.`],
+      };
+    }
+  }
   throw new ToolError(
-    `기존 이벤트 '${event.id}' 의 pages 배열 전체를 다시 보냈습니다(기존 ${existing.pages.length}페이지, 보낸 ${sent.length}페이지`
-    + `${changed.length ? `, 기존과 다른 페이지 ${changed.join(", ")}` : ""}). 전체를 다시 쓰면 바꾸지 않을 페이지·칸까지 다시 쓰게 됩니다. `
-    + `한 페이지의 칸만 바꾸려면 patch_event_page{mapId,eventId,pageIndex|pageId,set:{바꿀 페이지 필드만}}를 쓰세요. `
-    + `페이지를 추가·삭제·순서 변경해야 할 때만 upsert_event 에 replacePages:true 를 함께 보내고, 유지할 페이지는 읽은 값 그대로 두세요.`,
+    `upsert_event resent the whole pages array of existing event '${event.id}' (it has ${existing.pages.length} page(s), you sent ${sent.length}`
+    + `${changed.length ? `; differing pages: ${changed.join(", ")}` : ""}) — that would rewrite pages and fields you did not mean to change. `
+    + `To change one page use patch_event_page{mapId, eventId, pageIndex|pageId, set:{only the page fields to change}}. `
+    + `Send upsert_event with replacePages:true only to add, remove or reorder pages, keeping the pages you keep exactly as read.`,
     { code: "whole-record-rewrite" },
   );
 }

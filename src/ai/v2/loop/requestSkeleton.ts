@@ -25,6 +25,8 @@ function nameFrom(words: string): string | undefined {
   if (!name || name.length < 2 || PARTICLE_TAIL.test(name) && name.length < 3) return undefined;
   if (parts.slice(0, -1).some((w) => /(?:가|을|를)$/u.test(w))) return undefined;
   if (/^(방|곳|장면|마을|사람|사람들|주민|주인공|플레이어|그|이|저)$/u.test(name)) return undefined;
+  // 「액자」 뒤에서는 「…」 — 자리 낱말은 이름이 아니다(2026-11-01 cheap r4: 말하는 인물 「뒤에서」·「밑에서」).
+  if (/^(?:뒤|밑|위|안|속|옆|아래|앞)(?:에서|에|쪽)?(?:는|은|도)?$/u.test(name)) return undefined;
   return name;
 }
 
@@ -42,8 +44,14 @@ const GIVES = new RegExp(`(?<=^|\\s)(${W})(?:을|를) (?:주는|주게|준다|�
 const QUOTE_SAYS = new RegExp(`(?<=^|\\s)((?:${W} )?${W}?)(?:은|는|이|가) (?:${W} ){0,2}?["“「]([^"”」]{4,80})["”」]`, "gu");
 /** 「X를 조사하면 "…"」·「X가 있고, 조사하면 「…」」 — 조사하면 뜨는 글(조사 대상 이벤트). */
 const QUOTE_EXAMINE = new RegExp(`(?<=^|\\s)(${W}?)(?:을|를|이|가) (?:[^\\s"“「]+ ){0,3}?조사하면,? ["“「]([^"”」]{4,80})["”」]`, "gu");
+/** 「책상」을 조사하면 메모 「7 _ 9 _」·「액자」 뒤에서는 「_ 2 _ _」 — 낫표로 이름을 준 물건과 거기서 나오는 글. */
+const QUOTE_OBJ = /[「"“]([^」"”]{1,16})[」"”]\s*(?:을|를|이|가|은|는)?\s*(?:(?:[^\s「"“]+\s+){0,2}?조사하면|(?:뒤|밑|위|안|속|옆|아래)(?:에서|에|쪽에서)?(?:는|도)?)\s*,?\s*(?:[^\s「"“]+\s+){0,2}?[「"“]([^」"”]{3,80})[」"”]/gu;
+/** 「자물쇠」를 조사하면 4자리 숫자를 입력 — 번호를 받는 이벤트 이름. */
+const LOCK_ON = /[「"“]([^」"”]{1,16})[」"”]\s*(?:을|를|이|가|은|는|에서|에)?\s*(?:[^\s「"“]+\s+){0,2}?(?:조사하면|열면|누르면|만지면)[^「"“]{0,30}?(?:입력|번호|숫자)/u;
 /** 인용 대사 → 확인에 쓸 앞 두 낱말(모델이 끝말을 바꿔도 걸리게). */
 function saysFragment(quote: string): string | undefined {
+  // 글자 없는 조각(「_ 2 _ _」 같은 번호 조각)은 앞 두 낱말이 서로 같아진다 — 통째로 본다.
+  if (!/[가-힣A-Za-z]/u.test(quote) && quote.trim().length >= 3) return quote.trim();
   const words = quote.replace(/[.,!?…。·~]+/gu, " ").trim().split(/\s+/u).filter(Boolean);
   const head = words.slice(0, 2);
   if (head.length === 2 && head[1]!.length >= 3) head[1] = head[1]!.replace(/(?:이|가|은|는|을|를|의|도)$/u, "");
@@ -70,6 +78,15 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
   const t = task.replace(/\s+/gu, " ").trim();
   const els: SkeletonElement[] = [];
   const f = fresh ? { fresh: true } : {};
+  // 번호 자물쇠가 맨 앞 — author_puzzle_chain 한 번이 단서·자물쇠·힌트·엔딩을 같이 짓고, 단서·대사 항목은 그 결과로 기계 확인된다.
+  // 번호 자물쇠: 「비밀번호 7294」·「7294가 비밀번호」 + 「3번째로 틀렸을 때 … 힌트」.
+  const code = /(?:비밀번호|암호|번호)\s*(?:는|은|가|이)?\s*[「"']?(\d{3,8})(?!\d)/u.exec(t)?.[1] ?? /(?<!\d)(\d{3,8})[」"']?\s*(?:이|가)?\s*(?:비밀번호|암호)/u.exec(t)?.[1];
+  if (code && /입력|자물쇠|잠금|열/u.test(t)) {
+    const hint = /(\d)\s*(?:번째|번\s*째|회째|번)\s*(?:로\s*|에\s*)?틀[리렸린려]|틀린\s*(?:횟수|게)?\s*(?:가\s*)?(\d)\s*(?:번|회)/u.exec(t);
+    const hintAfter = hint && /힌트|도움말|알려/u.test(t) ? Number(hint[1] ?? hint[2]) : undefined;
+    const on = LOCK_ON.exec(t)?.[1]?.trim();
+    els.push({ content: `번호 자물쇠 ${code}${on ? ` — 「${on}」` : ""}${hintAfter ? ` — ${hintAfter}번째 오답에 힌트` : ""}`, check: { kind: "code_lock", code, ...(hintAfter ? { hintAfter } : {}), ...(on ? { on } : {}), ...f }, from: code });
+  }
   const talkers = speakers(t);
   const meets = met(t);
   for (const who of talkers) {
@@ -83,9 +100,9 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
   // 요청이 따옴표로 준 대사는 그 줄이 실제로 나와야 한다 — 2026-10-31 asst-parity 사냥꾼 계약 terra: 뱃사공·어부의 아내를 「인물 있음」 확인으로만 적어
   // 단서 대사 없이 ✓ 로 닫혔다. 조사 글(「시체를 조사하면 "…"」)은 그 물건 이벤트의 대사로 확인한다.
   const quoted = new Set<string>();
-  for (const [re, kind] of [[QUOTE_EXAMINE, "examine"], [QUOTE_SAYS, "say"]] as const) {
+  for (const [re, kind] of [[QUOTE_OBJ, "examine"], [QUOTE_EXAMINE, "examine"], [QUOTE_SAYS, "say"]] as const) {
     for (const m of t.matchAll(re)) {
-      const who = nameFrom(m[1] ?? ""), says = saysFragment(m[2] ?? "");
+      const who = re === QUOTE_OBJ ? (m[1] ?? "").trim() || undefined : nameFrom(m[1] ?? ""), says = saysFragment(m[2] ?? "");
       if (!who || !says || quoted.has(says) || /^(제목|이름|타이틀|게임|맵|장소|문구|글|글귀|말|대사|텍스트|메시지|선택지|자막)$/u.test(who.split(" ").at(-1) ?? who)) continue;
       quoted.add(says);
       els.push({ content: kind === "examine" ? `${who} 조사 글 「${m[2]!.trim().slice(0, 40)}」` : `${who} 대사 「${m[2]!.trim().slice(0, 40)}」`, check: { kind: "talk", who, says, ...f }, from: m[0] });
@@ -101,6 +118,8 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
     if (foes[0] && !talkers.concat(meets).some((x) => nameScore(x, foes[0]!) > 0)) els.push({ content: `${foes[0]} 두기`, check: { kind: "person", name: foes[0], ...f }, from: foes[0] });
     els.push({ content: `${boss ? "보스 " : ""}전투${who ? ` — ${who}` : ""}`, check: { kind: "battle", ...(who ? { who } : {}), ...(boss ? { boss: true } : {}), ...f }, from: battle[0] });
   }
+  // 엔딩은 자물쇠 뒤에 — 자물쇠 요청이면 author_puzzle_chain 의 ending 고리 한 번이 둘 다 짓는다. 엔딩 항목이 앞에 오면 모델이 add_ending_scene 으로
+  // 「자물쇠에 말을 걸면 엔딩」을 먼저 지어 번호 없이 끝나는 문이 됐다(2026-11-01 cheap r6 flash).
   if (/엔딩/u.test(t)) {
     const map = RETURN_TO.exec(t)?.[1];
     els.push({ content: `엔딩에 닿는다${map ? ` — ${map}` : ""}`, check: { kind: "ending", ...(map ? { map } : {}), ...f }, from: "엔딩" });
@@ -141,6 +160,7 @@ export function covers(items: readonly Pick<TodoItem, "check" | "content">[], el
       case "talk": return k.kind === "talk" && nameScore(c.who, k.who) > 0 && (!c.says || !!k.says);
       case "item": return k.kind === "item" && nameScore(c.name, k.name) > 0;
       case "party_join": return k.kind === "party_join" && nameScore(c.name, k.name) > 0;
+      case "code_lock": return k.kind === "code_lock" && k.code === c.code && (!c.hintAfter || k.hintAfter === c.hintAfter) && (!c.on || (!!k.on && nameScore(c.on, k.on) > 0));
       default: return true;
     }
   });

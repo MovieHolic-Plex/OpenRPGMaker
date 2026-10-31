@@ -415,7 +415,75 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "room_graph": return checkRoomGraph(project, sc, check.map);
     case "layout_built": return checkLayoutBuilt(project, sc, check.map);
     case "layout_review": return checkLayoutReview(project, sc, check.map);
+    case "code_lock": return checkCodeLock(project, sc, check.code, check.hintAfter, check.on);
   }
+}
+
+// ───────────── 번호 자물쇠 ─────────────
+// 2026-11-01 값싼 모델 대조(gemini-3.8-flash 자물쇠 판): 할 일을 «목표 줄»로 확인하게 적어 자물쇠 없이 ✓ 로 닫았다. 요청 뼈대가
+// 이 확인을 덧붙여 «입력 → 정답 분기 → 열림(+틀린 횟수 힌트)» 이 실제 명령으로 있어야 끝난다.
+type CmdNode = Record<string, unknown>;
+function branchesOf(c: CmdNode): CmdNode[][] {
+  const out: CmdNode[][] = [];
+  for (const k of ["then", "else", "body", "commands", "cancelBranch", "otherwiseBranch", "victoryBranch", "defeatBranch", "escapeBranch"]) if (Array.isArray(c[k])) out.push(c[k] as CmdNode[]);
+  for (const o of (Array.isArray(c.options) ? c.options : []) as CmdNode[]) if (o && Array.isArray(o.branch)) out.push(o.branch as CmdNode[]);
+  return out;
+}
+function flatCmds(list: unknown, out: CmdNode[] = []): CmdNode[] {
+  for (const c of (Array.isArray(list) ? list : []) as CmdNode[]) { if (!c || typeof c !== "object") continue; out.push(c); for (const b of branchesOf(c)) flatCmds(b, out); }
+  return out;
+}
+/** 정답 갈래가 실제로 무엇을 여나 — 이동·엔딩·타일·공통 이벤트·물건은 그 자체로, 스위치는 그 스위치를 조건으로 읽는 페이지·분기가
+ * 그런 일을 할 때만(두 단계까지). 2026-11-01 cheap r6 deepseek: 정답에 스위치만 켜고 그 스위치로 «문이 조금 열렸다» 글만 보여
+ * 서재 문은 그대로 잠겨 엔딩에 못 갔는데 ✓ 였다. */
+const EFFECT = new Set(["transfer", "triggerEnding", "ending", "changeTile", "callCommonEvent", "changeItem"]);
+function opensSomething(project: Project, ev: GameEvent, cmds: CmdNode[], depth = 0): boolean {
+  if (cmds.some((c) => EFFECT.has(String(c.kind)))) return true;
+  if (depth >= 2) return false;
+  for (const c of cmds) {
+    const self = c.kind === "setSelfSwitch";
+    if (c.kind !== "setSwitch" && !self) continue;
+    const key = self ? `"key":"${String(c.key ?? c.selfSwitch ?? "A")}"` : `"switchId":"${String(c.switchId)}"`;
+    const reads = (cond: unknown) => { const j = JSON.stringify(cond ?? null); return j.includes(key) && (!self || j.includes("selfSwitch")); };
+    for (const map of Object.values(project.maps)) for (const other of (map.events ?? []) as GameEvent[]) {
+      if (self && other.id !== ev.id) continue;
+      for (const page of ((other as unknown as { pages?: { conditions?: unknown; commands?: unknown }[] }).pages ?? [])) {
+        if (reads(page.conditions) && opensSomething(project, other, flatCmds(page.commands), depth + 1)) return true;
+        for (const f of flatCmds(page.commands)) if (f.kind === "fork" && reads(f.condition) && opensSomething(project, other, flatCmds(f.then), depth + 1)) return true;
+      }
+    }
+  }
+  return false;
+}
+function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: number, on?: string): CheckResult {
+  const want = Number(code);
+  const notes: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const ev of (map.events ?? []) as GameEvent[]) {
+      if (!eventInScope(sc, map, ev)) continue;
+      const pages = ((ev as unknown as { pages?: { commands?: unknown }[] }).pages ?? [{ commands: (ev as unknown as { commands?: unknown }).commands }]);
+      for (const page of pages) {
+        const all = flatCmds(page.commands);
+        const inputs = all.filter((c) => c.kind === "inputNumber" && typeof c.variableId === "string").map((c) => String(c.variableId));
+        if (!inputs.length) continue;
+        // 요청이 자물쇠 자리를 이름으로 말했으면(「자물쇠」를 조사하면 …) 그 이벤트여야 한다 — 2026-11-01 cheap r4 flash: 번호 입력을 「액자」에 붙이고 ✓ 로 닫았다.
+        if (on && nameScore(on, String(ev.name ?? "")) <= 0) { notes.push(t(`${at(map, ev)}: 번호를 받지만 요청의 자물쇠는 「${on}」이다 — 「${on}」 이벤트에 붙인다`, `${at(map, ev)}: takes the number, but the request puts the lock on «${on}» — put it on the «${on}» event`)); continue; }
+        const forks = all.filter((c) => c.kind === "fork");
+        const right = forks.find((f) => { const k = f.condition as CmdNode | undefined; return k?.kind === "variable" && inputs.includes(String(k.variableId)) && Number(k.value) === want && (k.op === "==" || k.op === undefined); });
+        if (!right) { notes.push(t(`${at(map, ev)}: 숫자를 받지만 ${code} 와 같은지 묻는 분기가 없다`, `${at(map, ev)}: takes a number but no fork compares it == ${code}`)); continue; }
+        const opens = opensSomething(project, ev, flatCmds(right.then));
+        if (!opens) { notes.push(t(`${at(map, ev)}: ${code} 정답 분기가 아무것도 열지 않는다 — 이동·엔딩이 없고, 켠 스위치를 읽어 문을 여는(이동·엔딩) 페이지도 없다`, `${at(map, ev)}: the == ${code} branch opens nothing — no transfer or ending, and no page reads the switch it sets to open a way out (a transfer or an ending)`)); continue; }
+        if (hintAfter) {
+          const counters = all.filter((c) => c.kind === "setVariable" && (c.op === "+=" || c.op === "+") && Number(c.value) === 1).map((c) => String(c.variableId));
+          const hint = forks.find((f) => { const k = f.condition as CmdNode | undefined; return k?.kind === "variable" && counters.includes(String(k.variableId)) && Number(k.value) === hintAfter && [">=", "=="].includes(String(k.op)) && flatCmds(f.then).some((c) => c.kind === "text"); });
+          if (!counters.length) { notes.push(t(`${at(map, ev)}: 틀린 횟수를 세는 명령(변수 +1)이 없다`, `${at(map, ev)}: nothing counts wrong tries (no variable += 1)`)); continue; }
+          if (!hint) { notes.push(t(`${at(map, ev)}: 틀린 횟수가 ${hintAfter} 일 때 힌트 대사를 보이는 분기가 없다`, `${at(map, ev)}: no fork shows a hint line when the wrong-try count reaches ${hintAfter}`)); continue; }
+        }
+        return { pass: true, detail: t(`번호 자물쇠 ${code} — ${at(map, ev)}: 입력 → 정답 분기 → 열림${hintAfter ? ` · ${hintAfter}번째 오답 힌트` : ""}`, `number lock ${code} — ${at(map, ev)}: input → == ${code} → opens${hintAfter ? `, hint at wrong try ${hintAfter}` : ""}`), evidence: evEvidence(map, ev) };
+      }
+    }
+  }
+  return { pass: false, detail: notes.length ? notes.slice(0, 3).join(" / ") : t(`숫자를 입력받는(inputNumber) 이벤트가 없다 — 번호 ${code} 자물쇠가 아직 없다`, `no event asks for a number (inputNumber) — the ${code} lock does not exist yet`) };
 }
 
 /** 할 일 항목 하나 판정 — 항목의 refs 를 ctx 에 얹는다. */

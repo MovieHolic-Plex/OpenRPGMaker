@@ -43,7 +43,7 @@ import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewToo
 import { critiqueCutscene } from './cutsceneCritic.ts';
 import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
 import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
-import { readFileSync as readBundledAsset } from 'node:fs';
+import { appendFileSync, readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { setDotTextChat } from '../../src/ai/dotTextArt';
@@ -59,6 +59,7 @@ import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
+import { coerceToolArgs } from "../../src/ai/piAgent/argCoerce.ts";
 import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
@@ -657,10 +658,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
     const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
     let valid: unknown;
+    // 작은 모델의 모양 습관(다른 이름·MV 숫자/명령 코드·낱값↔객체/목록) — src/ai/piAgent/argCoerce.ts. 검증 전에 한 번 맞춘다:
+    // MV `list` 처럼 검증은 지나가지만 조용히 버려지는 칸도 있어서다. 고친 것은 영어로 결과에 붙인다.
+    const pre = coerceToolArgs(tool.parameters, params, tool.name);
+    if (pre.problems.length) {
+      emit({ type: 'execution_status', name: 'tool.args.unsupported', ok: false, summary: `${tool.name}: ${pre.problems[0]!.slice(0, 160)}` });
+      throw new Error(pre.problems.join("\n"));
+    }
+    let fixedNotes: string[] = [...pre.changes];
+    if (pre.changes.length) emit({ type: 'execution_status', name: 'tool.args.coerced', ok: true, summary: `${tool.name}: ${pre.changes.slice(0, 4).join(" · ").slice(0, 300)}`, data: { toolCallId: id, tool: tool.name, changes: pre.changes } });
+    params = pre.args as typeof params;
     try {
       valid = check(params);
     } catch (error) {
-      const repaired = repairToolArgs(tool.parameters, params);
+      const shaped = repairToolArgs(tool.parameters, params);
+      // 작은 모델의 모양 습관(다른 이름·MV 숫자/명령 코드·낱값↔객체/목록) — src/ai/piAgent/argCoerce.ts. 고친 것은 영어로 결과에 붙인다.
+      const coerced = coerceToolArgs(tool.parameters, shaped.args);
+      const repaired = { args: coerced.args, changes: [...shaped.changes, ...coerced.changes] };
+      fixedNotes = [...fixedNotes, ...(shaped.changes.length ? ["moved top-level fields into the object the tool expects"] : []), ...coerced.changes];
       let fixed: unknown;
       let repairedError: unknown;
       if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
@@ -687,7 +702,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
     }
     shapeFailures.delete(tool.name);
-    return executeCountingRefusals(tool, id, valid, signal);
+    const ran = await executeCountingRefusals(tool, id, valid, signal);
+    // 고친 모양을 모델에게 알린다 — 다음 호출부터 맞는 모양을 쓰게(조용히 고치기만 하면 같은 실수를 계속 한다).
+    return fixedNotes.length ? { ...ran, content: [{ type: "text" as const, text: `[Fixed call: ${fixedNotes.slice(0, 6).join("; ")}${fixedNotes.length > 6 ? `; +${fixedNotes.length - 6} more` : ""}]` }, ...ran.content] } : ran;
   } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
@@ -976,6 +993,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let forceToolTurn: boolean | string = false;
   // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
   let freshContextNext = false;
+  // 모델 대화가 비워진 횟수(새 CLI 대화·기록 비우기) — v2 가 기록으로 준 지식 카드를 다시 줄지 본다(env.contextEpoch).
+  let contextEpoch = 0;
   // H3 다음 호출 우선(src/ai/v2/loop/nextCall.ts): 코어의 SoftToolRequirement — 알림 한 번, 그래도 다른 도구면 그 도구를 강제(최대 2번).
   // 코어는 강제 3번째에 실행을 던져 끝내므로 getToolChoice 가 3번 내준 뒤에는 내린다.
   let lastContextTrim = 0;
@@ -996,6 +1015,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(localCli && cliToolFreezeOn() ? { lazyToolsVia: CLI_CALL_TOOL } : {}),
     clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
+    contextEpoch: () => contextEpoch,
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
@@ -1163,6 +1183,36 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 실측(2026-09-26): "off" 를 보내면 HTTP 200 스트림에 error 이벤트 `Thinking effort off is not supported by
   // google-antigravity/gemini-3.8-flash. Supported efforts: minimal, low, medium, high` 가 실려 첫 턴에서 끝난다.
   const thinkingLevel = localCli ? undefined : normalizePiThinkingLevel(request.provider, request.thinkingLevel);
+  // 모델 호출 기록(OPRN_CALL_LOG=<jsonl 경로>) — 사용량을 돌려주지 않는 중계기(8318 등)의 토큰 추정과 호출별 지연을 재려고(2026-11-01 값싼 모델 대조).
+  // 한 줄 = 한 호출: 보낸 본문 글자 수(지시문·도구 목록·대화), 받은 글자 수(글·생각·도구 인자), 걸린 시간, 제공자가 준 사용량(있으면).
+  const callLog = (() => {
+    let pending: { at: number; systemChars: number; toolsChars: number; messagesChars: number; totalChars: number; messages: number; toolChoice?: unknown; tools?: number } | undefined;
+    const len = (v: unknown) => (v === undefined ? 0 : typeof v === "string" ? v.length : JSON.stringify(v).length);
+    return {
+      request(payload: unknown) {
+        try {
+          const p = (payload ?? {}) as { system?: unknown; tools?: unknown; messages?: unknown[]; contents?: unknown[]; systemInstruction?: unknown; tool_choice?: unknown; toolChoice?: unknown; toolConfig?: unknown };
+          const msgs = (p.messages ?? p.contents ?? []) as Array<{ role?: string }>;
+          const sys = p.system ?? p.systemInstruction ?? msgs.filter((m) => m?.role === "system" || m?.role === "developer");
+          pending = { at: Date.now(), systemChars: len(sys), toolsChars: len(p.tools), messagesChars: len(msgs.filter((m) => m?.role !== "system" && m?.role !== "developer")), totalChars: len(payload), messages: msgs.length,
+            toolChoice: p.tool_choice ?? p.toolChoice ?? p.toolConfig, tools: Array.isArray(p.tools) ? p.tools.length : undefined };
+        } catch { pending = undefined; }
+      },
+      response(message: { content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string }) {
+        if (!pending) return;
+        const out = { text: 0, thinking: 0, toolArgs: 0, calls: 0 };
+        for (const b of (message.content ?? []) as Array<{ type?: string; text?: string; thinking?: string; arguments?: unknown }>) {
+          if (b?.type === "text") out.text += (b.text ?? "").length;
+          else if (b?.type === "thinking") out.thinking += (b.thinking ?? "").length;
+          else if (b?.type === "toolCall") { out.toolArgs += len(b.arguments); out.calls += 1; }
+        }
+        const line = { ts: new Date().toISOString(), model: String((model as { id?: string }).id ?? request.model ?? ""), provider: request.provider, ms: Date.now() - pending.at, ...pending, at: undefined,
+          out, usage: message.usage ?? null, stop: message.stopReason, ...(message.errorMessage ? { error: String(message.errorMessage).slice(0, 200) } : {}) };
+        pending = undefined;
+        try { appendFileSync(process.env.OPRN_CALL_LOG!, `${JSON.stringify(line)}\n`); } catch { /* 기록 실패는 실행을 바꾸지 않는다 */ }
+      },
+    };
+  })();
   const onPayload = (payload: unknown) => {
     const outgoing = request.provider === "google-antigravity"
       ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
@@ -1171,6 +1221,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     charsetGate.payload(outgoing);
     // 로컬 CLI 는 요청 본문을 우리가 못 본다 — 관문에 넘기는 것은 «모델에게 넘어간 도구 결과»뿐이라 프롬프트 검사로 내보내지 않는다.
     if (localCli) return outgoing;
+    if (process.env.OPRN_CALL_LOG) callLog.request(outgoing);
     // Observe the actual provider payload after normalization, not a rebuilt prompt.
     try {
       emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
@@ -1230,8 +1281,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let answered = false;
   /** 모델이 마지막으로 낸 글 — 완성 뒤 윤문 고리가 짓기 보고를 지우지 않고 그 뒤에 윤문 결과를 붙인 최종 보고를 낸다. */
   let lastAssistantText = "";
+  /** 할 일 도구 강제(keepToolsOn) 호출과 보통 호출의 걸린 시간 — 강제가 제공자를 느리게 하면 끈다. */
+  const keepTiming: { forced: number[]; free: number[]; pending?: { kind: "forced" | "free"; at: number }; off?: boolean } = { forced: [], free: [] };
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
+      keepTiming.pending = undefined;
       if (!forceToolTurn && softPref) {
         // 이름 강제를 못 거는 호출(Anthropic 확장 생각)·없는 도구면 걸지 않는다.
         const api = (model as { api?: string }).api;
@@ -1242,7 +1296,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         return { soft: true as const, id: softPref.id, toolName: want, reminder: [{ role: "user" as const, content: [{ type: "text" as const, text: softPref.reminder }], timestamp: Date.now() }],
           satisfies: (call: { name: string }) => call.name === want || call.name === "todo" } as never;
       }
-      if (!forceToolTurn) return undefined;
+      if (!forceToolTurn) {
+        // v2 할 일이 열려 있는 동안은 도구 호출을 계속 강제한다(Anthropic 확장 생각은 강제를 못 받는다).
+        // 강제한 호출이 강제 안 한 호출보다 2.5배 넘게 느리면 그만둔다 — 2026-11-01 cheap r8: inferhub DeepSeek 은 tool_choice 를 걸면
+        // 호출당 5초 → 25~40초가 되어 11분 안에 단서 하나만 짓고 끝났다.
+        const api = (model as { api?: string }).api;
+        let keep = false;
+        try { keep = !!(options.v2?.keepToolsOn && v2Env && options.v2.keepToolsOn(v2Env)); } catch { keep = false; }
+        const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)] ?? 0;
+        const slow = keepTiming.forced.length >= 2 && keepTiming.free.length >= 2 && med(keepTiming.forced) > 2.5 * med(keepTiming.free);
+        if (slow && !keepTiming.off) { keepTiming.off = true; emit({ type: "execution_status", name: "v2.keep_tools.off", ok: true, summary: `도구 강제 중단 — 강제 호출 ${Math.round(med(keepTiming.forced) / 1000)}초 vs 보통 ${Math.round(med(keepTiming.free) / 1000)}초` }); }
+        const forced = keep && !keepTiming.off && !(api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off");
+        keepTiming.pending = { kind: forced ? "forced" : "free", at: Date.now() };
+        return forced ? "required" : undefined;
+      }
+      keepTiming.pending = undefined;
       const want = forceToolTurn;
       forceToolTurn = false;
       if (want === true) return "required";
@@ -1426,6 +1494,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
+      if (process.env.OPRN_CALL_LOG && !localLoop) callLog.response(message);
+      if (keepTiming.pending && message.stopReason !== "error" && message.stopReason !== "aborted") keepTiming[keepTiming.pending.kind].push(Date.now() - keepTiming.pending.at);
+      keepTiming.pending = undefined;
       referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       const receivedCharsets = charsetGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       if (receivedCharsets.length) emit({ type: 'execution_status', name: 'charset.image.received', ok: true,
@@ -1508,6 +1579,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       resumeAfter = undefined;
       if (cliContextResetPending && localLoop) {
         cliContextResetPending = false;
+        contextEpoch += 1;
         await localLoop.resetSession();
         emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "CLI 문맥 한도 — 앞 대화 기록을 비우고 요청만 다시 싣고 이어 한다" });
         await agent.prompt(cliContextResumePrompt(text));
@@ -1615,6 +1687,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 새 대화로 열어 윤문 도구 목록을 다시 받게 한다.
         // 새 대화라 앞서 읽은 스킬 글도 없으므로 스킬 관문도 다시 건다. 차례 지시는 줄·장면·말투를 스스로 담는다.
         if (localLoop) {
+          contextEpoch += 1;
           await localLoop.resetSession();
           dialoguePolishState.skillRead = false;
           emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
@@ -1682,6 +1755,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (freshContextNext) {
         freshContextNext = false;
         // 로컬 CLI 는 새 대화로, Pi 코어는 기록을 비운다(시스템 지시·도구는 그대로). 후속 글이 요청·결함·맵 요약을 스스로 담는다.
+        contextEpoch += 1;
         if (localLoop) await localLoop.resetSession();
         else (agent as unknown as { clearMessages(): void }).clearMessages();
         emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "고치기 차례 — 앞 대화 기록을 비우고 결함·맵 요약만으로 시작" });

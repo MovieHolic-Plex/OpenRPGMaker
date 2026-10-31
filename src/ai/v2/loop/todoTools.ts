@@ -29,6 +29,9 @@ export const isReadVerb = (name: string): boolean => READ_VERB.test(name);
 export function isWriteRequest(request: Pick<PiAgentRequest, "task" | "readOnly">): boolean {
   if (request.readOnly) return false;
   const t = request.task.trim();
+  // 만들라는 낱말이 있으면 쓰기다 — 「…「아직 아무 단서도 없다」고 알려 줘」처럼 게임 속 대사를 시키는 «알려 줘»를 질문으로 읽어
+  // 할 일 뼈대·첫 쓰기 관문이 통째로 꺼졌다(2026-11-01 자물쇠 요청, 모든 모델).
+  if (/넣어\s*줘|만들어|추가해|바꿔\s*줘|고쳐\s*줘|놓아\s*줘|지어\s*줘|깔아\s*줘|붙여\s*줘|구현해|짜\s*줘|세워\s*줘|그려\s*줘/u.test(t)) return true;
   return !/\?\s*$|？\s*$|알려\s*줘|뭐야|뭐가 있|어디\s*있|있어\?|보여\s*줘|설명해|정리해서|요약해/u.test(t);
 }
 
@@ -89,6 +92,10 @@ export interface TodoToolsState {
   /** 도구 이름 → 마지막으로 부른 호출 번호. */
   readonly calledAt: Map<string, number>;
   callNo: number;
+  /** 성공한 쓰기 수와, 마지막으로 받아 준 done 때의 그 수 — 쓰기 없이 done 만 이어 부르는 «거짓 끝»을 가른다. */
+  okWrites?: number;
+  okWritesAtDone?: number;
+  callNoAtDone?: number;
 }
 
 /** 진행 중 항목의 실패를 세고, 막힘이면 닫는다. 돌려주는 값: 조수에게 덧붙일 한 줄. */
@@ -212,7 +219,37 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
           const check = runCheck(env, store, item);
           const bound = refsLabel(item.refs, true);
           const ce = check?.en ?? check?.detail ?? "";
+          // 기계 확인이 없는 항목: 지난 done 뒤로 저장된 변경이 하나도 없는데, 그사이 쓰기가 거절됐거나 이 판에 성공한 쓰기가 아예 없으면 받지 않는다.
+          // 2026-11-01 gemini-3.8-flash 자물쇠 판: 쓰기 14번이 전부 인자 오류로 거절된 뒤 할 일 5개를 연달아 done → «완료» 보고.
+          if (!check) {
+            const ok = state.okWrites ?? 0;
+            const sinceDone = ok - (state.okWritesAtDone ?? 0);
+            const refusedSince = state.failures.filter((f) => f.at > (state.callNoAtDone ?? 0)).length;
+            if (sinceDone === 0 && (ok === 0 || refusedSince > 0)) {
+              env.emit({ type: "execution_status", name: "v2.todo.false_done", ok: false, summary: `할 일 ${item.id} done 요청 — 저장된 변경 없음(성공 쓰기 ${ok}, 그사이 거절 ${refusedSince})` });
+              result = done(`${item.id} is not done — nothing has been saved since ${state.okWritesAtDone !== undefined ? "the last item was closed" : "the start"}${refusedSince ? ` (${refusedSince} write call(s) were rejected in between)` : ""}. Make the change with a verb that succeeds, then call done. If you cannot, use todo block(reason). Calling done without a saved change is a false completion.`, false);
+              break;
+            }
+            // 항목 글이 맵의 이벤트 이름을 말하는데(「책상 단서」) 이번 실행에서 그 이벤트가 하나도 안 바뀌었으면 받지 않는다 —
+            // 2026-11-01 cheap r7 argon: 단서 쓰기가 세 번 다 거절된 뒤 다른 쓰기(깃발 선언) 하나로 t1·t2·t3 를 연달아 done.
+            if (store.baseline) {
+              const changed = new Set(changedSince(store.baseline, indexProject(env.ctx.project)).eventKeys);
+              const named: { key: string; name: string }[] = [];
+              for (const map of Object.values(env.ctx.project.maps ?? {})) for (const ev of (map?.events ?? [])) {
+                const n = String((ev as { name?: string }).name ?? "").trim();
+                if (n.length >= 2 && item.content.includes(n)) named.push({ key: `${map!.id}:${ev.id}`, name: n });
+              }
+              if (named.length && !named.some((x) => changed.has(x.key))) {
+                const names = [...new Set(named.map((x) => x.name))];
+                env.emit({ type: "execution_status", name: "v2.todo.false_done", ok: false, summary: `할 일 ${item.id} done 요청 — 「${names.join("·")}」 이벤트가 이번에 안 바뀜` });
+                result = done(`${item.id} is not done — ${names.map((n) => `«${n}»`).join(", ")} was not changed in this run. Write that event (its lines, pages) with a verb that succeeds, then call done. If it truly needs no change, use todo block(reason).`, false);
+                break;
+              }
+            }
+          }
           if (store.done(item, check)) {
+            state.okWritesAtDone = state.okWrites ?? 0;
+            state.callNoAtDone = state.callNo;
             const next = store.current();
             env.emit({ type: "execution_status", name: "v2.todo.done", ok: true, summary: `할 일 ${item.id} ✓${check ? ` — ${check.detail.slice(0, 120)}` : ""}${bound ? ` · ${bound}` : ""}` });
             result = done(`${item.id} ✓${check ? ` machine check: ${ce}` : ""}${bound ? ` (${bound})` : ""}. ${next ? `Next: ${next.id} «${next.content}» — continue now.` : store.openCount() ? "" : "No open items."}`);
@@ -514,6 +551,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
             if (next && !(sent.includes("\nFixed call: ") && next.startsWith(`[Next call] ${tool.name}(`))) notes.push(next);
           }
         } else {
+          state.okWrites = (state.okWrites ?? 0) + 1;
           loop.noteEffect(effectFingerprint(tool.name, params, read.text));
           { const cur = bindTo ?? store.current(); const m = cur ? store.meta.get(cur.id) : undefined; if (m?.nextCall?.verb === tool.name) { const { nextCall: _n, ...rest } = m; store.meta.set(cur!.id, rest); } }
           if (bindTo && before) {
