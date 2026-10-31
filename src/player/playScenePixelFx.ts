@@ -31,6 +31,8 @@ const MAX_ONE_SHOTS = 12;
 const LOOP_BUDGET_MS = 4;
 /** 이 넓이(게임 화소)를 넘는 반복 효과는 15fps 로 다시 그린다(날씨·반딧불·폭포). */
 const BIG_LOOP_AREA = 128 * 128;
+const FRAME_CACHE_PER_LOOP = 24 * 1024 * 1024;
+const FRAME_CACHE_TOTAL = 64 * 1024 * 1024;
 const FADE_MS = 300;
 const PAGE_RECHECK_MS = 300;
 
@@ -46,6 +48,17 @@ interface SharedLoop {
   /** 이번 틱에 화면 안 인스턴스가 있었나(없으면 그리지 않는다). */
   wanted: boolean;
   users: number;
+  /**
+   * 그린 장 보관(작은 효과만): 효과 프레임 번호 → 텍스처별 화소 사본. 한 주기를 다 그리고 나면 다시 그리지 않고 사본만 올린다.
+   * 한 효과 FRAME_CACHE_PER_LOOP, 장면 전체 FRAME_CACHE_TOTAL 바이트까지. 넘는 효과(반딧불·폭포·날씨)는 늘 그린다.
+   */
+  cache?: Map<number, CachedFrame>;
+  readonly cacheBytes: number;
+}
+
+interface CachedFrame {
+  readonly data: Partial<Record<`${"back" | "front"}-${Kind}`, Uint8ClampedArray>>;
+  readonly painted: LiveFx["painted"];
 }
 
 interface AmbientFx {
@@ -88,6 +101,7 @@ interface SceneFxState {
   ambientIds: string[];
   ambient: Map<string, AmbientFx>;
   loops: Map<string, SharedLoop>;
+  cacheBytes: number;
   oneShots: OneShot[];
   nextCheck: number;
   clock: number;
@@ -103,7 +117,7 @@ function stateFor(scene: PlaySceneContext): SceneFxState {
   let state = states.get(scene);
   if (!state) {
     state = {
-      mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), oneShots: [], nextCheck: 0, clock: 0, serial: 0,
+      mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), cacheBytes: 0, oneShots: [], nextCheck: 0, clock: 0, serial: 0,
       stats: { draws: 0, ms: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0 },
     };
     states.set(scene, state);
@@ -171,8 +185,13 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
     if (frame === loop.live.shownFrame) continue;
     if (!first && performance.now() - loopStarted > LOOP_BUDGET_MS) { deferred += 1; continue; }
     first = false;
-    renderer.seek(frame / loop.fps);
-    paintLive(loop.live, loop.layers, true, state);
+    const cached = loop.cache?.get(frame);
+    if (cached) uploadCached(loop.live, cached);
+    else {
+      renderer.seek(frame / loop.fps);
+      paintLive(loop.live, loop.layers, loop.layers.length === 1, state);
+      if (loop.cache) loop.cache.set(frame, snapshotLive(loop.live));
+    }
     loop.live.shownFrame = frame;
   }
   for (const fx of shown) {
@@ -233,7 +252,13 @@ function attachAmbient(scene: PlaySceneContext, state: SceneFxState, fx: Ambient
     const renderer = new PixelFxRenderer(mod, fx.spec);
     const layers = layersFor(fx.spec, renderer);
     const big = renderer.layout.width * renderer.layout.height > BIG_LOOP_AREA;
-    loop = { live: createLive(scene, renderer, fx.spec, layers), layers, fps: big ? Math.min(15, renderer.fps) : renderer.fps, wanted: false, users: 0 };
+    const fps = big ? Math.min(15, renderer.fps) : renderer.fps;
+    const live = createLive(scene, renderer, fx.spec, layers);
+    // 한 주기 사본 크기 = 장 수 × 텍스처 수 × 넓이 × 4. 한도 안이면 예약하고 보관한다.
+    const bytes = Math.round(renderer.durationSec * fps) * Object.keys(live.images).length * renderer.layout.width * renderer.layout.height * 4;
+    const cacheable = bytes <= FRAME_CACHE_PER_LOOP && state.cacheBytes + bytes <= FRAME_CACHE_TOTAL;
+    if (cacheable) state.cacheBytes += bytes;
+    loop = { live, layers, fps, wanted: false, users: 0, cacheBytes: cacheable ? bytes : 0, ...(cacheable ? { cache: new Map() } : {}) };
     state.loops.set(loopKey, loop);
   }
   loop.users += 1;
@@ -251,6 +276,7 @@ function releaseAmbient(scene: PlaySceneContext, state: SceneFxState, fx: Ambien
   loop.users -= 1;
   if (loop.users > 0) return;
   destroyLive(scene, loop.live);
+  state.cacheBytes -= loop.cacheBytes;
   for (const [key, value] of state.loops) if (value === loop) state.loops.delete(key);
 }
 
@@ -335,6 +361,30 @@ function paintLive(live: LiveFx, layers: readonly ("back" | "front")[], whole: b
     live.painted[`${layer}-color`] = painted.color;
     live.painted[`${layer}-light`] = painted.light;
   }
+}
+
+function snapshotLive(live: LiveFx): CachedFrame {
+  const data: CachedFrame["data"] = {};
+  for (const [key, image] of Object.entries(live.images) as [keyof CachedFrame["data"], ImageData][]) {
+    if (live.painted[key]) data[key] = image.data.slice();
+  }
+  return { data, painted: { ...live.painted } };
+}
+
+/** 보관한 장을 텍스처에 올린다(그리기 없이). 앞 장에 칠한 것이 있었는데 이번 장이 비었으면 비운 화소를 올린다. */
+function uploadCached(live: LiveFx, cached: CachedFrame): void {
+  for (const [key, tex] of Object.entries(live.textures) as [keyof CachedFrame["data"], Phaser.Textures.CanvasTexture][]) {
+    const was = live.painted[key];
+    const now = cached.painted[key];
+    if (!was && !now) continue;
+    const image = live.images[key]!;
+    const data = cached.data[key];
+    if (data) image.data.set(data);
+    else image.data.fill(0);
+    tex.context.putImageData(image, 0, 0);
+    tex.refresh();
+  }
+  Object.assign(live.painted, cached.painted);
 }
 
 /** 라이브(또는 공유) 텍스처를 인스턴스 스프라이트로 보인다. 칠한 화소가 없는 층·종류는 숨긴다. */
@@ -467,5 +517,6 @@ function disposeAll(scene: PlaySceneContext, state: SceneFxState): void {
   for (const loop of state.loops.values()) destroyLive(scene, loop.live);
   state.ambient.clear();
   state.loops.clear();
+  state.cacheBytes = 0;
   states.delete(scene);
 }
