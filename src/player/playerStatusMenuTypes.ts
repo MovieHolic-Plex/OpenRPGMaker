@@ -32,6 +32,7 @@ export type PlayerStatusMenuActions = {
   readonly onUnequipItem: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onOptimizeEquipment?: (actorId: string) => void;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
+  readonly onSelectBestiaryEntry?: (entryId: string | undefined) => void;
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
@@ -72,6 +73,7 @@ export type PlayerStatusMenuOptions = {
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
+  readonly bestiaryEntryId?: string;
   readonly campaignSpeciesId?: string;
   readonly dexPage?: import("@/player/playerMonsterDexTypes").MonsterDexPage;
   readonly monsterInstanceId?: string;
