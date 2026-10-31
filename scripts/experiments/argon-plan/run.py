@@ -314,7 +314,7 @@ Return one JSON object only, in cells (not pixels):
 {{"map": {{"w": {GW}, "h": {GH}}}, "cells": [{{"class": "floor-plank", "x": 1, "y": 3, "w": 6, "h": 5}}, {{"class": "ceiling", "x": 0, "y": 0, "w": {GW}, "h": 1}}, {{"class": "object:armchair", "x": 2, "y": 4, "w": 1, "h": 1}}, ...],
  "labels": [{{"x": 2, "y": 5, "text": "common hall"}}]}}
 Each entry paints the rectangle x..x+w-1, y..y+h-1 with its class; later entries paint over earlier ones."""
-    gp = TEACH + OUT; open(f"{G}/prompt-grid.txt", "w").write(gp)
+    gp = f"(run {arm}{rep} / grid)\n" + TEACH + OUT; open(f"{G}/prompt-grid.txt", "w").write(gp)   # run id: the 8318 route answers identical prompts identically
     msgs = [{"role": "user", "content": [{"type": "text", "text": gp}] + IMGS}]
     grid_hist = []; plan_g = None
     for n in range(4):   # first plan + at most 3 repairs
