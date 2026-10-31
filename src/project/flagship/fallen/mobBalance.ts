@@ -43,42 +43,42 @@ export const FS_MOB_STATS: Readonly<Record<string, { readonly from: Partial<Reco
   // 바위게 — 방어 92 는 「공격」만으로 흠집도 못 냈다(Lv6 승률 0%). 방어 무시·마법이 여전히 훨씬 빠르다.
   // 심문회 방패병 — 둘이 방패 벽을 세우면(방어 72·보호) 「공격」만으로는 끝이 안 났다(지하 3층 방진 0%).
   enemy_fs2_ash_crow: { from: { maxHp: 130, attack: 76, mind: 20 }, to: { maxHp: 120, attack: 70, mind: 18 } },
-  enemy_fs2_ash_snake: { from: { maxHp: 180, attack: 78, mind: 30 }, to: { maxHp: 220, attack: 92, mind: 35 } },
+  enemy_fs2_ash_snake: { from: { maxHp: 180, attack: 78, mind: 30 }, to: { maxHp: 220, attack: 93, mind: 36 } },
   enemy_fs2_ash_wisp: { from: { maxHp: 130, attack: 54, mind: 60 }, to: { maxHp: 190, attack: 82, mind: 92 } },
-  enemy_fs2_circuit_snake: { from: { maxHp: 260, attack: 94, mind: 60 }, to: { maxHp: 740, attack: 263, mind: 168 } },
-  enemy_fs2_crystal_spider: { from: { maxHp: 300, attack: 104, mind: 40 }, to: { maxHp: 380, attack: 132, mind: 51 } },
+  enemy_fs2_circuit_snake: { from: { maxHp: 260, attack: 94, mind: 60 }, to: { maxHp: 800, attack: 285, mind: 182 } },
+  enemy_fs2_crystal_spider: { from: { maxHp: 300, attack: 104, mind: 40 }, to: { maxHp: 370, attack: 128, mind: 50 } },
   enemy_fs2_fort_crossbow: { from: { maxHp: 180, attack: 82, mind: 10 }, to: { maxHp: 220, attack: 99, mind: 12 } },
-  enemy_fs2_fort_dog: { from: { maxHp: 200, attack: 80, mind: 20 }, to: { maxHp: 240, attack: 100, mind: 24 } },
+  enemy_fs2_fort_dog: { from: { maxHp: 200, attack: 80, mind: 20 }, to: { maxHp: 240, attack: 101, mind: 24 } },
   enemy_fs2_fort_knight: { from: { maxHp: 300, attack: 80, mind: 20 }, to: { maxHp: 370, attack: 97, mind: 24 } },
-  enemy_fs2_frost_bat: { from: { maxHp: 200, attack: 76, mind: 60 }, to: { maxHp: 200, attack: 75, mind: 60 } },
+  enemy_fs2_frost_bat: { from: { maxHp: 200, attack: 76, mind: 60 }, to: { maxHp: 200, attack: 74, mind: 59 } },
   enemy_fs2_frost_wolf: { from: { maxHp: 240, attack: 84, mind: 20 }, to: { maxHp: 280, attack: 100, mind: 24 } },
-  enemy_fs2_light_moth: { from: { maxHp: 190, attack: 72, mind: 74 }, to: { maxHp: 260, attack: 99, mind: 102 } },
+  enemy_fs2_light_moth: { from: { maxHp: 190, attack: 72, mind: 74 }, to: { maxHp: 260, attack: 101, mind: 104 } },
   enemy_fs2_starved_dog: { from: { maxHp: 150, attack: 74, mind: 20 }, to: { maxHp: 160, attack: 74, mind: 21 } },
   enemy_fs2_watchman: { from: { maxHp: 140, attack: 50, mind: 10 }, to: { maxHp: 220, attack: 83, mind: 16 } },
-  enemy_fs_bandit: { from: { maxHp: 190, attack: 66, mind: 30 }, to: { maxHp: 190, attack: 69, mind: 31 } },
+  enemy_fs_bandit: { from: { maxHp: 190, attack: 66, mind: 30 }, to: { maxHp: 190, attack: 70, mind: 31 } },
   enemy_fs_beetle: { from: { maxHp: 200, attack: 62, mind: 20 }, to: { maxHp: 220, attack: 67, mind: 22 } },
-  enemy_fs_boar: { from: { maxHp: 240, attack: 66, mind: 20 }, to: { maxHp: 220, attack: 58, mind: 17 } },
+  enemy_fs_boar: { from: { maxHp: 240, attack: 66, mind: 20 }, to: { maxHp: 210, attack: 56, mind: 16 } },
   enemy_fs_crab: { from: { maxHp: 190, attack: 58, defense: 92, mind: 20 }, to: { maxHp: 170, attack: 52, defense: 50, mind: 18 } },
   enemy_fs_eel: { from: { maxHp: 150, attack: 54, mind: 50 }, to: { maxHp: 230, attack: 83, mind: 77 } },
-  enemy_fs_fanatic: { from: { maxHp: 290, attack: 76, mind: 34 }, to: { maxHp: 540, attack: 144, mind: 65 } },
-  enemy_fs_fanatic_preacher: { from: { maxHp: 260, attack: 46, mind: 82 }, to: { maxHp: 510, attack: 90, mind: 161 } },
-  enemy_fs_goblin: { from: { maxHp: 120, attack: 52, mind: 30 }, to: { maxHp: 120, attack: 56, mind: 33 } },
+  enemy_fs_fanatic: { from: { maxHp: 290, attack: 76, mind: 34 }, to: { maxHp: 600, attack: 159, mind: 72 } },
+  enemy_fs_fanatic_preacher: { from: { maxHp: 260, attack: 46, mind: 82 }, to: { maxHp: 520, attack: 91, mind: 163 } },
+  enemy_fs_goblin: { from: { maxHp: 120, attack: 52, mind: 30 }, to: { maxHp: 120, attack: 57, mind: 34 } },
   enemy_fs_hornet: { from: { maxHp: 62, attack: 50, mind: 20 }, to: { maxHp: 90, attack: 79, mind: 31 } },
-  enemy_fs_inq_crossbow: { from: { maxHp: 230, attack: 82, mind: 12 }, to: { maxHp: 750, attack: 268, mind: 39 } },
-  enemy_fs_inq_flagellant: { from: { maxHp: 260, attack: 74, mind: 10 }, to: { maxHp: 400, attack: 112, mind: 15 } },
-  enemy_fs_inq_handler: { from: { maxHp: 340, attack: 70, mind: 14 }, to: { maxHp: 460, attack: 94, mind: 19 } },
-  enemy_fs_inq_hound: { from: { maxHp: 190, attack: 72, mind: 10 }, to: { maxHp: 280, attack: 107, mind: 15 } },
-  enemy_fs_inq_penitent: { from: { maxHp: 700, attack: 88, mind: 10 }, to: { maxHp: 820, attack: 103, mind: 12 } },
-  enemy_fs_inq_priest: { from: { maxHp: 300, attack: 34, mind: 88 }, to: { maxHp: 990, attack: 111, mind: 291 } },
-  enemy_fs_inq_shield: { from: { maxHp: 470, attack: 68, defense: 72, mind: 14 }, to: { maxHp: 500, attack: 73, defense: 56, mind: 16 } },
-  enemy_fs_inq_spy: { from: { maxHp: 260, attack: 74, mind: 30 }, to: { maxHp: 330, attack: 91, mind: 37 } },
-  enemy_fs_mantis: { from: { maxHp: 110, attack: 84, mind: 20 }, to: { maxHp: 130, attack: 103, mind: 24 } },
-  enemy_fs_moss: { from: { maxHp: 120, attack: 40, mind: 56 }, to: { maxHp: 180, attack: 58, mind: 82 } },
-  enemy_fs_moth: { from: { maxHp: 96, attack: 40, mind: 56 }, to: { maxHp: 140, attack: 60, mind: 85 } },
+  enemy_fs_inq_crossbow: { from: { maxHp: 230, attack: 82, mind: 12 }, to: { maxHp: 700, attack: 249, mind: 36 } },
+  enemy_fs_inq_flagellant: { from: { maxHp: 260, attack: 74, mind: 10 }, to: { maxHp: 370, attack: 103, mind: 14 } },
+  enemy_fs_inq_handler: { from: { maxHp: 340, attack: 70, mind: 14 }, to: { maxHp: 470, attack: 96, mind: 19 } },
+  enemy_fs_inq_hound: { from: { maxHp: 190, attack: 72, mind: 10 }, to: { maxHp: 280, attack: 105, mind: 15 } },
+  enemy_fs_inq_penitent: { from: { maxHp: 700, attack: 88, mind: 10 }, to: { maxHp: 850, attack: 106, mind: 12 } },
+  enemy_fs_inq_priest: { from: { maxHp: 300, attack: 34, mind: 88 }, to: { maxHp: 920, attack: 103, mind: 270 } },
+  enemy_fs_inq_shield: { from: { maxHp: 470, attack: 68, defense: 72, mind: 14 }, to: { maxHp: 450, attack: 66, defense: 56, mind: 14 } },
+  enemy_fs_inq_spy: { from: { maxHp: 260, attack: 74, mind: 30 }, to: { maxHp: 310, attack: 86, mind: 35 } },
+  enemy_fs_mantis: { from: { maxHp: 110, attack: 84, mind: 20 }, to: { maxHp: 130, attack: 104, mind: 24 } },
+  enemy_fs_moss: { from: { maxHp: 120, attack: 40, mind: 56 }, to: { maxHp: 190, attack: 61, mind: 86 } },
+  enemy_fs_moth: { from: { maxHp: 96, attack: 40, mind: 56 }, to: { maxHp: 140, attack: 62, mind: 87 } },
   enemy_fs_spider: { from: { maxHp: 130, attack: 55, mind: 30 }, to: { maxHp: 150, attack: 65, mind: 35 } },
   enemy_fs_undine: { from: { maxHp: 130, attack: 36, mind: 72 }, to: { maxHp: 130, attack: 34, mind: 68 } },
-  enemy_fs_wisp: { from: { maxHp: 90, attack: 60, mind: 60 }, to: { maxHp: 100, attack: 76, mind: 76 } },
-  enemy_fs_wolf: { from: { maxHp: 150, attack: 58, mind: 30 }, to: { maxHp: 270, attack: 103, mind: 53 } },
+  enemy_fs_wisp: { from: { maxHp: 90, attack: 60, mind: 60 }, to: { maxHp: 100, attack: 77, mind: 77 } },
+  enemy_fs_wolf: { from: { maxHp: 150, attack: 58, mind: 30 }, to: { maxHp: 270, attack: 105, mind: 54 } },
 };
 
 // ── 무리 구성 ─────────────────────────────────────────────────────────
@@ -109,7 +109,29 @@ export const FS_TROOP_SPLITS: readonly { readonly mapId: string; readonly fromTr
   // 재의 들판(Lv7) 도깨비 셋과 새벽샘 마을 터(Lv8) 도깨비 — 마을 터는 넷.
   { mapId: "fs2_dawnwell", fromTroop: "troop_fs2_ash_wisps", id: "troop_fs2_ash_wisps_dawn", name: "잿불 도깨비 떼",
     enemyIds: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
+  // 눈길(Lv10~11)과 얼음 호수(Lv12)의 서리늑대·서리박쥐 — 호수 쪽을 따로 둬 아래 FS_TROOP_TUNE 으로 조금 세게.
+  { mapId: "fs2_ice_lake", fromTroop: "troop_fs2_frost_wolves", id: "troop_fs2_frost_wolves_lake", name: "얼음 호수 서리늑대",
+    enemyIds: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"] },
+  { mapId: "fs2_ice_lake", fromTroop: "troop_fs2_frost_bats", id: "troop_fs2_frost_bats_lake", name: "얼음 호수 서리박쥐",
+    enemyIds: ["enemy_fs2_frost_bat", "enemy_fs2_frost_bat", "enemy_fs2_frost_bat"] },
 ];
+
+/**
+ * 같은 적이 레벨이 다른 여러 무리에 나와 위 한 표로는 다 못 맞추는 무리 — 그 무리 적만 따로 떼어(`<적>_t_<무리>`, 이름·그림 같음)
+ * 힘을 배수만큼 고친다(HP 와 공격·마력을 √배수씩). 숫자는 fs-mob-balance-solve 로 잰 값.
+ */
+export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
+  troop_fs_wolves: 1.06,
+  troop_fs_inq_zeal: 1.38,
+  troop_fs_inq_phalanx: 1.11,
+  troop_fs_inq_vigil: 0.63,
+  troop_fs_inq_patrol: 0.58,
+  troop_fs_inq_ledge: 1.23,
+  troop_fs2_ash_wisps: 1.09,
+  troop_fs2_frost_bats: 0.87,
+  troop_fs2_frost_wolves_lake: 1.06,
+  troop_fs2_tower_snakes: 1.1,
+};
 
 // ── 우두머리 ──────────────────────────────────────────────────────────
 interface EliteSpec {
@@ -170,7 +192,7 @@ export const FS_ELITES: readonly EliteSpec[] = [
   },
   {
     id: "enemy_fs2_elite_frostmane", from: "enemy_fs2_frost_wolf", name: "서리갈기 우두머리", level: 11, scale: 150,
-    stats: { maxHp: 1200, maxMp: 0, attack: 149, defense: 36, mind: 65, agility: 76 }, exp: 240, gold: 60,
+    stats: { maxHp: 1160, maxMp: 0, attack: 144, defense: 36, mind: 63, agility: 76 }, exp: 240, gold: 60,
     skill: { id: "skill_fs2_elite_frost_howl", name: "서리 울부짖음", priority: 12, every: 3,
       description: "얼어붙은 숨을 길게 내뱉어 무리 전체를 얼린다.",
       fields: { scope: "allEnemies", power: 56, elementId: "ice", effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_ice_shatter" } as Partial<SkillRecord> },
@@ -179,7 +201,7 @@ export const FS_ELITES: readonly EliteSpec[] = [
   },
   {
     id: "enemy_fs2_tower_sentinel", from: "enemy_fs2_tower_sentinel", name: "탑 파수 기계", level: 12, scale: 150,
-    stats: { maxHp: 1140, maxMp: 0, attack: 126, defense: 58, mind: 41, agility: 60 }, exp: 260, gold: 60,
+    stats: { maxHp: 1120, maxMp: 0, attack: 123, defense: 58, mind: 40, agility: 60 }, exp: 260, gold: 60,
     skill: { id: "skill_fs2_elite_sentinel_sweep", name: "파수 회전베기", priority: 12, every: 3,
       description: "몸통을 한 바퀴 돌려 팔날로 둘레를 벤다.",
       fields: { scope: "allEnemies", power: 58, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_slash_steel" } as Partial<SkillRecord> },
@@ -209,7 +231,7 @@ export const FS_ELITE_PLACEMENTS: readonly { readonly mapId: string; readonly fr
 ];
 
 /** 능력치·우두머리 기록만(맵은 안 건드린다) — 시뮬 스크립트도 이것을 부른다. */
-export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS = FS_MOB_STATS): string[] {
+export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS = FS_MOB_STATS, tune: Readonly<Record<string, number>> = FS_TROOP_TUNE): string[] {
   const db = project.database;
   const warnings: string[] = [];
   upsert(db.states as StateRecord[], {
@@ -241,6 +263,25 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
     troop.name = split.name;
     setMembers(troop, split.enemyIds);
     upsert(db.troops, troop);
+  }
+
+  for (const [troopId, mul] of Object.entries(tune)) {
+    const troop = db.troops.find((t) => t.id === troopId);
+    if (!troop) { warnings.push(`따로 고칠 무리 없음: ${troopId}`); continue; }
+    const k = Math.sqrt(mul);
+    const remap = new Map<string, string>();
+    for (const enemyId of new Set(troop.enemyIds)) {
+      const base = db.enemies.find((e) => e.id === enemyId);
+      if (!base) { warnings.push(`${troopId} 의 적 없음: ${enemyId}`); continue; }
+      const id = `${enemyId}_t_${troopId.replace(/^troop_/, "")}`;
+      const e = clone(base);
+      e.id = id;
+      e.stats = { ...e.stats, maxHp: Math.max(10, Math.round(e.stats.maxHp * k / 10) * 10), attack: Math.round(e.stats.attack * k), mind: Math.round(e.stats.mind * k) };
+      upsert(db.enemies, e);
+      remap.set(enemyId, id);
+    }
+    troop.enemyIds = troop.enemyIds.map((id) => remap.get(id) ?? id);
+    if (troop.members) troop.members = troop.members.map((m) => ({ ...m, enemyId: remap.get(m.enemyId) ?? m.enemyId }));
   }
 
   const template = db.skills.find((s) => s.id === "skill_fs_judgment") ?? db.skills.find((s) => s.id === "skill_attack");
