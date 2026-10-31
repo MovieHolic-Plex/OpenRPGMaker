@@ -170,6 +170,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
   나오기·붙잡힘(게임 오버 화면의 `stopAllAudio`)·맵 이동에서 저절로 멈추고, 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
   조수: `make_chase_scene({hidingSound:{enterSe?, exitSe?, heartbeat?}})` — 공포 장르는 생략해도 사물함 문 소리(`cc0-se-osx-door-close-03`) + 심장 고동(`HORROR_SOUNDS` heartbeat).
+- **숨은 동안 손전등**(2026-10-31): 주인공에 붙은 부채꼴 광원(`at:"player"` + `cone`, 손전등)은 `session.horror.hiding` 동안 그리지 않는다(`playSceneLighting.resolveLightAnchor`). 발밑 둥근 빛은 남는다. 숨은 사물함에서 복도로 빛이 새어 나가 숨기가 안 읽혔다.
   편집기: 물체 동작 「은신처」 아래 소리 칸 셋.
 - 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
   내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.

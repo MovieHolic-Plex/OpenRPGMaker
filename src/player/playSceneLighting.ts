@@ -167,6 +167,9 @@ function resolveLightAnchor(
   source: LightSource
 ): LightTilePosition | undefined {
   if (anchor === "player") {
+    // 숨은 동안(도구함·커튼 뒤) 주인공 손전등 부채꼴은 꺼진다 — 숨은 자리에서 복도로 빛이 새어 나가 「숨었다」가 안 읽혔다
+    // (2026-10-31 「이상 없음」 첫 숨기 녹화). 발밑의 작은 둥근 빛은 그대로 둔다.
+    if (source.cone && scene.session.horror?.hiding) return undefined;
     const at = spriteToTilePosition(scene.player, mapTileSize(scene.map));
     return source.cone ? { ...at, facing: scene.facing } : at;
   }
