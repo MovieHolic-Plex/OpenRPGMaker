@@ -446,7 +446,7 @@ function floorTwo(project: Project, exec: Exec): void {
   // 손잡이 이름표 — 도구는 「레버 → 동쪽 쇠창살」로 이름을 지어 이름표가 답(어느 손잡이가 어느 문)을 알려 줬다(첫 플레이 검수 2026-10-31).
   // 무엇인지만 보이게 고친다. 어느 문이 열리는지는 당겨 보고 소리로 안다.
   for (const [at, label] of [[T2.westLever, "벽 손잡이"], [T2.eastLever, "거울 손잡이"]] as const) {
-    const lever = M(project, FS2_T2).events.find((e) => e.x === at.x && e.y === at.y && String(e.name ?? "").startsWith("레버 →"));
+    const lever = M(project, FS2_T2).events.find((e) => e.x === at.x && e.y === at.y && String(e.name ?? "").startsWith("레버"));
     if (!lever) throw new Error(`[fallen-star tower] 2층 손잡이 이벤트가 없다 (${at.x},${at.y})`);
     lever.name = label;
   }
