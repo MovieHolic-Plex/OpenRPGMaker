@@ -20,7 +20,6 @@ import { ensureNamedSwitch } from './flagHelpers';
 import { assertEventShape, ensureMapCheckpointEvent, placementAdjustedWarning, resolveEventPlacement, upsertEventIntoMap } from './eventTools';
 import { protectedCells } from './npcPatrolTools';
 import { walkableFromAnchors } from './transferReachability';
-import { entryCells } from '@/project/eventPassageBlock';
 import { GRAPHIC_SPEC_SCHEMA } from './schemaShapes';
 import { battlersForFieldGraphic, fieldGraphicForBattler, fieldReadyBattlerIds } from './fieldEnemyGraphics';
 import { charsetGraphic } from './eventCompile';
@@ -208,7 +207,7 @@ const APPROACH_STYLE_SCHEMA = {
 } as const;
 
 export interface FieldEnemyChaseOptions {
-  /** 시야 칸(2..8, 기본 5). 입구가 시야+1 칸 안이면 그만큼 줄인다(들어서자마자 덮치지 않게). */
+  /** 시야 칸(2..12, 기본 5). 저작 값 그대로 쓴다 — 입구에서 들어서자마자 덮치지 않는 것은 런타임 도착 보호가 맡는다. */
   readonly sightRange?: number;
   /** cone = 앞쪽 90° 부채꼴(이벤트 시선 조건 eventSeesPlayer 와 같은 판정, 기본) · any = 사방. */
   readonly vision?: 'any' | 'cone';
@@ -228,21 +227,18 @@ export interface FieldEnemyChaseOptions {
 /**
  * 이미 놓인 보이는 적(place_field_enemy 의 「필드 적」 페이지)을 「보면 달려드는」 적으로 바꾼다 — 다시 쓸 수 있는 묶음.
  * 시야(부채꼴·벽 가림)에 들면 머리 위 느낌표 → 순찰보다 빠른 걸음으로 쫓아와 닿으면 전투, 놓치면 잠깐 뒤지다 돌아가 순찰을 잇는다.
- * 순찰 경로(custom route)는 그대로 살려 시야 밖 걸음으로 쓴다. 필드 적 페이지가 없거나 입구가 너무 가까우면 바꾸지 않는다.
+ * 순찰 경로(custom route)는 그대로 살려 시야 밖 걸음으로 쓴다. 필드 적 페이지가 없으면 바꾸지 않는다.
  */
-export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameEvent, options: FieldEnemyChaseOptions = {}): { ok: boolean; reason?: string; sightRange?: number } {
+export function makeFieldEnemyChase(project: Project, _map: GameMap, event: GameEvent, options: FieldEnemyChaseOptions = {}): { ok: boolean; reason?: string; sightRange?: number } {
   const fight = (event.pages ?? []).find((page) => page.trigger.kind === 'eventTouch' && page.commands.some((c) => c.kind === 'battleProcessing'));
   if (!fight) return { ok: false, reason: 'not-field-enemy' };
   const dirs = (fight.movement.route?.moves ?? []).flatMap((move) => {
     const rec = move as { kind?: string; dir?: unknown };
     return rec.kind === 'move' && isDir(rec.dir) ? [rec.dir] : [];
   });
-  const cells = (dirs.length ? walkRoute(project, map, { x: event.x, y: event.y }, dirs) : null) ?? [{ x: event.x, y: event.y }];
-  const entries = entryCells(project, map);
-  const nearest = Math.min(Infinity, ...cells.flatMap((cell) => entries.map((entry) => Math.abs(entry.x - cell.x) + Math.abs(entry.y - cell.y))));
-  let range = Math.max(2, Math.min(12, Math.round(options.sightRange ?? 5)));
-  while (range >= 2 && nearest <= range + 1) range -= 1;
-  if (range < 2) return { ok: false, reason: 'entry-too-close' };
+  // 입구 가까운 추격자의 시야를 여기서 깎지 않는다 — 들어서자마자 덮치는 것은 런타임 도착 보호(@/player/chaseSpawnGrace)가 막는다.
+  // 예전에는 시야를 영구히 줄여, 입구 곁을 지키는 경비가 바로 곁을 지나는 주인공도 못 봤다(2026-10-31 폴른 스타 B2·B6).
+  const range = Math.max(2, Math.min(12, Math.round(options.sightRange ?? 5)));
   const pace = CHASE_PACE[options.pace ?? 'fast'];
   const approachStyle = options.approachStyle === undefined ? fight.movement.approachStyle
     : options.approachStyle === 'auto' ? inferFieldApproachStyle(project, event) : options.approachStyle;
@@ -454,7 +450,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. 쫓는 동안은 쉬지 않고 길을 찾아 돌아오며, 주인공 진행 방향을 앞질러 막고 여럿이면 갈라져 감싼다. pace 기본 normal(≈218ms/칸, 주인공 걷기 160 보다 조금 느림), fast 는 주인공보다 빠르고 12칸마다 숨을 고른다 — 피하는 수단은 시야를 끊는 벽·엄폐·문·숨는 곳·숨 고를 때 달아나기다(rush:true 면 알아챈 뒤 더 빠르게 달려와 바로 덮친다 — 경비병·사냥꾼). ' +
       '던전 층·들판·길목에서 「몬스터가 돌아다닌다/눈에 보이는 적/피하거나 선제」 요청의 정본 — 한 마리씩 의도한 자리에 놓고 필요한 만큼 여러 번 호출한다(보통 한 맵 3~6마리, 서로 다른 troopId·behavior 로). ' +
       '필드 그림은 **전투 그림이 정본**: 적 그룹 선두 적의 monsterResourceId 와 같은 종류의 charset 을 자동으로 고른다(슬라임→슬라임 칩, 해골→해골 칩). 대응하는 걷기 칩이 없는 종(박쥐·늑대·거미 등)은 **전투에 서는 같은 도트 그림을 정지 심볼로 그대로** 쓴다(다른 그림으로 대체하지 않는다). 전투 그림(monsterResourceId)이 아예 없는 적만 거절한다. ' +
-      '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점 주변과 도달 불가 칸은 거부하며 chase 는 입구에서 시야 밖에 놓아야 한다. ' +
+      '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점·표지 2칸 안과 도달 불가 칸은 거부한다. chase 시야는 준 값 그대로다(입구 곁 경비도 깎지 않는다) — 주인공이 맵에 막 들어선 직후(3초, 또는 도착 칸에서 3칸 걸어 나갈 때까지)는 런타임이 추격자가 새로 알아채지 못하게 막으므로 입구를 지키는 경비를 시야 안에 둬도 들어서자마자 덮치지 않고, 그 뒤 곁을 지나면 본다. ' +
       '전투 방향 보정(적 등 뒤 접촉=선제, 등을 잡히면 기습)은 set_project_settings battle.formationRoll:true 를 켜야 적용된다. 그림은 생략하면 적 그룹 선두 몬스터 이름으로 기존 도트를 찾는다(새 그림·생성 인물 금지).',
     parameters: schema({
       mapId: { type: 'string' },
@@ -545,15 +541,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const vanishSwitchId = typeof args.vanishSwitchId === 'string' && args.vanishSwitchId.trim() ? args.vanishSwitchId.trim() : undefined;
       if (appearSwitchId) ensureNamedSwitch(draft, appearSwitchId, `필드 적 경보: ${appearSwitchId}`);
       if (vanishSwitchId) ensureNamedSwitch(draft, vanishSwitchId, `필드 적 물러남: ${vanishSwitchId}`);
-      if (behavior === 'chase' && !appearSwitchId) {
-        const reach = sightRaw + 1;
-        const entries = entryCells(draft, map);
-        // 순찰+추격은 순찰 경로 어느 칸에서도 입구가 시야 안이면 안 된다.
-        for (const cell of cells) {
-          const arrivals = entries.filter((entry) => Math.abs(entry.x - cell.x) + Math.abs(entry.y - cell.y) <= reach);
-          if (arrivals.length) throw new ToolError(`추격 적이 입구에서 시야(${sightRaw}칸) 안에 있어 맵에 들어서자마자 전투가 열립니다: (${cell.x}, ${cell.y}). 입구에서 ${reach}칸보다 먼 칸에 놓거나 sightRange 를 줄이세요.`, { code: 'field-enemy-ambush', mapId: map.id, x: cell.x, y: cell.y });
-        }
-      }
+      // 입구가 추격 적 시야 안이어도 거절하거나 시야를 깎지 않는다 — 맵에 막 들어선 주인공은 런타임 도착 보호(@/player/chaseSpawnGrace:
+      // 몇 초 동안, 또는 도착 칸에서 몇 칸 걸어 나갈 때까지 새로 알아채지 않음)가 지킨다. 입구 곁을 지키는 경비는 저작한 시야 그대로 본다.
       const reach = walkableFromAnchors(draft, map);
       if (reach) {
         const cut = cells.find((cell) => !reach.has(cell.y * map.width + cell.x));
@@ -724,7 +713,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
       'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침 · allRound 사방을 봄 · lineOfSight:false 벽·나무가 시선을 안 가림(트인 들판 매복) · brain 추격 성격(smart 발소리 듣고 앞질러 막기·beast 곧장 돌진·knight 포위·ghost 벽 통과·classic 예전). ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
-      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게) — 스위치·변수 조건 페이지(이야기가 깨우는 추격자)는 줄이지 않는다. ' +
+      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야는 준 값 그대로 쓴다(입구 곁 경비도 깎지 않는다) — 주인공이 맵에 막 들어선 직후(3초, 또는 도착 칸에서 3칸 걸어 나갈 때까지)는 런타임이 추격자가 새로 알아채지 못하게 막아 들어서자마자 덮치지 않는다. ' +
       '잠입 미니게임(경비 시야 피하기)이면 visionLight:{} 로 적마다 바라보는 쪽 바닥에 부채꼴 등불 빛을 깔아 시야를 눈에 보이게 한다 — 그 맵 조명(set_scene_mood)을 정한 다음에 부른다(조명을 나중에 다시 깔면 빛이 지워진다).',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 모든 맵)' },
@@ -751,28 +740,15 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
       const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
       const maps = wantedMaps ? wantedMaps.map((id) => draft.maps[id]!) : Object.values(draft.maps);
-      const changed: string[] = []; const notes: string[] = [];
+      const changed: string[] = [];
       for (const map of maps) {
-        const entries = tuning.sightRange !== undefined ? entryCells(draft, map) : [];
         for (const event of map.events) {
           if (wantedEvents && !wantedEvents.has(event.id)) continue;
           let touched = false;
           for (const page of event.pages ?? []) {
             if (page.movement.type !== 'chase') continue;
-            let local = tuning;
-            // 스위치·변수로 깨어나는 추격자(이야기 비트가 켜는 숙직 선생·경보 뒤 경비)는 플레이어가 맵에 들어설 때 그 자리에 없다 —
-            // place_field_enemy 의 appearSwitchId 처럼 입구 거리로 시야를 깎지 않는다. 예전엔 계단 곁에서 출발하는 순찰 경비가
-            // 6칸을 달라 해도 2칸이 되어, 손전등 빛이 발밑에만 비치고 복도 맞은편 주인공을 못 봤다(2026-10-31 「이상 없음」 2층).
-            const woken = (page.conditions ?? []).some((condition) => condition.kind === 'switch' || condition.kind === 'variable');
-            if (tuning.sightRange !== undefined && entries.length && woken) {
-              notes.push(`${map.id}/${event.id}: 스위치로 깨어나는 추격자라 입구 거리로 시야를 줄이지 않음(${tuning.sightRange}칸)`);
-            } else if (tuning.sightRange !== undefined && entries.length) {
-              const nearest = Math.min(...entries.map((e) => Math.abs(e.x - event.x) + Math.abs(e.y - event.y)));
-              let range = tuning.sightRange;
-              while (range > 2 && nearest <= range + 1) range -= 1;
-              if (range !== tuning.sightRange) { local = { ...tuning, sightRange: range }; notes.push(`${map.id}/${event.id}: 입구가 가까워 시야 ${range}칸`); }
-            }
-            page.movement = applyFieldDetection(page.movement, local);
+            // 저작한 시야를 입구 거리로 깎지 않는다(도착 직후 매복은 런타임 도착 보호가 막는다, @/player/chaseSpawnGrace).
+            page.movement = applyFieldDetection(page.movement, tuning);
             touched = true;
           }
           if (touched) changed.push(`${map.id}/${event.id}`);
@@ -796,7 +772,6 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       return {
         summary: `추격 적 ${changed.length}마리 조율 — ${parts.join(' · ')}`,
         data: { changed, tuning },
-        ...(notes.length ? { warnings: notes.slice(0, 12) } : {}),
       };
     },
   },

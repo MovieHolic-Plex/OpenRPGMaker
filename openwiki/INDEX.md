@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7957KB / 약 2,338,284 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7958KB / 약 2,338,705 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -104,7 +104,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-monster-art-v2.md` | 3 | `emerald-art-v2-register-npc.mjs`, `public/assets/emerald-monster/cast/uploaded-cast.json`, `verify-shots/emerald-art-v2-20261004/SUMMARY.md` |
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
-| `openwiki/field-enemy.md` | 2 | `chrono-bell.play.json`, `docs/games/school/design.md` |
+| `openwiki/field-enemy.md` | 3 | `chaser-entrance.record.mjs`, `chrono-bell.play.json`, `docs/games/school/design.md` |
 | `openwiki/getting-started.ko.md` | 1 | `.oprn-local.json` |
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
@@ -1539,19 +1539,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 25KB · 197줄 · ~7,508 토큰
+### `openwiki/field-enemy.md` — 26KB · 205줄 · ~7,929 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
 - `L36` 걷기 칩이 없는 종: 전투 그림에서 필드 칩을 뽑는다 (2026-10-24)
 - `L55` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 - `L72` 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
-- `L85` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
-- `L116` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
-- `L152` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
-- `L179` 시간대 무리 (2026-10-30)
-- `L183` 안전 장치 (도구가 거절하는 것)
-- `L191` 알려진 한계
+- `L86` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
+- `L124` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
+- `L160` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
+- `L187` 시간대 무리 (2026-10-30)
+- `L191` 안전 장치 (도구가 거절하는 것)
+- `L199` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 23KB · 305줄 · ~7,032 토큰
 
