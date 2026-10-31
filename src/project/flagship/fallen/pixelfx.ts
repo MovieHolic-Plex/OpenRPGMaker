@@ -234,6 +234,8 @@ function applyStoryFx(project: Project, report: { applied: string[]; skipped: st
 /** 데모 빌드 맨 끝에서 한 번 부른다. */
 export function applyFallenPixelFx(project: Project): FallenPixelFxReport {
   const report = { applied: [] as string[], skipped: [] as string[] };
+  // A/B 굽기용: OPRN_FS_PIXELFX=0 이면 아무것도 붙이지 않는다(효과 전 화면을 같은 코드로 굽는다).
+  if (typeof process !== "undefined" && process.env?.OPRN_FS_PIXELFX === "0") return report;
   applySkillFx(project, report);
   applyFieldFx(project, report);
   applyStoryFx(project, report);
