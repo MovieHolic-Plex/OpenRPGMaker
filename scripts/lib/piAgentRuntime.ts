@@ -993,6 +993,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let forceToolTurn: boolean | string = false;
   // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
   let freshContextNext = false;
+  // 모델 대화가 비워진 횟수(새 CLI 대화·기록 비우기) — v2 가 기록으로 준 지식 카드를 다시 줄지 본다(env.contextEpoch).
+  let contextEpoch = 0;
   // H3 다음 호출 우선(src/ai/v2/loop/nextCall.ts): 코어의 SoftToolRequirement — 알림 한 번, 그래도 다른 도구면 그 도구를 강제(최대 2번).
   // 코어는 강제 3번째에 실행을 던져 끝내므로 getToolChoice 가 3번 내준 뒤에는 내린다.
   let lastContextTrim = 0;
@@ -1013,6 +1015,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(localCli && cliToolFreezeOn() ? { lazyToolsVia: CLI_CALL_TOOL } : {}),
     clearToolPreference: () => { softPref = undefined; },
     freshContextNextTurn: () => { freshContextNext = true; },
+    contextEpoch: () => contextEpoch,
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
@@ -1576,6 +1579,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       resumeAfter = undefined;
       if (cliContextResetPending && localLoop) {
         cliContextResetPending = false;
+        contextEpoch += 1;
         await localLoop.resetSession();
         emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "CLI 문맥 한도 — 앞 대화 기록을 비우고 요청만 다시 싣고 이어 한다" });
         await agent.prompt(cliContextResumePrompt(text));
@@ -1683,6 +1687,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 새 대화로 열어 윤문 도구 목록을 다시 받게 한다.
         // 새 대화라 앞서 읽은 스킬 글도 없으므로 스킬 관문도 다시 건다. 차례 지시는 줄·장면·말투를 스스로 담는다.
         if (localLoop) {
+          contextEpoch += 1;
           await localLoop.resetSession();
           dialoguePolishState.skillRead = false;
           emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
@@ -1750,6 +1755,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (freshContextNext) {
         freshContextNext = false;
         // 로컬 CLI 는 새 대화로, Pi 코어는 기록을 비운다(시스템 지시·도구는 그대로). 후속 글이 요청·결함·맵 요약을 스스로 담는다.
+        contextEpoch += 1;
         if (localLoop) await localLoop.resetSession();
         else (agent as unknown as { clearMessages(): void }).clearMessages();
         emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "고치기 차례 — 앞 대화 기록을 비우고 결함·맵 요약만으로 시작" });

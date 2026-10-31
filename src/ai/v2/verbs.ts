@@ -8,7 +8,7 @@ import { shipBlockers, wantsWholeGame } from "./shipChecks";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
-import { INTERIOR_WORDS, interiorCatalogCard, projectBrief } from "./prompt";
+import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
 import { layoutReviewRounds, REVIEWS_TAG } from "./layoutReview";
@@ -125,6 +125,8 @@ export class V2Session {
   readonly villageTerrain = new Map<string, { terrainSeed: number; width: number; height: number; shape: string; previews: number }>();
   /** 설계(dungeonDesign) 없이 온 던전·동굴 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「맵은 조수가 설계한다」). */
   readonly dungeonBounced = new Set<string>();
+  /** 장소 지식 카드(prompt.ts placeSpecCards)를 기록으로 준 종류 → 그때의 대화 번호(env.contextEpoch). 대화가 비워지면 다시 준다. */
+  readonly specsShown = new Map<string, number>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -507,6 +509,35 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
   const freshStart = isFreshProject(env.ctx.project);
 
+  // 가벼운 지시문(prompt.ts leanPromptFor — 지은 맵에 로직만 넣는 요청): 장소 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록으로 준다.
+  // 이 대화에서 이미 줬으면 다시 주지 않는다. 판정은 이 차례를 시작할 때의 프로젝트로 한다(지시문과 같게).
+  const lean = leanPromptFor(env.ctx.project, String(task ?? ""));
+  const epoch = () => env.contextEpoch?.() ?? 0;
+  // 실행기(대화 번호를 주는 env)에서만 막는다 — 모델 없는 시험·덤프 도구는 예전처럼 바로 짓는다.
+  const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || session.specsShown.get(kind) === epoch();
+  const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
+    for (const kind of kinds) session.specsShown.set(kind, epoch());
+    return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""))).join("\n\n");
+  };
+  /** 판정 JSON 한 덩이 + 카드 원문(JSON 따옴표 없이 — 지시문에 있던 모양 그대로). */
+  const withSpecText = (head: Record<string, unknown>, cards: string): PiToolExecResult => ({ content: [{ type: "text", text: JSON.stringify(head) }, { type: "text", text: cards }] } as PiToolExecResult);
+  /** 이 종류의 카드를 아직 안 줬으면 짓지 않고 카드를 돌려준다(실패 아님) — 모델이 카드대로 다시 부른다. */
+  const specGate = (verb: string, kind: PlaceSpecKind | undefined) => {
+    if (!kind || specShown(kind)) return undefined;
+    return withSpecText({ ok: false, notFailure: true, summary: `Not done yet (not a failure): this is your first ${verb} for «${kind}» in this conversation, so its spec follows. Read it, then call ${verb} again following it. Next time read specs up front with read_specs.` }, showSpecs([kind]));
+  };
+  const readSpecs: PiToolShape = {
+    name: "read_specs", label: "장소 카드 읽기", concurrency: "shared",
+    description: "Read the specs for building places (they are not in your prompt). interior = inns, shops, studies, jails, houses inside (with the interior chipset catalog); village; dungeon (also caves); street (modern Japan/Korea streets and houses); people (NPCs); draw_object. Read the kinds you will build, once, before the first build call of that kind.",
+    parameters: { type: "object", properties: { names: { type: "array", items: { type: "string", enum: [...PLACE_SPEC_KINDS, "all"] } } }, required: ["names"], additionalProperties: false },
+    async execute(_id, params) {
+      const asked = ((params as { names?: unknown })?.names ?? []) as unknown[];
+      const kinds = asked.includes("all") ? [...PLACE_SPEC_KINDS] : PLACE_SPEC_KINDS.filter((k) => asked.includes(k));
+      if (!kinds.length) return text({ ok: false, summary: `Pass names from: ${PLACE_SPEC_KINDS.join(", ")} (or all).` });
+      return withSpecText({ ok: true, summary: `Specs for ${kinds.join(", ")} follow — use them in your build calls.` }, showSpecs(kinds));
+    },
+  };
+
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
   const outsideBuilt = (mapId: string): boolean => { const r = session.places.get(mapId); return !!r && isOutdoor(r.spec); };
@@ -768,6 +799,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const gate = await blueprintGate();
       if (gate) return text(gate);
+      const specFirst = specGate("make_place", placeSpecKindOf((params as { spec?: PlaceSpec })?.spec?.type));
+      if (specFirst) return specFirst;
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       // 씨앗은 모델이 정하지 않는다 — 요청·게임 열쇠(variety)로 빌더가 정한다(2026-10-29: terra 가 seed 0·1·2 를 채워 동굴 8장이 세 무리로 같았다).
       const raw0 = (params as { spec: PlaceSpec }).spec;
@@ -812,7 +845,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         session.designBounced.set(spec.name, bounces);
         // 재료(기물 이름표·견본 배치)를 같이 돌려준다 — 되돌려 보내기를 «실패»로 읽고 짓기를 그만둔 모델이 있었다(2026-10-29 flash 「마법사의 서재」).
         // 칩셋 목록 카드가 지시문에 없었으면(실내 낱말 없는 요청) 여기서 한 번 싣는다.
-        const cardShown = INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
+        const cardShown = lean ? specShown("interior") : INTERIOR_WORDS.test(String(task ?? "")) || env.ctx.project.maps[env.ctx.currentMapId ?? ""]?.tilesetId === HAND_INTERIOR_TILESET_ID;
         return text({ ok: false, notFailure: true, ...(cardShown ? {} : { catalog: interiorCatalogCard(env.ctx.project, env.ctx.currentMapId, String(task ?? "")) }), summary: `Not built yet (not a failure) — you design "${spec.name}" cell by cell.${bounces > 1 ? ` This is reminder ${bounces}/${LAYOUT_BOUNCES}: hand-pixel interiors are built from spec.layout; zones, design and anchors are not used for them — send the place with spec.layout and nothing in zones.` : ""} Call make_place again with spec.layout: ${LAYOUT_FORMAT}. Ids are in the [Interior catalog] card; the grid rules are in the interior card. One place is one map with the rooms it needs (an inn: hall, kitchen, stairs, guest rooms; a jail: guard room, corridor, cells). Code lays the layout exactly and checks it.`,
           });
       }
@@ -965,6 +998,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
       const { seed: _seed, ...rawPatch } = (raw.patch ?? {}) as PlacePatch;
       const patch0: PlacePatch = { ...rawPatch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
+      const editKind = placeSpecKindOf(session.places.get(patch0.mapId)?.spec.type) ?? (env.ctx.project.maps[patch0.mapId]?.tilesetId === HAND_INTERIOR_TILESET_ID ? "interior" : undefined);
+      const editSpecFirst = specGate("edit_place", editKind);
+      if (editSpecFirst) return editSpecFirst;
       const patch1: PlacePatch = patch0.set?.hints && "seed" in patch0.set.hints ? { ...patch0, set: { ...patch0.set, hints: Object.fromEntries(Object.entries(patch0.set.hints).filter(([k]) => k !== "seed")) } } : patch0;
       // 방이 둘 미만인 dungeonDesign(스키마를 기본값으로 채운 빈 껍데기 {rooms:[], links:[]})은 «설계를 바꾸지 않는다»로 읽는다 — make_place(screenDungeonSpec)와 같다.
       // 2026-10-30 scenes-duel terra boss-room: edit_place 가 이 껍데기로 «dungeonDesign.rooms 에 방이 둘 이상» 거절을 받았다(terra v2 동사 거절 1위).
@@ -1102,6 +1138,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const p = params as { mapId?: string; problems?: string[]; patch?: LayoutPatch };
       const mapId = p.mapId || env.ctx.currentMapId || "";
+      const reviewSpecFirst = specGate("review_layout", "interior");
+      if (reviewSpecFirst) return reviewSpecFirst;
       const record = session.places.get(mapId);
       if (!record || !hasLayout(record.spec)) return text({ ok: false, summary: `review_layout is for interiors laid from spec.layout in this run; ${mapId || "(no mapId)"} is not one. Laid interiors: ${[...new Set([...session.places.entries()].filter(([, r]) => hasLayout(r.spec)).map(([m]) => m))].join(", ") || "none"}.` });
       const round = (Number(record.spec.hints?.layoutReviews ?? 0) || 0) + 1;
@@ -1163,6 +1201,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }, required: ["role"] } },
     }, required: ["people"] },
     async execute(id, params) {
+      const peopleSpecFirst = specGate("add_people", "people");
+      if (peopleSpecFirst) return peopleSpecFirst;
       const p = params as { people: PersonSpec[]; mapId?: string };
       const result = buildPeople(run, p.people, p.mapId ?? env.ctx.currentMapId);
       return finishContent(id, "add_people", params, result);
@@ -1341,6 +1381,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       notThese: { type: "array", items: { type: "string" }, description: "ids that were rejected as «already exists» but whose art is a different object from the request" },
     }, required: ["what"] } }, required: ["object"] },
     async execute(id, params) {
+      const drawSpecFirst = specGate("draw_object", "draw_object");
+      if (drawSpecFirst) return drawSpecFirst;
       const object = (params as { object: ObjectSpec }).object;
       // 동굴·던전 입구는 물건이 아니라 들어가는 장소다 — 그림 카드로 미루면 맵에 아무것도 서지 않고 들어갈 곳도 없다(2026-10-30 실조수 opus 「서쪽 길 끝 동굴」).
       // 이 실행에 던전을 아직 짓지 않았으면 그리지 않고 make_place 로 돌려보낸다. 지은 뒤 입구 꾸밈을 더 그리는 것은 막지 않는다.
@@ -1871,7 +1913,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
