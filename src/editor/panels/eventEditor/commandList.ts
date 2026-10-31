@@ -8,6 +8,7 @@ import { handleCommandShortcut, openCommandContextMenu } from "./commandListCont
 import { readEventCommandsClipboard } from "./commandClipboard";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
+import { renderScriptLines } from "./scriptLines";
 import { renderEditorIcon } from "./editorIcons";
 import { brokenCommandDigest } from "./storyboardView";
 import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
@@ -365,11 +366,86 @@ function renderCommandItem(
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
   item.append(head, commandActions(path, actions));
+  if (cmd.kind === "script") appendScriptReading(head, cmd, path);
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
   attachItemDropHandlers(item, path, path.slice(0, -1), actions);
   return item;
+}
+
+/** Paths whose script code the author opened with the row's 「코드」 toggle (kept across list re-renders). */
+const openScriptCode = new Set<string>();
+
+/**
+ * A script row reads like event lines: read-only lines right under it (scriptLines.ts), the code behind a small
+ * 「코드」 toggle. Clicking the lines selects the script row; double-clicking opens its editor.
+ */
+function appendScriptReading(head: HTMLElement, cmd: Extract<Command, { kind: "script" }>, path: number[]): void {
+  const key = JSON.stringify(path);
+  const lines = renderScriptLines(cmd, () => store.getCurrent(), { summarize: renderCommandSummary });
+  lines.style.setProperty("margin", "0 0 4px 0");
+  lines.style.setProperty("padding-left", `calc(var(--cmd-depth, 0) * 18px + 64px)`);
+  lines.style.setProperty("cursor", "default");
+  lines.addEventListener("click", () => head.click());
+  lines.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    head.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+  });
+  const code = el("pre", {
+    class: "cmd-script-code",
+    text: cmd.source,
+    attrs: { translate: "no" },
+    dataset: { testid: "event-command-script-code" },
+  });
+  for (const [prop, value] of Object.entries({
+    margin: "0 8px 6px calc(var(--cmd-depth, 0) * 18px + 64px)",
+    padding: "6px 8px",
+    background: "var(--bg-inset, #f4efe4)",
+    border: "1px solid var(--border-default, #d9d0bd)",
+    "border-radius": "6px",
+    "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    "font-size": "12px",
+    "line-height": "1.5",
+    "white-space": "pre",
+    overflow: "auto",
+    "max-height": "320px",
+  })) code.style.setProperty(prop, value);
+  const toggle = el("button", {
+    class: "cmd-script-code-toggle",
+    text: "코드",
+    attrs: { type: "button", title: "스크립트 코드 보기·숨기기" },
+    dataset: { testid: "event-command-script-code-toggle" },
+  });
+  for (const [prop, value] of Object.entries({
+    "margin-left": "6px",
+    padding: "0 6px",
+    height: "20px",
+    border: "1px solid var(--border-default, #d9d0bd)",
+    "border-radius": "4px",
+    background: "var(--bg-raised, #fffdf7)",
+    color: "var(--text-2, #6b6457)",
+    "font-size": "11px",
+    "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    cursor: "pointer",
+    "flex-shrink": "0",
+  })) toggle.style.setProperty(prop, value);
+  const sync = (): void => {
+    const open = openScriptCode.has(key);
+    code.style.display = open ? "block" : "none";
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.style.setProperty("color", open ? "var(--accent, #4A57D6)" : "var(--text-2, #6b6457)");
+  };
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (openScriptCode.has(key)) openScriptCode.delete(key);
+    else openScriptCode.add(key);
+    sync();
+  });
+  toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+  sync();
+  head.append(toggle);
+  head.after(lines, code);
 }
 
 /**

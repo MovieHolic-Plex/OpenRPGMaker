@@ -35,18 +35,17 @@
 | `src/player/script/scriptLog.ts` | 개발자 로그 링 버퍼(200줄) |
 | `src/player/interpreter/scriptCommand.ts` | `script` 명령 실행·재진입·오류 표시·`disposeScriptRuns` |
 | `src/editor/script/compile.ts` | `compileScript`(transpile + 타입 검사 + 분석), `formatScriptDiagnostics`, `scriptCommandFields` |
-| `src/editor/script/dryRun.ts` | 헤드리스 실행 한 벌(`dryRunCommands`·`dryRunTranscript`) — 조수 `dry_run_script` 와 편집기 스크립트 카드의 예시 표가 같이 쓴다. 미리 놓기: 스위치·변수·돈·아이템·**시각(`hour`/`minute`, 시간 체계가 켜진 프로젝트만)**·선택지·숫자·전투 결과 |
+| `src/editor/script/dryRun.ts` | 헤드리스 실행 한 벌(`dryRunCommands`·`dryRunTranscript`) — 조수 `dry_run_script`·`author_script` 예시가 쓴다. 미리 놓기: 스위치·변수·돈·아이템·**시각(`hour`/`minute`, 시간 체계가 켜진 프로젝트만)**·선택지·숫자·전투 결과 |
 | `src/editor/script/analyze.ts` | 읽기/쓰기 추출·dynamic 기록·경고(모르는 id+제안, await 누락, transfer 뒤 호출)·한 줄 요약 |
 | `src/editor/script/tsEnv.ts` | TypeScript 5(`typescript5` 별칭 — 저장소 `typescript` 는 JS API 없는 TS7)와 ES2022 lib 지연 로드 |
 | `src/editor/script/tsLibSources.generated.ts` | lib.es2022 참조 폐포 57파일을 문자열로 담은 생성 모듈(약 470KB, `node scripts/content/generate-script-ts-libs.mjs`). 편집기·Bun 컴파일 조수 워커(node_modules 없음)·테스트가 같은 방법으로 읽는다 |
 | `src/editor/script/eventToScript.ts` | 명령 → TypeScript(`commandsToScript`, `read_event_as_script`) |
 | `src/editor/script/scriptToEvent.ts` | **스크립트 → 명령**(`scriptToCommands`, `scriptUnwrapProblemText`) — 동작이 같을 때만. 아래 「스크립트 → 명령」 절 |
 | `src/editor/tools/scriptUnwrapTool.ts` | 조수 도구 `write_script_as_commands` |
-| `src/editor/script/scriptInsight.ts` | 편집기 스크립트 카드의 기계 추출: 읽기/쓰기/부르기 칩(`scriptChips`), 최상위 리터럴 상수 = 조정값(`scriptTunables`·`setScriptTunable`), 흐름 나무(`scriptFlow`·`scriptFlowStats`) |
+| `src/editor/script/scriptInsight.ts` | 스크립트를 쉬운 말로 읽기(`scriptFlow`) — 조건·선택지·반복은 낱말로, 나머지 계산은 이름·낱말·기호로(「가격 = 내림(100 × (1 − 변수 「평판」 ÷ 200))」) |
 | `src/editor/script/scriptUnwrapAdapter.ts` | 카드의 「명령으로 풀기」 상태(`ok`/`blocked`+이유·줄/`unavailable`) — `scriptToCommands` 를 감싼다 |
-| `src/editor/panels/eventEditor/commandBodyScript.ts` | 스크립트 명령 편집 칸 = **스크립트 카드**(요약·흐름·명령 목록·코드 탭, AI 칸). 아래 「편집기 스크립트 카드」 절 |
-| `src/editor/panels/eventEditor/scriptCardViews.ts` | 카드 조각 DOM(칩 줄·흐름 나무·예시 결과 한 줄·줄 diff·읽기 전용 명령 목록) |
-| `src/ai/scriptAssist.ts` | 카드의 AI 칸 한 번 호출(`runScriptAssist`, 모드 `edit`/`explain`) — JSON `{source, summary[], examples[]}`, 컴파일 실패는 최대 두 번 더 되돌려 고치게 한다 |
+| `src/editor/panels/eventEditor/commandBodyScript.ts` | 스크립트 명령 편집 칸 — 탭 둘: **줄**(목록과 같은 읽기 전용 줄 + 「명령으로 풀기」) / **코드**(코드 상자·진단·API 목록) |
+| `src/editor/panels/eventEditor/scriptLines.ts` | 스크립트를 이벤트 줄 모양으로(`renderScriptLines`·`scriptLineNodes`) — 명령 목록과 편집 칸이 같이 쓴다. 아래 「목록에서 읽히는 스크립트」 절 |
 
 부팅 시 미리 받기: `createPlayGame`(편집기 플레이·내보낸 플레이어 공통), `exportEntry.prepareFirstScreen`, 도구
 `play_walkthrough`·`run_scene_test` 의 `prepare`. 늦게 실행되면 `script` 명령이 16ms `wait` 로 최대 약 10초 기다린다.
@@ -284,25 +283,22 @@
   (c) 못 푸는 예(레버 퍼즐 ORDER 배열 등)의 코드·줄, 도구의 confirm·거절·불변.
 - 조수 도구 라벨(`src/editor/panels/aiToolLabels.ts`)은 이 변경에 없다 — 편집기 화면 작업과 겹쳐 따로 넣는다.
 
-## 편집기 스크립트 카드 (2026-10-31)
+## 목록에서 읽히는 스크립트 (2026-10-31)
 
-이벤트 편집기에서 `script` 명령을 열면 코드 대신 **카드**가 먼저 보인다(`commandBodyScript.ts`, 대화 상자 폭 full, 일반 미리보기 칸은 숨김).
-탭 넷: **요약 / 흐름 / 명령 목록 / 코드**. 코드는 접혀 있고 「코드 보기」로만 연다. 원래 testid(`script-name-input`·`script-source-input`·`script-compile-status`·`script-diagnostics`·`script-api-reference`·`script-help`)는 그대로다.
+방향(사용자): 「편집은 AI 가 다 하고 사람은 읽는다」 — 이벤트 명령 목록이 가장 읽기 쉽다. 그래서 스크립트도 **목록 안에서 이벤트 줄처럼** 읽힌다.
+카드·흐름 그림·AI 고치기 칸(첫 시안, #4142)은 기본 화면에서 뺐다.
 
-- **요약:** 저장된 `explanation{sourceHash, lines, examples}` 의 쉬운 문장. `sourceHash` 가 지금 코드와 다르면 「옛 코드 기준 요약」 띠와 「요약 다시 쓰기」 단추(낡음 판정 = 해시 비교 하나). 없으면 컴파일러 한 줄 요약을 「하는 일(자동)」로 보여 준다.
-  명령 목록 줄(`commandSummary`)도 요약이 최신일 때만 첫 문장을 ` — …` 로 붙인다.
-- **칩:** 컴파일러 effects → 읽는 것 / 바꾸는 것 / 부르는 것 / 검사기가 못 보는 것(dynamic). 이름은 프로젝트 이름으로.
-- **조정값:** 최상위 `const` 리터럴(숫자·글·참거짓·목록)과 그 줄 주석 = 라벨. 칸을 고치면 그 리터럴만 바꿔 다시 컴파일한다(`setScriptTunable`).
-- **예시 표:** `explanation.examples` 는 **상황(미리 놓기)만** 저장한다 — 결과는 저장하지 않고 열 때마다 `dryRunCommands` 로 실제 실행해 채운다(지금 맵을 얕게 복제한 사본, 원본 불변). 그래서 코드가 바뀌어도 결과가 거짓말을 하지 않는다.
-- **흐름:** TS AST 에서 기계로 그린 나무(`scriptFlow`) — 조건 상자(예/아니오 갈래), 반복 상자, 단계 상자(대사·값 쓰기·효과·이동·부르기). 지역 상수·변수 읽기 별칭은 이름으로 바꿔 적고, 뜻을 못 읽는 계산은 회색 코드 글씨로 둔다(비율을 머리에 표시). 상자를 누르면 코드 탭의 그 줄로 간다.
-  `game.cmd({…})` 그대로 옮긴 명령은 `commandSummary` 문장으로 적는다(`describeCommand` 고리).
-- **AI 칸(E):** 「AI에게 고쳐 달라고 하기」 → `runScriptAssist(mode:"edit")` 한 번(도구·에이전트 루프 없음, `resolveSurfaceAiConfig("event-command")`). 제안은 바로 쓰지 않는다 — 줄 diff·바뀐 요약·**예시를 지금 코드와 바뀐 코드로 둘 다 실행한 결과**를 보여 주고 「적용」해야 명령에 들어간다(요약은 새 해시에 묶임). 「요약 다시 쓰기」는 `mode:"explain"`(코드 불변) 결과를 바로 저장한다.
-  모델 글은 영어, 요약 문장은 편집기 언어(ko/en/ja/zh).
-- **변환 단추:** 카드의 「명령으로 풀기」(풀 수 있을 때만, 아니면 비활성 + 첫 문제 이유 + 「그 줄 보기」) → 대화 상자가 `SCRIPT_UNWRAP_EVENT` 를 받아 그 명령 자리를 풀어 낸 명령들로 바꾼다(`commandList` 의 `onExpand`). 「명령 목록」 탭은 같은 결과의 읽기 전용 미리보기다.
-  이벤트 편집기 툴바 「도구 → { } 스크립트로 바꾸기」는 그 페이지 명령 전체를 `commandsToScript` 로 스크립트 하나로 바꾼다(확인 창에 그대로 옮긴 `game.cmd` 수, 되돌리기 한 번). 빈 페이지·이미 스크립트 하나면 비활성.
-- **옛 프로젝트 불변:** 카드·단추는 사용자가 누를 때만 바꾼다. 실측(버들 마을 상점 주인, 명령 101개): 열고 닫은 뒤 맵 이벤트 JSON 해시가 파일과 같고, 「스크립트로 바꾸기 → 명령으로 풀기 → 적용」 왕복 뒤 페이지 명령이 키 순서만 빼고 원본과 같다.
-- 스타일은 인라인 크림 토큰(`--bg-raised`·`--bg-inset`·`--accent`·`--success`·`--warning`·`--danger`) — 뒤에 오는 시트가 공용 클래스 규칙을 이기기 때문. 패널 전환은 `hidden` 대신 `style.display`(인라인 display 가 `hidden` 을 이긴다).
-- 테스트: `test/scriptInsight.test.ts`(칩·조정값·흐름·풀기 어댑터·AI 칸 파싱/재시도), `test/scriptDryRun.test.ts`.
+- **목록:** `script` 명령 줄 바로 밑에 읽기 전용 줄이 붙는다(`commandList.ts` `appendScriptReading` → `scriptLines.ts`).
+  - 스크립트가 명령으로 **정확히 풀리면**(`scriptToCommands`) 그 명령들의 목록 줄 그대로(같은 분류 알약·같은 요약 글).
+  - 안 풀리면 문장마다 한 줄: 대사·선택지·값 쓰기·효과·이동은 그 말로, `if` 는 「조건 분기: …」와 「: 조건이 맞을 때 / 맞지 않을 때」, 반복은 「반복: …」, 코드로만 뜻을 아는 조각은 「계산: 가격 = 내림(100 × (1 − 변수 「평판」 ÷ 200))」(game 읽기는 이름으로, `Math.floor` 는 「내림」, `*`·`/`·`-`·`===` 는 ×·÷·−·=). 리터럴 상수는 쓰는 줄에 값으로 들어가고, 리터럴 목록은 「정해 둔 목록 ORDER: 3, 1, 4, 2」 한 줄.
+  - 줄을 누르면 그 스크립트 줄이 선택되고, 두 번 누르면 편집 칸이 열린다. 40줄이 넘으면 「… N줄 더」.
+  - 코드는 줄 오른쪽 작은 「코드」 단추 뒤(열림 상태는 경로별로 다시 그려도 유지).
+  - TypeScript 읽기 도구가 아직 안 받아졌으면 「읽는 중…」을 잠깐 보이고 그 자리에서 채운다(목록 재렌더 없음).
+- **편집 칸:** 탭 둘 — 「줄」(위와 같은 줄 + 「명령으로 풀기」, 못 풀면 첫 이유와 「그 줄 보기」) / 「코드」. 원래 testid(`script-name-input`·`script-source-input`·`script-compile-status`·`script-diagnostics`·`script-api-reference`·`script-help`)는 그대로다.
+- **변환:** 「명령으로 풀기」(풀릴 때만)와 툴바 「도구 → { } 스크립트로 바꾸기」(페이지 전체)는 남겼다. 누를 때만 바뀐다 — 옛 프로젝트를 열고 닫으면 이벤트 JSON 해시가 파일과 같고(버들 마을 상점 주인, 명령 101개), 바꾸기 → 풀기 왕복 뒤 명령이 원본과 같다(키 순서만 다름).
+- 조수 쪽 짝(#4145): 읽히는 것은 전부 명령, 스크립트는 1~3줄 조각(공식·목록 반복·순서 판정·타이머·정확한 시각·난수)만 — 결과를 변수/스위치에 두고 둘레 명령이 읽는다. 그러면 목록에서 스크립트가 「계산: …」 한두 줄로 보인다.
+- `explanation`(모델이 쓴 요약, sourceHash 에 묶임)은 명령에 그대로 저장되고 목록 줄 끝에 ` — 첫 문장` 으로만 붙는다(최신일 때).
+- 테스트: `test/scriptLines.test.ts`(풀리는 스크립트 = 명령 줄, 안 풀리면 「계산」·「조건 분기」 줄), `test/scriptInsight.test.ts`(낱말·기호 읽기, 풀기 어댑터).
 
 ## 실조수 데모 (2026-10-31)
 

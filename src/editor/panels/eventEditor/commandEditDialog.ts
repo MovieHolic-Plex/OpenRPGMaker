@@ -28,7 +28,7 @@ type EventCommandEditDialogRequest = {
 
 /** 상점은 진열·재고·옵션이 한 화면에 다 들어야 하는 특수 케이스 — 전체화면으로 연다. */
 export function commandDialogWidth(command: Command): "narrow" | "wide" | "full" {
-  return command.kind === "shop" || command.kind === "script" ? "full" : "wide";
+  return command.kind === "shop" ? "full" : "wide";
 }
 
 export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {
