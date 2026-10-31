@@ -57,6 +57,7 @@ import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { DIALOGUE_LINT_TOOLS } from "./dialogueLintTool";
 import { SCRIPT_TOOLS } from "./scriptTools";
+import { SCRIPT_TOOL_NAMES, assistantScriptsOn } from "@/ai/scriptsSwitch";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -494,6 +495,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));
 
 export function getTool(name: string): ToolDefinition | undefined {
+  if (SCRIPT_TOOL_NAMES.has(name) && !assistantScriptsOn()) return undefined; // OPRN_V2_SCRIPTS=0 (src/ai/scriptsSwitch.ts)
   return TOOL_BY_NAME.get(name);
 }
 bindStreetToolLookup(getTool);
@@ -508,7 +510,8 @@ export function allTools(): readonly ToolDefinition[] {
 
 /** LLM/UI에 보여줄 활성 툴만 (deprecated 제외). */
 export function activeTools(): readonly ToolDefinition[] {
-  return TOOL_REGISTRY.filter((tool) => tool.deprecated !== true);
+  const scriptsOn = assistantScriptsOn();
+  return TOOL_REGISTRY.filter((tool) => tool.deprecated !== true && (scriptsOn || !SCRIPT_TOOL_NAMES.has(tool.name)));
 }
 
 export interface OpenAiTool {
