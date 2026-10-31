@@ -1286,7 +1286,9 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       .filter((c) => c.y > edgeY + 2 && !avoid.some((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) < 3))
       .sort((a, b) => Math.abs(a.x - want.x) + Math.abs(a.y - want.y) - (Math.abs(b.x - want.x) + Math.abs(b.y - want.y)))[0];
   const spots: { at: Cell; patrol?: Cell[] }[] = [];
-  const behindL = pick({ x: arrive.x - 10, y: arrive.y });
+  // 왼쪽 옆구리 — 길이 서쪽으로 휘는 자리(도착 8줄 위) 곁 풀밭. 도착 칸 바로 옆(뒤 왼쪽)에 두던 판은 붙잡혀 다시 나오면
+  // 화면이 밝아지자마자 「!」 → 1초 만에 또 붙잡혔다(독립 VQA 2026-10-31). 이제 달리기 시작한 뒤 길목에서 깨어 덮친다.
+  const behindL = pick({ x: 1, y: arrive.y - 8 });
   if (behindL) spots.push({ at: behindL });
   const aheadR = pick({ x: arrive.x + 13, y: arrive.y - 8 }, spots.map((s) => s.at));
   if (aheadR) spots.push({ at: aheadR });
@@ -1346,18 +1348,18 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   exec(project, "set_lighting_volume", {
     mapId, applyMode: "map", ambient: 0.82, color: "#0a1024",
     sources: [
-      ...[0.2, 0.5, 0.8].map((f, i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f), y: moonY }, radius: moonR, intensity: 0.5, color: "#c4d2ff" })),
+      ...[0.2, 0.5, 0.8].map((f, i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f), y: moonY }, radius: moonR, intensity: 0.36, color: "#c4d2ff" })),
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
-      ...knightIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 4, intensity: 1, color: "#ffb050", flicker: true })),
+      ...allIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 4, intensity: 1, color: "#ffb050", flicker: true })),
       { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 3.5, intensity: 0.9, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
   // 조명 뒤에 감지 — visionLight(부채꼴 손등불)는 지금 맵 조명에 덧붙는다(먼저 걸면 위 조명이 덮어쓴다).
   // 몰아오는 둘 — 「거기 서라!」 1.1초 뒤 움직이고(0.3초였을 땐 붙잡혀 개구멍으로 다시 나오면 문 앞에서 2초 안에 또 붙잡혔다 — 브라우저 녹화 2026-10-31), 칸당 0.127초(추격 엔진 개편 #3907 의 「빠름」 — 주인공 걷기 0.16초보다 빠르다, 12칸마다 숨 고름), 네 칸 안이면 0.09초로 덮친다.
   if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 1100, chaseStepMs: 127, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 3000, giveUpRange: 20 });
-  // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 그 부채꼴이 손등불 빛으로 바닥에 깔린다. 틈 어귀를 막는 몫이라 덮치지 않고 칸당 0.15초(주인공과 거의 같은 빠르기) —
+  // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 부채꼴 빛(visionLight)은 깔지 않는다 — 풀밭을 자로 그은 듯한 빛 쐐기가 화면을 가르고 깜빡였다(독립 VQA 2026-10-31). 등불은 다른 야경꾼과 같은 둥근 손등불. 틈 어귀를 막는 몫이라 덮치지 않고 칸당 0.15초(주인공과 거의 같은 빠르기) —
   // 곧장 뛰는 주인공을 틈 바로 앞에서 덮치던 판(브라우저 녹화, 2026-10-30)은 「성공 길」이 없었다. 돌아가는 길(서쪽)에선 여전히 부채꼴에 걸린다.
-  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 150, rush: false, searchMs: 2500, visionLight: { color: "#ffc070", intensity: 0.45 } });
+  if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 150, rush: false, searchMs: 2500 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   for (const id of allIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.[0];
@@ -1368,7 +1370,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     setSw(SW_B4_EDGE),
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다.
     ...allIds.map((id) => emote(id, "question", 700)),
-    { kind: "setLighting", ambient: 0.86, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
+    { kind: "setLighting", ambient: 0.85, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
     narrate("길돌을 지나 나무 그늘로 들어서자\n뒤쫓던 등불들이 우뚝 멈췄다."),
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가. 돌아가자."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
