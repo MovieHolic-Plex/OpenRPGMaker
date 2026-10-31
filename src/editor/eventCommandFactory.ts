@@ -202,6 +202,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "tradeMonster", fromSpeciesId: "", toSpeciesId: "" };
     case "fuseMonsters":
       return { kind: "fuseMonsters", instanceIdA: "", instanceIdB: "" };
+    case "script":
+      return { kind: "script", source: "", compiled: "" };
     default: {
       const _exhaustive: never = kind;
       void _exhaustive;

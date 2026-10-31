@@ -1,0 +1,627 @@
+{
+ "round": 4,
+ "judge": "opus-5.5 independent agent",
+ "rubric": "Strip exactly 2 rows north of the north-facing lip, running lip to low road; no seams; style matches that cliff/road (and forward pieces); reads at 1x as a way down away from the viewer (tread tops with nosings, risers hidden, farther = darker); no panel/mat/grate/shutter read; no glyph texture. A major means a careful art lead would reject the piece.",
+ "images": [
+  "sheet-*.png",
+  "*-probe.png",
+  "*-probe-3x.png",
+  "*-forward-cliff.png",
+  "forward-snow-stairs-sheet.png",
+  "opus1-rev-1x/3x.png",
+  "opus3-rev-1x/3x.png",
+  "plus 1x pieces cut from the sheets and 6x crops"
+ ],
+ "pieces": {
+  "grass-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope",
+    "ramp is a flatter, greyer brown than the speckled dirt road, so it reads slightly as a darker panel"
+   ]
+  },
+  "grass-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "irregular mortar on lower tread forms faint T/J letter-like shapes at zoom; brown/orange bank pixels at lower side edges"
+   ]
+  },
+  "grass-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "irregular mortar on lower tread forms faint T/J letter-like shapes at zoom; brown/orange bank pixels at lower side edges"
+   ]
+  },
+  "grass-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "grass-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "grass-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "grass-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "far tread is an untextured darker band; at 1x close to a sill stripe"
+   ]
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "far tread is an untextured darker band; at 1x close to a sill stripe"
+   ]
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it"
+   ]
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "heavy salt-and-pepper speckle on both treads reads as gravel/grate rather than snow-capped stone steps at 1x"
+   ],
+   "minors": [
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "heavy salt-and-pepper speckle on both treads reads as gravel/grate rather than snow-capped stone steps at 1x"
+   ],
+   "minors": [
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "8 dark blue/white stripes in 32 px read as a metal vent grille/shutter, not snowy stone treads"
+   ],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "8 dark blue/white stripes in 32 px read as a metal vent grille/shutter, not snowy stone treads"
+   ],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "treads are speckled blue-grey slate; forward snow stairs have snow-white tread tops, so the pair is inconsistent"
+   ]
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "near tread has a light rim on left, right and bottom inside a dark outline, so the h1 piece reads as a framed mat/panel rather than a step down"
+   ],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "near tread has a light rim on left, right and bottom inside a dark outline, so the h1 piece reads as a framed mat/panel rather than a step down"
+   ],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3"
+   ]
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "top edge is a hard straight seam against the road; side walls only cover the lower ~2/3",
+    "dense horizontal contour streaks start to read as dirt steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "near tread has a light rim on left, right and bottom inside a dark outline, so the h1 piece reads as a framed mat/panel rather than a step down"
+   ],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "near tread has a light rim on left, right and bottom inside a dark outline, so the h1 piece reads as a framed mat/panel rather than a step down"
+   ],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "3-4 px treads with high-contrast nosing/shadow stripes are close to a shutter/blind read; context carries it",
+    "low-contrast single-hue tread bands; the step is legible only from the stripe rhythm"
+   ]
+  }
+ },
+ "verdict": "FAIL",
+ "summary": "Geometry is right everywhere: every strip is 32 px, sits on the lip, has no gap or overlap, and darkens with distance. Treads show nosing at the far edge with the shadow on the near edge, so they read as going down. Both village scenes read well. Failures: snow stairs h1 (speckle reads as a grate) and h4 (a vent grille), and the snow treads lack the snow-white tops of the forward pieces. Peat and cave stairs h1 have a three-side rim, so they read as a framed mat. Ramps all pass; at h3-h4 they start to look stepped."
+}

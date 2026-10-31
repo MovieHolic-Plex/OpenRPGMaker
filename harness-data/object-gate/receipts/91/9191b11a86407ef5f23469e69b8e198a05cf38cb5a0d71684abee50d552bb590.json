@@ -1,0 +1,293 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9191b11a86407ef5f23469e69b8e198a05cf38cb5a0d71684abee50d552bb590",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 4 w2 reverse cut through a north-facing sand cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/sand-steps/stairs-h4-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 181,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (4 steps, repeating light edge row plus 2-3 tread rows)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 32x32 tile is a full-width opaque block with no transparent rows. Every column shows the same pattern: a pale #fff9b4 edge row about every 4 rows (rows 1, 5, 8-9, 12, 16, 20, 24, 27) followed by 2-3 rows of mid-tone sand, with the occasional darker #b58a50 or #cfa566 row. These are tread nosings seen from above. No tall vertical south face of 3 or more rows is drawn, no cliff wall, no eave shadow block and no side face. The scene is a top-down view of steps descending away from the viewer, so it reads as a flat top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's four stair treads each have a light lip, a mid face and a darker riser, giving about 5 sand steps. The measured facts support this: 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, matching both references, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted brown-tan line beside the sand rather than a black sticker line. It has less grain and speckle than the grass and paving references, and the treads read as fairly clean bands with only light dot texture. That puts density slightly below the references but not shallow. Only 7 raw colours is the same palette economy as the paving reference, which also has 7. It is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17926
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads: repeating steps, each a 1-row light lip (L=243) followed by 2-3 rows of mid-tone sand",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 32x32 block with no transparent rows. Rows 0-31 repeat a light lip row (rows 1, 5, 8/12, 16, 20, 24, 27) over 2-3 rows of slightly darker sand, with 1-row darker accent lines at rows 11, 15, 19, 23 and 26. The width is 32 on every row. There is no separate vertical south face of 3 or more rows, no eave shadow and no side face. The steps are viewed from above as flat bands descending away from the viewer. The result is a flat top-down terrain pattern and not a standing 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate reads as four evenly spaced horizontal tread bands with a light top edge and darker lip, inside a closed brown-tinted frame. The outline is tinted (0% neutral dark edge pixels) and is not near-black. The measured facts are acceptable: 6 visible tones per tile against 7 for the paving reference and 3 for the grass, with 0% near-flat coverage. By eye, though, each band is a smooth gradient with almost no sand speckle, grain or per-step variation. The reference paving shades individual stones and the grass has tufts. The closed frame and regular stripes also give a clean sticker or plank-pallet look, and nothing conveys a stair cut through a cliff. It is only about 7 raw colours in total, so the surface feels thinner and flatter than a reference piece. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20055
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads and nosings, full tile",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x32 opaque rectangle (width 32 on every row), so this is a terrain tile and not a standing object. The columns repeat a pattern every 3-4 rows: a bright #fff9b4 nosing row (rows 1, 5, 12, 16, 20, 24, 27), then 2-3 rows of mid sand (#dcaf6c or #e8c282), then a darker #b58a50 or #cfa566 row. This reads as steps descending away from the viewer, seen from above, where the treads are visible and the risers are hidden. No tall vertical south face of 3 or more rows is drawn, and there is no cap, ellipse or roof. The result is a flat top-down slab of stair treads."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, tidy stack of horizontal step bands. Each band has a light highlight line, a mid fill and a darker tan edge. The outline is tinted (0% near-neutral dark edge pixels), so it is not a black sticker line, and the 6 visible tones per tile and 0% near-flat coverage match the paving reference (7) and exceed the grass reference (3). By eye, though, the bands are clean and regular, with no sand speckle, grain dots or per-step irregularity. It reads closer to flat planks than to a cut in a sand cliff. The references carry more grain and variation across the tile: grass tufts and clumps, and individually shaded paving stones. The candidate also shows only about one tile of area rather than the 4x3 patch, so there is little to show a cliff, a terrace lip or any edge treatment. With the shallow texture and the doubt about how complete it is, it falls short of the reference quality bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21308
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair flight (repeating tread and nosing stripes)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32x32 block with every row 32 px wide and no silhouette change. Rows 1, 5, 8, 12, 16, 20, 24 and 27 are bright #fff9b4 nosing lines, spaced about 4 rows apart. Between them are 2-3 rows of mid-tone sand (#dcaf6c, #e8c282, #f5d090) with occasional darker #b58a50 specks. The pattern is a repeated horizontal stripe, so the whole tile reads as one flat sloped surface seen from above, like a terrain autotile. No vertical south face of 3 or more rows is drawn, and there is no cliff face, side face, ellipse or eave shadow. The step spacing is also irregular, so the stripes read as texture and not as distinct risers."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sand-toned patch with horizontal tread bands, each a light highlight line over a mid tan face and a darker brown edge. The edge pixels are tinted brown, not neutral (0% near-neutral), so the outline is a dark material tone. The measured facts are acceptable: 6 visible tones per tile against 3 for the grass and 7 for the paving, with 0% near-flat coverage. By eye, though, it uses only about 4 lightness steps against roughly 6 on the references. The treads are smooth bands with almost no grain, speckle or per-grain variation, so they read as a repeating stripe pattern. The sand surface has no texture dots, and the cliff-cut walls and depth have little modelling. Raw colours are only 7 in total, and the patch looks thinner and flatter than the references, so I am failing it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20684
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.373Z",
+ "cells": {
+  "16": [
+   "2f56cd965ea29d59",
+   "3665a8d84c39b54a",
+   "452ef7c8edd0448c",
+   "707cfd18dd18b57e"
+  ],
+  "24": [
+   "0210ffb2ddac0ae1",
+   "04e0b622b5a3cdff",
+   "20a74dc527372faf",
+   "2557f4018aa974d3",
+   "39cec0ac8b7cb78d",
+   "4006f6f2c62d16a7",
+   "441a63fcf8d995ed",
+   "4bdbee4b373ffab3",
+   "4f6a26ccff96f30e",
+   "62d2a1e016f5e32e",
+   "9302e516a66188c6",
+   "957a85424af1c995",
+   "9748842f3ec0585f",
+   "9a8a8b1998f59248",
+   "b9217faaa45c739b",
+   "bb983a5a5c67f61f",
+   "c1a7c9bb9f92be92",
+   "c859fdb4afeb537d",
+   "dc8163c4f73b8d42",
+   "df0b1e46ec52ee31",
+   "eca34ceb4c81cb2a",
+   "ed7797415df67f9e",
+   "f203dec94359a121",
+   "fff4153c545d2f13"
+  ],
+  "32": [
+   "e03e70d6b7747dba"
+  ],
+  "48": [
+   "3f63e2bbb858a816",
+   "5b22f2a886049b02",
+   "6d89f498256d2b59",
+   "7f156cefbbe04249",
+   "ca56297bda368028",
+   "cb5f927c62b98de8"
+  ]
+ }
+}

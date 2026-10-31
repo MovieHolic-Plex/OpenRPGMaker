@@ -2063,6 +2063,8 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
       return `일정표 ${cmd.scheduleId} 짜기`;
     case "runSchedule":
       return `일정표 ${cmd.scheduleId} 실행`;
+    case "script":
+      return `스크립트 실행${cmd.summary ? ` — ${cmd.summary}` : ""}`;
     case "callMapEvent":
       return `맵 이벤트 ${cmd.eventId} 호출`;
     case "setLighting":

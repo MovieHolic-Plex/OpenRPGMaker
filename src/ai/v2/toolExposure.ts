@@ -29,6 +29,8 @@ export const V2_UP_FRONT: ReadonlySet<string> = new Set([
   "simulate_battle", "upsert_actor", "upsert_troop", "set_encounter_table", "place_field_enemy", "define_ending", "set_project_settings",
   "set_opening", "edit_opening", "list_opening_media", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
   "inspect_opening_timeline", "set_opening_caption", "author_forest_route",
+  // TypeScript 이벤트 스크립트(2026-10-31, 새 도구라 기록 없음) — 로직 낱말(SCRIPT_TIER)이 맞는 요청에서만 처음부터 싣는다.
+  "get_script_api", "check_script", "author_script", "dry_run_script",
 ]);
 
 /** 같은 모양으로 걷을 하위 스키마의 최소 크기(설명 뺀 JSON 글자 수). 분기 명령 배열(약 420자)은 걷고, {x,y} 같은 작은 모양은 남긴다. */

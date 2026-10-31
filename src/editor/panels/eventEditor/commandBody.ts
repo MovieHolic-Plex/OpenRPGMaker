@@ -7,6 +7,7 @@ import { renderM2CommandBody } from "./commandBodyM2";
 import { renderSchemaCommandBody } from "./schemaCommandBody";
 import { fuseMonstersBody, partySetBody, removeMonsterBody, setDifficultyBody, tradeMonsterBody } from "./commandBodySystemParty";
 import { COMMAND_KIND_OPTIONS, commandKindLabel } from "./options";
+import { scriptCommandBody } from "./commandBodyScript";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
@@ -52,6 +53,7 @@ function renderSystemPartyCommandBody(context: CommandEditContext, cmd: Command)
     case "removeMonster": return removeMonsterBody(context, cmd);
     case "tradeMonster": return tradeMonsterBody(context, cmd);
     case "fuseMonsters": return fuseMonstersBody(context, cmd);
+    case "script": return scriptCommandBody(context, cmd);
     default: return undefined;
   }
 }

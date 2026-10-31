@@ -1,0 +1,292 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0aa75c59f0e1ff658e4004f36561f60a13bed175afb7ee604c70b914f3c97b2",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 2 w3 reverse cut through a north-facing grass cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/grass-steps/ramp-h2-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 47,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (dirt slope with step ridges) seen from above, descending away from viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass cliff flanks on left and right edges",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 48px wide across rows 0-31. It is a tile of a dirt ramp seen from above, with horizontal tread ridges at rows 14, 17, 21-22, 25 and 27-28 (lighter L=140 lines against darker L~111-116 bands). These ridges read as steps going down away from the viewer. Grass and dark cliff-edge strips run along the left and right sides. There is no south-facing vertical face and no eave or edge shadow, so the whole tile is a top-down ground surface. That is plausible for a terrain ramp, but it has no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a brown earth ramp built from horizontal step bands, with grass verges on both sides and a dark lip at the top. The measured facts favour it. It has 10 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outlines lean brown or green and are not a black sticker line. By eye, each band has a light top edge, a mid body and a dark underside, with scattered grain dots, giving about 5 lightness steps. That matches the references. The texture is coarser and more regular than the leafy grass reference, and the 13 total colours are fewer than the grass reference's 80. But these are locked-palette differences, and no large flat fills show. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 1
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (dirt slope with step ridges) descending away from viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass cliff edges on left and right sides",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a ramp seen from above, spanning rows 0-31 at a constant width of 48 px. Its dirt surface has horizontal step ridges (light lines at rows 14, 17, 21-22, 25, 27-28 and 30-31) and no front face of 3 or more rows. The grass strips and dark cliff edges run along both sides. The ramp reads as a flat ground tile, not a standing object with a top and a front. The reference pairs for standing objects do not apply to terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ramp of banded soil/plank steps with grassy edges at the sides and top. It shows about 5 lightness steps on the brown ramp, with grain dots and per-step highlight and shadow lines. Measured facts support it: 10 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the outline leans dark brown or green and follows the adjacent material rather than being a black sticker line. The horizontal banding is somewhat regular and the grass edge is thin. That makes it a little less varied than the grass reference's clumps, but it is not flat or thinner than either reference at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 1
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ramp surface with step ridges",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass verges on left and right",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 48 px wide for rows 0-31. The column scans show a continuous dirt-brown ramp with thin light step lines (rows 14, 17, 21-22, 25, 27-28) repeating down the tile. These are tread ridges on a sloped ground plane seen from above, not a vertical south face. There is no front-edge line followed by eave shadow, no ellipse, and no vertical front face of 3 or more rows. The grass and dark cliff-edge strips on the sides run the full height. The tile reads as a flat top-down terrain slab, which suits a terrain tile that descends away from the viewer."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ramp of tan and brown earth bands with grass shoulders. It shows about 5 lightness steps across the earth and grass, and the bands carry some grain and speckle. The measured facts support it: 10 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage, the same as both references. The dark edge pixels are 0% neutral, so the edges lean brown or green rather than black, which means material-tone edging and not a sticker outline. The weak points are that the stripes are fairly regular and the surface texture is simpler than the grass reference's dotted tufts. Its raw colour count is also low, at 13 in total. None of these is a flat fill or a shallow-outline problem. On the measured facts it is at or above the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 1
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface with step lines, seen from above",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass verges on left and right with dark cliff edge strips",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 48px wide for rows 0-31. The column scans show a brown dirt surface with thin lighter tread lines (x=12 at rows 21, 25, 27; x=24 at rows 22, 25; x=35 at rows 14, 17, 21, 27) and a lighter sandy band at the bottom. The thin lines are step edges across a sloped ground surface seen from above. There is no vertical south face, with no front-edge line followed by a tall face and no eave shadow. The grass and dark strips at the sides are cliff verges along the ramp edges. This is a flat, top-down ramp tile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a brown dirt ramp built from horizontal stepped bands, with grass shoulders on both sides. The bands carry about 4 lightness steps: a light lip highlight, a mid tan, a darker brown and a dark riser line. Speckle and grain dots break up each band. The edges are dark brown and dark green, tinted to the neighbouring material and not black, which matches 0% near-neutral dark edge pixels. The measured facts are 10 visible tones per tile against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, the same as both references. The weak points are the small total palette of 13 colours and the somewhat regular, banded texture, so it is a little shallower than the Beodeul grass. It is still not a flat or sticker-like piece, and on the primary facts it matches or exceeds both references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 1
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.196Z",
+ "cells": {
+  "16": [
+   "54c97ad171bec955",
+   "55a1b028d18403e8",
+   "82ef094fd0a91457",
+   "840e6cf182ea85e6",
+   "a2a3340f421c4799",
+   "e12e76469dfcdd15"
+  ],
+  "24": [
+   "110d2951c08c7a71",
+   "934b2431b10189c3",
+   "976c032e2a2f6c82",
+   "b32cc13a13a73eb9",
+   "bdbbd0c2bb005de4",
+   "bec4c1251d409538",
+   "dca9efe8cc6a04c6",
+   "fb23531da829caa4"
+  ],
+  "32": [
+   "01148eb06a332873",
+   "1fb226c5066ab4c2",
+   "6f4608c0d7a2f06a",
+   "b92d373e04ece98e",
+   "c372a1fbe98bd627",
+   "e1e5147573d64b80"
+  ],
+  "48": [
+   "ab48ec63321e2485",
+   "f1de966f76b241bc"
+  ]
+ }
+}

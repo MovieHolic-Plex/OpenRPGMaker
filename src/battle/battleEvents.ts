@@ -1033,6 +1033,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "removeMonster":
       case "tradeMonster":
       case "fuseMonsters":
+      // 스크립트(샌드박스 TS)는 맵·공통 이벤트 해석기에서만 돈다(openwiki/script-sandbox.md).
+      case "script":
         logUnsupported(page, context, command.kind);
         return false;
       default:

@@ -8,9 +8,15 @@ import type { ToolDefinition, ToolExecResult } from "./types";
 import { ToolError } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { isPassable } from "@/project/collision";
+import { preloadScriptEngine, projectUsesScripts } from "@/player/script/engine";
+
+/** Headless runs are synchronous: load the script sandbox first when the project has `script` commands. */
+const prepareScripts = (_args: Record<string, unknown>, project?: Project): Promise<void> =>
+  projectUsesScripts(project) ? preloadScriptEngine().catch(() => undefined) : Promise.resolve();
 
 const playWalkthrough: ToolDefinition = {
   name: "play_walkthrough",
+  prepare: prepareScripts,
   description:
     "브라우저 없이 명령 흐름을 검사하며 실제 키보드 플레이 증거는 아니다. " +
     "moveTo는 좌표 이동만 하고 playerTouch/eventTouch를 자동 실행하지 않는다. " +
@@ -194,6 +200,7 @@ function unwalkablePlacements(project: Project, args: { mapId: string; start: { 
 
 const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
+  prepare: prepareScripts,
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
     "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?,facing?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'battleChoice',index?|indices?:[…]}|{kind:'present',itemId?}|{kind:'useFieldSkill',skillId,target?,actorId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}. playerTouch/eventTouch 함정·접촉 이벤트는 interact 가 아니라 {kind:'move',dir|to} 로 그 칸을 밟아야 발동한다." +

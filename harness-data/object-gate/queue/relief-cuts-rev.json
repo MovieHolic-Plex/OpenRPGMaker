@@ -1,0 +1,488 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "relief-cuts-rev",
+ "title": "절벽 깎은 길 — 다섯 양식 역방향 80장",
+ "createdAt": "2026-10-31T06:46:17.861Z",
+ "items": [
+  {
+   "sha": "8a0597838b84e6aaadb1c9900e59512b887c14c704ed2b78b52898a51448ecbc",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h1-w2.png"
+  },
+  {
+   "sha": "82edac40f66b3a76acca93646f99b09f6298182fa68fb6605f9b392d1fdbca83",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h1-w3.png"
+  },
+  {
+   "sha": "f067fabf25faed37b17049cfd611cb258c6393622f91a65bbaf12f7c03292907",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h2-w2.png"
+  },
+  {
+   "sha": "c0aa75c59f0e1ff658e4004f36561f60a13bed175afb7ee604c70b914f3c97b2",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h2-w3.png"
+  },
+  {
+   "sha": "fe5fbcdf8dab8fff29e618a2885a5b4d2e0a2ef7f0cd81e632deb8d90ada693b",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h3-w2.png"
+  },
+  {
+   "sha": "8f52e2be0006ece082d1e68eae8b0650fafd6ad495c1ea94c08156a9fc247709",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h3-w3.png"
+  },
+  {
+   "sha": "352128a1493635286f4f41d9cb4ddf8ca4faec0aae1ef5edf62d1251e46e33ec",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h4-w2.png"
+  },
+  {
+   "sha": "7496ca57de76724da11f24e0b9f23c5ca95cc8c2977df398bc58af3c0ca25140",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/ramp-h4-w3.png"
+  },
+  {
+   "sha": "3a47a451ec75c80c02880319b255bb931be359b78c87206d2c34c65e0a22a61f",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h1-w2.png"
+  },
+  {
+   "sha": "c86748006960ef1e2c52b4f034a14616fe704a5d3e05c4087e2a3d13d0ca3a9d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h1-w3.png"
+  },
+  {
+   "sha": "b1db0a46673027aeb351970c463d2266d4a500b41781a2c593f7266a85b7591d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h2-w2.png"
+  },
+  {
+   "sha": "4d238273db29ad15a69f4533879896ea58132fb4ae697563a28c9e5e83d662ff",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h2-w3.png"
+  },
+  {
+   "sha": "ffc7ec5923178398d21dcea02d32eb589802bd80cf18db18e01446e5eaf3dc92",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h3-w2.png"
+  },
+  {
+   "sha": "35c3a956f0ae9e307bf4d1279c332ab8874902908855e3f3a7de890d6f6f89a6",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h3-w3.png"
+  },
+  {
+   "sha": "1e4bd5d4a6d4d7f559410d6ae2ce5f4c1cbebc9d40da9eb05526efe0521fb8b1",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h4-w2.png"
+  },
+  {
+   "sha": "f5152e58721eaddea3dae9efb646d89d87464bd58eb38286e993d9a3f367d2d4",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/grass-steps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h4-w3.png"
+  },
+  {
+   "sha": "b4debb2ed8ff3d35b3e93bded58f1d768cb8b4d4bfbeabc6cec2ee43093de253",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h1-w2.png"
+  },
+  {
+   "sha": "b33a199d411c145f50df5acb3c23ba98740ec54deef817bf11828b5ec661ffd5",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h1-w3.png"
+  },
+  {
+   "sha": "113a83427083045439e574f408c0ae728888a6c365bb444facc8717688c074a3",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h2-w2.png"
+  },
+  {
+   "sha": "8dbd39ddd0dfbf59fb45f5c92c6d2759bf1d058872c8ce5caf9e18163f01b217",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h2-w3.png"
+  },
+  {
+   "sha": "605b67e0ed98054569c1a347388215c42aa6cb39e401498c4fa67ae5f2f2b64c",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h3-w2.png"
+  },
+  {
+   "sha": "0d40379a1eb1c8dd732ba4932cacc7fe1d597a250c3e27076736e97ccced7784",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h3-w3.png"
+  },
+  {
+   "sha": "870bb18bff4e3efc9ec8817b64a4954c20cca488fd0561e08472333c487a6d80",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h4-w2.png"
+  },
+  {
+   "sha": "1e9eedba481ba9117b7b77bc52fc0089843919a4c901705260d467e154e423f1",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/ramp-h4-w3.png"
+  },
+  {
+   "sha": "ee038776269feef29545b43fffae0dd1a01e6828e25d13f0cd2cc9c7a0efd7f3",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h1-w2.png"
+  },
+  {
+   "sha": "90e555f49c9ae8f52adb3625eb7c703fd4315eccae78b02c011a08a84f54fead",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h1-w3.png"
+  },
+  {
+   "sha": "a971db718961699081d6381630630ba5b944473d52ff1629c82c2c6444a5f71c",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h2-w2.png"
+  },
+  {
+   "sha": "fb3168414b76232c9ca56d3e609ffb07a1774320d44683c88258d1e48ea6e0da",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h2-w3.png"
+  },
+  {
+   "sha": "d551ad8e4651d3d8db7700750c1e2d9f8faf743a7be7ba17ff715eaf6680aa88",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h3-w2.png"
+  },
+  {
+   "sha": "0871a7ec81a7f0e537fd31e210d3828be1c584d47df764766fbe6a8f424341bc",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h3-w3.png"
+  },
+  {
+   "sha": "9191b11a86407ef5f23469e69b8e198a05cf38cb5a0d71684abee50d552bb590",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h4-w2.png"
+  },
+  {
+   "sha": "806edd17e63ffacf08c3fe93ae7f87d0ccbe59b22ed44d55d7396774c751e07f",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/sand-steps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h4-w3.png"
+  },
+  {
+   "sha": "ff4d84367b765503b3d89266595d993b5bc29d800ca61189550154f18ae58619",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h1-w2.png"
+  },
+  {
+   "sha": "15f0321d2da12dc231c30b3e924bdf577ecf997b548764ae0f0cfcb459c28669",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h1-w3.png"
+  },
+  {
+   "sha": "8f7c9398a65aad83515836d8a2276aa7a33d361544f76ba2ef1729808db91766",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h2-w2.png"
+  },
+  {
+   "sha": "17ac9023375d39c7a898b853673e6ee5da6a4c63e6220631eba2d252023d17fd",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h2-w3.png"
+  },
+  {
+   "sha": "b484201ad2864a6f84879b3053f170c4dce2a2b61535e26d5a90d8b61bbdebba",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h3-w2.png"
+  },
+  {
+   "sha": "7d085284424aaed494eecbe334c0375252bab11fdaf543cf24589dc829ee759e",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h3-w3.png"
+  },
+  {
+   "sha": "f9d4d6d5e96ca9f0ebdf25f75e66c2b6913c41aa3119cefa130adaf4e2593721",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h4-w2.png"
+  },
+  {
+   "sha": "9c9c9f7e59745c0a44dfc0116d818ea781dcdb994c1947f6ebdaf3a82c61e0ce",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/ramp-h4-w3.png"
+  },
+  {
+   "sha": "c546e6382e6e41e8683872df2407e94c3c16426de14358933d60a1cfd502b1cf",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w2.png"
+  },
+  {
+   "sha": "522ab3f967704e966a72a7248c55c770afea493e1f5b08988a12a4381b0ac3b4",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w3.png"
+  },
+  {
+   "sha": "69063c345fcaf59e157a4393873bcd528cfa83deef92982d246d9a76bd7505ce",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h2-w2.png"
+  },
+  {
+   "sha": "050ae09393d82baa9e9f6a7fff9e2b9127a83d455bd1b90405a5233426ad2248",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h2-w3.png"
+  },
+  {
+   "sha": "d0fa48195db06ca736cacc406b2cb85704787455e02db794f56873ae9928dc16",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h3-w2.png"
+  },
+  {
+   "sha": "a044685ec5f785ee7ca11a8ee5030615dd46df97475b7a3263c54e1b6fbcd129",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h3-w3.png"
+  },
+  {
+   "sha": "b416ca179fbf95cb18f1b976177c17d371fd8a3f1091202c5fe7f4dc5034374f",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h4-w2.png"
+  },
+  {
+   "sha": "03f1794e89da0878a5424563efd470c5b2254718c755e5ea018d17b00da7fe83",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/snow-steps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h4-w3.png"
+  },
+  {
+   "sha": "ffa6bd8a82da9d9838c3bb48c562aeefb2f3c3084f0e4f2ff4d7272c3fea59e6",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h1-w2.png"
+  },
+  {
+   "sha": "cc009233dd2a8700a3d5afdbc95854fe24d401d0ed6062f5d3f6eac6f2850ae8",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h1-w3.png"
+  },
+  {
+   "sha": "379bf2da97214d9fc40f90ed6cf7fff69bccddaf8ede6a93cc6da3ff1d1804c7",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h2-w2.png"
+  },
+  {
+   "sha": "c8e1fa590c962abc13617f95b40b579541b2ee0be1e3d644af844daa0a842664",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h2-w3.png"
+  },
+  {
+   "sha": "6e218913d95f5dac999011e3f06c17d64b10c89654ed302a6e22df617428326f",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h3-w2.png"
+  },
+  {
+   "sha": "7041ed16661f5f8e94dd4f6f0ac8808a02fcc54acd3d38ef8ad353de4d2180ba",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h3-w3.png"
+  },
+  {
+   "sha": "4059bd0261fd0f270aaafa71cf0941fd6be59fbe561cb341ae901082e6b4e85d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h4-w2.png"
+  },
+  {
+   "sha": "4894c8e71b05c529ae9aba0500a1bab8def1a4f2301024d187d78d856491fa70",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/ramp-h4-w3.png"
+  },
+  {
+   "sha": "b4eb5a454e07c234408e810513b2bd7d960b684f7e46ef5fdfe0fdf98aaa63fa",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w2.png"
+  },
+  {
+   "sha": "67f57984c0b420ddab34b7f1d7c9a20e83084e89c3872362118b37c7e0805149",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w3.png"
+  },
+  {
+   "sha": "6e820275cffd773d0d5efa2a0fcde55df2f38fd7c4151eb80a45032b7a6dcc1d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h2-w2.png"
+  },
+  {
+   "sha": "a3e7be3f0d9c9886a274d8abcd0ecf32870ab470c98a9d1b17d030e655d968b5",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h2-w3.png"
+  },
+  {
+   "sha": "64e93443687b8f3aea8292b1e6de807e278d5a7e9f65a6f254fdd71b50cc19e7",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h3-w2.png"
+  },
+  {
+   "sha": "e4eb88e1913a77d9a73e8650730b6ecc624b7b001ee0be3ac5dd83e22039f2ae",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h3-w3.png"
+  },
+  {
+   "sha": "2d28ddfc548d1bc5b5acf086c2de2d1ed0fc9e3a1cad3fc203a659f5509fcc1d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h4-w2.png"
+  },
+  {
+   "sha": "154c7649838f660d88997acea665dfef03f3a9def7acf7de28365cefa47b365d",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/peat-steps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h4-w3.png"
+  },
+  {
+   "sha": "020f9c6a8f661a7b37c09ad6d8e115d7a4af5a7e75eaa825dcaf3961ebed28c9",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h1-w2.png"
+  },
+  {
+   "sha": "6ba797a7e65ca64463d1d1b0d00bcb69e0966a7450b938644634038bda43e9e6",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h1-w3.png"
+  },
+  {
+   "sha": "4b08f19ef4195286fa10405c38ff564990684fe69322e81ddc6108f300b0d4d6",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h2-w2.png"
+  },
+  {
+   "sha": "013d0a57fff07b33ecbbe4398a101be40e9b1a4b3dae99c95f873f08c297aebf",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h2-w3.png"
+  },
+  {
+   "sha": "7ec9bc8e02c23b036e7c76132f572a5647209517142eaf9e9208f4285c184298",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h3-w2.png"
+  },
+  {
+   "sha": "c718115c1be2e4a9b48fae7caaee527dfa7fb8e04fba821cd761dfc175641107",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h3-w3.png"
+  },
+  {
+   "sha": "493322bd5f20f0bfc78ed2b06b0674ae63a8286e22a9bd8c6ab3ff1801aed0ea",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h4-w2.png"
+  },
+  {
+   "sha": "41080f7e147974c3c6740fad26ba990c64f50a94ac3b60efb39e6d3e95c7ed26",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/ramp-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/ramp-h4-w3.png"
+  },
+  {
+   "sha": "be402dc79bc3d0f9c8d929c26736e65f9bbedf702511582850cb1b9f6394451a",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h1-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w2.png"
+  },
+  {
+   "sha": "63f0f27f864b1ce1c1463a6059fa8322fccd6b079f108a2028b6dba6ba70cbc5",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h1-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w3.png"
+  },
+  {
+   "sha": "550b9997e0a4235ba69488c6abbd0af03bbe686b0cb6365cd9e206bc57bf0d1f",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h2-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h2-w2.png"
+  },
+  {
+   "sha": "f305ed60672f0535d54b31a9b2c3f76790c8a8816ad44e0644b818262e350ef5",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h2-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h2-w3.png"
+  },
+  {
+   "sha": "ab2f92b98990e635b73c51df499416f99146e0bba3e00749ef5e6022cc5f0c74",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h3-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h3-w2.png"
+  },
+  {
+   "sha": "2016f19dac2e06865c9c2dad5ecbb9c749efbdb35fe5d1b824a99bc363c6904c",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h3-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h3-w3.png"
+  },
+  {
+   "sha": "c1897f7cb3455f2f328040ab5b53c8b2d31b1bac8ca5bfddfe34c4a2287c0600",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h4-w2",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h4-w2.png"
+  },
+  {
+   "sha": "80fdcfe30cadb6e466ddc5183d73f4ba654eb7f20be74ffc13bb9c62be9018cc",
+   "kind": "terrain",
+   "label": "relief-cuts-rev/cave-steps/stairs-h4-w3",
+   "source": "scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h4-w3.png"
+  }
+ ]
+}

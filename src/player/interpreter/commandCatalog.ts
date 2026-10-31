@@ -47,6 +47,7 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
+import { executeScriptCommand } from "@/player/interpreter/scriptCommand";
 import { choiceView, choicesHaveConditions, MAX_SHOWN_CHOICES } from "@/project/choiceView";
 import { presentableItems } from "@/player/interpreter/presentItem";
 import { advanceScheduleRun, buildSchedulePlanView } from "@/player/interpreter/schedule";
@@ -1271,6 +1272,8 @@ export function executeCommand(
       state.session.flags.fuseMonstersSuccess = result.ok;
       return resumeNext(frame);
     }
+    case "script":
+      return executeScriptCommand(state, frame, command, executeCommand);
     default:
       console.warn("[interpreter] 알 수 없는 command kind, 이벤트 중단");
       return { kind: "done" };

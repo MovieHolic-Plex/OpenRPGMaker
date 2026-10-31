@@ -1,0 +1,282 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0871a7ec81a7f0e537fd31e210d3828be1c584d47df764766fbe6a8f424341bc",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 3 w3 reverse cut through a north-facing sand cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/sand-steps/stairs-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 181,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper steps (treads with lit nosing and darker shaded band)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-5, 8-10"
+     },
+     {
+      "part": "lower steps (flat treads, each ending in a 1-row edge line)",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a 48x32 full-bleed tile with no transparent rows or silhouette change; the width is 48 on every row. The column scans show a repeating 5-row step pattern. Each step has a light nosing row (#fff9b4 at rows 1, 6, 11, 16, 21, 26 and 31), then 3-4 rows of tread colour (#f5d090), then a darker edge row (rows 15, 20, 25 and 30). Rows 3-5 and 8-10 are a slightly darker band (#dcaf6c) that reads as step shading rather than a vertical face. The stairs descend away from the viewer, so the risers face away and are hidden. There is no vertical south face of 3 or more rows and no receding side face. The whole tile is horizontal tread surface, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Its near-flat coverage is 0%, so there are no flat 5x5 fills. The dark edge pixels are 0% neutral, so the outline is a tinted tan/brown version of the sand rather than a black line. Each tread band has a highlight, a light mid-tone, a mid-tone and a darker edge line, with small speckle dots, so the sand ramp has about 5 steps. That is slightly below Beodeul's 5-6. The treads are fairly regular, so the texture is only 'some' next to the grass tufts and the per-stone shading on the paving. It is still comparable in information density to the references, not a flat sticker, so it passes, narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24191
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step treads (repeating bands, period 5 rows)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "3-5"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a full-width 48x32 tile of stair steps with a repeating pattern every 5 rows. Pale highlight edge lines (#fff9b4) fall at rows 1, 6, 11, 16, 21, 26 and 31. Each is followed by tread rows of mid-tone sand (L about 205-212). In the upper steps (rows 2-5 and 7-10) the highlight is followed by a darker 3-row band (L=177, #dcaf6c), which reads as the riser or shadow. In the lower steps (rows 11-14, 17-19, 22-24, 27-29) the tread is 3-4 rows of light sand with a darker line at the step edge (rows 15, 20, 25, 30). The silhouette is 48 wide on every row, so there is no outline taper and no side face. Each step has an edge line plus tread and riser bands, so it reads as stepped treads with a front face and not a flat slab. The tread depth of 2-4 rows is the main top estimate, and the riser is about 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 6 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Its near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the edge lines carry a tan/brown tint rather than black. Each step has a highlight lip, a light face, a mid tone and a darker riser line, with speckle dots in the sand. That is a clear value ramp with grain, and no large flat areas. It is simpler than the references' texture work and reads a little like planks, but its tonal density sits between the two references, so it is acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20581
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads, repeating step bands across the full 48px width, rows 0-31",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x32 rectangle. It is made of about six horizontal bands of 5 rows each. Each band has a light nosing line (L=243, e.g. rows 1, 6, 11, 16, 21, 26, 31), then 2-4 rows of tread in mid-tone (#f5d090 or #dcaf6c), then a darker edge line (rows 5, 10, 15, 20, 25, 30). These are stairs seen from above, descending away from the viewer. The risers face away, so no vertical south face of 3 or more rows is visible. Rows 3-5 and 8-10 are slightly darker in the first two bands, but they read as tread shading and not as a separate front face. The picture is a flat top-down tiling of steps with no front elevation, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a sand-toned stair patch built from horizontal bands. Each band has a light lip, a mid tone, and a darker tinted riser line, with a few speckle dots in the bands. That gives about 5 lightness steps, close to the paving reference's 6-7. Measured facts: 6 visible tones per tile (grass 3, paving 7), 0% near-flat coverage, and 0% neutral dark edge pixels, so the lines lean brown rather than black. The bands are fairly clean and the grain is sparse next to the paving's per-stone shading, so density is slightly lower. Even so, it is not a flat sticker fill, and a careful artist could accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19707
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads, upper steps (highlight edge line, then tread and a darker band)",
+      "rows": "0-10",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "3-5"
+     },
+     {
+      "part": "stair treads, lower steps (highlight edge line every 5 rows over a flat tread)",
+      "rows": "11-31",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px rectangle, rows 0-31, made of repeating horizontal steps. Each step has a pale highlight edge row (#fff9b4 at rows 1, 6, 11, 16, 21, 26, 31) above a tread of about 3-4 rows. Only the top few steps (rows 3-5 and 8-10) have a slightly darker band, which could be a short riser. There is no vertical front face of 3 or more rows and no side face. The stairs descend away from the viewer, so only tread surfaces show. This is a flat plan view of the steps, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 6 visible tones per tile (grass 3, paving 7), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted brown-sand tone and not near-black. By eye the piece is weaker than the references. It is a pale sand block cut into evenly spaced horizontal bands. Each band is a light fill with a lighter top edge and a darker lower line, plus a few sparse speckles. That is only about 4 lightness steps, against 5-6 for the references. There are no per-stone or per-grain clusters like the paving's stone shading or the grass's tufts. The repeated identical bands read more like wooden planks than sand-cut steps, and there is no sand grain, no cliff-wall shading, and no depth cue for descending away from the lip. The candidate also sits as a small isolated rectangle rather than a full 4x3 tile patch. It has no flat 5x5 fills, but it looks thinner and more regular than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22187
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.368Z",
+ "cells": {
+  "16": [
+   "049aa95021591b6c",
+   "3c6b1d6f0cd24a9e",
+   "45c3261fa254fa12",
+   "485c5681b9a96864",
+   "6dd3f2ff88f7339d",
+   "805819f9375212dc"
+  ],
+  "24": [
+   "05dc0dce7fef54eb",
+   "217a1e9502873b64",
+   "4f2f51b8065179f9",
+   "9dbac41d663362f9",
+   "e320cf0f597be237",
+   "e55960ec4eed9c6c",
+   "eb87520ac4e1c0a0",
+   "ebf6a5ff3ada8c28"
+  ],
+  "32": [
+   "535b932664ef4252",
+   "636e620712e173de",
+   "8df6a05888be2686",
+   "ab2d5fe9c04bc9a5",
+   "b6d47fbde287c1bc",
+   "cc3cd66105363e1a"
+  ],
+  "48": [
+   "1a97ea44c06688d3",
+   "e9b8902cc65c1330"
+  ]
+ }
+}

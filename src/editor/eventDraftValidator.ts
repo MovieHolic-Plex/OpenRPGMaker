@@ -1275,6 +1275,8 @@ function validateCommand(
     case "recallParty":
     case "removeMonster":
     case "fuseMonsters":
+    // 스크립트의 참조는 저장 때 뽑은 effects 로 스크립트 분석기(src/editor/script/analyze.ts)가 본다.
+    case "script":
       return;
   }
   const exhaustive: never = command;
