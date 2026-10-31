@@ -166,11 +166,15 @@ export function buildMaps(project: Project): Stage {
 
   // ── 늪 여관 — 주인 베일(카운터 뒤), 게시판(벽), 하그네(창가 탁자).
   const innMap = project.maps[M.inn]!;
-  const keeper = nearestFree(project, innMap, { x: 4, y: 11 }, [innEntry]);   // 카운터 뒤
-  const board = nearestFree(project, innMap, { x: 3, y: 10 }, [innEntry, keeper]);
-  const marta = nearestFree(project, innMap, { x: 11, y: 12 }, [innEntry, keeper, board]);
-  const bed = nearestFree(project, innMap, { x: 2, y: 5 }, [innEntry, keeper, board, marta]);
-  mustReach(project, innMap, { x: innEntry.x, y: innEntry.y - 1 }, keeper, "여관 입구 → 주인");
+  // 선술집은 가구 사이가 한 칸 통로다. 서 있는 사람(주인·하그네)이 통로를 막으면 게시판·침대에 못 간다(2026-10-31 통짜 플레이에서
+  // 주인이 카운터 뒤 통로 (3,12)에 서서 게시판·침대 쪽이 통째로 끊겼다). 게시판·침대를 먼저 정하고, 주인·하그네는 그 길을 끊지 않는 칸에 세운다.
+  const innFrom = { x: innEntry.x, y: innEntry.y - 1 };
+  const board = nearestFree(project, innMap, { x: 3, y: 10 }, [innEntry]);
+  const bed = nearestFree(project, innMap, { x: 2, y: 5 }, [innEntry, board]);
+  const standClear = (others: Cell[]) => (c: Cell) => reachesAround(project, innMap, innFrom, [board, bed, c, ...others], [c, ...others]);
+  const keeper = nearestFreeWhere(project, innMap, { x: 4, y: 11 }, [innEntry, board, bed], standClear([]));   // 카운터 곁
+  const marta = nearestFreeWhere(project, innMap, { x: 11, y: 12 }, [innEntry, keeper, board, bed], standClear([keeper]));
+  mustReach(project, innMap, innFrom, keeper, "여관 입구 → 주인");
   // 게시판 그림(실내 v5 notice board) — 벽 앞에 세운다(설계 2.6 기본안: 게시판은 실내 벽에).
   tryStamp(project, M.inn, "hand-interior:notice board", { x: board.x, y: board.y - 1 }, () => reachesAll(project, M.inn, { x: innEntry.x, y: innEntry.y - 1 }, [keeper, board, marta]));
 
@@ -186,6 +190,39 @@ export function buildMaps(project: Project): Stage {
     inn: { entry: innEntry, keeper, board, marta, bed },
     nest: { entry: nd.entrance, boss: nd.population?.boss ?? bossRoom.spots[0] ?? { x: 19, y: 9 }, bossRoom, packs, lake: lake.spots[1] ?? { x: 4, y: 16 } },
   };
+}
+
+/** want 근처 빈 칸 중 ok() 가 참인 가장 가까운 칸. */
+function nearestFreeWhere(project: Project, map: GameMap, want: Cell, avoid: readonly Cell[], ok: (c: Cell) => boolean, maxR = 8): Cell {
+  for (let r = 0; r <= maxR; r++) {
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const c = { x: want.x + dx, y: want.y + dy };
+      if (c.x < 0 || c.y < 0 || c.x >= map.width || c.y >= map.height) continue;
+      if (!isPassable(project, map, c.x, c.y)) continue;
+      if (map.events.some((e) => e.x === c.x && e.y === c.y) || avoid.some((a) => a.x === c.x && a.y === c.y)) continue;
+      if (ok(c)) return c;
+    }
+  }
+  throw new Error(`[hunter] ${map.id} 에 ${want.x},${want.y} 근처에 길을 막지 않는 빈 칸이 없다`);
+}
+/** from 에서 targets 마다 그 칸 또는 옆 칸에 닿는가 — blockers 칸(서 있는 사람)은 밟지 못한다. */
+function reachesAround(project: Project, map: GameMap, from: Cell, targets: readonly Cell[], blockers: readonly Cell[]): boolean {
+  const key = (x: number, y: number) => `${x},${y}`;
+  const block = new Set(blockers.map((b) => key(b.x, b.y)));
+  const seen = new Set([key(from.x, from.y)]);
+  const queue: Cell[] = [from];
+  while (queue.length) {
+    const c = queue.shift()!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const n = { x: c.x + dx, y: c.y + dy };
+      const k = key(n.x, n.y);
+      if (seen.has(k) || block.has(k) || n.x < 0 || n.y < 0 || n.x >= map.width || n.y >= map.height) continue;
+      if (!canMove(project, map, c.x, c.y, n.x, n.y)) continue;
+      seen.add(k); queue.push(n);
+    }
+  }
+  return targets.every((t) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(key(t.x + dx!, t.y + dy!)) && !block.has(key(t.x + dx!, t.y + dy!))));
 }
 
 /** BFS 최단 길(칸 목록, 시작·끝 포함). 길이 없으면 던진다. */
@@ -208,5 +245,5 @@ export function shortestPath(project: Project, map: GameMap, from: Cell, to: Cel
   for (let c: Cell | null = to; c; c = prev.get(key(c)) ?? null) out.unshift(c);
   return out;
 }
-import { canMove } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 const reachableStep = (project: Project, map: GameMap, a: Cell, b: Cell) => canMove(project, map, a.x, a.y, b.x, b.y);

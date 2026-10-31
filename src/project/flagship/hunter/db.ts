@@ -138,7 +138,7 @@ export function setupHunterDatabase(project: Project): void {
   enemy(ENEMY.ghoul, "익사귀", "enemy_ghoul_grave", { maxHp: 150, maxMp: 0, attack: 58, defense: 22, mind: 20, agility: 34 },
     [act("skill_attack", 6), act("skill_hc_drag", 7)], 60, 0, 6, { elementRates: drownerRates });
   // 공백 D 우회(설계 3.6 A): 기름 없이 싸우면 어미가 매 턴 메운다(상태 「불로 풀림」 필드가 엔진에 없다 — 트룹 둘로 가른다).
-  const motherStats = { maxHp: 520, maxMp: 30, attack: 74, defense: 30, mind: 50, agility: 30 };
+  const motherStats = { maxHp: 680, maxMp: 30, attack: 74, defense: 30, mind: 50, agility: 30 };
   const motherActs = [act("skill_attack", 5), act("skill_hc_drag", 6), act("skill_hc_wail", 8, { kind: "turn", start: 3, interval: 3 })];
   const motherExtra = { elementRates: drownerRates, role: "boss", battleScalePercent: 150, collapseEffect: "bossSink" };
   enemy(ENEMY.mother, "물에 잠긴 어미", "enemy_ghoul_grave", motherStats, [...motherActs, act("skill_hc_mire_mend", 7, { kind: "turn", start: 1, interval: 1 })], 240, 0, 10, motherExtra);
@@ -148,7 +148,7 @@ export function setupHunterDatabase(project: Project): void {
   // upsert_enemy 의 보스 위협 하한이 HP 를 올린다 — 저자 값으로 되돌린다.
   for (const id of [ENEMY.mother, ENEMY.motherDry]) {
     const boss = project.database.enemies.find((e) => e.id === id)!;
-    boss.stats = { ...boss.stats, maxHp: 520 };
+    boss.stats = { ...boss.stats, maxHp: 680 };
   }
 
   const troop = (id: string, name: string, enemyIds: string[], background: string) =>

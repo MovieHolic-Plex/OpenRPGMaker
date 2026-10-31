@@ -9,7 +9,7 @@ import { openingMapViewCrop } from "@/project/openingMapView";
 import type { Command, Project } from "@/project/types";
 import { ACTOR, ITEM } from "./db";
 import { journal, SW, V } from "./contractA";
-import { bgm, caption, event, execTool, fadeIn, gone, ifCond, note, page, playSe, say, setSw, setVar, think, varAtLeast, varIs, wait, type Cell } from "./kit";
+import { bgm, caption, event, execTool, fadeIn, gone, ifCond, note, page, playSe, setSw, setVar, think, varAtLeast, varIs, wait, type Cell } from "./kit";
 import { BGM, M, type Stage } from "./maps";
 
 const STAGE = { width: 480, height: 270 } as const;

@@ -358,6 +358,7 @@ export function buildContractA(project: Project, s: Stage): void {
   const gateEv = project.maps[M.swamp]!.events.find((e) => e.id === gateId)!;
   const nightGo = gateEv.pages!.find((pg) => JSON.stringify(pg.conditions ?? []).includes('"timePhase"'))!;
   (nightGo.commands as Command[]).unshift(
+    objective("늪 깊은 곳에서 어미를 찾는다. 익사귀는 눈에 띄면 쫓아온다."),
     ifCond(swOff(SW.oiled), [
       ...think("물이 낮다. 들어가기 전에 칼을 본다."),
       choices([
@@ -369,12 +370,20 @@ export function buildContractA(project: Project, s: Stage): void {
   );
 
   // ── 둥지: 익사귀 셋(필드 적, place_field_enemy) — 밤에만 물 밖에 있다(설계 3.6). 둥지 입구가 낮에는 막혀 있으니 둥지 안은 늘 밤이다.
+  const packClears: string[] = [];
   for (const [i, at] of s.nest.packs.entries()) {
     const r = execTool(project, "place_field_enemy", { mapId: M.nest, x: at.x, y: at.y, troopId: TROOP.drowners, behavior: "chase", sightRange: 4, canEscape: true });
     const id = (r.data as { eventId: string }).eventId;
     const ev = project.maps[M.nest]!.events.find((e) => e.id === id)!;
     ev.name = `익사귀 ${i + 1}`;
+    const clear = JSON.stringify(ev.pages).match(/"(sw_[^"]+_clear)"/)?.[1];
+    if (clear) packClears.push(clear);
   }
+  // 어미가 가라앉으면 남은 익사귀도 물 밑으로 간다 — 보스를 잡고 지친 채 나가는 길에 셋째 무리에 잡혀 게임이 끝났다(2026-10-31 통짜 플레이).
+  const truthPage = project.maps[M.nest]!.events.find((e) => e.id === "ev_hc_a_truth")!.pages!.find((pg) => pg.id === "truth")!;
+  const sinkAt = (truthPage.commands as Command[]).findIndex((c) => JSON.stringify(c).includes("어미가 물에 가라앉는다")) + 1;
+  if (sinkAt <= 0) throw new Error("[hunter] 진실 장면에 어미가 가라앉는 줄이 없다");
+  (truthPage.commands as Command[]).splice(sinkAt, 0, ...packClears.map((sw) => setSw(sw)), playSe(SE.splash), ...caption("둥지 곳곳에서 물소리가 났다. 남은 것들이 물 밑으로 내려갔다."));
 }
 
 function nearPlaza(s: Stage): Cell { return { x: s.swamp.plaza.x - 2, y: s.swamp.plaza.y + 2 }; }
