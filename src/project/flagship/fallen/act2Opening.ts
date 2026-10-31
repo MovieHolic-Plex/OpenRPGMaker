@@ -1500,10 +1500,13 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다. 위 순찰은 틈 어귀 둘레를 돌므로 이때 화면 안에 있다.
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.86, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
+    // 길돌 앞에서 먼저 두 걸음 물러선 뒤에 말한다 — 일행 바로 옆 틈 안에 선 채로 「못 들어간다」 하면 경계가 안 읽혔다(VQA r4).
+    ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
+      { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], i === allIds.length - 1)),
     say("야경꾼", "…숲지기 땅이다. 더는 못 들어가."),
     // 물러나며 꺼진다 — 세 걸음 뒷걸음질(얼굴은 숲 쪽) 동안 흐려진다.
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
-      ...[0, 1, 2].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -80 }])], i === allIds.length - 1)),
+      ...[0, 1, 2].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -85 }])], i === allIds.length - 1)),
     setSw(SW_B4_GONE),
     narrate("등불들이 하나씩 풀밭 너머로 멀어졌다."),
     say(BRAM, "야경꾼 놈들은 숲에 못 들어온다.\n여기까진 아직 내 숲이니까."),
