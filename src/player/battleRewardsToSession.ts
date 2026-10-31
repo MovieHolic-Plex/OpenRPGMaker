@@ -14,7 +14,7 @@ import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } fro
 import { addMonsterEvs, monsterStatRulesOf } from "@/project/monsterStatRules";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
-import { statesKeptAfterBattle } from "@/project/battleEndStates";
+import { releaseStatesAfterBattle, statesKeptAfterBattle } from "@/project/battleEndStates";
 
 export type BattleRewardsOutcome = {
   readonly result: BattleResult;
@@ -248,7 +248,9 @@ function applyBattleStatesToSession(session: PlaySession, actors: readonly Battl
   for (const actor of actors) {
     if (actor.monsterInstanceId) continue;
     // 전투 종료로 풀리는 상태(system.clearStatesAfterBattle · StateRecord.clearOnBattleEnd · removalCondition 「전투 종료」)는 넘기지 않는다.
-    session.actorStateIds[actor.recordId] = statesKeptAfterBattle(project, actor.stateIds);
+    const kept = statesKeptAfterBattle(project, actor.stateIds);
+    session.stateBattleCounts ??= {};
+    session.actorStateIds[actor.recordId] = releaseStatesAfterBattle(project, session.stateBattleCounts, actor.recordId, kept);
     if (actor.skillPp) session.actorSkillPp[actor.recordId] = { ...actor.skillPp };
   }
 }
