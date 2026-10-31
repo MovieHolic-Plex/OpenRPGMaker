@@ -108,7 +108,7 @@ function shotKeyBox(project: Project): void {
   newShot(project, id, ms, { kind: "fade", durationMs: 900 });
   const view = mapBackground(project, id, M.f1, { x: 7, y: 4 }, 2);
   night(project, id, 0.84);
-  glow(project, id, "moon", cellCenter(view, { x: 9, y: 3 }), 140, "#6f86c8", { hz: 0.2, amount: 0.05 });
+  glow(project, id, "moon", cellCenter(view, { x: 9, y: 3 }), 70, "#4f63a0", { hz: 0.2, amount: 0.04, inner: 0.08 });
   glow(project, id, "key", cellCenter(view, { x: 8, y: 1 }), 60, "#fff3c4", { startMs: 1200, hz: 0.5, amount: 0.15 });
   slowPan(project, id, ms, { x: 250, y: 150 }, { x: 240, y: 120 });
   sfx(project, id, "clock", "easyrpg-sound-clock", 300, 5200, 0.4, 800);
