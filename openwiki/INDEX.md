@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7850KB / 약 2,306,503 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7850KB / 약 2,306,567 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 466 | ~21,343 |
-| `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,278 |
+| `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,342 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -109,7 +109,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 3 | `capture.png`, `facts.json`, `reference.png` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -324,7 +324,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L354` 바로 플레이 게임 (2026-10-23)
   - `L458` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,278 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,342 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
