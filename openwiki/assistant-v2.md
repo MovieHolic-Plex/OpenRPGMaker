@@ -415,6 +415,12 @@ terra 마왕 편의점 다시 재기: 4 → 7점, 호출 46 → 43, 실패 3 →
 - **방금 본 칩을 칩 관문이 「안 봤다」고 되돌렸다**(`piAgent/charsetSelectionGate.payload`): openai-completions 는 도구 결과의 글 조각을 줄바꿈으로 이어 한 tool 메시지로 보내고, v2 문맥 정리는 마지막 도구 결과 끝에 상태 카드를 붙인다. 관문은 tool 메시지 전체를 JSON 하나로 읽으려다 실패해 그 검색 결과와 칩 그림이 모델에 갔다는 것을 세지 못했다(list_npc_graphics 「회사원」 → add_street_walkers 가 그 칩으로 거절). `JSON.stringify` 결과에는 줄바꿈이 없으므로 `{` 로 시작하는 줄을 따로 읽는다. 옛 코드는 같은 시험 입력에서 받은 칩 0개, 새 코드는 1개.
 - **장르 기본값을 「요청 없는 주인공 변경」으로 경고했다**(`gameChecks.unaskedChanges`): 현대 장소를 처음 지을 때 `genreDefaults` 가 주인공을 현대 칩·짝 얼굴로 갈아입히고, 전투 없는 게임이면 공장 기본 장비를 뺀다. 이 경고 줄의 면제가 `initialEquipment`·`battleCharacterResourceId` 를 몰라 「되돌려라」가 떴고, Opus·terra 둘 다 그 할 일을 「원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다. 공장 기본 장비만 뺀 것(`onlyFactoryGearRemoved`, 전투 없음)과 배틀러 칩도 면제한다.
 
+## 조수 대조 6회차 — 안 보이는 필드 적과 이른 막힘 (2026-10-31 asst-parity p2b-chase-terra·p3-hunter-terra)
+
+- **GPT 계열이 graphic 의 모든 칸을 빈 값으로 채워 필드 적이 투명하게 저장됐다**(`eventCompile.compactGraphicSpec`·`graphicSpecArg`): terra 숲 추격의 `place_field_enemy` 가 `graphic:{selectionId:"", query:"wolf", textureKey:"", characterIndex:0, transparent:false}` 를 보냈다. 인자 정리 훅이 빈 문자열만 걷어 내 `transparent:false` 가 남았고, `resolveGraphic` 은 `"transparent" in spec` 만 보고 투명 이벤트를 만들었다(들개 무리가 숲에서 안 보였다). 이제 빈 칸·`transparent:false`·시트 없는 `characterIndex` 를 먼저 걷어 내고, 빈 칸뿐이면 「graphic 생략」과 같다. `place_field_enemy` 는 `query` 만 남은 그림이면 전투 그림(대응 걷기 칩 또는 생성 몬스터 도트)을 따르고, 그래도 투명이면 `field-enemy-invisible` 로 거절한다. terra 판의 정확한 인자를 그 판 저장본에 다시 돌리면 `generated-enemy-wolf-grey` 도트가 선다.
+- **아무 거절도 없이 할 일을 막힘으로 닫았다**(`loop/todoTools` todo block): terra 사냥꾼 계약은 6.6분·호출 22번에 할 일 7개를 막힘으로 닫았다 — 시작 자리는 `set_start_position` 을 한 번도 부르지 않았고, 단서 집계·일지는 플래그 하나만 선언했다. 같은 장면을 Opus 는 `set_start_position`·`stamp_object`+조사 이벤트·조건 페이지·공통 이벤트로 다 지었다. 이제 그 항목에 거절된 호출이 없으면(`attempts 0`, 최근 쓰기 실패 없음) 첫 막힘을 한 번 되돌리고 그 항목의 다음 호출과 흔한 동사를 영어로 준다. 두 번째 막힘은 받는다(`blockBounced` 한 번).
+- **따옴표로 준 대사를 「인물 있음」으로만 확인했다**(`loop/requestSkeleton`): 같은 판에서 terra 는 뱃사공·어부의 아내를 `person` 확인으로만 적어, 단서 대사 없이(「늪물은 믿을 게 못 되오.」) ✓ 로 닫혔다. 요청 뼈대가 `X는 "…"고 말해`·`X를 조사하면 "…"`·`X가 있고, 조사하면 「…」` 를 읽어 `talk{who, says:<앞 두 낱말>}` 요소로 덧붙이고, 모델 항목이 `says` 없는 `talk` 이면 덮은 것으로 치지 않는다. 제목·이름·문구 같은 낱말 뒤의 인용은 대사로 보지 않는다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
