@@ -3,9 +3,11 @@
 //   field  : 새솔마을(examples/saesol-red) 시작 지점 둘레에 횃불·모닥불·반딧불(앞 층)·폭포 상시 효과 이벤트를 놓고,
 //            병렬 이벤트가 「애니메이션 표시」로 주인공 회복 빛·칸 폭발을 번갈아 튼다. 녹화 + 틱 비용(__oprnPixelFxStats).
 //   stress : 같은 맵에 상시 효과 이벤트를 --stress 개(기본 16) 더 놓고 틱 비용·rAF 간격을 잰다.
+//   screen : 같은 맵(16px 칸)에 「화면」 층 날씨(--screen-fx, 기본 눈·오로라)를 하나씩 깔고 정지 화면 + 녹화. 화면 층은 게임 화소
+//            배율 그대로(칸과 같은 배율) 시야에 바둑판으로 깔려야 한다 — 눈송이가 칸 하나만큼 커지면 회귀다.
 //   battle : editor-authored-demo-v3 + 도트 측면(retro2003) — 주인공 기술 「서리 폭발」(ice/frost-nova)과 통상 공격(melee/sword-slash).
 //
-// 사용: node scripts/qa/runtime/pixelfx.capture.mjs --out /tmp/pixelfx-qa [--mode field,stress,battle] [--stress 16]
+// 사용: node scripts/qa/runtime/pixelfx.capture.mjs --out /tmp/pixelfx-qa [--mode field,stress,battle,screen] [--stress 16] [--screen-fx weather/snow,weather/aurora] [--viewport 960x720]
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import { join, resolve } from "node:path";
@@ -23,6 +25,8 @@ function arg(name, fallback) {
 const outDir = resolve(arg("out", "/tmp/pixelfx-qa"));
 const modes = arg("mode", "field,stress,battle").split(",");
 const stressCount = Number(arg("stress", "16"));
+const screenEffects = arg("screen-fx", "weather/snow,weather/aurora").split(",");
+const [viewW, viewH] = arg("viewport", "960x720").split("x").map(Number);
 
 const pfx = (effectId, extra = {}) => ({
   id: `anim_pfx_${effectId.replace(/[/-]/g, "_")}`, name: `pixelfx ${effectId}`, scope: "singleTarget", position: "feet",
@@ -85,6 +89,15 @@ async function fieldProject(stress) {
   return JSON.stringify(project);
 }
 
+/** 효과를 다 뺀 같은 맵에 「화면」 층 효과 하나만. */
+async function screenProject(effectId) {
+  const project = JSON.parse(await baselineProject());
+  const map = project.maps[project.startMapId];
+  const { x, y } = project.startPos;
+  map.events.push(ambientEvent("ev_pfx_screen", x, y - 3, { effectId, layer: "screen" }));
+  return JSON.stringify(project);
+}
+
 async function battleProject() {
   const project = JSON.parse(await readFile(join(REPO_ROOT, "test/fixtures/projects/editor-authored-demo-v3.json"), "utf8"));
   project.system.battleUiStyle = "retro2003";
@@ -113,8 +126,8 @@ async function battleProject() {
 
 async function open(browser, name, projectJson, report, video = true) {
   const context = await browser.newContext({
-    viewport: { width: 960, height: 720 },
-    ...(video ? { recordVideo: { dir: join(outDir, `video-${name}`), size: { width: 960, height: 720 } } } : {}),
+    viewport: { width: viewW, height: viewH },
+    ...(video ? { recordVideo: { dir: join(outDir, `video-${name}`), size: { width: viewW, height: viewH } } } : {}),
   });
   const page = await context.newPage();
   page.on("pageerror", (error) => report.errors.push(`${name}: ${String(error?.message ?? error)}`));
@@ -151,7 +164,7 @@ async function sample(page, ms) {
         frames.push(now - last);
         last = now;
         const stats = window.__oprnPixelFxStats;
-        if (stats) fx.push({ ms: stats.ms, paintMs: stats.paintMs, uploadMs: stats.uploadMs, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, shared: stats.sharedLoops, deferred: stats.deferred });
+        if (stats) fx.push({ ms: stats.ms, paintMs: stats.paintMs, uploadMs: stats.uploadMs, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, shared: stats.sharedLoops, deferred: stats.deferred, screen: stats.screen });
         if (now < end) requestAnimationFrame(tick); else done();
       };
       requestAnimationFrame(tick);
@@ -205,6 +218,24 @@ try {
     await page.screenshot({ path: join(outDir, "stress.png") });
     report.stress = { count: 4 + stressCount, warm, steady };
     await page.context().close();
+  }
+  if (modes.includes("screen")) {
+    report.screen = {};
+    for (const effectId of screenEffects) {
+      const name = `screen-${effectId.split("/").pop()}`;
+      const page = await open(browser, name, await screenProject(effectId), report);
+      await page.waitForFunction("window.__oprnPixelFxStats && window.__oprnPixelFxStats.visible >= 1", null, { timeout: 60_000 });
+      await page.waitForTimeout(2500);
+      for (let i = 0; i < 3; i += 1) {
+        await page.screenshot({ path: join(outDir, `${name}-${i}.png`) });
+        await page.waitForTimeout(900);
+      }
+      const steady = await sample(page, 3000);
+      report.screen[effectId] = { steady, layout: steady.last?.screen ?? null };
+      const video = page.video();
+      await page.context().close();
+      if (video) report.screen[effectId].video = await video.path();
+    }
   }
   if (modes.includes("battle")) {
     const page = await open(browser, "battle", await battleProject(), report);
