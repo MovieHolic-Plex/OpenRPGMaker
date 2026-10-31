@@ -1,7 +1,7 @@
 import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
-import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, isStoreBattleAnimationId, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroBattleIntro, retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -51,6 +51,7 @@ import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom"
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
 import { createBattleImpactController } from "@/player/battleImpactDom";
+import { stateAttackElementId } from "@/battle/battleStates";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
@@ -605,7 +606,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else delete root.dataset.battleAnimationSkipFrames;
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : hasRetroChoreography(field) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
+        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : (hasRetroChoreography(field) && !isStoreBattleAnimationId(animation?.animationId)) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
         root,
       );
     },
@@ -1592,7 +1593,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     let damaging = false;
     if (command?.kind === "attack") {
       damaging = true;
-      elementId = snapshot.actors.find((actor) => actor.recordId === snapshot.activeActorId)?.equipmentEffects?.attackElementIds?.[0];
+      const active = snapshot.actors.find((actor) => actor.recordId === snapshot.activeActorId);
+      elementId = (active ? stateAttackElementId(project, active) : undefined) ?? active?.equipmentEffects?.attackElementIds?.[0];
     } else if (command?.kind === "skill") {
       const skill = project.database.skills.find((record) => record.id === command.skillId);
       if (skill?.effect.kind === "damage") {

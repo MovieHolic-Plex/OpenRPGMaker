@@ -238,6 +238,8 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   `set_game_audio{role:'bgs', mapIds?, resourceId}`(mapIds 비우면 maps 역할처럼 지금 보는 맵 → 시작 맵, resourceId 비우면 그 맵 환경음 끔). 연출 `music{action:'bgs', query}` 도 넣어 둔 환경음을 같은 순위로 먼저 고른다.
 - 맵 필드 `GameMap.bgs?: { mode: "none" | "custom", resourceId?, volume? }` — 없으면 앞 맵·이벤트 환경음을 그대로 둔다. 런타임 `startMapBgs`(`src/player/mapBgm.ts`)가 loadMap 에서 BGM 옆에 부르고
   세션 `audio.bgs` 에 실어 세이브·전투 복귀가 같은 루프를 다시 튼다. 크기는 bgs 채널(음악 볼륨 그룹). 편집기 맵 속성 「배경 음악」 탭 아래 「환경음(BGS)」.
+  시작 맵·불러오기는 첫 loadMap 이 `applyMapBgm:false` 라 `PlayScene` 의 첫 연출·인게임 로드가 BGM 옆에서 `startMapBgs` 를 따로 부른다(세션에 환경음이 없을 때만).
+  bgs 채널은 `<audio loop>` 대신 WebAudio 버퍼 루프(`src/player/audio/gaplessLoop.ts`)로 돈다 — 2026-10-31 출하 플레이어 실측: `<audio loop>` 는 감는 자리에 60ms 무음(부하), 버퍼 루프는 0ms. AudioContext 가 없으면 요소로 물러선다.
 - **새 자리**(`SE_CUE_SPECS`): `textBlip` · `emote-<exclamation|question|heart|sweat|anger|music|ellipsis|sleep|idea>` · `footstep-<metal|carpet|mud|ice>`(비면 stone·wood·water·snow 로 물러섬) ·
   `jump` `land` `explosion` `teleport` `notify` · 징글 `questComplete` `partyJoin` `innRest` `chapterStart`. 징글 자리는 `seCueChannel` 이 `me` 채널로 보낸다(levelUp 은 기존 팩 때문에 se).
   런타임 고리: 대사 글자마다 textBlip(`src/player/textBlipVoice.ts`, 화자 목소리·녹음이 먼저, 둘에 하나·55ms 간격), showEmote → emote-<종류>, 점프 시작 jump·착지 land, 여관 숙박 innRest,
