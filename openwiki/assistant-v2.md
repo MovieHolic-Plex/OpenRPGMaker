@@ -462,6 +462,22 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **`code_lock.on`**: 요청이 「「자물쇠」를 조사하면 … 입력」처럼 자리를 말하면 뼈대가 그 이름을 넣고, 번호 입력이 다른 이벤트에 붙으면 ✗.
   요청 뼈대는 낫표 이름 물건 글(「「액자」 뒤에서는 「_ 2 _ _」」)을 그 물건의 talk 확인으로 뽑고(전에는 화자 「뒤에서」·「밑에서」), 글자 없는 번호 조각은 통째로 확인한다.
 - **도구 없이 끝난 쓰기 요청**(`assistantV2Runtime` afterMain): 할 일 목록이 끝내 안 생겼으면(첫 답에 todo 호출을 ```tool_call``` 글로 «써» 놓고 멈춘 Flash r5) 실제 todo 호출을 두 번까지 다시 요구한다.
+- **정답이 정말 여나**(`code_lock`): 정답 갈래에 이동·엔딩이 있거나, 켠 스위치를 조건으로 읽는 페이지·분기가 이동·엔딩을 할 때만 «열림»(두 단계까지).
+  DeepSeek r6 은 정답에 스위치만 켜고 그 스위치로 «문이 조금 열렸다» 글만 보여 문은 잠긴 채 ✓ 였다.
+- **사슬 엔딩 id**: ending 고리에 endingId 가 없거나 아직 없는 id 면 사슬이 그 id(없으면 `ending_<사슬>`)로 엔딩을 만든다 — 전에는 사슬 전체가 거절되거나 무결성 검사에 걸렸다.
+- **이름 있는 물건에 말 걸기 장면**(`events.ts`): `add_event({kind:"talk", where:"책상"})` 의 where 가 그 맵 이벤트 이름 하나와 같으면 그 이벤트에 붙인다(전에는 «자리 낱말을 몰라» 시작 근처 빈 칸).
+- **fork 갈래 다른 이름**(`argCoerce` forkBranches): 명령 목록은 스키마가 느슨해 `otherwiseBranch`·`elseBranch` 같은 칸이 검증을 지나 실행기에서 말없이 버려졌다 — fork 면 then/else 로 옮기고 Fixed call 로 알린다. 안쪽 객체에만 있는 필수 칸(`event.mapId`)은 맨 위로 올린다.
+- 요청 뼈대는 번호 자물쇠 항목을 맨 앞에, 엔딩을 자물쇠 뒤에 둔다(엔딩부터 지으면 add_ending_scene 이 «자물쇠에 말 걸면 엔딩»을 만들어 번호가 필요 없어졌다). 실내 닿기 검사는 못 닿는 칸 좌표를 적는다(DeepSeek 이 칸마다 run_scene_test 28번으로 찾았다). 호출 기록에 tool_choice 를 남긴다.
+- **할 일이 열려 있는 동안 도구 강제**(`env.keepToolsOn` → 실행기 `getToolChoice` "required"): 재주입에 한 번만 강제하면 Flash 는 하나 부르고 바로 글로 멈춰
+  «진척 없음 2번» 으로 고리가 멈췄다(r6). 쓰기 요청에서 열린 항목이 있고 **모델이 한 번이라도 글로 멈춘 뒤에만** 매 호출 강제하고, 항목이 하나도 닫히지 않은 채 12번이면 풀어 고리가 판정한다. Anthropic 확장 생각 호출에는 걸지 않는다.
+  강제한 호출의 지연 중앙값이 강제 안 한 호출의 2.5배를 넘으면 그 실행에서는 강제를 끈다(`v2.keep_tools.off`) — inferhub DeepSeek 은 tool_choice 를 주면 호출당 5초 → 25~40초로 느려져 r8 에서 10분 안에 단서 하나만 지었다.
+- **이름 이벤트를 안 바꾼 done 거절**(`todoTools` done): 확인 없는 항목의 글이 맵 이벤트 이름(「책상 단서」)을 말하는데 이번 실행에서 그 이벤트가 안 바뀌었으면 받지 않는다 —
+  Argon 이 단서 쓰기 3번이 거절된 뒤 깃발 선언 하나로 t1·t2·t3 를 연달아 done 했다. todo 항목의 짧은 표기 `{talk:"책상"}` 은 `check:{kind:"talk", who}` 로, upsert_event 의 `eventId` 는 `id` 로, 대사 명령 `showText`/`message` 는 `text`+`body` 로 고친다.
+- **사슬 인자 너그럽게**(`puzzle.ts`·`argCoerce` author_puzzle_chain, r8~r9): 고리 `role:"lock"`(keypad·password…)은 엔딩을 부르면 `ending`, 아니면 `code` 로 고친다.
+  `reward.ending{id,name,epilogue}` 는 endingId·성공 대사로, `needsAll` 은 페이지 조건(전부)으로 받는다. 자리 없는 고리가 하나뿐이면 사슬 맨 위 `eventId`·`at`·`name` 을 그 자리로 쓰고,
+  그것도 없으면 번호 고리는 이름에 자물쇠·금고·lock 이 든 이벤트(하나뿐일 때)에 붙인다 — Flash r8 은 자리를 맨 위에 세 번 바꿔 주고 다 거절돼 자물쇠가 끝내 없었다.
+  단서 `learn` 이 없으면 고리·이벤트 이름으로 달고, 뒤 고리의 `needs` 는 앞 고리의 learn·이름·이벤트 이름, 또는 **앞서 따로 지은 사슬이 선언하고 실제로 켜는 깃발**(「…「이름」…」)·그 이름 이벤트가 켜는 스위치로도 찾는다(DeepSeek r9 은 단서를 사슬 하나씩 지어 자물쇠 사슬이 거절됐다).
+  번호 고리의 `lines` 는 입력 전 안내다 — 성공 글(풀렸다·맞물린다·철컥)만 있고 reward.lines 가 비면 성공 대사로 옮긴다(r9 DeepSeek: 「다이얼이 맞물린다」가 번호 입력 전에 나왔다). `declare_story_flag` 의 description 이 없으면 id 로 채운다.
 - **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.

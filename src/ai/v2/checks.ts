@@ -54,12 +54,13 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
     if (!start) { checks.push({ id: "reach", mapId, ok: false, detail: "걸을 수 있는 칸이 하나도 없다" }); continue; }
     const reach = terrainReachability(project, map, start);
     let passable = 0, reached = 0;
-    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) { passable++; if (reach[y * map.width + x]) reached++; }
+    const cut: string[] = [];
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) { passable++; if (reach[y * map.width + x]) reached++; else cut.push(`(${x},${y})`); }
     const ratio = passable ? reached / passable : 0;
     const interior = !!roomSpecOf(project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
     // 바깥 맵은 울타리 친 밭·지붕 위 같은 「못 가는 걸을 수 있는 칸」이 정상이다 — 실내만 엄격하게.
     const min = interior ? 0.97 : 0.6;
-    checks.push({ id: "reach", mapId, ok: ratio >= min, detail: `들어오는 칸 (${start.x},${start.y})에서 걸을 수 있는 칸의 ${Math.round(ratio * 100)}%에 닿는다(기준 ${Math.round(min * 100)}%)` });
+    checks.push({ id: "reach", mapId, ok: ratio >= min, detail: `들어오는 칸 (${start.x},${start.y})에서 걸을 수 있는 칸의 ${Math.round(ratio * 100)}%에 닿는다(기준 ${Math.round(min * 100)}%)${ratio < min && cut.length ? ` — 못 닿는 칸 ${cut.slice(0, 12).join(" ")}${cut.length > 12 ? ` 외 ${cut.length - 12}` : ""} (unreachable cells — move or remove what walls them off)` : ""}` });
     // 출입(계단·문): 도착이 실제 걸을 수 있는 칸인가, 출발이 걸어서 닿는 자리인가.
     for (const t of transfers(map)) {
       const target = project.maps[t.to.mapId];

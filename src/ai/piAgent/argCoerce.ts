@@ -61,7 +61,56 @@ export interface ArgCoercion {
 
 // 도구 하나에만 맞는 빈칸 채우기 — 그 칸이 «이름표»라 어떤 값이든 뜻이 같을 때만(값을 지어내도 동작이 안 바뀐다).
 // declare_story_flag: id 는 kebab 이름표일 뿐이다. 2026-11-01 flash·argon 이 id 없이 {action, description} 만 보내 4번씩 거절됐다.
+const TODO_KEY_CHECKS: Readonly<Record<string, string>> = { talk: "who", person: "name", place: "name", item: "name" };
 const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>> = {
+  // upsert_event({eventId}) — 이벤트 id 칸 이름은 id 다(2026-11-01 cheap r7 argon: 세 번 다 «id 없음» 으로 거절).
+  upsert_event(args, changes) {
+    if ((args.id === undefined || args.id === "") && typeof args.eventId === "string" && args.eventId.trim() && !isObj(args.event)) {
+      changes.push(`id: missing → "${args.eventId}" (from eventId — the event id field is named "id")`);
+      return { ...args, id: args.eventId };
+    }
+    return args;
+  },
+  // todo 항목의 짧은 확인 표기 {talk:"책상"} → check:{kind:"talk", who:"책상"} (r7 argon: 확인 없는 항목이 되어 거짓 done 이 통과했다).
+  todo(args, changes) {
+    if (!Array.isArray(args.items)) return args;
+    let touched = false;
+    const items = args.items.map((it, i) => {
+      if (!isObj(it) || it.check !== undefined || it.machineCheck !== undefined) return it;
+      for (const [k, field] of Object.entries(TODO_KEY_CHECKS)) {
+        const v = (it as Obj)[k];
+        if (typeof v !== "string" || !v.trim()) continue;
+        const { [k]: _drop, ...rest } = it as Obj;
+        touched = true;
+        changes.push(`items[${i}].${k}: "${v}" → check {kind:"${k}", ${field}:"${v}"} (a machine check goes in "check")`);
+        return { ...rest, check: { kind: k, [field]: v } };
+      }
+      return it;
+    });
+    return touched ? { ...args, items } : args;
+  },
+  // author_puzzle_chain 고리 role 별칭 — 2026-11-01 cheap r8 flash 가 role:"lock" 을 보내 스키마에서 거절됐다.
+  // 번호 고리는 엔딩을 부르면(endingId·reward.ending) ending, 아니면 code.
+  author_puzzle_chain(args, changes) {
+    if (!Array.isArray(args.links)) return args;
+    let touched = false;
+    const links = args.links.map((l, i) => {
+      if (!isObj(l) || typeof l.role !== "string") return l;
+      const r = l.role.trim().toLowerCase();
+      if (["clue", "code", "door", "pickup", "ending"].includes(r)) return l;
+      const reward = isObj(l.reward) ? l.reward : undefined;
+      const to = /lock|keypad|password|combination|pin|safe|code|answer/u.test(r) ? (l.endingId !== undefined || isObj(reward?.ending) ? "ending" : "code")
+        : /hint|note|examine|inspect|read|memo|clue/u.test(r) ? "clue"
+        : /item|take|get|pick|key/u.test(r) ? "pickup"
+        : /exit|gate|door|open/u.test(r) ? "door"
+        : /end|escape|finish|goal|win/u.test(r) ? "ending" : undefined;
+      if (!to) return l;
+      touched = true;
+      changes.push(`links[${i}].role: "${l.role}" → "${to}" (roles are clue | code | door | pickup | ending)`);
+      return { ...l, role: to };
+    });
+    return touched ? { ...args, links } : args;
+  },
   declare_story_flag(args, changes) {
     const out = { ...args };
     const text = [out.description, out.meaning, out.name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
@@ -70,6 +119,11 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
       const ascii = text.normalize("NFKD").replace(/[^A-Za-z0-9]+/gu, "-").replace(/^-|-$/gu, "").toLowerCase().slice(0, 24);
       out.id = `flag-${ascii || Math.abs(h).toString(36)}`;
       changes.push(`id: missing → "${out.id}" (any kebab-case name works; pass id next time)`);
+    }
+    // description 은 사람이 읽는 설명 — 없으면 id 로 채운다(2026-11-01 cheap r9 deepseek: {id,kind,targetId} 만 보내 다섯 번 거절).
+    if ((out.action === undefined || out.action === "declare") && !text && typeof out.id === "string" && out.id.trim()) {
+      out.description = out.id;
+      changes.push(`description: missing → "${out.id}" (from id; add a one-line description next time)`);
     }
     if ((out.action === undefined || out.action === "declare") && out.kind === undefined && text) {
       out.kind = /횟수|개수|번째|카운트|count|number|times|점수|수치/iu.test(text) ? "variable" : "switch";
@@ -85,9 +139,55 @@ export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string
   problems = [];
   const fill = toolName ? TOOL_FILLS[toolName] : undefined;
   if (fill && isObj(args)) args = fill(args, changes);
-  const out = coerce(schema as Schema, args, "", changes);
+  // 맨 위에 있어야 할 필수 칸이 안쪽 객체 하나에만 있으면 위로 올린다(upsert_event({event:{mapId,…}}) — 2026-11-01 cheap r6 flash).
+  const top = schema as Schema | undefined;
+  if (isObj(args) && Array.isArray(top?.required) && top?.properties) {
+    let lifted: Record<string, unknown> | undefined;
+    for (const req of top.required) {
+      if ((args as Record<string, unknown>)[req] !== undefined) continue;
+      const holders = Object.entries(args as Record<string, unknown>).filter(([, v]) => isObj(v) && (v as Record<string, unknown>)[req] !== undefined && (typeof (v as Record<string, unknown>)[req] !== "object"));
+      if (holders.length !== 1) continue;
+      lifted ??= { ...(args as Record<string, unknown>) };
+      lifted[req] = (holders[0]![1] as Record<string, unknown>)[req];
+      changes.push(`${req}: copied from ${holders[0]![0]}.${req} (it belongs at the top level)`);
+    }
+    if (lifted) args = lifted;
+  }
+  const out = forkBranches(coerce(schema as Schema, args, "", changes), "", changes);
   const found = problems; problems = [];
   return changes.length ? { args: out, changes, problems: found } : { args, changes, problems: found };
+}
+
+/** 분기 명령의 다른 이름 갈래 — 명령 목록은 스키마가 느슨해(아무 객체) 검증을 지나고, 모르는 칸은 실행기가 말없이 버린다.
+ * 2026-11-01 cheap r6 deepseek: fork 에 presentItem 의 `otherwiseBranch` 를 써서 «단서 없음»·«틀림» 갈래가 통째로 사라졌다. */
+const TEXT_KINDS = new Set(["showText", "show_text", "message", "showMessage", "say", "dialogue", "dialog"]);
+const FORK_ALIASES: Readonly<Record<string, string>> = { otherwiseBranch: "else", otherwise: "else", elseBranch: "else", elseCommands: "else", ifFalse: "else", thenBranch: "then", thenCommands: "then", ifTrue: "then" };
+function forkBranches(value: unknown, path: string, changes: string[], depth = 0): unknown {
+  if (depth > 40 || value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    let copy: unknown[] | undefined;
+    value.forEach((v, i) => { const n = forkBranches(v, `${path}[${i}]`, changes, depth + 1); if (n !== v) { copy ??= [...value]; copy[i] = n; } });
+    return copy ?? value;
+  }
+  let rec = value as Record<string, unknown>;
+  // 대사 명령의 다른 이름(RPG Maker·다른 엔진 습관) — showText/message/say → text, 글은 body.
+  if (typeof rec.kind === "string" && TEXT_KINDS.has(rec.kind) && (typeof rec.text === "string" || typeof rec.message === "string" || typeof rec.body === "string")) {
+    const body = typeof rec.body === "string" ? rec.body : typeof rec.text === "string" ? rec.text : rec.message;
+    const { text: _t, message: _m, ...rest } = rec;
+    changes.push(`${path || "(top level)"}: {kind:"${rec.kind}"} → {kind:"text", body} (a line of dialogue is kind "text" with "body")`);
+    rec = { ...rest, kind: "text", body };
+  }
+  if (rec.kind === "fork") {
+    for (const [from, to] of Object.entries(FORK_ALIASES)) {
+      if (rec[from] === undefined || rec[to] !== undefined) continue;
+      const { [from]: moved, ...rest } = rec;
+      rec = { ...rest, [to]: moved };
+      changes.push(`${path || "(top level)"}.${from} → ${to} (a fork's branches are "then" and "else")`);
+    }
+  }
+  let copy: Record<string, unknown> | undefined;
+  for (const [k, v] of Object.entries(rec)) { const n = forkBranches(v, path ? `${path}.${k}` : k, changes, depth + 1); if (n !== v) { copy ??= { ...rec }; copy[k] = n; } }
+  return copy ?? rec;
 }
 
 function coerce(schema: Schema | undefined, value: unknown, path: string, changes: string[], key = ""): unknown {

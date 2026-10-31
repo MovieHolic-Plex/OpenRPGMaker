@@ -78,6 +78,15 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
   const t = task.replace(/\s+/gu, " ").trim();
   const els: SkeletonElement[] = [];
   const f = fresh ? { fresh: true } : {};
+  // 번호 자물쇠가 맨 앞 — author_puzzle_chain 한 번이 단서·자물쇠·힌트·엔딩을 같이 짓고, 단서·대사 항목은 그 결과로 기계 확인된다.
+  // 번호 자물쇠: 「비밀번호 7294」·「7294가 비밀번호」 + 「3번째로 틀렸을 때 … 힌트」.
+  const code = /(?:비밀번호|암호|번호)\s*(?:는|은|가|이)?\s*[「"']?(\d{3,8})(?!\d)/u.exec(t)?.[1] ?? /(?<!\d)(\d{3,8})[」"']?\s*(?:이|가)?\s*(?:비밀번호|암호)/u.exec(t)?.[1];
+  if (code && /입력|자물쇠|잠금|열/u.test(t)) {
+    const hint = /(\d)\s*(?:번째|번\s*째|회째|번)\s*(?:로\s*|에\s*)?틀[리렸린려]|틀린\s*(?:횟수|게)?\s*(?:가\s*)?(\d)\s*(?:번|회)/u.exec(t);
+    const hintAfter = hint && /힌트|도움말|알려/u.test(t) ? Number(hint[1] ?? hint[2]) : undefined;
+    const on = LOCK_ON.exec(t)?.[1]?.trim();
+    els.push({ content: `번호 자물쇠 ${code}${on ? ` — 「${on}」` : ""}${hintAfter ? ` — ${hintAfter}번째 오답에 힌트` : ""}`, check: { kind: "code_lock", code, ...(hintAfter ? { hintAfter } : {}), ...(on ? { on } : {}), ...f }, from: code });
+  }
   const talkers = speakers(t);
   const meets = met(t);
   for (const who of talkers) {
@@ -109,17 +118,11 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
     if (foes[0] && !talkers.concat(meets).some((x) => nameScore(x, foes[0]!) > 0)) els.push({ content: `${foes[0]} 두기`, check: { kind: "person", name: foes[0], ...f }, from: foes[0] });
     els.push({ content: `${boss ? "보스 " : ""}전투${who ? ` — ${who}` : ""}`, check: { kind: "battle", ...(who ? { who } : {}), ...(boss ? { boss: true } : {}), ...f }, from: battle[0] });
   }
+  // 엔딩은 자물쇠 뒤에 — 자물쇠 요청이면 author_puzzle_chain 의 ending 고리 한 번이 둘 다 짓는다. 엔딩 항목이 앞에 오면 모델이 add_ending_scene 으로
+  // 「자물쇠에 말을 걸면 엔딩」을 먼저 지어 번호 없이 끝나는 문이 됐다(2026-11-01 cheap r6 flash).
   if (/엔딩/u.test(t)) {
     const map = RETURN_TO.exec(t)?.[1];
     els.push({ content: `엔딩에 닿는다${map ? ` — ${map}` : ""}`, check: { kind: "ending", ...(map ? { map } : {}), ...f }, from: "엔딩" });
-  }
-  // 번호 자물쇠: 「비밀번호 7294」·「7294가 비밀번호」 + 「3번째로 틀렸을 때 … 힌트」.
-  const code = /(?:비밀번호|암호|번호)\s*(?:는|은|가|이)?\s*[「"']?(\d{3,8})(?!\d)/u.exec(t)?.[1] ?? /(?<!\d)(\d{3,8})[」"']?\s*(?:이|가)?\s*(?:비밀번호|암호)/u.exec(t)?.[1];
-  if (code && /입력|자물쇠|잠금|열/u.test(t)) {
-    const hint = /(\d)\s*(?:번째|번\s*째|회째|번)\s*(?:로\s*|에\s*)?틀[리렸린려]|틀린\s*(?:횟수|게)?\s*(?:가\s*)?(\d)\s*(?:번|회)/u.exec(t);
-    const hintAfter = hint && /힌트|도움말|알려/u.test(t) ? Number(hint[1] ?? hint[2]) : undefined;
-    const on = LOCK_ON.exec(t)?.[1]?.trim();
-    els.push({ content: `번호 자물쇠 ${code}${on ? ` — 「${on}」` : ""}${hintAfter ? ` — ${hintAfter}번째 오답에 힌트` : ""}`, check: { kind: "code_lock", code, ...(hintAfter ? { hintAfter } : {}), ...(on ? { on } : {}), ...f }, from: code });
   }
   for (const m of t.matchAll(GIVES)) {
     const name = nameFrom(m[1] ?? "");

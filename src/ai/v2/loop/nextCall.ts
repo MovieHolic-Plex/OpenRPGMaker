@@ -187,7 +187,7 @@ export const VERB_SCOPE: Readonly<Partial<Record<string, { high: readonly string
   link: { high: ["create_transfer_pair"], low: ["upsert_event", "patch_event_page", "add_event_page"] },
   // 보스전(check.boss)만 — 잡몹 전투는 place_field_enemy·set_encounter_table 이 상위다.
   battle: { high: ["add_boss_encounter"], low: ["upsert_enemy", "upsert_troop", "patch_event_page", "add_event_page", "upsert_event", "place_npc"] },
-  ending: { high: ["add_ending_scene"], low: ["define_ending", "patch_event_page", "add_event_page", "upsert_event"] },
+  ending: { high: ["add_ending_scene", "author_puzzle_chain"], low: ["define_ending", "patch_event_page", "add_event_page", "upsert_event"] },
 };
 /** 상위 동사가 이 실행에 없을 때 하위 도구로만 짓는 확인 종류(측정 보고용) — 보스전·엔딩 동사가 실리지 않은 요청. */
 export const MISSING_HIGH_VERB: Readonly<Partial<Record<string, string>>> = {
