@@ -33,7 +33,62 @@ function sharedSlotLine(record: CharacterAppearanceRecord, slot: Slot): HTMLElem
   const attrs = Object.values(face.attributes ?? {}).filter((value): value is string => typeof value === "string" && value.length > 0).join(" · ");
   return el("p", { class: "appearance-help", text: `공용 분류 · ${face.label}${attrs ? ` · ${attrs}` : ""}`, dataset: { testid: "appearance-shared-face" } });
 }
-const subscriptions = new Map<Slot, () => void>();
+const subscriptions = new Map<Slot | "walkchip", () => void>();
+
+/**
+ * 걷기 칩 만들기 — 사진 또는 외형 설명으로 호스트 char-gen 작업을 공방 작업 줄에 세운다(알아서 고르기: 오류 검사 → Opus 쌍 비교 1위).
+ * 다 되면 줄이 묶음을 넣고 이 외형의 걷기 칩을 바꾼다(afterPackInstalled). 사진은 호스트 작업 폴더에만 간다.
+ */
+function walkChipMaker(record: CharacterAppearanceRecord): HTMLElement {
+  const host = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: "appearance-walkchip" } });
+  const file = el("input", { attrs: { type: "file", accept: "image/jpeg,image/png,image/webp", hidden: "" }, dataset: { testid: "appearance-walkchip-photo-file" } }) as HTMLInputElement;
+  let error = "";
+  const start = (mode: "photo" | "text", photo?: string): void => {
+    error = "";
+    void import("@/editor/workshop/queue/workshopQueue").then(({ workshopQueue }) => workshopQueue().enqueueRemote({
+      kind: "char-gen", mode, text: mode === "text" ? record.description.trim() : record.name || "사진 속 사람", appearanceId: record.id,
+      title: record.name || "새 인물", ...(photo ? { photo } : {}),
+    })).catch((reason: unknown) => { error = reason instanceof Error ? reason.message : String(reason); render(); });
+  };
+  file.addEventListener("change", () => {
+    const chosen = file.files?.[0];
+    file.value = "";
+    if (!chosen) return;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => { if (typeof reader.result === "string") start("photo", reader.result); }, { once: true });
+    reader.readAsDataURL(chosen);
+  });
+  let views: readonly import("@/editor/workshop/queue/workshopQueue").JobView[] = [];
+  const render = (): void => {
+    const mine = views.filter((view) => view.job.remote?.appearanceId === record.id);
+    const live = mine.find((view) => view.state !== "installed" && view.state !== "failed" && view.state !== "cancelled");
+    const last = mine.at(-1);
+    host.dataset.status = live ? "generating" : last?.state ?? "idle";
+    const hasText = record.description.trim().length >= 6;
+    const toolbar = listToolbar([
+      { label: "사진으로 걷기 칩 만들기", testid: "appearance-walkchip-photo", disabled: Boolean(live),
+        title: live ? "만드는 중입니다." : "사람 사진 한 장으로 맞는 머리·몸을 고르고 색을 칠해 이 외형의 걷기 칩으로 겁니다(수 분).", onClick: () => file.click() },
+      { label: "설명으로 걷기 칩 만들기", testid: "appearance-walkchip-text", disabled: Boolean(live) || !hasText,
+        title: live ? "만드는 중입니다." : hasText ? "외형 설명(머리·수염·모자·옷 색)으로 걷기 칩을 만들어 겁니다(수 분)." : "외형 설명을 먼저 적으세요.",
+        onClick: () => start("text") },
+    ]);
+    const lines: HTMLElement[] = [toolbar];
+    if (live) lines.push(el("p", { class: "appearance-help", dataset: { testid: "appearance-walkchip-status" }, text: `걷기 칩을 만드는 중 · ${Math.round(live.progress * 100)}% · 다 되면 이 외형의 칩이 저절로 바뀝니다(공방 작업 줄).` }));
+    else if (last?.state === "installed") lines.push(el("p", { class: "appearance-help", dataset: { testid: "appearance-walkchip-status" }, text: "만든 걷기 칩을 걸었습니다. 되돌리기로 이전 칩으로 돌아갈 수 있습니다." }));
+    else if (last?.state === "failed") lines.push(el("p", { class: "appearance-error", dataset: { testid: "appearance-walkchip-status" }, text: `걷기 칩을 만들지 못했습니다: ${last.job.error ?? "알 수 없는 오류"}` }));
+    if (error) lines.push(el("p", { class: "appearance-error", text: error }));
+    host.replaceChildren(...lines, file);
+  };
+  void import("@/editor/workshop/queue/workshopQueue").then(({ workshopQueue }) => {
+    const queue = workshopQueue();
+    const refresh = (): void => { views = queue.snapshot().jobs; render(); };
+    subscriptions.get("walkchip")?.();
+    subscriptions.set("walkchip", queue.subscribe(refresh));
+    refresh();
+  });
+  render();
+  return host;
+}
 
 export function disposeAppearanceSlots(): void {
   for (const unsubscribe of subscriptions.values()) unsubscribe();
@@ -89,6 +144,7 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
     }]));
   }
   children.push(el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." }));
+  if (slot === "charset") children.push(walkChipMaker(record));
   // AI 후보 생성은 얼굴·흉상만(전신은 공용 그림을 잇거나 업로드한다).
   if (slot === "face" || slot === "bust") {
     const candidateHost = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: `appearance-candidate-${slot}` } });
