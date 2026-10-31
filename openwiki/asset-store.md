@@ -94,11 +94,28 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 - 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
 - 테스트 `test/assetStoreMonsterMotion.test.ts`.
 
+#### 16칸(4×4) 시트 (2026-10-31)
+
+`pixelEnemySheet.grid: "4x4"`(생략 = `"3x3"`)이면 시트는 4cell×4cell, 시트 그림 meta `frames: 16`. 칸 번호는 격자 폭과 무관한 **행 우선 번호**다:
+0 idle_a · 1 idle_b · 2 idle_c · 3 windup · 4 move · 5 attack · 6 recover · 7 hit · 8 dead(0~8 = 3×3 과 같은 이름·순서) ·
+9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
+
+```json
+"pixelEnemySheet": { "sheetResourceId": "slime-sheet", "cell": 64, "motion": "hop", "idleFrameMs": 220, "skillCell": true, "grid": "4x4", "missingCells": [12, 13] }
+```
+
+- `missingCells`(선택, 9~14 만, 중복 금지, grid 4x4 에만): 그리지 못한 확장 칸. 0~8 은 비울 수 없다.
+- 검사: `monsterSheetProblems`(grid·missingCells·frames 9/16), `storeMonsterSheetSizeProblems`(시트 n·cell), 칸 채움 `storeMonsterSheetCellProblems`(0~8·적지 않은 9~14 는 그려져 있어야, 15·missingCells 는 알파 0). 칸 채움은 PNG 를 풀 수 있는 곳에서 돈다 — 스토어 서버 `checkBlobs`(`src/png.ts decodePng`), `scripts/store/agentStore.mts`(pngjs), 편집기 넣기 `prepareManifestItem`(`createImageBitmap`, 못 풀면 건너뜀).
+- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·weak·intro → 그 동작을 하지 않는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
+- 조수: 16칸 소재에 `battleCells: 16` 이 더 붙는다(`monsterBattleCells`), `store_install` 요약이 16칸 수를 센다.
+- 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
+- 테스트 `test/enemyPixelSheet16.test.ts`.
+
 ### 전투 애니메이션 팩 (2026-10-31)
 
 종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
 검사(`format.ts` `battleAnimationProblems`): 시트는 같은 팩의 `battle` PNG 에셋, `sheet` = `{frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8}`,
-프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋 또는 내장 `cc0-se-*`, 후속은 같은 목록의 다른 id.
+프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋, 내장 `cc0-se-*`, 또는 번들 EasyRPG 효과음 `easyrpg-sound-<id>`(`STORE_ANIMATION_EASYRPG_SOUNDS` 목록과 정확히 일치할 때만 — 접두어만 맞으면 거부; 목록은 테스트가 `EASYRPG_SOUND_ASSETS` 와 같은지 본다), 후속은 같은 목록의 다른 id.
 시트 기하(`storeBattleAnimationSizeProblems`: 가로 = columns×frameWidth, 세로 = frameHeight 배수, pattern < 칸 수)는 바이트가 있는 쪽 — 편집기 넣기와 스토어 서버 받기 — 가 본다.
 
 넣기(`applyPackBattleAnimations`): `database.battleAnimations` 에 `store_<slug>__anim-<id>`(`storeAnimationId`)로, 시트·소리·후속 id 를 바꿔 넣는다.
@@ -213,6 +230,36 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   끝맺음 검사 `[게임 검사 효과음]`: 효과음만 바라는 요청에 효과음 연결(seCues·타이틀 소리·패배/도주·지형 발소리)이 그대로면 짚는다.
 - 시험: `test/storeSoundPick.test.ts`(매니페스트 사본 `test/fixtures/oprn-sfx-*-battle.manifest.json` — 실제 팩에서 소리 6개만 남김, 소리 파일 없음). 런타임 쪽은 `openwiki/runtime-battle.md` 「효과음 자리」.
 
+### 환경음(BGS)·대사·감정·징글 자리 (2026-10-31)
+
+- **환경음 팩**: kind `sound`, 소리마다 `oprnSound.group:"ambient"` + `loopable:true` + `ambientTags`(≤12, 장소·날씨 낱말 한·영 — 비·rain·동굴·cave …). `slots` 는 비어도 된다 —
+  `readStoreSoundMeta` 가 `ambient:true` 로 읽고, 태그에 `bgs`·`환경음` 을 붙인다. 환경음은 자리 순위(`rankStoreSounds`)·화풍 통째(`planSoundStyle`)에 끼지 않는다.
+- 고르기 `rankStoreAmbience(tracks, {query, mood})`: ambientTags +5 / 분위기·느낌 +2 / 설명 +1. 조수 `store_find_sound{ambient:true, query}` → `store_install` →
+  `set_game_audio{role:'bgs', mapIds?, resourceId}`(mapIds 비우면 maps 역할처럼 지금 보는 맵 → 시작 맵, resourceId 비우면 그 맵 환경음 끔). 연출 `music{action:'bgs', query}` 도 넣어 둔 환경음을 같은 순위로 먼저 고른다.
+- 맵 필드 `GameMap.bgs?: { mode: "none" | "custom", resourceId?, volume? }` — 없으면 앞 맵·이벤트 환경음을 그대로 둔다. 런타임 `startMapBgs`(`src/player/mapBgm.ts`)가 loadMap 에서 BGM 옆에 부르고
+  세션 `audio.bgs` 에 실어 세이브·전투 복귀가 같은 루프를 다시 튼다. 크기는 bgs 채널(음악 볼륨 그룹). 편집기 맵 속성 「배경 음악」 탭 아래 「환경음(BGS)」.
+- **새 자리**(`SE_CUE_SPECS`): `textBlip` · `emote-<exclamation|question|heart|sweat|anger|music|ellipsis|sleep|idea>` · `footstep-<metal|carpet|mud|ice>`(비면 stone·wood·water·snow 로 물러섬) ·
+  `jump` `land` `explosion` `teleport` `notify` · 징글 `questComplete` `partyJoin` `innRest` `chapterStart`. 징글 자리는 `seCueChannel` 이 `me` 채널로 보낸다(levelUp 은 기존 팩 때문에 se).
+  런타임 고리: 대사 글자마다 textBlip(`src/player/textBlipVoice.ts`, 화자 목소리·녹음이 먼저, 둘에 하나·55ms 간격), showEmote → emote-<종류>, 점프 시작 jump·착지 land, 여관 숙박 innRest,
+  파티에 새로 들면 partyJoin, 퀘스트 완료 스위치(sw_<key>_done)가 켜지면 questComplete. 자리가 비면 모두 무음 — 옛 게임 그대로. 고리 없는 자리(explosion·teleport·notify·chapterStart)도 조수가 이벤트용으로 고를 수 있다.
+- **이벤트 소리**: 시스템 자리는 없고 `group` 과 자기 이름 slots(`cry-small`·`laser`·`horror-sting` …)만 있는 소리. `readStoreSoundMeta` 가 `event:true` 로 읽는다(묶음이 없으면 예전처럼 null).
+  자리 순위·화풍 통째 걸기에는 안 끼고, `store_find_sound{query}` 로 찾아 넣은 뒤 이벤트의 효과음 재생 명령에 리소스 id 를 쓴다.
+- 시험: `test/audioCues.test.ts`.
+
+### 아이콘 팩과 조수 (2026-10-31)
+
+- 팩: kind `icon`, 에셋 kind `icon`, **32×32 투명 PNG 한 장 = 아이콘 하나**(`STORE_ICON_SIZE`, `STORE_FIXED_SHEETS.icon` — 넣을 때 크기가 다르면 거절).
+  넣으면 프로젝트 자원 kind `icon`(통이미지, 프로필 `icon`)이 되고 `iconResourceId` 를 그대로 쓴다. 고르개(`resourceOptions` icon·image)는 kind `icon` 업로드도 보인다.
+- 고르기 설명 `meta.oprnIcon`(판 1): `category` weapon|armor|consumable|material|key|skill|state|treasure|modern|eastern · `itemType`(아이템 종류·장비 칸·skill·state) ·
+  `element`(fire|ice|thunder|water|wind|earth|light|dark|poison|arcane) · `nameEn` · `nameKo` · `tags`(≤24). 읽기·점수 `src/assetStore/storeIconPick.ts`
+  (이름 낱말 +6·설명 낱말 +2·부분 +3/+1·종류 +4·속성 ±; 분류는 대상별로 거르고 skill/state 아이콘은 아이템 자리에 안 간다). 자동 배정은 `STORE_ICON_CONFIDENT_SCORE`(6) 이상만.
+- 기술(`SkillRecord`)·상태(`StateRecord`)에 선택 필드 `iconResourceId` 가 생겼다(없으면 예전 그대로: 기술은 애니메이션 첫 칸, 상태는 글자 배지). 참조 검사·정규화·DB 탭 고르개 포함.
+  런타임: 상태 메뉴 기술 줄, 전투 기술·아이템 하위 메뉴 줄 머리(`.battle-command-record-icon`), 전투 상태 배지(`.battle-status-icon-image`).
+- 조수: `upsert_item`·`upsert_equipment`·`upsert_skill`·`upsert_state` 는 아이콘을 안 주면 프로젝트에 이미 있는 스토어 아이콘 중 자신 있는 것을 붙이고 경고 줄로 알린다(`dbTools` `autoStoreIcon`).
+  `assign_store_icons{collections?, ids?, overwrite?}`(`src/editor/tools/storeIconTools.ts`) — 빈 레코드를 한꺼번에 채운다. 스토어가 연결돼 있으면 아이콘 팩 매니페스트만 읽어 더 맞는 것을 고르고 고른 파일만 받는다.
+  `store_install` 결과의 `icons[]` 도 같은 자원 id 를 준다.
+- 시험: `test/assetStoreIcons.test.ts`.
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).
@@ -321,8 +368,15 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
   html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
   스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- **나라별 출처(2026-10-31).** 한국 밖 방문자는 판본 파일을 **`games-cdn.openrpgmaker.com`**(R2 버킷 `oprn-games` 사용자 도메인, Cloudflare 엣지 캐시)에서 받는다.
+  한국(`CF-IPCountry: KR`)과 나라를 모르는 요청은 지금처럼 games-kr. 고르는 곳은 play 화면(`/games/<slug>/play`) 하나 —
+  응답 머리 `x-oprn-game-origin` 이 고른 출처. 게시하면 스토어가 디스크 판본 폴더를 바이트 그대로(서버가 쓴 index.html·CSP 해시 포함) 사본 버킷에 올리고,
+  다 놓인 판본만 사본으로 보낸다. 세이브가 갈라지지 않게 고른 출처는 게임마다 쿠키에 남고, 사본을 켜기 전에 그 게임을 플레이한 사람은 games-kr 에 남는다.
+  사본 쪽 머리(nosniff·`frame-ancestors`·HSTS)와 경로 제한(GET 만, `_files/`·index 아닌 html 막음)은 Cloudflare 규칙이 붙인다. play CSP `frame-src` 는 두 출처.
+  플레이어 쪽 바꿀 것은 없다: `storeGame.embedders`(play)와 클라우드 세이브 다리(`event.origin` = iframe 출처)는 출처마다 그대로 돈다.
+  되돌리기는 스토어 env `STORE_GAMES_MIRROR_SERVE=off` + 재시작 한 줄. 상세·채우기 명령: 스토어 저장소 `deploy/README.md` 「게임 판본 해외 사본」.
 - 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
-  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처(games-kr·games-cdn)만.
 - 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
   상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).

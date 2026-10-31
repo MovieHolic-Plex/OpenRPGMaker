@@ -36,11 +36,11 @@ export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "REFMAP-MODIFIED": "REFMAP 약관(고친 그림) — 게임에 자유, 출처·「고침」 표기, 원본 재배포 금지",
 };
 
-export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "music", "sound", "animation", "pack"] as const;
+export const STORE_ITEM_KINDS = ["tileset", "character", "face", "battler", "picture", "icon", "music", "sound", "animation", "pack"] as const;
 export type StoreItemKind = (typeof STORE_ITEM_KINDS)[number];
 export const STORE_KIND_LABELS: Readonly<Record<StoreItemKind, string>> = {
   tileset: "타일셋", character: "캐릭터", face: "얼굴", battler: "전투 그림",
-  picture: "그림", music: "음악", sound: "효과음", animation: "전투 애니메이션", pack: "묶음",
+  picture: "그림", icon: "아이콘", music: "음악", sound: "효과음", animation: "전투 애니메이션", pack: "묶음",
 };
 
 /** 스토어가 지원하는 언어(편집기 i18n 과 같은 넷). zh 는 간체. */
@@ -54,6 +54,7 @@ export const STORE_KIND_NAMES: Readonly<Record<StoreItemKind, Readonly<Record<St
   face: { ko: "얼굴·초상", en: "Faces & portraits", ja: "顔グラ・立ち絵", zh: "头像与立绘" },
   battler: { ko: "전투 그림", en: "Battlers", ja: "バトラー", zh: "战斗图" },
   picture: { ko: "그림", en: "Pictures", ja: "ピクチャー", zh: "图片" },
+  icon: { ko: "아이콘", en: "Icons", ja: "アイコン", zh: "图标" },
   music: { ko: "음악", en: "Music", ja: "音楽", zh: "音乐" },
   sound: { ko: "효과음", en: "Sound effects", ja: "効果音", zh: "音效" },
   animation: { ko: "전투 애니메이션", en: "Battle animations", ja: "戦闘アニメーション", zh: "战斗动画" },
@@ -113,7 +114,7 @@ export const STORE_LIMITS = {
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
 export const STORE_ASSET_KINDS = [
   "tileset", "sprite", "chipset", "charset", "faceset", "battle", "battleCharset", "battleWeapon",
-  "backdrop", "monster", "picture", "title", "gameOver", "system", "system2", "music", "sound",
+  "backdrop", "monster", "picture", "icon", "title", "gameOver", "system", "system2", "music", "sound",
 ] as const;
 export type StoreAssetKind = (typeof STORE_ASSET_KINDS)[number];
 
@@ -122,10 +123,16 @@ export type StoreAssetKind = (typeof STORE_ASSET_KINDS)[number];
  * 에디터는 규격이 다른 캐릭터 시트를 말없이 건너뛰므로(bundled.ts registerUploadedCharsetTextures), 올릴 때 막는다.
  */
 export const STORE_TILE_SIZE = 16;
+/** 아이콘 한 장의 크기(가로·세로). 메뉴·상점·전투 목록이 이 그림을 줄여 그린다. */
+export const STORE_ICON_SIZE = 32;
 export const STORE_FIXED_SHEETS: Readonly<Partial<Record<StoreAssetKind, { width: number; height: number; label: string }>>> = {
   charset: { width: 288, height: 256, label: "캐릭터 시트는 24×32 칸 12×8 = 288×256" },
   battleCharset: { width: 144, height: 384, label: "전투 그림은 48×48 칸 3×8 = 144×384" },
   battleWeapon: { width: 192, height: 512, label: "전투 무기는 64×64 칸 3×8 = 192×512" },
+  // 런타임은 시스템 그림을 창 9칸 그림으로만 쓴다(border-image 24 fill, systemGraphics.ts). RM2000 System.png(160×80)는 받지 않는다.
+  system: { width: 96, height: 96, label: "시스템(윈도스킨) 그림은 9칸 자르기 24px 창 그림 96×96" },
+  // 아이템·장비·스킬·상태 아이콘(2026-10-31): 아이콘 하나에 PNG 하나. iconResourceId 가 그대로 가리킨다(번들 아이콘·AI 아이콘과 같은 32px).
+  icon: { width: STORE_ICON_SIZE, height: STORE_ICON_SIZE, label: `아이콘은 ${STORE_ICON_SIZE}×${STORE_ICON_SIZE} 투명 PNG 한 장` },
 };
 
 /** 크기 규격이 있는 종류인가. 얼굴·그림·배경은 크기가 자유다. */
@@ -376,13 +383,20 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
 }
 
 /**
- * 몬스터 전투 도트 시트(전투가 움직이는 3×3 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
+ * 몬스터 전투 도트 시트(전투가 움직이는 3×3 또는 4×4 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
  * (src/project/types/base.ts UploadedPixelEnemySheetMeta, 런타임 src/assets/pixelEnemySheets.ts projectPixelEnemySheet).
- * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (3·cell)×(3·cell), 초상(몬스터 에셋)은 cell×cell 이다.
+ * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (n·cell)×(n·cell)(grid 3x3 → n=3 기본, 4x4 → n=4), 초상(몬스터 에셋)은 cell×cell 이다.
+ * 4x4 칸 번호(행 우선): 0~8 = 3×3 과 같은 9칸, 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(투명).
+ * missingCells(9~14 만)는 그리지 않은 칸 — 완전 투명이어야 하고, 적지 않은 9~14 칸은 비어 있으면 안 된다(storeMonsterSheetCellProblems).
  */
 export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
 export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96] as const;
 export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
+export const STORE_MONSTER_SHEET_GRIDS = ["3x3", "4x4"] as const;
+/** 4x4 시트에서 비울 수 있는 칸 번호. 0~8 은 늘 그려야 하고 15 는 늘 비어 있다. */
+export const STORE_MONSTER_OPTIONAL_CELLS = [9, 10, 11, 12, 13, 14] as const;
+/** 시트 한 변의 칸 수. grid 생략 = 3x3. */
+export const storeMonsterSheetSide = (grid: unknown): 3 | 4 => (grid === "4x4" ? 4 : 3);
 
 /** 몬스터 에셋 하나의 meta.pixelEnemySheet 검사(크기는 storeMonsterSheetSizeProblems). 표식이 없으면 빈 목록. */
 function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: Record<string, unknown>): string[] {
@@ -406,11 +420,23 @@ function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: 
   if (sheet.skillCell !== undefined && sheet.skillCell !== true) out.push(`${where}: pixelEnemySheet.skillCell 은 true 이거나 없어야 합니다.`);
   if (sheet.skillSlug !== undefined && !isString(sheet.skillSlug, 80, 1)) out.push(`${where}: pixelEnemySheet.skillSlug 가 올바르지 않습니다.`);
   if (sheet.recipe !== undefined && !isRecord(sheet.recipe)) out.push(`${where}: pixelEnemySheet.recipe 는 객체여야 합니다.`);
+  if (sheet.grid !== undefined && !includes(STORE_MONSTER_SHEET_GRIDS, sheet.grid)) out.push(`${where}: pixelEnemySheet.grid 는 ${STORE_MONSTER_SHEET_GRIDS.join("·")} 중 하나여야 합니다.`);
+  if (sheet.missingCells !== undefined) {
+    const cells = sheet.missingCells;
+    if (sheet.grid !== "4x4") out.push(`${where}: pixelEnemySheet.missingCells 는 grid 4x4 시트에만 씁니다.`);
+    else if (!Array.isArray(cells) || cells.some((cell) => !(STORE_MONSTER_OPTIONAL_CELLS as readonly unknown[]).includes(cell)) || new Set(cells).size !== cells.length) {
+      out.push(`${where}: pixelEnemySheet.missingCells 는 ${STORE_MONSTER_OPTIONAL_CELLS.join("·")} 중 겹치지 않는 칸 번호 목록이어야 합니다.`);
+    }
+  }
+  if (isRecord(target) && isRecord(target.meta) && target.meta.frames !== undefined) {
+    const side = storeMonsterSheetSide(sheet.grid);
+    if (target.meta.frames !== side * side) out.push(`${where}: 전투 도트 시트 그림의 meta.frames 는 ${side * side} 이어야 합니다(grid ${side}x${side}).`);
+  }
   return out;
 }
 
 /**
- * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (3·cell)×(3·cell).
+ * 전투 도트 시트가 붙은 몬스터의 그림 크기 검사 — 초상 cell×cell, 시트 (n·cell)×(n·cell)(n = 3, grid 4x4 면 4).
  * 바이트가 있는 쪽(편집기 넣기·에이전트 제출)이 부른다. pngSize 는 sniff.ts 의 것(이 파일은 sniff 를 import 하지 않는다).
  */
 export function storeMonsterSheetSizeProblems(
@@ -429,8 +455,43 @@ export function storeMonsterSheetSizeProblems(
     }
     const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
     const size = sheetAsset ? sizeOfBlob(sheetAsset.blob) : null;
-    if (!size || size.width !== cell * 3 || size.height !== cell * 3) {
-      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 3×3 칸 ${cell * 3}×${cell * 3} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    const side = storeMonsterSheetSide(sheet.grid);
+    if (!size || size.width !== cell * side || size.height !== cell * side) {
+      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 ${side}×${side} 칸 ${cell * side}×${cell * side} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 4x4 전투 도트 시트의 칸 채움 검사: 0~8 은 비면 안 되고, 15 와 missingCells 는 완전 투명(알파 0), 적지 않은 9~14 는 비면 안 된다.
+ * 픽셀이 필요하므로 PNG 를 풀 수 있는 쪽(스토어 서버·에이전트 제출 스크립트)이 부른다. decode 가 null 이면(못 풂) 크기 검사에 맡긴다.
+ * 3x3 시트는 검사하지 않는다(예전 그대로).
+ */
+export function storeMonsterSheetCellProblems(
+  manifest: Pick<StorePackManifest, "content">,
+  decode: (sha256: string) => { width: number; height: number; data: Uint8Array } | null,
+): string[] {
+  const out: string[] = [];
+  const assets = manifest.content.assets;
+  for (const asset of Object.values(assets)) {
+    const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
+    if (!sheet || sheet.grid !== "4x4") continue;
+    const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
+    const image = sheetAsset ? decode(sheetAsset.blob) : null;
+    const cell = sheet.cell;
+    if (!image || image.width !== cell * 4 || image.height !== cell * 4) continue;
+    const missing = new Set(sheet.missingCells ?? []);
+    for (let index = 0; index < 16; index += 1) {
+      const x0 = (index % 4) * cell;
+      const y0 = Math.floor(index / 4) * cell;
+      let filled = false;
+      for (let y = y0; y < y0 + cell && !filled; y += 1) {
+        for (let x = x0; x < x0 + cell; x += 1) if (image.data[(y * image.width + x) * 4 + 3] !== 0) { filled = true; break; }
+      }
+      const mustBeEmpty = index === 15 || missing.has(index);
+      if (mustBeEmpty && filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸은 ${index === 15 ? "예약 칸이라" : "missingCells 에 적혀 있어"} 완전히 투명해야 합니다.`);
+      if (!mustBeEmpty && !filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸이 비어 있습니다${index >= 9 ? " — 그리지 않았으면 missingCells 에 적으세요" : ""}.`);
     }
   }
   return out;
@@ -439,10 +500,27 @@ export function storeMonsterSheetSizeProblems(
 /**
  * 팩 전투 애니메이션(content.battleAnimations, 2026-10-31). 레코드는 프로젝트의 BattleAnimationRecord 와 같은 꼴이고
  * id·resourceId·timings[].soundResourceId·followUps[].animationId 는 **팩 안의 id** 다(넣을 때 storeProjectId 로 바뀐다).
- * resourceId 는 같은 팩의 battle(PNG) 에셋, 소리는 같은 팩의 sound 에셋 또는 내장 CC0 효과음 카탈로그 id(cc0-se-…).
+ * resourceId 는 같은 팩의 battle(PNG) 에셋, 소리는 같은 팩의 sound 에셋 또는 내장 CC0 효과음 카탈로그 id(cc0-se-…)·번들 EasyRPG 효과음 id(easyrpg-sound-…).
  * 시트 크기(가로 = columns×frameWidth, 세로 = 행×frameHeight, 패턴 < 칸 수)는 바이트가 있는 쪽이 storeBattleAnimationSizeProblems 로 본다.
  */
 export const STORE_ANIMATION_BUILTIN_SOUND = /^cc0-se-[a-z0-9][a-z0-9-]{0,100}$/;
+/**
+ * 내장 EasyRPG RTP 효과음(src/assets/easyrpgRtp.ts EASYRPG_SOUND_ASSETS 의 id 꼬리). 이 파일은 편집기 모듈을 import 하지 못해
+ * 목록을 그대로 적는다 — test/assetStoreBattleAnimations.test.ts 가 번들 목록과 같은지 본다. 정확히 일치해야 한다(접두어 허용 아님).
+ */
+export const STORE_ANIMATION_EASYRPG_SOUNDS: ReadonlySet<string> = new Set([
+  "absorb1", "absorb2", "attack1", "attack2", "barrier", "barrier1", "barrier2", "bell", "blind", "blow2", "blow4", "breath", "buff",
+  "buzzer1", "buzzer2", "buzzer3", "buzzer4", "cancel1", "cancel2", "cat", "chime1", "chime2", "clock", "close1", "collapse1", "collapse2",
+  "combat1", "combat2", "confusion", "cursor1", "cursor2", "damage2", "darkness3", "darkness4", "darkness5", "debuff", "decision1",
+  "decision2", "dog", "earth2", "earth6", "earth7", "earth8", "escape", "evade1", "evade2", "explosion1", "fall1", "fall2", "fire1",
+  "fire2", "fire3", "fire4", "fire5", "fire6", "fire7", "flash1", "flash3", "fog1", "glare", "holy2", "holy3", "holy5", "holy6", "holy7",
+  "ice1", "ice2", "ice5", "ice6", "ice7", "ice9", "item1", "item2", "key", "knock", "magic1", "magic2", "monster1", "move", "poison",
+  "pollen", "raise2", "recovery5", "recovery7", "recovery8", "sandstorm", "shot1", "shot2", "shot3", "silence", "sleep", "song",
+  "teleport2", "wave1", "wave2", "wind8",
+].map((name) => `easyrpg-sound-${name}`));
+/** 팩 밖 소리 id 로 쓸 수 있는가: 내장 CC0 효과음(cc0-se-…) 또는 번들 EasyRPG 효과음(목록에 있는 것만). */
+export const isStoreAnimationBuiltinSound = (id: unknown): boolean =>
+  typeof id === "string" && (STORE_ANIMATION_BUILTIN_SOUND.test(id) || STORE_ANIMATION_EASYRPG_SOUNDS.has(id));
 const ANIMATION_SCOPES = ["singleTarget", "allTargets", "screen"] as const;
 const ANIMATION_POSITIONS = ["head", "center", "feet", "screen"] as const;
 const ANIMATION_BLENDS = ["add", "screen", "multiply"] as const;
@@ -508,7 +586,7 @@ function battleAnimationProblems(raw: unknown, assets: Record<string, unknown>):
         if (t.soundResourceId !== undefined) {
           const sound = t.soundResourceId;
           const packSound = kindOf(sound) === "sound";
-          if (!packSound && !(typeof sound === "string" && STORE_ANIMATION_BUILTIN_SOUND.test(sound))) out.push(`${where}: 소리는 같은 팩의 sound 에셋이나 내장 효과음 id(cc0-se-…)여야 합니다.`);
+          if (!packSound && !isStoreAnimationBuiltinSound(sound)) out.push(`${where}: 소리는 같은 팩의 sound 에셋이나 내장 효과음 id(cc0-se-… 또는 번들 easyrpg-sound-…)여야 합니다.`);
         }
         if (t.flash !== undefined) {
           const f = t.flash;

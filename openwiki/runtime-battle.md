@@ -551,7 +551,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 - 입력 프롬프트 동안 AUTO·명령 실행·Active ATB tick을 멈춘다. 완료 콜백은 열 때의 배우·turn·phase 소유권이 그대로인 경우에만 실행한다.
 - 열린 기술 메뉴는 연계 배우의 ready 경계와 HP·MP·상태·기술·PP·쿨다운·게이지 자원·장비 변경에 따라 갱신한다. 매 ATB 소수점 변화마다 DOM을 재생성하지 않는다.
 - 결과 단계의 retro2003 메시지창은 숨겨 승리 요약과 겹치지 않는다.
-- 타임라인/행동 결과는 정확한 `skillId`를 전달한다. 이름 조회는 ID 없는 과거 엔트리에만 사용한다. 배우/적 위치·시트는 실제 시전자 편, 타임라인/레이어는 선택 계약, 대상 편은 저작 scope가 결정한다. 양쪽은 직업/몬스터 계약을 서로 빌릴 수 있고 적의 scan 등 special 엔트리도 ID로 연출을 시작한다.
+- 타임라인/행동 결과는 정확한 `skillId`를 전달한다. 이름 조회는 ID 없는 과거 엔트리에만 사용한다. 배우/적 위치·시트는 실제 시전자 편, 타임라인/레이어는 선택 계약, 대상 편은 저작 scope가 결정한다. 양쪽은 직업/몬스터 계약을 서로 빌릴 수 있고 적의 scan 등 special 엔트리도 ID로 연출을 시작한다. 훔치기·조사·청마법(`applySpecialSkill`)의 `skill.animationId` 는 결과 `special` 엔트리에 붙는다(`attachAnimationToLatestTimeline`, 2026-10-31) — 화면은 엔트리에 붙은 애니메이션만 재생하므로, 전에는 이 셋의 애니메이션이 어느 스킨에서도 안 떴다.
 - charset `-cast` 동반 자산은 공용 resolver와 웹 내보내기 수집에 들어간다. 하위 경로·inline 내보내기도 같은 resolver를 사용한다.
 - 반복 타격이 명시된 기본 로스터 38개는 `mechanic.hits`를 저작했다. 삼연격/삼단 찌르기 각 `[0.4,0.4,0.4]`, 2연타 `[0.6,0.6]`, 러시는 `[0.25,0.25,0.25,0.5]`. 단순 flurry 모션만으로 타수를 추론하지 않는다. 기존 프로젝트의 동일 ID 저작 레코드를 덮어쓰지 않는다.
 
@@ -671,6 +671,12 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 2026-10-02부터 일반 이미지 소비자는 같은 id의 native idle_a 초상을 쓴다. 옛 통짜 그림은 폐기했다([공용 몬스터 폐기](native-enemy-retirement.md)).
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, cell×2 px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy`가 모션 7종을 고른다(아래 확장 설명). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
     - **프로젝트·스토어 시트:** 번들 id 말고도 `project.assets.uploaded[resourceId].meta.pixelEnemySheet`(공방 저작 시트, 스토어 몬스터 팩 — [에셋 스토어](asset-store.md) 「몬스터 전투 도트 시트」)가 있으면 `projectPixelEnemySheet` 가 그 3×3 시트를 번들보다 먼저 쓴다. 이 시트가 없는 업로드 몬스터는 같은 id 의 번들 시트를 쓰지 않고 번쩍임·흔들림만 한다. 조수·자료집용 판정은 `monsterBattleMotion(project, id)`.
+    - **16칸 시트(`grid: "4x4"`, 2026-10-31):** 칸 번호·빠진 칸 계약은 [에셋 스토어](asset-store.md) 「16칸(4×4) 시트」. 노드에 `data-pixel-grid="4x4"`, 배경 400%, 대기 루프 `retro-pixel-enemy-idle-16`. 칸 위치는 `pixelEnemyBackgroundPosition`. 3×3 시트(번들·공방)는 그대로다.
+      - 통상 공격: windup → **attack_mid**(근접은 다가가기 끝 82%, 제자리 공격은 다가가기 뒤쪽) → attack (`withAttackMid`).
+      - 몬스터 기술: `retroMonsterSkillCellKind` — 공격력 피해는 9칸 그대로, 그 밖(마력 피해·회복·상태)은 windup→**cast_charge**, 방출→**cast_release**, 방어를 올리는 자기 지원 기술(단단해지기)은 방출을 **guard** 로(`retroSkillChoreography` `monsterSheetCell`).
+      - 막기: 적은 방어 명령이 없어 `data-battler-guarded`(방어 명령 또는 `runtimeEffects.defenseMultiplier>1` 상태)가 기준이다. 막는 중 맞으면 guard 160ms → hit. 쉬는 칸은 방어 명령 중(`data-battler-defending`)일 때 guard.
+      - 빈사: HP≤25%(`data-battler-weak`) 대기는 weak ↔ idle_b 를 번갈아(`retro-pixel-enemy-weak-16`, 감속 모드는 weak 정지).
+      - 등장: `retroBattleIntro` 가 인트로 시작에 적마다 140ms 엇갈려 intro 칸을 520ms(보스 = 쓰러짐 연출 bossSink 는 900ms) 보인다. 감속 모드는 하지 않는다.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.
     - stomp는 두 걸음 후 두 팔 내려찍기, dash는 낮은 질주 후 물기, float는 부드러운 접근과 복귀. shoot/breath는 통상 공격이어도 ranged이며 접근·착탄·복귀 전체가 제자리다. 이동 소리는 각각 Earth2/Wind8/Magic2, 방출 소리는 Shot1/Fire1이며 실제 RTP 파일만 쓴다. 방출음은 빗나감의 0ms impact에서도 발생하고 감속 모드에서는 모두 억제한다. 타이머는 기존 비트 세대·씬 수명을 따른다.

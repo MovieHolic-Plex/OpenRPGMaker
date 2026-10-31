@@ -4,7 +4,7 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBgs, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
   setMapCloudShadows, setMapClimate, setMapSunlight, setMapTransit,
 } from "@/editor/actions";
 import { mapRoadBands, planMapTransit } from "@/editor/tools/transitTools";
@@ -52,7 +52,7 @@ import {
   CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting, MapBgsSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
@@ -1013,6 +1013,40 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
   }
 
   host.append(section);
+  host.append(renderBgsSection(host, map));
+}
+
+/** 맵 환경음(BGS) — BGM 밑에 깔리는 루프. 「유지」는 앞 맵·이벤트의 환경음을 이어 간다(설정 없음). */
+function renderBgsSection(host: HTMLElement, map: import("@/project/types").GameMap): HTMLElement {
+  const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-bgs-section" } });
+  const bgs = map.bgs;
+  const mode: "keep" | MapBgsSetting["mode"] = bgs?.mode ?? "keep";
+  const modeSelect = el("select", {
+    dataset: { testid: "map-bgs-mode" },
+    on: {
+      change: (e: Event) => {
+        const val = (e.target as HTMLSelectElement).value as "keep" | MapBgsSetting["mode"];
+        if (val === "keep") setMapBgs(map.id, null);
+        else setMapBgs(map.id, { mode: val, ...(bgs?.resourceId ? { resourceId: bgs.resourceId } : {}) });
+        rerender(host);
+      },
+    },
+  }) as HTMLSelectElement;
+  for (const [val, label] of [["keep", "유지(앞 환경음 그대로)"], ["none", "끔"], ["custom", "지정 환경음"]] as const) {
+    modeSelect.append(el("option", { text: label, attrs: { value: val } }));
+  }
+  modeSelect.value = mode;
+  section.append(fieldRow("환경음(BGS)", modeSelect));
+  if (mode === "custom") {
+    section.append(mapResourceField({
+      label: "환경음", resourceId: bgs?.resourceId, kind: "sound", testid: "map-bgs-resource",
+      dialogTitle: "맵 환경음(BGS)", allowClear: true,
+      onChange: (result) => setMapBgs(map.id, result.resourceId ? { mode: "custom", resourceId: result.resourceId } : null),
+      rerender: () => rerender(host, "map-bgs-resource-set"),
+    }));
+  }
+  section.append(el("p", { class: "map-props-hint", text: "비·바람·동굴 물방울처럼 음악 밑에 계속 깔리는 루프입니다. 크기는 음악 볼륨을 따릅니다." }));
+  return section;
 }
 
 // ── 전투 탭 ──

@@ -21,9 +21,9 @@ import { playAudioCommand, stopAudioChannel } from "@/player/audio";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
 import type { M2RuntimeState } from "@/project/sessionRuntimeTypes";
 
-import { resolveMapBgm, type BgmProject, type MapBgmResolution } from '@/project/mapMusic';
-export { resolveMapBgm, mapAncestorIds, FALLBACK_BGM_RESOURCE_ID } from '@/project/mapMusic';
-export type { MapBgmResolution } from '@/project/mapMusic';
+import { resolveMapBgm, resolveMapBgs, type BgmProject, type MapBgmResolution, type MapBgsResolution } from '@/project/mapMusic';
+export { resolveMapBgm, resolveMapBgs, mapAncestorIds, FALLBACK_BGM_RESOURCE_ID } from '@/project/mapMusic';
+export type { MapBgmResolution, MapBgsResolution } from '@/project/mapMusic';
 
 /**
  * 해석 결과를 세션 오디오 상태에 반영한다(실제 재생은 호출자가 엔진에 넘긴다).
@@ -63,5 +63,23 @@ export function startMapBgm(
   // 세션에 실은 페이드인을 그대로 재생한다. 빼면 맵 속성의 0ms·지정 ms 가 엔진 기본(600ms)으로 바뀐다.
   const track = session.audio.bgm;
   if (track) playAudioCommand(track, project);
+  return resolution;
+}
+
+/**
+ * 맵 진입 환경음(BGS) — startMapBgm 옆에서 loadMap 이 부른다. 설정이 없는 맵(keep)은 아무것도 하지 않는다(이벤트가 튼 환경음·옛 프로젝트 유지).
+ * 세션 audio.bgs 에 실어 세이브·전투 복귀가 같은 루프를 다시 튼다. 같은 루프면 엔진이 재시작하지 않는다(맵을 오가도 끊기지 않음).
+ * 크기는 환경음 채널(음악 볼륨 그룹, volumeGroupForChannel)을 따른다.
+ */
+export function startMapBgs(project: Pick<Project, "maps" | "assets">, session: { audio: AudioCommandState }, mapId: MapId): MapBgsResolution {
+  const resolution = resolveMapBgs(project, mapId);
+  if (resolution.kind === "keep") return resolution;
+  if (resolution.kind === "silence") {
+    if (session.audio.bgs !== undefined) stopAudioChannel("bgs");
+    session.audio.bgs = undefined;
+    return resolution;
+  }
+  session.audio.bgs = { resourceId: resolution.resourceId, loop: true, ...(resolution.volume === undefined ? {} : { volume: resolution.volume }) };
+  playAudioCommand({ ...session.audio.bgs, channel: "bgs" }, project);
   return resolution;
 }

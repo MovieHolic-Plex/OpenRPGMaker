@@ -529,6 +529,20 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const incremental = !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = snapshotProjectKeepingHeavy(ctx.project);
+  // v2 함수(끝맺음 단계·청사진 경로·전투 맞춤)는 도구 draft 가 아니라 ctx.project 를 제자리에서 고친다(database.troops.push 등).
+  // accepted 스냅숏은 database·assets 를 같은 객체로 공유하므로(snapshotProjectKeepingHeavy) 제자리 수정은 «그대로»로 보여
+  // 체크포인트 줄에서 빠지고, 받는 쪽은 옛 DB 를 다시 붙여 「troopId 없음」 직렬화 왕복 실패로 체크포인트 전체를 거부했다.
+  // 2026-10-30 jb1a/jb1b JRPG(aa8b3132a1) 모든 차례·sl1~3-1030 JRPG 전부: 끝맺음 조립(목표 이어 걸기·전투 맞춤·타이틀·게임 오버)이
+  // 매 차례 통째로 되돌아가 출하 게임에 하나도 들어가지 않았다. 그래서 v2 실행은 수용할 때마다 ctx.project 가 자기 database·assets 를 갖는다.
+  const ownHeavyForInPlaceEdits = (): void => {
+    if (!options.v2) return;
+    const own: Partial<Project> = {};
+    if (ctx.project.database === accepted.database) own.database = structuredClone(ctx.project.database);
+    const assets = ctx.project.assets as Project["assets"] | undefined;
+    if (assets && assets === accepted.assets) own.assets = { ...assets, sprites: { ...assets.sprites }, uploaded: { ...assets.uploaded } };
+    if (Object.keys(own).length) ctx.project = { ...ctx.project, ...own };
+  };
+  ownHeavyForInPlaceEdits();
   setupTimer.mark("snapshot");
   setupTimer.done();
   let rejected = false;
@@ -556,6 +570,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys, wire.unchangedTilesetIds);
       ctx.project = merged;
       accepted = snapshotProjectKeepingHeavy(merged);
+      ownHeavyForInPlaceEdits();
       finishSpatialToolAcceptance(ctx.project);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -565,12 +580,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // 권위·기준선·중단은 실행 단위 문제라 그대로 중단한다.
       if (/^적용 실패\(commit-rejected\)/u.test(message) && !options.signal?.aborted) {
         ctx.project = snapshotProjectKeepingHeavy(accepted);
+        ownHeavyForInPlaceEdits();
         throw new Error(`${message} — 이 도구의 변경은 적용 검증에서 거부돼 되돌렸습니다. 인자를 고쳐 다시 호출하세요.`);
       }
       // 맵 소실 확인에서 사용자가 「그만두기」를 골랐다 — 그 변경 하나를 거절한 것이지 작업 전체를 멈춘 게 아니다
       // (중단은 따로 있다). 되돌리고 모델에게 알린다. 2026-10-05 스트레스: 빈 시드 맵 삭제 거절이 팀 작업을 통째로 끝냈다.
       if (message.startsWith(PI_MAP_LOSS_DECLINED_PREFIX) && !options.signal?.aborted) {
         ctx.project = snapshotProjectKeepingHeavy(accepted);
+        ownHeavyForInPlaceEdits();
         throw new Error(`${message.slice(PI_MAP_LOSS_DECLINED_PREFIX.length).trim()} 사용자가 이 변경(맵 삭제·비우기)을 거절해 되돌렸습니다. 같은 맵을 지우거나 비우지 말고 나머지 작업을 계속하세요.`);
       }
       rejected = true;

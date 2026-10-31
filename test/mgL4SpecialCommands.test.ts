@@ -150,4 +150,16 @@ describe("mg L4 battle special command effects (#10)", () => {
     expect(skill?.effect).toEqual({ kind: "randomSkillFrom", skillIds: ["skill_attack"] });
     expect(skill?.learnable).toBe(true);
   });
+
+  it("special skills carry their animationId on their own timeline entry (steal, scan, learnEnemySkill)", () => {
+    for (const effect of [{ kind: "steal" }, { kind: "scan" }, { kind: "learnEnemySkill" }] as const) {
+      const s = setup();
+      const anim = s.project.database.battleAnimations[0]!;
+      addSkill(s.project, `skill_${effect.kind}`, effect, { animationId: anim.id });
+      const rt = runtime(s, [`skill_${effect.kind}`]);
+      rt.performActorCommand({ kind: "skill", skillId: `skill_${effect.kind}`, targetEnemyId: rt.snapshot().enemies[0]!.id });
+      const entry = rt.snapshot().timeline.find((row) => row.kind === "special" && row.skillId === `skill_${effect.kind}`);
+      expect(entry?.animation?.animationId, effect.kind).toBe(anim.id);
+    }
+  });
 });
