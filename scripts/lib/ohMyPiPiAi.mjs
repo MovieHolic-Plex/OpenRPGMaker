@@ -154,7 +154,9 @@ function startWorker() {
     });
     // 기동 타임아웃은 기동을 기다리는 동안만 의미가 있다. unref 하지 않으면 안 쓰는 타이머가
     // 프로세스를 30초 더 붙잡는다(실측: node 테스트 파일이 끝난 뒤에도 그만큼 안 끝났다).
-    const startTimeout = setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), 30_000);
+    // 부하가 아주 높은 박스(측정 스위트)에서는 소스에서 띄우는 워커가 30초를 넘긴다 — OPRN_OH_MY_PI_WORKER_START_MS 로 늘린다.
+    const startMs = Number(process.env.OPRN_OH_MY_PI_WORKER_START_MS) || 30_000;
+    const startTimeout = setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), startMs);
     startTimeout.unref?.();
   });
   workerPortPromise = promise;

@@ -15,6 +15,11 @@ import { DRESS_ROOM_TARGET, dressRoom, roomBarePct } from "./dressRoom";
 import { VIGNETTE_TARGET, hashText, itemCharacters, itemsFitWords, roomCharacters, seeded, vignetteRoomSize } from "@/editor/handInterior/vignettes";
 import type { HandInteriorNotch } from "@/editor/handInterior/rooms";
 import { normalizeDoor, shapeNotches, type DesignRoomReport, type RoomDesign } from "@/editor/handInterior/designRoom";
+import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/handInterior/roomGraph";
+import { copiedReference } from "../roomIdeas";
+import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
+import { LAYOUT_FORMAT, LAYOUT_FORMAT_REGIONS, LAYOUT_GRID_RULES } from "../interiorLayout";
+import { effectiveSpec } from "../interiorCatalog";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -1035,14 +1040,22 @@ export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly Z
   return zones;
 }
 
-export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
-- ★ You design the room (hand-pixel interior): first call room_parts({purpose}) to see part labels, sample layouts and pictures, then write zones[].design: shape (rect · L · U · T · bay (window bump) · alcove; L and alcove take corner — pick from room_parts shapes/shape pictures; a plain rect over 60 cells gets flagged as a box room; a side room is one more zone), floor size (w×h, wall-face rows excluded), door, materials (floor · wall), furniture groups (groups: name · at wall/corner/center · pos 0–1 · rug · items[{id, dx, dy, count}]). Your list is everything that gets placed — the function adds nothing; it only fixes names missing from the chipset, group overlap, chair facing, the aisle in front of the door and reachability, and reports them in «고침:» lines. Read those lines and the «맨바닥» (bare floor) line, fix the design, and rebuild with edit_place({patch:{mapId, design: the whole fixed design}}). Samples are references — do not copy a layout. Bookshelves/display cases (wall furniture) and windows/maps (hangings) stand only on the north wall. Without design, the function asks the same model for a design before building (it does not transplant a sample room). Upper-floor rooms (floor:2) each get their own design.
+export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
+- ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
+- layout format: ${LAYOUT_FORMAT}
+${LAYOUT_GRID_RULES.map((r) => `- ${r}`).join("\n")}
+- Ids: the [Interior catalog] card (generated from the chipset's own room tables) lists pieces suggested for this request first, then every floor, wall, carpet, dais, sized table and object id grouped by category with counts, with its footprint and placement kind (h and w pieces go in wall_items). Use exact ids. find_pieces(category, tags) shows a whole category with placement, art rise and the example rooms each piece is used in — furnish every room with several different pieces that serve it, not the first few of the suggested slice. The older rectangle form (regions + openings: ${LAYOUT_FORMAT_REGIONS.replace(/\s+/gu, " ").slice(0, 120)}…) is still accepted.
+- After it is laid you get its picture. Look at it as a player walking in and send review_layout({mapId, problems, patch}) — a patch (remove/add pieces, replace a field) is applied to your layout exactly and validated; an empty patch means nothing to fix. The todo loop asks for these review rounds. room_parts({purpose}) adds reference rooms players liked (structure summaries + pictures) — borrow structure, not plans.
+- Design it like a real place: a clear landmark (a big piece the place is built around), distinct functional areas, side rooms or alcoves, furniture and decoration so that no large floor area is empty, and walking paths from the entrance to every area.
+- ★ "Build one room / one place" means one map — one place — not one cell. Design the room graph inside that map from what the place needs to work: an inn has a hall, a kitchen, stairs and guest rooms; a library has reading rooms and stacks; a shop has the sales floor and a back storeroom; a jail has a guard room, a corridor and cells. Players and the judge expect a place with structure — rooms to walk between, a reason to go deeper, one landmark per room — and a single box reads as unfinished. A single cell is right only for places that really are one room (a closet, a hut, a cell on its own). How many rooms is your call.
+- (zones path — older, weaker than layout) zones[{kind, purpose, design}] per room: the function lays out shapes and groups from your design; room_parts shows the design format.
+- (zones path) Several rooms in one map (the reference rooms players liked are all like this: a main room, side rooms, a corridor or stairs, one big landmark per room): give each zone id, x, y (rough top-left cell), design (w, h, groups) and landmark (a part id in its groups; big multi-cell parts welcome), plus connections:[{a, b, type:"door"|"open"}] and entrance (the southernmost room). You decide the room count, sizes, positions and links; the function only snaps walls, carves doors and checks reachability, and the todo check room_graph verifies the result.
 - zones = each room (rooms split by partitions). kind words: tavern (tavern hall) · kitchen · storeroom · cellar · bedroom · inn_room (guest room) · study · library · living · dining · forge · workshop · alchemy · chapel · treasury · armory · throne_room · great_hall · entrance · corridor · bathroom · cell. Korean words also work.
 - anchors = the room's hero objects (words): 「큰 망원경」(big telescope) 「벽난로」(fireplace) 「바 카운터」(bar counter) 「책장」(bookshelf) 「별자리표」(star chart) 「올라가는 계단」(stairs up). Prefix 「큰」 for big ones. The function looks them up in the parts dictionary and places them on free floor, or tells you they are missing.
 - For stairs to a 2nd/upper floor, put "올라가는 계단" in anchors and floors:2 — it builds the upper floor and links the stairs.
 - style: fantasy (default — also wizard towers, alchemy workshops and observatories; telescope and alchemy parts are in this chipset) · wizarding (Hogwarts-style magic «school» buildings only) · sengoku (Sengoku/Edo) · modern (modern city). Modern Japanese homes use type:"house".
 - A name word (inn, tavern, observatory…) does not lay down a preset room — an inn hall or a study stands as your design says. Put hero objects like a big telescope in anchors and design.groups.
-- Fixing an existing room: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
+- Changing a laid layout: review_layout, or edit_place({patch:{mapId, layoutPatch:{remove_objects, add_objects, remove_wall_items, add_wall_items, replace}}}), or edit_place({patch:{mapId, set:{layout:{…the full corrected layout}}}}) — relaid exactly; layout places are not limited to 3 rebuilds. Fixing an existing room built another way: edit_place({mapId, patch:{dressing:1}}) = keep the room layout and floor, add props. A north back door: patch.set.exits:["north"] or addAnchors:[{what:"북쪽 뒷문"}] — it adds a door in the north wall and builds and links a back room. Keep the original floor and wall materials.`;
 
 /** 모델 설계(zone.design)로 방 한 칸의 layout 요청을 만든다 — 모양 → 도려 낼 귀퉁이, 크기·재질·문 자리. 모르는 재질은 알리고 뺀다. */
 function designedRoom(zone: ZoneSpec, kind: string, n: number, design: RoomDesign, S: HandInteriorSpec, notes: string[]) {
@@ -1076,6 +1089,12 @@ export const interiorBuilder: PlaceBuilder = {
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
+    // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
+    if (hasLayout(spec)) {
+      const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+      const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
+      if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
+    }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
     // 가구 길 고르기(2026-10-29 3단계, 벤치 room-base/vig/vig2-1029): 기본은 장소 견본·방 견본(제작자 구성이 있는 용도에선 이쪽이 강하다 — 예배당·여관).
@@ -1158,6 +1177,33 @@ export const interiorBuilder: PlaceBuilder = {
     const designed = rooms.some((r) => (r as { designed?: boolean }).designed);
     const designs = Object.fromEntries(rooms.filter((r) => (r as { design?: RoomDesign }).design).map((r) => [r.id, (r as { design?: RoomDesign }).design!]));
     const designExit = (rooms.find((r) => (r as { exitAt?: number }).exitAt !== undefined) as { exitAt?: number } | undefined)?.exitAt;
+    // 방 그래프(2026-10-30 2회차): 모델이 방마다 대략 자리(x,y)·연결·입구를 주면 배치 후보를 함수가 고르지 않는다 — 조화(칸막이 1칸 붙이기·문 내기·
+    // 출구 열)만 하고 못 짓는 평면은 영어 고친 호출과 함께 돌려보낸다(roomGraph.ts). 기준 방 평면을 거의 그대로 옮기면 돌려보낸다(roomIdeas.ts 지문).
+    // 방이 하나면 그래프가 아니다 — 2026-10-30 2회차 terra 가 엄격 스키마로 x·y·stairs 를 늘 채워 한 방짜리도 그래프로 지었고 «계단 선언·없음» 거짓 ✗ 가 났다.
+    const graphMode = designed && rooms.length >= 2 && rooms.every((r) => (r as { designed?: boolean }).designed)
+      && (!!spec.connections?.length || firstFloor.some((z) => typeof z.x === "number" && typeof z.y === "number"));
+    let graph: GraphOut | undefined;
+    if (graphMode) {
+      const entranceId = spec.entrance && rooms.some((r) => r.id === spec.entrance) ? spec.entrance : undefined;
+      const entranceRoom = rooms.find((r) => r.id === entranceId) as { exitAt?: number } | undefined;
+      try {
+        graph = harmonizeRoomGraph({
+          rooms: rooms.map((r) => ({ id: r.id, kind: r.kind, w: r.w!, h: r.h!, x: r.zone.x, y: r.zone.y, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: HandInteriorNotch[] }).notches })),
+          connections: spec.connections ?? [], ...(entranceId ? { entrance: entranceId } : {}), ...(entranceRoom?.exitAt !== undefined ? { exitAt: entranceRoom.exitAt } : designExit !== undefined ? { exitAt: designExit } : {}),
+        });
+      } catch (error) {
+        if (!(error instanceof RoomGraphError)) throw error;
+        return { ok: false, mapIds: [], summary: `Room graph rejected: ${error.message}${error.fixed ? ` Fixed call: ${error.fixed}` : ""}`, warnings: notes, missingArt: missing, calls: run.calls };
+      }
+      const copy = copiedReference({ w: graph.width, h: graph.height, rooms: graph.rooms.map((r) => ({ name: r.id, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1 })) });
+      if (copy) return { ok: false, mapIds: [], summary: `Room graph rejected: the plan is a near copy of reference room ${copy.id} (plan similarity ${copy.similarity}: same room count, sizes and positions). Borrow its structure, not its plan — change the room count, sizes or arrangement to fit this request.`, warnings: notes, missingArt: missing, calls: run.calls };
+      notes.push(...graph.notes.map((n) => `room graph: ${n}`));
+    }
+    // 그래프 선언(검사 room_graph 가 맵 이름표로 읽는다 — handInteriorTools 가 room-graph 이름표로 남긴다).
+    const graphDecl = graph ? {
+      rooms: rooms.map((r) => ({ id: r.id, name: String(r.zone.purpose ?? r.kind).slice(0, 40), ...(r.zone.role ? { role: String(r.zone.role) } : {}), ...(r.zone.stairs === "up" || r.zone.stairs === "down" ? { stairs: r.zone.stairs } : {}), ...(r.zone.landmark && !/^(none|null|-)?$/iu.test(String(r.zone.landmark).trim()) ? { landmark: String(r.zone.landmark) } : {}) })),
+      connections: graph.connect.map((c) => ({ a: c.a, b: c.b, type: c.open ? "open" : "door" })), entrance: graph.exit.room,
+    } : undefined;
     // 방이 모두 손으로 짠 견본이면 소금 변주도 쓰지 않는다 — 배치 후보 C·D 가 방을 넓혀 5×6 객실 견본이 7×8 방 왼쪽 위에 몰리고 나머지가 맨바닥이 됐다.
     const allAuthored = rooms.length > 0 && rooms.every((r) => !r.vig && String(r.tplId ?? "").startsWith("authored-"));
     // variety 열쇠가 있으면 무작위 salt 대신 그 해시 — 같은 게임·같은 요청이면 같은 배치(재현), 다른 게임이면 다른 배치.
@@ -1172,6 +1218,7 @@ export const interiorBuilder: PlaceBuilder = {
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
       layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
+        ...(graph ? { placed: { rooms: graph.rooms, connect: graph.connect, exit: graph.exit }, graph: graphDecl } : {}),
         ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : designExit !== undefined ? { exitAt: designExit } : {}),
         ...(designed ? { designs } : {}),
         ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };

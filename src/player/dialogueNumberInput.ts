@@ -1,6 +1,6 @@
 import type { MessageWindowSettings } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { isConfirmKey } from "@/player/keyBindings";
+import { isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { installConfirmPressTracker, isLeakedConfirmPress } from "@/player/confirmMashGuard";
 
 type DialogueSurfaceSettings = {
@@ -42,7 +42,13 @@ function tabbable(root: HTMLElement): HTMLElement[] {
 export const NUMBER_INPUT_CONFIRM_LABEL = "확인";
 
 /** 조작 안내 한 줄. 숫자 키를 몰라도 방향키와 결정 키만으로 넣을 수 있다. */
-export const NUMBER_INPUT_HINT = "↑↓ 숫자 · ←→ 자리 · 숫자 키 바로 입력 · Enter 확인";
+export const NUMBER_INPUT_HINT = "↑↓ 숫자 · ←→ 자리 · 숫자 키 바로 입력 · Enter 확인 · Esc 그만두기";
+
+/**
+ * 취소(Esc·X)로 닫았을 때 돌려주는 값. 해석기는 변수를 건드리지 않고 그 이벤트를 끝낸다(resume.ts).
+ * 왜(2026-10-31 미스터리·방탈출 판정 3판): 번호를 모르고 금고·서랍을 열면 아무 번호나 넣어 «맞지 않는다»를 봐야만 빠져나올 수 있었다.
+ */
+export const NUMBER_INPUT_CANCELLED = -1;
 
 /**
  * RM2K3-style numeric entry: per-digit slots (not a free text field).
@@ -168,6 +174,12 @@ export function showNumberInput(
       commit();
     };
 
+    const cancel = (): void => {
+      document.removeEventListener("keydown", onKey, true);
+      clearChildren(overlay);
+      helpers.resetOverlay(overlay);
+      resolve(NUMBER_INPUT_CANCELLED);
+    };
     const finish = (): void => {
       document.removeEventListener("keydown", onKey, true);
       const parsed = Number.parseInt(value || "0", 10);
@@ -211,6 +223,13 @@ export function showNumberInput(
         if (arrow === "up") stepDigit(1);
         else if (arrow === "down") stepDigit(-1);
         else moveCursor(arrow === "left" ? -1 : 1);
+        return;
+      }
+      if (isCancelKey(event.key)) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.repeat) return;
+        cancel();
         return;
       }
       if (isConfirmKey(event.key)) {

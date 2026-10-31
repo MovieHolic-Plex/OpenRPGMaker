@@ -1,7 +1,8 @@
 // 스토어 전투 애니메이션(content.battleAnimations): 매니페스트 검사 → 넣기(id 바꾸기·덮지 않기·다시 넣기) → 되돌리기 → 웹 내보내기 포함 → 프레임 hold 길이.
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { storeBattleAnimationSizeProblems, storeProjectId, validateManifest, type StorePackManifest } from "@/assetStore/format";
+import { STORE_ANIMATION_EASYRPG_SOUNDS, storeBattleAnimationSizeProblems, storeProjectId, validateManifest, type StorePackManifest } from "@/assetStore/format";
+import { EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { applyPackToProject, storeAnimationId } from "@/assetStore/pack";
 import { pngSize } from "@/assetStore/sniff";
 import { battleAnimationChainDurationMs, battleAnimationDurationMs, battleAnimationFrameAtUnits } from "@/battle/animationTiming";
@@ -69,6 +70,15 @@ describe("store battle animations — manifest", () => {
     expect(errorsOf(pack().manifest)).toBe("");
   });
 
+  it("accepts bundled EasyRPG sound ids exactly", () => {
+    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-fire1"; }).manifest)).toBe("");
+    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-wind8"; }).manifest)).toBe("");
+  });
+
+  it("keeps the EasyRPG sound list equal to the bundled catalog", () => {
+    expect([...STORE_ANIMATION_EASYRPG_SOUNDS].sort()).toEqual(EASYRPG_SOUND_ASSETS.map((asset) => asset.id).sort());
+  });
+
   it("rejects bad shapes and references", () => {
     expect(errorsOf(pack((r) => { r[0]!.resourceId = "boom"; }).manifest)).toContain("resourceId");
     expect(errorsOf(pack((r) => { r[0]!.resourceId = "missing"; }).manifest)).toContain("resourceId");
@@ -79,7 +89,9 @@ describe("store battle animations — manifest", () => {
     expect(errorsOf(pack((r) => { r[0]!.frames![0]!.hold = 17; }).manifest)).toContain("hold");
     expect(errorsOf(pack((r) => { r[0]!.timings![0]!.frameIndex = 4; }).manifest)).toContain("frameIndex");
     expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "fx-sheet"; }).manifest)).toContain("소리");
-    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-fire1"; }).manifest)).toContain("소리");
+    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-fire99"; }).manifest)).toContain("소리");
+    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-"; }).manifest)).toContain("소리");
+    expect(errorsOf(pack((r) => { r[0]!.timings![0]!.soundResourceId = "easyrpg-sound-fire1 "; }).manifest)).toContain("소리");
     expect(errorsOf(pack((r) => { r[0]!.followUps = [{ animationId: "fire-burst", startFrame: 0 }]; }).manifest)).toContain("followUp");
     expect(errorsOf(pack((r) => { r[0]!.followUps = [{ animationId: "nope", startFrame: 0 }]; }).manifest)).toContain("followUp");
     expect(errorsOf(pack((r) => { r[1]!.id = "fire-burst"; }).manifest)).toContain("두 번");

@@ -248,7 +248,7 @@ export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "
  * 적 그룹 정하기: 요청한 적·보스가 있으면 그 그림의 전용 그룹, 없으면 도구 주제 적. 보스 그림은 잡몹·수문장과 닮지 않게(LOOKALIKE),
  * 맵에서 갈색 덩어리로 보이는 골렘은 피한다 — 「3층 보스가 2층 몬스터 그림을 다시 써서 보스답지 않다」(2026-10-23 비교 검수).
  */
-function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<string, unknown>, warnings: string[]): Record<string, unknown> | undefined {
+export function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<string, unknown>, warnings: string[]): Record<string, unknown> | undefined {
   const theme = dungeonTheme(toolArgs);
   const base = pickTroops(run.ctx.project, undefined);
   const troops: Record<string, unknown> = {};
@@ -324,7 +324,7 @@ const isBoss = (id: string): boolean => /_boss$|_guardian$/.test(id);
  * 큰 몸이 벽을 뚫고 보이거나 플레이어가 몸 위를 걸어 지나가지 않게 한다. 몸 여섯 칸이 모두 걸을 수 있는 바닥이고 다른 이벤트가 없으며
  * 발밑 줄을 막아도 전에 닿던 칸이 모두 닿는 자리여야 한다 — 지금 자리가 안 되면 같은 방(없으면 4칸 안)에서 가장 가까운 자리로 옮긴다.
  */
-function enlargeBoss(run: BuildRun, mapId: string, d: Record<string, unknown> | undefined, eventRe: RegExp, scale: number, warnings: string[], allowMove = true): string | undefined {
+export function enlargeBoss(run: BuildRun, mapId: string, d: Record<string, unknown> | undefined, eventRe: RegExp, scale: number, warnings: string[], allowMove = true): string | undefined {
   const project = run.ctx.project;
   const map = project.maps[mapId];
   const ev = map?.events.find((e) => eventRe.test(e.id));
