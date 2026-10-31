@@ -20,6 +20,8 @@ import {
 import { battlerSpriteNode, findBattlerNode } from "@/player/battleFieldDom";
 import { battleAnimationAnchor, type BattleAnchorBox } from "@/player/battleAnimationAnchor";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
+import { mountPixelFxDom, type PixelFxDomPlayback } from "@/pixelfx/domPlayer";
+import { BATTLE_ANIMATION_FRAME_MS, PIXEL_FX_BATTLE_LOOP_MS, pixelFxEffectTiming } from "@/battle/animationTiming";
 
 type CellSourceRect = {
   readonly x: number;
@@ -114,7 +116,11 @@ export function mountBattleAnimationPlayback(
     element.dataset.blend = record.blendMode;
     element.style.mixBlendMode = cssMixBlendMode(record.blendMode);
   }
-  if (url && record?.sheet && record.frames && record.frames.length > 0) {
+  let pixelFx: PixelFxDomPlayback | undefined;
+  if (record?.pixelFx) {
+    // 코드 픽셀 효과(pixelfx): 시트 대신 효과를 무대 해상도(게임 1화소 = 논리 2px)로 직접 그린다. 효과 원점이 노드 가운데(앵커)에 온다.
+    pixelFx = startPixelFxPlayback(element, record, timers, context);
+  } else if (url && record?.sheet && record.frames && record.frames.length > 0) {
     element.dataset.renderedFrameCount = String(record.frames.length);
     const sheet = animationSheet(record, url);
     element.append(sheet);
@@ -137,11 +143,72 @@ export function mountBattleAnimationPlayback(
     destroy(): void {
       for (const timer of timers) window.clearInterval(timer);
       timers.clear();
+      pixelFx?.destroy();
       // 중간에 파괴돼도 효과 흔적을 남기지 않는다 — 남으면 다음 액션이 물려받는다.
       clearEffectClasses(context);
       element.remove();
     },
   };
+}
+
+/**
+ * pixelfx 레코드 재생. 효과는 자기 시계(효과 fps)로 돌고, 레코드 timings(소리·플래시·흔들림)는 기본 프레임 간격(120ms)
+ * 시계로 낸다 — 시트 애니메이션과 같은 저작 단위다. 방향 있는 효과는 오른쪽을 보므로, flip 을 저작하지 않았으면
+ * 대상이 무대 왼쪽 절반에 있을 때(측면 전투의 적) 왼쪽을 보게 뒤집는다.
+ */
+function startPixelFxPlayback(
+  element: HTMLElement,
+  record: BattleAnimationRecord,
+  timers: Set<number>,
+  context: AnimationRenderContext,
+): PixelFxDomPlayback {
+  const spec = record.pixelFx!;
+  const flip = spec.flip ?? targetOnLeftHalf(context);
+  const timing = pixelFxEffectTiming(spec.effectId);
+  const playback = mountPixelFxDom({ ...spec, flip }, {
+    pixelScale: BATTLE_ASSET_PIXEL_SCALE,
+    ...(timing?.loop ? { maxMs: PIXEL_FX_BATTLE_LOOP_MS } : {}),
+  });
+  playback.element.style.left = "50%";
+  playback.element.style.top = "50%";
+  element.dataset.pixelFx = spec.effectId;
+  element.dataset.renderedFrameCount = "0";
+  element.append(playback.element);
+  void playback.ready.then((ok) => { element.dataset.pixelFxReady = String(ok); });
+  void playback.finished.then(() => {
+    element.dataset.playbackFinished = "true";
+    clearEffectClasses(context);
+  });
+  const timings = record.timings ?? [];
+  const lastFrame = timings.reduce((max, entry) => Math.max(max, entry.frameIndex), -1);
+  if (lastFrame >= 0) {
+    const startedAt = Date.now();
+    let index = -1;
+    const timer = window.setInterval(() => {
+      const due = Math.floor((Date.now() - startedAt + 1) / BATTLE_ANIMATION_FRAME_MS);
+      while (index < due) {
+        index += 1;
+        const effects = activeTimingEffects(timings, index);
+        applyTimingEffects(context, effects);
+        playTimingSound(timings.find((entry) => entry.frameIndex === index)?.soundResourceId);
+        if (index > lastFrame + 16) {
+          window.clearInterval(timer);
+          timers.delete(timer);
+          clearEffectClasses(context);
+          return;
+        }
+      }
+    }, BATTLE_ANIMATION_FRAME_MS);
+    timers.add(timer);
+  }
+  return playback;
+}
+
+function targetOnLeftHalf(context: AnimationRenderContext): boolean {
+  const target = context.targetNode?.getBoundingClientRect();
+  const stage = context.sceneRoot?.getBoundingClientRect();
+  if (!target || !stage || target.width <= 0 || stage.width <= 0) return false;
+  return target.left + target.width / 2 < stage.left + stage.width / 2;
 }
 
 /**

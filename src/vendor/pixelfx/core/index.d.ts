@@ -1,5 +1,5 @@
 // OPRN 이 쓴 타입 선언(원본 pixelfx 에는 타입이 없다). 원본 core/index.js 중 OPRN 이 부르는 것만 적는다.
-// 갱신 스크립트(scripts/vendor/sync-pixelfx.mjs)는 core/ 를 통째로 다시 복사하므로 이 파일을 다시 써 둔다.
+// 갱신 스크립트(scripts/vendor/sync-pixelfx.mjs)는 core/·fx/ 를 다시 복사하되 *.d.ts 는 남겨 둔다 — 이 파일은 손으로 고친다.
 
 /** 한 장: w×h 화소, 좌상단이 월드 (ox, oy). color 는 불투명·반투명 화소(ABGR), light 는 더하는 빛(ABGR). */
 export interface PixelFxFrame {
