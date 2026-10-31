@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7840KB / 약 2,303,741 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7841KB / 약 2,304,029 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 67KB | 19KB | 436 | ~19,994 |
-| `openwiki/assistant-v2.md` | 243KB | 47KB | 688 | ~73,906 |
+| `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,122 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 615KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4013 | ~180,573 |
 | `openwiki/editor-database.md` | 458KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,655 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
-| `openwiki/editor-event-commands.md` | 82KB | 32KB | 340 | ~23,017 |
+| `openwiki/editor-event-commands.md` | 83KB | 33KB | 340 | ~23,089 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
@@ -322,7 +322,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L324` 바로 플레이 게임 (2026-10-23)
   - `L428` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 243KB · 688줄 · ~73,906 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,122 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -346,13 +346,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L405` 조수 대조 4회차 — 오류 글과 일본 실내 가구 빼기 (2026-10-31 asst-parity 4)
 - `L411` 조수 대조 5회차 — 칩 관문 읽기와 장르 기본값 부작용 (2026-10-31 asst-parity p1d-maou-terra)
 - `L418` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L429` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
-- `L473` 켜는 법
-- `L480` 구조 — v1 실행기를 그대로 쓴다
-  - `L498` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
-- `L606` 빌더가 하는 것 / 못 하는 것
-- `L665` 시험
-- `L674` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L430` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+- `L474` 켜는 법
+- `L481` 구조 — v1 실행기를 그대로 쓴다
+  - `L499` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+- `L607` 빌더가 하는 것 / 못 하는 것
+- `L666` 시험
+- `L675` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
@@ -1235,7 +1235,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 82KB · 340줄 · ~23,017 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 83KB · 340줄 · ~23,089 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 선택지 줄 조건 — 숨김(showWhen)·흐리게(enableWhen) (2026-10-30)
 - `L16` 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
