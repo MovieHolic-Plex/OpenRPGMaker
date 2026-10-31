@@ -1244,6 +1244,11 @@ export interface StateRecord {
   fieldStepCanKill?: boolean;
   /** 이 걸음 수를 걸으면 상태가 풀린다(필드 N걸음 지속). 생략 = 걸음으로 풀리지 않음. */
   releaseAfterSteps?: number;
+  /**
+   * 전투를 이만큼 치르면 풀린다(1~99). 칼 기름·축복처럼 «다음 싸움 N번»만 가는 상태 — 전투가 끝날 때마다 센다.
+   * 전투 종료로 풀리는 상태(clearOnBattleEnd)와 달리 전투 밖으로 이어지고, N번째 전투가 끝나면 풀린다. 생략 = 전투 수로 풀리지 않음.
+   */
+  releaseAfterBattles?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
@@ -1300,6 +1305,11 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /**
+   * 칼 기름·속성 부여(인챈트): 이 상태인 동안 통상 공격이 이 속성(속성 id)으로 친다 — 무기의 공격 속성 대신.
+   * 대상의 속성 등급(elementRates)·피해 계열 예외(damageTypeRates.elements)가 그대로 적용된다. 여러 상태면 나중에 걸린 것.
+   */
+  attackElementId?: string;
   /**
    * 이 상태인 동안 피해 계열별 받는 피해 %를 **바꿔 쓴다**(더하거나 곱하지 않는다 — 적의 기본 damageTypeRates 를 대신한다).
    * 여러 상태가 같은 계열을 정하면 가장 큰 값. 예: 「관통상」 { magic: 300 } — 마법 무효인 용도 이 상태 동안은 마법 피해 ×3.
