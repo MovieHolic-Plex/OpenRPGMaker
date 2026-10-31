@@ -37,6 +37,8 @@ export type ResourceKind =
   | "monster"
   | "faceset"
   | "picture"
+  /** 아이템·장비·스킬·상태 아이콘 한 장(32×32 투명 PNG, 에셋 스토어 아이콘 팩). */
+  | "icon"
   | "movie"
   | "system"
   | "system2"
