@@ -9,8 +9,12 @@ brief, arm, rep = sys.argv[1], sys.argv[2], sys.argv[3]
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BBOX_RUNS3", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxdungeon3")
 G = f"{RUNS}/{arm}{rep}/{brief}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra"}[arm]
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "argon": "gemini-4-argon"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
+HDR = {"content-type": "application/json"}
+if arm == "argon":   # the suite's argon route: proxy8318 (key read from the suite endpoints file, never printed)
+    _ep = json.load(open(os.path.expanduser("~/.oprn-suite/openai-compat-endpoints.json")))["endpoints"]["openai-compat:proxy8318"]
+    OCX = _ep["baseUrl"].rstrip("/") + "/chat/completions"; HDR = {"Content-Type": "application/json", "Authorization": f"Bearer {_ep['apiKey']}", **(_ep.get("headers") or {})}
 ENV = dict(os.environ, OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite")
 SUFFIX = " 다른 맵은 만들지 말고 이 던전 한 층만 지어 줘."
 REQ = {"crypt": "교회 지하에 있는 지하 묘지 던전 한 층을 만들어 줘. 입구 계단으로 내려와 보스가 기다리는 곳까지 가는 던전이야." + SUFFIX,
@@ -95,7 +99,7 @@ def call(n):
     t0 = time.time()
     for attempt in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=1500) as r: d = json.load(r)
+            with urllib.request.urlopen(urllib.request.Request(OCX, body, HDR), timeout=1500) as r: d = json.load(r)
             break
         except Exception:
             if attempt == 2: raise

@@ -122,3 +122,6 @@ export const TRAPS = new Set(["sand pit trap", "steam vent trap", "spike trap", 
 export const LIGHTS = new Set(["wall torch", "brazier", "stone brazier", "candelabra", "iron candelabra", "void brazier", "lantern post", "candles"]);
 export const STATUES = new Set(["jackal statue", "scarab statue", "sunken idol", "fallen statue head", "obelisk", "frozen warrior", "bone pillar"]);
 export const THEMES = ["catacomb", "castle", "temple", "cave"] as const;
+// round 4: floor-overlay patches that read as square stickers on a cave floor are dropped from the catalog (BBD_ROUND=4).
+export const DROPPED_R4 = ["bone-strewn floor", "sand patch", "wet sand patch"];
+if (process.env.BBD_ROUND === "4") for (const n of DROPPED_R4) delete PIECES[n];
