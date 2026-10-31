@@ -457,6 +457,7 @@ export async function applyOp(page, op, runState) {
       return;
     case "setClock":
       // 게임 안 시계(시간대 반응 이벤트 — 예: 밤에만 막는 경비병). Set Time 명령과 같은 경로(__oprnDebug.setClock).
+      // e8dd95b009 에서 들어왔다가 #4135 병합에서 빠졌다 — ts-sandbox-demo 의 경비병 비트 6개가 「구현되지 않은 op」로 죽었다.
       await page.evaluate(([hour, minute]) => window.__oprnDebug.setClock(hour, minute), [op.hour, op.minute ?? 0]);
       return;
     case "setVitals":

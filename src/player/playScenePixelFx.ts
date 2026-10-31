@@ -15,7 +15,8 @@ import { characterDepth, characterSpriteX, characterSpriteY, footprintSpriteX } 
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { loadedPixelFxModule, loadPixelFxModule } from "@/pixelfx/modules";
-import { PixelFxRenderer, type PixelFxLayout } from "@/pixelfx/renderer";
+import { PixelFxRenderer, type PixelFxFeather, type PixelFxLayout } from "@/pixelfx/renderer";
+import type { PixelFxModule } from "@/vendor/pixelfx/core/index.js";
 import { normalizeEventPixelFx, normalizePixelFxSpec, pixelFxRenderKey } from "@/project/pixelFxSpec";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
@@ -36,6 +37,13 @@ const FRAME_CACHE_TOTAL = 64 * 1024 * 1024;
 const LOAD_HIGH_MS = 6;
 const FADE_MS = 300;
 const PAGE_RECHECK_MS = 300;
+/** 「화면」 층 바둑판 한 효과의 칸 수 상한(아주 멀리 줌아웃한 시야에서 스프라이트가 끝없이 늘지 않게). */
+const MAX_SCREEN_TILES = 64;
+/**
+ * 날씨 효과는 원점(바닥) 아래·바로 위에 땅 띠를 그린다(빗방울 왕관·웅덩이 고리, 쌓인 눈 결정). 시야를 덮는 바둑판에서는
+ * 칸마다 이 띠가 가로줄로 되풀이되므로(2026-10-31 비 캡처), 원점 위 이만큼(게임 화소)부터 아래를 잘라 내고 남은 하늘만 잇는다.
+ */
+const SCREEN_GROUND_CUT = 8;
 
 type Kind = "color" | "light";
 type SpriteSet = Partial<Record<`${"back" | "front"}${"Color" | "Light"}`, Phaser.GameObjects.Image>>;
@@ -62,6 +70,23 @@ interface CachedFrame {
   readonly painted: LiveFx["painted"];
 }
 
+/**
+ * 「화면」 층의 바둑판: 효과 캔버스(대개 320×180)를 칸과 같은 배율로 시야에 이어 깐다. band = 하늘 띠(뒤 층 없는 오로라·구름·별똥별)라
+ * 시야 위에 한 줄만 깔고 옆 칸을 좌우 거울로 뒤집어 이음매를 잇는다.
+ */
+interface ScreenGrid {
+  readonly s: number;
+  readonly left: number;
+  readonly top: number;
+  readonly cols: number;
+  readonly rows: number;
+  /** 칸마다 보이는 효과 캔버스 위쪽 높이(효과 화소). 줄 간격도 이것이다. */
+  readonly cropH: number;
+  /** 가운데 칸의 열 번호(거울 뒤집기 기준). */
+  readonly center: number;
+  readonly band: boolean;
+}
+
 interface AmbientFx {
   readonly eventId: string;
   readonly spec: EventPixelFx;
@@ -70,6 +95,9 @@ interface AmbientFx {
   /** 한 번 효과를 페이지 상시로 단 경우(끝나면 다시 튼다). */
   live?: LiveFx;
   sprites: SpriteSet;
+  /** 「화면」 층: 바둑판 칸마다 스프라이트 묶음(sprites 는 쓰지 않는다). */
+  tiles?: SpriteSet[];
+  grid?: ScreenGrid;
   x: number;
   y: number;
   depth: number;
@@ -110,7 +138,11 @@ interface SceneFxState {
   clock: number;
   serial: number;
   /** 성능 계기(마지막 틱): 그린 프레임 수·걸린 ms. window.__oprnPixelFxStats 로 본다. */
-  stats: { draws: number; ms: number; paintMs: number; uploadMs: number; ambient: number; oneShots: number; visible: number; sharedLoops: number; deferred: number };
+  stats: {
+    draws: number; ms: number; paintMs: number; uploadMs: number; ambient: number; oneShots: number; visible: number; sharedLoops: number; deferred: number;
+    /** 마지막 「화면」 층 효과의 바둑판(배율·칸 수). 없으면 null. */
+    screen: { scale: number; cols: number; rows: number; band: boolean } | null;
+  };
 }
 
 const states = new WeakMap<PlaySceneContext, SceneFxState>();
@@ -121,7 +153,7 @@ function stateFor(scene: PlaySceneContext): SceneFxState {
   if (!state) {
     state = {
       mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), cacheBytes: 0, loadMs: 0, oneShots: [], nextCheck: 0, clock: 0, serial: 0,
-      stats: { draws: 0, ms: 0, paintMs: 0, uploadMs: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0 },
+      stats: { draws: 0, ms: 0, paintMs: 0, uploadMs: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0, screen: null },
     };
     states.set(scene, state);
     const created = state;
@@ -139,6 +171,7 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   state.stats.draws = 0;
   state.stats.paintMs = 0;
   state.stats.uploadMs = 0;
+  state.stats.screen = null;
   state.clock += deltaMs;
   if (state.mapId !== map.id) {
     for (const fx of state.ambient.values()) releaseAmbient(scene, state, fx);
@@ -157,8 +190,8 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   for (const loop of state.loops.values()) loop.wanted = false;
   const shown: AmbientFx[] = [];
   for (const [id, fx] of state.ambient) {
-    // 이벤트 스프라이트를 따라간다(움직이는 NPC 의 오라·상태 효과). 「화면」 층은 카메라를 따라 화면을 덮는다.
-    const screenScale = fx.spec.layer === "screen" ? anchorScreen(fx, view, scale) : 0;
+    // 이벤트 스프라이트를 따라간다(움직이는 NPC 의 오라·상태 효과). 「화면」 층은 카메라를 따라 시야에 바둑판으로 깔린다.
+    const screenScale = fx.spec.layer === "screen" ? anchorScreen(state, fx, view, scale) : 0;
     if (!screenScale) anchorEvent(scene, fx);
     if (fx.fadeOutAt !== undefined && state.clock - fx.fadeOutAt >= FADE_MS) {
       releaseAmbient(scene, state, fx);
@@ -168,13 +201,18 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
     const alpha = fx.fadeOutAt !== undefined ? 1 - (state.clock - fx.fadeOutAt) / FADE_MS : 1;
     const s = screenScale || scale * (fx.spec.scale ?? 1);
     if (fx.live) {
-      visible += drawLive(scene, fx.live, fx.sprites, fx, s, alpha, deltaMs, view, state) ? 1 : 0;
-      if (fx.live.renderer.done()) fx.live.renderer = new PixelFxRenderer(loadedPixelFxModule(fx.spec.effectId)!, fx.spec);
+      const live = fx.live;
+      const show = screenScale ? () => showScreenTiles(scene, live, fx, alpha) : undefined;
+      visible += drawLive(scene, live, fx.sprites, fx, s, alpha, deltaMs, view, state, show) ? 1 : 0;
+      if (live.renderer.done()) {
+        const mod = loadedPixelFxModule(fx.spec.effectId)!;
+        live.renderer = new PixelFxRenderer(mod, fx.spec, featherFor(fx.spec, mod));
+      }
       continue;
     }
     const loop = fx.loop;
     if (!loop) continue;
-    if (!onScreen(view, fx.x, fx.y, loop.live.renderer.layout, s, fx.spec)) { hideSprites(fx.sprites); continue; }
+    if (!screenScale && !onScreen(view, fx.x, fx.y, loop.live.renderer.layout, s, fx.spec)) { hideSprites(fx.sprites); continue; }
     visible += 1;
     loop.wanted = true;
     shown.push(fx);
@@ -201,8 +239,8 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   }
   for (const fx of shown) {
     const alpha = fx.fadeOutAt !== undefined ? 1 - (state.clock - fx.fadeOutAt) / FADE_MS : 1;
-    const screenScale = fx.spec.layer === "screen" ? anchorScreen(fx, view, scale) : 0;
-    showLive(scene, fx.loop!.live, fx.sprites, fx, screenScale || scale * (fx.spec.scale ?? 1), alpha);
+    if (fx.grid) showScreenTiles(scene, fx.loop!.live, fx, alpha);
+    else showLive(scene, fx.loop!.live, fx.sprites, fx, scale * (fx.spec.scale ?? 1), alpha);
   }
   state.stats.deferred = deferred;
   for (const shot of [...state.oneShots]) {
@@ -248,14 +286,14 @@ function attachAmbient(scene: PlaySceneContext, state: SceneFxState, fx: Ambient
   const mod = loadedPixelFxModule(fx.spec.effectId);
   if (!mod) return;
   if (!mod.meta.loop) {
-    const renderer = new PixelFxRenderer(mod, fx.spec);
+    const renderer = new PixelFxRenderer(mod, fx.spec, featherFor(fx.spec, mod));
     fx.live = createLive(scene, renderer, fx.spec, layersFor(fx.spec, renderer));
     return;
   }
   const loopKey = `${pixelFxRenderKey(fx.spec)}|${fx.spec.layer ?? "auto"}|${fx.spec.speed ?? 1}`;
   let loop = state.loops.get(loopKey);
   if (!loop) {
-    const renderer = new PixelFxRenderer(mod, fx.spec);
+    const renderer = new PixelFxRenderer(mod, fx.spec, featherFor(fx.spec, mod));
     const layers = layersFor(fx.spec, renderer);
     const big = renderer.layout.width * renderer.layout.height > BIG_LOOP_AREA;
     const fps = big ? Math.min(15, renderer.fps) : renderer.fps;
@@ -275,6 +313,8 @@ function attachAmbient(scene: PlaySceneContext, state: SceneFxState, fx: Ambient
 function releaseAmbient(scene: PlaySceneContext, state: SceneFxState, fx: AmbientFx): void {
   destroySprites(fx.sprites);
   fx.sprites = {};
+  for (const tile of fx.tiles ?? []) destroySprites(tile);
+  fx.tiles = undefined;
   if (fx.live) destroyLive(scene, fx.live);
   const loop = fx.loop;
   if (!loop) return;
@@ -337,9 +377,11 @@ function drawLive(
   deltaMs: number,
   view: Phaser.Geom.Rectangle | undefined,
   state: SceneFxState,
+  /** 띄우기를 바꿔 끼운다(「화면」 층 바둑판). 주면 화면 밖 검사도 건너뛴다 — 바둑판은 늘 시야를 덮는다. */
+  show?: () => void,
 ): boolean {
   live.renderer.advance(deltaMs / 1000);
-  if (!onScreen(view, at.x, at.y, live.renderer.layout, s, at.spec)) { hideSprites(sprites); return false; }
+  if (!show && !onScreen(view, at.x, at.y, live.renderer.layout, s, at.spec)) { hideSprites(sprites); return false; }
   // 효과 fps(대개 30)로만 다시 그린다 — 60Hz 화면에서 그리기·텍스처 올리기가 반이다. 틱 비용이 높으면 반 fps.
   const fps = state.loadMs > LOAD_HIGH_MS ? live.renderer.fps / 2 : live.renderer.fps;
   const frame = Math.floor(live.renderer.time * fps);
@@ -348,7 +390,8 @@ function drawLive(
     const layers = (["back", "front"] as const).filter((layer) => live.textures[`${layer}-color`]);
     paintLive(live, layers, wholeLayer(at.spec, layers), state);
   }
-  showLive(scene, live, sprites, at, s, alpha);
+  if (show) show();
+  else showLive(scene, live, sprites, at, s, alpha);
   return true;
 }
 
@@ -454,17 +497,77 @@ function destroySprites(sprites: SpriteSet): void {
 }
 
 /**
- * 「화면」 층(날씨·반딧불·오로라 같은 장면 효과): 카메라 시야 가운데 아래에 원점을 두고, 시야를 덮는 가장 작은 정수배로 키운다.
- * 돌려주는 값은 월드 배율(0 = 시야를 모름 → 이벤트 자리에 둔다). 효과 자체의 offset 은 그 배율로 민다.
+ * 「화면」 층(날씨·반딧불·오로라 같은 장면 효과)의 바둑판을 정한다. 효과 화소 1 = 그 맵 칸 그림 화소 1(칸과 같은 배율)이고,
+ * 효과 캔버스(대개 320×180)를 키우지 않고 시야에 이어 깐다. 예전에는 시야를 덮는 가장 작은 정수배로 키웠는데, 16px 칸 게임
+ * (시야 320×240 게임 화소)에서 2배가 되어 눈 결정이 칸 하나만 해지고 오로라가 문·벽을 덮었다(2026-10-31 폴른 스타).
+ * - 뒤 층이 있는 효과(눈·비·반딧불 — 화면에는 앞 층의 입자만 깐다): 땅 띠(SCREEN_GROUND_CUT)를 잘라 낸 하늘 부분을
+ *   시야 아래 끝에 맞춰 위로 쌓고 가로로 잇는다.
+ * - 뒤 층이 없는 하늘 띠(오로라·구름·별똥별 — 캔버스 전체가 하늘): 시야 맨 위에 한 줄만, 옆 칸은 좌우 거울로 이음매를 잇는다.
+ * 칸 경계는 게임 화소 격자에 맞춘다. 돌려주는 값은 월드 배율(0 = 시야를 모름 → 이벤트 자리에 둔다).
  */
-function anchorScreen(fx: AmbientFx, view: Phaser.Geom.Rectangle | undefined, worldScale: number): number {
-  const layout = fx.loop?.live.renderer.layout ?? fx.live?.renderer.layout;
-  if (!view || !layout) return 0;
-  const s = Math.max(1, Math.ceil(Math.max(view.width / (layout.width * worldScale), view.height / (layout.height * worldScale)))) * worldScale;
-  fx.x = view.centerX - (layout.width / 2 - layout.anchorX) * s;
-  fx.y = view.bottom - (layout.height - layout.anchorY) * s;
+function anchorScreen(state: SceneFxState, fx: AmbientFx, view: Phaser.Geom.Rectangle | undefined, worldScale: number): number {
+  const renderer = fx.loop?.live.renderer ?? fx.live?.renderer;
+  if (!view || !renderer || !(worldScale > 0)) { fx.grid = undefined; return 0; }
+  const layout = renderer.layout;
+  const s = worldScale;
+  const tileW = layout.width * s;
+  const band = !renderer.hasBackLayer;
+  const cut = layout.anchorY - SCREEN_GROUND_CUT;
+  const cropH = !band && cut >= layout.height / 2 ? Math.min(layout.height, cut) : layout.height;
+  const tileH = cropH * s;
+  // 가로: 가운데 칸을 시야 가운데에 두고 양옆으로 k 칸씩.
+  const side = Math.max(0, Math.ceil((view.width / 2 - tileW / 2) / tileW));
+  let cols = side * 2 + 1;
+  let rows = band ? 1 : Math.max(1, Math.ceil(view.height / tileH));
+  if (cols * rows > MAX_SCREEN_TILES) { rows = Math.max(1, Math.min(rows, Math.floor(MAX_SCREEN_TILES / cols))); cols = Math.min(cols, MAX_SCREEN_TILES); }
+  const snap = (v: number) => Math.round(v / s) * s;
+  const left = snap(view.centerX - tileW / 2) - side * tileW;
+  const top = band ? snap(view.y) : snap(view.bottom) - rows * tileH;
+  fx.grid = { s, left, top, cols, rows, cropH, center: side, band };
+  // anchorEvent 대신 첫 칸 원점(화면 밖 검사·한 번 효과 경로가 읽는다).
+  fx.x = left + layout.anchorX * s;
+  fx.y = top + layout.anchorY * s;
   fx.depth = FRONT_LAYER_DEPTH;
+  state.stats.screen = { scale: s, cols, rows, band };
   return s;
+}
+
+/** 「화면」 층: 공유 텍스처를 바둑판 칸마다 띄운다. 남는 칸 스프라이트는 숨긴다. */
+function showScreenTiles(scene: PlaySceneContext, live: LiveFx, fx: AmbientFx, alpha: number): void {
+  const grid = fx.grid;
+  if (!grid) return;
+  const layout = live.renderer.layout;
+  const tiles = (fx.tiles ??= []);
+  const count = grid.cols * grid.rows;
+  // 거울 뒤집기는 원점이 캔버스 가로 가운데일 때만(뒤집어도 칸 자리가 그대로다). 날씨 효과는 모두 그렇다.
+  const mirrorable = grid.band && layout.anchorX * 2 === layout.width;
+  for (let i = 0; i < count; i++) {
+    const col = i % grid.cols;
+    const row = Math.floor(i / grid.cols);
+    const sprites = (tiles[i] ??= {});
+    const at = {
+      x: grid.left + col * layout.width * grid.s + layout.anchorX * grid.s,
+      y: grid.top + row * grid.cropH * grid.s + layout.anchorY * grid.s,
+      depth: FRONT_LAYER_DEPTH,
+      spec: fx.spec,
+    };
+    showLive(scene, live, sprites, at, grid.s, alpha);
+    const flip = mirrorable && (col - grid.center) % 2 !== 0;
+    const cropped = grid.cropH < layout.height;
+    for (const sprite of Object.values(sprites)) {
+      if (!sprite) continue;
+      sprite.setFlipX(flip);
+      if (cropped && !sprite.isCropped) sprite.setCrop(0, 0, layout.width, grid.cropH);
+    }
+  }
+  for (let i = count; i < tiles.length; i++) hideSprites(tiles[i]!);
+}
+
+/** 상자 테두리 깃털: 보통은 네 변. 「화면」 바둑판은 이음매를 녹이면 빈 띠가 보이므로 끄고, 하늘 띠는 아래 변만 녹인다. */
+function featherFor(spec: EventPixelFx, mod: PixelFxModule): PixelFxFeather {
+  if (spec.layer !== "screen") return "all";
+  const hasBack = typeof mod.drawBack === "function" || typeof mod.create === "function";
+  return hasBack ? "none" : "bottom";
 }
 
 function anchorEvent(scene: PlaySceneContext, fx: AmbientFx): void {

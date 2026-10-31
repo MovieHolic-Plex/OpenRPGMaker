@@ -155,3 +155,23 @@ export function scriptApiCheatSheet(): string {
   lines.push("## Types", ...SCRIPT_HELPER_TYPE_LINES);
   return lines.join("\n");
 }
+
+/**
+ * One-paragraph API reference for up-front prompt text (v2 SCRIPT_TIER card, skill head): every call with its
+ * parameters and return, plus the field names models guess wrong. Enough to write common scripts without
+ * get_script_api (that tool is still there for this project's id literals). Generated from SCRIPT_API.
+ */
+export function scriptApiQuickRef(): string {
+  const calls = (SCRIPT_API as readonly ScriptApiEntry[]).map((entry) => {
+    const returns = entry.returns === "void" ? "" : `→${entry.returns}`;
+    return `${entry.awaits ? "await " : ""}game.${entry.name}(${entry.params})${returns}`;
+  });
+  return [
+    `game API (await the 'await' ones): ${calls.join("; ")}.`,
+    "Types: MessageOptions{speaker?}; ChoiceSettings{prompt?, cancel?:'cancel'(Esc→-1)|index}; NumberInputSettings{digits?, prompt?}; "
+      + "BattleResult 'victory'|'defeat'|'escape'; BattleOptions{canEscape?, canLose?}; MoveTarget 'player'|'this'|eventId; "
+      + "MoveStep 'up'|'down'|'left'|'right'|'face-up'…|'toward-player'|'forward'|'random'|'jump'|'wait'; TransferOptions{direction?, fade?}; "
+      + "PlayerInfo{mapId, x, y, direction}; EventInfo{id, name, x, y}; ActorInfo{id, name, level, exp, hp, mp, maxHp, maxMp, inParty}; "
+      + "GameClock{enabled, hour, minute, day, season, year, phase:'morning'|'day'|'evening'|'night'}; SelfSwitchKey 'A'|'B'|'C'|'D'.",
+  ].join("\n");
+}

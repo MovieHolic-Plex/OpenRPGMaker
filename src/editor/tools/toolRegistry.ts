@@ -57,6 +57,7 @@ import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { DIALOGUE_LINT_TOOLS } from "./dialogueLintTool";
 import { SCRIPT_TOOLS } from "./scriptTools";
+import { SCRIPT_UNWRAP_TOOLS } from "./scriptUnwrapTool";
 import { SCRIPT_TOOL_NAMES, assistantScriptsOn } from "@/ai/scriptsSwitch";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
@@ -403,6 +404,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // TypeScript 이벤트 스크립트(openwiki/script-sandbox.md) — 검사·작성·수정·헤드리스 시험·API·공용 모듈·페이지를 코드로 읽고 쓰기.
   // 컴파일러·QuickJS 는 prepare 에서 지연 로드한다(run 은 동기).
   ...withDomain(SCRIPT_TOOLS, "event"),
+  // 스크립트 → 일반 명령(명령으로 풀기) — 동작이 같을 때만(src/editor/script/scriptToEvent.ts).
+  ...withDomain(SCRIPT_UNWRAP_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

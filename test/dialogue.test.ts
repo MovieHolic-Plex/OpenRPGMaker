@@ -57,6 +57,13 @@ describe("dialogue text codes", () => {
     expect(resolveDialogueText("\\v[1]", context)).toBe("7");
   });
 
+  it("reads named variable ids in \\V[...] (the id a script writes)", () => {
+    const project = createBlankProject();
+    const context = { session: { variables: { var_price: 108 }, actorNames: {} }, project };
+    expect(resolveDialogueText("A potion is \\V[var_price] G. \\V[var_unset]", context)).toBe("A potion is 108 G. 0");
+    expect(resolveDialogueText("\\V[not an id]", context)).toBe("\\V[not an id]");
+  });
+
   it("falls back to database actor names and zero for missing variables", () => {
     const project = createBlankProject();
     project.database.actors = [{ ...project.database.actors[0]!, id: "hero", name: "Hero" }];

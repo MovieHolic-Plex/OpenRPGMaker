@@ -4,7 +4,7 @@
 // 규칙(야외 맵, 이미 길 오토타일이 깔린 맵만):
 //  - 다른 맵으로 가는 이동 이벤트가 맵 가장자리 칸에 있고 그 칸이 길이 아니면, 걸을 수 있는 칸으로 가장 가까운 길 칸까지(꺾임이 적은 쪽) 그 맵의 길 재료로 잇는다.
 //  - 길은 폭 1, 맵에 이미 깔린 같은 재료(가장 많이 쓴 길 오토타일)로 — 새 그림 없음. 집·구조물 칸은 fill_region 이 건너뛴다.
-//  - 너무 멀면(24칸 넘게) 잇지 않는다(그때는 런타임 목적지 글자만).
+//  - 너무 멀면(24칸 넘게) 잇지 않는다(출구 그림과 맵 가장자리로만 보인다).
 import { canMove } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import type { BuildRun } from "./types";
