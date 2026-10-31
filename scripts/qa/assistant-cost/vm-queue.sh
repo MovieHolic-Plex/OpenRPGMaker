@@ -6,6 +6,8 @@
 #   that arm only (feature switches), so two arms can share one build. Each run passes the suite build gate (remote-gate.sh).
 #   COST_MECHS / COST_REPS override the job list; COST_PAR = parallel workers (default 3 — share the VM with other measurements).
 set -u
+# non-interactive ssh has no suite env (python3, playwright browsers, TMPDIR) — without it every run dies at once and still says finished=.
+[ -f "$HOME/.oprn-suite/vm-env.sh" ] && . "$HOME/.oprn-suite/vm-env.sh"
 ROOT=$1; shift; HERE=$(cd "$(dirname "$0")" && pwd)
 S=/home/ubuntu/z-project/assistant-whole-game/suite; GATE=$S/remote-gate.sh; B=$(basename $ROOT)
 jobs=""

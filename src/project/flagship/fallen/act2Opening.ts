@@ -14,6 +14,7 @@ import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from 
 import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
+import { FS_ACT2_JOIN_LEVEL } from "./mobBalance";
 import { canMove, isPassable } from "@/project/collision";
 import { paintWoodlandOnto } from "./woodland";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
@@ -76,7 +77,7 @@ const CELL = {
 };
 const CELL_ROOM = {
   plan: CELL_PLAN,
-  floor: "dungeon",
+  floor: "wetstone", // 「dungeon」 바닥은 벽과 같은 벽돌이라 바닥·벽·짚 침대가 한 면으로 읽혔다(첫 플레이 2026-11-01)
   wall: "dungeonw",
   ceiling: "dark",
   objects: [
@@ -347,6 +348,9 @@ function cellEvents(map: GameMap): void {
     page(`${director}_run`, "감방의 밤", [sw(SW_ACT2, false)], [
       cutBegin(),
       setSw(SW_ACT2),
+      // 제1막 끝 파티에는 이리스가 있다 — 발렌이 따로 데려갔으니 감방에는 둘뿐(이어 하기 검수 2026-11-01: 「이리스가 없어」 하는데 옆에 서 있었다).
+      // B11 렌즈 대기실에서 다시 합류한다(act2Tower changeParty add).
+      { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
       fadeOut(1),
       wait(600),
       narrate("제2막 「빌린 불」", { position: "center", context: "narration" }),
@@ -665,7 +669,9 @@ const SW_MIRE = "sw_fs2_mire_well";
  */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
   // 북쪽 성벽 밑을 돈다 — 도착 칸·골목 틈(49,24)에서 7칸 밖이라, 나오자마자(3걸음 안) 잡히지 않고 광장을 건널 때 시야를 재게 된다.
-  { at: { x: 43, y: 17 }, axis: "horizontal", length: 4 },
+  // 입구(B4 개구멍에서 붙잡혀 돌아오는 칸 38,16)와 7칸 이내면 set_field_detection 이 시야를 2칸까지 깎는다 —
+  // (43,17)에선 시야 2칸이라 바로 옆을 지나가도 못 봤다(첫 플레이 2026-11-01). 8칸 밖(45,17)에서 돌면 시야 6 그대로.
+  { at: { x: 45, y: 17 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
 ];
 /** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
@@ -899,14 +905,16 @@ const SHAFT_PLAN = [
 ];
 const SHAFT = { ladder: { x: 2, y: 1 } as Cell, ladderUse: { x: 2, y: 3 } as Cell, arrive: { x: 2, y: 4 } as Cell, lift: { x: 6, y: 4 } as Cell };
 /** 천문대 서쪽 서고 — 제1막 승강 장치가 올라오던 칸(3,19), 하넬은 서고 탁자 곁. */
-const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 7, y: 18 } as Cell, door: { x: 15, y: 22 } as Cell };
+// 하넬은 서고(맵 맨 아래 줄)가 아니라 둥근 지붕 아래 망원경 곁 — 서고에서 이야기하면 흉상 대화창(늘 아래)이
+// 하넬과 일행을 통째로 가렸다(첫 플레이 2026-11-01). 승강 장치로 오르면 서고에서 부르는 소리만 듣고 위로 걸어 올라간다.
+const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 17, y: 13 } as Cell, door: { x: 15, y: 22 } as Cell };
 
 function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   ensureSwitch(project, SW_HANEL, "B3: 하넬 — 세린·인장");
   // 우물 밑 승강구 — 서고 지하. 쇠 사다리로 우물과, 승강 장치로 천문대와 잇는다.
   exec(project, "build_hand_interior_room", {
     mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
-    floor: "dungeon", wall: "dungeonw", ceiling: "dark",
+    floor: "wetstone", wall: "dungeonw", ceiling: "dark",
     objects: [{ id: "wall torch", x: 5, y: 1 }, { id: "wall torch", x: 9, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 }],
   });
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
@@ -1008,6 +1016,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       // (첫 플레이 검수 2026-10-31: 몇 번씩 오르내렸다).
       route("@player", [{ kind: "move", dir: "right" }, { kind: "turn", dir: "up" }]),
       say(HANEL, "거기 누구냐. …카엘이냐?"),
+      say(HANEL, "쉿. 서고 소리는 문밖까지 샌다.\n위로 올라오너라. 망원경 곁이다."),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { trigger: { kind: "auto" } }),
     page("ev_fs2_obs_call_done", "끝", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [], { priority: "below" }),
@@ -1848,8 +1857,10 @@ function sarahKit(project: Project, exec: Exec): void {
     ...lancer, id: FS2_LANCER_CLASS, name: "창기사",
     learnedSkills: [
       { level: 1, skillId: "skill_attack" }, { level: 1, skillId: FS2_SKILL_PIERCE }, { level: 1, skillId: FS2_SKILL_HOLD },
-      { level: 1, skillId: "skill_dragoon_jump" }, { level: 12, skillId: FS2_SKILL_COVER }, { level: 15, skillId: "skill_dragoon_sweeping_lance" },
-      { level: 18, skillId: "skill_dragoon_high_jump" },
+      // 1막에서 이어 하면 새라는 Lv16 에 들어와 하늘탑에서 Lv18~19 — 감싸기는 합류 다음 레벨, 휩쓸기·높이뛰기는 탑에서(2026-11-01).
+      { level: 1, skillId: "skill_dragoon_jump" }, { level: FS_ACT2_JOIN_LEVEL.sarah + 1, skillId: FS2_SKILL_COVER },
+      { level: FS_ACT2_JOIN_LEVEL.sarah + 2, skillId: "skill_dragoon_sweeping_lance" },
+      { level: FS_ACT2_JOIN_LEVEL.sarah + 2, skillId: "skill_dragoon_high_jump" },
     ],
   } });
 }
@@ -1953,7 +1964,8 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     description: "새라의 창끝에서 떼어 낸 별쇠.\n로한이라면 이걸로 창을 한 번 더 벼려 줄 거다.",
   } });
   sarahKit(project, exec);
-  // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +4). 합류 Lv8 = 새라에게 닿는 파티(Lv8, 요새를 다 싸우면 9).
+  // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +1). 합류 레벨 = 1막에서 이어 한 파티가 새라에게 닿는 레벨
+  // (FS_ACT2_JOIN_LEVEL.sarah = 16, mobBalance). 예전 값 8 은 2막을 Lv6 에서 새로 센 판이었다.
   // 능력치 곡선은 카엘 곡선을 따라간다(HP 6% 많고 방어 +3, 마력 −6) — 예전엔 직업 기본 곡선이라 Lv10 공격 95(카엘 1.8배)였다.
   // 경험 곡선도 파티와 같게(예전 값 1/677/40 은 다른 동료와 레벨이 따로 놀았다).
   const hero = project.database.actors.find((a) => a.id === "actor_hero");
@@ -1962,7 +1974,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.06), defense: (v) => v + 3, mind: (v) => Math.max(1, v - 6) };
   const sarahCurves = Object.fromEntries(Object.entries(hc).map(([k, arr]) => [k, arr.map((v) => (tweak[k] ?? ((x: number) => x))(v))]));
   exec(project, "upsert_actor", { actor: {
-    id: FS2_SARAH_ACTOR, name: SARAH, nickname: "북문의 창", classId: FS2_LANCER_CLASS, initialLevel: 8, maxLevel: 99,
+    id: FS2_SARAH_ACTOR, name: SARAH, nickname: "북문의 창", classId: FS2_LANCER_CLASS, initialLevel: FS_ACT2_JOIN_LEVEL.sarah, maxLevel: 99,
     faceResourceId: "easyrpg-faceset-actor1-03", characterResourceId: "easyrpg-charset-actor1", characterIndex: 3,
     battleCharacterResourceId: "charset-battler-actor1-3",
     parameterCurves: sarahCurves, expCurve: hero.expCurve,

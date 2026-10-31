@@ -122,11 +122,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [
@@ -218,11 +218,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [

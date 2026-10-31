@@ -79,6 +79,10 @@ export type RuntimeDebugHook = {
     monsterParty: PlaySession["monsterParty"];
     monsterBox: PlaySession["monsterBox"];
     partyActorIds: string[];
+    /** 배우별 레벨·누적 경험치·장비 — 파티에서 빠진 배우도 남는다(막 사이 이어 하기·동료 재합류를 QA 가 단정한다). */
+    actorLevels: Record<string, number>;
+    actorExperience: Record<string, number>;
+    actorEquipment: PlaySession["actorEquipment"];
     vehicle?: PlaySession["vehicle"];
     gameTime: PlaySession["gameTime"];
     npcActivities: PlaySession["npcActivities"];
@@ -416,6 +420,9 @@ export function installPlaySceneTestHooks(
         monsterParty: [...session.monsterParty],
         monsterBox: [...session.monsterBox],
         partyActorIds: [...session.partyActorIds],
+        actorLevels: { ...session.actorLevels },
+        actorExperience: { ...(session.actorExperience ?? {}) },
+        actorEquipment: structuredClone(session.actorEquipment ?? {}),
         ...(session.vehicle ? { vehicle: structuredClone(session.vehicle) } : {}),
         gameTime: session.gameTime ? { ...session.gameTime } : undefined,
         npcActivities: { ...(session.npcActivities ?? {}) },

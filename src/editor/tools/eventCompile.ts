@@ -42,6 +42,13 @@ const COMMAND_KIND_ALIASES: Readonly<Record<string, string>> = {
   conditionalbranch: "fork",
   teleport: "transfer",
   transferplayer: "transfer",
+  // RPG Maker MV 명령 이름(2026-11-01 cheap r11 flash: controlSelfSwitch 로 단서 쓰기가 두 번 거절돼 멈췄다).
+  controlselfswitch: "setSelfSwitch",
+  controlswitch: "setSwitch",
+  controlswitches: "setSwitch",
+  controlvariable: "setVariable",
+  controlvariables: "setVariable",
+  showchoices: "choices",
 };
 
 const COMMAND_KIND_SET: ReadonlySet<string> = new Set(COMMAND_KINDS);
