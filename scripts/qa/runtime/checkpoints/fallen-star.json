@@ -1070,7 +1070,7 @@
   {
    "id": "defeat",
    "label": "추락지 발렌에게 짐 — 브람의 기습으로 이야기가 이어진다",
-   "note": "act1Finale.ts crashSite 패배 갈래 rescue: sw_fs_valen_lost·체력 25%·브람 연막·회로 획득",
+   "note": "act1Finale.ts crashSite 패배 갈래 rescue: sw_fs_valen_lost·체력 25%·브람 연막·회로 획득. 1전(병사 넷)을 이긴 뒤(squad_down·soldiers_gone)에서 시작해 2전 발렌 본전에서 진다 — 1전에서 지면 rescue 가 아니라 pushedBack(물러서!)이다",
    "mapId": "fs_forest",
    "x": 15,
    "y": 9,
@@ -1082,7 +1082,9 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_crash_on": true
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_squad_down": true,
+    "sw_fs_valen_soldiers_gone": true
    },
    "variables": {
     "var_fs_main_progress": 2
