@@ -34,7 +34,8 @@ for d in sorted(glob.glob(f"{ROOT}/[AB]/*-[0-9]")):
     runtxt = open(f"{d}/RUN.txt").read() if os.path.exists(f"{d}/RUN.txt") else ""
     if "finished=" not in runtxt:
         continue
-    m = metrics.get(f"{arm}/{name}", {})
+    whole = metrics.get(f"{arm}/{name}", {})
+    m = whole.get("first", {})  # cost/size metrics compare the first request only: the cap cut the follow-up in some runs
     walk = load(f"{ROOT}/walk/{arm}-{name}/walk.json")
     audit = load(f"{d}/audit.json")
     dump = load(f"{d}/dump.json")
@@ -44,8 +45,11 @@ for d in sorted(glob.glob(f"{ROOT}/[AB]/*-[0-9]")):
             for e in mp["events"]:
                 for pg in e["pages"]:
                     scripts_in_game += pg["kinds"].get("script", 0)
-    runs.append(dict(arm=arm, pid=pid, rep=rep, name=name, m=m, walk=walk, audit=audit, timeout="timeout=" in runtxt,
-                     scripts=scripts_in_game))
+    chk = load(f"{d}/check/check.json")
+    turn_files = [load(f) or {} for f in sorted(glob.glob(f"{d}/session/turns/*.json"))]
+    capped = any(t.get("outcome") == "timeout" for t in turn_files) or ("timeout=" in runtxt and len(turn_files) > whole.get("steps", 0))
+    runs.append(dict(arm=arm, pid=pid, rep=rep, name=name, m=m, steps=whole.get("steps", 0), walk=walk, audit=audit, timeout=capped,
+                     scripts=scripts_in_game, blockers=(chk or {}).get("counts", {}).get("blocker")))
 
 judges = {os.path.basename(p)[:-5]: load(p) for p in glob.glob(f"{ROOT}/judge/*.json")}
 
@@ -68,6 +72,8 @@ def fmt(v, kind):
         return f"{v/1e6:.1f}M"
     if kind == "pct":
         return f"{v*100:.0f}%"
+    if isinstance(v, float) and v != int(v):
+        return f"{v:.1f}"
     return f"{v:.0f}" if isinstance(v, (int, float)) else str(v)
 
 
@@ -87,26 +93,28 @@ def dots(vals, lo, hi):
 
 
 ROWS = [
-    ("총 처리 토큰(입력+캐시+출력)", lambda r: r["m"].get("tokensTotal"), "M", "low"),
-    ("출력 토큰", lambda r: r["m"].get("output"), "k", "low"),
-    ("비용 추정(API 단가)", lambda r: r["m"].get("cost"), "usd", "low"),
-    ("모델 호출 수", lambda r: r["m"].get("modelCalls"), "n", "low"),
-    ("도구 호출 수", lambda r: r["m"].get("tools"), "n", "low"),
-    ("실패·거절된 도구 호출", lambda r: r["m"].get("failed"), "n", "low"),
-    ("get_event 호출", lambda r: r["m"].get("getEvent"), "n", "low"),
-    ("걸린 시간(요청 두 번 합)", lambda r: (r["m"].get("ms") or 0) / 60000 or None, "min", "low"),
+    ("첫 요청: 총 처리 토큰(캐시 포함)", lambda r: r["m"].get("tokensTotal"), "M", "low"),
+    ("첫 요청: 출력 토큰", lambda r: r["m"].get("output"), "k", "low"),
+    ("첫 요청: 비용 추정(API 단가)", lambda r: r["m"].get("cost"), "usd", "low"),
+    ("첫 요청: 모델 호출 수", lambda r: r["m"].get("modelCalls"), "n", "low"),
+    ("첫 요청: 도구 호출 수", lambda r: r["m"].get("tools"), "n", "low"),
+    ("첫 요청: 실패·거절된 도구 호출", lambda r: r["m"].get("failed"), "n", "low"),
+    ("첫 요청: get_event 호출", lambda r: r["m"].get("getEvent"), "n", "low"),
+    ("첫 요청: 걸린 시간", lambda r: (r["m"].get("ms") or 0) / 60000 or None, "min", "low"),
     ("플레이 점검 통과율", lambda r: (r["walk"]["pass"] / r["walk"]["total"]) if r["walk"] else None, "pct", "high"),
     ("엔딩 도달", lambda r: (1.0 if any(c["id"] == "ending" and c["pass"] for c in r["walk"]["checks"]) else 0.0) if r["walk"] else None, "pct", "high"),
     ("판정자가 찾은 버그(중대)", lambda r: sum(1 for b in r["audit"].get("bugs", []) if b.get("severity") == "major") if r["audit"] else None, "n", "low"),
     ("판정자가 찾은 버그(전체)", lambda r: len(r["audit"].get("bugs", [])) if r["audit"] else None, "n", "low"),
     ("요청 기능 구현·정확(개)", lambda r: sum(1 for x in r["audit"].get("mechanics", []) if x.get("realized") and x.get("correct")) if r["audit"] else None, "n", "high"),
     ("판정 점수(0~10)", lambda r: r["audit"].get("score") if r["audit"] else None, "n", "high"),
+    ("자동 검사기(qa-game check) 막힘", lambda r: r["blockers"], "n", "low"),
+    ("첫 요청 비용 ÷ 맞게 구현된 기능 수", lambda r: (r["m"].get("cost") / max(1, sum(1 for x in r["audit"].get("mechanics", []) if x.get("realized") and x.get("correct")))) if r["audit"] and r["m"].get("cost") else None, "usd", "low"),
     ("게임 속 스크립트 명령 수", lambda r: r["scripts"], "n", "-"),
 ]
 
 
 def summary_table():
-    t = ['<table class="sum"><tr><th>지표</th><th>A 스크립트 켬<br><small>중앙값</small></th><th>B 스크립트 끔<br><small>중앙값</small></th><th>판마다(● 방탈출 ● 마을 ● 던전)</th></tr>']
+    t = ['<table class="sum"><tr><th>지표</th><th>A 스크립트 켬<br><small>중앙값</small></th><th>B 스크립트 끔<br><small>중앙값</small></th><th>판마다(<span style="color:#2a6fdb">●</span> 방탈출 <span style="color:#1b9e5a">●</span> 마을 <span style="color:#c2410c">●</span> 던전)</th></tr>']
     for label, f, kind, better in ROWS:
         a = [(f(r), r["pid"], f"A {r['name']}") for r in runs if r["arm"] == "A"]
         b = [(f(r), r["pid"], f"B {r['name']}") for r in runs if r["arm"] == "B"]
@@ -132,16 +140,16 @@ def summary_table():
 
 
 def run_table():
-    t = ['<table class="runs"><tr><th>판</th><th>토큰</th><th>비용</th><th>모델 호출</th><th>도구 호출(실패)</th><th>스크립트 도구</th><th>시간</th><th>플레이 점검</th><th>엔딩</th><th>버그(중대/전체)</th><th>게임 속 스크립트</th></tr>']
+    t = ['<table class="runs"><tr><th>판</th><th colspan="6" style="text-align:center">첫 요청</th><th colspan="5" style="text-align:center">완성된 게임(후속 요청까지)</th></tr><tr><th></th><th>토큰</th><th>비용</th><th>모델 호출</th><th>도구 호출(실패)</th><th>스크립트 도구</th><th>시간</th><th>후속 요청</th><th>플레이 점검</th><th>엔딩</th><th>버그(중대/전체)</th><th>게임 속 스크립트</th></tr>']
     for r in sorted(runs, key=lambda r: (r["pid"], r["rep"], r["arm"])):
         m, w, a = r["m"], r["walk"], r["audit"]
         ending = "—" if not w else ("✓" if any(c["id"] == "ending" and c["pass"] for c in w["checks"]) else "✗")
-        fails = "" if not w else ", ".join(c["id"] for c in w["checks"] if not c["pass"])
+        fails = "" if not w else ", ".join(KO.get(c["id"], c["id"]) for c in w["checks"] if not c["pass"])
         bugs = "—" if not a else f'{sum(1 for b in a.get("bugs", []) if b.get("severity") == "major")}/{len(a.get("bugs", []))}'
-        to = ' <span class="to">35분 상한에 걸림</span>' if r["timeout"] else ""
+        to = ' <span class="to">요청 도중 상한으로 중단</span>' if r["timeout"] else ""
         t.append(f'<tr><td><b>{r["arm"]}</b> {REQ[r["pid"]]} {r["rep"]}{to}</td><td>{fmt(m.get("tokensTotal"), "M")}</td><td>{fmt(m.get("cost"), "usd")}</td>'
-                 f'<td>{m.get("modelCalls", "—")}</td><td>{m.get("tools", "—")} ({m.get("failed", "—")})</td><td>{m.get("scriptCalls", "—")}</td>'
-                 f'<td>{fmt((m.get("ms") or 0) / 60000 or None, "min")}</td><td>{"—" if not w else f"{w[chr(112)+chr(97)+chr(115)+chr(115)]}/{w[chr(116)+chr(111)+chr(116)+chr(97)+chr(108)]}"}'
+                 f'<td>{m.get("modelCalls") or "—"}</td><td>{m.get("tools", "—")} ({m.get("failed", "—")})</td><td>{m.get("scriptCalls", "—")}</td>'
+                 f'<td>{fmt((m.get("ms") or 0) / 60000 or None, "min")}</td><td>{"보냄" if r["steps"] >= 2 else "상한으로 생략"}</td><td>{"—" if not w else f"{w[chr(112)+chr(97)+chr(115)+chr(115)]}/{w[chr(116)+chr(111)+chr(116)+chr(97)+chr(108)]}"}'
                  f'{"<br><small>✗ " + esc(fails) + "</small>" if fails else ""}</td><td>{ending}</td><td>{bugs}</td><td>{r["scripts"]}</td></tr>')
     t.append("</table>")
     return "\n".join(t)
@@ -174,11 +182,15 @@ def judge_notes():
     out = []
     for k in sorted(judges):
         for r in judges[k] or []:
-            out.append(f'<li><b>{REQ.get(k.rsplit("-", 1)[0], k)} {k.rsplit("-", 1)[1]}</b> ({" → ".join(x.split("/")[0] for x in r["order"])} 순서로 보여 줌): '
-                       f'승자 <b>{r["winner"]}</b> — {esc(str(r.get("decisive", "")))}</li>')
+            first = r["order"][0].split("/")[0]
+            out.append(f'<li><b>{REQ.get(k.rsplit("-", 1)[0], k)} {k.rsplit("-", 1)[1]}회차</b> <small>({first} 를 먼저 보여 줌)</small> 승자 <b>{r["winner"]}</b> — '
+                       f'{esc(str(r.get("decisive_ko") or r.get("decisive", "")))}</li>')
     return "<ul>" + "\n".join(out) + "</ul>" if out else "<p>(판정 준비 중)</p>"
 
 
+KO = {"door-shut-after-wrong": "틀린 순서 뒤에도 문이 지나가짐", "gate-closes-after-10s": "10초 뒤에도 철창이 안 닫힘",
+      "boss-phase-line": "보스 반피 대사 없음", "door-opens-in-order": "순서대로 밟아도 문이 안 열림", "gate-open-in-time": "레버 직후 철창 통과 실패",
+      "gate-day-lets-through": "낮에 마을 문이 안 열림"}
 ANSWERS = load(f"{ROOT}/answers.json", {})
 done = len(runs)
 page = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>스크립트 샌드박스 A/B PoC</title>
@@ -187,7 +199,7 @@ body{{font:15px/1.55 system-ui,-apple-system,'Noto Sans KR',sans-serif;max-width
 h1{{font-size:24px;margin:0 0 4px}} h2{{font-size:19px;margin:30px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px}} h3{{font-size:16px;margin:18px 0 6px}}
 .lead{{color:#555}} table{{border-collapse:collapse;width:100%;margin:8px 0}} td,th{{border-bottom:1px solid #eee;padding:5px 8px;text-align:left;vertical-align:middle}}
 th{{background:#fafafa;font-weight:600}} td.win{{background:#e9f7ef;font-weight:600}} .strip{{display:flex;align-items:center;gap:4px;font-size:11px;color:#888}}
-.runs td{{font-size:13px}} .to{{color:#b45309;font-size:11px}} .qa{{background:#f6f8fb;border:1px solid #e3e8f0;border-radius:8px;padding:10px 14px;margin:10px 0}}
+.runs td{{font-size:13px;white-space:nowrap}} .runs td small{{white-space:normal}} .to{{color:#b45309;font-size:11px}} .qa{{background:#f6f8fb;border:1px solid #e3e8f0;border-radius:8px;padding:10px 14px;margin:10px 0}}
 .qa p{{margin:4px 0}} .clips{{display:flex;gap:12px}} .clip{{flex:1}} .clip video{{width:100%;border-radius:6px;background:#000}} .cap{{font-size:12px;color:#555}}
 .ph{{height:200px;background:#f2f2f2;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#999}}
 pre{{background:#0f172a;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;overflow:auto;max-height:420px}} .two{{display:flex;gap:12px}} .two>div{{flex:1;min-width:0}}

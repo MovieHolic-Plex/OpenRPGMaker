@@ -29,8 +29,10 @@ def family(name):
     return "other"
 
 
-def run_metrics(d):
+def run_metrics(d, only_first=False):
     turns = sorted(glob.glob(f"{d}/session/turns/*.json"))
+    if only_first:
+        turns = [f for f in turns if json.load(open(f)).get("kind") == "txt"][:1]
     m = dict(input=0, output=0, cacheRead=0, cacheWrite=0, cost=0.0, modelCalls=0, ms=0, tools=0, failed=0, retries=0,
              getEvent=0, scriptCalls=0, byFamily={}, byTool={}, steps=0, failedTools={})
     for f in turns:
@@ -66,7 +68,11 @@ def run_metrics(d):
             if prev_fail == n:
                 m["retries"] += 1
             prev_fail = None if ok else n
-    m["tokensTotal"] = m["input"] + m["output"] + m["cacheRead"] + m["cacheWrite"]
+    m["statsMissing"] = m["steps"] > 0 and m["modelCalls"] == 0  # turn aborted by the run cap: no usage record
+    m["tokensTotal"] = None if m["statsMissing"] else m["input"] + m["output"] + m["cacheRead"] + m["cacheWrite"]
+    if m["statsMissing"]:
+        for k in ("input", "output", "cacheRead", "cacheWrite", "cost", "modelCalls"):
+            m[k] = None
     m["distinctTools"] = len(m["byTool"])
     return m
 
@@ -79,9 +85,13 @@ def main():
             continue
         arm, run = d.split("/")[-2:]
         rows[f"{arm}/{run}"] = run_metrics(d)
+        rows[f"{arm}/{run}"]["first"] = run_metrics(d, only_first=True)
     json.dump(rows, open(f"{root}/metrics.json", "w"), ensure_ascii=False, indent=1)
     print(f"{'run':18} {'steps':>5} {'min':>5} {'calls':>5} {'out':>7} {'cacheR':>9} {'cacheW':>8} {'$':>6} {'tools':>5} {'fail':>4} {'retry':>5} {'getEv':>5} {'scr':>4}")
     for k, m in rows.items():
+        m = m["first"]
+        if m["statsMissing"]:
+            print(f"{k:18} {m['steps']:5} {m['ms']/60000:5.1f}  (no usage: capped)  tools {m['tools']} fail {m['failed']}"); continue
         print(f"{k:18} {m['steps']:5} {m['ms']/60000:5.1f} {m['modelCalls']:5} {m['output']:7} {m['cacheRead']:9} {m['cacheWrite']:8} {m['cost']:6.2f} {m['tools']:5} {m['failed']:4} {m['retries']:5} {m['getEvent']:5} {m['scriptCalls']:4}")
 
 

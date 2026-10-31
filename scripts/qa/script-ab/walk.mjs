@@ -274,13 +274,16 @@ try {
     await dbg("setClock", 22, 0);
     const gk = bind.gate; // {walk:[map,x,y,dir,tiles], talk?: id}
     if (gk.talk) await talk(gk.talk);
-    const night = await tryWalk(...gk.walk);
+    const walks = gk.walks ?? [gk.walk]; // approaches tried in order (a gate may be reachable from one side only)
     const fieldMap = findEvent(bind.herbs[0]).mapId;
-    check("gate-night-blocks", night.currentMapId !== fieldMap, `22:00 → still on ${night.currentMapId}`, await logSince(Math.max(0, (await logLen()) - 3)));
+    let night;
+    for (const w of walks) { night = await tryWalk(...w); if (night.currentMapId === fieldMap) break; }
+    check("gate-night-blocks", night.currentMapId !== fieldMap, `22:00 → still on ${night.currentMapId} (${night.x},${night.y})`, await logSince(Math.max(0, (await logLen()) - 3)));
     await dbg("setClock", 10, 0);
     if (gk.talk) await talk(gk.talk);
-    const day = await tryWalk(...gk.walk);
-    check("gate-day-lets-through", day.currentMapId === fieldMap, `10:00 → ${day.currentMapId}`);
+    let day; const tried = [];
+    for (const w of walks) { day = await tryWalk(...w); tried.push(`${w[1]},${w[2]} ${w[3]} → ${day.currentMapId} (${day.x},${day.y})`); if (day.currentMapId === fieldMap) break; }
+    check("gate-day-lets-through", day.currentMapId === fieldMap, `10:00: ${tried.join("; ")}`);
     const herbItem = bind.herbItem;
     for (const h of bind.herbs.slice(0, 2)) await talk(h, { choices: [0] });
     let inv = (await st()).inventory[herbItem] ?? 0;
@@ -318,9 +321,19 @@ try {
     const open = await tryWalk(...door.walk);
     check("door-opens-in-order", reached(open, door.beyond), `after R→B→G→Y: ${open.currentMapId} ${open.x},${open.y}`);
     const gate = bind.gate; // {lever:id, walk:[...], beyond:{...}}
-    await talk(gate.lever, { choices: [0] }); await sleep(11_000);
+    await talk(gate.lever, { choices: [0] });
+    // The game timer counts frames; the headless test browser renders below 60 fps, so 10 game seconds take longer than
+    // 10 wall seconds. Wait for the game's own timers to run out (cap 40 s), then 1.5 s more.
+    const leverAt = Date.now(); await sleep(10_000);
+    while (Date.now() - leverAt < 40_000) {
+      const tm = (await st())?.timers;
+      if (!tm || Object.values(tm).every((v) => !(v > 0))) break;
+      await sleep(250);
+    }
+    await sleep(1500);
+    const waited = ((Date.now() - leverAt) / 1000).toFixed(0);
     const late = await tryWalk(...gate.walk);
-    check("gate-closes-after-10s", !reached(late, gate.beyond), `11 s after the lever: ${late.currentMapId} ${late.x},${late.y}`);
+    check("gate-closes-after-10s", !reached(late, gate.beyond), `after the game timer ran out (${waited} s wall): ${late.currentMapId} ${late.x},${late.y}`);
     await talk(gate.lever, { choices: [0] });
     const quick = await tryWalk(...gate.walk);
     check("gate-open-in-time", reached(quick, gate.beyond), `right after the lever: ${quick.currentMapId} ${quick.x},${quick.y}`);
