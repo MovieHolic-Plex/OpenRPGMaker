@@ -2264,7 +2264,7 @@ function snowPass(project: Project, exec: Exec): void {
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
       mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
-      hint: "새라가 틈 앞에서 창을 고쳐 쥐었다.\n「창을 짚고 넘으면 돼. 내 손 잡아.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
+      hint: "새라가 틈 앞에서 창을 고쳐 쥐었다.\n「…이 정도 폭이면.」", blockedText: "얼음이 길을 가로질러 쩍 갈라졌다.\n맨몸으로 뛰기엔 너무 넓다.",
     });
   }));
   // 얼음 덩이 — 첫 틈을 건넌 뒤 좁은 눈길을 막는다. 엘레나의 불씨로 녹인다(계획 4-3 불씨 녹이기, 필드 기술 게이트).
@@ -2281,7 +2281,7 @@ function snowPass(project: Project, exec: Exec): void {
         mapId: maps[0]!.mapId, kind: "rock", x: g0.to.x + fwd.x * step, y: g0.to.y + fwd.y * step, fullWidth: true, direction: fwd.y !== 0 ? "right" : "down",
         tile: ICE_BLOCK.foot, tileAbove: ICE_BLOCK.head, requiresSkillId: FS2_SKILL_EMBER_MELT, skillName: "불씨 녹이기", machine: "none",
         id: "ev_fs2_snow_ice", name: "얼음 덩이",
-        hint: "엘레나가 얼음에 손바닥을 대 봤다.\n「불씨로 녹일 수 있겠어. 조금 걸려.」",
+        hint: "엘레나가 얼음에 손바닥을 대 봤다.\n「…손바닥만 한 불이라도.」",
         blockedText: "길 한가운데 얼음 덩이가 솟아 있다.\n밀어도 꿈쩍 않는다.",
         // 녹이는 연출 — 불티·김이 오르고 잠시 뒤 얼음이 걷힌다(순간 교체였다, 감독 검수).
         openEffect: { particles: ["fire", "smoke"], se: "cc0-se-ors-spell-fire-03", durationMs: 1600, text: "엘레나의 손바닥에서 불씨가 번졌다.\n얼음이 김을 뿜으며 녹아내렸다." },
@@ -2311,7 +2311,7 @@ function snowPass(project: Project, exec: Exec): void {
       say(KAEL, "그러니까 데리러 가는 거야."),
       say(ELENA, "…불이라면 나도 있어. 손바닥만 한 거지만."),
       { kind: "learnSkill", actorId: "actor_fs_elena", skillId: FS2_SKILL_EMBER_MELT, action: "learn" } as unknown as Command,
-      narrate("엘레나가 「불씨 녹이기」를 익혔다.\n길을 막은 얼음 덩이를 조사해 보자.", { context: "system" }),
+      narrate("엘레나가 「불씨 녹이기」를 익혔다.", { context: "system" }),
       setSw(SW_SNOW_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     // 뒤 페이지가 이긴다 — 한 번 본 뒤에는 멈춘다.
@@ -2426,10 +2426,10 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     }
   };
   /** 입구→출구 걸음 비율 t 근처(본길 위)에서 무리를 세운다 — 거절되면 이웃 걸음으로. */
-  const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[]): Cell | null => {
+  const onRoute = (mapId: string, dist: Map<string, number>, route: Set<string>, t: number, troopId: string, style: string, avoid: Cell[], quiet: (c: Cell) => boolean = () => true): Cell | null => {
     const total = Math.max(...[...route].map((k) => dist.get(k) ?? 0));
     const want = Math.round(total * t);
-    const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5))
+    const cands = [...route].map(cellOf).filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) > 5) && quiet(c))
       .sort((a, b) => Math.abs((dist.get(`${a.x},${a.y}`) ?? 0) - want) - Math.abs((dist.get(`${b.x},${b.y}`) ?? 0) - want));
     // 입구 시야(매복 금지)·이벤트 곁은 도구가 거절한다 — 가까운 걸음부터 넉넉히 시도한다.
     if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fs2-frost] ${mapId} ${troopId} route=${route.size} total=${total} want=${want} first=${JSON.stringify(cands.slice(0, 4))}`);
@@ -2467,6 +2467,8 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     }
     const nooks = [...offRoute.entries()].filter(([k, d]) => d >= 3 && (dist.get(k) ?? 0) > 6).sort((a, b) => b[1] - a[1]).map(([k]) => cellOf(k));
     const avoid: Cell[] = [start, ...(i === 1 ? [fire] : [])];
+    // 모닥불 둘레는 넓게 비운다 — 정담이 끝나자마자 늑대가 덮쳐 여운이 사라졌다(첫 플레이 검수 2026-10-31). 불에서 12걸음 안엔 무리를 안 세운다.
+    const fireQuiet = (c: Cell): boolean => i !== 1 || Math.abs(c.x - fire.x) + Math.abs(c.y - fire.y) > 12;
     if (i === 0) {
       // 서리 가도 — 첫 굽이 늑대 둘, 막다른 빈터 보물 + 그 앞 박쥐 떼.
       const w = onRoute(m.mapId, dist, route, 0.3, "troop_fs2_frost_wolves", "dash", avoid);
@@ -2486,9 +2488,9 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     } else {
       // 눈보라 고개 — 갈림 고리(본길에서 먼 칸)에 늑대+박쥐, 고개 위(본길 70%)에 늑대 둘.
       let mixed = false;
-      for (const at of nooks.slice(0, 40)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); mixed = true; break; }
-      if (!mixed) { const at = onRoute(m.mapId, dist, route, 0.4, "troop_fs2_frost_mixed", "dash", avoid); if (at) avoid.push(at); }
-      onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid);
+      for (const at of nooks.slice(0, 40)) if (avoid.every((a) => Math.abs(a.x - at.x) + Math.abs(a.y - at.y) > 5) && fireQuiet(at) && foe(m.mapId, "troop_fs2_frost_mixed", at, "dash")) { avoid.push(at); mixed = true; break; }
+      if (!mixed) { const at = onRoute(m.mapId, dist, route, 0.4, "troop_fs2_frost_mixed", "dash", avoid, fireQuiet); if (at) avoid.push(at); }
+      onRoute(m.mapId, dist, route, 0.7, "troop_fs2_frost_wolves", "dash", avoid, fireQuiet);
     }
   });
   for (const m of maps) {
