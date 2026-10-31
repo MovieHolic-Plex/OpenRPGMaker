@@ -16,6 +16,7 @@ import { DEFAULT_INVENTORY_VIEW, inventoryViewEntries } from '@/player/playerInv
 import { BAG_POCKETS, DEFAULT_BAG_POCKET, bagPocketCounts, bagPocketLabel } from '@/player/playerBagPockets';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
+import { bestiaryDetail } from "@/player/playerBestiaryDetail";
 import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
@@ -114,6 +115,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "battle-reports": return battleReportDetail(options);
+    case "bestiary": return bestiaryDetail(options);
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "gallery": return galleryDetail(options.project, options.session);
@@ -160,6 +162,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   "region-map": "현재 위치와 섬의 길을 봅니다.",
   "campaign-progress": "모은 배지와 다음 원정 목표를 봅니다.",
   "battle-reports": "최근 전투 결과와 실제 행동 기록을 읽습니다.",
+  bestiary: "만난 괴물의 외형·습성·약점을 읽습니다. 알아낸 만큼 칸이 열립니다.",
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
   gallery: "모아 둔 그림을 다시 봅니다.",
