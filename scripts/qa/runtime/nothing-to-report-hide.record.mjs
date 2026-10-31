@@ -130,8 +130,10 @@ async function step(dir) {
   await page.keyboard.down(key);
   const end = Date.now() + 15000;
   let moved = false;
-  while (Date.now() < end) { const p = await pos(); if (p.x !== from.x || p.y !== from.y) { moved = true; break; } await delay(20); }
+  // 걷기가 시작되는 순간(moving) 키를 뗀다 — 칸 좌표가 바뀔 때까지 누르고 있으면 다음 걸음이 이미 걸려 두 칸씩 간다.
+  while (Date.now() < end) { const p = await pos(); if (p.moving || p.x !== from.x || p.y !== from.y) break; await delay(10); }
   await page.keyboard.up(key);
+  for (let i = 0; i < 60; i++) { const p = await pos(); if (p.x !== from.x || p.y !== from.y) { moved = true; break; } await delay(20); }
   for (let i = 0; i < 40; i++) { const p = await pos(); if (!p.moving) break; await delay(40); }
   return moved;
 }
@@ -142,6 +144,7 @@ async function walkTo(target, label) {
   const end = Date.now() + 180000;
   while (Date.now() < end) {
     const s = await state();
+    if (s.gameOver) { report.caught = true; report.errors.push(`caught while walking ${label} at ${s.x},${s.y}`); return false; }
     if (s.text) { await readThrough(); continue; }
     if (s.x === target.x && s.y === target.y) return true;
     let dir = null, best = d.get(`${s.x},${s.y}`) ?? 99;
@@ -241,8 +244,10 @@ try {
     report.errors.push('drawer retry'); await walkTo({ x: 17, y: 4 }, '교탁 다시');
   }
   await delay(700);
-  // 서쪽 문으로 복도까지 — (13,15) 에서 첫 손전등.
-  await walkTo({ x: 13, y: 15 }, '복도');
+  // 서쪽 문으로 복도까지 — (13,14) 문간에서 한 칸 내려서 (13,15) 첫 손전등. 너비 우선으로 바로 (13,15) 를 노리면
+  // 동쪽 문(19,15)으로 나가 거기 첫 손전등을 밟고, 순찰 길(13,16)로 돌아오다 붙잡힌다.
+  await walkTo({ x: 13, y: 14 }, '서쪽 문간');
+  await step('down');
   await readThrough();
   mark('계단참 손전등');
   await delay(600);
