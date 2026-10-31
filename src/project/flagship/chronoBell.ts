@@ -43,7 +43,7 @@ import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
-import { polishFallenCrashClearing } from "./fallen/act1MapPolish";
+import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -2480,6 +2480,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
   // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
   polishFallenCrashClearing(project, ids.forest);
+  // 떨어진 별 — 관 그림 둘레 어디서든, 브람 전·퀘스트 전에도 조사된다(fallen/act1MapPolish.ts, 1.26 사용자 신고).
+  makeFallenPodExaminable(project, ids.forest);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
