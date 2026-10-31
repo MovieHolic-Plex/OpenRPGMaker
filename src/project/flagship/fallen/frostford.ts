@@ -502,10 +502,10 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
   // 서쪽 기슭은 주홍빛으로 물들고 동쪽 마을은 보랏빛 그늘에 잠긴다. 등불은 이제 막 켜진 참 — 칸 크기 웅덩이로 작게.
   const W = M(project, FS2_FROST_ID).width, H = M(project, FS2_FROST_ID).height;
   const sun = [] as { id: string; at: Cell; radius: number; intensity: number; color: string }[];
-  for (let y = 0, i = 0; y <= H; y += 9, i += 1) sun.push({ id: `low_sun_${i}`, at: { x: -12, y }, radius: W, intensity: 0.3, color: "#ff6418" });
-  const lamp = (id: string, c: Cell) => ({ id, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.9, color: "#ffb050", flicker: true });
+  for (let y = 0, i = 0; y <= H; y += 9, i += 1) sun.push({ id: `low_sun_${i}`, at: { x: -12, y }, radius: W, intensity: 0.26, color: "#ff6418" });
+  const lamp = (id: string, c: Cell) => ({ id, at: { x: c.x, y: c.y }, radius: 1.8, intensity: 1, color: "#ffb050", flicker: true });
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.78, color: "#2a1236",
+    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.82, color: "#2a1236",
     sources: [
       ...sun,
       ...L.lamps.map((c, i) => lamp(`answer_lamp_${i}`, { x: c.x, y: c.y - 2 })),
@@ -584,14 +584,14 @@ function lanternNight(project: Project, exec: Exec): void {
   exec(project, "set_lighting_volume", {
     mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.84, color: "#040818",
     sources: [
-      { id: "valen", at: { x: L.valen.x, y: L.valen.y }, radius: 2.2, intensity: 0.85, color: "#ffc060", flicker: true },
+      { id: "valen", at: { x: L.valen.x, y: L.valen.y }, radius: 1.6, intensity: 0.85, color: "#ffc060", flicker: true },
       ...L.shrineLights.map((c, i) => ({ id: `shrine_${i}`, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.75, color: "#ffb050", flicker: true })),
       ...L.lamps.map((l, i) => ({ id: `lamp${i}`, at: { x: l.x, y: l.y - 2 }, radius: 1.6, intensity: 0.75, color: "#ffb050", flicker: true })),
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.8, color: "#ffb050", flicker: true })),
       ...L.streetLamps.map((c, i) => ({ id: `street_${i}`, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.75, color: "#ffb050", flicker: true })),
       // 탈출길 — 지그재그 굽이마다 희미한 달빛(푸른 얼음): 어디가 안전한지 밤에도 읽히되 흰 원으로 튀지 않는다.
-      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 1, intensity: 0.3, color: "#7fa8ff" })),
-      { id: "player", at: { kind: "player" }, radius: 1.8, intensity: 0.5, color: "#ffd8a0" },
+      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 1, intensity: 0.2, color: "#7fa8ff" })),
+      { id: "player", at: { kind: "player" }, radius: 1.4, intensity: 0.4, color: "#ffd8a0" },
     ],
   });
   exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "none" } });
