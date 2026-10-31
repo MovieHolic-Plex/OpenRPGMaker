@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e675e7dba034d25d753c81486fb62fc97ef5f2e134f2ae1319f48630b931522b",
+ "width": 32,
+ "height": 48,
+ "kind": "terrain",
+ "name": "ramp rise 2 w2 cut through a south-facing cave cliff face (climbs north)",
+ "label": "relief-cuts-fwd/cave-steps/ramp-h2-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope plane (chevron-textured, climbs north)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut cliff side walls left and right of the ramp, with a dark edge line",
+      "rows": "4-31",
+      "evidence": "none",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground apron at the ramp foot",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The full 32px width is opaque for all 48 rows. Rows 0-31 are a sloped ramp plane with a V/chevron texture, flanked by darker cut-cliff walls on the left (about x0-11) and right (about x28-31). A dark edge line at row 31 ends the wall bottoms. Rows 32-47 are flat, uniform ground texture. The south-facing vertical face is not drawn. The ramp runs straight into the flat floor with no front-edge line, no eave shadow and no vertical front face of 3+ rows. The whole piece reads as a top-down surface, with the dark side walls as the only vertical hint."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a brown ramp with a chevron or fold shape and a flat sandy strip along the bottom. Its measured 8 visible tones per tile is above the grass reference (3) and the paving reference (7), but the picture does not support that number. The main ramp and the lower strip are large areas of nearly one colour with only a faint diagonal split and a few dots. Near-flat coverage is 27%, while both references are at 0%, so the large flat fills are real. The material ramps show only about 3 lightness steps, against 5-6 in the references. The paving reference has per-stone shading, speckle and light mortar edges. The candidate has none of the per-stone shading, speckle or grain that the references carry. Its dark edge pixels are only 24% neutral, so the outline leans toward tinted brown, but it is a thin edge and is not used with any selectivity. The piece looks smoother and flatter than the references and reads as a plain sticker-like gradient.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17052
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope plane (V-shaped chevron strata climbing north) between the cut walls",
+      "rows": "0-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat cave floor in front of the ramp",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut cliff flanks (dark receding walls)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 32x48 ground piece. Rows 0-31 show a sloped ramp plane with chevron strata. It is flanked by darker cut-wall flanks on the left (x about 0-10) and right (x about 28-31), with a dark edge line at row 31. Rows 32-47 are flat, uniform light floor with no vertical face. The ramp and floor are both seen from above, and no south-facing vertical face of 3 or more rows is drawn under the ramp. The only vertical faces are the narrow dark side walls of the cut, so it reads as a top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has about 4 visible lightness steps on its brown/tan rock ramp, where the references use 5-6. The V-shaped ramp wedge has a little grain and some light/dark facets. The lower band, and parts of the upper ramp, are large flat single-colour fills with no speckle or tile variation. This matches the measured 27% near-flat coverage, against 0% for both references. Its 8 visible tones per tile are on par with the paving (7) and above the grass (3), so the count alone is not damning. Those tones sit in a few big flat patches rather than being spread as dots and grain over every tile. Dark edge pixels are only 24% neutral, so the edges lean brown, not black, and the outline reads as dark material tone. The references show per-stone shading or tuft texture on every tile, while this piece reads as a smooth, simplified ramp, so I rate it flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16804
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface with chevron texture",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat floor strip at the foot of the ramp",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cut cliff wall flanking the ramp, left and right edges",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32-wide rectangle for all 48 rows. Rows 0-31 show a textured ramp surface with a V/chevron pattern. A dark, shaded wall runs down the left edge (x about 0-10, rows 4-31) and a lighter one down the right edge, ending in a dark edge line at row 31. Rows 32-47 are flat, uniform floor with a few speckles. There is no south-facing vertical face of 3+ rows with an eave or edge line above it. The dark side wedges are receding side faces of the cut, not a front face. The whole tile reads as ground plane and slope seen from above, so it is a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a brown-tan ramp with a chevron or V-shaped rock-face pattern and a pale sand band along the bottom. It reads as about 4 lightness steps per material, against 5-6 in the references. The measured 8 visible tones per tile is on par with the paving reference (7), but 27% of its pixels sit in flat 5x5 blocks, where both references have 0%. Visually the sand band at the bottom and the wide panels of the ramp body are smooth fills with no grain, speckle, or stone-by-stone shading, so the surface looks flatter than the references. The outline is tinted brown, not neutral black (only 24% of dark edge pixels are neutral), so it is a dark material tone and not a sticker line. Even so, the large flat areas and thin texture fall short of the Beodeul bar, and when in doubt the piece fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17049
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope, a chevron-textured sloped plane climbing north between the cut walls",
+      "rows": "0-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut cliff walls, dark shaded faces flanking the ramp",
+      "rows": "4-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat cave floor in front of the ramp, top-down ground texture",
+      "rows": "32-47",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 28,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-31 are the sloped ramp surface. It has a lighter V/chevron texture and sits between darker cut walls on the left and right. The walls run from about row 4 to row 31 and end in a dark base line at row 31, which acts as the front-edge line. The cave floor in rows 32-47 is uniform ground texture. The ramp is a sloped top plane with cliff faces beside it, so it reads as three-quarter, not a flat slab or a plain front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured tones per tile (8) are above the grass reference (3) and the paving reference (7), and only 24% of the dark edge pixels are neutral, so the edges lean brown rather than black. By eye, though, the candidate is a rock-and-sand ramp with only about 4 lightness steps. The bottom band is a large flat tan fill with no grain or speckle. The upper rock face has only a few V-shaped strata streaks and no per-stone shading. Near-flat coverage is 27%, while both references are at 0%. The Beodeul references show dense per-pixel grain or one-by-one shaded stones everywhere, so this reads flatter and shallower than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17131
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.946Z",
+ "cells": {
+  "16": [
+   "41fc062fd801b848",
+   "6a332a23055dccbd",
+   "6ce7dbb268dfa8a8",
+   "723097f739562b96",
+   "f883722d334bd9ed"
+  ],
+  "24": [
+   "4d506c61eee033fa",
+   "4e1e6ca9aec8226f",
+   "6955f59092793954",
+   "72707f65d411d07c",
+   "737d053f261f9375",
+   "aaabe9810b8093eb",
+   "aab092e401370747",
+   "c6eb4f2444d8e89e",
+   "d330af04b6ba25fc",
+   "e0305b03bf9865c9",
+   "f27ea3f84f4be6ee",
+   "ff87431557d9b9e3"
+  ],
+  "32": [
+   "3bd86aa8960ab263",
+   "74adba264099c1bd",
+   "9cf4f46282b411db",
+   "f1bbb93c34025fc5"
+  ],
+  "48": [
+   "347d13e6bbf915b0",
+   "a30ae1977a4d7b5b",
+   "a4340566284bf4de"
+  ]
+ }
+}

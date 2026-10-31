@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e2f836e408cfff908413e37c04ee0a83577d7e9ec3189729823546cd9dda443d",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "ramp rise 2 w3 cut through a south-facing sand cliff face (climbs north)",
+ "label": "relief-cuts-fwd/sand-steps/ramp-h2-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 8,
+  "darkV5": 111,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp slope (V-pattern sloped plane climbing north)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cut cliff wall (brown banded, receding side)",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cut cliff wall (narrow brown banded strip)",
+      "rows": "2-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand ground in front of ramp",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Rows 0-31 are a sloped sand plane seen from above (V-shaped diagonal texture) flanked by dark brown cut-wall strips at the left (x about 0-10) and right (x about 46-47). Rows 32-47 are uniform flat sand (L=205 in all three scanned columns) with only faint dabs and no edge line, eave shadow or vertical face change. So the ramp rows 0-31 have no vertical front face of 3+ rows, and the bottom is ground, not a wall. There is a visible side face on the cut walls, but the main drawing is a ground-level top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a sand ramp with a chevron-striped slope and a flat sand strip at the bottom. It has about 4 sand steps (light cream, mid tan, darker tan, brown edge) and about 6 visible tones per tile, which is above the grass reference (3) and close to paving (7). Dark edge pixels are 0% neutral, so the edges are tinted brown, a dark material tone, not a black sticker line. The chevron bands give some structure. However, 30% near-flat coverage versus 0% in both references shows large flat sand areas, mostly the bottom strip and the side panels, with no grain or speckle. There are only 9 distinct colours in total against 80 for grass, and the texture is limited to a few sparse dots in the lower strip. The references carry per-tile grain and variation throughout. A careful artist would find the candidate flatter and thinner than the references, with fewer shading steps and little grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17684
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp plane climbing north (V-pattern texture)",
+      "rows": "0-31",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff cut wall (dark brown strip)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff cut wall (dark brown strip)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat sand floor at ramp foot",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The full 48px width is opaque on every row (0-47). Rows 0-31 are a sand ramp surface with a diagonal V-shaped texture and no front-edge line or eave shadow. Narrow dark cliff-cut strips run down the left and right edges. Rows 32-47 are uniform flat sand (L=205) with a few faint dots, so this is ground rather than a vertical front face. Both parts are seen from above, and the ramp's sloped plane is the main body. No south-facing vertical face of 3 or more rows spans the body, so it reads as a top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a tinted brown, with 0% near-neutral dark edge pixels, so it reads as dark_material_tone and not as a sticker line. The visible tones per tile (6) are above the grass reference (3) and just below the paving reference (7), so density by tone count is acceptable. However, 30% of the candidate is near-flat, against 0% in both references. The sand patches beside the ramp and the lower strip are broad single-colour areas with only sparse dots. The chevron ramp is built from only about 4 clear sand lightness steps, with no per-grain speckle or variation of the kind the grass and paving references carry in every tile. A careful artist would find it flatter and plainer than the references, so it is not at the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21041
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface (sand, chevron texture)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "28-31"
+     },
+     {
+      "part": "sand cliff front face below the ramp",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut walls (darker brown strips)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 16,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-31 are a large sloped ramp plane seen from above, textured with chevron lines and bounded by darker cut walls at the left and right. Along the bottom of the plane, rows 28-31 are slightly darker (L≈178 against 205 below) and end at the row 31/32 boundary, which marks the ramp's front edge. Rows 32-47 are a flat, vertical sand cliff face 16 rows tall with faint vertical marks. This gives a top surface plus a front face of 3 or more rows, so it reads as three-quarter terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a sand ramp with a chevron or herringbone pattern in about 4 sand tones, plus a darker lower band with a dotted row. Measured visible tones per tile are 6, above the grass reference (3) and close to the paving reference (7). Dark edge pixels are 0% neutral, so any edges are tinted and there is no sticker outline. The weak points are structural. Near-flat coverage is 30%, where both references show 0%, so there are flat fills. The lower band and the large sand wedges are single flat colours with no grain or speckle. The picture shows only about 4 shading steps against Beodeul's 5-6 per material. There are 9 distinct colours in total against 80 for the grass, and the surface has little sand grain, pebble or speckle texture. A careful artist would find it thinner and flatter than the references, so it falls short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15091
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand ramp slope (V-patterned inclined plane)",
+      "rows": "0-31",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut cliff walls (dark brown side faces)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south sand face below the ramp",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 16,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-31 are the main surface: a sloped sand ramp with a V-shaped light and dark pattern, bounded left and right by darker cut-cliff walls whose dark base line sits at rows 30-31. Rows 32-47 are a uniform sand band (L=205) with faint vertical streaks at rows 37-39 and 42-44. I read this band as the vertical south face. The change at row 32 is a hard edge, but there is no eave shadow, so the front face is only weakly supported. The ramp is far taller than a rim, so it reads as a top surface above a front face. Uncertain: the lower band could instead be flat ground, which would make this a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sand ramp with chevron bands, and its outlines are tinted brown-sand rather than black (0% neutral dark edge pixels), so the outline is fine. It shows about 6 visible tones per tile, above the grass reference (3) and just under the paving reference (7), which looks acceptable on that number alone. The weaknesses are structural. Only 9 distinct colours are used in total, so each sand ramp has about 4 lightness steps against Beodeul's 5-6. 30% of the piece is near-flat, with wide chevron bands and the lower strip filled with one colour and no grain, speckle or per-grain highlights, while both references have 0% flat coverage. The only texture is a sparse row of dots near the bottom. Next to the references, the sand reads as cleaner and flatter, closer to a sticker-like fill than to hand-shaded sand.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22617
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.685Z",
+ "cells": {
+  "16": [
+   "866c86debaccea03",
+   "a2837d835df7f0a7",
+   "d102d88277f54f13",
+   "d76cbeb31cbda37e",
+   "e87f7503628d78f0",
+   "ea292f4b8bf4440b",
+   "fbd99891c9ff31a1"
+  ],
+  "24": [
+   "0358315ca59648c7",
+   "5996c94376fce997",
+   "953035ff7f92d890",
+   "f0457947e8b54130"
+  ],
+  "32": [
+   "113f1b035029f99b",
+   "1e12867e4792009b",
+   "29a1dce06d8315b5",
+   "31a26ba8b78b7db1",
+   "3ac6a0e4edb1d88c",
+   "5b4738361c341c8b",
+   "5be16e042b334d25",
+   "80eb7b258e6fec68",
+   "8cb7c59523073b2c",
+   "8cfa93cc9b6c3912",
+   "8d20716025ffd11b",
+   "8d53a8740108937a",
+   "95c4bffaa3b4af9e",
+   "a2e977c1d754a353",
+   "a6b7a40ec01d866c",
+   "ada359086004a248",
+   "b632f2bfa00c2521",
+   "bec0e2f1e0f18d9b",
+   "c17cd33becc80d91",
+   "c86b4b023a0761fb",
+   "ce8492c7d4eaa5f7",
+   "cf1b8832bb3fa655",
+   "fd016ec7d51af4bc"
+  ],
+  "48": [
+   "316e88422aeedbab"
+  ]
+ }
+}
