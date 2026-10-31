@@ -316,6 +316,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   dry_run_script: { d: "Run a script (source, an existing one, or the whole page) headless on a copy of the project with scripted answers and preset state. Returns transcript, switch/variable/gold/item changes, log and errors. Nothing is saved." },
   read_event_as_script: { d: "Read an event page's commands as TypeScript (game API; other commands as game.cmd JSON). Read-only." },
   write_event_as_script: { d: "Replace a page's whole command list with one compiled script. Needs confirm:true; read the page first." },
+  write_script_as_commands: { d: "Replace one script command with the ordinary event commands it is exactly equivalent to. Needs confirm:true; refuses (nothing changes) when the script uses formulas, locals, arrays, other loops, functions, imports, computed ids or random." },
   upsert_script_module: { d: "Create or replace a shared script module imported as \"@lib/<id>\". Compiles first." },
   list_script_modules: { d: "List shared script modules (@lib/<id>) and their exports." },
 };
