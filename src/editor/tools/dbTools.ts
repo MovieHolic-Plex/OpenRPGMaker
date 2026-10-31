@@ -36,6 +36,7 @@ import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
+import { charsetBattler, charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
@@ -2317,6 +2318,7 @@ const upsertActor: ToolDefinition = {
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
     reconcileActorFace(record, actorPatch, warnings);
+    reconcileActorBattler(record, actorPatch, warnings);
     validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
     if (record.battleCommandIds) {
@@ -2352,6 +2354,25 @@ const upsertActor: ToolDefinition = {
     };
   },
 };
+
+/**
+ * 걷기 그림만 바꾸면 전투 시트도 따라간다. 지금 전투 시트가 **다른 걷기 칩의 짝**(charset-battler-actor1-0 등 — 기본 주인공이 물려받은 검사)이면
+ * 새 칩의 짝 시트로, 짝 시트가 없으면 지워서 걷기 칩 한 칸으로 서게 한다. 칩 짝이 아닌 시트(직업·스토어·저작 시트)는 작가가 고른 것이라 둔다.
+ * 해원(2026-10-31): 주인공을 푸른 도포 Actor1#6 으로 바꿨는데 전투에서는 물려받은 붉은 머리 검사(actor1-0)가 섰다.
+ */
+function reconcileActorBattler(record: ActorRecord, patch: Record<string, unknown>, warnings: string[]): void {
+  if ("battleCharacterResourceId" in patch) return;
+  if (!("characterResourceId" in patch) && !("characterIndex" in patch)) return;
+  const current = record.battleCharacterResourceId;
+  const pair = charsetBattler(current);
+  if (!current || !pair?.characterResourceId) return;
+  const index = record.characterIndex ?? 0;
+  if (pair.characterResourceId === record.characterResourceId && pair.characterIndex === index) return;
+  const next = charsetBattlerForCharacter(record.characterResourceId, index);
+  if (next) record.battleCharacterResourceId = next;
+  else delete record.battleCharacterResourceId;
+  warnings.push(`액터 '${record.name}': 걷기 그림을 바꿔 전투 시트를 ${next ? `새 짝 ${next}` : "비움(짝 시트가 없어 걷기 칩 한 칸으로 선다)"} 으로 맞췄습니다(이전 ${current}).`);
+}
 
 /**
  * 배우 얼굴을 걷기 그림의 짝과 맞춘다(reconcileFaceWithCharset). 두 경우를 본다:
