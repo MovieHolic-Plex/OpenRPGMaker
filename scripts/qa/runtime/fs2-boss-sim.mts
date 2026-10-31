@@ -17,6 +17,11 @@ if (process.env.FS_BREAK) recall.chargeBreak.damage = Number(process.env.FS_BREA
 if (process.env.FS_RECALL) recall.power = Number(process.env.FS_RECALL);
 const scatter = project.database.skills.find((s) => s.id === "skill_fs2_ash_scatter") as unknown as { power: number };
 if (process.env.FS_SCATTER) scatter.power = Number(process.env.FS_SCATTER);
+for (const [env, id] of [["FS_EMBER", "skill_fs2_swallowed_flare"], ["FS_HEAT", "skill_fs2_collector_heat_ray"]] as const) {
+  const sk = project.database.skills.find((x) => x.id === id) as unknown as { power: number } | undefined;
+  if (process.env[env] && sk) sk.power = Number(process.env[env]);
+}
+if (process.env.FS_EMBER_HP) project.database.enemies.find((e) => e.id === "enemy_fs2_swallowed_fire")!.stats.maxHp = Number(process.env.FS_EMBER_HP);
 const party = ["actor_hero", "actor_fs_elena", "actor_fs2_sarah", "actor_fs_iris"];
 const out: Record<string, unknown> = {};
 for (const [name, extra] of [
@@ -25,7 +30,7 @@ for (const [name, extra] of [
   ["skills_noValen", { useSkills: true, switchesOn: [] }],
   ["skills_valen", { useSkills: true, switchesOn: ["sw_fs2_b13_valen_guest"] }],
 ] as const) {
-  const r = runTool(ctx, "simulate_battle", { troopId: "troop_fs2_ash_collector", heroLevel: 14, partyActorIds: party, inventory: { item_potion: 6, item_hi_potion: 1, item_ether: 2 }, potionItemId: "item_potion", n, seed: 11, ...extra });
+  const r = runTool(ctx, "simulate_battle", { troopId: "troop_fs2_ash_collector", heroLevel: Number(process.env.FS_LV ?? 14), partyActorIds: party, inventory: { item_potion: 6, item_hi_potion: 1, item_ether: 2 }, potionItemId: "item_potion", n, seed: 11, ...extra });
   if (process.env.FS_DUMP) console.log(name, JSON.stringify(r.data).slice(0, 1500));
   out[name] = r.ok ? { summary: r.summary, winRate: (r.data as { winRate?: number })?.winRate, avgTurns: (r.data as { avgTurns?: number })?.avgTurns } : { error: r.summary };
 }
