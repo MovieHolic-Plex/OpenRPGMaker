@@ -1,5 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## TypeScript 이벤트 스크립트 도구 `author_script` · `dry_run_script` 외 7개 (2026-10-31)
+
+조건·계산·반복·여러 갈래가 얽힌 이벤트 로직(조합 자물쇠·레버 순서·가격 공식·시간대·소지품·확률)을 명령 수십 줄 대신
+`script` 명령 하나(TypeScript, `game` API)로 쓰게 하는 도구 묶음 — `check_script`·`author_script`·`edit_script`·`dry_run_script`·
+`get_script_api`·`upsert_script_module`·`list_script_modules`·`read_event_as_script`·`write_event_as_script`(`src/editor/tools/scriptTools.ts`).
+쓰기는 먼저 컴파일하고 오류면 영어 진단으로 거부한다(모델이 고쳐 다시 부른다). 일반 이벤트 도구는 컴파일되지 않은(또는 소스와
+해시가 다른) `{kind:"script"}` 를 `script-not-compiled` 로 거부한다(`commandArgs.ts` `validateLowLevelCommandArray`).
+v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣는다. 스킬 `event-scripts`. 계약·표: `openwiki/script-sandbox.md` 「조수 도구」.
+
 ## 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
 
 전에는 설정집(`project.world`)에 쓰는 길이 대화 추출기와 화면 수동 편집뿐이어서, 코드로 짓는 대표 데모 넷은 자료집 「이야기」 탭(세계 개요·설정집·인물)이 모두 비어 있었다(구운 chrono-bell 실측: worldCanon 없음, 문서 0, 프로필 0).
