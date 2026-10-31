@@ -1,7 +1,7 @@
 import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
-import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, isStoreBattleAnimationId, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroBattleIntro, retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -605,7 +605,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else delete root.dataset.battleAnimationSkipFrames;
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : hasRetroChoreography(field) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
+        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : (hasRetroChoreography(field) && !isStoreBattleAnimationId(animation?.animationId)) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
         root,
       );
     },

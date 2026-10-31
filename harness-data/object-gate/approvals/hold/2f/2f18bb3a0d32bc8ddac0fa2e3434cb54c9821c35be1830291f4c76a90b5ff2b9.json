@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "2f18bb3a0d32bc8ddac0fa2e3434cb54c9821c35be1830291f4c76a90b5ff2b9",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (beodeul-grass-fix worker)",
+ "decidedAt": "2026-10-31T02:58:40.238Z",
+ "by": "delegated",
+ "delegatedBy": "user (delegated to supervisor, 2026-10-21 rule)",
+ "evidence": "harness-data/object-gate/vqa/beodeul-grass-unglyph/opus-vqa-r2.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: 버들항 풀밭 737 글자 무늬 제거 (r2 바탕) — delegated by user to supervisor 2026-10-21 — independent Opus 5.5 adversarial VQA r2 pass (r1 fail -> redrawn); receipts receipts/e0/e0db0973…, receip",
+ "sig": "855dce44b590c25d0ab997a208a0f97dd2120ee2f6d10039fef12d920d06cb64"
+}
