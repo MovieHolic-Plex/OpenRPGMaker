@@ -19,7 +19,7 @@ side = {"r1": dict(res=ld(f"{S}/runs-bboxwalls/results.json"), wal=ld(f"{S}/runs
         "r6": dict(res=ld(f"{R6}/results.json"), wal=ld(f"{R6}/walls.json"), meas=ld(f"{R7}/measure-r6.json"), root=R6),
         "r7": dict(res=ld(f"{R7}/results.json"), wal=ld(f"{R7}/walls.json"), meas={}, root=R7),
         "r8": dict(res=ld(f"{R8}/results.json"), wal=ld(f"{R8}/walls.json"), meas={}, root=R8)}
-ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]; RK = {"r8": "8c (새는 곳 찾기·벽 물건 자리 안내·opus 강한 쪽)", "r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
+ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]; RK = {"r8": "8d (낮은 방·문 자리·벽면 줄·남은 칸 안내·opus 강한 쪽)", "r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
 for t in TASKS:
     for k in RUNS:
         for rr, root in (("r7", R7), ("r8", R8)):
@@ -89,7 +89,7 @@ def model_rows():
 def argon_table():
     import glob, re as _re
     cfgs = [("6판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls6"), ("6판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8-r6"),
-            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8"), ("7판 흐름 · 8b(가장 나은 답에서 다시·이름 정리·벽 물건 옮기기)", f"{S}/runs-bboxwalls8b"), ("7판 흐름 · 8c(새는 곳 찾기·벽 물건 가까운 자리·칸막이 쪼개기)", R8)]
+            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8"), ("7판 흐름 · 8b(가장 나은 답에서 다시·이름 정리·벽 물건 옮기기)", f"{S}/runs-bboxwalls8b"), ("7판 흐름 · 8c(새는 곳 찾기·벽 물건 가까운 자리·칸막이 쪼개기)", f"{S}/runs-bboxwalls8c"), ("7판 흐름 · 8d(낮은 방·문 자리·벽면 줄·남은 칸 안내, 실행마다 새 시드)", R8)]
     out = []
     for lab, root in cfgs:
         rs = [json.load(open(p)) for p in sorted(glob.glob(f"{root}/argon[0-9]/*/RUN.json"))]
