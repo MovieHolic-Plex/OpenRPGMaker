@@ -174,7 +174,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           // 시작 실패는 공방 작업 줄에 「못 그림」으로 남는다.
           void import('../../editor/walkChipGeneration').then(({ startWalkChipJob }) => startWalkChipJob(event.data as { appearanceId: string; description: string; name?: string }))
             .catch((error: unknown) => console.warn('[walk-chip] 공방 작업을 세우지 못했습니다:', error));
-          png = 'queued';
+          // 워커는 render 응답을 PNG 로만 받는다(resolvePiRender) — 「세웠다」는 확인으로 1×1 투명 PNG 를 보낸다. 글자를 보내면 응답이 거절돼 연결이 끊겼다.
+          png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
         } else if (event.toolName === 'generate_opening_image') {
           const { generateOpeningStill } = await import('../../editor/openingImageGeneration');
           still = await generateOpeningStill(event.data as Record<string, unknown>, { project: draft, signal: options.signal });
