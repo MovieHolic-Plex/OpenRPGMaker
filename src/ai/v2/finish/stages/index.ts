@@ -29,6 +29,7 @@ export { stage as lockStepDoors } from "./lock-step-doors";
 export { stage as pointLockedPages } from "./point-locked-pages";
 export { stage as dropTokenLines } from "./drop-token-lines";
 export { stage as staleObjectives } from "./stale-objectives";
+export { stage as outFromUnderRoofs } from "./out-from-under-roofs";
 export { stage as objectiveRoutes } from "./objective-routes";
 export { stage as stairTransfers } from "./stair-transfers";
 export { stage as trimRoadStubs } from "./trim-road-stubs";

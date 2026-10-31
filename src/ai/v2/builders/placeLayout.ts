@@ -9,6 +9,8 @@ import type { PiAssistantV2Env } from "../env";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 import type { Project, TilesetDef } from "@/project/types";
 import { createBuildRun } from "../buildRun";
+import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
+import { SHARED_OBJECT_TOOLS } from "@/editor/tools/sharedObjectTools";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { BBOX_DUNGEON_FORMAT, BBOX_DUNGEON_RULES, BBOX_DUNGEON_THEMES, bboxDungeonCatalog, bboxDungeonCatalogText, bboxGraphShape, layBboxDungeon, type BboxDungeonLayout } from "@/editor/dungeonKit/bboxFloor";
@@ -26,15 +28,16 @@ import { villageArgs, villageMapSize } from "./village";
 import { ensureBossRest, ensureHealingAccess } from "../healingAccess";
 
 const TS = "beodeul_city";
-/** 실행기·측정 스위치: OPRN_V2_BBOX_PLACES=0 이면 칸 배치 경로를 끄고 옛 빌더만 쓴다(측정 대조군). */
+/** 실행기·측정 스위치: OPRN_V2_BBOX_PLACES=1 일 때만 칸 배치 경로를 쓴다. 기본은 꺼짐 — 실제 v2 경로 측정(2026-10-31)에서
+ *  칸 배치 던전이 지금 빌더에 직접 비교 0승 4패, 기준 그림 대비 8%(지금 빌더 59%)였다. 이길 때까지 옵트인. */
 export function bboxPlacesOn(): boolean {
   const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
-  return env?.OPRN_V2_BBOX_PLACES !== "0";
+  return env?.OPRN_V2_BBOX_PLACES === "1";
 }
 /** 자기 비평 바퀴 수(실험 bbox-better: 2바퀴). */
 export const LAYOUT_CRITIQUE_ROUNDS = 2;
 /** 거절된 배치를 고쳐 다시 보낼 수 있는 횟수 — 넘으면 옛 빌더로 짓는다. */
-export const LAYOUT_REPAIRS = 2;
+export const LAYOUT_REPAIRS = 3;
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export const hasDungeonLayout = (spec: PlaceSpec): boolean => isObj(spec.dungeonLayout) && Array.isArray((spec.dungeonLayout as BboxDungeonLayout).rooms) && (spec.dungeonLayout as BboxDungeonLayout).rooms!.length >= 2;
@@ -259,11 +262,15 @@ export async function villageKitSheet(env: PiAssistantV2Env): Promise<{ dataUrl?
     const made = run.call("create_map", { name: "kit sheet", width: W, height: H, tilesetId: TS, border: "none" });
     const id = String((made.data as { mapId?: string; id?: string } | undefined)?.mapId ?? (made.data as { id?: string } | undefined)?.id ?? "");
     if (made.ok && scratch.project.maps[id]) {
-      run.call("fill_region", { mapId: id, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭", clearUpper: true, _exactCells: true });
+      // 견본 사본에는 도구를 바로 돌린다 — run.call 은 호출마다 기록·사본을 만들어 208개에 200초를 넘겼고
+      // (2026-10-31 부하 박스 실측), 그동안 조수 스트림이 끊겨 포구 판이 모두 「terminated」로 끝났다.
+      const fill = CONSTRUCTION_TOOLS_V3.find((t) => t.name === "fill_region")!, stamp = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object")!;
+      const direct = (tool: typeof fill, args: Record<string, unknown>) => { try { tool.run(scratch.project, args); } catch { /* 한 견본이 실패해도 나머지는 그린다 */ } };
+      direct(fill, { mapId: id, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭", clearUpper: true, _exactCells: true });
       for (const k of cat) {
         const at = pos.get(k.id)!;
-        if (k.kind === "boat") run.call("fill_region", { mapId: id, rect: { x: at.x, y: at.y, w: k.w, h: k.h }, material: "버들항 강·운하 물", _exactCells: true });
-        run.call("stamp_object", { objectId: `kit:${TS}/${k.id}`, mapId: id, x: at.x, y: at.y });
+        if (k.kind === "boat") direct(fill, { mapId: id, rect: { x: at.x, y: at.y, w: k.w, h: k.h }, material: "버들항 강·운하 물", _exactCells: true });
+        direct(stamp, { objectId: `kit:${TS}/${k.id}`, mapId: id, x: at.x, y: at.y });
       }
       out.dataUrl = await renderScratch(env, scratch.project, id);
     }

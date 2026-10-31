@@ -429,7 +429,7 @@ export function shopItemIcon(goods: ShopGoods, extraClass = ""): HTMLElement {
     class: `runtime-shop-item-icon${extraClass ? ` ${extraClass}` : ""}`,
     dataset: { testid: `shop-item-icon-${goods.id}` },
   });
-  const url = goods.iconResourceId ? resolveAssetResourceUrl(goods.iconResourceId) : undefined;
+  const url = goods.iconResourceId ? resolveAssetResourceUrl(goods.iconResourceId, { project: store.getCurrent() }) : undefined;
   if (url) {
     icon.style.backgroundImage = `url("${url}")`;
     icon.dataset.itemIconResource = goods.iconResourceId ?? "";
