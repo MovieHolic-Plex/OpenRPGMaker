@@ -774,7 +774,6 @@ function vaultB2(project: Project, vault: GameMap): void {
     cutLabel(),
     cutEnd(),
     textBox("bottom"),
-    ...ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
   ];
   const prisonerGfx = { graphic: chip(spyChip[0], spyChip[1], "right"), overlapForbidden: true, animationType: "fixedGraphic" };
   addEvent(vault, pid, PRISONER, { x: 7, y: 22 }, [
@@ -788,6 +787,9 @@ function vaultB2(project: Project, vault: GameMap): void {
       ], cancelBranch: [say(PRISONER, "…가지 마시오.")] } as unknown as Command,
       ...turn,
     ], prisonerGfx),
+    // 싸움은 정체가 드러난 뒤의 자동 페이지에서 — 대화 페이지에 전투 명령이 있으면 다가가자마자 「Z 전투」 안내가 떠 함정이 들킨다.
+    page(`${pid}_fight`, "정체를 드러냄", [sw(SW_PRISONER_ON), sw(SW_PRISONER_DONE, false)], ambushFight(SW_PRISONER_ON, SW_PRISONER_DONE, stage),
+      { ...prisonerGfx, trigger: { kind: "auto" } }),
     page(`${pid}_gone`, "사라짐", [sw(SW_PRISONER_DONE)], []),
   ]);
 }
