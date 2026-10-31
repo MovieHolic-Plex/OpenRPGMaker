@@ -2,6 +2,14 @@
 
 # Editor Validation Expectations
 
+## 스크립트 effects 를 읽는 검증기 (2026-10-31)
+
+`script` 명령(TypeScript 이벤트 스크립트)이 쓰는 스위치·부르는 공통 이벤트·이동하는 맵은 저장 때 뽑은 `effects` 로 검증기에 보인다.
+명령 목록을 훑어 「켜는 곳 없음 / 안 쓰임 / 못 감」을 내는 검사를 새로 만들면 `src/project/script/effects.ts`(`scriptWrites`·`scriptCalls`·
+`scriptHasDynamic`·`forEachProjectScript`)를 같이 불러야 한다. 계산된 id(dynamic)가 있으면 그 판정은 증명할 수 없으므로 info 로 낮춘다.
+반영된 검증기 목록과 규칙은 `openwiki/script-sandbox.md` 「검증기」 절이 정본이다. 스크립트 참조 누락은 lint 경고(`script-reference-missing`)일 뿐
+로드 오류가 아니다.
+
 ## 계단 입구 검사 `stair-*` (2026-10-22)
 
 `stair-entrance-blocked` · `stair-misfacing` · `stair-trigger-off` — 장면 다듬기 검사(`lintScenePolish`)에 붙은 warning. 계약·배치·참고문서는 `openwiki/stair-entrance-contract.md`.

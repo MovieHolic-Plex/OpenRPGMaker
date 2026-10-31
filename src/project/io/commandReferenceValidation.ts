@@ -136,6 +136,11 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
     case "inn":
       collectCommandItemReferenceIds(command.notEnoughBranch ?? [], ids);
       return;
+    case "script":
+      for (const ref of [...(command.effects?.reads ?? []), ...(command.effects?.writes ?? [])]) {
+        if (ref.kind === "item") ids.add(ref.id);
+      }
+      return;
     default:
       return;
   }
@@ -160,6 +165,8 @@ export function collectConditionItemReferenceIds(condition: Condition | BattleEv
 
 function validateCommandReferences(command: Command, context: ReferenceContext): void {
   switch (command.kind) {
+    // Script ids are checked by the script analyzer (warnings), not at load: a script may name an id it creates later.
+    case "script":
     case "text":
     case "wait":
     case "inputWait":

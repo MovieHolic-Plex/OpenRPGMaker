@@ -258,6 +258,7 @@ function directionFor(command: Command, names: Names, mapId: string | undefined,
     case "callCommonEvent": return { k: "dir", text: `공용 이벤트: ${names.commonName(command.commonEventId)}` };
     case "planSchedule": return { k: "dir", text: `일정표 짜기: ${command.scheduleId}` };
     case "runSchedule": return { k: "dir", text: `일정표 실행: ${command.scheduleId}` };
+    case "script": return { k: "dir", text: `스크립트: ${command.name || command.summary || "TypeScript"}` };
     case "triggerEnding": return { k: "dir", text: `엔딩: ${names.endingName(command.endingId)}`, tone: "end" };
     case "gameOver": return { k: "dir", text: "게임 오버", tone: "end" };
     case "shop": return { k: "dir", text: "상점" };
