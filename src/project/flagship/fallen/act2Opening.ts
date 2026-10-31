@@ -1412,7 +1412,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   });
   // 조명 뒤에 감지 — visionLight(부채꼴 손등불)는 지금 맵 조명에 덧붙는다(먼저 걸면 위 조명이 덮어쓴다).
   // 몰아오는 둘 — 「거기 서라!」 1.1초 뒤 움직이고(0.3초였을 땐 붙잡혀 개구멍으로 다시 나오면 문 앞에서 2초 안에 또 붙잡혔다 — 브라우저 녹화 2026-10-31), 칸당 0.127초(추격 엔진 개편 #3907 의 「빠름」 — 주인공 걷기 0.16초보다 빠르다, 12칸마다 숨 고름), 네 칸 안이면 0.09초로 덮친다.
-  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 1100, chaseStepMs: 127, rush: true, rushSteps: 4, rushStepMs: 90, searchMs: 3000, giveUpRange: 20 });
+  if (knightIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: knightIds, sightRange: 10, alertMs: 1100, chaseStepMs: 175, rush: false, searchMs: 3000, giveUpRange: 20 });
   // 가로로 도는 하나 — 앞쪽 90° 부채꼴만 본다. 부채꼴 빛(visionLight)은 깔지 않는다 — 풀밭을 자로 그은 듯한 빛 쐐기가 화면을 가르고 깜빡였다(독립 VQA 2026-10-31). 등불은 다른 야경꾼과 같은 둥근 손등불. 틈 어귀를 막는 몫이라 덮치지 않고 칸당 0.15초(주인공과 거의 같은 빠르기) —
   // 곧장 뛰는 주인공을 틈 바로 앞에서 덮치던 판(브라우저 녹화, 2026-10-30)은 「성공 길」이 없었다. 돌아가는 길(서쪽)에선 여전히 부채꼴에 걸린다.
   if (sweeperIds.length) exec(project, "set_field_detection", { mapIds: [mapId], eventIds: sweeperIds, sightRange: 6, coneDegrees: 90, alertMs: 300, chaseStepMs: 150, rush: false, searchMs: 2500 });
