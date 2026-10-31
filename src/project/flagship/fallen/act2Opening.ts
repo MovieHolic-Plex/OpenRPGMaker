@@ -1675,7 +1675,7 @@ function dawnwell(project: Project, exec: Exec): void {
   for (const mapId of [field!, FS2_DAWNWELL_ID]) exec(project, "set_map_properties", { mapId, battleBackground: "battle-scenery-cave" });
   // 재의 들판 — 옅은 연기 + 해 질 녘 잿빛 빛(짙은 안개는 잿빛 땅을 하얗게 덮었다).
   exec(project, "set_scene_mood", { mapId: field!, applyMode: "map", weather: { kind: "fog", intensity: 0.22 }, lighting: { ambient: 0.4, color: "#4c4c54" } });
-  const W = (id: string) => M(project, id).width, H = (id: string) => M(project, id).height;
+  const W = (id: string) => M(project, id).width;
   // 숲 어귀 — 숲지기 땅(B4 도착선) 너머 숲길에. 맵이 숲 어귀(남쪽 풀밭·북쪽 숲)라 맵 가운데 칸은 나무일 수 있다 — 걸어 닿는 가장 가까운 칸으로.
   const northOpen = walkSteps(project, M(project, north1!), { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 });
   const near1 = (x: number, y: number): Cell => [...northOpen.keys()].map((k) => { const [cx, cy] = k.split(",").map(Number); return { x: cx!, y: cy! }; })
