@@ -299,11 +299,36 @@ def tread_log(px, m, x0, x1, y0, y1, j, f, rise):
 LIGHT = {
     "sand-steps": dict(nos=R("#fff9b4", "#f5d090"), under=R("#f5d090")[0], body=R("#eccb86", "#e8c282", "#dcaf6c"), speck=R("#dcaf6c")[0], crease=R("#cfa566", "#b58a50")),
     "cave-steps": dict(nos=R("#b6a28c", "#b69e89"), under=R("#a7917d")[0], body=R("#a7917d", "#988472", "#8d7766"), speck=R("#8d7766")[0], crease=R("#6c5c54", "#7a6a5b")),
-    "snow-steps": dict(nos=R("#ffffff", "#b9c6d8"), under=R("#ecf3fa")[0], body=R("#e6f0fa", "#d6e4f1", "#b7cde3"), speck=R("#d6e4f1")[0], crease=R("#93aecb", "#b8c0c8")),
+    # VQA r3: the white/ice treads in a light frame read as a panel/blind and clashed with the road and the slate forward stairs.
+    # Now the forward snow stairs' stone: blue-grey stone tread tops, snow caps only on the nosings, road tones at the seams.
+    "snow-steps": dict(nos=R("#ffffff", "#ecf3fa"), under=R("#d6e4f1")[0], body=R("#93a3bb", "#93a3bb", "#71819a"), speck=R("#b9c6d8")[0], crease=R("#566479", "#71819a"),
+                       foot=R("#c0b0aa", "#b8c0c8"), crest=R("#dccfca", "#c0b0aa"), cap_break=R("#b9c6d8")[0]),
     "peat-steps": dict(nos=R("#b5a85b", "#a69a54"), under=R("#a69a54")[0], body=R("#978c4c", "#887e44", "#837b40"), speck=R("#887e44")[0], crease=R("#5f5a2e", "#655f31"), end=R("#6e5a3c")[0]),
 }
+# VQA r3: the deep h1 treads (15 px) were flat bands that read as a mat/sill stripe. Deep treads (>= 10 px) get the material's
+# grain: sandstone strata streaks, peat path grit, cave rock speckle, stone grain on snow steps. (Only h1 treads are that deep.)
+GRAIN = {"sand-steps": ("streak", R("#dcaf6c", "#f5d090", "#cfa566")), "peat-steps": ("grit", R("#887e44", "#a69a54", "#77703a")),
+         "cave-steps": ("speck", R("#8d7766", "#a7917d", "#7a6a5b")), "snow-steps": ("speck", R("#71819a", "#b9c6d8", "#566479"))}
+
 LIGHT_FLANK = {"sand-steps": R("#dcaf6c", "#e8c282", "#e8c282", "#f5d090"), "cave-steps": R("#7a6a5b", "#8d7766", "#8d7766", "#a7917d"),
-               "snow-steps": R("#b8c0c8", "#d6e4f1", "#d6e4f1", "#ffffff"), "peat-steps": R("#6b6534", "#887e44", "#887e44", "#a69a54")}
+               "snow-steps": R("#71819a", "#93a3bb", "#93a3bb", "#93a3bb"), "peat-steps": R("#6b6534", "#887e44", "#887e44", "#a69a54")}
+
+def grain(px, kind, G, x0, x1, y0, y1, j, f):
+    d = 1 if f > 0.5 else 0
+    for X in range(x0, x1):
+        for Y in range(y0 + 2, y1 - 2):
+            if kind == "streak":                                          # sandstone strata: short horizontal streaks, lit over dark
+                q = h(X // 3, Y, 131 + j)
+                if q < 34: px[X, Y] = G[2] if d else G[0]
+                elif q < 50 and Y > y0 + 2: px[X, Y] = G[1] if not d else G[0]
+            elif kind == "grit":                                          # peat path grit: sparse 1 px grains, light and dark
+                q = h(X, Y, 133 + j)
+                if q < 30: px[X, Y] = G[2] if d else G[0]
+                elif q > 238: px[X, Y] = G[1]
+            else:                                                          # rock speckle: 2x1 clumps, dark under light
+                q = h(X // 2, Y, 135 + j)
+                if q < 36: px[X, Y] = G[2] if d else G[0]
+                elif q > 232: px[X, Y] = G[1]
 
 def tread_light(px, L, x0, x1, y0, y1, j, f):
     ht = y1 - y0; d = min(2, round(2 * f))
@@ -318,6 +343,9 @@ def tread_light(px, L, x0, x1, y0, y1, j, f):
                 if ht >= 6 and r == ht - 2: c = L["body"][min(2, d + 1)]                              # soft shade into the crease
                 if h(X, Y, 125) < 22: c = L["speck"]
             px[X, Y] = c
+    if "cap_break" in L:                                                                              # stone peeking through the snow caps
+        for X in range(x0, x1):
+            if h(X // 2, j, 137) < 70: px[X, y0] = L["cap_break"]
     if "end" in L:                                                                                    # log ends at the trail edge
         px[x0, y0] = L["end"]; px[x1 - 1, y0] = L["end"]
 
@@ -325,10 +353,13 @@ def stairs_light(style, w, rise):
     L = LIGHT[style]; W = w * 16
     im = Image.new("RGB", (W, 32)); px = im.load()
     n = 2 * rise
-    for (y0, y1, j) in bands(n): tread_light(px, L, 0, W, y0, y1, j, j / max(1, n - 1))
+    for (y0, y1, j) in bands(n):
+        tread_light(px, L, 0, W, y0, y1, j, j / max(1, n - 1))
+        if y1 - y0 >= 10: grain(px, *GRAIN[style], 0, W, y0, y1, j, j / max(1, n - 1))
+    C, Fo = L.get("crest", L["nos"]), L.get("foot", L["crease"])
     for X in range(W):
-        px[X, 31] = L["nos"][0] if h(X, 31, 127) < 200 else L["nos"][1]                                # crest: the terrace edge, lit
-        px[X, 0] = L["crease"][0] if h(X, 0, 31) < 200 else L["crease"][1]                             # foot: crease on the low road
+        px[X, 31] = C[0] if h(X, 31, 127) < 200 else C[1]                                              # crest: the terrace edge, lit
+        px[X, 0] = Fo[0] if h(X, 0, 31) < 200 else Fo[1]                                               # foot: crease on the low road
     flank(px, W, dict(flank=LIGHT_FLANK[style]), full=rise == 4)
     return im
 
