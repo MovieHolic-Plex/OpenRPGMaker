@@ -4,6 +4,7 @@ import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { buildStoryFlagUsageIndex } from "@/project/storyFlagUsage";
 import { visitProjectCommands, type CommandOwnerKind, type NestedBranchKind } from "./commandTraversal";
 import { flatGroundIssues } from "./mapEmptiness";
+import { areaUseIssues } from "./mapAreaUse";
 import type { ToolDefinition } from "./types";
 import type { Project } from "@/project/types/project";
 
@@ -53,7 +54,7 @@ const evaluateGameQuality: ToolDefinition = {
   },
   run(project, args) {
     const emptyMaps = emptyMapIssues(project);
-    const objectiveIssues = [...projectLint(project), ...emptyMaps, ...flatGroundIssues(project, { includeBlank: false })];
+    const objectiveIssues = [...projectLint(project), ...emptyMaps, ...flatGroundIssues(project, { includeBlank: false }), ...areaUseIssues(project)];
     const paletteIssues = lintTilesetPalettes(project);
     const commandOwners: Record<CommandOwnerKind, number> = { legacyEvent: 0, eventPage: 0, commonEvent: 0, troopPage: 0 };
     const nestedBranches: Record<NestedBranchKind, number> = {
