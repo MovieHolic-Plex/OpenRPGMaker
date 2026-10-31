@@ -5042,7 +5042,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 700
+       "ms": 900
       },
       {
        "kind": "repeatUntil",
@@ -5057,17 +5057,12 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 350
+         "ms": 200
         }
        ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 150
       }
      ],
-     "shot": true
+     "shot": false
     },
     {
      "id": "dash",

@@ -1440,22 +1440,23 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     page("ev_fs2_edge_bram_wait", "숲 그늘", [sw(SW_B4_ALARM)], [say(BRAM, "어서.")], bramPage("down")),
     page("ev_fs2_edge_bram_after", "브람(뒤)", [sw(SW_B4_EDGE)], [say(BRAM, "가라. 여기서부턴 내 숲이 아니다.")], bramPage("down")),
   ]);
-  // 밤 숲 조명 — 짙은 밤(0.84). 달빛은 풀밭에 옅게만(0.28) — 손등불 빛이 또렷이 떠야 「어디가 보이는 자리인지」 읽힌다.
+  // 밤 숲 조명 — 손등불 빛이 또렷이 떠야 「어디가 보이는 자리인지」 읽힌다.
   // 순찰 손등불 반지름 = 시야(3칸, 맨해튼) + 0.6 — 빛 웅덩이 밖이면 안 보인다. 흔들리지 않는다(깜빡이면 경계가 안 읽힌다).
   // 뒤쫓는 둘은 작은 등불(이미 쫓는 중이라 경계 표시가 아니다), 브람의 등은 틈 안에서 작게(가야 할 곳은 길돌·나무 벽 틈이 말한다).
-  const moonR = 7;
+  // 달빛 웅덩이는 깔지 않는다 — 큰 흐린 원들이 손등불 빛과 섞여 「어디가 빛인지」 흐려졌다(r2 녹화). 풀밭 전체를 고른 어둠(0.78)으로.
   exec(project, "set_lighting_volume", {
-    mapId, applyMode: "map", ambient: 0.84, color: "#0a1024",
+    mapId, applyMode: "map", ambient: 0.78, color: "#0a1024",
     sources: [
-      ...[[0.22, edgeY + 9], [0.72, edgeY + 7], [0.3, edgeY + 21], [0.78, edgeY + 22]].map(([f, y], i) => ({ id: `moon${i}`, at: { x: Math.round(map.width * f!), y: y! }, radius: moonR, intensity: 0.28, color: "#c4d2ff" })),
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
-      ...chaserIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 2.6, intensity: 0.6, color: "#ffb050" })),
+      ...chaserIds.map((eventId, i) => ({ id: `knight_lamp${i}`, at: { eventId }, radius: 1.8, intensity: 0.55, color: "#ffb050" })),
       ...patrolIds.map((eventId, i) => ({ id: `patrol_lamp${i}`, at: { eventId }, radius: 3.6, intensity: 1, color: "#ffc468" })),
       { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 2.4, intensity: 0.75, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
   // 등 뒤 둘 — 「거기 서라!」 1.1초 뒤 움직이고, 칸당 0.175초·돌진 없음 — 주인공 걷기(0.16초)보다 조금 느리다. 멈칫하거나 돌아가면 잡힌다.
-  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: chaserIds, sightRange: 10, alertMs: 1100, chaseStepMs: 175, rush: false, searchMs: 3000, giveUpRange: 20 });
+  // 옛 방식(classic) — 영리함은 느낌표에서 서지 않아(alertHoldCapMs 0) 외침 컷이 끝나자마자 열 칸을 달려와 첫 걸음에 붙잡았다(r2 녹화).
+  // 벽 너머도 아는 추격(persistent)이라 시야와 상관없이 쫓는다.
+  exec(project, "set_field_detection", { mapIds: [mapId], eventIds: chaserIds, sightRange: 10, allRound: true, brain: "classic", alertMs: 1100, chaseStepMs: 175, rush: false, searchMs: 3000, giveUpRange: 20 });
   // 앞 순찰 둘 — 손등불 빛만큼(3칸) 사방을 본다(옛 방식: 발소리로 알아채지 않는다 — 보이는 빛이 곧 규칙). 들키면 「!」 0.4초 뒤 주인공만큼 빠르게.
   exec(project, "set_field_detection", { mapIds: [mapId], eventIds: patrolIds, sightRange: 3, allRound: true, lineOfSight: true, brain: "classic", alertMs: 400, chaseStepMs: 165, rush: false, searchMs: 2500, giveUpRange: 9 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
