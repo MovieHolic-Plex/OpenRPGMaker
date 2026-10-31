@@ -56,7 +56,6 @@ const giveItem = (itemId: string, amount = 1): Command => ({ kind: "changeItem",
 const hasItem = (itemId: string): EventPageCondition => ({ kind: "item", itemId, present: true } as EventPageCondition);
 const night: EventPageCondition = { kind: "timePhase", phase: "night" } as EventPageCondition;
 const all = (...conditions: EventPageCondition[]): EventPageCondition => ({ kind: "all", conditions } as EventPageCondition);
-const not = (condition: EventPageCondition): EventPageCondition => ({ kind: "not", condition } as EventPageCondition);
 
 /** 일지 「계약」 한 줄(공백 B 도감 대신). */
 export function journal(lineId: string, text: string, writer = "doran"): Command {
@@ -252,27 +251,6 @@ export function buildContractA(project: Project, s: Stage): void {
     ], { who: "villager", dir: "down" }),
   ]));
 
-  // ── 늪 깊은 곳 입구 — 밤이 아니면 물이 높다(시간대 관문).
-  const gateEv = swamp.events.find((e) => JSON.stringify(e.pages ?? []).includes(`"mapId":"${M.nest}"`));
-  if (!gateEv) throw new Error("[hunter] 늪 마을에 둥지로 가는 출입구가 없다");
-  const goPage = gateEv.pages![0]!;
-  const dayBlock = page("nest_day", [not(night)], [
-    ...caption("물이 허리까지 찬다. 바닥에서 뭔가 움직인다."),
-    ...think("낮에는 물 밑에 있다. 밤에 와야 보인다."),
-  ], { trigger: goPage.trigger.kind as "action" | "playerTouch", priority: goPage.priority as "below" | "same" });
-  const nightGo = { ...structuredClone(goPage), id: "nest_night", conditions: [night] };
-  (nightGo.commands as Command[]).unshift(
-    ifCond(swOff(SW.oiled), [
-      ...think("물이 낮다. 들어가기 전에 칼을 본다."),
-      choices([
-        { text: "칼에 불씨 기름을 바른다", enableWhen: hasItem(ITEM.oil), disabledText: "기름이 없다. 여관 베일이 판다.",
-          then: [...applyOil(), setSw(SW.oiled), playSe("easyrpg-sound-fire1"), ...caption("칼날이 기름을 먹었다. 송진 냄새.")] },
-        { text: "그냥 들어간다", then: [] },
-      ]),
-    ]),
-  );
-  gateEv.pages = [dayBlock, nightGo];
-
   const BOSS = "ev_hc_a_mother";
   const motherFight = (troop: string): Command[] => [
     bgm(BGM.boss, 200),
@@ -369,6 +347,27 @@ export function buildContractA(project: Project, s: Stage): void {
         [...say("marta", "base", "볼일 끝났소.")]),
     ], { who: "marta", dir: "left" }),
   );
+  // ── 늪 깊은 곳 입구(도구 호출이라 맵 사본이 바뀐다. 손으로 넣는 이벤트가 다 들어간 뒤에 부른다). 밤이 아니면 물이 높다. 잠금은 lock_door 의 시간대 조건(#4047), 열린 쪽 앞에 칼 기름 선택만 손으로 붙인다.
+  const gateId = project.maps[M.swamp]!.events.find((e) => JSON.stringify(e.pages ?? []).includes(`"mapId":"${M.nest}"`))?.id;
+  if (!gateId) throw new Error("[hunter] 늪 마을에 둥지로 가는 출입구가 없다");
+  const gateAt = project.maps[M.swamp]!.events.find((e) => e.id === gateId)!;
+  execTool(project, "lock_door", {
+    mapId: M.swamp, x: gateAt.x, y: gateAt.y, unlockWhen: { timePhase: "night" },
+    lockedText: "물이 허리까지 찬다. 바닥에서 뭔가 움직인다.\n낮에는 물 밑에 있다. 밤에 와야 보인다.",
+  });
+  const gateEv = project.maps[M.swamp]!.events.find((e) => e.id === gateId)!;
+  const nightGo = gateEv.pages!.find((pg) => JSON.stringify(pg.conditions ?? []).includes('"timePhase"'))!;
+  (nightGo.commands as Command[]).unshift(
+    ifCond(swOff(SW.oiled), [
+      ...think("물이 낮다. 들어가기 전에 칼을 본다."),
+      choices([
+        { text: "칼에 불씨 기름을 바른다", enableWhen: hasItem(ITEM.oil), disabledText: "기름이 없다. 여관 베일이 판다.",
+          then: [...applyOil(), setSw(SW.oiled), playSe("easyrpg-sound-fire1"), ...caption("칼날이 기름을 먹었다. 송진 냄새.")] },
+        { text: "그냥 들어간다", then: [] },
+      ]),
+    ]),
+  );
+
   // ── 둥지: 익사귀 셋(필드 적, place_field_enemy) — 밤에만 물 밖에 있다(설계 3.6). 둥지 입구가 낮에는 막혀 있으니 둥지 안은 늘 밤이다.
   for (const [i, at] of s.nest.packs.entries()) {
     const r = execTool(project, "place_field_enemy", { mapId: M.nest, x: at.x, y: at.y, troopId: TROOP.drowners, behavior: "chase", sightRange: 4, canEscape: true });
