@@ -27,7 +27,7 @@ const ONLY = process.env.POD_STATES ? process.env.POD_STATES.split(",") : Object
 const state = (page) => page.evaluate(() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, x: s.x, y: s.y }; });
 async function settle(page) {
   for (let i = 0; i < 200; i++) {
-    const info = await page.evaluate(() => ({ running: window.__oprnHooksScene?.running === true, box: !!document.querySelector('[data-testid="dialogue-box"]'), choice: !!document.querySelector('[data-testid="choice-window"], .choice-window, [data-testid="dialogue-choices"]') }));
+    const info = await page.evaluate(() => ({ running: window.__oprnHooksScene?.running === true, box: !!document.querySelector('[data-testid="dialogue-box"]'), choice: !!document.querySelector('[data-testid="runtime-choices"], [data-testid="choice-list"], [data-testid="dialogue-choice-frame"]') }));
     if (!info.running && !info.box) return i;
     if (info.choice) await page.keyboard.press("Escape", { delay: 120 });
     else if (info.box) await page.keyboard.press("Enter", { delay: 120 });
@@ -36,16 +36,23 @@ async function settle(page) {
   return -1;
 }
 async function walkTo(page, x, y, dir) {
-  // 한 칸 바깥에서 걸어 들어와 그 칸에 실제로 설 수 있는지 본다(텔레포트는 막힌 칸에도 세운다).
-  const back = { up: [0, 1], down: [0, -1], left: [1, 0], right: [-1, 0] }[dir];
-  const key = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }[dir];
-  await settle(page);
-  await page.evaluate(([m, px, py, d]) => { window.__oprnInput.face(d); window.__oprnDebug.teleport(m, px, py); }, [MAP, x + back[0], y + back[1], dir]);
-  await page.waitForTimeout(500);
-  await page.keyboard.down(key); await page.waitForTimeout(230); await page.keyboard.up(key);
-  await page.waitForTimeout(450);
-  await page.evaluate((d) => window.__oprnInput.face(d), dir);
-  await page.waitForTimeout(200);
+  // 이웃 칸 넷 가운데 하나에서 걸어 들어와 그 칸에 실제로 설 수 있는지 본다(텔레포트는 막힌 칸에도 세운다).
+  const approaches = [["up", 0, 1], ["down", 0, -1], ["left", 1, 0], ["right", -1, 0]];
+  approaches.sort((p, q) => (q[0] === dir) - (p[0] === dir));
+  for (const [step, bx, by] of approaches) {
+    const key = { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }[step];
+    await settle(page);
+    await page.evaluate(([m, px, py, d]) => { window.__oprnInput.face(d); window.__oprnDebug.teleport(m, px, py); }, [MAP, x + bx, y + by, step]);
+    await page.waitForTimeout(500);
+    await page.keyboard.press(key, { delay: 90 });
+    await page.waitForTimeout(550);
+    const at = await state(page);
+    if (at.map === MAP && at.x === x && at.y === y) {
+      await page.evaluate((d) => window.__oprnInput.face(d), dir);
+      await page.waitForTimeout(200);
+      return at;
+    }
+  }
   return state(page);
 }
 async function pressAndRead(page) {
@@ -83,18 +90,21 @@ try {
     [px + 2, py, "left"], [px + 2, py - 1, "left"], [px + 2, py - 2, "left"],
     [px - 1, py - 3, "down"], [px, py - 3, "down"], [px + 1, py - 3, "down"],
     [px - 1, py, "right"], [px + 1, py, "left"],
+    // 관 그림 위 칸 — 설 수 있으면 관 위를 걷는 것이다(통행 확인용, 서면 발밑 조사).
+    [px, py - 1, "up"], [px - 1, py - 2, "up"], [px + 1, py - 1, "up"],
   ];
   for (const name of ONLY) {
     const sw = STATES[name];
     const all = new Set(Object.values(STATES).flatMap((s) => Object.keys(s)));
     await settle(page);
     await page.evaluate(([ids, on]) => { for (const id of ids) window.__oprnDebug.setSwitch(id, !!on[id]); }, [[...all], sw]);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(1500);
+    await settle(page);
     const rows = [];
     facts.marks[`${name}_start`] = +((Date.now() - t0) / 1000).toFixed(2);
     for (const [x, y, dir] of ring) {
       const at = await walkTo(page, x, y, dir);
-      if (at.map !== MAP || at.x !== x || at.y !== y) { rows.push({ x, y, dir, reach: false }); continue; }
+      if (at.map !== MAP || at.x !== x || at.y !== y) { rows.push({ x, y, dir, reach: false, at }); log(name, x, y, "unreached, at", JSON.stringify(at)); continue; }
       const text = await pressAndRead(page);
       if (rows.filter((r) => r.text).length === 0 && text) await page.screenshot({ path: resolve(out, `native-${name}-${x}-${y}.png`) });
       rows.push({ x, y, dir, reach: true, text });
@@ -104,12 +114,21 @@ try {
     facts.marks[`${name}_end`] = +((Date.now() - t0) / 1000).toFixed(2);
     facts.states[name] = rows;
   }
-  // 영상용 — 아래 칸에서 한 번 더 천천히(1배).
-  await walkTo(page, px, py + 1, "up");
+  // 영상용(1배) — 브람에게 말을 걸기 전, 관 왼쪽 옆에서 관을 보고 누른다(예전엔 두 겹으로 막혔다: 쪽 없음 + 옆은 조사 칸 밖).
+  {
+    const all = new Set(Object.values(STATES).flatMap((s) => Object.keys(s)));
+    await settle(page);
+    await page.evaluate(([ids, on]) => { for (const id of ids) window.__oprnDebug.setSwitch(id, !!on[id]); }, [[...all], STATES.before]);
+    await page.waitForTimeout(1200);
+    await settle(page);
+  }
+  await walkTo(page, px - 2, py - 1, "right");
   facts.marks.demo_start = +((Date.now() - t0) / 1000).toFixed(2);
   await page.waitForTimeout(800);
   await page.evaluate(() => window.__oprnInput.action());
-  for (let i = 0; i < 6; i++) { await page.waitForTimeout(1300); await page.keyboard.press("Enter", { delay: 120 }); }
+  for (let i = 0; i < 6; i++) { await page.waitForTimeout(1500); await page.keyboard.press("Enter", { delay: 120 }); }
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: resolve(out, "native-demo-choice.png") });
   await page.waitForTimeout(800);
   facts.marks.demo_end = +((Date.now() - t0) / 1000).toFixed(2);
   await context.close();
