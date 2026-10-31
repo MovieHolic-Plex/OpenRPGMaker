@@ -28,7 +28,8 @@ import { store } from "@/project/store";
 import { battleStepCanLose } from "@/player/battleDuel";
 import { markBattleEntry } from "@/app/perfMetrics";
 import { BATTLE_READY_TIMEOUT_MS, BATTLE_SCENERY_GRACE_MS, deferUntilBattleReady } from "@/player/battleReadiness";
-import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
+import { clearAudioState, DEFAULT_MESSAGE_WINDOW_SETTINGS, nextSessionRandom, setAudioState } from "@/project/session";
+import type { MessageWindowSettings } from "@/project/types";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -38,6 +39,17 @@ import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { playEmeraldMoveLearns, type EmeraldMoveLearnDecision } from "@/player/emeraldMoveLearnScene";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { playProjectSeCue } from "@/player/seCuePlayback";
+
+
+/**
+ * 전투 중 이벤트 대사·선택지 창 자리. 아래 창은 전투의 파티 상태 창(아래 띠)을 그대로 덮어 둘 다 읽을 수 없었다
+ * (폴른 스타 2막 첫 플레이 B6 2026-10-31) — 저작 자리가 아래면 위로 올리고, 필드 주인공 기준 가림 피하기는 끈다(전투 화면에는 필드 주인공이 없다).
+ * 가운데·위로 못박은 창은 그대로 둔다. 흉상·전신 초상 대사는 dialogue.ts 규칙대로 아래에 남는다.
+ */
+function battleMessageSettings(settings: MessageWindowSettings | undefined): MessageWindowSettings {
+  const base = settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
+  return { ...base, position: base.position === "bottom" ? "top" : base.position, preventObscuringPlayer: false };
+}
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -316,7 +328,7 @@ export async function playBattle(
             if (!dialogue) return Promise.reject(new Error("Battle text input host missing"));
             const eventState = runtime.snapshot().eventState;
             return dialogue.showText({
-              ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
+              ...request, settings: battleMessageSettings(request.settings), signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },
@@ -328,7 +340,7 @@ export async function playBattle(
             return dialogue.showChoices({
               prompt: request.prompt, options: request.options.map(option => ({ ...option })),
               cancelBehavior: request.cancelBehavior, signal: inputSignal,
-              settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
+              settings: battleMessageSettings(request.settings), playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },
