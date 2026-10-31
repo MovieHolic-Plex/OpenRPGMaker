@@ -5,6 +5,50 @@
 
 <!-- releases -->
 
+## 0.377.0 — 2026-10-31
+
+### 기능
+
+- **demos** — demo game openings can no longer be skipped (#4098) (`f94827d`)
+- **ai** — warn when a map uses only part of its area (map-area-unused) (#4086) (`e73a082`)
+- **battle** — 칼 기름 — 상태 attackElementId·releaseAfterBattles (#4088) (`497fe36`)
+- **builder** — tatami floors are laid as whole 1x2 mats, not the 4x4 wallpaper (`8c1023b`)
+- **refmap** — side-view battle sheets for 13 REFMAP doll characters, hand-drawn pixel by pixel by Opus agents (#4080) (`ef6f073`)
+
+### 수정
+
+- **ai** — changing an actor's walking chip carries its battle sheet along (#4089) (`5512a25`)
+- **assistant** — todo infers a missing op; invented battle backdrop ids refused; Korean object search falls back to English kit names (#4097) (`b59856d`)
+- **assistant** — visible field enemies, todo block needs a refusal, quoted lines become talk checks (#4077) (`9455567`)
+- **assistant** — find installed window skins before falling back to a dialogue style preset (`6de38e1`)
+- **assistant-tools** — remove_event refuses to delete the only event that turns on a switch other pages wait for (`4498e81`)
+- **ai** — set_field_detection keeps the sight of a switch-woken chaser (#4084) (`0169504`)
+- **ai** — graphic {transparent:false} no longer makes an NPC invisible; a copied page graphic resolves to its chip (#4082) (`e0558bd`)
+- **runtime** — draw a store battle effect even when the skill also has a class choreography (`94d7421`)
+- **ai** — a night set by an event survives going through a door (#4078) (`c3da4fd`)
+- **builder** — kit furniture on the wall face (blackboard, wall lamps, sconces, hoods) is wall-mounted, not a floor overlay (`98e3399`)
+- **beodeul** — grass body r2 after adversarial VQA, delegated allow on 18323 (`7b0508b`)
+- **assistant-v2** — name the prerequisite by a landmark, never by bare adjacency; the boss rest crystal counts as a landmark (`755e936`)
+- **store** — store_install points ambient sounds to role:'bgs' and event sounds to playAudio se (`8ea9b2f`)
+- **audio** — start-map BGS plays on new game/load; BGS loops gaplessly (`6836f9c`)
+- **assistant-v2** — locked step lines say where the prerequisite is even when they already say 먼저 (`f4cf9e1`)
+- **beodeul** — redraw the grass 737 body so village ground no longer reads as repeating letters (`627e5d1`)
+- **runtime** — fit ESC menu rail and battle inert reasons to the play surface (`09c3fd1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`e32bbf4`)
+- **openwiki** — Beodeul grass 737 letter-pattern fix (#4079) (`b98e56f`)
+- **openwiki** — regenerate INDEX against tracked files (`17f05df`)
+- move the Beodeul grass wiki note to a follow-up PR (keeps INDEX out of this one) (`e63fa8f`)
+- **openwiki** — regenerate INDEX for atlas-biome-interior note (`0574850`)
+- **openwiki** — regenerate INDEX for the Beodeul grass fix (`81cadf8`)
+
+### 잡무
+
+- keep openwiki as on main (wiki note moves to the checks PR) (`e7d8886`)
+- **css** — save css-winners baseline for the ESC rail row fit (`0d6601e`)
+
 ## 0.376.0 — 2026-10-31
 
 ### 기능
