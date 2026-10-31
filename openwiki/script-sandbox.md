@@ -122,6 +122,7 @@
 | 검증기 | 파일 | 스크립트 반영 |
 |---|---|---|
 | 진행 검사(켜는 곳 없는 스위치·엔딩 조건·셀프 스위치·엔딩 호출) | `src/qa/gameCheck/progression.ts` | `collectSwitchWrites` 에 스크립트 쓰기. dynamic 스위치 쓰기면 `page-switch-never-set`·`ending-switch-never-set` 을 info 로. 스크립트가 있는 이벤트는 셀프 스위치 판정 생략. 스크립트 소스에 `kind:"triggerEnding"` 이 있으면 `no-ending-trigger` info·`ending-uninvoked` 생략 |
+| 자동 플레이 막힘 | `src/qa/gameCheck/scriptGate.ts` `scriptGatedFailure` → `index.ts` | 실패 자리(이벤트의 페이지·분기 조건, 걷기 실패면 그 맵 이벤트들의 조건)에서 «그 값을 명령으로 쓰는 이벤트의 조건» 으로 깊이 5까지 따라가다 스크립트가 쓰는 스위치·변수·아이템(dynamic 쓰기 포함)을 만나거나 실패한 이벤트가 스크립트를 돌리면 `autoplay-failed`(막힘) 대신 `autoplay-script-gated`(info, 판정 보류). 스크립트 없는 게임은 그대로. sab-1031 A 마을 두 판·A 던전 두 판이 막힘 → 참고(B 판 막힘은 그대로). A 방탈출 2회차는 스크립트가 없다 — 자물쇠가 단서 수 변수 `== 0` 의 else 에 있어 계획기가 단서를 먼저 안 모으는 별개 오탐(남음) |
 | 맵 그래프·도달성 | `src/qa/gameCheck/mapGraph.ts` | `via:"script"` 간선(x/y NaN, 좌표 검사 안 함). 없는 맵이면 `script-transfer-missing-map` 경고. dynamic 이동이면 `unreachable-map` info |
 | 완성 구조 가드(조수) | `src/ai/gameStructureGuard.ts` | 위 그래프를 그대로 쓴다. dynamic 이동이면 고립 맵을 막지 않는다. 스크립트 엔딩 호출 인정 |
 | 이벤트 삭제 시 고아 스위치 | `src/editor/tools/strandedSwitches.ts` | 스크립트 쓰기도 「다른 곳이 켬」. 남는 스크립트가 dynamic 스위치 쓰기면 거절 안 함 |
