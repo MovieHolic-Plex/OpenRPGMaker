@@ -24,7 +24,7 @@ const argv = process.argv.slice(2);
 const opt = (n) => { const i = argv.indexOf(`--${n}`); return i >= 0 ? argv[i + 1] : undefined; };
 const projectDir = resolve(opt("project-dir"));
 const request = opt("request");
-const bind = JSON.parse(readFileSync(resolve(opt("bind")), "utf8"));
+let bind = JSON.parse(readFileSync(resolve(opt("bind")), "utf8"));
 const out = resolve(opt("out"));
 const video = argv.includes("--video");
 mkdirSync(out, { recursive: true });
@@ -42,6 +42,11 @@ const served = await new Promise((done, fail) => {
 const project = JSON.parse(readFileSync(join(serveOut, "player.json"), "utf8"));
 const maps = project.maps ?? {};
 const mapList = Array.isArray(maps) ? maps : Object.values(maps);
+// A/B 2: a binding string «@<event name>» resolves to the id of the event with that name (stage checkpoints fix the
+// names; a run that replaced an event with a new one keeps the name). «@<name>#n» picks the n-th such event.
+const byName = (name) => { const [n, k] = name.split("#"); const hits = mapList.flatMap((m) => (m.events ?? []).filter((e) => (e.name ?? "").trim() === n)); return hits[Number(k ?? 0)]?.id; };
+const resolveBind = (v) => typeof v === "string" && v.startsWith("@") ? (byName(v.slice(1)) ?? v) : Array.isArray(v) ? v.map(resolveBind) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, resolveBind(x)])) : v;
+bind = resolveBind(bind);
 function findEvent(id) {
   for (const m of mapList) for (const e of m.events ?? []) if (e.id === id) return { mapId: m.id, x: e.x, y: e.y, event: e, map: m };
   throw new Error(`event ${id} not found`);
@@ -284,19 +289,20 @@ try {
     let day; const tried = [];
     for (const w of walks) { day = await tryWalk(...w); tried.push(`${w[1]},${w[2]} ${w[3]} → ${day.currentMapId} (${day.x},${day.y})`); if (day.currentMapId === fieldMap) break; }
     check("gate-day-lets-through", day.currentMapId === fieldMap, `10:00: ${tried.join("; ")}`);
-    const herbItem = bind.herbItem;
+    const herbIds = [bind.herbItem].flat(); // A/B 2: candidate herb item ids (the run may create its own) — counted together
+    const herbs = (s) => herbIds.reduce((n, id) => n + (s.inventory?.[id] ?? 0), 0);
     for (const h of bind.herbs.slice(0, 2)) await talk(h, { choices: [0] });
-    let inv = (await st()).inventory[herbItem] ?? 0;
+    let inv = herbs(await st());
     check("herbs-2", inv === 2, `picked 2 herbs → inventory ${inv}`);
     const short = await talk(bind.grandma, { choices: [0, 0] });
-    inv = (await st()).inventory[herbItem] ?? 0;
+    inv = herbs(await st());
     check("short-says-1-more", /1\s*(개|송이|포기)?/.test(joined(short)) && inv === 2, `with 2 herbs: says 1 more, keeps herbs (${inv})`, short);
     await talk(bind.herbs[2], { choices: [0] });
     const before = await st();
     const done = await talk(bind.grandma, { choices: [0, 0] });
     const after = await st();
-    const repNow = bind.repVar ? after.variables[bind.repVar] ?? 0 : null;
-    check("turn-in", (after.inventory[herbItem] ?? 0) === (before.inventory[herbItem] ?? 0) - 3 && after.gold - before.gold === 100, `herbs ${before.inventory[herbItem]}→${after.inventory[herbItem] ?? 0}, gold +${after.gold - before.gold}`, done);
+    const repNow = bind.repVar ? Math.max(...[bind.repVar].flat().map((v) => after.variables[v] ?? 0)) : null; // A/B 2: several candidate variables → the one in use
+    check("turn-in", herbs(after) === herbs(before) - 3 && after.gold - before.gold === 100, `herbs ${herbs(before)}→${herbs(after)}, gold +${after.gold - before.gold}`, done);
     check("reputation-10", repNow === 10, `reputation ${repNow}`);
     const again = await talk(bind.grandma, { choices: [0, 0] });
     check("no-double-reward", (await st()).gold === after.gold, "talking again gives nothing more", again);
