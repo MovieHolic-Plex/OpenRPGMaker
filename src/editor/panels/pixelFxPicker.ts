@@ -34,6 +34,8 @@ const STAGE_BOX = 260;
 export function openPixelFxPicker(options: PixelFxPickerOptions): void {
   let spec: PixelFxSpec = normalizePixelFxSpec(options.initial) ?? { effectId: options.preferLoop ? "fire/torch" : "fire/fireball" };
   let category = pixelFxEntry(spec.effectId)?.category ?? "";
+  // 처음 분류는 지금 효과의 분류다 — 사람이 분류를 직접 고르기 전에는 찾기 낱말이 전체 분류에서 찾는다.
+  let categoryChosen = false;
   let query = "";
   let loopOnly = Boolean(options.preferLoop);
   let stage: PixelFxDomPlayback | undefined;
@@ -145,7 +147,9 @@ export function openPixelFxPicker(options: PixelFxPickerOptions): void {
 
   const renderGrid = (): void => {
     const job = ++stillJob;
-    const entries = searchPixelFx(query, { ...(category ? { category } : {}), ...(loopOnly ? { loop: true } : {}), limit: 400 });
+    const activeCategory = query.trim() && !categoryChosen ? "" : category;
+    categorySelect.value = activeCategory;
+    const entries = searchPixelFx(query, { ...(activeCategory ? { category: activeCategory } : {}), ...(loopOnly ? { loop: true } : {}), limit: 400 });
     count.textContent = `${entries.length}개`;
     grid.replaceChildren(...entries.map((entry) => {
       const canvas = el("canvas", { class: "pixel-fx-card-still" }) as HTMLCanvasElement;
@@ -179,7 +183,7 @@ export function openPixelFxPicker(options: PixelFxPickerOptions): void {
   };
 
   search.addEventListener("input", () => { query = search.value; renderGrid(); });
-  categorySelect.addEventListener("change", () => { category = categorySelect.value; renderGrid(); });
+  categorySelect.addEventListener("change", () => { category = categorySelect.value; categoryChosen = true; renderGrid(); });
   loopToggle.addEventListener("change", () => { loopOnly = loopToggle.checked; renderGrid(); });
 
   const body = el("div", {
@@ -257,7 +261,7 @@ function applyPickerStyle(body: HTMLElement, grid: HTMLElement): void {
   side.style.cssText = `width:${STAGE_BOX}px;display:flex;flex-direction:column;gap:6px`;
   const style = document.getElementById("pixel-fx-picker-style") ?? document.head.appendChild(Object.assign(document.createElement("style"), { id: "pixel-fx-picker-style" }));
   style.textContent = `
-.pixel-fx-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:#141821;color:inherit;cursor:pointer;font:inherit}
+.pixel-fx-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:#141821;color:#dfe6f0;cursor:pointer;font:inherit}
 .pixel-fx-card[aria-selected="true"]{outline:2px solid #6aa8ff;border-color:#6aa8ff}
 .pixel-fx-card-thumb{display:flex;align-items:center;justify-content:center;width:${CARD_BOX}px;height:${CARD_BOX}px}
 .pixel-fx-card-name{font-size:11px;line-height:1.2;text-align:center}

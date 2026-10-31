@@ -123,11 +123,16 @@ export async function renderPixelFxStill(spec: PixelFxSpec, canvas: HTMLCanvasEl
   canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) return false;
-  const target = renderer.durationSec * atFraction;
-  // 시뮬레이션은 화면 프레임 간격으로 걷는다(advance 는 한 번에 0.25 초까지).
-  for (let t = 0; t < target; t += 1 / 30) renderer.advance(Math.min(1 / 30, target - t));
   const image = ctx.createImageData(width, height);
-  renderer.paintComposite("all", image);
+  // 그 순간이 빈 장(아직 안 켜졌거나 다 꺼진 효과)이면 뒤로 걸어가며 처음 그려지는 장을 쓴다.
+  // 시뮬레이션은 화면 프레임 간격으로 걷는다(advance 는 한 번에 0.25 초까지).
+  let t = 0;
+  for (const fraction of [atFraction, 0.55, 0.75, 0.9]) {
+    const target = renderer.durationSec * fraction;
+    for (; t < target; t += 1 / 30) renderer.advance(Math.min(1 / 30, target - t));
+    image.data.fill(0);
+    if (renderer.paintComposite("all", image)) break;
+  }
   ctx.putImageData(image, 0, 0);
   return true;
 }

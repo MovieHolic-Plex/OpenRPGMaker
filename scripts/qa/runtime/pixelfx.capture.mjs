@@ -114,9 +114,17 @@ async function open(browser, name, projectJson, report, video = true) {
   }, [PROJECT_URL, `pixelfx-${name}`]);
   await page.route(PROJECT_ROUTE, (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
   await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+  try {
+    await page.waitForSelector("[data-testid='title-screen'], [data-testid='runtime-state-json']", { timeout: 240_000 });
+  } catch (error) {
+    await page.screenshot({ path: join(outDir, `${name}-boot-fail.png`) }).catch(() => {});
+    const body = await page.evaluate(() => document.body?.innerText?.slice(0, 600) ?? "").catch(() => "");
+    report.errors.push(`${name}: boot timeout — body: ${body}`);
+    await writeFile(join(outDir, "report.json"), JSON.stringify(report, null, 2));
+    throw error;
+  }
   page.openedAt = Date.now();
-  await page.keyboard.press("Enter");
+  if (await page.locator("[data-testid='title-screen']").count()) await page.keyboard.press("Enter");
   return page;
 }
 
@@ -152,7 +160,7 @@ await mkdir(outDir, { recursive: true });
 const server = await startPlayerQaServer();
 const browser = await chromium.launch({
   headless: true,
-  args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-features=NetworkChangeNotifier"],
+  args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"],
 });
 const report = { errors: [], field: null, stress: null, battle: null };
 try {
