@@ -10,6 +10,7 @@ import { installStampAssets, stampPattern, type StampPattern } from "@/project/o
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
+import { roadCutAt } from "./roadCutGuard";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
@@ -197,6 +198,23 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
           }
         }
         if (refusal) throw new ToolError(refusal.message, { code: refusal.code, mapId: map.id, ...(refusal.suggestion ? refusal.suggestion.at : {}) });
+        // 길 끊기(roadCutGuard): 발이 길을 두 동강 내면 nearest 는 길을 안 끊는 가까운 빈 자리로, 아니면 거부한다.
+        const feetAt = (ox: number, oy: number) => cells.filter((c) => c.foot).map((c) => ({ x: ox + c.dx, y: oy + c.dy }));
+        const cut = roadCutAt(project, map, feetAt(Number(args.x), Number(args.y)));
+        if (cut) {
+          let free: { x: number; y: number } | undefined;
+          for (let r = 1; r <= 6 && !free; r++) for (let dy = -r; dy <= r && !free; dy++) for (let dx = -r; dx <= r && !free; dx++) {
+            if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+            const ox = Number(args.x) + dx, oy = Number(args.y) + dy;
+            if (!footprintRefusal(project, map, cells, ox, oy, label) && !roadCutAt(project, map, feetAt(ox, oy))) free = { x: ox, y: oy };
+          }
+          if (mode === "nearest" && free) {
+            overlapNotes.push(`(${String(args.x)},${String(args.y)}) 에 서면 (${cut.x},${cut.y}) 에서 길이 끊겨 길을 안 막는 가까운 자리 (${free.x},${free.y}) 에 찍었다`);
+            args = { ...args, x: free.x, y: free.y };
+          } else {
+            throw new ToolError(`${label} at (${String(args.x)},${String(args.y)}) would stand on the road at (${cut.x},${cut.y}) and cut it in two — players walking the road could not get past. Put it beside the road${free ? `: top-left (${free.x},${free.y}) is free and keeps the road open (or pass onOverlap:'nearest')` : " (grass next to the road)"}.`, { code: "object-cuts-road", mapId: map.id, ...(free ?? {}) });
+          }
+        }
       }
       // 높이 단(map.relief): 그림은 한 단 위에만, 경사로 칸 금지, 남쪽 높은 칸이 아랫줄을 덮지 않게. relief 없는 맵은 그대로.
       const reliefBroken = checkReliefPlacement(map, resolved.source, objectId, resolved.name, pattern, Number(args.x), Number(args.y));

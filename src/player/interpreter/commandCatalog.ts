@@ -501,6 +501,8 @@ const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
 const ENDING_CONTINUE_COMMANDS = new WeakMap<Command, import("@/project/types").EndingContinueTo>();
 // 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
 const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
+// 에필로그 글을 대사창으로 보인 뒤에 오는 엔딩 명령 — 카드가 그 글을 요약으로 한 번 더 싣지 않게(첫사랑 r5: 엔딩 A 글이 두 번).
+const ENDING_AFTER_EPILOGUE = new WeakSet<Command>();
 
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
   return ending.conditions.every((condition) => condition.kind === "newGamePlus"
@@ -542,6 +544,7 @@ function triggerEnding(
   for (const epilogueCommand of epilogueCommands) {
     if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
   }
+  if (epilogueCommands.some((epilogueCommand) => epilogueCommand.kind === "text")) ENDING_AFTER_EPILOGUE.add(finalCommand);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
@@ -723,6 +726,10 @@ export function executeCommand(
       // 몬스터 장르: 캠페인 배지 스위치가 새로 켜지면 배지 획득 팡파레.
       if (next && !wasOn && state.project && monsterCampaign(state.project)?.badges.some((badge) => badge.switchId === command.switchId)) {
         playMonsterSfx(state.project, "badge-get");
+      }
+      // 퀘스트 완료 스위치(sw_<퀘스트>_done, quest/questDef questFlagIds)가 새로 켜지면 퀘스트 완료 징글(questComplete 자리, ME). 자리가 비면 무음.
+      if (next && !wasOn && state.project && /^sw_.+_done$/u.test(command.switchId) && (state.project.quests ?? []).some((quest) => "key" in quest && `sw_${quest.key}_done` === command.switchId)) {
+        playProjectSeCue("questComplete", state.project);
       }
       return resumeNext(frame);
     }
@@ -998,6 +1005,7 @@ export function executeCommand(
         ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
         ...(continueTo ? { continueTo } : {}),
+        ...(ENDING_AFTER_EPILOGUE.has(command) ? { epiloguePlayed: true } : {}),
       });
     }
     case "returnToTitle":
@@ -1136,10 +1144,14 @@ export function executeCommand(
     case "getFriendship":
       setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, resolveSocialHost(state)));
       return resumeNext(frame);
-    case "changeParty":
+    case "changeParty": {
+      const joined = command.action === "add" && !state.session.partyActorIds.includes(command.actorId);
       changeParty(state.session, command.actorId, command.action, state.project);
+      // 동료 합류 징글(partyJoin 자리, ME 채널) — 실제로 새로 들어왔을 때만. 자리가 비면 무음.
+      if (joined && state.project && state.session.partyActorIds.includes(command.actorId)) playProjectSeCue("partyJoin", state.project);
       if (state.project) syncPartyFollowers(state.project, state.session as PlaySession);
       return resumeNext(frame);
+    }
     case "giveMonster":
       if (state.project) giveMonster(state.project, state.session as PlaySession, command);
       return resumeNext(frame);

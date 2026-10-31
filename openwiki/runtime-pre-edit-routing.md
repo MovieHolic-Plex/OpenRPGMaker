@@ -50,6 +50,7 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
   **출구가 아닌 것(2026-10-30 첫사랑 검수):** 그림 있는 조사(action) 이벤트가 대사·선택지 뒤에 옮기는 페이지는 「다음 장면으로 넘어가는 대화」라 출구 글자를 달지 않는다
   (`exitTargetOf(page, here, talker)` — 탕비실 지후 머리 위 「→ 7층 · 금요일」이 다음 장을 미리 알렸다). 조사 ▼ 표식(`syncExamineMarkers`)도 출구 글자처럼 `scene.running` 동안 숨긴다
   (재회 컷신 내내 팀장·민호 머리 위에 떠 있었다).
+  조사(action) 이벤트가 **선택지** 뒤에 옮기는 페이지도 출구가 아니다(그림 없어도) — 편의점 냉장고에 「→ 그날의 방송실」이 떠 회상을 미리 알렸다(2026-10-31 첫사랑 r5). talker 규칙은 #4001 병합에서 빠졌다가 되살렸다.
   **길 잇기(2026-10-29 vm2 jrpg 「길 못 찾음」)**: 지금 맵에서 그 맵으로 바로 가는 문이 없으면 `mapRoute`(옮기기 이벤트로 이은 가장 짧은 맵 경로)의
   첫 맵으로 가는 문을 짚는다. 꼬리 「→」 뒤(「(숲 입구: 북쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」)는 그 뒤 대상이다 —
   그 이름의 이벤트가 지금 맵에 있으면 그것, 아니면 그 맵으로 가는 첫 출구. 글에 나온 다른 맵도 같은 첫 출구 규칙.
@@ -1210,6 +1211,12 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 게임 언어(`vnExtrasLanguage`: 저작 vnExtras > `meta.oprnDialogueSystem.language` > ko, auto 는 기기 언어). 막·장 끝 판정은 엔딩 id 의
 `act<n>`/`chapter<n>`(`endingSegmentOf`). 엔딩마다 덮기: `EndingPresentation.badge`·`finalTitle`(각 40자, `kicker` 도 40자 상한)
 — 엔딩 정의 presentation 과 ending 명령 presentation 둘 다, 검증 `validateEndingPresentation`, 조수 `define_ending` 스키마. 게임 오버 화면 글자는 이번 범위 밖이다.
+
+**에필로그는 한 번만 읽힌다 (2026-10-31).** 엔딩 CG 카드(`buildEndingCg`)는 저작 메시지가 비면 `define_ending.epilogue` 의 say 비트를
+요약(`endingSummaryText`)으로 싣는다. 그런데 `triggerEnding` 은 그 에필로그를 먼저 대사창으로 한 줄씩 보인 뒤 카드를 띄우므로 같은 글이
+두 번 나왔다(첫사랑 r5 엔딩 A). 에필로그에 글(text 명령)이 있으면 인터프리터가 마지막 `ending` 명령을 `ENDING_AFTER_EPILOGUE` WeakSet 으로
+표시하고, `returnToTitle` 단계의 `epiloguePlayed` → `showEndingScreen(…, epiloguePlayed)` 로 넘겨 카드는 배지·kicker·제목만 남긴다.
+에필로그가 그림뿐이거나 검증에 실패해 대사가 하나도 안 나왔으면 예전처럼 요약을 싣는다. 저작 `message` 는 늘 싣는다.
 
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 

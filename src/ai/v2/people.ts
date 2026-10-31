@@ -358,6 +358,8 @@ function parseWhere(map: GameMap, word: string | undefined): WhereIntent {
   }
   if (/구석|모퉁이|corner/.test(w)) return { kind: "corner", ...base };
   if (/창가|창문|window/.test(w)) return { kind: "window", ...base };
+  // 바깥 맵의 「광장 한쪽」 은 광장이다 — 「한쪽」 이 먼저 잡히면 맵 테두리(벽 없음)에 붙는다(2026-10-31 jb1a terra: 촌장이 (0,20) 서쪽 끝 한 칸에 서서 판정자가 한참 찾았다).
+  if (!room && /광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
   if (/한\s*쪽|한\s*켠|가장자리|벽\s*쪽|벽가|벽\s*앞|벽\s*옆|\bside\b|edge|along the wall/.test(w)) return { kind: "side", ...base };
   if (/가운데|중앙|한가운데|center|centre|middle/.test(w)) return room ? { kind: "center", ...base } : { kind: "plaza", ...base };
   if (/광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
@@ -602,7 +604,8 @@ export function resolveWhere(
 
   // 도움 함수: 방 안 칸의 벽 쪽(이웃이 방 밖이거나, 가구 아닌 못 가는 칸·벽 그림).
   const wallish = (x: number, y: number, room: RoomRect | undefined): boolean => {
-    if (x < 0 || y < 0 || x >= w || y >= map.height) return true;
+    // 바깥 맵의 테두리는 벽이 아니다 — 맵 끝 한 칸에 사람을 세우면 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(jb1a terra 촌장 (0,20)).
+    if (x < 0 || y < 0 || x >= w || y >= map.height) return indoor || !!room;
     if (room && !inRoom(room, { x, y })) return true;
     const c = { x, y };
     if (isPassable(project, map, x, y)) return false;
@@ -873,7 +876,9 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const row = sharedCharsetRow(e.textureKey, e.characterIndex);
       const face = row?.status === "mapped" && row.faceResourceId ? row.faceResourceId : undefined;
       const key = `${e.textureKey}#${e.characterIndex}`;
-      const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 45)
+      // 맵 화풍과 다른 계열은 얼굴 짝(70)보다 무겁게 친다 — 현대 편의점 점장이 얼굴 있는 판타지 RTP 주민 칩으로 뽑혔고, 첫 사람 칩이라 사람 칩 잠금이
+      // RTP 로 걸려 뒤이은 행인의 현대 칩 검색(여학생)이 0 개가 됐다(2026-10-31 asst-parity 마왕 편의점 opus 후).
+      const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 120)
         + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : 0)
         + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.

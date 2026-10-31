@@ -3,6 +3,7 @@ import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateA
 import { partyPixelChoices } from "@/assets/partyPixelSheets";
 import { numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import type { StateRateGrade } from "@/project/ontology/databaseStateOntology";
@@ -46,6 +47,7 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
       dataset: { testid: "db-states-oprn-workbench" },
       children: [
         panel("기본 설정", [
+          stateIconSlot(state.id),
           selectLiteral("주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
             update({ gen1MajorStatus: gen1MajorStatus === "none" ? undefined : gen1MajorStatus })
           ),
@@ -139,6 +141,27 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
 
 // ontology의 텍스트 형태(예: "매 턴 최대 HP의 -6%")에서 부호가 붙은 수치를 추출하거나,
 // 이미 숫자로 저장된 값을 그대로 반환. 사용자가 아직 편집하지 않았다면 ontology에서 파생.
+/** 상태 아이콘 고르기(StateRecord.iconResourceId) — 전투 상태 배지가 글자 대신 이 그림을 쓴다. 고르면 이 칸만 다시 그린다. */
+function stateIconSlot(stateId: string): HTMLElement {
+  const slot = el("div");
+  const render = (): void => {
+    const current = store.getCurrent().database.states.find((entry) => entry.id === stateId);
+    slot.replaceChildren(resourcePickerControl({
+      label: "아이콘",
+      resourceId: current?.iconResourceId,
+      kind: "icon",
+      testid: "db-state-icon-resource",
+      allowClear: true,
+      dialogTitle: "상태 아이콘",
+      queueKey: `state-icon-${stateId}`,
+      onChange: (result) => updateDatabaseRecord("states", stateId, { iconResourceId: result.resourceId || undefined }),
+      rerender: render,
+    }));
+  };
+  render();
+  return slot;
+}
+
 function numericRelease(value: number | undefined, ontologyText: string): number {
   if (value !== undefined) return value;
   const match = ontologyText.match(/-?\d+/);

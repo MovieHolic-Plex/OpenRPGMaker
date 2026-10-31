@@ -139,7 +139,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const crosswalkTile = (tileset.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
-    const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile });
+    const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile, ...(avoid.length ? { avoidProps: avoid } : {}) });
     const outcome = runJpStreetPlan(plan, (name, a) => {
       if (avoidedProp(avoid, name, a)) { avoided++; return undefined; }
       const tool = lookup(name);

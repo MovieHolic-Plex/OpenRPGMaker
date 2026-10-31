@@ -114,6 +114,11 @@ export interface GameMap {
   /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
   bgm?: MapBgmSetting;
   /**
+   * 맵 환경음(BGS) — BGM 밑에 계속 깔리는 루프(비·바람·동굴 물방울). 없으면 지금 흐르는 환경음을 그대로 둔다(옛 맵·이벤트가 튼 환경음 유지).
+   * custom = 이 맵에 들어오면 그 루프(같은 루프면 끊지 않음), none = 이 맵에서는 환경음을 끈다. 해석은 project/mapMusic.ts `resolveMapBgs`.
+   */
+  bgs?: MapBgsSetting;
+  /**
    * 스위치가 켜져 있는 동안 이 맵에 들어올 때(맵 진입·패배 복구) 대신 트는 곡. 앞쪽이 먼저(첫 번째로 켜진 것).
    * 추격 곡(set_game_audio role:chase)이 쓴다 — 추격 스위치가 켜진 채 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어진다.
    * `bgm` 과 따로 두어 맵 속성에서 BGM 을 바꿔도 지워지지 않는다. 해석은 project/mapMusic.ts `resolveMapBgm` 하나.
@@ -354,6 +359,15 @@ export interface MapBackgroundLayer {
 export interface MapSwitchBgm {
   switchId: string;
   resourceId: string;
+}
+
+export interface MapBgsSetting {
+  /** "custom" = 지정 환경음, "none" = 환경음 끔. */
+  mode: "none" | "custom";
+  /** mode="custom"일 때 리소스 ID(kind sound 루프). */
+  resourceId?: string;
+  /** 크기(0~100, 생략 = 100). 환경음 채널은 음악 볼륨 그룹을 따른다. */
+  volume?: number;
 }
 
 export interface MapBgmSetting {
