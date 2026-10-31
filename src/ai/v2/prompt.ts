@@ -21,6 +21,7 @@ import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
 import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
+import { isFreshProject } from "./genreDefaults";
 import type { TodoStore } from "./loop/todoStore";
 
 export const V2_CORE_PROMPT = [
@@ -43,18 +44,33 @@ export const V2_CORE_PROMPT = [
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
 /**
- * 장소 짓기 지식 카드는 지시문에 늘 싣지 않고 필요할 때 준다(2026-11-01 비용 분석 — openwiki/assistant-v2.md 「토큰 비용 재기」).
- * 실내·마을·던전·거리·사람·그리기 카드와 실내 칩셋 목록이 지시문의 약 1.9만 토큰(앞부분의 1/4)이었는데, 지은 맵에 로직만 넣는 요청은
- * 한 번도 쓰지 않으면서 호출마다 다시 읽었다. 이제 지시문에는 색인 한 줄만 두고, read_specs 나 그 종류의 첫 짓기 호출이 카드를 기록(캐시 뒤쪽)으로 준다.
- * 끄기: OPRN_V2_LEAN_PROMPT=0 (A/B 측정용).
+ * 지은 맵에 로직만 넣는 요청(editOnlyRequest)은 장소 짓기 지식 카드와 짓기 동사를 지시문·도구 목록에 싣지 않는다(2026-11-01 비용 분석 —
+ * openwiki/assistant-v2.md 「토큰 비용 재기」). 실내·마을·던전·거리·사람·그리기 카드와 실내 칩셋 목록이 약 1.9만 토큰, make_place·edit_place 등
+ * 짓기 동사가 약 1.6만 토큰인데, 로직 요청 18판에서 한 번도 쓰지 않으면서 호출마다 다시 읽었다.
+ * 그런 요청이면 지시문에는 색인 한 줄(PLACE_SPEC_INDEX)만 두고, 짓기 동사는 load_tools 로, 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록(캐시 뒤쪽)으로 준다.
+ * 게임 하나·장소 짓기·빈 프로젝트 요청은 예전 그대로 다 싣는다. 끄기: OPRN_V2_LEAN_PROMPT=0 (A/B 측정용).
  */
 export function leanPromptOn(): boolean {
   const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
   return env?.OPRN_V2_LEAN_PROMPT !== "0";
 }
+/** 장소를 짓거나 다시 짓는 요청 낱말 — 장소 이름 뒤 열두 글자 안에 짓기 동사, 또는 «새 ○○». 넉넉히 잡는다(잘못 맞으면 예전처럼 다 실을 뿐이다). */
+const PLACE_NOUNS = "맵|지도|마을|도시|거리|골목|던전|동굴|미궁|탑|성|궁|방|실내|집|건물|가게|상점|여관|주점|교회|성당|신전|사당|숲|들판|필드|평원|항구|부두|광장|학교|병원|저택|감옥|지하|층|섬|산|장소|무대|공간|place|map|village|town|city|dungeon|cave|room|house|building|interior|street";
+const BUILD_VERBS = "만들|지어|짓|그려|그리|깔아|깔|넓혀|넓히|키워|늘려|추가|하나 더|고쳐|바꿔|꾸며|꾸미|배치|build|make|add|create|expand|redesign|rebuild|draw";
+export const PLACE_BUILD_WORDS = new RegExp(`(${PLACE_NOUNS})[^.!?\\n]{0,12}(${BUILD_VERBS})|(새|새로운|new)\\s*(${PLACE_NOUNS})`, "iu");
+/** 이미 지은 게임에 로직·대사·데이터만 넣는 요청인가 — 게임 하나·첫 장소(빈 프로젝트)·장소 짓기 낱말이면 아니다. */
+export function editOnlyRequest(project: Project, task: string): boolean {
+  return !!task.trim() && !wantsWholeGame(task) && !wantsMakeGame(task) && !isFreshProject(project) && !PLACE_BUILD_WORDS.test(task);
+}
+/** 이 요청에 가벼운 지시문(장소 카드·짓기 동사를 필요할 때만)을 쓰나. */
+export function leanPromptFor(project: Project, task: string | undefined): boolean {
+  return leanPromptOn() && editOnlyRequest(project, task ?? "");
+}
+/** 가벼운 지시문에서 처음부터 싣지 않는 장소 짓기 동사(toolExposure.ts 가 load_tools 로 돌린다). add_people·move_object 같은 작은 동사는 남긴다. */
+export const PLACE_BUILD_VERBS: ReadonlySet<string> = new Set(["make_place", "edit_place", "review_layout", "dress_room", "room_parts", "dungeon_parts", "find_pieces", "draw_object"]);
 export const PLACE_SPEC_KINDS = ["interior", "village", "dungeon", "street", "people", "draw_object"] as const;
 export type PlaceSpecKind = (typeof PLACE_SPEC_KINDS)[number];
-export const PLACE_SPEC_INDEX = "[Place specs — read on demand] The specs for building places are not in this prompt. Before your first make_place / edit_place / review_layout / add_people / draw_object of a kind in this conversation, call read_specs{names:[…]} for the kinds you will build — interior (inns, shops, studies, jails, houses inside; with the interior chipset catalog), village, dungeon (also caves), street (modern Japan/Korea streets and houses), people (NPCs), draw_object. Read them together with your todo init. A build verb whose spec you have not read returns the spec instead of building (not a failure) — then call it again following the spec. Changing only events, logic, dialogue or the database on existing maps needs none of them.";
+export const PLACE_SPEC_INDEX = "[Place specs — not loaded] This request works on maps that already exist (events, logic, dialogue, database), so the place-building tools (make_place, edit_place, review_layout, dress_room, room_parts, dungeon_parts, find_pieces, draw_object) and their specs are left out. If you really must build or rebuild a place, load the tool with load_tools and read its spec first with read_specs{names:[…]} — interior (inns, shops, studies, jails, houses inside; with the interior chipset catalog), village, dungeon (also caves), street (modern Japan/Korea streets and houses), people (NPCs, for add_people), draw_object. A build call whose spec you have not read returns the spec instead of building (not a failure) — then call it again following the spec.";
 /** 장소 종류(make_place type) → 지식 카드 종류. */
 export function placeSpecKindOf(type: string | undefined): PlaceSpecKind | undefined {
   if (type === "interior") return "interior";
@@ -122,7 +138,7 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   const whole = wantsWholeGame(task ?? "");
   // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
   const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
-  const lean = leanPromptOn();
+  const lean = leanPromptFor(project, task);
   const cards = lean ? [EVENT_CARD, PLACE_SPEC_INDEX] : V2_CARDS;
   return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean), projectBrief(project, currentMapId)];
 }

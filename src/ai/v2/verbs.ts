@@ -8,7 +8,7 @@ import { shipBlockers, wantsWholeGame } from "./shipChecks";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
-import { INTERIOR_WORDS, interiorCatalogCard, leanPromptOn, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
+import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
 import { layoutReviewRounds, REVIEWS_TAG } from "./layoutReview";
@@ -509,8 +509,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
   const freshStart = isFreshProject(env.ctx.project);
 
-  // 가벼운 지시문(prompt.ts leanPromptOn): 장소 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록으로 준다. 이 대화에서 이미 줬으면 다시 주지 않는다.
-  const lean = leanPromptOn();
+  // 가벼운 지시문(prompt.ts leanPromptFor — 지은 맵에 로직만 넣는 요청): 장소 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록으로 준다.
+  // 이 대화에서 이미 줬으면 다시 주지 않는다. 판정은 이 차례를 시작할 때의 프로젝트로 한다(지시문과 같게).
+  const lean = leanPromptFor(env.ctx.project, String(task ?? ""));
   const epoch = () => env.contextEpoch?.() ?? 0;
   // 실행기(대화 번호를 주는 env)에서만 막는다 — 모델 없는 시험·덤프 도구는 예전처럼 바로 짓는다.
   const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || session.specsShown.get(kind) === epoch();

@@ -16,6 +16,7 @@ import type { PiAssistantV2Env } from "./env";
 import { v2ExtraToolNames, wantsGameTools } from "./game";
 import { musicOnly } from "./musicWords";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
+import { leanPromptFor, PLACE_BUILD_VERBS } from "./prompt";
 
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
@@ -152,9 +153,12 @@ function loadedSchema(tool: PiToolShape): string {
 export function exposeV2Tools(env: PiAssistantV2Env, tools: readonly PiToolShape[]): V2ToolExposure {
   const task = String(env.request.task ?? "");
   const lazyOn = wantsGameTools(task) && !musicOnly(task);
-  const offeredSet = new Set(v2ExtraToolNames(task));
+  // 지은 맵에 로직만 넣는 요청(prompt.ts leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
+  const placeLazy = leanPromptFor(env.ctx.project, task);
+  const offeredSet = new Set([...v2ExtraToolNames(task), ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
-  const isLazy = (t: PiToolShape) => lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name));
+  const isLazy = (t: PiToolShape) => (placeLazy && PLACE_BUILD_VERBS.has(t.name))
+    || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();
   const upFront = tools.filter((t) => !isLazy(t)).map((t) => collapseRepeats(englishToolCopy(t, true), seen));
   const lazy = new Map<string, PiToolShape>();
