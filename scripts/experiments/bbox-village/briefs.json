@@ -1,0 +1,8 @@
+{
+ "port": {"n": 4, "en": "A small fishing port village: a working harbour with wooden piers and boats, a fish market on the waterfront, fishermen's cottages, net-drying racks, an inn for sailors.",
+          "ko": "작은 포구 어촌 — 나무 부두와 배가 있는 일하는 항구, 물가의 생선 시장, 어부들의 집, 그물 말림대, 뱃사람 여관",
+          "spec": {"name": "Gull Harbour", "theme": "coast", "size": "medium", "features": ["fishing"]}, "seed": 5},
+ "hill": {"n": 2, "en": "A hillside farming village: farmhouses climbing the terraces of a hill, wheat fields and orchards, a barn and haystacks, a small chapel on the highest terrace.",
+          "ko": "언덕 비탈의 농촌 마을 — 단을 따라 오르는 농가, 밀밭과 과수원, 헛간과 짚가리, 가장 높은 단의 작은 예배당",
+          "spec": {"name": "Hill Farm", "theme": "river", "size": "medium", "features": ["hillside"]}, "landform": "hill", "seed": 11}
+}

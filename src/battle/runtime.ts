@@ -4441,9 +4441,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       recordAction({ userRecordId: user.recordId, targetId: target.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
       return;
     }
-    if (skill.animationId) {
-      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
-    }
     const enemyRecord = battlerSide(target) === "enemy"
       ? options.project.database.enemies.find((record) => record.id === target.recordId)
       : undefined;
@@ -4482,6 +4479,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       } else {
         recordSpecial(user, target, "배울 기술이 없다.", skill.id, commandKind);
       }
+    }
+    // 화면은 타임라인 엔트리에 붙은 애니메이션만 재생한다 — 기록한 뒤에 붙여야 이 기술의 줄에 실린다.
+    if (skill.animationId) {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
+      attachAnimationToLatestTimeline(lastAnimation);
     }
     applyStates(user, target, skill.stateEffects);
   }

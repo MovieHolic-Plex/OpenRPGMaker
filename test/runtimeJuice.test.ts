@@ -24,6 +24,15 @@ describe("emitRuntimeJuice", () => {
     expect(runtimeJuiceLog().at(-1)?.soundResourceId).toBe("easyrpg-sound-cursor2");
   });
 
+  it("title cursor/confirm follow the project SE cue table when the title has no own sound", () => {
+    installJuiceGlobals();
+    const project = { meta: {}, system: { seCues: { cursor: "store-cursor-a", confirm: "store-confirm-a" } } } as never;
+    expect(emitRuntimeJuice({ event: "title-select", project }).soundResourceId).toBe("store-cursor-a");
+    expect(emitRuntimeJuice({ event: "title-confirm", project }).soundResourceId).toBe("store-confirm-a");
+    // 타이틀 전용 소리(titleScreen.sounds → soundResourceId)를 저작했으면 그쪽이 이긴다.
+    expect(emitRuntimeJuice({ event: "title-select", project, soundResourceId: "title-own-cursor" }).soundResourceId).toBe("title-own-cursor");
+  });
+
   it("keeps default sound when override is omitted", () => {
     installJuiceGlobals();
     const entry = emitRuntimeJuice({ event: "title-enter" });

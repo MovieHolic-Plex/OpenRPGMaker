@@ -305,6 +305,29 @@
   75% { background-position: 50% 0%; animation-timing-function: steps(1, end); }
   100% { background-position: 0% 0%; }
 }
+/* 16칸(4×4) 적 시트: 배경 400%, 한 칸 = 33.333%. 대기 루프는 같은 a→b→c→b(칸 0·1·2). 칸 번호 계약은 pixelEnemySheets.ts PIXEL_ENEMY_CELL_INDEX. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy[data-pixel-grid="4x4"] .battle-enemy-image[data-pixel-sheet] {
+  background-size: 400% 400%;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy[data-pixel-grid="4x4"]:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation-name: retro-pixel-enemy-idle-16;
+}
+@keyframes retro-pixel-enemy-idle-16 {
+  0% { background-position: 0% 0%; animation-timing-function: steps(1, end); }
+  25% { background-position: 33.333% 0%; animation-timing-function: steps(1, end); }
+  50% { background-position: 66.667% 0%; animation-timing-function: steps(1, end); }
+  75% { background-position: 33.333% 0%; animation-timing-function: steps(1, end); }
+  100% { background-position: 0% 0%; }
+}
+/* HP 25% 이하(16칸 시트의 weak 칸 13 = 열 1·행 3): weak ↔ idle_b 를 대기 한 칸 길이의 두 배로 번갈아 숨이 가쁜 대기. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy[data-pixel-grid="4x4"][data-pixel-weak="true"]:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation-name: retro-pixel-enemy-weak-16;
+}
+@keyframes retro-pixel-enemy-weak-16 {
+  0% { background-position: 33.333% 100%; animation-timing-function: steps(1, end); }
+  62% { background-position: 33.333% 0%; animation-timing-function: steps(1, end); }
+  100% { background-position: 33.333% 100%; }
+}
 /* 흰 점멸 예비동작·10px 찌르기는 도트 칸이 대신한다. */
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat],
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat] .battle-enemy-image {
@@ -350,6 +373,8 @@
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"] .battle-enemy[data-pixel-enemy][data-battle-pose="dead"] { filter: none; }
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy[data-pixel-grid="4x4"]:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy[data-pixel-grid="4x4"][data-pixel-weak="true"]:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; background-position: 33.333% 100%; }
   .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] { animation: none; opacity: 0; }
 }
 

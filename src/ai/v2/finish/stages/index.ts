@@ -23,6 +23,7 @@ export { stage as bossRest } from "./boss-rest";
 export { stage as fillUnsetConditions } from "./fill-unset-conditions";
 export { stage as ungateTalkBattles } from "./ungate-talk-battles";
 export { stage as orderStepBattles } from "./order-step-battles";
+export { stage as bossWinFinishesStep } from "./boss-win-finishes-step";
 export { stage as humanizeMapNames } from "./humanize-map-names";
 export { stage as lockStepDoors } from "./lock-step-doors";
 export { stage as pointLockedPages } from "./point-locked-pages";

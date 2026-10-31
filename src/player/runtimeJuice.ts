@@ -62,9 +62,12 @@ const RUNTIME_JUICE_SPECS = {
 const RUNTIME_JUICE_CLASSES = Object.values(RUNTIME_JUICE_SPECS).map((spec) => spec.motionClass);
 
 const DEFAULT_VOLUME = 0.35;
+// 타이틀 사건도 같은 자리를 본다 — 스토어 효과음 팩(set_game_audio sfx-style·스토어 창 넣기)이 seCues 만 채워도 타이틀 커서·결정이
+// 그 소리로 울린다. 타이틀 전용 소리(titleScreen.sounds)는 호출자가 soundResourceId 로 넘기므로 여전히 이긴다(2026-10-31 스토어 검증).
 const MENU_SE_CUE: Partial<Record<RuntimeJuiceEvent, SystemSeCue>> = {
   "menu-back": "cancel", "menu-close": "cancel", "menu-confirm": "confirm",
   "menu-invalid": "buzzer", "menu-open": "confirm", "menu-select": "cursor",
+  "title-select": "cursor", "title-confirm": "confirm", "title-enter": "confirm",
 };
 
 /** 사건의 기본 자리 앞에 오는 자리(메뉴 열기 → menuOpen). */

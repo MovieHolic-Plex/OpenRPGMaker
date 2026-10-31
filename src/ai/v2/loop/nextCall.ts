@@ -82,6 +82,12 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
     const first = /이 맵의 이벤트:\s*([^\s,)…]+)/u.exec(body)?.[1];
     if (list || first) return { verb: "get_event", args: { mapId: mapId ?? "<mapId>", eventId: "<an id from the list below>" }, why: `that id does not exist (deleted, or rebuilt with a new id) — events on that map: ${list || first}` };
   }
+  // 칸 배치 거절: 고침은 layoutPatch(거절된 배치에도 적용된다)나 고친 배치 전체 — 글에 든 find_pieces 는 id 를 찾는 보조일 뿐이다
+  // (2026-10-31 6회차 terra-high: 다음 호출 제안이 find_pieces({}) 를 골라 빈 조회가 늘었다).
+  if (/Rejected: the (interior layout|layout patch) for/u.test(body) && has("edit_place")) {
+    return { verb: "edit_place", args: { patch: { mapId: mapId ?? "<mapId>", layoutPatch: { add_objects: [{ id: "<catalog id>", x: 0, y: 0 }] } } },
+      why: "fix every problem the rejection names with a layout patch (it also applies to a rejected, not yet built layout) or send make_place with the full corrected layout; use find_pieces(category) only to look up more ids" };
+  }
   // 거절 글이 다른 동사를 일렀다(«stamp_object·fill_region·move_event 로 고친다»): 그중 아직 안 쓴 것 하나.
   const named = [...available].filter((v) => v !== tool && v !== "todo" && mentions(body, v)).sort((x, y) => body.indexOf(x) - body.indexOf(y));
   const fresh = named.find((v) => !used.has(v)) ?? named[0];
@@ -160,6 +166,7 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
     case "ending": return has("add_ending_scene") ? { verb: "add_ending_scene", args: { mapId: mapId(c.map) ?? "<ending map mapId>", title: "<ending name>", lines: ["<name>: <line>"], epilogue: ["<epilogue line>"], after: "<after what (e.g. the demon lord)> or talkTo" }, why: "lines → ending in one call" } : has("define_ending") ? { verb: "define_ending", args: { "<ending definition>": "…" }, why: "ending" } : has("add_event") ? { verb: "add_event", args: skeletonFor("add_event", mapId(c.map)), why: "ending scene" } : undefined;
     case "item": return has("upsert_item") ? { verb: "upsert_item", args: { item: { id: "<item id>", name: c.name } }, why: "item" } : undefined;
     case "objective": return has("set_objective") ? { verb: "set_objective", args: { text: c.text ? `<objective line containing ${c.text}>` : "<objective line>", at: "start" }, why: "objective line" } : undefined;
+    case "layout_review": return has("review_layout") ? { verb: "review_layout", args: { mapId: mapId(c.map) ?? "<mapId>", problems: ["<what looks wrong or empty to a player, with cells>"], patch: { remove_objects: [], add_objects: [] } }, why: "self-review the laid interior as a player and patch the layout" } : undefined;
     default: return undefined;
   }
 }

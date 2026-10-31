@@ -99,6 +99,8 @@ const EN_RULES: readonly Rule[] = [
 export function englishToolMessage(message: string, code?: string): string {
   const example = /—\s*(?:다시 보낼 형식 예시|호출 예시):\s*(\{.*\})/su.exec(message)?.[1];
   const core = oneLine(withoutExample(message));
+  // 이미 영어로 쓴 거절 글(칸 배치 검사 «Rejected: … Fixed call»)은 그대로 — 장소 이름이 한글이라 «Tool said (Korean)»으로 싸이던 것.
+  if (/^(Rejected|Not built yet)\b/u.test(core)) return message.trim();
   for (const rule of EN_RULES) {
     if (rule.code && !(code && rule.code.test(code))) continue;
     const m = rule.re.exec(core);

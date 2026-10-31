@@ -191,7 +191,9 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
       `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". 다른 그림으로 대체하지 않습니다. ` +
         `사람이면 list_npc_graphics 로 고르고, 물건이면 그 칸에 place_props·paint_tiles 로 물건 타일을 깔고 graphic:{transparent:true} 를 주세요. ` +
         `charset 라벨 예시: ${examples}.` +
-        (npcGraphicCatalogIsFiltered() ? " 장르 잠금 중이라 이 프로젝트의 허용 칩(몬스터 수집 캐릭터 칩)만 검색한다 — 사람은 query:\"villager\"·\"트레이너\" 같은 일반 말로 허용 사람 칩이 골라진다." : ""),
+        // 필터는 장르 잠금(몬스터 수집·현대 연애)일 수도, 사람 칩 잠금(처음 놓은 사람 칩의 계열)일 수도 있다 — 현대 거리에서 「몬스터 수집 칩만」이라고 적어
+        // 모델이 헷갈렸다(2026-10-31 asst-parity 마왕 편의점 opus 후: 사람 칩 잠금 RTP 에서 「여학생」 0개).
+        (npcGraphicCatalogIsFiltered() ? " 이 프로젝트는 캐릭터 칩 잠금(장르 잠금 또는 처음 놓은 사람 칩 계열로 정해진 사람 칩 잠금)이 걸려 허용 계열 칩만 검색한다 — list_npc_graphics 로 허용 칩 안에서 고르거나, 「villager」 같은 일반 말로 다시 부른다." : ""),
       { code: "graphic-not-found" }
     );
   }
