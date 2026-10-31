@@ -38,6 +38,7 @@ import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT, GAME_OVER_DEFINITION_
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
 import { validateConditionShape } from "./shapeCommandFields";
+import { BESTIARY_ENTRY_LIMIT, BESTIARY_SECTION_LIMIT, isBestiaryUnlock } from "@/project/bestiary";
 import { SCHEDULE_ACTIVITY_LIMIT, SCHEDULE_MAX_USES_LIMIT, SCHEDULE_RECORD_LIMIT, SCHEDULE_SLOT_LIMIT } from "@/project/schedule";
 import { validateCharacterAppearances } from "./characterAppearanceValidation";
 
@@ -196,6 +197,7 @@ export function validateSystem(value: unknown): void {
     if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);
     if (gallery.label !== undefined) requireString("system.gallery.label", gallery.label);
   }
+  if (system.bestiary !== undefined) validateBestiaryShape(system.bestiary);
   if (system.newGamePlus !== undefined) {
     const newGamePlus = requireRecord("system.newGamePlus", system.newGamePlus);
     if (newGamePlus.enabled !== undefined) requireBoolean("system.newGamePlus.enabled", newGamePlus.enabled);
@@ -362,6 +364,37 @@ export function validateGameOverSettings(value: unknown, label = "system.gameOve
     assert((settings.kicker as string).length <= 24, `${label}.kicker is too long.`);
   }
   if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
+}
+
+/** 괴물 도감(project/bestiary.ts). 항목·칸 모양과 칸의 열림 조건을 본다. */
+function validateBestiaryShape(value: unknown): void {
+  const bestiary = requireRecord("system.bestiary", value);
+  requireOnlyFields("system.bestiary", bestiary, ["enabled", "title", "entries"]);
+  requireBoolean("system.bestiary.enabled", bestiary.enabled);
+  if (bestiary.title !== undefined) requireString("system.bestiary.title", bestiary.title);
+  const entries = requireArray("system.bestiary.entries", bestiary.entries);
+  assert(entries.length <= BESTIARY_ENTRY_LIMIT, `system.bestiary.entries must contain at most ${BESTIARY_ENTRY_LIMIT} entries.`);
+  for (const [index, raw] of entries.entries()) {
+    const label = `system.bestiary.entries[${index}]`;
+    const entry = requireRecord(label, raw);
+    requireOnlyFields(label, entry, ["id", "name", "enemyIds", "pictureResourceId", "sections"]);
+    requireString(`${label}.id`, entry.id);
+    requireString(`${label}.name`, entry.name);
+    for (const [enemyIndex, enemyId] of requireArray(`${label}.enemyIds`, entry.enemyIds).entries()) requireString(`${label}.enemyIds[${enemyIndex}]`, enemyId);
+    if (entry.pictureResourceId !== undefined) requireString(`${label}.pictureResourceId`, entry.pictureResourceId);
+    const sections = requireArray(`${label}.sections`, entry.sections);
+    assert(sections.length <= BESTIARY_SECTION_LIMIT, `${label}.sections must contain at most ${BESTIARY_SECTION_LIMIT} sections.`);
+    for (const [sectionIndex, rawSection] of sections.entries()) {
+      const sectionLabel = `${label}.sections[${sectionIndex}]`;
+      const section = requireRecord(sectionLabel, rawSection);
+      requireOnlyFields(sectionLabel, section, ["id", "title", "text", "unlock", "unlockWhen"]);
+      requireString(`${sectionLabel}.id`, section.id);
+      requireString(`${sectionLabel}.title`, section.title);
+      requireString(`${sectionLabel}.text`, section.text);
+      if (section.unlock !== undefined) assert(isBestiaryUnlock(section.unlock), `${sectionLabel}.unlock is invalid.`);
+      if (section.unlockWhen !== undefined) validateConditionShape(`${sectionLabel}.unlockWhen`, section.unlockWhen);
+    }
+  }
 }
 
 function requireOnlyFields(label: string, value: Record<string, unknown>, fields: readonly string[]): void {
