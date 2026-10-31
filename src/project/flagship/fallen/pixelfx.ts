@@ -6,7 +6,7 @@
 //
 // 1. 기술: 원래 애니메이션 레코드의 소리·흔들림을 효과의 터지는 박자로 옮긴 pixelfx 레코드(anim_pfx_fs_*)로 바꾼다.
 //    직업 연출 계약이 있는 기술(십자베기 등)은 연출이 제 소리를 내므로 소리를 옮기지 않는다(두 번 울린다).
-// 2. 필드: 서리나루 광장 모닥불, 서리나루 낮·밤 눈, 북쪽 숲 어귀(밤) 반딧불, 우물 밑 물방울.
+// 2. 필드: 서리나루 광장 모닥불, 북쪽 숲 어귀(밤) 반딧불, 우물 밑 물방울.
 //    16px 칩셋에는 효과 불꽃이 크다(spirit-flame 은 두 칸 반) — 벽난로·화덕·벽 촛대에 얹어 보니 아궁이 밖으로 솟아 뺐다
 //    (2026-10-31 실화면). 벽 촛대는 상층 벽 칸 밑에 가려 보이지도 않았다. 낮 맵에는 반딧불을 두지 않는다.
 // 3. 이야기: 성벽 개구멍 먼지, 하늘탑 마법진 순간이동.
@@ -124,9 +124,8 @@ export const FALLEN_FIELD_FX: readonly FieldFx[] = [
   { map: "fs2_frostford", key: "bonfire", at: { x: 19, y: 45 }, fx: { effectId: "fire/campfire", light: 0.9, offsetX: 6, offsetY: -2, seed: 29, layer: "auto" }, note: "서리나루 광장 모닥불" },
   // 우물 밑 — 천장에서 바닥 물웅덩이로 떨어지는 물방울.
   { map: "fs2_well_shaft", key: "drip", at: { x: 3, y: 6 }, fx: { effectId: "water/drip", light: 0.6, offsetY: -4, layer: "back" }, note: "우물 밑 물방울" },
-  // 화면 층 — 날씨·반딧불 (오로라는 화면 층이라 벽·문까지 덮어 뺐다).
-  { map: "fs2_frostford", key: "snow", at: { x: 1, y: 0 }, fx: { effectId: "weather/snow", layer: "screen", seed: 2 }, note: "서리나루 눈(화면 층)" },
-  { map: "fs2_frostford_night", key: "snow", at: { x: 1, y: 0 }, fx: { effectId: "weather/snow", layer: "screen", seed: 4 }, note: "얼음 위의 밤 눈(화면 층)" },
+  // 화면 층 — 반딧불. 화면 층은 효과 그림(320×180)을 시야를 덮도록 정수배로 키운다 — 눈(weather/snow)은 눈송이가
+  //   한 칸만 하게 커져 흰 눈밭에서 푸른 테두리 별처럼 보였고, 오로라는 성문·벽까지 덮었다. 둘 다 빼고 엔진 눈 날씨를 그대로 둔다.
   // 반딧불 효과의 앞 층에는 풀잎 한 줄이 화면 아래에 깔린다 — 화면 밖으로 밀어 낸다.
   { map: "map_field_north_1", key: "fireflies", at: { x: 1, y: 0 }, fx: { effectId: "weather/fireflies", layer: "screen", light: 1.4, offsetY: 24, seed: 3 }, note: "북쪽 숲 어귀(밤) 반딧불(화면 층)" },
 ];
@@ -147,21 +146,6 @@ function applyFieldFx(project: Project, report: { applied: string[]; skipped: st
     const event = { id, name: `효과 · ${entry.note}`, x: entry.at.x, y: entry.at.y, trigger: { kind: "action" }, commands: [], pages: [fxPage(`${id}_p`, entry.note, entry.fx)] } as unknown as GameEvent;
     map.events = [...map.events.filter((e) => e.id !== id), event];
     report.applied.push(`필드 ${entry.note} → ${entry.fx.effectId}${entry.fx.layer === "screen" ? " (화면 층)" : ""}`);
-  }
-  // 서리나루는 엔진 눈 날씨가 이미 있다 — 픽셀 눈을 얹은 맵은 엔진 눈을 끈다(두 겹이면 화면이 뿌옇다).
-  for (const mapId of ["fs2_frostford", "fs2_frostford_night"]) {
-    const map = project.maps[mapId];
-    if (!map || !map.events.some((e) => e.id === `ev_pfx_${mapId}_snow`)) continue;
-    clearEngineSnow(map);
-  }
-}
-
-/** 맵 분위기 이벤트(ev_scene_mood_<맵>)의 setWeather 눈을 없음으로 — 「없음」을 명시해야 앞 맵(얼음 호수)의 눈이 넘어오지 않는다. */
-function clearEngineSnow(map: GameMap): void {
-  const mood = map.events.find((e) => e.id === `ev_scene_mood_${map.id}`);
-  for (const page of mood?.pages ?? []) for (const cmd of page.commands) {
-    const rec = cmd as unknown as { kind: string; weather?: string };
-    if (rec.kind === "setWeather" && rec.weather === "snow") rec.weather = "none";
   }
 }
 
