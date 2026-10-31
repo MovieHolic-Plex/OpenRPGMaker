@@ -73,6 +73,7 @@ import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { movementKeyProblems, movementKeyRejectMessage, pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { withJosa } from "@/util/josa";
+import { npcStandReach } from "./npcStandReach";
 import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
@@ -412,12 +413,14 @@ const OBJECT_HEAD_NOUNS = new Set([
   "영역", "구역", "지점", "트리거", "입구", "출구", "계단", "사다리", "구멍", "통로",
   "거울", "촛대", "양초", "등불", "램프", "등", "화로", "난로", "벽난로", "우산", "석상", "동상", "조각상", "액자", "사진", "그림", "초상화",
   "책", "일기", "일기장", "편지", "쪽지", "메모", "수첩", "서류", "노트",
+  // 추리 단서 물건 — 2026-10-31 mef1 terra 추리: 단서 단계 「여관 장부」가 주민 칩(people1 #73)으로 서서 판정자가 「장부에게 말을 걸라」는 목표를 읽었다.
+  "장부", "기록", "기록부", "명부", "출입부", "숙박부", "발자국", "흔적", "자국", "얼룩", "핏자국", "조각", "천", "손수건", "장갑", "단추", "깃털", "보관함", "현장",
   "책상", "탁자", "식탁", "의자", "침대", "시계", "괘종시계", "우물", "무덤", "제단", "꽃병", "화분", "기둥", "수정", "분수", "기념비", "오르간", "피아노",
 ]);
 /** 숨은 장치·투명 구역 — 그림을 세우면 안 된다(이름이 숨겼다고 말한다). */
 const HIDDEN_WORDS = /숨은|숨겨진|감춰진|보이지 ?않는|투명|hidden|invisible|secret/iu;
 /** 대사가 아니라 서술(「잠겨 있다」「~라고 적혀 있다」)인 본문 — 사물을 조사한 결과다. */
-const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
+const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어|묻어|찍혀|남아|흩어져) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
 /** 1인칭·말 건네기 — 누군가 말하고 있다. */
 const FIRST_PERSON = /(^|[\s「"'“])(나|내|난|날|저|제|전|우리|이몸|본인|자네|너|네가|당신|그대|젊은이|여행자|손님)(는|가|도|를|의|에게|한테|요|야|,|\s|!|\?|$)|어서 ?오|안녕|반갑|고맙|부탁|[요죠네게지나]\s*[.!?~…]*\s*$|[까냐니][?？]\s*$|구먼|일세|하게|하오|습니다|ㅂ니다/u;
 
@@ -1034,7 +1037,10 @@ export function resolveEventPlacement(
   // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
   const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y
     && !(options.replacesAutoInspect === true && isAutoInspectEvent(event)));
-  const keepRequested = !requestedReserved && !occupiedRequested;
+  // 사람(character)은 걸어 와 말을 걸 수 있어야 한다 — 통행 칸이어도 입구에서 닿지 않는 덤불 주머니면 근처 닿는 칸으로 옮긴다
+  // (2026-10-31 이세계 고딩 왕도 근위병). 입구가 없는 새 맵은 판단 보류(npcStandReach 가 null).
+  const unreachablePerson = options.kind === "character" && !options.steppable && !(npcStandReach(project, map)?.talkable(x, y) ?? true);
+  const keepRequested = !requestedReserved && !occupiedRequested && !unreachablePerson;
   if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
   const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
@@ -1597,6 +1603,8 @@ const placeNpc: ToolDefinition = {
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const npcPassage = passageBlockWarning(draft, map, event);
     if (npcPassage) normalizationWarnings.push(npcPassage);
+    const npcUnreachable = unreachableNpcWarning(draft, map, event, `NPC '${name}'`);
+    if (npcUnreachable) normalizationWarnings.push(npcUnreachable);
     finalX = event.x;
     finalY = event.y;
     const adjusted = finalX !== requestedX || finalY !== requestedY;
@@ -2192,6 +2200,35 @@ function nearestPassableCell(
   ignoreEventId?: string,
   reserved?: ReadonlySet<string>,
 ): Point | null {
+  // 입구(시작 위치·착지 칸)에서 걸어 와 말을 걸 수 있는 칸만 먼저 — 큰 고립 덩이(덤불 주머니)나 착지 칸 위에 세우지 않는다
+  // (2026-10-31 이세계 고딩 왕도: 근위병이 덤불 주머니에 서서 말을 걸 수 없었다). 입구가 없는 새 맵은 판단 보류.
+  // 근처(반경 10)에 그런 칸이 하나도 없으면 예전 규칙으로 고른다 — 호출자가 unreachableNpcWarning 으로 알린다.
+  const stand = npcStandReach(project, map);
+  if (stand) {
+    const talkable = nearestPassableCellWhere(project, map, x, y, Math.max(maxRadius, 10), ignoreEventId, reserved, stand.talkable);
+    if (talkable) return talkable;
+  }
+  return nearestPassableCellWhere(project, map, x, y, maxRadius, ignoreEventId, reserved, () => true);
+}
+
+/** 사람이 선 칸에 입구에서 걸어 와 말을 걸 수 없으면 영어 경고(모델이 읽는다). 입구가 없는 맵은 판단 보류. */
+export function unreachableNpcWarning(project: Project, map: GameMap, event: Pick<GameEvent, "x" | "y">, label: string): string | null {
+  const stand = npcStandReach(project, map);
+  if (!stand || stand.talkable(event.x, event.y)) return null;
+  return `${label} at (${event.x},${event.y}) cannot be reached on foot from this map's start or entrance cells, so the player can never talk to it. `
+    + "Move it next to a road or open floor the player walks through (show_map_region shows the walkable cells), or open a path to it.";
+}
+
+function nearestPassableCellWhere(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  maxRadius: number,
+  ignoreEventId: string | undefined,
+  reserved: ReadonlySet<string> | undefined,
+  talkable: (x: number, y: number) => boolean,
+): Point | null {
   const occupied = new Set([
     ...map.events
       .filter((event) => event.id !== ignoreEventId)
@@ -2276,6 +2313,7 @@ function nearestPassableCell(
         if (componentSize(cx, cy) < totalWalkableEstimate) continue;
         if (isFurnitureOrRoadwayCell(cx, cy).bad) continue;
         if (lanes.has(cy * map.width + cx)) continue;
+        if (!talkable(cx, cy)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }
@@ -2297,6 +2335,7 @@ function nearestPassableCell(
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
         if (!isPassable(project, map, cx, cy)) continue;
+        if (!talkable(cx, cy)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }

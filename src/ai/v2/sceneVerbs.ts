@@ -12,7 +12,8 @@
 //    언제: afterSwitchId(또는 after 낱말이 맞는 격파·처치 스위치)가 켜진 뒤 맵에 들어오면 자동, talkTo 가 있으면 그 인물에게 말 걸 때.
 //    둘 다 없으면 시작하자마자 끝나는 엔딩을 만들지 않으려고 거절한다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun, ContentBuildResult } from "./types";
+import type { BuildRun, ContentBuildResult, EventBeat } from "./types";
+import { buildEvent } from "./events";
 import { buildPeople, eventsOf } from "./people";
 import { ensureFoeTroop, enemyArtFor } from "./builders/dungeon";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
@@ -34,6 +35,8 @@ export interface BossEncounterSpec {
 export interface EndingSceneSpec {
   readonly mapId?: string;
   readonly title: string;
+  /** 장면을 무대로 — add_event 와 같은 비트(사람이 모여 걸어오고, 감정 표시, 음악). 있으면 lines 는 그 뒤 대사로 붙는다. */
+  readonly beats?: readonly EventBeat[];
   readonly lines: readonly (string | { readonly who?: string; readonly text: string })[];
   readonly epilogue?: readonly string[];
   readonly talkTo?: string;
@@ -85,6 +88,10 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   if (!lines.length) return result(false, run, first, "lines(싸우기 전 보스 대사 1줄 이상)가 필요하다", warnings, []);
   const mapId = findMapId(run.ctx.project, spec.mapId) ?? (spec.mapId && run.ctx.project.maps[spec.mapId] ? spec.mapId : run.ctx.currentMapId);
   if (!mapId || !run.ctx.project.maps[mapId]) return result(false, run, first, `맵 「${spec.mapId ?? ""}」 을 찾지 못했다 — mapId(또는 맵 이름)를 준다`, warnings, []);
+  // 이 맵에 이미 보스전(던전 빌더의 보스·청사진 단계 전투)이 있으면 그것을 보스로 꾸민다 — 옆에 두 번째 보스를 세우지 않는다.
+  // 그 싸움의 적 그룹은 그대로 두고, 모델이 boss.troopId 를 줄 때만 바꾼다.
+  const adopted = adoptExistingBoss(run, mapId, spec, name, lines);
+  if (adopted) return result(true, run, first, adopted.summary, warnings, [mapId], [{ mapId, eventId: adopted.eventId }]);
   const troopId = bossTroop(run, spec.boss, warnings);
   if (!troopId) return result(false, run, first, `「${name}」 보스 적 그룹을 만들지 못했다 — boss.troopId 를 주거나 boss.enemy 에 적 낱말을 준다`, warnings, [mapId]);
   // 사람: 이미 그 이름이 이 맵에 있으면 대사만 바꾼다(buildPeople 규칙).
@@ -118,6 +125,70 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   return result(true, run, first, `보스 「${name}」 ${map.name}(${ev.x},${ev.y}) [${ev.id}] — 말을 걸면 대사 ${lines.length}줄 뒤 보스전(${troop?.name ?? troopId} [${troopId}], 도망 불가), 이기면 ${sw} 켜고 ${later.length ? "다시 말 걸면 뒤 대사" : "사라진다"}. 지면 보스 방 앞에서 다시(끝맺음).`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
 }
 
+/**
+ * 맵에 이미 있는 도망 못 치는 보스전 이벤트(던전 빌더 `<맵>_boss`·보스 그룹). 모델이 자리를 주면 그 둘레 4칸 안의 것만.
+ * 왜(2026-10-30 jb1a·jb1c terra jrpg): add_boss_encounter 가 동굴 빌더의 마왕(47,9) 바로 아래 (47,10)에 두 번째 「마왕」을 세웠고,
+ * 단계 이벤트는 첫 보스의 승리 스위치를, 모델이 붙인 엔딩은 둘째 보스의 스위치를 읽어 엔딩 길이 둘로 갈렸다.
+ */
+function existingBossEvent(project: Project, mapId: string, at?: Pt): GameEvent | undefined {
+  const map = project.maps[mapId];
+  const bossy = (ev: GameEvent): boolean => {
+    let fight = false, named = /(^|_)boss($|_)|보스/iu.test(ev.id);
+    const visit = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(visit); return; }
+      if (!node || typeof node !== "object") return;
+      const cmd = node as Obj;
+      if (cmd.kind === "battleProcessing" && cmd.canEscape === false) {
+        fight = true;
+        const troop = project.database.troops.find((t) => t.id === cmd.troopId);
+        if (/boss|보스|마왕|군주/iu.test(`${String(cmd.troopId ?? "")} ${troop?.name ?? ""}`)) named = true;
+      }
+      for (const v of Object.values(cmd)) if (v && typeof v === "object") visit(v);
+    };
+    visit(ev.pages ?? []);
+    return fight && named;
+  };
+  const near = (ev: GameEvent) => !at || Math.max(Math.abs(ev.x - at.x), Math.abs(ev.y - at.y)) <= 4;
+  return eventsOf(map).find((ev) => bossy(ev) && near(ev));
+}
+
+/** existingBossEvent 를 보스로 꾸민다: 이름, 싸우기 전 대사(보스 이름 화자), 고른 그룹, 이긴 뒤 대사. 되풀이 안전(전에 단 이 화자 대사는 바꾼다). */
+function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec, name: string, lines: string[]): { summary: string; eventId: string } | undefined {
+  const ev = existingBossEvent(run.ctx.project, mapId, spec.boss.at);
+  if (!ev) return undefined;
+  const said = (list: unknown[]) => list.filter((c) => !((c as Obj).kind === "text" && (c as Obj).speaker === name));
+  const talk = lines.map((body) => ({ kind: "text", speaker: name, body }));
+  const won = clean(spec.afterWin).map((body) => ({ kind: "text", speaker: name, body }));
+  let sw: string | undefined;
+  let fightTroop: string | undefined;
+  const dress = (list: unknown[]): unknown[] => {
+    const out: unknown[] = [];
+    for (const raw of said(list)) {
+      const cmd = { ...(raw as Obj) };
+      if (cmd.kind === "battleProcessing" && cmd.canEscape === false) {
+        out.push(...structuredClone(talk));
+        const pick = spec.boss.troopId && run.ctx.project.database.troops.some((t) => t.id === spec.boss.troopId) ? spec.boss.troopId : undefined;
+        if (pick) cmd.troopId = pick;
+        fightTroop ??= String(cmd.troopId ?? "");
+        if (Array.isArray(cmd.victoryBranch)) { cmd.victoryBranch = [...structuredClone(won), ...said(cmd.victoryBranch)]; sw ??= (cmd.victoryBranch as Obj[]).find((c) => c.kind === "setSwitch")?.switchId as string | undefined; }
+      }
+      const win = cmd.kind === "fork" && (cmd.condition as Obj | undefined)?.kind === "battleResult" && (cmd.condition as Obj).result === "victory";
+      if (win && Array.isArray(cmd.then)) { cmd.then = [...structuredClone(won), ...said(cmd.then)]; sw ??= (cmd.then as Obj[]).find((c) => c.kind === "setSwitch")?.switchId as string | undefined; }
+      for (const [k, v] of Object.entries(cmd)) if (Array.isArray(v) && k !== "then" && k !== "victoryBranch" && /^(then|else|commands)$|Branch$/u.test(k)) cmd[k] = dress(v);
+      out.push(cmd);
+    }
+    return out;
+  };
+  const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
+  run.ctx.project = replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent);
+  const map = run.ctx.project.maps[mapId]!;
+  const troop = run.ctx.project.database.troops.find((t) => t.id === fightTroop);
+  return {
+    eventId: ev.id,
+    summary: `Boss «${name}» is the boss fight that was already on ${map.name ?? mapId} at (${ev.x},${ev.y}) [${ev.id}] — no second boss was placed. It now says ${lines.length} line(s) before the battle${troop ? ` (troop ${troop.name ?? troop.id} [${troop.id}])` : ""}${won.length ? ` and ${won.length} line(s) after winning` : ""}. Winning turns on ${sw ?? "its victory switch"}${sw ? ` — for an ending after this boss call add_ending_scene{afterSwitchId:"${sw}"}` : ""}.`,
+  };
+}
+
 /** after 낱말·격파 스위치로 엔딩이 열릴 스위치 고르기. */
 function pickAfterSwitch(project: Project, spec: EndingSceneSpec): string | undefined {
   const switches = (project.switches ?? []) as { id: string; name?: string }[];
@@ -148,7 +219,7 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   const title = String(spec.title ?? "").trim() || "엔딩";
   const lines = (spec.lines ?? []).map((l) => typeof l === "string" ? (/^([^:：]{1,12})[:：]\s*(.+)$/u.exec(l) ? { who: /^([^:：]{1,12})[:：]/u.exec(l)![1]!.trim(), text: l.replace(/^[^:：]{1,12}[:：]\s*/u, "") } : { text: l }) : { who: l.who, text: String(l.text ?? "") })
     .filter((l) => l.text.trim()).slice(0, 16);
-  if (!lines.length) return result(false, run, first, "lines(엔딩 장면 대사 1줄 이상, 「이름: 대사」 또는 {who,text})가 필요하다", warnings, []);
+  if (!lines.length && !(spec.beats ?? []).some((b) => b.do === "say")) return result(false, run, first, "lines(엔딩 장면 대사 1줄 이상, 「이름: 대사」 또는 {who,text}) 또는 say 비트가 필요하다", warnings, []);
   const mapId = findMapId(run.ctx.project, spec.mapId) ?? (spec.mapId && run.ctx.project.maps[spec.mapId] ? spec.mapId : run.ctx.currentMapId);
   if (!mapId || !run.ctx.project.maps[mapId]) return result(false, run, first, `맵 「${spec.mapId ?? ""}」 을 찾지 못했다 — mapId(또는 맵 이름)를 준다`, warnings, []);
   const map = run.ctx.project.maps[mapId]!;
@@ -168,6 +239,26 @@ export function buildEndingScene(run: BuildRun, spec: EndingSceneSpec): ContentB
   const cond = afterSw ? [{ kind: "switch", switchId: afterSw, value: true }] : [];
   let ev: GameEvent;
   let how: string;
+  // 무대 비트가 있으면(2026-10-31 씬 벤치 terra 엔딩: 대사 세 줄만 — 판정 「마을 사람들이 모여 축하하는 모습이 화면에 없다」) add_event 와 같은 무대 모의로
+  // 들어오면 도는 장면을 짓고, 그 장면 페이지에 엔딩 조건과 엔딩 부르기를 붙인다. 사람·걸음·감정 표시는 모델이 비트로 정한다.
+  if (spec.beats?.length && !talker) {
+    const said = new Set(spec.beats.filter((b) => b.do === "say").map((b) => (b as { text?: string }).text?.trim()));
+    // 끝의 암전(fade out)은 뺀다 — 엔딩 화면 전환이 그 일을 하고, 컷신 검증은 암전으로 끝나는 장면을 거절한다.
+    const staged = [...spec.beats]; while (staged.length && staged.at(-1)!.do === "fade" && (staged.at(-1) as { dir?: string }).dir === "out") staged.pop();
+    const beats: EventBeat[] = [...staged, ...lines.filter((l) => !said.has(l.text.trim())).map((l) => ({ do: "say", who: l.who ?? "", text: l.text.trim() } as EventBeat))];
+    const hostId = `ev_ending_${slug}`.slice(0, 60);
+    const built = buildEvent(run, { kind: "cutscene", mapId, when: "enter", hostId, beats });
+    warnings.push(...built.warnings.map((w) => `장면: ${w}`));
+    if (!built.ok) return result(false, run, first, `엔딩 장면 무대를 짓지 못했다 — ${String(built.summary).slice(0, 220)}`, warnings, [mapId]);
+    const host = run.ctx.project.maps[mapId]?.events?.find((e) => e.id === (built.eventIds?.[0]?.eventId ?? hostId));
+    if (!host) return result(false, run, first, "엔딩 장면 이벤트를 찾지 못했다", warnings, [mapId]);
+    const pages = (host.pages ?? []).map((pg, i) => i === (host.pages ?? []).findIndex((p) => p.name === "컷신") || ((host.pages ?? []).every((p) => p.name !== "컷신") && i === 0)
+      ? { ...structuredClone(pg), conditions: [...(pg.conditions ?? []), ...cond] as typeof pg.conditions, commands: [...(pg.commands ?? []), { kind: "triggerEnding", endingId }] as typeof pg.commands }
+      : structuredClone(pg));
+    run.ctx.project = replaceEvent(run.ctx.project, mapId, { ...host, pages } as GameEvent);
+    return result(true, run, first, `엔딩 「${title}」 [${endingId}] — ${afterSw ? `${afterSw} 켜진 뒤 ` : ""}${map.name} 에 들어오면 무대 장면(비트 ${beats.length}, ${built.summary.replace(/^컷신 '[^']*' /u, "").slice(0, 120)}) 뒤 엔딩(${host.id})${epilogue.length ? `, 에필로그 ${epilogue.length}줄` : ""}.`,
+      warnings, [mapId], [...(built.eventIds ?? [{ mapId, eventId: host.id }])]);
+  }
   if (talker) {
     // 그 인물의 새 맨 끝 페이지(조건이 맞으면 이 페이지가 이긴다).
     const base = (talker.pages ?? []).find((p) => triggerOf(talker, p) === "action") ?? (talker.pages ?? [])[0];

@@ -49,9 +49,23 @@ function nounsFor(id: FlagshipDemoId | string): readonly string[] {
   return [...new Set([...(lock?.bannedProperNouns ?? []), ...BANNED_IP_PROPER_NOUNS, ...WIZARDING_ORIGINAL_NAMES])];
 }
 
+/**
+ * 짧은 금지어를 품지만 원작 고유명이 아닌 낱말. 검사 전에 글에서 지운다.
+ * 「마르」(원작 주인공)는 폴른 스타 여관 주인 「마르타」, NPC 「마르코」, 동사 「마르지·마르고」에 들어 있어
+ * 출하 굽기가 56건으로 실패했다(2026-10-31, 자동 스윕 빌드가 매 회 깨짐).
+ */
+const NOT_IP_WORDS: readonly string[] = ["마르타", "마르코", "마르지", "마르고", "마르다"];
+
+function stripNotIpWords(text: string): string {
+  let out = text;
+  for (const word of NOT_IP_WORDS) if (out.includes(word)) out = out.split(word).join(" ");
+  return out;
+}
+
 function walk(value: unknown, path: string, nouns: readonly string[], hits: ShippedPlayJsonHit[]): void {
   if (typeof value === "string") {
-    for (const noun of nouns) if (value.includes(noun)) hits.push({ path, noun });
+    const text = stripNotIpWords(value);
+    for (const noun of nouns) if (text.includes(noun)) hits.push({ path, noun });
     return;
   }
   if (Array.isArray(value)) {

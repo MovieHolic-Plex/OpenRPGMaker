@@ -568,7 +568,8 @@ function validateM2CommandShape(label: string, command: Record<string, unknown>)
         requireString(`${label}.fields.${spec.key}`, value);
         break;
     }
-    if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)) {
+    if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)
+      && !(spec.allowHex && /^#[0-9a-f]{6}$/iu.test(value))) {
       throw new ProjectFormatError(`${label}.fields.${spec.key} 값이 카탈로그 옵션에 없습니다: ${value} — 고를 수 있는 값: ${spec.options.map((o) => o.value).join(", ")}.`);
     }
   }
