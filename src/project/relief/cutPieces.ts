@@ -14,6 +14,14 @@ export function canonicalStackSplit(total: number): [lower: number, upper: numbe
   return lower >= 1 && upper <= CUT_MAX_RISE ? [lower, upper] : null;
 }
 
+/**
+ * 역방향(북향 절벽, 높은 땅이 남쪽) 깎은 길의 칸 수: 단 차 + 2. 3/4 시점에서 오르막 rise 칸은 높은 단 뒤에 숨고 나머지 2칸이
+ * 화면에 「멀어지며 내려가는」 2줄짜리 면으로 보인다(화면 높이 = (칸 수 − 단 차)·16 = 32px). 그래서 조각은 w×2줄 하나로 정해지고
+ * 높이 차이는 그 안의 디딤판 수·그늘로 읽힌다. 경사로 키는 `<kind>:s:<w>x<rise+2>:<rise>`.
+ */
+export const REVERSE_VISIBLE_ROWS = 2;
+export const reverseCutLength = (rise: number): number => rise + REVERSE_VISIBLE_ROWS;
+
 const composed = new WeakMap<object, Map<string, ReliefArtPatch | null>>();
 /** 경사로 하나의 통째 조각: 키가 있으면 그것, 북쪽 h=2 이면 정본 나눔으로 낱조각 둘을 이어 붙인다. */
 export function cutPieceFor(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "ramp" | "stairs", dir: string, w: number, h: number, rise: number): ReliefArtPatch | null {

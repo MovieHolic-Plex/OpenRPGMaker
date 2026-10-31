@@ -951,7 +951,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
 
 /**
  * 통째 경사로 조각(ReliefRenderOptions.slopeArt): 그 경사로 화소에 조각을 화면 사각형 기준으로 찍는다(반복 없음).
- * 북쪽 오르막 사각형 = x [s.x, s.x+w) 칸, 화면 y [s.y·T + pad − hi·U, (s.y+h)·T + pad − lo·U). 다른 방향은 조각을 쓰지 않는다.
+ * 북쪽 오르막 사각형 = x [s.x, s.x+w) 칸, 화면 y [s.y·T + pad − hi·U, (s.y+h)·T + pad − lo·U).
+ * 남쪽 오르막(역방향) 사각형 = 화면 y [s.y·T + pad − lo·U, (s.y+h)·T + pad − hi·U) — 높은 단 앞 가장자리에서 멀어지며 내려가는 면. 동서는 조각을 쓰지 않는다.
  */
 function paintSlopePieces(
   art: readonly (ReliefArtPatch | null | undefined)[], slopes: ReliefSlope[],
@@ -961,8 +962,9 @@ function paintSlopePieces(
   for (let i = 0; i < PW * SH; i++) {
     const sid = ssl[i]; if (!sid) continue;
     const p = art[sid - 1], s = slopes[sid - 1];
-    if (!p || !s || s.dir !== "n") continue;
-    const x = (i % PW) + ox - s.x * T, y = Math.floor(i / PW) + oy - (s.y * T + pad - s.hi * U);
+    if (!p || !s || (s.dir !== "n" && s.dir !== "s")) continue;
+    // n: top = the cut's crest on the high ground; s (reverse, high ground south): top = its far (north) foot on the low ground
+    const x = (i % PW) + ox - s.x * T, y = Math.floor(i / PW) + oy - (s.y * T + pad - (s.dir === "n" ? s.hi : s.lo) * U);
     if (x < 0 || y < 0 || x >= p.w || y >= p.h) continue;
     const q = (y * p.w + x) * 4;
     if (!p.rgba[q + 3]) continue;
