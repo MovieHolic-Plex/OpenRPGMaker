@@ -464,13 +464,16 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     ["child", "ev_fs_crowd_e", "눈사람 만드는 아이", ["이 눈사람, 탑 문 기사 아저씨야.\n코가 빨개!", "밤에 등 띄우는 거 보러 갈 거야.\n할머니가 같이 가 준댔어."]],
     ["net", "ev_fs_crowd_c", "그물 깁는 어부", ["썰매가 없으니 그물만 기워.\n고기는 구멍에서 한 마리씩 낚고.", "섬까지는 장대를 따라가.\n장대 밖 얼음은 믿지 마."]],
     ["wood", "ev_fs_crowd_f", "장작 패는 청년", ["남은 통나무는 이게 다예요.\n징발대가 창고째 잠갔거든요."]],
-    ["icefisher", "ev_fs_crowd_c", "얼음낚시 노인", ["쉿, 고기 놀란다.\n…오늘 등 띄우는 날인 거 알지?", "띄운 등은 섬 사당까지 흘러가.\n거기서 누가 꼭 받아 주더라고."]],
+    // 얼음낚시 노인 — 그물 깁는 어부와 같은 붉은 두건 칩이었다(같은 빨간 망토가 여럿, 첫 플레이 검수 2026-10-31). 흰머리 노인 칩(People3 #4).
+    ["icefisher", "rtp:tex_easyrpg_charset_people3#4", "얼음낚시 노인", ["쉿, 고기 놀란다.\n…오늘 등 띄우는 날인 거 알지?", "띄운 등은 섬 사당까지 흘러가.\n거기서 누가 꼭 받아 주더라고."]],
   ];
   for (const [spot, chipId, name, lines] of people) {
     const at = L.people[spot];
     if (!at) continue;
     let c: { textureKey: string; characterIndex: number };
-    try { c = chipOf(project, chipId, hubId); } catch { c = chipOf(project, "ev_fs_crowd_a", hubId); }
+    const rtp = /^rtp:(.+)#(\d+)$/u.exec(chipId);
+    if (rtp) c = { textureKey: rtp[1]!, characterIndex: Number(rtp[2]) };
+    else try { c = chipOf(project, chipId, hubId); } catch { c = chipOf(project, "ev_fs_crowd_a", hubId); }
     FS2_FROST.people[spot] = placeNpc(project, exec, FS2_FROST_ID, at, { id: `ev_fs2_frost_${spot}`, name, graphic: c,
       pages: [{ name: "이야기", commands: lines.map((l) => say(name, l)) }] });
   }
@@ -494,8 +497,9 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 
 /** 「대답의 등」 — 해 질 녘 기슭 등불. 첫 등에서 한 줄을 적어 띄운다(B9 밤 장면의 예고). */
 function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
+  // 해 질 녘 — 「해가 기운다」인데 0.4 보랏빛 막은 흰 눈 위에서 한낮으로 읽혔다(첫 플레이 검수 2026-10-31). 장밋빛 노을 막을 짙게, 등불은 켠다.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.4, color: "#2a1838",
+    mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.56, color: "#4a2440",
     sources: [
       ...L.lamps.map((c, i) => ({ id: `answer_lamp_${i}`, at: { x: c.x, y: c.y - 2 }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true })),
       { id: "bonfire", at: { x: L.bonfire.x, y: L.bonfire.y }, radius: 4, intensity: 0.9, color: "#ffb060", flicker: true },
