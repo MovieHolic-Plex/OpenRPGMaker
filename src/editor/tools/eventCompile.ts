@@ -226,6 +226,8 @@ export function graphicSpecArg(spec: unknown): GraphicSpec | undefined {
 // GraphicSpec을 EventPageGraphic으로 변환.
 export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   if (!spec0) return { transparent: true };
+  // transparent 는 값이 true 일 때만 투명이다(compactGraphicSpec 이 transparent:false 를 걷어 낸다). 이벤트 페이지 graphic 을 그대로 베껴 온
+  // {sprite, pattern, transparent:false} 가 키만 보고 투명이 되어 용의자·지목 NPC 가 보이지 않던 결함(해원 2026-10-31: author_mystery_case 용의자 셋이 모두 투명).
   const spec = compactGraphicSpec(spec0)!;
   // 빈 칸뿐인 지정은 예전처럼 「그림 없음」(생략과 같다) — 도구마다 생략 기본값이 다르므로 그 판단은 graphicSpecArg 를 쓰는 호출자가 한다.
   if ("transparent" in spec || Object.keys(spec).length === 0) return { transparent: true };
@@ -239,16 +241,23 @@ export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQue
   }
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
   // 모델이 textureKey 대신 resourceId·spriteId 로 적는 일이 잦다(같은 칩 id). 별칭으로 받고, 문자열이 아니면 도구 예외 대신 인자 오류로 알린다(2026-10-16 잠금 누수 감사 #12: `input.trim` TypeError).
-  const loose = spec as unknown as Record<string, unknown>;
-  const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+  const loose = looseSpec;
+  // 이벤트 페이지 graphic 모양({sprite:{id}, pattern}) — 다른 이벤트의 외형을 베껴 온 경우. 칩 칸은 pattern 에서 읽는다.
+  const sprite = loose.sprite && typeof loose.sprite === "object" ? (loose.sprite as Record<string, unknown>) : undefined;
+  const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id, sprite?.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
   if (textureKey === undefined) {
     throw new ToolError(
       `graphic 은 {query:"…"} 또는 {textureKey:"<시트>", characterIndex:0~7} 이어야 합니다 — 받은 모양: ${JSON.stringify(spec).slice(0, 120)}. 칩 id 는 textureKey 칸에 문자열로 적고, 그림을 고르려면 list_npc_graphics 로 허용 칩을 보세요.`,
       { code: "invalid-args" },
     );
   }
-  const index = typeof spec.characterIndex === "number" ? spec.characterIndex : typeof loose.characterIndex === "number" ? loose.characterIndex : undefined;
-  return charsetGraphic(textureKey, index);
+  const fromPattern = sprite && typeof loose.pattern === "number" ? decodeCharsetFrameIndex(loose.pattern).characterIndex : undefined;
+  const index = typeof loose.characterIndex === "number" ? loose.characterIndex : fromPattern;
+  const graphic = charsetGraphic(textureKey, index);
+  const direction = loose.direction;
+  return sprite && (direction === "up" || direction === "down" || direction === "left" || direction === "right")
+    ? { ...graphic, direction, pattern: charsetFrameIndex({ characterIndex: decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex, direction, pattern: 1 }) }
+    : graphic;
 }
 
 /** 맵 이벤트에 이미 쓰인 charset 슬롯 키 집합. */
