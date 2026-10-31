@@ -4,7 +4,7 @@
 대등한 수단이다(2026-10-31 결정: 「AI NATIVE 에디터로 탈바꿈」 — 실험 게이트 없이 도입). 조수(Opus 등)는 조건·공식·
 반복이 얽힌 로직(조합 퍼즐, 할인 공식, 시간대 반응)을 명령 수십 줄 대신 스크립트 한 덩이로 쓴다.
 
-읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → API 행 추가 절차 → 조수 도구 → 알려진 한계.
+읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → 검증기 → API 행 추가 절차 → 조수 도구 → 알려진 한계.
 
 ## TL;DR
 
@@ -26,6 +26,7 @@
 | `src/project/script/types.ts` | `ScriptModule`·`ScriptEffects`·한도·`scriptSourceHash`·`scriptCompiledIsFresh` |
 | `src/project/script/apiSpec.ts` | **`SCRIPT_API` 단일 진실**(이름·그룹·매개변수·반환·awaits·영문 doc·`refs`·한국어 요약 동사). `SCRIPT_RESULT_VARIABLE` |
 | `src/project/script/dts.ts` | `.d.ts` 생성(`buildGameApiDts(scriptDtsIds(project, mapId))` — 프로젝트 id 를 리터럴 유니온으로), `scriptApiCheatSheet()`(모델용 영문 목록) |
+| `src/project/script/effects.ts` | **검증기·그래프용 effects 읽기**: `scriptCommandEffects`·`expandScriptEffects`(`@lib` 전이 병합)·`scriptWrites/Reads/Calls`·`scriptHasDynamic`·`dynamicRefKinds`·`forEachProjectScript`·`projectScriptUsage`·`scriptRefersTo`. `game.cmd` id 필드 표(`SCRIPT_CMD_ID_FIELDS`)도 여기 — 분석기가 같이 쓴다 |
 | `src/project/script/library.ts` | `normalizeScriptLibrary`(관대한 로드 정규화)·`findScriptModule`·`libraryIdFromSpecifier` |
 | `src/player/script/engine.ts` | wasm 지연 로더 `preloadScriptEngine()`·`projectUsesScripts(project)` |
 | `src/player/script/scriptRun.ts` | 실행 1회 = QuickJS 런타임 1개. prelude(`game` 동결, Math.random·Date 교체, `require("@lib/…")`), 시간·메모리 한도, 핸들 정리 |
@@ -103,6 +104,41 @@
   스위치·변수 id 는 **이름**도 받는다(런타임도 이름 → id 로 푼다).
 - 한 줄 요약(`summary`): 쓰는 호출의 한국어 동사 + 쓰는 id 몇 개 — 이벤트 목록 `commandSummary` 에 보인다.
 
+## 검증기 (validators)
+
+스크립트가 쓴 스위치를 「켜는 곳 없음」으로, 스크립트가 부른 공통 이벤트를 「안 쓰임」으로 보지 않도록 검증기·그래프가
+`effects` 를 읽는다. **`effects` 를 직접 읽지 말고 `src/project/script/effects.ts` 를 거친다** — 그래야 다음 셋이 한 곳에서 맞는다.
+
+- `@lib/<id>` import 는 그 모듈의 effects 를 **전이적으로** 합친다(순환·중복은 한 번만).
+- `effects` 가 없는데 `compiled` 가 있는 스크립트(effects 이전에 저장된 것)는 **모든 종류가 dynamic** 이다(api `*`). `compiled` 가 비면 아무것도 안 한다.
+- 스위치·변수 ref 는 이름일 수 있다 → `resolveScriptRefId` 가 id 로 바꾼다(검증기는 id 로 센다).
+
+접근별 의미: `writes` = 설정(스위치는 켤 수 있다고 본다 — 켜는지 끄는지는 정적으로 모른다), `reads` = 읽기,
+`calls` 의 `commonEvent` = 호출 간선, `map` = 이동 간선(착지 좌표는 모름), `troop` = 전투, `library` = import.
+`dynamic` 의 api 이름은 `dynamicRefKinds` 가 SCRIPT_API `refs` 표와 `cmd.<kind>.<field>` 로 (종류, 접근) 쌍으로 바꾼다.
+비리터럴 `game.cmd(x)` 와 `*` 는 전부다. 그 종류·접근에 dynamic 이 있으면 「없음」 판정은 **증명할 수 없으므로** 막힘/경고를 info 로 낮추고
+「스크립트가 계산된 id 를 써서…」 안내를 붙인다(`SCRIPT_DYNAMIC_NOTE`).
+
+| 검증기 | 파일 | 스크립트 반영 |
+|---|---|---|
+| 진행 검사(켜는 곳 없는 스위치·엔딩 조건·셀프 스위치·엔딩 호출) | `src/qa/gameCheck/progression.ts` | `collectSwitchWrites` 에 스크립트 쓰기. dynamic 스위치 쓰기면 `page-switch-never-set`·`ending-switch-never-set` 을 info 로. 스크립트가 있는 이벤트는 셀프 스위치 판정 생략. 스크립트 소스에 `kind:"triggerEnding"` 이 있으면 `no-ending-trigger` info·`ending-uninvoked` 생략 |
+| 맵 그래프·도달성 | `src/qa/gameCheck/mapGraph.ts` | `via:"script"` 간선(x/y NaN, 좌표 검사 안 함). 없는 맵이면 `script-transfer-missing-map` 경고. dynamic 이동이면 `unreachable-map` info |
+| 완성 구조 가드(조수) | `src/ai/gameStructureGuard.ts` | 위 그래프를 그대로 쓴다. dynamic 이동이면 고립 맵을 막지 않는다. 스크립트 엔딩 호출 인정 |
+| 이벤트 삭제 시 고아 스위치 | `src/editor/tools/strandedSwitches.ts` | 스크립트 쓰기도 「다른 곳이 켬」. 남는 스크립트가 dynamic 스위치 쓰기면 거절 안 함 |
+| 서사 플래그 사용 색인(lint·퀘스트·DB 화면) | `src/project/storyFlagUsage.ts` | 스크립트 사이트(`commandPath:"script"`) + `scriptDynamic` 표. `projectLint` 의 read-without-write / write-without-read 는 dynamic 이면 생략하고 `story-flag:script-dynamic` info 한 줄 |
+| 퀘스트 그래프 막다른 노드 | `src/project/quest/questGraph.ts` | dynamic 쓰기면 `quest-graph:dead-end-node` 를 error→info |
+| 셀프 스위치 잠금 페이지 | `src/project/eventPageShadow.ts` | `script` 를 외부 제어 이전으로 취급(셀프 스위치 쓰기는 effects 에 안 남는다) → 판정 생략 |
+| 월드 그래프 transfer 정합 | `src/project/worldGraph/lint.ts` | 출발 맵 스크립트가 그 맵으로 transfer 하면 `world-transfer-missing` 없음. dynamic 이면 info |
+| 스크립트 참조 누락 | `src/project/lint/projectLint.ts` | `script-reference-missing` **경고**(아이템·배우·스킬·공통 이벤트·맵·적 그룹·애니메이션·라이브러리). 로드 검증(`commandReferenceValidation`)은 통과 — 스크립트 참조로 프로젝트가 안 열리면 안 된다 |
+| 공통 이벤트 순환 호출 | `src/editor/eventDraftValidator.ts` `checkCallDepth` | 스크립트의 `callCommonEvent` 도 호출 간선 |
+| 삭제 가드 | `src/editor/databaseReferences.ts`·`databaseRecordReferences.ts` | 스크립트·라이브러리가 리터럴로 부르는 공통 이벤트·배우·스킬·아이템·적 그룹·애니메이션·스위치·변수는 삭제 차단(`scriptRefersTo`). `projectCommonEventReferenceMessage` 는 순수 함수 |
+| 맵 삭제 영향 | `src/project/mapDeletion.ts`·`src/editor/mapDeleteConfirm.ts` | `incomingScriptCount` — 스크립트는 고치지 않고 남는다고 확인창에 적는다 |
+| 조수 고리 끊김 보고 | `src/ai/v2/gameChecks.ts` `lostLinks` | 스크립트의 쓰기·읽기·공통 이벤트 호출 |
+
+의도적으로 안 건드린 것: 로드 검증(`commandReferenceValidation`, 위 이유), `gameCheck/commands.ts`(스키마가 없는 kind 는 필드 검사 대상 아님),
+`autoPlay`(실제 인터프리터로 스크립트를 돌리지 않는 시뮬레이션), 전투 이벤트(스크립트는 트룹 페이지에서 안 돈다).
+회귀: `test/scriptEffectsValidation.test.ts`.
+
 ## API 행 추가 절차
 
 1. `apiSpec.ts` 에 행 추가(영문 doc, `ko`, 필요하면 `refs`, `awaits`). 2. `hostApi.ts` 에 구현 — 빠지면 컴파일 오류.
@@ -146,7 +182,7 @@
 
 ## 알려진 한계 / 다음 단계
 
-- 편집기 코드 편집기·라이브러리 화면·4개 언어(후속 PR), 조수 도구는 위 「조수 도구」 절(3/4 PR),
-  검증기(고아 스위치·도달성·gameCheck·mapGraph)의 `effects` 반영(후속 PR).
+- 스크립트 라이브러리(`@lib`) 전용 편집 화면은 없다 — 조수 도구 `upsert_script_module`·`list_script_modules` 로 만든다. 명령 편집 칸(코드·진단·요약·4개 언어)은 있다.
+- 셀프 스위치 쓰기(`game.setSelfSwitch`)와 명령 kind(`game.cmd({kind:"triggerEnding"})`)는 effects 에 남지 않는다 — 셀프 스위치는 판정을 생략하고, 엔딩은 소스 글을 본다(주석에도 속는 어림셈, 검사기가 조용해지는 쪽으로만 틀린다).
 - 컴파일 결과의 줄 번호는 TS 원본과 대체로 같지만 정확히 같지는 않다(오류는 `compiled line N`). 소스맵은 없다.
 - 라이브러리 모듈은 최상위 `await` 를 못 쓴다(동기 `new Function` 으로 평가).

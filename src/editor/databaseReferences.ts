@@ -3,9 +3,10 @@ import { commandsResourceReference } from "@/editor/databaseCommandReferences";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { namedReferenceMessage, commandLocationMessage, projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "./databaseRecordReferences";
-import type { Command, ItemRecord, SkillRecord } from "@/project/types";
+import type { Command, ItemRecord, Project, SkillRecord } from "@/project/types";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import { scriptRefersTo } from "@/project/script/effects";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
   return projectDatabaseReferenceMessage(store.getCurrent(), collection, id);
@@ -81,7 +82,11 @@ export function cropReferenceMessage(_cropId: string): string | null {
 }
 
 export function commonEventReferenceMessage(id: string): string | null {
-  const project = store.getCurrent();
+  return projectCommonEventReferenceMessage(store.getCurrent(), id);
+}
+
+/** Pure form of commonEventReferenceMessage (tools and tests pass their own project). */
+export function projectCommonEventReferenceMessage(project: Project, id: string): string | null {
   if (project.system.timeSystem?.onDayEnd === id) {
     return "시간 시스템(하루 끝)이 이 이벤트를 사용합니다.";
   }
@@ -95,6 +100,7 @@ export function commonEventReferenceMessage(id: string): string | null {
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id))
       || troopAfterBattleLists(troop).some((list) => commandListReferencesCommonEvent(list.commands, id)))
   ) return "이벤트 명령이 이 커먼 이벤트를 호출 중입니다.";
+  if (scriptRefersTo(project, "commonEvent", id)) return "스크립트가 이 커먼 이벤트를 호출 중입니다.";
   const schedule = (project.database.schedules ?? []).find((entry) => entry.activities.some((activity) => activity.commonEventId === id));
   if (schedule) return `일정표 '${schedule.title}'의 활동이 이 커먼 이벤트를 호출 중입니다.`;
   return null;

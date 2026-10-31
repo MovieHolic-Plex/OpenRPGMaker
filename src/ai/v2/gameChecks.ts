@@ -5,6 +5,7 @@
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, GameMap, Project } from "@/project/types";
 import { chaseCellMs } from "@/project/chaseTempo";
+import { isScriptCommand, scriptCalls, scriptReads, scriptWrites } from "@/project/script/effects";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
@@ -167,6 +168,11 @@ function readsOf(project: Project): { switches: Set<string>; variables: Set<stri
       // 변수는 값으로도 읽힌다(대사 속 \V[..]·다른 변수 연산·조건부 분기의 피연산자).
       for (const [k, v] of Object.entries(cmd)) if (k !== "variableId" && typeof v === "object" && v) for (const c of flatConditions(v)) if (c.kind === "var" && typeof c.id === "string") variables.add(c.id);
       if (cmd.kind === "text" && typeof cmd.body === "string") for (const m of cmd.body.matchAll(/\\V\[([^\]]+)\]/gu)) variables.add(m[1]!);
+      // 스크립트가 리터럴 id 로 읽는 스위치·변수.
+      if (isScriptCommand(cmd)) {
+        for (const id of scriptReads(cmd, "switch", project)) switches.add(id);
+        for (const id of scriptReads(cmd, "variable", project)) variables.add(id);
+      }
     }
   }
   const rest = JSON.stringify({ endings: project.endings ?? [], quests: project.quests ?? [] });
@@ -182,6 +188,12 @@ function settersOf(project: Project): { switches: Map<string, string>; variables
     if ((cmd.kind === "setSwitchRange" || cmd.kind === "controlSwitches") && typeof cmd.switchId === "string") switches.set(cmd.switchId, ev.name);
     if (cmd.kind === "setVariable" && typeof cmd.variableId === "string") variables.set(cmd.variableId, ev.name);
     if (cmd.kind === "callCommonEvent" && typeof cmd.commonEventId === "string") commons.set(cmd.commonEventId, ev.name);
+    // 스크립트의 game.setSwitch·setVar·callCommonEvent(리터럴 id).
+    if (isScriptCommand(cmd)) {
+      for (const id of scriptWrites(cmd, "switch", project)) switches.set(id, ev.name);
+      for (const id of scriptWrites(cmd, "variable", project)) variables.set(id, ev.name);
+      for (const id of scriptCalls(cmd, "commonEvent", project)) commons.set(id, ev.name);
+    }
   }
   // 엔딩·퀘스트 보상이 켜는 깃발도 켜는 쪽이다.
   const rest = JSON.stringify({ endings: project.endings ?? [], quests: project.quests ?? [] });
