@@ -422,6 +422,14 @@ terra 마왕 편의점 다시 재기: 4 → 7점, 호출 46 → 43, 실패 3 →
 - **아무 거절도 없이 할 일을 막힘으로 닫았다**(`loop/todoTools` todo block): terra 사냥꾼 계약은 6.6분·호출 22번에 할 일 7개를 막힘으로 닫았다 — 시작 자리는 `set_start_position` 을 한 번도 부르지 않았고, 단서 집계·일지는 플래그 하나만 선언했다. 같은 장면을 Opus 는 `set_start_position`·`stamp_object`+조사 이벤트·조건 페이지·공통 이벤트로 다 지었다. 이제 그 항목에 거절된 호출이 없으면(`attempts 0`, 최근 쓰기 실패 없음) 첫 막힘을 한 번 되돌리고 그 항목의 다음 호출과 흔한 동사를 영어로 준다. 두 번째 막힘은 받는다(`blockBounced` 한 번).
 - **따옴표로 준 대사를 「인물 있음」으로만 확인했다**(`loop/requestSkeleton`): 같은 판에서 terra 는 뱃사공·어부의 아내를 `person` 확인으로만 적어, 단서 대사 없이(「늪물은 믿을 게 못 되오.」) ✓ 로 닫혔다. 요청 뼈대가 `X는 "…"고 말해`·`X를 조사하면 "…"`·`X가 있고, 조사하면 「…」` 를 읽어 `talk{who, says:<앞 두 낱말>}` 요소로 덧붙이고, 모델 항목이 `says` 없는 `talk` 이면 덮은 것으로 치지 않는다. 제목·이름·문구 같은 낱말 뒤의 인용은 대사로 보지 않는다.
 
+## 조수 대조 7회차 — Argon 2차 모델·지어낸 전투 배경 id (2026-10-31 asst-parity p2a-chase-argon)
+
+GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` · `gemini-4-argon-high`, 그림을 받는 판)으로 바꿨다. 숲 추격 Argon 1회차 6점(Opus 8).
+
+- **todo 를 op 없이 불렀다**(`loop/todoTools`): Argon 은 `{list:[…]}`·`{task:"forest_path"}` 만 보내 스키마 거절이 두 번 났다. op 는 이제 필수가 아니고 다른 칸에서 짐작한다(list → init, items → init/append, task+reason → block, task → done, 나머지 view). 결과 글 앞에 영어로 「op 가 없어 X 로 처리했다 — 매번 op 를 보내라」를 붙인다.
+- **전투 배경 id 를 지어냈다**(`battleSceneryCatalog.unknownSceneryIdMessage`, upsert_troop·set_map_properties): 숲 추격 Opus 판은 `battle-scenery-forest-night` 을 찾느라 list_resources 를 8번 부르고 그 없는 id 를 저장했다. Argon 은 낮 숲 배경 그대로 두고 「밤 숲으로 했다」고 보고했다. 측면 전투 배경 id 는 바이옴 다섯뿐이고 밤·안개는 트룹의 `backdropLayers`(preset night·fog…)다. 도구 설명(`BATTLE_BACKDROP_ID_HINT`)에 그 말을 영어로 더하고, 목록에 없는 `battle-scenery-*` id 는 바이옴 id + `backdropLayers` 예시와 함께 거절한다.
+- **한국어 물건 낱말 검색이 0건이면 그대로 0건이었다**(`spatialTools` list_spatial_designs): terra 는 「시체」 0건을 보고 공방 그리기 카드만 올린 뒤 막혔다(Opus 는 「관」으로 `coffin open` 을 찾아 그 안에 시체를 두었다). 0건이면 작은 대응표(`OBJECT_QUERY_ALIASES`: 시체→coffin·grave, 게시판→notice board·board·sign, 횃불→torch·brazier …)로 한 번 더 찾고, 그래도 0건이면 「키트 이름은 대개 영어 — 영어 낱말이나 대신 설 물건으로」를 영어로 붙인다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
