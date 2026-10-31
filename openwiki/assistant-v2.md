@@ -468,6 +468,10 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **이름 있는 물건에 말 걸기 장면**(`events.ts`): `add_event({kind:"talk", where:"책상"})` 의 where 가 그 맵 이벤트 이름 하나와 같으면 그 이벤트에 붙인다(전에는 «자리 낱말을 몰라» 시작 근처 빈 칸).
 - **fork 갈래 다른 이름**(`argCoerce` forkBranches): 명령 목록은 스키마가 느슨해 `otherwiseBranch`·`elseBranch` 같은 칸이 검증을 지나 실행기에서 말없이 버려졌다 — fork 면 then/else 로 옮기고 Fixed call 로 알린다. 안쪽 객체에만 있는 필수 칸(`event.mapId`)은 맨 위로 올린다.
 - 요청 뼈대는 번호 자물쇠 항목을 맨 앞에, 엔딩을 자물쇠 뒤에 둔다(엔딩부터 지으면 add_ending_scene 이 «자물쇠에 말 걸면 엔딩»을 만들어 번호가 필요 없어졌다). 실내 닿기 검사는 못 닿는 칸 좌표를 적는다(DeepSeek 이 칸마다 run_scene_test 28번으로 찾았다). 호출 기록에 tool_choice 를 남긴다.
+- **할 일이 열려 있는 동안 도구 강제**(`env.keepToolsOn` → 실행기 `getToolChoice` "required"): 재주입에 한 번만 강제하면 Flash 는 하나 부르고 바로 글로 멈춰
+  «진척 없음 2번» 으로 고리가 멈췄다(r6). 쓰기 요청에서 열린 항목이 있으면 매 호출 강제하고, 항목이 하나도 닫히지 않은 채 12번이면 풀어 고리가 판정한다. Anthropic 확장 생각 호출에는 걸지 않는다.
+- **이름 이벤트를 안 바꾼 done 거절**(`todoTools` done): 확인 없는 항목의 글이 맵 이벤트 이름(「책상 단서」)을 말하는데 이번 실행에서 그 이벤트가 안 바뀌었으면 받지 않는다 —
+  Argon 이 단서 쓰기 3번이 거절된 뒤 깃발 선언 하나로 t1·t2·t3 를 연달아 done 했다. todo 항목의 짧은 표기 `{talk:"책상"}` 은 `check:{kind:"talk", who}` 로, upsert_event 의 `eventId` 는 `id` 로, 대사 명령 `showText`/`message` 는 `text`+`body` 로 고친다.
 - **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
