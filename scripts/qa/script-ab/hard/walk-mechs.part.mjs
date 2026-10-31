@@ -269,7 +269,9 @@ try {
   } else if (request === "schedule") {
     const toma = "빵집 주인 토마";
     const near = async (marker) => { const a = await evPos(toma), b = await evPos(marker); return { ok: a.mapId === b.mapId && dist(a, b) <= 2, note: `토마 ${a.x},${a.y} vs ${marker} ${b.x},${b.y}` }; };
-    const at = async (h) => { await dbg("setClock", h, 0); await sleep(3500); return near(h >= 6 && h < 11 ? "빵집 앞" : h >= 11 && h < 18 ? "광장 분수" : "토마의 집 앞"); };
+    // NPCs may WALK to their next spot after the clock jump: poll up to 30 s (wall) for arrival.
+    const at = async (h) => { await dbg("setClock", h, 0); const mk = h >= 6 && h < 11 ? "빵집 앞" : h >= 11 && h < 18 ? "광장 분수" : "토마의 집 앞"; const t0 = Date.now(); let n;
+      do { await sleep(1500); n = await near(mk); } while (!n.ok && Date.now() - t0 < 30_000); return { ...n, note: `${n.note} after ${((Date.now() - t0) / 1000).toFixed(0)} s` }; };
     await guard("schedule-clock", async () => { const s0 = await st(); await sleep(15000); const s1 = await st(); check("schedule-starts-7-and-flows", s0.gameTime?.hour === 7 && (s1.gameTime.hour * 60 + s1.gameTime.minute) > (s0.gameTime.hour * 60 + s0.gameTime.minute), `clock ${s0.gameTime?.hour}:${s0.gameTime?.minute} → ${s1.gameTime?.hour}:${s1.gameTime?.minute} after 15 s`); });
     await guard("schedule-morning", async () => {
       const n = await at(8); check("schedule-8-bakery", n.ok, `08:00 ${n.note}`);
