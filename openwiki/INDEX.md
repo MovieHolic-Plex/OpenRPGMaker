@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7857KB / 약 2,308,672 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7858KB / 약 2,308,765 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,485 |
 | `openwiki/assistant-v2.md` | 245KB | 47KB | 689 | ~74,443 |
-| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
+| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 535 | ~32,853 |
 | `openwiki/beodeul-city.md` | 233KB | 19KB | 1143 | ~70,730 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
@@ -141,7 +141,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/i18n.md` | 1 | `docs/terminology/product-terminology.md` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 8 | `-x2.png`, `.css`, `.empty.json`, `scripts/tmp-jp-gen.mts`, `src/ai/modernTilesetPolicy.ts`, `town-x3.png`, `verify-shots/jp-city/editor-town-full.png`, `verify-shots/jp-city/town-1x.png` |
-| `openwiki/licensing.md` | 2 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md` |
+| `openwiki/licensing.md` | 3 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md`, `node_modules/phaser/LICENSE.md` |
 | `openwiki/location-layer-affordance-audit.md` | 2 | `src/styles/editor/map-location-layer.css`, `verify-shots/loc-draw-cta/SUMMARY.md` |
 | `openwiki/modern-campus-interior.md` | 1 | `modernCampusInteriorSpec.json` |
 | `openwiki/modern-campus.md` | 8 | `campus_layout.py`, `campus_props.py`, `mc_core.py`, `preview/_all-x4.png`, `props_a.py`, `props_b.py`, `props_c.py`, `src/assets/modernCampusLayouts.json` |
@@ -356,31 +356,31 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L666` 시험
 - `L675` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
-### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
+### `openwiki/atlas-biome-interior.md` — 109KB · 535줄 · ~32,853 토큰 · 통째읽기 잘림
 
 - `L8` 원본과 칸
 - `L37` 코드
-- `L140` 참고문서 「손 도트 실내 (v5)」
-- `L145` 가구 메모·방 표 (2026-09-29)
-- `L164` 예제 맵·정본
-- `L170` 검증
-- `L176` 배·던전 — atlas_biome_dungeon
-- `L181` 기물 묶음 배치 — vignette (2026-10-29, 사용자 결정)
-- `L218` 남은 것
-- `L225` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
-- `L233` 고른 후보 반영 (2026-10-01)
-- `L251` 새 기물 길 (2026-10-01)
-- `L264` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
-  - `L279` 서버 하네스의 자동 공용 등록 (2026-10-04)
-- `L289` 박물관·배 안·투기장 — interior-plus (2026-10-14)
-- `L318` 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
-  - `L338` 2판 — 독립 적대 판정으로 다시 (2026-10-20)
-- `L358` 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
-- `L375` 천문대 조각 — interior-plus `observatory` (2026-10-21, 사람 허용 대기)
-- `L396` 폴른 스타 방 조각 — interior-plus `fallen` (2026-10-21~22, 위임 허용·굽기 완료)
-- `L451` 조수 실력 시험 — 폴른 스타 세 방 (2026-10-22)
-- `L471` 조수 실력 시험 2 — 1배 확인 루프·독립 비평 (2026-10-22)
-- `L502` 손으로 짠 방 견본 (2026-10-29)
+- `L141` 참고문서 「손 도트 실내 (v5)」
+- `L146` 가구 메모·방 표 (2026-09-29)
+- `L165` 예제 맵·정본
+- `L171` 검증
+- `L177` 배·던전 — atlas_biome_dungeon
+- `L182` 기물 묶음 배치 — vignette (2026-10-29, 사용자 결정)
+- `L219` 남은 것
+- `L226` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
+- `L234` 고른 후보 반영 (2026-10-01)
+- `L252` 새 기물 길 (2026-10-01)
+- `L265` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
+  - `L280` 서버 하네스의 자동 공용 등록 (2026-10-04)
+- `L290` 박물관·배 안·투기장 — interior-plus (2026-10-14)
+- `L319` 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
+  - `L339` 2판 — 독립 적대 판정으로 다시 (2026-10-20)
+- `L359` 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
+- `L376` 천문대 조각 — interior-plus `observatory` (2026-10-21, 사람 허용 대기)
+- `L397` 폴른 스타 방 조각 — interior-plus `fallen` (2026-10-21~22, 위임 허용·굽기 완료)
+- `L452` 조수 실력 시험 — 폴른 스타 세 방 (2026-10-22)
+- `L472` 조수 실력 시험 2 — 1배 확인 루프·독립 비평 (2026-10-22)
+- `L503` 손으로 짠 방 견본 (2026-10-29)
 
 ### `openwiki/authoring-play-presets.md` — 11KB · 88줄 · ~3,520 토큰
 
