@@ -1,0 +1,171 @@
+{
+  "round": 6,
+  "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+  "queue": "bbox-village-ramps",
+  "images": [
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/ramp-8x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/stairs-8x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/probe-1x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/probe-3x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/probe2-1x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/probe2-3x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/hill-terra32fix-crossings-4x.png",
+    "/home/main/claude-viz/bbox-ramps-vqa/r6/hill-terra32fix-map-1x.png"
+  ],
+  "rubric": "height vs cliff, edge seams, style vs beodeul cliffs, front-elevation look, 1x readability",
+  "pieces": {
+    "ramp-h1-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close.",
+        "At rise 1 the side wedges take a large share of the 16 face rows, so the cut reads as a shallow trapezoidal notch; still recognisable as a way through at 1x."
+      ]
+    },
+    "ramp-h1-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close.",
+        "At rise 1 the side wedges take a large share of the 16 face rows, so the cut reads as a shallow trapezoidal notch; still recognisable as a way through at 1x."
+      ]
+    },
+    "ramp-h2-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close."
+      ]
+    },
+    "ramp-h2-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close."
+      ]
+    },
+    "ramp-h3-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close."
+      ]
+    },
+    "ramp-h3-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close."
+      ]
+    },
+    "ramp-h4-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close.",
+        "Left dark wall is only ~1-3px wide in the upper rows, so the cut-into-cliff depth is weakly expressed at the top of the 4-row face."
+      ]
+    },
+    "ramp-h4-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Ramp surface is a paler, greyer tan than the dirt track above and below; at crest a straight 1-2px pale band and at toe a slightly darker 1-2px band make a visible horizontal tone step against the track (reads as the slope surface, not a gap, but noticeable at 1x as a lighter patch).",
+        "Side walls are smooth wedge strips (dark brown left, saturated orange right) without the native cliff's rounded rock-blob clusters; right (lit) wall has no dark inner outline, so it is a little flatter than the native face.",
+        "Chevron (downhill V) texture is low-contrast and slightly regular; slope reads more like a funnel/gully than a graded ramp up close.",
+        "Left dark wall is only ~1-3px wide in the upper rows, so the cut-into-cliff depth is weakly expressed at the top of the 4-row face."
+      ]
+    },
+    "stairs-h1-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps.",
+        "Only 2 treads in 16px; acceptable but the top tread sits almost flush with the grass lip."
+      ]
+    },
+    "stairs-h1-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps.",
+        "Only 2 treads in 16px; acceptable but the top tread sits almost flush with the grass lip."
+      ]
+    },
+    "stairs-h2-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    },
+    "stairs-h2-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    },
+    "stairs-h3-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    },
+    "stairs-h3-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    },
+    "stairs-h4-w2": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    },
+    "stairs-h4-w3": {
+      "verdict": "PASS",
+      "majors": [],
+      "minors": [
+        "Treads are brick-patterned risers with only a 1-2px light nosing row; the walkable tread top is thin, so up close the flight leans toward 'ledged brick wall' (still reads as stairs at 1x by the regular light bands).",
+        "Paved road's light curb lines stop abruptly at the crest and resume at the foot; side walls are 2-3px straight strips, so the cut walls are barely expressed compared with the ramps."
+      ]
+    }
+  },
+  "stacked": {
+    "verdict": "PASS",
+    "majors": [],
+    "minors": [
+      "Stacked flights (2+strip+2, 1+strip+2, and the hill village ramp-h2 pair) join cleanly: each flight's crest/toe meets the one-row strip track/road with no gap or row offset; the only visible join artifact is the same pale-ramp vs track tone step at each crest/toe, repeated twice.",
+      "Hill crossing panel is labelled 'north' although it shows a visible south-facing-looking face; label/orientation wording should be checked, art itself is fine."
+    ]
+  },
+  "majors": 0,
+  "verdict": "PASS",
+  "summary": "All 16 pieces match their cliff heights in the real-renderer probes (1-4 rows), crest meets upper ground and toe meets the foot track/road, no seams or row mismatches against native beodeul cliff faces or grass lips, palettes sit in the beodeul brown/stone range, and at 1x every cut reads clearly as a way up (ramps as sloped notches, stairs as banded flights). Stacked flights join at the landing strip. No major defects found; minors: ramp surface tone step vs track at crest/toe, smooth wedge walls lacking native rock clusters, thin tread tops on stairs, thin left wall on ramp-h4, notch-like ramp-h1."
+}
