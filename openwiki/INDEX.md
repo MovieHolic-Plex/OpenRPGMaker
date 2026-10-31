@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7857KB / 약 2,308,672 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7858KB / 약 2,309,018 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -3349,18 +3349,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L108` Implementation invariants
 - `L119` Sources
 
-### `openwiki/state-system.md` — 14KB · 141줄 · ~3,878 토큰
+### `openwiki/state-system.md` — 15KB · 148줄 · ~4,224 토큰
 
 - `L7` TL;DR (use this when explaining to a user)
 - `L15` Layers and ownership
 - `L27` StateRecord fields (authored)
-- `L61` StateOntology (engine default template)
-- `L86` Default seed (new projects)
-- `L90` Editor surface
-- `L100` Runtime application
-- `L111` Common confusion points
-- `L123` Files to inspect before editing
-- `L135` Related pages
+- `L68` StateOntology (engine default template)
+- `L93` Default seed (new projects)
+- `L97` Editor surface
+- `L107` Runtime application
+- `L118` Common confusion points
+- `L130` Files to inspect before editing
+- `L142` Related pages
 
 ### `openwiki/steampunk-city.md` — 8KB · 57줄 · ~2,389 토큰
 
