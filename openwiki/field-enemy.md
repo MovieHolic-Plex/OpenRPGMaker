@@ -164,12 +164,13 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
   조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
   내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(`{off:true}` 면 끔 — 스키마가 객체 하나라 `false` 대신 이 꼴을 받는다. 도구 안에서는 `false` 도 받는다).
-  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`). `chaser.blendMode` (add|screen|multiply) sets the chase page graphic blend (ghost = person charset + add). `onTouch: CutsceneBeat[]` compiles a non-lethal touch scene (same beat validation as `script_cutscene`) and is exclusive with `killOnTouch`/`caughtPenalty` (2026-10-31, 「이상 없음」 Sayo).
+  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`). `chaser.blendMode` (add|screen|multiply) sets the chase page graphic blend (ghost = person charset + add). `onTouch: CutsceneBeat[]` compiles a non-lethal touch scene (same beat validation as `script_cutscene`) and is exclusive with `killOnTouch`/`caughtPenalty` (2026-10-31, 「이상 없음」 Sayo). A switch-woken chaser defaults to `pursuit.tracking:"persistent"` (comes through walls) **unless it has a `patrol`** — then the switch only starts the patrol and the chaser must see the hero (2026-10-31: a patrolling night guard woke already chasing and skipped the first hiding scene).
 - **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
   더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
   `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
   나오기·붙잡힘(게임 오버 화면의 `stopAllAudio`)·맵 이동에서 저절로 멈추고, 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
   조수: `make_chase_scene({hidingSound:{enterSe?, exitSe?, heartbeat?}})` — 공포 장르는 생략해도 사물함 문 소리(`cc0-se-osx-door-close-03`) + 심장 고동(`HORROR_SOUNDS` heartbeat).
+- **숨은 동안 손전등**(2026-10-31): 주인공에 붙은 부채꼴 광원(`at:"player"` + `cone`, 손전등)은 `session.horror.hiding` 동안 그리지 않는다(`playSceneLighting.resolveLightAnchor`). 발밑 둥근 빛은 남는다. 숨은 사물함에서 복도로 빛이 새어 나가 숨기가 안 읽혔다.
   편집기: 물체 동작 「은신처」 아래 소리 칸 셋.
 - 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
   내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.
