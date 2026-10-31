@@ -21,8 +21,10 @@ G0, G1, G2, G3, G4 = (88, 122, 54), (94, 130, 57), (99, 138, 60), (110, 153, 67)
 S0, S1, S2, S3, S4, S5 = (88, 73, 60), (110, 91, 73), (118, 99, 79), (129, 106, 86), (138, 116, 92), (158, 139, 100)  # sand track
 P0, P1, P2, P3, P4, P5 = (55, 66, 67), (91, 102, 103), (119, 117, 121), (144, 146, 143), (196, 198, 195), (222, 224, 221)  # paving / stone
 FOOT = {"ramp": Image.open(f"{HERE}/foot-sand.png").convert("RGB"), "stairs": Image.open(f"{HERE}/foot-paving.png").convert("RGB")}
+# the foot row: the native road/track segment as it renders on a straight run, side edges included (sample_foot.py)
+SEG = {(k, w): Image.open(f"{HERE}/foot-{k}-w{w}.png").convert("RGB") for k in ("ramp", "stairs") for w in (2, 3)}
 LOCKED = {W0, W1, W2, W3, W4, W5, G0, G1, G2, G3, G4, S0, S1, S2, S3, S4, S5, P0, P1, P2, P3, P4, P5}
-for im in FOOT.values(): LOCKED |= set(im.get_flattened_data())
+for im in [*FOOT.values(), *SEG.values()]: LOCKED |= set(im.get_flattened_data())
 
 def h(x, y, k=0):  # deterministic hash noise 0..255
     v = (x * 374761393 + y * 668265263 + k * 2147483647) & 0xFFFFFFFF
@@ -32,57 +34,82 @@ def h(x, y, k=0):  # deterministic hash noise 0..255
 CW = 4  # cheek width px
 
 def cheek(px, x_, y_, F, W, left, rich=False):
-    """the cut's side wall in the face's own soil: left one faces east (shade), right one faces west (lit).
-    i = 0 outer edge (meets the face), CW-1 inner edge (meets the climb). Grass lip on top, dark foot line."""
+    """the cut's side: the cliff face's own soil running into the cut. Base like the face (shade side darker), a cobble or two,
+    an inner edge that wanders a pixel (no straight post), dark on the shaded left, a lit rim on the right; grass lip on top."""
+    for Y in range(F):
+        inner = CW - 1 - (1 if h(7 if left else 9, Y // 2, 3) < 90 else 0)       # ragged inner edge
+        for j in range(CW):
+            X = j if left else W - 1 - j
+            n = h(X, Y, 3)
+            if j > inner: px[X, Y] = px[X + 1, Y] if left else px[X - 1, Y]; continue   # the climb widens by a pixel here
+            if left: c = W1 if n < 60 else W2
+            else: c = W3 if n < 70 else (W4 if n < 200 else W2)
+            if j == inner: c = W0 if left else W5                                # cut edge: shadow / lit rim
+            px[X, Y] = c
+        if h(1 if left else W - 3, Y, 21) < 40 and 2 < Y < F - 2:               # a cobble like the face
+            X = 1 if left else W - 3
+            px[X, Y] = W3 if left else W5; px[X + 1, Y] = W2 if left else W4
     for j in range(CW):
         X = j if left else W - 1 - j
-        for Y in range(F):
-            n = h(X, Y, 3)
-            if left: c = W1 if j == 0 else (W2 if n > 50 else W1)
-            else:
-                c = W2 if j == 0 else (W5 if j == CW - 1 else (W4 if n > 45 else W3))
-            if rich and 0 < j < CW - 1:                                                       # soil grain in a short cheek
-                q = h(X, Y, 71)
-                if left: c = W3 if q > 225 else (W0 if q < 30 else c)
-                else: c = W5 if q > 220 else (W2 if q < 40 else c)
-            px[X, Y] = c
-        lip = 2 + (1 if h(X, 0, 5) < 110 else 0) + (1 if j == 0 else 0)
+        lip = 2 + (1 if h(X, 0, 5) < 110 else 0)
         for Y in range(lip): px[X, Y] = G1 if Y < lip - 1 else G0
-        px[X, F - 1] = W0 if (left or j == 0) else W1
-    # a pebble or two in the wall like the face
-    for Y in range(5, F - 3, 7):
-        X = 1 if left else W - 3
-        if h(X, Y, 21) < 150:
-            px[X, Y] = W3 if left else W5; px[X + 1, Y] = W2 if left else W4; px[X, Y + 1] = W1 if left else W3
+        px[X, F - 1] = W0 if left else W1
+
+SEQ = [S0, (96, 79, 63), S1, S2, S3, S4, S5]   # sand-track tones dark -> light (the foot tile uses all of them)
+
+def blob(X, Y):
+    """smooth value noise 0..1 (bilinear over a 3-px lattice, then a pixel of jitter): round clusters, no streaks"""
+    gx, gy = X / 2.5, Y / 2.5; ix, iy = int(gx), int(gy); fx, fy = gx - ix, gy - iy
+    v = lambda a, b: h(a, b, 107) / 255
+    top = v(ix, iy) * (1 - fx) + v(ix + 1, iy) * fx; bot = v(ix, iy + 1) * (1 - fx) + v(ix + 1, iy + 1) * fx
+    return min(1, max(0, (top * (1 - fy) + bot * fy) * 0.7 + h(X, Y, 109) / 255 * 0.3))
 
 def ramp_surface(px, F, W, rise):
-    """packed-earth ramp: lit at the crest, darker toward the toe (it faces up the climb), broken contour dashes that sag
-    in the middle (RTP rhythm, our colours), two worn wheel/foot ruts, cheek shade on the left, light on the right."""
-    x0, x1 = CW, W - CW
-    c, hw = (x0 + x1 - 1) / 2, (x1 - x0) / 2
-    ramp = [S5, S4, S3, S2, S1]                        # crest -> toe
-    rut = {round(x0 + (x1 - x0) * 0.3), round(x0 + (x1 - x0) * 0.7) - 1}
+    """packed-earth ramp (r6, after three adversarial VQA rounds: r1 horizontal dark dashes = "stone courses", r3 flat fill =
+    "a notch, no slope"). Slope cues, in the RTP cut's way but our colours: chevron contours that dip deep toward the middle
+    (soft: a lit lip over a one-tone-darker line, broken), a light-to-shade fade down the climb that starts at the track's own
+    tone at the crest (no pale band), and wedge-shaped cheeks (ramp_cheek) that are thin at the crest and full at the toe, so the
+    cut deepens as it descends. The texture is the track's own cluster mix (blob), so crest and toe meet the road without a seam."""
+    x0, x1 = 2, W - 2
+    cx, hw = (x0 + x1 - 1) / 2, (x1 - x0) / 2
+    for Y in range(F):
+        f = Y / max(1, F - 1)                                     # 0 crest .. 1 toe
+        # r7 (r5 VQA: "reads as a level track"): a clear fade from a lit brow to a shaded toe, dithered so no row is a hard line
+        g = 1.0 - 2.2 * f                                          # +1 .. -1.2 tone shift down the climb
+        for X in range(x0, x1):
+            q = blob(X, Y)
+            base = 6 if q < 0.25 else (4 if q > 0.85 else 5)       # the track's own mix
+            sh = g + (h(X, Y, 117) / 255 - 0.5) * 0.9              # ordered-ish dither of the shift
+            i = max(1, min(6, base + (1 if sh > 0.5 else (-1 if sh < -0.5 else 0)) + (-1 if sh < -1.2 else 0)))
+            if Y < 2 and h(X, Y, 119) < 200: i = 6                 # lit brow, broken
+            if h(X, Y, 101) > 248: i = 0 if h(X, Y, 103) & 1 else 2
+            u = abs(X - cx) / max(1, hw)
+            t = Y - round(0.45 * (x1 - x0) * (1 - u) * (0.6 + 0.4 * f)) # chevron, dipping deeper lower down (it comes nearer)
+            if Y >= 3 and Y < F - 1 and h(X, Y // 3, 113) < 215:
+                if t % 6 == 0: i = max(1, i - 2)                     # contour, two tones down
+                elif t % 6 == 5: i = min(6, i + 1)                   # its lit lip
+            px[X, Y] = SEQ[i]
+
+def ramp_cheek(px, F, W, left):
+    """wedge cheek of a ramp cut: the cliff face's soil, thin at the crest and widening to full at the toe; cut edge dark on the
+    shaded left, lit on the right; a couple of cobble lumps like the face; grass lip on top."""
     for Y in range(F):
         f = Y / max(1, F - 1)
-        for X in range(x0, x1):
-            n = h(X, Y, 7)
-            # dithered gradient between two neighbouring tones
-            k = f * 3.0 + 0.2
-            i = int(k); fr = k - i
-            col = ramp[min(4, i + (1 if (n / 255) < fr else 0))]
-            u = (X - c) / hw
-            sag = round(3 * (1 - u * u))
-            t = Y - sag
-            if t > 1 and t % 5 == 4 and n < 175 and 1 < Y < F - 2: col = S0 if f > .5 else S1          # contour dash
-            elif t > 1 and t % 5 == 3 and n < 120 and 1 < Y < F - 2: col = S5                          # its lit lip
-            if X in rut and 1 < Y < F - 1 and n < 200: col = S2 if f < .4 else S1                       # worn rut
-            if n > 249 and 2 < Y < F - 3: col = S0                                                      # pebble
-            px[X, Y] = col
-        px[x0, Y] = S1 if Y > 1 else S3; px[x0 + 1, Y] = S2 if h(x0 + 1, Y, 9) < 170 and Y > 1 else px[x0 + 1, Y]
-        px[x1 - 1, Y] = S5 if Y % 3 else S4
-    for X in range(x0, x1):
-        px[X, 0] = S5; px[X, 1] = S5 if h(X, 1, 4) < 128 else S4    # crest
-        px[X, F - 1] = S1 if h(X, F - 1, 11) < 128 else S2           # toe shadow
+        wd = 2 + round(6 * f) + (1 if h(3 if left else 5, Y // 2, 3) < 70 else 0)
+        for j in range(wd):
+            X = j if left else W - 1 - j
+            n = h(X, Y, 3)
+            c = (W1 if n < 70 else W2) if left else (W3 if n < 80 else W4)
+            if j == wd - 1: c = W0 if left else W5
+            elif j == wd - 2 and not left: c = W4
+            px[X, Y] = c
+    for j in range(3):
+        X = j if left else W - 1 - j
+        for Y in range(2 + (1 if h(X, 0, 5) < 110 else 0)): px[X, Y] = G1 if Y else G0
+    for Y in range(4, F - 3, 6):                                              # cobble lumps
+        X = 1 if left else W - 3
+        if h(X, Y, 21) < 170:
+            px[X, Y] = W3 if left else W5; px[X + 1, Y] = W2 if left else W4; px[X, Y + 1] = W1 if left else W3
 
 def stair_surface(px, F, W, rise, rich=False):
     """cut-stone steps, 8 px a step (two per face row). Each step = a row of dressed slabs (5-8 px, joints staggered step to
@@ -121,39 +148,31 @@ def stair_surface(px, F, W, rise, rich=False):
                         q = h(X, Y, 61)
                         if q < 45: c = L[max(0, 2 - dk - sv)]
                         elif q < 70 and d == 2: c = L[1]
-                        elif q > 215: c = L[min(5, 4 - dk + (1 if d == 1 else 0))]
+
                 elif d == 4: c = L[2 - dk] if not first else L[1]                             # tread back edge
                 elif d <= 6:                                                                     # riser front
                     q = h(X, Y, 47)
                     c = L[0] if X in rj else ((L[2] if q < 150 else L[3 - dk]) if d == 5 else (L[1] if q < 170 else L[2]))
                     if rich and X not in rj:                                                  # riser: chisel marks, lit top lip
-                        if d == 5 and q > 200: c = L[4 - dk]
-                        elif d == 6 and q < 40: c = L[0]
+                        if d == 6 and q < 40: c = L[0]
                 else: c = L[0]                                                                # shadow
                 if X == x0 and d > 0: c = L[1] if d <= 4 else L[0]                            # left end, cheek shade
                 if X == x1 - 1 and 0 < d <= 3: c = L[4]                                       # right end, lit
                 px[X, Y] = c
     for X in range(x0, x1): px[X, F - 1] = P0
-    if rich:                                                                                  # grass tufts hanging over the crest
-        for X in range(x0, x1):
-            q = h(X, 0, 81)
-            if q < 120: px[X, 0] = G2 if q < 50 else G3
-            if q < 40: px[X, 1] = G0
-            elif q > 235: px[X, 0] = G4
 
 def piece(kind, w, rise):
+    global CW
+    CW = 6 if kind == "ramp" else 4   # ramp cheeks as wide as the track's ragged grass edge, so the climb is the track's own width
     W, F = w * 16, rise * 16
     im = Image.new("RGB", (W, F + 16)); px = im.load()
     rich = kind == "stairs" and rise == 1
-    if kind == "ramp": ramp_surface(px, F, W, rise)
-    else: stair_surface(px, F, W, rise, rich)
-    cheek(px, 0, 0, F, W, True, rich); cheek(px, 0, 0, F, W, False, rich)
-    foot = FOOT[kind].load()
+    if kind == "ramp": ramp_surface(px, F, W, rise); ramp_cheek(px, F, W, True); ramp_cheek(px, F, W, False)
+    else: stair_surface(px, F, W, rise, rich); cheek(px, 0, 0, F, W, True, rich); cheek(px, 0, 0, F, W, False, rich)
+    seg = SEG[(kind, w)].load()
     for Y in range(16):
-        for X in range(W): px[X, F + Y] = foot[X % 16, Y]
+        for X in range(W): px[X, F + Y] = seg[X, Y]
     # the climb spills a little onto the foot: one row of the ramp/stair colour at the very top, cheek shadow corners
-    for X in range(CW, W - CW):
-        if kind == "ramp" and h(X, F, 17) < 150: px[X, F] = S3
     return im
 
 def check(im):
