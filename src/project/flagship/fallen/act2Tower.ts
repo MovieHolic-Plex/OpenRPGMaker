@@ -327,7 +327,8 @@ function floorOne(project: Project, exec: Exec): void {
       wait(500),
       se("cc0-se-osx-metal-03"), shake(1, 300),
       say(SARAH, "…쇳소리다. 안쪽 홀에서."),
-      camTo("ev_fs2_t1_stage_knight", 1300),
+      // 1배로는 기사·기계가 손톱만 해서 「쳐 낸다」가 안 읽혔다(첫 플레이 검수 2026-11-01) — 2배로 당겨 본다.
+      camTo("ev_fs2_t1_stage_knight", 1300, 2),
       wait(300),
       route("ev_fs2_t1_stage_knight", [{ kind: "move", dir: "left" }]),
       se("cc0-se-osx-metal-03"), flash("white", 200),
@@ -341,7 +342,7 @@ function floorOne(project: Project, exec: Exec): void {
       // 기계가 홀 가운데 자리(필드 적이 서는 칸)로 한 걸음 물러나 선다 — 장면이 끝나고 필드 적으로 바뀔 때 칸이 튀지 않게.
       route("ev_fs2_t1_stage_machine", [{ kind: "move", dir: "up" }, { kind: "turn", dir: "down" }]),
       wait(400),
-      camBack(700),
+      camBack(700, 1),
       say(SARAH, "기계가 기사를 쳤어.\n…저것들한텐 우리도 기사도 똑같나 봐."),
       say(ELENA, "벽 글자 봐. 천문대 지하 패널이랑 같아.\n이 탑도 그 사람들이 지었어."),
       say(KAEL, "부딪히지 말고 돌아서 가자.\n이리스는 위층이야."),
@@ -618,6 +619,12 @@ function floorFour(project: Project, exec: Exec): void {
     hint: "이리스가 손끝을 들자 둘레가 환해졌다.",
     blockedText: "발밑이 캄캄하다.\n한 발짝 앞이 바닥인지 낭떠러지인지 모르겠다.",
   });
+  // 도구의 어둠 자동 페이지는 4층에 들어설 때마다(체크포인트·계단 왕복 포함) 「발밑이 캄캄하다 … 손끝 빛을 쓸 줄 아는 동료가 있으면」을 띄웠다 —
+  // 도착 대사(엘레나·새라)보다 먼저 답(누가 밝히는지)을 말하고, 드나들 때마다 되풀이됐다(첫 플레이 검수 2026-11-01). 들어설 때는 말없이 어둡게만 둔다.
+  // 골방 길목(blockCells)을 조사하면 여전히 「발밑이 캄캄하다」 한 줄이 나온다.
+  for (const pg of ev(project, FS2_T4, "ev_fs2_t4_dark").pages ?? []) {
+    for (const c of pg.commands) if (c.kind === "fork") (c as unknown as { else: Command[] }).else = [];
+  }
   const light = project.database.skills.find((s) => s.id === FS2_SKILL_FINGERLIGHT);
   if (!light) throw new Error("[fallen-star tower] 손끝 빛 기술이 없다");
   Object.assign(light, { name: "손끝 빛", description: "필드 기술. 손끝에 빛을 맺어 어둠을 밝힌다.\n이리스가 처음 배운 「아침」의 빛." });
