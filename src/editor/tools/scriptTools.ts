@@ -267,7 +267,7 @@ const EXAMPLES_PROP: JsonSchema = {
   type: "array",
   maxItems: SCRIPT_EXAMPLE_LIMIT,
   description: "Situations to run right after writing (on a copy — nothing is saved) and to store as the script card's examples. "
-    + "Give the success path and one failure path (2-4 items). Each result comes back in this same call, so no dry_run_script is needed.",
+    + "Give the normal case and one edge (2-4 items). Each result comes back in this same call, so no dry_run_script is needed.",
   items: {
     type: "object",
     properties: { label: { type: "string", description: "Short situation name in the user's language (e.g. '맞는 순서', '평판 10', '밤 22시')." }, ...SETUP_PROPS },
@@ -316,7 +316,8 @@ interface ExampleRun {
   readonly label: string;
   /** Present only when the run failed (errors, or it hit the step cap). */
   readonly ok?: false;
-  readonly transcript: string[];
+  /** Omitted when the script showed nothing (a pure calculation fragment). */
+  readonly transcript?: string[];
   readonly changes?: DryRunChanges;
   readonly endedBy?: string;
   readonly log?: string[];
@@ -327,7 +328,7 @@ interface ExampleRun {
 function runExamples(project: Project, command: ScriptCommand, examples: readonly ScriptExample[], mapId: string | undefined, eventId: string | undefined): ExampleRun[] {
   if (!examples.length) return [];
   if (!scriptEngineModule()) {
-    return examples.map((example) => ({ label: example.label, ok: false as const, transcript: [], errors: ["The script engine (QuickJS) did not load; examples were not run. Call dry_run_script."] }));
+    return examples.map((example) => ({ label: example.label, ok: false as const, errors: ["The script engine (QuickJS) did not load; examples were not run. Call dry_run_script."] }));
   }
   return examples.map((example) => {
     const { label, ...setup } = example;
@@ -339,7 +340,7 @@ function runExamples(project: Project, command: ScriptCommand, examples: readonl
     return {
       label,
       ...(result.ok ? {} : { ok: false as const }),
-      transcript,
+      ...(transcript.length ? { transcript } : {}),
       ...(changed ? { changes: result.changes } : {}),
       ...(result.endedBy !== "done" ? { endedBy: result.endedBy } : {}),
       ...(result.log.length ? { log: result.log.slice(0, EXAMPLE_LOG_CAP).map(clip) } : {}),
@@ -401,14 +402,14 @@ const SINGLE_PROPS: Record<string, JsonSchema> = {
   ...TARGET_PROPS,
   source: { type: "string", description: "TypeScript script body. Always await awaitable calls (showMessage, showChoices, wait, battle, transfer, cmd …)." },
   name: { type: "string", description: "Short label shown in the event list (e.g. 'lever puzzle')." },
-  index: { type: "integer", minimum: 0, description: "Insert position in the top-level command list. Default: append at the end." },
+  index: { type: "integer", minimum: 0, description: "Insert position in the top-level command list (put it right before the commands that read its result). Default: append at the end." },
   explain: EXPLAIN_PROP,
   examples: EXAMPLES_PROP,
 };
 
 const authorScript: ToolDefinition = {
   name: "author_script",
-  description: "Insert a NEW `script` command (TypeScript using the game API) into an event page or common event — for logic only (several combined conditions, formulas, counters, timers, puzzle rules, time-of-day rules); dialogue, movement and cutscenes stay ordinary commands. "
+  description: "Insert a NEW small `script` command (TypeScript using the game API) among an event page's or common event's commands. Event commands stay the readable part (dialogue, cutscenes, branches, choices, switch/variable/gold/item changes, movement, effects); a script is only for what they express badly — a formula, a loop over a list, an ordered-sequence check, a timer — kept to 1-3 lines with one job and named consts, writing its result to a variable or switch the surrounding commands read (\\V[var_id] in Show Text, a fork). "
     + "One call does it all: it compiles (on errors nothing changes and you get line:col diagnostics to fix), stores explain (plain-language card) and runs every example on a copy, returning each transcript and state change. "
     + "So check_script and dry_run_script are not needed afterwards. Several scripts at once (e.g. 4 levers): scripts:[{…same fields…}] — each item is written or rejected on its own.",
   mode: "write",

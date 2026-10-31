@@ -186,12 +186,19 @@
 - 노출: 레지스트리·별칭(`스크립트·타입스크립트·코드로·공식·퍼즐 로직…`)·라벨·능력 색인 레시피 `event-scripts`. v2 는
   `game.ts` `SCRIPT_TIER`(로직 낱말: 레버·비밀번호·조합·공식·할인·확률·시간대…)가 맞으면 `author_script`·`edit_script` 둘만 처음부터 싣고
   (`V2_UP_FRONT`), 나머지 여덟은 `load_tools`/이름 호출. 카드에 API 한 문단(`scriptApiQuickRef()`)이 붙어 `get_script_api` 없이 흔한 호출을 쓴다.
-- **정책(2026-10-31 A/B 뒤)**: 대사·이동·연출·단순 스위치는 명령, 스크립트는 로직(여러 조건·공식·카운터·타이머·퍼즐 규칙·시간대 규칙)만.
-  이벤트마다 **한 번 정하고 바꾸지 않는다**(사용자가 시킬 때만 스크립트↔명령). 기존 명령은 자동으로 옮기지 않는다. 스크립트는 목록의 한 줄이고 둘레 대사는 명령으로 둔다.
-  쓰기는 `author_script` 한 번(explain + examples) — 쓰기→검사→시험 실행 왕복을 하지 않는다. 같은 꼴 여러 개는 `scripts:[…]`.
-  `GAME_CARD`·v1 시스템 지시문·능력 색인 정책·스킬이 같은 글이다. 확률은 `game.random` 스크립트로.
-  왜: 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 켠 쪽이 논리는 더 맞았지만 get_script_api·check_script·dry_run_script 왕복과
-  스크립트↔명령 갈아 끼우기로 모델 호출 136 vs 102, 비용 중앙값 $41.9 vs $23.3 이었다(방탈출 두 판은 스크립트를 짰다가 명령으로 되돌려 최종 0개).
+- **정책(2026-11-01, 「사람은 읽고 AI 가 고친다」)**: 사람이 읽는 것은 이벤트 명령 목록이다. 대사·연출·분기·선택지·스위치/변수/돈/아이템·
+  이동·효과는 **전부 명령**. 스크립트는 명령으로 쓰기 나쁜 **짧은 조각**만 — 공식(가격·피해), 목록을 도는 반복, 순서 맞추기 판정, 타이머·카운트다운,
+  정확한 시각 규칙, 난수. 조각은 1~3줄·일 하나·숫자는 이름 붙인 const, 결과를 변수·스위치에 쓰고 **둘레 명령이 그 값을 읽는다**
+  (대사 `\V[var_price]`, 그 변수로 분기, `changeGold` 양 `{kind:"var",id}`). 계산값에 기대는 대사가 아니면 스크립트 안에 대사를 넣지 않는다.
+  이벤트마다 한 번 정하고 되돌리지 않는다(스크립트↔명령 갈아 끼우기 금지), 기존 명령은 사용자가 시킬 때만 스크립트로.
+  쓰기는 `author_script` 한 번(explain + examples, `index` = 값을 읽는 명령 바로 앞), 같은 꼴 여럿은 `scripts:[…]`.
+  `GAME_CARD`·`SCRIPT_TIER` 카드·v1 시스템 지시문·능력 색인 정책·도구 설명·스킬이 같은 글이고, 짧은 본보기 하나(가격 2줄 스크립트 → `\V[var_price]` 대사)를 싣는다.
+  2026-10-31 판(「로직은 스크립트 하나로」)은 왕복을 줄였지만 대사까지 스크립트 안에 넣어 사람이 읽기 어려웠다.
+  처음 이유: 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 get_script_api·check_script·dry_run_script 왕복과
+  스크립트↔명령 갈아 끼우기로 모델 호출 136 vs 102, 비용 중앙값 $41.9 vs $23.3 이었다.
+- **대사 속 이름 id 변수**: `\V[var_price]` 처럼 숫자가 아닌 id 도 읽는다(`src/player/dialogue.ts` — 예전엔 `\V[12]` 숫자 칸만, 이름 id 는 글자 그대로 나왔다).
+  id 꼴(`[A-Za-z_][\w-]*`)이 아니면 예전처럼 글자 그대로. `dry_run_script`·예시 전사는 치환 전 글을 보여 준다.
+- 예시 결과에서 아무것도 보이지 않은 계산 조각은 `transcript` 칸을 뺀다(바뀐 값 `changes` 만).
 - **끄기 스위치(시험 전용)**: 조수 루프 프로세스 env `OPRN_V2_SCRIPTS=0` 이면 조수에게 스크립트 도구 10개(`getTool`·`activeTools` 에서 빠짐 — 이름으로 불러도 없다)·스킬 `event-scripts`·v1/v2 지시 줄·`SCRIPT_TIER` 카드를 모두 숨기고, GAME_CARD 난수 줄은 스크립트 이전 글(순서 돌리기)로 돌아간다(`src/ai/scriptsSwitch.ts`). 런타임·편집기의 `script` 명령은 그대로. 스크립트 켬/끔 A/B 용 — 제품 설정 칸이 아니다. 확인: `OPRN_V2_SCRIPTS=0 bun scripts/qa/script-ab/exposure.mts`.
 - 스킬: `assistant-skills/event-scripts/SKILL.md`(언제 쓰나·API 표·규칙·고리·레버 퍼즐/할인 상점(@lib)/시간대 경비 예제) →
   `npm run assistant-skills:bundle` 로 `src/assets/assistantSkills.json`.
