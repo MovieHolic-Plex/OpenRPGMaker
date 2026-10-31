@@ -10,8 +10,8 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
 import { INTERIOR_WORDS, interiorCatalogCard, projectBrief } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
-import { LAYOUT_FORMAT, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
-import { layoutReviewRounds } from "./layoutReview";
+import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
+import { layoutReviewRounds, REVIEWS_TAG } from "./layoutReview";
 import { effectiveSpec, findPieces, interiorTilesetFor } from "./interiorCatalog";
 import type { PiAssistantV2Env } from "./env";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
@@ -1106,8 +1106,23 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const problems = (p.problems ?? []).map((x) => String(x)).filter(Boolean);
       const notes = [...String(record.spec.hints?.layoutReviewNotes ?? "").split(" || ").filter(Boolean), (problems.join("; ") || "nothing to fix").slice(0, 300)].slice(-6).join(" || ");
       const lp = layoutPatchIsEmpty(p.patch) ? undefined : p.patch;
-      const res = await editPlace.execute(id, { patch: { mapId, ...(lp ? { layoutPatch: lp } : {}), set: { hints: { layoutReviews: round, layoutReviewNotes: notes } } } });
       const want = layoutReviewRounds();
+      // 빈 패치 = 고칠 것 없음: 다시 깔지 않고 바퀴만 센다. 예전엔 빈 패치도 다시 지어서, 다시 지은 배치가 더 나쁘다며 되돌리고 ok:false 를
+      // 돌려줬다(2026-10-31 조수 대조 8회차 FS2 감방 Opus: 「no patch — layout kept」 인데 「문제 1→3 되돌렸다」 거절 3번, 할 일 검사도 못 넘김).
+      const decl = !lp ? (env.ctx.project.maps[mapId]?.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl")) : undefined;
+      if (!lp && decl) {
+        let note0: Record<string, unknown> = {};
+        try { note0 = JSON.parse(String((decl as { note?: string }).note ?? "{}")) as Record<string, unknown>; } catch { /* 읽지 못한 기록은 바퀴만 센다 */ }
+        run.call("delete_map_location", { mapId, locationId: decl.id });
+        run.call("create_map_location", { mapId, name: decl.name, x: decl.x, y: decl.y, w: decl.w, h: decl.h,
+          note: JSON.stringify({ ...note0, reviews: round, reviewNotes: notes.split(" || ").filter(Boolean) }).slice(0, 8000),
+          tags: [...(decl.tags ?? []).filter((x) => !x.startsWith(REVIEWS_TAG)), `${REVIEWS_TAG}${round}`] });
+        const spent = { ...record, spec: { ...record.spec, hints: { ...(record.spec.hints ?? {}), layoutReviews: round, layoutReviewNotes: notes } } };
+        for (const m of record.result.mapIds) session.places.set(m, spent);
+        return text({ ok: true, review: `Review round ${round}${want ? `/${want}` : ""} for "${record.spec.name}" (${mapId}): no patch — layout kept as it is (not re-laid).`,
+          summary: round < want ? `Round ${round} recorded with no changes. Send the next review_layout round (empty patch again if nothing is wrong), or a small patch for one or two real problems.` : "Review rounds done — continue with the rest of the request." });
+      }
+      const res = await editPlace.execute(id, { patch: { mapId, ...(lp ? { layoutPatch: lp } : {}), set: { hints: { layoutReviews: round, layoutReviewNotes: notes } } } });
       const note = `Review round ${round}${want ? `/${want}` : ""} for "${record.spec.name}" (${mapId}): ${lp ? "patch applied and re-laid" : "no patch — layout kept"}. ${round < want ? "Look at the new picture and send the next review_layout round." : "Review rounds done."}`;
       const head = res.content[0];
       if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ review: note, ...j }) }; } catch { res.content.push({ type: "text", text: note }); } }
