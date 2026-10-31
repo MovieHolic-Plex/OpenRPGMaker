@@ -1223,7 +1223,9 @@ function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: C
   const gapX = Math.floor(W / 2) - 1; // 틈 왼쪽 칸(두 칸 폭: gapX, gapX+1)
   const nx = exit.x + 0.5;
   // 옆 가장자리 들쭉날쭉(0~4칸) — 줄마다 부드럽게. 0~2칸이면 풀밭이 반듯한 상자로 읽혔다(VQA r8 「좌우 직선 띠」).
-  const side = (y: number, k: number) => Math.max(0, Math.min(4, Math.round(1.6 + Math.sin(y * 0.47 + k) * 1.3 + Math.sin(y * 0.19 + k * 2.3) * 1.0)));
+  // 맨 아래 다섯 줄(성벽 밑, 등 뒤 추격자 둘이 서는 자리)은 0~1칸 — 가장자리가 안으로 들어오면 추격자가 그만큼 가까이 서서
+  // 곧게 달려도 틈 바로 앞에서 따라잡혔다(r9 녹화).
+  const side = (y: number, k: number) => Math.max(0, Math.min(y >= H - 6 ? 1 : 4, Math.round(1.6 + Math.sin(y * 0.47 + k) * 1.3 + Math.sin(y * 0.19 + k * 2.3) * 1.0)));
   const meadow = (x: number, y: number) => y > wallY && y < H - 1 && x >= 1 + side(y, 1.3) && x <= W - 2 - side(y, 4.1);
   paintWoodlandOnto(project, map, {
     id: mapId, name: map.name, width: W, height: H, seed: 4211,
