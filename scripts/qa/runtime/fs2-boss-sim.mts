@@ -25,7 +25,7 @@ for (const [name, extra] of [
   ["skills_noValen", { useSkills: true, switchesOn: [] }],
   ["skills_valen", { useSkills: true, switchesOn: ["sw_fs2_b13_valen_guest"] }],
 ] as const) {
-  const r = runTool(ctx, "simulate_battle", { troopId: "troop_fs2_ash_collector", heroLevel: 14, partyActorIds: party, inventory: { item_potion: 6, item_hi_potion: 1, item_ether: 2 }, potionItemId: "item_potion", n, seed: 11, ...extra });
+  const r = runTool(ctx, "simulate_battle", { troopId: "troop_fs2_ash_collector", heroLevel: Number(process.env.FS_LV ?? 14), partyActorIds: party, inventory: { item_potion: 6, item_hi_potion: 1, item_ether: 2 }, potionItemId: "item_potion", n, seed: 11, ...extra });
   if (process.env.FS_DUMP) console.log(name, JSON.stringify(r.data).slice(0, 1500));
   out[name] = r.ok ? { summary: r.summary, winRate: (r.data as { winRate?: number })?.winRate, avgTurns: (r.data as { avgTurns?: number })?.avgTurns } : { error: r.summary };
 }

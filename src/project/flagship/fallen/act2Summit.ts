@@ -95,11 +95,11 @@ export function gateSummitStair(project: Project, exec: Exec, irisBackSwitch: st
 function summitData(project: Project, exec: Exec): void {
   const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID } = towerKit;
   const skill = (s: Rec): void => { exec(project, "upsert_skill", { skill: { type: "normal", variance: 15, hitRate: 100, successRate: 100, stateEffects: [], ...s } }); };
-  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 42, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
+  skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 38, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_blind", chance: 35, operation: "add" }], animationId: "anim_gen_power_aura" });
   skill({ id: SK_GATHER_FIRE, name: "불 거두기", scope: "enemy", power: 58, drainPercent: 50, description: "거두는 눈이 붙잡은 상대의 기운을 빨아들인다. 준 피해의 절반을 회복.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_power_aura" });
-  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 118, chargeTurns: 1,
+  skill({ id: SK_RECALL, name: "재의 회수", scope: "allEnemies", power: 104, chargeTurns: 1,
     description: "한 차례 불을 모았다가 모두를 태워 거둔다. 모으는 동안 크게 때리거나 얼음을 맞히면 끊긴다.",
     chargeBreak: { damage: 520, elementIds: ["ice"], message: "…회수, 중단. 재점화 필요.", stagger: true },
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "fire", animationId: "anim_gen_critical_burst" });
@@ -126,7 +126,7 @@ function summitData(project: Project, exec: Exec): void {
   };
   // 몸통 — 큰 재 두건. 불은 안 듣고(삼킨다) 얼음·빛에 약하다. 「불 거두기」는 거두는 눈, 「재의 회수」는 태우는 눈이 살아 있어야 쓴다.
   foe({ id: E_COLLECTOR, name: "재의 회수자", art: "generated-enemy-wraith-dark", level: 15, scale: 190, hideHp: true,
-    stats: { maxHp: 4900, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
+    stats: { maxHp: 4600, maxMp: 200, attack: 124, defense: 60, mind: 108, agility: 50 },
     actions: [actRow("skill_attack", 4), actRow(SK_ASH_SCATTER, 5), { ...actRow(SK_GATHER_FIRE, 5), requiresPart: "grab" }, { ...actRow(SK_RECALL, 4), requiresPart: "furnace" }],
     rates: { fire: "E", ice: "A", holy: "A", dark: "D" }, exp: 1800, gold: 600,
     drops: [{ itemId: "item_potion", ratePercent: 100, quantity: 3, condition: { kind: "always" } }] });
@@ -389,4 +389,6 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
   //   2026-10-31 완화(HP 5200→4900, 회수 132→118, 끊김 피해 650→520, 흩뿌리기 46→42) — scripts/qa/runtime/fs2-boss-sim.mts, Lv14 넷, 회복약 6, n=60:
   //   기술 쓰는 판 발렌 없이 85%·행동 46 / 발렌 손님 98%·행동 38. 「공격」만 누르는 판은 여전히 0% — 회수(힘 모으기)를 얼음·큰 기술로 끊어야 이긴다.
+  //   2026-11-01 실제 도착 레벨로 다시(서리 가도 Lv9 → 탑 입구 Lv11 → 탑 다섯 판 뒤 Lv12): 그대로면 Lv12 발렌 없이 48%·발렌 85%.
+  //   HP 4600·회수 104·흩뿌리기 38 → Lv12 발렌 없이 70%·발렌 93%(n=40, FS_LV=12). 「공격」만은 여전히 0%.
 }
