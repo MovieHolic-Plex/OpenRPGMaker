@@ -308,7 +308,9 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
       tabindex: "0",
       "aria-activedescendant": `status-menu-command-${selectedRailId}`,
       // y 픽셀은 workbench 행 간격(26px) 기준. 행 높이가 다른 스킨(평탄 레일)은 index 로 자기 간격을 곱한다.
-      style: `--status-menu-cursor-y:${selectedRailIndex * 26}px;--status-menu-cursor-index:${selectedRailIndex}`,
+      // rail-count 는 workbench 레일이 행 높이를 남은 세로 길이로 나누는 데 쓴다(statusMenuEdgeDock.css) —
+      // 8명령이 240px 판에서 23px 고정 행으로 넘쳐 「설정」이 도움말 줄을 덮고 「타이틀로」가 화면 밖으로 나갔다(2026-10-31 jb3a jrpg).
+      style: `--status-menu-cursor-y:${selectedRailIndex * 26}px;--status-menu-cursor-index:${selectedRailIndex};--status-menu-rail-count:${Math.max(1, options.snapshot.commands.length)}`,
     },
     dataset: { testid: "status-menu-command-rail" },
   });
