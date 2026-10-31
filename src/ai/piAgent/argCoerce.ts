@@ -120,6 +120,11 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
       out.id = `flag-${ascii || Math.abs(h).toString(36)}`;
       changes.push(`id: missing → "${out.id}" (any kebab-case name works; pass id next time)`);
     }
+    // description 은 사람이 읽는 설명 — 없으면 id 로 채운다(2026-11-01 cheap r9 deepseek: {id,kind,targetId} 만 보내 다섯 번 거절).
+    if ((out.action === undefined || out.action === "declare") && !text && typeof out.id === "string" && out.id.trim()) {
+      out.description = out.id;
+      changes.push(`description: missing → "${out.id}" (from id; add a one-line description next time)`);
+    }
     if ((out.action === undefined || out.action === "declare") && out.kind === undefined && text) {
       out.kind = /횟수|개수|번째|카운트|count|number|times|점수|수치/iu.test(text) ? "variable" : "switch";
       changes.push(`kind: missing → "${out.kind}" (a count is a variable, an on/off fact is a switch)`);

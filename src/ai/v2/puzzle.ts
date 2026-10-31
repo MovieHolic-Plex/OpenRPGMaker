@@ -231,6 +231,27 @@ function pickupDoneLines(link: ChainLink): readonly string[] {
   return link.doneLines ?? ["비어 있다."];
 }
 
+/** 이름 need 를 켜는 스위치 — 사슬이 선언한 「…「need」…」 깃발 중 실제로 어떤 이벤트가 켜는 것, 아니면 이름이 need 인 이벤트가 켜는 스위치(하나뿐일 때). */
+function switchFromProject(project: { maps: Record<string, { events: readonly { name?: string; pages?: readonly unknown[] }[] }>; storyFlags?: readonly { kind?: string; targetId?: string; description?: string }[] }, need: string): string | undefined {
+  const setBy = (node: unknown, out: Set<string>): void => {
+    if (Array.isArray(node)) { for (const n of node) setBy(n, out); return; }
+    if (!node || typeof node !== "object") return;
+    const o = node as Obj;
+    if (o.kind === "setSwitch" && typeof o.switchId === "string" && o.value !== false) out.add(o.switchId);
+    for (const v of Object.values(o)) if (v && typeof v === "object") setBy(v, out);
+  };
+  const all = new Set<string>();
+  const byName = new Set<string>();
+  for (const map of Object.values(project.maps ?? {})) for (const ev of map.events ?? []) {
+    const mine = new Set<string>(); setBy(ev.pages ?? [], mine);
+    for (const id of mine) all.add(id);
+    if (typeof ev.name === "string" && ev.name.trim() === need.trim()) for (const id of mine) byName.add(id);
+  }
+  const flagged = (project.storyFlags ?? []).filter((f) => f.kind === "switch" && typeof f.targetId === "string" && all.has(f.targetId) && (f.description ?? "").includes(`「${need}」`));
+  if (flagged.length) return flagged[flagged.length - 1]!.targetId;
+  return byName.size === 1 ? [...byName][0] : undefined;
+}
+
 export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildResult {
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
@@ -259,7 +280,10 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       // 사슬 밖에서 이미 있는 물건이면 그대로 쓴다.
       const item = (run.ctx.project.database.items ?? []).find((it) => it.id === need || it.name === need);
       if (item) return [{ kind: "item", itemId: item.id, present: true }];
-      return `needs 「${need}」 를 앞 고리가 만들지 않았다(learn·reward 이름을 그대로 쓴다)`;
+      // 앞서 따로 지은 사슬·이벤트가 켜는 스위치면 그대로 쓴다(2026-11-01 cheap r9 deepseek: 단서를 사슬 하나씩 짓고 자물쇠 사슬의 needs 가 「앞 고리가 만들지 않았다」로 거절됐다).
+      const outside = switchFromProject(run.ctx.project, need);
+      if (outside) return [{ kind: "switch", switchId: outside, value: true }];
+      return `needs "${need}" is not made by an earlier link of this chain, by an existing event of that name that sets a switch, or by an item — use the exact learn / reward name of an earlier link (or put the clue links in this same chain)`;
     }
     return got.kind === "flag" ? [{ kind: "switch", switchId: got.switchId, value: true }] : [{ kind: "item", itemId: got.itemId, present: true }];
   };
@@ -388,20 +412,25 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       return out;
     };
     if (link.role === "clue") {
-      if (!link.learn) return fail(`${index + 1}번 고리(clue): learn(알게 되는 것의 이름)이 없다`);
-      const sw = flag(link.learn, `${args.name}: 단서 「${link.learn}」 를 읽음`);
+      // learn 은 이름표일 뿐 — 없으면 고리 이름·이벤트 이름으로 단다(2026-11-01 cheap r9 deepseek 가 learn 없이 두 번 거절됐다).
+      // 뒤 고리의 needs 가 learn 대신 고리 이름·이벤트 이름을 써도 같은 스위치를 찾게 셋 다 등록한다.
+      const learn = link.learn ?? link.name ?? (typeof existing?.name === "string" && existing.name.trim() ? existing.name : `clue ${index + 1}`);
+      if (!link.learn) warnings.push(`${index + 1}번 고리(clue): learn 이 없어 「${learn}」 로 달았다`);
+      const sw = flag(learn, `${args.name}: 단서 「${learn}」 를 읽음`);
       if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["아직 무엇인지 알 수 없다."]) }));
       pages.push(basePage({ conditions: need, commands: [...say(link.lines), { kind: "setSwitch", switchId: sw, value: true }] }));
-      have.set(link.learn, { kind: "flag", switchId: sw });
+      for (const key of [learn, link.name, existing?.name]) if (typeof key === "string" && key.trim() && !have.has(key)) have.set(key, { kind: "flag", switchId: sw });
     } else if (link.role === "code") {
       if (!link.code) return fail(`${index + 1}번 고리(code): code(정답)가 없다`);
-      if (!link.needs && !link.needsAll?.length && !link.needsCondition?.length) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
+      if (!link.needs && !link.needsAll?.length && !link.needsAny?.length && !link.needsCondition?.length) warnings.push(`${index + 1}번 고리(code): needs 가 없어 단서 없이 답을 맞힐 수 있다 — 단서 고리의 learn 이름을 needs 로 준다`);
       const solved = flag(`${slug(link.code)}_solved_${index + 1}`, `${args.name}: 자물쇠 풀림`);
       const attempt = codeAttempt(link, index, () => [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }]);
       if (typeof attempt === "string") return fail(attempt);
       if (!anyOf) pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
       pages.push(basePage({ conditions: need, commands: gated([...say(link.lines), ...attempt], "자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다.") }));
       pages.push(basePage({ conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
+      // 뒤 고리(문)가 needs 에 이 고리의 learn·이름을 쓰면 「풀림」 스위치로 잇는다(r9 deepseek: learn:"자물쇠가 풀렸다" 를 문이 needs 로 썼는데 거절).
+      for (const key of [link.learn, link.name, existing?.name]) if (typeof key === "string" && key.trim() && !have.has(key)) have.set(key, { kind: "flag", switchId: solved });
     } else if (link.role === "pickup") {
       if (!link.reward?.item && !link.reward?.flag) return fail(`${index + 1}번 고리(pickup): reward.item 또는 reward.flag 가 없다`);
       const taken = flag(`taken_${index + 1}`, `${args.name}: 집어 감`);
