@@ -876,8 +876,41 @@ function checkRoomZones(project: Project, sc: Scope, name: string, min = 2): Che
 
 interface GraphDeclJson { rooms: { id: string; name: string; role?: string; stairs?: string; landmark?: string }[]; connections: { a: string; b: string; type: string }[]; entrance: string }
 
-/** 두 방 상자와 그 사이 칸막이 줄 안에서만 걸어 A 에서 B 로 가나(문·트인 칸이 실제로 뚫렸나). */
-function roomsJoined(project: Project, map: GameMap, a: Loc, b: Loc): boolean {
+/**
+ * 칸 배치로 지은 맵의 문짝 칸(잠긴 문·쇠창살 문·옆문) — 방 그래프·랜드마크 걷기에서 지나갈 수 있는 문으로 친다.
+ * 왜(2026-10-31 bbox 이식 측정): 감방 쇠창살 문 칸은 타일 통행이 막혀 «선언한 연결이 막혔다 — 문 앞 가구를 옮겨라»가 떴고,
+ * 모델이 쇠창살 문을 모두 떼어 감방이 트인 방이 됐다. 칸 배치 검사(interiorWalls)는 이미 문짝을 지나갈 수 있는 문으로 본다.
+ */
+function layoutDoorCells(m: GameMap): Set<number> {
+  const out = new Set<number>();
+  const loc = (m.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl"));
+  if (!loc?.note) return out;
+  try {
+    const d = JSON.parse(loc.note) as { objects?: { id: string; x: number; y: number }[] };
+    for (const o of d.objects ?? []) if (/\b(door|gate)\b/u.test(o.id) && o.x >= 0 && o.y >= 0 && o.x < m.width && o.y < m.height) out.add(o.y * m.width + o.x);
+  } catch { /* 선언이 깨졌으면 문짝 없음 */ }
+  return out;
+}
+
+/** 걷기 결과를 문짝 칸 너머로 넓힌다(문짝이 없으면 그대로). */
+function reachThroughDoors(project: Project, map: GameMap, reach: Uint8Array | undefined, doors: ReadonlySet<number>): Uint8Array | undefined {
+  if (!reach || !doors.size) return reach;
+  const W = map.width, out = Uint8Array.from(reach);
+  const q: number[] = [];
+  for (let i = 0; i < out.length; i++) if (out[i]) q.push(i);
+  while (q.length) {
+    const i = q.pop()!, x = i % W, y = (i - x) / W;
+    for (const [X, Y] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+      if (X < 0 || Y < 0 || X >= W || Y >= map.height) continue;
+      const j = Y * W + X;
+      if (!out[j] && (doors.has(j) || (doors.has(i) && isPassable(project, map, X, Y)))) { out[j] = 1; q.push(j); }
+    }
+  }
+  return out;
+}
+
+/** 두 방 상자와 그 사이 칸막이 줄 안에서만 걸어 A 에서 B 로 가나(문·트인 칸이 실제로 뚫렸나). doors = 지나갈 수 있는 문짝 칸. */
+function roomsJoined(project: Project, map: GameMap, a: Loc, b: Loc, doors: ReadonlySet<number> = new Set()): boolean {
   const x0 = Math.min(a.x, b.x), y0 = Math.min(a.y, b.y), x1 = Math.max(a.x + a.w, b.x + b.w) - 1, y1 = Math.max(a.y + a.h, b.y + b.h) - 1;
   const inA = (x: number, y: number) => x >= a.x && x < a.x + a.w && y >= a.y && y < a.y + a.h;
   const inB = (x: number, y: number) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h;
@@ -886,7 +919,7 @@ function roomsJoined(project: Project, map: GameMap, a: Loc, b: Loc): boolean {
     const ox0 = Math.max(a.x, b.x), ox1 = Math.min(a.x + a.w, b.x + b.w) - 1, oy0 = Math.max(a.y, b.y), oy1 = Math.min(a.y + a.h, b.y + b.h) - 1;
     return (x >= ox0 && x <= ox1 && y >= y0 && y <= y1) || (y >= oy0 && y <= oy1 && x >= x0 && x <= x1);
   };
-  const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && (inA(x, y) || inB(x, y) || between(x, y)) && isPassable(project, map, x, y);
+  const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && (inA(x, y) || inB(x, y) || between(x, y)) && (doors.has(y * map.width + x) || isPassable(project, map, x, y));
   const seen = new Set<number>();
   const stack: [number, number][] = [];
   for (let y = a.y; y < a.y + a.h; y++) for (let x = a.x; x < a.x + a.w; x++) if (ok(x, y)) { stack.push([x, y]); seen.add(y * map.width + x); }
@@ -918,7 +951,8 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
       `${mapAt(m)}: no room graph was declared — to build the interior as rooms, give each zone id, x, y, design (w, h) and landmark, plus connections:[{a, b, type:"door"|"open"}] and entrance, in make_place/edit_place`), evidence: { mapId: m.id } };
   }
   const roomLocs = new Map(locs.filter((l) => (l.tags ?? []).includes(GRAPH_TAG) && tagVal(l, "room")).map((l) => [tagVal(l, "room")!, l] as const));
-  const reach = mapReach(project, m);
+  const doors = layoutDoorCells(m);
+  const reach = reachThroughDoors(project, m, mapReach(project, m), doors);
   const problems: string[] = [];
   const built = decl.rooms.filter((r) => roomLocs.has(r.id));
   const lost = decl.rooms.filter((r) => !roomLocs.has(r.id));
@@ -926,7 +960,7 @@ function roomGraphOf(project: Project, m: GameMap): CheckResult {
   if (!reach) problems.push(t("들어오는 칸·시작점이 없어 걸어 볼 수 없다 — 문(create_transfer_pair)으로 잇는다", "no entry cell or start point, so walking cannot be checked — link it with a door (create_transfer_pair)"));
   const unreached = built.filter((r) => !roomReached(m, reach, roomLocs.get(r.id)!));
   if (reach && unreached.length) problems.push(t(`입구에서 걸어 닿지 못하는 방: ${unreached.map((r) => q(r.id)).join(", ")} — 연결을 더하거나 문 앞을 비운다`, `rooms not reachable on foot from the entrance: ${unreached.map((r) => q(r.id)).join(", ")} — add a connection or clear the doorway`));
-  const cut = decl.connections.filter((c) => roomLocs.has(c.a) && roomLocs.has(c.b) && !roomsJoined(project, m, roomLocs.get(c.a)!, roomLocs.get(c.b)!));
+  const cut = decl.connections.filter((c) => roomLocs.has(c.a) && roomLocs.has(c.b) && !roomsJoined(project, m, roomLocs.get(c.a)!, roomLocs.get(c.b)!, doors));
   if (cut.length) problems.push(t(`선언한 연결이 막혔다: ${cut.map((c) => `${c.a}–${c.b}`).join(", ")} — 문·트인 칸 앞의 가구를 옮긴다`, `declared connections are blocked: ${cut.map((c) => `${c.a}–${c.b}`).join(", ")} — move the furniture away from that doorway`));
   const lines: string[] = [];
   for (const r of built) {
@@ -981,7 +1015,7 @@ function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
   if (unmet.length) problems.push(t(`요청 물건이 안 보인다: ${unmet.map((r) => `${q(r.ask)}(${r.why ?? ""})`).join(", ")}`, `requested items not shown: ${unmet.map((r) => `${q(r.ask)} (${r.why ?? "unmet"})`).join(", ")} — place a standing piece for each with review_layout`));
   if (!decl.landmark) problems.push(t("랜드마크가 없다", "no landmark"));
   else {
-    const reach = mapReach(project, m);
+    const reach = reachThroughDoors(project, m, mapReach(project, m), layoutDoorCells(m));
     const lm = decl.landmark;
     if (reach && !ringReached(m, reach, [lm.x, lm.y, lm.w, Math.max(1, lm.h)])) problems.push(t(`랜드마크 ${lm.id}(${lm.x},${lm.y}) 둘레에 걸어 닿지 못한다`, `landmark ${lm.id} at (${lm.x},${lm.y}) has no walkable cell next to it`));
   }
