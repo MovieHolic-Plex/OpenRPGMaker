@@ -105,7 +105,15 @@ const WORDS: readonly [RegExp, string][] = [
  * 스토어 애니메이션을 기술에 달아도 보이지 않았다. 스토어 시트에만 한정해 옛 프로젝트의 연출은 바꾸지 않는다.
  */
 function usesStoreBattleAnimation(skill: Partial<SkillRecord>): boolean {
-  const id = skill.animationId;
+  return isStoreBattleAnimationId(skill.animationId);
+}
+
+/**
+ * 이 전투 애니메이션 id 가 스토어에서 넣은 시트를 쓰는가. 사용자가 고른 스토어 이펙트는 직업 연출(retroChoreographyId)이
+ * 함께 걸려 있어도 그려야 한다 — 예전엔 연출이 있으면 lastAnimation 을 비워서, 조수가 「화염」에 연출과 스토어
+ * 「화염구 직격」을 함께 달면 스토어 이펙트가 한 번도 안 보였다(2026-10-31 스토어 검증).
+ */
+export function isStoreBattleAnimationId(id: string | undefined): boolean {
   if (!id) return false;
   const project = store.getCurrent();
   const record = project.database.battleAnimations.find((entry) => entry.id === id);
