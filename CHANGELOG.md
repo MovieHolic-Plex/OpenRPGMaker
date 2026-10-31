@@ -5,6 +5,29 @@
 
 <!-- releases -->
 
+## 0.376.0 — 2026-10-31
+
+### 기능
+
+- **runtime** — 괴물 도감 — system.bestiary, ESC 도감, 조수 도구 (#4074) (`b96e5d1`)
+- **assistant** — run_scene_test 가 전투 이벤트 선택지에 답한다 (battleChoice 스텝) (#4060) (`1089e93`)
+- **v2 bbox** — 마을 배치 검사 — 빈 풀밭 55% 넘으면 거절 (`dbf5fc1`)
+
+### 수정
+
+- **ai** — make_chase_scene — a patrolling chaser woken by a switch must see the hero (no default persistent tracking) (#4062) (`e534100`)
+- **ai** — log-roof villages pick their landmark and anchor from the log palette (#4065) (`2968b35`)
+- **assistant-v2** — a scene attached after a shop NPC's talk runs before the shop window, the shop stays on later talks (`bd34f9e`)
+
+### 문서
+
+- **openwiki** — v2 칸 배치 장소 2차 측정 결과 (`014a8b2`)
+- **openwiki** — after-scene on a shop NPC (`ab8cbd0`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`3e66eee`)
+
 ## 0.375.0 — 2026-10-31
 
 ### 기능

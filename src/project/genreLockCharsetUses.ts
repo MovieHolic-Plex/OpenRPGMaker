@@ -30,6 +30,8 @@ function object(value: unknown): Record<string, unknown> | undefined {
 export function battlerSourceChip(battlerId: string): { readonly resourceId: string; readonly characterIndex: number } | undefined {
   const walk = /^charset-battler-(actor[1-4]|people[1-5])-([0-7])(?:-|$)/u.exec(battlerId);
   if (walk) return { resourceId: `easyrpg-charset-${walk[1]}`, characterIndex: Number(walk[2]) };
+  const refmap = /^charset-battler-refmap-doll(\d+)-([0-7])$/u.exec(battlerId);
+  if (refmap) return { resourceId: `oprn-charset-refmap-doll${refmap[1]}`, characterIndex: Number(refmap[2]) };
   const pixel = /^party-pixel-(actor[1-4]|people[1-5]|monster[1-6]|animal)-([0-9])$/u.exec(battlerId);
   if (pixel) return { resourceId: `easyrpg-charset-${pixel[1]}`, characterIndex: Number(pixel[2]) };
   return undefined;
