@@ -1210,7 +1210,7 @@ function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: C
   if (map.lowerOverlayTiles) map.lowerOverlayTiles = Array.from({ length: W * H }, () => -1);
   if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: W * H }, () => -1);
   if (map.shadowBits) map.shadowBits = Array.from({ length: W * H }, () => 0);
-  const wallY = Math.round(H * 0.28); // 40줄 맵 → 11: 풀밭 12~38(27줄), 벽 8~11, 그 위 숲길
+  const wallY = Math.round(H * 0.33); // 40줄 맵 → 13: 풀밭 14~38(25줄), 벽 10~13, 그 위 숲길(들개·까마귀 자리)
   const gapX = Math.floor(W / 2) - 1; // 틈 왼쪽 칸(두 칸 폭: gapX, gapX+1)
   const nx = exit.x + 0.5;
   // 옆 가장자리 들쭉날쭉(0~2칸) — 줄마다 부드럽게.
@@ -1222,9 +1222,10 @@ function reshapeForestEdge(project: Project, mapId: string, entry: Cell, exit: C
     paths: [{ pts: [{ x: gapX + 0.5, y: wallY + 0.5 }, { x: gapX + 0.5, y: wallY - 3 }, { x: gapX - 1.5, y: wallY - 6 }, { x: (gapX + nx) / 2, y: 2.5 }, { x: nx, y: 0 }], w: [1.7, 2.3] }],
     exits: [entry, exit],
     open: (x, y) => meadow(x, y) || (y === wallY && x >= gapX - 1 && x <= gapX + 2),
-    closed: (x, y) => y >= wallY - 3 && y < wallY && !(x >= gapX && x <= gapX + 1),
+    // 벽 네 줄(틈 어귀 줄 포함)은 길 두 칸만 — 길섶이 벌어지면 틈이 큰길로 읽힌다. 어귀 줄 양옆 한 칸은 길돌 자리.
+    closed: (x, y) => y >= wallY - 3 && y <= wallY && !(x >= gapX && x <= gapX + 1) && !(y === wallY && (x === gapX - 1 || x === gapX + 2)),
     undergrowth: 0,
-    look: { loose: { every: 1, reach: 99, at: [{ x: 5, y: wallY + 6 }, { x: W - 7, y: wallY + 5 }, { x: 10, y: wallY + 13 }, { x: 7, y: H - 6 }, { x: W - 7, y: H - 7 }] } },
+    look: { loose: { every: 1, reach: 99, at: [{ x: 5, y: wallY + 6 }, { x: W - 7, y: wallY + 5 }, { x: 10, y: wallY + 13 }, { x: 6, y: H - 4 }, { x: W - 7, y: H - 4 }] } },
   }, () => true);
   meadowDecor(project, mapId, meadow, wallY);
   return { wallY, gapX };
@@ -1679,9 +1680,9 @@ function dawnwell(project: Project, exec: Exec): void {
   const northOpen = walkSteps(project, M(project, north1!), { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 });
   const near1 = (x: number, y: number): Cell => [...northOpen.keys()].map((k) => { const [cx, cy] = k.split(",").map(Number); return { x: cx!, y: cy! }; })
     // 도착선에서 여덟 줄 넘게 안쪽 — 네 줄이면 브람의 고백이 끝나자마자 들개가 덮쳤다(VQA 2026-10-30).
-    .filter((c) => c.y < (FS2_B4.edge[0]?.y ?? H(north1!)) - 8)
+    .filter((c) => c.y < FS2_NORTH_ROUTE.treeline - 1 - 8)
     .sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - (Math.abs(b.x - x) + Math.abs(b.y - y)))[0] ?? { x, y };
-  const dogs = near1(Math.floor(W(north1!) / 2), Math.floor(H(north1!) * 0.3)), crows = near1(Math.floor(W(north1!) / 2) - 2, Math.floor(H(north1!) / 6));
+  const dogs = near1(Math.floor(W(north1!) / 2) - 2, 3), crows = near1(Math.floor(W(north1!) / 2) - 5, 2);
   try { foe(north1!, "troop_fs2_starved_dogs", dogs.x, dogs.y, "dash"); } catch { /* 그 칸 거절 */ }
   try { foe(north1!, "troop_fs2_ash_crows", crows.x, crows.y, "swoop"); } catch { /* 그 칸 거절 */ }
   foe(field!, "troop_fs2_ash_wisps", ASH_SPOTS.wisps.x, ASH_SPOTS.wisps.y, "float");
