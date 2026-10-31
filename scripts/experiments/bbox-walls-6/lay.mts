@@ -174,6 +174,7 @@ for (const d of Array.isArray(L.doors) ? L.doors : []) {
   if (!open(a!) || !open(b!)) { errors.push(`door ${P(d.x, d.y)} on "${w.id}" does not join two rooms: ${P(a![0]!, a![1]!)} and ${P(b![0]!, b![1]!)} must both be room cells (not wall).`); continue; }
   if (d.piece !== undefined && d.piece !== null && !["locked door", "iron gate", "iron gate open"].includes(d.piece)) errors.push(`door ${P(d.x, d.y)}: piece "${d.piece}" — a door piece must be one of locked door, iron gate, iron gate open (or omit it for an open doorway).`);
   for (const i of cells) doorCell.add(i);
+  if (vertical && d.piece && process.env.BW_LENIENT_VDOOR) d.piece = null;   // re-measuring old rounds: drop the leaf, keep measuring
   if (vertical && d.piece) { errors.push(`door ${P(d.x, d.y)} in vertical wall "${w.id}": a "${d.piece}" leaf is drawn facing south, so it only fits a doorway in a horizontal wall — in a side wall it shows as a stray tile and blocks the way. Leave this doorway open (piece null), or move the door to a horizontal wall.`); d.piece = null; }
   doors.push({ wall: w.id, cells, piece: d.piece ?? undefined, x: d.x, y: d.y, vertical });
 }

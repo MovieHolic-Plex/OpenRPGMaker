@@ -9,7 +9,7 @@ jobs = [(k, t) for k in ("sol1", "sol2", "terra1", "terra2") for t in ("inn", "l
 def one(j):
     k, t = j
     p = subprocess.run(["bun", "scripts/experiments/bbox-walls-6/lay.mts", f"{root}/{k}/{t}/layout.json", f"/tmp/bw5-remeasure/{os.path.basename(root)}/{k}/{t}", f"{RUNS}/base", "--task", t, "--cats", f"{RUNS}/cats-{t}.json"],
-                       capture_output=True, text=True, env=dict(os.environ, OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite"))
+                       capture_output=True, text=True, env=dict(os.environ, BW_LENIENT_VDOOR="1", OPRN_SHARED_CONTENT_SQLITE=f"{RUNS}/shared-content.sqlite"))
     try: d = json.loads(p.stdout.strip().splitlines()[-1]); return f"{k}/{t}", (d.get("stats") or {}).get("measure")
     except Exception: return f"{k}/{t}", None
 with ThreadPoolExecutor(8) as ex: res = dict(ex.map(one, jobs))
