@@ -3,8 +3,8 @@
 #   collect.sh [batch=sab2]    (idempotent; run it every few minutes)
 set -u
 B=${1:-sab2}; L=$HOME/z-project/assistant-whole-game/suite/script-ab/$B; H=$(cd "$(dirname "$0")" && pwd)
-# Every arm is walked with ONE player build (WALK_REPO, default the new-arm worktree) so runtime fixes do not differ by arm.
-REPO=${WALK_REPO:-$HOME/z-project/rpg-zzu-sab2-v1}; [ "$(cat $REPO/dist/.built-from 2>/dev/null)" ] || { echo "walk player $REPO has no dist yet"; exit 1; }
+# Every arm is walked with ONE player build (WALK_REPO, pinned to the newest build, 4b65b60) so runtime fixes do not differ by arm.
+REPO=${WALK_REPO:-$HOME/z-project/rpg-zzu-sab2-new-4b65b60}; [ "$(cat $REPO/dist/.built-from 2>/dev/null)" ] || { echo "walk player $REPO has no dist yet"; exit 1; }
 rsync -a $H/../ $REPO/scripts/qa/script-ab/
 . ~/z-project/assistant-whole-game/suite/remote/config.sh
 RRSYNC="env LD_LIBRARY_PATH=$RBASE/sys/usr/lib/aarch64-linux-gnu:$RBASE/sys/lib/aarch64-linux-gnu $RBASE/bin/rsync"

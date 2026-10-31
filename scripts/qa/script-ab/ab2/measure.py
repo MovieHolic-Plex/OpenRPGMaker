@@ -142,7 +142,7 @@ def main():
                    "walkPassSum": sum(r["walkPass"] or 0 for r in done if r["walkPass"] is not None), "walkTotalSum": sum(r["walkTotal"] or 0 for r in done if r["walkTotal"] is not None),
                    "endings": sum(1 for r in done if r["ending"]), "walked": sum(1 for r in done if r["walkPass"] is not None),
                    "changedEvents": med([len(r["changedEvents"]) for r in done if r.get("changedEvents") is not None]),
-                   "readability": (lambda xs: round(sum(xs) / len(xs), 2) if xs else None)([r["readability"]["score"] for r in done if r.get("readability")])}
+                   "readability": (lambda xs: round(sum(xs) / len(xs), 2) if xs else None)([r["readability"]["score"] for r in done if (r.get("readability") or {}).get("score") is not None])}
     judge = {}
     for f in sorted(glob.glob(f"{L}/judge/*.json")):
         mech, rep, x, y = os.path.basename(f)[:-5].split("-")
