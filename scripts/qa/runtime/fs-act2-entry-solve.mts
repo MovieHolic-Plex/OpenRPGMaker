@@ -5,7 +5,7 @@
 //   결투·보스: 옛 설계 레벨(2막 Lv6 에서 새로 센 레벨)의 「기술 자동 전투」 승률을 이어 하기 레벨에서도 그대로 내는 배수.
 import { readFileSync, writeFileSync } from "node:fs";
 import { simulateBattle } from "../../../src/battle/simulate";
-import { FS_ELITES } from "../../../src/project/flagship/fallen/mobBalance";
+import { FS_ACT2_ENTRY_BOSSES, FS_ELITES } from "../../../src/project/flagship/fallen/mobBalance";
 import { deserialize } from "../../../src/project/io";
 import type { EnemyRecord, Project } from "../../../src/project/types";
 import { ACTS, runTable } from "./fs-mob-balance-lib.mts";
@@ -29,7 +29,8 @@ const pick = (t: string) => act2.has(t) && (!only || only.has(t));
 const now = runTable(project, { n: 1, potions: false, only: pick });
 const design = new Map(runTable(project, { n: 1, potions: false, only: pick, startLevels: { "2막": 6 } }).map((r) => [`${r.troop}@${r.map}`, r.level]));
 const partyOf = new Map<string, string[]>();
-for (const act of ACTS) for (const s of act.steps) partyOf.set(`${s.troop}@${s.map}`, s.party);
+const gearOf = new Map<string, Record<string, Record<string, string>> | undefined>();
+for (const act of ACTS) for (const s of act.steps) { partyOf.set(`${s.troop}@${s.map}`, s.party); gearOf.set(`${s.troop}@${s.map}`, s.gear); }
 
 const scaleTo = (snap: Map<string, EnemyRecord["stats"]>, ids: string[], p: number, eliteOnly: boolean): void => {
   for (const id of ids) {
@@ -48,14 +49,27 @@ for (const r of now) {
   if (r.kind === "boss" && !BOSS_ENEMIES[r.troop]) continue;
   const key = `${r.troop}@${r.map}`;
   const party = partyOf.get(key)!;
+  // 이야기 장비(로한의 창 등)를 쥐여 잰다 — 옛 설계 레벨 목표도 같은 장비로.
+  const savedGear = new Map<string, unknown>();
+  for (const [actorId, eq] of Object.entries(gearOf.get(key) ?? {})) {
+    const a = db.actors.find((x) => x.id === actorId)!;
+    savedGear.set(actorId, a.initialEquipment);
+    a.initialEquipment = { ...(a.initialEquipment ?? {}), ...eq } as typeof a.initialEquipment;
+  }
   const designLevel = design.get(key) ?? r.level;
   const bossLike = r.kind === "boss" || r.kind === "duel";
   const ids = bossLike ? BOSS_ENEMIES[r.troop]! : [...new Set(r.enemyIds)];
   const elite = r.kind === "elite";
   const snap = new Map(ids.map((id) => [id, { ...db.enemies.find((e) => e.id === id)!.stats }]));
-  const target = bossLike ? win(r.troop, designLevel, party, true) : elite ? ELITE_TARGET : MOB_TARGET;
+  // 보스·결투 목표는 옛 설계 힘(이미 들어간 이어 하기 배수를 걷어 낸 힘)으로 옛 설계 레벨에서 잰다.
+  let target = elite ? ELITE_TARGET : MOB_TARGET;
+  if (bossLike) {
+    for (const id of ids) scaleTo(snap, [id], 1 / (FS_ACT2_ENTRY_BOSSES[id] ?? 1), false);
+    target = win(r.troop, designLevel, party, true);
+    for (const id of ids) db.enemies.find((x) => x.id === id)!.stats = { ...snap.get(id)! };
+  }
   const base = win(r.troop, r.level, party, bossLike);
-  let lo = Math.log(0.5), hi = Math.log(8), at = base;
+  let lo = Math.log(0.4), hi = Math.log(8), at = base;
   for (let i = 0; i < 9; i += 1) {
     const mid = (lo + hi) / 2;
     scaleTo(snap, ids, Math.exp(mid), elite);
@@ -66,6 +80,7 @@ for (const r of now) {
   scaleTo(snap, ids, p, elite);
   at = win(r.troop, r.level, party, bossLike);
   for (const id of ids) db.enemies.find((x) => x.id === id)!.stats = { ...snap.get(id)! };
+  for (const [actorId, eq] of savedGear) db.actors.find((x) => x.id === actorId)!.initialEquipment = eq as never;
   result.push({ troop: r.troop, map: r.map, kind: r.kind, designLevel, level: r.level, target: Math.round(target * 100), base: Math.round(base * 100), p: Math.round(p * 100) / 100, at: Math.round(at * 100) });
   console.log(`${r.kind.padEnd(5)} 설계 Lv${designLevel} → 이어 하기 Lv${r.level} ${r.troop.padEnd(30)} ${r.map.padEnd(18)} 목표 ${Math.round(target * 100)}% 지금 ${String(Math.round(base * 100)).padStart(3)}% → ×${p.toFixed(2)} 이면 ${Math.round(at * 100)}%`);
 }

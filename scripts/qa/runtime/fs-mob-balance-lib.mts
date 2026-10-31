@@ -10,7 +10,7 @@ export interface Row { act: string; map: string; troop: string; name: string; en
   level: number; party: number; atkWin: number; atkHpPct: number; atkTurns: number; potWin: number; potUsed: number }
 
 type Kind = "mob" | "elite" | "boss" | "duel";
-interface Step { troop: string; map: string; party: string[]; kind?: Kind; note?: string }
+interface Step { troop: string; map: string; party: string[]; kind?: Kind; note?: string; gear?: Record<string, Record<string, string>> }
 const HE = ["actor_hero", "actor_fs_elena"];
 const HEI = [...HE, "actor_fs_iris"];
 const HES = [...HE, "actor_fs2_sarah"];
@@ -81,6 +81,17 @@ export const ACTS: { act: string; startLevel: number | "continue"; steps: Step[]
   },
 ];
 
+/**
+ * 이야기가 쥐여 주는 장비 — B4 대장간에서 로한이 카엘에게 「로한의 별쇠 창」(공격 +40)을 준다(act2Opening, 피할 수 없다).
+ * 그 뒤 2막 싸움은 모두 그 창을 든 카엘로 잰다(새라에게 돌려주는 선택지를 골라도 일행 공격 합은 비슷하다 — 더 센 「맡아 둔다」 쪽으로 잰다).
+ * 2026-11-01 이전 표는 처음 장비(청동 검 +8)로 재서 B5 부터가 실제보다 쉬웠다.
+ */
+{
+  const act2 = ACTS.find((a) => a.act === "2막")!;
+  const from = act2.steps.findIndex((s) => s.troop === "troop_fs2_starved_dogs");
+  for (const s of act2.steps.slice(from)) s.gear = { actor_hero: { weapon: "equip_fs2_rohan_spear" } };
+}
+
 function walk(commands: readonly Command[] | undefined, visit: (c: Command) => void): void {
   for (const c of commands ?? []) {
     visit(c);
@@ -143,6 +154,13 @@ export function runTable(project: Project, opts: TableOptions): Row[] {
       const level = levelFor(exp);
       exp += troopExp(step.troop) * count;
       if (opts.only && !opts.only(step.troop)) continue;
+      const saved = new Map<string, unknown>();
+      for (const [actorId, eq] of Object.entries(step.gear ?? {})) {
+        const a = db.actors.find((x) => x.id === actorId);
+        if (!a) continue;
+        saved.set(actorId, a.initialEquipment);
+        a.initialEquipment = { ...(a.initialEquipment ?? {}), ...eq } as typeof a.initialEquipment;
+      }
       const base = { project, troopId: step.troop, heroLevel: level, partyActorIds: step.party, n: opts.n, seed: 7, useSkills: opts.useSkills };
       const atk = simulateBattle(base);
       const pot = opts.potions === false ? undefined : simulateBattle({ ...base, inventory: { item_potion: 3 }, potionItemId: "item_potion" });
@@ -154,6 +172,7 @@ export function runTable(project: Project, opts: TableOptions): Row[] {
         atkWin: Math.round(atk.winRate * 1000) / 10, atkHpPct: Math.round((atk.avgHpRemaining / maxHp) * 100), atkTurns: Math.round(atk.avgTurns * 10) / 10,
         potWin: pot ? Math.round(pot.winRate * 1000) / 10 : -1, potUsed: pot ? Math.round(pot.avgPotionsUsed * 10) / 10 : -1,
       };
+      for (const [actorId, eq] of saved) db.actors.find((x) => x.id === actorId)!.initialEquipment = eq as never;
       rows.push(row);
       if (opts.log) console.log(`${act.act} Lv${level} ${step.map.padEnd(18)} ${step.troop.padEnd(30)} ×${count} ${kind.padEnd(5)} 공격만 ${String(row.atkWin).padStart(5)}% HP${String(row.atkHpPct).padStart(3)}%  회복약 ${String(row.potWin).padStart(5)}% (${row.potUsed})  ${enemies}`);
     }

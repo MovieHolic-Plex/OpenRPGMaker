@@ -139,6 +139,8 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
  * 레벨을 깎지 않고, 2막 적을 이어 하기 도착 레벨(감방 Lv13 → 요새 Lv15 → 눈길 Lv16~17 → 하늘탑 Lv18)에 맞춰 세게 한다.
  * 값은 무리마다 「지금 힘에 곱할 배수」 — scripts/qa/runtime/fs-act2-entry-solve.mts(구운 판, n=80, 시드 7)로 잰 값.
  *   잡몹·우두머리 = 공격만 승률 목표(잡몹 76% · 우두머리 60%), 결투·보스 = 옛 설계 레벨의 「기술 자동 전투」 승률을 그대로.
+ *   B4 부터는 카엘이 로한의 별쇠 창(공격 +40, 이야기로 받는다)을 든 채로 쟀다 — 요새 기사·수문장·쇠뇌병, 서리박쥐가 그 창 앞에서 100% 였다.
+ *   새라 결투는 그 창으로 옛 설계도 100% 라(턴 수로 맞춘 결투) 승률 대신 길이로 본다: 옛 Lv9 6턴꼴 → 지금 Lv16 7~8턴, 이긴 뒤 남은 HP 46%.
  * 잡몹 무리는 FS_TROOP_TUNE 과 같은 식으로 그 무리 적만 떼어(`<적>_t_<무리>`) 곱한다. 우두머리·보스는 그 적 자체를 곱한다
  * (전투 이벤트가 적 id 를 가리킨다). 같은 무리가 두 곳에 놓이면 두 값의 기하평균.
  */
@@ -149,27 +151,27 @@ export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_ash_crows: 1.78,
   troop_fs2_ash_wisps: 2.98,
   troop_fs2_ash_snakes: 1.7,
-  troop_fs2_ash_wisps_pair: 1.67,
+  troop_fs2_ash_wisps_pair: 1.84,
   troop_fs2_fort_dogs_out: 1.6,
-  troop_fs2_fort_knights_out: 2.31,
+  troop_fs2_fort_knights_out: 3.35,
   troop_fs2_fort_dogs: 1.6,
-  troop_fs2_fort_knights: 2.31,
-  troop_fs2_fort_gate: 2.31, // 성문 앞 기사+경비견 — 요새 기사와 같은 배수
-  troop_fs2_fort_crossbows: 1.58,
+  troop_fs2_fort_knights: 3.35,
+  troop_fs2_fort_gate: 3.35, // 성문 앞 기사+경비견 — 요새 기사와 같은 배수
+  troop_fs2_fort_crossbows: 2.09,
   troop_fs2_frost_wolves: 1.68,
-  troop_fs2_frost_bats: 2.25,
+  troop_fs2_frost_bats: 3.04,
   troop_fs2_frost_wolves_lake: 1.66,
-  troop_fs2_frost_bats_lake: 2.2,
-  troop_fs2_frost_mixed: 2.09,
+  troop_fs2_frost_bats_lake: 2.9,
+  troop_fs2_frost_mixed: 2.63,
   troop_fs2_tower_moths: 1.97,
-  troop_fs2_tower_bats: 2.6,
+  troop_fs2_tower_bats: 3.38,
   troop_fs2_tower_spiders: 1.94,
   troop_fs2_tower_snakes: 1.9,
 };
 /** 우두머리(적 id → 배수). HP 는 1000 안팎에 묶고(√배수를 0.9~1.2 로) 나머지를 공격·마력으로. */
 export const FS_ACT2_ENTRY_ELITES: Readonly<Record<string, number>> = {
   enemy_fs2_cinder_golem: 1.9,
-  enemy_fs2_elite_warden: 2.01,
+  enemy_fs2_elite_warden: 4.32,
   enemy_fs2_elite_frostmane: 1.85,
   enemy_fs2_tower_sentinel: 1.73,
 };

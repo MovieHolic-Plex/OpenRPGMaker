@@ -779,26 +779,15 @@
      "id": "settle",
      "ops": [
       {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 30,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 900
-        }
-       ]
+       "kind": "pressUntilJs",
+       "fn": "() => window.__oprnDebug.readState().partyActorIds.includes('actor_fs_iris') && !document.querySelector('[data-testid=\"dialogue-box\"]')",
+       "maxPresses": 80,
+       "settleMs": 700
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
       }
      ],
      "shot": true
