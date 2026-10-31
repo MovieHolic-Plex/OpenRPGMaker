@@ -122,6 +122,9 @@ export type StatusMenuDetailOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
+  /** 괴물 도감에서 고른 항목(없으면 목록). */
+  readonly bestiaryEntryId?: string;
+  readonly onSelectBestiaryEntry?: (entryId: string | undefined) => void;
   readonly campaignSpeciesId?: string;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
   readonly monsterInstanceId?: string;

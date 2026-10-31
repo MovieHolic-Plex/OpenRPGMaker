@@ -502,6 +502,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   place_lift: build("승강기 놓기", "door"),
   author_party_split: people("파티 나누기", "user"),
   configure_story_journal: system("이야기 일지 설정", "book"),
+  define_bestiary_entry: system("괴물 도감 항목 만들기", "book"),
+  list_bestiary: inspect("괴물 도감 보기"),
   make_timed_escape: build("시간 제한 탈출 만들기", "clock"),
   add_street_walkers: people("거리 행인 놓기", "user"),
   place_search_containers: build("조사할 상자 놓기", "box"),

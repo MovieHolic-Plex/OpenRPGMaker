@@ -20,6 +20,7 @@ import {
 import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "./audioResources";
 
 import { WeatherAudio } from "./weatherAudio";
+import { canUseGaplessLoop, GaplessLoopAudio } from "./gaplessLoop";
 import { preloadedAudioUrl } from "@/player/preloadedAudio";
 
 const DEFAULT_FADE_MS = 600;
@@ -56,10 +57,13 @@ export interface AudioStateSnapshot {
   readonly fadeInMs: number;
 }
 
+/** 트랙이 쥔 재생기. 환경음(BGS) 루프는 틈 없는 WebAudio 재생기(gaplessLoop.ts), 나머지는 <audio>. */
+type TrackAudio = HTMLAudioElement | GaplessLoopAudio;
+
 interface ManagedTrack {
   channel: AudioChannel;
   resourceId: string;
-  readonly audio: HTMLAudioElement;
+  readonly audio: TrackAudio;
   fadeTimer: number | null;
   gain: number;
   // Fade envelope is independent of mixer/gain, including when either is zero.
@@ -103,7 +107,7 @@ export class AudioEngine {
   private fadeInMs = DEFAULT_FADE_MS;
   private unlockInstalled = false;
   private readonly blockedTracks = new Set<ManagedTrack>();
-  private readonly mediaCleanup = new WeakMap<HTMLAudioElement, () => void>();
+  private readonly mediaCleanup = new WeakMap<TrackAudio, () => void>();
   private readonly warnedMissing: Set<string> = new Set();
   // WebAudio 팬 그래프는 **지연 생성**한다: pan 이 0 이 아닌 요청이 처음 올 때만 만든다.
   // AudioContext 가 없거나 createMediaElementSource 가 던지는 환경(jsdom/happy-dom)에서는
@@ -423,7 +427,7 @@ export class AudioEngine {
       this.loopTracks.delete(request.channel);
       this.fadeOutAndDispose(existing, DEFAULT_FADE_MS);
     }
-    const audio = this.createElement(request.url, true, playbackRate, pan);
+    const audio = request.channel === "bgs" ? this.createGaplessLoop(request.url, playbackRate, pan) : this.createElement(request.url, true, playbackRate, pan);
     audio.volume = 0;
     const track: ManagedTrack = {
       channel: request.channel,
@@ -469,6 +473,16 @@ export class AudioEngine {
     return audio;
   }
 
+  // 환경음 루프: <audio loop> 는 감는 자리에서 끊긴다(gaplessLoop.ts 실측). WebAudio 가 없으면 예전 요소로.
+  private createGaplessLoop(url: string, playbackRate: number, pan: number): TrackAudio {
+    const context = this.ensureAudioContext();
+    if (!canUseGaplessLoop(context)) return this.createElement(url, true, playbackRate, pan);
+    const audio = new GaplessLoopAudio(context, preloadedAudioUrl(url) ?? url);
+    audio.playbackRate = playbackRate;
+    audio.setPan(pan);
+    return audio;
+  }
+
   // 생성한 오디오 요소를 문서에 달아도 재생 동작은 변하지 않는다(controls 없는 audio 는
   // 렌더링되지 않는다). 대싼 볼륨·재생속도가 실제 반영됐는지를 브라우저 QA 가
   // `document.querySelector("audio")` 로 교차 검증할 수 있게 된다.
@@ -483,14 +497,18 @@ export class AudioEngine {
   }
 
   // 재생 중인 모든 요소(루프 트랙 + 원샷).
-  private *liveElements(): Generator<HTMLAudioElement> {
+  private *liveElements(): Generator<TrackAudio> {
     for (const track of this.loopTracks.values()) yield track.audio;
     for (const track of this.oneShots) yield track.audio;
     for (const track of this.fadingTracks) yield track.audio;
   }
 
   // 팬 적용. 그래프가 아직 없고 중앙(0)이면 아무것도 만들지 않는다(지연 생성).
-  private applyPan(audio: HTMLAudioElement, pan: number = this.pan): void {
+  private applyPan(audio: TrackAudio, pan: number = this.pan): void {
+    if (audio instanceof GaplessLoopAudio) {
+      audio.setPan(pan);
+      return;
+    }
     const existing = this.panners.get(audio);
     if (existing) {
       existing.pan.value = pan;
@@ -633,7 +651,7 @@ export class AudioEngine {
     this.hardStop(track.audio);
   }
 
-  private hardStop(audio: HTMLAudioElement): void {
+  private hardStop(audio: TrackAudio): void {
     try {
       audio.pause();
       audio.currentTime = 0;
