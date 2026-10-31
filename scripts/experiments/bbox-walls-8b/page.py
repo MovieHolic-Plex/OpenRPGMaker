@@ -4,12 +4,12 @@
 import html, json, os, sys
 from PIL import Image
 HOME = os.path.expanduser("~"); S = f"{HOME}/z-project/assistant-whole-game/suite/rooms"
-R7 = os.environ.get("BW_RUNS", f"{S}/runs-bboxwalls8b"); R6 = f"{S}/runs-bboxwalls6"; R5 = f"{S}/runs-bboxwalls5"; R4 = f"{S}/runs-bboxwalls4"; R3 = f"{S}/runs-bboxwalls3"
+R8 = os.environ.get("BW_RUNS", f"{S}/runs-bboxwalls8b"); R7 = f"{S}/runs-bboxwalls7"; R6 = f"{S}/runs-bboxwalls6"; R5 = f"{S}/runs-bboxwalls5"; R4 = f"{S}/runs-bboxwalls4"; R3 = f"{S}/runs-bboxwalls3"
 VIZ = f"{HOME}/claude-viz"; IMG = f"{VIZ}/bbox-walls-2"; os.makedirs(IMG, exist_ok=True)
 verdict = sys.argv[1] if len(sys.argv) > 1 else "진행 중 — 판이 끝나는 대로 채운다."
 ld = lambda p: json.load(open(p)) if os.path.exists(p) else {}
 TASKS = ["inn", "library", "jail", "manor"]; KO = {"inn": "여관", "library": "도서관", "jail": "감옥", "manor": "저택"}
-RUNS = ["sol1", "sol2", "terra1", "terra2", "argon1", "argon2", "argon3"]
+RUNS = ["sol1", "sol2", "opus1", "terra1", "terra2", "argon1", "argon2", "argon3"]
 NEED_STAIRS = {"inn", "manor"}
 side = {"r1": dict(res=ld(f"{S}/runs-bboxwalls/results.json"), wal=ld(f"{S}/runs-bboxwalls/walls.json"), meas=ld(f"{R7}/measure-r1.json"), root=f"{S}/runs-bboxwalls"),
         "r2": dict(res=ld(f"{S}/runs-bboxwalls2/results.json"), wal=ld(f"{S}/runs-bboxwalls2/walls.json"), meas=ld(f"{R7}/measure-r2.json"), root=f"{S}/runs-bboxwalls2"),
@@ -17,12 +17,14 @@ side = {"r1": dict(res=ld(f"{S}/runs-bboxwalls/results.json"), wal=ld(f"{S}/runs
         "r4": dict(res=ld(f"{R4}/results.json"), wal=ld(f"{R4}/walls.json"), meas=ld(f"{R7}/measure-r4.json"), root=R4),
         "r5": dict(res=ld(f"{R5}/results.json"), wal=ld(f"{R5}/walls.json"), meas=ld(f"{R7}/measure-r5.json"), root=R5),
         "r6": dict(res=ld(f"{R6}/results.json"), wal=ld(f"{R6}/walls.json"), meas=ld(f"{R7}/measure-r6.json"), root=R6),
-        "r7": dict(res=ld(f"{R7}/results.json"), wal=ld(f"{R7}/walls.json"), meas={}, root=R7)}
-ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7"]; RK = {"r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
+        "r7": dict(res=ld(f"{R7}/results.json"), wal=ld(f"{R7}/walls.json"), meas={}, root=R7),
+        "r8": dict(res=ld(f"{R8}/results.json"), wal=ld(f"{R8}/walls.json"), meas={}, root=R8)}
+ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]; RK = {"r8": "8b (기계적 정리·가장 나은 답·opus 강한 쪽)", "r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
 for t in TASKS:
     for k in RUNS:
-        r = ld(f"{R7}/{k}/{t}/RUN.json")
-        if r.get("stats"): side["r7"]["meas"][f"{k}/{t}"] = r["stats"]["measure"]
+        for rr, root in (("r7", R7), ("r8", R8)):
+            r = ld(f"{root}/{k}/{t}/RUN.json")
+            if r.get("stats") and r.get("ok"): side[rr]["meas"][f"{k}/{t}"] = r["stats"]["measure"]
 
 
 def m_of(s, key): return side[s]["meas"].get(key)
@@ -67,8 +69,8 @@ def summary(s, t):
 
 def model_rows():
     out = []
-    for s in ["r4", "r5", "r6", "r7"]:
-        for mdl in ("sol", "terra", "argon"):
+    for s in ["r4", "r5", "r6", "r7", "r8"]:
+        for mdl in ("sol", "opus", "terra", "argon"):
             ks = [f"{k}/{t}" for k in RUNS if k.startswith(mdl) for t in TASKS]
             ms = [m for m in (m_of(s, k) for k in ks) if m]
             if not ms: continue
@@ -87,7 +89,7 @@ def model_rows():
 def argon_table():
     import glob, re as _re
     cfgs = [("6판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls6"), ("6판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8-r6"),
-            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8b")]
+            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8"), ("7판 흐름 · 8b(가장 나은 답에서 다시·이름 정리·벽 물건 옮기기)", R8)]
     out = []
     for lab, root in cfgs:
         rs = [json.load(open(p)) for p in sorted(glob.glob(f"{root}/argon[0-9]/*/RUN.json"))]
@@ -123,8 +125,8 @@ def card(s, k, t):
             f"방 크기 CV {m.get('roomCV', '—')}" + (f" · 같은 크기 줄 {m.get('sameRows')}" if m.get('sameRows') else ""), f"빈 바닥 {m.get('emptyPctAll', '—')}% (통로 제외 {m.get('emptyPct', '—')}%)", f"몸채 볼록도 {sh.get('convexity', '—')} · 바깥벽 꺾임 {sh.get('outerRuns', '—')} · 공유벽 {sh.get('sharedWallRatio', '—')}", f"양탄자 {m.get('rugs', '—')} (방당 최대 {m.get('maxRugs', '—')})", f"계단 {stair_txt(m, t)}",
             f"물건 종류 {m.get('types', '—')}" + (f" (새 풀 {len(m.get('poolUsed', []))})" if s != "r1" else ""),
             f"바닥 {len(m.get('floors', []))}종", f"Opus 쌍 비교 {wdl(s, [key])}", f"벽 {w.get('walls', '—')}/10"]
-    if s in ("r5", "r6", "r7") and run.get("lookups") is not None is not None: bits.append(f"find_pieces {len(run['lookups'])}회")
-    if s in ("r4", "r5", "r6", "r7") and run.get("noteRevision"): bits.append(f"메모 → {'고쳐 냄' if run['noteRevision'] == 'kept' else '고친 안 거절, 이전 유지'}")
+    if s in ("r5", "r6", "r7", "r8") and run.get("lookups") is not None is not None: bits.append(f"find_pieces {len(run['lookups'])}회")
+    if s in ("r4", "r5", "r6", "r7", "r8") and run.get("noteRevision"): bits.append(f"메모 → {'고쳐 냄' if run['noteRevision'] == 'kept' else '고친 안 거절, 이전 유지'}")
     if s != "r1":
         bits.append(f"검증 {'통과' if run.get('ok') else '<b>실패</b>'} · 고침 {run.get('repairs')}회 {run.get('errorsPerCall')} · {run.get('secs')}초")
     why = f"<br><span class=why>{html.escape(str(w.get('why', '')))}</span>" if w.get("why") else ""
@@ -135,7 +137,7 @@ secs = []
 for t in TASKS:
     cards = []
     for k in RUNS:
-        model = "gpt-6.1-sol" if k.startswith("sol") else "gpt-6.1-terra" if k.startswith("terra") else "gemini-4-argon-high (argon, terra 대역)"
+        model = "gpt-6.1-sol" if k.startswith("sol") else "claude-opus-5-5 medium (sol 대역)" if k.startswith("opus") else "gpt-6.1-terra" if k.startswith("terra") else "gemini-4-argon-high (argon, terra 대역)"
         cards.append(f"<div class=card><h3>{KO[t]} · {model} #{k[-1]}</h3><div class=pair>{''.join(f"<div class=col><h4>{RK[s]}</h4>{card(s, k, t)}</div>" for s in ROUNDS)}</div></div>")
     secs.append(f"<h2>{KO[t]}</h2>" + "".join(cards))
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 벽 시험 1~7판</title>
@@ -151,6 +153,6 @@ table{{border-collapse:collapse;margin:8px 0}}td,th{{border:1px solid #444;paddi
 <div class=card><h3>세로(남북) 벽의 문 — 고치기 전 / 후 (같은 저택 sol #2 3판 배치, 4배)</h3><div class=pair><div class=col><h4>전: 문 위 두 칸이 벽면(붉은 천)으로 칠해져 벽처럼 보였다</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-old.png'></div><div class=col><h4>후: 세 칸 모두 바닥으로 — 위 벽머리만 남은 통로</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-new.png'></div></div><p class=meta>1~3판 그림은 옛 렌더 그대로다(판정자도 그 그림을 봤다). 4판부터 새 렌더.</p></div>
 <table><tr><th>장소 · 판</th><th>빈 바닥</th><th>통로 제외</th><th>양탄자</th><th>계단 맞음</th><th>물건 종류 (네 장 합쳐)</th><th>새 풀 물건</th><th>방당 다른 물건</th><th>반복률</th><th>네모 방 / 밋밋한 네모</th><th>방 크기 변이(CV)</th><th>같은 크기 줄</th><th>볼록도</th><th>바깥벽 꺾임</th><th>공유벽</th><th>Opus 쌍 비교</th><th>벽 점수</th></tr>{''.join(rows)}</table>
 {argon_table()}
-<h2>모델별 물건 다양성 (4~7판)</h2><table><tr><th>판 · 모델</th><th>방당 다른 물건</th><th>반복률</th><th>지도당 물건 종류</th><th>지도당 새 풀 물건</th><th>같은 용도 겹침</th><th>find_pieces 호출</th><th>네모 방</th></tr>{model_rows()}</table>
+<h2>모델별 물건 다양성 (4~8판, 검증 통과한 지도만)</h2><table><tr><th>판 · 모델</th><th>방당 다른 물건</th><th>반복률</th><th>지도당 물건 종류</th><th>지도당 새 풀 물건</th><th>같은 용도 겹침</th><th>find_pieces 호출</th><th>네모 방</th></tr>{model_rows()}</table>
 {''.join(secs)}"""
 open(f"{VIZ}/bbox-walls-2.html", "w").write(page); print("ok")
