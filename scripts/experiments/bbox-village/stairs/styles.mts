@@ -5,5 +5,5 @@ export const STYLE_GROUND: Record<string, { ground: string; road: string; stairR
   "sand-steps": { ground: "bd-pick-desert-oasis-ground-sand", road: "bd-pick-desert-oasis-ground-road" },
   "snow-steps": { ground: "bd-pick-snowfield-ground-snow", road: "bd-pick-snowfield-ground-road" },
   "peat-steps": { ground: "bd-pick-swamp-stilt-ground-mud", road: "bd-pick-swamp-stilt-ground-path" },
-  "cave-steps": { ground: "bd-pick-sea-cave-floor-cave", road: "bd-pick-dungeon-theme-cracked-floor" },
+  "cave-steps": { ground: "bd-pick-mining-valley-ground-road", road: "bd-pick-mining-valley-ground-road" },   // the cave dungeon floor (dungeonKit beodeul/profiles.ts cave.floor.base); a cave climb starts from the floor itself
 };
