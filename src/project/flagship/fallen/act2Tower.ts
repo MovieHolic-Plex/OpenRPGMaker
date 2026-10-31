@@ -3,7 +3,7 @@
  *
  * 탑 네 층 맵은 B9(act2Opening.ts skyTower — author_dungeon tower floors 4)이 이미 지었다. 여기서는 그 위에 조수 도구로 짓는다.
  *   - 1층 「기사와 기계의 싸움터」: 들어서면 파수 기계가 심문회 기사를 쳐 내는 장면 → 그 기계가 필드 적으로 남는다.
- *     다친 기사(새라의 동료)·별빛 결정·남쪽 방 빛나방·서고 관측 일지.
+ *     다친 기사(새라의 동료)·별빛 결정·남쪽 방 태엽나방·서고 관측 일지.
  *   - 2층 「갈라진 회랑」: author_party_split — 발판이 꺼지며 카엘·새라(서쪽 나무 발판) / 엘레나(동쪽 서고)로 갈린다.
  *     카엘 쪽 벽 손잡이가 엘레나 쪽 쇠창살을, 엘레나 쪽 거울 손잡이가 카엘 쪽 쇠창살을 연다. 둥근 방 박쥐.
  *   - 3층 「거울의 층」: author_map_puzzle mirror_beam_refraction 이 4층 계단을 막는다. 거미·회로뱀.
@@ -201,12 +201,13 @@ const actRow = (skillId: string, priority: number) => ({ skillId, priority, cond
 
 /**
  * 탑 적 — 서리 가도(Lv9 늑대 HP240·박쥐 HP200) 다음 단계. 탑에 들어설 때 파티 Lv10~11, 4층에서 Lv12 쯤.
- * 파수 기계는 느리고(lumber) 물리 반감·번개 두 배 — 피해 가거나 엘레나 마법으로. 빛나방은 실명, 회로뱀은 마력을 갉는다.
+ * 파수 기계는 느리고(lumber) 물리 반감·번개 두 배 — 피해 가거나 엘레나 마법으로. 태엽나방(청동 날개 — 탑 기계의 하나)은 실명, 회로뱀은 마력을 갉는다.
  */
+const SENTINEL_ART = "generated-enemy-golem-iron";
 const TOWER_FOES: { id: string; name: string; art: string; level: number; stats: Rec; skills: [string, number][]; exp: number; gold: number; elementRates?: Rec; damageTypeRates?: Rec; scale?: number }[] = [
-  { id: E_SENTINEL, name: "탑 파수 기계", art: "generated-enemy-golem-iron", level: 11, stats: { maxHp: 520, maxMp: 30, attack: 122, defense: 58, mind: 40, agility: 30 },
+  { id: E_SENTINEL, name: "탑 파수 기계", art: SENTINEL_ART, level: 11, stats: { maxHp: 520, maxMp: 30, attack: 122, defense: 58, mind: 40, agility: 30 },
     skills: [["skill_attack", 6], ["skill_mon_body_slam", 5], ["skill_mon_shell_guard", 3]], exp: 190, gold: 46, elementRates: { thunder: "A", fire: "C", ice: "C" }, damageTypeRates: { physical: 60 }, scale: 115 },
-  { id: E_MOTH, name: "빛나방", art: "generated-enemy-moth-dust", level: 10, stats: { maxHp: 190, maxMp: 30, attack: 72, defense: 26, mind: 74, agility: 84 },
+  { id: E_MOTH, name: "태엽나방", art: "generated-enemy-moth-dust", level: 10, stats: { maxHp: 190, maxMp: 30, attack: 72, defense: 26, mind: 74, agility: 84 },
     skills: [["skill_attack", 5], [SKILL_MOTH_DUST, 5]], exp: 72, gold: 18, elementRates: { fire: "A", wind: "A" } },
   { id: E_SPIDER, name: "결정 거미", art: "generated-enemy-spider-cave", level: 11, stats: { maxHp: 300, maxMp: 20, attack: 104, defense: 46, mind: 40, agility: 72 },
     skills: [["skill_attack", 6], ["skill_mon_web_shot", 3]], exp: 110, gold: 24, elementRates: { fire: "A", ice: "E" } },
@@ -244,8 +245,8 @@ function towerData(project: Project, exec: Exec): void {
   if (!project.database.enemies.some((e) => e.id === E_BAT)) throw new Error("[fallen-star tower] 서리박쥐(B7)가 없다");
   for (const [id, name, members] of [
     [T_SENTINEL, "탑 파수 기계", [E_SENTINEL, E_MOTH]],
-    [T_MOTHS, "빛나방 떼", [E_MOTH, E_MOTH, E_MOTH]],
-    [T_BATS, "서리박쥐와 빛나방", [E_BAT, E_BAT, E_MOTH]],
+    [T_MOTHS, "태엽나방 떼", [E_MOTH, E_MOTH, E_MOTH]],
+    [T_BATS, "서리박쥐와 태엽나방", [E_BAT, E_BAT, E_MOTH]],
     [T_SPIDERS, "결정 거미", [E_SPIDER, E_SPIDER]],
     [T_SNAKES, "회로뱀", [E_SNAKE, E_SNAKE, E_MOTH]],
   ] as const) {
@@ -285,6 +286,11 @@ function floorOne(project: Project, exec: Exec): void {
   }) as { eventId?: string } | undefined;
   const machineId = placed?.eventId ?? M(project, FS2_T1).events.find((e) => e.x === T1.machine.x && e.y === T1.machine.y)?.id;
   if (!machineId) throw new Error("[fallen-star tower] 1층 파수 기계가 없다");
+  // 필드 그림 = 전투 그림. 도구는 골렘 종류를 모두 같은 RTP 흙 골렘 칩으로 세워, 필드의 누런 흙인형이 전투에서 검은 쇠 기계로 바뀌었다
+  // (첫 플레이 검수 2026-10-31). 전투 도트 그대로(걷기 칩이 없는 종과 같은 방식)를 필드 심볼로 쓴다.
+  for (const pg of ev(project, FS2_T1, machineId).pages ?? []) {
+    if ((pg.graphic as { sprite?: unknown } | undefined)?.sprite) pg.graphic = { sprite: { type: "bundled", id: SENTINEL_ART }, direction: "down", pattern: 0 } as EventPage["graphic"];
+  }
   const machineLook = (ev(project, FS2_T1, machineId).pages ?? []).map((p) => p.graphic as Rec | undefined).find((g) => g && (g as { sprite?: unknown }).sprite);
   if (!machineLook) throw new Error("[fallen-star tower] 파수 기계 그림이 없다");
   // 다친 기사 — 새라의 견습 동기. 장면 기사가 물러난 칸(24,21)에 같이 서므로 목록에서 먼저 둔다(조사는 앞 이벤트가 받는다). 발렌이 위로 갔다는 것, 회복약 둘.
@@ -353,7 +359,7 @@ function floorOne(project: Project, exec: Exec): void {
   }));
   if (!save) throw new Error("[fallen-star tower] 1층 별빛 결정 자리가 없다");
 
-  // 남쪽 막다른 방 — 빛나방 떼가 지키는 기계 부품 상자.
+  // 남쪽 막다른 방 — 태엽나방 떼가 지키는 기계 부품 상자.
   const chest = firstOk([{ x: 15, y: 33 }, { x: 16, y: 32 }, { x: 14, y: 32 }, { x: 17, y: 31 }], (c) => exec(project, "place_chest", {
     mapId: FS2_T1, x: c.x, y: c.y, contents: { itemId: "item_hi_potion", gold: 180 }, name: "녹슨 부품 상자", id: "ev_fs2_t1_chest",
   }));
@@ -362,7 +368,7 @@ function floorOne(project: Project, exec: Exec): void {
     mapId: FS2_T1, x: c.x, y: c.y, troopId: T_MOTHS, behavior: "chase", patrol: { length: 2, axis: "horizontal" },
     sightRange: 6, vision: "cone", pace: "normal", approachStyle: "float", respawnSec: 120, checkpointOnEntry: true,
   }));
-  if (!moths) throw new Error("[fallen-star tower] 1층 빛나방 자리가 없다");
+  if (!moths) throw new Error("[fallen-star tower] 1층 태엽나방 자리가 없다");
 
   // 서쪽 서고(마법진으로도 닿는다) — 독서대 위 관측 일지: 「4층 대기실 — 회수 대상 보관」.
   const lectern = firstOk([{ x: 4, y: 20 }, { x: 5, y: 20 }, { x: 6, y: 20 }, { x: 7, y: 20 }], (c) => {
@@ -430,13 +436,20 @@ function floorTwo(project: Project, exec: Exec): void {
     afterSplitLines: [
       { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
       { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
-      { speaker: KAEL, text: "들려! 우리도 이쪽 손잡이를 내려 볼게.\n북쪽 벽에 손잡이가 있어." },
+      { speaker: KAEL, text: "들려! 우리도 이쪽에서\n열 방법을 찾아볼게." },
       { text: "수정 받침을 조사하면 엘레나 쪽으로 넘어간다." },
     ],
     switchIdleText: "수정 받침이 희미하게 울린다.\n벽 너머 동료의 숨소리가 들리는 것 같다.",
     rejoinText: "다시 모였다.",
     rejoinLines: [{ speaker: ELENA, text: "거울, 진짜 됐네. 빛이 그쪽까지 갔어." }, { speaker: SARAH, text: "기계보다 손발이 잘 맞는군.\n…올라가자." }],
   });
+  // 손잡이 이름표 — 도구는 「레버 → 동쪽 쇠창살」로 이름을 지어 이름표가 답(어느 손잡이가 어느 문)을 알려 줬다(첫 플레이 검수 2026-10-31).
+  // 무엇인지만 보이게 고친다. 어느 문이 열리는지는 당겨 보고 소리로 안다.
+  for (const [at, label] of [[T2.westLever, "벽 손잡이"], [T2.eastLever, "거울 손잡이"]] as const) {
+    const lever = M(project, FS2_T2).events.find((e) => e.x === at.x && e.y === at.y && String(e.name ?? "").startsWith("레버 →"));
+    if (!lever) throw new Error(`[fallen-star tower] 2층 손잡이 이벤트가 없다 (${at.x},${at.y})`);
+    lever.name = label;
+  }
   // 합류 칸 곁 칸 — 갈린 동안만 막아 합류 칸을 반드시 밟게 한다.
   addEv(project, FS2_T2, "ev_fs2_t2_rejoin_plug", "합류 길목", T2.rejoinPlug, [
     page("ev_fs2_t2_rejoin_plug_open", "열림", [], [], { priority: "below" }),
