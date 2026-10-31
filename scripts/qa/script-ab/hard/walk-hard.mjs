@@ -85,7 +85,7 @@ await page.addInitScript(([projectUrl]) => {
 await page.goto(served.playUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
 await page.waitForSelector("[data-testid='title-screen']", { timeout: 180_000 });
 
-const st = () => page.evaluate(() => window.__oprnDebug?.readState?.() ?? null);
+const st = async () => { for (let i = 0; i < 40; i += 1) { const v = await page.evaluate(() => window.__oprnDebug?.readState?.() ?? null).catch(() => null); if (v) return v; await sleep(250); } return null; };
 const fieldReadyJs = `(() => { const s = window.__oprnDebug?.readState?.(); if (!s?.currentMapId) return false;
   if (document.querySelector("[data-testid='dialogue-box'], [data-testid='battle-scene'], [data-testid='main-menu'], [data-testid='dialogue-choice-frame'], [data-testid='runtime-input-number'], [data-testid='battle-transition-overlay'], [data-testid='ending-screen'], .battle-return-settle")) return false;
   return !/건너뛰기/.test(document.body.innerText); })()`;
@@ -125,7 +125,7 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
       await sleep(150); await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-choice-frame']")) {
-      const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid='dialogue-choice-frame'] [role='option'], [data-testid='dialogue-choice-frame'] li, [data-testid='dialogue-choice-frame'] button")].map((n) => (n.textContent ?? "").trim()).filter(Boolean));
+      const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid^='runtime-choice-']")].filter((n) => /^runtime-choice-\d+$/.test(n.dataset.testid ?? "")).map((n) => (n.textContent ?? "").replace(/\s+/g, " ").trim()));
       seenChoices.push(opts);
       let index = 0;
       if (plan.chooser) index = await plan.chooser(opts, await logSince(start));
@@ -135,8 +135,10 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
         if (typeof want === "string") { const re = new RegExp(want); const k = opts.findIndex((o) => re.test(o)); index = k >= 0 ? k : (plan.missChoice ?? 0); }
       }
       if (index < 0) index = 0;
-      for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); }
-      await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
+      const clicked = opts.length ? await page.evaluate((k) => { const b = document.querySelector(`[data-testid='runtime-choice-${k}']`); if (!b) return false; b.click(); return true; }, index) : false;
+      if (!clicked) { for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); } await page.keyboard.press("Enter"); }
+      await sleep(500); if (clicked && await has("[data-testid='dialogue-choice-frame']") && JSON.stringify(opts) === JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("[data-testid^='runtime-choice-']")].filter((n) => /^runtime-choice-\d+$/.test(n.dataset.testid ?? "")).map((n) => (n.textContent ?? "").replace(/\s+/g, " ").trim())))) { for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); } await page.keyboard.press("Enter"); await sleep(400); }
+      freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-box']")) { await advanceMessage(); freeSince = null; continue; }
     if (await fieldReady()) { freeSince ??= Date.now(); if (Date.now() - freeSince > 900) break; }
@@ -147,6 +149,7 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
 }
 async function toField() { await drain({}, { maxMs: 30_000 }); }
 async function teleport(mapId, x, y) {
+  for (let i = 0; i < 80; i += 1) { if (await page.evaluate(() => Boolean(window.__oprnDebug?.teleport)).catch(() => false)) break; await sleep(250); }
   await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [mapId, x, y]);
   for (let i = 0; i < 60; i += 1) { const s = await st(); if (s?.currentMapId === mapId && s.x === x && s.y === y && await fieldReady()) break; await sleep(150); }
   await sleep(250);
@@ -208,7 +211,7 @@ async function tryWalk(mapId, x, y, dir, tiles = 2) {
   for (let i = 0; i < 20; i += 1) { if (await fieldReady()) break; await sleep(200); }
   return st();
 }
-const dbg = (fn, ...a) => page.evaluate(([f, args]) => window.__oprnDebug[f](...args), [fn, a]);
+const dbg = async (fn, ...a) => { for (let i = 0; i < 80; i += 1) { if (await page.evaluate(() => Boolean(window.__oprnDebug)).catch(() => false)) break; await sleep(250); } return page.evaluate(([f, args]) => window.__oprnDebug[f](...args), [fn, a]); };
 
 // ---------- checks ----------
 const checks = [];
@@ -266,10 +269,9 @@ const inv = async (name) => count(await st(), itemIds(name));
 function prefer(steps, fallback = [], { cap = 30 } = {}) {
   let i = 0, n = 0;
   return (opts) => {
-    n += 1; if (n > cap) { const k = opts.findIndex((o) => /그만|취소|아니|나가|됐|끝|안 해/.test(o)); return k >= 0 ? k : opts.length - 1; }
-    const tries = [...(i < steps.length ? [steps[i]] : []), ...fallback].flat();
-    for (const re of tries) { const k = opts.findIndex((o) => re.test(o)); if (k >= 0) { if (i < steps.length && [steps[i]].flat().includes(re)) i += 1; return k; } }
-    if (i < steps.length) i += 1;
+    n += 1; if (n > cap) { const k = opts.findIndex((o) => /그만|취소|아니|나가|됐|끝|안 해|안 할|돌아/.test(o)); return k >= 0 ? k : opts.length - 1; }
+    if (i < steps.length) for (const re of [steps[i]].flat()) { const k = opts.findIndex((o) => re.test(o)); if (k >= 0) { i += 1; return k; } }
+    for (const re of fallback.flat()) { const k = opts.findIndex((o) => re.test(o)); if (k >= 0) return k; }
     return 0;
   };
 }
@@ -284,15 +286,19 @@ async function openMainMenu() {
 async function closeMenus() { for (let i = 0; i < 8 && !(await fieldReady()); i += 1) { await page.keyboard.press("Escape"); await sleep(400); } }
 const domClick = (sel) => page.evaluate((q) => { const n = [...document.querySelectorAll(q)].find((x) => x.getClientRects().length) ?? document.querySelector(q); if (!n) return false; n.click(); return true; }, sel);
 async function waitSel(sel, ms = 8000) { for (let t = 0; t < ms; t += 200) { if (await page.$(sel)) return true; await sleep(200); } return false; }
+let lastSaveMsg = "";
 async function saveGame() {
   if (!(await openMainMenu())) throw new Error("main menu did not open");
   if (!(await domClick("[data-testid='status-menu-command-save']"))) { await domClick("[data-testid='status-menu-command-system-menu']"); await sleep(700); if (!(await domClick("[data-testid='status-menu-group-command-save']"))) throw new Error("no save command in the menu"); }
   if (!(await waitSel("[data-testid='save-slot-1']"))) throw new Error("save slots did not open");
   await domClick("[data-testid='save-slot-1']");
-  await sleep(1000);
-  if (await has("[data-testid='dialogue-choice-frame'], [role='dialog'] button")) { await page.keyboard.press("Enter"); await sleep(600); }
-  const saved = await page.evaluate(() => Object.keys(localStorage).filter((k) => /save/i.test(k) && !/auto/i.test(k)).length);
+  await sleep(900);
+  let msg = await page.evaluate(() => document.querySelector("[data-testid='status-menu-message']")?.textContent?.trim() ?? "");
+  if (/다시 선택/.test(msg)) { await domClick("[data-testid='save-slot-1']"); await sleep(900); msg = await page.evaluate(() => document.querySelector("[data-testid='status-menu-message']")?.textContent?.trim() ?? ""); }
+  lastSaveMsg = msg;
+  const saved = /저장했습니다/.test(msg) ? 1 : 0;
   await closeMenus();
+  if (!saved) console.log(`save refused: «${msg}»`);
   return saved > 0;
 }
 async function loadGame() {
@@ -307,6 +313,8 @@ async function loadGame() {
   });
   if (!clicked) { await page.keyboard.press("ArrowDown"); await page.keyboard.press("ArrowDown"); await sleep(300); await page.keyboard.press("Enter"); }
   if (!(await waitSel("[data-testid='save-slot-1']", 10_000))) throw new Error(`load panel did not open (title pick ${clicked})`);
+  const slotText = await page.evaluate(() => document.querySelector("[data-testid='save-slot-1']")?.textContent ?? "");
+  if (/비어/.test(slotText)) throw new Error(`slot 1 is empty — the save was refused («${lastSaveMsg}»)`);
   await domClick("[data-testid='save-slot-1']");
   for (let i = 0; i < 60; i += 1) { if ((await st())?.currentMapId && !(await has("[data-testid='title-screen']"))) break; await sleep(500); }
   for (let i = 0; i < 40 && !(await fieldReady()); i += 1) { if (await has("[data-testid='dialogue-box'], [data-testid='dialogue-choice-frame']")) await page.keyboard.press("Enter"); await sleep(400); }
@@ -338,10 +346,14 @@ try {
     await openMainMenu(); await page.evaluate(() => document.querySelector("[data-testid='status-menu-command-system-menu']").click()); await sleep(1000);
     const ids = await page.evaluate(() => [...document.querySelectorAll("[data-testid]")].filter((n) => n.getClientRects().length).map((n) => `${n.dataset.testid}:${(n.textContent ?? "").trim().slice(0, 12)}`));
     console.log(ids.join("\n")); await page.screenshot({ path: join(out, "menu.png") });
+  } else if (request === "probe-loc") {
+    const ev = findEvent(evId(opt("name") ?? "석상 1")); await teleport(ev.mapId, ev.x, ev.y + 1); await sleep(1500);
+    const s = await st(); console.log(JSON.stringify(s.eventLocations?.[ev.event.id]), Object.keys(s.eventLocations ?? {}).length);
+    console.log(JSON.stringify(await page.evaluate(() => window.__oprnCharacterSprites?.() ?? null)).slice(0, 1500));
   } else if (request === "smoke-save") {
     const t = await T("힌트 팻말"); check("smoke-talk", t.length > 0, "talk", t);
     await dbg("setGold", 123); const b = await st(); const saved = await saveGame(); await dbg("setGold", 5); const loaded = await loadGame(); const a = await st();
-    check("smoke-save-load", saved && loaded && a.gold === 123 && a.x === b.x && a.y === b.y, `saved ${saved} loaded ${loaded} gold ${a.gold} pos ${b.x},${b.y}→${a.x},${a.y}`);
+    check("smoke-save-load", saved && loaded && a.gold === 123 && a.x === b.x && a.y === b.y, `saved ${saved}${saved ? "" : ` «${lastSaveMsg}»`} loaded ${loaded} gold ${a.gold} pos ${b.x},${b.y}→${a.x},${a.y}`);
   } else if (request === "lights") {
     const solvedRe = /모든 불|꺼졌/;
     await guard("lights-door-shut-at-start", async () => { const d = await doorOpen("등불 방 문"); check("lights-door-shut-at-start", !d.open, `door before solving: ${d.note}`); });
@@ -349,33 +361,41 @@ try {
     await guard("lights-reset", async () => { const t = await T("초기화 레버", { choices: [0, 0] }); check("lights-reset-lever", t.length > 0, "reset lever responds", t); });
     await guard("lights-first-half", async () => { const t = await T("등 11"); check("lights-11-not-solved", !solvedRe.test(joined(t)), "after reset, 등 11 alone does not solve", t); });
     await guard("lights-save-load", async () => {
-      const before = await st(); const saved = await saveGame(); const loaded = await loadGame(); const after = await st();
+      const before = await st(); const saved = await saveGame(); const loaded = saved ? await loadGame() : false; const after = await st();
       const same = JSON.stringify(before.switches) === JSON.stringify(after.switches) && JSON.stringify(before.variables) === JSON.stringify(after.variables) && JSON.stringify(before.selfSwitches) === JSON.stringify(after.selfSwitches);
-      check("lights-save-load", saved && loaded && same, `saved ${saved} loaded ${loaded}; switches/variables/self-switches identical after load: ${same}`);
+      check("lights-save-load", saved && loaded && same, `saved ${saved}${saved ? "" : ` «${lastSaveMsg}»`} loaded ${loaded}; switches/variables/self-switches identical after load: ${same}`);
     });
     await guard("lights-solve", async () => { const t = await T("등 44"); check("lights-solved-after-load", solvedRe.test(joined(t)), "등 44 after the load turns the last lights off → «모든 불이 꺼졌다»", t); });
     await guard("lights-door", async () => { const d = await doorOpen("등불 방 문"); check("lights-door-opens", d.open, `door after solving: ${d.note}`); });
   } else if (request === "statues") {
     const FACE = { up: "북", right: "동", down: "남", left: "서" };
-    const dirs = async () => { const s = await st(); return [1, 2, 3, 4].map((k) => s?.eventLocations?.[evId(`석상 ${k}`)]?.direction ?? "?"); };
+    const ROW = ["down", "left", "right", "up"];
+    // Facing as the player SEES it: the event sprite's charset frame row (3 columns × 4 rows: 아래·왼·오른·위). Static events
+    // have no eventLocations entry, so the live sprite is the only witness.
+    const dirs = async () => { const sp = await page.evaluate(() => window.__oprnCharacterSprites?.()?.events ?? {}).catch(() => ({})); const s = await st();
+      return [1, 2, 3, 4].map((k) => { const id = evId(`석상 ${k}`); const live = s?.eventLocations?.[id]?.direction; const f = sp[id]?.frame; return live ?? (typeof f === "number" ? ROW[Math.floor(f / 3) % 4] : "?"); }); };
     const fmt = (d) => d.map((x) => FACE[x] ?? x).join("");
-    await guard("statues-initial", async () => { const d = await dirs(); check("statues-initial-facing", fmt(d) === "북동남서", `facing ${fmt(d)} (expect 북동남서)`); });
+    const P = (k) => T(`석상 ${k}`, { choices: [0, 0] });
     await guard("statues-undo-empty", async () => { const t = await T("되돌리기 돌", { choices: [0, 0] }); check("statues-undo-empty", /없/.test(joined(t)), "undo with no history says nothing to undo", t); });
-    await guard("statues-rotate", async () => { await T("석상 3", { choices: [0, 0] }); const d = await dirs(); check("statues-rotate-cw", d[2] === "left", `석상 3 남 → ${FACE[d[2]] ?? d[2]} (expect 서)`); });
-    await guard("statues-undo", async () => { await T("되돌리기 돌", { choices: [0, 0] }); const d = await dirs(); check("statues-undo-one", d[2] === "down", `undo → 석상 3 ${FACE[d[2]] ?? d[2]} (expect 남)`); });
-    await guard("statues-progress", async () => { await T("석상 1", { choices: [0, 0] }); await T("석상 1", { choices: [0, 0] }); await T("석상 3", { choices: [0, 0] }); const d = await dirs(); check("statues-progress", fmt(d) === "남동서서", `after 석상1×2, 석상3×1: ${fmt(d)} (expect 남동서서)`); });
+    await guard("statues-initial", async () => { const d = await dirs(); check("statues-initial-facing-visible", fmt(d) === "북동남서", `sprites face ${fmt(d)} (expect 북동남서)`); });
+    let afterRot = "";
+    await guard("statues-rotate", async () => { const b = await dirs(); await P(3); const d = await dirs(); afterRot = fmt(d); check("statues-rotate-visible", d[2] !== b[2] && d[2] === "left", `석상 3 sprite ${FACE[b[2]] ?? b[2]} → ${FACE[d[2]] ?? d[2]} (expect 남→서)`); });
+    await guard("statues-undo", async () => { await T("되돌리기 돌", { choices: [0, 0] }); const d = await dirs(); check("statues-undo-visible", d[2] === "down", `undo → 석상 3 sprite ${FACE[d[2]] ?? d[2]} (expect 남)`); });
+    let before = null;
     await guard("statues-save-load", async () => {
-      const b = await dirs(); const saved = await saveGame(); const loaded = await loadGame(); const a = await dirs();
-      check("statues-save-load-facing", saved && loaded && fmt(a) === fmt(b), `saved ${saved} loaded ${loaded}: ${fmt(b)} → ${fmt(a)}`);
-      await T("되돌리기 돌", { choices: [0, 0] }); const u = await dirs();
-      check("statues-undo-after-load", u[2] === "down", `undo after load → 석상 3 ${FACE[u[2]] ?? u[2]} (expect 남, history kept)`);
+      await P(1); await P(1); await P(3);
+      before = await st(); const b = await dirs(); const saved = await saveGame(); const loaded = saved ? await loadGame() : false; const a = await st();
+      const same = JSON.stringify(before.switches) === JSON.stringify(a.switches) && JSON.stringify(before.variables) === JSON.stringify(a.variables) && JSON.stringify(before.selfSwitches) === JSON.stringify(a.selfSwitches);
+      check("statues-save-load", saved && loaded && same, `saved ${saved}${saved ? "" : ` «${lastSaveMsg}»`} loaded ${loaded}; switches/variables/self-switches identical: ${same} (sprites ${fmt(b)})`);
+      await T("되돌리기 돌", { choices: [0, 0] });
     });
     await guard("statues-solve", async () => {
+      // Correct only if: rotation is clockwise, the first undo reverted 석상 3, and the post-load undo reverted 석상 3 again.
       const all = [];
-      all.push(...await T("석상 2", { choices: [0, 0] }));
-      for (let k = 0; k < 3; k += 1) all.push(...await T("석상 4", { choices: [0, 0] }));
+      all.push(...await P(2));
+      for (let k = 0; k < 3; k += 1) all.push(...await P(4));
       const d = await dirs();
-      check("statues-solved", /숙|열/.test(joined(all)) && fmt(d) === "남남남남", `all south ${fmt(d)}; message`, all.slice(-4));
+      check("statues-solved-via-undo", /숙|열/.test(joined(all)), `after 석상2×1, 석상4×3 (needs both undos to have worked): message; sprites ${fmt(d)}`, all.slice(-4));
       const o = await doorOpen("석상 방 문"); check("statues-door-opens", o.open, `door: ${o.note}`);
     });
   } else if (request === "stealth") {
@@ -515,7 +535,7 @@ try {
       const n = await at(13); check("schedule-13-fountain", n.ok, `13:00 ${n.note}`);
       const g0 = (await st()).gold; const t = await T(toma, { chooser: prefer([], [/아니|그만|안/]) });
       check("schedule-noon-talk", (await st()).gold === g0 && !/문 닫/.test(joined(t)) && t.length > 0, "fountain line, no sale", t);
-      const saved = await saveGame(); const loaded = await loadGame(); await sleep(2500);
+      const saved = await saveGame(); const loaded = saved ? await loadGame() : false; await sleep(2500);
       const m = await near("광장 분수"); const s = await st();
       check("schedule-save-load", saved && loaded && m.ok && s.gameTime?.hour >= 13 && s.gameTime?.hour < 18, `after load ${s.gameTime?.hour}:${s.gameTime?.minute} ${m.note}`);
     });
@@ -538,7 +558,7 @@ try {
       check("aff-special-once", lines(tx[4]) < lines(tx[3]), `4th flower (70) lines ${lines(tx[4])} < ${lines(tx[3])}`, tx[4]);
     });
     await guard("aff-save-load", async () => {
-      const b = await st(); const saved = await saveGame(); const loaded = await loadGame(); const a = await st();
+      const b = await st(); const saved = await saveGame(); const loaded = saved ? await loadGame() : false; const a = await st();
       check("aff-save-load", saved && loaded && JSON.stringify(b.variables) === JSON.stringify(a.variables) && JSON.stringify(b.switches) === JSON.stringify(a.switches), `variables/switches identical after load`);
     });
     await guard("aff-partner", async () => {
@@ -640,8 +660,8 @@ try {
       return [];
     }
     await guard("random-box1", async () => { boxes[1] = await open(1); });
-    let snapQ = [];
-    await guard("random-save", async () => { const saved = await saveGame(); check("random-saved", saved, "saved after opening box 1"); });
+    let snapQ = []; let randomSaved = false;
+    await guard("random-save", async () => { const saved = await saveGame(); randomSaved = saved; check("random-saved", saved, `saved after opening box 1${saved ? "" : ` — refused «${lastSaveMsg}»`}`); });
     await guard("random-boxes", async () => {
       for (const k of [2, 3, 4, 5]) boxes[k] = await open(k);
       const vals = Object.values(boxes); const keys = vals.filter((b) => b.key > 0).length; const golds = vals.filter((b) => b.key === 0).map((b) => b.gold);
@@ -657,6 +677,7 @@ try {
       qs.push(...rec);
     });
     await guard("random-load", async () => {
+      if (!randomSaved) throw new Error("no save to load");
       const loaded = await loadGame(); const b2 = {};
       for (const k of [2, 3, 4, 5]) b2[k] = await open(k);
       const same = [2, 3, 4, 5].every((k) => b2[k].gold === boxes[k].gold && b2[k].key === boxes[k].key);

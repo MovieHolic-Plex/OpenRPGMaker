@@ -53,7 +53,7 @@ await page.addInitScript(([projectUrl]) => {
 await page.goto(served.playUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
 await page.waitForSelector("[data-testid='title-screen']", { timeout: 180_000 });
 
-const st = () => page.evaluate(() => window.__oprnDebug?.readState?.() ?? null);
+const st = async () => { for (let i = 0; i < 40; i += 1) { const v = await page.evaluate(() => window.__oprnDebug?.readState?.() ?? null).catch(() => null); if (v) return v; await sleep(250); } return null; };
 const fieldReadyJs = `(() => { const s = window.__oprnDebug?.readState?.(); if (!s?.currentMapId) return false;
   if (document.querySelector("[data-testid='dialogue-box'], [data-testid='battle-scene'], [data-testid='main-menu'], [data-testid='dialogue-choice-frame'], [data-testid='runtime-input-number'], [data-testid='battle-transition-overlay'], [data-testid='ending-screen'], .battle-return-settle")) return false;
   return !/건너뛰기/.test(document.body.innerText); })()`;
@@ -93,7 +93,7 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
       await sleep(150); await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-choice-frame']")) {
-      const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid='dialogue-choice-frame'] [role='option'], [data-testid='dialogue-choice-frame'] li, [data-testid='dialogue-choice-frame'] button")].map((n) => (n.textContent ?? "").trim()).filter(Boolean));
+      const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid^='runtime-choice-']")].filter((n) => /^runtime-choice-\d+$/.test(n.dataset.testid ?? "")).map((n) => (n.textContent ?? "").replace(/\s+/g, " ").trim()));
       seenChoices.push(opts);
       let index = 0;
       if (plan.chooser) index = await plan.chooser(opts, await logSince(start));
@@ -103,8 +103,10 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
         if (typeof want === "string") { const re = new RegExp(want); const k = opts.findIndex((o) => re.test(o)); index = k >= 0 ? k : (plan.missChoice ?? 0); }
       }
       if (index < 0) index = 0;
-      for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); }
-      await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
+      const clicked = opts.length ? await page.evaluate((k) => { const b = document.querySelector(`[data-testid='runtime-choice-${k}']`); if (!b) return false; b.click(); return true; }, index) : false;
+      if (!clicked) { for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); } await page.keyboard.press("Enter"); }
+      await sleep(500); if (clicked && await has("[data-testid='dialogue-choice-frame']") && JSON.stringify(opts) === JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("[data-testid^='runtime-choice-']")].filter((n) => /^runtime-choice-\d+$/.test(n.dataset.testid ?? "")).map((n) => (n.textContent ?? "").replace(/\s+/g, " ").trim())))) { for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); } await page.keyboard.press("Enter"); await sleep(400); }
+      freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-box']")) { await advanceMessage(); freeSince = null; continue; }
     if (await fieldReady()) { freeSince ??= Date.now(); if (Date.now() - freeSince > 900) break; }
@@ -115,6 +117,7 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
 }
 async function toField() { await drain({}, { maxMs: 30_000 }); }
 async function teleport(mapId, x, y) {
+  for (let i = 0; i < 80; i += 1) { if (await page.evaluate(() => Boolean(window.__oprnDebug?.teleport)).catch(() => false)) break; await sleep(250); }
   await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [mapId, x, y]);
   for (let i = 0; i < 60; i += 1) { const s = await st(); if (s?.currentMapId === mapId && s.x === x && s.y === y && await fieldReady()) break; await sleep(150); }
   await sleep(250);
@@ -176,7 +179,7 @@ async function tryWalk(mapId, x, y, dir, tiles = 2) {
   for (let i = 0; i < 20; i += 1) { if (await fieldReady()) break; await sleep(200); }
   return st();
 }
-const dbg = (fn, ...a) => page.evaluate(([f, args]) => window.__oprnDebug[f](...args), [fn, a]);
+const dbg = async (fn, ...a) => { for (let i = 0; i < 80; i += 1) { if (await page.evaluate(() => Boolean(window.__oprnDebug)).catch(() => false)) break; await sleep(250); } return page.evaluate(([f, args]) => window.__oprnDebug[f](...args), [fn, a]); };
 
 // ---------- checks ----------
 const checks = [];

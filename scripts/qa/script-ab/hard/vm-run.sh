@@ -19,6 +19,11 @@ if [ ! -f $G/project/project.sqlite ]; then
 fi
 [ -f $HOME/.oprn-suite/claude-env.sh ] && . $HOME/.oprn-suite/claude-env.sh
 unset OPRN_V2_SCRIPTS
+# Usage survives the run cap: the CLI's stream-json (per-message usage) is teed to <run>/claude-stream.jsonl. The session
+# turn record only gets usage when the turn ends normally, so capped turns had none.
+REAL_CLAUDE=$(command -v claude); mkdir -p $G/bin
+printf '#!/bin/bash\nexec "%s" "$@" > >(tee -a "%s")\n' "$REAL_CLAUDE" "$G/claude-stream.jsonl" > $G/bin/claude-tee; chmod +x $G/bin/claude-tee
+export OPRN_LOCAL_CLI_CLAUDE=$G/bin/claude-tee
 DEADLINE_MS=$(( $(date +%s) * 1000 + (CAP_MIN - 1) * 60000 )); echo "deadline_ms=$DEADLINE_MS cap_min=$CAP_MIN" >> $G/RUN.txt
 OPRN_OPENAI_COMPAT_PATH=$HOME/.oprn-suite/openai-compat-endpoints.json OPRN_TURN_DIAG=1 HARNESS_DIST_DIR=dist setsid nohup node src/harnesses/assistant-capability/node/wholeGameSession.mjs \
   --project-dir $G/project --out $G/session --v2 --snapshots --engine $ENGINE --deadline-ms $DEADLINE_MS >> $G/session-driver.log 2>&1 < /dev/null &

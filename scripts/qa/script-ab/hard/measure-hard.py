@@ -88,6 +88,29 @@ def logic_shape(L, mech, d):
             "scriptMax": max([len((s.get("source") or "").strip().splitlines()) for s in scripts] or [0])}
 
 
+def stream_usage(d):
+    """Per-message usage from the teed CLI stream (survives the run cap). Max per message id, summed."""
+    f = f"{d}/claude-stream.jsonl"
+    if not os.path.exists(f):
+        return None
+    msgs = {}
+    for line in open(f, errors="ignore"):
+        try:
+            e = json.loads(line)
+        except Exception:
+            continue
+        if e.get("type") != "assistant":
+            continue
+        m = e.get("message") or {}; u = m.get("usage") or {}
+        k = m.get("id") or len(msgs)
+        cur = msgs.setdefault(k, {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0})
+        for a, b in (("input", "input_tokens"), ("output", "output_tokens"), ("cacheRead", "cache_read_input_tokens"), ("cacheWrite", "cache_creation_input_tokens")):
+            cur[a] = max(cur[a], u.get(b) or 0)
+    tot = {k: sum(v[k] for v in msgs.values()) for k in ("input", "output", "cacheRead", "cacheWrite")}
+    tot["modelCalls"] = len(msgs)
+    return tot
+
+
 def row(L, arm, mech, rep):
     d = f"{L}/{arm}/{mech}-{rep}"
     run = open(f"{d}/RUN.txt").read() if os.path.exists(f"{d}/RUN.txt") else ""
@@ -95,6 +118,9 @@ def row(L, arm, mech, rep):
         return {"arm": arm, "mech": mech, "rep": rep, "status": "running" if run else "queued"}
     m = run_metrics(d)
     pr = PRICE[arm]
+    su = stream_usage(d)
+    if su:
+        m.update(su); m["tokensTotal"] = su["input"] + su["output"] + su["cacheRead"] + su["cacheWrite"]; m["usageFrom"] = "stream"
     cost = None if m["input"] is None else round((m["input"] * pr[0] + m["output"] * pr[1] + m["cacheRead"] * pr[2] + m["cacheWrite"] * pr[3]) / 1e6, 3)
     st = run.split("started=")[1].split()[0]; fin = run.split("finished=")[1].split()[0]
     wall = (datetime.datetime.fromisoformat(fin.replace("Z", "+00:00")) - datetime.datetime.fromisoformat(st.replace("Z", "+00:00"))).total_seconds() / 60
@@ -109,7 +135,7 @@ def row(L, arm, mech, rep):
     real_fails = [c["id"] for c in (walk or {}).get("checks", []) if not c["pass"] and c["id"] not in hf]
     return {"arm": arm, "mech": mech, "rep": rep, "status": "done", "capped": turn_timeout or "timeout=" in run,
             "costUsd": cost, "tokens": m["tokensTotal"], "input": m["input"], "output": m["output"], "cacheRead": m["cacheRead"], "cacheWrite": m["cacheWrite"],
-            "modelCalls": m["modelCalls"], "toolCalls": m["tools"], "toolFailed": m["failed"], "failedTools": m["failedTools"], "scriptToolCalls": m["scriptCalls"],
+            "usageFrom": m.get("usageFrom", "turns"), "modelCalls": m["modelCalls"], "toolCalls": m["tools"], "toolFailed": m["failed"], "failedTools": m["failedTools"], "scriptToolCalls": m["scriptCalls"],
             "turnMin": round(m["ms"] / 60000, 1), "wallMin": round(wall, 1), "shape": logic_shape(L, mech, d),
             "walkPass": walk and walk["pass"], "walkTotal": walk and walk["total"], "walkFails": walk and [c["id"] for c in walk["checks"] if not c["pass"]],
             "realFails": real_fails if walk else None,
