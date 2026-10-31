@@ -1,16 +1,12 @@
-// editor/script/scriptInsight.ts — mechanical, model-free views of a script for non-coders.
+// editor/script/scriptInsight.ts — a model-free, plain-language reading of a script for non-coders.
 //
-// The event editor's script card (panels/eventEditor/commandBodyScript.ts) shows three things that come straight
-// from the code, so they can never drift from it:
-//   - tunables: top-level `const NAME = <literal>` values (numbers, strings, booleans, literal lists) the author
-//     can edit in place — the edit rewrites only that literal and recompiles;
-//   - flow: an if/else · choices · loop tree with plain-language boxes (conditions on switches/variables/items/
-//     gold/self switches/choice picks are worded; anything else shows as a short code box);
-//   - chips: what the script reads/writes/calls, from the compiler's effects, with project names.
-// The model-written sentence summary lives on the command (`explanation`, bound to sourceHash) — not here.
+// `scriptFlow` turns the code into an if/else · choices · loop tree of plain lines (conditions on switches/
+// variables/items/gold/self switches/choice picks are worded; other code is shown with names and words for
+// operators — 「가격 = 내림(100 × (1 − 변수 「평판」 ÷ 200))」). The event list renders it as event-style lines
+// (panels/eventEditor/scriptLines.ts) whenever the script does not convert to event commands exactly.
 // Requires the TypeScript parser (`prepareScriptCompiler()`); pure otherwise. Wiki: openwiki/script-sandbox.md.
 import { SCRIPT_API_BY_NAME } from "@/project/script/apiSpec";
-import type { ScriptEffects, ScriptRef } from "@/project/script/types";
+import type { ScriptRef } from "@/project/script/types";
 import type { Project } from "@/project/types";
 import type * as TS from "typescript5";
 import { scriptTs, type TypeScriptApi } from "./tsEnv";
@@ -45,167 +41,12 @@ export function scriptRefName(project: Project | undefined, kind: ScriptRef["kin
   }
 }
 
-const KIND_LABEL: Partial<Record<ScriptRef["kind"], string>> = {
-  switch: "스위치",
-  variable: "변수",
-  string: "글 변수",
-  selfSwitch: "셀프 스위치",
-  item: "아이템",
-  actor: "인물",
-  skill: "스킬",
-  commonEvent: "공통 이벤트",
-  map: "맵",
-  troop: "적 그룹",
-  event: "이벤트",
-  resource: "자료",
-  animation: "애니메이션",
-  library: "공용 모듈",
-};
-
-export interface ScriptChip {
-  readonly access: "read" | "write" | "call" | "dynamic";
-  readonly kind: ScriptRef["kind"] | "dynamic";
-  readonly id: string;
-  /** "스위치 · 창고 문 열림" */
-  readonly label: string;
-}
-
-/** Read / write / call chips from compiler effects, with project names. Self switches read+written show once each. */
-export function scriptChips(effects: ScriptEffects | undefined, project: Project | undefined): ScriptChip[] {
-  if (!effects) return [];
-  const out: ScriptChip[] = [];
-  const seen = new Set<string>();
-  const add = (access: ScriptChip["access"], ref: ScriptRef): void => {
-    const key = `${access}:${ref.kind}:${ref.id}`;
-    if (seen.has(key)) return;
-    seen.add(key);
-    const kindLabel = KIND_LABEL[ref.kind] ?? ref.kind;
-    const name = ref.kind === "selfSwitch" ? (ref.id.split(".").pop() ?? ref.id) : ref.kind === "library" ? `@lib/${ref.id}` : scriptRefName(project, ref.kind, ref.id);
-    out.push({ access, kind: ref.kind, id: ref.id, label: `${kindLabel} · ${name}` });
-  };
-  for (const ref of effects.reads) add("read", ref);
-  for (const ref of effects.writes) add("write", ref);
-  for (const ref of effects.calls) add("call", ref);
-  for (const entry of effects.dynamic) {
-    const key = `dynamic:${entry.api}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const api = SCRIPT_API_BY_NAME.get(entry.api.replace(/^cmd\..*/u, "cmd"));
-    out.push({ access: "dynamic", kind: "dynamic", id: entry.api, label: `${api?.ko ?? entry.api} — 계산된 대상(검사기 밖)` });
-  }
-  return out;
-}
-
-// ── tunables ─────────────────────────────────────────────────────────────────
-
-export interface ScriptTunable {
-  readonly name: string;
-  /** 1-based line of the declaration. */
-  readonly line: number;
-  /** Source offsets of the initializer literal (without a trailing `as const`). */
-  readonly start: number;
-  readonly end: number;
-  readonly kind: "number" | "string" | "boolean" | "list";
-  /** Value as the author edits it: `3`, `안녕`, `true`, `3, 1, 4, 2`. */
-  readonly value: string;
-  /** Trailing or preceding line comment, if any (used as the label). */
-  readonly comment?: string;
-  /** For lists: element kind and quote char to rebuild the literal. */
-  readonly listOf?: "number" | "string";
-  readonly quote?: string;
-}
-
 function literalKind(ts: TypeScriptApi, node: TS.Expression): "number" | "string" | "boolean" | undefined {
   if (ts.isNumericLiteral(node)) return "number";
   if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(node.operand)) return "number";
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return "string";
   if (node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword) return "boolean";
   return undefined;
-}
-
-function commentNear(source: string, statementStart: number, statementEnd: number): string | undefined {
-  const lineEnd = source.indexOf("\n", statementEnd);
-  const tail = source.slice(statementEnd, lineEnd < 0 ? source.length : lineEnd);
-  const trailing = /\/\/\s*(.+)$/u.exec(tail);
-  if (trailing?.[1]) return trailing[1].trim();
-  const before = source.slice(0, statementStart).replace(/[ \t]*$/u, "");
-  const lastLine = before.slice(before.lastIndexOf("\n", before.length - 2) + 1).trim();
-  const leading = /^\/\/\s*(.+)$/u.exec(lastLine) ?? /^\/\*\*?\s*(.+?)\s*\*\/$/u.exec(lastLine);
-  return leading?.[1]?.trim() || undefined;
-}
-
-/** Top-level `const NAME = literal` declarations (numbers, strings, booleans, lists of numbers or strings). */
-export function scriptTunables(source: string, ts: TypeScriptApi = scriptTs()): ScriptTunable[] {
-  const file = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
-  const out: ScriptTunable[] = [];
-  for (const statement of file.statements) {
-    if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
-    for (const declaration of statement.declarationList.declarations) {
-      if (!ts.isIdentifier(declaration.name) || !declaration.initializer) continue;
-      let init = declaration.initializer;
-      if (ts.isAsExpression(init) || ts.isSatisfiesExpression(init)) init = init.expression;
-      const line = file.getLineAndCharacterOfPosition(declaration.getStart(file)).line + 1;
-      const comment = commentNear(source, statement.getStart(file), statement.getEnd());
-      const base = { name: declaration.name.text, line, start: init.getStart(file), end: init.getEnd(), ...(comment ? { comment } : {}) };
-      const kind = literalKind(ts, init);
-      if (kind) {
-        const value = kind === "string" ? (init as TS.StringLiteral).text : init.getText(file);
-        const quote = kind === "string" ? init.getText(file)[0] : undefined;
-        out.push({ ...base, kind, value, ...(quote ? { quote } : {}) });
-        continue;
-      }
-      if (ts.isArrayLiteralExpression(init) && init.elements.length > 0 && init.elements.length <= 24) {
-        const kinds = init.elements.map((element) => literalKind(ts, element));
-        const first = kinds[0];
-        if ((first === "number" || first === "string") && kinds.every((entry) => entry === first)) {
-          const values = init.elements.map((element) => (first === "string" ? (element as TS.StringLiteral).text : element.getText(file)));
-          const quote = first === "string" ? init.elements[0]!.getText(file)[0] : undefined;
-          out.push({ ...base, kind: "list", listOf: first, value: values.join(", "), ...(quote ? { quote } : {}) });
-        }
-      }
-    }
-  }
-  return out;
-}
-
-function quoteString(value: string, quote = '"'): string {
-  if (quote === "`") return `\`${value.replace(/[`\\$]/gu, (ch) => `\\${ch}`)}\``;
-  const q = quote === "'" ? "'" : '"';
-  return `${q}${value.replace(/\\/gu, "\\\\").replace(new RegExp(q, "gu"), `\\${q}`).replace(/\n/gu, "\\n")}${q}`;
-}
-
-/**
- * New source with one tunable's literal replaced by the edited value, or an error message (Korean, shown under
- * the field). Only that literal changes — comments, `as const` and the rest of the file stay byte-identical.
- */
-export function setScriptTunable(source: string, tunable: ScriptTunable, edited: string): { source: string } | { error: string } {
-  const text = edited.trim();
-  let literal: string;
-  switch (tunable.kind) {
-    case "number":
-      if (!/^-?\d+(\.\d+)?$/u.test(text)) return { error: "숫자를 넣어 주세요." };
-      literal = text;
-      break;
-    case "boolean":
-      if (text !== "true" && text !== "false") return { error: "true 또는 false 입니다." };
-      literal = text;
-      break;
-    case "string":
-      literal = quoteString(edited, tunable.quote);
-      break;
-    case "list": {
-      const parts = text.split(",").map((part) => part.trim()).filter((part) => part.length > 0);
-      if (!parts.length) return { error: "값을 쉼표로 나눠 넣어 주세요." };
-      if (tunable.listOf === "number") {
-        if (parts.some((part) => !/^-?\d+(\.\d+)?$/u.test(part))) return { error: "숫자를 쉼표로 나눠 넣어 주세요." };
-        literal = `[${parts.join(", ")}]`;
-      } else {
-        literal = `[${parts.map((part) => quoteString(part, tunable.quote)).join(", ")}]`;
-      }
-      break;
-    }
-  }
-  return { source: `${source.slice(0, tunable.start)}${literal}${source.slice(tunable.end)}` };
 }
 
 // ── flow ─────────────────────────────────────────────────────────────────────
@@ -273,8 +114,42 @@ function lineOf(ctx: FlowContext, node: TS.Node): number {
 }
 
 function shortCode(ctx: FlowContext, node: TS.Node, limit = 70): string {
-  const text = readable(ctx, node.getText(ctx.file).replace(/\s+/gu, " ").trim());
+  const text = plainCode(ctx, readable(ctx, node.getText(ctx.file).replace(/\s+/gu, " ").trim()));
   return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
+}
+
+const MATH_WORD: Readonly<Record<string, string>> = { floor: "내림", ceil: "올림", round: "반올림", min: "최소", max: "최대", abs: "절댓값", trunc: "버림" };
+
+/**
+ * Code text a non-coder can still read in a list line: game reads become names, Math helpers and operators
+ * become words/symbols ("가격 = 내림(100 × (1 − 변수 「평판」 ÷ 200))"). Text inside quotes is left alone.
+ */
+function plainCode(ctx: FlowContext, text: string): string {
+  const named = text
+    .replace(/game\.(getVar|getSwitch|itemCount|hasItem)\(\s*(["'])([^"']+)\2\s*\)/gu, (_whole, api: string, _q: string, id: string) => {
+      if (api === "getVar") return `변수 「${scriptRefName(ctx.project, "variable", id)}」`;
+      if (api === "getSwitch") return `스위치 「${scriptRefName(ctx.project, "switch", id)}」`;
+      if (api === "itemCount") return `「${scriptRefName(ctx.project, "item", id)}」 개수`;
+      return `「${scriptRefName(ctx.project, "item", id)}」 가짐`;
+    })
+    .replace(/game\.gold\(\)/gu, "돈");
+  // Operators only outside string literals.
+  const parts = named.split(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/u);
+  return parts.map((part, index) => {
+    if (index % 2 === 1) return part;
+    return part
+      .replace(/Math\.(floor|ceil|round|min|max|abs|trunc)\(/gu, (_whole, name: string) => `${MATH_WORD[name] ?? name}(`)
+      .replace(/\s*===\s*/gu, " = ")
+      .replace(/\s*!==\s*/gu, " ≠ ")
+      .replace(/\s*>=\s*/gu, " ≥ ")
+      .replace(/\s*<=\s*/gu, " ≤ ")
+      .replace(/\s*&&\s*/gu, " 그리고 ")
+      .replace(/\s*\|\|\s*/gu, " 또는 ")
+      .replace(/\s\*\s/gu, " × ")
+      .replace(/\s\/\s/gu, " ÷ ")
+      .replace(/\s-\s/gu, " − ")
+      .replace(/\.length\b/gu, "의 개수");
+  }).join("");
 }
 
 function unwrap(ctx: FlowContext, node: TS.Expression): TS.Expression {
@@ -489,6 +364,11 @@ function flowStatement(ctx: FlowContext, statement: TS.Statement): ScriptFlowNod
         out.push({ k: "step", tone: "ask", text: `선택지: ${options.map((option) => `「${option}」`).join(" · ")}`, line });
         continue;
       }
+      if (call?.api === "inputNumber" && ts.isIdentifier(declaration.name)) {
+        ctx.aliases.set(name, "입력한 숫자");
+        out.push({ k: "step", tone: "ask", text: "숫자 입력", line });
+        continue;
+      }
       if (call?.api === "getVar" && ts.isIdentifier(declaration.name)) {
         ctx.aliases.set(name, `변수 「${refLabel(ctx, "variable", call.args[0])}」`);
         continue;
@@ -497,15 +377,20 @@ function flowStatement(ctx: FlowContext, statement: TS.Statement): ScriptFlowNod
       const literal = literalKind(ts, unwrap(ctx, init));
       if (literal && statement.declarationList.flags & ts.NodeFlags.Const) {
         ctx.consts.set(name, unwrap(ctx, init).getText(ctx.file));
-        continue; // tunables are shown in their own panel
+        continue; // literal values are written into the lines that use them
       }
-      if (ts.isArrayLiteralExpression(unwrap(ctx, init)) && statement.parent && ts.isSourceFile(statement.parent)) continue; // list tunables
+      const listInit = unwrap(ctx, init);
+      if (ts.isArrayLiteralExpression(listInit) && listInit.elements.every((element) => literalKind(ts, unwrap(ctx, element)))) {
+        const values = listInit.elements.map((element) => stripQuotes(element.getText(ctx.file)) ?? "");
+        out.push({ k: "step", tone: "set", text: `정해 둔 목록 ${name}: ${values.join(", ")}`, line });
+        continue;
+      }
       const step = gameStep(ctx, init, line);
       if (step && step.tone !== "calc") {
         out.push(step);
         continue;
       }
-      out.push({ k: "step", tone: "calc", text: `${name} ← ${shortCode(ctx, init, 60)}`, line, code: true });
+      out.push({ k: "step", tone: "calc", text: `${name} = ${shortCode(ctx, init, 60)}`, line, code: true });
     }
     return out;
   }
@@ -550,21 +435,3 @@ export function scriptFlow(
   return flowStatements(ctx, file.statements);
 }
 
-/** Counts steps whose wording is raw code (the "계산" share). */
-export function scriptFlowStats(nodes: readonly ScriptFlowNode[]): { readonly steps: number; readonly code: number } {
-  let steps = 0;
-  let code = 0;
-  const visit = (list: readonly ScriptFlowNode[]): void => {
-    for (const node of list) {
-      steps += 1;
-      if (node.k === "step" && node.code) code += 1;
-      if (node.k === "branch") {
-        if (node.code) code += 1;
-        for (const arm of node.arms) visit(arm.body);
-      }
-      if (node.k === "loop") visit(node.body);
-    }
-  };
-  visit(nodes);
-  return { steps, code };
-}
