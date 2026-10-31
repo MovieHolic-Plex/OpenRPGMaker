@@ -225,8 +225,9 @@ try {
     mark('오프닝');
     for (let i = 0; i < 400 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) await delay(250);
   } else {
-    // 오프닝(새 게임 뒤 애니메틱)은 건너뛴다 — 이 녹화는 게임 안 첫 숨기의 톤 시험이다. 오프닝은 --opening 으로 따로.
-    for (let i = 0; i < 60 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) { await page.keyboard.press('Escape'); await delay(250); await page.keyboard.press('Enter'); await delay(400); }
+    // 데모 오프닝은 건너뛸 수 없다(#4098, system.opening.skippable=false) — 끝날 때까지 기다린다. 톤 시험용 자르기는 '오프닝 끝' 표시부터.
+    for (let i = 0; i < 600 && await page.locator('[data-testid="cinematic-sequence"]').count(); i++) await delay(250);
+    mark('오프닝 끝');
   }
   await page.waitForFunction(() => !!window.__oprnDebug?.readState?.().currentMapId, null, { timeout: 120000 });
   await page.evaluate(() => window.__oprnDebug.setSeed(1));
