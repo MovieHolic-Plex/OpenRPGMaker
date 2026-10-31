@@ -8,7 +8,7 @@
  * 좌표는 떨어진 별(조사 칸) 기준 상대 칸 — 관 자리가 옮겨져도 같은 그림이 된다. 새 그림 없음(버들항 장소 칸만).
  */
 import { isPassable } from "@/project/collision";
-import type { Project } from "@/project/types";
+import type { Command, EventPage, Project } from "@/project/types";
 import { FS_PREFIX } from "../fallenStarStory";
 
 /** 빈터에서 걷는 낱 장식(위 겹). 나무·줄기·관·고목·통나무·그루터기는 이름이 달라 남는다. */
@@ -58,4 +58,45 @@ export function polishFallenCrashClearing(project: Project, forestId: string): v
     map.upperTiles[y * W + x] = t;
     if (wide) map.upperTiles[y * W + x + 1] = t + 1;
   }
+}
+
+/**
+ * 떨어진 별(은빛 관)에 언제든, 관 둘레 어느 칸에서든 말을 걸 수 있게 한다 — 모든 숲·이야기 단계 뒤(chronoBell.ts, 빈터 마감 다음).
+ *
+ * 사용자 신고(1.26 운영, 2026-11-01): 「그 운석 ..? 그 관이라고해야하나 그거 말을 걸수가 없는데」. 원인 둘:
+ * 1. 조사 칸은 관 그림(3×2, 조사 칸 바로 위) 아래 한 칸뿐이었다 — 관 그림 옆·위에서 관을 보고 눌러도 아무 일이 없었다.
+ *    몸 사각(footprint 3×3, 조사 칸이 아랫줄 가운데)을 관 그림까지 넓힌다. 우선순위는 그대로 «아래»라 통행은 바뀌지 않는다.
+ * 2. 퍼즐 쪽은 숲지기 브람에게 먼저 말을 걸어야(sw_fs_main_step0) 켜졌고, 그 전·주 퀘스트 전에는 쪽이 아예 없었다 — 숲길의 브람을
+ *    지나쳐 공터로 바로 오면 관은 «없는 것»이었다. 브람 없이 와도 같은 퍼즐을 열고(브람 단계도 함께 마친다), 그 밖의 때는 짧은 한 줄.
+ */
+export function makeFallenPodExaminable(project: Project, forestId: string): void {
+  const map = project.maps[forestId];
+  const pod = map?.events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
+  if (!map || !pod?.pages?.length) return;
+  const STEP0 = "sw_fs_main_step0";
+  const active = pod.pages.find((p) => p.conditions.some((c) => c.kind === "switch" && c.switchId === STEP0 && c.value === true));
+  if (!active) throw new Error("[fallen-star act1] 떨어진 별 퍼즐 쪽(브람 뒤)을 찾지 못했다");
+  const narrate = (body: string): Command => ({ kind: "text", body } as Command);
+  const base = { graphic: { transparent: true }, trigger: { kind: "action" as const }, priority: "below" as const, overlapForbidden: false, movement: active.movement };
+  // 브람 없이 온 때 — 브람 단계(진행 스위치·진행 변수)를 마치고 같은 퍼즐로. 브람 뒤 쪽보다 앞에 두어 그 쪽이 이긴다.
+  const early: EventPage = {
+    ...structuredClone(active),
+    id: `${active.id}_early`,
+    name: "떨어진 별(브람 전)",
+    conditions: active.conditions.filter((c) => !(c.kind === "switch" && c.switchId === STEP0)) as EventPage["conditions"],
+    commands: [
+      { kind: "setSwitch", switchId: STEP0, value: true } as Command,
+      { kind: "setVariable", variableId: "var_fs_main_progress", op: "+=", value: 1 } as Command,
+      ...structuredClone(active.commands),
+    ],
+  };
+  // 주 퀘스트 전 — 조건 없는 맨 앞 쪽(다른 쪽이 하나도 안 맞을 때만).
+  const idle: EventPage = {
+    ...base, id: `${pod.id}_idle`, name: "떨어진 별(퀘스트 전)", conditions: [],
+    commands: [narrate("그을린 구덩이에 사람 키만 한\n은빛 알이 박혀 있다. 아직 뜨겁다.")],
+  } as EventPage;
+  pod.pages = pod.pages.filter((p) => p.id !== early.id && p.id !== idle.id);
+  pod.pages.splice(pod.pages.indexOf(active), 0, early);
+  pod.pages.unshift(idle);
+  for (const page of pod.pages) page.footprint = { width: 3, height: 3 };
 }

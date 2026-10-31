@@ -1,5 +1,6 @@
 import type { PlaySceneContext, RuntimeTimer } from "@/player/playSceneTypes";
 import type { BattleEventStateSnapshot } from "@/battle/types";
+import type { Condition, GameMap } from "@/project/types";
 
 const DEFAULT_TIMER_ID = "timer1";
 
@@ -29,16 +30,44 @@ export function applyTimerStep(scene: PlaySceneContext, step: TimerStep): void {
   }
 }
 
-export function updateRuntimeTimers(scene: PlaySceneContext, deltaMs: number): void {
+/** 흐르는 타이머를 깎는다. 화면에 보이는 초(session.timers)가 하나라도 바뀌었으면 true — 타이머 조건 페이지를 다시 골라야 한다. */
+export function updateRuntimeTimers(scene: PlaySceneContext, deltaMs: number): boolean {
+  let changed = false;
   for (const [id, timer] of scene.runtimeTimers.entries()) {
     if (!timer.active) continue;
     timer.remaining = Math.max(0, timer.remaining - deltaMs / 1000);
-    scene.session.timers[id] = displaySeconds(timer);
+    const shown = displaySeconds(timer);
+    if (scene.session.timers[id] !== shown) changed = true;
+    scene.session.timers[id] = shown;
     if (timer.remaining === 0) {
       timer.active = false;
       recordTimerActive(scene.session, id, false);
+      changed = true;
     }
   }
+  return changed;
+}
+
+function conditionUsesTimer(condition: Condition | undefined): boolean {
+  if (!condition) return false;
+  if (condition.kind === "timer") return true;
+  if (condition.kind === "all" || condition.kind === "any") return condition.conditions.some(conditionUsesTimer);
+  if (condition.kind === "not") return conditionUsesTimer(condition.condition);
+  return false;
+}
+
+const timerPagesByMap = new WeakMap<GameMap, readonly { readonly eventId: string; readonly pageId: string; readonly auto: boolean }[]>();
+
+/** 이 맵에서 타이머 조건을 가진 이벤트 페이지(맵 객체마다 한 번 센다). */
+export function timerConditionPages(map: GameMap): readonly { readonly eventId: string; readonly pageId: string; readonly auto: boolean }[] {
+  let pages = timerPagesByMap.get(map);
+  if (!pages) {
+    pages = (map.events ?? []).flatMap((event) => (event.pages ?? [])
+      .filter((page) => (page.conditions ?? []).some(conditionUsesTimer))
+      .map((page) => ({ eventId: event.id, pageId: page.id, auto: page.trigger?.kind === "auto" })));
+    timerPagesByMap.set(map, pages);
+  }
+  return pages;
 }
 
 export function runtimeTimerActivity(timers: ReadonlyMap<string, RuntimeTimer>): Record<string, boolean> {

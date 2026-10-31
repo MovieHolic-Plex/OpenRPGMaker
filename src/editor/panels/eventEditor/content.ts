@@ -1,6 +1,7 @@
 import { commandSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { editorState } from "@/editor/editorState";
+import { showConfirm } from "@/editor/ui/modal";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import {
   buildEventBeginnerTemplate,
@@ -758,7 +759,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   // 팝오버가 열릴 때마다 상태를 다시 계산한다 — 버튼이 보이는 순간이 곧 이 시점이다.
   editTools.addEventListener("toggle", () => { if (editTools.open) syncEditTools(); });
   makePopoverEscapable(editTools);
-  const toolsMenu = renderEventToolsMenu(mapId, eventId, page, actions);
+  const toolsMenu = renderEventToolsMenu(mapId, eventId, page, actions, (commands) => commandHistory.replaceAll(commands));
   makePopoverEscapable(toolsMenu);
 
   const searchCount = el("span", {
@@ -888,6 +889,7 @@ function renderEventToolsMenu(
   eventId: string,
   page: EventPage,
   actions: CommandListActions,
+  replaceAll: (commands: readonly Command[]) => void,
 ): HTMLDetailsElement {
   // 플로우차트는 여기 없다 — 보기 방식 세그먼트의 「플로우」가 칼럼 전체를 쓴다.
   const auxTools = el("div", {
@@ -899,6 +901,7 @@ function renderEventToolsMenu(
         },
         commandCount: () => page.commands.length,
       }),
+      renderScriptifyPageButton(page, replaceAll),
       el("button", {
         class: "btn event-editor-aux-tool-button",
         text: "☠ 필드 몬스터 템플릿",
@@ -922,6 +925,52 @@ function renderEventToolsMenu(
   }) as HTMLDetailsElement;
   syncAuxHosts(auxCompositeKey(mapId, eventId, page.id));
   return menu;
+}
+
+/**
+ * 「스크립트로 바꾸기」: the whole page becomes one script command with the same behavior (commandsToScript —
+ * plain calls where the game API has an exact equivalent, `game.cmd(<exact JSON>)` otherwise). Only on request;
+ * existing events are never converted automatically. Reverse: the script card's 「명령으로 풀기」.
+ */
+function renderScriptifyPageButton(page: EventPage, replaceAll: (commands: readonly Command[]) => void): HTMLButtonElement {
+  const reason = page.commands.length === 0
+    ? "이 페이지에 명령이 없습니다."
+    : page.commands.length === 1 && page.commands[0]?.kind === "script"
+      ? "이미 스크립트 하나입니다."
+      : undefined;
+  const button = el("button", {
+    class: "btn event-editor-aux-tool-button",
+    text: "{ } 스크립트로 바꾸기",
+    attrs: { type: "button", title: reason ?? "이 페이지의 명령 전체를 같은 동작의 스크립트 하나로 바꿉니다. 되돌리기 한 번으로 돌아옵니다." },
+    dataset: { testid: "event-command-toolbar-scriptify" },
+    on: {
+      click: () => {
+        if (reason) return;
+        void (async () => {
+          const [{ commandsToScript }, compile] = await Promise.all([import("@/editor/script/eventToScript"), import("@/editor/script/compile")]);
+          await compile.prepareScriptCompiler();
+          const converted = commandsToScript(page.commands);
+          const result = compile.compileScript(converted.source, { project: store.getCurrent(), mapId: editorState.get().currentMapId ?? undefined });
+          if (!result.ok) {
+            await showConfirm({ title: "스크립트로 바꾸지 못했습니다", message: "바꾼 코드가 검사를 통과하지 못해 그대로 두었습니다.", confirmLabel: "확인" });
+            return;
+          }
+          const ok = await showConfirm({
+            title: "스크립트로 바꾸기",
+            message: `명령 ${converted.translated + converted.passthrough}개를 스크립트 하나로 바꿉니다. 동작은 같습니다(그대로 옮긴 명령 ${converted.passthrough}개). 되돌리기로 돌아올 수 있습니다.`,
+            confirmLabel: "바꾸기",
+          });
+          if (!ok) return;
+          replaceAll([compile.scriptCommandFields(converted.source, result, "이 페이지 (스크립트로 바꿈)")]);
+        })();
+      },
+    },
+  }) as HTMLButtonElement;
+  if (reason) {
+    button.setAttribute("aria-disabled", "true");
+    button.style.opacity = "0.5";
+  }
+  return button;
 }
 
 function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {

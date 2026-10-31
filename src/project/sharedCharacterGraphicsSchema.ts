@@ -31,7 +31,18 @@ export function parseSharedCharacterGraphicsDocument(value: unknown): CharacterG
     return Object.keys(left).length === Object.keys(right).length
       && Object.keys(left).every(key => equal(left[key], right[key]));
   };
-  const mappings = document.mappings.map(row => corrections.mappings.find(change => equal(row, change.before))?.after ?? row);
+  // revisions: 번들 행을 다시 고친 기록(2026-10-31 다른 시트 얼굴을 빌리던 근사 짝 8칸 끊기). 옛 행 → 새 행으로 한 단계씩 따라간다.
+  const mappingChanges = [...corrections.mappings, ...corrections.revisions];
+  const upgrade = (row: (typeof document.mappings)[number]) => {
+    let current = row;
+    for (let step = 0; step < 4; step++) {
+      const next = mappingChanges.find(change => equal(current, change.before))?.after;
+      if (!next) break;
+      current = next as unknown as typeof row;
+    }
+    return current;
+  };
+  const mappings = document.mappings.map(upgrade);
   const faces = document.faces.map(row => corrections.faces.find(change => equal(row, change.before))?.after ?? row);
   // 번들이 나중에 더한 현대 연애 칩 짝(2026-10-16 흉상·전신): 호스트에 이미 저장된 옛 대응표에는 이 행이 없다 — 없는 행만 채운다.
   // 사용자가 같은 칸을 이미 고쳐 두었으면(행이 있으면) 건드리지 않는다.

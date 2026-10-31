@@ -60,6 +60,11 @@ export interface PiAssistantV2Env {
    * 없으면(시험·덤프) load_tools 는 도구 글만 돌려준다.
    */
   readonly declareTool?: (tool: PiToolShape) => void;
+  /**
+   * "call_tool" 이면 실은 도구가 모델의 도구 목록에 나타나지 않는다(로컬 CLI 도구 목록 고정 — src/ai/piAgent/cliToolFreeze.ts).
+   * load_tools 는 매개변수 모양을 결과 글로 주고, 모델은 call_tool{name, args} 로 부른다.
+   */
+  readonly lazyToolsVia?: "call_tool";
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }

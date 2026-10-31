@@ -141,8 +141,39 @@ function partyOf(project: Project): { ids: string[]; level: number; hp: number }
   return hp > 0 ? { ids, level, hp } : undefined;
 }
 
+/**
+ * 사본 무리가 들고 가는 적 참조(전투 이벤트 페이지 조건·명령, 손님 합류 조건, 전투 뒤 명령)를 사본 적 id 로 바꾼다.
+ * 왜(2026-10-31 script-ab sab-1031 던전 1회차 A·B 둘 다): 무리만 사본으로 바꾸고 페이지의 `enemyHpBelow` enemyId 는 원본을 가리켜,
+ * 보스 반피 대사가 끝내 안 떴다(전투에 원본 적이 없으니 조건이 영원히 거짓).
+ */
+function remapEnemyRefs(node: unknown, copies: ReadonlyMap<string, string>): void {
+  walk(node, (obj) => {
+    if (typeof obj.enemyId === "string" && copies.has(obj.enemyId)) obj.enemyId = copies.get(obj.enemyId);
+    if (Array.isArray(obj.enemyIds)) obj.enemyIds = obj.enemyIds.map((id) => (typeof id === "string" ? copies.get(id) ?? id : id));
+  });
+}
+
+/**
+ * 이 수정 전에 만든 길 사본 무리도 고친다 — 사본 적 `enemy_path_<무리>_<꼬리>` 의 원본(`enemy_<꼬리>` 또는 `<꼬리>`)을 가리키는 참조를 사본으로.
+ * 되풀이 안전: 이미 바꾼 참조는 사본 id 라 다시 맞지 않는다.
+ */
+export function repairPathTroop(project: Project, troop: Project["database"]["troops"][number]): void {
+  const prefix = `enemy_path_${troop.id.slice(PATH_TROOP_PREFIX.length)}_`;
+  const made = new Map<string, string>();
+  for (const copyId of new Set(troop.enemyIds ?? [])) {
+    if (!copyId.startsWith(prefix)) continue;
+    const tail = copyId.slice(prefix.length);
+    const original = [`enemy_${tail}`, tail].find((id) => project.database.enemies.some((e) => e.id === id));
+    if (original) made.set(original, copyId);
+  }
+  if (!made.size) return;
+  remapEnemyRefs(troop.battleEventPages, made);
+  remapEnemyRefs(troop.battleGuests, made);
+  remapEnemyRefs(troop.afterBattle, made);
+}
+
 /** 무리를 길 사본으로(이미 사본이면 그대로). 사본 적은 무리마다 따로 — 같은 적이 다른 몫의 무리에 있어도 서로 안 건드린다. */
-function pathCopy(project: Project, troopId: string): string | undefined {
+export function pathCopy(project: Project, troopId: string): string | undefined {
   if (troopId.startsWith(PATH_TROOP_PREFIX)) return troopId;
   const source = project.database.troops.find((t) => t.id === troopId);
   if (!source) return undefined;
@@ -162,6 +193,9 @@ function pathCopy(project: Project, troopId: string): string | undefined {
   (clone as { id: string }).id = id;
   (clone as { enemyIds: string[] }).enemyIds = (source.enemyIds ?? memberIds).map((e) => copies.get(e) ?? e);
   if (source.members?.length) (clone as { members: unknown[] }).members = source.members.map((m) => ({ ...m, enemyId: copies.get(m.enemyId) ?? m.enemyId }));
+  remapEnemyRefs(clone.battleEventPages, copies);
+  remapEnemyRefs(clone.battleGuests, copies);
+  remapEnemyRefs(clone.afterBattle, copies);
   project.database.troops.push(clone);
   return id;
 }
@@ -190,6 +224,7 @@ function pathSkillCopies(project: Project, copyId: string): string {
 
 export function fitPathBattlesIn(project: Project): string[] {
   if (!project.gameBlueprint || project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
+  for (const troop of project.database.troops) if (troop.id.startsWith(PATH_TROOP_PREFIX)) repairPathTroop(project, troop);
   const party = partyOf(project);
   if (!party) return [];
   const notes: string[] = [];

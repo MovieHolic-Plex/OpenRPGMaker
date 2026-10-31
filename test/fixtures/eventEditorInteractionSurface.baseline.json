@@ -25078,21 +25078,32 @@
    "testids": [
     "event-command-edit-summary",
     "script-api-reference",
+    "script-card-status",
     "script-compile-status",
     "script-diagnostics",
     "script-help",
+    "script-lines-panel",
     "script-name-input",
-    "script-source-input"
+    "script-source-input",
+    "script-tab-code",
+    "script-tab-lines",
+    "script-unwrap",
+    "script-unwrap-reason"
    ],
    "classes": [
+    "btn",
     "cream-command-form",
     "cream-command-form-head",
     "empty-hint",
     "rich-command-form",
-    "rich-form-row",
     "script-api-group",
     "script-api-list",
     "script-api-reference",
+    "script-card-header",
+    "script-card-panel",
+    "script-card-status",
+    "script-card-tabs",
+    "script-card-unwrap",
     "script-command-form",
     "script-compile-status",
     "script-diagnostics",
@@ -25100,19 +25111,26 @@
    ],
    "controls": {
     "script-name-input": "input[text]{}",
-    "script-source-input": "textarea{}"
+    "script-source-input": "textarea{hidden,nodisplay}",
+    "script-tab-code": "button{}",
+    "script-tab-lines": "button{}",
+    "script-unwrap": "button{disabled}"
    },
    "selectOptions": {},
    "labels": [
-    "game API 목록"
+    "game API 목록",
+    "명령으로 풀기",
+    "줄",
+    "코드"
    ],
    "tags": {
+    "button": 3,
     "code": 56,
     "details": 1,
-    "div": 16,
+    "div": 21,
     "input": 1,
     "li": 56,
-    "span": 63,
+    "span": 61,
     "summary": 1,
     "textarea": 1,
     "ul": 13
@@ -25120,27 +25138,38 @@
    "tagByTestid": {
     "event-command-edit-summary": "div",
     "script-api-reference": "details",
+    "script-card-status": "span",
     "script-compile-status": "div",
     "script-diagnostics": "ul",
     "script-help": "span",
+    "script-lines-panel": "div",
     "script-name-input": "input",
-    "script-source-input": "textarea"
+    "script-source-input": "textarea",
+    "script-tab-code": "button",
+    "script-tab-lines": "button",
+    "script-unwrap": "button",
+    "script-unwrap-reason": "span"
    },
    "texts": {
     "event-command-edit-summary": "스크립트 (TypeScript)"
    },
-   "testidCount": 7,
-   "controlCount": 2
+   "testidCount": 13,
+   "controlCount": 5
   },
   "classes": [
+   "btn",
    "cream-command-form",
    "cream-command-form-head",
    "empty-hint",
    "rich-command-form",
-   "rich-form-row",
    "script-api-group",
    "script-api-list",
    "script-api-reference",
+   "script-card-header",
+   "script-card-panel",
+   "script-card-status",
+   "script-card-tabs",
+   "script-card-unwrap",
    "script-command-form",
    "script-compile-status",
    "script-diagnostics",

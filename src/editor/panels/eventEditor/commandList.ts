@@ -1,6 +1,6 @@
 import { jsonEqual } from "@/util/structuralJson";
 import { clearChildren, el } from "@/util/dom";
-import { t } from "@/i18n";
+import { getLocale, t } from "@/i18n";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
@@ -8,9 +8,11 @@ import { handleCommandShortcut, openCommandContextMenu } from "./commandListCont
 import { readEventCommandsClipboard } from "./commandClipboard";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
+import { renderScriptLines, richLineText, shortArmLabel } from "./scriptLines";
 import { renderEditorIcon } from "./editorIcons";
 import { brokenCommandDigest } from "./storyboardView";
-import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
+import { commandSummaryParts, forkSentenceParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
+import { shortRecordName } from "@/editor/shortRecordName";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   CHARSET_FRAME_HEIGHT,
@@ -365,11 +367,86 @@ function renderCommandItem(
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
   item.append(head, commandActions(path, actions));
+  if (cmd.kind === "script") appendScriptReading(head, cmd, path);
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
   attachItemDropHandlers(item, path, path.slice(0, -1), actions);
   return item;
+}
+
+/** Paths whose script code the author opened with the row's 「코드」 toggle (kept across list re-renders). */
+const openScriptCode = new Set<string>();
+
+/**
+ * A script row reads like event lines: read-only lines right under it (scriptLines.ts), the code behind a small
+ * 「코드」 toggle. Clicking the lines selects the script row; double-clicking opens its editor.
+ */
+function appendScriptReading(head: HTMLElement, cmd: Extract<Command, { kind: "script" }>, path: number[]): void {
+  const key = JSON.stringify(path);
+  const lines = renderScriptLines(cmd, () => store.getCurrent(), { summarize: renderCommandSummary });
+  lines.style.setProperty("margin", "0 0 4px 0");
+  lines.style.setProperty("padding-left", `calc(var(--cmd-depth, 0) * 18px + 64px)`);
+  lines.style.setProperty("cursor", "default");
+  lines.addEventListener("click", () => head.click());
+  lines.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    head.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+  });
+  const code = el("pre", {
+    class: "cmd-script-code",
+    text: cmd.source,
+    attrs: { translate: "no" },
+    dataset: { testid: "event-command-script-code" },
+  });
+  for (const [prop, value] of Object.entries({
+    margin: "0 8px 6px calc(var(--cmd-depth, 0) * 18px + 64px)",
+    padding: "6px 8px",
+    background: "var(--bg-inset, #f4efe4)",
+    border: "1px solid var(--border-default, #d9d0bd)",
+    "border-radius": "6px",
+    "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    "font-size": "12px",
+    "line-height": "1.5",
+    "white-space": "pre",
+    overflow: "auto",
+    "max-height": "320px",
+  })) code.style.setProperty(prop, value);
+  const toggle = el("button", {
+    class: "cmd-script-code-toggle",
+    text: "코드",
+    attrs: { type: "button", title: "스크립트 코드 보기·숨기기" },
+    dataset: { testid: "event-command-script-code-toggle" },
+  });
+  for (const [prop, value] of Object.entries({
+    "margin-left": "6px",
+    padding: "0 6px",
+    height: "20px",
+    border: "1px solid var(--border-default, #d9d0bd)",
+    "border-radius": "4px",
+    background: "var(--bg-raised, #fffdf7)",
+    color: "var(--text-2, #6b6457)",
+    "font-size": "11px",
+    "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    cursor: "pointer",
+    "flex-shrink": "0",
+  })) toggle.style.setProperty(prop, value);
+  const sync = (): void => {
+    const open = openScriptCode.has(key);
+    code.style.display = open ? "block" : "none";
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.style.setProperty("color", open ? "var(--accent, #4A57D6)" : "var(--text-2, #6b6457)");
+  };
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (openScriptCode.has(key)) openScriptCode.delete(key);
+    else openScriptCode.add(key);
+    sync();
+  });
+  toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+  sync();
+  head.append(toggle);
+  head.after(lines, code);
 }
 
 /**
@@ -443,9 +520,27 @@ function renderBrokenCommandRow(cmd: Command, path: number[], actions: CommandLi
   return item;
 }
 
+/** `\V[n]` / `\V[var_id]` in a message reads as the variable's «short name» chip in the list. */
+function resolveTextCodes(text: string): string {
+  if (!text.includes("\\V[") && !text.includes("\\v[")) return text;
+  const variables = store.getCurrent().variables;
+  return text.replace(/\\[Vv]\[([^\]]+)\]/gu, (whole, ref: string) => {
+    const key = ref.trim();
+    // \V[12] is slot var_0012 (player/dialogue.ts resolveVariable); \V[var_price] is the id itself
+    const id = /^\d+$/u.test(key) ? `var_${key.padStart(4, "0")}` : key;
+    const record = variables.find((entry) => entry.id === id || entry.id === key);
+    const name = record?.name?.trim();
+    return name ? `«${shortRecordName(name)}»` : whole;
+  });
+}
+
 function renderCommandSummary(cmd: Command): HTMLElement {
   const summary = el("span", { class: "cmd-kind" });
-  for (const part of commandSummaryParts(cmd)) {
+  // Fork rows read as a sentence in the list: 「만약 돈이 35 이상이면」 (commandSummary text stays 「조건 분기: …」).
+  // Korean only — the sentence is built from parts the DOM translator cannot match, so other locales keep the
+  // catalogued 「조건 분기: …」 wording.
+  const parts = cmd.kind === "fork" && getLocale() === "ko" ? forkSentenceParts(cmd) : commandSummaryParts(cmd);
+  for (const part of parts) {
     // 아이콘 토큰은 텍스트 대신 16px 이미지로 렌더. URL 을 못 찾으면 조용히 생략한다.
     if (isSummaryIconPart(part)) {
       const icon = renderSummaryIcon(part.resourceId);
@@ -458,7 +553,12 @@ function renderCommandSummary(cmd: Command): HTMLElement {
       if (visual) summary.append(visual);
       continue;
     }
-    summary.append(el("span", { class: `cmd-summary-token ${part.tone}`, text: part.text }));
+    const hint = "hint" in part ? part.hint : undefined;
+    const text = resolveTextCodes(part.text);
+    const token = el("span", { class: `cmd-summary-token ${part.tone}`, ...(hint ? { attrs: { title: hint } } : {}) });
+    if (text.includes("«")) token.append(...Array.from(richLineText(text).childNodes));
+    else token.textContent = text;
+    summary.append(token);
   }
   return summary;
 }
@@ -565,7 +665,8 @@ function* appendCommandChildren(
   // «주소를 못 매기는» 분기였다 — 런타임은 실행하는데 목록에는 줄이 안 났다.
   for (const branch of eventCommandBranches(cmd)) {
     const branchPath = [...path, branch.branchIndex];
-    appendCommandNode(host, renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
+    // 「조건이 맞을 때 / 맞지 않을 때」 → 「그러면 / 아니면」 (list wording only; the branch data and other views keep theirs)
+    appendCommandNode(host, renderBranchDropLine(shortArmLabel(branch.label), depth, branch.tone, branchPath, actions));
     yield;
     if (branch.commands.length === 0) {
       appendCommandNode(host, renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
@@ -680,6 +781,12 @@ function openCommandEditModal(cmd: Command, path: number[], actions: CommandList
     lockKind: true,
     previewFace,
     onApply: (edited) => actions.replaceCommand(path, edited),
+    // 「명령으로 풀기」: the script line becomes the converted commands at the same place.
+    onExpand: (commands) => {
+      actions.deleteCommand(path);
+      if (actions.insertCommands) actions.insertCommands(path, commands);
+      else [...commands].reverse().forEach((command) => actions.insertCommand(path, command));
+    },
   });
 }
 
