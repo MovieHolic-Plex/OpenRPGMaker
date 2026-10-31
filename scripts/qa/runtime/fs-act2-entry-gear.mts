@@ -16,7 +16,12 @@ const BEST: Record<string, Record<string, string>> = {
   actor_hero: { weapon: "equip_fs_spear_star", armor: "equip_gen_armor_plate", helmet: "equip_gen_helm_iron", shield: "equip_gen_shield_iron" },
   actor_fs_elena: { weapon: "equip_gen_staff_crystal", armor: "equip_gen_robe_mage", helmet: "equip_mage_hat" },
 };
-const EARLY = new Set(["fs2_hub_night", "map_field_north_1"]); // 로한의 창(B4) 전
+// GEAR=armor 이면 방어구만, GEAR=weapon 이면 무기만 바꾼다(어느 쪽이 쉬워지게 하는지 가르기).
+const only = process.env.GEAR;
+for (const eq of Object.values(BEST)) for (const slot of Object.keys(eq)) {
+  if ((only === "armor" && slot === "weapon") || (only === "weapon" && slot !== "weapon")) delete eq[slot];
+}
+const EARLY = new Set(["fs2_hub_night"]); // 로한의 창(B4) 전 — 그 뒤는 lib 이 카엘에게 로한의 창을 쥐여 준다
 const run = (gear: "base" | "best") => {
   const out: Record<string, number> = {};
   for (const early of [true, false]) {
