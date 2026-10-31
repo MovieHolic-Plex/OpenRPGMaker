@@ -32,7 +32,7 @@ import { normalizeSpeakerDialogueProfile } from "@/project/dialogueStyles";
 const DIRECTIONS = ["down", "left", "right", "up"] as const satisfies readonly Dir[];
 const RESOURCE_KINDS = [
   "chipset", "charset", "battle", "battleCharset", "battleWeapon", "backdrop",
-  "gameOver", "monster", "faceset", "picture", "movie", "system", "system2", "title", "music", "sound",
+  "gameOver", "monster", "faceset", "picture", "movie", "system", "system2", "title", "music", "sound", "icon",
 ] as const satisfies readonly ResourceKind[];
 const SEASONS = ["spring", "summer", "fall", "winter"] as const;
 

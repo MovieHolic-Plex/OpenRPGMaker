@@ -640,6 +640,13 @@ function selectControl(
     optionElement.textContent = option.label;
     select.append(optionElement);
   }
+  // 목록 밖 #rrggbb 를 받는 필드(섬광 색)는 지금 값을 그대로 한 줄로 보여 준다 — 비우면 저장 때 사라진다.
+  if (spec.allowHex && /^#[0-9a-f]{6}$/iu.test(value) && !(spec.options ?? []).some((option) => option.value === value)) {
+    const custom = document.createElement("option");
+    custom.value = value;
+    custom.textContent = value;
+    select.append(custom);
+  }
   select.value = value;
   select.addEventListener("change", () => updateField(context, cmd, spec.key, select.value));
   return select;

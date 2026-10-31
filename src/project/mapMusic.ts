@@ -71,3 +71,20 @@ export function resolveMapBgm(
   return fallback ? { kind: "play", resourceId: fallback } : { kind: "silence" };
 }
 
+
+/** 맵 환경음(BGS) 해석 결과. keep = 맵에 설정이 없다(지금 흐르는 환경음을 그대로 둔다). */
+export type MapBgsResolution =
+  | { readonly kind: "play"; readonly resourceId: string; readonly volume?: number }
+  | { readonly kind: "silence" }
+  | { readonly kind: "keep" };
+
+/** 맵 진입 시 환경음. BGM 과 달리 상속·프로젝트 기본이 없다 — 설정이 없는 맵은 앞 환경음을 이어 간다. */
+export function resolveMapBgs(project: Pick<Project, "maps">, mapId: MapId): MapBgsResolution {
+  const setting = project.maps[mapId]?.bgs;
+  if (!setting) return { kind: "keep" };
+  if (setting.mode === "none") return { kind: "silence" };
+  const resourceId = setting.resourceId?.trim();
+  if (setting.mode !== "custom" || !resourceId) return { kind: "keep" };
+  const volume = typeof setting.volume === "number" && Number.isFinite(setting.volume) ? Math.min(100, Math.max(0, setting.volume)) : undefined;
+  return volume === undefined ? { kind: "play", resourceId } : { kind: "play", resourceId, volume };
+}

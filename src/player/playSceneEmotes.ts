@@ -9,6 +9,7 @@ import {
   type EmoteKind,
 } from "@/project/emotes";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 // 이모트는 캐릭터(same=200k+)와 above 이벤트(300k+) 위에 떠야 한다. 맵 애니메이션과 같은 층에
 // 두면 above 가구에 가려 정수리가 잘린다 — characterDepth.ts 의 depth 표 참고.
@@ -60,6 +61,8 @@ export function showSceneEmote(
 ): void {
   const host = hostSprite(scene, target);
   if (!host || !scene.textures.exists(EMOTE_TEXTURE_KEY)) return;
+  // 감정 표시 소리(emote-<종류> 자리). 자리가 비어 있으면 아무 소리도 없다 — 옛 게임 그대로.
+  playProjectSeCue(`emote-${emote}`);
 
   clearSceneEmote(scene, target);
 

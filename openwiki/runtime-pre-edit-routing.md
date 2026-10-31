@@ -1212,6 +1212,12 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 `act<n>`/`chapter<n>`(`endingSegmentOf`). 엔딩마다 덮기: `EndingPresentation.badge`·`finalTitle`(각 40자, `kicker` 도 40자 상한)
 — 엔딩 정의 presentation 과 ending 명령 presentation 둘 다, 검증 `validateEndingPresentation`, 조수 `define_ending` 스키마. 게임 오버 화면 글자는 이번 범위 밖이다.
 
+**에필로그는 한 번만 읽힌다 (2026-10-31).** 엔딩 CG 카드(`buildEndingCg`)는 저작 메시지가 비면 `define_ending.epilogue` 의 say 비트를
+요약(`endingSummaryText`)으로 싣는다. 그런데 `triggerEnding` 은 그 에필로그를 먼저 대사창으로 한 줄씩 보인 뒤 카드를 띄우므로 같은 글이
+두 번 나왔다(첫사랑 r5 엔딩 A). 에필로그에 글(text 명령)이 있으면 인터프리터가 마지막 `ending` 명령을 `ENDING_AFTER_EPILOGUE` WeakSet 으로
+표시하고, `returnToTitle` 단계의 `epiloguePlayed` → `showEndingScreen(…, epiloguePlayed)` 로 넘겨 카드는 배지·kicker·제목만 남긴다.
+에필로그가 그림뿐이거나 검증에 실패해 대사가 하나도 안 나왔으면 예전처럼 요약을 싣는다. 저작 `message` 는 늘 싣는다.
+
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 
 - **옵트인 저작.** `meta.oprnDialogueSystem`(순수 모듈 `src/project/dialogueSystem.ts`)이 없고 관계 중심 게임도 아니면 대사창·ESC 메뉴·설정 화면은 예전과 바이트 단위로 같다(예전 hover 「기록」 단추·세션 로그 포함, 설정은 8줄 그대로). 켜지면 `dialogue.ts` 가 단축키(오토 A · 스킵 S · 백로그 L/PageUp/휠 위 · 숨기기 H, Ctrl 누르는 동안 스킵)와 `dialogueBacklogView`(전체 화면, 휠·방향키·Esc, 캡처 단계에서 키를 삼킴)를 붙인다.

@@ -435,7 +435,7 @@ function itemRow(input: {
 function itemIcon(item: ItemRecord | undefined): HTMLElement {
   const icon = el("span", { class: "runtime-chest-item-icon" });
   const resourceId = item?.iconResourceId ?? item?.imageResourceId;
-  const url = resourceId ? resolveAssetResourceUrl(resourceId) : undefined;
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : undefined;
   if (url) {
     icon.style.backgroundImage = `url("${url}")`;
   } else {
