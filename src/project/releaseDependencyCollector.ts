@@ -23,6 +23,7 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
   for (const map of Object.values(project.maps)) {
     if (map.background) optionalMapResources.set(map.background, "imageId");
     if (map.bgm) optionalMapResources.set(map.bgm, "resourceId");
+    if (map.bgs) optionalMapResources.set(map.bgs, "resourceId");
   }
   const resolve = (id: unknown, commandResource = false): void => {
     if (typeof id !== "string") throw new Error("Invalid authored resource reference");
