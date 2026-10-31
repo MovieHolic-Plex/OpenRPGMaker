@@ -83,7 +83,10 @@ def call(n):
         try:
             text, u, mdl = "", {}, None
             if arm == "argon":   # the 8318 relay hangs on streamed Argon answers: plain request
-                j = json.load(urllib.request.urlopen(urllib.request.Request(OCX, json.dumps({**json.loads(body), "stream": False, "stream_options": None}).encode(), HDR), timeout=1800))
+                # and it drops content arrays (images included: prompt_tokens 13, empty answer) — send the text only (the terrain grid and
+                # the catalog sizes are in the text; the two images are not)
+                tm = [{"role": m["role"], "content": m["content"] if isinstance(m["content"], str) else "\n".join(c["text"] for c in m["content"] if c.get("type") == "text")} for m in msgs]
+                j = json.load(urllib.request.urlopen(urllib.request.Request(OCX, json.dumps({"model": MODEL, "messages": tm, "reasoning_effort": "high"}).encode(), HDR), timeout=1800))
                 text, u, mdl = (j["choices"][0]["message"].get("content") or ""), j.get("usage") or {}, j.get("model")
                 if not text.strip(): raise RuntimeError("empty answer")
                 break
