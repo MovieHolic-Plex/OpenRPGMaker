@@ -166,14 +166,14 @@ export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_tower_moths: 1.97,
   troop_fs2_tower_bats: 3.38,
   troop_fs2_tower_spiders: 1.94,
-  troop_fs2_tower_snakes: 1.9,
+  troop_fs2_tower_snakes: 1.75,
 };
 /** 우두머리(적 id → 배수). HP 는 1000 안팎에 묶고(√배수를 0.9~1.2 로) 나머지를 공격·마력으로. */
 export const FS_ACT2_ENTRY_ELITES: Readonly<Record<string, number>> = {
   enemy_fs2_cinder_golem: 1.9,
-  enemy_fs2_elite_warden: 4.32,
-  enemy_fs2_elite_frostmane: 1.85,
-  enemy_fs2_tower_sentinel: 1.73,
+  enemy_fs2_elite_warden: 4.97,
+  enemy_fs2_elite_frostmane: 1.8,
+  enemy_fs2_tower_sentinel: 1.78,
 };
 /**
  * 결투·보스(적 id → 배수, HP·공격·마력 √배수씩). 새라 결투 = 옛 Lv9 두 명의 기술 전투 승률 94% 를 Lv16 에서.
