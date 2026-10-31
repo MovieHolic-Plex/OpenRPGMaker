@@ -268,7 +268,10 @@
 
 /* 아이콘·이미지는 이름 한 줄보다 그림으로 고른다. 한 열 목록은 200종이 넘으면 비교가 안 된다. */
 .db-resource-picker-list.db-resource-picker-list-icons {
+  /* 줄 높이는 내용대로. 기본 auto 줄은 max-height 안에서 줄어들어 아이콘이 많으면(99개~) 한 줄이 12px 로 눌렸다. */
+  align-content: start;
   gap: 6px;
+  grid-auto-rows: max-content;
   grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
   max-height: 360px;
   padding: 6px;
@@ -284,9 +287,15 @@
 }
 
 .db-resource-picker-list.db-resource-picker-list-icons button > span:last-child {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
   font-size: 11px;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   line-height: 1.2;
   max-width: 100%;
+  min-height: 2.4em;
+  overflow-wrap: anywhere;
   white-space: normal;
 }
 
