@@ -88,8 +88,16 @@ r = subprocess.run(["claude", "-p", "--model", "claude-opus-5-5", "--effort", "m
                     "--no-session-persistence", "--strict-mcp-config", "--output-format", "json"],
                    input=prompt, capture_output=True, text=True, timeout=1800, cwd="/tmp")
 dj = json.loads(r.stdout)
-m = re.search(r"\{.*\}", dj.get("result", ""), re.S)
-out = json.loads(m.group(0))
+text = dj.get("result", "")
+out = None
+for i, ch in enumerate(text):
+    if ch != "{": continue
+    try:
+        out, _ = json.JSONDecoder().raw_decode(text[i:])
+        if isinstance(out, dict) and "checklist" in out: break
+    except ValueError:
+        continue
+if not isinstance(out, dict): sys.exit(f"judge reply had no JSON: {text[:200]}")
 out["_cost"] = dj.get("total_cost_usd")
 os.makedirs(f"{L}/judge", exist_ok=True)
 json.dump(out, open(f"{L}/judge/{arm}__{task}__{rep}.json", "w"), ensure_ascii=False, indent=1)
