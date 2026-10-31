@@ -50,6 +50,18 @@ describe("local store assets", () => {
     expect(readdirSync(join(projectDir, "assets")).some(name => name.endsWith(".pending"))).toBe(false);
   });
 
+  it("행 없이 assets/ 에만 있는 파일은 해시가 맞을 때만 찾기에서 등록한다", async () => {
+    const { createHash } = await import("node:crypto");
+    const sha256 = createHash("sha256").update(PNG_BYTES).digest("hex");
+    writeFileSync(join(projectDir, "assets", `${sha256}.png`), PNG_BYTES);
+    expect(store.listAssets()).toHaveLength(0);
+    expect(store.findAsset(sha256)).toMatchObject({ sha256, mime: "image/png", extension: "png", bytes: PNG_BYTES.byteLength });
+    expect(new Uint8Array(await store.assetBytes(sha256))).toEqual(PNG_BYTES);
+    const wrong = "0".repeat(64);
+    writeFileSync(join(projectDir, "assets", `${wrong}.png`), PNG_BYTES);
+    expect(store.findAsset(wrong)).toBeNull();
+  });
+
   it("putAsset 은 sha256 파일명으로 쓰고 같은 바이트는 한 벌만 남다", async () => {
     const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "a.png", kind: "sprite" });
     const again = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "b.png", kind: "sprite" });
