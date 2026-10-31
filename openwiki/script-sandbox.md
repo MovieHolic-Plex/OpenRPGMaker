@@ -8,9 +8,10 @@
 
 ## TL;DR
 
-- 데이터: 명령 `{ kind: "script", source, compiled, name?, summary?, effects?, sourceHash?, apiVersion? }` 와
+- 데이터: 명령 `{ kind: "script", source, compiled, name?, summary?, effects?, sourceHash?, apiVersion?, explanation? }` 와
   프로젝트 `scriptLibrary?: ScriptModule[]`(공용 모듈, `import { x } from "@lib/<id>"`). 정본은 `current_json`(SQLite) 안 —
   별도 테이블이 없다. `compiled` 를 저장하므로 **게임은 TypeScript 컴파일러 없이 돈다**.
+- `explanation`(`ScriptExplanation`): 모델이 쓴 쉬운 말 문장 1~4줄 + 예시 상황(미리 놓을 상태·답만, 결과는 편집기가 실행해서 채운다). `sourceHash` 에 묶여 있어 소스가 바뀌면 「옛 코드 기준」으로 보인다. 다시 컴파일해도 지우지 않는다(`scriptCommandFields` 넷째 인자).
 - 런타임: QuickJS-wasm(`quickjs-emscripten-core` + `@jitl/quickjs-singlefile-browser-release-sync`, wasm 내장 약 0.5MB).
   스크립트가 있는 프로젝트만 동적 import 로 받는다(`src/player/script/engine.ts`). 편집기 플레이·내보낸 플레이어·헤드리스가 같은 경로.
 - API: `game.*` 한 표(`src/project/script/apiSpec.ts` `SCRIPT_API`)가 단일 진실이다. `.d.ts`(편집기·조수 타입 검사),
@@ -34,6 +35,7 @@
 | `src/player/script/scriptLog.ts` | 개발자 로그 링 버퍼(200줄) |
 | `src/player/interpreter/scriptCommand.ts` | `script` 명령 실행·재진입·오류 표시·`disposeScriptRuns` |
 | `src/editor/script/compile.ts` | `compileScript`(transpile + 타입 검사 + 분석), `formatScriptDiagnostics`, `scriptCommandFields` |
+| `src/editor/script/dryRun.ts` | 헤드리스 실행 한 벌(`dryRunCommands`·`dryRunTranscript`) — 조수 `dry_run_script` 와 편집기 스크립트 카드의 예시 표가 같이 쓴다. 미리 놓기: 스위치·변수·돈·아이템·**시각(`hour`/`minute`, 시간 체계가 켜진 프로젝트만)**·선택지·숫자·전투 결과 |
 | `src/editor/script/analyze.ts` | 읽기/쓰기 추출·dynamic 기록·경고(모르는 id+제안, await 누락, transfer 뒤 호출)·한 줄 요약 |
 | `src/editor/script/tsEnv.ts` | TypeScript 5(`typescript5` 별칭 — 저장소 `typescript` 는 JS API 없는 TS7)와 ES2022 lib 지연 로드 |
 | `src/editor/script/tsLibSources.generated.ts` | lib.es2022 참조 폐포 57파일을 문자열로 담은 생성 모듈(약 470KB, `node scripts/content/generate-script-ts-libs.mjs`). 편집기·Bun 컴파일 조수 워커(node_modules 없음)·테스트가 같은 방법으로 읽는다 |
@@ -184,7 +186,8 @@
 - 스킬: `assistant-skills/event-scripts/SKILL.md`(언제 쓰나·API 표·규칙·고리·레버 퍼즐/할인 상점(@lib)/시간대 경비 예제) →
   `npm run assistant-skills:bundle` 로 `src/assets/assistantSkills.json`.
 - 테스트: `test/scriptTools.test.ts`.
-- 한계: `dry_run_script` 는 게임 시각을 미리 놓지 못한다(프로젝트 시작 시각). `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
+- `dry_run_script` 는 `hour`/`minute` 로 게임 시각을 미리 놓는다(시간 체계가 꺼진 프로젝트는 `game.time()` 이 늘 enabled:false 라 효과 없음).
+- 한계: `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
 
 ## 스크립트 → 명령 (명령으로 풀기)
 
