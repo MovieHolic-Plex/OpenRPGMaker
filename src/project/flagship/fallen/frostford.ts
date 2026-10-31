@@ -570,19 +570,21 @@ function lanternNight(project: Project, exec: Exec): void {
     if (L.island.has(key(b)) || !far) continue;
     if (turn || i % 7 === 0) routeLights.push(b);
   }
+  // 밤 — 0.5 남색 막은 흰 얼음 위에서 대낮처럼 밝았고, 눈발 띠가 구름 그림자처럼 화면을 어지럽혔다(첫 플레이 검수 2026-10-31).
+  // 짙은 밤(0.8)에 눈은 그친다. 길은 굽이마다 차가운 빛(routeLights)과 사당·등불이 짚는다.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.5, color: "#0d1736",
+    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.8, color: "#060c24",
     sources: [
       { id: "valen", at: { x: L.valen.x, y: L.valen.y }, radius: 3, intensity: 0.9, color: "#ffd27a", flicker: true },
       ...L.shrineLights.map((c, i) => ({ id: `shrine_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       ...L.lamps.map((l, i) => ({ id: `lamp${i}`, at: { x: l.x, y: l.y - 2 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.8, color: "#ffc070", flicker: true })),
       // 탈출길 — 지그재그 굽이마다 차가운 빛(밝은 얼음): 어디가 안전한지 밤에도 읽힌다.
-      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 2.2, intensity: 0.75, color: "#d6ecff" })),
-      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 2.4, intensity: 0.85, color: "#d6ecff" })),
+      { id: "player", at: { kind: "player" }, radius: 3.2, intensity: 0.6, color: "#9fb4ff" },
     ],
   });
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 } });
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "none" } });
 
   // 발렌 — 섬 사당 앞, 등 하나를 든 채.
   const vc = chipOf(project, "ev_fs_valen");
