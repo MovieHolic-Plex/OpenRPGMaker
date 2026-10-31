@@ -4,7 +4,7 @@ import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/run
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DIR_DELTA as STAGE_DIR_DELTA, planApproach } from "@/project/staging/approach";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import { headlessBattleSnapshot, createBattleRuntime, BattleEventInputRequiredError, type BattleResult } from "@/battle/runtime";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand } from "@/battle/types";
 import { resolveEventPage } from "@/project/io";
@@ -228,6 +228,11 @@ export type SceneStep =
   /** 대기 중인 presentItem 에 아이템을 낸다. itemId 를 생략하면 아무것도 내지 않고 닫는다. */
   | { kind: "present"; itemId?: string }
   | { kind: "retryCheckpoint" }
+  /**
+   * 다음 전투의 전투 이벤트 선택지(적 무리 전투 페이지의 choices)에 낼 답을 차례로 미리 넣는다. 0부터, -1 은 취소.
+   * 전투는 헤드리스로 끝까지 돌기 때문에 choose 로는 전투 안 선택지에 답할 수 없다 — 답이 모자라면 전투가 멈춘 자리를 알려 준다.
+   */
+  | { kind: "battleChoice"; index?: number; indices?: readonly number[] }
   | { kind: "advanceDays"; days: number }
   | SceneExpectStep;
 
@@ -427,6 +432,8 @@ interface RunnerState {
   encounterAccumulator: number;
   readonly recoverBeforeRandomEncounters: boolean;
   readonly monsterTactics: boolean;
+  /** battleChoice 로 미리 넣은 전투 이벤트 선택 답(앞에서부터 하나씩 쓴다). */
+  readonly battleChoiceAnswers: number[];
   facing: Dir;
   /** Runner-observable transcript of message text bodies shown so far. */
   readonly messages: string[];
@@ -542,6 +549,15 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
     required: ["eventId", "itemId", "count", "unitPrice"],
   },
   choose: { fields: { index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1 }, required: ["index"] },
+  battleChoice: {
+    fields: {
+      index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
+      indices: entry => Array.isArray(entry) && entry.length > 0 && entry.every((n) => typeof n === "number" && Number.isSafeInteger(n) && n >= -1),
+    },
+    extra: value => (value.index === undefined) === (value.indices === undefined)
+      ? "index(답 하나)와 indices(차례로 낼 답 배열) 중 하나만 주세요 — 예: {kind:'battleChoice',indices:[1,0]}"
+      : null,
+  },
   present: { fields: { itemId: sceneText } },
   advanceDays: { fields: { days: sceneCount }, required: ["days"] },
   expect: {
@@ -730,6 +746,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     encounterAccumulator: 0,
     recoverBeforeRandomEncounters: runnerOptions.recoverBeforeRandomEncounters === true,
     monsterTactics: runnerOptions.monsterTactics === true,
+    battleChoiceAnswers: [],
     facing: "down",
     messages: [],
     gameOver: false,
@@ -826,6 +843,10 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runGiftStep(state, step);
     case "choose":
       return runChooseStep(state, step.index);
+    case "battleChoice":
+      state.battleChoiceAnswers.push(...(step.indices ?? (step.index !== undefined ? [step.index] : [])));
+      state.log.push(`battle choice answers queued: ${state.battleChoiceAnswers.join(",")}`);
+      return null;
     case "present":
       return runPresentStep(state, step.itemId);
     case "retryCheckpoint":
@@ -2890,17 +2911,17 @@ function runHeadlessBattle(
     owned: new Set(Object.values(state.session.monsterInstances ?? {}).map((instance) => instance.speciesId)),
   } : undefined;
   for (let guard = 0; guard < 8000; guard += 1) {
-    const snapshot = headlessBattleSnapshot(runtime);
+    const snapshot = battleSnapshotAnswering(state, runtime, step.troopId);
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
-      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id, tactics);
+      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id, tactics, () => battleSnapshotAnswering(state, runtime, step.troopId));
       else runtime.tick(1000);
     } else {
       runtime.tick(1000);
     }
   }
-  const final = headlessBattleSnapshot(runtime);
+  const final = battleSnapshotAnswering(state, runtime, step.troopId);
   // 수를 두지 못해 끝나지 않은 전투도 패배로 친다 — 그 사실은 로그에 남긴다(진 이유를 「레벨 부족」으로 오판하지 않게).
   if (!final.result) state.log.push(`battle ${step.troopId}: stalled in ${final.phase} (${final.actors.map((actor) => `${actor.name} ${actor.hp}hp`).join(", ")} vs ${final.enemies.filter((enemy) => !enemy.defeated).map((enemy) => `${enemy.name} ${enemy.hp}hp`).join(", ")})`);
   const result = final.result ?? "defeat";
@@ -2920,6 +2941,40 @@ function runHeadlessBattle(
 }
 
 /**
+ * 헤드리스 전투 스냅숏 — 전투 이벤트 대사는 메시지 기록에 남기고, 전투 이벤트 선택지는 battleChoice 로 넣어 둔 답을 낸다.
+ * 답이 없으면 어디서 멈췄는지(페이지·선택지 글)를 알려 준다. 예전에는 BATTLE_EVENT_INPUT_REQUIRED 예외로 장면 시험이
+ * 통째로 죽어 「전투 중 고하기」 같은 선택 전투를 조수가 검증할 수 없었다(2026-10-31 해원 데모).
+ */
+function battleSnapshotAnswering(state: RunnerState, runtime: ReturnType<typeof createBattleRuntime>, troopId: string): ReturnType<typeof headlessBattleSnapshot> {
+  for (let guard = 0; guard < 400; guard += 1) {
+    const raw = runtime.snapshot();
+    if (raw.eventPause?.kind === "text" && raw.eventPause.body) {
+      const last = state.messages[state.messages.length - 1];
+      if (last !== raw.eventPause.body) state.messages.push(raw.eventPause.body);
+    }
+    try {
+      return headlessBattleSnapshot(runtime);
+    } catch (error) {
+      if (!(error instanceof BattleEventInputRequiredError) || !("pageId" in error.choice)) throw error;
+      const choice = error.choice;
+      if (choice.prompt) state.messages.push(choice.prompt);
+      const answer = state.battleChoiceAnswers.shift();
+      const labels = choice.options.map((option, index) => `${index}:${option.text}`).join(" / ");
+      if (answer === undefined) {
+        throw new Error(`전투 ${troopId} 페이지 ${choice.pageId} ${choice.round}라운드 선택지에 낼 답이 없습니다 — 전투 전에 {kind:"battleChoice",indices:[…]} 로 넣으세요 (${labels})`);
+      }
+      const index = answer === -1 ? cancelChoiceIndex(choice.cancelBehavior, choice.options.length) : answer;
+      if (index === null || index < 0 || (answer !== -1 && (index >= choice.options.length || choice.options[index]?.disabled))) {
+        throw new Error(`전투 ${troopId} 페이지 ${choice.pageId} 선택지에 낼 수 없는 답 ${answer} (${labels})`);
+      }
+      state.log.push(`battle ${troopId} choice ${choice.pageId}@${choice.round}: ${answer === -1 ? "취소" : `${answer} ${choice.options[index]!.text}`}`);
+      if (!runtime.resumeEventChoice(choice.id, index)) throw new Error(`전투 ${troopId} 선택지 응답이 거부됐습니다 (${choice.pageId}, ${answer})`);
+    }
+  }
+  throw new Error(`전투 ${troopId}: 선택지가 400번 넘게 이어졌습니다`);
+}
+
+/**
  * 헤드리스 전투의 한 수. 기본은 「공격」이지만 gen1(포켓몬식)은 기술이 남은 몬스터의 공격을 받지 않는다 —
  * 그러면 아무 수도 두지 못해 매 전투를 졌다(2026-09-24 몬스터 수집 도그푸딩: 스타터가 Lv3 야생에 패배).
  * 적을 때리는 기술을 위력 순으로 시도하고, 받아들여지지 않으면 다음 수로 간다.
@@ -2932,7 +2987,7 @@ interface HeadlessTactics {
 
 type HeadlessBattler = ReturnType<typeof headlessBattleSnapshot>["actors"][number];
 
-function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string, tactics?: HeadlessTactics): void {
+function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string, tactics?: HeadlessTactics, read: () => ReturnType<typeof headlessBattleSnapshot> = () => headlessBattleSnapshot(runtime)): void {
   // activeActorId 는 기록 id 다(몬스터 배틀러는 id 가 "mon:<개체>" 라 recordId·monsterInstanceId 로 찾는다).
   const matches = (actor: HeadlessBattler, id: string | undefined) => actor.id === id || actor.recordId === id || actor.monsterInstanceId === id;
   const active = snapshot.actors.find((actor) => matches(actor, snapshot.activeActorId));
@@ -2957,7 +3012,7 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     if (bestDamage(pick.battler) > bestDamage(active) * 2 + 2) {
       tactics.switches += 1;
       runtime.performActorCommand({ kind: "switch", targetActorId: pick.id });
-      if (headlessBattleSnapshot(runtime).turn !== snapshot.turn || headlessBattleSnapshot(runtime).activeActorId !== snapshot.activeActorId) return;
+      { const now = read(); if (now.turn !== snapshot.turn || now.activeActorId !== snapshot.activeActorId) return; }
     }
   }
   // 상성까지 본 예상 피해 순 — 위력만 보면 같은 풀 타입에게 반감되는 풀 기술을 고집하다 졌다(2026-10-06 몬스터 원정 1번길).
@@ -3008,7 +3063,7 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
-    const after = headlessBattleSnapshot(runtime);
+    const after = read();
     // 턴제 전투는 한 수에 적 행동까지 끝나 같은 배우의 명령 단계로 돌아온다 — 턴·타임라인이 움직였으면 받아들여진 수다.
     if (after.phase !== "actorCommand" || after.activeActorId !== snapshot.activeActorId || after.result
       || after.turn !== snapshot.turn || after.timeline.length !== snapshot.timeline.length) return;

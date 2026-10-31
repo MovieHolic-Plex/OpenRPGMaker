@@ -6,7 +6,7 @@ import type { Project, UploadedAsset } from "@/project/types";
 import { toast } from "@/util/toast";
 
 function audioReferenceMessage(project: Project, id: string): string | null {
-  const map = Object.values(project.maps).find(item => item.bgm?.resourceId === id);
+  const map = Object.values(project.maps).find(item => item.bgm?.resourceId === id || item.bgs?.resourceId === id);
   if (map) return `'${map.name}' 맵이 이 음원을 사용 중입니다.`;
   const system = project.system;
   const sounds = system.titleScreen?.sounds;

@@ -48,6 +48,8 @@ export type M2CommandFieldSpec = {
   readonly min?: number;
   readonly max?: number;
   readonly step?: number;
+  /** select 필드가 목록 밖의 #rrggbb 도 받는다(런타임 screenColorToRgb 가 이미 읽는다). */
+  readonly allowHex?: boolean;
 };
 
 export type M2CommandCatalogEntry = M2PdfCommandRow & {
@@ -490,7 +492,8 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       ];
     case "Flash Screen":
       return [
-        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
+        // 섬광 색은 이름 목록 또는 #rrggbb(차가운 푸른 섬광 #cfe0ff 등). 컷신 flash 비트 설명이 hex 를 약속하는데 검증이 거절했다(2026-10-31 「이상 없음」).
+        { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS, allowHex: true },
         { key: "value", label: "색 값", type: "text", defaultValue: "flash" },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
       ];

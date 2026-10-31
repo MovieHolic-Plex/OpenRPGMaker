@@ -52,7 +52,7 @@ import {
 import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyCharacterShadow, destroyAllCharacterShadows } from "@/player/characterShadow";
-import { startMapBgm } from "@/player/mapBgm";
+import { startMapBgm, startMapBgs } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture, withDerivedFieldFoe } from "@/player/eventSpriteResources";
 import {
   characterDepth,
@@ -246,7 +246,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   scene.session.currentMapId = mapId;
   if (options.applyDefaultLighting !== false) applyMapDefaultLighting(scene.session, scene.map);
   // 세이브 복원 경로는 저장된 BGM 을 resumeAudioState 가 되살리므로 맵 기본값으로 덮지 않는다.
-  if (options.applyMapBgm !== false) startMapBgm(project, scene.session, mapId);
+  if (options.applyMapBgm !== false) { startMapBgm(project, scene.session, mapId); startMapBgs(project, scene.session, mapId); }
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   syncPlayerCharacterScale(scene);

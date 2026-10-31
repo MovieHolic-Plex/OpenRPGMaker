@@ -19,6 +19,8 @@ import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { searchResources } from "@/assets/resourceSearch";
 import { horrorSoundFor } from "./horrorSounds";
+import { readStoreSoundMeta } from "@/assets/storeSoundMeta";
+import { rankStoreAmbience } from "@/assetStore/storeSoundPick";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
 import {
@@ -824,10 +826,18 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
             }
           }
           const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]], [/wind|바람/u, ["wind"]]];
+          // 환경음: 프로젝트에 이미 넣은 스토어 환경음(oprnSound group ambient)을 장소·날씨 낱말로 먼저 고른다 — store_find_sound{ambient} 와 같은 순위.
+          if (!resourceId && action === "bgs") {
+            const installed = Object.values(project().assets.uploaded ?? {}).flatMap((a) => {
+              const sound = a.kind === "sound" ? readStoreSoundMeta(a.meta) : null;
+              return sound?.ambient ? [{ slug: "", version: 0, assetId: a.id, name: a.name, packTitle: "", blob: "", license: "", aiGenerated: false, credits: "", sound }] : [];
+            });
+            resourceId = rankStoreAmbience(installed, { query: q }, 1)[0]?.assetId;
+          }
           const tries = [q, ...(SYN.find(([re]) => re.test(q))?.[1] ?? [])];
           const kind = action === "bgm" ? "bgm" : "se";
           if (!resourceId) for (const t of tries) { const hit = searchResources(kind, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
-          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
+          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — ${action === "bgs" ? "store_find_sound{ambient:true, query} 로 환경음을 넣거나 " : ""}list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
         }
         out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: resourceId! });
         effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : action === "bgs" ? `a looping '${b.query}' ambient sound starts under the music (stays after the scene)` : "the music stops");
@@ -984,11 +994,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     const pi = e0?.pages ? Math.max(0, e0.pages.findIndex((p) => (cd.pageId ? p.id === cd.pageId : p.name === "컷신"))) : -1;
     const pg = pi >= 0 ? e0!.pages![pi] : undefined;
     if (pg) {
-      const swapped = (pg.commands ?? []).map((c) => {
+      const swapped = (pg.commands ?? []).flatMap((c): Command[] => {
         const name = (c as { kind?: string; name?: string }).kind === "label" ? String((c as { name?: string }).name ?? "") : "";
-        if (!name.startsWith(CHOOSE_LABEL)) return c;
+        if (!name.startsWith(CHOOSE_LABEL)) return [c];
         const ch = chooses[Number(name.slice(CHOOSE_LABEL.length))];
-        return ch ? chooseCommand(run.ctx.project, ch, warnings) : c;
+        const faceFor = (who: string): string | undefined => {
+          if (!who || isHero(who)) return heroFace(run.ctx.project);
+          const id = actorIds.get(who) ?? (m0 ? findNpcByName(m0, who)?.id : undefined);
+          return id && m0 ? npcFace(m0, id) : undefined;
+        };
+        return ch ? chooseCommand(run.ctx.project, ch, warnings, faceFor) : [c];
       });
       const res = run.call("patch_event_page", { mapId, eventId: cutId, pageIndex: pi, set: { commands: swapped } });
       if (!res.ok) warnings.push(`choose: 선택지를 넣지 못했다 — ${String(res.summary).slice(0, 200)}`);
@@ -1043,17 +1058,23 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       // 「장면 뒤」 페이지도 늘어 같은 대사가 되풀이됐다(2026-10-31 씬 벤치 terra 배신 r1: add_event 네 번 → 판정 「같은 대사가 여러 번」).
       const baseCmds = (p0.commands ?? []) as unknown as { kind?: string; name?: string }[];
       const mark = baseCmds.findIndex((c) => c.kind === "label" && c.name === AFTER_SCENE_LABEL);
-      const original = mark >= 0 ? baseCmds.slice(0, mark) : baseCmds;
+      const prevAfter = mark >= 0 ? npc.pages[pick + 1] : undefined;
+      const isAfter = !!prevAfter && /\(장면 뒤\)$/u.test(String(prevAfter.name ?? "")) && (prevAfter.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+      // 첫 대화에서 뺀 상점 창은 앞 「장면 뒤」 페이지에 남아 있다 — 다시 이을 때 원래 대사에 되살린다.
+      const keptShops = isAfter ? ((prevAfter!.commands ?? []) as unknown as { kind?: string }[]).filter((c) => c.kind === "shop") : [];
+      const original = mark >= 0 ? [...baseCmds.slice(0, mark), ...keptShops] : baseCmds;
       const srcPages = npc.pages.slice();
       if (!afterLines.length) talked.commands = structuredClone(original) as unknown as typeof talked.commands;
       if (mark >= 0) {
-        // 앞 장면의 「장면 뒤」 페이지(고른 페이지 바로 뒤, 셀프 스위치 D 조건)를 걷는다 — 새 것으로 바꾼다. 원래 대사는 그 페이지에서 되살린다.
-        const prevAfter = npc.pages[pick + 1];
-        const isAfter = !!prevAfter && /\(장면 뒤\)$/u.test(String(prevAfter.name ?? "")) && (prevAfter.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+        // 앞 장면의 「장면 뒤」 페이지(고른 페이지 바로 뒤, 셀프 스위치 D 조건)를 걷는다 — 새 것으로 바꾼다.
         if (isAfter) srcPages.splice(pick + 1, 1);
         warnings.push(`'${spec.after}' 에 이어 둔 앞 장면을 이 장면으로 바꿨다(겹쳐 쌓지 않는다).`);
       }
-      const first = { ...structuredClone(p0), commands: [...structuredClone(original), { kind: "label", name: AFTER_SCENE_LABEL }, ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
+      // 상점 NPC 의 첫 대화는 상점 창을 빼고 곧장 장면으로 간다 — 상점 창이 먼저 떠 장면 도입을 가리고(판정 「시작하자마자 상점 창이 먼저」), 흥정은
+      // 정가로 산 뒤에 흥정하는 꼴이 됐다(2026-10-31 sc-narr-a1 배신·흥정). 상점은 장면 뒤 대화(afterTalk 가 없으면 원래 대사)에 남는다.
+      const opener = (original as unknown as { kind?: string }[]).filter((c) => c.kind !== "shop");
+      if (opener.length !== original.length) warnings.push(`'${spec.after}' 첫 대화에서는 상점 창을 빼고 바로 장면으로 간다(그 뒤 대화에서 상점이 열린다${afterLines.length ? " — afterTalk 를 줬으니 상점 없이 그 대사만" : ""}).`);
+      const first = { ...structuredClone(p0), commands: [...structuredClone(opener), { kind: "label", name: AFTER_SCENE_LABEL }, ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
       // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
       const pages: unknown[] = srcPages.map((pg) => structuredClone(pg));
       pages.splice(pick, 1, first, talked);
@@ -1088,17 +1109,20 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 const CHOOSE_LABEL = "v2-choose-";
 
 /** choose 비트 → choices 명령. 갈래: 대답 대사 + 돈(모자라면 «모자란다»로 끝) + 물건. 취소는 막는다(흥정 도중 빠져나가 결과가 없는 길을 없앤다). */
-function chooseCommand(project: Project, b: Extract<EventBeat, { do: "choose" }>, warnings: string[]): Command {
+function chooseCommand(project: Project, b: Extract<EventBeat, { do: "choose" }>, warnings: string[], faceFor: (who: string) => string | undefined): Command[] {
   const who = String(b.who ?? "").trim();
-  const lineCmd = (raw: string): Command => {
+  // 갈래 대사마다 말하는 사람 얼굴을 다시 건다 — 선택 앞 마지막 얼굴(주인공)이 상인 대답에 남아 있었다(시연 캡처 2026-10-31).
+  const lineCmd = (raw: string): Command[] => {
     const m = /^([^:：]{1,12})[:：]\s*(.+)$/u.exec(raw.trim());
     const speaker = m ? m[1]!.trim() : who;
     const body = m ? m[2]!.trim() : raw.trim();
-    return (isHero(speaker) || !speaker ? { kind: "text", body } : { kind: "text", speaker, body }) as Command;
+    const face = faceFor(speaker);
+    return [{ kind: "changeFace", resourceId: face ?? "", position: "left", flipHorizontally: false } as unknown as Command,
+      (isHero(speaker) || !speaker ? { kind: "text", body } : { kind: "text", speaker, body }) as Command];
   };
   const items = (project.database.items ?? []) as unknown as { id: string; name?: string }[];
   const options = b.options.filter((o) => String(o?.label ?? "").trim()).slice(0, 4).map((o) => {
-    const said = (o.lines ?? []).map((l) => String(l).trim()).filter(Boolean).map(lineCmd);
+    const said = (o.lines ?? []).map((l) => String(l).trim()).filter(Boolean).flatMap(lineCmd);
     const gain: Command[] = [];
     if (o.item) {
       const want = String(o.item).trim();
@@ -1111,11 +1135,12 @@ function chooseCommand(project: Project, b: Extract<EventBeat, { do: "choose" }>
     if (gold < 0) {
       const pay = { kind: "changeGold", op: "-=", amount: -gold } as unknown as Command;
       branch = [{ kind: "fork", condition: { kind: "gold", op: ">=", amount: -gold }, then: [pay, ...gain, ...said],
-        else: [lineCmd(`${who ? `${who}: ` : ""}돈이 모자라는군. ${-gold}G 는 있어야 해.`)] } as unknown as Command];
+        else: lineCmd(`${who ? `${who}: ` : ""}돈이 모자라는군. ${-gold}G 는 있어야 해.`) } as unknown as Command];
     } else branch = [...(gold > 0 ? [{ kind: "changeGold", op: "+=", amount: gold } as unknown as Command] : []), ...gain, ...said];
     return { text: String(o.label).trim().slice(0, 40), branch };
   });
-  return { kind: "choices", ...(b.text ? { prompt: String(b.text).trim() } : {}), options, cancelBehavior: "disallow" } as unknown as Command;
+  // 묻는 말(text)은 그 사람의 대사로 선택지 바로 앞에 띄운다(choices.prompt 는 이름·얼굴 없이 떠서 누가 묻는지 안 보였다).
+  return [...(b.text ? lineCmd(String(b.text)) : []), { kind: "choices", options, cancelBehavior: "disallow" } as unknown as Command];
 }
 
 function dirTo(from: Cell, to: Cell): Dir {
