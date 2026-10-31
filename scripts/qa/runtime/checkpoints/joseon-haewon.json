@@ -413,7 +413,7 @@
       {
        "kind": "pressUntilJs",
        "key": "Enter",
-       "fn": "() => /우리 분이가 갔소/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "fn": "() => /물결이 한 번/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '') || !!window.__oprnDebug.readState().switches.sw_jw_c1_haewon",
        "maxPresses": 30,
        "settleMs": 1300
       },
@@ -439,6 +439,84 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "inn",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_inn",
+       "x": 12,
+       "y": 7
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "sleep",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /이튿날 아침/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1300
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "morning",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /사건 一/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1300
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "end",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 6 && !document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true

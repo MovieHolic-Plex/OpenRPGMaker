@@ -39,7 +39,7 @@ export const SW = {
 } as const;
 
 /** 흐름 단계 — 설계 3절. */
-export const S = { ARRIVE: 0, TO_OFFICE: 1, CASE1: 2, C1_ACCUSED: 3, C1_NIGHT: 4, C1_DONE: 5 } as const;
+export const S = { ARRIVE: 0, TO_OFFICE: 1, CASE1: 2, C1_ACCUSED: 3, C1_NIGHT: 4, C1_DONE: 5, C1_MORNING: 6 } as const;
 
 export const JW_MAP = {
   village: "map_jw_village",
@@ -224,7 +224,8 @@ export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
   // 맵 바탕 소리·이름.
   const bgmOf: Record<string, string> = { [JW_MAP.village]: BGM.village, [JW_MAP.office]: BGM.examine, [JW_MAP.inn]: BGM.inn, [JW_MAP.shrine]: BGM.village };
   for (const [id, track] of Object.entries(bgmOf)) { const m = project.maps[id]; if (m) m.bgm = { mode: "custom", resourceId: track }; }
-  for (const id of Object.values(JW_MAP)) { const m = project.maps[id]; if (m && !m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] }; }
+  // 맵에 기본 조명을 박지 않는다 — 박으면 밤 장면(setLighting) 뒤 문을 드나들 때마다 낮으로 돌아간다(기본 조명 없는 맵은 앞 맵 조명을 잇는다).
+  for (const id of Object.values(JW_MAP)) { const m = project.maps[id]; if (m) delete m.defaultLighting; }
 
   project.startMapId = JW_MAP.village;
   project.startPos = { ...V.arrive };
@@ -286,7 +287,7 @@ function buildPrologue(project: Project, officeStep: { x: number; y: number }): 
       journal("l_c1_open", "삼월 열이틀", "노비 분이(열다섯). 지난달 마을 우물에서 건졌다. 밤마다 우물에서 운다고들 한다."),
       setVar(V_STAGE, S.CASE1),
       objective("o_office", "관아 동헌으로 간다", "complete"),
-      objective("o_well", "우물"),
+      objective("o_well", "분이가 어떻게 죽었는지 밝힌다"),
     ], { trigger: "auto" }),
     page("p_office_intro_done", [stageAtLeast(S.CASE1)], []),
   ]));
@@ -404,7 +405,7 @@ function buildCase1(project: Project): void {
         ...think("군안에서 이름을 빼 준다는 말은 누가 했나. 이방은 묻기도 전에 덮는다."),
         journal("l_c1_solved", "삼월 열사흘", "분이는 목이 졸린 뒤 우물에 던져졌다. 방앗간 정 서방이 했다. 밤에 쌀에 모래를 섞는 것을 그 아이가 봤다."),
         setVar(V_STAGE, S.C1_ACCUSED),
-        objective("o_well", "우물", "complete"),
+        objective("o_well", "분이가 어떻게 죽었는지 밝힌다", "complete"),
         objective("o_night", "밤, 우물가의 월화를 찾는다"),
       ],
       onWrong: [
@@ -414,7 +415,7 @@ function buildCase1(project: Project): void {
         ...think("손등의 자국을 보지 않았다. 그 밤 방아 소리도 묻지 않았다."),
         journal("l_c1_wrong", "삼월 열사흘", "분이 사건을 닫았다. 닫은 것이 맞는지는 모르겠다."),
         setVar(V_STAGE, S.C1_ACCUSED),
-        objective("o_well", "우물", "complete"),
+        objective("o_well", "분이가 어떻게 죽었는지 밝힌다", "complete"),
         objective("o_night", "밤, 우물가의 월화를 찾는다"),
       ],
       after: ["사건은 끝났소. 더 할 말 있으시오?"],
@@ -431,6 +432,29 @@ function buildInn(project: Project): void {
       ...say("주모", "어서 오시오. 국밥은 없고 시래깃국은 있소."),
       setSw(SW.innRoom),
       ...say("주모", "방은 안쪽 끝이오. 감영 나리라고 값은 안 받겠소. 대신 분이 일, 제대로 봐 주시오."),
+    ], { chip: CHIP.jumo, dir: "down" }),
+    // 퇴마 뒤 — 방에 들어 자고 아침을 맞는다(사건 1 마감).
+    page("p_jumo_sleep", [stageIs(S.C1_DONE)], [
+      ...say("주모", "우물 쪽에서 오시는 길이오? 얼굴이 하얗소.", "방은 안쪽 끝이오. 불은 내가 끄리다."),
+      ...fadeOut(1200),
+      stopBgm(),
+      { kind: "removeLight", id: "lt_jw_hand" } as Command,
+      { kind: "removeLight", id: "lt_jw_well" } as Command,
+      { kind: "setLighting", ambient: 0, color: "#000000", transitionMs: 0 } as Command,
+      setSw(SW.c1Night, false),
+      wait(900),
+      ...caption("이튿날 아침."),
+      journal("l_c1_close", "삼월 열나흘", "정 서방은 옥에 들었다. 군안에서 아들 이름을 빼 준다는 말은 누가 했는가. 이방은 묻기도 전에 덮었다."),
+      objective("o_rest", "주막에서 쉰다", "complete"),
+      objective("o_c2", "관아 곳간의 주판 소리를 알아본다"),
+      setVar(V_STAGE, S.C1_MORNING),
+      bgm(BGM.inn, 1200),
+      ...fadeIn(1200),
+      ...think("분이 일은 닫았다. 셈은 아직 맞지 않는다."),
+      ...caption("사건 一 「우물에서 우는 아이」 끝.", "사건 二 「셈하는 귀신」은 다음 판에 잇는다."),
+    ], { chip: CHIP.jumo, dir: "down" }),
+    page("p_jumo_morning", [stageAtLeast(S.C1_MORNING)], [
+      ...say("주모", "곳간 쪽에서 밤마다 주판 소리가 난다는 말이 있소. 서원이 죽은 뒤로 그렇소."),
     ], { chip: CHIP.jumo, dir: "down" }),
   ]));
 }
@@ -462,11 +486,14 @@ function buildRitual(project: Project): void {
       ...say("월화 만신", "굿은 산 사람 들으라고 하는 거요. 죽은 사람은 벌써 다 알고 있소.", "그래도 말은 해 줘야지. 누가, 왜 그랬는지. 맞는 말을 해야 그 애가 듣소."),
       bgm(BGM.ritual, 600),
       wait(800),
-      // 귀신은 몸으로 나오지 않는다 — 우물 위에 옅은 그림 한 겹(더하기 섞기)만.
-      { kind: "showPicture", pictureId: "pic_jw_ghost", resourceId: "generated-enemy-banshee-wail", x: 240, y: 110, opacity: 70, durationMs: 1800, easing: "easeOut", blendMode: "add", waitForPicture: true } as unknown as Command,
-      ...caption("두레박 줄이 혼자 내려간다."),
+      // 귀신은 몸으로 나오지 않는다 — 우물의 찬 빛이 부풀고, 물소리·방울 소리·물안개만.
+      se("cc0-se-osx-bell-01"),
+      { kind: "addLight", source: { id: "lt_jw_well", at: { x: V.well.x, y: V.well.y }, radius: 64, intensity: 0.85, color: "#9fc4ff", flicker: true } } as Command,
+      m2("Particle Effect", { preset: "smoke", target: "tile", x: V.well.x, y: V.well.y, durationMs: 2400, sizePercent: 120, wait: false }),
+      wait(700),
+      se("cc0-se-osx-splash-02"),
+      ...caption("두레박 줄이 혼자 내려간다. 우물 안에서 아이 우는 소리가 올라온다."),
       ...say("월화 만신", "왔소. 이제 고하시오."),
-      { kind: "erasePicture", pictureId: "pic_jw_ghost" } as Command,
       {
         kind: "battleProcessing", troopId: "troop_jw_buni", canEscape: false, canLose: true, branchOnResult: true,
         victoryBranch: ritualEnd(),
@@ -518,6 +545,7 @@ function ritualEnd(): Command[] {
     setSw(SW.c1RitualDone),
     setVar(V_STAGE, S.C1_DONE),
     objective("o_night", "밤, 우물가의 월화를 찾는다", "complete"),
+    objective("o_rest", "주막에서 쉰다"),
   ];
 }
 
