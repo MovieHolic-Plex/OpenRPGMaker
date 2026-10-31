@@ -331,7 +331,7 @@ Each entry paints the rectangle x..x+w-1, y..y+h-1 with its class; later entries
         if not ok_parse:
             grid_hist.append({"call": n, "errors": ["unparseable"]})
             msgs.append({"role": "user", "content": "That was not one " + ("SVG (<svg ...>...</svg>)" if arm == "argonG" else "JSON object") + ". Return the plan only."}); continue
-        plan_g, gerr = gridplan.validate(rects, GW, GH, catalog, FLOORS, as_json=(arm == "argonJ"))
+        plan_g, gerr = gridplan.validate(rects, GW, GH, catalog, FLOORS, as_json=(arm == "argonJ"), labels=labels)
         gridplan.render(plan_g, labels, GW, GH, f"{G}/grid-{n}.png")
         grid_hist.append({"call": n, "errors": gerr}); last_labels = labels; last_rects = rects
         print(f"{arm}{rep}/{task} grid {n}: {len(rects)} shapes, {len(gerr)} errors", flush=True)

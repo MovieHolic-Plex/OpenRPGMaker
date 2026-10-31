@@ -6,7 +6,7 @@
 import glob, json, os, re, shutil, subprocess
 HOME = os.path.expanduser("~"); R = os.environ.get("BW_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-argonplan")
 PAT = [re.compile(r'"([^"]+)" at \((\d+),(\d+)\)'), re.compile(r'"([^"@]+)"@\((\d+),(\d+)\)')]
-for g in sorted(glob.glob(f"{R}/argon[AB][0-9]/*/RUN.json")):
+for g in sorted(glob.glob(f"{R}/argon[ABGJ][0-9]/*/RUN.json")):
     G = os.path.dirname(g); task = G.split("/")[-1]
     if os.path.exists(f"{G}/map.png") and not os.path.exists(f"{G}/salvage.json") and json.load(open(g)).get("rendered"): continue
     if os.path.exists(f"{G}/salvage.json") and json.load(open(f"{G}/salvage.json")).get("rendered"): continue

@@ -59,7 +59,7 @@ def parse_json(d):
     labels = [(l.get("x", 0), l.get("y", 0), str(l.get("text", ""))) for l in (d.get("labels") or []) if isinstance(l, dict)]
     return rects, labels
 
-def validate(rects, W, H, cat_text, floors, as_json=False):
+def validate(rects, W, H, cat_text, floors, as_json=False, labels=None):
     """Returns (plan, errors). plan = dict(base=[[cls]], objs=[...], windows=[...]). Errors carry exact Fixed calls."""
     fp = catalog_footprints(cat_text); errs = []
     def fixed(cls, x, y, w=1, h=1):
@@ -177,6 +177,27 @@ def validate(rects, W, H, cat_text, floors, as_json=False):
     for (x, y, w, h) in wins:
         if any(at(i, j) != "wallface" for i in range(x, x + w) for j in range(y, y + h)):
             errs.append(f"window at ({x},{y}) is not on a wallface row: windows hang on the face of a wall. Fixed call: draw it on the wallface cell right under a ceiling of the outer wall.")
+    # outer doors: only the entrance, on the bottom row
+    for (i, j) in sorted(door):
+        if j != H - 1 and any(0 <= a < W and 0 <= b < H and seen[b][a] or not (0 <= a < W and 0 <= b < H) for a, b in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1))):
+            errs.append(f"door at ({i},{j}) opens the outer wall to the outside: the only opening in the outer wall is the entrance on the bottom row y={H - 1}. Fixed call: {fixed('ceiling', i, j)}")
+    # rooms (floor areas closed by ceiling, wallface and doors) must be furnished in the plan
+    comp_of, comps = {}, []
+    for j in range(H):
+        for i in range(W):
+            if (base[j][i] or "").startswith("floor-") and (i, j) not in comp_of and not seen[j][i]:
+                k = len(comps); comps.append([]); st = [(i, j)]
+                while st:
+                    a, b = st.pop()
+                    if (a, b) in comp_of or not (0 <= a < W and 0 <= b < H) or not (base[b][a] or "").startswith("floor-"): continue
+                    comp_of[(a, b)] = k; comps[k].append((a, b)); st += [(a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)]
+    lab = {(int(x), int(y)): t for x, y, t in (labels or [])}
+    for k, cells in enumerate(comps):
+        if len(cells) < 6: continue
+        cs = set(cells); n = sum(1 for o in objs if any((o["x"] + a, o["y"] + b) in cs or (o["x"] + a, o["y"] + b + 1) in cs for a in range(o["w"]) for b in range(o["h"])))
+        if n < 2:
+            x0, y0 = min(cells, key=lambda p: (p[1], p[0])); name = next((t for (x, y), t in lab.items() if (x, y) in cs), None)
+            errs.append(f"the room at ({x0},{y0}){' (' + name + ')' if name else ''} has {n} pieces: the plan shows each room furnished for its purpose. Add its furniture as object:<catalog id> boxes (several distinct pieces).")
     if not door: errs.append(f"no door: the entrance is a door cell in the outer ceiling line on the bottom row y={H - 1}.")
     return dict(base=base, objs=objs, windows=wins), errs[:40]
 

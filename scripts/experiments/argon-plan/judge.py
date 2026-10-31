@@ -16,7 +16,7 @@ fres, fh = f"{RUNS}/results.json", f"{RUNS}/h2h.json"
 res = json.load(open(fres)) if os.path.exists(fres) else {}
 h2h = json.load(open(fh)) if os.path.exists(fh) else {}
 lock = threading.Lock(); jobs = []
-for g in sorted(glob.glob(f"{RUNS}/argon[AB][0-9]/*/map.png")):
+for g in sorted(glob.glob(f"{RUNS}/argon[ABGJ][0-9]/*/map.png")):
     run = "/".join(g.split("/")[-3:-1]); task = run.split("/")[-1]
     for a in mapvqa.anchors_for(KIND[task]):
         if f"{run}|{a['id']}" not in res: jobs.append(("pair", run, g, task, a))
@@ -25,6 +25,14 @@ for g in sorted(glob.glob(f"{RUNS}/argon[AB][0-9]/*/map.png")):
         if not os.path.exists(ga):   # same-rep A has no map: pair with another A rep of the same place
             alt = sorted(glob.glob(f"{RUNS}/argonA[0-9]/{task}/map.png")); ga = alt[0] if alt else ga
         if os.path.exists(ga) and run not in h2h: jobs.append(("h2h", run, g, task, ga))
+    if run.startswith("argonG"):   # round 2: G vs A (round 1 control) and G vs J (grid as JSON, no picture)
+        for other in ("argonA", "argonJ"):
+            key = f"{other[-1]}:{run}"
+            if key in h2h: continue
+            go = f"{RUNS}/{run.replace('argonG', other)}/map.png"
+            if not os.path.exists(go):
+                alt = sorted(glob.glob(f"{RUNS}/{other}[0-9]/{task}/map.png")); go = alt[0] if alt else go
+            if os.path.exists(go): jobs.append(("h2h", key, g, task, go))
 print("jobs", len(jobs), flush=True)
 def one(j):
     kind, run, png, task, a = j
@@ -32,7 +40,7 @@ def one(j):
         per = mapvqa.pairwise(png, a["png"], KIND[task], REQ[task], judges=[J])
         return kind, f"{run}|{a['id']}", {"run": run, "anchor": a["id"], "judges": per, "verdict": mapvqa.majority(per, [J])}
     per = mapvqa.pairwise(png, a, KIND[task], REQ[task], judges=[J])   # x = B, y = A; +1 = B better
-    return kind, run, {"b": run, "a": "/".join(a.split("/")[-3:-1]), "judges": per, "verdict": mapvqa.majority(per, [J])}
+    return kind, run, {"b": "/".join(png.split("/")[-3:-1]), "a": "/".join(a.split("/")[-3:-1]), "judges": per, "verdict": mapvqa.majority(per, [J])}
 with cf.ThreadPoolExecutor(8) as ex:
     for kind, k, v in ex.map(one, jobs):
         with lock:
