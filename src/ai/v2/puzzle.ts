@@ -325,6 +325,12 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       if (re.name) endingName = re.name;
       link = { ...link, endingId: link.endingId ?? re.id, reward: { ...link.reward, ending: undefined, lines: link.reward?.lines?.length ? link.reward.lines : epi } };
     }
+    // 번호 고리의 lines 는 입력 전 안내다. 성공 글(풀렸다·맞물린다)을 lines 에 두고 reward.lines 가 비었으면 성공 글로 옮긴다
+    // (2026-11-01 cheap r9 deepseek: 「철컥, 다이얼이 맞물린다」가 번호를 넣기 전에 나왔고, 맞힌 뒤엔 아무 말이 없었다).
+    if (link.code && (link.role === "code" || link.role === "ending") && link.lines?.length && !link.reward?.lines?.length && link.lines.some((l) => /풀렸|풀린다|풀리|열렸|열린다|맞물|떨어진|떨어졌|철컥|딸깍|찰칵|unlock|opens|opened|click/iu.test(l))) {
+      warnings.push(`${index + 1}번 고리(${link.role}): lines 가 성공 글이라 맞혔을 때 나오게 reward.lines 로 옮겼다(lines 는 입력 전 안내)`);
+      link = { ...link, lines: undefined, reward: { ...link.reward, lines: link.lines } };
+    }
     const mapId = link.mapId ?? args.mapId;
     const map = run.ctx.project.maps[mapId];
     if (!map) return fail(`${index + 1}번 고리: 맵 ${mapId} 이 없다`);
