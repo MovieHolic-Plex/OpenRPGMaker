@@ -1,0 +1,410 @@
+{
+ "set": "fallen-star",
+ "query": {
+  "demo": "fallen-star",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 480,
+  "height": 270
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "light-b9",
+   "label": "제2막 B9 — 섬 사당의 발렌: 등을 같이 띄운다 → 탑 빛기둥(카메라) → 갈라지는 얼음 탈출 → 하늘탑",
+   "note": "frostford.ts lanternNight — 섬 사당 앞 발렌(19,26), iceEscape make_timed_escape(지그재그 3번 꺾기)",
+   "mapId": "fs2_frostford_night",
+   "x": 19,
+   "y": 27,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "items": {
+    "item_fs2_serin_form": 1
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnHooksScene; const L = s?.session?.lighting; const o = s?.lightingOverlayImage; return { map: s?.map?.id, ambient: L?.ambient, color: L?.color, nSources: L?.sources?.length, overlayVisible: o?.visible, overlayAlpha: o?.alpha, overlayDepth: o?.depth, weather: s?.session?.m2Runtime?.screen?.weather, zoom: s?.cameras?.main?.zoom }; }",
+       "out": "/tmp/fs2p/probe/light-b9.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "light-b11",
+   "label": "제2막 B11 — 렌즈 대기실: 관을 열면 이리스, 지워진 일지를 카엘이 읽어 준다",
+   "note": "act2Tower.ts floorFour (configure_story_journal · place_field_obstacle dark)",
+   "mapId": "fs2_sky_tower_f4",
+   "x": 15,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "fs2t2_after_split": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnHooksScene; const L = s?.session?.lighting; const o = s?.lightingOverlayImage; return { map: s?.map?.id, ambient: L?.ambient, color: L?.color, nSources: L?.sources?.length, overlayVisible: o?.visible, overlayAlpha: o?.alpha, overlayDepth: o?.depth, weather: s?.session?.m2Runtime?.screen?.weather, zoom: s?.cameras?.main?.zoom }; }",
+       "out": "/tmp/fs2p/probe/light-b11.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "light-b8",
+   "label": "제2막 B8 — 하르마: 세린 이야기, 은빛 송어 부탁",
+   "note": "frostford.ts — 하르마(큰 부두 끝 18,30)",
+   "mapId": "fs2_frostford",
+   "x": 18,
+   "y": 31,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnHooksScene; const L = s?.session?.lighting; const o = s?.lightingOverlayImage; return { map: s?.map?.id, ambient: L?.ambient, color: L?.color, nSources: L?.sources?.length, overlayVisible: o?.visible, overlayAlpha: o?.alpha, overlayDepth: o?.depth, weather: s?.session?.m2Runtime?.screen?.weather, zoom: s?.cameras?.main?.zoom }; }",
+       "out": "/tmp/fs2p/probe/light-b8.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "light-b2",
+   "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
+   "note": "act2Opening.ts curfewHub 순찰 (44,21) 가로 4칸 — 광장 서쪽 (39,21)에서 기다리면 돌아서며 본다",
+   "mapId": "fs2_hub_night",
+   "x": 39,
+   "y": 21,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnHooksScene; const L = s?.session?.lighting; const o = s?.lightingOverlayImage; return { map: s?.map?.id, ambient: L?.ambient, color: L?.color, nSources: L?.sources?.length, overlayVisible: o?.visible, overlayAlpha: o?.alpha, overlayDepth: o?.depth, weather: s?.session?.m2Runtime?.screen?.weather, zoom: s?.cameras?.main?.zoom }; }",
+       "out": "/tmp/fs2p/probe/light-b2.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b2-walk",
+   "label": "B2 골목 틈에서 나와 서쪽으로 걷기 — 3걸음 안에 잡히면 안 된다",
+   "note": "act2Opening.ts curfewHub 순찰 (43,17) 가로 4칸 — 북쪽 성벽 밑 (40,17)에서 기다리면 돌아서며 본다",
+   "mapId": "fs2_hub_night",
+   "x": 49,
+   "y": 23,
+   "facing": "left",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "beats": [
+    {
+     "id": "start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "west4",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 1300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "west8",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 1300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wait",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b6-breath",
+   "label": "B6 앞뜰 들머리에서 8초 — 아직 전투가 아니어야 한다",
+   "note": "act2Opening.ts northFortress — 순찰 기사 COURT_SPOTS.knight (35,25) 세로 — (22,28)에서는 16칸이라 안 보이고, 동쪽으로 네 걸음 가면 시야 12 에 든다 — 부하 걸린 호스트에서는 Phaser 프레임 시간이 17ms 로 고정돼 게임 시간이 벽시계의 1/3~1/4 로 흐른다(실측 15fps·delta 17). 맵 진입 은총 2초가 벽시계 8~10초가 되므로 접근 비트를 16초 기다린다",
+   "mapId": "fs2_fort_court",
+   "x": 22,
+   "y": 28,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 8000
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear"
+     }
+    }
+   }
+  }
+ ]
+}

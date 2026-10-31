@@ -603,9 +603,28 @@ function crashSite(project: Project, forestId: string): void {
   ];
   // 병사 넷 — 발렌 뒤를 따라 올라와 길을 막는다(전투의 병사 여덟 중 앞줄). 전투에 이기면 사라진다.
   const soldierWalks: Command[] = [];
-  const soldierSpots: Cell[] = [{ x: stop.x - 1, y: stop.y + 1 }, { x: stop.x, y: stop.y + 2 }, { x: stop.x - 1, y: stop.y + 3 }, { x: stop.x, y: stop.y + 4 }];
+  // 지그재그 한 줄(길 위 세로 줄)은 패배 뒤 병사가 「한 줄로 정렬」해 선 것으로 읽혔다(fs-act1-vqa) — 발렌을 꼭짓점으로 한 쐐기 대열.
+  // 앞줄 둘은 발렌 양 어깨 한 칸 뒤, 뒷줄 둘은 한 칸 더 벌린다. 막힌 칸이면 같은 줄 안쪽으로 당긴다.
+  const free = (c: Cell) => isPassable(project, forest, c.x, c.y) && !forest.events.some((e) => e.x === c.x && e.y === c.y);
+  // 좌우 한 쌍씩 — 쌍의 두 칸이 모두 비어 있는 첫 후보를 쓴다(한쪽만 밀려 비뚤어진 대열이 되지 않게).
+  const pair = (cands: ReadonlyArray<readonly [number, number]>): Cell[] => {
+    for (const [dx, dy] of cands) {
+      const l = { x: stop.x - dx, y: stop.y + dy }, r = { x: stop.x + dx, y: stop.y + dy };
+      if (free(l) && free(r)) return [l, r];
+    }
+    const [dx, dy] = cands[0]!;
+    return [{ x: stop.x - dx, y: stop.y + dy }, { x: stop.x + dx, y: stop.y + dy }];
+  };
+  const soldierSpots: Cell[] = [...pair([[1, 1], [1, 2]]), ...pair([[2, 2], [1, 3], [2, 3]])];
+  const usedFrom = new Set<string>();
   soldierSpots.forEach((spot, i) => {
-    const from: Cell = { x: spot.x, y: Math.min(forest.height - 1, spot.y + 6) };
+    // 숲길 아래에서 올라온다 — 출발 칸은 같은 열 여섯 칸 아래의 걸을 수 있는 칸(없으면 길 쪽으로 옮긴다). 넷이 한 칸에 겹쳐 서지 않게.
+    let from: Cell = { x: spot.x, y: Math.min(forest.height - 1, spot.y + 6) };
+    search: for (const dy of [6, 5, 7, 4]) for (const dx of [0, -1, 1, -2, 2, -3, 3]) {
+      const c = { x: spot.x + dx, y: Math.min(forest.height - 1, spot.y + dy) };
+      if (free(c) && !usedFrom.has(`${c.x},${c.y}`)) { from = c; break search; }
+    }
+    usedFrom.add(`${from.x},${from.y}`);
     let dirs: Dir[];
     try { dirs = pathTo(project, forest, from, spot); } catch { return; }
     const sid = `ev_${FS_PREFIX}_valen_soldier_${i + 1}`;
@@ -900,7 +919,10 @@ function shells(project: Project, exec: Exec, vault: GameMap): void {
   lightRoom(project, exec, FS_B4_ID, B4_ROOM, 0.55, "#10182e", [
     { x: 14, y: 3, radius: 2.6, color: "#7cf0b0", intensity: 0.8 },
     { x: 11, y: 3, radius: 1.6, color: "#a8d8f0", intensity: 0.7 },
-    { x: 18, y: 3, radius: 1.6, color: "#a8d8f0", intensity: 0.7 },
+    // 비대칭 홀(vaultLabyrinthRooms B4_HALL) — 동쪽 수정은 걷었다. 서쪽·동쪽 용암 화로와 동쪽 보물 굴에 작은 빛.
+    { x: 8, y: 7, radius: 1.8, color: "#ffb060", intensity: 0.6 },
+    { x: 21, y: 7, radius: 1.8, color: "#ffb060", intensity: 0.6 },
+    { x: 25, y: 11, radius: 2.2, color: "#ffd27a", intensity: 0.5 },
     { x: 15, y: 11, radius: 4.5, color: "#9cc8ff", intensity: 0.5 },
     { x: 10, y: 27, radius: 2.4, color: "#88c8ff", intensity: 0.9 },
     { x: 18, y: 27, radius: 2.4, color: "#88f0e0", intensity: 0.8 },
@@ -1647,6 +1669,19 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
       objectId: "kit:atlas_biome_interior/hand-interior:deck grate", x: B4.lift.x, y: B4.lift.y,
       afterText: "패널 옆 바닥 판이 덜컹거리기", theme: "machine", switchId: SW_LIFT_OPEN,
     });
+  }
+  // 바닥 판만 바뀌면 「승강 장치가 올라온다」가 그림으로 안 읽혔다(fs-act1-vqa) — 판이 열린 뒤 빈 발판이 갱도에서 솟아
+  // 그 자리에 선다(Lift Ride riders:none · 갱도 자르기). 스위치를 켜기 바로 앞에 끼운다.
+  {
+    const b4 = M(project, FS_B4_ID);
+    const rise = m2("m2-226-lift-ride", { mode: "arrive", direction: "up", distance: 2, durationMs: 1800, x: B4.lift.x, y: B4.lift.y, width: 2, depth: 2, riders: "none", se: "cc0-se-osx-machine-02", wait: true });
+    for (let i = 0; i < B4.panel.length; i += 1) {
+      const ev = b4.events.find((e) => e.id === `ev_${FS_PREFIX}_b4_panel_${i}`);
+      for (const p of ev?.pages ?? []) eachList(p.commands as Command[], (list) => {
+        const at = list.findIndex((c) => c.kind === "setSwitch" && (c as unknown as { switchId?: string }).switchId === SW_LIFT_OPEN);
+        if (at > 0 && list.slice(0, at).some((c) => c.kind === "changeTile")) list.splice(at, 0, JSON.parse(JSON.stringify(rise)) as Command);
+      });
+    }
   }
   // 보스 HP 숨김 — 용(발렌은 이미 숨김). 조수 도구 upsert_enemy 의 hideHp.
   exec(project, "upsert_enemy", { enemy: { id: FS_DRAGON_ENEMY, hideHp: true } });

@@ -1,4 +1,5 @@
 import { activeItemEffects, itemAllowsMenu, itemAllowsBattle } from "@/project/itemUsage";
+import { pixelFxAnimationPickButton } from "@/editor/panels/pixelFxPicker";
 import { isKeyItem } from "@/player/playerBagPockets";
 import {
   avatarChipRow,
@@ -475,6 +476,12 @@ function animationCard(record: ItemRecord, refreshStory: () => void): HTMLElemen
       selectField("애니메이션", "db-picker-item-animation", record.animationId ?? "", store.getCurrent().database.battleAnimations, (animationId) =>
         updateItemAndRefresh(record, { animationId: emptyToUndefined(animationId) }, refreshStory)
       ),
+      pixelFxAnimationPickButton({
+        testid: "db-item-pixel-fx",
+        currentAnimationId: record.animationId,
+        recordName: `${record.name} 효과`,
+        onAnimationId: (animationId) => updateItemAndRefresh(record, { animationId }, refreshStory),
+      }),
     ],
   });
 }

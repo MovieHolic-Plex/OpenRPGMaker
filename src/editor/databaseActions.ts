@@ -5,6 +5,7 @@ import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databas
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
 import { createActorRecord, normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { upsertPixelFxAnimationRecord } from "@/project/pixelFxAnimationRecords";
 import { GENERATED_EFFECT_RESOURCE_IDS, GENERATED_EFFECT_SHEETS, generatedEffectDatabaseAnimationId } from "@/assets/generatedEffectSheets";
 import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabaseStarterRecords";
 import {
@@ -40,6 +41,7 @@ import type {
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
+  PixelFxSpec,
   Project,
   SkillRecord,
   StateRecord,
@@ -239,6 +241,19 @@ function shouldUpgradeLegacyGeneratedEffect(record: BattleAnimationRecord): bool
   return record.resourceId === LEGACY_GENERATED_EFFECT_RESOURCES[record.id];
 }
 
+/** pixelfx 효과를 트는 전투 애니메이션 레코드를 찾거나 만들고 id 를 돌려준다(되돌리기 한 칸). */
+export function ensurePixelFxAnimationRecord(
+  spec: PixelFxSpec,
+  options: { readonly name?: string; readonly position?: BattleAnimationPosition } = {},
+): string | undefined {
+  let id: string | undefined;
+  recordProjectSnapshot();
+  store.updateDatabase("battleAnimations", (database) => {
+    id = upsertPixelFxAnimationRecord(database.battleAnimations, spec, options);
+  });
+  return id;
+}
+
 export function updateDatabaseRecord(collection: DatabaseCollection, id: string, patch: DatabasePatch): void {
   // 텍스트/숫자 필드는 keystroke 마다 호출되므로, 같은 레코드의 같은 필드 편집은
   // 커밋 단위(1 스냅샷)로 병합한다. 필드가 바뀌면 키가 달라져 새 스냅샷이 남는다.
@@ -385,7 +400,13 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("large" in patch && patch.large !== undefined) record.large = patch.large;
         if ("frames" in patch && patch.frames !== undefined) record.frames = patch.frames;
         if ("timings" in patch && patch.timings !== undefined) record.timings = patch.timings;
+        // 코드 픽셀 효과(pixelfx). undefined 를 주면 떼어 시트 애니메이션으로 돌아간다.
+        if ("pixelFx" in patch) {
+          if (patch.pixelFx) record.pixelFx = patch.pixelFx;
+          else delete record.pixelFx;
+        }
         Object.assign(record, normalizeBattleAnimationRecord(record));
+        if (!record.pixelFx) delete record.pixelFx;
         return;
       }
     }

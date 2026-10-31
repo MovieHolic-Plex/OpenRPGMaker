@@ -12,6 +12,7 @@ unless a link is given. Third party art and audio are listed separately in `publ
 | Component | Where | License |
 |---|---|---|
 | Phaser 3 — Richard Davey, Phaser Studio Inc. | `node_modules/phaser`, copied into exported games as `phaser.min-*.js` | MIT — `licenses/MIT-Phaser.md` (also prepended to the shipped file) |
+| pixelfx — Patch, Hugo Duprez (232 code-drawn pixel-art effects, upstream commit in `src/vendor/pixelfx/UPSTREAM.json`) | `src/vendor/pixelfx/core` + `fx`, loaded per effect into exported games (battle/field effects) | MIT — `licenses/MIT-pixelfx.md` (also prepended to each shipped effect chunk). The upstream gallery font "Patch Pixel" is **not** MIT and is not copied. |
 
 ## Shipped with the editor or its sites
 
