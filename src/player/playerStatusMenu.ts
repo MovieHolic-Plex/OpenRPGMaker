@@ -18,7 +18,7 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
-import { applySystemGraphic } from "@/player/systemGraphics";
+import { applySystemGraphic, markClassicWindowSkin } from "@/player/systemGraphics";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
@@ -100,6 +100,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
   panel.style.removeProperty("border-image-slice");
+  // 고전 윈도스킨 게임은 메뉴 창(명령·파티·상세·돈)도 같은 그림으로 — 칠은 windowSkinSurfaces.css.
+  markClassicWindowSkin(panel, options.project);
 
   if (mode === "function") panel.classList.add("status-menu-detail-focus");
   const detail = createStatusMenuDetail({

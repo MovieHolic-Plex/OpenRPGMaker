@@ -3,7 +3,7 @@
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { Project, ResourceKind } from "@/project/types";
 
-const PROFILE_KINDS: ReadonlySet<string> = new Set(["chipset", "charset", "faceset", "battle", "battleCharset", "battleWeapon", "backdrop", "monster", "picture", "title", "gameOver", "system", "system2", "music", "sound"]);
+const PROFILE_KINDS: ReadonlySet<string> = new Set(["chipset", "charset", "faceset", "battle", "battleCharset", "battleWeapon", "backdrop", "monster", "picture", "icon", "title", "gameOver", "system", "system2", "music", "sound"]);
 
 export function addStoreProfiles(project: Project, assetIds: readonly string[]): void {
   const known = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter(Boolean));

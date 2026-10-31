@@ -222,7 +222,8 @@ const setProjectSettings: ToolDefinition = {
       resources: {
         type: "object",
         properties: {
-          titleResourceId: { type: "string" }, systemResourceId: { type: "string" },
+          titleResourceId: { type: "string" },
+          systemResourceId: { type: "string", description: "창 그림(윈도스킨, 시스템 그림 96×96). 대사·선택지·메뉴·상점·타이틀 창에 보이려면 같은 호출에서 dialogue.style 을 'classic' 으로 둔다 — 기본 유리 창은 이 그림을 쓰지 않는다. 스토어 윈도스킨은 store_install 결과 windowSkins 의 resourceId." },
           defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
           battleVictoryMeResourceId: { type: "string" }, battleDefeatSeResourceId: { type: "string" }, battleEscapeSeResourceId: { type: "string" },
         },

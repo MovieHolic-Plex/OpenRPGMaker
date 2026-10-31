@@ -470,14 +470,39 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     return joinFixes(promptFix, optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
   }
   if (promptFix) return promptFix;
+  if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind)) {
+    // 수치 명령의 양을 value·count·delta 로 쓴 사례(2026-10-31 씬 벤치 terra 흥정: `{kind:"changeGold",op:"-=",value:25}`)
+    // — 「amount가 객체가 아닙니다」로 흥정 이벤트 전체가 두 번 거부됐다. 양 칸은 amount 하나다.
+    const amountFix = canonicalizeAmountField(command);
+    if (amountFix) return amountFix;
+  }
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
-    if (!resolved) return undefined;
+    if (!resolved) {
+      // op 없이 부호 있는 양만 준 사례(같은 판: `{kind:"changeGold",amount:-25}` → 「op가 문자열이 아닙니다」). 부호가 방향이다.
+      if (command.action === undefined && typeof command.amount === "number" && command.amount !== 0) {
+        command.op = command.amount < 0 ? "-=" : "+=";
+        command.amount = Math.abs(command.amount);
+        return `${command.kind} 의 부호 있는 amount 를 op:"${command.op}" amount:${command.amount} 로 고쳤습니다.`;
+      }
+      return undefined;
+    }
     delete command.action;
     command.op = resolved === "add" ? "+=" : "-=";
     return `${command.kind} action 을 op:"${command.op}" 로 고쳤습니다.`;
   }
   return undefined;
+}
+
+const AMOUNT_ALIASES = ["value", "count", "delta", "quantity", "gold"] as const;
+function canonicalizeAmountField(command: RecordValue): string | undefined {
+  if (command.amount !== undefined) return undefined;
+  const aliases = AMOUNT_ALIASES.filter(key => typeof command[key] === "number");
+  if (aliases.length !== 1) return undefined;
+  const key = aliases[0]!;
+  command.amount = command[key];
+  delete command[key];
+  return `${String(command.kind)}.${key} 를 amount 로 옮겼습니다(수치 명령의 양 칸은 amount).`;
 }
 
 /** 명령 목록과 모든 중첩 분기를 제자리에서 고친다. */

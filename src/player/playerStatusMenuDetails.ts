@@ -1346,8 +1346,9 @@ function fieldSkillDescription(project: Project, skill: SkillRecord, user?: Skil
   return [help.description || skillKindLabel(skill), skillHelpTagLine(help), help.comboNames ? `연계: ${help.comboNames.join(" × ")} · ${help.cost}` : ""].filter(Boolean).join("\n");
 }
 
-// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
+// 스킬 아이콘(iconResourceId)이 있으면 그것을, 없으면 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
+  if (skill.iconResourceId) return { resourceId: skill.iconResourceId, alt: skill.name, testId: `status-menu-entry-icon-skill-${skill.id}` };
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
     : undefined;

@@ -38,6 +38,7 @@ import { ENEMY_PIXEL_SHEET_TOOLS } from "./enemyPixelSheetTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { LOCK_DOOR_TOOLS } from "./lockDoorTools";
 import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
 import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
@@ -150,6 +151,7 @@ import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
+import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
@@ -178,6 +180,7 @@ import { STORY_JOURNAL_TOOLS } from "./storyJournalTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { STORE_ICON_TOOLS } from "./storeIconTools";
 import { TIMED_ESCAPE_TOOLS } from "./timedEscapeTools";
 import { OBJECT_GEN_TOOLS } from "./objectGenTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
@@ -360,6 +363,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(LOCK_DOOR_TOOLS, "event"),
   ...withDomain(MAP_VARIANT_TOOLS, "map"),
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
@@ -408,6 +412,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
   ...TILESET_CHANGE_TOOLS,
   ...STORE_TOOLS,
+  ...STORE_ICON_TOOLS,
   ...OBJECT_GEN_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
@@ -418,6 +423,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
   ...DUNGEON_LINK_TOOLS,
+  ...BBOX_PLACE_TOOLS,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),

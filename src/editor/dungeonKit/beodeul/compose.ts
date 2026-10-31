@@ -124,7 +124,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const specT: DungeonSpec = { ...spec, type };
   // 방+통로 문법에 조수 설계가 오면 rooms 로 옮긴다(designLayout.ts) — 고친 것은 notes 로 warnings 에 실린다.
   const designed = profile.grammar === "rooms" && spec.design && !spec.rooms?.length ? designToRooms(spec.design, type, profile) : undefined;
-  const layout = profile.grammar === "maze" ? (spec.design ? layoutDesignedMaze(specT, profile, spec.design) : layoutMaze(specT)) : profile.grammar === "blob" ? layoutBlob(specT, profile)
+  // 모델이 칸 단위로 쓴 층(spec.exact, 조수 v2 bbox 던전): 배치·정착·꾸미기 없이 열린 칸 그대로 — 벽·천장·바닥·액체 그림만 끌어낸다.
+  const exact = spec.exact;
+  const layout = exact ? exact.layout : profile.grammar === "maze" ? (spec.design ? layoutDesignedMaze(specT, profile, spec.design) : layoutMaze(specT)) : profile.grammar === "blob" ? layoutBlob(specT, profile)
     : designed ? (() => { const l = layoutDungeon({ ...specT, rooms: designed.rooms, ...(designed.loop ? { layout: "loop" as const } : {}) }); return { ...l, notes: [...designed.fixes, ...l.notes] }; })()
     : layoutDungeon(specT);
   // 방+통로 문법: 설계한 높이 단을 지은 방 id 에 옮긴다
@@ -492,6 +494,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (!liquid[idx(x, y)] || !isFloor(x, y)) continue;
     liquidCells += 1;
+    if (exact) {
+      const kind = exact.liqKind[idx(x, y)]!;
+      let m = 0;
+      const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+      for (const [dx, dy, bit] of bits) if (inb(x + dx, y + dy) && (liquid[idx(x + dx, y + dy)] || bridge[idx(x + dx, y + dy)]) && exact.liqKind[idx(x + dx, y + dy)] === kind) m |= bit;
+      if (kind === 3) { lower[idx(x, y)] = (groups.length ? ceilingTile(groups[0]!, m) : undefined) ?? voidTile; continue; }
+      if (kind === 2) { lower[idx(x, y)] = gapLava ? autoCell(gapLava, m, x, y) : tileOf(LAVA_KIT, x, y); continue; }
+      lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile; continue;
+    }
     if (voidLiquid) continue;   // 허공은 천장 오토타일이 이미 칠했다
     if (profile.bank && (profile.liquid !== "lava" || !gapLava)) bankCells.push(idx(x, y));   // 용암은 gap 용암 오토타일이 식은 껍질 테두리를 그리면 둑을 얹지 않는다
     if (profile.bank && profile.liquid !== "lava" && canal) {
@@ -562,6 +573,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
   }
 
+  if (exact) return { exactOut: { lower, upper, wallB, W, H } } as unknown as DungeonCompose;   // composeExactFloor 가 읽는다
   const counts: Record<string, number> = {};
   // ---- 높이 단(설계한 rooms[].level, reliefPlan.ts): 통로 높이 채우기 + 경계마다 곧은 돌계단 한 줄. 계단·층계참 칸은 장식·이벤트 자리에서 뺀다. ----
   const reliefPlan = !voidLiquid && !rings.length ? planDungeonRelief(W, H, floorMask, roomAt, liquid, bridge, doorstep, rooms, outdoor ? 0 : WR) : undefined;
@@ -1270,4 +1282,11 @@ function drawPicture(W: number, H: number, isFloor: (x: number, y: number) => bo
     rows.push(line);
   }
   return rows;
+}
+
+/** 모델이 칸 단위로 쓴 층의 그림(조수 v2 bbox 던전): 열린 칸(grid.floor)·방 번호(grid.roomAt)·액체·다리에서 벽 앞면·천장·바닥·액체만 그린다.
+ *  wallB[i] ≥ 0 = 벽 앞면 칸(벽걸이 조각 자리). 벽이 너무 얇으면(열린 칸 위 1~3줄에 또 열린 칸) composeDungeon 이 던진다. */
+export function composeExactFloor(ts: TilesetDef, type: DungeonType, layout: DungeonLayout, liqKind: Uint8Array): { lower: number[]; upper: number[]; wallB: Int8Array } {
+  const out = composeDungeon(ts, { type, seed: 7, exact: { layout, liqKind } }) as unknown as { exactOut: { lower: number[]; upper: number[]; wallB: Int8Array } };
+  return out.exactOut;
 }

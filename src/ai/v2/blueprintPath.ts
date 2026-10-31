@@ -514,6 +514,57 @@ export function orderStepBattlesIn(project: Project): string[] {
   return notes;
 }
 
+/**
+ * 싸워 이기는 단계는 이기면 끝난다 — 단계 이벤트의 넘어가는 페이지가 같은 맵 보스의 승리 스위치 W 를 조건으로 걸 때(gateBattleSteps·
+ * 모델이 지은 고리), 그 보스의 승리 갈래(W 를 켜는 곳) 끝에서 단계 이벤트를 부른다(callMapEvent — 지금 켜진 페이지를 돈다).
+ * 앞 단계가 안 됐으면 그 이벤트의 잠김 대사가 바로 뜨고, 됐으면 다음 목표·엔딩이 이어진다. 결정적·되풀이 안전(이미 부르면 그대로).
+ * 왜(2026-10-30 sl2 opus jrpg 「무엇을 할지 모름」): 마왕을 이긴 뒤 「쓰러진 마왕 곁의 검은 기운에 빛의 검을 겨누자」 목표만 남았고,
+ * 엔딩은 마왕 옆 칸 「마왕의 최후」(사람 그림)에게 다시 말을 걸어야 났다. 판정자는 동쪽 빛나는 구슬을 조사하다 시간이 끝났다.
+ * jb1b terra(엔딩 닿음)도 승리 뒤 그 칸을 찾아 다시 눌러야 했다.
+ */
+export function finishStepOnBossVictoryIn(project: Project): string[] {
+  const bp = project.gameBlueprint;
+  if (!bp) return [];
+  const notes: string[] = [];
+  const won = victoryGatedSwitches(project);
+  for (const step of bp.steps) {
+    const map = mapFor(project, step.place);
+    if (!map) continue;
+    const ev = map.events.find((e) => e.id === step.event) ?? map.events.find((e) => norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
+      ?? map.events.find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), step.event));
+    if (!ev) continue;
+    const gates = new Set<string>();
+    for (const page of (ev.pages ?? []) as unknown as RawPage[]) {
+      if (!pageMoves(page)) continue;
+      for (const c of (page.conditions ?? []) as { kind?: string; switchId?: string; value?: unknown }[]) if (c.kind === "switch" && c.switchId && c.value !== false && won.has(c.switchId)) gates.add(c.switchId);
+    }
+    for (const w of gates) {
+      const setsW = (list: unknown): boolean => Array.isArray(list) && list.some((c) => (c as { kind?: string; switchId?: string }).kind === "setSwitch" && (c as { switchId?: string }).switchId === w && (c as { value?: unknown }).value !== false);
+      const calls = (list: unknown): boolean => Array.isArray(list) && list.some((c) => (c as { kind?: string; eventId?: string }).kind === "callMapEvent" && (c as { eventId?: string }).eventId === ev.id);
+      for (const holder of map.events) {
+        if (holder.id === ev.id || !JSON.stringify(holder.pages ?? []).includes('"battleProcessing"')) continue;
+        let touched = false;
+        // 승리 갈래(fork battleResult victory 의 then, battleProcessing 의 victoryBranch) 중 W 를 켜는 목록 끝에 부르기를 단다.
+        const visit = (node: unknown): unknown => {
+          if (Array.isArray(node)) return node.map(visit);
+          if (!node || typeof node !== "object") return node;
+          const cmd = { ...(node as Record<string, unknown>) };
+          for (const [key, value] of Object.entries(cmd)) if (value && typeof value === "object") cmd[key] = visit(value);
+          const isWinFork = cmd.kind === "fork" && (cmd.condition as { kind?: string; result?: string } | undefined)?.kind === "battleResult" && (cmd.condition as { result?: string }).result === "victory";
+          const key = isWinFork ? "then" : cmd.kind === "battleProcessing" ? "victoryBranch" : undefined;
+          if (key && setsW(cmd[key]) && !calls(cmd[key])) { cmd[key] = [...(cmd[key] as unknown[]), { kind: "callMapEvent", eventId: ev.id }]; touched = true; }
+          return cmd;
+        };
+        const pages = visit(structuredClone(holder.pages ?? [])) as typeof holder.pages;
+        if (!touched) continue;
+        map.events = map.events.map((e) => e.id === holder.id ? { ...e, pages } : e);
+        notes.push(`${String((holder as { name?: string }).name || holder.id)} 을 이기면 바로 「${String((ev as { name?: string }).name ?? ev.id)}」 단계가 이어진다`);
+      }
+    }
+  }
+  return notes;
+}
+
 /** 시작 파티가 이 정도도 못 이기면 «길을 막는 전투»가 아니라 막힌 길이다. */
 const STEP_BATTLE_MIN_WIN = 0.5;
 
