@@ -61,7 +61,34 @@ export interface ArgCoercion {
 
 // 도구 하나에만 맞는 빈칸 채우기 — 그 칸이 «이름표»라 어떤 값이든 뜻이 같을 때만(값을 지어내도 동작이 안 바뀐다).
 // declare_story_flag: id 는 kebab 이름표일 뿐이다. 2026-11-01 flash·argon 이 id 없이 {action, description} 만 보내 4번씩 거절됐다.
+const TODO_KEY_CHECKS: Readonly<Record<string, string>> = { talk: "who", person: "name", place: "name", item: "name" };
 const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>> = {
+  // upsert_event({eventId}) — 이벤트 id 칸 이름은 id 다(2026-11-01 cheap r7 argon: 세 번 다 «id 없음» 으로 거절).
+  upsert_event(args, changes) {
+    if ((args.id === undefined || args.id === "") && typeof args.eventId === "string" && args.eventId.trim() && !isObj(args.event)) {
+      changes.push(`id: missing → "${args.eventId}" (from eventId — the event id field is named "id")`);
+      return { ...args, id: args.eventId };
+    }
+    return args;
+  },
+  // todo 항목의 짧은 확인 표기 {talk:"책상"} → check:{kind:"talk", who:"책상"} (r7 argon: 확인 없는 항목이 되어 거짓 done 이 통과했다).
+  todo(args, changes) {
+    if (!Array.isArray(args.items)) return args;
+    let touched = false;
+    const items = args.items.map((it, i) => {
+      if (!isObj(it) || it.check !== undefined || it.machineCheck !== undefined) return it;
+      for (const [k, field] of Object.entries(TODO_KEY_CHECKS)) {
+        const v = (it as Obj)[k];
+        if (typeof v !== "string" || !v.trim()) continue;
+        const { [k]: _drop, ...rest } = it as Obj;
+        touched = true;
+        changes.push(`items[${i}].${k}: "${v}" → check {kind:"${k}", ${field}:"${v}"} (a machine check goes in "check")`);
+        return { ...rest, check: { kind: k, [field]: v } };
+      }
+      return it;
+    });
+    return touched ? { ...args, items } : args;
+  },
   declare_story_flag(args, changes) {
     const out = { ...args };
     const text = [out.description, out.meaning, out.name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
@@ -106,6 +133,7 @@ export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string
 
 /** 분기 명령의 다른 이름 갈래 — 명령 목록은 스키마가 느슨해(아무 객체) 검증을 지나고, 모르는 칸은 실행기가 말없이 버린다.
  * 2026-11-01 cheap r6 deepseek: fork 에 presentItem 의 `otherwiseBranch` 를 써서 «단서 없음»·«틀림» 갈래가 통째로 사라졌다. */
+const TEXT_KINDS = new Set(["showText", "show_text", "message", "showMessage", "say", "dialogue", "dialog"]);
 const FORK_ALIASES: Readonly<Record<string, string>> = { otherwiseBranch: "else", otherwise: "else", elseBranch: "else", elseCommands: "else", ifFalse: "else", thenBranch: "then", thenCommands: "then", ifTrue: "then" };
 function forkBranches(value: unknown, path: string, changes: string[], depth = 0): unknown {
   if (depth > 40 || value === null || typeof value !== "object") return value;
@@ -115,6 +143,13 @@ function forkBranches(value: unknown, path: string, changes: string[], depth = 0
     return copy ?? value;
   }
   let rec = value as Record<string, unknown>;
+  // 대사 명령의 다른 이름(RPG Maker·다른 엔진 습관) — showText/message/say → text, 글은 body.
+  if (typeof rec.kind === "string" && TEXT_KINDS.has(rec.kind) && (typeof rec.text === "string" || typeof rec.message === "string" || typeof rec.body === "string")) {
+    const body = typeof rec.body === "string" ? rec.body : typeof rec.text === "string" ? rec.text : rec.message;
+    const { text: _t, message: _m, ...rest } = rec;
+    changes.push(`${path || "(top level)"}: {kind:"${rec.kind}"} → {kind:"text", body} (a line of dialogue is kind "text" with "body")`);
+    rec = { ...rest, kind: "text", body };
+  }
   if (rec.kind === "fork") {
     for (const [from, to] of Object.entries(FORK_ALIASES)) {
       if (rec[from] === undefined || rec[to] !== undefined) continue;
