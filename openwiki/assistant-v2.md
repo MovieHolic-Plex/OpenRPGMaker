@@ -456,6 +456,12 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   다음 호출 제안은 `author_puzzle_chain` 한 번(단서 → `role:"ending"|"code"` + `needsAny`·`hintAfter`·`hintLines`).
 - **author_puzzle_chain**: `needsAny`(단서 중 하나라도 봤으면 시도, 없으면 lockedLines), `hintAfter`+`hintLines`(틀린 횟수 변수를 세어 그 횟수부터 힌트), 스키마에 `ending` 역할·`endingId` 를 드러냈다.
 - **저장 없는 done 거절**(`todoTools` done): 기계 확인 없는 항목은 지난 done 뒤로 성공한 쓰기가 없고 (그사이 쓰기가 거절됐거나 이 판 성공 쓰기가 0) 이면 받지 않는다.
+- **사슬 고리가 기존 물건을 쓴다**(`puzzle.ts`): 찾는 차례 eventId → name → 단서 이름·첫 줄에 든 기존 이벤트 이름(하나뿐일 때) → at 칸.
+  지어 낸 eventId(「desk_clue」)는 그 맵 이벤트 목록(id·이름·칸)을 영어로 돌려주고, at 칸이 같은 사슬 앞 고리가 쓴 이벤트면 거절한다 —
+  Flash 가 이름 없이 칸만 짐작해 「책상」「액자」「화분」 옆 빈 칸에 새 이벤트를 세우고, 자물쇠 고리를 「액자」 위에 덮어 단서 글을 지웠다(r4).
+- **`code_lock.on`**: 요청이 「「자물쇠」를 조사하면 … 입력」처럼 자리를 말하면 뼈대가 그 이름을 넣고, 번호 입력이 다른 이벤트에 붙으면 ✗.
+  요청 뼈대는 낫표 이름 물건 글(「「액자」 뒤에서는 「_ 2 _ _」」)을 그 물건의 talk 확인으로 뽑고(전에는 화자 「뒤에서」·「밑에서」), 글자 없는 번호 조각은 통째로 확인한다.
+- **도구 없이 끝난 쓰기 요청**(`assistantV2Runtime` afterMain): 할 일 목록이 끝내 안 생겼으면(첫 답에 todo 호출을 ```tool_call``` 글로 «써» 놓고 멈춘 Flash r5) 실제 todo 호출을 두 번까지 다시 요구한다.
 - **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
