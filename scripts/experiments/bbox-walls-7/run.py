@@ -90,6 +90,7 @@ Footprints must not overlap, must be on floor cells (not face rows), and every r
 - Room shapes: a building where every room is a plain four-wall box reads as a spreadsheet. Give the important rooms character from their use — a bay of windows in the drawing room, a raised dais for the high table, columns in the entrance hall, a fenced bar corner, a bed alcove, an L-shaped hall wrapping the stairs. Not every room needs it; storage and cells stay simple. Choose shapes because the room's use calls for them.
 - Stairs: use the exact kit footprint above; never put furniture on their 3 entry cells.{JAIL}
 {("# Design vocabulary (ideas from real buildings — why they exist matters more than copying them; use one where it serves a room, not as a template)" + chr(10) + IDEAS + chr(10)) if IDEAS else ""}Design real architecture for this request: one building mass with a shaped outline, divided into distinct rooms of sensible sizes joined by doors, each room furnished for its purpose with its landmark against a wall, windows along the outer walls."""
+if arm == "argon": PROMPT = f"(run {arm}{rep} / {sys.argv[0].split('/')[-2]})\n" + PROMPT   # the 8318 route returns identical answers to identical prompts; a run id makes reps independent
 open(f"{G}/prompt.txt", "w").write(PROMPT)
 NSH = json.load(open(f"{RUNS}/pieces-{task}.n"))
 IMGS = [{"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(open(f"{RUNS}/pieces-{task}-{k + 1}.png", "rb").read()).decode()}} for k in range(NSH)]
