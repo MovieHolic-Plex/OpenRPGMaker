@@ -455,6 +455,8 @@ export interface PlaySession {
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   /** 상태별 필드 걸음 카운터(actorId → stateId → 걸음). 걸음 상태 효과(#25)가 쓴다. */
   stateStepCounts?: Record<string, Record<string, number>>;
+  /** 상태별 치른 전투 수(actorId → stateId → 전투). releaseAfterBattles(칼 기름 「싸움 N번」)가 쓴다. 세이브에 들어간다. */
+  stateBattleCounts?: Record<string, Record<string, number>>;
   /**
    * 이 기기의 회차 기록 사본(부팅 때 clearRecord 에서 채운다, 세이브에 넣지 않는다).
    * 회차는 세이브 슬롯이 아니라 기기에 속한다 — 예전 세이브를 불러도 '이미 본 엔딩' 은 남는다.

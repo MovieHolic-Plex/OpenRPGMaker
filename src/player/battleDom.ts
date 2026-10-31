@@ -51,6 +51,7 @@ import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom"
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
 import { createBattleImpactController } from "@/player/battleImpactDom";
+import { stateAttackElementId } from "@/battle/battleStates";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
@@ -1592,7 +1593,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     let damaging = false;
     if (command?.kind === "attack") {
       damaging = true;
-      elementId = snapshot.actors.find((actor) => actor.recordId === snapshot.activeActorId)?.equipmentEffects?.attackElementIds?.[0];
+      const active = snapshot.actors.find((actor) => actor.recordId === snapshot.activeActorId);
+      elementId = (active ? stateAttackElementId(project, active) : undefined) ?? active?.equipmentEffects?.attackElementIds?.[0];
     } else if (command?.kind === "skill") {
       const skill = project.database.skills.find((record) => record.id === command.skillId);
       if (skill?.effect.kind === "damage") {

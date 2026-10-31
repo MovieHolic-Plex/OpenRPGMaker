@@ -126,6 +126,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.mpReleaseStep !== undefined ? { mpReleaseStep: optionalNumber(record.mpReleaseStep) } : {}),
     ...(record.fieldStepInterval !== undefined ? { fieldStepInterval: optionalNumber(record.fieldStepInterval) } : {}),
     ...(record.releaseAfterSteps !== undefined ? { releaseAfterSteps: optionalNumber(record.releaseAfterSteps) } : {}),
+    ...(record.releaseAfterBattles !== undefined ? { releaseAfterBattles: optionalNumber(record.releaseAfterBattles) } : {}),
     ...(record.fieldStepCanKill !== undefined ? { fieldStepCanKill: record.fieldStepCanKill === true } : {}),
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),

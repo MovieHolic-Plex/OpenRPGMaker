@@ -98,6 +98,7 @@ import {
   recoverStatesWhenHit,
   runStateUpkeep,
   stateBehavior,
+  stateAttackElementId,
   stateElementRateOverride,
 } from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
@@ -1929,7 +1930,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
-      hitMultiplier:gimmickDamageMultiplier(actor,target)*damageTypeMultiplier(options.project,"physical",target,actor.equipmentEffects?.attackElementIds?.[0]),
+      hitMultiplier:gimmickDamageMultiplier(actor,target)*damageTypeMultiplier(options.project,"physical",target,normalAttackElementId(actor)),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
@@ -1946,7 +1947,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target, actor.equipmentEffects?.attackElementIds?.[0]) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, actor.equipmentEffects?.attackElementIds?.[0], "physical", target)) : {}) },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, normalAttackElementId(actor), target) * damageTypeMultiplier(options.project, "physical", target, normalAttackElementId(actor)) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, normalAttackElementId(actor), "physical", target)) : {}) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -1955,7 +1956,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
-    if (result.hit) queueCounter(actor, target, "attack", actor.equipmentEffects?.attackElementIds?.[0]);
+    if (result.hit) queueCounter(actor, target, "attack", normalAttackElementId(actor));
     if (result.hit) queueStateCounter(actor, target);
   }
 
@@ -4909,8 +4910,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function normalAttackElementMultiplier(user: MutableBattler, target: MutableBattler): number {
-    const elementId = user.equipmentEffects?.attackElementIds?.[0];
-    return elementMultiplierFor(elementId, user, target);
+    return elementMultiplierFor(normalAttackElementId(user), user, target);
+  }
+
+  /** 통상 공격의 속성 — 칼 기름 같은 상태(runtimeEffects.attackElementId)가 무기 속성보다 앞선다. */
+  function normalAttackElementId(user: MutableBattler): string | undefined {
+    return stateAttackElementId(options.project, user) ?? user.equipmentEffects?.attackElementIds?.[0];
   }
 
   // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
