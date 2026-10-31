@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e9943d40a94e5b27b3c80c7e4ddec9b0460a5d91d7822ddb1cf913c5adcc107",
+ "width": 48,
+ "height": 64,
+ "kind": "terrain",
+ "name": "ramp rise 3 w3 cut through a south-facing cave cliff face (climbs north)",
+ "label": "relief-cuts-fwd/cave-steps/ramp-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "평면 채움 (3/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface with chevron texture",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat cave floor at the ramp foot",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Rows 0-47 are an inclined ramp plane with chevron strokes pointing up the slope (north). A dark outline runs down the left edge and along the bottom of the slope at row 47. Dark wall strips on the left and right sides (about x 0-11 and x 44-47) show the cut cliff sides. Rows 48-63 are a uniform flat floor with scattered specks, not a vertical face. No vertical south face of 3 or more rows sits below the ramp surface. The ramp therefore reads as a sloped top-down surface with side walls, not as a front-elevation wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has a herringbone chevron ramp with tinted dark-brown side walls. Only 20% of its dark edge pixels are neutral, so the outline is dark_material_tone rather than sticker black. Its visible tones per tile (7) match the paving reference (7) and exceed the grass reference (3). Against that, it has only 11 distinct colours in total, so each material ramp is shallow at about 4 steps against 5-6 in Beodeul. Near-flat coverage is 21% against 0% for both references. The sandy strip at the bottom and the dark side walls read as large, almost flat fills with little grain or per-stone shading. The ramp surface is also more uniform than the one-by-one shaded cobbles in the paving reference. It is clean and coherent but a little thinner and flatter than the references. Given the flat-fill coverage and the instruction to fail when in doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17821
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface with chevron texture",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat cave floor in front of the ramp",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut side walls (narrow dark strips)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48px-wide tile on every row, 0-63. Rows 0-47 are a sloped ramp plane with a chevron texture and no vertical south face. The dark line at row 47 only marks where the ramp meets the flat floor below. Rows 48-63 are uniform flat floor with sparse speckles and are not a front face. Narrow darker strips on the left (x about 0-10) and right (x about 45-48) are the cut side walls. The ramp surface is seen from above with no south-facing vertical face of 3 or more rows, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has about 7 visible tones per tile, matching the paving reference (7) and above the grass (3). Its dark edge pixels are mostly tinted (20% neutral), so the outline is a dark brown tone of the adjacent material, not a black sticker line. The chevron ramp is readable, with light and dark strokes that give roughly 5 steps. However, 21% of it is near-flat, against 0% for both references. The dark side walls and the sandy base strip read as large, almost flat fills with only sparse speckle. Only 11 distinct colours overall make the grain thinner than the references' per-stone and per-tuft shading. The ramp is competent but flatter than the references in its non-chevron areas. With the flat-fill evidence and the 'when in doubt, fail' rule, it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17609
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface with chevron texture",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right cut-wall strips (dark, narrow)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat floor strip at the south foot",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is the sloped ramp plane in rows 0-47. Its chevron pattern points up the slope and it is seen from above. A thin dark line at row 47-48 separates it from the plain flat floor in rows 48-63. That floor is ground, not a vertical south face. The ramp has no front face of 3 or more rows and no front-edge line with eave shadow. The narrow dark strips at the left and right edges are the cut walls beside the ramp. Nothing in the drawing reads as a standing object with a top and a front face, so it is a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile, the same as the paving reference and well above the grass reference's 3. Its dark edge pixels are mostly tinted (only 20% neutral), so the outlines read as dark brown beside the earthy ramp rather than a black sticker line. The ramp face shows a layered chevron/herringbone pattern with several brown-tan steps and some grain, so it is not a flat fill. Its weaknesses are the 21% near-flat coverage against 0% in both references, from the dark side walls and the sandy bottom strip, and a total palette of only 11 colours. Those make it slightly sparser than the references. Paving is also a 7-colour material, and the tone count, tinted outline and structured shading keep it acceptable next to it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18096
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope plane with chevron texture",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff wall flank (dark, vertical)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall flank (dark, vertical)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground apron at ramp foot",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48 px wide column for all 64 rows. Rows 0-47 are the sloped ramp surface, drawn as chevron or V stripes that climb north, bounded left and right by dark cliff-wall strips. A dark outline at row 47-48 separates the ramp from the plain flat ground in rows 48-63. The column scan shows no vertical south face of 3+ rows: the x=24 column goes from ramp texture (rows 0-47) directly into uniform floor (L=136, rows 48-63). The rows 48-63 band is ground, not a cliff face. The ramp is therefore a top-down sloped plane with no front elevation, so it reads as a slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, equal to the paving reference (7) and above the grass reference (3). The ramp surface carries a chevron/herringbone plank pattern with light and dark steps, roughly 5 lightness steps on the main material. Dark edge pixels are only 20% neutral, so the outlines lean brown and follow the neighbouring material instead of forming a black sticker line. Near-flat coverage is 21%, against 0% in both references. The flat areas are limited to the bottom sand strip and parts of the dark side walls, and they still show some tonal variation. The total of 11 distinct colours is low, but the tones are distinguishable by eye. The piece is slightly less grainy than the references but not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17594
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.962Z",
+ "cells": {
+  "16": [
+   "06f04af9fa79efb3",
+   "2038ad7c447badbc",
+   "302e1f08dfddde51",
+   "70cd8274eb338455",
+   "723097f739562b96",
+   "7bb75107dd9c80b4",
+   "dcdf99f6a781ac57",
+   "e2406a3e65673e9e",
+   "e65f43b57401f24a",
+   "e690440a4f41d9b8"
+  ],
+  "24": [
+   "1070a65c095f327a",
+   "4a8817201b99c1f4",
+   "4aa5cc8c8d89096b",
+   "787d8adcaed4c3a8",
+   "8dc9965a31bd6c6f",
+   "8ffb8d3cccfadaf0",
+   "96193f58b673ffda",
+   "9719a162203178fe",
+   "9ca96ffd19ba89c8",
+   "d1d2280a3ada36fb",
+   "d66be307cc8373e6",
+   "e60860edb04ea90f"
+  ],
+  "32": [
+   "0acee82027425332",
+   "0bbf40583ab1b60a",
+   "487144dd92866d10",
+   "586b78c6dda68e3c",
+   "93691b949c906ea8",
+   "940ca08683cc7c6c",
+   "95b43cc5371f7077",
+   "ac51a6e188be8fb8",
+   "b067431fb0c0ad5c",
+   "c53ff73fdf00d6ed",
+   "e479fc2f6fcefb38",
+   "febd33304f4f3ca8"
+  ],
+  "48": [
+   "3b305413790d7082",
+   "6ff0b193e6d14af7",
+   "b137951ee979c8a7",
+   "b81be78d333657ac"
+  ]
+ }
+}

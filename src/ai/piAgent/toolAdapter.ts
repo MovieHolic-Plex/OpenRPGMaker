@@ -1,5 +1,6 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
 import type { PiCharsetSelectionGate } from './charsetSelectionGate';
+import { collectToolChosenGraphics } from '@/editor/tools/toolChosenGraphics';
 import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
@@ -294,15 +295,17 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
       let constructionLogs: readonly ConstructionLog[] = [];
       const writeStarted = Date.now();
-      let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
+      // 도구가 모델 대신 고른 칩(그림 없는 대화 페이지의 주민 기본 칩 등)을 모아 아래 칩 관문에서 면제한다.
+      const { value: ran, chosen: toolChosenGraphics } = await collectToolChosenGraphics(async () => gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal, ...(options.eventAssistChat ? { chat: options.eventAssistChat } : {}) })
         : tool.mode === "write"
           ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
-          : runTool(ctx, tool.name, args));
+          : runTool(ctx, tool.name, args)));
+      let result = ran;
       if (tool.name === "find_tools" && options.findToolsCallable) result = scopeFindToolsResult(result, options.findToolsCallable);
       const ownGraphic = typeof tool.choosesOwnGraphic === 'function' ? tool.choosesOwnGraphic(args) : tool.choosesOwnGraphic === true;
       if (tool.mode === 'write' && result.ok && options.charsetGate && !tool.placesCuratedCast && !ownGraphic) {
-        const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
+        const violation = options.charsetGate.afterWrite(beforeProject, ctx.project, toolChosenGraphics);
         if (violation) { ctx.project = beforeProject; result = violation; }
       }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.

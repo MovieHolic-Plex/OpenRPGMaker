@@ -9,6 +9,7 @@
 //  순서: 걸이 = 벽면 윗줄 y·16, 바닥 무늬 = 맨 먼저, 나머지 = (y + 높이)·16 — 남쪽 가구가 나중(앞)에 그려진다.
 //  문(door, jp_city): 가로 칸막이의 1칸 틈 (x,y) 에 단다 — 틈 칸 = 인방 ★, 그 아래 벽면 높이 두 줄 = 열린 문틀(윗줄 ★ · 아랫줄 2층). 통로는 막지 않는다.
 //  옆문(sidedoor): 세로 칸막이 3줄 틈의 통로 칸 (x,y) 에 단다 — 위 두 칸(칸막이 끝 벽면) ★ + 통로 칸 2층.
+import { isTatamiFloor, layTatami } from "./tatami";
 import spec from "@/assets/handInteriorSpec.json";
 import jpSpec from "@/assets/jpInteriorSpec.json";
 import wizardingSpec from "@/assets/wizardingRoomSpec.json";
@@ -150,6 +151,12 @@ export interface HandInteriorInput {
   readonly goods?: readonly HandInteriorGoods[];
   /** 출입구 칸. 생략하면 맨 아래 줄의 실내 칸. */
   readonly start?: readonly { readonly x: number; readonly y: number }[];
+  /**
+   * 세로 칸막이 3줄 문 틈을 «트인 통로»로 그릴 칸(틈 위 두 칸). 기본(생략)은 칸막이 끝 벽면으로 그린다 — 옆문(sidedoor) 조각을 다는 자리.
+   * 2026-10-31 bbox-walls-4 실험: 벽면으로 그린 세로 문 틈은 판정자가 «벽판»으로 읽었다 → 칸 배치(v2) 길은 틈 칸을 들어가는 방의 바닥으로 그린다.
+   * 그림만 바꾼다(통행·검사는 그대로 — 벽면 칸이라 걷지는 못한다).
+   */
+  readonly passages?: readonly { readonly x: number; readonly y: number }[];
 }
 export interface HandInteriorIssue { readonly severity: "error" | "warning"; readonly code: string; readonly message: string; readonly x?: number; readonly y?: number }
 export interface HandInteriorLayers {
@@ -221,7 +228,7 @@ export function floorLayX(fd: { readonly cols: number; readonly lay?: string }, 
 }
 
 /** 1층(구조) — build_tileset.py structure() 와 같다. */
-export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
+export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling" | "passages">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
   const { W, H, g, face, top, inn } = analyseHandInteriorPlan(input.plan);
   const ceiling = input.ceiling ?? "default";
   const ceil = S.ceilings[ceiling];
@@ -239,10 +246,15 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
     return { f, w };
   };
   const lower: number[] = [];
+  const pass = new Set((input.passages ?? []).map((p) => p.y * W + p.x));
   for (let cy = 0; cy < H; cy++) for (let cx = 0; cx < W; cx++) {
     const { f, w } = mat(cx, cy);
     const west = inn(cx - 1, cy) ? 0 : 1;
-    if (g[cy]![cx] && face[cy]![cx]) { const wd = S.walls[w]!; lower.push(wd.tiles[(((face[cy]![cx]! - 1) * wd.cols + (cx % wd.cols)) * 2) + west]!); }
+    if (g[cy]![cx] && face[cy]![cx] && pass.has(cy * W + cx)) {
+      const sh = (pass.has((cy - 1) * W + cx) ? 0 : 1) | (west ? 2 : 0);
+      const fd = S.floors[f]!;
+      lower.push(fd.tiles[((cy % fd.rows) * fd.cols + (floorLayX(fd, cx, cy) % fd.cols)) * 4 + sh]!);
+    } else if (g[cy]![cx] && face[cy]![cx]) { const wd = S.walls[w]!; lower.push(wd.tiles[(((face[cy]![cx]! - 1) * wd.cols + (cx % wd.cols)) * 2) + west]!); }
     else if (g[cy]![cx]) {
       const sh = (cy > 0 && face[cy - 1]![cx] ? 1 : 0) | (west ? 2 : 0);
       const fd = S.floors[f]!;
@@ -255,6 +267,15 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
         | (!oN && !oW && inn(cx - 1, cy - 1) ? 4 : 0) | (!oN && !oE && inn(cx + 1, cy - 1) ? 8 : 0);
       lower.push((d ? corners?.[`${b}:${d}`] : undefined) ?? ceil[b]!);
     } else lower.push(S.void);
+  }
+  // 다다미 바닥은 무늬가 아니라 통짜 돗자리로(tatami.ts) — 벽마다 반쪽 돗자리가 잘리지 않게.
+  for (const [id, fd] of Object.entries(S.floors)) {
+    if (!isTatamiFloor(id, fd)) continue;
+    // 문 틈·입구(좌우나 위아래가 막힌 한 칸 폭)는 문턱이라 돗자리에서 뺀다 — 홀수 칸이 되어 못 깔리지 않게.
+    const gap = (x: number, y: number) => (!inn(x - 1, y) && !inn(x + 1, y)) || (!inn(x, y - 1) && !inn(x, y + 1)) || y === H - 1;
+    const floorOf = (i: number) => { const x = i % W, y = (i - x) / W; return !!g[y]![x] && !face[y]![x] && !gap(x, y) && mat(x, y).f === id; };
+    if (!lower.some((_, i) => floorOf(i))) continue;
+    layTatami(lower, W, fd.tiles, floorOf, (i) => { const x = i % W, y = (i - x) / W; return (y > 0 && face[y - 1]![x] ? 1 : 0) | (inn(x - 1, y) ? 0 : 2); });
   }
   void issues;
   return { W, H, lower };
@@ -636,6 +657,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (!ok) issues.push({ severity: "warning", code: "unreachable-piece", message: `${label} 옆에 닿는 칸이 없다 — 쓸 수 없는 가구` });
     }
   }
+  for (const p of input.passages ?? []) { const i = p.y * W + p.x; if (inBounds(p.x, p.y) && A.face[p.y]?.[p.x]) { L2[i] = -1; L3[i] = -1; L4[i] = -1; } }
   return { width: W, height: H, lowerTiles: lower, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, issues, reachable, floorCells, unreachedFloor, start,
     travel: landings.map((l) => ({ label: l.label, x: l.i % W, y: Math.floor(l.i / W),
       ...(l.trigger !== undefined ? { trigger: { x: l.trigger % W, y: Math.floor(l.trigger / W) } } : {}),

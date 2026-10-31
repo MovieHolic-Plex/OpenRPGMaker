@@ -3,7 +3,7 @@ import { resolve, relative, sep } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { isDeepStrictEqual } from 'node:util';
 import { evaluate, knownGood, resultStatus, MAP } from './checks.mjs';
-import { execute, digest, stored, observeSaved, writeRuntimeProject, captureSaved } from './editorDriver.mjs';
+import { execute, digest, stored, observeSaved, writeRuntimeProject, captureSaved, assistantReports } from './editorDriver.mjs';
 import { verifyRuntime } from './runtimeVerifier.mjs';
 
 const seedPath=resolve('harness-data/assistant-capability/seed.json');
@@ -236,7 +236,7 @@ async function recheckSaved() {
   if(changedOnReload) {
     if(applied.meta.bootNormalization?.lib!==saved.project.meta.bootNormalization?.lib)receipt={...receipt,libraryRevisionChange:{before:applied.meta.bootNormalization?.lib,after:saved.project.meta.bootNormalization?.lib,gameContentEqual:true}};
   }
-  const checks=evaluate(entry,before,applied,trace.events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n'));
+  const checks=evaluate(entry,before,applied,assistantReports(trace.events).join('\n'));
   if(entry.check==='graphic') checks.required.push({id:'actual-candidate-image-received',ok:trace.events.some(e=>e.type==='execution_status'&&e.name==='charset.image.received'&&e.ok&&e.data?.selectionIds?.includes(`charset:${entry.textureKey}:${entry.frame===73?4:0}`)),detail:'원본 실행의 실제 제공자 입력과 후보 PNG 응답 완료 영수증'});
   const result={...previous,gates:{
     execution:gate([{id:'native-pi-run',ok:true,detail:'원본 trace.json의 실제 입력과 done'},

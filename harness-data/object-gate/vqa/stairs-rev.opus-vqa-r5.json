@@ -1,0 +1,576 @@
+{
+ "round": 5,
+ "judge": "claude opus 5.5 (independent adversarial VQA)",
+ "rubric": "FAIL if at 1x the piece does not read as a walkable descent away from the viewer (reads as panel/mat/crate/grate/vent/door), direction reads wrong, the strip has gaps or misalignment with the lip or road, or the palette/texture clashes badly with its style ground and cliff. Anything lesser is a minor. Judged from the sheets, 1x/3x probes, per-piece pixel dumps and enlargements, forward-cliff and forward-snow-stairs sheets, and village scenes.",
+ "images": [
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sheet-snow-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/forward-snow-stairs-sheet.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/snow-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/snow-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/snow-steps-forward-cliff.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sheet-peat-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sheet-cave-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/peat-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/cave-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sheet-grass-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sheet-sand-steps.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/grass-steps-probe.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/grass-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/sand-steps-probe-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/opus1-rev-3x.png",
+  "/home/main/claude-viz/stairs-vqa/rev-r5/opus3-rev-3x.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w2.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h1-w3.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/snow-steps/stairs-h4-w3.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w2.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/peat-steps/stairs-h1-w3.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w2.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/cave-steps/stairs-h1-w3.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/sand-steps/stairs-h1-w3.png",
+  "/home/main/z-project/rpg-zzu-stairs/scripts/experiments/bbox-village/stairs/rev/grass-steps/stairs-h1-w3.png",
+  "/tmp/vqa5/snow-stairs-x6.png",
+  "/tmp/vqa5/snowprobe-crop.png"
+ ],
+ "pieces": {
+  "grass-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "grass-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "grass-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "grass-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "grass-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark-outlined stone blocks make each tread a bit panel-like; OK against the cobble road"
+   ]
+  },
+  "grass-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "dark-outlined stone blocks make each tread a bit panel-like; OK against the cobble road"
+   ]
+  },
+  "grass-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "grass-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 high-contrast dark/white stripes would read as a grate in isolation; it is carried by the matching cobble road and grey cheeks"
+   ]
+  },
+  "grass-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "8 high-contrast dark/white stripes would read as a grate in isolation; it is carried by the matching cobble road and grey cheeks"
+   ]
+  },
+  "sand-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "sand-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "faint lighter inner rim on the near tread; subtle enough not to read as a frame"
+   ]
+  },
+  "sand-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "faint lighter inner rim on the near tread; subtle enough not to read as a frame"
+   ]
+  },
+  "sand-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "sand-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright yellow nosing stripes are dense at h3-h4"
+   ]
+  },
+  "sand-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright yellow nosing stripes are dense at h3-h4"
+   ]
+  },
+  "sand-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright yellow nosing stripes are dense at h3-h4"
+   ]
+  },
+  "sand-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "bright yellow nosing stripes are dense at h3-h4"
+   ]
+  },
+  "snow-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope",
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope",
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope",
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope",
+    "ramp is road-tan with blue-grey bands; no snow on it, unlike the white snow stair treads"
+   ]
+  },
+  "snow-steps/stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "single near tread is fully enclosed: white nosing on top, light blue-grey inner rim columns at left/right (x=1, x=30) and blue rim rows at the bottom (y=29-30), inside the dark x=0/x=31 outline; on the tan road at 1x it reads as a framed white panel/box lid (same pattern that failed peat/cave h1 in round 4)",
+    "descent cue is weak: the only division between treads is a 1 px pale-blue line, with no dark riser or shadow band, so the step drop is barely legible at 1x"
+   ],
+   "minors": [
+    "near-tread grain (pale blue and white specks on 236,243,250) is faint at 1x and reads as frost, acceptable; the sparse pure-white dots on the far tread read as glitter"
+   ]
+  },
+  "snow-steps/stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "single near tread is fully enclosed: white nosing on top, light blue-grey inner rim columns at left/right (x=1, x=30) and blue rim rows at the bottom (y=29-30), inside the dark x=0/x=31 outline; on the tan road at 1x it reads as a framed white panel/box lid (same pattern that failed peat/cave h1 in round 4)",
+    "descent cue is weak: the only division between treads is a 1 px pale-blue line, with no dark riser or shadow band, so the step drop is barely legible at 1x"
+   ],
+   "minors": [
+    "near-tread grain (pale blue and white specks on 236,243,250) is faint at 1x and reads as frost, acceptable; the sparse pure-white dots on the far tread read as glitter"
+   ]
+  },
+  "snow-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles"
+   ]
+  },
+  "snow-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles"
+   ]
+  },
+  "snow-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles"
+   ]
+  },
+  "snow-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles"
+   ]
+  },
+  "snow-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles",
+    "6 pale stripes in 32 px edge toward a window-blind read; contrast is low enough that it no longer reads as a vent"
+   ]
+  },
+  "snow-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "very low contrast (no dark riser like the forward snow stairs); steps read only from pale-blue stripe rhythm",
+    "blue-grey cheek frame on a tan road pops out more than the cheeks of other styles",
+    "6 pale stripes in 32 px edge toward a window-blind read; contrast is low enough that it no longer reads as a vent"
+   ]
+  },
+  "peat-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "peat-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "peat-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "peat-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "peat-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "peat-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "redrawn h1 has no side rim and reads as two slabs stepping down; near-tread speckle is a bit busy, and the near tread is lighter than the surrounding ground"
+   ]
+  },
+  "peat-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "redrawn h1 has no side rim and reads as two slabs stepping down; near-tread speckle is a bit busy, and the near tread is lighter than the surrounding ground"
+   ]
+  },
+  "peat-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "peat-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "peat-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "peat-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "peat-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands",
+    "dense stripes, legible only as rhythm at 1x"
+   ]
+  },
+  "peat-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands",
+    "dense stripes, legible only as rhythm at 1x"
+   ]
+  },
+  "cave-steps/ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "cave-steps/ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "cave-steps/ramp-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "cave-steps/ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": []
+  },
+  "cave-steps/ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "banding at h3-h4 starts to read as shallow steps rather than a smooth slope"
+   ]
+  },
+  "cave-steps/stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "redrawn h1 has no side rim and reads as two slabs stepping down; near-tread speckle is a bit busy, and the near tread is lighter than the surrounding ground"
+   ]
+  },
+  "cave-steps/stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "redrawn h1 has no side rim and reads as two slabs stepping down; near-tread speckle is a bit busy, and the near tread is lighter than the surrounding ground"
+   ]
+  },
+  "cave-steps/stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "cave-steps/stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "cave-steps/stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "cave-steps/stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands"
+   ]
+  },
+  "cave-steps/stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands",
+    "dense stripes, legible only as rhythm at 1x"
+   ]
+  },
+  "cave-steps/stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "low-contrast single-hue tread bands",
+    "dense stripes, legible only as rhythm at 1x"
+   ]
+  }
+ },
+ "verdict": "FAIL",
+ "summary": "78/80 pass. Geometry holds everywhere: 32 px strips sit on the lip with no gaps, and village scenes read correctly. The round-4 fixes for peat and cave h1 work: the side rim is gone and they read as two slabs stepping down. Snow h4 no longer reads as a vent; its stripes are low contrast and only edge toward a blind. Snow treads are now white, matching the forward snow stairs. Still failing: snow stairs h1 (w2 and w3). The single near tread is fully enclosed by a light rim on three sides inside a dark outline, the pattern that failed peat and cave in round 4. The only tread division is a 1 px pale line, so at 1x on the tan road it reads as a framed white panel or box lid, not a step. The faint grain on the near tread is acceptable as frost. Top minors: (1) snow stairs have no dark riser at all, so the step read depends on pale stripes; (2) grass h4 has a grate-like stripe density, carried by its cobble road; (3) ramps at h3-h4 look stepped; (4) snow ramps are tan with no snow."
+}

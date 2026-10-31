@@ -1,0 +1,417 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d629ba898c3f227937346d30fc74be99a9605288ebe6d58efe5b104a30b86abf",
+ "width": 32,
+ "height": 64,
+ "kind": "terrain",
+ "name": "stairs rise 3 w2 cut through a south-facing sand cliff face (climbs north)",
+ "label": "relief-cuts-fwd/sand-steps/stairs-h3-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 99,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads, 6 steps each 8 rows (rows 0-4, 8-12, 16-20, 24-28, 32-36, 40-44)",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "flat sand ground in front of the stairs",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each step repeats an 8-row cycle. A 4-5 row tread band is lighter and ends in a cream front-edge line (rows 4, 12, 20, 28, 36, 44). Below each line, 3 rows of darker riser or shadow (rows 5-7, 13-15, and so on) form the front face. Together these read as treads with risers. The narrow dark strips at the left and right edges are the cut's cliff walls, not a receding side face. Rows 48-63 are plain flat sand ground with no structure. It is terrain, so the three-quarter step structure of the stairs is what counts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sand-coloured wooden stair with a sand ground strip at the bottom. Measured: 7 visible tones per tile, equal to the paving reference and above the grass reference's 3. Dark edge pixels are 0% neutral, so the outline is tinted brown rather than black. Near-flat coverage is 23% against 0% for both references, and the sand strip at the bottom is a large single-colour fill with no grain or speckle. The stair treads show only about 3-4 steps per material (highlight, light, mid, shadow edge) and little grain. Beodeul ground tiles carry texture dots throughout, so the flat sand and the shallow wood ramp fall short of that. With only 10 distinct colours in total, the piece is simpler than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14569
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step tread 1",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "step tread 2",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "step tread 3",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "step tread 4",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-31"
+     },
+     {
+      "part": "step tread 5",
+      "rows": "32-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-39"
+     },
+     {
+      "part": "step tread 6",
+      "rows": "40-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair block (rows 0-47) is a stack of repeating steps on an 8-row cycle. Each step has a tread band of about 4 rows, then a 1-row bright front-edge line (rows 4, 12, 20, 28, 36, 44) and a 3-row dark riser or shadow below it (rows 5-7 and so on). So each step shows a top surface, an edge line and a vertical front face. The two edge strips are cliff-wall texture drawn face-on, not a receding side face. Rows 48-63 are flat sand ground."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow sand-coloured staircase: about 4 tan/sand steps, with brown edges between treads and a flat sand landing at the bottom. Its measured 7 visible tones per tile matches the paving reference (7) and is well above the grass (3). The 0% neutral dark edge share shows the outlines are brown-tinted, so they read as dark material tone, not near-black. Weaknesses: 23% near-flat coverage against 0% in both references, with the flat sand landing at the bottom and the wide tread faces as the visible flat fills. The tread faces carry little grain or per-pixel speckle, and the sand landing has no grain or pebbles, unlike the references, which texture every area. Only 10 distinct colours in total against 80 for the grass. Shading is about 4 steps per material against the 5-6 of Beodeul. The ramp structure is clean but plainer and flatter than the references, so it would look thinner beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15264
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "step 2 tread",
+      "rows": "8-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "step 3 tread",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "step 4 tread",
+      "rows": "24-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-32"
+     },
+     {
+      "part": "step 5 tread",
+      "rows": "32-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-39"
+     },
+     {
+      "part": "step 6 tread",
+      "rows": "40-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair run repeats every 8 rows. Each step has a 4-row tread band, then a 1-row bright front-edge line (rows 4, 12, 20, 28, 36, 44), then about 3 rows of dark shadow or riser face below it (rows 5-7, 13-15, and so on). Every step therefore shows a top surface with a front-edge line and a front face of about 3 rows, which fits a 3/4 view of terrain. The dark strip at the left edge is the cliff wall, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow sand staircase with wood-like steps, and it reads as a clean, legible stair. Measured facts: 7 visible tones per tile, matching the paving reference (7) and above the grass reference (3). The dark edge pixels are 0% neutral, so the outlines lean brown and count as dark_material_tone. Near-flat coverage is 23%, while both references are at 0%. The flat areas are the sand landing at the bottom and parts of the step faces, which are large single-colour fills with no grain or speckle. Raw colours are only 8 per tile and 10 in total, versus 26 and 80 for the grass reference, so the surface texture is thin. Each step has about 3-4 tones (highlight, light, mid, dark edge), and the sand has only 1-2, so it is shallower than the roughly 5-6 steps per material in Beodeul. The sand landing lacks the grain and pebble dots that the references carry, so it looks flatter and a little sticker-like beside them. Tone counts hold up, but flat coverage and the plain sand area bring it below the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16088
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (repeating steps, bright nosing lines at rows 4, 12, 20, 28, 36, 44)",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "flat sand ground in front of the stairs",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each step repeats the same pattern. Rows 0-3 are a lighter tread band that ends in a bright 1-row front-edge line at row 4 (L=244, #fff6d0). Rows 5-7 are a dark eave shadow (L=118). Rows 8-11 are the mid-tone riser face below. The same sequence recurs at rows 12, 20, 28, 36 and 44 down to row 47. The tread band is about 5 rows and the face below it about 7 rows, so each step has both a top surface and a front face. This matches the green cabinet and seat references, not the rim-only red ones. No receding side face is drawn. Rows 48-63 are flat sand floor with no structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow sand-coloured stair strip with a sand-floor base. Its steps are drawn as repeated horizontal bands, each with a light top, a mid face and a brown edge. That gives roughly 3 lightness steps per material, against about 5 in the references. The outline is a tinted brown, with 0% neutral dark edge pixels, so it is not a sticker line. The sand floor below the stairs is a large, nearly flat area with almost no grain, speckle or pebbles. The measured near-flat coverage is 23%, while both references are at 0%. The 7 visible tones per tile match the paving reference, but the picture shows regular banding with little per-step texture, such as wood grain or sand speckle. By eye it looks flatter and simpler than the grass and paving references, which are textured throughout. The stairs also fill only a small part of the 4x3 patch and read as an isolated object instead of ground texture. There is no sand-cliff context, and the sand area lacks variation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15039
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.741Z",
+ "cells": {
+  "16": [
+   "1e6f86f501167850",
+   "304eab11e68284e3",
+   "40dcbd3cc73f50d5",
+   "53c08d809fd5282b",
+   "87d5460e72e0dca2",
+   "a2837d835df7f0a7",
+   "ba8f054bcb489300"
+  ],
+  "24": [
+   "0606c5cb464e6367",
+   "104c92a523007e27",
+   "11382fc2ae188daa",
+   "21a768b92133fb1d",
+   "223739916f2c1467",
+   "22b0db5ef19ae1b7",
+   "2b91345ab6f313f4",
+   "3abeabfa16561b94",
+   "430bb3786b9fcb32",
+   "5139d7d9b2b69943",
+   "5fef7c4c692005b2",
+   "662404d02f714955",
+   "686fb15f62792310",
+   "6a20d87529c013f4",
+   "7248748961e86f24",
+   "7945adf76fbb7ff8",
+   "7ee85874ec010c62",
+   "815cd14bd81bdcc1",
+   "820a64a0e1fb1de3",
+   "83293199d1f3ed8c",
+   "854c21c0acbe3ad6",
+   "88a1d40ddb167d74",
+   "93789f6873339ded",
+   "939959621a4f917d",
+   "994b657a29361a22",
+   "9aba8e47c636965c",
+   "9e13b5307079a2cb",
+   "a4377bbf3538115e",
+   "c49a9c6d903f22f5",
+   "c99a3fbe4a3f95e0",
+   "cd96d36d5a3ed42f",
+   "ce3b24953463e0da",
+   "ce90b00c6ff6fc11",
+   "e4eacef805e721ca",
+   "e7393b68ae653f57",
+   "f72b8a016be17713"
+  ],
+  "32": [
+   "2bbe946a83cd356a",
+   "4b1ea3fe12d2c6a8"
+  ],
+  "48": [
+   "02e313be75747a14",
+   "532d248bd33ef2ab",
+   "7809ee6976c2fa5e",
+   "7e0a4d38238505b3",
+   "7f134d71fac45158",
+   "8149e3f04dc94606",
+   "83109e080ec8e538",
+   "b64d0fc5e489ad60",
+   "c0287bf0464a673c",
+   "dc341093f59e6f26",
+   "e4dfd0b3aacf6b5f",
+   "e66b6feada2475ab"
+  ]
+ }
+}

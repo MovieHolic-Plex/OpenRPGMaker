@@ -30,7 +30,7 @@ import { Input } from "@/player/input";
 import type { StepResult } from "@/player/interpreter";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { AUDIO_HANDOFF_REGISTRY_KEY, resumeAudioState, stopAllAudio } from "@/player/audio";
-import { startMapBgm } from "@/player/mapBgm";
+import { startMapBgm, startMapBgs } from "@/player/mapBgm";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import type { GameMap, MapId, MoveCommand, TilesetDef, Trigger } from "@/project/types";
 import type { RuntimeEventPositions, RuntimeEventView } from "@/project/runtimeEventState"
@@ -485,6 +485,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     resumeAudioState(this.session.audio, project);
     if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
+    // 시작 맵의 환경음(BGS) — 첫 loadMap 은 applyMapBgm:false 라 startMapBgs 를 건너뛴다. 세이브에 환경음이 없을 때만(이어하기는 저장된 것을 유지).
+    if (!this.session.audio.bgs) startMapBgs(project, this.session, this.session.currentMapId);
     const eventId = this.initialEventTestId();
     if (eventId) void this.runInitialEventTestWhenReady(eventId);
     else void this.fireAutoTriggersWhenReady();
@@ -757,6 +759,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     stopAllAudio();
     resumeAudioState(this.session.audio, project);
     if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
+    if (!this.session.audio.bgs) startMapBgs(project, this.session, this.session.currentMapId);
     this.refreshRuntimeSurfaces();
     syncFollowerSprites(this);
   }
@@ -786,8 +789,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     showSceneGameOverScreen(this, message, gameOverId);
   }
 
-  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string, continueTo?: import("@/project/types").EndingContinueTo): void {
-    showSceneEndingScreen(this, title, message, presentation, endingId, continueTo);
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string, continueTo?: import("@/project/types").EndingContinueTo, epiloguePlayed?: boolean): void {
+    showSceneEndingScreen(this, title, message, presentation, endingId, continueTo, epiloguePlayed);
   }
 
   returnToTitle(): void {

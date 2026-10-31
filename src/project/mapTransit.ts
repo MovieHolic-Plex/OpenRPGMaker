@@ -346,7 +346,11 @@ export interface TransitSim {
   junctions?: TransitJunctions;
 }
 
-export interface TransitJunctionPass { box: number; entryDir: TransitDir; swept: Set<string> }
+export interface TransitJunctionPass {
+  box: number; entryDir: TransitDir; swept: Set<string>;
+  /** 이 노선이 상자를 지나며 밟는 건널목 구역 — 앞 정지선부터 상자 건너 STOP_LINE_GAP 칸까지 몸이 지나는 칸(처음 쓸 때 만든다). */
+  crossZone?: Set<string>;
+}
 export interface TransitJunctions { boxes: Array<Set<string>>; byRoute: TransitJunctionPass[][] }
 
 /** 신호 주기(초): 동서 초록 → 전부 빨강 → 남북 초록 → 전부 빨강. */
@@ -479,6 +483,22 @@ export function transitPose(sim: TransitSim, v: TransitVehicleState): TransitPos
   return { head, dir, blinker, rect, open: v.wait > 0 && v.stopAt !== null };
 }
 
+/** 그림 한 칸의 화소(차 시트는 16px 칸으로 그린다 — 렌더러 SPRITE_CELL 과 같다). */
+const DRAWN_CELL_PX = 16;
+
+/**
+ * 그림이 땅에 닿는 사각(칸, 실수) — 렌더러(syncTransitSprites)와 같은 가로 맞춤: 그림 폭이 몸 폭과 다르면 몸 가운데에 맞춘다.
+ * 몸보다 넓게 그린 차(옆·앞뒤로 삐져나온 그림)는 그만큼 가로로 넓힌다. 세로는 몸 사각 그대로 — 그림이 몸 위로 솟은 만큼
+ * (프레임 높이 − 발자국 높이)은 3/4 시점의 지붕·옆면 높이라 땅이 아니다(그 뒤에 선 사람은 차 뒤에 가려질 뿐이다).
+ */
+export function transitGroundRect(def: Pick<TransitVehicleDef, "frames">, pose: Pick<TransitPose, "rect" | "dir">): TransitPose["rect"] {
+  const r = pose.rect;
+  const f = def.frames[pose.dir];
+  if (!f || f.w <= r.w * DRAWN_CELL_PX) return r;
+  const w = f.w / DRAWN_CELL_PX;
+  return { x: r.x + r.w / 2 - w / 2, y: r.y, w, h: r.h };
+}
+
 /** 실수 사각이 걸치는 정수 칸들. */
 export function transitRectCells(rect: { x: number; y: number; w: number; h: number }): TransitPoint[] {
   const out: TransitPoint[] = [];
@@ -557,6 +577,42 @@ const touchesBox = (rect: TransitPose["rect"], box: Set<string>): boolean => tra
 
 /** 정지선 — 상자(차선이 엇갈리는 칸) 앞 이만큼(칸)에서 선다. modern_city 교차로 횡단보도(2칸)를 밟지 않게. */
 const STOP_LINE_GAP = 2;
+
+/**
+ * 건널목 구역 — 이 노선 몸(길이 1)이 앞 정지선을 넘는 자리부터 상자를 지나 건너편 STOP_LINE_GAP 칸(건너편 횡단보도)을
+ * 빠져나갈 때까지 밟는 칸. 사람이 여기 있으면 정지선에서 기다린다(건널목 위에 서서 사람 옆을 막지 않게).
+ */
+function crossZoneOf(r: NormalizedTransitRoute, pass: TransitJunctionPass, box: Set<string>): Set<string> {
+  if (pass.crossZone) return pass.crossZone;
+  const zone = new Set<string>();
+  const lo = r.loop ? 0 : -1, hi = r.loop ? r.cells.length : r.cells.length + 1;
+  for (let p = lo; p <= hi; p += 0.25) {
+    const { rect, dir } = transitBodyRect(r, p, 1);
+    const back: TransitDir = dir === "left" ? "right" : dir === "right" ? "left" : dir === "up" ? "down" : "up";
+    if (!touchesBox(reachAhead(rect, dir, STOP_LINE_GAP), box) && !touchesBox(reachAhead(rect, back, STOP_LINE_GAP), box)) continue;
+    for (const c of transitRectCells(rect)) zone.add(cellKey(c.x, c.y));
+  }
+  pass.crossZone = zone;
+  return zone;
+}
+
+/**
+ * 정지선을 넘으려는 차 앞 건널목 구역(앞 횡단보도·상자·건너편 횡단보도)에 사람이 있는가 — 있으면 정지선에서 선다.
+ * 이미 정지선을 넘은 차는 여기서 세우지 않는다(사람 바로 앞 규칙이 맡는다).
+ */
+function crossingHasPerson(sim: TransitSim, v: TransitVehicleState, curRect: TransitPose["rect"], curDir: TransitDir, nextRect: TransitPose["rect"], nextDir: TransitDir, isBlocked: (x: number, y: number) => boolean): boolean {
+  const j = sim.junctions!;
+  const r = sim.routes[v.routeIndex]!;
+  for (const pass of j.byRoute[v.routeIndex] ?? []) {
+    const box = j.boxes[pass.box]!;
+    if (touchesBox(reachAhead(curRect, curDir, STOP_LINE_GAP), box) || !touchesBox(reachAhead(nextRect, nextDir, STOP_LINE_GAP), box)) continue;
+    for (const k of crossZoneOf(r, pass, box)) {
+      const [x, y] = k.split(",").map(Number) as [number, number];
+      if (isBlocked(x, y)) return true;
+    }
+  }
+  return false;
+}
 
 /** 사각을 진행 방향으로 늘인다(정지선 내다보기). */
 function reachAhead(rect: TransitPose["rect"], dir: TransitDir, by: number): TransitPose["rect"] {
@@ -688,7 +744,8 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
       if (v.pos <= s.index + 1e-6 && next >= s.index) { next = s.index; reached = s; break; }
     }
     // 막힘: 새로 들어갈 몸 칸이 주인공·다른 탈것과 겹치면 서 있는다(정류장 대기 설정은 그대로 둔다)
-    const curRect = transitPose(sim, v).rect;
+    const curPose = transitPose(sim, v);
+    const curRect = curPose.rect;
     const cur = new Set(transitRectCells(curRect).map((c) => cellKey(c.x, c.y)));
     const nextPose = transitPose(sim, { ...v, pos: next });
     // 교차로: 빨간불·상자 안 엇갈린 탈것이면 정지선에서 기다린다(막힘 초에는 넣지 않는다 — 신호 대기는 막힘이 아니다).
@@ -698,7 +755,14 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     const ahead = transitHeadAt(r, next + 1);
     const aheadCells = transitRectCells(transitFootprintRect(ahead.head, ahead.dir, 1));
     const enter = transitRectCells(nextPose.rect).filter((c) => !cur.has(cellKey(c.x, c.y)));
-    const byPlayer = enter.some((c) => isBlocked(c.x, c.y));
+    // 사람 앞: 다음 몸 칸 전체와 머리 앞 두 칸에 사람(주인공·걷는 인물)이 있으면 선다. 새로 들어갈 칸만 보면 몸 밑으로
+    // 걸어 들어온 사람 위를 그대로 밀고 지나갔고, 머리 바로 앞에서야 서면 범퍼가 사람에게 닿은 뒤였다(첫사랑 r4 횡단보도).
+    // 사람이 비키면(isBlocked 가 거짓이 되면) 다음 걸음에 다시 간다.
+    const ahead2 = transitHeadAt(r, next + 2);
+    // 몸 칸은 그림이 땅에 닿는 사각(transitGroundRect)으로 본다 — 몸보다 넓게 그린 차가 옆 행인 위에 겹쳐 서지 않게.
+    const yieldCells = [...transitRectCells(transitGroundRect(v.def, nextPose)), ...aheadCells, ...transitRectCells(transitFootprintRect(ahead2.head, ahead2.dir, 1))];
+    // 건널목: 정지선을 넘으려는데 앞 횡단보도·교차로·건너편 횡단보도에 사람이 있으면 정지선에서 선다(r5: 횡단보도 위에서 섰다).
+    const byPlayer = yieldCells.some((c) => isBlocked(c.x, c.y)) || crossingHasPerson(sim, v, curRect, curPose.dir, nextPose.rect, nextPose.dir, isBlocked);
     const blockers = new Set<TransitVehicleState>();
     for (const c of [...enter, ...aheadCells]) { const o = occ.get(cellKey(c.x, c.y)); if (o) blockers.add(o); }
     // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린(직각) 방향**이고 STUCK_RELEASE_SEC 넘게
@@ -720,10 +784,22 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
   if (gone.length) sim.vehicles = sim.vehicles.filter((v) => !gone.includes(v));
 }
 
+/**
+ * 사람 위에 선 탈것을 치운다 — 맵에 들어올 때 미리 돌리기(createTransitSim warmup)는 사람을 모르고 돌기 때문에, 들어오자마자
+ * 서 있는 행인 칸 위에 차가 겹쳐 놓일 수 있었다(첫사랑 금요일 밤: 횡단보도에 선 행인 위에 차가 서서 장면 내내 겹쳐 있었다).
+ * 그런 차는 길에서 빼고 지운 수를 돌려준다. 화면이 밝아지기 전(들어온 직후)에만 부른다.
+ */
+export function transitClearPeople(sim: TransitSim | undefined, isBlocked: (x: number, y: number) => boolean): number {
+  if (!sim) return 0;
+  const before = sim.vehicles.length;
+  sim.vehicles = sim.vehicles.filter((v) => !transitRectCells(transitGroundRect(v.def, transitPose(sim, v))).some((c) => isBlocked(c.x, c.y)));
+  return before - sim.vehicles.length;
+}
+
 /** (x, y) 칸이 탈것 몸에 덮였는가 — 주인공 통행 판정이 쓴다. */
 export function transitCellBlocked(sim: TransitSim | undefined, x: number, y: number): boolean {
   if (!sim) return false;
-  for (const v of sim.vehicles) if (transitRectCells(transitPose(sim, v).rect).some((c) => c.x === x && c.y === y)) return true;
+  for (const v of sim.vehicles) if (transitRectCells(transitGroundRect(v.def, transitPose(sim, v))).some((c) => c.x === x && c.y === y)) return true;
   return false;
 }
 

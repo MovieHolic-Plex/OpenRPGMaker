@@ -212,6 +212,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(tileValueCaption(cmd.tile))
   ),
   callCommonEvent: (cmd) => commandLine("다른 이벤트 부르기", valuePart(commonEventName(cmd.commonEventId))),
+  planSchedule: (cmd) => commandLine("일정표 짜기", valuePart(cmd.scheduleId || "?")),
+  runSchedule: (cmd) => commandLine("일정표 실행", valuePart(cmd.scheduleId || "?")),
+  script: (cmd) => commandLine("스크립트", valuePart(cmd.name || cmd.summary || (cmd.source.trim() ? "TypeScript" : "비어 있음"))),
   callMapEvent: (cmd) => commandLine("맵 위 이벤트 부르기", valuePart(mapEventName(cmd.eventId))),
   battleProcessing: (cmd) => commandLine(
     "전투",
@@ -1190,7 +1193,9 @@ function choicesSummaryParts(cmd: Extract<Command, { kind: "choices" }>): readon
     options.forEach((option, index) => {
       if (index > 0) parts.push(plainPart(" "));
       const label = oneLine(option.text) || `선택지 ${index + 1}`;
-      parts.push(choiceOptionPart(`${index + 1}.${label}`));
+      // 조건 붙은 줄은 목록에서 바로 알아보게 표시한다(보일 조건 ?, 고를 조건 ◐).
+      const marks = `${option.showWhen ? "?" : ""}${option.enableWhen ? "◐" : ""}`;
+      parts.push(choiceOptionPart(`${index + 1}.${label}${marks ? ` ${marks}` : ""}`));
     });
   }
   parts.push(plainPart("  "), choiceCancelPart(choiceCancelSummary(cmd)));

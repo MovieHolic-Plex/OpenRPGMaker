@@ -41,7 +41,8 @@ const CONTENT_SECURITY_POLICY = [
   // 인터뷰 선택 배경은 공개 R2(cdn.openrpgmaker.com)에서 받는다 — src/editor/interviewSceneBank.ts
   "img-src 'self' app: oprn-asset: data: blob: https://cdn.openrpgmaker.com",
   "media-src 'self' app: oprn-asset: data: blob:",
-  "script-src 'self' app:",
+  // 'wasm-unsafe-eval': 이벤트 스크립트 샌드박스(QuickJS wasm, src/player/script/engine.ts)를 컴파일한다. JS eval 은 여전히 막힌다.
+  "script-src 'self' app: 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline' app:",
   "connect-src 'self' app: http://127.0.0.1:* ws://127.0.0.1:*",
 ].join("; ");
@@ -159,7 +160,7 @@ export function registerAssetProtocol(sessions: SessionRegistry): void {
     const session = sessions.findByProjectId(url.hostname);
     if (!session) return new Response("unknown project", { status: 404 });
     const sha256 = url.pathname.replace(/^\//, "");
-    const row = session.store.listAssets().find((asset) => asset.sha256 === sha256);
+    const row = session.store.findAsset(sha256);
     if (!row) return new Response("unknown asset", { status: 404 });
     const bytes = await session.store.assetBytes(sha256);
     return new Response(bytes, {

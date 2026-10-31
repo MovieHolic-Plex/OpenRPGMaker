@@ -1,0 +1,190 @@
+{
+ "round": 3,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "bbox-village-ramps",
+ "images": [
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/ramp-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/stairs-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/probe-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/probe-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/probe2-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/probe2-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-sol31-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-sol32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-terra32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-terra33-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-sol31-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-sol32-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-terra32-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r3/hill-terra33-map-1x.png"
+ ],
+ "rubric": "height vs cliff, edge seams, style vs beodeul cliffs, front-elevation look, 1x readability",
+ "pieces": {
+  "ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Flat fill with no slope cue; acceptable only because the rise is one row (reads as a notch over 16px).",
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Flat fill with no slope cue; acceptable only because the rise is one row (reads as a notch over 16px).",
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "ramp-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 2-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "ramp-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 2-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff.",
+    "w3: wide flat expanse makes the lack of slope modelling more obvious."
+   ]
+  },
+  "ramp-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 3-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips. The taller the cut, the more it reads as a flat corridor/slot."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "ramp-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 3-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips. The taller the cut, the more it reads as a flat corridor/slot."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff.",
+    "w3: wide flat expanse makes the lack of slope modelling more obvious."
+   ]
+  },
+  "ramp-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 4-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips. The taller the cut, the more it reads as a flat corridor/slot."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "ramp-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the 4-row cut is one uniformly speckled dirt rectangle (ramp-8x) with only a weak light-to-dark vertical gradient; no contour/slope bands, no foreshortening, no edge shadow that varies with depth. In probe-3x/probe2-3x and the hill crops it reads as the flat track running through a vertical notch/slot in the cliff, not as a surface climbing up and away; at 1x it is just a slightly paler patch of track between two thin wall strips. The taller the cut, the more it reads as a flat corridor/slot."
+   ],
+   "minors": [
+    "Crest seam: the top 2-4 rows of the cut are a lighter, flatter beige (probe-1x h3 column: ~150,130,97 vs track ~138,117,92) ending in a dead-straight horizontal edge against the track above; visible as a pale band at every crossing in probe-3x and the terra32/33 crops.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff.",
+    "w3: wide flat expanse makes the lack of slope modelling more obvious."
+   ]
+  },
+  "stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top tread (rows ~1-4) has a vertical comb/tooth pattern unlike the other treads; noisy.",
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Top tread (rows ~1-4) has a vertical comb/tooth pattern unlike the other treads; noisy.",
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  },
+  "stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Treads are only 1-2 px lit noses over 5-6 px brick-coursed risers; reads as stairs at 1x but at 8x leans toward a coursed masonry wall with ledges.",
+    "Paved-road light curb is cut off abruptly at the crest and resumes at the foot; no curb/parapet on the flight.",
+    "Side cut-walls (dark left strip, orange right strip) use vertical speckle/stripe noise, not the native cliff's rounded lump clusters; they read as pasted strips rather than continuation of the cliff."
+   ]
+  }
+ },
+ "stacked": {
+  "verdict": "PASS",
+  "majors": [],
+  "minors": [
+   "Stairs 2+strip+2 and 1+strip+2 join cleanly: landing is native road, flights align in x, no row offset.",
+   "Ramp stacks join without row mismatch, but each flight repeats the pale crest band, giving a striped look; they inherit the per-piece ramp major (flat notch, no climb)."
+  ]
+ },
+ "majors": 6,
+ "verdict": "FAIL",
+ "summary": "Heights are correct everywhere (cut replaces exactly rise rows, crest meets upper ground, toe meets lower track/road; stacked flights join at the landing). All 8 stairs PASS: treads read at 1x and 3x, palette matches the paved road, only minor issues (h1 comb top tread, curbs cut off, side-wall texture). Ramps h2-h4 (6 pieces) FAIL: the cut is a flat uniformly speckled dirt rectangle with no slope modelling, so it reads as the track passing through a vertical notch in the cliff rather than a surface climbing away; plus a pale crest band with a hard horizontal seam against the track above. Ramp h1 passes as a one-row notch with the same minors."
+}

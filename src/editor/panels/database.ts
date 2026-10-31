@@ -1,6 +1,7 @@
 import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { renderSchedulesTab } from "@/editor/panels/databaseScheduleView";
 import { dialogueTabCount, renderDialogueTab } from "@/editor/panels/databaseDialogueView";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
@@ -68,6 +69,7 @@ import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
 import { comboTechCount, renderComboTechTab } from "@/editor/panels/databaseComboTechView";
+import { bestiaryEntryCount, renderBestiaryTab } from "@/editor/panels/databaseBestiaryView";
 import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
@@ -87,6 +89,7 @@ export type DatabaseTab =
   | "battleCommands"
   | "battleScreen"
   | "commonEvents"
+  | "schedules"
   | "dialogue"
   | "characters"
   | "characterGraphics"
@@ -116,6 +119,7 @@ export type DatabaseTab =
   | "variables"
   | "worldCanon"
   | "worldCodex"
+  | "bestiary"
   | "spatialTiles"
   | "spatialObjects"
   | "spatialSpaces"
@@ -157,6 +161,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
   { id: "worldCanon", label: "세계 개요", testid: "db-tab-world-canon" },
   { id: "worldCodex", label: "설정집", testid: "db-tab-world-codex" },
+  { id: "bestiary", label: "괴물 도감", testid: "db-tab-bestiary" },
   { id: "structureKits", label: "부품 보관함", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "기존 방 규칙", testid: "db-tab-tileset-spaces" },
   { id: "scratchConcepts", label: "개념 꾸러미", testid: "db-tab-scratch-concepts" },
@@ -167,6 +172,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
+  { id: "schedules", label: "일정표", testid: "db-tab-schedules" },
   { id: "dialogue", label: "대사", testid: "db-tab-dialogue" },
   { id: "system", label: "게임 설정", testid: "db-tab-system" },
   { id: "menuSystem", label: "메뉴·시스템", testid: "db-tab-menu-system" },
@@ -196,7 +202,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     label: "이야기",
     slug: "lore",
     description: "무슨 이야기를 쓰나요?",
-    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "dialogue", "switches", "variables"],
+    tabs: ["worldCanon", "worldCodex", "characters", "bestiary", "commonEvents", "schedules", "dialogue", "switches", "variables"],
     subheadings: {
       switches: "진행 값 (고급)",
     },
@@ -780,6 +786,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
+    case "schedules":
+      return project.database.schedules?.length ?? 0;
     case "dialogue":
       return dialogueTabCount(project);
     case "factions":
@@ -819,6 +827,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return worldCanonHasContent(project.worldCanon) ? 1 : 0;
     case "worldCodex":
       return project.world?.entities.length ?? 0;
+    case "bestiary":
+      return bestiaryEntryCount(project);
     case "structureKits":
       return Object.values(project.tilesets).reduce(
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
@@ -856,6 +866,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   tilesetSpaces: "공간 종류",
   // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
   comboTechs: "연계 합체기 듀얼 트리플 테크 combo tech 크로노",
+  bestiary: "도감 몬스터 괴물 약점 사냥 bestiary",
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
@@ -1570,6 +1581,9 @@ function renderActiveTabUnguarded(
     case "commonEvents":
       renderCommonEventsTab(body, rerender);
       break;
+    case "schedules":
+      renderSchedulesTab(body, rerender);
+      break;
     case "dialogue":
       renderDialogueTab(body, container, rerender);
       break;
@@ -1602,6 +1616,9 @@ function renderActiveTabUnguarded(
       break;
     case "worldCodex":
       renderWorldCodexTab(body, container);
+      break;
+    case "bestiary":
+      renderBestiaryTab(body, rerender);
       break;
     case "system":
       renderSystemTab(body, rerender);

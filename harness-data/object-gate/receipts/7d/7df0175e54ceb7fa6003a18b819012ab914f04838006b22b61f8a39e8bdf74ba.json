@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7df0175e54ceb7fa6003a18b819012ab914f04838006b22b61f8a39e8bdf74ba",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 1 w3 cut through a south-facing sand cliff face (climbs north)",
+ "label": "relief-cuts-fwd/sand-steps/stairs-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 118,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stair tread (step 2)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-8"
+     },
+     {
+      "part": "lower stair tread (step 1)",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "sand cliff face below the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=24 shows two stair treads, each with a bright front-edge line (row 4 L=244, row 12 L=244). Each line is followed by darker riser or eave-shadow rows (5-8 and 13-15, L=170 to 118). The treads at rows 0-3 and 9-11 are horizontal surfaces seen from above. Rows 16-31 are a plain, uniform sand cliff face (L=205) that serves as the south-facing front face. The silhouette is a full 48 px wide on every row. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small sand stair patch: a wooden or tan top band with a few plank lines, then a large sand area. Sand ramp has about 3 steps (light sand, mid sand, a few dark speckle dots). The measured 46% near-flat coverage against 0% in both references confirms big flat fills. The sand area below the band is mostly one flat colour with only sparse dots in a regular row, with no grain, no per-tile variation and no clumps. Visible tones per tile are 6, above the grass reference (3) and just under paving (7), but they come from the band and not from surface texture. The sand body, which fills most of each tile, reads flat. The stair steps are not clearly shaded as treads and risers. Edge tints are brownish rather than neutral (0% near-neutral), so the outline is fine. Overall it is flatter and sparser than the Beodeul references, which carry grain on every tile, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12989
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-8"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "sand ground in front of the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 show two stair steps. The upper tread (rows 0-3) ends in a bright front-edge line at row 4 and is followed by a dark riser (rows 5-8, L=118-144). The lower tread (rows 9-11) ends in a bright edge line at row 12 and is followed by a dark riser (rows 13-15). Each step therefore has a top surface and a south-facing front face. Rows 16-31 are flat sand ground. The dark columns at the left and right edges are the cliff walls seen frontally, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a sand-coloured stair patch with a wooden-looking rail band across the top. The sand body is a large flat fill with only a few sparse dots. Near-flat coverage is 46%, against 0% for both references. It has 6 visible tones per tile, but they come mostly from the small rail strip. The sand ramp itself has about 2-3 steps, where the references have 5-6 with per-stone or per-tuft grain. Edge pixels are tinted (0% neutral), so the outline reads as a dark material tone, not a black sticker line. That is fine, but the large flat sand area, the sparse speckle and the shallow ramp still look thinner and flatter than the grass and paving references. A careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12976
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-8"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "flat sand ground in front of the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 show two stair steps. The upper tread is rows 0-3, with a bright front-edge line at row 4 and a dark riser and shadow at rows 5-8. The lower tread is rows 9-11, with a bright edge line at row 12 and a dark riser at rows 13-15. Each tread is 3-4 rows deep and sits above a riser of 3-4 rows, which matches the cabinet and seat references with a top, an edge line and shadow. Rows 16-31 are a uniform flat sand floor with no structure. The left and right edges at x=0-9 and x=40-47 are cliff wall sides in dark tones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a sand floor with a small wooden stair or rail band across the top. The sand body is a large flat fill: near-flat coverage is 46%, against 0% in both references. It carries only a few sparse dots and no grain or clumping. The stair or cliff band has about 3 to 4 tones of tan and brown, but it reads as a plain horizontal band with no per-step shading or stone and soil texture. Visible tones per tile (6) are above the grass reference (3) and close to the paving reference (7). However, the references spread their tones across the whole tile as grain, while the candidate's tones sit in the narrow top band. The dark edge pixels are tinted brown rather than neutral, so the outline is dark material tone where it exists, but it is sparse. Overall the piece is flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13129
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread (top of the stairs)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-8"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "sand cliff face below the stairs",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-3 are a lighter tread band that ends in a bright 1-row front-edge line at row 4 (#fff6d0). Rows 5-8 are darker riser/eave shadow (L=170, 144, then 118). A second tread, rows 9-11, has its edge line at row 12 and shadow at rows 13-15. So both steps show top surfaces with edge lines and shadow. The plain sand cliff face (rows 16-31, 16 rows) is a vertical south face. The side strips at the left and right edges are dark wall columns with no receding isometric face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small strip: a sand-coloured stair/cliff band at the top over a large flat sand area, with only a few sparse dots. Near-flat coverage is 46%, while both references are at 0%. The sand body is a large flat fill with only 2-3 steps (base sand plus a few dots), against the references' 5-6 steps with grain and per-stone shading. The top band has some plank or step detail with a tinted brown edge (0% neutral dark pixels), so the outline is a dark material tone and not a black sticker line. At 6 visible tones per tile it is above the grass reference (3) but close to the paving (7). That count comes from the band's few colours, not from texture spread across the surface, so the tile reads as flat and sparse next to the references. The stairs show little shading and no clear per-step highlight and shadow ramp, which makes the piece thinner and flatter than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13628
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.727Z",
+ "cells": {
+  "16": [
+   "0ebf88e015747f77",
+   "2c09ac75c35bc985",
+   "a2837d835df7f0a7",
+   "c63c4b0e2e130502"
+  ],
+  "24": [
+   "19a2e6885f11a226",
+   "1e5e3fcf2f175328",
+   "6236872e45a78c1f",
+   "7a47819d7175f57f",
+   "9128d10d14ddc120",
+   "97ffee7888bb9881",
+   "b003f2ed4c2ea43d",
+   "cdf8d12f4402cee9"
+  ],
+  "32": [
+   "4dc21a352cde19f6",
+   "54be080451a9e929",
+   "8c83674c50d4b57c",
+   "a0446d82c572936b",
+   "da599f7b4bee3d8c",
+   "e1dbf9790cc2a8d4"
+  ],
+  "48": [
+   "5cf22363d9f1916f",
+   "cf18721b6570512d"
+  ]
+ }
+}

@@ -29,7 +29,7 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   // 팀장은 버건디 카디건 — 정장 차림 본부장·출근길 회사원과 칩에서 바로 갈린다(VQA 7차).
   lead: { name: "오 팀장", stem: "teacher-cardigan", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 7, side: "right" },
   client: { name: "박 본부장", stem: "suit-boy-charcoal", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 1, side: "right" },
-  clerk: { name: "점원", stem: "apron-brown", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 3, side: "right" },
+  clerk: { name: "점원", stem: "apron-navy", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 4, side: "right" },
   seohaYoung: { name: "열일곱의 서하", stem: "uni-girl-long", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 0, side: "left" },
   jihuYoung: { name: "열아홉의 지후", stem: "uni-boy-navy", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 0, side: "right" },
   // 엑스트라 — 주요 인물과 겹치지 않는 칩(승강장에서 팀장·본부장 칩을 미리 보이면 같은 사람으로 읽힌다).
@@ -151,6 +151,9 @@ export const letterbox = (on: boolean, ms = 500): Command[] => [
 export const tint = (value: string, ms = 0): Command => m2("Tint Screen", { color: "neutral", value, durationMs: ms });
 /** 회상 색 — 화면 색 필터(세피아·채도 낮춤). 색 덮개가 아니라 아래 그림의 색을 바꾼다. */
 export const memoryTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", sepia: 70, saturation: 70, durationMs: ms });
+/** 검게 덮인 화면 그대로 세피아 필터만 먼저 건다 — memoryTint 는 색조 칸을 neutral 로 바꿔 검은 덮개를 걷어서, 필터가 붙기 전
+ *  한 프레임이 원색으로 드러났다(r4 블라인드: 「회상 직전 한 장면 컬러」). 다음 fadeIn 이 검정만 걷고 필터는 남긴다. */
+export const memoryTintUnderBlack = (): Command => m2("Tint Screen", { color: "neutral", value: "0,0,0,1", sepia: 70, saturation: 70, durationMs: 0 });
 export const clearTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", durationMs: ms });
 /** 검게 덮인(fadeOut) 화면에서 회상 세피아만 걷는다. 「Tint Screen」은 페이드와 같은 색조 칸을 쓰므로 neutral 로 걷으면
  *  검은 덮개까지 걷혀 옮기기 전 한 장면이 원색으로 드러난다(VQA r6: 10년 전 복도에 어른 서하). 검정을 그대로 다시 칠한다. */
@@ -159,7 +162,9 @@ export const shake = (ms = 300): Command => m2("Shake Screen", { value: 1, inten
 export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms, value: "flash" });
 /** 회상 그림 겹침 — 10년 전 교복의 두 사람을 화면 가득 반투명으로 띄웠다 거둔다(고백 정점). 그림은 앱에 든 연애 타이틀 그림. */
 const MEMORY_PICTURE = "fl_memory";
-const MEMORY_ART = { resourceId: "oprn-title-romance-school", x: -4, y: -3, scale: 29 } as const;
+// 승강장 고백의 회상 — 10년 전 방송실 사연함 앞의 두 사람. 게임의 방송실 맵 + 어린 서하·지후 걷기 칩으로 지은 도트 장면(bake_ending_cards.py).
+// 예전 그림(romance-school 키아트)은 고해상 애니 일러스트라 16px 게임과 결이 달랐다(r3 처음 하는 사람 검수).
+const MEMORY_ART = { resourceId: "oprn-first-love-memory", x: -4, y: -3, scale: 29 } as const;
 // 기다리지 않는다 — 그림이 번지는 동안 대사가 바로 뜬다. 기다리는 동안 눌린 Enter 가 다음 대사를 삼키지 않게(첫사랑 VQA 3차).
 export function memoryPictureIn(opacity = 140, ms = 1600): Command[] {
   return [

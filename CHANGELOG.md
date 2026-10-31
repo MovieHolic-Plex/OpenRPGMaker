@@ -5,6 +5,387 @@
 
 <!-- releases -->
 
+## 0.379.2 — 2026-10-31
+
+### 수정
+
+- **runtime** — 다음 막으로 잇는 엔딩의 크레딧 안내를 「끝나면 다음 막으로」 (#4117) (`47f4b06`)
+- **runtime** — 조사 안내 이름에 칩셋 묶음 이름 대신 물건 이름 (#4116) (`3e179ad`)
+- **runtime** — hide the cutscene-skip hint during cutscene battles; lift the first objective card off the hero (#4115) (`13bafdb`)
+
+## 0.379.1 — 2026-10-31
+
+### 수정
+
+- **runtime** — coloured light tint stays inside the map like the darkness (#4114) (`1ece8d1`)
+- **assistant** — a locked door is bypassed only when its two sides are one walkable region (#4109) (`ba418a2`)
+- **character** — answer the walk-chip render request with a PNG the worker accepts (#4112) (`83ced3a`)
+- **runtime** — the hero's flashlight cone goes dark while hiding (#4091) (`9633c02`)
+
+## 0.379.0 — 2026-10-31
+
+### 기능
+
+- **character** — 조수가 새 인물의 걷기 칩을 만들고, 캐릭터 외형 DB 에서 사진·설명으로 걷기 칩 만들기 (#4105) (`10a00b2`)
+- **assistant** — interior layout room checks ported from the bbox experiments (`8317f06`)
+
+### 수정
+
+- **assistant** — store_search finds multi-word queries like 무기 아이콘 (#4107) (`cdb8219`)
+- **harness** — side model calls no longer count as the assistant's final reply (`976de58`)
+- **runtime** — pixel ESC party rows keep HP/MP/EX on one line (`23c2770`)
+- **assistant-v2** — a battle step that already fights is not wrapped in a second battle; progress moves into its victory branch (`9ef928f`)
+- **assistant** — room graph and landmark walks pass through layout door leaves (iron gates, locked doors) (`90f7e6a`)
+- **runtime** — the action button opens a touch foe or boss from any cell touching its body (`6393779`)
+
+### 잡무
+
+- keep openwiki as on main (the assistant-v2 wiki note stays in 8317f06e95; re-add after merge to avoid the INDEX race) (`c76c6d7`)
+
+## 0.378.0 — 2026-10-31
+
+### 기능
+
+- **ai** — warn when an interior's south exit leads nowhere (map-exit-leads-nowhere) (#4092) (`0534ad1`)
+- **relief** — ramps redrawn (r7) after fresh Opus VQA, delegated allow recorded, 16 cut pieces baked (`aad047a`)
+- **relief** — cut pieces redrawn after adversarial VQA, canonical stacked split in the renderer (`ca87ec2`)
+
+### 수정
+
+- **assistant** — an empty review round keeps the layout, wrong-type args get the field shape, polish keeps quoted request lines (#4101) (`37904ac`)
+- **editor** — icon picker rows no longer squash to 12px (#4103) (`a3a71dd`)
+- **store** — serve content-addressed asset files that have no DB row (`ff83785`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2a85d97`)
+- **relief** — bbox ramps page section 6 (VQA rounds, in-game walk video) (`a05ecfb`)
+
+## 0.377.0 — 2026-10-31
+
+### 기능
+
+- **demos** — demo game openings can no longer be skipped (#4098) (`f94827d`)
+- **ai** — warn when a map uses only part of its area (map-area-unused) (#4086) (`e73a082`)
+- **battle** — 칼 기름 — 상태 attackElementId·releaseAfterBattles (#4088) (`497fe36`)
+- **builder** — tatami floors are laid as whole 1x2 mats, not the 4x4 wallpaper (`8c1023b`)
+- **refmap** — side-view battle sheets for 13 REFMAP doll characters, hand-drawn pixel by pixel by Opus agents (#4080) (`ef6f073`)
+
+### 수정
+
+- **ai** — changing an actor's walking chip carries its battle sheet along (#4089) (`5512a25`)
+- **assistant** — todo infers a missing op; invented battle backdrop ids refused; Korean object search falls back to English kit names (#4097) (`b59856d`)
+- **assistant** — visible field enemies, todo block needs a refusal, quoted lines become talk checks (#4077) (`9455567`)
+- **assistant** — find installed window skins before falling back to a dialogue style preset (`6de38e1`)
+- **assistant-tools** — remove_event refuses to delete the only event that turns on a switch other pages wait for (`4498e81`)
+- **ai** — set_field_detection keeps the sight of a switch-woken chaser (#4084) (`0169504`)
+- **ai** — graphic {transparent:false} no longer makes an NPC invisible; a copied page graphic resolves to its chip (#4082) (`e0558bd`)
+- **runtime** — draw a store battle effect even when the skill also has a class choreography (`94d7421`)
+- **ai** — a night set by an event survives going through a door (#4078) (`c3da4fd`)
+- **builder** — kit furniture on the wall face (blackboard, wall lamps, sconces, hoods) is wall-mounted, not a floor overlay (`98e3399`)
+- **beodeul** — grass body r2 after adversarial VQA, delegated allow on 18323 (`7b0508b`)
+- **assistant-v2** — name the prerequisite by a landmark, never by bare adjacency; the boss rest crystal counts as a landmark (`755e936`)
+- **store** — store_install points ambient sounds to role:'bgs' and event sounds to playAudio se (`8ea9b2f`)
+- **audio** — start-map BGS plays on new game/load; BGS loops gaplessly (`6836f9c`)
+- **assistant-v2** — locked step lines say where the prerequisite is even when they already say 먼저 (`f4cf9e1`)
+- **beodeul** — redraw the grass 737 body so village ground no longer reads as repeating letters (`627e5d1`)
+- **runtime** — fit ESC menu rail and battle inert reasons to the play surface (`09c3fd1`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`e32bbf4`)
+- **openwiki** — Beodeul grass 737 letter-pattern fix (#4079) (`b98e56f`)
+- **openwiki** — regenerate INDEX against tracked files (`17f05df`)
+- move the Beodeul grass wiki note to a follow-up PR (keeps INDEX out of this one) (`e63fa8f`)
+- **openwiki** — regenerate INDEX for atlas-biome-interior note (`0574850`)
+- **openwiki** — regenerate INDEX for the Beodeul grass fix (`81cadf8`)
+
+### 잡무
+
+- keep openwiki as on main (wiki note moves to the checks PR) (`e7d8886`)
+- **css** — save css-winners baseline for the ESC rail row fit (`0d6601e`)
+
+## 0.376.0 — 2026-10-31
+
+### 기능
+
+- **runtime** — 괴물 도감 — system.bestiary, ESC 도감, 조수 도구 (#4074) (`b96e5d1`)
+- **assistant** — run_scene_test 가 전투 이벤트 선택지에 답한다 (battleChoice 스텝) (#4060) (`1089e93`)
+- **v2 bbox** — 마을 배치 검사 — 빈 풀밭 55% 넘으면 거절 (`dbf5fc1`)
+
+### 수정
+
+- **ai** — make_chase_scene — a patrolling chaser woken by a switch must see the hero (no default persistent tracking) (#4062) (`e534100`)
+- **ai** — log-roof villages pick their landmark and anchor from the log palette (#4065) (`2968b35`)
+- **assistant-v2** — a scene attached after a shop NPC's talk runs before the shop window, the shop stays on later talks (`bd34f9e`)
+
+### 문서
+
+- **openwiki** — v2 칸 배치 장소 2차 측정 결과 (`014a8b2`)
+- **openwiki** — after-scene on a shop NPC (`ab8cbd0`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`3e66eee`)
+
+## 0.375.0 — 2026-10-31
+
+### 기능
+
+- **first-love** — r3+r4 — pantry lesson, rooftop, pixel ending cards & memory, last-train staging, night lighting (#3998) (`d004f10`)
+- **store** — event sounds (group + own slot name, no system cue) readable and findable; SE cue table labels for dialogue/jingle (`2b8c7a4`)
+- **audio** — ambient BGS loops in store sound packs, map BGS, new SE cues with runtime hooks (`6aadbc2`)
+
+### 수정
+
+- **assistant** — find installed party battle sheets; store_search works in the Pi worker (`9101359`)
+- **assistant-v2** — scene craft checks stop flagging gate notices and copied lines; re-calling add_ending_scene rebuilds instead of stacking (`3cd4c6d`)
+- **transit** — clear cars the warm-up left on top of people at map load (#4067) (`1ef8af0`)
+
+### 문서
+
+- **openwiki** — scene craft scope (scene-verb events only, new lines only) (`39712e2`)
+
+### 테스트
+
+- **qa** — audio-cues runtime proof capture against the built export player; regenerate openwiki INDEX (`7df2e7e`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`5174cff`)
+- **openwiki** — regenerate INDEX as CI sees it (`207cd5c`)
+
+## 0.374.0 — 2026-10-31
+
+### 기능
+
+- **store** — battle animation packs may use bundled EasyRPG sounds; special skills attach their animation (`d2e2ab5`)
+- **v2 bbox** — 던전 배치 검사 — 방마다 채움(걷는 칸 24마다 조각 하나, 최소 2)·한 줄 그래프 거절, 고치기 3번 (`1fcc482`)
+- **assistant-v2** — add_event choose beat — player answers with per-branch replies, gold and items (`d2b9f7b`)
+- **store** — icon packs — 32px store icons, skill/state icons, assistant auto-pick (`86c04a1`)
+- **tools** — lock_door·create_time_gate unlockWhen 에 timePhase 조건 (#4047) (`88c0cb3`)
+- **runtime** — classic window skin paints menu, shop and title windows (`b4bd8fc`)
+- **assistant-v2** — ending scene beats, enter scenes, scene redo in place (`33d8f47`)
+- **ai** — world canon tones horror(공포)·mystery(미스터리); horror presets seed horror (#4041) (`18565de`)
+- **assistant-v2** — interior layout furnishing density check (standing pieces per floor cell) (`1028ae6`)
+- **battle** — 16-cell (4x4) enemy motion sheets with missingCells (`ad8f216`)
+- **ai** — make_chase_scene — chaser.blendMode and non-lethal onTouch beats (ghosts) (#4038) (`b8285a7`)
+- **ai** — compile_puzzle — blocking item-gate, password wrongMessage/wrongSound, onSolve.giveItems (#4035) (`10600e7`)
+- **assistant-v2** — interior layout space checks, stair kit, rug cap, find_pieces, grouped catalog, open vertical doorways (`3c3ddfe`)
+- **ai** — lock_door — lock an existing transfer door until a story condition (#4034) (`a70797e`)
+- **store** — packs carry battle animations (content.battleAnimations) + per-frame hold (`1a5c308`)
+- **ai** — chase scene identity — characterId, caughtText, footsteps {off:true} (#4029) (`65f71de`)
+- **assistant-v2** — 마을 배치 선언에 코드 지형을 싣는다(상자 그림·측정용) (`b3cf500`)
+- **assistant-v2** — make_place 던전·마을 칸 배치 경로 + 자기 비평 두 바퀴·할 일 관문 (`b5a2e56`)
+- **assistant-v2** — walls-first interior layout, self-review stage, chipset catalog generator (`65e5072`)
+- **assistant-v2** — bbox 장소 배치 깔기 도구 — 던전 층(exact compose)·코드 지형 마을 (`7ce71e6`)
+- **runtime** — 일반 장르 가방 「중요한 물건」 분류 + 증거 제시 기본 후보 (#4019) (`d8a7ec7`)
+- **assistant-v2** — interior layout path — model writes a cell-grid layout, code lays it exactly (`7bff434`)
+- **runtime** — ending presentation textSide + particles (#4004) (`ae93ef5`)
+- **battle** — per-troop victory banner text (TroopRecord.victoryBanner) (#4016) (`fc9a99d`)
+- **ai/v2** — interior card — one place is one map; design its room graph from what the place needs (`5fa34d4`)
+- **ai/v2** — room graph probe; interior design prompts, shape guide and shape examples in English (`037563d`)
+- **ai/v2** — model-declared room graph for interiors, room_zones/room_graph todo checks (`5fdf9c9`)
+- **runtime** — G4 주간 일정표 planSchedule/runSchedule (#4008) (`ea19796`)
+- **ai** — author_mystery_case verdict.mode "chapter" — 지목 뒤에도 게임이 이어진다 (#4014) (`92d0af6`)
+- **ai** — link_joseon_interior — joseon_baram 건물 문 ↔ 실내 방 잇기 (#4012) (`59be8aa`)
+- **ai** — chase-horror recipe and skill section for patrol, footsteps, hiding and horror game over (#4007) (`ea087c5`)
+- ESC 「쉬기」 rest-until-time menu and time-of-day field spawns (#4011) (`8ad275a`)
+- **battle** — 결투 규칙 TroopRecord.duel (항복·기권·라운드 판정·아이템 금지) (#4006) (`4abfeea`)
+- **store** — store monsters carry a 3x3 battle motion sheet (`cd8ffb0`)
+- **flagship** — 출하 play.json 원작 IP 고유명 검사 + 굽기 실패 연결 (#4005) (`fa35fed`)
+- **runtime** — 메뉴 화면 열기 screen:"skills" + upsert_actor loadoutSlots (#4003) (`924e47b`)
+- choice options can be hidden (showWhen) or greyed with a reason (enableWhen) (#4001) (`55d3979`)
+- **battle** — 걷기 칩으로 서는 적 (EnemyRecord.walkChip) (#4000) (`0fca3b7`)
+- **chase** — horror chase sound — quiet emotes, positional chaser footsteps, hiding sounds (#3999) (`16099c1`)
+- **ai** — dialogue polish hook runs after a finished build (#3987) (`6aa790e`)
+- **ai** — store sound-effect packs — store_find_sound, set_game_audio se/sfx-style, sound-word routing (`4eb3df0`)
+- **audio** — project-saved sound-effect cue table, runtime footsteps, editor cue table (`0575c16`)
+- **runtime** — fieldGuides "arrows" — exit arrows only, no destination names, no objective/▼ (`aa62df4`)
+- **ai** — forest route gets an English per-session design brief, checked before building — off-brief or repeated designs are rejected (max 2) instead of rewritten by the function (`02c89f5`)
+- **ai** — todo gate «전투 세기» — fresh field foes measured against the start party (win<100%, per-fight loss, chained loss per map) (`5777e57`)
+- **ai** — author_forest_route gets two random design angles per session so the same request stops yielding the same design (`646b6e6`)
+- **ai** — forest route reports empty encounters + separate enemy spots; dungeon guidance and seed vary per session (design angles) (`de76476`)
+- **ai** — forest routes are model-designed — hidden seed, designs[] (bends/branches/dead ends/clearings), warn on repeating an earlier route (`9b279ae`)
+- **harness** — turn records keep the exact tool text the model received (toolCalls[].modelText) (`1eab013`)
+- **ai** — v2 high-level verbs add_boss_encounter and add_ending_scene; H5 redirects boss-battle and ending items to them (`9005c6b`)
+- **ai** — todo check kind party_join (live changeParty add reachable from start, matched by actor or event name); H1 appends it for join requests (`c313adb`)
+- **ai** — todo-loop hook H5 — verb scope per item kind: redirect low-level tools to the item's high-level verb once; record kinds with no high-level verb (battle, ending) (`351464b`)
+- **ai** — todo-loop hook H1 — request skeleton: show required elements before init, append the checkable ones the model's list missed (`3fbc96d`)
+- **ai** — todo-loop hook H6 — trim old tool results before each model call (cache-stable steps) and attach a per-call state card (`8ef961e`)
+- **ai** — todo-loop hook H7 — reinjection names the next call (verb + filled argument skeleton) for the current item (`421a0d7`)
+- **ai** — todo-loop hook H4 — machine check right after a successful write; auto-close on pass with the next call, reason on fail (`751c97c`)
+- **ai** — todo-loop hooks H3/H8 — next call after a rejection (soft tool requirement) and strategy change on a repeated rejection (`cee6fe4`)
+- **ai** — todo-loop hook H2 — pre-call argument check/repair and deterministic retry for cheap models (`86da085`)
+- **ai** — gate problems on existing events touched only by the finish auto-build count as existing defects (`74ab70f`)
+- **ai** — todo loop — gate problems already in the start save are reported as existing defects, not items; place repair cap follows item attempts (`76048dd`)
+- **ai** — finish stage combat-menu — battles on a story ESC menu get skills/equipment/status back deterministically (`dc2de4c`)
+- **ai** — todo loop binds items to ids — turn baseline + changed for fresh checks, auto-bind write-verb diffs (todoId arg), bind op, ambiguity hint (`c5b4408`)
+- **ai** — todo checks bind to ids — refs, fresh+changed scope, ambiguity fails, ids in detail (`d36a354`)
+- **ai** — todo checks skip pages that never run, ending map scope, replay table 45/45 (`bd0f107`)
+- **ai** — v2 runs on the todo loop — gate, critic, advisor and VQA findings become todo items; final answer is a machine-check table (`2521a61`)
+- **ai** — v2 todo verb, stop-time continuation loop and loop guard (omo todotools/goal/loop-guard) (`c200caf`)
+- **ai** — omo todo machine checks (runTodoCheck) with loose name matching and replay table script (`5a8cf7e`)
+- **ai** — omo todo item types and TodoCheck tool schema (`e34a10d`)
+- **village** — unfenced orchards with apple crates between the tree rows; exits aim at the middle 60% of the requested edge before falling back to the whole edge (`bb02654`)
+
+### 수정
+
+- **transit** — cars wait at the stop line for people on the crossing (#4057) (`3a430b7`)
+- **runtime** — ending card does not repeat the epilogue just played (#4058) (`22b29c7`)
+- **flagship** — IP name check no longer trips on 마르타/마르코 — main bake was failing (#4066) (`a0a69e8`)
+- **events** — Flash Screen color accepts #rrggbb (cutscene flash beat promised hex, validation rejected it) (#4059) (`0078e24`)
+- **assistant-v2** — evidence place words follow the evidence cell at every stop (`9606d94`)
+- **runtime** — shop and chest resolve uploaded (store) item icons; regenerate openwiki index (`a5b4e39`)
+- **assistant-v2** — choose branches re-set the speaker face; the asking line is a spoken line, not a nameless prompt (`13e5e37`)
+- **assistant-v2** — keep a single dungeon gate that already sits on a map edge (`42f2806`)
+- **assistant-v2** — start position and talk targets never stand under a roof (`9ab97eb`)
+- **assistant** — charset gate reads appended tool text; genre-default hero dress is not unasked (asst-parity 5) (#4054) (`8bb7dc7`)
+- **ai** — place NPCs only where the player can walk up and talk (#4050) (`b65ac78`)
+- **store** — icon pick reads elements by whole words, matches Korean compound heads (`2e0b0f0`)
+- **tools** — stamp_object will not stand a prop where it cuts a road in two (`da064b3`)
+- **v2 bbox** — 칸 배치 장소 경로는 옵트인(OPRN_V2_BBOX_PLACES=1) — 실측에서 지금 빌더에 졌다 (`20516ae`)
+- **assistant-v2** — people «광장 한쪽» stands in the square, not on the map border (`e09b6c5`)
+- **tools** — clue objects (장부·발자국·흔적·현장…) stay transparent instead of becoming villagers (`74bfed5`)
+- **editor** — allow icon kind in resource profile tool (`f1aaaca`)
+- **v2** — mystery culprit can be the shop/inn owner the clues name (`1ccebaa`)
+- **assistant** — suggest edit_place layoutPatch after a layout rejection, not find_pieces({}) (`79bf92b`)
+- **assistant** — people-chip lock note, jp interior move_object, nearest start cell (asst-parity 4) (#4049) (`dec6b1f`)
+- **assistant-v2** — edit_place layoutPatch on a rejected (not yet built) interior layout patches it and resends make_place (`4254302`)
+- **battle** — crop uploaded battleCharset sheets by shape; title SE follows seCues (`7ae1b06`)
+- **harness** — 호스트 기동 상한도 HARNESS_WAIT_MS 를 따른다(최소 180초) (`bc791cd`)
+- **v2** — choke clearing moves events by walking steps, not grid distance (`351dcdd`)
+- **assistant-v2** — add_boss_encounter adopts the map's existing boss fight (`8e96c99`)
+- **editor** — narrow still-cell lookup for widened RetroMonsterCell (`3548bcc`)
+- **v2** — keep pre-request maps, re-align number locks every stop, let number input cancel (`3aae42b`)
+- **ai** — beating the step's boss runs that step at once (ending no longer needs a second talk) (`fff9668`)
+- **events** — changeGold-style amount aliases (value/count, signed amount without op) (`4db9812`)
+- **ai** — v2 in-place edits no longer vanish at the checkpoint (finish assembly was rejected every turn) (`eda9171`)
+- **ai** — add_event stages scenes where they happen — touch scenes simulate from the scene cell, when:'enter' plays on the map's arrival spot, 주인공 옆/앞 spot words, line distance checked at the moment of the line (not after vanish), uncanny entrances in smoke (`647aae7`)
+- **host** — OPRN_OH_MY_PI_WORKER_START_MS — 워커 기동 대기 상한을 늘릴 수 있게(기본 30초 그대로) (`66887fb`)
+- **assistant-v2** — layout interiors use the layout space check for bare-floor, English rejections pass through, stuck pieces named (`6b1ec2c`)
+- **runtime** — Z opens the adjacent examine target when nothing is in front (`8f07e5f`)
+- **runtime** — no exit tag on talking NPCs (restored) or on examine events that move after a choice (#4033) (`4597681`)
+- **v2 bbox** — edit_place 의 빈 배치는 보내지 않은 것으로 — 앞 배치를 지우고 옛 빌더로 넘어가던 것 (`991ef47`)
+- **battle** — side-view skins play a skill's store battle animation instead of inferred choreography (`5e74990`)
+- **assistant** — NPC tag names, era-matched person chips, bike-baked landmark (asst-parity 3) (#4030) (`ea30824`)
+- **v2 bbox** — 던전 배치에 보이는 적 최소 수 — max(2, 방-3), 평화 던전 제외 (`a93e7ed`)
+- **harness** — HARNESS_WAIT_MS — 편집기 부팅 대기 상한을 부하 높은 박스에서 늘릴 수 있게 (`99ca5a4`)
+- **store** — "EasyRPG RTP" credit is not the RPG Maker RTP token (`8d2791f`)
+- **assistant-v2** — core rule against inventing coordinates now excepts spec.layout, review patches, village and dungeon designs (terra blocked the jail citing it) (`65a5654`)
+- **assistant-v2** — 칸 배치 카드는 옛 설계·자리 힌트를 먼저 채워 와도 장소마다 한 번 보여 준다 (`25166eb`)
+- **assistant-v2** — layout patch applies replace before remove/add, ignores strict-schema shells (`03f6a8c`)
+- **assistant-v2** — bounce hand-pixel interiors to spec.layout up to 3 times (terra resent zones/design after one bounce) (`a0d3992`)
+- **runtime** — cars stop for people in or stepping into the lane ahead (#4022) (`73abd50`)
+- **runtime** — load transit vehicle sheets by document-relative path (#4024) (`b26fb4b`)
+- **assistant** — negated encounters, night forest mood, multi-place critic (asst-parity 2) (#4023) (`a886bed`)
+- **assistant** — jp street doors, avoidProps, walker chips (asst-parity 1) (#4015) (`492606b`)
+- **assistant-v2** — layout bounce also when a strict-schema model fills mapId with the current map (`f301d3e`)
+- **assistant-v2** — bounce hand-pixel interiors to spec.layout once even when zones carry design (`2e5155f`)
+- **content** — 조선 등록 장소 주민의 반려 칩(Actor1 #1·#7)을 조선 평민 칩으로 (#4020) (`6f6ea63`)
+- **ai** — upsert_enemy accepts a record copied from an existing enemy (#4021) (`4c85309`)
+- **battle** — walk-chip enemies follow battleScalePercent (#4018) (`6d2310e`)
+- **ai/v2** — a single room is not a room graph; stairs enum has none; ignore empty landmarks; openwiki round-2 measurement (`ba6c35d`)
+- **ai** — resize_map may shrink a town map when no completed-house cell is cut (#4017) (`e6318b0`)
+- **store** — games may use modified REFMAP chips (RefmapDoll) — allow under REFMAP-MODIFIED, ship only used sheets, add REFMAP credit (#4010) (`e9dc7f2`)
+- **runtime,store** — star over a collision cap stays above walkers; door arrows centred on the door; refuse stale player bundles (`f4c9425`)
+- **runtime** — player placeAt, no exit label on talking NPCs, examine markers hidden during scenes (#4002) (`5e4c4cc`)
+- **dungeon** — multi-floor dungeons always place the stair that links floors (#3997) (`08adaa1`)
+- **ai** — set_project_settings applies fieldHud.font (#3995) (`0450bd3`)
+- **ai** — pool check uses audioOnly after origin/main renamed the music-only guard (`899026b`)
+- **battle** — localize status badges; victory banner and command prompt follow project terms (#3994) (`2cca7fe`)
+- **ai** — v2 verb rejections reach the model as Rejected / You sent / Fixed call; empty dungeonDesign in edit_place is a no-op; add_ending_scene uses trigger auto (`e4f6ebb`)
+- **runtime** — exit arrows on building doors always point up; in-map exits prefer the vertical (`bfaed2d`)
+- **editor** — cue table uses existing CSS classes (`76ba99d`)
+- **ai** — v2 English tool text for main's new tools and args; RPG requests load the game tool pool (`47cc624`)
+- **runtime** — patrols detour around NPCs/player blocking them; NPCs can walk out of a blocked door cell (#3982) (`f39a22f`)
+- **runtime,ai** — grouped party-buff lines, reason-first greyed hint, explicit boss stats win (#3988) (`c158faa`)
+- **events** — a graphic-less talk event is a person unless its name or text marks an object (`6c34112`)
+- **runtime** — dialogue box waits for its portrait; choices center between two portraits (#3984) (`79fe0f2`)
+- **ai** — charset gate no longer rejects the chip a tool picked itself (`029ce1b`)
+- **ai** — v2 todo block bounce names the next concrete call for the item, in English (`ae387a5`)
+- **ai** — v2 charset-gate rejections on event pages — English text, keep the other fields, next call list_npc_graphics (`fc795fd`)
+- **runtime** — facing a field enemy and pressing action opens its battle, same as bumping into it (`559dd1b`)
+- **ai** — a fight-the-monsters request with no battle becomes a v2 game-check gate item; forest route stops repeating it as a tool warning (`c27da0c`)
+- **ai** — forest-route branches keep their dead end clear of the main path (flip side / shorten, note the fix) (`6521fdc`)
+- **ai** — v2 upsert_actor saves everything but an unseen walking chip instead of failing on the charset gate (`0ec9118`)
+- **ai** — v2 game requests load only used tools up front, in English; the rest load on demand (`00fe614`)
+- **ai** — v2 model-facing instructions in English (`ed973c9`)
+- **ai** — v2 todo loop speaks English to the model (`152c93f`)
+- **ai** — v2 rejection text — all blocking issues, sent values and a fixed call, in English; not-a-failure outcomes recorded ok (`9ce9cc7`)
+- **ai** — schema-fill cleanup retries with the same call id; note H2 runs first and the overlap is harmless (`ce041f4`)
+- **builder** — omo unfinished check runs — default field-enemy graphic, events off transfer landings, ids are not fix tools (`0a762b8`)
+- **builder** — omo unfinished scenes — edge exits are not door-bare, inner dungeon links, dungeon rebuild keeps doors and events, stale fight critique, schema-fill cleanup, forest forks in result (`16d90b1`)
+- **ai** — finishing moves pocketed landings next to the return gate; objective chips name a landmark for invisible targets and dialogue 'who is where' claims follow the person's real spot (`0e2f58a`)
+- **ai** — boss-defeat-returns leaves escapable battles (field enemies) alone — it rewrote untouched base dungeon foes on every commit (`4e2b269`)
+- **player** — Enter mash no longer leaks into the choice / number window that follows the dialogue (`f89b6ec`)
+- **ai** — v2 create_transfer_pair relocates instead of refusing — drop doorAt on the refused end (then both) and connect at the nearest walkable cell (`1a9d1c4`)
+- **ai** — todo talk check — an event bound by refs whose name does not match must have a line spoken by that person (`cafb7da`)
+- **ai** — todo loop — blocked gate items stay blocked when the same problem recurs; gate items whose fix tool is not exposed close as blocked; report dedupes auto-build lines (`06420e3`)
+- **ai** — todo labels show the ending map scope; kind none counts as unchecked in the init receipt (`380970d`)
+- **ai** — a requested cave/dungeon is built as a place, not drawn — village result names the next make_place, draw_object refuses cave-entrance art before a dungeon exists, gate follows the requested side and the latest built village (`71193b9`)
+
+### 성능
+
+- **v2 bbox** — 마을 조각 견본을 도구 직접 실행으로 — 200초 → 4초 (`b497e5b`)
+
+### 정리
+
+- **assistant-v2** — bbox 배치 확장 자리 — 방 모양 사전·방마다 검사·마을 단 오르기 종류 (`38e1da3`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`6b51b59`)
+- **openwiki** — regenerate INDEX (clean checkout) (`590dcd9`)
+- **openwiki** — regenerate INDEX against tracked files (`9118f92`)
+- **openwiki** — v2 scene craft checks, add_event redo/enter, ending beats (`06bc3cd`)
+- **store** — games served by country — games-kr in Korea, R2 edge mirror elsewhere (#4037) (`4656685`)
+- **openwiki** — furnishing density check and bare-floor from the layout space result (`b458ffc`)
+- **openwiki** — interior layout space checks, stair kit, find_pieces, open vertical doorways (round 6) (`2a2176c`)
+- **openwiki** — store battle animation packs and per-frame hold (`e066069`)
+- **openwiki** — interior layout rounds 4-5 — walls form, self-review, bounce and coordinate-rule fixes, measurements (`d22ce6a`)
+- **agents** — point store battle-art work to the private battle-gen harness (`8f6297b`)
+- **openwiki** — v2 칸 배치(bbox) 던전·마을 경로 계약 (`bc57d75`)
+- **openwiki** — interior round 3 — one place is one map, 5/52 against reference rooms (`745c172`)
+- **openwiki** — interior room graph, room_graph check, per-room bare floor, reference fingerprint (`4c8955c`)
+- **openwiki** — room_zones interior measurement — 0/52 before and after against reference rooms (`be9efa0`)
+- **ai** — todo-loop hook table (when, what, status names) and v1 isolation note (`2b79212`)
+- **ai** — todo loop — existing defects, combat-menu stage, transfer relocation, repair cap 3, talk speaker rule (`e22463a`)
+- **openwiki** — assistant-v2 structure — the todo loop replaces the finish-gate rounds (`cbf426f`)
+- **openwiki** — regenerate INDEX for suite bundle 5 (`5d92962`)
+
+### 테스트
+
+- **ai** — forest route probe can start from a scene base save (FR_BASE/FR_FROM) (`5a51356`)
+- **qa** — walkpath can face and examine after afterLegs; record the ebfe-sl re-verification of field-foe and landing/guide-text fixes (`e380482`)
+
+### 잡무
+
+- **css** — baseline for store icon battle rules; drop unstyled slot classes (`60f57c3`)
+- regenerate openwiki INDEX (`44c54d5`)
+- **css** — refresh css-winners baseline after merging main (`910101d`)
+- regenerate openwiki INDEX (without local dist) (`2332ec8`)
+- **css** — refresh css-winners baseline for windowSkinSurfaces.css (`c273c36`)
+- CSS baseline after main merge (`7215160`)
+- regenerate CSS baseline and openwiki INDEX (`e264f83`)
+- **experiment** — bbox-village ramps round 3 — h4 cut pieces, stacked flights over one-row landings, h1 stairs redrawn (`e67437c`)
+- **qa** — store battle animation proof fixture + 1x recorder; regenerate openwiki index (`e006f5d`)
+- **experiment** — bbox-village ramps page — include sol23 in round 2 (`a30e4ba`)
+- **experiment** — bbox-village ramps round 2 — stone-slab stairs, north-facing cuts rejected, gated bake script (`987bb94`)
+- **experiment** — bbox-village ramps — cliff cut pieces (ramp/stairs h1-3 x w2-3) as tall as the face (`b4141ee`)
+- **experiment** — bbox-village companions after all kits, results page (`14aa453`)
+- **experiment** — bbox-village streaming calls, baseline (current v2), judge, page (`68c403b`)
+- **experiment** — bbox-village — model writes cell-exact village layout on code terrain, code validates and paints (`6ed9c1a`)
+- **experiment** — bbox-room Opus re-judge (bbox + earlier G runs), page column (`d0a9b0b`)
+- **experiment** — bbox-room judge + page side-by-side (`8f6527f`)
+- **experiment** — bbox-room test — model writes cell-rect layout, code lays it exactly (`6323f5b`)
+- **css** — refresh baseline after main merge (`7ddd2e3`)
+- **css** — baseline for store monster idle preview declarations (`9aa00e7`)
+
+### 기타
+
+- **ai** — scene craft checks, add_event redo, scene writing principles (`1cc47cf`)
+
 ## 0.373.0 — 2026-10-30
 
 ### 기능

@@ -167,7 +167,7 @@ export function lookMismatches(before: Project, after: Project): string[] {
         const why = entry ? spriteMismatch(evName, entry) : undefined;
         if (why && !seen.has(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`)) {
           seen.add(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`);
-          out.push(`[게임 검사 그림] 「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 보고에 «맞는 그림 없음»이라고 적는다.`);
+          out.push(`[게임 검사 그림] 「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 generate_walk_chip(그 이벤트, 생김새 설명)으로 그 인물의 걷기 칩을 만들게 한다.`);
         }
         walkFaces(page.commands, (speaker, faceId) => {
           const reason = faceMismatch(speaker, faceId);

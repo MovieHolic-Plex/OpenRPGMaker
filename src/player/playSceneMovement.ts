@@ -10,7 +10,7 @@ import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { runTroopAfterBattle } from "@/player/troopAfterBattleRunner";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
-import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
+import { advancePursuitDoors, currentHidingInteraction, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
@@ -30,7 +30,7 @@ import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { playMonsterSfx } from "@/player/monsterSfx";
-import { playSoundEffect } from "@/player/audio";
+import { playSoundEffect, syncHeldLoop } from "@/player/audio";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -46,13 +46,14 @@ import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/pla
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
-import { runtimeEventViewById, type RuntimeEventView } from "@/project/runtimeEventState"
+import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { flushPendingAutosave } from "@/player/autosave";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
+import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
@@ -61,6 +62,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
 import { grantEscapeGrace, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
 import { terrainRecordAt } from "@/project/terrainAt";
+import { playFootstep } from "@/player/footsteps";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { doorWalkInActive, isDoorstepPadInScene, tryEnterDoor, updateDoorEntryGuard } from "@/player/playSceneDoorEntry";
@@ -72,11 +74,15 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
+import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
+import { objectiveMarkerIds } from "@/player/playSceneFieldStaging";
+import { interactionPromptLabel } from "@/player/zoneFeedback";
 import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import { applySideViewLanding, isSideViewMap, planSideViewTick, resolveSideViewSettings, sideViewGridFor, sideViewStateFor } from "@/player/sideViewPhysics";
+import { playProjectSeCue } from "@/player/seCuePlayback";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -129,7 +135,10 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
-  scene.player.setVisible?.(!isPlayerHiding(world));
+  const hidingNow = isPlayerHiding(world);
+  scene.player.setVisible?.(!hidingNow);
+  // 숨어 있는 동안의 고리음(심장 고동). 나오기·붙잡힘·맵 이동에서 isPlayerHiding 이 거짓이 되면 이 줄이 끈다.
+  syncHeldLoop(hidingNow ? currentHidingInteraction(world)?.heldSe : undefined, world.project);
   scene.session.playTimeSeconds += deltaMs / 1000;
   // 방향 조건(주인공이 보는 쪽)은 세션만 본다 — 씬의 facing 을 매 프레임 적어 둔다.
   if (scene.session.playerFacing !== scene.facing) scene.session.playerFacing = scene.facing;
@@ -319,11 +328,15 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.
     const flying = boardedVehicleId(scene.session) === "airship";
     if (!flying) applyTerrainStepDamage(scene);
+    // 지형 발소리(지형 기록 → footstep-<표면> 자리). 하나도 걸려 있지 않으면 무음. 비행선·탈것은 땅을 밟지 않는다.
+    if (!flying && !boardedVehicleId(scene.session)) playFootstep(project, { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
     scene.moving = false;
     scene.player.x = footprintSpriteX(scene.tileX, footprint, mapTileSize(scene.map));
     scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));
     updateCharacterDepth(scene.player, "same");
     if (hopState) {
+      // 착지(land 자리) — 자리가 비면 무음. 낙하 등장(countsAsStep:false)도 땅에 닿으면 같은 소리.
+      playProjectSeCue("land", project);
       scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
       finishHop(scene, PLAYER_SHADOW_KEY, scene.player, scene.player.x, scene.player.y, hopState.hop);
       scene.playerHop = null;
@@ -556,6 +569,7 @@ function tryStartLedgeHop(scene: PlaySceneContext, body: PlayerBody, dx: number,
   scene.dashing = false;
   beginPlayerStep(scene, landX, landY);
   scene.playerHop = { hop: jumpHop({}), elapsedFrames: 0, countsAsStep: true, via };
+  playProjectSeCue("jump");
   scene.lastActionTargetKey = "";
   return true;
 }
@@ -701,6 +715,13 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "setThrough":
       route.through = command.enabled;
       return false;
+    // 같은 맵 안 순간 이동 — NPC 와 같은 명령. 예전엔 아래 default 로 조용히 건너뛰어, 「문간에 세우고 한 걸음 걸어 나온다」
+    // 컷신이 주인공을 시작 칸에 그대로 두고 그 뒤 걸음이 엉뚱한 칸에서 막혔다(첫사랑 옥상 r4: 서하가 지후에게 못 가고 문 옆에서 대화).
+    case "placeAt": {
+      const x = Math.round(command.x), y = Math.round(command.y);
+      if (inBounds(scene.map, x, y)) placePlayerOnCurrentMap(scene, x, y);
+      return false;
+    }
     case "exitVia":
     case "enterVia":
       // 주인공의 문 출입은 장소 이동(transfer)이다 — 문 연출 단계는 NPC 전용.
@@ -728,6 +749,7 @@ function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, 
   scene.dashing = false;
   beginPlayerStep(scene, nx, ny);
   scene.playerHop = { hop: jumpHop(command), elapsedFrames: 0, countsAsStep: true };
+  playProjectSeCue("jump");
   return true;
 }
 
@@ -801,13 +823,24 @@ function performAction(
   farmAttempts?: FarmInteractionResult[],
 ): boolean {
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
-  if (world.session.horror?.hiding) { toggleHiding(world); scene.lastActionTargetKey = ""; return true; }
+  if (world.session.horror?.hiding) {
+    const leaving = currentHidingInteraction(world);
+    toggleHiding(world);
+    scene.lastActionTargetKey = "";
+    const exitSe = leaving?.exitSe ?? leaving?.enterSe;
+    if (exitSe) playSoundEffect(exitSe, world.project);
+    return true;
+  }
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty);
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta) ?? findWalkerLeaving(scene, world.project, tx, ty) ?? findEventOnFacedObject(scene, world.project, tx, ty) ?? findFieldFoeFacing(scene, tx, ty);
   if (event) {
-    if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
+    if (event.page?.interaction?.kind === 'hiding') {
+      const hid = toggleHiding(world, event);
+      if (hid && event.page.interaction.enterSe) playSoundEffect(event.page.interaction.enterSe, world.project);
+      return hid;
+    }
     if (event.page?.interaction?.kind === 'pushable') {
       pushFurniture?.(event);
       return true;
@@ -849,11 +882,43 @@ function performAction(
   if (attemptLifeInteraction(scene, scene.tileX, scene.tileY)) return true;
   const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY, farmAttempts);
   if (underfootFarm.handled) return true;
+  // 정면·발밑에 없으면 바로 곁(상하좌우, 그다음 대각)에 몸이 닿은 조사 대상으로 돌아서서 연다(pickNearbyActionTarget 주석).
+  const nearby = pickNearbyActionTarget(
+    runtimeEventViewsForMap(world.project, scene.map, scene.session, scene.eventPositions),
+    scene.tileX,
+    scene.tileY,
+    { front: { x: tx, y: ty }, preferIds: new Set(objectiveMarkerIds(scene as PlaySceneContext)), usable: (view) => interactionPromptLabel(view.page) !== null, fieldFoe: isFieldFoeView },
+  );
+  if (nearby) {
+    if (nearby.view.event.id === scene.lastActionTargetKey) return true;
+    if (scene.running) return true;
+    scene.facing = nearby.face;
+    scene.lastActionTargetKey = nearby.view.event.id;
+    turnActionEventTowardPlayer(scene, nearby.view);
+    void scene.runEvent(nearby.view.event.id);
+    return true;
+  }
   // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
   // 발밑 사유를 우선하고(플레이어가 서 있는 밭이 더 구체적인 대상), 없으면 정면 사유로 대체한다.
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * 정면의 보이는 적(닿으면 싸우는 eventTouch·playerTouch 이벤트 중 전투 명령이 있는 것)은 조사 단추로도 부딪힌 것과 같게 연다 — RPG Maker MV 의 확인 단추 관례.
+ * 왜(2026-10-30 omo-fr-t terra 숲길 r3 판정): 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다.
+ * 전투가 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다.
+ */
+function findFieldFoeFacing(scene: ActionEventSceneContext, tx: number, ty: number): RuntimeEventView | undefined {
+  const view = findRuntimeEventInScene(scene, tx, ty, ["eventTouch", "playerTouch"]);
+  return view && isFieldFoeView(view) ? view : undefined;
+}
+
+/** 닿으면 싸우는 접촉 이벤트(eventTouch·playerTouch 이고 지금 페이지에 전투 명령이 있다). */
+function isFieldFoeView(view: RuntimeEventView): boolean {
+  if (view.trigger.kind !== "eventTouch" && view.trigger.kind !== "playerTouch") return false;
+  return JSON.stringify(view.page?.commands ?? []).includes('"battleProcessing"');
 }
 
 /**

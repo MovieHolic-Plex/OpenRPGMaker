@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f9d4d6d5e96ca9f0ebdf25f75e66c2b6913c41aa3119cefa130adaf4e2593721",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (claude opus 5.5)",
+ "decidedAt": "2026-10-31T07:19:06.947Z",
+ "by": "delegated",
+ "delegatedBy": "user (delegated to supervisor, 2026-10-21 rule)",
+ "evidence": "harness-data/object-gate/vqa/stairs-rev.opus-vqa-r6.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: 절벽 깎은 길 — 다섯 양식 역방향 80장 — independent Opus 5.5 adversarial VQA passed all pieces; object-gate advisory only (uncalibrated profile)",
+ "sig": "17423789b78166051311309ee0f30cf92af288a910c9272f64b4a3d12d0fef95"
+}

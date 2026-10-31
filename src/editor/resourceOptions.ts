@@ -283,7 +283,7 @@ export function uploadedMatchesKind(
   if (kind === "movie") return uploadedKind === "movie";
   if (kind === "picture") return uploadedKind === "picture";
   if (kind === "icon" || kind === "image") {
-    return uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
+    return uploadedKind === "icon" || uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
   }
   if (kind === "monster") return uploadedKind === "monster" || uploadedKind === "picture";
   if (kind === "faceset") return uploadedKind === "faceset";

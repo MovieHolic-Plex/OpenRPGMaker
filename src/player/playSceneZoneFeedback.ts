@@ -12,6 +12,7 @@ import type { GameMap } from "@/project/types";
 import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
 import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
 import { eventMenuLocked } from "@/player/eventMenuLock";
+import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -488,7 +489,10 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
     ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
   // 은신처는 가구 타일 위의 투명 이벤트라 들어가기 전엔 안 보인다 — 바로 곁(상하좌우)에 서면 등을 대고 있어도 「숨기」 를 띄운다(2026-10-29).
   const target = promptForEvent(faced) ? faced
-    : events.find((event) => event.page?.interaction?.kind === "hiding" && Math.abs(event.x - scene.tileX) + Math.abs(event.y - scene.tileY) === 1) ?? faced;
+    : events.find((event) => event.page?.interaction?.kind === "hiding" && Math.abs(event.x - scene.tileX) + Math.abs(event.y - scene.tileY) === 1)
+      // 정면에 없으면 Z 가 실제로 열 곁의 대상(performAction 과 같은 고르기)을 알려 준다.
+      ?? pickNearbyActionTarget(events, scene.tileX, scene.tileY, { front: { x: targetX, y: targetY }, usable: (view) => promptForEvent(view) !== null })?.view
+      ?? faced;
   const label = promptForEvent(target);
   return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? namedPrompt(scene, target, label) : null;
 }

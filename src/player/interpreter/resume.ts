@@ -1,7 +1,9 @@
 import { teleportMenuEntries } from "@/project/teleportPoints";
 import type { InterpreterState, PendingStep, ResumeAdvance, ResumeValue } from "@/player/interpreter/types";
 import { pushFrame, topFrame } from "@/player/interpreter/stack";
+import { authoredChoiceIndex } from "@/project/choiceView";
 import { presentItemBranch } from "@/player/interpreter/presentItem";
+import { storeSchedulePlan } from "@/player/interpreter/schedule";
 import { clampName } from "@/player/nameEntry/hangulTable";
 import { changeActorName } from "@/project/sessionActorCommands";
 
@@ -25,12 +27,15 @@ export function advanceResume(
   if (pending === "choices") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "choices") {
-      const index = typeof value === "number" ? value : 0;
+      const view = state.choiceView;
+      state.choiceView = undefined;
+      // 화면 번호 → 저작 번호. 숨은 줄 때문에 번호가 당겨졌을 수 있다. 흐린 줄·범위 밖은 아무 분기도 타지 않는다.
+      const index = authoredChoiceIndex(view, typeof value === "number" ? value : 0);
       if (index === -1 && command.cancelBehavior === "branch") {
         if (!pushFrame(state, command.cancelBranch ?? [])) frame.pc += 1;
         return "continue";
       }
-      const option = command.options[index];
+      const option = index === undefined ? undefined : command.options[index];
       if (!option || !pushFrame(state, option.branch)) {
         frame.pc += 1;
       }
@@ -38,10 +43,14 @@ export function advanceResume(
   } else if (pending === "presentItem") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "presentItem") {
-      if (!pushFrame(state, presentItemBranch(state.session, command, value))) frame.pc += 1;
+      if (!pushFrame(state, presentItemBranch(state.session, command, value, state.project))) frame.pc += 1;
     } else {
       frame.pc += 1;
     }
+  } else if (pending === "planSchedule") {
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "planSchedule") storeSchedulePlan(state.project, state.session, command, value);
+    frame.pc += 1;
   } else if (pending === "shop") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "shop") {
@@ -74,6 +83,8 @@ export function advanceResume(
     frame.pc += 1;
   } else if (pending === "inputNumber") {
     const command = frame.commands[frame.pc];
+    // 취소(NUMBER_INPUT_CANCELLED = -1, dialogueNumberInput.ts)면 변수는 그대로 두고 이 이벤트를 끝낸다 — 틀린 번호 분기로 가지 않는다.
+    if (value === -1) return "done";
     if (command?.kind === "inputNumber") {
       state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
     }

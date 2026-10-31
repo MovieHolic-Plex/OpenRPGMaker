@@ -434,13 +434,14 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
-      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo);
+      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo, step.epiloguePlayed);
       else scene.returnToTitle();
       return true;
     case "done":
     case "text":
     case "choices":
     case "presentItem":
+    case "planSchedule":
     case "wait":
     case "waitForAllMovement":
     case "inputWait":
@@ -467,6 +468,7 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "text" ||
     step.kind === "choices" ||
     step.kind === "presentItem" ||
+    step.kind === "planSchedule" ||
     step.kind === "tacticsBattle" ||
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||

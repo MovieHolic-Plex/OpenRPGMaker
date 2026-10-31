@@ -40,8 +40,12 @@ const setLightingVolume: ToolDefinition = {
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
       area: { ...RECT_SCHEMA, description: "event 모드 필수 {x,y,w,h}" },
+      inherit: {
+        type: "boolean",
+        description: "true 면 이 맵의 기본 조명(defaultLighting)을 지운다 — 들어올 때 지금 조명(앞 맵·이벤트 setLighting 밤)을 그대로 잇는다. 「밤이 되면」을 이벤트 setLighting 으로 연출하는 맵에 쓴다: 기본 조명이 박힌 맵은 문을 드나들 때마다 그 값으로 돌아가 밤이 풀린다. ambient·sources 는 무시.",
+      },
     },
-    required: ["mapId", "ambient"],
+    required: ["mapId"],
   },
   invalidArgsExample: {
     mapId: "map1",
@@ -51,6 +55,18 @@ const setLightingVolume: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
+    if (args.inherit === true) {
+      if (args.applyMode === "event") throw new ToolError("inherit 는 applyMode 'map' 에만 쓴다 — 영역 조명 트리거는 지울 기본 조명이 없다.", { code: "invalid-args" });
+      const had = map.defaultLighting;
+      delete map.defaultLighting;
+      return {
+        summary: had
+          ? `${map.name} 기본 조명 지움(ambient ${had.ambient.toFixed(2)} → 이어 받기) — 들어올 때 지금 조명을 잇는다`
+          : `${map.name} 은 이미 기본 조명이 없다 — 들어올 때 지금 조명을 잇는다`,
+        data: { mapId: map.id, applyMode: "map", inherit: true, removed: Boolean(had) },
+      };
+    }
+    if (args.ambient === undefined) throw new ToolError("ambient(0~1)가 필요하다 — 기본 조명을 지우려면 inherit:true.", { code: "invalid-args" });
     const applyMode = args.applyMode === "event" ? "event" : "map";
     const split = splitConditionalSources(draft, args.sources, applyMode);
     const lighting = normalizeLightingState({
@@ -111,7 +127,7 @@ const setSceneMood: ToolDefinition = {
       },
       lighting: {
         type: "object",
-        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다.",
+        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다. An object, never a bare word: night = {ambient:0.8, color:'#0a1030', sources:[{at:{x,y}, radius:3, color:'#ffb060', flicker:true}]} (one source per torch).",
         additionalProperties: true,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },

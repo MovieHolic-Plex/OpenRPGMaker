@@ -198,7 +198,7 @@ export function dropShadowedStairLinks(run: BuildRun): string[] {
  * 왜(2026-10-29 vm1 재생): argon/jrpg 「시작 마을」·「마왕의 방」, flash/mystery 「2층 객실」은 같은 이름 맵을 한 번 더 지은 빈 사본이었고,
  * argon/escape 「밀실 뒷방」은 탈출 봉인이 들어오는 이동을 지워 고아가 됐다 — 엔딩까지는 가지만 점검 막힘으로 남았다.
  */
-export function retireOrphanMaps(run: BuildRun): string[] {
+export function retireOrphanMaps(run: BuildRun, keep: ReadonlySet<string> = new Set()): string[] {
   const notes: string[] = [];
   const norm = (s: string | undefined) => (s ?? "").replace(/\s+/gu, "").toLowerCase();
   const inboundOf = (project: Project): Set<string> => {
@@ -216,6 +216,9 @@ export function retireOrphanMaps(run: BuildRun): string[] {
   const places = new Set((project0.gameBlueprint?.steps ?? []).map((s) => norm(s.place)));
   for (const map of Object.values(project0.maps)) {
     if (!orphan(map)) continue;
+    // 이 요청 전부터 있던 맵은 자동으로 지우지 않는다 — 지우면 「맵 소실 확인」 카드가 뜨고, 거절되면 그 턴의 변경이 통째로 버려진다.
+    // 왜(2026-10-31 meb1 terra 추리): 고쳐 짓기가 「시골 여관 뒷방」 문을 지운 뒤 이 단계가 뒷방을 지우려 해, 턴 3~7 다섯 번이 모두 거절로 끝났다.
+    if (keep.has(map.id)) { notes.push(`Orphan map "${map.name}" (${map.id}) has no way in, but it existed before this request, so it was kept. Reconnect it with a door, or remove it only if the user asks.`); continue; }
     const twin = Object.values(project0.maps).find((m) => m.id !== map.id && norm(m.name) === norm(map.name) && !orphan(m));
     if (!twin && places.has(norm(map.name))) continue;
     const removed = run.call("remove_map", { mapId: map.id });

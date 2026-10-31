@@ -23,6 +23,7 @@ import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding"
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { doorLine, recordDoorForGate } from "./mapDoorTools";
+import { strandedByRemoval, strandedRefusal } from "./strandedSwitches";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -36,6 +37,8 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
+import { noteToolChosenGraphic } from "./toolChosenGraphics";
+import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -71,6 +74,7 @@ import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { movementKeyProblems, movementKeyRejectMessage, pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { withJosa } from "@/util/josa";
+import { npcStandReach } from "./npcStandReach";
 import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
@@ -397,40 +401,77 @@ function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
   return graphic ? structuredClone(graphic) : undefined;
 }
 
-/** 이름에 이 낱말이 있으면 말하는 존재로 본다(주민 그림을 세운다). */
-const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청년|노인|할머니|할아버지|아저씨|아주머니|아줌마|여인|남자|여자|상인|점원|주인|손님|경비|병사|기사|마법사|의사|박사|탐정|집사|신부|수녀|왕|공주|왕자|어부|농부|사냥꾼|그림자|유령|요정|정령|괴물|몬스터|인형|villager|person|npc|man|woman|girl|boy|guard|ghost/iu;
+/**
+ * 이름의 머리 명사(괄호 앞 마지막 낱말)가 이것이면 사물·표지·장치·구역이다. 인물 쪽 낱말 목록은 두지 않는다 —
+ * 촌장·장로·대장장이처럼 역할 이름은 끝이 없어 목록이 늘 빠뜨린다(2026-10-30: 「촌장」이 투명 이벤트로 저장됐다).
+ * 사물은 머리 명사가 정해져 있으므로 이쪽을 적는다.
+ */
+const OBJECT_HEAD_NOUNS = new Set([
+  "문", "대문", "정문", "후문", "철문", "철창", "창살", "창문", "창", "커튼",
+  "표지판", "팻말", "푯말", "간판", "게시판", "안내판", "이정표", "비석", "묘비", "비문", "석판", "명판", "현판", "포스터", "벽보", "지도",
+  "상자", "보물상자", "궤", "금고", "항아리", "단지", "통", "나무통", "술통", "자루", "바구니", "서랍", "옷장", "찬장", "선반", "책장", "장롱", "사물함",
+  "스위치", "레버", "단추", "버튼", "발판", "장치", "기계", "함정", "열쇠구멍", "자물쇠", "손잡이",
+  "영역", "구역", "지점", "트리거", "입구", "출구", "계단", "사다리", "구멍", "통로",
+  "거울", "촛대", "양초", "등불", "램프", "등", "화로", "난로", "벽난로", "우산", "석상", "동상", "조각상", "액자", "사진", "그림", "초상화",
+  "책", "일기", "일기장", "편지", "쪽지", "메모", "수첩", "서류", "노트",
+  // 추리 단서 물건 — 2026-10-31 mef1 terra 추리: 단서 단계 「여관 장부」가 주민 칩(people1 #73)으로 서서 판정자가 「장부에게 말을 걸라」는 목표를 읽었다.
+  "장부", "기록", "기록부", "명부", "출입부", "숙박부", "발자국", "흔적", "자국", "얼룩", "핏자국", "조각", "천", "손수건", "장갑", "단추", "깃털", "보관함", "현장",
+  "책상", "탁자", "식탁", "의자", "침대", "시계", "괘종시계", "우물", "무덤", "제단", "꽃병", "화분", "기둥", "수정", "분수", "기념비", "오르간", "피아노",
+]);
+/** 숨은 장치·투명 구역 — 그림을 세우면 안 된다(이름이 숨겼다고 말한다). */
+const HIDDEN_WORDS = /숨은|숨겨진|감춰진|보이지 ?않는|투명|hidden|invisible|secret/iu;
+/** 대사가 아니라 서술(「잠겨 있다」「~라고 적혀 있다」)인 본문 — 사물을 조사한 결과다. */
+const NARRATION = /(적혀|쓰여|새겨져|새겨진|잠겨|놓여|걸려|붙어|꽂혀|들어|묻어|찍혀|남아|흩어져) ?있|열리지 않|꿈쩍도 않|비어 있|아무것도 없|아무 반응이 없|조사했다|살펴보았다/u;
+/** 1인칭·말 건네기 — 누군가 말하고 있다. */
+const FIRST_PERSON = /(^|[\s「"'“])(나|내|난|날|저|제|전|우리|이몸|본인|자네|너|네가|당신|그대|젊은이|여행자|손님)(는|가|도|를|의|에게|한테|요|야|,|\s|!|\?|$)|어서 ?오|안녕|반갑|고맙|부탁|[요죠네게지나]\s*[.!?~…]*\s*$|[까냐니][?？]\s*$|구먼|일세|하게|하오|습니다|ㅂ니다/u;
+
+function pageTextBodies(page: Partial<EventPage>): string[] {
+  return allPageCommands(page.commands).flatMap((command) => command.kind === "text" && typeof command.body === "string" ? [command.body] : []);
+}
 
 /**
- * 투명 action 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
+ * 그림 없는 대화(action) 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
  *
- * 2026-09-24 꿈 세계 도그푸딩: 「기억의 거울」「타오르는 촛대」「버려진 우산」「고양이 석상」「오래된 사진 액자」가
- * 전부 주민 기본 charset(people1)으로 저장돼, 플레이어는 거울·촛대 자리에 서 있는 마을 사람을 봤다. 화자(speaker)가
- * 있는 대사나 인물 낱말이 든 이름이면 null(주민 그림 유지). 사물이면 이름 낱말과 라벨 낱말이 정확히 겹치는
- * charset(문·상자…)을, 없으면 투명을 준다.
+ * 기본은 인물이다. 사물로 보는 것은 이름이나 내용이 분명히 사물·표지·장치·구역이라고 말할 때뿐이다:
+ *   1. 화자가 이벤트 이름 자신이면(speaker === name, 「이름:」으로 시작하는 본문) 인물 — 말하는 거울도 인물로 세운다.
+ *   2. 이름이 숨은 장치(「숨은 스위치」)면 투명.
+ *   3. 이름의 머리 명사가 사물(문·표지판·상자·스위치·구역 …)이면 사물 — 이름과 맞는 칩(문·상자)이 있으면 그 칩, 없으면 투명.
+ *   4. 이름이 없거나 사물 낱말이 아니어도, 본문이 전부 서술(「잠겨 있다」)이고 1인칭·말 건네기가 하나도 없으면 사물(id 로 문 칩만 찾는다).
+ *   5. 나머지는 인물(주민 기본 칩) — 촌장·장로·대장장이처럼 목록에 없는 역할 이름도 인물이다.
+ * 이력: 2026-09-24 꿈 세계(거울·촛대가 주민으로 섬) → 인물 낱말 목록, 2026-10-30 「촌장」 투명 → 사물 쪽 판정으로 뒤집음.
  */
 function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
   if (event.characterId) return null;
   const name = (event.name ?? "").trim();
-  if (allPageCommands(page.commands).some((command) => command.kind === "text"
-    && ((typeof command.speaker === "string" && command.speaker.trim()) || bodyNamesSpeaker(command.body, name)))) return null;
-  if (!name) return objectGraphicFromId(event.id);
-  if (SPEAKING_BEING_WORDS.test(name)) return null;
-  // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
-  // 산 고양이를 고르면 안 된다.
-  const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-  // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
-  const whole = name.replace(/[(（].*$/u, "").trim();
-  const exact = searchResources("charset", whole).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === whole);
-  const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
-  if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
-  for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
-    // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
-    const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
-    if (labelHead !== head) continue;
-    const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
-    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  const bare = name.replace(/[(（].*$/u, "").trim();
+  const texts = allPageCommands(page.commands).filter((command) => command.kind === "text");
+  const speaksAsSelf = Boolean(name) && texts.some((command) => (typeof command.speaker === "string" && command.speaker.trim() === name) || bodyNamesSpeaker(command.body, name));
+  const firstPerson = pageTextBodies(page).some((body) => FIRST_PERSON.test(body));
+  if (bare && HIDDEN_WORDS.test(bare)) return { graphic: { transparent: true }, label: "" };
+  const head = bare.split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  const objectNamed = Boolean(head && OBJECT_HEAD_NOUNS.has(head));
+  // 사물 이름에 화자 표시만 붙은 표지판(「표지판: 북쪽 마을」)은 사물이다 — 이름이 사물이면 1인칭으로 말할 때만 인물로 본다.
+  if (speaksAsSelf && (!objectNamed || firstPerson)) return null;
+  if (objectNamed && head) {
+    // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
+    const exact = searchResources("charset", bare).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === bare);
+    const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
+    if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
+    for (const hit of searchResources("charset", head).slice(0, 6)) {
+      // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
+      const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+      if (labelHead !== head) continue;
+      const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
+      if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+    }
+    return { graphic: { transparent: true }, label: "" };
   }
-  return { graphic: { transparent: true }, label: "" };
+  const bodies = pageTextBodies(page);
+  const anySpeaker = texts.some((command) => typeof command.speaker === "string" && command.speaker.trim());
+  const narrationOnly = !anySpeaker && !BEING_ID_WORDS.test(event.id) && bodies.length > 0 && bodies.every((body) => NARRATION.test(body.trim()) && !FIRST_PERSON.test(body));
+  if (narrationOnly) return objectGraphicFromId(event.id) ?? { graphic: { transparent: true }, label: "" };
+  if (!name) return objectGraphicFromId(event.id);
+  return null;
 }
 
 /** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
@@ -573,6 +614,7 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
       // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
       page.graphic = object.graphic;
+      noteToolChosenGraphic(object.graphic);
       // 칩 그림 사물(문·철창·상자)은 조사하면 플레이어 쪽으로 돌아 다른 줄(열린 문짝)을 보였다 — 잠긴 문이 열린 문으로 보였다(2026-10-28 interior 장부 38).
       if (!object.graphic.transparent && page.animationType === undefined) page.animationType = "fixedGraphic";
       warnings?.push(object.graphic.transparent
@@ -581,6 +623,8 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
         : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
     } else {
       page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
+      // 주민 기본 칩은 도구가 고른 것이다 — 모델 선택 관문이 거절하지 않게 적는다(형제·이전 외형은 이미 그 이벤트의 칩이라 관문이 통과시킨다).
+      if (!siblingGraphic && !previousLook) noteToolChosenGraphic(page.graphic);
       warnings?.push(
         siblingGraphic
           ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
@@ -894,6 +938,11 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[] 
     } else if (command.kind === "choices") {
       for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "runSchedule") {
+      if (command.slotVariableId && !project.variables.some((entry) => entry.id === command.slotVariableId)) {
+        ensureNamedVariable(project, command.slotVariableId, `이벤트 ${eventId}: ${command.slotVariableId}`);
+        warnings.push(`미등록 slotVariableId 자동 생성: ${command.slotVariableId}`);
+      }
     } else if (command.kind === "presentItem") {
       for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
@@ -989,7 +1038,10 @@ export function resolveEventPlacement(
   // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
   const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y
     && !(options.replacesAutoInspect === true && isAutoInspectEvent(event)));
-  const keepRequested = !requestedReserved && !occupiedRequested;
+  // 사람(character)은 걸어 와 말을 걸 수 있어야 한다 — 통행 칸이어도 입구에서 닿지 않는 덤불 주머니면 근처 닿는 칸으로 옮긴다
+  // (2026-10-31 이세계 고딩 왕도 근위병). 입구가 없는 새 맵은 판단 보류(npcStandReach 가 null).
+  const unreachablePerson = options.kind === "character" && !options.steppable && !(npcStandReach(project, map)?.talkable(x, y) ?? true);
+  const keepRequested = !requestedReserved && !occupiedRequested && !unreachablePerson;
   if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
   const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
@@ -1552,6 +1604,8 @@ const placeNpc: ToolDefinition = {
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const npcPassage = passageBlockWarning(draft, map, event);
     if (npcPassage) normalizationWarnings.push(npcPassage);
+    const npcUnreachable = unreachableNpcWarning(draft, map, event, `NPC '${name}'`);
+    if (npcUnreachable) normalizationWarnings.push(npcUnreachable);
     finalX = event.x;
     finalY = event.y;
     const adjusted = finalX !== requestedX || finalY !== requestedY;
@@ -2147,6 +2201,35 @@ function nearestPassableCell(
   ignoreEventId?: string,
   reserved?: ReadonlySet<string>,
 ): Point | null {
+  // 입구(시작 위치·착지 칸)에서 걸어 와 말을 걸 수 있는 칸만 먼저 — 큰 고립 덩이(덤불 주머니)나 착지 칸 위에 세우지 않는다
+  // (2026-10-31 이세계 고딩 왕도: 근위병이 덤불 주머니에 서서 말을 걸 수 없었다). 입구가 없는 새 맵은 판단 보류.
+  // 근처(반경 10)에 그런 칸이 하나도 없으면 예전 규칙으로 고른다 — 호출자가 unreachableNpcWarning 으로 알린다.
+  const stand = npcStandReach(project, map);
+  if (stand) {
+    const talkable = nearestPassableCellWhere(project, map, x, y, Math.max(maxRadius, 10), ignoreEventId, reserved, stand.talkable);
+    if (talkable) return talkable;
+  }
+  return nearestPassableCellWhere(project, map, x, y, maxRadius, ignoreEventId, reserved, () => true);
+}
+
+/** 사람이 선 칸에 입구에서 걸어 와 말을 걸 수 없으면 영어 경고(모델이 읽는다). 입구가 없는 맵은 판단 보류. */
+export function unreachableNpcWarning(project: Project, map: GameMap, event: Pick<GameEvent, "x" | "y">, label: string): string | null {
+  const stand = npcStandReach(project, map);
+  if (!stand || stand.talkable(event.x, event.y)) return null;
+  return `${label} at (${event.x},${event.y}) cannot be reached on foot from this map's start or entrance cells, so the player can never talk to it. `
+    + "Move it next to a road or open floor the player walks through (show_map_region shows the walkable cells), or open a path to it.";
+}
+
+function nearestPassableCellWhere(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  maxRadius: number,
+  ignoreEventId: string | undefined,
+  reserved: ReadonlySet<string> | undefined,
+  talkable: (x: number, y: number) => boolean,
+): Point | null {
   const occupied = new Set([
     ...map.events
       .filter((event) => event.id !== ignoreEventId)
@@ -2231,6 +2314,7 @@ function nearestPassableCell(
         if (componentSize(cx, cy) < totalWalkableEstimate) continue;
         if (isFurnitureOrRoadwayCell(cx, cy).bad) continue;
         if (lanes.has(cy * map.width + cx)) continue;
+        if (!talkable(cx, cy)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }
@@ -2252,6 +2336,7 @@ function nearestPassableCell(
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
         if (!isPassable(project, map, cx, cy)) continue;
+        if (!talkable(cx, cy)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }
@@ -3385,7 +3470,7 @@ function readCaughtPenalty(draft: Project, raw: unknown): CaughtPenalty | undefi
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. activateSwitch 로 깨운 추격자는 기본으로 벽 너머의 주인공도 쫓는다(persistent) — patrol 이 있으면 스위치는 순찰 시작이고 보아야 쫓는다. 추격전·「쫓아오는」 요청의 정본. " +
     "speed 는 쫓는 동안 한 칸 시간이다(쉬지 않고 이어 걷는다, 주인공 걷기 160ms): 1≈327 · 2≈255 · 3≈182ms(주인공보다 조금 느림) · 4≈145 · 5≈127 · 6(기본)·7·8≈115ms(주인공보다 빠름). 주인공보다 빠른 추격자는 12칸마다 숨을 고르고, 시야가 끊기면 잠깐 뒤 마지막 목격 자리와 달아난 방향을 뒤진다 — 은신처·시야를 끊는 벽·문을 꼭 둘 것. " +
     "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것. " +
     "activateSwitch 를 setSwitch value:false 로 끄면 추격자가 사라질 뿐 은신이 아니다. 숫자 암호·금고·열쇠는 compile_puzzle kind:password — answer 가 1~6자리 숫자면 inputNumber. 선택지 보기에 정답 숫자를 적지 말 것.",
@@ -3397,12 +3482,13 @@ const makeChaseScene: ToolDefinition = {
       id: { type: "string", description: "추격자 이벤트 id(생략 시 자동) — 다른 이벤트·시험에서 이 추격자를 가리킬 때" },
       chaser: {
         type: "object",
-        description: "{at:{x,y},graphic,speed?,sightRange?}",
+        description: "{at:{x,y},graphic,speed?,sightRange?,blendMode?}",
         properties: {
           at: COORD_SCHEMA,
           graphic: GRAPHIC_SPEC_SCHEMA,
           speed: { type: "integer" },
           sightRange: { type: "integer" },
+          blendMode: { type: "string", enum: ["add", "screen", "multiply"], description: "칩을 아래 화면과 섞는 방식. 유령·빛나는 것은 add(사람 걷기 칩을 그대로 쓰고 희미하게 빛나게), 그림자는 multiply. 생략 = 보통" },
         },
         required: ["at"],
       },
@@ -3419,6 +3505,9 @@ const makeChaseScene: ToolDefinition = {
         },
       },
       killOnTouch: { type: "boolean" },
+      onTouch: { type: "array", items: CUTSCENE_BEAT_SCHEMA, description: "닿았을 때 게임 오버 대신 도는 장면(CutsceneBeat[]) — 죽이지 않는 추격자(유령의 차가운 손 → 화면이 하얘지고 계단 앞으로 transfer, 스위치로 추격 끄기). killOnTouch·caughtPenalty 와 같이 쓸 수 없다" },
+      caughtText: { type: "string", maxLength: 80, description: "killOnTouch 로 붙잡힌 순간 게임 오버 앞에 뜨는 한 줄(기본 「붙잡혔다.」). 추격자의 말로 — 예 숙직 선생 「찾았다.」, 짐승은 비우거나 「…」" },
+      characterId: { type: "string", description: "추격자의 인물 프로필 id(upsert_character_profile). 주면 그 프로필 이름이 이벤트 이름이 되고, 그 이름을 화자로 쓴 bark(text container:\"bark\") 혼잣말이 이 추격자 머리 위에 붙는다 — 층마다 다른 추격자 이벤트여도 같은 인물로 묶인다" },
       caughtPenalty: {
         type: "object",
         description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님, 끝나면 파티 회복) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
@@ -3438,6 +3527,9 @@ const makeChaseScene: ToolDefinition = {
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
+      footsteps: { type: "object", description: "추격자 발소리 — 주인공과 걸음 거리로 커지고 좌우로 갈린다(소리로 거리를 재는 호러). {se?(생략 = 공포 기본 구두 발소리를 만든다), everySteps?(기본 2), radius?(칸, 기본 10), volume?}. 공포 장르(horror-chase)는 생략해도 기본 발소리를 단다 — {off:true} 면 끈다(유령·발소리 없는 추격자)", properties: { se: { type: "string" }, everySteps: { type: "integer" }, radius: { type: "integer" }, volume: { type: "number" }, off: { type: "boolean", description: "true 면 발소리를 뗀다" } } },
+      emotes: { type: "string", enum: ["none", "default"], description: "none = 알아챈 「!」·숨 고르기 땀 말풍선을 띄우지 않는다(호러 기본). default = 띄운다" },
+      hidingSound: { type: "object", description: "은신처 소리 — {enterSe?(숨을 때, 생략 = 사물함 문 소리), exitSe?, heartbeat?(true 면 숨어 있는 동안 심장 고동 고리, 공포 장르 기본 true)}. false 면 무음", properties: { enterSe: { type: "string" }, exitSe: { type: "string" }, heartbeat: { type: "boolean" } } },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
     },
     required: ["mapId", "chaser"],
@@ -3491,11 +3583,19 @@ const makeChaseScene: ToolDefinition = {
         throw new ToolError(`pursuit.${key} 에 activateSwitch(${activateSwitch})를 쓸 수 없습니다 — ${key === "lostSwitchId" ? "다시 발견하면 꺼지므로 추격자가 주인공을 보는 순간 사라집니다" : "넘어오기 연출 스위치이지 추격을 켜는 스위치가 아닙니다"}. 연출용 스위치를 따로 쓰거나 빼세요.`);
       }
     }
-    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
+    // 단, 순찰(patrol)이 있으면 스위치는 «순찰 시작»이다 — persistent 면 켜지는 순간 이미 쫓는 상태로 깨어나
+    // 순찰도 숨기도 건너뛰고 곧장 주인공에게 온다(2026-10-31 「이상 없음」: 계단참에 손전등이 서자마자 숙직 선생이
+    // 도구함 앞까지 직행해 첫 숨기가 성립하지 않았다). 순찰 경비는 보아야 쫓는다.
+    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined && args.patrol === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const penalty = readCaughtPenalty(draft, args.caughtPenalty);
     if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
-    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }]
+    if (args.onTouch !== undefined && (args.killOnTouch === true || penalty)) throw new ToolError("onTouch 는 killOnTouch·caughtPenalty 와 같이 쓸 수 없습니다 — 닿았을 때 하나만 고르세요.", { code: "invalid-args" });
+    const touchCommands = args.onTouch === undefined ? undefined : compileChaserTouch(draft, map, id, args.onTouch);
+    const caughtText = typeof args.caughtText === "string" && args.caughtText.trim() ? args.caughtText.trim() : "붙잡혔다.";
+    const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
+    const commands: Command[] = touchCommands ? touchCommands
+      : args.killOnTouch === true ? [{ kind: "killPlayer", message: caughtText }]
       : penalty ? [
         { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
         { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
@@ -3524,6 +3624,7 @@ const makeChaseScene: ToolDefinition = {
     const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id, paceMs);
     const event: GameEvent = {
       id,
+      ...(characterId ? { characterId, ...(draft.characters?.[characterId]?.displayName ? { name: draft.characters[characterId]!.displayName } : {}) } : {}),
       x: placement.x,
       y: placement.y,
       trigger: { kind: "eventTouch" },
@@ -3533,7 +3634,7 @@ const makeChaseScene: ToolDefinition = {
           id: `${id}_chase`,
           name: "추격자",
           conditions: activateSwitch ? [{ kind: "switch", switchId: activateSwitch, value: true }] : [],
-          graphic,
+          graphic: chaser.blendMode && !graphic.transparent ? { ...graphic, blendMode: chaser.blendMode } : graphic,
           trigger: { kind: "eventTouch" },
           priority: "same",
           overlapForbidden: true,
@@ -3553,6 +3654,14 @@ const makeChaseScene: ToolDefinition = {
         },
       ],
     };
+    const horrorGenre = draft.system?.genre === "horror-chase";
+    const chasePage = event.pages![0]!;
+    const footstepsArg = args.footsteps === undefined ? (horrorGenre ? { se: "" } : undefined) : readFootstepsArg(args.footsteps);
+    const footsteps = resolveFootstepsSe(draft, footstepsArg);
+    if (footsteps) chasePage.movement = { ...chasePage.movement, footsteps };
+    const quiet = args.emotes === "none" || (args.emotes === undefined && horrorGenre);
+    if (args.emotes !== undefined && args.emotes !== "none" && args.emotes !== "default") throw new ToolError("emotes 는 none|default 입니다.", { code: "invalid-args" });
+    if (quiet) chasePage.movement = { ...chasePage.movement, quietBreath: true, ...(chasePage.movement.sightAlert ? { sightAlert: { ...chasePage.movement.sightAlert, emote: null } } : {}) };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     // 붙잡히면 게임 오버인 추격은 기본으로 진입 체크포인트를 둔다 — 없으면 「다시 시작」 이 타이틀뿐이다
@@ -3571,6 +3680,16 @@ const makeChaseScene: ToolDefinition = {
       hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
       if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
       else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
+    }
+    const hidingSound = readHidingSound(draft, args.hidingSound, horrorGenre);
+    if (hidingSound) {
+      for (const hideId of hiding.eventIds) {
+        const hideEvent = draft.maps[map.id]?.events.find((e) => e.id === hideId)
+          ?? Object.values(draft.maps).flatMap((m) => m.events).find((e) => e.id === hideId);
+        for (const page of hideEvent?.pages ?? []) {
+          if (page.interaction?.kind === "hiding") page.interaction = { ...page.interaction, ...hidingSound };
+        }
+      }
     }
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
@@ -3594,6 +3713,24 @@ const makeChaseScene: ToolDefinition = {
     };
   },
 };
+
+/** 사물함 문 소리(숨기 기본). */
+const HIDING_ENTER_SE = "cc0-se-osx-door-close-03";
+
+/** make_chase_scene hidingSound → interaction 소리 필드. 공포 장르는 생략해도 사물함 소리 + 심장 고동. false = 무음. */
+function readHidingSound(draft: Project, raw: unknown, horrorGenre: boolean): { enterSe?: string; exitSe?: string; heldSe?: string } | undefined {
+  if (raw === false) return undefined;
+  if (raw === undefined && !horrorGenre) return undefined;
+  if (raw !== undefined && (typeof raw !== "object" || raw === null || Array.isArray(raw))) throw new ToolError("hidingSound 는 {enterSe?,exitSe?,heartbeat?} 또는 false 입니다.", { code: "invalid-args" });
+  const r = (raw ?? {}) as { enterSe?: unknown; exitSe?: unknown; heartbeat?: unknown };
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+  const heartbeat = r.heartbeat === undefined ? true : r.heartbeat === true;
+  return {
+    enterSe: str(r.enterSe) ?? HIDING_ENTER_SE,
+    ...(str(r.exitSe) ? { exitSe: str(r.exitSe) } : {}),
+    ...(heartbeat ? { heldSe: ensureHorrorSound(draft, "heartbeat") } : {}),
+  };
+}
 
 /** 벽감의 action 접근 예외는 기본 보물상자를 수면에 띄우는 허가가 아니다. */
 function assertChestDrySurface(project: Project, map: GameMap, x: number, y: number): void {
@@ -3966,17 +4103,41 @@ function chaseSpec(value: unknown): {
   readonly graphic?: unknown;
   readonly speed?: number;
   readonly sightRange?: number;
+  readonly blendMode?: "add" | "screen" | "multiply";
 } {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?} 객체여야 합니다.", { code: "chaser-spec" });
+    throw new ToolError("chaser는 {at,graphic?,speed?,sightRange?,blendMode?} 객체여야 합니다.", { code: "chaser-spec" });
   }
-  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown };
+  const record = value as { at?: unknown; graphic?: unknown; speed?: unknown; sightRange?: unknown; blendMode?: unknown };
+  if (record.blendMode !== undefined && record.blendMode !== "add" && record.blendMode !== "screen" && record.blendMode !== "multiply") {
+    throw new ToolError("chaser.blendMode 는 add|screen|multiply 입니다.", { code: "chaser-spec" });
+  }
   return {
     at: pointFromRecord(record.at, "chaser.at"),
     graphic: record.graphic,
     speed: typeof record.speed === "number" ? record.speed : undefined,
     sightRange: typeof record.sightRange === "number" ? record.sightRange : undefined,
+    ...(record.blendMode ? { blendMode: record.blendMode as "add" | "screen" | "multiply" } : {}),
   };
+}
+
+/** 죽이지 않는 추격자의 «닿음» 장면 — script_cutscene 과 같은 비트 검증을 거친다. */
+function compileChaserTouch(draft: Project, map: GameMap, chaserId: string, beats: unknown): Command[] {
+  if (!Array.isArray(beats) || beats.length === 0) throw new ToolError("onTouch 는 비어 있지 않은 CutsceneBeat 배열이어야 합니다.", { code: "invalid-args" });
+  try {
+    return compileCutscene(beats as CutsceneBeat[], {
+      context: {
+        eventIds: new Set([...map.events.map((event) => event.id), chaserId]),
+        resourceIds: collectResourceIds(draft),
+        mapIds: new Set(Object.keys(draft.maps)),
+        switchIds: new Set((draft.switches ?? []).map((sw) => sw.id)),
+        endingIds: new Set((draft.endings ?? []).map((ending) => ending.id)),
+      },
+    });
+  } catch (cause) {
+    if (cause instanceof CutsceneValidationError) throw new ToolError(`onTouch 검증 실패: ${cause.reasons.join(" / ")}`, { code: "cutscene-validation", mapId: map.id });
+    throw cause;
+  }
 }
 
 function rectFromRecord(value: unknown, label: string): { x: number; y: number; w: number; h: number } {
@@ -4133,7 +4294,7 @@ const duplicateEvent: ToolDefinition = {
 
 const removeEvent: ToolDefinition = {
   name: "remove_event",
-  description: "맵에서 이벤트를 제거한다(파괴적).",
+  description: "Remove an event from a map (destructive). Refused when the event is the only thing that turns on a switch other events' pages wait for (removing it would block the story).",
   mode: "write",
   parameters: {
     type: "object",
@@ -4144,6 +4305,9 @@ const removeEvent: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const index = map.events.findIndex((event) => event.id === args.eventId);
     if (index < 0) throw new ToolError(`제거할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found" });
+    // 남는 페이지가 기다리는 스위치를 이 이벤트만 켜면 지우지 않는다(진행이 영영 안 열린다 — strandedSwitches.ts).
+    const stranded = strandedByRemoval(draft, map.id, args.eventId as string);
+    if (stranded.length) throw new ToolError(strandedRefusal(args.eventId as string, stranded), { code: "remove-strands-progress" });
     map.events.splice(index, 1);
     return { summary: `${map.name}에서 이벤트 '${args.eventId}' 제거`, warnings: [`파괴적 작업: 이벤트 '${args.eventId}'를 삭제했습니다.`] };
   },

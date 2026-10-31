@@ -159,8 +159,20 @@ export function promptTargetName(project: Pick<Project, "maps">, view: RuntimeEv
   // 말 거는 사람(대사 화자)이면 그 이름 — 2026-10-30 씬 벤치 gym-leader: 이름 없는 관장 앞에 단상 칸 이름 「gyd_dais_gr…」가 떴다.
   const speaker = firstSpeaker(view.page?.commands);
   if (speaker) return clip(speaker);
-  const tile = tileLabel?.split(" · ")[0]?.replace(/\s*\([^)]*\)/gu, "").replace(/\s+\d+\s*[w×x]\s*\d*$/iu, "").trim();
+  const tile = tileObjectName(tileLabel);
   return tile && !ID_LIKE.test(tile) ? clip(tile) : undefined;
+}
+
+/**
+ * 칸 이름표에서 물건 이름만. 번들 칩셋 이름표는 「묶음 · 물건 · 부분」 꼴이 많다(「버들항 던전 · 받침 위 수정 덩이 1×2…」
+ * 「바닥 · 널마루」「탁상 물건 · 생선」) — 앞 마디가 묶음 이름이면 다음 마디를 쓴다. 「승용차 · 오른쪽 향함」처럼 앞 마디가
+ * 물건인 이름표는 그대로 앞 마디(2026-10-31 폴른 스타 1막 VQA: 숲 세이브 수정 앞에 「Z 휴식 · 버들항 던전」).
+ */
+const SET_PREFIX = /^(?:버들항(?:\s.+)?|조선|웨이브 장소|바닥|벽면|탁상 물건|심연|건물)$/u;
+function tileObjectName(label: string | undefined): string | undefined {
+  const parts = (label ?? "").split(" · ").map((part) => part.trim()).filter((part) => part && part !== "공방");
+  const pick = parts.length > 1 && SET_PREFIX.test(parts[0]!) ? parts[1] : parts[0];
+  return pick?.replace(/\s*\([^)]*\)/gu, "").replace(/\s*\d+\s*[w×x]\s*\d+.*$/iu, "").replace(/\s+\d+\s*[w×x]\s*\d*$/iu, "").trim() || undefined;
 }
 
 /** 내부 식별자(영문·숫자·밑줄만, 밑줄 포함 — 「gyd_dais_grass」「mx_map_x_leader」)는 사람에게 보이는 이름이 아니다. */

@@ -12,6 +12,7 @@ import type { MotionTrack, BattleMotionProgram } from "@/battle/battleMotionProg
 import { castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { RetroFxAnchor, RetroFxLayer, RetroSkillMotion } from "@/assets/retroClassSkills";
 import type { PartyPixelCell, RetroMonsterCell } from "@/assets/pixelEnemySheets";
+import type { SkillRecord } from "@/project/types";
 import { retroTintFilter } from "@/assets/retroChoreographyTints";
 
 /** 시전자가 서는 자리. 좌표는 무대가 정한다. */
@@ -532,6 +533,34 @@ export function retroMonsterCellForPose(pose: ExtendedBattlerPose): RetroMonster
   if (pose === "dead" || pose === "dying") return "dead";
   if (pose === "evade" || pose === "attack_follow" || pose === "weak" || pose === "revive") return "recover";
   return "skill";
+}
+
+/**
+ * 16칸(4×4) 적 시트에서 몬스터 기술이 어느 칸 줄기를 쓰는가.
+ *   physical 공격력으로 치는 피해(물기·몸통박치기) — 9칸과 같은 windup·skill 칸
+ *   cast     그 밖의 기술(마력 피해·회복·상태) — cast_charge → cast_release
+ *   guard    자기 방어를 올리는 지원 기술(단단해지기류) — 방출 순간을 guard 칸으로
+ * raisesDefense 는 상태 id 가 방어 배율을 1보다 크게 올리는지 답한다(runtimeEffects.defenseMultiplier).
+ */
+export type RetroMonsterSkillCellKind = "physical" | "cast" | "guard";
+export function retroMonsterSkillCellKind(
+  skill: Pick<SkillRecord, "scope" | "effect" | "stateEffects">,
+  raisesDefense: (stateId: string) => boolean,
+): RetroMonsterSkillCellKind {
+  if (skill.effect.kind === "damage" && skill.effect.statistic === "attack") return "physical";
+  if (skill.scope === "self" && skill.effect.kind === "support"
+    && (skill.stateEffects ?? []).some((effect) => effect.operation === "add" && raisesDefense(effect.stateId))) return "guard";
+  return "cast";
+}
+
+/**
+ * 9칸 칸 이름을 16칸 시트의 확장 칸으로 바꾼다(몬스터 기술 재생 전용). 시트에 그 칸이 없으면 pixelEnemyFrame 이 물린다
+ * (cast_charge → windup, cast_release → attack). guard 칸이 없는 시트는 부르는 쪽이 physical 로 낮춘다.
+ */
+export function retroMonster16Cell(cell: RetroMonsterCell | undefined, kind: RetroMonsterSkillCellKind): RetroMonsterCell | undefined {
+  if (kind === "cast") return cell === "windup" ? "cast_charge" : cell === "skill" ? "cast_release" : cell;
+  if (kind === "guard") return cell === "skill" ? "guard" : cell;
+  return cell;
 }
 
 /**

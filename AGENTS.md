@@ -173,6 +173,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
+   - 스크립트 샌드박스 (TypeScript 이벤트 스크립트 — `script` 명령·`scriptLibrary`·QuickJS 실행 다리·`game` API 단일 표 `apiSpec.ts`·컴파일/분석·한도·CSP): `openwiki/script-sandbox.md`
    - 높이 지형 relief (단·경사로·벽면 장식 — 편집기 붓·절벽 띠·들린 타일, 게임 걷기·들림·depth, 성능 계약, 알려진 한계): `openwiki/relief-terrain.md`
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.

@@ -18,7 +18,7 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
-import { applySystemGraphic } from "@/player/systemGraphics";
+import { applySystemGraphic, markClassicWindowSkin } from "@/player/systemGraphics";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
@@ -100,6 +100,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
   panel.style.removeProperty("border-image-slice");
+  // 고전 윈도스킨 게임은 메뉴 창(명령·파티·상세·돈)도 같은 그림으로 — 칠은 windowSkinSurfaces.css.
+  markClassicWindowSkin(panel, options.project);
 
   if (mode === "function") panel.classList.add("status-menu-detail-focus");
   const detail = createStatusMenuDetail({
@@ -114,6 +116,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onInventoryViewChange: options.actions.onInventoryViewChange,
     onOptionsChanged: options.actions.onOptionsChanged,
     onToggleWait: options.actions.onToggleWait,
+    onRest: options.actions.onRest,
     targetItemId: options.targetItemId,
     skillActorId: options.skillActorId,
     selectedSkillId: options.selectedSkillId,
@@ -125,6 +128,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     formationActorId: options.formationActorId,
     battleReportIndex: options.battleReportIndex,
     onSelectBattleReport: options.actions.onSelectBattleReport,
+    bestiaryEntryId: options.bestiaryEntryId,
+    onSelectBestiaryEntry: options.actions.onSelectBestiaryEntry,
     campaignSpeciesId: options.campaignSpeciesId,
     onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
     dexPage: options.dexPage,
@@ -305,7 +310,9 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
       tabindex: "0",
       "aria-activedescendant": `status-menu-command-${selectedRailId}`,
       // y 픽셀은 workbench 행 간격(26px) 기준. 행 높이가 다른 스킨(평탄 레일)은 index 로 자기 간격을 곱한다.
-      style: `--status-menu-cursor-y:${selectedRailIndex * 26}px;--status-menu-cursor-index:${selectedRailIndex}`,
+      // rail-count 는 workbench 레일이 행 높이를 남은 세로 길이로 나누는 데 쓴다(statusMenuEdgeDock.css) —
+      // 8명령이 240px 판에서 23px 고정 행으로 넘쳐 「설정」이 도움말 줄을 덮고 「타이틀로」가 화면 밖으로 나갔다(2026-10-31 jb3a jrpg).
+      style: `--status-menu-cursor-y:${selectedRailIndex * 26}px;--status-menu-cursor-index:${selectedRailIndex};--status-menu-rail-count:${Math.max(1, options.snapshot.commands.length)}`,
     },
     dataset: { testid: "status-menu-command-rail" },
   });
@@ -382,6 +389,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "campaign-progress": return "◆";
     case "trainer-card": return "▤";
     case "battle-reports": return "▤";
+    case "bestiary": return "✦";
     case "quests": return "✓";
     case "relationships": return "∞";
     case "gallery": return "▣";
@@ -391,6 +399,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "journal": return "✎";
     case "save": return "↓";
     case "load": return "↑";
+    case "rest": return "☾";
     case "wait": return "Ⅱ";
     case "to-title": return "⌂";
   }
@@ -417,6 +426,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "campaign-progress": return "shield";
     case "trainer-card": return "book-magic";
     case "battle-reports": return "book-magic";
+    case "bestiary": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
     case "gallery": return "map";
@@ -426,6 +436,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "journal": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
+    case "rest": return "clock";
     case "wait": return "clock";
     case "to-title": return "boot";
   }
@@ -446,6 +457,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     // 「전투 대기」는 목록에서 고르는 순간 값을 뒤집지 않는다 — 화면을 열고 그 화면의 행에서 바꾼다
     // (열기만 해도 값이 뒤집히고 화면 안에서는 못 바꾸던 결함, 2026-10-23).
     case "wait":
+    case "rest":
     case "items":
     case "skills":
     case "equipment":
@@ -460,6 +472,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "row":
     case "formation":
     case "battle-reports":
+    case "bestiary":
     case "quests":
     case "relationships":
     case "gallery":

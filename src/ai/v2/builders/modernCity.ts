@@ -23,9 +23,9 @@ export function localizePlaceSpec<T extends PlaceSpec>(spec: T, task: string): T
 }
 
 export const MODERN_KR_CARD =
-  "[한국 현대 type:street|house, style kr-modern] 서울·현대 한국 배경이면 style 에 kr-modern 을 넣는다(일본 거리·일본 집으로 짓지 않는다). " +
-  "street=한국 도시 거리 한 장(60×48: 차도·교차로·횡단보도·한글 입간판·버스 쉘터·공원·건물 문). features 가게 낱말: 편의점·카페·은행·병원·사무실·호텔·백화점·아파트·주택·빵집·우체국·경찰서. " +
-  "house=그 도시의 실내 하나: 카페(바 카운터·좌석)·편의점·지하철역·사무실·아파트·빌딩 로비·은행·병원·마트·백화점·영화관·식당·미술관·도서관·시청·의원·빵집 카페·창고. hints.program 으로 직접 고를 수도 있다.";
+  "[Modern Korea type:street|house, style kr-modern] For Seoul or modern Korea put kr-modern in style (do not build a Japanese street or Japanese house). " +
+  "street = one Korean city street (60×48: roads, intersection, crosswalks, Hangul signboards, bus shelter, park, building doors). features shop words: 편의점 (convenience store) · 카페 · 은행 (bank) · 병원 (hospital) · 사무실 (office) · 호텔 · 백화점 (department store) · 아파트 · 주택 (house) · 빵집 (bakery) · 우체국 (post office) · 경찰서 (police station). " +
+  "house = one interior in that city: 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). You can also pick directly with hints.program.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);

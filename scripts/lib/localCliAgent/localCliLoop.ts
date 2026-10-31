@@ -267,6 +267,8 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     async prompt(text) {
       if (aborted) return;
       lastActivity = Date.now();
+      // 실행기가 차례 사이에 도구 배열을 바꿨으면(완성 뒤 윤문 차례 등) 다음 요청 전에 CLI 에 알린다 — 도구 호출 뒤에만 알리면 놓친다.
+      announceToolChanges();
       await open().prompt(text);
     },
     steer(message) {

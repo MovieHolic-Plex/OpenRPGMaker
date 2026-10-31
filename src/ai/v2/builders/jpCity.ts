@@ -14,16 +14,16 @@ import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec }
 
 /** v2 계획 모델에게 주는 일본 도시 지식(≤900자). */
 export const JP_CITY_CARD =
-  "[일본 현대 type:street|house, style jp-modern] street=거리 한 장. features 낱말: shops/상점가(상가)·houses/주택가·alley/골목(시타마치)·arcade(아케이드 상점가)·" +
-  "가게 konbini·izakaya·ramen·cafe·sento·bento·machiya·apartment·office·garage, 소품 vending/자판기·park/공원·crosswalk/횡단보도·signal·bus stop·post box·river/다리·bench·sakura·bicycle·car·lamp. " +
-  "한 맵=지역 하나: station/역전·school/학교·university·shrine/신사·temple/절·castle·rail crossing/건널목·danchi·onsen·harbor·beach·rice terraces·mountain trail·festival·museum·yokocho·office district·canal (넣으면 그 지역 문법). " +
-  "size small 40×28·medium 48×36·large 60×48. house=집·가게 실내 하나: 다다미/옛집(平屋)·단독주택(floors 2면 2층+계단)·원룸·맨션·편의점·라멘·이자카야·초밥·찻집·빵집·서점·약국·꽃집·센토·파출소·의원·우체국·학교·역·료칸·노래방… " +
-  "zones kind 로 방(ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study) 직접 지정 가능. 거리와 실내 잇기·사람·탑·지하철 노선은 못 함(보고됨). hints: variant·region·style·parkForest. 역전(station)은 짜임을 직접 고른다: hints.length short|medium|long, hints.plaza rotary|crossing|square, hints.landmark fountain|hachiko|clock|zelkova|kiosk, hints.shops 「books,cafe,…」(books·cafe·pharmacy·ramen·bakery·izakaya·sushi·soba·teishoku·flower·barber·cleaning·wagashi·conbini·parking·office 중 4~7곳 순서대로), hints.mirror — 요청이 정한 것만 넣는다(횡단보도는 어느 꼴에나 있다). 말하지 않은 손잡이는 비워 둔다 — 비우면 판마다 다르게 짜고, 채우면 같은 요청이 늘 같은 거리가 된다.";
+  "[Modern Japan type:street|house, style jp-modern] street = one street map. features words: shops/상점가 (shopping street) · houses/주택가 (residential) · alley/골목 (shitamachi) · arcade (covered shopping arcade) · " +
+  "shops konbini·izakaya·ramen·cafe·sento·bento·machiya·apartment·office·garage, props vending/자판기·park/공원·crosswalk/횡단보도·signal·bus stop·post box·river/다리 (bridge)·bench·sakura·bicycle·car·lamp. " +
+  "One map = one district: station/역전·school/학교·university·shrine/신사·temple/절·castle·rail crossing/건널목·danchi·onsen·harbor·beach·rice terraces·mountain trail·festival·museum·yokocho·office district·canal (adding one applies that district's grammar). " +
+  "size small 40×28 · medium 48×36 · large 60×48. house = one home or shop interior: tatami/old house (hiraya) · detached house (floors 2 = two floors + stairs) · studio · mansion flat · konbini · ramen · izakaya · sushi · tea house · bakery · bookstore · pharmacy · florist · sento · police box · clinic · post office · school · station · ryokan · karaoke… " +
+  "zones kind can set rooms directly (ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study). Props to leave out: hints.avoidProps «bike,vend,…» (or a feature like «no bicycle»). After building a street and its interiors, link each shop door with link_jp_city_interior{mapId:street, door:{x,y} from the summary «문: … (x,y)», interiorMapId} — it places both transfers, the door kind and the konbini chime (no extra sound command). People: add_people / add_street_walkers. Towers and subway lines are not possible here (reported). hints: variant·region·style·parkForest. For a station front pick the layout yourself: hints.length short|medium|long, hints.plaza rotary|crossing|square, hints.landmark fountain|hachiko|clock|zelkova|kiosk, hints.shops «books,cafe,…» (4–7 in order from books·cafe·pharmacy·ramen·bakery·izakaya·sushi·soba·teishoku·flower·barber·cleaning·wagashi·conbini·parking·office), hints.mirror — set only what the request decided (every layout has a crosswalk). Leave unmentioned knobs empty — empty varies per run; filled makes the same request always give the same street.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);
 const num = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
-const KNOWN_HINTS = new Set(["seed", "variant", "region", "style", "parkForest", "width", "height", "program", "length", "plaza", "landmark", "shops", "mirror"]);
+const KNOWN_HINTS = new Set(["seed", "variant", "region", "style", "parkForest", "width", "height", "program", "length", "plaza", "landmark", "shops", "mirror", "avoidProps"]);
 
 /** 한 장에 한 지역 — 거리 조합기가 아니라 지역 문법(compose_jp_region)으로 짓는 낱말. 앞이 우선. */
 const REGION_RULES: readonly Rule[] = [
@@ -101,6 +101,26 @@ interface PlanView { ids: string[]; parks: number }
 const textOf = (spec: PlaceSpec): string => [spec.name, spec.style, spec.theme, ...(spec.features ?? []), ...(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""} ${(z.anchors ?? []).join(" ")}`)].join(" ");
 /** 요청 낱말 목록(features·zones). 이름은 거리 짜임·지역 판단에만 쓰고, 소품 확인은 낱말별로 한다. */
 const requestedWords = (spec: PlaceSpec): string[] => [...(spec.features ?? []), ...(spec.zones ?? []).flatMap((z) => [z.kind, ...(z.anchors ?? [])])].map((w) => String(w).trim()).filter(Boolean);
+
+/** 「자전거 없이」「no bicycle」 같은 빼 달라는 소품 — compose_jp_city_street avoidProps 낱말로. */
+const AVOID_PROPS: readonly (readonly [RegExp, string])[] = [
+  [/bicycle|bike|자전거/i, "bike"], [/vending|자판기/i, "vend"], [/\bcars?\b|자동차|주차/i, "car"], [/bench|벤치/i, "bench"],
+  [/planter|화분/i, "planter"], [/nobori|노보리|깃발/i, "nobori"], [/cone|라바콘/i, "cone"],
+];
+const NEGATED = /^(?:no|without|avoid|remove|not?)\b|없[이게음는]|빼|말고|금지|두지\s*마|놓지\s*마/iu;
+/** 부정 낱말(「no bicycle」「자전거 없이」)과 hints.avoidProps(쉼표 목록). 요청 낱말 목록에서 그 낱말은 확인 대상에서 뺀다. */
+export function jpAvoidProps(spec: PlaceSpec): { avoid: string[]; negatedWords: Set<string> } {
+  const negatedWords = new Set<string>();
+  const avoid = new Set<string>();
+  for (const w of requestedWords(spec)) {
+    if (!NEGATED.test(w)) continue;
+    const hit = AVOID_PROPS.find(([re]) => re.test(w));
+    if (hit) { avoid.add(hit[1]); negatedWords.add(w); }
+  }
+  const hinted = spec.hints?.avoidProps;
+  if (typeof hinted === "string") for (const part of hinted.split(/[,\s·]+/u)) { const hit = AVOID_PROPS.find(([re]) => re.test(part)); if (hit) avoid.add(hit[1]); else if (part.trim()) avoid.add(part.trim().toLowerCase()); }
+  return { avoid: [...avoid], negatedWords };
+}
 
 /** 역전 짜임 손잡이(hints 의 낱값) → compose_jp_region layout. */
 function stationLayout(spec: PlaceSpec): Record<string, unknown> {
@@ -239,7 +259,9 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const variant = num(spec.hints?.variant) ?? 0;
   const baseSeed = (num(spec.hints?.seed) ?? prev?.baseSeed ?? (spec.salt ?? 0) % 9973) + variant * 101;
   const sizeKey = spec.size ?? "medium";
-  const words = requestedWords(spec);
+  const avoidance = jpAvoidProps(spec);
+  // 빼 달라는 소품 낱말(「no bicycle」)은 놓을 소품으로 세지 않는다 — 자전거를 요청 소품으로 읽어 자전거가 다 들어가는 씨앗을 골랐다(2026-10-30 asst-parity 마왕 편의점 opus).
+  const words = requestedWords(spec).filter((w) => !avoidance.negatedWords.has(w));
 
   let w: number, h: number;
   const r = region ? jpRegionById(region) : undefined;
@@ -303,7 +325,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     const finalView = planView(mapId, w, h, bestSeed, bestStyle, finalShops);
     for (const [what, f] of checks) if (!f(finalView)) missing.push(`${what}(씨앗 40개 안에서 이 크기·짜임 거리에 함께 못 놓음)`);
     seed = bestSeed;
-    args = { mapId, seed, style: bestStyle, replace: true, ...(finalShops.length ? { shops: finalShops } : {}),
+    args = { mapId, seed, style: bestStyle, replace: true, ...(finalShops.length ? { shops: finalShops } : {}), ...(avoidance.avoid.length ? { avoidProps: avoidance.avoid } : {}),
       ...(typeof spec.hints?.parkForest === "string" ? { parkForest: spec.hints.parkForest } : {}) };
   }
   const res = run.call(kind === "region" ? "compose_jp_region" : "compose_jp_city_street", args);

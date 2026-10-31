@@ -1,0 +1,417 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab2f92b98990e635b73c51df499416f99146e0bba3e00749ef5e6022cc5f0c74",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 3 w2 reverse cut through a north-facing cave cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/cave-steps/stairs-h3-w2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 108,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "step 2 tread",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "step 3 tread",
+      "rows": "11-12",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "step 4 tread",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "step 5 tread",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 6 tread",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is a flight of steps stacked in horizontal bands. The upper steps each have a 2-row light tread (rows 1-2, 6-7, 11-12, 16-17). Below each tread is a 2-3 row darker riser (rows 3-4, 8-10, 13-14, 18-19), then a dark 1-row edge line (rows 5, 10, 15, 20). The lower steps (rows 21-24 and 26-29) are 4-row light treads separated by dark edge lines at rows 25 and 30. Every step has a top surface with a front-edge line, and the upper steps also have a riser face of 2-3 rows. The silhouette is a full 32-wide tile, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The measured facts match the paving reference: 7 visible tones per tile against 7 for paving and 3 for grass, and 0% near-flat coverage. The dark edge pixels are 0% neutral, so the outlines carry a brown tint. Each stair tread has a light lip, a mid body and a dark brown riser line, which gives about 5 lightness steps. No block of 5x5 pixels or larger is a single flat colour. The weak points are that the treads read as fairly regular horizontal bands with little grain, and that the piece looks more like wood than cave stone. Because the palette is locked, I did not count that as a failure. Against the references it is not thinner or more sticker-like, so it is acceptable, though only just.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21214
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-5"
+     },
+     {
+      "part": "step 2 tread",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-10"
+     },
+     {
+      "part": "step 3 tread",
+      "rows": "11-12",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "step 4 tread",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "step 5 tread",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 6 tread",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is a full 32px-wide stack of horizontal bands, each a light tread followed by a darker riser. Treads are at rows 1-2, 6-7, 11-12 and 16-17, with 2-row risers below them (rows 3-5, 8-10, 13-14 and 18-19). Dark edge lines at rows 5, 10, 15, 20, 25 and 30 separate the steps. The lower steps (rows 21-24 and 26-29) have 4-row light treads. Risers are 2-3 rows, so the stairs read as descending steps with top and front faces. The tile has no isometric side face. The edge-line placement is a little ambiguous, so this is a moderate-confidence reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Each stair tread is a banded ramp: a light top lip, mid-tan face, and a darker brown riser line. That gives about 5 distinct steps, close to the paving reference's 6. The dark edge lines lean brown, matching the 0% near-neutral measure, so they are tinted material tones rather than a black sticker outline. The measured facts agree: 7 visible tones per tile, equal to the paving reference and above the grass reference's 3, with 0% near-flat coverage. By eye the treads are clean and fairly regular, with less per-stone grain than the paving, so texture is 'some' rather than 'rich'. The bands are narrow enough that no 5x5 area is a flat fill. It holds up next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22899
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tread 1",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "tread 2",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "tread 3",
+      "rows": "11-12",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "tread 4",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "tread 5 (lower landing)",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tread 6 (lowest landing)",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full 32 px wide in every row. The column scans show a repeating pattern: a light tread band of 2 rows (1-2, 6-7, 11-12, 16-17), then 2-3 darker rows (3-5, 8-10, 13-15, 18-20) ending in a dark 1-row edge line (rows 5, 10, 15, 20). The bottom two treads are wider, at 4 rows each (21-24 and 26-29), separated by a dark line at row 25, with a dark line at row 30. The light bands are horizontal treads and the darker bands are risers, so the stairs read as stepped terrain with tops and front faces. The largest tread is 4 rows. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 7 visible tones per tile, matching the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outlines carry a warm brown tint rather than black. Each tread has a light lip, a mid body and a dark riser line, which gives about 5 lightness steps. There are small variations inside the bands, so there are no large flat fills, but the texture is less grainy than the cobble paving. The piece reads as clean stepped bands. It is a little simple but not sticker-like, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18438
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "step 2 tread",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "step 3 tread",
+      "rows": "11-12",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "step 4 tread",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "step 5 tread",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 6 tread",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is a full 32-wide stair block. Light tread bands (rows 1-2, 6-7, 11-12, 16-17, 21-24, 26-29) alternate with darker riser or shadow bands (rows 3-5, 8-10, 13-15, 18-20). Each band ends in a 1-row dark edge line at rows 5, 10, 15, 20, 25 and 30. The upper steps have 2-row treads and 3-row risers. The lower treads are 4 rows tall with only a 1-row edge line below, so the stairs read as stepped horizontal surfaces with front faces rather than a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stepped ramp of horizontal bands. Each step has a light lip, a mid face and a dark shadow edge, which gives about 5 lightness steps on the one material, against roughly 6 on the paving reference. The measured facts support it: 7 visible tones per tile equals the paving reference (7) and exceeds the grass (3). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a dark brown tint of the material rather than a black sticker line. The picture shows only light grain dashes within each step, so texture is modest. That is thinner than the per-stone shading on the paving, but the piece is a simple stair with a limited palette, and a careful artist would accept it next to the references. It is a little less rich than the paving but not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21602
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.649Z",
+ "cells": {
+  "16": [
+   "5ff6dd5f6c5d1efb",
+   "64a692e317d435e4",
+   "64c7c1d987695372",
+   "ac4703a7e2b3fd8b"
+  ],
+  "24": [
+   "0ad046a2ccc304fb",
+   "0fb57a480bd69de1",
+   "15005fedc55bcfae",
+   "17cf49bf0c780935",
+   "1aff5311b0e0e4da",
+   "3fe490b8431a95c3",
+   "4592ba06f09de5ef",
+   "50db775ee6df994c",
+   "59aa10351658fd14",
+   "62f97ce138258f63",
+   "73232fad3c40a885",
+   "7ff9504bd3019637",
+   "8140b8f721ae84ee",
+   "82f02439596a0c37",
+   "a4bc5036f5e230a8",
+   "b3023f80b729f7fe",
+   "b94aad7608243a9a",
+   "b9e8892d611477d0",
+   "c004e30e7d3a2802",
+   "dc35a46c836412ce",
+   "e6c1c780d5bbe885",
+   "f12457f2e15d72dc",
+   "f53bcda37c1b7983",
+   "ff212ad7a6af7921"
+  ],
+  "32": [
+   "331b4d50c9d9a01b"
+  ],
+  "48": [
+   "07dd6b2316701ae9",
+   "248a72bd90808868",
+   "259b97f3a29e07c8",
+   "29074884c85603ac",
+   "430548c6e486e4be",
+   "639467e17929e5d3"
+  ]
+ }
+}

@@ -144,8 +144,15 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
 
   // 빛 색 — 어둠만 걷어 내면 가로등·창 불빛이 «덜 어두운 자리»로만 보이고 따뜻한 불빛으로 읽히지 않았다(첫사랑 밤거리, VQA r22).
   // 색을 준 광원은 걷어 낸 자리에 그 색을 옅게 얹는다. 어두운 장면일수록(ambient) 진하다. 흰빛에 가까우면 거의 티가 안 난다.
+  // 어둠과 같은 맵 사각 안에만 — 자르지 않으면 맵 가장자리 경비 등불(부채꼴)의 색이 맵 밖 검은 빈칸까지 번져
+  // 벽 너머 허공에 빛 쐐기가 떴다(폴른 스타 제2막 막사, 처음 하는 사람 검수 2026-10-31).
   context.save();
   context.globalCompositeOperation = "source-over";
+  if (clip) {
+    context.beginPath();
+    context.rect(clip.x, clip.y, clip.width, clip.height);
+    context.clip();
+  }
   for (const light of params.gradients) {
     const rgb = light.color ? hexRgb(light.color) : null;
     if (!rgb || light.radiusPx <= 0 || light.intensity <= 0) continue;

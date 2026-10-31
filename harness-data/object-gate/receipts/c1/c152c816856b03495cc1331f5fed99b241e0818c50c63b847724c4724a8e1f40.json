@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c152c816856b03495cc1331f5fed99b241e0818c50c63b847724c4724a8e1f40",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 3 w3 reverse cut through a north-facing snow cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/snow-steps/stairs-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 188,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow stair tread band 1",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow stair tread band 2",
+      "rows": "7-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow stair tread band 3",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow stair tread band 4",
+      "rows": "19-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow stair tread band 5",
+      "rows": "25-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 48x32 area with a constant silhouette width of 48. It is a stack of five repeating step bands, each about 6 rows: 2 rows of white, then 3 rows of pale blue, then a 1-row darker blue-grey edge line at rows 6, 12, 18, 24 and 30 (the column scans show L=169 or 201 at those rows). The bands are all horizontal tread surfaces seen from above, descending away from the viewer. The pale-blue rows are shading on the tread, not a vertical face. No vertical south face of 3 or more rows is drawn, and there are no legs, no side face and no cap. This reads as a flat top-down slab of steps."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a pale snow-stair patch of horizontal tread bands. Each band has a light top edge and a blue-grey riser shadow line, with fine speckle on the treads. The measured facts support it: 9 visible tones per tile against 7 for the paving and 3 for the grass, 0% near-flat coverage, and 0% neutral dark edge pixels, so the edges are tinted rather than near-black. That matches the Beodeul habit of using the adjacent material's dark tone. There is no sticker outline and no large flat fill. Weaknesses: it uses only 11 distinct colours in total, so the ramp is a little shallower than the references' 6 steps, and the contrast is low. The stone-by-stone shading of the paving reference is not matched, but the stair structure is readable and the tone count is at or above both references. Borderline, but it passes on the primary facts and the visible grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24703
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread band (top terrace)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "3-5"
+     },
+     {
+      "part": "step 2 tread band",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "step 3 tread band",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "step 4 tread band",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 5 tread band",
+      "rows": "25-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is a full-width 48 px block from row 0 to row 31. Columns x=12, 24 and 35 show the same repeating pattern every 6 rows. Each step has a white lit band of 2 rows, then a 3-row blue-tinted band, then a 1-row darker blue edge line at rows 6, 12, 18, 24 and 30. That reads as five stacked step bands, each a tread surface ending in a front-edge line with shade below, so the main top surface is 5 rows per step. The shaded blue band gives about 3 rows of vertical face per step. Which bands are treads and which are risers is somewhat ambiguous, since the stairs descend away from the viewer. There is no side face and no slab-only look, so this reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pale snow-stair patch made of horizontal tread and riser bands in several light blue-white steps, with speckle between them. It shows 9 visible tones per tile, against 3 for the grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no large flat fills. Its edge pixels are 0% neutral, so the band edges are tinted blue-grey rather than near-black, and there is no sticker outline. It uses fewer raw colours (11 in total) than the grass reference's 80, but the visible tones match or exceed the references, so I don't count that against it. It is somewhat simpler than the grass and paving, with regular stripes and less per-stone or per-clump variation, which is why texture is rated only 'some'. Shading depth is still comparable (about 5 steps), and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25442
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step tread 1",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 2",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 3",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 4",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step tread 5",
+      "rows": "25-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is full-width (48 px) for all 32 rows. It shows five snow treads, rows 1-5, 7-11, 13-17, 19-23 and 25-29. Each tread ends in a 1-row blue edge line at rows 6, 12, 18, 24 and 30. The treads are seen from above as the stairs descend away from the viewer. No vertical riser or front face of 3 or more rows is drawn, because the risers are hidden by the reverse cut. The image is a top-down view of the stair surface, so it reads as a slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pale snow-white and ice-blue stair patch built from horizontal tread and riser bands. Several light-to-mid steps separate each tread from its riser, and faint speckle and streaks break up the surface. Measured facts support this: 9 visible tones per tile against 3 for the grass and 7 for the paving, 0% near-flat coverage, and 0% neutral dark edge pixels. So there is no black sticker outline, and forms are separated by value, as in Beodeul. The low contrast suits snow and is not a flaw. The main weakness is that the texture is sparse and the stair read is simple, but it is not thinner or flatter than the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19286
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terrace lip / top tread",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 5",
+      "rows": "25-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px block of snow-white treads about 5 rows each, separated by 1-row blue-grey riser lines at rows 6, 12, 18, 24 and 30. The treads are seen from above as the stairs descend away from the viewer. No riser is deeper than 1 row, so there is no vertical south face of 3 or more rows and no side face. The whole 32-row tile is horizontal surface, which reads as a top-down slab. That is plausible for a terrain stair tile viewed from the terrace lip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pale snow-stair patch with horizontal tread and riser bands. On the measured facts it holds up: 9 visible tones per tile against 3 for the grass and 7 for the paving, 0% near-flat coverage, and 0% neutral dark edge pixels, so there is no black sticker outline. By eye, each stair tread shows about 4-5 lightness steps (highlight lip, light snow, mid, cool shadow, riser edge). Forms are separated by value rather than by a drawn outline, as in the references. Texture is lighter than the references' speckle and grain, but there are no 5x5 flat fills. The piece looks a little soft and low-contrast, yet it carries at least as much tonal information as the references, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18832
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.466Z",
+ "cells": {
+  "16": [
+   "1104c3e842630443",
+   "20441511abe9c0d7",
+   "3b9d1566e8208357",
+   "75ffe87596e1df5b",
+   "84cdfe45b14a5ae8",
+   "c7c25ae186c11064"
+  ],
+  "24": [
+   "06b77f50fb281baf",
+   "0838868e207c2a2d",
+   "1b5a689022e5df02",
+   "456ad5eb29b781bc",
+   "4666edc3871b3e3c",
+   "bcd48c560ba3b396",
+   "c765f5d5630ea184",
+   "cdd69700b3979ac4"
+  ],
+  "32": [
+   "4b6957d957939eac",
+   "62e0740f4ab4b61f",
+   "77644aab2d9924de",
+   "983573dfbe5ec150",
+   "a5861f968e48bfcf",
+   "df9ac50f22bbbefc"
+  ],
+  "48": [
+   "00cbc6d78607e3d0",
+   "6eaec61fb149639e"
+  ]
+ }
+}

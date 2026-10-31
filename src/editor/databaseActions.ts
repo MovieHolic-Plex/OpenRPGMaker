@@ -322,6 +322,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         const record = project.database.states.find((entry) => entry.id === id);
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+        if ("iconResourceId" in patch) {
+          if (patch.iconResourceId) record.iconResourceId = patch.iconResourceId;
+          else delete record.iconResourceId;
+        }
         if ("gen1MajorStatus" in patch) record.gen1MajorStatus = patch.gen1MajorStatus;
         if ("volatileStatus" in patch) record.volatileStatus = patch.volatileStatus;
         if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
@@ -338,6 +342,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
         if ("fieldStepInterval" in patch && patch.fieldStepInterval !== undefined) record.fieldStepInterval = patch.fieldStepInterval;
         if ("releaseAfterSteps" in patch && patch.releaseAfterSteps !== undefined) record.releaseAfterSteps = patch.releaseAfterSteps;
+        if ("releaseAfterBattles" in patch) {
+          if (patch.releaseAfterBattles && patch.releaseAfterBattles > 0) record.releaseAfterBattles = patch.releaseAfterBattles;
+          else delete record.releaseAfterBattles;
+        }
         if ("fieldStepCanKill" in patch && patch.fieldStepCanKill !== undefined) record.fieldStepCanKill = patch.fieldStepCanKill;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
