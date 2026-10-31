@@ -633,7 +633,8 @@ function lanternNight(project: Project, exec: Exec): void {
       cutLabel(),
       cutEnd(),
       say(ELENA, "카엘, 발밑!"),
-      say(SARAH, "큰 금은 못 건넌다! 서쪽으로 돌아서\n동쪽 끝으로, 다시 계단까지 달려!"),
+      // 길은 불러 주지 않는다 — 굽이마다 밝은 얼음(routeLights)이 보여 준다(첫 플레이 검수 2026-10-31: 탈출로를 통째로 말했다).
+      say(SARAH, "금 간 데는 못 버틴다!\n계단까지 달려!"),
       setSw(SW_ICE_RUN),
     ], { graphic: chip(vc.textureKey, vc.characterIndex, "down"), priority: "same" }),
     page("ev_fs2_lake_valen_gone", "떠남", [sw(SW_VALEN_MET)], [], { graphic: { transparent: true }, priority: "below" }),
