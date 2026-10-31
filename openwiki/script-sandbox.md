@@ -42,6 +42,11 @@
 | `src/editor/script/eventToScript.ts` | 명령 → TypeScript(`commandsToScript`, `read_event_as_script`) |
 | `src/editor/script/scriptToEvent.ts` | **스크립트 → 명령**(`scriptToCommands`, `scriptUnwrapProblemText`) — 동작이 같을 때만. 아래 「스크립트 → 명령」 절 |
 | `src/editor/tools/scriptUnwrapTool.ts` | 조수 도구 `write_script_as_commands` |
+| `src/editor/script/scriptInsight.ts` | 편집기 스크립트 카드의 기계 추출: 읽기/쓰기/부르기 칩(`scriptChips`), 최상위 리터럴 상수 = 조정값(`scriptTunables`·`setScriptTunable`), 흐름 나무(`scriptFlow`·`scriptFlowStats`) |
+| `src/editor/script/scriptUnwrapAdapter.ts` | 카드의 「명령으로 풀기」 상태(`ok`/`blocked`+이유·줄/`unavailable`) — `scriptToCommands` 를 감싼다 |
+| `src/editor/panels/eventEditor/commandBodyScript.ts` | 스크립트 명령 편집 칸 = **스크립트 카드**(요약·흐름·명령 목록·코드 탭, AI 칸). 아래 「편집기 스크립트 카드」 절 |
+| `src/editor/panels/eventEditor/scriptCardViews.ts` | 카드 조각 DOM(칩 줄·흐름 나무·예시 결과 한 줄·줄 diff·읽기 전용 명령 목록) |
+| `src/ai/scriptAssist.ts` | 카드의 AI 칸 한 번 호출(`runScriptAssist`, 모드 `edit`/`explain`) — JSON `{source, summary[], examples[]}`, 컴파일 실패는 최대 두 번 더 되돌려 고치게 한다 |
 
 부팅 시 미리 받기: `createPlayGame`(편집기 플레이·내보낸 플레이어 공통), `exportEntry.prepareFirstScreen`, 도구
 `play_walkthrough`·`run_scene_test` 의 `prepare`. 늦게 실행되면 `script` 명령이 16ms `wait` 로 최대 약 10초 기다린다.
@@ -271,6 +276,26 @@
   transcript·변화(스위치·변수·셀프 스위치·돈·아이템)가 같다(스위치 뒤집기 NPC, 고정 가격 선택지 상점, 반복·곱하기·아이템 조건),
   (c) 못 푸는 예(레버 퍼즐 ORDER 배열 등)의 코드·줄, 도구의 confirm·거절·불변.
 - 조수 도구 라벨(`src/editor/panels/aiToolLabels.ts`)은 이 변경에 없다 — 편집기 화면 작업과 겹쳐 따로 넣는다.
+
+## 편집기 스크립트 카드 (2026-10-31)
+
+이벤트 편집기에서 `script` 명령을 열면 코드 대신 **카드**가 먼저 보인다(`commandBodyScript.ts`, 대화 상자 폭 full, 일반 미리보기 칸은 숨김).
+탭 넷: **요약 / 흐름 / 명령 목록 / 코드**. 코드는 접혀 있고 「코드 보기」로만 연다. 원래 testid(`script-name-input`·`script-source-input`·`script-compile-status`·`script-diagnostics`·`script-api-reference`·`script-help`)는 그대로다.
+
+- **요약:** 저장된 `explanation{sourceHash, lines, examples}` 의 쉬운 문장. `sourceHash` 가 지금 코드와 다르면 「옛 코드 기준 요약」 띠와 「요약 다시 쓰기」 단추(낡음 판정 = 해시 비교 하나). 없으면 컴파일러 한 줄 요약을 「하는 일(자동)」로 보여 준다.
+  명령 목록 줄(`commandSummary`)도 요약이 최신일 때만 첫 문장을 ` — …` 로 붙인다.
+- **칩:** 컴파일러 effects → 읽는 것 / 바꾸는 것 / 부르는 것 / 검사기가 못 보는 것(dynamic). 이름은 프로젝트 이름으로.
+- **조정값:** 최상위 `const` 리터럴(숫자·글·참거짓·목록)과 그 줄 주석 = 라벨. 칸을 고치면 그 리터럴만 바꿔 다시 컴파일한다(`setScriptTunable`).
+- **예시 표:** `explanation.examples` 는 **상황(미리 놓기)만** 저장한다 — 결과는 저장하지 않고 열 때마다 `dryRunCommands` 로 실제 실행해 채운다(지금 맵을 얕게 복제한 사본, 원본 불변). 그래서 코드가 바뀌어도 결과가 거짓말을 하지 않는다.
+- **흐름:** TS AST 에서 기계로 그린 나무(`scriptFlow`) — 조건 상자(예/아니오 갈래), 반복 상자, 단계 상자(대사·값 쓰기·효과·이동·부르기). 지역 상수·변수 읽기 별칭은 이름으로 바꿔 적고, 뜻을 못 읽는 계산은 회색 코드 글씨로 둔다(비율을 머리에 표시). 상자를 누르면 코드 탭의 그 줄로 간다.
+  `game.cmd({…})` 그대로 옮긴 명령은 `commandSummary` 문장으로 적는다(`describeCommand` 고리).
+- **AI 칸(E):** 「AI에게 고쳐 달라고 하기」 → `runScriptAssist(mode:"edit")` 한 번(도구·에이전트 루프 없음, `resolveSurfaceAiConfig("event-command")`). 제안은 바로 쓰지 않는다 — 줄 diff·바뀐 요약·**예시를 지금 코드와 바뀐 코드로 둘 다 실행한 결과**를 보여 주고 「적용」해야 명령에 들어간다(요약은 새 해시에 묶임). 「요약 다시 쓰기」는 `mode:"explain"`(코드 불변) 결과를 바로 저장한다.
+  모델 글은 영어, 요약 문장은 편집기 언어(ko/en/ja/zh).
+- **변환 단추:** 카드의 「명령으로 풀기」(풀 수 있을 때만, 아니면 비활성 + 첫 문제 이유 + 「그 줄 보기」) → 대화 상자가 `SCRIPT_UNWRAP_EVENT` 를 받아 그 명령 자리를 풀어 낸 명령들로 바꾼다(`commandList` 의 `onExpand`). 「명령 목록」 탭은 같은 결과의 읽기 전용 미리보기다.
+  이벤트 편집기 툴바 「도구 → { } 스크립트로 바꾸기」는 그 페이지 명령 전체를 `commandsToScript` 로 스크립트 하나로 바꾼다(확인 창에 그대로 옮긴 `game.cmd` 수, 되돌리기 한 번). 빈 페이지·이미 스크립트 하나면 비활성.
+- **옛 프로젝트 불변:** 카드·단추는 사용자가 누를 때만 바꾼다. 실측(버들 마을 상점 주인, 명령 101개): 열고 닫은 뒤 맵 이벤트 JSON 해시가 파일과 같고, 「스크립트로 바꾸기 → 명령으로 풀기 → 적용」 왕복 뒤 페이지 명령이 키 순서만 빼고 원본과 같다.
+- 스타일은 인라인 크림 토큰(`--bg-raised`·`--bg-inset`·`--accent`·`--success`·`--warning`·`--danger`) — 뒤에 오는 시트가 공용 클래스 규칙을 이기기 때문. 패널 전환은 `hidden` 대신 `style.display`(인라인 display 가 `hidden` 을 이긴다).
+- 테스트: `test/scriptInsight.test.ts`(칩·조정값·흐름·풀기 어댑터·AI 칸 파싱/재시도), `test/scriptDryRun.test.ts`.
 
 ## 실조수 데모 (2026-10-31)
 

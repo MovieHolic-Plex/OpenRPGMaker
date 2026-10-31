@@ -680,6 +680,12 @@ function openCommandEditModal(cmd: Command, path: number[], actions: CommandList
     lockKind: true,
     previewFace,
     onApply: (edited) => actions.replaceCommand(path, edited),
+    // 「명령으로 풀기」: the script line becomes the converted commands at the same place.
+    onExpand: (commands) => {
+      actions.deleteCommand(path);
+      if (actions.insertCommands) actions.insertCommands(path, commands);
+      else [...commands].reverse().forEach((command) => actions.insertCommand(path, command));
+    },
   });
 }
 

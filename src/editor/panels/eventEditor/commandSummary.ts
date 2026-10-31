@@ -24,6 +24,7 @@ import { eventDisplayName } from "@/project/eventDisplayName";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { EMOTE_LABELS } from "@/project/emotes";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
+import { scriptSourceHash } from "@/project/script/types";
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
@@ -214,7 +215,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   callCommonEvent: (cmd) => commandLine("다른 이벤트 부르기", valuePart(commonEventName(cmd.commonEventId))),
   planSchedule: (cmd) => commandLine("일정표 짜기", valuePart(cmd.scheduleId || "?")),
   runSchedule: (cmd) => commandLine("일정표 실행", valuePart(cmd.scheduleId || "?")),
-  script: (cmd) => commandLine("스크립트", valuePart(cmd.name || cmd.summary || (cmd.source.trim() ? "TypeScript" : "비어 있음"))),
+  script: (cmd) => {
+    const title = cmd.name || cmd.summary || (cmd.source.trim() ? "TypeScript" : "비어 있음");
+    // The model-written plain sentence (only while it still describes this exact code) — the line a non-coder reads.
+    const sentence = cmd.explanation && cmd.explanation.sourceHash === scriptSourceHash(cmd.source) ? cmd.explanation.lines[0] : undefined;
+    return sentence ? commandLine("스크립트", valuePart(title), plainPart(` — ${sentence}`)) : commandLine("스크립트", valuePart(title));
+  },
   callMapEvent: (cmd) => commandLine("맵 위 이벤트 부르기", valuePart(mapEventName(cmd.eventId))),
   battleProcessing: (cmd) => commandLine(
     "전투",

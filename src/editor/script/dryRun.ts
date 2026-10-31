@@ -49,6 +49,9 @@ export type DryRunStep =
   | { readonly kind: "battle"; readonly troopId: string; readonly canLose: boolean; readonly result: string; readonly defaulted: boolean }
   | { readonly kind: "transfer"; readonly mapId: string; readonly x: number; readonly y: number }
   | { readonly kind: "wait"; readonly ms: number }
+  /** Sound started (se/me/bgm/bgs). Recorded so example results show audio-only changes. */
+  | { readonly kind: "sound"; readonly channel: string; readonly resourceId: string }
+  | { readonly kind: "fx"; readonly effect: "shake" | "flash" }
   | { readonly kind: "other"; readonly stepKind: string };
 
 export interface DryRunResult {
@@ -203,6 +206,13 @@ export function dryRunCommands(project: Project, commands: readonly Command[], o
         case "wait":
           steps.push({ kind: "wait", ms: step.ms });
           break;
+        case "playAudio":
+          steps.push({ kind: "sound", channel: step.channel ?? "bgm", resourceId: step.resourceId });
+          break;
+        case "shakeScreen":
+        case "flashScreen":
+          steps.push({ kind: "fx", effect: step.kind === "shakeScreen" ? "shake" : "flash" });
+          break;
         default:
           steps.push({ kind: "other", stepKind: step.kind });
       }
@@ -233,6 +243,8 @@ export function dryRunTranscript(steps: readonly DryRunStep[]): string[] {
       case "battle": return `battle ${step.troopId} (canLose ${step.canLose}) → ${step.result}${step.defaulted ? " [default]" : ""}`;
       case "transfer": return `transfer → ${step.mapId} (${step.x}, ${step.y})`;
       case "wait": return `wait ${step.ms}ms`;
+      case "sound": return `sound ${step.channel} ${step.resourceId}`;
+      case "fx": return `screen ${step.effect}`;
       default: return step.stepKind;
     }
   });

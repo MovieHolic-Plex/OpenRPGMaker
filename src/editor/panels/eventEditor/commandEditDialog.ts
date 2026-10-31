@@ -4,6 +4,7 @@ import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBr
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
+import { SCRIPT_UNWRAP_EVENT } from "./commandBodyScript";
 import { validateWeightedBranchForm } from "./commandBodyWeightedBranch";
 import { validateBattleProcessingForm } from "./commandBodyDatabase";
 import { renderCommandPreview } from "./commandPreview";
@@ -21,11 +22,13 @@ type EventCommandEditDialogRequest = {
   readonly lockKind?: boolean;
   // [중간-3] 이 명령 시점의 활성 얼굴(직전 changeFace). 문장 표시 프리뷰에 반영.
   readonly previewFace?: ActiveFace;
+  /** 「명령으로 풀기」: replace the edited command with these commands (script → event commands). */
+  readonly onExpand?: (commands: readonly Command[]) => void;
 };
 
 /** 상점은 진열·재고·옵션이 한 화면에 다 들어야 하는 특수 케이스 — 전체화면으로 연다. */
 export function commandDialogWidth(command: Command): "narrow" | "wide" | "full" {
-  return command.kind === "shop" ? "full" : "wide";
+  return command.kind === "shop" || command.kind === "script" ? "full" : "wide";
 }
 
 export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {
@@ -49,7 +52,8 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         clearChildren(previewHost);
         // 새 애니메이션 표시면은 편집 본문이 재생기를 직접 갖는다. 여기서 한 번 더 그리면
         // 같은 연출이 한 모달에 둘 생긴다 — 표시면은 하나만 둔다.
-        const ownsPreview = stagedCommand.kind === "showAnimation";
+        // 스크립트 카드는 요약·흐름·예시를 스스로 그린다 — 일반 미리보기 칸은 중복이다.
+        const ownsPreview = stagedCommand.kind === "showAnimation" || stagedCommand.kind === "script";
         if (stagedCommand.kind === "shop") {
           const slot = formHost.querySelector<HTMLElement>('[data-testid="shop-preview-slot"]');
           const toggle = editor.querySelector<HTMLElement>('[data-testid="shop-preview-toggle"]');
@@ -178,11 +182,14 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       }
       footer.push(ok, cancel);
 
+      const columns = el("div", {
+        class: "event-command-edit-columns",
+        children: [formHost, previewHost],
+      });
+      // The script card is its own preview (summary · flow · examples): one full-width column.
+      if (stagedCommand.kind === "script") columns.style.gridTemplateColumns = "minmax(0, 1fr)";
       editor.append(
-        el("div", {
-          class: "event-command-edit-columns",
-          children: [formHost, previewHost],
-        }),
+        columns,
         el("div", {
           class: "event-command-edit-actions",
           children: footer,
@@ -190,6 +197,12 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       );
       body.append(editor);
       editor.addEventListener("shop-tab-change", renderPreview);
+      editor.addEventListener(SCRIPT_UNWRAP_EVENT, (event) => {
+        const commands = (event as CustomEvent<{ commands?: readonly Command[] }>).detail?.commands;
+        if (!request.onExpand || !commands?.length) return;
+        request.onExpand(structuredClone(commands) as Command[]);
+        close();
+      });
       renderEditor();
       if (stagedCommand.kind === "shop") {
         queueMicrotask(() => setShopPreviewCollapsed(editor, true));
