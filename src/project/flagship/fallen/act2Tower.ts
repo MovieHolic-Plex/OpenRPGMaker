@@ -17,6 +17,7 @@ import { isPassable } from "@/project/collision";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
 import { applyFallenAct2Summit, buildSummitMap, FS2_SW_B12_DONE, FS2_SW_B13_WON, FS2_SW_STOP_B13, FS2_TOP, gateSummitStair } from "./act2Summit";
+import { FS_ACT2_JOIN_LEVEL } from "./mobBalance";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };
@@ -755,7 +756,8 @@ function floorFour(project: Project, exec: Exec): void {
     say(IRIS, "저기, 종이가 떨어져 있어요.\n…제 일지 쪽이에요."),
     camBack(900, T4_ZOOM),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as unknown as Command,
-    { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: 13 } as unknown as Command,
+    // 1막 끝(Lv13)에 멈춰 있던 이리스를 탑까지 올라온 일행 레벨에 맞춘다(FS_ACT2_JOIN_LEVEL.iris, mobBalance — 1막에서 이어 한 도착 레벨).
+    { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: FS_ACT2_JOIN_LEVEL.iris } as unknown as Command,
     learn(IRIS_ID, FS2_SKILL_FINGERLIGHT),
     { kind: "recoverAll", actorId: IRIS_ID } as unknown as Command,
     setSw(SW_IRIS_BACK),

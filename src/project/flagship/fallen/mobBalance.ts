@@ -132,6 +132,64 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_fort_crossbows: 0.93,
 };
 
+// ── 2막 이어 하기 보정(2026-11-01) ─────────────────────────────────────
+/**
+ * 위 표들은 2막을 Lv6 두 명(카엘·엘레나)에서 새로 센 판으로 맞췄다. 그런데 실제로는 1막 끝(용까지 한 번씩 다 싸우면 Lv13)의
+ * 경험치를 그대로 들고 2막에 들어온다 — 이야기에 레벨이 떨어질 까닭이 없으므로(감방에 하룻밤 갇혔을 뿐, 짐도 그대로 돌려받는다)
+ * 레벨을 깎지 않고, 2막 적을 이어 하기 도착 레벨(감방 Lv13 → 요새 Lv15 → 눈길 Lv16~17 → 하늘탑 Lv18)에 맞춰 세게 한다.
+ * 값은 무리마다 「지금 힘에 곱할 배수」 — scripts/qa/runtime/fs-act2-entry-solve.mts(구운 판, n=80, 시드 7)로 잰 값.
+ *   잡몹·우두머리 = 공격만 승률 목표(잡몹 76% · 우두머리 60%), 결투·보스 = 옛 설계 레벨의 「기술 자동 전투」 승률을 그대로.
+ * 잡몹 무리는 FS_TROOP_TUNE 과 같은 식으로 그 무리 적만 떼어(`<적>_t_<무리>`) 곱한다. 우두머리·보스는 그 적 자체를 곱한다
+ * (전투 이벤트가 적 id 를 가리킨다). 같은 무리가 두 곳에 놓이면 두 값의 기하평균.
+ */
+export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
+  troop_fs2_curfew_patrol: 1.38,
+  troop_fs2_barracks_guards: 1.38, // 막사에서 들킨 벌 — 통금 순찰과 같은 야경꾼
+  troop_fs2_starved_dogs: 1.6,
+  troop_fs2_ash_crows: 1.78,
+  troop_fs2_ash_wisps: 2.98,
+  troop_fs2_ash_snakes: 1.7,
+  troop_fs2_ash_wisps_pair: 1.67,
+  troop_fs2_fort_dogs_out: 1.6,
+  troop_fs2_fort_knights_out: 2.31,
+  troop_fs2_fort_dogs: 1.6,
+  troop_fs2_fort_knights: 2.31,
+  troop_fs2_fort_gate: 2.31, // 성문 앞 기사+경비견 — 요새 기사와 같은 배수
+  troop_fs2_fort_crossbows: 1.58,
+  troop_fs2_frost_wolves: 1.68,
+  troop_fs2_frost_bats: 2.25,
+  troop_fs2_frost_wolves_lake: 1.66,
+  troop_fs2_frost_bats_lake: 2.2,
+  troop_fs2_frost_mixed: 2.09,
+  troop_fs2_tower_moths: 1.97,
+  troop_fs2_tower_bats: 2.6,
+  troop_fs2_tower_spiders: 1.94,
+  troop_fs2_tower_snakes: 1.9,
+};
+/** 우두머리(적 id → 배수). HP 는 1000 안팎에 묶고(√배수를 0.9~1.2 로) 나머지를 공격·마력으로. */
+export const FS_ACT2_ENTRY_ELITES: Readonly<Record<string, number>> = {
+  enemy_fs2_cinder_golem: 1.9,
+  enemy_fs2_elite_warden: 2.01,
+  enemy_fs2_elite_frostmane: 1.85,
+  enemy_fs2_tower_sentinel: 1.73,
+};
+/**
+ * 결투·보스(적 id → 배수, HP·공격·마력 √배수씩). 새라 결투 = 옛 Lv9 두 명의 기술 전투 승률 94% 를 Lv16 에서.
+ * 재의 회수자 = 옛 Lv14 넷의 기술 전투 승률 61% 를 Lv19 에서(몸통·두 눈·삼킨 불을 같이 — 단계 넘김이 HP 비율이라 함께 키운다).
+ */
+export const FS_ACT2_ENTRY_BOSSES: Readonly<Record<string, number>> = {
+  enemy_fs2_sarah: 3.18,
+  enemy_fs2_ash_collector: 2.1,
+  enemy_fs2_collector_eye_grab: 2.1,
+  enemy_fs2_collector_eye_burn: 2.1,
+  enemy_fs2_swallowed_fire: 2.1,
+};
+/**
+ * 이어 하기 도착 레벨(위 솔버가 쓴 경험치 누적, 1막 끝 exp 6249) — 동료가 들어올 때 이 레벨로 맞춘다.
+ * 새라 합류(요새 성벽 위, 결투 뒤) · 이리스 재회(하늘탑 B11, 탑 잡몹을 다 싸운 뒤).
+ */
+export const FS_ACT2_JOIN_LEVEL = { sarah: 16, iris: 18 } as const;
+
 // ── 우두머리 ──────────────────────────────────────────────────────────
 interface EliteSpec {
   readonly id: string;
@@ -264,7 +322,10 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
     upsert(db.troops, troop);
   }
 
-  for (const [troopId, mul] of Object.entries(tune)) {
+  // 2막 이어 하기 보정은 같은 무리 떼어 내기에 곱해 넣는다(무리마다 한 번만 떼어 낸다).
+  const merged: Record<string, number> = { ...tune };
+  for (const [troopId, mul] of Object.entries(FS_ACT2_ENTRY_TUNE)) merged[troopId] = (merged[troopId] ?? 1) * mul;
+  for (const [troopId, mul] of Object.entries(merged)) {
     const troop = db.troops.find((t) => t.id === troopId);
     if (!troop) { warnings.push(`따로 고칠 무리 없음: ${troopId}`); continue; }
     const k = Math.sqrt(mul);
@@ -318,6 +379,17 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
     ] as TroopRecord["battleEventPages"];
     upsert(db.troops, troop);
   }
+
+  // 2막 이어 하기 보정 — 우두머리·결투·보스는 그 적 자체를 곱한다(전투 이벤트가 적 id 를 가리킨다).
+  const scaleEnemy = (id: string, p: number, elite: boolean): void => {
+    const e = db.enemies.find((x) => x.id === id);
+    if (!e) { warnings.push(`2막 이어 하기 보정할 적 없음: ${id}`); return; }
+    const hpMul = elite ? Math.min(1.2, Math.max(0.9, Math.sqrt(p))) : Math.sqrt(p);
+    const atkMul = p / hpMul;
+    e.stats = { ...e.stats, attack: Math.round(e.stats.attack * atkMul), mind: Math.round(e.stats.mind * atkMul), maxHp: Math.max(10, Math.round(e.stats.maxHp * hpMul / 10) * 10) };
+  };
+  for (const [id, p] of Object.entries(FS_ACT2_ENTRY_ELITES)) scaleEnemy(id, p, true);
+  for (const [id, p] of Object.entries(FS_ACT2_ENTRY_BOSSES)) scaleEnemy(id, p, false);
   return warnings;
 }
 

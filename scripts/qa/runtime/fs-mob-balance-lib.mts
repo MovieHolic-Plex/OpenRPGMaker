@@ -14,7 +14,11 @@ interface Step { troop: string; map: string; party: string[]; kind?: Kind; note?
 const HE = ["actor_hero", "actor_fs_elena"];
 const HEI = [...HE, "actor_fs_iris"];
 const HES = [...HE, "actor_fs2_sarah"];
-export const ACTS: { act: string; startLevel: number; steps: Step[] }[] = [
+/**
+ * 2막 시작 — "continue" = 1막을 다 싸우고 끝난 경험치를 그대로 잇는다(실제 이어 하기). 2026-11-01 이전 표는 2막을 Lv6 에서 새로 셌다
+ * (2막만 따로 시작하는 판). 이어 하면 1막 끝이 Lv13 이라 2막 잡몹이 너무 쉬웠다 — 지금 표는 이어 하기 기준이다.
+ */
+export const ACTS: { act: string; startLevel: number | "continue"; steps: Step[] }[] = [
   {
     act: "1막", startLevel: 6, steps: [
       { troop: "troop_fs_wolves", map: "fs_forest_edge", party: HE },
@@ -44,7 +48,7 @@ export const ACTS: { act: string; startLevel: number; steps: Step[] }[] = [
     ],
   },
   {
-    act: "2막", startLevel: 6, steps: [
+    act: "2막", startLevel: "continue", steps: [
       { troop: "troop_fs2_curfew_patrol", map: "fs2_hub_night", party: HE },
       { troop: "troop_fs2_starved_dogs", map: "map_field_north_1", party: HE },
       { troop: "troop_fs2_ash_crows", map: "map_field_north_1", party: HE },
@@ -111,7 +115,9 @@ export function placements(project: Project, mapId: string, troopId: string, kin
   return n;
 }
 
-export interface TableOptions { n: number; only?: (troopId: string) => boolean; potions?: boolean; log?: boolean }
+export interface TableOptions { n: number; only?: (troopId: string) => boolean; potions?: boolean; log?: boolean;
+  /** 막 시작 레벨 덮어쓰기(예: { "2막": 6 } = 옛 설계 — 2막을 Lv6 에서 새로 센다). */
+  startLevels?: Record<string, number>; useSkills?: boolean }
 
 export function runTable(project: Project, opts: TableOptions): Row[] {
   const db = project.database;
@@ -123,8 +129,10 @@ export function runTable(project: Project, opts: TableOptions): Row[] {
     return s + (a?.parameterCurves ? parameterValueAtLevel(a.parameterCurves.maxHp, level) : 0);
   }, 0);
   const rows: Row[] = [];
+  let exp = 0;
   for (const act of ACTS) {
-    let exp = totalExpForLevel(hero.expCurve!, act.startLevel);
+    const start = opts.startLevels?.[act.act] ?? act.startLevel;
+    if (start !== "continue") exp = totalExpForLevel(hero.expCurve!, start);
     for (const step of act.steps) {
       const troop = db.troops.find((t) => t.id === step.troop);
       if (!troop) { if (opts.log) console.error("missing troop", step.troop); continue; }
@@ -135,7 +143,7 @@ export function runTable(project: Project, opts: TableOptions): Row[] {
       const level = levelFor(exp);
       exp += troopExp(step.troop) * count;
       if (opts.only && !opts.only(step.troop)) continue;
-      const base = { project, troopId: step.troop, heroLevel: level, partyActorIds: step.party, n: opts.n, seed: 7 };
+      const base = { project, troopId: step.troop, heroLevel: level, partyActorIds: step.party, n: opts.n, seed: 7, useSkills: opts.useSkills };
       const atk = simulateBattle(base);
       const pot = opts.potions === false ? undefined : simulateBattle({ ...base, inventory: { item_potion: 3 }, potionItemId: "item_potion" });
       const maxHp = partyMaxHp(step.party, level);
