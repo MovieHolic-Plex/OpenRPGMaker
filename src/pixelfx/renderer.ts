@@ -32,6 +32,46 @@ export function pixelFxLayout(mod: PixelFxModule, spec: Pick<PixelFxSpec, "flip"
   return { width: Math.min(MAX_SIDE, w), height: Math.min(MAX_SIDE, h), anchorX: spec.flip ? w - ox : ox, anchorY: oy };
 }
 
+/**
+ * 가장자리 깃털(0~255): 효과 상자 테두리에서 안쪽으로 F 화소까지 0→255. 횃불·치유 빛, 반딧불 같은 장면 효과의 은은한 색은
+ * 상자 끝까지 번져 있어 그대로 겹치면 네모난 테두리가 보인다(2026-10-31 필드 캡처) — 상자 끝에서 0 으로 녹인다.
+ */
+const featherCache = new Map<string, Uint8Array>();
+function featherMask(width: number, height: number): Uint8Array {
+  const key = `${width}x${height}`;
+  const cached = featherCache.get(key);
+  if (cached) return cached;
+  const f = Math.max(4, Math.min(24, Math.floor(Math.min(width, height) / 5)));
+  const mask = new Uint8Array(width * height);
+  for (let y = 0; y < height; y++) {
+    const dy = Math.min(y, height - 1 - y);
+    for (let x = 0; x < width; x++) {
+      const d = Math.min(dy, x, width - 1 - x);
+      const t = d >= f ? 1 : d / f;
+      mask[y * width + x] = Math.round(255 * t * t * (3 - 2 * t));
+    }
+  }
+  featherCache.set(key, mask);
+  return mask;
+}
+
+/** frame 의 color 알파와 light 밝기에 가장자리 깃털을 곱한다(제자리). */
+function featherFrame(frame: PixelFxFrame, mask: Uint8Array): void {
+  const C = frame.color;
+  const L = frame.light;
+  for (let i = 0; i < C.length; i++) {
+    const m = mask[i]!;
+    if (m === 255) continue;
+    const c = C[i]!;
+    if (c >>> 24) C[i] = ((((c >>> 24) * m) / 255) << 24 | (c & 0xffffff)) >>> 0;
+    const l = L[i]!;
+    if (l & 0xffffff) {
+      const r = ((l & 255) * m / 255) | 0, g = (((l >> 8) & 255) * m / 255) | 0, b = (((l >> 16) & 255) * m / 255) | 0;
+      L[i] = ((l & 0xff000000) | (b << 16) | (g << 8) | r) >>> 0;
+    }
+  }
+}
+
 /** 한 번 그린 결과: 그 층에 color·light 화소가 있었나(없으면 그 그림을 띄우지 않아도 된다). */
 export interface PixelFxPaint {
   readonly color: boolean;
@@ -117,6 +157,7 @@ export class PixelFxRenderer {
     const f = this.frame;
     clearFrame(f);
     this.fx.draw(f, layer === "all" ? undefined : layer);
+    featherFrame(f, featherMask(f.w, f.h));
     const C = f.color;
     const out32 = new Uint32Array(color.data.buffer, color.data.byteOffset, C.length);
     out32.set(C);
@@ -144,6 +185,7 @@ export class PixelFxRenderer {
     const f = this.frame;
     clearFrame(f);
     this.fx.draw(f, layer === "all" ? undefined : layer);
+    featherFrame(f, featherMask(f.w, f.h));
     composite(f, out.data, null);
     const C = f.color, L = f.light;
     for (let i = 0; i < C.length; i++) if ((C[i]! >>> 24) || (L[i]! & 0xffffff)) return true;

@@ -140,7 +140,7 @@ async function sample(page, ms) {
         frames.push(now - last);
         last = now;
         const stats = window.__oprnPixelFxStats;
-        if (stats) fx.push({ ms: stats.ms, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, banked: stats.bankedFrames });
+        if (stats) fx.push({ ms: stats.ms, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, shared: stats.sharedLoops, deferred: stats.deferred });
         if (now < end) requestAnimationFrame(tick); else done();
       };
       requestAnimationFrame(tick);
@@ -199,14 +199,19 @@ try {
     await page.screenshot({ path: join(outDir, "battle-0-menu.png") });
     const commands = await page.evaluate(() => [...document.querySelectorAll("[data-testid^='actor-command']")].map((n) => n.dataset.testid));
     report.battle = { commands, shots: [] };
-    // 기술 → 서리 폭발 → (전체기라 대상 선택 없음)
-    const skillCommand = page.locator("[data-testid='actor-command-skill'], [data-testid='actor-command-skill-skill_pfx_frost']").first();
-    await skillCommand.click();
-    await page.waitForTimeout(400);
+    // 기술 → 서리 폭발(전체기). 명령 칸은 격자가 포인터를 가로채므로 DOM click 으로 누른다.
+    await page.evaluate(() => document.querySelector("[data-testid='actor-command-skill']")?.click());
+    await page.waitForTimeout(500);
     await page.screenshot({ path: join(outDir, "battle-1-skills.png") });
-    report.battle.skillList = await page.evaluate(() => [...document.querySelectorAll("[data-testid*='skill']")].map((n) => n.dataset.testid).slice(0, 30));
-    const frost = page.locator("[data-testid*='skill_pfx_frost']").first();
-    if (await frost.count()) await frost.click(); else await page.keyboard.press("z");
+    report.battle.skillList = await page.evaluate(() => [...document.querySelectorAll("button, [role='option'], li")].map((n) => n.textContent?.trim()).filter((t) => t && t.length < 40).slice(0, 30));
+    report.battle.frostClicked = await page.evaluate(() => {
+      const hit = [...document.querySelectorAll("button, [role='option'], li, [data-testid]")].find((n) => n.textContent?.includes("서리 폭발") && n.children.length < 6);
+      if (!hit) return false;
+      hit.click();
+      return true;
+    });
+    await page.waitForTimeout(300);
+    if (!report.battle.frostClicked) await page.keyboard.press("z");
     await page.waitForTimeout(300);
     await page.keyboard.press("z");
     const appeared = await page.waitForSelector(".battle-animation[data-pixel-fx]", { timeout: 15_000, state: "attached" }).then(() => true, () => false);
