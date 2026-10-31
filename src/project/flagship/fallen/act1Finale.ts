@@ -1451,6 +1451,19 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
       afterText: "패널 옆 바닥 판이 덜컹거리기", theme: "machine", switchId: SW_LIFT_OPEN,
     });
   }
+  // 바닥 판만 바뀌면 「승강 장치가 올라온다」가 그림으로 안 읽혔다(fs-act1-vqa) — 판이 열린 뒤 빈 발판이 갱도에서 솟아
+  // 그 자리에 선다(Lift Ride riders:none · 갱도 자르기). 스위치를 켜기 바로 앞에 끼운다.
+  {
+    const b4 = M(project, FS_B4_ID);
+    const rise = m2("m2-226-lift-ride", { mode: "arrive", direction: "up", distance: 2, durationMs: 1800, x: B4.lift.x, y: B4.lift.y, width: 2, depth: 2, riders: "none", se: "cc0-se-osx-machine-02", wait: true });
+    for (let i = 0; i < B4.panel.length; i += 1) {
+      const ev = b4.events.find((e) => e.id === `ev_${FS_PREFIX}_b4_panel_${i}`);
+      for (const p of ev?.pages ?? []) eachList(p.commands as Command[], (list) => {
+        const at = list.findIndex((c) => c.kind === "setSwitch" && (c as unknown as { switchId?: string }).switchId === SW_LIFT_OPEN);
+        if (at > 0 && list.slice(0, at).some((c) => c.kind === "changeTile")) list.splice(at, 0, JSON.parse(JSON.stringify(rise)) as Command);
+      });
+    }
+  }
   // 보스 HP 숨김 — 용(발렌은 이미 숨김). 조수 도구 upsert_enemy 의 hideHp.
   exec(project, "upsert_enemy", { enemy: { id: FS_DRAGON_ENEMY, hideHp: true } });
   // 보스와 마주 서는 장면 — 동료가 주인공 좌우 한 줄로 서서 같은 쪽(발렌)을 본다. 조수 도구 configure_companion_rules.
