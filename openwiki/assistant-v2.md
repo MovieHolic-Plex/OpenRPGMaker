@@ -699,6 +699,16 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - v1/v2 비교: `space-craft` 하네스의 `compare` 분류(cmp-monster-town·cmp-romance-scene 포함 — 연애 사례는 `startBrief` 로 확정 기획·계약 씨앗까지 심는다)(`harness-data/space-craft/seed.json`, `startBuild` 로 「이미 있는 맵」 시작 상태),
   ai-config `local-claude-sonnet-high.json`(v1) / `local-claude-sonnet-high-v2.json`(v2, `assistantVersion:"v2"` → 하네스가 스위치를 켠다).
 
+## 토큰 비용 재기 (2026-11-01)
+
+- 근거는 로컬 CLI 루프가 이미 남기는 호출별 기록이다: turns/*.json `done[].stats.exposure.requests[]`(호출마다 cacheRead·cacheWrite·input·부른 도구).
+  `python3 scripts/qa/assistant-cost/breakdown.py '<…>/session/turns/*.json'` 가 Opus 5.5 정가(입력 $4·출력 $20·캐시 읽기 $0.20·캐시 쓰기 5분 $5, 100만 토큰당)로
+  «고정 앞부분 다시 읽기·쌓인 기록 다시 읽기·앞부분 처음 쓰기·도구 목록이 바뀌어 통째 다시 쓰기·새 기록 쓰기·출력»으로 나눈다.
+- **2026-11-01 전 기록의 `stats.costUsd` 는 믿지 않는다.** Claude Code 의 `result.total_cost_usd` 는 프로세스 누적값인데 차례마다 그대로 더해 2~9배 부풀었다
+  (스크립트 A/B PoC 「판당 $21~47」→ 정가 계산 $5~14). 이제 `claudeTurnCost` 가 이 차례 몫만 낸다(`scripts/lib/localCliAgent/claude.ts`).
+- 측정 결과(스크립트 A/B 기록): 호출마다 지시문+도구 설명 7.5만~9만 토큰을 다시 보내는 것이 처리 토큰의 약 70%이고, load_tools·도구 선언으로
+  MCP 도구 목록이 바뀌면 다음 호출에서 캐시를 통째로 다시 쓴다(로직 요청 비용의 약 29%). 도구 결과 본문은 약 9%뿐이다. 페이지 `~/claude-viz/assistant-cost.html`.
+
 ## v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 같은 모델(로컬 CLI Sonnet 5.5 high, Argon 할당량 막힘 → 둘 다 «조수 대용»), 실제 입력창, 사례마다 새 프로젝트, 저장 재로드 10/10.
