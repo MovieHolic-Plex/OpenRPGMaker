@@ -1034,7 +1034,6 @@ const SW_B4_GONE = "sw_fs2_b4_watch_gone";
 /** 숲 어귀에서 들켰다(외침 컷 한 번) · 야경꾼들이 움직이기 시작했다(외침 컷 끝 — 붙잡혔다 다시 나오면 이미 켜져 있다). */
 const SW_B4_SPOTTED = "sw_fs2_b4_spotted";
 const SW_B4_RUN = "sw_fs2_b4_run";
-const SW_B4_CAUGHT = "sw_fs2_b4_caught";
 const SW_B4_BRAM_FOREST = "sw_fs2_b4_bram_forest";
 const ROHAN = "대장장이 로한";
 const BRAM = "숲지기 브람";
@@ -1053,7 +1052,7 @@ export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell; entries: Cell[]; 
 export const FS2_B4: { edge: Cell[]; knights: Cell[]; bram: Cell; patrols: { id: string; at: Cell; waypoints: Cell[] }[] } = { edge: [], knights: [], bram: { x: 0, y: 0 }, patrols: [] };
 
 function northGate(project: Project, exec: Exec, smithyId: string): void {
-  for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"], [SW_B4_ALARM, "B4: 개구멍 — 들켰다"], [SW_B4_EDGE, "B4: 숲 가장자리 — 브람의 고백"], [SW_B4_BRAM_OUT, "B4: 브람이 먼저 빠져나감"], [SW_B4_GONE, "B4: 등불들이 물러남"], [SW_B4_SPOTTED, "B4: 숲 어귀에서 들켰다"], [SW_B4_RUN, "B4: 야경꾼들이 움직인다"], [SW_B4_CAUGHT, "B4: 숲 어귀에서 붙잡혔다"], [SW_B4_BRAM_FOREST, "B4: 브람이 숲으로 돌아감"]] as const) ensureSwitch(project, id, name);
+  for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"], [SW_B4_ALARM, "B4: 개구멍 — 들켰다"], [SW_B4_EDGE, "B4: 숲 가장자리 — 브람의 고백"], [SW_B4_BRAM_OUT, "B4: 브람이 먼저 빠져나감"], [SW_B4_GONE, "B4: 등불들이 물러남"], [SW_B4_SPOTTED, "B4: 숲 어귀에서 들켰다"], [SW_B4_RUN, "B4: 야경꾼들이 움직인다"], [SW_B4_BRAM_FOREST, "B4: 브람이 숲으로 돌아감"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_equipment", { equipment: {
     id: FS2_ROHAN_SPEAR, name: "로한의 별쇠 창", slot: "weapon", price: 0, iconResourceId: "cc0-jetrel-bronze-sword", imageResourceId: "cc0-jetrel-bronze-sword",
     description: "공격 40, 상대의 회피를 무시한다.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n자루 무늬가 새라의 창과 같다.",
@@ -1466,16 +1465,16 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   exec(project, "set_field_detection", { mapIds: [mapId], eventIds: patrolIds, sightRange: 3, allRound: true, lineOfSight: true, brain: "classic", alertMs: 400, chaseStepMs: 165, rush: false, searchMs: 2500, giveUpRange: 9 });
   // 붙잡히면 개구멍 앞(광장)으로 — 도구 검사 뒤에 직접 붙인다(위 caughtPenalty 주석).
   // 옮기기를 야경꾼 페이지에 직접 넣으면 출구 이름표(3칸 안 이벤트의 transfer → 「→ 광장」)가 야경꾼 발밑을 따라다녔다(VQA r4).
-  // 야경꾼은 스위치만 켜고, 맵 구석의 보이지 않는 자동 이벤트가 옮긴다.
+  // 옮기기는 공통 이벤트로 감싸 같은 실행 안에서 부른다. 스위치 + 따로 도는 자동 이벤트로 나눈 판(r5)은 야경꾼이 대사 뒤 한 번 더 닿아
+  // 다시 기어 나오자마자 「잡았다」가 또 떴다.
+  const ceId = "ce_fs2_b4_caught";
+  project.commonEvents = [...(project.commonEvents ?? []).filter((c) => c.id !== ceId),
+    { id: ceId, name: "B4: 숲 어귀에서 끌려감", trigger: "none", commands: [transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")] } as unknown as (typeof project.commonEvents)[number]];
   for (const id of allIds) {
     const chasePage = M(project, mapId).events.find((e) => e.id === id)?.pages?.find((pg) => pg.movement?.type === "chase");
     if (!chasePage) throw new Error(`[fallen-star act2] ${id}: 추격 페이지가 없다`);
-    chasePage.commands = [...(chasePage.commands ?? []), setSw(SW_B4_CAUGHT)];
+    chasePage.commands = [...(chasePage.commands ?? []), { kind: "callCommonEvent", commonEventId: ceId } as unknown as Command];
   }
-  addEv(project, mapId, "ev_fs2_edge_caught", "끌려감", { x: map.width - 1, y: 0 }, [
-    page("ev_fs2_edge_caught_idle", "대기", [], [], { priority: "below" }),
-    page("ev_fs2_edge_caught_go", "끌려감", [sw(SW_B4_CAUGHT)], [setSw(SW_B4_CAUGHT, false), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "auto" } }),
-  ]);
   // 들키는 순간 — 이 맵에 처음 기어 나왔을 때 한 번(SW_B4_SPOTTED). 붙잡혔다 다시 나오면 곧장 달린다.
   addEv(project, mapId, "ev_fs2_edge_spotted", "들켰다", { x: 0, y: map.height - 1 }, [
     page("ev_fs2_edge_spotted_wait", "대기", [], [], { priority: "below" }),
