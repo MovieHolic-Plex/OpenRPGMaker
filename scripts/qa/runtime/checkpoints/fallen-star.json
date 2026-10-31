@@ -13250,19 +13250,41 @@
        "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 6
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
        "kind": "face",
@@ -13286,15 +13308,7 @@
        "kind": "waitForEventAt",
        "eventId": "ev_fs2_barracks_watch_n",
        "mapId": "fs2_barracks",
-       "x": 6,
-       "y": 7,
-       "timeoutMs": 90000
-      },
-      {
-       "kind": "waitForEventAt",
-       "eventId": "ev_fs2_barracks_watch_n",
-       "mapId": "fs2_barracks",
-       "x": 14,
+       "x": 24,
        "y": 7,
        "timeoutMs": 90000
       },
@@ -13307,19 +13321,52 @@
        "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 7
+       "kind": "face",
+       "dir": "up"
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "action"
       },
       {
        "kind": "hold",
@@ -13352,24 +13399,57 @@
      "id": "chest",
      "ops": [
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "action"
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 7
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
       },
       {
        "kind": "face",

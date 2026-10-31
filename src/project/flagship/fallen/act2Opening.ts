@@ -166,6 +166,9 @@ const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unkno
 const cutLabel = (): Command => ({ kind: "label", name: "cutscene_end" } as unknown as Command);
 const transfer = (mapId: string, at: Cell, direction: Dir = "down"): Command =>
   ({ kind: "transfer", mapId, x: at.x, y: at.y, direction, fade: "black" } as unknown as Command);
+/** 대화창 위치 — 장면이 화면 아래 끝에서 벌어질 때 위로 올리고, 끝나면 되돌린다(act1Finale textBox 와 같은 꼴). */
+const textBox = (position: "top" | "bottom"): Command =>
+  ({ kind: "displayTextSettings", format: "normal", position, preventObscuringPlayer: false, allowEventMovementDuringWait: false } as unknown as Command);
 const item = (itemId: string, amount = 1): Command => ({ kind: "changeItem", itemId, op: amount >= 0 ? "+=" : "-=", amount: Math.abs(amount) } as unknown as Command);
 
 const fixedMove = { type: "fixed", speed: 3, frequency: 3 };
@@ -347,6 +350,9 @@ function cellEvents(map: GameMap): void {
     page(`${director}_run`, "감방의 밤", [sw(SW_ACT2, false)], [
       cutBegin(),
       setSw(SW_ACT2),
+      // 제1막 끝 파티에는 이리스가 있다 — 발렌이 따로 데려갔으니 감방에는 둘뿐(이어 하기 검수 2026-11-01: 「이리스가 없어」 하는데 옆에 서 있었다).
+      // B11 렌즈 대기실에서 다시 합류한다(act2Tower changeParty add).
+      { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
       fadeOut(1),
       wait(600),
       narrate("제2막 「빌린 불」", { position: "center", context: "narration" }),
@@ -665,7 +671,9 @@ const SW_MIRE = "sw_fs2_mire_well";
  */
 const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
   // 북쪽 성벽 밑을 돈다 — 도착 칸·골목 틈(49,24)에서 7칸 밖이라, 나오자마자(3걸음 안) 잡히지 않고 광장을 건널 때 시야를 재게 된다.
-  { at: { x: 43, y: 17 }, axis: "horizontal", length: 4 },
+  // 입구(B4 개구멍에서 붙잡혀 돌아오는 칸 38,16)와 7칸 이내면 set_field_detection 이 시야를 2칸까지 깎는다 —
+  // (43,17)에선 시야 2칸이라 바로 옆을 지나가도 못 봤다(첫 플레이 2026-11-01). 8칸 밖(45,17)에서 돌면 시야 6 그대로.
+  { at: { x: 45, y: 17 }, axis: "horizontal", length: 4 },
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
 ];
 /** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
@@ -969,8 +977,10 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   const hg = hubHanel?.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
   if (!hg?.sprite?.id || typeof hg.pattern !== "number") throw new Error("[fallen-star act2] 하넬 칩이 없다");
   hanelChip.textureKey = hg.sprite.id; hanelChip.characterIndex = decodeCharsetFrameIndex(hg.pattern).characterIndex;
+  // 서고는 천문대 맵 맨 아래 줄(y18·19)이라 아래 대화창이 하넬과 일행을 통째로 가렸다(첫 플레이 2026-11-01) — 이 장면만 위 창.
   const talk: Command[] = [
     cutBegin(),
+    textBox("top"),
     emote("ev_fs2_obs_hanel", "exclamation", 700),
     say(HANEL, "…밑으로 올 줄 알았다.\n정문으로 왔으면 혼쭐을 냈을 게다."),
     say(ELENA, "선생님! 이리스가──"),
@@ -993,11 +1003,12 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n대장간 뒷문은 아무도 안 지킨다."),
     setSw(SW_HANEL),
     cutLabel(),
+    textBox("bottom"),
     cutEnd(),
   ];
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_hanel", HANEL, OBS.hanel, [
     page("ev_fs2_obs_hanel_p", "하넬(연금)", [], talk, { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
-    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.")], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
+    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.", { position: "top" })], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
   ]);
   // 처음 올라오면 하넬이 먼저 부른다(승강 장치 도착 뒤 한 번).
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_call", "하넬이 부른다", { x: 0, y: 0 }, [
@@ -1007,7 +1018,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       // 발판에서 한 걸음 내려선다 — 도착 칸이 승강 발판(조사로 탄다)이라, 대사를 넘기는 Enter 가 승강 장치를 다시 태웠다
       // (첫 플레이 검수 2026-10-31: 몇 번씩 오르내렸다).
       route("@player", [{ kind: "move", dir: "right" }, { kind: "turn", dir: "up" }]),
+      textBox("top"),
       say(HANEL, "거기 누구냐. …카엘이냐?"),
+      textBox("bottom"),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { trigger: { kind: "auto" } }),
     page("ev_fs2_obs_call_done", "끝", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [], { priority: "below" }),
