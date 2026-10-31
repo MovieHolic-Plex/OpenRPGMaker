@@ -8,6 +8,7 @@ import { normalizeHeldItemEffect } from "@/battle/heldItems";
 import { ESCAPE_GRACE_STEPS_MAX, normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeBestiary } from "./bestiary";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
 import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
@@ -126,6 +127,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.mpReleaseStep !== undefined ? { mpReleaseStep: optionalNumber(record.mpReleaseStep) } : {}),
     ...(record.fieldStepInterval !== undefined ? { fieldStepInterval: optionalNumber(record.fieldStepInterval) } : {}),
     ...(record.releaseAfterSteps !== undefined ? { releaseAfterSteps: optionalNumber(record.releaseAfterSteps) } : {}),
+    ...(record.releaseAfterBattles !== undefined ? { releaseAfterBattles: optionalNumber(record.releaseAfterBattles) } : {}),
     ...(record.fieldStepCanKill !== undefined ? { fieldStepCanKill: record.fieldStepCanKill === true } : {}),
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
@@ -408,6 +410,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 파티원 유대(옵트인) — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
   { const partyBonds = normalizePartyBonds(system.partyBonds); if (partyBonds) records.partyBonds = partyBonds; }
   if (gallery) records.gallery = gallery;
+  // 괴물 도감 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const bestiary = normalizeBestiary(system.bestiary); if (bestiary && (bestiary.enabled || bestiary.entries.length)) records.bestiary = bestiary; }
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;
   if (vehicles) records.vehicles = vehicles;

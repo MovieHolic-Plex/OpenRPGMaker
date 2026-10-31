@@ -79,6 +79,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
 - 들면 `sightAlert`(기본 exclamation, 0.3초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 3500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
 - 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
+  `set_field_detection` 은 스위치·변수 조건 페이지(이야기가 깨우는 추격자 — 숙직 선생 순찰, 경보 뒤 경비)는 줄이지 않는다(`place_field_enemy` 의 `appearSwitchId` 면제와 같은 이유: 들어설 때 그 자리에 없다). 2026-10-31 「이상 없음」 2층 순찰이 6칸을 달라 해도 2칸이 되어 손전등 빛이 발밑에만 비쳤다.
 - 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
 
 ## 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
@@ -164,7 +165,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
   조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
   내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(`{off:true}` 면 끔 — 스키마가 객체 하나라 `false` 대신 이 꼴을 받는다. 도구 안에서는 `false` 도 받는다).
-  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`). `chaser.blendMode` (add|screen|multiply) sets the chase page graphic blend (ghost = person charset + add). `onTouch: CutsceneBeat[]` compiles a non-lethal touch scene (same beat validation as `script_cutscene`) and is exclusive with `killOnTouch`/`caughtPenalty` (2026-10-31, 「이상 없음」 Sayo).
+  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`). `chaser.blendMode` (add|screen|multiply) sets the chase page graphic blend (ghost = person charset + add). `onTouch: CutsceneBeat[]` compiles a non-lethal touch scene (same beat validation as `script_cutscene`) and is exclusive with `killOnTouch`/`caughtPenalty` (2026-10-31, 「이상 없음」 Sayo). A switch-woken chaser defaults to `pursuit.tracking:"persistent"` (comes through walls) **unless it has a `patrol`** — then the switch only starts the patrol and the chaser must see the hero (2026-10-31: a patrolling night guard woke already chasing and skipped the first hiding scene).
 - **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
   더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
   `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
