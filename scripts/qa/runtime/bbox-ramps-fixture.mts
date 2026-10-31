@@ -14,7 +14,7 @@ const args = process.argv.slice(2);
 const oi = args.indexOf("--out"); const OUT = oi >= 0 ? args[oi + 1]! : "/tmp/bbox-ramps/hill.json";
 const runs = args.filter((a, i) => a !== "--out" && i !== oi + 1);
 let project: Project | null = null;
-const walks: { mapId: string; x: number; from: number; to: number; id: string }[] = [];
+const walks: { mapId: string; dir: "n" | "s"; x: number; from: number; to: number; id: string }[] = [];
 for (const [k, run] of runs.entries()) {
   const { project: p, mapId } = JSON.parse(fs.readFileSync(`${run}/project.json`, "utf8")) as { project: Project; mapId: string };
   const id = `bbox-hill-${k + 1}`;
@@ -23,9 +23,10 @@ for (const [k, run] of runs.entries()) {
   project.maps[id] = map;
   // 남향 깎은 길 = 북쪽 오르막 경사로(겹친 계단은 h=2 하나): 아래 입구(발치 아래 줄) → 위 출구(맨 위 줄 위), 경사로 왼쪽 열을 걷는다
   for (const sl of reliefSlopes(map.relief!)) {
-    if (sl.dir !== "n") continue;
-    const code = map.relief!.ramps?.[sl.y * map.width + sl.x] ?? 0;
-    walks.push({ mapId: id, x: sl.x, from: sl.y + sl.h, to: sl.y - 1, id: `${code > 4 ? "stairs" : "ramp"} w${sl.w} rise ${sl.hi - sl.lo}${sl.h > 1 ? ` (stacked ${sl.h})` : ""} @${sl.x},${sl.y}` });
+    if (sl.dir !== "n" && sl.dir !== "s") continue;
+    const code = map.relief!.ramps?.[sl.y * map.width + sl.x] ?? 0, kind = code > 4 ? "stairs" : "ramp";
+    if (sl.dir === "n") walks.push({ mapId: id, dir: "n", x: sl.x, from: sl.y + sl.h, to: sl.y - 1, id: `${kind} w${sl.w} rise ${sl.hi - sl.lo}${sl.h > 1 ? ` (stacked ${sl.h})` : ""} @${sl.x},${sl.y}` });
+    else walks.push({ mapId: id, dir: "s", x: sl.x, from: sl.y - 1, to: sl.y + sl.h, id: `reverse ${kind} w${sl.w} rise ${sl.hi - sl.lo} @${sl.x},${sl.y}` });
   }
 }
 if (!project) throw new Error("run dir 가 없다");

@@ -19,7 +19,7 @@ import { createBeodeulGroundTileset } from "../../../src/project/defaults/beodeu
 import groundCatalog from "../../../src/assets/beodeulGroundCatalog.json";
 import type { ReliefData } from "../../../src/project/relief/types.ts";
 import { installPieces, STYLE } from "./ramps/install.mts";
-import { canonicalStackSplit, CUT_MAX_RISE } from "../../../src/project/relief/cutPieces.ts";
+import { canonicalStackSplit, CUT_MAX_RISE, reverseCutLength } from "../../../src/project/relief/cutPieces.ts";
 const PIECES: Record<string, { w: number; h: number; rgba: number[] }> = JSON.parse(readFileSync(new URL("./ramps/pieces.json", import.meta.url), "utf8"));
 installPieces(PIECES);
 
@@ -81,17 +81,6 @@ const patch = new Int32Array(W * H).fill(-1);
     for (let k = 0; k < q.length; k += 1) { const c = q[k]!, x = c % W, y = Math.floor(c / W);
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const X = x + dx, Y = y + dy; if (!inMap(X, Y)) continue; const d2 = idx(X, Y);
         if (patch[d2] < 0 && !water[d2] && lv[d2] === lv[c]) { patch[d2] = n; q.push(d2); } } } n += 1; } }
-/** nearest south-facing stretch onto the SAME high patch from the same low level (foot row on the low level, the row north of it on the high patch, entry row below on the low level), w wide */
-const southFaceNear = (x: number, y: number, w: number, lowL: number, highP: number): { x: number; y: number } | null => {
-  let best: { x: number; y: number } | null = null, bd = 1e9;
-  for (let cy = 1; cy < H - 1; cy += 1) for (let cx = 0; cx + w <= W; cx += 1) {
-    let ok = true;
-    for (let i = 0; i < w && ok; i += 1) { const f = idx(cx + i, cy); ok = lv[f] === lowL && !water[f] && patch[f - W] === highP && !water[f + W] && lv[f + W] === lowL; }
-    if (!ok) continue;
-    const d = Math.abs(cx - x) + Math.abs(cy - y); if (d < bd) { bd = d; best = { x: cx, y: cy }; }
-  }
-  return best;
-};
 // cliff cuts (ramps / stairs): one foot row on the lower level against the cliff, as tall as the face (ramps/pieces.py).
 // Stacked flight (r3): a cut whose exit row is a ONE-row strip of a middle level can carry a second cut on that strip (same
 // columns, same kind, foot = the strip row, its own cliff height) — the strip is the landing. The chain becomes one relief
@@ -101,7 +90,7 @@ const ramps = new Array<number>(W * H).fill(0);
 const stairCells = new Set<number>();
 const rampCells = new Set<number>(); // cut cells of a ramp: painted as track (sand) so the road autotile runs on through the cut
 const MAXR = CUT_MAX_RISE;
-type Cut = { i: number; id: string; x: number; y: number; w: number; rise: number; cut: string; dir: string; lo: number; hi: number; tag: string };
+type Cut = { i: number; id: string; x: number; y: number; w: number; rise: number; cut: string; dir: string; lo: number; hi: number; tag: string; len: number };
 const cuts: (Cut & { stackedOn?: number })[] = [];
 const cutId = (k: string, r: number, w: number) => `${k}-h${r}-w${w}`;
 const pathKind = (c: number) => ["road", "track", "plaza"].includes(kind[c]!);
@@ -109,7 +98,7 @@ arr("cuts").forEach((s, i) => {
   const d = CAT[s?.id] as any, tag = `cuts[${i}] "${s?.id}"`;
   if (!d || d.kind !== "cut") { errors.push(`${tag}: unknown cut id — use ramp-h<1..${MAXR}>-w<2|3> or stairs-h<1..${MAXR}>-w<2|3> from the catalog.`); return; }
   if (!num(s.x) || !num(s.y)) { errors.push(`${tag}: needs integer x, y (the left foot cell on the lower level).`); return; }
-  if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" (preferred: climbs through a south-facing cliff) or "south".`); return; }
+  if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" (climbs through a south-facing cliff: high ground north of the foot) or "south" (climbs through a north-facing cliff: high ground south of the foot).`); return; }
   const w = d.w, north = s.dir === "north";
   if (!rectOk({ x: s.x, y: s.y, w, h: 1 }, tag)) return;
   const cs = cellsOf({ x: s.x, y: s.y, w, h: 1 }), lo = lv[cs[0]!]!;
@@ -122,14 +111,16 @@ arr("cuts").forEach((s, i) => {
   const rise = hi - lo;
   if (rise > MAXR) { errors.push(`${tag}: the cliff there is ${rise} tall — cuts exist for heights 1-${MAXR} only; choose another spot.`); return; }
   if (rise !== d.rise) errors.push(`${tag}: the cliff face there is ${rise} tall, so the piece must be ${cutId(d.cut, rise, w)} (a ${d.rise}-tall piece does not fit). Fixed: {"id": "${cutId(d.cut, rise, w)}", "x": ${s.x}, "y": ${s.y}, "dir": "${s.dir}"}.`);
+  // reverse cut (r5, 2026-10-31): through a NORTH-facing cliff the climb runs rise+2 cells north of the cliff on the lower level
+  // (cutPieces.ts reverseCutLength): in 3/4 view `rise` of them hide behind the terrace and 2 show as a way down from its lip
+  const len = north ? 1 : reverseCutLength(rise);
+  const body = north ? cs : cellsOf({ x: s.x, y: s.y - len + 1, w, h: len });
   if (!north) {
-    // a cut through a NORTH-facing cliff is hidden by the 3/4 view: rejected unless that boundary has no south face at all
-    const alt = southFaceNear(s.x, s.y, w, lo, patch[idx(s.x, hiY)]!);
-    if (alt) { errors.push(`${tag} climbs through a NORTH-facing cliff (level ${hi} lies south of the foot): the 3/4 view hides that face, so the cut would be invisible. The same level-${hi} terrace has a south-facing face onto level ${lo} nearby. Fixed: move it to {"id": "${s.id}", "x": ${alt.x}, "y": ${alt.y}, "dir": "north"} (foot row y=${alt.y}, exit row y=${alt.y - 1} on level ${hi}, entry row y=${alt.y + 1} on level ${lo}, columns ${alt.x}..${alt.x + w - 1}) and reroute the road through those rows — or route the road around the hill to reach that face.`); return; }
-    if (s.northFace !== true) { errors.push(`${tag} climbs through a NORTH-facing cliff and no south-facing face ${w} wide leads from level ${lo} onto this level-${hi} terrace anywhere, so a hidden north cut is the only way. Fixed: acknowledge it explicitly: {"id": "${s.id}", "x": ${s.x}, "y": ${s.y}, "dir": "south", "northFace": true}.`); return; }
-    warnings.push(`${tag} is an acknowledged north-facing cut (no south face on that boundary) — hidden in the 3/4 view.`);
+    if (!inMap(s.x, s.y - len)) { errors.push(`${tag}: a ${rise}-tall reverse cut runs ${len} cells north of the cliff (rows ${s.y - len + 1}..${s.y}) plus an entry row y=${s.y - len} — that leaves the map; climb elsewhere.`); return; }
+    const badLv = body.filter((c) => lv[c] !== lo || water[c]);
+    if (badLv.length) { errors.push(`${tag}: a reverse cut through a north-facing ${rise}-tall cliff takes ${len} cells on the lower level north of the cliff: rows ${s.y - len + 1}..${s.y}, columns ${s.x}..${s.x + w - 1}, all dry level ${lo} — ${P(badLv[0]!)} is not. Use a spot with ${len + 1} rows of level-${lo} ground north of the cliff.`); return; }
   }
-  if (cs.some((c) => stairCells.has(c))) { errors.push(`${tag}: overlaps another cut.`); return; }
+  if (body.some((c) => stairCells.has(c))) { errors.push(`${tag}: overlaps another cut.`); return; }
   // flanks (r4 VQA): the cliff right beside the cut, on both sides, must be the same face (foot level ${lo} under level ${hi}) —
   // a cut where the cliff steps (one side a different height) leaves its side wall standing in the grass of the lower side
   const flankOk = (fx: number) => !inMap(fx, s.y) || water[idx(fx, s.y)] || (lv[idx(fx, s.y)] === lo && lv[idx(fx, hiY)] === hi);
@@ -144,13 +135,13 @@ arr("cuts").forEach((s, i) => {
     errors.push(`${tag} at (${s.x},${s.y}) sits where the cliff steps: the face beside it (column ${!flankOk(s.x - 1) ? s.x - 1 : s.x + w}) is not the same level-${lo}-to-${hi} face, so the cut's side wall would stand in the grass. ${alt !== null ? `Fixed: {"id": "${s.id}", "x": ${alt}, "y": ${s.y}, "dir": "${s.dir}"} (move the road to columns ${alt}..${alt + w - 1}).` : "No straight stretch of that face is wide enough here — climb elsewhere."}`);
     return;
   }
-  for (const c of cs) { if (kind[c] === "road" || kind[c] === "track") { owner[c] = ""; kind[c] = ""; roadMat.delete(c); } claim(c, "stair", `cut ${i}`); ramps[c] = rampCode(north ? "n" : "s", d.cut === "stairs"); stairCells.add(c); if (d.cut === "ramp") rampCells.add(c); }
-  cuts.push({ i, id: s.id, x: s.x, y: s.y, w, rise, cut: d.cut, dir: s.dir, lo, hi, tag });
+  for (const c of body) { if (kind[c] === "road" || kind[c] === "track") { owner[c] = ""; kind[c] = ""; roadMat.delete(c); } claim(c, "stair", `cut ${i}`); ramps[c] = rampCode(north ? "n" : "s", d.cut === "stairs"); stairCells.add(c); if (d.cut === "ramp") rampCells.add(c); }
+  cuts.push({ i, id: s.id, x: s.x, y: s.y, w, rise, cut: d.cut, dir: s.dir, lo, hi, tag, len });
 });
 // entry / exit rows (pass 2, after every cut is known): a row may be road/track/plaza, or the foot of the next flight of a stack
 const footOf = (x: number, y: number, w: number) => cuts.find((q) => q.dir === "north" && q.x === x && q.y === y && q.w === w);
 for (const q of cuts) {
-  const north = q.dir === "north", hiY = north ? q.y - 1 : q.y + 1, loY = north ? q.y + 1 : q.y - 1;
+  const north = q.dir === "north", hiY = north ? q.y - 1 : q.y + 1, loY = north ? q.y + 1 : q.y - q.len;
   const up = north ? footOf(q.x, hiY, q.w) : undefined, down = north ? footOf(q.x, loY, q.w) : undefined;
   if (up && up.cut !== q.cut) errors.push(`${q.tag} and ${up.tag} form a stacked flight but mix a ramp and stairs — both flights of a stack must be the same kind. Fixed: {"id": "${cutId(q.cut, up.rise, up.w)}", "x": ${up.x}, "y": ${up.y}, "dir": "north"}.`);
   if (up && up.cut === q.cut) up.stackedOn = q.i;
@@ -270,8 +261,7 @@ for (let c = 0; c < W * H; c += 1) {
           const hiC0 = lowC === c ? n : c, sy = Math.floor(hiC0 / W) - 1, r2 = northHigh && sy >= 0 ? lv[idx(fx, sy)]! - lv[hiC0]! : 0;
           if (northHigh && r <= MAXR && r2 > 0 && r2 <= MAXR) return `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff, and row y=${fy - 1} is a one-row level-${lv[hiC0]} strip under a further ${r2}-tall cliff. Fixed: climb both with a stacked flight (the strip is the landing): {"id": "stairs-h${r}-w2", "x": <left column>, "y": ${fy}, "dir": "north"} and {"id": "stairs-h${r2}-w2", "x": <same column>, "y": ${fy - 1}, "dir": "north"} (or ramp-h${r}-w2 + ramp-h${r2}-w2 for a track; x=${fx} must be inside both), with row y=${fy - 2} a road/track/plaza on level ${lv[hiC0]! + r2}.`;
           return r > MAXR ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff — too tall for a cut (max ${MAXR}); route the path elsewhere.`
-            : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff without a cut. Fixed: add {"id": "ramp-h${r}-w2" (track) or "stairs-h${r}-w2" (paved; -w3 for a 3-wide road), "x": <left column>, "y": ${fy}, "dir": "${northHigh ? "north" : "south"}"} with its foot on the lower row y=${fy} (x=${fx} must be inside it)${northHigh ? "" : (() => { const hiC = lowC === c ? n : c, alt = southFaceNear(fx, fy, 2, lv[lowC]!, patch[hiC]!);
-              return alt ? ` — BUT this face looks north and north-facing cuts are rejected; climb at the south-facing face of the same boundary instead: {"id": "ramp-h${r}-w2", "x": ${alt.x}, "y": ${alt.y}, "dir": "north"} and reroute the road there` : ` — this face looks north; no south face exists on this boundary, so add "northFace": true`; })()}.`; })());
+            : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a ${r}-tall cliff without a cut. Fixed: add {"id": "ramp-h${r}-w2" (track) or "stairs-h${r}-w2" (paved; -w3 for a 3-wide road), "x": <left column>, "y": ${fy}, "dir": "${northHigh ? "north" : "south"}"} with its foot on the lower row y=${fy} (x=${fx} must be inside it)${northHigh ? "" : ` — this face looks north, so it is a reverse cut: it takes rows ${fy - reverseCutLength(r) + 1}..${fy} (${reverseCutLength(r)} cells on level ${lv[lowC]}) and row y=${fy - reverseCutLength(r)} must be the road/track on level ${lv[lowC]} leading to it`}.`; })());
   }
 }
 const pathCells = [...Array(W * H).keys()].filter(pathy);
