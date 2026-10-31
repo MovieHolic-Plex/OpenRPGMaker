@@ -114,6 +114,11 @@ function lineOf(ctx: FlowContext, node: TS.Node): number {
 }
 
 function shortCode(ctx: FlowContext, node: TS.Node, limit = 70): string {
+  // `x = a ? b : c`: read the right side on its own so the ternary wording does not swallow the target.
+  if (ctx.ts.isBinaryExpression(node) && node.operatorToken.kind >= ctx.ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ctx.ts.SyntaxKind.LastAssignment) {
+    const text = `${plainCode(ctx, node.left.getText(ctx.file).trim())} ${node.operatorToken.getText(ctx.file)} ${plainCode(ctx, readable(ctx, node.right.getText(ctx.file).replace(/\s+/gu, " ").trim()))}`;
+    return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
+  }
   const text = plainCode(ctx, readable(ctx, node.getText(ctx.file).replace(/\s+/gu, " ").trim()));
   return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
 }
@@ -135,7 +140,7 @@ function plainCode(ctx: FlowContext, text: string): string {
     .replace(/game\.gold\(\)/gu, "돈");
   // Operators only outside string literals.
   const parts = named.split(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/u);
-  return parts.map((part, index) => {
+  return plainTernary(parts.map((part, index) => {
     if (index % 2 === 1) return part;
     return part
       .replace(/Math\.(floor|ceil|round|min|max|abs|trunc)\(/gu, (_whole, name: string) => `${MATH_WORD[name] ?? name}(`)
@@ -149,7 +154,41 @@ function plainCode(ctx: FlowContext, text: string): string {
       .replace(/\s\/\s/gu, " ÷ ")
       .replace(/\s-\s/gu, " − ")
       .replace(/\.length\b/gu, "의 개수");
-  }).join("");
+  }).join(""));
+}
+
+/**
+ * One `a ? b : c` (outside quotes, not `?.`/`??`) reads as 「(a 이면 b, 아니면 c)」. Nested or several
+ * ternaries stay as code — a half-translated chain is harder to read than the original.
+ */
+function plainTernary(text: string): string {
+  const marks: { char: string; at: number; depth: number }[] = [];
+  let depth = 0;
+  let quote = "";
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i]!;
+    if (quote) {
+      if (char === "\\") i += 1;
+      else if (char === quote) quote = "";
+      continue;
+    }
+    if (char === '"' || char === "'" || char === "`") quote = char;
+    else if (char === "(" || char === "[" || char === "{") depth += 1;
+    else if (char === ")" || char === "]" || char === "}") depth -= 1;
+    else if (char === "?" && text[i + 1] !== "." && text[i + 1] !== "?" && text[i - 1] !== "?") marks.push({ char, at: i, depth });
+    else if (char === ":") marks.push({ char, at: i, depth });
+  }
+  const ask = marks.filter((mark) => mark.char === "?");
+  const colon = marks.filter((mark) => mark.char === ":");
+  if (ask.length !== 1 || colon.length !== 1) return text;
+  const [q] = ask;
+  const [c] = colon;
+  if (!q || !c || c.at < q.at || q.depth !== c.depth) return text;
+  const head = text.slice(0, q.at).trimEnd();
+  const yes = text.slice(q.at + 1, c.at).trim();
+  const no = text.slice(c.at + 1).trimStart();
+  if (q.depth > 0) return `${head} 이면 ${yes}, 아니면 ${no}`;
+  return `(${head} 이면 ${yes}, 아니면 ${no})`;
 }
 
 function unwrap(ctx: FlowContext, node: TS.Expression): TS.Expression {
