@@ -3883,7 +3883,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 둘(등 뒤 양 끝, 틈 어귀 순찰 없음), chaseStepMs 127 · 틈 y=24(숲 어귀를 다시 칠함 — 맵 폭 나무 벽, 틈 x15~18)",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 둘(등 뒤 양 끝, 틈 어귀 순찰 없음), chaseStepMs 175·돌진 없음 · 달리기는 방향키를 누른 채(held) · 틈 y=24(숲 어귀를 다시 칠함 — 맵 폭 나무 벽, 틈 x15~18)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -4054,19 +4054,22 @@
        "kind": "move",
        "dir": "up",
        "steps": 6,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
        "kind": "move",
        "dir": "right",
        "steps": 4,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
        "kind": "move",
        "dir": "up",
        "steps": 8,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       }
      ],
      "shot": true

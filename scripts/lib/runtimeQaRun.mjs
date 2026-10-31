@@ -335,6 +335,27 @@ export async function applyOp(page, op, runState) {
         const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
         return state ? { mapId: state.currentMapId, x: state.x, y: state.y } : null;
       });
+      if (op.held === true) {
+        // 사람처럼 방향키를 누른 채로 — 칸마다 떼었다 누르는 왕복이 없다(추격 장면은 그 왕복만큼 느려져 잡혔다).
+        // 목표 칸 수만큼 그 축 좌표가 바뀌면 뗀다. 막혀 시간이 다 되면 거기서 멈춘다.
+        const start = await readPosition();
+        const axis = dir === "up" || dir === "down" ? "y" : "x";
+        const sign = dir === "up" || dir === "left" ? -1 : 1;
+        await page.evaluate((value) => window.__oprnInput.dir(value), dir);
+        try {
+          await page.waitForFunction(([mapId, origin, key, s, n]) => {
+            const debug = window.__oprnDebug;
+            const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
+            return Boolean(state) && (state.currentMapId !== mapId || (state[key] - origin) * s >= n);
+          }, [start?.mapId ?? null, start?.[axis] ?? 0, axis, sign, steps], { timeout: (op.stepTimeoutMs ?? 1200) * steps });
+        } catch { /* 막혔다 — 아래에서 간 칸 수를 남긴다 */ }
+        await page.evaluate(() => window.__oprnInput.dir(null));
+        const end = await readPosition();
+        const heldMoved = end && start && end.mapId === start.mapId ? Math.abs(end[axis] - start[axis]) : steps;
+        runState.notes ??= [];
+        runState.notes.push(heldMoved >= steps ? `moved ${heldMoved} tile(s) held` : `moved ${heldMoved}/${steps} tile(s) held, blocked`);
+        return;
+      }
       let moved = 0;
       for (let index = 0; index < steps; index += 1) {
         const before = await readPosition();
