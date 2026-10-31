@@ -1630,7 +1630,7 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
   const vault = M(project, ids.vault);
   shells(project, exec, vault);
   vaultSeal(project, ids.vault);
-  vaultB2(project, vault);
+  vaultB2(project, M(project, ids.vault)); // shells() 의 도구 실행이 맵 객체를 바꿔 끼우므로 다시 읽는다
   floorB3(project, vault);
   floorB4(project);
   // 「승강 장치가 드러났다」를 지도 위에 실제로 — 패널 옆 바닥에 화물 승강구가 솟는다(조수 도구 stage_map_reveal).
