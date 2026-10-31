@@ -163,7 +163,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         miss: { lines: ["목소리가 뚝 끊긴다. 관이 다시 차게 식는다."] },
       },
     ],
-    wrong: ["이 단계만 다시 해 보자."],
+    wrong: ["…다시 생각해 보자."],
     wrongFx: ["shake:1"],
     solvedFx: ["shake:3", "flash:white", "particles:sparkle"],
     reward: {
