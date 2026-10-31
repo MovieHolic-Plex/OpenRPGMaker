@@ -84,6 +84,22 @@ def model_rows():
     return "".join(out)
 
 
+def argon_table():
+    import glob, re as _re
+    cfgs = [("6판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls6"), ("6판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8-r6"),
+            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8")]
+    out = []
+    for lab, root in cfgs:
+        rs = [json.load(open(p)) for p in sorted(glob.glob(f"{root}/argon[0-9]/*/RUN.json"))]
+        if not rs: continue
+        n = len(rs); ok = sum(r["ok"] for r in rs)
+        harm = sum(sum(len(h["repairs"]) for h in r.get("harmonised", [])) for r in rs) / n
+        last = [str((r.get("errors") or [""])[0]) for r in rs if not r["ok"]]
+        struct = sum(1 for e in last if _re.match(r"(wall |shell|outer|entrance|door |map\.|rooms? \"[^\"]*\" (and|are one))", e))
+        out.append(f"<tr><td>{lab}</td><td>{ok}/{n}</td><td>{sum(len(r['calls']) for r in rs) / n:.1f}</td><td>{sum(r['errorsPerCall'][0] for r in rs) / n:.1f} → {sum(r['errorsPerCall'][-1] for r in rs) / n:.1f}</td><td>{harm:.1f}</td><td>{struct}/{len(last)}</td></tr>")
+    return "<h2>argon(gemini-4-argon-high) 통과율 — 기계적 정리 전/후</h2><table><tr><th>설정</th><th>검증 통과</th><th>호출 수(평균)</th><th>오류 수 첫 답 → 마지막 답</th><th>코드가 고친 것(장당)</th><th>실패 중 마지막 오류가 벽 구조인 것</th></tr>" + "".join(out) + "</table>"
+
+
 rows = []
 for t in TASKS:
     for s in ROUNDS:
@@ -134,6 +150,7 @@ table{{border-collapse:collapse;margin:8px 0}}td,th{{border:1px solid #444;paddi
 빈 바닥 = 그 칸과 둘레 8칸에 아무것도(벽·가구·난간) 없는 바닥의 비율 · 통로 제외 = 문과 문 사이 3칸 폭 길은 빼고 잰 값(3판 검사 기준) · 몸채 볼록도 = 건물 면적 / 둘레 사각형 면적(1 = 네모) · 바깥벽 꺾임 = 바깥벽 윤곽의 모서리 수(네모 = 4) · 공유벽 = 방 둘에 맞닿은 벽 칸 비율.</p>
 <div class=card><h3>세로(남북) 벽의 문 — 고치기 전 / 후 (같은 저택 sol #2 3판 배치, 4배)</h3><div class=pair><div class=col><h4>전: 문 위 두 칸이 벽면(붉은 천)으로 칠해져 벽처럼 보였다</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-old.png'></div><div class=col><h4>후: 세 칸 모두 바닥으로 — 위 벽머리만 남은 통로</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-new.png'></div></div><p class=meta>1~3판 그림은 옛 렌더 그대로다(판정자도 그 그림을 봤다). 4판부터 새 렌더.</p></div>
 <table><tr><th>장소 · 판</th><th>빈 바닥</th><th>통로 제외</th><th>양탄자</th><th>계단 맞음</th><th>물건 종류 (네 장 합쳐)</th><th>새 풀 물건</th><th>방당 다른 물건</th><th>반복률</th><th>네모 방 / 밋밋한 네모</th><th>방 크기 변이(CV)</th><th>같은 크기 줄</th><th>볼록도</th><th>바깥벽 꺾임</th><th>공유벽</th><th>Opus 쌍 비교</th><th>벽 점수</th></tr>{''.join(rows)}</table>
+{argon_table()}
 <h2>모델별 물건 다양성 (4~7판)</h2><table><tr><th>판 · 모델</th><th>방당 다른 물건</th><th>반복률</th><th>지도당 물건 종류</th><th>지도당 새 풀 물건</th><th>같은 용도 겹침</th><th>find_pieces 호출</th><th>네모 방</th></tr>{model_rows()}</table>
 {''.join(secs)}"""
 open(f"{VIZ}/bbox-walls-2.html", "w").write(page); print("ok")
