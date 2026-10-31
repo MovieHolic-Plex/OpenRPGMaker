@@ -706,6 +706,17 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   «고정 앞부분 다시 읽기·쌓인 기록 다시 읽기·앞부분 처음 쓰기·도구 목록이 바뀌어 통째 다시 쓰기·새 기록 쓰기·출력»으로 나눈다.
 - **2026-11-01 전 기록의 `stats.costUsd` 는 믿지 않는다.** Claude Code 의 `result.total_cost_usd` 는 프로세스 누적값인데 차례마다 그대로 더해 2~9배 부풀었다
   (스크립트 A/B PoC 「판당 $21~47」→ 정가 계산 $5~14). 이제 `claudeTurnCost` 가 이 차례 몫만 낸다(`scripts/lib/localCliAgent/claude.ts`).
+- **로컬 CLI 도구 목록 고정(2026-11-01, `src/ai/piAgent/cliToolFreeze.ts`)**: Claude Code 는 도구 목록을 요청 맨 앞에 싣는다. 대화 중에 도구가 «더해지면»
+  (load_tools·할 일 고리의 선언·이름 구제) 더 이상 MCP list_changed 를 보내지 않는다 — 보내면 다음 호출이 지시문·도구·기록 전부를 다시 썼다.
+  대신 CLI 목록에 `call_tool{name, args}` 하나가 있고, load_tools 결과가 실은 도구의 매개변수(가벼운 스키마)를 기록으로 준다(env.lazyToolsVia).
+  목록에 있던 도구가 «빠질» 때(윤문 차례처럼 통째로 바꿀 때)만 알린다. CLI 시스템 지시에 영어 한 줄(`CLI_LAZY_TOOLS_LINE`). 끄기 `OPRN_CLI_TOOL_FREEZE=0`.
+  Pi 코어 엔진(API 경로)은 그대로다(in-place 선언).
+  실측(cost1, 체크포인트 로직 요청 탈출·던전·마을 ×2): 비용이 모두 잡힌 5판 합계 $17.11 → $11.67(−32%), 모델 호출 233 → 207,
+  대본 플레이 68/70 → 69/70, Opus 짝 판정 12승 0패(정확성 중앙값 9 대 6.5). «도구 목록이 바뀌어 통째 다시 쓰기» 몫이 사라졌다.
+- **측정 틀(`scripts/qa/assistant-cost/`)**: 스크립트 A/B 2 의 무대 체크포인트(로직 요청만, Opus 5.5 medium, 15분 상한)를 그대로 쓴다.
+  `vm-queue.sh <out-root> <팔>=<VM 사본>[=ENV,…]` — 같은 빌드로 기능 스위치만 다른 팔을 나란히 돌린다(기본 동시 3판, 스위트 관문 통과).
+  `collect.sh <batch> <기준 팔> <팔>…` — 당겨 와서 출하 플레이어로 대본 플레이(walk.mjs), 기준 팔과 Opus 짝 판정(ab2/judge.py, 앞뒤 두 번), `measure.py` 표.
+  15분 상한에 걸린 판은 done 통계가 없어 비용이 0 으로 보인다 — `measure.py` 는 그 판을 no-stats 로 빼고, 모든 팔에 비용이 있는 판끼리의 합(paired$)을 따로 낸다.
 - 측정 결과(스크립트 A/B 기록): 호출마다 지시문+도구 설명 7.5만~9만 토큰을 다시 보내는 것이 처리 토큰의 약 70%이고, load_tools·도구 선언으로
   MCP 도구 목록이 바뀌면 다음 호출에서 캐시를 통째로 다시 쓴다(로직 요청 비용의 약 29%). 도구 결과 본문은 약 9%뿐이다. 페이지 `~/claude-viz/assistant-cost.html`.
 
