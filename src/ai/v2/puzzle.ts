@@ -252,11 +252,26 @@ function switchFromProject(project: { maps: Record<string, { events: readonly { 
   return byName.size === 1 ? [...byName][0] : undefined;
 }
 
-export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildResult {
+export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuildResult {
+  let args = argsIn;
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
   const fail = (summary: string): ContentBuildResult => ({ ok: false, mapIds: [args.mapId], summary, warnings, missingArt: [], calls: [] });
   if (!args.links?.length) return fail("links 가 비었다 — 단서·자물쇠·문을 순서대로 준다");
+  // 조건 없는 단서 고리는 무엇에도 기대지 않으니 앞으로 모은다(r10 flash 가 자물쇠를 첫 고리로, 단서를 뒤에 줬다 — 뒤 단서 이름을 needs 로 못 찾았다).
+  const freeClue = (l: ChainLink): boolean => l.role === "clue" && !l.needs && !l.needsAny?.length && !l.needsAll?.length && !l.needsCondition?.length;
+  const firstOther = args.links.findIndex((l) => !freeClue(l));
+  if (firstOther >= 0 && args.links.slice(firstOther).some(freeClue)) {
+    args = { ...args, links: [...args.links.filter(freeClue), ...args.links.filter((l) => !freeClue(l))] };
+    warnings.push(`조건 없는 단서 고리를 앞으로 모았다(고리 번호는 새 순서) — ${args.links.map((l) => l.role).join(" → ")}`);
+  }
+  // 번호 고리에 조건이 하나도 없으면 같은 사슬 단서 중 하나라도 본 뒤에 시도하게 한다(단서 없이 답을 맞히는 자물쇠·lockedLines 가 안 나오는 자물쇠를 막는다).
+  {
+    const clueNames = args.links.filter(freeClue).map((l) => l.learn ?? l.name).filter((n): n is string => typeof n === "string" && !!n.trim());
+    if (clueNames.length) args = { ...args, links: args.links.map((l, i) => (l.code && (l.role === "code" || l.role === "ending") && !l.needs && !l.needsAny?.length && !l.needsAll?.length && !l.needsCondition?.length
+      ? (warnings.push(`${i + 1}번 고리(${l.role}): 조건이 없어 단서 ${clueNames.map((n) => `「${n}」`).join("·")} 중 하나를 본 뒤 시도하게 했다`), { ...l, needsAny: clueNames })
+      : l)) };
+  }
   const chainKey = slug(args.name || "chain");
   const have = new Map<string, { kind: "flag"; switchId: string } | { kind: "item"; itemId: string }>();
   const itemId = (name: string): string => {
@@ -502,7 +517,17 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     if (shown) warnings.push(shown);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!)))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  // 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)는 자리별로 겹쳐 답이 되면 적힌 것으로 본다 — 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.
+  const overlaid = (code: string, lines: readonly string[]): boolean => {
+    const n = [...code].length; const got: (string | undefined)[] = new Array(n).fill(undefined);
+    for (const line of lines) for (const m of line.matchAll(/[0-9A-Za-z_＿?○□*](?:[\s·-]*[0-9A-Za-z_＿?○□*])*/gu)) {
+      const toks = [...m[0].replace(/[\s·-]/gu, "")];
+      if (toks.length !== n) continue;
+      toks.forEach((t, i) => { if (/[0-9A-Za-z]/u.test(t)) got[i] = got[i] ?? t; });
+    }
+    return got.join("") === code;
+  };
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !overlaid(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
