@@ -9715,8 +9715,8 @@
   },
   {
    "id": "act2-b10-mirror",
-   "label": "제2막 B10 — 하늘탑 3층: 렌즈 거울 둘로 빛을 계단에 → 4층 어둠",
-   "note": "act2Tower.ts floorThree (author_map_puzzle mirror_beam_refraction)",
+   "label": "제2막 B10 — 하늘탑 3층: 거울 넷으로 천창 빛을 계단 빛 막까지 잇는다(미끼 거울은 검은 수정에 막힌다) → 4층 어둠",
+   "note": "act2Tower.ts floorThree (거울 다섯·빛 계산 공통 이벤트 ce_fs2_t3_beam)",
    "mapId": "fs2_sky_tower_f3",
    "x": 7,
    "y": 11,
@@ -9766,88 +9766,40 @@
    ],
    "beats": [
     {
-     "id": "first",
+     "id": "look",
      "ops": [
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 1500
       },
       {
-       "kind": "action"
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
+       "kind": "move",
+       "dir": "right",
+       "steps": 3,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 2500
       }
      ],
      "shot": true
     },
     {
-     "id": "second",
+     "id": "m1-left",
      "ops": [
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 2000
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 4,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "move",
-       "dir": "left",
-       "steps": 2,
-       "stepTimeoutMs": 4000
-      },
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower_f3",
-       "x": 9,
-       "y": 10
+       "x": 12,
+       "y": 12
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 500
       },
       {
        "kind": "face",
@@ -9857,15 +9809,290 @@
        "kind": "action"
       },
       {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
        "state": "present",
-       "timeoutMs": 15000
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m2-up",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 5,
+       "y": 12
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m3-right",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 5,
+       "y": 8
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m4-up",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 7,
+       "y": 6
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
       }
      ],
      "shot": true
@@ -9893,51 +10120,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 6,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 2500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 4,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1000
+       "ms": 1500
       }
      ],
      "shot": true
@@ -11458,7 +11641,8 @@
          "skill_gunner_shot",
          "skill_gunner_shot"
         ]
-       }
+       },
+       "resultHoldMs": 1200
       },
       {
        "kind": "hold",
