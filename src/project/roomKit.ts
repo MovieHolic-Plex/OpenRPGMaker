@@ -232,6 +232,13 @@ export interface KitHandObject {
 const NOT_FURNITURE = new Set(["wall", "terrain", "fence", "roof", "building", "water", "floor", "path", "cliff"]);
 const WALL_PLACE = /벽 앞|벽에 붙|북쪽 벽에|북벽 앞|north-wall/u;
 const HANG_PLACE = /벽에 건|벽면에 건|걸이|걸어 둔/u;
+/**
+ * 벽면(북벽 정면)에 붙는 물건 — 칠판·벽등·벽 촛대·배기 후드. 통행 칸이 있거나(촛대 받침) 위층 그림만 있어(후드) 위 규칙으로는
+ * 발밑 없는 덧그림이나 바닥 가구로 갈렸다(2026-10-31 bbox-chipsets: 마법약 교실 칠판·벽 램프·후드를 조수가 바닥에 깔았다).
+ * 이름이나 놓는 곳 문장이 벽면을 가리키면 벽걸이(hang)로 본다. 「벽 앞」(벽에 붙여 세우는 가구)은 여기에 들지 않는다.
+ */
+const FACE_NAME = /칠판|blackboard|후드|· hood$|벽등|벽 촛대|벽 램프|wall[- ]lamp|sconce/u;
+const FACE_PLACE = /북벽 정면|벽 정면에|벽에 거는|벽에 매단|벽 위쪽에/u;
 
 /**
  * 칩셋의 조립 부품(structureKits) → 방 짓기 가구. 역할표에 가구 표가 없는 칩셋(마법 학교·사용자가 「방 짓기」 탭에서 만든 역할표)이
@@ -257,7 +264,8 @@ export function kitHandObjects(tileset: TilesetDef | undefined): Record<string, 
     // 설명서(ObjectSpec)가 있으면 놓는 곳·발밑을 거기서 읽는다(2026-10-20). 없으면 예전처럼 통행·문장에서 짐작한다.
     const spec = kit.spec && validateObjectSpec(kit.spec).ok ? kit.spec : null;
     const specKind = objectSpecHandKind(spec);
-    const kind: KitHandObject["kind"] = specKind ?? (firstBlocked < 0
+    const onFace = !specKind && !stairContractOf(tileset.id, kit) && (FACE_NAME.test(kit.name ?? "") || FACE_PLACE.test(place));
+    const kind: KitHandObject["kind"] = specKind ?? (onFace ? "hang" : firstBlocked < 0
       ? (hasUpper ? (HANG_PLACE.test(place) ? "hang" : "floor") : "flat")
       : WALL_PLACE.test(kit.ai?.placementRules ?? "") ? "wall" : "floor");
     const foot = specKind ? (specKind === "floor" || specKind === "wall" ? Math.min(H, spec!.view.footRows) : 0) : firstBlocked < 0 ? 0 : H - firstBlocked;
