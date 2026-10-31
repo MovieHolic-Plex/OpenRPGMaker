@@ -9,6 +9,7 @@
 //  순서: 걸이 = 벽면 윗줄 y·16, 바닥 무늬 = 맨 먼저, 나머지 = (y + 높이)·16 — 남쪽 가구가 나중(앞)에 그려진다.
 //  문(door, jp_city): 가로 칸막이의 1칸 틈 (x,y) 에 단다 — 틈 칸 = 인방 ★, 그 아래 벽면 높이 두 줄 = 열린 문틀(윗줄 ★ · 아랫줄 2층). 통로는 막지 않는다.
 //  옆문(sidedoor): 세로 칸막이 3줄 틈의 통로 칸 (x,y) 에 단다 — 위 두 칸(칸막이 끝 벽면) ★ + 통로 칸 2층.
+import { isTatamiFloor, layTatami } from "./tatami";
 import spec from "@/assets/handInteriorSpec.json";
 import jpSpec from "@/assets/jpInteriorSpec.json";
 import wizardingSpec from "@/assets/wizardingRoomSpec.json";
@@ -266,6 +267,15 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
         | (!oN && !oW && inn(cx - 1, cy - 1) ? 4 : 0) | (!oN && !oE && inn(cx + 1, cy - 1) ? 8 : 0);
       lower.push((d ? corners?.[`${b}:${d}`] : undefined) ?? ceil[b]!);
     } else lower.push(S.void);
+  }
+  // 다다미 바닥은 무늬가 아니라 통짜 돗자리로(tatami.ts) — 벽마다 반쪽 돗자리가 잘리지 않게.
+  for (const [id, fd] of Object.entries(S.floors)) {
+    if (!isTatamiFloor(id, fd)) continue;
+    // 문 틈·입구(좌우나 위아래가 막힌 한 칸 폭)는 문턱이라 돗자리에서 뺀다 — 홀수 칸이 되어 못 깔리지 않게.
+    const gap = (x: number, y: number) => (!inn(x - 1, y) && !inn(x + 1, y)) || (!inn(x, y - 1) && !inn(x, y + 1)) || y === H - 1;
+    const floorOf = (i: number) => { const x = i % W, y = (i - x) / W; return !!g[y]![x] && !face[y]![x] && !gap(x, y) && mat(x, y).f === id; };
+    if (!lower.some((_, i) => floorOf(i))) continue;
+    layTatami(lower, W, fd.tiles, floorOf, (i) => { const x = i % W, y = (i - x) / W; return (y > 0 && face[y - 1]![x] ? 1 : 0) | (inn(x - 1, y) ? 0 : 2); });
   }
   void issues;
   return { W, H, lower };
