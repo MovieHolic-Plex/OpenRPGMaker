@@ -2005,9 +2005,9 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     }
     if (count === 0) throw new Error(`[fallen-star act2] ${mapId} 에 보초를 하나도 못 세웠다(${roomIds.join("·")}): ${why}`);
   };
-  // 바깥 순찰 기사 — 도개교 앞 눈 턱을 가로로 오간다. 성문으로 가려면 이 기사를 지나야 한다.
+  // 바깥 순찰 기사 — 도개교 들머리를 세로로 오간다(양옆 가로등 사이). 성문으로 가려면 이 기사를 지나야 한다.
   exec(project, "place_field_enemy", { mapId: FS2_FORT_COURT_ID, x: COURT_SPOTS.knight.x, y: COURT_SPOTS.knight.y, graphic: knight, troopId: FS2_KNIGHT_TROOP_OUT, behavior: "chase",
-    patrol: { length: 3, axis: "horizontal" }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", alert: "exclamation",
+    patrol: { length: 3, axis: "vertical" }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", alert: "exclamation",
     respawnSec: 0, clearSwitchId: "sw_fs2_fort_knight_court_down", checkpointOnEntry: true });
   post(FS2_FORTRESS_ID, FORT.rooms, ["yard", "stair"], 2, (n) => ({
     troopId: FS2_KNIGHT_TROOP, behavior: "chase", patrol: { length: 2, axis: n % 2 ? "vertical" : "horizontal" },
