@@ -698,7 +698,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped);
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -818,6 +818,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const visible = await composeVisiblePanorama(far.dataUrl, near?.dataUrl, args.view, visibleTop).catch(() => undefined);
           if (visible?.startsWith('data:image/png;base64,')) result.content.push({ type: 'image', mimeType: 'image/png', data: visible.slice(visible.indexOf(',') + 1) });
           emit({ type: 'execution_status', name: 'map.background.delivered', ...imageStatus('생성한 맵 배경 그림을 모델에게 전달했습니다.'), data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
+        } else if (tool.name === 'generate_walk_chip') {
+          // 외형 만들기·잇기는 보통 쓰기로 하고, 걷기 칩 생성은 편집기의 공방 작업 줄에 세운다(render_request 'generate_walk_chip'). 작업은 수 분
+          // 걸리고 편집기가 끝내면 외형 칩을 바꾼다 — 조수는 기다리지 않는다. 레지스트리 run 의 ui-required 만 남기면 아무도 작업을 세우지 않았다.
+          result = await tool.execute(id, params, signal);
+          const linked = result.details as { ok?: boolean; summary?: string; data?: { appearanceId?: string; description?: string } } | undefined;
+          const want = linked?.ok !== false ? linked?.data : undefined;
+          if (want?.appearanceId && want.description) {
+            const name = ctx.project.database.characterAppearances?.find(entry => entry.id === want.appearanceId)?.name ?? '';
+            let started: { ok: boolean; note: string };
+            try {
+              if (!options.renderToolImage) throw new Error('편집기 연결이 없다');
+              await options.renderToolImage(ctx.project, 'generate_walk_chip', { appearanceId: want.appearanceId, description: want.description, name }, signal ?? options.signal);
+              started = { ok: true, note: `편집기 공방 작업 줄에서 걷기 칩을 만들기 시작했다(보통 5~12분). 다 되면 외형 칩이 저절로 바뀜고 이은 배우·이벤트도 함께 바뀐다 — 기다리지 말고 다음 작업을 계속한다.` };
+            } catch (error) {
+              started = { ok: false, note: `걷기 칩 생성은 시작하지 못했다(${error instanceof Error ? error.message : String(error)}). 외형에는 지금 칩이 그대로 있다 — 사용자에게 알린다.` };
+            }
+            const execution = { ...linked, ok: true, summary: `${linked?.summary ?? ''} ${started.note}`.trim(), data: { ...want, status: started.ok ? 'generating' : 'failed' } };
+            emit({ type: 'execution_status', name: 'walkchip.started', ok: started.ok, summary: started.note, data: { toolCallId: id, appearanceId: want.appearanceId } });
+            result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+          }
         } else result = await tool.execute(id, params, signal);
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {

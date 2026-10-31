@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc009233dd2a8700a3d5afdbc95854fe24d401d0ed6062f5d3f6eac6f2850ae8",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 1 w3 reverse cut through a north-facing peat cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/peat-steps/ramp-h1-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 32,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground surface seen from above, descending away from viewer",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48px opaque field, rows 0-31, of olive-peat checker texture with a few faint horizontal step lines (rows ~11, ~24) that suggest ramp steps. It has dark edges on the left and right sides (rows 7-31) as cut walls. The whole tile is a flat ground surface seen from above. No front face of 3+ rows is drawn, only a slightly lighter strip at the bottom (rows 30-31). For terrain, this reads as a top-down ramp surface rather than a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a tan/olive block split into three horizontal bands with thin darker separator lines. Each band is a smooth gradient or fill with almost no grain, speckle, clumps or per-pixel texture, so it looks like a striped sticker beside the references. The grass reference has tufts and clumps, and the paving reference has stones shaded one by one. The measured facts are not bad: 7 visible tones per tile (grass 3, paving 7) and 4% near-flat coverage. But the candidate has only 11 distinct colours in total, against 80 for the grass, and the picture shows about 4 real lightness steps against the 5-6 of Beodeul. About 49% of its dark edge pixels are neutral, which is a mix of tinted and neutral lines. The peat-cliff ramp has no soil grain, no root or strata detail and no per-band highlights. It is not rich enough to sit next to the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14763
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface (peat texture, seen from above, with faint horizontal step lines at rows 11, 24 and 25)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cut-wall slivers along left and right edges",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x32 tile is one continuous speckled peat surface seen from above, with the same width on every row. Only faint 1-row darker step lines break it up (rows 11 and 24, with lighter bands around rows 14-15, 19-23 and 25-31). There is no vertical south face of 3 or more rows and no front-edge line with eave shadow. The dark 1-3 px strips at the left and right edges are thin cut-wall borders, not a receding side face. This matches a terrain ramp descending away from the viewer, with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is an olive-tan ramp built from a few broad horizontal bands, each a nearly flat colour with only thin step lines between them. By eye I count about 3-4 lightness steps against the references' 5-6. The paving reference has stones shaded one by one, and the grass reference has clumps and tufts. The candidate has no grain, no peat speckle, no soil clumps and no per-band variation, so it reads as flat stripes. The measured 7 visible tones per tile matches the paving reference, but the picture shows large uniform band areas. The 4% near-flat coverage is low only because the bands are thin, not because the surface has texture. About 49% of the dark edge pixels are neutral, which puts the outline between neutral and tinted. The darkest lines look closer to grey-brown than to a clear dark tone of the neighbouring material, so I call it mixed. Overall the patch is flatter and more banded than either reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18709
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (peat slope with faint step lines)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48px-wide block for all 32 rows. The interior is a uniform olive-peat checker texture seen from above. Faint darker 1-row lines at about rows 11 and 24 suggest ramp step edges, but no front face follows them. The columns are continuous mid-tone runs with only slight lightening toward the bottom rows. The only darker areas are 1-3px edge strips at the left and right sides from about row 7 down, which hint at the cut walls but are not a receding side face. There is no vertical south face of 3 or more rows, so the tile reads as a flat top-down terrain slab, as a descending ramp viewed from above would."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small olive-tan block with a few horizontal bands and only about 4 readable tones. It has no grain, speckle, peat fibre or per-clump variation, so it reads as a flat striped sticker. The grass reference has dotted tufts and soil grain, and the paving reference shades each stone separately. The measured 7 tones per tile and 4% flat coverage look better than the picture shows. They likely come from band edges and a dark border, not from real texture. The edge is only partly tinted (49% near-neutral), so it is a mixed outline, not a clean dark material tone. The piece also doesn't convey a descending ramp cut into a cliff, because it is a few flat bands with no sense of slope or depth. It falls well short of the reference richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16172
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (peat tread, descending away from the viewer)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "faint tread step lines",
+      "rows": "10-11, 23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-width 48 px ground texture of olive peat checker dither across rows 0-31. Only faint 1-row darker step lines appear, at rows 10-11 and 23-24. No front-facing vertical face of 3 or more rows is drawn, so the ramp reads as a flat top-down surface. The column scans show only small lightness changes (L about 100-150) and no face break. Dark 1-2 px strips at the left and right edges (rows 7-31) are cut-wall shading and do not form a receding side face. For terrain seen from above this is a flat slab, with no front face and no volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts look fine: 7 visible tones per tile (equal to the paving reference and above the grass at 3), 4% near-flat coverage, and 49% neutral dark edge pixels. By eye the candidate is weaker than the numbers suggest. It reads as a flat olive-khaki slab with a few horizontal step bands and a dark rim. The main material ramp is about 3-4 steps (base, one lighter band, one darker band, dark edge), where the references use about 5-6. The rim is partly neutral dark grey rather than a clearly tinted dark peat-brown, so the outline is mixed. There is little grain, speckle or per-clump variation inside the bands. The paving reference shades each stone, and the grass reference has tufts and speckle, so the candidate looks flatter and more sticker-like than either. It also carries no peat soil grain or cut-face texture to convey a reverse cut through a peat cliff. It would look thinner next to the references, and when in doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18981
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.488Z",
+ "cells": {
+  "16": [
+   "1cee930238afc2b0",
+   "249fc1bedf326e28",
+   "5fa880d4f524c952",
+   "938d0c3792fbf9a4",
+   "9b31b045ece9a210",
+   "ff9e4d4ab9fdbfc9"
+  ],
+  "24": [
+   "18bc3a7ce9fed4c2",
+   "37d40c55593ec949",
+   "3fbe452ee455d9b3",
+   "428f7277d4a5f35b",
+   "51004729f2f72308",
+   "606ddcb12ac83306",
+   "fb862ae77d99a02c",
+   "ff3cf35d5d0e9b8b"
+  ],
+  "32": [
+   "2763323548296e2b",
+   "6d79fb29f0cf9d7b",
+   "79cf0032228df960",
+   "8a8f100674cb3ee3",
+   "cef65cc3b577be17",
+   "d1a047f60e00b322"
+  ],
+  "48": [
+   "03b65656232375cf",
+   "57e1ddc719ccc776"
+  ]
+ }
+}

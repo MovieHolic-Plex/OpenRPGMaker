@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7876KB / 약 2,314,244 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7879KB / 약 2,315,279 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,485 |
-| `openwiki/assistant-v2.md` | 253KB | 47KB | 713 | ~77,071 |
+| `openwiki/assistant-v2.md` | 254KB | 47KB | 714 | ~77,242 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,376 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -41,9 +41,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~32,956 |
 | `openwiki/runtime-battle.md` | 456KB | 32KB | 2503 | ~133,903 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
-| `openwiki/runtime-pre-edit-routing.md` | 212KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1264 | ~63,127 |
+| `openwiki/runtime-pre-edit-routing.md` | 212KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1264 | ~63,178 |
 | `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,297 |
-| `openwiki/runtime-sessions.md` | 173KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 939 | ~47,294 |
+| `openwiki/runtime-sessions.md` | 173KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 941 | ~47,560 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 266KB | 48KB | 2413 | ~75,025 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
@@ -324,7 +324,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L356` 바로 플레이 게임 (2026-10-23)
   - `L460` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 253KB · 713줄 · ~77,071 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 254KB · 714줄 · ~77,242 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -350,14 +350,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L419` 조수 대조 6회차 — 안 보이는 필드 적과 이른 막힘 (2026-10-31 asst-parity p2b-chase-terra·p3-hunter-terra)
 - `L425` 조수 대조 7회차 — Argon 2차 모델·지어낸 전투 배경 id (2026-10-31 asst-parity p2a-chase-argon)
 - `L433` 조수 대조 8회차 — 빈 검토 바퀴·모양 오류 칸 설명·요청 대사 지키기 (2026-10-31 asst-parity p4-cell-opus)
-- `L441` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L453` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
-- `L498` 켜는 법
-- `L505` 구조 — v1 실행기를 그대로 쓴다
-  - `L523` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
-- `L631` 빌더가 하는 것 / 못 하는 것
-- `L690` 시험
-- `L699` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L442` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
+- `L454` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+- `L499` 켜는 법
+- `L506` 구조 — v1 실행기를 그대로 쓴다
+  - `L524` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+- `L632` 빌더가 하는 것 / 못 하는 것
+- `L691` 시험
+- `L700` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
 
@@ -1533,7 +1533,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 25KB · 196줄 · ~7,412 토큰
+### `openwiki/field-enemy.md` — 25KB · 197줄 · ~7,508 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
@@ -1543,9 +1543,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
 - `L116` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
 - `L152` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
-- `L178` 시간대 무리 (2026-10-30)
-- `L182` 안전 장치 (도구가 거절하는 것)
-- `L190` 알려진 한계
+- `L179` 시간대 무리 (2026-10-30)
+- `L183` 안전 장치 (도구가 거절하는 것)
+- `L191` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 23KB · 305줄 · ~7,032 토큰
 
@@ -2729,7 +2729,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L211` 검증
 - `L222` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 45KB · 334줄 · ~13,850 토큰
+### `openwiki/relief-terrain.md` — 46KB · 343줄 · ~14,301 토큰
 
 - `L14` 파일 지도
 - `L33` depth 규칙(런타임, `playSceneRelief.ts` 머리말)
@@ -2746,7 +2746,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L281` 편집기 높이 지형 위 타일 칠하기·선택·호버 좌표 일치 (2026-10-20)
 - `L290` 알려진 한계 · 결정이 필요한 것
 - `L300` 검증 도구 (이 브랜치에 들어온 것)
-- `L329` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
+- `L338` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
 ### `openwiki/rpg-opening-research.md` — 5KB · 27줄 · ~1,404 토큰
 
@@ -2928,7 +2928,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L335` 그림 컷 준비와 direction (2026-10-04)
 - `L343` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 212KB · 1264줄 · ~63,127 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 212KB · 1264줄 · ~63,178 토큰 · 통째읽기 잘림
 
 - `L1` 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
 - `L13` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
@@ -3075,7 +3075,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1822` 상태의 부위 손실·전투 오라 (2026-10-27)
 - `L1826` 효과음 자리 표 `system.seCues` (2026-10-30)
 
-### `openwiki/runtime-sessions.md` — 173KB · 939줄 · ~47,294 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 173KB · 941줄 · ~47,560 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -3094,34 +3094,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L262` P1 daily-weather transition authority (2026-08-25)
 - `L271` Event audio state (U14)
 - `L279` Session state & life-sim
-- `L379` Editorial title screen (2026-08-26)
-- `L386` playerTouch trigger contract (2026-08-20)
-- `L390` Selected-event runtime sandbox (2026-07-30)
-- `L396` P2 spatial runtime and saves (2026-08-25)
-- `L410` 공포 게임 제작 기능 (2026-09-05)
-  - `L414` 메뉴 PR 통합 검증 (2026-09-05)
-- `L421` Game menu designs and information ownership (2026-09-18)
-  - `L451` Four era-inspired menu windows (2026-09-18 follow-up)
-- `L475` Player options, inventory views and honest shop services (feature16, 2026-09-21)
-- `L515` 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
-- `L544` 도트 창 통일 — ESC 메뉴·장비·아이템·여관·전투 결과 (2026-09-28)
-- `L578` Persistent battle reports and formation (2026-09-21)
-- `L586` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
-- `L596` 갤러리와 줄 음성 (2026-09-25)
-- `L608` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
-- `L629` 탈것 — 소형선·대형선·비행선 (2026-09-26) + 초코보·광산 수레·뗏목 (2026-10-15)
-- `L655` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
-- `L677` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
-- `L691` Original monster campaign journal and field menus (2026-10-03)
-- `L700` Monster party common UI dogfood follow-up (2026-10-03)
-- `L729` Collector supply shop (2026-10-04)
-- `L754` Emerald reference shop stages (2026-10-04)
-- `L796` Default camera zoom during new game and Continue (2026-10-04)
-- `L808` Authored sliding floors restored in the current engine (2026-10-04)
-  - `L852` Emerald shop confirmation backdrop and pending row (2026-10-04)
-- `L883` 몬스터 센터 회복 연출 (2026-10-16)
-- `L887` 몬스터 필드 아이템 사용과 가방 포켓 (2026-10-16, poke-sys-items)
-- `L893` 체감 속도 — 대사 흘림·엔딩 크레딧·엔딩 뒤 「이어하기」 (2026-10-29)
+- `L380` Editorial title screen (2026-08-26)
+- `L387` playerTouch trigger contract (2026-08-20)
+- `L391` Selected-event runtime sandbox (2026-07-30)
+- `L397` P2 spatial runtime and saves (2026-08-25)
+- `L411` 공포 게임 제작 기능 (2026-09-05)
+  - `L415` 메뉴 PR 통합 검증 (2026-09-05)
+- `L422` Game menu designs and information ownership (2026-09-18)
+  - `L452` Four era-inspired menu windows (2026-09-18 follow-up)
+- `L476` Player options, inventory views and honest shop services (feature16, 2026-09-21)
+- `L516` 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
+- `L545` 도트 창 통일 — ESC 메뉴·장비·아이템·여관·전투 결과 (2026-09-28)
+- `L579` Persistent battle reports and formation (2026-09-21)
+- `L587` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
+- `L597` 갤러리와 줄 음성 (2026-09-25)
+- `L609` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
+- `L630` 탈것 — 소형선·대형선·비행선 (2026-09-26) + 초코보·광산 수레·뗏목 (2026-10-15)
+- `L656` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
+- `L678` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
+- `L692` Original monster campaign journal and field menus (2026-10-03)
+- `L701` Monster party common UI dogfood follow-up (2026-10-03)
+- `L730` Collector supply shop (2026-10-04)
+- `L755` Emerald reference shop stages (2026-10-04)
+- `L797` Default camera zoom during new game and Continue (2026-10-04)
+- `L809` Authored sliding floors restored in the current engine (2026-10-04)
+  - `L853` Emerald shop confirmation backdrop and pending row (2026-10-04)
+- `L884` 몬스터 센터 회복 연출 (2026-10-16)
+- `L888` 몬스터 필드 아이템 사용과 가방 포켓 (2026-10-16, poke-sys-items)
+- `L894` 체감 속도 — 대사 흘림·엔딩 크레딧·엔딩 뒤 「이어하기」 (2026-10-29)
 
 ### `openwiki/schedule-planner.md` — 4KB · 35줄 · ~1,143 토큰
 

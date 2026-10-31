@@ -1,0 +1,444 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3e7be3f0d9c9886a274d8abcd0ecf32870ab470c98a9d1b17d030e655d968b5",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 2 w3 reverse cut through a north-facing peat cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/peat-steps/stairs-h2-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 95,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair step 1 (light lip + tread)",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair step 2",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair step 3",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair step 4",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full-width 48 px rectangle over rows 0-31. Four identical horizontal bands repeat every 8 rows: a dark line (rows 0, 7, 15, 23, 30), a 2-row light lip (1-2, 8-9, 16-17, 24-25), then 4-5 rows of mid-tone tread. These are stair treads seen from above, descending away from the viewer. No riser or south face is drawn with its own tone, and there is no eave shadow. The bands are all tread-like, so no front face of 3+ rows exists. The drawing is a flat plan view of steps rather than a standing volume. This is a terrain tile, so the shape is acceptable as a stair autotile, but it has no separate front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small block of horizontal bands, each step a flat olive/tan face with a darker lip line. That is about 3 lightness steps per material against roughly 5-6 in the references. The outline is tinted (0% neutral dark edge pixels), so it reads as a dark material tone and is not a sticker line. The measured 6 visible tones per tile beats the grass reference (3) and is just under the paving reference (7), but the picture does not back that up. The step faces have no grain, speckle, per-clump shading or soil texture, and 29% near-flat coverage against 0% for both references confirms large flat fills. There is no peat or soil grain, and the bands look like wooden planks, not stairs cut through a peat cliff. Next to the grass and paving, which are full of dots and stone-by-stone shading, it looks thinner and flatter, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20052
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread highlight",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 0,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 1 riser / face",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 2 tread highlight",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 2 face",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 3 tread highlight",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 3 face",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 4 tread highlight",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 4 face",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The full-width 48px tile repeats the same band pattern four times: a 1-row dark line, a 1-2 row light strip (rows 1-2, 8-9, 16-17, 24-25), then a 4-5 row mid-tone block (rows 3-6, 10-14, 18-22, 26-29), ending in a dark line at rows 7, 15, 23 and 30. The light strips are only 1-2 rows, which is rim-sized. The mid-tone blocks are much taller and read as vertical riser faces. No step shows a top plane of 3 or more rows, and there is no receding side face. The tile reads as a stack of front-facing strips (front elevation) and not as a foreshortened 3/4 stair run."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small olive-tan stair block of horizontal bands, one light-edge, one mid and one dark-edge band per tread, with almost no grain or speckle inside. It has about 3 shading steps per material against 5-6 on the references. Its measured 6 visible tones per tile is inflated by the band edges, and near-flat coverage is 29% where both references show 0%. The dark edges lean brown, so the outline is a dark material tone with 0% neutral edge pixels. The treads are broad, flat stripes with no stone, peat or soil texture, and the whole piece reads as a plain sticker-like plank block. It is also much smaller than the 4x3 tile patch the references imply, and next to the grass and cobble paving it looks flatter and thinner. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17979
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread (top band)",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 1 riser/face",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 2 tread",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 2 riser/face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 3 tread",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 3 riser/face",
+      "rows": "18-22",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 4 tread",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 4 riser/face",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan repeats the same pattern four times: a dark edge line (rows 0, 7, 15, 23, 30), a 2-row light band (rows 1-2, 8-9, 16-17, 24-25), then 4-5 rows of mid-tone face. Each light band is only 2 rows, so it reads as a lip or rim rather than a real top surface. The mid-tone faces are 4-5 rows tall and read as vertical riser faces. The silhouette is a flat 48-wide rectangle for all 32 rows with no ellipse, no receding side face and no foreshortened treads. Overall it is a stack of horizontal strips, closer to a front elevation of steps than a 3/4 view of treads descending away from the viewer."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small wooden-looking stair block of horizontal bands, each a flat tan/olive fill with a darker edge line. It reads as about 3 lightness steps per material, against about 5-6 in the references. The measured 6 visible tones per tile is inflated by the band edges. 29% near-flat coverage versus 0% in both references confirms the broad flat areas, and the references have grain, speckle and per-stone shading while the candidate has none. The dark edge pixels are tinted (0% neutral), so the outline is dark brown-olive and not black, which is fine. The candidate also reads as a plain sticker-like plank panel rather than a peat-cliff stair cut seen from above, with no soil grain or step shading, so it is thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17702
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 tread strip + riser",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 2 tread strip + riser",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 3 tread strip + riser",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "step 4 tread strip + riser",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is 48 px wide and 32 rows tall, with the same pattern repeating every 8 rows. Each repeat is a dark outline row, a light 2-row strip (rows 1-2, 8-9, 16-17, 24-25), a mid-tone band of 4-5 rows (rows 3-6, 10-14, 18-22, 26-29), and a dark separator line (rows 7, 15, 23, 30). The light strips are only 2 rows, so they read as lips or rims, not as a real top surface. There is no ellipse, no sloped plane and no visible contents. Each step is a flat horizontal stripe, so the whole tile looks like a stack of front-facing bands, with no foreshortened treads receding from the viewer. No side face is drawn. This is a front elevation of stacked steps, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small set of horizontal wooden-looking bands (olive/tan) on a flat dark grey-blue background. Each stair step reads as a light top edge, a mid fill and a darker lower edge, so about 3 steps per material against roughly 5-6 in the references. The 6 visible tones per tile are mostly the background and band edges, not texture. 29% near-flat coverage is well above the references' 0%. The step treads are broad smooth fills with no grain, speckle, soil or peat texture, and the background is one flat colour. Outline pixels are tinted (0% neutral), so the outline is not near-black, but this does not offset the flat, sticker-like bands. The piece does not fill a 4x3 ground patch, and it reads as plank boards rather than steps cut into a peat cliff. A careful artist would not accept it next to the grass and paving references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15959
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.547Z",
+ "cells": {
+  "16": [
+   "6b7068990a7a6664",
+   "843a730e94bdbb63",
+   "b6fb645548f39c1f",
+   "b9824cd8e0257f37",
+   "c213b3fa767bb7d5",
+   "c6c8e4ab925c8dba"
+  ],
+  "24": [
+   "1390e5f1371048d6",
+   "4ccd3101be873216",
+   "719a7d8708d96353",
+   "82429638f592effb",
+   "969eab83d3a6f193",
+   "c56fb20aded0125b",
+   "d8a493a7e0b53cf3",
+   "fa22c46c656affb9"
+  ],
+  "32": [
+   "8f3ac0c4573f5738",
+   "912b9385bda6fd2a",
+   "b650c8388acc04d8",
+   "ddd807cd3b1467fe",
+   "ec936bac2575efe3",
+   "f0553ab936a3e0d0"
+  ],
+  "48": [
+   "70aba5b58aebcc66",
+   "b63d4c463fb70446"
+  ]
+ }
+}

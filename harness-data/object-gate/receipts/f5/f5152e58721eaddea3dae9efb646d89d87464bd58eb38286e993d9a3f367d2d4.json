@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5152e58721eaddea3dae9efb646d89d87464bd58eb38286e993d9a3f367d2d4",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stairs rise 4 w3 reverse cut through a north-facing grass cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/grass-steps/stairs-h4-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 11,
+  "darkV5": 42,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads, repeating 4-row steps (light lip row, 2 mid-tone tread rows, 1 dark shadow row)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-4, 7, 11, 15, 19, 23, 27, 31 (one dark row per step)"
+     },
+     {
+      "part": "side cut walls (grey stone left and right edges, brown earth lower down)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 48 px wide for all 32 rows. The column scans at x=12, 24 and 35 repeat the same 4-row cycle: a light row (L~197-223), 1-2 mid-grey rows (L~145 to 99), then a dark row (L~52-63). Each step is therefore a tread seen from above with a 1-row dark shadow line, which fits stairs descending away from the viewer. No step has a vertical south face of 3 or more rows, because the risers face away and are hidden. The only vertical-looking parts are the narrow wall strips at the left and right edges, drawn flat. The whole drawing is a plan-like top surface with no real front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 7 visible tones per tile, equal to the paving reference and above the grass reference's 3, and 0% near-flat coverage. By eye, though, it reads as a handful of smooth horizontal grey-white stripes. Each step has only about 3-4 lightness values: highlight, mid, dark edge. There are no per-stone dots, grain or speckle like the cobble shading in the paving reference or the grass tufts. Only a thin brown edge appears at the sides, and the rest of the edge is neutral-looking grey-dark (40% near-neutral), so the outline is mixed rather than a clear dark material tone. The whole piece is only 11 distinct colours, and it looks more like a clean sticker than the richly textured Beodeul ground. A careful artist would likely call it thinner and flatter than the references next to it, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 2
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (4 steps repeating every 4 rows: 1 light edge row, 2 mid-grey rows, 1 dark shadow row)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side cheek walls with grass and dirt edging, left and right strips",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48 px wide rectangle across rows 0-31. The column scans at x=12, 24 and 35 repeat the same 4-row cycle: a light row (L≈197-223), 1-2 mid-grey rows (L≈118-145), then a dark row (L≈52-63). These are treads seen from above, each ending in a light edge and a thin dark shadow line. No riser is taller than 1 row, so there is no front face of 3 or more rows. The whole image is a descending stair seen top-down, a flat tiled surface rather than a 3/4 volume. The side strips are narrow vertical bands, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a stair of horizontal bars. Each tread has a bright highlight, a light-grey face and a dark riser line, and the sides have brown stringers, so I count about 4 shading steps against about 6 on the paving reference. The measured numbers are not the problem: 7 visible tones per tile equals the paving reference and is well above the grass reference's 3, and near-flat coverage is 0%. The weakness is in how the tones are used. The treads are smooth, even bands with almost no stone grain, speckle or per-tile variation, unlike the paving reference, where every stone is shaded one by one. The outline is mixed: 40% of dark edge pixels are neutral, and the brown side edges lean toward wood tint, but the dark riser lines are close to neutral grey. The piece also shows no grass-cliff context and no transition into the surrounding grass. Next to the references it looks cleaner, thinner and more graphic than they do, so I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 3
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (repeating steps, about 4 rows per step: light tread edge line, 1-2 mid-tone rows, 1 dark shadow row)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "flanking cut walls (grey stone at left/right, brown earth lower down)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide and 32 rows tall. Column scans at x=12, 24 and 35 show the same 4-row cycle all the way down: a light tread row (L about 197-223), a mid-grey row, a darker row, then a near-black row (L about 52-63). This reads as steps descending away from the viewer, seen almost straight down. The only vertical element is the single dark riser or shadow row per step, so no front face of 3 or more rows exists. The side walls are flat strips, not receding side faces. The tile is therefore a top-down view of a stepped slab, not a standing three-quarter object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a set of repeated horizontal stripes (white lip, light grey, mid grey, dark riser line) with thin brown side edges. Each step has about 4 tones, against the reference paving's 5-6 steps. The measured facts do not argue against it: 7 visible tones per tile matches the paving reference and exceeds the grass reference's 3, and near-flat coverage is 0%. By eye, though, the steps are smooth, uniform bands with almost no per-stone shading, speckle or grain, unlike the paving's stone-by-stone cobbles. The 40% neutral share of dark edge pixels means the outline is mixed, partly neutral dark lines and partly brown tint on the sides. The piece is meant to be cut into a grass cliff, yet none of the grass or soil texture appears at its edges, so it reads as a flat sticker and not as embedded ground. A careful artist would find it thinner and flatter than the reference, and with the doubt this raises it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 1
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (repeating 4-row steps: light nosing row, grey tread, dark riser line)",
+      "rows": "0-31",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "side cut walls of grey stone and brown earth at left and right edges",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full-width 48 px rectangle for all 32 rows. The stairs are seen from above, descending away from the viewer. Each step repeats every 4 rows: a light nosing (L~197-223), 1-2 grey tread rows, then a dark riser/shadow row (L~52). Examples are rows 1-4, 5-7 and 8-11. The risers are single dark lines, never a vertical face of 3+ rows. The strips at the left and right edges are the cut walls. Nearly all of the drawing is top surface with no real front face, so it is a top-down slab, which is expected for a terrain stair tile descending away from the viewer."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small block of horizontal pale-grey step bands with thin brown side posts, set on a dark neutral grey backdrop. Each tread is basically a light stripe over a grey stripe, with only 3-4 lightness steps. It has none of the per-stone shading, speckle or grain of the cobble paving reference, and none of the grass tufts in the grass reference. The stair is meant to cut through a grass cliff, yet there is no grass lip, no cliff-face shading and no grass-to-stone transition. The tile reads as a flat, sticker-like icon. The measured 7 visible tones per tile match the paving reference, but they come from a few uniform stripes, not varied texture, so they overstate the real richness. The brown side edges are tinted, but the stripe separators and backdrop are neutral grey (40% neutral dark edges), so the outline is mixed. There are no true 5x5 flat fills, but the repetitive bands give little detail. Against the references it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 1
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.292Z",
+ "cells": {
+  "16": [
+   "28e1c9d841c69876",
+   "59737d237a9662a1",
+   "b6dd45b0970dbb9a",
+   "bd7e1ef6bc555657",
+   "c989d96300a7522a",
+   "f7655ff5ea911ada"
+  ],
+  "24": [
+   "30d4e626526a96a0",
+   "39aebc97fbe96494",
+   "62b4d7f7fb2c75af",
+   "7eae6777cc4af400",
+   "87b4ff5651be7ffd",
+   "a29deadd60aca2aa",
+   "a8a53170cd97d2a4",
+   "be834f4254e7f5ec"
+  ],
+  "32": [
+   "76b4b6c0cc7f64fe",
+   "b3eb8fccaf594dd7",
+   "c1512372fba8074c",
+   "c6a71a6e8657c877",
+   "dadbca7b4a9b7bbd",
+   "fabd4d95b082e6c2"
+  ],
+  "48": [
+   "502eb8c462602fc5",
+   "78cab7fc79617e8b"
+  ]
+ }
+}

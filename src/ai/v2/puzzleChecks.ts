@@ -125,7 +125,9 @@ export function lockBypasses(project: Project, changedIds?: ReadonlySet<string>)
       for (const [a, b] of [[[0, -1], [0, 1]], [[-1, 0], [1, 0]]] as const) {
         const ax = ev.x + a[0], ay = ev.y + a[1], bx = ev.x + b[0], by = ev.y + b[1];
         if (!pass(ax, ay) || !pass(bx, by)) continue;
-        if (reach.has(`${ax},${ay}`) && reach.has(`${bx},${by}`)) {
+        // 두 쪽이 «같은 덩이»일 때만 우회다. 시작 칸은 감방 안, 다른 맵에서 돌아오는 착지는 복도처럼 양쪽에 따로 앵커가 있으면
+        // 앵커 합집합으로는 둘 다 닿아 보였다(2026-10-31 조수 대조 8회차 FS2 감방: 벽이 닫혔는데도 「벽 틈」 항목으로 막혀 끝났다).
+        if (reach.has(`${ax},${ay}`) && reach.has(`${bx},${by}`) && sameRegion(project, map, blocked, { x: ax, y: ay }, { x: bx, y: by })) {
           out.push(`${map.name}의 잠긴 문 「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y} · ${lockOf(ev)!.key} 필요)을 거치지 않고 양쪽 (${ax},${ay})·(${bx},${by})에 다 걸어 닿는다 — 문 너머 방이 벽 틈으로 열려 있다`);
           break;
         }
@@ -133,6 +135,25 @@ export function lockBypasses(project: Project, changedIds?: ReadonlySet<string>)
     }
   }
   return out;
+}
+
+/** a 에서 막는 칸을 지나지 않고 걸어 b 에 닿는가(같은 맵 이동은 따르지 않는다). */
+function sameRegion(project: Project, map: GameMap, blocked: ReadonlySet<string>, a: { x: number; y: number }, b: { x: number; y: number }): boolean {
+  const goal = `${b.x},${b.y}`;
+  const seen = new Set<string>([`${a.x},${a.y}`]);
+  const queue = [a];
+  for (let i = 0; i < queue.length; i += 1) {
+    const c = queue[i]!;
+    for (const [dx, dy] of STEPS) {
+      const x = c.x + dx, y = c.y + dy, key = `${x},${y}`;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key) || blocked.has(key)) continue;
+      if (!canMove(project, map, c.x, c.y, x, y)) continue;
+      if (key === goal) return true;
+      seen.add(key);
+      queue.push({ x, y });
+    }
+  }
+  return false;
 }
 
 /** 숫자 자물쇠가 자기 대사에 답을 적어 둔다(J12 금고: 「일기장에 적힌 날짜 1024를 떠올려 보자」). */

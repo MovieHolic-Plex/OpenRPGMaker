@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7041ed16661f5f8e94dd4f6f0ac8808a02fcc54acd3d38ef8ad353de4d2180ba",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ramp rise 3 w3 reverse cut through a north-facing peat cliff, seen from above descending away from the viewer from the terrace lip",
+ "label": "relief-cuts-rev/peat-steps/ramp-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-rev",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-rev 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 32,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (stepped treads seen from above)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is 48 px wide on all 32 rows, so it is a full rectangular tile. The column scans show olive tread bands separated by thin darker 1-row step lines at about rows 6, 10, 14, 19, 23 and 27. The surface gets lighter toward the bottom, which suggests a ramp descending away from the viewer. There is no vertical south face of 3 or more rows, only a few dark pixel columns at the left and right edges, which look like cut-wall shading. The whole tile is the ramp's top surface seen from above, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a ramp of regular horizontal bands. Each band is a flat tan fill with a light top edge and a darker lower line, so it reads as about 4 lightness steps against the references' 5-6. It has no tufts, grain, speckle or per-stone shading, so the grass reference's clumps and the paving reference's stone-by-stone shading are missing. The measured facts are mixed. Visible tones per tile are 7, matching the paving reference. Near-flat coverage is 0%, but only because the band lines break up every 5x5 block. Only 11 distinct colours exist in total. 49% of the dark edge pixels are near-neutral, so the outline is partly a grey or black sticker line and partly tinted, which I call mixed. The result looks more like a stylised stripe pattern than a peat-cut surface with Beodeul-level texture, and it is thinner and more graphic than either reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18640
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface with step treads",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x32 tile is one surface seen from above. The column scans show alternating light and dark bands: 1-row dark step lines at about rows 6, 10, 14, 19, 23 and 27, with lighter treads between them. These are tread and riser lines of a ramp descending away from the viewer, not a standing object's front face. No vertical south face of 3 or more rows is drawn. Thin dark slivers at the left and right edges from row 7 downward are cut-wall shading, not a receding side face. The tile is a flat terrain ramp seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tan, stepped ramp made of horizontal bands. It has about 4 lightness steps and 11 colours in total, against roughly 6 steps and 80 colours in the grass reference. The measured facts look fine: 7 visible tones per tile (the paving reference also has 7), 0% near-flat coverage, and 49% neutral dark edge pixels, which reads as a mixed outline. By eye, though, each band is a smooth strip with a light top edge and a dark bottom edge, and there are very few grain dots, speckle or clumps inside the bands. It reads as a clean striped sticker, a bit like planks or thatch, with a dark border. It does not read as ground with soil or peat grain, and it has none of the per-element shading the references have. Nothing about it says peat cliff. A careful artist would find it thinner and flatter than the references, so it fails on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18957
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp tread surface with step lines",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48-wide, 32-row field of olive/peat texture with a constant silhouette width. Thin darker lines at rows 10, 14, 19, 23 and 27 mark the step edges of a ramp seen from above, with lighter treads between them (rows 20-22, 24-26, 28-31). It shows no vertical south face of 3+ rows, only tread surface. Dark strips at the left and right edges from about row 7 down are the cut walls of the cliff. For terrain this reads as a flat top-down ramp surface descending away from the viewer, with no front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tan ramp built from horizontal stripes, each stripe nearly one flat colour, with a light lip line at the top and a darker rim. The measured facts look fine: 7 visible tones per tile (equal to the paving reference, above grass at 3), 0% near-flat coverage and only 11 distinct colours in total. By eye, though, the surface reads as striped bands rather than a peat cliff cut. The bands have no per-clump grain, no speckle and no stone-by-stone shading like the references. The ramp has about 4 real ramp steps against 5-6 in Beodeul. The dark edge pixels are 49% neutral, so the outline is mixed. Part of it is a grey-black rim, not purely a dark tone of the adjacent material, which gives a slight sticker look. With the stripes regular and little varied, a careful artist would find it thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19444
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface with step bands",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x32 rectangle (width 48 on rows 0-31). The column scans show only horizontal tread bands with thin darker step lines at rows 10, 14, 19, 23 and 27, so the whole tile is a ground surface seen from above. No vertical south face of 3 or more rows is drawn. The darker pixels at the left and right edges are a narrow cut-wall edge, not a receding side face. This matches a descending ramp seen from above rather than a standing object, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tan ramp built from evenly spaced horizontal bands, each a light face with a darker lower edge. The measured facts are fine: 7 visible tones per tile (the paving reference also has 7, grass has 3) and 0% near-flat coverage. By eye, though, the bands repeat the same pattern with almost no grain, speckle, peat clumps or per-step variation. The pattern reads as a stack of planks, not a cut through a peat cliff. The material ramp is about 4 steps against Beodeul's 5-6. The dark edges are 49% neutral and 51% tinted, so the outline is mixed. There is a dark neutral-looking frame at the lower and side edges, which adds a slight sticker look. The whole piece has only 11 distinct colours, far fewer than the grass reference's 80, and it carries less visible surface information than either reference. It is cleanly drawn, but I would not accept it next to the references without it looking flatter and more regular.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16822
+  }
+ ],
+ "decidedAt": "2026-10-31T07:13:12.508Z",
+ "cells": {
+  "16": [
+   "057ce44192d54028",
+   "1b78e66a45530dc7",
+   "2905f31b832e6f3f",
+   "6560ebe392d58405",
+   "c0e9957979bbfdc5",
+   "f0b24628b23ddc9d"
+  ],
+  "24": [
+   "0cebd68d0022b061",
+   "42826617902ae870",
+   "550b130df0e51925",
+   "718744227d9fc947",
+   "b69f7f06bf57a25b",
+   "b84d0b4e2f7c3042",
+   "cd4cd999bc9cdacf",
+   "e4906d0a29118397"
+  ],
+  "32": [
+   "5bc487373b193ce2",
+   "7f5131d88acb1d89",
+   "acb12ff16e728431",
+   "c4158e7e36fe4ba2",
+   "e99c5dec61bb33c5",
+   "e9a7230b92e3d9c0"
+  ],
+  "48": [
+   "209ae8bd3a8ed41d",
+   "f38b427f6131e874"
+  ]
+ }
+}

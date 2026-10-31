@@ -437,6 +437,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **빈 패치 review_layout 도 다시 깔았다**(`verbs.ts reviewLayout`): 「고칠 것 없음」(빈 patch)인데 edit_place 로 다시 지어, 다시 지은 배치가 더 나쁘다며 되돌리고 ok:false 를 냈다(세 번). 빈 패치는 이제 다시 깔지 않고 칸 배치 선언 위치의 `reviews:N` 태그와 장소 기록의 `hints.layoutReviews` 만 올린다(할 일 `layout_review` 검사가 그 태그를 읽는다).
 - **모양 오류에 그 칸의 모양을 첫 번부터 준다**(`argRepair.wrongTypeFieldHint`, 실행기 `withArgRepair`): set_scene_mood 에 `lighting:"night"` 를 세 번 보냈고, 세 번째에야 받은 최소 예시도 필수 칸(mapId)뿐이었다. 「expected object/array, received …」 오류면 그 칸의 스키마 설명(모양이 적혀 있다)을 영어 안내와 함께 붙인다. set_scene_mood 의 lighting 설명에도 「낱말이 아니라 객체 — 밤은 {ambient, color, sources}」 를 영어로 더했다.
 - **윤문이 사용자가 따옴표로 준 대사를 바꿨다**(`dialoguePolishHook.runWrittenDialogueLines(…, request)`): 요청의 「카엘, 이 빵… 무게가 이상해.」 가 윤문 뒤 「들어 보니까 이상해」 가 됐다. 요청 글의 따옴표 대사(4글자 이상, 띄어쓰기·부호 무시)를 담은 줄은 윤문 대상에서 뺀다.
+- **닫힌 감방을 「벽 틈 우회」로 막았다**(`puzzleChecks.lockBypasses`): 잠긴 쇠살문 양쪽이 «어느 앵커에서든» 닿으면 우회로 봤다. 시작 칸은 감방 안, 막사에서 돌계단으로 돌아오는 착지는 복도라 벽이 닫혔는데도 양쪽이 닿아 보였고, 조수는 없는 틈을 메우려 fill_region 참고문서 읽기 관문(158건)에 막혀 10분을 쓰고 「우회로가 남았다」고 보고했다. 이제 문 칸을 막고 한쪽 이웃에서 걸어 다른 쪽에 닿을 때만 우회다.
 
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
