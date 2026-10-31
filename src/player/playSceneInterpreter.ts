@@ -335,9 +335,10 @@ export async function runCommands(
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
       const step = result;
-      // 컷신 안에서 연 전투 동안에는 「Esc 두 번: 컷신 건너뛰기」를 내린다 — 전투 화면 오른쪽 위 배속 표시 자리를 덮고
-      // 전투 안내 띠와 겹쳤다(폴른 스타 1막 VQA 2026-10-31). 전투가 끝나 다음 걸음이 오면 다시 뜬다.
-      if (step.kind === "battleProcessing") scene.clearRuntimeOverlay("cutscene-skip-hint");
+      // 컷신 안에서 연 전투·메뉴 동안에는 「Esc 두 번: 컷신 건너뛰기」를 내린다 — 전투 화면 오른쪽 위 배속 표시 자리를 덮고
+      // 전투 안내 띠와 겹쳤고(폴른 스타 1막 VQA 2026-10-31), 저장 메뉴의 명령 목록 머리를 덮었다(2막 첫 플레이 B13).
+      // 화면 전체를 차지하는 UI 걸음(SCREEN_UI_STEPS)이 끝나 다음 걸음이 오면 다시 뜬다.
+      if (SCREEN_UI_STEPS.has(step.kind)) scene.clearRuntimeOverlay("cutscene-skip-hint");
       else if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
@@ -425,6 +426,15 @@ function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController
     skipController.waitForSkip(),
   ]);
 }
+
+/**
+ * 컷신 건너뛰기 표시를 내려야 하는 걸음 — 자기 화면(전투·메뉴·상점·입력 창·영상)을 띄워 그 머리·목록을 차지하는 것들.
+ * 대사·선택지·이동·연출 걸음은 표시가 오른쪽 위 구석에 남아도 겹치지 않는다(대사 창은 아래).
+ */
+const SCREEN_UI_STEPS: ReadonlySet<string> = new Set([
+  "battleProcessing", "tacticsBattle", "openSaveMenu", "openLoadMenu", "openMenuScreen", "shop", "inn", "teleportMenu",
+  "enterHeroName", "inputNumber", "presentItem", "planSchedule", "playMovie", "quickTimeEvent", "gameOver", "returnToTitle",
+]);
 
 async function consumeBlockingStep(
   scene: PlaySceneContext,
