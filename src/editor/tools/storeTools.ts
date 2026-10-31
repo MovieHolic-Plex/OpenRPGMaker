@@ -204,7 +204,13 @@ const storeInstall: ToolDefinition = {
     const icons = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "icon")
       .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name }));
     const sounds = Object.keys(prepared.manifest.content.assets).filter((id) => prepared.manifest.content.assets[id]!.kind === "sound")
-      .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, cue: readStoreSoundMeta(prepared.manifest.content.assets[id]!.meta)?.slots[0] }));
+      .map((id) => {
+        const meta = readStoreSoundMeta(prepared.manifest.content.assets[id]!.meta);
+        return { resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name, cue: meta?.slots[0], ambient: meta?.ambient === true, event: meta?.event === true };
+      });
+    const ambientSounds = sounds.filter((m) => m.ambient);
+    const eventSounds = sounds.filter((m) => !m.ambient && m.event);
+    const cueSounds = sounds.filter((m) => !m.ambient && !m.event);
     // 전투 애니메이션: 레코드가 database.battleAnimations 에 들어간다(이미 있던 같은 id 는 그대로 둔다).
     const animations = (result.animationIds ?? []).map((id) => {
       const record = draft.database.battleAnimations.find((entry) => entry.id === id);
@@ -217,7 +223,9 @@ const storeInstall: ToolDefinition = {
         + (monsters.length ? ` 몬스터 ${monsters.length}개(전투에서 움직이는 도트 시트 ${animated}개${monsters.some((m) => m.battleCells === 16) ? `, 그중 16칸 시트 ${monsters.filter((m) => m.battleCells === 16).length}개` : ""}) — 적의 monsterResourceId 로 쓰고, 고를 때 battleMotion 이 있는 것을 먼저 쓴다(battleCells:16 은 시전·막기·빈사·등장까지 움직인다).` : "")
         + (windowSkins.length ? ` 창 그림(윈도스킨) ${windowSkins.length}개: ${windowSkins.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_project_settings{resources:{systemResourceId}, dialogue:{style:'classic'}} 한 번으로 대사·메뉴·상점·타이틀 창에 건다.` : "")
         + (icons.length ? ` 아이콘 ${icons.length}개 — assign_store_icons 로 아이템·장비·스킬·상태에 한꺼번에 붙이거나 upsert_* 의 iconResourceId 로 쓴다.` : "")
-        + (sounds.length ? ` 효과음 ${sounds.length}개: ${sounds.slice(0, 6).map((m) => `${m.cue ?? "?"}=${m.resourceId}`).join(", ")} — set_game_audio{role:'se', cue, resourceId} 로 자리에 건다.` : ""),
+        + (cueSounds.length ? ` 효과음 ${cueSounds.length}개: ${cueSounds.slice(0, 6).map((m) => `${m.cue ?? "?"}=${m.resourceId}`).join(", ")} — set_game_audio{role:'se', cue, resourceId} 로 자리에 건다.` : "")
+        + (ambientSounds.length ? ` 환경음 ${ambientSounds.length}개: ${ambientSounds.slice(0, 6).map((m) => `${m.name}=${m.resourceId}`).join(", ")} — set_game_audio{role:'bgs', mapIds?, resourceId} 로 맵에 건다.` : "")
+        + (eventSounds.length ? ` 이벤트 효과음 ${eventSounds.length}개: ${eventSounds.slice(0, 6).map((m) => `${m.name}=${m.resourceId}`).join(", ")} — 이벤트의 효과음 재생 명령(playAudio se)에 resourceId 로 쓴다.` : ""),
       data: {
         title: prepared.manifest.title, version: prepared.version, replaced: result.replaced, tilesets, assetIds: result.assetIds.slice(0, 40),
         ...(music.length ? { resourceIds: music.map((m) => m.resourceId), music: music.slice(0, 12) } : {}),

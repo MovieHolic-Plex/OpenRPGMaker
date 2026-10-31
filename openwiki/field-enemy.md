@@ -79,6 +79,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
 - 들면 `sightAlert`(기본 exclamation, 0.3초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 3500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
 - 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
+  `set_field_detection` 은 스위치·변수 조건 페이지(이야기가 깨우는 추격자 — 숙직 선생 순찰, 경보 뒤 경비)는 줄이지 않는다(`place_field_enemy` 의 `appearSwitchId` 면제와 같은 이유: 들어설 때 그 자리에 없다). 2026-10-31 「이상 없음」 2층 순찰이 6칸을 달라 해도 2칸이 되어 손전등 빛이 발밑에만 비쳤다.
 - 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
 
 ## 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)

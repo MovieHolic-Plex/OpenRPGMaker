@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7856KB / 약 2,308,383 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7857KB / 약 2,308,643 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/asset-store.md` | 72KB | 19KB | 466 | ~21,343 |
+| `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,485 |
 | `openwiki/assistant-v2.md` | 245KB | 47KB | 689 | ~74,443 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 233KB | 19KB | 1143 | ~70,730 |
@@ -109,7 +109,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 3 | `capture.png`, `facts.json`, `reference.png` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -300,7 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 72KB · 466줄 · ~21,343 토큰 · 통째읽기 잘림
+### `openwiki/asset-store.md` — 72KB · 468줄 · ~21,485 토큰 · 통째읽기 잘림
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -314,15 +314,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L151` 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
   - `L215` 효과음 팩과 조수 (2026-10-30)
   - `L233` 환경음(BGS)·대사·감정·징글 자리 (2026-10-31)
-  - `L249` 아이콘 팩과 조수 (2026-10-31)
-- `L263` 게시기
-- `L293` 상태 확인
-- `L297` 에디터 첫 진입 화면 (2026-10-12)
-- `L304` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
-- `L329` 에디터에서 열기 링크 (2026-10-20)
-- `L346` 주인 초안 (D2, 2026-10-20)
-- `L354` 바로 플레이 게임 (2026-10-23)
-  - `L458` 조수와 평가 (2026-10-25)
+  - `L251` 아이콘 팩과 조수 (2026-10-31)
+- `L265` 게시기
+- `L295` 상태 확인
+- `L299` 에디터 첫 진입 화면 (2026-10-12)
+- `L306` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L331` 에디터에서 열기 링크 (2026-10-20)
+- `L348` 주인 초안 (D2, 2026-10-20)
+- `L356` 바로 플레이 게임 (2026-10-23)
+  - `L460` 조수와 평가 (2026-10-25)
 
 ### `openwiki/assistant-v2.md` — 245KB · 689줄 · ~74,443 토큰 · 통째읽기 잘림
 
@@ -1529,19 +1529,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Parent-owned verification (not run by this worker)
   - `L43` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 25KB · 196줄 · ~7,390 토큰
+### `openwiki/field-enemy.md` — 25KB · 197줄 · ~7,508 토큰
 
 - `L12` 다른 수단과의 구분
 - `L25` 필드 그림 = 전투 그림 (2026-10-14)
 - `L36` 걷기 칩이 없는 종: 전투 그림에서 필드 칩을 뽑는다 (2026-10-24)
 - `L55` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 - `L72` 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
-- `L84` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
-- `L115` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
-- `L151` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
-- `L178` 시간대 무리 (2026-10-30)
-- `L182` 안전 장치 (도구가 거절하는 것)
-- `L190` 알려진 한계
+- `L85` 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
+- `L116` 추격 성격·소리·닿으면 전투 (2026-10-30 「추격을 졸라 스마트하게」)
+- `L152` 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
+- `L179` 시간대 무리 (2026-10-30)
+- `L183` 안전 장치 (도구가 거절하는 것)
+- `L191` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 23KB · 305줄 · ~7,032 토큰
 
