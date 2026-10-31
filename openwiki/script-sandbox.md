@@ -4,7 +4,7 @@
 대등한 수단이다(2026-10-31 결정: 「AI NATIVE 에디터로 탈바꿈」 — 실험 게이트 없이 도입). 조수(Opus 등)는 조건·공식·
 반복이 얽힌 로직(조합 퍼즐, 할인 공식, 시간대 반응)을 명령 수십 줄 대신 스크립트 한 덩이로 쓴다.
 
-읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → API 행 추가 절차 → 알려진 한계.
+읽는 순서: TL;DR → 파일 지도 → 실행 다리(bridge) → 한도·격리 → 저장/불러오기 → 컴파일·분석 → API 행 추가 절차 → 조수 도구 → 알려진 한계.
 
 ## TL;DR
 
@@ -113,9 +113,40 @@
 `runtimeSupport`, `shapeCommandFields`, `commandReferenceValidation`, `battleEvents`, `commandCatalog`, `eventCommandFactory`,
 `eventDraftValidator`, `storyScript`, `commandPreview`, `commandSummary`, `options.ts`, 테스트 고정 목록 3곳 + `commandContracts/script.contract.test.ts`.
 
+## 조수 도구 (Assistant tools)
+
+`src/editor/tools/scriptTools.ts` 의 9개(도메인 event). 모델에게 가는 글(설명·결과·오류)은 영어다. 컴파일러와 QuickJS 는 각 도구의
+`prepare` 가 기다린다(`run` 은 동기) — 실행기(`prepareTool`·Pi `toolAdapter`)가 `run` 앞에서 부른다.
+
+| 도구 | 모드 | 하는 일 |
+|---|---|---|
+| `check_script` | read | 컴파일·타입 검사만. `ok`, `formatScriptDiagnostics` 진단(`L줄:열 error: …`), effects, 요약 |
+| `author_script` | write | 대상(`mapId`+`eventId`+`pageIndex?` 또는 `commonEventId`) 최상위 목록의 `index`(기본 끝)에 새 `script` 명령. 컴파일 오류면 `ToolError`(코드 `script-compile-error`) + 영어 진단, 프로젝트 불변. 경고는 `warnings` |
+| `edit_script` | write | 기존 스크립트를 `commandPath`(다른 이벤트 도구와 같은 `[index, branch, index…]`) 또는 `name` 으로 찾아 소스 교체·재컴파일. 페이지에 하나뿐이면 주소 생략 가능 |
+| `dry_run_script` | read | 프로젝트 **사본**에서 헤드리스 실행(`startSession` + `createInterpreter`, 이벤트면 `currentEventId`·맵·좌표). `source`(즉석 컴파일) / 주소로 기존 스크립트 / 대상만 주면 페이지 전체. 답: `choices`·`numbers`·`battleResults`(기본 0·0·victory), 미리 놓기: `switches`·`variables`(닫힌 `{id,value}` 배열)·`gold`·`items`, `maxSteps`(기본 200, 최대 1000). 결과 `transcript`·`changes`(스위치·변수·글 변수·셀프 스위치·돈·아이템 전후)·`log`(`onScriptLog`)·`errors`·`endedBy` |
+| `get_script_api` | read | `buildGameApiDts(scriptDtsIds(project, mapId))` — 이 프로젝트 id 가 리터럴 타입인 `.d.ts`. `format:'cheatsheet'` 는 `scriptApiCheatSheet()` |
+| `upsert_script_module` | write | `@lib/<id>` 공용 모듈 만들기·교체(`libraryId` 로 컴파일). 바꾼 모듈을 import 하는 스크립트 목록을 경고로 |
+| `list_script_modules` | read | 모듈 id·import 경로·export 이름·fresh, `includeSource` |
+| `read_event_as_script` | read | 페이지 명령 목록 → TypeScript(`src/editor/script/eventToScript.ts`). 대사·선택지·단순 조건 분기·스위치/변수/돈/아이템(+=)·대기(프레임 정수)·이동·전투(결과 분기)·공통 이벤트·loop/breakLoop 는 직접 호출, 나머지와 추가 필드가 붙은 명령은 `await game.cmd({…정확한 JSON…})`. 출력은 그대로 컴파일된다(테스트 고정) |
+| `write_event_as_script` | write | 페이지(또는 공통 이벤트) 명령 전체를 스크립트 하나로 교체. `confirm:true` 필수, 컴파일 오류면 거부 |
+
+- **손으로 쓴 `{kind:"script"}` 거부**: 일반 이벤트 도구의 단일 관문 `validateLowLevelCommandArray`(`src/editor/tools/commandArgs.ts`,
+  `upsert_event`·`patch_event_page`·`add_event_page`·`upsert_common_event`·트룹 페이지)가 모든 깊이의 `script` 명령에
+  `scriptCommandProblem` 을 적용한다 — `compiled` 가 비었거나 `sourceHash !== scriptSourceHash(source)` 면 `script-not-compiled`
+  로 거부하고 author_script/edit_script/write_event_as_script 를 안내한다. 빈 스크립트(소스·코드 둘 다 없음)는 통과,
+  `get_event` 로 읽은 스크립트를 그대로 다시 보내는 것도 통과(해시가 맞는다).
+- 노출: 레지스트리·별칭(`스크립트·타입스크립트·코드로·공식·퍼즐 로직…`)·라벨·능력 색인 레시피 `event-scripts`. v2 는
+  `game.ts` `SCRIPT_TIER`(로직 낱말: 레버·비밀번호·조합·공식·할인·확률·시간대…)가 맞으면 `get_script_api`·`check_script`·`author_script`·
+  `dry_run_script` 를 처음부터 싣고(`V2_UP_FRONT`), 나머지는 `load_tools`/이름 호출. `GAME_CARD` 와 v1 시스템 지시문에
+  「조건·계산·반복·여러 갈래 로직은 스크립트 하나로, 단순 대사는 명령」 규칙, 확률은 `game.random` 스크립트로.
+- 스킬: `assistant-skills/event-scripts/SKILL.md`(언제 쓰나·API 표·규칙·고리·레버 퍼즐/할인 상점(@lib)/시간대 경비 예제) →
+  `npm run assistant-skills:bundle` 로 `src/assets/assistantSkills.json`.
+- 테스트: `test/scriptTools.test.ts`.
+- 한계: `dry_run_script` 는 게임 시각을 미리 놓지 못한다(프로젝트 시작 시각). `author_script` 는 최상위 목록에만 넣는다(분기 안은 `edit_script`·`write_event_as_script`).
+
 ## 알려진 한계 / 다음 단계
 
-- 편집기 코드 편집기·라이브러리 화면·4개 언어(후속 PR), 조수 도구 `author_script`·`edit_script`·`check_script`·`dry_run_script`(후속 PR),
+- 편집기 코드 편집기·라이브러리 화면·4개 언어(후속 PR), 조수 도구는 위 「조수 도구」 절(3/4 PR),
   검증기(고아 스위치·도달성·gameCheck·mapGraph)의 `effects` 반영(후속 PR).
 - 컴파일 결과의 줄 번호는 TS 원본과 대체로 같지만 정확히 같지는 않다(오류는 `compiled line N`). 소스맵은 없다.
 - 라이브러리 모듈은 최상위 `await` 를 못 쓴다(동기 `new Function` 으로 평가).
