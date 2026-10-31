@@ -73,6 +73,12 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
   },
   // todo 항목의 짧은 확인 표기 {talk:"책상"} → check:{kind:"talk", who:"책상"} (r7 argon: 확인 없는 항목이 되어 거짓 done 이 통과했다).
   todo(args, changes) {
+    // done/block 에 항목을 «item» 칸으로 준 호출 → task(r10 flash: «Item «» not found»).
+    if (typeof args.op === "string" && ["start", "done", "drop", "block"].includes(args.op) && args.task === undefined) {
+      for (const k of ["id", "taskId", "item", "todo", "name", "content", "text"]) {
+        if (typeof args[k] === "string" && (args[k] as string).trim()) { const { [k]: v, ...rest } = args; changes.push(`${k} → task (the item id or exact content goes in "task")`); return { ...rest, task: v }; }
+      }
+    }
     if (!Array.isArray(args.items)) return args;
     let touched = false;
     const items = args.items.map((it, i) => {
@@ -94,8 +100,27 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
   author_puzzle_chain(args, changes) {
     if (!Array.isArray(args.links)) return args;
     let touched = false;
-    const links = args.links.map((l, i) => {
-      if (!isObj(l) || typeof l.role !== "string") return l;
+    const links = args.links.map((l0, i) => {
+      if (!isObj(l0)) return l0;
+      let l: Obj = l0;
+      // 칸 이름 오타·다른 이름(r10 flash: needAny → 무시돼 단서 없이 번호를 넣을 수 있었다).
+      for (const [from, to] of [["needAny", "needsAny"], ["needAll", "needsAll"], ["need", "needs"], ["requires", "needs"], ["requiresAll", "needsAll"], ["requiresAny", "needsAny"]] as const) {
+        if (l[from] !== undefined && l[to] === undefined) { const { [from]: v, ...rest } = l; l = { ...rest, [to]: v }; touched = true; changes.push(`links[${i}].${from} → links[${i}].${to}`); }
+      }
+      const rw = isObj(l.reward) ? l.reward : undefined;
+      if (rw && typeof rw.endingId === "string" && l.endingId === undefined) {
+        const { endingId: e, ...rest } = rw; l = { ...l, endingId: e, reward: rest }; touched = true; changes.push(`links[${i}].reward.endingId → links[${i}].endingId`);
+      }
+      if (typeof l.role !== "string" || !l.role.trim()) {
+        // role 없음(r10 flash 첫 사슬) — 칸으로 정해지면 채운다.
+        const to = typeof l.code === "string" || typeof l.code === "number" ? (l.endingId !== undefined || isObj((l.reward as Obj | undefined)?.ending) ? "ending" : "code")
+          : typeof l.learn === "string" ? "clue" : isObj(l.reward) && ((l.reward as Obj).item !== undefined) ? "pickup"
+          : Array.isArray(l.lines) && l.lines.length ? "clue" : undefined;
+        if (!to) return l;
+        touched = true;
+        changes.push(`links[${i}].role: missing → "${to}" (roles are clue | code | door | pickup | ending)`);
+        return { ...l, role: to };
+      }
       const r = l.role.trim().toLowerCase();
       if (["clue", "code", "door", "pickup", "ending"].includes(r)) return l;
       const reward = isObj(l.reward) ? l.reward : undefined;
@@ -110,6 +135,18 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
       return { ...l, role: to };
     });
     return touched ? { ...args, links } : args;
+  },
+  // patch_event_page 에서 set 없이 페이지 칸(commands·trigger…)을 맨 위에 둔 호출 → set 으로 감싼다(r10 flash 세 번 거절).
+  patch_event_page(args, changes) {
+    if (isObj(args.set)) return args;
+    const PAGE_KEYS = ["commands", "conditions", "trigger", "graphic", "movement", "priority", "animationType", "through", "directionFix"];
+    const moved = PAGE_KEYS.filter((k) => args[k] !== undefined);
+    if (!moved.length) return args;
+    const set: Obj = {}; const rest: Obj = { ...args };
+    for (const k of moved) { set[k] = args[k]; delete rest[k]; }
+    delete rest.set;
+    changes.push(`${moved.join(", ")} → set.{${moved.join(", ")}} (page fields go inside "set")`);
+    return { ...rest, set };
   },
   declare_story_flag(args, changes) {
     const out = { ...args };
