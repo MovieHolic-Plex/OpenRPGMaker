@@ -4500,11 +4500,11 @@
   {
    "id": "act2-b2-patrol",
    "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
-   "note": "act2Opening.ts curfewHub 순찰 (43,17) 가로 4칸 — 북쪽 성벽 밑 (40,17)에서 기다리면 돌아서며 본다",
+   "note": "act2Opening.ts curfewHub 북쪽 순찰 (45,17) 가로 4칸 — 광장 돌바닥 (43,20)에 서 있으면 서쪽으로 돌아설 때 부채꼴에 든다(40,17 은 말뚝 울타리 뒤라 시선이 막혔다)",
    "mapId": "fs2_hub_night",
-   "x": 40,
-   "y": 17,
-   "facing": "right",
+   "x": 43,
+   "y": 20,
+   "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4702,7 +4702,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 4,
+       "maxRounds": 6,
        "ops": [
         {
          "kind": "key",
@@ -4716,14 +4716,112 @@
        ]
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 5
+       "kind": "waitForPosition",
+       "mapId": "fs2_obs_night",
+       "x": 16,
+       "y": 13,
+       "timeoutMs": 20000
       },
       {
        "kind": "face",
@@ -13287,6 +13385,13 @@
        ]
       },
       {
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 8,
+       "y": 4,
+       "timeoutMs": 15000
+      },
+      {
        "kind": "face",
        "dir": "up"
       },
@@ -13360,6 +13465,13 @@
          "dir": "up"
         }
        ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 15,
+       "y": 4,
+       "timeoutMs": 15000
       },
       {
        "kind": "face",
@@ -13450,6 +13562,13 @@
          "dir": "right"
         }
        ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 23,
+       "y": 4,
+       "timeoutMs": 15000
       },
       {
        "kind": "face",

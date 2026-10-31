@@ -76,7 +76,7 @@ const CELL = {
 };
 const CELL_ROOM = {
   plan: CELL_PLAN,
-  floor: "dungeon",
+  floor: "wetstone", // 「dungeon」 바닥은 벽과 같은 벽돌이라 바닥·벽·짚 침대가 한 면으로 읽혔다(첫 플레이 2026-11-01)
   wall: "dungeonw",
   ceiling: "dark",
   objects: [
@@ -166,9 +166,6 @@ const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unkno
 const cutLabel = (): Command => ({ kind: "label", name: "cutscene_end" } as unknown as Command);
 const transfer = (mapId: string, at: Cell, direction: Dir = "down"): Command =>
   ({ kind: "transfer", mapId, x: at.x, y: at.y, direction, fade: "black" } as unknown as Command);
-/** 대화창 위치 — 장면이 화면 아래 끝에서 벌어질 때 위로 올리고, 끝나면 되돌린다(act1Finale textBox 와 같은 꼴). */
-const textBox = (position: "top" | "bottom"): Command =>
-  ({ kind: "displayTextSettings", format: "normal", position, preventObscuringPlayer: false, allowEventMovementDuringWait: false } as unknown as Command);
 const item = (itemId: string, amount = 1): Command => ({ kind: "changeItem", itemId, op: amount >= 0 ? "+=" : "-=", amount: Math.abs(amount) } as unknown as Command);
 
 const fixedMove = { type: "fixed", speed: 3, frequency: 3 };
@@ -907,14 +904,16 @@ const SHAFT_PLAN = [
 ];
 const SHAFT = { ladder: { x: 2, y: 1 } as Cell, ladderUse: { x: 2, y: 3 } as Cell, arrive: { x: 2, y: 4 } as Cell, lift: { x: 6, y: 4 } as Cell };
 /** 천문대 서쪽 서고 — 제1막 승강 장치가 올라오던 칸(3,19), 하넬은 서고 탁자 곁. */
-const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 7, y: 18 } as Cell, door: { x: 15, y: 22 } as Cell };
+// 하넬은 서고(맵 맨 아래 줄)가 아니라 둥근 지붕 아래 망원경 곁 — 서고에서 이야기하면 흉상 대화창(늘 아래)이
+// 하넬과 일행을 통째로 가렸다(첫 플레이 2026-11-01). 승강 장치로 오르면 서고에서 부르는 소리만 듣고 위로 걸어 올라간다.
+const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 17, y: 13 } as Cell, door: { x: 15, y: 22 } as Cell };
 
 function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   ensureSwitch(project, SW_HANEL, "B3: 하넬 — 세린·인장");
   // 우물 밑 승강구 — 서고 지하. 쇠 사다리로 우물과, 승강 장치로 천문대와 잇는다.
   exec(project, "build_hand_interior_room", {
     mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
-    floor: "dungeon", wall: "dungeonw", ceiling: "dark",
+    floor: "wetstone", wall: "dungeonw", ceiling: "dark",
     objects: [{ id: "wall torch", x: 5, y: 1 }, { id: "wall torch", x: 9, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 }],
   });
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
@@ -977,10 +976,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   const hg = hubHanel?.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
   if (!hg?.sprite?.id || typeof hg.pattern !== "number") throw new Error("[fallen-star act2] 하넬 칩이 없다");
   hanelChip.textureKey = hg.sprite.id; hanelChip.characterIndex = decodeCharsetFrameIndex(hg.pattern).characterIndex;
-  // 서고는 천문대 맵 맨 아래 줄(y18·19)이라 아래 대화창이 하넬과 일행을 통째로 가렸다(첫 플레이 2026-11-01) — 이 장면만 위 창.
   const talk: Command[] = [
     cutBegin(),
-    textBox("top"),
     emote("ev_fs2_obs_hanel", "exclamation", 700),
     say(HANEL, "…밑으로 올 줄 알았다.\n정문으로 왔으면 혼쭐을 냈을 게다."),
     say(ELENA, "선생님! 이리스가──"),
@@ -1003,12 +1000,11 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n대장간 뒷문은 아무도 안 지킨다."),
     setSw(SW_HANEL),
     cutLabel(),
-    textBox("bottom"),
     cutEnd(),
   ];
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_hanel", HANEL, OBS.hanel, [
     page("ev_fs2_obs_hanel_p", "하넬(연금)", [], talk, { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
-    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.", { position: "top" })], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
+    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.")], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
   ]);
   // 처음 올라오면 하넬이 먼저 부른다(승강 장치 도착 뒤 한 번).
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_call", "하넬이 부른다", { x: 0, y: 0 }, [
@@ -1018,9 +1014,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       // 발판에서 한 걸음 내려선다 — 도착 칸이 승강 발판(조사로 탄다)이라, 대사를 넘기는 Enter 가 승강 장치를 다시 태웠다
       // (첫 플레이 검수 2026-10-31: 몇 번씩 오르내렸다).
       route("@player", [{ kind: "move", dir: "right" }, { kind: "turn", dir: "up" }]),
-      textBox("top"),
       say(HANEL, "거기 누구냐. …카엘이냐?"),
-      textBox("bottom"),
+      say(HANEL, "쉿. 서고 소리는 문밖까지 샌다.\n위로 올라오너라. 망원경 곁이다."),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { trigger: { kind: "auto" } }),
     page("ev_fs2_obs_call_done", "끝", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [], { priority: "below" }),
