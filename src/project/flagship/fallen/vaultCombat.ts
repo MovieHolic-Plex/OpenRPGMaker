@@ -72,6 +72,20 @@ export const FS_INQ_CHIPS: Record<string, [string, number]> = {
   [PREACHER]: ["tex_easyrpg_charset_people2", 2],
 };
 
+/**
+ * 심문회 화자 → 흉상. 칩의 짝 얼굴로 자동으로 고르면 방패병이 리본 소녀, 참회자가 소년, 사제가 할머니로 나온다
+ * (people4 칩은 people1 얼굴로 이어진다). 이 게임에서 아무도 쓰지 않는 흉상만 골랐다 — 다른 사람과 얼굴이 겹치지 않는다.
+ */
+export const FS_INQ_BUSTS: Readonly<Record<string, string>> = {
+  "심문회 방패병": "shared-actor2-red-helmet-expressions-bust-base",
+  "채찍 고행자": "shared-actor2-mustache-expressions-bust-base",
+  "심문 사제": "shared-black-headband-expressions-bust-base",
+  "심문회 석궁수": "shared-people1-black-man-expressions-bust-base",
+  "사냥개지기": "shared-green-goggles-expressions-bust-base",
+  "사슬 참회자": "shared-monster-red-helm-expressions-bust-base",
+  "포로": "shared-black-martial-expressions-bust-base",
+};
+
 /** 층마다 무리 — 같은 싸움이 두 번 나오지 않는다. 키는 act1Finale 의 필드 적·매복 자리. */
 export const FS_VAULT_TROOPS = {
   // 지하 2층 · 옛 별지기의 방
