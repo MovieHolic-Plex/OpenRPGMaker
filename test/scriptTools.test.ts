@@ -117,6 +117,22 @@ describe("author_script / edit_script — examples, explanation, batch", () => {
     expect(script.explanation?.examples).toEqual([{ label: "맞는 순서", choices: [2, 0, 3, 1] }, { label: "틀린 순서", choices: [2, 1] }]);
   }, 30_000);
 
+  it("puts a small calculation fragment before the commands that read it, with compact example results", async () => {
+    const { ctx, mapId } = contextWithPanel([{ kind: "text", body: "A potion is \\V[var_price] G." }]);
+    const source = `const BASE = 120, MAX_OFF = 30;\ngame.setVar("var_price", Math.round(BASE * (100 - Math.min(MAX_OFF, game.getVar("var_rep"))) / 100));`;
+    const result = await runToolAsync(ctx, "author_script", {
+      mapId, eventId: "ev_panel", index: 0, name: "price", source,
+      explain: ["평판 1점마다 1% 싸지고, 최대 30%까지 깎인다."],
+      examples: [{ label: "평판 10", variables: [{ id: "var_rep", value: 10 }] }, { label: "평판 50", variables: [{ id: "var_rep", value: 50 }] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(pageCommands(ctx, mapId).map((command) => command.kind)).toEqual(["script", "text"]);
+    const runs = (result.data as { examples: ExampleRun[] }).examples;
+    // A pure calculation shows nothing: no transcript key, only the changes.
+    expect(runs[0]).toEqual({ label: "평판 10", changes: { variables: { var_price: { from: 0, to: 108 } } } });
+    expect(runs[1]!.changes?.variables?.var_price).toEqual({ from: 0, to: 84 });
+  }, 30_000);
+
   it("writes a batch item by item: a compile error drops only that item", async () => {
     const { ctx, mapId } = contextWithPanel();
     const result = await runToolAsync(ctx, "author_script", {
