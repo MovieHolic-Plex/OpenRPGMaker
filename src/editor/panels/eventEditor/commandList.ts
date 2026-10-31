@@ -366,7 +366,7 @@ function renderCommandItem(
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
   item.append(head, commandActions(path, actions));
-  if (cmd.kind === "script") appendScriptReading(item, head, cmd, path);
+  if (cmd.kind === "script") appendScriptReading(head, cmd, path);
   ensureTerminalRowHint(item, cmd);
   // 항목 자체를 드롭 타겟으로 만들어 위/아래 삽입 위치를 결정한다.
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
@@ -381,7 +381,7 @@ const openScriptCode = new Set<string>();
  * A script row reads like event lines: read-only lines right under it (scriptLines.ts), the code behind a small
  * 「코드」 toggle. Clicking the lines selects the script row; double-clicking opens its editor.
  */
-function appendScriptReading(item: HTMLElement, head: HTMLElement, cmd: Extract<Command, { kind: "script" }>, path: number[]): void {
+function appendScriptReading(head: HTMLElement, cmd: Extract<Command, { kind: "script" }>, path: number[]): void {
   const key = JSON.stringify(path);
   const lines = renderScriptLines(cmd, () => store.getCurrent(), { summarize: renderCommandSummary });
   lines.style.setProperty("margin", "0 0 4px 0");
