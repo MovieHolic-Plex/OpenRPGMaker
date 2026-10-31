@@ -9,7 +9,7 @@ PAT = [re.compile(r'"([^"]+)" at \((\d+),(\d+)\)'), re.compile(r'"([^"@]+)"@\((\
 for g in sorted(glob.glob(f"{R}/argon[ABGJ][0-9]/*/RUN.json")):
     G = os.path.dirname(g); task = G.split("/")[-1]
     if os.path.exists(f"{G}/map.png") and not os.path.exists(f"{G}/salvage.json") and json.load(open(g)).get("rendered"): continue
-    if os.path.exists(f"{G}/salvage.json") and json.load(open(f"{G}/salvage.json")).get("rendered"): continue
+    if os.path.exists(f"{G}/salvage.json"): continue   # already salvaged (or known unrenderable)
     cands = ["layout.json"] + [f"layout-{n}{h}.json" for n in range(9, -1, -1) for h in ("-harmonised", "") if os.path.exists(f"{G}/layout-{n}{h}.json")]
     for src in cands:   # the final layout first; if its walls cannot be drawn, the latest earlier answer that can
       L = json.load(open(f"{G}/{src}")); dropped = []; ok = False; errs = []
