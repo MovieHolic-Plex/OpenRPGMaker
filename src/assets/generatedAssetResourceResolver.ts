@@ -21,7 +21,7 @@ import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveOprnMonsterCharsetUrl } from "./oprnMonsterCharsets";
 import { resolveHeroesCharsetUrl } from "./heroesCharsets";
 import { resolveModernCharsetUrl } from "./modernCharsets";
-import { resolveRefmapDollCharsetUrl } from "./refmapDollCharsets";
+import { resolveRefmapDollBattlerUrl, resolveRefmapDollCharsetUrl } from "./refmapDollCharsets";
 import { resolveScarloxyPeopleCharsetUrl } from "./scarloxyPeopleCharsets";
 import { resolveWizardingCharsetUrl } from "./wizardingCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
@@ -267,6 +267,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveHeroesCharsetUrl(resourceId) ??
     resolveModernCharsetUrl(resourceId) ??
     resolveRefmapDollCharsetUrl(resourceId) ??
+    resolveRefmapDollBattlerUrl(resourceId) ??
     resolveScarloxyPeopleCharsetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveOgaBackdropAssetUrl(resourceId) ??
