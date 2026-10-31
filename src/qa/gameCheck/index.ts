@@ -13,6 +13,8 @@ import { buildMapGraph, checkLightingLeak, checkMapGraph, checkHugeLightRadius, 
 import { checkProgression, companionJoins } from "./progression";
 import { BOSS_CHECK_LEVEL, checkJrpg, partyRoster } from "./jrpg";
 import { allPages, visitPageCommands } from "./walk";
+import { scriptGatedFailure } from "./scriptGate";
+import { projectScriptUsage, SCRIPT_DYNAMIC_NOTE } from "@/project/script/effects";
 import { checkHorror } from "./horror";
 import { checkMystery } from "./mystery";
 import { checkMonster } from "./monster";
@@ -190,9 +192,21 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
       return run;
     });
     autoPlay = { ...autoPlay, runs };
+    const scriptUsage = projectScriptUsage(project);
     for (const run of autoPlay.runs) {
       if (run.ok || !run.failure || downgraded.has(run)) continue;
       const later = run.steps.filter((step) => !step.ok && step !== run.failure && step.goal !== "계획").at(-1);
+      // 실패 자리의 진행 조건을 스크립트가 쓴다(아이템 개수·시각·위치를 스크립트 안에서 본다) — 계획기는 그 안을 못 따라가니
+      // 막힘이 아니라 판정 보류다(2026-10-31 sab-1031 A 마을: 플레이로는 엔딩까지 가는데 막힘으로 나왔다).
+      const gate = scriptGatedFailure(project, run.failure.where, run.failure.detail, scriptUsage);
+      if (gate) {
+        findings.push({
+          severity: "info", code: "autoplay-script-gated",
+          message: `자동 플레이(${run.label})가 「${run.failure.goal}」에서 멈췄지만 판정 보류입니다 — 이 진행은 스크립트가 정합니다(${gate.keys.join(", ")}). 검사기는 스크립트 안의 조건을 따라가지 못하니 실제 플레이로 확인하세요: ${run.failure.detail}${gate.dynamic ? ` (${SCRIPT_DYNAMIC_NOTE})` : ""}`,
+          ...(run.failure.where ? { where: run.failure.where } : {}),
+        });
+        continue;
+      }
       findings.push({
         severity: "blocker", code: "autoplay-failed",
         message: `자동 플레이(${run.label})가 「${run.failure.goal}」에서 실패했습니다: ${run.failure.detail}${later ? ` — 이어서 「${later.goal}」: ${later.detail}` : ""}`,
