@@ -508,8 +508,14 @@ const STEP4: Record<Dir, Cell> = { up: { x: 0, y: -1 }, right: { x: 1, y: 0 }, d
 function floorThree(project: Project, exec: Exec): void {
   ensureSwitch(project, SW_T3_ARRIVE, "B10: 하늘탑 3층 도착");
   ensureSwitch(project, SW_T3_SOLVED, "B10: 거울 빛줄기로 4층 계단을 엶");
+  // 방 꾸밈(거울 홀 바닥·기둥 격자·계단 앞 빛 막 칸)은 거울 프리셋이 짓는다 — 그 방 위에 거울 다섯을 새로 세운다.
+  // 프리셋 거울 둘(「둘을 차례로 돌리면 끝」)과 빛 막 글은 걷어 낸다.
+  const done = firstOk([{ x: 9, y: 9 }, { x: 10, y: 8 }, { x: 12, y: 10 }, { x: 19, y: 11 }], (c) => exec(project, "author_map_puzzle", {
+    mapId: FS2_T3, presetId: "mirror_beam_refraction", puzzleId: "fs2_t3_mirror", x: c.x, y: c.y,
+    gateEventId: "ev_fs2_sky_tower_f3_stair_next", solveSwitchId: SW_T3_SOLVED, title: "렌즈 거울",
+  }));
+  if (!done) throw new Error("[fallen-star tower] 3층 거울 방을 못 지었다");
   const map = M(project, FS2_T3);
-  // 옛 판(author_map_puzzle 두 거울)이 남아 있으면 걷는다.
   map.events = map.events.filter((e) => !e.id.startsWith("ev_fs2_t3_mirror"));
   for (const m of T3_MIRRORS) mustWalk(project, FS2_T3, m.at, `3층 ${m.name}`);
   mustWalk(project, FS2_T3, T3_SINK, "3층 검은 수정");
@@ -1059,12 +1065,12 @@ function redressFloors(project: Project, exec: Exec): void {
   // 1층 — 장면 칸(기계 13,18·19 / 기사 15,19 → 17,19 → 19,19 → 19,20 / 다친 기사 18,20)과 입구·계단·마법진 착지를 비운다.
   const keep1: Cell[] = [T1.arrive, T1.machine, { x: 13, y: 19 }, T1.knight, { x: 16, y: 19 }, { x: 17, y: 19 }, { x: 18, y: 19 }, { x: 19, y: 19 }, T1.knightEnd, { x: 19, y: 20 },
     { x: 34, y: 16 }, { x: 20, y: 19 }, { x: 20, y: 20 }, { x: 7, y: 16 }, T1.stair, { x: 20, y: 28 }, { x: 37, y: 17 }, { x: 36, y: 17 }];
-  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-cracked-floor", [{ x: 14, y: 20 }, { x: 15, y: 20 }, { x: 13, y: 21 }], keep1.filter((k) => k !== T1.knight));
-  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-rubble-heap", [{ x: 26, y: 19 }, { x: 25, y: 20 }, { x: 27, y: 19 }], keep1);
-  dress(project, exec, FS2_T1, "bd-pick-dungeon-cave-broken-pillar", [{ x: 24, y: 16 }, { x: 25, y: 16 }, { x: 23, y: 16 }], keep1);
-  dress(project, exec, FS2_T1, "bd-pick-volcano-cave-pillar-broken-b", [{ x: 16, y: 16 }, { x: 15, y: 16 }, { x: 14, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-cracked-floor", [{ x: 10, y: 20 }, { x: 9, y: 20 }, { x: 22, y: 20 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-rubble-heap", [{ x: 31, y: 20 }, { x: 29, y: 19 }, { x: 33, y: 20 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-cave-broken-pillar", [{ x: 24, y: 16 }, { x: 28, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-volcano-cave-pillar-broken-b", [{ x: 10, y: 16 }, { x: 9, y: 16 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-royal-banner", [{ x: 30, y: 16 }, { x: 31, y: 16 }, { x: 29, y: 16 }], keep1);
-  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-armor-stand", [{ x: 33, y: 16 }, { x: 32, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-armor-stand", [{ x: 32, y: 16 }, { x: 33, y: 16 }], keep1);
   dress(project, exec, FS2_T1, "bd-prop-sword_barrel", [{ x: 35, y: 20 }, { x: 36, y: 20 }, { x: 34, y: 20 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-aqueduct-sewer-pipe-copper-leak", [{ x: 22, y: 21 }, { x: 23, y: 21 }, { x: 17, y: 21 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-castle-catacombs-rubble", [{ x: 12, y: 21 }, { x: 11, y: 21 }, { x: 12, y: 17 }], keep1);
@@ -1073,14 +1079,14 @@ function redressFloors(project: Project, exec: Exec): void {
   // 3층 — 거울 빛길·계단·도착 칸을 비운다.
   const keep3: Cell[] = [{ x: 7, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }, { x: 10, y: 22 }, { x: 10, y: 21 }, { x: 2, y: 6 }, { x: 17, y: 21 }, { x: 18, y: 12 }, { x: 5, y: 21 },
     ...T3_MIRRORS.map((m) => m.at)];
-  if (liftKit(project, FS2_T3, "bd-pick-wizard-tower-athanor", { x: 3, y: 6 })) dress(project, exec, FS2_T3, "bd-pick-headland-lighthouse-telescope", [{ x: 3, y: 6 }], []);
-  if (liftKit(project, FS2_T3, "bd-pick-aqueduct-sewer-barrel", { x: 2, y: 10 })) dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 2, y: 9 }, { x: 2, y: 10 }], []);
+  if (liftKit(project, FS2_T3, "bd-pick-wizard-tower-athanor", { x: 3, y: 6 })) stamp(project, exec, FS2_T3, "bd-pick-headland-lighthouse-telescope", { x: 3, y: 6 });
+  if (liftKit(project, FS2_T3, "bd-pick-aqueduct-sewer-barrel", { x: 2, y: 10 })) stamp(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", { x: 2, y: 9 });
   dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-corrupt-crystal-big", [{ x: 19, y: 23 }, { x: 18, y: 23 }, { x: 20, y: 23 }], keep3);
-  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 14, y: 19 }, { x: 15, y: 19 }, { x: 13, y: 19 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 13, y: 19 }, { x: 12, y: 19 }], keep3);
   dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 7, y: 19 }, { x: 8, y: 19 }, { x: 6, y: 20 }], keep3);
   dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-cracked-floor", [{ x: 12, y: 22 }, { x: 13, y: 23 }, { x: 14, y: 22 }], keep3);
-  dress(project, exec, FS2_T3, "bd-pick-aqueduct-sewer-bones", [{ x: 16, y: 24 }, { x: 15, y: 24 }], keep3);
-  dress(project, exec, FS2_T3, "bd-pick-wizard-tower-orrery", [{ x: 17, y: 13 }, { x: 16, y: 13 }, { x: 21, y: 13 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-aqueduct-sewer-bones", [{ x: 8, y: 24 }, { x: 9, y: 24 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-wizard-tower-orrery", [{ x: 19, y: 13 }, { x: 20, y: 13 }], keep3);
 }
 
 export function ringRooms(project: Project, exec: Exec): void {
