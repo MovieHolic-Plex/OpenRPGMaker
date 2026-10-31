@@ -1,0 +1,290 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0db09732a83f4b9226c4c61bb9a6b261af182d2f4ab2bc9fa6002cdb796094c",
+ "width": 64,
+ "height": 64,
+ "kind": "terrain",
+ "name": "Beodeul plain grass 737 (r2 body, 4x4 tiled)",
+ "label": "beodeul_city/grass-737-r2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 140,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 16
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile fill",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a uniform 64x64 grass texture with speckled light and dark green pixels. The column scan shows one continuous run over rows 0-63, with no front-edge line, eave shadow, ellipse or vertical face. It is a flat top-down terrain tile with no standing structure, which is normal for a terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a plain grass ground patch and the reference grass is the same kind. It has 4 visible tones per tile against the reference grass's 3, and 0% near-flat coverage like the reference. Its raw colour count is only 4 against the reference's 26, but the visible tones are what count here. By eye the candidate is a fine, even speckle of four greens with no 5x5 flat areas. It has no outline, which suits a ground tile, and no dark edge pixels, so the 0% neutral share raises no concern. It is less structured than the reference, which has tuft clusters, lighter patches and a dark clump. That is acceptable for a plain base-grass tile that is meant to tile quietly, so I rate the texture 'some' rather than 'rich'. It would not look flatter or thinner than the reference grass next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12796
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile fill",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a uniform 64x64 grass terrain fill with a speckled texture. The column scan shows one continuous run (rows 0-63) with nearly constant lightness. There is no front-edge line, eave shadow, ellipse, or vertical face, so it is a flat ground tile with no standing structure. The kind is terrain, so this flat top-down read is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a seamless grass patch with 4 visible tones per tile, against 3 for the reference grass, and 0% near-flat coverage, which matches the reference. A fine speckle covers the whole surface, so there are no flat fills. It has no outline, which suits a ground tile, and the dark-edge neutral share is 0%, so there is no black sticker line. Compared with the reference grass, though, it is more uniform. The reference has distinct grass tufts, lighter clusters, a dark patch with flowers, and clear tonal variation across the tile. The candidate shows only a low-contrast noise dither of 4 colours with no clumps, tufts or larger-scale variation. As a result it looks flatter and thinner than the reference, even though the measured tone count is slightly higher. The raw tile colour count (4 against 26) also supports this. A careful artist would likely want tufts or clusters added before accepting it beside the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11350
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile fill (64x64, uniform noise texture, 4x4 tiled)",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x64 opaque grass texture. Column scans show a single uniform run (rows 0-63, L=131) with only a slight darker 3-row variation at x=47, which is noise. The silhouette width is 64 for every row, so there is no outline, front face, edge line, eave shadow or ellipse. This is flat terrain ground seen from above, which fits the terrain kind. It has no vertical face by design."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a seamless grass field with fine speckled grain in 4 visible tones. The reference grass tile shows only 3 visible tones, so the candidate is at or above it on the primary facts. Near-flat coverage is 0%, the same as the reference, and no 5x5 area is a flat fill. Grass has no outlines, and the dark edge pixels are 0% neutral, so nothing reads as a black sticker line. The candidate is more uniform and lower in contrast than the reference. It lacks the reference's darker clumps and bright tufts, so texture is 'some' rather than 'rich'. That is acceptable for a plain base grass that tiles 4x3, and the tile-level density matches the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23010
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground fill",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a uniform 64x64 grass texture filling every row with mottled green pixels. There is no front-edge line, no eave shadow, no ellipse, and no vertical face. The column scan shows one continuous run of rows 0-63 at about L=131. It is a flat seamless ground tile, so it has no front face, which fits terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a seamless grass ground tile with a fine, evenly spread speckle in 4 green tones. The measured facts put it at or above the grass reference: 4 visible tones per tile against 3, 0% near-flat coverage in both, and tinted (green) edge pixels with 0% neutral. There are no large flat fills, and the tile reads as grass grain rather than a flat colour. It lacks the reference's larger tufts, clumps and dark patches, so it is more uniform and has fewer raw colours (4 against 26). That is acceptable for a tiling body fill, since the visible tone count and speckle texture match the reference at the same scale. A ground patch has no outline, so outline is 'none'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18463
+  }
+ ],
+ "decidedAt": "2026-10-31T02:52:07.742Z",
+ "cells": {
+  "16": [
+   "3686001355e15924"
+  ],
+  "24": [
+   "093b385b8948402c",
+   "0b7038804c11a685",
+   "0f538012b85eb872",
+   "2d5e37121e7605ad",
+   "44c688701bb307eb",
+   "5256dd72b4dd51e0",
+   "5db046f41129b0d9",
+   "5e39eb818043c673",
+   "62fc852046809eca",
+   "65e91dcedf92c744",
+   "68df711fe4c1a0aa",
+   "7aa0dee80f6f5150",
+   "826c3e4ce2c3d0a0",
+   "88249af5eb0e5ea1",
+   "96d63d9eedacbea2",
+   "985aa48402c8b886",
+   "9e79700cf367c00e",
+   "a8524991a8b960c8",
+   "afcd3fe5cf914c9f",
+   "c79bee88b9ae7fec",
+   "cccde26f6a563394",
+   "e2b7a29c6fd9b3c0",
+   "ea626ae5263fa4a9",
+   "f136979b9cb9658f",
+   "f25c16107a407e96",
+   "f7c317d9a86b84dc",
+   "f91bfec859461dfa",
+   "fc1e3bed15200c1c"
+  ],
+  "32": [
+   "fc361ee1fafcecdf"
+  ],
+  "48": [
+   "1f598945f3757a6c",
+   "201fc03943c67a24",
+   "2d81f07f2d6af36b",
+   "32683187ec02b530",
+   "3886aed601be7fb6",
+   "3dbb4c1eb0397e09",
+   "7031aee87008667c",
+   "7b7bd1bf0e970824",
+   "bb5d05a9d468e5aa",
+   "c9b313469c9b888e",
+   "cd333929b36f42b2",
+   "dcf87bdfabf7587b",
+   "dd52b1c3166209d4",
+   "e348781201944fe8",
+   "ea90330a1d4d13f1"
+  ]
+ }
+}
