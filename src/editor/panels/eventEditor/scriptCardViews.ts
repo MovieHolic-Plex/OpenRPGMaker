@@ -197,7 +197,8 @@ export function renderScriptFlow(nodes: readonly ScriptFlowNode[], onLine: (line
   const root = styled(el("div", { class: "script-flow", dataset: { testid: "script-flow" } }), {
     display: "flex",
     "flex-direction": "column",
-    "align-items": "center",
+    // `safe`: a tree wider than the panel starts at the left edge and scrolls, instead of being cut off on the left.
+    "align-items": "safe center",
     gap: "4px",
     padding: "8px",
     overflow: "auto",
