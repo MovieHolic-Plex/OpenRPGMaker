@@ -8,6 +8,7 @@
 // 올리기·숨기기는 도구가 직접 하지 않는다 — 제안만 돌려주고, 패널 카드(aiStoreCard.ts)에서 사용자가 눌러야 실행된다.
 // 스토어 글(제목·소개·참고문서)은 남이 쓴 자료라 그 안의 지시로 조수가 사용자 프로젝트를 올리게 만들 수 있기 때문이다.
 
+import { searchStoreCatalog } from "@/assetStore/storeQuery";
 import { STORE_ITEM_KINDS, STORE_LICENSES, type StoreItemSummary, type StoreLicense } from "@/assetStore/format";
 import type { MyStoreItem } from "@/assetStore/bridgeTypes";
 import type { PreparedStoreItem } from "@/editor/assetStore/storeApply";
@@ -88,7 +89,7 @@ const storeSearch: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      query: { type: "string", description: "찾을 말(예: 숲, 성, 상점 실내, 몬스터). 사용자의 말을 짧게." },
+      query: { type: "string", description: "찾을 말(예: 숲, 성, 상점 실내, 몬스터, 무기 아이콘). 사용자의 말을 짧게. 종류 낱말(아이콘·효과음·캐릭터·음악 …)은 kind 로 읽고, 낱말이 여럿이면 낱말마다 찾아 합친다." },
       kind: { type: "string", enum: STORE_ITEM_KINDS, description: "종류로 좁히기. tileset·character·face·battler·picture·music·sound·animation(전투 애니메이션)·pack" },
       aiReadyOnly: { type: "boolean", description: "참고문서가 있는(조수가 바로 깔 수 있는) 팩만" },
     },
@@ -103,11 +104,14 @@ const storeSearch: ToolDefinition = {
       const { storeBridge } = await import("@/editor/assetStore/storeBridge");
       const access = workerStoreAccess();
       if (!storeBridge() && access) {
-        const page = await access.catalog({ q: String(args.query ?? "").trim(), kind: kindOf(args.kind), lang: await locale() });
+        const lang = await locale();
+        const page = await searchStoreCatalog((input) => access.catalog({ ...input, lang }), String(args.query ?? ""), kindOf(args.kind));
         return args.aiReadyOnly === true ? { ...page, items: page.items.filter((item) => item.grade === "pack") } : page;
       }
       const bridge = await bridgeOrThrow();
-      return bridge.catalog({ q: String(args.query ?? "").trim(), kind: kindOf(args.kind), grade: args.aiReadyOnly === true ? "pack" : "", lang: await locale() });
+      const lang = await locale();
+      const grade = args.aiReadyOnly === true ? "pack" : "";
+      return searchStoreCatalog((input) => bridge.catalog({ ...input, grade, lang }), String(args.query ?? ""), kindOf(args.kind));
     });
   },
   run(_project, args): ToolExecResult {
@@ -320,7 +324,7 @@ export function clearStoreMusicCache(): void {
 /** 음악 팩 목록(전부) → 매니페스트(slug@판본 캐시) → 곡. 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾아 앞에 둔다(서버 검색은 팩 제목·태그만 본다). */
 async function loadStoreMusic(access: StoreReadAccess, query: string): Promise<StoreMusicTrack[]> {
   const listed = await listAllStoreMusicPacks(access);
-  const searched = query && !listed.complete ? ((await access.catalog({ kind: "music", q: query }).catch(() => null))?.items ?? []).filter((item) => item.kind === "music") : [];
+  const searched = query && !listed.complete ? ((await searchStoreCatalog((input) => access.catalog(input), query, "music").catch(() => null))?.items ?? []).filter((item) => item.kind === "music") : [];
   const items = [...new Map([...searched, ...listed.items].map((item) => [item.slug, item])).values()].slice(0, MUSIC_PACK_CAP);
   const tracks: StoreMusicTrack[] = [];
   for (let at = 0; at < items.length; at += 4) {
