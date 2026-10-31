@@ -20,6 +20,8 @@ export function normalizeLiftRide(fields: Readonly<Record<string, unknown>>): {
   y: number | undefined;
   se: string;
   wait: boolean;
+  /** "none" = 빈 발판만 움직인다(장치가 드러나는 연출). 기본 "party"(주인공·동료가 탄다). */
+  riders: "party" | "none";
 } {
   const num = (key: string): number | undefined => {
     const raw = fields[key];
@@ -44,6 +46,7 @@ export function normalizeLiftRide(fields: Readonly<Record<string, unknown>>): {
     y: y === undefined || y < 0 ? undefined : Math.round(y),
     se: typeof fields.se === "string" && fields.se.trim() ? fields.se.trim() : DEFAULT_LIFT_SE,
     wait: fields.wait !== false && fields.wait !== "false",
+    riders: fields.riders === "none" ? "none" : "party",
   };
 }
 
