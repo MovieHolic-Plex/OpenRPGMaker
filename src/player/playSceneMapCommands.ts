@@ -285,7 +285,11 @@ const SHAKE_MAX_RATIO = 0.1;
 export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Promise<void> {
   return new Promise((resolve) => {
     scene.cameras.main.once("camerashakecomplete", () => resolve());
-    const ratio = shakeIntensityRatio(step.intensity);
+    // Phaser 4 의 흔들림은 오프셋(비율 × 화면 폭 × 배율)을 배율이 이미 곱해진 보기 행렬에 한 번 더 옮겨, 화면에서는 배율의
+    // 제곱만큼 커진다 — 2배 확대 방에서 「강도 10」이 화면 40% 를 밀어 반쪽이 허공으로 번쩍였다(2026-10-31 폴른 스타 승강 장치 공개).
+    // 비율을 배율 제곱으로 나눠 「강도 10 = 화면의 10%」 계약을 배율과 무관하게 지킨다.
+    const zoom = Math.max(1e-3, scene.cameras.main.zoom || 1);
+    const ratio = shakeIntensityRatio(step.intensity) / (zoom * zoom);
     // 방향은 Phaser 의 축별 세기(Vector2)로 낸다. 한 축을 0 으로 두면 그 축은 흔들리지 않는다.
     const direction = step.direction ?? "both";
     const intensity = direction === "both"

@@ -76,6 +76,10 @@ const LIFT_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "up", label: "위로" },
   { value: "down", label: "아래로" },
 ];
+const LIFT_RIDER_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "party", label: "주인공·동료가 탄다" },
+  { value: "none", label: "빈 발판만(장치가 드러나는 연출)" },
+];
 
 /** 파티클·모습 효과가 붙을 대상. event 면 eventId 칸을 쓴다. */
 const STAGING_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -471,6 +475,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "depth", label: "발판 깊이(칸)", type: "number", defaultValue: 2, min: 1, max: 4, step: 1 },
         { key: "se", label: "기계음 효과음", type: "text", defaultValue: "cc0-se-osx-machine-02" },
         { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: true },
+        { key: "riders", label: "타는 사람", type: "select", defaultValue: "party", options: LIFT_RIDER_OPTIONS },
       ];
     case "Journal Line":
       return [
