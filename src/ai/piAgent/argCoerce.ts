@@ -99,9 +99,33 @@ export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string
     }
     if (lifted) args = lifted;
   }
-  const out = coerce(schema as Schema, args, "", changes);
+  const out = forkBranches(coerce(schema as Schema, args, "", changes), "", changes);
   const found = problems; problems = [];
   return changes.length ? { args: out, changes, problems: found } : { args, changes, problems: found };
+}
+
+/** 분기 명령의 다른 이름 갈래 — 명령 목록은 스키마가 느슨해(아무 객체) 검증을 지나고, 모르는 칸은 실행기가 말없이 버린다.
+ * 2026-11-01 cheap r6 deepseek: fork 에 presentItem 의 `otherwiseBranch` 를 써서 «단서 없음»·«틀림» 갈래가 통째로 사라졌다. */
+const FORK_ALIASES: Readonly<Record<string, string>> = { otherwiseBranch: "else", otherwise: "else", elseBranch: "else", elseCommands: "else", ifFalse: "else", thenBranch: "then", thenCommands: "then", ifTrue: "then" };
+function forkBranches(value: unknown, path: string, changes: string[], depth = 0): unknown {
+  if (depth > 40 || value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    let copy: unknown[] | undefined;
+    value.forEach((v, i) => { const n = forkBranches(v, `${path}[${i}]`, changes, depth + 1); if (n !== v) { copy ??= [...value]; copy[i] = n; } });
+    return copy ?? value;
+  }
+  let rec = value as Record<string, unknown>;
+  if (rec.kind === "fork") {
+    for (const [from, to] of Object.entries(FORK_ALIASES)) {
+      if (rec[from] === undefined || rec[to] !== undefined) continue;
+      const { [from]: moved, ...rest } = rec;
+      rec = { ...rest, [to]: moved };
+      changes.push(`${path || "(top level)"}.${from} → ${to} (a fork's branches are "then" and "else")`);
+    }
+  }
+  let copy: Record<string, unknown> | undefined;
+  for (const [k, v] of Object.entries(rec)) { const n = forkBranches(v, path ? `${path}.${k}` : k, changes, depth + 1); if (n !== v) { copy ??= { ...rec }; copy[k] = n; } }
+  return copy ?? rec;
 }
 
 function coerce(schema: Schema | undefined, value: unknown, path: string, changes: string[], key = ""): unknown {
