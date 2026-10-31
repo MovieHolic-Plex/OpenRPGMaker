@@ -566,6 +566,13 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
       panel.hidden = key !== tab;
       panel.style.display = key !== tab ? "none" : key === "flow" ? "grid" : "flex";
     }
+    // A tree wider than the panel opens on its top (centered) node, not its left-most arm.
+    if (tab === "flow") {
+      requestAnimationFrame(() => {
+        const tree = flowPanel.querySelector<HTMLElement>("[data-testid=script-flow]");
+        if (tree && tree.scrollWidth > tree.clientWidth) tree.scrollLeft = (tree.scrollWidth - tree.clientWidth) / 2;
+      });
+    }
     if (tab === "flow") renderFlow();
     if (tab === "list") renderList();
   }
