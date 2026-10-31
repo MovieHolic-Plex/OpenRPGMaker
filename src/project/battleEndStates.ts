@@ -12,6 +12,8 @@ export function stateClearsOnBattleEnd(project: Pick<Project, "system">, state: 
   if (stateId === DEATH_STATE_ID) return false;
   if (state?.clearOnBattleEnd === true) return true;
   if (state?.clearOnBattleEnd === false) return false;
+  // 「전투 N번 뒤 풀림」 상태(칼 기름)는 전투를 넘어 이어져야 센다 — 일반 규칙(clearStatesAfterBattle)으로 지우지 않는다.
+  if (Math.trunc(state?.releaseAfterBattles ?? 0) > 0) return false;
   if (project.system.clearStatesAfterBattle === true) return true;
   return BATTLE_END_TEXT.test(state?.removalCondition ?? "");
 }
@@ -19,4 +21,30 @@ export function stateClearsOnBattleEnd(project: Pick<Project, "system">, state: 
 /** 전투 뒤 세션에 남길 상태만. */
 export function statesKeptAfterBattle(project: Pick<Project, "system" | "database">, stateIds: readonly StateId[]): StateId[] {
   return stateIds.filter((id) => !stateClearsOnBattleEnd(project, project.database.states.find((state) => state.id === id), id));
+}
+
+/**
+ * 전투 하나가 끝났다 — releaseAfterBattles 가 있는 상태의 전투 수를 올리고, 다 채운 상태는 뺀다(칼 기름 「싸움 N번」).
+ * counts 는 세션의 actorId → stateId → 치른 전투 수. 더는 걸려 있지 않은 상태의 수는 치운다(다시 걸리면 0 부터).
+ */
+export function releaseStatesAfterBattle(
+  project: Pick<Project, "database">,
+  counts: Record<string, Record<string, number>>,
+  actorId: string,
+  stateIds: readonly StateId[],
+): StateId[] {
+  const mine = (counts[actorId] ??= {});
+  const kept: StateId[] = [];
+  for (const id of stateIds) {
+    const limit = Math.trunc(project.database.states.find((state) => state.id === id)?.releaseAfterBattles ?? 0);
+    if (limit > 0) {
+      const fought = (mine[id] ?? 0) + 1;
+      if (fought >= limit) { delete mine[id]; continue; }
+      mine[id] = fought;
+    }
+    kept.push(id);
+  }
+  for (const id of Object.keys(mine)) if (!kept.includes(id)) delete mine[id];
+  if (Object.keys(mine).length === 0) delete counts[actorId];
+  return kept;
 }

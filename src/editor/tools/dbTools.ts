@@ -108,6 +108,7 @@ import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { closestDeclaredKey } from "./argRepair";
 import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_SCORE, type StoreIconWant } from "@/assetStore/storeIconPick";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
+import { itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 
 const DATABASE_RECORD_COLLECTIONS = [
   "actors",
@@ -548,6 +549,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   forcedAction: { type: "string", enum: ["attackRandom", "rage"], description: "attackRandom=버서크(명령 없이 무작위 상대 통상 공격), rage=폭주(폭주 기술이 정한 몬스터의 행동 표대로 자동 행동). 폭주 기본 상태 id state_rage" },
   grantSkillIds: stringArraySchema("트랜스·변신 — 이 상태인 동안만 전투 명령 목록에 더해지는 기술 id(최대 12). 리미트 기술(limitSkill)로 이 상태를 걸면 FF6 트랜스"),
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
+  attackElementId: stringSchema("칼 기름·속성 부여 — 이 상태인 동안 통상 공격이 이 속성 id 로 친다(무기 속성 대신, 예 fire). 적의 속성 등급·피해 예외가 그대로 먹는다. 「다음 싸움 한 번만」은 상태의 releaseAfterBattles:1 과 같이 쓰고, 바르는 것은 아이템 stateEffects add"),
   incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
   damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
   counterChance: numberSchema("반격 % 0~100 — 물리 공격(통상·attack 계열)에 맞으면 이 확률로 통상 공격을 되돌린다. 반격끼리는 이어지지 않는다"),
@@ -1092,6 +1094,7 @@ const stateRecordSchema = objectSchema({
   }, "감정 상태. 배틀러는 감정을 하나만 가진다. 계열 상성은 set_battle_settings 의 emotionCycle"),
   fieldStepInterval: integerSchema(),
   releaseAfterSteps: integerSchema(),
+  releaseAfterBattles: integerSchema("전투를 이만큼(1~99) 치르면 풀린다 — 칼 기름·축복처럼 「다음 싸움 N번」. 전투 종료 규칙(clearOnBattleEnd·clearStatesAfterBattle)과 달리 전투 밖으로 이어지고 N번째 전투가 끝날 때 풀린다"),
   fieldStepCanKill: { type: "boolean" },
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
@@ -1394,6 +1397,10 @@ const upsertItem: ToolDefinition = {
     coerceSwitchItem(record, warnings);
     coerceMonsterFieldItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
+    // 칼 기름처럼 상태만 거는 물건을 필드 가방에서 쓰려면 종류가 special 이어야 한다 — 다른 종류면 「필드에서 사용할 수 없는 아이템」으로 조용히 막혔다.
+    if ((record.occasion === "field" || record.occasion === "always") && record.stateEffects.some((effect) => effect.operation === "add") && !itemAllowsFieldMenu(draft, record)) {
+      warnings.push(`'${record.name}' 은 상태를 거는 물건인데 type '${record.type}' 이라 필드 가방에서 쓸 수 없습니다 — 바르는 기름·축복 부적처럼 쓰게 하려면 type:"special" 로 주세요(skillId·activateSkillId 없이).`);
+    }
     resolveIconResourceId(draft, record, "item", warnings);
     autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
@@ -2631,6 +2638,19 @@ const upsertState: ToolDefinition = {
       if (!draft.database.skills.some((skill) => skill.id === skillId)) {
         throw new ToolError(`runtimeEffects.grantSkillIds '${skillId}' 는 없는 기술입니다 — 먼저 upsert_skill 로 만든 뒤 다시 부르세요.`);
       }
+    }
+    const enchant = record.runtimeEffects?.attackElementId?.trim();
+    if (enchant && !(draft.database.elements ?? []).some((element) => element.id === enchant)) {
+      throw new ToolError(`runtimeEffects.attackElementId '${enchant}' 는 없는 속성입니다. 있는 속성: ${(draft.database.elements ?? []).map((element) => element.id).join(", ")}`);
+    }
+    if (record.releaseAfterBattles !== undefined) {
+      const n = Math.trunc(Number(record.releaseAfterBattles));
+      if (!Number.isFinite(n) || n < 1 || n > 99) throw new ToolError(`releaseAfterBattles 는 1~99 정수입니다(받은 값 ${String(record.releaseAfterBattles)}). 전투 수로 풀지 않으려면 빼세요.`);
+      record.releaseAfterBattles = n;
+      if (record.clearOnBattleEnd === true) warnings.push("clearOnBattleEnd:true 면 첫 전투가 끝날 때 풀립니다 — releaseAfterBattles 로 세려면 clearOnBattleEnd 를 빼세요.");
+    }
+    if (enchant && !record.releaseAfterBattles && !record.releaseAfterSteps && record.clearOnBattleEnd !== true) {
+      warnings.push(`attackElementId '${enchant}' 상태가 풀리는 조건이 없습니다 — 칼 기름이면 releaseAfterBattles:1(다음 싸움 한 번)을 주세요.`);
     }
     if ((record.volatileStatus || record.gen1MajorStatus) && draft.system.battleModel !== "gen1") {
       warnings.push(`${record.volatileStatus ? "volatileStatus(혼란)" : "gen1MajorStatus"} 는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다 — 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 이 상태는 일반 상태처럼만 동작합니다.`);
