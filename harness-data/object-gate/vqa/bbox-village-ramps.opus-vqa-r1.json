@@ -1,0 +1,219 @@
+{
+ "round": 1,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "bbox-village-ramps",
+ "images": [
+  "/home/main/claude-viz/bbox-ramps-vqa/ramp-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/stairs-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/probe-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/probe-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/probe2-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/hill-sol31-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/hill-sol32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/hill-terra32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/hill-terra33-crossings-4x.png"
+ ],
+ "rubric": "height vs cliff, edge seams, style vs beodeul cliffs, front-elevation look, 1x readability",
+ "pieces": {
+  "ramp-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h2-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h3-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h3-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h4-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "ramp-h4-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Front-elevation look: the cut face is a near-uniform vertical panel (flat mid-tan fill with horizontal dash marks that read as masonry courses) with a dark shadow band along its bottom rows, exactly like a cliff base. Nothing reads as a surface sloping up and away; in the village crops (terra32/33, sol31 @(3,10), sol32 @(4,10)) it looks like a recessed wall niche/door in the cliff, not a ramp.",
+    "Edge seam: hard horizontal value step at the boundary between the face rows and the foot cell (last 16 rows) - the face ends on a dark shadow row and the foot starts on lighter flat dirt, so a continuous slope is visibly broken into 'wall + floor' across the full width."
+   ],
+   "minors": [
+    "Side cheeks are straight full-height columns (dark brown left, flat orange right) not present on native beodeul cliffs; they read as wooden posts framing the cut.",
+    "Foot cell is a clean rectangle with straight edges and a slightly greyer/flat tint; in probe-3x it is wider than the ragged dirt road below and shows hard corners against grass.",
+    "Face texture is lower-contrast, finer noise than the chunky clustered cobbles of the native cliff face; looks washed out next to it.",
+    "1x readability weak: at 1x (probe-1x) the ramp is a faded patch in the cliff band; only the road continuity tells you it is passable."
+   ]
+  },
+  "stairs-h1-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Top tread (top ~4-5 rows of the face) is overlaid with scattered green and near-white speckle noise, so at 1x/3x (probe-1x leftmost stairs, probe2 right stacked lower flight) the whole h1 cut reads as a grassy/frosted fringe or broken rubble, not as two clean steps.",
+    "Style inconsistency within the set: h1 stone is lighter and noisier (single-pixel white flecks) than the clean dressed treads of h2-h4, so the same paved road changes material at one-level cliffs."
+   ],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal."
+   ]
+  },
+  "stairs-h1-w3": {
+   "verdict": "FAIL",
+   "majors": [
+    "Top tread (top ~4-5 rows of the face) is overlaid with scattered green and near-white speckle noise, so at 1x/3x (probe-1x leftmost stairs, probe2 right stacked lower flight) the whole h1 cut reads as a grassy/frosted fringe or broken rubble, not as two clean steps.",
+    "Style inconsistency within the set: h1 stone is lighter and noisier (single-pixel white flecks) than the clean dressed treads of h2-h4, so the same paved road changes material at one-level cliffs."
+   ],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal."
+   ]
+  },
+  "stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal."
+   ]
+  },
+  "stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal."
+   ]
+  },
+  "stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal.",
+    "Long flights (h3/h4) are very repetitive identical courses; no perspective change toward the crest."
+   ]
+  },
+  "stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal.",
+    "Long flights (h3/h4) are very repetitive identical courses; no perspective change toward the crest."
+   ]
+  },
+  "stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal.",
+    "Long flights (h3/h4) are very repetitive identical courses; no perspective change toward the crest."
+   ]
+  },
+  "stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Side cheeks are full-height straight columns (dark brown left, flat orange right) not present on native cliffs; the orange right strip reads as a wooden plank.",
+    "Foot cell cobble has no light kerb edge, while the paved road tile above/below does; small visible break at the foot.",
+    "Treads are drawn as front-elevation stone courses with only a 1px light lip; acceptable stair read but tread depth is minimal.",
+    "Long flights (h3/h4) are very repetitive identical courses; no perspective change toward the crest."
+   ]
+  }
+ },
+ "stacked": {
+  "verdict": "FAIL",
+  "majors": [
+   "Right stack in probe2 (1 + strip + 2): the lower stairs flight is stairs-h1 and reads as a white/green speckled fringe, so the composed flight looks broken at the bottom.",
+   "Ramp stacks (probe2 middle and right, terra32/33 crossings) compose two flat wall-like panels with a dark shadow row and hard face/foot seam each; the composition reads as two niches separated by a ledge, not one continuous climb."
+  ],
+  "minors": [
+   "Stairs 2+strip+2 stack joins cleanly at the landing (foot cobble lies on the strip and meets the next flight's crest); this part is fine.",
+   "Ramp foot cell on the landing strip is a flat rectangle wider than the dirt path."
+  ]
+ },
+ "majors": 22,
+ "verdict": "FAIL",
+ "summary": "Heights match the native cliff rows in every probe and village crop (no wrong-height defect found). All 8 ramps fail: the cut face is a flat vertical panel with a cliff-style dark base shadow and a hard value step into the foot cell, so it reads as a niche/wall in the cliff, not a slope. Stairs h2-h4 read clearly as stairs and pass with minors (posts-like side cheeks, kerbless foot). Stairs h1 (both widths) fail: the top tread is covered in green/white speckle noise and reads as a grassy fringe at 1x. Stacked art fails because it inherits these defects; the stairs 2+2 stack itself joins cleanly. Side note (not graded as piece art): the two 'south cliff 2' ramp crossings in sol31 @(14,32) and sol32 @(20,32) show no cliff or ramp at all in the crop."
+}
