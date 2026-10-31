@@ -784,6 +784,18 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
   if (gone.length) sim.vehicles = sim.vehicles.filter((v) => !gone.includes(v));
 }
 
+/**
+ * 사람 위에 선 탈것을 치운다 — 맵에 들어올 때 미리 돌리기(createTransitSim warmup)는 사람을 모르고 돌기 때문에, 들어오자마자
+ * 서 있는 행인 칸 위에 차가 겹쳐 놓일 수 있었다(첫사랑 금요일 밤: 횡단보도에 선 행인 위에 차가 서서 장면 내내 겹쳐 있었다).
+ * 그런 차는 길에서 빼고 지운 수를 돌려준다. 화면이 밝아지기 전(들어온 직후)에만 부른다.
+ */
+export function transitClearPeople(sim: TransitSim | undefined, isBlocked: (x: number, y: number) => boolean): number {
+  if (!sim) return 0;
+  const before = sim.vehicles.length;
+  sim.vehicles = sim.vehicles.filter((v) => !transitRectCells(transitGroundRect(v.def, transitPose(sim, v))).some((c) => isBlocked(c.x, c.y)));
+  return before - sim.vehicles.length;
+}
+
 /** (x, y) 칸이 탈것 몸에 덮였는가 — 주인공 통행 판정이 쓴다. */
 export function transitCellBlocked(sim: TransitSim | undefined, x: number, y: number): boolean {
   if (!sim) return false;
