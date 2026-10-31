@@ -383,6 +383,14 @@ export function gateBattleSteps(run: BuildRun): string[] {
         if (plan.ok) for (const entry of plan.events) run.call("upsert_event", { mapId: entry.mapId, event: entry.event, replacePages: true });
       }
     } else {
+      // 이미 싸우는 페이지는 두 번째 전투로 감싸지 않는다 — 승리 갈래 밖 진행 명령을 그 전투의 승리 갈래로 옮긴다(foldProgressIntoVictory).
+      const folded = pages.map((page) => foldProgressIntoVictory(page));
+      if (folded.some((f) => f.moved > 0) && !battleStepBypass(project, { ...ev, pages: folded.map((f) => f.page) } as unknown as typeof ev)) {
+        const moved = folded.flatMap((f, i) => (f.moved ? [`page ${i + 1} (${f.moved} commands)`] : []));
+        notes.push(`Fixed: «${step.event}» already fights a battle, but ${moved.join(", ")} ran story progress outside the battle's victory branch, so the step could be passed without winning. Moved those commands into that battle's victory branch instead of adding a second battle.`);
+        if (!run.call("upsert_event", { mapId: map.id, event: { ...structuredClone(ev), pages: folded.map((f) => f.page) } as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
+        continue;
+      }
       const troopId = pickFittedTroops(project, undefined).boss;
       if (!troopId) continue;
       for (const page of pages) {
@@ -398,6 +406,40 @@ export function gateBattleSteps(run: BuildRun): string[] {
     if (!run.call("upsert_event", { mapId: map.id, event: event as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
   }
   return notes;
+}
+
+/**
+ * 이미 전투가 있는 페이지에서, 맨 위 줄의 진행 명령(엔딩·스위치·아이템·이동)과 그 바로 앞에 이어 붙은 대사를 첫 전투의 승리 갈래 끝으로 옮긴다.
+ * 왜(2026-10-31 ja2a·ja2b argon jrpg): 단계 「마왕」 페이지가 [「마왕을 살펴보았다」, 엔딩 글, triggerEnding, 마왕 전투] 꼴이라 이기지 않아도
+ * 엔딩이 불렸고(blueprint-battle-bypass), gateBattleSteps 가 페이지 통째를 맞춘 보스 그룹(troop_fit_boss_dragon) 전투로 한 번 더 감쌌다 —
+ * 플레이어는 용과 싸운 뒤 바로 마왕과 또 싸웠다(판정자 「보스가 두 번 나온다」). 전투가 이미 있으면 그 승리 갈래가 진행을 맡는다.
+ */
+export function foldProgressIntoVictory(page: RawPage): { page: RawPage; moved: number } {
+  type Cmd = Record<string, unknown> & { kind?: string };
+  const cmds = (page.commands ?? []) as Cmd[];
+  const b = cmds.findIndex((c) => c.kind === "battleProcessing");
+  if (b < 0) return { page, moved: 0 };
+  const take = new Set<number>();
+  cmds.forEach((c, i) => {
+    if (i === b || !PROGRESS.has(String(c.kind))) return;
+    take.add(i);
+    for (let j = i - 1; j >= 0 && j !== b && cmds[j]!.kind === "text" && !take.has(j); j -= 1) take.add(j);
+  });
+  if (!take.size) return { page, moved: 0 };
+  const moving = cmds.filter((_, i) => take.has(i)).map((c) => structuredClone(c));
+  const battle = structuredClone(cmds[b]!) as Cmd & { victoryBranch?: Cmd[]; branchOnResult?: boolean };
+  const rest = cmds.filter((_, i) => !take.has(i) && i !== b);
+  const at = cmds.slice(0, b).filter((_, i) => !take.has(i)).length;
+  const after: Cmd[] = [];
+  if (Array.isArray(battle.victoryBranch)) {
+    const fork = battle.victoryBranch.find((c) => c.kind === "fork" && (c.condition as { kind?: string; result?: string } | undefined)?.kind === "battleResult" && (c.condition as { result?: string }).result === "victory") as (Cmd & { then?: Cmd[] }) | undefined;
+    if (fork) fork.then = [...(fork.then ?? []), ...moving];
+    else battle.victoryBranch = [...battle.victoryBranch, ...moving];
+  } else {
+    after.push({ kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: moving });
+  }
+  const commands = [...rest.slice(0, at), battle, ...after, ...rest.slice(at)];
+  return { page: { ...page, commands }, moved: moving.length };
 }
 
 /**
