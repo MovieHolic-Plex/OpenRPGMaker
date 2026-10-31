@@ -20,7 +20,16 @@ export const BATTLE_SCENERY_CATALOG = BATTLE_SCENERY_BIOMES.map((biome) => ({
 export const BATTLE_BACKDROP_ID_HINT =
   "전투 배경. 도트 측면 전투(기본)는 그림을 그대로 깔지 않고 겹 배경 종류로 푼다 — "
   + BATTLE_SCENERY_BIOMES.map((biome) => `battle-scenery-${biome}`).join(" | ")
-  + " 중 하나를 쓴다(이스턴 RPG 기본 배경·옛 스킨 배경은 전부 풀밭이 된다). 업로드한 그림 id 만 그대로 깔린다. 몬스터 대치(포켓몬식)는 고른 그림을 그대로 쓴다.";
+  + " 중 하나를 쓴다(이스턴 RPG 기본 배경·옛 스킨 배경은 전부 풀밭이 된다). 업로드한 그림 id 만 그대로 깔린다. 몬스터 대치(포켓몬식)는 고른 그림을 그대로 쓴다."
+  + " Night/fog/rain moods are not separate ids (there is no battle-scenery-forest-night): keep the biome id and add backdropLayers on the troop, e.g. [{preset:\"night\", opacity:65, blendMode:\"multiply\"}].";
+
+/** battle-scenery-<없는 바이옴> 같은 지어낸 id 면 모델에게 줄 거절 글, 아니면 undefined. 2026-10-31 asst-parity 숲 추격 Opus: 「battle-scenery-forest-night」 을 지어내 저장했다. */
+export function unknownSceneryIdMessage(id: unknown): string | undefined {
+  if (typeof id !== "string" || !id.trim().startsWith("battle-scenery-")) return undefined;
+  if (BATTLE_SCENERY_CATALOG.some((entry) => entry.resourceId === id.trim())) return undefined;
+  return `"${id.trim()}" is not a battle backdrop. Side-view backdrops are ${BATTLE_SCENERY_BIOMES.map((biome) => `battle-scenery-${biome}`).join(" | ")}. `
+    + `For a night, foggy or rainy look keep the biome id and add backdropLayers on the troop, e.g. previewBackgroundResourceId:"battle-scenery-forest", backdropLayers:[{preset:"night", opacity:65, blendMode:"multiply"}].`;
+}
 
 export function sceneryBiomeFromResourceId(id: string | undefined): BattleSceneryBiome | undefined {
   return BATTLE_SCENERY_CATALOG.find((entry) => entry.resourceId === id)?.biome;

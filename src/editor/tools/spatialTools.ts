@@ -100,6 +100,19 @@ function importReviewedPlace(project: Project, args: Record<string, unknown>) {
   return { summary: `검토 장소 ${placeId} → 맵 ${results.map(result => result.mapId).join(", ")}`,
     data: { referenceId: `reviewed:${placeId}`, source: "reviewed", maps: results } };
 }
+/** 한국어 물건 낱말 → 공용 키트에서 찾을 영어 이름·대신 쓸 물건(list_spatial_designs 가 0건일 때만). */
+const OBJECT_QUERY_ALIASES: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
+  [/시체|시신|주검|송장/u, ["coffin", "grave"]],
+  [/무덤|묘지|비석/u, ["grave", "tomb"]],
+  [/게시판|알림판|공고/u, ["notice board", "board", "sign"]],
+  [/표지판|팻말/u, ["sign"]],
+  [/나룻배|조각배|^배$/u, ["boat", "ship"]],
+  [/횃불|화톳불/u, ["torch", "brazier"]],
+  [/^관$|관짝/u, ["coffin"]],
+  [/우물/u, ["well"]],
+  [/제단/u, ["altar"]],
+];
+
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
   readSpatialReferenceTool,
   { name: "read_region_reference", mode: "read", domains: ["world", "map", "database"],
@@ -188,9 +201,18 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
           || Number(b.entry.tags.includes("사용자 선택")) - Number(a.entry.tags.includes("사용자 선택"))
           || Number(activeTilesetIds.includes(b.entry.tilesetId ?? "")) - Number(activeTilesetIds.includes(a.entry.tilesetId ?? ""))
           || a.index - b.index).map(({ entry }) => entry);
+      // 한국어 낱말이 0건이면 가까운 영어 이름·대신 쓸 물건으로 한 번 더 찾는다 — 공용 키트 이름은 대개 영어다.
+      // 2026-10-31 asst-parity 사냥꾼 계약 terra: 「시체」 0건 → 공방 그리기 카드만 올리고 막힘. Opus 는 「관」으로 coffin open 을 찾아 그 안에 시체를 두었다.
+      let aliasNote = "";
+      if (!shared.length && query) {
+        const words = OBJECT_QUERY_ALIASES.filter(([re]) => re.test(query)).flatMap(([, alts]) => alts);
+        const alt = words.length ? candidates.filter(entry => words.some(word => matchesQuery(entry, word))) : [];
+        if (alt.length) { shared.push(...alt); aliasNote = ` — 「${query}」 0건이라 ${words.join("·")} 로 찾음(search used ${words.join(", ")} for "${query}")`; }
+        else aliasNote = ` — no match for "${query}". Kit names are mostly English: try English words or a nearby object that stands in for it (corpse → coffin, notice → board/sign)`;
+      }
       const sharedPage = { total: shared.length, offset, rows: shared.slice(offset, offset + limit),
         ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}) };
-      const sharedNote = `공용 ${shared.length}건`;
+      const sharedNote = `공용 ${shared.length}건${aliasNote}`;
       if (project.spatialAuthoring === undefined) {
         return { summary: `장소 저작 비활성(프로젝트 설계 0) · ${sharedNote}`, data: { active: false, designs: [], shared: sharedPage } };
       }

@@ -99,7 +99,7 @@ import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
 import { pickBlueprintTitleArt } from "@/project/blueprintAssembly";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
-import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
+import { BATTLE_BACKDROP_ID_HINT, unknownSceneryIdMessage } from "@/assets/battleSceneryCatalog";
 import { BOSS_FLOOR_STATS, type BossFloorStat, isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -2018,6 +2018,8 @@ const upsertTroop: ToolDefinition = {
         { code: "use-battle-page-tool" },
       );
     }
+    const badScenery = unknownSceneryIdMessage((args.troop as Record<string, unknown> | undefined)?.previewBackgroundResourceId);
+    if (badScenery) throw new ToolError(badScenery, { code: "unknown-battle-backdrop" });
     const troopArg = withEnemyIdsFromMembers(args.troop);
     const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
     const patch = troopArg as Partial<TroopRecord>;
