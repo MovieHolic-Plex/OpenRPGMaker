@@ -290,9 +290,35 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const mapId = link.mapId ?? args.mapId;
     const map = run.ctx.project.maps[mapId];
     if (!map) return fail(`${index + 1}번 고리: 맵 ${mapId} 이 없다`);
-    const existing = map.events.find((ev) => ev.id === link.eventId) ?? (link.name ? map.events.find((ev) => ev.name === link.name) : undefined)
-      ?? (link.at ? map.events.find((ev) => ev.x === link.at!.x && ev.y === link.at!.y) : undefined);
-    if (!existing && !link.at) return fail(`${index + 1}번 고리(${link.role}): 이벤트 ${link.eventId ?? link.name ?? ""} 를 못 찾았다 — eventId 를 주거나 새로 둘 칸 at:{x,y} 를 준다`);
+    // 찾는 차례: eventId → name → 단서 이름·첫 줄에 든 기존 물건 이름(하나뿐일 때) → at 칸.
+    // 왜(2026-11-01 cheap r4 flash): 모델이 eventId 를 «desk_clue» 처럼 지어 내고, 거절되자 이름 없이 at 만 짐작해 줘서
+    // 이미 있던 「책상」「액자」「화분」 대신 빈 칸에 새 이벤트를 세웠고, 자물쇠 고리는 짐작한 칸의 「액자」에 붙었다.
+    const claimedIds = new Set(eventIds.map((e) => e.eventId));
+    const free = map.events.filter((ev) => !claimedIds.has(ev.id) && typeof ev.name === "string" && ev.name.trim().length >= 1);
+    const byId = link.eventId ? map.events.find((ev) => ev.id === link.eventId) : undefined;
+    if (link.eventId && !byId && !link.name && !link.at) {
+      const list = free.slice(0, 24).map((ev) => `${ev.id} «${ev.name}» (${ev.x},${ev.y})`).join(", ");
+      return fail(`link ${index + 1} (${link.role}): there is no event with id "${link.eventId}" on map ${mapId}. Use one of the existing events (eventId or name): ${list || "none"} — or give at:{x,y} for a new spot.`);
+    }
+    const byName = link.name ? map.events.find((ev) => ev.name === link.name) : undefined;
+    const inferred = (() => {
+      if (byId || byName || link.name) return undefined;
+      const text = [link.learn ?? "", (link.lines?.[0] ?? "").slice(0, 16)].join(" ");
+      const hits = free.filter((ev) => ev.name!.trim().length >= 2 && text.includes(ev.name!.trim()));
+      return hits.length === 1 ? hits[0] : undefined;
+    })();
+    const atEv = link.at ? map.events.find((ev) => ev.x === link.at!.x && ev.y === link.at!.y) : undefined;
+    if (!byId && !byName && !inferred && atEv && claimedIds.has(atEv.id)) {
+      // 같은 사슬의 앞 고리가 이미 쓴 이벤트를 칸 짐작으로 다시 덮지 않는다(앞 고리의 단서 글이 지워진다).
+      const list = free.slice(0, 24).map((ev) => `${ev.id} «${ev.name}» (${ev.x},${ev.y})`).join(", ");
+      return fail(`link ${index + 1} (${link.role}): cell (${link.at!.x},${link.at!.y}) is «${atEv.name}», already used by an earlier link of this chain. Give this link its own event — unused events here: ${list || "none"} (eventId or name) — or an empty cell in at.`);
+    }
+    const existing = byId ?? byName ?? inferred ?? atEv;
+    if (inferred) warnings.push(`${index + 1}번 고리(${link.role}): 이름 없이 받은 고리를 단서 글에 든 기존 이벤트 「${inferred.name}」(${inferred.id}) 에 붙였다${link.at ? ` — 짐작한 칸 (${link.at.x},${link.at.y}) 대신` : ""}`);
+    if (!existing && !link.at) {
+      const list = free.slice(0, 24).map((ev) => `${ev.id} «${ev.name}» (${ev.x},${ev.y})`).join(", ");
+      return fail(`link ${index + 1} (${link.role}): event ${link.eventId ?? link.name ?? "(none given)"} not found on map ${mapId}. Existing events: ${list || "none"} — give one as eventId or name, or give at:{x,y} for a new spot.`);
+    }
     // 새 고리 id 는 게임 어디의 이벤트와도 겹치지 않게 — 다시 지을 때 «ev_chain_<이름>_1» 이 이미 있는 다른 고리(그대로 둔 단계)를 덮어썼다
     // (2026-10-29 mt3 flash 방탈출 재빌드: 덧붙인 단서 고리가 「조사 시작」을 지웠다).
     const usedIds = new Set(Object.values(run.ctx.project.maps).flatMap((m) => (m.events ?? []).map((ev) => ev.id)));

@@ -415,7 +415,7 @@ export function runTodoCheck(project: Project, check: TodoCheck, ctx: TodoCheckC
     case "room_graph": return checkRoomGraph(project, sc, check.map);
     case "layout_built": return checkLayoutBuilt(project, sc, check.map);
     case "layout_review": return checkLayoutReview(project, sc, check.map);
-    case "code_lock": return checkCodeLock(project, sc, check.code, check.hintAfter);
+    case "code_lock": return checkCodeLock(project, sc, check.code, check.hintAfter, check.on);
   }
 }
 
@@ -434,7 +434,7 @@ function flatCmds(list: unknown, out: CmdNode[] = []): CmdNode[] {
   return out;
 }
 const OPENS = new Set(["setSwitch", "transfer", "triggerEnding", "ending", "setSelfSwitch", "changeTile", "callCommonEvent", "changeItem"]);
-function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: number): CheckResult {
+function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: number, on?: string): CheckResult {
   const want = Number(code);
   const notes: string[] = [];
   for (const map of Object.values(project.maps)) {
@@ -445,6 +445,8 @@ function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: nu
         const all = flatCmds(page.commands);
         const inputs = all.filter((c) => c.kind === "inputNumber" && typeof c.variableId === "string").map((c) => String(c.variableId));
         if (!inputs.length) continue;
+        // 요청이 자물쇠 자리를 이름으로 말했으면(「자물쇠」를 조사하면 …) 그 이벤트여야 한다 — 2026-11-01 cheap r4 flash: 번호 입력을 「액자」에 붙이고 ✓ 로 닫았다.
+        if (on && nameScore(on, String(ev.name ?? "")) <= 0) { notes.push(t(`${at(map, ev)}: 번호를 받지만 요청의 자물쇠는 「${on}」이다 — 「${on}」 이벤트에 붙인다`, `${at(map, ev)}: takes the number, but the request puts the lock on «${on}» — put it on the «${on}» event`)); continue; }
         const forks = all.filter((c) => c.kind === "fork");
         const right = forks.find((f) => { const k = f.condition as CmdNode | undefined; return k?.kind === "variable" && inputs.includes(String(k.variableId)) && Number(k.value) === want && (k.op === "==" || k.op === undefined); });
         if (!right) { notes.push(t(`${at(map, ev)}: 숫자를 받지만 ${code} 와 같은지 묻는 분기가 없다`, `${at(map, ev)}: takes a number but no fork compares it == ${code}`)); continue; }

@@ -30,7 +30,7 @@ export type TodoCheckBody =
   | { kind: "layout_built"; map: string }
   | { kind: "layout_review"; map: string }
   /** 번호 자물쇠: 숫자 입력 → 그 변수 == code 분기(맞으면 무엇이 열림), hintAfter 면 틀린 횟수를 세어 그 횟수에 힌트 대사. */
-  | { kind: "code_lock"; code: string; hintAfter?: number }
+  | { kind: "code_lock"; code: string; hintAfter?: number; on?: string }
   | { kind: "none" };
 
 export type TodoCheck = TodoCheckBody & TodoCheckCommon;
@@ -142,6 +142,7 @@ export const TODO_CHECK_SCHEMA = {
     target: { type: "string", description: "target for reachable (event, person or map name)" },
     code: { type: "string", description: "code_lock: the right number (digits)" },
     hintAfter: { type: "number", description: "code_lock: wrong tries before the hint line shows (optional)" },
+    on: { type: "string", description: "code_lock: in-game name of the event that holds the lock, e.g. the safe or keypad the request names (optional)" },
     fresh: { type: "boolean", description: "true if this request must create or change it (default true) — something that already existed does not pass. false to only confirm something that exists" },
   },
   required: ["kind"],
@@ -202,7 +203,7 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
     case "code_lock": {
       const code = str("code")!.replace(/\D/gu, "");
       const n = typeof r.hintAfter === "number" && Number.isFinite(r.hintAfter) ? Math.max(1, Math.min(9, Math.round(r.hintAfter))) : undefined;
-      return clean({ kind: k, code, hintAfter: n });
+      return clean({ kind: k, code, hintAfter: n, on: str("on") });
     }
     case "none":
       return { kind: k };
