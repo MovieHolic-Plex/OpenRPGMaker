@@ -19,7 +19,7 @@ import { resolve, dirname } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { isDeepStrictEqual } from 'node:util';
 import { firefox } from 'playwright';
-import { stored, writeRuntimeProject, newEditor, startHost } from './editorDriver.mjs';
+import { stored, writeRuntimeProject, newEditor, startHost, assistantReports } from './editorDriver.mjs';
 import { readOAuthClientsFromPiAi } from '../../../../scripts/lib/oauthClients.mjs';
 import { installStoreBridge } from './storeBridgeShim.mjs';
 
@@ -215,7 +215,7 @@ try {
     if (outcome !== 'awaiting-answer') saveKind = await save().catch(error => `save-failed: ${error.message.slice(0, 200)}`);
     const snap = stored(projectDir);
     // 편집기는 마지막 보고 하나만 말풍선으로 보인다(aiPiAgentCommand lastAssistantText). 끝맺음 관문 앞의 초안은 따로 남긴다(G32).
-    const reports = events.filter(e => e.type === 'assistant').map(e => (e.text ?? '').trim()).filter(Boolean);
+    const reports = assistantReports(events);
     const answer = reports.at(-1) ?? '';
     const draftReports = reports.slice(0, -1);
     const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined,
