@@ -74,6 +74,12 @@ profiles·dress·gimmick 는 키트를 **후보 목록**(`KitPref`)으로 받는
   - 링 안 장식(`dressTower` `ringEdge`): 링 그림(안벽 그늘·띠)이 덮은 바닥 칸에는 물건이 못 앉는다 — 그 안쪽 첫 둘레에 책장·촛대·수정을 둔다.
   - 층 변화(`towerRooms(top, k, seed)`): 시드로 층계참 너비(9·11)·곁 서고/창고(동·서, 55%)·꼭대기 링 크기(12·10)가 바뀐다 — 같은 탑 두 요청이 판박이가 아니다.
   - 키트가 없는 타일셋 사본은 mask 의 팔각(round)으로 남는다.
+  - **층마다 계단방 윤곽·표지(2026-10-31, 폴른 스타 2막 B10 「하늘탑 1~4층이 같은 둥근 계단방」)**: 층 꼴(cross·twin·spiral…)은 아래쪽만 바꾸고 계단방은 늘 같은 12칸 계단 링이라, 위층마다 같은 둥근 방이 같은 자리에 찍혔다.
+    `towerFloorPlans(floors, seed, floorShapes)` 가 층마다 꼴 + 계단방 윤곽(`ringStair`) + 표지(`landmark`)를 정한다.
+    링 계단방은 **한 층 걸러** 쓴다(꼭대기가 ring 이면 바로 아래층은 팔각). 링이 아닌 층의 계단방은 11·13×7·8 팔각(round)/반원(apse) 홀이고 북벽 계단으로 오르며 shift(−3·0·+3)로 자리가 흔들린다.
+    표지(방 kind)는 링 층 = 서고(library)·별 관측실(hall: 혼천의·천구의), 팔각 층 = 마법진 방(shrine)·연금 공방(storage)을 번갈아 — 이웃 층은 늘 다르다.
+    링 바닥은 대부분 링 그림 칸이라 5×5 마법진·연금로가 앉지 못한다(실측: 링 안 빈 칸 31/80) — 그래서 큰 기물 표지는 팔각 층에만 준다.
+    나란히 그리기: `bun scripts/qa/dungeons/tower-floors.mts <outDir> '<author_dungeon args JSON>'`.
 - **얼음굴 바닥(`profile.autoFloor`)**: ice 는 바위 줄 C(어두운 청색) + 걷는 바닥 `beodeul_dungeon_ice_ground` 오토타일, 호수 방과 잡음 덩이(vnoise>0.74)는 빙판 `beodeul_dungeon_ice` 오토타일(이웃 = 빙판 칸). 얼음 미끄럼 장치는 이미 빙판인 줄은 다시 칠하지 않는다.
 - **벽 레버**: `placeLever` 가 방 북쪽 벽 칸(바닥 첫 줄 위)에 `bd-dg-lever-up` 을 받침 검사(`checkGroundSupportForStamp`) 통과할 때만 걸고, 이벤트를 그 벽 칸에(투명·같은 높이) 둔다 — 당기면 `changeTile`(upper) 로 `lever-down` 그림 + 스위치. 바위 앞면(동굴·화산)은 벽 태그가 없어 바닥 charset 레버로 물러선다.
 - **문 여는 이벤트**: 벽 문(`DungeonStairCell.doorTiles`)이 있는 계단 이벤트는 이동 전에 문 소리 + `changeTile`(upper, 문 위·아래 칸 → open 그림) + 250ms 를 먼저 한다.

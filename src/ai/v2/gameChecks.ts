@@ -5,6 +5,7 @@
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, GameMap, Project } from "@/project/types";
 import { chaseCellMs } from "@/project/chaseTempo";
+import { isScriptCommand, scriptCalls, scriptReads, scriptWrites } from "@/project/script/effects";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
@@ -167,6 +168,11 @@ function readsOf(project: Project): { switches: Set<string>; variables: Set<stri
       // 변수는 값으로도 읽힌다(대사 속 \V[..]·다른 변수 연산·조건부 분기의 피연산자).
       for (const [k, v] of Object.entries(cmd)) if (k !== "variableId" && typeof v === "object" && v) for (const c of flatConditions(v)) if (c.kind === "var" && typeof c.id === "string") variables.add(c.id);
       if (cmd.kind === "text" && typeof cmd.body === "string") for (const m of cmd.body.matchAll(/\\V\[([^\]]+)\]/gu)) variables.add(m[1]!);
+      // 스크립트가 리터럴 id 로 읽는 스위치·변수.
+      if (isScriptCommand(cmd)) {
+        for (const id of scriptReads(cmd, "switch", project)) switches.add(id);
+        for (const id of scriptReads(cmd, "variable", project)) variables.add(id);
+      }
     }
   }
   const rest = JSON.stringify({ endings: project.endings ?? [], quests: project.quests ?? [] });
@@ -182,6 +188,12 @@ function settersOf(project: Project): { switches: Map<string, string>; variables
     if ((cmd.kind === "setSwitchRange" || cmd.kind === "controlSwitches") && typeof cmd.switchId === "string") switches.set(cmd.switchId, ev.name);
     if (cmd.kind === "setVariable" && typeof cmd.variableId === "string") variables.set(cmd.variableId, ev.name);
     if (cmd.kind === "callCommonEvent" && typeof cmd.commonEventId === "string") commons.set(cmd.commonEventId, ev.name);
+    // 스크립트의 game.setSwitch·setVar·callCommonEvent(리터럴 id).
+    if (isScriptCommand(cmd)) {
+      for (const id of scriptWrites(cmd, "switch", project)) switches.set(id, ev.name);
+      for (const id of scriptWrites(cmd, "variable", project)) variables.set(id, ev.name);
+      for (const id of scriptCalls(cmd, "commonEvent", project)) commons.set(id, ev.name);
+    }
   }
   // 엔딩·퀘스트 보상이 켜는 깃발도 켜는 쪽이다.
   const rest = JSON.stringify({ endings: project.endings ?? [], quests: project.quests ?? [] });
@@ -467,10 +479,14 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 1b) 화면 흔들림·번쩍·음악: 실제 명령(카메라 이동·페이드로 흉내 내지 않는다).
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
-  if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
-  if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio")) problems.push("[게임 검사 효과음] 요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se').");
-  if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
+  // TypeScript event scripts call the same effects through game.* (openwiki/script-sandbox.md) — 2026-10-31 live run:
+  // a lever script with `await game.shake(6, 40)` was reported as «no shake command».
+  const scriptSource = cmds.filter((r) => r.cmd.kind === "script").map((r) => String(r.cmd.source ?? "")).join("\n");
+  const scriptCalls = (re: RegExp) => re.test(scriptSource);
+  if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u) && !scriptCalls(/\bgame\.shake\s*\(|m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
+  if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !scriptCalls(/\bgame\.flash\s*\(|m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
+  if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio") && !scriptCalls(/\bgame\.playSe\s*\(/u)) problems.push("[게임 검사 효과음] 요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se').");
+  if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu) && !scriptCalls(/\bgame\.(playBgm|stopBgm)\s*\(/u)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
   if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).

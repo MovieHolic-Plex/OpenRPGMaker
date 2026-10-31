@@ -11,6 +11,7 @@
 // - 어느 경로든 마지막 안전핀: 삭제 결과를 serialize→deserialize 왕복으로 검증해
 //   통과하지 못하면 삭제를 커밋하지 않는다(벽돌 원천 차단).
 
+import { forEachProjectScript, scriptCalls } from "@/project/script/effects";
 import { deserialize, serialize } from "./io";
 import type { Command, EventPage, GameEvent, MapId, MapTreeNode, Project } from "./types";
 import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
@@ -39,6 +40,8 @@ export interface MapDeletionImpact {
   readonly treeChildCount: number;
   /** 다른 맵/공통 이벤트에서 이 맵으로 이동(transfer/changeTile)하는 명령 수(함께 제거됨). */
   readonly incomingCommandCount: number;
+  /** 이 맵으로 game.transfer 하는 스크립트 수. 스크립트는 고치지 않고 남는다(실행하면 「없는 맵」 오류). */
+  readonly incomingScriptCount?: number;
   readonly incomingScheduleRows: readonly MapScheduleRowReference[];
   /** 이 맵과 연결된 mapConnections 수(함께 제거됨). */
   readonly connectionCount: number;
@@ -96,6 +99,7 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     isTreeRoot: project.mapTree.mapId === mapId,
     treeChildCount: treeNode?.children.length ?? 0,
     incomingCommandCount: countIncomingCommands(project, mapId),
+    ...scriptImpact(project, mapId),
     incomingScheduleRows: collectIncomingScheduleRows(project, mapId),
     connectionCount: (project.mapConnections ?? []).filter(
       (connection) => connection.from.mapId === mapId || connection.to.mapId === mapId
@@ -410,6 +414,14 @@ function stripMapCommandSet(commands: readonly Command[], deleted: ReadonlySet<s
     result.push(command);
   }
   return result;
+}
+
+function scriptImpact(project: Project, mapId: MapId): { incomingScriptCount?: number } {
+  let count = 0;
+  forEachProjectScript(project, (command, owner) => {
+    if (owner.mapId !== mapId && scriptCalls(command, "map", project).includes(mapId)) count += 1;
+  });
+  return count > 0 ? { incomingScriptCount: count } : {};
 }
 
 function countIncomingCommands(project: Project, mapId: MapId): number {

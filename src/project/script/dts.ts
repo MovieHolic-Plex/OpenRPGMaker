@@ -61,6 +61,39 @@ function entrySignature(entry: ScriptApiEntry): string {
   return `  /** ${entry.doc} */\n  ${entry.name}(${entry.params}): ${returns};`;
 }
 
+/** Shared helper types (options, info objects, enums) — in the `.d.ts` and at the end of the cheat sheet. */
+const SCRIPT_HELPER_TYPE_LINES: readonly string[] = [
+  'type SelfSwitchKey = "A" | "B" | "C" | "D";',
+  'type Direction = "up" | "down" | "left" | "right";',
+  'type TileLayer = "lower" | "upper" | "lower2" | "upper2";',
+  'type BattleResult = "victory" | "defeat" | "escape";',
+  'type FlashColor = "white" | "red" | "black" | `#${string}`;',
+  `type EmoteName = ${EMOTE_KINDS.map(quote).join(" | ")};`,
+  'type MoveTarget = "player" | "this" | EventId;',
+  "type MoveStep =",
+  '  | Direction',
+  '  | "face-up" | "face-down" | "face-left" | "face-right" | "face-player" | "face-away"',
+  '  | "toward-player" | "away-from-player" | "forward" | "random" | "jump" | "wait"',
+  "  | { kind: string; [field: string]: unknown };",
+  "type AnimTarget = \"player\" | \"this\" | EventId | { x: number; y: number };",
+  "interface MessageOptions { speaker?: string }",
+  "interface ChoiceSettings {",
+  "  prompt?: string;",
+  "  /** 'cancel' → Esc resolves -1. A number → Esc picks that index. Default: Esc does nothing. */",
+  "  cancel?: \"cancel\" | number;",
+  "}",
+  "interface NumberInputSettings { digits?: number; prompt?: string }",
+  'interface TransferOptions { direction?: Direction; fade?: "black" | "white" | "none" }',
+  "interface MoveOptions { wait?: boolean; skippable?: boolean }",
+  "interface TileOptions { layer?: TileLayer; mapId?: MapId }",
+  "interface BattleOptions { canEscape?: boolean; canLose?: boolean }",
+  "interface AudioOptions { volume?: number }",
+  "interface ActorInfo { readonly id: ActorId; readonly name: string; readonly level: number; readonly exp: number; readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number; readonly inParty: boolean }",
+  "interface PlayerInfo { readonly mapId: MapId; readonly x: number; readonly y: number; readonly direction: Direction }",
+  "interface EventInfo { readonly id: EventId; readonly name: string; readonly x: number; readonly y: number }",
+  'interface GameClock { readonly enabled: boolean; readonly hour: number; readonly minute: number; readonly day: number; readonly season: string; readonly year: number; readonly phase: "morning" | "day" | "evening" | "night" }',
+];
+
 /** Full `.d.ts` text. Pure; the same text for the same ids. */
 export function buildGameApiDts(ids: ScriptDtsIds = scriptDtsIds(undefined)): string {
   const groups = new Map<ScriptApiGroup, ScriptApiEntry[]>();
@@ -92,35 +125,7 @@ export function buildGameApiDts(ids: ScriptDtsIds = scriptDtsIds(undefined)): st
     `type EventId = ${idUnion(ids.events)};`,
     `type AnimationId = ${idUnion(ids.animations)};`,
     "type ResourceId = string;",
-    'type SelfSwitchKey = "A" | "B" | "C" | "D";',
-    'type Direction = "up" | "down" | "left" | "right";',
-    'type TileLayer = "lower" | "upper" | "lower2" | "upper2";',
-    'type BattleResult = "victory" | "defeat" | "escape";',
-    'type FlashColor = "white" | "red" | "black" | `#${string}`;',
-    `type EmoteName = ${EMOTE_KINDS.map(quote).join(" | ")};`,
-    'type MoveTarget = "player" | "this" | EventId;',
-    "type MoveStep =",
-    '  | Direction',
-    '  | "face-up" | "face-down" | "face-left" | "face-right" | "face-player" | "face-away"',
-    '  | "toward-player" | "away-from-player" | "forward" | "random" | "jump" | "wait"',
-    "  | { kind: string; [field: string]: unknown };",
-    "type AnimTarget = \"player\" | EventId | { x: number; y: number };",
-    "interface MessageOptions { speaker?: string }",
-    "interface ChoiceSettings {",
-    "  prompt?: string;",
-    "  /** 'cancel' → Esc resolves -1. A number → Esc picks that index. Default: Esc does nothing. */",
-    "  cancel?: \"cancel\" | number;",
-    "}",
-    "interface NumberInputSettings { digits?: number; prompt?: string }",
-    'interface TransferOptions { direction?: Direction; fade?: "black" | "white" | "none" }',
-    "interface MoveOptions { wait?: boolean; skippable?: boolean }",
-    "interface TileOptions { layer?: TileLayer; mapId?: MapId }",
-    "interface BattleOptions { canEscape?: boolean; canLose?: boolean }",
-    "interface AudioOptions { volume?: number }",
-    "interface ActorInfo { readonly id: ActorId; readonly name: string; readonly level: number; readonly exp: number; readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number; readonly inParty: boolean }",
-    "interface PlayerInfo { readonly mapId: MapId; readonly x: number; readonly y: number; readonly direction: Direction }",
-    "interface EventInfo { readonly id: EventId; readonly name: string; readonly x: number; readonly y: number }",
-    'interface GameClock { readonly enabled: boolean; readonly hour: number; readonly minute: number; readonly day: number; readonly season: string; readonly year: number; readonly phase: "morning" | "day" | "evening" | "night" }',
+    ...SCRIPT_HELPER_TYPE_LINES,
     "/** Any event command object (same JSON as event pages). `kind` picks the command; other fields are checked at run time. */",
     `type EventCommand = { kind: ${COMMAND_KINDS.filter((kind) => kind !== "script").map(quote).join(" | ")}; [field: string]: unknown };`,
     "",
@@ -146,5 +151,7 @@ export function scriptApiCheatSheet(): string {
     const returns = entry.awaits ? `Promise<${entry.returns}>` : entry.returns;
     lines.push(`- game.${entry.name}(${entry.params}): ${returns} — ${entry.doc}`);
   }
+  // Field names matter (2026-10-31 live run: Opus guessed `game.player().facing`; the field is `direction`).
+  lines.push("## Types", ...SCRIPT_HELPER_TYPE_LINES);
   return lines.join("\n");
 }

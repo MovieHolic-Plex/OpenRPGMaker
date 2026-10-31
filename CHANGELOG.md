@@ -5,6 +5,56 @@
 
 <!-- releases -->
 
+## 0.380.0 — 2026-10-31
+
+### 기능
+
+- **assistant** — OPRN_V2_SCRIPTS=0 hides script tools, skill and guidance from the assistant (A/B switch) (`1bfdb57`)
+- pixelfx 코드 픽셀 효과 232종 — 전투·필드·편집기 고르기·조수 도구 (#4121) (`24173d1`)
+- **tools** — lock_door / create_time_gate unlockWhen accepts {itemId} (#4085) (`90d8890`)
+- **validation** — validators and graphs read script effects (4/4) (`0c49129`)
+- **assistant** — script tools to check, author, edit and dry-run TypeScript event scripts (`d66b1ad`)
+- **script** — sandboxed TypeScript event scripts (QuickJS runtime, game API, compiler) (`43e5ca7`)
+- **relief** — bake forward and reverse cut pieces for five cliff styles (160, delegated allow after Opus VQA) (`3d53353`)
+- **relief** — reverse cut pieces for five cliff styles; fwd cheeks and snow treads after VQA r1 minors (`fc1304f`)
+- **relief** — forward cut pieces for sand/snow/peat/cave cliff styles (code hand-pixel, palette-locked) (`627582a`)
+- **bbox-village** — accept reverse cuts through north-facing cliffs (rise+2 cells), opus/argon arms, reverse walks in runtime QA (`a22fc3a`)
+- **relief** — reverse (south-climbing) cut pieces placed north of the terrace lip; per-style cut probe (`09b6941`)
+
+### 수정
+
+- **runtime** — 조명 어둠 막이 카메라 줌만큼 부풀지 않게 — 줌 3·6 맵에서 불빛이 3·6배, 밤이 환했다 (#4131) (`191b602`)
+- **assistant** — todo talk check counts game.showMessage lines in scripts (`083f8ab`)
+- **editor** — script command form is one full-width column (`2cce29d`)
+- **script** — follow-ups from the live Opus demo — typed helper types in the cheat sheet, 'this' targets, script-aware game checks, setClock QA op (`e8dd95b`)
+- **player** — 컷신 건너뛰기 표시·전투 대사 창이 UI 를 덮지 않게 (#4127) (`702d8cf`)
+- **player** — 출구 이름표·「+ 이름」 글자를 논리 화면 12px 로 (#4129) (`6a47450`)
+- **party-split** — 레버 이름표에 문 이름을 넣지 않는다 — 기본 「레버」, label 로 바꿀 수 있다 (#4128) (`646bd11`)
+- **dungeon** — 탑 층마다 계단방 윤곽·표지를 바꾼다 (#4125) (`f22a4d8`)
+- **assistant** — no backticks inside the GAME_CARD template literal (`004728e`)
+- **relief** — reverse snow stairs h1 edge to edge with a riser band after VQA r5 (`eacb7ad`)
+- **relief** — reverse snow stairs snow-white tops, peat/cave h1 edge to edge after VQA r4 (`5fae4dd`)
+- **relief** — reverse snow stairs and h1 treads after VQA r3 (`ffef9df`)
+- **relief** — reverse stairs light treads after VQA r2 (`cb1feed`)
+- **relief** — snow/peat cut pieces after VQA (fwd r2, rev r1) (`04cc843`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX in a clean checkout (`628a0f4`)
+- **openwiki** — regenerate INDEX (`2770321`)
+- **openwiki** — assistant tools for TypeScript event scripts (`8a9d925`)
+- **assistant** — event-scripts skill — when to script, API, loop and worked examples (`f5ed321`)
+- **openwiki** — note the interior layout room checks ported from the bbox experiments (`b85b2a4`)
+
+### 테스트
+
+- **assistant** — script tools — compile errors, insert, dry run, generic rejection, event-as-script round trip (`36b4edc`)
+
+### 잡무
+
+- **object-gate** — forward cut pieces — advisory receipts and delegated allow after Opus VQA r3 (`bb774f2`)
+- **relief** — bake script covers every cut set; gate manifests (`0a58c47`)
+
 ## 0.379.2 — 2026-10-31
 
 ### 수정

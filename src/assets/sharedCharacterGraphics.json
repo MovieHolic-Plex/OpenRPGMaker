@@ -1163,10 +1163,10 @@
         "gender": "남성",
         "hair": "갈색 머리"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people2-06",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 중절모 신사에 콧수염 성인 남성 얼굴. 얼굴에 모자가 없어 근사 연결; 어린이 얼굴은 제외."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 중절모를 쓴 신사다. People2 #06 은 모자 없는 People3 #6 귀족 남성의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people2",
@@ -1392,10 +1392,10 @@
         "age": "어린이",
         "hair": "보라 머리"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-00",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 모자를 쓴 갈색 머리 아이에 갈색 머리 소년 얼굴. 모자 표현이 없어 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 회색 빵모자를 쓴 어두운 피부 아이다. People1 #00 은 모자 없는 밝은 피부 갈색 단발 소년(People1 #0 의 짝)이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people4",
@@ -1478,10 +1478,10 @@
         "age": "노년",
         "hair": "백발"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-06",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 터번을 쓴 흰 수염 노인에 흰 수염 노인 얼굴. 얼굴에 터번이 없어 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 주황 터번·붉은 옷의 어두운 피부 노인이다. People1 #06 은 터번 없는 흰 수염 대머리 노인(People1 #6 의 짝)이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people4",
@@ -1492,10 +1492,10 @@
         "gender": "여성",
         "age": "노년"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-07",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 보라 두건 노파에 백발 노파 얼굴. 두건 색이 달라 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 붉은 두건·붉은 옷의 노파다. People1 #07 은 두건 없는 백발 노파(People1 #7 의 짝)이고 흉상은 주황 두건이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1522,10 +1522,10 @@
         "age": "어린이",
         "hair": "주황 머리"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-01",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 주황색 양갈래 머리 여자아이에 금발 소녀 얼굴. 머리색과 묶음 모양이 달라 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 주황 양갈래 머리 소녀다. People1 #01 은 금발 소녀(People1 #1 의 짝)다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1579,10 +1579,10 @@
         "gender": "여성",
         "hair": "붉은 머리"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-14",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 붉은 머리 하녀에 붉은 머리 여성 얼굴. 하녀 머리 장식이 없어 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 붉은 머리 하녀(흰 앞치마)다. People1 #14 는 People2 #6 여왕의 짝이고 흉상에 날개·광륜이 있다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1594,10 +1594,10 @@
         "age": "중년",
         "hair": "대머리"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people1-06",
-      "quality": "approximate",
-      "note": "걷기는 대머리, 얼굴은 관자 흰 머리가 남아 있다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 갈색 옷 여관 주인이다. People1 #06 은 People1 #6 대머리 주민의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1609,10 +1609,10 @@
         "age": "노년",
         "hair": "백발"
       },
-      "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people2-04",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 회색 머리 노학자에 백발 장로 얼굴. 안경과 수염 세부 표현이 달라 근사 연결."
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 초록 옷 백발 노학자다. People2 #04 는 People3 #4 집사의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
     },
     {
       "textureKey": "tex_easyrpg_charset_template",

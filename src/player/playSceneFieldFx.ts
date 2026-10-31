@@ -35,6 +35,7 @@ import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtime
 import { getMapTile, setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
+import { runtimeLogicalTextScale } from "@/player/runtimeViewScale";
 import type { GameMap, Project } from "@/project/types";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 
@@ -623,14 +624,14 @@ const POPUP_FONT_PX = 12;
 export function playLootPopup(scene: PlaySceneContext, cell: Cell, text: string, color: string, se: string): void {
   playSe(se);
   const size = mapTileSize(scene.map);
-  const zoom = Math.max(1, Math.round(scene.cameras.main.zoom || 1));
+  const textScale = runtimeLogicalTextScale(scene, scene.cameras.main.zoom || 1);
   const cx = cell.x * size + size / 2;
   const y = Math.round(cell.y * size - 2);
   const make = (): Phaser.GameObjects.Text => {
-    // 글자 텍스처는 카메라 배율과 같은 해상도(재표본 없음), 크기는 글꼴 격자 그대로(월드 px = 12 / 배율).
+    // 글자 텍스처는 캔버스 밀도와 같은 해상도(재표본 없음), 크기는 논리 화면 글꼴 격자 그대로(월드 px = 12 × 밀도 / 배율).
     const label = scene.add.text(0, y, text, {
       fontFamily: POPUP_FONT, fontSize: `${POPUP_FONT_PX}px`, color, stroke: "#1a1008", strokeThickness: 2,
-    }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(rowDepth(cell.y + 2, size) + 1);
+    }).setResolution(textScale.resolution).setScale(textScale.scale).setOrigin(0, 1).setDepth(rowDepth(cell.y + 2, size) + 1);
     // 가운데 맞춤을 origin 0.5 로 하면 홀수 폭에서 반 화소에 걸린다 — 왼쪽 끝을 정수로 둔다.
     label.x = Math.round(cx - label.displayWidth / 2);
     return label;

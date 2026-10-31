@@ -99,22 +99,22 @@ function endpoint(value: unknown, label: string): { mapId: string; x: number; y:
   return { mapId: record.mapId, x: Math.trunc(record.x), y: Math.trunc(record.y) };
 }
 
-const UNLOCK_KEYS = new Set(["switchId", "storyFlagId", "variableId", "op", "value", "timePhase"]);
+const UNLOCK_KEYS = new Set(["switchId", "storyFlagId", "variableId", "op", "value", "timePhase", "itemId"]);
 const DEFAULT_LOCKED_MESSAGE = "시간의 문이 굳게 닫혀 있다. 아직 열 방법을 찾지 못했다.";
 
 /** unlockWhen 인자를 페이지 조건 하나로 바꾼다. 모르는 키·둘 이상의 지정은 거절한다(조용히 버리면 문이 그냥 열린다). */
 export function unlockCondition(project: Project, raw: unknown): { readonly condition: Condition; readonly note?: string } {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new ToolError("unlockWhen 은 {switchId} | {storyFlagId} | {variableId,op,value} | {timePhase} 객체여야 합니다.", { code: "invalid-args" });
+    throw new ToolError("unlockWhen 은 {switchId} | {storyFlagId} | {variableId,op,value} | {timePhase} | {itemId} 객체여야 합니다.", { code: "invalid-args" });
   }
   const record = raw as Record<string, unknown>;
   const unknownKeys = Object.keys(record).filter((key) => !UNLOCK_KEYS.has(key));
   if (unknownKeys.length > 0) {
     throw new ToolError(`unlockWhen 에 알 수 없는 키: ${unknownKeys.join(", ")} — 허용: ${[...UNLOCK_KEYS].join(", ")}. 키 이름이 틀리면 조건이 사라져 문이 잠기지 않는다.`, { code: "invalid-args" });
   }
-  const given = ["switchId", "storyFlagId", "variableId", "timePhase"].filter((key) => typeof record[key] === "string" && String(record[key]).trim());
+  const given = ["switchId", "storyFlagId", "variableId", "timePhase", "itemId"].filter((key) => typeof record[key] === "string" && String(record[key]).trim());
   if (given.length !== 1) {
-    throw new ToolError(`unlockWhen 은 switchId · storyFlagId · variableId · timePhase 중 정확히 하나여야 합니다(받은 것: ${given.join(", ") || "없음"}). 스위치를 모르면 declare_story_flag 로 먼저 만든다.`, { code: "invalid-args" });
+    throw new ToolError(`unlockWhen 은 switchId · storyFlagId · variableId · timePhase · itemId 중 정확히 하나여야 합니다(받은 것: ${given.join(", ") || "없음"}). 스위치를 모르면 declare_story_flag 로 먼저 만든다.`, { code: "invalid-args" });
   }
   // 시간대 문(밤에만 열리는 늪 길·낮에만 여는 성문). 시간 시스템이 꺼져 있으면 시간대가 늘 낮이라 밤 문은 영영 닫힌다 — 알린다.
   if (given[0] === "timePhase") {
@@ -122,6 +122,14 @@ export function unlockCondition(project: Project, raw: unknown): { readonly cond
     if (!(TIME_PHASES as readonly string[]).includes(phase)) throw new ToolError(`unlockWhen.timePhase 는 ${TIME_PHASES.join(", ")} 중 하나여야 합니다(받은 값: ${phase}).`, { code: "invalid-args" });
     return { condition: { kind: "timePhase", phase: phase as TimePhase },
       ...(project.system.timeSystem?.enabled ? {} : { note: "시간 시스템이 꺼져 있어 시간대 조건이 바뀌지 않는다 — configure_time_system {enabled:true} 로 켜고, 기다리게 하려면 restMenu 도 준다." }) };
+  }
+  // 아이템을 가지고 있어야 열리는 문(옥상 열쇠, 「낱장 세 장을 다 모아야」) — 페이지 조건 item. 여러 개를 다 요구하면 AND 목록으로.
+  // 예전엔 스위치만 받아 「열쇠를 얻으면 스위치를 켜는」 줍기 이벤트를 따로 짜거나 잠긴 문 페이지를 손으로 짰다(2026-10-31 「이상 없음」 옥상 철문).
+  if (given[0] === "itemId") {
+    const itemId = String(record.itemId).trim();
+    const known = project.database.items.some((item) => item.id === itemId);
+    if (!known) throw new ToolError(`아이템 '${itemId}' 이 데이터베이스에 없습니다 — 먼저 아이템을 만들거나(upsert_item) 있는 id 를 쓰세요.`, { code: "invalid-args" });
+    return { condition: { kind: "item", itemId, present: true } };
   }
   if (given[0] === "switchId") {
     const switchId = String(record.switchId).trim();
@@ -197,7 +205,7 @@ const createTimeGate: ToolDefinition = {
     "크로노 트리거식 시간의 문(왕복 게이트)을 만든다. {a:{mapId,x,y}, b:{mapId,x,y}, name?, effect?, unlockWhen?, lockedMessage?, lockSide?, graphic?} — 두 지점을 create_transfer_pair 와 같은 규칙으로 잇고"
     + " 밟으면 연출 뒤 흰 페이드로 상대편 게이트 옆에 착지한다. 시대·차원 이동용이며 일반 문·계단은 create_transfer_pair."
     + ` effect(전이 연출, 새 그림 없이 화면 왜곡·섬광·파티클 조합): ${EFFECT_GUIDE}`
-    + " unlockWhen({switchId}|{storyFlagId}|{variableId,op,value}|{timePhase})을 주면 그 조건이 참일 때만 열리고, 아니면 lockedMessage(생략 시 기본 안내)가 뜬다"
+    + " unlockWhen({switchId}|{storyFlagId}|{variableId,op,value}|{timePhase}|{itemId})을 주면 그 조건이 참일 때만 열리고, 아니면 lockedMessage(생략 시 기본 안내)가 뜬다"
     + " — 한 호출로 「과거의 장치를 켜야 미래로 가는 문이 열린다」를 만든다. lockSide 는 잠글 쪽(both 기본|a|b; 되돌아오는 쪽은 열어 두려면 지정)."
     + " 알 수 없는 인자·unlockWhen 키는 거절한다. graphic 을 주면 게이트에 그 그림을 쓰고, 생략하면 투명 게이트(바닥 표식은 paint_tiles 로 따로 칠한다).",
   mode: "write",
