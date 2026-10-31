@@ -1182,7 +1182,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }, required: ["do"] };
   const addEndingScene: PiToolShape = {
     name: "add_ending_scene", label: "엔딩 장면", concurrency: "exclusive",
-    description: "Build an ending scene in one go — the ending definition (epilogue, final title) and an event on that map that calls the ending after its lines. When: automatically on entering the map after afterSwitchId (or the after word — «마왕» means the demon-king-defeated switch) is on; with talkTo, when talking to that person. Do not assemble it from lower tools (define_ending, patch_event_page).",
+    description: "Build an ending scene in one go — the ending definition (epilogue, final title) and an event on that map that calls the ending after its lines. Give the hero at least one line of their own (who:'주인공') — an ending where only others speak leaves the player out of their own payoff. Calling it again with the same title rebuilds that ending (it does not stack). When: automatically on entering the map after afterSwitchId (or the after word — «마왕» means the demon-king-defeated switch) is on; with talkTo, when talking to that person. Do not assemble it from lower tools (define_ending, patch_event_page).",
     parameters: { type: "object", properties: {
       mapId: { type: "string", description: "ending scene map id (or map name)" },
       title: { type: "string", description: "ending name and final screen title" },

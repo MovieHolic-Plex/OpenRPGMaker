@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.375.0 — 2026-10-31
+
+### 기능
+
+- **first-love** — r3+r4 — pantry lesson, rooftop, pixel ending cards & memory, last-train staging, night lighting (#3998) (`d004f10`)
+- **store** — event sounds (group + own slot name, no system cue) readable and findable; SE cue table labels for dialogue/jingle (`2b8c7a4`)
+- **audio** — ambient BGS loops in store sound packs, map BGS, new SE cues with runtime hooks (`6aadbc2`)
+
+### 수정
+
+- **assistant** — find installed party battle sheets; store_search works in the Pi worker (`9101359`)
+- **assistant-v2** — scene craft checks stop flagging gate notices and copied lines; re-calling add_ending_scene rebuilds instead of stacking (`3cd4c6d`)
+- **transit** — clear cars the warm-up left on top of people at map load (#4067) (`1ef8af0`)
+
+### 문서
+
+- **openwiki** — scene craft scope (scene-verb events only, new lines only) (`39712e2`)
+
+### 테스트
+
+- **qa** — audio-cues runtime proof capture against the built export player; regenerate openwiki INDEX (`7df2e7e`)
+
+### 잡무
+
+- **openwiki** — regenerate INDEX (`5174cff`)
+- **openwiki** — regenerate INDEX as CI sees it (`207cd5c`)
+
 ## 0.374.0 — 2026-10-31
 
 ### 기능

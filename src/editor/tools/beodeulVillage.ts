@@ -368,6 +368,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const palette = roofs ? ROOF_PALETTES[roofs] : null;
   const houses = have(palette ? palette.main : spec.houses).filter(doorAtBottom);
   const accentHouses = palette ? have(palette.accent).filter(doorAtBottom) : [];
+  // 통나무(log) 마을의 높은 곳 건물·모이는 곳 건물은 그 지붕 무리의 강조 건물(너와 양조장·돌벽집)에서 고른다(2026-10-31 이세계 고딩 VQA:
+  // 고블린 통나무 마을에 유럽식 예배당·원통 망루 집·붉은 기와 광장 여관이 섰다 — 테마 목록(TIER_LANDMARKS·spec.anchors)이 지붕을 보지 않았다).
+  const culturePool = (ids: readonly string[]): readonly string[] => (roofs === "log" && accentHouses.length ? accentHouses : ids);
   if (houses.length < 3) throw new ToolError(`버들항 ${spec.label} 집 키트가 부족하다(${houses.length}). 타일셋을 최신 번들로 갱신할 것.`, { code: "beodeul-kits-missing" });
 
   const occ = new Uint8Array(W * H);
@@ -411,7 +414,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       // 마을이 앉는 단을 안 주면 땅이 정한다: 강가·늪 마을은 물가 단(low)에 내려앉고(강·늪이 마을에 붙는다 — ab9 「맨 아래 강이 마을과 떨어졌다」·「늪 맵의 네모 물」), 그 밖은 가운데 단
       const settle1 = settle ?? (spec.feature === "river" || theme === "swamp" ? "low" : "middle");
       // 맨 윗단 폭·깊이는 이 테마의 가장 작은 높은 곳 건물에 맞춘다
-      const lms = have(TIER_LANDMARKS[theme] ?? []).map((id) => K(id)).filter((k) => k.door);
+      const lms = have(culturePool(TIER_LANDMARKS[theme] ?? [])).map((id) => K(id)).filter((k) => k.door);
       const need = lms.length ? lms.reduce((a, k) => (k.w * k.h < a.w * a.h ? { w: k.w, h: k.h } : a), { w: lms[0]!.w, h: lms[0]!.h }) : { w: 7, h: 6 };
       hf = planHeightFirst(W, H, seed, theme, landform, settle1, theme === "coast" ? Math.round(H * 0.72) - 3 : undefined, spec.feature === "river", tiers ?? (theme === "swamp" ? 1 : undefined), high, need);
       terrainName = hf.terrainName;
@@ -704,8 +707,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     const shuffled = <T,>(xs: readonly T[]): T[] => xs.map((v) => ({ v, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.v);
     const doorKits = (ids: readonly string[]) => have(ids).filter(doorAtBottom).map(K);
-    if (layout.landmark) { const ks = shuffled(doorKits(TIER_LANDMARKS[theme] ?? spec.anchors)); if (ks.length) place("landmark", ks, layout.landmark); }
-    const anchorIds = roofs === "medieval" && have(MEDIEVAL_ANCHORS).length ? MEDIEVAL_ANCHORS : spec.anchors;
+    if (layout.landmark) { const ks = shuffled(doorKits(culturePool(TIER_LANDMARKS[theme] ?? spec.anchors))); if (ks.length) place("landmark", ks, layout.landmark); }
+    const anchorIds = roofs === "medieval" && have(MEDIEVAL_ANCHORS).length ? MEDIEVAL_ANCHORS : culturePool(spec.anchors);
     if (layout.anchor) { const ks = shuffled(doorKits(anchorIds)).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("anchor", ks, layout.anchor); }
     if (layout.work) { const ks = shuffled(doorKits(LOW_WORKS[theme] ?? [])); if (ks.length) place("work", ks, layout.work); }
     const last: string[] = [];
@@ -1504,7 +1507,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   } else {
     // 중세 건물 마을은 모이는 곳에 시청·장터·예배당·여관 같은 공공 건물(2026-10-25 VQA: 광장·장터·교회가 없고 앵커가 원본 버들항 집이었다)
     const anchorPool = roofs === "medieval" ? have(MEDIEVAL_ANCHORS) : [];
-    const cand = (anchorPool.length ? anchorPool : have(spec.anchors)).filter((id) => K(id).door);
+    const cand = (anchorPool.length ? anchorPool : have(culturePool(spec.anchors))).filter((id) => K(id).door);
     const order = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
     let done = false;
     // 가까운 자리부터, 안 되면 ±16칸까지(계단식 비탈 물가 띠 88×56 seed 11 은 ±10 안이 다 단 경계였다 — 길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
@@ -2034,7 +2037,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const tierStreets = climbs.filter((c) => c.street).sort((a, b) => b.level - a.level).map((c) => c.street!);
     for (const st of topStreets) if (!tierStreets.includes(st)) tierStreets.unshift(st);
     if (hf) {
-      const high = have(TIER_LANDMARKS[theme] ?? []).filter((id) => K(id).door && !anchors.includes(id));
+      const high = have(culturePool(TIER_LANDMARKS[theme] ?? [])).filter((id) => K(id).door && !anchors.includes(id));
       // 높은 곳 건물은 가장 높은 단 길부터 앉을 자리가 있는 단에(없으면 위 단을 따라가는 북쪽 뒷길에) — 맨 위 단에 길만 남지 않게
       let landmarked = false;
       for (const st of tierStreets) if (!landmarked && high.length) landmarked = lineLandmark(st, high);

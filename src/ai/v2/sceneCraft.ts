@@ -23,39 +23,45 @@ export const SCENE_WORDS = /장면|컷신|컷씬|연출|오프닝|프롤로그|�
 /** 요청이 주고받는 대화를 시켰나. */
 export const TALK_WORDS = /대화|흥정|심문|설득|협상|말다툼|수다|만나|합류|고백|배신|대사|banter|haggle|interrogat|conversation|dialogue/iu;
 
-interface Line { readonly speaker: string; readonly body: string; readonly pageIndex: number }
+interface Line { readonly speaker: string; readonly body: string; readonly pageIndex: number; readonly path: string }
 interface ScenePage {
   readonly mapId: string; readonly mapName: string; readonly eventId: string; readonly eventName: string; readonly pageIndex: number;
   readonly trigger: string; readonly cmds: Obj[]; readonly lines: Line[]; readonly cutscene: boolean;
 }
 
-/** 명령 나무를 펼친다(fork then/else, 선택지 가지, parallel). */
-function flatten(commands: unknown, out: Obj[] = []): Obj[] {
+/** 명령 나무를 펼친다(fork then/else, 선택지 가지, parallel). 명령마다 갈래 경로(«2.o1» = 2번 명령의 선택지 1번 갈래)를 단다 —
+ * 서로 다른 갈래의 같은 대사(예: 두 갈래의 «돈이 모자라는군»)는 한 번 플레이에 둘 다 보이지 않으니 반복이 아니다. */
+const PATHS = new WeakMap<object, string>();
+function flatten(commands: unknown, out: Obj[] = [], path = ""): Obj[] {
   if (!Array.isArray(commands)) return out;
-  for (const raw of commands) {
+  commands.forEach((raw, i) => {
     const c = obj(raw);
-    if (!c) continue;
+    if (!c) return;
+    PATHS.set(c, path);
     out.push(c);
     for (const [k, v] of Object.entries(c)) {
       if (k === "condition" || !Array.isArray(v)) continue;
-      if (v.some((x) => obj(x)?.kind)) flatten(v, out);
-      else for (const x of v) { const o = obj(x); if (o) { flatten(o.branch, out); flatten(o.commands, out); } }
+      if (v.some((x) => obj(x)?.kind)) flatten(v, out, `${path}/${i}.${k}`);
+      else v.forEach((x, j) => { const o = obj(x); if (o) { flatten(o.branch, out, `${path}/${i}.${k}${j}`); flatten(o.commands, out, `${path}/${i}.${k}${j}`); } });
     }
-  }
+  });
   return out;
 }
+const pathOf = (c: Obj): string => PATHS.get(c) ?? "";
+/** 두 갈래 경로가 한 번 플레이에 함께 지나갈 수 있나(한쪽이 다른 쪽의 앞부분). */
+const samePlay = (a: string, b: string): boolean => a.startsWith(b) || b.startsWith(a);
 
 const norm = (s: string): string => s.replace(/[\s.,!?…~·'"“”‘’「」『』()\-—:：]/gu, "").toLowerCase();
 
 function linesOf(cmds: readonly Obj[], pageIndex: number): Line[] {
-  return cmds.filter((c) => c.kind === "text" && typeof c.body === "string" && c.body.trim()).map((c) => ({ speaker: String(c.speaker ?? "").trim(), body: String(c.body).trim(), pageIndex }));
+  return cmds.filter((c) => c.kind === "text" && typeof c.body === "string" && c.body.trim()).map((c) => ({ speaker: String(c.speaker ?? "").trim(), body: String(c.body).trim(), pageIndex, path: pathOf(c) }));
 }
 
-/** 컷신 페이지인가 — 저절로·닿으면 도는 페이지, 또는 컷신 제어·레터박스가 든 페이지. */
-function isCutscenePage(page: Obj, cmds: readonly Obj[], eventId: string): boolean {
-  const trig = String(obj(page.trigger)?.kind ?? "");
-  if (trig === "auto" || trig === "autorun" || trig === "playerTouch" || trig === "eventTouch") return true;
-  if (/^ev_(v2cut|cutscene)/u.test(eventId)) return true;
+/** 컷신 페이지인가 — 장면 동사가 지은 이벤트(id) 또는 컷신 제어·레터박스가 든 페이지. 트리거만으로는 보지 않는다:
+ * 밟으면 뜨는 막힌 길 안내(ev_world_gate_*)는 장면이 아니다 — 그걸 «얇은 장면»으로 짚었더니 terra 가 안내 글에 힌트 넷을 덧붙였다(2026-10-31 sc-narr-a1, 여덟 판 모두). */
+function isCutscenePage(_page: Obj, cmds: readonly Obj[], eventId: string): boolean {
+  if (/^ev_world_gate|^ev_chain_|_gate_/u.test(eventId)) return false;
+  if (/^ev_(v2cut|cutscene|ending_)/u.test(eventId) && !/_a_\d+$/u.test(eventId)) return true; // _a_N = 장면이 세운 사람의 뒤 대화
   return cmds.some((c) => c.kind === "cutsceneControl" || (c.kind === "m2Command" && /screen-effect/u.test(String(c.commandId)) && obj(c.fields)?.effect === "letterbox"));
 }
 
@@ -128,14 +134,18 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
   const sceneAsked = SCENE_WORDS.test(task);
   const talkAsked = TALK_WORDS.test(task);
 
+  // 이번 실행 전에도 있던 대사는 세지 않는다 — 장면을 이은 NPC 의 «장면 뒤» 쪽은 원래 대사를 그대로 옮겨 담는다.
+  const oldLines = new Set<string>();
+  for (const m of Object.values(before.maps ?? {})) for (const e of m.events ?? []) for (const pg of (e.pages ?? []) as unknown as Obj[]) for (const l of linesOf(flatten(pg.commands), 0)) oldLines.add(norm(l.body));
   // repeat: 바뀐 장면 글 전체에서 같은 대사(짧은 감탄 빼고) — 같은 사람이 다시 말을 걸 때 같은 말을 되풀이하는 것도 포함.
   const seen = new Map<string, { p: ScenePage; line: Line }>();
   const repeated = new Set<string>();
   for (const p of pages) for (const line of p.lines) {
     const k = norm(line.body);
-    if (k.length < 8) continue;
+    if (k.length < 8 || oldLines.has(k)) continue;
     const first = seen.get(k);
     if (!first) { seen.set(k, { p, line }); continue; }
+    if (first.p === p && !samePlay(first.line.path, line.path)) continue;
     if (repeated.has(k)) continue;
     repeated.add(k);
     const sameEvent = first.p.eventId === p.eventId;
@@ -144,7 +154,7 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
 
   // name: 「이름: 대사」 — 이름표(speaker)와 겹쳐 두 번 보이거나, 이름표 없이 대본 꼴로 보인다.
   for (const p of pages) {
-    const hit = p.lines.find((l) => { const s = splitScriptSpeaker(l.body); return !!s.speaker && s.speaker.length <= 12 && !/^\d/u.test(s.speaker); });
+    const hit = p.lines.find((l) => { if (oldLines.has(norm(l.body))) return false; const s = splitScriptSpeaker(l.body); return !!s.speaker && s.speaker.length <= 12 && !/^\d/u.test(s.speaker); });
     if (!hit) continue;
     const s = splitScriptSpeaker(hit.body);
     out.push({ id: "name", text: `[scene name] ${where(p)} writes the speaker inside the line: ${q(hit.body)}. The dialogue box already shows the name plate, so the player reads ${hit.speaker ? `«${hit.speaker}» and then «${s.speaker}:» again` : `a script prefix instead of a speaking person`}. Put the name in the speaker field and keep only the words in the body (add_event beat {do:'say', who:'${s.speaker}', text:'${s.text.slice(0, 30).replace(/'/gu, "’")}…'} or the text command {kind:'text', speaker:'${s.speaker}', body:…}).` });
@@ -174,7 +184,7 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     const walked = new Map<string, number>();
     p.cmds.forEach((c, i) => {
       const id = String(c.eventId ?? "");
-      if (!people.has(id)) return;
+      if (!people.has(id) || id === p.eventId) return; // 자기 대화 안에서 한두 걸음 다가오는 것은 자리 이탈이 아니다
       if (c.kind === "approach") walked.set(id, i);
       if (c.kind === "moveEvent") {
         const moves = ((obj(c.route)?.moves as Obj[] | undefined) ?? []).map((m) => String(m.kind));

@@ -786,7 +786,7 @@ const actorRecordSchema = objectSchema({
   characterResourceId: stringSchema(),
   characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
-  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* 등). 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
+  battleCharacterResourceId: stringSchema("측면 전투 도트 시트 id(charset-battler-* · party-pixel-* · 스토어로 넣은 store_* 시트). 고를 시트는 list_resources{kind:'battler', query:'도끼 전사'} 로 찾는다(낱말마다 맞아야 한다). 무기·직업을 바꿔 전투에서도 그 무기를 든 모습이 필요한데 맞는 시트가 없으면 store_search{kind:'battler'} 로 스토어를 찾는다. 빈 문자열 \"\" 이면 지운다 — 전투 시트가 없는 배우는 자기 걷기 칩(characterResourceId·characterIndex) 한 칸으로 측면 전투에 선다. 기본 주인공(actor_hero)을 현대 교복 칩 같은 다른 걷기 칩으로 바꿨다면 물려받은 전투 시트(Actor1 검사)를 \"\" 로 지워야 전투에서도 같은 인물이 보인다."),
   battleScalePercent: integerSchema("측면 전투 표시 크기(%). 50~300, 기본 100. 파티원 몬스터 도트 시트(party-pixel-*)에 적용 — 마왕처럼 사람보다 큰 파티원."),
   loadoutSlots: { type: "integer", minimum: 0, maximum: 12, description: "스킬 장착 칸 수(0~12). 0 = 장착 제한 없음(배운 스킬 전부 사용). 1 이상이면 ESC 메뉴 스킬 장착 화면에서 고른 스킬만 전투에서 쓴다. 이벤트에서 m2 「메뉴 화면 열기」 screen:\"skills\" 로 그 화면을 바로 열 수 있다." },
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
