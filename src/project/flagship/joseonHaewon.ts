@@ -12,6 +12,7 @@
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
+import { writeJoseonHaewonLore } from "./joseonHaewonLore";
 import type { FlagshipDemoBuildResult } from "./types";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -227,6 +228,7 @@ export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
 
   project.startMapId = JW_MAP.village;
   project.startPos = { ...V.arrive };
+  writeJoseonHaewonLore(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
@@ -362,7 +364,7 @@ function buildCase1(project: Project): void {
       {
         id: "rice", name: "모래 섞인 쌀", at: at(V.millYard),
         description: "방앗간 물레방아 곁에 흘린 쌀. 손으로 비비면 모래가 굴러 나온다.",
-        lines: ["물레방아 곁에 쌀이 흘려져 있다.", "손바닥에 올려 비비자 모래가 굴러 나온다. 밤에 찧은 쌀이다. 아직 이슬이 마르지 않았다."],
+        lines: ["물레방아 곁에 쌀이 흘려져 있다.", "손바닥에 올려 비비자 모래가 굴러 나온다. 밤에 찧은 쌀이다. 쌀알에 아직 밤이슬이 앉아 있다."],
         implicates: ["jeong"], obtainedBy: "examine",
       },
       {

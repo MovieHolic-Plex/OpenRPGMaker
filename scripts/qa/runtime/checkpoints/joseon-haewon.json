@@ -1,0 +1,449 @@
+{
+ "set": "joseon-haewon",
+ "query": {
+  "demo": "joseon-haewon"
+ },
+ "viewport": {
+  "width": 960,
+  "height": 540
+ },
+ "checkpoints": [
+  {
+   "id": "jw-arrive",
+   "label": "청석골 들머리 — 프롤로그 자막과 덕배",
+   "mapId": "map_jw_village",
+   "x": 1,
+   "y": 28,
+   "facing": "right",
+   "variables": {
+    "var_jw_stage": 0
+   },
+   "beats": [
+    {
+     "id": "caption",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "deokbae",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /덕배올시다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 30,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 1 && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 30,
+       "settleMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "jw-office",
+   "label": "동헌 첫 대면 — 이방이 기록 셋을 내놓는다",
+   "mapId": "map_jw_office",
+   "x": 8,
+   "y": 10,
+   "facing": "up",
+   "variables": {
+    "var_jw_stage": 1
+   },
+   "beats": [
+    {
+     "id": "ibang",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 2 && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 30,
+       "settleMs": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "jw-c1-autopsy",
+   "label": "동헌 마당 검안 — 거적을 걷는다",
+   "mapId": "map_jw_office",
+   "x": 3,
+   "y": 10,
+   "facing": "up",
+   "variables": {
+    "var_jw_stage": 2
+   },
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "marks",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /손가락 자국/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 12,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!window.__oprnDebug.readState().inventory.item_mystery_c1_autopsy && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "jw-c1-accuse",
+   "label": "지목 — 이방 앞에서 정 서방을 고한다",
+   "mapId": "map_jw_office",
+   "x": 8,
+   "y": 8,
+   "facing": "up",
+   "variables": {
+    "var_jw_stage": 2
+   },
+   "items": {
+    "item_mystery_c1_autopsy": 1,
+    "item_mystery_c1_sandal": 1,
+    "item_mystery_c1_rice": 1,
+    "item_mystery_c1_jumo": 1,
+    "item_mystery_c1_wolhwa_nails": 1,
+    "item_mystery_c1_scratch": 1
+   },
+   "beats": [
+    {
+     "id": "ask",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 20,
+       "settleMs": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "confess",
+     "ops": [
+      {
+       "kind": "click",
+       "testid": "runtime-choice-1",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /죽이려던 게 아니오/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1100
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 3 && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 30,
+       "settleMs": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "jw-c1-ritual",
+   "label": "밤 우물 — 진범의 이름을 고해 분이를 보낸다",
+   "mapId": "map_jw_village",
+   "x": 17,
+   "y": 9,
+   "facing": "down",
+   "variables": {
+    "var_jw_stage": 3
+   },
+   "switches": {
+    "sw_jw_c1_solved": true
+   },
+   "items": {
+    "item_mystery_c1_autopsy": 1,
+    "item_mystery_c1_sandal": 1,
+    "item_mystery_c1_rice": 1,
+    "item_mystery_c1_jumo": 1,
+    "item_mystery_c1_wolhwa_nails": 1,
+    "item_mystery_c1_scratch": 1
+   },
+   "beats": [
+    {
+     "id": "dusk",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 4 && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "well",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "map_jw_village",
+       "x": 33,
+       "y": 28
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wolhwa",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /이제 고하시오/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 20,
+       "settleMs": 1300
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='battle-scene']\") && !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 30,
+       "settleMs": 1300
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "tell",
+     "ops": [
+      {
+       "kind": "click",
+       "testid": "runtime-choice-1",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fight",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "untilEnd": true,
+       "timeoutMs": 180000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choose",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 30,
+       "settleMs": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "send",
+     "ops": [
+      {
+       "kind": "click",
+       "testid": "runtime-choice-0",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /우리 분이가 갔소/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 30,
+       "settleMs": 1300
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => (window.__oprnDebug.readState().variables.var_jw_stage ?? 0) >= 5 && !!!document.querySelector(\"[data-testid='dialogue-box']\")",
+       "maxPresses": 20,
+       "settleMs": 1000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
