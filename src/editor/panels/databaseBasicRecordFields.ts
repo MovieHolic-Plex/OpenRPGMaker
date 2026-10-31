@@ -4,6 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { openQuickBattleModal } from "@/editor/panels/quickBattleModal";
+import { pixelFxAnimationPickButton } from "@/editor/panels/pixelFxPicker";
 
 export function skillFields(form: HTMLElement, id: string): void {
   const skill = store.getCurrent().database.skills.find((record) => record.id === id);
@@ -12,9 +13,17 @@ export function skillFields(form: HTMLElement, id: string): void {
     updateDatabaseRecord("skills", id, { scope: value })
   ));
   form.append(numberField("위력", "db-field-power", skill.power, (value) => updateDatabaseRecord("skills", id, { power: value }), { min: -9999, max: 9999 }));
-  form.append(selectField("애니메이션", "db-picker-animation", skill.animationId ?? "", store.getCurrent().database.battleAnimations, (value) =>
+  const animation = selectField("애니메이션", "db-picker-animation", skill.animationId ?? "", store.getCurrent().database.battleAnimations, (value) =>
     updateDatabaseRecord("skills", id, { animationId: emptyToUndefined(value) })
-  ));
+  );
+  // 코드 픽셀 효과(pixelfx)에서 고르면 anim_pfx_* 레코드를 만들어 이 기술에 단다.
+  animation.append(pixelFxAnimationPickButton({
+    testid: "db-skill-pixel-fx",
+    currentAnimationId: skill.animationId,
+    recordName: `${skill.name} 효과`,
+    onAnimationId: (animationId) => updateDatabaseRecord("skills", id, { animationId }),
+  }));
+  form.append(animation);
 }
 
 // 아이템 필드는 목적별로 쪼개서 내보낸다 — 아이템 인스펙터가 이 넷을 서로 다른 카드

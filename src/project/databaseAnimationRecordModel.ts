@@ -12,6 +12,7 @@ import type {
   BattleAnimationTone,
 } from "@/project/types";
 import { normalizeBlendMode } from "@/project/blendMode";
+import { normalizePixelFxSpec } from "@/project/pixelFxSpec";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5, assetScale: 2 };
 /** 시트 배율 허용 범위. 0.125 = 1536px 시트가 192 논리 px, 8 = 24px 시트가 192 논리 px. */
@@ -32,6 +33,7 @@ export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRe
     timings: normalizeAnimationTimings(record.timings),
     followUps: normalizeFollowUps(record.id, record.followUps),
     ...(normalizeBlendMode(record.blendMode) ? { blendMode: normalizeBlendMode(record.blendMode) } : {}),
+    ...(normalizePixelFxSpec(record.pixelFx) ? { pixelFx: normalizePixelFxSpec(record.pixelFx) } : {}),
   };
 }
 

@@ -1,4 +1,5 @@
 import { createAnimationPlaybackState, renderAnimationCellCommands, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
+import { renderPixelFxRecordEditor, pixelFxConvertRow } from "@/editor/panels/pixelFxRecordEditor";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { emptyToUndefined, field, numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
@@ -87,8 +88,16 @@ export function renderBattleAnimationRecordForm(
   };
 
   form.classList.add("animation-detail-form", "db-battle-studio-surface");
+  if (animation.pixelFx) {
+    form.append(
+      battleStudioHeading("animations", animation.name, "코드로 그리는 픽셀 효과(pixelfx)입니다. 시트 없이 게임 해상도에서 바로 그리며, 도트 측면 전투에서도 기술의 연출로 보입니다."),
+      renderPixelFxRecordEditor(animation, rerender),
+    );
+    return form;
+  }
   form.append(
     battleStudioHeading("animations", animation.name, "옛 셀 애니메이션입니다. 도트 측면 전투는 스킬에 도트 연출이 있으면 이 애니메이션을 쓰지 않습니다 — 연출 없는 스킬의 대체용과 몬스터 대치 전투에서만 보입니다."),
+    pixelFxConvertRow(animation),
     animationEditor(context)
   );
 

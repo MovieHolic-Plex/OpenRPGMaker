@@ -1,4 +1,5 @@
 import { actorQueryConditionSummary } from "./actorQueryConditionForm";
+import { renderPagePixelFxControl } from "@/editor/panels/pixelFxPicker";
 import { renderDetectionEncounter } from "./pageNpcBehavior";
 import { difficultyDisplayName } from "@/project/difficulty";
 import { renderObjectInteraction } from "./pageHorror";
@@ -1051,6 +1052,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("상시 효과", renderPagePixelFxControl(mapId, eventId, page), "event-classic-pixel-fx"),
     rm2k3Fieldset("크기와 통행", renderPageFootprint(mapId, eventId, page), "event-classic-footprint"),
     el("div", {
       class: "event-page-behavior-sections",

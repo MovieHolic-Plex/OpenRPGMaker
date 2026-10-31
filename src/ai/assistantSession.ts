@@ -317,6 +317,7 @@ import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
+import { pixelFxPreviewImages } from '@/pixelfx/previewSheet';
 import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
 import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
 import type {
@@ -5538,6 +5539,9 @@ export class AssistantSession {
           }
           if (name === "preview_choreography" && toolResult.ok) {
             roundImages.push(...await operation.wait(retroChoreographyPreviewImages(toolResult.data)));
+          }
+          if (name === "preview_pixel_fx" && toolResult.ok) {
+            roundImages.push(...await operation.wait(pixelFxPreviewImages(toolResult.data)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
