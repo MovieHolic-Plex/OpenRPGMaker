@@ -16,4 +16,5 @@ for s in ["grass-steps", "sand-steps", "snow-steps", "peat-steps", "cave-steps"]
     im = Image.open(f"{D}/probe/{s}.png").convert("RGB")
     c = im.crop((0, 88, im.width, 208)); c.resize((c.width * 3, c.height * 3), Image.NEAREST).save(f"{D}/probe/{s}-3x.png")
 PY
+python3 "$D/crops.py"
 echo ok

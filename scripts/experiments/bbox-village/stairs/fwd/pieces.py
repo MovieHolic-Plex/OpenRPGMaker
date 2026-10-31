@@ -104,19 +104,24 @@ def ramp_surface(px, F, W, st, cw):
                 elif t % 6 == 5: i = min(top, i + 1)                 # its lit lip
             px[Xp, Y] = seq[i]
 
-def cheek_wedge(px, F, W, st, face, left):
+def cheek_wedge(px, F, W, st, face, left, crease=None):
     """ramp cheek: the face itself, thin at the crest and widening to full at the toe; shade side a tone down, cut edge
-    darkest on the left, lit on the right."""
+    darkest on the left. VQA r1: on tall 3-wide ramps the lit right cheek melted into the ramp's own toe tones (same browns), so
+    the right cheek is now at least 3 px, its face lifted a tone, the face's dark knots kept out of it (a stray dark notch), and
+    the ramp gets a one-pixel crease in its own shade tone where it meets the lit rim."""
     fp = face.load()
     for Y in range(F):
         f = Y / max(1, F - 1)
         wd = 2 + round(6 * f) + (1 if h(3 if left else 5, Y // 2, 3) < 70 else 0)
+        if not left: wd = max(3, wd)
         for j in range(wd):
             Xp = j if left else W - 1 - j
-            c = st.shift(fp[Xp, Y], -1 if left else 0)
+            c = st.shift(fp[Xp, Y], -1 if left else 1)
+            if not left and Y < F - 1 and c in st.wall and st.wall.index(c) < 3: c = st.wall[3]
             if j == wd - 1: c = st.wall[0] if left else st.wall[5]
             elif j == wd - 2 and not left and c in st.wall: c = st.wall[4]
             px[Xp, Y] = c
+        if not left and crease and 2 <= Y < F - 1: px[W - 1 - wd, Y] = crease
 
 def cheek_straight(px, F, W, st, face, left, cw=4):
     """stair cheek: the face, inner edge wandering a pixel; shade side a tone down, cut edge dark left / lit right."""
@@ -180,15 +185,14 @@ def stairs_slab(px, F, W, rise, L, nose, snow=None, rough=False):
                 if Xp == x0 and d > 0: c = L[max(0, 1 - dk + (1 if d < N else 0))]     # left end, in the cheek's shade
                 if Xp == x1 - 1 and 0 < d < N: c = L[5 - dk]                          # right end, lit
                 if snow and d <= N:
-                    # the stone shows on the trodden middle of each tread; snow lies heaped toward the cheeks and drifted against
-                    # the riser above (the tread's back rows), and its lip rounds over the nosing except where feet wore it off
+                    # VQA r1: grey stone showing through read as garbled lettering. Now the tread is clean soft snow: drifted shade
+                    # against the riser above, lit snow, a white lip over the nosing, and only sparse isolated flecks of stone.
                     lip, lit, body, shade = snow
-                    heap = 0.5 + 0.25 * blob(Xp, k * 8 + 40)                         # where the side heap starts (wavy)
-                    side = u > heap
-                    if d == N: c = lip if (side or h(Xp // 2, k, 81) < 70) else c
-                    elif d == 0 and k: c = shade                                            # snow drifted against the riser above
-                    elif side or (d == 1 and blob(Xp, k * 8 + 60) < 0.5): c = lit if d == 1 or h(Xp, Y, 85) < 90 else body
-                    else: c = L[4] if (first and d < N - 1) or h(Xp, Y, 86) >= 248 else L[5]          # bare tread: pale frosted stone, joints under frost
+                    if d == N: c = lip
+                    elif d == 0 and k: c = shade
+                    else:
+                        c = lit if d == 1 else body
+                        if 1 < d < N - 1 and Xp % 4 == (k * 3) % 4 and h(Xp, Y, 86) < 26 and 0 < Xp - x0 < x1 - x0 - 1: c = L[5]   # a lone fleck
                 if snow and d == N + 1 and h(Xp, k, 89) < 40 and 0 < Xp - x0 < x1 - x0 - 1: c = snow[2]   # a drip over the riser
                 px[Xp, Y] = c
 
@@ -247,9 +251,10 @@ def piece(st, kind, w, rise):
     im = Image.new("RGB", (W, F + 16)); px = im.load()
     face = st.face(rise, w)
     im.paste(face, (0, 0))
+    s_ = st.name
     if kind == "ramp":
         ramp_surface(px, F, W, st, 6)
-        cheek_wedge(px, F, W, st, face, True); cheek_wedge(px, F, W, st, face, False)
+        cheek_wedge(px, F, W, st, face, True); cheek_wedge(px, F, W, st, face, False, X(RAMP[s_][0][2]))
     else:
         stairs_surface(px, F, W, rise, st)
         cheek_straight(px, F, W, st, face, True); cheek_straight(px, F, W, st, face, False)

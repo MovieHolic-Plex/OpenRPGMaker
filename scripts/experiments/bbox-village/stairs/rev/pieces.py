@@ -53,6 +53,7 @@ def h(x, y, k=0):  # deterministic hash noise 0..255
 # ---------------------------------------------------------------- materials (dark -> light), all from probe renders / spec
 M = {
     "grass-steps": dict(
+        shade=2.2,
         flank=R("#24170b", "#432c16", "#634223", "#a2753f"),
         road=R("#58493c", "#6e5b49", "#76634f", "#816a56", "#8a745c", "#9e8b64"), road_base=4, road_mix=(3, 5),
         crest=R("#9e8b64", "#9e8b64", "#9e8b64"),
@@ -60,25 +61,29 @@ M = {
         stone=R("#2b3934", "#374243", "#5b6667", "#777579", "#90928f", "#c4c6c3", "#dee0dd"),
         curb=R("#2b3934", "#777579", "#90928f", "#c4c6c3"), curbw=3),
     "sand-steps": dict(
+        shade=3.0,
         flank=R("#5a3e22", "#7a5630", "#98703f", "#cfa566"),
         road=R("#b58a50", "#cfa566", "#dcaf6c", "#e8c282", "#eccb86", "#f5d090"), road_base=4, road_mix=(2, 4),
         crest=R("#f5d090", "#ffefa5", "#fff9b4"),
         stone=R("#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282", "#f5d090"),
         curb=R("#5a3e22", "#98703f", "#b58a50", "#e8c282"), curbw=3),
     "snow-steps": dict(
-        flank=R("#2a3040", "#3c4658", "#566479", "#93a3bb"),
+        shade=1.4,
+        flank=R("#3c4658", "#566479", "#71819a", "#b9c6d8"),
         road=R("#71819a", "#93a3bb", "#b8c0c8", "#c0b0aa", "#c0b0aa", "#dccfca"), road_base=3, road_mix=(2, 5),
         crest=R("#dccfca", "#ecf3fa", "#ffffff"),
         stone=R("#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8", "#d6e4f1"),
         snow=R("#93aecb", "#b7cde3", "#d6e4f1", "#ecf3fa", "#ffffff"),
-        curb=R("#2a3040", "#566479", "#93a3bb", "#ffffff"), curbw=3),
+        curb=R("#566479", "#93a3bb", "#b9c6d8", "#ffffff"), curbw=3),
     "peat-steps": dict(
+        shade=2.4,
         flank=R("#1a1510", "#2a2118", "#3a2d1f", "#5b4930"),
         road=R("#5f5a2e", "#6b6534", "#77703a", "#887e44", "#978c4c", "#a69a54"), road_base=4, road_mix=(3, 5),
         crest=R("#a69a54", "#b5a85b", "#b5a85b"),
         wood=R("#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"),
-        curb=R("#1a1510", "#3a2d1f", "#4a3a27", "#5b4930"), curbw=2),
+        curb=R("#1a1510", "#3a2d1f", "#4a3a27", "#5b4930"), curbw=0),   # log steps on a trail: no stringers, log ends show,
     "cave-steps": dict(
+        shade=2.4,
         flank=R("#30242a", "#463a3a", "#604e48", "#806a5d"),
         road=R("#6c5c54", "#7a6a5b", "#817061", "#8d7766", "#988472", "#a7917d"), road_base=4, road_mix=(3, 5),
         crest=R("#a7917d", "#b69e89", "#b6a28c"),
@@ -114,7 +119,7 @@ def ramp(style, w, rise):
             q = h(X, Y, 11)
             busy = "margin" in m                                      # the beodeul track is a busy cluster mix; the others are flat
             i = m["road_base"] if q < (170 if busy else 236) else (m["road_mix"][0] if q < (215 if busy else 246) else m["road_mix"][1])
-            sh = 2.2 * f                                                # faces away from the light: shade grows toward the far end
+            sh = m['shade'] * f                                                # faces away from the light: shade grows toward the far end
             i -= int(sh + (bay(X, Y) - 0.5) * 0.7)                      # banded, dithered only near each tone step
             u = abs(X - cx) / max(1, hw)
             off = round(bow * (1 - u * u))                             # worn middle: contour bows toward the viewer
@@ -181,7 +186,8 @@ def stairs(style, w, rise):
     # crest (row 31): the terrace edge where the flight starts — the lip, interrupted by the cut's lit nosing
     painter_crest(px, m, style, x0, x1)
     # foot (row 0): the low road just beyond the last riser, in its shadow
-    F = m.get("stone") or m["wood"]
+    # (self VQA r4: the darkest stone here closed the flight into a framed box; the shadow lies on the low ROAD, so road tones)
+    F = m["stone"][1:3] if style == "grass-steps" else m["road"][0:2]
     for X in range(x0, x1): px[X, 0] = F[0] if h(X, 0, 31) < 200 else F[1]
     curbs(px, W, m, lambda Y: 1 - Y / 31)
     flank(px, W, m)
@@ -215,7 +221,7 @@ def tread_stone(px, m, x0, x1, y0, y1, j, f, rise):
         jag = (1 if h(X // 2, j, 53) < 80 else 0) if rough and ht >= 4 else 0
         for Y in range(y0, y1):
             r = Y - y0
-            dd = round(1.6 * f)                                                  # far treads a whole tone deeper (per tread: no checker)
+            dd = round(1.2 * f)                                                  # far treads a whole tone deeper (per tread: no checker)
             if r == jag:                                                 # nosing (far edge, lit)
                 c = S[top - dd] if not (rough and h(X, Y, 57) < 60) else S[top - 1 - dd]
             elif r < jag: c = S[1]                                       # ragged nosing: a bite of shadow above it
@@ -247,23 +253,25 @@ def tread_snow(px, m, x0, x1, y0, y1, j, f, rise):
     Sn = m["snow"]; ht = y1 - y0
     tone = 3 if f < 0.5 else 2
     for X in range(x0 + 1, x1 - 1):
-        lip = 2 if ht >= 6 else 1                                         # bare stone rows under the nosing
+        lip = (ht // 2 if ht >= 10 else 2) if ht >= 6 else 1             # bare stone under the nosing (deep treads: front half)
         if ht >= 6 and h(X // 4, j, 71) < 110: lip += 1                   # scalloped drift edge, 4 px scallops
         for Y in range(y0 + lip, y1 - 1):
             px[X, Y] = Sn[tone] if Y > y0 + lip or ht < 6 else Sn[tone - 1]
-        px[X, y1 - 1] = Sn[0] if ht >= 3 else px[X, y1 - 1]               # blue shadow at the riser foot
+        St = m["stone"]
+        px[X, y1 - 1] = St[2] if ht >= 3 else px[X, y1 - 1]               # cold shadow at the riser foot (stone shows through)
         if ht >= 6: px[X, y1 - 2] = Sn[tone - 1]
+        if 2 <= lip < 4: px[X, y0 + 1] = St[4]                                # bare stone under the lit nosing
 
 def tread_log(px, m, x0, x1, y0, y1, j, f, rise):
     """log step: a round log laid across the path (its top lit = the nosing), packed peat path behind it, the next log's shadow."""
     Wd, T = m["wood"], m["road"]; ht = y1 - y0
     d = 0 if f < 0.34 else (1 if f < 0.75 else 2)
-    lg = 2 if ht <= 5 else 3                                              # log thickness on screen
+    lg = 2 if ht <= 5 else (3 if ht < 12 else 4)                          # log thickness on screen
     for X in range(x0, x1):
         for Y in range(y0, y1):
             r = Y - y0
             if r < lg:                                                     # the log, seen from above: lit crown, darker flank
-                c = Wd[5 - d] if r == 0 else (Wd[4 - d] if r == 1 and lg == 3 else Wd[3 - d])
+                c = Wd[5 - d] if r == 0 else (Wd[4 - d] if r == 1 and lg >= 3 else Wd[3 - d])
                 if h(X, Y, 81) < 40: c = Wd[max(0, 3 - d)]                 # bark grain
                 if r == lg - 1: c = Wd[2 - min(d, 1)]
             elif r == ht - 1: c = Wd[0] if h(X, Y, 83) < 210 else Wd[1]     # shadow under the higher log
