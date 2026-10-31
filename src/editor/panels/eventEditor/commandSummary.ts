@@ -21,6 +21,7 @@ import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventComm
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
+import { shortRecordName } from "@/editor/shortRecordName";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { EMOTE_LABELS } from "@/project/emotes";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
@@ -53,6 +54,8 @@ import { timerThresholdLabel } from "./timerConditionText";export type CommandSu
 export type CommandSummaryPart = {
   readonly text: string;
   readonly tone: CommandSummaryTone;
+  /** Full text for the hover title when `text` is a shortened name (switch/variable descriptions). */
+  readonly hint?: string;
 };
 
 // 아이템/장비 아이콘 토큰. 문자열 요약(commandSummary)에는 기여하지 않고
@@ -147,17 +150,17 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   fork: (cmd) => commandLine("조건 분기", valuePart(conditionSummary(cmd.condition))),
   wait: (cmd) => {
     if (cmd.variableId?.trim()) {
-      return commandLine("대기", plainPart("변수 "), valuePart(recordName("variable", cmd.variableId)));
+      return commandLine("대기", plainPart("변수 "), recordPart("variable", cmd.variableId));
     }
     return commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초"));
   },
   inputWait: (cmd) => cmd.variableId
-    ? commandLine("키 입력 대기", valuePart(recordName("variable", cmd.variableId)))
+    ? commandLine("키 입력 대기", recordPart("variable", cmd.variableId))
     : [commandPart("입력 대기")],
   inputNumber: (cmd) =>
     commandLine(
       "숫자 입력",
-      valuePart(recordName("variable", cmd.variableId)),
+      recordPart("variable", cmd.variableId),
       plainPart(" / "),
       valuePart(String(cmd.digits)),
       plainPart("자리"),
@@ -170,13 +173,13 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   breakLoop: () => [commandPart("반복 탈출")],
   setSwitch: (cmd) => commandLine(
     "스위치 조작",
-    valuePart(recordName("switch", cmd.switchId)),
+    recordPart("switch", cmd.switchId),
     plainPart(" "),
     ...switchValueParts(cmd.value),
   ),
   setVariable: (cmd) => commandLine(
     "변수 조작",
-    valuePart(recordName("variable", cmd.variableId)),
+    recordPart("variable", cmd.variableId),
     plainPart(" "),
     opPart(cmd.op),
     plainPart(" "),
@@ -330,7 +333,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     plainPart(" "),
     valuePart(String(cmd.value)),
   ),
-  getFriendship: (cmd) => commandLine("호감도 읽기", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), valuePart(recordName("variable", cmd.variableId))),
+  getFriendship: (cmd) => commandLine("호감도 읽기", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), recordPart("variable", cmd.variableId)),
   changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : cmd.action === "lead" ? "선두로" : "제외")),
   giveMonster: (cmd) => commandLine(
     "몬스터 지급",
@@ -1257,6 +1260,74 @@ function operandSummary(value: VariableOperand): string {
   return typeof value === "number" ? String(value) : `변수 ${recordName("variable", value.id)}`;
 }
 
+function withSubject(name: string): string {
+  return `${name}${hasBatchimText(name) ? "이" : "가"}`;
+}
+
+const DIGIT_BATCHIM = [true, true, false, true, false, false, true, true, true, false];
+function hasBatchimText(word: string): boolean {
+  const text = word.replace(/[\s」』)\]»'"%]+$/u, "");
+  const last = text[text.length - 1];
+  if (!last) return true;
+  const code = last.charCodeAt(0);
+  if (code >= 0xac00 && code <= 0xd7a3) return (code - 0xac00) % 28 !== 0;
+  if (/\d/u.test(last)) return DIGIT_BATCHIM[Number(last)] ?? true;
+  return true;
+}
+
+function compareSentence(subject: string, op: string, amount: number): string {
+  const subj = withSubject(subject);
+  switch (op) {
+    case ">=": return `${subj} ${amount} 이상이면`;
+    case "<=": return `${subj} ${amount} 이하이면`;
+    case ">": return `${subj} ${amount}보다 많으면`;
+    case "<": return `${subj} ${amount}보다 적으면`;
+    case "==": return `${subj} ${amount}${hasBatchimText(String(amount)) ? "이면" : "면"}`;
+    case "!=": return `${subj} ${amount}${hasBatchimText(String(amount)) ? "이" : "가"} 아니면`;
+    default: return `${subj} ${amount}${hasBatchimText(String(amount)) ? "이면" : "면"}`;
+  }
+}
+
+/**
+ * A fork condition as a sentence ending in 「…면」, for the event list row (「돈이 35 이상이면」, 「이 이벤트에서 이미 했으면」).
+ * The string summary (`commandSummary`, 「조건 분기: …」) is unchanged — tools, search and diffs keep reading that.
+ */
+export function forkConditionSentence(condition: Extract<Command, { kind: "fork" }>["condition"]): string {
+  switch (condition.kind) {
+    case "switch":
+    {
+      const name = recordName("switch", condition.switchId);
+      return `「${name}」${hasBatchimText(name) ? "이" : "가"} ${condition.value ? "켜져 있으면" : "꺼져 있으면"}`;
+    }
+    case "variable":
+      return compareSentence(recordName("variable", condition.variableId), condition.op, condition.value);
+    case "selfSwitch":
+      if (condition.key === "A") return condition.value ? "이 이벤트에서 이미 했으면" : "이 이벤트에서 아직 안 했으면";
+      return `이 이벤트 기억 ${withSubject(condition.key)} ${condition.value ? "켜져 있으면" : "꺼져 있으면"}`;
+    case "item": {
+      const name = itemName(condition.itemId);
+      return condition.present ? `「${name}」${hasBatchimText(name) ? "을" : "를"} 가지고 있으면` : `「${name}」${hasBatchimText(name) ? "이" : "가"} 없으면`;
+    }
+    case "gold":
+      return compareSentence("돈", condition.op, condition.amount);
+    case "actor": {
+      const name = actorName(condition.actorId);
+      return `${withSubject(name)} 파티에 ${condition.present ? "있으면" : "없으면"}`;
+    }
+    case "timePhase":
+      return `시간대가 ${timePhaseLabel(condition.phase)}${hasBatchimText(timePhaseLabel(condition.phase)) ? "이면" : "면"}`;
+    default: {
+      const summary = conditionSummary(condition);
+      return /때\)?$/u.test(summary) ? summary : `${summary}일 때`;
+    }
+  }
+}
+
+/** The event list's fork row: 「만약 <조건 문장>」. */
+export function forkSentenceParts(cmd: Extract<Command, { kind: "fork" }>): readonly CommandSummaryToken[] {
+  return [plainPart("만약 "), valuePart(forkConditionSentence(cmd.condition))];
+}
+
 function conditionSummary(condition: Extract<Command, { kind: "fork" }>['condition']): string {
   switch (condition.kind) {
     case "switch":
@@ -1415,7 +1486,7 @@ function upgradeName(id: string): string {
 function resultVariableSummaryParts(resultVariableId: string | undefined): readonly CommandSummaryToken[] {
   // Keep the authored id exact — display lookup may fall back to the id itself.
   if (resultVariableId === undefined || resultVariableId === "") return [];
-  return [plainPart(" → "), valuePart(recordName("variable", resultVariableId))];
+  return [plainPart(" → "), recordPart("variable", resultVariableId)];
 }
 
 function monsterInstanceLabel(id: string): string {
@@ -1486,7 +1557,7 @@ function formatActorVitalAmount(amount: number, amountMode?: "flat" | "percent")
   return amountMode === "percent" ? `${Math.trunc(amount)}%` : String(amount);
 }
 
-function recordName(kind: "switch" | "variable", id: string): string {
+function recordFullName(kind: "switch" | "variable", id: string): string {
   const project = store.getCurrent();
   const collection = kind === "switch" ? project.switches : project.variables;
   const index = collection.findIndex((record) => record.id === id);
@@ -1495,6 +1566,17 @@ function recordName(kind: "switch" | "variable", id: string): string {
     return named || "(이름 없음)";
   }
   return id ? id : kind === "switch" ? "스위치 선택" : "변수 선택";
+}
+
+/** Short switch/variable name (the description part is dropped — shortRecordName); the full name is the part's hint. */
+function recordName(kind: "switch" | "variable", id: string): string {
+  return shortRecordName(recordFullName(kind, id));
+}
+
+function recordPart(kind: "switch" | "variable", id: string): CommandSummaryPart {
+  const full = recordFullName(kind, id);
+  const short = shortRecordName(full);
+  return short === full ? valuePart(short) : { text: short, tone: "value", hint: full };
 }
 
 function endingName(id: string | undefined): string {
