@@ -4,7 +4,7 @@
 // (결함 2→2→2, 조수 보고 「맵 미리보기 그림에는 조명이 그려지지 않아서 여전히 밝게 보입니다」). 게임의 조명 마스크(player/lighting.ts
 // drawLightingMask — ambient 만큼 덮고 광원마다 방사형으로 걷어 낸다)를 같은 식으로 RGBA 에 칠한다. 순수 함수 — 그림 해독·인코딩은 호출자.
 import type { GameMap, LightSource, Project } from "@/project/types";
-import { effectiveDarkness } from "@/project/lightingRules";
+import { effectiveDarkness, lightFalloffAt } from "@/project/lightingRules";
 
 export interface LitShot { readonly applied: boolean; readonly ambient: number; readonly lights: number; readonly playerLightAtStart: boolean }
 
@@ -15,8 +15,8 @@ const hex = (color: string | undefined): [number, number, number] => {
   const n = Number.parseInt(m[1]!, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
-/** 게임 마스크의 걷어 내기 기울기(0 → alpha, 0.7 → 0.65·alpha, 1 → 0). */
-const cutAt = (t: number, alpha: number): number => t >= 1 ? 0 : t <= 0.7 ? alpha * (1 - (0.35 * t) / 0.7) : alpha * 0.65 * (1 - (t - 0.7) / 0.3);
+/** 게임 마스크의 걷어 내기 기울기 — 게임과 같은 빛 곡선(LIGHT_FALLOFF). */
+const cutAt = (t: number, alpha: number): number => alpha * lightFalloffAt(t);
 
 /** 맵 기본 조명(defaultLighting)을 rgba(가로 width) 에 칠한다. 플레이어를 따라가는 빛은 시작 맵이면 시작 자리에 그린다. */
 export function applyMapLighting(rgba: Uint8Array, width: number, height: number, map: GameMap, project: Project): LitShot {
