@@ -1183,15 +1183,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 모델 호출 기록(OPRN_CALL_LOG=<jsonl 경로>) — 사용량을 돌려주지 않는 중계기(8318 등)의 토큰 추정과 호출별 지연을 재려고(2026-11-01 값싼 모델 대조).
   // 한 줄 = 한 호출: 보낸 본문 글자 수(지시문·도구 목록·대화), 받은 글자 수(글·생각·도구 인자), 걸린 시간, 제공자가 준 사용량(있으면).
   const callLog = (() => {
-    let pending: { at: number; systemChars: number; toolsChars: number; messagesChars: number; totalChars: number; messages: number } | undefined;
+    let pending: { at: number; systemChars: number; toolsChars: number; messagesChars: number; totalChars: number; messages: number; toolChoice?: unknown; tools?: number } | undefined;
     const len = (v: unknown) => (v === undefined ? 0 : typeof v === "string" ? v.length : JSON.stringify(v).length);
     return {
       request(payload: unknown) {
         try {
-          const p = (payload ?? {}) as { system?: unknown; tools?: unknown; messages?: unknown[]; contents?: unknown[]; systemInstruction?: unknown };
+          const p = (payload ?? {}) as { system?: unknown; tools?: unknown; messages?: unknown[]; contents?: unknown[]; systemInstruction?: unknown; tool_choice?: unknown; toolChoice?: unknown; toolConfig?: unknown };
           const msgs = (p.messages ?? p.contents ?? []) as Array<{ role?: string }>;
           const sys = p.system ?? p.systemInstruction ?? msgs.filter((m) => m?.role === "system" || m?.role === "developer");
-          pending = { at: Date.now(), systemChars: len(sys), toolsChars: len(p.tools), messagesChars: len(msgs.filter((m) => m?.role !== "system" && m?.role !== "developer")), totalChars: len(payload), messages: msgs.length };
+          pending = { at: Date.now(), systemChars: len(sys), toolsChars: len(p.tools), messagesChars: len(msgs.filter((m) => m?.role !== "system" && m?.role !== "developer")), totalChars: len(payload), messages: msgs.length,
+            toolChoice: p.tool_choice ?? p.toolChoice ?? p.toolConfig, tools: Array.isArray(p.tools) ? p.tools.length : undefined };
         } catch { pending = undefined; }
       },
       response(message: { content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string }) {

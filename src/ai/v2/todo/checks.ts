@@ -433,7 +433,28 @@ function flatCmds(list: unknown, out: CmdNode[] = []): CmdNode[] {
   for (const c of (Array.isArray(list) ? list : []) as CmdNode[]) { if (!c || typeof c !== "object") continue; out.push(c); for (const b of branchesOf(c)) flatCmds(b, out); }
   return out;
 }
-const OPENS = new Set(["setSwitch", "transfer", "triggerEnding", "ending", "setSelfSwitch", "changeTile", "callCommonEvent", "changeItem"]);
+/** 정답 갈래가 실제로 무엇을 여나 — 이동·엔딩·타일·공통 이벤트·물건은 그 자체로, 스위치는 그 스위치를 조건으로 읽는 페이지·분기가
+ * 그런 일을 할 때만(두 단계까지). 2026-11-01 cheap r6 deepseek: 정답에 스위치만 켜고 그 스위치로 «문이 조금 열렸다» 글만 보여
+ * 서재 문은 그대로 잠겨 엔딩에 못 갔는데 ✓ 였다. */
+const EFFECT = new Set(["transfer", "triggerEnding", "ending", "changeTile", "callCommonEvent", "changeItem"]);
+function opensSomething(project: Project, ev: GameEvent, cmds: CmdNode[], depth = 0): boolean {
+  if (cmds.some((c) => EFFECT.has(String(c.kind)))) return true;
+  if (depth >= 2) return false;
+  for (const c of cmds) {
+    const self = c.kind === "setSelfSwitch";
+    if (c.kind !== "setSwitch" && !self) continue;
+    const key = self ? `"key":"${String(c.key ?? c.selfSwitch ?? "A")}"` : `"switchId":"${String(c.switchId)}"`;
+    const reads = (cond: unknown) => { const j = JSON.stringify(cond ?? null); return j.includes(key) && (!self || j.includes("selfSwitch")); };
+    for (const map of Object.values(project.maps)) for (const other of (map.events ?? []) as GameEvent[]) {
+      if (self && other.id !== ev.id) continue;
+      for (const page of ((other as unknown as { pages?: { conditions?: unknown; commands?: unknown }[] }).pages ?? [])) {
+        if (reads(page.conditions) && opensSomething(project, other, flatCmds(page.commands), depth + 1)) return true;
+        for (const f of flatCmds(page.commands)) if (f.kind === "fork" && reads(f.condition) && opensSomething(project, other, flatCmds(f.then), depth + 1)) return true;
+      }
+    }
+  }
+  return false;
+}
 function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: number, on?: string): CheckResult {
   const want = Number(code);
   const notes: string[] = [];
@@ -450,8 +471,8 @@ function checkCodeLock(project: Project, sc: Scope, code: string, hintAfter?: nu
         const forks = all.filter((c) => c.kind === "fork");
         const right = forks.find((f) => { const k = f.condition as CmdNode | undefined; return k?.kind === "variable" && inputs.includes(String(k.variableId)) && Number(k.value) === want && (k.op === "==" || k.op === undefined); });
         if (!right) { notes.push(t(`${at(map, ev)}: 숫자를 받지만 ${code} 와 같은지 묻는 분기가 없다`, `${at(map, ev)}: takes a number but no fork compares it == ${code}`)); continue; }
-        const opens = flatCmds(right.then).some((c) => OPENS.has(String(c.kind)));
-        if (!opens) { notes.push(t(`${at(map, ev)}: ${code} 정답 분기가 아무것도 열지 않는다(스위치·이동·엔딩 없음)`, `${at(map, ev)}: the == ${code} branch opens nothing (no switch, transfer or ending)`)); continue; }
+        const opens = opensSomething(project, ev, flatCmds(right.then));
+        if (!opens) { notes.push(t(`${at(map, ev)}: ${code} 정답 분기가 아무것도 열지 않는다 — 이동·엔딩이 없고, 켠 스위치를 읽어 문을 여는(이동·엔딩) 페이지도 없다`, `${at(map, ev)}: the == ${code} branch opens nothing — no transfer or ending, and no page reads the switch it sets to open a way out (a transfer or an ending)`)); continue; }
         if (hintAfter) {
           const counters = all.filter((c) => c.kind === "setVariable" && (c.op === "+=" || c.op === "+") && Number(c.value) === 1).map((c) => String(c.variableId));
           const hint = forks.find((f) => { const k = f.condition as CmdNode | undefined; return k?.kind === "variable" && counters.includes(String(k.variableId)) && Number(k.value) === hintAfter && [">=", "=="].includes(String(k.op)) && flatCmds(f.then).some((c) => c.kind === "text"); });
