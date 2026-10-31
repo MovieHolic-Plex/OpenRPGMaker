@@ -595,11 +595,16 @@ function crashSite(project: Project, forestId: string): void {
   // 지그재그 한 줄(길 위 세로 줄)은 패배 뒤 병사가 「한 줄로 정렬」해 선 것으로 읽혔다(fs-act1-vqa) — 발렌을 꼭짓점으로 한 쐐기 대열.
   // 앞줄 둘은 발렌 양 어깨 한 칸 뒤, 뒷줄 둘은 한 칸 더 벌린다. 막힌 칸이면 같은 줄 안쪽으로 당긴다.
   const free = (c: Cell) => isPassable(project, forest, c.x, c.y) && !forest.events.some((e) => e.x === c.x && e.y === c.y);
-  const wedge = (dx: number, dy: number): Cell => {
-    for (const k of [0, -Math.sign(dx)]) { const c = { x: stop.x + dx + k, y: stop.y + dy }; if (free(c)) return c; }
-    return { x: stop.x + dx, y: stop.y + dy };
+  // 좌우 한 쌍씩 — 쌍의 두 칸이 모두 비어 있는 첫 후보를 쓴다(한쪽만 밀려 비뚤어진 대열이 되지 않게).
+  const pair = (cands: ReadonlyArray<readonly [number, number]>): Cell[] => {
+    for (const [dx, dy] of cands) {
+      const l = { x: stop.x - dx, y: stop.y + dy }, r = { x: stop.x + dx, y: stop.y + dy };
+      if (free(l) && free(r)) return [l, r];
+    }
+    const [dx, dy] = cands[0]!;
+    return [{ x: stop.x - dx, y: stop.y + dy }, { x: stop.x + dx, y: stop.y + dy }];
   };
-  const soldierSpots: Cell[] = [wedge(-1, 1), wedge(1, 1), wedge(-2, 2), wedge(2, 2)];
+  const soldierSpots: Cell[] = [...pair([[1, 1], [1, 2]]), ...pair([[2, 2], [1, 3], [2, 3]])];
   const usedFrom = new Set<string>();
   soldierSpots.forEach((spot, i) => {
     // 숲길 아래에서 올라온다 — 출발 칸은 같은 열 여섯 칸 아래의 걸을 수 있는 칸(없으면 길 쪽으로 옮긴다). 넷이 한 칸에 겹쳐 서지 않게.
