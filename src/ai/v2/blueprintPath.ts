@@ -959,12 +959,8 @@ export function pointLockedPagesIn(project: Project): string[] {
     const located = texts.some((c) => /에 있다|근처|옆|쪽/u.test(String(c.body ?? "")));
     if (mentioned && (located || person(src.ev))) continue;
     // 물건은 눈에 띄는 것에 기대어(「회복의 샘 서쪽」), 사람은 방위로.
-    const spot = landmarkWord(project, src.map, src.ev.x, src.ev.y, src.ev.id);
-    // 같은 맵 두 칸 안이면 잠긴 이벤트에서 본 방향으로(「서쪽 바로 옆」) — 가장 가까운 기댈 것이 잠긴 이벤트 자신이라 「「새벽의 귀환」 옆」이 되었다.
-    const ddx = src.ev.x - ev.x, ddy = src.ev.y - ev.y;
-    const near = src.map.id === map.id && Math.abs(ddx) + Math.abs(ddy) <= 2
-      ? `${Math.abs(ddx) >= Math.abs(ddy) ? (ddx < 0 ? "서쪽" : "동쪽") : (ddy < 0 ? "북쪽" : "남쪽")} 바로 옆의 ` : "";
-    const where = near || (src.map.id === map.id
+    const spot = landmarkWord(project, src.map, src.ev.x, src.ev.y, [src.ev.id, ev.id]);
+    const where = (src.map.id === map.id
       ? (person(src.ev) ? `${bearingWord({ x: ev.x, y: ev.y }, { x: src.ev.x, y: src.ev.y })}의 ` : `${spot}의 `)
       : `${src.map.name ?? src.map.id}${person(src.ev) ? "" : ` ${spot}`}의 `);
     const line = mentioned
