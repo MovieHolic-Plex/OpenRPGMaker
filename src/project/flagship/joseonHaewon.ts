@@ -230,6 +230,7 @@ export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
   // 맵에 기본 조명을 박지 않는다 — 박으면 밤 장면(setLighting) 뒤 문을 드나들 때마다 낮으로 돌아간다(기본 조명 없는 맵은 앞 맵 조명을 잇는다).
   for (const id of Object.values(JW_MAP)) { const m = project.maps[id]; if (m) delete m.defaultLighting; }
 
+  stripFaces(project);
   project.startMapId = JW_MAP.village;
   project.startPos = { ...V.arrive };
   writeJoseonHaewonLore(project);
@@ -242,6 +243,38 @@ export function createJoseonHaewonFlagshipDemo(): FlagshipDemoBuildResult {
     project: reloaded,
     serialized,
   };
+}
+
+/**
+ * 얼굴을 쓰지 않는다(설계 2절) — 사건 도구·place_npc 가 붙이는 「검토된 짝 얼굴」은 EasyRPG 얼굴(폐기 대상)이라
+ * 조선 칩 위에 서양 만화 얼굴이 뜬다. 이름표만 남긴다.
+ */
+function stripFaces(project: Project): void {
+  const clean = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    const out = list.filter((c) => !(c && typeof c === "object" && (c as { kind?: string }).kind === "changeFace"));
+    for (const c of out) {
+      if (!c || typeof c !== "object") continue;
+      const rec = c as Record<string, unknown>;
+      if (rec.kind === "text") delete rec.face;
+      for (const [key, value] of Object.entries(rec)) {
+        if (Array.isArray(value)) rec[key] = clean(value);
+        else if (value && typeof value === "object") {
+          for (const [k2, v2] of Object.entries(value as Record<string, unknown>)) if (Array.isArray(v2)) (value as Record<string, unknown>)[k2] = clean(v2);
+        }
+      }
+      if (Array.isArray(rec.options)) for (const o of rec.options as Record<string, unknown>[]) if (o && Array.isArray(o.branch)) o.branch = clean(o.branch);
+    }
+    return out;
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const ev of map.events ?? []) {
+      for (const pg of ev.pages ?? []) pg.commands = clean(pg.commands) as Command[];
+      if (ev.commands) ev.commands = clean(ev.commands) as Command[];
+    }
+  }
+  for (const ce of project.commonEvents ?? []) ce.commands = clean(ce.commands) as Command[];
+  for (const t of project.database.troops) for (const bp of t.battleEventPages ?? []) bp.commands = clean(bp.commands) as Command[];
 }
 
 // ── 프롤로그 「청석골에 들다」 ──
