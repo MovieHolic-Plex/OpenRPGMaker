@@ -2225,7 +2225,7 @@ function fortressEvents(project: Project, exec: Exec): void {
   ];
   const win: Command[] = [
     cutBegin(),
-    narrate("새라가 창을 내렸다. 개들이 그 발치에 엎드렸다."),
+    narrate("새라가 창을 내렸다. 경비견이 그 발치에 엎드렸다."),
     say(SARAH, "…졌다. 명령은 지켰고."),
     say(SARAH, "쇠 마차는 사흘 전에 여길 지나갔다.\n안에 탄 아이가 내내 뭘 쓰고 있더군. 공책에."),
     say(ELENA, "이리스 일지예요."),
@@ -2768,6 +2768,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   iceLake(project, exec);
   detection(project, exec);
+  courtKnightSight(project);
   fortressFixes(project, exec);
   waveFloorUnderFeet(project, exec);
   waveBgm(project, exec);
@@ -2864,6 +2865,25 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
   { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
 ];
+/**
+ * 요새 바깥 순찰 기사의 시야를 12칸으로 되돌린다(B6 다듬기 2026-10-31 첫 플레이 녹화: 9칸 앞 탁 트인 흙길에 서 있는데도 16초 동안 움직이지 않았다).
+ * set_field_detection 은 맵 입구 칸에서 가까운 추격자의 시야를 깎는다(입구 매복 방지) — 이 맵에서는 성문 망루에서 도로 나오는
+ * 도개교 칸(35,20~21)이 입구로 잡혀 기사(35,27) 시야가 12 → 5 로 줄었다. 그 입구는 요새 안에서 돌아 나오는 길이라 들어서자마자
+ * 붙잡히는 매복이 아니다(기사는 성문 앞 길목을 지키고, 지나가려면 어차피 마주친다). 시야만 저작 값으로 되돌리고 나머지(돌진·수색)는 그대로.
+ */
+function courtKnightSight(project: Project): void {
+  const knight = M(project, FS2_FORT_COURT_ID).events.find((e) => JSON.stringify(e.pages ?? []).includes("sw_fs2_fort_knight_court_down")
+    && (e.pages ?? []).some((pg) => pg.movement?.type === "chase"));
+  if (!knight) throw new Error("[fallen-star act2] 요새 바깥 순찰 기사가 없다");
+  for (const pg of knight.pages ?? []) {
+    if (pg.movement?.type !== "chase") continue;
+    const mv = pg.movement as unknown as Rec;
+    mv.sightRange = 12;
+    mv.sight = { ...((mv.sight as Rec | undefined) ?? {}), range: 12, facing: "any" };
+    mv.giveUpRange = Math.max(Number(mv.giveUpRange ?? 0), 22);
+  }
+}
+
 function detection(project: Project, exec: Exec): void {
   const routeMaps = [...FS2_NORTH_ROUTE.mapIds, ...FS2_SNOW.mapIds];
   // 막사는 시야 3칸의 잠입 퍼즐이다. 야외 적 설정으로 덮으면 순찰에서 떨어진 동쪽 통로까지 감지한다.

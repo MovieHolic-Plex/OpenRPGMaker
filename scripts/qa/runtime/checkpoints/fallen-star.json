@@ -5704,10 +5704,10 @@
   {
    "id": "act2-b6-sarah",
    "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
-   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,14) 바로 앞 새라(19,14)·경비견(20,14) — y15 는 망루 지붕·장작더미 줄, 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
    "x": 17,
-   "y": 15,
+   "y": 14,
    "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
@@ -5944,10 +5944,10 @@
   {
    "id": "act2-b6-lose",
    "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
-   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,15) 바로 앞 새라(19,15)·경비견(20,15), 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
+   "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,14) 바로 앞 새라(19,14)·경비견(20,14) — y15 는 망루 지붕·장작더미 줄, 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
    "mapId": "fs2_fort_court",
    "x": 17,
-   "y": 15,
+   "y": 14,
    "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
@@ -6076,9 +6076,9 @@
   {
    "id": "act2-b6-lever",
    "label": "제2막 B6 — 2층 레버: 당기면 쇠사슬 소리에 순찰 기사가 곧장 달려온다",
-   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버 바로 밑 칸(15,19)에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
+   "note": "act2Opening.ts northFortress — author_dungeon floors 2 floorRooms + gimmick lever — 레버(13,18) 바로 밑 칸(13,19) — 2층을 다시 그리며 레버가 (13,18)로 옮겨졌는데 시작 칸이 (15,19)라 벽을 누르고 있었다에서 시작하고 홀 경비견(foe1)은 이미 쓰러뜨린 뒤다(돌진에 레버 장면이 끊기지 않게). 쇠창살까지는 19줄로 돌아간다(18줄 13·14열은 벽)",
    "mapId": "fs2_fortress_f2",
-   "x": 15,
+   "x": 13,
    "y": 19,
    "facing": "up",
    "switches": {
