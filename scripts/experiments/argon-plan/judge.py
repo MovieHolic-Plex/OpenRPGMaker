@@ -22,6 +22,8 @@ for g in sorted(glob.glob(f"{RUNS}/argon[AB][0-9]/*/map.png")):
         if f"{run}|{a['id']}" not in res: jobs.append(("pair", run, g, task, a))
     if run.startswith("argonB"):
         ra = run.replace("argonB", "argonA"); ga = f"{RUNS}/{ra}/map.png"
+        if not os.path.exists(ga):   # same-rep A has no map: pair with another A rep of the same place
+            alt = sorted(glob.glob(f"{RUNS}/argonA[0-9]/{task}/map.png")); ga = alt[0] if alt else ga
         if os.path.exists(ga) and run not in h2h: jobs.append(("h2h", run, g, task, ga))
 print("jobs", len(jobs), flush=True)
 def one(j):
@@ -30,7 +32,7 @@ def one(j):
         per = mapvqa.pairwise(png, a["png"], KIND[task], REQ[task], judges=[J])
         return kind, f"{run}|{a['id']}", {"run": run, "anchor": a["id"], "judges": per, "verdict": mapvqa.majority(per, [J])}
     per = mapvqa.pairwise(png, a, KIND[task], REQ[task], judges=[J])   # x = B, y = A; +1 = B better
-    return kind, run, {"b": run, "a": run.replace("argonB", "argonA"), "judges": per, "verdict": mapvqa.majority(per, [J])}
+    return kind, run, {"b": run, "a": "/".join(a.split("/")[-3:-1]), "judges": per, "verdict": mapvqa.majority(per, [J])}
 with cf.ThreadPoolExecutor(8) as ex:
     for kind, k, v in ex.map(one, jobs):
         with lock:

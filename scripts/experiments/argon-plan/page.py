@@ -18,18 +18,21 @@ def wdl(vs): return f"{vs.count(1)}승 {vs.count(0)}무 {vs.count(-1)}패" if vs
 rows = []
 for arm, lab in [("argonA", "A 바로 JSON"), ("argonB", "B 그림 먼저 → JSON")]:
     Rs = [run(arm, r, t) for r in (1, 2, 3) for t in TASKS]; Rs = [x for x in Rs if x]
-    M = [(x.get("stats") or {}).get("measure") or {} for x in Rs]; V = [m.get("variety") or {} for m in M]
+    M = [(x.get("stats") or x.get("salvageStats") or {}).get("measure") or {} for x in Rs if (x.get("stats") or x.get("salvageStats"))]; V = [m.get("variety") or {} for m in M]
     anc = [v["verdict"] for k, v in res.items() if k.startswith(arm)]
     hv = [v["verdict"] for v in h2h.values()]; hv = hv if arm == "argonB" else [-x for x in hv]
     pics = sum(1 for r in (1, 2, 3) for t in TASKS if os.path.exists(f"{R}/{arm}{r}/{t}/plan-picture.png")) if arm == "argonB" else None
     rows.append(f"<tr><td>{lab}</td><td>{len(Rs)}/12</td><td>{sum(1 for x in Rs if x.get('ok'))}/{len(Rs)}</td><td>{avg([x.get('repairs') for x in Rs], '{:.1f}')}</td>"
                 f"<td>{avg([v.get('distinctPerRoom') for v in V], '{:.1f}')}</td><td>{avg([v.get('repetition') for v in V])}</td><td>{avg([m.get('types') for m in M], '{:.1f}')}</td>"
-                f"<td>{avg([v.get('boxRoomRatio') for v in V])} / {avg([v.get('plainBoxRatio') for v in V])}</td><td>{wdl(anc)}</td><td>{wdl(hv)}</td><td>{'' if pics is None else f'{pics}/12'}</td></tr>")
+                f"<td>{avg([v.get('boxRoomRatio') for v in V])} / {avg([v.get('plainBoxRatio') for v in V])}</td><td>{wdl(anc)}</td><td>{wdl(hv)}</td><td>{'' if pics is None else f'{pics}/12'}</td><td>{sum(1 for r in (1, 2, 3) for t in TASKS if os.path.exists(f"{R}/{arm}{r}/{t}/map.png"))}/12</td></tr>")
 def cap(x, arm, r, t):
     if not x: return "아직"
-    m = (x.get("stats") or {}).get("measure") or {}; v = m.get("variety") or {}
+    m = (x.get("stats") or x.get("salvageStats") or {}).get("measure") or {}; v = m.get("variety") or {}
+    sv = ld(f"{R}/{arm}{r}/{t}/salvage.json")
     anc = [vv["verdict"] for k, vv in res.items() if k.startswith(f"{arm}{r}/{t}|")]
     s = f"{'검증 통과' if x.get('ok') else '<b class=bad>검증 실패</b>'} · 수리 {x.get('repairs')}회 · 방당 서로 다른 물건 {v.get('distinctPerRoom', '—')} · 종류 {m.get('types', '—')} · 네모 방 {v.get('boxRoomRatio', '—')} · 기준 방 대비 {wdl(anc)}"
+    if sv.get("rendered"): s += f" · <span class=err>그림은 검증 실패 배치({sv.get('from')})에서 잘못 놓인 물건 {len(sv.get('dropped') or [])}개를 빼고 그린 것</span>"
+    elif sv: s += " · <span class=err>벽 구조 오류로 그릴 수 없음</span>"
     if not x.get("ok") and x.get("errors"): s += f"<br><span class=err>남은 오류 {len(x['errors'])}: {html.escape(x['errors'][0][:160])}</span>"
     return s
 secs = []
@@ -55,7 +58,8 @@ h4{{margin:4px 0;font-size:13px;color:#aab}}.meta{{font-size:12px;color:#aaa;mar
 <p class=verdict>{html.escape(verdict)}</p>
 <p>장소 4곳 × Argon 3회씩. 두 쪽 모두 bbox-walls 8판 흐름(방 계획 → 맞춤 카탈로그 → 배치 → 같은 검증기·같은 영어 수리 지적, 최대 6회)이고, B 는 그 앞에 평면도 그림 한 장을 그린다.
 8318 경로의 Argon 은 그림을 내지 못해(이미지 대신 dalle 호출 글을 돌려줌, gemini-web 계열은 503) <b>Argon 이 SVG 를 직접 쓰고 코드는 그것을 PNG 로 바꾸기만 했다</b>(배치 논리 없음). B 의 2단계에는 SVG 원문이 아니라 그 그림만 붙였다.
+<b>두 팔 24장 모두 최대 6회 안에 검증을 통과하지 못했다</b>(7·8판 Argon 과 같음). 판정용 그림은 두 팔에 똑같이: 마지막 배치(벽을 못 그리면 그릴 수 있는 가장 늦은 답)에서 검증기가 지목한 잘못 놓인 물건만 빼고 그렸다 — 벽·방은 건드리지 않았다. 벽이 닫히지 않아 어떤 답도 못 그린 판은 맵이 없다.
 판정자 Opus 5.5 medium, 기준 방은 bbox-walls 판들과 같고 두 순서로 본다. 맞대결은 같은 장소·같은 회차의 B 맵 대 A 맵.</p>
-<table><tr><th>팔</th><th>완료</th><th>검증 통과</th><th>평균 수리</th><th>방당 서로 다른 물건</th><th>반복률</th><th>물건 종류</th><th>네모 방 / 밋밋한 네모</th><th>기준 방 대비</th><th>맞대결</th><th>그림 성공</th></tr>{''.join(rows)}</table>
+<table><tr><th>팔</th><th>완료</th><th>검증 통과</th><th>평균 수리</th><th>방당 서로 다른 물건</th><th>반복률</th><th>물건 종류</th><th>네모 방 / 밋밋한 네모</th><th>기준 방 대비</th><th>맞대결</th><th>그림 성공</th><th>맵 그려짐</th></tr>{''.join(rows)}</table>
 {''.join(secs)}"""
 open(f"{VIZ}/argon-plan-vs-direct.html", "w").write(page); print("ok")
