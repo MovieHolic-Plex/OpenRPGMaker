@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **189쪽 / 7850KB / 약 2,306,503 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **189쪽 / 7850KB / 약 2,306,681 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,9 +16,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 466 | ~21,343 |
-| `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,278 |
+| `openwiki/assistant-v2.md` | 244KB | 47KB | 689 | ~74,342 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
-| `openwiki/beodeul-city.md` | 232KB | 19KB | 1141 | ~70,616 |
+| `openwiki/beodeul-city.md` | 233KB | 19KB | 1143 | ~70,730 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
 | `openwiki/editor-ai-tools.md` | 615KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4013 | ~180,573 |
@@ -109,7 +109,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 3 | `capture.png`, `facts.json`, `reference.png` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -324,7 +324,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L354` 바로 플레이 게임 (2026-10-23)
   - `L458` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,278 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 244KB · 689줄 · ~74,342 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -440,74 +440,74 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 232KB · 1141줄 · ~70,616 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 233KB · 1143줄 · ~70,730 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
   - `L73` 나무 연결 보정과 집 5채 작은 마을 (2026-10-04 후속)
   - `L80` 마을마다 다르게 (2026-10-22)
-- `L117` 마을 성벽 bd-wall (2026-10-22, 3판) — 3/4 성벽 길·성문루·망루·계단·쪽문, 눈·사막 변형, 칸 28,544~29,567
-- `L183` 왕도 아스텔 조각 bd-capital (2026-10-27) — 칸 33,408~, 마당 꼬리 바로 뒤
-- `L199` 던전 주제 2 꼬리 bd-pick-dungeon-theme2 (2026-10-27) — 칸 33,664~, 왕도 꼬리 바로 뒤
-- `L205` 동굴 기물 꼬리 bd-pick-dungeon-cave (2026-10-29) — 칸 33,920~, 주제 2 꼬리 바로 뒤
-- `L218` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
-- `L244` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
-- `L251` 기본 타일셋 (2026-09-30)
-  - `L272` 빠른 집·도로 도구 (2026-10-03)
-  - `L287` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L313` 무엇이 어디에 있나
-- `L333` 칸 자르기 규칙
-- `L345` 정본 저장·재로드 (2026-09-28)
-- `L353` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L364` 결과 (2026-09-28, 두 번)
-- `L384` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L388` 무엇을 더했나
-  - `L401` 예시 배치 둘과 배치 자
-  - `L412` 참고문서 (v7)
-  - `L418` 정본 (v7)
-  - `L422` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L444` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L449` 무엇을 더했나
-  - `L465` 배우며 찾은 것
-  - `L473` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L493` 정본 (v8)
-- `L497` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L515` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
-- `L554` 남은 것
-- `L565` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L576` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L589` 칸·키트
-  - `L612` 기존 프로젝트
-  - `L618` 참고문서 (조수)
-  - `L625` 화면 증거
-  - `L629` 남은 것
-- `L634` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
-  - `L658` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
-  - `L680` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
-  - `L728` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
-  - `L751` 지형 먼저 — 마을 짓기의 기본 순서 (2026-10-29)
-  - `L796` 코드 지형 + 조수 배치 + 칩셋 계단 (2026-10-30)
-  - `L824` 코드 지형 2판: 끊긴 절벽·낮은 기본 땅·늪 널판·어촌 물가·빈 단 쓰임 (2026-10-30)
-  - `L844` 코드 지형 3판: 굽은 띠·넓은 돌계단·집 크기 고르기·과수원·길가 소품·집 보호 다시 짓기 (2026-10-30)
-- `L857` 작은 마을 길·마당 구도 보정 (2026-10-04)
-- `L862` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
-- `L867` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
-  - `L872` 코드 지형 5판 일부: 과수원 울타리 없음·출구는 가장자리 가운데 (2026-10-30)
-  - `L878` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
-  - `L908` woodland 보정 (2026-10-20)
-- `L927` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
-- `L932` 물굽이 조밀한 마을 표본 (2026-10-04)
-- `L938` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
-- `L944` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
-  - `L952` 포석길 끊김 정정 (2026-10-05)
-- `L956` RPG 시설과 생활 역할 (2026-10-05)
-- `L964` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
-- `L972` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
-  - `L993` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
-  - `L1016` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
-  - `L1041` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
-- `L1118` 마당 바닥 오토타일 (2026-10-23, village-art)
-- `L1131` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+- `L119` 마을 성벽 bd-wall (2026-10-22, 3판) — 3/4 성벽 길·성문루·망루·계단·쪽문, 눈·사막 변형, 칸 28,544~29,567
+- `L185` 왕도 아스텔 조각 bd-capital (2026-10-27) — 칸 33,408~, 마당 꼬리 바로 뒤
+- `L201` 던전 주제 2 꼬리 bd-pick-dungeon-theme2 (2026-10-27) — 칸 33,664~, 왕도 꼬리 바로 뒤
+- `L207` 동굴 기물 꼬리 bd-pick-dungeon-cave (2026-10-29) — 칸 33,920~, 주제 2 꼬리 바로 뒤
+- `L220` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
+- `L246` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
+- `L253` 기본 타일셋 (2026-09-30)
+  - `L274` 빠른 집·도로 도구 (2026-10-03)
+  - `L289` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L315` 무엇이 어디에 있나
+- `L335` 칸 자르기 규칙
+- `L347` 정본 저장·재로드 (2026-09-28)
+- `L355` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L366` 결과 (2026-09-28, 두 번)
+- `L386` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L390` 무엇을 더했나
+  - `L403` 예시 배치 둘과 배치 자
+  - `L414` 참고문서 (v7)
+  - `L420` 정본 (v7)
+  - `L424` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L446` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L451` 무엇을 더했나
+  - `L467` 배우며 찾은 것
+  - `L475` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L495` 정본 (v8)
+- `L499` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L517` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
+- `L556` 남은 것
+- `L567` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L578` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L591` 칸·키트
+  - `L614` 기존 프로젝트
+  - `L620` 참고문서 (조수)
+  - `L627` 화면 증거
+  - `L631` 남은 것
+- `L636` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L660` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
+  - `L682` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
+  - `L730` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
+  - `L753` 지형 먼저 — 마을 짓기의 기본 순서 (2026-10-29)
+  - `L798` 코드 지형 + 조수 배치 + 칩셋 계단 (2026-10-30)
+  - `L826` 코드 지형 2판: 끊긴 절벽·낮은 기본 땅·늪 널판·어촌 물가·빈 단 쓰임 (2026-10-30)
+  - `L846` 코드 지형 3판: 굽은 띠·넓은 돌계단·집 크기 고르기·과수원·길가 소품·집 보호 다시 짓기 (2026-10-30)
+- `L859` 작은 마을 길·마당 구도 보정 (2026-10-04)
+- `L864` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
+- `L869` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
+  - `L874` 코드 지형 5판 일부: 과수원 울타리 없음·출구는 가장자리 가운데 (2026-10-30)
+  - `L880` 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
+  - `L910` woodland 보정 (2026-10-20)
+- `L929` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
+- `L934` 물굽이 조밀한 마을 표본 (2026-10-04)
+- `L940` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
+- `L946` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
+  - `L954` 포석길 끊김 정정 (2026-10-05)
+- `L958` RPG 시설과 생활 역할 (2026-10-05)
+- `L966` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
+- `L974` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+  - `L995` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
+  - `L1018` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+  - `L1043` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+- `L1120` 마당 바닥 오토타일 (2026-10-23, village-art)
+- `L1133` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 ### `openwiki/bgm-catalog.md` — 27KB · 368줄 · ~7,175 토큰
 
