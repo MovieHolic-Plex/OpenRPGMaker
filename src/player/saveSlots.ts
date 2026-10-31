@@ -115,6 +115,7 @@ import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/
 import { parseVehicleSessionState } from "@/project/vehicles";
 import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 import { normalizeJournalLines } from "@/project/storyJournal";
+import { normalizeBestiarySession } from "@/project/bestiary";
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { decodeMapBackgroundFlow, encodeMapBackgroundFlow } from "@/project/mapBackground";
 export {
@@ -278,6 +279,7 @@ export type SaveSnapshot = {
     readonly scheduleUses?: PlaySession["scheduleUses"];
     readonly scheduleRun?: PlaySession["scheduleRun"];
     readonly storyJournal?: PlaySession["storyJournal"];
+    readonly bestiary?: PlaySession["bestiary"];
     readonly teleportPoints?: PlaySession["teleportPoints"];
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
@@ -621,6 +623,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       ...(session.scheduleUses && Object.keys(session.scheduleUses).length > 0 ? { scheduleUses: structuredClone(session.scheduleUses) } : {}),
       ...(session.scheduleRun ? { scheduleRun: { ...session.scheduleRun } } : {}),
       ...(session.storyJournal && session.storyJournal.length > 0 ? { storyJournal: structuredClone(session.storyJournal) } : {}),
+      ...(session.bestiary && Object.keys(session.bestiary).length > 0 ? { bestiary: structuredClone(session.bestiary) } : {}),
       ...(session.teleportPoints && session.teleportPoints.length > 0 ? { teleportPoints: structuredClone(session.teleportPoints) } : {}),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
@@ -1014,6 +1017,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.scheduleUses) session.scheduleUses = structuredClone(snapshot.session.scheduleUses);
   if (snapshot.session.scheduleRun) session.scheduleRun = { ...snapshot.session.scheduleRun };
   if (snapshot.session.storyJournal) session.storyJournal = structuredClone(snapshot.session.storyJournal);
+  if (snapshot.session.bestiary) session.bestiary = structuredClone(snapshot.session.bestiary);
   if (snapshot.session.teleportPoints) session.teleportPoints = structuredClone(snapshot.session.teleportPoints);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
@@ -1522,6 +1526,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       scheduleUses: isNestedNumberRecord(session.scheduleUses) ? session.scheduleUses : undefined,
       scheduleRun: isScheduleRun(session.scheduleRun) ? session.scheduleRun : undefined,
       storyJournal: normalizeJournalLines(session.storyJournal),
+      bestiary: normalizeBestiarySession(session.bestiary),
       teleportPoints: Array.isArray(session.teleportPoints)
         ? session.teleportPoints.filter((p): p is NonNullable<PlaySession["teleportPoints"]>[number] =>
           !!p && typeof p === "object" && typeof (p as { mapId?: unknown }).mapId === "string"

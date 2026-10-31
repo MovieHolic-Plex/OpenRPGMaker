@@ -3931,6 +3931,18 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 도구 `configure_story_journal {title, writers, lines:[{mapId,eventId|commonEventId, pageId?, afterText?, action, lineId, writer, date, text, learnActorId, learnSkillId, say?, resultSwitchId?}], remove?}` — 일지 설정과 이벤트 안 명령을 한 번에 넣는다. say 는 명령 앞 대사 한 줄(다시 읽어 주는 말).
 - 시험 과제: `harness-data/space-craft/seed.json` `fs2-journal`.
 
+## 괴물 도감 — `define_bestiary_entry` · `list_bestiary` (2026-10-31, 사냥꾼 계약 공백 B)
+
+- **설정**은 `system.bestiary {enabled, title?, entries:[{id, name, enemyIds[], pictureResourceId?, sections:[{id, title, text, unlock?, unlockWhen?}]}]}`(`src/project/bestiary.ts`). 정규화 `normalizeBestiary`(databaseRecordModel 화이트리스트), 모양 검증 `shapeDatabaseFields.validateBestiaryShape`(칸 조건은 `validateConditionShape`).
+- **칸이 열리는 때** `unlock`: `seen`(기본, 묶인 적 중 하나라도 전투에서 만남) · `defeated`(이긴 전투에서 HP 0) · `weakness`(`session.knownWeaknesses[적]` 에 한 칸이라도 — 전투의 「약점 발견」이 적는 장부를 그대로 읽는다, 그 칸 글 아래 「알아낸 것: 화염 약점 ×2」) · `condition`(`unlockWhen` 이 참, 페이지 조건과 같은 `evalCondition`).
+- **플레이어 기록**은 세이브에 들어가는 `session.bestiary {seen[], defeated{적:수}, noted[]}`(`saveSlots` 직렬화·복원·`normalizeBestiarySession`). 만남·처치는 `playSceneBattle` 결산 자리의 `recordBestiaryBattle`(도감이 꺼진 게임은 적지 않는다).
+- **알림**: `refreshRuntimeSurfaces` 끝(이벤트·전투가 끝나는 자리)의 `noteBestiaryUnlocks` 가 `takeBestiaryNotices` 로 새로 열린 칸을 찾아 m2 ui 토스트 「도감에 적었다 — 익사귀 · 약점」을 띄운다. `noted` 에 적어 칸마다 한 번.
+- **ESC 메뉴** 항목 id `bestiary`(「기록」 묶음, `resolveBestiary` 일 때만). 목록 → 상세(`player/playerBestiaryDetail.ts`, 몬스터 도감과 같은 `campaign-dex` 틀: 전투 그림 크게·칸 글·잠긴 칸 「???」+여는 방법 한 줄). testid `status-menu-bestiary-<항목>`, `status-menu-bestiary-section-<칸>`(`data-bestiary-unlocked`). `menuSystemIssues` 가 `bestiary-entry-off`·`bestiary-on-no-entry` 를 짚는다.
+- **도구** `define_bestiary_entry {id, name, enemyIds, pictureResourceId?, sections:[{id,title,text,unlock?,unlockWhen?,unlockSwitchId?}], title?, remove?}` — 항목 하나를 통째로 넣거나 바꾼다. `unlockSwitchId` 는 `unlock:condition` + `{kind:"switch",switchId,value:true}` 를 채우고 스위치가 없으면 만든다(증인 대사 끝 setSwitch 로 「이벤트로 칸 열기」). 도감을 켜고 저작된 ESC 메뉴에 `bestiary` 항목을 넣는다. 스키마는 닫힌 객체(`additionalProperties:false`), 조건은 `CONDITION_SCHEMA`. `list_bestiary` 는 항목·칸과 도감에 없는 적 목록.
+- 이벤트 명령 «도감 칸 열기»는 따로 두지 않았다 — 같은 일을 스위치 조건 칸이 한다(m2 카탈로그를 늘리면 편집기 표면 기준선 다섯 개를 다시 구워야 한다).
+- 편집기: 자료집 → 이야기 → 「괴물 도감」(`databaseBestiaryView.ts`, testid `db-bestiary-*`). 조건 칸은 이벤트 편집기의 `conditionForm`.
+- 레시피 `bestiary`(`src/ai/toolCapabilityIndex.ts`), 스킬 `game-scene-polish` 7-11. QA `scripts/qa/runtime/bestiary{-fixture.mts,.scenario.mjs}`.
+
 
 
 ## 전투 중 손님 `add_battle_guest` · 보이는 적 진영 싸움 (2026-10-25, 폴른 스타 2막 과제 8·11)
