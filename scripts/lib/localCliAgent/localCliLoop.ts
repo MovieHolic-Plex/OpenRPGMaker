@@ -13,6 +13,7 @@
 
 import { capResultImages, compactCliToolList, CLI_CONTEXT_EXHAUSTED_PREFIX, isCliApiErrorText, isCliContextExhaustedText } from "../../../src/ai/piAgent/cliContextBudget.ts";
 import type { PiToolShape } from "../../../src/ai/piAgent/toolAdapter.ts";
+import { CLI_CALL_TOOL, CLI_CALL_TOOL_SPEC, cliListNeedsAnnounce, cliToolFreezeOn, unwrapCallTool } from "../../../src/ai/piAgent/cliToolFreeze.ts";
 import { startLocalMcpServer, type LocalMcpContent, type LocalMcpServer } from "./mcpHttpServer.ts";
 import { localCliBinary, LOCAL_CLI_ADAPTERS } from "./registry.ts";
 import type { LocalCliBilling, LocalCliEvent, LocalCliId, LocalCliSession, LocalCliUsage } from "./types.ts";
@@ -116,6 +117,9 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
   let stderrTail = "";
   const signature = () => setup.tools.map((tool) => tool.name).join("\n");
   let listed = signature();
+  // 도구 목록 고정(src/ai/piAgent/cliToolFreeze.ts): CLI 가 마지막으로 받은 이름들. 더해진 도구는 알리지 않고 call_tool 로 부른다.
+  const freeze = cliToolFreezeOn();
+  let listedNames: string[] = setup.tools.map((tool) => tool.name);
   let mcp: LocalMcpServer | undefined;
   const weight: LocalCliWeight = { systemChars: setup.systemPrompt.join("\n\n").length, listChars: 0, listCount: 0, results: {},
     systemSections: setup.systemPrompt.map((part) => ({ head: part.slice(0, 40).replace(/\s+/gu, " "), chars: part.length })).sort((a, b) => b.chars - a.chars).slice(0, 12),
@@ -135,6 +139,8 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
   const announceToolChanges = () => {
     const now = signature();
     if (now === listed) return;
+    // 고정: 더해지기만 했으면 알리지 않는다 — 알리면 CLI 가 목록을 다시 받아 다음 호출의 캐시가 통째로 깨진다.
+    if (freeze && !cliListNeedsAnnounce(listedNames, setup.tools.map((tool) => tool.name))) return;
     listed = now;
     listChanged += 1;
     mcp?.notifyToolsChanged();
@@ -144,17 +150,23 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     name: "oprn-editor",
     tools: () => {
       listed = signature();
+      listedNames = setup.tools.map((tool) => tool.name);
       // 목록만 가볍게(깊은 설명 걷기·같은 큰 하위 스키마 한 줄) — J79: 24만 자 목록이 Claude 문맥의 80% 를 먹었다.
-      const list = compactCliToolList(setup.tools.map(mcpToolOf));
+      const list = [...compactCliToolList(setup.tools.map(mcpToolOf)), ...(freeze ? [CLI_CALL_TOOL_SPEC as never] : [])];
       weight.listChars = JSON.stringify(list).length;
       weight.listCount = list.length;
       weight.listTop = list.map((tool) => ({ name: tool.name, chars: JSON.stringify(tool).length })).sort((a, b) => b.chars - a.chars).slice(0, 12);
       return list;
     },
-    async callTool(name, args) {
+    async callTool(mcpName, mcpArgs) {
       if (aborted || setup.signal?.aborted) return { content: [{ type: "text", text: "실행이 중단되었습니다." }], isError: true };
+      // call_tool{name, args}: 고정된 목록 밖 도구(load_tools 로 실은 것·고리가 선언한 것)를 부르는 길. 안쪽 도구로 풀어 그대로 실행한다.
+      const via = freeze && mcpName === CLI_CALL_TOOL ? unwrapCallTool(mcpArgs) : undefined;
+      if (via && "error" in via) return { content: [{ type: "text", text: via.error }], isError: true };
+      const name = via ? via.name : mcpName;
+      const args = via ? via.args : mcpArgs;
       const tool = findTool(name);
-      if (!tool) return { content: [{ type: "text", text: `이 실행에서 쓸 수 없는 도구입니다: ${name}. find_tools 로 찾으세요.` }], isError: true };
+      if (!tool) return { content: [{ type: "text", text: `No tool named ${name} in this run. Load it with load_tools{names:["${name}"]} (then run it with ${CLI_CALL_TOOL}) or use one from your tool list.` }], isError: true };
       const id = `mcp_${++callSeq}`;
       const release = await gate.acquire(tool.concurrency === "exclusive");
       emit({ type: "tool_execution_start", toolCallId: id, toolName: name, args });
@@ -164,12 +176,12 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: false, result: raw });
         const result = { ...raw, content: capResultImages(name, raw.content) };
         weigh(name, result.content as never);
-        sentResults.push({ name, content: result.content as never, isError: false });
+        sentResults.push({ name: mcpName, content: result.content as never, isError: false });
         return { content: result.content as LocalMcpContent[] };
       } catch (error) {
         const text = error instanceof Error ? error.message : String(error);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: true, result: { content: [{ type: "text", text }] } });
-        sentResults.push({ name, content: [{ type: "text", text }], isError: true });
+        sentResults.push({ name: mcpName, content: [{ type: "text", text }], isError: true });
         return { content: [{ type: "text", text }], isError: true };
       } finally {
         lastActivity = Date.now();
@@ -226,7 +238,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       const current = weight.requests!.at(-1);
       if (current) {
         if (event.usage) { current.out = Math.max(current.out, event.usage.output); current.cacheRead = Math.max(current.cacheRead, event.usage.cacheRead); current.cacheWrite = Math.max(current.cacheWrite, event.usage.cacheWrite); current.input = Math.max(current.input, event.usage.input); }
-        for (const block of event.blocks) if (block.type === "tool_use") current.tools.push(block.name.replace(/^mcp__[^_]+__/u, ""));
+        for (const block of event.blocks) if (block.type === "tool_use") { const bare = block.name.replace(/^mcp__[^_]+__/u, ""); current.tools.push(bare === CLI_CALL_TOOL && block.callee ? `${CLI_CALL_TOOL}>${block.callee.replace(/^mcp__[^_]+__/u, "")}` : bare); }
       }
       if (event.newRequest) emit({ type: "turn_start" });
       // 이 응답은 직전 도구 결과를 받은 모델이 낸 것이다 — 관문에 «실제로 넘어간 것»을 보여 준 뒤 완료로 친다.

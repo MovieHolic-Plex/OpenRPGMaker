@@ -11,6 +11,7 @@
 // 실행기(scripts/lib/piAgentRuntime.ts)는 env.declareTool 로 실은 도구를 다음 모델 호출부터 선언하고, 이름만 부른 호출은 options.v2.lazyTool 로 이 사본을 찾는다.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
 import type { PiAssistantV2Env } from "./env";
 import { v2ExtraToolNames, wantsGameTools } from "./game";
 import { musicOnly } from "./musicWords";
@@ -138,6 +139,12 @@ function loadedLine(tool: PiToolShape): string {
   return `- ${tool.name}: ${tool.description}\n  required: ${req.length ? req.join(", ") : "(none)"} · fields: ${props.join(", ") || "(none)"}`;
 }
 
+/** 목록 고정(call_tool) 때 load_tools 결과에 싣는 한 도구 — 설명과 매개변수 스키마(CLI 목록과 같은 가벼운 모양). */
+function loadedSchema(tool: PiToolShape): string {
+  const [compact] = compactCliToolList([{ name: tool.name, description: tool.description, inputSchema: tool.parameters }]);
+  return `- ${tool.name}: ${tool.description}\n  parameters: ${JSON.stringify(compact?.inputSchema ?? tool.parameters)}`;
+}
+
 /**
  * 할 일 고리(withTodoLoop)까지 감싼 v2 도구 목록을 받아 이번 요청에 내놓을 모양으로 나눈다.
  * 게임 요청이 아니면(맵만·음악만·덧그리기·스토어) 다 싣는다 — 영어 사본·같은 모양 걷기만 한다.
@@ -160,7 +167,9 @@ export function exposeV2Tools(env: PiAssistantV2Env, tools: readonly PiToolShape
     name: "load_tools",
     label: "load tools",
     description: [
-      "Load more tools by name. They are left out of your tool list to keep it short; after loading, their full schemas are in your tool list from your next call. Calling one of them by name also works (it loads on first use).",
+      env.lazyToolsVia === "call_tool"
+        ? "Load more tools by name. They are left out of your tool list to keep it short. Loading returns their parameters; run them with call_tool{name, args} (your tool list itself never changes)."
+        : "Load more tools by name. They are left out of your tool list to keep it short; after loading, their full schemas are in your tool list from your next call. Calling one of them by name also works (it loads on first use).",
       `For this request: ${offered.map((n) => `${n} — ${gloss(lazy.get(n)!)}`).join("; ") || "(none)"}.`,
       ...(others.length ? [`Also loadable: ${others.join(", ")}.`] : []),
     ].join("\n"),
@@ -170,15 +179,18 @@ export function exposeV2Tools(env: PiAssistantV2Env, tools: readonly PiToolShape
       const got: PiToolShape[] = []; const unknown: string[] = []; const already: string[] = [];
       for (const raw of names) {
         const name = raw.trim();
-        if (upFront.some((t) => t.name === name) || loaded.has(name)) { already.push(name); continue; }
+        if (upFront.some((t) => t.name === name)) { already.push(name); continue; }
+        if (loaded.has(name) && env.lazyToolsVia !== "call_tool") { already.push(name); continue; }
         const tool = lazy.get(name);
         if (!tool) { unknown.push(name); continue; }
         loaded.add(name);
         env.declareTool?.(tool);
         got.push(tool);
       }
+      const viaCall = env.lazyToolsVia === "call_tool";
       const lines = [
-        got.length ? `Loaded ${got.length} tool(s)${env.declareTool ? " — call them from your next step; the full schema is in your tool list" : ""}:\n${got.map(loadedLine).join("\n")}` : "",
+        got.length && viaCall ? `Loaded ${got.length} tool(s). Your tool list does not change (prompt cache) — run them with call_tool{name:"<tool>", args:{…}} using these parameters:\n${got.map(loadedSchema).join("\n")}` : "",
+        got.length && !viaCall ? `Loaded ${got.length} tool(s)${env.declareTool ? " — call them from your next step; the full schema is in your tool list" : ""}:\n${got.map(loadedLine).join("\n")}` : "",
         already.length ? `Already in your tool list: ${already.join(", ")}.` : "",
         unknown.length ? `Unknown tool name(s): ${unknown.join(", ")}. Loadable names: ${[...lazy.keys()].filter((n) => !loaded.has(n)).join(", ")}.` : "",
       ].filter(Boolean);
