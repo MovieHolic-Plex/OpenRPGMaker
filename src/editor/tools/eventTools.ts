@@ -3469,7 +3469,7 @@ function readCaughtPenalty(draft: Project, raw: unknown): CaughtPenalty | undefi
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. activateSwitch 로 깨운 추격자는 기본으로 벽 너머의 주인공도 쫓는다(persistent) — patrol 이 있으면 스위치는 순찰 시작이고 보아야 쫓는다. 추격전·「쫓아오는」 요청의 정본. " +
     "speed 는 쫓는 동안 한 칸 시간이다(쉬지 않고 이어 걷는다, 주인공 걷기 160ms): 1≈327 · 2≈255 · 3≈182ms(주인공보다 조금 느림) · 4≈145 · 5≈127 · 6(기본)·7·8≈115ms(주인공보다 빠름). 주인공보다 빠른 추격자는 12칸마다 숨을 고르고, 시야가 끊기면 잠깐 뒤 마지막 목격 자리와 달아난 방향을 뒤진다 — 은신처·시야를 끊는 벽·문을 꼭 둘 것. " +
     "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것. " +
     "activateSwitch 를 setSwitch value:false 로 끄면 추격자가 사라질 뿐 은신이 아니다. 숫자 암호·금고·열쇠는 compile_puzzle kind:password — answer 가 1~6자리 숫자면 inputNumber. 선택지 보기에 정답 숫자를 적지 말 것.",
@@ -3582,7 +3582,10 @@ const makeChaseScene: ToolDefinition = {
         throw new ToolError(`pursuit.${key} 에 activateSwitch(${activateSwitch})를 쓸 수 없습니다 — ${key === "lostSwitchId" ? "다시 발견하면 꺼지므로 추격자가 주인공을 보는 순간 사라집니다" : "넘어오기 연출 스위치이지 추격을 켜는 스위치가 아닙니다"}. 연출용 스위치를 따로 쓰거나 빼세요.`);
       }
     }
-    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
+    // 단, 순찰(patrol)이 있으면 스위치는 «순찰 시작»이다 — persistent 면 켜지는 순간 이미 쫓는 상태로 깨어나
+    // 순찰도 숨기도 건너뛰고 곧장 주인공에게 온다(2026-10-31 「이상 없음」: 계단참에 손전등이 서자마자 숙직 선생이
+    // 도구함 앞까지 직행해 첫 숨기가 성립하지 않았다). 순찰 경비는 보아야 쫓는다.
+    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined && args.patrol === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const penalty = readCaughtPenalty(draft, args.caughtPenalty);
     if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
