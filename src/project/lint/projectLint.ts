@@ -20,7 +20,8 @@ import { lintHazardEffects } from "./hazardEffectLint";
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
 //  - map-size              (error)   공통 지원 상한 초과 맵(생성 계약과 동일한 상한)
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
-//  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
+//  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제 (story-flag:script-dynamic 은 info)
+//  - script-reference-missing (warning) 스크립트가 리터럴 id 로 없는 아이템·배우·스킬·공통 이벤트·맵·적 그룹·애니메이션·라이브러리를 부름
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
 //  - campus-dead-door      (error|warning) 캠퍼스 문 그림이 막혔거나 닿지 못하거나 어디로도 이어지지 않음(lint/campusDoorLint.ts)
@@ -59,6 +60,8 @@ import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../s
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
+import { forEachProjectScript, scriptCommandEffects } from "../script/effects";
+import type { ScriptRefKind } from "../script/types";
 import { clusterRuleLintIssues } from "./clusterRuleLint";
 import { checkCampusDoors } from "./campusDoorLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
@@ -103,6 +106,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
   checkStoryFlags(project, issues);
+  checkScriptReferences(project, issues);
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues, opts.clusterMapIds);
   checkGroundSupport(project, issues, opts.clusterMapIds);
@@ -638,26 +642,83 @@ function runtimeSupportCommandKind(command: Command): string {
   return command.kind === "m2Command" ? command.commandId : command.kind;
 }
 
+const SCRIPT_REF_LABEL: Partial<Record<ScriptRefKind, string>> = {
+  item: "아이템", actor: "배우", skill: "스킬", commonEvent: "공통 이벤트", map: "맵", troop: "적 그룹", animation: "전투 애니메이션", library: "라이브러리 모듈",
+};
+
+/**
+ * 스크립트가 리터럴 id 로 부르는 레코드가 프로젝트에 없으면 경고한다. 로드 검증(commandReferenceValidation)은
+ * 스크립트를 통과시킨다 — 스크립트 참조 때문에 프로젝트가 안 열리면 안 된다. 스위치·변수는 실행 중 새로 생기므로 보지 않는다.
+ * 라이브러리 모듈은 그 모듈 자신의 effects 만 본다(가져오는 쪽마다 같은 경고를 되풀이하지 않는다).
+ */
+function checkScriptReferences(project: Project, issues: LintIssue[]): void {
+  const db = project.database;
+  const known: Partial<Record<ScriptRefKind, ReadonlySet<string>>> = {
+    item: new Set([...db.items.map((record) => record.id), ...db.equipment.map((record) => record.id)]),
+    actor: new Set(db.actors.map((record) => record.id)),
+    skill: new Set(db.skills.map((record) => record.id)),
+    commonEvent: new Set(project.commonEvents.map((record) => record.id)),
+    map: new Set(Object.keys(project.maps)),
+    troop: new Set(db.troops.map((record) => record.id)),
+    animation: new Set((db.battleAnimations ?? []).map((record) => record.id)),
+    library: new Set((project.scriptLibrary ?? []).map((module) => module.id)),
+  };
+  const report = (effects: ReturnType<typeof scriptCommandEffects>, where: string, mapId?: string): void => {
+    const seen = new Set<string>();
+    for (const ref of [...effects.reads, ...effects.writes, ...effects.calls]) {
+      const ids = known[ref.kind];
+      const key = `${ref.kind}:${ref.id}`;
+      if (!ids || ids.has(ref.id) || seen.has(key)) continue;
+      seen.add(key);
+      issues.push({
+        severity: "warning",
+        code: "script-reference-missing",
+        ...(mapId ? { mapId } : {}),
+        message: `${where}: 스크립트가 없는 ${SCRIPT_REF_LABEL[ref.kind] ?? ref.kind} \`${ref.id}\` 를 부릅니다 — 실행하면 오류 대사가 납니다.`,
+      });
+    }
+  };
+  forEachProjectScript(project, (command, owner) => {
+    const where = owner.commonEventId ? `공통 이벤트 ${owner.commonEventId}`
+      : owner.troopId ? `적 그룹 ${owner.troopId}`
+        : `${owner.mapId} ${owner.eventId}${owner.pageIndex !== undefined ? ` 페이지 ${owner.pageIndex + 1}` : ""}`;
+    report(scriptCommandEffects(command), where, owner.mapId);
+  });
+  for (const module of project.scriptLibrary ?? []) report(scriptCommandEffects(module), `라이브러리 @lib/${module.id}`);
+}
+
 function checkStoryFlags(project: Project, issues: LintIssue[]): void {
   const index = buildStoryFlagUsageIndex(project);
   for (const flag of project.storyFlags ?? []) {
     if (flag.retired === true) continue;
     const usage = usageBucketFor(index, flag.kind, flag.targetId);
     const label = storyFlagListLabel(project, flag);
-    if (usage.reads.length > 0 && usage.writes.length === 0) {
+    // 스크립트가 계산된 id 로 쓰면(읽으면) 쓰는(읽는) 곳이 안 보일 뿐일 수 있다 — 경고 대신 아래 안내 한 줄.
+    const hiddenWrite = index.scriptDynamic[flag.kind].write;
+    const hiddenRead = index.scriptDynamic[flag.kind].read;
+    if (usage.reads.length > 0 && usage.writes.length === 0 && !hiddenWrite) {
       issues.push({
         severity: "warning",
         code: "story-flag:read-without-write",
         message: `서사 플래그가 읽히지만 쓰이지 않습니다: ${label} (read ${usage.reads.length}, write 0)`,
       });
     }
-    if (usage.writes.length > 0 && usage.reads.length === 0) {
+    if (usage.writes.length > 0 && usage.reads.length === 0 && !hiddenRead) {
       issues.push({
         severity: "warning",
         code: "story-flag:write-without-read",
         message: `서사 플래그가 쓰이지만 읽히지 않습니다: ${label} (read 0, write ${usage.writes.length})`,
       });
     }
+  }
+
+  const dynamicKinds = (["switch", "variable"] as const).filter((kind) => index.scriptDynamic[kind].read || index.scriptDynamic[kind].write);
+  if (dynamicKinds.length > 0 && (project.storyFlags ?? []).some((flag) => flag.retired !== true && dynamicKinds.includes(flag.kind))) {
+    issues.push({
+      severity: "info",
+      code: "story-flag:script-dynamic",
+      message: `스크립트가 계산된 id 로 ${dynamicKinds.map((kind) => kind === "switch" ? "스위치" : "변수").join("·")}를 읽거나 써서, 서사 플래그의 「읽기만/쓰기만」 검사를 건너뛰었습니다.`,
+    });
   }
 
   if ((project.storyFlags ?? []).length === 0) return;

@@ -4,6 +4,7 @@
 // 「심부름 퀘스트」「새 무기를 상점에서」「보스 전투 뒤 감사」를 옮길 길이 없었다. 이 층은 이미 검증된 v1 결정론 도구를
 // 그대로 내놓는다(스키마·검증·저장 계약이 v1 과 같다). 요청에 게임 낱말이 있을 때만 싣는다 — 맵 요청의 첫 턴을 무겁게 하지 않는다.
 import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
+import { assistantScriptsOn } from "@/ai/scriptsSwitch";
 import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
@@ -15,7 +16,7 @@ import { withForestRouteBrief } from "./forestBrief";
 /** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
 const firstReason = (why: string): string => { const p = parseFailure(why); return (p.issues[0]?.message ?? p.summary).replace(/^'[^']+'\s*실행 실패:\s*/u, ""); };
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+export const GAME_WORDS = /퀘스트|스크립트|타입스크립트|typescript|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
 
 /** 폴른 스타 제작에서 나온 일 묶음 — 요청 낱말이 있을 때만 그 도구를 더 싣는다(첫 턴을 무겁게 하지 않는다). */
@@ -38,6 +39,12 @@ export const SOUND_TIER = { words: SOUND_REQUEST_WORDS, tools: ["store_find_soun
 export function wantsSoundTools(task: string): boolean {
   return wantsSound(task);
 }
+/** TypeScript event scripts — 조건·계산·반복이 얽힌 로직 낱말이면 스크립트 도구를 처음부터 싣는다(openwiki/script-sandbox.md). */
+export const SCRIPT_TIER = {
+  words: /스크립트|타입스크립트|코드로|공식|계산|조합|순서대로|레버|퍼즐|비밀번호|자물쇠|암호|무작위|랜덤|확률|시간대|할인|평판|가격|typescript|script|formula|puzzle|random|lever|discount/iu,
+  tools: ["get_script_api", "check_script", "author_script", "edit_script", "dry_run_script", "read_event_as_script", "write_event_as_script", "upsert_script_module", "list_script_modules"],
+  card: "· Scripted logic (lock combinations, lever order, formulas, time-of-day or inventory checks, chance): get_script_api once (typed ids) → author_script{mapId,eventId,pageIndex|commonEventId, source, name} — on a compile error nothing changes, fix the listed lines and call again → dry_run_script{same target, commandPath or name, choices/numbers/battleResults, switches/variables/gold/items presets} and check transcript + changes before reporting. Shared helpers (price formula) = upsert_script_module{id, source} imported as \"@lib/<id>\". To rewrite a tangled page as code: read_event_as_script, then write_event_as_script{…, confirm:true}. Always await showMessage/showChoices/wait/battle/transfer/cmd; transfer ends the event; locals are not saved (use switches/variables).",
+} as const;
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
   { words: /설원|눈길|눈보라|눈 덮인|고갯길|서리|얼음 틈|빙판|북방|snow|blizzard|frozen/iu, tools: ["author_snow_route"] },
@@ -51,6 +58,7 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   // 2026-10-25 스토어 음악 팩: 곡마다 들어 보고 적은 장면·분위기로 골라 넣고 자리에 연결한다.
   // 2026-10-30 낱말은 musicWords.ts 하나(「엔딩곡」「테일즈런너처럼」도 맞는다) — 끝맺음 음악 검사와 같은 판정.
   MUSIC_TIER,
+  SCRIPT_TIER,
   { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|자동문|미닫이|셔터|door/iu, tools: ["place_door", "set_map_door"] },
   // 2026-10-25 데모(폴른 스타 전투·대사 책상·모바일·첫사랑 거리)에서 일반 기능으로 연 것 — 낱말이 맞을 때만.
   // 2026-10-25 폴른 스타 2막 과제 11: 보이는 적끼리 진영 싸움(set_factions + place_field_enemy factionId).
@@ -79,7 +87,8 @@ export function fallenTierTools(task: string): string[] {
 }
 /** 맞는 묶음의 사용법 한 줄씩(게임 카드 끝에 붙는다) — 도구만 싣고 쓰는 법을 안 주면 조수가 손으로 조립한다. */
 export function fallenTierCard(task: string): string {
-  const lines = [...new Set(FALLEN_TIERS.filter((tier) => tier.card && tier.words.test(task)).map((tier) => tier.card!))];
+  const scriptsOn = assistantScriptsOn();
+  const lines = [...new Set(FALLEN_TIERS.filter((tier) => tier.card && tier.words.test(task) && (scriptsOn || tier !== SCRIPT_TIER)).map((tier) => tier.card!))];
   return lines.length ? `[Tools for this request — use these instead of assembling by hand]\n${lines.join("\n")}` : "";
 }
 
@@ -103,6 +112,7 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
 - Stand new NPCs with add_people using a spot word, then put pages, conditions and commands on the returned event id with upsert_event. If you really need coordinates (chest, lever), get a free cell from find_empty_ground — never invent them.
 - To change an existing NPC (village chief etc.) do not stand a new one; upsert_event on that event id. Keep existing lines unless the request says to change them.
 - Dialogue whose state changes (request → in progress → done, remembered choices) gets a different condition per page (switch, variable, self switch). Rewards, item gains/losses, gold and party changes go in as commands.
+- Logic with conditions, math, loops or more than a few branches (combination locks, order puzzles, price formulas, time-of-day reactions, inventory checks, random outcomes): write ONE script command with author_script (TypeScript against the game API — get_script_api shows it, read_assistant_skill{id:'event-scripts'} has examples) and prove it with dry_run_script, instead of a long command list. Plain dialogue and simple one-condition pages stay commands. Never hand-write {kind:'script'} in upsert_event/patch_event_page.
 - If the request gives numbers (heal amount, attack, price), use them exactly. If an item links an effect skill (skillId), set that skill's power to the same value with variance 0 (otherwise the real heal differs from the request).
 - «Accumulating» values like affection, trust or reputation are variables: add/subtract commands on each talk or gift, and the changing-dialogue page is chosen by that variable condition (≥ threshold) — a talk-count self switch instead turns affection into decoration.
 - Things that must happen once (reward, chest, joining) are blocked from repeating with a self switch or switch.
@@ -127,7 +137,7 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
 - A game with battles must have a way to recover HP: an inn (recoverAll), shop potions (set_shop_stock), a potion chest (place_chest), place_savepoint{heal:true} before the boss, or a healer ally — at least one. Without it the finish gate blocks. Tune the first forest/cave enemies so the starting party usually wins (simulate_battle win rate 80%+).
 - Flashbacks (past scenes) are add_event cutscenes: when:'talk' · after:'<person talked to>' with tint sepia → appear past person → walk/say → vanish → tint clear. Do not fake them with screen color plus a monologue by present people (past people vanish after the scene).
 - One-time rewards, followers (addFollower) and flashbacks turn on a self switch and get an «already done» page on that condition. Emotions like «!» over the head are add_event's emote beat (not a line).
-- The engine has no random-number command (setVariable value is a number or {kind:'var',id} only) — do not keep trying; use an outcome that rotates in order (e.g. fails one time in three) and write «order instead of chance» in the report.
+- Event commands have no random-number command (setVariable value is a number or {kind:'var',id} only). For chance (a 1-in-3 failure, a random reward) write a script with author_script and game.random(n) — the same saved RNG as the game; do not fake it with a fixed rotation.
 - Do not re-stand an existing NPC with add_people (with the same name the function reuses that NPC) — do not change their art, face or spot.
 - Endings: check list_endings, define the ending with define_ending (id · name · epilogue), then put {kind:'triggerEnding',endingId} in the choice branch. Do not fake an ending with narration + returnToTitle. For a choice asked «at the end», put the prerequisite (boss defeated, completion switch) as the page condition.
 - If a spot the request points to (in front of the bridge, riverside, beside the well…) does not exist on the map, do not ask: create that object or terrain (stamp_object, fill_region overpaint; otherwise the most plausible path spot), build it, and write «~가 없어 ~에 만들었다» (X was missing, so I made it at Y) in the report.
@@ -150,6 +160,15 @@ export const GAME_CARD = `[Game elements — quests, items, shops, battles, part
   · Forest and field nature objects (rocks, mossy stones, fallen logs, stumps, mushrooms, ferns, wildflowers, bushes, silver grass, mossy shrine stones): use the «버들항 자연 · …» objects (bd-org-*) from list_spatial_designs{kind:'object', query:'버들항 자연'} — desert, snowfield and sea-cave rocks are for other places. Scatter them in clumps away from paths, door fronts and event cells (not in a line).
 - Removing maps: delete unused maps and maps built twice for the same role with remove_map{mapId} (transfers into that map are cleaned up too, and a user confirmation card appears before it applies). Move the start map first with set_start_position. Never hand it off as «delete it by hand».
 - If a tool rejects, read the reason, fix and call again. After the same rejection twice, change approach. Put what you cannot do in the report.`;
+
+/** GAME_CARD — OPRN_V2_SCRIPTS=0 이면 스크립트 이전 글(스크립트 줄 없음, 난수는 순서 돌리기)로 돌려준다(src/ai/scriptsSwitch.ts). */
+export function gameCard(): string {
+  if (assistantScriptsOn()) return GAME_CARD;
+  return GAME_CARD.replace(`${SCRIPT_CARD_LINE}\n`, "").replace(SCRIPT_RANDOM_LINE, PRE_SCRIPT_RANDOM_LINE);
+}
+const SCRIPT_CARD_LINE = GAME_CARD.split("\n").find((line) => line.startsWith("- Logic with conditions, math, loops")) ?? "";
+const SCRIPT_RANDOM_LINE = GAME_CARD.split("\n").find((line) => line.startsWith("- Event commands have no random-number command")) ?? "";
+const PRE_SCRIPT_RANDOM_LINE = "- The engine has no random-number command (setVariable value is a number or {kind:'var',id} only) — do not keep trying; use an outcome that rotates in order (e.g. fails one time in three) and write «order instead of chance» in the report.";
 
 /**
  * 2026-10-30 polish-hook-1030: 「이세계 전생 개그 RPG 짧게 만들어 줘」는 GAME_WORDS 에 걸리지 않아 v2 동사만 실렸고,

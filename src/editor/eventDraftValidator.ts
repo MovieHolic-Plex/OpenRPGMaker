@@ -9,6 +9,7 @@ import {
   resolveCoordinateAxis,
 } from "@/project/eventCommands/coordinateDestination";
 import { battleTroopError } from "@/project/battleAdmission";
+import { scriptCalls } from "@/project/script/effects";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { callMapEventTargetStatus } from "@/editor/eventCallTargetStatus";
@@ -84,12 +85,16 @@ type CommandVisit = {
 function checkCallDepth(project: Project, pages: readonly EventPage[], issues: EventDraftIssue[]): void {
   const maxDepth = 8;
   const commonEvents = new Map(project.commonEvents.map((event) => [event.id, event]));
+  // 스크립트의 game.callCommonEvent("…") 도 호출 간선이다(리터럴 id 만 — 계산된 id 는 따라갈 수 없다).
+  const calledBy = (command: Command): string[] => command.kind === "callCommonEvent" ? [command.commonEventId]
+    : command.kind === "script" ? scriptCalls(command, "commonEvent", project) : [];
   const calls = new Map(project.commonEvents.map((event) => [event.id, [...new Set(
-    walkCommands(event.commands).flatMap(({ command }) => command.kind === "callCommonEvent" ? [command.commonEventId] : []),
+    walkCommands(event.commands).flatMap(({ command }) => calledBy(command)),
   )]]));
   for (const page of pages) {
     for (const root of walkCommands(page.commands ?? [])) {
-      if (root.command.kind !== "callCommonEvent") continue;
+      const rootCalls = calledBy(root.command);
+      if (rootCalls.length === 0) continue;
       const visiting = new Set<string>();
       const reported = new Set<string>();
       const completed = new Set<string>();
@@ -116,7 +121,7 @@ function checkCallDepth(project: Project, pages: readonly EventPage[], issues: E
         visiting.delete(id);
         completed.add(key);
       };
-      visit(root.command.commonEventId, 1);
+      for (const calledId of rootCalls) visit(calledId, 1);
     }
   }
 }

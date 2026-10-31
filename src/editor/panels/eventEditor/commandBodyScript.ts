@@ -147,14 +147,30 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
     void prepareScriptCompiler().then(() => showResult(check())).catch(() => undefined);
   }
 
-  return el("span", {
+  // One column, full width (2026-10-31 live capture: the shared rich-form grid squeezed the code into a ~240px
+  // column next to the name). Inline styles, not a stylesheet rule — the editor's late sheets win the cascade.
+  const row = (...children: (HTMLElement | string)[]): HTMLElement => {
+    const node = el("span", { class: "rich-form-row", children });
+    node.style.display = "block";
+    node.style.width = "100%";
+    return node;
+  };
+  source.style.minHeight = "320px";
+  source.style.boxSizing = "border-box";
+  source.style.fontSize = "13px";
+  source.style.lineHeight = "1.5";
+  source.style.whiteSpace = "pre";
+  source.style.overflow = "auto";
+  name.style.width = "100%";
+  name.style.boxSizing = "border-box";
+  const root = el("span", {
     class: "rich-command-form cream-command-form script-command-form",
     children: [
-      el("span", { class: "rich-form-row", children: [name] }),
-      el("span", { class: "rich-form-row", children: [source] }),
-      el("span", { class: "rich-form-row", children: [status] }),
-      el("span", { class: "rich-form-row", children: [problems] }),
-      el("span", { class: "rich-form-row", children: [apiReference()] }),
+      row(name),
+      row(source),
+      row(status),
+      row(problems),
+      row(apiReference()),
       el("span", {
         class: "empty-hint",
         text: "TypeScript 로 이벤트 로직을 씁니다. await 가 붙은 호출(대사·선택지·전투…)은 이벤트 명령처럼 차례로 실행됩니다. 지역 변수는 세이브되지 않으니 남길 값은 스위치·변수에 두세요.",
@@ -162,4 +178,11 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
       }),
     ],
   });
+  root.style.display = "flex";
+  root.style.flexDirection = "column";
+  root.style.alignItems = "stretch";
+  root.style.gap = "8px";
+  root.style.width = "100%";
+  root.style.gridColumn = "1 / -1";
+  return root;
 }

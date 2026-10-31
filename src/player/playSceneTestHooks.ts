@@ -9,6 +9,7 @@ import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
 import { startPlayerRoute } from "@/player/playerRouteState";
+import { applySetTimeStep } from "@/player/playSceneTime";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -41,6 +42,8 @@ export type RuntimeDebugHook = {
   playerRoute: (moves: readonly MoveCommand[]) => void;
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
+  /** 게임 안 시계를 옮긴다(Set Time 명령과 같은 경로 — 시간 체계가 꺼져 있으면 아무것도 안 한다). 시간대 반응 QA 용. */
+  setClock?: (hour: number, minute?: number) => void;
   /** 지금 세션을 실제 저장과 같은 모양으로 뜬다 — QA 체크포인트(scripts/qa/runtime/checkpoints) 수집용. */
   captureSave?: () => SaveSnapshot;
   /**
@@ -358,6 +361,10 @@ export function installPlaySceneTestHooks(
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
       syncRuntimeState();
+    },
+    setClock: (hour, minute) => {
+      applySetTimeStep(scene as PlaySceneContext, { kind: "setTime", hour, ...(minute === undefined ? {} : { minute }) });
+      (scene as unknown as Partial<PlaySceneContext>).refreshRuntimeEntities?.();
     },
     setSeed: (seed) => {
       reseedSessionRng(getSession(), seed);

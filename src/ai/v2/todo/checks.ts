@@ -472,6 +472,18 @@ function checkPerson(project: Project, sc: Scope, name: string, map?: string): C
   return { pass: false, detail: `${r.result.detail}${scopeNote(sc, "이벤트")}` };
 }
 
+/**
+ * Literal lines a TypeScript event script shows (`game.showMessage("…")`, quotes or template text) — a script is a
+ * real dialogue command (openwiki/script-sandbox.md). 2026-10-31 live run: a merchant written as one script kept
+ * failing «has no live dialogue command», and the model added a plain text line in front just to pass.
+ */
+function scriptMessageLiterals(source: string): string[] {
+  const out: string[] = [];
+  const re = /game\.showMessage\(\s*(['"`])((?:\\.|(?!\1)[^\\])*)\1/gu;
+  for (const m of source.matchAll(re)) if (m[2]?.trim()) out.push(m[2]);
+  return out;
+}
+
 function checkTalk(project: Project, sc: Scope, who: string, says?: string): CheckResult {
   const maps = Object.values(project.maps);
   const r = choose(who, eventCands(project, sc, maps), "말하는 인물", eventBound(sc), () => eventNameList(maps));
@@ -481,8 +493,11 @@ function checkTalk(project: Project, sc: Scope, who: string, says?: string): Che
   const dead: { map: GameMap; ev: GameEvent; why: string }[] = [];
   for (const { t: { map, ev } } of r.picked) {
     const live = liveCmds(project, ev);
-    for (const c of live.cmds) if (c.kind === "text") lines.push({ map, ev, body: String(c.body ?? "") });
-    for (const d of live.dead) if (d.cmds.some((c) => c.kind === "text")) dead.push({ map, ev, why: d.why });
+    for (const c of live.cmds) {
+      if (c.kind === "text") lines.push({ map, ev, body: String(c.body ?? "") });
+      else if (c.kind === "script") for (const body of scriptMessageLiterals(String(c.source ?? ""))) lines.push({ map, ev, body });
+    }
+    for (const d of live.dead) if (d.cmds.some((c) => c.kind === "text" || c.kind === "script")) dead.push({ map, ev, why: d.why });
   }
   const ids = r.picked.map((p) => p.id).slice(0, 4).join(", ");
   const first = r.picked[0]!.t;

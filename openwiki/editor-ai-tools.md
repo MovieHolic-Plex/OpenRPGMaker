@@ -1,5 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## TypeScript 이벤트 스크립트 도구 `author_script` · `dry_run_script` 외 7개 (2026-10-31)
+
+조건·계산·반복·여러 갈래가 얽힌 이벤트 로직(조합 자물쇠·레버 순서·가격 공식·시간대·소지품·확률)을 명령 수십 줄 대신
+`script` 명령 하나(TypeScript, `game` API)로 쓰게 하는 도구 묶음 — `check_script`·`author_script`·`edit_script`·`dry_run_script`·
+`get_script_api`·`upsert_script_module`·`list_script_modules`·`read_event_as_script`·`write_event_as_script`(`src/editor/tools/scriptTools.ts`).
+쓰기는 먼저 컴파일하고 오류면 영어 진단으로 거부한다(모델이 고쳐 다시 부른다). 일반 이벤트 도구는 컴파일되지 않은(또는 소스와
+해시가 다른) `{kind:"script"}` 를 `script-not-compiled` 로 거부한다(`commandArgs.ts` `validateLowLevelCommandArray`).
+v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣는다. 스킬 `event-scripts`. 계약·표: `openwiki/script-sandbox.md` 「조수 도구」.
+
 ## 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
 
 전에는 설정집(`project.world`)에 쓰는 길이 대화 추출기와 화면 수동 편집뿐이어서, 코드로 짓는 대표 데모 넷은 자료집 「이야기」 탭(세계 개요·설정집·인물)이 모두 비어 있었다(구운 chrono-bell 실측: worldCanon 없음, 문서 0, 프로필 0).
@@ -1176,6 +1185,20 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 `pending` / `no-face` / 없는 항목은 시트 번호나 나이로 추정하지 않는다.
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
+
+### 다른 시트 얼굴을 빌리던 근사 짝 8칸 해제 (2026-10-31)
+
+흉상·전신은 칩 → 짝 얼굴 → 그 얼굴의 표정 세트(`sharedExpressionSetIdOf`) 순서로 정해진다. 그래서 칩이 **다른 시트의 다른 인물**
+얼굴을 「근사」로 빌려 쓰면 대화 흉상이 엉뚱한 사람이 된다(폴른 스타: 사슬 참회자 People4 #0 → 소년 흉상, 심문 사제 People4 #7 → 할머니 흉상).
+192칸 전체를 칩·얼굴·흉상 그림으로 대조해 8칸을 얼굴 없음으로 바꿨다: People4 #0·#6·#7, People5 #1·#5·#6·#7, People2 #0.
+모두 그 얼굴이 이미 다른 칩(People1·People2·People3 의 제 짝)의 얼굴이었다. 틀린 얼굴보다 얼굴 없음이 낫다 — 필요하면 `generate_character_appearance`.
+
+- 조수 경로(place_npc 자동 얼굴·`reconcileSharedFaceWithCharset`·`list_npc_graphics` portraitOptions·컷신)는 모두 같은 대응표를 읽으므로 따로 고칠 곳이 없다.
+- 이미 저장된 호스트 파일(`~/.local/share/oprn/character-graphics.json`)은 `characterReferenceCorrections.json` 의 `revisions`(옛 행 → 새 행)로
+  손대지 않은 행만 올라간다. 파서는 `mappings`·`revisions` 를 한 단계씩 따라간다(최대 4단계). 옛 `mappings` 의 해당 8행 `after` 도 새 행으로 바꿨다.
+- 확인했지만 둔 것: People1 #4·#5(피부색 차이, 원본 같은 칸 짝), Actor2 #4(머리색), Modern1 #3(흉상 경로가 `MODERN_CLEAN_STEM_OVERRIDES`로
+  Modern1 #1 그림을 쓴다 — 기존 결정), 폴른 스타 「방패병」 리본 흉상은 데모가 메이드 칩 People3 #5 를 방패병에 쓴 탓이다(대응표는 맞다).
+- 회귀: `test/fullCharacterReferenceAudit.test.ts`(자동 얼굴 해제 목록·호스트 이전). 대조 시트는 칩/얼굴/흉상 전후 192칸.
 
 ### 캐릭터 참조 전수 교정 (2026-10-05)
 
@@ -3262,7 +3285,7 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - `place_savepoint {heal?:boolean, mode?:both|slot|checkpoint}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다. `mode` 기본 both = 체크포인트 + 저장 칸 선택 창(`openSaveMenu`), slot = 저장 창만, checkpoint = 체크포인트만.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, effect?(flash|swirl|pillar|warp|quake), unlockWhen?, lockedMessage?, lockSide?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 전이 앞에 `effect` 연출(화면 왜곡·섬광·흔들림·파티클, 새 그림 없음)을 넣는다. `unlockWhen`({switchId}|{storyFlagId}|{variableId,op,value} 중 정확히 하나)을 주면 **잠긴 페이지를 앞에, 열린 페이지를 뒤에** 둔다(런타임은 조건이 모두 맞는 마지막 페이지를 쓴다). 모르는 키(`swich` 등)·`unlockWhen` 없는 `lockedMessage` 는 거절한다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다. 맵 이벤트는 `transfer` 뒤 명령을 실행하지 않아 왜곡은 전이 전에 스스로 풀린다.
   - **빛 표식(jrpg-loop-1)**: `graphic` 을 안 주면 투명 문이라 플레이어가 문을 찾을 수 없었다. 이제 문 칸마다 `addGateBeacon` 이 파티클(`magic`, target tile, 병렬 이벤트)을 단다(`data.beaconEventIds`). 그림을 주면 달지 않는다.
-- `lock_door {mapId,x,y,unlockWhen|unlockWhenAny,lockedText,stepBack?,speaker?,unlock?}` (`src/editor/tools/lockDoorTools.ts`): 이미 있는 이동 문(`create_transfer_pair`·`build_*` 가 만든 transfer 이벤트)을 이야기 조건이 참일 때까지 잠근다. (x,y)는 문 칸 또는 그 앞 칸, 맞닿은 같은 줄 이동 이벤트(두 칸 폭 문)도 함께. 페이지 순서 [잠김(조건 없음), 열림1, 열림2…] — 런타임은 조건이 모두 맞는 마지막 페이지를 쓴다. `unlockWhen`=조건 하나, `unlockWhenAny`=[[AND 조건들],[AND 조건들]] 의 OR(열림 페이지 여러 장); 둘 중 하나만. 잠김 페이지는 `lockedText`(+`speaker`)와 `stepBack`(기본 true) 한 걸음 물러남. 다시 부르면 id `_locked`/`_open_N` 페이지를 바꿔 끼우고 `unlock:true` 는 조건 없는 이동 페이지 하나로 되돌린다. 이동 이벤트가 없으면 `no-door`. 레시피 `story-locked-door`, 스킬 game-scene-polish 54.
+- `lock_door {mapId,x,y,unlockWhen|unlockWhenAny,lockedText,stepBack?,speaker?,unlock?}` (`src/editor/tools/lockDoorTools.ts`): 이미 있는 이동 문(`create_transfer_pair`·`build_*` 가 만든 transfer 이벤트)을 이야기 조건이 참일 때까지 잠근다. (x,y)는 문 칸 또는 그 앞 칸, 맞닿은 같은 줄 이동 이벤트(두 칸 폭 문)도 함께. 페이지 순서 [잠김(조건 없음), 열림1, 열림2…] — 런타임은 조건이 모두 맞는 마지막 페이지를 쓴다. `unlockWhen`=조건 하나, `unlockWhenAny`=[[AND 조건들],[AND 조건들]] 의 OR(열림 페이지 여러 장); 둘 중 하나만. 조건 키는 `switchId`·`storyFlagId`·`variableId`·`timePhase`·`itemId`(그 아이템을 가지고 있을 때, 2026-10-31 — 「열쇠+낱장 세 장」은 `unlockWhenAny:[[{itemId},…]]` 하나의 AND). 잠김 페이지는 `lockedText`(+`speaker`)와 `stepBack`(기본 true) 한 걸음 물러남. 다시 부르면 id `_locked`/`_open_N` 페이지를 바꿔 끼우고 `unlock:true` 는 조건 없는 이동 페이지 하나로 되돌린다. 이동 이벤트가 없으면 `no-door`. 레시피 `story-locked-door`, 스킬 game-scene-polish 54.
 - **의도 메모는 몬스터 판정에서 뺀다(jrpg-loop-1)**: `composePiTask` 가 사용자 글과 의도 메모 사이에 `INTENT_NOTE_BOUNDARY`(monsterGameRequest.ts)를 끼우고, `hasMonsterCollectIntent`·`classifyMonsterGameRequest`·`requestsEmeraldMonsterGame` 은 경계 앞(사용자 글)만 본다. 메모(모험 지침·던전 노트의 「몬스터 키트」「포켓몬풍」「트레이너」)를 신호로 읽어 「FF6 같은 게임…동료들을 다시 모으는 이야기」가 포켓몬형 캠페인(build_monster_game 완료 검사)으로 납치되던 결함 수정.
 - `derive_map_variant {sourceMapId, variants:[{id,name?,era?,tilesetId?,tileRemap?,tileOverrides?,removeEvents?}], timeGates?:drop|keep, relinkDoors?, gates?:[create_time_gate 인자], resync?}` (`src/editor/tools/mapVariantTools.ts`): 같은 지리의 시대 변형(중세·현대·미래)을 한 번에 파생한다. 복제는 `cloneMapIntoProject`(`src/project/mapClone.ts`)를 거치며 **이벤트 id 를 새로 매기고 명령 트리·조건·빛 앵커·M2 이벤트 참조의 맵 안 이벤트 참조를 함께 고친다**(예전 `duplicate_map` 은 깨진 참조를 남겼다). `resync` 는 이미 만든 변형의 영역을 원본 지리로 다시 맞춘다. 모르는 키(`tile_overrides` 등)는 거절하고 올바른 이름을 알려 준다.
   - **시대 강도(jrpg-loop-1 D8·D16)**: `mapVariantLook.ts` LOOKS — ruin 철거 75%·어둠 0.5, past 철거 60%·소품 2~4개·옅은 안개 0.25, future 철거 55%·소품 2~3개. 시대 변형이 색조뿐이라 같은 마을로 읽히던 문제를 새 그림 없이 철거·소품 킷 밀도로 완화한다(칩셋이 다른 건물 그림을 못 주는 한계는 그대로). 폐허 조각은 물 칸 위에 놓지 않는다(`isWaterCell`) — 해안 건물 자리에 놓으면 받침 없는 물체로 커밋이 거절돼 `derive_map_variant` 가 통째로 실패했다(ff1 원본 맵에 변형 id 7개를 시험하면 옛 코드는 5개 거절, 새 코드는 0개).
