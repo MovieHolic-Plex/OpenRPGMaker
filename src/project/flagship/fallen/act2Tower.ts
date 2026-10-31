@@ -548,7 +548,10 @@ const T4 = {
   coffin: { x: 15, y: 11 },         // 석관(동서 2×1) 왼쪽 — (15..16, 11). 바로 뒤(북쪽)가 큰 렌즈
   coffinFront: { x: 15, y: 12 },    // 관을 조사하는 칸(관 바로 아래)
   iris: { x: 17, y: 11 },           // 깨어난 이리스가 서는 칸(관 동쪽 곁)
-  irisNear: { x: 17, y: 12 },       // 「한 번 더 읽어 주세요」 — 카엘(16,12) 바로 옆으로 한 걸음
+  /** 카엘이 다가가 이리스(17,11)와 마주 서는 칸. 위를 보고 서면 동료가 양옆(16,12)·(18,12)에 횡대로 선다 —
+   *  옆을 보고 서면 횡대 칸이 관·벽에 막혀 동료가 카엘 밑에 겹쳐 섰다(첫 플레이 검수 2026-10-31). */
+  irisNear: { x: 17, y: 12 },
+  besideKael: [{ x: 16, y: 12 }, { x: 18, y: 12 }],
   doorway: [{ x: 15, y: 13 }, { x: 16, y: 13 }],
   dark: { x: 14, y: 19 },
   alcovePlugs: [{ x: 10, y: 19 }, { x: 10, y: 20 }],
@@ -582,7 +585,7 @@ function floorFour(project: Project, exec: Exec): void {
   // 꼭대기(B12)를 먼저 잇는다 — 둥근 방 문 이벤트가 생기면 계단 쪽이 갈려 연결 도구가 「봉쇄」로 거절한다.
   buildSummitMap(project, exec, T4.stair);
   for (const c of [T4.arrive, T4.coffinFront, T4.iris, ...T4.doorway, T4.dark, ...T4.alcovePlugs, T4.pageStar, T4.pageHand]) mustWalk(project, FS2_T4, c, "4층");
-  mustWalk(project, FS2_T4, T4.irisNear, "4층");
+  for (const c of [T4.irisNear, ...T4.besideKael]) mustWalk(project, FS2_T4, c, "4층");
 
   // 렌즈 대기실 — 북쪽 벽 앞 큰 렌즈(등대 프레넬 렌즈), 그 앞 석관, 양옆 수정 받침·촛대, 벽에 별자리 지도. 모두 stamp_object.
   if (!stamp(project, exec, FS2_T4, COFFIN_KIT.closed, T4.coffin)) throw new Error("[fallen-star tower] 4층 석관을 못 놓았다");
@@ -595,7 +598,7 @@ function floorFour(project: Project, exec: Exec): void {
   const candE = placed("bd-pick-dungeon-theme-iron-candelabra", [{ x: 18, y: 7 }, { x: 18, y: 8 }, { x: 19, y: 7 }, { x: 20, y: 10 }]);
   placed("bd-pick-wizard-tower-starmap", [{ x: 17, y: 5 }, { x: 13, y: 5 }, { x: 18, y: 6 }, { x: 12, y: 6 }]);
 
-  // 조명 — 빛 웅덩이: 렌즈(가장 밝다)·석관·수정 받침 둘·촛대 둘·주인공 등불. 어둠 세기는 아래 dark 장애물이 0.62 로 잡는다(윤곽은 보이게).
+  // 조명 — 빛 웅덩이: 렌즈(가장 밝다)·석관·수정 받침 둘·촛대 둘·주인공 등불. 어둠 세기는 아래 dark 장애물이 0.82 로 잡는다(빛 웅덩이 밖은 캄캄하게).
   const centre = (c: Cell | null, dx: number, dy: number): Rec | null => (c ? { x: c.x + dx, y: c.y + dy } : null);
   const sources = [
     { id: "lens", at: centre(lens, 1, 2), radius: 4, intensity: 0.95, color: "#d8fff0", flicker: false },
@@ -606,11 +609,12 @@ function floorFour(project: Project, exec: Exec): void {
     { id: "cand_e", at: centre(candE, 0, 0), radius: 2, intensity: 0.65, color: "#ffb860", flicker: true },
     { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.5, color: "#ffc070", flicker: true },
   ].filter((src) => src.at);
-  exec(project, "set_lighting_volume", { mapId: FS2_T4, applyMode: "map", ambient: 0.62, color: "#06140f", sources });
+  // 0.62 는 「발밑이 캄캄하다」는 글과 달리 방이 다 보였다(첫 플레이 검수 2026-10-31) — 빛 웅덩이 밖은 거의 안 보이게 짙게.
+  exec(project, "set_lighting_volume", { mapId: FS2_T4, applyMode: "map", ambient: 0.82, color: "#040c0a", sources });
   // 어둠 — 서쪽 골방 길목 두 칸은 어두운 동안 막히고(blockCells), 이리스가 돌아오면(litSwitchId) 들어설 때마다 밝다.
   exec(project, "place_field_obstacle", {
     mapId: FS2_T4, x: T4.dark.x, y: T4.dark.y, kind: "dark", requiresSkillId: FS2_SKILL_FINGERLIGHT, skillName: "손끝 빛", machine: "none",
-    id: "ev_fs2_t4_dark", name: "렌즈 대기실의 어둠", darkness: 0.62, blockCells: T4.alcovePlugs, litSwitchId: SW_IRIS_BACK,
+    id: "ev_fs2_t4_dark", name: "렌즈 대기실의 어둠", darkness: 0.82, blockCells: T4.alcovePlugs, litSwitchId: SW_IRIS_BACK,
     hint: "이리스가 손끝을 들자 둘레가 환해졌다.",
     blockedText: "발밑이 캄캄하다.\n한 발짝 앞이 바닥인지 낭떠러지인지 모르겠다.",
   });
@@ -696,8 +700,9 @@ function floorFour(project: Project, exec: Exec): void {
     emote("ev_fs2_t4_iris", "question", 900),
     wait(400),
     say(IRIS, "…누구세요? 아니, 알아요.\n모르는데 알아요."),
-    // 카엘이 관 곁으로 다가선다(이리스 바로 옆).
-    route("@player", [{ kind: "move", dir: "right" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "right" }]),
+    // 카엘이 이리스 앞으로 다가선다(이리스 바로 아래, 마주 본다). 동료는 카엘 양옆에 선다.
+    route("@player", [{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "up" }]),
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "down" }]),
     narrate("이리스가 품에 안고 있던 일지를 펼쳤다."),
     narrate("넘기는 쪽마다 글자가 하얗게 바래 간다."),
     say(IRIS, "일지에 당신 글씨가 있어요.\n그런데 읽으려니까 자꾸 지워져요."),
@@ -721,14 +726,14 @@ function floorFour(project: Project, exec: Exec): void {
     wait(500),
     say(IRIS, "맛은 안 나요.\n그런데 이 줄은 따뜻해요."),
     emote("ev_fs2_t4_iris", "heart", 1000),
-    // 이리스가 카엘 바로 곁으로 한 걸음 — 둘이 마주 본다.
-    route("ev_fs2_t4_iris", [{ kind: "move", dir: "down" }, { kind: "turn", dir: "left" }]),
+    // 이리스가 카엘을 내려다본다(이미 마주 서 있다 — 한 걸음 내려오면 카엘 자리에 겹쳤다).
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "down" }]),
     say(IRIS, "한 번 더 읽어 주세요. 몇 번이고."),
     say(KAEL, "응. 몇 번이고."),
     say(ELENA, "이리스, 손 줘. …차가워.\n그래도 안 떨리네."),
-    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "down" }]),
-    say(IRIS, "떨리는 건 흉내예요.\n…지금은 흉내 안 내는데도 떨려요."),
     route("ev_fs2_t4_iris", [{ kind: "turn", dir: "left" }]),
+    say(IRIS, "떨리는 건 흉내예요.\n…지금은 흉내 안 내는데도 떨려요."),
+    route("ev_fs2_t4_iris", [{ kind: "turn", dir: "down" }]),
     wait(700),
     say(IRIS, "어둡네요. 잠깐만요."),
     se("easyrpg-sound-recovery7"),
