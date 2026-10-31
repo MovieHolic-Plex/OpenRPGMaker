@@ -5,6 +5,15 @@
 
 <!-- releases -->
 
+## 0.379.1 — 2026-10-31
+
+### 수정
+
+- **runtime** — coloured light tint stays inside the map like the darkness (#4114) (`1ece8d1`)
+- **assistant** — a locked door is bypassed only when its two sides are one walkable region (#4109) (`ba418a2`)
+- **character** — answer the walk-chip render request with a PNG the worker accepts (#4112) (`83ced3a`)
+- **runtime** — the hero's flashlight cone goes dark while hiding (#4091) (`9633c02`)
+
 ## 0.379.0 — 2026-10-31
 
 ### 기능
