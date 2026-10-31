@@ -34,6 +34,7 @@ import { renderSkillAnimationStage, type SkillAnimationStage } from "@/editor/pa
 import { retroChoreographyPicker } from "@/editor/panels/databaseSkillRetroPicker";
 import { renderSkillRetroStage, retroStageSignature, type SkillRetroStage } from "@/editor/panels/databaseSkillRetroStage";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -79,6 +80,22 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   const retroBody = el("div", { class: "db-skill-retro-slot" });
   const pickerBody = el("div", { class: "db-skill-retro-picker-slot" });
   const actionBody = el("div", { class: "db-skill-action-fields" });
+  const iconBody = el("div");
+  const renderIconPanel = (): void => {
+    const current = currentSkill(record);
+    iconBody.replaceChildren(resourcePickerControl({
+      label: "아이콘",
+      resourceId: current.iconResourceId,
+      kind: "icon",
+      testid: "db-field-skill-icon-resource",
+      allowClear: true,
+      dialogTitle: "스킬 아이콘",
+      queueKey: `skill-icon-${record.id}`,
+      onChange: (result) => updateDatabaseRecord("skills", record.id, { iconResourceId: emptyToUndefined(result.resourceId) }),
+      rerender: renderIconPanel,
+    }));
+  };
+  renderIconPanel();
   const renderEffectPanel = () => effectBody.replaceChildren(...effectFields(currentSkill(record), renderEffectPanel));
   const renderStatePanel = () => stateBody.replaceChildren(...stateEffectFields(currentSkill(record), renderStatePanel));
   let animationStage: SkillAnimationStage | null = null;
@@ -149,6 +166,12 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
         ],
       }),
       battleResourceCard(record),
+      sectionCard({
+        title: "아이콘",
+        hint: "메뉴·전투 기술 목록에 보입니다. 없으면 연출 첫 칸",
+        testid: "db-skill-card-icon",
+        children: [iconBody],
+      }),
       // 성공률·명중률·분산·우선도는 초보가 만질 일이 드물다 — 기본값이면 접어 두고, 몇 개가
       // 들어 있는지와 「기본값 그대로」를 머리에 적는다(2026-09-23 파티 UX 검토).
       sectionCard({

@@ -177,9 +177,10 @@ export function planSoundStyle(
  */
 export function subsetAudioManifest(manifest: StorePackManifest, assetIds: readonly string[]): StorePackManifest {
   const wanted = new Set(assetIds);
-  const assets = Object.fromEntries(Object.entries(manifest.content.assets).filter(([id, asset]) => wanted.has(id) && (asset.kind === "music" || asset.kind === "sound")));
+  // 낱개로 골라 넣을 수 있는 것: 곡·효과음·아이콘(스토어 아이콘 팩의 32px 한 장, store_find_icons).
+  const assets = Object.fromEntries(Object.entries(manifest.content.assets).filter(([id, asset]) => wanted.has(id) && (asset.kind === "music" || asset.kind === "sound" || asset.kind === "icon")));
   const missing = assetIds.filter((id) => !Object.hasOwn(assets, id));
-  if (missing.length) throw new Error(`이 팩에 없는 곡·효과음입니다: ${missing.join(", ")}`);
+  if (missing.length) throw new Error(`이 팩에 없는 곡·효과음·아이콘입니다: ${missing.join(", ")}`);
   const shas = new Set(Object.values(assets).map((asset) => asset.blob));
   return { ...manifest, previews: [], content: { assets, tilesets: {}, characters: [], objects: [] }, blobs: manifest.blobs.filter((blob) => shas.has(blob.sha256)) };
 }

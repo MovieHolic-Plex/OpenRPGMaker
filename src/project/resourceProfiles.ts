@@ -27,6 +27,7 @@ export const RESOURCE_PROFILE_SPECS: readonly ResourceProfileSpec[] = [
   imageSpec("monster", "몬스터"),
   imageSpec("faceset", "얼굴 그래픽", FACE_IMAGE_SIZE, FACE_IMAGE_SIZE),
   imageSpec("picture", "그림"),
+  imageSpec("icon", "아이콘", 32, 32),
   { kind: "movie", label: "동영상", slicing: RESOURCE_SLICING.movie, media: "video" },
   imageSpec("system", "시스템"),
   imageSpec("system2", "시스템 2"),
