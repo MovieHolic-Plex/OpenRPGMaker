@@ -81,7 +81,10 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
     }
     if (!Array.isArray(args.items)) return args;
     let touched = false;
-    const items = args.items.map((it, i) => {
+    const items = args.items.map((it0, i) => {
+      let it: unknown = it0;
+      // machineCheck → check(r11 flash: 확인이 안 붙어 요청 뼈대가 같은 항목을 한 벌 더 붙였다).
+      if (isObj(it) && it.check === undefined && isObj(it.machineCheck)) { const { machineCheck: mc, ...rest } = it; it = { ...rest, check: mc }; touched = true; changes.push(`items[${i}].machineCheck → items[${i}].check`); return it; }
       if (!isObj(it) || it.check !== undefined || it.machineCheck !== undefined) return it;
       for (const [k, field] of Object.entries(TODO_KEY_CHECKS)) {
         const v = (it as Obj)[k];
