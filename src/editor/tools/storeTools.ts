@@ -79,7 +79,7 @@ const brief = (item: StoreItemSummary) => ({
 
 const storeSearch: ToolDefinition = {
   name: "store_search",
-  description: "에셋 스토어(공유 장터)에서 타일셋·캐릭터·얼굴·음악을 찾는다. 프로젝트에 필요한 타일이 없을 때는 이 도구보다 ask_missing_tiles 로 사용자에게 먼저 묻는다(카드가 검색 결과를 보여 준다). "
+  description: "에셋 스토어(공유 장터)에서 타일셋·캐릭터·얼굴·전투 그림(battler: 아군 무기별 시트·적)·음악을 찾는다. 프로젝트에 필요한 타일이 없을 때는 이 도구보다 ask_missing_tiles 로 사용자에게 먼저 묻는다(카드가 검색 결과를 보여 준다). "
     + "사용자가 스토어에서 찾아 달라고 직접 말했을 때 쓴다. aiReady:true 인 것은 참고문서가 있어 넣은 뒤 바로 맵을 깔 수 있다. "
     + "음악은 곡 단위로 고르는 store_find_music 을 쓴다(장면·장르·분위기) — 이미 넣은 음악 팩의 곡은 recommend_bgm 이 고른다. "
     + "효과음은 자리(cue) 단위로 고르는 store_find_sound 를 쓴다.",
@@ -98,6 +98,14 @@ const storeSearch: ToolDefinition = {
   invalidArgsExample: { query: "숲 마을", kind: "tileset" },
   async prepare(args) {
     await load(searchKey(args), async () => {
+      // 조수 도구는 Pi 워커에서 돈다 — 데스크톱 다리가 없으면 편집기가 실어 보낸 스토어 주소로 읽는다(store_install 과 같은 길).
+      // 예전엔 다리만 봐서 실제 조수 경로에서 store_search 가 늘 「데스크톱 앱에서만」으로 실패했다(2026-10-31 스토어 검증).
+      const { storeBridge } = await import("@/editor/assetStore/storeBridge");
+      const access = workerStoreAccess();
+      if (!storeBridge() && access) {
+        const page = await access.catalog({ q: String(args.query ?? "").trim(), kind: kindOf(args.kind), lang: await locale() });
+        return args.aiReadyOnly === true ? { ...page, items: page.items.filter((item) => item.grade === "pack") } : page;
+      }
       const bridge = await bridgeOrThrow();
       return bridge.catalog({ q: String(args.query ?? "").trim(), kind: kindOf(args.kind), grade: args.aiReadyOnly === true ? "pack" : "", lang: await locale() });
     });
