@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.378.0 — 2026-10-31
+
+### 기능
+
+- **ai** — warn when an interior's south exit leads nowhere (map-exit-leads-nowhere) (#4092) (`0534ad1`)
+- **relief** — ramps redrawn (r7) after fresh Opus VQA, delegated allow recorded, 16 cut pieces baked (`aad047a`)
+- **relief** — cut pieces redrawn after adversarial VQA, canonical stacked split in the renderer (`ca87ec2`)
+
+### 수정
+
+- **assistant** — an empty review round keeps the layout, wrong-type args get the field shape, polish keeps quoted request lines (#4101) (`37904ac`)
+- **editor** — icon picker rows no longer squash to 12px (#4103) (`a3a71dd`)
+- **store** — serve content-addressed asset files that have no DB row (`ff83785`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`2a85d97`)
+- **relief** — bbox ramps page section 6 (VQA rounds, in-game walk video) (`a05ecfb`)
+
 ## 0.377.0 — 2026-10-31
 
 ### 기능
