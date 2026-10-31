@@ -1058,17 +1058,23 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       // 「장면 뒤」 페이지도 늘어 같은 대사가 되풀이됐다(2026-10-31 씬 벤치 terra 배신 r1: add_event 네 번 → 판정 「같은 대사가 여러 번」).
       const baseCmds = (p0.commands ?? []) as unknown as { kind?: string; name?: string }[];
       const mark = baseCmds.findIndex((c) => c.kind === "label" && c.name === AFTER_SCENE_LABEL);
-      const original = mark >= 0 ? baseCmds.slice(0, mark) : baseCmds;
+      const prevAfter = mark >= 0 ? npc.pages[pick + 1] : undefined;
+      const isAfter = !!prevAfter && /\(장면 뒤\)$/u.test(String(prevAfter.name ?? "")) && (prevAfter.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+      // 첫 대화에서 뺀 상점 창은 앞 「장면 뒤」 페이지에 남아 있다 — 다시 이을 때 원래 대사에 되살린다.
+      const keptShops = isAfter ? ((prevAfter!.commands ?? []) as unknown as { kind?: string }[]).filter((c) => c.kind === "shop") : [];
+      const original = mark >= 0 ? [...baseCmds.slice(0, mark), ...keptShops] : baseCmds;
       const srcPages = npc.pages.slice();
       if (!afterLines.length) talked.commands = structuredClone(original) as unknown as typeof talked.commands;
       if (mark >= 0) {
-        // 앞 장면의 「장면 뒤」 페이지(고른 페이지 바로 뒤, 셀프 스위치 D 조건)를 걷는다 — 새 것으로 바꾼다. 원래 대사는 그 페이지에서 되살린다.
-        const prevAfter = npc.pages[pick + 1];
-        const isAfter = !!prevAfter && /\(장면 뒤\)$/u.test(String(prevAfter.name ?? "")) && (prevAfter.conditions ?? []).some((c) => (c as { kind?: string; key?: string }).kind === "selfSwitch" && (c as { key?: string }).key === "D");
+        // 앞 장면의 「장면 뒤」 페이지(고른 페이지 바로 뒤, 셀프 스위치 D 조건)를 걷는다 — 새 것으로 바꾼다.
         if (isAfter) srcPages.splice(pick + 1, 1);
         warnings.push(`'${spec.after}' 에 이어 둔 앞 장면을 이 장면으로 바꿨다(겹쳐 쌓지 않는다).`);
       }
-      const first = { ...structuredClone(p0), commands: [...structuredClone(original), { kind: "label", name: AFTER_SCENE_LABEL }, ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
+      // 상점 NPC 의 첫 대화는 상점 창을 빼고 곧장 장면으로 간다 — 상점 창이 먼저 떠 장면 도입을 가리고(판정 「시작하자마자 상점 창이 먼저」), 흥정은
+      // 정가로 산 뒤에 흥정하는 꼴이 됐다(2026-10-31 sc-narr-a1 배신·흥정). 상점은 장면 뒤 대화(afterTalk 가 없으면 원래 대사)에 남는다.
+      const opener = (original as unknown as { kind?: string }[]).filter((c) => c.kind !== "shop");
+      if (opener.length !== original.length) warnings.push(`'${spec.after}' 첫 대화에서는 상점 창을 빼고 바로 장면으로 간다(그 뒤 대화에서 상점이 열린다${afterLines.length ? " — afterTalk 를 줬으니 상점 없이 그 대사만" : ""}).`);
+      const first = { ...structuredClone(p0), commands: [...structuredClone(opener), { kind: "label", name: AFTER_SCENE_LABEL }, ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
       // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
       const pages: unknown[] = srcPages.map((pg) => structuredClone(pg));
       pages.splice(pick, 1, first, talked);
