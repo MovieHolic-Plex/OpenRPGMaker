@@ -12,7 +12,7 @@ import json, os, sys, glob, statistics, datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from metrics import run_metrics  # noqa: E402
 
-ARMS = ["main", "off", "new"]
+ARMS = ["main", "off", "v1", "new"]  # v1 = a7456dd876 (first guidance), new = the next guidance PR
 MECHS = ["escape", "village", "dungeon"]
 WRITE_TOOLS = {"author_script", "write_event_as_script", "upsert_script_module"}
 
@@ -69,6 +69,32 @@ def script_writes(run_dir, final):
     return ok_calls, len(written), len(gone)
 
 
+def logic_units(proj):
+    """Map/common/troop events of a runtime project as {key: (label, canonical JSON of pages)} for the changed-events diff."""
+    if not os.path.exists(proj):
+        return None
+    p = json.load(open(proj))
+    maps = p["maps"] if isinstance(p["maps"], list) else list(p["maps"].values())
+    units = {}
+    for m in maps:
+        for e in m.get("events") or []:
+            units[f'map:{m["id"]}:{e["id"]}'] = (e.get("name") or e["id"], json.dumps(e.get("pages"), sort_keys=True, ensure_ascii=False))
+    for c in p.get("commonEvents") or []:
+        units[f'common:{c.get("id")}'] = (c.get("name") or str(c.get("id")), json.dumps(c, sort_keys=True, ensure_ascii=False))
+    troops = (p.get("database") or {}).get("troops") or {}
+    for t in (troops.values() if isinstance(troops, dict) else troops):
+        units[f'troop:{t.get("id")}'] = (t.get("name") or t.get("id"), json.dumps(t.get("pages"), sort_keys=True, ensure_ascii=False))
+    return units
+
+
+def changed_events(L, mech, d):
+    """Events/common events/troops the run created or changed, against the frozen stage checkpoint (readability input)."""
+    base, now = logic_units(f"{L}/checkpoints/{mech}/check/project.json"), logic_units(f"{d}/check/project.json")
+    if base is None or now is None:
+        return None
+    return [{"key": k, "name": v[0], "kind": "created" if k not in base else "changed"} for k, v in now.items() if k not in base or base[k][1] != v[1]]
+
+
 def run_row(L, arm, mech, rep):
     d = f"{L}/{arm}/{mech}-{rep}"
     run = open(f"{d}/RUN.txt").read() if os.path.exists(f"{d}/RUN.txt") else ""
@@ -88,7 +114,13 @@ def run_row(L, arm, mech, rep):
             "scriptWriteCalls": calls, "scriptsWritten": written, "scriptsReverted": reverted,
             "scriptsInGame": None if final is None else final["count"], "turnMin": round(m["ms"] / 60000, 1), "wallMin": round(wall, 1),
             "walkPass": walk and walk["pass"], "walkTotal": walk and walk["total"], "ending": walk and any(c["id"] == "ending" and c["pass"] for c in walk["checks"]),
-            "walkFails": walk and [c["id"] for c in walk["checks"] if not c["pass"]]}
+            "walkFails": walk and [c["id"] for c in walk["checks"] if not c["pass"]],
+            "changedEvents": changed_events(L, mech, d), "readability": readability(L, arm, mech, rep)}
+
+
+def readability(L, arm, mech, rep):
+    f = f"{L}/readability/{arm}-{mech}-{rep}.json"
+    return json.load(open(f)) if os.path.exists(f) else None
 
 
 def med(vals):
@@ -108,7 +140,9 @@ def main():
             continue
         arms[a] = {"runs": len(done), "capped": sum(1 for r in done if r["capped"]), **{k: med([r.get(k) for r in done]) for k in keys},
                    "walkPassSum": sum(r["walkPass"] or 0 for r in done if r["walkPass"] is not None), "walkTotalSum": sum(r["walkTotal"] or 0 for r in done if r["walkTotal"] is not None),
-                   "endings": sum(1 for r in done if r["ending"]), "walked": sum(1 for r in done if r["walkPass"] is not None)}
+                   "endings": sum(1 for r in done if r["ending"]), "walked": sum(1 for r in done if r["walkPass"] is not None),
+                   "changedEvents": med([len(r["changedEvents"]) for r in done if r.get("changedEvents") is not None]),
+                   "readability": (lambda xs: round(sum(xs) / len(xs), 2) if xs else None)([r["readability"]["score"] for r in done if (r.get("readability") or {}).get("score") is not None])}
     judge = {}
     for f in sorted(glob.glob(f"{L}/judge/*.json")):
         mech, rep, x, y = os.path.basename(f)[:-5].split("-")
@@ -122,6 +156,7 @@ def main():
         j["games"].append({"mech": mech, "rep": int(rep), "winners": [r["winner"] for r in res], "decisive": [r.get("decisive") for r in res],
                            "correctness": [r.get("correctness") for r in res]})
     doc = {"updated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "batch": os.path.basename(L.rstrip("/")),
+           "armBuilds": {"main": "0b6bc12098", "off": "0b6bc12098 + OPRN_V2_SCRIPTS=0", "v1": "a7456dd876 (first guidance)", "new": "next guidance PR (pending)"},
            "design": "3 mechanics x 2 reps per arm; each run = one logic request on a frozen stage checkpoint; Opus 5.5 medium (local Claude CLI), v2; 15 min cap",
            "arms": arms, "runs": rows, "judgePairwise": judge}
     os.makedirs(os.path.dirname(out), exist_ok=True)
