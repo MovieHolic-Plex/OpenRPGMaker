@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.380.1 — 2026-10-31
+
+### 수정
+
+- **faces** — stop borrowing other sheets' faces for 8 chips (wrong dialogue busts) (#4133) (`e2b78c6`)
+- **runtime** — Lift Ride shaft clipping + riders:none, zoom-independent Shake Screen (#4132) (`8a8449a`)
+
 ## 0.380.0 — 2026-10-31
 
 ### 기능
