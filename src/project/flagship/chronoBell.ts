@@ -49,6 +49,7 @@ import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 
 import type { FlagshipDemoBuildResult } from "./types";
+import { applyFallenPixelFx } from "./fallen/pixelfx";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
 const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
@@ -2505,6 +2506,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.
   applyFallenStoryIndex(project);
+  // pixelfx 코드 픽셀 효과 — 기술·필드·이야기 한 번 효과를 id 로 찾아 덧붙인다(fallen/pixelfx.ts). 맨 끝.
+  applyFallenPixelFx(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
