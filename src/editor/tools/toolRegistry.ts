@@ -56,6 +56,7 @@ import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { DIALOGUE_LINT_TOOLS } from "./dialogueLintTool";
+import { SCRIPT_TOOLS } from "./scriptTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -397,6 +398,9 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(DIALOGUE_TOOLS, "event"),
   // 윤문 린터 lint_dialogue — general-good-writing(코드 연규) polish-lint 로컬 규칙. 린터는 prepare 에서 동적 import(첫 번들·플레이어 밖).
   ...withDomain(DIALOGUE_LINT_TOOLS, "event"),
+  // TypeScript 이벤트 스크립트(openwiki/script-sandbox.md) — 검사·작성·수정·헤드리스 시험·API·공용 모듈·페이지를 코드로 읽고 쓰기.
+  // 컴파일러·QuickJS 는 prepare 에서 지연 로드한다(run 은 동기).
+  ...withDomain(SCRIPT_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

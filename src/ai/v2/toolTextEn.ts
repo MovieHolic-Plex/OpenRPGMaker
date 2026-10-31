@@ -308,4 +308,14 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   read_tileset_reference: { d: "Read one tileset reference document (all pages and images) for a purpose before laying those tiles." },
   list_tileset_references: { d: "List the reference purposes and documents of a tileset." },
+  // ── TypeScript event scripts (registry text is already English; these are the short v2 copies) ──
+  get_script_api: { d: "The typed game API (.d.ts with this project's ids) scripts are checked against. Read once before writing scripts; format:'cheatsheet' is shorter." },
+  check_script: { d: "Type-check a TypeScript event script without changing anything: ok, diagnostics (line:col), reads/writes, summary." },
+  author_script: { d: "Insert a new `script` command (TypeScript, game API) into an event page or common event. Compiles first — on errors nothing changes; fix the diagnostics and retry. Use for logic with conditions, math, loops or many branches; then dry_run_script." },
+  edit_script: { d: "Replace the source of an existing script command (commandPath or name). Recompiles; on errors nothing changes." },
+  dry_run_script: { d: "Run a script (source, an existing one, or the whole page) headless on a copy of the project with scripted answers and preset state. Returns transcript, switch/variable/gold/item changes, log and errors. Nothing is saved." },
+  read_event_as_script: { d: "Read an event page's commands as TypeScript (game API; other commands as game.cmd JSON). Read-only." },
+  write_event_as_script: { d: "Replace a page's whole command list with one compiled script. Needs confirm:true; read the page first." },
+  upsert_script_module: { d: "Create or replace a shared script module imported as \"@lib/<id>\". Compiles first." },
+  list_script_modules: { d: "List shared script modules (@lib/<id>) and their exports." },
 };
