@@ -607,7 +607,7 @@ function floorFour(project: Project, exec: Exec): void {
     { id: "ped_e", at: centre(pedE, 0, 0), radius: 2, intensity: 0.7, color: "#9fe8ff", flicker: false },
     { id: "cand_w", at: centre(candW, 0, 0), radius: 2, intensity: 0.65, color: "#ffb860", flicker: true },
     { id: "cand_e", at: centre(candE, 0, 0), radius: 2, intensity: 0.65, color: "#ffb860", flicker: true },
-    { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.5, color: "#ffc070", flicker: true },
+    { id: "player", at: { kind: "player" }, radius: 2, intensity: 0.45, color: "#ffc070", flicker: true },
   ].filter((src) => src.at);
   // 0.62 는 「발밑이 캄캄하다」는 글과 달리 방이 다 보였다(첫 플레이 검수 2026-10-31) — 빛 웅덩이 밖은 거의 안 보이게 짙게.
   exec(project, "set_lighting_volume", { mapId: FS2_T4, applyMode: "map", ambient: 0.82, color: "#040c0a", sources });

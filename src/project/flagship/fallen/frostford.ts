@@ -580,8 +580,8 @@ function lanternNight(project: Project, exec: Exec): void {
       ...L.lamps.map((l, i) => ({ id: `lamp${i}`, at: { x: l.x, y: l.y - 2 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
       ...L.gateLights.map((c, i) => ({ id: `gate_${i}`, at: { x: c.x, y: c.y }, radius: 2, intensity: 0.8, color: "#ffc070", flicker: true })),
       // 탈출길 — 지그재그 굽이마다 차가운 빛(밝은 얼음): 어디가 안전한지 밤에도 읽힌다.
-      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 2.4, intensity: 0.85, color: "#d6ecff" })),
-      { id: "player", at: { kind: "player" }, radius: 3.2, intensity: 0.6, color: "#9fb4ff" },
+      ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 1.6, intensity: 0.6, color: "#d6ecff" })),
+      { id: "player", at: { kind: "player" }, radius: 2.4, intensity: 0.55, color: "#9fb4ff" },
     ],
   });
   exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "none" } });
