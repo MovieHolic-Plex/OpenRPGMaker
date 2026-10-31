@@ -251,6 +251,18 @@ for (const [k, l] of (Array.isArray(L.ledges) ? L.ledges : []).entries()) {
   let n = 0; for (const c of e.cells) if (owner[c]! >= 0) { levels[c] = l.level; n += 1; }
   if (!n) errors.push(`${tag}: covers no open cell.`);
 }
+// BBD_FIXED=1 (argon-image-dungeon round 2): errors that had no exact correction get an English "Fixed call" (code still only checks; it never applies them).
+const FIXED = process.env.BBD_FIXED === "1";
+const entranceStairsFix = (preferX?: number): string => {
+  const ent = regionList.find((r) => r.kind === "room" && r.purpose === "entrance"); if (!ent || !ent.cells.size) return "";
+  let top = H; for (const c of ent.cells) top = Math.min(top, Math.floor(c / W));
+  const xs = [...ent.cells].filter((c) => Math.floor(c / W) === top && !isOpen(c % W, top - 1)).map((c) => c % W).sort((a, b) => a - b);
+  if (!xs.length) return "";
+  const want = preferX ?? xs[Math.floor(xs.length / 2)]!;
+  const x = xs.reduce((b, v) => (Math.abs(v - want) < Math.abs(b - want) ? v : b), xs[0]!);
+  return `{"id": "stairs up", "x": ${x}, "y": ${top - 2}}`;
+};
+const ENTRANCE_HINT = (x?: number) => FIXED ? ` If this entry is meant as the entrance: the entrance is not a "stairs" entry ("stairs" only climb onto a raised ledge) but the wall-mounted piece "stairs up" in "objects" on the entrance room's north wall face — delete this "stairs" entry. Fixed call: add to "objects" ${entranceStairsFix(x)}` : "";
 const SD: Record<string, [number, number, number]> = { n: [0, -1, 5], s: [0, 1, 6], e: [1, 0, 7], w: [-1, 0, 8] };
 type Flight = { cells: Set<number>; dx: number; dy: number; lo: number; hi: number; first: Set<number>; last: Set<number> };
 const flights: Flight[] = [];
@@ -274,7 +286,7 @@ for (const [k, s] of (Array.isArray(L.stairs) ? L.stairs : []).entries()) {
     if (f.lo === 0 && f.hi === 0) { f.lo = lo; f.hi = hi; } else if (f.lo !== lo || f.hi !== hi) { bad = "all its lanes must climb between the same two levels"; break; }
     for (let t = 0; t < len; t += 1) { const c = idx(sx + dx * t, sy + dy * t); levels[c] = lo; ramps[c] = code; f.cells.add(c); if (t === 0) f.first.add(c); if (t === len - 1) f.last.add(c); }
   }
-  if (bad) { errors.push(`${tag} at ${P(s.x, s.y)} up ${s.up}: ${bad}.`); continue; }
+  if (bad) { errors.push(`${tag} at ${P(s.x, s.y)} up ${s.up}: ${bad}.` + (!levels.some((v) => v > 0) || levels[idx(s.x, s.y)] === 0 || !isOpen(s.x, s.y) ? ENTRANCE_HINT(s.x) : "")); continue; }
   flights.push(f);
 }
 const flightOf = (i: number) => flights.find((f) => f.cells.has(i));
@@ -302,8 +314,13 @@ for (const o of [...(Array.isArray(L.objects) ? L.objects : []), ...(Array.isArr
 for (const p of puts) if (!PIECES[p.name] || !num(p.x) || !num(p.y)) errors.push(`piece ${JSON.stringify(p).slice(0, 80)}: unknown catalog id or non-integer x,y — use an exact id from the catalog.`);
 const chests: any[] = Array.isArray(L.chests) ? L.chests : [];
 const gates: any[] = Array.isArray(L.gates) ? L.gates : [];
-for (const g of gates) if (!num(g.x) || !num(g.y) || !isWalkFloor(g.x, g.y)) errors.push(`gate ${JSON.stringify(g).slice(0, 60)}: needs integer x,y on walkable floor.`);
-if (puts.filter((p) => p.name === "stairs up").length !== 1) errors.push(`need exactly one "stairs up" (the entrance stairs, on the entrance room's north wall face).`);
+const nearWalk = (x: number, y: number): [number, number] | null => { for (let r = 1; r <= 4; r += 1) for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (Math.max(Math.abs(dx), Math.abs(dy)) === r && isWalkFloor(x + dx, y + dy)) return [x + dx, y + dy]; return null; };
+for (const g of gates) if (!num(g.x) || !num(g.y) || !isWalkFloor(g.x, g.y)) {
+  const n = FIXED && num(g.x) && num(g.y) ? nearWalk(g.x, g.y) : null;
+  errors.push(`gate ${JSON.stringify(g).slice(0, 60)}: needs integer x,y on walkable floor.` + (FIXED ? (n ? ` Fixed call: {"x": ${n[0]}, "y": ${n[1]}} (nearest walkable cell), or delete this gate.` : " Fixed call: delete this gate.") : ""));
+}
+{ const su = puts.filter((p) => p.name === "stairs up").length;
+  if (su !== 1) errors.push(`need exactly one "stairs up" (the entrance stairs, on the entrance room's north wall face).` + (FIXED ? (su === 0 ? ` Fixed call: add to "objects" ${entranceStairsFix(Array.isArray(L.stairs) && num(L.stairs[0]?.x) ? L.stairs[0].x : undefined)}` : ` You have ${su}; keep only the one on the entrance room's north wall face, e.g. ${entranceStairsFix()}`) : "")); }
 if (errors.length) done({ stats: { boxRatio: rooms.length ? +(plainRects / rooms.length).toFixed(2) : 0 } });
 
 // ---- compose: walls / ceiling / floor / liquid art from the open cells ----
