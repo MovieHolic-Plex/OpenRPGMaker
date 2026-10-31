@@ -137,11 +137,11 @@ def ramp(style, w, rise):
                 if Y < 30: px[X, Y] = T[0] if h(X, Y, 33) < 200 else T[1]
             elif X == re - 1 or X == x1 - 1:
                 if Y < 30: px[X, Y] = T[top] if f < 0.5 else T[top - 1]
-    if "margin" in m: flank(px, W, m, (x0, x1), 3)       # grass: the flank stands in the grass margin beside the track
-    else: flank(px, W, m)
+    if "margin" in m: flank(px, W, m, (x0, x1), 3, full=rise == 4)   # grass: the flank stands in the grass margin beside the track
+    else: flank(px, W, m, full=rise == 4)
     return im
 
-def flank(px, W, m, outside=None, maxw=3, stairs=False):
+def flank(px, W, m, outside=None, maxw=3, stairs=False, full=False):
     """the cut's side flanks: the slope stands out of the low ground, so each side shows a sliver of its flank in the cliff's own
     material, widest where the cut leaves the terrace (bottom) and running out to nothing at the far foot (top) — the wedge is
     what says the height falls away from the viewer. Counted outward from the surface edge: lit/shade rim next to the surface,
@@ -150,6 +150,7 @@ def flank(px, W, m, outside=None, maxw=3, stairs=False):
     Fc = m["flank"] if stairs is False or "flank_st" not in m else m["flank_st"]
     for Y in range(32):
         fw = round(maxw * (Y - 2) / 29) if Y > 2 else 0
+        if full: fw = max(1, fw)                                          # VQA r2 minor: h4 walls must reach the top edge
         for k in range(fw):
             if outside: L, Rr = outside[0] - 1 - k, outside[1] + k
             else: L, Rr = fw - 1 - k, W - fw + k
@@ -290,6 +291,47 @@ def tread_log(px, m, x0, x1, y0, y1, j, f, rise):
         px[x0, Y] = Wd[4] if Y == y0 else Wd[3]
         px[x1 - 1, Y] = Wd[5] if Y == y0 else Wd[3]
 
+
+# VQA r2 (independent): sand/cave/snow/peat stairs failed as dark framed objects (crate, pallet, shutter, doormat). The passing grass
+# stairs are the template: tread tops near the brightness of the ground/road they are cut into, a bright nosing on each, one thin
+# darker crease beyond, no dark posts or frame, no slab joints (L/J marks at zoom). nos = nosing (bright, its broken tone),
+# under = the row under a deep nosing, body = tread top near/mid/far, crease = the hidden riser's line, flank_st = pale side edges.
+LIGHT = {
+    "sand-steps": dict(nos=R("#fff9b4", "#f5d090"), under=R("#f5d090")[0], body=R("#eccb86", "#e8c282", "#dcaf6c"), speck=R("#dcaf6c")[0], crease=R("#cfa566", "#b58a50")),
+    "cave-steps": dict(nos=R("#b6a28c", "#b69e89"), under=R("#a7917d")[0], body=R("#a7917d", "#988472", "#8d7766"), speck=R("#8d7766")[0], crease=R("#6c5c54", "#7a6a5b")),
+    "snow-steps": dict(nos=R("#ffffff", "#b9c6d8"), under=R("#ecf3fa")[0], body=R("#e6f0fa", "#d6e4f1", "#b7cde3"), speck=R("#d6e4f1")[0], crease=R("#93aecb", "#b8c0c8")),
+    "peat-steps": dict(nos=R("#b5a85b", "#a69a54"), under=R("#a69a54")[0], body=R("#978c4c", "#887e44", "#837b40"), speck=R("#887e44")[0], crease=R("#5f5a2e", "#655f31"), end=R("#6e5a3c")[0]),
+}
+LIGHT_FLANK = {"sand-steps": R("#dcaf6c", "#e8c282", "#e8c282", "#f5d090"), "cave-steps": R("#7a6a5b", "#8d7766", "#8d7766", "#a7917d"),
+               "snow-steps": R("#b8c0c8", "#d6e4f1", "#d6e4f1", "#ffffff"), "peat-steps": R("#6b6534", "#887e44", "#887e44", "#a69a54")}
+
+def tread_light(px, L, x0, x1, y0, y1, j, f):
+    ht = y1 - y0; d = min(2, round(2 * f))
+    for X in range(x0, x1):
+        for Y in range(y0, y1):
+            r = Y - y0
+            if r == 0: c = L["nos"][1] if h(X, j, 121) < (60 if "end" not in L else 50) else L["nos"][0]   # bright nosing, broken
+            elif r == ht - 1 and ht >= 3: c = L["crease"][0] if h(X, Y, 123) < 190 else L["crease"][1]  # thin crease beyond
+            elif r == 1 and ht >= 5: c = L["under"]
+            else:
+                c = L["body"][d]
+                if ht >= 6 and r == ht - 2: c = L["body"][min(2, d + 1)]                              # soft shade into the crease
+                if h(X, Y, 125) < 22: c = L["speck"]
+            px[X, Y] = c
+    if "end" in L:                                                                                    # log ends at the trail edge
+        px[x0, y0] = L["end"]; px[x1 - 1, y0] = L["end"]
+
+def stairs_light(style, w, rise):
+    L = LIGHT[style]; W = w * 16
+    im = Image.new("RGB", (W, 32)); px = im.load()
+    n = 2 * rise
+    for (y0, y1, j) in bands(n): tread_light(px, L, 0, W, y0, y1, j, j / max(1, n - 1))
+    for X in range(W):
+        px[X, 31] = L["nos"][0] if h(X, 31, 127) < 200 else L["nos"][1]                                # crest: the terrace edge, lit
+        px[X, 0] = L["crease"][0] if h(X, 0, 31) < 200 else L["crease"][1]                             # foot: crease on the low road
+    flank(px, W, dict(flank=LIGHT_FLANK[style]), full=rise == 4)
+    return im
+
 # ---------------------------------------------------------------- output
 def check(style, im, ok):
     bad = set(im.get_flattened_data()) - ok
@@ -303,7 +345,7 @@ def main(out=HERE):
         for kind in ("ramp", "stairs"):
             for rise in (1, 2, 3, 4):
                 for w in (2, 3):
-                    im = (ramp if kind == "ramp" else stairs)(style, w, rise); check(style, im, ok)
+                    im = (ramp if kind == "ramp" else (stairs_light if style in LIGHT else stairs))(style, w, rise); check(style, im, ok)
                     im.save(f"{out}/{style}/{kind}-h{rise}-w{w}.png"); ims.append(im)
                     pieces[f"{kind}:s:{w}x{rise + 2}:{rise}"] = {"w": im.width, "h": im.height, "rgba": [v for p in im.get_flattened_data() for v in (*p, 255)]}
         allp[style] = pieces
