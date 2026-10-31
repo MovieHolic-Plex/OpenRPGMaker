@@ -1237,6 +1237,11 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   거절음(`command-cancel`)만 울리고 메뉴를 연 채 둔다. 사유는 `.battle-command-reason` 으로 눈에도 보이며
   `detail` 과 같은 말이면 중복 출력하지 않는다. 회색 처리는 `17-sprint-a-polish.css` 와 rm2000·vxace 스킨에
   `[aria-disabled="true"]` 형제 선택자를 더해 유지했다.
+  **사유 폭 맞춤(2026-10-31).** 루트 명령의 사유는 버튼 안 한 줄이라 2열 메뉴에서 메뉴 폭을 넘으면 잘렸다(보스전
+  「이 싸움에서는 도주할 수 없…」, 960×720). `commandGrid` 가 붙은 뒤 마이크로태스크로 `fitInertReasons(menu)` 를 돌려,
+  사유가 메뉴 안쪽 오른쪽 끝을 넘을 때만 실제 남은 폭(BCR ÷ 장면 배율)을 `max-width` 로 주고 두 줄까지 감싼 뒤
+  말줄임한다(`data-reason-fit="wrap"`, 인라인 스타일 — 스킨 규칙 특이도가 높다). 넘치지 않으면 손대지 않는다.
+  재현: `UIFIT_PROJECT=<player.json> UIFIT_RES=320x240 UIFIT_VIEW=960x720 npm run qa:runtime -- --scenario ui-fit`.
 - **결과 문체 통일(2026-09-15, 보류 항목 해소).** `resultLine` 은 `승리`(명사)·`패배했습니다`(합쇼체)·
   `무사히 후퇴했다`(해라체)로 세 갈래였다. 이 슬롯은 디렉터 첫 줄이자 `.battle-result-title` 에 그대로 찍히는
   **제목**이므로(문장은 바로 아래 `rewardsLine` 담당) 셋 다 명사로 맞췄다 — `승리`/`패배`/`후퇴`.

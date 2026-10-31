@@ -23,6 +23,7 @@ import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding"
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { doorLine, recordDoorForGate } from "./mapDoorTools";
+import { strandedByRemoval, strandedRefusal } from "./strandedSwitches";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -4293,7 +4294,7 @@ const duplicateEvent: ToolDefinition = {
 
 const removeEvent: ToolDefinition = {
   name: "remove_event",
-  description: "맵에서 이벤트를 제거한다(파괴적).",
+  description: "Remove an event from a map (destructive). Refused when the event is the only thing that turns on a switch other events' pages wait for (removing it would block the story).",
   mode: "write",
   parameters: {
     type: "object",
@@ -4304,6 +4305,9 @@ const removeEvent: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const index = map.events.findIndex((event) => event.id === args.eventId);
     if (index < 0) throw new ToolError(`제거할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found" });
+    // 남는 페이지가 기다리는 스위치를 이 이벤트만 켜면 지우지 않는다(진행이 영영 안 열린다 — strandedSwitches.ts).
+    const stranded = strandedByRemoval(draft, map.id, args.eventId as string);
+    if (stranded.length) throw new ToolError(strandedRefusal(args.eventId as string, stranded), { code: "remove-strands-progress" });
     map.events.splice(index, 1);
     return { summary: `${map.name}에서 이벤트 '${args.eventId}' 제거`, warnings: [`파괴적 작업: 이벤트 '${args.eventId}'를 삭제했습니다.`] };
   },

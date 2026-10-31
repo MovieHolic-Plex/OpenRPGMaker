@@ -161,11 +161,15 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
         itemId: { type: "string", description: "bind: the item id this item means" },
         troopId: { type: "string", description: "bind: the troop id this item means" },
       },
-      required: ["op"],
+      // op 를 빼고 부르는 모델이 있다(2026-10-31 Gemini 4 Argon 숲 추격: list 만·task 만 보내 스키마 거절 두 번). 다른 칸에서 짐작한다.
+      required: [],
     },
     async execute(id, params) {
       const p = (params ?? {}) as { op?: string; list?: unknown; phase?: string; items?: unknown; task?: string; reason?: string; mapId?: string; eventId?: string; itemId?: string; troopId?: string };
-      const op = String(p.op ?? "view");
+      const inferred = typeof p.op === "string" && p.op.trim() ? undefined
+        : Array.isArray(p.list) ? "init" : Array.isArray(p.items) ? (store.initialized ? "append" : "init")
+        : typeof p.task === "string" && p.task.trim() ? (typeof p.reason === "string" && p.reason.trim() ? "block" : "done") : "view";
+      const op = inferred ?? String(p.op);
       const warnings: string[] = [];
       let result: PiToolExecResult;
       const target = (): TodoItem | undefined => store.resolve(p.task) ?? (op === "done" || op === "block" || op === "bind" ? store.current() : undefined);
@@ -291,6 +295,11 @@ export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: T
         }
         default:
           result = done("todo list");
+      }
+      if (inferred) {
+        const body = JSON.parse((result.content[0] as { text: string }).text) as Record<string, unknown>;
+        body.summary = `[op was missing — treated as op:"${inferred}"; send op every time] ${String(body.summary ?? "")}`;
+        result = { ...result, content: result.content.map((c, k) => k === 0 ? { type: "text" as const, text: JSON.stringify(body) } : c) };
       }
       const parsed = JSON.parse((result.content[0] as { text: string }).text) as { ok: boolean; summary: string };
       // 항목을 닫거나 뺐으면 그 항목을 위해 걸어 둔 «다음 호출 우선»(H3)을 내린다.

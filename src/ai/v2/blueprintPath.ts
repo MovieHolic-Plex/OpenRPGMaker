@@ -954,13 +954,15 @@ export function pointLockedPagesIn(project: Project): string[] {
     const speaker = speakers.sort((a, b) => speakers.filter((x) => x === b).length - speakers.filter((x) => x === a).length)[0];
     const mentioned = texts.some((c) => flat(String(c.body ?? "")).includes(flat(name)) || (speaker && flat(String(c.body ?? "")).includes(flat(speaker))));
     // 이미 이름을 대는데(「동굴 열쇠가 있어야 한다」 — 주는 것이 그 물건 자체) 어디인지 없으면 자리만 붙인다(2026-10-29 vm8 flash jrpg).
-    const located = texts.some((c) => /먼저|에 있다|근처|옆|쪽/u.test(String(c.body ?? "")));
+    // 「먼저」는 자리가 아니다 — 「먼저 동굴의 흔적을 살피자.」만 말하던 잠김 대사가 이 검사에 걸려 자리를 못 받았다
+    // (2026-10-31 jb3b terra jrpg: 흔적은 잠긴 「새벽의 귀환」 바로 서쪽 칸이었고 판정자는 30분 동안 동굴을 돌았다).
+    const located = texts.some((c) => /에 있다|근처|옆|쪽/u.test(String(c.body ?? "")));
     if (mentioned && (located || person(src.ev))) continue;
     // 물건은 눈에 띄는 것에 기대어(「회복의 샘 서쪽」), 사람은 방위로.
-    const spot = landmarkWord(project, src.map, src.ev.x, src.ev.y, src.ev.id);
-    const where = src.map.id === map.id
+    const spot = landmarkWord(project, src.map, src.ev.x, src.ev.y, [src.ev.id, ev.id]);
+    const where = (src.map.id === map.id
       ? (person(src.ev) ? `${bearingWord({ x: ev.x, y: ev.y }, { x: src.ev.x, y: src.ev.y })}의 ` : `${spot}의 `)
-      : `${src.map.name ?? src.map.id}${person(src.ev) ? "" : ` ${spot}`}의 `;
+      : `${src.map.name ?? src.map.id}${person(src.ev) ? "" : ` ${spot}`}의 `);
     const line = mentioned
       ? `「${name}」${josa(name, "은", "는")} ${where.replace(/의 $/u, "")}에 있다.`
       : person(src.ev) ? `먼저 ${where}「${speaker ?? name}」에게 말을 걸어 보자.` : `먼저 ${where}「${name}」${josa(name, "을", "를")} 살펴보자.`;
