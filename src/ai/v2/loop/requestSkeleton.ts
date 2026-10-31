@@ -105,6 +105,13 @@ export function requestSkeleton(task: string, fresh = true): SkeletonElement[] {
     const map = RETURN_TO.exec(t)?.[1];
     els.push({ content: `엔딩에 닿는다${map ? ` — ${map}` : ""}`, check: { kind: "ending", ...(map ? { map } : {}), ...f }, from: "엔딩" });
   }
+  // 번호 자물쇠: 「비밀번호 7294」·「7294가 비밀번호」 + 「3번째로 틀렸을 때 … 힌트」.
+  const code = /(?:비밀번호|암호|번호)\s*(?:는|은|가|이)?\s*[「"']?(\d{3,8})(?!\d)/u.exec(t)?.[1] ?? /(?<!\d)(\d{3,8})[」"']?\s*(?:이|가)?\s*(?:비밀번호|암호)/u.exec(t)?.[1];
+  if (code && /입력|자물쇠|잠금|열/u.test(t)) {
+    const hint = /(\d)\s*(?:번째|번\s*째|회째|번)\s*(?:로\s*|에\s*)?틀[리렸린려]|틀린\s*(?:횟수|게)?\s*(?:가\s*)?(\d)\s*(?:번|회)/u.exec(t);
+    const hintAfter = hint && /힌트|도움말|알려/u.test(t) ? Number(hint[1] ?? hint[2]) : undefined;
+    els.push({ content: `번호 자물쇠 ${code}${hintAfter ? ` — ${hintAfter}번째 오답에 힌트` : ""}`, check: { kind: "code_lock", code, ...(hintAfter ? { hintAfter } : {}), ...f }, from: code });
+  }
   for (const m of t.matchAll(GIVES)) {
     const name = nameFrom(m[1] ?? "");
     if (name && !/^(값|말|도움|축하|경고|힌트|선택)$/u.test(name)) els.push({ content: `${name}을(를) 준다`, check: { kind: "item", name, gives: true, ...f }, from: m[0] });
@@ -141,6 +148,7 @@ export function covers(items: readonly Pick<TodoItem, "check" | "content">[], el
       case "talk": return k.kind === "talk" && nameScore(c.who, k.who) > 0 && (!c.says || !!k.says);
       case "item": return k.kind === "item" && nameScore(c.name, k.name) > 0;
       case "party_join": return k.kind === "party_join" && nameScore(c.name, k.name) > 0;
+      case "code_lock": return k.kind === "code_lock" && k.code === c.code && (!c.hintAfter || k.hintAfter === c.hintAfter);
       default: return true;
     }
   });

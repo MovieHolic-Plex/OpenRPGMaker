@@ -80,6 +80,7 @@ export function checkLabel(check: TodoCheck | undefined, en = false): string {
     case "room_graph": return `「${check.map}」 방 그래프(방 수·연결·도달·계단·랜드마크)`;
     case "layout_built": return `「${check.map}」 칸 배치대로(방·기물·랜드마크)`;
     case "layout_review": return `「${check.map}」 자기 검토(review_layout)`;
+    case "code_lock": return `번호 자물쇠 ${check.code}${check.hintAfter ? ` · ${check.hintAfter}번 틀리면 힌트` : ""}`;
   }
 }
 
@@ -101,6 +102,7 @@ function checkLabelEn(check: TodoCheck | undefined): string {
     case "room_graph": return `"${check.map}" built as the declared room graph (rooms, connections, reachability, stairs, landmarks)`;
     case "layout_built": return `"${check.map}" laid as the layout (regions and pieces on the map, landmark reachable)`;
     case "layout_review": return `"${check.map}" self-reviewed as a player (review_layout rounds)`;
+    case "code_lock": return `number lock ${check.code}${check.hintAfter ? `, hint after ${check.hintAfter} wrong tries` : ""}`;
   }
 }
 

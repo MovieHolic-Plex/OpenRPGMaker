@@ -43,6 +43,11 @@ export interface ChainLink {
   readonly needsCondition?: readonly Record<string, unknown>[];
   /** ending: 부를 엔딩 id(조건이 차면 대사 뒤 triggerEnding). */
   readonly endingId?: string;
+  /** code·ending: 이 중 하나라도 있으면 시도할 수 있다(앞 고리 learn 이름들) — 하나도 없으면 lockedLines. */
+  readonly needsAny?: readonly string[];
+  /** code·ending: 틀린 횟수가 이 수에 닿으면(이상) 틀림 대사 뒤에 hintLines 를 보인다. */
+  readonly hintAfter?: number;
+  readonly hintLines?: readonly string[];
 }
 export interface ChainArgs { readonly mapId: string; readonly name: string; readonly links: readonly ChainLink[] }
 
@@ -255,18 +260,29 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
   /** 번호·고르기 시도 명령 — 맞으면 onSolve, 틀리면 wrongLines. 틀린 인자면 실패 문장. */
   const codeAttempt = (link: ChainLink, index: number, onSolve: () => Obj[]): Obj[] | string => {
     const code = link.code!;
-    const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? [])].find((l) => l.includes(code));
+    const leaked = [...(link.lockedLines ?? []), ...(link.wrongLines ?? []), ...(link.doneLines ?? []), ...(link.hintLines ?? [])].find((l) => l.includes(code));
     if (leaked) return `${index + 1}번 고리(${link.role}): 자물쇠 대사에 답 ${code} 이 들어 있다 — 답은 단서 고리의 lines 에만 둔다`;
+    if (link.hintAfter !== undefined && !(Number.isInteger(link.hintAfter) && link.hintAfter >= 1 && link.hintAfter <= 9)) return `${index + 1}번 고리(${link.role}): hintAfter 는 1~9 의 정수`;
+    if (link.hintAfter && !link.hintLines?.some((l) => l.trim())) return `${index + 1}번 고리(${link.role}): hintAfter 를 주면 hintLines(힌트 대사)도 준다`;
+    // 틀린 횟수 세기(2026-11-01 「3번째로 틀렸을 때 힌트」 요청 — 작은 모델이 MV 명령을 손으로 짜다 무너졌다): 한 고리 안에서 지어 준다.
+    const wrongFor = (fallback: string): Obj[] => {
+      const wrong = say(link.wrongLines ?? [fallback]);
+      if (!link.hintAfter) return wrong;
+      const counter = `var_${chainKey}_${index + 1}_wrong`;
+      run.call("declare_story_flag", { action: "declare", id: `${chainKey}-wrong-${index + 1}`, kind: "variable", targetId: counter, description: `${args.name}: 틀린 횟수` });
+      return [{ kind: "setVariable", variableId: counter, op: "+=", value: 1 },
+        { kind: "fork", condition: { kind: "variable", variableId: counter, op: ">=", value: link.hintAfter }, then: [...wrong, ...say(link.hintLines)], else: wrong }];
+    };
     if (link.options?.length) {
       if (!link.options.includes(code)) return `${index + 1}번 고리(${link.role}): options 에 정답 ${code} 이 없다`;
-      return [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === code ? onSolve() : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
+      return [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === code ? onSolve() : wrongFor("…아무 일도 일어나지 않는다.") })) }];
     }
     if (!/^\d{1,8}$/u.test(code)) return `${index + 1}번 고리(${link.role}): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`;
     if (trivialCode(code)) return `${index + 1}번 고리(${link.role}): 정답 ${code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`;
     const variableId = `var_${chainKey}_${index + 1}`;
     run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
     return [{ kind: "inputNumber", variableId, digits: code.length },
-      { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(code) }, then: onSolve(), else: say(link.wrongLines ?? ["철컥… 맞지 않는다."]) }];
+      { kind: "fork", condition: { kind: "variable", variableId, op: "==", value: Number(code) }, then: onSolve(), else: wrongFor("철컥… 맞지 않는다.") }];
   };
   const doors: { mapId: string; eventId: string }[] = [];
   const personNotes: string[] = [];
@@ -297,6 +313,14 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
     const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
     const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
+    // needsAny: 단서 중 하나라도 봤으면 시도, 하나도 없으면 lockedLines — 페이지 조건이 아니라 분기로(any 조건).
+    let anyOf: Obj[] | undefined;
+    if (link.needsAny?.length && (link.role === "code" || link.role === "ending")) {
+      const parts: Obj[] = [];
+      for (const n of link.needsAny) { const c = condFor(n); if (typeof c === "string") return fail(`${index + 1}번 고리: ${c}`); parts.push(...c); }
+      anyOf = parts;
+    }
+    const gated = (body: Obj[], locked: string): Obj[] => (anyOf ? [{ kind: "fork", condition: { kind: "any", conditions: anyOf }, then: body, else: say(link.lockedLines ?? [locked]) }] : body);
     const pages: Obj[] = [];
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
@@ -316,8 +340,8 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       const solved = flag(`${slug(link.code)}_solved_${index + 1}`, `${args.name}: 자물쇠 풀림`);
       const attempt = codeAttempt(link, index, () => [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }]);
       if (typeof attempt === "string") return fail(attempt);
-      pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
-      pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
+      if (!anyOf) pages.push(basePage({ commands: say(link.lockedLines ?? ["자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다."]) }));
+      pages.push(basePage({ conditions: need, commands: gated([...say(link.lines), ...attempt], "자물쇠가 걸려 있다. 무엇을 맞춰야 하는지 아직 모르겠다.") }));
       pages.push(basePage({ conditions: [{ kind: "switch", switchId: solved, value: true }], commands: say(link.doneLines ?? ["이미 열려 있다."]) }));
     } else if (link.role === "pickup") {
       if (!link.reward?.item && !link.reward?.flag) return fail(`${index + 1}번 고리(pickup): reward.item 또는 reward.flag 가 없다`);
@@ -340,7 +364,7 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       // code 가 있으면 번호를 맞혀야 엔딩(2026-10-28 mt3 flash 방탈출: 「비밀번호 입력」 단계가 조사만으로 엔딩을 불렀다).
       const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), { kind: "triggerEnding", endingId: link.endingId }]) : [{ kind: "triggerEnding", endingId: link.endingId }];
       if (typeof attempt === "string") return fail(attempt);
-      pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...attempt] }));
+      pages.push(basePage({ conditions: need, commands: gated([...say(link.lines), ...attempt], "아직 할 수 없다.") }));
     }
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);

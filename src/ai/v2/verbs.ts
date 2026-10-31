@@ -1269,11 +1269,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const LINES = { type: "array", items: { type: "string" } } as const;
   const authorPuzzleChain: PiToolShape = {
     name: "author_puzzle_chain", label: "퍼즐 사슬", concurrency: "exclusive",
-    description: "Build clue → lock (password or choice) → reward → locked door in one go. Links in order: only the previous link's learn · reward.flag · reward.item names become a later link's needs. Put the answer (code) only in the clue's lines, never in the lock's lines (a leak is rejected). A door, after building, blocks the door cell and walks; if the room behind is reachable another way, the gap is filled with wall. Existing events are rewritten by eventId; new ones get at{x,y} and name.",
+    description: "Build clue → lock (password or choice, optional wrong-try count with a hint) → reward or ending → locked door in one go. Links in order: only the previous link's learn · reward.flag · reward.item names become a later link's needs. Put the answer (code) only in the clue's lines, never in the lock's lines (a leak is rejected). A door, after building, blocks the door cell and walks; if the room behind is reachable another way, the gap is filled with wall. Existing events are rewritten by eventId; new ones get at{x,y} and name.",
     parameters: { type: "object", properties: {
       mapId: { type: "string" }, name: { type: "string", description: "chain name (e.g. 서재의 비밀)" },
       links: { type: "array", items: { type: "object", properties: {
-        role: { type: "string", enum: ["clue", "code", "door", "pickup"] },
+        role: { type: "string", enum: ["clue", "code", "door", "pickup", "ending"], description: "ending: a code (optional) then triggerEnding endingId" },
         eventId: { type: "string" }, name: { type: "string" }, mapId: { type: "string" },
         at: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
         learn: { type: "string", description: "clue: what you learn by reading (the needs name of a later link)" },
@@ -1282,6 +1282,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         options: LINES, lines: LINES, lockedLines: LINES, wrongLines: LINES, doneLines: LINES,
         reward: { type: "object", properties: { item: { type: "string" }, flag: { type: "string" }, lines: LINES } },
         seal: { type: "boolean", description: "door: seal gaps behind the door (default true)" },
+        endingId: { type: "string", description: "ending: the ending id to trigger (define_ending first)" },
+        needsAny: { ...LINES, description: "code/ending: tryable once ANY of these earlier learn names is known; before that lockedLines shows" },
+        hintAfter: { type: "number", description: "code/ending: count wrong tries; from this many on, hintLines show after wrongLines" },
+        hintLines: LINES,
       }, required: ["role"] } },
     }, required: ["mapId", "name", "links"] },
     async execute(id, params) {
