@@ -4500,11 +4500,11 @@
   {
    "id": "act2-b2-patrol",
    "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
-   "note": "act2Opening.ts curfewHub 북쪽 순찰 (45,17) 가로 4칸 — 광장 돌바닥 (43,20)에 서 있으면 서쪽으로 돌아설 때 부채꼴에 든다(40,17 은 말뚝 울타리 뒤라 시선이 막혔다)",
+   "note": "act2Opening.ts curfewHub 북쪽 순찰 (45,17) 가로 4칸(동쪽으로 먼저 걷는다, 콘 120°·시야 6) — 순찰로 동쪽 끝 너머 (50,17)에 서 있으면 첫 걸음 뒤 정면 부채꼴에 든다. (43,20)은 순찰이 등을 돌린 채 서 있어 14초 안에 못 봤다(r2).",
    "mapId": "fs2_hub_night",
-   "x": 43,
-   "y": 20,
-   "facing": "up",
+   "x": 50,
+   "y": 17,
+   "facing": "left",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4534,7 +4534,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 9000
+       "ms": 6000
       }
      ],
      "shot": true
@@ -4543,9 +4543,15 @@
      "id": "battle",
      "ops": [
       {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 30000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 5000
+       "ms": 1500
       }
      ],
      "shot": true
