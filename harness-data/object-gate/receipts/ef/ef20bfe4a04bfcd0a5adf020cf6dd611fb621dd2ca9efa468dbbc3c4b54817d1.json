@@ -1,0 +1,429 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef20bfe4a04bfcd0a5adf020cf6dd611fb621dd2ca9efa468dbbc3c4b54817d1",
+ "width": 48,
+ "height": 64,
+ "kind": "terrain",
+ "name": "stairs h3 w3 cut through a south-facing cliff face",
+ "label": "bbox-village-ramps/stairs-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "bbox-village-ramps",
+   "fallback": true,
+   "reason": "칩셋 bbox-village-ramps 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step tread 1",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "step tread 2",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "step tread 3",
+      "rows": "16-18",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "step tread 4",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "31"
+     },
+     {
+      "part": "step tread 5",
+      "rows": "32-34",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "39"
+     },
+     {
+      "part": "step tread 6",
+      "rows": "40-42",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "47"
+     },
+     {
+      "part": "cobble landing floor at base",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair block repeats an 8-row step pattern. Each step starts with a light highlight row (row 0, 8, 16 and so on) and a lighter band of about 3 rows (L≈197-223) as the tread. Below that sit about 4 rows of mid-grey riser (L≈118, rows 3-6) and a dark shadow row (L=63, row 7, 15 and so on) before the next tread. Each tread is a short horizontal band with a darker riser and shadow beneath it, so the steps read as horizontal surfaces with front faces rather than a flat elevation. The tread bands are thin and the edge line is not clearly marked, so this is a borderline reading. The dirt walls at left and right are plain vertical cliff faces with no receding side face. The cobble floor in rows 48-63 is a flat ground tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stone stair with brown side rails and a grass cap, and it sits well next to the grey cobble paving reference. Each step has a light top edge, a mid face with grain and a dark underside shadow, which gives about 5 grey steps. The bottom cobble row is shaded stone by stone, as in the reference. The edges are tinted: brown beside the rails and dark grey-blue beside the stone, with 0% near-neutral dark edge pixels against 80% for the paving reference. The measured 9 visible tones per tile is above the paving reference (7) and the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. Texture is only moderate, since the step faces are somewhat smooth, but the piece does not look thinner or more sticker-like than the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29483
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone stair treads (6 repeated steps, 8 rows each, rows 0-47)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "risers / cliff face under each tread",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cobblestone floor at the foot of the stairs",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt and grass cliff flanks left and right",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each of the six steps (rows 0-7, 8-15, 16-23, 24-31, 32-39, 40-47) starts with a light tread band of about 3 rows. At x=12 and x=35 that band is a 223 row followed by 197 rows, with a 223 edge line at the row-0 start of each step. Below the band is a mid-grey riser of about 4-5 rows, closed by a 1-row dark shadow line (L=63 at rows 7, 15 and 23). That gives a repeating tread, edge line, riser, shadow pattern, so the stairs read as horizontal surfaces with front faces rather than a flat elevation. The treads are fairly shallow, and in the x=24 column the highlight is mostly a single row. The cobblestone floor at rows 48-63 is flat ground with no front face, which is acceptable for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per 16x16 tile, above the paving reference at 7 and the grass reference at 3. Near-flat coverage is 0%, and the dark edge pixels are 0% near-neutral, so the outlines are tinted rather than black. By eye, each step has a light lip highlight, a mid stone face and a dark shadow line beneath it. Brown side walls are shaded in their own dark tone, with a grass fringe along the top. The cobble base at the bottom is shaded stone by stone, like the paving reference. The step faces are a little smoother than the reference cobbles, so texture is only 'some', but no large area is flat. Overall it is as dense as the references and not a sticker-style piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24514
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step tread 1",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "step tread 2",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "step tread 3",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "step tread 4",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "step tread 5",
+      "rows": "32-36",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "step tread 6",
+      "rows": "40-44",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "cobble floor at foot of stairs",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-47 repeat an 8-row step pattern. Each step has a 1-row bright line at its top (rows 0, 8, 16, ...), a 4-row stone tread, a lighter front-edge line (e.g. row 5, L=145), and 2-3 dark shadow rows (e.g. rows 6-7, L=99 then 63) for the riser. The cliff walls on both sides are drawn as front faces. Rows 48-63 are a cobble floor. This is a judgement call, because the dark rows below each edge line could also be read as mortar courses of a flat wall; I read the step pattern as treads with a front-edge line and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The stone steps are built from a pale highlight lip, a light-grey tread, a mid-grey riser and a dark underside, which gives about 5 steps. The cobble base below the stairs is shaded stone by stone, like the paving reference. Dark edge pixels are 0% neutral, so the outline is tinted. The brown wood or earth side edges and the green grass cap carry material-toned darks rather than a black sticker line. It is a little less textured than the paving reference, because the step faces are fairly smooth bands. It is still at or above the references on the primary facts and would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29270
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair tread 1",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 0,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "16-18",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "31"
+     },
+     {
+      "part": "stair tread 5-6",
+      "rows": "32-42",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor at foot of cliff",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dirt cliff edges",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs repeat as 8-row bands. Each band starts with a 1-row bright edge line (L=223 at rows 0, 8, 16, 24 and so on). Under it is a 1-2 row lighter stone tread (L=197). Below that is a darker stone riser (L=118/99) ending in a dark shadow row (L=63, e.g. row 7 and row 15). This gives a tread of about 3 rows and a front face of about 5 rows per step, with a stepped-down ordering rather than a single flat front. The bottom rows 48-63 are a top-down cobble floor, which is normal for terrain. The treads are thin but each has a clear edge line and shadow, so the drawing reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 9 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 0%, the same as both references. None of its dark edge pixels are neutral, so the outlines lean toward the neighbouring material: dark brown against the wooden side posts and a dark grey-blue stone tone around the treads. That matches the Beodeul habit rather than a black sticker line. Each stair tread has a light top highlight, a mid face and a dark riser shadow, and the base is a cobble pattern shaded stone by stone, which gives roughly 5 steps on the stone ramp. The grass cap at the top and the wood edges add variation. The treads are a little cleaner and more banded than the grainy paving reference, and the total palette is only 16 colours, so the texture is 'some' rather than 'rich'. It still sits at the reference's level on every measured fact, with no flat fills, so it holds up beside the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23187
+  }
+ ],
+ "decidedAt": "2026-10-31T03:07:34.618Z",
+ "cells": {
+  "16": [
+   "11909ff931e413cd",
+   "5632dfd07d09a621",
+   "633309491e1d90f9",
+   "7908854f347ef24e",
+   "7a5602c28a08e6e7",
+   "86a6266d34e68b1a",
+   "9824244d9a9531f4",
+   "c19efa7aad554497",
+   "c85d6916fd32d54a",
+   "e95cd8a92330f4ef",
+   "ecd2dde432296807",
+   "f28db9a31f0eace8"
+  ],
+  "24": [
+   "1c0a4ce47159da54",
+   "1c87289bb3e6e31e",
+   "2f03549e71f3ee8d",
+   "48f40987f73f0c53",
+   "54421b0633266ff2",
+   "57d0f9b8ee20e5f5",
+   "826c127309c0aee2",
+   "9f955384448dd53d",
+   "a16c3b452dbf0eb5",
+   "a55fded22f12e749",
+   "baa8aa15e72fe300",
+   "d939b7f34e34d5e8"
+  ],
+  "32": [
+   "3bc8c181fd68fe4d",
+   "3e5bf972cac12710",
+   "577f6032dd4cce8b",
+   "6169bb04d35f34d3",
+   "6775e3e8763f3f02",
+   "90bbc7114b44156b",
+   "9f0c63478e1f269d",
+   "be25b9000541c9e5",
+   "c336adce44929098",
+   "de3835675eaa0ae8",
+   "e307e3d06eb4d2a5",
+   "fa504e970785ad16"
+  ],
+  "48": [
+   "17198c190af36c9a",
+   "6c4236c134cce648",
+   "6e96d53e76bfdd77",
+   "8a1a1c21cf42f863"
+  ]
+ }
+}

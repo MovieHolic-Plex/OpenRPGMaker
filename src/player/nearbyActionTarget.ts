@@ -11,6 +11,10 @@ import type { RuntimeEventView } from "@/project/runtimeEventState";
  *
  * 고르는 순서: 지금 목표가 가리키는 이벤트 → 상하좌우 → 대각. 같은 등급이면 위·왼쪽·오른쪽·아래 순(결정적).
  * 밀기·숨기 이벤트는 고르지 않는다(등 뒤 가구가 밀리거나 몸이 숨는 일은 의도가 아니다).
+ *
+ * 닿으면 싸우는 적(`fieldFoe` 가 참인 접촉 이벤트)도 고른다 — 정면 조사 단추로 열리는 것(findFieldFoeFacing)과 같은 대상이다.
+ * 왜(2026-10-31 jb3c terra jrpg): 3×2 몸 보스는 그림이 몸보다 크게 그려져, 판정자가 몸 바로 위 칸에 서서 위를 보고 눌렀을 때
+ * 아무 일이 없었다(「정확히 아래 칸에서 위를 봐야 전투가 열린다」). 여러 칸 몸이면 몸에 닿은 어느 칸에서든 열린다.
  */
 export type NearbyActionTarget = {
   readonly view: RuntimeEventView;
@@ -27,14 +31,17 @@ export function pickNearbyActionTarget(
     readonly front?: { readonly x: number; readonly y: number };
     readonly preferIds?: ReadonlySet<string>;
     readonly usable?: (view: RuntimeEventView) => boolean;
+    /** 닿으면 싸우는 접촉 이벤트(보이는 적·보스)인가 — 참이면 action 이 아니어도 고른다. */
+    readonly fieldFoe?: (view: RuntimeEventView) => boolean;
   } = {},
 ): NearbyActionTarget | undefined {
   let best: { target: NearbyActionTarget; rank: number } | undefined;
   for (const view of views) {
-    if (view.trigger.kind !== "action") continue;
+    const foe = view.trigger.kind !== "action" && options.fieldFoe?.(view) === true;
+    if (view.trigger.kind !== "action" && !foe) continue;
     const kind = view.page?.interaction?.kind;
     if (kind === "pushable" || kind === "hiding") continue;
-    if (options.usable && !options.usable(view)) continue;
+    if (!foe && options.usable && !options.usable(view)) continue;
     const rect = view.bodyRect;
     // 주인공 칸에서 몸 사각까지의 칸 거리(가로·세로 따로)
     const dx = tileX < rect.left ? rect.left - tileX : tileX > rect.right ? rect.right - tileX : 0;

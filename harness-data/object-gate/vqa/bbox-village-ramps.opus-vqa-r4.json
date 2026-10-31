@@ -1,0 +1,178 @@
+{
+ "round": 4,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "bbox-village-ramps",
+ "images": [
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/ramp-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/stairs-8x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/probe-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/probe-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/probe2-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/probe2-3x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-sol31-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-sol32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-terra32-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-terra33-crossings-4x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-sol31-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-sol32-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-terra32-map-1x.png",
+  "/home/main/claude-viz/bbox-ramps-vqa/r4/hill-terra33-map-1x.png"
+ ],
+ "rubric": "height vs cliff, edge seams, style vs beodeul cliffs, front-elevation look, 1x readability",
+ "pieces": {
+  "ramp-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x.",
+    "At 1x the 16 px cut is barely distinguishable from a plain gap in the cliff; readable as a passage, weak as a 'climb'."
+   ]
+  },
+  "ramp-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x."
+   ]
+  },
+  "ramp-h2-w2": {
+   "verdict": "FAIL",
+   "majors": [
+    "Height/row mismatch against the adjacent cliff in the villages: hill-terra32 and hill-terra33 crossing @(22,19) and @(22,18) - the cliff to the LEFT of the cut sits one 16 px row lower than the cliff on the right, and the ramp is aligned to the right cliff only. Result: the dark left cheek starts ~1 row above the left cliff's grass lip (dark strip standing in grass) and ends ~1 row above the left cliff's bottom outline, so the last face row of the left cliff ends bare against a grass sliver and the track with no cheek. Same pattern at hill-sol31 @(40,16): the left cheek pokes up ~1 row into the grass above the adjacent face. A careful player sees a broken, misregistered cliff edge at every such crossing. The piece has no variant (or the placer does not pick one) for unequal cliff rows on its two sides; as shipped, this crossing fails."
+   ],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x."
+   ]
+  },
+  "ramp-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x."
+   ]
+  },
+  "ramp-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x.",
+    "At 48-64 px of near-uniform dirt the tall ramps read closer to a flat trench floor than a slope; still clearly a passable way through at 1x."
+   ]
+  },
+  "ramp-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x.",
+    "At 48-64 px of near-uniform dirt the tall ramps read closer to a flat trench floor than a slope; still clearly a passable way through at 1x."
+   ]
+  },
+  "ramp-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x.",
+    "At 48-64 px of near-uniform dirt the tall ramps read closer to a flat trench floor than a slope; still clearly a passable way through at 1x."
+   ]
+  },
+  "ramp-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Ramp surface carries almost no slope cue: measured column luminance across the h3 cut in probe-1x drifts only ~121 -> ~110 crest to toe, and the chevron texture is faint; the climb is conveyed mostly by the cliff context and the widening side cheeks, not by the surface itself.",
+    "Ramp surface texture is slightly lighter/patchier than the native dirt track above and below, so the cut reads as a separate patch at 3x (no hard seam, just a tone/texture change).",
+    "Right (lit) cheek is a tan strip that butts against the native cliff's own tan left end-cap, giving a doubled edge (tan strip + dotted dark line) at 6-8x.",
+    "At 48-64 px of near-uniform dirt the tall ramps read closer to a flat trench floor than a slope; still clearly a passable way through at 1x."
+   ]
+  },
+  "stairs-h1-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h1-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h2-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h2-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h3-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h3-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h4-w2": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  },
+  "stairs-h4-w3": {
+   "verdict": "PASS",
+   "majors": [],
+   "minors": [
+    "Native road's light-grey border columns stop abruptly at the crest and restart at the foot; the flight has no matching edge trim (only a thin dark/tan cheek).",
+    "Side cheeks are only ~2-3 px wide, thinner than the native cliff end-caps; acceptable at 1x."
+   ]
+  }
+ },
+ "stacked": {
+  "verdict": "PASS",
+  "majors": [],
+  "minors": [
+   "probe2 middle (2+strip+2) and right (2 upper + strip + 1 lower): flights register exactly with each cliff band, the one-row landing shows the road/track (with road border) between them, crest and toe of each flight meet the strip with no gap or row offset.",
+   "Stacked ramp through the strip is visually just a continuous dirt column; the landing is not distinguished from the flights (consistent with the weak ramp slope cue)."
+  ]
+ },
+ "majors": 1,
+ "verdict": "FAIL",
+ "summary": "15/16 pieces pass in isolation and in the synthetic probes: stairs are excellent (8 px treads with light nosing and dark riser lines, dressed stone matches the road palette, flights exactly replace 1-4 rows of face, crest/toe meet road cleanly); ramps fit height and palette with widening side cheeks but carry only a weak slope cue on the surface (minor). Stacked flights join cleanly at the one-row landing. FAIL because ramp-h2-w2, the piece actually used in the model-made villages, misregisters by one row against the adjacent cliff wherever the cliff steps between the two sides of the cut (terra32/terra33 @(22,19),(22,18); sol31 @(40,16)): its cheek stands in grass above one cliff and stops short of that cliff's bottom. Fix by placing the cut where both sides share the same face rows, or adding a stepped-side variant."
+}

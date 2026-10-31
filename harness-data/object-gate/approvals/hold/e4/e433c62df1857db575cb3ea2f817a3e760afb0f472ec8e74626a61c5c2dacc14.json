@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e433c62df1857db575cb3ea2f817a3e760afb0f472ec8e74626a61c5c2dacc14",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (claude opus 5.5)",
+ "decidedAt": "2026-10-31T04:04:06.313Z",
+ "by": "delegated",
+ "delegatedBy": "user (delegated to supervisor, 2026-10-21 rule)",
+ "evidence": "/home/main/z-project/rpg-zzu-bboxramps/harness-data/object-gate/vqa/bbox-village-ramps.opus-vqa-r6.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: bbox 마을 절벽 경사로·계단 16종 (r7)",
+ "sig": "9e49806a41d1b93d11f3d9f53394b0e5b36a466a0142ba148a74d97810a45289"
+}

@@ -887,7 +887,7 @@ function performAction(
     runtimeEventViewsForMap(world.project, scene.map, scene.session, scene.eventPositions),
     scene.tileX,
     scene.tileY,
-    { front: { x: tx, y: ty }, preferIds: new Set(objectiveMarkerIds(scene as PlaySceneContext)), usable: (view) => interactionPromptLabel(view.page) !== null },
+    { front: { x: tx, y: ty }, preferIds: new Set(objectiveMarkerIds(scene as PlaySceneContext)), usable: (view) => interactionPromptLabel(view.page) !== null, fieldFoe: isFieldFoeView },
   );
   if (nearby) {
     if (nearby.view.event.id === scene.lastActionTargetKey) return true;
@@ -912,8 +912,13 @@ function performAction(
  */
 function findFieldFoeFacing(scene: ActionEventSceneContext, tx: number, ty: number): RuntimeEventView | undefined {
   const view = findRuntimeEventInScene(scene, tx, ty, ["eventTouch", "playerTouch"]);
-  if (!view) return undefined;
-  return JSON.stringify(view.page?.commands ?? []).includes('"battleProcessing"') ? view : undefined;
+  return view && isFieldFoeView(view) ? view : undefined;
+}
+
+/** 닿으면 싸우는 접촉 이벤트(eventTouch·playerTouch 이고 지금 페이지에 전투 명령이 있다). */
+function isFieldFoeView(view: RuntimeEventView): boolean {
+  if (view.trigger.kind !== "eventTouch" && view.trigger.kind !== "playerTouch") return false;
+  return JSON.stringify(view.page?.commands ?? []).includes('"battleProcessing"');
 }
 
 /**
