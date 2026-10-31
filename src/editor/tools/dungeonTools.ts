@@ -9,7 +9,7 @@ import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { Command, EncounterTableEntry, GameEvent, GameMap, Project } from "@/project/types";
-import { DUNGEON_DIRS, DUNGEON_LAYOUTS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, type DungeonRoomInput, type DungeonSpec, type DungeonType } from "../dungeonKit/types";
+import { DUNGEON_DIRS, DUNGEON_LAYOUTS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, type DungeonRoomInput, type DungeonRoomKind, type DungeonSpec, type DungeonType } from "../dungeonKit/types";
 import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
@@ -507,7 +507,31 @@ export function towerFloorShapes(floors: number, seed: number, asked: readonly u
  * 2026-10-24: 층 꼴을 고른다 — ring 둥근 큰 방 · gallery 긴 회랑 끝 링 · cross 가운데 홀 사방 곁방 · spiral 돌아 오르는 작은 방 사슬 · twin 양 날개 방.
  * 꼭대기: ring 둥근 보스방 · hall 긴 알현 회랑 끝 보스방 · observatory 링 보스방 양옆 보물 방.
  */
-function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = "ring"): DungeonRoomInput[] {
+/**
+ * 층마다 계단방 표지(2026-10-31 fs2 B10 「하늘탑 1~4층이 같은 둥근 계단방」): 중간 층 계단방의 쓰임을 층마다 돌린다 —
+ * library 서고 · shrine 마법진 방 · storage 연금 공방 · hall 별 관측실. 이웃 층은 늘 다르다(시드로 출발점만 어긋남). 꼭대기 층은 보스방이라 표지를 쓰지 않는다.
+ */
+export const TOWER_LANDMARKS = ["library", "shrine", "storage", "hall"] as const satisfies readonly DungeonRoomKind[];
+export type TowerLandmark = (typeof TOWER_LANDMARKS)[number];
+export interface TowerFloorPlan { shape: TowerFloorShape; landmark: TowerLandmark; ringStair: boolean }
+/**
+ * 탑 층 계획: 꼴 + 계단방 표지 + 계단방 윤곽. 계단방이 늘 같은 12칸 링(계단 링 키트)이라 꼴(cross·twin·spiral)을 바꿔도
+ * 층마다 같은 둥근 방이 위에 찍혔다. 링 계단방은 한 층 걸러 쓰고(꼭대기가 링이면 그 아래층은 팔각 홀), 나머지 층은 넓은 팔각·반원 홀에서 북벽 계단으로 오른다.
+ */
+export function towerFloorPlans(floors: number, seed: number, asked: readonly unknown[] = []): TowerFloorPlan[] {
+  const shapes = towerFloorShapes(floors, seed, asked);
+  const start = Math.floor(towerHash(seed, 61) * TOWER_LANDMARKS.length);
+  const ring: boolean[] = new Array(floors).fill(false);
+  ring[floors - 1] = shapes[floors - 1] === "ring";
+  for (let k = floors - 2; k >= 0; k -= 1) ring[k] = !ring[k + 1];
+  // 링 계단방은 바닥 대부분이 링 그림이라 큰 기물(마법진·연금로)이 앉지 못한다 — 링 층은 서고·관측실, 팔각 홀 층은 마법진 방·연금 공방을 번갈아 준다.
+  // 링 여부가 층마다 번갈으므로 이웃 층의 표지는 늘 다르다.
+  const ringPool: TowerLandmark[] = start % 2 ? ["hall", "library"] : ["library", "hall"];
+  const hallPool: TowerLandmark[] = start >= 2 ? ["storage", "shrine"] : ["shrine", "storage"];
+  let nr = 0, nh = 0;
+  return shapes.map((shape, i) => ({ shape, landmark: ring[i] ? ringPool[nr++ % 2]! : hallPool[nh++ % 2]!, ringStair: ring[i]! }));
+}
+function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = "ring", plan?: Pick<TowerFloorPlan, "landmark" | "ringStair">): DungeonRoomInput[] {
   const h = (n: number) => towerHash(seed, n);
   const landW = 9 + (h(k) < 0.5 ? 0 : 2);
   const landing: DungeonRoomInput = k === 1 && !top ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: landW, h: 6, shape: "round" };
@@ -523,7 +547,12 @@ function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = 
     const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: side, shape: "round" }] : [];
     return [landing, { id: "throne", kind: "boss", w: big ? 10 : 8, h: big ? 8 : 6, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
   }
-  const ring = (id: string, parent: string): DungeonRoomInput => ({ id, kind: "hall", w: 10, h: 8, from: parent, dir: "N", shift: 0, len: 4, shape: "ring" });
+  // 계단방: 링(12칸 계단 링 키트) 또는 넓은 팔각·반원 홀(북벽 계단). 쓰임(kind)은 층 표지 — 꾸미기(dressTower)가 서고·마법진·공방·관측실로 다르게 채운다.
+  const landmark: DungeonRoomKind = plan?.landmark ?? "hall";
+  const ringStair = plan?.ringStair ?? true;
+  const ring = (id: string, parent: string): DungeonRoomInput => ringStair
+    ? { id, kind: landmark, w: 10, h: 8, from: parent, dir: "N", shift: 0, len: 4, shape: "ring" }
+    : { id, kind: landmark, w: h(k + 23) < 0.5 ? 13 : 11, h: h(k + 29) < 0.5 ? 7 : 8, from: parent, dir: "N", shift: [0, -3, 3][Math.floor(h(k + 37) * 3)]!, len: 3, shape: h(k + 41) < 0.5 ? "round" : "apse" };
   switch (shape) {
     case "gallery":
       return [landing, { id: "gallery", kind: "hall", w: 14, h: 5, from, dir: "N", shift: 0, len: 3 }, ring("hall", "gallery")];
@@ -656,7 +685,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   delete args.floorRooms;
   if (floorRooms.length && floors < 2) throw new ToolError("floorRooms 는 floors 가 2 이상일 때만 씁니다 — 한 층이면 rooms 를 주세요.", { code: "invalid-args" });
   if (floorRooms.some((r) => r !== undefined && r !== null && (!Array.isArray(r) || r.length === 0))) throw new ToolError("floorRooms 는 층마다 방 목록(배열, 1개 이상)의 배열입니다 — 예: [[{kind:'entrance'},{kind:'hall'}],[{kind:'boss'}]].", { code: "invalid-args" });
-  const shapes = floors > 1 && direction === "up" && !args.rooms && !floorRooms.length ? towerFloorShapes(floors, baseSeed, Array.isArray(args.floorShapes) ? args.floorShapes : []) : [];
+  const towerPlans = floors > 1 && direction === "up" && !args.rooms && !floorRooms.length ? towerFloorPlans(floors, baseSeed, Array.isArray(args.floorShapes) ? args.floorShapes : []) : [];
   delete args.floorShapes;
   const floorGimmicks = Array.isArray(args.floorGimmicks) ? args.floorGimmicks : [];
   delete args.floorGimmicks;
@@ -679,7 +708,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     if (floorDesign && typeof floorDesign === "object") floorArgs.design = floorDesign;
     if (Array.isArray(floorRooms[k - 1])) floorArgs.rooms = floorRooms[k - 1];
     else if (floorArgs.design) { /* 설계한 층: 방은 설계에서 */ }
-    else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
+    else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, towerPlans[k - 1]?.shape, towerPlans[k - 1]); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size && !floorArgs.rooms) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
   }
@@ -720,7 +749,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   // 탑 중간 층 장치(2026-10-24): 층마다 다른 장치를 고를 수 있다 — floorGimmicks[i](아래층부터, "none" = 끔). 안 주면 1층·꼭대기를 뺀 층에 씨앗으로 마법진.
   // 1층은 꼭대기와 잇는 건너 마법진 자리라 기본으로는 비운다. 레버 대체는 하지 않는다(좁은 탑 통로에 쇠창살이 떠 보였다).
   const floorAfter: (() => void)[] = [];
-  if (shapes.length && datas.every((d) => d.adapter === "beodeul")) {
+  if (towerPlans.length && datas.every((d) => d.adapter === "beodeul")) {
     for (let i = 0; i + 1 < datas.length; i += 1) {
       const asked = floorGimmicks[i];
       const want = typeof asked === "string" && (DUNGEON_GIMMICKS as readonly string[]).includes(asked) ? (asked as DungeonGimmick)
