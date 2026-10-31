@@ -1,4 +1,5 @@
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import { forEachProjectScript, scriptHasDynamic, scriptReads, scriptWrites } from "@/project/script/effects";
 import type {
   BattleEventCondition,
   Command,
@@ -37,6 +38,11 @@ export interface StoryFlagUsageIndex {
   readonly switches: Record<string, StoryFlagUsageBucket>;
   readonly variables: Record<string, StoryFlagUsageBucket>;
   readonly sites: StoryFlagUsageSite[];
+  /**
+   * Some `script` command reads/writes a switch or variable through a computed id, so a flag with no
+   * listed reader or writer may still be used. Checks that report "read without write" stay quiet then.
+   */
+  readonly scriptDynamic: Readonly<Record<StoryFlagKind, Readonly<Record<StoryFlagAccess, boolean>>>>;
 }
 
 type UsageOwner = {
@@ -60,6 +66,7 @@ export function buildStoryFlagUsageIndex(project: Project): StoryFlagUsageIndex 
     switches: {} as Record<string, { reads: StoryFlagUsageSite[]; writes: StoryFlagUsageSite[] }>,
     variables: {} as Record<string, { reads: StoryFlagUsageSite[]; writes: StoryFlagUsageSite[] }>,
     sites: [] as StoryFlagUsageSite[],
+    scriptDynamic: { switch: { read: false, write: false }, variable: { read: false, write: false } } as Record<StoryFlagKind, Record<StoryFlagAccess, boolean>>,
   };
 
   const add = (access: StoryFlagAccess, kind: StoryFlagKind, targetId: string | undefined, location: UsageLocation): void => {
@@ -149,6 +156,30 @@ export function buildStoryFlagUsageIndex(project: Project): StoryFlagUsageIndex 
       scanCommands(list.commands, add, { source: "troop-event", troopId: troop.id, pageId: `afterBattle.${list.outcome}` }, `afterBattle.${list.outcome}`);
     }
   }
+
+  // 스크립트(`script` 명령)가 리터럴 id 로 읽고 쓰는 스위치·변수. 경로는 명령 단위가 아니라 「script」로 남는다.
+  forEachProjectScript(project, (command, where) => {
+    const owner: UsageOwner = where.commonEventId
+      ? { source: "common-event", commonEventId: where.commonEventId }
+      : where.troopId
+        ? { source: "troop-event", troopId: where.troopId }
+        : {
+          source: "map-event",
+          mapId: where.mapId,
+          eventId: where.eventId,
+          ...(where.pageIndex !== undefined
+            ? { pageId: project.maps[where.mapId ?? ""]?.events.find((event) => event.id === where.eventId)?.pages?.[where.pageIndex]?.id, pageNumber: where.pageIndex + 1 }
+            : {}),
+        };
+    const label = command.name ? `script ${command.name}` : "script";
+    for (const kind of ["switch", "variable"] as const) {
+      for (const id of scriptWrites(command, kind, project)) add("write", kind, id, { ...owner, commandPath: "script", detail: label });
+      for (const id of scriptReads(command, kind, project)) add("read", kind, id, { ...owner, commandPath: "script", detail: label });
+      for (const access of ["read", "write"] as const) {
+        if (scriptHasDynamic(command, kind, { access, library: project.scriptLibrary })) mutable.scriptDynamic[kind][access] = true;
+      }
+    }
+  });
 
   return mutable;
 }

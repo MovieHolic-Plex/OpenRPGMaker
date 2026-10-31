@@ -1,6 +1,7 @@
 // 진행 검사 — 읽히기만 하고 켜지지 않는 스위치, 엔딩 정의와 엔딩 호출, 동료 합류, 전투 성립.
 
 import { monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
+import { isScriptCommand, projectScriptMentionsCmdKind, projectScriptUsage, scriptWrites, SCRIPT_DYNAMIC_NOTE } from "@/project/script/effects";
 import type { Project } from "@/project/types";
 import { allPages, commandList, conditionLeaves, visitAllCommands, visitPageCommands, type CommandVisit, type PageRef } from "./walk";
 import type { CommandWhere, Finding } from "./types";
@@ -22,6 +23,8 @@ export function collectSwitchWrites(project: Project): SwitchWrite[] {
     const { command, where } = visit;
     if (command.kind === "setSwitch" && typeof command.switchId === "string") writes.push({ switchId: command.switchId, value: command.value, where, visit });
     if (command.kind === "moveEvent") moves(command.route, where);
+    // 스크립트가 game.setSwitch("리터럴", …) 로 쓰는 스위치. 켜는지 끄는지는 정적으로 모르므로 켤 수 있다고 본다.
+    if (isScriptCommand(command)) for (const switchId of scriptWrites(command, "switch", project)) writes.push({ switchId, value: true, where, visit });
   });
   for (const map of Object.values(project.maps)) {
     for (const event of map.events ?? []) {
@@ -79,6 +82,14 @@ export function checkProgression(project: Project): Finding[] {
   const settable = new Set(writes.filter((write) => turnsOn(write.value)).map((write) => write.switchId));
   const reported = new Set<string>();
   const pages = allPages(project);
+  // 스크립트가 계산된 id 로 스위치를 쓰면 「켜는 곳 없음」을 증명할 수 없다 — 막힘 대신 안내(info)로 낮춘다.
+  const scriptUsage = projectScriptUsage(project);
+  const dynamicSwitchWrites = scriptUsage.dynamic("switch", "write");
+  const scriptSelfSwitchHosts = new Set<string>();
+  for (const page of pages) {
+    if (!page.event || !page.map) continue;
+    visitPageCommands(page, ({ command }) => { if (isScriptCommand(command)) scriptSelfSwitchHosts.add(`${page.map!.id}|${page.event!.id}`); });
+  }
 
   // 1) 페이지 조건이 기다리는 스위치 — 켜는 곳이 없으면 그 페이지는 영원히 안 나온다.
   for (const page of pages) {
@@ -91,12 +102,14 @@ export function checkProgression(project: Project): Finding[] {
         if (reported.has(key)) continue;
         reported.add(key);
         findings.push({
-          severity: ending ? "blocker" : "warning", code: ending ? "ending-page-switch-never-set" : "page-switch-never-set",
-          message: `스위치 ${switchName(project, id)} 을 켜는 곳이 없어 이 페이지가 절대 나오지 않습니다${ending ? " — 엔딩이 이 페이지에 있습니다" : ""}.`,
+          severity: dynamicSwitchWrites ? "info" : ending ? "blocker" : "warning", code: ending ? "ending-page-switch-never-set" : "page-switch-never-set",
+          message: `스위치 ${switchName(project, id)} 을 켜는 곳이 없어 이 페이지가 절대 나오지 않습니다${ending ? " — 엔딩이 이 페이지에 있습니다" : ""}${dynamicSwitchWrites ? ` (${SCRIPT_DYNAMIC_NOTE} — 스크립트가 켤 수도 있습니다)` : ""}.`,
           where: { ...(page.map ? { mapId: page.map.id, mapName: page.map.name } : {}), ...(page.event ? { eventId: page.event.id, eventName: page.event.name, x: page.event.x, y: page.event.y } : {}), pageIndex: page.pageIndex },
         });
       }
       if (leaf.kind === "selfSwitch" && leaf.value === true && page.event) {
+        // 스크립트는 game.setSelfSwitch 로 어느 키든 켤 수 있고, 그 키는 effects 에 남지 않는다 — 판정하지 않는다.
+        if (page.map && scriptSelfSwitchHosts.has(`${page.map.id}|${page.event.id}`)) continue;
         const key = String(leaf.key);
         const setsIt = (page.event.pages ?? []).some((other) => {
           let hit = false;
@@ -114,7 +127,10 @@ export function checkProgression(project: Project): Finding[] {
   const endings = project.endings ?? [];
   const triggers: CommandVisit[] = [];
   visitAllCommands(project, (visit) => { if (visit.command.kind === "triggerEnding" || visit.command.kind === "ending") triggers.push(visit); });
-  if (triggers.length === 0) {
+  const scriptEnds = projectScriptMentionsCmdKind(project, "triggerEnding") || projectScriptMentionsCmdKind(project, "ending");
+  if (triggers.length === 0 && scriptEnds) {
+    findings.push({ severity: "info", code: "no-ending-trigger", message: "이벤트 명령으로 부르는 엔딩은 없고, 스크립트가 game.cmd 로 엔딩을 부르는 것으로 보입니다 — 검사기는 그 경로를 따라가지 못합니다." });
+  } else if (triggers.length === 0) {
     findings.push({
       severity: "blocker", code: "no-ending-trigger",
       message: endings.length > 0
@@ -141,7 +157,7 @@ export function checkProgression(project: Project): Finding[] {
     if (endingId) namedCalls.add(endingId);
     else autoSelects = true;
   }
-  if (triggers.length > 0 && !autoSelects) {
+  if (triggers.length > 0 && !autoSelects && !scriptEnds) {
     for (const ending of endings) {
       if (namedCalls.has(ending.id)) continue;
       findings.push({
@@ -156,8 +172,8 @@ export function checkProgression(project: Project): Finding[] {
         // 조건 없이 자동 선택되는 호출(endingId 없음)이 있으면 이 조건 스위치가 곧 도달 조건이라 막힌다.
         const autoSelected = triggers.some((t) => t.command.kind === "triggerEnding" && !t.command.endingId);
         findings.push({
-          severity: autoSelected ? "blocker" : "warning", code: "ending-switch-never-set",
-          message: `엔딩 「${ending.name || ending.id}」 의 조건 스위치 ${switchName(project, condition.switchId)} 을 켜는 곳이 없습니다.`,
+          severity: dynamicSwitchWrites ? "info" : autoSelected ? "blocker" : "warning", code: "ending-switch-never-set",
+          message: `엔딩 「${ending.name || ending.id}」 의 조건 스위치 ${switchName(project, condition.switchId)} 을 켜는 곳이 없습니다${dynamicSwitchWrites ? ` (${SCRIPT_DYNAMIC_NOTE})` : ""}.`,
         });
       }
     }

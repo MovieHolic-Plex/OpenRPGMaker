@@ -3,6 +3,8 @@ import { commandsReferenceLocations, switchVariableReferencedInProject, type Dat
 import type { DatabaseCollection } from "./databaseActions";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
 import type { Project } from "@/project/types";
+import { scriptRefersTo } from "@/project/script/effects";
+import type { ScriptRefKind } from "@/project/script/types";
 
 // Pure reference checks: editor wrappers supply the store; tools supply their draft.
 // 참조 거부 메시지는 "무엇이" 뿐 아니라 "어디서" 참조하는지도 밝힌다 — 그래야 사용자가
@@ -47,6 +49,14 @@ function withObjectParticle(word: string): string {
   return hasBatchim ? `${word}을` : `${word}를`;
 }
 
+const SCRIPT_REF_KIND_BY_COLLECTION: Partial<Record<DatabaseCollection, ScriptRefKind>> = {
+  actors: "actor",
+  skills: "skill",
+  items: "item",
+  troops: "troop",
+  battleAnimations: "animation",
+};
+
 export function projectDatabaseReferenceMessage(project: Project, collection: DatabaseCollection, id: string): string | null {
   // 삭제 차단 UX 계층 — orphan-FK '검출' 권위자는 src/project/io/references.ts 의 collectProjectReferenceIssues(validate*Records) 이고,
   // 이 함수는 삭제 시점에 사용자에게 보여 줄 차단 메시지를 만드는 보조 계층이다. 두 시스템을 중복 검출기로 분리하지 말 것.
@@ -56,6 +66,9 @@ export function projectDatabaseReferenceMessage(project: Project, collection: Da
     const owner = project.database.classes.find(c => c.promotions?.some(p => p.requires.requiredSkillIds?.includes(id)));
     if (owner) return `직업 '${owner.name}'의 승급 조건에서 사용 중입니다. 먼저 연결을 해제하세요.`;
   }
+  // 스크립트(이벤트 스크립트·공용 라이브러리)가 리터럴 id 로 이 레코드를 부르면 지우지 않는다 — 스크립트는 자동으로 고칠 수 없다.
+  const scriptKind = SCRIPT_REF_KIND_BY_COLLECTION[collection];
+  if (scriptKind && scriptRefersTo(project, scriptKind, id)) return "스크립트가 이 레코드를 사용 중입니다. 스크립트에서 먼저 지우세요.";
   switch (collection) {
     case "skills": {
       const species = (project.database.monsterSpecies ?? []).filter((record) => record.skillsByLevel?.some((skill) => skill.skillId === id));
@@ -234,6 +247,7 @@ export function projectSwitchVariableReferenceMessage(project: Project, kind: "s
   if (kind === "switch" && project.database.skills.some((skill) => skill.effect.kind === "switch" && skill.effect.switchId === id)) {
     return "스킬 효과가 이 스위치를 사용 중입니다.";
   }
+  if (scriptRefersTo(project, kind, id)) return kind === "switch" ? "스크립트가 이 스위치를 사용 중입니다." : "스크립트가 이 변수를 사용 중입니다.";
   if (!switchVariableReferencedInProject(project, kind, id)) return null;
   return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
 }
