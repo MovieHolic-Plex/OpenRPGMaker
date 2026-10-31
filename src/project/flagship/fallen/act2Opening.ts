@@ -1475,7 +1475,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
       say(ELENA, "뛰어!"),
       setSw(SW_B4_SPOTTED),
       setSw(SW_B4_RUN),
-    ], { priority: "below", trigger: { kind: "autorun" } }),
+    ], { priority: "below", trigger: { kind: "auto" } }),
     page("ev_fs2_edge_spotted_done", "끝", [sw(SW_B4_SPOTTED)], [], { priority: "below" }),
   ]);
   const confess: Command[] = [
