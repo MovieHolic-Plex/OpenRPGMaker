@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.379.0 — 2026-10-31
+
+### 기능
+
+- **character** — 조수가 새 인물의 걷기 칩을 만들고, 캐릭터 외형 DB 에서 사진·설명으로 걷기 칩 만들기 (#4105) (`10a00b2`)
+- **assistant** — interior layout room checks ported from the bbox experiments (`8317f06`)
+
+### 수정
+
+- **assistant** — store_search finds multi-word queries like 무기 아이콘 (#4107) (`cdb8219`)
+- **harness** — side model calls no longer count as the assistant's final reply (`976de58`)
+- **runtime** — pixel ESC party rows keep HP/MP/EX on one line (`23c2770`)
+- **assistant-v2** — a battle step that already fights is not wrapped in a second battle; progress moves into its victory branch (`9ef928f`)
+- **assistant** — room graph and landmark walks pass through layout door leaves (iron gates, locked doors) (`90f7e6a`)
+- **runtime** — the action button opens a touch foe or boss from any cell touching its body (`6393779`)
+
+### 잡무
+
+- keep openwiki as on main (the assistant-v2 wiki note stays in 8317f06e95; re-add after merge to avoid the INDEX race) (`c76c6d7`)
+
 ## 0.378.0 — 2026-10-31
 
 ### 기능
