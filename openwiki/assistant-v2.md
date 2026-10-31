@@ -175,6 +175,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 ## 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
 
 - **단서 번호 = 정답**(`blueprintPath.modelCode`, `codeClues.alignCodeClues`): 모델이 code 를 안 줘도 앞 단계·이 단계 대사(또는 그대로 둔 앞 이벤트)에 `alignCodeClues` 는 끝맺음(code-clues 단계, 한 번) 뒤에도 **모델이 멈출 때마다**(`assistantV2Runtime` afterMain 첫머리) 다시 돈다 — 그 뒤 모델이 대사·자물쇠를 고치면 어긋난 채 출하됐다(2026-10-31 meb1 terra 방탈출: 서랍 «긁힌 숫자 4816» · 탈출문 정답 5937 → 엔딩 불가). 자물쇠를 풀면 나오는 번호(그 자물쇠 정답 분기 글의 번호)는 그 자물쇠의 경쟁 번호로 세지 않는다 — 다음 자물쇠의 답이다.
+- **증거 자리 말 = 지금 칸**(`mysteryCase.realignEvidencePlaces`): 바닥 증거 칸 `<사람 id>_evidence` 의 자리 말(「가운데 카운터 옆」)은 사람 귀띔·칸 대사·범인 진술·지목 증명·증거 설명에 같은 글로 들어간다. 모델이 칸을 옮기면 `alignCodeClues` 와 같이 **모델이 멈출 때마다** 칸 대사의 옛 말을 찾아 지금 칸의 말(`floorPhrase` — 곁 가구가 있으면 「방위 가구 옆」, 없으면 방위)로 그 틀(「… 바닥」「…엔 」「…에서 」「…에 떨어져」「… 근처」) 안에서만 바꾼다. 2026-10-31 mef3 terra 추리(32.3점, 엔딩 못 봄): 「게임 검사 보임」에 쫓겨 모델이 칸을 일곱 번 옮겼는데 대사는 처음 자리를 말했다. 같은 판 뒤로 `gameChecks` 의 「게임 검사 보임」(그림·물건 타일 없는 조사 칸)은 조사 페이지가 모두 `nearSparkle`(가까이 오면 반짝임)인 칸에는 내지 않는다.
   번호가 하나 적혀 있으면 그것을 정답으로 쓴다(함수가 새 번호·쪽지를 만들지 않는다). 끝맺음과 경로 짓기 끝에서 이미 지은 자물쇠도 맞춘다 —
   정답이 모델 대사에 없고 모델 «번호» 대사의 같은 자릿수 번호가 하나면 그 번호로 정답·함수 쪽지를 바꾸고, 정답이 있으면 다른 번호를 정답으로 고쳐 쓴다
   (다른 자물쇠의 정답은 건드리지 않는다). 입력창 앞의 «입력하자 열렸다» 같은 결과 대사는 정답 분기 맨 앞으로 옮긴다.
@@ -316,7 +317,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 ## 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
 
-실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. `OPRN_V2_BBOX_PLACES=0` 이면 꺼지고 옛 경로만 탄다(측정 대조군).
+실험(브랜치 agent/bbox-dungeon·agent/bbox-village·agent/bbox-better)에서 모델이 칸 단위 배치 JSON 을 쓰고 함수가 검사·실행만 한 판이 Opus 판정에서 v2 빌더를 이겼다(던전 10승 2무 0패, 마을 8승 6무 2패, 실내 자기 비평 2바퀴 0.61→0.71). 그것을 v2 경로로 옮겼다. **기본은 꺼짐 — `OPRN_V2_BBOX_PLACES=1` 일 때만 탄다.** 실제 v2 경로 측정(2026-10-31, terra-high·sol-high, Opus 판정)에서는 실험과 달리 칸 배치 던전이 지금 빌더에 직접 비교 0승 4패, 기준 그림 대비 8%(지금 빌더 59%)였다 — 판정자는 「빈 회색 상자 방의 나열」로 읽었다. 그래서 방마다 채움(걷는 칸 24마다 조각 하나)·한 줄 그래프 거절 검사를 더했고, 이기는 측정이 나오기 전에는 옵트인이다. 결과 쪽: http://mdc-server:18301/v2-bbox-places.html
 
 - **던전(type dungeon)**: 설계·배치 없이 온 `make_place` 는 장소마다 한 번 영어 카드로 되돌린다(`placeLayout.dungeonLayoutCard`) — 칩셋 메타에서 뽑은 조각 목록(`bboxFloor.bboxDungeonCatalog`: 던전 테마 role prop·벽걸이/바닥/무늬, 이름 = 키트 id 의 낱말)·견본 그림(사본 맵에 조각을 실제 벽·바닥 위에 찍어 1배 렌더, 목록에 sheet 좌표)·격자 규칙·형식. 모델이 `spec.dungeonLayout` 을 주면 `BBOX_DUNGEON_BUILDER`(id dungeon, 빌더 목록 맨 앞)가 받는다. 동굴(type cave)은 옛 경로.
   - 깔기: 쓰기 도구 `lay_dungeon_layout`(`editor/tools/bboxPlaceTools.ts`) → `layBboxDungeon`(검사) → `composeExactFloor`(compose.ts `spec.exact` — 배치·자리·장식 단계를 건너뛰고 칸 그대로 바닥·벽·물/용암/구덩이). 방 이름표(dungeon-room·bbox-room)·입구(gate:/land: 태그)·잠긴 문(쇠창살 이벤트)·배치 선언(이름표 태그 `bbox-layout`, note 에 조각·보스·적·상자 JSON).
@@ -407,6 +408,13 @@ Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_
 - **일본 실내에서 `move_object` 가 「위층·딸린 맵」으로 거절했다**(`verbs.moveObject`): jp-city 빌더의 기록 인자는 예제 구성(program)이라 가구 목록이 없고 mapId 도 없어 엉뚱한 거절 글로 빠졌다. jp-city 기록은 인자로 다시 짓지 않고 그림 칸 그대로 옮기기·빼기(`tileMoveObjects`)로 간다. 마왕 편의점 Opus 판에서 dress_room 이 더 놓은 계산대 둘을 빼려다 막혔다.
 - **`set_start_position` 이 막힌 칸만 알렸다**(`mapTools`): 4칸 안의 가장 가까운 걸을 수 있는 칸을 같이 알려 준다(모델이 칸을 짐작해 다시 부르던 왕복).
 
+## 조수 대조 5회차 — 칩 관문 읽기와 장르 기본값 부작용 (2026-10-31 asst-parity p1d-maou-terra)
+
+terra 마왕 편의점 다시 재기: 4 → 7점, 호출 46 → 43, 실패 3 → 1. 남은 실패 하나와 두 모델 공통의 거짓 「남은 문제」를 고쳤다.
+
+- **방금 본 칩을 칩 관문이 「안 봤다」고 되돌렸다**(`piAgent/charsetSelectionGate.payload`): openai-completions 는 도구 결과의 글 조각을 줄바꿈으로 이어 한 tool 메시지로 보내고, v2 문맥 정리는 마지막 도구 결과 끝에 상태 카드를 붙인다. 관문은 tool 메시지 전체를 JSON 하나로 읽으려다 실패해 그 검색 결과와 칩 그림이 모델에 갔다는 것을 세지 못했다(list_npc_graphics 「회사원」 → add_street_walkers 가 그 칩으로 거절). `JSON.stringify` 결과에는 줄바꿈이 없으므로 `{` 로 시작하는 줄을 따로 읽는다. 옛 코드는 같은 시험 입력에서 받은 칩 0개, 새 코드는 1개.
+- **장르 기본값을 「요청 없는 주인공 변경」으로 경고했다**(`gameChecks.unaskedChanges`): 현대 장소를 처음 지을 때 `genreDefaults` 가 주인공을 현대 칩·짝 얼굴로 갈아입히고, 전투 없는 게임이면 공장 기본 장비를 뺀다. 이 경고 줄의 면제가 `initialEquipment`·`battleCharacterResourceId` 를 몰라 「되돌려라」가 떴고, Opus·terra 둘 다 그 할 일을 「원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다. 공장 기본 장비만 뺀 것(`onlyFactoryGearRemoved`, 전투 없음)과 배틀러 칩도 면제한다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
@@ -416,6 +424,7 @@ Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_
 - **더하는 법**: (1) 새 파일 `stages/<id>.ts` — 단계 하나, 실패가 끝맺음을 깨면 안 되면 그 안에서 `try/catch`; 기록 키가 필요하면 `env.emit({ type:"execution_status", name:"v2.…" })`. (2) `stages/index.ts` 에 한 줄. (3) `order` 는 앞뒤 단계 사이 빈 번호(10 간격, 꽉 차면 소수 `135` 도 된다). 같은 묶음 안 `order`·`id` 가 겹치면 모듈을 읽을 때 던진다 — 순서가 import 줄 순서에 기대지 않는다. 다른 단계 파일·실행기는 고치지 않는다.
 - **제자리 수정과 체크포인트(2026-10-31 J107)**: 끝맺음 단계·청사진 경로·전투 맞춤은 도구 draft 없이 `env.ctx.project` 를 제자리에서 고친다(`database.troops.push` 등). 실행기 `scripts/lib/piAgentRuntime.ts` 는 v2 실행에서 수용·되돌림 때마다 `ctx.project` 에 자기 `database`·`assets` 사본을 준다(`ownHeavyForInPlaceEdits`). 그전에는 수용 스냅숏과 같은 객체라 바뀌어도 «그대로»로 보여 줄에서 빠졌고, 편집기가 옛 DB 를 다시 붙여 「troopId 없음」 직렬화 왕복 실패로 조립 체크포인트가 매 차례 통째 거부됐다(JRPG 출하 게임에 목표 이어 걸기·전투 맞춤·타이틀이 하나도 안 들어갔다). 새 단계도 DB 를 제자리에서 고쳐도 된다. `tilesets` 는 이 보호 밖이니 타일셋은 도구(`run.call`)로 바꾼다.
 - **보스를 이기면 단계가 이어진다(`boss-win-finishes-step`, assembly 195, J108)**: 청사진 단계 이벤트의 넘어가는 페이지가 같은 맵 보스의 승리 스위치를 조건으로 걸면, 그 보스 승리 갈래 끝에 `callMapEvent(<단계 이벤트>)` 를 단다. 이기자마자 다음 목표·엔딩이 이어지고, 앞 단계가 안 됐으면 그 이벤트의 잠김 대사가 뜬다. 승리 뒤 보스 옆 칸을 다시 찾아 눌러야 엔딩이 나던 판(sl2 opus jrpg)을 막는다.
+- **지붕 밑에서 꺼내기(`out-from-under-roofs`, assembly 245, src/ai/v2/underRoof.ts)**: 윗층 그림의 타일셋 우선순위가 upper(주인공 위로 그려짐)인 걸을 수 있는 칸을 «덮인 칸»으로 본다. 시작 자리가 덮인 칸이면 걸어 닿는 트인 칸(openStartCell)으로, 그림·반짝임이 있는 1×1 말 걸기·조사 이벤트가 덮인 칸이면 6칸 안 트인 칸으로 옮긴다(닿는 칸이 줄거나 못 닿는 이벤트가 늘거나 길이 끊기면 그 자리는 안 씀). 버들항 집 킷은 지붕 줄을 «뒤로 지나는» 칸으로 그려서, jb2a terra jrpg 는 시작 칸이 지붕 한가운데라 주인공이 가려진 채 시작했다.
 - **동작이 같은지 보기**: `bun scripts/qa/assistant-v2/finishReplay.mts <판> --trace --followup "<후속>" [--snapshot <json>]` — `--trace` 는 `Math.random`·`Date.now` 를 고정하고 `rec.trace`(emit 이름·ok·요약, 체크포인트 이름)·`rec.projectHash` 를 남긴다. 구조만 바꾸는 변경은 두 커밋의 출력(`after`·`trace`·`notes`·`reload`·프로젝트 해시)이 같아야 한다.
 
 ## 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
@@ -582,6 +591,9 @@ Opus 다시 재기: 호출 68 → 31, 실패 11 → 4, 14분 → 6분. `link_jp_
     상위 동사가 없는 종류는 돌려보내지 않고 기록만 한다(`scope` data.missingHighVerb): **전투**(말 걸기 → 보스전을 한 번에 짓는 동사 없음 — upsert_enemy·upsert_troop·patch_event_page 조립), **엔딩**(축하 대사 → 엔딩 호출 — add_event + define_ending·patch_event_page 조립).
   - 상위 동사 둘(`sceneVerbs.ts`, 요청에 보스·싸우·마왕 / 엔딩·결말 낱말이 있을 때만 싣는다): `add_boss_encounter{mapId, boss{name, where, at, looks, enemy, troopId}, lines, afterWin, laterTalk}` — buildPeople 로 보스를 세우고(있으면 대사만), 적 그룹은 troopId → 이름이 맞는 DB 적 → 이름·외형 낱말 그림(`dungeon.ts enemyArtFor`, 해골 기사→enemy_skeleton_knight)으로 `ensureFoeTroop` 보스 그룹(시작 파티에 맞춤), 말 거는 페이지 끝에 보스전(도망·패배 불가, branchOnResult, 이기면 `sw_<이벤트>_beaten`)+격파 뒤 페이지(사라짐 또는 laterTalk). 지면 끝맺음 bossDefeatReturns.
     `add_ending_scene{mapId, title, lines(「이름: 대사」), epilogue, talkTo, afterSwitchId, after}` — define_ending(조건 없음, 에필로그·finalTitle) + 대사 줄 뒤 triggerEnding 이벤트: talkTo 면 그 인물 새 맨 끝 페이지, 아니면 스위치 조건 자동 실행(투명). 스위치는 afterSwitchId → after 낱말이 맞는 격파 스위치(스위치가 가리키는 이벤트·맵 이름, 보스 우선) → 격파 스위치가 하나뿐이면 그것. 언제가 없으면 거절한다(시작하자마자 끝나는 엔딩 방지).
+    **beats**(2026-10-31): add_ending_scene 에 add_event 비트(appear·walk·emote·music·say)를 주면 `buildEvent(when:'enter', hostId:ev_ending_<slug>)` 로 무대 장면을 짓고 그 컷신 페이지에 격파 스위치 조건과 triggerEnding 을 붙인다(talkTo 없을 때). lines 중 비트에 이미 쓴 대사는 빼고 뒤에 붙인다. 씬 벤치 terra 엔딩 판정 「마을 사람들이 모여 축하하는 모습이 화면에 없다 — 대사창만 나열」 대응.
+  - **장면 손질 검사**(`sceneCraft.ts sceneCraftProblems`, gameProblemTexts 에서 관문 항목으로): 이번 실행이 바꾼 페이지의 대사·연출을 영어 글과 Fix 호출로 짚는다 — `[scene repeat]` 같은 대사 두 번, `[scene name]` 본문 머리 「이름:」, `[scene thin]` 장면 요청인데 컷신 대사 <3, `[scene static]` 대사 ≥3 인데 걷기·돌기·감정·소리·효과 0, `[scene one-voice]` 대화 요청인데 한 사람만, `[scene off-post]` 원래 서 있던 말 거는 사람을 걸려 놓고 안 돌려놓음. 함수는 대사를 대신 쓰지 않는다.
+  - **add_event 다시 쓰기·들어오면**: `redo:<장면 이벤트 id>` 는 그 자리·그 트리거로 장면을 다시 쓴다(새 이벤트를 만들지 않음). redo·after 없이 같은 맵·같은 when(touch·talk)·3칸 안(또는 같은 where)으로 다시 부르면 실행기가 앞 장면을 자동 redo 한다 — 고치려고 다시 부를 때마다 장면이 겹쳐 같은 대사가 두 번 돌았다(씬 벤치 terra 배신·회상·마왕 등장). `when:'enter'` 는 그 맵에 들어오면 한 번(주인공은 도착 칸 = 가장 흔한 이동 도착 칸, 시작 맵은 시작 위치). 밟기 장면의 무대 모의는 그 장면 칸에서 시작하고(전에는 맵 왼쪽 위에서 모의해 거짓 「주인공과 N칸(안 보임)」 무대 문제 → 모델이 장면을 지웠다), 대사 거리 검사는 그 대사 순간의 자리로 잰다. after 장면을 다시 붙이면 앞에 붙인 장면(`v2-after-scene` 표지 뒤)과 「(장면 뒤)」 페이지를 바꿔 쓴다. 「주인공 옆/앞」 자리 낱말, 마왕·유령류 등장은 연기 입자 뒤에 나타난다. **choose 비트**: `{do:'choose', who, text?, options:[{label, lines, gold?, item?, count?}]}` — script_cutscene 에 선택 비트가 없어 자리 표지(label `v2-choose-N`)로 짓고 컷신 뒤 그 자리를 choices 명령으로 바꾼다(취소 막음). gold 음수는 `fork gold>=` 로 감싸 모자라면 거절 대사, item 은 DB 이름으로 changeItem. after:'<NPC>' 와 쓰면 한 번만이라 되풀이 이득이 없다(씬 벤치 terra 흥정 — 손으로 쓴 중첩 선택지가 changeGold 형식으로 거절돼 막힘).
     H5 는 보스 전투(check.boss)·엔딩 항목의 하위 도구를 이 둘로 돌려보내고, 동사가 실리지 않은 실행에서만 «상위 동사 없음»을 기록한다. fantasy 바탕 저장본 확인: 보스 인물·대사·보스전 ✓, 엔딩 ✓(after:「마왕」 → 마왕의 동굴 보스 처치 스위치).
   - H6 문맥 정리(`loop/contextTrim.ts trimContext`, 실행기 transformContext 에서 `options.v2.stateCard` 가 있을 때만): 마지막 도구 결과 10개는 그대로, 그보다 앞은 글 700자만 남기고 그림은 뺀다 — 줄이는 경계는 8개 단위로만 옮겨 프롬프트 캐시 접두부를 지킨다.
     그리고 그 호출의 마지막 메시지 끝에만 상태 카드(진척 줄·지금 할 것+다음 호출·그 항목 마지막 ✗·남은 항목 6개)를 붙인다. 사본만 바꾸고 기록에는 남지 않는다. 줄인 수가 늘 때 `v2.hook.context`.

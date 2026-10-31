@@ -487,6 +487,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const at = (layer: unknown) => Array.isArray(layer) ? Number(layer[i]) : -1;
       // 도구가 만든 장면 받침(ev_cutscene_*·호위 목적지)은 빼고, 그 칸이나 바로 위(북쪽) 칸에 물건 타일·건물 도장이 있으면 «그 물건 앞»이라 본다.
       if (/^ev_(cutscene|escort)_/u.test(ev.id)) continue;
+      // 바닥에 떨어진 증거(evidenceOnThing `<사람 id>_evidence`)는 그림 대신 가까이 오면 반짝인다(nearSparkle) — 맨땅이 아니다.
+      // 이 칸에 「물건을 찍거나 옮겨라」를 내면 모델이 칸을 일곱 번 옮기고 대사의 자리 말과 어긋났다(2026-10-31 mef3 terra 추리).
+      if (pages.filter((pg) => obj(pg.trigger)?.kind === "action").every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
       const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
       let near = false;
       for (const [dx, dy] of [[0, 0], [0, -1]] as const) {
@@ -1018,7 +1021,11 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if ((section === "items" || section === "weapons" || section === "armors") && /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu.test(task)) continue;
       const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
       // 장르 기본값(genreDefaults.ts): 판타지 기본 주인공 칩을 현대 칩으로 바꾼 것은 요청한 무대에 맞춘 것이다.
-      if (section === "actors" && keys.every((k) => ["characterResourceId", "characterIndex", "faceResourceId", "name", "nickname"].includes(k))
+      // 전투 없는 게임에서 공장 기본 장비만 뺀 것(stripFactoryHeroGear)도 같은 장르 기본값이다 — 이 줄이 initialEquipment 를 몰라 「되돌려라」가 떠서
+      // 두 모델 모두 할 일을 「주인공이 바뀌었는데 원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다(2026-10-31 asst-parity 마왕 편의점 opus·terra).
+      const genreDefaultKey = (k: string) => ["characterResourceId", "characterIndex", "faceResourceId", "battleCharacterResourceId", "name", "nickname"].includes(k)
+        || (k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k]));
+      if (section === "actors" && keys.every(genreDefaultKey)
         && (prev.characterResourceId === undefined || prev.characterResourceId === "easyrpg-charset-actor1") && /^oprn-charset-modern/u.test(String(r.characterResourceId ?? ""))) continue;
       out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
     }

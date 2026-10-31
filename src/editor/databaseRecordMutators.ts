@@ -44,6 +44,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("scope" in patch && isSkillScope(patch.scope)) record.scope = patch.scope;
   if ("power" in patch && patch.power !== undefined) record.power = patch.power;
   if ("animationId" in patch) record.animationId = patch.animationId;
+  if ("iconResourceId" in patch) record.iconResourceId = patch.iconResourceId;
   if ("description" in patch && patch.description !== undefined) record.description = patch.description;
   if ("type" in patch && isSkillType(patch.type)) record.type = patch.type;
   if ("mpCost" in patch && patch.mpCost !== undefined) record.mpCost = patch.mpCost;

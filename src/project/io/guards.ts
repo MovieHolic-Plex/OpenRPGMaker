@@ -14,6 +14,7 @@ export const resourceKinds = new Set([
   "monster",
   "faceset",
   "picture",
+  "icon",
   "movie",
   "system",
   "system2",
