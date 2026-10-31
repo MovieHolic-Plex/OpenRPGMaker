@@ -17,6 +17,7 @@ import type { BattleAnimationRecord, CharacterFootprint, ShowAnimationTarget } f
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { parseFieldFxId } from "@/project/containerFx";
 import { playFieldFx } from "@/player/playSceneFieldFx";
+import { playFieldPixelFx } from "@/player/playScenePixelFx";
 
 const MAP_ANIMATION_DEPTH = 800_000;
 const RAW_TEXTURE_PREFIX = "__oprn_battle_animation_raw_";
@@ -58,6 +59,8 @@ export function playMapAnimation(
   }
   const project = store.getCurrent();
   const record = project.database.battleAnimations.find((entry) => entry.id === step.animationId);
+  // 코드 픽셀 효과(pixelfx) 레코드 — 대상 발밑에서 캐릭터와 y 정렬해 튼다(대상을 따라간다). playScenePixelFx.
+  if (record?.pixelFx) return playFieldPixelFx(scene, record.pixelFx, step.target, currentEventId);
   const durationMs = battleAnimationDurationMs(record);
   const layer = ensureMapAnimationLayer(scene);
   const target = resolveAnimationTargetPixel(scene, step.target, currentEventId);

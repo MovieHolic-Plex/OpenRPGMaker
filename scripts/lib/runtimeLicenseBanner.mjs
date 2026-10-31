@@ -24,10 +24,14 @@ export function readRuntimeLicenseNotice(licensePath) {
 
 const PHASER_MODULE = /[\\/]node_modules[\\/]phaser[\\/]/;
 const PHASER_ASSET = /(^|\/)phaser(\.min)?-[^/]*\.js$/;
+// pixelfx(MIT, patch-gg/pixelfx): src/vendor/pixelfx 의 효과 모듈은 효과마다 따로 청크로 나간다 — 그 청크마다 고지를 붙인다.
+const PIXELFX_MODULE = /[\\/]src[\\/]vendor[\\/]pixelfx[\\/]/;
+const PIXELFX_LICENSE = join(dirname(new URL(import.meta.url).pathname), "..", "..", "src", "vendor", "pixelfx", "LICENSE");
 
 export function runtimeLicenseBannerPlugin(licensePath) {
   const oprn = asComment("OPRN runtime — LICENSE-RUNTIME.md", readRuntimeLicenseNotice(licensePath));
   const phaser = asComment("Phaser — https://phaser.io", readFileSync(join(dirname(require.resolve("phaser/package.json")), "LICENSE.md"), "utf8"));
+  const pixelfx = asComment("pixelfx — https://github.com/patch-gg/pixelfx", readFileSync(PIXELFX_LICENSE, "utf8"));
   return {
     name: "oprn-runtime-license-banner",
     apply: "build",
@@ -35,7 +39,8 @@ export function runtimeLicenseBannerPlugin(licensePath) {
       for (const file of Object.values(bundle)) {
         if (file.type === "chunk") {
           const bundlesPhaser = file.moduleIds.some((id) => PHASER_MODULE.test(id));
-          file.code = oprn + (bundlesPhaser ? phaser : "") + file.code;
+          const bundlesPixelFx = file.moduleIds.some((id) => PIXELFX_MODULE.test(id));
+          file.code = oprn + (bundlesPhaser ? phaser : "") + (bundlesPixelFx ? pixelfx : "") + file.code;
         } else if (PHASER_ASSET.test(file.fileName) && typeof file.source === "string") {
           file.source = phaser + file.source;
         } else if (PHASER_ASSET.test(file.fileName)) {

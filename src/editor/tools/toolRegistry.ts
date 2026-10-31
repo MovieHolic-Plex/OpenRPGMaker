@@ -138,6 +138,7 @@ import { TRANSIT_TOOLS } from "./transitTools";
 import { ADD_STREET_WALKERS_TOOL } from "./streetWalkersTool";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
+import { PIXEL_FX_TOOLS } from "./pixelFxTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
@@ -409,6 +410,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 새 9칸 시트 생성(author_enemy_pixel_sheet), 제자리 수정·셀 패치(edit_enemy_pixel_sheet), 전용 스킬 안무 배선(set_enemy_skill_choreography).
   ...withDomain(ENEMY_PIXEL_SHEET_TOOLS, "database"),
   ...withDomain(RETRO_CHOREOGRAPHY_TOOLS, "database"),
+  ...withDomain(PIXEL_FX_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
   ...withDomain(LIFE_ECONOMY_TOOLS, "database"),
   ...withDomain(LIFE_COLLECTION_TOOLS, "database"),
