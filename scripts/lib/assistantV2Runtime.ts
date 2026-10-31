@@ -27,6 +27,7 @@ import { syncRoomZoneItems } from "../../src/ai/v2/loop/roomZones.ts";
 import { TODO_MAX_ATTEMPTS, checkLabel, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
 import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
+import { leadFixNote, leadPlanMessages, leadReviewMessages, parseLeadReview, planForWorker, projectDigest, toolCatalog, SPLIT_LIMITS } from "../../src/ai/v2/split.ts";
 
 /** 독립 검토자(src/ai/v2/advisor.ts). 끄려면 OPRN_V2_ADVISOR=0 — 비교 실행·장애 때만 쓴다. 읽기 전용 실행에는 돌지 않는다. */
 // 설정에서 검토자를 끈 경우(assistantRoles.advisor = "off")도 돌지 않는다. 검토자 모델은 env.advisorChat(따로 고른 칸) → 없으면 주 모델(sideChat).
@@ -312,6 +313,10 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   };
   const lateBuildPending = (env: PiAssistantV2Env) => finishBuildPending(env, session);
   let exposure: V2ToolExposure | undefined;
+  // 리드·워커 나누기(OPRN_V2_SPLIT, src/ai/v2/split.ts) — 리드 계획 글과 검토 상태.
+  let leadPlan: string | undefined;
+  let leadReviews = 0;
+  const leadItems = new Set<string>();
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store),
@@ -355,6 +360,24 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${i.content.slice(0, 50)}»`);
         if (rest.length) lines.push(`Still open: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
         return lines.join("\n");
+      },
+      // 리드 계획 — 리드는 요청·요청 뼈대·프로젝트 요약·워커 도구 목록만 보고 할 일+사양을 쓴다. 그 글이 워커 첫 지시 뒤에 붙는다.
+      firstPromptSuffix: async (env) => {
+        if (!env.leadChat || !writeRequest) return undefined;
+        const t0 = Date.now();
+        try {
+          const skeleton = skeletonCard(requestSkeleton(env.request.task));
+          const messages = leadPlanMessages({ task: env.request.task, ...(skeleton ? { skeleton } : {}), digest: projectDigest(env.ctx.project), tools: toolCatalog(exposure?.tools ?? [], [...(exposure?.lazy.keys() ?? [])]) });
+          const plan = (await env.leadChat(messages, env.signal)).trim();
+          if (!plan) { env.emit({ type: "execution_status", name: "v2.split.plan", ok: false, summary: `리드 계획이 비어 옴 — 워커 혼자 한다 · ${env.leadModel}` }); return undefined; }
+          leadPlan = plan;
+          env.emit({ type: "execution_status", name: "v2.split.plan", ok: true, summary: `리드 계획 ${plan.length}자 · ${env.leadModel} · ${Math.round((Date.now() - t0) / 1000)}초`, data: { plan, model: env.leadModel, ms: Date.now() - t0 } });
+          return planForWorker(plan);
+        } catch (error) {
+          if (env.signal?.aborted) throw error;
+          env.emit({ type: "execution_status", name: "v2.split.plan", ok: false, summary: `리드 계획 실패 — 워커 혼자 한다: ${error instanceof Error ? error.message : String(error)}`.slice(0, 300) });
+          return undefined;
+        }
       },
       // 첫 호출 todo 강제(omo first-turn) — 쓰기 요청이고 이어 받은 목록이 없을 때. 로컬 CLI 는 감싸개가 첫 쓰기를 되돌린다.
       beforeFirstPrompt: (env) => { if (writeRequest && !store.initialized) env.requireToolNextTurn?.("todo"); },
@@ -452,9 +475,33 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             if (prompt) return prompt;
             return undefined;
           }
+          // ⑤a 리드 검토(나누기 켜짐) — 열린 항목이 없을 때 리드가 계획·할 일 표·변경 요약·보고를 보고 승인하거나 영어 고칠 것을 준다.
+          // 고칠 것은 critic 항목(기계 확인·완료 관문 그대로). 처음 한 번 + 그 항목을 닫은 뒤 한 번. 나누기에서는 독립 검토자 대신이다.
+          if (env.leadChat && leadPlan) {
+            const leadOpen = [...leadItems].some((id) => { const i = store.get(id); return i && isOpen(i.status); });
+            if (leadReviews < SPLIT_LIMITS.reviews && !leadOpen && (leadReviews === 0 || leadItems.size > 0)) {
+              leadReviews += 1;
+              const t0 = Date.now();
+              let review;
+              try {
+                review = parseLeadReview(await env.leadChat(leadReviewMessages({ task: env.request.task, plan: leadPlan, todo: store.view(40, true), diff: safeDiff(env), toolLog: compactToolLog(calls, SPLIT_LIMITS.toolLog), report: draft, round: leadReviews }), env.signal));
+              } catch (error) {
+                if (env.signal?.aborted) throw error;
+                review = { approve: true, fixes: [], problem: error instanceof Error ? error.message : String(error) };
+              }
+              env.emit({ type: "execution_status", name: "v2.split.review", ok: review.approve, summary: `리드 검토 ${leadReviews} — ${review.problem ? `답 못 읽음(${review.problem.slice(0, 120)})` : review.approve ? "승인" : `고칠 것 ${review.fixes.length}`} · ${Math.round((Date.now() - t0) / 1000)}초`, data: { ...review, round: leadReviews, model: env.leadModel } });
+              const opened = store.append(leadReviews === 1 ? "리드 검토" : "리드 검토 다시", review.fixes.map((f, i) => ({ content: f.slice(0, 220), key: `lead:${leadReviews}:${i}` })), "critic");
+              for (const item of opened) leadItems.add(item.id);
+              if (opened.length) {
+                const prompt = newBatch(env, opened, leadFixNote(opened.length, leadReviews));
+                if (prompt) return prompt;
+                return undefined;
+              }
+            }
+          }
           // ⑤ 독립 검토자 — 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막음만 항목으로(우려·참고는 기록만). 처음 한 번 + 그 항목을 닫은 뒤 한 번.
           const advisorOpen = [...advisorItems].some((id) => { const i = store.get(id); return i && isOpen(i.status); });
-          if (advisorEnabled(env.request) && advisorRuns < 2 && !advisorOpen && (advisorRuns === 0 || advisorItems.size > 0)) {
+          if (advisorEnabled(env.request) && !(env.leadChat && leadPlan) && advisorRuns < 2 && !advisorOpen && (advisorRuns === 0 || advisorItems.size > 0)) {
             advisorRuns += 1;
             const verdict = scopeAdviceToRequest(withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env)), env.request.task);
             advice = advice ? { ...verdict, ms: advice.ms + verdict.ms, inputChars: advice.inputChars + verdict.inputChars } : verdict;
@@ -498,6 +545,6 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     }
   } catch { /* 보고 조립 실패는 실행을 막지 않는다 */ }
   options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: (done as { ok?: boolean }).ok, at: Date.now(), summary: `v2 요약: 할 일 ${store.view(0).split("\n")[0]}·재주입 ${reinjections}·갈고리 ${[...session.hooks.counts].map(([k, v]) => `${k}${v}`).join(" ") || "0"}${loopStop ? `(멈춤: ${loopStop})` : ""}·장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size}${advice ? `·검토 ${advice.notes.filter((n) => n.level === "blocker").length}막음(${(advice.ms / 1000).toFixed(1)}초)` : ""}${vqaRounds.length ? `·${vqaSummary(vqaRounds).text}(${Math.round(vqaMs / 1000)}초)` : ""} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
-    data: { todo: store.items, reinjections, loopStop, hooks: session.hooks.toJSON(), places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, inputChars: advice.inputChars } } : {}) } });
+    data: { ...(leadPlan ? { split: { lead: liveEnv?.leadModel, planChars: leadPlan.length, reviews: leadReviews, leadItems: leadItems.size } } : {}), todo: store.items, reinjections, loopStop, hooks: session.hooks.toJSON(), places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, inputChars: advice.inputChars } } : {}) } });
   return done;
 }
