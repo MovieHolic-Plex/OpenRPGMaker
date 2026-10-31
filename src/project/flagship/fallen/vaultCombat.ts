@@ -8,7 +8,7 @@
  *      방패병  : 「방패 벽」으로 무리 전체의 물리 피해를 줄이고, 치면 되받아친다 → 마법으로 뚫는다.
  *      채찍 고행자: 제 몸을 채찍질해 「광신」(공격 1.5배)에 든다, 대신 약하다 → 먼저 쓰러뜨리거나 기세 꺾기.
  *      심문 사제 : 한 차례 기도를 모아 무리를 고치고, 「침묵의 낙인」을 찍는다 → 기도 중에 때려 끊고, 정화.
- *      석궁수   : 한 차례 조준한 뒤 크게 쏜다. 조준 중에 한 대라도 맞으면 흐트러진다 → 조준을 끊는다.
+ *      궁수   : 한 차례 조준한 뒤 크게 쏜다. 조준 중에 한 대라도 맞으면 흐트러진다 → 조준을 끊는다.
  *      사냥개지기 : 둘째 차례에 휘파람으로 사냥개를 더 부르고 「물어라!」로 몰아붙인다 → 개보다 주인 먼저.
  *      사슬 참회자: 체력이 많고, 「참회의 일격」을 모은다. 기절·마비·잠이면 사슬이 엉킨다 → 봉 내려치기.
  *      변장한 첩자: 포로인 척하다 독침을 놓는다(가짜 포로 매복 전용).
@@ -61,28 +61,29 @@ const PREACHER = "enemy_fs_fanatic_preacher";
 
 /** 필드 걷기 칩(전투 그림과 같은 사람) — act1Finale 이 필드 적·매복 인물에 쓴다. */
 export const FS_INQ_CHIPS: Record<string, [string, number]> = {
-  [FS_INQ.shield]: ["tex_easyrpg_charset_people3", 5],
-  [FS_INQ.flagellant]: ["tex_easyrpg_charset_people1", 4],
-  [FS_INQ.priest]: ["tex_easyrpg_charset_people4", 7],
-  [FS_INQ.crossbow]: ["tex_easyrpg_charset_actor2", 2],
-  [FS_INQ.handler]: ["tex_easyrpg_charset_people4", 3],
-  [FS_INQ.penitent]: ["tex_easyrpg_charset_people4", 0],
-  [FS_INQ.spy]: ["tex_easyrpg_charset_people2", 1],
+  [FS_INQ.shield]: ["tex_easyrpg_charset_actor3", 0],
+  [FS_INQ.flagellant]: ["tex_easyrpg_charset_actor3", 1],
+  [FS_INQ.priest]: ["tex_easyrpg_charset_actor1", 6],
+  [FS_INQ.crossbow]: ["tex_easyrpg_charset_actor2", 3],
+  [FS_INQ.handler]: ["tex_easyrpg_charset_actor4", 2],
+  [FS_INQ.penitent]: ["tex_easyrpg_charset_people4", 4],
+  [FS_INQ.spy]: ["tex_easyrpg_charset_actor2", 0],
   [FANATIC]: ["tex_easyrpg_charset_actor3", 2],
   [PREACHER]: ["tex_easyrpg_charset_people2", 2],
 };
 
 /**
- * 심문회 화자 → 흉상. 칩의 짝 얼굴로 자동으로 고르면 방패병이 리본 소녀, 참회자가 소년, 사제가 할머니로 나온다
- * (people4 칩은 people1 얼굴로 이어진다). 이 게임에서 아무도 쓰지 않는 흉상만 골랐다 — 다른 사람과 얼굴이 겹치지 않는다.
+ * 심문회 화자 → 흉상. 칩마다 「같은 사람」인 흉상만 준다(걷기 칩·전투 그림·흉상 셋이 한 사람).
+ * 방패병 사무라이(actor3#0)↔붉은 투구, 고행자 떠돌이 검객(actor3#1)↔콧수염, 사제 파란 로브(actor1#6)↔검은 머리띠,
+ * 궁수 녹색 후드(actor2#3)↔초록 고글, 사냥개지기 붉은 두건(actor4#2)↔붉은 띠 금발, 첩자 도적(actor2#0)↔검은 무도가.
+ * 사슬 참회자(people4#4 대머리)는 같은 사람 흉상이 없어 흉상 없이 말한다. 이 게임의 다른 화자가 쓰지 않는 흉상만이다.
  */
 export const FS_INQ_BUSTS: Readonly<Record<string, string>> = {
   "심문회 방패병": "shared-actor2-red-helmet-expressions-bust-base",
   "채찍 고행자": "shared-actor2-mustache-expressions-bust-base",
   "심문 사제": "shared-black-headband-expressions-bust-base",
-  "심문회 석궁수": "shared-people1-black-man-expressions-bust-base",
-  "사냥개지기": "shared-green-goggles-expressions-bust-base",
-  "사슬 참회자": "shared-monster-red-helm-expressions-bust-base",
+  "심문회 궁수": "shared-green-goggles-expressions-bust-base",
+  "사냥개지기": "shared-actor2-red-band-blonde-expressions-bust-base",
   "포로": "shared-black-martial-expressions-bust-base",
 };
 
@@ -91,14 +92,14 @@ export const FS_VAULT_TROOPS = {
   // 지하 2층 · 옛 별지기의 방
   b2Kitchen: "troop_fs_inq_zeal",        // 광신도 + 채찍 고행자
   b2Crypt: "troop_fs_inq_shieldwall",    // 방패병 + 설교자
-  b2Library: "troop_fs_inq_bolts",       // 석궁수 + 광신도
+  b2Library: "troop_fs_inq_bolts",       // 궁수 + 광신도
   b2Prisoner: "troop_fs_inq_false_prisoner", // 매복 — 변장한 첩자 + 채찍 고행자 + 광신도
   // 지하 3층 · 가라앉은 회랑
-  b3Gallery: "troop_fs_inq_phalanx",     // 방패병 둘 + 석궁수
+  b3Gallery: "troop_fs_inq_phalanx",     // 방패병 둘 + 궁수
   b3West: "troop_fs_inq_vigil",          // 심문 사제 + 고행자 + 광신도
   b3East: "troop_fs_inq_kennel",         // 사냥개지기 + 사냥개 둘(+휘파람 하나)
   b3Levers: "troop_fs_inq_penance",      // 사슬 참회자 + 설교자
-  b3Patrol: "troop_fs_inq_patrol",       // 매복 — 방패병 + 석궁수 + 고행자
+  b3Patrol: "troop_fs_inq_patrol",       // 매복 — 방패병 + 궁수 + 고행자
   b3Ledge: "troop_fs_inq_ledge",         // 매복 — 고행자 둘 + 심문 사제
   b3Alarm: "troop_fs_inq_alarm",         // 경종 증원 — 사슬 참회자 + 사냥개지기 + 사냥개
 } as const;
@@ -153,9 +154,9 @@ export function applyFallenVaultCombat(project: Project): void {
   skill("skill_fs_inq_shield_counter", { name: "방패 되받기", scope: "enemy", power: 30, effect: dmg("attack"), animationId: "anim_gen_tackle_impact",
     description: "막아 낸 방패를 그대로 밀어 붙인다." });
   skill("skill_fs_inq_scourge", { name: "자기 채찍질", scope: "self", power: 0, effect: { kind: "support" }, animationId: "anim_gen_power_aura",
-    description: "제 등을 채찍으로 갈긴다. 피를 흘릴수록 낫이 무거워진다.", hpCostPercent: 12, stateEffects: [{ stateId: FS_ZEAL_STATE, chance: 100, operation: "add" }] });
-  skill("skill_fs_inq_scythe", { name: "광신의 낫", scope: "enemy", power: 42, effect: dmg("attack"), animationId: "anim_gen_claw_rake",
-    description: "낫을 두 번 휘두른다.", hitSequence: [1, 1] });
+    description: "제 등을 채찍으로 갈긴다. 피를 흘릴수록 칼끝이 무거워진다.", hpCostPercent: 12, stateEffects: [{ stateId: FS_ZEAL_STATE, chance: 100, operation: "add" }] });
+  skill("skill_fs_inq_scythe", { name: "광신의 칼날", scope: "enemy", power: 42, effect: dmg("attack"), animationId: "anim_gen_claw_rake",
+    description: "칼을 두 번 휘두른다.", hitSequence: [1, 1] });
   skill("skill_fs_inq_bless", { name: "성수 축복", scope: "allAllies", power: 46, effect: { kind: "healing", statistic: "mind", affects: "hp" }, animationId: "anim_gen_cleanse_sparkle",
     description: "한 차례 기도를 모아 무리의 상처를 씻는다.\n기도 중에 크게 맞으면 끊긴다.", chargeTurns: 1,
     chargeBreak: { damage: 60, stateIds: ["state_stop", "state_paralysis", "state_sleep", "state_silence"], message: "기도가… 끊겼다!" } });
@@ -164,7 +165,7 @@ export function applyFallenVaultCombat(project: Project): void {
   skill("skill_fs_inq_aim", { name: "조준 사격", scope: "enemy", power: 128, effect: dmg("attack"), animationId: "anim_gen_projectile_shot",
     description: "한 차례 숨을 멈추고 겨눈 뒤 쏜다.\n겨누는 동안 맞으면 흐트러진다.", chargeTurns: 1, criticalRate: 15,
     chargeBreak: { damage: 1, message: "조준이 흐트러졌다!" } });
-  skill("skill_fs_inq_bolt", { name: "석궁 사격", scope: "enemy", power: 58, effect: dmg("attack"), animationId: "anim_gen_projectile_shot",
+  skill("skill_fs_inq_bolt", { name: "화살 사격", scope: "enemy", power: 58, effect: dmg("attack"), animationId: "anim_gen_projectile_shot",
     description: "짧은 화살을 쏜다." });
   skill("skill_fs_inq_whistle", { name: "휘파람", scope: "self", power: 0, effect: { kind: "switch", switchId: SW_HOUND_CALL }, animationId: "anim_gen_sonic_wave",
     description: "날카롭게 휘파람을 분다. 어둠 속에서 개가 짖는다." });
@@ -203,33 +204,33 @@ export function applyFallenVaultCombat(project: Project): void {
     } as unknown as EnemyRecord);
   };
   const st = (stateId: string, present: boolean) => ({ kind: "status", stateId, present });
-  make(fanatic, FS_INQ.shield, "심문회 방패병", "charset-battler-people3-5", 8,
+  make(fanatic, FS_INQ.shield, "심문회 방패병", "charset-battler-actor3-0-samurai", 8,
     { maxHp: 470, maxMp: 0, attack: 68, defense: 72, mind: 14, agility: 30 },
     [act("skill_fs_inq_shield_wall", 9, { kind: "turn", start: 1, interval: 3 }), act("skill_fs_inq_shield_bash", 6), act("skill_attack", 4)], 58, 20,
     { reactions: [{ trigger: "physical", skillId: "skill_fs_inq_shield_counter", chance: 30 }] } as Partial<EnemyRecord>);
-  make(fanatic, FS_INQ.flagellant, "채찍 고행자", "charset-battler-people1-4", 8,
+  make(fanatic, FS_INQ.flagellant, "채찍 고행자", "charset-battler-actor3-1", 8,
     { maxHp: 260, maxMp: 0, attack: 74, defense: 12, mind: 10, agility: 56 },
     [act("skill_fs_inq_scourge", 30, st(FS_ZEAL_STATE, false)), act("skill_fs_inq_scythe", 7), act("skill_attack", 4)], 50, 14);
-  make(fanatic, FS_INQ.priest, "심문 사제", "charset-battler-people4-7", 9,
+  make(fanatic, FS_INQ.priest, "심문 사제", "charset-battler-actor1-6", 9,
     { maxHp: 300, maxMp: 90, attack: 34, defense: 22, mind: 88, agility: 36 },
     [act("skill_fs_inq_bless", 9, { kind: "hp", minPercent: 0, maxPercent: 100 }), act("skill_fs_inq_brand", 12, { kind: "turn", start: 2, interval: 4 }),
       act("skill_holy", 5)], 64, 26, { stateRates: { [PIERCED]: "E", state_silence: "C" } } as Partial<EnemyRecord>);
-  make(fanatic, FS_INQ.crossbow, "심문회 석궁수", "charset-battler-actor2-2", 8,
+  make(fanatic, FS_INQ.crossbow, "심문회 궁수", "charset-battler-actor2-3", 8,
     { maxHp: 230, maxMp: 0, attack: 82, defense: 20, mind: 12, agility: 46 },
     [act("skill_fs_inq_aim", 14, { kind: "turn", start: 2, interval: 3 }), act("skill_fs_inq_bolt", 6), act("skill_attack", 3)], 52, 18);
-  make(fanatic, FS_INQ.handler, "사냥개지기", "charset-battler-people4-3", 8,
+  make(fanatic, FS_INQ.handler, "사냥개지기", "charset-battler-actor4-2", 8,
     { maxHp: 340, maxMp: 0, attack: 70, defense: 26, mind: 14, agility: 42 },
     [act("skill_fs_inq_whistle", 40, { kind: "switch", switchId: SW_HOUND_CALL, value: false }, SW_HOUND_CALL),
       act("skill_fs_inq_sic", 11, { kind: "turn", start: 3, interval: 3 }), act("skill_fs_inq_whip", 6)], 60, 24);
   make(wolf, FS_INQ.hound, "심문회 사냥개", "generated-enemy-wolf-dire", 7,
     { maxHp: 190, maxMp: 0, attack: 72, defense: 18, mind: 10, agility: 64 },
     [act("skill_fs_hound_bite", 6), act("skill_attack", 4)], 34, 0, { elementRates: { ...(clone(wolf.elementRates ?? {})), fire: "B" } } as Partial<EnemyRecord>);
-  make(fanatic, FS_INQ.penitent, "사슬 참회자", "charset-battler-people4-0", 9,
+  make(fanatic, FS_INQ.penitent, "사슬 참회자", "charset-battler-people4-4", 9,
     { maxHp: 700, maxMp: 0, attack: 88, defense: 34, mind: 10, agility: 20 },
     [act("skill_fs_inq_rapture", 40, { kind: "hp", minPercent: 0, maxPercent: 35 }), act("skill_fs_inq_penance", 14, { kind: "turn", start: 2, interval: 3 }),
       act("skill_fs_inq_chain", 6), act("skill_attack", 4)], 84, 30,
     { stateRates: { [PIERCED]: "E", state_stop: "B", state_paralysis: "B", state_sleep: "C" } } as Partial<EnemyRecord>);
-  make(fanatic, FS_INQ.spy, "변장한 첩자", "charset-battler-people2-1", 8,
+  make(fanatic, FS_INQ.spy, "변장한 첩자", "charset-battler-actor2-0", 8,
     { maxHp: 260, maxMp: 0, attack: 74, defense: 20, mind: 30, agility: 60 },
     [act("skill_fs_inq_smoke", 9, { kind: "turn", start: 1, interval: 4 }), act("skill_fs_inq_needle", 7), act("skill_attack", 4)], 56, 40,
     { rewards: { exp: 56, gold: 40, dropRatePercent: 0, drops: [{ itemId: "item_antidote", ratePercent: 60, quantity: 1, condition: { kind: "always" } }] } } as Partial<EnemyRecord>);
@@ -252,7 +253,7 @@ export function applyFallenVaultCombat(project: Project): void {
   const T = FS_VAULT_TROOPS;
   troop(T.b2Kitchen, "광신도와 채찍 고행자", [[FANATIC], [FS_INQ.flagellant]]);
   troop(T.b2Crypt, "방패병과 설교자", [[FS_INQ.shield], [PREACHER]]);
-  troop(T.b2Library, "석궁수와 광신도", [[FANATIC], [FS_INQ.crossbow]]);
+  troop(T.b2Library, "궁수와 광신도", [[FANATIC], [FS_INQ.crossbow]]);
   troop(T.b2Prisoner, "포로였던 자", [[FS_INQ.spy], [FS_INQ.flagellant], [FANATIC]]);
   troop(T.b3Gallery, "방패 줄", [[FS_INQ.shield], [FS_INQ.crossbow], [FS_INQ.shield]]);
   troop(T.b3West, "달의 방 기도회", [[FS_INQ.flagellant], [FS_INQ.priest], [FANATIC]]);
