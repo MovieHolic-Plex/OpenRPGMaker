@@ -322,6 +322,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         const record = project.database.states.find((entry) => entry.id === id);
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+        if ("iconResourceId" in patch) {
+          if (patch.iconResourceId) record.iconResourceId = patch.iconResourceId;
+          else delete record.iconResourceId;
+        }
         if ("gen1MajorStatus" in patch) record.gen1MajorStatus = patch.gen1MajorStatus;
         if ("volatileStatus" in patch) record.volatileStatus = patch.volatileStatus;
         if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
