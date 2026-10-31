@@ -810,7 +810,10 @@ function shells(project: Project, exec: Exec, vault: GameMap): void {
   lightRoom(project, exec, FS_B4_ID, B4_ROOM, 0.55, "#10182e", [
     { x: 14, y: 3, radius: 2.6, color: "#7cf0b0", intensity: 0.8 },
     { x: 11, y: 3, radius: 1.6, color: "#a8d8f0", intensity: 0.7 },
-    { x: 18, y: 3, radius: 1.6, color: "#a8d8f0", intensity: 0.7 },
+    // 비대칭 홀(vaultLabyrinthRooms B4_HALL) — 동쪽 수정은 걷었다. 서쪽·동쪽 용암 화로와 동쪽 보물 굴에 작은 빛.
+    { x: 8, y: 7, radius: 1.8, color: "#ffb060", intensity: 0.6 },
+    { x: 21, y: 7, radius: 1.8, color: "#ffb060", intensity: 0.6 },
+    { x: 25, y: 11, radius: 2.2, color: "#ffd27a", intensity: 0.5 },
     { x: 15, y: 11, radius: 4.5, color: "#9cc8ff", intensity: 0.5 },
     { x: 10, y: 27, radius: 2.4, color: "#88c8ff", intensity: 0.9 },
     { x: 18, y: 27, radius: 2.4, color: "#88f0e0", intensity: 0.8 },
