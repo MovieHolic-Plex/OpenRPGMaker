@@ -1186,6 +1186,20 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
 
+### 다른 시트 얼굴을 빌리던 근사 짝 8칸 해제 (2026-10-31)
+
+흉상·전신은 칩 → 짝 얼굴 → 그 얼굴의 표정 세트(`sharedExpressionSetIdOf`) 순서로 정해진다. 그래서 칩이 **다른 시트의 다른 인물**
+얼굴을 「근사」로 빌려 쓰면 대화 흉상이 엉뚱한 사람이 된다(폴른 스타: 사슬 참회자 People4 #0 → 소년 흉상, 심문 사제 People4 #7 → 할머니 흉상).
+192칸 전체를 칩·얼굴·흉상 그림으로 대조해 8칸을 얼굴 없음으로 바꿨다: People4 #0·#6·#7, People5 #1·#5·#6·#7, People2 #0.
+모두 그 얼굴이 이미 다른 칩(People1·People2·People3 의 제 짝)의 얼굴이었다. 틀린 얼굴보다 얼굴 없음이 낫다 — 필요하면 `generate_character_appearance`.
+
+- 조수 경로(place_npc 자동 얼굴·`reconcileSharedFaceWithCharset`·`list_npc_graphics` portraitOptions·컷신)는 모두 같은 대응표를 읽으므로 따로 고칠 곳이 없다.
+- 이미 저장된 호스트 파일(`~/.local/share/oprn/character-graphics.json`)은 `characterReferenceCorrections.json` 의 `revisions`(옛 행 → 새 행)로
+  손대지 않은 행만 올라간다. 파서는 `mappings`·`revisions` 를 한 단계씩 따라간다(최대 4단계). 옛 `mappings` 의 해당 8행 `after` 도 새 행으로 바꿨다.
+- 확인했지만 둔 것: People1 #4·#5(피부색 차이, 원본 같은 칸 짝), Actor2 #4(머리색), Modern1 #3(흉상 경로가 `MODERN_CLEAN_STEM_OVERRIDES`로
+  Modern1 #1 그림을 쓴다 — 기존 결정), 폴른 스타 「방패병」 리본 흉상은 데모가 메이드 칩 People3 #5 를 방패병에 쓴 탓이다(대응표는 맞다).
+- 회귀: `test/fullCharacterReferenceAudit.test.ts`(자동 얼굴 해제 목록·호스트 이전). 대조 시트는 칩/얼굴/흉상 전후 192칸.
+
 ### 캐릭터 참조 전수 교정 (2026-10-05)
 
 현재 조수의 얼굴 검색·NPC 후보·명시 얼굴 대조는 `sharedCharacterFaceResolver.ts`의 승인된 호스트 대응표를 읽는다.

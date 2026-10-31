@@ -34,6 +34,15 @@ describe("Complete character reference census regressions", () => {
     expect(parseSharedCharacterGraphicsDocument(original).mappings[0]).toEqual(original.mappings[0]);
   });
 
+  it("upgrades hosts that saved the pre-2026-10-31 borrowed cross-sheet pairs to no-face", () => {
+    const stored = defaultSharedCharacterGraphics();
+    stored.mappings = corrections.revisions.map(change => structuredClone(change.before)) as typeof stored.mappings;
+    stored.faces = [];
+    const migrated = parseSharedCharacterGraphicsDocument(stored).mappings.filter(row => !/^tex_oprn_charset_modern\d+$/u.test(row.textureKey));
+    expect(migrated).toEqual(corrections.revisions.map(change => change.after));
+    expect(migrated.every(row => row.status === "no-face" && row.faceResourceId === null)).toBe(true);
+  });
+
   it("removes 19 blank cells from picker, prompt and search despite stored profiles", async () => {
     expect(GENERATED_FACESET_FACE_IDS.size).toBe(19);
     const p = project();
@@ -84,7 +93,8 @@ describe("Complete character reference census regressions", () => {
     expect(reconcileSharedFaceWithCharset("easyrpg-faceset-people1-00",row.textureKey,0).faceResourceId).toBe(row.faceResourceId);
   });
 
-  it.each([["monster3",1],["monster3",4],["monster3",6],["actor4",5]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
+  // 2026-10-31: 다른 시트의 다른 인물 얼굴을 빌리던 근사 짝(폴른 스타: 참회자 → 소년, 사제 → 할머니)은 얼굴 없음이다.
+  it.each([["monster3",1],["monster3",4],["monster3",6],["actor4",5],["people4",0],["people4",6],["people4",7],["people5",1],["people5",5],["people5",6],["people5",7],["people2",0]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
     expect(sharedFaceForCharset(`tex_easyrpg_charset_${sheet}`,Number(index))).toBeNull();
   });
 
