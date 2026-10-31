@@ -71,7 +71,7 @@ const state = () => page.evaluate(() => {
   const box = document.querySelector("[data-testid='dialogue-box']");
   const text = box && box.offsetParent !== null ? (box.textContent ?? '').trim() : '';
   return { x: st.x, y: st.y, map: st.currentMapId, text, hiding: !!st.horror?.hiding, saeki: st.eventLocations?.ev_nr_saeki_2f ?? null,
-    pursuing: !!st.horror?.pursuits?.ev_nr_saeki_2f?.active, gameOver: !!document.querySelector("[data-testid='game-over'], [data-testid='horror-game-over']") };
+    pursuing: !!st.horror?.pursuits?.ev_nr_saeki_2f?.active, gameOver: !!document.querySelector("[data-testid='game-over-screen']") };
 });
 /** 대사가 떠 있으면 읽을 시간만큼 두고 넘긴다. 대사가 하나도 없을 때까지. */
 async function readThrough(maxMs = 60000) {
