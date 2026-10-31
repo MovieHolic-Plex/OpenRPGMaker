@@ -1000,6 +1000,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     page("ev_fs2_obs_call_wait", "대기", [], [], { priority: "below" }),
     page("ev_fs2_obs_call_run", "부른다", [sw(SW_HANEL, false)], [
       wait(400),
+      // 발판에서 한 걸음 내려선다 — 도착 칸이 승강 발판(조사로 탄다)이라, 대사를 넘기는 Enter 가 승강 장치를 다시 태웠다
+      // (첫 플레이 검수 2026-10-31: 몇 번씩 오르내렸다).
+      route("@player", [{ kind: "move", dir: "right" }, { kind: "turn", dir: "up" }]),
       say(HANEL, "거기 누구냐. …카엘이냐?"),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { trigger: { kind: "auto" } }),
