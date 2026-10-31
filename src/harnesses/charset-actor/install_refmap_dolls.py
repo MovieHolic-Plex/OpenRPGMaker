@@ -15,7 +15,7 @@
       src/assets/refmapDollCharsets.ts 의 REFMAP_DOLL_SHEETS (시트 수 — 플레이어는 명단 JSON 없이 이것만 본다)
       harness-data/charset-actor/refmap-dolls-source.json (칸마다 머리·몸 원본 인물과 칸 RGBA SHA-256)
 칸 번호는 덧붙이기 전용이다: 이미 설치된 id 의 시트·칸·화소가 바뀌면 거절한다(--force 없이는 덮지 않는다).
-REFMAP 조건(변형 재배포 가능·출처 표기·소재 판매 금지·원본 재배포 금지): public/assets/ATTRIBUTION.md 「RefmapDoll」. 원본 시트는 이 저장소에 넣지 않는다.
+REFMAP 조건(고친 그림 재배포 가능·「고침」과 출처 표기·원본 재배포 금지): public/assets/ATTRIBUTION.md 「RefmapDoll」. 원본 시트는 이 저장소에 넣지 않는다.
 사람 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다.
 """
 import argparse

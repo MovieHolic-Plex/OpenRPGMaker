@@ -77,15 +77,10 @@ def grass_body(base, taken):
         while c in taken: c = (c[0], c[1], c[2] + 1)
         return c
     pal = {"b": base, **{k: tone(k) for k in ("d1", "l1", "l2")}}
-    rng = np.random.default_rng(737)
-    nz = ndimage.gaussian_filter(rng.random((T, T)), 1.5, mode="wrap")
-    sp = rng.random((T, T))
-    px = np.empty((T, T), object); px[:] = "b"
-    px[(nz < np.quantile(nz, 0.35)) & (sp < 0.4)] = "d1"
-    px[(nz > np.quantile(nz, 0.7)) & (sp < 0.3)] = "l1"
-    blade = [(0, 0, "l2"), (1, 0, "l1"), (2, 0, "d1")]
-    for y, x in ((3, 5), (10, 12)):
-        for dy, dx, k in blade: px[(y + dy) % T, (x + dx) % T] = k
+    # r2 (2026-10-31): r1 의 흐린 잡음 문턱 무리가 16px 마다 글자(「Sng」)처럼 읽혀(LEDGER J124) 손 도트 행 문자열로 바꿨다.
+    #   흩뿌린 점·세로 2~3화소 풀잎뿐(8-이웃 무리 최대 3화소, 3화소는 세로 풀잎만). 이미 구운 시트는 beodeul-grass-unglyph.py 가 같은 자리에서 바꾼다.
+    rows = json.loads((ROOT / "scripts/content/beodeul-foliage/grass-body-r2.json").read_text())["rows"]
+    px = [[{".": "b", "a": "d1", "b": "l1", "c": "l2"}[ch] for ch in row] for row in rows]
     return np.array([[pal[k] for k in row] for row in px], np.uint8)
 
 def main():

@@ -250,6 +250,17 @@ source는 16px/16열/336칸이며 기존 칸 배정을 유지하고 필요한 �
 `harmonize_beodeul_daylight({mapId})`는 기존 맵만 보정한다. 그림자/잔디는 2층 빈칸에 넣고 기존 2층 그림과 높이를 보존한다. 길 보정은 원본 형태와 통행을 유지한 1층 graft이며 원래 길 오토타일 connectTileIds에 연결한다. memberTileIds는 바꾸지 않는다. 반복 적용은 중복하지 않는다.
 작은 마을 houseCount 시공은 마지막에 자동 적용하고 큰 기후 마을에는 강제하지 않는다. 공통 조수 프롬프트와 참고문서 읽기 계약에 등록한다. 하네스 build/validate/review, 공용 신규/기존 source 등록과 실제 마을 전후·그림자만 비교·정본 저장·재로드·통행 근거는 verify-shots/beodeul-light-ground. 전체 게이트는 실행하지 않는다.
 
+## 풀밭 737 글자 무늬 제거 r2 (2026-10-31, LEDGER J124)
+
+적대적 VQA 가 버들항 마을마다 「풀밭에 글자 모양 반복 무늬 — 워터마크, 체험판 에셋 같다」를 큰 결함으로 매겼다(마을 바닥이 737 한 칸이라 16px 마다 「Sng」「ULL」이 줄지어 읽힘).
+출처는 이 저장소 코드다: `restyle-beodeul-ground.py`(#2981, 2026-10-19)의 `grass_body` 가 흐린 잡음을 문턱으로 잘라 짙은 점을 3~8화소 획으로 무리 지었다. 제3자 그림·참고 이미지·글자 렌더는 없다(라이선스 문제 아님).
+
+- 새 바탕 = `scripts/content/beodeul-foliage/grass-body-r2.json` 의 행 문자열(흩뿌린 점·두 화소 짝 + 세로 2~3화소 풀잎, 8-이웃 무리 최대 3화소이고 3화소는 세로 풀잎만, 같은 간격으로 셋 이상 늘어선 점 최소화, 무늬 화소 59 — r1 67). 첫 안(점만 고르게 흩은 것)은 독립 Opus VQA 가 「점 그물·점선」으로 떨어뜨렸다(`opus-vqa-r1-fail.json`). 같은 네 색(#6e9943 바탕·#618c3b·#7aa34b·#84ab52), 칸 번호 그대로.
+- `python3 scripts/content/beodeul-grass-unglyph.py [--dry]` 가 r1 바탕과 **같은 자리·같은 색**인 화소만 r2 로 바꾼다 — 풀밭 변형(548·736~749)과 길·물가·숲 가장자리·둑 칸에 복사된 바탕까지 함께 바뀌어 이음매가 맞는다. 버들항 2,982칸 · beodeul_ground 46칸 · beodeul_nature 78칸. 멱등(두 번째 실행 0화소).
+- `restyle-beodeul-ground.py` 의 `grass_body` 도 같은 행 문자열을 읽어 다시 돌려도 r2 가 나온다.
+- 학습 그림(`beodeul-ground/palette-standard.png`, `beodeul-massing/street.png`, `beodeul-town-wall/*.png`)에는 옛 바탕이 남아 있다(게임 칩셋 아님).
+- 3/4 관문: kind terrain 2장(737 4×4 `e0db0973…` · 변형 15칸 `2f18bb3a…`) AI 조언 PASS(미보정 프로필). 독립 Opus 5.5 적대적 VQA r2 pass(`harness-data/object-gate/vqa/beodeul-grass-unglyph/opus-vqa-r2.json`, 그림 같은 폴더) 뒤 18323 묶음 `beodeul-grass-unglyph-1031` 에 **위임 허용**(`by: delegated`, 사용자 → 감독 2026-10-21 규칙)으로 기록 → `check --context bundle` 통과. 비교 그림 `~/claude-viz/beodeul-grass-fix.html`.
+
 ## 기본 타일셋 (2026-09-30)
 
 버들항이 **새 프로젝트의 기본 타일셋**이다. `DEFAULT_TILESET_ID = "beodeul_city"`(`src/project/defaults/constants.ts`, 문자열 리터럴 —

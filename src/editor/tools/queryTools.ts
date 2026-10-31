@@ -11,6 +11,7 @@ import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
+import { refmapDollBattlerFor } from "@/assets/refmapDollCharsets";
 import { GHOST_WORDS, jrpgHeroesCharsetHint, PERSON_WORDS, queryNpcGraphics, unmatchedNpcGraphicTerms } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
@@ -50,6 +51,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
 import { flatGroundIssues } from "./mapEmptiness";
+import { areaUseIssues } from "./mapAreaUse";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
@@ -428,7 +430,31 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset" | "battler")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset", "battler"];
+const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset" | "battler" | "windowskin")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset", "battler", "windowskin"];
+
+/**
+ * 창 그림(윈도스킨·시스템 그림) 검색 — 스토어로 넣은 창 테두리 팩이 먼저 보인다. 예전엔 이 종류가 list_resources 에 없어서,
+ * 「한지·옻칠 동양풍 창 테두리」를 넣어 두고도 「창 테두리를 한지풍으로」에 조수가 picture 만 뒤져 0건 → 대사창 프리셋(joseon)만
+ * 바꾸고 「한지 창 그림 없음」이라 보고했다(2026-10-31 스토어 검증).
+ */
+function searchWindowSkins(project: Project, query: string): Pick<ResourceSearchResult, "id" | "label" | "description">[] {
+  const needle = query.trim().toLocaleLowerCase();
+  const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
+  const terms = needle.split(/\s+/u).filter(Boolean);
+  const rows = listDatabaseResourceOptions("system", project)
+    .map((option) => {
+      const store = option.id.startsWith("store_");
+      return {
+        id: option.id, label: option.name, store,
+        description: `${store ? "스토어로 넣은 " : ""}창 그림 — set_project_settings{resources:{systemResourceId:"${option.id}"}, dialogue:{style:"classic"}} 한 번으로 대사·선택지·메뉴·상점·타이틀 창에 건다.`,
+        haystack: [option.id, option.name, ...(option.searchTerms ?? [])].join(" ").toLocaleLowerCase(),
+      };
+    })
+    .sort((a, b) => Number(b.store) - Number(a.store));
+  // 창 그림은 몇 장뿐이다 — 「한지풍」처럼 이름에 없는 낱말이면 0건 대신 전부 보여 이름을 읽고 고르게 한다.
+  const hits = browse ? rows : rows.filter((row) => terms.some((term) => row.haystack.includes(term)));
+  return (hits.length ? hits : rows).map(({ id, label, description }) => ({ id, label, description }));
+}
 
 /**
  * 아군 측면 전투 도트 시트(battleCharset) 검색 — 공용 시트와 스토어로 넣은 시트(무기별 전사 팩 등)를 함께 본다.
@@ -532,7 +558,7 @@ function jrpgHeroesHintForNpcList(project: Project, query: string | undefined): 
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다.",
+  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다. battleSheet:true 인 칸은 옆모습 전투 그림이 있는 인물이라 주인공·동료(파티 배우)로 먼저 고른다 — query \"전투 그림\" 으로 찾는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -557,6 +583,8 @@ const listNpcGraphics: ToolDefinition = {
       age: match.entry.age,
       tags: match.entry.tags,
       ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
+      // REFMAP 대표 인물(13명)은 모델이 그린 옆모습 전투 시트가 있다 — 파티 배우로 쓰면 전투에서 그 그림으로 싸운다.
+      ...(refmapDollBattlerFor(match.entry.textureKey, match.entry.characterIndex) ? { battleSheet: true } : {}),
       // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
       face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
       portraitOptions: (() => {
@@ -593,7 +621,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book), battler(아군 측면 전투 도트 시트 — 스토어로 넣은 무기별 전사·직업 시트 포함, 결과 id 를 upsert_actor 의 battleCharacterResourceId 로. 「도끼 든 전사」처럼 전투 모습을 바꿀 때 먼저 찾는다) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book), battler(아군 측면 전투 도트 시트 — 스토어로 넣은 무기별 전사·직업 시트 포함, 결과 id 를 upsert_actor 의 battleCharacterResourceId 로. 「도끼 든 전사」처럼 전투 모습을 바꿀 때 먼저 찾는다), windowskin(창 그림·창 테두리 — 스토어로 넣은 윈도스킨 포함, 「창 테두리를 ○○풍으로」는 먼저 이것을 찾는다) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
@@ -634,6 +662,8 @@ const listResources: ToolDefinition = {
       if (args.portraitMode !== undefined) all = all.filter((face) => facePresentationForResource(face.id) === args.portraitMode);
     } else if (kind === "battler") {
       all = searchPartyBattlers(project, args.query);
+    } else if (kind === "windowskin") {
+      all = searchWindowSkins(project, args.query);
     } else if (kind === "picture") {
       // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
@@ -792,6 +822,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...lintTilesetPalettes(project),
     ...verifyPlacedTiles(project),
     ...flatGroundIssues(project),
+    ...areaUseIssues(project),
     ...lintScenePolish(project),
     ...lintOriginalIpNames(project),
   ];
@@ -815,6 +846,7 @@ const runLint: ToolDefinition = {
   description:
     "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
     + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)과 장면 다듬기 경고 scene-*(문 아닌 칸의 이동·짝 안 맞는 착지·제자리 사라짐·대화창 위치 섞임·BGM 없는 맵·움직이는 교통·겹쳐 선 인물 — read_assistant_skill game-scene-polish)다. "
+    + "warning map-area-unused flags maps where much of the area is blank void or lies far from every event — shrink with shift_map + resize_map or give the band a purpose. "
     + "원작 IP 고유명(해리포터풍 학교·기숙사 이름 등)이 플레이어에게 보이는 글에 있으면 warning original-ip-name 으로 알린다 — 공개·판매용이면 일반 낱말로 바꾼다. "
     + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",

@@ -99,6 +99,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 8. **레벨업 숫자가 터지지 않는다.** 높은 레벨에서 시작하는 배우의 경험치는 그 레벨 바닥부터. Lv6 HP 526 같은 값이 나오면 곡선을 본다.
 9. **스킬 장착 칸이 있는 게임은 이벤트에서 장착 화면을 열어 준다.** `upsert_actor loadoutSlots`(1~12) 로 칸을 정하고, 전투 전에 m2 「메뉴 화면 열기」 `{screen:"skills", actorId}` 를 두면 닫을 때 이벤트가 이어진다. 확인: 칸 수만 있고 장착 화면을 여는 이벤트가 없으면 플레이어가 장착 방법을 모른다.
 10. **결투·겨루기 장면은 부대 `duel` 로 규칙을 건다.** 사람 상대는 `upsert_enemy.walkChip`(걷기 칩, 서 있는 적), 항복·기권·라운드 판정은 `upsert_troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}` 로 쓰고 이벤트로 흉내 내지 않는다. 확인은 `simulate_battle` 의 `outcomes`(victory/defeat/escape).
+11. **「약점을 알아 가는」 사냥은 괴물 도감으로.** 일지 줄·퀘스트·설정집(`upsert_world_codex`, 플레이어가 못 본다)으로 흉내 내지 않는다. 괴물 하나에 `define_bestiary_entry {id, name, enemyIds:[보스판·변종 함께], sections:[{id:"look",title:"외형",text,unlock:"seen"}, {id:"weakness",title:"약점",text,unlock:"weakness"}, {id:"habit",…,unlockSwitchId:"sw_clue_x"}]}` 한 번 — 약점 칸은 전투에서 약점을 처음 맞히면 열리고 알아낸 약점이 붙는다. 증인 대사로 여는 칸은 `unlockSwitchId` + 그 대사 끝 setSwitch. 확인: `list_bestiary` 에 칸마다 여는 방법이 있고, 저작한 ESC 메뉴면 `bestiary` 항목이 있다.
 
 ## 8. 이름과 크레딧
 

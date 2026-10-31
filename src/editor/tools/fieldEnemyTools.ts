@@ -15,7 +15,7 @@ import { normalizeLightingState } from '@/project/lightingRules';
 import { ToolError, type ToolDefinition, type ToolExecResult, type JsonSchema } from './types';
 import { readFootstepsArg, resolveFootstepsSe } from './horrorSoundAssets';
 import { inMapBounds, requireMap } from './mapHelpers';
-import { resolveGraphic, type GraphicSpec } from './eventCompile';
+import { graphicSpecArg, resolveGraphic } from './eventCompile';
 import { ensureNamedSwitch } from './flagHelpers';
 import { assertEventShape, ensureMapCheckpointEvent, placementAdjustedWarning, resolveEventPlacement, upsertEventIntoMap } from './eventTools';
 import { protectedCells } from './npcPatrolTools';
@@ -447,7 +447,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
   {
     name: 'place_field_enemy',
     mode: 'write',
-    choosesOwnGraphic: (args) => args.graphic === undefined,
+    // graphic 이 빈 칸뿐이거나 query 만 있으면 도구가 전투 그림에서 고른다(아래 run) — 모델이 고른 칩이 아니다.
+    choosesOwnGraphic: (args) => { const spec = graphicSpecArg(args.graphic); return !spec || (Object.keys(spec).length === 1 && "query" in spec); },
     description:
       '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 느낌표(alert)는 chase 는 시야에 든 순간, stationary·patrol 은 닿기 직전에 뜬다. ' +
       'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. 쫓는 동안은 쉬지 않고 길을 찾아 돌아오며, 주인공 진행 방향을 앞질러 막고 여럿이면 갈라져 감싼다. pace 기본 normal(≈218ms/칸, 주인공 걷기 160 보다 조금 느림), fast 는 주인공보다 빠르고 12칸마다 숨을 고른다 — 피하는 수단은 시야를 끊는 벽·엄폐·문·숨는 곳·숨 고를 때 달아나기다(rush:true 면 알아챈 뒤 더 빠르게 달려와 바로 덮친다 — 경비병·사냥꾼). ' +
@@ -485,7 +486,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const x = Number(args.x), y = Number(args.y);
       if (!Number.isInteger(x) || !Number.isInteger(y) || !inMapBounds(map, x, y)) throw new ToolError(`필드 적 위치가 맵 밖입니다: (${String(args.x)}, ${String(args.y)})`, { code: 'field-enemy-out-of-bounds', mapId: map.id });
       // 필드 그림 ↔ 전투 적 일치(fieldEnemyGraphics.ts): 그림만 주고 troopId 를 생략하면 그 그림에 맞는 적 그룹을 고른다.
-      const explicitGraphic = args.graphic as GraphicSpec | undefined;
+      const explicitGraphic = graphicSpecArg(args.graphic);
       let troopId = typeof args.troopId === 'string' ? args.troopId.trim() : '';
       let troopFromGraphic = false;
       if (!troopId) {
@@ -564,7 +565,10 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const expected = fieldGraphicForBattler(lead?.monsterResourceId);
       let graphic: EventPageGraphic | undefined;
       let graphicNote: string | undefined;
-      if (explicitGraphic) {
+      // query 만 준 그림(「wolf」)은 전투 그림이 있으면 그 그림을 쓴다 — 걷기 칩 검색이 0개라 거절되거나 다른 칩으로 어긋나지 않게.
+      const queryOnly = !!explicitGraphic && Object.keys(explicitGraphic).length === 1 && "query" in explicitGraphic;
+      const autoAvailable = !!expected || (!!lead?.monsterResourceId && isGeneratedMonsterSprite(lead.monsterResourceId));
+      if (explicitGraphic && !(queryOnly && autoAvailable)) {
         graphic = resolveGraphic(explicitGraphic, { overrides: draft.charsetLabels });
         if (expected && graphicCellKey(graphic) !== `${expected.textureKey}#${expected.characterIndex}`) {
           throw new ToolError(`graphic 이 전투 그림과 다릅니다: 적 그룹 '${troopId}' 선두 '${lead?.name ?? troop.enemyIds[0]}'(${lead?.monsterResourceId}) 은(는) 필드에서 「${expected.label}」(${expected.textureKey}:${expected.characterIndex}) 로 보여야 합니다. graphic 을 생략하면 자동으로 맞춥니다.`, { code: 'field-enemy-graphic-mismatch', mapId: map.id });
@@ -588,6 +592,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       if (!graphic) {
         throw new ToolError(`적 그룹 '${troopId}' 선두 '${lead?.name ?? troop.enemyIds[0]}'(${lead?.monsterResourceId ?? '그림 없음'}) 은(는) 필드에 둘 같은 종류의 그림이 없습니다 — 다른 그림(예: 슬라임)으로 대체하면 필드에는 슬라임이 서 있는데 박쥐와 싸우게 되므로 거절합니다. 필드에 둘 수 있는 전투 시트: ${fieldReadyBattlerIds().slice(0, 14).join(', ')} … 이 중 하나를 monsterResourceId 로 가진 적 그룹을 쓰세요.`, { code: 'field-enemy-no-field-graphic', mapId: map.id });
       }
+      // 보이지 않는 필드 적은 플레이어가 피할 수 없다 — 투명 그림은 저장하지 않는다(2026-10-31 terra 숲 추격).
+      if ('transparent' in graphic && graphic.transparent) {
+        throw new ToolError(`A visible field enemy cannot be transparent: graphic resolved to {transparent:true}, so the player would be chased by something they cannot see. Omit graphic (the tool then uses the battle sprite of '${lead?.name ?? troop.enemyIds[0]}') or pass a selectionId from list_npc_graphics.`, { code: 'field-enemy-invisible', mapId: map.id });
+      }
+      if (queryOnly && autoAvailable) graphicNote = `${graphicNote ?? ""} (graphic.query 「${(explicitGraphic as { query: string }).query}」 대신 전투 그림을 따름)`.trim();
       if (troopFromGraphic) graphicNote = `troopId 생략 → graphic 과 같은 종류의 적 그룹 '${troopId}' 선택`;
       const clearSwitchId = typeof args.clearSwitchId === 'string' && args.clearSwitchId.trim() ? args.clearSwitchId.trim() : `sw_${id}_clear`;
       ensureNamedSwitch(draft, clearSwitchId, `필드 적 처치: ${id}`);
@@ -715,7 +724,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
       'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침 · allRound 사방을 봄 · lineOfSight:false 벽·나무가 시선을 안 가림(트인 들판 매복) · brain 추격 성격(smart 발소리 듣고 앞질러 막기·beast 곧장 돌진·knight 포위·ghost 벽 통과·classic 예전). ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
-      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게). ' +
+      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게) — 스위치·변수 조건 페이지(이야기가 깨우는 추격자)는 줄이지 않는다. ' +
       '잠입 미니게임(경비 시야 피하기)이면 visionLight:{} 로 적마다 바라보는 쪽 바닥에 부채꼴 등불 빛을 깔아 시야를 눈에 보이게 한다 — 그 맵 조명(set_scene_mood)을 정한 다음에 부른다(조명을 나중에 다시 깔면 빛이 지워진다).',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 모든 맵)' },
@@ -751,7 +760,13 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           for (const page of event.pages ?? []) {
             if (page.movement.type !== 'chase') continue;
             let local = tuning;
-            if (tuning.sightRange !== undefined && entries.length) {
+            // 스위치·변수로 깨어나는 추격자(이야기 비트가 켜는 숙직 선생·경보 뒤 경비)는 플레이어가 맵에 들어설 때 그 자리에 없다 —
+            // place_field_enemy 의 appearSwitchId 처럼 입구 거리로 시야를 깎지 않는다. 예전엔 계단 곁에서 출발하는 순찰 경비가
+            // 6칸을 달라 해도 2칸이 되어, 손전등 빛이 발밑에만 비치고 복도 맞은편 주인공을 못 봤다(2026-10-31 「이상 없음」 2층).
+            const woken = (page.conditions ?? []).some((condition) => condition.kind === 'switch' || condition.kind === 'variable');
+            if (tuning.sightRange !== undefined && entries.length && woken) {
+              notes.push(`${map.id}/${event.id}: 스위치로 깨어나는 추격자라 입구 거리로 시야를 줄이지 않음(${tuning.sightRange}칸)`);
+            } else if (tuning.sightRange !== undefined && entries.length) {
               const nearest = Math.min(...entries.map((e) => Math.abs(e.x - event.x) + Math.abs(e.y - event.y)));
               let range = tuning.sightRange;
               while (range > 2 && nearest <= range + 1) range -= 1;

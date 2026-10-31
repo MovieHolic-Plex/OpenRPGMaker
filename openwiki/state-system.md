@@ -49,7 +49,14 @@ Runtime effects (`runtimeEffects?: StateRuntimeEffects`):
 - `removeOnBattleEnd` — 전투 종료 시 해제
 - `invertHealing` — 좀비: HP 회복(회복 스킬·아이템·재생)이 같은 양의 피해가 된다(`invertsHealingForStates`). 기본 상태 `state_zombie`.
 - `grantSkillIds` — 트랜스·변신: 이 상태인 동안만 전투 기술 목록에 더해지는 기술(최대 12). 리미트 기술로 이 상태를 걸면 FF6 트랜스.
+- `attackElementId` — 칼 기름·속성 부여(2026-10-31): 이 상태인 동안 통상 공격이 이 속성으로 친다(무기 속성 대신, `stateAttackElementId` → `runtime.ts normalAttackElementId`). 대상의 속성 등급·피해 계열 예외·약점 표시가 그대로 먹는다. `upsert_state` 가 없는 속성 id 를 거절하고, 풀릴 조건이 없으면 경고한다.
 - `forcedAction: "rage"` — 폭주: 폭주(rage) 기술이 몬스터를 정한 배틀러가 그 몬스터의 행동 표대로 자동 행동한다. 기본 상태 `state_rage`(`attackRandom` 은 버서크).
+
+Battle-count release (`releaseAfterBattles?: number`, 2026-10-31): 전투를 N번(1~99) 치르면 풀린다 — 칼 기름 「다음 싸움 한 번」. 전투가 끝날 때마다
+`applyBattleStatesToSession` → `releaseStatesAfterBattle`(`src/project/battleEndStates.ts`)이 `PlaySession.stateBattleCounts`(세이브에 들어감)를 올리고 N번째에 뺀다.
+`system.clearStatesAfterBattle` 일반 규칙이 켜져 있어도 이 상태는 지우지 않는다(`clearOnBattleEnd:true` 를 직접 주면 첫 전투에 풀린다).
+필드 가방에서 바르게 하려면 아이템 `type:"special"`·`occasion:"field"`·`stateEffects:[{stateId, operation:"add"}]` — 다른 종류면 `upsert_item` 이 경고한다.
+검증: `scripts/qa/blade-oil-probe.mts`(실제 도구 + 실제 전투 런타임 + 저장 왕복).
 
 Emotion (`emotion?: { family, tier }`, 2026-09-27): 감정 계열·단계. 배틀러는 감정 상태를 하나만 가지며, 같은 계열을 다시 걸면 한 단계 오르고
 (최고 단계에서 멈춤) 다른 계열은 바꿔 끼운다. 계열 상성 배율은 `system.emotionCycle`. 규칙·파일은 `openwiki/runtime-battle.md` 「전투 자원 · 감정 · 장비 부여」.
