@@ -4866,7 +4866,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 셋(뒤 왼쪽·앞 오른쪽·틈 어귀 가로 순찰 부채꼴), chaseStepMs 127 · 틈 y=23",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 둘(등 뒤 양 끝, 틈 어귀 순찰 없음), chaseStepMs 175·돌진 없음 · 달리기는 방향키를 누른 채(held) · 틈 y=24(숲 어귀를 다시 칠함 — 맵 폭 나무 벽, 틈 x15~18)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -5034,19 +5034,25 @@
      "id": "dash",
      "ops": [
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "up",
-       "ms": 2000
+       "steps": 6,
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "right",
-       "ms": 330
+       "steps": 4,
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "up",
-       "ms": 1400
+       "steps": 8,
+       "stepTimeoutMs": 10000,
+       "held": true
       }
      ],
      "shot": true
@@ -5086,6 +5092,11 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 3000
       }
      ],
      "shot": true
@@ -5094,7 +5105,7 @@
   },
   {
    "id": "act2-b4-caught",
-   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 틈 어귀 야경꾼 부채꼴에 걸려 「!」 → 덮침 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
+   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 등 뒤 야경꾼에게 따라잡혀 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
    "note": "act2Opening.ts forestEdgeChase — 붙잡히면 광장 개구멍 앞(38,16), 개구멍 다시 조사 = ev_fs2_hub_hole_again",
    "mapId": "map_field_north_1",
    "x": 12,
@@ -5255,19 +5266,25 @@
      "id": "dash",
      "ops": [
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "up",
-       "ms": 2000
+       "steps": 6,
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "right",
-       "ms": 330
+       "steps": 4,
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "up",
-       "ms": 1400
+       "steps": 8,
+       "stepTimeoutMs": 10000,
+       "held": true
       }
      ],
      "shot": true
@@ -5307,6 +5324,11 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 3000
       }
      ],
      "shot": true
@@ -5316,7 +5338,7 @@
   {
    "id": "act2-b5-dogs",
    "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
-   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다 — 걸음마다 stepTimeoutMs 10000: 부하 걸린 호스트(4~6fps)에서 기본 1.2초 안에 한 칸을 못 가 첫 걸음에서 멈추던 것",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다 — 걸음마다 stepTimeoutMs 10000: 부하 걸린 호스트(4~6fps)에서 기본 1.2초 안에 한 칸을 못 가 첫 걸음에서 멈추던 것 · 2026-10-31 숲 어귀 재칠 뒤: 틈 안 숲길(15,18)에서 위로 세 걸음 — 들개 (15,12)",
    "mapId": "map_field_north_1",
    "x": 15,
    "y": 18,
@@ -5359,20 +5381,8 @@
       },
       {
        "kind": "move",
-       "dir": "left",
-       "steps": 4,
-       "stepTimeoutMs": 10000
-      },
-      {
-       "kind": "move",
        "dir": "up",
-       "steps": 5,
-       "stepTimeoutMs": 10000
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 2,
+       "steps": 3,
        "stepTimeoutMs": 10000
       },
       {
