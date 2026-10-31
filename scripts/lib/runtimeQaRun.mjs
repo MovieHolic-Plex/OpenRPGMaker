@@ -335,6 +335,34 @@ export async function applyOp(page, op, runState) {
         const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
         return state ? { mapId: state.currentMapId, x: state.x, y: state.y } : null;
       });
+      if (op.held === true) {
+        // 사람처럼 방향키를 누른 채로 — 칸마다 떼었다 누르는 왕복이 없다(추격 장면은 그 왕복만큼 느려져 잡혔다).
+        // 목표 칸 수만큼 그 축 좌표가 바뀌면 뗀다. 막혀 시간이 다 되면 거기서 멈춘다.
+        const start = await readPosition();
+        const axis = dir === "up" || dir === "down" ? "y" : "x";
+        const sign = dir === "up" || dir === "left" ? -1 : 1;
+        await page.evaluate((value) => window.__oprnInput.dir(value), dir);
+        // 끝: 목표 칸 수에 닿거나, 맵이 바뀌거나, stallMs(기본 1.5초) 동안 한 칸도 못 가면(벽·대화로 멈춤) 뗀다.
+        const stallMs = Number(op.stallMs ?? 1500);
+        const deadline = Date.now() + (op.stepTimeoutMs ?? 1200) * steps;
+        let last = start;
+        // 도착 직후 입력 잠금(맵 전환·자동 저장)이 1~2초 있다 — 첫 칸 전엔 넉넉히 기다린다.
+        let lastChange = Date.now() + Number(op.startGraceMs ?? 3000);
+        while (Date.now() < deadline) {
+          await page.waitForTimeout(50);
+          const now = await readPosition();
+          if (!now || !start || now.mapId !== start.mapId) break;
+          if ((now[axis] - start[axis]) * sign >= steps) break;
+          if (now.x !== last?.x || now.y !== last?.y) { last = now; lastChange = Date.now(); }
+          else if (Date.now() - lastChange >= stallMs) break;
+        }
+        await page.evaluate(() => window.__oprnInput.dir(null));
+        const end = await readPosition();
+        const heldMoved = end && start && end.mapId === start.mapId ? Math.abs(end[axis] - start[axis]) : steps;
+        runState.notes ??= [];
+        runState.notes.push(heldMoved >= steps ? `moved ${heldMoved} tile(s) held` : `moved ${heldMoved}/${steps} tile(s) held, blocked`);
+        return;
+      }
       let moved = 0;
       for (let index = 0; index < steps; index += 1) {
         const before = await readPosition();
@@ -426,10 +454,6 @@ export async function applyOp(page, op, runState) {
     case "setSwitch":
       // 실물 게임의 진행 스위치(예: 공포판 추격자 등장 sw_0001)를 퍼즐을 다 풀지 않고 켠다(__oprnDebug.setSwitch — 실제 세션).
       await page.evaluate(([switchId, value]) => window.__oprnDebug.setSwitch(switchId, value), [op.switchId, op.value ?? true]);
-      return;
-    case "setClock":
-      // 게임 안 시계(시간대 반응 이벤트 — 예: 밤에만 막는 경비병). Set Time 명령과 같은 경로(__oprnDebug.setClock).
-      await page.evaluate(([hour, minute]) => window.__oprnDebug.setClock(hour, minute), [op.hour, op.minute ?? 0]);
       return;
     case "setVitals":
       await page.evaluate(
