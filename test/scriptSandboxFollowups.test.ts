@@ -5,15 +5,16 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { runTodoCheck } from "@/ai/v2/todo/checks";
 import { buildGameApiDts, scriptApiCheatSheet } from "@/project/script/dts";
 import type { Command, GameEvent, Project } from "@/project/types";
 
-function withScriptEvent(project: Project, source: string): Project {
+function withScriptEvent(project: Project, source: string, name = "레버"): Project {
   const p = structuredClone(project);
   const map = Object.values(p.maps)[0]!;
   const script = { kind: "script", source, compiled: "/* compiled */", summary: "" } as unknown as Command;
   map.events = [...(map.events ?? []), {
-    id: "ev_lever", name: "레버", x: 3, y: 3, trigger: "action",
+    id: "ev_lever", name, x: 3, y: 3, trigger: "action",
     pages: [{ id: "p1", name: "", conditions: [], trigger: "action", priority: "same", commands: [script] }],
   } as unknown as GameEvent];
   return p;
@@ -45,5 +46,11 @@ describe("script follow-ups from the live assistant run", () => {
     const dts = buildGameApiDts();
     expect(dts).toMatch(/showEmote\(target: 'player' \| 'this' \| EventId/);
     expect(dts).toContain('type AnimTarget = "player" | "this" | EventId');
+  });
+
+  it("a todo talk check reads game.showMessage lines inside a script", () => {
+    const after = withScriptEvent(before, "const p = 80;\nawait game.showMessage(`포션은 ${p}골드예요.`, { speaker: \"포션 상인\" });", "포션 상인");
+    const result = runTodoCheck(after, { kind: "talk", who: "포션 상인", says: "골드예요" });
+    expect(result.pass).toBe(true);
   });
 });

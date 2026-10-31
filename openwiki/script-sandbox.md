@@ -200,4 +200,5 @@
 - 셀프 스위치 쓰기(`game.setSelfSwitch`)와 명령 kind(`game.cmd({kind:"triggerEnding"})`)는 effects 에 남지 않는다 — 셀프 스위치는 판정을 생략하고, 엔딩은 소스 글을 본다(주석에도 속는 어림셈, 검사기가 조용해지는 쪽으로만 틀린다).
 - 컴파일 결과의 줄 번호는 TS 원본과 대체로 같지만 정확히 같지는 않다(오류는 `compiled line N`). 소스맵은 없다.
 - 라이브러리 모듈은 최상위 `await` 를 못 쓴다(동기 `new Function` 으로 평가).
+- 조수 할 일 검사 `talk`(`src/ai/v2/todo/checks.ts`)는 스크립트의 `game.showMessage("리터럴")` 줄도 대사로 센다(변수·감싼 함수로 넘긴 글은 못 본다). 데모에서 이게 없어 상인 스크립트 앞에 평범한 대사 한 줄이 덧붙었다.
 - 끝맺음 게임 검사(`src/ai/v2/gameChecks.ts`)는 흔들기·번쩍·효과음·BGM 을 스크립트 소스의 `game.shake/flash/playSe/playBgm` 호출로도 인정한다(글 검색 — 주석에도 속는다).
