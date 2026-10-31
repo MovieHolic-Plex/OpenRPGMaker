@@ -430,6 +430,14 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **전투 배경 id 를 지어냈다**(`battleSceneryCatalog.unknownSceneryIdMessage`, upsert_troop·set_map_properties): 숲 추격 Opus 판은 `battle-scenery-forest-night` 을 찾느라 list_resources 를 8번 부르고 그 없는 id 를 저장했다. Argon 은 낮 숲 배경 그대로 두고 「밤 숲으로 했다」고 보고했다. 측면 전투 배경 id 는 바이옴 다섯뿐이고 밤·안개는 트룹의 `backdropLayers`(preset night·fog…)다. 도구 설명(`BATTLE_BACKDROP_ID_HINT`)에 그 말을 영어로 더하고, 목록에 없는 `battle-scenery-*` id 는 바이옴 id + `backdropLayers` 예시와 함께 거절한다.
 - **한국어 물건 낱말 검색이 0건이면 그대로 0건이었다**(`spatialTools` list_spatial_designs): terra 는 「시체」 0건을 보고 공방 그리기 카드만 올린 뒤 막혔다(Opus 는 「관」으로 `coffin open` 을 찾아 그 안에 시체를 두었다). 0건이면 작은 대응표(`OBJECT_QUERY_ALIASES`: 시체→coffin·grave, 게시판→notice board·board·sign, 횃불→torch·brazier …)로 한 번 더 찾고, 그래도 0건이면 「키트 이름은 대개 영어 — 영어 낱말이나 대신 설 물건으로」를 영어로 붙인다.
 
+## 조수 대조 8회차 — 빈 검토 바퀴·모양 오류 칸 설명·요청 대사 지키기 (2026-10-31 asst-parity p4-cell-opus)
+
+폴른 스타 2막 B1(지하 감방의 납작빵 → 막사 순찰 → 밤 광장)을 Opus 로 다시 지었다. 132호출 중 18개 실패, 45분.
+
+- **빈 패치 review_layout 도 다시 깔았다**(`verbs.ts reviewLayout`): 「고칠 것 없음」(빈 patch)인데 edit_place 로 다시 지어, 다시 지은 배치가 더 나쁘다며 되돌리고 ok:false 를 냈다(세 번). 빈 패치는 이제 다시 깔지 않고 칸 배치 선언 위치의 `reviews:N` 태그와 장소 기록의 `hints.layoutReviews` 만 올린다(할 일 `layout_review` 검사가 그 태그를 읽는다).
+- **모양 오류에 그 칸의 모양을 첫 번부터 준다**(`argRepair.wrongTypeFieldHint`, 실행기 `withArgRepair`): set_scene_mood 에 `lighting:"night"` 를 세 번 보냈고, 세 번째에야 받은 최소 예시도 필수 칸(mapId)뿐이었다. 「expected object/array, received …」 오류면 그 칸의 스키마 설명(모양이 적혀 있다)을 영어 안내와 함께 붙인다. set_scene_mood 의 lighting 설명에도 「낱말이 아니라 객체 — 밤은 {ambient, color, sources}」 를 영어로 더했다.
+- **윤문이 사용자가 따옴표로 준 대사를 바꿨다**(`dialoguePolishHook.runWrittenDialogueLines(…, request)`): 요청의 「카엘, 이 빵… 무게가 이상해.」 가 윤문 뒤 「들어 보니까 이상해」 가 됐다. 요청 글의 따옴표 대사(4글자 이상, 띄어쓰기·부호 무시)를 담은 줄은 윤문 대상에서 뺀다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
