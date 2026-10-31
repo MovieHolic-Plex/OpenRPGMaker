@@ -104,7 +104,7 @@ import {
   roadRepairWarnings,
   withWidthCells,
 } from "./roadObstacles";
-import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
+import { BATTLE_BACKDROP_ID_HINT, unknownSceneryIdMessage } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { emptyMapNextStep } from "./mapEmptiness";
 import { THEME_SCENES, parseThemeScene, runThemedMap, themeSceneCatalogLines } from "./themeScenes";
@@ -2407,6 +2407,8 @@ const setMapProperties: ToolDefinition = {
       delete map.battleBackground;
       changed.push("전투배경=기본");
     } else if (typeof args.battleBackground === "string" && args.battleBackground.trim()) {
+      const badScenery = unknownSceneryIdMessage(args.battleBackground);
+      if (badScenery) throw new ToolError(badScenery.replace("add backdropLayers on the troop", "add backdropLayers on the troops fought there (upsert_troop)"), { code: "unknown-battle-backdrop" });
       map.battleBackground = args.battleBackground.trim();
       changed.push(`전투배경=${map.battleBackground}`);
     }
