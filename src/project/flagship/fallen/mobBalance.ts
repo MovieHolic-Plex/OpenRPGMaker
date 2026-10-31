@@ -106,9 +106,6 @@ export const FS_TROOP_MEMBERS: Readonly<Record<string, { readonly from: readonly
 
 /** 같은 무리가 레벨이 다른 두 곳에 놓여 한 값으로 못 맞추는 경우 — 뒤쪽 자리에 새 무리를 준다(맵의 그 전투만 무리 id 를 바꾼다). */
 export const FS_TROOP_SPLITS: readonly { readonly mapId: string; readonly fromTroop: string; readonly id: string; readonly name: string; readonly enemyIds: readonly string[] }[] = [
-  // 재의 들판(Lv7) 도깨비 셋과 새벽샘 마을 터(Lv8) 도깨비 — 마을 터는 넷.
-  { mapId: "fs2_dawnwell", fromTroop: "troop_fs2_ash_wisps", id: "troop_fs2_ash_wisps_dawn", name: "잿불 도깨비 떼",
-    enemyIds: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
   // 눈길(Lv10~11)과 얼음 호수(Lv12)의 서리늑대·서리박쥐 — 호수 쪽을 따로 둬 아래 FS_TROOP_TUNE 으로 조금 세게.
   { mapId: "fs2_ice_lake", fromTroop: "troop_fs2_frost_wolves", id: "troop_fs2_frost_wolves_lake", name: "얼음 호수 서리늑대",
     enemyIds: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"] },
@@ -128,6 +125,7 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
   troop_fs_inq_patrol: 0.58,
   troop_fs_inq_ledge: 1.23,
   troop_fs2_ash_wisps: 1.09,
+  troop_fs2_ash_wisps_pair: 4.4, // 새벽샘 마을 터 도깨비 둘(Lv8) — 둘뿐이라 하나하나가 세다
   troop_fs2_frost_bats: 0.87,
   troop_fs2_frost_wolves_lake: 1.06,
   troop_fs2_tower_snakes: 1.1,
@@ -366,9 +364,15 @@ export function applyFallenMobBalance(project: Project, exec: Exec): void {
     const original = clone(at);
     exec(project, "remove_event", { mapId: p.mapId, eventId: at.id });
     // 우두머리는 늘 보이는 곳에 서서 지키다 가까이(4칸) 와야 천천히 온다 — 피해 갈 수 있다. 한 번 이기면 다시 서지 않는다.
+    const args = { mapId: p.mapId, x, y, troopId: p.toTroop, behavior: "chase", patrol: { length: 1, axis: "horizontal" },
+      sightRange: 4, vision: "cone", pace: "slow", alert: "anger", respawnSec: 0, canEscape: false, id: `ev_${p.toTroop}` };
+    // 필드 그림은 도구가 전투 그림에서 고른다. 대응표에 없는 전투 그림(요새 기사 = 사람 전투 칩)은 원래 적이 쓰던 걷기 칩을 그대로 준다.
+    const seen = (original.pages ?? []).map((pg) => pg.graphic as Rec | undefined).find((g) => g && !g.transparent && g.sprite);
     try {
-      exec(project, "place_field_enemy", { mapId: p.mapId, x, y, troopId: p.toTroop, behavior: "chase", patrol: { length: 1, axis: "horizontal" },
-        sightRange: 4, vision: "cone", pace: "slow", alert: "anger", respawnSec: 0, canEscape: false, id: `ev_${p.toTroop}` });
+      try { exec(project, "place_field_enemy", args); } catch (first) {
+        if (!seen) throw first;
+        exec(project, "place_field_enemy", { ...args, graphic: clone(seen) });
+      }
     } catch (error) {
       console.warn(`[fallen-star mob] ${p.mapId} (${x},${y}) 우두머리 자리 거절 — 원래 적을 되돌린다: ${String((error as Error).message).slice(0, 160)}`);
       project.maps[p.mapId]!.events.push(original);

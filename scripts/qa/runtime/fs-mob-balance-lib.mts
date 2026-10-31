@@ -51,7 +51,7 @@ export const ACTS: { act: string; startLevel: number; steps: Step[] }[] = [
       { troop: "troop_fs2_ash_wisps", map: "map_field_north_2", party: HE },
       { troop: "troop_fs2_ash_snakes", map: "map_field_north_2", party: HE },
       { troop: "troop_fs2_cinder_golem", map: "map_field_north_2", party: HE },
-      { troop: "troop_fs2_ash_wisps_dawn", map: "fs2_dawnwell", party: HE },
+      { troop: "troop_fs2_ash_wisps_pair", map: "fs2_dawnwell", party: HE },
       { troop: "troop_fs2_fort_dogs_out", map: "fs2_fort_court", party: HE },
       { troop: "troop_fs2_fort_knights_out", map: "fs2_fort_court", party: HE },
       { troop: "troop_fs2_fort_dogs", map: "fs2_fortress", party: HE },
