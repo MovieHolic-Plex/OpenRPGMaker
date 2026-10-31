@@ -59,10 +59,32 @@ export interface ArgCoercion {
   readonly changes: readonly string[];
 }
 
+// 도구 하나에만 맞는 빈칸 채우기 — 그 칸이 «이름표»라 어떤 값이든 뜻이 같을 때만(값을 지어내도 동작이 안 바뀐다).
+// declare_story_flag: id 는 kebab 이름표일 뿐이다. 2026-11-01 flash·argon 이 id 없이 {action, description} 만 보내 4번씩 거절됐다.
+const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>> = {
+  declare_story_flag(args, changes) {
+    const out = { ...args };
+    const text = [out.description, out.meaning, out.name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
+    if ((out.action === undefined || out.action === "declare") && (typeof out.id !== "string" || !out.id.trim()) && text) {
+      let h = 7; for (const ch of text) h = (h * 31 + ch.codePointAt(0)!) | 0;
+      const ascii = text.normalize("NFKD").replace(/[^A-Za-z0-9]+/gu, "-").replace(/^-|-$/gu, "").toLowerCase().slice(0, 24);
+      out.id = `flag-${ascii || Math.abs(h).toString(36)}`;
+      changes.push(`id: missing → "${out.id}" (any kebab-case name works; pass id next time)`);
+    }
+    if ((out.action === undefined || out.action === "declare") && out.kind === undefined && text) {
+      out.kind = /횟수|개수|번째|카운트|count|number|times|점수|수치/iu.test(text) ? "variable" : "switch";
+      changes.push(`kind: missing → "${out.kind}" (a count is a variable, an on/off fact is a switch)`);
+    }
+    return out;
+  },
+};
+
 let problems: string[] = [];
-export function coerceToolArgs(schema: unknown, args: unknown): ArgCoercion {
+export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string): ArgCoercion {
   const changes: string[] = [];
   problems = [];
+  const fill = toolName ? TOOL_FILLS[toolName] : undefined;
+  if (fill && isObj(args)) args = fill(args, changes);
   const out = coerce(schema as Schema, args, "", changes);
   const found = problems; problems = [];
   return changes.length ? { args: out, changes, problems: found } : { args, changes, problems: found };
@@ -145,12 +167,18 @@ function coerceObject(obj: Schema, value: Obj, path: string, changes: string[]):
   }
   if (Array.isArray(out.list) && !("list" in props) && "commands" in props && out.commands === undefined && out.list.some((c) => isObj(c) && typeof c.code === "number")) {
     const failed = mvListToCommands(out.list as Obj[]);
-    if (!failed.ok) problems.push(`${path || "(top level)"}.list: RPG Maker MV event codes are not accepted here (code ${failed.code} has no equivalent). Write \`commands\` instead, e.g. [{kind:"text", body:"…"}, {kind:"inputNumber", variableId:"var_0001", digits:4}, {kind:"fork", condition:{kind:"variable", variableId:"var_0001", op:"==", value:7294}, then:[…], else:[…]}, {kind:"setSwitch", switchId:"sw_0004", value:true}, {kind:"setVariable", variableId:"var_0002", op:"+=", value:1}]. A \`list\` field is ignored, so the event would have no commands.`);
+    if (!failed.ok) problems.push(`${path || "(top level)"}.list: RPG Maker MV event codes are not accepted here (code ${failed.code} has no equivalent). Write \`commands\` instead, e.g. [{kind:"text", body:"…"}, {kind:"inputNumber", variableId:"var_0001", digits:4}, {kind:"fork", condition:{kind:"variable", variableId:"var_0001", op:"==", value:7294}, then:[…], else:[…]}, {kind:"setSwitch", switchId:"sw_0004", value:true}, {kind:"setVariable", variableId:"var_0002", op:"+=", value:1}]. A \`list\` field is ignored, so the event would have no commands.${(out.list as Obj[]).some((c) => c?.code === 103 || c?.code === 303) ? " For a number lock (clues → code input → wrong-try count and hint → opening or ending), one author_puzzle_chain call builds all of it: links:[{role:\"clue\", eventId, learn, lines}, …, {role:\"ending\" or \"code\", eventId, needsAny:[clue learn names], code:\"7294\", lockedLines, wrongLines, hintAfter:3, hintLines, endingId or reward}]." : ""}`);
   }
   // 조건 목록이 필수인데 없다(define_ending 등) — 빈 목록 = «조건 없음, triggerEnding 으로만 닿는다».
   if ((obj.required ?? []).includes("conditions") && out.conditions === undefined && typeIs(props.conditions, "array")) {
     out.conditions = [];
     changes.push(`${path ? `${path}.` : ""}conditions: missing → [] (no conditions; it is reached only when a command triggers it by id)`);
+  }
+  // MV 페이지의 priorityType(0 아래 · 1 같은 층 · 2 위) → priority
+  if (typeof out.priorityType === "number" && out.priority === undefined && "priority" in props && !("priorityType" in props) && MV_ENUMS.priority![out.priorityType] && props.priority!.enum?.includes(MV_ENUMS.priority![out.priorityType])) {
+    out.priority = MV_ENUMS.priority![out.priorityType];
+    delete out.priorityType;
+    changes.push(`${path || "(top level)"}: priorityType → priority "${String(out.priority)}"`);
   }
   // 빠진 필수 칸 ← 다른 이름
   for (const need of obj.required ?? []) {
@@ -172,22 +200,31 @@ function coerceObject(obj: Schema, value: Obj, path: string, changes: string[]):
 // ── RPG Maker MV 명령 코드 → 우리 명령 ─────────────────────────────────────────────
 // 작은 모델이 이벤트를 MV JSON 으로 쓰는 습관을 그대로 받아 준다. 아는 코드만 바꾸고, 모르는 코드가 하나라도 있으면
 // 바꾸지 않는다(반쯤 바꾼 이벤트를 저장하지 않는다 — 그때는 원래 검증 오류가 commands 모양을 알려 준다).
-const sw = (n: unknown): string | undefined => (typeof n === "number" && n > 0 ? `sw_${String(n).padStart(4, "0")}` : undefined);
-const vr = (n: unknown): string | undefined => (typeof n === "number" && n > 0 ? `var_${String(n).padStart(4, "0")}` : undefined);
+// 번호(1) · 번호 글("1") · 이미 우리 id("sw_0001"·"var_wrong_count") 셋 다 받는다 — flash 가 121 의 매개변수에 "sw_0001" 을 넣었다.
+const idOf = (prefix: string, n: unknown): string | undefined => {
+  if (typeof n === "number" && Number.isInteger(n) && n > 0) return `${prefix}_${String(n).padStart(4, "0")}`;
+  if (typeof n === "string" && /^\d+$/u.test(n.trim()) && Number(n) > 0) return `${prefix}_${n.trim().padStart(4, "0")}`;
+  if (typeof n === "string" && /^[A-Za-z][\w-]*$/u.test(n.trim())) return n.trim();
+  return undefined;
+};
+const sw = (n: unknown): string | undefined => idOf("sw", n);
+const vr = (n: unknown): string | undefined => idOf("var", n);
 const MV_OPS = ["=", "+=", "-=", "*=", "/="] as const;
 const MV_CMP = ["==", ">=", "<=", ">", "<", "!="] as const;
 
 const MV_PAGE_KEYS = ["switch1Valid", "switch1Id", "switch2Valid", "switch2Id", "variableValid", "variableId", "variableValue", "selfSwitchValid", "selfSwitchCh", "itemValid", "itemId", "actorValid", "actorId"];
+/** MV 는 «…Valid» 로 켜고 끈다 — Valid 를 빼고 id 만 준 작은 모델은 «쓰겠다»는 뜻이다. */
+const on = (v: Obj, valid: string, id: string): boolean => v[valid] === true || (v[valid] === undefined && v[id] !== undefined && v[id] !== 0 && v[id] !== "");
 function mvPageConditions(v: Obj): Obj[] | undefined {
   const keys = Object.keys(v);
   if (keys.length === 0) return [];
   if (!keys.every((k) => MV_PAGE_KEYS.includes(k))) return undefined;
   const out: Obj[] = [];
-  if (v.switch1Valid && sw(v.switch1Id)) out.push({ kind: "switch", switchId: sw(v.switch1Id), value: true });
-  if (v.switch2Valid && sw(v.switch2Id)) out.push({ kind: "switch", switchId: sw(v.switch2Id), value: true });
-  if (v.variableValid && vr(v.variableId) && typeof v.variableValue === "number") out.push({ kind: "variable", variableId: vr(v.variableId), op: ">=", value: v.variableValue });
-  if (v.selfSwitchValid && typeof v.selfSwitchCh === "string") out.push({ kind: "selfSwitch", key: v.selfSwitchCh, value: true });
-  if (v.itemValid || v.actorValid) return undefined; // 항목·배우 번호는 우리 id 로 옮길 수 없다
+  if (on(v, "switch1Valid", "switch1Id") && sw(v.switch1Id)) out.push({ kind: "switch", switchId: sw(v.switch1Id), value: true });
+  if (on(v, "switch2Valid", "switch2Id") && sw(v.switch2Id)) out.push({ kind: "switch", switchId: sw(v.switch2Id), value: true });
+  if (on(v, "variableValid", "variableId") && vr(v.variableId) && typeof v.variableValue === "number") out.push({ kind: "variable", variableId: vr(v.variableId), op: ">=", value: v.variableValue });
+  if (on(v, "selfSwitchValid", "selfSwitchCh") && typeof v.selfSwitchCh === "string") out.push({ kind: "selfSwitch", key: v.selfSwitchCh, value: true });
+  if (on(v, "itemValid", "itemId") || on(v, "actorValid", "actorId")) return undefined; // 항목·배우 번호는 우리 id 로 옮길 수 없다
   return out;
 }
 
@@ -212,21 +249,28 @@ export function mvListToCommands(list: readonly Obj[]): { ok: true; commands: Ob
       const ind = typeof c.indent === "number" ? c.indent : indent;
       if (ind < indent) return outCmds;
       if (code === 0) { i += 1; if (indent > 0) return outCmds; continue; }
+      if (code === 108 || code === 408) { i += 1; continue; } // 주석
       if (code === 101) { i += 1; const lines: string[] = []; while (list[i]?.code === 401) { lines.push(String(((list[i]!.parameters as unknown[]) ?? [])[0] ?? "")); i += 1; } if (lines.length) { outCmds.push({ kind: "text", body: lines.join("\n") }); note("text"); } continue; }
       if (code === 401) { const lines: string[] = []; while (list[i]?.code === 401) { lines.push(String(((list[i]!.parameters as unknown[]) ?? [])[0] ?? "")); i += 1; } outCmds.push({ kind: "text", body: lines.join("\n") }); note("text"); continue; }
       if (code === 121) { // [start, end, 0=ON 1=OFF]
         const [a, b, v] = p as number[];
         if (!sw(a)) return code;
-        for (let n = a!; n <= (typeof b === "number" ? b : a!); n += 1) outCmds.push({ kind: "setSwitch", switchId: sw(n), value: v === 0 });
+        if (typeof a !== "number") outCmds.push({ kind: "setSwitch", switchId: sw(a), value: v === 0 });
+        else for (let n = a; n <= (typeof b === "number" ? b : a); n += 1) outCmds.push({ kind: "setSwitch", switchId: sw(n), value: v === 0 });
         note("setSwitch"); i += 1; continue;
       }
       if (code === 122) { // [start, end, op, operandType 0=const 1=var, operand]
         const [a, b, op, t, x] = p as number[];
         if (!vr(a) || (t !== 0 && t !== 1) || !MV_OPS[op ?? 0]) return code;
-        for (let n = a!; n <= (typeof b === "number" ? b : a!); n += 1) outCmds.push({ kind: "setVariable", variableId: vr(n), op: MV_OPS[op ?? 0], value: t === 0 ? x : { kind: "var", id: vr(x) } });
+        const value = t === 0 ? x : { kind: "var", id: vr(x) };
+        if (typeof a !== "number") outCmds.push({ kind: "setVariable", variableId: vr(a), op: MV_OPS[op ?? 0], value });
+        else for (let n = a; n <= (typeof b === "number" ? b : a); n += 1) outCmds.push({ kind: "setVariable", variableId: vr(n), op: MV_OPS[op ?? 0], value });
         note("setVariable"); i += 1; continue;
       }
+      // 303 은 MV 의 이름 입력인데, 작은 모델이 [변수, 자릿수] 로 숫자 입력 자리에 쓴다(2026-11-01 flash) — 그 모양일 때만 숫자 입력으로.
+      if (code === 303 && vr(p[0]) && typeof p[1] === "number" && p[1] >= 1 && p[1] <= 8) { outCmds.push({ kind: "inputNumber", variableId: vr(p[0]), digits: p[1] }); note("inputNumber"); i += 1; continue; }
       if (code === 103) { const [a, digits] = p as number[]; if (!vr(a)) return code; outCmds.push({ kind: "inputNumber", variableId: vr(a), digits: Math.max(1, Math.min(6, digits ?? 4)) }); note("inputNumber"); i += 1; continue; }
+      if (code === 201 && p[0] === 0 && typeof p[1] === "string" && p[1].trim() && typeof p[2] === "number" && typeof p[3] === "number") { outCmds.push({ kind: "transfer", mapId: p[1], x: p[2], y: p[3], ...(MV_ENUMS.direction![p[4] as number] ? { direction: MV_ENUMS.direction![p[4] as number] } : {}) }); note("transfer"); i += 1; continue; }
       if (code === 230) { outCmds.push({ kind: "wait", ms: Math.round(((p[0] as number) ?? 60) * (1000 / 60)) }); note("wait"); i += 1; continue; }
       if (code === 111) {
         const cond = mvCondition(p);

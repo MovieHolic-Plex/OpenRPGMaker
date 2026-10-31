@@ -29,6 +29,9 @@ export const isReadVerb = (name: string): boolean => READ_VERB.test(name);
 export function isWriteRequest(request: Pick<PiAgentRequest, "task" | "readOnly">): boolean {
   if (request.readOnly) return false;
   const t = request.task.trim();
+  // 만들라는 낱말이 있으면 쓰기다 — 「…「아직 아무 단서도 없다」고 알려 줘」처럼 게임 속 대사를 시키는 «알려 줘»를 질문으로 읽어
+  // 할 일 뼈대·첫 쓰기 관문이 통째로 꺼졌다(2026-11-01 자물쇠 요청, 모든 모델).
+  if (/넣어\s*줘|만들어|추가해|바꿔\s*줘|고쳐\s*줘|놓아\s*줘|지어\s*줘|깔아\s*줘|붙여\s*줘|구현해|짜\s*줘|세워\s*줘|그려\s*줘/u.test(t)) return true;
   return !/\?\s*$|？\s*$|알려\s*줘|뭐야|뭐가 있|어디\s*있|있어\?|보여\s*줘|설명해|정리해서|요약해/u.test(t);
 }
 

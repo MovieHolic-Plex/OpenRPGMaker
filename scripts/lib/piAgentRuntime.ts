@@ -660,7 +660,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     let valid: unknown;
     // 작은 모델의 모양 습관(다른 이름·MV 숫자/명령 코드·낱값↔객체/목록) — src/ai/piAgent/argCoerce.ts. 검증 전에 한 번 맞춘다:
     // MV `list` 처럼 검증은 지나가지만 조용히 버려지는 칸도 있어서다. 고친 것은 영어로 결과에 붙인다.
-    const pre = coerceToolArgs(tool.parameters, params);
+    const pre = coerceToolArgs(tool.parameters, params, tool.name);
     if (pre.problems.length) {
       emit({ type: 'execution_status', name: 'tool.args.unsupported', ok: false, summary: `${tool.name}: ${pre.problems[0]!.slice(0, 160)}` });
       throw new Error(pre.problems.join("\n"));
