@@ -836,7 +836,7 @@ async function consumeBlockingStep(
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
       if (step.title !== undefined || step.message !== undefined || step.presentation) {
-        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo);
+        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo, step.epiloguePlayed);
       } else {
         scene.returnToTitle();
       }
