@@ -17,6 +17,7 @@
 .database-modal-body .db-bestiary-enemy { align-items: center; display: inline-flex; font-size: 12px; gap: 4px; }
 .database-modal-body .db-bestiary-section { border: 1px dashed var(--border-default); border-radius: 6px; display: grid; gap: 6px; margin-top: 8px; padding: 8px; }
 .database-modal-body .db-bestiary-section textarea { min-height: 52px; resize: vertical; width: 100%; }
+.database-modal-body .db-bestiary-condition { border-left: 2px solid var(--border-default); padding-left: 8px; }
 .database-modal-body .db-bestiary-note { color: var(--text-2); font-size: 11px; margin: 0; }
 .database-modal-body .db-bestiary-row-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .database-modal-body .db-bestiary-remove,
