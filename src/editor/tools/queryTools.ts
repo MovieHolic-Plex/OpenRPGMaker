@@ -11,6 +11,7 @@ import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
+import { refmapDollBattlerFor } from "@/assets/refmapDollCharsets";
 import { GHOST_WORDS, jrpgHeroesCharsetHint, PERSON_WORDS, queryNpcGraphics, unmatchedNpcGraphicTerms } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
@@ -532,7 +533,7 @@ function jrpgHeroesHintForNpcList(project: Project, query: string | undefined): 
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다.",
+  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다. battleSheet:true 인 칸은 옆모습 전투 그림이 있는 인물이라 주인공·동료(파티 배우)로 먼저 고른다 — query \"전투 그림\" 으로 찾는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -557,6 +558,8 @@ const listNpcGraphics: ToolDefinition = {
       age: match.entry.age,
       tags: match.entry.tags,
       ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
+      // REFMAP 대표 인물(13명)은 모델이 그린 옆모습 전투 시트가 있다 — 파티 배우로 쓰면 전투에서 그 그림으로 싸운다.
+      ...(refmapDollBattlerFor(match.entry.textureKey, match.entry.characterIndex) ? { battleSheet: true } : {}),
       // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
       face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
       portraitOptions: (() => {

@@ -145,6 +145,65 @@ export function checkLightingLeak(project: Project, graph: MapGraph): Finding[] 
   return findings;
 }
 
+/**
+ * 이벤트 setLighting 으로 어둡게 한 맵(「그날 밤」)이 기본 조명(defaultLighting)을 밝게 박아 두면, 문을 드나드는 순간
+ * applyMapDefaultLighting 이 박힌 값으로 되돌려 밤이 풀린다 — 해원(조선 검안 데모) 밤 우물에서 주막에 들렀다 나오니 대낮이었다.
+ * map-lighting-leak 의 「조명을 고정하라」 처방을 따른 맵에서 특히 생긴다. 들어오는 문이 있는 맵만 본다(다시 들어올 수 없으면 무해).
+ */
+export function checkStoryLightingReset(project: Project, graph: MapGraph): Finding[] {
+  const findings: Finding[] = [];
+  const reported = new Set<string>();
+  for (const page of allPages(project)) {
+    const map = page.map;
+    if (!map) continue;
+    visitPageCommands(page, ({ command, where }) => {
+      if (command.kind !== "setLighting" || reported.has(map.id)) return;
+      const ambient = Number(command.ambient);
+      const pinned = map.defaultLighting;
+      if (!(ambient >= DARK_AMBIENT) || !pinned || pinned.ambient >= DARK_AMBIENT) return;
+      const reentry = graph.edges.some((edge) => edge.to === map.id && edge.from !== null && edge.from !== map.id);
+      if (!reentry) return;
+      reported.add(map.id);
+      findings.push({
+        severity: "warning",
+        code: "story-lighting-reset",
+        message: `${map.name}(${map.id}) 은 이벤트에서 setLighting(ambient ${ambient})으로 어두워지지만 기본 조명(ambient ${pinned.ambient})이 박혀 있어, 문으로 나갔다 들어오면 곧바로 그 밝기로 돌아갑니다(밤이 풀림). 고치기: set_lighting_volume({mapId:"${map.id}", inherit:true}) 로 기본 조명을 지우고, 밤이 끝날 때 이벤트에서 setLighting(ambient 0)으로 되돌리세요.`,
+        where,
+      });
+    });
+  }
+  return findings;
+}
+
+/** 이보다 큰 광원 반경(칸)은 픽셀로 잘못 쓴 값으로 본다 — 해원 밤 장면에서 손등불 72·우물 40 이 화면 전체를 밝혀 밤이 보이지 않았다. */
+const HUGE_LIGHT_RADIUS_TILES = 24;
+
+/** 광원 반경은 칸 단위다. 픽셀처럼 큰 값이면 어둠 막 전체가 뚫려 setLighting·기본 조명의 밤이 안 보인다. */
+export function checkHugeLightRadius(project: Project): Finding[] {
+  const findings: Finding[] = [];
+  const flag = (radius: unknown, id: unknown, where: CommandWhere) => {
+    const r = Number(radius);
+    if (!(r > HUGE_LIGHT_RADIUS_TILES)) return;
+    findings.push({
+      severity: "warning",
+      code: "light-radius-huge",
+      message: `광원 ${String(id ?? "?")} 반경이 ${r}칸입니다 — 반경은 픽셀이 아니라 칸 단위라 화면 전체가 밝아져 어둠(밤·암전)이 보이지 않습니다. 손등불은 3~4, 방 하나는 6~8칸으로 줄이세요.`,
+      where,
+    });
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const source of map.defaultLighting?.sources ?? []) flag(source.radius, source.id, { mapId: map.id, mapName: map.name });
+  }
+  for (const page of allPages(project)) {
+    visitPageCommands(page, ({ command, where }) => {
+      if (command.kind !== "addLight") return;
+      const source = command.source as { radius?: unknown; id?: unknown } | undefined;
+      flag(source?.radius, source?.id, where);
+    });
+  }
+  return findings;
+}
+
 export function summarizeMaps(project: Project, graph: MapGraph): MapSummary[] {
   return Object.values(project.maps).map((map) => ({
     id: map.id, name: map.name, width: map.width, height: map.height, events: map.events?.length ?? 0,
