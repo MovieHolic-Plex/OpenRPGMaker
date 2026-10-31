@@ -4109,6 +4109,11 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 3000
       }
      ],
      "shot": true
@@ -4281,19 +4286,22 @@
        "kind": "move",
        "dir": "up",
        "steps": 6,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
        "kind": "move",
        "dir": "right",
        "steps": 4,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       },
       {
        "kind": "move",
        "dir": "up",
        "steps": 8,
-       "stepTimeoutMs": 10000
+       "stepTimeoutMs": 10000,
+       "held": true
       }
      ],
      "shot": true
@@ -4333,6 +4341,11 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 3000
       }
      ],
      "shot": true
