@@ -4868,7 +4868,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 reshapeForestEdge(풀밭 14~38, 나무 벽 y13, 틈 x15~16) · ev_fs2_edge_spotted 외침 컷(SW_B4_RUN) · 등 뒤 둘(0.175초) + 앞 순찰 둘(손등불 3칸 = 시야, 아래 y30 서→동, 위 틈 어귀→(16,21)→서→동→틈) · 길: 위 2 → 동쪽 7 → 위 21(x19) → 서쪽 3 → 위 2",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 reshapeForestEdge(풀밭 14~38, 나무 벽 y13, 틈 x15~16) · ev_fs2_edge_spotted 외침 컷(SW_B4_RUN) · 등 뒤 둘(0.175초) + 앞 순찰 둘(손등불 3칸 = 시야, 아래 y30 서→동, 위 (16,19)→서(y21)→동(y21)→(16,19)) · 길: 위 7 → 동쪽 7 → 위 16(x19) → 서쪽 3 → 위 2 (동쪽 추격자에게 가로막히지 않게 먼저 올라간다)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -5072,7 +5072,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 2,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
@@ -5086,7 +5086,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 21,
+       "steps": 16,
        "stepTimeoutMs": 10000,
        "held": true
       },
@@ -5320,7 +5320,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 2,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
@@ -5334,7 +5334,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 21,
+       "steps": 16,
        "stepTimeoutMs": 10000,
        "held": true
       },

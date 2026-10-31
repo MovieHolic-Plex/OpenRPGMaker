@@ -1379,7 +1379,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   //  · 등 뒤 둘(성벽 밑 양 끝) — 경보 뒤 끝까지 따라붙는 추격(벽 너머도 안다). 주인공(0.16초)보다 조금 느린 0.175초.
   //  · 앞 둘 — 손등불 순찰. 앞을 막는 몫이 없어 「뒤에서 느리게 따라올 뿐」이던 판(VQA 5/10)을 고친다.
   //      아래 순찰: 풀밭 아래쪽을 서쪽 끝에서 동쪽으로 가로질러 오간다.
-  //      위 순찰: 틈 어귀에서 출발해 풀밭 한가운데로 내려오며(주인공 쪽으로 다가온다) 서쪽·동쪽을 훑고 틈 어귀로 돌아간다.
+  //      위 순찰: 틈 아래 풀밭 위쪽 띠에서 서쪽·동쪽으로 내려오며 훑는다(주인공 쪽으로 다가온다). 틈 어귀 자체는 지키지 않는다.
   //    둘 다 사방을 보되 손등불 빛만큼(3칸)만 본다 — 빛 = 시야. 빛에 들면 「!」 뒤 덮친다. 나무 밑동이 시선을 가린다.
   //    곧장 가운데로 뛰면 내려오는 위 순찰의 빛에 걸리고, 머뭇대면 뒤의 둘이 따라잡는다. 아래 순찰이 오기 전에 동쪽으로 빠져 올라가면 산다.
   const knight = { selectionId: `charset:${WATCHMAN_CHIP.textureKey}:${WATCHMAN_CHIP.characterIndex}` };
@@ -1397,7 +1397,9 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     { role: "chase", at: near({ x: 2, y: arrive.y }, meadow) },
     { role: "chase", at: near({ x: map.width - 3, y: arrive.y }, meadow) },
     { role: "patrol", at: near({ x: lowW, y: lowY }), patrol: [near({ x: lowE, y: lowY })] },
-    { role: "patrol", at: near({ x: gapC, y: edgeY + 2 }), patrol: [near({ x: gapC, y: highY }), near({ x: gapC - 8, y: highY }), near({ x: gapC + 8, y: highY })] },
+    // 위 순찰은 틈 어귀까지 올라가지 않는다 — 들를 칸 고리가 출발 칸으로 돌아오므로 틈 어귀에서 출발하면 결승선 앞을 지켜 서서
+    // 다 건너온 일행을 길돌 한 칸 앞에서 붙잡았다(r6 녹화). 풀밭 위쪽 띠(틈에서 6칸 아래)를 서·동으로 훑는다.
+    { role: "patrol", at: near({ x: gapC, y: highY - 2 }), patrol: [near({ x: gapC - 8, y: highY }), near({ x: gapC + 8, y: highY })] },
   ];
   FS2_B4.patrols = [];
   const chaserIds: string[] = [];
@@ -1497,7 +1499,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const confess: Command[] = [
     cutBegin(),
     setSw(SW_B4_EDGE),
-    // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다. 위 순찰은 틈 어귀 둘레를 돌므로 이때 화면 안에 있다.
+    // 등불들이 그 자리에 멈칫 — 숲 쪽을 보고 서서 머뭇거린다. 위 순찰은 틈 아래 띠를 돌므로 이때 화면 안에 있다.
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.86, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
     // 길돌 앞에서 먼저 두 걸음 물러선 뒤에 말한다 — 일행 바로 옆 틈 안에 선 채로 「못 들어간다」 하면 경계가 안 읽혔다(VQA r4).
