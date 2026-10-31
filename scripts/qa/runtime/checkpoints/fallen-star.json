@@ -4500,11 +4500,11 @@
   {
    "id": "act2-b2-patrol",
    "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
-   "note": "act2Opening.ts curfewHub 순찰 (43,17) 가로 4칸 — 북쪽 성벽 밑 (40,17)에서 기다리면 돌아서며 본다",
+   "note": "act2Opening.ts curfewHub 북쪽 순찰 (45,17) 가로 4칸(동쪽으로 먼저 걷는다, 콘 120°·시야 6) — 순찰로 동쪽 끝 너머 (50,17)에 서 있으면 첫 걸음 뒤 정면 부채꼴에 든다. (43,20)은 순찰이 등을 돌린 채 서 있어 14초 안에 못 봤다(r2).",
    "mapId": "fs2_hub_night",
-   "x": 40,
+   "x": 50,
    "y": 17,
-   "facing": "right",
+   "facing": "left",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_done": true,
@@ -4534,7 +4534,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 9000
+       "ms": 6000
       }
      ],
      "shot": true
@@ -4543,9 +4543,15 @@
      "id": "battle",
      "ops": [
       {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 30000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 5000
+       "ms": 1500
       }
      ],
      "shot": true
@@ -4702,7 +4708,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 4,
+       "maxRounds": 6,
        "ops": [
         {
          "kind": "key",
@@ -4716,14 +4722,112 @@
        ]
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 5
+       "kind": "waitForPosition",
+       "mapId": "fs2_obs_night",
+       "x": 16,
+       "y": 13,
+       "timeoutMs": 20000
       },
       {
        "kind": "face",
@@ -13385,19 +13489,48 @@
        "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 6
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 8,
+       "y": 4,
+       "timeoutMs": 15000
       },
       {
        "kind": "face",
@@ -13421,15 +13554,7 @@
        "kind": "waitForEventAt",
        "eventId": "ev_fs2_barracks_watch_n",
        "mapId": "fs2_barracks",
-       "x": 6,
-       "y": 7,
-       "timeoutMs": 90000
-      },
-      {
-       "kind": "waitForEventAt",
-       "eventId": "ev_fs2_barracks_watch_n",
-       "mapId": "fs2_barracks",
-       "x": 14,
+       "x": 24,
        "y": 7,
        "timeoutMs": 90000
       },
@@ -13442,19 +13567,59 @@
        "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 7
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 15,
+       "y": 4,
+       "timeoutMs": 15000
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
       },
       {
        "kind": "hold",
@@ -13487,24 +13652,64 @@
      "id": "chest",
      "ops": [
       {
-       "kind": "move",
-       "dir": "down",
-       "steps": 1
+       "kind": "action"
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 7
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
       },
       {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
       },
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 1
+       "kind": "waitForPosition",
+       "mapId": "fs2_barracks",
+       "x": 23,
+       "y": 4,
+       "timeoutMs": 15000
       },
       {
        "kind": "face",

@@ -4,7 +4,8 @@
 //
 // 그림은 전부 기존 버들항 원본(새 그림 없음):
 // - 바닥 = 설원 마을 키트 눈 바닥(bd-pick-snowfield-ground-snow) 칸을 해시로 섞는다(키트 무늬 그대로 깔면 3칸 주기가 격자로 드러난다).
-// - 길 = 밟힌 다진 눈(던전 얼음굴 바닥 오토타일 beodeul_dungeon_ice_ground, 테두리가 부드럽다 — 없으면 bd-pick-snowfield-ground-road 키트). Catmull-Rom 곡선, 폭이 굽이마다 2~3.4칸으로 숨 쉰다.
+// - 길 = 걷는 칸은 Catmull-Rom 곡선, 폭이 굽이마다 2~3.4칸으로 숨 쉰다. 밟힌 다진 눈(던전 얼음굴 바닥 오토타일 beodeul_dungeon_ice_ground —
+//   없으면 bd-pick-snowfield-ground-road 키트)은 곧게 16칸 넘게 뻗는 구간에만 깐다(비스듬한 굽이에 깔면 칸 계단으로 읽힌다).
 // - 길 양옆 벽 = 눈 덮인 침엽 수관 오토타일(beodeul_nature forestCanopy.snow — 설원 마을 숲과 같은 그림).
 // - 빙판 = 던전 얼음 바닥 오토타일(beodeul_dungeon_ice, 둥근 가장자리), 없으면 설원 얼음 키트.
 // - 눈더미 = bd-pick-snowfield-mound(1×1 막힘)·rock, 낱 눈 소나무 = bd-pick-snowfield-pine.
@@ -268,9 +269,21 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
   const roadKit = (tileset.structureKits ?? []).find((k) => k.id === KIT("ground-road"));
   const rows = (roadKit?.rows ?? []).map((r) => (r.tiles ?? []).filter((t) => t >= 0));
   const trail = new Set<number>();
+  // 비스듬한 굽이에 일정한 폭의 띠를 깔면 두 칸마다 같은 꺾임이 되풀이돼 「눈 덮인 돌계단」으로 읽혔다
+  // (2026-11-01 폴른 스타 B7 첫 플레이 검수 — 테두리 있는 오토타일이 대각선을 칸 계단으로 그린다).
+  // 밟힌 눈길은 곧게 뻗는 구간(진행 방향이 축에서 15° 안)에만, 그것도 16칸 넘게 이어질 때만 깐다. 비스듬한 굽이는 새 눈이 덮은
+  // 맨 눈밭 그대로 — 길은 양옆 숲 벽이 이미 보여 준다. 걷는 칸(path)은 그대로, 그림만 바뀐다.
   const trailRadius = packedGroup ? 1.3 : 0.95;
-  for (const s of spline(plan.pts)) for (let y = Math.floor(s.y) - 2; y <= Math.ceil(s.y) + 2; y += 1) for (let x = Math.floor(s.x) - 2; x <= Math.ceil(s.x) + 2; x += 1) {
-    if (inMap(x, y) && path.has(idx(x, y)) && Math.hypot(x - s.x, y - s.y) <= trailRadius) trail.add(idx(x, y));
+  const samples = spline(plan.pts);
+  for (let i = 0; i < samples.length; i += 1) {
+    const s = samples[i]!;
+    const a = samples[Math.max(0, i - 2)]!, b = samples[Math.min(samples.length - 1, i + 2)]!;
+    const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+    const slant = Math.min(Math.abs(b.x - a.x), Math.abs(b.y - a.y)) / len;
+    if (packedGroup && slant > 0.26) continue;
+    for (let y = Math.floor(s.y) - 2; y <= Math.ceil(s.y) + 2; y += 1) for (let x = Math.floor(s.x) - 2; x <= Math.ceil(s.x) + 2; x += 1) {
+      if (inMap(x, y) && path.has(idx(x, y)) && Math.hypot(x - s.x, y - s.y) <= trailRadius) trail.add(idx(x, y));
+    }
   }
   if (packedGroup) {
     // 2×2 덩이에 들지 못한 외톨이 칸은 뺀다(테두리 그림이 칸마다 끊긴다).
@@ -279,6 +292,17 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
       const ok = ([[0, 0], [-1, 0], [0, -1], [-1, -1]] as const).some(([ox, oy]) =>
         ([[0, 0], [1, 0], [0, 1], [1, 1]] as const).every(([i, j]) => trail.has(idx(x + ox + i, y + oy + j))));
       if (!ok) trail.delete(c);
+    }
+    // 곧은 구간이 짧아 남은 작은 조각(16칸 미만)은 뺀다 — 눈밭 한가운데 회색 네모로 떠 보였다.
+    const seen = new Set<number>();
+    for (const c0 of [...trail]) {
+      if (seen.has(c0)) continue;
+      const comp = [c0]; seen.add(c0);
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!, x = c % W;
+        for (const n of [c - W, c + W, x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1]) if (n >= 0 && trail.has(n) && !seen.has(n)) { seen.add(n); comp.push(n); }
+      }
+      if (comp.length < 16) for (const c of comp) trail.delete(c);
     }
     const tb: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
     for (const c of trail) {
