@@ -342,13 +342,20 @@ export async function applyOp(page, op, runState) {
         const axis = dir === "up" || dir === "down" ? "y" : "x";
         const sign = dir === "up" || dir === "left" ? -1 : 1;
         await page.evaluate((value) => window.__oprnInput.dir(value), dir);
-        try {
-          await page.waitForFunction(([mapId, origin, key, s, n]) => {
-            const debug = window.__oprnDebug;
-            const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
-            return Boolean(state) && (state.currentMapId !== mapId || (state[key] - origin) * s >= n);
-          }, [start?.mapId ?? null, start?.[axis] ?? 0, axis, sign, steps], { timeout: (op.stepTimeoutMs ?? 1200) * steps });
-        } catch { /* 막혔다 — 아래에서 간 칸 수를 남긴다 */ }
+        // 끝: 목표 칸 수에 닿거나, 맵이 바뀌거나, stallMs(기본 1.5초) 동안 한 칸도 못 가면(벽·대화로 멈춤) 뗀다.
+        const stallMs = Number(op.stallMs ?? 1500);
+        const deadline = Date.now() + (op.stepTimeoutMs ?? 1200) * steps;
+        let last = start;
+        // 도착 직후 입력 잠금(맵 전환·자동 저장)이 1~2초 있다 — 첫 칸 전엔 넉넉히 기다린다.
+        let lastChange = Date.now() + Number(op.startGraceMs ?? 3000);
+        while (Date.now() < deadline) {
+          await page.waitForTimeout(50);
+          const now = await readPosition();
+          if (!now || !start || now.mapId !== start.mapId) break;
+          if ((now[axis] - start[axis]) * sign >= steps) break;
+          if (now.x !== last?.x || now.y !== last?.y) { last = now; lastChange = Date.now(); }
+          else if (Date.now() - lastChange >= stallMs) break;
+        }
         await page.evaluate(() => window.__oprnInput.dir(null));
         const end = await readPosition();
         const heldMoved = end && start && end.mapId === start.mapId ? Math.abs(end[axis] - start[axis]) : steps;
