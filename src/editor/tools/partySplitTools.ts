@@ -23,6 +23,8 @@ interface LeverPair {
   readonly index: number; readonly lever: Spot; readonly door: Spot; readonly name: string;
   /** 문이 막는 칸 전부(door + doorHeight 2 면 그 바로 위 칸). */
   readonly cells: readonly Spot[];
+  /** 조사 이름표(생략 = 「레버」). 문 이름을 넣지 않는다 — 이름표가 어느 문인지(퍼즐의 답)를 알려 준다. */
+  readonly label: string;
   readonly text?: string; readonly prompt?: string; readonly pullLabel?: string; readonly pullText?: string; readonly doneText?: string;
   readonly pullLines: readonly Line[]; readonly doorText?: string;
 }
@@ -30,7 +32,7 @@ interface LeverPair {
 const KEYS = ['id', 'mapId', 'splitAt', 'groups', 'levers', 'rejoin', 'splitText', 'rejoinText',
   'splitTrigger', 'splitWhenSwitchId', 'splitLines', 'splitQuake', 'fadeOnSplit', 'afterSplitLines', 'rejoinLines', 'gateLook', 'leverLook', 'switchLook', 'switchIdleText'] as const;
 const GROUP_KEYS = ['name', 'actorIds', 'mapId', 'x', 'y', 'switchAt'] as const;
-const LEVER_KEYS = ['lever', 'door', 'name', 'doorHeight', 'text', 'prompt', 'pullLabel', 'pullText', 'doneText', 'pullLines', 'doorText'] as const;
+const LEVER_KEYS = ['lever', 'door', 'name', 'label', 'doorHeight', 'text', 'prompt', 'pullLabel', 'pullText', 'doneText', 'pullLines', 'doorText'] as const;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 /** 이 도구가 짓는 이벤트 id 꼬리 — 같은 id 로 다시 부르면 이것들만 치우고 새로 짓는다. */
 const OWN_EVENT = /^(?:split|switch_[ab]|rejoin|lever_\d+|door_\d+(?:_top)?|after_split)$/u;
@@ -240,6 +242,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
             properties: {
               lever: cellSchema('레버 칸(leverLook wall 이면 벽 앞면 칸 — 바로 남쪽 바닥에서 조사)'), door: cellSchema('문 칸(걸을 수 있는 길 칸)'), name: { type: 'string', description: '문 이름(생략 = 철문 n)' },
               doorHeight: { type: 'integer', enum: [1, 2], description: '2 = 문 칸과 그 바로 위 칸을 함께 막는다(두 칸 높이 옆 틈을 쇠창살 하나로). 생략 = 1' },
+              label: { type: 'string', description: '레버 조사 이름표(생략 = 「레버」). 어느 문인지는 넣지 마라 — 답을 알려 준다' },
               text: { type: 'string', description: '레버를 조사할 때 첫 줄(생략 = 기본)' },
               prompt: { type: 'string', description: '당길지 묻는 줄(생략 = 「레버를 당길까?」)' },
               pullLabel: { type: 'string', description: '당기는 선택지 글(생략 = 「당긴다」)' },
@@ -319,6 +322,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
           door,
           cells: height === 2 ? [{ mapId: door.mapId, x: door.x, y: door.y - 1 }, door] : [door],
           name: typeof value.name === 'string' && value.name.trim() ? value.name.trim() : `철문 ${index + 1}`,
+          label: optText(value.label) ?? '레버',
           text: optText(value.text), prompt: optText(value.prompt), pullLabel: optText(value.pullLabel), pullText: optText(value.pullText), doneText: optText(value.doneText),
           pullLines: linesOf(value.pullLines, `levers[${index}].pullLines`), doorText: optText(value.doorText),
         };
@@ -537,7 +541,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         const open = sw(`lever_${pair.index}`);
         const leverTile = leverTiles.get(pair.index);
         const gate = gateTiles.get(pair.index);
-        put(pair.lever, at(pair.lever, sw(`lever_${pair.index}`), `레버 → ${pair.name}`, [
+        put(pair.lever, at(pair.lever, sw(`lever_${pair.index}`), pair.label, [
           makePage({ id: `${id}_lever_${pair.index}_p1`, name: '레버 (당기기 전)', graphic: leverTile ? TRANSPARENT : objGraphic('object2', 0, 'down'), commands: [
             textCmd(pair.text ?? '묵직한 레버다. 어딘가의 문과 이어져 있는 것 같다.'),
             choices(pair.prompt ?? '레버를 당길까?', [
