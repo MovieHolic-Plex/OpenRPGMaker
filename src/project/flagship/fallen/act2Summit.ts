@@ -11,6 +11,7 @@
  */
 import type { Command, Project } from "@/project/types";
 import { towerKit } from "./act2Tower";
+import skySummitBackdrop from "./backdrops/sky-summit.json";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };
@@ -92,7 +93,7 @@ export function gateSummitStair(project: Project, exec: Exec, irisBackSwitch: st
 }
 
 function summitData(project: Project, exec: Exec): void {
-  const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID, TOWER_LAYERS } = towerKit;
+  const { actRow, ENEMY_TOOL_FIELDS, HERO, ELENA_ID, IRIS_ID, SARAH_ID } = towerKit;
   const skill = (s: Rec): void => { exec(project, "upsert_skill", { skill: { type: "normal", variance: 15, hitRate: 100, successRate: 100, stateEffects: [], ...s } }); };
   skill({ id: SK_ASH_SCATTER, name: "재 흩뿌리기", scope: "allEnemies", power: 42, description: "서른 해 묵은 재를 흩뿌린다. 아군 전체 피해, 실명.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_blind", chance: 35, operation: "add" }], animationId: "anim_gen_power_aura" });
@@ -138,9 +139,12 @@ function summitData(project: Project, exec: Exec): void {
   foe({ id: E_EMBER, name: "삼킨 불", art: "generated-enemy-spirit-fire", level: 14, scale: 110,
     stats: { maxHp: 900, maxMp: 60, attack: 90, defense: 36, mind: 100, agility: 76 },
     actions: [actRow("skill_attack", 4), actRow(SK_EMBER_BURST, 5)], rates: { fire: "E", ice: "A", water: "A" }, exp: 200, gold: 0 });
+  // 꼭대기는 밤하늘 아래 돌 옥상이다 — 동굴 배경(battle-scenery-cave)이면 「탑 꼭대기」가 아니라 굴속에서 싸운다(2026-10-31 첫 플레이 검토).
+  // 손 도트 배경 backdrops/draw_sky_summit.py → sky-summit.json. 낮 빛줄기(lightRays)는 밤과 안 맞아 뺐다.
+  exec(project, "upsert_resource", { resource: skySummitBackdrop.resource });
   exec(project, "upsert_troop", { troop: {
     id: FS2_TROOP_COLLECTOR, name: "재의 회수자", autoAlign: false,
-    previewBackgroundResourceId: "battle-scenery-cave", backdropLayers: TOWER_LAYERS,
+    previewBackgroundResourceId: skySummitBackdrop.resource.id, backdropLayers: [{ preset: "glow", opacity: 35 }],
     members: [
       { enemyId: E_COLLECTOR, x: 120, y: 120 },
       { enemyId: E_EYE_GRAB, x: 48, y: 70, partOf: 0, partTag: "grab" },
