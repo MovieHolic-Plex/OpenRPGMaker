@@ -97,7 +97,8 @@ export default {
     { id: "opening-2", note: "오프닝 2컷 — 편지의 빛", ops: [shotPause(5600)], shot: true },
     { id: "opening-4", note: "오프닝 4컷 — 지금", ops: [shotPause(13000)], shot: true },
     { id: "intro", note: "오프닝 넘김 → 승강장 첫 대사", ops: [
-      { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='cinematic-sequence']\")", maxPresses: 8, settleMs: 800 },
+      // 데모 오프닝은 건너뛸 수 없다(flagship/index.ts lockDemoOpening) — 끝날 때까지 기다린다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 180000 },
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 },
       shotPause(1500),

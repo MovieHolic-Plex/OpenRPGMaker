@@ -1,5 +1,6 @@
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import { collectChangeTileCommands } from "@/project/changeTileValidation";
+import { serialize } from "@/project/io";
 import type { Project } from "@/project/types";
 import {
   FLAGSHIP_BEAT_MANIFESTS,
@@ -75,7 +76,19 @@ export function createFlagshipDemoProject(id: FlagshipDemoId): FlagshipDemoBuild
   if (!spec) {
     throw new Error(`알 수 없는 대표 데모게임 ID입니다: ${String(id)}`);
   }
-  return spec.build();
+  return lockDemoOpening(spec.build());
+}
+
+/**
+ * 데모게임의 새 게임 오프닝은 건너뛸 수 없다(사용자 2026-10-31 「데모게임들의 오프닝은 스킵할 수 없게」).
+ * 데모마다 `skippable` 을 따로 적지 않고 모든 데모가 지나는 이 입구에서 한 번에 잠근다 — 굽기·편집기 메뉴·dev 폴백이
+ * 모두 여기를 지난다. 런타임(`cinematicSequence`)은 skippable 이 거짓이면 Esc·건너뛰기 단추를 둘 다 내지 않는다.
+ */
+function lockDemoOpening(result: FlagshipDemoBuildResult): FlagshipDemoBuildResult {
+  const opening = result.project.system.opening;
+  if (!opening || opening.skippable === false) return result;
+  result.project.system.opening = { ...opening, skippable: false };
+  return { ...result, serialized: serialize(result.project) };
 }
 
 export function createFlagshipDemoForChoice(choiceId: NewProjectChoiceId): FlagshipDemoBuildResult | undefined {
