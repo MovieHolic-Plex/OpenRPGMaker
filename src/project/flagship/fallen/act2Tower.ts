@@ -440,7 +440,8 @@ function floorTwo(project: Project, exec: Exec): void {
     splitText: "발밑 판이 덜컹 꺼졌다! 양쪽 날개 사이로 쇠창살이 내리꽂혔다.",
     afterSplitLines: [
       { speaker: SARAH, text: "…갈렸군. 엘레나는 반대쪽 날개야." },
-      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 내가 이쪽 거울을 돌릴게.\n빛이 그쪽 문에 닿으면 말해." },
+      // 해법(「내가 거울을 돌릴게, 빛이 그쪽 문에 닿으면」)을 먼저 말해 퍼즐이 지시가 됐다(적대 검수 2026-11-01) — 갇혔다는 것만.
+      { speaker: ELENA, text: "(벽 너머) 카엘, 들려? 이쪽도 창살에 막혔어.\n벽에 뭔가 장치가 있긴 한데…" },
       { speaker: KAEL, text: "들려! 우리도 이쪽에서\n열 방법을 찾아볼게." },
       { text: "수정 받침을 조사하면 엘레나 쪽으로 넘어간다." },
     ],

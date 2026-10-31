@@ -162,9 +162,11 @@ function summitData(project: Project, exec: Exec): void {
   const hero = project.database.actors.find((a) => a.id === HERO);
   if (!hero?.parameterCurves || !hero.expCurve) throw new Error("[fallen-star summit] 카엘 곡선이 없다");
   const hc = hero.parameterCurves as unknown as Record<string, number[]>;
-  const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.15), attack: (v) => v + 8, defense: (v) => v + 6, mind: (v) => v + 10 };
+  // 발렌은 거들 뿐 — 암흑기사 직업의 그라비티(적 모두 남은 체력 1/4)가 한 방 846(보스 HP 의 18%)으로 판을 끝내
+  // 「손님이 이긴 싸움」으로 읽혔다(적대 검수 2026-11-01). 심문회 지휘관답게 장군 직업(지휘 검·격려·방진)으로 거들게 한다.
+  const tweak: Record<string, (v: number) => number> = { maxHp: (v) => Math.round(v * 1.15), attack: (v) => v + 4, defense: (v) => v + 6, mind: (v) => Math.round(v * 0.75) };
   exec(project, "upsert_actor", { actor: {
-    id: VALEN_ACTOR, name: VALEN, nickname: "심문관", classId: "class_dark_knight", initialLevel: 15, maxLevel: 99,
+    id: VALEN_ACTOR, name: VALEN, nickname: "심문관", classId: "class_general", initialLevel: 15, maxLevel: 99,
     faceResourceId: "easyrpg-faceset-actor1-04", characterResourceId: "easyrpg-charset-actor1", characterIndex: 4,
     battleCharacterResourceId: "charset-battler-fs-valen",
     parameterCurves: Object.fromEntries(Object.entries(hc).map(([k, arr]) => [k, arr.map((v) => (tweak[k] ?? ((x: number) => x))(v))])), expCurve: hero.expCurve,
@@ -394,4 +396,5 @@ export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   //   HP 4600·회수 104·흩뿌리기 38 → Lv12 발렌 없이 70%·발렌 93%(n=40, FS_LV=12). 「공격」만은 여전히 0%.
   //   그런데 출하 플레이어 QA(Lv14·발렌·계획대로 블리자드)에서 졌다 — 2막(삼킨 불)의 전체 불 피해가 모의전보다 아프다.
   //   삼킨 불 HP 900→700·새벽샘의 불 54→46·열선 64→56 → Lv12 발렌 없이 83%·발렌 100%.
+  //   발렌 직업 암흑기사→장군(그라비티 빠짐) → 발렌 손님 95%·행동 42(발렌 없이 83% 그대로).
 }
