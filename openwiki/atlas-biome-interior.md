@@ -64,7 +64,6 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
     오토타일 시트면 AI 가 짚은 칸의 블록 가운데로 바꾼다. 초안은 저장하지 않는다 — 사람이 견본 방을 보고 고친 뒤 저장.
 - **가구 = 칩셋 조립 부품 (`kitHandObjects`, 2026-10-08):** 역할표에 가구 표(objects)가 없으면 칩셋의 section 조립 부품을 가구로 쓴다(공방 부품은 따로).
   역할 wall·terrain·fence·roof·building·water 는 뺀다. 발밑 줄 = 네 방향 다 막힌 칸이 처음 나오는 줄부터 아래 끝, 놓는 곳 설명에 「벽에 붙·벽 앞·north-wall」 = 벽 가구, 「벽에 건·걸이」 = 걸이, 막힌 칸이 없고 위층 칸도 없으면 밟는 무늬.
-  이름(칠판·후드·벽등·벽 촛대·벽 램프)이나 놓는 곳(「북벽 정면·벽 정면에·벽에 거는·벽에 매단·벽 위쪽에」)이 벽면을 가리키면 통행 칸이 있어도 걸이(2026-10-31 — 마법약 교실 칠판·후드·벽 램프가 바닥 덧그림으로 갈렸다).
   업로드 칩셋은 자료집 → 오브젝트에서 부품을 등록하면 늘어난다.
 - **마법 학교 번들 역할표 (2026-10-08):** `scripts/content/wizarding/roomkit_wz.py` 를 `bake_wz.py` 가 부른다 — 바닥(A·B·C 변형을 한 판으로 묶고 rowShift) 13 · 벽 세트 북벽 아래 두 줄 8 · 어두운 천장 32 + 바깥.
   변형 색은 마법 학교 팔레트 최근접으로 붙인다. 번호는 pins `roomkit/…` 키(기존 칸·예제 불변, 2508 → 2669칸). 사양 `src/assets/wizardingRoomSpec.json`, `roomKit {builtin:"wizarding_world"}`.
