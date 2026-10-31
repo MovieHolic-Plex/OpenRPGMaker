@@ -1,5 +1,6 @@
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { READY_PEOPLE_BATTLERS } from "@/assets/charsetBattlerReady";
+import { refmapDollBattler, refmapDollBattlerFor } from "@/assets/refmapDollCharsets";
 
 /** 걷기 칩과 전투 시트의 공용 대응표. 48px 셀 3열×8행, 확대는 표시 계층에서 한 번만 한다. */
 const WALK_CHIP_BATTLERS = Array.from({ length: 32 }, (_, index) => {
@@ -73,8 +74,9 @@ const PEOPLE_CHIP_BATTLERS = Array.from({ length: 40 }, (_, index) => {
 export const CHARSET_BATTLERS = [...WALK_CHIP_BATTLERS, ...PEOPLE_CHIP_BATTLERS, ...CLASS_BATTLERS];
 
 const byId = new Map(CHARSET_BATTLERS.map((entry) => [entry.resourceId, entry]));
+/** REFMAP 변형 인물 칩의 전투 시트(2,567개)는 표에 싣지 않고 id 규칙으로 푼다(refmapDollCharsets.ts) — 에디터 그림 목록에도 늘어놓지 않는다. */
 export function charsetBattler(resourceId: string | undefined) {
-  return resourceId ? byId.get(resourceId) : undefined;
+  return resourceId ? byId.get(resourceId) ?? refmapDollBattler(resourceId) : undefined;
 }
 
 /** 손으로 고친 걷기 칩(업로드 칩)에 맞춘 전투 시트 — 칩 id·자리로 찾는다. 원본 칩의 전투 시트를 쓰면 모자·머리가 다른 사람이 된다. */
@@ -84,6 +86,8 @@ const BY_CUSTOM_CHIP = new Map(CLASS_BATTLERS.filter((entry) => entry.characterR
 export function charsetBattlerForCharacter(characterResourceId?: string, characterIndex = 0): string | undefined {
   const custom = BY_CUSTOM_CHIP.get(`${characterResourceId ?? ""}#${characterIndex}`);
   if (custom) return custom;
+  const refmap = refmapDollBattlerFor(characterResourceId, characterIndex);
+  if (refmap) return refmap;
   if (!/^easyrpg-charset-(actor[1-4]|people[1-5])$/.test(characterResourceId ?? "")) return undefined;
   if (!Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return undefined;
   const id = `charset-battler-${characterResourceId!.slice("easyrpg-charset-".length)}-${characterIndex}`;
