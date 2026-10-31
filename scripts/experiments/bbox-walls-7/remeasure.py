@@ -5,7 +5,8 @@ import json, os, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 root, out = sys.argv[1], sys.argv[2]
 HOME = os.path.expanduser("~"); RUNS = os.environ.get("BW_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxwalls7")
-jobs = [(k, t) for k in ("sol1", "sol2", "terra1", "terra2") for t in ("inn", "library", "jail", "manor") if os.path.exists(f"{root}/{k}/{t}/layout.json")]
+import re
+jobs = [(k, t) for k in sorted(os.listdir(root)) if re.fullmatch(r"(sol|terra|astra)\d", k) for t in ("inn", "library", "jail", "manor") if os.path.exists(f"{root}/{k}/{t}/layout.json")]
 def one(j):
     k, t = j
     p = subprocess.run(["bun", "scripts/experiments/bbox-walls-7/lay.mts", f"{root}/{k}/{t}/layout.json", f"/tmp/bw5-remeasure/{os.path.basename(root)}/{k}/{t}", f"{RUNS}/base", "--task", t, "--cats", f"{RUNS}/cats-{t}.json"],

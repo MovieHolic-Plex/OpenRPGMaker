@@ -4,13 +4,13 @@ New vs bbox-walls: exact multi-cell footprints/anchors/entry sides (stairs = 3x3
   python3 scripts/experiments/bbox-walls-6/run.py <inn|library|jail|manor> <sol|terra> <rep> [--critique N]   (from the worktree root)
 --critique N (optional, default 0): after a valid layout, N self-critique rounds (the model sees its laid map and returns a full corrected layout).
 Out: $BW_RUNS/<arm><rep>/<task>/ {prompt.txt, call-N.json, layout-N.json, check-N.json, layout.json, map.png, RUN.json}"""
-import base64, json, os, re, subprocess, sys, time, urllib.request
+import base64, json, os, re, subprocess, sys, time, urllib.error, urllib.request
 task, arm, rep = sys.argv[1], sys.argv[2], sys.argv[3]
 CRIT = int(sys.argv[sys.argv.index("--critique") + 1]) if "--critique" in sys.argv else 0
 HOME = os.path.expanduser("~")
 RUNS = os.environ.get("BW_RUNS", f"{HOME}/z-project/assistant-whole-game/suite/rooms/runs-bboxwalls6")
 G = f"{RUNS}/{arm}{rep}/{task}"; os.makedirs(G, exist_ok=True)
-MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "astra": "gpt-6-astra"}[arm]
+MODEL = {"sol": "gpt-6.1-sol", "terra": "gpt-6.1-terra", "astra": "gpt-6-astra", "argon": "gemini-4-argon-high"}[arm]
 OCX = "http://127.0.0.1:10200/v1/chat/completions"
 REQ = {"inn": "Build the ground floor of a small village inn: a common hall where guests are greeted at the reception counter and eat at tables, a kitchen, a staircase up, and two guest rooms.",
        "library": "Build an old town library: a hall of tall book stacks and a quiet reading room, plus whatever small rooms fit (an archive, the librarian's office).",
@@ -118,12 +118,29 @@ def call(n):
     json.dump({"secs": secs, "usage": u, "model": d.get("model"), "text": text}, open(f"{G}/call-{n}.json", "w"), ensure_ascii=False, indent=1)
     return text, secs, u
 
+QUOTA_RE = re.compile(r"\b429\b|quota|resource.?exhausted|rate.?limit|too many requests", re.I)
+class Quota(Exception): pass
+def _hook(t, v, tb):
+    if t is Quota: open(f"{G}/QUOTA.txt", "w").write(str(v)); print(f"{arm}{rep}/{task} QUOTA: {v}", flush=True); sys.exit(2)
+    sys.__excepthook__(t, v, tb)
+sys.excepthook = _hook
+def _route():
+    if arm != "argon": return OCX, {"content-type": "application/json"}
+    ep = json.load(open(os.path.expanduser("~/.oprn-suite/openai-compat-endpoints.json")))["endpoints"]["openai-compat:proxy8318"]   # key read, never written
+    return ep["baseUrl"].rstrip("/") + "/chat/completions", {"Authorization": f"Bearer {ep['apiKey']}", "Content-Type": "application/json", **(ep.get("headers") or {})}
 def post(n, tools=True):
-    body = json.dumps({"model": MODEL, "messages": msgs, "reasoning_effort": "high", **({"tools": TOOLS} if tools else {})}).encode()
+    body = json.dumps({"model": MODEL, "messages": msgs, **({} if arm == "argon" else {"reasoning_effort": "high"}), **({"tools": TOOLS} if tools else {})}).encode()
+    url, hdr = _route()
     for attempt in range(6):
         try:
-            with urllib.request.urlopen(urllib.request.Request(OCX, body, {"content-type": "application/json"}), timeout=900) as r: d = json.load(r)
+            with urllib.request.urlopen(urllib.request.Request(url, body, hdr), timeout=900) as r: d = json.load(r)
             break
+        except urllib.error.HTTPError as e:   # quota: stop at once, no retry loop (user, 2026-10-31)
+            t = e.read().decode("utf8", "replace")[:300]
+            if e.code == 429 or QUOTA_RE.search(t): raise Quota(f"HTTP {e.code} {t}")
+            print(f"{arm}{rep}/{task} call {n} attempt {attempt}: HTTP {e.code} {t[:120]}", flush=True)
+            if attempt == 5: raise
+            time.sleep(15 * (attempt + 1))
         except Exception as e:
             print(f"{arm}{rep}/{task} call {n} attempt {attempt}: {e}", flush=True)
             if attempt == 5: raise

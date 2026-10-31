@@ -9,7 +9,7 @@ VIZ = f"{HOME}/claude-viz"; IMG = f"{VIZ}/bbox-walls-2"; os.makedirs(IMG, exist_
 verdict = sys.argv[1] if len(sys.argv) > 1 else "진행 중 — 판이 끝나는 대로 채운다."
 ld = lambda p: json.load(open(p)) if os.path.exists(p) else {}
 TASKS = ["inn", "library", "jail", "manor"]; KO = {"inn": "여관", "library": "도서관", "jail": "감옥", "manor": "저택"}
-RUNS = ["sol1", "sol2", "terra1", "terra2", "terra3"]
+RUNS = ["sol1", "sol2", "terra1", "terra2", "astra1", "astra2", "astra3"]
 NEED_STAIRS = {"inn", "manor"}
 side = {"r1": dict(res=ld(f"{S}/runs-bboxwalls/results.json"), wal=ld(f"{S}/runs-bboxwalls/walls.json"), meas=ld(f"{R7}/measure-r1.json"), root=f"{S}/runs-bboxwalls"),
         "r2": dict(res=ld(f"{S}/runs-bboxwalls2/results.json"), wal=ld(f"{S}/runs-bboxwalls2/walls.json"), meas=ld(f"{R7}/measure-r2.json"), root=f"{S}/runs-bboxwalls2"),
@@ -68,7 +68,7 @@ def summary(s, t):
 def model_rows():
     out = []
     for s in ["r4", "r5", "r6", "r7"]:
-        for mdl in ("sol", "terra"):
+        for mdl in ("sol", "terra", "astra"):
             ks = [f"{k}/{t}" for k in RUNS if k.startswith(mdl) for t in TASKS]
             ms = [m for m in (m_of(s, k) for k in ks) if m]
             if not ms: continue
@@ -77,7 +77,7 @@ def model_rows():
             for k in ks:
                 run = ld(f"{side[s]['root']}/{k}/RUN.json")
                 if run and run.get("lookups") is not None: lk.append(len(run["lookups"]))
-            out.append(f"<tr class={s}><td>{RK[s]} · {mdl} ({len(ms)}장)</td>" + "".join(f"<td>{c}</td>" for c in [
+            out.append(f"<tr class={s}><td>{RK[s]} · {mdl if mdl != "astra" else "astra (terra 대역)"} ({len(ms)}장)</td>" + "".join(f"<td>{c}</td>" for c in [
                 avg([v.get("distinctPerRoom") for v in V], "{:.1f}"), avg([v.get("repetition") for v in V], "{:.2f}"), avg([m["types"] for m in ms], "{:.0f}"),
                 avg([len(m.get("poolUsed", [])) for m in ms], "{:.1f}"), avg([v.get("crossSame") for v in V], "{:.1f}"), (avg(lk, "{:.1f}") if lk else "—"),
                 avg([v.get("boxRoomRatio") for v in V], "{:.2f}")]) + "</tr>")
@@ -119,7 +119,7 @@ secs = []
 for t in TASKS:
     cards = []
     for k in RUNS:
-        model = "gpt-6.1-sol" if k.startswith("sol") else "gpt-6.1-terra"
+        model = "gpt-6.1-sol" if k.startswith("sol") else "gpt-6.1-terra" if k.startswith("terra") else "gpt-6-astra (terra 대역)"
         cards.append(f"<div class=card><h3>{KO[t]} · {model} #{k[-1]}</h3><div class=pair>{''.join(f"<div class=col><h4>{RK[s]}</h4>{card(s, k, t)}</div>" for s in ROUNDS)}</div></div>")
     secs.append(f"<h2>{KO[t]}</h2>" + "".join(cards))
 page = f"""<!doctype html><meta charset=utf-8><title>bbox 벽 시험 1~7판</title>
@@ -128,9 +128,9 @@ page = f"""<!doctype html><meta charset=utf-8><title>bbox 벽 시험 1~7판</tit
 .pair{{display:flex;gap:10px;align-items:flex-start}}.col{{flex:1 1 0;min-width:0}}figure{{margin:0}}img{{image-rendering:pixelated;width:100%;display:block}}
 figcaption{{font-size:12px;color:#bbb;margin-top:4px}}.why{{color:#888}}.meta{{color:#999}}
 table{{border-collapse:collapse;margin:8px 0}}td,th{{border:1px solid #444;padding:4px 10px}}tr.r1 td{{color:#8a9}}tr.r2 td{{color:#9ab}}tr.r3 td{{color:#cde}}tr.r4 td{{color:#dde}}tr.r5 td{{color:#dde}}tr.r6 td{{color:#dde}}tr.r7 td{{color:#fff}}tr.r7 td:first-child{{font-weight:bold}}</style>
-<h1>bbox 벽 시험 — 1판 | 2판(계단·빈 바닥·양탄자·방 나누기·물건 풀) | 3판(몸채 먼저) | 4판(세로 벽 문·방 위계·홀 채우기) | 5판(물건 풀 전부·종류별 찾기·물건 다양성·방 모양 어휘) | 6판(5판 조건 + 물건 풀 86개 + 감방 앞 문살 안내) | 7판(방 계획 → 그 용도의 물건을 펼친 맞춤 카탈로그 → 배치, terra 장소마다 3장·sol 1장)</h1>
+<h1>bbox 벽 시험 — 1판 | 2판(계단·빈 바닥·양탄자·방 나누기·물건 풀) | 3판(몸채 먼저) | 4판(세로 벽 문·방 위계·홀 채우기) | 5판(물건 풀 전부·종류별 찾기·물건 다양성·방 모양 어휘) | 6판(5판 조건 + 물건 풀 86개 + 감방 앞 문살 안내) | 7판(방 계획 → 그 용도의 물건을 펼친 맞춤 카탈로그 → 배치, astra 장소마다 3장·sol 1장)</h1>
 <p class=v>{html.escape(verdict)}</p>
-<p>왼쪽부터 1판(bbox-walls) · 2판(bbox-walls-2) · 3판(bbox-walls-3) · 4판(bbox-walls-4) · 5판(bbox-walls-5) · 6판(bbox-walls-6) · 7판(bbox-walls-7, terra #1~3 · sol #1만). 같은 장소·같은 모델(gpt-6.1-sol / terra high)·같은 판정자(Opus 5.5 medium)·같은 기준 방. 지표는 일곱 판 모두 7판 검사기로 다시 쟀다. 같은 용도 겹침 = 같은 용도 방 3개 이상에 같은 물건이 다 들어가고 다른 변형이 있는 경우의 수. 5판과 6판의 차이는 물건 풀(39→86)과 감옥 감방 앞 안내뿐이라 물건 다양성 효과만 따로 본다. 서로 다른 물건 = 방마다 다른 물건 id 수 평균, 반복률 = 1 - 서로 다른 수/물건 수(낮을수록 다양), 네모 방 = 직사각형 방 비율 / 밋밋한 네모 = 그중 기둥·단·난간·구역도 없는 방 비율(보고만 한다). 방 크기 CV = 방 면적의 표준편차/평균(클수록 크기 차이가 크다) · 같은 크기 줄 = 크기가 같고 용도가 섞인 이웃 방 3개 이상 묶음 수(repeat 표시한 방 제외).
+<p>왼쪽부터 1판(bbox-walls) · 2판(bbox-walls-2) · 3판(bbox-walls-3) · 4판(bbox-walls-4) · 5판(bbox-walls-5) · 6판(bbox-walls-6) · 7판(bbox-walls-7, astra #1~3 · sol #1만). terra 사용량이 바닥나 싼 모델 쪽은 gpt-6-astra 로 바꿨고(terra 대역), 같은 차이를 보려고 6판도 astra 로 3장씩 다시 돌렸다. 같은 장소·같은 모델(gpt-6.1-sol / terra high)·같은 판정자(Opus 5.5 medium)·같은 기준 방. 지표는 일곱 판 모두 7판 검사기로 다시 쟀다. 같은 용도 겹침 = 같은 용도 방 3개 이상에 같은 물건이 다 들어가고 다른 변형이 있는 경우의 수. 5판과 6판의 차이는 물건 풀(39→86)과 감옥 감방 앞 안내뿐이라 물건 다양성 효과만 따로 본다. 서로 다른 물건 = 방마다 다른 물건 id 수 평균, 반복률 = 1 - 서로 다른 수/물건 수(낮을수록 다양), 네모 방 = 직사각형 방 비율 / 밋밋한 네모 = 그중 기둥·단·난간·구역도 없는 방 비율(보고만 한다). 방 크기 CV = 방 면적의 표준편차/평균(클수록 크기 차이가 크다) · 같은 크기 줄 = 크기가 같고 용도가 섞인 이웃 방 3개 이상 묶음 수(repeat 표시한 방 제외).
 빈 바닥 = 그 칸과 둘레 8칸에 아무것도(벽·가구·난간) 없는 바닥의 비율 · 통로 제외 = 문과 문 사이 3칸 폭 길은 빼고 잰 값(3판 검사 기준) · 몸채 볼록도 = 건물 면적 / 둘레 사각형 면적(1 = 네모) · 바깥벽 꺾임 = 바깥벽 윤곽의 모서리 수(네모 = 4) · 공유벽 = 방 둘에 맞닿은 벽 칸 비율.</p>
 <div class=card><h3>세로(남북) 벽의 문 — 고치기 전 / 후 (같은 저택 sol #2 3판 배치, 4배)</h3><div class=pair><div class=col><h4>전: 문 위 두 칸이 벽면(붉은 천)으로 칠해져 벽처럼 보였다</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-old.png'></div><div class=col><h4>후: 세 칸 모두 바닥으로 — 위 벽머리만 남은 통로</h4><img style='max-width:380px' src='bbox-walls-2/vdoor-new.png'></div></div><p class=meta>1~3판 그림은 옛 렌더 그대로다(판정자도 그 그림을 봤다). 4판부터 새 렌더.</p></div>
 <table><tr><th>장소 · 판</th><th>빈 바닥</th><th>통로 제외</th><th>양탄자</th><th>계단 맞음</th><th>물건 종류 (네 장 합쳐)</th><th>새 풀 물건</th><th>방당 다른 물건</th><th>반복률</th><th>네모 방 / 밋밋한 네모</th><th>방 크기 변이(CV)</th><th>같은 크기 줄</th><th>볼록도</th><th>바깥벽 꺾임</th><th>공유벽</th><th>Opus 쌍 비교</th><th>벽 점수</th></tr>{''.join(rows)}</table>
