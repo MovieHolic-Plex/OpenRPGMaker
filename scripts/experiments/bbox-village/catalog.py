@@ -74,13 +74,16 @@ L += ["", "## Cliff cuts: ramps and stairs  (id | footprint w x cliff height | d
       "height 2 (level difference 2) needs an -h2- piece. Place it by its FOOT: x,y = the left cell of the row on the LOWER level",
       "directly south of the cliff; it covers columns x..x+w-1. Entry = the row below (x..x+w-1, y+1), lower level; exit = the row above",
       "(x..x+w-1, y-1), higher level; both rows must be road/track/plaza cells. dir is \"north\" (walk north to climb). The foot row",
-      "itself is path (do not list it as road). A cut through a north-facing cliff (dir \"south\") is hidden by the 3/4 view and is REJECTED whenever",
+      "itself is path (do not list it as road). The cliff right beside the cut on BOTH sides (columns x-1 and x+w) must be the same face",
+      "(same lower and higher level as the cut): never put a cut where the cliff steps. A cut through a north-facing cliff (dir \"south\") is hidden by the 3/4 view and is REJECTED whenever",
       "the same level boundary has a south-facing face somewhere; only if it has none, write it with \"northFace\": true.",
       "STACKED FLIGHT (climbing two or more levels at once): where a cut's exit row is a ONE-row strip of a middle level with another",
       "cliff right behind it, put a second cut ON that strip: same columns (same x), same kind and width, its foot y = the strip row,",
       "each piece matching its OWN cliff height. The strip is the landing between the flights; the row behind the top flight must be",
       "road/track/plaza. Example: levels 0 (y=19), 2 (strip y=18), 4 (y=17): {\"id\": \"stairs-h2-w2\", \"x\": 22, \"y\": 19, \"dir\": \"north\"} +",
-      "{\"id\": \"stairs-h2-w2\", \"x\": 22, \"y\": 18, \"dir\": \"north\"}, road on row 17 and row 20."]
+      "{\"id\": \"stairs-h2-w2\", \"x\": 22, \"y\": 18, \"dir\": \"north\"}, road on row 17 and row 20.",
+      "A stack has at most two flights, and only the canonical split has art: lower = floor(total/2), upper = the rest",
+      "(1+1, 1+2, 2+2, 2+3, 3+3, 3+4, 4+4). Other splits (e.g. 3 lower + 1 upper) are rejected — climb elsewhere."]
 for i, e in kits.items():
     if e["kind"] == "cut": L.append(f"{i} | {e['w']} wide x {e['rise']} tall face | {e['en']}")
 L += ["", "## Surfaces (rects, not kits)",
