@@ -214,6 +214,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   callCommonEvent: (cmd) => commandLine("다른 이벤트 부르기", valuePart(commonEventName(cmd.commonEventId))),
   planSchedule: (cmd) => commandLine("일정표 짜기", valuePart(cmd.scheduleId || "?")),
   runSchedule: (cmd) => commandLine("일정표 실행", valuePart(cmd.scheduleId || "?")),
+  script: (cmd) => commandLine("스크립트", valuePart(cmd.name || cmd.summary || (cmd.source.trim() ? "TypeScript" : "비어 있음"))),
   callMapEvent: (cmd) => commandLine("맵 위 이벤트 부르기", valuePart(mapEventName(cmd.eventId))),
   battleProcessing: (cmd) => commandLine(
     "전투",

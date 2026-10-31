@@ -4,6 +4,7 @@
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command } from "@/project/types";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
+import { scriptSourceHash } from "@/project/script/types";
 import { ToolError } from "./types";
 
 type RecordValue = Record<string, unknown>;
@@ -72,6 +73,15 @@ export function validateLowLevelCommandArray(label: string, commands: readonly C
   const failures = collectKindShapeFailures(label, commands);
   if (failures.length > 0) {
     throw commandShapeError(`커맨드 형식 오류:\n- ${failures.join("\n- ")}`);
+  }
+  const scripts = uncompiledScriptPaths(label, commands, 0);
+  if (scripts.length > 0) {
+    throw new ToolError(
+      `Script commands cannot be written by hand: ${scripts.join("; ")}. `
+      + "Write scripts with author_script (insert), edit_script (change) or write_event_as_script (whole page) — they compile the TypeScript. "
+      + "When you resend an existing page, copy its script command unchanged (source, compiled and sourceHash together).",
+      { code: "script-not-compiled" },
+    );
   }
   try {
     validateCommandArray(label, commands);
@@ -178,4 +188,43 @@ function choicesFailures(path: string, command: RecordValue): string[] {
     failures.push(...collectKindShapeFailures(`${path}.cancelBranch`, command.cancelBranch));
   }
   return failures;
+}
+
+/**
+ * Is this script command something only the script tools may write? A script must carry `compiled` JavaScript
+ * built from exactly its `source` (`sourceHash`) — the game runs `compiled` only, so a hand-written or edited
+ * source without a compile would silently run old or invented code. Empty scripts (no source, no code) are no-ops.
+ */
+export function scriptCommandProblem(command: Record<string, unknown>): string | undefined {
+  const source = typeof command.source === "string" ? command.source : "";
+  const compiled = typeof command.compiled === "string" ? command.compiled : "";
+  if (!source.trim() && !compiled.trim()) return undefined;
+  if (!compiled.trim()) return "has no compiled code";
+  if (command.sourceHash !== scriptSourceHash(source)) return "was not compiled from this source";
+  return undefined;
+}
+
+/** Every `script` command (any depth: option branches and every nested command list) failing scriptCommandProblem. */
+function uncompiledScriptPaths(path: string, value: unknown, depth: number): string[] {
+  if (!Array.isArray(value) || depth > 40) return [];
+  const out: string[] = [];
+  for (const [index, raw] of value.entries()) {
+    if (!isRecord(raw)) continue;
+    const here = `${path}[${index}]`;
+    if (raw.kind === "script") {
+      const problem = scriptCommandProblem(raw);
+      if (problem) out.push(`${here} ${problem}`);
+    }
+    for (const [key, child] of Object.entries(raw)) {
+      if (!Array.isArray(child) || child.length === 0) continue;
+      if (key === "options") {
+        child.forEach((option, optionIndex) => {
+          if (isRecord(option)) out.push(...uncompiledScriptPaths(`${here}.options[${optionIndex}].branch`, option.branch, depth + 1));
+        });
+        continue;
+      }
+      if (isRecord(child[0]) && typeof child[0].kind === "string") out.push(...uncompiledScriptPaths(`${here}.${key}`, child, depth + 1));
+    }
+  }
+  return out;
 }
