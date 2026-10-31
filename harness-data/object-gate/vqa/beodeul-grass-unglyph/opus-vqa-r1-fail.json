@@ -1,0 +1,49 @@
+{
+ "schema": "oprn-adversarial-vqa/1",
+ "judge": "claude-opus-5.5 medium (independent agent)",
+ "subject": "beodeul grass 737 r2 body (unglyph)",
+ "verdict": "fail",
+ "checks": {
+  "glyphs": {
+   "pass": true,
+   "notes": "The old 'Sng'/'ULL' letter clusters are gone. No letter/logo-like clusters in tiles-8x-after or field-3x-after; the 16px period is far weaker than before."
+  },
+  "seams": {
+   "pass": true,
+   "notes": "No visible seams at 16px borders in field-1x/3x-after or the village crops; wrap-around neighbours do not form clumps."
+  },
+  "edges": {
+   "pass": true,
+   "notes": "Grass meets cobble road, plaza paving, forest edge and shadows cleanly in village-crop1..4-3x-after; cells 736/548 keep their shadow corners; no texture breaks against variants 740-749."
+  },
+  "density_style": {
+   "pass": false,
+   "notes": "The new body is an evenly spaced dot lattice, not a natural scatter. Pixel map of tile 737 after: 57 non-base pixels, 0 horizontally adjacent pairs, 23 pairs exactly 2 px apart horizontally. That forms dashed horizontal lines: row 0 has marks at x=6,8,10,12,14 (five in a row at pitch 2), row 2 at x=1,3,5,7, row 4 at x=2,4,6,8, row 11 at x=7,9,11,13. Repeated, field-3x-after reads as a uniform screen/mesh fabric, and field-1x-after shows a faint diagonal weave banding. The brief's '2-3 px vertical blades' are mostly missing: only 8 vertically adjacent pairs and no 3 px blade, so the grass has no blade character and looks flatter and more mechanical than the surrounding speckled variants 740-749."
+  },
+  "regression": {
+   "pass": true,
+   "notes": "Nothing that was fine before is broken. Palette is unchanged (4 colours) and the overall tone matches. It is a clear improvement over the watermark body."
+  }
+ },
+ "reasons": [
+  "Pitch-2 dotted runs (up to 5 marks at even spacing in one row, h1=0, h2=23) make an artificial lattice/mesh that is visible over open fields (field-3x-after, field-1x-after diagonal weave).",
+  "The specified 2-3 px vertical blades are almost absent (8 two-pixel vertical pairs, no three-pixel blades), so the texture reads as a dot screen instead of grass.",
+  "Fix suggestion: break the even-x runs (jitter marks by 1 px, vary gaps 1-4 px), add 4-6 real 2-3 px blades (dark base + light/tip top), and keep the 4-colour palette. Re-check with field-3x."
+ ],
+ "images": [
+  "tiles-8x-before.png",
+  "tiles-8x-after.png",
+  "field-1x-before.png",
+  "field-1x-after.png",
+  "field-3x-before.png",
+  "field-3x-after.png",
+  "village-1x-after.png",
+  "village-crop1-3x-after.png",
+  "village-crop2-3x-after.png",
+  "village-crop3-3x-after.png",
+  "village-crop4-3x-after.png",
+  "village-crop4-3x-before.png"
+ ],
+ "decidedAt": "2026-10-31T00:00:00Z",
+ "imagesNote": "r1 after images moved to r1/ (body v3, rejected); before images unchanged at top level"
+}
