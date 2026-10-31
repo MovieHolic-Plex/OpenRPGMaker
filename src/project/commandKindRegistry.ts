@@ -100,6 +100,7 @@ export const COMMAND_KINDS = [
   "removeMonster",
   "tradeMonster",
   "fuseMonsters",
+  "script",
 ] as const satisfies readonly Command["kind"][];
 
 export type CommandKind = (typeof COMMAND_KINDS)[number];

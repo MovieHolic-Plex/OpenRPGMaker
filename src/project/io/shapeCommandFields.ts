@@ -9,6 +9,7 @@ import { assert, commandKinds, requireArray, requireBoolean, requireNumber, requ
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
 import { m2CommandById, M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { SCRIPT_COMPILED_LIMIT, SCRIPT_SOURCE_LIMIT } from "@/project/script/types";
 
 import { isRelationshipState } from "@/project/relationshipState";
 export function validateCommandArray(label: string, value: unknown): void {
@@ -303,6 +304,20 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.scheduleId`, command.scheduleId);
       if (command.slotVariableId !== undefined) requireString(`${label}.slotVariableId`, command.slotVariableId);
       return;
+    case "script": {
+      const source = requireString(`${label}.source`, command.source);
+      const compiled = requireString(`${label}.compiled`, command.compiled);
+      assert(source.length <= SCRIPT_SOURCE_LIMIT, `${label}.source 는 ${SCRIPT_SOURCE_LIMIT}자 이하여야 합니다.`);
+      assert(compiled.length <= SCRIPT_COMPILED_LIMIT, `${label}.compiled 는 ${SCRIPT_COMPILED_LIMIT}자 이하여야 합니다.`);
+      for (const key of ["name", "summary", "sourceHash"] as const) {
+        if (command[key] !== undefined) requireString(`${label}.${key}`, command[key]);
+      }
+      if (command.apiVersion !== undefined) {
+        assert(Number.isInteger(command.apiVersion), `${label}.apiVersion 는 정수여야 합니다.`);
+      }
+      if (command.effects !== undefined) requireRecord(`${label}.effects`, command.effects);
+      return;
+    }
     case "spawnFieldEnemy": {
       const spawn = requireRecord(`${label}.spawn`, command.spawn) as { id?: unknown; troopId?: unknown; area?: unknown };
       requireString(`${label}.spawn.id`, spawn.id);

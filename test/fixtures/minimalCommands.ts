@@ -147,4 +147,5 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
   tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
   fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
+  script: { kind: "script", source: "", compiled: "" },
 };

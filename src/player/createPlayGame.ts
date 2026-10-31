@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { preloadScriptEngine, projectUsesScripts } from "@/player/script/engine";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import type { PlaySession } from "@/project/session";
 import { resolveCameraZoom } from "@/project/cameraZoom";
@@ -44,6 +45,8 @@ export async function createPlayGame(
 ): Promise<Phaser.Game> {
   const { PhaserRuntime, PlayScene } = await preparePlayRuntime();
   const project = store.getCurrent();
+  // `script` commands run in QuickJS-wasm; the interpreter is synchronous, so load it before the first event.
+  if (projectUsesScripts(project)) await preloadScriptEngine().catch((error: unknown) => console.error("[script] engine load failed", error));
   const resolution = resolvePlayResolution(project.system);
   // 타일 크기가 섞인 프로젝트는 큰 칸의 맵을 도트 손실 없이 그리도록 캔버스만 촘촘하게 만든다.
   // 캔버스 CSS 는 논리 해상도에 맞춰지므로(playSurface.css) 레이아웃·DOM 좌표는 그대로다.

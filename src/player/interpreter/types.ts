@@ -283,6 +283,8 @@ export interface InterpreterState {
   maxLoopIterations: number;
   instructionsExecuted: number;
   maxInstructions: number;
+  /** Live script sandboxes, one per frame that is inside a `script` command (scriptCommand.ts). Disposed on finish. */
+  scriptRuns?: Map<Frame, import("@/player/script/scriptRun").ScriptRun>;
 }
 
 export interface InterpreterOptions {

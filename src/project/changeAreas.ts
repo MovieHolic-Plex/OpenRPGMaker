@@ -52,6 +52,7 @@ export const AREA_LABELS: Readonly<Record<string, string>> = {
   assistantTodo: "조수 할 일",
   worldCanon: "세계 정본",
   dialogueDesk: "대사 책상",
+  scriptLibrary: "스크립트 라이브러리",
   worldGraph: "세계 그래프",
   factions: "세력",
   quests: "퀘스트",
