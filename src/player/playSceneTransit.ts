@@ -9,7 +9,7 @@ import { characterDepth } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
-  createTransitSim, stepTransitSim, transitBoardingAt, transitCellBlocked, transitPose,
+  createTransitSim, stepTransitSim, transitBoardingAt, transitCellBlocked, transitClearPeople, transitPose,
   type TransitFrameName, type TransitSim, type TransitVehicleDef,
 } from "@/project/mapTransit";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -17,6 +17,8 @@ import { mapTileSize } from "@/project/tileGeometry";
 /** 시트 그림의 한 칸 = 16px(jp_city · modern_city). 맵 칸 크기가 다르면 비율로 늘린다. */
 const SPRITE_CELL = 16;
 const STEP_SEC = 1 / 30;
+/** 맵에 들어온 뒤 처음 이만큼의 프레임 동안 사람 위의 차를 치운다 — 화면이 밝아지는 동안(첫 프레임 간격이 길어도 횟수로 센다). */
+const TRANSIT_SETTLE_FRAMES = 30;
 
 type TransitScene = PlaySceneContext & {
   transitSim?: TransitSim;
@@ -24,6 +26,8 @@ type TransitScene = PlaySceneContext & {
   transitSprites?: Map<number, Phaser.GameObjects.Image>;
   transitPrevPos?: Map<number, number>;
   transitAccumulatorSec?: number;
+  /** 맵에 들어온 뒤 사람 위에 놓인 차를 치우는 남은 프레임(transitClearPeople). */
+  transitSettleFrames?: number;
   transitShutdownHooked?: boolean;
 };
 
@@ -51,6 +55,7 @@ export function syncTransitForMap(scene: PlaySceneContext): void {
   s.transitPrevPos = new Map();
   s.transitAccumulatorSec = 0;
   s.transitMapId = scene.map?.id;
+  s.transitSettleFrames = TRANSIT_SETTLE_FRAMES;
   s.transitSim = scene.map?.transit?.routes?.length
     ? createTransitSim(scene.map.transit, { width: scene.map.width, height: scene.map.height })
     : undefined;
@@ -100,6 +105,11 @@ export function updateTransit(scene: PlaySceneContext, deltaMs: number): void {
   if (!sim) return;
   s.transitAccumulatorSec = Math.min(0.5, (s.transitAccumulatorSec ?? 0) + Math.max(0, deltaMs) / 1000);
   const blocked = playerBlocksCell(scene);
+  // 들어온 직후 잠깐: 미리 돌리기로 사람 위에 놓인 차를 치운다(행인·이벤트는 맵을 지은 뒤 첫 몇 걸음 안에 자리를 잡는다).
+  if ((s.transitSettleFrames ?? 0) > 0) {
+    transitClearPeople(sim, blocked);
+    s.transitSettleFrames = (s.transitSettleFrames ?? 0) - 1;
+  }
   const switches = scene.session?.switches;
   const switchOn = (id: string): boolean => switches?.[id] === true;
   while (s.transitAccumulatorSec >= STEP_SEC) {

@@ -302,6 +302,8 @@ export interface SkillRecord {
   animationId?: BattleAnimationId;
   description: string;
   type: "normal" | "teleport" | "escape" | "switch";
+  /** 메뉴·전투 기술 목록에 그릴 아이콘(아이템 iconResourceId 와 같은 그림 id, 예: 스토어 아이콘 팩). 생략 = 전투 애니메이션 첫 칸(기존 동작). */
+  iconResourceId?: string;
   /**
    * 필드 능력(명작 공백 #5, 2026-09-27): 메뉴 스킬 목록에서 쓰면 MP 를 내고 이 공통 이벤트를 실행한다.
    * 실행 전에 주인공 정면 칸의 이벤트 id 를 문자열 변수 `fieldAbilityTarget` 에, 정면 좌표를 변수
@@ -1208,6 +1210,8 @@ export interface BattleBackdropLayer {
 export interface StateRecord {
   id: StateId;
   name: string;
+  /** 전투 상태 배지·메뉴에 그릴 아이콘(그림 id, 예: 스토어 아이콘 팩). 생략 = 글자 배지(기존 동작). */
+  iconResourceId?: string;
   /** Gen1 persistent major status semantics, independent of authored state id/name. */
   gen1MajorStatus?: "poison" | "toxic" | "burn" | "sleep" | "freeze" | "paralysis";
   /**

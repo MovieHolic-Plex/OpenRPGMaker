@@ -77,11 +77,12 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-romance-school": "/assets/generated/title/romance-school.jpg",
   "oprn-title-romance-office": "/assets/generated/title/romance-office.jpg",
   "oprn-title-romance-town": "/assets/generated/title/romance-town.jpg",
-  // 『첫사랑』 엔딩 B·C 카드 — 서하 혼자, 밤 도시(맑음·비). 위 사무실 타이틀 그림의 사람 없는 쪽 + 공용 전신 초상을 합성(새 생성 아님).
-  // 생성기 scripts/content/first-love/bake_ending_cards.py.
+  // 『첫사랑』 엔딩 A·B·C 카드와 승강장 고백의 회상 그림 — 게임 속 맵(옥상·밤거리·방송실)을 찍은 그림 + 파노라마 + 걷기 칩으로 지은 16px 도트 장면
+  // (새로 생성한 사람·그림 없음). 생성기 scripts/content/first-love/bake_ending_cards.py.
   "oprn-first-love-ending-a": "/assets/generated/title/first-love-ending-a.jpg",
   "oprn-first-love-ending-b": "/assets/generated/title/first-love-ending-b.jpg",
   "oprn-first-love-ending-c": "/assets/generated/title/first-love-ending-c.jpg",
+  "oprn-first-love-memory": "/assets/generated/title/first-love-memory.jpg",
   // 『시타마치의 네 번째 계절』 타이틀·오프닝 5컷·엔딩 4장(2026-10-25, 같은 모델·같은 화풍, 공용 전신 초상 참조 시트로 인물 일치). 후보 2~3장 중 감독 선택 —
   // 출처·프롬프트: public/assets/generated/title/shitamachi-keyart-provenance.json.
   "oprn-shitamachi-title": "/assets/generated/title/shitamachi-title.jpg",

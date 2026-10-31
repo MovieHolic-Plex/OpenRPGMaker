@@ -87,7 +87,12 @@ export function settleDungeonGates(run: BuildRun, floors: readonly string[], isO
     if (!want) continue;
     const ignore = new Set(outs.map((e) => e.id));
     const spot = worldSideGateSpot(p0, M, want, ignore);
-    if (outs.length === 1 && backs.length <= 1 && (onEdge(M, outs[0]!, want) || (spot && edgeDist(M, outs[0]!, want) <= spot.edge))) continue;
+    // 요청이 방향을 말하지 않았고 문이 하나뿐이며 이미 맵 가장자리(어느 쪽이든)에 있으면 그대로 둔다 — 던전 입구 칸이 가장 가까운 끝(nearestSide)은 세계 방향을 잘 못 읽는다.
+    // 왜(2026-10-31 jb2a terra jrpg): 동굴 입구 칸 (33,25)가 45×38 동굴의 동쪽 끝에 가까워 «던전은 서쪽»으로 읽고, 시작 칸 곁 북쪽 끝 길 (22,0)의
+    // 문을 38×48 마을의 남서쪽 구석 (0,47)로 옮겼다. 모델은 마을 출구를 north 로 적었고, 판정자는 30분 동안 그 구석을 못 찾았다.
+    const single = outs.length === 1 && backs.length <= 1;
+    if (single && !side && (["north", "south", "east", "west"] as Side[]).some((s) => onEdge(M, outs[0]!, s))) continue;
+    if (single && (onEdge(M, outs[0]!, want) || (spot && edgeDist(M, outs[0]!, want) <= spot.edge))) continue;
     if (!spot) { notes.push(`「${M.name}」→「${D.name}」: ${KO[want]}쪽 가장자리에 걸어 닿는 칸이 없어 문 ${outs.length}개를 그대로 두었다`); continue; }
     const backIds = new Set(backs.map((e) => e.id));
     const graph = (p0 as unknown as { worldGraph?: { edges?: { from?: { mapId?: string }; to?: { mapId?: string } }[] } }).worldGraph;

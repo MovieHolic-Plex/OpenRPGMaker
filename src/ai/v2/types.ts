@@ -3,6 +3,7 @@
 // v2 의 한 줄: 모델은 «무엇을» 정하고(명세), 함수가 «어떻게» 짓고(결정론 빌더), 다른 눈이 1배 그림을 본다(비평가).
 // 모델은 칸 번호·평면 문자열·좌표 목록을 쓰지 않는다. 빌더가 명세를 v1 의 결정론 도구 인자로 옮겨 부른다.
 // 이 파일은 순수 타입이다 — 워커(scripts/lib/assistantV2Runtime.ts)와 테스트가 같이 읽는다.
+import type { InteriorLayout } from "./interiorLayout";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { RoomDesign } from "@/editor/handInterior/designRoom";
 
@@ -34,8 +35,17 @@ export interface ZoneSpec {
   readonly design?: RoomDesign;
   /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
   readonly floor?: number;
-  /** 고치기에서 가리킬 이름(생략하면 kind). */
+  /** 고치기에서 가리킬 이름(생략하면 kind). 방 그래프(PlaceSpec.connections)에서는 방 id. */
   readonly id?: string;
+  /** (실내 방 그래프) 이 방의 대략 왼쪽 위 칸(x 오른쪽·y 아래, 원점은 아무 데나) — 함수가 이웃 방과 칸막이 1칸으로 붙인다(roomGraph.ts). */
+  readonly x?: number;
+  readonly y?: number;
+  /** (실내 방 그래프) 이 방의 랜드마크 — design.groups 에 넣은 기물 id 하나(큰 여러 칸 기물 환영: great telescope·summoning circle·pulpit). */
+  readonly landmark?: string;
+  /** (실내 방 그래프) 이 방에 계단이 있다 — design.groups 에 계단 기물(stairs up wood·stairs down…)을 넣는다. 검사가 놓였는지·닿는지 본다. */
+  readonly stairs?: "up" | "down" | "none";
+  /** (실내 방 그래프) 방의 역할 낱말: main · side(곁방) · corridor · stairs. 검사·보고용. */
+  readonly role?: string;
   /** (빌더 내부) 이미 지어진 방을 고칠 때 원래 크기·재질을 지킨다 — 모델 스키마에는 없다. */
   readonly keep?: { readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string };
 }
@@ -60,6 +70,12 @@ export interface PlaceSpec {
   readonly features?: readonly string[];
   /** 층 수(던전·탑·집). */
   readonly floors?: number;
+  /** (실내 방 그래프) 방 쌍의 연결 — a·b 는 zones[].id, type door(문) · open(칸막이 없이 트임). 주면 방 배치를 함수가 고르지 않고 모델의 대략 자리를 조화만 한다. */
+  readonly connections?: readonly { readonly a: string; readonly b: string; readonly type?: string }[];
+  /** (실내 칸 배치, 2026-10-31) 모델이 쓴 칸 단위 배치(맵 크기·방 사각형·문 틈·입구·깔개·단·기물) — 주면 코드는 그대로 깔고 검증만 한다(interiorLayout.ts). */
+  readonly layout?: InteriorLayout;
+  /** (실내 방 그래프) 남쪽 출구가 나는 방(zones[].id) — 가장 남쪽이어야 한다. */
+  readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */
@@ -70,6 +86,10 @@ export interface PlaceSpec {
   readonly dungeonDesign?: import("@/editor/dungeonKit/designLayout").DungeonDesign;
   /** (여러 층 던전) 층마다 설계(아래층부터). */
   readonly floorDesigns?: readonly import("@/editor/dungeonKit/designLayout").DungeonDesign[];
+  /** (던전, 칸 배치 bbox) 조수가 칸 단위로 쓴 층 배치 — 형식 src/editor/dungeonKit/bboxFloor.ts BBOX_DUNGEON_FORMAT. 함수는 검사하고 그대로 깐다. */
+  readonly dungeonLayout?: import("@/editor/dungeonKit/bboxFloor").BboxDungeonLayout;
+  /** (코드 지형 마을, 칸 배치 bbox) 조수가 칸 단위로 쓴 마을 배치 — 형식 src/editor/tools/bboxVillage.ts BBOX_VILLAGE_FORMAT. */
+  readonly villageLayout?: import("@/editor/tools/bboxVillage").BboxVillageLayout;
 }
 
 /** 고치기 패치 — edit_place 의 인자. 명세의 그 부분만 바꾼 뒤 같은 빌더로 다시 짓는다. */
@@ -77,6 +97,8 @@ export interface PlacePatch {
   readonly mapId: string;
   readonly set?: Partial<Omit<PlaceSpec, "type" | "zones">>;
   readonly addZones?: readonly ZoneSpec[];
+  /** (실내) 이 층의 구역 목록 전체 — 옛 방을 바꾼다(방 그래프 다시 짜기, set.connections 와 함께). */
+  readonly zones?: readonly ZoneSpec[];
   /** 구역 id 또는 kind. */
   readonly removeZones?: readonly string[];
   /** 구역(id·kind)에 주인공 물건을 더한다. near = 비평가가 짚은 칸 근처(선택). */
@@ -91,6 +113,10 @@ export interface PlacePatch {
   /** (설계 방) 고친 방 설계 전체 — designZone(구역 id·kind, 생략하면 첫 설계 구역)의 design 을 바꿔 다시 짓는다. */
   readonly design?: RoomDesign;
   readonly designZone?: string;
+  /** (칸 배치 장소) 지금 배치에 적용할 고침 — 기물 빼기/더하기·칸 통째 바꾸기(interiorLayout.applyLayoutPatch). */
+  readonly layoutPatch?: import("./interiorLayout").LayoutPatch;
+  /** (칸 배치 장소) 자기 비평 한 바퀴를 «고칠 것 없음»으로 마칠 때 — 무엇을 보고 왜 괜찮은지. 다시 깔지 않는다. */
+  readonly layoutReview?: string;
 }
 
 /** 빌더가 실제로 부른 v1 결정론 도구 하나. */
@@ -166,7 +192,7 @@ export interface EventSpec {
   readonly kind: "cutscene" | "talk" | "trigger";
   readonly mapId?: string;
   /** 언제: 게임 시작 자동 재생 / 칸을 밟으면 / 말을 걸면. */
-  readonly when?: "game-start" | "touch" | "talk";
+  readonly when?: "game-start" | "enter" | "touch" | "talk";
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
   /** 이 NPC(이름)와 대화가 끝나면 이어서 재생 — 그 NPC 의 말 걸기 끝에 붙는다(한 번만). */
@@ -175,6 +201,10 @@ export interface EventSpec {
   readonly afterTalk?: readonly string[];
   /** after NPC 의 어느 말 걸기 페이지에 이을지(0부터). 말 걸기 페이지가 여럿이면 꼭 고른다. */
   readonly afterPage?: number;
+  /** 이 맵에 이미 있는 장면 이벤트 id — 그 자리·그 이벤트의 컷신 페이지를 새 비트로 다시 쓴다(새 이벤트를 하나 더 만들지 않는다). 장면 손질 검사가 짚은 장면을 고칠 때. */
+  readonly redo?: string;
+  /** 함수끼리만(모델 스키마 밖): 맵마다 하나인 자동 장면 자리 id 를 따로 준다 — 엔딩 장면이 오프닝 자리를 덮지 않게. */
+  readonly hostId?: string;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }
@@ -202,7 +232,19 @@ export type EventBeat =
   /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
   /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
   | { readonly do: "emote"; readonly who: string; readonly emote: string }
-  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string };
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string }
+  /** 플레이어가 고르는 말 — 갈래마다 대답 대사와 결과(돈·물건). 흥정·설득·고백처럼 고른 말에 따라 반응이 달라야 할 때. */
+  | { readonly do: "choose"; readonly who?: string; readonly text?: string; readonly options: readonly ChooseOption[] };
+export interface ChooseOption {
+  readonly label: string;
+  /** 고른 뒤 대사 — 「이름: 대사」 또는 그냥 대사(choose 의 who 가 말한다). */
+  readonly lines?: readonly string[];
+  /** 돈 — 음수는 낸다(-25), 양수는 받는다. 낼 돈이 모자라면 그 갈래는 «돈이 모자란다» 대사로 끝난다. */
+  readonly gold?: number;
+  /** 받는 물건 이름(DB 아이템 이름) · 개수. */
+  readonly item?: string;
+  readonly count?: number;
+}
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {

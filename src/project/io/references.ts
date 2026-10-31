@@ -25,6 +25,8 @@ import {
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
+  validateSkillResources,
+  validateStateResources,
   isKnownResourceId,
   validateOptionalResource,
   validateSystemResources,
@@ -638,7 +640,9 @@ function validateSkillRecords(project: Project, skillIds: ReadonlySet<string>, a
     if (skill.elementId && !elementIdExists(project, skill.elementId)) issues.push(`skill ${skill.id}: elementId does not exist.`);
     for (const effect of skill.stateEffects ?? []) if (!stateIdExists(project, effect.stateId)) issues.push(`skill ${skill.id}: stateId does not exist.`);
     if (skill.effect.kind === "switch" && skill.effect.switchId && !context.switchIds.has(skill.effect.switchId)) issues.push(`skill ${skill.id}: switchId does not exist.`);
+    capture(issues, () => validateSkillResources(skill, context.resourceIds));
   }
+  for (const state of project.database.states) capture(issues, () => validateStateResources(state, context.resourceIds));
   void skillIds;
 }
 
