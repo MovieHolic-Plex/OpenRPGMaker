@@ -720,7 +720,7 @@ function vaultB2(project: Project, vault: GameMap): void {
   const plan: Record<string, { troop: string; chip: [string, number]; shout: [string, string] }> = {
     [`ev_${FS_PREFIX}_vault_foe1`]: { troop: T.b2Kitchen, chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, shout: ["채찍 고행자", "피가 흐를수록 신께 가까워진다.\n너희 피도 보태라!"] },
     [`ev_${FS_PREFIX}_vault_foe2`]: { troop: T.b2Crypt, chip: FS_INQ_CHIPS[FS_INQ.shield]!, shout: ["심문회 방패병", "설교 중이시다.\n이 방패 뒤로는 한 발짝도 못 온다."] },
-    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: T.b2Library, chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, shout: ["심문회 석궁수", "책장 사이로 다 보인다.\n움직이면 쏜다."] },
+    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: T.b2Library, chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, shout: ["심문회 궁수", "책장 사이로 다 보인다.\n움직이면 쏜다."] },
   };
   let changed = 0;
   for (const event of vault.events) {
@@ -1031,7 +1031,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     foes: [
       { name: "채찍 고행자", chip: FS_INQ_CHIPS[FS_INQ.flagellant]!, from: { x: 38, y: 17 }, to: { x: 34, y: 17 }, steps: ["left", "left", "left", "left"] },
       { name: "심문회 방패병", chip: FS_INQ_CHIPS[FS_INQ.shield]!, from: { x: 38, y: 18 }, to: { x: 34, y: 18 }, steps: ["left", "left", "left", "left"] },
-      { name: "심문회 석궁수", chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, from: { x: 40, y: 18 }, to: { x: 36, y: 18 }, steps: ["left", "left", "left", "left"] },
+      { name: "심문회 궁수", chip: FS_INQ_CHIPS[FS_INQ.crossbow]!, from: { x: 40, y: 18 }, to: { x: 36, y: 18 }, steps: ["left", "left", "left", "left"] },
     ],
     cue: [se("cc0-se-osx-door-01"), shake(3, 450), narrate("쾅! 쇠살문 너머에서 군홧발이 몰려온다.")],
     bark: ["심문회 방패병", "문을 연 놈들이 여기 있다!\n방패 세워, 한 놈도 못 지나간다!"],
