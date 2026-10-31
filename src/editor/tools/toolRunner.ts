@@ -558,7 +558,7 @@ export function runToolDefinition(
   let protectedHouses: HouseSnapshot[];
   try {
     protectedHouses = captureHouseProtection(before);
-    // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 거부, DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
+    // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 바뀐 commands 만(페이지 수가 같을 때, 아니면 거부), DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
     const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
     // 라우팅이 몬스터 의도를 놓친 자유 경로: 빈 시작 맵뿐인 프로젝트에서 몬스터 전용 도구가 처음 불리면, 도구가 NPC·트레이너를 놓기 전에 몬스터 키트 시작 + 장르 잠금을 건다.
