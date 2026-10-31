@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.379.2 — 2026-10-31
+
+### 수정
+
+- **runtime** — 다음 막으로 잇는 엔딩의 크레딧 안내를 「끝나면 다음 막으로」 (#4117) (`47f4b06`)
+- **runtime** — 조사 안내 이름에 칩셋 묶음 이름 대신 물건 이름 (#4116) (`3e179ad`)
+- **runtime** — hide the cutscene-skip hint during cutscene battles; lift the first objective card off the hero (#4115) (`13bafdb`)
+
 ## 0.379.1 — 2026-10-31
 
 ### 수정
