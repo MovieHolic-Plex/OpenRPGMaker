@@ -19,7 +19,7 @@ side = {"r1": dict(res=ld(f"{S}/runs-bboxwalls/results.json"), wal=ld(f"{S}/runs
         "r6": dict(res=ld(f"{R6}/results.json"), wal=ld(f"{R6}/walls.json"), meas=ld(f"{R7}/measure-r6.json"), root=R6),
         "r7": dict(res=ld(f"{R7}/results.json"), wal=ld(f"{R7}/walls.json"), meas={}, root=R7),
         "r8": dict(res=ld(f"{R8}/results.json"), wal=ld(f"{R8}/walls.json"), meas={}, root=R8)}
-ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]; RK = {"r8": "8b (기계적 정리·가장 나은 답·opus 강한 쪽)", "r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
+ROUNDS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]; RK = {"r8": "8c (새는 곳 찾기·벽 물건 자리 안내·opus 강한 쪽)", "r7": "7판 (방 계획→맞춤 카탈로그·같은 용도 방 다양성·감방 다양성)", "r6": "6판 (물건 풀 86개·감방 문살)", "r5": "5판 (물건 다양성·방 모양)", "r1": "1판", "r2": "2판 (계단·빈 바닥·양탄자)", "r3": "3판 (몸채 먼저)", "r4": "4판 (문·방 위계·홀 채우기)"}
 for t in TASKS:
     for k in RUNS:
         for rr, root in (("r7", R7), ("r8", R8)):
@@ -89,7 +89,7 @@ def model_rows():
 def argon_table():
     import glob, re as _re
     cfgs = [("6판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls6"), ("6판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8-r6"),
-            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8"), ("7판 흐름 · 8b(가장 나은 답에서 다시·이름 정리·벽 물건 옮기기)", R8)]
+            ("7판 흐름 · 이전 검사기", f"{S}/runs-bboxwalls7"), ("7판 흐름 · 8판 검사기(기계적 정리)", f"{S}/runs-bboxwalls8"), ("7판 흐름 · 8b(가장 나은 답에서 다시·이름 정리·벽 물건 옮기기)", f"{S}/runs-bboxwalls8b"), ("7판 흐름 · 8c(새는 곳 찾기·벽 물건 가까운 자리·칸막이 쪼개기)", R8)]
     out = []
     for lab, root in cfgs:
         rs = [json.load(open(p)) for p in sorted(glob.glob(f"{root}/argon[0-9]/*/RUN.json"))]
@@ -98,8 +98,8 @@ def argon_table():
         harm = sum(sum(len(h["repairs"]) for h in r.get("harmonised", [])) for r in rs) / n
         last = [str((r.get("errors") or [""])[0]) for r in rs if not r["ok"]]
         struct = sum(1 for e in last if _re.match(r"(wall |shell|outer|entrance|door |map\.|rooms? \"[^\"]*\" (and|are one))", e))
-        out.append(f"<tr><td>{lab}</td><td>{ok}/{n}</td><td>{sum(len(r['calls']) for r in rs) / n:.1f}</td><td>{sum(r['errorsPerCall'][0] for r in rs) / n:.1f} → {sum(r['errorsPerCall'][-1] for r in rs) / n:.1f}</td><td>{harm:.1f}</td><td>{struct}/{len(last)}</td></tr>")
-    return "<h2>argon(gemini-4-argon-high) 통과율 — 기계적 정리 전/후</h2><table><tr><th>설정</th><th>검증 통과</th><th>호출 수(평균)</th><th>오류 수 첫 답 → 마지막 답</th><th>코드가 고친 것(장당)</th><th>실패 중 마지막 오류가 벽 구조인 것</th></tr>" + "".join(out) + "</table>"
+        out.append(f"<tr><td>{lab}</td><td>{ok}/{n}</td><td>{sum(len(r['calls']) for r in rs) / n:.1f}</td><td>{sum(r['errorsPerCall'][0] for r in rs) / n:.1f} → {sum(r['errorsPerCall'][-1] for r in rs) / n:.1f}</td><td>{harm:.1f}</td><td>{struct}/{len(last)}</td><td>{sum(min(r['errorsPerCall']) <= 1 for r in rs)}/{n}</td></tr>")
+    return "<h2>argon(gemini-4-argon-high) 통과율 — 기계적 정리 전/후</h2><table><tr><th>설정</th><th>검증 통과</th><th>호출 수(평균)</th><th>오류 수 첫 답 → 마지막 답</th><th>코드가 고친 것(장당)</th><th>실패 중 마지막 오류가 벽 구조인 것</th><th>오류 1개 이하까지 간 장</th></tr>" + "".join(out) + "</table>"
 
 
 rows = []
