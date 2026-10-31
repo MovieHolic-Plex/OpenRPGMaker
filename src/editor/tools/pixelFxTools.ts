@@ -173,7 +173,7 @@ function findEvent(draft: Parameters<ToolDefinition["run"]>[0], mapId: string, e
 
 const LAYER_SCHEMA: JsonSchema = {
   type: "string", enum: ["auto", "back", "front", "screen"],
-  description: "auto = 효과의 뒤·앞 층을 캐릭터와 y 정렬(횃불·모닥불, 기본) · back = 통째로 캐릭터 뒤(바닥 마법진·물결) · front = 통째로 위, 이벤트 자리 · screen = 카메라를 따라 화면 전체를 덮는다(날씨·반딧불·오로라처럼 장면 크기 효과 — 이벤트 위치는 상관없다)",
+  description: "auto = 효과의 뒤·앞 층을 캐릭터와 y 정렬(횃불·모닥불, 기본) · back = 통째로 캐릭터 뒤(바닥 마법진·물결) · front = 통째로 위, 이벤트 자리 · screen = 카메라를 따라 화면 전체를 덮는다(날씨·반딧불·오로라처럼 장면 크기 효과 — 배경 하늘·땅은 빼고 떨어지는 입자만, 이벤트 위치는 상관없다)",
 };
 const PLACEMENT_PROPERTIES: Record<string, JsonSchema> = {
   layer: LAYER_SCHEMA,

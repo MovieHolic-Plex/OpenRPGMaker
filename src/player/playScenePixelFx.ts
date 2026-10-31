@@ -194,7 +194,7 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
     if (cached) { const t0 = performance.now(); uploadCached(loop.live, cached); state.stats.uploadMs += performance.now() - t0; }
     else {
       renderer.seek(frame / loop.fps);
-      paintLive(loop.live, loop.layers, loop.layers.length === 1, state);
+      paintLive(loop.live, loop.layers, wholeLayer(loop.live.spec, loop.layers), state);
       if (loop.cache) loop.cache.set(frame, snapshotLive(loop.live));
     }
     loop.live.shownFrame = frame;
@@ -346,14 +346,24 @@ function drawLive(
   if (frame !== live.shownFrame) {
     live.shownFrame = frame;
     const layers = (["back", "front"] as const).filter((layer) => live.textures[`${layer}-color`]);
-    const single = Boolean((at.spec as EventPixelFx).layer && (at.spec as EventPixelFx).layer !== "auto");
-    paintLive(live, layers, single || layers.length === 1, state);
+    paintLive(live, layers, wholeLayer(at.spec, layers), state);
   }
   showLive(scene, live, sprites, at, s, alpha);
   return true;
 }
 
 /** 지금 장면을 라이브 텍스처에 그린다. whole = 층 하나에 효과 전체(뒤·앞 합쳐). 빈 층은 텍스처를 올리지 않는다. */
+/**
+ * 한 층 텍스처에 효과 전체(뒤+앞)를 그리나. back/front 는 통째로 그 층에. screen 은 **앞 층만** — 날씨 효과의 뒤 층은
+ * 하늘·땅 배경 장면(비·눈·반딧불은 화면 100% 를 반투명으로 덮는다)이라 맵 위에 깔면 맵을 가린다(2026-10-31 실측).
+ */
+function wholeLayer(spec: EventPixelFx | PixelFxSpec, layers: readonly ("back" | "front")[]): boolean {
+  const layer = (spec as EventPixelFx).layer;
+  if (layer === "screen") return false;
+  if (layer === "back" || layer === "front") return true;
+  return layers.length === 1;
+}
+
 function paintLive(live: LiveFx, layers: readonly ("back" | "front")[], whole: boolean, state: SceneFxState): void {
   for (const layer of layers) {
     const colorTex = live.textures[`${layer}-color`];
