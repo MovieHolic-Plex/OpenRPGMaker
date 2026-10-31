@@ -1,4 +1,5 @@
 import { activeItemEffects, itemAllowsMenu, itemAllowsBattle } from "@/project/itemUsage";
+import { isKeyItem } from "@/player/playerBagPockets";
 import {
   avatarChipRow,
   emptyToUndefined,
@@ -265,10 +266,22 @@ function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () =
       itemPriceField(record.id),
       ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
       ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
+      ...(!isEquipmentItemType(record.type) ? [keyItemField(record, rerender)] : []),
     ],
   });
   card.classList.add("db-item-basics", "db-ws-span");
   return card;
+}
+
+/**
+ * 「중요한 물건」: 게임 가방의 중요한 물건 칸에 모이고, 증거 제시(presentItem, 후보 생략)에 이것만 뜬다.
+ * 켜면 pocket "key", 끄면 pocket 을 지워 자동 분류(쓸 곳 없고 가격 0 이면 여전히 중요한 물건)로 돌린다.
+ */
+function keyItemField(record: ItemRecord, rerender: () => void): HTMLElement {
+  return toggleSwitch("중요한 물건 (증거·편지·열쇠)", "db-field-item-key", isKeyItem(record), (on) => {
+    updateDatabaseRecord("items", record.id, { pocket: on ? "key" : undefined });
+    rerender();
+  });
 }
 
 function itemTypeField(record: ItemRecord, rerender: () => void): HTMLElement {

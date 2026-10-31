@@ -273,11 +273,15 @@ function applySpeakerPrefixes(project: Project): void {
             return m ? { speaker: m[1]!.trim(), body: m[2]!.trim() } : { body: line };
           });
           if (!parsed.some((p) => "speaker" in p)) continue;
-          // 같은 화자가 이어지는 줄은 한 창에 모은다.
+          // 같은 화자가 이어지는 줄은 한 창에 모은다. 「이름:」 없이 이어지는 줄은 앞 화자의 말이 이어지는 것이다
+          // (VQA 2026-10-31: 「숲지기 브람: 별 찾으러 왔나?\n심문관 놈들은…」의 둘째 줄이 이름표·얼굴 없는 서술 창으로 떨어졌다).
+          // 괄호로 감싼 줄은 지문이라 서술로 둔다.
           const merged: Array<{ speaker?: string; body: string }> = [];
           for (const p of parsed) {
             const last = merged[merged.length - 1];
-            if (last && last.speaker === (p as { speaker?: string }).speaker) last.body += `\n${p.body}`;
+            const speaker = (p as { speaker?: string }).speaker;
+            if (last && last.speaker && !speaker && !/^[(（]/u.test(p.body)) last.body += `\n${p.body}`;
+            else if (last && last.speaker === speaker) last.body += `\n${p.body}`;
             else merged.push({ ...p });
           }
           const replacement = merged.map((p) => {
@@ -1664,7 +1668,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 선택지를 닫으면 관에서 물러선다(다시 조사하면 처음부터). gotoLabel 은 바깥 프레임까지 거슬러 찾는다.
   {
     const podPage = podSpot.pages![0]!;
-    const WRONG = "이 단계만 다시 해 보자.";
+    const WRONG = "…다시 생각해 보자."; // 「이 단계만」은 시험 도구 말투였다(VQA 2026-10-31).
     const isWrong = (branch: Command[]): boolean => branch.some((c) => c.kind === "text" && (c as { body?: string }).body === WRONG);
     const stageLabels: string[] = [];
     const wire = (list: Command[]): void => {
@@ -1857,7 +1861,11 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
           say("석판", "북서는 남서와 북동보다 먼저 탄다.\n남서는 셋째가 아니다."),
         );
       } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
-        list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자.\n첫 불은 동쪽, 북서는 남서랑 북동보다 먼저야."));
+        // VQA 2026-10-31: 엘레나가 석판 답을 그대로 읊어 추론이 사라졌다 — 석판으로 돌려보내기만 한다.
+        list.splice(i + 1, 0, say("엘레나", "…석판을 다시 읽어 보자."));
+      } else if (rec.body === "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!") {
+        // 바로 뒤 줄이 「쇠창살이 끌려 올라간다」라 창살이 녹았다는 말과 어긋났다(VQA 2026-10-31).
+        rec.body = "네 화로가 하나의 불길로 이어진다.";
       }
     }
   }

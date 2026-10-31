@@ -50,9 +50,13 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 `REFMAP_CREDIT` 이 있어야 한다. 공식 게시기·에이전트 제출만 쓴다 — 편집기 올리기 화면과 조수 도구는 이 라이선스를 고를 수 없고, 사용자 올리기
 경로(`pack.ts`)는 refmap 이름을 계속 막는다. 다른 제3자 이름(Rasak·PAW·RPG Maker·RTP)은 이 라이선스에서도 막힌다. 스토어 상품은 무료다.
 
+2026-10-31 (사용자: 「REFMAP 은 수정된 것들은 전부 허용」): 게임 게시(`store:publish-game`)도 고친 REFMAP 칩을 막지 않는다.
+`storeGameThirdParty.ts` 가 RefmapDoll 자원을 `REFMAP-MODIFIED` 로 보고 「refmap」 낱말만 풀며, 게임이 쓰는 시트만 판본에 싣고 쓰지 않는 시트는 뺀다.
+쓰면 게임 크레딧에 `REFMAP_CREDIT` 줄을 자동으로 단다. REFMAP 원본 이름·다른 제3자 이름은 그대로 막는다(실측: 폴른 스타 1.25 의 꼬마 토비 = RefmapDoll121 이 이 관문에 막혔다).
+
 | 지점 | 무엇을 보나 |
 |---|---|
-| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과) |
+| `storeThirdPartyName` (`format.ts`) | 공용 낱말표. rasak·라삭·refmap·rpgmaker·알만툴·쯔꾸르·ツクール 는 붙여 써도, paw·mv·mz·rtp 는 낱말로 떨어질 때만(camelCase·숫자 경계 분리, pawn·mvp 는 통과). 「EasyRPG RTP」 구절(CC BY 4.0 걷기 칩 출처, easyrpg-rtp·github.com/EasyRPG/RTP 포함)은 rtp 로 치지 않는다 — 따로 선 RTP·「RPG Maker RTP」는 그대로 걸린다(2026-10-31) |
 | `storePublishBlockReason`·`packBlockedItems` (`pack.ts`) | 고른 것 **과 딸려 들어가는 것 전부**(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름). 스토어에서 받은 것(`origin`)·공용 자료집(`shared_`)도 막는다 |
 | `buildPack` | 하나라도 걸리면 바이트를 읽기 전에 `StorePackBlockedError`(`.blocked` 목록, 한국어 문장) |
 | `uploadCandidates` (`storeUpload.ts`) | 같은 판정으로 후보를 막고 「딸려 들어가는 X: …」를 보여 준다 |
@@ -69,6 +73,55 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 읽을 때마다 sha256 을 다시 보고 깨졌으면 다시 받는다.
 `applyPackToProject` 는 프로젝트를 건드리기 전에 그림 규격(캐릭터 시트 등)과 타일셋 칸이 그림 안에 드는지 본다.
 `validateManifest` 는 `__proto__`·`constructor`·`prototype` id, `count` 와 통행·층 배열 길이가 다른 타일셋, `--` 든 slug 를 받지 않는다.
+
+### 몬스터 전투 도트 시트 (2026-10-30)
+
+스토어 몬스터(`kind: "monster"`, 한 칸 PNG)는 전투에서 움직이는 3×3 시트를 함께 실을 수 있다. 계약은 프로젝트 공방 시트와 **같은**
+`meta.pixelEnemySheet`(`src/project/types/base.ts` `UploadedPixelEnemySheetMeta`)라 넣을 때 번역하지 않는다.
+
+```json
+"drake": { "kind": "monster", "blob": "<cell×cell PNG>", "meta": { "width": 64, "height": 64, "oprnBattler": { … },
+  "pixelEnemySheet": { "sheetResourceId": "drake-sheet", "cell": 64, "motion": "swoop", "idleFrameMs": 180, "skillCell": true } } },
+"drake-sheet": { "kind": "picture", "blob": "<(3·cell)×(3·cell) PNG>", "meta": { "width": 192, "height": 192, "frameWidth": 64, "frameHeight": 64, "frames": 9 } }
+```
+
+- 칸 배치·기준선은 번들 시트와 같다(`src/assets/pixelEnemySheets.ts` 머리 주석): 1행 idle a·b·c, 2행 windup·move·attack, 3행 recover(skillCell 이면 스킬 방출)·hit·dead, 오른쪽 보기, 가로 중심 cell/2, 바닥 y=cell−4. 초상은 idle_a 와 같은 그림.
+- `validateManifest`(`monsterSheetProblems`): 몬스터 에셋에만, `sheetResourceId` 는 같은 팩의 다른 picture PNG, `cell` 48·64·96, `motion` 은 `STORE_MONSTER_MOTIONS`(런타임 7종), `idleFrameMs` 60~2000 정수, `skillCell` 은 true 또는 없음.
+- 크기 검사 `storeMonsterSheetSizeProblems`(초상 cell×cell, 시트 3cell×3cell)는 바이트가 있는 곳에서 돈다: `applyPackToProject`(프로젝트를 건드리기 전)·`scripts/store/agentStore.mts` check/submit.
+- 넣기: `applyPackToProject` 가 `sheetResourceId` 를 `storeProjectId` 로 바꾼다. 그 뒤로는 전투(`projectPixelEnemySheet`)·자료집 미리보기·웹 내보내기(`collectUsedUploadedAssetIds` 가 meta 로 이어진 시트를 함께 싣는다)가 공방 시트와 같은 길을 탄다. 다른 종류 에셋에 붙은 표식은 넣을 때 버린다.
+- 올리기: `closeSelection` 이 몬스터의 시트 자산을 의존으로 딸려 보낸다.
+- 공방(`isAuthoredMonsterAsset`)은 출처(`origin`)가 있는 몬스터를 자기 저작물로 치지 않는다 — 스토어 그림을 레시피로 덮어 그리지 않는다.
+- 조수: `list_monster_resources`·`get_monster_resource` 가 시트로 움직이는 소재에 `battleMotion` 을 붙이고 설명이 그것을 먼저 고르라고 한다. `store_install` 결과는 `monsters[{resourceId, name, battleMotion?}]`.
+- 테스트 `test/assetStoreMonsterMotion.test.ts`.
+
+#### 16칸(4×4) 시트 (2026-10-31)
+
+`pixelEnemySheet.grid: "4x4"`(생략 = `"3x3"`)이면 시트는 4cell×4cell, 시트 그림 meta `frames: 16`. 칸 번호는 격자 폭과 무관한 **행 우선 번호**다:
+0 idle_a · 1 idle_b · 2 idle_c · 3 windup · 4 move · 5 attack · 6 recover · 7 hit · 8 dead(0~8 = 3×3 과 같은 이름·순서) ·
+9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
+
+```json
+"pixelEnemySheet": { "sheetResourceId": "slime-sheet", "cell": 64, "motion": "hop", "idleFrameMs": 220, "skillCell": true, "grid": "4x4", "missingCells": [12, 13] }
+```
+
+- `missingCells`(선택, 9~14 만, 중복 금지, grid 4x4 에만): 그리지 못한 확장 칸. 0~8 은 비울 수 없다.
+- 검사: `monsterSheetProblems`(grid·missingCells·frames 9/16), `storeMonsterSheetSizeProblems`(시트 n·cell), 칸 채움 `storeMonsterSheetCellProblems`(0~8·적지 않은 9~14 는 그려져 있어야, 15·missingCells 는 알파 0). 칸 채움은 PNG 를 풀 수 있는 곳에서 돈다 — 스토어 서버 `checkBlobs`(`src/png.ts decodePng`), `scripts/store/agentStore.mts`(pngjs), 편집기 넣기 `prepareManifestItem`(`createImageBitmap`, 못 풀면 건너뜀).
+- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·weak·intro → 그 동작을 하지 않는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
+- 조수: 16칸 소재에 `battleCells: 16` 이 더 붙는다(`monsterBattleCells`), `store_install` 요약이 16칸 수를 센다.
+- 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
+- 테스트 `test/enemyPixelSheet16.test.ts`.
+
+### 전투 애니메이션 팩 (2026-10-31)
+
+종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.
+검사(`format.ts` `battleAnimationProblems`): 시트는 같은 팩의 `battle` PNG 에셋, `sheet` = `{frameWidth 8~640, frameHeight 8~640, columns 1~20, assetScale? 0.125~8}`,
+프레임 1~120 · 셀 1~16(정수 범위, 모르는 칸 거부) · `hold?` 1~16, timings 64·followUps 4, 소리 = 팩 `sound` 에셋, 내장 `cc0-se-*`, 또는 번들 EasyRPG 효과음 `easyrpg-sound-<id>`(`STORE_ANIMATION_EASYRPG_SOUNDS` 목록과 정확히 일치할 때만 — 접두어만 맞으면 거부; 목록은 테스트가 `EASYRPG_SOUND_ASSETS` 와 같은지 본다), 후속은 같은 목록의 다른 id.
+시트 기하(`storeBattleAnimationSizeProblems`: 가로 = columns×frameWidth, 세로 = frameHeight 배수, pattern < 칸 수)는 바이트가 있는 쪽 — 편집기 넣기와 스토어 서버 받기 — 가 본다.
+
+넣기(`applyPackBattleAnimations`): `database.battleAnimations` 에 `store_<slug>__anim-<id>`(`storeAnimationId`)로, 시트·소리·후속 id 를 바꿔 넣는다.
+**같은 id 레코드가 이미 있으면 덮지 않는다** — 넣은 뒤 저자가 고친 이름·타이밍이 남고, 다시 넣기는 레코드에 아무것도 하지 않는다(새 판본의 레코드 변경도 반영 안 됨, 지우고 다시 넣어야 한다).
+되돌리기·빼기(`storeUndo.ts`)는 레코드도 함께 다룬다. 기술이 쓰고 있으면 빼기가 막힌다. 조수 `store_install` 결과 `animations[]` 의 id 를 `upsert_skill`·`upsert_item` 의 `animationId` 로 건다.
+웹 내보내기는 레코드의 `resourceId`·소리 id 문자열로 시트·소리를 싣는다(`collectUsedUploadedAssetIds`). 시험 `test/assetStoreBattleAnimations.test.ts`.
 
 ### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
 
@@ -158,6 +211,56 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
   2026-10-25 스테이징 실조수(v2·Argon, 판타지·몬스터 자동 넣기 + 조선 카드): 첫 판 14자리 중 9자리 적합(Argon 청취) → 고친 뒤 새 프로젝트 11요청 15자리 중 11자리.
   모든 곡이 `assets/` 파일·저장 뒤 재로드 유지, 출하 플레이어에서 타이틀·마을·던전·전투·보스·승리 15자리 모두 재생 확인. 남은 빗나감은 곡 자체(조선 팩 마을·전투·보스가 조선풍으로 안 들림, 몬스터 타이틀).
   고친 것: 위 점수 규칙·카드 묶기·boss 자동 고르기, 그리고 v2 가 음악 요청을 다 건 뒤에도 「실패」로 끝나던 것(v1 의 게임 시스템 검토 검사 `PiGameSystemProduction` 을 v2 에서 끈다 — v2 에는 그 검토 도구가 없다).
+
+### 효과음 팩과 조수 (2026-10-30)
+
+- 팩: kind `sound`, OGG, 소리마다 `meta.oprnSound`(판 1 — `slots`(1..4, 첫째가 주 자리)·`group`·`style` retro|modern·`set`·`variant` a|b|c·`mood`·`intensity`·`durationSec`·`loopable`·`pairWith`·`summaryKo`·`feelTags`, 참고용 `qa`).
+  지금 팩 8개 = retro·modern × UI·전투·마법·필드. 절차 합성이라 `aiGenerated:false`·크레딧 「OPRN 합성 효과음」 — AI 표시가 붙지 않는다. 에셋 id 는 `oprn-sfx-<style>-<cue>-<a|b|c>`.
+- 읽기 `src/assets/storeSoundMeta.ts` `readStoreSoundMeta`: 자리 id 는 `@/project/seCues` 목록. 옛 이름 별칭(collapse→faint, evasion→miss …)을 풀고,
+  아는 자리가 하나도 없으면 null, 모르는 새 자리 id 는 버리지 않고 `extraSlots`(태그)로 넘긴다. 프로젝트에 넣은 소리는 `audioResourceCatalog` 가 이 값으로 태그·설명을 단다.
+- 고르기 `src/assetStore/storeSoundPick.ts`: 점수 = 주 자리 +20 / 다른 자리 +14 / 가족 기본 자리(magic-fire 를 원하는데 cast) +6 / 안 맞으면 −30, 화풍 ±8, 분위기 낱말 +2, A안 +1, qa 는 /20 동점 깨기.
+  `planSoundStyle` 은 한 화풍으로 자리마다 한 소리(기본 A안). `subsetAudioManifest` 가 곡·소리 몇 개만 남긴 매니페스트를 만든다(음악과 공용).
+- 조수 도구(`src/editor/tools/storeTools.ts`): `store_find_sound{cue, style, mood, query}` — 효과음 팩 목록 전부(쪽 넘김·캐시 `sound|주소`) → 매니페스트(slug@판본 캐시)만 읽고 소리 단위로 줄 세운다,
+  1위에 recommended·why. `autoInstall:false`(「먼저 묻기」)면 `store-sound-choice` 카드(`aiStoreCard.ts` soundChoiceCard, 미리듣기·넣기). 넣은 뒤 `set_game_audio{role:'se', cue, resourceId}`.
+  화풍 통째는 `set_game_audio{role:'sfx-style', style, variant?, cues?}` 한 번 — prepare 가 팩마다 고른 소리 파일만 받고, run 이 넣고 `system.seCues` 를 채운다(먼저 묻기면 거절).
+- `set_game_audio` 의 다른 변화: `role:'maps'` 에 mapIds 가 없으면 지금 보는 맵 → 시작 맵 → 하나뿐인 맵에 걸고 결과 글에 그렇다고 쓴다(틀린 mapIds 는 여전히 거절).
+  `role:'se'` 는 프로젝트 전체 자리라 mapIds 를 받지 않는다. 메뉴 역할(cursor·confirm·cancel)도 자리 표에 같이 건다.
+- v2 낱말 길(`src/ai/v2/musicWords.ts`): `wantsSound`(효과음·SE·SFX·사운드 이펙트·타격음·발소리…) → `SOUND_TIER` 묶음·카드. `soundOnly` 는 `musicOnly` 의 짝 —
+  맵·이벤트 동사를 싣지 않고 검토자·끝맺음 관문의 소리 밖 지적은 참고로 낮춘다(`audioOnly`). 「사운드 이펙트」의 「사운드」는 음악 낱말로 세지 않는다.
+  끝맺음 검사 `[게임 검사 효과음]`: 효과음만 바라는 요청에 효과음 연결(seCues·타이틀 소리·패배/도주·지형 발소리)이 그대로면 짚는다.
+- 시험: `test/storeSoundPick.test.ts`(매니페스트 사본 `test/fixtures/oprn-sfx-*-battle.manifest.json` — 실제 팩에서 소리 6개만 남김, 소리 파일 없음). 런타임 쪽은 `openwiki/runtime-battle.md` 「효과음 자리」.
+
+### 환경음(BGS)·대사·감정·징글 자리 (2026-10-31)
+
+- **환경음 팩**: kind `sound`, 소리마다 `oprnSound.group:"ambient"` + `loopable:true` + `ambientTags`(≤12, 장소·날씨 낱말 한·영 — 비·rain·동굴·cave …). `slots` 는 비어도 된다 —
+  `readStoreSoundMeta` 가 `ambient:true` 로 읽고, 태그에 `bgs`·`환경음` 을 붙인다. 환경음은 자리 순위(`rankStoreSounds`)·화풍 통째(`planSoundStyle`)에 끼지 않는다.
+- 고르기 `rankStoreAmbience(tracks, {query, mood})`: ambientTags +5 / 분위기·느낌 +2 / 설명 +1. 조수 `store_find_sound{ambient:true, query}` → `store_install` →
+  `set_game_audio{role:'bgs', mapIds?, resourceId}`(mapIds 비우면 maps 역할처럼 지금 보는 맵 → 시작 맵, resourceId 비우면 그 맵 환경음 끔). 연출 `music{action:'bgs', query}` 도 넣어 둔 환경음을 같은 순위로 먼저 고른다.
+- 맵 필드 `GameMap.bgs?: { mode: "none" | "custom", resourceId?, volume? }` — 없으면 앞 맵·이벤트 환경음을 그대로 둔다. 런타임 `startMapBgs`(`src/player/mapBgm.ts`)가 loadMap 에서 BGM 옆에 부르고
+  세션 `audio.bgs` 에 실어 세이브·전투 복귀가 같은 루프를 다시 튼다. 크기는 bgs 채널(음악 볼륨 그룹). 편집기 맵 속성 「배경 음악」 탭 아래 「환경음(BGS)」.
+  시작 맵·불러오기는 첫 loadMap 이 `applyMapBgm:false` 라 `PlayScene` 의 첫 연출·인게임 로드가 BGM 옆에서 `startMapBgs` 를 따로 부른다(세션에 환경음이 없을 때만).
+  bgs 채널은 `<audio loop>` 대신 WebAudio 버퍼 루프(`src/player/audio/gaplessLoop.ts`)로 돈다 — 2026-10-31 출하 플레이어 실측: `<audio loop>` 는 감는 자리에 60ms 무음(부하), 버퍼 루프는 0ms. AudioContext 가 없으면 요소로 물러선다.
+- **새 자리**(`SE_CUE_SPECS`): `textBlip` · `emote-<exclamation|question|heart|sweat|anger|music|ellipsis|sleep|idea>` · `footstep-<metal|carpet|mud|ice>`(비면 stone·wood·water·snow 로 물러섬) ·
+  `jump` `land` `explosion` `teleport` `notify` · 징글 `questComplete` `partyJoin` `innRest` `chapterStart`. 징글 자리는 `seCueChannel` 이 `me` 채널로 보낸다(levelUp 은 기존 팩 때문에 se).
+  런타임 고리: 대사 글자마다 textBlip(`src/player/textBlipVoice.ts`, 화자 목소리·녹음이 먼저, 둘에 하나·55ms 간격), showEmote → emote-<종류>, 점프 시작 jump·착지 land, 여관 숙박 innRest,
+  파티에 새로 들면 partyJoin, 퀘스트 완료 스위치(sw_<key>_done)가 켜지면 questComplete. 자리가 비면 모두 무음 — 옛 게임 그대로. 고리 없는 자리(explosion·teleport·notify·chapterStart)도 조수가 이벤트용으로 고를 수 있다.
+- **이벤트 소리**: 시스템 자리는 없고 `group` 과 자기 이름 slots(`cry-small`·`laser`·`horror-sting` …)만 있는 소리. `readStoreSoundMeta` 가 `event:true` 로 읽는다(묶음이 없으면 예전처럼 null).
+  자리 순위·화풍 통째 걸기에는 안 끼고, `store_find_sound{query}` 로 찾아 넣은 뒤 이벤트의 효과음 재생 명령에 리소스 id 를 쓴다.
+- 시험: `test/audioCues.test.ts`.
+
+### 아이콘 팩과 조수 (2026-10-31)
+
+- 팩: kind `icon`, 에셋 kind `icon`, **32×32 투명 PNG 한 장 = 아이콘 하나**(`STORE_ICON_SIZE`, `STORE_FIXED_SHEETS.icon` — 넣을 때 크기가 다르면 거절).
+  넣으면 프로젝트 자원 kind `icon`(통이미지, 프로필 `icon`)이 되고 `iconResourceId` 를 그대로 쓴다. 고르개(`resourceOptions` icon·image)는 kind `icon` 업로드도 보인다.
+- 고르기 설명 `meta.oprnIcon`(판 1): `category` weapon|armor|consumable|material|key|skill|state|treasure|modern|eastern · `itemType`(아이템 종류·장비 칸·skill·state) ·
+  `element`(fire|ice|thunder|water|wind|earth|light|dark|poison|arcane) · `nameEn` · `nameKo` · `tags`(≤24). 읽기·점수 `src/assetStore/storeIconPick.ts`
+  (이름 낱말 +6·설명 낱말 +2·부분 +3/+1·종류 +4·속성 ±; 분류는 대상별로 거르고 skill/state 아이콘은 아이템 자리에 안 간다). 자동 배정은 `STORE_ICON_CONFIDENT_SCORE`(6) 이상만.
+- 기술(`SkillRecord`)·상태(`StateRecord`)에 선택 필드 `iconResourceId` 가 생겼다(없으면 예전 그대로: 기술은 애니메이션 첫 칸, 상태는 글자 배지). 참조 검사·정규화·DB 탭 고르개 포함.
+  런타임: 상태 메뉴 기술 줄, 전투 기술·아이템 하위 메뉴 줄 머리(`.battle-command-record-icon`), 전투 상태 배지(`.battle-status-icon-image`).
+- 조수: `upsert_item`·`upsert_equipment`·`upsert_skill`·`upsert_state` 는 아이콘을 안 주면 프로젝트에 이미 있는 스토어 아이콘 중 자신 있는 것을 붙이고 경고 줄로 알린다(`dbTools` `autoStoreIcon`).
+  `assign_store_icons{collections?, ids?, overwrite?}`(`src/editor/tools/storeIconTools.ts`) — 빈 레코드를 한꺼번에 채운다. 스토어가 연결돼 있으면 아이콘 팩 매니페스트만 읽어 더 맞는 것을 고르고 고른 파일만 받는다.
+  `store_install` 결과의 `icons[]` 도 같은 자원 id 를 준다.
+- 시험: `test/assetStoreIcons.test.ts`.
 
 ## 게시기
 
@@ -267,8 +370,15 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
   html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
   스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- **나라별 출처(2026-10-31).** 한국 밖 방문자는 판본 파일을 **`games-cdn.openrpgmaker.com`**(R2 버킷 `oprn-games` 사용자 도메인, Cloudflare 엣지 캐시)에서 받는다.
+  한국(`CF-IPCountry: KR`)과 나라를 모르는 요청은 지금처럼 games-kr. 고르는 곳은 play 화면(`/games/<slug>/play`) 하나 —
+  응답 머리 `x-oprn-game-origin` 이 고른 출처. 게시하면 스토어가 디스크 판본 폴더를 바이트 그대로(서버가 쓴 index.html·CSP 해시 포함) 사본 버킷에 올리고,
+  다 놓인 판본만 사본으로 보낸다. 세이브가 갈라지지 않게 고른 출처는 게임마다 쿠키에 남고, 사본을 켜기 전에 그 게임을 플레이한 사람은 games-kr 에 남는다.
+  사본 쪽 머리(nosniff·`frame-ancestors`·HSTS)와 경로 제한(GET 만, `_files/`·index 아닌 html 막음)은 Cloudflare 규칙이 붙인다. play CSP `frame-src` 는 두 출처.
+  플레이어 쪽 바꿀 것은 없다: `storeGame.embedders`(play)와 클라우드 세이브 다리(`event.origin` = iframe 출처)는 출처마다 그대로 돈다.
+  되돌리기는 스토어 env `STORE_GAMES_MIRROR_SERVE=off` + 재시작 한 줄. 상세·채우기 명령: 스토어 저장소 `deploy/README.md` 「게임 판본 해외 사본」.
 - 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
-  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처(games-kr·games-cdn)만.
 - 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
   상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).
@@ -312,7 +422,7 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·「스토어에 올리기」.
   다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
-  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player` — `dist/export-player` 가 마지막 런타임 커밋(src, 편집기 제외)보다 오래면 게시를 거절한다(2026-10-30 마왕 편의점 스테이징 1.5·1.6 이 아침 묶음으로 나간 사고, 우회는 `--allow-stale-player`). 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
 - 제3자 이름 자원(2026-10-30): 판본은 프로젝트 자원 목록 전체를 싣는데, 기본 목록에는 쓰지 않는 「RefmapDoll · REFMAP 변형 인물」 걷기 칩 321장이 딸려 왔다.
   `store:publish-game` 은 `splitStoreGameThirdPartyProfiles`(`src/assetStore/storeGameThirdParty.ts`)로 스토어가 막는 이름(`storeThirdPartyName`)의 자원을
   게임이 쓰지 않으면 빼고, 쓰면(assetId 가 자원 목록 밖에 나오면) 게시를 멈춘다. 공개 라이선스 카탈로그(`cc0-`·`easyrpg-`)는 「rtp」 낱말이 있어도 막지 않는다.

@@ -92,6 +92,8 @@
   살림집만 골라 주색 80%·둘째(돌벽 작은 집) 20%, 앵커(여관 등)는 강조색으로 남는다. 허용 건물은 그림자(2층)·기초(4층)를 같은 원점에
   모든 키트를 찍은 뒤 빈 칸에만 놓는다. 문은 두 칸 높이라 아랫칸 기준으로 맞춘다. 팔레트 집은 키가 커 좁은 띠에 안 들어가면
   같은 자리에서 더 낮은 집을 한 번 더 본다(붉은 기와 기본 마을의 난수열은 그대로).
+  `log` 마을은 높은 곳 건물(landmark)·모이는 곳 건물(anchor)도 통나무 무리 강조 건물(너와 양조장·돌벽집)에서 고른다 — 테마 목록
+  (`TIER_LANDMARKS`·`spec.anchors`)을 그대로 쓰면 숲속 통나무 마을에 예배당·원통 망루 집·붉은 기와 광장 여관이 섰다(2026-10-31 이세계 고딩 VQA 고블린 마을).
 - `water`(river 만): `river` 강과 다리 · `none` 강 없는 숲 빈터·언덕·성벽 안 마을(큰길이 가로지르고 일터는 타작마당). 생략하면 seed 로 셋에 하나꼴 none,
   riverbank 형태는 늘 river(생략 시 none 확률 0.45). 루프 1 의 숲속·산골·장터·성벽 마을이 모두 「세로 강 + 가운데 다리」 같은 뼈대였다.
 - `terrain: "highland"`(river, 요청할 때만): 큰길을 맵 아래쪽(H×0.66)으로 내리고 7칸 간격 등고선 세 단. 세 단째는 오를 길 없이 산 숲(`summit`)으로 덮는다.
@@ -247,6 +249,17 @@ source는 16px/16열/336칸이며 기존 칸 배정을 유지하고 필요한 �
 공용 source beodeul_ground는 앞의 112칸을 그대로 두고 304칸으로 확장한다. 추가 44레시피는 집 6종/수관 3종의 짧은 일광·접촉 그림자, 4×3 저대비 잔디/흙 변화 3종, 원본 길 오토타일 16종의 연석 대비를 낮춘 변형 2개씩이다.
 `harmonize_beodeul_daylight({mapId})`는 기존 맵만 보정한다. 그림자/잔디는 2층 빈칸에 넣고 기존 2층 그림과 높이를 보존한다. 길 보정은 원본 형태와 통행을 유지한 1층 graft이며 원래 길 오토타일 connectTileIds에 연결한다. memberTileIds는 바꾸지 않는다. 반복 적용은 중복하지 않는다.
 작은 마을 houseCount 시공은 마지막에 자동 적용하고 큰 기후 마을에는 강제하지 않는다. 공통 조수 프롬프트와 참고문서 읽기 계약에 등록한다. 하네스 build/validate/review, 공용 신규/기존 source 등록과 실제 마을 전후·그림자만 비교·정본 저장·재로드·통행 근거는 verify-shots/beodeul-light-ground. 전체 게이트는 실행하지 않는다.
+
+## 풀밭 737 글자 무늬 제거 r2 (2026-10-31, LEDGER J124)
+
+적대적 VQA 가 버들항 마을마다 「풀밭에 글자 모양 반복 무늬 — 워터마크, 체험판 에셋 같다」를 큰 결함으로 매겼다(마을 바닥이 737 한 칸이라 16px 마다 「Sng」「ULL」이 줄지어 읽힘).
+출처는 이 저장소 코드다: `restyle-beodeul-ground.py`(#2981, 2026-10-19)의 `grass_body` 가 흐린 잡음을 문턱으로 잘라 짙은 점을 3~8화소 획으로 무리 지었다. 제3자 그림·참고 이미지·글자 렌더는 없다(라이선스 문제 아님).
+
+- 새 바탕 = `scripts/content/beodeul-foliage/grass-body-r2.json` 의 행 문자열(흩뿌린 점·두 화소 짝 + 세로 2~3화소 풀잎, 8-이웃 무리 최대 3화소이고 3화소는 세로 풀잎만, 같은 간격으로 셋 이상 늘어선 점 최소화, 무늬 화소 59 — r1 67). 첫 안(점만 고르게 흩은 것)은 독립 Opus VQA 가 「점 그물·점선」으로 떨어뜨렸다(`opus-vqa-r1-fail.json`). 같은 네 색(#6e9943 바탕·#618c3b·#7aa34b·#84ab52), 칸 번호 그대로.
+- `python3 scripts/content/beodeul-grass-unglyph.py [--dry]` 가 r1 바탕과 **같은 자리·같은 색**인 화소만 r2 로 바꾼다 — 풀밭 변형(548·736~749)과 길·물가·숲 가장자리·둑 칸에 복사된 바탕까지 함께 바뀌어 이음매가 맞는다. 버들항 2,982칸 · beodeul_ground 46칸 · beodeul_nature 78칸. 멱등(두 번째 실행 0화소).
+- `restyle-beodeul-ground.py` 의 `grass_body` 도 같은 행 문자열을 읽어 다시 돌려도 r2 가 나온다.
+- 학습 그림(`beodeul-ground/palette-standard.png`, `beodeul-massing/street.png`, `beodeul-town-wall/*.png`)에는 옛 바탕이 남아 있다(게임 칩셋 아님).
+- 3/4 관문: kind terrain 2장(737 4×4 `e0db0973…` · 변형 15칸 `2f18bb3a…`) AI 조언 PASS(미보정 프로필). 독립 Opus 5.5 적대적 VQA r2 pass(`harness-data/object-gate/vqa/beodeul-grass-unglyph/opus-vqa-r2.json`, 그림 같은 폴더) 뒤 18323 묶음 `beodeul-grass-unglyph-1031` 에 **위임 허용**(`by: delegated`, 사용자 → 감독 2026-10-21 규칙)으로 기록 → `check --context bundle` 통과. 비교 그림 `~/claude-viz/beodeul-grass-fix.html`.
 
 ## 기본 타일셋 (2026-09-30)
 
@@ -869,6 +882,12 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건물/나무 전체 배열을 확인하고 집·길·마당·시작점을 유지하며 흩어진 나무/덤불을 수관이 앞뒤로 겹친 공용 숲 8덩어리로 교체한다. 높이 있는 풀은 숲 밑동에만 겹치고 줄기의 X를 상속하는 ★다. 짧은 문틈 울타리 두 조각을 제거하고 실제 텃밭 3변을 연속 레일/수직선/모서리로 연결한다. 북쪽은 큰길에서 들어오는 면이다. stone 박공은 정면 돌벽과 같은 원본 질감으로 통일한다. 원본 지붕/알파/창문/문 개수/집 위치를 유지한다. 이벤트/높이/다른 이벤트의 전이 도착점/수정된 나무·별도 지형/기물은 거부, 반복은 no-op. source WOODLAND.md, build 하네스가 이전368칸을 보존한다. 공용 문서/정확한 4층 예제/전체 graft 규칙은 새·기존 city/ground 모두 배포하며 각 MD 12만자 이하로 분리한다. 전용 player.html과 SQLite 재로드 근거 verify-shots/beodeul-depth-fix.
 
 
+### 코드 지형 5판 일부: 과수원 울타리 없음·출구는 가장자리 가운데 (2026-10-30)
+
+- **과수원:** 울타리를 두르지 않고 줄지은 둥근 나무 사이에 사과 상자(`bd-prop-crate_apple`) 한두 개 — 4판 ab23 판정 「울타리 안에 나무만 있어 쓸모없음」(나무를 가둔 빈 우리로 읽혔다).
+- **출구:** 큰길은 요청 방향 가장자리의 가운데 60%(양끝 20% 밖)를 먼저 찾고, 길이 없을 때만 가장자리 전체로 — 4판 출구 시험 셋째 판에서 북쪽 출구가 서쪽 가장자리 열을 타고 (0,0) 구석으로 나갔다. 고친 뒤 같은 판은 (33,0) 에서 나간다.
+- 지형 띠 변경(비평지 동서 띠 쌓기)은 같은 10요청 맞대기에서 4판을 못 이겨 함께 넣지 않았다 — 4판 지형 유지.
+
 ### 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
 
 - 사용자가 village-diversity-1 마을들을 보고 지적했다. 강가·해안 마을 숲(아래 woodland 보정의 composer)이 짙은 풀 위에 낱 나무로 서서,
@@ -1060,7 +1079,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 
 **조수 던전 시험 후 고친 것(2026-10-22, assistant-dungeons, 기준 시험 9건 Opus 적대 VQA 평균 4.5):**
 - **죽은 계단** — 8맵 전부 계단이 장식뿐이었다. 이제 1층 바깥 계단은 `entrance` 를 줄 때만 그리고(`entryStair:"none"`), 마지막 층에는 내려가는 계단을 그리지 않는다(`exitStair:"none"`).
-- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`.
+- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`. **층 계단은 반드시 놓는다(2026-10-30):** 내려가는 계단은 장식이 끝난 뒤 깊은 방에 놓는데, 보스방이 옥좌·제단으로 차면 후보가 0이 되어 말없이 빠졌다(성 2층 시드 4·9·11 = `links: []`, 1층 `exitStair: null`). 이제 `holeSomewhere` 가 깊은 방 안쪽 → 둘레 조건 없는 칸 → 다른 방(깊은 순, 입구 방 끝)을 차례로 보고, 올라가는 계단(탑)도 깊은 방 북벽이 없으면 다른 방 북벽에서 찾는다. 그래도 없으면 경고를 남긴다. 프로브: `bun scripts/content/dungeon-floor-link-probe.mts castle,cave 40`.
 - **빈 방** — `populate`(rpg 기본 켜짐): 계획 자리의 순찰 적(≤4), 상자 2(보물 방 먼저 — 같은 그림 3개부터 린트 경고), 마지막 층 보스(도망 불가)·보스 앞 방 회복 세이브, 그 아래층 층 수문장. `troops:{field,midBoss,boss}` 로 요청한 적을 넘긴다. 도구가 그림을 스스로 고르므로 `choosesOwnGraphic`(없으면 Pi 의 그림 선택 검사가 세 번 거부했다). `expand_jrpg_campaign_volume`·`author_jrpg_chapter` 는 자기 채우기가 있어 `populate:false` 로 부른다.
 - **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
 - **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.

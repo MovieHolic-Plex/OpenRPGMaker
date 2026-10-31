@@ -19,6 +19,8 @@ export interface AudioRequest {
   // 요청별 재생 속도와 팬도 언락 대기 중 보존해 다른 요청의 값으로 덮이지 않게 한다.
   readonly playbackRate?: number;
   readonly pan?: number;
+  /** pan 을 이 소리에만 쓴다(엔진 밸런스로 남기지 않는다) — 발소리 같은 위치음. */
+  readonly positional?: boolean;
 }
 
 export interface AudioQueueState {

@@ -22,6 +22,10 @@ export type RemoteGen = {
   readonly mode?: string;
   /** 지형: 합칠 지금 맵 칩셋 */
   readonly targetTilesetId?: string;
+  /** 캐릭터: 다 넣으면 이 캐릭터 외형의 걷기 칩을 새 칩으로 바꾼다(조수 generate_walk_chip · 외형 DB 「사진으로 걷기 칩」) */
+  readonly appearanceId?: string;
+  /** 캐릭터 사진·글: 후보 1위(오류 검사 → Opus 쌍 비교)를 호스트가 알아서 고른다. 없으면 사람이 고른다 */
+  readonly autoPick?: boolean;
   jobId: string | null;
   /** 마지막으로 읽은 호스트 상태(짧게) */
   status: { state: string; stage?: string; progress?: number; elapsedMs?: number; expectMs?: number; engine?: string; error?: string | null; reviewing?: boolean; attempts?: number } | null;

@@ -151,6 +151,8 @@ export function defaultTerms(): Required<Terms> {
     capture: "포획",
     defend: "방어",
     escape: "도주",
+    battleVictory: "승리!",
+    battleCommandPrompt: "{name은} 무엇을 할까?",
     back: "뒤로",
     target: "대상",
     shopGreeting: "어서 오세요.",

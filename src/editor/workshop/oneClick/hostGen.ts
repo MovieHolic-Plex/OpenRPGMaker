@@ -15,6 +15,10 @@ export interface HostGenStart {
   readonly tileset?: { readonly png: string; readonly refs: readonly (readonly [number, number])[] };
   /** char-gen mode "photo": 사진(data URL, JPG·PNG·WEBP). 사진은 호스트 작업 폴더에만 있고 묶음에는 들어가지 않는다. */
   readonly photo?: string;
+  /** char-gen mode "photo"·"text": 후보 1위를 호스트가 알아서 골라 묶는다(사람 고르기 단계 없음) */
+  readonly autoPick?: boolean;
+  /** autoPick 일 때 묶음 캐릭터 이름 */
+  readonly title?: string;
 }
 
 /** 사진으로 만든 후보 하나(호스트 state "picking") — 사람이 고른다. */

@@ -4,7 +4,7 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBgs, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
   setMapCloudShadows, setMapClimate, setMapSunlight, setMapTransit,
 } from "@/editor/actions";
 import { mapRoadBands, planMapTransit } from "@/editor/tools/transitTools";
@@ -52,7 +52,7 @@ import {
   CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting, MapBgsSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
@@ -97,7 +97,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
   restrictions: "체크한 행동을 이 맵에서 제한합니다.",
   encounter: "걸어 다닐 때 만나는 적 그룹과 출현 조건을 설정합니다.",
-  spawns: "맵 위에 배치된 적의 소속 진영을 설정합니다.",
+  spawns: "맵 위에 배치된 적의 소속 진영과 나오는 시간대를 설정합니다.",
   minimap: "플레이 화면에 표시할 작은 지도를 설정합니다.",
 };
 
@@ -1013,6 +1013,40 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
   }
 
   host.append(section);
+  host.append(renderBgsSection(host, map));
+}
+
+/** 맵 환경음(BGS) — BGM 밑에 깔리는 루프. 「유지」는 앞 맵·이벤트의 환경음을 이어 간다(설정 없음). */
+function renderBgsSection(host: HTMLElement, map: import("@/project/types").GameMap): HTMLElement {
+  const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-bgs-section" } });
+  const bgs = map.bgs;
+  const mode: "keep" | MapBgsSetting["mode"] = bgs?.mode ?? "keep";
+  const modeSelect = el("select", {
+    dataset: { testid: "map-bgs-mode" },
+    on: {
+      change: (e: Event) => {
+        const val = (e.target as HTMLSelectElement).value as "keep" | MapBgsSetting["mode"];
+        if (val === "keep") setMapBgs(map.id, null);
+        else setMapBgs(map.id, { mode: val, ...(bgs?.resourceId ? { resourceId: bgs.resourceId } : {}) });
+        rerender(host);
+      },
+    },
+  }) as HTMLSelectElement;
+  for (const [val, label] of [["keep", "유지(앞 환경음 그대로)"], ["none", "끔"], ["custom", "지정 환경음"]] as const) {
+    modeSelect.append(el("option", { text: label, attrs: { value: val } }));
+  }
+  modeSelect.value = mode;
+  section.append(fieldRow("환경음(BGS)", modeSelect));
+  if (mode === "custom") {
+    section.append(mapResourceField({
+      label: "환경음", resourceId: bgs?.resourceId, kind: "sound", testid: "map-bgs-resource",
+      dialogTitle: "맵 환경음(BGS)", allowClear: true,
+      onChange: (result) => setMapBgs(map.id, result.resourceId ? { mode: "custom", resourceId: result.resourceId } : null),
+      rerender: () => rerender(host, "map-bgs-resource-set"),
+    }));
+  }
+  section.append(el("p", { class: "map-props-hint", text: "비·바람·동굴 물방울처럼 음악 밑에 계속 깔리는 루프입니다. 크기는 음악 볼륨을 따릅니다." }));
+  return section;
 }
 
 // ── 전투 탭 ──
@@ -2007,6 +2041,8 @@ function spawnFactionRow(
   main.append(select);
   row.append(main);
 
+  row.append(spawnTimePhaseRow(map, spawns, index, spawn, host));
+
   row.append(el("p", {
     class: `map-props-hint map-spawn-row-effect${dangling ? " map-spawn-row-warning" : ""}`,
     dataset: { testid: `map-spawn-faction-effective-${index}` },
@@ -2018,6 +2054,41 @@ function spawnFactionRow(
   }));
 
   return row;
+}
+
+/** 「나오는 시간대」 — 체크가 모두 켜져 있으면 키를 지운다(늘 나온다). 시간 시스템이 꺼져 있으면 듣지 않는다고 알린다. */
+function spawnTimePhaseRow(
+  map: import("@/project/types").GameMap,
+  spawns: readonly FieldSpawnDef[],
+  index: number,
+  spawn: FieldSpawnDef,
+  host: HTMLElement,
+): HTMLElement {
+  const active = new Set<TimePhase>(spawn.timePhases?.length ? spawn.timePhases : TIME_PHASES);
+  const wrap = el("div", { class: "map-encounter-row-main", dataset: { testid: `map-spawn-time-phases-${index}` } });
+  wrap.append(el("span", { class: "map-spawn-row-meta", text: "나오는 시간대" }));
+  for (const phase of TIME_PHASES) {
+    const check = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `map-spawn-time-phase-${index}-${phase}` } }) as HTMLInputElement;
+    check.checked = active.has(phase);
+    check.addEventListener("change", () => {
+      const nextPhases = TIME_PHASES.filter((candidate) => candidate === phase ? check.checked : active.has(candidate));
+      if (nextPhases.length === 0) { check.checked = true; return; }
+      const next = spawns.map((item, i) => {
+        if (i !== index) return item;
+        const { timePhases: _dropped, ...rest } = item;
+        return nextPhases.length === TIME_PHASES.length ? rest : { ...rest, timePhases: nextPhases };
+      });
+      setMapFieldSpawns(map.id, next as FieldSpawnDef[]);
+      rerender(host);
+    });
+    const label = el("label", { class: "map-props-check-row" });
+    label.append(check, el("span", { text: TIME_PHASE_LABELS[phase] }));
+    wrap.append(label);
+  }
+  if (spawn.timePhases?.length && !store.getCurrent().system.timeSystem?.enabled) {
+    wrap.append(el("p", { class: "map-props-hint map-spawn-row-warning", text: "시간 시스템이 꺼져 있어 늘 나옵니다. 자료집 「시스템 → 시간」에서 켜세요." }));
+  }
+  return wrap;
 }
 
 // ── 헬퍼 ──

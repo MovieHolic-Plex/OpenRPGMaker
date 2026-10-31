@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5c067dde68a50666d26ad1c59b9dbcc969802b8d2870b9539056db559bd45d1",
+ "width": 48,
+ "height": 64,
+ "kind": "terrain",
+ "name": "ramp rise 3 w3 cut through a south-facing snow cliff face (climbs north)",
+ "label": "relief-cuts-fwd/snow-steps/ramp-h3-w3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "relief-cuts-fwd",
+   "fallback": true,
+   "reason": "칩셋 relief-cuts-fwd 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 10,
+  "darkV5": 85,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow ramp slope (centre lane)",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cut wall (stepped blue-grey rock profile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cut wall (stepped blue-grey rock profile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat ground apron at the foot",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The centre lane (rows 0-47, L≈210 snow with sparse diagonal speckle) is a single sloped plane with no edge line, eave shadow or vertical south face. It is the ramp surface seen from above. Left and right are dark-outlined blue-grey walls with stepped profiles that grow wider toward the bottom (about 4 px wide at row 0, about 9 px at row 46). These are the cut sides of the cliff, shown as side faces. Rows 48-63 are flat ground (L=180) with no front face. The ramp reads as an inclined plane flanked by side walls, not as a standing object with a top and a front face, so I did not count a front face and chose 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a snow ramp with chevron bands, speckled grain and blue-grey stone walls at the sides. It has about 6 visible tones per tile, close to the paving reference (7) and above the grass reference (3). Its dark edge pixels are 0% neutral, so they lean blue-grey and read as material-toned. Near-flat coverage is 29%, while both references have 0%. The picture confirms this: the lower part of the ramp is a large, nearly uniform beige-pink fill with little grain, unlike the references, which carry texture across the whole surface. Only the upper chevron area has dithered speckle. The side walls have few steps and read as flat blue-grey blocks. The ramp does not match the per-tile grain and shading of the references, so it is slightly lower in density and has flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20692
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow ramp slope (chevron-textured plane climbing north)",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff cut wall (blue-grey rock, stepped)",
+      "rows": "4-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff cut wall (blue-grey rock, stepped)",
+      "rows": "2-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat snow ground at foot of ramp",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 44,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide sloped snow plane, rows 0-47, with chevron and speckle texture. It is flanked on both sides by dark-outlined, stepped blue-grey rock walls that run rows 4-47 and form the cut through the cliff. The left wall shows a bottom outline at row 47. Rows 48-63 are flat snow ground at the foot of the ramp. The ramp reads as a tilted surface with vertical cliff faces beside it, not a flat top-down slab, though the ramp plane itself has no separate south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a snow ramp with chevron-banded steps and speckle dots, plus stone cliff edges at the sides. It shows 6 visible tones per tile, above the grass reference (3) and just under the paving reference (7). Dark edge pixels are 0% neutral, so the outlines lean blue-grey (dark material tone), not near-black. Near-flat coverage is 29%, against 0% for both references, so there are real flat areas. The lower part of the ramp and the broad pale bands are large, plain fills with sparse speckle. The snow ramp has only about 4 distinct lightness steps, against 5-6 in the references, whose stones and tufts are shaded individually. The speckle is sparse and scattered and does not form per-tile clumps or grain. A careful artist would find it flatter than the references, mainly in the lower snow area.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17992
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow ramp surface (sloped plane with chevron texture)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rock cliff wall, stepped profile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right rock cliff wall, stepped profile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat snow ground at the foot of the ramp",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Rows 0-47 are one continuous snow plane (L about 210 and 180) with diagonal chevron texture. It has no front-edge line, no eave shadow and no vertical south face, so the ramp reads as a top-down inclined surface. The left and right cliff walls (rows 0-47) are rock side faces cut into the slope, with stepped inner edges. Rows 48-63 are flat snow ground (L=180) with no vertical riser between it and the ramp. No part of the drawing has a south-facing vertical face of 3 or more rows, so front_face_rows is 0."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a snow ramp with chevron stripes and speckle dither, drawn in a pale cool ramp of about 4-5 lightness steps. It measures 6 visible tones per tile, above the grass (3) and close to the paving (7). Its dark edge pixels are 0% neutral, so the blue-grey rock edges on the sides lean tinted and read as dark material tone, not a sticker line. The weakness is the lower half and the bottom of the ramp. These are large areas of one flat tan/beige with no grain, and near-flat coverage is 29% against 0% for both references. That is a clear flat-fill problem. Raw colours are only 6 per tile, so the texture is sparse next to the references' per-stone and per-tuft shading. A careful artist would not accept the flat lower third beside the references, which look fully worked. Fail on flat fills and thinner texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17698
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow ramp surface (sloped plane climbing north, chevron texture)",
+      "rows": "0-47",
+      "evidence": "c",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left cliff wall flanking the ramp (stepped stone blocks)",
+      "rows": "4-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right cliff wall flanking the ramp (stepped stone blocks)",
+      "rows": "2-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat snow ground at the foot of the ramp",
+      "rows": "48-63",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central ramp is a large sloped snow plane (rows 0-47) with diagonal chevron texture, so it reads as a receding surface seen from above. It is flanked on both sides by dark blue-grey cliff walls drawn as stacked stone blocks with dark outlines and horizontal course lines (rows 4-47), and these are the vertical south-facing cliff faces. The walls step wider toward the south, but they look like front-facing blocks, not a receding isometric side face. Flat ground fills rows 48-63. Column scans at x=12, 24 and 35 show uniform snow tones, with no front-face band across the ramp itself."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has a chevron ramp with scattered speckle and dark blue-grey cliff-side steps. Those edge pixels are tinted (0% neutral), so the outline is a material tone rather than a black sticker line. It falls short of the references in three ways. First, the lower third of the ramp is a large flat beige field: 29% near-flat coverage against 0% for both references, and 5x5 blocks are visibly unbroken. Second, the snow ramp has only about 4 lightness steps, and its 13 total colours are far fewer than the grass reference's 80. Third, the speckle is sparse and does not shade each surface the way the paving stones are shaded one by one. It has 6 visible tones per tile, which is above grass (3) and just under paving (7), but much of that comes from the dark side walls rather than the snow surface. A careful artist would find the ramp flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20857
+  }
+ ],
+ "decidedAt": "2026-10-31T06:45:40.787Z",
+ "cells": {
+  "16": [
+   "2273238ba0149a73",
+   "531237e06ed42e4c",
+   "5dff3096db0ae23d",
+   "5f503660be0d5bb0",
+   "60cb4ab2058a29f7",
+   "95b9c63457a70822",
+   "c774380dfc9aafe5",
+   "d1897be4265aa465",
+   "d7946c1df233db0c",
+   "fa6a7894f45a331f"
+  ],
+  "24": [
+   "0d04c95464d24ba3",
+   "4b54d8b10e161a84",
+   "61f39b872c41ea92",
+   "8902229538705ff3",
+   "b222d1c419a4cbc4",
+   "b8ed458fb4780197",
+   "bcf5dd0c2b00e768",
+   "bfd97f6ac61bbff5",
+   "c6ef5199f9aafe8d",
+   "d0c87daa14ca5867",
+   "db269f0e565c0d72",
+   "e3a3232d1c404b6f"
+  ],
+  "32": [
+   "00668d5e51b4d01a",
+   "077c0bef408cf680",
+   "1b3075284a87ac04",
+   "312f0bf4ede68614",
+   "3365906fff826918",
+   "518bd6e465df3139",
+   "5851a7dddadd940c",
+   "6b1efd4b8fb6e66c",
+   "71b77b5541717678",
+   "7de7e4e07f987f8d",
+   "d8a3362c1a360f2f",
+   "fdb68daf65ff56c0"
+  ],
+  "48": [
+   "02bdb5496003fd05",
+   "13ed465455caf555",
+   "af1a97bc4284f5b4",
+   "eb5f8e80ecb883fd"
+  ]
+ }
+}

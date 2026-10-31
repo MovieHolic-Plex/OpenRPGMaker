@@ -12,6 +12,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
+import { withoutNegatedEncounters } from "./combatChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
@@ -21,7 +22,7 @@ import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { musicAsked, musicOnly } from "./musicWords";
+import { musicAsked, musicOnly, soundOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -416,6 +417,8 @@ const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
 const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
+/** 싸울 몬스터·적을 바라는 요청(「약한 몬스터가 있게」「고블린과 싸우는」). 「기적이 있」 같은 낱말 속 「적」은 빼려고 앞 글자를 본다. */
+export const FOE_ASK = /(몬스터|마물|(?<![가-힣])적|고블린|슬라임|늑대|멧돼지|도적)(들)?(이|가|와|과|랑|하고)?\s*(있|나오|나타나|출몰|싸우|싸울|싸워|덤비|잡)|필드 적|(?<![가-힣])적을\s*(두|놓|배치)|monsters?|enemies|enemy/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
 /** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝·엔딩 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
@@ -425,6 +428,16 @@ function audioBindingsChanged(before: Project, after: Project): boolean {
     p.system.defaultBgmResourceId ?? null, p.system.battleBgmResourceId ?? null, p.system.battleVictoryMeResourceId ?? null,
     p.system.titleScreen?.musicResourceId ?? null, p.system.opening?.musicResourceId ?? null,
     (p.endings ?? []).map((e) => [e.id, e.presentation?.musicResourceId ?? null]),
+  ]);
+  return pick(before) !== pick(after);
+}
+
+/** 효과음 연결(자리 표·타이틀 메뉴 소리·패배/도주·지형 발소리)이 바뀌었나. */
+function seBindingsChanged(before: Project, after: Project): boolean {
+  const pick = (p: Project) => JSON.stringify([
+    p.system.seCues ?? null, p.system.titleScreen?.sounds ?? null,
+    p.system.battleDefeatSeResourceId ?? null, p.system.battleEscapeSeResourceId ?? null,
+    (p.database.terrains ?? []).map((t) => t.footstepSoundResourceId ?? null),
   ]);
   return pick(before) !== pick(after);
 }
@@ -456,6 +469,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
+  if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio")) problems.push("[게임 검사 효과음] 요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se').");
   if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
   if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
@@ -473,6 +487,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const at = (layer: unknown) => Array.isArray(layer) ? Number(layer[i]) : -1;
       // 도구가 만든 장면 받침(ev_cutscene_*·호위 목적지)은 빼고, 그 칸이나 바로 위(북쪽) 칸에 물건 타일·건물 도장이 있으면 «그 물건 앞»이라 본다.
       if (/^ev_(cutscene|escort)_/u.test(ev.id)) continue;
+      // 바닥에 떨어진 증거(evidenceOnThing `<사람 id>_evidence`)는 그림 대신 가까이 오면 반짝인다(nearSparkle) — 맨땅이 아니다.
+      // 이 칸에 「물건을 찍거나 옮겨라」를 내면 모델이 칸을 일곱 번 옮기고 대사의 자리 말과 어긋났다(2026-10-31 mef3 terra 추리).
+      if (pages.filter((pg) => obj(pg.trigger)?.kind === "action").every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
       const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
       let near = false;
       for (const [dx, dy] of [[0, 0], [0, -1]] as const) {
@@ -586,10 +603,17 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     });
   }
   // 1h) 무작위 조우: 「랜덤 인카운터·풀숲에서 마주치는」 요청인데 조우표가 안 바뀌었다(보이는 적 이벤트만 놓았다).
-  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(task)) {
+  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(withoutNegatedEncounters(task))) {
     const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
     const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
+  }
+  // 1i) 싸울 몬스터: 「약한 몬스터가 있게·적과 싸우는」 요청인데 이번에 바뀐 이벤트에 전투가 없고 켜진 조우도 바뀌지 않았다
+  // (2026-10-31 sc-1031-b4 terra 숲길 3판 «몬스터·조우 없음» — 할 일 고리는 모델이 전투 항목을 적을 때만 이것을 본다).
+  if (FOE_ASK.test(task) && !kinds.has("battleProcessing")) {
+    const enc = (m: unknown) => { const o = m as Obj | undefined; return Number(o?.encounterRate ?? 0) > 0 && Array.isArray(o?.encounterTable) && (o!.encounterTable as unknown[]).length ? JSON.stringify([o!.encounterTable, o!.encounterRate]) : ""; };
+    const encOn = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
+    if (!encOn) problems.push("[게임 검사 전투] 요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게).");
   }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
@@ -997,7 +1021,11 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if ((section === "items" || section === "weapons" || section === "armors") && /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu.test(task)) continue;
       const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
       // 장르 기본값(genreDefaults.ts): 판타지 기본 주인공 칩을 현대 칩으로 바꾼 것은 요청한 무대에 맞춘 것이다.
-      if (section === "actors" && keys.every((k) => ["characterResourceId", "characterIndex", "faceResourceId", "name", "nickname"].includes(k))
+      // 전투 없는 게임에서 공장 기본 장비만 뺀 것(stripFactoryHeroGear)도 같은 장르 기본값이다 — 이 줄이 initialEquipment 를 몰라 「되돌려라」가 떠서
+      // 두 모델 모두 할 일을 「주인공이 바뀌었는데 원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다(2026-10-31 asst-parity 마왕 편의점 opus·terra).
+      const genreDefaultKey = (k: string) => ["characterResourceId", "characterIndex", "faceResourceId", "battleCharacterResourceId", "name", "nickname"].includes(k)
+        || (k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k]));
+      if (section === "actors" && keys.every(genreDefaultKey)
         && (prev.characterResourceId === undefined || prev.characterResourceId === "easyrpg-charset-actor1") && /^oprn-charset-modern/u.test(String(r.characterResourceId ?? ""))) continue;
       out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
     }

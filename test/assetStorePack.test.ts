@@ -173,6 +173,16 @@ describe("asset store pack", () => {
     expect(storeThirdPartyName("rtp actor", "REFMAP-MODIFIED")).toBe("rtp");
   });
 
+  it("does not treat the EasyRPG RTP credit as RPG Maker RTP, but still catches bare RTP", () => {
+    for (const text of [
+      "Walking chips based on EasyRPG RTP (CC BY 4.0)", "easyrpg rtp", "EasyRPG-RTP", "EASYRPG  RTP", "Easy RPG RTP",
+      "https://github.com/EasyRPG/RTP", "그림: EasyRPG RTP 바탕 · CC BY 4.0",
+    ]) expect(storeThirdPartyName(text), text).toBeNull();
+    for (const text of ["RTP", "RTP 소재", "RPG Maker RTP", "rtp_actor1", "EasyRPG RTP and RTP chars"]) {
+      expect(storeThirdPartyName(text), text).not.toBeNull();
+    }
+  });
+
   it("refuses a pack when a picked tileset drags in third-party or store-bought dependencies", async () => {
     const p = project();
     p.assets.uploaded.extra!.name = "Rasak town A";

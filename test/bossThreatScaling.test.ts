@@ -11,6 +11,8 @@ const WEAK_BOSS = {
   stats: { maxHp: 280, maxMp: 50, attack: 22, defense: 18, mind: 25, agility: 16 },
   rewards: { exp: 80, gold: 120 },
 };
+/** 체력·공격·마력·민첩을 주지 않은 보스 — 하한(기본값)이 채운다. */
+const UNSPECIFIED_BOSS = { ...WEAK_BOSS, stats: { maxMp: 50, defense: 18 } };
 
 function write(role?: "boss" | "normal", enemy: Record<string, unknown> = WEAK_BOSS): { project: Project; result: ReturnType<typeof runTool> } {
   const ctx = { project: createBlankProject() };
@@ -25,16 +27,16 @@ function bossFight(project: Project) {
   return { sim, partyHp };
 }
 
-describe("upsert_enemy role:boss scales a weak boss to the start party", () => {
-  it("raises HP/attack/agility so the boss takes real HP but stays beatable", () => {
-    const { project, result } = write("boss");
+describe("upsert_enemy role:boss fills unspecified boss stats from the start party", () => {
+  it("raises unspecified HP/attack/agility so the boss takes real HP but stays beatable", () => {
+    const { project, result } = write("boss", UNSPECIFIED_BOSS);
     expect(result.ok, result.summary).toBe(true);
     const enemy = project.database.enemies.find(entry => entry.id === "enemy_blizzard_spirit")!;
     expect(enemy.stats.maxHp).toBeGreaterThan(280);
     expect(enemy.stats.attack).toBeGreaterThan(22);
     expect(enemy.stats.agility).toBeGreaterThan(16);
-    expect(result.summary).toContain("보스 위협 하한");
-    expect(JSON.stringify(result)).toContain("attack 22→");
+    expect(result.summary).toContain("보스 위협 하한을 기본값으로 적용");
+    expect(JSON.stringify(result)).toContain("attack ");
     const { sim } = bossFight(project);
     expect(sim.winRate).toBeGreaterThanOrEqual(0.85);
     const party = project.database.actors.filter(actor => project.session.partyActorIds.includes(actor.id));
@@ -44,13 +46,40 @@ describe("upsert_enemy role:boss scales a weak boss to the start party", () => {
   });
 
   it("a boss id/name implies the role", () => {
-    const { project } = write(undefined, { ...WEAK_BOSS, id: "enemy_boss_blizzard" });
+    const { project } = write(undefined, { ...UNSPECIFIED_BOSS, id: "enemy_boss_blizzard" });
     expect(project.database.enemies.find(entry => entry.id === "enemy_boss_blizzard")!.stats.attack).toBeGreaterThan(22);
+  });
+
+  it("explicit author stats win over the floor and the result says the floor was not applied", () => {
+    // 이세계 고딩(2026-10-30): 저자가 짧은 보스전으로 maxHp 400 을 줬는데 하한이 590 으로 덮었다.
+    const { project, result } = write("boss");
+    expect(result.ok, result.summary).toBe(true);
+    expect(project.database.enemies.find(entry => entry.id === "enemy_blizzard_spirit")!.stats).toMatchObject(WEAK_BOSS.stats);
+    expect(result.summary).toContain("저자 값 유지");
+    expect(JSON.stringify(result)).toContain("maxHp 280(권장");
+  });
+
+  it("only the stats left out get the floor", () => {
+    const { project, result } = write("boss", { ...WEAK_BOSS, stats: { maxHp: 360, maxMp: 50, defense: 18 } });
+    const enemy = project.database.enemies.find(entry => entry.id === "enemy_blizzard_spirit")!;
+    expect(enemy.stats.maxHp).toBe(360);
+    expect(enemy.stats.attack).toBeGreaterThan(22);
+    expect(result.summary).toContain("기본값으로 적용");
+    expect(result.summary).not.toContain("maxHp·");
+  });
+
+  it("editing an existing boss without role keeps its stats", () => {
+    const ctx = { project: createBlankProject() };
+    runTool(ctx, "upsert_enemy", { enemy: WEAK_BOSS, role: "boss" });
+    const result = runTool(ctx, "upsert_enemy", { enemy: { id: WEAK_BOSS.id, name: "눈보라 정령 2" } });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.database.enemies.find(entry => entry.id === WEAK_BOSS.id)!.stats).toMatchObject(WEAK_BOSS.stats);
   });
 
   it("never lowers authored stats and leaves normal enemies alone", () => {
     const strong = { ...WEAK_BOSS, stats: { maxHp: 99999, maxMp: 50, attack: 999, defense: 18, mind: 999, agility: 999 } };
     const { project: strongProject } = write("boss", strong);
+    // 전부 명시한 값이라 그대로다(하한보다 높든 낮든).
     expect(strongProject.database.enemies.find(entry => entry.id === "enemy_blizzard_spirit")!.stats).toMatchObject(strong.stats);
     const { project, result } = write("normal");
     expect(project.database.enemies.find(entry => entry.id === "enemy_blizzard_spirit")!.stats).toMatchObject(WEAK_BOSS.stats);
@@ -58,7 +87,7 @@ describe("upsert_enemy role:boss scales a weak boss to the start party", () => {
   });
 
   it("leaves no probe troop behind", () => {
-    const { project } = write("boss");
+    const { project } = write("boss", UNSPECIFIED_BOSS);
     expect(project.database.troops.some(troop => troop.id.startsWith("__"))).toBe(false);
   });
 });

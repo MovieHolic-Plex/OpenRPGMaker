@@ -111,6 +111,8 @@ export type StatusMenuDetailOptions = {
   readonly onOptionsChanged?: (message?: string) => void;
   /** 「전투 대기」 화면의 행을 확정했을 때. 값은 이 콜백이 바꾸고 화면을 다시 그린다. */
   readonly onToggleWait?: () => void;
+  /** 「쉬기」 화면에서 목표 시각을 확정했을 때. 메뉴를 닫고 시간을 흘린다. */
+  readonly onRest?: (target: import("@/project/restMenu").RestTarget) => void;
   readonly targetItemId?: string;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;
@@ -120,6 +122,9 @@ export type StatusMenuDetailOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
+  /** 괴물 도감에서 고른 항목(없으면 목록). */
+  readonly bestiaryEntryId?: string;
+  readonly onSelectBestiaryEntry?: (entryId: string | undefined) => void;
   readonly campaignSpeciesId?: string;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
   readonly monsterInstanceId?: string;

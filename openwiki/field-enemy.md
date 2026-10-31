@@ -65,6 +65,8 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 3. `_cleared` — 스위치(clearSwitch) 켜짐. 투명·통과·항상 parallel. `respawnSec>0` 이면 N초 뒤 스위치를 꺼서 되돌린다
    (그 맵에 있을 때만 흐른다 — 맵을 떠나 있는 시간은 세지 않는다).
 
+**조사 단추로도 연다(2026-10-30)**: 정면 칸에 있는 닿기(eventTouch·playerTouch) 이벤트 중 페이지 명령에 `battleProcessing` 이 든 것은 조사(Enter·z)로도 부딪힌 것과 같이 실행한다 — RPG Maker MV 의 확인 단추 관례(`playSceneMovement.ts findFieldFoeFacing`, `performAction` 정면 찾기 끝). 전투 없는 닿기 이벤트(함정·문)는 조사로 열지 않는다. 왜: 씬 벤치 omo-fr-t terra 숲길 r3 판정자가 서 있는 슬라임 바로 옆에서 Enter·z 를 눌러도 아무 일이 없어 «전투를 못 해 봄»으로 적었다. 확인 `scripts/qa/runtime/field-foe-action.scenario.mjs`(픽스처 `field-foe-action-fixture.mts --sqlite <판>/project.sqlite`).
+
 처치 상태는 스위치라서 저장·맵 재진입에서도 유지된다. 스위치 id 를 안 주면 도구가 새로 만든다(`clearSwitchId` 로 한 스위치에 여럿을 묶을 수 있다).
 
 ## 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
@@ -77,6 +79,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
   `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
 - 들면 `sightAlert`(기본 exclamation, 0.3초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 3500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
 - 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
+  `set_field_detection` 은 스위치·변수 조건 페이지(이야기가 깨우는 추격자 — 숙직 선생 순찰, 경보 뒤 경비)는 줄이지 않는다(`place_field_enemy` 의 `appearSwitchId` 면제와 같은 이유: 들어설 때 그 자리에 없다). 2026-10-31 「이상 없음」 2층 순찰이 6칸을 달라 해도 2칸이 되어 손전등 빛이 발밑에만 비쳤다.
 - 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
 
 ## 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
@@ -145,6 +148,37 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - **검증**: `npm run qa:runtime -- --scenario chase-contact`(`chase-contact.scenario.mjs` + `chase-contact-fixture.mts`) — 서 있으면 못 알아챔 →
   두 칸 걸으면 발소리로 달려와 서 있는 주인공에 닿아 battle-scene, 대각 옆 정지 → battle-scene, 레버 소리 → 와서 닿아 battle-scene.
   `field-enemy` 게이트는 느낌표 멈춤 계약을 보므로 픽스처 추격자 둘을 `brain:"classic"` 으로 고정했다.
+
+## 호러 추격: 말풍선 끄기·발소리·숨기 소리 (2026-10-30 「이상 없음」 데모)
+
+계기: 밤 학교 추격 호러 데모 설계(`docs/games/school/design.md`, agent/game-school)가 「소리와 어둠으로 하는 공포」를 요구했는데,
+추격자는 걸어도 아무 소리가 없었고, 알아챈 순간 「!」·숨 고를 때 땀 말풍선이 만화처럼 떠서 첫 발각이 웃음이 됐다.
+
+- **말풍선 끄기(G5)**: `ChaseSightAlert.emote` 가 `null` 이면 알아챔 멈춤은 그대로 두고 말풍선만 띄우지 않는다(`holdForSightAlert`).
+  `movement.quietBreath:true` 면 지치기 숨 고르기(650ms 멈춤)는 남기고 땀 말풍선만 뺀다. 조수: `set_field_detection({emotes:"none"})` 한 인자로 둘 다,
+  `"default"` 로 되돌린다. `make_chase_scene` 은 프로젝트 장르가 `horror-chase` 면 기본이 none(`emotes` 로 바꾼다). 편집기: 추격 설정 「「!」·땀 말풍선 끄기」.
+- **추격자 발소리(G4)**: `movement.footsteps {se, everySteps?=2, radius?=10, volume?=1}`(`EventFootsteps`). 자율 이동이 칸을 옮길 때마다
+  (`moveAutonomousRuntimePosition` — 순찰·추격·수색·생활 이동 모두) 세어 everySteps 째에 낸다(`src/player/eventFootsteps.ts`).
+  음량 = volume × (1 − d/radius)², d 는 주인공까지 **걸음 거리**(4방향 BFS, 반경 안까지만, 길이 없으면 맨해튼+4 = 벽 너머로 먹먹하게).
+  좌우 = clamp(dx/8, −0.8, 0.8). 쫓는 동안은 박자가 짧아지니 발소리도 빨라진다. 숨어 있어도 들린다.
+  재생은 `playPositionalSound` — 엔진의 밸런스 값(명령 「밸런스」로 정하는 끈적한 pan)을 바꾸지 않는 위치음(`AudioPlayOptions.positional`)이고,
+  잠금 해제 전에는 큐에 쌓지 않는다(지나간 발소리를 나중에 몰아 들려주지 않는다). 헤드리스 장면(Phaser 없음)에서는 내지 않는다.
+  조수: `set_field_detection({footsteps:{…}})`·`make_chase_scene({footsteps})`. se 를 생략하면 공포 기본 패치 「공포 — 발소리 한 걸음」(`HORROR_SOUNDS` key `step`)을
+  내장 합성으로 한 번 만들어 다시 쓴다(`src/editor/tools/horrorSoundAssets.ts` `ensureHorrorSound`). `horror-chase` 장르의 `make_chase_scene` 은 생략해도 단다(`{off:true}` 면 끔 — 스키마가 객체 하나라 `false` 대신 이 꼴을 받는다. 도구 안에서는 `false` 도 받는다).
+  `make_chase_scene` 의 `caughtText` 는 `killOnTouch` 의 붙잡힘 한 줄(기본 「붙잡혔다.」), `characterId` 는 추격자 이벤트의 인물 프로필 — 프로필 이름을 화자로 쓴 bark 가 그 이벤트 머리 위에 붙는다(`playSceneDialogueHooks.speakingTarget`). `chaser.blendMode` (add|screen|multiply) sets the chase page graphic blend (ghost = person charset + add). `onTouch: CutsceneBeat[]` compiles a non-lethal touch scene (same beat validation as `script_cutscene`) and is exclusive with `killOnTouch`/`caughtPenalty` (2026-10-31, 「이상 없음」 Sayo). A switch-woken chaser defaults to `pursuit.tracking:"persistent"` (comes through walls) **unless it has a `patrol`** — then the switch only starts the patrol and the chaser must see the hero (2026-10-31: a patrolling night guard woke already chasing and skipped the first hiding scene).
+- **숨기 소리(G3)**: 「숨어 있음」 조건은 이미 있었다(`Condition {kind:"hiding", value}`, 편집기 조건 「숨어 있음」) — 병렬 이벤트·페이지 조건으로 숨은 동안 연출을 건다.
+  더한 것은 `interaction.hiding` 의 `enterSe`(숨을 때)·`exitSe`(나올 때, 생략 = enterSe)·`heldSe`(숨어 있는 동안 고리).
+  `heldSe` 는 BGM·BGS 채널이 아니라 엔진의 별도 고리(`AudioEngine.holdLoop`)라 맵 음악·환경음을 끊지 않는다. 매 프레임 `isPlayerHiding` 으로 맞추므로
+  나오기·붙잡힘(게임 오버 화면의 `stopAllAudio`)·맵 이동에서 저절로 멈추고, 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
+  조수: `make_chase_scene({hidingSound:{enterSe?, exitSe?, heartbeat?}})` — 공포 장르는 생략해도 사물함 문 소리(`cc0-se-osx-door-close-03`) + 심장 고동(`HORROR_SOUNDS` heartbeat).
+- **숨은 동안 손전등**(2026-10-31): 주인공에 붙은 부채꼴 광원(`at:"player"` + `cone`, 손전등)은 `session.horror.hiding` 동안 그리지 않는다(`playSceneLighting.resolveLightAnchor`). 발밑 둥근 빛은 남는다. 숨은 사물함에서 복도로 빛이 새어 나가 숨기가 안 읽혔다.
+  편집기: 물체 동작 「은신처」 아래 소리 칸 셋.
+- 저장 형식: 모두 선택 필드다. 옛 프로젝트는 그대로 돌고, 형식 검사(`shapeEventFields`)·허용 키(`eventPageKeys`)·정규화(`eventPages`)·스키마(`schemaShapes`)에 같이 넣었다.
+  내보내기는 프로젝트 문자열을 훑으므로(`webExportAssets`) 새 효과음 id 도 따라간다.
+
+## 시간대 무리 (2026-10-30)
+
+사냥터 스폰(`make_hunting_ground`)은 `timePhases:["night"]` 처럼 나오는 시간대를 정할 수 있다. 시간 시스템이 켜졌을 때만 듣고, 시간대를 벗어나면 살아 있던 무리가 사라지고, 다시 그 시간대가 오면 상한까지 새로 나온다. 플레이어가 그 시간대까지 기다리는 길은 ESC 「쉬기」(`configure_time_system.restMenu`)다. 한 마리씩 놓는 `place_field_enemy` 는 페이지 조건 `timePhase` 를 쓴다. 정본 설명은 `runtime-sessions.md` 「Rest menu」·`fieldSpawns` 항목.
 
 ## 안전 장치 (도구가 거절하는 것)
 

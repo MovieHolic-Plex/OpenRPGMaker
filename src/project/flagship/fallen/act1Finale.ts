@@ -855,8 +855,8 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     sign("수첩", "아래층 비늘 짐승에게는\n기도도, 불도, 성광도 모두 미끄러진다."),
     sign("수첩", "마르코가 비늘 틈에 창을 박았다.\n그제야 설교자님 성광이 먹혀들었다."),
     sign("수첩", "세 배는 아팠을 거라며 설교자님이 웃었다.\n마르코는 돌아오지 못했다."),
-    say(ELENA, "창으로 비늘부터 갈라야 주문이 들어가겠어."),
-    say(IRIS, "그 틈이면 제 광선도 들어가요."),
+    // VQA 2026-10-31: 용의 약점을 수첩·엘레나·다친 광신도·카엘·후퇴 대사가 다섯 번 풀어 줬다 — 수첩을 읽은 사람의 몫으로 남긴다.
+    say(IRIS, "비늘 틈이라면… 제 광선도 들어가겠어요."),
   ]);
 
   // 쇠살문과 레버.
@@ -1007,7 +1007,7 @@ function floorB4(project: Project): GameMap {
       say(ELENA, "저 안쪽, 벽에서 빛이 깜빡여."),
     ], [
       { kind: "recoverAll" } as unknown as Command,
-      say(ELENA, "물러서! 그냥 주문으론 안 돼.\n…수첩에 적힌 거, 기억나지?"),
+      say(ELENA, "물러서! 그냥 주문으론 안 돼."),
       route("@player", walk(["down", "down", "down"])),
     ]),
   ];
@@ -1363,6 +1363,8 @@ function ending(project: Project): void {
     { kind: "say", speaker: KAEL, text: "잘 지내. …오늘은." },
     { kind: "say", speaker: IRIS, text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
   ];
+  // 끝 카드는 「제1막 끝」 머리글 아래 큰 제목이 「제1막 / 떨어진 별」이라 「제1막」을 두 번 읽었다(1막 VQA) — 이름은 막 이름만.
+  (end as Rec).name = "떨어진 별";
   end.presentation = {
     ...(end.presentation ?? {}),
     kicker: "제1막 끝",

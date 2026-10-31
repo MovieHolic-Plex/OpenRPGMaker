@@ -5,7 +5,7 @@ import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { firefox } from 'playwright';
-import { stored, writeRuntimeProject, newEditor } from './editorDriver.mjs';
+import { stored, writeRuntimeProject, newEditor, assistantReports } from './editorDriver.mjs';
 import { withTsModule } from '../../../../scripts/ontology-ts-loader.mjs';
 import { startPackagedPlayerQaServer } from '../../../../scripts/lib/packagedPlayerQaServer.mjs';
 import { readOAuthClientsFromPiAi } from '../../../../scripts/lib/oauthClients.mjs';
@@ -205,7 +205,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
     result.modelDone = events.some(event => event.type === 'done');
     result.modelErrors = events.filter(event => event.type === 'error');
     json(resolve(out, 'trace.json'), { requests, events, errors, elapsedMs: Date.now() - startedAt });
-    writeFileSync(resolve(out, 'answer.txt'), events.filter(event => event.type === 'assistant').map(event => event.text ?? '').join('\n'));
+    writeFileSync(resolve(out, 'answer.txt'), assistantReports(events).join('\n'));
     phase = 'save'; result.save = await saveEditor(page);
     const applied = stored(host.projectDir);
     json(resolve(out, 'after.json'), applied.project);

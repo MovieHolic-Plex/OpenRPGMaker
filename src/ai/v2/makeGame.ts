@@ -29,10 +29,10 @@ export interface GameSpec {
 }
 
 export const MAKE_GAME_CARD = [
-  "[작은 게임 한 판 — make_game] 맵 여러 장(마을·집 안·가게·숲·던전…)과 그 사이 길·문, 사람, 이야기를 함께 요청하면 make_game 한 번에 계획을 넘긴다(make_place 를 맵마다 부르지 않는다).",
-  "- places: [{key, spec(make_place 와 같은 명세), from?:부모 key, side?:north|south|east|west}] — 5~8곳. 첫 장소(또는 start)가 시작. 실내·집 안은 from 마을의 집 문과 이어지고, 던전은 from 맵에 입구가 생기고, 바깥끼리는 side 쪽 가장자리로 잇는다.",
-  "- people: [{place:key, …사람 명세}] · events: [{place:key, …사건 명세(add_event 와 같다)}] — 이야기의 시작 컷신·의뢰인·보스 앞 대사 등.",
-  "- 결과: 맵마다 1배 그림·기계 검사·비평, 시작→각 맵→돌아오기 길 검사. 고칠 것은 edit_place·add_people·add_event 로, 게임 요소(퀘스트·아이템·전투)는 게임 도구로 덧붙인다.",
+  "[One small game — make_game] When the request asks for several maps (village, house interior, shop, forest, dungeon…) with the roads and doors between them, people and a story, hand the plan over in one make_game call (do not call make_place per map).",
+  "- places: [{key, spec (same spec as make_place), from?:parent key, side?:north|south|east|west}] — 5–8 places. The first place (or start) is the start. Interiors and house insides connect to a house door in the from village, dungeons get an entrance on the from map, and outdoor maps link at the side edge.",
+  "- people: [{place:key, …people spec}] · events: [{place:key, …event spec (same as add_event)}] — the opening cutscene, the client, lines before the boss, etc.",
+  "- Result: per map a 1x picture, machine checks and critique, plus a start→each map→back path check. Add fixes with edit_place, add_people, add_event, and game elements (quests, items, battles) with the game tools.",
 ].join("\n");
 
 export const MAKE_GAME_WORDS = /게임\s*(하나|한\s*판|을|를)?\s*(만들|짓)|작은\s*게임|짧은\s*게임|맵\s*[5-8]\s*(장|개)|[5-8]\s*개의?\s*맵|마을.*(던전|동굴|숲).*(보스|이야기)|이야기가\s*있는|퀘스트\s*라인|챕터/iu;

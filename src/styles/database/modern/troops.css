@@ -1234,6 +1234,20 @@
   grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-duel-details {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-duel-details > summary {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  font: 600 11.5px/1.5 var(--font-ui);
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-content {
   align-items: start;
   display: grid;

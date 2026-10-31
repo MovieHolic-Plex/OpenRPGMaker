@@ -61,7 +61,7 @@ function guessKind(project: Project, selection: PackSelection): StoreItemKind {
   const assetKinds = selection.assetIds.map((id) => project.assets.uploaded[id]?.kind ?? "");
   if (selection.tilesetIds.length > 0) return assetKinds.length > 0 ? "pack" : "tileset";
   const kinds = new Set(assetKinds.map((kind) => kind === "charset" ? "character" : kind === "faceset" ? "face"
-    : kind.startsWith("battle") || kind === "monster" ? "battler" : kind === "music" ? "music" : kind === "sound" ? "sound" : "picture"));
+    : kind.startsWith("battle") || kind === "monster" ? "battler" : kind === "music" ? "music" : kind === "sound" ? "sound" : kind === "icon" ? "icon" : "picture"));
   return kinds.size === 1 ? ([...kinds][0] as StoreItemKind) : "pack";
 }
 

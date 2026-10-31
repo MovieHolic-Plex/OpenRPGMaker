@@ -1,3 +1,4 @@
+import { stateBadgeLabel } from "@/player/battleStatusLabel";
 import { enemyHidesHp } from "@/project/enemyHpVisibility";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
@@ -9,7 +10,7 @@ import { charsetBattler, partyWalkChipBattler, resolvePartyBattleCharset, retroF
 import { appendWalkChipBattler, paintWalkChipBattler } from "@/player/battleWalkChipBattler";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
-import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
+import { pixelEnemyBackgroundPosition, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { monsterExpBarProgress } from "@/player/battleExpBar";
@@ -191,12 +192,16 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
   node.dataset.pixelEnemyCell = String(cell);
   for (const key of dimensions) image.style.setProperty(key, `${cell * 2}px`);
   image.dataset.pixelSheet = sheet.resourceId;
+  // 16칸(4×4) 시트: 배경 400%, 대기 루프는 한 칸이 33.3% 인 키프레임(27-retro-motion.css). 3×3 은 표식 없음 = 예전 그대로.
+  if (sheet.grid === "4x4") node.dataset.pixelGrid = "4x4";
+  else delete node.dataset.pixelGrid;
   image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
   image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
   const probe = new Image();
   probe.addEventListener("error", () => {
     delete node.dataset.pixelEnemy;
     delete node.dataset.pixelEnemyCell;
+    delete node.dataset.pixelGrid;
     dimensions.forEach((key, index) => {
       const previous = previousDimensions[index];
       if (previous) image.style.setProperty(key, previous);
@@ -850,7 +855,25 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     if (!authored && !node.classList.contains("defeated")) spawnDeathShards(node);
   }
   node.classList.toggle("defeated", presented.defeated);
+  // 결투 항복(TroopDuelRules.yieldAtPercent): 걷기 칩은 정면 가운데 칸으로 무릎 꿇고(paintWalkChipBattler), 그림 적은 멈추고 살짝 어두워진다.
+  const yielded = enemy.yielded === true && !presented.defeated;
+  if (yielded) node.dataset.battleYielded = "true";
+  else delete node.dataset.battleYielded;
+  // 16칸 도트 시트의 weak(HP 25% 이하 대기)·guard(방어 중) 칸이 읽는다(retroPixelEnemyCell). 아군 노드와 같은 이름·문턱.
+  node.dataset.battlerWeak = String(presented.hp > 0 && presented.hp <= enemy.maxHp / 4);
+  node.dataset.battlerDefending = String(enemy.defending);
+  // 막기(16칸 guard 칸으로 맞기): 방어 명령 중이거나 방어를 올리는 상태(단단해지기류)가 걸려 있을 때. 적은 방어 명령이 없어 상태가 주 경로다.
+  const states = store.getCurrent().database.states;
+  node.dataset.battlerGuarded = String(enemy.defending || presentedStateIds(enemy, presentation)
+    .some((id) => (states.find((state) => state.id === id)?.runtimeEffects?.defenseMultiplier ?? 1) > 1));
   applyBattlerPose(node, presented.pose);
+  if (!node.dataset.walkChipBattler) {
+    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
+    if (image) {
+      image.style.animationPlayState = yielded ? "paused" : "";
+      image.style.filter = yielded ? "brightness(0.82)" : "";
+    }
+  }
   node.dataset.battleTargetable = targetable ? "true" : "false";
   if (targetable) node.dataset.battleTargetId = enemy.id;
   else delete node.dataset.battleTargetId;
@@ -927,8 +950,7 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     node.dataset.battlePoseFrame = cell;
     if (cell === "idle") sprite.style.removeProperty("background-position");
     else {
-      const at = pixelEnemyFrame(pixelEnemySheet(sprite.dataset.pixelSheet), cell);
-      sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+      sprite.style.backgroundPosition = pixelEnemyBackgroundPosition(pixelEnemySheet(sprite.dataset.pixelSheet), cell);
     }
     return;
   }
@@ -1350,7 +1372,16 @@ function enemyButton(
   // 시트는 왼쪽(적 쪽)을 보도록 그려져 있다 — 적 진영(왼쪽)에 서면 CSS 가 좌우를 뒤집어 아군 쪽을 보게 한다.
   const charsetEnemy = perEnemyUrl && resourceId && charsetBattler(resourceId) && !Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)
     ? resourceId : undefined;
-  if (charsetEnemy && perEnemyUrl) {
+  // 걷기 칩으로 서는 적(EnemyRecord.walkChip): 아군 걷기 칩 배틀러와 같은 24x32 칸 그림을 오른쪽 방향 줄로 그린다.
+  // 변신 중이면 변신 그림이 우선이라 이 경로를 타지 않는다. 그림 클래스는 HP·조준·쓰러짐 규칙이 보는 battle-enemy-image 도 단다.
+  const walkChip = record?.walkChip && !enemy.transformResourceId ? record.walkChip : undefined;
+  const walkChipUrl = walkChip ? resolveAssetResourceUrl(walkChip.characterResourceId, { project: store.getCurrent() }) : null;
+  if (walkChip && walkChipUrl) {
+    const sprite = appendWalkChipBattler(enemyNode, enemy.name, walkChip.characterResourceId, walkChip.characterIndex, walkChipUrl, "right", true);
+    sprite.classList.add("battle-enemy-image");
+    sprite.dataset.testid = `battle-enemy-sprite-${enemy.id}`;
+    sprite.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+  } else if (charsetEnemy && perEnemyUrl) {
     enemyNode.dataset.charsetEnemy = "true";
     enemyNode.dataset.battlerExtended = "true";
     enemyNode.dataset.battleCharsetResourceId = charsetEnemy;
@@ -1590,7 +1621,8 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
       node.append(pixelPlatform);
       return node;
     }
-    if (charsetBattler(resourceId)) node.dataset.battlerExtended = "true";
+    // 올린(스토어·업로드) 전투 시트는 id 가 아니라 적어 둔 시트 모양으로 판정한다 — 3열×8행이면 24포즈 확장 시트다.
+    if (charsetBattler(resourceId) || uploadedBattleSheet(resourceId)?.extended) node.dataset.battlerExtended = "true";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) node.append(actorBattleImage(actor.name, resourceId, url));
     applyBattlerPose(node, actor.pose);
@@ -2117,6 +2149,12 @@ function buffIconToken(stateId: string): string | null {
   return null;
 }
 
+function stateIconImage(stateId: string): string | null {
+  const project = store.getCurrent();
+  const resourceId = project.database.states.find((state) => state.id === stateId)?.iconResourceId;
+  return resourceId ? resolveAssetResourceUrl(resourceId, { project }) : null;
+}
+
 function stateName(stateId: string): string {
   return store.getCurrent().database.states.find((state) => state.id === stateId)?.name ?? stateId;
 }
@@ -2211,8 +2249,8 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   cluster.dataset.hasStages = battler.statStages && !battler.defeated ? "true" : "false";
   // 에메랄드 HP 상자: 쓰러진 칸에는 화상·혼란 알약을 남기지 않는다 — 「전투불능」 하나로 충분하고 알약이 빈 HP 바 앞 「HP」 글자를 덮는다(D26).
   const hideStatesWhenDefeated = battler.defeated && isEmeraldMonsterStyle(store.getCurrent());
-  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
-  const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
+  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId), image: stateIconImage(stateId) }));
+  const entries: { icon: string; name: string; image?: string | null }[] = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
   // 능력치 단계 알약(ATK↑2·SPE↓1): 쓰러진 배틀러는 단계를 보이지 않는다. 상태 알약 뒤에 붙고 같은 클러스터 안이라 스킨별 배치 규칙을 그대로 탄다.
   const stagePills = battler.defeated ? [] : STAT_STAGE_KEYS.flatMap((stat) => {
     const stage = battler.statStages?.[stat] ?? 0;
@@ -2226,6 +2264,15 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.testid = `battle-status-${battler.id}-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
+    // 배지 글자는 저작한 상태 이름(게임의 언어)을 쓴다 — 한국어 게임에서 마비가 「PAR」로 떴다(2026-10-30).
+    // 이름이 배지에 안 들어가는 영문 이름이면 CSS 의 3글자 약어(PSN·PAR…)로 남는다.
+    const label = entry.icon === "death" || entry.icon.endsWith("-up") || entry.icon.endsWith("-down") ? null : stateBadgeLabel(entry.name);
+    if (label) node.dataset.statusLabel = label;
+    // 상태 아이콘 그림(StateRecord.iconResourceId)이 있으면 글자 배지 대신 그림을 보인다. 없으면 기존 배지 그대로.
+    if (entry.image) {
+      node.classList.add("battle-status-icon-image");
+      node.style.backgroundImage = `url("${entry.image}")`;
+    }
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
     cluster.append(node);
@@ -2286,7 +2333,8 @@ function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
-  if (charsetBattler(resourceId) || resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
+  const uploadedSheet = uploadedBattleSheet(resourceId);
+  if (charsetBattler(resourceId) || resourceId === "hero" || isGeneratedBattleActor(resourceId) || uploadedSheet) {
     // 생성 전투 시트는 144×384 새로 48×48 셀을 3열×8행으로 담는다(자산 계획서의 "3x8 battle sheet").
     // 48×64 로 잘리면 한 프레임에 아랫행 머리 16px 이 따라들어와 발밑에 쟘러기 스프라이트가 보인다.
     // Asset pixels are authored for the old 320×240 stage, so one source pixel maps
@@ -2316,8 +2364,9 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
     sprite.style.setProperty("--battle-sprite-frame-height", `${frameH}px`);
     sprite.style.backgroundPosition = "0 0";
-    sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
+    sprite.style.backgroundSize = `${frameW * (uploadedSheet?.columns ?? BATTLE_SHEET_COLUMNS)}px ${frameH * (uploadedSheet?.rows ?? BATTLE_SHEET_ROWS)}px`;
     sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
+    if (uploadedSheet) sprite.dataset.rendering = "pixelated";
     sprite.style.backgroundImage = `url("${sheetUrl}")`;
     if (charsetBattler(resourceId)) preloadCastSheet(sprite);
     return sprite;
@@ -2356,6 +2405,26 @@ export function preloadCastSheet(sprite: HTMLElement): void {
 }
 const BATTLE_SHEET_COLUMNS = 3;
 const BATTLE_SHEET_ROWS = 8;
+
+/**
+ * 프로젝트에 올린 전투 캐릭터 시트(kind battleCharset — 스토어 「파티 직업」 팩 등)의 모양. 번들 id 표(charsetBattler)에 없어도
+ * 48px 칸 격자로 적힌 시트면 칸을 잘라 포즈를 그린다. 예전에는 id 로만 판정해 올린 144×384 시트가 통짜 <img> 로 서서
+ * 24칸이 한 화면에 깔리고 움직이지 않았다(2026-10-31 스토어 검증). 3열×8행 = 24포즈 확장 시트(EXTENDED_POSE_FRAME),
+ * 3열×2행 이상 = 5포즈 시트(POSE_FRAME). 칸 격자가 아니면 undefined(예전처럼 그림 한 장).
+ */
+function uploadedBattleSheet(resourceId: string): { readonly columns: number; readonly rows: number; readonly extended: boolean } | undefined {
+  const asset = store.getCurrent().assets.uploaded[resourceId];
+  if (!asset || asset.kind !== "battleCharset") return undefined;
+  const cellW = asset.meta.frameWidth ?? BATTLE_SHEET_CELL;
+  const cellH = asset.meta.frameHeight ?? BATTLE_SHEET_CELL;
+  const { width, height } = asset.meta;
+  if (cellW !== BATTLE_SHEET_CELL || cellH !== BATTLE_SHEET_CELL || !width || !height) return undefined;
+  if (width % cellW !== 0 || height % cellH !== 0) return undefined;
+  const columns = width / cellW;
+  const rows = height / cellH;
+  if (columns !== BATTLE_SHEET_COLUMNS || rows < 2) return undefined;
+  return { columns, rows, extended: rows === BATTLE_SHEET_ROWS };
+}
 
 function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");

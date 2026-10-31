@@ -37,6 +37,8 @@ export type ResourceKind =
   | "monster"
   | "faceset"
   | "picture"
+  /** 아이템·장비·스킬·상태 아이콘 한 장(32×32 투명 PNG, 에셋 스토어 아이콘 팩). */
+  | "icon"
   | "movie"
   | "system"
   | "system2"
@@ -732,7 +734,7 @@ export interface UploadedAsset {
 
 /** 프로젝트 저작 적 도트 시트 계약(번들 PIXEL_ENEMY_SHEETS 항목과 같은 뜻). */
 export interface UploadedPixelEnemySheetMeta {
-  /** 3×3 시트 PNG 를 담은 uploaded 자산 id. */
+  /** 전투 도트 시트 PNG(3×3 또는 4×4) 를 담은 uploaded 자산 id. */
   sheetResourceId: string;
   cell: 48 | 64 | 96;
   motion: "hop" | "swoop" | "stomp" | "dash" | "float" | "shoot" | "breath";
@@ -742,6 +744,10 @@ export interface UploadedPixelEnemySheetMeta {
   skillSlug?: string;
   /** 생성 인자(공방 대화상자를 다시 열 때 채운다). */
   recipe?: Record<string, unknown>;
+  /** 칸 배치. 생략 = 3x3(9칸, 시트 3cell×3cell). 4x4 = 16칸(시트 4cell×4cell, src/assets/pixelEnemySheets.ts PIXEL_ENEMY_CELL_INDEX). */
+  grid?: "3x3" | "4x4";
+  /** 4x4 시트에서 비워 둔(완전 투명) 확장 칸 번호 — 9~14 만. 런타임이 대신 칸으로 물린다. */
+  missingCells?: number[];
 }
 
 export interface AssetSet {
@@ -769,6 +775,14 @@ export interface Terms {
   defend?: string;
   /** 도주 커맨드 라벨. defend 와 같은 이유로 용어에 편입한다. */
   escape?: string;
+  /** 전투에서 이겼을 때 화면 가운데 뜨는 큰 띠(기본 「승리!」). 에메랄드 화면에는 띠가 없다. */
+  battleVictory?: string;
+  /**
+   * 명령을 고를 차례의 질문 줄(기본 「{name은} 무엇을 할까?」).
+   * `{name}` = 이름 그대로, `{name은}`·`{name이}`·`{name을}` = 받침에 맞춘 조사(은/는·이/가·을/를)를 붙인 이름.
+   * 포켓몬 화면에서는 이름 자리표시자 바로 뒤 첫 빈칸이 줄바꿈이 된다.
+   */
+  battleCommandPrompt?: string;
   back?: string;
   target?: string;
   shopGreeting?: string;
