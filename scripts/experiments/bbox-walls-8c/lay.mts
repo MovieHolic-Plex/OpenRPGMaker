@@ -80,7 +80,17 @@ if (L.shell && Array.isArray(L.shell.parts) && num(L.map?.w) && num(L.map?.h)) {
     // partitions: trim the ends that poke outside the shell
     const MW2 = L.map.w, MH2 = L.map.h;
     const inU = (x: number, y: number) => ok.some((p) => x >= p[0]! && x < p[0]! + p[2]! && y >= p[1]! && y < p[1]! + p[3]!);
-    const dropped = new Set<string>();
+    // a path that jumps diagonally between points is several straight walls written as one: split it at each jump
+    if (Array.isArray(L.walls)) L.walls = (L.walls as any[]).flatMap((w) => {
+      const pts = w?.path; if (!Array.isArray(pts) || pts.length < 3 || !pts.every((q: any) => Array.isArray(q) && q.length === 2 && num(q[0]) && num(q[1]))) return [w];
+      const groups: number[][][] = [[pts[0]]];
+      for (let k = 1; k < pts.length; k++) { const [x0, y0] = pts[k - 1], [x1, y1] = pts[k]; if (x0 !== x1 && y0 !== y1) groups.push([pts[k]]); else groups[groups.length - 1]!.push(pts[k]); }
+      if (groups.length < 2 || groups.some((g) => g.length < 2)) return [w];
+      const parts = groups.map((g, n) => ({ ...w, id: n === 0 ? w.id : `${w.id}_${n + 1}`, path: g }));
+      for (const d of Array.isArray(L.doors) ? L.doors : []) if (String(d?.wall) === String(w.id)) { const o = parts.find((p) => { for (let k = 0; k + 1 < p.path.length; k++) { const [x0, y0] = p.path[k]!, [x1, y1] = p.path[k + 1]!; if (d.x >= Math.min(x0!, x1!) && d.x <= Math.max(x0!, x1!) && d.y >= Math.min(y0!, y1!) && d.y <= Math.max(y0!, y1!)) return true; } return false; }); if (o) d.wall = o.id; }
+      repairs.push(`wall "${w.id}" jumped diagonally between points, so it was split into separate straight walls: ${parts.map((p) => `{"id": "${p.id}", "path": ${JSON.stringify(p.path)}}`).join(", ")}.`);
+      return parts; });
+    const dropped = new Set<string>(); const splitWalls: { id: string; parts: any[] }[] = [];
     for (const w of Array.isArray(L.walls) ? L.walls : []) {
       const pts = w?.path; if (!Array.isArray(pts) || pts.length < 2 || !pts.every((q: any) => Array.isArray(q) && q.length === 2 && num(q[0]) && num(q[1]))) continue;
       const cells: [number, number][] = []; const corner: number[] = [0]; let diag = false;
@@ -92,6 +102,15 @@ if (L.shell && Array.isArray(L.shell.parts) && num(L.map?.w) && num(L.map?.h)) {
       const i = inside.indexOf(true), j = inside.lastIndexOf(true);
       if (i < 0) { dropped.add(String(w.id)); repairs.push(`wall "${w.id}" ${JSON.stringify(pts)} lies entirely outside the shell and was removed.`); continue; }
       if (i === 0 && j === cells.length - 1) continue;
+      if (!inside.slice(i, j + 1).every(Boolean)) {   // the path leaves the shell in the middle: keep each inside run as its own partition
+        const runs: [number, number][] = []; let k0 = -1;
+        inside.forEach((v, k) => { if (v && k0 < 0) k0 = k; if ((!v || k === inside.length - 1) && k0 >= 0) { runs.push([k0, v ? k : k - 1]); k0 = -1; } });
+        const parts = runs.filter(([p, q]) => q > p).map(([p, q], n) => ({ ...w, id: n === 0 ? w.id : `${w.id}_${n + 1}`, path: [cells[p]!, ...corner.filter((c) => c > p && c < q).map((c) => cells[c]!), cells[q]!].map(([x, y]) => [x, y]) }));
+        const owner = (x: number, y: number) => { for (let n = 0; n < parts.length; n++) { const [p, q] = runs.filter(([p0, q0]) => q0 > p0)[n]!; if (cells.slice(p, q + 1).some(([cx, cy]) => cx === x && cy === y)) return parts[n]!.id; } return null; };
+        for (const d of Array.isArray(L.doors) ? L.doors : []) if (String(d?.wall) === String(w.id)) { const o = owner(d.x, d.y); if (o) d.wall = o; }
+        repairs.push(`wall "${w.id}" ran outside the shell at ${cells.filter((_, k) => !inside[k] && k > i && k < j).map(([x, y]) => Pt(x, y)).slice(0, 10).join(" ")}; the parts inside the shell were kept as ${parts.map((p) => `{"id": "${p.id}", "path": ${JSON.stringify(p.path)}}`).join(", ")}.`);
+        splitWalls.push({ id: w.id, parts }); continue;
+      }
       if (inside.slice(i, j + 1).every(Boolean)) {
         const np = [cells[i]!, ...corner.filter((c) => c > i && c < j).map((c) => cells[c]!), cells[j]!].map(([x, y]) => [x, y]);
         const cut = [...cells.slice(0, i), ...cells.slice(j + 1)]; const onRim = cut.every(([x, y]) => x >= 0 && y >= 0 && x < MW2 && y < MH2 && inU(x, y));
@@ -100,6 +119,7 @@ if (L.shell && Array.isArray(L.shell.parts) && num(L.map?.w) && num(L.map?.h)) {
         w.path = np;
       }
     }
+    if (splitWalls.length) L.walls = (L.walls as any[]).flatMap((w) => splitWalls.find((sw) => sw.id === w.id)?.parts ?? [w]);
     if (dropped.size) { const before = (L.doors ?? []).length; L.doors = (L.doors ?? []).filter((d: any) => !dropped.has(String(d.wall))); if (L.doors.length < before) repairs.push(`${before - L.doors.length} door(s) on removed walls were removed.`);
       L.walls = L.walls.filter((w: any) => !dropped.has(String(w.id))); }
     // entrance: snap onto the shell's bottom edge
