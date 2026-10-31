@@ -29,7 +29,7 @@ import { maybeAutosave } from "@/player/autosave";
 import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneLocationTransitions";
 import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
-import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace } from "@/player/chaseSpawnGrace";
+import { CHASE_ENTRY_GRACE_MS, extendChaseSpawnGrace, startArrivalShield } from "@/player/chaseSpawnGrace";
 import { holdForMapAssets, prefetchMapAssets } from "@/player/scenePreload";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
@@ -132,8 +132,12 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = landing.y;
   scene.session.x = landing.x;
   scene.session.y = landing.y;
-  // 다른 맵에 들어섰다 — 입구 가까운 추격자가 들어서자마자 붙잡지 않게 잠깐 기다리게 한다(@/player/chaseSpawnGrace).
-  if (request.mapId !== departureMapId) extendChaseSpawnGrace(scene, CHASE_ENTRY_GRACE_MS);
+  // 다른 맵에 들어섰다 — 입구 가까운 추격자가 들어서자마자 붙잡지 않게 잠깐 기다리게 하고(정지 유예), 도착 칸 곁에 있는 동안
+  // 짧게 새로 알아채지 못하게 한다(도착 보호). 저작한 시야는 깎지 않는다(@/player/chaseSpawnGrace).
+  if (request.mapId !== departureMapId) {
+    extendChaseSpawnGrace(scene, CHASE_ENTRY_GRACE_MS);
+    startArrivalShield(scene.session, { mapId: request.mapId, x: landing.x, y: landing.y });
+  }
   if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "completed", x: landing.x, y: landing.y });
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });

@@ -78,8 +78,9 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - 시야 `sight.facing:'cone'` — `NpcSight` 의 새 값. 이벤트 시선 조건 `eventSeesPlayer` 와 같은 90° 앞쪽 부채꼴(`conditionEventSight.inViewCone`)을
   `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
 - 들면 `sightAlert`(기본 exclamation, 0.3초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 3500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
-- 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
-  `set_field_detection` 은 스위치·변수 조건 페이지(이야기가 깨우는 추격자 — 숙직 선생 순찰, 경보 뒤 경비)는 줄이지 않는다(`place_field_enemy` 의 `appearSwitchId` 면제와 같은 이유: 들어설 때 그 자리에 없다). 2026-10-31 「이상 없음」 2층 순찰이 6칸을 달라 해도 2칸이 되어 손전등 빛이 발밑에만 비쳤다.
+- 시야는 **저작 값 그대로**다(2..12). 입구 거리로 깎지 않는다 — 아래 「도착 보호」 참고. 2026-11-01 이전에는 `makeFieldEnemyChase`·`set_field_detection` 이
+  입구(`entryCells`)가 시야+1 안이면 시야를 **영구히** 줄였고(`place_field_enemy` 는 `field-enemy-ambush` 로 거절), 그래서 입구 곁을 지키는 경비가
+  눈멀었다: 폴른 스타 B6 성문 앞 기사는 도개교 칸이 입구로 잡혀 12 → 5, B2 밤 순찰은 지하 뚜껑 곁이라 2 가 되어 바로 곁을 지나는 주인공도 못 봤다.
 - 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
 
 ## 추격 박자와 전술 (2026-10-29 「2배 이상 빠르고 스마트하게」)
@@ -105,6 +106,13 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - **놓친 뒤**: 시야가 끊긴 뒤 400ms(`LOS_GRACE_MS`, horrorRuntime) 동안은 간 쪽을 안다. 그 뒤 마지막 목격 자리 → 달아난 방향 6칸 앞(`lastHeading`·`lastTurn`,
   `pursuitNavigation.searchTarget`) → 그 둘레를 뒤진다. 옛 페이지의 수색 시간은 3500ms 아래로 내려가지 않는다(`chaseSearchLimitMs`).
 - **입장 유예**: 다른 맵에 들어서면 1200ms 동안 추격자가 움직이지 않는다(`extendChaseSpawnGrace`, transferTo). 시작·불러오기 2000ms 는 그대로.
+- **도착 보호**(2026-11-01, `src/player/chaseSpawnGrace.ts` `startArrivalShield`/`tickArrivalShield`/`arrivalShielded`): 문·이동 명령으로 다른 맵에
+  들어서면(`transferTo`, 같은 맵 안 이동은 아님), 추격자가 주인공을 **새로 알아채지 못한다**(시야·발소리 둘 다). `ARRIVAL_SHIELD_MS`(3000ms, 장면 프레임 시간)가
+  지나거나 주인공이 도착 칸에서 `ARRIVAL_SHIELD_STEPS`(맨해튼 3칸) 이상 걸어 나가면 끝난다 — 끝난 뒤에는 저작한 시야 그대로 본다.
+  막는 곳은 `horrorRuntime.trackedPursuitTarget`(시야·추격 정책이 있는 추격자)과 `updateChaseNpc` 의 옛 sightRange 경로 두 곳이다.
+  이미 쫓던 추격자(`mover.chaseActive`, 방금 본 뒤 400ms 안, 문을 따라 막 넘어온 추격자)와 `tracking:'persistent'` 는 막지 않는다.
+  입장 유예(정지)와 달리 추격자는 순찰을 계속하고, 접촉 전투는 입장 유예(1200ms)가 끝나면 열린다. 시야 등불(`visionLight`) 반경도 저작 시야 그대로다.
+  녹화 검증: `scripts/qa/runtime/chaser-entrance-fixture.mts`(방→문→들판, 도착 칸에서 7칸 경비, 도구 저작) + `chaser-entrance.record.mjs`(`--stand` ms 서 있다 지나가기, 1배 MP4·report.json). 체크아웃마다 그 체크아웃의 도구·런타임으로 돈다.
 - **접촉 = 그림이 닿을 때**(`src/player/chaseContact.ts`): 칸 이동은 걸음을 시작할 때 논리 칸을 먼저 옮긴다
   (추격자 `moveAutonomousRuntimePosition`, 주인공 `movingTo` 예약). 2026-10-29 에는 접촉을 논리 칸으로 보던 것(「부딪히지도 않았는데 전투가」)을
   그림 자리(걸음 진행률로 보간한 칸) 거리로 바꿨다. 2026-10-30 에 `TOUCH_REACH` 를 1.05 → **1.45** 로 넓혀 **대각 이웃(1.41)도 닿음**이다
@@ -183,7 +191,7 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 ## 안전 장치 (도구가 거절하는 것)
 
 - 문·시작 위치·착지 칸·표지판 등 보호 칸(`protectedCells`) 맨해튼 거리 2 이내: `field-enemy-unsafe-spot`.
-- chase 는 입구 칸(`entryCells`) 에서 `sightRange+1` 안이면 `field-enemy-ambush`(입장하자마자 추격 방지).
+- chase 가 입구를 시야 안에 두는 것은 거절하지 않는다(예전 `field-enemy-ambush` 폐지, 2026-11-01) — 입장 직후 매복은 런타임 「도착 보호」가 막는다.
 - 시작·입구에서 걸어서 닿지 못하는 칸: `field-enemy-unreachable`(`walkableFromAnchors`).
 - 순찰 경로는 닫힌 왕복이어야 하고 양방향 통행 가능·다른 이벤트 칸 불가.
 - 그래픽: 위 「필드 그림 = 전투 그림」. 생성 그림 없음, 말없는 대체 없음.
