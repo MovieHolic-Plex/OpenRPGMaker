@@ -724,7 +724,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       '추격하는 적(보면 쫓아오는 필드 적·순찰 경비병 — movement chase 페이지)의 「알아채기·다가오기」만 조율한다. 다른 것(그림·전투·순찰 길)은 그대로. ' +
       'sightRange 시야(칸) · coneDegrees 부채꼴 각(넓을수록 곁눈으로도 봄) · chaseStepMs 쫓는 동안 한 칸 시간(작을수록 빨리 다가옴, 주인공 걷기 160, 그보다 작으면 12칸마다 숨 고름) · alertMs 알아챈 뒤 멈춤(짧을수록 빨리 덤빔) · searchMs 놓친 뒤 뒤지는 시간(추격 기억) · giveUpRange 포기 거리 · rush 알아채면 두 배 빠르기로 달려와 덮침 · allRound 사방을 봄 · lineOfSight:false 벽·나무가 시선을 안 가림(트인 들판 매복) · brain 추격 성격(smart 발소리 듣고 앞질러 막기·beast 곧장 돌진·knight 포위·ghost 벽 통과·classic 예전). ' +
       '「몬스터가 보면 순식간에 달려와 전투를 걸게」「몬스터가 보면 훨씬 빨리 다가오게」「밤 순찰을 더 예민하게, 더 넓게 찾게」 요청의 정본. eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. ' +
-      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게). ' +
+      '순찰 경로가 있으면 칸 사이 쉼을 늘려 시야 밖 순찰 걸음은 예전 빠르기를 지킨다. 시야를 넓힐 때 입구가 시야+1 칸 안이면 그 적만 시야를 줄인다(들어서자마자 덮치지 않게) — 스위치·변수 조건 페이지(이야기가 깨우는 추격자)는 줄이지 않는다. ' +
       '잠입 미니게임(경비 시야 피하기)이면 visionLight:{} 로 적마다 바라보는 쪽 바닥에 부채꼴 등불 빛을 깔아 시야를 눈에 보이게 한다 — 그 맵 조명(set_scene_mood)을 정한 다음에 부른다(조명을 나중에 다시 깔면 빛이 지워진다).',
     parameters: schema({
       mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 모든 맵)' },
@@ -760,7 +760,13 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           for (const page of event.pages ?? []) {
             if (page.movement.type !== 'chase') continue;
             let local = tuning;
-            if (tuning.sightRange !== undefined && entries.length) {
+            // 스위치·변수로 깨어나는 추격자(이야기 비트가 켜는 숙직 선생·경보 뒤 경비)는 플레이어가 맵에 들어설 때 그 자리에 없다 —
+            // place_field_enemy 의 appearSwitchId 처럼 입구 거리로 시야를 깎지 않는다. 예전엔 계단 곁에서 출발하는 순찰 경비가
+            // 6칸을 달라 해도 2칸이 되어, 손전등 빛이 발밑에만 비치고 복도 맞은편 주인공을 못 봤다(2026-10-31 「이상 없음」 2층).
+            const woken = (page.conditions ?? []).some((condition) => condition.kind === 'switch' || condition.kind === 'variable');
+            if (tuning.sightRange !== undefined && entries.length && woken) {
+              notes.push(`${map.id}/${event.id}: 스위치로 깨어나는 추격자라 입구 거리로 시야를 줄이지 않음(${tuning.sightRange}칸)`);
+            } else if (tuning.sightRange !== undefined && entries.length) {
               const nearest = Math.min(...entries.map((e) => Math.abs(e.x - event.x) + Math.abs(e.y - event.y)));
               let range = tuning.sightRange;
               while (range > 2 && nearest <= range + 1) range -= 1;
