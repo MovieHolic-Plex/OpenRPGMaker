@@ -68,10 +68,10 @@ function blocksOf(content: unknown): LocalCliBlock[] {
   if (!Array.isArray(content)) return [];
   const out: LocalCliBlock[] = [];
   for (const part of content) {
-    const p = part as { type?: string; text?: string; thinking?: string; name?: string };
+    const p = part as { type?: string; text?: string; thinking?: string; name?: string; input?: { name?: unknown } };
     if (p.type === "text" && typeof p.text === "string") out.push({ type: "text", text: p.text });
     else if (p.type === "thinking" && typeof p.thinking === "string") out.push({ type: "thinking", text: p.thinking });
-    else if (p.type === "tool_use" && typeof p.name === "string") out.push({ type: "tool_use", name: p.name });
+    else if (p.type === "tool_use" && typeof p.name === "string") out.push({ type: "tool_use", name: p.name, ...(typeof p.input?.name === "string" ? { callee: p.input.name } : {}) });
   }
   return out;
 }
