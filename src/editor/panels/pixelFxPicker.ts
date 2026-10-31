@@ -335,6 +335,7 @@ export function renderPagePixelFxControl(mapId: MapId, eventId: string, page: Ev
       el("option", { text: "캐릭터와 앞뒤 정렬", attrs: { value: "auto" } }),
       el("option", { text: "캐릭터 뒤(바닥)", attrs: { value: "back" } }),
       el("option", { text: "모두 위(날씨·안개)", attrs: { value: "front" } }),
+      el("option", { text: "화면 전체(날씨·반딧불)", attrs: { value: "screen" } }),
     ],
   }) as HTMLSelectElement;
   layer.value = current?.layer ?? "auto";
@@ -342,7 +343,7 @@ export function renderPagePixelFxControl(mapId: MapId, eventId: string, page: Ev
   layer.addEventListener("change", () => {
     if (!current) return;
     const { layer: _old, ...rest } = current;
-    updateEventPage(mapId, eventId, page.id, { pixelFx: layer.value === "auto" ? rest : { ...rest, layer: layer.value as "back" | "front" } }, "상시 효과 층");
+    updateEventPage(mapId, eventId, page.id, { pixelFx: layer.value === "auto" ? rest : { ...rest, layer: layer.value as "back" | "front" | "screen" } }, "상시 효과 층");
   });
   const clear = el("button", { class: "btn small", text: "떼기", attrs: { type: "button" }, dataset: { testid: "event-page-pixel-fx-clear" } });
   clear.hidden = !current;

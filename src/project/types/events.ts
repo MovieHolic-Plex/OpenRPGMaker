@@ -994,7 +994,7 @@ export interface EventPage {
 
 export interface EventPixelFx extends PixelFxSpec {
   /** "auto"(효과의 뒤·앞 층을 캐릭터와 y 정렬, 기본) · "back"(통째로 캐릭터 뒤 — 바닥 무늬) · "front"(통째로 위 — 날씨·안개). */
-  layer?: "auto" | "back" | "front";
+  layer?: "auto" | "back" | "front" | "screen";
 }
 
 export interface EventGlow {

@@ -6,7 +6,7 @@ const EFFECT_ID = /^[a-z][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/;
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 export const PIXEL_FX_PALETTE_MAX = 12;
-export const PIXEL_FX_LAYERS = ["auto", "back", "front"] as const;
+export const PIXEL_FX_LAYERS = ["auto", "back", "front", "screen"] as const;
 
 export function isPixelFxEffectIdFormat(value: unknown): value is string {
   return typeof value === "string" && value.length <= 64 && EFFECT_ID.test(value);

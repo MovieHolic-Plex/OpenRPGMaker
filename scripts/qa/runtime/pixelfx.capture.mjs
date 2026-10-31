@@ -39,6 +39,14 @@ function ambientEvent(id, x, y, pixelFx) {
   };
 }
 
+/** 같은 맵에서 효과를 다 뺀 것 — 효과 없는 rAF 간격 기준선. */
+async function baselineProject() {
+  const project = JSON.parse(await fieldProject(0));
+  const map = project.maps[project.startMapId];
+  map.events = map.events.filter((event) => !event.id.startsWith("ev_pfx_"));
+  return JSON.stringify(project);
+}
+
 async function fieldProject(stress) {
   const project = JSON.parse(gunzipSync(await readFile(join(REPO_ROOT, "examples/saesol-red/project.json.gz"))).toString("utf8"));
   const db = project.database;
@@ -49,12 +57,12 @@ async function fieldProject(stress) {
     ambientEvent("ev_pfx_torch", x - 3, y - 2, { effectId: "fire/torch" }),
     ambientEvent("ev_pfx_campfire", x + 3, y - 2, { effectId: "fire/campfire" }),
     ambientEvent("ev_pfx_blue", x - 3, y + 1, { effectId: "fire/torch", palette: ["#102040", "#1a3a8a", "#2f6fe0", "#5aa8ff", "#a8e0ff", "#ffffff"], seed: 7 }),
-    ambientEvent("ev_pfx_fireflies", x, y - 3, { effectId: "weather/fireflies", layer: "front" }),
+    ambientEvent("ev_pfx_fireflies", x, y - 3, { effectId: "weather/fireflies", layer: "screen" }),
   );
   if (stress) {
     for (let i = 0; i < stress; i += 1) {
       const effectId = ["fire/torch", "fire/candle", "fire/brazier", "water/fountain"][i % 4];
-      map.events.push(ambientEvent(`ev_pfx_stress_${i}`, (x - 8 + (i % 8) * 2 + map.width) % map.width, Math.max(1, y - 6 + Math.floor(i / 8) * 9), { effectId, seed: i }));
+      map.events.push(ambientEvent(`ev_pfx_stress_${i}`, (x - 8 + (i % 8) * 2 + map.width) % map.width, Math.max(1, y - 6 + Math.floor(i / 8) * 9), { effectId, seed: i % 2 }));
     }
   }
   map.events.push({
@@ -83,8 +91,10 @@ async function battleProject() {
   db.battleAnimations.push(pfx("ice/frost-nova"), pfx("melee/sword-slash", { position: "center" }), pfx("impacts/hit-flash"));
   const base = structuredClone(db.skills.find((skill) => skill.scope && skill.effect) ?? db.skills[0]);
   db.skills.push({ ...base, id: "skill_pfx_frost", name: "서리 폭발", animationId: "anim_pfx_ice_frost_nova", mpCost: 0, tpCost: 0, scope: "allEnemies", retroChoreographyId: undefined });
+  for (const actor of db.actors) actor.learnedSkills = [{ level: 1, skillId: "skill_pfx_frost" }, ...(actor.learnedSkills ?? [])];
   for (const cls of db.classes) {
     cls.skillIds = ["skill_pfx_frost", ...(cls.skillIds ?? [])];
+    cls.learnedSkills = [{ level: 1, skillId: "skill_pfx_frost" }, ...(cls.learnedSkills ?? [])];
     cls.animationId = "anim_pfx_melee_sword_slash";
   }
   for (const enemy of db.enemies) enemy.stats = { ...enemy.stats, maxHp: 9999 };
@@ -164,6 +174,12 @@ const browser = await chromium.launch({
 });
 const report = { errors: [], field: null, stress: null, battle: null };
 try {
+  if (modes.includes("baseline")) {
+    const page = await open(browser, "baseline", await baselineProject(), report, false);
+    await page.waitForTimeout(4000);
+    report.baseline = await sample(page, 6000);
+    await page.context().close();
+  }
   if (modes.includes("field")) {
     const page = await open(browser, "field", await fieldProject(0), report);
     await page.waitForFunction("window.__oprnPixelFxStats && window.__oprnPixelFxStats.ambient >= 4", null, { timeout: 60_000 });

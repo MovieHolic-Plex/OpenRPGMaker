@@ -138,15 +138,16 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   for (const loop of state.loops.values()) loop.wanted = false;
   const shown: AmbientFx[] = [];
   for (const [id, fx] of state.ambient) {
-    // 이벤트 스프라이트를 따라간다(움직이는 NPC 의 오라·상태 효과).
-    anchorEvent(scene, fx);
+    // 이벤트 스프라이트를 따라간다(움직이는 NPC 의 오라·상태 효과). 「화면」 층은 카메라를 따라 화면을 덮는다.
+    const screenScale = fx.spec.layer === "screen" ? anchorScreen(fx, view, scale) : 0;
+    if (!screenScale) anchorEvent(scene, fx);
     if (fx.fadeOutAt !== undefined && state.clock - fx.fadeOutAt >= FADE_MS) {
       releaseAmbient(scene, state, fx);
       state.ambient.delete(id);
       continue;
     }
     const alpha = fx.fadeOutAt !== undefined ? 1 - (state.clock - fx.fadeOutAt) / FADE_MS : 1;
-    const s = scale * (fx.spec.scale ?? 1);
+    const s = screenScale || scale * (fx.spec.scale ?? 1);
     if (fx.live) {
       visible += drawLive(scene, fx.live, fx.sprites, fx, s, alpha, deltaMs, view, state) ? 1 : 0;
       if (fx.live.renderer.done()) fx.live.renderer = new PixelFxRenderer(loadedPixelFxModule(fx.spec.effectId)!, fx.spec);
@@ -176,7 +177,8 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   }
   for (const fx of shown) {
     const alpha = fx.fadeOutAt !== undefined ? 1 - (state.clock - fx.fadeOutAt) / FADE_MS : 1;
-    showLive(scene, fx.loop!.live, fx.sprites, fx, scale * (fx.spec.scale ?? 1), alpha);
+    const screenScale = fx.spec.layer === "screen" ? anchorScreen(fx, view, scale) : 0;
+    showLive(scene, fx.loop!.live, fx.sprites, fx, screenScale || scale * (fx.spec.scale ?? 1), alpha);
   }
   state.stats.deferred = deferred;
   for (const shot of [...state.oneShots]) {
@@ -256,7 +258,7 @@ function releaseAmbient(scene: PlaySceneContext, state: SceneFxState, fx: Ambien
 function layersFor(spec: EventPixelFx | PixelFxSpec, renderer: PixelFxRenderer): readonly ("back" | "front")[] {
   const layer = (spec as EventPixelFx).layer;
   if (layer === "back") return ["back"];
-  if (layer === "front") return ["front"];
+  if (layer === "front" || layer === "screen") return ["front"];
   // 뒤 층이 없는 효과는 앞 층 한 장이면 된다 — 그리기·텍스처 올리기가 반이다.
   return renderer.hasBackLayer ? ["back", "front"] : ["front"];
 }
@@ -269,7 +271,7 @@ function placeSprite(
   alpha: number,
 ): void {
   const mode = (at.spec as EventPixelFx).layer;
-  const depth = mode === "back" ? BACK_LAYER_DEPTH : mode === "front" ? FRONT_LAYER_DEPTH : at.depth + (layer === "back" ? -0.5 : 0.5);
+  const depth = mode === "back" ? BACK_LAYER_DEPTH : mode === "front" || mode === "screen" ? FRONT_LAYER_DEPTH : at.depth + (layer === "back" ? -0.5 : 0.5);
   sprite
     .setVisible(true)
     .setPosition(at.x + (at.spec.offsetX ?? 0) * s, at.y + (at.spec.offsetY ?? 0) * s)
@@ -378,6 +380,20 @@ function hideSprites(sprites: SpriteSet): void {
 
 function destroySprites(sprites: SpriteSet): void {
   for (const sprite of Object.values(sprites)) sprite?.destroy();
+}
+
+/**
+ * 「화면」 층(날씨·반딧불·오로라 같은 장면 효과): 카메라 시야 가운데 아래에 원점을 두고, 시야를 덮는 가장 작은 정수배로 키운다.
+ * 돌려주는 값은 월드 배율(0 = 시야를 모름 → 이벤트 자리에 둔다). 효과 자체의 offset 은 그 배율로 민다.
+ */
+function anchorScreen(fx: AmbientFx, view: Phaser.Geom.Rectangle | undefined, worldScale: number): number {
+  const layout = fx.loop?.live.renderer.layout ?? fx.live?.renderer.layout;
+  if (!view || !layout) return 0;
+  const s = Math.max(1, Math.ceil(Math.max(view.width / (layout.width * worldScale), view.height / (layout.height * worldScale)))) * worldScale;
+  fx.x = view.centerX - (layout.width / 2 - layout.anchorX) * s;
+  fx.y = view.bottom - (layout.height - layout.anchorY) * s;
+  fx.depth = FRONT_LAYER_DEPTH;
+  return s;
 }
 
 function anchorEvent(scene: PlaySceneContext, fx: AmbientFx): void {

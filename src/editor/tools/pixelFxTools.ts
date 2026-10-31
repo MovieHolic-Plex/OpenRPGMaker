@@ -172,8 +172,8 @@ function findEvent(draft: Parameters<ToolDefinition["run"]>[0], mapId: string, e
 }
 
 const LAYER_SCHEMA: JsonSchema = {
-  type: "string", enum: ["auto", "back", "front"],
-  description: "auto = 효과의 뒤·앞 층을 캐릭터와 y 정렬(횃불·모닥불, 기본) · back = 통째로 캐릭터 뒤(바닥 마법진·물결) · front = 통째로 위(날씨·안개·반딧불 떼)",
+  type: "string", enum: ["auto", "back", "front", "screen"],
+  description: "auto = 효과의 뒤·앞 층을 캐릭터와 y 정렬(횃불·모닥불, 기본) · back = 통째로 캐릭터 뒤(바닥 마법진·물결) · front = 통째로 위, 이벤트 자리 · screen = 카메라를 따라 화면 전체를 덮는다(날씨·반딧불·오로라처럼 장면 크기 효과 — 이벤트 위치는 상관없다)",
 };
 const PLACEMENT_PROPERTIES: Record<string, JsonSchema> = {
   layer: LAYER_SCHEMA,
@@ -238,7 +238,7 @@ const placePixelFx: ToolDefinition = {
   description:
     "맵 칸(x,y)에 효과만 있는 투명 이벤트(통과 가능, 조사 없음)를 놓고 상시 픽셀 효과를 단다 — 횃불·모닥불 불꽃, 분수 물, 폭포 물보라, 반딧불·벚꽃·눈 같은 장소 분위기. " +
     "같은 칸에 이미 놓은 효과 이벤트가 있으면 바꾼다. remove:true 면 그 칸의 효과 이벤트를 지운다. 장작·횃대 같은 받침 그림은 타일·기물로 따로 깐다. " +
-    "날씨류(weather/*)는 화면만 한 큰 효과라 맵 가운데쯤 한 개, layer:'front'.",
+    "날씨류(weather/*: 비·눈·반딧불·오로라)는 장면 크기 효과라 맵에 한 개, layer:'screen'(카메라를 따라 화면을 덮는다).",
   mode: "write",
   fillsCurrentMapId: true,
   parameters: {
