@@ -358,6 +358,8 @@ function parseWhere(map: GameMap, word: string | undefined): WhereIntent {
   }
   if (/구석|모퉁이|corner/.test(w)) return { kind: "corner", ...base };
   if (/창가|창문|window/.test(w)) return { kind: "window", ...base };
+  // 바깥 맵의 「광장 한쪽」 은 광장이다 — 「한쪽」 이 먼저 잡히면 맵 테두리(벽 없음)에 붙는다(2026-10-31 jb1a terra: 촌장이 (0,20) 서쪽 끝 한 칸에 서서 판정자가 한참 찾았다).
+  if (!room && /광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
   if (/한\s*쪽|한\s*켠|가장자리|벽\s*쪽|벽가|벽\s*앞|벽\s*옆|\bside\b|edge|along the wall/.test(w)) return { kind: "side", ...base };
   if (/가운데|중앙|한가운데|center|centre|middle/.test(w)) return room ? { kind: "center", ...base } : { kind: "plaza", ...base };
   if (/광장|plaza|square/.test(w)) return { kind: "plaza", ...base };
@@ -602,7 +604,8 @@ export function resolveWhere(
 
   // 도움 함수: 방 안 칸의 벽 쪽(이웃이 방 밖이거나, 가구 아닌 못 가는 칸·벽 그림).
   const wallish = (x: number, y: number, room: RoomRect | undefined): boolean => {
-    if (x < 0 || y < 0 || x >= w || y >= map.height) return true;
+    // 바깥 맵의 테두리는 벽이 아니다 — 맵 끝 한 칸에 사람을 세우면 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(jb1a terra 촌장 (0,20)).
+    if (x < 0 || y < 0 || x >= w || y >= map.height) return indoor || !!room;
     if (room && !inRoom(room, { x, y })) return true;
     const c = { x, y };
     if (isPassable(project, map, x, y)) return false;
