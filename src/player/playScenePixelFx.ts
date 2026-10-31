@@ -107,7 +107,7 @@ interface SceneFxState {
   clock: number;
   serial: number;
   /** 성능 계기(마지막 틱): 그린 프레임 수·걸린 ms. window.__oprnPixelFxStats 로 본다. */
-  stats: { draws: number; ms: number; ambient: number; oneShots: number; visible: number; sharedLoops: number; deferred: number };
+  stats: { draws: number; ms: number; paintMs: number; uploadMs: number; ambient: number; oneShots: number; visible: number; sharedLoops: number; deferred: number };
 }
 
 const states = new WeakMap<PlaySceneContext, SceneFxState>();
@@ -118,7 +118,7 @@ function stateFor(scene: PlaySceneContext): SceneFxState {
   if (!state) {
     state = {
       mapId: "", ambientIds: [], ambient: new Map(), loops: new Map(), cacheBytes: 0, oneShots: [], nextCheck: 0, clock: 0, serial: 0,
-      stats: { draws: 0, ms: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0 },
+      stats: { draws: 0, ms: 0, paintMs: 0, uploadMs: 0, ambient: 0, oneShots: 0, visible: 0, sharedLoops: 0, deferred: 0 },
     };
     states.set(scene, state);
     const created = state;
@@ -134,6 +134,8 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
   const state = stateFor(scene);
   const started = performance.now();
   state.stats.draws = 0;
+  state.stats.paintMs = 0;
+  state.stats.uploadMs = 0;
   state.clock += deltaMs;
   if (state.mapId !== map.id) {
     for (const fx of state.ambient.values()) releaseAmbient(scene, state, fx);
@@ -186,7 +188,7 @@ export function updatePixelFx(scene: PlaySceneContext, deltaMs: number): void {
     if (!first && performance.now() - loopStarted > LOOP_BUDGET_MS) { deferred += 1; continue; }
     first = false;
     const cached = loop.cache?.get(frame);
-    if (cached) uploadCached(loop.live, cached);
+    if (cached) { const t0 = performance.now(); uploadCached(loop.live, cached); state.stats.uploadMs += performance.now() - t0; }
     else {
       renderer.seek(frame / loop.fps);
       paintLive(loop.live, loop.layers, loop.layers.length === 1, state);
@@ -353,11 +355,15 @@ function paintLive(live: LiveFx, layers: readonly ("back" | "front")[], whole: b
     if (!colorTex) continue;
     const color = live.images[`${layer}-color`]!;
     const light = live.images[`${layer}-light`] ?? null;
+    const t0 = performance.now();
     const painted = live.renderer.paint(whole ? "all" : layer, color, light);
+    const t1 = performance.now();
     state.stats.draws += 1;
+    state.stats.paintMs += t1 - t0;
     if (painted.color || live.painted[`${layer}-color`]) { colorTex.context.putImageData(color, 0, 0); colorTex.refresh(); }
     const lightTex = live.textures[`${layer}-light`];
     if (lightTex && light && (painted.light || live.painted[`${layer}-light`])) { lightTex.context.putImageData(light, 0, 0); lightTex.refresh(); }
+    state.stats.uploadMs += performance.now() - t1;
     live.painted[`${layer}-color`] = painted.color;
     live.painted[`${layer}-light`] = painted.light;
   }

@@ -65,7 +65,8 @@ async function fieldProject(stress) {
       map.events.push(ambientEvent(`ev_pfx_stress_${i}`, (x - 8 + (i % 8) * 2 + map.width) % map.width, Math.max(1, y - 6 + Math.floor(i / 8) * 9), { effectId, seed: i % 2 }));
     }
   }
-  map.events.push({
+  // 스트레스는 상시 효과만 잰다(한 번 효과 없이).
+  if (!stress) map.events.push({
     id: "ev_pfx_show", name: "한 번 효과", x: x + 1, y: y + 3, trigger: { kind: "parallel" }, commands: [],
     pages: [{
       id: "ev_pfx_show_page", name: "반복", conditions: [], trigger: { kind: "parallel" }, graphic: { transparent: true },
@@ -150,7 +151,7 @@ async function sample(page, ms) {
         frames.push(now - last);
         last = now;
         const stats = window.__oprnPixelFxStats;
-        if (stats) fx.push({ ms: stats.ms, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, shared: stats.sharedLoops, deferred: stats.deferred });
+        if (stats) fx.push({ ms: stats.ms, paintMs: stats.paintMs, uploadMs: stats.uploadMs, draws: stats.draws, visible: stats.visible, ambient: stats.ambient, oneShots: stats.oneShots, shared: stats.sharedLoops, deferred: stats.deferred });
         if (now < end) requestAnimationFrame(tick); else done();
       };
       requestAnimationFrame(tick);
@@ -161,7 +162,8 @@ async function sample(page, ms) {
     return {
       frames: frames.length, frameAvgMs: avg(frames), frameP95Ms: pct(frames, 0.95),
       fxAvgMs: avg(fxMs), fxP95Ms: pct(fxMs, 0.95), fxMaxMs: Math.max(0, ...fxMs),
-      drawsAvg: avg(fx.map((s) => s.draws)), last: fx.at(-1) ?? null,
+      drawsAvg: avg(fx.map((s) => s.draws)), paintAvgMs: avg(fx.map((s) => s.paintMs ?? 0)), uploadAvgMs: avg(fx.map((s) => s.uploadMs ?? 0)),
+      last: fx.at(-1) ?? null,
     };
   }, ms);
 }
