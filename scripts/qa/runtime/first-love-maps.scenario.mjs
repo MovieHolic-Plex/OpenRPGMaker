@@ -25,7 +25,8 @@ export default {
     { id: "start", note: "시작", ops: [
       { kind: "key", key: "Enter" },
       { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 60000 },
-      { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='cinematic-sequence']\")", maxPresses: 8, settleMs: 800 },
+      // 데모 오프닝은 건너뛸 수 없다(flagship/index.ts lockDemoOpening) — 끝날 때까지 기다린다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 180000 },
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "hold", dir: null, ms: 800 },
     ], shot: false },
