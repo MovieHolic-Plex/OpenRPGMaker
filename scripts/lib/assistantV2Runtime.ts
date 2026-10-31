@@ -182,7 +182,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // → ⑥ 화면 검수 결함을 vqa 항목으로(게임 전체 요청만). ④~⑥ 이 항목을 덧붙이면 같은 고리로 ② 부터 다시. 아무것도 없으면 끝 — 최종 보고는 기계 표.
   let autoBuilt = false;
   let noTodoKicks = 0;
-  let forcedSig = "", forcedCalls = 0;
+  let forcedSig = "", forcedCalls = 0, textStops = 0;
   const autoNotes: string[] = [];
   let loopStop: string | undefined;
   let advisorRuns = 0;
@@ -362,7 +362,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       maxRounds: 64,
       // 열린 항목이 있는 동안 도구 호출을 강제한다 — 다만 항목이 하나도 닫히지 않은 채 연속 12번이면 풀어 모델이 멈추고 고리(afterMain)가 판정하게 한다.
       keepToolsOn: () => {
-        if (!writeRequest || !store.initialized || loopStop || store.openCount() === 0) return false;
+        // 할 일이 열린 채 글로 멈춘 적이 있는 모델만(Flash) — 멈추지 않는 모델(DeepSeek)에는 걸지 않는다.
+        if (!writeRequest || !store.initialized || loopStop || store.openCount() === 0 || textStops === 0) return false;
         const c = store.counts(); const sig = `${c.done}/${c.blocked}/${c.dropped}/${c.total}`;
         if (sig !== forcedSig) { forcedSig = sig; forcedCalls = 0; }
         forcedCalls += 1;
@@ -370,6 +371,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       },
       afterMain: async (env) => {
         liveEnv = env;
+        if (store.initialized && store.openCount() > 0) textStops += 1;
         try {
           // 쓰기 요청인데 할 일 목록이 끝내 안 생겼다 — 도구를 하나도 안 부르고 글로 끝낸 것이다. 2026-11-01 cheap r5 flash:
           // 첫 답에 todo 호출을 ```tool_call``` 글 묶음으로 «써» 놓고 멈춰 아무것도 안 지은 채 끝났다(목록이 없으니 재주입도 없었다).

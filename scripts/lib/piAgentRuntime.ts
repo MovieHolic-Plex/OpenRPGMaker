@@ -1278,8 +1278,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let answered = false;
   /** 모델이 마지막으로 낸 글 — 완성 뒤 윤문 고리가 짓기 보고를 지우지 않고 그 뒤에 윤문 결과를 붙인 최종 보고를 낸다. */
   let lastAssistantText = "";
+  /** 할 일 도구 강제(keepToolsOn) 호출과 보통 호출의 걸린 시간 — 강제가 제공자를 느리게 하면 끈다. */
+  const keepTiming: { forced: number[]; free: number[]; pending?: { kind: "forced" | "free"; at: number }; off?: boolean } = { forced: [], free: [] };
   const agent: PiLoopDriver = localLoop ?? new Agent({
     getToolChoice: () => {
+      keepTiming.pending = undefined;
       if (!forceToolTurn && softPref) {
         // 이름 강제를 못 거는 호출(Anthropic 확장 생각)·없는 도구면 걸지 않는다.
         const api = (model as { api?: string }).api;
@@ -1292,11 +1295,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
       if (!forceToolTurn) {
         // v2 할 일이 열려 있는 동안은 도구 호출을 계속 강제한다(Anthropic 확장 생각은 강제를 못 받는다).
+        // 강제한 호출이 강제 안 한 호출보다 2.5배 넘게 느리면 그만둔다 — 2026-11-01 cheap r8: inferhub DeepSeek 은 tool_choice 를 걸면
+        // 호출당 5초 → 25~40초가 되어 11분 안에 단서 하나만 짓고 끝났다.
         const api = (model as { api?: string }).api;
         let keep = false;
         try { keep = !!(options.v2?.keepToolsOn && v2Env && options.v2.keepToolsOn(v2Env)); } catch { keep = false; }
-        return keep && !(api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off") ? "required" : undefined;
+        const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)] ?? 0;
+        const slow = keepTiming.forced.length >= 2 && keepTiming.free.length >= 2 && med(keepTiming.forced) > 2.5 * med(keepTiming.free);
+        if (slow && !keepTiming.off) { keepTiming.off = true; emit({ type: "execution_status", name: "v2.keep_tools.off", ok: true, summary: `도구 강제 중단 — 강제 호출 ${Math.round(med(keepTiming.forced) / 1000)}초 vs 보통 ${Math.round(med(keepTiming.free) / 1000)}초` }); }
+        const forced = keep && !keepTiming.off && !(api === "anthropic-messages" && thinkingLevel && String(thinkingLevel) !== "off");
+        keepTiming.pending = { kind: forced ? "forced" : "free", at: Date.now() };
+        return forced ? "required" : undefined;
       }
+      keepTiming.pending = undefined;
       const want = forceToolTurn;
       forceToolTurn = false;
       if (want === true) return "required";
@@ -1481,6 +1492,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
       if (process.env.OPRN_CALL_LOG && !localLoop) callLog.response(message);
+      if (keepTiming.pending && message.stopReason !== "error" && message.stopReason !== "aborted") keepTiming[keepTiming.pending.kind].push(Date.now() - keepTiming.pending.at);
+      keepTiming.pending = undefined;
       referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       const receivedCharsets = charsetGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       if (receivedCharsets.length) emit({ type: 'execution_status', name: 'charset.image.received', ok: true,
