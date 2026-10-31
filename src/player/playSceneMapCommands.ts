@@ -16,7 +16,7 @@ import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
-import { holdScreenFlash, screenCoverRemainingMs } from "@/player/playSceneScreenEffects";
+import { flashPeakMs, holdScreenFlash, screenCoverRemainingMs } from "@/player/playSceneScreenEffects";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
@@ -254,6 +254,11 @@ export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Pro
       const color = ((step.red & 255) << 16) | ((step.green & 255) << 8) | (step.blue & 255);
       graphics.fillStyle(color, 0.85);
       graphics.fillRect(0, 0, width, height);
+      // DOM 플래시(holdScreenFlash)와 같이 — 잠깐 덮고 남은 시간 동안 걷힌다(예전엔 끝까지 85% 단색 판이었다).
+      const peakMs = flashPeakMs(holdMs);
+      if (typeof scene.tweens?.add === "function") {
+        scene.tweens.add({ targets: graphics, alpha: 0, delay: peakMs, duration: Math.max(1, holdMs - peakMs) });
+      }
     }
     const finish = (): void => {
       if (settled) return;
