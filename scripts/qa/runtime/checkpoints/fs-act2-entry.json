@@ -1,0 +1,833 @@
+{
+ "set": "fs-act2-entry",
+ "query": {
+  "demo": "fallen-star",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 480,
+  "height": 270
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "continue-bridge",
+   "label": "1막 끝(이어 하기 Lv13·이리스 포함) → 「제2막으로」 → 감방: 이리스가 빠지는가",
+   "note": "fs-act2-entry: 1막을 다 싸운 실제 상태(exp 6249, 회복약·상급 회복약·마력약 소지)에서 이어 한다",
+   "mapId": "fs_observatory",
+   "x": 4,
+   "y": 18,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true,
+    "sw_fs_main_step3": true,
+    "sw_fs_act1_lifted": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 13
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 13
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 13
+    }
+   ],
+   "items": {
+    "item_potion": 8,
+    "item_hi_potion": 3,
+    "item_ether": 4
+   },
+   "gold": 900,
+   "beats": [
+    {
+     "id": "bridge-before",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, party: s.partyActorIds, levels: s.actorLevels, exp: s.actorExperience, equip: s.actorEquipment, inventory: s.inventory, gold: s.gold, switches: { iris_back: s.switches.sw_fs2_iris_back ?? null } }; }",
+       "out": "/tmp/fs2/ae/state/bridge-before.json"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "alarm",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "siege",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "ending-screen",
+       "state": "present",
+       "maxRounds": 140,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "credits",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 2,
+       "holdMs": 80
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "continue",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "ending-screen",
+       "state": "absent",
+       "maxRounds": 40,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cell",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 20,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "bridge-after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, party: s.partyActorIds, levels: s.actorLevels, exp: s.actorExperience, equip: s.actorEquipment, inventory: s.inventory, gold: s.gold, switches: { iris_back: s.switches.sw_fs2_iris_back ?? null } }; }",
+       "out": "/tmp/fs2/ae/state/bridge-after.json"
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorExperience": {
+     "actor_hero": 6249,
+     "actor_fs_elena": 6249,
+     "actor_fs_iris": 6249
+    }
+   }
+  },
+  {
+   "id": "continue-b11",
+   "label": "B11 렌즈 대기실(이어 하기 Lv18, 이리스는 1막 끝 Lv13 으로 빠져 있음) → 관을 열면 다시 합류",
+   "note": "fs-act2-entry: 재회 뒤 이리스가 일행에 들고 Lv18(FS_ACT2_JOIN_LEVEL.iris)",
+   "mapId": "fs2_sky_tower_f4",
+   "x": 15,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true,
+    "sw_fs2_t1_arrive": true,
+    "fs2t2_split": true,
+    "fs2t2_done": true,
+    "sw_fs2_t3_arrive": true,
+    "sw_fs2_t3_mirror_solved": true,
+    "sw_fs2_t4_arrive": true,
+    "sw_fs2_t4_coffin_seen": true,
+    "fs2t2_after_split": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 18
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 18
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 18
+    }
+   ],
+   "beats": [
+    {
+     "id": "b11-before",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, party: s.partyActorIds, levels: s.actorLevels, exp: s.actorExperience, equip: s.actorEquipment, inventory: s.inventory, gold: s.gold, switches: { iris_back: s.switches.sw_fs2_iris_back ?? null } }; }",
+       "out": "/tmp/fs2/ae/state/b11-before.json"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "call",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "wake",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "who",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "erased",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "read",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hands",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "light",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "joined",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 60,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1300
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "settle",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 30,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "b11-after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, party: s.partyActorIds, levels: s.actorLevels, exp: s.actorExperience, equip: s.actorEquipment, inventory: s.inventory, gold: s.gold, switches: { iris_back: s.switches.sw_fs2_iris_back ?? null } }; }",
+       "out": "/tmp/fs2/ae/state/b11-after.json"
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "sessionPatch": {
+    "actorLevels": {
+     "actor_fs_iris": 13
+    },
+    "actorExperience": {
+     "actor_fs_iris": 6249
+    }
+   }
+  }
+ ]
+}
