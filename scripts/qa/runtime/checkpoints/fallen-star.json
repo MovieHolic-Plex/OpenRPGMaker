@@ -5614,10 +5614,10 @@
   {
    "id": "act2-b5-dogs",
    "label": "제2막 B5 — 숲 어귀 북쪽 잿빛 빈터: 굶은 들개가 보자마자 달려와 전투",
-   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다 — 걸음마다 stepTimeoutMs 10000: 부하 걸린 호스트(4~6fps)에서 기본 1.2초 안에 한 칸을 못 가 첫 걸음에서 멈추던 것 · 2026-10-31 숲 어귀 재칠 뒤: 틈 안 숲길(15,18)에서 위로 세 걸음 — 들개 (15,12)",
+   "note": "act2Opening.ts dawnwell foes map_field_north_1 들개 (16,12) — 숲 가장자리(23줄) 너머 깊이 — 고백 직후 매복이 아니라 몇 걸음 걸어 들어가야 만난다. detection 짐승 프로필(놀람 150ms·돌진 4칸@100ms) — 길이 서쪽으로 굽어 (15,18)에서는 나무에 가려 안 보인다: 왼쪽 4·위 5·오른쪽 2 로 빈터 입구까지 걸어간다 — 걸음마다 stepTimeoutMs 10000: 부하 걸린 호스트(4~6fps)에서 기본 1.2초 안에 한 칸을 못 가 첫 걸음에서 멈추던 것 · 2026-10-31 숲 어귀 재칠 뒤: 틈 안 숲길(15,18)에서 위로 세 걸음 — 들개 (15,12) · 2026-11-01 fs2-rework 숲 가장자리 줄이 13줄로 내려와(도착선 여덟 줄 안쪽 규칙) 들개가 (14,3)·까마귀 (12,2) — 틈 안 숲길 (14,11)에서 위로 세 걸음 (14,8), 들개까지 다섯 칸",
    "mapId": "map_field_north_1",
-   "x": 15,
-   "y": 18,
+   "x": 14,
+   "y": 11,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -5634,7 +5634,10 @@
     "sw_fs2_b4_alarm": true,
     "sw_fs2_b4_forest_edge": true,
     "sw_fs2_b4_bram_out": true,
-    "sw_fs2_b4_watch_gone": true
+    "sw_fs2_b4_watch_gone": true,
+    "sw_fs2_b4_spotted": true,
+    "sw_fs2_b4_run": true,
+    "sw_fs2_b4_bram_forest": true
    },
    "party": [
     {
