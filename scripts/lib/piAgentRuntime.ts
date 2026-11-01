@@ -37,6 +37,7 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
+import { parseSplitConfig } from "../../src/ai/v2/split.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
 import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
 import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
@@ -129,6 +130,15 @@ interface PiLoopDriver {
   prompt(text: string): Promise<void>;
   steer(message: { role: "user"; content: { type: "text"; text: string }[]; timestamp: number }): void;
   abort(reason?: string): void;
+}
+
+/** 글만 든 대화(리드 계획·검토)를 로컬 CLI 한 번짜리 글로 — 역할 머리표를 붙여 잇는다. */
+function localCliPromptText(messages: readonly unknown[]): string {
+  return messages.map((message) => {
+    const m = message as { role?: string; content?: unknown };
+    const body = typeof m.content === "string" ? m.content : Array.isArray(m.content) ? m.content.map((part) => String((part as { text?: string }).text ?? "")).join("\n") : "";
+    return `[${m.role ?? "user"}]\n${body}`;
+  }).join("\n\n");
 }
 
 /** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
@@ -988,6 +998,40 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof content === "string" ? content : "";
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
+  // 리드(OPRN_V2_SPLIT, src/ai/v2/split.ts) — v2 에서만. 주 모델이 워커가 되고 리드는 계획·단계 검토만 한다. 사용량은 leadUsage 로 따로.
+  const split = options.v2 ? parseSplitConfig(process.env.OPRN_V2_SPLIT) : undefined;
+  const leadCli = split ? localCliIdOf(split.lead.provider) : undefined;
+  const leadKey = split && !leadCli ? options.providerApiKeys?.[split.lead.provider] ?? (split.lead.provider === request.provider ? options.apiKey : undefined) : undefined;
+  if (split && !leadCli && !leadKey) emit({ type: "execution_status", name: "v2.split.no_key", ok: false, summary: `리드 ${split.lead.provider}/${split.lead.model} 계정 키가 이 실행에 없음 — 나누지 않고 주 모델 혼자 한다` });
+  const leadUsage = { calls: 0, ms: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, costUsd: 0, inChars: 0, outChars: 0 };
+  const leadChat = split && (leadCli || leadKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const t0 = Date.now();
+    const inChars = JSON.stringify(messages).length;
+    const got = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+    const onUsage = (u: { input?: number; output?: number; cacheRead?: number; cacheWrite?: number }, costUsd?: number) => {
+      got.input += u.input ?? 0; got.output += u.output ?? 0; got.cacheRead += u.cacheRead ?? 0; got.cacheWrite += u.cacheWrite ?? 0;
+      if (costUsd) leadUsage.costUsd += costUsd;
+    };
+    let text = "";
+    try {
+      if (leadCli) text = await LOCAL_CLI_ADAPTERS[leadCli].complete(localCliPromptText(messages), { binary: localCliBinary(leadCli), model: split.lead.model, ...(split.lead.effort ? { effort: split.lead.effort } : {}), ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}), onUsage });
+      else {
+        const result = await completeProvider(split.lead.provider, { model: split.lead.model, max_tokens: 8192, messages, ...(split.lead.effort ? { reasoning: { effort: split.lead.effort } } : {}) }, { apiKey: leadKey!, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+        const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+        if (reported) onUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+        const content = result.completion.choices[0]?.message.content;
+        text = typeof content === "string" ? content : "";
+      }
+      return text;
+    } finally {
+      const ms = Date.now() - t0;
+      leadUsage.calls += 1; leadUsage.ms += ms; leadUsage.inChars += inChars; leadUsage.outChars += text.length;
+      leadUsage.input += got.input; leadUsage.output += got.output; leadUsage.cacheRead += got.cacheRead; leadUsage.cacheWrite += got.cacheWrite;
+      if (process.env.OPRN_CALL_LOG) {
+        try { appendFileSync(process.env.OPRN_CALL_LOG, `${JSON.stringify({ ts: new Date().toISOString(), role: "lead", model: split.lead.model, provider: split.lead.provider, ms, totalChars: inChars, out: { text: text.length }, usage: got })}\n`); } catch { /* 기록 실패는 실행을 바꾸지 않는다 */ }
+      }
+    }
+  } : undefined;
   // 재주입 차례·첫 요청: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
   // 문자열이면 그 도구 하나(v2 첫 호출 todo init — omo first-turn), true 면 «required».
   let forceToolTurn: boolean | string = false;
@@ -1022,6 +1066,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
     ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
+    ...(leadChat ? { leadChat, leadModel: `${split!.lead.provider}/${split!.lead.model}${split!.lead.effort ? `@${split!.lead.effort}` : ""}` } : {}),
     ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
       const ids = "resourceId" in art ? [art.resourceId] : animaticResourceIdsFor(ctx.project, art.shotId);
       const tool = "resourceId" in art ? "show_opening_image" : "preview_opening_animatic";
@@ -1727,7 +1772,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   try {
     if (options.v2?.beforeFirstPrompt && v2Env) options.v2.beforeFirstPrompt(v2Env);
-    await promptResuming(request.task);
+    let firstSuffix: string | undefined;
+    if (options.v2?.firstPromptSuffix && v2Env) {
+      try { firstSuffix = await options.v2.firstPromptSuffix(v2Env); }
+      catch (error) { emit({ type: "execution_status", name: "v2.first_prompt_suffix", ok: false, summary: `첫 지시 덧붙이기 실패 — 요청만 보낸다: ${error instanceof Error ? error.message : String(error)}` }); }
+    }
+    await promptResuming(firstSuffix ? `${request.task}\n\n${firstSuffix}` : request.task);
     // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
     // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.
     if (!fatal && !rejected && !request.readOnly && !options.readOnlyTools && request.task.includes(ULTRABRAIN_PLAN_HEADING)
@@ -2064,7 +2114,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged,
         ...(local.weight.systemSections ? { systemSections: local.weight.systemSections } : {}), ...(local.weight.listTop ? { listTop: local.weight.listTop } : {}),
         ...(local.weight.requests ? { requests: local.weight.requests } : {}), results: local.weight.results } }; })() : {}),
-      ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}) },
+      ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}),
+      ...(leadUsage.calls ? { lead: { ...leadUsage, model: split?.lead.model, totalTokens: leadUsage.input + leadUsage.output + leadUsage.cacheRead + leadUsage.cacheWrite } } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),

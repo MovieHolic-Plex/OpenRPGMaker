@@ -5,6 +5,95 @@
 
 <!-- releases -->
 
+## 0.383.0 — 2026-11-01
+
+### 기능
+
+- **assistant** — lead/worker split for v2 behind OPRN_V2_SPLIT — lead plans todos+specs and reviews at the phase gate, main model works (`6acfe77`)
+
+### 수정
+
+- **assistant** — host resolves the account key and endpoint of an account-model split lead (`7dc1f99`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX as CI sees it (`c289212`)
+- **assistant** — lead/worker split results and battery notes in openwiki (`c67a9cf`)
+
+### 잡무
+
+- **qa** — split battery collect/judge/readability/measure/page (`766ca81`)
+- **qa** — lead/worker split battery harness (VM run/queue, 11 requests on frozen stages) (`98774d9`)
+
+## 0.382.0 — 2026-11-01
+
+### 기능
+
+- **assistant** — number-lock check from the request, wrong-try hint in author_puzzle_chain (`b2156db`)
+- **editor** — readable event lists — Korean names, short records, sentence conditions (`d885889`)
+
+### 수정
+
+- stop blinding chasers near map entrances; runtime arrival protection instead (#4164) (`54a65d3`)
+- **assistant** — keep links narrowed after filling the chain name (`1001e69`)
+- **assistant** — todo promotes an item with a machine check before unchecked self-made items (`ed6a814`)
+- **assistant** — MV command names (controlSelfSwitch…) map to ours, todo machineCheck → check (`552407c`)
+- **assistant** — MV-coded commands converted anywhere, upsert_event resending same-count pages applies only changed commands (English refusal otherwise), chain name filled (`aab424c`)
+- **assistant** — todo done/block item→task, chain link role from lines (`f4061ff`)
+- **assistant** — chain fills a missing role, needAny/need typos, reward.endingId; clue links first; lock gated on the chain's clues by default; patch_event_page page fields wrapped in set; split-digit clues count as the answer (`56a1810`)
+- **qa** — __oprnDebug.readState 에 배우 레벨·경험치·장비를 싣는다 (#4157) (`2e57d81`)
+- **tools** — author_snow_route 비스듬한 굽이에 다진 눈 띠를 깔지 않는다 (#4156) (`907b861`)
+- **player** — screen flash flashes and fades instead of holding a solid 85% plate (#4151) (`da17e88`)
+- **assistant** — type the chain-level host fallback (`2428315`)
+- **assistant** — puzzle chain moves success text out of a code link's prompt lines; clearer English field descriptions, needsAll in schema (`604d6b1`)
+- **assistant** — puzzle chain needs can name a clue/code link or an earlier chain's flag; clue learn defaults; declare_story_flag description from id (`f3721fc`)
+- **assistant** — puzzle chain accepts lock role aliases, needsAll, reward.ending, and a top-level host for the one hostless link (`300610f`)
+- **assistant** — keep tool calls required only after a text stop with open items, and stop when forcing makes calls 2.5x slower (`68b35d4`)
+- **qa** — assistant cost collect judges every rep, not only 1-2 (`a781006`)
+- **qa** — assistant cost queue sources the VM suite env (`56cd11a`)
+- **assistant** — eventId → id and showText → text in calls, todo shorthand checks, done refused when the named event was not changed (`c1e5ed6`)
+- **assistant** — keep tool calls required while todo items are open (bounded to 12 calls without an item closing) (`e046f31`)
+- **assistant** — fork branches written under other names (otherwiseBranch, elseBranch…) become then/else instead of being dropped (`21b60e7`)
+- **assistant** — talk scene on a named object attaches to it, chain makes a missing ending id, nested required ids lifted, lock item first in the request skeleton (`562d522`)
+- **assistant** — lock check needs a real way out, chain ending without endingId makes one, reach check lists cut-off cells, call log records tool_choice (`55064cf`)
+- **assistant** — re-ask for a real todo call when a write request ends with no tool run (`2d5fbdd`)
+- **assistant** — puzzle chain reuses the named objects, lock check follows the request's lock event, quoted-object clue lines in the request skeleton (`bc7a3d3`)
+- **assistant** — build requests that quote an in-game line are write requests; fill story-flag ids; more MV codes (`72adb7e`)
+- **assistant** — accept small-model argument shapes, block done without saved changes, log model calls (`2279b23`)
+- **css** — drop hex fallback (CSS ratchet) (`cb85546`)
+- **qa** — restore setClock op in runtime QA runner (`a11ea4b`)
+- **runtime** — 등불이 밝은 바닥 위에서 흰 원판으로 뜨지 않게 빛 곡선·빛 색을 고친다 (#4144) (`2237d4e`)
+
+### 성능
+
+- **assistant** — leave place-building verbs and specs out of edit-only requests (`80177a5`)
+- **assistant** — give place-building specs on demand, not in every prompt (`cd5f204`)
+- **assistant** — keep the local CLI tool list fixed for a conversation (`c55144b`)
+
+### 정리
+
+- **runtime** — 출구 목적지 글자 삭제 (#4154) (`a0daf94`)
+
+### 문서
+
+- **openwiki** — cheap-model lock round 5 — MV commands anywhere, same-count page resend, checked items first (`585991c`)
+- **assistant** — edit-only lean prompt shipped (`efb3266`)
+- **openwiki** — cheap-model lock round 4 — chain link roles and default lock gating (`9ce7954`)
+- **openwiki** — cheap-model lock round 3 — forcing gated on a text stop, tolerant puzzle chain links (`08e895f`)
+- **assistant** — lean-prompt A/B result (not shipped) and cost harness notes (`6877261`)
+- **openwiki** — cheap-model lock — tool calls kept required, named-event done gate (`4233f0d`)
+- **openwiki** — cheap-model lock round 2 — real opening, chain ending ids, fork branch names (`dc59ca1`)
+- **openwiki** — regenerate INDEX (`49f54ed`)
+- **openwiki** — cheap-model lock — chain reuses named objects, lock event check, no-tool-run re-ask (`c5a94c1`)
+- **openwiki** — cheap-model lock comparison — argument coercion, number-lock check, call log (`aa44dbe`)
+- **skill** — event scripts carry Korean labels and step headings (`8969b15`)
+- **assistant** — tool-list freeze A/B result; measure.py skips capped runs (`881d0bb`)
+- **assistant** — tool-list freeze and cost A/B harness (`05f124c`)
+
+### 잡무
+
+- **css** — save winner baseline for event list readability rules (`a7adcf0`)
+
 ## 0.381.0 — 2026-11-01
 
 ### 기능
