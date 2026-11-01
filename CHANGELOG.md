@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.383.1 — 2026-11-01
+
+### 수정
+
+- **runtime** — keep the scene lineup when the leader turns to face a speaker (#4163) (`b70085b`)
+
 ## 0.383.0 — 2026-11-01
 
 ### 기능
