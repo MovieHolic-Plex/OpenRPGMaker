@@ -50,6 +50,10 @@ export interface WoodSpec {
   readonly nooks?: readonly { from: Cell; to: Cell }[];
   /** 숲 모양 시안(forest-trunks-1, 2026-10-24). 실제 숲 맵 정의에는 없다 — 비교 그림 전용. */
   readonly look?: WoodLook;
+  /** 덧붙여 트는 칸(곧은 가장자리가 필요한 들판 — 타원 빈터는 좌우 끝 줄이 어긋난다). */
+  readonly open?: (x: number, y: number) => boolean;
+  /** 길이 아니면 숲으로 막는 칸(길섶이 벌어지지 않는 좁은 틈). open·빈터·길섶보다 나중에 적용한다. */
+  readonly closed?: (x: number, y: number) => boolean;
 }
 
 /**
@@ -61,7 +65,7 @@ export interface WoodLook {
   readonly forest?: BeodeulForestLook;
   readonly castShadows?: "all" | "outside";
   readonly plainGround?: boolean;
-  readonly loose?: { readonly every: number; readonly reach: number };
+  readonly loose?: { readonly every: number; readonly reach: number; /** 정한 밑동 칸(그림 맨 아래 줄, 줄기 왼쪽 칸 + 1) — 주면 숲 가까움·간격 대신 이 칸들만. */ readonly at?: readonly Cell[] };
   readonly skirt?: boolean;
   /**
    * 줄기 다시 그린 나무(scripts/content/fallen-forest-trunks): 시안 칸 시트(16칸 폭 PNG dataUrl)와 그 시트 칸 번호로 쓴 그림 정의.
@@ -216,7 +220,9 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
     }
     if (near) open.add(c);
     else if ((spec.clearings ?? []).some((b) => inBlob(b, x, y, seed))) open.add(c);
+    else if (spec.open?.(x, y)) open.add(c);
   }
+  if (spec.closed) for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (spec.closed(x, y) && !path.has(idx(x, y))) open.delete(idx(x, y));
   for (const b of spec.groves ?? []) for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const c = idx(x, y);
     if (inBlob(b, x, y, seed + 7) && !path.has(c) && !water.has(c) && !nookCells.has(c)) open.delete(c);
@@ -382,7 +388,7 @@ function mossSkirt(project: Project, map: GameMap, tileset: Project["tilesets"][
  */
 function plantLooseTrees(map: GameMap, sprites: readonly import("@/project/types").TreeComposerSprite[], spec: WoodSpec,
   m: { path: Set<number>; water: Set<number>; nookCells: Set<number>; forest: Set<number>; open: Set<number> },
-  opt: { every: number; reach: number }, editable: (x: number, y: number) => boolean): TreePlacement[] {
+  opt: { every: number; reach: number; at?: readonly Cell[] }, editable: (x: number, y: number) => boolean): TreePlacement[] {
   const W = map.width, H = map.height;
   const pool = sprites.filter((sp) => !sp.dark && (sp.shape === "T3" || sp.shape === "T4"));
   const busy = new Set<number>();
@@ -395,13 +401,14 @@ function plantLooseTrees(map: GameMap, sprites: readonly import("@/project/types
   for (const e of map.events) guard.add(e.y * W + e.x);
   const out: TreePlacement[] = [];
   const cand: number[] = [];
-  for (let c = 0; c < W * H; c++) if (m.open.has(c) && !guard.has(c)) cand.push(c);
-  cand.sort((a, b) => ((a * 2654435761) >>> 0) % 1009 - ((b * 2654435761) >>> 0) % 1009);
+  if (opt.at) for (const a of opt.at) cand.push(a.y * W + a.x);
+  else for (let c = 0; c < W * H; c++) if (m.open.has(c) && !guard.has(c)) cand.push(c);
+  if (!opt.at) cand.sort((a, b) => ((a * 2654435761) >>> 0) % 1009 - ((b * 2654435761) >>> 0) % 1009);
   let k = 0;
   for (const c of cand) {
     const ax = c % W, ay = (c - ax) / W;
-    if (!near(ax, ay, m.forest, opt.reach)) continue;
-    if ((k++ % opt.every) !== 0) continue;
+    if (!opt.at && !near(ax, ay, m.forest, opt.reach)) continue;
+    if (!opt.at && (k++ % opt.every) !== 0) continue;
     const sp = pool[(ax * 7 + ay * 13) % pool.length]!;
     const tc = sp.shape === "T4" ? 1 : 1;
     const x0 = ax - tc, y0 = ay - sp.h + 1;

@@ -5016,7 +5016,7 @@
   {
    "id": "act2-b4-hole",
    "label": "제2막 B4 — 브람이 성벽 돌을 빼낸다(가까이·먼지) → 들켜 숲 어귀 풀밭을 가로질러 나무 벽 틈까지(등불 셋, 아슬아슬) → 숲지기 땅 고백",
-   "note": "act2Opening.ts bram (39,16) · hole (38,15) · stage_map_reveal zoom 2 → map_field_north_1(author_forest_route terrain edge) forestEdgeChase: 야경꾼 둘(등 뒤 양 끝, 틈 어귀 순찰 없음), chaseStepMs 175·돌진 없음 · 달리기는 방향키를 누른 채(held) · 틈 y=24(숲 어귀를 다시 칠함 — 맵 폭 나무 벽, 틈 x15~18)",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1 reshapeForestEdge(풀밭 14~38, 나무 벽 y13, 틈 x15~16) · ev_fs2_edge_spotted 외침 컷(SW_B4_RUN) · 등 뒤 둘(0.175초) + 앞 순찰 둘(손등불 3칸 = 시야, 아래 y30 서→동, 위 (16,19)→서(y21)→동(y21)→(16,19)) · 길: 위 2 → 동쪽 3(틈 x15) → 위 23 곧장 (누른 채 걷기는 한 칸 넘칠 수 있어 틈 칸 줄로 곧게 올라간다; 위 순찰은 출발하자마자 서쪽으로 멀어진다)",
    "mapId": "fs2_hub_night",
    "x": 38,
    "y": 16,
@@ -5181,26 +5181,60 @@
      "shot": false
     },
     {
+     "id": "shout",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 200
+        }
+       ]
+      }
+     ],
+     "shot": false
+    },
+    {
      "id": "dash",
      "ops": [
       {
        "kind": "move",
        "dir": "up",
-       "steps": 6,
+       "steps": 2,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 4,
+       "steps": 3,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 8,
+       "steps": 23,
        "stepTimeoutMs": 10000,
        "held": true
       }
@@ -5237,6 +5271,44 @@
          "ms": 1500
         }
        ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
       },
       {
        "kind": "hold",
@@ -5278,7 +5350,9 @@
     "sw_fs2_rohan_spear": true,
     "sw_fs2_bram_hole": true,
     "sw_fs2_b4_alarm": true,
-    "sw_fs2_b4_bram_out": true
+    "sw_fs2_b4_bram_out": true,
+    "sw_fs2_b4_spotted": true,
+    "sw_fs2_b4_run": true
    },
    "party": [
     {
@@ -5418,21 +5492,35 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 6,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 4,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 8,
+       "steps": 16,
+       "stepTimeoutMs": 10000,
+       "held": true
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 3,
+       "stepTimeoutMs": 10000,
+       "held": true
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 2,
        "stepTimeoutMs": 10000,
        "held": true
       }
@@ -5469,6 +5557,44 @@
          "ms": 1500
         }
        ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
       },
       {
        "kind": "hold",
@@ -9863,8 +9989,8 @@
   },
   {
    "id": "act2-b10-mirror",
-   "label": "제2막 B10 — 하늘탑 3층: 렌즈 거울 둘로 빛을 계단에 → 4층 어둠",
-   "note": "act2Tower.ts floorThree (author_map_puzzle mirror_beam_refraction)",
+   "label": "제2막 B10 — 하늘탑 3층: 거울 넷으로 천창 빛을 계단 빛 막까지 잇는다(미끼 거울은 검은 수정에 막힌다) → 4층 어둠",
+   "note": "act2Tower.ts floorThree (거울 다섯·빛 계산 공통 이벤트 ce_fs2_t3_beam)",
    "mapId": "fs2_sky_tower_f3",
    "x": 7,
    "y": 11,
@@ -9914,88 +10040,40 @@
    ],
    "beats": [
     {
-     "id": "first",
+     "id": "look",
      "ops": [
       {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 1500
       },
       {
-       "kind": "action"
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
+       "kind": "move",
+       "dir": "right",
+       "steps": 3,
+       "stepTimeoutMs": 4000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 2500
       }
      ],
      "shot": true
     },
     {
-     "id": "second",
+     "id": "m1-left",
      "ops": [
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 8,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 2000
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 4,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "move",
-       "dir": "left",
-       "steps": 2,
-       "stepTimeoutMs": 4000
-      },
       {
        "kind": "teleport",
        "mapId": "fs2_sky_tower_f3",
-       "x": 9,
-       "y": 10
+       "x": 12,
+       "y": 12
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 500
       },
       {
        "kind": "face",
@@ -10005,15 +10083,290 @@
        "kind": "action"
       },
       {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
        "state": "present",
-       "timeoutMs": 15000
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m2-up",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 5,
+       "y": 12
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m3-right",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 5,
+       "y": 8
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "m4-up",
+     "ops": [
+      {
+       "kind": "teleport",
+       "mapId": "fs2_sky_tower_f3",
+       "x": 7,
+       "y": 6
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 250
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
       }
      ],
      "shot": true
@@ -10041,51 +10394,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 6,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 2500
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 4,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1300
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1000
+       "ms": 1500
       }
      ],
      "shot": true
@@ -11606,7 +11915,8 @@
          "skill_gunner_shot",
          "skill_gunner_shot"
         ]
-       }
+       },
+       "resultHoldMs": 1200
       },
       {
        "kind": "hold",
