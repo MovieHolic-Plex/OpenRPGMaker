@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.383.0 — 2026-11-01
+
+### 기능
+
+- **assistant** — lead/worker split for v2 behind OPRN_V2_SPLIT — lead plans todos+specs and reviews at the phase gate, main model works (`6acfe77`)
+
+### 수정
+
+- **assistant** — host resolves the account key and endpoint of an account-model split lead (`7dc1f99`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX as CI sees it (`c289212`)
+- **assistant** — lead/worker split results and battery notes in openwiki (`c67a9cf`)
+
+### 잡무
+
+- **qa** — split battery collect/judge/readability/measure/page (`766ca81`)
+- **qa** — lead/worker split battery harness (VM run/queue, 11 requests on frozen stages) (`98774d9`)
+
 ## 0.382.0 — 2026-11-01
 
 ### 기능
