@@ -1695,13 +1695,23 @@ function dawnwell(project: Project, exec: Exec): void {
   const W = (id: string) => M(project, id).width;
   // 숲 어귀 — 숲지기 땅(B4 도착선) 너머 숲길에. 맵이 숲 어귀(남쪽 풀밭·북쪽 숲)라 맵 가운데 칸은 나무일 수 있다 — 걸어 닿는 가장 가까운 칸으로.
   const northOpen = walkSteps(project, M(project, north1!), { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 });
-  const near1 = (x: number, y: number): Cell => [...northOpen.keys()].map((k) => { const [cx, cy] = k.split(",").map(Number); return { x: cx!, y: cy! }; })
+  // 가까운 칸부터 차례로 세워 본다 — 도구가 거절하면(출입구 2칸 안·이미 선 무리 곁) 다음 칸으로. 숲 어귀가 넓어진 뒤(2026-11-01)
+  // 안쪽 줄이 좁아져 까마귀가 들개 칸·북쪽 출구 곁을 골라 조용히 빠졌다 — 그러면 뒤 싸움 도착 레벨이 한 단 낮아져 승률표가 어긋난다.
+  const near1 = (x: number, y: number, avoid: readonly Cell[] = []): Cell[] => [...northOpen.keys()].map((k) => { const [cx, cy] = k.split(",").map(Number); return { x: cx!, y: cy! }; })
     // 도착선에서 여덟 줄 넘게 안쪽 — 네 줄이면 브람의 고백이 끝나자마자 들개가 덮쳤다(VQA 2026-10-30).
     .filter((c) => c.y < FS2_NORTH_ROUTE.treeline - 1 - 8)
-    .sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - (Math.abs(b.x - x) + Math.abs(b.y - y)))[0] ?? { x, y };
-  const dogs = near1(Math.floor(W(north1!) / 2) - 2, 3), crows = near1(Math.floor(W(north1!) / 2) - 5, 2);
-  try { foe(north1!, "troop_fs2_starved_dogs", dogs.x, dogs.y, "dash"); } catch { /* 그 칸 거절 */ }
-  try { foe(north1!, "troop_fs2_ash_crows", crows.x, crows.y, "swoop"); } catch { /* 그 칸 거절 */ }
+    .filter((c) => avoid.every((a) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) >= 3))
+    .sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - (Math.abs(b.x - x) + Math.abs(b.y - y)));
+  const placeNear = (troopId: string, x: number, y: number, style: string, avoid: readonly Cell[] = []): Cell | undefined => {
+    let last = "";
+    for (const at of near1(x, y, avoid).slice(0, 24)) {
+      try { foe(north1!, troopId, at.x, at.y, style); return at; } catch (error) { last = String((error as Error).message).slice(0, 160); }
+    }
+    console.warn(`[fallen-star act2] 숲 어귀 ${troopId} 세울 칸 없음: ${last}`);
+    return undefined;
+  };
+  const dogs = placeNear("troop_fs2_starved_dogs", Math.floor(W(north1!) / 2) - 2, 3, "dash");
+  placeNear("troop_fs2_ash_crows", Math.floor(W(north1!) / 2) - 5, 2, "swoop", dogs ? [dogs] : []);
   foe(field!, "troop_fs2_ash_wisps", ASH_SPOTS.wisps.x, ASH_SPOTS.wisps.y, "float");
   foe(field!, "troop_fs2_ash_snakes", ASH_SPOTS.snakes.x, ASH_SPOTS.snakes.y, "slither");
   // 골렘은 하나 — 이기면 다시 안 나온다. 피해 갈 수 있는 정예(느리고 돌진 없음). 동쪽 유황 벌판의 짐 상자 앞에 선다.

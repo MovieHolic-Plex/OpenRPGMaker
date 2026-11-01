@@ -224,7 +224,7 @@ export const FS_GEAR_TUNE: Readonly<Record<string, number>> = {
  */
 export const FS_GEAR_ELITES: Readonly<Record<string, number>> = {
   enemy_fs_elite_penitent: 0.81,
-  enemy_fs2_cinder_golem: 0.935,
+  enemy_fs2_cinder_golem: 0.94,
   enemy_fs2_elite_warden: 1.045,
   enemy_fs2_elite_frostmane: 0.98,
   enemy_fs2_tower_sentinel: 0.98,
