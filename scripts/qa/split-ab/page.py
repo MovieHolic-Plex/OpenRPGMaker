@@ -139,7 +139,7 @@ diagram = """<svg viewBox="0 0 760 250" class="dia" role="img" aria-label="리�
 page = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>리드·워커 나누기 점수표</title>
 <style>body{{font:14px/1.5 system-ui,sans-serif;margin:24px;color:#222;max-width:1500px}}table{{border-collapse:collapse;margin:8px 0 24px;font-size:13px}}
 th,td{{border:1px solid #ddd;padding:4px 7px;text-align:right;white-space:nowrap}}th{{background:#f4f4f4;cursor:pointer;position:sticky;top:0}}td.name{{text-align:left;font-weight:600}}
-td.sum{{text-align:left;white-space:normal;max-width:380px;color:#555}}td.good{{background:#dff3e2}}td.ok{{background:#fbf6dc}}td.bad{{background:#f8dcdc}}td.na{{color:#aaa}}
+td.sum{{text-align:left;white-space:normal;min-width:440px;max-width:560px;color:#555}}td.good{{background:#dff3e2}}td.ok{{background:#fbf6dc}}td.bad{{background:#f8dcdc}}td.na{{color:#aaa}}
 small{{color:#666}}.dia{{width:760px;max-width:100%}}.dia rect.u{{fill:#eee;stroke:#999}}.dia rect.l{{fill:#e6efff;stroke:#5b7fd6}}.dia rect.w{{fill:#e9f7ec;stroke:#4c9a5f}}.dia rect.m{{fill:#fff4e0;stroke:#d39b38}}
 .dia text{{text-anchor:middle;font-size:14px}}.dia text.s{{font-size:11.5px;fill:#444}}.dia .a{{stroke:#555;fill:none;marker-end:url(#ar)}}.dia .d{{stroke-dasharray:4 3}}.note{{color:#555;font-size:13px}}</style></head><body>
 <h1>리드·워커 나누기 — 조합별 점수표</h1>

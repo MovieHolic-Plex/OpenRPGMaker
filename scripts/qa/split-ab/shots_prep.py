@@ -27,7 +27,7 @@ for pulled in sorted(glob.glob(f"{L}/*/*/.pulled")):
         ev.append({"mapId": parts[1], "eventId": parts[2]} if parts[0] == "map" else {"commonEventId": parts[1]})
     os.makedirs(sd, exist_ok=True)
     p["tilesets"] = {}
-    for k in ("resourceProfiles", "charsetLabels"): p.pop(k, None)
+    p["resourceProfiles"] = []; p["charsetLabels"] = []  # big and unused by the event list; the editor needs them iterable
     json.dump(p, open(f"{sd}/run.json", "w"), ensure_ascii=False)
     json.dump(ev[:20], open(f"{sd}/events.json", "w"), ensure_ascii=False)
     print(tag, len(changed))
