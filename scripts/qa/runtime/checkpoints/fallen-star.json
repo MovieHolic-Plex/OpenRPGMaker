@@ -5176,35 +5176,21 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 2,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 4,
+       "steps": 7,
        "stepTimeoutMs": 10000,
        "held": true
       },
       {
        "kind": "move",
        "dir": "up",
-       "steps": 8,
-       "stepTimeoutMs": 10000,
-       "held": true
-      },
-      {
-       "kind": "move",
-       "dir": "right",
-       "steps": 3,
-       "stepTimeoutMs": 10000,
-       "held": true
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 13,
+       "steps": 16,
        "stepTimeoutMs": 10000,
        "held": true
       },
@@ -5241,10 +5227,15 @@
       },
       {
        "kind": "pressUntilJs",
-       "fn": "() => { const s = window.__oprnDebug?.readState?.(); return !!s?.switches?.sw_fs2_b4_bram_forest && !document.querySelector('[data-testid=\"dialogue-box\"]'); }",
+       "fn": "() => { const s = window.__oprnDebug?.readState?.(); if (!s) return false; if (s.currentMapId && s.currentMapId !== 'map_field_north_1') return true; return !!s.switches?.sw_fs2_b4_bram_forest && !document.querySelector('[data-testid=\"dialogue-box\"]'); }",
        "key": "Enter",
        "settleMs": 1500,
        "maxPresses": 40
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 1500
       },
       {
        "kind": "hold",
@@ -5474,10 +5465,15 @@
       },
       {
        "kind": "pressUntilJs",
-       "fn": "() => { const s = window.__oprnDebug?.readState?.(); return !!s?.switches?.sw_fs2_b4_bram_forest && !document.querySelector('[data-testid=\"dialogue-box\"]'); }",
+       "fn": "() => { const s = window.__oprnDebug?.readState?.(); if (!s) return false; if (s.currentMapId && s.currentMapId !== 'map_field_north_1') return true; return !!s.switches?.sw_fs2_b4_bram_forest && !document.querySelector('[data-testid=\"dialogue-box\"]'); }",
        "key": "Enter",
        "settleMs": 1500,
        "maxPresses": 40
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_field_north_1",
+       "timeoutMs": 1500
       },
       {
        "kind": "hold",
