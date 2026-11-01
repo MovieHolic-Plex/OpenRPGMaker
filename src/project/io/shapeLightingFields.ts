@@ -22,6 +22,7 @@ export function validateLightSource(label: string, value: unknown): void {
     requireNumber(`${label}.cone.degrees`, cone.degrees);
     if (cone.facing !== undefined) requireString(`${label}.cone.facing`, cone.facing);
   }
+  if (source.edge !== undefined) requireString(`${label}.edge`, source.edge);
 }
 
 function validateLightAnchor(label: string, value: unknown): void {

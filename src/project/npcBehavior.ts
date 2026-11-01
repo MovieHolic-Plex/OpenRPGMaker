@@ -16,7 +16,14 @@ const integer = (v: unknown, min: number, max: number): v is number => typeof v 
 export function isNpcSight(value: unknown): value is NpcSight {
   return record(value) && integer(value.range, 0, 999) && typeof value.lineOfSight === 'boolean'
     && (value.facing === 'any' || value.facing === 'forward' || value.facing === 'cone')
-    && (value.coneDegrees === undefined || (typeof value.coneDegrees === 'number' && value.coneDegrees >= 30 && value.coneDegrees <= 180));
+    && (value.coneDegrees === undefined || (typeof value.coneDegrees === 'number' && value.coneDegrees >= 30 && value.coneDegrees <= 180))
+    && (value.shape === undefined || value.shape === 'diamond' || value.shape === 'circle');
+}
+
+/** 시야 거리 안인가(칸 차이 dx·dy). circle 은 시야 등불과 같은 반지름 range + 0.5 원(@/project/types NpcSight.shape). */
+export function withinSightRange(dx: number, dy: number, range: number, shape: NpcSight['shape']): boolean {
+  if (shape === 'circle') return dx * dx + dy * dy <= (range + 0.5) * (range + 0.5);
+  return Math.abs(dx) + Math.abs(dy) <= range;
 }
 export function isDetectionEncounter(value: unknown): value is DetectionEncounter {
   return record(value) && isNpcSight(value.sight) && (value.emote === null || isEmoteKind(value.emote))

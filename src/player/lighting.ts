@@ -3,7 +3,7 @@ import {
   deterministicFlickerFactor,
   effectiveDarkness,
   lightConeAngle,
-  LIGHT_FALLOFF,
+  lightFalloffCurve,
   lightSourceIntensity,
   normalizeLightingState,
   PLAYER_PRESENCE_LIGHT,
@@ -36,6 +36,8 @@ export type LightGradientParam = {
   readonly flicker: number;
   /** 부채꼴 빛이면 [시작각, 끝각](라디안) — 그 사이만 칠한다. */
   readonly arc?: readonly [number, number];
+  /** 가장자리가 또렷한 빛(시야 등불) — LightSource.edge. */
+  readonly edge?: "hard";
 };
 
 export type LightingMaskParams = {
@@ -98,7 +100,7 @@ export function lightingMaskSignature(params: LightingMaskParams): string {
   let signature = `${round(params.ambient)}|${params.color}|${params.width}x${params.height}`;
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
   for (const entry of params.gradients) {
-    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}`;
+    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}`;
   }
   return signature;
 }
@@ -137,7 +139,7 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     const alpha = clamp01(light.intensity);
     // 빛은 가운데서 바깥으로 꾸준히 사위어야 한다. 예전 곡선(0.7 까지 65% 유지 후 급락)은 반지름 끝까지 거의 다 걷어 내
     // 흰 눈·얼음 위에서 등불마다 테두리 선명한 하얀 원판이 떴다(폴른 스타 서리나루 해 질 녘·밤, 2026-10-31).
-    for (const [at, k] of LIGHT_FALLOFF) gradient.addColorStop(at, `rgba(0,0,0,${alpha * k})`);
+    for (const [at, k] of lightFalloffCurve(light.edge)) gradient.addColorStop(at, `rgba(0,0,0,${alpha * k})`);
     context.fillStyle = gradient;
     fillLight(context, light);
   }
@@ -160,7 +162,7 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     const alpha = clamp01(light.intensity) * LIGHT_TINT_STRENGTH * params.ambient;
     const gradient = context.createRadialGradient(light.centerX, light.centerY, 0, light.centerX, light.centerY, light.radiusPx);
     // 색은 걷어 낸 만큼 같은 곡선으로 얹는다 — 걷힌 자리가 맨바닥(흰 눈)으로 비치지 않고 그 불빛 색으로 물든다.
-    for (const [at, k] of LIGHT_FALLOFF) gradient.addColorStop(at, `rgba(${rgb},${alpha * k})`);
+    for (const [at, k] of lightFalloffCurve(light.edge)) gradient.addColorStop(at, `rgba(${rgb},${alpha * k})`);
     context.fillStyle = gradient;
     fillLight(context, light);
   }
@@ -204,10 +206,12 @@ function lightGradientParam(source: LightSource, context: LightingMaskContext): 
     centerX,
     centerY,
     radiusPx: source.radius * context.tileSize * zoom,
-    intensity: lightSourceIntensity(source, context.timeMs),
+    // 빛을 든 몸이 흐려지면(이벤트 불투명도) 빛도 같이 — 몸 없이 등불만 남지 않는다.
+    intensity: lightSourceIntensity(source, context.timeMs) * clamp01(position.fade ?? 1),
     color: source.color,
     flicker: source.flicker ? deterministicFlickerFactor(source.id, context.timeMs) : 1,
     ...(source.cone ? { arc: coneArc(source.cone.degrees, position.facing ?? source.cone.facing) } : {}),
+    ...(source.edge === "hard" ? { edge: "hard" as const } : {}),
   };
 }
 
