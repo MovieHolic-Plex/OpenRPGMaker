@@ -42,7 +42,7 @@ for r in json.load(open(f"{L}/measure.json"))["rows"]:
     json.dump(ev[:20], open(f"{L}/shots/{tag}/events.json", "w"), ensure_ascii=False)
 PY
 for d in $L/shots/*/; do t=$(basename $d); ls $d/*.png >/dev/null 2>&1 && continue
-  (cd $REPO && PW=$REPO/node_modules/playwright/index.mjs timeout 1200 node $H/../ab2/capture-event-lists.mjs --base $URL --project $d/run.json --events $d/events.json --out $d > $d/capture.log 2>&1); echo "shots $t: $(ls $d/*.png 2>/dev/null | wc -l)"; done
+  (cd $REPO && PW=$REPO/node_modules/playwright/index.mjs timeout 1200 node $H/capture-event-lists.mjs --base $URL --project $d/run.json --events $d/events.json --out $d > $d/capture.log 2>&1); echo "shots $t: $(ls $d/*.png 2>/dev/null | wc -l)"; done
 for d in $L/shots/*/; do t=$(basename $d); ls $d/*.png >/dev/null 2>&1 || continue; [ -f $L/readability/$t.json ] || echo $t; done | xargs -r -P 4 -I{} bash -c 'IFS=- read a m r <<< "{}"; python3 '$H'/readability-hard.py '$L' $a $m $r 2>> '$L'/readability.err'
 else echo "viewer $URL down — readability skipped"; fi
 python3 $H/measure-hard.py $L

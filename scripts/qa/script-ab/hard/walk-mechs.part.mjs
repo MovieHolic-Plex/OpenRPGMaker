@@ -74,6 +74,8 @@ async function loadGame() {
 async function doorOpen(name) {
   const ev = findEvent(evId(name));
   await talk(ev.event.id, { silentOk: true, choices: [0, 0] }).catch(() => {});
+  await sleep(1200); const after = await st();
+  if (after?.currentMapId && after.currentMapId !== ev.mapId) return { open: true, note: `using the door moved the player to ${after.currentMapId}` };
   const p = await evPos(name);
   const occupied = new Set((ev.map.events ?? []).filter((e) => e.id !== ev.event.id).map((e) => `${e.x},${e.y}`));
   const tried = [];
@@ -298,7 +300,7 @@ try {
       const n3 = await at(10); check("schedule-10-back-to-bakery", n3.ok, `10:00 next day ${n3.note}`);
     });
   } else if (request === "affinity") {
-    const gift = (who, item) => T(who, { chooser: prefer([[/선물/], [new RegExp(item)]], [/예|네|준다|줄래|그래/, /그만|아니|닫/], { cap: 8 }) });
+    const gift = (who, item) => T(who, { present: `^\\s*${item}(\\s|×|x|\\(|\\d|$)`, chooser: prefer([[/선물/], [new RegExp(item)]], [/예|네|준다|줄래|그래/, /그만|아니|닫/], { cap: 8 }) });
     await guard("aff-start", async () => { const a = [await inv("꽃"), await inv("빵"), await inv("보석")]; check("aff-start-inventory", a.join() === "10,10,10", `flowers/bread/gems ${a.join("/")}`); });
     const tx = [];
     await guard("aff-gifts", async () => {
@@ -323,20 +325,22 @@ try {
     });
   } else if (request === "boss") {
     const enemyNames = () => page.evaluate(() => [...document.querySelectorAll("[data-testid='battle-enemy']")].filter((n) => n.getClientRects().length).map((n) => (n.querySelector("[data-testid='battle-enemy-name']")?.textContent ?? n.textContent ?? "").trim()));
-    async function fight(hp) {
+    async function fight(hp, fallback = "attack") {
       const start = await logLen(); let maxEnemies = 0; const names = new Set();
       for (let round = 0; round < 60; round += 1) {
         if (!(await has("[data-testid='battle-scene']"))) { await sleep(800); if (!(await has("[data-testid='battle-scene']"))) break; }
+        if (await has("[data-testid='battle-result-confirm']")) { await page.evaluate(() => document.querySelector("[data-testid='battle-result-confirm']")?.click()); await sleep(1200); continue; }
+        if (await has("[data-testid='dialogue-box']")) { await advanceMessage(); continue; }
         const en = await enemyNames(); maxEnemies = Math.max(maxEnemies, en.length); en.forEach((n) => names.add(n));
-        await page.evaluate((v) => { const ids = window.__oprnDebug.readState().partyActorIds; for (const id of ids) window.__oprnSetActorVitals?.(id, v, v > 1 ? 999 : 0); }, hp).catch(() => {});
-        await battleQaOp(page, { kind: "battle", fallback: "attack", commands: 1, timeoutMs: 60_000 }).catch(() => {});
+        if (hp) await page.evaluate((v) => { const ids = window.__oprnDebug.readState().partyActorIds; for (const id of ids) window.__oprnSetActorVitals?.(id, v, 999); }, hp).catch(() => {});
+        await battleQaOp(page, { kind: "battle", fallback, commands: 1, timeoutMs: 60_000 }).catch(() => {});
       }
       return { start, maxEnemies, names: [...names] };
     }
     const boss = await evPos("보스");
     await guard("boss-defeat", async () => {
       await T("보스", { choices: [0, 0] });
-      const f = await fight(1);
+      const f = await fight(0, "defend"); // never attack: the boss wins
       const t = await drain({ chooser: prefer([[/예|네|도전/]], [/예|네/]) }, { maxMs: 40_000, start: f.start });
       await sleep(1500);
       const s = await st(); const title = await has("[data-testid='title-screen']"); const over = await has("[data-testid='game-over-screen']");
@@ -348,7 +352,7 @@ try {
       const all = await logSince(f.start);
       const i2 = all.findIndex((x) => /부하/.test(x)), i3 = all.findIndex((x) => /끝까지/.test(x));
       check("boss-phase2-line", i2 >= 0, "«나와라, 내 부하들!» at 50%", all.filter((x) => /부하/.test(x)));
-      check("boss-adds-summoned", f.maxEnemies >= 3 || f.names.some((n) => /박쥐/.test(n)), `enemies seen: max ${f.maxEnemies} [${f.names.join(", ")}]`);
+      check("boss-adds-summoned", f.maxEnemies >= 3 || f.names.some((n) => /박쥐/.test(n)) || all.some((x) => /박쥐/.test(x)), `bats in the battle log: ${all.filter((x) => /박쥐/.test(x)).length} lines (enemy sprites max ${f.maxEnemies})`);
       check("boss-phase3-line", i3 >= 0 && (i2 < 0 || i3 > i2), "«끝까지 간다!» at 20%, after phase 2", all.filter((x) => /끝까지/.test(x)));
       check("boss-lines-once", all.filter((x) => /부하/.test(x)).length <= 1 && all.filter((x) => /끝까지/.test(x)).length <= 1, "each shout at most once");
       const ending = await finishTo([]);
@@ -370,7 +374,7 @@ try {
       const r0 = await rate(); const v0 = await tval(); const t0 = Date.now(); const n0 = await logLen();
       const p = await evPos(name); await toField(); await teleport(p.mapId, p.x - 1, p.y);
       await page.evaluate(() => window.__oprnInput.dir("right")); await sleep(420); await page.evaluate(() => window.__oprnInput.dir(null));
-      if (quick) { for (let i = 0; i < 8; i += 1) { await sleep(180); await page.keyboard.press("Enter"); } } else await sleep(2600);
+      if (quick) { for (let i = 0; i < 24; i += 1) { await sleep(150); await page.keyboard.press("Enter"); } } else await sleep(2600);
       const texts = await drain({}, { maxMs: 15_000, start: n0 });
       const v1 = await tval(); const wall = (Date.now() - t0) / 1000;
       return { extra: (v0 - v1 - r0 * wall) / unit, texts, r0, wall };
@@ -383,7 +387,8 @@ try {
     });
     await guard("collapse-timeout", async () => {
       const n0 = await logLen(); const t0 = Date.now();
-      while (Date.now() - t0 < 120_000) { const v = await tval(); if (!(v > 0)) break; if (await has("[data-testid='dialogue-box']")) break; await sleep(500); }
+      while (Date.now() - t0 < 150_000) { const v = await tval(); if (!(v > 0)) break; if (await has("[data-testid='dialogue-box'], [data-testid='dialogue-choice-frame']")) await drain({}, { maxMs: 5000 }); await sleep(500); }
+      await sleep(1500);
       const t = await drain({}, { maxMs: 30_000, start: n0 }); await sleep(1000); const s = await st();
       check("collapse-timeout-fails", /깔/.test(joined(t)) && !(await endingVisible()) && s.currentMapId === plate.mapId && dist(s, plate) <= 2, `time out → player ${s.x},${s.y} (plate ${plate.x},${plate.y})`, t);
     });

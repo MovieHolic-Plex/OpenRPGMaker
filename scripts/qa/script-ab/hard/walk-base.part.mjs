@@ -55,7 +55,7 @@ await page.waitForSelector("[data-testid='title-screen']", { timeout: 180_000 })
 
 const st = async () => { for (let i = 0; i < 40; i += 1) { const v = await page.evaluate(() => window.__oprnDebug?.readState?.() ?? null).catch(() => null); if (v) return v; await sleep(250); } return null; };
 const fieldReadyJs = `(() => { const s = window.__oprnDebug?.readState?.(); if (!s?.currentMapId) return false;
-  if (document.querySelector("[data-testid='dialogue-box'], [data-testid='battle-scene'], [data-testid='main-menu'], [data-testid='dialogue-choice-frame'], [data-testid='runtime-input-number'], [data-testid='battle-transition-overlay'], [data-testid='ending-screen'], .battle-return-settle")) return false;
+  if (document.querySelector("[data-testid='dialogue-box'], [data-testid='battle-scene'], [data-testid='main-menu'], [data-testid='dialogue-choice-frame'], [data-testid='runtime-input-number'], [data-testid='battle-transition-overlay'], [data-testid='ending-screen'], [data-testid='present-item-scene'], .battle-return-settle")) return false;
   return !/건너뛰기/.test(document.body.innerText); })()`;
 const fieldReady = () => page.evaluate(fieldReadyJs).catch(() => false);
 const has = (sel) => page.evaluate((s) => [...document.querySelectorAll(s)].some((n) => { const cs = getComputedStyle(n); return n.getClientRects().length > 0 && cs.visibility !== "hidden" && Number(cs.opacity) > 0.05; }), sel).catch(() => false);
@@ -91,6 +91,14 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
       const n = numbers.length ? String(numbers.shift()) : "0000";
       for (const d of n) { await page.keyboard.press(d); await sleep(80); }
       await sleep(150); await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
+    }
+    if (await has("[data-testid='present-item-scene']")) {
+      const items = await page.evaluate(() => [...document.querySelectorAll("[data-testid^='present-item-']")].filter((n) => n.tagName === "BUTTON" || n.getAttribute("role") === "button").map((n) => ({ id: n.dataset.testid, text: (n.textContent ?? "").replace(/\s+/g, " ").trim() })));
+      seenChoices.push(items.map((i) => `[item] ${i.text}`));
+      const want = plan.present ? new RegExp(plan.present) : null;
+      const hit = (want && items.find((i) => i.id !== "present-item-cancel" && want.test(i.text))) ?? items.find((i) => i.id === "present-item-cancel");
+      if (hit) await page.evaluate((id) => document.querySelector(`[data-testid='${id}']`)?.click(), hit.id); else await page.keyboard.press("Escape");
+      await sleep(600); freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-choice-frame']")) {
       const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid^='runtime-choice-']")].filter((n) => /^runtime-choice-\d+$/.test(n.dataset.testid ?? "")).map((n) => (n.textContent ?? "").replace(/\s+/g, " ").trim()));
