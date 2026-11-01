@@ -1,11 +1,20 @@
-// 에디터가 고를 수 있는 LLM 제공자 레지스트리 — **Antigravity 와 Codex 둘뿐이다.**
+// 에디터가 고를 수 있는 LLM 제공자 레지스트리.
 //
-// 예전에는 oh-my-pi 카탈로그(`@oh-my-pi/pi-catalog` CATALOG_PROVIDERS)의 69종을 그대로 베껴
-// 두고 authKind 로 분류했다. 그 목록은 고를 수 없는 선택지였다 — 동반 서비스에 로그인 경로가
-// 붙어 있는 것은 이 둘뿐이고, 나머지는 화면에 남겨 두면 "고르면 바뀐다"는 거짓 표면이 된다.
-// 두 제공자 모두 구독 로그인(oauth)이라 브라우저에는 어떤 비밀도 남지 않는다(자격은 동반
-// 서비스의 ~/.oprn/oh-my-pi-auth.json 에만 있다).
+// 2026-11-02: 예전에는 **Antigravity 와 Codex 둘뿐**이었다. 이유는 정당했다 — 그때는 로그인·갱신 코드가
+// 그 둘만 손으로 구현돼 있었고, 목록에만 올려 두면 «고르면 바뀐다» 는 거짓 표면이 됐다.
+// 이제 상황이 다르다: 사용자가 OMP(pi) 에서 이미 로그인해 둔 자격을 그대로 가져다 쓸 수 있고
+// (scripts/lib/omp-auth-probe.mjs), pi 의 카탈로그에 각 제공자의 기본 모델이 있다
+// (@oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER).
 //
+// 등록 기준은 **교집합**이다: (pi 에 로그인 정책이 있다) AND (그 제공자의 모델 정책이 있다).
+// 모델 정책이 없는 제공자(zai-coding-plan·perplexity·stencil)나, 자격을 네트워크로 받아와야만
+// 모델이 생기는 곳(factory-droid)은 올리지 않는다 — 올려도 고르는 순간 실패한다.
+//
+// 앞의 둘(Google·ChatGPT)은 **순서를 바꾸지 않는다** — 첫 항목이 기본값이라서, 순서를 건드리면
+// 기존 사용자가 말없이 다른 제공자로 넘어간다.
+//
+// 모든 제공자의 자격은 동반 서비스(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
+
 // id 문자열은 src/ai/oauth/credentials.ts 에서 가져온다 — 전송 계층(packRequestApiKey)과 UI 가
 // 같은 상수를 보게 해서 한쪽만 오타/개명되는 사고를 없앤다.
 
@@ -63,6 +72,24 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
     envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
     authKind: "oauth",
   },
+  // ── 이하 2026-11-02 추가: pi 가 로그인을 구현했고 모델 정책도 있는 제공자 ─────────────
+  // defaultModel 은 @oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER 실측값이다(2026-11-02).
+  // resolveOhMyPiModel 이 이 id/모델 쌍을 카탈로그에서 찾으므로, 값을 바꾸면 실제 호출이 400 이 된다.
+  { id: "anthropic", label: "Claude", defaultModel: "claude-opus-5-5", envVars: ["ANTHROPIC_API_KEY"], authKind: "oauth" },
+  { id: "openrouter", label: "OpenRouter", defaultModel: "openai/gpt-5.5", envVars: ["OPENROUTER_API_KEY"], authKind: "oauth" },
+  { id: "google-gemini-cli", label: "Gemini CLI", defaultModel: "gemini-3.1-pro-preview", envVars: [], authKind: "oauth" },
+  { id: "github-copilot", label: "GitHub Copilot", defaultModel: "gpt-5.5", envVars: ["GITHUB_TOKEN"], authKind: "oauth" },
+  { id: "cursor", label: "Cursor", defaultModel: "claude-opus-5-high", envVars: [], authKind: "oauth" },
+  { id: "xai-oauth", label: "xAI Grok", defaultModel: "grok-4.6", envVars: ["XAI_OAUTH_TOKEN"], authKind: "oauth" },
+  { id: "kilo", label: "Kilo", defaultModel: "anthropic/claude-opus-5", envVars: [], authKind: "oauth" },
+  { id: "kimi-code", label: "Kimi", defaultModel: "kimi-for-coding", envVars: [], authKind: "oauth" },
+  { id: "muse-code", label: "Muse", defaultModel: "muse-spark-1.3", envVars: [], authKind: "oauth" },
+  { id: "devin", label: "Devin", defaultModel: "swe-1-6", envVars: [], authKind: "oauth" },
+  { id: "gitlab-duo", label: "GitLab Duo", defaultModel: "duo-chat-opus-4-6", envVars: ["GITLAB_TOKEN"], authKind: "oauth" },
+  { id: "alibaba-coding-plan", label: "Alibaba", defaultModel: "qwen3.7-plus", envVars: [], authKind: "oauth" },
+  { id: "cloudflare-ai-gateway", label: "Cloudflare", defaultModel: "anthropic/claude-opus-5", envVars: [], authKind: "oauth" },
+  { id: "snowflake", label: "Snowflake", defaultModel: "claude-opus-5-5", envVars: [], authKind: "oauth" },
+  { id: "xiaomi", label: "Xiaomi", defaultModel: "mimo-v2.5", envVars: [], authKind: "oauth" },
 ];
 
 /**

@@ -130,7 +130,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         el("div", { class: "ai-compat-head-copy", children: [
           el("span", {
             class: "ai-config-help",
-            text: "키는 이 PC의 연결 서비스에만 저장되고 브라우저에는 남지 않아요.",
+            text: "키는 이 PC에만 저장돼요.",
           }),
         ] }),
         addButton,
@@ -151,7 +151,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     if (endpoints.length === 0) {
       list.replaceChildren(el("p", {
         class: "ai-config-help ai-compat-empty",
-        text: loadError ? "" : "등록한 엔드포인트가 없어요. 「엔드포인트 추가」로 주소를 넣고 연결을 시험해 보세요.",
+        text: loadError ? "" : "없음",
         dataset: { testid: "ai-compat-empty" },
       }));
       return;
