@@ -554,6 +554,7 @@ export const LIGHT_SOURCE_SCHEMA: JsonSchema = {
       properties: { degrees: { type: "number" }, facing: { type: "string", enum: ["up", "down", "left", "right"] } },
       required: ["degrees"],
     },
+    edge: { type: "string", enum: ["soft", "hard"], description: "빛 가장자리. soft(기본) = 바깥으로 사위는 등불. hard = 끝까지 버티다 원 테두리에서 끊긴다 — 「이 빛 안에 들면 들킨다」 같은 규칙 빛(시야 등불)에." },
   },
   required: ["id", "radius"],
   // at 을 'player' 문자열로 보내는 경로를 스키마가 막지 않도록 자유 필드를 허용한다.
