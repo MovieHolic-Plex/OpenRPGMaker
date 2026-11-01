@@ -41,7 +41,7 @@ import { chooseChaseGoal, trackPlayerMotion, type PlayerMotion } from "@/player/
 import { moverVisualShift, playerVisualShift, rectsTouchVisually } from "@/player/chaseContact";
 import { CHASE_BREATHER_MS, CHASE_SEARCH_SLOWDOWN, CHASE_STAMINA_STEPS, chaseAlertHoldMs, chaseCellMs, chaseTempoAuthored, chaseTires } from "@/project/chaseTempo";
 import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
-import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
+import { arrivalShielded, tickArrivalShield, tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
 import { followerOccupiesTile } from "@/player/playSceneFollowers";
 import { nextSessionRandom } from "@/project/session";
@@ -174,6 +174,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
   const project = store.getCurrent();
   // 시작·복귀 직후 은총 시간에는 추격자가 제자리에서 기다린다(시야 판정·접촉 없음, J61).
   const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs);
+  // 도착 보호: 도착 칸 곁·짧은 시간 동안 추격자가 새로 알아채지 않는다(저작 시야는 그대로, horrorRuntime 이 읽는다).
+  tickArrivalShield(scene.session, frameDeltaMs, { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
   // 추격 전술이 쓰는 주인공 진행 방향 — 프레임마다 한 번만 갱신한다(@/player/chaseTactics).
   const movingTo = (scene as { movingTo?: ChasePoint }).movingTo;
   frameMotion.set(scene, trackPlayerMotion(scene, { x: scene.tileX, y: scene.tileY }, scene.moving === true, movingTo));
@@ -593,7 +595,8 @@ function updateChaseNpc(
     mover.chaseGoalKey = undefined;
   }
   // 시야·추격 정책이 없는 옛 추격자(sightRange 만)도 발소리를 들으면 깨어난다.
-  if (tracked === undefined && !mover.chaseTarget && mover.chaseActive !== true && hearsPlayer(world, view)) mover.chaseActive = true;
+  const shielded = arrivalShielded(scene.session, scene.map.id) && mover.chaseActive !== true;
+  if (tracked === undefined && !shielded && !mover.chaseTarget && mover.chaseActive !== true && hearsPlayer(world, view)) mover.chaseActive = true;
   let decision = nextChaseDecision({
     project,
     map: scene.map,
@@ -601,7 +604,8 @@ function updateChaseNpc(
     player: pursuit,
     deltaMs,
     mover,
-    sightRange: tracked ? undefined : mover.sightRange !== undefined ? mover.sightRange + brain.sightBonusCells : undefined,
+    // 도착 보호 중인 옛 추격자(sightRange 만)는 새로 알아채지 않는다 — 시야 0(이미 쫓는 중이면 그대로).
+    sightRange: tracked ? undefined : shielded && mover.sightRange !== undefined ? 0 : mover.sightRange !== undefined ? mover.sightRange + brain.sightBonusCells : undefined,
     giveUpRange: tracked ? undefined : mover.giveUpRange !== undefined ? mover.giveUpRange + (approach?.giveUpBonus ?? 0) + brain.giveUpBonus : undefined,
     pathfind: mover.pathfind,
     kite: mover.kite,

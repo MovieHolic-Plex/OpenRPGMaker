@@ -12,6 +12,7 @@ import { pursuitState, searchTarget, type PursuitWorld as World } from './pursui
 import { CHASE_NOISE_RADIUS, chaseBrainProfile, type ChaseBrainProfile } from '@/project/chaseBrain';
 import { emitChaseNoise, hearChaseNoise, playerFootstepAt, playerGait } from './chaseNoise';
 import type { NpcSight } from '@/project/types';
+import { arrivalShielded } from './chaseSpawnGrace';
 export { carryPursuitThroughDoor, advancePursuitDoors } from './pursuitDoors';
 
 const directions: Record<Dir, { x: number; y: number }> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
@@ -125,7 +126,12 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
   const state = pursuitState(world, view);
   if (state.doors.length) return null; // Transit, not an independently walking duplicate.
   if (config) world.session.eventLocations[view.event.id] = { mapId: world.map.id, x: view.x, y: view.y, direction: view.direction };
-  const visible = (!hiding || hiding.witnessedBy.includes(view.event.id)) && (seesPlayer(world, view) || hearsPlayer(world, view));
+  // 도착 보호(@/player/chaseSpawnGrace): 막 들어선·다시 태어난 주인공을 새로 알아채지 않는다. 이미 쫓던 추격자
+  // (방금 본 추격자·문을 따라 막 넘어온 추격자)는 계속 본다. 제자리로 돌아가는 중인 순찰(active 지만 오래전 목격)은 새로 본다.
+  const pursuing = mover.chaseActive === true || (state.active && state.lastSeen !== undefined && state.searchMs <= LOS_GRACE_MS);
+  const fresh = !pursuing;
+  const shielded = fresh && view.movement.type === 'chase' && arrivalShielded(world.session, world.map.id);
+  const visible = !shielded && (!hiding || hiding.witnessedBy.includes(view.event.id)) && (seesPlayer(world, view) || hearsPlayer(world, view));
   const persistent = config?.tracking === 'persistent' && (state.active || mover.chaseActive)
     && !hiding && !isInSafeZone(world.map.safeZones, world.session);
   if (visible || persistent) {

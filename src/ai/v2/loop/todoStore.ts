@@ -152,13 +152,23 @@ export class TodoStore {
 
   /** 다음에 할 항목 — 진행 중이 있으면 그것, 없으면 순서상 첫 준비된 열린 항목. */
   next(): TodoItem | undefined {
-    return this.current() ?? this.items.find((i) => i.status === "pending" && this.ready(i)) ?? this.items.find((i) => i.status === "pending");
+    return this.current() ?? this.firstReady() ?? this.items.find((i) => i.status === "pending");
+  }
+
+  /**
+   * 순서상 첫 준비된 열린 항목 — 기계 확인이 있는 항목을 먼저 고른다.
+   * 2026-11-01 cheap r11 DeepSeek: 스스로 적은 확인 없는 「서재 확인」「물건을 보이게 배치」 항목이 맨 앞이라 10분 내내 가구만 찍고
+   * 요청의 단서·자물쇠는 하나도 못 지었다. 확인 있는 항목(요청이 실제로 묻는 것)이 남아 있으면 그것부터 올린다.
+   */
+  private firstReady(): TodoItem | undefined {
+    const ready = this.items.filter((i) => i.status === "pending" && this.ready(i));
+    return ready.find((i) => i.check && i.check.kind !== "none") ?? ready[0];
   }
 
   /** 진행 중이 없으면 다음 항목을 진행 중으로 올린다(omo: 완료마다 첫 열린 항목이 자동으로 올라온다). */
   promote(): TodoItem | undefined {
     if (this.current()) return this.current();
-    const n = this.items.find((i) => i.status === "pending" && this.ready(i));
+    const n = this.firstReady();
     if (n) n.status = "in_progress";
     return n;
   }

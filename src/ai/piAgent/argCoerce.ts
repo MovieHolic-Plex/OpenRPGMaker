@@ -81,7 +81,10 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
     }
     if (!Array.isArray(args.items)) return args;
     let touched = false;
-    const items = args.items.map((it, i) => {
+    const items = args.items.map((it0, i) => {
+      let it: unknown = it0;
+      // machineCheck → check(r11 flash: 확인이 안 붙어 요청 뼈대가 같은 항목을 한 벌 더 붙였다).
+      if (isObj(it) && it.check === undefined && isObj(it.machineCheck)) { const { machineCheck: mc, ...rest } = it; it = { ...rest, check: mc }; touched = true; changes.push(`items[${i}].machineCheck → items[${i}].check`); return it; }
       if (!isObj(it) || it.check !== undefined || it.machineCheck !== undefined) return it;
       for (const [k, field] of Object.entries(TODO_KEY_CHECKS)) {
         const v = (it as Obj)[k];
@@ -98,9 +101,17 @@ const TOOL_FILLS: Readonly<Record<string, (args: Obj, changes: string[]) => Obj>
   // author_puzzle_chain 고리 role 별칭 — 2026-11-01 cheap r8 flash 가 role:"lock" 을 보내 스키마에서 거절됐다.
   // 번호 고리는 엔딩을 부르면(endingId·reward.ending) ending, 아니면 code.
   author_puzzle_chain(args, changes) {
-    if (!Array.isArray(args.links)) return args;
+    const linksIn = args.links;
+    if (!Array.isArray(linksIn)) return args;
+    // 사슬 이름은 이름표(깃발 설명·엔딩 이름) — 없으면 자물쇠/마지막 고리 이름으로(r11 flash: name 없음으로 거절).
+    if (typeof args.name !== "string" || !args.name.trim()) {
+      const last = [...linksIn].reverse().find((l) => isObj(l) && typeof l.name === "string" && l.name.trim()) as Obj | undefined;
+      const nm = last ? `${String(last.name)} puzzle` : "puzzle";
+      changes.push(`name: missing → "${nm}" (the chain name is a label)`);
+      args = { ...args, name: nm };
+    }
     let touched = false;
-    const links = args.links.map((l0, i) => {
+    const links = linksIn.map((l0: unknown, i: number) => {
       if (!isObj(l0)) return l0;
       let l: Obj = l0;
       // 칸 이름 오타·다른 이름(r10 flash: needAny → 무시돼 단서 없이 번호를 넣을 수 있었다).
@@ -176,6 +187,7 @@ export function coerceToolArgs(schema: unknown, args: unknown, toolName?: string
   problems = [];
   const fill = toolName ? TOOL_FILLS[toolName] : undefined;
   if (fill && isObj(args)) args = fill(args, changes);
+  if (isObj(args)) args = mvCommandsDeep(args, changes, "");
   // 맨 위에 있어야 할 필수 칸이 안쪽 객체 하나에만 있으면 위로 올린다(upsert_event({event:{mapId,…}}) — 2026-11-01 cheap r6 flash).
   const top = schema as Schema | undefined;
   if (isObj(args) && Array.isArray(top?.required) && top?.properties) {
@@ -371,6 +383,30 @@ function mvCondition(p: readonly unknown[]): Obj | undefined {
   if (type === 1 && vr(a) && b === 0 && typeof c === "number") return { kind: "variable", variableId: vr(a), op: MV_CMP[(d as number) ?? 0] ?? "==", value: c };
   if (type === 2 && typeof a === "string") return { kind: "selfSwitch", key: a, value: b === 0 };
   return undefined;
+}
+
+/**
+ * 어디에 있든 `commands` 가 MV 코드 목록([{code:101},{code:401,parameters:["…"]}])이면 우리 명령으로 바꾼다.
+ * 스키마가 느슨한 자리(patch_event_page 의 set, upsert_event 의 pages)는 위 list 변환이 안 닿아 «kind 없음»으로 세 번 거절됐다(2026-11-01 cheap r11 flash).
+ */
+function mvCommandsDeep(value: Obj, changes: string[], path: string, depth = 0): Obj {
+  if (depth > 6) return value;
+  let out: Obj | undefined;
+  for (const [k, v] of Object.entries(value)) {
+    let next: unknown = v;
+    if (k === "commands" && Array.isArray(v) && v.length && v.every((c) => isObj(c) && typeof c.code === "number" && c.kind === undefined)) {
+      const converted = mvListToCommands(v as Obj[]);
+      if (converted.ok) { next = converted.commands; changes.push(`${path ? `${path}.` : ""}commands: converted RPG Maker MV codes (${converted.summary}) — write {kind:"text", body:"…"} next time`); }
+    } else if (Array.isArray(v)) {
+      const arr = v.map((x, i) => (isObj(x) ? mvCommandsDeep(x, changes, `${path ? `${path}.` : ""}${k}[${i}]`, depth + 1) : x));
+      if (arr.some((x, i) => x !== v[i])) next = arr;
+    } else if (isObj(v)) {
+      const o = mvCommandsDeep(v, changes, `${path ? `${path}.` : ""}${k}`, depth + 1);
+      if (o !== v) next = o;
+    }
+    if (next !== v) { out = out ?? { ...value }; out[k] = next; }
+  }
+  return out ?? value;
 }
 
 export function mvListToCommands(list: readonly Obj[]): { ok: true; commands: Obj[]; summary: string } | { ok: false; code: number } {
