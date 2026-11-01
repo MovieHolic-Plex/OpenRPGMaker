@@ -487,34 +487,163 @@ function floorTwo(project: Project, exec: Exec): void {
 // 3. 3층 「거울의 층」 — mirror_beam_refraction 이 4층 계단을 막는다
 // ════════════════════════════════════════════════════════════════════
 
+/**
+ * 3층 거울 — 천창 빛이 첫 거울에 떨어진다. 거울 넷(+ 빛을 삼키는 검은 수정 쪽으로 새는 미끼 거울 하나)을 저마다 위·오른쪽·아래·왼쪽으로
+ * 돌려 빛을 계단 빛 막까지 잇는다. 빛이 닿은 거울은 수정처럼 빛나고, 빛줄기는 반짝이로 그 길을 따라 흐른다 — 막히는 데도 보인다.
+ * 처음 판: 첫 거울은 위(미끼 거울)를 본다. 미끼 거울 왼쪽 길은 검은 수정이 빛을 삼킨다. 답은 첫 거울 왼쪽 → 남서 거울 위 → 북서 거울
+ * 오른쪽 → 계단 앞 거울 위. 넷 다 처음 방향이 틀려 있다(2026-11-01 「거울 두 개를 돌리면 끝」 적대 검수).
+ */
+const T3_MIRRORS = [
+  { key: "m1", at: { x: 12, y: 13 }, first: "up", name: "천창 아래 거울" },
+  { key: "m2", at: { x: 5, y: 13 }, first: "down", name: "남서 거울" },
+  { key: "m3", at: { x: 5, y: 7 }, first: "left", name: "북서 거울" },
+  { key: "m4", at: { x: 7, y: 7 }, first: "right", name: "계단 앞 거울" },
+  { key: "m5", at: { x: 12, y: 7 }, first: "left", name: "북동 거울" },
+] as const;
+const T3_STAIR = { x: 7, y: 5 };
+const T3_SINK = { x: 9, y: 7 };   // 빛을 삼키는 검은 수정(1×2, 밑칸)
+const DIRS4: Dir[] = ["up", "right", "down", "left"];
+const DIR_WORD: Record<Dir, string> = { up: "위", right: "오른쪽", down: "아래", left: "왼쪽" };
+const STEP4: Record<Dir, Cell> = { up: { x: 0, y: -1 }, right: { x: 1, y: 0 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 } };
+
 function floorThree(project: Project, exec: Exec): void {
   ensureSwitch(project, SW_T3_ARRIVE, "B10: 하늘탑 3층 도착");
   ensureSwitch(project, SW_T3_SOLVED, "B10: 거울 빛줄기로 4층 계단을 엶");
-  // #4125 뒤 3층 계단방은 북서 팔각 홀(계단 (7,5)) — 닻 (9,9) 이면 첫 거울 (7,12)·둘째 (9,11)·빛 막 글 (11,12).
+  // 방 꾸밈(거울 홀 바닥·기둥 격자·계단 앞 빛 막 칸)은 거울 프리셋이 짓는다 — 그 방 위에 거울 다섯을 새로 세운다.
+  // 프리셋 거울 둘(「둘을 차례로 돌리면 끝」)과 빛 막 글은 걷어 낸다.
   const done = firstOk([{ x: 9, y: 9 }, { x: 10, y: 8 }, { x: 12, y: 10 }, { x: 19, y: 11 }], (c) => exec(project, "author_map_puzzle", {
     mapId: FS2_T3, presetId: "mirror_beam_refraction", puzzleId: "fs2_t3_mirror", x: c.x, y: c.y,
     gateEventId: "ev_fs2_sky_tower_f3_stair_next", solveSwitchId: SW_T3_SOLVED, title: "렌즈 거울",
-    hintText: "(바닥 글) 첫 거울은 천창의 빛을 받고, 둘째 거울은 그 빛을 계단으로 보낸다.",
-    reward: { itemId: "item_ether", gold: 150 },
-    // 프리셋 문구는 「태양 성소」 말투다 — 탑의 렌즈 거울로(rewordLines·renameObjects).
-    rewordLines: [
-      { from: "스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!", to: "거울이 스르륵 돌아갔다.\n천창 빛이 꺾여 둘째 거울로 뻗어 간다." },
-      { from: "제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.", to: "첫 거울이 천창 빛을 둘째 거울로 보내고 있다." },
-      { from: "동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!", to: "둘째 거울을 계단 쪽으로 돌렸다.\n빛줄기가 꺾여 북쪽 벽 계단에 꽂힌다." },
-      { from: "찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!", to: "계단을 막던 빛 막이 걷혔다.\n위층으로 가는 길이 열렸다." },
-      { from: "퍼즐 해독 보상! 「마력약」과(와) 150G를 획득했다!", to: "거울 아래에서 「마력약」과 150G를 찾았다." },
-      { from: "동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다.", to: "계단 쪽 둘째 거울. 아직 빛이 닿지 않는다.\n천창 아래 첫 거울부터 돌려야 한다." },
-      { from: "제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.", to: "둘째 거울이 빛을 계단으로 모으고 있다." },
-      { from: "태양 빛줄기로 정화된 대성소 마법진이다.", to: "빛 막이 걷힌 자리. 바닥 글자가 아직 따뜻하다." },
-      { from: "이 통로는 '렌즈 거울' 장치를 먼저 풀어야 열립니다.", to: "계단 위에 희미한 빛 막이 쳐져 있다.\n거울로 빛을 보내야 걷힐 것 같다." },
-    ],
-    renameObjects: [{ eventId: "ev_fs2_t3_mirror_mirror_1", name: "천창 아래 첫 거울" }, { eventId: "ev_fs2_t3_mirror_mirror_2", name: "계단 쪽 둘째 거울" }, { eventId: "ev_fs2_t3_mirror_mirror_seal", name: "빛 막 바닥 글" }],
   }));
-  if (!done) throw new Error("[fallen-star tower] 3층 거울 퍼즐을 못 지었다");
+  if (!done) throw new Error("[fallen-star tower] 3층 거울 방을 못 지었다");
+  const map = M(project, FS2_T3);
+  map.events = map.events.filter((e) => !e.id.startsWith("ev_fs2_t3_mirror"));
+  for (const m of T3_MIRRORS) mustWalk(project, FS2_T3, m.at, `3층 ${m.name}`);
+  mustWalk(project, FS2_T3, T3_SINK, "3층 검은 수정");
+  mustWalk(project, FS2_T3, { x: T3_STAIR.x, y: T3_STAIR.y + 1 }, "3층 계단 앞");
+  // 빛을 삼키는 검은 수정 — 미끼 거울의 왼쪽 길을 끊는다.
+  if (!stamp(project, exec, FS2_T3, "bd-pick-dungeon-theme-corrupt-crystal", { x: T3_SINK.x, y: T3_SINK.y - 1 })) throw new Error("[fallen-star tower] 3층 검은 수정을 못 놓았다");
 
-  const left = JSON.stringify(M(project, FS2_T3).events.filter((e) => e.id.startsWith("ev_fs2_t3_mirror")).map((e) => [e.name, (e.pages ?? []).map((pg) => pg.commands)]));
-  const stale = /.{0,40}(태양|성소|결계).{0,20}/u.exec(left);
-  if (stale) throw new Error(`[fallen-star tower] 3층 거울 문구에 태양 성소 말투가 남았다: ${stale[0]}`);
+  const varOf = (key: string): string => `var_fs2_t3_${key}_dir`;
+  const litOf = (key: string): string => `sw_fs2_t3_${key}_lit`;
+  const segOf = (key: string, d: Dir): string => `sw_fs2_t3_${key}_ray_${d}`;
+  const SW_INIT = "sw_fs2_t3_beam_init";
+  ensureSwitch(project, SW_INIT, "B10: 3층 빛줄기 첫 계산");
+  for (const m of T3_MIRRORS) {
+    if (!project.variables.some((v) => v.id === varOf(m.key))) project.variables.push({ id: varOf(m.key), name: `B10: 3층 ${m.name} 방향` });
+    ensureSwitch(project, litOf(m.key), `B10: 3층 ${m.name}에 빛`);
+    for (const d of DIRS4) ensureSwitch(project, segOf(m.key, d), `B10: 3층 ${m.name} 빛줄기 ${DIR_WORD[d]}`);
+  }
+  /** 변수 값 0..3 → 방향. 0 이 처음 방향(틀린 쪽)이다 — 변수 기본값 0 이면 체크포인트로 들어와도 같은 처음 판. */
+  const order = (first: Dir): Dir[] => { const i = DIRS4.indexOf(first); return [0, 1, 2, 3].map((k) => DIRS4[(i + k) % 4]!); };
+  // 빛줄기 — 거울에서 한 방향으로 칸을 따라가다 거울·계단·막힌 칸(벽·기물·검은 수정)에서 멈춘다.
+  type Ray = { cells: Cell[]; hit: string | null };
+  const rays = new Map<string, Ray>();
+  for (const m of T3_MIRRORS) for (const d of DIRS4) {
+    const cells: Cell[] = [];
+    let hit: string | null = null;
+    let c: Cell = { x: m.at.x, y: m.at.y };
+    for (let k = 0; k < 14; k += 1) {
+      c = { x: c.x + STEP4[d].x, y: c.y + STEP4[d].y };
+      const other = T3_MIRRORS.find((o) => o.at.x === c.x && o.at.y === c.y);
+      if (other) { hit = other.key; break; }
+      if (c.x === T3_STAIR.x && c.y === T3_STAIR.y) { cells.push(c); hit = "stair"; break; }
+      if (c.x === T3_SINK.x && c.y === T3_SINK.y) { cells.push(c); hit = "sink"; break; }
+      if (!walkable(project, FS2_T3, c)) break;
+      cells.push(c);
+    }
+    rays.set(`${m.key}:${d}`, { cells, hit });
+  }
+  // 설계 확인 — 답 길이 이어지고, 미끼 길은 수정에 막힌다.
+  const want: [string, Dir, string][] = [["m1", "left", "m2"], ["m2", "up", "m3"], ["m3", "right", "m4"], ["m4", "up", "stair"], ["m1", "up", "m5"], ["m5", "left", "sink"]];
+  for (const [k, d, hit] of want) if (rays.get(`${k}:${d}`)?.hit !== hit) throw new Error(`[fallen-star tower] 3층 빛줄기 ${k} ${d} 가 ${hit} 에 닿지 않는다(${rays.get(`${k}:${d}`)?.hit})`);
+
+  // 빛 계산(공통 이벤트) — 첫 거울은 천창 빛을 늘 받는다. 다섯 번 번지면 어떤 길이든 끝까지 닿는다.
+  const CE_BEAM = "ce_fs2_t3_beam";
+  const beam: Command[] = [
+    ...T3_MIRRORS.flatMap((m) => [setSw(litOf(m.key), false), ...DIRS4.map((d) => setSw(segOf(m.key, d), false))]),
+    setSw(litOf("m1")),
+  ];
+  const stairHits: Condition[] = [];
+  for (let pass = 0; pass < T3_MIRRORS.length; pass += 1) {
+    for (const m of T3_MIRRORS) order(m.first).forEach((d, v) => {
+      const ray = rays.get(`${m.key}:${d}`)!;
+      const cond: Rec = { kind: "all", conditions: [sw(litOf(m.key)), { kind: "variable", variableId: varOf(m.key), op: "==", value: v }] };
+      beam.push(fork(cond, [setSw(segOf(m.key, d)), ...(ray.hit && ray.hit !== "stair" && ray.hit !== "sink" ? [setSw(litOf(ray.hit))] : [])]));
+      if (pass === 0 && ray.hit === "stair") stairHits.push(sw(segOf(m.key, d)));
+    });
+  }
+  beam.push(fork({ kind: "all", conditions: [{ kind: "any", conditions: stairHits }, sw(SW_T3_SOLVED, false)] }, [
+    wait(300), se("easyrpg-sound-chime2"),
+    fx("magic", T3_STAIR.x, T3_STAIR.y, 1600), fx("sparkle", T3_STAIR.x, T3_STAIR.y + 1, 1600), flash("white", 400), shake(2, 400),
+    narrate("빛줄기가 계단 빛 막에 꽂혔다.\n막이 녹듯이 걷혀 간다."),
+    setSw(SW_T3_SOLVED),
+    item("item_ether", 1), { kind: "changeGold", op: "+=", amount: 150 } as unknown as Command,
+    sys("계단 곁 틈에서 「마력약」과 150G를 찾았다."),
+    say(ELENA, "됐다. …천문대 렌즈도\n이렇게 빛을 모았겠지."),
+  ]));
+  const ces = project.commonEvents.filter((c) => c.id !== CE_BEAM);
+  ces.push({ id: CE_BEAM, name: "B10: 3층 빛줄기 계산", trigger: "none", commands: beam });
+  project.commonEvents = ces;
+  const callBeam: Command = { kind: "callCommonEvent", commonEventId: CE_BEAM } as unknown as Command;
+
+  // 거울 — 조사하면 지금 어느 쪽을 보는지 듣고, 돌릴 쪽을 고른다.
+  const LOOK_DARK = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }) };
+  const LOOK_LIT = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 6, direction: "down", pattern: 1 }) };
+  for (const m of T3_MIRRORS) {
+    const dirs = order(m.first);
+    const nowLine = dirs.map((d, v) => fork({ kind: "variable", variableId: varOf(m.key), op: "==", value: v }, [narrate(`거울 면이 ${DIR_WORD[d]}쪽을 향해 있다.`)]));
+    const turn: Command = { kind: "choices", prompt: "어느 쪽으로 돌릴까?", cancelBehavior: "branch", cancelBranch: [], options: [
+      ...dirs.map((d, v) => ({ text: `${DIR_WORD[d]}쪽`, branch: [
+        { kind: "setVariable", variableId: varOf(m.key), op: "=", value: v } as unknown as Command,
+        se("cc0-se-osx-metal-03"), callBeam,
+      ] })),
+      { text: "그대로 둔다", branch: [] },
+    ] } as unknown as Command;
+    const body = (lit: boolean): Command[] => [
+      narrate(lit ? "거울에 빛이 맺혀 있다." : "어두운 거울. 아직 빛이 닿지 않는다."),
+      ...nowLine, turn,
+    ];
+    addEv(project, FS2_T3, `ev_fs2_t3_${m.key}`, m.name, m.at, [
+      page(`ev_fs2_t3_${m.key}_dark`, "어두움", [], body(false), { graphic: LOOK_DARK, priority: "same", overlapForbidden: true }),
+      page(`ev_fs2_t3_${m.key}_lit`, "빛", [sw(litOf(m.key))], body(true), { graphic: LOOK_LIT, priority: "same", overlapForbidden: true }),
+    ]);
+  }
+  // 빛줄기가 흐르는 길 — 켜진 길마다 반짝이(계산은 처음 한 번 여기서).
+  const flow: Command[] = [fork(sw(SW_INIT, false), [setSw(SW_INIT), callBeam])];
+  for (const m of T3_MIRRORS) for (const d of DIRS4) {
+    const ray = rays.get(`${m.key}:${d}`)!;
+    if (!ray.cells.length) continue;
+    flow.push(fork(sw(segOf(m.key, d)), [
+      ...ray.cells.map((c) => fx("sparkle", c.x, c.y, 1100)),
+      ...(ray.hit === "sink" ? [fx("smoke", T3_SINK.x, T3_SINK.y, 900)] : []),
+    ]));
+  }
+  flow.push(fx("sparkle", T3_MIRRORS[0].at.x, T3_MIRRORS[0].at.y - 1, 1100), wait(1300));
+  addEv(project, FS2_T3, "ev_fs2_t3_beam", "빛줄기", { x: 0, y: 1 }, [
+    page("ev_fs2_t3_beam_p", "빛줄기", [], flow, { trigger: { kind: "parallel" }, priority: "below" }),
+  ]);
+  // 계단 — 빛 막이 걷히기 전에는 한 줄.
+  const stairEv = ev(project, FS2_T3, "ev_fs2_sky_tower_f3_stair_next");
+  const goPage = (stairEv.pages ?? []).find((pg) => pg.commands.some((c) => c.kind === "transfer"));
+  if (!goPage) throw new Error("[fallen-star tower] 3층 계단 이동이 없다");
+  exec(project, "upsert_event", { mapId: FS2_T3, replacePages: true, event: { id: stairEv.id, name: "4층 계단", x: stairEv.x, y: stairEv.y, trigger: goPage.trigger, commands: [], pages: [
+    page(`${stairEv.id}_seal`, "빛 막", [], [narrate("계단 위에 희미한 빛 막이 쳐져 있다.\n손을 대면 차갑게 밀려난다.")], { trigger: goPage.trigger, priority: goPage.priority }),
+    { ...goPage, id: `${stairEv.id}_go`, name: "4층으로", conditions: [...(goPage.conditions ?? []).filter((c) => !(c.kind === "switch" && c.switchId === SW_T3_SOLVED)), sw(SW_T3_SOLVED)] },
+  ] } });
+  // 빛 막 — 풀기 전엔 계단에 막이 일렁인다.
+  addEv(project, FS2_T3, "ev_fs2_t3_seal_glow", "빛 막", { x: 0, y: 1 }, [
+    page("ev_fs2_t3_seal_glow_p", "일렁임", [], [fx("magic", T3_STAIR.x, T3_STAIR.y, 1400), wait(1700)], { trigger: { kind: "parallel" }, priority: "below" }),
+    page("ev_fs2_t3_seal_glow_off", "걷힘", [sw(SW_T3_SOLVED)], [], { priority: "below" }),
+  ]);
+  // 천창 — 첫 거울에 떨어지는 빛과 계단 빛 막. 층 전체는 조금 어둡게(1층 횃불·2층 서고와 다른 빛).
+  exec(project, "set_lighting_volume", { mapId: FS2_T3, applyMode: "map", ambient: 0.42, color: "#0c1424", sources: [
+    { id: "skylight", at: { x: T3_MIRRORS[0].at.x, y: T3_MIRRORS[0].at.y }, radius: 3, intensity: 1, color: "#f4f0c8", flicker: false },
+    { id: "seal", at: { x: T3_STAIR.x, y: T3_STAIR.y + 1 }, radius: 2, intensity: 0.8, color: "#a8d8ff", flicker: true },
+    { id: "sink", at: { x: T3_SINK.x, y: T3_SINK.y }, radius: 2, intensity: 0.5, color: "#b080ff", flicker: true },
+    { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.5, color: "#ffc070", flicker: true },
+  ] });
+
   // 들어서면 한 번.
   addEv(project, FS2_T3, "ev_fs2_t3_arrive", "하늘탑 3층", { x: 0, y: 1 }, [
     page("ev_fs2_t3_arrive_idle", "대기", [], [], { priority: "below" }),
@@ -899,6 +1028,68 @@ function redressRing(project: Project, exec: Exec, mapId: string, swaps: { kit: 
   });
 }
 
+type Kit = { id: string; width: number; height: number; rows: { upperTiles?: number[] }[] };
+function kitOf(project: Project, id: string): Kit {
+  const ts = project.tilesets.beodeul_city as unknown as { structureKits?: Kit[] } | undefined;
+  const kit = ts?.structureKits?.find((k) => k.id === id);
+  if (!kit) throw new Error(`[fallen-star tower] 키트가 없다: ${id}`);
+  return kit;
+}
+/** 생성기가 놓은 기물 하나를 걷는다(윗층 칸이 그 키트 그림과 꼭 맞을 때만 — 판이 바뀌었으면 건드리지 않고 false). */
+function liftKit(project: Project, mapId: string, kitId: string, at: Cell): boolean {
+  const map = M(project, mapId), kit = kitOf(project, kitId), up = map.upperTiles as number[];
+  const cells: [number, number][] = [];
+  kit.rows.forEach((r, dy) => (r.upperTiles ?? []).forEach((tile, dx) => { if (tile >= 0) cells.push([(at.y + dy) * map.width + at.x + dx, tile]); }));
+  if (!cells.length || cells.some(([i, tile]) => up[i] !== tile)) { console.warn(`[fallen-star tower] ${mapId} (${at.x},${at.y}) 에 ${kitId} 가 없다 — 걷지 않는다`); return false; }
+  for (const [i] of cells) up[i] = -1;
+  return true;
+}
+/** 바닥 장식 — 키트 칸이 모두 걷는 바닥이고 이벤트·지켜야 할 칸이 없을 때만 놓는다(후보를 차례로). */
+function dress(project: Project, exec: Exec, mapId: string, kitId: string, cands: Cell[], keep: Cell[]): Cell | null {
+  const kit = kitOf(project, kitId);
+  for (const c of cands) {
+    const foot: Cell[] = [];
+    for (let dy = 0; dy < kit.height; dy += 1) for (let dx = 0; dx < kit.width; dx += 1) foot.push({ x: c.x + dx, y: c.y + dy });
+    if (!foot.every((f) => walkable(project, mapId, f) && freeOfEvents(project, mapId, f) && !keep.some((k) => Math.abs(k.x - f.x) + Math.abs(k.y - f.y) <= 1))) continue;
+    if (stamp(project, exec, mapId, kitId, c)) return c;
+  }
+  console.warn(`[fallen-star tower] ${mapId} ${kitId} 둘 자리가 없다`);
+  return null;
+}
+
+/**
+ * 1층·3층 다시 꾸미기 — 생성기가 두 층에 같은 연금 화로·약초 선반·수정 받침을 놓아 층이 복사돼 보였다(적대 검수 2026-11-01).
+ * 1층은 「기사와 기계의 싸움터」: 깨진 바닥·무너진 기둥·쓰러진 심문회 깃발·부서진 관·무기 통. 연금 공방(북쪽 막다른 방)은 그대로.
+ * 3층은 「거울의 층」: 연금 화로 자리에 망원경, 술통 자리에 얼음 결정, 남쪽 홀은 결정 거미 둥지(결정 무리·깨진 바닥).
+ * 지켜야 할 칸(장면·체크포인트·순찰·거울 빛길)은 비운다.
+ */
+function redressFloors(project: Project, exec: Exec): void {
+  // 1층 — 장면 칸(기계 13,18·19 / 기사 15,19 → 17,19 → 19,19 → 19,20 / 다친 기사 18,20)과 입구·계단·마법진 착지를 비운다.
+  const keep1: Cell[] = [T1.arrive, T1.machine, { x: 13, y: 19 }, T1.knight, { x: 16, y: 19 }, { x: 17, y: 19 }, { x: 18, y: 19 }, { x: 19, y: 19 }, T1.knightEnd, { x: 19, y: 20 },
+    { x: 34, y: 16 }, { x: 20, y: 19 }, { x: 20, y: 20 }, { x: 7, y: 16 }, T1.stair, { x: 20, y: 28 }, { x: 37, y: 17 }, { x: 36, y: 17 }];
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-cracked-floor", [{ x: 10, y: 20 }, { x: 9, y: 20 }, { x: 22, y: 20 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-rubble-heap", [{ x: 31, y: 20 }, { x: 29, y: 19 }, { x: 33, y: 20 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-cave-broken-pillar", [{ x: 24, y: 16 }, { x: 28, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-volcano-cave-pillar-broken-b", [{ x: 10, y: 16 }, { x: 9, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-armor-stand", [{ x: 32, y: 16 }, { x: 33, y: 16 }], keep1);
+  dress(project, exec, FS2_T1, "bd-prop-sword_barrel", [{ x: 35, y: 20 }, { x: 36, y: 20 }, { x: 34, y: 20 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-aqueduct-sewer-pipe-copper-leak", [{ x: 22, y: 21 }, { x: 23, y: 21 }, { x: 17, y: 21 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-castle-catacombs-rubble", [{ x: 12, y: 21 }, { x: 11, y: 21 }, { x: 12, y: 17 }], keep1);
+  dress(project, exec, FS2_T1, "bd-pick-aqueduct-sewer-rubble", [{ x: 28, y: 20 }, { x: 29, y: 20 }], keep1);
+
+  // 3층 — 거울 빛길·계단·도착 칸을 비운다.
+  const keep3: Cell[] = [{ x: 7, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }, { x: 10, y: 22 }, { x: 10, y: 21 }, { x: 2, y: 6 }, { x: 17, y: 21 }, { x: 18, y: 12 }, { x: 5, y: 21 },
+    ...T3_MIRRORS.map((m) => m.at)];
+  if (liftKit(project, FS2_T3, "bd-pick-wizard-tower-athanor", { x: 3, y: 6 })) stamp(project, exec, FS2_T3, "bd-pick-headland-lighthouse-telescope", { x: 3, y: 6 });
+  if (liftKit(project, FS2_T3, "bd-pick-aqueduct-sewer-barrel", { x: 2, y: 10 })) stamp(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", { x: 2, y: 9 });
+  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-corrupt-crystal-big", [{ x: 19, y: 23 }, { x: 18, y: 23 }, { x: 20, y: 23 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 13, y: 19 }, { x: 12, y: 19 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", [{ x: 7, y: 19 }, { x: 8, y: 19 }, { x: 6, y: 20 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-cracked-floor", [{ x: 12, y: 22 }, { x: 13, y: 23 }, { x: 14, y: 22 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-aqueduct-sewer-bones", [{ x: 8, y: 24 }, { x: 9, y: 24 }], keep3);
+  dress(project, exec, FS2_T3, "bd-pick-wizard-tower-orrery", [{ x: 19, y: 13 }, { x: 20, y: 13 }], keep3);
+}
+
 export function ringRooms(project: Project, exec: Exec): void {
   // main #4125 뒤로 1·3층 계단방은 팔각 홀·서쪽 방으로 바뀌어 저마다 다르다. 링 계단방은 2층(과 렌즈·석관이 차지한 4층)만 남았다.
   redressRing(project, exec, FS2_T2, [
@@ -932,7 +1123,7 @@ function towerCommon(project: Project, exec: Exec): void {
   const more: [string, string][] = [
     ...(nodes.some((n) => JSON.stringify(n.completesWhen).includes(SW_T1_ARRIVE)) ? [] : [[SW_T1_ARRIVE, "하늘탑에 들어선다"] as [string, string]]),
     [SW_T2_DONE, "2층에서 흩어진 일행이 서로 쇠창살을 열어 주고 다시 만난다"],
-    [SW_T3_SOLVED, "3층 거울 두 개를 돌려 빛을 계단으로 보낸다"],
+    [SW_T3_SOLVED, "3층 거울들을 돌려 천창 빛을 계단 빛 막까지 잇는다"],
     [SW_IRIS_BACK, "4층 렌즈 대기실의 관에서 이리스를 찾는다"],
     [FS2_SW_B12_DONE, "꼭대기 렌즈실에서 발렌을 막는다. 하넬이 서른 해 전 일을 털어놓는다"],
     [FS2_SW_B13_WON, "탑 깊은 곳에서 올라온 재의 회수자를 쓰러뜨린다"],
@@ -954,6 +1145,7 @@ export function applyFallenAct2Tower(project: Project, exec: Exec): void {
   floorTwo(project, exec);
   floorThree(project, exec);
   floorFour(project, exec);
+  redressFloors(project, exec);
   applyFallenAct2Summit(project, exec);
   towerCommon(project, exec);
 }
