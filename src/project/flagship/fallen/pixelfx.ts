@@ -127,7 +127,10 @@ export const FALLEN_FIELD_FX: readonly FieldFx[] = [
   // 화면 층 — 반딧불. 화면 층은 효과 그림(320×180)을 시야를 덮도록 정수배로 키운다 — 눈(weather/snow)은 눈송이가
   //   한 칸만 하게 커져 흰 눈밭에서 푸른 테두리 별처럼 보였고, 오로라는 성문·벽까지 덮었다. 둘 다 빼고 엔진 눈 날씨를 그대로 둔다.
   // 반딧불 효과의 앞 층에는 풀잎 한 줄이 화면 아래에 깔린다 — 화면 밖으로 밀어 낸다.
-  { map: "map_field_north_1", key: "fireflies", at: { x: 1, y: 0 }, fx: { effectId: "weather/fireflies", layer: "screen", light: 1.4, offsetY: 24, seed: 3 }, note: "북쪽 숲 어귀(밤) 반딧불(화면 층)" },
+  //   숲 어귀 반딧불은 차가운 청록·흐리게 — 기본 노란 연두빛(빛 1.4)은 야경꾼 등불(#ffc468)과 같은 계열로 읽혀
+  //   어느 빛이 들키는 등불인지 흐렸다(검수 r10 「노란 반딧불 점이 등불처럼 보인다」).
+  { map: "map_field_north_1", key: "fireflies", at: { x: 1, y: 0 }, fx: { effectId: "weather/fireflies", layer: "screen", light: 0.7, offsetY: 24, seed: 3,
+    palette: ["#0c2a2e", "#1c4f58", "#2f8a8c", "#5cc4bc", "#a8ece0", "#e4fff8"] }, note: "북쪽 숲 어귀(밤) 반딧불(화면 층, 청록)" },
 ];
 
 function fxPage(id: string, name: string, pixelFx: EventPixelFx): EventPage {
