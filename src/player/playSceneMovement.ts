@@ -51,7 +51,7 @@ import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { flushPendingAutosave } from "@/player/autosave";
-import { recordFollowerPlayerStep } from "@/project/followers";
+import { anchorSceneFormation, recordFollowerPlayerStep } from "@/project/followers";
 import { beginFollowerStep } from "@/player/playSceneFollowers";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
@@ -633,6 +633,8 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
   // 제자리 회전(turn)도 동료가 다시 선다 — 장면 중 동료는 주인공이 보는 쪽을 따라 돌아선다(followers §sceneFacing).
   if (scene.facing !== facingBefore && !scene.moving) {
     scene.session.playerFacing = scene.facing;
+    // 저작한 돌기는 장면 횡대 축도 함께 돌린다(대사 자동 돌아보기는 축을 두고 고개만 돌린다 — followers §sceneAxisFacing).
+    anchorSceneFormation(scene.session, { x: scene.tileX, y: scene.tileY }, scene.facing);
     syncFollowerSprites(scene);
   }
 }
