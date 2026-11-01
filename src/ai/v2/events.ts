@@ -964,7 +964,14 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 
   // 5) 컷신 이벤트 자리(보이지 않는 연출 이벤트) — 사람·주인공 칸을 피한 빈 칸.
   const trigger = when === "game-start" ? "auto" : when === "talk" ? "action" : "playerTouch";
-  const existingHost = redoEv ? eventsOf(map!).find((e) => e.id === redoEv.id) : hostId ? eventsOf(map!).find((e) => e.id === hostId) : undefined;
+  // 말 걸기 장면의 where 가 그 맵에 이미 있는 물건·사람 이벤트 이름 하나와 같으면 그 이벤트가 자리다(새 투명 칸을 만들지 않는다).
+  // 2026-11-01 cheap r6 flash: add_event({kind:"talk", where:"책상"}) 이 「자리 낱말 '책상' 을 몰라」 시작 근처 빈 칸에 새 이벤트를 세워
+  // 플레이어가 책상을 조사해도 단서가 안 나왔다.
+  const namedHost = !redoEv && !hostId && when === "talk" && typeof spec.where === "string" && spec.where.trim()
+    ? (() => { const want = spec.where.trim(); const hits = eventsOf(map!).filter((e) => (e as { name?: string }).name?.trim() === want); return hits.length === 1 ? hits[0] : undefined; })()
+    : undefined;
+  if (namedHost) warnings.push(`컷신 자리: 이 맵의 「${spec.where}」 이벤트(${namedHost.id} (${namedHost.x},${namedHost.y}))에 붙였다 — 그것을 조사하면 이 장면이 돈다.`);
+  const existingHost = redoEv ? eventsOf(map!).find((e) => e.id === redoEv.id) : hostId ? eventsOf(map!).find((e) => e.id === hostId) : namedHost;
   const hostCell = existingHost ? { cell: { x: existingHost.x, y: existingHost.y }, note: undefined as string | undefined }
     : earlyHost ?? resolveWhere(project(), map!, when === "game-start" ? undefined : spec.where, { ...(spec.at ? { at: spec.at } : {}), avoid: [...used, ...sim.walks.flatMap((w) => w.path)] });
   if (hostCell.note && when !== "game-start") warnings.push(`컷신 자리: ${hostCell.note}`);

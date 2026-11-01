@@ -438,6 +438,61 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **윤문이 사용자가 따옴표로 준 대사를 바꿨다**(`dialoguePolishHook.runWrittenDialogueLines(…, request)`): 요청의 「카엘, 이 빵… 무게가 이상해.」 가 윤문 뒤 「들어 보니까 이상해」 가 됐다. 요청 글의 따옴표 대사(4글자 이상, 띄어쓰기·부호 무시)를 담은 줄은 윤문 대상에서 뺀다.
 - **닫힌 감방을 「벽 틈 우회」로 막았다**(`puzzleChecks.lockBypasses`): 잠긴 쇠살문 양쪽이 «어느 앵커에서든» 닿으면 우회로 봤다. 시작 칸은 감방 안, 막사에서 돌계단으로 돌아오는 착지는 복도라 벽이 닫혔는데도 양쪽이 닿아 보였고, 조수는 없는 틈을 메우려 fill_region 참고문서 읽기 관문(158건)에 막혀 10분을 쓰고 「우회로가 남았다」고 보고했다. 이제 문 칸을 막고 한쪽 이웃에서 걸어 다른 쪽에 닿을 때만 우회다.
 
+## 값싼 모델(Flash·DeepSeek·Argon) 자물쇠 대조 — 인자 모양·거짓 끝·호출 기록 (2026-11-01)
+
+같은 서재 체크포인트에 자물쇠 요청 하나(단서 셋·4자리·3번째 오답 힌트)를 모델별로 보내 출하 플레이어로 끝까지 걸어 봤다(`scripts/qa/script-ab/walk.mjs`, 10검사).
+수리 전 Opus·Haiku 10/10, DeepSeek 7/10, Flash 3/10. Flash 는 도구 23번 중 14번이 인자 검증 실패였고 할 일 5개를 저장 없이 done 했다.
+
+- **인자 맞추기 `src/ai/piAgent/argCoerce.ts`**(실행기 `withArgRepair` 가 검증 전에 부른다): 스키마가 답을 하나로 정할 때만 고치고 고친 것을
+  영어 `[Fixed call: …]` 로 결과 앞에 붙인다. 다른 이름(`text`→`content`·`action`→`kind`·`meaning`→`description`), 열거값 하나 → 객체(`check:"talk"`→`{kind:"talk"}`),
+  낱값 → 목록, 숫자 글 ↔ 숫자, **RPG Maker MV 습관**(trigger 0~4·priority 0~2·direction 2/4/6/8·페이지 조건 `switch1Valid`·`list:[{code,…}]` 명령 코드)을
+  우리 모양으로. MV `list` 는 아는 코드(101/401 글·121 스위치·122 변수·103 숫자 입력·111/411/412 분기·201 이동·230 대기·108 주석)만 바꾸고,
+  모르는 코드(355 스크립트 등)가 있으면 실행하지 않고 영어로 commands 모양과 author_puzzle_chain 을 알려 준다 — 전에는 `list` 가 검증을 지나 조용히 버려져 명령 없는 이벤트가 저장됐다.
+  도구별 이름표 채우기는 `declare_story_flag` 의 id·kind 하나뿐이다(이름표라 어떤 값이든 동작이 같다).
+- **upsert_event id 없음**(`argGuard` `event-new-id`): 같은 이름 이벤트가 그 맵에 하나면 그 id, 없고 좌표가 있으면 새 id.
+- **쓰기 요청 판정**(`isWriteRequest`): 「…「아직 아무 단서도 없다」고 **알려 줘**」를 질문으로 읽어 요청 뼈대·첫 쓰기 관문이 모든 모델에서 꺼져 있었다. 「넣어 줘·만들어…」가 있으면 쓰기다.
+- **번호 자물쇠 확인 `code_lock`**(`todo/checks.ts`): 살아 있는 이벤트가 숫자를 받고(inputNumber) 그 변수 == 정답 분기가 무엇을 열고(스위치·이동·엔딩),
+  hintAfter 면 틀린 횟수(+1)와 그 횟수에 힌트 대사가 있어야 ✓. 요청 뼈대가 「비밀번호 NNNN」에서 뽑아 덧붙인다 — Flash 가 할 일을 «목표 줄» 확인으로 적어 자물쇠 없이 ✓ 로 닫던 구멍.
+  다음 호출 제안은 `author_puzzle_chain` 한 번(단서 → `role:"ending"|"code"` + `needsAny`·`hintAfter`·`hintLines`).
+- **author_puzzle_chain**: `needsAny`(단서 중 하나라도 봤으면 시도, 없으면 lockedLines), `hintAfter`+`hintLines`(틀린 횟수 변수를 세어 그 횟수부터 힌트), 스키마에 `ending` 역할·`endingId` 를 드러냈다.
+- **저장 없는 done 거절**(`todoTools` done): 기계 확인 없는 항목은 지난 done 뒤로 성공한 쓰기가 없고 (그사이 쓰기가 거절됐거나 이 판 성공 쓰기가 0) 이면 받지 않는다.
+- **사슬 고리가 기존 물건을 쓴다**(`puzzle.ts`): 찾는 차례 eventId → name → 단서 이름·첫 줄에 든 기존 이벤트 이름(하나뿐일 때) → at 칸.
+  지어 낸 eventId(「desk_clue」)는 그 맵 이벤트 목록(id·이름·칸)을 영어로 돌려주고, at 칸이 같은 사슬 앞 고리가 쓴 이벤트면 거절한다 —
+  Flash 가 이름 없이 칸만 짐작해 「책상」「액자」「화분」 옆 빈 칸에 새 이벤트를 세우고, 자물쇠 고리를 「액자」 위에 덮어 단서 글을 지웠다(r4).
+- **`code_lock.on`**: 요청이 「「자물쇠」를 조사하면 … 입력」처럼 자리를 말하면 뼈대가 그 이름을 넣고, 번호 입력이 다른 이벤트에 붙으면 ✗.
+  요청 뼈대는 낫표 이름 물건 글(「「액자」 뒤에서는 「_ 2 _ _」」)을 그 물건의 talk 확인으로 뽑고(전에는 화자 「뒤에서」·「밑에서」), 글자 없는 번호 조각은 통째로 확인한다.
+- **도구 없이 끝난 쓰기 요청**(`assistantV2Runtime` afterMain): 할 일 목록이 끝내 안 생겼으면(첫 답에 todo 호출을 ```tool_call``` 글로 «써» 놓고 멈춘 Flash r5) 실제 todo 호출을 두 번까지 다시 요구한다.
+- **정답이 정말 여나**(`code_lock`): 정답 갈래에 이동·엔딩이 있거나, 켠 스위치를 조건으로 읽는 페이지·분기가 이동·엔딩을 할 때만 «열림»(두 단계까지).
+  DeepSeek r6 은 정답에 스위치만 켜고 그 스위치로 «문이 조금 열렸다» 글만 보여 문은 잠긴 채 ✓ 였다.
+- **사슬 엔딩 id**: ending 고리에 endingId 가 없거나 아직 없는 id 면 사슬이 그 id(없으면 `ending_<사슬>`)로 엔딩을 만든다 — 전에는 사슬 전체가 거절되거나 무결성 검사에 걸렸다.
+- **이름 있는 물건에 말 걸기 장면**(`events.ts`): `add_event({kind:"talk", where:"책상"})` 의 where 가 그 맵 이벤트 이름 하나와 같으면 그 이벤트에 붙인다(전에는 «자리 낱말을 몰라» 시작 근처 빈 칸).
+- **fork 갈래 다른 이름**(`argCoerce` forkBranches): 명령 목록은 스키마가 느슨해 `otherwiseBranch`·`elseBranch` 같은 칸이 검증을 지나 실행기에서 말없이 버려졌다 — fork 면 then/else 로 옮기고 Fixed call 로 알린다. 안쪽 객체에만 있는 필수 칸(`event.mapId`)은 맨 위로 올린다.
+- 요청 뼈대는 번호 자물쇠 항목을 맨 앞에, 엔딩을 자물쇠 뒤에 둔다(엔딩부터 지으면 add_ending_scene 이 «자물쇠에 말 걸면 엔딩»을 만들어 번호가 필요 없어졌다). 실내 닿기 검사는 못 닿는 칸 좌표를 적는다(DeepSeek 이 칸마다 run_scene_test 28번으로 찾았다). 호출 기록에 tool_choice 를 남긴다.
+- **할 일이 열려 있는 동안 도구 강제**(`env.keepToolsOn` → 실행기 `getToolChoice` "required"): 재주입에 한 번만 강제하면 Flash 는 하나 부르고 바로 글로 멈춰
+  «진척 없음 2번» 으로 고리가 멈췄다(r6). 쓰기 요청에서 열린 항목이 있고 **모델이 한 번이라도 글로 멈춘 뒤에만** 매 호출 강제하고, 항목이 하나도 닫히지 않은 채 12번이면 풀어 고리가 판정한다. Anthropic 확장 생각 호출에는 걸지 않는다.
+  강제한 호출의 지연 중앙값이 강제 안 한 호출의 2.5배를 넘으면 그 실행에서는 강제를 끈다(`v2.keep_tools.off`) — inferhub DeepSeek 은 tool_choice 를 주면 호출당 5초 → 25~40초로 느려져 r8 에서 10분 안에 단서 하나만 지었다.
+- **이름 이벤트를 안 바꾼 done 거절**(`todoTools` done): 확인 없는 항목의 글이 맵 이벤트 이름(「책상 단서」)을 말하는데 이번 실행에서 그 이벤트가 안 바뀌었으면 받지 않는다 —
+  Argon 이 단서 쓰기 3번이 거절된 뒤 깃발 선언 하나로 t1·t2·t3 를 연달아 done 했다. todo 항목의 짧은 표기 `{talk:"책상"}` 은 `check:{kind:"talk", who}` 로, upsert_event 의 `eventId` 는 `id` 로, 대사 명령 `showText`/`message` 는 `text`+`body` 로 고친다.
+- **사슬 인자 너그럽게**(`puzzle.ts`·`argCoerce` author_puzzle_chain, r8~r9): 고리 `role:"lock"`(keypad·password…)은 엔딩을 부르면 `ending`, 아니면 `code` 로 고친다.
+  `reward.ending{id,name,epilogue}` 는 endingId·성공 대사로, `needsAll` 은 페이지 조건(전부)으로 받는다. 자리 없는 고리가 하나뿐이면 사슬 맨 위 `eventId`·`at`·`name` 을 그 자리로 쓰고,
+  그것도 없으면 번호 고리는 이름에 자물쇠·금고·lock 이 든 이벤트(하나뿐일 때)에 붙인다 — Flash r8 은 자리를 맨 위에 세 번 바꿔 주고 다 거절돼 자물쇠가 끝내 없었다.
+  단서 `learn` 이 없으면 고리·이벤트 이름으로 달고, 뒤 고리의 `needs` 는 앞 고리의 learn·이름·이벤트 이름, 또는 **앞서 따로 지은 사슬이 선언하고 실제로 켜는 깃발**(「…「이름」…」)·그 이름 이벤트가 켜는 스위치로도 찾는다(DeepSeek r9 은 단서를 사슬 하나씩 지어 자물쇠 사슬이 거절됐다).
+  번호 고리의 `lines` 는 입력 전 안내다 — 성공 글(풀렸다·맞물린다·철컥)만 있고 reward.lines 가 비면 성공 대사로 옮긴다(r9 DeepSeek: 「다이얼이 맞물린다」가 번호 입력 전에 나왔다). `declare_story_flag` 의 description 이 없으면 id 로 채운다.
+  r10 뒤: role 없는 고리는 칸으로 채우고(code → code/ending, learn·lines → clue, reward.item → pickup), `needAny`·`need` 오타와 `reward.endingId` 를 고친다.
+  조건 없는 단서 고리는 앞으로 모으고(Flash 가 자물쇠를 첫 고리로 줬다), **조건이 하나도 없는 번호 고리는 같은 사슬 단서 중 하나를 본 뒤에만 시도**한다 —
+  r10 Flash 는 `needAny` 오타로 조건이 빠져 단서 전에도 번호를 받았고 「아직 아무 단서도 없다」가 안 나왔으며 틀린 횟수가 하나 밀렸다.
+  조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)를 자리별로 겹쳐 답이 되면 «답이 단서에 없다» 경고를 내지 않는다(맞는 단서를 고쳐 쓰게 만들었다).
+  `patch_event_page` 에서 `set` 없이 맨 위에 둔 페이지 칸(commands·trigger…)은 set 으로 감싸고, todo done/block 의 `item`·`id` 는 `task` 로 고친다.
+- **r11 에서 본 새 실패 모양**(r12 수리): MV 코드 `commands`(101/401…)는 스키마가 느슨한 자리(patch_event_page 의 `set`, upsert_event 의 `pages`)까지 어디서든 우리 명령으로 바꾼다.
+  기존 이벤트에 **페이지 수가 같은** pages 를 통째로 다시 보낸 upsert_event 는 페이지마다 바뀐 `commands` 만 적용하고 나머지 칸(그림·조건·트리거)은 둔다(`assistantRewriteGuard`) —
+  Flash 는 단서 대사 하나를 고치려고 MV 모양 페이지를 세 번 보냈고 세 번 다 거절돼(한국어 문구) 자물쇠가 끝내 없었다. 페이지 수가 다르면 영어로 거절한다.
+  MV 명령 이름(`controlSelfSwitch`·`controlSwitches`·`controlVariables`·`showChoices`)은 `eventCompile` 별칭으로, todo 항목의 `machineCheck` 는 `check` 로, 사슬 `name` 이 없으면 마지막 고리 이름으로 채운다.
+- **할 일은 기계 확인 있는 항목부터 올린다**(`todoStore.promote/next`): DeepSeek 이 스스로 적은 확인 없는 「서재 확인」「물건을 보이게 배치」가 맨 앞이라 10분 내내 가구만 찍고(82번 호출) 단서·자물쇠를 하나도 못 지었다. 확인 없는 항목은 확인 있는 항목이 다 끝난 뒤에 올라온다.
+- **모델 호출 기록 `OPRN_CALL_LOG=<jsonl>`**(`piAgentRuntime` callLog): 호출마다 보낸 글자 수(지시문·도구 목록·대화)·받은 글자 수(글·생각·도구 인자)·걸린 시간·제공자 사용량.
+  8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
+- 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
+- 결과 페이지 `~/claude-viz/cheap-model-check.html`.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
@@ -714,6 +769,11 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   `vm-queue.sh <out-root> <팔>=<VM 사본>[=ENV,…]` — 같은 빌드로 기능 스위치만 다른 팔을 나란히 돌린다(기본 동시 3판, 스위트 관문 통과).
   `collect.sh <batch> <기준 팔> <팔>…` — 당겨 와서 출하 플레이어로 대본 플레이(walk.mjs), 기준 팔과 Opus 짝 판정(ab2/judge.py, 앞뒤 두 번), `measure.py` 표.
   15분 상한에 걸린 판은 done 통계가 없어 비용이 0 으로 보인다 — `measure.py` 는 그 판을 no-stats 로 빼고, 모든 팔에 비용이 있는 판끼리의 합(paired$)을 따로 낸다.
+  `vm-queue.sh` 는 `~/.oprn-suite/vm-env.sh` 를 스스로 읽는다 — 비대화 ssh 로 띄우면 python3·Playwright 브라우저가 없어 판이 즉시 죽고도 finished= 를 남겼다.
+- **로직만 넣는 요청의 가벼운 지시문(2026-11-01, `prompt.ts` editOnlyRequest·leanPromptFor, 끄기 `OPRN_V2_LEAN_PROMPT=0`)**: 지은 맵에 로직만 넣는 요청(게임 하나·빈 프로젝트·장소 짓기 낱말 PLACE_BUILD_WORDS 가 아님)에서 장소 카드·실내 칩셋 목록·짓기 동사(make_place·edit_place 등 8개)를
+  빼고 load_tools·read_specs 로 돌리면 고정 앞부분이 약 7.8만 → 4.4~4.9만 토큰, 호출당 비용이 약 23% 줄었다. 그러나 모델이 호출을 더 많이 했다(중앙값 47 → 57회).
+  cost1 탈출·던전·마을 ×4(비용이 잡힌 10판 합): 도구 목록 고정만 $23.48 vs 줄인 지시문 $24.05(+2%), 대본 플레이 134/140 → 139/140, 짝 판정 12승 2패 10무.
+  비용은 그대로지만 품질이 나아서 넣었다(감독 결정). 게임 하나·장소 짓기 요청은 예전 그대로 다 싣는다. 다음 비용 고리는 앞부분보다 «호출 수»다.
 - 측정 결과(스크립트 A/B 기록): 호출마다 지시문+도구 설명 7.5만~9만 토큰을 다시 보내는 것이 처리 토큰의 약 70%이고, load_tools·도구 선언으로
   MCP 도구 목록이 바뀌면 다음 호출에서 캐시를 통째로 다시 쓴다(로직 요청 비용의 약 29%). 도구 결과 본문은 약 9%뿐이다. 페이지 `~/claude-viz/assistant-cost.html`.
 

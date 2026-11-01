@@ -3811,11 +3811,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -3917,11 +3917,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "items": {
@@ -4073,15 +4073,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 13
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 9
+     "level": 13
     }
    ],
    "items": {
@@ -4246,11 +4246,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4342,11 +4342,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4434,11 +4434,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4520,11 +4520,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4583,11 +4583,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4906,11 +4906,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -4996,11 +4996,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -5313,11 +5313,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 14
     }
    ],
    "beats": [
@@ -5595,11 +5595,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [
@@ -5674,11 +5674,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [
@@ -5768,11 +5768,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -5872,11 +5872,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -5960,11 +5960,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -6332,11 +6332,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -6444,11 +6444,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -6527,11 +6527,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 15
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 15
     }
    ],
    "beats": [
@@ -6650,15 +6650,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 9
+     "level": 16
     }
    ],
    "beats": [
@@ -6784,15 +6784,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 9
+     "level": 16
     }
    ],
    "beats": [
@@ -6952,15 +6952,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 9
+     "level": 16
     }
    ],
    "beats": [
@@ -7079,15 +7079,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -7399,15 +7399,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -7855,15 +7855,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -7956,15 +7956,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -8144,15 +8144,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -8243,15 +8243,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -8327,15 +8327,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -8456,15 +8456,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "items": {
@@ -8932,15 +8932,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "items": {
@@ -9251,15 +9251,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     }
    ],
    "beats": [
@@ -9459,15 +9459,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     }
    ],
    "beats": [
@@ -9983,15 +9983,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     }
    ],
    "beats": [
@@ -10284,15 +10284,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     }
    ],
    "beats": [
@@ -10804,19 +10804,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -11085,19 +11085,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -11232,19 +11232,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -11578,19 +11578,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 12
+     "level": 19
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 12
+     "level": 19
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 12
+     "level": 19
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -11769,19 +11769,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 19
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -12034,19 +12034,19 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 18
     },
     {
      "actorId": "actor_fs_iris",
-     "level": 13
+     "level": 18
     }
    ],
    "beats": [
@@ -12166,11 +12166,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -12280,11 +12280,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -12398,11 +12398,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -12493,15 +12493,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -12618,15 +12618,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -12752,15 +12752,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -12870,15 +12870,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 14
+     "level": 17
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 14
+     "level": 17
     }
    ],
    "beats": [
@@ -12973,11 +12973,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -13084,11 +13084,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -13125,11 +13125,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -13173,11 +13173,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [
@@ -13242,15 +13242,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 16
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 9
+     "level": 16
     }
    ],
    "beats": [
@@ -13299,11 +13299,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 6
+     "level": 13
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 6
+     "level": 13
     }
    ],
    "beats": [
@@ -13808,11 +13808,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 14
     }
    ],
    "beats": [
@@ -13881,15 +13881,15 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 11
+     "level": 18
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 11
+     "level": 18
     },
     {
      "actorId": "actor_fs2_sarah",
-     "level": 11
+     "level": 18
     }
    ],
    "beats": [

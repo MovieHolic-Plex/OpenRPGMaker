@@ -65,6 +65,8 @@ export interface PiAssistantV2Env {
    * load_tools 는 매개변수 모양을 결과 글로 주고, 모델은 call_tool{name, args} 로 부른다.
    */
   readonly lazyToolsVia?: "call_tool";
+  /** 모델 대화가 비워질 때마다(새 CLI 대화·기록 비우기) 하나씩 오르는 수. 기록으로 준 지식 카드(read_specs)를 다시 줘야 하는지 본다. 없으면 0. */
+  readonly contextEpoch?: () => number;
   /** 빌려 쓰는 v1 도구가 이 실행의 관문(참고문서 읽기·캐릭터 칩 선택)·맵 범위·보조 호출을 같이 쓰게 하는 옵션. */
   readonly toolsetOptions?: Pick<ResolvePiToolOptions, "referenceGate" | "charsetGate" | "scopeMapIds" | "scopeAllowsSystem" | "findToolsCallable" | "eventAssistChat">;
 }
@@ -89,6 +91,11 @@ export interface PiAssistantV2Hooks {
   readonly lazyTool?: (name: string) => PiToolShape | undefined;
   /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글. */
   readonly unknownToolText?: (name: string) => string;
+  /**
+   * 도구 호출을 계속 강제할지(tool_choice "required") — 실행기가 모델 호출마다 묻는다. v2 는 쓰기 요청에서 할 일 항목이 열려 있는 동안 true.
+   * 왜(2026-11-01 cheap r7 flash): 재주입에 한 번 강제하면 한 번 부르고 바로 글로 멈춰, 재주입 한 번이 도구 하나에 그쳤고 «진척 없음» 으로 고리가 멈췄다.
+   */
+  readonly keepToolsOn?: (env: PiAssistantV2Env) => boolean;
   /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }

@@ -205,6 +205,31 @@ const PRE_RULES: readonly PreRule[] = [
     },
   },
   {
+    // upsert_event 에 id 없이 이름·좌표만(새 이벤트를 MV 식으로 적는 작은 모델 습관, 2026-11-01 deepseek·flash 대조) —
+    // 같은 이름 이벤트가 그 맵에 하나뿐이면 그 id(고치기), 없고 좌표가 있으면 새 id 를 붙인다(새로 만들기). 둘 다 아니면 그대로(원래 거절).
+    tool: /^upsert_event$/u, id: "event-new-id",
+    apply(args, project) {
+      const inner = isObj(args.event) ? args.event : args;
+      if (typeof inner.id === "string" && inner.id.trim()) return undefined;
+      const mapId = findMapId(project, args.mapId) ?? (typeof args.mapId === "string" ? args.mapId : undefined);
+      const map = mapId ? project.maps[mapId] : undefined;
+      if (!map) return undefined;
+      const name = typeof inner.name === "string" ? inner.name.trim() : "";
+      const same = name ? eventsOf(map).filter((e) => (e.name ?? "").trim() === name) : [];
+      let id: string | undefined;
+      let note: string;
+      if (same.length === 1) { id = same[0]!.id; note = `id was missing — «${name}» already exists on this map, so this edits ${id}`; }
+      else if (num(inner.x) !== undefined && num(inner.y) !== undefined && same.length === 0) {
+        const taken = new Set(eventsOf(map).map((e) => e.id));
+        let n = taken.size + 1;
+        while (taken.has(`ev_new_${n}`)) n += 1;
+        id = `ev_new_${n}`; note = `id was missing — created a new event with id ${id} (use this id to edit it later)`;
+      } else return undefined;
+      const fixed = { ...inner, id };
+      return { args: isObj(args.event) ? { ...args, event: fixed } : fixed, note };
+    },
+  },
+  {
     // 이벤트 id 가 그 맵에 없다 — 다른 맵에 하나뿐이면 맵을, 이벤트 이름이면 id 로 바꾼다.
     tool: /^(get_event|move_event|patch_event_page|add_event_page|remove_event|delete_event|duplicate_event)$/u, id: "event-id",
     apply(args, project) {
