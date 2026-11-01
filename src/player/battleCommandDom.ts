@@ -1210,12 +1210,22 @@ function commandButton(
   disabledReason?: string,
   hint?: string,
 ): HTMLButtonElement {
+  // "없음" 은 정보가 아니다 — 소지품·스킬·후보가 없다는 뜻이라 명령 이름 아래에 회색 둘째 줄로
+  // 남으면 커서 행이 하나 더 있는 것처럼 보인다(QA 실측: fs2_fort_court·map_field_north_2 에서
+  // 빈 '없음' 행이 명령 목록에 한 줄 더 그려져 클릭 가능해 보였다). 비활성 사유는 inertReason 이
+  // 따로 그리므로 여기서는 빈 문자열로 접는다.
+  const detailText = detail === "없음" ? "" : detail;
+  // 사유도 같은 접기를 쓴다. item 분기가 `detail = "없음"` 을 넘기면서 `inert` 로 들어오면
+  // 예전엔 그 "없음" 이 곧 `inertReason` 이 되어 회색 사유 줄로 한 번 더 그려졌다
+  // (QA 실측: fs2_fort_court·map_field_north_2 의 명령창에 빈 '없음' 행 — after 캡처에서도 그대로 남아 확인).
   const button = document.createElement("button");
   button.type = "button";
   button.className = "battle-command";
   button.dataset.testid = testId;
   button.dataset.commandIcon = icon;
-  const inertReason = inert ? disabledReason || hint || detail || "현재 사용할 수 없습니다." : "";
+  const inertReason = inert ? disabledReason || hint || detailText || "현재 사용할 수 없습니다." : "";
+  // 능력이 없다는 것만 알리는 기본 문구도 화면 가치가 없다 — 회색 사유 줄을 하나 더 만든다.
+  const DEFAULT_INERT = "현재 사용할 수 없습니다.";
   if (inert) {
     button.dataset.previewOnly = "true";
     // `disabled` 가 아니라 `aria-disabled` 다 — 비활성 행에도 커서가 **서야** 한다.
@@ -1237,14 +1247,14 @@ function commandButton(
   const title = document.createElement("strong");
   title.textContent = label;
   text.append(title);
-  if (detail) {
+  if (detailText) {
     const small = document.createElement("small");
-    small.textContent = detail;
+    small.textContent = detailText;
     text.append(small);
   }
   // 사유는 눈으로도 읽혀야 한다 — 예전엔 `aria-label` 에만 넣어서 화면을 보는 사람에겐 없는 정보였다.
   // `detail` 이 이미 같은 말이면 두 번 쓰지 않는다.
-  if (inertReason && inertReason !== detail) {
+  if (inertReason && inertReason !== detailText && inertReason !== DEFAULT_INERT) {
     const reasonNode = document.createElement("small");
     reasonNode.className = "battle-command-reason";
     reasonNode.dataset.testid = `${testId}-reason`;
