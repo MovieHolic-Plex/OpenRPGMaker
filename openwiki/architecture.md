@@ -22,6 +22,13 @@
   body 끝으로 옮긴다(지연 모듈 스크립트는 차단 스타일시트가 다 올 때까지 실행되지 않으므로 FOUC 없음). ② 호스트가 head 끝에 심던 `bridge.js` 는
   modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
   Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
+- **첫 화면도 OS 다크를 따른다 (2026-11-01):** 로더(`index.html` 인라인 CSS)와 Electron 창 바탕색은 한동안 `#f7f8f8` 하드코딩이라,
+  편집기만 `prefers-color-scheme`(`src/styles/base/theme.css` 의 `--bg-base` = `#16181D`)를 따랐다. 그래서 어두운 OS 에서 앱을 열자마자
+  **흰 화면이 10초 넘게** 뜨고, 로더가 걷히는 순간 검은 편집기로 툭 바뀌었다(실측: 흰 로더 10.2s → 편집기 `#16181D`).
+  이제 `index.html` 의 `@media (prefers-color-scheme: dark)` 블록이 로더 색을 편집기 다크 토큰과 같은 값으로 뒤집고(배경 `#16181D`,
+  글자 `--text-1/2/3`, 진행 줄·단추 `--accent`), `electron/main/main.ts` 의 창 `backgroundColor` 는 `nativeTheme.shouldUseDarkColors` 로 고른다.
+  `html[data-theme="light"]` 는 편집기와 같은 규칙으로 라이트를 고정한다. 증거: `verify-shots/first-open-theme/`.
+  로더가 걷힌 뒤 편집기 바탕색과 로더 바탕색이 같은지가 판정 기준이다(다르면 첫 화면에 색이 튄다).
 
 - **셸 먼저 보이기 (2026-10-25):** 첫 부팅에서 `enterMode("edit")` 가 `renderEditor` 로 셸 DOM 을 붙인 직후 `revealShellEarly()`(src/app/bootLoader.ts, 마크 `shell-visible`)로 로더를 걷는다 —
   맵 판(Phaser 기동·텍스처·`EditScene.preload` 의 팔레트 프레임 약 1s)을 기다리지 않는다. 그동안 맵 칸에는 글자 없는 도는 표시(`[data-map-loading]`, `aria-busy`)가 있고 `EditScene.create` 가 걷는다.

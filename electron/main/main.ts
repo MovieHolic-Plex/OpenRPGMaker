@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
 import { join, resolve } from "node:path";
-import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, shell, type IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
@@ -283,8 +283,9 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     minHeight: 600,
     show: false,
     // 창 크기가 바뀌는 순간에 다른 색이 비치지 않게 문서 바탕색과 맞춘다 — 시작 화면은 어두운 #111214(startScreen.css),
-    // 편집기는 tokens.css --bg-base.
-    backgroundColor: opensStartScreen(options.projectDir) ? "#111214" : "#F7F8F8",
+    // 편집기는 tokens.css --bg-base. 어두운 OS 에서는 편집기 다크 토큰(--bg-base = #16181D)과 같은 색으로 시작한다 —
+    // 흰 바탕이 먼저 번쩍이면 앱을 열자마자 흰 화면이 보인다(2026-11-01 실측).
+    backgroundColor: opensStartScreen(options.projectDir) ? "#111214" : nativeTheme.shouldUseDarkColors ? "#16181D" : "#F7F8F8",
     // 전체화면은 보일 때 켠다 — 리눅스는 생성자에서 fullscreen 을 주면 show:false 여도 창을 바로 띄워(빈 화면이 스플래시를 덮었다).
     fullscreen: false,
     autoHideMenuBar: true,
