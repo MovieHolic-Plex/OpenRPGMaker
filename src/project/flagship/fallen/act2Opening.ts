@@ -2780,6 +2780,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   iceLake(project, exec);
   detection(project, exec);
+  curfewPatrolGait(project);
   courtKnightSight(project);
   fortressFixes(project, exec);
   waveFloorUnderFeet(project, exec);
@@ -2877,6 +2878,38 @@ const DETECTION_PROFILES: { troops: string[]; args: Rec }[] = [
   { troops: ["troop_fs2_ash_snakes"], args: { sightRange: 6, coneDegrees: 100, alertMs: 350, rush: false, chaseStepMs: 300 } },
   { troops: ["troop_fs2_cinder_golem"], args: { sightRange: 6, coneDegrees: 90, alertMs: 600, rush: false, chaseStepMs: 400, giveUpRange: 8 } },
 ];
+/**
+ * B2 통금 야경꾼의 순찰 걸음(2026-11-01). set_field_detection 이 추격 박자(170ms/칸)를 맞추며 순찰 경로의 걸음마다 쉼을 늘려
+ * 놓아(빠른 걸음 80ms + 쉼 다섯 번) 야경꾼이 한 칸 튀고 0.5초 서기를 되풀이했다 — 길의 대부분을 서 있어 위협이 없었다.
+ * 시야 밖 순찰만 고친다: 칸 사이 쉼 없이 보통 걸음(속도 4, 240ms/칸)으로 끝까지 걷고, 끝에서만 양옆을 한 번씩 둘러본다
+ * (걷기 → 둘러보기 → 되돌아 걷기 — 길과 쉬는 자리가 읽힌다). 쫓기·덮치기 박자(chaseStepMs·chaseLunge)는 그대로다.
+ */
+function curfewPatrolGait(project: Project): void {
+  const hub = M(project, FS2_HUB_NIGHT_ID);
+  const side: Record<Dir, [Dir, Dir]> = { left: ["down", "up"], right: ["down", "up"], up: ["left", "right"], down: ["left", "right"] };
+  let fixed = 0;
+  for (const e of hub.events) {
+    if (!JSON.stringify(e.pages ?? []).includes(`"troopId":"${FS2_PATROL_TROOP}"`)) continue;
+    for (const pg of e.pages ?? []) {
+      const mv = pg.movement as unknown as (Rec & { route?: { moves: { kind: string; dir?: Dir }[] } }) | undefined;
+      if (mv?.type !== "chase" || !mv.route) continue;
+      const dirs = mv.route.moves.filter((m) => m.kind === "move").map((m) => m.dir!) as Dir[];
+      const moves: Rec[] = [];
+      dirs.forEach((dir, i) => {
+        moves.push({ kind: "move", dir });
+        if (dirs[i + 1] === dir) return;
+        // 길 끝 — 양옆을 둘러보고(각 0.45초) 돌아선다.
+        const [a, b] = side[dir];
+        moves.push({ kind: "turn", dir: a }, ...Array.from({ length: 4 }, () => ({ kind: "wait" })), { kind: "turn", dir: b }, ...Array.from({ length: 4 }, () => ({ kind: "wait" })));
+      });
+      mv.route = { ...mv.route, moves } as typeof mv.route;
+      mv.speed = 4;
+      fixed += 1;
+    }
+  }
+  if (fixed < PATROLS.length) throw new Error(`[fallen-star act2] 통금 야경꾼 순찰 걸음을 못 고쳤다(${fixed})`);
+}
+
 /**
  * 요새 바깥 순찰 기사의 시야를 12칸으로 되돌린다(B6 다듬기 2026-10-31 첫 플레이 녹화: 9칸 앞 탁 트인 흙길에 서 있는데도 16초 동안 움직이지 않았다).
  * set_field_detection 은 맵 입구 칸에서 가까운 추격자의 시야를 깎는다(입구 매복 방지) — 이 맵에서는 성문 망루에서 도로 나오는

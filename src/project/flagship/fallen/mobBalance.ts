@@ -98,7 +98,7 @@ export const FS_TROOP_MEMBERS: Readonly<Record<string, { readonly from: readonly
   troop_fs_inq_alarm: { from: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound", "enemy_fs_inq_hound"], to: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound"] },
   troop_fs_inq_vigil: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic", "enemy_fs_fanatic"] },
   troop_fs_inq_patrol: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow", "enemy_fs_inq_flagellant"] },
-  troop_fs2_curfew_patrol: { from: ["enemy_fs2_watchman", "enemy_fs2_watchman"], to: ["enemy_fs2_watchman", "enemy_fs2_watchman", "enemy_fs2_watchman"] },
+  // 통금 순찰은 둘 그대로 — 무리 이름·대사가 「야경꾼 2인조」다(셋을 세우면 셋이 나와 말과 어긋났다, 2026-11-01). 힘은 FS_GEAR_TUNE 으로.
   troop_fs2_frost_wolves: { from: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"], to: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"] },
   troop_fs2_tower_moths: { from: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"], to: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"] },
   troop_fs2_tower_snakes: { from: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"], to: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"] },
@@ -192,6 +192,34 @@ export const FS_ACT2_ENTRY_BOSSES: Readonly<Record<string, number>> = {
  */
 export const FS_ACT2_JOIN_LEVEL = { sarah: 16, iris: 18 } as const;
 
+// ── 대장간 방어구(2026-11-01) ─────────────────────────────────────────
+/**
+ * 1막 대장간에서 파는 방어구의 속성 반감을 이 게임에서는 뗀다. 방어 수치·값은 그대로.
+ * 실측(scripts/qa/runtime/fs-gear-balance.mts, 200판): 판금(화염 반감)·철 방패·사슬 갑옷(검 반감)·마법사 로브(화염·냉기 반감)를
+ * 사 입으면 2막 잡몹의 주된 피해가 반으로 줄어 요새 기사·서리박쥐·탑 박쥐·잿불 도깨비·숯덩이 골렘이 97~100% 가 됐다
+ * (속성만 떼고 방어 +30 은 남긴 판은 거의 다 60~90% 안). 이 게임의 적이 쓰는 속성이 바로 불(재의 들판)·얼음(설원)·검(요새)이라
+ * 반감 하나가 한 구역을 통째로 지운다. 반감 대신 방어 수치만 남겨 「산 사람이 조금 편한」 정도로 둔다.
+ * 쓰는 적이 없는 속성(타격·활)은 남긴다.
+ */
+export const FS_SMITHY_ARMOR_RULES: Readonly<Record<string, { readonly drop: readonly string[]; readonly description: string }>> = {
+  equip_gen_armor_plate: { drop: ["fire"], description: "큰 민첩 손실을 감수하고 타격을 크게 줄이는 전면 중갑입니다." },
+  equip_gen_armor_chain: { drop: ["sword"], description: "고리를 엮어 베기와 마비 충격을 받아 내는 사슬 갑옷입니다." },
+  equip_gen_shield_iron: { drop: ["sword"], description: "철판을 덧대 방어 하락에도 버틸 여지를 주는 중급 방패입니다." },
+  equip_gen_robe_mage: { drop: ["fire", "ice"], description: "정신력을 크게 높이는 정통 원소술사 로브입니다." },
+};
+
+/** 대장간 방어구 규칙을 적용한다(두 번 불러도 같다). */
+export function applyFallenGearRules(project: Project): string[] {
+  const warnings: string[] = [];
+  for (const [id, rule] of Object.entries(FS_SMITHY_ARMOR_RULES)) {
+    const item = (project.database.equipment ?? []).find((e) => e.id === id) as (Rec & { elementalDefenseIds?: string[] }) | undefined;
+    if (!item) { warnings.push(`대장간 방어구 없음: ${id}`); continue; }
+    item.elementalDefenseIds = (item.elementalDefenseIds ?? []).filter((el) => !rule.drop.includes(el));
+    item.description = rule.description;
+  }
+  return warnings;
+}
+
 // ── 우두머리 ──────────────────────────────────────────────────────────
 interface EliteSpec {
   readonly id: string;
@@ -208,6 +236,12 @@ interface EliteSpec {
   readonly keep: readonly string[];
   readonly line: string;
 }
+
+/**
+ * 갑옷을 뚫는 일격 — 방어를 절반만 친다(뺄셈식 `power + 공격/2 - 방어/2` 대신 `- 방어/4`). 대장간 판금·철 방패를 산 판과 안 산 판의
+ * 차이가 우두머리 표지 기술에서만이라도 줄게(쇠사슬 대참회자: 처음 장비 60% · 산 장비 88% → 이 식으로 좁힌다).
+ */
+export const FS_PIERCE_FORMULA = "power + a.atk / 2 - b.def / 4";
 
 // 우두머리 민첩은 파티와 비슷하게 — 굼뜬 종(멧돼지·참회자·기계)을 그대로 두면 셋이 여섯 번 칠 때 한 번 움직여
 // HP 1000 이 무색했다(공격을 다섯 배로 올려도 승률 100%).
@@ -226,7 +260,7 @@ export const FS_ELITES: readonly EliteSpec[] = [
     stats: { maxHp: 1200, maxMp: 0, attack: 138, defense: 36, mind: 10, agility: 64 }, exp: 220, gold: 90,
     skill: { id: "skill_fs_elite_chain_storm", name: "쇠사슬 폭풍", priority: 12, every: 3,
       description: "온몸에 감은 쇠사슬을 풀어 방 안을 휩쓴다.",
-      fields: { scope: "allEnemies", power: 64, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_wind_slice" } as Partial<SkillRecord> },
+      fields: { scope: "allEnemies", power: 64, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_wind_slice", damageFormula: FS_PIERCE_FORMULA } as Partial<SkillRecord> },
     // 참회의 일격(힘 모으기)은 뺀다 — 셋이 번갈아 치면 늘 끊겨 혼자 선 대참회자가 한 대도 못 쳤다(승률 100%).
     keep: ["skill_fs_inq_chain", "skill_attack"],
     line: "쇠사슬이 바닥을 긁는다. 다른 참회자들보다 머리 하나가 크다.",
@@ -236,13 +270,15 @@ export const FS_ELITES: readonly EliteSpec[] = [
     stats: { maxHp: 1070, maxMp: 0, attack: 92, defense: 72, mind: 47, agility: 48 }, exp: 280, gold: 90,
     skill: { id: "skill_fs2_elite_ember_slam", name: "숯불 내려찍기", priority: 12, every: 3,
       description: "달아오른 두 팔로 땅을 내려찍어 불티를 흩뿌린다.",
-      fields: { scope: "allEnemies", power: 60, elementId: "fire", effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_earth_spike" } as Partial<SkillRecord> },
+      fields: { scope: "allEnemies", power: 60, elementId: "fire", effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_earth_spike", damageFormula: FS_PIERCE_FORMULA } as Partial<SkillRecord> },
     keep: ["skill_attack", "skill_earth"],
     line: "잿더미가 일어선다. 갈라진 틈마다 숯불이 붉게 숨 쉰다.",
   },
   {
     id: "enemy_fs2_elite_warden", from: "enemy_fs2_fort_knight", name: "요새 수문장", level: 10, scale: 135,
-    stats: { maxHp: 980, maxMp: 0, attack: 80, defense: 50, mind: 19, agility: 58 }, exp: 150, gold: 80,
+    // 민첩 58 → 50: 카엘(Lv15 민첩 56, 로한의 창 +2)과 꼭 같아 판금(-2) 하나로 차례가 뒤집히며 승률이 53% → 12% 로 떨어졌다.
+    // 어느 장비로 와도 카엘이 먼저 움직이게 둔다(2026-11-01 장비 판 측정).
+    stats: { maxHp: 980, maxMp: 0, attack: 80, defense: 50, mind: 19, agility: 50 }, exp: 150, gold: 80,
     skill: { id: "skill_fs2_elite_gate_charge", name: "성문 돌파", priority: 12, every: 3,
       description: "방패를 앞세우고 돌진해 앞줄을 쓰러뜨린다.",
       fields: { scope: "enemy", power: 95, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_tackle_impact", gaugeShift: -40 } as Partial<SkillRecord> },
@@ -292,7 +328,7 @@ export const FS_ELITE_PLACEMENTS: readonly { readonly mapId: string; readonly fr
 /** 능력치·우두머리 기록만(맵은 안 건드린다) — 시뮬 스크립트도 이것을 부른다. */
 export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS = FS_MOB_STATS, tune: Readonly<Record<string, number>> = FS_TROOP_TUNE): string[] {
   const db = project.database;
-  const warnings: string[] = [];
+  const warnings: string[] = applyFallenGearRules(project);
   upsert(db.states as StateRecord[], {
     id: FS_ELITE_STATE, name: "우두머리", restriction: "없음", removalCondition: "전투 종료", battleAura: "berserk-pulse",
     recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0, runtimeEffects: { removeOnBattleEnd: true },
