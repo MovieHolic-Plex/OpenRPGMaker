@@ -1534,7 +1534,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const confess: Command[] = [
     cutBegin(),
     setSw(SW_B4_EDGE),
-    m2("m2-201-camera-control", { mode: "panTo", target: "position", x: gapC, y: edgeY + 4, durationMs: "900", wait: "false" }),
+    m2("m2-201-camera-control", { mode: "panTo", target: "screen", x: gapC, y: edgeY + 4, durationMs: "900", wait: "false" }),
     // 넷이 그 줄로 몰려와 숲 쪽을 본다(먼 순찰은 조금 빨리). 길을 찾아 걷는다(approach) — 칸 수를 손으로 늘어놓지 않는다.
     ...allIds.map((id, i) => route(id, [{ kind: "setThrough", enabled: true }, { kind: "changeSpeed", delta: 2 },
       { kind: "approach", x: haltAt[i % haltAt.length]!.x, y: haltAt[i % haltAt.length]!.y, distance: 0 }, { kind: "turn", dir: "up" }], false)),
