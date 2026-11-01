@@ -58,7 +58,11 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
   background: #141623; color: var(--ln-sub); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer;
 }
 .ln-ai-status:hover { border-color: #353b58; color: var(--ln-fg); }
-.ln-ai-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* AI 상태 줄 — 엔진 줄과 모델 줄을 나란히 둔다. 한 줄에 몰면 레일 폭(약 200px)에서 모델 이름이 잘려
+   「Google 연결됨 · gemini-4-a…」 가 된다(2026-11-01). 모델은 자기 줄에서 말줄임으로 끝난다. */
+.ln-ai-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-width: 0; overflow: hidden; }
+.ln-ai-engine, .ln-ai-model { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ln-ai-model { color: var(--ln-faint); font-size: 11.5px; }
 .ln-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 2px; background: #6b7090; }
 .ln-dot.is-ok { background: var(--ln-green); box-shadow: 0 0 0 2px rgb(121 217 122 / 0.2); }
 .ln-dot.is-warn { background: var(--ln-gold); }
@@ -174,7 +178,7 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .hm-card:hover .hm-cov img { transform: scale(1.03); }
 .hm-cov.is-empty, .hm-hero-frame.is-empty { background: repeating-linear-gradient(45deg, #1c2032 0 8px, #191c2c 8px 16px); }
 .hm-ph { display: grid; place-items: center; align-content: center; width: 100%; height: 100%; color: var(--ln-faint); text-align: center; }
-.hm-ph b { font-size: 28px; font-weight: 900; line-height: 1.1; }
+.hm-ph b { font-size: 34px; font-weight: 900; line-height: 1.1; opacity: .55; }
 .hm-ph em { display: block; font-size: 11.5px; font-style: normal; font-weight: 600; }
 .hm-hero-frame .hm-ph b { font-size: 48px; }
 .hm-cap { display: block; padding: 9px 11px 10px; }
@@ -289,7 +293,12 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
   .ln-root { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
   .ln-rail { flex-direction: row; align-items: center; gap: 8px; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--ln-line); }
   .ln-brand { padding: 0 8px 0 4px; }
-  .ln-brand strong, .ln-nav span, .ln-navsep, .ln-foot-line, .ln-ai-text { display: none; }
+  .ln-brand strong, .ln-nav span, .ln-navsep, .ln-foot-line { display: none; }
+  /* 좁은 창에서도 AI 상태 글자는 남긴다 — 점만 두면 «AI 가 되는지» 를 앱이 답하지 않는 셈이다(2026-11-01).
+     레일이 가로로 놓이므로 두 줄 쌓기를 거두고 엔진 이름만 한 줄로 보인다. */
+  .ln-ai-text { display: flex; }
+  .ln-ai-model { display: none; }
+  .ln-ai-status { padding: 6px 9px; font-size: 12px; }
   .ln-navs { flex-direction: row; }
   .ln-rail-foot { flex-direction: row; margin: 0 0 0 auto; }
   .ln-top { padding: 0 12px; }
