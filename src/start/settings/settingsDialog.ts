@@ -229,6 +229,26 @@ export function openSettingsDialog(options: {
     ] });
   };
 
+  /**
+   * 편집기의 AI 설정 막을 연다 — 구글/ChatGPT 로그인과 「사용자 지정(OpenAI 호환)」 카드가 사는 곳.
+   * 첫 화면 설정창은 로컬 CLI 만 다루므로, 로그인·외부 서버는 그 막으로 넘긴다(2026-11-01).
+   * aiModalStyles 를 같이 받아야 막이 문서 끝에 맨몸으로 붙지 않는다(실측: 예약 없이 열면 뒤로 숨었다).
+   */
+  const openEditorAiSettings = async (): Promise<void> => {
+    const [modal, , status] = await Promise.all([
+      import("@/editor/panels/aiSettingsModal"),
+      import("../aiModalStyles"),
+      import("@/editor/panels/aiConnectionStatus"),
+    ]);
+    modal.openAiSettingsModal();
+    const onClosed = (): void => {
+      void status.refreshAiConnectionStatus().catch(() => {});
+      render();
+      options.onEngineChange?.(summarizeAiStatus(choice, report));
+    };
+    window.addEventListener(modal.AI_SETTINGS_CLOSED_EVENT, onClosed, { once: true });
+  };
+
   const renderAi = (): HTMLElement[] => {
     const row = readySelected();
     const status = !enabled ? null
@@ -252,11 +272,26 @@ export function openSettingsDialog(options: {
         rolesTable(),
         ...(row ? [el("p", { class: "st-cost", text: costLine(row.billing) })] : []),
       ] }),
+      // 구글·ChatGPT 로그인으로 쓰는 연결은 **로컬 CLI 가 아니다** — 여기서 안내하지 않으면 첫 화면은
+      // 「AI 엔진이 없어요」만 보여 주고, 실제로 연결돼 있는 사람도 설정을 못 찾는다(2026-11-01 실측:
+      // antigravity OAuth 가 살아 있는데 이 창은 로컬 CLI 세 칸만 보여 줬다).
+      el("section", { class: "st-sec", dataset: { testid: "start-settings-oauth" }, children: [
+        el("h3", { text: "구글·ChatGPT 로그인으로 쓰기" }),
+        el("p", { class: "st-sub", text: "로그인만 해 두면 조수가 바로 돼요. AI 프로그램을 깔 필요가 없어요." }),
+        el("div", { class: "st-oauth-row", children: [
+          el("p", { class: "st-oauth-state", attrs: { role: "status" }, dataset: { testid: "start-settings-oauth-state" }, text: "확인 중…" }),
+          el("button", {
+            class: "st-btn st-btn-ghost", attrs: { type: "button" }, dataset: { testid: "start-settings-oauth-open" },
+            text: "로그인·연결 관리",
+            on: { click: () => void openEditorAiSettings() },
+          }),
+        ] }),
+      ] }),
       el("details", { class: "st-advanced", dataset: { testid: SETTINGS_TESTIDS.advanced }, children: [
         el("summary", { text: "고급 — 자동으로 찾지 못했을 때만" }),
         el("dl", { children: [
-          el("dt", { text: "API 키로 쓰기" }),
-          el("dd", { text: "AI 프로그램 없이 Anthropic · OpenAI · Google AI Studio · OpenRouter 키를 쓸 수 있어요. 키는 이 PC 의 보안 저장소에만 남고 프로젝트 파일·팀·스토어로 나가지 않아요. 편집기의 「AI 연결 → API 키」에서 넣어요." }),
+          el("dt", { text: "API 키·외부 서버로 쓰기" }),
+          el("dd", { text: "OpenRouter · OpenAI · Google AI Studio 같은 서버는 위 「로그인·연결 관리」의 「사용자 지정 연결」에서 주소와 키를 넣어 써요. 키는 이 PC 의 연결 서비스에만 남고 프로젝트 파일·팀·스토어로 나가지 않아요." }),
           el("dt", { text: "프로그램 위치" }),
           el("dd", { text: "자동 (PATH · ~/.local/bin · %APPDATA%/npm)", attrs: { translate: "no" } }),
           el("dt", { text: "요금" }),
@@ -338,7 +373,30 @@ export function openSettingsDialog(options: {
   render();
   tabButtons.get(tab)?.focus();
   if (enabled) void detect(false);
+  void fillOAuthState();
   return { close };
+}
+
+/**
+ * 「구글·ChatGPT 로그인으로 쓰기」 칸의 현재 상태를 채운다.
+ * 이 칸을 만들 때 동반 서비스에 묻지 않으면 영원히 「확인 중…」 이 남아,
+ * 첫 화면이 다시 모호해진다(2026-11-01). 안 되면 그 사실을 그대로 적는다.
+ */
+async function fillOAuthState(): Promise<void> {
+  const target = document.querySelector<HTMLElement>("[data-testid='start-settings-oauth-state']");
+  if (!target) return;
+  try {
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
+    await refreshAiConnectionStatus();
+    const status = getAiConnectionStatus();
+    target.textContent = status.kind === "ready"
+      ? `${status.label} — 조수가 이 연결로 일해요.`
+      : `${status.label} — 「로그인·연결 관리」에서 로그인하거나 외부 서버를 등록하세요.`;
+    target.dataset.tone = status.kind === "ready" ? "ok" : "off";
+  } catch {
+    target.textContent = "연결 상태를 읽지 못했어요. 「로그인·연결 관리」에서 직접 확인하세요.";
+    target.dataset.tone = "off";
+  }
 }
 
 function copyCommand(command: string): HTMLElement {

@@ -309,6 +309,17 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       setError(error instanceof Error ? error.message : String(error));
     });
   };
+  /**
+   * 「Google 연결됨」 → 「Google 연결됨 · Gemini 4 Argon」.
+   * 어떤 모델로 일하는지가 첫 화면에서 보여야 한다(2026-11-01 사용자 「지금은 좀 애매하다」).
+   * 모델을 못 읽으면 받은 라벨을 그대로 돌려준다 — 첫 화면이 비지 않게.
+   * llmClient 는 편집기 AI 모듈이라 정적으로 받지 않는다(첫 화면 번들을 키우지 않게) — 부를 때만 동적 import.
+   */
+  const aiModelLabelFor = async (statusLabel: string): Promise<string> => {
+    const model = (await import("@/ai/llmClient")).loadAiConfig().model?.trim();
+    if (!model || statusLabel.includes(model)) return statusLabel;
+    return `${statusLabel} · ${model}`;
+  };
   /** 레일 AI 상태 줄 — 고른 엔진이 있으면 그 이름, 깃발이 켜져 있으면 한가할 때 한 번 찾아본다. */
   const refreshAiStatus = (): void => {
     void import("./settings/settingsDialog").then(async ({ summarizeAiStatus }) => {
@@ -319,7 +330,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         const { getAiConnectionStatus, refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
         await refreshAiConnectionStatus().catch(() => {});
         const status = getAiConnectionStatus();
-        if (status.kind === "ready") { applyAiStatus({ tone: "ok", text: status.label }); return; }
+        // 「Google 연결됨」 만으로는 *무엇으로* 일하는지 알 수 없다(2026-11-01 사용자 「지금은 좀 애매하다」).
+        // 모델 이름을 같이 적어 첫 화면이 바로 답하게 한다 — 모델을 못 읽으면 예전 라벨 그대로 둔다.
+        if (status.kind === "ready") { applyAiStatus({ tone: "ok", text: await aiModelLabelFor(status.label) }); return; }
       }
       if (!localAgentsEnabled()) { applyAiStatus(summarizeAiStatus(choice, null)); return; }
       const { createLocalAgentsApi } = await import("./settings/localAgents");
