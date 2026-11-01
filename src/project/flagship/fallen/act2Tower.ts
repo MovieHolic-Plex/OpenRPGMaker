@@ -1071,7 +1071,6 @@ function redressFloors(project: Project, exec: Exec): void {
   dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-rubble-heap", [{ x: 31, y: 20 }, { x: 29, y: 19 }, { x: 33, y: 20 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-dungeon-cave-broken-pillar", [{ x: 24, y: 16 }, { x: 28, y: 16 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-volcano-cave-pillar-broken-b", [{ x: 10, y: 16 }, { x: 9, y: 16 }], keep1);
-  dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-royal-banner", [{ x: 30, y: 16 }, { x: 31, y: 16 }, { x: 29, y: 16 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-dungeon-theme-armor-stand", [{ x: 32, y: 16 }, { x: 33, y: 16 }], keep1);
   dress(project, exec, FS2_T1, "bd-prop-sword_barrel", [{ x: 35, y: 20 }, { x: 36, y: 20 }, { x: 34, y: 20 }], keep1);
   dress(project, exec, FS2_T1, "bd-pick-aqueduct-sewer-pipe-copper-leak", [{ x: 22, y: 21 }, { x: 23, y: 21 }, { x: 17, y: 21 }], keep1);
