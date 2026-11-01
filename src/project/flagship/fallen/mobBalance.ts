@@ -192,6 +192,44 @@ export const FS_ACT2_ENTRY_BOSSES: Readonly<Record<string, number>> = {
  */
 export const FS_ACT2_JOIN_LEVEL = { sarah: 16, iris: 18 } as const;
 
+// ── 장비 판 보정(2026-11-01) ─────────────────────────────────────────
+/**
+ * 위 표들을 다 곱한 뒤 한 번 더 곱하는 배수 — 「처음 장비 + 이야기 장비(B4 로한의 창)」 판과 「1막 대장간 최고 방어구를 산」 판
+ * 둘 다 띠(잡몹 60~90% · 우두머리 50~70%, 목표 60%) 안에 들게 맞춘 값. 공격만 누르고 아이템 없이, 이어 하기 도착 레벨.
+ * 잰 도구: scripts/qa/runtime/fs-gear-solve.mts · fs-gear-probe.mts · fs-gear-balance.mts(구운 판, 200판, 시드 7).
+ * 잡몹 무리는 FS_TROOP_TUNE 과 같은 식(그 무리 적만 떼어 HP·공격·마력 √배수씩).
+ */
+export const FS_GEAR_TUNE: Readonly<Record<string, number>> = {
+  troop_fs_inq_kennel: 0.95,
+  troop_fs_inq_patrol: 1.06,
+  troop_fs_inq_ledge: 0.95,
+  troop_fs_inq_bolts: 1.04,
+  troop_fs_inq_false_prisoner: 1.1,
+  troop_fs_inq_alarm: 1.03,
+  troop_fs_inq_phalanx: 0.95,
+  troop_fs2_curfew_patrol: 1.729, // 둘뿐인 야경꾼 — 셋을 세우던 힘을 둘에게
+  troop_fs2_ash_wisps: 0.96,
+  troop_fs2_ash_snakes: 0.97,
+  troop_fs2_frost_bats: 0.95,
+  troop_fs2_frost_bats_lake: 1.045,
+  troop_fs2_frost_mixed: 0.91,
+  troop_fs2_tower_moths: 0.96,
+  troop_fs2_tower_bats: 0.93,
+  troop_fs2_tower_spiders: 0.96,
+};
+/**
+ * 우두머리(적 id → 배수) — 마지막에 곱한다. HP 는 √배수를 0.92~1.1 에 묶고 나머지를 공격·마력으로.
+ * 쇠사슬 대참회자: 늘 쓰는 쇠사슬 휘두르기까지 갑옷을 뚫게 되자(FS_ELITES pierce) 처음 장비에서도 3% 로 떨어져 0.81 로 내리고,
+ * 민첩 64 → 68 로 올렸다. 64 는 판금(민첩 -2)을 입은 카엘과 차례가 엇갈려 처음 장비 49% · 판금 78% 로 벌어졌다(68 이면 62% · 64%).
+ */
+export const FS_GEAR_ELITES: Readonly<Record<string, number>> = {
+  enemy_fs_elite_penitent: 0.81,
+  enemy_fs2_cinder_golem: 0.935,
+  enemy_fs2_elite_warden: 1.045,
+  enemy_fs2_elite_frostmane: 0.98,
+  enemy_fs2_tower_sentinel: 0.98,
+};
+
 // ── 대장간 방어구(2026-11-01) ─────────────────────────────────────────
 /**
  * 1막 대장간에서 파는 방어구의 속성 반감을 이 게임에서는 뗀다. 방어 수치·값은 그대로.
@@ -234,6 +272,8 @@ interface EliteSpec {
   readonly skill: { readonly id: string; readonly name: string; readonly description: string; readonly fields: Partial<SkillRecord>; readonly priority: number; readonly every: number };
   /** 견본의 행동 중 남길 기술(나머지는 버린다). */
   readonly keep: readonly string[];
+  /** 남긴 기술 중 갑옷을 뚫게 바꿀 것 — `<기술>_fs_pierce` 사본(FS_PIERCE_FORMULA)으로 갈아 낀다. */
+  readonly pierce?: readonly string[];
   readonly line: string;
 }
 
@@ -257,12 +297,14 @@ export const FS_ELITES: readonly EliteSpec[] = [
   },
   {
     id: "enemy_fs_elite_penitent", from: "enemy_fs_inq_penitent", name: "쇠사슬 대참회자", level: 10, scale: 140,
-    stats: { maxHp: 1200, maxMp: 0, attack: 138, defense: 36, mind: 10, agility: 64 }, exp: 220, gold: 90,
+    stats: { maxHp: 1200, maxMp: 0, attack: 138, defense: 36, mind: 10, agility: 68 }, exp: 220, gold: 90,
     skill: { id: "skill_fs_elite_chain_storm", name: "쇠사슬 폭풍", priority: 12, every: 3,
       description: "온몸에 감은 쇠사슬을 풀어 방 안을 휩쓴다.",
       fields: { scope: "allEnemies", power: 64, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_wind_slice", damageFormula: FS_PIERCE_FORMULA } as Partial<SkillRecord> },
     // 참회의 일격(힘 모으기)은 뺀다 — 셋이 번갈아 치면 늘 끊겨 혼자 선 대참회자가 한 대도 못 쳤다(승률 100%).
     keep: ["skill_fs_inq_chain", "skill_attack"],
+    // 쇠사슬 휘두르기(늘 쓰는 줄 공격)도 갑옷을 뚫는다 — 표지 기술만 뚫으면 판금을 산 판이 88~95%, 안 산 판이 60% 로 벌어졌다.
+    pierce: ["skill_fs_inq_chain"],
     line: "쇠사슬이 바닥을 긁는다. 다른 참회자들보다 머리 하나가 크다.",
   },
   {
@@ -363,6 +405,7 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
   // 2막 이어 하기 보정은 같은 무리 떼어 내기에 곱해 넣는다(무리마다 한 번만 떼어 낸다).
   const merged: Record<string, number> = { ...tune };
   for (const [troopId, mul] of Object.entries(FS_ACT2_ENTRY_TUNE)) merged[troopId] = (merged[troopId] ?? 1) * mul;
+  for (const [troopId, mul] of Object.entries(FS_GEAR_TUNE)) merged[troopId] = (merged[troopId] ?? 1) * mul;
   for (const [troopId, mul] of Object.entries(merged)) {
     const troop = db.troops.find((t) => t.id === troopId);
     if (!troop) { warnings.push(`따로 고칠 무리 없음: ${troopId}`); continue; }
@@ -392,8 +435,16 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
       stateEffects: [], chargeTurns: undefined, chargeBreak: undefined, elementId: undefined, hitRate: 100, variance: 12,
       mpCost: { flat: 0, percentMax: 0 }, ...spec.skill.fields,
     } as SkillRecord);
-    const kept = (base.actions ?? []).filter((a) => spec.keep.includes(a.skillId));
-    const actions = [act(spec.skill.id, spec.skill.priority, { kind: "turn", start: 2, interval: spec.skill.every }), ...clone(kept)];
+    const kept = clone((base.actions ?? []).filter((a) => spec.keep.includes(a.skillId)));
+    for (const a of kept) {
+      if (!spec.pierce?.includes(a.skillId)) continue;
+      const src = db.skills.find((x) => x.id === a.skillId);
+      if (!src) { warnings.push(`뚫는 기술 견본 없음: ${a.skillId}`); continue; }
+      const id = `${a.skillId}_fs_pierce`;
+      upsert(db.skills, { ...clone(src), id, damageFormula: FS_PIERCE_FORMULA } as SkillRecord);
+      a.skillId = id;
+    }
+    const actions = [act(spec.skill.id, spec.skill.priority, { kind: "turn", start: 2, interval: spec.skill.every }), ...kept];
     const e = clone(base) as EnemyRecord & Rec;
     upsert(db.enemies, normalizeEnemyRecord({
       ...e, id: spec.id, name: spec.name, level: spec.level, battleScalePercent: spec.scale, stats: spec.stats, actions,
@@ -428,6 +479,13 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
   };
   for (const [id, p] of Object.entries(FS_ACT2_ENTRY_ELITES)) scaleEnemy(id, p, true);
   for (const [id, p] of Object.entries(FS_ACT2_ENTRY_BOSSES)) scaleEnemy(id, p, false);
+  for (const [id, p] of Object.entries(FS_GEAR_ELITES)) {
+    const e = db.enemies.find((x) => x.id === id);
+    if (!e) { warnings.push(`장비 판 보정할 우두머리 없음: ${id}`); continue; }
+    const hpMul = Math.min(1.1, Math.max(0.92, Math.sqrt(p)));
+    const atkMul = p / hpMul;
+    e.stats = { ...e.stats, attack: Math.round(e.stats.attack * atkMul), mind: Math.round(e.stats.mind * atkMul), maxHp: Math.max(10, Math.round(e.stats.maxHp * hpMul / 10) * 10) };
+  }
   return warnings;
 }
 

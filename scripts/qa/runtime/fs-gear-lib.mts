@@ -24,6 +24,12 @@ export function overlayDecisions(project: Project): void {
     const sk = db.skills.find((x) => x.id === spec.skill.id) as unknown as { damageFormula?: string } | undefined;
     const want = (spec.skill.fields as { damageFormula?: string }).damageFormula;
     if (sk && want === FS_PIERCE_FORMULA) sk.damageFormula = want;
+    for (const kept of spec.pierce ?? []) {
+      const id = `${kept}_fs_pierce`;
+      const src = db.skills.find((x) => x.id === kept);
+      if (src && !db.skills.some((x) => x.id === id)) db.skills.push({ ...JSON.parse(JSON.stringify(src)), id, damageFormula: FS_PIERCE_FORMULA });
+      for (const a of e?.actions ?? []) if (a.skillId === kept) a.skillId = id;
+    }
   }
 }
 
