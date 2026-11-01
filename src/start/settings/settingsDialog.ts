@@ -261,14 +261,14 @@ export function openSettingsDialog(options: {
           el("h3", { text: "AI 엔진" }),
           ...(enabled ? [el("button", { class: "st-link", attrs: { type: "button" }, text: "다시 확인", on: { click: () => void detect(true) } })] : []),
         ] }),
-        el("p", { class: "st-sub", text: "조수는 이 PC 에 깔린 Claude Code · Codex · Gemini CLI 로 일해요. 로그인은 그 프로그램 안에서 직접 하고, OPRN 은 로그인 정보를 보거나 저장하지 않아요." }),
+        el("p", { class: "st-sub", text: "이 PC 의 Claude Code · Codex · Gemini CLI 로 일해요. 로그인은 그 프로그램에서 해요." }),
         ...(status ? [el("p", { class: "st-status", attrs: { role: "status" }, text: status })] : []),
         ...(!enabled ? [el("p", { class: "st-status", text: "이 PC 의 AI 프로그램을 찾는 기능은 곧 켜져요. 지금은 편집기 안 「AI 연결」을 써요." })] : []),
         el("div", { class: "st-engines", children: ENGINE_ORDER.map(engineCard) }),
       ] }),
       el("section", { class: "st-sec", children: [
         el("h3", { text: "모델" }),
-        el("p", { class: "st-sub", text: "처음엔 한 모델이 모든 일을 해요. 그림·큰 계획만 더 좋은 모델로 돌리고 싶으면 나누세요." }),
+        el("p", { class: "st-sub", text: "필요하면 역할별로 나눠요." }),
         rolesTable(),
         ...(row ? [el("p", { class: "st-cost", text: costLine(row.billing) })] : []),
       ] }),
@@ -276,8 +276,8 @@ export function openSettingsDialog(options: {
       // 「AI 엔진이 없어요」만 보여 주고, 실제로 연결돼 있는 사람도 설정을 못 찾는다(2026-11-01 실측:
       // antigravity OAuth 가 살아 있는데 이 창은 로컬 CLI 세 칸만 보여 줬다).
       el("section", { class: "st-sec", dataset: { testid: "start-settings-oauth" }, children: [
-        el("h3", { text: "구글·ChatGPT 로그인으로 쓰기" }),
-        el("p", { class: "st-sub", text: "로그인만 해 두면 조수가 바로 돼요. AI 프로그램을 깔 필요가 없어요." }),
+        el("h3", { text: "구글·ChatGPT 로그인" }),
+        el("p", { class: "st-sub", text: "프로그램 없이 로그인만으로 돼요." }),
         el("div", { class: "st-oauth-row", children: [
           el("p", { class: "st-oauth-state", attrs: { role: "status" }, dataset: { testid: "start-settings-oauth-state" }, text: "확인 중…" }),
           el("button", {
@@ -291,7 +291,7 @@ export function openSettingsDialog(options: {
         el("summary", { text: "고급 — 자동으로 찾지 못했을 때만" }),
         el("dl", { children: [
           el("dt", { text: "API 키·외부 서버로 쓰기" }),
-          el("dd", { text: "OpenRouter · OpenAI · Google AI Studio 같은 서버는 위 「로그인·연결 관리」의 「사용자 지정 연결」에서 주소와 키를 넣어 써요. 키는 이 PC 의 연결 서비스에만 남고 프로젝트 파일·팀·스토어로 나가지 않아요." }),
+          el("dd", { text: "OpenRouter·OpenAI 등은 「로그인·연결 관리」의 「사용자 지정 연결」에서요." }),
           el("dt", { text: "프로그램 위치" }),
           el("dd", { text: "자동 (PATH · ~/.local/bin · %APPDATA%/npm)", attrs: { translate: "no" } }),
           el("dt", { text: "요금" }),

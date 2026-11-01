@@ -79,11 +79,24 @@ function testStub(): boolean {
   return process.env.OPRN_OH_MY_PI_TEST_STUB === "1";
 }
 
-function isKnown(provider: string): provider is PortedOAuthProviderId {
-  return provider === ANTIGRAVITY_PROVIDER_ID || provider === CODEX_PROVIDER_ID;
+/**
+ * 이 앱이 **직접** 로그인 흐름을 구현한 제공자(브리지 로그인).
+ * 나머지 제공자는 OMP(pi) 에서 이미 로그인한 자격을 가져오는 경로로만 쓰인다 —
+ * pi 의 로그인은 Bun·bun:sqlite 를 쓰고 이 동반 서비스는 순수 Node 라 여기서 돌릴 수 없다.
+ */
+const BRIDGE_LOGIN_PROVIDERS = new Set<string>([ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID]);
+
+/**
+ * 로그인·상태·갱신이 다룰 수 있는 제공자인가.
+ *
+ * 2026-11-02 전에는 두 상수만 비교했다 — 레지스트리에 행을 더해도 여기서 막혀
+ * `알 수 없는 제공자입니다` 400 이 났다. 이제 **레지스트리가 정본**이다(행을 더하면 바로 열린다).
+ */
+function isKnown(provider: string): boolean {
+  return Boolean(getOhMyPiProvider(provider)) && !isOpenAiCompatProviderId(provider);
 }
 
-function requireKnown(provider: string): PortedOAuthProviderId {
+function requireKnown(provider: string): string {
   if (!isKnown(provider)) {
     const error = new Error(`알 수 없는 제공자입니다: ${provider}`) as Error & { status?: number };
     error.status = 400;
@@ -363,6 +376,13 @@ export async function startProviderLogin(
     throw Object.assign(new Error("사용자 지정 엔드포인트는 로그인이 없습니다. 연결 설정에서 주소와 API 키를 저장하세요."), { status: 400 });
   }
   const id = requireKnown(provider);
+  if (!BRIDGE_LOGIN_PROVIDERS.has(id)) {
+    // pi 는 이 제공자의 로그인을 구현했지만 그 흐름은 Bun·bun:sqlite 위에서 돈다 — 이 Node 서비스는
+    // 그것을 돌릴 수 없다. 거짓 성공(연결됨처럼 보이는 상태)보다 사실을 말한다.
+    const error = new Error(`이 앱에서 로그인할 수 없는 제공자입니다: ${id}. OMP(pi) 에서 먼저 로그인해 주세요.`) as Error & { status?: number };
+    error.status = 400;
+    throw error;
+  }
   cancelProviderLogin(id);
   const abort = new AbortController();
   startingLogins.set(id, abort);

@@ -608,7 +608,7 @@ export function renderAiSettingsForm(options: {
 
   const savedHint = el("span", {
     class: "ai-config-saved-hint",
-    text: "변경 사항은 자동으로 저장됩니다.",
+    text: "자동 저장",
     attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-saved-hint" },
   });
@@ -901,7 +901,7 @@ export function renderAiSettingsForm(options: {
     alignAccountButton.hidden = !mixed;
     modelConnectionHint.textContent = mixed
       ? "직접 지정한 작업 모델은 유지됩니다. 다른 계정을 쓰는 모델이 있으면 그 계정도 연결하세요."
-      : "작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.";
+      : "연결되면 이 계정으로 바로 시작해요.";
     const status = getAiConnectionStatus(current);
     const valid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean)
       && brainModel.validate(authMode, brainProvider.value);
@@ -1208,8 +1208,8 @@ export function renderAiSettingsForm(options: {
     class: "ai-settings-content",
     children: [
       pane("connection", [
-        settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element, modelConnectionHint, alignAccountButton]),
-        settingsSection("compat", "사용자 지정 연결", "OpenRouter · OpenAI · Ollama · LiteLLM 같은 OpenAI 호환 서버를 직접 연결합니다. 기본 연결은 바꾸지 않아요.", [compatSettings.element]),
+        settingsSection("connection", "연결", "", [authSettings.element, modelConnectionHint, alignAccountButton]),
+        settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(OpenRouter 등)", [compatSettings.element]),
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
