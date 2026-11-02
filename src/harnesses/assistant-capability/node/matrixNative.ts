@@ -69,10 +69,14 @@ function providerPin(): ProviderPin | null {
  * The only compat endpoints a pin may target. The store derives the id from `name`
  * (openAiCompatIdForName), so `name` must slug to the provider suffix — checked after upsert.
  * oc.hyeon.space is a free gateway that answers 429 now and then; InferHub is paid.
+ * deploy is paid ($0.1 in / $0.35 out per M). Its gateway answers 400 「Invalid Model Name」 to the bare
+ * `deepseek-v4.1-flash-1017` (omo's alias) and only serves the upstream id `deepseek-ai/…` (2026-11-02 probe).
+ * `contextWindow` is optional: unset keeps the store default (128,000); deploy declares 600,000 by owner request.
  */
-const COMPAT_PINS: Record<string, { name: string; baseUrl: string; allowModels: string[]; keyEnv: string }> = {
+const COMPAT_PINS: Record<string, { name: string; baseUrl: string; allowModels: string[]; keyEnv: string; contextWindow?: number }> = {
   'openai-compat:inferhub': { name: 'inferhub', baseUrl: 'https://api.inferhub.dev/v1', allowModels: ['deepseek-v4.1-flash'], keyEnv: 'INFERHUB_API_KEY' },
   'openai-compat:oc': { name: 'oc', baseUrl: 'https://oc.hyeon.space/v1', allowModels: ['deepseek-v4.1-flash-free'], keyEnv: 'OC_API_KEY' },
+  'openai-compat:deploy': { name: 'deploy', baseUrl: 'https://api-cdn.deploy.com/api/v1', allowModels: ['deepseek-ai/deepseek-v4.1-flash-1017'], keyEnv: 'DEPLOY_API_KEY', contextWindow: 600_000 },
 };
 
 /**
@@ -102,6 +106,7 @@ function prepareCompatEndpoint(pin: ProviderPin): { dir: string; reasoningMode: 
     reasoningMode: reasoningMode as 'field' | 'none' | 'suffix',
     supportsImages: true,
     defaultModel: pin.model,
+    ...(endpoint.contextWindow ? { contextWindow: endpoint.contextWindow } : {}),
   });
   if (saved.id !== pin.provider) throw new Error(`엔드포인트 id 가 ${saved.id} 로 만들어졌습니다 — ${pin.provider} 여야 합니다.`);
   process.env.OPRN_OPENAI_COMPAT_PATH = path;
