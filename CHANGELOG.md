@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.387.0 — 2026-11-02
+
+### 기능
+
+- **harness** — matrix-native can pin the deploy DeepSeek endpoint (#4176) (`8641d48`)
+
 ## 0.386.0 — 2026-11-02
 
 ### 기능
