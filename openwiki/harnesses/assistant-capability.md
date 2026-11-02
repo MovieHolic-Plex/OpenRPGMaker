@@ -167,6 +167,13 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 InferHub `deepseek-v4.1-flash` 는 `low, high, max` 라 `max` 는 그대로 통과하고 `xhigh` 는 pi-ai 가
 `requireSupportedEffort` 로 거절한다.
 
+**무료 oc.hyeon.space 고정:** `MATRIX_NATIVE_PROVIDER=openai-compat:oc MATRIX_NATIVE_MODEL=deepseek-v4.1-flash-free` 는
+같은 경로로 주소 `https://oc.hyeon.space/v1`, 허용 모델 `deepseek-v4.1-flash-free` 엔드포인트(저장 이름 `oc` → id
+`openai-compat:oc`)를 쓴다. 키는 환경 변수 `OC_API_KEY` 에서만 읽는다(없으면 실패, 값은 찍지 않는다). 무료라 청구는 0이지만
+업스트림이 가끔 429 를 돌려주므로 그 명령은 모델 실수가 아니라 재시도 대상으로 본다. pi-catalog 가 이 id 에도 `low, high, max`
+사다리를 주므로 `MATRIX_NATIVE_EFFORT=high|max` 는 통과하고 `off` 는 위와 같이 거절한다. 두 고정의 허용 목록은
+`matrixNative.ts` 의 `COMPAT_PINS` 표 하나다 — 표에 없는 제공자·모델은 실행 전에 실패한다.
+
 `MATRIX_NATIVE_SPEC=500` 실행은 `dist-electron/browser-bridge.js` 도 필요하다 — 워크트리면
 `npm run build:electron` 을 먼저 돌린다(`HARNESS_DIST_DIR` 만으로는 호스트가 뜨지 않는다).
 
