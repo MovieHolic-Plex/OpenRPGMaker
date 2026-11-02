@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.386.0 — 2026-11-02
+
+### 기능
+
+- **harness** — matrix-native can pin the oc.hyeon.space free endpoint (#4174) (`adcbada`)
+
 ## 0.385.0 — 2026-11-02
 
 ### 기능
