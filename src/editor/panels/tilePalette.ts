@@ -557,7 +557,10 @@ function attachPaletteFilters(head: HTMLElement, label: string): HTMLElement {
     children: [el("span", { text: label }), el("span", { class: "tile-section-chevron", attrs: { "aria-hidden": "true" }, text: "▾" })],
     on: { click: () => setPaletteFiltersOpen(!isPaletteFiltersOpen()) },
   });
-  head.insertBefore(toggle, head.lastElementChild);
+  // 머리는 한 줄 「타일 · 타일셋   전체 ▾」 — 「붓 설정」 단추는 이 칸의 첫 줄로 내린다.
+  const settingsToggle = head.querySelector<HTMLElement>('[data-testid="palette-brush-settings-toggle"]');
+  if (settingsToggle) body.append(settingsToggle);
+  head.append(toggle);
   return body;
 }
 

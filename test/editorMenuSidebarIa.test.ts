@@ -287,7 +287,9 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       // 왼쪽 열 목업(2026-11-03): 맵 머리 → 「타일 · 타일셋」 머리 → 접힌 「붓 설정」(도구 줄을 품는다) 순서.
       expect(order.indexOf('sidebar-map-header')).toBe(0);
       expect(order.indexOf("tile-section-header")).toBe(1);
-      expect(order.indexOf("palette-brush-settings")).toBe(2);
+      // 보기 탭·검색·분류는 머리의 「전체 ▾」 칸, 도구 줄은 그 아래 접힌 「붓 설정」 안이다.
+      expect(order.indexOf("palette-view-filters")).toBe(2);
+      expect(order.indexOf("palette-brush-settings")).toBe(3);
       expect(order.indexOf("oprn-tile-toolbar"), "도구 줄은 붓 설정 안으로 갔다").toBe(-1);
       const settings = findByTestId(fake(container), "palette-brush-settings");
       expect(findByTestId(settings as unknown as FakeElement, "oprn-tile-toolbar"), "붓 설정 안의 도구 줄").not.toBeNull();

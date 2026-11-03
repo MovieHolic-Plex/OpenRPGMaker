@@ -66,6 +66,7 @@
 .tile-section-settings[aria-expanded="true"] .tile-section-chevron { transform: rotate(180deg); }
 .tile-section-settings[hidden], .tile-brush-settings[hidden] { display: none; }
 .tile-view-filters { display: flex; flex-direction: column; gap: 4px; flex: none; padding: 0 2px 4px; }
+.tile-view-filters > .tile-section-settings { align-self: flex-start; }
 .tile-view-filters[hidden] { display: none; }
 .tile-brush-settings { display: flex; flex-direction: column; gap: 4px; flex: none; padding: 4px 2px 6px; border-radius: 8px; background: var(--bg-inset); }
 
