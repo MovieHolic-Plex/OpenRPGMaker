@@ -10,6 +10,8 @@ import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { formatIntentAudit, formatIntentClarifyMessage, type IntentDeclaration, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+import { decideWiden, widenToolNames, type WidenDecision } from "@/ai/vagueWiden";
+import { rememberWiden, widenHistory } from "@/ai/vagueWidenHistory";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools, SCENE_SETTING_NOTE, SCENE_SETTING_PATTERN } from "@/ai/sessionToolExposure";
 import { monsterAssetsAllowed, toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
@@ -83,6 +85,8 @@ export interface PlainPiTurnInput {
   readonly onDeclaring?: () => void;
   /** 실행 모델의 컨텍스트 창. 주면 폴백 의도라도 창에 안 들어가는 전체 카탈로그를 보내지 않는다(buildSessionRegistryTools). */
   readonly contextWindow?: number;
+  /** 넓히기 무작위 선택(시험용 주입). */
+  readonly widenRandom?: () => number;
 }
 
 export interface PlainPiTurnClassification {
@@ -104,6 +108,8 @@ export interface PlainPiTurnClassification {
    * 2026-10-22 배경 조수 시험: 「배경 좀 예쁘게」 에 선언은 「맵 배경/맵 꾸미기」 를 물었지만 Pi 경로가 이 값을 버려 소품 꾸미기 56호출로 갔다.
    */
   readonly clarify?: string;
+  /** 모호한 새로 짓기를 넓힌 장면. 있으면 호출자(입력창)는 시작 한 줄(startLine)을 보이고 기다리지 않고 실행한다. */
+  readonly widen?: { readonly id: string; readonly label: string; readonly traits: readonly string[]; readonly startLine: string };
 }
 
 /** 되묻기에 대한 사용자 답을 원래 요청과 묶은 문장의 표지 — 이 표지가 있는 턴은 다시 되묻지 않는다. */
@@ -137,6 +143,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   let initialToolNames: readonly string[] | undefined;
   let intentNote: string | null = null;
   let clarifyIntent: IntentDeclaration | null = null;
+  let widen: WidenDecision | null = null;
   // `/goal` is an explicit campaign command. It must bypass both intent routing and
   // the small genre-preset first-build contract, including the headless generator path
   // that calls this classifier before it can build a ParsedPiCommand.
@@ -215,6 +222,18 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       }
     }
     if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    // 모호한 새로 짓기(「마을 만들어줘」) — 묻지 않고 이 프로젝트가 지을 수 있는 장면 하나로 넓혀 바로 짓는다(vagueWiden.ts, 2026-11-03 사용자).
+    // 넓혔으면 되묻기를 지운다. 집은 외장+실내(both)로 짓는다 — 실내/야외가 갈리는 다른 요청(「방 만들어줘」 등)은 그대로 묻는다.
+    if (declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.widenSubject && !plan.readOnly) {
+      const decision = decideWiden(project, declared.intent.widenSubject, widenHistory(project), input.widenRandom);
+      if (decision) {
+        widen = decision;
+        rememberWiden(decision.modifier.id);
+        const space = declared.intent.space === "unclear" || declared.intent.space === "none"
+          ? (declared.intent.widenSubject === "house" ? "both" : "outdoor") : declared.intent.space;
+        declared = { ...declared, intent: { ...declared.intent, clarify: null, clarifyOptions: [], space } };
+      }
+    }
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     if (declared.intent.source === "llm" && declared.intent.clarify && declared.intent.mode !== "question") clarifyIntent = declared.intent;
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
@@ -321,9 +340,11 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
         ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
         ...villageTypeExposedTools(villageType),
+        ...(widen ? widenToolNames(widen.modifier) : []),
         ...(requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text) ? OPENING_ANIMATIC_AUTHORING_TOOLS : []),
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
+      if (widen) intentNote = intentNote ? `${widen.note}\n\n${intentNote}` : widen.note;
       if ((requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text)) && !(intentNote ?? "").includes("create_opening_animatic_shot")) {
         const openingNote = "[새로하기 오프닝·타이틀 — #2852 레이어드 도트 애니메틱 6샷 필수] 새 게임 제작 시 타이틀(set_title_screen title + backgroundResourceId:'oprn-still-...')과 새로하기 오프닝 **6샷(shot_1..shot_6)**도 반드시 함께 제작한다(generate_title_art·generate_opening_image 호출 금지, list_opening_media 의 oprn-still-kingdom-day·oprn-still-dark-citadel·oprn-still-snow-village·oprn-still-desert-ruin·oprn-still-farm-golden·oprn-still-forest-path 등(oprn-pack-still-* 는 목록에 보일 때만) 한 장면이 화면을 꽉 채우는 번들 배경 활용 — 분할 화면·게임 UI가 박힌 참고 스틸(suitableForOpening:false, 예 oprn-still-hero-dawn)은 거절된다): plan_opening(bible 포함, 6샷) → 6샷 각각 create_opening_animatic_shot(width:384,height:216,durationMs:6500) → set_opening_pixel_grid(384,216) → place_opening_background(6샷 서로 다른 oprn-still-*/oprn-pack-still-* 배경) → place_opening_charset_actor(charsetResourceId:'oprn-charset-heroes1', characterIndex:0..7, x:72, y:136, toX:200 걷기 포함) → upsert_opening_light_fx + animate_opening_camera → set_opening_caption(전 샷 #fff0dc 통일) → set_opening(6개 animatic shotId 연결) → review_opening. 제목 카드 한 장이나 정지 그림 슬라이드, 6샷 미만으로 끝내지 않는다.";
         intentNote = intentNote ? `${intentNote}\n\n${openingNote}` : openingNote;
@@ -353,7 +374,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   const team = input.piTeam && !plan.readOnly;
   const clarify = clarifyIntent && !plan.readOnly && !input.text.includes(CLARIFY_ANSWER_MARKER) ? formatIntentClarifyMessage(clarifyIntent) : undefined;
   if (clarify) routingAudit += " · 되묻기";
-  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}), ...(clarify ? { clarify } : {}) };
+  if (widen) routingAudit += ` · 넓힘 ${widen.modifier.id}`;
+  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}), ...(clarify ? { clarify } : {}),
+    ...(widen ? { widen: { id: widen.modifier.id, label: widen.modifier.label, traits: widen.modifier.traits, startLine: widen.startLine } } : {}) };
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */

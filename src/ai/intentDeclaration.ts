@@ -17,6 +17,8 @@ import type { RequestRequirement } from "./requestCoverage";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import { parseActionCombatRequirements, type AcceptanceTarget } from "./assistantAcceptance";
 import { estimateVillageSize, parseConstructionDeclaration, type ConstructionDeclaration } from "./constructionDeclaration";
+import { isWidenSubject } from "./vagueWiden";
+import type { WidenSubject } from "./vagueWidenCatalog";
 
 export type IntentMode = "create" | "modify" | "question" | "other";
 export type IntentSpace = "interior" | "outdoor" | "both" | "none" | "unclear";
@@ -103,6 +105,11 @@ export interface IntentDeclaration {
    * 원작 고유명(해리포터·호그워즈 등)은 그대로 쓰지 않는다 — 분위기와 구조만 가져와 새 이름을 짓는다.
    */
   readonly referenceWork?: string | null;
+  /**
+   * 대상만 말하고 어떤 것인지(장소·분위기·규모·특징)를 하나도 말하지 않은 새로 짓기 요청의 대상(「마을 만들어줘」→ village).
+   * 있으면 경로가 묻지 않고 실현 가능한 장면 수식어로 넓혀 바로 짓는다(vagueWiden.ts).
+   */
+  readonly widenSubject?: WidenSubject;
   readonly summary: string;
   /** 요청이 이름으로 말한 장소인데 아직 없는 것(템플릿 빈 풀밭을 대상으로 잡았던 선언을 코드가 돌린 경우) — 「작은 마을」. */
   readonly placeToBuild?: string;
@@ -202,7 +209,8 @@ Fields:
 - "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 build_hand_interior_room(plan) 로 짓는다(손 도트 v5) — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=create/modify 모두 작업할 기존 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 새 맵 자체를 요청하거나 모르면 null.
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false. 「이 작업·이걸·여기」처럼 가리키는 말만 있고 이름 붙은 대상이 없으면, 선택 영역이 주어진 한 그 선택 영역을 가리키는 것이니 true(계획만·미리보기·추천 요청도 마찬가지).
-- "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
+- "clarify": 도구가 실제로 갈릴 만큼 모호할 때만 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다. 「마을 만들어줘」「던전 만들어줘」「숲 만들어줘」「집 지어줘」「성 만들어줘」처럼 무엇을 짓는지만 말하고 어떤 것인지 말하지 않은 요청은 되묻지 않는다 — widenSubject 를 적고 clarify=null 로 둔다(코드가 지을 수 있는 장면으로 넓혀 바로 짓는다). 「집 지어줘」는 space="both"(외장+실내)로 둔다.
+- "widenSubject": mode=create 이고 사용자가 대상 낱말만 말했을 때(분위기·장소·테마·크기·수량·특징·작품 비유가 하나도 없을 때)만 "village"(마을·동네·도시) | "dungeon"(던전·동굴·지하) | "forest"(숲·숲길) | "house"(집·주택 한 채) | "castle"(성·성채·요새). 「사막 마을」「큰 마을」「집 3채 마을」「얼음 동굴」「여관 지어줘」처럼 무엇이든 하나라도 정해 주면 생략한다. 지금 맵을 고치는 요청·질문도 생략한다.
 - "clarifyOptions": clarify 가 있을 때 2~4개의 짧은 선택지 라벨. 없으면 [].
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. 집 한 채(place_terrain_house)는 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
@@ -436,6 +444,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
         const referenceWork = readString(parsed.referenceWork, 80);
         return referenceWork ? { referenceWork } : {};
       })(),
+      ...(mode === "create" && isWidenSubject(parsed.widenSubject) ? { widenSubject: parsed.widenSubject } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -557,6 +566,7 @@ export function formatIntentAudit(intent: IntentDeclaration, elapsedMs: number):
         intent.construction.targetName ? `name:${intent.construction.targetName}` : null,
       ].filter((part) => part !== null).join("/") || "declared"}`
       : null,
+    intent.widenSubject ? `widen=${intent.widenSubject}` : null,
     intent.tools.length > 0 ? `tools=${intent.tools.join(",")}` : null,
     `${elapsedMs}ms`,
   ];
