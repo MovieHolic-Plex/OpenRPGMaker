@@ -550,7 +550,7 @@ const authorSnowRoute: ToolDefinition = {
     for (const paint of gapArt) paint();
     const gapNote = out.reduce((n, m) => n + m.gaps.length, 0);
     return {
-      summary: `설원 길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.gaps.length ? ` 얼음 틈 ${m.gaps.length}` : ""}`).join(" → ")} · ${linkFrom ? `${from.id} ${side} 가장자리와 연결` : `${from.id} 와는 잇지 않음(첫 맵 입구 data.maps[0].entry 에 이벤트로 잇는다)`}${gapNote ? ` · 틈 자리는 data.maps[i].gaps(from→to)` : ""}`,
+      summary: `설원 길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.gaps.length ? ` 얼음 틈 ${m.gaps.length}` : ""}`).join(" → ")} · ${linkFrom ? `${from.id} ${side} 가장자리와 연결` : `${from.id} 와는 잇지 않음(첫 맵 입구 data.maps[0].entry 에 이벤트로 잇는다)`}${gapNote ? ` · 틈 자리는 data.maps[i].gaps(from→to) — 틈마다 place_field_obstacle({mapId, kind:"gap", x:from.x, y:from.y, requiresActorId 또는 requiresSkillId}) 로 건너기를 단다(틈은 칠해졌으니 다시 칠하지 않는다. upsert_event 로 순간 이동을 손으로 짜지 않는다)` : ""}`,
       data: { maps: out },
       ...(warnings.length ? { warnings } : {}),
     };

@@ -14,8 +14,13 @@ const SETTLEMENT_PROP = new RegExp(
   + "|^obj:house/",
 );
 
+// 길 위 짐 — 버려진 짐수레·자루 더미·건초 더미·말뚝 난간은 장터 세트에 있지만 길가에 놓이는 물건이다
+// (2026-11-03 조수 대조 B7 서리 가도: 「길 옆 반쯤 묻힌 버려진 짐수레」를 Opus 가 bd-pick-walled-market-wagon 으로 찾았는데 거절돼
+// 수레 없이 짐 상자만 놓았다. 코딩판도 같은 수레를 쓴다).
+const ROADSIDE_LOAD = /(^|\/)bd-pick-walled-market-(wagon|sack-pile|hay-bales|hitching-rail)$/u;
+
 export function rejectSettlementPropOnRoute(map: GameMap, objectId: string): void {
-  if (map.mapRole !== "field" || !SETTLEMENT_PROP.test(objectId)) return;
+  if (map.mapRole !== "field" || !SETTLEMENT_PROP.test(objectId) || ROADSIDE_LOAD.test(objectId)) return;
   throw new ToolError(
     `${objectId} 는 마을·항구·농장 소품이라 도로·필드 맵 ${map.id}(${map.name})에 찍지 않는다. `
     + "길섶은 list_spatial_designs({kind:\"object\",query:\"deep-forest-path\"}) 의 고사리·들꽃·돌·그루터기·쓰러진 통나무나 mountain-pass 소품, 나무(bd-tree-*)로 꾸민다.",
