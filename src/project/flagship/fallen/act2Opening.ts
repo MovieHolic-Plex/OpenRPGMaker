@@ -1535,10 +1535,18 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   const confess: Command[] = [
     cutBegin(),
     setSw(SW_B4_EDGE),
-    m2("m2-201-camera-control", { mode: "panTo", target: "screen", x: gapC, y: edgeY + 4, durationMs: "900", wait: "false" }),
+    // 화면 가운데를 길돌 두 줄 아래로 — 넷째 줄 아래였을 때는 위 대사창이 길돌 앞 일행·브람을 덮었다(독립 검수 r4).
+    m2("m2-201-camera-control", { mode: "panTo", target: "screen", x: gapC, y: edgeY + 2, durationMs: "900", wait: "false" }),
     // 넷이 그 줄로 몰려와 숲 쪽을 본다(먼 순찰은 조금 빨리). 길을 찾아 걷는다(approach) — 칸 수를 손으로 늘어놓지 않는다.
     ...allIds.map((id, i) => route(id, [{ kind: "setThrough", enabled: true }, { kind: "changeSpeed", delta: 2 },
       { kind: "approach", x: haltAt[i % haltAt.length]!.x, y: haltAt[i % haltAt.length]!.y, distance: 0 }, { kind: "turn", dir: "up" }], false)),
+    // 멈춘 순찰병은 더는 보는 빛(또렷한 시야 원)이 아니라 손에 든 작은 등불 — 시야 원 넷이 겹쳐 화면 가운데 큰 노란 덩어리가 됐다
+    // (독립 검수 r4 「벤다이어그램처럼 겹친 원」). 쫓는 동안만 원이 「들키는 자리」다.
+    ...allIds.flatMap((id, i) => [
+      { kind: "removeLight", id: `vision_${id}` } as unknown as Command,
+      { kind: "removeLight", id: `watch_lamp${i}` } as unknown as Command,
+      { kind: "addLight", source: { id: `halt_lamp${i}`, at: { eventId: id }, radius: 1.6, intensity: 0.6, color: "#ffc468", flicker: true } } as unknown as Command,
+    ]),
     wait(2400),
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.8, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
