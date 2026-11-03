@@ -516,8 +516,9 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
       { id: "player", at: { kind: "player" }, radius: 1.6, intensity: 0.3, color: "#ffc890" },
     ],
   });
-  // 해는 서쪽 낮은 곳(방위 262°, 고도 14°) — 그림자가 동쪽으로 서너 칸 눕는다. 진하기는 상한(0.65)에 가깝게: 곱하기 막 아래에서 한 번 더 어두워진다.
-  exec(project, "set_map_properties", { mapId: FS2_FROST_ID, sunlight: { enabled: true, azimuth: 262, altitude: 14, opacity: 0.6, softness: 1.5, heightScale: 1 } });
+  // 해는 서쪽 낮은 곳(방위 262°) — 그림자가 동쪽으로 눕는다. 고도 14° 는 집 높이의 네 배(16칸)로 뻗어 그림자끼리 이어진 계단 띠가 됐다(감독 r1) —
+  // 고도 24°·높이 0.8 배로 집 하나 너비 남짓, 가장자리는 부드럽게. 곱하기 막 아래에서 한 번 더 어두워지므로 진하기는 0.45.
+  exec(project, "set_map_properties", { mapId: FS2_FROST_ID, sunlight: { enabled: true, azimuth: 262, altitude: 24, opacity: 0.45, softness: 2.5, heightScale: 0.8 } });
   const first = L.lamps[0];
   if (!first) return;
   // 등불 기둥 밑동 칸(막힘)에 같은 층으로 — 그 앞 길에 서서 등을 바라보고 누른다.
