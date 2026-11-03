@@ -2,6 +2,7 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { Agent, get } from "node:http";
+import { openTopbarAiSettings } from "./topbarNavigation";
 
 const EVIDENCE = path.resolve("output/evidence/assistant-clean-glass/phase-1");
 
@@ -11,7 +12,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   await boot(page);
   const root = page.locator(".ai-chat-panel");
   const deck = page.locator(".ai-deck");
-  await page.getByTestId("topbar-ai-settings").click();
+  await openTopbarAiSettings(page);
   await page.getByTestId("ai-settings-tab-display").click();
   const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
   await expect(slider).toHaveValue("82");
@@ -36,7 +37,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   await expect(pill).toBeVisible({ timeout: 60_000 });
   expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("99%");
   expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe(before.background);
-  await page.getByTestId("topbar-ai-settings").click();
+  await openTopbarAiSettings(page);
   await page.getByTestId("ai-settings-tab-display").click();
   await expect(slider).toHaveValue("99");
   await slider.press("Home");

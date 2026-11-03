@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { isWikiExtraction } from "../wikiTransportFixture";
+import { openTopbarAiSettings, runPaletteCommand } from "./topbarNavigation";
 
 const evidence = path.resolve("output/evidence/ai-ui-fixes", process.env.AI_UI_PHASE ?? "green");
 mkdirSync(evidence, { recursive: true });
@@ -167,7 +168,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 
     test("F3 history to studio removes old deck and permits exit", async ({ page }) => {
       await history(page);
-      await page.getByTestId("topbar-ai-studio").click();
+      await runPaletteCommand(page, "AI 스튜디오", "topbar-ai-studio");
       await expect(page.getByTestId("ai-deck")).toBeHidden();
       await page.getByTestId("ai-studio-exit").click();
       await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-studio|is-history-open/);
@@ -182,7 +183,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     });
 
     test("F5 studio collapsed columns reclaim monitor width", async ({ page }) => {
-      await page.getByTestId("topbar-ai-studio").click();
+      await runPaletteCommand(page, "AI 스튜디오", "topbar-ai-studio");
       const shell = page.locator(".ai-studio-shell");
       const before = await geometry(page.getByTestId("ai-studio-monitor"));
       const columnsBefore = await shell.evaluate((n) => getComputedStyle(n).gridTemplateColumns);
@@ -198,7 +199,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     });
 
     test("F6 topbar settings immediately synchronize panel", async ({ page }) => {
-      await page.getByTestId("topbar-ai-settings").click();
+      await openTopbarAiSettings(page);
       // 페인별로 나뉘었으므로 탭을 오가며 고른다 — 수동 저장 버튼은 없고 change 가 자동 저장을 태운다.
       await page.getByTestId("ai-settings-tab-behavior").click();
       await choose(page, "ai-config-autonomy", "최대");
@@ -210,13 +211,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       await page.keyboard.press("End");
       expect(await page.getByTestId("ai-panel").evaluate((n) => n.style.getPropertyValue("--ai-background-opacity"))).toBe("100%");
       await page.getByTestId("ai-settings-close").click();
-      await expect(page.getByTestId("topbar-ai-settings")).toBeFocused();
+      // 2026-11 톱바 개편: AI 설정은 ⋯ 안의 항목이라 팝업이 닫힌 뒤 초점은 ⋯ 단추로 돌아간다.
+      await expect(page.getByTestId("menu-more-tools")).toBeFocused();
     });
 
     for (const kind of ["settings", "history"]) {
       test(`F7 ${kind} contains focus and restores opener`, async ({ page }) => {
-        const opener = page.getByTestId(kind === "settings" ? "topbar-ai-settings" : "ai-open-conversations");
-        await opener.click();
+        // 설정의 톱바 진입점은 ⋯ 안의 항목이다 — 닫으면 초점은 ⋯ 단추로 돌아간다(2026-11 톱바 개편).
+        const opener = page.getByTestId(kind === "settings" ? "menu-more-tools" : "ai-open-conversations");
+        if (kind === "settings") await openTopbarAiSettings(page);
+        else await opener.click();
         await page.getByTestId(`ai-${kind}-close`).focus();
         await page.keyboard.press("Shift+Tab");
         const inside = await page.getByTestId(`ai-${kind}-modal`).evaluate((n) => n.contains(document.activeElement));
@@ -240,7 +244,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 
     test("F8 neither settings entry exposes the retired idle-screen choices", async ({ page }) => {
       for (const entry of ["topbar", "panel"]) {
-        if (entry === "topbar") await page.getByTestId("topbar-ai-settings").click();
+        if (entry === "topbar") await openTopbarAiSettings(page);
         else {
           await page.getByTestId("ai-command-menu-toggle").click();
           await page.getByTestId("ai-command-menu-settings").click();

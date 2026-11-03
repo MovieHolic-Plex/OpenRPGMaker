@@ -65,6 +65,25 @@ export function openMockLoginModal(onIdentityChanged?: () => void): void {
   renderLoginModal({ kind: "email" }, onIdentityChanged);
 }
 
+/** ⌘K 「화면: 편집 이름 바꾸기」 — 톱바 신원 단추와 같은 메뉴를 톱바 오른쪽 아래에 연다. */
+export function openIdentityMenu(onIdentityChanged: () => void): void {
+  if (!canRenderFloatingUi()) return;
+  closeCommitHistoryPanel();
+  // 문서에서 떨어진 옛 메뉴(본문 교체 등)는 열린 것으로 치지 않는다 — ⌘K 가 아무것도 열지 못한다.
+  if (activeIdentityMenu?.isConnected) return;
+  closeIdentityMenu();
+  toggleIdentityMenu(null, currentHumanEditorIdentity(), onIdentityChanged);
+}
+
+/** ⌘K 「화면: 저장 기록 열기」 — 톱바 기록 단추와 같은 패널. */
+export function openCommitHistoryPanel(): void {
+  if (!canRenderFloatingUi()) return;
+  closeIdentityMenu();
+  if (activeCommitPanel?.isConnected) return;
+  closeCommitHistoryPanel();
+  toggleCommitHistoryPanel();
+}
+
 export function renderIdentityTopbarControl(onIdentityChanged: () => void): HTMLElement {
   const identity = currentHumanEditorIdentity();
   const title = `편집 신원 — ${identity.label}`;
@@ -231,11 +250,11 @@ function completeMockLogin(label: string, method: LoginMethod, onIdentityChanged
   if (!silent) toast("목업 로그인 신원을 설정했습니다", "ok");
 }
 
-function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIdentityChanged: () => void): void {
+function toggleIdentityMenu(anchor: HTMLElement | null, identity: EditorIdentity, onIdentityChanged: () => void): void {
   const alreadyOpen = Boolean(activeIdentityMenu);
   closeIdentityMenu();
   if (alreadyOpen) return;
-  anchor.setAttribute("aria-expanded", "true");
+  anchor?.setAttribute("aria-expanded", "true");
   // 자동으로 붙은 게스트 이름(「브라우저 0b5c」)의 꼬리는 기계 ID 다 — 입력칸에 채우지 않고 「게스트」를 자리표시로 보인다.
   const guest = /^브라우저\s+\S+$/u.test(identity.label.trim());
   const shown = guest ? "" : identity.label;
@@ -293,7 +312,8 @@ function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIde
       }),
     ],
   });
-  const rect = anchor.getBoundingClientRect();
+  // ⌘K 에서 열면 기준 단추가 없다 — 톱바 오른쪽 아래(⋯ 자리)에 띄운다.
+  const rect = anchor?.getBoundingClientRect() ?? { right: viewportWidth() - 12, bottom: 44 };
   // Prefer right-align under the icon so the menu stays near the topbar trailing cluster.
   const menuWidth = 220;
   const left = Math.max(8, Math.min(Math.round(rect.right - menuWidth), Math.round(viewportWidth() - menuWidth - 8)));

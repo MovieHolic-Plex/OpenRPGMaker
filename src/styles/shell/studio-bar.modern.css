@@ -8,7 +8,8 @@
    · 토큰만 쓴다(hex 0 · !important 0). 색은 tokens.css 의 cool white + indigo 사다리.
    · 32px 컨트롤 하나의 리듬. 글자 버튼(메뉴·도구)도, 아이콘 버튼도, 명령 팔레트도 32px.
    · 무게는 셋뿐 — 채운 인디고(▶ 테스트) / 테두리(스튜디오·명령 팔레트) / 고스트(나머지).
-   · 그리드 3열: 왼쪽(파일·자료) | 가운데(명령 팔레트) | 오른쪽(실행·화면·세션).
+   · 그리드 3열(2026-11 개편): 왼쪽(상품 점·경로) | 가운데(편집 칸 분절) | 오른쪽(자료집·소재·조수·저장됨·테스트 실행·⋯).
+     가운데 칸은 바의 정가운데에 선다. 모자라면 14절 맞춤이 양쪽 글자를 차례로 걷는다.
    ───────────────────────────────────────────────────────────────────────────────────────── */
 
 /* ── 1. 바 ─────────────────────────────────────────────────────────────────────────────── */
@@ -25,10 +26,10 @@
   column-gap: 12px;
   display: grid;
   flex-wrap: nowrap;
-  /* 양 끝은 내용 폭(max-content) — 왼쪽 묶음이 길어져도 가운데 칩 밑으로 흘러들지 않는다.
-     (1280 전문가에서 찾기 버튼 위에 명령 팔레트가 얹혀 클릭을 가로챈 실측 — 2026-09-03.)
-     가운데 칩은 남는 폭 안에서 중앙, 폭이 모자라면 칩이 먼저 줄어든다. */
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  /* 양 끝은 남는 폭을 똑같이 나눠(1fr) 가운데 분절이 바 한가운데에 선다(시안). 1fr 의 최솟값은 내용 폭이라
+     한쪽 묶음이 길면(영어 저장 문구 등) 가운데가 옆으로 비켜 서고, 바 전체가 모자랄 때만 바가 넘친다 —
+     topbarFit 이 그 넘침을 재서 14절 단계로 접는다(넘친 단추가 옆 칸 위에 그려져 클릭을 가로채지 않게, C-19). */
+  grid-template-columns: 1fr auto 1fr;
   /* 개편안 2단계(2026-11): 44px 한 줄. 컨트롤은 32px 그대로(포인터 상자 계약). */
   height: 44px;
   min-height: 44px;
@@ -46,19 +47,29 @@
 }
 
 .studio-bar-lead {
-  justify-self: start;
+  justify-self: stretch;
 }
 
 .studio-bar-center {
   display: flex;
   justify-content: center;
-  justify-self: stretch;
+  justify-self: center;
   min-width: 0;
 }
 
 .studio-bar .editor-topbar-trailing {
-  gap: 6px;
-  justify-self: end;
+  gap: 2px;
+  justify-self: stretch;
+  /* 오른쪽 단추는 줄지 않는다(자기 내용 폭이 칸 최솟값) — 모자라면 왼쪽 경로가 먼저 말줄임으로 줄고,
+     그래도 모자라면 바가 넘쳐 14절 맞춤이 단계를 올린다. */
+  min-width: max-content;
+}
+
+/* 오른쪽 정렬은 첫 단추의 auto 여백으로 한다. justify-content:flex-end 는 넘친 내용을 왼쪽(가운데 칸 위)으로 흘려
+   scrollWidth 가 넘침을 못 봐서 topbarFit 이 접지 않았다(en 1024 실측: 자료집이 레이어 분절 위에 그려짐).
+   auto 여백은 자리가 모자라면 0 이 되어 넘침이 오른쪽으로 가고, 맞춤이 그걸 잰다. */
+.studio-bar-trailing > :first-child {
+  margin-left: auto;
 }
 
 /* ── 2. 브랜드 ─────────────────────────────────────────────────────────────────────────── */
@@ -88,10 +99,11 @@
   align-items: center;
   color: var(--text-1);
   display: inline-flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   font: 500 13px/1 var(--font-ui);
   gap: 6px;
   margin-left: -6px;
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -101,6 +113,7 @@
 
 .studio-bar .studio-crumb-map-name {
   max-width: 180px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -168,6 +181,121 @@
 
 .studio-tool-button {
   padding: 0 10px 0 8px;
+}
+
+/* 오른쪽 고스트 단추(자료집·소재·조수) — 시안처럼 보조 글자색·보통 굵기·작은 아이콘. 호버만 진해진다. */
+.studio-bar-trailing .studio-tool-button {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-weight: 500;
+}
+
+.studio-bar-trailing .studio-tool-button svg {
+  color: currentColor;
+  height: 16px;
+  width: 16px;
+}
+
+.studio-bar-trailing .studio-tool-button:hover,
+.studio-bar-trailing .studio-tool-button:focus-visible {
+  color: var(--text-1);
+}
+
+/* 저장 — 연한 글자 단추 「저장됨 HH:MM」. 누르면 저장, 실패면 위험색 글자. */
+.studio-save-wrap {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.studio-bar .studio-save-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  font: 400 12px/1 var(--font-ui);
+  height: 32px;
+  margin: 0 4px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.studio-bar .studio-save-button:hover,
+.studio-bar .studio-save-button:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-2);
+  outline: none;
+}
+
+.studio-bar .studio-save-button:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-bar .studio-save-button.is-failing {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ▷ 테스트 실행 — 상단 바에서 강조색을 채우는 유일한 단추. */
+.studio-bar-trailing > .topbar-test-play-wrap {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-left: 2px;
+}
+
+.studio-bar-trailing .topbar-test-play {
+  align-items: center;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 13px/1 var(--font-ui);
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px 0 10px;
+  white-space: nowrap;
+}
+
+.studio-bar-trailing .topbar-test-play:hover,
+.studio-bar-trailing .topbar-test-play:focus-visible {
+  background: var(--accent-hover);
+  filter: none;
+  outline: none;
+}
+
+.studio-bar-trailing .topbar-test-play:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-bar-trailing .topbar-test-play-glyph {
+  display: inline-flex;
+}
+
+.studio-bar-trailing .topbar-test-play-glyph svg {
+  height: 14px;
+  width: 14px;
+}
+
+/* ⋯ 더 보기 — 늘 보인다(도움말·언어·AI 설정의 집). 32×32 포인터 상자. */
+.studio-bar .studio-more-button {
+  flex: 0 0 32px;
+  margin-left: 2px;
+}
+
+/* 가운데 편집 칸 — 지형 · 바닥 · 상위 · 이벤트를 한 안쪽 바탕에 둔다. 칸 모양은 header-layer-switcher.css. */
+.studio-bar .studio-layer-segment {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 8px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0;
+  padding: 2px;
 }
 
 /* 프로젝트 이름 — 굵게, 길면 말줄임. 톱바가 「지금 어느 프로젝트인가」를 말하는 유일한 자리다. */
@@ -420,33 +548,6 @@
   padding: 0 8px 0 10px;
 }
 
-/* 저장 상태 폭은 1500px 이하에서 먼저 줄인다. */
-@media (max-width: 1500px) {
-  .studio-bar .topbar-save-status {
-    flex-basis: 165px;
-    max-width: 165px;
-  }
-}
-
-/* 1599px까지 명령 칩은 아이콘으로 유지한다. 1501px 경계에서 키캡만 남기면
-   표준 모드에서 키캡이 버튼 밖으로 흘러 실행 묶음과 겹친다. 1600px부터
-   아이콘·라벨·키캡을 함께 보여 줄 수 있는 폭이 생긴다. */
-@media (max-width: 1599px) {
-  .studio-bar .studio-command-center {
-    flex: 0 0 32px;
-    justify-content: center;
-    min-width: 32px;
-    padding-left: 0;
-    padding-right: 0;
-    width: 32px;
-  }
-
-  .studio-command-center .workspace-command-chip-label,
-  .studio-command-center .workspace-command-chip-key {
-    display: none;
-  }
-}
-
 .studio-bar .studio-command-center:hover,
 .studio-bar .studio-command-center:focus-visible {
   background: var(--bg-raised);
@@ -484,82 +585,7 @@
   padding: 3px 5px;
 }
 
-/* 가운데 칸이 아이콘+라벨+키캡을 다 못 담으면(언어·좌우 묶음 길이에 따라 1600 이상에서도) 라벨·키캡을
-   걷고 아이콘만 둔다 — 키캡이 잘리거나 라벨이 0px 로 사라진 채 칩만 남지 않게(2026-10-22 VQA C15). */
-.studio-bar .studio-bar-center {
-  container-type: inline-size;
-}
-
-@container (max-width: 169px) {
-  .studio-bar .studio-command-center {
-    flex: 0 0 32px;
-    justify-content: center;
-    min-width: 32px;
-    padding-left: 0;
-    padding-right: 0;
-    width: 32px;
-  }
-
-  .studio-command-center .workspace-command-chip-label,
-  .studio-command-center .workspace-command-chip-key {
-    display: none;
-  }
-}
-
-/* ── 6. 실행 묶음: ▶ 테스트 | ⚔ ─────────────────────────────────────────────────────── */
-.studio-run-group {
-  align-items: stretch;
-  display: inline-flex;
-  height: 32px;
-}
-
-.studio-run-group .topbar-test-play-wrap {
-  display: inline-flex;
-}
-
-.studio-run-group .topbar-test-play {
-  border: 0;
-  border-radius: var(--radius-s) 0 0 var(--radius-s);
-  font: 700 13px/1 var(--font-ui);
-  height: 32px;
-  padding: 0 12px;
-}
-
-.studio-run-group .topbar-test-play:hover,
-.studio-run-group .topbar-test-play:focus-visible {
-  filter: none;
-  background: var(--accent-hover);
-  outline: none;
-}
-
-.studio-run-group .topbar-test-play:focus-visible {
-  box-shadow: var(--focus-ring);
-}
-
-.studio-run-group .topbar-test-play-glyph {
-  display: inline-flex;
-}
-
-.studio-run-group .topbar-test-play-glyph svg {
-  height: 14px;
-  width: 14px;
-}
-
-.studio-run-group .quick-battle-test-button {
-  background: var(--accent-muted);
-  border: 0;
-  border-left: 1px solid var(--bg-base);
-  border-radius: 0 var(--radius-s) var(--radius-s) 0;
-  color: var(--accent);
-}
-
-.studio-run-group .quick-battle-test-button:hover,
-.studio-run-group .quick-battle-test-button:focus-visible {
-  background: var(--accent-border);
-  border-color: var(--bg-base);
-  color: var(--accent);
-}
-
+/* ── 6. 실행 — ▷ 테스트 실행은 오른쪽 묶음 규칙(3절)이 그린다. 예전 ▶|⚔ 묶음(studio-run-group)은 2026-11 개편에서 걷었다. */
 /* 스튜디오 토글 — 테두리 무게. 켜지면 인디고(01-shell-topbar-team.css 의 .is-on 유지). */
 .studio-bar .topbar-ai-studio {
   background: transparent;
@@ -607,16 +633,6 @@
 .workspace-panels-icon svg {
   height: 18px;
   width: 18px;
-}
-
-/* 세션 묶음(도움말·기록·신원·AI 설정·전체화면)은 헤어라인으로 나눈다. */
-.studio-icon-cluster {
-  align-items: center;
-  border-left: 1px solid var(--border-subtle);
-  display: inline-flex;
-  gap: 2px;
-  margin-left: 2px;
-  padding-left: 8px;
 }
 
 /* ── 8. 메뉴 팝업 ─────────────────────────────────────────────────────────────────────── */
@@ -859,224 +875,69 @@
 
 /* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
 
-/* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
-@media (max-width: 1559px) {
-  /* 명령 아이콘의 32px을 먼저 확보하고, 왼쪽 저장 상태가 남은 폭 안에서 줄어든다. */
+/* ── 12. 좁은 뷰포트 — 2026-11 개편부터 폭 경계로 접지 않는다 ────────────────────────────────
+   예전 배치는 명령 칩·실행 묶음·스튜디오·보기 이름표를 1559/1439/1279/1119px 경계로 접었다. 그 단추들은 ⌘K 로
+   갔고, 남은 단추는 14절 맞춤이 실제 넘침을 재서 접는다(언어·이름 길이마다 경계를 다시 잴 필요가 없다).
+   남은 폭 규칙은 여백뿐이다. window-controls.css 의 창 단추용 사본도 같은 원칙이다. */
+@media (max-width: 1279px) {
   .oprn-menu-bar.studio-bar {
-    column-gap: 4px;
-    grid-template-columns: minmax(0, 1fr) 32px minmax(0, max-content);
+    column-gap: 8px;
     padding-left: 8px;
     padding-right: 8px;
-  }
-
-  .studio-bar-center {
-    display: flex;
-    width: 32px;
-  }
-
-  .studio-bar-lead {
-    /* justify-self:start의 내용 폭이 그리드를 넘으면 찾기를 명령 아이콘이 덮는다.
-       컨트롤을 자르지 않고 flex 항목(저장 상태)을 실제 그리드 폭 안에서 줄인다. */
-    width: 100%;
-  }
-
-  .studio-run-group .topbar-test-play-label {
-    display: none;
-  }
-
-  .studio-run-group .topbar-test-play {
-    justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
-    width: 32px;
-  }
-
-  .studio-bar .topbar-ai-studio {
-    justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
-    width: 32px;
-  }
-
-  .studio-bar .topbar-ai-studio-label {
-    display: none;
-  }
-
-  .studio-bar .topbar-ai-studio-icon {
-    display: inline-flex;
-  }
-
-  .studio-bar .topbar-ai-studio-icon svg {
-    height: 18px;
-    width: 18px;
-  }
-
-  .studio-bar .workspace-panels-label {
-    display: none;
-  }
-
-  .studio-bar .workspace-panels-button {
-    gap: 0;
-    justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
-    width: 32px;
-  }
-
-  .studio-bar .workspace-panels-button .oprn-menu-item-chevron {
-    display: none;
-  }
-
-}
-
-@media (max-width: 1279px) {
-  .studio-bar .editor-product-brand-text {
-    display: none;
-  }
-
-  .studio-bar .editor-product-brand {
-    margin-right: 0;
   }
 
   .studio-project-button .oprn-menu-item-label {
     max-width: 140px;
   }
-
 }
 
-/* 1439 이하: 왼쪽 도구 이름표(찾기·이벤트)까지 접는다. 1280 에서 레이어 분절과 명령 칩이
-   24~32px 겹치던 실측(2026-10-21 UI VQA R01) — 이름은 title/aria-label 로 남는다. */
-@media (max-width: 1439px) {
-  .studio-tool-button .studio-tool-button-label {
-    display: none;
-  }
-
-  .studio-tool-button {
-    flex: 0 0 32px;
-    justify-content: center;
-    padding: 0;
-    width: 32px;
-  }
-}
-
-@media (max-width: 1119px) {
-  .studio-tool-button .studio-tool-button-label,
-  .studio-bar .workspace-panels-label {
-    display: none;
-  }
-
-  .studio-tool-button {
-    flex: 0 0 32px;
-    justify-content: center;
-    padding: 0;
-    width: 32px;
-  }
-
-  .studio-bar .workspace-panels-button {
-    padding: 0;
-  }
-
-  .studio-bar .topbar-save-status {
-    flex-basis: 145px;
-    max-width: 145px;
-  }
-}
-
-/* ── 13. 태블릿 폭(<960) — 세 묶음이 한 줄에 들어가야 한다 ────────────────────────────────
-   왼쪽 401px + 오른쪽 441px 이 900px 아래로 내려가면 그리드의 minmax(0,1fr) 왼쪽 칸이 내용을
-   못 담아 도구·저장·검색·테스트·이벤트 버튼이 한 자리에 포개졌다(2026-09-24 visual QA, 768px).
-   이름표를 먼저 걷는다 — AI 연결 칩은 점만(title 이 이름), 간격은 2px, 전체화면은
-   브라우저가 이미 제공하므로 숨긴다. */
+/* ── 13. 태블릿 폭(<960) — 간격만 줄인다. 접기는 14절 맞춤이 한다 ─────────────────────────── */
 @media (max-width: 959px) {
-  .studio-bar .ai-connection-chip {
-    height: 32px;
-    justify-content: center;
-    padding: 0;
-    width: 32px;
-  }
-
-  .studio-bar .ai-connection-chip .ai-connection-label {
-    display: none;
-  }
-
   .studio-bar-lead,
   .studio-bar .editor-topbar-trailing {
     gap: 2px;
   }
-
 }
 
 /* ── 14. 넘침 맞춤 — topbarFit.ts 가 실제 넘침을 재서 data-fit-level 을 올린다(누적) ───────────────────
-   폭 경계(미디어 쿼리)만으로는 언어·프로젝트 이름·연결 문구 조합을 다 못 막아, 영어 1440 에서 찾기가
-   ▶·전투 버튼 위에 그려져 클릭을 가로채었다(2026-10-21 UI 감사 01-shell-01). */
-.studio-bar .studio-tools-more {
+   폭 경계(미디어 쿼리)만으로는 언어·프로젝트 이름·저장 문구 조합을 다 못 막아, 넘친 단추가 옆 칸 단추 위에
+   그려져 클릭을 가로챘다(2026-10-21 UI 감사 01-shell-01). 순서: 맵 이름 → 자료집·소재·조수 글자 → 상품 이름 → 가로 밀기. */
+
+/* 1단계: 경로의 맵 칸은 맵 트리가 이미 말하므로 넘치면 가장 먼저 걷는다(찌그러뜨리지 않는다). */
+.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-crumb-map {
   display: none;
 }
 
-.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-tools-more {
-  display: inline-flex;
-}
-
-/* 1단계: 세계관·음악·찾기·전체화면을 「도구 더 보기」 메뉴로 옮긴다(메뉴 항목이 같은 이름·단축키를 보인다).
-   전체화면은 예전에 960px 아래에서 그냥 사라졌다 — 이제는 메뉴에서 닿는다. */
-.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-bar-lead > :is([data-testid="toolbar-world"], [data-testid="toolbar-sound-test"], [data-testid="toolbar-search"]),
-.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .oprn-window-control {
+/* 2단계: 오른쪽 고스트 단추는 아이콘만 둔다 — 이름은 title·aria-label 이 말한다. */
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"]) .studio-bar-trailing .studio-tool-button-label {
   display: none;
 }
 
-.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .ai-connection-chip {
-  height: 32px;
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"]) .studio-bar-trailing .studio-tool-button {
+  flex: 0 0 32px;
   justify-content: center;
   padding: 0;
   width: 32px;
 }
 
-.studio-bar:is([data-fit-level="2"], [data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .ai-connection-chip .ai-connection-label {
+/* 3단계: 상품 이름표 글자(장식)를 걷는다. 점 「O」는 남는다. */
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"]) .editor-product-brand-text {
   display: none;
 }
 
-.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .header-layer-switcher {
-  margin-inline: 2px;
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"]) .studio-project-button .oprn-menu-item-label {
+  max-width: 96px;
 }
 
-.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .left-layer-btn {
-  padding-inline: 5px;
-}
-
-.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .studio-project-button .oprn-menu-item-label {
-  max-width: 72px;
-}
-
-/* 경로의 맵 칸은 맵 트리가 이미 말하므로 넘치면 가장 먼저 걷는다(찌그러뜨리지 않는다). */
-.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-crumb-map {
-  display: none;
-}
-
-/* 1599px 이하에서는 맵 칸이 세계관·음악·찾기 아이콘을 더 보기로 밀어낸다(ko 1440 맞춤 0→1 실측) — 걷는다. */
-@media (max-width: 1599px) {
-  .studio-bar .studio-crumb-map {
-    display: none;
-  }
-}
-
-/* 4단계: 상품 이름표(장식)를 걷는다. */
-.studio-bar:is([data-fit-level="4"], [data-fit-level="5"]) .editor-product-brand {
-  display: none;
-}
-
-/* 5단계(200% 확대·아주 좁은 창): 그래도 넘치면 묶음을 겹치지 않고 상단 바를 가로로 민다.
-   예전에는 왼쪽 묶음이 가운데·오른쪽 묶음 밑으로 흘러들어 넘침 단추 위에 「랜덤 전투」가 그려지고
-   레이어 「이벤트」 자리를 「테스트 실행」이 가로챘다(C-19). 단추는 모두 제자리에서 눌리고, Tab 초점은 스스로 보이는 곳까지 민다. */
-.oprn-menu-bar.studio-bar[data-fit-level="5"] {
-  grid-template-columns: max-content 32px max-content;
+/* 4단계(200% 확대·아주 좁은 창): 그래도 넘치면 묶음을 겹치지 않고 상단 바를 가로로 민다(C-19).
+   단추는 모두 제자리에서 눌리고, Tab 초점은 스스로 보이는 곳까지 민다. */
+.oprn-menu-bar.studio-bar[data-fit-level="4"] {
+  grid-template-columns: max-content max-content max-content;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
 }
 
-.studio-bar[data-fit-level="5"] .studio-bar-lead {
-  width: auto;
-}
 
 /* ── 15. 상태 줄 — 지금 도구와 저장 상태를 글자로(IS-009·IS-036) ─────────────────────────── */
 .studio-status-strip {

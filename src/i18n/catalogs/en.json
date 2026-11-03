@@ -19043,4 +19043,13 @@
 "Google 계정의 기본 모델(Gemini 4 Argon)로 해요.":"Uses the Google account's default model (Gemini 4 Argon).",
 "{0} 설정에서 바꿀 수 있어요.":"{0} You can change this in Settings.",
 "연결됨: {0} · 이걸로 시작":"Connected: {0} · Start with this",
-"{0}(으)로 시작해요. {1}":"Starting with {0}. {1}"}
+"{0}(으)로 시작해요. {1}":"Starting with {0}. {1}",
+"화면: 랜덤 전투 테스트":"Screen: Random battle test",
+"화면: AI 스튜디오 열기/닫기":"Screen: Open/close AI Studio",
+"화면: 저장 기록 열기":"Screen: Open save history",
+"화면: 편집 이름 바꾸기":"Screen: Change editing name",
+"화면: 전체화면 전환":"Screen: Toggle fullscreen",
+"화면: 패널 보기 — {0}":"Screen: View panel: {0}",
+"편집 칸":"Edit layer",
+"조수 패널을 아직 불러오는 중입니다":"The assistant panel is still loading",
+"AI 설정 · {0}":"AI settings · {0}"}

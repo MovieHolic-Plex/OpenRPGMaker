@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   openAudioTestDialog: vi.fn(),
   openMapEventSearchModal: vi.fn(),
   openAiSettingsModal: vi.fn(),
+  openAiAssistantPanel: vi.fn((): boolean => true),
   saveProjectNow: vi.fn(async () => true),
   createProjectFolderWithSeed: vi.fn(async (_title: string, _seed: Project) => true),
   openConceptFeedOverlay: vi.fn(async (_mode: "menu" | "welcome") => "closed" as const),
@@ -33,6 +34,10 @@ vi.mock("@/editor/panels/worldEntries", () => ({ openWorldPanel: mocks.openWorld
 vi.mock("@/editor/panels/audioTestDialog", () => ({ openAudioTestDialog: mocks.openAudioTestDialog }));
 vi.mock("@/editor/panels/mapEventSearchModal", () => ({ openMapEventSearchModal: mocks.openMapEventSearchModal }));
 vi.mock("@/editor/panels/aiSettingsModal", () => ({ openAiSettingsModal: mocks.openAiSettingsModal }));
+vi.mock("@/editor/aiAssistantBridge", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/editor/aiAssistantBridge")>();
+  return { ...actual, openAiAssistantPanel: mocks.openAiAssistantPanel };
+});
 vi.mock("@/editor/saveActions", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/saveActions")>();
   return { ...actual, saveProjectNow: mocks.saveProjectNow };
@@ -158,7 +163,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   it("동작마다 testid 는 톱바+팝업 전체에서 한 번씩만 나온다", () => {
     // Break: 같은 동작이 두 자리에 놓여 testid 가 겹친다(예: 테스트 실행 네 자리).
     const topbar = render();
-    for (const menuId of ["menu-project", "menu-help"]) {
+    for (const menuId of ["menu-project", "menu-more-tools"]) {
       if (findByTestId(topbar, menuId)) openMenu(topbar, menuId);
     }
     const ids = allTestIds(topbar).filter((id) => !id.startsWith("menu-popup-"));
@@ -173,7 +178,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     let topbar = render();
     const button = findByTestId(topbar, "menu-project");
     expect(button?.textContent).toContain("달빛 항구");
-    expect(button?.getAttribute("title")).toBe("프로젝트 — 달빛 항구");
+    expect(button?.getAttribute("title")).toBe("프로젝트 메뉴 — 달빛 항구");
 
     store.replace({ ...project, meta: { ...project.meta, title: "   " } });
     expect(projectMenuLabel()).toBe("제목 없는 프로젝트");
@@ -205,8 +210,8 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
   });
 
-  it("저장 버튼: title 은 정확히 「프로젝트 저장 (Ctrl+S)」, 누르면 saveProjectNow, 점은 autosave 상태를 따른다", () => {
-    // Break: e2e 계약(title)이 깨지거나, 점이 상태를 안 따라가 늘 회색으로 남는다.
+  it("저장 글자 단추: title 은 정확히 「프로젝트 저장 (Ctrl+S)」, 누르면 saveProjectNow, 글자는 autosave 상태를 말한다", () => {
+    // Break: e2e 계약(title)이 깨지거나, 글자가 상태를 안 따라가 늘 「변경 없음」으로 남거나, 실패가 위험색이 아니다.
     let listener: ((state: AutoSaveState) => void) | null = null;
     vi.spyOn(store, "getAutoSaveState").mockReturnValue({ kind: "idle" });
     vi.spyOn(store, "subscribeAutoSave").mockImplementation((fn) => { listener = fn; return () => { listener = null; }; });
@@ -214,18 +219,29 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     const save = findByTestId(topbar, "toolbar-save");
     expect(save).not.toBeNull();
     expect(save?.getAttribute("title")).toBe("프로젝트 저장 (Ctrl+S)");
+    expect(save?.getAttribute("aria-keyshortcuts")).toBe("Control+S");
     expect(save?.dataset.autosaveKind).toBe("idle");
+    // 저장 글자는 오른쪽 묶음에 있다(시안: 조수 뒤, 테스트 실행 앞).
+    expect(findByTestId(findByTestId(topbar, "editor-topbar-trailing") as FakeElement, "toolbar-save")).not.toBeNull();
 
     save?.click();
     expect(mocks.saveProjectNow).toHaveBeenCalledTimes(1);
 
     listener?.({ kind: "saving" });
     expect(save?.dataset.autosaveKind).toBe("saving");
+    expect(save?.textContent).toBe("저장 중");
     listener?.({ kind: "saved", at: new Date(2026, 8, 3, 9, 7).getTime() });
     expect(save?.dataset.autosaveKind).toBe("saved");
+    expect(save?.textContent).toBe("저장됨 09:07");
     expect(findByTestId(topbar, "toolbar-save-autosave")?.textContent).toBe("자동 저장됨 09:07");
     listener?.({ kind: "error", message: "network", retryCount: 1 });
     expect(save?.dataset.autosaveKind).toBe("error");
+    expect(save?.textContent).toBe("저장 실패");
+    expect(save?.className).toContain("is-failing");
+    listener?.({ kind: "error", message: "임시", code: "session-not-persisted" });
+    expect(save?.dataset.autosaveKind).toBe("unsaved-session");
+    expect(save?.textContent).toBe("저장 안 함(임시)");
+    expect(save?.className).not.toContain("is-failing");
     expect(autosaveStatusText({ kind: "pending" })).toBe("저장 중");
   });
 
@@ -238,34 +254,68 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(mocks.openResourceModal).toHaveBeenCalledTimes(1);
   });
 
-  it("세계관·음악·찾기 인라인 버튼이 각 창을 연다", () => {
-    // Break: 인라인 버튼이 장식으로만 남는다(눌러도 아무 일 없음).
+  it("조수 단추가 조수 도크를 펼친다", () => {
+    // Break: 시안의 「조수」 단추가 장식으로만 남는다(눌러도 아무 일 없음).
     const topbar = render();
-    findByTestId(topbar, "toolbar-world")?.click();
-    findByTestId(topbar, "toolbar-sound-test")?.click();
-    findByTestId(topbar, "toolbar-search")?.click();
-    expect(mocks.openWorldPanel).toHaveBeenCalledTimes(1);
-    expect(mocks.openAudioTestDialog).toHaveBeenCalledTimes(1);
-    expect(mocks.openMapEventSearchModal).toHaveBeenCalledTimes(1);
+    const assistant = findByTestId(topbar, "topbar-assistant");
+    expect(assistant?.textContent).toContain("조수");
+    assistant?.click();
+    expect(mocks.openAiAssistantPanel).toHaveBeenCalledTimes(1);
   });
 
-  it("AI 설정은 ⚙ 버튼이 집이다", () => {
+  it("오른쪽 묶음은 시안 순서다 — 자료집 · 소재 · 조수 · 저장됨 · ▷ 테스트 실행 · ⋯", () => {
+    // Break: 세션·디버그 단추가 다시 톱바에 늘어서 초보자의 첫 화면을 채운다.
     const topbar = render();
-    findByTestId(topbar, "topbar-ai-settings")?.click();
+    const trailing = findByTestId(topbar, "editor-topbar-trailing") as FakeElement;
+    const order: string[] = [];
+    const walk = (node: FakeElement): void => {
+      if (node.dataset.testid) order.push(node.dataset.testid);
+      for (const child of node.children) walk(child);
+    };
+    walk(trailing);
+    const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play", "menu-more-tools"];
+    expect(order.filter((id) => shown.includes(id))).toEqual(shown);
+    // ⌘K 로만 닿는 것 — 톱바 어디에도 단추가 없다.
+    for (const gone of [
+      "toolbar-world", "toolbar-sound-test", "toolbar-search", "topbar-battle-test", "topbar-ai-studio",
+      "workspace-panels-button", "workspace-command-palette-button", "commit-history-toggle", "topbar-identity",
+      "window-fullscreen", "topbar-save-status", "studio-status-strip", "ai-connection-chip", "studio-run-group",
+    ]) {
+      expect(findByTestId(topbar, gone), gone).toBeNull();
+    }
+  });
+
+  it("⋯ 더 보기는 도움말 · 언어 · AI 설정만 담고, AI 설정이 모달을 연다", () => {
+    const topbar = render();
+    const more = findByTestId(topbar, "menu-more-tools");
+    expect(more?.getAttribute("aria-label")).toBe("더 보기");
+    const popup = openMenu(topbar, "menu-more-tools");
+    expect((popup?.children ?? []).map((child) => child.dataset.testid).filter(Boolean)).toEqual(["menu-help", "menu-language", "topbar-ai-settings"]);
+    expect(findByTestId(popup as FakeElement, "topbar-ai-settings")?.textContent).toContain("AI 설정");
+    findByTestId(popup as FakeElement, "topbar-ai-settings")?.click();
     expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);
   });
 
-  it("오른쪽 묶음: ▶ 테스트와 ⚔ 가 한 실행 그룹, 도움말은 아이콘 메뉴, 전체화면은 남는다", () => {
+  it("도움말은 ⋯ 안의 하위 메뉴다 — 단축키·가이드·정보", () => {
     const topbar = render();
-    const group = findByTestId(topbar, "studio-run-group");
-    expect(group).not.toBeNull();
-    expect(findByTestId(group as unknown as FakeElement, "mode-play")).not.toBeNull();
-    expect(findByTestId(group as unknown as FakeElement, "topbar-battle-test")).not.toBeNull();
-    const help = findByTestId(topbar, "menu-help");
-    expect(help?.getAttribute("aria-label")).toBe("도움말");
-    expect(help?.textContent).toContain("도움말");
-    const popup = openMenu(topbar, "menu-help");
-    expect((popup?.children ?? []).map((child) => child.dataset.testid)).toEqual(["menu-help-shortcuts", "menu-help-about"]);
-    expect(findByTestId(topbar, "window-fullscreen")).not.toBeNull();
+    const body = fake(document.body as unknown as HTMLElement);
+    openMenu(topbar, "menu-more-tools");
+    findByTestId(body, "menu-help")?.click();
+    const popup = findByTestId(body, "menu-popup-help");
+    expect((popup?.children ?? []).map((child) => child.dataset.testid)).toEqual(["menu-help-shortcuts", "menu-help-guide", "menu-help-about"]);
+  });
+
+  it("가운데 칸은 편집 칸 한 분절이다 — 지형 · 바닥 · 상위 · 이벤트", () => {
+    const topbar = render();
+    const center = findByTestId(topbar, "studio-bar-center") as FakeElement;
+    const segment = findByTestId(center, "studio-layer-segment") as FakeElement;
+    expect(segment).not.toBeNull();
+    const ids: string[] = [];
+    const walk = (node: FakeElement): void => {
+      if (node.dataset.testid?.startsWith("layer-")) ids.push(node.dataset.testid);
+      for (const child of node.children) walk(child);
+    };
+    walk(segment);
+    expect(ids).toEqual(["layer-relief", "layer-lower", "layer-upper", "layer-event"]);
   });
 });

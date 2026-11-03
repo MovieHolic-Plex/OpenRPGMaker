@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openTopbarAiSettings } from "./topbarNavigation";
 
 test("edit mode restores existing chrome, removes the bottom bar, and exposes scrollable AI settings", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
@@ -6,27 +7,27 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   await page.goto("/?freshProject=1");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId("topbar-ai-settings")).toBeVisible();
-
-  // 맵 메뉴(2026-08-26)·게임 메뉴·클래식 툴바 행·작업 칩(2026-09-03)은 없다. 전문가의 도구 창은 인라인 버튼.
+  // 맵 메뉴(2026-08-26)·게임 메뉴·클래식 툴바 행·작업 칩(2026-09-03)은 없다.
+  // 2026-11 톱바 개편: 세계관·보기·명령 팔레트 칩·랜덤 전투는 ⌘K 로, 도움말·AI 설정은 ⋯ 안으로 옮겼다.
   for (const testId of [
     "menu-project",
     "toolbar-save",
     "toolbar-database",
     "toolbar-resource-manager",
-    "toolbar-world",
-    "menu-help",
-    "workspace-panels-button",
-    "workspace-command-palette-button",
+    "topbar-assistant",
     "topbar-test-play",
-    "topbar-battle-test",
+    "menu-more-tools",
   ]) {
     await expect(page.getByTestId(testId)).toBeVisible();
+  }
+  for (const moved of ["toolbar-world", "workspace-panels-button", "workspace-command-palette-button", "topbar-battle-test"]) {
+    await expect(page.getByTestId(moved)).toHaveCount(0);
   }
 
   for (const testId of [
     "editor-statusbar",
     "db-connection-status",
+    "ai-connection-chip",
     "toggle-layout-bboxes",
     "ai-connection-status",
     "ai-settings-toggle",
@@ -35,7 +36,7 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
     await expect(page.getByTestId(testId)).toHaveCount(0);
   }
 
-  await page.getByTestId("topbar-ai-settings").click();
+  await openTopbarAiSettings(page);
   await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("position", "fixed");
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("display", "grid");

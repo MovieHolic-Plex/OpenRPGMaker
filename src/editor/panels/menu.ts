@@ -11,6 +11,8 @@ import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderAiConnectionChip } from "@/editor/panels/aiConnectionChip";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import {
   AI_STUDIO_CHANGE_EVENT,
   readStudioMode,
@@ -79,6 +81,13 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 // 작업 칩(레이어 전환·자료집 버튼·▶ 테스트의 복제). 맵 메뉴는 2026-08-26 에 같은 이유로 사라졌다.
 // 초보/표준/전문가 편집 모드는 2026-09-27 에 없앴다 — 편집기 화면은 하나다. 초보 전용이던
 // 「도구 ▾」 메뉴도 그때 걷었다(자료집·소재·세계관·음악·찾기가 모두 인라인 버튼이다).
+//
+// 2026-11 개편안 배치(시안 mock-editor-*.png) — 처음 30분 쓰는 사람에게 필요한 것만 보인다:
+//   • 왼쪽  = 상품 점 · 경로 「프로젝트 ▾ / 지금 맵」.
+//   • 가운데 = 편집 칸 지형 · 바닥 · 상위 · 이벤트(한 분절).
+//   • 오른쪽 = 자료집 · 소재 · 조수 · 저장됨(글자) · ▷ 테스트 실행 · ⋯ 더 보기(도움말·언어·AI 설정).
+// 세계관·음악·찾기·랜덤 전투·AI 스튜디오·보기·명령 팔레트 칩·저장 기록·편집 이름·전체화면은 ⌘K 명령으로만
+// 닿는다(commandRegistry). 단추를 그리던 함수는 아래 「⌘K 로 옮긴 톱바 단추」 묶음에 남겨 되살릴 수 있게 했다.
 
 type MenuId = "project" | "help" | "more-tools" | "language";
 
@@ -86,7 +95,11 @@ const autoSaveLog = createLogger("autosave");
 
 // 톱바 전용 그림 — 공용 세트(tileToolbarIcons)와 같은 22px 선 규격으로 그린다. 지구본은 언어 전환이
 // 쓰므로 세계관은 책, 스튜디오는 장면 모니터, 랜덤 전투는 주사위로 다른 기능과 모양을 나눈다.
-const TOPBAR_ICONS: Readonly<Record<"world" | "studio" | "dice", readonly SvgNodeSpec[]>> = {
+const TOPBAR_ICONS: Readonly<Record<"world" | "studio" | "dice" | "sparkle", readonly SvgNodeSpec[]>> = {
+  // 조수 — 시안의 반짝임(16 격자)을 22 격자로 키운다. 선 굵기는 키운 만큼 되돌려 다른 아이콘과 맞춘다.
+  sparkle: [
+    { tag: "path", attrs: { d: "M8 1.5l1.6 4.9 4.9 1.6-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z", transform: "scale(1.375)", "stroke-width": "1.3" } },
+  ],
   world: [
     { tag: "path", attrs: { d: "M11 6.5C9.2 5 6.8 4.5 4 4.8v11.5c2.8-.3 5.2.2 7 1.7 1.8-1.5 4.2-2 7-1.7V4.8c-2.8-.3-5.2.2-7 1.7z" } },
     { tag: "path", attrs: { d: "M11 6.5V18" } },
@@ -132,12 +145,12 @@ let activeMenuTrigger: HTMLElement | null = null;
 // 걸므로, 이전 호출이 남긴 document 리스너/ResizeObserver를 재구축 직전에 반드시 해제해야
 // 세션 내 리스너 누적을 막을 수 있다.
 let disposeToolbarOverflows: (() => void)[] = [];
-// 저장 상태 칩의 autosave 구독도 같은 이유로 재구축 직전에 끊는다. renderTopbar는 한 세션에서
+// 저장 글자의 autosave 구독도 같은 이유로 재구축 직전에 끊는다. renderTopbar는 한 세션에서
 // 여러 번 불린다(mode.ts: 편집 상태 구독 / enterMode / 신원·워크스페이스·UI모드 구독) —
-// 구독을 끊지 않으면 편집 몇 분 만에 같은 리스너가 수십 개 쌓여 죽은 DOM을 계속 그린다.
+// 구독을 끊지 않으면 편집 몇 분 만에 같은 리스너가 수십 개 쌓여 죽은 DOM을 계속 그린다
+// (test/saveStatusVisibility: 재렌더마다 이전 구독을 끊고 살아 있는 구독은 항상 1개).
 let disposeSaveStatus: (() => void) | null = null;
-// 저장 버튼의 자동 저장 점을 그리는 함수. 구독은 renderTopbarSaveStatus 의 하나만 살아 있어야 하므로
-// (test/saveStatusVisibility: 재렌더마다 이전 구독을 끊고 살아 있는 구독은 항상 1개) 점은 그 구독에 얹는다.
+// ⌘K 로 옮긴 저장 상태 칩(renderTopbarSaveStatus)이 다시 붙으면 쓰는 상태다 — 지금 톱바는 부르지 않는다.
 let paintSaveDot: ((state: AutoSaveState) => void) | null = null;
 let disposeLayerSwitcher: (() => void) | null = null;
 let disposeStudioButton: (() => void) | null = null;
@@ -145,12 +158,12 @@ let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let disposeTopbarFit: (() => void) | null = null;
 let disposeProjectLabel: (() => void) | null = null;
-let disposeStatusStrip: (() => void) | null = null;
 let disposeMapCrumb: (() => void) | null = null;
+let disposeStatusStrip: (() => void) | null = null;
 let paintStripSave: ((state: AutoSaveState) => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
-// 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
+// 실패 표시를 붙잡아 둔다(눌렀는데 사라지면 결과를 오해한다). 톱바가 다시 그려져도 이어져야 하므로 모듈 상태다.
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
@@ -162,6 +175,9 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeSaveStatus?.();
   disposeSaveStatus = null;
   paintSaveDot = null;
+  disposeStatusStrip?.();
+  disposeStatusStrip = null;
+  paintStripSave = null;
   disposeLayerSwitcher?.();
   disposeLayerSwitcher = null;
   disposeStudioButton?.();
@@ -174,11 +190,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeTopbarFit = null;
   disposeProjectLabel?.();
   disposeProjectLabel = null;
-  disposeStatusStrip?.();
-  disposeStatusStrip = null;
   disposeMapCrumb?.();
   disposeMapCrumb = null;
-  paintStripSave = null;
   installTopbarChords();
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
@@ -187,27 +200,17 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "oprn-menu-bar" },
   });
 
-  // 왼쪽 — 파일·자료 묶음.
+  // 왼쪽 — 상품 점과 경로 「프로젝트 ▾ / 지금 맵」.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
   const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 메뉴 — ${projectLabel}` });
   disposeProjectLabel = watchProjectMenuLabel(projectButton);
-  lead.append(
-    renderProductBrand(),
-    projectButton,
-    ...(mode === "edit" ? [renderMapCrumb()] : []),
-    renderSaveButton(),
-    renderTopbarSaveStatus(topbar),
-    toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
-    toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
-    toolButton({ testId: "toolbar-world", icon: TOPBAR_ICONS.world, title: headerLabel("world"), keys: "Control+Alt+W", onClick: () => openWorldPanel() }),
-    toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
-    toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
-    // 폭이 모자랄 때만 보인다(topbarFit 1단계) — 위 세 아이콘과 전체화면을 메뉴 한 칸으로 옮긴다.
-    renderMenu("more-tools", "도구 더 보기", menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-tools-more" }),
-  );
+  lead.append(renderProductBrand(), projectButton, ...(mode === "edit" ? [renderMapCrumb()] : []));
+  menuBar.append(lead);
+
+  // 가운데 — 편집 칸 한 분절: 지형 · 바닥 · 상위 · 이벤트. 「지형」은 레이어가 아니라 붓(토글)이라 radiogroup 밖 첫 칸이다.
+  const center = el("div", { class: "studio-bar-center", dataset: { testid: "studio-bar-center" } });
   if (mode === "edit") {
-    const resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
     const [relief, layers] = makeLeftLayerSwitcher(editorState.get());
     layers.classList.add("header-layer-switcher");
     let painted = `${editorState.get().layer}|${editorState.get().tool === "relief"}`;
@@ -218,44 +221,29 @@ export function renderTopbar(topbar: HTMLElement): void {
       painted = key;
       paintLayerSwitcher(relief, layers, state);
     });
-    const resourceIndex = resources ? Array.from(lead.children).indexOf(resources) : -1;
-    lead.insertBefore(relief, resourceIndex >= 0 ? lead.children[resourceIndex + 1] ?? null : null);
-    lead.insertBefore(layers, relief.nextSibling);
-    lead.append(renderStatusStrip());
+    center.append(el("div", {
+      class: "studio-layer-segment",
+      attrs: { role: "group", "aria-label": "편집 칸" },
+      dataset: { testid: "studio-layer-segment" },
+      children: [relief, layers],
+    }));
   }
-  menuBar.append(lead);
+  menuBar.append(center);
 
-  // 가운데 — 명령 팔레트.
-  menuBar.append(el("div", { class: "studio-bar-center", children: [renderCommandCenter()] }));
-
-  // 오른쪽 — 실행·화면·세션.
+  // 오른쪽 — 자료 · 조수 · 저장 · 실행 · 더 보기.
   const trailing = el("div", {
-    class: "editor-topbar-trailing",
+    class: "editor-topbar-trailing studio-bar-trailing",
     dataset: { testid: "editor-topbar-trailing" },
   });
-  if (mode === "edit") {
-    trailing.append(
-      el("div", {
-        class: "studio-run-group",
-        attrs: { role: "group", "aria-label": "실행" },
-        dataset: { testid: "studio-run-group" },
-        children: [renderTestPlayButton(), renderQuickBattleTestButton()],
-      }),
-      renderTopbarStudioButton(),
-    );
-  } else {
-    trailing.append(renderQuickBattleTestButton());
-  }
-  const [panelsButton, panelsMenu] = renderWorkspaceBar();
-  trailing.append(panelsButton, panelsMenu);
-  const cluster = el("div", { class: "studio-icon-cluster", dataset: { testid: "studio-icon-cluster" } });
-  cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
-  // 언어는 「보기」 메뉴 바닥에 묻혀 있었다 — 한국어를 못 읽는 사람도 찾게 지구본 단추 하나로 둔다.
-  cluster.append(renderMenu("language", "언어 · Language", menuCommands("language", topbar), { icon: "globe", className: "studio-icon-button studio-language-button" }));
-  cluster.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
-  if (mode === "edit") cluster.append(renderTopbarAiSettingsButton(), renderTopbarAiConnectionChip());
-  cluster.append(renderFullscreenButton());
-  trailing.append(cluster);
+  trailing.append(
+    toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
+    toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
+    toolButton({ testId: "topbar-assistant", icon: TOPBAR_ICONS.sparkle, label: "조수", title: "조수 열기", onClick: () => openAssistantDock() }),
+    renderSaveButton(),
+  );
+  if (mode === "edit") trailing.append(renderTestPlayButton());
+  // 늘 보인다 — 숨긴 단추의 집이 아니라 도움말·언어·AI 설정의 집이다. 항목은 열 때마다 만든다(연결 상태가 이름에 붙는다).
+  trailing.append(renderMenu("more-tools", "더 보기", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" }));
   menuBar.append(trailing);
 
   topbar.append(menuBar);
@@ -374,11 +362,73 @@ function watchProjectMenuLabel(button: HTMLElement): () => void {
 }
 
 /**
- * 저장 버튼 + 자동 저장 점. 저장 상태는 예전에 오류일 때만 칩으로 보였다(평상시 pending·saving 은
- * 281px 칩이 옆 버튼을 밀어서 접었다). 점은 폭이 고정이라 레이아웃을 흔들지 않으면서 저장됨(초록)·
- * 저장 중(호박)·오류(빨강)를 말한다. title 은 e2e 계약대로 정확히 「프로젝트 저장 (Ctrl+S)」다.
+ * 저장 = 오른쪽의 연한 글자 단추 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(2026-11 개편).
+ * 예전에는 디스크 아이콘 + 7px 점, 실패 칩(topbar-save-status), 상태 줄 저장 칸 셋이 같은 상태를 나눠 말했다.
+ * 이제 이 글자 하나가 상태를 말하고, 누르면 저장(실패 뒤에는 다시 저장)한다. 실패는 위험색이다.
+ * title 은 e2e 계약대로 정확히 「프로젝트 저장 (Ctrl+S)」다. 하네스 드라이버는 data-autosave-kind 를 기다린다.
  */
 function renderSaveButton(): HTMLElement {
+  const label = el("span", { class: "studio-save-label", dataset: { testid: "toolbar-save-label" } });
+  // 단추의 접근 이름은 동작(저장)이다 — 바뀐 상태는 옆의 라이브 리전이 읽는다.
+  const status = el("span", { class: "visually-hidden", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "toolbar-save-autosave" } });
+  const button = el("button", {
+    class: "studio-save-button",
+    attrs: { type: "button", title: "프로젝트 저장 (Ctrl+S)", "aria-label": "프로젝트 저장 (Ctrl+S)", "aria-keyshortcuts": "Control+S" },
+    dataset: { testid: "toolbar-save" },
+    children: [label],
+    on: { click: () => void saveProjectNow() },
+  });
+  const paint = (state: AutoSaveState): void => {
+    const notPersisted = isSessionNotPersisted(state);
+    const blocked = store.getPersistenceRecovery().kind === "blocked";
+    if ((state.kind === "error" && !notPersisted) || blocked) saveFailureEpisode = true;
+    else if (state.kind === "saved" || state.kind === "idle" || notPersisted) saveFailureEpisode = false;
+    // 저장하지 않는 세션은 실패가 아니다 — 빨간 글자 대신 회색 「저장 안 함(임시)」(배너가 이유를 말한다).
+    button.dataset.autosaveKind = notPersisted ? "unsaved-session" : state.kind;
+    button.classList.toggle("is-failing", saveFailureEpisode);
+    const text = blocked && state.kind !== "error" ? "저장 실패" : autosaveStripText(state);
+    if (label.textContent !== text) label.textContent = text;
+    const retries = state.kind === "error" && !notPersisted && state.retryCount ? ` (${state.retryCount}회)` : "";
+    status.textContent = `${autosaveStatusText(state)}${retries}`;
+  };
+  paint(store.getAutoSaveState());
+  disposeSaveStatus = store.subscribeAutoSave((state) => {
+    logAutoSaveTransition(state);
+    paint(state);
+  });
+  return el("span", { class: "studio-save-wrap", children: [button, status] });
+}
+
+/**
+ * ⌘K 로 옮긴 톱바 단추 — 2026-11 개편에서 톱바에서 떼었다(초보자가 처음 30분에 쓰지 않는다).
+ * 동작은 commandRegistry 의 ⌘K 명령이 그대로 갖는다. 단추를 되살리려면 renderTopbar 에서 이 함수를
+ * append 하면 된다(자기 dispose 는 모듈 상태로 들고 renderTopbar 가 푸는 그대로다).
+ */
+export const RETIRED_TOPBAR_CONTROLS = {
+  savedIconButton: renderSavedIconButton,
+  saveStatusChip: renderTopbarSaveStatus,
+  statusStrip: renderStatusStrip,
+  commandCenter: renderCommandCenter,
+  studioButton: renderTopbarStudioButton,
+  aiSettingsButton: renderTopbarAiSettingsButton,
+  aiConnectionChip: renderTopbarAiConnectionChip,
+  identity: renderTopbarIdentityControl,
+  commitHistory: renderCommitHistoryButton,
+  panels: renderWorkspaceBar,
+  battleTest: renderQuickBattleTestButton,
+  fullscreen: renderFullscreenButton,
+  worldButton: (): HTMLElement => toolButton({ testId: "toolbar-world", icon: TOPBAR_ICONS.world, title: headerLabel("world"), keys: "Control+Alt+W", onClick: () => openWorldPanel() }),
+  audioButton: (): HTMLElement => toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
+  searchButton: (): HTMLElement => toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
+} as const;
+
+/** 조수 도크를 펼친다. 패널이 아직 안 붙었으면 그렇다고 말한다(눌렀는데 아무 일도 없으면 안 된다). */
+function openAssistantDock(): void {
+  if (!openAiAssistantPanel()) toast("조수 패널을 아직 불러오는 중입니다", "info");
+}
+
+/** 예전 저장 단추(디스크 아이콘 + 자동 저장 점). ⌘K 로 옮긴 단추 묶음 — 톱바는 글자 단추를 쓴다. */
+function renderSavedIconButton(): HTMLElement {
   const dot = el("span", { class: "studio-save-dot", attrs: { "aria-hidden": "true" } });
   const status = el("span", { class: "visually-hidden", dataset: { testid: "toolbar-save-autosave" } });
   const button = el("button", {
@@ -665,7 +715,7 @@ type RenderMenuOptions = {
   readonly title?: string;
 };
 
-function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[], options: RenderMenuOptions = {}): HTMLElement {
+function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[] | (() => readonly MenuCommand[]), options: RenderMenuOptions = {}): HTMLElement {
   const children: Node[] = [];
   if (options.icon) {
     children.push(makeSvgIcon(options.icon), el("span", { class: "visually-hidden", text: label }));
@@ -689,7 +739,7 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[],
         event.stopPropagation();
         const target = event.currentTarget;
         if (!(target instanceof HTMLElement)) return;
-        openMenuPopup(id, target, commands);
+        openMenuPopup(id, target, typeof commands === "function" ? commands() : commands);
       },
       keydown: (event) => {
         if (!(event instanceof KeyboardEvent) || event.key !== "Escape" || activeMenuTrigger !== event.currentTarget) return;
@@ -732,7 +782,8 @@ function renderFullscreenButton(): HTMLElement {
   return button;
 }
 
-async function toggleFullscreen(): Promise<void> {
+/** ⌘K 「화면: 전체화면 전환」 이 부른다(톱바 단추는 2026-11 에 ⌘K 로 옮겼다). */
+export async function toggleFullscreen(): Promise<void> {
   // 이 창은 네이티브 전체화면(fullscreen: true)으로 뜬다. 그 창에서 브라우저 Fullscreen API 는
   // DOM 만 바꾸고 창 크기는 그대로여서 「축소」가 안 됐다 — 데스크톱 브릿지가 있으면
   // 시작 화면 「화면 전환」 과 같은 창 컨트롤로 토글한다. 브라우저·팀 페이지에는 브릿지가 없다.
@@ -939,14 +990,18 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
           ],
         },
       ];
-    case "more-tools":
-      // 폭이 모자라 톱바가 숨긴 것과 같은 넷 — 숫긴 것은 모두 여기서 같은 이름·단축키로 닿는다.
+    case "more-tools": {
+      // ⋯ 더 보기 — 초보자에게도 필요한 세션 설정 셋만. 나머지(세계관·음악·찾기·전투 테스트·스튜디오·패널·저장 기록·
+      // 편집 이름·전체화면)는 ⌘K 명령에만 둔다. AI 연결 상태는 칩 대신 「AI 설정」 항목 이름이 말한다.
+      const connection = getAiConnectionStatus();
+      const aiSettingsLabel = connection.kind === "ready" && !connection.limited ? "AI 설정" : `AI 설정 · ${connection.label}`;
       return [
-        { ...item(headerLabel("world"), "menu-more-tools-world", () => openWorldPanel(), "globe"), shortcut: "Ctrl+Alt+W", keys: "Control+Alt+W" },
-        { ...item(headerLabel("audio"), "menu-more-tools-audio", () => openAudioTestDialog(), "music"), shortcut: "Ctrl+Alt+M", keys: "Control+Alt+M" },
-        { ...item(headerLabel("mapEventSearch"), "menu-more-tools-search", () => openMapEventSearchModal(), "docSearch"), shortcut: "Ctrl+Shift+F", keys: "Control+Shift+F" },
-        item("전체화면 전환", "menu-more-tools-fullscreen", () => void toggleFullscreen(), "expand"),
+        { kind: "submenu", label: "도움말", testId: "menu-help", popupId: "help", commands: () => menuCommands("help", topbar) },
+        { kind: "submenu", label: "언어 · Language", testId: "menu-language", popupId: "language", commands: () => menuCommands("language", topbar) },
+        { kind: "separator" },
+        item(aiSettingsLabel, "topbar-ai-settings", () => openAiSettingsModal(), "gear"),
       ];
+    }
     case "help":
       return [
         { ...item("단축키 보기", "menu-help-shortcuts", () => openHelpModal("shortcuts")), shortcut: "?", keys: "?" },
@@ -968,7 +1023,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
 let topbarChordsInstalled = false;
 
 /**
- * 톱바 도구의 단축키. 넓은 창에서는 아이콘, 좁은 창에서는 「도구 더 보기」 메뉴 항목이 같은 키를 보여 준다.
+ * 톱바 도구의 단축키. 단추는 ⌘K 로 옮겼지만(2026-11) 키는 그대로다 — ⌘K 명령이 같은 키를 보인다.
  * 편집 캐내버스(Phaser)는 Ctrl 조합을 도구 키로 넘기지 않으므로 문서 수준에서 한 번만 받는다.
  * 글자 입력 중이거나 다른 창이 떠 있으면 양보한다.
  */
@@ -1051,7 +1106,8 @@ function renderTestPlayButton(): HTMLElement {
         },
         children: [
           el("span", { class: "topbar-test-play-glyph", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("play")] }),
-          el("span", { class: "topbar-test-play-label", text: headerLabel("testPlayShort") }),
+          // 시안대로 정본 이름 「테스트 실행」을 다 쓴다 — 좁으면 14절 맞춤이 다른 글자를 먼저 걷는다.
+          el("span", { class: "topbar-test-play-label", text: headerLabel("testPlay") }),
         ],
       }),
     ],

@@ -148,35 +148,35 @@ describe("에디터 헤더 복구", () => {
       "menu-project",
       // 맵 메뉴는 2026-08-26 에, 게임 메뉴·클래식 툴바 행·작업 칩은 2026-09-03 에 사라졌다 —
       // 전부 다른 자리에 이미 있는 동작의 복제였다.
+      // 2026-11 개편: 세계관·음악·찾기·전투 테스트·스튜디오·보기·명령 팔레트 칩·전체화면은 ⌘K 명령으로만 닿는다.
       "toolbar-save",
       "toolbar-database",
       "toolbar-resource-manager",
-      "toolbar-world",
-      "toolbar-sound-test",
-      "toolbar-search",
-      "menu-help",
-      "workspace-panels-button",
-      "workspace-command-palette-button",
+      "topbar-assistant",
+      "menu-more-tools",
       "topbar-test-play",
-      "topbar-battle-test",
-      "topbar-ai-studio",
-      "window-fullscreen",
     ]) {
       expect(findByTestId(surface, testId), testId).not.toBeNull();
+    }
+    for (const moved of ["toolbar-world", "toolbar-sound-test", "toolbar-search", "topbar-battle-test", "topbar-ai-studio", "window-fullscreen"]) {
+      expect(findByTestId(surface, moved), `${moved} 는 ⌘K 로 옮겼다`).toBeNull();
     }
     for (const gone of ["menu-game", "oprn-toolbar", "toolbar-new", "toolbar-map-copy", "authoring-task-launcher", "window-toolbar-collapse"]) {
       expect(findByTestId(surface, gone), gone).toBeNull();
     }
   });
 
-  it("헤더의 AI 설정 버튼이 설정 모달을 연다", () => {
+  it("헤더 ⋯ 메뉴의 AI 설정 항목이 설정 모달을 연다", () => {
     // Break: settings remains buried in the assistant panel instead of the header.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
-    const settings = findByTestId(fakeElement(topbar), "topbar-ai-settings");
+    const more = findByTestId(fakeElement(topbar), "menu-more-tools");
+    more?.click();
+    const body = fakeElement(document.body as unknown as HTMLElement);
+    if (!findByTestId(body, "menu-popup-more-tools")) more?.click();
+    const settings = findByTestId(body, "topbar-ai-settings");
     expect(settings?.textContent).toContain("AI 설정");
-    expect(settings?.getAttribute("aria-label")).toBe("AI 설정 열기");
     settings?.click();
 
     expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);

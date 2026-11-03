@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
+import { runPaletteCommand } from "./topbarNavigation";
 
 const evidenceDir = "output/evidence/browser-evidence-button";
 
@@ -23,10 +24,11 @@ test("worldview toolbar button opens the world panel", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId("toolbar-world")).toHaveAttribute("title", "세계관");
+  // 2026-11 톱바 개편: 세계관 단추는 ⌘K 「화면: 세계관 · 세계 개요 열기」 명령으로 옮겼다.
+  await expect(page.getByTestId("toolbar-world")).toHaveCount(0);
   await page.screenshot({ path: `${evidenceDir}/desktop-entry.png`, fullPage: true });
 
-  await page.getByTestId("toolbar-world").click();
+  await runPaletteCommand(page, "세계관", "open-world");
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await expect(page.getByTestId("db-world-canon-workspace")).toBeVisible();
   await page.screenshot({ path: `${evidenceDir}/desktop-after-click.png`, fullPage: true });
@@ -36,6 +38,6 @@ test("worldview toolbar button opens the world panel", async ({ page }) => {
   await writeFile(`${evidenceDir}/project-export.json`, projectExport, "utf8");
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.getByTestId("toolbar-world")).toBeVisible();
+  await expect(page.getByTestId("db-world-canon-workspace")).toBeVisible();
   await page.screenshot({ path: `${evidenceDir}/mobile-after-click.png`, fullPage: true });
 });

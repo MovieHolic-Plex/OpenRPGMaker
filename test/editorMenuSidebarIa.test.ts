@@ -18,6 +18,7 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const { renderTopbar } = await import("@/editor/panels/menu");
+const { listEditorCommands } = await import("@/editor/commandRegistry");
 const { renderTilePalette } = await import("@/editor/panels/tilePalette");
 
 class MemoryStorage implements Storage {
@@ -145,7 +146,7 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     // Break: 레이어·되돌리기·맵 트리 동작이 다시 상단 메뉴/툴바로 새어 들어온다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
-    for (const menuId of ["menu-project", "menu-help"]) {
+    for (const menuId of ["menu-project", "menu-more-tools"]) {
       if (findByTestId(fake(topbar), menuId)) openMenu(topbar, menuId);
     }
 
@@ -173,15 +174,18 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     }
   });
 
-  it("세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다", () => {
-    // Break: 「도구 ▾」 메뉴가 되살아나 인라인 버튼과 같은 동작을 두 자리에 놓는다.
+  it("세계관·음악·찾기는 ⌘K 명령으로만 닿고 도구 메뉴는 없다", () => {
+    // Break: 「도구 ▾」 메뉴나 인라인 아이콘이 되살아나 ⌘K 와 같은 동작을 두 자리에 놓는다(2026-11 개편).
     const topbar = document.createElement("div");
     renderTopbar(topbar);
+    openMenu(topbar, "menu-more-tools");
 
-    for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
-      expect(findByTestId(fake(topbar), id), id).not.toBeNull();
+    const ids = topRegionTestIds(topbar);
+    for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search", "menu-tools"]) {
+      expect(ids, id).not.toContain(id);
     }
-    expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
+    const commands = listEditorCommands().map((command) => command.id);
+    for (const id of ["open-world", "open-audio", "open-map-event-search"]) expect(commands, id).toContain(id);
   });
 
   it("자료집·소재는 톱바 버튼이 집이다", () => {
@@ -220,7 +224,7 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     }
   });
 
-  it("게임 메뉴는 없다 — 테스트 실행·전투 테스트는 오른쪽 버튼이 유일한 집이다", () => {
+  it("게임 메뉴는 없다 — 테스트 실행은 오른쪽 버튼, 전투 테스트는 ⌘K 명령이 유일한 집이다", () => {
     // Break: 게임 메뉴가 되살아나 ▶ 테스트·⚔ 와 같은 창을 두 번째 자리에서 연다
     // (2026-09-03 이전에는 테스트 실행의 집이 작업 칩·▶ 버튼·게임 메뉴·클래식 툴바 넷이었다).
     const topbar = document.createElement("div");
@@ -228,10 +232,10 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
 
     expect(findByTestId(fake(topbar), "menu-game")).toBeNull();
     expect(findByTestId(fake(topbar), "mode-play")).not.toBeNull();
-    expect(findByTestId(fake(topbar), "topbar-battle-test")).not.toBeNull();
     const ids = topRegionTestIds(topbar);
     expect(ids.filter((id) => id === "mode-play")).toHaveLength(1);
-    expect(ids.filter((id) => id === "topbar-battle-test")).toHaveLength(1);
+    expect(ids).not.toContain("topbar-battle-test");
+    expect(listEditorCommands().filter((command) => command.id === "topbar-battle-test")).toHaveLength(1);
   });
 
   it("예제 하위 메뉴도 Escape 로 닫힌다", () => {
@@ -272,9 +276,11 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
         expect(findByTestId(switcher as unknown as FakeElement, id), `${mode}/${id}`).not.toBeNull();
       }
 
-      const lead = findByTestId(fake(header), "studio-bar-lead");
-      const headerOrder = (lead?.children ?? []).map(child => child.dataset.testid);
-      expect(headerOrder.indexOf("left-layer-switcher")).toBe(headerOrder.indexOf("toolbar-resource-manager") + 1);
+      // 2026-11 개편: 레이어 전환은 톱바 가운데 칸의 편집 칸 분절이다(첫 칸 「지형」).
+      const center = findByTestId(fake(header), "studio-bar-center");
+      const segment = findByTestId(center as unknown as FakeElement, "studio-layer-segment");
+      const headerOrder = (segment?.children ?? []).map(child => child.dataset.testid);
+      expect(headerOrder).toEqual(["layer-relief", "left-layer-switcher"]);
       const pane = findByTestId(fake(container), "palette-work-pane-paint");
       const order = (pane?.children ?? []).map((child) => child.dataset.testid ?? "");
       const toolsAt = order.indexOf("oprn-tile-toolbar");
