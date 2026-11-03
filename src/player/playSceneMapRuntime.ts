@@ -67,6 +67,7 @@ import {
 } from "@/player/characterDepth";
 // ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
+import { keptEventOpacity } from "@/player/eventOpacityOverrides";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { lifeCalendarHudLines } from "@/player/lifeCalendarHud";
@@ -168,6 +169,8 @@ interface RenderedEventSprite extends RenderedTileImage {
   setScale(value: number): void;
   /** 저작 섞기 방식. 테스트 스텁에는 없을 수 있다. */
   setBlendMode?(value: number): unknown;
+  /** 경로가 남긴 불투명도를 다시 입힌다. 테스트 스텁에는 없을 수 있다. */
+  setAlpha?(value: number): unknown;
   destroy(): void;
 }
 
@@ -219,6 +222,8 @@ interface RenderTilesSceneContext<
   readonly children?: { list: unknown[]; queueDepthSort(): void };
   readonly tweens?: { getTweens?(): readonly TweenTargetSource[] };
   readonly eventGraphicPatternOverrides?: Map<string, number>;
+  /** 이동 경로 changeOpacity 가 남긴 불투명도(0..255). 새로 만든 스프라이트에 다시 입힌다. */
+  readonly eventOpacityOverrides?: PlaySceneContext["eventOpacityOverrides"];
   /** 걷는 중인 NPC 의 보간 위치를 알기 위한 무버 풀(선택). */
   readonly autonomousNPCs?: { get(eventId: string): AutonomousMover | undefined };
   readonly runtimeDom: Pick<
@@ -866,12 +871,12 @@ function collectTweenTargets(tween: TweenTargetSource, targets: Set<object>): vo
 // (page graphic blendMode) and part of the signature.
 const eventGraphicSignatures = new WeakMap<RenderedEventSprite, readonly unknown[]>();
 
-function reusableEventSprite(sprite: RenderedEventSprite, texture: string, tweenTargets: Set<object>, blendMode = 0): boolean {
+function reusableEventSprite(sprite: RenderedEventSprite, texture: string, tweenTargets: Set<object>, blendMode = 0, expectedAlpha = 1): boolean {
   // Some consumers capture the object (battle hiding, knockback/windup/landing tweens).
   // Replacing only these exceptional sprites preserves the old callback lifetime.
   // The authored blend (page graphic blendMode) is the expected value; anything else was set by someone else.
   return sprite.active !== false && sprite.visible !== false
-    && (sprite.alpha === undefined || sprite.alpha === 1)
+    && (sprite.alpha === undefined || Math.abs(sprite.alpha - expectedAlpha) < 0.002)
     && ((sprite.blendMode ?? 0) === blendMode)
     && !sprite.isTinted && !sprite.flipX && !sprite.flipY && !sprite.rotation
     && !sprite.anims?.isPlaying && !tweenTargets.has(sprite)
@@ -925,8 +930,9 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const blendMode = phaserBlendMode(view.page?.graphic.blendMode);
     let marker = scene.eventSprites.get(event.id);
     const previous = marker && eventGraphicSignatures.get(marker);
+    const keptOpacity = keptEventOpacity(scene.eventOpacityOverrides, event.id, view.pageId);
     if (marker && (!previous || !signature.every((value, index) => Object.is(value, previous[index]))
-      || !reusableEventSprite(marker, texture, tweenTargets, blendMode))) {
+      || !reusableEventSprite(marker, texture, tweenTargets, blendMode, keptOpacity === undefined ? 1 : keptOpacity / 255))) {
       marker.destroy();
       destroyCharacterShadow(scene, event.id);
       marker = undefined;
@@ -940,6 +946,8 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       marker = scene.add.sprite(x, y, texture, frame);
       if (blendMode !== 0) marker.setBlendMode?.(blendMode);
     }
+    // 경로가 흐려 둔 인물은 다시 그려도 흐린 채로 — 새 스프라이트 기본값(1)이 이기면 떠난 사람이 되살아났다.
+    if (keptOpacity !== undefined) marker.setAlpha?.(keptOpacity / 255);
     eventGraphicSignatures.set(marker, signature);
     retained.add(event.id);
     setCharacterBaseOrigin(marker, spriteTexture?.origin);
@@ -1014,6 +1022,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.pageMoveRouteEventIds.clear();
   scene.commandMoveRouteEventIds.clear();
   scene.eventGraphicPatternOverrides.clear();
+  scene.eventOpacityOverrides?.clear();
   scene.autonomousNPCs.clear();
   scene.fieldSpawnState = null;
   for (const animation of scene.activeMapAnimations) animation.destroy(true);
