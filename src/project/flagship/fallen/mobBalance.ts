@@ -98,7 +98,7 @@ export const FS_TROOP_MEMBERS: Readonly<Record<string, { readonly from: readonly
   troop_fs_inq_alarm: { from: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound", "enemy_fs_inq_hound"], to: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound"] },
   troop_fs_inq_vigil: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic", "enemy_fs_fanatic"] },
   troop_fs_inq_patrol: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow", "enemy_fs_inq_flagellant"] },
-  // 통금 순찰은 둘 그대로 — 무리 이름·대사가 「야경꾼 2인조」다(셋을 세우면 셋이 나와 말과 어긋났다, 2026-11-01). 힘은 FS_GEAR_TUNE 으로.
+  // 통금 순찰은 둘 그대로 — 무리 이름·대사가 「순찰병 2인조」다(셋을 세우면 셋이 나와 말과 어긋났다, 2026-11-01). 힘은 FS_GEAR_TUNE 으로.
   troop_fs2_frost_wolves: { from: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"], to: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"] },
   troop_fs2_tower_moths: { from: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"], to: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"] },
   troop_fs2_tower_snakes: { from: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"], to: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"] },
@@ -146,7 +146,7 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
  */
 export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_curfew_patrol: 1.38,
-  troop_fs2_barracks_guards: 1.38, // 막사에서 들킨 벌 — 통금 순찰과 같은 야경꾼
+  troop_fs2_barracks_guards: 1.38, // 막사에서 들킨 벌 — 통금 순찰과 같은 순찰병
   troop_fs2_starved_dogs: 1.6,
   troop_fs2_ash_crows: 1.78,
   troop_fs2_ash_wisps: 2.98,
@@ -207,7 +207,7 @@ export const FS_GEAR_TUNE: Readonly<Record<string, number>> = {
   troop_fs_inq_false_prisoner: 1.1,
   troop_fs_inq_alarm: 1.03,
   troop_fs_inq_phalanx: 0.95,
-  troop_fs2_curfew_patrol: 1.729, // 둘뿐인 야경꾼 — 셋을 세우던 힘을 둘에게
+  troop_fs2_curfew_patrol: 1.729, // 둘뿐인 순찰병 — 셋을 세우던 힘을 둘에게
   troop_fs2_ash_wisps: 0.96,
   troop_fs2_ash_snakes: 0.97,
   troop_fs2_frost_bats: 0.95,
