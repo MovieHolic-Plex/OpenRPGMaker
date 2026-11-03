@@ -9,6 +9,7 @@
 //   - 「어둡고 긴장감 있게」 인데 조명이 기본(밝음)이었다.
 
 import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { chaseCellMs, chaseTempoAuthored } from "@/project/chaseTempo";
 import { canMove, isPassable } from "@/project/collision";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
@@ -24,6 +25,8 @@ const PLAYER_STEP_MS = PLAYER_WALK_STEP_MS;
 
 /** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + 이동 간격(moveIntervalMs 또는 frequency). 정본 표 @/project/characterMotion. */
 export function chaserStepMs(movement: EventPage["movement"]): number {
+  // 박자(chaseStepMs)를 적은 페이지는 쫓을 때 그 박자로 미끄러진다 — speed 는 순찰 걸음이다(set_field_detection).
+  if (chaseTempoAuthored(movement)) return chaseCellMs({ ...movement, speed: movement.speed ?? 3, frequency: movement.frequency ?? 3 });
   return npcMoveDurationMs(movement.speed ?? 3) + npcPageMoveIntervalMs({ moveIntervalMs: movement.moveIntervalMs, frequency: movement.frequency ?? 3 });
 }
 
