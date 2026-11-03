@@ -1588,6 +1588,49 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   void stones;
 }
 
+/**
+ * 숲길 문턱 — 고백·맺음 자리(숲지기 땅 줄)에서 숲길로 두 줄 넘게 걸어 들어가야 숲 어귀 짐승(들개·까마귀)이 깨어난다.
+ * 맺음 「성벽 위 마지막 등불이 꺼졌다 — 가자」 바로 뒤 5초 만에 들개가 덮쳐 조용한 끝이 곧장 싸움이 됐다(감독 검수 2026-11-04).
+ * 문턱 전에는 짐승이 그 자리에 없다(첫 페이지가 이긴다 — 싸움 페이지들이 문턱 스위치를 기다린다). 문턱은 숲길 한 줄 전체를 덮는 닿기 칸.
+ */
+const SW_B5_FOREST_PATH = "sw_fs2_b5_forest_path";
+function forestPathGate(project: Project, mapId: string, foes: readonly Cell[]): void {
+  ensureSwitch(project, SW_B5_FOREST_PATH, "B5: 숲 어귀 숲길에 들어섬(짐승이 깨어남)");
+  const map = M(project, mapId);
+  const lineY = Math.min(...FS2_B4.edge.map((c) => c.y)) - 3;
+  const open = walkSteps(project, map, { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 });
+  const cells = [...open.keys()].map((k) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y! }; }).filter((c) => c.y === lineY);
+  if (!cells.length) throw new Error(`[fallen-star act2] 숲길 문턱 줄(${lineY})에 걷는 칸이 없다`);
+  // 문턱 줄을 안 밟고 짐승 쪽으로 가는 길이 있으면 문턱이 아니다 — 그 줄을 막고 다시 걸어 짐승 칸에 못 닿아야 한다.
+  const cut = new Set(cells.map((c) => `${c.x},${c.y}`));
+  const seen = new Set<string>(); const q: Cell[] = [...FS2_B4.edge];
+  for (const c of q) seen.add(`${c.x},${c.y}`);
+  while (q.length) {
+    const c = q.shift()!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const k = `${c.x + dx},${c.y + dy}`;
+      if (!open.has(k) || seen.has(k) || cut.has(k)) continue;
+      seen.add(k); q.push({ x: c.x + dx, y: c.y + dy });
+    }
+  }
+  const leak = foes.filter((f) => seen.has(`${f.x},${f.y}`));
+  if (leak.length) throw new Error(`[fallen-star act2] 숲길 문턱(${lineY}줄)을 돌아 짐승(${leak.map((f) => `${f.x},${f.y}`).join(" ")})에 닿는 길이 있다`);
+  cells.forEach((c, i) => {
+    addEv(project, mapId, `ev_fs2_forest_path_${i}`, "숲길 문턱", c, [
+      page(`ev_fs2_forest_path_${i}_wait`, "대기", [], [setSw(SW_B5_FOREST_PATH)], { priority: "below", trigger: { kind: "playerTouch" } }),
+      page(`ev_fs2_forest_path_${i}_done`, "끝", [sw(SW_B5_FOREST_PATH)], [], { priority: "below" }),
+    ]);
+  });
+  // 짐승 이벤트 — 「필드 적」 계열 페이지(싸움·숨 고르기)가 문턱 스위치를 기다리고, 그 앞에 「없음」 페이지를 둔다. 쓰러진 자리는 그대로.
+  const m = M(project, mapId);
+  for (const f of foes) {
+    const ev = m.events.find((e) => e.x === f.x && e.y === f.y && e.pages?.some((pg) => pg.id.endsWith("_fight")));
+    if (!ev) throw new Error(`[fallen-star act2] 숲 어귀 짐승(${f.x},${f.y})을 못 찾았다`);
+    for (const pg of ev.pages ?? []) if (pg.id.endsWith("_fight") || pg.id.endsWith("_stun")) pg.conditions = [...(pg.conditions ?? []), sw(SW_B5_FOREST_PATH)];
+    ev.pages = [page(`${ev.id}_asleep`, "숲길 전(없음)", [], [], { priority: "below" }), ...(ev.pages ?? [])];
+  }
+}
+
 // ════════════════════════════════════════════════════════════════════
 // 8. B5 새벽샘 터 — 재의 들판의 적(잿불 도깨비·재까마귀·숯덩이 골렘·굶은 들개·재뱀), 불탄 마을, 잠긴 집, 정착 확인서
 // ════════════════════════════════════════════════════════════════════
@@ -1751,7 +1794,8 @@ function dawnwell(project: Project, exec: Exec): void {
     return undefined;
   };
   const dogs = placeNear("troop_fs2_starved_dogs", Math.floor(W(north1!) / 2) - 2, 3, "dash");
-  placeNear("troop_fs2_ash_crows", Math.floor(W(north1!) / 2) - 5, 2, "swoop", dogs ? [dogs] : []);
+  const crows = placeNear("troop_fs2_ash_crows", Math.floor(W(north1!) / 2) - 5, 2, "swoop", dogs ? [dogs] : []);
+  forestPathGate(project, north1!, [dogs, crows].filter((c): c is Cell => !!c));
   foe(field!, "troop_fs2_ash_wisps", ASH_SPOTS.wisps.x, ASH_SPOTS.wisps.y, "float");
   foe(field!, "troop_fs2_ash_snakes", ASH_SPOTS.snakes.x, ASH_SPOTS.snakes.y, "slither");
   // 골렘은 하나 — 이기면 다시 안 나온다. 피해 갈 수 있는 정예(느리고 돌진 없음). 동쪽 유황 벌판의 짐 상자 앞에 선다.
