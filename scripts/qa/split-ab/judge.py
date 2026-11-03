@@ -93,8 +93,17 @@ out = None
 for i, ch in enumerate(text):
     if ch != "{": continue
     try:
-        out, _ = json.JSONDecoder().raw_decode(text[i:])
-        if isinstance(out, dict) and "checklist" in out: break
+        out, end = json.JSONDecoder().raw_decode(text[i:])
+        if isinstance(out, dict) and "checklist" in out:
+            # the model sometimes closes the object one brace early (after "structure") — the rest of the keys follow it
+            rest = text[i + end:].lstrip().lstrip(",").strip()
+            if "summary" not in out and rest.startswith('"'):
+                for cut in range(len(rest), 0, -1):
+                    try:
+                        out.update(json.loads("{" + rest[:cut].rstrip().rstrip("}").rstrip(",") + "}")); break
+                    except ValueError:
+                        continue
+            break
     except ValueError:
         continue
 if not isinstance(out, dict): sys.exit(f"judge reply had no JSON: {text[:200]}")

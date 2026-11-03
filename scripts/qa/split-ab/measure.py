@@ -5,7 +5,7 @@
 
 Cost = tokens × public list price (per 1M): Opus 5.5 $4/$20 (cache read $0.20, write $5) · Haiku 5.5 $0.10/$0.50 (read $0.01,
 write $0.125) · Gemini 3.8 Flash $0.75/$3.75 (read $0.075) · Gemini 4 Argon $2/$10 (read $0.10) · DeepSeek V4.1 Flash
-$0.15/$0.60 (cache hit $0.003). Claude CLI calls (worker or lead) come from the teed stream: per turn `usage` (the
+$0.15/$0.60 (cache hit $0.003) · GPT-6 Astra $10/$50 (cached $1) · GPT-6.1 Sol $2/$10 ($0.20) · GPT-6.1 Terra $1/$5 ($0.05). Claude CLI calls (worker or lead) come from the teed stream: per turn `usage` (the
 `modelUsage`/`total_cost_usd` there are per-session cumulative — not summed), plus the per-message usage of a turn cut by
 the cap. Haiku is priced at Haiku list price (Claude Code bills it at Opus rates). The 8318 relay (Flash, Argon) reports
 no usage: tokens are estimated from request characters ÷ 3.04 (calibrated on DeepSeek's reported usage, ±8 %), between
@@ -24,6 +24,9 @@ PRICE = {
     "gemini-3.8-flash": dict(inp=0.75, out=3.75, read=0.075, write=0),
     "gemini-4-argon": dict(inp=2, out=10, read=0.1, write=0),
     "deepseek-v4.1-flash": dict(inp=0.15, out=0.6, read=0.003, write=0),
+    "gpt-6-astra": dict(inp=10, out=50, read=1.0, write=0),
+    "gpt-6.1-sol": dict(inp=2, out=10, read=0.2, write=0),
+    "gpt-6.1-terra": dict(inp=1, out=5, read=0.05, write=0),
 }
 CPT_IN, CPT_OUT = 3.04, 2.67
 
@@ -102,7 +105,7 @@ def run_row(d):
     arm = os.path.basename(os.path.dirname(d)); tr = os.path.basename(d); task, rep = tr.rsplit("-", 1)
     A = P["arms"].get(arm, {}); T = TASKS.get(task, {})
     worker = A.get("worker"); lead_spec = A.get("lead")
-    lead_model = (re.split(r"[:/]", lead_spec.split("@")[0])[-2] if lead_spec and lead_spec.startswith("claude:") else lead_spec.split("/")[-1].split("@")[0]) if lead_spec else None
+    lead_model = (lead_spec.split("@")[0].split(":")[1] if lead_spec.startswith("claude:") else lead_spec.split("/")[-1].split("@")[0]) if lead_spec else None
     r = dict(arm=arm, task=task, rep=int(rep), group=T.get("group"), worker=worker, lead=lead_model)
     run = open(f"{d}/RUN.txt").read() if os.path.exists(f"{d}/RUN.txt") else ""
     st = re.search(r"started=(\S+)", run); fi = re.search(r"finished=(\S+)", run)
@@ -115,7 +118,22 @@ def run_row(d):
     r["tools"] = len(tc); r["toolFails"] = sum(1 for c in tc if not c.get("ok"))
     notes = [n for t in turns for n in (t.get("statusNotes") or []) if isinstance(n, str)]
     r["leadPlan"] = any("리드 계획" in n and "실패" not in n and "비어" not in n for n in notes)
-    r["leadReviews"] = sum(1 for n in notes if n.startswith("v2.split.review") or "리드 검토" in n)
+    # lead review / plan notes: turns keep only the last note per name — read the full audit (activity.jsonl), one per review round
+    act = f"{d}/project/output/ai-activity/activity.jsonl"
+    audit = open(act, errors="replace").read() if os.path.exists(act) else ""
+    rvd = {}
+    for m in re.finditer(r'v2\.split\.review[^:"]*: (리드 검토 (\d+) — [^"]{0,300})', audit): rvd[m.group(2)] = m.group(1)
+    for n in notes:
+        m = re.search(r"리드 검토 (\d+) — .*", n) if n.startswith("v2.split.review") else None
+        if m: rvd.setdefault(m.group(1), m.group(0))
+    rv = list(rvd.values())
+    r["leadReviews"] = len(rv)
+    r["leadPlan"] = r["leadPlan"] or bool(re.search(r"v2\.split\.plan: 리드 계획 \d", audit))
+    r["leadPlanFail"] = bool(re.search(r"리드 계획 실패", audit))
+    # parseLeadReview passes (approve) a reply it could not read — count those: «no JSON» / «did not parse», and call errors
+    r["leadUnreadJson"] = sum(1 for n in rv if "답 못 읽음" in n and ("no JSON in lead reply" in n or "did not parse" in n))
+    r["leadUnreadOther"] = sum(1 for n in rv if "답 못 읽음" in n) - r["leadUnreadJson"]
+    r["claimedDone"] = bool(turns) and turns[-1].get("outcome") == "settled"   # finished inside the cap (a timeout is not a claim)
     # cost per role
     cu = claude_usage(f"{d}/claude-stream.jsonl")
     wc = lc = 0.0; wcalls = lcalls = 0; est = False
@@ -126,9 +144,8 @@ def run_row(d):
     if worker and not worker.startswith("claude-"):
         rows = api_calls(f"{d}/calls.jsonl"); c, e = api_cost(rows, worker); wc += c; wcalls += len(rows); est |= e
     if lead_model and not lead_model.startswith("claude-"):
-        rows = api_calls(f"{d}/calls.jsonl", "lead")
-        tin = sum(x.get("totalChars") or 0 for x in rows) / CPT_IN; tout = sum((x.get("out") or {}).get("text", 0) for x in rows) / CPT_OUT
-        lc += price(lead_model, tin, tout); lcalls += len(rows); est = True
+        rows = api_calls(f"{d}/calls.jsonl", "lead"); c, e = api_cost(rows, lead_model)
+        lc += c; lcalls += len(rows); est |= e
     r.update(costWorker=round(wc, 4), costLead=round(lc, 4), cost=round(wc + lc, 4), callsWorker=wcalls, callsLead=lcalls, estimated=est,
              cut=sum(u["cut"] for u in cu.values()))
     # checks
@@ -143,7 +160,7 @@ def run_row(d):
         r["checksFail"] = [str(c.get("item")) for c in ch if not c.get("pass")]
     if J:
         r.update(fidelity=J.get("fidelity"), works=J.get("works"), dialogue=J.get("dialogue"), staging=J.get("staging"),
-                 defects=len((J.get("structure") or {}).get("defects") or []), falseDone=bool((J.get("structure") or {}).get("falseDone")), summary=J.get("summary"))
+                 defects=len((J.get("structure") or {}).get("defects") or []), falseDone=bool((J.get("structure") or {}).get("falseDone") or J.get("falseDone")), summary=J.get("summary"))
         if os.path.exists(w):   # judge checklist too (logic requests: play checks are the completeness source)
             r["judgeChecks"] = sum(1 for c in J.get("checklist") or [] if c.get("pass"))
     rd = f"{L}/readability/{arm}__{task}__{rep}.json"

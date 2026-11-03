@@ -250,6 +250,41 @@
    "engine": "--ai-config $G/aiconfig-flash-high.json",
    "lead": "claude:claude-opus-5-5:medium",
    "worker": "gemini-3.8-flash"
+  },
+  "astra": {
+   "engine": "--ai-config $G/aiconfig-astra.json",
+   "lead": null,
+   "worker": "gpt-6-astra"
+  },
+  "terra": {
+   "engine": "--ai-config $G/aiconfig-terrahigh.json",
+   "lead": null,
+   "worker": "gpt-6.1-terra"
+  },
+  "astra-terra": {
+   "engine": "--ai-config $G/aiconfig-terrahigh.json",
+   "lead": "openai-compat:opencodex/gpt-6-astra@medium",
+   "worker": "gpt-6.1-terra"
+  },
+  "astra-deepseek": {
+   "engine": "--ai-config $G/aiconfig-deepseek-high.json",
+   "lead": "openai-compat:opencodex/gpt-6-astra@medium",
+   "worker": "deepseek-v4.1-flash"
+  },
+  "astra-haiku": {
+   "engine": "--engine claude:claude-haiku-5-5:high --ai-config $G/aiconfig-terrahigh.json",
+   "lead": "openai-compat:opencodex/gpt-6-astra@medium",
+   "worker": "claude-haiku-5-5"
+  },
+  "opus-terra": {
+   "engine": "--ai-config $G/aiconfig-terrahigh.json",
+   "lead": "claude:claude-opus-5-5:medium",
+   "worker": "gpt-6.1-terra"
+  },
+  "sol-terra": {
+   "engine": "--ai-config $G/aiconfig-terrahigh.json",
+   "lead": "openai-compat:opencodex/gpt-6.1-sol@medium",
+   "worker": "gpt-6.1-terra"
   }
  }
 }

@@ -25,7 +25,7 @@ def main():
     def recs(key):
         v = db.get(key) or []
         return list(v.values()) if isinstance(v, dict) else v
-    out["equipment"] = logic_export.clean([{k: e.get(k) for k in ("id", "name", "price", "params", "stats", "slot", "kind", "etypeId", "traits")} for e in recs("equipment") if f'"{e.get("id")}"' in used or e.get("id", "").startswith(("eq_", "equipment_")) and e.get("name") in used])
+    out["equipment"] = logic_export.clean([{k: e.get(k) for k in ("id", "name", "price", "params", "stats", "statBonuses", "slot", "kind", "etypeId", "traits")} for e in recs("equipment") if f'"{e.get("id")}"' in used or e.get("id", "").startswith(("eq_", "equipment_")) and e.get("name") in used])
     out["actors"] = logic_export.clean([{k: a.get(k) for k in ("id", "name", "classId", "initialLevel", "level", "faceName", "portrait")} for a in recs("actors") if f'"{a.get("id")}"' in used])
     extra = {}
     for m in maps:
