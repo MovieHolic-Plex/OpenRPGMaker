@@ -13,7 +13,7 @@
 import type Phaser from "phaser";
 import { isPassable } from "@/project/collision";
 import { mapTileSize } from "@/project/tileGeometry";
-import { effectiveDarkness, normalizeLightingState } from "@/project/lightingRules";
+import { darkenChannel, effectiveDarkness, lightingBlend, normalizeLightingState } from "@/project/lightingRules";
 import { store } from "@/project/store";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
@@ -310,10 +310,11 @@ function patchTilesCleanly(scene: SkirtScene, textureKey: string, frameName: str
 function darknessTint(scene: SkirtScene): number | undefined {
   const lighting = normalizeLightingState(scene.session?.lighting);
   if (!(lighting.ambient > 0)) return undefined;
-  const darkness = effectiveDarkness(lighting.color, lighting.ambient);
+  const blend = lightingBlend(lighting);
+  const darkness = effectiveDarkness(lighting.color, lighting.ambient, blend);
   const mask = /^#([0-9a-f]{6})$/iu.exec(darkness.color);
   const m = mask ? Number.parseInt(mask[1]!, 16) : 0;
-  const channel = (shift: number) => Math.round(255 * (1 - darkness.ambient) + ((m >> shift) & 255) * darkness.ambient);
+  const channel = (shift: number) => Math.round(darkenChannel(255, (m >> shift) & 255, darkness.ambient, blend));
   return (channel(16) << 16) | (channel(8) << 8) | channel(0);
 }
 
@@ -335,11 +336,12 @@ function backdropColor(scene: SkirtScene, map: GameMap, textureKey: string): str
   // 방에 어둠 막이 있으면 여백도 같은 만큼 어둡게 — 어두운 방 둘레만 환하게 뜨지 않게.
   const lighting = normalizeLightingState(scene.session?.lighting);
   if (lighting.ambient > 0) {
-    const darkness = effectiveDarkness(lighting.color, lighting.ambient);
+    const blend = lightingBlend(lighting);
+    const darkness = effectiveDarkness(lighting.color, lighting.ambient, blend);
     const mask = /^#([0-9a-f]{6})$/iu.exec(darkness.color);
     const m = mask ? Number.parseInt(mask[1]!, 16) : 0;
     const maskRgb = [(m >> 16) & 255, (m >> 8) & 255, m & 255];
-    rgb = rgb.map((channel, i) => channel * (1 - darkness.ambient) + maskRgb[i]! * darkness.ambient) as [number, number, number];
+    rgb = rgb.map((channel, i) => darkenChannel(channel, maskRgb[i]!, darkness.ambient, blend)) as [number, number, number];
   }
   return `#${rgb.map((channel) => Math.round(channel).toString(16).padStart(2, "0")).join("")}`;
 }

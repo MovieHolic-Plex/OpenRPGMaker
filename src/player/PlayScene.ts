@@ -200,6 +200,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
+  lightingOverlayBlend?: "NORMAL" | "MULTIPLY";
   lightingClockMs = 0;
   lightingFixedAccumulatorMs = 0;
   lightingTransition: LightingAmbientTransition | null = null;

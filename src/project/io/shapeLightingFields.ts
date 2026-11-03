@@ -4,6 +4,8 @@ export function validateLightingState(label: string, value: unknown): void {
   const lighting = requireRecord(label, value);
   requireNumber(`${label}.ambient`, lighting.ambient);
   if (lighting.color !== undefined) requireString(`${label}.color`, lighting.color);
+  if (lighting.blend !== undefined) requireString(`${label}.blend`, lighting.blend);
+  if (lighting.vignette !== undefined) requireNumber(`${label}.vignette`, lighting.vignette);
   for (const [index, sourceValue] of requireArray(`${label}.sources`, lighting.sources).entries()) {
     validateLightSource(`${label}.sources[${index}]`, sourceValue);
   }
