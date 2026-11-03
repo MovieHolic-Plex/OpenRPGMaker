@@ -14,7 +14,7 @@ export type AutonomousNpcSceneContext = Pick<
   | "tileX"
   | "tileY"
 > &
-  Partial<Pick<PlaySceneContext, "moving" | "movingTo" | "running" | "playerRoute" | "playerSlide" | "playerSlideKind" | "eventGraphicPatternOverrides">> & {
+  Partial<Pick<PlaySceneContext, "moving" | "movingTo" | "running" | "playerRoute" | "playerSlide" | "playerSlideKind" | "eventGraphicPatternOverrides" | "eventOpacityOverrides">> & {
   readonly eventSprites: {
     get(eventId: string): AutonomousNpcSprite | undefined;
     keys?(): Iterable<string>;

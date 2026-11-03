@@ -795,6 +795,21 @@
     "no single added light has radius above 3 tiles; ambient after the lighting change is at most 0.65",
     "in the shipped player, a frame after the lighting shows several separate warm glows along the arcade instead of one large disc"
    ]
+  },
+  {
+   "id": "keeper-fades-into-forest",
+   "label": "숲 어귀: 등불 든 숲지기가 숲으로 걸어 들어가며 사라지고, 대화가 이어져도 다시 나타나지 않는다",
+   "port": 19543,
+   "lessons": [
+    "fade-out-stays-gone",
+    "held-light-follows-carrier"
+   ],
+   "prompt": "숲 어귀 밤 장면에서 등불을 든 숲지기가 마지막 말을 하고 숲 안으로 네 걸음 걸어 들어가며 서서히 사라지게 해 줘. 그 뒤에 주인공이 성벽을 돌아보고 동료가 「가자」고 말하는 대사가 두 줄 더 있어. 숲지기와 등불은 사라진 뒤 다시 보이면 안 돼.",
+   "requirements": [
+    "the keeper's walk-out moveEvent fades opacity to 0 (changeOpacity) and the keeper's lamp is a light anchored to that event, not a fixed cell",
+    "after the fade the keeper ends on a transparent page or is erased before the remaining dialogue, or the fade alone keeps it invisible in the shipped player",
+    "in the shipped player, frames taken during the two closing lines show neither the keeper sprite nor a lamp glow where he walked"
+   ]
   }
  ]
 }
