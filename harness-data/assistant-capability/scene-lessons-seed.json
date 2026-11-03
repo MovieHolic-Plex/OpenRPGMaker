@@ -822,8 +822,8 @@
    "prompt": "밤 풀밭에서 등불 든 순찰병 둘이 오가는데 빛이 노란 반투명 원판처럼 보여. 들키는 거리는 그대로 두고, 빛 안은 순찰병 곁이 밝고 바깥으로 갈수록 어두워지게, 경계만 짧게 읽히게 해 줘. 둘이 겹칠 때 밝은 덩어리가 생기면 안 돼.",
    "requirements": [
     "the patrols keep set_field_detection visionLight with the same sightRange (the light radius still equals the sight circle)",
-    "no extra uniform light disc is layered over the vision lights, and visionLight intensity is at most 0.7",
-    "in the shipped player, a frame shows each lamp brighter at the carrier than at mid-radius, with a thin readable rim, and the overlap of two lamps is not brighter than either lamp's centre"
+    "no extra uniform light disc is layered over the vision lights, and visionLight intensity is at most 0.6 (0.7 still read as yellow plates on grass)",
+    "in the shipped player, a frame shows each lamp brighter at the carrier than at mid-radius, with a thin readable rim, the brightness drop from centre to just inside the rim is several times the rim step, and the overlap of two lamps is not brighter than either lamp's centre"
    ]
   }
  ]

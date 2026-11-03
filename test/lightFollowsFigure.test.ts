@@ -26,7 +26,9 @@ describe("hard-edged sight light and circular sight agree", () => {
     expect(lightFalloffAt(0.9, "hard")).toBeGreaterThan(0.2);
     expect(lightFalloffAt(0.9)).toBeLessThan(0.1);
     // 안쪽은 고른 판이 아니라 들고 있는 사람 곁이 밝다.
-    expect(lightFalloffAt(0.1, "hard")).toBeGreaterThan(lightFalloffAt(0.5, "hard") * 1.6);
+    expect(lightFalloffAt(0.1, "hard")).toBeGreaterThan(lightFalloffAt(0.5, "hard") * 2);
+    // 안쪽 낙차(가운데 → 끝 띠 직전)가 끝 계단보다 훨씬 커야 판이 아니라 등불로 읽힌다.
+    expect(lightFalloffAt(0.05, "hard") - lightFalloffAt(0.92, "hard")).toBeGreaterThan(lightFalloffAt(0.92, "hard") * 3);
     expect(lightFalloffAt(0.5, "hard")).toBeGreaterThan(lightFalloffAt(0.85, "hard"));
     // 끝 띠는 짧다 — 반지름 94% 너머에서 끊긴다.
     expect(lightFalloffAt(0.99, "hard")).toBeLessThan(0.05);
