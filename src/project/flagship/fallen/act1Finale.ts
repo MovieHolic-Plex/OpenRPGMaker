@@ -454,14 +454,14 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
         commands: [
           setSw(SW_VALEN_P3),
           text("…별수 없군.", VALEN),
-          text("별지기들이 금한 주술 ──\n살을 내주고, 쇠를 입는다.", VALEN),
+          text("별지기들이 금한 주술이다.\n살을 내주고, 쇠를 입는다.", VALEN),
           anim(FS_VALEN_ENEMY, "anim_gen_holy_beam"),
           m2("m2-046-tint-screen", { color: "white", durationMs: 120 }), wait(260),
           st(FS_VALEN_ENEMY, "add", FS_VALEN_MACHINE_STATE),
           anim(FS_VALEN_ENEMY, "anim_gen_thunder_strike"),
           hp(FS_VALEN_ENEMY, 1000),
           m2("m2-046-tint-screen", { color: "neutral", durationMs: 700 }),
-          text("살갗이 갈라지고, 그 밑에서\n톱니와 금빛 선이 드러난다."),
+          text("살갗이 갈라지고, 그 밑으로\n톱니와 금빛 선이 보인다."),
           text("저건… 저랑 같은 몸이에요.\n칼도 주문도 튕겨 나가요!", IRIS),
           text("안쪽 회로를 노려요. 번개면 먹혀요!", IRIS),
         ] },
@@ -523,7 +523,7 @@ function crashSite(project: Project, forestId: string): void {
     item(FS_CIRCUIT_ITEM),
     narrate("「회로」를 얻었다."),
     say(IRIS, "그 사람 몸에서… 저랑 같은 소리가 났어요.\n이건 거기서 떨어진 거예요."),
-    say(ELENA, "새벽샘… 선생님 일기장에서 본 이름이야."),
+    say(ELENA, "새벽샘… 선생님 일지에서 본 이름이야."),
     say(KAEL, "천문대로 가자.\n선생님은 아실 거야."),
   ];
   // 져도 이야기는 이어진다 — 숲지기 브람이 숲에서 기습해 일행을 빼낸다. 회로는 브람이 줍는다(하넬에게 가는 줄은 같다).
@@ -535,7 +535,7 @@ function crashSite(project: Project, forestId: string): void {
     ...party.map((actorId) => ({ kind: "changeActorHp", actorId, op: "=", amount: 25, amountMode: "percent" } as unknown as Command)),
     cutBegin(),
     letterbox(),
-    narrate("무릎이 꺾인다. 쇠로 된 손이\n이리스에게 뻗어 오는데 ──"),
+    narrate("무릎이 꺾인다. 쇠로 된 손이\n이리스에게 뻗어 오는데…"),
     se("cc0-se-orp-battle-swing"),
     fx("dust", at.x, at.y, 600),
     emote(id, "exclamation", 700),
@@ -954,14 +954,14 @@ function floorB3(project: Project, vault: GameMap): GameMap {
   const read = (key: string, name: string, at: Cell, lines: Command[]) => addEvent(map, `ev_${FS_PREFIX}_lore_${key}`, name, at, [page(`ev_${FS_PREFIX}_lore_${key}_p`, name, [], lines)]);
   read("b3_hall", "층 안내 석판", B3.hallTablet, [
     sign("석판", "가라앉은 회랑.\n아래로 가는 길은 「달의 문」 하나뿐이다."),
-    sign("석판", "(석판) 달의 문은 동쪽 손잡이 방에서 연다.\n동쪽 길은 서쪽 달의 방이 연다."),
+    sign("석판", "달의 문은 동쪽 손잡이 방에서 연다.\n동쪽 길은 서쪽 달의 방이 연다."),
   ]);
   read("b3_levers", "손잡이 방 석판", B3.leverTablet, [
     sign("석판", "해가 누운 뒤에야\n달이 길을 연다."),
     sign("석판", "순서를 어긴 손에는 종이 운다."),
   ]);
   read("b3_orders", "심문회 명령서", B3.ordersNE, [
-    sign("명령서", "(명령서) 심문회 지하반에 명한다.\n심문관께서 돌아오시기 전에\n「문지기의 방」을 반드시 열 것."),
+    sign("명령서", "심문회 지하반에 명한다.\n심문관께서 돌아오시기 전에\n「문지기의 방」을 반드시 열 것."),
     sign("명령서", "달의 문 손잡이는 해 먼저, 달 나중이다.\n거꾸로 당기면 경종이 운다. 또 틀리지 마라."),
     sign("명령서", "최하층 짐승에게는 다가가지 말 것.\n성광 주문이 안 먹혀 벌써 셋을 잃었다."),
   ]);
@@ -1060,7 +1060,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
     cue: [se("cc0-se-osx-door-01"), shake(3, 450), narrate("쾅! 쇠살문 너머에서 군홧발이 몰려온다.")],
     bark: ["심문회 방패병", "문을 연 놈들이 여기 있다!\n방패 세워, 한 놈도 못 지나간다!"],
     troopId: FS_VAULT_TROOPS.b3Patrol,
-    after: [say(KAEL, "…순찰이 돌고 있었어.\n문을 열면 저쪽도 우리를 알아."), say(IRIS, "초소 홀에 더 있어요.\n발소리가 아직 들려요.")],
+    after: [say(KAEL, "…순찰이 돌고 있었어.\n문 여는 소리를 들은 거야."), say(IRIS, "초소 홀에 더 있어요.\n발소리가 아직 들려요.")],
   });
   // 매복 ② 난간 위 — 달의 문을 지나 계단통 방에 들어서면, 문지기 석상 뒤 난간에서 고행자들이 뛰어내린다.
   ambush(project, map, {
@@ -1404,7 +1404,7 @@ function hanelAfterCrash(project: Project, obsId: string): void {
           narrate("카엘이 「회로」를 내민다.\n금빛 선이 아직 희미하게 깜빡인다."),
           emote(hanel.id, "exclamation", 700),
           say(H, "…회로로구나. 별지기들은 「옛것」이라 불렀지.\n지금은 이 땅 누구도 못 만든다."),
-          say(H, "발렌이 이런 걸 몸에 품고 있었다면…\n답은 하늘이 아니라 땅 밑에 있다."),
+          say(H, "발렌이 이런 걸 몸에 품고 있었다면…\n답은 땅 밑에서 찾아야겠구나."),
           say(H, "옛 별지기의 방 밑으로 길이 더 있다.\n거기엔 비늘 덮인 짐승이 산다."),
           say(ELENA, "짐승이요…?"),
           say(H, "그래서 아무도 가까이 가지 못했다.\n렌즈가 문을 열거든, 서두르지 말거라."),

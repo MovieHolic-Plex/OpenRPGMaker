@@ -403,7 +403,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [
         narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기 별 무늬가 새겨져 있다."),
-        narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것──「잘 지내나요?」"),
+        narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것. 「잘 지내나요?」"),
         narrate("(새긴 글) 아래 몇 줄은 정으로 쪼아 냈다.\n남은 글자는 「문」과 「비늘」 둘뿐이다."),
         say("엘레나", "이 별 무늬, 서고 바닥에서 본 것 같아.\n아래 글은 누가 일부러 지웠고."),
         narrate("(사당) 향 주머니가 놓여 있다.\n누가 아직 여길 돌보나 보다."),
@@ -454,7 +454,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
     placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
-      narrate("(쪽지) 별 떨어진 뒤로 늑대가 북쪽에 몰린다.\n쉼터는 비운다. 필요한 건 챙겨 가라. ──브람"),
+      narrate("(쪽지) 별 떨어진 뒤로 늑대가 북쪽에 몰린다.\n쉼터는 비운다. 필요한 건 챙겨 가라. 브람 씀."),
     ]);
   }
   // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.
