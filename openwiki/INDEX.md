@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7983KB / 약 2,345,991 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7984KB / 약 2,346,215 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,485 |
+| `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,516 |
 | `openwiki/assistant-v2.md` | 275KB | 48KB | 819 | ~83,595 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,376 |
@@ -39,7 +39,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~32,956 |
-| `openwiki/runtime-battle.md` | 456KB | 32KB | 2509 | ~134,049 |
+| `openwiki/runtime-battle.md` | 457KB | 32KB | 2509 | ~134,242 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,046 |
 | `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,297 |
@@ -301,7 +301,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 72KB · 468줄 · ~21,485 토큰 · 통째읽기 잘림
+### `openwiki/asset-store.md` — 72KB · 468줄 · ~21,516 토큰 · 통째읽기 잘림
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -2804,7 +2804,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 456KB · 2509줄 · ~134,049 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 457KB · 2509줄 · ~134,242 토큰 · 통째읽기 잘림
 
 - `L1` pixelfx 코드 효과 애니메이션 (2026-10-31)
 - `L7` 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
