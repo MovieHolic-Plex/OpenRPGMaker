@@ -1482,9 +1482,9 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     sources: [
       { id: "player", at: { kind: "player" }, radius: 2.5, intensity: 0.3, color: "#9fb4ff" },
       // 순찰병 넷 모두 같은 등불 — 빛이 두 가지면 「작은 빛은 안전」으로 읽혀, 등불 밖에서 뒤의 추격꾼에게 붙잡히는 게 규칙 위반처럼 보였다(VQA r8).
-      // 세기 0.7 — 1 이면 빛 한가운데 순찰병 그림이 하얗게 날아가 사람으로 안 보였다.
+      // 세기 0.5 — 1 이면 빛 한가운데 순찰병 그림이 하얗게 날아가 사람으로 안 보였고, 0.7 도 풀밭 위 누런 원판으로 읽혔다(감독 검수 r7).
       // 뒤쫓는 둘은 시야와 상관없이 쫓지만(벽 너머도 안다) 등불 모양은 순찰과 같게 — 반지름·테두리·색이 같다.
-      ...chaserIds.map((eventId, i) => ({ id: `watch_lamp${i}`, at: { eventId }, radius: 3.5, intensity: 0.7, color: "#ffc468", edge: "hard" })),
+      ...chaserIds.map((eventId, i) => ({ id: `watch_lamp${i}`, at: { eventId }, radius: 3.5, intensity: 0.5, color: "#ffc468", edge: "hard" })),
       { id: "bram_lamp", at: { eventId: "ev_fs2_edge_bram" }, radius: 2.4, intensity: 0.75, color: "#ffe08a", flicker: true, when: { switchId: SW_B4_ALARM } },
     ],
   });
@@ -1494,7 +1494,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
   exec(project, "set_field_detection", { mapIds: [mapId], eventIds: chaserIds, sightRange: 10, allRound: true, brain: "classic", alertMs: 1100, chaseStepMs: 175, rush: false, searchMs: 3000, giveUpRange: 20 });
   // 앞 순찰 둘 — 손등불 빛만큼(3칸) 사방을 본다(옛 방식: 발소리로 알아채지 않는다 — 보이는 빛이 곧 규칙). 들키면 「!」 0.4초 뒤 주인공만큼 빠르게.
   exec(project, "set_field_detection", { mapIds: [mapId], eventIds: patrolIds, sightRange: 3, allRound: true, lineOfSight: true, brain: "classic", alertMs: 400, chaseStepMs: 165, rush: false, searchMs: 2500, giveUpRange: 9,
-    visionLight: { color: "#ffc468", intensity: 0.7 } });
+    visionLight: { color: "#ffc468", intensity: 0.5 } });
   for (const id of patrolIds) {
     const sight = M(project, mapId).events.find((e) => e.id === id)?.pages?.find((pg) => pg.movement?.type === "chase")?.movement.sight;
     if (sight?.shape !== "circle") throw new Error(`[fallen-star act2] ${id}: 순찰 시야가 등불과 같은 원이 아니다(${JSON.stringify(sight)})`);
