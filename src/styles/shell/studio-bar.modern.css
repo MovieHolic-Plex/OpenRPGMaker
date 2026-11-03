@@ -29,8 +29,9 @@
      (1280 전문가에서 찾기 버튼 위에 명령 팔레트가 얹혀 클릭을 가로챈 실측 — 2026-09-03.)
      가운데 칩은 남는 폭 안에서 중앙, 폭이 모자라면 칩이 먼저 줄어든다. */
   grid-template-columns: max-content minmax(0, 1fr) max-content;
-  height: 48px;
-  min-height: 48px;
+  /* 개편안 2단계(2026-11): 44px 한 줄. 컨트롤은 32px 그대로(포인터 상자 계약). */
+  height: 44px;
+  min-height: 44px;
   min-width: 0;
   padding: 0 12px;
 }
@@ -63,16 +64,46 @@
 /* ── 2. 브랜드 ─────────────────────────────────────────────────────────────────────────── */
 .studio-bar .editor-product-brand {
   color: var(--text-1);
-  font: 700 13px/1 var(--font-ui);
-  gap: 6px;
+  font: 600 13px/1 var(--font-ui);
+  gap: 8px;
   letter-spacing: 0;
-  margin-right: 4px;
+  margin-right: 2px;
   padding: 0 4px;
 }
 
+/* 브랜드 점 — 글자색 사각형 안의 「O」. 강조색은 「테스트 실행」 하나에만 쓴다. */
 .studio-bar .editor-product-brand-mark {
-  color: var(--accent);
-  font-size: 15px;
+  background: var(--text-1);
+  border-radius: 5px;
+  color: var(--bg-base);
+  display: inline-grid;
+  font: 700 10px/1 var(--font-ui);
+  height: 18px;
+  place-items: center;
+  width: 18px;
+}
+
+/* 경로 「프로젝트 / 지금 맵」 — 프로젝트는 메뉴 단추(보조 글자), 맵 이름은 진한 글자. */
+.studio-bar .studio-crumb-map {
+  align-items: center;
+  color: var(--text-1);
+  display: inline-flex;
+  flex: 0 1 auto;
+  font: 500 13px/1 var(--font-ui);
+  gap: 6px;
+  margin-left: -6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.studio-bar .studio-crumb-sep {
+  color: var(--text-3);
+}
+
+.studio-bar .studio-crumb-map-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── 3. 글자 버튼(메뉴 트리거·도구) ───────────────────────────────────────────────────────── */
@@ -142,7 +173,8 @@
 
 /* 프로젝트 이름 — 굵게, 길면 말줄임. 톱바가 「지금 어느 프로젝트인가」를 말하는 유일한 자리다. */
 .studio-project-button .oprn-menu-item-label {
-  font-weight: 700;
+  color: var(--text-2);
+  font-weight: 500;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -531,9 +563,10 @@
 
 /* 스튜디오 토글 — 테두리 무게. 켜지면 인디고(01-shell-topbar-team.css 의 .is-on 유지). */
 .studio-bar .topbar-ai-studio {
-  background: var(--control-bg);
-  border: 1px solid var(--border-subtle);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius-s);
+  color: var(--text-2);
   font: 600 13px/1 var(--font-ui);
   height: 32px;
   padding: 0 10px;
@@ -541,8 +574,9 @@
 
 .studio-bar .topbar-ai-studio:hover,
 .studio-bar .topbar-ai-studio:focus-visible {
-  background: var(--control-bg-hover);
-  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
 }
 
 /* 위 두 규칙(0,2,0)이 01-shell-topbar-team.css 의 .is-on 배경을 덮어 켜진 상태가 연회색 바탕에
@@ -1011,6 +1045,10 @@
 }
 
 .studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .studio-project-button .oprn-menu-item-label {
+  max-width: 72px;
+}
+
+.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .studio-crumb-map-name {
   max-width: 72px;
 }
 

@@ -4,11 +4,11 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   margin-inline: 2px 6px;
   padding: 2px;
-  border: 1px solid var(--border-default);
-  border-radius: 9px;
+  border: 0;
+  border-radius: 8px;
   background: var(--bg-inset);
 }
 
@@ -16,10 +16,10 @@
   min-height: 32px;
   padding: 4px 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font: 600 13px/1.2 var(--font-ui);
+  font: 500 12px/1.2 var(--font-ui);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -27,7 +27,7 @@
 .studio-bar .header-relief-brush {
   flex: 0 0 auto;
   margin-left: 6px;
-  border: 1px solid var(--border-default);
+  background: var(--bg-inset);
 }
 
 .studio-bar .left-layer-btn:hover {
@@ -37,9 +37,9 @@
 
 .studio-bar .left-layer-btn.is-active {
   background: var(--bg-raised);
-  box-shadow: 0 0 0 1px var(--border-strong), var(--shadow-pop);
+  box-shadow: 0 0 0 1px var(--border-subtle), var(--shadow-pop);
   color: var(--text-1);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .studio-bar .left-layer-btn:focus-visible {
