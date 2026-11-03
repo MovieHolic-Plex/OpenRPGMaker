@@ -11,11 +11,22 @@ import type { GameMap, Project } from "@/project/types";
 import { fallenBakeryStock, fallenSmithyStock } from "./fallen/townLife";
 import { isPassable } from "@/project/collision";
 import { FS_INN_SPEC, FS_SMITHY_SPEC } from "./fallen/townRoomSpecs";
+import { FS_INTERIOR_OVERRIDES } from "./fallen/worldPass/interiors";
 
 type Cell = { x: number; y: number };
 type Run = { ok: boolean; summary?: string; issues?: unknown; data?: unknown };
 
 const DOOR_LABEL = "버들항 · 집 문";
+
+/** 월드 정비(2026-11-04) — 넓고 어수선한 집 넷은 줄인 방 구성으로 짓는다(fallen/worldPass/interiors.ts). */
+function applyInteriorOverride(home: Home): Home {
+  const o = FS_INTERIOR_OVERRIDES[home.mapId];
+  if (!o) return home;
+  return {
+    ...home, layout: o.layout, dress: o.dress,
+    people: home.people.map((p) => ({ ...p, ...(o.people?.[p.id] ?? {}) })),
+  };
+}
 
 type Home = {
   readonly door: Cell;
@@ -69,7 +80,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const hub = project.maps[hubId]!;
   const after = (switchId: string) => [{ kind: "switch", switchId, value: true }];
   const shopItems = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && i.type === "medicine").slice(0, 4).map((i) => i.id);
-  const homes: Home[] = [
+  const homes: Home[] = ([
     {
       door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
       // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
@@ -208,7 +219,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         },
       ],
     },
-  ];
+  ] as Home[]).map(applyInteriorOverride);
 
   const doors = townDoors(project, hub);
   const built: string[] = [];
