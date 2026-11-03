@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.390.0 — 2026-11-03
+
+### 기능
+
+- **ai** — paste an OpenRouter key to connect on first run (#4182) (`0829c7c`)
+
 ## 0.389.0 — 2026-11-03
 
 ### 기능
