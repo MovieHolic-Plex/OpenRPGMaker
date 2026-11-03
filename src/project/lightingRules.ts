@@ -1,4 +1,4 @@
-import type { GameMap, LightSource, LightSourceAnchor, LightingState } from "@/project/types";
+import type { GameMap, LightSource, LightSourceAnchor, LightingBlend, LightingState } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 
 export const DEFAULT_LIGHTING_STATE: LightingState = {
@@ -54,13 +54,18 @@ export function applyMapDefaultLighting(session: PlaySessionLike, map: GameMap):
 
 export function setSessionLighting(
   session: PlaySessionLike,
-  next: Pick<LightingState, "ambient" | "color">
+  next: Pick<LightingState, "ambient" | "color"> & Partial<Pick<LightingState, "blend" | "vignette">>
 ): LightingState {
   const current = ensureLightingState(session);
+  // 섞기·비네트는 맵 기본 조명의 성질 — setLighting(어둠 진하기·색만 바꿈)이 지우지 않는다.
+  const blend = next.blend ?? current.blend;
+  const vignette = next.vignette ?? current.vignette;
   session.lighting = normalizeLightingState({
     ambient: next.ambient,
     color: next.color,
     sources: current.sources,
+    ...(blend ? { blend } : {}),
+    ...(vignette !== undefined ? { vignette } : {}),
   });
   return session.lighting;
 }
@@ -94,7 +99,22 @@ export function normalizeLightingState(value: LightingState | undefined): Lighti
     ambient: clamp01(value.ambient),
     ...(typeof value.color === "string" && value.color.trim() ? { color: value.color.trim() } : {}),
     sources: Array.isArray(value.sources) ? value.sources.map(normalizeLightSource) : [],
+    ...(value.blend === "multiply" ? { blend: "multiply" as const } : {}),
+    ...(Number.isFinite(value.vignette) && value.vignette! > 0 ? { vignette: clamp01(value.vignette!) } : {}),
   };
+}
+
+/** 어둠 막 섞기 — 생략·모르는 값은 "over". */
+export function lightingBlend(value: Pick<LightingState, "blend"> | undefined): LightingBlend {
+  return value?.blend === "multiply" ? "multiply" : "over";
+}
+
+/**
+ * 어둠 막을 한 화소 색(0~255)에 입힌 결과. over: c·(1−a)+m·a, multiply: c·(1−a+m/255·a).
+ * 맵 여백·검수 그림처럼 게임 마스크를 직접 계산하는 곳이 같은 식을 쓴다.
+ */
+export function darkenChannel(channel: number, mask: number, alpha: number, blend: LightingBlend): number {
+  return blend === "multiply" ? channel * (1 - alpha + (mask / 255) * alpha) : channel * (1 - alpha) + mask * alpha;
 }
 
 export function normalizeLightSource(value: LightSource): LightSource {
@@ -260,8 +280,10 @@ export const LIGHT_MASK_MAX_LUMA = 0.3;
 export const LIGHT_TINT_MAX_ALPHA = 0.35;
 
 /** 화면에 실제로 칠할 어둠 막 색·진하기. 어두운 색(기본 검정 포함)·#hex 가 아닌 색은 그대로다. */
-export function effectiveDarkness(color: string | undefined, ambient: number): { readonly color: string; readonly ambient: number } {
+export function effectiveDarkness(color: string | undefined, ambient: number, blend: LightingBlend = "over"): { readonly color: string; readonly ambient: number } {
   const base = color ?? "#000000";
+  // 곱하기 막은 밝은 색이어도 안개처럼 덮지 않는다(그 색으로 물들 뿐) — 묶지 않는다.
+  if (blend === "multiply") return { color: base, ambient };
   const rgb = parseHexColor(base);
   if (!rgb) return { color: base, ambient };
   const luma = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;

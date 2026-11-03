@@ -111,6 +111,12 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
 
   drawLightingMask(texture.canvas, params);
   texture.refresh();
+  // 곱하기 막 — 마스크(색 M, 진하기 A)를 화면에 곱한다: 결과 = 화면·(1−A+M·A). WebGL·Canvas 둘 다 같은 식이다.
+  const blendMode = params.blend === "multiply" ? "MULTIPLY" : "NORMAL";
+  if (scene.lightingOverlayBlend !== blendMode) {
+    overlay.setBlendMode(blendMode);
+    scene.lightingOverlayBlend = blendMode;
+  }
   overlay.setVisible(params.ambient > 0);
   scene.lightingMaskSignature = signature;
 }

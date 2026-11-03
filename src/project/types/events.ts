@@ -366,10 +366,21 @@ export type LightSource = {
   readonly edge?: "soft" | "hard";
 };
 
+/**
+ * 어둠 막을 화면에 얹는 방식. 생략 = "over"(예전과 같다: color 를 ambient 만큼 덮는다).
+ * "multiply" 는 화면 색에 color 를 곱한다 — 흰 눈·얼음과 어두운 나무가 같은 회청색 막으로 뭉개지지 않고
+ * 밝기 차이를 지킨 채 달빛 색으로 가라앉는다(폴른 스타 서리나루 밤, 2026-11-03). 밝은 color 도 색조로 묶지 않는다.
+ */
+export type LightingBlend = "over" | "multiply";
+
 export type LightingState = {
   readonly ambient: number;
   readonly color?: string;
   readonly sources: readonly LightSource[];
+  /** 생략 = "over". */
+  readonly blend?: LightingBlend;
+  /** 화면 가장자리를 더 어둡게(0~1, 생략 = 0). 광원은 비네트도 걷어 낸다. */
+  readonly vignette?: number;
 };
 
 export type WeatherKind = "none" | "rain" | "storm" | "snow" | "fog";
