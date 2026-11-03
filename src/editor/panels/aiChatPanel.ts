@@ -2613,7 +2613,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         return;
       }
       // 모호한 새로 짓기를 넓힌 장면 — 묻지 않고 한 줄로 알리고 바로 짓는다. 다른 느낌을 원하면 사용자는 다음 말로 바꾼다.
-      if (classified.widenLine) appendBubble("assistant", classified.widenLine);
+      // 작업 카드는 분류 전에 이미 섰다 — 카드 뒤에 붙이면 도구 행에 밀려 안 보인다(2026-11-03 실측). 사용자 문장 바로 아래, 카드 앞에 둔다.
+      if (classified.widenLine) {
+        const line = appendBubble("assistant", classified.widenLine);
+        if (workCard?.root.isConnected) workCard.root.before(line);
+      }
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
