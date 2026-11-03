@@ -7416,6 +7416,1168 @@
    ]
   },
   {
+   "id": "act2-b7-walk",
+   "label": "제2막 B7 — 서리 가도 → 눈보라 고개 걷기(짐수레·이정표·틈·얼음·폐허 초소·고갯마루 → 얼음 호수)",
+   "note": "snowLandmarks.ts applySnowLandmarks — 필드 적은 처치 스위치로 비우고 본길을 걷는다. 좌표는 구운 지도에서 BFS 로 뽑았다",
+   "mapId": "map_snow_north_1",
+   "x": 19,
+   "y": 37,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_gear_meds": true,
+    "sw_fs2_b4_forest_edge": true,
+    "sw_fs2_fortress_f2_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 16
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 16
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 16
+    }
+   ],
+   "beats": [
+    {
+     "id": "road-arrive",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "maxPresses": 1,
+       "fn": "() => { const s = window.__oprnHooksScene; if (!s || !s.map) return false; for (const e of s.map.events) if (e.id.startsWith('ev_field_enemy') || e.id.startsWith('ev_troop')) window.__oprnDebug.setSwitch('sw_' + e.id + '_clear', true); return true; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "road-wagon",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_1",
+       "x": 15,
+       "y": 26,
+       "timeoutMs": 13000
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "road-sign",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_1",
+       "x": 22,
+       "y": 23,
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "road-gap",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_1",
+       "x": 13,
+       "y": 17,
+       "timeoutMs": 13000
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "road-ice",
+     "ops": [
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_1",
+       "x": 13,
+       "y": 15,
+       "timeoutMs": 5000
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "road-exit",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_snow_north_2",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pass-arrive",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "maxPresses": 1,
+       "fn": "() => { const s = window.__oprnHooksScene; if (!s || !s.map) return false; for (const e of s.map.events) if (e.id.startsWith('ev_field_enemy') || e.id.startsWith('ev_troop')) window.__oprnDebug.setSwitch('sw_' + e.id + '_clear', true); return true; }"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_2",
+       "x": 13,
+       "y": 18,
+       "timeoutMs": 25000
+      },
+      {
+       "kind": "face",
+       "dir": "left"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_2",
+       "x": 11,
+       "y": 18,
+       "timeoutMs": 5000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pass-ruin",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_2",
+       "x": 7,
+       "y": 17,
+       "timeoutMs": 7000
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pass-view",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        }
+       ]
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "pressUntilJs",
+       "maxPresses": 30,
+       "settleMs": 1300,
+       "fn": "() => window.__oprnDebug.readState().selfSwitches?.ev_fs2_snow_view?.A === true"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pass-exit",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_ice_lake",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_hi_potion": 2,
+    "item_ether": 3,
+    "item_panacea": 1
+   },
+   "gold": 400,
+   "sessionPatch": {
+    "actorSkillIds": {
+     "actor_fs_elena": [
+      "skill_fs2_ember_melt"
+     ]
+    }
+   }
+  },
+  {
    "id": "act2-b8-arrive",
    "label": "제2막 B8 — 얼음 호수 빙벽 얼음 굴 → 서리나루 도착",
    "note": "frostford.ts + act2Opening.ts iceLake — 얼음 굴 (45,10) ↔ 마을 남쪽 어귀, 광장·징발 창고·기슭 길·동쪽 집을 돌아 하르마 앞까지",
