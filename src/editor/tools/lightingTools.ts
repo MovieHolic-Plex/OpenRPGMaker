@@ -1,6 +1,7 @@
 import { genId } from "@/util/id";
 import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
+import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import type { Command, EventPage, GameEvent, LightingBlend, LightingState, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -120,7 +121,7 @@ const setLightingVolume: ToolDefinition = {
 const setSceneMood: ToolDefinition = {
   name: "set_scene_mood",
   description:
-    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부의 통행 불가 칸을 건너뛰고 playerTouch 분위기 이벤트를 만든다. 「어둡게」「축제」「음산하게」 같은 분위기 요청의 정본. 등불·장식 소품은 place_props, 호러 슬라이스는 make_horror_loop/make_gallery_room 과 함께.",
+    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부의 통행 불가 칸을 건너뛰고 playerTouch 분위기 이벤트를 만든다. 「어둡게」「축제」「음산하게」 같은 분위기 요청의 정본. 해 질 녘·아침 「집·나무가 길게 그림자를 드리운다」는 sunlight(고정 태양 그림자: 서쪽 낮은 해 = azimuth 262·altitude 20~25)를 같이 준다 — 마을·숲 도구로 지은 집·나무가 그림자를 던진다. 등불·장식 소품은 place_props, 호러 슬라이스는 make_horror_loop/make_gallery_room 과 함께.",
   mode: "write",
   parameters: {
     type: "object",
@@ -137,6 +138,16 @@ const setSceneMood: ToolDefinition = {
         additionalProperties: true,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
+      sunlight: {
+        type: "object",
+        description: "applyMode map 만. 고정 태양의 집·나무 그림자(set_map_properties.sunlight 와 같다). {enabled:true, azimuth: 해가 있는 쪽 0북·90동·180남·270서, altitude:12~85(낮을수록 길다), opacity:0~0.65, softness:0~4}",
+        properties: {
+          enabled: { type: "boolean" }, azimuth: { type: "number", minimum: 0, maximum: 359 },
+          altitude: { type: "number", minimum: 12, maximum: 85 }, opacity: { type: "number", minimum: 0, maximum: 0.65 },
+          softness: { type: "number", minimum: 0, maximum: 4 }, heightScale: { type: "number", minimum: 0.25, maximum: 2 },
+        },
+        additionalProperties: false,
+      },
     },
     required: ["mapId"],
   },
@@ -150,15 +161,19 @@ const setSceneMood: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const weather = weatherCommandArg(args.weather);
     const lighting = lightingStateArg(args.lighting);
-    if (!weather && !lighting) {
-      throw new ToolError("weather 또는 lighting 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
+    const sun = args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight) ? args.sunlight as Partial<MapSunlight> : undefined;
+    if (!weather && !lighting && !sun) {
+      throw new ToolError("weather·lighting·sunlight 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
     }
     const applyMode = args.applyMode === "event" ? "event" : "map";
+    if (sun && applyMode !== "map") throw new ToolError("sunlight 는 applyMode 'map' 에서만 씁니다(맵 전체의 해).", { code: "invalid-args", mapId: map.id });
     if (applyMode === "map") {
       if (lighting) map.defaultLighting = lighting;
+      if (sun) map.sunlight = patchSunlight(map.sunlight, { enabled: true, ...sun });
+      const casters = (map.structurePlacements?.length ?? 0) + (map.doodadGroups?.length ?? 0);
       const moodEventId = weather ? upsertSceneMoodAutoEvent(map, [weather]) : undefined;
       return {
-        summary: `${map.name} 분위기 설정 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}`,
+        summary: `${map.name} 분위기 설정 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}${map.sunlight && sun ? `, 태양 그림자 방향 ${map.sunlight.azimuth}°·고도 ${map.sunlight.altitude}°${casters ? "" : " (이 맵엔 그림자를 던질 집·나무 기록이 없다 — 마을·숲 도구로 지은 맵에서 보인다)"}` : ""}`,
         data: { mapId: map.id, applyMode, weatherKind: weather?.weather, lightCount: lighting?.sources.length ?? 0, eventIds: moodEventId ? [moodEventId] : [] },
       };
     }

@@ -58,6 +58,9 @@ export const SCRIPT_TIER = {
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
   { words: /설원|눈길|눈보라|눈 덮인|고갯길|서리|얼음 틈|빙판|북방|snow|blizzard|frozen/iu, tools: ["author_snow_route"] },
+  // 「동료가 있어야 건너는 틈」 — author_snow_route 결과가 틈마다 place_field_obstacle(kind:"gap") 를 가리킨다. v2 풀에 없어 Argon 이 「없는 도구」로
+  // 거절받고 actorInParty 페이지 조건으로 순간 이동을 손으로 짰다(2026-11-03 조수 대조 B7 설원).
+  { words: /틈|건너|뛰어넘|장대|절벽 사이|gap|chasm|crevasse/iu, tools: ["place_field_obstacle"] },
   { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
   { words: /숨겨|숨긴|숨은|조사하면|조사할|비석|책장|망원경|표지판|팻말|일지/u, tools: ["place_examine_hotspots"] },
   { words: /전부|모두|일괄|이름을|바꿔|바꾸/u, tools: ["replace_text_in_project"] },

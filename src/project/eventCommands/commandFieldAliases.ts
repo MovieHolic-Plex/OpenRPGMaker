@@ -375,8 +375,10 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
   }
   // fork 조건에 setVariable 피연산자 모양 {kind:'var',id,...} 을 쓴 사례(2026-10-24 g3-number-lock·h-fishing-spot) — 조건의 kind 는 variable·variableId 다.
   if (command.kind === "fork" && command.condition && typeof command.condition === "object") {
+    const party = fixActorPartyConditions(command.condition);
     const fixed = fixVarConditions(command.condition);
-    if (fixed) return `fork 조건의 {kind:"var",id} 를 {kind:"variable",variableId} 로 고쳤습니다(${fixed}곳).`;
+    if (fixed || party) return joinFixes(fixed ? `fork 조건의 {kind:"var",id} 를 {kind:"variable",variableId} 로 고쳤습니다(${fixed}곳).` : undefined,
+      party ? `fork 조건의 「파티에 있다」(${party}곳)를 {kind:"actor",actorId,present} 로 고쳤습니다.` : undefined);
   }
   // 전직 명령에 classId 로 쓴 사례(2026-10-24 g3-class-change) — 런타임은 toClassId 만 읽어 기본 전직으로 갔다.
   if (command.kind === "promoteActor" && command.toClassId === undefined && typeof command.classId === "string") {
@@ -565,6 +567,28 @@ export function canonicalizeCommandFieldAliases(commands: readonly unknown[] | u
 }
 
 /** 조건 나무 안의 {kind:"var", id} → {kind:"variable", variableId}(all·any·not 안쪽까지). 고친 수를 돌려준다. */
+// 「이 동료가 파티에 있다」를 다른 엔진식 이름으로 쓴 사례(2026-11-03 조수 대조 B7 설원 Argon:
+// {kind:"actorInParty",actorId,present:true} 페이지 조건 넷이 「알 수 없는 condition kind」로 이벤트째 거절됐다) — 정본은 {kind:"actor",actorId,present}.
+const ACTOR_IN_PARTY_KIND = /^(actor_?in_?party|in_?party|party_?has(_?actor)?|party_?member|has_?actor|party_?includes)$/iu;
+export function fixActorPartyConditions(node: unknown): number {
+  if (Array.isArray(node)) return node.reduce((n: number, c) => n + fixActorPartyConditions(c), 0);
+  if (!node || typeof node !== "object") return 0;
+  const c = node as RecordValue;
+  let n = 0;
+  // {kind:"actor",actorId} 에 present 를 빼먹은 사례(같은 날 B7 Opus: 「condition.present가 boolean이 아닙니다」) — 「있다」로 읽는다.
+  if (c.kind === "actor" && typeof c.actorId === "string" && c.present === undefined) { c.present = c.value === false ? false : true; delete c.value; n++; }
+  if (typeof c.kind === "string" && ACTOR_IN_PARTY_KIND.test(c.kind) && (typeof c.actorId === "string" || typeof c.actor === "string")) {
+    c.kind = "actor";
+    if (c.actorId === undefined) { c.actorId = c.actor; delete c.actor; }
+    if (typeof c.present !== "boolean") c.present = c.value === false || c.inParty === false ? false : true;
+    delete c.value; delete c.inParty;
+    n++;
+  }
+  if (Array.isArray(c.conditions)) n += fixActorPartyConditions(c.conditions);
+  if (c.condition) n += fixActorPartyConditions(c.condition);
+  return n;
+}
+
 export function fixVarConditions(node: unknown): number {
   if (Array.isArray(node)) return node.reduce((n: number, c) => n + fixVarConditions(c), 0);
   if (!node || typeof node !== "object") return 0;
