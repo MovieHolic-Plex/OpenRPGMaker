@@ -1,7 +1,7 @@
-// 조수 v2 리드·워커 나누기(2026-11-01, 기본 꺼짐) — 비싼 모델(리드)은 요청을 할 일과 구체 사양으로 바꾸고 단계 끝에서 검토만 한다.
+// 조수 v2 리드·워커 나누기(2026-11-01, 2026-11-03 부터 Haiku 워커에 기본 켜짐 — resolveSplitConfig) — 비싼 모델(리드)은 요청을 할 일과 구체 사양으로 바꾸고 단계 끝에서 검토만 한다.
 // 값싼 모델(워커 = 이 실행의 주 모델)이 그 사양대로 도구를 부르고, 도구 오류·재시도를 스스로 처리하며, 기계 확인 없이는 할 일을 닫지 못한다.
 // 리드는 도구 호출을 하나도 보지 않는다 — 사양·요약·기계 확인 결과·변경 요약만 받는다(리드 문맥을 작게).
-// 켜기: OPRN_V2_SPLIT="lead:<엔진>" — <엔진> 은 로컬 CLI(`claude:claude-opus-5-5:medium`) 또는 계정/모델(`openai-compat:proxy8318/gemini-4-argon@medium`).
+// 기본: 주 모델이 로컬 CLI Haiku 면 Opus 리드(DEFAULT_SPLIT). 끄기: OPRN_V2_SPLIT=off. 바꾸기: OPRN_V2_SPLIT="lead:<엔진>" — <엔진> 은 로컬 CLI(`claude:claude-opus-5-5:medium`) 또는 계정/모델(`openai-compat:proxy8318/gemini-4-argon@medium`).
 //   `worker:` 칸은 받기만 한다(기록용) — 워커는 이 실행의 주 모델(편집기에서 고른 조수 모델)이다.
 // 모델에게 가는 글은 영어(사용자 지시 2026-10-30). 순수 함수만 — 호출은 실행기(scripts/lib/assistantV2Runtime.ts)가 한다.
 import type { Project } from "../../project/types";
@@ -36,6 +36,19 @@ export function parseSplitConfig(raw: string | undefined): SplitConfig | undefin
     else worker = m[2]!;
   }
   return lead ? { lead, ...(worker ? { worker } : {}), raw } : undefined;
+}
+
+/** 기본 리드(2026-11-03 측정 split2) — 주 모델이 로컬 CLI Haiku 면 OPRN_V2_SPLIT 없이도 Opus 리드가 붙는다. */
+export const DEFAULT_SPLIT = "lead:claude:claude-opus-5-5:medium";
+
+/**
+ * 이 실행의 나누기 설정. OPRN_V2_SPLIT 이 있으면 그 값이 이긴다(`off`·`0` = 끄기). 없으면 주 모델이 로컬 Claude CLI 의 Haiku 일 때만
+ * Opus 리드를 붙인다 — 측정한 조합이 그것뿐이고, 로컬 CLI 가 돌고 있으니 리드도 같은 CLI 로 부를 수 있다. 다른 모델은 그대로 혼자 돈다.
+ */
+export function resolveSplitConfig(raw: string | undefined, main: { readonly provider?: string; readonly model?: string }): SplitConfig | undefined {
+  if (raw !== undefined && raw.trim() !== "") return parseSplitConfig(raw.trim());
+  if (main.provider === "local-cli:claude" && /^claude-haiku/u.test(main.model ?? "")) return parseSplitConfig(DEFAULT_SPLIT);
+  return undefined;
 }
 
 export const SPLIT_LIMITS = { digest: 7_000, tools: 5_000, plan: 9_000, diff: 8_000, toolLog: 3_000, report: 1_500, reviews: 2, fixes: 5 } as const;
