@@ -1,0 +1,124 @@
+"""폴른 스타 몬스터 새 그림(16칸 4×4 전투 시트)을 battle-gen 에서 가져와 src/project/flagship/fallen/monsterSheets16.ts 로 쓴다.
+
+그림은 battle-gen 이 만든다(새 초상 → 3x3 → 4x4, 기계 게이트, Opus 검수 4점 이상). 이 스크립트는 그림을 바꾸지 않는다.
+  - battle-gen catalog 의 pack "fallen-star" 행 중 4x4 동작 시트에 지금 Opus 통과(review.current_pass)가 있고
+    초상이 통과했거나 오너가 고른(stages.owner_picked) 종만 싣는다. 나머지는 번들 3×3 그대로 남는다.
+  - PNG 는 무손실 팔레트 PNG 로 다시 싸고(다시 풀어 화소 비교), 칸 규칙을 한 번 더 본다:
+    시트 = 4cell 정사각, idle_a = 초상 그대로, 0~14 칸은 채움, 15 칸은 완전 투명, 알파 0/255.
+
+  python3 scripts/content/fallen-monster16/export.py [--battle-gen ~/z-project/battle-gen]
+"""
+import argparse, base64, io, json, os, sys
+
+import numpy as np
+from PIL import Image
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+OUT = os.path.join(ROOT, "src/project/flagship/fallen/monsterSheets16.ts")
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--battle-gen", default=os.environ.get("BATTLE_GEN", "~/z-project/battle-gen"))
+BG = os.path.abspath(os.path.expanduser(ap.parse_args().battle_gen))
+os.environ["BATTLEGEN_ROOT"] = BG
+sys.path.insert(0, BG)
+from battlegen import catalog, review, stages, state  # noqa: E402
+from battlegen.imageutil import pixel_sha  # noqa: E402
+
+
+def rgba(path):
+    a = np.array(Image.open(path).convert("RGBA"))
+    a[a[..., 3] == 0] = 0
+    return a
+
+
+def palette_png(a):
+    flat = a.reshape(-1, 4)
+    cols, inv = np.unique(flat, axis=0, return_inverse=True)
+    if len(cols) > 256:
+        raise ValueError(f"{len(cols)} colours")
+    img = Image.fromarray(inv.reshape(a.shape[:2]).astype(np.uint8), "P")
+    img.putpalette(cols[:, :3].astype(np.uint8).flatten().tolist())
+    alpha = bytes(cols[:, 3].astype(np.uint8).tolist())
+    buf = io.BytesIO()
+    img.save(buf, "PNG", optimize=True, transparency=alpha)
+    data = buf.getvalue()
+    back = np.array(Image.open(io.BytesIO(data)).convert("RGBA"))
+    back[back[..., 3] == 0] = 0
+    if not np.array_equal(back, a):
+        raise ValueError("palette PNG does not round-trip")
+    return data
+
+
+def sheet_problems(sheet, portrait):
+    C = portrait.shape[0]
+    if portrait.shape[:2] != (C, C) or C not in (48, 64, 96):
+        return [f"portrait {portrait.shape[1]}x{portrait.shape[0]} is not a 48/64/96 square"]
+    if sheet.shape[:2] != (4 * C, 4 * C):
+        return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {4 * C}x{4 * C}"]
+    out = []
+    if not set(np.unique(sheet[..., 3]).tolist()) <= {0, 255}:
+        out.append("alpha must be 0 or 255")
+    for k in range(16):
+        cell = sheet[(k // 4) * C:(k // 4 + 1) * C, (k % 4) * C:(k % 4 + 1) * C]
+        filled = bool((cell[..., 3] > 0).any())
+        if k == 15 and filled:
+            out.append("cell 15 must be transparent")
+        if k < 15 and not filled:
+            out.append(f"cell {k} is empty")
+        if k == 0 and not np.array_equal(cell, portrait):
+            out.append("idle_a differs from the portrait")
+    return out
+
+
+items = state.load()
+entries, skipped, bad = [], [], []
+for row in catalog.enemies():
+    if row.get("pack") != "fallen-star":
+        continue
+    i = row["id"]
+    pit, mit = items.get(state.key("portrait", i)), items.get(state.key("motion", i))
+    if not pit or not pit.get("art") or not mit or not mit.get("art"):
+        skipped.append(f"{i}: no portrait or motion sheet")
+        continue
+    portrait_ok, portrait_why = review.current_pass("portrait", i)
+    picked = stages.owner_picked(pit)
+    motion_ok, motion_why = review.current_pass("motion", i)
+    if not motion_ok or (not portrait_ok and not picked):
+        skipped.append(f"{i}: portrait {portrait_why if not picked else 'owner pick'} / motion {motion_why}")
+        continue
+    portrait, sheet = rgba(os.path.join(BG, pit["art"])), rgba(os.path.join(BG, mit["art"]))
+    probs = sheet_problems(sheet, portrait)
+    if probs:
+        bad.append(f"{i}: {'; '.join(probs)}")
+        continue
+    verdicts = review.item_verdicts
+    pv = [v for v in verdicts("portrait", i) if v.get("pixelSha") == pixel_sha(portrait) and v.get("standard") == review.STANDARD]
+    mv = [v for v in verdicts("motion", i) if v.get("pixelSha") == pixel_sha(sheet) and v.get("standard") == review.STANDARD]
+    note = f"초상 Opus {pv[-1].get('score')} ({pv[-1]['batch']})"
+    if not portrait_ok:
+        note += f" · 오너 선택(「{pit['ownerPick']['quote']}」)"
+    note += f" · 16칸 Opus {mv[-1].get('score')} ({mv[-1]['batch']})"
+    url = lambda a: "data:image/png;base64," + base64.b64encode(palette_png(a)).decode()
+    entries.append({"resourceId": row["fallenStarResourceId"], "name": row["ko"], "cell": int(portrait.shape[0]),
+                    "motion": row["motion"], "idleFrameMs": int(row["idleFrameMs"]), "note": f"{row['ko']} {i[3:]} · {note}",
+                    "portrait": url(portrait), "sheet": url(sheet)})
+
+if bad:
+    sys.exit("refused (sheet rules):\n  " + "\n  ".join(bad))
+js = lambda v: json.dumps(v, ensure_ascii=False)
+with open(OUT, "w") as f:
+    f.write("// 생성 파일 — python3 scripts/content/fallen-monster16/export.py. 손으로 고치지 말 것.\n")
+    f.write("// 『폴른 스타』 몬스터 새 그림: battle-gen 16칸(4×4) 전투 시트와 한 칸 초상(idle_a). 설치는 monsterArt16.ts.\n")
+    f.write('import type { UploadedPixelEnemySheetMeta } from "@/project/types";\n\n')
+    f.write("export interface FallenMonsterSheet16 {\n")
+    f.write("  /** 번들 시트 id(generated-enemy-<slug>) — 적 기록의 monsterResourceId 그대로. */\n")
+    f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: 64 | 96;\n")
+    f.write('  readonly motion: UploadedPixelEnemySheetMeta["motion"];\n  readonly idleFrameMs: number;\n')
+    f.write("  readonly portrait: string;\n  readonly sheet: string;\n}\n\n")
+    f.write("export const FS_MONSTER_SHEETS_16: readonly FallenMonsterSheet16[] = [\n")
+    for e in entries:
+        f.write(f"  // {e['note']}\n")
+        f.write(f"  {{ resourceId: {js(e['resourceId'])}, name: {js(e['name'])}, cell: {e['cell']}, motion: {js(e['motion'])}, "
+                f"idleFrameMs: {e['idleFrameMs']}, portrait: {js(e['portrait'])}, sheet: {js(e['sheet'])} }},\n")
+    f.write("];\n")
+print(json.dumps({"out": os.path.relpath(OUT, ROOT), "sheets": len(entries), "bytes": os.path.getsize(OUT), "skipped": skipped}, ensure_ascii=False, indent=1))
