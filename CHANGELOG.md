@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.388.0 — 2026-11-03
+
+### 기능
+
+- **lighting** — multiply darkness blend and vignette for snow/ice night scenes (#4178) (`e7da3dd`)
+
+### 수정
+
+- event-held lights follow their carrier; vision light edge matches sight (#4165) (`0c15c8c`)
+
 ## 0.387.0 — 2026-11-02
 
 ### 기능
