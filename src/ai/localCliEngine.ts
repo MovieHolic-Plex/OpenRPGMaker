@@ -22,6 +22,12 @@ export interface AssistantEngineChoice {
   /** 계획·팀장·큰 판단 모델. 비우면 routineModel. */
   readonly deepModel?: string;
   readonly effort?: "low" | "medium" | "high";
+  /**
+   * 팀장·워커(조수 v2 리드, src/ai/v2/split.ts). 켜면 deepModel 이 팀장으로 할 일·사양을 쓰고 단계 끝에서 검토하며,
+   * routineModel 이 워커로 짓는다(같은 CLI). deepModel 이 routineModel 과 같으면 나누지 않는다 — 설정의 「한 모델로 합치기」가 곴 끄기다.
+   * 첫 실행 관문이 Claude 구독에만 켠다(planDefaults.ts). OPRN_V2_SPLIT 이 있으면 그 값이 이긴다.
+   */
+  readonly teamLead?: boolean;
 }
 
 export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
@@ -57,7 +63,7 @@ export function parseAssistantEngine(raw: unknown): AssistantEngineChoice | unde
   const deepModel = text(value.deepModel);
   return {
     kind: "local-cli", cli: value.cli as LocalCliEngineId,
-    ...(routineModel ? { routineModel } : {}), ...(deepModel ? { deepModel } : {}),
+    ...(routineModel ? { routineModel } : {}), ...(deepModel ? { deepModel } : {}), ...(value.teamLead === true ? { teamLead: true } : {}),
     ...(value.effort === "low" || value.effort === "medium" || value.effort === "high" ? { effort: value.effort } : {}),
   };
 }
@@ -92,6 +98,15 @@ export function applyAssistantEngine<T extends { providerId?: string; model: str
     pixelModel: row(deep),
     ultrabrainProviderId: provider, ultrabrainModel: deep, ultrabrainReasoningEffort: effort,
   };
+}
+
+/**
+ * 조수 v2 팀장(리드) — 엔진 선택이 teamLead 를 켜고 deepModel 이 routineModel 과 다를 때만. 같은 CLI 로 부른다(키 없음).
+ * 강도는 측정한 조합(2026-11-03 lead-worker-split, `lead:claude:claude-opus-5-5:medium`)을 따라 medium 으로 둔다.
+ */
+export function assistantEngineLead(choice: AssistantEngineChoice | undefined): RoleModel | undefined {
+  if (!choice?.teamLead || !choice.deepModel || choice.deepModel === (choice.routineModel ?? LOCAL_CLI_DEFAULT_MODELS[choice.cli].routine)) return undefined;
+  return { provider: localCliProviderId(choice.cli), model: choice.deepModel, thinkingLevel: "medium" };
 }
 
 /** 비용 한 줄(D8). 구독이면 청구가 아니라 한도 사용이다. */

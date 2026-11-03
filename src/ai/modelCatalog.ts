@@ -17,6 +17,8 @@ const CODEX_MODELS: readonly string[] = [
   "gpt-6-astra",
   "gpt-6-sol",
   "gpt-6-luna",
+  // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). 2026-11-03 앱 경로(openai-codex) 실제 호출 통과.
+  "gpt-6.1-terra",
 ];
 
 /**

@@ -23,6 +23,8 @@ const DISABLED_FEATURES = [
 const FALLBACK_MODELS: LocalCliModel[] = [
   { id: "gpt-6.1-sol", label: "GPT-6.1 Sol (권장)", roles: ["deep"] },
   { id: "gpt-6-luna", label: "GPT-6 Luna (빠름·가벼움)", roles: ["routine"] },
+  // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). 2026-11-03 codex 0.164 로 실제 호출 통과.
+  { id: "gpt-6.1-terra", label: "GPT-6.1 Terra" },
 ];
 
 export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: string | undefined, options: { model?: string; effort?: string; resume?: string; images?: readonly string[] }): string[] {
@@ -74,7 +76,11 @@ function codexModels(): LocalCliModel[] {
   try {
     const cache = JSON.parse(readFileSync(join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "models_cache.json"), "utf8")) as { models?: { slug?: string; display_name?: string; visibility?: string }[] };
     const rows = (cache.models ?? []).filter((m) => typeof m.slug === "string" && m.visibility !== "hide" && !/review/u.test(m.slug!));
-    if (rows.length) return rows.map((m) => ({ id: m.slug!, label: m.display_name ?? m.slug!, ...(FALLBACK_MODELS.find((f) => f.id === m.slug)?.roles ? { roles: FALLBACK_MODELS.find((f) => f.id === m.slug)!.roles! } : {}) }));
+    // 캐시에 없는 고정 목록 모델(기본값이 쓰는 gpt-6.1-sol·gpt-6.1-terra)은 뒤에 붙인다 — 없으면 설정 목록이 기본값을 못 보여 준다.
+    if (rows.length) return [
+      ...rows.map((m) => ({ id: m.slug!, label: m.display_name ?? m.slug!, ...(FALLBACK_MODELS.find((f) => f.id === m.slug)?.roles ? { roles: FALLBACK_MODELS.find((f) => f.id === m.slug)!.roles! } : {}) })),
+      ...FALLBACK_MODELS.filter((f) => !rows.some((m) => m.slug === f.id)),
+    ];
   } catch { /* 목록이 없다 */ }
   return FALLBACK_MODELS;
 }

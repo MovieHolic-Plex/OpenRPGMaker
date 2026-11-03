@@ -17,6 +17,10 @@ const MODELS = [
   { id: "sonnet", label: "Sonnet (권장)", roles: ["routine", "deep"] as const },
   { id: "haiku", label: "Haiku (빠름·가벼움)" },
   { id: "opus", label: "Opus (가장 강함·한도 많이 씀)" },
+  // 첫 실행 기본값(Opus 팀장 + Haiku 워커, src/ai/planDefaults.ts)이 쓰는 정식 ID. 별칭 `haiku` 는 Claude Code 2.1.284 에서
+  // Haiku 4.5 로 간다(2026-11-03 실측 modelUsage) — 측정한 조합은 5.5 라 이름을 박는다.
+  { id: "claude-haiku-5-5", label: "Haiku 5.5" },
+  { id: "claude-opus-5-5", label: "Opus 5.5" },
 ];
 
 export function buildClaudeArgs(configPath: string, systemPromptPath: string, options: { model?: string; effort?: string; maxBudgetUsd?: number; tools?: boolean }): string[] {

@@ -20,6 +20,8 @@ const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
   // codex-rs 0.155 카탈로그가 use_responses_lite: true 로 내려 준다. 이 헤더 없이 보내면
   // 「not supported when using Codex with a ChatGPT account」 400 이다(실측 2026-10-07).
   "gpt-6.1-sol": { name: "GPT-6.1 Sol", contextWindow: 272000, useResponsesLite: true },
+  // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). Codex CLI 카탈로그의 Terra 계열(gpt-5.6-terra)이 use_responses_lite: true 다.
+  "gpt-6.1-terra": { name: "GPT-6.1 Terra", contextWindow: 272000, useResponsesLite: true },
 };
 
 /** Exact selection only. Missing catalog entries must never change the user's model. */
