@@ -15,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
+import { resetBrushSettingsForTests, setBrushSettingsOpen } from "@/editor/panels/brushSettingsDisclosure";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -54,11 +55,14 @@ describe("도구막대 오버플로 도달성", () => {
     host = document.createElement("div");
     host.dataset.testid = "left-palette-root";
     document.body.append(host);
+    // 도구 줄·붓 크기는 왼쪽 열의 접힌 「붓 설정」 안에 있다 — 펼친 상태에서 도달성을 본다.
+    setBrushSettingsOpen(true);
     render();
   });
 
   afterEach(() => {
     resetTileToolbarMenusForTests();
+    resetBrushSettingsForTests();
     host.remove();
   });
 

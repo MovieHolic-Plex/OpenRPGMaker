@@ -8,7 +8,7 @@ import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
-import { isBrushSettingsOpen, setBrushSettingsOpen } from "@/editor/panels/brushSettingsDisclosure";
+import { isBrushSettingsOpen, isPaletteFiltersOpen, setBrushSettingsOpen, setPaletteFiltersOpen } from "@/editor/panels/brushSettingsDisclosure";
 import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
@@ -536,6 +536,31 @@ function makeTileSection(label: string, tileset: TilesetDef | undefined, map: Ga
   return [header, body];
 }
 
+const PALETTE_VIEW_LABEL: Readonly<Record<string, string>> = { terrain: "지형", prefab: "프리팹", recent: "최근", tiles: "타일" };
+
+/**
+ * 머리의 「전체 ▾」와 그 아래 접힌 칸. 보기 탭·검색·분류 칩·필터 줄은 이 칸으로 옮긴다 — 목업은 머리 바로 아래가 그림 칸이다.
+ * 접혀도 DOM 에 남아 제자리 필터 갱신(refreshPaletteFilter)과 키보드가 그대로 닿는다.
+ */
+function attachPaletteFilters(head: HTMLElement, label: string): HTMLElement {
+  const open = isPaletteFiltersOpen();
+  const body = el("div", {
+    class: "tile-view-filters",
+    attrs: { id: "tile-view-filters", role: "region", "aria-label": "타일 보기와 찾기" },
+    dataset: { testid: "palette-view-filters" },
+  });
+  body.hidden = !open;
+  const toggle = el("button", {
+    class: "tile-section-settings tile-section-filter",
+    attrs: { type: "button", "aria-expanded": String(open), "aria-controls": "tile-view-filters", title: "타일 보기·찾기·분류" },
+    dataset: { testid: "palette-view-filters-toggle" },
+    children: [el("span", { text: label }), el("span", { class: "tile-section-chevron", attrs: { "aria-hidden": "true" }, text: "▾" })],
+    on: { click: () => setPaletteFiltersOpen(!isPaletteFiltersOpen()) },
+  });
+  head.insertBefore(toggle, head.lastElementChild);
+  return body;
+}
+
 /** 빈 이벤트 목록에는 안내 글만 두지 않고 바로 만드는 단추를 둔다(맵 가운데에서 가장 가까운 빈 칸). */
 function offerNewEventInEmptyList(root: HTMLElement, map: GameMap): void {
   const empty = root.querySelector<HTMLElement>(".event-list-empty");
@@ -616,7 +641,11 @@ function makePaletteSurface(input: {
   }
   const smart = paletteHasSmartCatalog(tileset);
   const smartView = smart ? currentPaletteView(tileset) : "tiles";
-  if (smart) root.append(makePaletteSmartTabs(tileset, () => {
+  const filterLabel = smart ? PALETTE_VIEW_LABEL[smartView] ?? "전체"
+    : TILE_CATEGORIES.find((category) => category.id === activeTileCategory)?.label ?? "전체";
+  const filters = attachPaletteFilters(sectionHead!, filterLabel);
+  root.insertBefore(filters, settings!);
+  if (smart) filters.append(makePaletteSmartTabs(tileset, () => {
     if (tileSearchRenderTimer !== null) {
       clearTimeout(tileSearchRenderTimer);
       tileSearchRenderTimer = null;
@@ -626,12 +655,16 @@ function makePaletteSurface(input: {
   }));
   if (smart && smartView !== "tiles") {
     const catalogBody = makePaletteSmartBody(tileset, renderPalettePreservingViewport, selectPaletteTile);
+    // 검색칸·분류 칩·「모두 …」 안내는 「전체 ▾」 칸으로 — 그림 칸만 남긴다.
+    for (const node of Array.from(catalogBody.children)) {
+      if (node instanceof HTMLElement && node.dataset.testid !== "palette-smart-body" && node.dataset.testid !== "palette-search-results") filters.append(node);
+    }
     root.append(catalogBody);
     settingsTail();
     return { root, palette: catalogBody, sheetSlot: null };
   }
   const visibleTiles = filteredTileIdSet(tileset);
-  root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
+  filters.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
   const emptyHint = makePaletteEmptyHint(tileLayer);
 
   const palette = retainedSheet ?? (usesSourceSheet(tileset)

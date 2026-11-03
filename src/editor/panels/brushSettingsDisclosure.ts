@@ -33,4 +33,19 @@ export function setBrushSettingsOpen(next: boolean): void {
 
 export function resetBrushSettingsForTests(): void {
   open = false;
+  filtersOpen = false;
+}
+
+// 「전체 ▾」 — 타일 보기(지형·프리팹·최근·타일)·검색·분류 칩을 접어 둔 칸. 기본은 접힘(목업: 머리 아래 바로 그림 칸).
+let filtersOpen = false;
+
+export function isPaletteFiltersOpen(): boolean {
+  return filtersOpen;
+}
+
+export function setPaletteFiltersOpen(next: boolean): void {
+  filtersOpen = next;
+  if (typeof document === "undefined") return;
+  for (const body of document.querySelectorAll<HTMLElement>('[data-testid="palette-view-filters"]')) body.hidden = !next;
+  for (const toggle of document.querySelectorAll<HTMLElement>('[data-testid="palette-view-filters-toggle"]')) toggle.setAttribute("aria-expanded", String(next));
 }
