@@ -93,8 +93,10 @@ const fieldReady = () => page.evaluate(fieldReadyJs).catch(() => false);
 const has = (sel) => page.evaluate((s) => [...document.querySelectorAll(s)].some((n) => { const cs = getComputedStyle(n); return n.getClientRects().length > 0 && cs.visibility !== "hidden" && Number(cs.opacity) > 0.05; }), sel).catch(() => false);
 const boxText = () => page.evaluate(() => (document.querySelector("[data-testid='dialogue-box']")?.textContent ?? "").replace(/\s+/g, " ").trim()).catch(() => "");
 /** Press Enter on an open message and wait until it changed or closed — never press Enter on the free field (that is «interact»). */
+const readMs = video && request === "story" ? 1100 : 0; // story videos: leave each line on screen long enough to read
 async function advanceMessage() {
   const before = await boxText();
+  if (readMs) await sleep(readMs);
   await page.keyboard.press("Enter");
   for (let i = 0; i < 20; i += 1) {
     await sleep(100);
@@ -118,6 +120,19 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
   while (Date.now() - t0 < maxMs) {
     if (await endingVisible()) break;
     if (await has("[data-testid='battle-scene']")) break;
+    if (request === "story" && await has("[data-testid='shop-scene']")) {
+      // Story videos: buy the first goods once, show the result, then leave the shop.
+      const click = (sel) => page.click(sel, { timeout: 2500 }).then(() => true).catch(() => false);
+      if (!plan.__shopDone) {
+        plan.__shopDone = true;
+        await sleep(readMs); await click("[data-testid='shop-mode-buy']"); await sleep(700);
+        await click("[data-testid^='shop-buy-']"); await sleep(700);
+        for (let i = 0; i < 3 && await has("[data-testid='shop-scene']"); i += 1) { await click("[data-testid='shop-confirm']") || await page.keyboard.press("Enter"); await sleep(700); }
+        await sleep(readMs);
+      }
+      for (let i = 0; i < 6 && await has("[data-testid='shop-scene']"); i += 1) { await page.keyboard.press("Escape"); await sleep(400); await click("[data-testid='shop-menu-cancel']"); await sleep(400); }
+      freeSince = null; continue;
+    }
     if (await has("[data-testid='runtime-input-number']")) {
       const n = numbers.length ? String(numbers.shift()) : "0000";
       for (const d of n) { await page.keyboard.press(d); await sleep(80); }
@@ -130,7 +145,8 @@ async function drain(plan = {}, { maxMs = 45_000, start: from } = {}) {
         const opts = await page.evaluate(() => [...document.querySelectorAll("[data-testid='dialogue-choice-frame'] [role='option'], [data-testid='dialogue-choice-frame'] li, [data-testid='dialogue-choice-frame'] button")].map((n) => (n.textContent ?? "").trim()).filter(Boolean));
         const re = new RegExp(want); const k = opts.findIndex((o) => re.test(o)); index = k >= 0 ? k : 0;
       }
-      for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120); }
+      if (readMs) await sleep(readMs);
+      for (let i = 0; i < index; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(120 + readMs / 3); }
       await page.keyboard.press("Enter"); await sleep(500); freeSince = null; continue;
     }
     if (await has("[data-testid='dialogue-box']")) { await advanceMessage(); freeSince = null; continue; }
@@ -203,12 +219,16 @@ async function tryWalk(mapId, x, y, dir, tiles = 2) {
   for (let i = 0; i < 20; i += 1) { if (await fieldReady()) break; await sleep(200); }
   return st();
 }
+/** Video caption (top-left, never intercepts input) — what the walk is doing now. */
+const caption = (text) => page.evaluate((t) => { let n = document.getElementById("__walkcap"); if (!n) { n = document.createElement("div"); n.id = "__walkcap";
+  n.style.cssText = "position:fixed;left:8px;top:8px;z-index:2147483647;pointer-events:none;background:rgba(0,0,0,.72);color:#fff;font:600 15px/1.35 system-ui,sans-serif;padding:4px 9px;border-radius:5px;max-width:70%";
+  document.body.appendChild(n); } n.textContent = t; }, text).catch(() => {});
 const dbg = (fn, ...a) => page.evaluate(([f, args]) => window.__oprnDebug[f](...args), [fn, a]);
 
 // ---------- checks ----------
 const checks = [];
 let lastCheckAt = Date.now();
-const check = (id, pass, note, texts = []) => { const now = Date.now(); checks.push({ id, pass: Boolean(pass), note, texts: texts.slice(-8), startSec: (lastCheckAt - videoT0) / 1000, endSec: (now - videoT0) / 1000 }); lastCheckAt = now; console.log(`${pass ? "PASS" : "FAIL"} ${id} — ${note}`); };
+const check = (id, pass, note, texts = []) => { const now = Date.now(); checks.push({ id, pass: Boolean(pass), note, texts: texts.slice(-8), startSec: (lastCheckAt - videoT0) / 1000, endSec: (now - videoT0) / 1000 }); lastCheckAt = now; if (video) caption(`${pass ? "✓" : "✗"} ${id} — ${note}`.slice(0, 140)); console.log(`${pass ? "PASS" : "FAIL"} ${id} — ${note}`); };
 const joined = (t) => t.join(" / ");
 const t0 = Date.now();
 
@@ -266,6 +286,17 @@ try {
     check("code-opens", /열/.test(joined(ok)) || s.currentMapId !== findEvent(bind.lock).mapId || await endingVisible(), "7294 opens the door", ok);
     const ending = await finishTo(bind.afterOpen);
     check("ending", ending, "ending screen reached");
+    if (video && !ending) {
+      // Video verification only (not the scored check): the fixed route may miss this build's door — try the door event itself.
+      const door = mapList.flatMap((m) => (m.events ?? []).map((e) => ({ e, m }))).find(({ e }) => /서재 문|문$/.test(e.name ?? "") && !/자물쇠/.test(e.name ?? ""));
+      let reached = false;
+      if (door) {
+        await caption("엔딩 다시: 서재 문으로 직접 가 본다");
+        await talk(door.e.id, {}); reached = await finishTo([]);
+        for (const side of ["down", "up", "left", "right"]) { if (reached || await endingVisible()) break; await stepOn(door.m.id, door.e.x, door.e.y, side); reached = await finishTo([]); }
+      }
+      check("ending-via-door (video)", reached || await endingVisible(), door ? `walked into ${door.e.name}` : "no door event");
+    }
   } else if (request === "village") {
     const s0 = await st();
     check("start-8am", !s0.gameTime || s0.gameTime.hour === 8, `start clock ${s0.gameTime ? `${s0.gameTime.hour}:${String(s0.gameTime.minute).padStart(2, "0")}` : "(no time system)"}`);
@@ -352,6 +383,23 @@ try {
     check("boss-won", (await st()).battleResult !== "defeat", `battle result ${(await st()).battleResult}`);
     const ending = await finishTo(bind.afterBoss ?? []);
     check("ending", ending, "ending after the boss");
+  } else if (request === "story") {
+    // Video playthrough of a dialogue/staging request: bind.steps = [{label, talk:"@name"|[...names], plan, side} | {battle:true} | {wait:ms}].
+    const fuzzy = (v) => { if (typeof v !== "string" || !v.startsWith("@")) return v; const n = v.slice(1).split("#")[0];
+      const hit = mapList.flatMap((m) => m.events ?? []).find((e) => (e.name ?? "").includes(n)); return hit?.id ?? null; };
+    for (const stp of bind.steps ?? []) {
+      if (await endingVisible()) break;
+      await caption(stp.label ?? "");
+      if (stp.talk) {
+        const id = [stp.talk].flat().map(fuzzy).find(Boolean);
+        if (!id) { check(stp.label ?? "talk", false, `no event named ${[stp.talk].flat().join("/")}`); continue; }
+        const t = await talk(id, stp.plan ?? {}, stp.side);
+        await caption(stp.label ?? ""); check(stp.label ?? id, t.length > 0, t.length ? "shown" : "nothing happened", t);
+      } else if (stp.battle) { const f = await fightBoss(); check(stp.label ?? "battle", true, `result ${(await st())?.battleResult}`, f.texts); }
+      else if (stp.wait) await sleep(stp.wait);
+      await sleep(stp.pause ?? 700);
+    }
+    await sleep(1500);
   }
 } catch (error) {
   check("walk-error", false, String(error?.message ?? error).split("\n")[0]);
