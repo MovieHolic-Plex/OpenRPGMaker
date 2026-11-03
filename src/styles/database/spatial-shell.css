@@ -146,9 +146,9 @@
 .database-modal-body .spatial-source-chip.is-active,
 .database-modal-body .spatial-card.is-selected {
   border-color: var(--db-studio-accent, var(--accent));
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   color: var(--db-studio-accent, var(--accent));
-  box-shadow: inset 0 0 0 1px var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  box-shadow: inset 0 0 0 1px var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
 }
 
 .database-modal-body .spatial-inspector-toggle {

@@ -111,7 +111,7 @@
 
 .structure-kit-overlay.entrance {
   border: 2px solid #fff;
-  background: rgba(74, 87, 214, 0.45);
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
@@ -268,7 +268,7 @@
   background: #fff;
   color: var(--accent);
   font-weight: 700;
-  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2)), 0 1px 2px rgba(20, 26, 45, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent)), 0 1px 2px rgba(20, 26, 45, 0.06);
 }
 
 .structure-kit-source-item.active .structure-kit-album-count {
@@ -313,13 +313,13 @@
 }
 
 .structure-kit-theme-card:hover {
-  border-color: var(--accent-muted, rgba(74, 87, 214, 0.2));
+  border-color: var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent));
 }
 
 .structure-kit-theme-card.active {
   background: #fff;
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2));
+  box-shadow: 0 0 0 1px var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent));
 }
 
 .structure-kit-theme-card-title {

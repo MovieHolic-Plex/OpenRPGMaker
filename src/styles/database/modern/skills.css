@@ -21,8 +21,8 @@
 /* ── 요약 스트립 ────────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio > .db-skill-composer {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   border-radius: 10px;
   flex: 0 0 auto;
   padding: 10px 12px;
@@ -42,12 +42,12 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-composer-chip[data-chip-kind="activation"] {
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-effect-icon {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
@@ -127,8 +127,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-backlink:hover {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-backlink-arrow {

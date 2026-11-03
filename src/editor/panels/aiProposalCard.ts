@@ -163,7 +163,7 @@ export function renderProposalMapThumbnail(
     sliceCtx.imageSmoothingEnabled = false;
     sliceCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
     // 변경 영역 강조
-    sliceCtx.strokeStyle = kind === "after" ? "#4A57D6" : "#5B6472";
+    sliceCtx.strokeStyle = kind === "after" ? "#1F6FC5" : "#5F5E5B";
     sliceCtx.lineWidth = Math.max(2, Math.floor(tile / 8));
     sliceCtx.strokeRect(1, 1, sw - 2, sh - 2);
     canvas.width = sw;

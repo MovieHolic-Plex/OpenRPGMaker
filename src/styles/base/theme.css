@@ -3,20 +3,21 @@
    이 파일은 편집기 진입점(styles/index.css → base/index.css)만 읽으므로 게임 화면의 색은 바뀌지 않는다.
    토큰 이름은 tokens.css 와 같다 — 값만 덮는다(base 레이어가 tokens 레이어를 이긴다).
 
-   OS 설정(prefers-color-scheme)을 따른다(HIG C-05). html[data-theme="light"] 는 라이트로 고정한다. */
+   OS 설정(prefers-color-scheme)을 따른다(HIG C-05). html[data-theme="light"] 는 라이트로 고정한다.
+   다크는 중립 회색 사다리다(2026-11-03 개편안): inset #161618 < base #1C1C1E < surface #232325 < raised #262628 < overlay #2C2C2E. */
 
 @layer base {
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg-base: #16181D;
-      --bg-surface: #16181D;
-      --bg-raised: #1E2128;
-      --bg-overlay: #23262E;
-      --bg-inset: #111317;
-      --bg-canvas: #111317;
-      --bg-glass: rgba(22, 24, 29, 0.92);
-      --bg-glass-panel: rgba(30, 33, 40, 0.86);
+      --bg-base: #1C1C1E;
+      --bg-surface: #232325;
+      --bg-raised: #262628;
+      --bg-overlay: #2C2C2E;
+      --bg-inset: #161618;
+      --bg-canvas: #141415;
+      --bg-glass: rgba(28, 28, 30, 0.92);
+      --bg-glass-panel: rgba(38, 38, 40, 0.86);
       --bg-scrim: rgba(0, 0, 0, 0.55);
       --bg-hover: rgba(255, 255, 255, 0.06);
       --bg-active: rgba(255, 255, 255, 0.10);
@@ -26,19 +27,20 @@
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-default: rgba(255, 255, 255, 0.14);
       --border-strong: rgba(255, 255, 255, 0.42);
-      --text-1: #E6E9EF;
-      --text-2: #B4BCC8;
-      --text-3: #98A2B3;
-      --text-placeholder: #98A2B3;
-      --text-disabled: #6B7280;
-      /* accent 는 글자색이자 칠이다. 어두운 바탕 위 글자로 읽히도록 밝게 두고(#16181D 위 6.6:1),
-         칠 위 글자(--on-accent)는 어둡게 뒤집는다(6.4:1). */
-      --accent: #8C96F2;
-      --accent-hover: #9EA6F4;
-      --accent-active: #B0B7F6;
-      --accent-muted: rgba(140, 150, 242, 0.16);
-      --accent-border: rgba(140, 150, 242, 0.50);
-      --on-accent: #0F172A;
+      /* --text-3 은 #2C2C2E(overlay) 위에서도 5.18 이다. 개편안 #8E8E8A 는 overlay 위 4.5 미달이라 한 단계 밝힌다. */
+      --text-1: #ECECEA;
+      --text-2: #ABABA7;
+      --text-3: #9E9E9A;
+      --text-placeholder: #9E9E9A;
+      --text-disabled: #6E6E6A;
+      /* accent 는 글자색이자 칠이다. 어두운 바탕 위 글자로 읽히도록 밝게 두고(#1C1C1E 위 6.0:1),
+         칠 위 글자(--on-accent)는 어둡게 뒤집는다(6.7:1). muted 0.11 은 raised 위 accent 글자 4.52 다. */
+      --accent: #409CFF;
+      --accent-hover: #6CB2FF;
+      --accent-active: #8EC3FF;
+      --accent-muted: rgba(64, 156, 255, 0.11);
+      --accent-border: rgba(64, 156, 255, 0.50);
+      --on-accent: #111113;
       --danger: #F2766F;
       --danger-muted: rgba(242, 118, 111, 0.16);
       --success: #4CC38A;
@@ -47,13 +49,13 @@
       --warning-muted: rgba(227, 179, 65, 0.16);
       --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.40);
       --shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.40), 0 24px 64px rgba(0, 0, 0, 0.50);
-      --mix-base: #16181D;
-      --bg-well: #111317;
+      --mix-base: #1C1C1E;
+      --bg-well: #161618;
       --scrollbar-thumb: rgba(255, 255, 255, 0.20);
       --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
-      --empty-icon-bg: rgba(124, 134, 238, 0.16);
-      --empty-icon-border: rgba(124, 134, 238, 0.36);
-      --empty-icon-color: #8C96F2;
+      --empty-icon-bg: rgba(64, 156, 255, 0.14);
+      --empty-icon-border: rgba(64, 156, 255, 0.34);
+      --empty-icon-color: #409CFF;
     }
   }
 

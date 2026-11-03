@@ -8,6 +8,7 @@ import type Phaser from "phaser";
 import { prepareReliefRead, reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
 import { hasRelief } from "@/project/relief/walk";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
+import { readCanvasSurroundColor, watchCanvasSurroundColor } from "@/editor/canvasSurround";
 import {
   ensureBundledProjectTextures,
   ensureUploadedCharsetTextures,
@@ -341,6 +342,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 키보드로 칠할 칸(캔버스에 초점이 있을 때 화살표로 옮긴다). */
   private keyboardCursor: { x: number; y: number } | null = null;
   private detachCanvasKeyboard: (() => void) | null = null;
+  private detachCanvasSurround: (() => void) | null = null;
   private readonly tileIndex: EditSceneTileIndex = new Map();
   /** large-map lazy 경로의 타일 청크 컨테이너 저장소(비-lazy 맵은 사용하지 않는다). */
   private readonly tileChunks: Map<string, Phaser.GameObjects.Container> = new Map();
@@ -533,7 +535,11 @@ export class EditScene extends PhaserRuntime.Scene {
     host?.removeAttribute("aria-busy");
     this.initTextureRedraw();
     registerBundledFrames(this, store.getCurrent());
-    this.cameras.main.setBackgroundColor("#E7E0D0");
+    this.cameras.main.setBackgroundColor(readCanvasSurroundColor());
+    this.detachCanvasSurround = watchCanvasSurroundColor((color) => {
+      this.cameras.main.setBackgroundColor(color);
+      this.requestRenderFrame();
+    });
     // 배경 미리보기는 하층 타일 **아래** 다 — 타일이 깔린 칸은 가리고 빈 칸만 뚫린다(플레이와 같은 순서).
     this.mapBackgroundLayer = this.add.container(0, 0);
     this.mapBackgroundLayer.setDepth(MAP_BACKGROUND_LAYER_DEPTH);
@@ -747,6 +753,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.scale.off("resize", this.handleResize, this);
     this.detachCanvasKeyboard?.();
     this.detachCanvasKeyboard = null;
+    this.detachCanvasSurround?.();
+    this.detachCanvasSurround = null;
     this.sys.events.off(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
     this.sys.events.off(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.unbindBrowserContextMenuGuards();

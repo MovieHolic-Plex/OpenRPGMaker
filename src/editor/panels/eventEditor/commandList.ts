@@ -435,7 +435,7 @@ function appendScriptReading(head: HTMLElement, cmd: Extract<Command, { kind: "s
     const open = openScriptCode.has(key);
     code.style.display = open ? "block" : "none";
     toggle.setAttribute("aria-expanded", String(open));
-    toggle.style.setProperty("color", open ? "var(--accent, #4A57D6)" : "var(--text-2, #6b6457)");
+    toggle.style.setProperty("color", open ? "var(--accent, #1F6FC5)" : "var(--text-2, #6b6457)");
   };
   toggle.addEventListener("click", (event) => {
     event.stopPropagation();

@@ -116,7 +116,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-search input:focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: none;
-  box-shadow: 0 0 0 3px var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  box-shadow: 0 0 0 3px var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
 }
 
 /* 목록 자체가 스크롤 경계. 조상에 스크롤을 넘기지 않는다. */
@@ -238,8 +238,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tag {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   border-radius: 999px;
   color: var(--db-studio-accent, var(--db-studio-accent));
 }
@@ -594,8 +594,8 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-empty-icon {
   align-items: center;
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   border-radius: 12px;
   color: var(--db-studio-accent, var(--db-studio-accent));
   display: inline-flex;
@@ -661,8 +661,8 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice {
   align-items: center;
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   box-sizing: border-box;
   display: flex;
   gap: 10px;

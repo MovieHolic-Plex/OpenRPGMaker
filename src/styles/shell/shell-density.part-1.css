@@ -62,7 +62,7 @@
 
 .oprn-autotile-badge {
   align-items: center;
-  background: rgba(74, 87, 214, 0.38);
+  background: color-mix(in srgb, var(--accent) 38%, transparent);
   border: 1px solid rgba(42, 37, 33, 0.20);
   border-radius: 2px;
   color: var(--text-inverse, #fff);

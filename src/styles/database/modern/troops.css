@@ -286,7 +286,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:not([type="radio"]):focus-visible,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select:focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
-  outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  outline: 2px solid var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   outline-offset: 0;
 }
 
@@ -421,8 +421,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-check.active {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
 
@@ -651,8 +651,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.active {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   box-shadow: none;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
 }
@@ -753,7 +753,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-enemy-row.active {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   border-color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
@@ -914,8 +914,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-page-tab.active {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   color: var(--db-studio-accent, var(--db-studio-accent));
 }
 

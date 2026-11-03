@@ -1,6 +1,7 @@
 /* ============================================================================
    OPRN 디자인 토큰 — 단일 진실 공급원
-   쿨 화이트 스튜디오 (cool white + indigo). 크림/골드 폐기.
+   중립 화이트 스튜디오 (neutral white + blue). 크림/골드·인디고 폐기(2026-11-03 개편안).
+   라이트가 기본이고, 다크는 base/theme.css 가 중립 회색으로 덮는다.
    전 영역(shell/editor/database/map/resources)은 여기 정의된 변수만 사용한다.
    가이드: src/styles/TOKENS.md
    주의: 이 파일은 index.css 최상단에서 가장 먼저 import 된다.
@@ -11,13 +12,14 @@
    ========================================================================= */
 
 :root {
-  --bg-base: #F7F8F8;
-  --bg-surface: #F7F8F8;
+  --bg-base: #FFFFFF;
+  --bg-surface: #F7F7F5;
   --bg-raised: #FFFFFF;
   --bg-overlay: #FFFFFF;
-  --bg-inset: #EEF1F4;
-  --bg-canvas: #EEF1F4;
-  --bg-glass: rgba(247, 248, 248, 0.92);
+  --bg-inset: #F2F2F0;
+  /* 맵 캔버스 둘레 — 중립 회색. Phaser 카메라 바탕도 이 토큰을 읽는다(src/editor/canvasSurround.ts). */
+  --bg-canvas: #E9E9E7;
+  --bg-glass: rgba(255, 255, 255, 0.92);
   /* 조수 패널 유리면 전용 — --bg-glass(셸 칩·상태바용)와 값이 다르므로 별도 토큰이다.
      알파 0.78 은 감독 선택값이다(2026-08-28).
 
@@ -27,36 +29,39 @@
      패널 전체가 초록으로 물들었고, 그 초록이 휘도를 끌어올려 보조 텍스트 대비를 4.22:1 로
      떨어뜨렸다(AA 4.5 미달). 채도를 낮추면 색 캐스트와 대비가 동시에 해결된다.
 
-     ⚠ 알파를 더 내리지 마라: --text-3(#626E89) 은 **순백 위에서도 4.75:1** 뿐이라
+     ⚠ 알파를 더 내리지 마라: --text-3(#656460) 은 **순백 위에서도 5.97:1** 뿐이라
      반투명 여유가 거의 없다. 유리 위 보조 텍스트는 --text-2 를 써야 한다
      (18-assistant-deck.css 의 유리 위 보조 글자 규칙 참고). */
   --bg-glass-panel: rgba(255, 255, 255, 0.78);
   --glass-blur-panel: blur(24px) saturate(1.08);
-  --bg-scrim: rgba(15, 23, 42, 0.40);
+  --bg-scrim: rgba(15, 15, 15, 0.40);
 
-  --bg-hover: rgba(15, 23, 42, 0.05);
-  --bg-active: rgba(15, 23, 42, 0.09);
-  --control-bg: rgba(15, 23, 42, 0.04);
-  --control-bg-hover: rgba(15, 23, 42, 0.08);
-  --control-bg-active: rgba(15, 23, 42, 0.12);
+  /* 상태 칠·선은 따뜻한 중립 잉크(55,53,47) 의 알파다 — 바탕이 흰색·#F7F7F5 어느 쪽이어도 같은 회색으로 읽힌다. */
+  --bg-hover: rgba(55, 53, 47, 0.06);
+  --bg-active: rgba(55, 53, 47, 0.10);
+  --control-bg: rgba(55, 53, 47, 0.04);
+  --control-bg-hover: rgba(55, 53, 47, 0.08);
+  --control-bg-active: rgba(55, 53, 47, 0.12);
 
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-default: rgba(15, 23, 42, 0.127);
-  --border-strong: rgba(15, 23, 42, 0.461);
+  /* 머리카락 선. default 는 바탕 대비 1.33, strong 은 3.22(WCAG 1.4.11) — test/tokensContrast.test.ts. */
+  --border-subtle: rgba(55, 53, 47, 0.09);
+  --border-default: rgba(55, 53, 47, 0.16);
+  --border-strong: rgba(55, 53, 47, 0.56);
 
-  --text-1: #0F172A;
-  --text-2: #475569;
-  /* --text-3 은 #626E89 였다 — 순백 5.11 이지만 호버(--bg-hover)·눌림(--control-bg-active) 위에서
-     4.34·3.75 로 AA 미달이었다(HIG C-04). #566179 는 --control-bg-active 위에서도 4.56 이다. */
-  --text-3: #566179;
-  --text-placeholder: #566179;
-  --text-disabled: #94A3B8;
+  --text-1: #1F1F1E;
+  --text-2: #5F5E5B;
+  /* 개편안 보조 글자 #91908C 는 순백 위 3.2:1 이라 AA 미달이다. #656460 은 #F2F2F0(inset) 5.28,
+     눌림(--control-bg-active) 위에서도 4.79 다(HIG C-04). */
+  --text-3: #656460;
+  --text-placeholder: #656460;
+  --text-disabled: #A3A29E;
 
-  --accent: #4A57D6;
-  --accent-hover: #3C48C4;
-  --accent-active: #2F3AAE;
-  --accent-muted: rgba(74, 87, 214, 0.12);
-  --accent-border: rgba(74, 87, 214, 0.45);
+  /* 단일 강조색. 개편안 #2383E2 는 흰 글자 대비 3.88 이라 칠로 못 쓴다 — 한 단계 어두운 #1F6FC5(흰 글자 5.07). */
+  --accent: #1F6FC5;
+  --accent-hover: #185BA3;
+  --accent-active: #164F8E;
+  --accent-muted: rgba(31, 111, 197, 0.08);
+  --accent-border: rgba(31, 111, 197, 0.45);
   --on-accent: #ffffff;
 
   /* The author-requested cinematic entry uses its own night/paper pairing over scene art.
@@ -124,8 +129,8 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10);
-  --shadow-modal: 0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14);
+  --shadow-pop: 0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10);
+  --shadow-modal: 0 8px 24px rgba(15, 15, 15, 0.10), 0 24px 64px rgba(15, 15, 15, 0.14);
 
   /* 포커스 표시(HIG C-01·C-108) — 불투명 accent 2px. 45% 알파였을 때 툴바 바탕 위 대비가 1.97:1 이라
      호버와 구별되지 않았다. accent 는 --bg-base 위 5.44:1 이다. 링(box-shadow)을 쓰는 규칙과
@@ -140,7 +145,9 @@
 
   /* 글꼴 단일 진실 공급원. 값은 src/project/fontRegistry.ts 의 기본 스택과 글자 단위로 같아야
      하며 test/systemFontTheme.test.ts 가 그 일치를 검사한다. 저작자가 DB → 시스템 → 폰트에서
-     고른 값은 applyProjectFontTheme 이 :root 인라인 스타일로 이 세 토큰을 덮어쓴다. */
+     고른 값은 applyProjectFontTheme 이 :root 인라인 스타일로 이 세 토큰을 덮어쓴다.
+     편집기 화면은 시스템 글꼴 + 한글 Pretendard 다: 편집기 전용 시트(base/ui-font.css)가 Pretendard 글꼴면을
+     들인다. 시스템 글꼴에 한글이 없으면 다음 후보인 Pretendard 로 내려간다. 내보낸 게임은 그 시트를 읽지 않는다. */
   --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   --font-pixel: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
@@ -217,8 +224,8 @@
   --z-overlay: var(--z-modal-overlay);
   --z-dialog: var(--z-app-modal);
 
-  --brand-blue: #4A57D6;
-  --mix-base: #F7F8F8;
+  --brand-blue: #1F6FC5;
+  --mix-base: #FFFFFF;
   /* 셸 액센트(인디고)와 구분되는 보조 강조색 — 조수 패널 1차 액션·보상/보물 크롬.
      4a732471(2026-08-25)이 "골드 크롬 일괄 폐기"로 이 네 값을 인디고로 눌렀는데,
      같은 커밋이 DESIGN.md:268/286 에 "Focus ring uses --gold, not indigo" 와
@@ -232,11 +239,11 @@
   --gold-deep: #6E5424;
   --gold-soft: #E8D9A8;
   --gold-wash: rgba(138, 107, 47, 0.12);
-  --bg-well: #EEF1F4;
-  --scrollbar-thumb: rgba(15, 23, 42, 0.18);
-  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.30);
+  --bg-well: #F2F2F0;
+  --scrollbar-thumb: rgba(55, 53, 47, 0.18);
+  --scrollbar-thumb-hover: rgba(55, 53, 47, 0.30);
 
-  --empty-icon-bg: rgba(74, 87, 214, 0.10);
-  --empty-icon-border: rgba(74, 87, 214, 0.28);
-  --empty-icon-color: #4A57D6;
+  --empty-icon-bg: rgba(31, 111, 197, 0.08);
+  --empty-icon-border: rgba(31, 111, 197, 0.24);
+  --empty-icon-color: #1F6FC5;
 }

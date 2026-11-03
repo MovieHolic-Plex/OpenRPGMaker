@@ -538,12 +538,12 @@ function drawHighlightOverlay(
   const rw = Math.min(W - rx, Math.max(cellW, highlight.width * cellW));
   const rh = Math.min(H - ry, Math.max(cellH, highlight.height * cellH));
 
-  ctx.fillStyle = "rgba(74, 87, 214, 0.24)";
+  ctx.fillStyle = "rgba(31, 111, 197, 0.24)";
   ctx.fillRect(rx, ry, rw, rh);
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 2.5;
   ctx.strokeRect(rx + 1, ry + 1, Math.max(2, rw - 2), Math.max(2, rh - 2));
-  ctx.strokeStyle = "#4A57D6";
+  ctx.strokeStyle = "#1F6FC5";
   ctx.lineWidth = 1.5;
   ctx.strokeRect(rx + 1, ry + 1, Math.max(2, rw - 2), Math.max(2, rh - 2));
 }

@@ -38,7 +38,7 @@
   }
 
   ::selection {
-    background: rgba(74, 87, 214, 0.22);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
     color: var(--text-1);
   }
 

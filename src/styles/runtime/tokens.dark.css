@@ -17,6 +17,9 @@
  * (플레이어의 토큰 레이어링 자체를 바로잡는 것은 별도 과제다 — 계획 Phase 6.)
  *
  * 에디터(`src/styles/index.css`)는 이 시트를 읽지 않는다. 플레이어 진입점 전용이다.
+ *
+ * 2026-11-03 편집기 개편(중립 화이트 + 파랑 강조)은 tokens.css 값을 바꿨다. 내보낸 게임 화면은
+ * 그대로여야 하므로, 바뀐 토큰 중 위 다크 다섯 개가 아닌 것은 개편 이전 값을 아래에 그대로 고정한다.
  */
 :root {
   --bg-canvas: #05070c;
@@ -24,4 +27,35 @@
   --border-strong: rgba(255, 255, 255, 0.17);
   --text-1: #e9ecf3;
   --text-2: #b6bece;
+
+  /* 개편 이전 tokens.css 값 — 게임 화면 보존용(편집기 토큰과 따로 간다). */
+  --bg-base: #F7F8F8;
+  --bg-surface: #F7F8F8;
+  --bg-inset: #EEF1F4;
+  --bg-scrim: rgba(15, 23, 42, 0.40);
+  --bg-hover: rgba(15, 23, 42, 0.05);
+  --bg-active: rgba(15, 23, 42, 0.09);
+  --control-bg: rgba(15, 23, 42, 0.04);
+  --control-bg-hover: rgba(15, 23, 42, 0.08);
+  --control-bg-active: rgba(15, 23, 42, 0.12);
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-default: rgba(15, 23, 42, 0.127);
+  --text-3: #566179;
+  --text-placeholder: #566179;
+  --text-disabled: #94A3B8;
+  --accent: #4A57D6;
+  --accent-hover: #3C48C4;
+  --accent-active: #2F3AAE;
+  --accent-muted: rgba(74, 87, 214, 0.12);
+  --accent-border: rgba(74, 87, 214, 0.45);
+  --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10);
+  --shadow-modal: 0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14);
+  --brand-blue: #4A57D6;
+  --mix-base: #F7F8F8;
+  --bg-well: #EEF1F4;
+  --scrollbar-thumb: rgba(15, 23, 42, 0.18);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.30);
+  --empty-icon-bg: rgba(74, 87, 214, 0.10);
+  --empty-icon-border: rgba(74, 87, 214, 0.28);
+  --empty-icon-color: #4A57D6;
 }

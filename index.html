@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치" />
-    <meta name="theme-color" content="#131722" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/pwa-192.png" />
@@ -19,7 +20,7 @@
       글자 번역은 boot-splash.js 가 직접 한다(src/i18n 에 기대지 않는다) — data-i18n-skip 으로 DOM 번역기를 비킨다.
     -->
     <style>
-      html { background: #f7f8f8; }
+      html { background: #ffffff; }
       #oprn-boot-loader {
         position: fixed;
         inset: 0;
@@ -31,8 +32,8 @@
         gap: 14px;
         padding: 16px;
         box-sizing: border-box;
-        background: #f7f8f8;
-        color: #0f172a;
+        background: #ffffff;
+        color: #1f1f1e;
         font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
         transition: opacity 160ms ease-out;
       }
@@ -49,7 +50,7 @@
       #oprn-boot-loader .oprn-boot-text {
         min-height: 1.4em;
         font-size: 14px;
-        color: #334155;
+        color: #37352f;
         text-align: center;
       }
       /* 진행 줄: 4개 단계 칸. 끝난 칸은 꽉 차고, 지금 칸은 transform 만 움직이는 띠가 오간다(합성 스레드라 메인이 막혀도 돈다). */
@@ -66,7 +67,7 @@
         flex: 1;
         height: 5px;
         border-radius: 999px;
-        background: rgba(15, 23, 42, 0.1);
+        background: rgba(55, 53, 47, 0.1);
         overflow: hidden;
       }
       #oprn-boot-loader .oprn-boot-steps li::after {
@@ -74,13 +75,13 @@
         position: absolute;
         inset: 0;
         border-radius: inherit;
-        background: #4a57d6;
+        background: #1f6fc5;
         transform: scaleX(0);
         transform-origin: left center;
         transition: transform 240ms ease-out;
       }
       #oprn-boot-loader .oprn-boot-steps li[data-state="done"]::after { transform: scaleX(1); }
-      #oprn-boot-loader .oprn-boot-steps li[data-state="active"] { background: rgba(74, 87, 214, 0.22); }
+      #oprn-boot-loader .oprn-boot-steps li[data-state="active"] { background: rgba(31, 111, 197, 0.22); }
       #oprn-boot-loader .oprn-boot-steps li[data-state="active"]::after {
         width: 42%;
         transform: translateX(-100%);
@@ -105,7 +106,7 @@
         align-items: center;
         justify-content: center;
         font-size: 12px;
-        color: #64748b;
+        color: #656460;
       }
       @keyframes oprn-boot-lines {
         0%, 30% { transform: translateY(0); }
@@ -118,7 +119,7 @@
         margin: 0;
         font-size: 12.5px;
         line-height: 1.5;
-        color: #475569;
+        color: #5f5e5b;
         text-align: center;
         opacity: 0;
         visibility: hidden;
@@ -132,7 +133,7 @@
         max-width: 24rem;
         margin: 0;
         font-size: 12.5px;
-        color: #475569;
+        color: #5f5e5b;
         text-align: center;
         opacity: 0;
         visibility: hidden;
@@ -146,14 +147,14 @@
         font-size: 13px;
         font-weight: 600;
         color: #fff;
-        background: #4a57d6;
+        background: #1f6fc5;
         border: 0;
         border-radius: 8px;
         padding: 8px 18px;
         cursor: pointer;
       }
-      #oprn-boot-loader .oprn-boot-retry:hover { background: #3d49b8; }
-      #oprn-boot-loader .oprn-boot-retry:focus-visible { outline: 2px solid #0f172a; outline-offset: 2px; }
+      #oprn-boot-loader .oprn-boot-retry:hover { background: #185ba3; }
+      #oprn-boot-loader .oprn-boot-retry:focus-visible { outline: 2px solid #1f1f1e; outline-offset: 2px; }
       /* 실패: 돌아가는 줄·안내는 끄고 메시지 + 다시 시도만 보인다. 다시 시도는 <a href=""> 라 JS·인라인 핸들러(CSP 가 막는다) 없이 같은 주소를 다시 연다. 영원히 도는 스플래시는 없다. */
       #oprn-boot-loader .oprn-boot-fail { display: none; flex-direction: column; align-items: center; gap: 10px; max-width: 26rem; text-align: center; }
       #oprn-boot-loader[data-failed] .oprn-boot-fail { display: flex; }
@@ -163,8 +164,8 @@
       #oprn-boot-loader[data-failed] .oprn-boot-note,
       #oprn-boot-loader[data-failed] .oprn-boot-stall { display: none; }
       #oprn-boot-loader .oprn-boot-fail-title { margin: 0; font-size: 15px; font-weight: 700; color: #991b1b; }
-      #oprn-boot-loader .oprn-boot-fail-msg { margin: 0; font-size: 13px; line-height: 1.5; color: #334155; }
-      #oprn-boot-loader .oprn-boot-fail details { font-size: 11.5px; color: #64748b; max-width: 100%; }
+      #oprn-boot-loader .oprn-boot-fail-msg { margin: 0; font-size: 13px; line-height: 1.5; color: #37352f; }
+      #oprn-boot-loader .oprn-boot-fail details { font-size: 11.5px; color: #656460; max-width: 100%; }
       #oprn-boot-loader .oprn-boot-fail code { display: block; margin-top: 6px; white-space: pre-wrap; word-break: break-all; text-align: left; max-height: 6em; overflow: auto; }
       /* 마지막 편집 화면(데스크톱, electron/main/lastView.ts → public/boot-splash.js): 지난번에 닫을 때의 편집기 그림을 읽기 전용 자리표시로
          깔고, 단계 글자를 아래 가운데 작은 칩으로 바꾼다. 그림을 묻는 동안(최대 400ms)은 로고·줄을 숨겨 흰 로더가 한 번 비치지 않게 한다. */
@@ -194,10 +195,10 @@
         min-height: 0;
         padding: 7px 14px;
         border-radius: 999px;
-        background: rgba(15, 23, 42, 0.82);
+        background: rgba(32, 32, 30, 0.82);
         color: #fff;
         font-size: 12.5px;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+        box-shadow: 0 4px 16px rgba(15, 15, 15, 0.25);
         white-space: nowrap;
       }
       #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-text::before {
@@ -205,7 +206,7 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #8b96ff;
+        background: #6cb2ff;
         animation: oprn-boot-pulse 1s ease-in-out infinite alternate;
       }
       @keyframes oprn-boot-pulse { from { opacity: 0.35; } to { opacity: 1; } }
@@ -217,7 +218,7 @@
         padding: 10px 14px;
         border-radius: 10px;
         background: #fff;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 4px 16px rgba(15, 15, 15, 0.18);
       }
       @media (prefers-reduced-motion: reduce) {
         #oprn-boot-loader[data-resume] .oprn-boot-text::before { animation: none; }
@@ -230,23 +231,23 @@
          검은 편집기로 툭 바뀐다(2026-11-01 실측: 흰 로더 10.2s → 편집기 #16181D). html[data-theme="light"] 는
          편집기와 같은 규칙으로 라이트를 고정한다. */
       @media (prefers-color-scheme: dark) {
-        html:not([data-theme="light"]) { background: #16181D; }
-        html:not([data-theme="light"]) #oprn-boot-loader { background: #16181D; color: #E6E9EF; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-text { color: #B4BCC8; }
+        html:not([data-theme="light"]) { background: #1C1C1E; }
+        html:not([data-theme="light"]) #oprn-boot-loader { background: #1C1C1E; color: #ECECEA; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-text { color: #ABABA7; }
         html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li { background: rgba(255, 255, 255, 0.10); }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li::after { background: #8C96F2; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li[data-state="active"] { background: rgba(140, 150, 242, 0.22); }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-track p { color: #98A2B3; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li::after { background: #409CFF; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li[data-state="active"] { background: rgba(64, 156, 255, 0.22); }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-track p { color: #9E9E9A; }
         html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-note,
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-stall { color: #98A2B3; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry { background: #8C96F2; color: #0F172A; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:hover { background: #9EA6F4; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:focus-visible { outline-color: #E6E9EF; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-stall { color: #9E9E9A; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry { background: #409CFF; color: #111113; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:hover { background: #6CB2FF; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:focus-visible { outline-color: #ECECEA; }
         html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail-title { color: #F2766F; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail-msg { color: #B4BCC8; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail details { color: #98A2B3; }
-        html:not([data-theme="light"]) #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-stall { background: #1E2128; }
-        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail code { color: #B4BCC8; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail-msg { color: #ABABA7; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail details { color: #9E9E9A; }
+        html:not([data-theme="light"]) #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-stall { background: #262628; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail code { color: #ABABA7; }
       }
     </style>
   </head>
@@ -254,7 +255,7 @@
     <div id="oprn-boot-loader" data-testid="boot-loader" data-stage="app" role="status" aria-live="polite" data-i18n-skip translate="no">
       <div class="oprn-boot-brand">
         <svg class="oprn-boot-logo" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-          <rect width="28" height="28" rx="7" fill="#4a57d6" />
+          <rect width="28" height="28" rx="7" fill="#1f6fc5" />
           <rect x="6" y="6" width="7" height="7" rx="1.5" fill="#fff" />
           <rect x="15" y="6" width="7" height="7" rx="1.5" fill="#fff" fill-opacity="0.55" />
           <rect x="6" y="15" width="7" height="7" rx="1.5" fill="#fff" fill-opacity="0.55" />

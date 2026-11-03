@@ -776,9 +776,9 @@
 .event-contents-fieldset .cmd-list {
   --cmd-indent-step: 18px;
   --cmd-indent-base: 0px;
-  --cmd-rail: color-mix(in srgb, var(--accent, #4A57D6) 55%, var(--border-default));
+  --cmd-rail: color-mix(in srgb, var(--accent, #1F6FC5) 55%, var(--border-default));
   --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
-  --cmd-rail-fork: color-mix(in srgb, var(--accent, #4A57D6) 70%, var(--border-default));
+  --cmd-rail-fork: color-mix(in srgb, var(--accent, #1F6FC5) 70%, var(--border-default));
   --cmd-rail-shop: color-mix(in srgb, var(--success, #18764F) 70%, var(--border-default));
 }
 

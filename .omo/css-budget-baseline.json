@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-29T13:35:55.840Z",
+  "generatedAt": "2026-11-03T09:44:37.116Z",
   "metrics": {
-    "hexLiterals": 2786,
+    "hexLiterals": 2799,
     "important": 385,
     "undefinedVars": 56,
     "globalRootFiles": 11,
-    "cssFileCount": 420
+    "cssFileCount": 424
   },
   "details": {
     "hexByFile": {
@@ -171,7 +171,7 @@
       "src/styles/runtime/tacticsBattle.css": 3,
       "src/styles/runtime/timer.css": 1,
       "src/styles/runtime/title.css": 60,
-      "src/styles/runtime/tokens.dark.css": 3,
+      "src/styles/runtime/tokens.dark.css": 16,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/runtime/transitions.css": 2,
       "src/styles/runtime/zoneFeedback.css": 1,
@@ -511,6 +511,7 @@
     "cssFileList": [
       "src/styles/base/index.css",
       "src/styles/base/theme.css",
+      "src/styles/base/ui-font.css",
       "src/styles/components/app-modal.css",
       "src/styles/components/empty-state.css",
       "src/styles/components/from-database-tabs-b-resource-manager.css",
@@ -541,6 +542,7 @@
       "src/styles/database/assistant-rising-overlay.css",
       "src/styles/database/assistant-sticky-checklist.css",
       "src/styles/database/battle-studio.css",
+      "src/styles/database/bestiary.css",
       "src/styles/database/character-appearances.css",
       "src/styles/database/character-graphics.css",
       "src/styles/database/combo-techs.css",
@@ -880,6 +882,7 @@
       "src/styles/runtime/playLoading.css",
       "src/styles/runtime/playSurface.css",
       "src/styles/runtime/playerRuntime.css",
+      "src/styles/runtime/schedule.css",
       "src/styles/runtime/shop.css",
       "src/styles/runtime/statusMenuEdgeDock.css",
       "src/styles/runtime/statusMenuLegacySkins.css",
@@ -891,6 +894,7 @@
       "src/styles/runtime/tokens.dark.css",
       "src/styles/runtime/touchpad.css",
       "src/styles/runtime/transitions.css",
+      "src/styles/runtime/windowSkinSurfaces.css",
       "src/styles/runtime/zoneFeedback.css",
       "src/styles/shell/dialogs/ai-modal-shell.css",
       "src/styles/shell/dialogs/ai-settings-modal.css",

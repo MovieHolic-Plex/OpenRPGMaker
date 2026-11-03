@@ -296,7 +296,7 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
       node.setAttribute("aria-selected", String(on));
       node.style.background = on ? "var(--bg-raised, #fffdf7)" : "transparent";
       node.style.fontWeight = on ? "700" : "500";
-      node.style.color = on ? "var(--accent, #4A57D6)" : "var(--text-1)";
+      node.style.color = on ? "var(--accent, #1F6FC5)" : "var(--text-1)";
     }
     // `hidden` loses to the inline display these panels need, so the display itself switches.
     for (const [key, panel] of Object.entries(panels) as [Tab, HTMLElement][]) {

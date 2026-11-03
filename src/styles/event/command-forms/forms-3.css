@@ -603,11 +603,11 @@
 }
 
 .shop-goods-row:hover {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, color-mix(in srgb, var(--accent) 12%, transparent)) 80%, transparent);
 }
 
 .shop-goods-row.is-selected {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent)) 90%, transparent);
   border-color: var(--accent);
 }
 
@@ -680,7 +680,7 @@
 /* 아이템 정보(왼쪽) + 계절·가격(오른쪽)을 나란히 놓아 상세 칸을 낮게 유지한다. */
 .shop-processing-item-detail {
   align-items: start;
-  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, var(--accent-muted, rgba(74, 87, 214, 0.12)));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, var(--accent-muted, color-mix(in srgb, var(--accent) 12%, transparent)));
   border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   column-gap: 14px;
@@ -887,7 +887,7 @@
 .shop-processing-side { display: grid; gap: 8px; min-width: 0; }
 
 .shop-processing-intent {
-  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.14)) 88%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, color-mix(in srgb, var(--accent) 14%, transparent)) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 8px;
   display: grid;

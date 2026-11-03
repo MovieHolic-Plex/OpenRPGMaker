@@ -30,8 +30,8 @@
     border-radius: var(--radius-3);
     display: grid;
     place-items: center;
-    background: var(--empty-icon-bg, rgba(74, 87, 214, 0.10));
-    border: 1px solid var(--empty-icon-border, rgba(74, 87, 214, 0.28));
+    background: var(--empty-icon-bg, color-mix(in srgb, var(--accent) 10%, transparent));
+    border: 1px solid var(--empty-icon-border, color-mix(in srgb, var(--accent) 28%, transparent));
     color: var(--empty-icon-color, var(--accent));
     font-size: 18px;
     line-height: 1;

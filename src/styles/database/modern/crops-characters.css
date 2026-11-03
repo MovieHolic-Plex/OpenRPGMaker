@@ -125,8 +125,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-row:hover {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-row:focus-visible {
@@ -169,8 +169,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-cta {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   border-radius: 999px;
   color: var(--db-studio-accent, var(--db-studio-accent));
   font: 600 11.5px/1 var(--font-ui);
@@ -270,11 +270,11 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn:hover {
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn.active {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   border-color: var(--db-studio-accent, var(--db-studio-accent));
 }
 
@@ -305,8 +305,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-season:has(input:checked) {
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   color: var(--db-studio-accent, var(--db-studio-accent));
   font-weight: 700;
 }
