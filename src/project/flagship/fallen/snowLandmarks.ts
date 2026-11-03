@@ -9,13 +9,13 @@
  *    부러진 바퀴 자국 대신 쓰러진 짐 상자. 첫 굽이 위로 이정표와 돌탑. 심문회 깃발이 꽂힌 채 얼어 있다.
  *    길 목적: 짐수레를 살피면 쇠 마차가 이 길로 올라갔다는 흔적(바퀴 홈·떨어진 공책 한 장) — 쫓는 이야기의 단서.
  *    수레 곁에 상급 회복약 하나(한 번).
- *  - 눈보라 고개(map_snow_north_2) = 「바위 능선을 넘는 고개」. 동쪽 숲 벽 한 덩이를 눈 덮인 돌 절벽(고원 눈 윗면 + 돌 절벽 앞면,
- *    서리나루 북쪽 절벽과 같은 그림)으로 바꾸고, 고개 위에 무너진 옛 초소 터(쓰러진 기둥·낮은 폐허 벽·돌무더기)와
- *    얼음에 갇힌 전사를 둔다. 길 목적: 고갯마루에서 북쪽을 보면 하늘탑 쪽 하늘이 짧게 열린다(지도 끌어올리기).
+ *  - 눈보라 고개(map_snow_north_2) = 「버려진 고개 초소」. 서쪽 빈 눈밭에 무너진 옛 초소 터(회색 돌담·돌기둥·쓰러진 기둥·
+ *    부서진 울타리·눈 더미)와 얼음에 갇힌 파수꾼. 숲 벽은 손대지 않는다(바위 능선 시안은 벽돌 상자로 읽혀 뺐다).
+ *    길 목적: 고갯마루에서 북쪽을 보면 하늘탑 쪽 하늘이 짧게 열린다(지도 끌어올리기).
  *    폐허의 얼음 기둥 곁에 마력약 하나(한 번).
  *
  * 지키는 것: 입구·출구 이동, 얼음 틈 둘(새라 도약)·얼음 덩이(엘레나 불씨), 모닥불·유대, 필드 적과 우두머리.
- * 걷는 칸은 줄이기만 하고(숲 벽 → 절벽, 빈 눈밭 → 소품), 마지막에 입구에서 출구·이벤트 칸이 모두 닿는지 다시 잰다.
+ * 걷는 칸은 줄이기만 하고(빈 눈밭 → 소품, 서리 가도 수레 빈터만 숲을 걷는다), 마지막에 입구에서 출구·이벤트 칸이 모두 닿는지 다시 잰다.
  */
 import { canMove } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
@@ -391,116 +391,16 @@ function frostRoad(project: Project, mapId: string, start: Cell, gaps: readonly 
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// 눈보라 고개 — 동쪽 숲 벽을 눈 덮인 돌 절벽 능선으로, 고갯마루에 무너진 옛 초소·얼음에 갇힌 전사, 북쪽 탑 하늘 보기
+// 눈보라 고개 — 고갯마루에 무너진 옛 초소(회색 돌)·얼음에 갇힌 파수꾼, 북쪽 탑 하늘 보기
 // ─────────────────────────────────────────────────────────────────────
 function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readonly Cell[], who: SnowLandmarkInput["speakers"]): void {
   const p = new Painter(project, mapId);
   const through = new Set(gaps.map((c) => p.idx(c.x, c.y)));
   guardEvents(p);
   const { dist, route } = guardRoute(p, start, through);
-  const ts = p.tileset;
-  const cliff = kitOf(ts, "bd-pick-snowfield-ground-cliff").rows.map((r) => (r.tiles ?? []).filter((t) => t >= 0));
-  const cliff2 = kitOf(ts, "bd-pick-mining-valley-ground-cliff").rows.map((r) => (r.tiles ?? []).filter((t) => t >= 0));
-  const plat = kitOf(ts, "bd-pick-snowfield-ground-plat").rows.flatMap((r) => (r.tiles ?? []).filter((t) => t >= 0));
   const map = p.map;
-  // 1) 능선 — 맵 북동쪽 숲 덩이(본길 동쪽, 위쪽 절반)를 눈 덮인 돌 고원으로 바꾼다. 서리나루 북쪽 절벽과 같은 그림:
-  //    윗면 = 고원 눈(막힌 사본), 남쪽 끝 두 줄 = 돌 절벽 앞면(윗줄 눈 턱 + 아랫줄 바위, 세 칸 덩이마다 어두운 바위 섞기), 밑에 고드름.
-  //    열마다 「위에서부터 이어진 숲」의 남쪽 끝을 앞면 밑줄로 잡되, 이웃 열과 한 칸 넘게 차이 나지 않게 고른다(칸 계단 금지).
-  const forest0 = forestCells(p);
-  const routeXs = (y: number) => [...route].filter((c) => Math.floor(c / p.W) === y).map((c) => c % p.W);
-  const rockCols = new Map<number, { bottom: number }>();
-  const yMax = Math.floor(p.H * 0.5);
-  for (let x = 0; x < p.W; x += 1) {
-    let y = 0;
-    while (y <= yMax && forest0.has(p.idx(x, y)) && !p.keep.has(p.idx(x, y))) y += 1;
-    const bottom = y - 1;
-    // 본길보다 동쪽인 열만(서쪽 숲은 그대로 숲) — 그 줄 본길 칸의 가장 동쪽보다 2칸 이상 동쪽.
-    const rx = routeXs(Math.max(0, bottom));
-    const eastOfRoute = rx.length ? x >= Math.max(...rx) + 2 : x >= p.W * 0.55;
-    if (bottom >= 4 && eastOfRoute) rockCols.set(x, { bottom });
-  }
-  // 가장 긴 연속 열 묶음 하나만(띄엄띄엄 바위 기둥 금지).
-  const xs0 = [...rockCols.keys()].sort((a, b) => a - b);
-  let runs: number[][] = [], cur: number[] = [];
-  for (const x of xs0) { if (cur.length && x !== cur[cur.length - 1]! + 1) { runs.push(cur); cur = []; } cur.push(x); }
-  if (cur.length) runs.push(cur);
-  runs = runs.sort((a, b) => b.length - a.length);
-  const keepXs = new Set(runs[0] ?? []);
-  for (const x of xs0) if (!keepXs.has(x)) rockCols.delete(x);
-  if (keepXs.size < 6) throw new Error(`[fallen-star snow] 눈보라 고개 북동 능선 폭이 좁다(${keepXs.size}열)`);
-  // 높이 다듬기 — 내리기만 한다(숲 밖으로 절벽을 늘리지 않는다). 능선을 6열 넘는 넓은 마디 몇 개로 나눠 마디마다 한 높이로 —
-  // 열마다 한두 칸씩 꺾이면 돌계단으로 읽혔다(1차 시안). 이웃 마디는 두 칸까지만 다르다.
-  const xs = [...keepXs].sort((a, b) => a - b);
-  const segN = Math.max(1, Math.min(3, Math.floor(xs.length / 6)));
-  const segLen = Math.ceil(xs.length / segN);
-  const segBottom: number[] = [];
-  for (let k = 0; k < segN; k += 1) segBottom.push(Math.min(...xs.slice(k * segLen, (k + 1) * segLen).map((x) => rockCols.get(x)!.bottom)));
-  for (let pass = 0; pass < 3; pass += 1) for (let k = 1; k < segN; k += 1) {
-    if (segBottom[k]! > segBottom[k - 1]! + 2) segBottom[k] = segBottom[k - 1]! + 2;
-    if (segBottom[k - 1]! > segBottom[k]! + 2) segBottom[k - 1] = segBottom[k]! + 2;
-  }
-  xs.forEach((x, i) => { rockCols.get(x)!.bottom = segBottom[Math.floor(i / segLen)]!; });
-  const face = new Set<number>(), top = new Set<number>();
-  for (const [x, s0] of rockCols) for (let y = 0; y <= s0.bottom; y += 1) (y >= s0.bottom - 2 ? face : top).add(p.idx(x, y));
-  const BLOCK_PLAT = (() => {
-    // 고원 윗면은 걷지 못해야 한다 — 고원 눈 그림 그대로, 막힌 사본을 칩셋 끝에 덧붙인다(그림은 같은 칸을 이식).
-    const out = new Map<number, number>();
-    for (const t of new Set(plat)) {
-      const slot = ts.count;
-      ts.count += 1;
-      ts.passability[slot] = { up: false, down: false, left: false, right: false };
-      ts.priority[slot] = "lower";
-      ts.terrain[slot] = ts.terrain[t] ?? 0;
-      (ts.tileMeta ??= [])[slot] = { label: "폴른 스타 · 눈보라 고개 능선 윗면(고원 눈, 막힘)", description: "버들항 설원 고원 눈 칸의 막힌 사본 — 능선 위는 걷지 못한다." };
-      const graft = (ts.tileGrafts ?? []).find((g) => g.targetTile === t);
-      ts.tileGrafts = [...(ts.tileGrafts ?? []), graft ? { ...graft, targetTile: slot } : { targetTile: slot, sourceChipset: ts.image.id, sourceTile: t }];
-      out.set(t, slot);
-    }
-    const aligned = Math.ceil(ts.count / ts.tilesPerRow) * ts.tilesPerRow;
-    for (let s1 = ts.count; s1 < aligned; s1 += 1) {
-      ts.passability[s1] = { up: true, down: true, left: true, right: true }; ts.priority[s1] = "lower"; ts.terrain[s1] = 0;
-      (ts.tileMeta ??= [])[s1] = { label: "", description: "" };
-    }
-    ts.count = aligned;
-    return out;
-  })();
-  const clearUpper = (c: number) => { for (const L of [2, 3, 4] as const) if (layerTileAt(map, L, c) >= 0) setLayerTileAt(map, L, c, -1); };
-  for (const c of top) {
-    const x = c % p.W, y = (c - x) / p.W;
-    map.lowerTiles[c] = BLOCK_PLAT.get(plat[Math.floor(hash01(x, y, 12) * plat.length)]!)!;
-    clearUpper(c); p.taken.add(c);
-  }
-  for (const c of face) {
-    const x = c % p.W, y = (c - x) / p.W;
-    const s0 = rockCols.get(x)!;
-    const dark = hash01(Math.floor(x / 3), 0, 14) < 0.4;
-    const row = y === s0.bottom - 2 ? cliff[0]! : y === s0.bottom ? (dark ? cliff2 : cliff)[2]! : (dark ? cliff2 : cliff)[1]!;
-    map.lowerTiles[c] = row[(x + Math.floor(hash01(x, y, 13) * 3)) % row.length]!;
-    clearUpper(c); p.taken.add(c);
-  }
-  // 남은 숲을 다시 깐다 — 고원으로 바뀐 칸은 숲에서 빼고(수관 테두리가 절벽 쪽에서 둥글게 닫힌다), 바로 밑 숲 그늘도 지운다.
-  const forest1 = forestCells(p);
-  for (const c of [...top, ...face]) forest1.delete(c);
-  for (const k of reforest(p, forest1)) if (!top.has(k) && !face.has(k)) { /* 다듬기로 열린 숲 칸 — 걷는 눈밭이 된다 */ }
-  for (const [x, s0] of rockCols) {
-    const c = p.idx(x, s0.bottom + 1);
-    if (p.inMap(x, s0.bottom + 1) && layerTileAt(map, 2, c) >= 0 && !forest1.has(c)) setLayerTileAt(map, 2, c, -1);
-  }
-  // 고원 위 눈 소나무(일렬 금지, 앞면에 안 걸리게)·앞면에 고드름.
-  const pine = kitOf(ts, "bd-pick-snowfield-pine");
-  for (let i = 0; i < xs.length - 1; i += 1) {
-    const x = xs[i]!, s0 = rockCols.get(x)!, s1 = rockCols.get(x + 1);
-    if (!s1 || hash01(x, 1, 21) < 0.5) continue;
-    const foot = Math.min(s0.bottom, s1.bottom) - 3 - (hash01(x, 2, 22) < 0.5 ? 0 : 2);
-    if (foot < 3) continue;
-    for (let j = 1; j < 4; j += 1) for (let k = 0; k < 2; k += 1) {
-      const t = pine.rows[j]!.upperTiles?.[k] ?? -1;
-      if (t >= 0) setLayerTileAt(map, 3, p.idx(x + k, foot - 3 + j), t);
-    }
-    i += 2;
-  }
-  const icicle = kitOf(ts, "bd-pick-dungeon-theme-icicles").rows[0]!.upperTiles![0]!;
-  for (const [x, s0] of rockCols) if (hash01(x, s0.bottom, 16) < 0.4) setLayerTileAt(map, 4, p.idx(x, s0.bottom), icicle);
+  // 1) 북동 바위 능선은 뺐다(r2 감독 검수): 설원 절벽 키트에는 모서리·가장자리 조각이 없어 어떻게 깔아도 눈 위에 놓인 벽돌 상자로 읽혔다.
+  //    숲 벽을 그대로 둔다 — 가짜 벽보다 깨끗한 숲이 낫다. 이 장의 랜드마크는 옛 초소 폐허와 고갯마루 전망이다.
 
   // 2) 고갯마루 폐허 — 본길 60~80% 지점 곁 빈 눈밭에 무너진 옛 초소 터.
   const steps = (x: number, y: number) => dist.get(p.idx(x, y)) ?? 999;
@@ -511,31 +411,28 @@ function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readon
     return [1, 2, 3].every((i) => p.walkable(x + i, y + 4));
   };
   const fireEv = map.events.find((e) => e.id === "ev_fs2_snow_fire");
-  // 고갯마루(본길 60%) 곁 숲을 걷어 폐허 빈터를 낸다 — 모닥불·틈·출입구에서 떨어져서.
-  const avoidP: Cell[] = [...gaps, start, ...(fireEv ? [{ x: fireEv.x, y: fireEv.y }] : []), ...map.events.filter((e) => e.y === 0).map((e) => ({ x: e.x, y: e.y }))];
-  // 먼저 이미 트인 눈밭(본길 45~85%)에서 찾고, 없을 때만 숲을 걷는다 — 걷은 빈터를 안 쓰면 맨 눈밭만 넓어졌다(2차 시안).
+  // 이미 트인 눈밭에서만 고른다 — 숲을 걷는 예비 경로는 뺐다: 걷은 빈터를 폐허가 안 쓰고 서쪽 숲 띠만 사라졌다(r2 감독 검수).
+  // 점수: 본길 60% 지점에 가깝고, 남쪽 앞줄이 본길에서 6걸음 안, 모닥불과 겹치지 않게.
   const ruinScore = (cx: number, cy: number) => (x: number, y: number) => {
     const d = Math.min(...[0, 2, 4].map((i) => steps(x + i, y + 4)));
     const nearFire = fireEv ? Math.max(0, 8 - (Math.abs(fireEv.x - x - 2) + Math.abs(fireEv.y - y - 2))) * 3 : 0;
     return Math.abs(x + 2 - cx) + Math.abs(y + 2 - cy) * 1.5 + nearFire + (d > 6 ? 50 : 0);
   };
   const want = [...route].reduce<Cell>((acc, c) => (Math.abs((dist.get(c) ?? 0) - total * 0.6) < Math.abs((dist.get(p.idx(acc.x, acc.y)) ?? 0) - total * 0.6) ? { x: c % p.W, y: Math.floor(c / p.W) } : acc), start);
-  let ruin = findSpot(p, 5, 4, (x, y) => ruinOk(x, y) && steps(x + 2, y + 4) >= total * 0.45 && steps(x + 2, y + 4) <= total * 0.85, ruinScore(want.x, want.y));
-  if (!ruin) {
-    const ruinClear = carveClearing(p, route, dist, Math.round(total * 0.6), 4.2, 3.0, avoidP, 5);
-    for (const [k, v] of p.reach(start, through)) if (!dist.has(k)) (dist as Map<number, number>).set(k, v);
-    ruin = findSpot(p, 5, 4, ruinOk, ruinScore(ruinClear.center.x, ruinClear.center.y));
-  }
+  const ruin = findSpot(p, 5, 4, ruinOk, ruinScore(want.x, want.y));
   let pillar: Cell | null = null;
   if (ruin) {
-    // 5×4 터: 서쪽 무너진 벽(2×2)·그 앞 쓰러진 기둥(2×1), 가운데 부러진 기둥, 동쪽 키 큰 기둥, 그 사이 얼음에 갇힌 파수꾼(앞 칸은 비운다).
-    p.stamp("bd-pick-temple-ruins-ruined-wall-2", ruin.x, ruin.y + 1);
-    p.stamp("bd-pick-temple-ruins-fallen-column-temple", ruin.x, ruin.y + 3);
-    p.stamp("bd-pick-temple-ruins-column-temple-broken", ruin.x + 2, ruin.y);
-    p.stamp("bd-pick-temple-ruins-column-temple-tall", ruin.x + 4, ruin.y);
+    // 5×4 터 — 회색 돌만(사암 신전 키트 금지, r2 감독 검수): 서쪽 무너진 고개 돌담(2×2)·그 앞 쓰러진 돌기둥(2×1),
+    // 가운데 부러진 기둥, 동쪽 선 기둥, 그 사이 얼음에 갇힌 파수꾼(앞 칸은 비운다). 둘레에 눈 더미와 부서진 울타리.
+    p.stamp("bd-pick-mountain-pass-wall-seg", ruin.x, ruin.y + 1);
+    p.stamp("bd-pick-aqueduct-sewer-fallen-column", ruin.x, ruin.y + 3);
+    p.stamp("bd-pick-aqueduct-sewer-column-sewer-broken", ruin.x + 2, ruin.y + 1);
+    p.stamp("bd-pick-aqueduct-sewer-column-sewer", ruin.x + 4, ruin.y);
     if (p.stamp("bd-pick-dungeon-theme-frozen-warrior", ruin.x + 3, ruin.y + 1)) pillar = { x: ruin.x + 3, y: ruin.y + 3 };
+    p.stamp("bd-pick-dungeon-theme-snow-drift", ruin.x + 2, ruin.y + 3) || p.stamp("bd-pick-dungeon-theme-snow-drift", ruin.x - 1, ruin.y + 3);
+    p.stamp("bd-pick-dungeon-theme-snow-drift-2", ruin.x + 4, ruin.y + 2);
     p.stamp("bd-pick-castle-catacombs-rubble", ruin.x - 1, ruin.y + 2);
-    p.stamp("bd-pick-castle-catacombs-rubble", ruin.x + 5, ruin.y + 3);
+    for (const [dx, dy] of [[5, 3], [-3, 3], [5, 0], [-3, 0]] as const) if (p.stamp("bd-pick-snowfield-fence", ruin.x + dx, ruin.y + dy)) break;
   }
   if (!ruin) throw new Error("[fallen-star snow] 눈보라 고개 폐허 자리가 없다");
   // 얼음에 갇힌 전사 — 옛 초소 파수꾼. 앞에서 살핀다.
@@ -580,7 +477,7 @@ function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readon
       ]);
     }
   }
-  // 4) 남쪽 비탈 — 갈림 고리 빈 눈밭에 바위·눈더미 덩이를 조금 더(능선과 이어지는 결). 일렬 금지.
+  // 4) 남쪽 비탈 — 갈림 고리 빈 눈밭에 바위 덩이를 조금 더. 일렬 금지.
   let rocks = 0;
   for (const c of [...dist.keys()].sort((a, b) => hash01(a, 9, 72) - hash01(b, 9, 72))) {
     if (rocks >= 4) break;

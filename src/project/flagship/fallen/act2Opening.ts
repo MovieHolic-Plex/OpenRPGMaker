@@ -2883,7 +2883,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   iceLake(project, exec);
   // B7 두 장이 같은 눈길로 보였다(7/10) — 장마다 랜드마크 하나와 길 목적 하나: 서리 가도 = 버려진 보급 수레·쇠바퀴 홈·이정표,
-  // 눈보라 고개 = 북동 바위 능선·얼어붙은 옛 초소·고갯마루 전망(하늘탑 빛). 적·틈·모닥불을 세운 뒤에 깔아 그 칸을 피한다.
+  // 눈보라 고개 = 회색 돌 옛 초소 폐허·얼음 속 파수꾼·고갯마루 전망(하늘탑 빛). 적·틈·모닥불을 세운 뒤에 깔아 그 칸을 피한다.
   applySnowLandmarks(project, exec, {
     mapIds: FS2_SNOW_PLAN.maps.map((m) => m.mapId),
     starts: FS2_SNOW_PLAN.maps.map((m) => m.entry),
