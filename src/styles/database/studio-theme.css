@@ -6,50 +6,50 @@
    ========================================================================= */
 
 .database-modal-backdrop {
-  color-scheme: light;
-
   /* ---- studio tokens (single source for DB chrome) -------------------- */
   /* 2026-09-27 자료집 개선안(visualizations/…/database-ui-proposal.html)의 쿨 인디고 팔레트.
      바탕은 옅은 청회색, 칸은 흰색, 액센트는 인디고 600. 대비는 아래 text-3 주석과 같은
      세 배경(흰·inset·선택행)에서 AA 를 다시 확인했다. */
-  --db-studio-canvas: #F5F6FA;
-  --db-studio-surface: #FFFFFF;
-  --db-studio-inset: #F0F2F7;
-  --db-studio-well: #ECEFF5;
-  --db-studio-text-1: #1A1E29;
-  --db-studio-text-2: #4B5263;
+  /* 개편안 6단계(2026-11): 자료집도 편집기 전역 토큰(중립 화이트·회색 다크·파랑 하나)을 그대로 따른다.
+     예전에는 이 블록이 청회색·인디고를 고정값으로 박고 color-scheme 을 light 로 묶어, OS 다크에서도 자료집만 밝았다. */
+  --db-studio-canvas: var(--bg-surface);
+  --db-studio-surface: var(--bg-raised);
+  --db-studio-inset: var(--bg-inset);
+  --db-studio-well: var(--bg-inset);
+  --db-studio-text-1: var(--text-1);
+  --db-studio-text-2: var(--text-2);
   /* 보조 텍스트. 예전 값 #94A3B8 은 11~11.5px 로 쓰이면서 흰 배경에서 2.56:1,
      inset(#F1F5F9) 에서 2.34:1, 선택 행 틴트(#F1F2FC) 에서 1.74:1 밖에 안 나왔다
      (2026-09-01 실측: 몬스터 그룹 4탭에서 AA 미달 118건 → 0건).
      세 배경 전부에서 AA 를 넘는다: 흰 배경 5.43:1 / inset 4.96:1 / 선택행 4.87:1.
      선택 행 틴트가 가장 빡빡한 제약이라 여기서 더 밝히면 그쪽이 먼저 깨진다. */
-  --db-studio-text-3: #5D6477;
+  --db-studio-text-3: var(--text-3);
   /* 텍스트가 아닌 "옅은 회색 도형"용. 위 토큰을 텍스트 대비 때문에 어둡게 내렸는데,
      같은 토큰이 바 채움(modern/utility-records.css 의 .db-el-bar-none)과 빈 얼굴 자리
      표시(play-resolution.css)처럼 **칠**에도 쓰여서 그대로 두면 검증하지 않은 탭의
      그림 무게까지 바뀐다. 그 용도는 예전 값에 고정한다. */
   --db-studio-muted-paint: #94A3B8;
-  --db-studio-border-subtle: rgba(26, 30, 60, 0.07);
-  --db-studio-border-default: rgba(26, 30, 60, 0.11);
-  --db-studio-border-strong: rgba(26, 30, 60, 0.20);
-  --db-studio-accent: #4F46E5;
-  --db-studio-accent-hover: #4338CA;
-  --db-studio-accent-active: #3730A3;
+  --db-studio-border-subtle: var(--border-subtle);
+  --db-studio-border-default: var(--border-default);
+  --db-studio-border-strong: var(--border-strong);
+  --db-studio-accent: var(--accent);
+  --db-studio-accent-hover: var(--accent-hover);
+  --db-studio-accent-active: var(--accent-active);
   /* 선택 행·활성 탭 바탕. 알파 대신 불투명 값을 써서 흰 칸·inset 어느 위에서도 같은 색이 난다. */
-  --db-studio-accent-soft: #EEF0FF;
-  --db-studio-accent-border: rgba(79, 70, 229, 0.22);
+  --db-studio-accent-soft: var(--accent-muted);
+  --db-studio-accent-border: var(--accent-border);
   /* 액센트 바탕 위 글자(활성 탭 라벨·선택 칩). --db-studio-accent 보다 한 단계 어둡다. */
   --db-studio-accent-text: var(--db-studio-accent-active);
-  --db-studio-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --db-studio-shadow-pop: 0 4px 16px rgba(15, 23, 42, 0.10);
-  --db-studio-success: #0F7A4A;
-  --db-studio-success-muted: rgba(15, 122, 74, 0.10);
-  --db-studio-danger: #B91C1C;
+  --db-studio-shadow: var(--shadow-pop);
+  --db-studio-shadow-pop: var(--shadow-pop);
+  --db-studio-success: var(--success);
+  --db-studio-success-muted: color-mix(in srgb, var(--success) 10%, transparent);
+  --db-studio-danger: var(--danger);
   /* 액센트/위험 배경 위에 얹는 글자색. 흰 배경 표면(--db-studio-surface)과 값은 같지만
      의미가 달라 따로 둔다 — 표면색을 글자에 쓰면 다크 테마에서 같이 뒤집혀 글자가 사라진다. */
-  --db-studio-on-accent: #FFFFFF;
+  --db-studio-on-accent: var(--on-accent);
   /* modern/enemies.css 가 폴백과 함께 쓰던 미정의 변수. 정식 토큰으로 승격한다. */
-  --db-studio-surface-2: rgba(15, 23, 42, 0.03);
+  --db-studio-surface-2: var(--bg-hover);
   /* 경고 계열. 기존 --warning(var(--warning)) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
      않는다 — 재사용하면 카운터는 줄지만 화면이 바뀐다. 값은 그대로 두고 이름만 준다. */
   --db-studio-warning: #B45309;
@@ -61,38 +61,9 @@
   --db-ws-preview-text-dim: #8FA0D8;
   --db-ws-preview-highlight: #FFD166;
 
-  /* ---- cream -> studio remap (legacy token bridge) -------------------- */
+  /* ---- 바탕 한 단계: 창 바탕은 surface, 칸은 raised(전역 토큰 그대로) ---- */
   --bg-base: var(--db-studio-canvas);
-  --bg-surface: var(--db-studio-surface);
-  --bg-raised: var(--db-studio-surface);
-  --bg-overlay: var(--db-studio-surface);
-  --bg-inset: var(--db-studio-inset);
   --bg-canvas: var(--db-studio-canvas);
-  --bg-well: var(--db-studio-inset);
-  --bg-glass: rgba(255, 255, 255, 0.86);
-  --bg-hover: var(--db-studio-inset);
-  --bg-active: var(--db-studio-accent-soft);
-  --control-bg: var(--db-studio-surface);
-  --control-bg-hover: var(--db-studio-inset);
-  --control-bg-active: var(--db-studio-accent-soft);
-  --border-subtle: var(--db-studio-border-subtle);
-  --border-default: var(--db-studio-border-default);
-  --border-strong: var(--db-studio-border-strong);
-  --text-1: var(--db-studio-text-1);
-  --text-2: var(--db-studio-text-2);
-  --text-3: var(--db-studio-text-3);
-  --text-placeholder: var(--db-studio-text-3);
-  --text-disabled: var(--db-studio-text-3);
-  --accent: var(--db-studio-accent);
-  --accent-hover: var(--db-studio-accent-hover);
-  --accent-active: var(--db-studio-accent-active);
-  --accent-muted: var(--db-studio-accent-soft);
-  --accent-border: var(--db-studio-accent-border);
-  --on-accent: #FFFFFF;
-  --danger: var(--db-studio-danger);
-  --success: var(--db-studio-success);
-  --shadow-pop: var(--db-studio-shadow-pop);
-  --shadow-modal: var(--db-studio-shadow-pop);
   /* --focus-ring 재정의를 지웠다(2026-09-17). 정본(tokens.css)과 알파만 달랐고
      (0.35 vs 0.45) 그 차이 때문에 키보드 사용자가 셸 → DB 모달로 넘어갈 때마다 포커스
      표시가 옅어졌다. 같은 앱 안에서 포커스 표시가 표면마다 다를 이유가 없다.
@@ -126,7 +97,7 @@
   --db-light-accent-hover: var(--db-studio-accent-hover);
   --db-light-accent-muted: var(--db-studio-accent-soft);
   --db-light-accent-border: var(--db-studio-accent-border);
-  --db-light-on-accent: #FFFFFF;
+  --db-light-on-accent: var(--on-accent);
 
   --db-modern-bg: var(--db-studio-canvas);
   --db-modern-panel: var(--db-studio-surface);
