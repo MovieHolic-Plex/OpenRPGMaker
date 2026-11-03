@@ -113,6 +113,14 @@ export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
   { id: "openai", label: "OpenAI", name: "OpenAI", baseUrl: "https://api.openai.com/v1", hint: "OpenAI API 키가 필요해요.", reasoningMode: "field" },
 ];
 
+// ── 빠른 연결(editor/panels/aiQuickConnect.ts) ───────────────────────────────
+// 첫 실행 사용자가 OpenRouter 키 하나로 시작하는 길. 기본 모델은 싸고 도구 호출을 하는 것으로 고른다:
+// deepseek/deepseek-v4.1-flash — 2026-11-03 OpenRouter 목록 실측 입력 $0.045/M · 출력 $0.50/M, tools·reasoning_effort 지원.
+// 같은 모델(InferHub 경유)로 조수가 도구 6종을 쓰고 저장·재로드까지 통과한 기록이 있다(2026-10-22). 사용자가 바꿀 수 있다.
+export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+export const OPENROUTER_DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash";
+export const OPENROUTER_KEYS_URL = "https://openrouter.ai/keys";
+
 const EFFORT_SUFFIX = /-(?:minimal|low|medium|high|xhigh)$/u;
 
 /** suffix 방식의 실제 모델 ID. 이미 강도 접미사가 있는 ID 와 강도 없음(off)은 그대로 둔다. */
