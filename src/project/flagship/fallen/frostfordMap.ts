@@ -518,10 +518,8 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   for (const c of [...forest]) if (clear(c)) forest.delete(c);
   const canopy = planBeodeulCanopy(W, H, "snow", forest, (s) => !forest.has(s) && !clear(s));
   writeBeodeulCanopy(project, map, tileset, canopy);
-  // 숲 덩이도 그림자를 드리운다(map.sunlight 는 「숲」 묶음의 3층 수관 칸을 나무로 본다).
-  // 3층에 쓴 수관 칸만(남쪽 끝 줄은 2층이라 3층 칸이 다른 그림이다 — writeBeodeulCanopy).
-  const forestCells = [...canopy.canopy.keys()].filter((c) => canopy.canopy.has(c + W) && (map.upperTiles[c] ?? -1) >= 0).map((c) => ({ index: c, tile: map.upperTiles[c]!, before: -1 }));
-  if (forestCells.length) map.doodadGroups = [...(map.doodadGroups ?? []), { id: "dg_frost_forest", label: "숲 (눈 덮인 침엽수)", kitId: "beodeul_nature_forest_snow", cells: forestCells }];
+  // 숲 덩이는 그림자를 드리우지 않는다 — 칸마다 따로 높이 2 기둥으로 잡혀 숲 가장자리 줄마다 가로 띠 그림자가 바코드처럼 섰다(적대 검수 r2).
+  // 집·외딴 소나무(키트 그림 실루엣)만 그림자를 드리운다.
   for (const c of forest) taken.add(c);
   for (const c of canopy.shade.keys()) taken.add(c);
   // 숲 가장자리 — 몇 그루만 따로 선 소나무(숲 앞 한 칸 띄워서, 길·집과 떨어진 자리).

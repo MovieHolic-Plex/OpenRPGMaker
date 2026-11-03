@@ -585,11 +585,11 @@ function lanternNight(project: Project, exec: Exec): void {
   // 밤 — 0.5 남색 막은 흰 얼음 위에서 대낮처럼 밝았고, 눈발 띠가 구름 그림자처럼 화면을 어지럽혔다(첫 플레이 검수 2026-10-31).
   // 0.84 덮기 막(#040818)도 흰 얼음·어두운 나무가 같은 회청색 판이 되어 「밤보다 새벽녘의 옅은 어둠」이었다(적대 검수 r2: 6/10).
   // 이제 곱하기 막 — 화면 색에 짙은 달빛 남색을 곱한다: 흰 얼음은 깊은 남색, 통나무·소나무는 거의 검정으로 가라앉아 대비가 남고,
-  // 가장자리는 비네트(0.65)로 더 깊게 잠긴다. 불빛은 칸 크기에 맞춘 작은 웅덩이 — 반경 2~3 의 흰빛은 얼음 위에 하얀 원판으로 떴다(감독 r7).
+  // 가장자리는 비네트(0.75)로 더 깊게 잠긴다. #1e2d5c·0.93 은 불빛 없는 눈이 아직 다 읽혀 「파란 막 낮」이었다(적대 검수 r2) — #121a3a·0.95. 불빛은 칸 크기에 맞춘 작은 웅덩이 — 반경 2~3 의 흰빛은 얼음 위에 하얀 원판으로 떴다(감독 r7).
   // 길은 굽이마다 희미한 달빛 얼음(routeLights)과 사당·등불이 짚는다. 낮 판의 해 그림자는 밤 판에 남기지 않는다.
   delete M(project, FS2_FROST_NIGHT_ID).sunlight;
   exec(project, "set_lighting_volume", {
-    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.93, color: "#1e2d5c", blend: "multiply", vignette: 0.65,
+    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.95, color: "#121a3a", blend: "multiply", vignette: 0.75,
     sources: [
       { id: "valen", at: { x: L.valen.x, y: L.valen.y }, radius: 1.8, intensity: 0.9, color: "#ffc060", flicker: true },
       ...L.shrineLights.map((c, i) => ({ id: `shrine_${i}`, at: { x: c.x, y: c.y }, radius: 1.7, intensity: 0.85, color: "#ffb050", flicker: true })),
@@ -598,7 +598,8 @@ function lanternNight(project: Project, exec: Exec): void {
       ...L.streetLamps.map((c, i) => ({ id: `street_${i}`, at: { x: c.x, y: c.y }, radius: 1.7, intensity: 0.85, color: "#ffb050", flicker: true })),
       // 탈출길 — 지그재그 굽이마다 희미한 달빛(푸른 얼음): 어디가 안전한지 밤에도 읽히되 흰 원으로 튀지 않는다.
       ...routeLights.map((c, i) => ({ id: `route_${i}`, at: { x: c.x, y: c.y }, radius: 1, intensity: 0.28, color: "#7fa8ff" })),
-      { id: "player", at: { kind: "player" }, radius: 1.5, intensity: 0.5, color: "#ffd8a0" },
+      // 주인공 손등불 — 흰 원판으로 떴다(적대 검수 r2 「광원 없는 차가운 흰 원」). 등불과 같은 주황, 조금 약하게.
+      { id: "player", at: { kind: "player" }, radius: 1.5, intensity: 0.42, color: "#ffa850", flicker: true },
     ],
   });
   exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "none" } });
