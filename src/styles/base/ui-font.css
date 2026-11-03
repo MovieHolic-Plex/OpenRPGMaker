@@ -1,0 +1,13 @@
+/* 편집기 화면의 한글 글꼴 Pretendard(길형진, SIL OFL 1.1 — licenses/OFL-Pretendard.txt).
+   편집기 진입점(base/index.css)만 이 시트를 읽는다 — 내보낸 게임(src/player/player.css)은 읽지 않으므로 게임 글꼴은 그대로다.
+   unicode-range 를 한글로 묶어, 라틴 글자는 스택 첫 후보 system-ui 가 그리고, system-ui 에 없는 한글은 다음 후보 Pretendard 가 그린다.
+   한글이 화면에 처음 나올 때 한 번 내려받는다(2.0MB, 앱에 들어 있어 네트워크는 쓰지 않는다). */
+@font-face {
+  font-family: "Pretendard";
+  src: url("../../assets/fonts/PretendardVariable.woff2") format("woff2-variations"),
+    url("../../assets/fonts/PretendardVariable.woff2") format("woff2");
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7AF, U+D7B0-D7FF;
+}

@@ -20,6 +20,7 @@ unless a link is given. Third party art and audio are listed separately in `publ
 |---|---|---|
 | sql.js — sql.js contributors (SQLite is public domain) | `public/vendor/sql-wasm.wasm` | MIT — `licenses/MIT-sql.js.txt` |
 | Galmuri 9 / Galmuri 11 — Lee Minseo | `public/assets/fonts/Galmuri9.woff2` (Emerald battle/menu pixel font, `src/styles/runtime/fonts.css`), external community/store service artifacts, `tiledata/atlas-pick/bakeoff/**/Galmuri11.ttf` | SIL Open Font License 1.1 — `licenses/OFL-Galmuri.md` |
+| Pretendard 1.3.9 — Kil Hyung-jin (orioncactus) | `src/assets/fonts/PretendardVariable.woff2`, editor UI Korean glyphs only (`src/styles/base/ui-font.css`); not loaded by exported games | SIL Open Font License 1.1 with Reserved Font Name "Pretendard" — `licenses/OFL-Pretendard.txt` |
 | Neo둥근모 (NeoDunggeunmo) — Eunbin Jeong | external community player artifact | `licenses/NeoDunggeunmo.txt` (reserved font names apply) |
 | node-unrar-js — Jianrong Yu, compiling RARLAB's UnRAR source | npm dependency used by the desktop app to open `.rar` packs | MIT for the wrapper; the UnRAR source is under the UnRAR license, which allows use and redistribution but forbids using it to re-create the RAR compression algorithm. https://www.rarlab.com/license.htm |
 | pngjs — pngjs contributors | bundled in `harness/**/lib/native.cjs` | MIT — https://github.com/pngjs/pngjs/blob/main/LICENSE |
