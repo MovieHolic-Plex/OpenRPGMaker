@@ -209,6 +209,8 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
       button.setAttribute("aria-expanded", String(open));
     }
     collapseButton.setAttribute("aria-expanded", String(!collapsed));
+    // 「보기」 메뉴가 이 단추를 「왼쪽 열」 패널 항목으로 비춘다(workspaceBar.syncPanelItems).
+    collapseButton.setAttribute("aria-pressed", String(!collapsed));
   }
   function reveal(): void {
     if (collapsed) return;

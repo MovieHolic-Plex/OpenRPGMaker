@@ -61,3 +61,4 @@
 @import "./build-palette.css" layer(map);
 @import "./map-event-search.css" layer(map);
 @import "./event-marker-tooltip.css" layer(map);
+@import "./left-column.css" layer(map);

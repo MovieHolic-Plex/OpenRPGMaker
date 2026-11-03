@@ -313,7 +313,8 @@ export async function seedMapsAndHistory(page: Page): Promise<SeedResult> {
   expect(result.mapIds).toEqual(expect.arrayContaining([MAP_A, MAP_B, MAP_EMPTY]));
   expect(result.mapIds).not.toContain(MAP_DELETED);
   expect(result.startMapId).toBe(MAP_A);
-  await expect(page.getByTestId("sidebar-map-switcher")).toContainText(MAP_A_NAME);
+  // 현재 맵은 왼쪽 열 맵 트리의 고른 행이다(맵 머리 스위처는 트리가 같은 열에 있으면 그리지 않는다).
+  await expect(page.getByTestId(`map-tree-node-${MAP_A}`)).toHaveAttribute("aria-selected", "true");
   return result;
 }
 
@@ -345,7 +346,8 @@ export async function selectMap(page: Page, mapId: string, mapName: string): Pro
     if (!selectEditorMap(id)) throw new Error(`selectEditorMap(${id}) failed`);
     await switched;
   }, mapId);
-  await expect(page.getByTestId("sidebar-map-switcher")).toContainText(mapName);
+  await expect(page.getByTestId(`map-tree-node-${mapId}`)).toContainText(mapName);
+  await expect(page.getByTestId(`map-tree-node-${mapId}`)).toHaveAttribute("aria-selected", "true");
 }
 
 export async function selectKnownMapInHistory(page: Page, mapId: string): Promise<void> {

@@ -1,6 +1,12 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { showIndividualTiles } from "./showIndividualTiles";
 
+// 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:brush-settings-open", "1"));
+});
+
+
 // Explicit screenshots are the evidence; avoid tracing every tile DOM node on each action.
 test.use({ trace: "off" });
 
@@ -92,7 +98,7 @@ test("sidebar retains focus, reachable controls and usable map space", async ({ 
   await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-current", "true");
   await page.getByTestId("layer-lower").click();
   await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
-  await page.getByTestId("sidebar-tools").click();
+  // 타일 섹션은 늘 보인다(왼쪽 한 칸) — 예전 「그리기」 레일 단추를 누를 필요가 없다.
   const sheet = page.getByTestId("tile-palette");
   await expect(sheet.locator(".chipset-tile")).not.toHaveCount(48);
   expect(await sheet.locator(".chipset-tile").count()).toBeGreaterThan(48);
@@ -107,11 +113,9 @@ test("sidebar retains focus, reachable controls and usable map space", async ({ 
   await expect(cells.last()).toHaveAttribute("aria-pressed", "true");
   expect(await sheet.evaluate(e => e.scrollTop)).toBeGreaterThan(0);
   await page.screenshot({ path: testInfo.outputPath("sidebar-tiles.png") });
-  // 맵 고르기는 사이드바 「맵」 탭이 집이다 — 그리기 탭으로 돌아오면 시트가 그대로 있다.
-  await page.getByTestId("sidebar-maps").click();
+  // 맵 트리와 타일 시트는 같은 열에 함께 떠 있다 — 탭 전환 없이 둘 다 보인다.
   await expect(page.getByTestId("map-tree")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("sidebar-maps.png") });
-  await page.getByTestId("sidebar-tools").click();
   await expect(sheet).toBeVisible();
   await expect(page.getByTestId("tool-paint")).toHaveAttribute("aria-current", "true");
 });

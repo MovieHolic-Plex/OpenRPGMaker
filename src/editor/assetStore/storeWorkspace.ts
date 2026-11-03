@@ -108,7 +108,7 @@ export function openAssetStore(tab: Tab = state.tab): void {
   }
   host = el("div", { class: "store-host", dataset: { testid: "store-host" }, on: { click: (event) => { if (event.target === host) closeAssetStore(); } } });
   if (typeof document !== "undefined") {
-    if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+    { const column = document.querySelector<HTMLElement>('[data-testid="editor-ai-sidebar"]'); if (column) host.style.left = `${Math.round(column.getBoundingClientRect().width)}px`; }
     if (document.querySelector('[data-testid="oprn-menu-bar"]')) {
       host.style.top = "48px";
       host.style.paddingTop = "16px";
@@ -417,8 +417,8 @@ function openInPalette(tilesetId: string, title: string): void {
   if (!mapId) return;
   closeAssetStore();
   selectEditorMap(mapId);
-  const tools = document.querySelector<HTMLElement>('[data-testid="sidebar-tools"]');
-  if (tools && tools.getAttribute("aria-pressed") !== "true") tools.click();
+  // 왼쪽 열을 맵·타일로 돌린다(서랍이 열려 있었으면 닫는다).
+  window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
   toast(`「${title}」 타일로 새 맵을 열었어요. 왼쪽 팔레트에서 골라 칠해 보세요.`, "ok");
 }
 

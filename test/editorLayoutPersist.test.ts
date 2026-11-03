@@ -229,9 +229,9 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mousemove", { clientY: -6 }));
     document.dispatchEvent(mouseEvent("mouseup", {}));
 
-    // 기본값 526/300 에서 각각 +100 / +6(위로 끌면 커진다).
+    // 기본값 260/300 에서 각각 +100 / +6(위로 끌면 커진다). 왼쪽 열 기본 폭은 목업의 260px 이다.
     const saved: unknown = JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}");
-    expect(saved).toMatchObject({ leftWidth: 626, mapTreeHeight: 306 });
+    expect(saved).toMatchObject({ leftWidth: 360, mapTreeHeight: 306 });
     expect(saved).not.toHaveProperty("leftCollapsed");
     expect(saved).not.toHaveProperty("chatDock");
 
@@ -247,7 +247,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     // Tree resizing remains Expert-owned. Stored width is capped to 320px in
     // this mode, so re-saving observes the original width preference.
     expect(cssVar(nextLeft, "--map-tree-height")).toBe("306px");
-    expect(resaveLayout(nextRoot)).toMatchObject({ leftWidth: 626, mapTreeHeight: 306 });
+    expect(resaveLayout(nextRoot)).toMatchObject({ leftWidth: 360, mapTreeHeight: 306 });
     // 이 파일의 첫 테스트가 `@/editor/panels/editor` 그래프 전체를 처음 변환·실행한다 —
     // 이 저장소에서 그 비용만 70초대다(뒤 테스트는 5~10초). 대기가 아니라 상한이다.
   }, 180_000);
@@ -287,9 +287,9 @@ describe("에디터 레이아웃 크기 저장", () => {
     fresh.renderEditor(freshMain);
 
     const freshRoot = fakeElement(freshMain);
-    // 파싱 실패는 조용히 기본값(526 / 300)으로 떨어진다.
+    // 파싱 실패는 조용히 기본값(260 / 300)으로 떨어진다.
     expect(cssVar(freshRoot.querySelector(".left-panel"), "--map-tree-height")).toBe("300px");
-    expect(resaveLayout(freshRoot)).toMatchObject({ leftWidth: 526, mapTreeHeight: 300 });
+    expect(resaveLayout(freshRoot)).toMatchObject({ leftWidth: 260, mapTreeHeight: 300 });
   }, 120_000);
 
   it("맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다", async () => {
