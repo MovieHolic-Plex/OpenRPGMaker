@@ -2814,7 +2814,17 @@ function iceLake(project: Project, exec: Exec): void {
   for (const l of links) exec(project, "remove_event", { mapId: l.mapId, eventId: l.id });
   importWavePlace(project, exec, WAVE_ICE_AGE_FIELD, FS2_ICE_LAKE_ID, "얼음 호수");
   exec(project, "set_map_properties", { mapId: FS2_ICE_LAKE_ID, mapRole: "field", battleBackground: "battle-scenery-snow" });
-  exec(project, "set_scene_mood", { mapId: FS2_ICE_LAKE_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.25 }, lighting: { ambient: 0.55, color: "#6a7a96" } });
+  // 해 질 녘 얼음 호수 — 서리나루에 닿기 직전이라 마을과 같은 저녁빛. 0.55 회청 덮기 막은 밝은 색이라 0.35 색조로 묶여 한낮처럼 보였다.
+  // 곱하기 막(보랏빛 그늘)에 서쪽 낮은 해가 호수 서쪽을 주홍으로 물들이고, 가장자리는 비네트로 저문다(B8 적대 검수 r2 「그림자·분위기 부족」).
+  {
+    const lake = M(project, FS2_ICE_LAKE_ID);
+    const sun = [] as { id: string; at: { x: number; y: number }; radius: number; intensity: number; color: string }[];
+    for (let y = 0, i = 0; y <= lake.height; y += 8, i += 1) sun.push({ id: `lake_low_sun_${i}`, at: { x: -10, y }, radius: lake.width * 0.7, intensity: 0.4, color: "#ff7a2a" });
+    exec(project, "set_scene_mood", { mapId: FS2_ICE_LAKE_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.25 }, lighting: {
+      ambient: 0.88, color: "#5e4a8c", blend: "multiply", vignette: 0.5,
+      sources: [...sun, { id: "player", at: { kind: "player" }, radius: 1.6, intensity: 0.3, color: "#ffc890" }],
+    } });
+  }
   requireReach(project, FS2_ICE_LAKE_ID, ICE_SPOTS.entry, {
     ...Object.fromEntries(ICE_SPOTS.cave.map((c, i) => [`얼음 굴${i}`, c])), 늑대: ICE_SPOTS.wolves, 박쥐: ICE_SPOTS.bats, 섞인무리: ICE_SPOTS.mixed, 결정: ICE_SPOTS.save,
   });
