@@ -243,10 +243,12 @@ function clamp(min: number, max: number, value: number): number {
 export const LIGHT_FALLOFF: readonly (readonly [number, number])[] = [[0, 1], [0.25, 0.8], [0.5, 0.45], [0.75, 0.15], [1, 0]];
 
 /**
- * 가장자리가 또렷한 빛(LightSource.edge hard) — 반지름 끝 가까이까지 절반 넘게 걷어 낸 채 버티다 마지막 4% 에서 끊긴다.
- * 시야 등불은 「원 안 = 보인다」가 규칙이라 원의 테두리가 화면에서 읽혀야 한다. 가운데는 조금 더 밝아 들고 있는 등불로 읽힌다.
+ * 가장자리가 읽히는 빛(LightSource.edge hard) — 시야 등불은 「원 안 = 보인다」가 규칙이라 원의 테두리가 화면에서 읽혀야 한다.
+ * 안쪽은 등불처럼 들고 있는 사람 곁이 밝고 바깥으로 사위며(가운데 0.9 → 반지름 0.6 에서 0.4), 끝 6% 의 짧은 띠에서 0.22 → 0 으로 끊긴다.
+ * 예전 곡선(0.8 까지 0.62, 0.96 까지 0.56 을 버팀)은 안이 고른 반투명 노란 원판이라 등불 빛이 아니라 화면 표시 원으로 읽혔고,
+ * 두 빛이 겹치면 겹친 자리가 한 단 더 밝은 판이 됐다(폴른 스타 2막 숲 어귀, 감독 검수 2026-11-04).
  */
-export const LIGHT_FALLOFF_HARD: readonly (readonly [number, number])[] = [[0, 1], [0.35, 0.82], [0.8, 0.62], [0.96, 0.56], [1, 0]];
+export const LIGHT_FALLOFF_HARD: readonly (readonly [number, number])[] = [[0, 0.9], [0.3, 0.62], [0.6, 0.4], [0.88, 0.28], [0.94, 0.22], [1, 0]];
 
 /** 그 광원의 빛 곡선. */
 export function lightFalloffCurve(edge: LightSource["edge"]): readonly (readonly [number, number])[] {
