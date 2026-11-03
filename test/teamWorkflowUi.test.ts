@@ -186,7 +186,9 @@ describe("team workflow UI", () => {
   it("renders topbar identity and allows label edits from the identity menu", () => {
     setOwnerLabel("기존 사용자");
     const topbar = document.createElement("div");
-    topbar.append(renderIdentityTopbarControl(() => renderTopbar(topbar)));
+    // 톱바는 더 이상 신원 단추를 그리지 않는다(⌘K 「편집 이름」) — 단추만 다시 그려 갱신을 본다.
+    const rerender = (): void => { topbar.replaceChildren(renderIdentityTopbarControl(rerender)); };
+    rerender();
     expect(findByTestId(fakeElement(topbar), "topbar-identity-label")?.textContent).toBe("기존 사용자");
 
     findByTestId(fakeElement(topbar), "topbar-identity")?.click();

@@ -69,7 +69,9 @@ export function openMockLoginModal(onIdentityChanged?: () => void): void {
 export function openIdentityMenu(onIdentityChanged: () => void): void {
   if (!canRenderFloatingUi()) return;
   closeCommitHistoryPanel();
-  if (activeIdentityMenu) return;
+  // 문서에서 떨어진 옛 메뉴(본문 교체 등)는 열린 것으로 치지 않는다 — ⌘K 가 아무것도 열지 못한다.
+  if (activeIdentityMenu?.isConnected) return;
+  closeIdentityMenu();
   toggleIdentityMenu(null, currentHumanEditorIdentity(), onIdentityChanged);
 }
 
@@ -77,7 +79,8 @@ export function openIdentityMenu(onIdentityChanged: () => void): void {
 export function openCommitHistoryPanel(): void {
   if (!canRenderFloatingUi()) return;
   closeIdentityMenu();
-  if (activeCommitPanel) return;
+  if (activeCommitPanel?.isConnected) return;
+  closeCommitHistoryPanel();
   toggleCommitHistoryPanel();
 }
 
