@@ -1,8 +1,9 @@
 /* 캔버스 가운데 위 알약(2026-11 개편, src/editor/panels/canvasToolPill.ts).
    시안 mock/frames.html 의 .float: 흰(어두운 테마는 --bg-overlay) 바탕 · 반경 10px · 안쪽 4px · 단추 28px · 아이콘 16px.
    컨테이너는 여전히 .canvas-toolbar 라 위치(가운데·top 16px)는 from-shell-figma-editor-11-canvas-toolbar-uxc.css 가 맡는다.
-   이 파일은 map/index.css 끝에 들어가 옛 막대 규칙(배경 유리·그림자·gap)보다 뒤에서 이긴다. */
-.canvas-toolbar.canvas-tool-pill {
+   이 파일은 map/index.css 끝에 들어가 옛 막대 규칙(.canvas-toolbar 배경 유리·그림자·gap, 같은 특이도)보다 뒤에서 이긴다.
+   AI 스튜디오 머리띠가 입양하면 .ai-studio-monitor-chrome .canvas-toolbar(특이도가 더 높다)가 납작한 모양으로 덮는다. */
+.canvas-tool-pill {
   align-items: center;
   backdrop-filter: none;
   background: var(--bg-overlay);
@@ -151,16 +152,4 @@
   user-select: none;
   white-space: nowrap;
   z-index: 3;
-}
-
-/* AI 스튜디오 머리띠가 알약을 입양하면 배율만 남긴다(옛 막대에서도 줌만 남겼다). */
-.ai-studio-monitor-chrome .canvas-toolbar.canvas-tool-pill {
-  background: var(--bg-inset);
-  box-shadow: none;
-  left: auto;
-  padding: 2px;
-  transform: none;
-}
-.ai-studio-monitor-chrome .canvas-tool-pill > :not(.canvas-tool-pill-zoom) {
-  display: none;
 }

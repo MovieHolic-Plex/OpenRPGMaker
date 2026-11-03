@@ -58,16 +58,17 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   expect(Math.abs(cellWidth - cellHeight)).toBeLessThanOrEqual(1);
   await expect(firstChipsetCell).toHaveCSS("background-image", /easyrpg-chipset-combined-town|oprn-original-chipset|chipset/);
 
-  // Dense zoom buttons sit behind the ⋯ expand gate in expert mode, and the canvas
-  // toolbar re-renders (collapses) on every zoom change — re-open the gate per click.
-  await page.getByTestId("editor-canvas-toolbar-expand").click();
+  // 배율 목록은 캔버스 알약의 「200%」 단추 아래에 뜨고, 고르면 닫힌다(2026-11) — 고를 때마다 다시 연다.
   await expect(page.getByTestId("editor-zoom-controls")).toBeVisible();
+  await expect(page.getByTestId("editor-zoom-stepper")).toHaveText("200%");
+  await page.getByTestId("editor-zoom-stepper").click();
   await expect(page.getByTestId("editor-zoom-2")).toHaveClass(/active/);
   await page.getByTestId("editor-zoom-4").click();
+  await expect(page.getByTestId("editor-zoom-stepper")).toHaveText("400%");
+  await page.getByTestId("editor-zoom-stepper").click();
   await expect(page.getByTestId("editor-zoom-4")).toHaveClass(/active/);
-  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-2").click();
-  await expect(page.getByTestId("editor-zoom-2")).toHaveClass(/active/);
+  await expect(page.getByTestId("editor-zoom-stepper")).toHaveText("200%");
 
   await expect(page.getByTestId("tile-palette")).toBeVisible();
   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("#0 호수 외곽");

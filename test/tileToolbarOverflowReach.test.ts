@@ -72,7 +72,7 @@ describe("도구막대 오버플로 도달성", () => {
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll");
     expect(scroll).toBeTruthy();
     expect(scroll!.parentElement).toBe(row);
-    for (const testid of ["tool-select", "tool-paint", "tool-erase", "tool-fill", "oprn-tool-undo"]) {
+    for (const testid of ["tool-select", "palette-tool-paint", "tool-erase", "palette-tool-fill", "oprn-tool-undo"]) {
       expect(scroll!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
     // 「도구」 메뉴는 삭제됐다 — 복사·붙여넣기는 Ctrl+C/V 와 선택 칩이 맡는다.

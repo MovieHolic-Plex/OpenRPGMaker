@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { runPaletteCommand } from "./topbarNavigation";
 
 async function dismissChrome(page: Page): Promise<void> {
   const guest = page.getByTestId("login-guest");
@@ -21,7 +22,8 @@ async function boot(page: Page): Promise<void> {
   await dismissChrome(page);
 }
 
-test("1024px launcher reaches real surfaces and journey stays a corner chip", async ({ page }) => {
+// 2026-11 캔버스 알약 개편: 캔버스 위 토글은 숨겼고 띠는 ⌘K 「화면: 저작 진행 보기」로 연다.
+test("1024px launcher reaches real surfaces and journey opens from the command palette", async ({ page }) => {
   test.setTimeout(60_000);
   await boot(page);
 
@@ -29,21 +31,15 @@ test("1024px launcher reaches real surfaces and journey stays a corner chip", as
   await expect(page.getByTestId("authoring-task-launcher")).toHaveCount(0);
   await expect(page.getByTestId("mode-play")).toBeVisible();
 
-  const toggle = page.getByTestId("authoring-journey-toggle");
-  await expect(toggle).toBeVisible();
+  await expect(page.getByTestId("authoring-journey-toggle")).toBeHidden();
   await expect(page.getByTestId("authoring-journey-strip")).toBeHidden();
-  const closedBox = await page.getByTestId("authoring-journey").boundingBox();
-  expect(closedBox).not.toBeNull();
-  expect(closedBox!.width).toBeLessThanOrEqual(48);
-  expect(closedBox!.height).toBeLessThanOrEqual(48);
-  expect(closedBox!.x + closedBox!.width).toBeLessThanOrEqual(1024);
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await runPaletteCommand(page, "저작 진행 보기", "authoring-journey-toggle");
+  await expect(page.getByTestId("authoring-journey-toggle")).toHaveAttribute("aria-expanded", "true");
   const strip = page.getByTestId("authoring-journey-strip");
   await expect(strip).toBeVisible();
   await expect(page.getByTestId("authoring-journey-stage-test")).toHaveAttribute("data-completion", "pending");

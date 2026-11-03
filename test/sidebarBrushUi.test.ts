@@ -68,7 +68,7 @@ describe("sidebar brush and source gestures", () => {
   });
   it("Paint clears a previous stamp and shape through the tool reset", () => {
     editorState.set({ paintShape: "round", activePaletteStamp: { width: 2, height: 1, source: { startTile: 0, endTile: 1 }, cells: [] } });
-    node("tool-paint").click();
+    node("palette-tool-paint").click();
     expect(editorState.get()).toMatchObject({ paintShape: "pen", activePaletteStamp: null });
   });
   it("reports the active eraser rather than a retained paint shape or stamp", () => {

@@ -135,7 +135,7 @@ describe("sidebar painting workflow", () => {
 
   it("keeps daily tools direct and inspection actions reachable once through More", () => {
     renderTilePalette(host);
-    for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "oprn-tool-undo"]) {
+    for (const id of ["palette-tool-paint", "tool-erase", "palette-tool-fill", "tool-select", "oprn-tool-undo"]) {
       control(id);
     }
     expect(find('sidebar-tools-menu')).toBeNull();

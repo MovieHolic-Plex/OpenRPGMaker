@@ -104,10 +104,10 @@ describe("도구막대 표기", () => {
 
   it("도구마다 hotkeys.ts 의 단축키를 툴팁에 적는다", () => {
     const expected: ReadonlyArray<readonly [string, string]> = [
-      ["tool-paint", "칠하기 (B)"],
+      ["palette-tool-paint", "칠하기 (B)"],
       ["tool-select", "영역 선택 (V)"],
       ["tool-erase", "지우기 (E)"],
-      ["tool-fill", "이어진 영역 채우기 (G)"],
+      ["palette-tool-fill", "이어진 영역 채우기 (G)"],
     ];
     for (const [testid, prefix] of expected) {
       expect(button(testid).getAttribute("title") ?? "", testid).toContain(prefix);
@@ -115,7 +115,7 @@ describe("도구막대 표기", () => {
   });
 
   it("「칠하기」는 초보 레일과 같은 brush 글리프를 쓴다", () => {
-    const icon = button("tool-paint").querySelector("svg");
+    const icon = button("palette-tool-paint").querySelector("svg");
     expect(icon).toBeTruthy();
     expect(icon!.outerHTML).toBe(makeSvgIcon("brush").outerHTML);
     expect(icon!.outerHTML).not.toBe(makeSvgIcon("pen").outerHTML);
