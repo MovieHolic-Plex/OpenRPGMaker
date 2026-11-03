@@ -740,9 +740,10 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-preview {
-  background: var(--db-studio-text-1);
+  /* 도트 무대 카드는 테마와 상관없이 어두운 판이다. 예전 값 --db-studio-text-1(글자색)은 다크에서 밝게 뒤집혔다. */
+  background: var(--db-ws-preview-bg);
   border-radius: 8px;
-  color: var(--db-studio-on-accent);
+  color: var(--db-ws-preview-text);
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
@@ -830,9 +831,9 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action {
   background: transparent;
-  border: 1px solid var(--db-studio-text-3);
+  border: 1px solid var(--db-ws-preview-border);
   border-radius: 5px;
-  color: var(--db-studio-on-accent);
+  color: var(--db-ws-preview-text);
   cursor: pointer;
   font: 500 12px/1.4 var(--font-ui);
   min-height: 32px;
@@ -842,6 +843,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action[aria-pressed="true"] {
   background: var(--db-studio-accent);
   border-color: var(--db-studio-accent);
+  color: var(--db-studio-on-accent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action:focus-visible,
@@ -858,10 +860,10 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell {
   align-items: center;
-  background: var(--db-studio-well);
+  background: color-mix(in srgb, var(--db-ws-preview-text) 8%, transparent);
   border: 1px solid transparent;
   border-radius: 4px;
-  color: var(--db-studio-text-1);
+  color: var(--db-ws-preview-text);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -939,7 +941,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skills {
-  border-top: 1px solid color-mix(in srgb, var(--db-studio-on-accent) 18%, transparent);
+  border-top: 1px solid var(--db-ws-preview-border);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -960,7 +962,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skill {
-  border-color: color-mix(in srgb, var(--db-studio-accent) 60%, var(--db-studio-text-3));
+  border-color: color-mix(in srgb, var(--db-studio-accent) 60%, var(--db-ws-preview-border));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skill-note {
