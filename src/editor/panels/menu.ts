@@ -146,6 +146,7 @@ let disposeFullscreenButton: (() => void) | null = null;
 let disposeTopbarFit: (() => void) | null = null;
 let disposeProjectLabel: (() => void) | null = null;
 let disposeStatusStrip: (() => void) | null = null;
+let disposeMapCrumb: (() => void) | null = null;
 let paintStripSave: ((state: AutoSaveState) => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
@@ -175,6 +176,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeProjectLabel = null;
   disposeStatusStrip?.();
   disposeStatusStrip = null;
+  disposeMapCrumb?.();
+  disposeMapCrumb = null;
   paintStripSave = null;
   installTopbarChords();
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
@@ -192,6 +195,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   lead.append(
     renderProductBrand(),
     projectButton,
+    ...(mode === "edit" ? [renderMapCrumb()] : []),
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
@@ -316,6 +320,35 @@ function renderStatusStrip(): HTMLElement {
   paintStripSave = paintSave;
   disposeStatusStrip = editorState.subscribe(() => paintTool());
   return strip;
+}
+
+function currentMapName(): string {
+  const id = editorState.get().currentMapId;
+  const map = id ? store.getCurrent().maps[id] : undefined;
+  return map ? map.name || id || "" : t("맵 없음");
+}
+
+/**
+ * 경로의 둘째 칸 「프로젝트 / 지금 맵」. 맵 이름은 저자가 쓴 글이라 번역하지 않는다.
+ * 맵 전환·이름 바꾸기 때 글자만 바꾼다 — 톱바를 다시 그리지 않는다.
+ */
+function renderMapCrumb(): HTMLElement {
+  const name = el("span", { class: "studio-crumb-map-name", attrs: { translate: "no", "data-i18n-skip": "" } });
+  const crumb = el("span", {
+    class: "studio-crumb-map",
+    dataset: { testid: "topbar-crumb-map" },
+    children: [el("span", { class: "studio-crumb-sep", attrs: { "aria-hidden": "true" }, text: "/" }), name],
+  });
+  const paint = (): void => {
+    const next = currentMapName();
+    if (name.textContent !== next) name.textContent = next;
+    crumb.title = `${t("현재 맵")}: ${next}`;
+  };
+  paint();
+  const offState = editorState.subscribe(paint);
+  const offStore = store.subscribe(paint);
+  disposeMapCrumb = () => { offState(); offStore(); };
+  return crumb;
 }
 
 /** 프로젝트 메뉴의 얼굴은 프로젝트 이름이다 — 지금 어느 프로젝트를 만지는지 톱바가 말해야 한다. */
@@ -453,7 +486,7 @@ function renderProductBrand(): HTMLElement {
     dataset: { testid: "editor-product-brand" },
     attrs: { title: PRODUCT_BRAND },
     children: [
-      el("span", { class: "editor-product-brand-mark", attrs: { "aria-hidden": "true" }, text: "✦" }),
+      el("span", { class: "editor-product-brand-mark", attrs: { "aria-hidden": "true", translate: "no" }, text: "O" }),
       el("span", { class: "editor-product-brand-text", text: PRODUCT_BRAND }),
     ],
   });

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7970KB / 약 2,342,153 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7971KB / 약 2,342,460 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -28,7 +28,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
-| `openwiki/editor-pre-edit-routing.md` | 189KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1176 | ~55,736 |
+| `openwiki/editor-pre-edit-routing.md` | 191KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1184 | ~56,043 |
 | `openwiki/editor-validation.md` | 62KB | 16KB | 414 | ~17,510 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
@@ -1364,7 +1364,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L714` 편집기 UX 지연 조사 (2026-10-04)
   - `L722` 2026-10-04: 제출 중 추가 지형 편집과 초안 목록
 
-### `openwiki/editor-pre-edit-routing.md` — 189KB · 1176줄 · ~55,736 토큰 · 통째읽기 잘림 · 깨진 줄 3
+### `openwiki/editor-pre-edit-routing.md` — 191KB · 1184줄 · ~56,043 토큰 · 통째읽기 잘림 · 깨진 줄 3
 
 - `L5` 태양과 그림자 (2026-10-04)
 - `L11` 공식 맵 상한 1024×1024 (2026-10-01)
@@ -1405,8 +1405,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1042` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
   - `L1074` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
   - `L1103` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
-- `L1143` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
-- `L1159` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+- `L1151` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+- `L1167` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
 
 ### `openwiki/editor-preview-performance.md` — 10KB · 146줄 · ~2,678 토큰
 
