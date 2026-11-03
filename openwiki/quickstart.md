@@ -171,7 +171,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 | 톱바·메뉴·용어 (편집 모드는 2026-09-27 삭제) | `src/editor/panels/menu.ts`, `src/editor/uiCopy.ts` |
 | 좌측 도크·레이아웃 | `src/editor/workspace/leftDockPanels.ts`, `src/editor/panels/editor.ts` |
 | 테스트 플레이 창 | `src/editor/panels/testPlayModal.ts` |
-| 색·토큰·크림 셸 | `src/styles/tokens.css`, `src/styles/index.css` |
+| 색·토큰·테마(라이트 기본·다크) | `src/styles/tokens.css`, `src/styles/base/theme.css`, `src/styles/index.css` |
 | 웹 게임 내보내기 | `src/project/webExport.ts`, `vite.player.config.ts` |
 | 커뮤니티 사이트(공유, 현재 미운영) | 아카이브된 [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community) + `openwiki/community-service.md` |
 

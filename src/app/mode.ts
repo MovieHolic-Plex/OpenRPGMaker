@@ -16,6 +16,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
+import { readCanvasSurroundColor } from "@/editor/canvasSurround";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import { configureEditorGameAccessor } from "@/editor/panels/editorGameSuspension";
@@ -608,7 +609,7 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
   const next = new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,
-    backgroundColor: "#E7E0D0",
+    backgroundColor: readCanvasSurroundColor(),
     roundPixels: true,
     antialias: false,
     pixelArt: true,

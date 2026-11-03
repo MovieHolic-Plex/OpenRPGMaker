@@ -1,7 +1,7 @@
 # OPRN 디자인 토큰 가이드
 
 **원본:** `src/styles/tokens.css` (유일한 `:root` 토큰 정의). 이 문서의 값 표는 `node -e` 로 생성한다 — 손으로 고치지 말고 tokens.css 를 고친 뒤 재생성.
-**방향:** 쿨 화이트 + 인디고 단일 액센트(2026-08-25 이후). 크림/골드 팔레트는 폐기됐다. `html { color-scheme: light }`.
+**방향:** 중립 화이트 + 파랑 단일 액센트(2026-11-03 개편안 이후, 그 전은 쿨 화이트 + 인디고). 라이트가 기본이고 다크는 `base/theme.css` 가 중립 회색으로 덮는다. 편집기 한글은 Pretendard(`base/ui-font.css`, 편집기 전용). 내보낸 게임은 `runtime/tokens.dark.css` 가 개편 이전 값을 고정한다.
 
 값 표 재생성 명령(리포 루트에서):
 
@@ -15,34 +15,34 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 ## 1. 토큰 값 (자동 생성)
 | 토큰 | 값 |
 |---|---|
-| `--bg-base` | `#F7F8F8` |
-| `--bg-surface` | `#F7F8F8` |
+| `--bg-base` | `#FFFFFF` |
+| `--bg-surface` | `#F7F7F5` |
 | `--bg-raised` | `#FFFFFF` |
 | `--bg-overlay` | `#FFFFFF` |
-| `--bg-inset` | `#EEF1F4` |
-| `--bg-canvas` | `#EEF1F4` |
-| `--bg-glass` | `rgba(247, 248, 248, 0.92)` |
+| `--bg-inset` | `#F2F2F0` |
+| `--bg-canvas` | `#E9E9E7` |
+| `--bg-glass` | `rgba(255, 255, 255, 0.92)` |
 | `--bg-glass-panel` | `rgba(255, 255, 255, 0.78)` |
 | `--glass-blur-panel` | `blur(24px) saturate(1.08)` |
-| `--bg-scrim` | `rgba(15, 23, 42, 0.40)` |
-| `--bg-hover` | `rgba(15, 23, 42, 0.05)` |
-| `--bg-active` | `rgba(15, 23, 42, 0.09)` |
-| `--control-bg` | `rgba(15, 23, 42, 0.04)` |
-| `--control-bg-hover` | `rgba(15, 23, 42, 0.08)` |
-| `--control-bg-active` | `rgba(15, 23, 42, 0.12)` |
-| `--border-subtle` | `rgba(15, 23, 42, 0.08)` |
-| `--border-default` | `rgba(15, 23, 42, 0.127)` |
-| `--border-strong` | `rgba(15, 23, 42, 0.461)` |
-| `--text-1` | `#0F172A` |
-| `--text-2` | `#475569` |
-| `--text-3` | `#566179` |
-| `--text-placeholder` | `#566179` |
-| `--text-disabled` | `#94A3B8` |
-| `--accent` | `#4A57D6` |
-| `--accent-hover` | `#3C48C4` |
-| `--accent-active` | `#2F3AAE` |
-| `--accent-muted` | `rgba(74, 87, 214, 0.12)` |
-| `--accent-border` | `rgba(74, 87, 214, 0.45)` |
+| `--bg-scrim` | `rgba(15, 15, 15, 0.40)` |
+| `--bg-hover` | `rgba(55, 53, 47, 0.06)` |
+| `--bg-active` | `rgba(55, 53, 47, 0.10)` |
+| `--control-bg` | `rgba(55, 53, 47, 0.04)` |
+| `--control-bg-hover` | `rgba(55, 53, 47, 0.08)` |
+| `--control-bg-active` | `rgba(55, 53, 47, 0.12)` |
+| `--border-subtle` | `rgba(55, 53, 47, 0.09)` |
+| `--border-default` | `rgba(55, 53, 47, 0.16)` |
+| `--border-strong` | `rgba(55, 53, 47, 0.56)` |
+| `--text-1` | `#1F1F1E` |
+| `--text-2` | `#5F5E5B` |
+| `--text-3` | `#656460` |
+| `--text-placeholder` | `#656460` |
+| `--text-disabled` | `#A3A29E` |
+| `--accent` | `#1F6FC5` |
+| `--accent-hover` | `#185BA3` |
+| `--accent-active` | `#164F8E` |
+| `--accent-muted` | `rgba(31, 111, 197, 0.08)` |
+| `--accent-border` | `rgba(31, 111, 197, 0.45)` |
 | `--on-accent` | `#ffffff` |
 | `--cinema-night` | `#101a29` |
 | `--cinema-paper` | `#fff9eb` |
@@ -90,8 +90,8 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--space-4` | `16px` |
 | `--space-5` | `24px` |
 | `--space-6` | `32px` |
-| `--shadow-pop` | `0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10)` |
-| `--shadow-modal` | `0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14)` |
+| `--shadow-pop` | `0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10)` |
+| `--shadow-modal` | `0 8px 24px rgba(15, 15, 15, 0.10), 0 24px 64px rgba(15, 15, 15, 0.14)` |
 | `--focus-color` | `var(--accent)` |
 | `--focus-ring` | `0 0 0 2px var(--focus-color)` |
 | `--focus-outline` | `2px solid var(--focus-color)` |
@@ -138,18 +138,18 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--z-dropdown` | `var(--z-popover-high)` |
 | `--z-overlay` | `var(--z-modal-overlay)` |
 | `--z-dialog` | `var(--z-app-modal)` |
-| `--brand-blue` | `#4A57D6` |
-| `--mix-base` | `#F7F8F8` |
+| `--brand-blue` | `#1F6FC5` |
+| `--mix-base` | `#FFFFFF` |
 | `--gold` | `#8A6B2F` |
 | `--gold-deep` | `#6E5424` |
 | `--gold-soft` | `#E8D9A8` |
 | `--gold-wash` | `rgba(138, 107, 47, 0.12)` |
-| `--bg-well` | `#EEF1F4` |
-| `--scrollbar-thumb` | `rgba(15, 23, 42, 0.18)` |
-| `--scrollbar-thumb-hover` | `rgba(15, 23, 42, 0.30)` |
-| `--empty-icon-bg` | `rgba(74, 87, 214, 0.10)` |
-| `--empty-icon-border` | `rgba(74, 87, 214, 0.28)` |
-| `--empty-icon-color` | `#4A57D6` |
+| `--bg-well` | `#F2F2F0` |
+| `--scrollbar-thumb` | `rgba(55, 53, 47, 0.18)` |
+| `--scrollbar-thumb-hover` | `rgba(55, 53, 47, 0.30)` |
+| `--empty-icon-bg` | `rgba(31, 111, 197, 0.08)` |
+| `--empty-icon-border` | `rgba(31, 111, 197, 0.24)` |
+| `--empty-icon-color` | `#1F6FC5` |
 
 ## 2. 레이어와 표면
 
@@ -241,7 +241,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 
 ## 시네마틱 새 게임 화면 (2026-10-03)
 
-사용자가 선택한 밤색 배경·따뜻한 종이색 인터뷰는 `--cinema-night`, `--cinema-paper`, `--cinema-accent`를 사용한다. 이미지 위 고정 테마용 예외이며 일반 에디터의 쿨 화이트·인디고 토큰은 그대로다. 반투명 표면과 테두리는 이 토큰의 `color-mix`로 파생한다.
+사용자가 선택한 밤색 배경·따뜻한 종이색 인터뷰는 `--cinema-night`, `--cinema-paper`, `--cinema-accent`를 사용한다. 이미지 위 고정 테마용 예외이며 일반 에디터의 중립 화이트·파랑 토큰은 그대로다. 반투명 표면과 테두리는 이 토큰의 `color-mix`로 파생한다.
 
 ## 4. 척도 (HIG 기반, 2026-10-28)
 

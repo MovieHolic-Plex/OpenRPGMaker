@@ -37,7 +37,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active {
   font-weight: 600;
-  background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
+  background: var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent));
   box-shadow: none;
   color: var(--db-studio-accent, var(--accent));
 }
@@ -87,7 +87,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-sub {
-  border-color: var(--db-studio-accent-border, rgba(74,87,214,.16));
+  border-color: var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   color: var(--db-studio-accent, var(--accent));
 }
 

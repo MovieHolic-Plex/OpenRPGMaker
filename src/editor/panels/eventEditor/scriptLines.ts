@@ -78,8 +78,8 @@ export function richLineText(text: string): HTMLElement {
         "border-radius": "4px",
         "font-size": "12px",
         "line-height": "18px",
-        color: "var(--accent, #4A57D6)",
-        background: "color-mix(in srgb, var(--accent, #4A57D6) 9%, transparent)",
+        color: "var(--accent, #1F6FC5)",
+        background: "color-mix(in srgb, var(--accent, #1F6FC5) 9%, transparent)",
       }));
     } else span.append(document.createTextNode(part));
   }
@@ -242,7 +242,7 @@ export function renderScriptLines(command: Pick<ScriptCommand, "source">, projec
         text: `… ${rest.length}줄 더`,
         attrs: { type: "button" },
         dataset: { testid: "event-command-script-lines-more" },
-      }), { margin: "2px 0 2px 8px", border: "0", background: "transparent", color: "var(--accent, #4A57D6)", "font-size": "12px", cursor: "pointer" });
+      }), { margin: "2px 0 2px 8px", border: "0", background: "transparent", color: "var(--accent, #1F6FC5)", "font-size": "12px", cursor: "pointer" });
       more.addEventListener("click", (event) => {
         event.stopPropagation();
         more.replaceWith(...rest);

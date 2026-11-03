@@ -215,7 +215,7 @@
 
 .ecp-move-badges { display: flex; flex-wrap: wrap; gap: 4px; }
 
-.ecp-move-badge { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--accent-muted, rgba(74, 87, 214, 0.16)); color: var(--accent); border: 1px solid var(--accent); }
+.ecp-move-badge { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent)); color: var(--accent); border: 1px solid var(--accent); }
 
 /* fork 흐름도 */
 .ecp-fork { display: flex; flex-direction: column; gap: 10px; align-items: center; padding: 8px 0; }
@@ -332,7 +332,7 @@
 
 .ecp-audio-badge { font-size: 11px; padding: 1px 8px; border-radius: 999px; }
 
-.ecp-audio-badge.on { background: var(--accent-muted, rgba(74, 87, 214, 0.16)); color: var(--accent); border: 1px solid var(--accent); }
+.ecp-audio-badge.on { background: var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent)); color: var(--accent); border: 1px solid var(--accent); }
 
 .ecp-audio-badge.off { background: var(--bg-inset, #EFE9DC); color: var(--text-2, #5C5348); border: 1px solid var(--border-default, rgba(42,37,33,.20)); }
 

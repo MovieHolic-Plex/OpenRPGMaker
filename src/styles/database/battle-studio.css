@@ -395,7 +395,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-secondary-action:hover {
-  background: rgba(74, 87, 214, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .database-modal-backdrop .database-modal-window .db-command-kind-legend {

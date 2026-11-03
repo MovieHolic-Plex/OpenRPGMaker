@@ -204,7 +204,7 @@
   background: #fff;
   color: var(--accent);
   font-weight: 700;
-  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2)), 0 1px 2px rgba(20, 26, 45, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-muted, color-mix(in srgb, var(--accent) 20%, transparent)), 0 1px 2px rgba(20, 26, 45, 0.06);
 }
 
 .structure-kit-album-count {

@@ -799,7 +799,7 @@
 /* shell/shell-density.part-1.css:824-842 */
 .chipset-tile.classified::after {
   align-items: center;
-  background: rgba(74, 87, 214, 0.30);
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
   border: 1px solid rgba(42, 37, 33, 0.12);
   border-radius: 999px;
   color: var(--text-inverse);

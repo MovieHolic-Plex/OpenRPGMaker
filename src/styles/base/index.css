@@ -1,5 +1,6 @@
 /* base 표면 — 전역 기본값(html/body/::selection/스크롤바). index.css 에서 옮겨 왔다(2026-09-11, Task 7). */
 @import "./theme.css";
+@import "./ui-font.css";
 
 @layer base {
   /* ============================================================================
@@ -37,7 +38,7 @@
   }
 
   ::selection {
-    background: rgba(74, 87, 214, 0.22);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
     color: var(--text-1);
   }
 

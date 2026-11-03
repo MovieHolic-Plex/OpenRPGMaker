@@ -169,7 +169,7 @@ function mountMapLoadingIndicator(container: HTMLElement): void {
   ring.dataset.testid = "map-loading";
   ring.setAttribute("aria-hidden", "true");
   ring.style.cssText = "position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;"
-    + "border:3px solid rgba(74,87,214,.18);border-top-color:#4a57d6;pointer-events:none;z-index:1";
+    + "border:3px solid color-mix(in srgb, var(--accent) 18%, transparent);border-top-color:var(--accent);pointer-events:none;z-index:1";
   container.append(ring);
   if (typeof ring.animate === "function" && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
     ring.animate([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }], { duration: 900, iterations: Infinity });

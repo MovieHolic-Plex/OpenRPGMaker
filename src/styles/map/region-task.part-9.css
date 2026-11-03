@@ -26,7 +26,7 @@
 }
 
 /* 포함: 인디고 채움 + 실선 외곽. 「이건 적용된다」 */
-.region-chunk.is-included > .region-chunk-cell { background: rgba(74, 87, 214, 0.16); }
+.region-chunk.is-included > .region-chunk-cell { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .region-chunk.is-included > .region-chunk-edge { background: var(--accent); }
 
 /* 제외: 채움 없음(원본 타일이 그대로 보인다) + 붉은 파선 외곽. 고스트가 이미 걷혀 있으므로
@@ -44,7 +44,7 @@
 .region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) { opacity: 0.45; }
 
 .region-chunk.is-focus > .region-chunk-edge { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85); }
-.region-chunk.is-focus > .region-chunk-cell { background: rgba(74, 87, 214, 0.3); }
+.region-chunk.is-focus > .region-chunk-cell { background: color-mix(in srgb, var(--accent) 30%, transparent); }
 
 .region-chunk:focus-visible { outline: none; }
 .region-chunk:focus-visible > .region-chunk-edge { box-shadow: var(--focus-ring); }
