@@ -98,7 +98,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--focus-offset` | `2px` |
 | `--transition-fast` | `120ms ease` |
 | `--transition-med` | `160ms ease` |
-| `--font-ui` | `-apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, "Malgun Gothic", "Segoe UI", sans-serif` |
+| `--font-ui` | `system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, "Segoe UI", sans-serif` |
 | `--font-mono` | `"Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace` |
 | `--font-pixel` | `"NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace` |
 | `--font-serif` | `Georgia, "Noto Serif KR", serif` |
