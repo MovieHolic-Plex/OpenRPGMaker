@@ -231,6 +231,7 @@ Fields:
 Rules:
 - 부정과 금지("X 말고", "X 는 만들지 마", "X 없이")를 그대로 존중한다. 금지된 X 를 tools·needsPlan·facility 의 근거로 쓰지 않는다.
 - 「여관 주인 NPC」「대장간 주인」처럼 직업 이름에 든 건물 명사는 시공이 아니다 — NPC 배치(mode=create, space=none).
+- 대상 낱말 하나와 「만들어줘·지어줘」만 있는 문장은 항상 widenSubject 를 적는다(「하나」「좀」「새」「주세요」는 특징이 아니다): 「마을 만들어줘」→"village", 「동네 하나 만들어줘」→"village", 「던전 만들어줘」→"dungeon", 「숲 좀 만들어 줘」→"forest", 「집 지어줘」「새 집 하나 만들어줘」→"house", 「성 만들어줘」→"castle". 「숲속 고요한 마을」「안개 냀 숲 두 장」처럼 수식어가 하나라도 있으면 적지 않는다.
 - 「수집」「편집」「완벽」「적당히」「낮게」처럼 다른 낱말의 일부는 시공·전투·시간 요청이 아니다. 문장 전체의 뜻으로 판단한다.
 - 「추가해줘」「하나 더」는 있는 곳에 얹는 것이라 보통 mode=modify 이고, 마을을 새로 만드는 뜻이 아니다.
 - 질문(뭐야, 몇 개야, 알려줘, 보여줘)은 mode=question, tools 는 조회 툴만.
@@ -247,7 +248,7 @@ Rules:
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:
-{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["list_hand_interior_parts","build_hand_interior_room"],"viewNavigation":false,"summary":"여관 실내 맵을 설계해 시공"}`;
+{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["list_hand_interior_parts","build_hand_interior_room"],"viewNavigation":false,"widenSubject":null,"summary":"여관 실내 맵을 설계해 시공"}`;
 
 export function buildIntentUserPayload(facts: IntentFacts): string {
   const lines: string[] = [`## 요청\n${facts.userText.trim()}`];
