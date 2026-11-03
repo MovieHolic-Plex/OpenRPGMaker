@@ -36,7 +36,8 @@ export const PALETTE_CARD_WINDOW = 24;
 /** 높이를 재기 전에 쓰는 줄 간격(카드 + 간격). 붙은 뒤에는 실제 카드 높이로 바꾼다. */
 export const PALETTE_CARD_ROW_PX = 80;
 const CARD_GAP_PX = 4;
-const CARD_COLUMNS = 3;
+/** 목업(2026-11-03)의 4열 타일 격자. CSS(map/left-column.css)의 grid-template-columns 와 같아야 한다. */
+export const CARD_COLUMNS = 4;
 /** 시트에서 잘라 내는 칸. 이보다 크면 조선·버들항 시트의 background-size 가 텍스처 한도를 넘긴다. */
 export const PALETTE_THUMB_PX = 32;
 const SEARCH_DELAY_MS = 120;

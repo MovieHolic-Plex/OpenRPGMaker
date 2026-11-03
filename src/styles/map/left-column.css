@@ -25,7 +25,8 @@
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-filter.is-facets-only { padding: 0 6px 4px; }
 
 /* 타일 섹션 — 옛 2열 격자 대신 위에서 아래로 쌓는다. 그림 칸이 남는 높이를 다 가진다. */
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] { background: transparent; padding: 0; }
+.editor-layout .left-column .left-panel,
+.editor-layout .left-column .left-panel-stack[data-testid="left-palette-root"] { background: transparent; border: 0; box-shadow: none; padding: 0; border-radius: 0; }
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint:has(> .tile-section-head),
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event:has(> .tile-section-head) {
   display: flex; flex-direction: column; gap: 4px; min-height: 0; height: 100%; padding: 0;
@@ -59,4 +60,6 @@
 /* 카드는 목업처럼 그림만 — 이름은 카드 title·스크린 리더 이름으로 남는다. */
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card-name { display: none; }
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card { padding: 2px; }
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card-window,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-smart-tabs { background: transparent; padding: 0 6px; }
