@@ -64,6 +64,11 @@ export interface AiConfig {
    * 없으면 기존 동작(공방 그리기가 계획·최종 판단 모델을 쓴다)을 그대로 둔다.
    */
   pixelModel?: RoleModel;
+  /**
+   * 의도 판정(한 문장 → JSON 분류) 전용 모델. 있으면 이 칸으로 먼저 부르고, 실패·시간 초과·해석 실패면 옛 경로(configForLiteModel)로 한 번 더 부른다.
+   * 없으면 옛 경로 그대로다(src/ai/intentDeclarationClient.ts).
+   */
+  intentModel?: RoleModel;
   /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
   modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel" | "smol" | "advisor", true>>;
   /**
@@ -397,6 +402,7 @@ function loadStoredAiConfig(): AiConfig {
         : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
       // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
       ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
+      ...(parseRoleModel(parsed.intentModel) ? { intentModel: parseRoleModel(parsed.intentModel)! } : {}),
       ...(parseAssistantRoleSlots(parsed.assistantRoles) ? { assistantRoles: parseAssistantRoleSlots(parsed.assistantRoles)! } : {}),
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.

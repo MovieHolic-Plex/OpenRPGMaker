@@ -2298,7 +2298,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
     /** 같이 도는 실행(맵별 대기열)은 보낸 순간의 맵·선택으로 해석한다 — 사용자는 그 사이 다른 맵으로 옮겼을 수 있다. */
@@ -2355,6 +2355,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
       ...(classified.clarify ? { clarify: classified.clarify } : {}),
+      ...(classified.widen ? { widenLine: classified.widen.startLine } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
@@ -2398,6 +2399,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       command = classified.command;
       options = piRunOptionsFor(classified.plan, { timing: classified.timing, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
+      if (classified.widenLine) card.say("assistant", classified.widenLine);
     }
     signal.throwIfAborted();
     card.setStatus("작업 중");
@@ -2609,6 +2611,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         finishWorkCard({ ok: true, message: "되묻기" });
         setStatus("대기");
         return;
+      }
+      // 모호한 새로 짓기를 넓힌 장면 — 묻지 않고 한 줄로 알리고 바로 짓는다. 다른 느낌을 원하면 사용자는 다음 말로 바꾼다.
+      // 작업 카드는 분류 전에 이미 섰다 — 카드 뒤에 붙이면 도구 행에 밀려 안 보인다(2026-11-03 실측). 사용자 문장 바로 아래, 카드 앞에 둔다.
+      if (classified.widenLine) {
+        const line = appendBubble("assistant", classified.widenLine);
+        if (workCard?.root.isConnected) workCard.root.before(line);
       }
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
