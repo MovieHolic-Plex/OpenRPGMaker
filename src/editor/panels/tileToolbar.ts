@@ -23,7 +23,7 @@ type TileToolbarItem = {
   readonly icon: SvgIconName;
   /** hotkeys.ts 의 단축키 표기 — 툴팁에 같이 적어 잘린 도구도 키보드로 부를 수 있게 한다. */
   readonly hotkey?: string;
-  /** 구 tool-grid에서 승계한 testid — e2e/자동화 계약이라 이름을 바꾸지 않는다. */
+  /** 구 tool-grid에서 승계한 testid — e2e/자동화 계약이다. 캔버스 알약(canvasToolPill.ts)이 같은 도구를 가지면 그쪽이 tool-* 를 갖는다. */
   readonly testid: string;
 };
 
@@ -36,9 +36,10 @@ type TileToolbarItem = {
 const TOOLBAR_ITEMS: readonly TileToolbarItem[] = [
   { id: "select", label: "영역 선택", hotkey: "V", icon: "select", testid: "tool-select" },
   // 아이콘은 초보 레일과 같은 brush 를 쓴다 — 한 행위에 두 글리프를 두지 않는다.
-  { id: "pen", label: "칠하기", hotkey: "B", icon: "brush", testid: "tool-paint" },
+  // 칠하기·채우기는 캔버스 알약에도 있다(2026-11) — 한 화면에 같은 testid 가 둘이면 자동화가 어느 쪽인지 모른다. 알약이 tool-paint/tool-fill 을 갖는다.
+  { id: "pen", label: "칠하기", hotkey: "B", icon: "brush", testid: "palette-tool-paint" },
   { id: "erase", label: "지우기", hotkey: "E", icon: "eraser", testid: "tool-erase" },
-  { id: "fill", label: "이어진 영역 채우기", hotkey: "G", icon: "fill", testid: "tool-fill" },
+  { id: "fill", label: "이어진 영역 채우기", hotkey: "G", icon: "fill", testid: "palette-tool-fill" },
 ];
 
 type MapModeItem = {

@@ -16,13 +16,11 @@
   }
 
 /* shell/figma-editor/07-context-menu-responsive.css:49-55 */
+/* 2026-11: 좁은 창에서도 알약은 가운데에 남는다(양옆으로 늘리지 않는다). */
 @media (max-width: 900px) {
   .canvas-toolbar {
         gap: 4px;
-        left: 12px;
         padding: 7px;
-        right: 12px;
-        transform: none;
       }
 }
 

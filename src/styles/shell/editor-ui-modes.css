@@ -194,6 +194,7 @@ body .left-panel-stack[data-testid="left-map-root"] {
   outline: none;
 }
 .authoring-journey-toggle svg { display: block; }
+.authoring-journey-toggle[hidden] { display: none; }
 
 .authoring-journey-badge {
   align-items: center;

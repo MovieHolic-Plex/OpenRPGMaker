@@ -3,14 +3,14 @@
    규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
    각 규칙 앞 주석은 원본 파일:줄 이다. */
 
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:1-8 */
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:1-8 — 2026-11 캔버스 알약 개편: 오른쪽 위 막대 → 가운데 위 알약 하나(시안 mock-editor). */
 .canvas-toolbar,
 .persistence-mode-banner ~ .canvas-toolbar {
-  left: auto;
+  left: 50%;
   max-width: calc(100% - 24px);
-  right: 12px;
-  top: 8px;
-  transform: none;
+  right: auto;
+  top: 16px;
+  transform: translateX(-50%);
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:10-12 — 2026-09-18 변경.

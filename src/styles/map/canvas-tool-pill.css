@@ -1,0 +1,166 @@
+/* 캔버스 가운데 위 알약(2026-11 개편, src/editor/panels/canvasToolPill.ts).
+   시안 mock/frames.html 의 .float: 흰(어두운 테마는 --bg-overlay) 바탕 · 반경 10px · 안쪽 4px · 단추 28px · 아이콘 16px.
+   컨테이너는 여전히 .canvas-toolbar 라 위치(가운데·top 16px)는 from-shell-figma-editor-11-canvas-toolbar-uxc.css 가 맡는다.
+   이 파일은 map/index.css 끝에 들어가 옛 막대 규칙(배경 유리·그림자·gap)보다 뒤에서 이긴다. */
+.canvas-toolbar.canvas-tool-pill {
+  align-items: center;
+  backdrop-filter: none;
+  background: var(--bg-overlay);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  padding: 4px;
+}
+
+.canvas-tool-pill-button,
+.canvas-tool-pill-zoom-current {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1 var(--font-ui);
+  height: 28px;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 8px;
+}
+
+.canvas-tool-pill-icon {
+  fill: none;
+  flex: none;
+  height: 16px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  width: 16px;
+}
+
+.canvas-tool-pill-button:hover:not(:disabled),
+.canvas-tool-pill-zoom-current:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+/* 고른 도구는 시안처럼 옅은 회색 판 + 진한 글자(파란 채움은 쓰지 않는다 — 알약 하나에 강조색이 하나도 없는 것이 시안이다). */
+.canvas-tool-pill-button.is-active,
+.canvas-tool-pill-button.is-active:hover {
+  background: var(--bg-active);
+  color: var(--text-1);
+}
+
+.canvas-tool-pill-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.canvas-tool-pill-button:focus-visible,
+.canvas-tool-pill-zoom-current:focus-visible,
+.canvas-tool-pill-zoom-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.canvas-tool-pill-divider {
+  background: var(--border-default);
+  flex: none;
+  height: 18px;
+  margin: 0 4px;
+  width: 1px;
+}
+
+.canvas-tool-pill-zoom {
+  position: relative;
+}
+
+.canvas-tool-pill-zoom-current {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.canvas-tool-pill-zoom-menu {
+  display: none;
+}
+
+.canvas-tool-pill-zoom.is-menu-open .canvas-tool-pill-zoom-menu {
+  background: var(--bg-overlay);
+  border-radius: 8px;
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 88px;
+  padding: 4px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 2;
+}
+
+.canvas-tool-pill-zoom-steps {
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2px;
+  padding-bottom: 4px;
+}
+
+.canvas-tool-pill-zoom-item {
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: var(--text-1);
+  cursor: pointer;
+  flex: 1;
+  font: 500 12px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  height: 26px;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.canvas-tool-pill-zoom-steps .canvas-tool-pill-zoom-item {
+  font-size: 15px;
+  text-align: center;
+}
+
+.canvas-tool-pill-zoom-item:hover {
+  background: var(--bg-hover);
+}
+
+.canvas-tool-pill-zoom-item.active {
+  background: var(--bg-active);
+  font-weight: 600;
+}
+
+/* 캔버스 왼쪽 아래의 옅은 상태 글자(시안 .status: left 12 · bottom 12 · 12px · --t3). 누를 것이 아니라 포인터를 받지 않는다. */
+.canvas-status {
+  bottom: 12px;
+  color: var(--text-3);
+  font: 400 12px/1.3 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  left: 12px;
+  pointer-events: none;
+  position: absolute;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+/* AI 스튜디오 머리띠가 알약을 입양하면 배율만 남긴다(옛 막대에서도 줌만 남겼다). */
+.ai-studio-monitor-chrome .canvas-toolbar.canvas-tool-pill {
+  background: var(--bg-inset);
+  box-shadow: none;
+  left: auto;
+  padding: 2px;
+  transform: none;
+}
+.ai-studio-monitor-chrome .canvas-tool-pill > :not(.canvas-tool-pill-zoom) {
+  display: none;
+}

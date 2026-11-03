@@ -72,7 +72,8 @@ import {
   saveAuthoringJourneyProgress,
   setManualJourneyStage,
 } from "@/editor/authoringJourney";
-import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
+import { OPEN_AUTHORING_JOURNEY_EVENT, renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
+import { mountCanvasStatus } from "@/editor/panels/canvasToolPill";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
@@ -133,6 +134,7 @@ let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = nul
 let aiDockRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
+let disposeCanvasStatus: (() => void) | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
 // 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
 let persistenceBannerHost: HTMLElement | null = null;
@@ -220,6 +222,11 @@ export function renderEditor(main: HTMLElement): void {
     ],
   });
   const authoringJourney = el("div", { class: "authoring-journey-host" });
+  // 캔버스 왼쪽 아래의 옛은 상태 글자(좌표 · 레이어). 좌표는 위 숨은 진단 노드를 따라간다.
+  const canvasStatus = el("div", { class: "canvas-status", attrs: { "aria-hidden": "true" }, dataset: { testid: "canvas-status" } });
+  disposeCanvasStatus?.();
+  const cursorPositionNode = cursorDiagnostics.querySelector<HTMLElement>("[data-testid='cursor-position']");
+  disposeCanvasStatus = cursorPositionNode ? mountCanvasStatus(canvasStatus, cursorPositionNode) : null;
   const chatFloatHost = el("div", {
     class: "ai-chat-float-host ai-chat-sidebar-host",
     dataset: { testid: "chat-float-host" },
@@ -245,7 +252,7 @@ export function renderEditor(main: HTMLElement): void {
     : null;
   persistenceBannerObserver?.observe(bannerHost);
   paintPersistenceBanner();
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, canvasStatus, cursorDiagnostics);
   // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).
   disposeReliefToolbar?.();
   disposeReliefToolbar = mountReliefToolbar(canvasArea);
@@ -301,6 +308,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener(TEMPORARY_SESSION_EXPORTED_EVENT, paintPersistenceBanner);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.addEventListener(OPEN_AUTHORING_JOURNEY_EVENT, onOpenAuthoringJourney);
   bindMapSurfaceFocusHandoff(phaserContainer);
   // 맵 판이 그려지기 전(Phaser 기동·텍스처·팔레트 준비, 약 1~2s)에는 셸이 먼저 보인다 — 그동안 맵 칸에 작은 도는 표시를 둔다.
   // EditScene.create 가 걷는다. 글자는 넣지 않는다(DOM 번역 카탈로그 밖) — 상태는 aria-busy 로 알린다.
@@ -334,6 +342,8 @@ export function renderEditor(main: HTMLElement): void {
     const previous = lastEditorPanelState;
     lastEditorPanelState = state;
     if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    // 캔버스 알약은 도구·붓 모양·레이어·배율을 그린다 — 아래 제자리 동기화 분기들이 일찍 돌아가도 먼저 맞춘다(입력이 같으면 DOM 을 그대로 둔다).
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
     // 맵을 바꿀 때만 맵 트리를 다시 짓는다. 타일·도구·레이어는 썸네일을 다시 그릴 이유가 없다.
     if (editorStateNeedsMapTreeRefresh(previous, state)) {
       scheduleFullPanelRefresh(false);
@@ -345,7 +355,7 @@ export function renderEditor(main: HTMLElement): void {
       if (editorStateChangedOnlySelectedTile(previous, state) && syncMountedPaletteSelection()) return;
       // 레이어 단추는 탑바(menu.ts)가 제자리에서 바꾸고, 캔버스 툴바는 배율만 그린다.
       if (editorStateChangedOnlySelectedTileAndLayer(previous, state) && syncMountedPaletteLayerSelection()) return;
-      // 도구·붓 모양·크기만 바꾸면 시트는 그대로다 — 도구줄·붓 옵션 줄만 간다. 캔버스 툴바는 도구를 읽지 않는다.
+      // 도구·붓 모양·크기만 바꾸면 시트는 그대로다 — 도구줄·붓 옵션 줄만 간다(캔버스 알약은 위에서 이미 맞췄다).
       if (editorStateChangedOnlyToolPick(previous, state) && syncMountedPaletteToolPick()) return;
       // 이벤트만 고른 클릭은 목록 전체를 다시 만들지 않는다. 마을 이벤트 수백 개면
       // 행·초상을 다시 붙이는 동안 사이드바가 멈추고, 스크롤이 맨 위로 돌아간다.
@@ -353,7 +363,6 @@ export function renderEditor(main: HTMLElement): void {
       schedulePaletteOnlyRefresh();
       return;
     }
-    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
   });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
@@ -536,6 +545,9 @@ export function teardownEditor(): void {
   mapTreeResizer = null;
   phaserHost = null;
   canvasToolbarRoot = null;
+  disposeCanvasStatus?.();
+  disposeCanvasStatus = null;
+  window.removeEventListener(OPEN_AUTHORING_JOURNEY_EVENT, onOpenAuthoringJourney);
   disposeReliefToolbar?.();
   disposeReliefToolbar = null;
   chatFloatRoot = null;
@@ -1050,6 +1062,13 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
 }
 
 let lastJourneyRenderKey: string | null = null;
+
+/** ⌘K 「저작 진행 보기」 — 캔버스 위 토글은 걷었고(2026-11) 같은 띠를 연다. */
+function onOpenAuthoringJourney(): void {
+  if (!authoringJourneyRoot) return;
+  authoringJourneyOpen = true;
+  refreshAuthoringJourney();
+}
 let lastJourneyRenderChild: Element | null = null;
 /** 참조 점검 결과가 어느 문서 버전의 것인지. */
 let authoringJourneyIssuesDocumentKey: string | null = null;

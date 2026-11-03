@@ -9,6 +9,9 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
 
+/** ⌘K 「화면: 저작 진행 보기」가 보내는 신호 — 캔버스 위 토글은 2026-11 에 걷었고 띠는 이 신호로만 열린다. */
+export const OPEN_AUTHORING_JOURNEY_EVENT = "oprn:open-authoring-journey";
+
 // 다시 그려져도 같은 층이다 — 모듈 하나가 owner 를 들어야 재렌더가 스스로를 닫지 않는다.
 const JOURNEY_LAYER_OWNER = {};
 
@@ -199,6 +202,8 @@ export function renderAuthoringJourney(
     list.append(item);
   }
   strip.append(list);
+  // 캔버스 위 토글은 2026-11 개편에서 숨겼다(캔버스 위엔 도구 알약 하나만 뜬다) — 띠는 ⌘K 「화면: 저작 진행 보기」로 연다.
+  toggle.hidden = true;
   root.append(toggle, strip);
   if (open) attach();
   return root;

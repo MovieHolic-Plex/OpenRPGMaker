@@ -14,6 +14,12 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
+import { executeCanvasAiAction } from "@/editor/panels/canvasAiWorkbench";
+import { openWalkEncounterList } from "@/editor/panels/walkEncounterModal";
+import { toggleLocationLayer } from "@/editor/mapLocationLayerState";
+import { toggleMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
+import { OPEN_AUTHORING_JOURNEY_EVENT } from "@/editor/panels/authoringJourneyStrip";
+import { OPEN_AI_SUGGESTIONS_EVENT } from "@/editor/panels/aiSuggestionPeek";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntries";
@@ -104,6 +110,90 @@ const TOPBAR_MOVED_COMMANDS: readonly EditorCommand[] = [
   },
 ];
 
+// 캔버스 위에서 ⌘K 로 옮긴 단추들(2026-11 캔버스 알약 개편). id 는 옛 단추의 testid 다 — 팔레트 행이
+// `command-palette-item-command-<id>` 로 그려져 같은 이름으로 찾는다. 단추의 클릭과 같은 함수를 부른다.
+// 맵 PNG 저장은 아래 「map-screenshot」 명령이 이미 맡는다.
+const CANVAS_MOVED_COMMANDS: readonly EditorCommand[] = [
+  {
+    id: "walk-encounter-list-open",
+    label: "화면: 걷기 전투 — 적 출현 범위",
+    category: "화면",
+    keywords: ["encounter", "walk", "인카운터", "걷기 전투", "적 출현", "랜덤 인카운터", "범위"],
+    run: () => openWalkEncounterList(),
+  },
+  {
+    id: "map-location-layer-toggle",
+    label: "화면: 구역 그리기 켜기/끄기",
+    category: "화면",
+    keywords: ["location", "region", "로케이션", "구역", "이름 붙은 구역"],
+    run: () => toggleLocationLayer(),
+  },
+  {
+    id: "map-background-preview-toggle",
+    label: "화면: 맵 배경 미리보기 켜기/끄기",
+    category: "화면",
+    keywords: ["background", "preview", "parallax", "배경", "맵 배경", "미리보기"],
+    run: () => toggleMapBackgroundPreview(),
+  },
+  {
+    id: "editor-grid-toggle",
+    label: "화면: 격자 보이기/숨기기",
+    category: "화면",
+    keywords: ["grid", "격자", "격자선", "눈금"],
+    run: () => editorState.set({ showGrid: !editorState.get().showGrid }),
+  },
+  {
+    id: "canvas-ai-create",
+    label: "AI: 선택 영역에 집·길·NPC 만들기",
+    category: "도구",
+    keywords: ["ai", "create", "build", "만들기", "건축", "집", "길"],
+    run: () => executeCanvasAiAction("create"),
+  },
+  {
+    id: "canvas-ai-polish",
+    label: "AI: 선택 영역 다듬기",
+    category: "도구",
+    keywords: ["ai", "polish", "다듬기", "정리"],
+    run: () => executeCanvasAiAction("polish"),
+  },
+  {
+    id: "canvas-ai-inspect",
+    label: "검사: 맵 통행·참조·이벤트",
+    category: "화면",
+    keywords: ["inspect", "lint", "검사", "통행", "참조"],
+    run: () => executeCanvasAiAction("inspect"),
+  },
+  {
+    id: "canvas-ai-ask",
+    label: "AI: 선택 영역이나 현재 맵에 요청",
+    category: "도구",
+    keywords: ["ai", "ask", "request", "AI 요청", "영역 작업", "요청"],
+    run: () => executeCanvasAiAction("ask"),
+  },
+  {
+    id: "authoring-journey-toggle",
+    label: "화면: 저작 진행 보기",
+    category: "화면",
+    keywords: ["journey", "progress", "저작 진행", "여정", "단계", "진행"],
+    run: () => { window.dispatchEvent(new CustomEvent(OPEN_AUTHORING_JOURNEY_EVENT)); },
+  },
+  {
+    id: "ai-suggestion-peek",
+    label: "AI: 살펴볼 것 보기",
+    category: "화면",
+    keywords: ["suggestion", "diagnostic", "살펴볼 것", "제안", "진단", "조수"],
+    run: () => { window.dispatchEvent(new CustomEvent(OPEN_AI_SUGGESTIONS_EVENT)); },
+  },
+  {
+    id: "tool-pan",
+    label: `도구: ${toolLabel("pan")}`,
+    category: "도구",
+    keywords: ["pan", "hand", "손", "이동", "화면 밀기"],
+    hotkey: "Space",
+    run: () => runTool("pan"),
+  },
+];
+
 /** 「보기」 메뉴가 비추던 왼쪽 활동 막대 패널 — 누르면 막대 단추를 누른 것과 같다(workspaceBar). */
 function leftPanelViewCommands(): readonly EditorCommand[] {
   return listLeftActivityPanes().map((pane): EditorCommand => ({
@@ -126,6 +216,7 @@ async function openCurrentMapSettings(): Promise<void> {
 export function listEditorCommands(): readonly EditorCommand[] {
   return [
     ...TOPBAR_MOVED_COMMANDS,
+    ...CANVAS_MOVED_COMMANDS,
     ...leftPanelViewCommands(),
     ...INSPECTION_COMMANDS.map((id): EditorCommand => ({
       id: `sidebar-inspection-${id}`, label: `검사: ${{ inspector: '인스펙터', ruleAudit: '규칙 감사', history: '작업 기록' }[id]}`,
