@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7967KB / 약 2,341,341 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7967KB / 약 2,341,455 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -222,7 +222,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 16KB · 184줄 · ~4,174 토큰
+### `openwiki/PROJECT_WIKI.md` — 16KB · 184줄 · ~4,257 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -297,7 +297,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 37KB · 171줄 · ~10,696 토큰
+### `openwiki/architecture.md` — 37KB · 171줄 · ~10,713 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -2715,7 +2715,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L56` 한계와 완료 근거의 구분
 - `L73` 재현
 
-### `openwiki/quickstart.md` — 20KB · 199줄 · ~5,908 토큰
+### `openwiki/quickstart.md` — 20KB · 199줄 · ~5,922 토큰
 
 - `L8` 0. 여기서 에이전트가 실제로 헤매는 이유
 - `L21` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
