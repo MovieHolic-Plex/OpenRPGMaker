@@ -787,6 +787,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **편집기에서 켜기(2026-11-03):** 환경 변수가 없으면 요청의 `lead`(`PiAgentRequest.lead`)를 쓴다 — `resolveSplitConfig(env, request.lead)`, 로컬 CLI 리드만.
   클라이언트(`src/ai/piAgent/client.ts`)는 v2 실행이고 엔진 선택이 `teamLead: true`(deepModel ≠ routineModel)일 때만 싣는다(`assistantEngineLead`).
   첫 실행 관문이 Claude 구독에 Haiku 5.5 워커 + Opus 5.5 팀장으로 켠다(`src/ai/planDefaults.ts`, editor-ai-panel 「자동 감지」). `OPRN_V2_SPLIT=off` 는 둘 다 끈다.
+- **리드 실패(2026-11-03):** `guardLeadChat` 이 감싼다 — 호출이 던지거나 답이 Claude Code 의 `API Error: 400 …`·«model not available on your plan» 같은 한 줄 오류면 실패로 보고, 그 실행 동안 리드를 끈다. 호출부는 계획 실패를 «워커 혼자», 검토 실패를 «승인»으로 받는다(최저 요금제에서 Opus 가 막혀도 워커가 이어 간다).
 - **코드:** 순수 함수 `src/ai/v2/split.ts`(설정 읽기·요약·리드 지시·검토 답 읽기), 리드 호출은 `scripts/lib/piAgentRuntime.ts`(`env.leadChat`, 비용은 `done.stats.lead` 따로,
   `OPRN_CALL_LOG` 에 role:"lead"), 흐름은 `scripts/lib/assistantV2Runtime.ts`: 쓰기 요청이면 첫 지시 뒤에 리드 계획을 붙이고(`firstPromptSuffix`, 실패하면 혼자),
   afterMain ⑤a 에서 리드가 검토 — 고칠 것(최대 5개)은 critic 할 일로 더해 재주입한다. 검토는 최대 2바퀴, 답을 못 읽으면 승인으로 본다(막지 않는다). 나누기가 켜지면 조언자(⑤)는 건너뛴다.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assistantEngineLead } from "../src/ai/localCliEngine";
-import { CLAUDE_SUBSCRIPTION_ENGINE, planCandidates } from "../src/ai/planDefaults";
+import { CLAUDE_SUBSCRIPTION_ENGINE, configForPlanAccount, planCandidates } from "../src/ai/planDefaults";
 
 const cli = (id: "claude" | "codex" | "gemini", state: string, billing: string) => ({ id, state, billing });
 const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ providerId, connected: true, authKind: "oauth", ...extra });
@@ -31,6 +31,11 @@ describe("first-run plan defaults", () => {
 
   it("falls back to an in-app ChatGPT login when the Codex CLI is not signed in", () => {
     expect(planCandidates([], [oauth("openai-codex")]).map((plan) => plan.key)).toEqual(["codex-account"]);
+    const next = configForPlanAccount({ providerId: "openai-codex", model: "gpt-6.1-sol", roleModels: { writer: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } }, modelSelectionOverrides: { vision: true } }, "openai-codex");
+    expect(next.model).toBe("gpt-6.1-terra");
+    expect(next.ultrabrainModel).toBe("gpt-6.1-terra");
+    expect(next.roleModels?.writer?.model).toBe("gpt-6.1-terra");
+    expect(next.roleModels?.vision).toBeUndefined();
   });
 
   it("drops the lead once the user merges the roles in settings", () => {

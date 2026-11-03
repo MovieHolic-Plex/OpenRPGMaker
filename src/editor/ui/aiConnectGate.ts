@@ -22,7 +22,7 @@ import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForProviderSelection } from "@/ai/providerSelection";
 import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 import { loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
-import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, planCandidates, type DetectedAccount, type DetectedCli, type PlanCandidate } from "@/ai/planDefaults";
+import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, configForPlanAccount, planCandidates, type DetectedAccount, type DetectedCli, type PlanCandidate } from "@/ai/planDefaults";
 import { createLocalAgentsApi, localAgentsEnabled } from "@/start/settings/localAgents";
 import { renderAiQuickConnect } from "@/editor/panels/aiQuickConnect";
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
@@ -79,7 +79,7 @@ export function planSummaryLine(plan: PlanCandidate): string {
 /** 그 로그인으로 조수를 맞춘다. 실제로 연결이 서면 true, 아니면 엔진 선택을 되돌리고 false. */
 export async function startWithPlan(plan: PlanCandidate): Promise<boolean> {
   if (plan.kind === "local-cli") saveAssistantEngine(plan.engine);
-  else saveAiConfig(configForProviderSelection(loadAiConfig(), plan.providerId));
+  else saveAiConfig(configForPlanAccount(configForProviderSelection(loadAiConfig(), plan.providerId), plan.providerId));
   if (await connectedNow()) return true;
   if (plan.kind === "local-cli") saveAssistantEngine(undefined);
   return false;

@@ -4467,7 +4467,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 |---|---|---|
 | Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · 워커 `claude-haiku-5-5` · 팀장 `claude-opus-5-5`(`teamLead: true`) | v2 실행에서 `request.lead` 로 실려 리드가 된다. v1 은 계획 차례(ultrabrain)가 Opus 다 |
 | Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.1-terra` 혼자 | |
-| 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로(`configForProviderSelection`) | 앱 경로 카탈로그에 Terra 가 없어(`resolveOhMyPiModel` 400) 계정 기본 gpt-6.1-sol |
+| 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 모든 역할·계획을 `gpt-6.1-terra` 로(`configForPlanAccount`, 직접 고른 칸은 그대로) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts` CODEX_GPT6_EXTENSION)·카탈로그에 Terra 를 넣었다. 2026-11-03 앱 경로 실제 호출 OK |
 | Gemini CLI 구글 로그인 / 편집기 안 Google 로그인 | 그 엔진·계정의 지금 기본값 | |
 
 API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사용자(`oprn:assistant-engine` 있음)는 후보가 아니다. 환경 변수 키 동의 규칙은 동반 서비스 그대로다.

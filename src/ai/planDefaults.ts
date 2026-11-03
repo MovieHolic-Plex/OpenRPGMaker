@@ -10,6 +10,7 @@
 // 순수 모듈 — 감지 결과를 받아 후보만 만든다. 저장·호출은 관문이 한다.
 
 import type { AssistantEngineChoice, LocalCliEngineId } from "./localCliEngine";
+import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 
 /** LocalCliStatus(src/start/settings/localAgents.ts)의 부분. */
 export interface DetectedCli {
@@ -60,7 +61,7 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
   if (ready(rows, "codex")) {
     out.push({ key: "codex-cli", kind: "local-cli", name: "ChatGPT 구독", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", engine: CHATGPT_SUBSCRIPTION_ENGINE });
   } else if (signedIn(accounts, CODEX_ACCOUNT_PROVIDER_ID)) {
-    out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "ChatGPT 계정의 기본 모델(GPT-6.1 Sol)로 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
+    out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.1 Terra 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
   }
   if (ready(rows, "gemini")) {
     out.push({ key: "gemini-cli", kind: "local-cli", name: "Gemini CLI 구글 로그인", setup: "Gemini CLI 기본 모델로 해요.", engine: { kind: "local-cli", cli: "gemini", effort: "medium" } });
@@ -68,4 +69,30 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
     out.push({ key: "google-account", kind: "account", name: "Google 로그인", setup: "Google 계정의 기본 모델(Gemini 4 Argon)로 해요.", providerId: GOOGLE_ACCOUNT_PROVIDER_ID });
   }
   return out;
+}
+
+/** 편집기 안 ChatGPT 로그인도 Terra 혼자 — 실행·시공·작문·시각·계획이 모두 같은 모델. */
+export const CHATGPT_ACCOUNT_MODEL = "gpt-6.1-terra";
+
+type PlanAccountConfig = {
+  providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels;
+  ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: ThinkingEffort;
+  modelSelectionOverrides?: Partial<Record<string, true>>;
+};
+
+/**
+ * 계정 후보를 골랐을 때 역할 모델. 제공자 선택(configForProviderSelection)을 이미 거친 설정을 받는다.
+ * ChatGPT 만 Terra 로 바꾼다(사람이 직접 고른 칸은 그대로). 다른 계정은 받은 그대로.
+ */
+export function configForPlanAccount<T extends PlanAccountConfig>(config: T, providerId: string): T {
+  if (providerId !== CODEX_ACCOUNT_PROVIDER_ID) return config;
+  const pinned = config.modelSelectionOverrides ?? {};
+  const row = (old: RoleModel | undefined): RoleModel => ({ provider: providerId, model: CHATGPT_ACCOUNT_MODEL, thinkingLevel: old?.provider === providerId ? old.thinkingLevel : "medium" });
+  const roleModels: SpecialistModels = { ...config.roleModels };
+  for (const role of ["deep", "build", "writer", "vision"] as const) if (!pinned[role]) roleModels[role] = row(roleModels[role]);
+  return {
+    ...config,
+    providerId, model: CHATGPT_ACCOUNT_MODEL, liteModel: CHATGPT_ACCOUNT_MODEL, roleModels,
+    ...(pinned.ultrabrain ? {} : { ultrabrainProviderId: providerId, ultrabrainModel: CHATGPT_ACCOUNT_MODEL }),
+  };
 }

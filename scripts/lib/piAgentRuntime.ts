@@ -37,7 +37,7 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
-import { resolveSplitConfig } from "../../src/ai/v2/split.ts";
+import { guardLeadChat, resolveSplitConfig } from "../../src/ai/v2/split.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
 import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
 import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
@@ -1005,7 +1005,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const leadKey = split && !leadCli ? options.providerApiKeys?.[split.lead.provider] ?? (split.lead.provider === request.provider ? options.apiKey : undefined) : undefined;
   if (split && !leadCli && !leadKey) emit({ type: "execution_status", name: "v2.split.no_key", ok: false, summary: `리드 ${split.lead.provider}/${split.lead.model} 계정 키가 이 실행에 없음 — 나누지 않고 주 모델 혼자 한다` });
   const leadUsage = { calls: 0, ms: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, costUsd: 0, inChars: 0, outChars: 0 };
-  const leadChat = split && (leadCli || leadKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+  const leadChatRaw = split && (leadCli || leadKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
     const t0 = Date.now();
     const inChars = JSON.stringify(messages).length;
     const got = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
@@ -1033,6 +1033,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
     }
   } : undefined;
+  // 리드가 한 번 실패하면(모델 없음·요금제에 없는 모델·연결 오류) 이 실행 동안 끄고 워커 혼자 한다(src/ai/v2/split.ts guardLeadChat).
+  const leadChat = leadChatRaw ? guardLeadChat(leadChatRaw, (signal) => Boolean((signal ?? options.signal)?.aborted)) : undefined;
   // 재주입 차례·첫 요청: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
   // 문자열이면 그 도구 하나(v2 첫 호출 todo init — omo first-turn), true 면 «required».
   let forceToolTurn: boolean | string = false;

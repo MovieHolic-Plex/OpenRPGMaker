@@ -51,6 +51,41 @@ export function resolveSplitConfig(raw: string | undefined, requested?: { readon
   return parseSplitConfig(`lead:${cli}:${requested.model.trim()}${effort}`);
 }
 
+/**
+ * 리드 답이 사실은 호출 실패인가. Claude Code 는 모델을 못 쓸 때(없는 모델·요금제에 없는 모델) 오류 대신 글 답으로
+ * `API Error: 400 …` 을 돌려준다(2026-11-03 실측) — 그대로 두면 그 글이 «리드 계획»으로 워커에게 간다. 실패면 이유, 아니면 undefined.
+ */
+export function leadCallFailure(text: string): string | undefined {
+  const head = text.trim().slice(0, 400);
+  if (/^API Error\b/iu.test(head)) return head.slice(0, 200);
+  // 한 줄짜리 오류 답만 본다 — 계획은 여러 줄(TODO·SPECS)이라 본문의 «not found» 같은 말에 걸리지 않는다.
+  if (!head.includes("\n") && head.length < 300 && /\b(model[^.\n]{0,40}(not (found|available|supported)|unavailable|does not exist|unknown)|unknown (provider|model)|not available (on|with|for) (your|this) (plan|subscription|account)|upgrade your plan|invalid model)\b/iu.test(head)) return head.slice(0, 200);
+  return undefined;
+}
+
+type LeadChat = (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
+
+/**
+ * 리드 호출을 감싼다: 한 번 실패하면(던짐 또는 leadCallFailure) 이 실행 동안 리드를 끄고 다음 호출은 곧바로 던진다.
+ * 호출부(scripts/lib/assistantV2Runtime.ts 계획·검토)는 던져진 오류를 «워커 혼자»로 받는다. 사용자 중단(abort)은 끄지 않는다.
+ */
+export function guardLeadChat(raw: LeadChat, aborted: (signal?: AbortSignal) => boolean = (signal) => signal?.aborted === true): LeadChat {
+  let disabled: string | undefined;
+  return async (messages, signal) => {
+    if (disabled) throw new Error(`lead disabled for this run after an earlier failure: ${disabled}`);
+    let text: string;
+    try {
+      text = await raw(messages, signal);
+    } catch (error) {
+      if (!aborted(signal)) disabled = (error instanceof Error ? error.message : String(error)).slice(0, 200);
+      throw error;
+    }
+    const failure = leadCallFailure(text);
+    if (failure) { disabled = failure; throw new Error(`lead call failed, the worker continues alone: ${failure}`); }
+    return text;
+  };
+}
+
 export const SPLIT_LIMITS = { digest: 7_000, tools: 5_000, plan: 9_000, diff: 8_000, toolLog: 3_000, report: 1_500, reviews: 2, fixes: 5 } as const;
 
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
