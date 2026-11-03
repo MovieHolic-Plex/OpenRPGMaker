@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.389.0 — 2026-11-03
+
+### 기능
+
+- **ui** — neutral light/dark tokens, one blue accent, Pretendard (redesign step 1) (#4180) (`298cfb4`)
+
 ## 0.388.0 — 2026-11-03
 
 ### 기능
