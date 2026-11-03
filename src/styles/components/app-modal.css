@@ -365,7 +365,7 @@
     margin: 0;
   }
   /* 이 PC 에 로그인된 구독 카드(findSignedInPlans). 찾는 동안에는 한 줄, 찾으면 시작 버튼 + 구성 한 줄. */
-  .ai-connect-gate-detected {
+  .app-modal-gate-detected {
     background: var(--accent-muted);
     border-radius: var(--radius-l);
     display: flex;
@@ -373,26 +373,26 @@
     gap: var(--space-2);
     padding: var(--space-3);
   }
-  .ai-connect-gate-detected[hidden] {
+  .app-modal-gate-detected[hidden] {
     display: none;
   }
-  .ai-connect-gate-start {
+  .app-modal-gate-start {
     justify-content: center;
     width: 100%;
   }
-  .ai-connect-gate-plan {
+  .app-modal-gate-plan {
     color: var(--text-1);
     font-size: 13px;
     line-height: 1.5;
     margin: 0;
   }
-  .ai-connect-gate-switches {
+  .app-modal-gate-switches {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  .ai-connect-gate-switch {
+  .app-modal-gate-switch {
     background: none;
     border: 0;
     color: var(--accent);
@@ -402,11 +402,11 @@
     padding: 0;
     text-decoration: underline;
   }
-  .ai-connect-gate-link[hidden] {
+  .app-modal-gate-link[hidden] {
     display: none;
   }
-  /* 키 카드(.ai-quick-connect 는 display:flex)는 로그인을 찾으면 접힌다 — [hidden] 이 작성자 display 에 지지 않게. */
-  .ai-connect-gate-card .ai-quick-connect[hidden] {
+  /* 키 카드(빠른 연결 폼, display:flex)는 로그인을 찾으면 접힌다 — [hidden] 이 작성자 display 에 지지 않게. */
+  .app-modal-gate-keycard[hidden] {
     display: none;
   }
   @media (max-width: 420px) {

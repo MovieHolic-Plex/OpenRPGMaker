@@ -145,16 +145,17 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
       },
     });
     quick.element.dataset.testid = AI_CONNECT_GATE_TESTIDS.quick;
+    quick.element.classList.add("app-modal-gate-keycard");
 
     // 이미 로그인된 구독을 찾는 동안에도 키 카드는 보인다. 찾으면 그 카드 한 장을 위에 두고 키 카드는 「키로 연결」 뒤로 접는다.
     const detected = el("section", {
-      class: "ai-connect-gate-detected",
+      class: "app-modal-gate-detected",
       attrs: { "aria-label": "이 PC 에 로그인된 AI", "aria-live": "polite" },
       dataset: { testid: AI_CONNECT_GATE_TESTIDS.detected, state: "finding" },
       children: [el("p", { class: "ai-connect-gate-status", text: "이 PC 에 로그인된 AI 를 찾는 중이에요…" })],
     });
     const keyToggle = el("button", {
-      class: "app-modal-button ai-connect-gate-link",
+      class: "app-modal-button app-modal-gate-link",
       text: "API 키로 연결",
       attrs: { type: "button" },
       dataset: { testid: AI_CONNECT_GATE_TESTIDS.useKey },
@@ -168,7 +169,7 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
       detected.dataset.state = "found";
       detected.dataset.plan = plan.key;
       const start = el("button", {
-        class: "app-modal-button is-confirm ai-connect-gate-start",
+        class: "app-modal-button is-confirm app-modal-gate-start",
         text: t("연결됨: {0} · 이걸로 시작").replace("{0}", t(plan.name)),
         attrs: { type: "button" },
         dataset: { testid: AI_CONNECT_GATE_TESTIDS.start },
@@ -186,7 +187,7 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
         paintStatus(true);
       });
       const others = plans.flatMap((other, i) => (i === index ? [] : [el("button", {
-        class: "ai-connect-gate-switch",
+        class: "app-modal-gate-switch",
         text: other.name,
         attrs: { type: "button" },
         dataset: { plan: other.key },
@@ -194,8 +195,8 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
       })]));
       detected.replaceChildren(
         start,
-        el("p", { class: "ai-connect-gate-plan", text: planSummaryLine(plan), dataset: { testid: AI_CONNECT_GATE_TESTIDS.plan } }),
-        ...(others.length ? [el("div", { class: "ai-connect-gate-switches", children: [el("span", { class: "ai-connect-gate-status", text: "다른 로그인으로:" }), ...others] })] : []),
+        el("p", { class: "app-modal-gate-plan", text: planSummaryLine(plan), dataset: { testid: AI_CONNECT_GATE_TESTIDS.plan } }),
+        ...(others.length ? [el("div", { class: "app-modal-gate-switches", children: [el("span", { class: "ai-connect-gate-status", text: "다른 로그인으로:" }), ...others] })] : []),
       );
       quick.element.hidden = true;
       keyToggle.hidden = false;
