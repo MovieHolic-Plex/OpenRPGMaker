@@ -81,4 +81,12 @@ describe("버들항 도로", () => {
     const onTown = runTool(town, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-fishing-port-lobster-pots", mapId: town.project.startMapId, x: 2, y: 2 }, { dryRun: false });
     expect(onTown.ok, onTown.summary).toBe(true);
   });
+
+  it("길 위 짐(짐수레·자루 더미)은 도로 맵에도 찍을 수 있고 장터 노점은 막는다", () => {
+    const { ctx } = routeProject(1);
+    const stall = runTool(ctx, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-walled-market-cloth-stall", mapId: "map_route", x: 1, y: 1 }, { dryRun: false });
+    expect(stall.issues?.[0]?.code).toBe("settlement-prop-on-route");
+    const wagon = runTool(ctx, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-walled-market-wagon", mapId: "map_route", x: 1, y: 1, onOverlap: "nearest" }, { dryRun: false });
+    expect(wagon.issues?.some((i) => i.code === "settlement-prop-on-route") ?? false, wagon.summary).toBe(false);
+  });
 });
