@@ -359,9 +359,17 @@ describe("3차: 전투 적 맞춤", () => {
   it("배율이 1 이하면 필드 크기를 읽지 않는다", () => {
     let reads = 0;
     const field = { get clientWidth() { reads += 1; return 320; }, get clientHeight() { reads += 1; return 160; } } as unknown as HTMLElement;
-    const node = { style: { getPropertyValue: () => "1" } } as unknown as HTMLElement;
+    const node = { dataset: { pixelEnemyCell: "96" }, style: { getPropertyValue: () => "1" } } as unknown as HTMLElement;
     expect(fitBattleEnemy(field, node, { x: 10, y: 20 })).toEqual({ x: 10, y: 20 });
     expect(reads).toBe(0);
+  });
+
+  it("칸 128 이상 도트 시트는 배율 1 에서도 필드 크기를 잰다", () => {
+    let reads = 0;
+    const field = { get clientWidth() { reads += 1; return 0; }, get clientHeight() { reads += 1; return 0; } } as unknown as HTMLElement;
+    const node = { dataset: { pixelEnemyCell: "128" }, style: { getPropertyValue: () => "1" } } as unknown as HTMLElement;
+    expect(fitBattleEnemy(field, node, { x: 10, y: 20 })).toEqual({ x: 10, y: 20 });
+    expect(reads).toBeGreaterThan(0);
   });
 });
 
