@@ -7417,7 +7417,7 @@
   },
   {
    "id": "act2-b7-walk",
-   "label": "제2막 B7 — 서리 가도 → 눈보라 고개 걷기(짐수레·이정표·틈·얼음·폐허 초소·고갯마루 → 얼음 호수)",
+   "label": "제2막 B7 — 서리 가도 → 눈보라 고개 걷기(짐수레·이정표·틈·얼음·초소 폐허·틈·고갯마루 → 얼음 호수)",
    "note": "snowLandmarks.ts applySnowLandmarks — 필드 적은 처치 스위치로 비우고 본길을 걷는다. 좌표는 구운 지도에서 BFS 로 뽑았다",
    "mapId": "map_snow_north_1",
    "x": 19,
@@ -8073,7 +8073,7 @@
      "shot": true
     },
     {
-     "id": "pass-arrive",
+     "id": "pass-ruin",
      "ops": [
       {
        "kind": "pressUntilJs",
@@ -8182,11 +8182,108 @@
         },
         {
          "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        }
+       ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "map_snow_north_2",
+       "x": 21,
+       "y": 27,
+       "timeoutMs": 20800
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "pass-gap",
+     "ops": [
+      {
+       "kind": "playerRoute",
+       "moves": [
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
+        },
+        {
+         "kind": "move",
          "dir": "up"
         },
         {
          "kind": "move",
          "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "left"
         },
         {
          "kind": "move",
@@ -8235,7 +8332,7 @@
        "mapId": "map_snow_north_2",
        "x": 13,
        "y": 18,
-       "timeoutMs": 25000
+       "timeoutMs": 14200
       },
       {
        "kind": "face",
@@ -8308,83 +8405,6 @@
      "shot": true
     },
     {
-     "id": "pass-ruin",
-     "ops": [
-      {
-       "kind": "playerRoute",
-       "moves": [
-        {
-         "kind": "move",
-         "dir": "up"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        },
-        {
-         "kind": "move",
-         "dir": "left"
-        }
-       ]
-      },
-      {
-       "kind": "waitForPosition",
-       "mapId": "map_snow_north_2",
-       "x": 7,
-       "y": 17,
-       "timeoutMs": 7000
-      },
-      {
-       "kind": "face",
-       "dir": "up"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 500
-      },
-      {
-       "kind": "action"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 600
-      },
-      {
-       "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
-       "maxRounds": 10,
-       "ops": [
-        {
-         "kind": "key",
-         "key": "Enter"
-        },
-        {
-         "kind": "hold",
-         "dir": null,
-         "ms": 1100
-        }
-       ]
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 500
-      }
-     ],
-     "shot": true
-    },
-    {
      "id": "pass-view",
      "ops": [
       {
@@ -8392,19 +8412,11 @@
        "moves": [
         {
          "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
          "dir": "up"
         },
         {
          "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
-         "dir": "up"
+         "dir": "left"
         },
         {
          "kind": "move",
@@ -8420,7 +8432,11 @@
         },
         {
          "kind": "move",
-         "dir": "right"
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
         },
         {
          "kind": "move",
