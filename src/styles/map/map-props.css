@@ -12,13 +12,32 @@
   background: var(--bg-panel);
 }
 
+/* 개편안 4단계: 애플식 묶음 행 — 둥근 카드 하나 안에 가는 선으로 나뉜 행, 왼쪽 라벨·오른쪽 값. */
 .map-props-tabs {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px;
+  gap: 0;
+  padding: 16px 24px;
   background: var(--bg-panel);
   overflow-y: auto;
+}
+
+.map-props-tabs > .map-props-row {
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.map-props-tabs > .map-props-row:first-of-type {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.map-props-tabs > .map-props-row:last-of-type {
+  border-bottom: 1px solid var(--border-subtle);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .map-props-row {
@@ -33,12 +52,12 @@
   gap: 10px;
   flex: 1;
   min-width: 0;
-  padding: 8px 10px;
-  min-height: 48px;
+  padding: 0 12px;
+  min-height: 40px;
   text-align: left;
-  font: 500 14px/1.4 var(--font-ui);
-  border: 1px solid transparent;
-  border-radius: 8px;
+  font: 500 13px/1.4 var(--font-ui);
+  border: 0;
+  border-radius: inherit;
   background: transparent;
   color: var(--text-1);
   cursor: pointer;
@@ -46,15 +65,23 @@
 
 .map-props-row-copy {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   min-width: 0;
 }
 
 .map-props-row-sum {
+  min-width: 0;
+  overflow: hidden;
   font-size: 13px;
   font-weight: 400;
   color: var(--text-2);
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .map-props-previews:empty { display: none; }
@@ -83,10 +110,9 @@
 }
 
 .map-props-tab[aria-current="location"] {
-  background: var(--accent-soft);
-  border-color: var(--accent);
+  background: var(--bg-active);
   color: var(--text-1);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .map-props-dialog :is(button, input, select, textarea, summary):focus-visible {
@@ -105,10 +131,10 @@
 }
 
 .map-props-section-block {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 20px;
-  background: var(--bg-raised);
+  background: var(--bg-surface);
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
@@ -127,8 +153,8 @@
 
 .map-props-section-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1.5;
   color: var(--text-1);
 }
