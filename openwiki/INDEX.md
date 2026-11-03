@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7984KB / 약 2,346,215 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7987KB / 약 2,347,274 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -28,7 +28,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
-| `openwiki/editor-pre-edit-routing.md` | 194KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1206 | ~56,953 |
+| `openwiki/editor-pre-edit-routing.md` | 197KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1227 | ~57,926 |
 | `openwiki/editor-validation.md` | 62KB | 16KB | 414 | ~17,510 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
@@ -606,14 +606,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L72` 주의
 - `L77` 정정 (2026-10-22) — 버들항은 「직접 만든 것」만이 아니었다: RTP 파생은 크레딧, 나무는 다시 그렸다
 
-### `openwiki/delayed-tooltip.md` — 7KB · 87줄 · ~1,980 토큰
+### `openwiki/delayed-tooltip.md` — 7KB · 89줄 · ~2,066 토큰
 
 - `L11` 동작 계약
 - `L30` 문구 규칙
 - `L38` 맵 도구바·접이식 왼쪽 레일 (2026-09-18)
-- `L47` 1차 롤아웃 대상
-- `L66` 설치 지점
-- `L72` 테스트
+- `L49` 1차 롤아웃 대상
+- `L68` 설치 지점
+- `L74` 테스트
 
 ### `openwiki/desert-east.md` — 7KB · 49줄 · ~2,146 토큰
 
@@ -1367,7 +1367,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L714` 편집기 UX 지연 조사 (2026-10-04)
   - `L722` 2026-10-04: 제출 중 추가 지형 편집과 초안 목록
 
-### `openwiki/editor-pre-edit-routing.md` — 194KB · 1206줄 · ~56,953 토큰 · 통째읽기 잘림 · 깨진 줄 3
+### `openwiki/editor-pre-edit-routing.md` — 197KB · 1227줄 · ~57,926 토큰 · 통째읽기 잘림 · 깨진 줄 3
 
 - `L5` 태양과 그림자 (2026-10-04)
 - `L11` 공식 맵 상한 1024×1024 (2026-10-01)
@@ -1408,8 +1408,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1042` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
   - `L1074` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
   - `L1103` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
-- `L1173` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
-- `L1189` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+- `L1194` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+- `L1210` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
 
 ### `openwiki/editor-preview-performance.md` — 10KB · 146줄 · ~2,678 토큰
 
