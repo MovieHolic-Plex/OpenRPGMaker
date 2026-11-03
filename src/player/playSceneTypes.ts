@@ -292,6 +292,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature: string;
+  /** 오버레이에 지금 걸린 섞기(곱하기 막). 바뀔 때만 setBlendMode. */
+  lightingOverlayBlend?: "NORMAL" | "MULTIPLY";
   lightingClockMs: number;
   lightingFixedAccumulatorMs: number;
   lightingTransition: LightingAmbientTransition | null;

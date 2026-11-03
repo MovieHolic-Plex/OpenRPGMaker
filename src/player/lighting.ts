@@ -4,6 +4,7 @@ import {
   effectiveDarkness,
   lightConeAngle,
   lightFalloffCurve,
+  lightingBlend,
   lightSourceIntensity,
   normalizeLightingState,
   PLAYER_PRESENCE_LIGHT,
@@ -43,6 +44,10 @@ export type LightGradientParam = {
 export type LightingMaskParams = {
   readonly ambient: number;
   readonly color: string;
+  /** "multiply" 면 오버레이를 곱하기로 얹는다(playSceneLighting). 마스크 그림은 두 방식이 같다. */
+  readonly blend: "over" | "multiply";
+  /** 가장자리 어둠(0~1). 0 이면 그리지 않는다. */
+  readonly vignette: number;
   readonly width: number;
   readonly height: number;
   /** 어둠 막을 칠할 화면 사각(캔버스 px). 없으면 화면 전체. */
@@ -58,7 +63,8 @@ export function lightingGradientParams(
   const width = Math.max(1, Math.round(context.viewportWidth));
   const height = Math.max(1, Math.round(context.viewportHeight));
   // 밝은 색 어둠 막은 같은 색상의 어두운 색조로 낮춘다(effectiveDarkness) — 방 전체가 안개 낀 듯 뭉개지지 않게.
-  const darkness = effectiveDarkness(state.color, state.ambient);
+  const blend = lightingBlend(state);
+  const darkness = effectiveDarkness(state.color, state.ambient, blend);
   const sources = [...state.sources];
   // 짙은 어둠에 플레이어를 따라가는 빛이 없으면 플레이어 둘레만 살짝 걷어 내 주인공이 어둠에 묻히지 않게 한다.
   if (darkness.ambient >= PLAYER_PRESENCE_LIGHT.minAmbient && !sources.some((source) => source.at === "player")) {
@@ -67,6 +73,8 @@ export function lightingGradientParams(
   return {
     ambient: darkness.ambient,
     color: darkness.color,
+    blend,
+    vignette: state.vignette ?? 0,
     width,
     height,
     ...(context.mapBounds ? { clip: mapClip(context, width, height) } : {}),
@@ -97,7 +105,7 @@ function gradientTouchesViewport(param: LightGradientParam, width: number, heigh
 
 export function lightingMaskSignature(params: LightingMaskParams): string {
   // 매 프레임 불린다. 중간 객체·JSON 없이 같은 정보를 이어 붙인다(값·정밀도는 예전과 같다).
-  let signature = `${round(params.ambient)}|${params.color}|${params.width}x${params.height}`;
+  let signature = `${round(params.ambient)}|${params.color}|${params.blend}|${round(params.vignette)}|${params.width}x${params.height}`;
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
   for (const entry of params.gradients) {
     signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}`;
@@ -122,6 +130,7 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
   if (clip) context.fillRect(clip.x, clip.y, clip.width, clip.height);
   else context.fillRect(0, 0, params.width, params.height);
   context.restore();
+  if (params.vignette > 0) drawVignette(context, params, clip);
 
   // 현재 범위는 원형 반경 기반 마스크만 지원한다. 벽/시야선 차폐는 Phase 6a 범위 밖이다.
   context.save();
@@ -174,6 +183,35 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
  * 따뜻한 등불이 흰 원으로 읽혔다(2026-10-31). 걷어 낸 양의 대부분을 불빛 색이 다시 채운다.
  */
 const LIGHT_TINT_STRENGTH = 0.8;
+
+/**
+ * 가장자리 어둠 — 화면 가운데는 그대로, 바깥으로 갈수록 검정을 덧칠한다(타원). 어둠 막 다음·광원 걷어 내기 전에 그려
+ * 등불·모닥불 둘레는 가장자리여도 걷힌다. 곱하기 막이면 그 자리 색에 (1−비네트)를 곱하는 셈이다.
+ * 밤 장면이 화면 끝까지 같은 밝기의 판으로 깔려 「색만 입힌 낮」으로 읽혔다(폴른 스타 서리나루 밤, 2026-11-03).
+ */
+function drawVignette(context: CanvasRenderingContext2D, params: LightingMaskParams, clip: LightingMaskParams["clip"]): void {
+  const w = params.width, h = params.height;
+  const cx = w / 2;
+  context.save();
+  context.globalCompositeOperation = "source-over";
+  if (clip) {
+    context.beginPath();
+    context.rect(clip.x, clip.y, clip.width, clip.height);
+    context.clip();
+  }
+  // 가로로 긴 화면에 맞춘 타원 — 세로를 h/w 로 눌러 원을 그린다. 눌린 좌표에서 화면 네 귀퉁이는 가운데서 cx·√2 다.
+  context.translate(cx, h / 2);
+  context.scale(1, h / w);
+  const gradient = context.createRadialGradient(0, 0, 0, 0, 0, cx * Math.SQRT2);
+  const v = clamp01(params.vignette);
+  for (const [at, k] of VIGNETTE_CURVE) gradient.addColorStop(at, `rgba(0,0,0,${v * k})`);
+  context.fillStyle = gradient;
+  context.fillRect(-cx, -cx, w, w);
+  context.restore();
+}
+
+/** 비네트 곡선 [가운데에서의 거리 비율, 세기] — 화면 가운데 절반은 비워 둔다. */
+const VIGNETTE_CURVE: readonly (readonly [number, number])[] = [[0, 0], [0.42, 0], [0.7, 0.45], [0.9, 0.85], [1, 1]];
 
 /** 둥근 빛은 사각을, 부채꼴 빛(경비 등불 시야)은 그 부채꼴만 칠한다 — 바닥에 시야가 그대로 보인다. */
 function fillLight(context: CanvasRenderingContext2D, light: LightGradientParam): void {

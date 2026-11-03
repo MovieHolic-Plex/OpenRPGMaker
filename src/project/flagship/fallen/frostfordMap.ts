@@ -12,6 +12,7 @@ import type { AutotileGroup, GameMap, Project, TilesetDef } from "@/project/type
 import { autotileVariantForMask } from "@/project/defaults/autotileEngine";
 import { planBeodeulCanopy, shapeBeodeulCanopyMask, writeBeodeulCanopy } from "@/editor/tools/beodeulForest";
 import { canMove } from "@/project/collision";
+import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 
 type Cell = { x: number; y: number };
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
@@ -318,6 +319,19 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     }
     return true;
   };
+  /**
+   * 해 질 녘 긴 그림자(map.sunlight)는 기록된 키트 배치(집·나무)만 그림자를 드리운다 — 찍기만 하면 그림자가 없다.
+   * 집·소나무만 기록한다. 맵 밖으로 걸친 키트는 그림 칸이 어긋나므로 빼고, 찍기 전 칸을 떠 두었다가 찍은 뒤 붙인다.
+   */
+  const stampCast = (id: string, x0: number, y0: number, opt: { force?: boolean } = {}): boolean => {
+    const kit = kitOf(tileset, id);
+    const rect = { x: x0, y: y0, w: kit.width, h: kit.rows.length };
+    const fits = x0 >= 0 && y0 >= 0 && x0 + rect.w <= W && y0 + rect.h <= H;
+    const before = fits ? captureStructureTiles(map, rect) : null;
+    const ok = stamp(id, x0, y0, opt);
+    if (ok && before) appendStructurePlacement(map, { kitId: id, rect, before, id: `sp_frost_${id.replace(/^bd-pick-/, "")}_${x0}_${y0}`, stampedAt: "2026-11-03T00:00:00.000Z" });
+    return ok;
+  };
   const problems: string[] = [];
   const must = (id: string, x: number, y: number, opt: { force?: boolean; onPath?: boolean } = {}) => {
     if (stamp(id, x, y, opt)) return;
@@ -349,7 +363,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     const top = Math.min(cliffAt(x).p, cliffAt(x + 1).p);
     const y = top - 4 - (hash01(x, 2, 22) < 0.5 ? 0 : 1);
     if (y < -1 || hash01(x, 1, 21) < 0.42) continue;
-    stamp(SNOW("pine"), x, y, { force: true });
+    stampCast(SNOW("pine"), x, y, { force: true });
     x += 1;
   }
 
@@ -362,7 +376,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   const shrineLights = [{ x: 16, y: 24 }, { x: 21, y: 24 }];
   stamp("bd-pick-swamp-stilt-lantern", 21, 23);
   stamp("bd-pick-swamp-stilt-lantern", 16, 23);
-  stamp(SNOW("pine"), 14, 21);
+  stampCast(SNOW("pine"), 14, 21);
   stamp(SNOW("rock"), 22, 25);
   stamp(SNOW("mound"), 23, 24);
   // 장대 얼음길 — 두 칸 폭 양옆에 장대(1×2)를 두 칸 걸러.
@@ -398,7 +412,7 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     // 문 앞 골목: 문 앞 칸에서 큰 길로(길은 집 그림 밑으로 들어가지 않는다).
     pathAdd([{ x: front.x, y: front.y + 0.2 }, ...lane], houses.length + 20);
     for (let j = 0; j < kit.rows.length; j += 1) for (let i = 0; i < kit.width; i += 1) path.delete(idx(x + i, y + j));
-    stamp(kitId, x, y, { force: true });
+    stampCast(kitId, x, y, { force: true });
     keepClear.add(idx(front.x, front.y));
     houses.push({ role, kit: kitId, at: { x, y }, door, front });
   };
@@ -504,10 +518,12 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   for (const c of [...forest]) if (clear(c)) forest.delete(c);
   const canopy = planBeodeulCanopy(W, H, "snow", forest, (s) => !forest.has(s) && !clear(s));
   writeBeodeulCanopy(project, map, tileset, canopy);
+  // 숲 덩이는 그림자를 드리우지 않는다 — 칸마다 따로 높이 2 기둥으로 잡혀 숲 가장자리 줄마다 가로 띠 그림자가 바코드처럼 섰다(적대 검수 r2).
+  // 집·외딴 소나무(키트 그림 실루엣)만 그림자를 드리운다.
   for (const c of forest) taken.add(c);
   for (const c of canopy.shade.keys()) taken.add(c);
   // 숲 가장자리 — 몇 그루만 따로 선 소나무(숲 앞 한 칸 띄워서, 길·집과 떨어진 자리).
-  for (const [x, y] of [[4, 47], [35, 47], [31, 35], [11, 34]] as const) stamp(SNOW("pine"), x, y - 3);
+  for (const [x, y] of [[4, 47], [35, 47], [31, 35], [11, 34]] as const) stampCast(SNOW("pine"), x, y - 3);
 
   map.mapRole ??= "town";
   const entry = { x: 19, y: H - 1 };

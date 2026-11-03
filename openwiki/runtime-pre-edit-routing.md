@@ -141,6 +141,11 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
 - **어둠 막.** `player/lighting.ts` 는 ambient 를 맵 사각 안에만 칠한다(`mapBounds` → `clip`) — 작은 방 바깥 여백이 베이지·회색 판이 되던 것.
   밝은 막 색(상대 밝기 > 0.3)은 같은 색상의 어두운 색으로 낮추고 진하기를 0.35 로 묶는다(`lightingRules.effectiveDarkness`, 조수 VQA 그림
   `ai/v2/vqaLighting.ts` 도 같은 식). ambient ≥ 0.6 인데 플레이어를 따라가는 빛이 없으면 플레이어 둘레 1.6칸을 0.6 만큼 걷어 낸다(`PLAYER_PRESENCE_LIGHT`).
+- **곱하기 막 · 비네트 (2026-11-03).** `LightingState.blend:"multiply"` 면 오버레이를 Phaser `MULTIPLY` 로 얹는다 — 결과 = 화면·(1−A+M·A).
+  흰 눈·얼음이 덮기 막(over)에서는 어두운 나무·지붕과 같은 회청색 판이 되어 밤이 「색만 입힌 낮」으로 읽혔다(폴른 스타 서리나루). 곱하기 막은 밝은 색을
+  `effectiveDarkness` 로 묶지 않는다. `vignette`(0~1)는 어둠 막 다음·광원 걷어 내기 전에 타원 가장자리 검정을 덧칠해 등불 둘레는 가장자리여도 걷힌다.
+  `setLighting`(진하기·색만)은 두 값을 지우지 않는다. 맵 여백(`playSceneMapSkirt`)·검수 그림(`ai/v2/vqaLighting`)은 `darkenChannel` 로 같은 식을 쓴다.
+  저작: `set_lighting_volume`/`set_scene_mood` 의 `blend`·`vignette`.
 - 세이브 표지 빛무리(page.glow, ADD)는 밝은 바닥에서 흰 덩이가 되어 알파를 절반 남짓으로 낮췄다. 목표 줄(`zone-feedback-objective`)은
   바뀐 직후 또렷하고 4초 뒤 0.4 로 가라앉는다(`zone-objective-settle`, 글이 바뀌면 다시 튼다) — 맞춤 확대로 방이 화면을 채우면 늘 책장을 덮었다.
 - 시작 칸에 늘 막는 보이는 물체(모든 쪽이 같은 층·겹침 금지·그림 있음)가 있으면 `playPreflight` 가 가장 가까운 빈 칸으로 옮긴다.

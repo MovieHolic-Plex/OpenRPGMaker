@@ -98,7 +98,7 @@ export const FS_TROOP_MEMBERS: Readonly<Record<string, { readonly from: readonly
   troop_fs_inq_alarm: { from: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound", "enemy_fs_inq_hound"], to: ["enemy_fs_inq_penitent", "enemy_fs_inq_handler", "enemy_fs_inq_hound"] },
   troop_fs_inq_vigil: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_priest", "enemy_fs_fanatic", "enemy_fs_fanatic"] },
   troop_fs_inq_patrol: { from: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow"], to: ["enemy_fs_inq_flagellant", "enemy_fs_inq_shield", "enemy_fs_inq_crossbow", "enemy_fs_inq_flagellant"] },
-  troop_fs2_curfew_patrol: { from: ["enemy_fs2_watchman", "enemy_fs2_watchman"], to: ["enemy_fs2_watchman", "enemy_fs2_watchman", "enemy_fs2_watchman"] },
+  // 통금 순찰은 둘 그대로 — 무리 이름·대사가 「순찰병 2인조」다(셋을 세우면 셋이 나와 말과 어긋났다, 2026-11-01). 힘은 FS_GEAR_TUNE 으로.
   troop_fs2_frost_wolves: { from: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"], to: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf", "enemy_fs2_frost_wolf"] },
   troop_fs2_tower_moths: { from: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"], to: ["enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth", "enemy_fs2_light_moth"] },
   troop_fs2_tower_snakes: { from: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"], to: ["enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_circuit_snake", "enemy_fs2_light_moth"] },
@@ -146,7 +146,7 @@ export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
  */
 export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
   troop_fs2_curfew_patrol: 1.38,
-  troop_fs2_barracks_guards: 1.38, // 막사에서 들킨 벌 — 통금 순찰과 같은 야경꾼
+  troop_fs2_barracks_guards: 1.38, // 막사에서 들킨 벌 — 통금 순찰과 같은 순찰병
   troop_fs2_starved_dogs: 1.6,
   troop_fs2_ash_crows: 1.78,
   troop_fs2_ash_wisps: 2.98,
@@ -192,6 +192,72 @@ export const FS_ACT2_ENTRY_BOSSES: Readonly<Record<string, number>> = {
  */
 export const FS_ACT2_JOIN_LEVEL = { sarah: 16, iris: 18 } as const;
 
+// ── 장비 판 보정(2026-11-01) ─────────────────────────────────────────
+/**
+ * 위 표들을 다 곱한 뒤 한 번 더 곱하는 배수 — 「처음 장비 + 이야기 장비(B4 로한의 창)」 판과 「1막 대장간 최고 방어구를 산」 판
+ * 둘 다 띠(잡몹 60~90% · 우두머리 50~70%, 목표 60%) 안에 들게 맞춘 값. 공격만 누르고 아이템 없이, 이어 하기 도착 레벨.
+ * 잰 도구: scripts/qa/runtime/fs-gear-solve.mts · fs-gear-probe.mts · fs-gear-balance.mts(구운 판, 200판, 시드 7).
+ * 잡몹 무리는 FS_TROOP_TUNE 과 같은 식(그 무리 적만 떼어 HP·공격·마력 √배수씩).
+ */
+export const FS_GEAR_TUNE: Readonly<Record<string, number>> = {
+  troop_fs_inq_kennel: 0.95,
+  troop_fs_inq_patrol: 1.06,
+  troop_fs_inq_ledge: 0.95,
+  troop_fs_inq_bolts: 1.04,
+  troop_fs_inq_false_prisoner: 1.1,
+  troop_fs_inq_alarm: 1.03,
+  troop_fs_inq_phalanx: 0.95,
+  troop_fs2_curfew_patrol: 1.729, // 둘뿐인 순찰병 — 셋을 세우던 힘을 둘에게
+  troop_fs2_ash_wisps: 0.96,
+  troop_fs2_ash_snakes: 0.97,
+  troop_fs2_frost_bats: 0.95,
+  troop_fs2_frost_bats_lake: 1.045,
+  troop_fs2_frost_mixed: 0.91,
+  troop_fs2_tower_moths: 0.96,
+  troop_fs2_tower_bats: 0.93,
+  troop_fs2_tower_spiders: 0.96,
+};
+/**
+ * 우두머리(적 id → 배수) — 마지막에 곱한다. HP 는 √배수를 0.92~1.1 에 묶고 나머지를 공격·마력으로.
+ * 쇠사슬 대참회자: 늘 쓰는 쇠사슬 휘두르기까지 갑옷을 뚫게 되자(FS_ELITES pierce) 처음 장비에서도 3% 로 떨어져 0.81 로 내리고,
+ * 민첩 64 → 68 로 올렸다. 64 는 판금(민첩 -2)을 입은 카엘과 차례가 엇갈려 처음 장비 49% · 판금 78% 로 벌어졌다(68 이면 62% · 64%).
+ */
+export const FS_GEAR_ELITES: Readonly<Record<string, number>> = {
+  enemy_fs_elite_penitent: 0.81,
+  enemy_fs2_cinder_golem: 0.94,
+  enemy_fs2_elite_warden: 1.045,
+  enemy_fs2_elite_frostmane: 0.98,
+  enemy_fs2_tower_sentinel: 0.98,
+};
+
+// ── 대장간 방어구(2026-11-01) ─────────────────────────────────────────
+/**
+ * 1막 대장간에서 파는 방어구의 속성 반감을 이 게임에서는 뗀다. 방어 수치·값은 그대로.
+ * 실측(scripts/qa/runtime/fs-gear-balance.mts, 200판): 판금(화염 반감)·철 방패·사슬 갑옷(검 반감)·마법사 로브(화염·냉기 반감)를
+ * 사 입으면 2막 잡몹의 주된 피해가 반으로 줄어 요새 기사·서리박쥐·탑 박쥐·잿불 도깨비·숯덩이 골렘이 97~100% 가 됐다
+ * (속성만 떼고 방어 +30 은 남긴 판은 거의 다 60~90% 안). 이 게임의 적이 쓰는 속성이 바로 불(재의 들판)·얼음(설원)·검(요새)이라
+ * 반감 하나가 한 구역을 통째로 지운다. 반감 대신 방어 수치만 남겨 「산 사람이 조금 편한」 정도로 둔다.
+ * 쓰는 적이 없는 속성(타격·활)은 남긴다.
+ */
+export const FS_SMITHY_ARMOR_RULES: Readonly<Record<string, { readonly drop: readonly string[]; readonly description: string }>> = {
+  equip_gen_armor_plate: { drop: ["fire"], description: "큰 민첩 손실을 감수하고 타격을 크게 줄이는 전면 중갑입니다." },
+  equip_gen_armor_chain: { drop: ["sword"], description: "고리를 엮어 베기와 마비 충격을 받아 내는 사슬 갑옷입니다." },
+  equip_gen_shield_iron: { drop: ["sword"], description: "철판을 덧대 방어 하락에도 버틸 여지를 주는 중급 방패입니다." },
+  equip_gen_robe_mage: { drop: ["fire", "ice"], description: "정신력을 크게 높이는 정통 원소술사 로브입니다." },
+};
+
+/** 대장간 방어구 규칙을 적용한다(두 번 불러도 같다). */
+export function applyFallenGearRules(project: Project): string[] {
+  const warnings: string[] = [];
+  for (const [id, rule] of Object.entries(FS_SMITHY_ARMOR_RULES)) {
+    const item = (project.database.equipment ?? []).find((e) => e.id === id) as (Rec & { elementalDefenseIds?: string[] }) | undefined;
+    if (!item) { warnings.push(`대장간 방어구 없음: ${id}`); continue; }
+    item.elementalDefenseIds = (item.elementalDefenseIds ?? []).filter((el) => !rule.drop.includes(el));
+    item.description = rule.description;
+  }
+  return warnings;
+}
+
 // ── 우두머리 ──────────────────────────────────────────────────────────
 interface EliteSpec {
   readonly id: string;
@@ -206,8 +272,16 @@ interface EliteSpec {
   readonly skill: { readonly id: string; readonly name: string; readonly description: string; readonly fields: Partial<SkillRecord>; readonly priority: number; readonly every: number };
   /** 견본의 행동 중 남길 기술(나머지는 버린다). */
   readonly keep: readonly string[];
+  /** 남긴 기술 중 갑옷을 뚫게 바꿀 것 — `<기술>_fs_pierce` 사본(FS_PIERCE_FORMULA)으로 갈아 낀다. */
+  readonly pierce?: readonly string[];
   readonly line: string;
 }
+
+/**
+ * 갑옷을 뚫는 일격 — 방어를 절반만 친다(뺄셈식 `power + 공격/2 - 방어/2` 대신 `- 방어/4`). 대장간 판금·철 방패를 산 판과 안 산 판의
+ * 차이가 우두머리 표지 기술에서만이라도 줄게(쇠사슬 대참회자: 처음 장비 60% · 산 장비 88% → 이 식으로 좁힌다).
+ */
+export const FS_PIERCE_FORMULA = "power + a.atk / 2 - b.def / 4";
 
 // 우두머리 민첩은 파티와 비슷하게 — 굼뜬 종(멧돼지·참회자·기계)을 그대로 두면 셋이 여섯 번 칠 때 한 번 움직여
 // HP 1000 이 무색했다(공격을 다섯 배로 올려도 승률 100%).
@@ -223,12 +297,14 @@ export const FS_ELITES: readonly EliteSpec[] = [
   },
   {
     id: "enemy_fs_elite_penitent", from: "enemy_fs_inq_penitent", name: "쇠사슬 대참회자", level: 10, scale: 140,
-    stats: { maxHp: 1200, maxMp: 0, attack: 138, defense: 36, mind: 10, agility: 64 }, exp: 220, gold: 90,
+    stats: { maxHp: 1200, maxMp: 0, attack: 138, defense: 36, mind: 10, agility: 68 }, exp: 220, gold: 90,
     skill: { id: "skill_fs_elite_chain_storm", name: "쇠사슬 폭풍", priority: 12, every: 3,
       description: "온몸에 감은 쇠사슬을 풀어 방 안을 휩쓴다.",
-      fields: { scope: "allEnemies", power: 64, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_wind_slice" } as Partial<SkillRecord> },
+      fields: { scope: "allEnemies", power: 64, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_wind_slice", damageFormula: FS_PIERCE_FORMULA } as Partial<SkillRecord> },
     // 참회의 일격(힘 모으기)은 뺀다 — 셋이 번갈아 치면 늘 끊겨 혼자 선 대참회자가 한 대도 못 쳤다(승률 100%).
     keep: ["skill_fs_inq_chain", "skill_attack"],
+    // 쇠사슬 휘두르기(늘 쓰는 줄 공격)도 갑옷을 뚫는다 — 표지 기술만 뚫으면 판금을 산 판이 88~95%, 안 산 판이 60% 로 벌어졌다.
+    pierce: ["skill_fs_inq_chain"],
     line: "쇠사슬이 바닥을 긁는다. 다른 참회자들보다 머리 하나가 크다.",
   },
   {
@@ -236,13 +312,15 @@ export const FS_ELITES: readonly EliteSpec[] = [
     stats: { maxHp: 1070, maxMp: 0, attack: 92, defense: 72, mind: 47, agility: 48 }, exp: 280, gold: 90,
     skill: { id: "skill_fs2_elite_ember_slam", name: "숯불 내려찍기", priority: 12, every: 3,
       description: "달아오른 두 팔로 땅을 내려찍어 불티를 흩뿌린다.",
-      fields: { scope: "allEnemies", power: 60, elementId: "fire", effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_earth_spike" } as Partial<SkillRecord> },
+      fields: { scope: "allEnemies", power: 60, elementId: "fire", effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_earth_spike", damageFormula: FS_PIERCE_FORMULA } as Partial<SkillRecord> },
     keep: ["skill_attack", "skill_earth"],
     line: "잿더미가 일어선다. 갈라진 틈마다 숯불이 붉게 숨 쉰다.",
   },
   {
     id: "enemy_fs2_elite_warden", from: "enemy_fs2_fort_knight", name: "요새 수문장", level: 10, scale: 135,
-    stats: { maxHp: 980, maxMp: 0, attack: 80, defense: 50, mind: 19, agility: 58 }, exp: 150, gold: 80,
+    // 민첩 58 → 50: 카엘(Lv15 민첩 56, 로한의 창 +2)과 꼭 같아 판금(-2) 하나로 차례가 뒤집히며 승률이 53% → 12% 로 떨어졌다.
+    // 어느 장비로 와도 카엘이 먼저 움직이게 둔다(2026-11-01 장비 판 측정).
+    stats: { maxHp: 980, maxMp: 0, attack: 80, defense: 50, mind: 19, agility: 50 }, exp: 150, gold: 80,
     skill: { id: "skill_fs2_elite_gate_charge", name: "성문 돌파", priority: 12, every: 3,
       description: "방패를 앞세우고 돌진해 앞줄을 쓰러뜨린다.",
       fields: { scope: "enemy", power: 95, effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_tackle_impact", gaugeShift: -40 } as Partial<SkillRecord> },
@@ -292,7 +370,7 @@ export const FS_ELITE_PLACEMENTS: readonly { readonly mapId: string; readonly fr
 /** 능력치·우두머리 기록만(맵은 안 건드린다) — 시뮬 스크립트도 이것을 부른다. */
 export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS = FS_MOB_STATS, tune: Readonly<Record<string, number>> = FS_TROOP_TUNE): string[] {
   const db = project.database;
-  const warnings: string[] = [];
+  const warnings: string[] = applyFallenGearRules(project);
   upsert(db.states as StateRecord[], {
     id: FS_ELITE_STATE, name: "우두머리", restriction: "없음", removalCondition: "전투 종료", battleAura: "berserk-pulse",
     recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0, runtimeEffects: { removeOnBattleEnd: true },
@@ -327,6 +405,7 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
   // 2막 이어 하기 보정은 같은 무리 떼어 내기에 곱해 넣는다(무리마다 한 번만 떼어 낸다).
   const merged: Record<string, number> = { ...tune };
   for (const [troopId, mul] of Object.entries(FS_ACT2_ENTRY_TUNE)) merged[troopId] = (merged[troopId] ?? 1) * mul;
+  for (const [troopId, mul] of Object.entries(FS_GEAR_TUNE)) merged[troopId] = (merged[troopId] ?? 1) * mul;
   for (const [troopId, mul] of Object.entries(merged)) {
     const troop = db.troops.find((t) => t.id === troopId);
     if (!troop) { warnings.push(`따로 고칠 무리 없음: ${troopId}`); continue; }
@@ -356,8 +435,16 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
       stateEffects: [], chargeTurns: undefined, chargeBreak: undefined, elementId: undefined, hitRate: 100, variance: 12,
       mpCost: { flat: 0, percentMax: 0 }, ...spec.skill.fields,
     } as SkillRecord);
-    const kept = (base.actions ?? []).filter((a) => spec.keep.includes(a.skillId));
-    const actions = [act(spec.skill.id, spec.skill.priority, { kind: "turn", start: 2, interval: spec.skill.every }), ...clone(kept)];
+    const kept = clone((base.actions ?? []).filter((a) => spec.keep.includes(a.skillId)));
+    for (const a of kept) {
+      if (!spec.pierce?.includes(a.skillId)) continue;
+      const src = db.skills.find((x) => x.id === a.skillId);
+      if (!src) { warnings.push(`뚫는 기술 견본 없음: ${a.skillId}`); continue; }
+      const id = `${a.skillId}_fs_pierce`;
+      upsert(db.skills, { ...clone(src), id, damageFormula: FS_PIERCE_FORMULA } as SkillRecord);
+      a.skillId = id;
+    }
+    const actions = [act(spec.skill.id, spec.skill.priority, { kind: "turn", start: 2, interval: spec.skill.every }), ...kept];
     const e = clone(base) as EnemyRecord & Rec;
     upsert(db.enemies, normalizeEnemyRecord({
       ...e, id: spec.id, name: spec.name, level: spec.level, battleScalePercent: spec.scale, stats: spec.stats, actions,
@@ -392,6 +479,13 @@ export function applyFallenMobStats(project: Project, stats: typeof FS_MOB_STATS
   };
   for (const [id, p] of Object.entries(FS_ACT2_ENTRY_ELITES)) scaleEnemy(id, p, true);
   for (const [id, p] of Object.entries(FS_ACT2_ENTRY_BOSSES)) scaleEnemy(id, p, false);
+  for (const [id, p] of Object.entries(FS_GEAR_ELITES)) {
+    const e = db.enemies.find((x) => x.id === id);
+    if (!e) { warnings.push(`장비 판 보정할 우두머리 없음: ${id}`); continue; }
+    const hpMul = Math.min(1.1, Math.max(0.92, Math.sqrt(p)));
+    const atkMul = p / hpMul;
+    e.stats = { ...e.stats, attack: Math.round(e.stats.attack * atkMul), mind: Math.round(e.stats.mind * atkMul), maxHp: Math.max(10, Math.round(e.stats.maxHp * hpMul / 10) * 10) };
+  }
   return warnings;
 }
 

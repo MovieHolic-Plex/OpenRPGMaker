@@ -1,7 +1,7 @@
 import { genId } from "@/util/id";
 import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
-import type { Command, EventPage, GameEvent, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
+import type { Command, EventPage, GameEvent, LightingBlend, LightingState, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { LIGHT_SOURCE_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -33,6 +33,11 @@ const setLightingVolume: ToolDefinition = {
       mapId: { type: "string" },
       ambient: { type: "number", description: "0=밝음, 1=암전" },
       color: { type: "string", description: "마스크 색상. 기본 #000000" },
+      blend: {
+        type: "string", enum: ["over", "multiply"],
+        description: "어둠 막 섞기. 기본 over(color 를 ambient 만큼 덮는다). multiply 는 화면 색에 color 를 곱한다 — 흰 눈·얼음·밝은 바닥의 밤·해 질 녘에 쓴다(덮기 막은 밝은 바닥을 회색 판으로 뭉갠다). 예: 달밤 {ambient:0.9, color:'#263a70', blend:'multiply'}.",
+      },
+      vignette: { type: "number", description: "화면 가장자리 어둠 0~1(기본 0). 밤·동굴 0.4~0.7. 광원 둘레는 가장자리여도 걷힌다." },
       sources: {
         type: "array",
         description: "LightSource[]. at 은 객체: 플레이어를 따라가는 빛 {kind:'player'}, 칸 {x,y}, 이벤트 {eventId}. when:{switchId} 를 단 광원은 그 스위치가 켜졌을 때만 켜진다(applyMode map).",
@@ -73,6 +78,7 @@ const setLightingVolume: ToolDefinition = {
       ambient: numberArg(args.ambient, "ambient"),
       ...(typeof args.color === "string" && args.color.trim() ? { color: args.color.trim() } : {}),
       sources: sourceArgs(split.always),
+      ...lightingLookArgs(args),
     });
     if (applyMode === "map") {
       map.defaultLighting = lighting;
@@ -127,7 +133,7 @@ const setSceneMood: ToolDefinition = {
       },
       lighting: {
         type: "object",
-        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다. An object, never a bare word: night = {ambient:0.8, color:'#0a1030', sources:[{at:{x,y}, radius:3, color:'#ffb060', flicker:true}]} (one source per torch).",
+        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, blend?:'over'|'multiply', vignette?:0~1, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다. An object, never a bare word: night = {ambient:0.8, color:'#0a1030', sources:[{at:{x,y}, radius:3, color:'#ffb060', flicker:true}]} (one source per torch).",
         additionalProperties: true,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
@@ -356,7 +362,21 @@ function lightingStateArg(value: unknown): ReturnType<typeof normalizeLightingSt
     ambient: numberArg(record.ambient, "lighting.ambient"),
     ...(typeof record.color === "string" && record.color.trim() ? { color: record.color.trim() } : {}),
     sources: sourceArgs(record.sources),
+    ...lightingLookArgs(record, "lighting."),
   });
+}
+
+/** blend·vignette 인자 — 모르는 섞기 이름은 조용히 넘기지 않는다. */
+function lightingLookArgs(record: Record<string, unknown>, prefix = ""): Pick<LightingState, "blend" | "vignette"> {
+  const out: { blend?: LightingBlend; vignette?: number } = {};
+  if (record.blend !== undefined) {
+    if (record.blend !== "over" && record.blend !== "multiply") {
+      throw new ToolError(`${prefix}blend 는 'over' 또는 'multiply' 입니다.`, { code: "invalid-args" });
+    }
+    if (record.blend === "multiply") out.blend = "multiply";
+  }
+  if (record.vignette !== undefined) out.vignette = numberArg(record.vignette, `${prefix}vignette`);
+  return out;
 }
 
 function weatherCommandArg(value: unknown): Extract<Command, { kind: "setWeather" }> | undefined {
