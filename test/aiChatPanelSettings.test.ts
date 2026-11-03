@@ -302,7 +302,7 @@ describe("설정 자동 저장", () => {
 
     // Codex 는 사용자 지시(2026-09-27)의 네 모델에 gpt-6.1-sol 을 더해 맨 앞(기본)에 둔다(2026-10-07, src/ai/modelCatalog.ts).
     const codexOptions = preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean);
-    expect(codexOptions).toEqual(["gpt-6.1-sol", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]);
+    expect(codexOptions).toEqual(["gpt-6.1-sol", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-6.1-terra"]);
     for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-", "gpt-5.4-mini", "gpt-5.6-terra"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }

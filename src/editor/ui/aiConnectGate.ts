@@ -9,13 +9,21 @@
 //
 // 2026-11-03: 관문 안에 빠른 연결 카드(aiQuickConnect — OpenRouter 키 또는 OpenAI 호환 주소·키·모델)를 바로 둔다.
 // 키를 붙여 넣고 「연결」 하면 실제 채팅 한 번이 통과할 때만 저장하고 곧바로 이어 간다. 첫 실행 화면은 ensureAiConnected() 를 부른다.
+// 같은 날 자동 감지: 이 PC 에 이미 로그인된 구독이 있으면 「연결됨: <이름> · 이걸로 시작」 한 장을 위에 둔다(findSignedInPlans,
+// 요금제별 기본값은 src/ai/planDefaults.ts).
 //
 // 「다른 방법으로 연결」 흐름: 관문을 숨기고 AI 설정을 연다 → 설정이 닫히면 연결을 다시 조회한다 →
 // 연결됐으면 관문을 닫고 true(호출부가 인터뷰로 넘어간다), 아니면 관문을 다시 보이며 현재 상태를 적는다.
 
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
+import { t } from "@/i18n";
 import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForProviderSelection } from "@/ai/providerSelection";
+import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+import { loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
+import { CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID, configForPlanAccount, planCandidates, type DetectedAccount, type DetectedCli, type PlanCandidate } from "@/ai/planDefaults";
+import { createLocalAgentsApi, localAgentsEnabled } from "@/start/settings/localAgents";
 import { renderAiQuickConnect } from "@/editor/panels/aiQuickConnect";
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus, refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -29,7 +37,53 @@ export const AI_CONNECT_GATE_TESTIDS = {
   later: "ai-connect-gate-later",
   quick: "ai-connect-gate-quick",
   status: "ai-connect-gate-status",
+  detected: "ai-connect-gate-detected",
+  start: "ai-connect-gate-start",
+  plan: "ai-connect-gate-plan",
+  useKey: "ai-connect-gate-use-key",
 } as const;
+
+/**
+ * 감지를 기다리는 상한. 관문은 감지를 기다리지 않는다 — 열리자마자 OpenRouter 카드가 보이고, 찾으면 그때 카드가 올라온다.
+ * 따뜻한 감지는 1.5초 안팎이지만 앱을 켜고 첫 감지는 동반 워커를 띄우느라 3초를 넘기도 해서(2026-11-03 실측 3.1초)
+ * 3초로 자르면 로그인된 사람에게도 키 카드만 남는다.
+ */
+export const PLAN_DETECT_TIMEOUT_MS = 10_000;
+
+/**
+ * 이 PC 에 이미 로그인된 구독(Claude Code CLI 구독 · Codex CLI ChatGPT 로그인 · 편집기 안 ChatGPT/Google 로그인)을
+ * Claude → ChatGPT → 나머지 순으로 돌려준다(src/ai/planDefaults.ts). 엔진을 이미 고른 사용자는 빈 목록(기본값을 바꾸지 않는다).
+ * 감지는 fresh 로 한 번, timeoutMs 안에 끝나지 않으면 빈 목록. 환경 변수 키는 보지 않는다(동의 규칙은 동반 서비스가 지킨다).
+ * 첫 실행 화면도 이것과 startWithPlan 으로 같은 카드를 만들 수 있다.
+ */
+export async function findSignedInPlans(timeoutMs = PLAN_DETECT_TIMEOUT_MS): Promise<PlanCandidate[]> {
+  if (loadAssistantEngine()) return [];
+  const clis: Promise<readonly DetectedCli[]> = localAgentsEnabled()
+    ? createLocalAgentsApi().detect(true).then((report) => report.clis, () => [])
+    : Promise.resolve([]);
+  const accounts: Promise<DetectedAccount[]> = Promise.all([CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID].map((providerId) =>
+    fetchChatGptAuthStatus(providerId).then((status): DetectedAccount => ({ providerId, ...status }), () => null),
+  )).then((rows) => rows.filter((row): row is DetectedAccount => row !== null));
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => { timer = setTimeout(() => resolve(null), timeoutMs); });
+  const found = await Promise.race([Promise.all([clis, accounts]), timeout]);
+  clearTimeout(timer);
+  return found ? planCandidates(found[0], found[1]) : [];
+}
+
+/** 보여 줄 한 줄 — 카드와 시작 뒤 알림에 같은 글을 쓴다. */
+export function planSummaryLine(plan: PlanCandidate): string {
+  return t("{0} 설정에서 바꿀 수 있어요.").replace("{0}", t(plan.setup));
+}
+
+/** 그 로그인으로 조수를 맞춘다. 실제로 연결이 서면 true, 아니면 엔진 선택을 되돌리고 false. */
+export async function startWithPlan(plan: PlanCandidate): Promise<boolean> {
+  if (plan.kind === "local-cli") saveAssistantEngine(plan.engine);
+  else saveAiConfig(configForPlanAccount(configForProviderSelection(loadAiConfig(), plan.providerId), plan.providerId));
+  if (await connectedNow()) return true;
+  if (plan.kind === "local-cli") saveAssistantEngine(undefined);
+  return false;
+}
 
 export type AiConnectGateOptions = {
   /** 고른 프리셋 이름. 제목 위 눈썹줄에 그대로 보인다. */
@@ -91,6 +145,70 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
       },
     });
     quick.element.dataset.testid = AI_CONNECT_GATE_TESTIDS.quick;
+    quick.element.classList.add("app-modal-gate-keycard");
+
+    // 이미 로그인된 구독을 찾는 동안에도 키 카드는 보인다. 찾으면 그 카드 한 장을 위에 두고 키 카드는 「키로 연결」 뒤로 접는다.
+    const detected = el("section", {
+      class: "app-modal-gate-detected",
+      attrs: { "aria-label": "이 PC 에 로그인된 AI", "aria-live": "polite" },
+      dataset: { testid: AI_CONNECT_GATE_TESTIDS.detected, state: "finding" },
+      children: [el("p", { class: "ai-connect-gate-status", text: "이 PC 에 로그인된 AI 를 찾는 중이에요…" })],
+    });
+    const keyToggle = el("button", {
+      class: "app-modal-button app-modal-gate-link",
+      text: "API 키로 연결",
+      attrs: { type: "button" },
+      dataset: { testid: AI_CONNECT_GATE_TESTIDS.useKey },
+    });
+    keyToggle.hidden = true;
+    keyToggle.addEventListener("click", () => { quick.element.hidden = false; keyToggle.hidden = true; quick.focus(); });
+    let starting = false;
+    const paintPlans = (plans: readonly PlanCandidate[], index: number): void => {
+      const plan = plans[index];
+      if (!plan) { detected.hidden = true; detected.dataset.state = "none"; return; }
+      detected.dataset.state = "found";
+      detected.dataset.plan = plan.key;
+      const start = el("button", {
+        class: "app-modal-button is-confirm app-modal-gate-start",
+        text: t("연결됨: {0} · 이걸로 시작").replace("{0}", t(plan.name)),
+        attrs: { type: "button" },
+        dataset: { testid: AI_CONNECT_GATE_TESTIDS.start },
+      });
+      start.addEventListener("click", async () => {
+        if (starting || settled) return;
+        starting = true;
+        start.disabled = true;
+        status.textContent = "연결을 확인하고 있어요…";
+        const ok = await startWithPlan(plan);
+        starting = false;
+        if (settled) return;
+        if (ok) { toast(t("{0}(으)로 시작해요. {1}").replace("{0}", t(plan.name)).replace("{1}", planSummaryLine(plan)), "ok"); finish(true); return; }
+        start.disabled = false;
+        paintStatus(true);
+      });
+      const others = plans.flatMap((other, i) => (i === index ? [] : [el("button", {
+        class: "app-modal-gate-switch",
+        text: other.name,
+        attrs: { type: "button" },
+        dataset: { plan: other.key },
+        on: { click: () => paintPlans(plans, i) },
+      })]));
+      detected.replaceChildren(
+        start,
+        el("p", { class: "app-modal-gate-plan", text: planSummaryLine(plan), dataset: { testid: AI_CONNECT_GATE_TESTIDS.plan } }),
+        ...(others.length ? [el("div", { class: "app-modal-gate-switches", children: [el("span", { class: "ai-connect-gate-status", text: "다른 로그인으로:" }), ...others] })] : []),
+      );
+      quick.element.hidden = true;
+      keyToggle.hidden = false;
+    };
+    void findSignedInPlans().then((plans) => {
+      if (settled) return;
+      const typing = quick.element.contains(document.activeElement) && Boolean((document.activeElement as HTMLInputElement | null)?.value);
+      paintPlans(plans, 0);
+      // 키를 이미 치고 있었으면 카드를 접지 않는다.
+      if (typing) { quick.element.hidden = false; keyToggle.hidden = true; }
+      if (plans.length && !typing) detected.querySelector<HTMLButtonElement>("button")?.focus();
+    });
 
     const laterButton = el("button", {
       class: "app-modal-button",
@@ -123,7 +241,9 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
           text: "AI 팀이 기획을 나누고, 맵·이벤트를 만들고, 결과를 검수해요. 연결을 마치면 선택한 내용으로 이어서 진행해요.",
           attrs: { id: "ai-connect-gate-message" },
         }),
+        detected,
         quick.element,
+        keyToggle,
         el("p", { class: "ai-connect-gate-status", text: "Google·ChatGPT 계정 로그인이나 다른 제공자는 「다른 방법으로 연결」 에서 고를 수 있어요." }),
         status,
         el("div", { class: "app-modal-actions", children: [laterButton, connectButton] }),

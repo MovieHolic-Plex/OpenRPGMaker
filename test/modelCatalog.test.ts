@@ -41,6 +41,7 @@ const CODEX_SUPPORTED = [
   "gpt-6-astra",
   "gpt-6-sol",
   "gpt-6-luna",
+  "gpt-6.1-terra",
 ];
 
 describe("modelCatalog — 두 제공자만 해석한다", () => {
@@ -55,7 +56,7 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
 
-  it("Codex 목록은 정확히 다섯 모델이고 첫 항목이 gpt-6.1-sol 다", async () => {
+  it("Codex 목록은 정확히 여섯 모델이고 첫 항목이 gpt-6.1-sol 다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", CODEX_PROVIDER_ID).flatMap((g) => g.models);
 

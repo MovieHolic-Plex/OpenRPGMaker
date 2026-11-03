@@ -44,6 +44,11 @@ export interface PiAgentRequest {
    * 비면 옛 동작: 검토자는 주 모델로(다른 문맥) 돈다.
    */
   readonly assistantRoles?: { readonly smol?: RoleModel | "off"; readonly advisor?: RoleModel | "off" };
+  /**
+   * 조수 v2 팀장(src/ai/v2/split.ts). 편집기 엔진 선택이 팀장을 켠 때만 실린다(localCliEngine.assistantEngineLead).
+   * 워커는 OPRN_V2_SPLIT 이 없을 때만 이 값을 쓴다. 로컬 CLI 팀장만 받는다.
+   */
+  readonly lead?: RoleModel;
   readonly provider: string;
   /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
   readonly projectKey?: string;

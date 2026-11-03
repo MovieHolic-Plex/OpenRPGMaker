@@ -51,7 +51,8 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     // 기본 모델(gpt-5.6-sol, 1M) 창으로 떨어져 실제(272k)보다 크게 본다.
     "gpt-6-astra": 272000,
     "gpt-6-sol": 272000,
-    "gpt-6-luna": 272000
+    "gpt-6-luna": 272000,
+    "gpt-6.1-terra": 272000
   }
 };
 

@@ -4457,6 +4457,23 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 
 **첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 빠른 연결 카드가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
 
+### 자동 감지 — 이미 로그인된 구독으로 한 번에 시작 (2026-11-03)
+
+관문이 열리면 `findSignedInPlans()` 가 `GET /v1/local-agents?fresh=1` 과 `/auth/status`(openai-codex·google-antigravity)를 동시에 묻는다(관문은 기다리지 않는다 — 열리자마자 OpenRouter 카드가 보이고, 찾으면 그때 카드가 올라온다. 기다림 상한 `PLAN_DETECT_TIMEOUT_MS` 10초: 앱을 켜고 첫 감지는 동반 워커를 띄우느라 3.1초가 걸렸다).
+찾으면 `연결됨: <이름> · 이걸로 시작` 버튼 하나와 구성 한 줄을 위에 두고 키 카드는 「API 키로 연결」 뒤로 접는다. 여럿이면 Claude → ChatGPT → 나머지 순, 「다른 로그인으로」 로 바꾼다.
+후보와 기본값은 순수 모듈 `src/ai/planDefaults.ts` 가 정한다.
+
+| 로그인 | 고르면 | 비고 |
+|---|---|---|
+| Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · 워커 `claude-haiku-5-5` · 팀장 `claude-opus-5-5`(`teamLead: true`) | v2 실행에서 `request.lead` 로 실려 리드가 된다. v1 은 계획 차례(ultrabrain)가 Opus 다 |
+| Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.1-terra` 혼자 | |
+| 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 모든 역할·계획을 `gpt-6.1-terra` 로(`configForPlanAccount`, 직접 고른 칸은 그대로) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts` CODEX_GPT6_EXTENSION)·카탈로그에 Terra 를 넣었다. 2026-11-03 앱 경로 실제 호출 OK |
+| Gemini CLI 구글 로그인 / 편집기 안 Google 로그인 | 그 엔진·계정의 지금 기본값 | |
+
+API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사용자(`oprn:assistant-engine` 있음)는 후보가 아니다. 환경 변수 키 동의 규칙은 동반 서비스 그대로다.
+시작을 누르면 `startWithPlan` 이 저장한 뒤 재판정하고, 실패하면 엔진 선택을 되돌린다. 바꾸기는 설정 「AI 엔진·모델」(로컬 CLI)·AI 설정(계정)에서 한다.
+첫 실행 화면이 같은 카드를 직접 그리려면 `findSignedInPlans`·`planSummaryLine`·`startWithPlan` 을 쓴다.
+
 ## 사용자 지정(OpenAI 호환) 연결 (2026-10-14)
 
 내부 AI 가 OpenAI 호환 Chat Completions 서버(CLIProxyAPI·LiteLLM·Ollama·LM Studio·vLLM·OpenRouter·OpenAI)를 일급 제공자로 쓴다. 기본 연결(Google/ChatGPT)은 **바뀌지 않는다** — 사용자가 설정 → 연결 → 「사용자 지정 연결」에서 직접 골라야 쓴다. PR #2453(apiKey authKind·`/auth/key`)과는 별개 경로다: 거기는 정적 제공자에 키를 얹는 길이고, 여기는 사용자가 주소를 정하는 **동적 제공자 id `openai-compat:<slug>`** 이며 정적 레지스트리(`OH_MY_PI_PROVIDERS`)는 건드리지 않는다. 겹치는 파일은 `aiAuthRuntime.ts`·`ohMyPiHttp.mjs`·`aiAuthSettings.ts` 뿐이므로 두 PR 을 합칠 때 그 셋만 본다.

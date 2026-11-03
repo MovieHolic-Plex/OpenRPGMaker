@@ -350,7 +350,7 @@ describe("installed model window contract", () => {
     // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts) — 번들에 없는 것이 정상이다.
     const localExtensions: Record<string, readonly string[]> = {
       "google-antigravity": ["gemini-4-argon", "gemini-3.8-flash"],
-      "openai-codex": ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna"],
+      "openai-codex": ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-6.1-terra"],
     };
     for (const [provider, windows] of Object.entries(ORIGINAL_MODEL_WINDOWS)) {
       const local = new Set(localExtensions[provider] ?? []);
