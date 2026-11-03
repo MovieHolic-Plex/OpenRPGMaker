@@ -19,6 +19,12 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 
+/**
+ * ⌘K 「AI: 살펴볼 것 보기」가 보내는 신호. 캔버스 위 떠 있는 느낌표 단추는 2026-11 캔버스 개편에서 숨겼다 —
+ * 조수 패널 머리 단추(headerButton)와 이 명령이 같은 팝오버를 연다.
+ */
+export const OPEN_AI_SUGGESTIONS_EVENT = "oprn:open-ai-suggestions";
+
 export interface AiSuggestionPeek {
   /** 캔버스 영역에 붙이는 루트(버튼 + 팝오버). */
   readonly root: HTMLElement;
@@ -59,7 +65,9 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     dataset: { testid: "ai-suggestion-peek-popover" },
     children: [body],
   });
-  const root = el("div", { class: "ai-suggestion-peek", dataset: { testid: "ai-suggestion-peek-root" }, children: [popover, button] });
+  // 캔버스 위 떠 있는 느낌표 단추는 2026-11 캔버스 개편에서 걷었다(캔버스 위엔 도구 알약 하나만 뜬다). 단추 노드는 만들되 붙이지 않는다 —
+  // 같은 팝오버는 조수 패널 머리 단추(headerButton)와 ⌘K 「AI: 살펴볼 것 보기」(OPEN_AI_SUGGESTIONS_EVENT)가 연다.
+  const root = el("div", { class: "ai-suggestion-peek", dataset: { testid: "ai-suggestion-peek-root" }, children: [popover] });
   let open = false;
   let disposed = false;
 
@@ -102,6 +110,8 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
   }
+  const onOpenRequest = (): void => setOpen(true);
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener(OPEN_AI_SUGGESTIONS_EVENT, onOpenRequest);
 
   return {
     root,
@@ -128,6 +138,7 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     dispose: () => {
       disposed = true;
       open = false;
+      if (typeof window !== "undefined" && typeof window.removeEventListener === "function") window.removeEventListener(OPEN_AI_SUGGESTIONS_EVENT, onOpenRequest);
       if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);

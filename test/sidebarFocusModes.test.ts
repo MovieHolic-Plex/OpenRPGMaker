@@ -63,7 +63,7 @@ describe('focused sidebar', () => {
     expect(editorState.get()).toMatchObject({ layer: 'event', tool: 'event' });
     expect(find('tile-brush-controls')).toBeNull();
     expect(find('tile-search-input')).toBeNull();
-    expect(find('tool-paint')).toBeNull();
+    expect(find('palette-tool-paint')).toBeNull();
     expect(find('layer-lower')).toBeNull();
   });
   it('returns focus from map search Escape without changing the selected map', () => {
@@ -181,16 +181,16 @@ describe('focused sidebar', () => {
     });
     const sheet = find('tile-palette');
     expect(sheet).not.toBeNull();
-    find('tool-fill')?.click();
+    find('palette-tool-fill')?.click();
     expect(editorState.get().tool).toBe('fill');
     expect(rebuilds).toBe(0);
     expect(find('tile-palette')).toBe(sheet);
-    expect(find('tool-fill')?.getAttribute('aria-pressed')).toBe('true');
-    expect(find('tool-paint')?.getAttribute('aria-pressed')).toBe('false');
+    expect(find('palette-tool-fill')?.getAttribute('aria-pressed')).toBe('true');
+    expect(find('palette-tool-paint')?.getAttribute('aria-pressed')).toBe('false');
     expect(find('tile-brush-state')?.dataset.tool).toBe('fill');
     expect(find('brush-size-select')).toBeNull();
     expect(host.querySelectorAll('[data-testid="oprn-tile-toolbar"]')).toHaveLength(1);
-    find('tool-paint')?.click();
+    find('palette-tool-paint')?.click();
     expect(rebuilds).toBe(0);
     expect(find('tile-palette')).toBe(sheet);
     expect(find('brush-size-select')).not.toBeNull();

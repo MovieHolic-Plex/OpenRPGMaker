@@ -17,8 +17,9 @@
 /* 오버레이일 때만: 대화 패널이 맵 조작 도구를 가리지 않게 도구바를 비킨다.
    스튜디오 머리띠가 입양한 도구바(relative)는 제외 — 여기 right/max-width 가 들어가면 348px 왼쪽으로 밀려 제목을 덮는다. */
 @media (max-width: 999.98px) {
+  /* 가운데 알약은 덮이지 않은 폭의 가운데로 옮긴다(2026-11). */
   .editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar) {
-    right: min(348px, calc(100vw - 80px));
+    left: calc((100% - min(348px, calc(100vw - 80px))) / 2);
     max-width: calc(100% - 360px);
   }
 }
@@ -99,7 +100,7 @@
   }
 
   .editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar) {
-    right: calc(clamp(280px, calc(100vw - 600px), 380px) + 8px);
+    left: calc((100% - clamp(280px, calc(100vw - 600px), 380px) - 8px) / 2);
     max-width: calc(100% - clamp(280px, calc(100vw - 600px), 380px) - 20px);
   }
 }

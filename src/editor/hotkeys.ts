@@ -201,7 +201,7 @@ export function handleHistoryHotkey(event: KeyboardEvent): boolean {
  * 사고가 났다. 스택이 비어 있을 때도 마찬가지로 침묵해서 "고장인가" 로 읽혔다.
  * 성공·실패 양쪽 모두 알린다. 라벨은 pop 전에 읽어야 해서 pendingHistoryLabels() 를 쓴다.
  */
-function runUndoWithFeedback(): boolean {
+export function runUndoWithFeedback(): boolean {
   const label = pendingHistoryLabels().undo;
   if (!undoMapEdit()) {
     toast("되돌릴 작업이 없습니다", "info");

@@ -141,6 +141,8 @@ test.describe("줌만 바꿀 때 look-at 보존", () => {
     const lookAfterPan = lookAtWorld(afterPan.area);
     await page.screenshot({ path: path.join(EVIDENCE, "01-after-pan.png"), animations: "disabled" });
 
+    // 확대(+)는 캔버스 알약의 「200%」 배율 목록 맨 위 줄에 있다(2026-11).
+    await page.getByTestId("editor-zoom-stepper").click();
     await page.getByTestId("editor-zoom-next").click();
     await expect.poll(async () => (await readGeometry(page)).camera.zoom, { timeout: 5_000 }).toBeGreaterThan(beforePan.camera.zoom);
 

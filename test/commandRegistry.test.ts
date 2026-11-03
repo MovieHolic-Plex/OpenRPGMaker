@@ -236,4 +236,35 @@ describe("commandRegistry", () => {
     expect(hits.some((c) => c.id === "tool-fill")).toBe(true);
     expect(matchEditorCommands("fill", commands).some((c) => c.id === "tool-fill")).toBe(true);
   });
+
+  // 2026-11 캔버스 알약 개편: 캔버스 위에서 빠진 단추는 ⌘K 에만 남는다 — 하나라도 빠지면 그 기능에 닿을 길이 없다.
+  it("캔버스 위에서 뺀 단추들이 옛 testid 를 id 로 한 명령으로 한 번씩 등록된다", () => {
+    const ids = listEditorCommands().map((command) => command.id);
+    for (const id of [
+      "walk-encounter-list-open",
+      "map-location-layer-toggle",
+      "map-background-preview-toggle",
+      "editor-grid-toggle",
+      "canvas-ai-create",
+      "canvas-ai-polish",
+      "canvas-ai-inspect",
+      "canvas-ai-ask",
+      "authoring-journey-toggle",
+      "ai-suggestion-peek",
+      "map-screenshot",
+      "tool-pan",
+    ]) {
+      expect(ids.filter((candidate) => candidate === id), id).toHaveLength(1);
+    }
+  });
+
+  it("격자 명령은 editorState.showGrid 를 뒤집고, 화면 밀기 명령은 pan 도구를 고른다", () => {
+    const commands = listEditorCommands();
+    editorState.set({ showGrid: true });
+    commands.find((c) => c.id === "editor-grid-toggle")!.run();
+    expect(editorState.get().showGrid).toBe(false);
+    commands.find((c) => c.id === "tool-pan")!.run();
+    expect(editorState.get().tool).toBe("pan");
+    expect(matchEditorCommands("격자", commands).some((c) => c.id === "editor-grid-toggle")).toBe(true);
+  });
 });

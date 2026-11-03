@@ -30,8 +30,8 @@ async function openEventLayerContextMenu(page: Page, width: number, height: numb
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
-  // Dense zoom buttons sit behind the ⋯ expand gate in expert mode.
-  await page.getByTestId("editor-canvas-toolbar-expand").click();
+  // 배율 목록은 캔버스 알약의 「200%」 단추 아래에 뜬다(2026-11).
+  await page.getByTestId("editor-zoom-stepper").click();
   await page.getByTestId("editor-zoom-2").click();
 
   const canvas = page.getByTestId("edit-canvas").locator("canvas");

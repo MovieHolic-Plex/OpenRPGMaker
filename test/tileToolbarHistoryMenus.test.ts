@@ -443,7 +443,7 @@ describe("도구막대 되돌리기/다시실행", () => {
 
     expect(find("oprn-tool-undo")).toBeTruthy();
     expect(find("oprn-tool-redo")).toBeTruthy();
-    expect(find("tool-paint")).toBeNull();
+    expect(find("palette-tool-paint")).toBeNull();
   });
 });
 
