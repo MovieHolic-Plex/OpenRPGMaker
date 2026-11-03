@@ -146,6 +146,16 @@ function addBackground(terminal: TerminalScene, resourceId: string | undefined, 
   terminal.root.prepend(image);
 }
 
+/** 막과 막 사이: 앞 막 끝 장면이 남긴 레터박스와 연출 카메라(고정·배율)를 걷는다. 색조·날씨는 도착 맵이 정한다. */
+function clearCinematicCarryOver(scene: PlaySceneContext): void {
+  const screen = scene.session.m2Runtime?.screen;
+  if (screen?.letterbox) {
+    delete screen.letterbox;
+    screen.letterboxDurationMs = 0;
+  }
+  scene.session.camera = undefined;
+}
+
 function terminalButton(testId: string, label: string, action: () => void): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
@@ -563,8 +573,10 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
     // 다음 막으로 이어지는 엔딩 — 타이틀 대신 그 맵으로 옮겨 이야기를 잇는다(EndingDef.continueTo).
+    // 앞 막 마지막 장면의 레터박스·연출 카메라는 다음 막으로 가져가지 않는다 — 폴른 스타 1막 포위 장면이 띠를 켜 둔 채
+    // 엔딩을 불러 2막 내내 화면이 좁았다(2026-11-04 오너 플레이).
     const button = continueTo
-      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
+      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { clearCinematicCarryOver(scene); void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
       : terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     const fitFinal = (): void => {

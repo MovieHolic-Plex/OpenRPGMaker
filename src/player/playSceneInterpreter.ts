@@ -52,6 +52,7 @@ import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
+import { fastForwardAction, withoutWait } from "@/player/cutsceneFastForward";
 import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
@@ -329,7 +330,7 @@ export async function runCommands(
   };
   observe("started");
   try {
-    let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
+    let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false, fastForwardSteps = 0;
     // 첫 걸음이 다른 맵으로 가는 이동(문·출구 이벤트)이면 지금 맵을 다시 그리지 않는다 — 곧 버릴 맵의 타일·이벤트를
     // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
@@ -341,6 +342,22 @@ export async function runCommands(
       if (SCREEN_UI_STEPS.has(step.kind)) scene.clearRuntimeOverlay("cutscene-skip-hint");
       else if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
+      if (interpreter.isFastForwarding()) {
+        const action = fastForwardAction(step);
+        if (action === "stop" || ++fastForwardSteps > FAST_FORWARD_STEP_LIMIT) {
+          // 고르기·전투·맵 이동은 대신하지 않는다. 상한을 넘긴 빨리 감기(끝나지 않는 Wait Until 등)는 예전처럼 라벨로 뛴다.
+          if (action === "stop") interpreter.endFastForward();
+          else { result = interpreter.jumpToLabel(CUTSCENE_END_LABEL); scene.refreshRuntimeSurfaces(); continue; }
+          scene.refreshRuntimeSurfaces();
+        } else if (action === "skip") {
+          result = interpreter.resume(undefined);
+          if (!interpreter.isFastForwarding()) scene.refreshRuntimeSurfaces();
+          continue;
+        } else {
+          result = await consumeBlockingStep(scene, interpreter, withoutWait(step), currentEventId, skipController, current, () => { handledFailure = true; });
+          continue;
+        }
+      }
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
       if (step.kind === "battleProcessing" && !battleStepCanLose(store.getCurrent(), step, activeSession) && activeSession.battleResult === "defeat") normalCompletion = false;
@@ -373,6 +390,9 @@ export async function runCommands(
   }
 }
 
+/** 한 번의 건너뛰기가 빨리 감을 걸음 상한. 넘으면 라벨로 뛴다. */
+const FAST_FORWARD_STEP_LIMIT = 2000;
+
 type CutsceneSkipController = {
   dispose(): void;
   takeResult(): StepResult | null;
@@ -395,7 +415,8 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
     lastEscapeAt = now;
     if (!secondEscape) return;
     event.preventDefault();
-    result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+    // 라벨까지 빨리 감는다(cutsceneFastForward.ts) — 라벨이 없는 장면만 예전처럼 끝낸다.
+    if (!interpreter.beginFastForward(CUTSCENE_END_LABEL)) result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
     restoreCameraAfterCutsceneSkip(scene);
     scene.refreshRuntimeSurfaces();
     notify();
@@ -412,7 +433,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
       return next;
     },
     waitForSkip(): Promise<void> {
-      if (result) return Promise.resolve();
+      if (result || interpreter.isFastForwarding()) return Promise.resolve();
       return new Promise((resolve) => waiters.push(resolve));
     },
   };
@@ -667,6 +688,7 @@ async function consumeBlockingStep(
         const outcome = await Promise.race([pending, skipController.waitForSkip()]);
         const skipped = skipController.takeResult();
         if (skipped) { abort.abort(); return skipped; }
+        if (interpreter.isFastForwarding()) abort.abort();
         if (step.onFailure === "stop" && outcome !== undefined && outcome !== "arrived") {
           scene.refreshRuntimeSurfaces();
           return { kind: "done" };
