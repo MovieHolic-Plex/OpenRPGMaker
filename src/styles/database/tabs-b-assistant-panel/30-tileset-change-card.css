@@ -1,5 +1,5 @@
 /* 칩셋 계열 변경 질문 카드(aiTilesetChangeCard.ts). 모양은 29-creation-choice 를 따른다. */
-.ai-tileset-change-card { --choice-accent: #7660d4; margin: 10px 0; padding: 16px; border: 1px solid var(--border-default); border-radius: 13px; background: var(--bg-raised); color: var(--text-1); font: 13px/1.6 var(--font-ui); }
+.ai-tileset-change-card { --choice-accent: var(--accent); margin: 10px 0; padding: 16px; border: 1px solid var(--border-default); border-radius: 13px; background: var(--bg-raised); color: var(--text-1); font: 13px/1.6 var(--font-ui); }
 .ai-tileset-change-eyebrow { color: var(--choice-accent); font-size: 11px; font-weight: 650; letter-spacing: .7px; }
 .ai-tileset-change-card h3 { margin: 4px 0 6px; font-size: 18px; letter-spacing: -.6px; }
 .ai-tileset-change-reason { margin: 0 0 4px; }
