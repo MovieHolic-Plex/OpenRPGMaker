@@ -58,6 +58,7 @@ function providerPin(): ProviderPin | null {
   if (raw && !level) throw new Error(`MATRIX_NATIVE_EFFORT=${raw} 는 알 수 없는 값입니다 — ${PIN_EFFORTS.join('|')} 중 하나를 쓰세요.`);
   // InferHub accepts only low|high|max and kills the turn on 「off」 (2026-10-22 local proof), so a compat
   // pin never sends it: the default is the cheapest accepted effort and an explicit 「off」 is refused.
+  // The oc pin's deepseek-v4.1-flash-free gets the same low|high|max ladder from pi-catalog.
   if (provider.startsWith('openai-compat:') && level === 'off') {
     throw new Error('MATRIX_NATIVE_EFFORT=off 는 openai-compat 고정에서 쓸 수 없습니다 — InferHub 는 low|high|max 만 받습니다.');
   }
@@ -65,31 +66,47 @@ function providerPin(): ProviderPin | null {
 }
 
 /**
- * Writes the InferHub endpoint into a throwaway store outside the run folder and points every
+ * The only compat endpoints a pin may target. The store derives the id from `name`
+ * (openAiCompatIdForName), so `name` must slug to the provider suffix — checked after upsert.
+ * oc.hyeon.space is a free gateway that answers 429 now and then; InferHub is paid.
+ * deploy is paid ($0.1 in / $0.35 out per M). Its gateway answers 400 「Invalid Model Name」 to the bare
+ * `deepseek-v4.1-flash-1017` (omo's alias) and only serves the upstream id `deepseek-ai/…` (2026-11-02 probe).
+ * `contextWindow` is optional: unset keeps the store default (128,000); deploy declares 600,000 by owner request.
+ */
+const COMPAT_PINS: Record<string, { name: string; baseUrl: string; allowModels: string[]; keyEnv: string; contextWindow?: number }> = {
+  'openai-compat:inferhub': { name: 'inferhub', baseUrl: 'https://api.inferhub.dev/v1', allowModels: ['deepseek-v4.1-flash'], keyEnv: 'INFERHUB_API_KEY' },
+  'openai-compat:oc': { name: 'oc', baseUrl: 'https://oc.hyeon.space/v1', allowModels: ['deepseek-v4.1-flash-free'], keyEnv: 'OC_API_KEY' },
+  'openai-compat:deploy': { name: 'deploy', baseUrl: 'https://api-cdn.deploy.com/api/v1', allowModels: ['deepseek-ai/deepseek-v4.1-flash-1017'], keyEnv: 'DEPLOY_API_KEY', contextWindow: 600_000 },
+};
+
+/**
+ * Writes the pinned compat endpoint into a throwaway store outside the run folder and points every
  * spawned host at it. The key lives only in that 0600 file, never in the run output, and the
  * directory is deleted when the pass ends.
  */
 function prepareCompatEndpoint(pin: ProviderPin): { dir: string; reasoningMode: string } {
-  if (pin.provider !== 'openai-compat:inferhub') {
-    throw new Error(`MATRIX_NATIVE_PROVIDER: 지금은 openai-compat:inferhub 만 지원합니다(받은 값: ${pin.provider}).`);
+  const endpoint = Object.hasOwn(COMPAT_PINS, pin.provider) ? COMPAT_PINS[pin.provider] : undefined;
+  if (!endpoint) {
+    throw new Error(`MATRIX_NATIVE_PROVIDER: 지금은 ${Object.keys(COMPAT_PINS).join(', ')} 만 지원합니다(받은 값: ${pin.provider}).`);
   }
-  if (pin.model !== 'deepseek-v4.1-flash') throw new Error(`inferhub 는 deepseek-v4.1-flash 만 허용합니다(받은 값: ${pin.model}).`);
-  const apiKey = process.env.INFERHUB_API_KEY?.trim();
-  if (!apiKey) throw new Error('INFERHUB_API_KEY 가 설정되지 않았습니다 — 셸 환경 변수로 넘기세요. 키는 실행 폴더·로그에 쓰지 않습니다.');
+  if (!endpoint.allowModels.includes(pin.model)) throw new Error(`${endpoint.name} 는 ${endpoint.allowModels.join(', ')} 만 허용합니다(받은 값: ${pin.model}).`);
+  const apiKey = process.env[endpoint.keyEnv]?.trim();
+  if (!apiKey) throw new Error(`${endpoint.keyEnv} 가 설정되지 않았습니다 — 셸 환경 변수로 넘기세요. 키는 실행 폴더·로그에 쓰지 않습니다.`);
   const reasoningMode = process.env.MATRIX_NATIVE_REASONING?.trim() || 'field';
   if (!['field', 'none', 'suffix'].includes(reasoningMode)) throw new Error(`MATRIX_NATIVE_REASONING 은 field|none|suffix 입니다(받은 값: ${reasoningMode}).`);
   const dir = mkdtempSync(join(tmpdir(), 'oprn-ac500-'));
   const path = join(dir, 'openai-compat-endpoints.json');
   const store = createOpenAiCompatStore(path);
   const saved = store.upsert({
-    name: 'inferhub',
-    baseUrl: 'https://api.inferhub.dev/v1',
+    name: endpoint.name,
+    baseUrl: endpoint.baseUrl,
     apiKey,
-    allowModels: ['deepseek-v4.1-flash'],
+    allowModels: [...endpoint.allowModels],
     blockModels: [],
     reasoningMode: reasoningMode as 'field' | 'none' | 'suffix',
     supportsImages: true,
     defaultModel: pin.model,
+    ...(endpoint.contextWindow ? { contextWindow: endpoint.contextWindow } : {}),
   });
   if (saved.id !== pin.provider) throw new Error(`엔드포인트 id 가 ${saved.id} 로 만들어졌습니다 — ${pin.provider} 여야 합니다.`);
   process.env.OPRN_OPENAI_COMPAT_PATH = path;

@@ -19,6 +19,12 @@ export interface PiAssistantV2Env {
   readonly advisorChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   readonly advisorModel?: string;
   /**
+   * 리드(OPRN_V2_SPLIT 의 lead — src/ai/v2/split.ts). 있으면 계획·단계 검토를 이 모델이 하고 주 모델은 워커가 된다.
+   * 사용량은 done 통계 lead 칸과 호출 기록(role:"lead")에 따로 모인다.
+   */
+  readonly leadChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
+  readonly leadModel?: string;
+  /**
    * 타이틀·오프닝 그림을 1배로 찍는다(화면 검수 src/ai/v2/vqa.ts). resourceId 한 장, 또는 애니메틱 샷의 시간 표본(atMs 1~4개).
    * 편집기 렌더 브로커 경로라 브라우저가 붙은 실행에만 있다.
    */
@@ -74,6 +80,8 @@ export interface PiAssistantV2Hooks {
   readonly tools: (env: PiAssistantV2Env) => PiToolShape[];
   /** 첫 지시(사용자 요청)를 보내기 직전에 한 번 — 첫 호출 todo 강제 같은 준비. */
   readonly beforeFirstPrompt?: (env: PiAssistantV2Env) => void;
+  /** 첫 지시 뒤에 붙일 글(리드 계획 등)을 만든다 — 대화 기록의 첫 사용자 글에 남는다. env.request.task 는 그대로다. */
+  readonly firstPromptSuffix?: (env: PiAssistantV2Env) => Promise<string | undefined>;
   /**
    * 모델이 도구 없이 멈춘 뒤마다 — 글을 돌려주면 그 글(숨은 재주입)로 같은 대화를 한 차례 더 돈다. undefined 면 실행이 끝난다.
    * v2 는 여기서 할 일 고리를 돌린다(열린 항목·기계 확인 ✗·관문·비평·화면 검수 → 재주입, 상한·진척 규칙은 src/ai/v2/loop/continuation.ts).

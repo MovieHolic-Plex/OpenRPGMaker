@@ -504,6 +504,10 @@ export function followerPositions(
     return memo.result;
   }
   const previous = memo?.result;
+  // 장면 횡대의 축은 주인공이 마지막으로 칸을 옮겼을 때(또는 장면이 시작될 때) 보던 쪽으로 고정한다.
+  // 대사마다 주인공이 말하는 이 쪽으로 돌아서면(왼쪽·오른쪽) 축이 세로로 바뀌어, 동료가 주인공 위아래로 한 줄로
+  // 겹쳐 서거나 주인공 칸 쪽으로 뭉쳤다(폴른 스타 하늘탑 컷신·막 끝 줄서기, 2026-11-01 배치 기록).
+  const axisWorld = world ? { ...world, playerFacing: sceneAxisFacing(session, hero, world) } : world;
   let cursor = -1;
   const placed: { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }[] = [];
   const result = followers.map((follower, index) => {
@@ -527,7 +531,7 @@ export function followerPositions(
     // 몬스터 동행은 monsterFollowers 가 따로 정하므로 여기서 건드리지 않는다.
     if (config?.display === "scenesOnly" && follower.kind !== "monster" && !follower.monsterInstanceId) {
       const spot = world?.storyScene
-        ? (config.sceneFormation === "abreast" ? abreastCell(hero, index, world, clear, minDistance) : null) ?? nearestSpreadCell(hero, world, clear)
+        ? (config.sceneFormation === "abreast" ? abreastCell(hero, index, axisWorld ?? world, clear, minDistance) : null) ?? nearestSpreadCell(hero, world, clear)
         : null;
       if (!spot) return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
       taken.push(spot);
@@ -535,7 +539,7 @@ export function followerPositions(
     }
     // 뒤따르기(follow)여도 sceneFormation "abreast" 면 이야기 장면(컷신 잠금) 동안은 횡대로 선다 — 장면이 끝나 걸으면 궤적으로 돌아온다.
     if (config?.sceneFormation === "abreast" && world?.storyScene && follower.kind !== "monster" && !follower.monsterInstanceId) {
-      const spot = abreastCell(hero, index, world, clear, minDistance);
+      const spot = abreastCell(hero, index, axisWorld ?? world, clear, minDistance);
       if (spot) {
         taken.push(spot);
         return { follower, x: spot.x, y: spot.y, direction: world.playerFacing ?? follower.graphic.direction };
@@ -598,6 +602,31 @@ export function followerPositions(
   }
   followerPlacementMemo.set(session, { trail, x: hero.x, y: hero.y, followers, gap, minDistance, result });
   return result;
+}
+
+/** 세션별 장면 횡대 축 — 주인공 칸과 그때 보던 쪽. 세이브에 넣지 않는다. */
+const sceneAxisMemo = new WeakMap<object, { readonly x: number; readonly y: number; readonly facing: Dir }>();
+
+/**
+ * 저작한 제자리 돌기(이동 루트의 turn)가 부른다 — 그 방향을 장면 횡대의 새 축으로 삼는다.
+ * 대사 자동 돌아보기(playSceneDialogueFacing)는 부르지 않으므로 축을 바꾸지 않는다.
+ */
+export function anchorSceneFormation(session: object, at: { readonly x: number; readonly y: number }, facing: Dir): void {
+  sceneAxisMemo.set(session, { x: at.x, y: at.y, facing });
+}
+
+/**
+ * 장면 횡대(sceneFormation "abreast")가 쓰는 방향. 이야기 장면이 아니거나 주인공이 다른 칸으로 옮겼으면 지금 보는 쪽을
+ * 새로 적고, 같은 칸에서 제자리로 돌아선 것뿐이면(말하는 이 쪽으로 고개 돌리기) 적어 둔 쪽을 그대로 쓴다 —
+ * 동료는 서 있던 자리에서 고개만 돌린다(sceneFacing).
+ */
+function sceneAxisFacing(session: object, hero: { readonly x: number; readonly y: number }, world: FollowerWorld): Dir | undefined {
+  const facing = world.playerFacing;
+  if (!facing) return facing;
+  const kept = sceneAxisMemo.get(session);
+  if (world.storyScene === true && kept && kept.x === hero.x && kept.y === hero.y) return kept.facing;
+  sceneAxisMemo.set(session, { x: hero.x, y: hero.y, facing });
+  return facing;
 }
 
 /**

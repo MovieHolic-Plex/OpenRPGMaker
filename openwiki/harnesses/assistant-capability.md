@@ -167,6 +167,23 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 InferHub `deepseek-v4.1-flash` 는 `low, high, max` 라 `max` 는 그대로 통과하고 `xhigh` 는 pi-ai 가
 `requireSupportedEffort` 로 거절한다.
 
+**무료 oc.hyeon.space 고정:** `MATRIX_NATIVE_PROVIDER=openai-compat:oc MATRIX_NATIVE_MODEL=deepseek-v4.1-flash-free` 는
+같은 경로로 주소 `https://oc.hyeon.space/v1`, 허용 모델 `deepseek-v4.1-flash-free` 엔드포인트(저장 이름 `oc` → id
+`openai-compat:oc`)를 쓴다. 키는 환경 변수 `OC_API_KEY` 에서만 읽는다(없으면 실패, 값은 찍지 않는다). 무료라 청구는 0이지만
+업스트림이 가끔 429 를 돌려주므로 그 명령은 모델 실수가 아니라 재시도 대상으로 본다. pi-catalog 가 이 id 에도 `low, high, max`
+사다리를 주므로 `MATRIX_NATIVE_EFFORT=high|max` 는 통과하고 `off` 는 위와 같이 거절한다. 두 고정의 허용 목록은
+`matrixNative.ts` 의 `COMPAT_PINS` 표 하나다 — 표에 없는 제공자·모델은 실행 전에 실패한다.
+
+**유료 deploy 고정:** `MATRIX_NATIVE_PROVIDER=openai-compat:deploy MATRIX_NATIVE_MODEL=deepseek-ai/deepseek-v4.1-flash-1017
+MATRIX_NATIVE_EFFORT=high` 는 주소 `https://api-cdn.deploy.com/api/v1`(저장 이름 `deploy` → id `openai-compat:deploy`)를 쓰고
+키는 `DEPLOY_API_KEY` 에서만 읽는다(입력 $0.1 · 출력 $0.35 / 100만 토큰). 모델 id 는 업스트림 이름 그대로다 — omo 별칭
+`deepseek-v4.1-flash-1017` 은 이 게이트웨이가 400 「Invalid Model Name」 으로 거절한다(2026-11-02 실측). 인증은 보통의
+`Authorization: Bearer` 라 엔드포인트 모양은 그대로다(omo 의 `authHeader: true` 도 같은 헤더를 뜻한다). pi-catalog 가 이 id 를
+DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_content` 재전송(모든 assistant 차례)을 켜므로 따로 손댈 것이 없다.
+이 고정만 `contextWindow: 600000` 을 선언한다(다른 고정은 저장소 기본 128,000). 이 값은 pi-ai 모델의 창(출력 상한 맞춤·
+오버플로 판정)으로 간다. 에디터의 자동 압축 지점은 모델 id 접두사로 창을 고르는 `resolveContextWindow` 를 따르므로 이 id 는
+여전히 128,000 창 · 문턱 111,616 토큰이다(`openwiki/ai-context-compaction.md`).
+
 `MATRIX_NATIVE_SPEC=500` 실행은 `dist-electron/browser-bridge.js` 도 필요하다 — 워크트리면
 `npm run build:electron` 을 먼저 돌린다(`HARNESS_DIST_DIR` 만으로는 호스트가 뜨지 않는다).
 

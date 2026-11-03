@@ -68,13 +68,19 @@ export function displayTitles(entries: readonly RecentProjectEntry[], locale = "
   return result;
 }
 
-/** 표지. 그림이 없으면 무늬 자리표 + 제목 첫 글자 + 「아직 그림 없음」(곧 구워지면 data-cover-for 로 이 칸만 바뀐다). */
 export function coverArt(entry: RecentProjectEntry, className = "hm-cov"): HTMLElement {
   const art = el("span", { class: className, attrs: { "aria-hidden": "true" }, dataset: { coverFor: entry.projectDir } });
   fillCover(art, entry.cover ?? null, entry.title);
   return art;
 }
 
+/**
+ * 표지. 그림이 없으면 무늬 자리표 + 제목 첫 글자를 둔다(곱 구워지면 data-cover-for 로 이 칸만 바뀐다).
+ *
+ * 2026-11-01: 예전에는 그림이 없을 때마다 「아직 그림 없음」 을 찍었다. 첫 화면에서 최근 게임 대부분이
+ * 회색 박스 + 「아직 그림 없음」 으로 덮이면 화면이 **미완성처럼** 보인다(사용자 「앱을 키자마자 좀 엽엽하다」).
+ * 지금은 제목 첫 글자만 남기고, 카드 아래 메타가 무엇인지 말한다.
+ */
 export function fillCover(art: HTMLElement, cover: string | null, title: string): void {
   if (cover) {
     art.classList.remove("is-empty");
@@ -84,7 +90,6 @@ export function fillCover(art: HTMLElement, cover: string | null, title: string)
   art.classList.add("is-empty");
   art.replaceChildren(el("span", { class: "hm-ph", children: [
     el("b", { text: Array.from(title.trim())[0] ?? "?", attrs: { translate: "no" } }),
-    el("em", { text: "아직 그림 없음" }),
   ] }));
 }
 

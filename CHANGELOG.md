@@ -5,6 +5,68 @@
 
 <!-- releases -->
 
+## 0.387.0 — 2026-11-02
+
+### 기능
+
+- **harness** — matrix-native can pin the deploy DeepSeek endpoint (#4176) (`8641d48`)
+
+## 0.386.0 — 2026-11-02
+
+### 기능
+
+- **harness** — matrix-native can pin the oc.hyeon.space free endpoint (#4174) (`adcbada`)
+
+## 0.385.0 — 2026-11-02
+
+### 기능
+
+- **ai** — OMP 가 로그인해 둔 제공자를 전부 고를 수 있게 하고, AI 설정 설명을 줄인다 (`abaa03e`)
+
+## 0.384.0 — 2026-11-02
+
+### 기능
+
+- **start** — 첫 화면이 "무엇으로 일하는지" 답하게 한다 — AI 모델명·로그인 연결·외부 서버 (`a136458`)
+
+### 수정
+
+- **boot** — 첫 화면이 OS 다크를 따라가게 한다 — 흰 로더가 10초 떠 있다 검게 튀던 것 (`d6bb7ed`)
+
+### 문서
+
+- **openwiki** — architecture 절이 늘어 INDEX 를 다시 뜬다 (`3dd2d87`)
+
+### 잡무
+
+- **css** — 첫 화면 CSS 승자 기준선을 다시 뜬다 (의도한 변경 31키, 2파일) (`c84e979`)
+
+## 0.383.1 — 2026-11-01
+
+### 수정
+
+- **runtime** — keep the scene lineup when the leader turns to face a speaker (#4163) (`b70085b`)
+
+## 0.383.0 — 2026-11-01
+
+### 기능
+
+- **assistant** — lead/worker split for v2 behind OPRN_V2_SPLIT — lead plans todos+specs and reviews at the phase gate, main model works (`6acfe77`)
+
+### 수정
+
+- **assistant** — host resolves the account key and endpoint of an account-model split lead (`7dc1f99`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX as CI sees it (`c289212`)
+- **assistant** — lead/worker split results and battery notes in openwiki (`c67a9cf`)
+
+### 잡무
+
+- **qa** — split battery collect/judge/readability/measure/page (`766ca81`)
+- **qa** — lead/worker split battery harness (VM run/queue, 11 requests on frozen stages) (`98774d9`)
+
 ## 0.382.0 — 2026-11-01
 
 ### 기능

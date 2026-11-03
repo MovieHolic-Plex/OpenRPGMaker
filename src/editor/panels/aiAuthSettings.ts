@@ -101,13 +101,13 @@ const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: strin
     label: "Google 계정",
     // 부제는 모델 계열만 — 내부 연결 방식 이름(Antigravity)은 작가에게 뜻이 없다(C-71).
     sub: "Gemini",
-    hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.",
+    hint: "Google 계정",
   },
   {
     id: CODEX_PROVIDER_ID,
     label: "ChatGPT 계정",
     sub: "Codex",
-    hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.",
+    hint: "ChatGPT 구독 계정",
   },
 ];
 
@@ -176,7 +176,9 @@ export function renderAiAuthSettings(
     children: providersForKind(kind).map((row) => {
       const copy = QUICK_PROVIDERS.find((quick) => quick.id === row.id);
       const label = copy?.label ?? `${row.label} 계정`;
-      const hint = copy?.hint ?? `${row.label} 계정으로 로그인합니다.`;
+      // 2026-11-02: 예전엔 카드마다 「<이름> 계정으로 로그인합니다.」 를 반복해 17장이 같은 문장을 쏟아 냈다.
+      // 힌트는 모델 한 줄만 — 무엇으로 로그인하는지는 카드 이름이 이미 말한다.
+      const hint = copy?.hint ?? row.defaultModel;
       const pill = el("span", {
         class: "ai-auth-card-pill",
         text: "확인 중…",
@@ -494,12 +496,12 @@ export function renderAiAuthSettings(
     // 사용자 지정 엔드포인트는 로그인이 없다 — 주소·키 관리는 아래 「사용자 지정 연결」 카드가 맡는다.
     actionsRow.hidden = custom;
     providerHelp.textContent = custom
-      ? `${label} (사용자 지정 연결)을 기본 연결로 쓰고 있어요. 주소·키·모델은 아래 「사용자 지정 연결」에서 바꾸고, Google·ChatGPT 로 돌아가려면 위 카드를 고르세요.`
+      ? `${label} (사용자 지정) 로 쓰는 중 — 아래에서 바꿔요.`
       : providerKind !== "oauth"
-      ? `${label} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`
+      ? `${label} 자격 종류는 지원하지 않아요.`
       : stored
-        ? `${label} 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.`
-        : `로그인을 누르면 새 창이 열리고 ${label} 계정으로 로그인합니다. API 키는 필요 없어요.`;
+        ? `${label} 계정으로 연결됨`
+        : `${label} 계정으로 로그인`;
     loginButton.textContent = stored
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";

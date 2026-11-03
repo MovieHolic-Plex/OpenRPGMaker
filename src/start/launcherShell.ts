@@ -99,7 +99,17 @@ export function createLauncherShell(options: {
     setActive,
     setAiStatus(status) {
       aiDot.className = `ln-dot is-${status.tone}`;
-      aiText.textContent = status.text;
+      // 「Google 연결됨 · gemini-4-argon」 처럼 엔진과 모델이 한 줄에 오면 레일 폭에서 모델이 잘린다.
+      // 구분자가 있으면 엔진/모델 두 줄로 나누고, 없으면 예전처럼 한 줄로 둔다(2026-11-01).
+      const cut = status.text.indexOf(" · ");
+      if (cut > 0) {
+        aiText.replaceChildren(
+          el("span", { class: "ln-ai-engine", text: status.text.slice(0, cut) }),
+          el("span", { class: "ln-ai-model", text: status.text.slice(cut + 3), attrs: { translate: "no" } }),
+        );
+      } else {
+        aiText.replaceChildren(el("span", { class: "ln-ai-engine", text: status.text }));
+      }
       aiStatus.dataset.tone = status.tone;
     },
     show(nextTop, body) {

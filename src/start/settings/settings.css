@@ -83,6 +83,12 @@
 .st-btn-ghost:hover { color: var(--st-fg); }
 .st-backdrop :is(button, select, summary, a):focus-visible { outline: 2px solid var(--st-gold); outline-offset: 2px; }
 
+/* 구글·ChatGPT 로그인 줄 — 로컬 CLI 세 칸과 달리 이 연결은 로그인만 하면 바로 쓴다(2026-11-01). */
+.st-oauth-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.st-oauth-state { margin: 0; color: var(--st-sub); font-size: 13px; }
+.st-oauth-state[data-tone="ok"] { color: var(--st-green); }
+.st-oauth-row .st-btn { margin-left: auto; }
+
 @media (max-width: 900px) {
   .st-dialog { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
   .st-tabs { flex-direction: row; overflow-x: auto; padding: 10px; border-right: 0; border-bottom: 1px solid #22263a; }

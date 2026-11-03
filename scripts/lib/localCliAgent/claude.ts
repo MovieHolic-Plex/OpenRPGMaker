@@ -209,7 +209,7 @@ export const claudeAdapter: LocalCliAdapter = {
     let text = "";
     const session = openClaudeSession({
       mcpUrl: "http://127.0.0.1:9/none", mcpToken: "none", systemPrompt: "Answer the user's request directly. No tools are available.",
-      ...(options.model ? { model: options.model } : {}), ...(options.signal ? { signal: options.signal } : {}), ...(options.binary ? { binary: options.binary } : {}),
+      ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}), ...(options.signal ? { signal: options.signal } : {}), ...(options.binary ? { binary: options.binary } : {}),
       onEvent: (event) => {
         if (event.kind === "assistant") for (const block of event.blocks) if (block.type === "text") text += block.text;
         if (event.kind === "result" && event.usage) options.onUsage?.(event.usage, event.costUsd);

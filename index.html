@@ -225,6 +225,29 @@
         #oprn-boot-loader .oprn-boot-track { animation: none; }
         #oprn-boot-loader .oprn-boot-steps li[data-state="active"]::after { animation: none; width: 100%; transform: none; opacity: 0.45; }
       }
+      /* 어두운 OS: 아래 로더 색을 편집기와 같은 다크 토큰(src/styles/base/theme.css)으로 뒤집는다.
+         이 블록이 없으면 OS 가 어두운 사용자는 앱을 열자마자 흰 화면을 10초 넘게 보고, 로더가 걷히는 순간
+         검은 편집기로 툭 바뀐다(2026-11-01 실측: 흰 로더 10.2s → 편집기 #16181D). html[data-theme="light"] 는
+         편집기와 같은 규칙으로 라이트를 고정한다. */
+      @media (prefers-color-scheme: dark) {
+        html:not([data-theme="light"]) { background: #16181D; }
+        html:not([data-theme="light"]) #oprn-boot-loader { background: #16181D; color: #E6E9EF; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-text { color: #B4BCC8; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li { background: rgba(255, 255, 255, 0.10); }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li::after { background: #8C96F2; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-steps li[data-state="active"] { background: rgba(140, 150, 242, 0.22); }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-track p { color: #98A2B3; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-note,
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-stall { color: #98A2B3; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry { background: #8C96F2; color: #0F172A; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:hover { background: #9EA6F4; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-retry:focus-visible { outline-color: #E6E9EF; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail-title { color: #F2766F; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail-msg { color: #B4BCC8; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail details { color: #98A2B3; }
+        html:not([data-theme="light"]) #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-stall { background: #1E2128; }
+        html:not([data-theme="light"]) #oprn-boot-loader .oprn-boot-fail code { color: #B4BCC8; }
+      }
     </style>
   </head>
   <body>

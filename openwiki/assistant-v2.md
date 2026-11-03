@@ -777,6 +777,27 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - 측정 결과(스크립트 A/B 기록): 호출마다 지시문+도구 설명 7.5만~9만 토큰을 다시 보내는 것이 처리 토큰의 약 70%이고, load_tools·도구 선언으로
   MCP 도구 목록이 바뀌면 다음 호출에서 캐시를 통째로 다시 쓴다(로직 요청 비용의 약 29%). 도구 결과 본문은 약 9%뿐이다. 페이지 `~/claude-viz/assistant-cost.html`.
 
+## 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
+
+- **무엇:** 비싼 모델(리드)은 요청을 할 일과 구체 사양(TODO·SPECS·TRAPS, 영어)으로 바꾸고, 단계 끝에서 검토만 한다. 값싼 모델(워커 = 이 실행의 주 모델)이
+  그 사양으로 도구를 부르고, 도구 오류는 스스로 고친다. 할 일 고리·TodoChecks·완료 관문은 그대로다 — 워커는 기계 확인 없이 할 일을 닫지 못한다.
+  리드는 도구 호출을 하나도 보지 않는다: 프로젝트 요약(`projectDigest`), 도구 이름 목록, 할 일 표(기계 확인 결과), 변경 요약(safeDiff), 짧은 도구 기록, 워커 보고만 받는다.
+- **켜기:** `OPRN_V2_SPLIT="lead:<엔진>[,worker:<기록용>]"`. `<엔진>` = 로컬 CLI `claude:claude-opus-5-5:medium` 또는 계정 모델 `openai-compat:proxy8318/gemini-4-argon@medium`.
+  계정 모델 리드의 키·주소는 호스트가 푼다(`scripts/lib/ohMyPiPiAi.mjs` `splitLeadProvider`). 키가 없으면 `v2.split.no_key` 를 내고 혼자 돈다.
+- **코드:** 순수 함수 `src/ai/v2/split.ts`(설정 읽기·요약·리드 지시·검토 답 읽기), 리드 호출은 `scripts/lib/piAgentRuntime.ts`(`env.leadChat`, 비용은 `done.stats.lead` 따로,
+  `OPRN_CALL_LOG` 에 role:"lead"), 흐름은 `scripts/lib/assistantV2Runtime.ts`: 쓰기 요청이면 첫 지시 뒤에 리드 계획을 붙이고(`firstPromptSuffix`, 실패하면 혼자),
+  afterMain ⑤a 에서 리드가 검토 — 고칠 것(최대 5개)은 critic 할 일로 더해 재주입한다. 검토는 최대 2바퀴, 답을 못 읽으면 승인으로 본다(막지 않는다). 나누기가 켜지면 조언자(⑤)는 건너뛴다.
+- **측정 틀:** `scripts/qa/split-ab/` — 과제 11개(`prompts.json`: 퍼즐 lock·shop·plates, RPG quest·inn·floor·party, 연애 days·date·endings·confess)를 얼린 무대 체크포인트에서
+  15분 상한으로 돌린다(`vm-queue.sh` 는 큐가 여럿이어도 슬롯 잠금으로 동시 3판). `collect.sh` = 당기기 → 출하 플레이어 대본 플레이(퍼즐) → Opus 판정(`judge.py`: 체크리스트·정확도·대사·연출·구조 결함·거짓 완료)
+  → 이벤트 목록 그림 가독성(`readability.py`) → `measure.py` → `page.py`(점수표 `~/claude-viz/lead-worker-split.html`). 비용 = 공개 정가 × 실제 토큰(Claude CLI 는 차례별 usage, 누적값 modelUsage 금지),
+  사용량을 안 주는 중계기(Flash·Argon)는 글자 수 추정(«추정»).
+  - 함정: 큐 스크립트는 `. ~/.oprn-suite/vm-env.sh` 뒤에 띄운다(없으면 python3 가 없어 모든 판이 no-checkpoint). 큐를 죽일 때 xargs 자식(`bash -c one …`)과 판 서버(oprn-serve)가 남는다 — 같은 판을 두 큐가 돌리지 않게.
+    가독성 캡처용 run.json 에서 resourceProfiles·charsetLabels 는 빼지 말고 빈 배열로(편집기가 «not iterable» 로 죽는다).
+- **결과(split1, 52판, Opus 판정 + 출하 플레이어):** 같은 6과제에서 Opus 혼자 완성도 95%·정확도 8.0·요청당 $2.05, **Opus 리드 + Haiku 워커 90%·7.9·$0.28**(리드 $0.20),
+  Haiku 혼자 88%·7.4·$0.11. 나누기는 가장 어려운 발판 퍼즐에서 Haiku 6/10 → 10/10, 거짓 완료 3 → 1 이었지만 던전 층은 5/7 로 졌다.
+  Argon 리드 + Haiku 는 리드 $0.03 로 싸고 괜찮다(완성도 91%). DeepSeek 워커는 품질은 좋지만 15분 상한에 자주 걸린다. Flash 는 혼자·워커 모두 도구를 몇 번 부르고 멈춰 탈락.
+  **기본값 꺼짐 유지** — Opus 대비 비용은 1/7 이지만 Haiku 혼자 대비 이득이 칸마다 n=1~2 로 일관되지 않다.
+
 ## v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 같은 모델(로컬 CLI Sonnet 5.5 high, Argon 할당량 막힘 → 둘 다 «조수 대용»), 실제 입력창, 사례마다 새 프로젝트, 저장 재로드 10/10.

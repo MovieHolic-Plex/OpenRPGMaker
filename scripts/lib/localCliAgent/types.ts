@@ -122,5 +122,5 @@ export interface LocalCliAdapter {
   openSession(options: LocalCliSessionOptions): LocalCliSession;
   /** 도구 없는 한 번짜리 글 생성(event_command_assist·도트 글 저작 같은 내부 보조 호출). */
   /** 그림을 못 받는 CLI(gemini 비대화 모드)는 images 가 있으면 오류를 낸다 — 그림 없이 「봤다」고 답하게 두지 않는다. */
-  complete(prompt: string, options?: { readonly model?: string; readonly signal?: AbortSignal; readonly binary?: string; readonly images?: readonly LocalCliImage[]; /** 이 호출의 사용량(판정자·비평가 토큰을 실행 합계에 넣는다). 보고하는 CLI 만 부른다. */ readonly onUsage?: (usage: LocalCliUsage, costUsd?: number) => void }): Promise<string>;
+  complete(prompt: string, options?: { readonly model?: string; /** 생각 강도(claude 만 따른다). */ readonly effort?: "low" | "medium" | "high"; readonly signal?: AbortSignal; readonly binary?: string; readonly images?: readonly LocalCliImage[]; /** 이 호출의 사용량(판정자·비평가 토큰을 실행 합계에 넣는다). 보고하는 CLI 만 부른다. */ readonly onUsage?: (usage: LocalCliUsage, costUsd?: number) => void }): Promise<string>;
 }

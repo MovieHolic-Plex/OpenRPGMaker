@@ -50,11 +50,20 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
     expect(defaultAiConfig().providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
   });
 
-  it("셋째 제공자는 존재하지 않는다", () => {
-    expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
+  it("처음 두 제공자는 순서가 고정이고, 나머지는 뒤에 덧붙기만 한다", () => {
+    // 2026-11-02: 예전에는 「둘뿐」 이었다. 이제 OMP 가 로그인해 둔 제공자를 그대로 쓰므로 목록이 늘었지만,
+    // **앞의 둘 순서는 그대로여야 한다** — 첫 항목이 기본값이라 순서가 바뀌면 기존 사용자가 말없이 넘어간다.
+    const ids = OH_MY_PI_PROVIDERS.map((provider) => provider.id);
+    expect(ids.slice(0, 2)).toEqual([
       ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
     ]);
+    expect(ids.length).toBeGreaterThan(2);
+    // 중복이 없고 id·모델이 비지 않는다(비면 고르는 순간 호출이 400 이 된다).
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const provider of OH_MY_PI_PROVIDERS) {
+      expect(provider.defaultModel, provider.id).not.toBe("");
+    }
   });
 
   it("Codex 의 옛 공장 기본 gpt-5.6-sol 은 gpt-6.1-sol 로 올리고, 모델 없는 Codex blob 에 Gemini 를 채우지 않는다", () => {
