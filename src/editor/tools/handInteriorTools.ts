@@ -345,10 +345,17 @@ function fitDoorsToPlan(
     const outbound = transfers.filter((t) => draft.maps[t.mapId]?.climate?.mode !== "indoor");
     const indoorTransfers = transfers.filter((t) => draft.maps[t.mapId]?.climate?.mode === "indoor");
     if (!outbound.length) {
+      // 실내끼리 잇는 문이 방 가장자리 틈(입구)에 서 있으면 층 이동이 아니라 문이다 — 그대로 둔다. 그리고 다른 맵으로 이미 이어진
+      // 사다리·계단 탈 자리는 고르지 않는다. 왜(2026-11-04 조수 대조 B1 Opus r3): 감방 계단 ↔ 막사 입구(7,17) 문이 막사를 다시 지을 때
+      // 사다리(밤 광장 출구) 탈 자리로 끌려가, 감방 계단이 광장 사다리 앞에 내리고 광장에서 오면 막사 입구에 내렸다(scene-transfer-off-door·pair).
+      if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
+      const servesOtherMap = (tr: { x: number; y: number; trigger?: { x: number; y: number } }) => events.some((other) => other !== event
+        && ((tr.trigger && other.x === tr.trigger.x && other.y === tr.trigger.y) || (other.x === tr.x && other.y <= tr.y && other.y >= tr.y - 2))
+        && eventTransfers(other).some((t) => t.mapId !== mapId && !transfers.some((mine) => mine.mapId === t.mapId)));
       // 층 사이 이동(엘리베이터·계단): built.travel 탈 자리가 있으면 그 자리로 맞추고, 막힌 칸이면 가까운 열린 바닥으로 옮긴다.
-      if (indoorTransfers.length && built.travel.length) {
+      if (indoorTransfers.length && built.travel.some((tr) => !servesOtherMap(tr))) {
         // 계단 입구 계약이 있는 탈 자리: 이벤트는 그 계단 그림 칸(trigger)에 — 앞 바닥에 두면 지나가기만 해도 층이 바뀐다.
-        const contracted = built.travel.filter((tr) => tr.trigger);
+        const contracted = built.travel.filter((tr) => tr.trigger && !servesOtherMap(tr));
         if (contracted.length && !contracted.some((tr) => tr.trigger!.x === event.x && tr.trigger!.y === event.y)) {
           const best = [...contracted]
             .filter((tr) => !occupied.has(`${tr.trigger!.x},${tr.trigger!.y}`))
@@ -366,7 +373,7 @@ function fitDoorsToPlan(
         if (contracted.some((tr) => tr.trigger!.x === event.x && tr.trigger!.y === event.y)) continue;
         if (!built.travel.some((tr) => tr.x === event.x && tr.y === event.y)) {
           const bestTravel = [...built.travel]
-            .filter((tr) => !occupied.has(`${tr.x},${tr.y}`) || (tr.x === event.x && tr.y === event.y))
+            .filter((tr) => !servesOtherMap(tr) && (!occupied.has(`${tr.x},${tr.y}`) || (tr.x === event.x && tr.y === event.y)))
             .sort((a, b) => (Math.abs(a.x - event.x) + Math.abs(a.y - event.y)) - (Math.abs(b.x - event.x) + Math.abs(b.y - event.y)))[0];
           if (bestTravel) {
             occupied.delete(`${event.x},${event.y}`);
@@ -448,8 +455,13 @@ function fitDoorsToPlan(
     if (other.id === mapId) continue;
     for (const event of other.events) for (const t of eventTransfers(event)) {
       if (t.mapId !== mapId) continue;
-      if (other.climate?.mode === "indoor" && built.travel.length) {
-        const tr = [...built.travel]
+      // 이 맵에서 그 실내로 돌아가는 문이 방 가장자리 틈(입구)에 있으면 계단이 아니라 문으로 드나든다 — 착지는 아래 출입구 안쪽 규칙으로.
+      // 다른 맵으로 이미 이어진 사다리·계단 앞에는 내리지 않는다(2026-11-04 조수 대조 B1 Opus r3: 감방에서 올라오면 광장 사다리 앞에 내렸다).
+      const backAtOpening = events.some((e) => shape.openings.some((o) => o.x === e.x && o.y === e.y) && eventTransfers(e).some((bt) => bt.mapId === other.id));
+      const freeTravel = built.travel.filter((tr) => !events.some((e) => ((tr.trigger && e.x === tr.trigger.x && e.y === tr.trigger.y) || (e.x === tr.x && e.y <= tr.y && e.y >= tr.y - 2))
+        && eventTransfers(e).some((et) => et.mapId !== mapId && et.mapId !== other.id)));
+      if (other.climate?.mode === "indoor" && !backAtOpening && freeTravel.length) {
+        const tr = [...freeTravel]
           .sort((a, b) => (Math.abs(a.x - t.x) + Math.abs(a.y - t.y)) - (Math.abs(b.x - t.x) + Math.abs(b.y - t.y)))[0]!;
         if (tr.facing) {
           // 계약 계단: 앞 칸(들어서는 칸)에 내려 계단을 등진다.
