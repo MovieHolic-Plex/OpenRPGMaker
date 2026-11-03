@@ -77,11 +77,12 @@ import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
 
-const LEFT_PANEL_DEFAULT_WIDTH = 526;
+const LEFT_PANEL_DEFAULT_WIDTH = 260;
 const LEFT_PANEL_MIN_WIDTH = 184;
 const LEFT_PANEL_MAX_WIDTH = 640;
 const MIN_CANVAS_WIDTH = 520;
-const LEFT_ACTIVITY_BAR_WIDTH = 48;
+/** 접힌 왼쪽 열은 펴기 손잡이만 남는다. */
+const LEFT_COLUMN_HANDLE_WIDTH = 12;
 const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
@@ -736,7 +737,8 @@ function applyLayout(): void {
     const dockWidth = aiDockRoot ? 44 : 0;
     if (aiDockRoot) aiDockRoot.style.width = `${dockWidth}px`;
     const room = usableWidth - dockWidth - MIN_CANVAS_WIDTH - resizerWidth;
-    const width = collapsed ? LEFT_ACTIVITY_BAR_WIDTH : Math.max(220, Math.min(340, leftWidth, room));
+    // 목업 폭 260px(기본). 저장 폭은 220~340 안에서 쓴다.
+    const width = collapsed ? LEFT_COLUMN_HANDLE_WIDTH : Math.max(220, Math.min(340, leftWidth, room));
     aiSidebarWorkspace.root.style.width = `${width}px`;
     leftRoot.style.width = "100%";
     leftRoot.style.setProperty("--map-tree-height", `${effectiveMapTreeHeight()}px`);

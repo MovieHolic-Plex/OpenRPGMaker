@@ -65,7 +65,7 @@ export function openGenWorkspace(generator: LocalGenerator): void {
     class: "workshop-host is-gen", dataset: { testid: "workshop-gen-host" },
     on: { click: (event) => { if (event.target === host) closeGenWorkspace(); } },
   });
-  if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+  { const column = document.querySelector<HTMLElement>('[data-testid="editor-ai-sidebar"]'); if (column) host.style.left = `${Math.round(column.getBoundingClientRect().width)}px`; }
   if (document.querySelector('[data-testid="oprn-menu-bar"]')) host.style.top = "48px";
 
   const steps: HTMLElement[] = [];

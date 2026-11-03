@@ -120,6 +120,8 @@ function mockEditorDependencies(): void {
     renderMapList: (node: HTMLElement) => {
       node.textContent = "maps";
     },
+    getMapFilterQuery: () => "",
+    setMapFilterQuery: () => {},
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({
     syncMountedPaletteSelection: () => false,

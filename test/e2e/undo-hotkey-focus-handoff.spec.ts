@@ -1,6 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 import { showIndividualTiles } from "./showIndividualTiles";
 
+// 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:brush-settings-open", "1"));
+});
+
+
 // 실측 회귀(2026-08-27): Phaser 캔버스는 포커스를 받지 않아, 어시스턴트 입력창에 한 번 타이핑하면
 // 맵을 칠한 뒤 누른 Ctrl+Z 가 맵이 아니라 프롬프트 글자를 지웠다("마을에 길 하나" → "마을에 길 하").
 type EditorSnapshot = {

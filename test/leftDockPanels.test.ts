@@ -109,6 +109,8 @@ function mockEditorDependencies(): void {
     renderMapList: (node: HTMLElement) => {
       node.textContent = "maps";
     },
+    getMapFilterQuery: () => "",
+    setMapFilterQuery: () => {},
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({
     renderTilePalette: (node: HTMLElement) => {
@@ -185,16 +187,16 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
 
 });
 
-describe("패널 메뉴는 왼쪽 활동 막대를 그대로 비춘다", () => {
+describe("패널 메뉴는 왼쪽 열의 패널 단추를 그대로 비춘다", () => {
   // 감사 02-leftdock-02·03·09: 예전 절은 도크 멤버십(타일·맵)을 토글해서 체크를 꺼도 화면이 그대로였고,
-  // 접힌 도크도 「열림」으로 보였다. 이제 체크 = 막대에서 지금 펼쳐진 패널, 누르면 막대 단추를 누른다.
+  // 접힌 도크도 「열림」으로 보였다. 이제 체크 = 왼쪽 열에서 지금 펼쳐진 것(열 자체·진행·기물), 누르면 그 단추를 누른다.
   function mountActivityBar(pressed: string | null): { readonly clicks: string[] } {
     const clicks: string[] = [];
-    const bar = document.createElement("nav");
-    bar.dataset.testid = "left-activity-bar";
-    for (const [id, label] of [["tools", "그리기"], ["maps", "맵"]] as const) {
+    const bar = document.createElement("aside");
+    bar.dataset.testid = "editor-ai-sidebar";
+    for (const [id, label] of [["tools", "왼쪽 열"], ["maps", "진행"]] as const) {
       const button = document.createElement("button");
-      button.className = "left-activity-item";
+      button.dataset.leftPane = id;
       button.dataset.testid = `sidebar-${id}`;
       button.setAttribute("aria-label", label);
       button.setAttribute("aria-pressed", String(pressed === id));
@@ -202,7 +204,6 @@ describe("패널 메뉴는 왼쪽 활동 막대를 그대로 비춘다", () => {
       bar.append(button);
     }
     const inspect = document.createElement("button");
-    inspect.className = "left-activity-item";
     inspect.dataset.testid = "sidebar-inspect";
     inspect.setAttribute("aria-label", "검사");
     bar.append(inspect);

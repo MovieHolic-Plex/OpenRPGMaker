@@ -193,25 +193,33 @@ describe("commandRegistry", () => {
     }
   });
 
-  it("「패널 보기」 명령은 왼쪽 활동 막대 단추를 누른다", () => {
+  it("「패널 보기」 명령은 왼쪽 열의 패널 단추를 누른다", () => {
     // Break: 「보기」 메뉴 단추를 톱바에서 빼면서 패널 전환의 두 번째 길이 사라진다.
     const clicked = vi.fn();
     const paneButton = {
-      dataset: { testid: "sidebar-maps" },
-      getAttribute: (name: string) => (name === "aria-label" ? "맵" : name === "aria-pressed" ? "false" : null),
+      dataset: { testid: "sidebar-progress", leftPane: "progress" },
+      getAttribute: (name: string) => (name === "aria-label" ? "진행" : name === "aria-pressed" ? "false" : null),
       click: clicked,
     };
     vi.stubGlobal("document", {
       body: { classList: { add: vi.fn(), remove: vi.fn() }, dataset: {} },
       querySelectorAll: vi.fn(() => [{}]),
-      querySelector: vi.fn((selector: string) => (selector.includes("left-activity-bar")
+      querySelector: vi.fn((selector: string) => (selector.includes("editor-ai-sidebar")
         ? { querySelectorAll: () => [paneButton] }
         : null)),
     });
-    const command = listEditorCommands().find((entry) => entry.id === "workspace-panels-button-maps");
-    expect(command?.label).toBe("화면: 패널 보기 — 맵");
+    const command = listEditorCommands().find((entry) => entry.id === "workspace-panels-button-progress");
+    expect(command?.label).toBe("화면: 패널 보기 — 진행");
     command?.run();
     expect(clicked).toHaveBeenCalledTimes(1);
+  });
+
+  it("왼쪽 열에서 뺀 연결·공방·스토어·검사는 ⌘K 명령으로 남는다", () => {
+    const commands = listEditorCommands();
+    for (const [id, query] of [["left-drawer-links", "맵 연결"], ["left-drawer-workshop", "공방"], ["left-drawer-store", "에셋 스토어"], ["inspect-rule-violations", "규칙 위반"]] as const) {
+      expect(commands.filter((command) => command.id === id), id).toHaveLength(1);
+      expect(matchEditorCommands(query, commands).some((command) => command.id === id), query).toBe(true);
+    }
   });
 
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {

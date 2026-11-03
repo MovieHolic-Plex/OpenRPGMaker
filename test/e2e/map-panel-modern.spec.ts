@@ -27,9 +27,7 @@ async function bootEditor(page: Page, mode: Mode): Promise<void> {
     if (await btn.isVisible().catch(() => false)) await btn.click().catch(() => {});
   }
   await page.keyboard.press("Escape").catch(() => {});
-  if (mode === "beginner") {
-    await page.getByTestId("sidebar-maps").click();
-  }
+  // 맵 트리는 왼쪽 열의 상시 섹션이다(2026-11-03) — 어느 모드에서도 여는 탭이 없다.
   await page.getByTestId("map-tree").waitFor({ state: "visible", timeout: 30_000 });
 }
 
@@ -102,13 +100,10 @@ for (const mode of MODES) {
 }
 
 test.describe("맵 패널 헤더 — expert", () => {
-  // 필터 토글(map-tree-filter-toggle)이 5번째 버튼이다. 예전엔 이 그물에서
-  // 의도적으로 빠져 있었다 — `.oprn-icon-search` 가 컬러 PNG 라 ::before/::after 가
-  // 0px 였고, 넣으면 실패했기 때문이다(리뷰 Finding 1). `.oprn-icon-map-search` CSS
-  // 도형으로 바꾼 지금은 다섯 버튼 전부 같은 그물로 검증한다.
-  const HEADER_BUTTONS = ["map-add", "map-add-folder", "map-set-start", "map-toggle-all", "map-tree-filter-toggle"] as const;
+  // 이름 검색은 왼쪽 열 맨 위 검색칸으로 갔다(2026-11-03) — 머리의 필터 토글은 없다. 남은 네 버튼을 같은 그물로 본다.
+  const HEADER_BUTTONS = ["map-add", "map-add-folder", "map-set-start", "map-toggle-all"] as const;
 
-  test("헤더 버튼 5개가 모두 보이는 글리프를 가진다", async ({ page }) => {
+  test("헤더 버튼 4개가 모두 보이는 글리프를 가진다", async ({ page }) => {
     await bootEditor(page, "expert");
     for (const testid of HEADER_BUTTONS) {
       const button = page.getByTestId(testid);
@@ -128,27 +123,22 @@ test.describe("맵 패널 헤더 — expert", () => {
 });
 
 test.describe("맵 필터 점진적 노출", () => {
-  test("맵이 적으면 접혀 있고, 토글하면 열리며, 패싯이 활성이면 강제로 열린다", async ({ page }) => {
+  test("검색칸이 비면 패싯이 접혀 있고, 이름을 치면 패싯이 열리며, 패싯이 활성이면 열린 채 남는다", async ({ page }) => {
     await bootEditor(page, "expert");
-    const filterWrap = page.locator(".map-tree-filter");
-    await expect(filterWrap).toBeHidden();
+    const facets = page.locator(".map-tree-filter");
+    await expect(facets).toBeHidden();
+    await expect(page.getByTestId("map-tree-filter-toggle")).toHaveCount(0);
 
-    await page.getByTestId("map-tree-filter-toggle").click();
-    await expect(filterWrap).toBeVisible();
     await page.getByTestId("map-tree-filter").fill("시장");
     await expect(page.getByTestId("map-tree-filter")).toHaveValue("시장");
+    await expect(facets).toBeVisible();
 
     // 질의를 지우고 패싯만 켜도 접히지 않아야 한다.
-    await page.getByTestId("map-tree-filter").fill("");
     await page.getByTestId("map-tree-facet-empty").click();
-    // 패싯이 활성인 동안은 토글을 눌러도 상태가 안 바뀌는 죽은 컨트롤이 되므로 아예 사라진다.
-    await expect(page.getByTestId("map-tree-filter-toggle")).toBeHidden();
-    await expect(filterWrap).toBeVisible(); // 패싯이 활성이라 열려 있다
+    await page.getByTestId("map-tree-filter").fill("");
+    await expect(facets).toBeVisible();
 
-    // 패싯을 다시 끄면 토글이 돌아오고, 맵이 적으니 다시 접을 수 있다.
     await page.getByTestId("map-tree-facet-all").click();
-    await expect(page.getByTestId("map-tree-filter-toggle")).toBeVisible();
-    await page.getByTestId("map-tree-filter-toggle").click();
-    await expect(filterWrap).toBeHidden();
+    await expect(facets).toBeHidden();
   });
 });

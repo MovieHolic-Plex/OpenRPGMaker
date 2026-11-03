@@ -5,7 +5,11 @@ import { closeWorkshop, isWorkshopOpen } from "@/editor/workshop/workshopWorkspa
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { editorState } from "@/editor/editorState";
+import { COMMAND_PALETTE_OPEN_EVENT } from "@/editor/panels/commandPalette";
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
+import { isLeftDrawerId, LEFT_COLUMN_TOGGLE_EVENT, LEFT_DRAWER_EVENT, LEFT_INSPECT_EVENT, type LeftDrawerId } from "@/editor/panels/leftColumnDrawer";
+import { setMapFilterQuery } from "@/editor/panels/mapList";
+import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { ruleAuditViolationCountCached, RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
 import { closeSidebarSurface } from "@/editor/panels/sidebarSurface";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
@@ -19,34 +23,37 @@ import { createLeftStorePane } from "./leftStorePane";
 import { createLeftWorkshopPane } from "./leftWorkshopPane";
 import { createMapSidebarSection } from "./mapSidebarSection";
 
-const COLLAPSED_KEY = "oprn:ai-sidebar-collapsed";
-const PANE_KEY = "oprn:left-activity-pane";
-const PANES = ["tools", "maps", "props", "progress", "links", "workshop", "store"] as const;
-type Pane = (typeof PANES)[number];
+const COLLAPSED_KEY = "oprn:left-column-collapsed";
 type PaneSurface = { readonly root: HTMLElement; show(): void; dispose(): void };
 
-const isPane = (value: string | null): value is Pane => (PANES as readonly string[]).includes(value ?? "");
 const journeyScope = (): string => {
   const identity = store.getProjectIdentity();
   return `${identity.kind}:${identity.id}`;
 };
 
+const isMacPlatform = (): boolean => typeof navigator !== "undefined" && /Mac|iPhone|iPad/u.test(navigator.platform ?? "");
+
 /**
- * 왼쪽 활동 막대(48px 세로) + 패널 하나. 조수는 오른쪽 도크(editor.ts)에 있어 팔레트와 동시에 쓴다.
- * 켜진 아이콘을 다시 누르면 접히고, 「검사」는 패널이 아니라 규칙 감사를 여는 명령이다.
- * 패널은 펼쳐질 때만 그린다(show) — 숨은 패널은 store 알림을 받아도 root.hidden 에서 돌아선다.
+ * 왼쪽 한 칸(목업 2026-11-03): 위에서부터 「맵·이벤트 찾기」 검색칸 → 「맵」 트리 → 「타일」 팔레트 → 아래 링크 「진행」·「기물」.
+ * 세로 아이콘 막대는 없다. 진행·기물은 서랍으로 맵·타일 자리를 잠시 덮고(뒤로 단추로 돌아온다),
+ * 맵 연결·공방·에셋 스토어는 ⌘K 명령이 같은 서랍을 연다(leftColumnDrawer.ts). 「검사」는 위반이 있을 때만
+ * 검색칸 옆 경고 칩으로 보이고, 늘 ⌘K 「검사: 규칙 위반 보기」로 열 수 있다.
+ * 접으면 12px 손잡이만 남는다. 서랍은 열릴 때만 그린다(show).
  */
 export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement | null = null, onResize: () => void = () => {}): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
   let collapsed = false;
-  let pane: Pane = "tools";
+  let drawer: LeftDrawerId | null = null;
   try {
     collapsed = localStorage.getItem(COLLAPSED_KEY) === "1";
-    const saved = localStorage.getItem(PANE_KEY);
-    if (saved === "favorites") pane = "props";
-    else if (isPane(saved)) pane = saved;
   } catch { /* restricted storage */ }
-  const surfaces: Record<Exclude<Pane, "tools">, PaneSurface> = {
-    maps: createMapSidebarSection(),
+
+  const search = el("input", {
+    class: "left-column-search-input",
+    attrs: { type: "search", placeholder: "맵·이벤트 찾기", "aria-label": "맵 이름 필터", autocomplete: "off", spellcheck: "false" },
+    dataset: { testid: "map-tree-filter" },
+  }) as HTMLInputElement;
+  const maps = createMapSidebarSection(search);
+  const drawers: Record<LeftDrawerId, PaneSurface> = {
     props: createLeftPropsPane(),
     progress: createLeftProgressPane(journeyScope),
     links: createLeftLinksPane(),
@@ -54,24 +61,112 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     store: createLeftStorePane(),
   };
   tools.classList.add("ai-chat-sidebar-tools");
-  const item = (icon: DeckIconName, label: string, testid: string, onClick: () => void, shortLabel = label): HTMLButtonElement => el("button", {
-    class: "ai-chat-sidebar-tab left-activity-item",
-    children: [deckIcon(icon), el("span", { class: "ai-chat-sidebar-tab-label", text: shortLabel })],
-    attrs: { type: "button", "aria-label": label, title: label },
-    dataset: { testid },
-    on: { click: onClick },
-  }) as HTMLButtonElement;
-  const paneButtons: Record<Pane, HTMLButtonElement> = {
-    tools: item("brush", "그리기", "sidebar-tools", () => activate("tools")),
-    maps: item("map", "맵", "sidebar-maps", () => activate("maps")),
-    props: item("box", "기물", "sidebar-props", () => activate("props")),
-    progress: item("flag", "진행", "sidebar-progress", () => activate("progress")),
-    links: item("link", "연결", "sidebar-links", () => activate("links")),
-    workshop: item("wrench", "공방", "sidebar-workshop", () => activate("workshop")),
-    store: item("shop", "에셋 스토어", "sidebar-store", () => activate("store"), "스토어"),
+
+  const commitSearch = (): void => {
+    if (search.dataset.composing === "1") return;
+    setMapFilterQuery(search.value);
   };
-  const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
-  const inspectButton = item("alert", "검사", "sidebar-inspect", () => {
+  search.addEventListener("compositionstart", () => { search.dataset.composing = "1"; });
+  search.addEventListener("compositionend", () => { delete search.dataset.composing; commitSearch(); });
+  search.addEventListener("input", commitSearch);
+  search.addEventListener("keydown", (event) => {
+    if (event.isComposing) return;
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const query = search.value.trim();
+      openMapEventSearchModal(query ? { initialQuery: query } : {});
+    } else if (event.key === "Escape" && search.value) {
+      event.preventDefault();
+      event.stopPropagation();
+      search.value = "";
+      setMapFilterQuery("");
+    }
+  });
+  const shortcut = el("button", {
+    class: "left-column-search-shortcut",
+    text: isMacPlatform() ? "⌘K" : "Ctrl K",
+    attrs: { type: "button", title: "명령 팔레트 — 명령 실행 · 맵 이동", "aria-label": "명령 팔레트 열기" },
+    dataset: { testid: "left-column-command-palette" },
+    on: { click: () => window.dispatchEvent(new Event(COMMAND_PALETTE_OPEN_EVENT)) },
+  });
+  const badge = el("span", { class: "left-column-inspect-count", dataset: { testid: "sidebar-inspect-badge" } });
+  const inspectChip = el("button", {
+    class: "left-column-inspect",
+    attrs: { type: "button", title: "검사: 규칙 위반 보기" },
+    dataset: { testid: "sidebar-inspect" },
+    children: [deckIcon("alert"), badge],
+    on: { click: () => openInspection() },
+  }) as HTMLButtonElement;
+  inspectChip.hidden = true;
+  const head = el("div", {
+    class: "left-column-head",
+    children: [
+      el("label", {
+        class: "left-column-search",
+        children: [el("span", { class: "left-column-search-icon", attrs: { "aria-hidden": "true" }, children: [deckIcon("search")] }), search],
+      }),
+      shortcut,
+      inspectChip,
+    ],
+  });
+
+  const back = el("button", {
+    class: "left-column-drawer-back",
+    attrs: { type: "button", title: "맵·타일로 돌아가기" },
+    dataset: { testid: "left-drawer-back" },
+    children: [el("span", { attrs: { "aria-hidden": "true" }, text: "←" }), el("span", { text: "맵·타일" })],
+    on: { click: () => closeDrawer() },
+  });
+  const drawerShell = el("section", {
+    class: "left-column-drawer",
+    dataset: { testid: "left-column-drawer" },
+    children: [el("div", { class: "left-column-drawer-head", children: [back] }), ...Object.values(drawers).map((surface) => surface.root)],
+  });
+  const content = el("div", {
+    class: "ai-chat-sidebar-content left-column-body",
+    attrs: { id: "ai-sidebar-content" },
+    children: [maps.root, tools, drawerShell],
+  });
+
+  const link = (id: "progress" | "props", icon: DeckIconName, label: string): HTMLButtonElement => el("button", {
+    class: "left-column-link",
+    attrs: { type: "button", "aria-label": label },
+    dataset: { testid: `sidebar-${id}`, leftPane: id },
+    children: [deckIcon(icon), el("span", { text: label })],
+    on: { click: () => (drawer === id ? closeDrawer() : openDrawer(id)) },
+  }) as HTMLButtonElement;
+  const links = { progress: link("progress", "flag", "진행"), props: link("props", "box", "기물") };
+  const collapseButton = el("button", {
+    class: "left-column-collapse",
+    attrs: { type: "button", "aria-label": "왼쪽 열", title: "왼쪽 열 접기" },
+    dataset: { testid: "left-column-collapse", leftPane: "column" },
+    children: [deckIcon("sidebar")],
+    on: { click: () => setCollapsed(!collapsed) },
+  });
+  const nav = el("nav", {
+    class: "left-column-links",
+    attrs: { "aria-label": "왼쪽 열 링크" },
+    children: [links.progress, links.props, collapseButton],
+  });
+  const restore = el("button", {
+    class: "left-column-restore",
+    attrs: { type: "button", "aria-label": "왼쪽 열 펴기", title: "왼쪽 열 펴기" },
+    dataset: { testid: "left-column-restore" },
+    on: { click: () => setCollapsed(false) },
+  });
+  const root = el("aside", {
+    class: "ai-chat-sidebar left-column",
+    attrs: { "aria-label": "왼쪽 열" },
+    dataset: { testid: "editor-ai-sidebar" },
+    children: [head, content, nav, restore],
+  });
+
+  function closeAuxiliaryOverlays(except?: LeftDrawerId): void {
+    if (except !== "workshop" && isWorkshopOpen()) closeWorkshop();
+    if (except !== "store" && isAssetStoreOpen()) closeAssetStore();
+    if (readStudioMode()) requestAiStudioToggle();
+  }
+  function openInspection(): void {
     closeAuxiliaryOverlays();
     const state = editorState.get();
     if (state.layer === "event" || state.tool === "relief") {
@@ -81,129 +176,112 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
         : tools.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
       if (paletteRoot) renderTilePalette(paletteRoot);
     }
-    show("tools");
+    closeDrawer();
     openSidebarInspection("ruleAudit");
-  });
-  inspectButton.append(badge);
-  const content = el("div", {
-    class: "ai-chat-sidebar-content",
-    attrs: { id: "ai-sidebar-content" },
-    children: [tools, ...Object.values(surfaces).map((surface) => surface.root)],
-  });
-  const bar = el("nav", {
-    class: "ai-chat-sidebar-tabs left-activity-bar",
-    attrs: { "aria-label": "왼쪽 활동 막대" },
-    dataset: { testid: "left-activity-bar" },
-    children: [
-      el("div", { class: "left-activity-group", attrs: { role: "group", "aria-label": "왼쪽 패널 보기" }, children: PANES.map((id) => paneButtons[id]) }),
-      el("div", { class: "left-activity-spacer", attrs: { "aria-hidden": "true" } }),
-      inspectButton,
-    ],
-  });
-  const root = el("aside", {
-    class: "ai-chat-sidebar has-activity-bar", dataset: { testid: "editor-ai-sidebar" },
-    children: [bar, content],
-  });
-  function closeAuxiliaryOverlays(): void {
-    if (isWorkshopOpen()) closeWorkshop();
-    if (isAssetStoreOpen()) closeAssetStore();
-    if (readStudioMode()) requestAiStudioToggle();
   }
   function syncBadge(): void {
     const count = ruleAuditViolationCountCached();
-    badge.textContent = count > 0 ? String(count > 99 ? "99+" : count) : "";
-    badge.hidden = count === 0;
-    inspectButton.setAttribute("aria-label", count > 0 ? `검사 — 규칙 위반 ${count}건` : "검사");
-    inspectButton.dataset.count = String(count);
+    badge.textContent = count > 99 ? "99+" : String(count);
+    inspectChip.hidden = count === 0;
+    inspectChip.setAttribute("aria-label", count > 0 ? `검사 — 규칙 위반 ${count}건` : "검사");
+    inspectChip.dataset.count = String(count);
   }
   function sync(): void {
     root.classList.toggle("is-collapsed", collapsed);
+    root.classList.toggle("has-drawer", drawer !== null);
+    head.hidden = collapsed;
     content.hidden = collapsed;
-    const hideTools = collapsed || pane !== "tools";
-    if (hideTools) {
+    nav.hidden = collapsed;
+    restore.hidden = !collapsed;
+    const hideMain = collapsed || drawer !== null;
+    if (hideMain) {
       closeSidebarSurface();
       closeSidebarInspectionMenus();
     }
-    tools.hidden = hideTools;
-    for (const [id, surface] of Object.entries(surfaces)) surface.root.hidden = collapsed || pane !== id;
-    root.dataset.pane = pane;
-    for (const id of PANES) {
-      const open = !collapsed && pane === id;
-      paneButtons[id].setAttribute("aria-pressed", String(open));
-      paneButtons[id].setAttribute("aria-expanded", String(open));
+    tools.hidden = hideMain;
+    maps.root.hidden = hideMain;
+    drawerShell.hidden = collapsed || drawer === null;
+    for (const [id, surface] of Object.entries(drawers)) surface.root.hidden = collapsed || drawer !== id;
+    root.dataset.pane = drawer ?? "main";
+    for (const [id, button] of Object.entries(links)) {
+      const open = !collapsed && drawer === id;
+      button.setAttribute("aria-pressed", String(open));
+      button.setAttribute("aria-expanded", String(open));
     }
-  }
-  function persist(): void {
-    try {
-      localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0");
-      localStorage.setItem(PANE_KEY, pane);
-    } catch { /* restricted storage */ }
+    collapseButton.setAttribute("aria-expanded", String(!collapsed));
+    // 「보기」 메뉴가 이 단추를 「왼쪽 열」 패널 항목으로 비춘다(workspaceBar.syncPanelItems).
+    collapseButton.setAttribute("aria-pressed", String(!collapsed));
   }
   function reveal(): void {
-    if (collapsed || pane === "tools") return;
-    surfaces[pane].show();
+    if (collapsed) return;
+    if (drawer) drawers[drawer].show();
+    else maps.show();
   }
-  function show(next: Pane): void {
-    if (next !== "workshop" && isWorkshopOpen()) closeWorkshop();
-    if (next !== "store" && isAssetStoreOpen()) closeAssetStore();
-    if (readStudioMode()) requestAiStudioToggle();
+  function persist(): void {
+    try { localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0"); } catch { /* restricted storage */ }
+  }
+  function setCollapsed(next: boolean): void {
+    if (collapsed === next) return;
+    collapsed = next;
+    sync();
+    persist();
+    reveal();
+    onResize();
+  }
+  function openDrawer(next: LeftDrawerId): void {
+    closeAuxiliaryOverlays(next);
+    drawer = next;
     const wasCollapsed = collapsed;
-    pane = next;
     collapsed = false;
     sync();
     persist();
     reveal();
     if (wasCollapsed) onResize();
   }
-  function activate(next: Pane): void {
-    if (next === "tools" && (editorState.get().tool === "relief" || editorState.get().layer === "event")) {
-      selectSidebarLayer("lower");
-      show("tools");
-      return;
-    }
-    if (!collapsed && pane === next) {
-      if (next === "workshop" && isWorkshopOpen()) {
-        closeWorkshop();
-        return;
-      }
-      if (next === "store" && isAssetStoreOpen()) {
-        closeAssetStore();
-        return;
-      }
-      if (readStudioMode()) {
-        requestAiStudioToggle();
-        return;
-      }
-      collapsed = true;
-      sync();
-      persist();
-      onResize();
-      return;
-    }
-    show(next);
+  function closeDrawer(): void {
+    const wasCollapsed = collapsed;
+    if (drawer === null && !collapsed) return;
+    if (drawer === "workshop" && isWorkshopOpen()) closeWorkshop();
+    if (drawer === "store" && isAssetStoreOpen()) closeAssetStore();
+    drawer = null;
+    collapsed = false;
+    sync();
+    persist();
+    reveal();
+    if (wasCollapsed) onResize();
   }
-  const showTools = (): void => show("tools");
-  const showMaps = (): void => show("maps");
+  const showMain = (): void => closeDrawer();
+  const onDrawerRequest = (event: Event): void => {
+    const id = event instanceof CustomEvent ? event.detail : null;
+    if (isLeftDrawerId(id)) openDrawer(id);
+  };
+  const onToggle = (): void => setCollapsed(!collapsed);
   const onStudioChange = (event: Event): void => {
     if (event instanceof CustomEvent && event.detail?.open) {
       closeSidebarSurface();
       closeSidebarInspectionMenus();
     }
   };
-  window.addEventListener("oprn:ai-sidebar-tools", showTools);
-  window.addEventListener("oprn:ai-sidebar-maps", showMaps);
+  window.addEventListener("oprn:ai-sidebar-tools", showMain);
+  window.addEventListener("oprn:ai-sidebar-maps", showMain);
+  window.addEventListener(LEFT_DRAWER_EVENT, onDrawerRequest);
+  window.addEventListener(LEFT_COLUMN_TOGGLE_EVENT, onToggle);
+  window.addEventListener(LEFT_INSPECT_EVENT, openInspection);
   window.addEventListener(AI_STUDIO_CHANGE_EVENT, onStudioChange);
   window.addEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
   sync();
-  // 배지는 규칙 감사가 끝났다고 알릴 때(RULE_AUDIT_UPDATED_EVENT) 채운다. 올리면서 직접 세지 않는다 —
+  // 칩은 규칙 감사가 끝났다고 알릴 때(RULE_AUDIT_UPDATED_EVENT) 채운다. 올리면서 직접 세지 않는다 —
   // 도구줄 ⋯ 배지가 같은 캐시를 데우고 그 알림을 낸다.
-  badge.hidden = true;
   reveal();
   installDelayedTooltips(root);
   return { root, isCollapsed: () => collapsed, dispose: () => {
-    for (const surface of Object.values(surfaces)) surface.dispose();
-    window.removeEventListener("oprn:ai-sidebar-tools", showTools);
-    window.removeEventListener("oprn:ai-sidebar-maps", showMaps);
+    maps.dispose();
+    for (const surface of Object.values(drawers)) surface.dispose();
+    window.removeEventListener("oprn:ai-sidebar-tools", showMain);
+    window.removeEventListener("oprn:ai-sidebar-maps", showMain);
+    window.removeEventListener(LEFT_DRAWER_EVENT, onDrawerRequest);
+    window.removeEventListener(LEFT_COLUMN_TOGGLE_EVENT, onToggle);
+    window.removeEventListener(LEFT_INSPECT_EVENT, openInspection);
     window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onStudioChange);
     window.removeEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
   } };

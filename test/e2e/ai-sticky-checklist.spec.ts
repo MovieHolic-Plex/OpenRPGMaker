@@ -3,6 +3,12 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { Agent, get } from "node:http";
 import path from "node:path";
 
+// 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:brush-settings-open", "1"));
+});
+
+
 const evidence = path.resolve("output/evidence/assistant-sticky");
 const instruction = "기존 월드맵을 정확히 가로 22칸, 세로 17칸으로 변경해줘.";
 

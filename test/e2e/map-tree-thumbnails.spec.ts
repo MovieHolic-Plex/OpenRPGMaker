@@ -98,9 +98,8 @@ test("the beginner sidebar map tab shows the same thumbnails and nesting", async
   });
   await page.setViewportSize({ height: 1000, width: 1600 });
   await page.goto("/?freshProject=1");
-  await expect(page.getByTestId("sidebar-maps")).toBeVisible({ timeout: 30_000 });
-  await page.getByTestId("sidebar-maps").click();
-  await expect(page.getByTestId("map-tree")).toBeVisible();
+  // 맵 트리는 왼쪽 열의 상시 섹션이다 — 여는 탭이 없다.
+  await expect(page.getByTestId("map-tree")).toBeVisible({ timeout: 30_000 });
 
   const rootId = await firstRowMapId(page);
   await addChildMap(page, rootId, "민재의 집");

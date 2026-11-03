@@ -23,6 +23,7 @@ import { uiLabel } from "@/editor/uiCopy";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { INSPECTION_COMMANDS } from '@/editor/panels/sidebarInspectionPins';
+import { openLeftDrawer, openLeftInspection, toggleLeftColumn } from "@/editor/panels/leftColumnDrawer";
 import { openSidebarInspection } from '@/editor/panels/tileToolbarMenus';
 
 export interface EditorCommand {
@@ -135,6 +136,20 @@ export function listEditorCommands(): readonly EditorCommand[] {
         openSidebarInspection(id);
       },
     })),
+    // 왼쪽 열에서 뺀 진입(맵 연결·공방·에셋 스토어·검사)은 여기서만 연다 — 같은 서랍·같은 검사 메뉴다.
+    {
+      id: "inspect-rule-violations", label: "검사: 규칙 위반 보기", category: "화면",
+      keywords: ["inspect", "audit", "lint", "rule", "검사", "규칙", "위반", "경고"],
+      run: () => {
+        if (openLeftInspection()) return;
+        if (!document.querySelector('[data-testid="left-palette-root"]')) moveWorkspacePanel('tiles', 'left');
+        openSidebarInspection("ruleAudit");
+      },
+    },
+    { id: "left-drawer-links", label: "화면: 맵 연결 보기", category: "화면", keywords: ["links", "connection", "graph", "연결", "맵 연결", "이동", "도달"], run: () => openLeftDrawer("links") },
+    { id: "left-drawer-workshop", label: "화면: 공방 열기", category: "화면", keywords: ["workshop", "harness", "공방", "도트", "후보"], run: () => openLeftDrawer("workshop") },
+    { id: "left-drawer-store", label: "화면: 에셋 스토어 열기", category: "화면", keywords: ["store", "asset", "market", "스토어", "에셋", "장터"], run: () => openLeftDrawer("store") },
+    { id: "left-column-toggle", label: "화면: 왼쪽 열 접기/펴기", category: "화면", keywords: ["sidebar", "left", "collapse", "사이드바", "왼쪽", "접기", "펴기"], run: () => toggleLeftColumn() },
     // 「작업: 데이터」·「작업: 테스트」는 아래 「자료집 열기」·「테스트 실행」과 같은 일을 다른 이름으로 했다 — 한 명령 한 이름.
     ...AUTHORING_TASKS.filter((task) => !DUPLICATED_TASKS.has(task.id)).map((task): EditorCommand => ({
       id: `authoring-task-${task.id}`,
