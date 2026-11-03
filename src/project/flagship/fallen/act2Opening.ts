@@ -22,6 +22,7 @@ import { mulberry32 } from "@/util/rng";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
+import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
@@ -2871,6 +2872,14 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   fortressEvents(project, exec);
   frostFoes(project, exec, FS2_SNOW_PLAN.maps, FS2_SNOW_PLAN.fire);
   iceLake(project, exec);
+  // B7 두 장이 같은 눈길로 보였다(7/10) — 장마다 랜드마크 하나와 길 목적 하나: 서리 가도 = 버려진 보급 수레·쇠바퀴 홈·이정표,
+  // 눈보라 고개 = 북동 바위 능선·얼어붙은 옛 초소·고갯마루 전망(하늘탑 빛). 적·틈·모닥불을 세운 뒤에 깔아 그 칸을 피한다.
+  applySnowLandmarks(project, exec, {
+    mapIds: FS2_SNOW_PLAN.maps.map((m) => m.mapId),
+    starts: FS2_SNOW_PLAN.maps.map((m) => m.entry),
+    gaps: FS2_SNOW_PLAN.maps.map((m) => m.gaps.flat()),
+    speakers: { kael: KAEL, elena: ELENA, sarah: SARAH },
+  });
   detection(project, exec);
   curfewPatrolGait(project);
   courtKnightSight(project);
