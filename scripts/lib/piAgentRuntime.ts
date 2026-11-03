@@ -37,7 +37,7 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
-import { parseSplitConfig } from "../../src/ai/v2/split.ts";
+import { resolveSplitConfig } from "../../src/ai/v2/split.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
 import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
 import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
@@ -999,7 +999,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
   // 리드(OPRN_V2_SPLIT, src/ai/v2/split.ts) — v2 에서만. 주 모델이 워커가 되고 리드는 계획·단계 검토만 한다. 사용량은 leadUsage 로 따로.
-  const split = options.v2 ? parseSplitConfig(process.env.OPRN_V2_SPLIT) : undefined;
+  // 환경 변수가 없으면 편집기 엔진 선택의 팀장(request.lead — Claude 구독 첫 실행 기본값 Opus 팀장 + Haiku 워커).
+  const split = options.v2 ? resolveSplitConfig(process.env.OPRN_V2_SPLIT, request.lead) : undefined;
   const leadCli = split ? localCliIdOf(split.lead.provider) : undefined;
   const leadKey = split && !leadCli ? options.providerApiKeys?.[split.lead.provider] ?? (split.lead.provider === request.provider ? options.apiKey : undefined) : undefined;
   if (split && !leadCli && !leadKey) emit({ type: "execution_status", name: "v2.split.no_key", ok: false, summary: `리드 ${split.lead.provider}/${split.lead.model} 계정 키가 이 실행에 없음 — 나누지 않고 주 모델 혼자 한다` });

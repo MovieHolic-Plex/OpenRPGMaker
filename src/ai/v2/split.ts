@@ -2,6 +2,7 @@
 // 값싼 모델(워커 = 이 실행의 주 모델)이 그 사양대로 도구를 부르고, 도구 오류·재시도를 스스로 처리하며, 기계 확인 없이는 할 일을 닫지 못한다.
 // 리드는 도구 호출을 하나도 보지 않는다 — 사양·요약·기계 확인 결과·변경 요약만 받는다(리드 문맥을 작게).
 // 켜기: OPRN_V2_SPLIT="lead:<엔진>" — <엔진> 은 로컬 CLI(`claude:claude-opus-5-5:medium`) 또는 계정/모델(`openai-compat:proxy8318/gemini-4-argon@medium`).
+//   환경 변수가 없으면 요청의 `lead`(편집기 엔진 선택의 팀장 — 첨 실행 관문이 Claude 구독에 Opus 팀장 + Haiku 워커로 켠다)를 쓴다. `off`·`0` 은 둘 다 끈다.
 //   `worker:` 칸은 받기만 한다(기록용) — 워커는 이 실행의 주 모델(편집기에서 고른 조수 모델)이다.
 // 모델에게 가는 글은 영어(사용자 지시 2026-10-30). 순수 함수만 — 호출은 실행기(scripts/lib/assistantV2Runtime.ts)가 한다.
 import type { Project } from "../../project/types";
@@ -36,6 +37,18 @@ export function parseSplitConfig(raw: string | undefined): SplitConfig | undefin
     else worker = m[2]!;
   }
   return lead ? { lead, ...(worker ? { worker } : {}), raw } : undefined;
+}
+
+/**
+ * 이 실행의 나누기 설정. OPRN_V2_SPLIT 이 있으면 그 값이 이긴다(`off`·`0` = 끄기). 없으면 요청이 실어 온 팀장을 쓴다 —
+ * 로컬 CLI 팀장만 받는다(사용자가 그 CLI 에 로그인해 있어 키가 필요 없다). 계정 모델 팀장은 키를 푸는 경로가 환경 변수에만 있다.
+ */
+export function resolveSplitConfig(raw: string | undefined, requested?: { readonly provider: string; readonly model: string; readonly thinkingLevel?: string }): SplitConfig | undefined {
+  if (raw !== undefined && raw.trim() !== "") return parseSplitConfig(raw.trim());
+  const cli = requested ? /^local-cli:(claude|codex|gemini)$/u.exec(requested.provider)?.[1] : undefined;
+  if (!cli || !requested?.model.trim()) return undefined;
+  const effort = EFFORTS.has(requested.thinkingLevel ?? "") ? `:${requested.thinkingLevel}` : "";
+  return parseSplitConfig(`lead:${cli}:${requested.model.trim()}${effort}`);
 }
 
 export const SPLIT_LIMITS = { digest: 7_000, tools: 5_000, plan: 9_000, diff: 8_000, toolLog: 3_000, report: 1_500, reviews: 2, fixes: 5 } as const;

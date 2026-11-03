@@ -11,6 +11,7 @@ import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from ".
 import { defaultYieldToUi } from "../yieldToUi";
 import { loadAiConfig } from '../llmClient';
 import { resolvePixelModel } from '../pixelModel';
+import { assistantEngineLead, loadAssistantEngine } from '../localCliEngine';
 
 export interface RunPiAgentClientOptions {
   /** Campaign supervisor retains the partial result to repair it; it must inspect production issues before completion. */
@@ -85,6 +86,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     imageModel: request.imageModel ?? imageConfig.imageModel,
     pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model,
     ...(request.assistantRoles ?? imageConfig.assistantRoles ? { assistantRoles: request.assistantRoles ?? imageConfig.assistantRoles } : {}) };
+  // 조수 v2 팀장: 엔진 선택이 팀장을 켠 때만, 그 엔진으로 도는 v2 실행에만 싣는다.
+  const lead = request.lead ?? (request.assistantVersion === "v2" ? assistantEngineLead(loadAssistantEngine()) : undefined);
+  if (lead && lead.provider === request.provider) request = { ...request, lead };
   if (!request.store) {
     const store = await import("@/editor/assetStore/storeHint").then((m) => m.storeRunHint()).catch(() => undefined);
     if (store) request = { ...request, store };

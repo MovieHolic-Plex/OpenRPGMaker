@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, toolCatalog } from "../src/ai/v2/split";
+import { leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, resolveSplitConfig, toolCatalog } from "../src/ai/v2/split";
 
 describe("assistant v2 lead/worker split", () => {
   it("reads the lead from OPRN_V2_SPLIT (local CLI and account/model forms)", () => {
@@ -8,6 +8,16 @@ describe("assistant v2 lead/worker split", () => {
     expect(parseSplitConfig("lead:openai-compat:proxy8318/gemini-4-argon@medium")?.lead)
       .toEqual({ provider: "openai-compat:proxy8318", model: "gemini-4-argon", effort: "medium" });
     expect(parseSplitRole("claude:claude-haiku-5-5")).toEqual({ provider: "local-cli:claude", model: "claude-haiku-5-5" });
+  });
+
+  it("uses the request lead only without OPRN_V2_SPLIT, and only a local-CLI lead", () => {
+    const opus = { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" };
+    expect(resolveSplitConfig(undefined, opus)?.lead).toEqual({ provider: "local-cli:claude", model: "claude-opus-5-5", effort: "medium" });
+    expect(resolveSplitConfig("", opus)?.lead.model).toBe("claude-opus-5-5");
+    expect(resolveSplitConfig("off", opus)).toBeUndefined();
+    expect(resolveSplitConfig("lead:openai-compat:proxy8318/gemini-4-argon@medium", opus)?.lead.model).toBe("gemini-4-argon");
+    expect(resolveSplitConfig(undefined, { provider: "openai-codex", model: "gpt-6.1-sol" })).toBeUndefined();
+    expect(resolveSplitConfig(undefined, undefined)).toBeUndefined();
   });
 
   it("stays off without a lead", () => {
