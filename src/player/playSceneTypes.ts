@@ -260,6 +260,12 @@ export interface PlaySceneContext extends Phaser.Scene {
   eventSprites: Map<string, Phaser.GameObjects.Sprite>;
   /** Runtime-only charset frame overrides from setEventGraphicPattern (cleared on map reset). */
   eventGraphicPatternOverrides: Map<string, number>;
+  /**
+   * 이동 경로 changeOpacity 가 남긴 이벤트 불투명도(0..255, cleared on map reset). 경로가 끝나도, 표면을 다시 그려도 그 페이지가 서 있는 동안 유지된다 —
+   * 페이지가 바뀌면(다른 그림·상태로 다시 나타남) 잊는다.
+   * 없으면 흐려져 떠난 인물이 다음 갱신에 255 로 되살아나 몸과 들고 있던 빛이 다시 보였다(폴른 스타 B4 숲지기, 2026-11-03).
+   */
+  eventOpacityOverrides?: import("@/player/eventOpacityOverrides").EventOpacityOverrides;
   followerSprites: Map<string, Phaser.GameObjects.Sprite>;
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;

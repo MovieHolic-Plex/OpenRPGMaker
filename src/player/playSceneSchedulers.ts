@@ -34,8 +34,9 @@ import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { reportEndingClear } from "@/player/playSceneOverlays";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
+import { keptEventOpacity } from "@/player/eventOpacityOverrides";
 
-type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
+type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session"> & Partial<Pick<PlaySceneContext, "eventOpacityOverrides">>;
 
 export function registerAutonomousMover(
   scene: AutonomousMoverSceneContext,
@@ -62,7 +63,8 @@ export function registerAutonomousMover(
     directionFix: false,
     through: false,
     animationEnabled: true,
-    opacity: 255,
+    // 앞 경로가 흐려 둔 인물은 흐린 채로 다음 경로를 시작한다.
+    opacity: keptEventOpacity(scene.eventOpacityOverrides, eventId, view.pageId) ?? 255,
     speedRank: speed,
     frequencyRank: frequency,
     moveDurationMs: timing?.moveDurationMs ?? npcMoveDurationMs(speed),

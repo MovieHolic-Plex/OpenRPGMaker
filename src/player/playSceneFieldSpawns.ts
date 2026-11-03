@@ -91,6 +91,7 @@ function resetRoguelikeRoomEventRuntime(scene: PlaySceneContext): void {
   scene.pageMoveRouteEventIds.clear();
   scene.commandMoveRouteEventIds.clear();
   scene.eventGraphicPatternOverrides.clear();
+  scene.eventOpacityOverrides?.clear();
   scene.autonomousNPCs.clear();
 }
 

@@ -202,6 +202,9 @@ export function executeInstantCommand(
     case "changeOpacity":
       target.mover.opacity = clampRouteOpacity(target.mover.opacity + command.delta);
       applySpriteAlpha(target.sprite, target.mover.opacity);
+      // 경로가 끝난 뒤에도 남긴다(RPG 만들기 툴의 불투명도 변경과 같다). 255 면 기록을 지운다.
+      if (target.mover.opacity >= 255) routeContext.scene.eventOpacityOverrides?.delete(routeContext.eventId);
+      else routeContext.scene.eventOpacityOverrides?.set(routeContext.eventId, { pageId: target.view.pageId, opacity: target.mover.opacity });
       return true;
     case "setSwitch":
       applyRouteSwitch(routeContext.scene, command);

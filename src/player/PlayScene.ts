@@ -134,6 +134,7 @@ import { diagnosticToken } from "@/util/diagnosticObserver";
 import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { onRegistryValue } from "@/player/registryReady";
 import { syncDialogueCameraLift } from "@/player/dialogueCameraLift";
+import type { EventOpacityOverrides } from "@/player/eventOpacityOverrides";
 
 const PhaserRuntime = getLoadedPhaser();
 const MAX_FAILED_ASSETS = 20;
@@ -158,6 +159,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   eventPositions: RuntimeEventPositions = {};
   eventSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   eventGraphicPatternOverrides: Map<string, number> = new Map();
+  eventOpacityOverrides: EventOpacityOverrides = new Map();
   followerSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();
