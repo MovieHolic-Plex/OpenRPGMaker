@@ -1136,6 +1136,14 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 붙고 `maps` 는 막대로 옮겨 가 도크에 안 붙어 체크를 꺼도 화면이 그대로였다. Ctrl+K 의 「화면: 패널 — … 열기/닫기」
 명령(`commandRegistry.ts`)은 아직 옛 도크 토글이다.
 
+**개편안 2단계 — 앱 셸 (2026-11-04, 승인 개편안 http://mdc-server:18301/oprn-ui-redesign.html):** 톱바 높이 48→44px(컨트롤은
+32px 그대로, `responsive-shell` e2e ≤49px). 브랜드는 글자색 사각형 점 「O」(강조색은 「테스트 실행」 하나만). 프로젝트 메뉴 뒤에
+경로 둘째 칸 `topbar-crumb-map`(「/ 지금 맵」, `menu.ts` `renderMapCrumb`)을 두어 「프로젝트 / **맵**」으로 읽힌다 — 맵 이름은
+저자 글이라 `data-i18n-skip`, 맵 전환·이름 변경 때 글자만 바꾼다. 레이어 전환기는 테두리 없는 움푹한 분절(켜진 칸만 떠 있는
+바탕+그림자), AI 스튜디오는 고스트 단추. **DOM 자리·testid 는 바꾸지 않았다** — 개편안의 「컬트롤 20→8」 축소는
+`editor-map-focused-shell`·`oprn-editor-fidelity-shell` e2e 가 1024 전문가에서 세계관·음악·찾기·도움말 등이 보이기를 요구해
+따로 정한다(레이어를 가운데로 옮기면 `editorMenuSidebarIa` 277행 순서 단언도 바뀐다).
+
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
 회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
