@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { prepareAudioEditor } from "./audioDescriptionHarness";
+import { runPaletteCommand } from "./topbarNavigation";
 
 test.beforeEach(async ({ page }) => {
   await prepareAudioEditor(page);
@@ -30,7 +31,7 @@ test("finds and refreshes uploaded descriptions through the real audio-test tool
     });
   }, { id, description });
   // When
-  await page.getByTestId("toolbar-sound-test").click();
+  await runPaletteCommand(page, "음악·효과음", "open-audio");
   await page.getByTestId("audio-test-filter").fill(description);
   await page.getByTestId("audio-test-list").locator(`button[data-resource-id="${id}"]`).click();
   // Then
@@ -63,7 +64,7 @@ test("finds and refreshes uploaded descriptions through the real audio-test tool
 
 test("keeps MIDI unplayable when selected through the real audio-test toolbar", async ({ page }) => {
   // Given
-  await page.getByTestId("toolbar-sound-test").click();
+  await runPaletteCommand(page, "음악·효과음", "open-audio");
   const midi = page.getByTestId("audio-test-list").locator('button[data-audio-midi="true"]').first();
   // When: these existing rows permit inspection but advertise disabled playback.
   await midi.click({ force: true });

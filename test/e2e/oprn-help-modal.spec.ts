@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
+import { openHelpMenu } from "./topbarNavigation";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
-/** 도움말은 스튜디오 바 오른쪽 ? 아이콘 메뉴(menu-help → 단축키 · 도움말)로 연다(2026-09-03 클래식 툴바 행 삭제). */
+/** 도움말은 스튜디오 바 오른쪽 ⋯ 더 보기의 하위 메뉴(menu-help → 단축키 · 도움말)로 연다(2026-11 톱바 개편). */
 async function openHelpFromTopbar(page: import("@playwright/test").Page): Promise<void> {
-  await page.getByTestId("menu-help").click();
+  await openHelpMenu(page);
   await page.getByTestId("menu-help-shortcuts").click();
 }
 
@@ -53,7 +54,7 @@ test("help button opens a wiki-style editor guide", async ({ page }, testInfo) =
 test("help menu item opens the same modal", async ({ page }) => {
   await page.goto("/?freshProject=1");
 
-  await page.getByTestId("menu-help").click();
+  await openHelpMenu(page);
   await page.getByTestId("menu-help-shortcuts").click();
 
   await expect(page.getByTestId("help-modal")).toBeVisible();

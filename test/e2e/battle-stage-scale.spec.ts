@@ -11,6 +11,7 @@
 import { expect, test } from "@playwright/test";
 import { seedReferenceBattleProject } from "./battleReferenceProject";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { runPaletteCommand } from "./topbarNavigation";
 
 const LOGICAL_WIDTH = 640;
 const LOGICAL_HEIGHT = 480;
@@ -87,8 +88,8 @@ test("battle scene fills its host without clipping on the battle-test route", as
   test.setTimeout(120_000);
   await page.goto("/?project=rpg-zzu-quest-demo");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
-  // 2026-09-03: 게임 메뉴·클래식 툴바 행이 사라졌다 — 전투 테스트의 집은 톱바 ⚔(topbar-battle-test) 하나다.
-  await page.getByTestId("topbar-battle-test").click({ force: true });
+  // 2026-11 톱바 개편: 랜덤 전투 테스트의 집은 ⌘K 「화면: 랜덤 전투 테스트」 명령 하나다.
+  await runPaletteCommand(page, "랜덤 전투 테스트", "topbar-battle-test");
   await expect(page.getByTestId("battle-scene")).toBeVisible({ timeout: 25_000 });
   await page.waitForTimeout(800);
 

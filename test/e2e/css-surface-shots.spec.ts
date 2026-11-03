@@ -65,8 +65,9 @@ async function boot(page: Page, w: number, h: number) {
 }
 
 // 게스트 신원 라벨은 부트마다 무작위다(editorIdentity) — 셸 샷에서는 그 버튼을 가린다.
+// 2026-11 톱바 개편으로 신원 단추는 ⌘K 로 옮겨 톱바에 없다(0개 로케이터는 가릴 것이 없다). 저장 글자의 시각도 가린다.
 function shellMasks(page: Page) {
-  return [page.getByTestId("topbar-identity")];
+  return [page.getByTestId("topbar-identity"), page.getByTestId("toolbar-save")];
 }
 
 // eventEditorCertEvidence.openEventEditor 는 전문가 모드 전제(tool-event 버튼)다. 표준 모드는 이벤트

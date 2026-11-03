@@ -6,6 +6,8 @@ import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "
 import { AI_BACKGROUND_OPACITY_KEY } from "@/editor/panels/aiPanelLayout";
 import { closeAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderTopbar } from "@/editor/panels/menu";
+import { listEditorCommands } from "@/editor/commandRegistry";
+import { requestAiStudioToggle } from "@/editor/aiStudioMode";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -50,8 +52,23 @@ async function boot(): Promise<HTMLElement> {
   return panel;
 }
 
-function setDensity(value: number): void {
+/** AI 설정은 ⋯ 더 보기 안의 항목이다(2026-11 개편). 팝업이 열려 있지 않으면 ⋯ 를 누른다. */
+function openTopbarAiSettings(): void {
+  if (!document.querySelector('[data-testid="topbar-ai-settings"]')) control("menu-more-tools").click();
   control("topbar-ai-settings").click();
+}
+
+/**
+ * AI 스튜디오는 ⌘K 「화면: AI 스튜디오 열기/닫기」 명령이 집이다(2026-11 개편). 명령은 aiStudioMode 를 실행 때 불러와
+ * requestAiStudioToggle 을 부른다 — 이 테스트는 명령이 있는지 확인한 뒤 같은 요청을 동기로 보낸다(동적 import 대기 없이).
+ */
+function toggleStudioFromCommand(): void {
+  expect(listEditorCommands().some((entry) => entry.id === "topbar-ai-studio"), "⌘K AI 스튜디오 명령").toBe(true);
+  requestAiStudioToggle();
+}
+
+function setDensity(value: number): void {
+  openTopbarAiSettings();
   const range = control<HTMLInputElement>("ai-background-opacity");
   expect(range.type).toBe("range");
   range.value = String(value);
@@ -62,25 +79,26 @@ function setDensity(value: number): void {
 function expectDensity(panel: HTMLElement, value: number): void {
   expect(localStorage.getItem(AI_BACKGROUND_OPACITY_KEY)).toBe(String(value));
   expect(panel.style.getPropertyValue("--ai-background-opacity")).toBe(`${value}%`);
-  control("topbar-ai-settings").click();
+  openTopbarAiSettings();
   expect(control<HTMLInputElement>("ai-background-opacity").value).toBe(String(value));
   control("ai-settings-close").click();
 }
 
 describe("studio background-density preference lifecycle", () => {
   // Happy DOM is intentional: FakeDom's style attribute does not reset its style object.
-  it.each(["ai-studio-exit", "topbar-ai-studio", "ai-collapse"])("preserves current preferences through studio entry and %s", async (exitControl) => {
+  it.each(["ai-studio-exit", "studio-command", "ai-collapse"])("preserves current preferences through studio entry and %s", async (exitControl) => {
     // Given a real settings input on a mounted floating panel.
     const panel = await boot();
     setDensity(100);
     expectDensity(panel, 100);
 
-    // When studio opens from the topbar and exits or collapses.
-    control("topbar-ai-studio").click();
+    // When studio opens from the ⌘K command and exits or collapses.
+    toggleStudioFromCommand();
     expect(panel.classList.contains("is-studio")).toBe(true);
     expectDensity(panel, 100);
     expect(panel.style.getPropertyValue("--ai-font-scale")).toBe("1.2");
-    control(exitControl).click();
+    if (exitControl === "studio-command") toggleStudioFromCommand();
+    else control(exitControl).click();
 
     // Then preferences survive both paths, including the collapsed pill's inherited token.
     expect(panel.classList.contains("is-studio")).toBe(false);
@@ -120,14 +138,14 @@ describe("studio background-density preference lifecycle", () => {
     // Given studio entered with a different density.
     const panel = await boot();
     setDensity(100);
-    control("topbar-ai-studio").click();
+    toggleStudioFromCommand();
 
     // When the active studio's settings change, then exit and enter again.
     setDensity(78);
     expectDensity(panel, 78);
     control("ai-studio-exit").click();
     expectDensity(panel, 78);
-    control("topbar-ai-studio").click();
+    toggleStudioFromCommand();
 
     // Then the latest setting survives the next transition and collapse.
     expectDensity(panel, 78);
@@ -149,7 +167,7 @@ describe("studio background-density preference lifecycle", () => {
     panel.style.maxHeight = "800px";
 
     // When studio takes over geometry.
-    control("topbar-ai-studio").click();
+    toggleStudioFromCommand();
 
     // Then no float geometry sticks to either root; appearance remains independent.
     for (const property of ["width", "height", "maxWidth", "maxHeight"] as const) {

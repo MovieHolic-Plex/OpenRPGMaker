@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
+import { openTopbarAiSettings } from "./topbarNavigation";
 
 const EVIDENCE = path.resolve(".omo/evidence/editor-ai-phase2");
 const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
@@ -35,7 +36,7 @@ test("접힌 조수에서 제공자와 여섯 저작 예제를 확인하고 입�
   await dismissBootOverlays(page);
 
   // 제공자 표시는 퇴역한 하단 상태 칩이 아니라 현재 연결 설정 표면에서 확인한다.
-  await page.getByTestId("topbar-ai-settings").click();
+  await openTopbarAiSettings(page);
   await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
   await expect(page.getByTestId("ai-auth-provider-help")).toContainText("ChatGPT 계정으로 로그인");
   await page.getByTestId("ai-settings-close").click();

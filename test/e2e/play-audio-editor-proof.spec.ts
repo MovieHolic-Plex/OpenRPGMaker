@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { runPaletteCommand } from "./topbarNavigation";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/play-audio-editor";
 
@@ -17,10 +18,8 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
 
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
-  // Expert mode is pinned by the addInitScript above — toolbar-sound-test is expert chrome.
-  await expect(page.getByTestId("toolbar-sound-test")).toBeVisible({ timeout: 20_000 });
-
-  await page.getByTestId("toolbar-sound-test").click();
+  // 2026-11 톱바 개편: 음악·효과음 단추는 ⌘K 「화면: 음악·효과음 열기」 명령으로 옮겼다.
+  await runPaletteCommand(page, "음악·효과음", "open-audio");
   const audioDialog = page.getByTestId("audio-test-dialog");
   await expect(audioDialog).toBeVisible();
   await page.getByTestId("audio-test-option-1").click();
