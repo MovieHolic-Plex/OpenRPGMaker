@@ -3797,7 +3797,7 @@
   },
   {
    "id": "act2-b1-cell",
-   "label": "제2막 B1 — 감방의 밤: 막 제목 → 리노의 납작빵",
+   "label": "제2막 B1 — 감방의 밤: 붙잡히던 밤 회상 → 막 제목 카드 → 엎어진 카엘이 일어남 → 리노의 납작빵",
    "note": "act2Opening.ts cellEvents director·rino",
    "mapId": "fs2_cell",
    "x": 6,
@@ -3820,7 +3820,7 @@
    ],
    "beats": [
     {
-     "id": "open",
+     "id": "rope",
      "ops": [
       {
        "kind": "waitFor",
@@ -3831,7 +3831,109 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1800
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hanel",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "title",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "caption",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fallen",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rise",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
       }
      ],
      "shot": true
@@ -4045,7 +4147,7 @@
   },
   {
    "id": "act2-bridge",
-   "label": "제1막 끝 카드 → 「제2막으로」 → 감방",
+   "label": "제1막 끝 「…잡아라」 → 크레딧 → 「제2막으로」 → 회상·막 제목 카드 → 감방(1막→2막 연결)",
    "note": "define_ending continueTo — 엔딩 마지막 버튼이 타이틀 대신 fs2_cell 로",
    "mapId": "fs_observatory",
    "x": 4,
@@ -4188,7 +4290,109 @@
       {
        "kind": "hold",
        "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hanel",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "title",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "caption",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fallen",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rise",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
       }
      ],
      "shot": true

@@ -25,6 +25,7 @@ import { applyFallenAct2Tower } from "./act2Tower";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
+import act2TitleCard from "./backdrops/act2-title.json";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -36,6 +37,8 @@ type Rec = Record<string, unknown>;
 const KAEL = FS_NAMES.hero;
 const ELENA = FS_NAMES.mage;
 const RINO = "리노";
+const IRIS = FS_NAMES.android;
+const VALEN = FS_NAMES.inquisitor;
 
 // ── id ─────────────────────────────────────────────────────────────────
 export const FS2_CELL_ID = "fs2_cell";
@@ -90,6 +93,18 @@ const CELL_ROOM = {
     { id: "shackles", x: 5, y: 1 },
     { id: "shackles", x: 8, y: 1 },
     { id: "drip puddle", x: 4, y: 5 },
+    // 감방이 한 면으로 읽혔다(B1 검수 2026-11-04: 「감방이 단조롭다」) — 구석마다 다른 것을 둔다:
+    // 흩어진 짚·거미줄·금 간 벽·녹은 촛농(감방), 물동이·돌 걸상(복도), 열쇠 꾸러미·술 탁자·무기 상자(간수실).
+    { id: "straw pile", x: 5, y: 3 },
+    { id: "straw pile", x: 11, y: 5 },
+    { id: "cobweb", x: 1, y: 1 },
+    { id: "cracked wall", x: 11, y: 1 },
+    { id: "candle stubs", x: 1, y: 3 },
+    { id: "stone bench", x: 2, y: 8 },
+    { id: "water bucket", x: 11, y: 8 },
+    { id: "key ring hook", x: 18, y: 1 },
+    { id: "table:mug+bottle", x: 17, y: 7 },
+    { id: "weapon crate", x: 19, y: 7 },
     { id: "iron gate", x: CELL.gate.x, y: CELL.gate.y },
     { id: "stairs up stone", x: CELL.stairs[0]!.x, y: CELL.stairs[0]!.y },
     { id: "wall torch", x: 14, y: 1 },
@@ -98,6 +113,8 @@ const CELL_ROOM = {
     { id: "barrel", x: 19, y: 5 },
   ],
   lines: [{ id: "bars", cells: Array.from({ length: 12 }, (_, i) => ({ x: i + 1, y: 6 })).filter((c) => c.x !== CELL.gate.x) }],
+  // 간수실은 판석 — 감방·복도의 젖은 돌과 갈린다.
+  zones: [{ x0: 14, y0: 1, x1: 19, y1: 9, floor: "flag" }],
 };
 
 // ── 막사 평면(28×15) ─────────────────────────────────────────────────────
@@ -324,6 +341,8 @@ function cellMap(project: Project, exec: Exec): GameMap {
   });
   const map = M(project, FS2_CELL_ID);
   (map as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  // 제2막 막 제목 카드(코드 손 그림 backdrops/draw_act2_title.py) — 여는 장면이 showPicture 로 띄운다.
+  exec(project, "upsert_resource", { resource: act2TitleCard.resource });
   // 횃불 둘만 밝다 — 감방 쪽은 거의 어둡다.
   exec(project, "set_lighting_volume", {
     mapId: FS2_CELL_ID, ambient: 0.5, color: "#0b0f1a", applyMode: "map",
@@ -331,6 +350,8 @@ function cellMap(project: Project, exec: Exec): GameMap {
       { id: "t1", at: { x: 14, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
       { id: "t2", at: { x: 19, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
       { id: "grate", at: { x: 7, y: 2 }, radius: 3, intensity: 0.35, color: "#8fa6d8" },
+      // 감방 구석의 녹은 촛농 — 쇠창살 안쪽에도 작은 불 한 점.
+      { id: "stub", at: { x: 1, y: 3 }, radius: 1.6, intensity: 0.55, color: "#ffc070", flicker: true },
     ],
   });
   return map;
@@ -355,16 +376,35 @@ function cellEvents(map: GameMap): void {
       // B11 렌즈 대기실에서 다시 합류한다(act2Tower changeParty add).
       { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
       fadeOut(1),
-      wait(600),
-      narrate("제2막 「빌린 불」", { position: "center", context: "narration" }),
-      wait(300),
+      wait(700),
+      // 붙잡히던 밤의 회상 — 1막 끝 「…잡아라」 와 감방 사이를 잇는다(1막→2막 연결 검수 2026-11-04: 크레딧 뒤 곧장 감방이라
+      // 어떻게 갇혔는지가 빠졌다). 어둠 위 네 줄. 하넬의 「작은 것부터」 가 빵 속 열쇠(「작은 일들이 먼저 대답을 해」)로 이어진다.
+      se("cc0-se-orp-inventory-cloth"),
+      narrate("손목에 밧줄이 감겼다.", { position: "center", context: "narration" }),
+      say(IRIS, "카엘…!"),
+      say(VALEN, "아이는 따로 모셔라.\n선생님은 천문대에."),
+      say(HANEL, "…별을 세거라, 카엘. 작은 것부터."),
+      wait(900),
+      // 막 제목 카드 — 1막 끝 카드와 같은 꼴(작은 머리글·큰 제목·금빛 밑줄)의 그림 한 장. 대화창에 띄우지 않는다.
+      { kind: "showPicture", pictureId: "fs2_act2_title_9", resourceId: act2TitleCard.resource.id, x: 0, y: 0, scale: 100, opacity: 255, waitForPicture: false } as unknown as Command,
+      fadeIn(1400),
+      wait(2600),
+      fadeOut(1000),
+      { kind: "erasePicture", pictureId: "fs2_act2_title_9" } as unknown as Command,
+      wait(400),
       narrate("이튿날 밤, 심문회 초소 지하.", { position: "center", context: "narration" }),
-      fadeIn(1200),
+      // 첫 장면 — 카엘이 젖은 바닥에 엎어져 있다가 몸을 일으킨다.
+      m2("m2-225-sprite-look", { target: "player", pose: "fallen" }),
+      fadeIn(1400),
+      wait(700),
       se("cc0-se-osx-splash-01"),
-      wait(500),
+      wait(600),
+      se("cc0-se-orp-inventory-cloth"),
+      m2("m2-225-sprite-look", { target: "player", reset: true }),
+      wait(300),
       emote("player", "ellipsis", 900),
-      say(ELENA, "…이리스가 없어.\n발렌이 따로 데려갔어."),
-      say(KAEL, "선생님은 천문대에 갇히셨대.\n간수들이 떠드는 걸 들었어."),
+      say(ELENA, "…이리스가 없어."),
+      say(KAEL, "선생님도."),
       se("cc0-se-osx-door-open"),
       route(rinoId, [{ kind: "setThrough", enabled: true }, ...walk(toGate), { kind: "setThrough", enabled: false }, { kind: "turn", dir: "up" }]),
       say(RINO, "저녁이다. …토마 아저씨가 구운 거다."),
@@ -398,7 +438,7 @@ function cellEvents(map: GameMap): void {
         setSw(SW_KEY),
         narrate("「빵 속 감방 열쇠」를 얻었다.", { context: "system" }),
         say(ELENA, "토마 아저씨…!\n「꼭꼭 씹어라」가 이 뜻이었구나."),
-        say(KAEL, "선생님 말씀이 맞았어.\n작은 일들이 먼저 대답을 해."),
+        say(KAEL, "선생님 말씀이 맞았어. 작은 것부터.\n작은 일들이 먼저 대답을 해."),
       ], { priority: "same" }),
       page(`${id}_after`, "짚 침대", [sw(SW_KEY)], [narrate("빵 부스러기만 남았다.")], { priority: "same" }),
     ]);
@@ -512,6 +552,9 @@ function barracks(project: Project, exec: Exec): void {
       caughtPenalty: caught,
       // 침상(2층 침대) 앞에서 조사하면 밑으로 숨는다 — 숨는 걸 못 본 순찰병은 지나간다.
       ...(g.hides ? { hidingSpots: BARRACKS.nooks.slice(0, 3).flatMap((n) => [n.x0, n.x0 + 1, n.x0 + 2, n.x0 + 3].map((x) => ({ x, y: 3 }))) } : {}),
+      // 숨을 곳 위 ▼ 표식은 달지 않는다 — 침상이 숨을 곳이라는 건 엘레나의 「침상 그늘이면 안 보여」와 침상 모양이 말한다
+      // (B1 검수 2026-11-04: 표식·늘 떠 있는 「숨어 있음」 띠가 손잡이였다).
+      hidingMarkers: false,
       checkpointOnEntry: false,
       mood: false,
     }) as { eventId?: string } | undefined;
@@ -918,12 +961,16 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   exec(project, "build_hand_interior_room", {
     mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
     floor: "wetstone", wall: "dungeonw", ceiling: "dark",
-    objects: [{ id: "wall torch", x: 5, y: 1 }, { id: "wall torch", x: 9, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 }],
+    // 승강 장치가 기계로 읽히게(B3 검수 2026-11-04: 「발판 한 장이라 기계로 안 읽힌다」) — 발판(6..7,4..5) 바로 위 벽면에 도는 톱니,
+    // 곁에 감는 고패·쇠사슬 더미·계기판·레버. 발판 칸과 그 앞 칸(6..7,6)은 비워 둔다.
+    objects: [{ id: "wall torch", x: 4, y: 1 }, { id: "wall torch", x: 10, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 },
+      { id: "gear wall", x: 6, y: 1 }, { id: "gauge panel", x: 8, y: 1 },
+      { id: "gate winch", x: 8, y: 4 }, { id: "anchor chain", x: 5, y: 5 }, { id: "wall lever", x: 9, y: 1 }],
   });
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
-    sources: [{ id: "t1", at: { x: 5, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 9, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
+    sources: [{ id: "t1", at: { x: 4, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 10, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
       // 승강 발판 — 위(천문대)에서 새는 푸른 별빛. 발판이 어둠에 묻혀 안 보였다(2026-10-29 결함 목록).
       { id: "lift", at: { x: SHAFT.lift.x + 1, y: SHAFT.lift.y + 1 }, radius: 2.5, intensity: 0.7, color: "#9fb8ff" }],
   });
