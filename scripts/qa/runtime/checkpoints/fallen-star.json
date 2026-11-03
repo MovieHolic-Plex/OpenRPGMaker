@@ -4499,7 +4499,7 @@
   },
   {
    "id": "act2-b2-patrol",
-   "label": "제2막 B2 — 야경꾼 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
+   "label": "제2막 B2 — 순찰병 2인조에게 들킨다 → 쉬운 전투(이기면 그 순찰은 사라진다)",
    "note": "act2Opening.ts curfewHub 북쪽 순찰 (45,17) 가로 4칸(동쪽으로 먼저 걷는다, 콘 120°·시야 6) — 순찰로 동쪽 끝 너머 (50,17)에 서 있으면 첫 걸음 뒤 정면 부채꼴에 든다. (43,20)은 순찰이 등을 돌린 채 서 있어 14초 안에 못 봤다(r2).",
    "mapId": "fs2_hub_night",
    "x": 50,
@@ -4560,7 +4560,7 @@
   },
   {
    "id": "act2-b2-patrol-watch",
-   "label": "제2막 B2 — 통금 야경꾼 순찰 걸음 보기(들키지 않는 자리에서 12초)",
+   "label": "제2막 B2 — 통금 순찰병 순찰 걸음 보기(들키지 않는 자리에서 12초)",
    "note": "act2Opening.ts curfewPatrolGait — 북쪽 순찰 (45..49,17) 가로 4칸. B4 개구멍 도착 칸 (38,16)은 순찰 서쪽 끝에서 7칸이라 시야 6 밖. 걷기 → 끝에서 양옆 둘러보기 → 되돌아 걷기가 끊김 없이 보여야 한다.",
    "mapId": "fs2_hub_night",
    "x": 38,
@@ -5327,7 +5327,7 @@
   },
   {
    "id": "act2-b4-caught",
-   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 등 뒤 야경꾼에게 따라잡혀 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
+   "label": "제2막 B4 — 숲 어귀 추격 실패 한 판: 서쪽으로 돌아가다 등 뒤 순찰병에게 따라잡혀 → 개구멍 안쪽으로 → 다시 기어 나가 곧장 틈으로",
    "note": "act2Opening.ts forestEdgeChase — 붙잡히면 광장 개구멍 앞(38,16), 개구멍 다시 조사 = ev_fs2_hub_hole_again",
    "mapId": "map_field_north_1",
    "x": 12,
@@ -13185,7 +13185,7 @@
   },
   {
    "id": "act2-b1-caught",
-   "label": "제2막 B1 — 막사 잠입 실패 한 판: 남쪽 야경꾼 등불에 들어서면 「!」 → 덮침 → 감방으로",
+   "label": "제2막 B1 — 막사 잠입 실패 한 판: 남쪽 순찰병 등불에 들어서면 「!」 → 덮침 → 감방으로",
    "note": "act2Opening.ts barracks — caughtPenalty(중간 지점 전 = 감방)",
    "mapId": "fs2_barracks",
    "x": 3,
@@ -13512,8 +13512,8 @@
   },
   {
    "id": "act2-b1-sneak",
-   "label": "제2막 B1 — 막사 잠입 성공 한 판: 귀띔 → 남쪽 야경꾼 등 뒤로 왼벽 → 첫 알코브(중간 지점) → 침상 밑에 숨기 → 알코브 건너기 → 압수품 상자 → 사다리",
-   "note": "act2Opening.ts barracks — 야경꾼 둘(make_chase_scene patrol pauseBeats·lookAround, set_field_detection visionLight)",
+   "label": "제2막 B1 — 막사 잠입 성공 한 판: 귀띔 → 남쪽 순찰병 등 뒤로 왼벽 → 첫 알코브(중간 지점) → 침상 밑에 숨기 → 알코브 건너기 → 압수품 상자 → 사다리",
+   "note": "act2Opening.ts barracks — 순찰병 둘(make_chase_scene patrol pauseBeats·lookAround, set_field_detection visionLight)",
    "mapId": "fs2_barracks",
    "x": 3,
    "y": 13,

@@ -331,6 +331,8 @@ export function isLightingState(value: unknown): value is LightingState {
   if (!isRecord(value)) return false;
   if (typeof value.ambient !== "number" || !Number.isFinite(value.ambient)) return false;
   if (value.color !== undefined && typeof value.color !== "string") return false;
+  if (value.blend !== undefined && typeof value.blend !== "string") return false;
+  if (value.vignette !== undefined && (typeof value.vignette !== "number" || !Number.isFinite(value.vignette))) return false;
   if (!Array.isArray(value.sources)) return false;
   return value.sources.every(isLightSource);
 }
