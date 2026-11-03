@@ -228,7 +228,7 @@ function database(project: Project): void {
     const skill = db.skills.find((s) => s.id === id) as SkillRecord | undefined;
     if (!skill) throw new Error(`[fallen-star act1] 기술 ${id} 이 없다`);
     skill.stateEffects = [...(skill.stateEffects ?? []).filter((e) => e.stateId !== FS_PIERCED_STATE), { stateId: FS_PIERCED_STATE, chance: 100, operation: "add" }];
-    if (!skill.description?.includes("관통상")) skill.description = `${skill.description ?? ""}\n맞으면 「관통상」, 비늘에도 마법이 먹힌다.`.trim();
+    if (!skill.description?.includes("관통상")) skill.description = `${skill.description ?? ""}\n맞으면 「관통상」을 입힌다.`.trim();
   }
   // 다른 적은 관통상에 걸리지 않는다(마법 3배는 용의 비늘에만 뜻이 있다).
   for (const enemy of db.enemies) enemy.stateRates = { ...(enemy.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
@@ -283,7 +283,7 @@ function database(project: Project): void {
     backdropLayers: [{ preset: "glow", opacity: 70 }, { preset: "fog", opacity: 40 }, { preset: "embers", opacity: 30 }],
     battleEventPages: [
       { id: "troop_fs_dragon_open", name: "시작 — 마력이 미끄러진다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
-        commands: [text("비늘이 마력을 먹어요.\n이대로는 주문이 미끄러져요.", IRIS), text("알았어. 창으로 먼저 틈을 낼게.", KAEL)] },
+        commands: [text("비늘이 마력을 먹어요.\n이대로는 주문이 미끄러져요.", IRIS), text("…어딘가 틈이 있을 거야.", KAEL)] },
       { id: "troop_fs_dragon_crack", name: "관통상 — 비늘이 갈라졌다", span: "battle", runOnce: false,
         conditions: [{ kind: "enemyState", enemyId: FS_DRAGON_ENEMY, stateId: FS_PIERCED_STATE }, sw(SW_DRAGON_CRACK, false)],
         commands: [setSw(SW_DRAGON_CRACK), text("비늘이 쩍 갈라진다!\n그 틈으로 마력이 먹힌다.")] },
@@ -362,7 +362,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   upsert(db.skills, {
     ...clone(shot), id: FS_IRIS_SHOCK_SKILL, name: "전격탄", power: 62, elementId: "thunder", animationId: "anim_gen_thunder_strike",
     mpCost: { flat: 5, percentMax: 0 }, criticalRate: 10, weaponAffinity: undefined,
-    description: "번개를 실어 쏜다.\n기계나 쇠붙이에 잘 듣는다.",
+    description: "번개를 실어 쏜다.",
   } as unknown as SkillRecord);
   const iris = db.actors.find((a) => a.id === "actor_fs_iris") as (ActorRecord & { learnedSkills?: { level: number; skillId: string }[] }) | undefined;
   if (!iris) throw new Error("[fallen-star act1] actor_fs_iris 가 없다");
@@ -463,7 +463,6 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
           m2("m2-046-tint-screen", { color: "neutral", durationMs: 700 }),
           text("살갗이 갈라지고, 그 밑에서\n톱니와 금빛 선이 드러난다."),
           text("저건… 저랑 같은 몸이에요.\n칼도 주문도 튕겨 나가요!", IRIS),
-          text("안쪽 회로를 노려요. 번개면 먹혀요!", IRIS),
         ] },
     ],
   } as unknown as TroopRecord);

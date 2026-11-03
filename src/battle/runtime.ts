@@ -2038,7 +2038,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     for (const [stateId, chance] of chances) {
-      applyStateEffectsWithEmotion(options.project, target, [{ stateId, chance, operation: "add" }], rng);
+      // applyStates 는 걸린 상태를 타임라인(stateAdded)에 남긴다 — 예전엔 조용히 걸어 화면에 상태 글자가 안 떴다(2026-11-03 폴른 스타 무기 특성).
+      applyStates(actor, target, [{ stateId, chance, operation: "add" }]);
     }
   }
 

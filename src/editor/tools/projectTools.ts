@@ -10,7 +10,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { BATTLE_FANFARE_STYLES, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare } from "@/project/battleFanfare";
-import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
+import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_PACES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
@@ -338,6 +338,7 @@ const setProjectSettings: ToolDefinition = {
               comboFx: { type: "string", enum: [...BATTLE_COMBO_FXS], description: "연계기 화려함. spectacular = 번쩍임·확대·흔들림·참가자별 빛 → 합쳐진 마무리·착탄 느린 화면·피해 숫자 폭발 · simple = 번쩍임만" },
               skillHint: { type: "string", enum: [...BATTLE_SKILL_HINTS], description: "전투 기술 도움말. line = 「○○은 무엇을 할까?」 자리에 한 줄(MP6 · 적 전체 · 냉기 · 둔화) · window = 긴 도움말 창" },
               revealWeakness: { type: "string", enum: [...BATTLE_REVEAL_WEAKNESSES], description: "battle.revealWeakness 와 같다" },
+              pace: { type: "string", enum: [...BATTLE_PACES], description: "전투 흐름. quick(기본) = 지금 속도 · steady = 행동 동작·이펙트 0.75배 템포에 격파 대사·차례 정리 쉼을 넉넉히. 「전투가 너무 빠르다」면 steady" },
             },
             additionalProperties: false,
           },
@@ -608,10 +609,10 @@ const setProjectSettings: ToolDefinition = {
       }
       if (battle.staging !== undefined || battle.revealWeakness !== undefined) {
         if (battle.staging !== undefined && (!battle.staging || typeof battle.staging !== "object" || Array.isArray(battle.staging))) {
-          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?, revealWeakness?} 객체여야 합니다.", { code: "invalid-args" });
+          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?, revealWeakness?, pace?} 객체여야 합니다.", { code: "invalid-args" });
         }
         const patch: Record<string, unknown> = { ...(battle.staging as Record<string, unknown> | undefined), ...(battle.revealWeakness !== undefined ? { revealWeakness: battle.revealWeakness } : {}) };
-        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS, revealWeakness: BATTLE_REVEAL_WEAKNESSES };
+        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS, revealWeakness: BATTLE_REVEAL_WEAKNESSES, pace: BATTLE_PACES };
         for (const [key, list] of Object.entries(lists)) {
           if (patch[key] !== undefined && !list.includes(String(patch[key]))) {
             throw new ToolError(`battle.staging.${key} 는 ${list.join(" · ")} 중 하나입니다(받은 값 ${JSON.stringify(patch[key])}).`, { code: "invalid-args" });
