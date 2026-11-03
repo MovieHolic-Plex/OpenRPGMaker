@@ -21,9 +21,15 @@ describe("event-anchored light follows the figure", () => {
 });
 
 describe("hard-edged sight light and circular sight agree", () => {
-  it("keeps a hard edge bright until the rim", () => {
-    expect(lightFalloffAt(0.9, "hard")).toBeGreaterThan(0.5);
+  it("keeps the hard edge readable at the rim while the inside falls off like a lantern", () => {
+    // 끝 가까이에도 빛이 남아 테두리가 읽힌다(부드러운 곡선은 거의 0).
+    expect(lightFalloffAt(0.9, "hard")).toBeGreaterThan(0.2);
     expect(lightFalloffAt(0.9)).toBeLessThan(0.1);
+    // 안쪽은 고른 판이 아니라 들고 있는 사람 곁이 밝다.
+    expect(lightFalloffAt(0.1, "hard")).toBeGreaterThan(lightFalloffAt(0.5, "hard") * 1.6);
+    expect(lightFalloffAt(0.5, "hard")).toBeGreaterThan(lightFalloffAt(0.85, "hard"));
+    // 끝 띠는 짧다 — 반지름 94% 너머에서 끊긴다.
+    expect(lightFalloffAt(0.99, "hard")).toBeLessThan(0.05);
     const hard = lightingGradientParams({ ...lamp, sources: [{ ...lamp.sources[0]!, at: { x: 1, y: 1 }, edge: "hard" }] }, context((a) => (a === "player" || "eventId" in a ? undefined : a)));
     expect(hard.gradients[0]?.edge).toBe("hard");
   });

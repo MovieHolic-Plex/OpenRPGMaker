@@ -942,7 +942,7 @@
 }
 
 /* Dedicated left map section: navigation and properties, independent of tiles. */
-.map-sidebar-section { display: flex; flex: 1; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; background: var(--bg-raised); }
+.map-sidebar-section { display: flex; flex: 1; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; background: var(--bg-surface); }
 .map-sidebar-section[hidden], .map-sidebar-section [hidden] { display: none; }
 .map-sidebar-list { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 10px 12px; }
 .map-sidebar-list > .map-tree-panel { height: auto; max-height: none; }
@@ -957,7 +957,8 @@
 .map-sidebar-section .map-tree-panel .map-tree-thumb { width: 24px; height: 18px; border-radius: 3px; }
 .map-sidebar-section .map-tree-panel .map-tree-name { font: 500 13px/1.25 var(--font-ui); }
 .map-sidebar-section .map-tree-panel .map-item:not(.active) .map-tree-meta { display: none; }
-.map-sidebar-section .map-tree-panel .map-item.active { box-shadow: none; }
+/* 개편안 3단계: 노션 사이드바 — 고른 행은 옜은 회색 채움(강조색 없음), 호버는 더 옜게. */
+.map-sidebar-section .map-tree-panel .map-item.active { box-shadow: none; background: var(--bg-active); }
 .map-sidebar-section .map-tree-panel .map-item.active .map-tree-name { font-weight: 600; }
 .map-sidebar-section .map-tree-panel .map-item.active .map-tree-meta { font: 500 12px/1.2 var(--font-ui); color: var(--text-2); }
 .map-sidebar-section .map-tree-panel .map-tree-drag-handle:not(.is-disabled) { opacity: 0; }
