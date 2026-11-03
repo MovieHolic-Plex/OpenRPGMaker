@@ -1,0 +1,319 @@
+{
+  "set": "cutscene-skip-state",
+  "note": "컷신 건너뛰기(Esc 두 번)가 장면이 주는 상태를 잃지 않는지, 1막 끝 레터박스가 2막으로 넘어가지 않는지 — 폴른 스타 실제 장면으로 잰다(2026-11-04 오너 플레이 제보). 부팅은 fallen-star 세트와 같다(?demo=fallen-star, 구운 dist/demos/chrono-bell.play.json 이 있으면 그것). 실행: npm run qa:runtime -- --scenario checkpoints --checkpoint-set cutscene-skip-state --checkpoint all --parallel 1",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "skip-cell-bread",
+      "label": "2막 감방 첫 장면을 건너뛰어도 리노의 납작빵 두 개와 bread_given 이 남는다",
+      "note": "act2Opening.ts 감방 director — 납작빵(changeItem)·sw_fs2_bread_given 이 cutscene_end 라벨 앞에만 있다",
+      "mapId": "fs2_cell",
+      "x": 6,
+      "y": 4,
+      "facing": "down",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        }
+      ],
+      "beats": [
+        {
+          "id": "skip",
+          "note": "건너뛰기 안내가 뜨면 Esc 두 번(110ms 간격) → 장면이 끝나고 조작이 돌아온다",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "cutscene-skip-hint",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "keyBurst",
+              "keys": [
+                "Escape",
+                "Escape"
+              ],
+              "intervalMs": 110
+            },
+            {
+              "kind": "waitFor",
+              "testid": "cutscene-skip-hint",
+              "state": "absent",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "expect": {
+            "mapId": "fs2_cell",
+            "inventoryCounts": {
+              "fs_bread_flat": 1,
+              "item_fs2_heavy_bread": 1
+            },
+            "testidAbsent": [
+              "dialogue-box",
+              "cutscene-skip-hint"
+            ],
+            "pageAssertions": [
+              {
+                "id": "bread-given-switch",
+                "fn": "() => window.__oprnDebug.readState().switches.sw_fs2_bread_given === true || 'sw_fs2_bread_given=' + window.__oprnDebug.readState().switches.sw_fs2_bread_given"
+              },
+              {
+                "id": "no-letterbox",
+                "fn": "() => { const b = document.querySelector(\"[data-testid='runtime-letterbox-top']\"); const h = b ? Math.round(b.getBoundingClientRect().height) : 0; return h === 0 || ('letterbox ' + h + 'px'); }"
+              }
+            ]
+          },
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "skip-tower-reunion",
+      "label": "하늘탑 4층 석관 재회를 건너뛰어도 이리스가 일행에 들어오고 화면 띠가 걷힌다",
+      "note": "act2Tower.ts reunion — changeParty add·clearLetterbox 가 cutscene_end 라벨 앞에만 있다",
+      "mapId": "fs2_sky_tower_f4",
+      "x": 15,
+      "y": 12,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs2_t3_mirror_solved": true,
+        "sw_fs2_t4_arrive": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 18
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 18
+        }
+      ],
+      "startEventId": "ev_fs2_t4_coffin",
+      "beats": [
+        {
+          "id": "skip",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "cutscene-skip-hint",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "keyBurst",
+              "keys": [
+                "Escape",
+                "Escape"
+              ],
+              "intervalMs": 110
+            },
+            {
+              "kind": "waitFor",
+              "testid": "cutscene-skip-hint",
+              "state": "absent",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "expect": {
+            "mapId": "fs2_sky_tower_f4",
+            "testidAbsent": [
+              "dialogue-box",
+              "cutscene-skip-hint"
+            ],
+            "pageAssertions": [
+              {
+                "id": "iris-joined",
+                "fn": "() => window.__oprnDebug.readState().partyActorIds.includes('actor_fs_iris') || ('party=' + window.__oprnDebug.readState().partyActorIds.join(','))"
+              },
+              {
+                "id": "no-letterbox",
+                "fn": "() => { const b = document.querySelector(\"[data-testid='runtime-letterbox-top']\"); const h = b ? Math.round(b.getBoundingClientRect().height) : 0; return h === 0 || ('letterbox ' + h + 'px'); }"
+              }
+            ]
+          },
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "act1-to-act2-letterbox",
+      "label": "1막 포위 장면 → 엔딩 「제2막으로」 → 감방: 1막 레터박스가 2막에 남지 않는다",
+      "note": "act1Finale.ts siege director 는 letterbox 를 켜고 끄지 않은 채 triggerEnding 한다. 오너: 「화면이 좁아진 이후로 복구가 안되네」",
+      "mapId": "fs_hub",
+      "x": 26,
+      "y": 24,
+      "facing": "down",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs_siege_on": true,
+        "sw_fs_main_done": false
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 9
+        }
+      ],
+      "beats": [
+        {
+          "id": "siege",
+          "note": "포위 장면이 레터박스를 켠다(수정 전후 같다)",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "cutscene-skip-hint",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "ending",
+          "note": "Esc 두 번 → 엔딩 화면까지",
+          "ops": [
+            {
+              "kind": "keyBurst",
+              "keys": [
+                "Escape",
+                "Escape"
+              ],
+              "intervalMs": 110
+            },
+            {
+              "kind": "repeatUntil",
+              "testid": "ending-screen",
+              "state": "present",
+              "maxRounds": 140,
+              "ops": [
+                {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                {
+                  "kind": "hold",
+                  "dir": null,
+                  "ms": 500
+                }
+              ]
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "expect": {
+            "testidPresent": [
+              "ending-screen"
+            ]
+          },
+          "shot": true
+        },
+        {
+          "id": "act2-arrival",
+          "note": "엔딩 → 「제2막으로」 → 감방. 화면 위아래 검은 띠가 없어야 한다",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 2,
+              "holdMs": 80
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4000
+            },
+            {
+              "kind": "repeatUntil",
+              "testid": "ending-screen",
+              "state": "absent",
+              "maxRounds": 40,
+              "ops": [
+                {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                {
+                  "kind": "hold",
+                  "dir": null,
+                  "ms": 900
+                }
+              ]
+            },
+            {
+              "kind": "waitForMap",
+              "mapId": "fs2_cell",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "expect": {
+            "mapId": "fs2_cell",
+            "pageAssertions": [
+              {
+                "id": "no-letterbox",
+                "fn": "() => { const b = document.querySelector(\"[data-testid='runtime-letterbox-top']\"); const h = b ? Math.round(b.getBoundingClientRect().height) : 0; return h === 0 || ('letterbox ' + h + 'px'); }"
+              }
+            ]
+          },
+          "shot": true
+        }
+      ]
+    }
+  ]
+}
