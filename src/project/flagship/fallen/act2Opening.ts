@@ -1594,6 +1594,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
  * 문턱 전에는 짐승이 그 자리에 없다(첫 페이지가 이긴다 — 싸움 페이지들이 문턱 스위치를 기다린다). 문턱은 숲길 한 줄 전체를 덮는 닿기 칸.
  */
 const SW_B5_FOREST_PATH = "sw_fs2_b5_forest_path";
+const FOREST_BEASTS: { mapId: string; cells: Cell[] } = { mapId: "", cells: [] };
 function forestPathGate(project: Project, mapId: string, foes: readonly Cell[]): void {
   ensureSwitch(project, SW_B5_FOREST_PATH, "B5: 숲 어귀 숲길에 들어섬(짐승이 깨어남)");
   const map = M(project, mapId);
@@ -1795,7 +1796,9 @@ function dawnwell(project: Project, exec: Exec): void {
   };
   const dogs = placeNear("troop_fs2_starved_dogs", Math.floor(W(north1!) / 2) - 2, 3, "dash");
   const crows = placeNear("troop_fs2_ash_crows", Math.floor(W(north1!) / 2) - 5, 2, "swoop", dogs ? [dogs] : []);
-  forestPathGate(project, north1!, [dogs, crows].filter((c): c is Cell => !!c));
+  // 숲길 문턱은 B4 숲지기 땅 줄이 정해진 뒤(northGateEvents)에 건다 — applyFallenAct2Opening.
+  FOREST_BEASTS.mapId = north1!;
+  FOREST_BEASTS.cells = [dogs, crows].filter((c): c is Cell => !!c);
   foe(field!, "troop_fs2_ash_wisps", ASH_SPOTS.wisps.x, ASH_SPOTS.wisps.y, "float");
   foe(field!, "troop_fs2_ash_snakes", ASH_SPOTS.snakes.x, ASH_SPOTS.snakes.y, "slither");
   // 골렘은 하나 — 이기면 다시 안 나온다. 피해 갈 수 있는 정예(느리고 돌진 없음). 동쪽 유황 벌판의 짐 상자 앞에 선다.
@@ -2956,6 +2959,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
   northGateEvents(project, exec);
+  if (FOREST_BEASTS.mapId) forestPathGate(project, FOREST_BEASTS.mapId, FOREST_BEASTS.cells);
   // B4 도착선이 정해진 뒤에 — 그 너머 빈터에만 마른 고목(바닥은 칠하지 않는다).
   scorchAshFields(project, exec);
   dawnwellEvents(project);
