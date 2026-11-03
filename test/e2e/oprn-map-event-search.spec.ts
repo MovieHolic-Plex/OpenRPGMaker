@@ -1,14 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
+import { runPaletteCommand } from "./topbarNavigation";
 
 test.setTimeout(240_000);
 
 async function gotoEditor(page: Page, query: string): Promise<void> {
   await page.goto(`/?freshProject=1&${query}`, { waitUntil: "domcontentloaded", timeout: 90_000 });
-  await expect(page.getByTestId("toolbar-search")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
 }
 
 async function openSearch(page: Page) {
-  await page.getByTestId("toolbar-search").click();
+  // 2026-11 톱바 개편: 찾기 단추는 ⌘K 「화면: 맵·이벤트 찾기」 명령으로 옮겼다.
+  await runPaletteCommand(page, "맵·이벤트 찾기", "open-map-event-search");
   const dialog = page.getByTestId("map-event-search-modal");
   await expect(dialog).toBeVisible();
   return dialog;

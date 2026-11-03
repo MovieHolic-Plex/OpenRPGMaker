@@ -19,7 +19,8 @@ import { store } from "@/project/store";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const { renderTopbar } = await import("@/editor/panels/menu");
+const { renderTopbar, RETIRED_TOPBAR_CONTROLS } = await import("@/editor/panels/menu");
+const { listEditorCommands } = await import("@/editor/commandRegistry");
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -99,7 +100,7 @@ function headerStrings(topbar: HTMLElement): Finding[] {
     }
     for (const child of node.children) walk(child, owner);
   };
-  for (const menuId of ["menu-project", "menu-help"]) {
+  for (const menuId of ["menu-project", "menu-more-tools"]) {
     openMenu(topbar, menuId);
     walk(fake(topbar), "editor-topbar");
     // 메뉴 팝업은 document.body 로 붙는다.
@@ -160,20 +161,24 @@ type ConceptCase = {
 const CONCEPTS: readonly ConceptCase[] = [
   { concept: "DB 편집기", canonical: "database", short: "databaseShort", homes: ["toolbar-database"] },
   { concept: "보관함", canonical: "resourceLibrary", short: "resources", homes: ["toolbar-resource-manager"] },
-  { concept: "세계관", canonical: "world", homes: ["toolbar-world"] },
-  { concept: "음악·효과음", canonical: "audio", short: "audioShort", homes: ["toolbar-sound-test"] },
-  { concept: "맵·이벤트 찾기", canonical: "mapEventSearch", short: "mapEventSearchShort", homes: ["toolbar-search"] },
   { concept: "테스트 실행", canonical: "testPlay", short: "testPlayShort", homes: ["mode-play"] },
-  { concept: "랜덤 전투 테스트", canonical: "battleTest", short: "battleTestShort", homes: ["topbar-battle-test"] },
 ];
 
-/** title 이 정확히 정본이어야 하는 톱바 도구 버튼(다섯 개가 모두 버튼이다). */
+/**
+ * 2026-11 개편에서 톱바를 떠나 ⌘K 명령으로만 닿는 개념. 집은 명령 id 이고, 이름은 「화면: <정본>…」 꼴이다.
+ * 정본 이름이 명령 라벨에 그대로 들어 있어야 한다 — 같은 동작이 표면마다 다른 이름이면 팔레트에서 못 찾는다.
+ */
+const COMMAND_CONCEPTS: readonly { readonly concept: string; readonly canonical: UiCopyKey; readonly commandId: string }[] = [
+  { concept: "세계관", canonical: "world", commandId: "open-world" },
+  { concept: "음악·효과음", canonical: "audio", commandId: "open-audio" },
+  { concept: "맵·이벤트 찾기", canonical: "mapEventSearch", commandId: "open-map-event-search" },
+  { concept: "랜덤 전투 테스트", canonical: "battleTest", commandId: "topbar-battle-test" },
+];
+
+/** title 이 정확히 정본이어야 하는 톱바 도구 버튼(2026-11 개편 뒤 남은 고스트 단추). */
 const TITLE_IS_CANONICAL: readonly { readonly testId: string; readonly key: UiCopyKey }[] = [
   { testId: "toolbar-database", key: "database" },
   { testId: "toolbar-resource-manager", key: "resourceLibrary" },
-  { testId: "toolbar-sound-test", key: "audio" },
-  { testId: "toolbar-search", key: "mapEventSearch" },
-  { testId: "toolbar-world", key: "world" },
 ];
 
 function renderHeaderTopbar(): HTMLElement {
@@ -235,6 +240,18 @@ describe("에디터 헤더 용어", () => {
     });
   }
 
+  for (const { concept, canonical, commandId } of COMMAND_CONCEPTS) {
+    it(`${concept} 은 톱바가 아니라 ⌘K 명령이 집이고, 명령 이름에 정본이 들어 있다`, () => {
+      // Break: 톱바에 단추가 되살아나거나, 명령 이름이 정본과 다른 말로 불린다.
+      const topbar = renderHeaderTopbar();
+      const ids = headerStrings(topbar).map(({ owner }) => owner);
+      expect(ids, `${concept} 단추가 헤더에 남아 있다`).not.toContain(commandId);
+      const command = listEditorCommands().find((entry) => entry.id === commandId);
+      expect(command, commandId).toBeDefined();
+      expect(command?.label ?? "", commandId).toContain(uiLabel(canonical));
+    });
+  }
+
   it("톱바 도구 버튼 title 은 정확히 uiCopy 정본이다", () => {
     // Break: 툴바 title 을 손으로 적어 정본과 어긋난다.
     const topbar = renderHeaderTopbar();
@@ -252,8 +269,9 @@ describe("에디터 헤더 용어", () => {
     const topbar = renderHeaderTopbar();
     const canonical = uiLabel("mapEventSearch");
 
-    const palette = findByTestId(fake(topbar), "workspace-command-palette-button");
-    expect(palette, "workspace-command-palette-button").not.toBeNull();
+    // 2026-11 개편: 팔레트 칩은 톱바를 떠났다(Ctrl+K 가 집). 칩을 다시 붙일 때 쓸 보관 렌더러가 이름 계약을 지킨다.
+    expect(findByTestId(fake(topbar), "workspace-command-palette-button"), "팔레트 칩은 톱바에 없다").toBeNull();
+    const palette = fake(RETIRED_TOPBAR_CONTROLS.commandCenter());
     const paletteTitle = palette?.getAttribute("title") ?? "";
     expect(paletteTitle, "삭제된 조수 스킬을 광고하면 안 된다").not.toContain("스킬");
     expect(paletteTitle, "찾기 표면 이름을 나눠 쓰면 안 된다").not.toBe(canonical);

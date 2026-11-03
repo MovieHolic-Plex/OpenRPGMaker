@@ -10,6 +10,10 @@
 //  → 결과적으로 오토세이브가 계속 실패해도 사용자·감독 누구도 모르고 console.error 만 남았다.
 //
 // 계약: 실패·충돌은 톱바에 뜨고, saved 로 돌아가면 사라지고, 톱바 재렌더가 구독을 누적시키지 않는다.
+//
+// 2026-11 개편: 따로 뜨던 실패 칩(topbar-save-status)과 상태 줄은 걷었다. 오른쪽의 저장 글자 단추
+// (toolbar-save, 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」) 하나가 상태를 말하고, 실패면
+// 위험색이 되며, 누르면 다시 저장한다. 아래 단언은 같은 계약을 그 단추에 건다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
@@ -106,10 +110,16 @@ function renderFreshTopbar(): HTMLElement {
   return topbar;
 }
 
-function saveStatusHost(topbar: HTMLElement): FakeElement {
-  const host = findByTestId(fake(topbar), "topbar-save-status");
-  if (!host) throw new Error("톱바에 저장 상태 칩 호스트가 없다");
-  return host;
+function saveButton(topbar: HTMLElement): FakeElement {
+  const button = findByTestId(fake(topbar), "toolbar-save");
+  if (!button) throw new Error("톱바에 저장 글자 단추가 없다");
+  return button;
+}
+
+function liveStatus(topbar: HTMLElement): FakeElement {
+  const status = findByTestId(fake(topbar), "toolbar-save-autosave");
+  if (!status) throw new Error("저장 상태 라이브 리전이 없다");
+  return status;
 }
 
 beforeEach(() => {
@@ -142,73 +152,56 @@ afterEach(async () => {
   _resetLoggerForTest();
 });
 
-describe("톱바 저장 상태 칩", () => {
-  it("자동 저장이 실패하면 칩과 다시 저장 버튼이 뜨고 재시도 횟수를 보여준다", () => {
-    // Break: 저장이 계속 실패하는데 화면에는 아무 흔적이 없다(칩이 호스트를 다시 잃는다).
+describe("톱바 저장 글자", () => {
+  it("자동 저장이 실패하면 저장 글자가 「저장 실패」(위험색)가 되고 재시도 횟수를 읽어 준다", () => {
+    // Break: 저장이 계속 실패하는데 화면에는 아무 흔적이 없다(상태가 호스트를 다시 잃는다).
     const topbar = renderFreshTopbar();
-    const host = saveStatusHost(topbar);
-    expect(host.hidden, "조용한 상태에서는 접혀 있어야 한다").toBe(true);
+    const button = saveButton(topbar);
+    expect(button.className, "조용한 상태에서는 위험색이 아니다").not.toContain("is-failing");
+    // 라이브 리전은 내용이 바뀌기 전부터 DOM 에 있어야 읽힌다.
+    const status = liveStatus(topbar);
+    expect(status.getAttribute("role")).toBe("status");
+    expect(status.getAttribute("aria-live")).toBe("polite");
 
     emitAutoSave({ kind: "error", message: "provider 401 secret detail", retryCount: 3 });
 
-    expect(host.hidden).toBe(false);
-    expect(host.style.display).toBe("inline-flex");
-    expect(host.dataset.autosaveKind).toBe("error");
-    // 라이브 리전은 내용이 바뀌기 전부터 DOM 에 있어야 읽힌다.
-    expect(host.getAttribute("role")).toBe("status");
-    expect(host.getAttribute("aria-live")).toBe("polite");
-
-    expect(findByTestId(host, "db-connection-status"), "기존 칩을 재사용해야 한다").not.toBeNull();
-    expect(findByTestId(host, "db-autosave-retry"), "다시 저장 진입점").not.toBeNull();
-    const state = findByTestId(host, "db-autosave-state");
-    expect(state?.className ?? "").toContain("db-autosave-state");
-    expect(state?.textContent ?? "").toContain("저장 실패");
-    expect(state?.textContent ?? "").toContain("3회");
+    expect(button.dataset.autosaveKind).toBe("error");
+    expect(button.className).toContain("is-failing");
+    expect(button.textContent).toBe("저장 실패");
+    expect(status.textContent ?? "").toContain("3회");
     // 오류 원문 노출 금지 계약(결함 ⑫)은 그대로 유지된다.
-    expect(host.textContent).not.toContain("provider 401 secret detail");
+    expect(fake(topbar).textContent).not.toContain("provider 401 secret detail");
+    expect(findByTestId(fake(topbar), "topbar-save-status"), "따로 뜨던 실패 칩은 걷었다").toBeNull();
   });
 
-  it("저장 충돌도 같은 칩으로 뜬다 — store 가 conflict 를 error 로 접어 보낸다", () => {
+  it("저장 충돌도 같은 글자로 뜬다 — store 가 conflict 를 error 로 접어 보낸다", () => {
     // Break: AutoSaveState 에 conflict kind 가 없다는 사실을 잊고 충돌 분기를 따로 만들었다가
     // 실제 충돌(kind:"error" + 충돌 문구)을 아무 데서도 안 그리게 된다.
     const topbar = renderFreshTopbar();
-    const host = saveStatusHost(topbar);
-
     emitAutoSave({ kind: "error", message: "온라인 저장이 충돌했습니다. 저장본을 다시 불러온 뒤 저장하세요." });
-
-    expect(host.hidden).toBe(false);
-    expect(findByTestId(host, "db-connection-status")).not.toBeNull();
-    expect(findByTestId(host, "db-autosave-retry")).not.toBeNull();
+    expect(saveButton(topbar).className).toContain("is-failing");
+    expect(saveButton(topbar).textContent).toBe("저장 실패");
   });
 
-  it("실패가 아닌 상태에서는 조용하고 saved 로 돌아가면 사라진다", () => {
-    // Break: "저장됨"·"저장 대기"가 톱바에 상주해 정작 실패했을 때의 신호 가치를 잡아먹고,
-    //        281px 짜리 칩이 칠할 때마다 떴다 사라져 옆 버튼을 좌우로 흔든다(실측 캡처).
+  it("실패 중 재시도(saving)에는 위험색을 붙잡아 두고 saved 로 돌아가면 풀린다", () => {
+    // Break: 눌렀는데 표시가 사라져 결과를 오해하거나, 성공 뒤에도 빨간 글자가 남는다.
     const topbar = renderFreshTopbar();
-    const host = saveStatusHost(topbar);
+    const button = saveButton(topbar);
 
     emitAutoSave({ kind: "pending" });
-    expect(host.hidden).toBe(true);
-    emitAutoSave({ kind: "saving" });
-    expect(host.hidden).toBe(true);
+    expect(button.className).not.toContain("is-failing");
+    expect(button.textContent).toBe("저장 중");
 
     emitAutoSave({ kind: "error", message: "network down", retryCount: 1 });
-    expect(host.hidden).toBe(false);
-    expect(findByTestId(host, "db-connection-status")).not.toBeNull();
+    expect(button.className).toContain("is-failing");
 
-    // 실패 에피소드 중의 재시도(saving)는 칩을 붙잡아 둔다 — 눌렀는데 사라지면 결과를 오해한다.
     emitAutoSave({ kind: "saving" });
-    expect(host.hidden, "재시도 중에도 칩이 남는다").toBe(false);
-    expect(host.dataset.autosaveKind).toBe("saving");
+    expect(button.className, "재시도 중에도 실패 표시가 남는다").toContain("is-failing");
+    expect(button.dataset.autosaveKind).toBe("saving");
 
-    emitAutoSave({ kind: "saved", at: Date.now() });
-    expect(host.hidden, "성공하면 조용해진다").toBe(true);
-    expect(host.style.display).toBe("none");
-    expect(findByTestId(host, "db-connection-status")).toBeNull();
-    expect(findByTestId(host, "db-autosave-retry")).toBeNull();
-
-    emitAutoSave({ kind: "idle" });
-    expect(host.hidden).toBe(true);
+    emitAutoSave({ kind: "saved", at: new Date(2026, 10, 3, 14, 5).getTime() });
+    expect(button.className, "성공하면 풀린다").not.toContain("is-failing");
+    expect(button.textContent).toBe("저장됨 14:05");
   });
 
   it("톱바를 다시 그려도 autosave 구독이 누적되지 않는다", () => {
@@ -224,18 +217,17 @@ describe("톱바 저장 상태 칩", () => {
 
     emitAutoSave({ kind: "error", message: "network down", retryCount: 2 });
 
-    expect(saveStatusHost(last).hidden, "최신 톱바가 상태를 받는다").toBe(false);
-    expect(saveStatusHost(first).hidden, "떼어낸 톱바는 더 이상 갱신되지 않는다").toBe(true);
+    expect(saveButton(last).className, "최신 톱바가 상태를 받는다").toContain("is-failing");
+    expect(saveButton(first).className, "떼어낸 톱바는 더 이상 갱신되지 않는다").not.toContain("is-failing");
   });
 
-  it("다시 저장 버튼이 실제 저장을 재시도한다", async () => {
+  it("실패 뒤 저장 글자를 누르면 실제 저장을 다시 시도한다", async () => {
     // Break: 실패는 보이는데 그 자리에서 되돌릴 방법이 없다.
     const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved" });
     const topbar = renderFreshTopbar();
-    const host = saveStatusHost(topbar);
     emitAutoSave({ kind: "error", message: "network down", retryCount: 1 });
 
-    findByTestId(host, "db-autosave-retry")?.click();
+    saveButton(topbar).click();
 
     await vi.waitFor(() => expect(flush).toHaveBeenCalledTimes(1));
     await Promise.resolve();
@@ -244,8 +236,7 @@ describe("톱바 저장 상태 칩", () => {
 
   it("상태 전이를 autosave 네임스페이스 로그로 남긴다", () => {
     // Break: 화면을 안 보고 있었던 실패는 사후에 조회할 데가 없어진다(감사 원점).
-    const topbar = renderFreshTopbar();
-    saveStatusHost(topbar);
+    renderFreshTopbar();
 
     emitAutoSave({ kind: "pending" });
     emitAutoSave({ kind: "error", message: "network down", retryCount: 4 });
@@ -258,15 +249,16 @@ describe("톱바 저장 상태 칩", () => {
   });
 
   it("톱바의 기존 저장·열기·테스트 동작을 건드리지 않는다", () => {
-    // Break: 칩을 끼우면서 트레일링 클러스터나 클래식 툴바 버튼이 밀려 사라진다.
+    // Break: 저장 글자를 끼우면서 트레일링 묶음 버튼이 밀려 사라진다.
     const topbar = fake(renderFreshTopbar());
 
     // 열기·가져오기·저장본 다시 불러오기는 프로젝트 메뉴 항목이다(2026-09-03, 클래식 툴바 행 삭제).
+    // AI 설정은 2026-11 개편부터 ⋯ 더 보기 안의 항목이다.
     for (const testId of [
       "toolbar-save",
       "menu-project",
       "topbar-test-play",
-      "topbar-ai-settings",
+      "menu-more-tools",
       "editor-topbar-trailing",
     ]) {
       expect(findByTestId(topbar, testId), testId).not.toBeNull();

@@ -1,22 +1,20 @@
 // 톱바 한 줄 맞춤 — 왼쪽·가운데·오른쪽 세 묶음이 서로 덮지 않게 한다.
 //
-// 왜 미디어 쿼리가 아니라 실측인가 (2026-10-21 UI 감사 01-shell-01): 왼쪽 묶음의 폭은 화면 폭만이
-// 아니라 언어(영어 「Upper layer」), 프로젝트 이름, 저장 실패 칩, AI 연결 문구에 따라 달라진다.
-// 폭 경계로 접으면 언어마다 경계를 다시 재야 하고, 놓친 조합에서는 넘친 버튼이 옆 칸 버튼 위에
-// 그려져 클릭을 가로챘다(영어 1440 에서 찾기 → 전투 테스트). 그래서 실제로 넘칠 때만 단계적으로 접는다.
+// 왜 미디어 쿼리가 아니라 실측인가 (2026-10-21 UI 감사 01-shell-01): 묶음의 폭은 화면 폭만이
+// 아니라 언어(영어 「Upper」·「Assistant」), 프로젝트·맵 이름, 저장 문구(「저장 실패」·「Not saved
+// (temporary)」)에 따라 달라진다. 폭 경계로 접으면 언어마다 경계를 다시 재야 하고, 놓친 조합에서는
+// 넘친 버튼이 옆 칸 버튼 위에 그려져 클릭을 가로챘다. 그래서 실제로 넘칠 때만 단계적으로 접는다.
 //
-// 단계(누적, CSS `studio-bar.modern.css` 「14. 넘침 맞춤」 이 모양을 소유한다):
-//  1 = 세계관·음악·찾기·전체화면을 「더 보기 ⋯」 메뉴 하나로 접는다(메뉴 항목은 같은 이름과 단축키).
-//  2 = AI 연결 칩은 점만 남긴다(이름은 title 이 말한다).
-//  3 = 레이어 전환·프로젝트 이름의 여백을 줄인다.
-//  4 = 상품 이름표(장식)를 걷는다.
-//  5 = 그래도 넘치면 묶음끼리 겹치지 않게 상단 바를 가로로 민다(200% 확대·아주 좁은 창). 예전에는 3단계에서
-//      멈춰 왼쪽 묶음이 오른쪽 단추 밑으로 흘러들었고, 넘침 단추를 누르면 위에 그려진 「랜덤 전투」가 눌렸다(C-19).
-const MAX_FIT_LEVEL = 5;
+// 단계(누적, CSS `studio-bar.modern.css` 「14. 넘침 맞춤」 이 모양을 소유한다 — 2026-11 개편 배치):
+//  1 = 경로의 맵 이름을 걷는다(맵 트리가 이미 말한다).
+//  2 = 자료집·소재·조수의 글자를 걷고 아이콘만 둔다(이름은 title·aria-label 이 말한다).
+//  3 = 상품 이름표 글자를 걷는다(점 「O」는 남는다).
+//  4 = 그래도 넘치면 묶음끼리 겹치지 않게 상단 바를 가로로 민다(200% 확대·아주 좁은 창 — C-19).
+const MAX_FIT_LEVEL = 4;
 
 export function installTopbarFit(bar: HTMLElement): () => void {
   if (typeof ResizeObserver === "undefined" || typeof requestAnimationFrame === "undefined") return () => {};
-  const boxes = [bar, bar.querySelector(".studio-bar-lead"), bar.querySelector(".editor-topbar-trailing")]
+  const boxes = [bar, bar.querySelector(".studio-bar-lead"), bar.querySelector(".studio-bar-center"), bar.querySelector(".editor-topbar-trailing")]
     .filter((node): node is HTMLElement => node instanceof HTMLElement);
   const overflows = (): boolean => boxes.some((box) => box.scrollWidth > box.clientWidth + 1);
 
@@ -36,7 +34,7 @@ export function installTopbarFit(bar: HTMLElement): () => void {
     if (frame === 0) frame = requestAnimationFrame(fit);
   };
 
-  // 바 자체(창 폭)와 각 묶음의 자식(번역·프로젝트 이름·저장 칩·연결 문구가 바꾸는 폭)을 본다.
+  // 바 자체(창 폭)와 각 묶음의 자식(번역·프로젝트 이름·맵 이름·저장 문구가 바꾸는 폭)을 본다.
   const observer = new ResizeObserver(schedule);
   observer.observe(bar);
   for (const box of boxes.slice(1)) {

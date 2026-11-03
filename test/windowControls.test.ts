@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderTopbar } from "@/editor/panels/menu";
+import { renderTopbar, RETIRED_TOPBAR_CONTROLS } from "@/editor/panels/menu";
+import { listEditorCommands } from "@/editor/commandRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -109,6 +110,21 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+/**
+ * 2026-11 개편: 전체화면 단추는 톱바를 떠나 ⌘K 「화면: 전체화면 전환」 명령이 집이다.
+ * 명령은 menu.ts 를 실행 때 불러오므로 click() 은 한 틱 뒤에 끝난다 — 아래 단언은 그 뒤를 기다린다.
+ */
+function fullscreenCommand(): { click(): void } {
+  const command = listEditorCommands().find((entry) => entry.id === "window-fullscreen");
+  if (!command) throw new Error("window-fullscreen command missing");
+  return { click: () => command.run() };
+}
+
+async function settleCommand(): Promise<void> {
+  await import("@/editor/panels/menu");
+  for (let i = 0; i < 5; i += 1) await Promise.resolve();
+}
+
 describe("상단 창 컨트롤", () => {
   it("툴바 접기 버튼은 없다 — 접을 두 번째 툴바 행이 사라졌다(2026-09-03)", () => {
     // Break: 편집 모드 클래식 툴바 행이 되살아나 「─」 접기 버튼과 함께 돌아온다.
@@ -118,31 +134,29 @@ describe("상단 창 컨트롤", () => {
     expect(findByTestId(fakeElement(topbar), "window-toolbar-collapse")).toBeNull();
     expect(findByTestId(fakeElement(topbar), "oprn-toolbar")).toBeNull();
     expect(document.body.classList.contains("toolbar-collapsed")).toBe(false);
+    // 2026-11 개편: 전체화면 단추도 톱바에 없다 — ⌘K 명령이 집이다.
+    expect(findByTestId(fakeElement(topbar), "window-fullscreen")).toBeNull();
   });
 
-  it("전체화면 버튼이 requestFullscreen을 호출한다", () => {
+  it("⌘K 전체화면 명령이 requestFullscreen을 호출한다", async () => {
     const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document.documentElement, "requestFullscreen", {
       configurable: true,
       value: requestFullscreen,
     });
-    const topbar = document.createElement("div");
-    renderTopbar(topbar);
-    const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
-    if (!fullscreen) throw new Error("window-fullscreen button missing");
+    const fullscreen = fullscreenCommand();
 
     fullscreen.click();
+    await settleCommand();
 
     expect(requestFullscreen).toHaveBeenCalledTimes(1);
   });
 
-  it("전체화면 API가 없으면 토스트를 표시하고 예외 없이 반환한다", () => {
-    const topbar = document.createElement("div");
-    renderTopbar(topbar);
-    const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
-    if (!fullscreen) throw new Error("window-fullscreen button missing");
+  it("전체화면 API가 없으면 토스트를 표시하고 예외 없이 반환한다", async () => {
+    const fullscreen = fullscreenCommand();
 
     expect(() => fullscreen.click()).not.toThrow();
+    await settleCommand();
     expect(findByTestId(fakeBody(), "toast")?.textContent).toContain("전체화면");
   });
 
@@ -154,12 +168,10 @@ describe("상단 창 컨트롤", () => {
     const windowControl = vi.fn(async () => true);
     const disposeBridge = installDesktopBridge({ windowControl });
     try {
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-      const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
-      if (!fullscreen) throw new Error("window-fullscreen button missing");
+      const fullscreen = fullscreenCommand();
 
       fullscreen.click();
+      await settleCommand();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(windowControl).toHaveBeenCalledWith("toggle-fullscreen");
@@ -169,7 +181,7 @@ describe("상단 창 컨트롤", () => {
     }
   });
 
-  it("데스크톱 네이티브 전체화면 상태를 구독해 aria-pressed 를 맞춘다", async () => {
+  it("보관된 전체화면 단추는 데스크톱 네이티브 전체화면 상태를 구독해 aria-pressed 를 맞춘다", async () => {
     // Break: 창 컨트롤로 들어간 전체화면은 document.fullscreenElement 를 바꾸지 않아
     // 아이콘이 항상 「아님」으로 남는다.
     const listeners: Array<(fullscreen: boolean) => void> = [];
@@ -182,10 +194,8 @@ describe("상단 창 컨트롤", () => {
       },
     });
     try {
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-      const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
-      if (!fullscreen) throw new Error("window-fullscreen button missing");
+      // 2026-11 개편으로 톱바에서 뺐지만 되살릴 수 있게 보관한 단추(RETIRED_TOPBAR_CONTROLS)가 이 계약을 지킨다.
+      const fullscreen = fakeElement(RETIRED_TOPBAR_CONTROLS.fullscreen());
 
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(fullscreen.getAttribute("aria-pressed")).toBe("true");

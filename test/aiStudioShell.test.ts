@@ -11,6 +11,7 @@ import { resetLaneSessionForTest } from "@/editor/panels/aiLaneSession";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import { renderTopbar } from "@/editor/panels/menu";
+import { listEditorCommands } from "@/editor/commandRegistry";
 import { laneSession } from "@/editor/panels/aiLaneSession";
 import { LANE_BOARD_EMPTY_TEXT } from "@/editor/panels/aiLaneBoard";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -134,14 +135,16 @@ describe("패널 스튜디오 모드", () => {
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
   });
 
-  it("톱바 스튜디오와 숨은 훅이 같은 셸을 열고, ☰ 에는 없다", () => {
+  it("⌘K 스튜디오 명령과 숨은 훅이 같은 셸을 열고, ☰ 와 톱바에는 없다", () => {
     const panel = renderPanel();
     const topbar = new FakeElement("div");
     renderTopbar(topbar as unknown as HTMLElement);
     const menu = findByTestId(panel, "ai-command-menu");
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
     expect(findByTestId(menu!, "ai-command-menu-studio")).toBeNull();
-    expect(findByTestId(topbar, "topbar-ai-studio")).toBeTruthy();
+    // 2026-11 개편: 톱바 단추는 ⌘K 「화면: AI 스튜디오 열기/닫기」로 옮겼다.
+    expect(findByTestId(topbar, "topbar-ai-studio")).toBeNull();
+    expect(listEditorCommands().some((command) => command.id === "topbar-ai-studio")).toBe(true);
 
     findByTestId(panel, "ai-studio-toggle")?.click();
     expect(panel.classList.contains("is-studio")).toBe(true);

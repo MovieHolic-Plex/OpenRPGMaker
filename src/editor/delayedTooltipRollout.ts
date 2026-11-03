@@ -60,7 +60,7 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "세계관", name: "세계관", testid: "toolbar-world" },
   { label: "음악", name: "음악·효과음", testid: "toolbar-sound-test" },
   { label: "찾기", name: "맵·이벤트 찾기", testid: "toolbar-search" },
-  { label: "도구", name: "도구 더 보기", testid: "menu-more-tools" },
+  { label: "더 보기", name: "더 보기", testid: "menu-more-tools" },
   { label: "랜덤 전투", name: "랜덤 전투 테스트", testid: "topbar-battle-test" },
   { label: "커밋 히스토리", name: "커밋 히스토리", testid: "commit-history-toggle" },
   { label: "스튜디오", name: "AI 스튜디오 — 장면 모니터와 조수", testid: "topbar-ai-studio" },

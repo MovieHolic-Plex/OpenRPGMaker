@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderCommitHistoryButton, renderIdentityTopbarControl, openLoginModalIfNeeded, openMockLoginModal } from "@/editor/teamWorkflowUi";
+import { renderCommitHistoryButton, renderIdentityTopbarControl, openLoginModalIfNeeded, openMockLoginModal, openCommitHistoryPanel, openIdentityMenu } from "@/editor/teamWorkflowUi";
+import { listEditorCommands } from "@/editor/commandRegistry";
 import { renderTopbar } from "@/editor/panels/menu";
 import { createBlankProject } from "@/project/defaults";
 import { setOwnerLabel } from "@/project/editorIdentity";
@@ -185,7 +186,9 @@ describe("team workflow UI", () => {
   it("renders topbar identity and allows label edits from the identity menu", () => {
     setOwnerLabel("기존 사용자");
     const topbar = document.createElement("div");
-    topbar.append(renderIdentityTopbarControl(() => renderTopbar(topbar)));
+    // 톱바는 더 이상 신원 단추를 그리지 않는다(⌘K 「편집 이름」) — 단추만 다시 그려 갱신을 본다.
+    const rerender = (): void => { topbar.replaceChildren(renderIdentityTopbarControl(rerender)); };
+    rerender();
     expect(findByTestId(fakeElement(topbar), "topbar-identity-label")?.textContent).toBe("기존 사용자");
 
     findByTestId(fakeElement(topbar), "topbar-identity")?.click();
@@ -209,6 +212,28 @@ describe("team workflow UI", () => {
     expect(findByTestId(fakeBody(), "commit-history-panel")).not.toBeNull();
     expect(findByTestId(fakeBody(), "commit-history-row-commit-1")?.textContent).toContain("tester@example.com");
     expect(findByTestId(fakeBody(), "commit-history-row-commit-1")?.textContent).toContain("direct");
+  });
+
+  it("⌘K 저장 기록·편집 이름 명령이 톱바 단추 없이 같은 패널·메뉴를 연다", async () => {
+    // Break: 2026-11 개편으로 톱바 단추를 뺀 뒤 저장 기록·편집 이름에 닿는 길이 사라진다.
+    const ids = listEditorCommands().map((command) => command.id);
+    expect(ids).toContain("commit-history-toggle");
+    expect(ids).toContain("topbar-identity");
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+    expect(findByTestId(fakeElement(topbar), "commit-history-toggle")).toBeNull();
+    expect(findByTestId(fakeElement(topbar), "topbar-identity")).toBeNull();
+
+    openCommitHistoryPanel();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(findByTestId(fakeBody(), "commit-history-panel")).not.toBeNull();
+
+    setOwnerLabel("기존 사용자");
+    openIdentityMenu(() => undefined);
+    expect(findByTestId(fakeBody(), "commit-history-panel"), "한 번에 하나만 뜬다").toBeNull();
+    const input = findByTestId(fakeBody(), "identity-label-input") as FakeElement | null;
+    expect(input?.value).toBe("기존 사용자");
   });
 
   it("renders history and identity as icon-only controls", () => {

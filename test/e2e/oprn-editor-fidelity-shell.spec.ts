@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { showIndividualTiles } from "./showIndividualTiles";
+import { clickMoreMenuItem } from "./topbarNavigation";
 
 test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -8,16 +9,18 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await page.goto("/");
 
   // 2026-09-03 스튜디오 바: 프로젝트 메뉴의 얼굴은 프로젝트 이름, 맵·게임 메뉴와 클래식 툴바 행은 없다.
-  // 전문가는 세계관·음악·찾기가 「도구 ▾」 메뉴 대신 인라인 아이콘 버튼이다.
+  // 2026-11 톱바 개편: 세계관·음악·찾기는 ⌘K 명령으로만 닿고, 도움말은 ⋯ 더 보기 안의 하위 메뉴다.
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
   await expect(page.getByTestId("menu-project")).toBeVisible();
-  await expect(page.getByTestId("menu-project")).toHaveAttribute("title", /^프로젝트 — /);
-  await expect(page.getByTestId("menu-help")).toContainText("도움말");
+  await expect(page.getByTestId("menu-project")).toHaveAttribute("title", /^프로젝트 메뉴 — /);
+  await clickMoreMenuItem(page, "menu-help");
+  await expect(page.getByTestId("menu-popup-help")).toBeVisible();
+  await page.keyboard.press("Escape");
   for (const gone of ["menu-map", "menu-game", "menu-tools", "oprn-toolbar", "authoring-task-launcher"]) {
     await expect(page.getByTestId(gone)).toHaveCount(0);
   }
-  for (const inline of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
-    await expect(page.getByTestId(inline)).toBeVisible();
+  for (const moved of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
+    await expect(page.getByTestId(moved)).toHaveCount(0);
   }
 
   await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장 (Ctrl+S)");

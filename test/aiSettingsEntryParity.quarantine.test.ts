@@ -39,6 +39,8 @@ async function boot(): Promise<HTMLElement> {
 
 function open(entry: "topbar" | "panel"): void {
   if (entry === "panel") control("ai-command-menu-toggle").click();
+  // 톱바 진입점은 ⋯ 더 보기 안의 「AI 설정」 항목이다(2026-11 개편).
+  if (entry === "topbar") control("menu-more-tools").click();
   control(entry === "topbar" ? "topbar-ai-settings" : "ai-command-menu-settings").click();
 }
 

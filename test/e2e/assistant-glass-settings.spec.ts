@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { Agent, get } from "node:http";
 import path from "node:path";
+import { openTopbarAiSettings } from "./topbarNavigation";
 
 const EVIDENCE = path.resolve("output/evidence/assistant-clean-glass/phase-2");
 const KEY = "oprn:ai-background-opacity";
@@ -131,7 +132,7 @@ async function focusEvidence(control: Locator, log: Log) {
 }
 
 async function settings(page: Page) {
-  await page.getByTestId("topbar-ai-settings").click();
+  await openTopbarAiSettings(page);
   await page.getByTestId("ai-settings-tab-display").click();
   const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
   await expect(slider).toBeVisible();

@@ -174,6 +174,46 @@ describe("commandRegistry", () => {
     expect(ids.some(id => id.startsWith(`workspace-panel-${LEFT_DOCK_TASK_HOST}`))).toBe(false);
   });
 
+  it("톱바에서 ⌘K 로 옮긴 단추마다 명령이 하나씩 있고, 이름으로 찾을 수 있다", () => {
+    // Break: 2026-11 개편으로 톱바에서 물린 단추가 ⌘K 에도 없어 닿을 길이 사라진다.
+    const commands = listEditorCommands();
+    const cases: readonly (readonly [string, string])[] = [
+      ["topbar-battle-test", "전투 테스트"],
+      ["topbar-ai-studio", "AI 스튜디오"],
+      ["commit-history-toggle", "저장 기록"],
+      ["topbar-identity", "편집 이름"],
+      ["window-fullscreen", "전체화면"],
+      ["open-world", "세계관"],
+      ["open-audio", "음악"],
+      ["open-map-event-search", "맵·이벤트 찾기"],
+    ];
+    for (const [id, query] of cases) {
+      expect(commands.filter((command) => command.id === id), id).toHaveLength(1);
+      expect(matchEditorCommands(query, commands).some((command) => command.id === id), `${id} ← 「${query}」`).toBe(true);
+    }
+  });
+
+  it("「패널 보기」 명령은 왼쪽 활동 막대 단추를 누른다", () => {
+    // Break: 「보기」 메뉴 단추를 톱바에서 빼면서 패널 전환의 두 번째 길이 사라진다.
+    const clicked = vi.fn();
+    const paneButton = {
+      dataset: { testid: "sidebar-maps" },
+      getAttribute: (name: string) => (name === "aria-label" ? "맵" : name === "aria-pressed" ? "false" : null),
+      click: clicked,
+    };
+    vi.stubGlobal("document", {
+      body: { classList: { add: vi.fn(), remove: vi.fn() }, dataset: {} },
+      querySelectorAll: vi.fn(() => [{}]),
+      querySelector: vi.fn((selector: string) => (selector.includes("left-activity-bar")
+        ? { querySelectorAll: () => [paneButton] }
+        : null)),
+    });
+    const command = listEditorCommands().find((entry) => entry.id === "workspace-panels-button-maps");
+    expect(command?.label).toBe("화면: 패널 보기 — 맵");
+    command?.run();
+    expect(clicked).toHaveBeenCalledTimes(1);
+  });
+
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {
     const commands = listEditorCommands();
     expect(commands.some((c) => c.id === "help-shortcuts")).toBe(true);

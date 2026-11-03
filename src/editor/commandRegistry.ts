@@ -17,6 +17,7 @@ import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar"
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntries";
+import { listLeftActivityPanes } from "@/editor/panels/workspaceBar";
 import { saveProjectNow } from "@/editor/saveActions";
 import { uiLabel } from "@/editor/uiCopy";
 import { store } from "@/project/store";
@@ -60,6 +61,59 @@ function runTool(tool: Tool): void {
 
 const DUPLICATED_TASKS: ReadonlySet<string> = new Set(["data", "test"]);
 
+// 톱바에서 ⌘K 로 옮긴 단추들(2026-11 개편 — 초보자가 처음 30분에 쓰지 않는 것). id 는 옛 톱바 testid 다 —
+// 팔레트 행은 `command-palette-item-command-<id>` 로 그려져 같은 이름으로 찾는다. 메뉴 모듈은 팔레트를 가져오므로
+// 순환을 피하려고 실행 때 불러온다. 단추 자체는 menu.ts RETIRED_TOPBAR_CONTROLS 에 남아 있다.
+const TOPBAR_MOVED_COMMANDS: readonly EditorCommand[] = [
+  {
+    id: "topbar-battle-test",
+    label: "화면: 랜덤 전투 테스트",
+    category: "화면",
+    keywords: ["battle", "random", "encounter", "전투", "전투 테스트", "랜덤", "적"],
+    run: () => { window.dispatchEvent(new CustomEvent("oprn:test-play-window", { detail: { kind: "random-battle" } })); },
+  },
+  {
+    id: "topbar-ai-studio",
+    label: "화면: AI 스튜디오 열기/닫기",
+    category: "화면",
+    keywords: ["studio", "ai", "스튜디오", "장면 모니터", "조수"],
+    run: () => { void import("@/editor/aiStudioMode").then((mod) => mod.requestAiStudioToggle()); },
+  },
+  {
+    id: "commit-history-toggle",
+    label: "화면: 저장 기록 열기",
+    category: "화면",
+    keywords: ["history", "commit", "기록", "저장 기록", "커밋", "히스토리"],
+    run: () => { void import("@/editor/teamWorkflowUi").then((mod) => mod.openCommitHistoryPanel()); },
+  },
+  {
+    id: "topbar-identity",
+    label: "화면: 편집 이름 바꾸기",
+    category: "화면",
+    keywords: ["identity", "name", "login", "이름", "편집 이름", "신원", "로그인"],
+    // 톱바는 더 이상 이름을 보이지 않으므로 바뀐 뒤 다시 그릴 것이 없다.
+    run: () => { void import("@/editor/teamWorkflowUi").then((mod) => mod.openIdentityMenu(() => {})); },
+  },
+  {
+    id: "window-fullscreen",
+    label: "화면: 전체화면 전환",
+    category: "화면",
+    keywords: ["fullscreen", "window", "전체화면", "창"],
+    run: () => { void import("@/editor/panels/menu").then((mod) => mod.toggleFullscreen()); },
+  },
+];
+
+/** 「보기」 메뉴가 비추던 왼쪽 활동 막대 패널 — 누르면 막대 단추를 누른 것과 같다(workspaceBar). */
+function leftPanelViewCommands(): readonly EditorCommand[] {
+  return listLeftActivityPanes().map((pane): EditorCommand => ({
+    id: `workspace-panels-button-${pane.pane}`,
+    label: `화면: 패널 보기 — ${pane.title}`,
+    category: "화면",
+    keywords: ["panel", "view", "패널", "보기", pane.title],
+    run: pane.toggle,
+  }));
+}
+
 async function openCurrentMapSettings(): Promise<void> {
   const mapId = editorState.get().currentMapId;
   const map = mapId ? store.getCurrent().maps[mapId] : undefined;
@@ -70,6 +124,8 @@ async function openCurrentMapSettings(): Promise<void> {
 
 export function listEditorCommands(): readonly EditorCommand[] {
   return [
+    ...TOPBAR_MOVED_COMMANDS,
+    ...leftPanelViewCommands(),
     ...INSPECTION_COMMANDS.map((id): EditorCommand => ({
       id: `sidebar-inspection-${id}`, label: `검사: ${{ inspector: '인스펙터', ruleAudit: '규칙 감사', history: '작업 기록' }[id]}`,
       category: '화면', keywords: ['inspect', 'audit', 'history', '검사', '기록', id], run: () => {

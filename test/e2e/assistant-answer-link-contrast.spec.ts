@@ -1,5 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { Agent, get } from "node:http";
+import { openTopbarAiSettings } from "./topbarNavigation";
 
 // Run with DEV_SERVER_PORT=9917 E2E_RETRIES=0. Model/persistence transports are mocked;
 // the live answer renderer, reference index/decorator, navigation and CSS are shipped code.
@@ -117,7 +118,7 @@ test("decorated ambiguous answer links retain AA contrast and disambiguation at 
   await expect(ambiguous).toHaveAttribute("data-ref-label", DUPLICATE);
   const samples: unknown[] = [];
   for (const density of [82, 78, 100]) {
-    await page.getByTestId("topbar-ai-settings").click();
+    await openTopbarAiSettings(page);
     const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
     await expect(slider).toHaveAttribute("min", "78");
     await expect(slider).toHaveAttribute("max", "100");

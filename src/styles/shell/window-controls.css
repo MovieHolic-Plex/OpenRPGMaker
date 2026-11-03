@@ -104,23 +104,16 @@ body.has-window-buttons .oprn-menu-bar .oprn-window-control { display: none; }
 /* 전체 화면 인터뷰의 오른쪽 패널은 top:18px 에서 시작한다 — 단추(48px) 밑으로 들어가지 않게 내린다. */
 body.has-window-buttons .ci-controls { margin-top: 36px; }
 
-/* 단추(오른쪽 ≈190px, macOS 는 신호등 자리 왼쪽 82px)가 자리를 차지하므로, 톱바가 이미 빠듯한 1439px 이하에서는 이름표를 한 단계 일찍 걷는다
-   (기존 규칙은 1279/1119px 에서 걷는다 — studio-bar.modern.css §12). 클릭 경로는 그대로이고 title·aria-label 이 이름이다.
-   아래 두 구간은 그 규칙의 기준 폭에 단추 폭(≈180px)을 더한 사본이다 — 기준을 고치면 같이 고친다. */
-@media (max-width: 1439px) {
-  body.has-window-chrome .studio-bar .editor-product-brand-text,
-  body.has-window-chrome .studio-tool-button .studio-tool-button-label,
-  body.has-window-chrome .studio-bar .ai-connection-chip .ai-connection-label { display: none; }
-  body.has-window-chrome .studio-bar .editor-product-brand { margin-right: 0; }
-  body.has-window-chrome .studio-tool-button { flex: 0 0 32px; justify-content: center; padding: 0; width: 32px; }
-  body.has-window-chrome .studio-bar .ai-connection-chip { justify-content: center; padding: 0; width: 32px; }
+/* 단추(오른쪽 ≈190px, macOS 는 신호등 자리 왼쪽 82px)가 자리를 차지한다. 이름표를 언제 걷을지는 폭 경계가 아니라
+   topbarFit 이 정한다(studio-bar.modern.css §12·§14, 2026-11 개편) — 위 여백(--window-inset-*)이 묶음 칸을 줄이면 실제 넘침으로 잡힌다.
+   그래서 이 파일에는 §12 의 여백 규칙 사본만 둔다. 기준을 고치면 같이 고친다. */
+@media (max-width: 1279px) {
+  body.has-window-chrome .oprn-menu-bar.studio-bar {
+    padding-right: calc(8px + var(--window-inset-right, 0px));
+    padding-left: calc(8px + var(--window-inset-left, 0px));
+  }
 }
 
-@media (max-width: 1299px) {
-  body.has-window-chrome .studio-bar .workspace-panels-label { display: none; }
-  body.has-window-chrome .studio-bar .workspace-panels-button { padding: 0; }
-  body.has-window-chrome .studio-bar .topbar-save-status { flex-basis: 145px; max-width: 145px; }
-}
 /* 창 최소 폭은 1100px(electron/main/main.ts minWidth) — 그보다 좁은 톱바는 이 단추 폭을 더하면 버튼이 겹친다. */
 
 /* ── 모달 머리줄 ─────────────────────────────────────────────────────────────────────────
