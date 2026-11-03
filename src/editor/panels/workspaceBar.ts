@@ -167,8 +167,19 @@ function syncLocaleItems(menu: HTMLElement): void {
     item.setAttribute("aria-checked", active ? "true" : "false");
   });
 }
+/** ⌘K 「화면: 패널 보기 — …」 명령의 재료. 「보기」 메뉴 단추는 2026-11 에 톱바에서 빠졌고, 메뉴가 비추던 같은 막대 단추를 누른다. */
+export function listLeftActivityPanes(): readonly { readonly pane: string; readonly title: string; readonly toggle: () => void }[] {
+  return leftActivityPaneButtons().map((paneButton) => ({
+    pane: (paneButton.dataset.testid ?? "").replace(/^sidebar-/, ""),
+    title: sourceAttributeOf(paneButton, "aria-label") ?? paneButton.getAttribute("aria-label") ?? "",
+    toggle: () => paneButton.click(),
+  }));
+}
+
 /** 왼쪽 활동 막대의 패널 단추들. 「검사」는 패널이 아니라 명령이라 aria-pressed 가 없어 빠진다. */
 function leftActivityPaneButtons(): HTMLElement[] {
+  // ⌘K 목록은 문서가 없거나 흉내 문서인 테스트 환경에서도 만들어진다 — 막대를 못 찾으면 패널 명령이 없을 뿐이다.
+  if (typeof document === "undefined" || typeof document.querySelector !== "function") return [];
   const bar = document.querySelector<HTMLElement>('[data-testid="left-activity-bar"]');
   if (!bar) return [];
   return Array.from(bar.querySelectorAll<HTMLElement>(".left-activity-item"))

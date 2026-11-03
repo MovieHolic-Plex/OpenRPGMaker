@@ -1144,9 +1144,31 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 `editor-map-focused-shell`·`oprn-editor-fidelity-shell` e2e 가 1024 전문가에서 세계관·음악·찾기·도움말 등이 보이기를 요구해
 따로 정한다(레이어를 가운데로 옮기면 `editorMenuSidebarIa` 277행 순서 단언도 바뀐다).
 
+**개편안 3단계 — 톱바 배치 (2026-11-04, 시안 `mock-editor-light.png`, 사용자 「화면 배치까지 공격적으로… 기능을 좀 없애도 상관없음」·「'초보자'에게 어울리지 않는 것들은 공격적으로 빼도 좋아」):**
+2단계가 미뤘던 배치를 바꿨다. 기준은 **처음 30분 쓰는 사람이 누를 것만 톱바에 둔다**, 나머지는 ⌘K(코드는 지우지 않는다 —
+`menu.ts` `RETIRED_TOPBAR_CONTROLS` 에 단추 렌더러를 남겨 append 한 줄로 되살린다).
+
+| 자리 | 컨트롤(testid) | 집 |
+|---|---|---|
+| 왼쪽 | 브랜드 점 `editor-product-brand` · 프로젝트 메뉴 `menu-project`(title 「프로젝트 메뉴 — 이름」) · `/ 맵` `topbar-crumb-map`(말줄임) | 그대로 |
+| 가운데 | `studio-layer-segment` 한 분절 = `layer-relief`(지형) + `left-layer-switcher`(`layer-lower`·`layer-upper`·`layer-event`) | 옮김 |
+| 오른쪽 | `toolbar-database` 자료집 · `toolbar-resource-manager` 소재 · **`topbar-assistant` 조수**(`openAiAssistantPanel()`) | 고스트 단추 |
+| 오른쪽 | `toolbar-save` = 연한 글자 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 함(임시)」(`autosaveStripText`), 누르면 저장, 실패는 `.is-failing` 위험색, title 「프로젝트 저장 (Ctrl+S)」, `data-autosave-kind` 유지, 라이브 리전 `toolbar-save-autosave` | 그대로(모양만) |
+| 오른쪽 | `topbar-test-play`/`mode-play` 「▷ 테스트 실행」 | 그대로 |
+| 오른쪽 끝 | `menu-more-tools` ⋯ 32×32, 늘 보임. 항목 = `menu-help` ▸ · `menu-language` ▸ · `topbar-ai-settings`(이름에 연결 상태: 「AI 설정 · … 로그인 필요」) | ⋯ |
+| ⌘K 만 | 세계관 `open-world` · 음악 `open-audio` · 찾기 `open-map-event-search` · 랜덤 전투 `topbar-battle-test` · AI 스튜디오 `topbar-ai-studio` · 패널 보기 `workspace-panels-button-<pane>` · 저장 기록 `commit-history-toggle` · 편집 이름 `topbar-identity` · 전체화면 `window-fullscreen` · 명령 팔레트 칩(Ctrl+K 자체) | 팔레트 행 testid `command-palette-item-command-<id>` |
+| 뺌 | `topbar-save-status` 실패 칩 · `studio-status-strip` 상태 줄 · `ai-connection-chip` | 저장 글자·캔버스·⋯ 항목 이름이 같은 정보를 말한다 |
+
+그리드는 `1fr auto 1fr` — 가운데 분절이 바 한가운데에 서고, 한쪽이 길면 비켜 선다. 폭 경계 미디어 쿼리(1559/1439/1119px)는
+걷었고 `topbarFit.ts` 단계가 바뀌었다: **1 맵 이름 → 2 자료집·소재·조수 글자 → 3 상품 이름 글자 → 4 가로 밀기.**
+오른쪽 묶음은 `justify-content:flex-end` 대신 첫 자식 `margin-left:auto` 로 붙인다 — flex-end 는 넘친 내용을 왼쪽으로 흘려
+`scrollWidth` 가 넘침을 못 봤다(영어 1024 에서 자료집이 레이어 분절 위에 그려짐 실측). `window-controls.css` 는 여백 사본만 둔다.
+AI 설정 모달을 ⋯ 항목에서 열면 닫을 때 초점은 ⋯ 단추로 돌아간다(`aiModalFocus.ts`). e2e 는 `test/e2e/topbarNavigation.ts`
+(`runPaletteCommand`·`clickMoreMenuItem`·`openTopbarAiSettings`·`openHelpMenu`)로 새 길을 지난다.
+
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
-회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
+회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·오른쪽 순서·⋯ 항목·가운데 분절·저장 글자·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
 
 ## 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
 

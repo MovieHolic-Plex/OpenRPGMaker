@@ -35,9 +35,11 @@ export function installAiModalFocus(backdrop: HTMLElement): () => void {
   return () => {
     backdrop.removeEventListener("keydown", trap);
     // Saving settings can rebuild the topbar without closing this modal.
+    // The topbar entry is an item inside the ⋯ menu (2026-11): once that popup closes, focus returns to ⋯.
     const target = opener?.isConnected ? opener
       : opener?.dataset.testid === "topbar-ai-settings"
         ? document.querySelector<HTMLElement>('[data-testid="topbar-ai-settings"]')
+          ?? document.querySelector<HTMLElement>('[data-testid="menu-more-tools"]')
         : null;
     if (target && (!hasOpenModalLayer() || document.activeElement === document.body)) {
       target.focus({ preventScroll: true });
