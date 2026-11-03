@@ -1557,13 +1557,16 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     // 브람이 등을 돌려 숲 안으로 — 걸음마다 흐려져 끝에 0, 등불도 같이 꺼진다.
     route("ev_fs2_edge_bram", [{ kind: "setThrough", enabled: true },
       ...[0, 1, 2, 3].flatMap(() => [{ kind: "move", dir: "up" }, { kind: "changeOpacity", delta: -64 }])]),
+    // 걸어 들어간 즉시 투명 페이지로 — 이동 경로가 끝나면 엔진이 그 흐림을 잊고 브람을 다시 진하게 그려, 맺음 대사 동안
+    // 나무 사이에 브람과 등불이 다시 떠 있었다(r4 녹화 78~86초, 「브람이 떠난 뒤에도 빛이 남는다」).
+    setSw(SW_B4_BRAM_FOREST),
     // 맺음 — 성벽 쪽을 한 번 돌아본 뒤 숲길로 들어선다(검수 r10 「끝 5초가 정지 화면, 마무리가 없다」).
     route("@player", [{ kind: "turn", dir: "down" }]),
     wait(600),
     narrate("성벽 위 마지막 등불이 꺼졌다."),
     say(ELENA, "가자, 카엘. 날 밝기 전에."),
-    route("@player", [{ kind: "turn", dir: "up" }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }]),
-    setSw(SW_B4_BRAM_FOREST),
+    // 두 걸음만 — 세 걸음이면 숲 안 들개 무리(도착선 열 줄 안쪽)의 시야에 들어 컷이 끝나자마자 싸움이 붙었다(r4 녹화 86초).
+    route("@player", [{ kind: "turn", dir: "up" }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }]),
     cutLabel(),
     cutEnd(),
   ];
