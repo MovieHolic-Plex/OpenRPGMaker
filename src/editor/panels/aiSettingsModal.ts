@@ -51,6 +51,7 @@ import { dismissToastsByKey, toast } from "@/util/toast";
 const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
 import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
 import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
+import { renderAiQuickConnect } from "./aiQuickConnect";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { fetchConnectedRoutes, renderAiRoleMatrixSettings } from "./aiRoleMatrixSettings";
 import { localCliOfProvider } from "@/ai/localCliEngine";
@@ -439,6 +440,15 @@ export function renderAiSettingsForm(options: {
     selectMain: (endpointId) => authSettings.selectProvider(endpointId),
     assign: (slot, endpointId, endpointModel) => assignCompatRole(slot, endpointId, endpointModel),
   });
+  // 빠른 연결(OpenRouter 키·OpenAI 호환) — 아무것도 연결되지 않은 사용자에게 연결 탭 맨 위에 보인다. 저장되면 그 엔드포인트를 기본 연결로 고른다.
+  const quickConnect = renderAiQuickConnect({
+    onConnected: (endpoint) => {
+      authSettings.selectProvider(endpoint.id);
+      compatSettings.refresh();
+    },
+  });
+  const quickConnectSection = settingsSection("quick-connect", "빠른 연결", "처음이라면 여기서 시작하세요.", [quickConnect.element]);
+  quickConnectSection.hidden = true;
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
@@ -976,6 +986,9 @@ export function renderAiSettingsForm(options: {
   } as const;
   pendingAuthStatus = (next) => {
     lastAuthStatus = next;
+    // 무엇이든 연결되면 빠른 연결 칸을 접는다(사용자 지정 연결 카드에서 같은 일을 할 수 있다).
+    if (next.tone === "connected") quickConnectSection.hidden = true;
+    else if (next.tone !== "checking") quickConnectSection.hidden = false;
     updateReadiness();
   };
   if (lastAuthStatus) pendingAuthStatus(lastAuthStatus);
@@ -1208,6 +1221,7 @@ export function renderAiSettingsForm(options: {
     class: "ai-settings-content",
     children: [
       pane("connection", [
+        quickConnectSection,
         settingsSection("connection", "연결", "", [authSettings.element, modelConnectionHint, alignAccountButton]),
         settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(OpenRouter 등)", [compatSettings.element]),
       ]),

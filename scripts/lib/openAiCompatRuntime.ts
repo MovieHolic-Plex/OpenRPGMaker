@@ -21,6 +21,8 @@ import {
   openAiCompatModelVerdict,
   openAiCompatPatternMatches,
   openAiCompatSuffixedModelId,
+  OPENROUTER_BASE_URL,
+  OPENROUTER_DEFAULT_MODEL,
   type OpenAiCompatEndpointPublic,
   type OpenAiCompatLastTest,
   type OpenAiCompatWorkerEndpoint,
@@ -512,4 +514,72 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
     }
   }
   return result;
+}
+
+// ── 빠른 연결 (/auth/openai-compat/connect) ─────────────────────────────────
+// 첫 실행 사용자의 「키 붙여 넣고 연결」. 시험(모델 목록 + 도구 달린 채팅 한 번)이 통과할 때만 저장한다 —
+// 틀린 키를 저장해 두고 첫 작업에서야 401 을 보는 일을 막는다. OpenRouter 의 /models 는 키 없이도 열리므로
+// 키가 맞는지는 채팅 시험만 말해 준다. 그래서 모델 없이 시험하는 길은 두지 않는다.
+
+export interface OpenAiCompatConnectInput {
+  /** "openrouter" = 주소·이름·추론 방식을 고정한다. 그 밖 = baseUrl 을 받는다. */
+  readonly kind?: unknown;
+  readonly name?: unknown;
+  readonly baseUrl?: unknown;
+  readonly apiKey?: unknown;
+  readonly model?: unknown;
+}
+
+export interface OpenAiCompatConnectResult {
+  readonly ok: boolean;
+  readonly code: string;
+  readonly message: string;
+  readonly model: string;
+  readonly endpoint?: OpenAiCompatEndpointPublic;
+  readonly endpoints: OpenAiCompatEndpointPublic[];
+  readonly test?: OpenAiCompatTestResult;
+}
+
+export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetchImpl: FetchLike = fetch): Promise<OpenAiCompatConnectResult> {
+  const openRouter = input.kind === "openrouter";
+  const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+  const apiKey = text(input.apiKey);
+  const model = text(input.model) || (openRouter ? OPENROUTER_DEFAULT_MODEL : "");
+  const name = openRouter ? "OpenRouter" : text(input.name).slice(0, 60) || "사용자 지정 연결";
+  const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
+    ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
+  });
+  if (openRouter && !apiKey) return reject("invalid", "OpenRouter API 키를 붙여 넣어 주세요.");
+  if (!model) return reject("invalid", "쓸 모델 ID 를 넣어 주세요.");
+  const check = checkOpenAiCompatBaseUrl(openRouter ? OPENROUTER_BASE_URL : input.baseUrl);
+  if (!check.ok || !check.url) return reject("invalid", check.error ?? "기본 주소가 올바르지 않아요.");
+  const baseUrl = check.url;
+
+  const test = await testOpenAiCompat({ name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true }, fetchImpl);
+  if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
+  if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
+  if (test.toolsOk !== true) {
+    return reject("tools", `${name} 의 「${model}」 은(는) 대답은 하지만 도구 호출을 못 해요. 조수는 도구로 맵을 고치므로 도구를 지원하는 모델을 골라 주세요. 저장하지 않았어요.`, test);
+  }
+
+  // 같은 주소의 엔드포인트가 있으면 고친다 — 다시 연결할 때마다 「OpenRouter 2」 가 생기지 않게.
+  const existing = openAiCompatStore.list().find(({ row }) => checkOpenAiCompatBaseUrl(row.baseUrl).url === baseUrl);
+  const endpoint = saveOpenAiCompat({
+    ...(existing ? { id: existing.id } : {}),
+    name: existing?.row.name ?? name,
+    baseUrl,
+    apiKey,
+    defaultModel: model,
+    ...(openRouter ? { reasoningMode: "field" } : {}),
+  });
+  openAiCompatStore.recordTest(endpoint.id, {
+    models: test.models,
+    lastTest: { at: Date.now(), ok: true, ...(test.chat.status ? { status: test.chat.status } : {}), toolsOk: true, message: test.message.slice(0, 200) },
+  });
+  const endpoints = listOpenAiCompatPublic();
+  return {
+    ok: true, code: "ok", model, test, endpoints,
+    endpoint: endpoints.find((row) => row.id === endpoint.id) ?? endpoint,
+    message: `연결됐어요. ${name} 의 「${model}」 이(가) 도구 호출까지 대답했어요.`,
+  };
 }

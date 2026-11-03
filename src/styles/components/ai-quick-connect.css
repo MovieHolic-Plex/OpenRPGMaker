@@ -1,0 +1,115 @@
+/* 빠른 AI 연결 카드 (editor/panels/aiQuickConnect.ts) — AI 설정 연결 탭 맨 위와 연결 관문 안에서 쓴다. 색·간격은 tokens.css 만 쓴다. */
+@layer components {
+  .ai-quick-connect {
+    background: var(--bg-surface);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-l);
+    color: var(--text-1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  .ai-quick-connect-title {
+    font-size: var(--font-16);
+    font-weight: 600;
+  }
+  .ai-quick-connect-lead,
+  .ai-quick-connect-hint {
+    color: var(--text-2);
+    font-size: var(--font-13);
+    margin: 0;
+  }
+  .ai-quick-connect-kinds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .ai-quick-connect-kind {
+    background: var(--control-bg);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--font-13);
+    padding: var(--space-1) var(--space-3);
+  }
+  .ai-quick-connect-kind:hover {
+    background: var(--control-bg-hover);
+  }
+  .ai-quick-connect-kind[aria-checked="true"] {
+    background: var(--accent-muted);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+  .ai-quick-connect-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .ai-quick-connect-field[hidden] {
+    display: none;
+  }
+  .ai-quick-connect-label {
+    font-size: var(--font-13);
+    font-weight: 600;
+  }
+  .ai-quick-connect-input {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--font-14);
+    padding: var(--space-2) var(--space-3);
+  }
+  .ai-quick-connect-input:focus-visible {
+    border-color: var(--accent);
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+  }
+  .ai-quick-connect-input::placeholder {
+    color: var(--text-placeholder);
+  }
+  .ai-quick-connect-link {
+    color: var(--accent);
+    font-size: var(--font-13);
+    width: fit-content;
+  }
+  .ai-quick-connect-link[hidden] {
+    display: none;
+  }
+  .ai-quick-connect-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .ai-quick-connect-submit {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-m);
+    color: var(--bg-raised);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--font-14);
+    font-weight: 600;
+    padding: var(--space-2) var(--space-5);
+  }
+  .ai-quick-connect-submit:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .ai-quick-connect-submit:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+  .ai-quick-connect-status {
+    flex: 1 1 200px;
+    font-size: var(--font-13);
+    margin: 0;
+  }
+  .ai-quick-connect-status[data-tone="busy"] { color: var(--text-2); }
+  .ai-quick-connect-status[data-tone="ok"] { color: var(--success); }
+  .ai-quick-connect-status[data-tone="error"] { color: var(--danger); }
+}

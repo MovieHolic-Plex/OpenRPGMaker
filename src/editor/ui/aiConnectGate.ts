@@ -7,11 +7,16 @@
 // 메뉴·웰컴은 인터뷰 전에, 런처는 최종 확정 뒤에 연결을 안내한다. AI 없이 시작하는 길(⚙ 시스템 프리셋·빈 프로젝트)은
 // 이 관문을 지나지 않는다.
 //
-// 흐름: 「AI 연결하기」 → 관문을 숨기고 AI 설정을 연다 → 설정이 닫히면 연결을 다시 조회한다 →
+// 2026-11-03: 관문 안에 빠른 연결 카드(aiQuickConnect — OpenRouter 키 또는 OpenAI 호환 주소·키·모델)를 바로 둔다.
+// 키를 붙여 넣고 「연결」 하면 실제 채팅 한 번이 통과할 때만 저장하고 곧바로 이어 간다. 첫 실행 화면은 ensureAiConnected() 를 부른다.
+//
+// 「다른 방법으로 연결」 흐름: 관문을 숨기고 AI 설정을 연다 → 설정이 닫히면 연결을 다시 조회한다 →
 // 연결됐으면 관문을 닫고 true(호출부가 인터뷰로 넘어간다), 아니면 관문을 다시 보이며 현재 상태를 적는다.
 
 import { el } from "@/util/dom";
-import { loadAiConfig } from "@/ai/llmClient";
+import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
+import { configForProviderSelection } from "@/ai/providerSelection";
+import { renderAiQuickConnect } from "@/editor/panels/aiQuickConnect";
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus, refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { AI_SETTINGS_CLOSED_EVENT } from "@/editor/panels/aiSettingsEvents";
@@ -22,6 +27,7 @@ export const AI_CONNECT_GATE_TESTIDS = {
   host: "ai-connect-gate",
   connect: "ai-connect-gate-connect",
   later: "ai-connect-gate-later",
+  quick: "ai-connect-gate-quick",
   status: "ai-connect-gate-status",
 } as const;
 
@@ -73,6 +79,19 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
         : `지금 상태 · ${current.label}`;
     };
 
+    // 빠른 연결 카드(OpenRouter 키·OpenAI 호환)를 관문 안에 바로 둔다 — 설정 창을 열지 않고 여기서 끝낼 수 있다.
+    // 저장되면 그 엔드포인트를 기본 연결로 고르고(설정 창의 카드 선택과 같은 configForProviderSelection), 다시 판정한다.
+    const quick = renderAiQuickConnect({
+      onConnected: async (endpoint) => {
+        saveAiConfig(configForProviderSelection(loadAiConfig(), endpoint.id));
+        const connected = await connectedNow();
+        if (settled) return;
+        if (connected) finish(true);
+        else paintStatus(true);
+      },
+    });
+    quick.element.dataset.testid = AI_CONNECT_GATE_TESTIDS.quick;
+
     const laterButton = el("button", {
       class: "app-modal-button",
       text: "나중에",
@@ -81,25 +100,9 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
     });
     const connectButton = el("button", {
       class: "app-modal-button is-confirm",
-      text: "AI 연결하기",
+      text: "다른 방법으로 연결",
       attrs: { type: "button" },
       dataset: { testid: AI_CONNECT_GATE_TESTIDS.connect },
-    });
-
-    const roster = el("ul", {
-      class: "ai-connect-gate-team",
-      attrs: { "aria-label": "첫 생성을 맡는 AI 팀" },
-      children: [
-        ["팀장", "기획을 나눠 맡긴다"],
-        ["시공", "맵·이벤트·DB 를 만든다"],
-        ["검수", "결과를 확인하고 고친다"],
-      ].map(([role, job]) => el("li", {
-        class: "ai-connect-gate-member",
-        children: [
-          el("span", { class: "ai-connect-gate-role", text: role! }),
-          el("span", { class: "ai-connect-gate-job", text: job! }),
-        ],
-      })),
     });
 
     const card = el("div", {
@@ -114,13 +117,14 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
         ...(options.presetLabel
           ? [el("span", { class: "ai-connect-gate-kicker", text: `${options.presetLabel} 프리셋` })]
           : []),
-        el("div", { class: "app-modal-title", text: "AI 를 먼저 연결해 주세요", attrs: { id: "ai-connect-gate-title" } }),
+        el("div", { class: "app-modal-title", text: "AI 를 연결하고 시작해요", attrs: { id: "ai-connect-gate-title" } }),
         el("div", {
           class: "app-modal-message",
-          text: "AI가 게임을 만들려면 계정 연결이 필요해요. 연결을 마치면 선택한 내용으로 이어서 진행해요.",
+          text: "AI 팀이 기획을 나누고, 맵·이벤트를 만들고, 결과를 검수해요. 연결을 마치면 선택한 내용으로 이어서 진행해요.",
           attrs: { id: "ai-connect-gate-message" },
         }),
-        roster,
+        quick.element,
+        el("p", { class: "ai-connect-gate-status", text: "Google·ChatGPT 계정 로그인이나 다른 제공자는 「다른 방법으로 연결」 에서 고를 수 있어요." }),
         status,
         el("div", { class: "app-modal-actions", children: [laterButton, connectButton] }),
       ],
@@ -184,8 +188,10 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
     overlay.addEventListener("click", () => { if (!overlay.hidden) finish(false); });
     card.addEventListener("keydown", (event) => {
       if (event.key !== "Tab") return;
-      const first = laterButton;
-      const last = connectButton;
+      const focusables = [...card.querySelectorAll<HTMLElement>("button, input, a[href]")].filter((node) => !node.hidden && !node.closest("[hidden]") && !(node as HTMLButtonElement).disabled);
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!first || !last) return;
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
@@ -194,6 +200,14 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
     paintStatus(false);
     document.body.append(overlay);
     registerModal(overlay, () => finish(false));
-    connectButton.focus();
+    quick.focus();
   });
+}
+
+/**
+ * 첫 실행 화면용 입구. 연결돼 있으면 곧바로 true, 아니면 빠른 연결 카드가 든 관문을 띄워 연결되면 true, 「나중에」 면 false.
+ * presetLabel 은 선택이다(눈썹줄). DOM 이 없는 환경에서는 막지 않는다(true).
+ */
+export function ensureAiConnected(options: AiConnectGateOptions = {}): Promise<boolean> {
+  return ensureAiConnectedForPreset(options);
 }

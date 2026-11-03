@@ -550,3 +550,52 @@ export async function testOpenAiCompatEndpoint(request: OpenAiCompatTestRequest)
     clearTimeout(timer);
   }
 }
+
+export interface OpenAiCompatConnectRequest {
+  /** "openrouter" 면 주소·이름을 동반 서비스가 정한다. */
+  readonly kind: "openrouter" | "custom";
+  readonly apiKey?: string;
+  readonly baseUrl?: string;
+  readonly name?: string;
+  readonly model?: string;
+}
+
+export interface OpenAiCompatConnectResponse {
+  readonly ok: boolean;
+  readonly code: string;
+  readonly message: string;
+  readonly model: string;
+  readonly endpoint: OpenAiCompatEndpointPublic | undefined;
+}
+
+/**
+ * 빠른 연결 — 동반 서비스가 도구 달린 채팅을 한 번 보내 보고, 통과하면 그때만 키를 저장 파일(0600)에 넣는다.
+ * 키는 브라우저에 남지 않는다(요청 본문으로만 한 번 간다). 실패도 200 으로 오고 ok=false 와 사람 말 message 를 담는다.
+ */
+export async function connectOpenAiCompatEndpoint(request: OpenAiCompatConnectRequest): Promise<OpenAiCompatConnectResponse> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 130_000);
+  let response: Response;
+  try {
+    response = await fetchCompanion(`${companionOrigin()}/auth/openai-compat/connect`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    throw new ChatGptCompanionUnreachableError(error, controller.signal.aborted ? "timeout" : "network");
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  const payload = await readJsonBody(response);
+  setKnownOpenAiCompatEndpoints(readCompatEndpoints(payload));
+  return {
+    ok: payload?.ok === true,
+    code: typeof payload?.code === "string" ? payload.code : "unknown",
+    message: typeof payload?.message === "string" ? payload.message : "",
+    model: typeof payload?.model === "string" ? payload.model : "",
+    endpoint: readCompatEndpoints({ endpoints: [payload?.endpoint] })[0],
+  };
+}

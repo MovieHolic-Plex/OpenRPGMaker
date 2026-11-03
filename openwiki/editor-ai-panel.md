@@ -4442,6 +4442,21 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 그대로다(진짜 팀 변경·프로젝트 전환은 여전히 `valid=false`). 디버깅 힌트: `valid` 가 꺼진 순간 `change.projectSwitch`·`origin`·호출 스택을
 `globalThis` 에 남겨 두면 어느 방송인지 바로 보인다(이번 진단법).
 
+## 빠른 연결 — OpenRouter 키 하나로 시작 (2026-11-03)
+
+처음 쓰는 사람이 「AI 를 먼저 연결해 주세요」 에서 막히지 않게, 키 한 줄을 붙여 넣는 길을 맨 앞에 둔다. 저장·전송은 아래 「사용자 지정 연결」 과 같은 엔드포인트다.
+
+| 층 | 파일 | 하는 일 |
+|---|---|---|
+| 기본값 | `src/ai/openAiCompat.ts` | `OPENROUTER_BASE_URL`, `OPENROUTER_DEFAULT_MODEL = deepseek/deepseek-v4.1-flash`(싸고 tools 지원), `OPENROUTER_KEYS_URL` |
+| 동반 서비스 | `scripts/lib/openAiCompatRuntime.ts` `connectOpenAiCompat` | `POST /auth/openai-compat/connect`. `testOpenAiCompat({ model, probeTools: true })` 로 **도구 달린 채팅 한 번**을 보내 통과(채팅 2xx + toolsOk)할 때만 저장한다. 같은 주소가 있으면 그 행을 고친다 |
+| 클라이언트 | `src/ai/chatgptOAuthClient.ts` `connectOpenAiCompatEndpoint` | 키는 요청 본문으로만 한 번 간다. 실패도 200 + `ok:false` + 사람 말 |
+| 카드 | `src/editor/panels/aiQuickConnect.ts` | OpenRouter 키 / 다른 OpenAI 호환(주소·키·모델) 두 가지. 성공하면 키 칸을 비운다 |
+| 설정 창 | `aiSettingsModal.ts` | 연결 탭 맨 위 「빠른 연결」. 연결 상태가 connected 면 숨긴다. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
+| 관문 | `src/editor/ui/aiConnectGate.ts` | 카드를 관문 안에 바로 둔다. 성공 시 `configForProviderSelection` 으로 저장하고 재판정해 이어 간다. 「다른 방법으로 연결」 은 예전처럼 AI 설정을 연다 |
+
+**첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 빠른 연결 카드가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
+
 ## 사용자 지정(OpenAI 호환) 연결 (2026-10-14)
 
 내부 AI 가 OpenAI 호환 Chat Completions 서버(CLIProxyAPI·LiteLLM·Ollama·LM Studio·vLLM·OpenRouter·OpenAI)를 일급 제공자로 쓴다. 기본 연결(Google/ChatGPT)은 **바뀌지 않는다** — 사용자가 설정 → 연결 → 「사용자 지정 연결」에서 직접 골라야 쓴다. PR #2453(apiKey authKind·`/auth/key`)과는 별개 경로다: 거기는 정적 제공자에 키를 얹는 길이고, 여기는 사용자가 주소를 정하는 **동적 제공자 id `openai-compat:<slug>`** 이며 정적 레지스트리(`OH_MY_PI_PROVIDERS`)는 건드리지 않는다. 겹치는 파일은 `aiAuthRuntime.ts`·`ohMyPiHttp.mjs`·`aiAuthSettings.ts` 뿐이므로 두 PR 을 합칠 때 그 셋만 본다.

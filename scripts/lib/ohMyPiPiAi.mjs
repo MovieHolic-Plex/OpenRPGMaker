@@ -30,6 +30,7 @@ import {
   resolveOpenAiCompatRun,
   saveOpenAiCompat,
   testOpenAiCompat,
+  connectOpenAiCompat,
 } from "./openAiCompatRuntime.ts";
 
 applyLegacyEnvAliases();
@@ -288,6 +289,7 @@ export async function createOhMyPiAdapters() {
     async compatSave(body) { return { endpoint: saveOpenAiCompat(body ?? {}), endpoints: listOpenAiCompatPublic() }; },
     async compatDelete(id) { return deleteOpenAiCompat(String(id ?? "")); },
     async compatTest(body) { return testOpenAiCompat(body ?? {}); },
+    async compatConnect(body) { return connectOpenAiCompat(body ?? {}); },
     async complete(provider, body) {
       // 호스트 직전 검사 — 차단·비허용 모델은 키를 꺼내거나 워커를 부르기 전에 거절한다(폴백 없음).
       assertOpenAiCompatModelsAllowed([{ provider, model: body?.model }]);
