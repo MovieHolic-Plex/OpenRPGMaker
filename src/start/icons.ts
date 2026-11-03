@@ -19,6 +19,8 @@ const START_ICONS = {
   games: svg('<rect x="1.8" y="2.6" width="5.4" height="4.6" rx=".8"/><rect x="8.8" y="2.6" width="5.4" height="4.6" rx=".8"/><rect x="1.8" y="8.8" width="5.4" height="4.6" rx=".8"/><rect x="8.8" y="8.8" width="5.4" height="4.6" rx=".8"/>'),
   plus: svg('<path d="M8 2.5v11M2.5 8h11"/>'),
   store: svg('<path d="M2.4 3h11.2l-.9 3.6H3.3Z"/><path d="M3.2 6.6v6.8h9.6V6.6"/><path d="M6.4 13.4V9.8h3.2v3.6"/>'),
+  globe: svg('<circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c1.7 1.7 2.5 3.7 2.5 6S9.7 12.3 8 14M8 2C6.3 3.7 5.5 5.7 5.5 8s.8 4.3 2.5 6"/>'),
+  arrow: svg('<path d="M3 8h10M9 4l4 4-4 4"/>'),
   gear: svg('<circle cx="8" cy="8" r="2.2"/><path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.5 3.5l1.3 1.3M11.2 11.2l1.3 1.3M3.5 12.5l1.3-1.3M11.2 4.8l1.3-1.3"/>'),
 } as const;
 

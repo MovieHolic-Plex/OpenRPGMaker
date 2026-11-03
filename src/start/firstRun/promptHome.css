@@ -1,0 +1,103 @@
+/* 첫 사용자 프롬프트 홈(src/start/firstRun/promptHome.ts). 층 밖 — 클래스는 fr- 접두로만(launcher.css 의 ln-·hm- 와 같은 방식).
+   색은 편집기 새 토큰만 쓴다: 라이트 기본, OS 다크면 base/theme.css 의 중립 회색. 강조는 --accent 하나. 8px 격자, 머리카락 선.
+   theme.css·ui-font.css 는 편집기 진입점만 싣던 시트라 여기서 들인다 — 시작 화면에서도 다크 토큰과 한글 Pretendard 가 같아진다. */
+@import "../../styles/base/theme.css";
+@import "../../styles/base/ui-font.css";
+
+.fr-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg-base);
+  color: var(--text-1);
+  font: var(--font-14) / 1.5 var(--font-ui);
+}
+.fr-root *, .fr-root *::before, .fr-root *::after { box-sizing: border-box; }
+.fr-root button:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); }
+.fr-root.is-busy { cursor: progress; }
+.fr-icon { display: inline-grid; flex: none; }
+.fr-icon svg { display: block; width: 16px; height: 16px; }
+
+.fr-top { display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--space-4); height: 48px; padding: 0 var(--space-5); }
+.fr-brand { font-size: var(--font-14); font-weight: var(--font-weight-semibold); white-space: nowrap; }
+.fr-locale {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--hit-min); padding: 0 var(--space-3);
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-pill);
+  background: transparent; color: var(--text-2); font: inherit; font-size: var(--font-13); white-space: nowrap; cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+.fr-locale:hover { background: var(--bg-hover); color: var(--text-1); }
+
+.fr-main {
+  display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 720px;
+  margin: 0 auto; padding: clamp(var(--space-6), 18vh, 192px) var(--space-5) var(--space-6);
+  text-align: center;
+}
+.fr-title { margin: 0; font-size: var(--font-28); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
+.fr-sub { margin: var(--space-2) 0 0; color: var(--text-2); font-size: var(--font-16); }
+
+.fr-composer {
+  display: flex; flex-direction: column; width: 100%; margin-top: var(--space-5);
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-4);
+  background: var(--bg-raised); text-align: left;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.fr-composer:focus-within { border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-muted); }
+.fr-input {
+  display: block; width: 100%; min-height: 96px; padding: var(--space-4) var(--space-4) 0; margin: 0;
+  border: 0; background: transparent; color: var(--text-1); font: inherit; font-size: var(--font-16); line-height: 1.5;
+  resize: none;
+}
+.fr-input:focus { outline: none; }
+.fr-input::placeholder { color: var(--text-placeholder); }
+.fr-composer-foot { display: flex; justify-content: flex-end; padding: var(--space-2); }
+.fr-submit {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 var(--space-4);
+  border: 0; border-radius: var(--radius-3); background: var(--accent); color: var(--on-accent);
+  font: inherit; font-size: var(--font-14); font-weight: var(--font-weight-semibold); white-space: nowrap; cursor: pointer;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+.fr-submit:hover:not(:disabled) { background: var(--accent-hover); }
+.fr-submit:active:not(:disabled) { background: var(--accent-active); }
+.fr-submit:disabled { opacity: 0.45; cursor: default; }
+.fr-root.is-busy .fr-submit:disabled { opacity: 0.7; cursor: progress; }
+
+.fr-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-top: var(--space-4); }
+.fr-chip {
+  min-height: var(--hit-min); padding: var(--space-1) var(--space-3);
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-pill);
+  background: transparent; color: var(--text-2); font: inherit; font-size: var(--font-13); line-height: 1.4; cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+.fr-chip:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-1); }
+.fr-chip:disabled { cursor: default; }
+
+.fr-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-1) var(--space-2); margin-top: var(--space-6); }
+.fr-link {
+  min-height: var(--hit-min-dense); padding: 0 var(--space-1); border: 0; border-radius: var(--radius-1);
+  background: transparent; color: var(--text-3); font: inherit; font-size: var(--font-13); cursor: pointer;
+}
+.fr-link:hover { color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
+.fr-dot { color: var(--text-disabled); }
+.fr-root ~ .ln-error {
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-3);
+  background: var(--bg-overlay); color: var(--danger); font-size: var(--font-13); box-shadow: var(--shadow-pop);
+}
+
+@media (max-width: 600px) {
+  .fr-top { padding: 0 var(--space-4); }
+  .fr-main { padding: var(--space-6) var(--space-4); }
+  .fr-title { font-size: var(--font-22); }
+  .fr-sub { font-size: var(--font-14); }
+}
+
+/* 데스크톱 창 단추(shell/window-controls.css): 단추 밑으로 들어가지 않게 양 끝을 비우고, 빈 곳은 창 끌기 영역으로 쓴다. */
+body.has-window-chrome .fr-top {
+  padding-right: calc(var(--space-5) + var(--window-inset-right, 0px));
+  padding-left: calc(var(--space-5) + var(--window-inset-left, 0px));
+  -webkit-app-region: drag;
+}
+body.has-window-chrome .fr-top button { -webkit-app-region: no-drag; }
+body.has-window-chrome:has([aria-modal="true"]:not([aria-hidden="true"] *), dialog[open]) .fr-top { -webkit-app-region: no-drag; }

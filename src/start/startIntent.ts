@@ -28,6 +28,8 @@ export type StartScreenIntent = {
   readonly screenSize?: ProjectStartScreenSize;
   /** Full confirmed interview; the editor validates it before seeding and saving. */
   readonly gameDesignBrief?: GameDesignBrief;
+  /** 첫 사용자 프롬프트 홈에서 왔다 — 부팅 로더(public/boot-splash.js)가 intent 문장과 「세계를 펼치는 중」을 보인다. */
+  readonly firstBuild?: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -51,6 +53,7 @@ export function takeStartScreenIntent(storage: StorageLike, openedProjectDir: st
   if (value.choiceId !== null && typeof value.choiceId !== "string") return null;
   if (value.startMode !== undefined && !["example", "ai", "blank"].includes(value.startMode)) return null;
   if (value.screenSize !== undefined && !["classic", "wide"].includes(value.screenSize)) return null;
+  if (value.firstBuild !== undefined && typeof value.firstBuild !== "boolean") return null;
   if (now - value.createdAt > MAX_AGE_MS || value.createdAt > now + 60_000) return null;
   if (value.projectDir !== openedProjectDir) return null;
   return value as StartScreenIntent;

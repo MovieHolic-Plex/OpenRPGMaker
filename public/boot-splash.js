@@ -57,6 +57,7 @@
       script: "앱을 시작하는 중 오류가 났어요. 다시 시도해도 같으면 아래 자세히 내용을 함께 알려 주세요.",
       project: "프로젝트를 여는 중 오류가 났어요. 프로젝트 파일은 건드리지 않았어요.",
       unknown: "열리는 중 문제가 생겼어요.",
+      firstBuild: "세계를 펼치는 중",
       lang: "ko"
     },
     en: {
@@ -68,6 +69,7 @@
       script: "Something went wrong while starting the app. If it happens again, please share the details below.",
       project: "Something went wrong while opening the project. Your project files were not touched.",
       unknown: "Something went wrong while opening.",
+      firstBuild: "Unfolding your world",
       lang: "en"
     },
     ja: {
@@ -79,6 +81,7 @@
       script: "アプリの起動中にエラーが発生しました。繰り返す場合は下の詳細を共有してください。",
       project: "プロジェクトを開く途中でエラーが発生しました。プロジェクトのファイルには触れていません。",
       unknown: "起動中に問題が発生しました。",
+      firstBuild: "世界を広げています",
       lang: "ja"
     },
     zh: {
@@ -90,6 +93,7 @@
       script: "启动应用时出错。如果再次出现，请分享下方的详情。",
       project: "打开项目时出错。项目文件未被改动。",
       unknown: "打开时出现问题。",
+      firstBuild: "正在展开世界",
       lang: "zh-CN"
     }
   };
@@ -147,6 +151,21 @@
     if (lines && tipNodes.length === 3) for (var n = 0; n < 3; n += 1) tipNodes[n].textContent = lines[n];
   } catch (e) { /* 캐시가 깨져 있으면 기본 줄을 둔다 */ }
 
+  /* 첫 빌드(시작 화면 프롬프트 홈 → src/start/startIntent.ts firstBuild): 사용자가 적은 문장과 «세계를 펼치는 중».
+   * 인계는 편집기 부팅이 꺼내므로 여기서는 읽기만 한다. 문장은 textContent 로만 넣는다. */
+  var firstBuild = false;
+  try {
+    var handoff = JSON.parse(w.sessionStorage.getItem("oprn:start-screen-intent") || "null");
+    if (handoff && handoff.firstBuild === true && typeof handoff.intent === "string" && handoff.intent.trim()) {
+      var quote = q(".oprn-boot-first");
+      if (quote) {
+        quote.textContent = handoff.intent.trim().slice(0, 400);
+        root.setAttribute("data-first-build", "");
+        firstBuild = true;
+      }
+    }
+  } catch (e) { firstBuild = false; }
+
   var STAGE_INDEX = { prepare: 0, shared: 1, project: 2, editor: 3 };
   var current = 0;
   var finished = false;
@@ -159,7 +178,7 @@
       stepNodes[i].setAttribute("data-state", i < index ? "done" : i === index ? "active" : "pending");
     }
     root.setAttribute("data-stage", ["app", "shared", "project", "editor"][index] || "app");
-    setText(".oprn-boot-text", copy.steps[index] + " (" + (index + 1) + "/" + stepNodes.length + ")");
+    setText(".oprn-boot-text", (firstBuild ? copy.firstBuild + "…" : copy.steps[index]) + " (" + (index + 1) + "/" + stepNodes.length + ")");
   }
   render(0);
 
