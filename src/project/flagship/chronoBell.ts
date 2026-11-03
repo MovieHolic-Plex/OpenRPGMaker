@@ -53,6 +53,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
+import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
 const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
@@ -2513,6 +2514,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
   // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
   applyFallenMobBalance(project, execTool);
+  // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
+  applyFallenMonsterArt16(project);
 
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.
