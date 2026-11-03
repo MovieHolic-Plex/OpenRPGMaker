@@ -164,8 +164,10 @@
 /* map/resource-system.part-1.css:260-273 */
 .test-play-window[data-window-mode="windowed"] {
   align-self: center;
-  border: 1px solid var(--editor-line-strong);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
   box-shadow: var(--shadow-modal);
+  overflow: hidden;
   /* 642×512 기본은 전투 씬(논리 640×480)을 배율 1.0 에 가둬 "전투 UI 가 너무 좁다"
      (감독 지적 4). 화면 대부분을 기본으로 쓰고, 스테이지 스케일이 창에 맞춰 키운다. */
   height: min(1000px, calc(100dvh - 48px));
@@ -202,8 +204,9 @@
 
 /* map/resource-system.part-1.css:294-298 */
 .test-play-window[data-window-mode="windowed"] .test-play-titlebar {
-  background: var(--editor-toolbar-bg);
-  border-bottom: 1px solid var(--editor-line);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-inline: 12px 8px;
   position: relative;
 }
 
@@ -227,8 +230,9 @@
 
 /* map/resource-system.part-1.css:308-319 */
 .test-play-window[data-window-mode="windowed"] .test-play-title {
-  color: var(--editor-text);
+  color: var(--text-1);
   flex: 1 1 auto;
+  font-weight: 600;
   height: auto;
   left: auto;
   min-width: 0;
@@ -379,6 +383,7 @@
 }
 
 .test-play-close[data-testid="mode-edit"] {
+  background: var(--bg-raised);
   border-color: var(--border-default);
   color: var(--text-1);
 }
