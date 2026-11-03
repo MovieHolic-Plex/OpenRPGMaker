@@ -1,4 +1,5 @@
 import { jsonEqual } from "@/util/structuralJson";
+import { fixActorPartyConditions } from "@/project/eventCommands/commandFieldAliases";
 import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
 import { npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { chaseCellMs } from "@/project/chaseTempo";
@@ -876,6 +877,8 @@ export function assertEventShape(event: GameEvent, warnings?: string[], supplied
       if (!Array.isArray(page.conditions)) {
         throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.${page.id ?? "page"}.conditions 는 배열이어야 합니다(조건 없음은 []).`, { code: "invalid-args" });
       }
+      const partyFixed = fixActorPartyConditions(page.conditions);
+      if (partyFixed) warnings?.push(`${event.id}.${page.id} 조건의 「파티에 있다」(${partyFixed}곳)를 {kind:"actor",actorId,present} 로 고쳤습니다.`);
       page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
     }
     normalizeEventCommandArrays(event, warnings, supplied);

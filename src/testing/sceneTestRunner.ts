@@ -209,6 +209,8 @@ export type SceneStep =
       variables?: Record<string, number>;
       inventory?: Record<string, number>;
       gold?: number;
+      /** 전투 파티를 이 배우들로 바꾼다(순서 = 대열). 「동료가 있을 때만」 조건을 양쪽으로 시험할 때 — 2026-11-03 조수 대조 B7 설원 Opus 가 party 를 넣었다가 거절됐다. */
+      party?: readonly string[];
       manualHint?: string;
     }
   | { kind: "move"; dir: Dir; to?: never }
@@ -534,7 +536,7 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
   set: { fields: {
     mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
     switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
-    variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
+    variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText, party: sceneStrings,
   } },
   interact: { fields: { eventId: sceneText } },
   useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
@@ -576,7 +578,7 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   to: "{x,y} 0 이상의 정수 좌표", adjacent: "true/false",
   mapId: "비어 있지 않은 맵 id 문자열", eventId: "비어 있지 않은 이벤트 id 문자열", itemId: "비어 있지 않은 아이템 id 문자열",
   manualHint: "비어 있지 않은 문자열",
-  switches: "스위치 id 배열 또는 {스위치id: true/false}", variables: "{변수id: 숫자}", inventory: "{아이템id: 개수}",
+  switches: "스위치 id 배열 또는 {스위치id: true/false}", variables: "{변수id: 숫자}", inventory: "{아이템id: 개수}", party: "배우 id 배열(전투 파티를 이걸로 바꾼다)",
   playerAt: "{x,y,mapId?}", switchOn: "스위치 id 또는 id 배열", switchOff: "스위치 id 또는 id 배열",
   variableEquals: "{변수id: 숫자} 또는 {variableId,value}", variableAtLeast: "{변수id: 숫자} 또는 {variableId,value}",
   eventAt: "{eventId,x,y,mapId?}", eventOnMap: "{eventId,mapId}", eventDistanceToPlayerLessThan: "{eventId,distance,mapId?}",
@@ -599,7 +601,7 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
 
 // 모델이 자주 쓰는 틀린 필드 이름 → 올바른 이름.
 const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
-  set: { switch: "switches", switchIds: "switches", variable: "variables", items: "inventory", item: "inventory", position: "x/y", pos: "x/y", dir: "facing", direction: "facing" },
+  set: { switch: "switches", switchIds: "switches", variable: "variables", items: "inventory", item: "inventory", position: "x/y", pos: "x/y", dir: "facing", direction: "facing", partyActorIds: "party", members: "party" },
   present: { item: "itemId", items: "itemId", id: "itemId" },
   interact: {
     id: "eventId", event: "eventId", target: "eventId",
@@ -884,6 +886,11 @@ function runSetStep(state: RunnerState, step: Extract<SceneStep, { kind: "set" }
   for (const [variableId, value] of Object.entries(step.variables ?? {})) state.session.variables[variableId] = value;
   for (const [itemId, count] of Object.entries(step.inventory ?? {})) state.session.inventory[itemId] = count;
   if (step.gold !== undefined) state.session.gold = step.gold;
+  if (step.party !== undefined) {
+    const missing = step.party.filter((id) => !state.project.database.actors.some((actor) => actor.id === id));
+    if (missing.length) return `set party: 없는 배우 ${missing.join(", ")}`;
+    state.session.partyActorIds = [...step.party];
+  }
   syncFollowCamera(state);
   state.log.push(`set${step.manualHint ? `: ${step.manualHint}` : ""}`);
   return null;
