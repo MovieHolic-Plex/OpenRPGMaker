@@ -380,6 +380,12 @@ function fitDoorsToPlan(
       continue;
     }
     if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
+    // 바깥으로 나가는 문이 이미 벽에 박힌 사다리·계단·문 그림 칸(또는 그 탈 자리)에 서 있으면 그대로 둔다.
+    // 왜(2026-11-03 조수 대조 B1 Opus): 막사 끝 사다리(1,3) ↔ 밤 광장으로 이은 문이 막사를 다시 지을 때(edit_place)
+    // 가장 가까운 가장자리 틈 = 막사 입구(11,21)로 끌려가, 사다리는 아무 데도 안 가고 입구가 광장으로 나갔다.
+    //   1×1 벽 조각(사다리)의 탈 자리는 그림 바로 아래 칸이고, 문(부딪힘)은 그림 칸에 선다 — 같은 열의 그 위 두 칸까지 같은 문으로 본다.
+    if (built.travel.some((tr) => (tr.trigger ? tr.trigger.x === event.x && tr.trigger.y === event.y : false)
+      || (tr.x === event.x && event.y <= tr.y && event.y >= tr.y - 2))) continue;
     const target = nearestOpening(shape, event);
     if (!target) {
       // 바깥 출구 틈이 없는 방(전철 차내 J45)은 그린 탈것 문 앞 탈 자리가 드나드는 곳이다 — 바깥으로 가는 문도 그리로 옮긴다.

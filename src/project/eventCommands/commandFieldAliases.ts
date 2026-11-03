@@ -215,7 +215,20 @@ const WAIT_MS_ALIASES: readonly (readonly [string, number])[] = [
 const MOVE_DIRS = new Set(["up", "down", "left", "right"]);
 const ROUTE_FLAG_KEYS = ["wait", "repeat", "skippable"] as const;
 
+// 걸음 kind 에 방향을 붙여 쓴 객체(2026-11-03 조수 대조 B1 Opus: {kind:"turnUp"} 로 컷신 전체가 「알 수 없는 move command kind」로 거절).
+//   RPG Maker 의 「위로 이동」·「위를 본다」 표기다. 뜻이 하나인 move·turn·step·face 뒤 방향만 {kind,dir} 로 옮긴다.
+const DIRECTED_STEP_KIND = /^(move|step|walk|turn|face)_?(up|down|left|right)$/u;
+
+function directedStepObject(raw: RecordValue): RecordValue | undefined {
+  if (typeof raw.kind !== "string" || raw.dir !== undefined) return undefined;
+  const hit = DIRECTED_STEP_KIND.exec(raw.kind.trim().replace(/[\s-]+/gu, "_").replace(/([a-z])([A-Z])/gu, "$1_$2").toLowerCase());
+  if (!hit) return undefined;
+  const kind = hit[1] === "turn" || hit[1] === "face" ? "turn" : "move";
+  return { ...raw, kind, dir: hit[2] };
+}
+
 function moveStep(raw: unknown): unknown {
+  if (raw !== null && typeof raw === "object" && !Array.isArray(raw)) return directedStepObject(raw as RecordValue) ?? raw;
   if (typeof raw !== "string") return raw;
   const word = raw.trim().toLowerCase().replace(/[\s-]+/gu, "_");
   if (MOVE_DIRS.has(word)) return { kind: "move", dir: word };
@@ -238,7 +251,7 @@ function canonicalizeMoveEventRoute(command: RecordValue): string | undefined {
     const moves = ((source as RecordValue).moves as unknown[]).map(moveStep);
     if (moves.some((step) => step === undefined || step === null || typeof step !== "object")) return undefined;
     command.route = { repeat: false, ...(source as RecordValue), moves };
-    return `moveEvent.${from} 를 route 객체로 옮겼습니다(문자열 방향은 {kind:"move",dir} 로).`;
+    return `moveEvent.${from} 를 route 객체로 옮겼습니다(문자열 방향·turnUp 같은 방향 붙은 걸음은 {kind:"move"|"turn",dir} 로).`;
   }
   if (!Array.isArray(source)) return undefined;
   const moves = source.map(moveStep);
@@ -290,10 +303,41 @@ function canonicalizeChangeFace(command: RecordValue): string | undefined {
   return fixed.length ? `changeFace: ${fixed.join(", ")}.` : undefined;
 }
 
+/**
+ * 다른 엔진식 한 걸음 명령 → moveEvent 한 칸 경로(2026-11-03 조수 대조 B1 Argon: 시작 컷신 upsert_event 가
+ * {kind:"moveActor",target:"@player",action:"turn",dir} 와 {kind:"setEventLocation",eventId,x,y} 로 「알 수 없는 kind」 거절 →
+ * 다시 보내다 첫 응답 시간 초과로 턴이 끝나 빵·열쇠·순찰이 하나도 안 생겼다). 뜻이 하나인 모양만 옮긴다:
+ *  - moveActor/moveCharacter {target|eventId, action:"turn"|"move"|"face"|"step", dir} → moveEvent route [{kind:"turn"|"move",dir}]
+ *  - setEventLocation/setEventPosition {eventId, x, y} → moveEvent route [{kind:"placeAt",x,y}] (같은 맵 순간 이동)
+ */
+function canonicalizeForeignStepCommand(command: RecordValue): string | undefined {
+  const kind = typeof command.kind === "string" ? command.kind : "";
+  const target = typeof command.target === "string" ? command.target : typeof command.eventId === "string" ? command.eventId : undefined;
+  if ((kind === "moveActor" || kind === "moveCharacter") && target !== undefined) {
+    const action = typeof command.action === "string" ? command.action.toLowerCase() : "move";
+    const dir = typeof command.dir === "string" ? command.dir : typeof command.direction === "string" ? command.direction : undefined;
+    if (!dir || !MOVE_DIRS.has(dir) || !["turn", "face", "move", "step", "walk"].includes(action)) return undefined;
+    const step = { kind: action === "turn" || action === "face" ? "turn" : "move", dir };
+    for (const key of Object.keys(command)) delete command[key];
+    Object.assign(command, { kind: "moveEvent", eventId: target, route: { moves: [step], repeat: false, wait: true } });
+    return `${kind} 를 moveEvent(route 한 칸 ${step.kind} ${dir}) 로 옮겼습니다 — 걷기·돌기는 moveEvent.route.moves 입니다(주인공은 eventId "@player").`;
+  }
+  if ((kind === "setEventLocation" || kind === "setEventPosition") && target !== undefined
+    && typeof command.x === "number" && typeof command.y === "number" && command.mapId === undefined) {
+    const at = { x: command.x, y: command.y };
+    for (const key of Object.keys(command)) delete command[key];
+    Object.assign(command, { kind: "moveEvent", eventId: target, route: { moves: [{ kind: "placeAt", ...at }], repeat: false, wait: true } });
+    return `${kind} 를 moveEvent(route placeAt (${at.x},${at.y})) 로 옮겼습니다 — 같은 맵 순간 이동은 route 의 placeAt 입니다.`;
+  }
+  return undefined;
+}
+
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
   const command = raw as RecordValue;
+  const foreign = canonicalizeForeignStepCommand(command);
+  if (foreign) return foreign;
   // m2 명령의 글자 칸(text·select)에 숫자를 주면 모양 검사가 「fields.value가 문자열」로 거절했다(2026-10-24 g3-boss-heal) — 글자로 바꿔 받는다.
   if (command.kind === "m2Command" && typeof command.commandId === "string" && command.fields && typeof command.fields === "object") {
     const spec = m2CommandById(command.commandId);
@@ -378,7 +422,8 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
   }
   if (command.kind === "moveEvent" && (command.route === undefined || Array.isArray(command.route) || typeof command.route === "string"
     || (command.route !== null && typeof command.route === "object" && Array.isArray((command.route as RecordValue).moves)
-      && ((command.route as RecordValue).moves as unknown[]).some((step) => typeof step === "string")))) {
+      && ((command.route as RecordValue).moves as unknown[]).some((step) => typeof step === "string"
+        || (step !== null && typeof step === "object" && !Array.isArray(step) && directedStepObject(step as RecordValue) !== undefined))))) {
     return canonicalizeMoveEventRoute(command);
   }
   if (command.kind === "displayTextSettings") return fillDisplayTextSettings(command);
