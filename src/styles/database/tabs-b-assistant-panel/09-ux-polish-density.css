@@ -225,7 +225,7 @@
 .ai-start-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(0,0,0,0.14);
-  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-default));
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border-default));
 }
 .ai-start-card .ai-start-mosaic {
   border-radius: 8px;
@@ -283,7 +283,7 @@
 .ai-assistant-status[data-status-tone="thinking"]::before {
   content: "●";
   margin-right: 6px;
-  color: var(--accent, #4c6ef5);
+  color: var(--accent);
   animation: ai-status-pulse 1s ease-in-out infinite;
 }
 @keyframes ai-status-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }

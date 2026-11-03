@@ -1,4 +1,4 @@
-.ai-creation-choice { --choice-accent: #7660d4; width: 100%; color: var(--text-1); font: 13px/1.6 var(--font-ui); }
+.ai-creation-choice { --choice-accent: var(--accent); width: 100%; color: var(--text-1); font: 13px/1.6 var(--font-ui); }
 .ai-creation-choice h2 { margin: 9px 0 6px; font-size: clamp(20px, 2vw, 28px); letter-spacing: -1px; line-height: 1.35; outline: none; }
 .ai-creation-steps, .ai-creation-eyebrow { color: var(--choice-accent, var(--accent)); font-size: 11px; font-weight: 650; letter-spacing: .7px; }
 .ai-creation-intro { margin: 0 0 24px; color: var(--text-3); }

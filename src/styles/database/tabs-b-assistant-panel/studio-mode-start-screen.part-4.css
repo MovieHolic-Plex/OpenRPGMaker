@@ -92,7 +92,7 @@
 
 .ai-start-visual-card:hover,
 .ai-start-visual-card:focus-visible {
-  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 32%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border-subtle));
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
   transform: translateY(-2px);
   outline: none;
@@ -269,8 +269,8 @@
 }
 .ai-empty-cta-btn:hover,
 .ai-empty-cta-btn:focus-visible {
-  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 32%, var(--border-subtle));
-  background: color-mix(in srgb, var(--accent, #4c6ef5) 7%, var(--bg-inset));
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-inset));
   transform: translateY(-1px);
   outline: none;
 }
