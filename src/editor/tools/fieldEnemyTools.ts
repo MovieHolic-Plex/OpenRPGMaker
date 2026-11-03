@@ -721,7 +721,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       ...FIELD_DETECTION_SCHEMA,
       visionLight: {
         type: 'object',
-        description: '잠입용 「보이는 시야」: 적마다 바라보는 쪽으로 부채꼴 등불 빛을 바닥에 깐다(반경 = 시야 칸, 각 = coneDegrees 또는 이미 정한 부채꼴, 기본 90°). 돌아서면 빛도 같이 돈다 — 플레이어가 어디가 위험한지 눈으로 본다. 맵이 밝으면 빛이 안 보이므로 조명이 없는 맵은 어둡게(ambient 0.55) 깐다. {} 만 줘도 된다.',
+        description: '잠입용 「보이는 시야」: 적마다 바라보는 쪽으로 부채꼴 등불 빛을 바닥에 깐다(반경 = 시야 칸, 각 = coneDegrees 또는 이미 정한 부채꼴, 기본 90°; allRound 면 둥근 빛). 돌아서면 빛도 같이 돈다 — 플레이어가 어디가 위험한지 눈으로 본다. 빛 가장자리는 또렷이 끊기고, 시야도 그 빛과 같은 원으로 잰다(빛 안에 발을 들이면 들킨다, 밖이면 안 들킨다). 적이 흐려지거나 숨으면 빛도 같이 꺼진다. 맵이 밝으면 빛이 안 보이므로 조명이 없는 맵은 어둡게(ambient 0.55) 깐다. {} 만 줘도 된다.',
         properties: { color: { type: 'string', description: '빛 색(기본 #ffcf7a 등불)' }, intensity: { type: 'number', description: '0..1(기본 0.85)' } },
       },
     }, []),
@@ -753,16 +753,25 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           }
           if (touched) changed.push(`${map.id}/${event.id}`);
           if (touched && vision) {
+            // 보이는 빛 = 들키는 자리. 시야를 빛과 같은 원(반지름 range + 0.5)으로 재고, 빛 가장자리를 또렷이 끊는다.
+            // 맨해튼 마름모 시야 + 번지는 둥근 빛은 대각선에서 어긋나 「빛 안인데 안전」「빛 끝 어스름에서 잡힘」이 섞였다(2026-11-01).
+            for (const page of event.pages ?? []) {
+              if (page.movement.type !== 'chase') continue;
+              const sight = page.movement.sight ?? { range: page.movement.sightRange ?? 5, lineOfSight: true, facing: 'cone' as const };
+              page.movement = { ...page.movement, sight: { ...sight, shape: 'circle' } };
+            }
             const movement = (event.pages ?? []).find((page) => page.movement.type === 'chase')!.movement;
             const range = movement.sight?.range ?? movement.sightRange ?? 5;
+            // 사방을 보는 적(allRound)은 둥근 빛, 앞을 보는 적은 그 부채꼴.
+            const allRound = movement.sight?.facing === 'any';
             const degrees = movement.sight?.facing === 'cone' ? movement.sight.coneDegrees ?? 90 : tuning.coneDegrees ?? 90;
             const base = normalizeLightingState(map.defaultLighting ?? { ambient: 0.55, color: '#0b0f1e', sources: [] });
             const id = `vision_${event.id}`;
             map.defaultLighting = normalizeLightingState({
               ...base,
-              sources: [...base.sources.filter((source) => source.id !== id), { id, at: { eventId: event.id }, radius: range + 0.5, intensity: visionIntensity, color: visionColor, cone: { degrees } }],
+              sources: [...base.sources.filter((source) => source.id !== id), { id, at: { eventId: event.id }, radius: range + 0.5, intensity: visionIntensity, color: visionColor, edge: 'hard', ...(allRound ? {} : { cone: { degrees } }) }],
             });
-            lit.push(`${event.id}(${range}칸·${degrees}°)`);
+            lit.push(`${event.id}(${range}칸·${allRound ? '사방' : `${degrees}°`})`);
           }
         }
       }

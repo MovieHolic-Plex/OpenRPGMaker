@@ -16,7 +16,7 @@ const hex = (color: string | undefined): [number, number, number] => {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
 /** 게임 마스크의 걷어 내기 기울기 — 게임과 같은 빛 곡선(LIGHT_FALLOFF). */
-const cutAt = (t: number, alpha: number): number => alpha * lightFalloffAt(t);
+const cutAt = (t: number, alpha: number, edge?: LightSource["edge"]): number => alpha * lightFalloffAt(t, edge);
 
 /** 맵 기본 조명(defaultLighting)을 rgba(가로 width) 에 칠한다. 플레이어를 따라가는 빛은 시작 맵이면 시작 자리에 그린다. */
 export function applyMapLighting(rgba: Uint8Array, width: number, height: number, map: GameMap, project: Project): LitShot {
@@ -28,7 +28,7 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
   const padY = Math.max(0, height - map.height * tile);
   const isStart = project.startMapId === map.id;
   let playerLightAtStart = false;
-  const centers: { x: number; y: number; r: number; a: number }[] = [];
+  const centers: { x: number; y: number; r: number; a: number; edge?: LightSource["edge"] }[] = [];
   for (const source of lighting.sources ?? [] as readonly LightSource[]) {
     let cell: { x: number; y: number } | undefined;
     const at = source.at as unknown;
@@ -39,7 +39,7 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
       if (ev) cell = { x: ev.x, y: ev.y };
     } else if (at && typeof at === "object" && "x" in (at as object)) cell = at as { x: number; y: number };
     if (!cell || !(source.radius > 0)) continue;
-    centers.push({ x: (cell.x + 0.5) * tile, y: padY + (cell.y + 0.5) * tile, r: source.radius * tile, a: clamp01(source.intensity ?? 1) });
+    centers.push({ x: (cell.x + 0.5) * tile, y: padY + (cell.y + 0.5) * tile, r: source.radius * tile, a: clamp01(source.intensity ?? 1), edge: source.edge });
   }
   // 게임과 같은 어둠 막(player/lighting.ts): 밝은 색은 어두운 색조로 낮추고 진하기를 묶는다.
   const darkness = effectiveDarkness(lighting.color, ambient);
@@ -52,7 +52,7 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
     const r2 = c.r * c.r;
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       const dx = x + 0.5 - c.x, dy = y + 0.5 - c.y, d2 = dx * dx + dy * dy;
-      if (d2 < r2) keep[y * width + x]! *= 1 - cutAt(Math.sqrt(d2) / c.r, c.a);
+      if (d2 < r2) keep[y * width + x]! *= 1 - cutAt(Math.sqrt(d2) / c.r, c.a, c.edge);
     }
   }
   for (let p = 0; p < width * height; p++) {

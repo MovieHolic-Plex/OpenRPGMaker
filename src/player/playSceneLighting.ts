@@ -183,7 +183,11 @@ function resolveLightAnchor(
   if ("eventId" in anchor) {
     const eventSprite = scene.eventSprites.get(anchor.eventId);
     if (eventSprite) {
-      const at = spriteToTilePosition(eventSprite, mapTileSize(scene.map));
+      // 이벤트에 붙은 빛은 그 몸을 따른다 — 몸이 흐려지면(changeOpacity) 같이 흐려지고, 숨기면 꺼진다.
+      // 예전에는 자리만 따라가 몸이 사라진 뒤에도 등불만 남아 떠 있었다(폴른 스타 2막 숲 어귀, 독립 검수 2026-11-01).
+      const fade = eventSprite.visible === false ? 0 : Math.max(0, Math.min(1, eventSprite.alpha ?? 1));
+      if (fade <= 0.01) return undefined;
+      const at = { ...spriteToTilePosition(eventSprite, mapTileSize(scene.map)), ...(fade < 1 ? { fade } : {}) };
       if (!source.cone) return at;
       // 부채꼴 빛(경비 등불 시야)은 그 이벤트가 지금 보는 쪽으로 — 순찰하며 돌아서면 빛도 같이 돈다(시야 판정 npcSeesPoint 와 같은 방향).
       const facing = scene.autonomousNPCs.get(anchor.eventId)?.facing
@@ -197,6 +201,9 @@ function resolveLightAnchor(
     if (follower) return { x: follower.x, y: follower.y };
     // 그 id 하나만 뷰로 만든다 — 광원마다 맵 전체 이벤트 뷰를 만들면 광원 수 × 이벤트 수가 매 프레임 든다.
     const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, anchor.eventId);
+    // 지금 페이지가 투명(graphic.transparent)이거나 맞는 페이지가 없는 이벤트는 몸이 없다 — 빛도 없다.
+    // 지운 이벤트(eraseEvent)는 뷰가 없어 이미 꺼진다. 그림 없이 놓인 표식 이벤트(투명 표시 없음)는 예전처럼 그 자리에서 빛난다.
+    if (view?.transparent) return undefined;
     // 스프라이트가 없으면 뷰에서 몸 중앙을 계산한다 — spriteToTilePosition 과 같은 좌표계다
     // (중앙 타일 인덱스). Y 는 발밑이 곧 앵커라 그대로다.
     return view

@@ -358,6 +358,12 @@ export type LightSource = {
    * 이벤트가 아닌 자리·주인공에 주면 facing 으로 정한 쪽(기본 아래)을 비춘다.
    */
   readonly cone?: { readonly degrees: number; readonly facing?: "up" | "down" | "left" | "right" };
+  /**
+   * 빛 가장자리. soft(기본) = 가운데서 바깥으로 꾸준히 사위는 등불. hard = 반지름 끝까지 거의 같은 밝기로 버티다 끝에서 끊긴다 —
+   * 「이 원 안이 보이는 자리」가 규칙인 시야 등불(set_field_detection visionLight)에 쓴다. 번지는 가장자리는 들킴 경계를 못 읽게 했다
+   * (폴른 스타 2막 숲 어귀, 독립 검수 2026-11-01: 비슷한 거리에서 한 번은 통과, 한 번은 잡힘).
+   */
+  readonly edge?: "soft" | "hard";
 };
 
 export type LightingState = {
@@ -854,6 +860,12 @@ export interface NpcSight {
   facing: "any" | "forward" | "cone";
   /** cone 의 벌어진 각(도, 30~180). 생략 = 90°(옆 폭 ≤ 앞 거리). 넓을수록 곁눈으로도 본다 — 순찰 기사·경계병. */
   coneDegrees?: number;
+  /**
+   * 거리 재는 꼴. diamond(생략) = 맨해튼 range 칸. circle = 칸 가운데가 반지름 range + 0.5 원 안 — 시야 등불(반지름 range + 0.5)과
+   * 같은 원이라 「빛 안 = 보인다」가 화면 그대로다. 맨해튼 마름모는 둥근 빛과 대각선에서 어긋나, 빛 한가운데 대각선 칸은 안전하고
+   * 빛 끝 곧은 칸에서는 잡혔다.
+   */
+  shape?: "diamond" | "circle";
 }
 export interface DetectionEncounter {
   sight: NpcSight;

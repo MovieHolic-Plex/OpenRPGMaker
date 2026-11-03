@@ -403,6 +403,7 @@ function sourceArg(value: unknown, label: string): LightSource {
     ...(typeof record.color === "string" && record.color.trim() ? { color: record.color.trim() } : {}),
     ...(record.flicker === true ? { flicker: true } : {}),
     ...(record.cone !== undefined ? { cone: coneArg(record.cone, `${label}.cone`) } : {}),
+    ...(record.edge === "hard" ? { edge: "hard" as const } : {}),
   };
 }
 

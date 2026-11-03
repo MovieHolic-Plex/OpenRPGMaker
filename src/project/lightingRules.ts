@@ -13,6 +13,11 @@ export type LightTilePosition = {
   readonly y: number;
   /** 부채꼴 빛(source.cone)의 방향 — 이벤트 앵커면 그 이벤트가 지금 보는 쪽. */
   readonly facing?: "up" | "down" | "left" | "right";
+  /**
+   * 0~1 — 빛을 든 몸이 얼마나 보이는가(이벤트 그림의 불투명도). 광원 세기에 곱한다. 생략 = 1.
+   * 몸이 흐려지며 물러나면 들고 있던 등불도 같이 흐려진다(빛만 남아 떠 있던 「유령 등불」, 폴른 스타 2막 숲 어귀 2026-11-01).
+   */
+  readonly fade?: number;
 };
 
 export type LightAnchorResolver = (
@@ -103,6 +108,7 @@ export function normalizeLightSource(value: LightSource): LightSource {
     ...(value.cone && Number.isFinite(value.cone.degrees)
       ? { cone: { degrees: clamp(20, 180, value.cone.degrees), ...(value.cone.facing && ["up", "down", "left", "right"].includes(value.cone.facing) ? { facing: value.cone.facing } : {}) } }
       : {}),
+    ...(value.edge === "hard" ? { edge: "hard" as const } : {}),
   };
 }
 
@@ -148,7 +154,7 @@ export function lightAtTile(
   for (const source of state.sources) {
     const position = resolveAnchor(source.at, source);
     if (!position) continue;
-    const intensity = lightSourceIntensity(source, timeMs);
+    const intensity = lightSourceIntensity(source, timeMs) * (position.fade ?? 1);
     if (intensity <= 0) continue;
     const dx = position.x - x;
     const dy = position.y - y;
@@ -216,14 +222,26 @@ function clamp(min: number, max: number, value: number): number {
  */
 export const LIGHT_FALLOFF: readonly (readonly [number, number])[] = [[0, 1], [0.25, 0.8], [0.5, 0.45], [0.75, 0.15], [1, 0]];
 
+/**
+ * 가장자리가 또렷한 빛(LightSource.edge hard) — 반지름 끝 가까이까지 절반 넘게 걷어 낸 채 버티다 마지막 4% 에서 끊긴다.
+ * 시야 등불은 「원 안 = 보인다」가 규칙이라 원의 테두리가 화면에서 읽혀야 한다. 가운데는 조금 더 밝아 들고 있는 등불로 읽힌다.
+ */
+export const LIGHT_FALLOFF_HARD: readonly (readonly [number, number])[] = [[0, 1], [0.35, 0.82], [0.8, 0.62], [0.96, 0.56], [1, 0]];
+
+/** 그 광원의 빛 곡선. */
+export function lightFalloffCurve(edge: LightSource["edge"]): readonly (readonly [number, number])[] {
+  return edge === "hard" ? LIGHT_FALLOFF_HARD : LIGHT_FALLOFF;
+}
+
 /** 빛 곡선을 t(0~1, 반지름 비율)에서 잇는다. */
-export function lightFalloffAt(t: number): number {
+export function lightFalloffAt(t: number, edge?: LightSource["edge"]): number {
   if (!(t > 0)) return 1;
   if (t >= 1) return 0;
-  for (let i = 1; i < LIGHT_FALLOFF.length; i += 1) {
-    const [t1, k1] = LIGHT_FALLOFF[i]!;
+  const curve = lightFalloffCurve(edge);
+  for (let i = 1; i < curve.length; i += 1) {
+    const [t1, k1] = curve[i]!;
     if (t <= t1) {
-      const [t0, k0] = LIGHT_FALLOFF[i - 1]!;
+      const [t0, k0] = curve[i - 1]!;
       return k0 + ((k1 - k0) * (t - t0)) / (t1 - t0);
     }
   }
