@@ -3554,7 +3554,14 @@ const makeChaseScene: ToolDefinition = {
     }
     const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" }, { overrides: draft.charsetLabels });
     const wantedId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
-    if (wantedId && map.events.some((event) => event.id === wantedId)) throw new ToolError(`이벤트 id '${wantedId}' 가 이 맵에 이미 있습니다 — 다른 id 를 주세요.`, { code: "invalid-args" });
+    // 같은 id 의 추격자를 다시 부르면(속도·순찰·시야 고치기) 그 추격자를 새 인자로 다시 만든다 — 2026-11-04 조수 대조 B1 Opus:
+    // 게임 검사 「추격자가 주인공보다 느리다」를 고치려 같은 id 로 두 번 다시 불렀다가 「이미 있습니다」로 두 번 거절됐다.
+    // 추격자가 아닌 이벤트와 id 가 겹치면 그 이벤트를 덮지 않고 무엇이 있는지 알려 준다.
+    const existing = wantedId ? map.events.find((event) => event.id === wantedId) : undefined;
+    const replacing = !!existing && (existing.pages ?? []).some((page) => page.movement?.type === "chase");
+    if (existing && !replacing) {
+      throw new ToolError(`Event id '${wantedId}' is already used on this map by an event that is not a chaser (${existing.name ?? existing.id} at ${existing.x},${existing.y}) — pick another id. To change an existing chaser, call make_chase_scene again with that chaser's id: it is rebuilt with the new arguments.`, { code: "invalid-args" });
+    }
     const id = wantedId ?? genId("ev_chaser");
     // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
     const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
@@ -3710,7 +3717,7 @@ const makeChaseScene: ToolDefinition = {
       ...chaserSpawnWarnings(draft, map.id, id, activateSwitch),
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${patrolRoute ? ` — 순찰 ${patrolRoute.cells.length - 1}걸음 고리${patrolRoute.pauses ? `(멈춤 ${patrolRoute.pauses}곳)` : ""}(시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰)` : " — 순찰 없음(시야에 들 때까지 제자리, patrol:{mode:'auto'} 로 순찰)"}${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      summary: `${map.name}에 추격자 '${id}' ${replacing ? "다시 만듦(same id — the previous chaser was replaced with these arguments)" : "생성"} (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${patrolRoute ? ` — 순찰 ${patrolRoute.cells.length - 1}걸음 고리${patrolRoute.pauses ? `(멈춤 ${patrolRoute.pauses}곳)` : ""}(시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰)` : " — 순찰 없음(시야에 들 때까지 제자리, patrol:{mode:'auto'} 로 순찰)"}${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
       data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted, ...(patrolRoute ? { patrolCells: patrolRoute.cells } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

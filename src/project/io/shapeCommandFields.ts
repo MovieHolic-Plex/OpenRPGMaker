@@ -12,6 +12,47 @@ import { m2CommandById, M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Cat
 import { SCRIPT_COMPILED_LIMIT, SCRIPT_SOURCE_LIMIT } from "@/project/script/types";
 
 import { isRelationshipState } from "@/project/relationshipState";
+// 다른 엔진(RPG Maker MV/MZ·일반 스크립트)의 명령 이름 → 이 엔진의 kind 와 모양. 2026-11-04 조수 대조 B8 Argon:
+// {kind:"conditionalBranch"} 로 여관 숙박 분기를 두 번 거절받았는데 거절 글이 「알 수 없는 kind」뿐이라 무엇으로 바꿀지 몰랐다.
+const FOREIGN_KIND_HINT: Readonly<Record<string, string>> = {
+  conditionalbranch: `fork {condition:{kind:"switch"|"variable"|"item"|"gold"|"actor"…}, then:[…], else:[…]}`,
+  if: `fork {condition:{…}, then:[…], else:[…]}`, branch: `fork {condition:{…}, then:[…], else:[…]}`, ifelse: `fork {condition:{…}, then:[…], else:[…]}`,
+  showtext: `text {body, speaker?}`, message: `text {body, speaker?}`, dialogue: `text {body, speaker?}`, say: `text {body, speaker?}`,
+  showchoices: `choices {options:[{text, branch:[…]}]}`, choice: `choices {options:[{text, branch:[…]}]}`,
+  controlswitches: `setSwitch {switchId, value}`, controlswitch: `setSwitch {switchId, value}`,
+  controlvariables: `setVariable {variableId, op:"="|"+="…, value}`, controlvariable: `setVariable {variableId, op, value}`,
+  controlselfswitch: `setSelfSwitch {key:"A"…, value}`,
+  transferplayer: `transfer {mapId, x, y, direction?}`, teleport: `transfer {mapId, x, y, direction?}`,
+  changegold: `changeGold {op:"+="|"-=", amount}`, changeitems: `changeItem {itemId, op:"+="|"-=", amount}`, giveitem: `changeItem {itemId, op:"+=", amount}`,
+  fadeout: `m2Command {commandId:"m2-202-screen-effect", fields:{effect:"fadeOut", durationMs}}`, fadeoutscreen: `m2Command {commandId:"m2-202-screen-effect", fields:{effect:"fadeOut", durationMs}}`,
+  fadein: `m2Command {commandId:"m2-202-screen-effect", fields:{effect:"fadeIn", durationMs}}`, fadeinscreen: `m2Command {commandId:"m2-202-screen-effect", fields:{effect:"fadeIn", durationMs}}`,
+  setmoveroute: `moveEvent {eventId, route:{moves:[{kind:"move"|"turn", dir}], wait}}`, moveroute: `moveEvent {eventId, route:{moves:[…], wait}}`,
+  recoverall: `recoverAll {}`,
+};
+/** 알 수 없는 kind 에 붙일 「이걸 뜻했나」 목록 — 다른 엔진 이름의 정본 모양, 그다음 글자가 가까운 kind 셋. */
+function unknownKindHint(kind: string): string {
+  const norm = kind.replace(/[\s_-]/gu, "").toLowerCase();
+  const exact = [...commandKinds].find((k) => k.toLowerCase() === norm);
+  if (exact) return ` — only case/separators differ: use kind:"${exact}"`;
+  const foreign = FOREIGN_KIND_HINT[norm];
+  const words = kind.replace(/([a-z])([A-Z])/gu, "$1 $2").toLowerCase().split(/[^a-z0-9]+/u).filter((w) => w.length > 2);
+  const scored = [...commandKinds].map((k) => {
+    const kl = k.toLowerCase();
+    const shared = words.filter((w) => kl.includes(w)).length;
+    return { k, score: shared * 10 - editDistance(norm, kl) };
+  }).sort((a, b) => b.score - a.score).slice(0, 3).map((e) => e.k);
+  if (foreign) return ` — this engine's equivalent is ${foreign}`;
+  return ` — did you mean: ${scored.join(", ")}? (full list and shapes: event_command_assist)`;
+}
+function editDistance(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0]!; row[0] = i;
+    for (let j = 1; j <= b.length; j++) { const cur = row[j]!; row[j] = Math.min(row[j]! + 1, row[j - 1]! + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+  }
+  return row[b.length]!;
+}
+
 export function validateCommandArray(label: string, value: unknown): void {
   for (const [index, command] of requireArray(label, value).entries()) {
     validateCommandShape(`${label}[${index}]`, command);
@@ -21,7 +62,7 @@ export function validateCommandArray(label: string, value: unknown): void {
 function validateCommandShape(label: string, value: unknown): void {
   const command = requireRecord(label, value);
   const kind = requireString(`${label}.kind`, command.kind);
-  if (!commandKinds.has(kind)) throw new ProjectFormatError(`command ${label}: 알 수 없는 kind: ${kind}`);
+  if (!commandKinds.has(kind)) throw new ProjectFormatError(`command ${label}: 알 수 없는 kind: ${kind}${unknownKindHint(kind)}`);
   switch (kind) {
     case "choices":
       for (const [index, option] of requireArray(`${label}.options`, command.options).entries()) {
