@@ -781,6 +781,7 @@ export function executeCommand(
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "label":
+      if (state.fastForwardLabel === command.name) state.fastForwardLabel = undefined;
       return resumeNext(frame);
     case "gotoLabel":
       if (!gotoLabel(state.stack, command.name)) {
