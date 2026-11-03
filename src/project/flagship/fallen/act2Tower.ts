@@ -385,7 +385,7 @@ function floorOne(project: Project, exec: Exec): void {
   const logAt = lectern?.at ?? { x: 18, y: 28 };
   addEv(project, FS2_T1, "ev_fs2_t1_log", "관측 일지", logAt, [
     page("ev_fs2_t1_log_p", "관측 일지", [], [
-      narrate("(펼친 관측 일지) 「4층 대기실 ── 회수 대상 한 기 보관.\n귀환선이 내려오기 전에 현지 기록을 정리할 것.」"),
+      narrate("(펼친 관측 일지) 「4층 대기실. 회수 대상 한 기 보관.\n귀환선이 내려오기 전에 현지 기록을 정리할 것.」"),
       say(KAEL, "…회수 대상. 이리스를 그렇게 부르네."),
       say(ELENA, "기록을 정리한다는 건, 지운다는 소리야.\n서두르자."),
       setSw(SW_T1_LOG),
