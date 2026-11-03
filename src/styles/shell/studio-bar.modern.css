@@ -88,11 +88,10 @@
   align-items: center;
   color: var(--text-1);
   display: inline-flex;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   font: 500 13px/1 var(--font-ui);
   gap: 6px;
   margin-left: -6px;
-  min-width: 0;
   white-space: nowrap;
 }
 
@@ -1048,8 +1047,16 @@
   max-width: 72px;
 }
 
-.studio-bar:is([data-fit-level="3"], [data-fit-level="4"], [data-fit-level="5"]) .studio-crumb-map-name {
-  max-width: 72px;
+/* 경로의 맵 칸은 맵 트리가 이미 말하므로 넘치면 가장 먼저 걷는다(찌그러뜨리지 않는다). */
+.studio-bar:not([data-fit-level="0"]):is([data-fit-level]) .studio-crumb-map {
+  display: none;
+}
+
+/* 1599px 이하에서는 맵 칸이 세계관·음악·찾기 아이콘을 더 보기로 밀어낸다(ko 1440 맞춤 0→1 실측) — 걷는다. */
+@media (max-width: 1599px) {
+  .studio-bar .studio-crumb-map {
+    display: none;
+  }
 }
 
 /* 4단계: 상품 이름표(장식)를 걷는다. */
