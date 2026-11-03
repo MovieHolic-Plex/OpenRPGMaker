@@ -8,6 +8,7 @@ import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
+import { isBrushSettingsOpen, setBrushSettingsOpen } from "@/editor/panels/brushSettingsDisclosure";
 import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
@@ -75,6 +76,7 @@ let sheetZoom: 1 | 2 | 3 = 1;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
+const BRUSH_SETTINGS_ID = "tile-brush-settings";
 
 type PaletteScroll = {
   readonly containerLeft: number;
@@ -284,10 +286,9 @@ export function renderTilePalette(container: HTMLElement): void {
       class: "palette-work-pane is-event",
       dataset: { testid: "palette-work-pane-event" },
     });
-    if (map) root.append(mapHeaderWithLayer(map, "event"));
-    if (map && tileset) {
-      root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
-    }
+    if (map) appendStandaloneMapHeader(root, map);
+    const eventSettings = map && tileset ? [makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset })] : [];
+    root.append(...makeTileSection("이벤트", tileset, map, eventSettings));
     renderEventEditor(root);
     if (map) offerNewEventInEmptyList(root, map);
     // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
@@ -327,7 +328,8 @@ export function renderTilePalette(container: HTMLElement): void {
   if (map.worldmapSource && !map.worldmapSource.tilemap && tileset.family === 'worldmap-kit') {
     const pane = el('div', { class: 'palette-work-pane is-paint', dataset: { testid: 'worldmap-material-upgrade' } });
     pane.style.display = 'flex'; pane.style.flexDirection = 'column';
-    pane.append(mapHeaderWithLayer(map, tileLayer));
+    appendStandaloneMapHeader(pane, map);
+    pane.append(...makeTileSection("타일", tileset, map, []));
     const status = el('p', { class: 'empty-hint', text: '지형과 거점을 재료로 분리하면 붓으로 편집할 수 있습니다.', attrs: { 'aria-live': 'polite' } });
     const button = el('button', { class: 'btn', text: '지형·거점 재료로 바꾸기', attrs: { type: 'button' }, dataset: { testid: 'worldmap-material-upgrade-confirm' } }) as HTMLButtonElement;
     button.onclick = async () => {
@@ -470,19 +472,6 @@ function makeSelectedTileStatus(
       on: { click: () => { if (hasTile) revealPaletteTileFromMap(Number(chip.dataset.selectedTile)); } },
     })
   );
-  names.append(
-    el("button", {
-      class: "selected-tile-tileset",
-      text: tileset.name,
-      attrs: {
-        type: "button",
-        title: tileset.name,
-        "aria-label": `타일 그림판 ${tileset.name} — 맵 설정에서 바꾸기`,
-      },
-      dataset: { testid: "palette-tileset-name" },
-      on: { click: () => openMapPropertiesDialog(map.id, map.name, { focus: "tileset" }) },
-    })
-  );
   // 속성 진입 — 예전 「속성」 탭의 자리. 창으로 열어 팔레트 높이를 건드리지 않는다.
   chip.append(
     el("button", {
@@ -500,13 +489,51 @@ function makeSelectedTileStatus(
   return chip;
 }
 
-const LAYER_NAMES: Readonly<Record<Layer, string>> = { lower: "바닥 레이어", upper: "상위 레이어", event: "이벤트 레이어" };
+/**
+ * 맵 트리가 같은 열에 늘 떠 있으면(왼쪽 열의 「맵」 섹션) 팔레트 머리의 맵 고르기는 같은 일을 두 번 한다 — 그리지 않는다.
+ * 트리 없이 팔레트만 붙은 곳(맵 도크 `left-map-root` 나 단독 팔레트)에서는 예전 맵 머리가 남는다.
+ */
+function appendStandaloneMapHeader(root: HTMLElement, map: GameMap): void {
+  if (typeof document !== "undefined" && document.querySelector('[data-testid="map-sidebar-section"]')) return;
+  root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+}
 
-/** 패널 머리에 지금 편집하는 레이어를 적는다 — 캔버스에서 레이어를 바꿔도 왼쪽 패널이 무엇을 다루는지 바로 보인다. */
-function mapHeaderWithLayer(map: GameMap, layer: Layer): HTMLElement {
-  const header = makeSidebarMapHeader(map, renderPalettePreservingViewport);
-  header.append(el("span", { class: "sidebar-layer-badge", text: LAYER_NAMES[layer], dataset: { testid: "sidebar-layer-badge", layer } }));
-  return header;
+/**
+ * 「타일 · 타일셋」 머리와 접힌 「붓 설정」. 그리기 도구 줄·붓 크기·모양·이웃 연결·구조 보조·선택 타일·붓 보조는
+ * 처음 쓰는 사람에게 필요 없는 조절이라 접어 둔다(펼침 상태는 기억한다). 접혀도 DOM 에 남아 단축키·⌘K·제자리 갱신이 그대로 닿는다.
+ */
+function makeTileSection(label: string, tileset: TilesetDef | undefined, map: GameMap | undefined, settings: readonly HTMLElement[]): HTMLElement[] {
+  const body = el("div", {
+    class: "tile-brush-settings",
+    attrs: { id: BRUSH_SETTINGS_ID, role: "region", "aria-label": "붓 설정" },
+    dataset: { testid: "palette-brush-settings" },
+    children: [...settings],
+  });
+  const open = isBrushSettingsOpen();
+  body.hidden = !open;
+  const toggle = el("button", {
+    class: "tile-section-settings",
+    attrs: { type: "button", "aria-expanded": String(open), "aria-controls": BRUSH_SETTINGS_ID, title: "붓 설정 — 도구·크기·모양·이웃 연결" },
+    dataset: { testid: "palette-brush-settings-toggle" },
+    children: [el("span", { text: "붓 설정" }), el("span", { class: "tile-section-chevron", attrs: { "aria-hidden": "true" }, text: "▾" })],
+    on: { click: () => setBrushSettingsOpen(!isBrushSettingsOpen()) },
+  });
+  if (settings.length === 0) toggle.hidden = true;
+  const title = el("div", { class: "tile-section-title", children: [el("span", { text: label })] });
+  if (tileset && map) {
+    title.append(
+      el("span", { class: "tile-section-dot", attrs: { "aria-hidden": "true" }, text: "·" }),
+      el("button", {
+        class: "tile-section-tileset",
+        text: tileset.name,
+        attrs: { type: "button", title: tileset.name, "aria-label": `타일 그림판 ${tileset.name} — 맵 설정에서 바꾸기`, translate: "no" },
+        dataset: { testid: "palette-tileset-name" },
+        on: { click: () => openMapPropertiesDialog(map.id, map.name, { focus: "tileset" }) },
+      }),
+    );
+  }
+  const header = el("div", { class: "tile-section-head", dataset: { testid: "tile-section-header" }, children: [title, toggle] });
+  return [header, body];
 }
 
 /** 빈 이벤트 목록에는 안내 글만 두지 않고 바로 만드는 단추를 둔다(맵 가운데에서 가장 가까운 빈 칸). */
@@ -558,8 +585,8 @@ function makePaletteSurface(input: {
   });
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
-  root.append(mapHeaderWithLayer(map, tileLayer));
-  root.append(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
+  appendStandaloneMapHeader(root, map);
+  const toolbar = makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome });
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
@@ -567,11 +594,16 @@ function makePaletteSurface(input: {
   if (assist.modeRow && !hasWorldmapBrushes(tileset)) options.append(assist.modeRow);
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
   if (assist.clusterRow && !hasWorldmapBrushes(tileset)) options.append(assist.clusterRow);
-  root.append(options);
+  const [sectionHead, settings] = makeTileSection("타일", tileset, map, [toolbar, options]);
+  root.append(sectionHead!, settings!);
+  const settingsTail = (): void => {
+    settings!.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
+    appendPaletteUtilities(settings!, tileset, state, assist.section);
+  };
   if(hasWorldmapBrushes(tileset)) {
     const palette=makeWorldmapBrushShelf(tileset,tileLayer,state.selectedTile,selectPaletteTile,renderPalettePreservingViewport);
     palette.dataset.testid='tile-palette';palette.dataset.retainKey=paintSheetRetainKey(tileset,tileLayer);
-    root.append(palette);return{root,palette,sheetSlot:null};
+    root.append(palette);settingsTail();return{root,palette,sheetSlot:null};
   }
   if (usesMaterialGrid(tileset) && tileLayer === 'upper' && tileset.structureKits?.length) {
     const palette = makeStructureKitShelf({ tileset, title: '거점 · 전체 아이콘', activeKitId: state.activePaletteStamp?.kitId ?? null,
@@ -579,6 +611,7 @@ function makePaletteSurface(input: {
     palette.dataset.testid = 'tile-palette';
     palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
     root.append(palette);
+    settingsTail();
     return { root, palette, sheetSlot: null };
   }
   const smart = paletteHasSmartCatalog(tileset);
@@ -594,8 +627,7 @@ function makePaletteSurface(input: {
   if (smart && smartView !== "tiles") {
     const catalogBody = makePaletteSmartBody(tileset, renderPalettePreservingViewport, selectPaletteTile);
     root.append(catalogBody);
-    root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
-    appendPaletteUtilities(root, tileset, state, assist.section);
+    settingsTail();
     return { root, palette: catalogBody, sheetSlot: null };
   }
   const visibleTiles = filteredTileIdSet(tileset);
@@ -639,9 +671,7 @@ function makePaletteSurface(input: {
   // 살린 시트는 제자리에 두므로 새 판에는 자리표시자만 둔다(swapPaneAroundSheet 가 앞뒤를 시트 둘레로 옮긴다).
   const sheetSlot: Node | null = retainedSheet ? document.createComment("palette-sheet-slot") : null;
   root.append(sheetSlot ?? palette);
-
-  root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
-  appendPaletteUtilities(root, tileset, state, assist.section);
+  settingsTail();
 
   return { root, palette, sheetSlot };
 }
