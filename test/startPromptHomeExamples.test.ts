@@ -38,6 +38,11 @@ describe("첫 화면 예제 행", () => {
     expect(cards.map((card) => card.dataset.testid)).toEqual([0, 1, 2, "new"].map((suffix) => `${PROMPT_HOME_TESTIDS.game}-${suffix}`));
     cards[1]!.click();
     expect(opened).toEqual(["/g/b"]);
+    const more = section.querySelector<HTMLButtonElement>(`[data-testid="${PROMPT_HOME_TESTIDS.gamesMore}"]`)!;
+    expect(more.hidden).toBe(false);
+    expect(more.textContent).toContain("(4)");
+    home.setGames([game("/g/a")], 1);
+    expect(more.hidden).toBe(true);
     expect([...home.element.querySelectorAll("button")].some((button) => /플레이/.test(button.textContent ?? ""))).toBe(false);
     home.setGames([], 0);
     expect(section.hidden).toBe(true);

@@ -154,7 +154,7 @@
 .fr-builtin-title { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; color: var(--text-1); font-size: var(--font-14); font-weight: var(--font-weight-semibold); }
 .fr-builtin-tag { padding: 0 6px; border-radius: var(--radius-1); background: var(--accent-muted); color: var(--accent); font-size: var(--font-12); font-weight: var(--font-weight-medium); }
 /* 세 행이 전부다 — 「모두 보기」 링크는 DOM 에만 남긴다. */
-.fr-builtin-head > .fr-link { display: none; }
+.fr-builtin > .fr-builtin-head > .fr-link, .fr-games .fr-link[hidden] { display: none; }
 .fr-builtin-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .fr-bcard {
   display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 0; border-radius: var(--radius-3);
