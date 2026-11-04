@@ -121,4 +121,4 @@ export const BEODEUL_WAVE_PLACE_REFERENCES = [
     ],
     "limitations": "석문·대장간은 그림뿐 — 요새 안 맵 이동 이벤트를 따로 놓는다. 이벤트·적·BGM 은 없다. 새 맵을 이 칩셋 낱칸으로 짓는 재료가 아니다."
   }
-];
+] as const;
