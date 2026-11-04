@@ -90,6 +90,10 @@ export function applyFallenBattleItems(project: Project): void {
   hiPotion.hpRecovery = { flat: 100, percentMax: 50 };
   hiPotion.price = 180;
   hiPotion.description = "HP를 100 + 최대 HP 50% 채운다.\n카엘이 마시면 360쯤 찬다.";
+  // 불사조 깃(상자 두 곳)은 기본 DB 에서 필드 전용이라, 전투 중 쓰러진 동료를 일으킬 방법이 없었다
+  // (fs2 스웜 I21 — 동료가 부활 기술을 배우지 않는다). 전투에서도 쓴다 — 쓰러진 아군만 대상이 된다.
+  const phoenix = db.items.find((item) => item.id === "item_phoenix_down");
+  if (phoenix) Object.assign(phoenix, { occasion: "always", occasionBattle: true, occasionField: true, description: "쓰러진 동료 하나를 최대 HP 50%로 일으킨다.\n전투 중에도 쓸 수 있다." });
 
   // ── 스킬 복제 도구 ───────────────────────────────────────────────────────
   const cloneSkill = (fromId: string, id: string, patch: Partial<SkillRecord>): void => {
@@ -234,7 +238,7 @@ export function applyFallenBattleItems(project: Project): void {
   });
   weapon(FS_SPEAR_STAR, {
     name: "별꿰기 창", price: 640,
-    description: "공격 34, 민첩 -2. 회피를 무시한다.\n철심 창보다 한 수 위다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
+    description: "공격 34, 민첩 -2. 회피를 무시한다.\n푸른 불꽃 창보다 한 수 위다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
     statBonuses: { attack: 34, defense: 0, mind: 0, agility: -2 }, attackElementIds: ["spear"], criticalRate: 3, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });
