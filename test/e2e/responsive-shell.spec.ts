@@ -51,10 +51,11 @@ for (const size of SIZES) {
 
       // 3) 보내기 버튼이 뷰포트 안에 온전히 존재
       const panel = page.getByTestId("ai-panel");
-      const restore = page.getByTestId("ai-collapsed-restore");
+      // 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추다(2026-11 목업).
+      const restore = page.getByTestId("topbar-assistant");
       await expect(panel).toHaveClass(/is-collapsed/);
+      await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
       await expect(restore).toBeVisible();
-      await expect(restore).toHaveAttribute("aria-label", "AI 패널 펼치기");
       await expect(page.locator(".ai-chat-send").first()).toBeHidden();
       const restoreBox = await restore.boundingBox();
       expect(restoreBox).toBeTruthy();
@@ -62,8 +63,6 @@ for (const size of SIZES) {
       expect(restoreBox!.y).toBeGreaterThanOrEqual(0);
       expect(restoreBox!.x + restoreBox!.width).toBeLessThanOrEqual(size.width + 1);
       expect(restoreBox!.y + restoreBox!.height).toBeLessThanOrEqual(size.height + 1);
-      expect(Math.min(restoreBox!.width, restoreBox!.height)).toBeGreaterThanOrEqual(44);
-      if (dock === "side") expect(restoreBox!.width).toBeGreaterThanOrEqual(44);
 
       const send = page.locator(".ai-chat-send").first();
       await restore.click();

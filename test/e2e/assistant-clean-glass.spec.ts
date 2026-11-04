@@ -29,19 +29,19 @@ test("background opacity: native keyboard, immediate application and reload", as
   }
   await page.getByTestId("ai-settings-close").click();
   await page.getByTestId("ai-collapse").click();
-  const pill = page.getByTestId("ai-collapsed-restore");
-  await expect(pill).toBeVisible();
-  const before = await pill.evaluate((node) => ({ background: getComputedStyle(node).backgroundColor, opacity: getComputedStyle(node).opacity }));
-  expect(before.opacity).toBe("1");
+  // 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추다(2026-11 목업).
+  // 농도는 접힘·새로고침을 건너 패널 루트 변수로 살아남아야 한다.
+  await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
+  await expect(page.getByTestId("topbar-assistant")).toBeVisible();
   await page.reload({ waitUntil: "commit" });
-  await expect(pill).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByTestId("topbar-assistant")).toBeVisible({ timeout: 60_000 });
+  await expect(root).toHaveClass(/is-collapsed/);
   expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("99%");
-  expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe(before.background);
   await openTopbarAiSettings(page);
   await page.getByTestId("ai-settings-tab-display").click();
   await expect(slider).toHaveValue("99");
   await slider.press("Home");
-  expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe(before.background);
+  expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("78%");
   const evidence = path.resolve("output/evidence/assistant-clean-glass/phase-2");
   mkdirSync(evidence, { recursive: true });
   await page.screenshot({ path: path.join(evidence, "keyboard-opacity-settings.png") });

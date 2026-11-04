@@ -251,7 +251,7 @@ async function mapBackgrounds(page: Page, id: string, log: Log): Promise<Backgro
     const ctx = canvas.getContext("2d")!; ctx.drawImage(img, 0, 0);
     return [[0.25, 0.25], [0.5, 0.5], [0.75, 0.25]].map(([x, y]) => Array.from(ctx.getImageData(Math.floor(img.width * x!), Math.floor(img.height * y!), 1, 1).data).slice(0, 3));
   }, image.toString("base64"));
-  await page.getByTestId("ai-collapsed-restore").click();
+  await page.getByTestId("topbar-assistant").click();
   const backgrounds = [...pixels.map((rgb, i) => ({ name: `actual-map-sample-${i}`, rgb })), { name: "dark-bound", rgb: [0, 0, 0] }, { name: "light-bound", rgb: [255, 255, 255] }, { name: "representative-grass", rgb: [65, 120, 45] }, { name: "representative-water", rgb: [40, 90, 160] }, { name: "representative-sand", rgb: [215, 190, 135] }];
   log.push({ action: "map-background-sampling-and-analytical-bounds", backgrounds });
   return backgrounds;
@@ -318,7 +318,9 @@ test.describe("adjustable assistant glass - real editor", () => {
           await focusEvidence(button, log);
         }
         await page.getByTestId("ai-collapse").press("Enter");
-        const pill = page.getByTestId("ai-collapsed-restore");
+        // 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추다(2026-11 목업).
+        await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
+        const pill = page.getByTestId("topbar-assistant");
         await expect(pill).toBeVisible();
         const pillStyle = await pill.evaluate(node => ({ opacity: getComputedStyle(node).opacity, background: getComputedStyle(node).backgroundColor }));
         expect(pillStyle.opacity).toBe("1");

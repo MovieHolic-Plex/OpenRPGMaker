@@ -1,6 +1,7 @@
 /* One workspace; 넓은 화면에서는 열면 도크가 자리를 차지해 맵이 그만큼 줄고(F24: 열면 맵 오른쪽이 패널 밑에 가려졌다),
    좁은 화면(<1100px)에서만 맵 폭을 지키는 오버레이로 남는다. */
 .ai-right-dock { flex: 0 0 44px; width: 44px; min-width: 44px; z-index: 43; }
+.ai-right-dock.is-collapsed { flex: 0 0 0; width: 0; min-width: 0; border-left: 0; overflow: hidden; }
 /* 1000px 이상은 도킹한다(C-57): 1024 에서도 오버레이로 남아 캔버스 도구막대·선택 명령줄이 패널 밑에 깔렸다.
    1024 에서 남는 맵 폭(약 300px)은 오버레이 때 패널 옆에 보이던 폭과 같다 — 가려지던 부분이 없어질 뿐이다. */
 @media (min-width: 1000px) {

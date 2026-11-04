@@ -27,8 +27,8 @@ async function waitForEditor(page: Page): Promise<void> {
   await dismissLogin(page);
   // 콜드 부팅(vite 첫 변환)은 공유 머신에서 20초를 넘긴다 — ai-panel-reachability 와 같은 90초.
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
 }
 
 /** 옛 키는 **첫 탐색에서만** 심는다 — 새로 고침 뒤 복원이 이관본(IndexedDB)에서 왔음을 가르기 위해. */

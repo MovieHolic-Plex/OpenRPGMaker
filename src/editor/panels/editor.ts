@@ -1,5 +1,6 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { exportTemporarySession, lastTemporarySessionExportAt, TEMPORARY_SESSION_EXPORTED_EVENT } from "@/editor/saveActions";
+import { flagshipDemoIdForLocation } from "@/editor/devShowcaseProjects";
 import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIssues";
@@ -652,7 +653,9 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   }
   if (status.reason === "dev-showcase") {
     const saveSkipped = isSaveSkippedLocation();
-    if (saveSkipped && persistenceBannerDismissed) return null;
+    // 대표 예제(?demo=…, 출하 런처의 「플레이·열기」)는 개발 모드가 아니다 — 사용자에게는 「예제」다.
+    const isDemo = flagshipDemoIdForLocation() !== null;
+    if ((saveSkipped || isDemo) && persistenceBannerDismissed) return null;
     const banner = el("div", {
       class: `persistence-mode-banner ${saveSkipped ? "is-save-skipped" : "is-local-only"}`,
       dataset: { testid: "save-skip-banner" },
@@ -660,9 +663,9 @@ function renderPersistenceModeBanner(): HTMLElement | null {
     const exportedAt = saveSkipped ? lastTemporarySessionExportAt() : null;
     banner.append(el("span", {
       class: "persistence-mode-banner-text",
-      text: exportedAt !== null ? temporarySessionExportedBannerText(exportedAt) : persistenceModeBannerText(status.reason, saveSkipped),
+      text: exportedAt !== null ? temporarySessionExportedBannerText(exportedAt) : persistenceModeBannerText(status.reason, saveSkipped, isDemo),
     }));
-    if (saveSkipped) {
+    if (saveSkipped || isDemo) {
       banner.append(
         el("button", {
           class: "persistence-mode-banner-action",
@@ -697,7 +700,8 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   });
 }
 
-export function persistenceModeBannerText(reason: string, saveSkipped: boolean): string {
+export function persistenceModeBannerText(reason: string, saveSkipped: boolean, isDemo = false): string {
+  if (reason === "dev-showcase" && isDemo) return "예제 — 저장하려면 내보내기";
   if (reason === "dev-showcase" && saveSkipped) {
     return "임시 세션입니다. 작업은 이 탭에만 있어요. 보존하려면 내보내세요.";
   }

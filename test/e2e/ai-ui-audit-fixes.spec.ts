@@ -44,7 +44,7 @@ async function boot(page: Page): Promise<void> {
 
 async function ready(page: Page): Promise<void> {
   const guest = page.getByTestId("login-guest");
-  await page.locator("[data-testid='login-guest']:visible, [data-testid='ai-input']:visible, [data-testid='ai-collapsed-restore']:visible")
+  await page.locator("[data-testid='login-guest']:visible, [data-testid='ai-input']:visible, [data-testid='topbar-assistant']:visible")
     .first().waitFor({ state: "visible", timeout: 60_000 });
   if (await guest.isVisible()) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden();
@@ -161,8 +161,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       await history(page);
       await page.getByTestId("ai-collapse").click();
       await expect(page.getByTestId("ai-deck")).toBeHidden();
-      await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
-      await page.getByTestId("ai-collapsed-restore").click();
+      // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11 목업).
+      await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
+      await page.getByTestId("topbar-assistant").click();
       await expect(page.getByTestId("ai-input")).toBeVisible();
     });
 

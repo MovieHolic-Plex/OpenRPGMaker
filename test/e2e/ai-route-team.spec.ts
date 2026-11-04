@@ -47,7 +47,7 @@ async function boot(page: Page): Promise<void> {
   });
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   const guest = page.getByTestId("login-guest");
-  const ready = page.locator("[data-testid='login-guest']:visible, [data-testid='ai-input']:visible, [data-testid='ai-collapsed-restore']:visible").first();
+  const ready = page.locator("[data-testid='login-guest']:visible, [data-testid='ai-input']:visible, [data-testid='topbar-assistant']:visible").first();
   // 콜드 스타트에서는 vite 가 의존성을 최적화하는 동안 첫 로드가 빈 화면으로 끝난다(실측). 그 사이의
   // 새로고침은 같은 504 를 다시 받으므로, 로드→판정→다시 로드를 몇 바퀴 돌려 최적화가 끝난 바퀴를 잡는다.
   for (let attempt = 0; attempt < 4; attempt += 1) {

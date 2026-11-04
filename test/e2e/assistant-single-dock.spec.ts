@@ -45,8 +45,8 @@ async function openEditor(page: Page): Promise<void> {
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   // 첫 방문은 펼친 채 부팅한다 — 이미 펼쳐져 있으면 이 클릭은 무해하다.
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
   await expect(page.getByTestId("ai-command-bar")).toBeVisible();
 }
 
@@ -173,7 +173,9 @@ test.describe("조수 단일 도크", () => {
     // 셰브론이 여닫는 것은 하나다: 패널 전체. 유리 카드의 본문 접힘(fold)은 함께 삭제됐다.
     await expect(panel).toHaveClass(/is-collapsed/);
     await expect(panel).not.toHaveClass(/is-glass-folded/);
-    await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
+    // 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추다(2026-11 목업).
+    await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
+    await expect(page.getByTestId("topbar-assistant")).toBeVisible();
     await expect(page.getByTestId("ai-command-bar")).toBeHidden();
     const collapsedBox = await box(panel);
     expect(collapsedBox.width * collapsedBox.height).toBeLessThan(canvasBox.width * canvasBox.height * 0.2);
@@ -184,9 +186,9 @@ test.describe("조수 단일 도크", () => {
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 40_000 });
     await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", "float");
     await expect(page.getByTestId("ai-panel")).toHaveClass(/is-collapsed/);
-    await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();
+    await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
 
-    await page.getByTestId("ai-collapsed-restore").click();
+    await page.getByTestId("topbar-assistant").click();
     await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
     await assertInputUsable(page, "restored ok");
   });
