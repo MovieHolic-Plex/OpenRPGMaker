@@ -354,7 +354,7 @@ export function openingWithoutPlace(project: Project): ShipBlocker[] {
   return [{
     id: "opening-no-place",
     message: `오프닝 ${scenes.length}장면이 하늘·별·구름 같은 일반 배경(${used.slice(0, 4).join(", ")})만 보이고 이 게임의 장소가 한 번도 안 나온다 — 어디서 일이 나는지 모른 채 시작한다. `
-      + `맞는 장소 그림이 없으면 게임 맵을 그대로 쓴다: create_opening_animatic_shot{shotId} 뒤 place_opening_background{shotId, layerId:'bg', mapId:'${firstMap?.id ?? "<무대 맵 id>"}', focus:{x,y}}(${firstMap?.name ?? "무대"}의 대표 자리 — 건물 정문·광장), 인물은 place_opening_charset_actor. `
+      + `걷는 인물·카메라 이동이 필요하면 맵 위 엔진 무대로 짓는다: author_opening_stage{mapId:'${firstMap?.id ?? "<무대 맵 id>"}', x, y, beats}. 그림 컷이 필요하고 맞는 장소 그림이 없으면 게임 맵을 그대로 쓴다: create_opening_animatic_shot{shotId} 뒤 place_opening_background{shotId, layerId:'bg', mapId:'${firstMap?.id ?? "<무대 맵 id>"}', focus:{x,y}}(${firstMap?.name ?? "무대"}의 대표 자리 — 건물 정문·광장), 인물은 place_opening_charset_actor. `
       + `맞는 스틸이 있으면 list_opening_media{kind:'image', query:<장소 낱말>} 로 골라 그 장면에 쓴다. 하늘 층은 장소 장면 뒤 겹으로만.`,
     evidence: `opening images=${used.join(",") || "none"}`,
   }];
