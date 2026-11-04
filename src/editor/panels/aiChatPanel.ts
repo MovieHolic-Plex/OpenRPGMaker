@@ -2,6 +2,7 @@ import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
 import { createAiLiveStatus, type AiLiveStatus } from "@/editor/panels/aiLiveStatus";
+import { createAiReferenceView } from "@/editor/aiReferenceView";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
@@ -2191,6 +2192,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnLiveStatus = createAiLiveStatus({ baseProject: store.getCurrent() });
     liveStatus = turnLiveStatus;
     composerShell.commandBar.before(turnLiveStatus.root);
+    const turnReference = createAiReferenceView({ images: opts?.images ?? [], baseProject: store.getCurrent() });
     runSurface.turnBusy = true;
     refreshSendEnabled();
     await progress.paint();
@@ -2228,7 +2230,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     try {
       await runPiCommand(command, {
-        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); },
+        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2274,6 +2276,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } finally {
       progress.finish();
       turnLiveStatus.finish();
+      turnReference.finish();
       if (canvasProgress === progress) canvasProgress = null;
       const phase = currentTeamActivity()?.phase;
       finishWorkCard({ ok: phase !== "실패" && phase !== "중단", message: phase === "검토 대기" ? "검토 필요" : phase === "실패" ? "실패" : phase === "중단" ? "중단" : undefined });
