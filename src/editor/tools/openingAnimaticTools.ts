@@ -466,7 +466,10 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return zoomWarning ? { ...result, summary: `${result.summary} (경고: ${zoomWarning})`, warnings: [...(result.warnings ?? []), zoomWarning] } : result;
   }),
   definition('set_opening_transition', '샷 입장 cut/fade/wipe/iris/flash와 레터박스.', 'write', schema({ shotId: str, transition: obj, letterbox: { type: 'number' } }, ['shotId', 'transition']), (p, args) => {
-    const s = shot(p, args.shotId); s.composition.transition = structuredClone(args.transition) as OpeningAnimatic['transition']; if (args.letterbox !== undefined) s.composition.letterbox = Number(args.letterbox); return commit(p, s, '샷 전환을 저장했습니다.');
+    const s = shot(p, args.shotId); s.composition.transition = structuredClone(args.transition) as OpeningAnimatic['transition'];
+    const lb = args.letterbox === undefined ? undefined : letterboxRatio(args.letterbox, s);
+    if (lb) s.composition.letterbox = lb.ratio;
+    return commit(p, s, `샷 전환을 저장했습니다.${lb?.note ?? ''}`);
   }),
   definition('upsert_opening_audio_cue', '시간별 효과음/음악 큐 추가·교체. 전체 BGM 유지.', 'write', schema({ shotId: str, cue: obj }), (p, args) => {
     const s = shot(p, args.shotId), rawCue = structuredClone(args.cue) as Record<string, unknown>, rows = s.composition.audioCues ?? [];
@@ -569,7 +572,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
         typewriterMs: Math.min(remaining, Math.max(100, Math.round(Number(desiredTw)))),
       };
     });
-    if (args.letterbox !== undefined) s.composition.letterbox = Number(args.letterbox);
+    const lb = args.letterbox === undefined ? undefined : letterboxRatio(args.letterbox, s);
+    if (lb) s.composition.letterbox = lb.ratio;
     else if (!s.composition.letterbox) s.composition.letterbox = 0.15;
     const safe = Math.ceil(s.composition.height * (s.composition.letterbox ?? 0.15));
     for (const actor of s.composition.layers) {
@@ -583,7 +587,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       caption: { cues, ...(args.safeArea !== undefined ? { safeArea: Number(args.safeArea) } : {}), ...(args.fadeOutMs !== undefined ? { fadeOutMs: Number(args.fadeOutMs) } : {}) } };
     const at = s.composition.layers.findIndex(row => row.id === id);
     if (at >= 0) s.composition.layers[at] = layer; else s.composition.layers.push(layer);
-    return commit(p, s, '자막 트랙을 저장했습니다. letterbox가 있으면 막대 안에, 없으면 하단 안전 영역에 놓인다.');
+    return commit(p, s, `자막 트랙을 저장했습니다. letterbox가 있으면 막대 안에, 없으면 하단 안전 영역에 놓인다.${lb?.note ?? ''}`);
   }),
   definition('place_opening_background', '무대 전체를 덮는 배경 그림 레이어를 정확히 깔아 준다(x,y는 «앵커 점»이므로 손으로 채우면 어긋난다). '
     + '그림 대신 mapId 를 주면 그 게임 맵을 그대로 배경으로 쓴다(맞는 오프닝 그림이 없을 때 — 엉뚱한 스틸 대신 실제 무대). focus {x,y} = 가운데에 올 맵 칸(기본 맵 가운데), zoom 1 = 맵 화소 1:1(384×216 무대면 칸 24×13.5개), 2 = 두 배로 당김. 인물은 그려지지 않으니 place_opening_charset_actor 로 얹는다.',
@@ -676,6 +680,20 @@ export function openingCameraZoomWarning(camera: OpeningAnimatic['camera'] | und
   if (!odd.length) return null;
   const shown = odd.slice(0, 4).map(value => `${value}(→${Math.max(1, Math.round(value))})`).join(', ');
   return `카메라 줌 ${shown} 이(가) 정수가 아닙니다. 도트 그림·맵 무대는 1·2 같은 정수 줌으로 멈춰야 도트 굵기가 고르게 나옵니다 — 멈추는 줌 값을 정수로 맞추세요.`;
+}
+
+/**
+ * letterbox 는 무대 높이에 대한 비율(0..0.25)이다. 1 이상은 막대 화소 높이로 보고 비율로 바꾼다(상한 0.25).
+ * 실측(2026-11-05 gpt-only-game, Terra 혼자 고양이 탐험 4차): set_opening_caption{letterbox:14} 를 다섯 샷 모두 보내
+ * 「animatic.letterbox: 0..0.25 number required」로 거절돼 오프닝 자막이 전부 빠졌다(카탈로그 안내도 「216의 32px」로 화소를 말한다).
+ */
+function letterboxRatio(raw: unknown, s: Shot): { ratio: number; note: string } {
+  const value = Number(raw);
+  // 화소는 무대 격자 기준이다 — 렌더러가 막대를 격자 공간에 그린다(player/openingAnimaticRenderer.ts, 「216의 32px」).
+  const height = s.composition.pixelGrid?.height ?? s.composition.height;
+  if (!Number.isFinite(value) || value < 1 || !(height > 0)) return { ratio: value, note: '' };
+  const exact = Math.round((value / height) * 1000) / 1000, ratio = Math.min(0.25, exact);
+  return { ratio, note: ` (letterbox ${value}px → ${ratio}${ratio < exact ? ', 상한 0.25' : ''} — letterbox 는 무대 높이 ${height} 에 대한 비율 0..0.25 다)` };
 }
 
 /**

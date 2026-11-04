@@ -49,6 +49,27 @@ describe("animate_opening_camera keyframe arrays", () => {
     expect(ctx.project.system.opening?.scenes.map((s) => s.id)).toEqual(["mine", "s1"]);
   });
 
+  // 2026-11-05 cat exploration round 4: set_opening_caption{letterbox:14} (pixels) was refused on all five shots, so no caption survived.
+  it("a pixel letterbox becomes a ratio of the stage height", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    runTool(ctx, "create_opening_animatic_shot", { shotId: "s1", width: 384, height: 216, durationMs: 6500 }, { dryRun: false });
+    const result = runTool(ctx, "set_opening_caption", { shotId: "s1", layerId: "line", letterbox: 32, cues: [{ atMs: 400, text: "숲 곁에 고양이가 살았어요." }] }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const shot = ctx.project.system.opening?.scenes.find((s) => s.id === "s1") as { composition?: { letterbox?: number } } | undefined;
+    expect(shot?.composition?.letterbox).toBe(0.148);
+    expect(runTool(ctx, "set_opening_caption", { shotId: "s1", layerId: "line", letterbox: 0.5, cues: [{ atMs: 400, text: "x" }] }, { dryRun: false }).ok).toBe(false);
+  });
+
+  it("pixels count on the pixel grid when the stage is larger", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    runTool(ctx, "create_opening_animatic_shot", { shotId: "s1", width: 1280, height: 720, durationMs: 6500 }, { dryRun: false });
+    expect(runTool(ctx, "set_opening_pixel_grid", { shotId: "s1", width: 384, height: 216 }, { dryRun: false }).ok).toBe(true);
+    const result = runTool(ctx, "set_opening_caption", { shotId: "s1", layerId: "line", letterbox: 32, cues: [{ atMs: 400, text: "x" }] }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const shot = ctx.project.system.opening?.scenes.find((s) => s.id === "s1") as { composition?: { letterbox?: number } } | undefined;
+    expect(shot?.composition?.letterbox).toBe(0.148);
+  });
+
   it("a non-keyframe array is still refused", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     runTool(ctx, "create_opening_animatic_shot", { shotId: "s1", width: 384, height: 216, durationMs: 6500 }, { dryRun: false });
