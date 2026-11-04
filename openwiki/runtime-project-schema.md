@@ -216,9 +216,11 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   고른 로컬 엔진이 없으면 레일 AI 상태 줄·「AI 엔진이 아직 없어요」 안내는 편집기의 AI 연결(`aiConnectionStatus`, Google·ChatGPT 로그인)을 본다 — 연결돼 있으면 「Google 연결됨」.
   시작 화면에서 띄우는 AI 연결 창(`aiConnectGate`)은 `src/start/aiModalStyles.ts` 로 AI 창 CSS 를 같이 받는다(없으면 창이 위치 없이 첫 화면 뒤로 숨는다). 편집기에서는 이 모듈을 가져오지 말 것 — 계층 없는 사본이 `@layer shell` 규칙을 이긴다.
   고르는 것은 사용자다(#3072 D1 opt-in) — 추천은 카드에 「추천 · 눌러서 쓰기」로만 보이고, 고른 값은 `oprn:assistant-engine` 에 남으며 「원래 AI 연결로 되돌리기」가 지운다.
-- **만들기·플레이 동작**: 「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
-  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다. 플레이 기록 `oprn:start-played` 는 `src/start/playFeed/playFeed.ts` 에 남아 있다.
-  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다.
+- **만들기 동작(2026-11-04 Studio/런타임 분리, 설계 http://mdc-server:18301/studio-runtime-split.html)**: 시작 화면에는 「플레이」 입구가 없다.
+  내 게임·예제(기본 게임)는 편집기에서 열고(`start.openRecent` → `/index.html`, 예제는 `/index.html?demo=<id>`), 해 보는 것은 편집기 「테스트 실행」이다.
+  `/index.html?play=1`(`START_PLAY_URL`)·`?demo=<id>&play=1` 부팅 경로는 QA·캡처 스크립트용으로 남아 있다 — 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
+  표시를 읽고 지운 뒤 플레이 모드로 연다. 플레이 기록(`oprn:start-played`, 옛 `src/start/playFeed`)은 지웠다.
+  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 편집기로 연다.
   런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다. 팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
