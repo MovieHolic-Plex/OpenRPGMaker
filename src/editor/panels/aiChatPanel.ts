@@ -59,7 +59,7 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
-import { IMAGE_PLAN_NOTE } from "@/ai/imagePlan";
+import { imagePlanBuildNote, type ImagePlanScene } from "@/ai/imagePlan";
 import { requestImagePlanMockup } from "@/editor/imagePlanMockup";
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
@@ -2304,14 +2304,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly widen?: { readonly label: string; readonly traits: readonly string[] }; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly widen?: ImagePlanScene; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   /** 그림 도안 먼저(설정, src/ai/imagePlan.ts): 넓힌 새 장소면 도안 한 장을 받아 첨 요청 그림으로 싣는다. 계정이 없거나 실패하면 한 줄만 남기고 도안 없이 짓는다. */
   const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string }> => {
     if (!widen || loadAiConfig().imagePlanBuild !== true) return { images: [] };
     setStatus("그림 도안 그리는 중…");
     const outcome = await requestImagePlanMockup(widen);
+    console.info(`imagePlan: outcome=${outcome.kind} read=${outcome.kind === "mockup" && outcome.read ? "ok" : "none"}`);
     if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
-    return { images: [outcome.dataUrl], note: IMAGE_PLAN_NOTE };
+    if (outcome.readLine) say(outcome.readLine);
+    return { images: [outcome.dataUrl], note: imagePlanBuildNote(widen, outcome.read) };
   };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
@@ -2369,7 +2371,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
       ...(classified.clarify ? { clarify: classified.clarify } : {}),
-      ...(classified.widen ? { widenLine: classified.widen.startLine, widen: { label: classified.widen.label, traits: classified.widen.traits } } : {}),
+      ...(classified.widen ? { widenLine: classified.widen.startLine, widen: { subject: classified.widen.subject, label: classified.widen.label, traits: classified.widen.traits } } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
