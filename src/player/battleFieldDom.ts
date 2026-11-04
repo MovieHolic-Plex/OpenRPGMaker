@@ -15,7 +15,7 @@ import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { monsterExpBarProgress } from "@/player/battleExpBar";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
-import { fitBattleEnemy } from "@/player/battleEnemyFit";
+import { bigSheetSeat, fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   battlerIdleAnimation,
@@ -648,10 +648,12 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
       if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
     }
   }
+  // 위치를 재기 전에 단다 — 큰 보스 전투는 무대 위 여백(--battle-stage-inset-top)이 바뀌어 적 무리 상자 위끝이 달라진다.
+  syncBigBossScene(field, group as HTMLElement, Boolean(presentation?.onField));
   const onFieldPositions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField);
-  const positions = onFieldPositions ?? spreadRetroEnemyRow(group as HTMLElement, snapshot, resolveEnemyRowPositions(snapshot, snapshot.enemies));
   // 쓰기 전에 한 번에 읽는다(적마다 읽고 쓰면 레이아웃을 적 수만큼 다시 계산한다).
   const plateFloors = presentation?.onField ? undefined : enemyPlateFloors(field, group as HTMLElement, snapshot);
+  const positions = onFieldPositions ?? spreadRetroEnemyRow(group as HTMLElement, snapshot, bigSheetSeats(field, group as HTMLElement, snapshot, resolveEnemyRowPositions(snapshot, snapshot.enemies), plateFloors));
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     const form = presentedForm(enemy, presentation);
@@ -669,9 +671,9 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
     // 필드 위 전투는 심볼 발밑이 곧 자리다 — 큰 적을 전장 안으로 밀어 넣는 보정을 하지 않는다.
-    const fitted = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
-    // 이름·HP 이름표가 전장 아래(명령 창 뒤)로 잘리지 않게 그만큼 적을 올린다.
+    // 이름·HP 이름표가 전장 아래(명령 창 뒤)로 잘리지 않게 그만큼 적을 올린다. 큰 시트의 맞춤도 이 바닥을 넘지 않는다.
     const floor = plateFloors?.get(enemy.id);
+    const fitted = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index], floor);
     const position = floor !== undefined && fitted.y > floor ? { x: fitted.x, y: floor } : fitted;
     if (presentation?.onField) fitNodeToFieldSprite(node, ".battle-enemy-image", presentation.onField);
     // 옮겨진 적: 새 좌표로 미끄러지게 이동 시간을 노드에 싣는다(01-scene-base.css 의 left/top 트랜지션).
@@ -724,6 +726,56 @@ function enemyPlateFloors(field: HTMLElement, group: HTMLElement, snapshot: Batt
     floors.set(enemy.id, visibleBottom - drop - 4 / unitY);
   }
   return floors;
+}
+
+/** 큰 보스 전투의 기준: 도트 시트 칸이 이 값 이상인 적이 하나라도 있으면 씬에 `data-battle-big-boss` 를 단다. */
+export const BIG_BOSS_PIXEL_CELL = 128;
+
+/**
+ * 큰 보스 전투 표식. 칸 128 이상 시트의 보스는 윗창 아래에 맞추면 131 무대 px 안팎으로 눌리고 머리가 창 뒤로 들어갔다
+ * (1440×900 실측, 숯덩이 골렘 공격·달빛의 용 대기). 표식이 있으면 _retro2003.css 가 무대 위 여백을 윗창 자리까지 줄이고,
+ * 윗창은 예전처럼 필드 위에 떠서 글이 있을 때만 보인다. 필드 위 전투(onField)는 심볼 자리에 서므로 달지 않는다.
+ */
+function syncBigBossScene(field: HTMLElement, group: HTMLElement, onField: boolean): void {
+  const scene = field.closest<HTMLElement>(".battle-scene");
+  if (!scene) return;
+  const big = !onField && [...group.querySelectorAll<HTMLElement>(":scope > .battle-enemy[data-pixel-enemy-cell]")]
+    .some((node) => Number(node.dataset.pixelEnemyCell) >= BIG_BOSS_PIXEL_CELL);
+  if (big) {
+    if (scene.dataset.battleBigBoss !== "true") scene.dataset.battleBigBoss = "true";
+  } else if (scene.dataset.battleBigBoss !== undefined) delete scene.dataset.battleBigBoss;
+}
+
+/**
+ * 큰 도트 시트 적(칸 128 이상)만 진형 전에 맞춤 뒤 자리로 옮긴다(battleEnemyFit.bigSheetSeat). 다른 적이 함께 있으면 큰 적은 뒷줄 왼쪽 끝에 서고,
+ * 나머지는 진형 모양 그대로 함께 오른쪽으로 밀어 큰 상자를 비킨다 — 진형 벌리기(spreadEnemyFormation)는 무게중심을 지키려다
+ * 보스를 작은 적 사이에 끼워 겹치고 슬라임을 전장 밖으로 밀었다(1440×900 실측). 큰 적이 없으면 자리를 그대로 돌려준다.
+ */
+function bigSheetSeats(field: HTMLElement, group: HTMLElement, snapshot: BattleSnapshot, positions: readonly { x: number; y: number }[], plateFloors: Map<string, number> | undefined): readonly { x: number; y: number }[] {
+  const nodes = snapshot.enemies.map((enemy) => group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`));
+  const big = snapshot.enemies.map((enemy, index) => {
+    const node = nodes[index], seat = positions[index];
+    return node && seat && !enemy.moved ? bigSheetSeat(field, node, seat, plateFloors?.get(enemy.id)) : undefined;
+  });
+  if (!big.some(Boolean)) return positions;
+  const next = positions.map((p, index) => { const placed = big[index]; return placed ? { x: placed.x, y: placed.y } : { ...p }; });
+  const others = next.map((_, index) => index).filter((index) => !big[index] && nodes[index] && !snapshot.enemies[index]!.moved);
+  if (others.length === 0) return next;
+  const unitX = group.offsetWidth / 320;
+  if (!(unitX > 0)) return next;
+  let wall = -Infinity;
+  for (const [index, placed] of big.entries()) {
+    if (!placed) continue;
+    next[index]!.x = placed.leftmost;
+    wall = Math.max(wall, placed.leftmost + placed.half);
+  }
+  const halves = others.map((index) => (nodes[index]!.querySelector<HTMLElement>(".battle-enemy-image")?.offsetWidth ?? 0) / 2 / unitX);
+  const lo = Math.min(...others.map((index, k) => next[index]!.x - halves[k]!));
+  const hi = Math.max(...others.map((index, k) => next[index]!.x + halves[k]!));
+  // 진형 벌리기의 오른쪽 한계(206, 아군 앞)를 넘지 않는 만큼만 민다. 모자라면 남은 겹침은 진형 벌리기가 푼다.
+  const shift = Math.max(0, Math.min(wall + 2 - lo, 206 - hi));
+  for (const index of others) next[index]!.x += shift;
+  return next;
 }
 
 function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, positions: readonly { x: number; y: number }[]): readonly { x: number; y: number }[] {

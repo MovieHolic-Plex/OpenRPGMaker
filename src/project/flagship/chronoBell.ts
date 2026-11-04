@@ -56,6 +56,8 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
+import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
+import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
 import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
@@ -2526,6 +2528,10 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
   // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
   applyFallenMobBalance(project, execTool);
+  // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
+  applyFallenMonsterArt16(project);
+  // 지역별 전투 배경 13장(battle-backdrop · Opus 최고점) — 맵·트룹 배경을 모두 지은 뒤에 덮는다(fallen/areaBackdrops.ts).
+  applyFallenAreaBackdrops(project, (name, args) => execTool(project, name, args));
   // 무기 계열 특성(검 급소·창 방어 깎기·지팡이 기절·사출봉 둔화) — 대장간·2막 무기까지 다 생긴 뒤(fallen/weaponTraits.ts).
   applyFallenWeaponTraits(project);
 

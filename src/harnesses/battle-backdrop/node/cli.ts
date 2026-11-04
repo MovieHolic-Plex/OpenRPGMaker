@@ -6,7 +6,9 @@
  *   pixelize <판> [글자…]                       원본 → 320×180 도트(맵 팔레트+덧색, 디더링·중간색 없음) + 640×360 저장본
  *   check    <판> [--judge claude:sonnet|agy:<모델>|none]   크기·색 수·아래 띠·밝기 + 그림 판정자(인물·글자·시간·시점). 통과 ≠ 합격
  *   sheet    <판> [<판>…] [--name <이름>]       ~/claude-viz/battle-backdrop-<이름>.html (캡처 옆 후보 1배·3배·전투 무대 미리보기)
- *   pick     <판> <글자> [--by <사람>]           사람이 고른 후보를 현재 도트 화소 해시에 묶는다(감독·에이전트는 고르지 않는다)
+ *   review   <판>                               Claude Opus 검수(숨긴 디코이, 1~5점 0.5 단위, 3.5 통과). 판정은 도트 화소 해시에 묶인다
+ *   pick     <판> <글자> --by <누구>             고른 후보를 현재 도트 화소 해시에 묶는다
+ *   pick     <판> --best --by <근거>             Opus 검수를 통과한 후보 중 최고점을 고른다(2026-11-04 오너 「이제 사람이 고르지 않아. AI 가 해야함」)
  *   build    <판> --project <project.json|폴더> [--target troop:<id>|map:<id>] [--out <새 json>] [--in-place] [--leave-field-mode]
  *   build    <판> --emit <폴더> [--target troop:<id>|map:<id>]   (프로젝트 없이 upsert_resource 인자 JSON + PNG 만)
  *   status   [<판>]
@@ -27,6 +29,10 @@ import {
   type BackdropFacts, type JudgeVerdict, type MachineCheck, type Rgba,
 } from "../../../editor/battleBackdropCore";
 import { generateImage, mapLimit } from "../../monster-collect-species/node/imageSource";
+import {
+  BACKDROP_REVIEW_STANDARD, backdropBatchCounts, backdropReviewPrompt, isOpusModel, parseBackdropReview, passingBackdrops, reviewedShas,
+  type BackdropControlKind, type ReviewBatch, type ReviewEntry,
+} from "../opusReview";
 
 const ROOT = path.resolve(import.meta.dirname, "../../../..");
 const DATA = path.join(ROOT, "harness-data/battle-backdrop");
@@ -60,7 +66,8 @@ type Run = {
   referenceSha256: string;
   facts: BackdropFacts;
   candidates: Candidate[];
-  pick?: { letter: string; nativePixelSha256: string; storedPixelSha256: string; by: string; at: string };
+  reviews?: ReviewBatch[];
+  pick?: { letter: string; nativePixelSha256: string; storedPixelSha256: string; by: string; at: string; score?: number; batch?: string };
   builds?: { at: string; target: string; resourceId: string; storedPixelSha256: string; into: string; reloaded: boolean }[];
 };
 type Ledger = { version: 1; runs: Record<string, Run> };
@@ -93,7 +100,7 @@ function opt(argv: string[], name: string): string | undefined {
   const i = argv.indexOf(`--${name}`);
   return i >= 0 && i + 1 < argv.length ? argv[i + 1] : undefined;
 }
-const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place", "--leave-field-mode"].includes(argv[i - 1]!)));
+const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place", "--leave-field-mode", "--best"].includes(argv[i - 1]!)));
 const runDir = (id: string) => path.join(RUNS, id);
 function getRun(ledger: Ledger, id: string | undefined): Run {
   if (!id || !ledger.runs[id]) throw new Error(`판이 없다: ${id ?? "(없음)"} — 있는 판: ${Object.keys(ledger.runs).join(", ") || "없음"}`);
@@ -331,6 +338,93 @@ async function check(argv: string[]): Promise<number> {
   return 0;
 }
 
+// ---------- review (Opus) ----------
+
+const REVIEWS = path.join(DATA, "reviews");
+const machineOk = (c: Candidate) => !!c.machine && Object.values(c.machine).every((v) => v.ok);
+
+function flipVertical(img: Rgba): Rgba {
+  const row = img.width * 4;
+  const data = new Uint8Array(img.data.length);
+  for (let y = 0; y < img.height; y += 1) data.set(img.data.subarray(y * row, (y + 1) * row), (img.height - 1 - y) * row);
+  return { width: img.width, height: img.height, data };
+}
+
+function fitNearest(img: Rgba, w: number, h: number): Rgba {
+  const data = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) {
+    const s = (Math.floor((y * img.height) / h) * img.width + Math.floor((x * img.width) / w)) * 4;
+    data.set(img.data.subarray(s, s + 4), (y * w + x) * 4);
+  }
+  return { width: w, height: h, data };
+}
+
+async function callOpus(content: unknown[]): Promise<{ raw: string; text: string; model: string; runId: string }> {
+  const base = (process.env.BATTLE_BACKDROP_OPUS_URL ?? "http://127.0.0.1:10200/v1").replace(/\/$/u, "");
+  const model = process.env.BATTLE_BACKDROP_OPUS_MODEL ?? "klb/claude-opus-5.5";
+  if (!isOpusModel(model)) throw new Error(`검수 모델 ${model} 은 Opus 가 아니다 — Opus 만 검수한다`);
+  const res = await fetch(`${base}/chat/completions`, {
+    method: "POST", headers: { "content-type": "application/json" }, signal: AbortSignal.timeout(20 * 60 * 1000),
+    body: JSON.stringify({ model, temperature: 0, messages: [{ role: "user", content }] }),
+  });
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`Opus 호출 실패 ${res.status}: ${raw.slice(0, 300)}`);
+  const d = JSON.parse(raw) as { id?: string; model?: string; choices?: { message?: { content?: string } }[] };
+  if (!isOpusModel(d.model)) throw new Error(`응답 모델 ${d.model} 은 Opus 가 아니다`);
+  if (!d.id) throw new Error("응답에 run id 가 없다");
+  return { raw, text: d.choices?.[0]?.message?.content ?? "", model: d.model!, runId: d.id };
+}
+
+async function review(argv: string[]): Promise<number> {
+  const ledger = readLedger();
+  const run = getRun(ledger, positional(argv)[1]);
+  const dir = runDir(run.id);
+  const done = reviewedShas(run.reviews ?? []);
+  const todo = run.candidates.filter((c) => c.nativePixelSha256 && machineOk(c) && !done.has(c.nativePixelSha256));
+  if (!todo.length) { console.log(`[battle-backdrop] ${run.id}: 검수할 후보 없음(기계 검사 통과·미검수 후보가 없다)`); return 0; }
+  for (const c of todo) if (pixelSha(readPng(path.join(dir, `native-${c.letter}.png`))) !== c.nativePixelSha256) throw new Error(`${c.letter}: 도트 그림이 기록과 다르다`);
+  const wrongBiome = /사막|desert|모래/iu.test(run.facts.placeWords.join(" ")) ? "snow" : "desert";
+  const controls: { kind: BackdropControlKind; img: Rgba }[] = [
+    { kind: "flipped", img: flipVertical(readPng(path.join(dir, `stored-${todo[0]!.letter}.png`))) },
+    { kind: "top-down", img: fitNearest(readPng(path.join(dir, "reference.png")), 640, 360) },
+    { kind: "wrong-place", img: readPng(path.join(ROOT, `public/assets/generated/battle-scenery/${wrongBiome}/preview.png`)) },
+  ];
+  const pool = new Set<string>();
+  while (pool.size < todo.length + controls.length) pool.add(String(10 + Math.floor(Math.random() * 90)));
+  const labels = [...pool];
+  const items: { entry: ReviewEntry; img: Rgba }[] = [
+    ...todo.map((c, i) => ({ entry: { label: labels[i]!, pixelSha256: c.nativePixelSha256!, letter: c.letter }, img: readPng(path.join(dir, `stored-${c.letter}.png`)) })),
+    ...controls.map((k, i) => ({ entry: { label: labels[todo.length + i]!, pixelSha256: pixelSha(k.img), control: k.kind }, img: k.img })),
+  ].sort(() => Math.random() - 0.5);
+  const id = `${now().replace(/[-:]/gu, "").replace("T", "-").slice(0, 15)}-${run.id}`;
+  const shown = items.map((x) => x.entry.label);
+  const png = (img: Rgba) => ({ type: "image_url", image_url: { url: `data:image/png;base64,${encodePng(img).toString("base64")}` } });
+  const content: unknown[] = [{ type: "text", text: backdropReviewPrompt(run.facts, shown) }, { type: "text", text: "MAP:" }, png(readPng(path.join(dir, "reference.png")))];
+  for (const x of items) content.push({ type: "text", text: `Label ${x.entry.label}:` }, png(x.img));
+  let reply = await callOpus(content);
+  let answers = parseBackdropReview(reply.text, shown);
+  if (!answers) { reply = await callOpus(content); answers = parseBackdropReview(reply.text, shown); }
+  fs.mkdirSync(REVIEWS, { recursive: true });
+  const rawFile = path.join(REVIEWS, `${id}.json`);
+  fs.writeFileSync(rawFile, reply.raw);
+  const entries = items.map((x) => x.entry);
+  const { counted, reason } = backdropBatchCounts(entries, answers);
+  const batch: ReviewBatch = {
+    id, at: now(), standard: BACKDROP_REVIEW_STANDARD, model: reply.model, runId: reply.runId,
+    rawFile: path.relative(ROOT, rawFile), rawSha256: sha(reply.raw), entries, answers: answers ?? {}, counted, reason,
+  };
+  (run.reviews ??= []).push(batch);
+  writeJson(LEDGER, ledger);
+  for (const e of entries) {
+    const a = answers?.[e.label];
+    console.log(`${e.control ? `디코이(${e.control})` : `후보 ${e.letter}`} #${e.label}: ${a ? `${a.v} ${a.score} — ${a.why}` : "답 없음"}`);
+  }
+  console.log(`[battle-backdrop] ${run.id} 검수 ${id} (${reply.model}) — ${counted ? "효력 있음" : "효력 없음"}: ${reason}`);
+  return counted ? 0 : 1;
+}
+
+const currentPasses = (run: Run) => passingBackdrops(run.reviews ?? [], run.candidates.map((c) => ({ letter: c.letter, nativePixelSha256: c.nativePixelSha256, machineOk: machineOk(c) })));
+
 // ---------- sheet ----------
 
 const dataUri = (file: string) => `data:image/png;base64,${fs.readFileSync(file).toString("base64")}`;
@@ -363,12 +457,14 @@ function sheet(argv: string[]): number {
       const machine = Object.entries(c.machine ?? {}).map(([k, v]) => `<tr class="${v.ok ? "ok" : "no"}"><td>${k}</td><td>${esc(v.value)}</td><td>${esc(v.rule)}</td></tr>`).join("");
       const j = c.judge;
       const judgeHtml = j ? (j.verdict ? `<p class="${j.findings.length ? "no" : "ok"}">판정 ${esc(j.by)}: ${esc(j.findings.join(" · ") || "지적 없음")} — <i>${esc(j.verdict.notes)}</i></p>` : `<p class="no">판정 응답 실패</p>`) : `<p class="dim">판정 없음</p>`;
-      const picked = run.pick?.letter === c.letter ? `<b class="pick">사람 선택됨</b>` : "";
+      const picked = run.pick?.letter === c.letter ? `<b class="pick">선택됨(${esc(run.pick.by)})</b>` : "";
+      const opus = (run.reviews ?? []).flatMap((b) => b.entries.filter((e) => e.letter === c.letter && e.pixelSha256 === c.nativePixelSha256 && b.answers[e.label]).map((e) => ({ b, a: b.answers[e.label]! })));
+      const opusHtml = opus.map(({ b, a }) => `<p class="${a.v === "pass" && b.counted ? "ok" : "no"}">Opus ${a.score}점 ${a.v}${b.counted ? "" : " (효력 없는 묶음)"} — ${esc(a.why)}</p>`).join("");
       return `<div class="card" id="${run.id}-${c.letter}"><h3>${c.letter} ${picked} <span class="dim">색 ${c.colors} · 화소 해시 ${c.nativePixelSha256.slice(0, 12)}</span></h3>
 <div class="row"><figure><img class="x1" src="${native}"><figcaption>1배 320×180</figcaption></figure>
 <figure class="stage"><div class="stagebox" style="background-image:url(${native})"><div class="ground"></div>${battlers()}</div><figcaption>전투 무대 640×480 cover 미리보기(회색 상자 = retro2003 배틀러 자리, 아래 끝이 발 · 점선 = 바닥 띠 시작)</figcaption></figure></div>
 <figure><img class="x3" src="${native}"><figcaption>3배</figcaption></figure>
-${judgeHtml}<table>${machine}</table>
+${opusHtml}${judgeHtml}<table>${machine}</table>
 <div class="pal">${(c.palette ?? []).map((h) => `<i style="background:${h}" title="${h}${c.extras?.includes(h) ? " (덧색)" : ""}" class="${c.extras?.includes(h) ? "extra" : ""}"></i>`).join("")}</div>
 <details><summary>프롬프트</summary><pre>${esc(fs.existsSync(path.join(dir, `prompt-${c.letter}.txt`)) ? fs.readFileSync(path.join(dir, `prompt-${c.letter}.txt`), "utf8") : "")}</pre></details>
 <details><summary>생성 원본(도트화 전)</summary><img class="raw" src="${rawPreviewUri(path.join(dir, `raw-${c.letter}.png`))}"></details>
@@ -391,7 +487,7 @@ table{border-collapse:collapse;margin:6px 0}td{padding:2px 8px;border-bottom:1px
 pre{white-space:pre-wrap;background:#111;padding:8px;font-size:12px}</style>
 <h1>전투 배경 후보 — ${esc(name)}</h1>
 <p>보는 법: 왼쪽 맵 캡처가 전투가 벌어지는 실제 장소다. 각 후보가 <b>같은 장소·같은 시간(낮/밤)·같은 그림체</b>로 읽히는지, 아래 바닥 띠가 배틀러 설 자리로 비어 있는지, 도트로 보이는지를 본다.
-기계 검사·판정자 결과는 참고일 뿐 합격이 아니다. 고른 것만 <code>pick</code> → <code>build</code> 로 설치한다.</p>
+기계 검사·판정자 결과는 참고일 뿐이다. Opus 검수(숨긴 디코이, 3.5 통과)를 통과한 후보 중 최고점을 <code>pick --best</code> → <code>build</code> 로 설치한다.</p>
 ${sections}`;
   fs.mkdirSync(VIZ, { recursive: true });
   const out = path.join(VIZ, `battle-backdrop-${name}.html`);
@@ -416,17 +512,20 @@ function battlers(): string {
 
 function pick(argv: string[]): number {
   const ledger = readLedger();
-  const [, id, letter] = positional(argv);
+  const [, id, letterArg] = positional(argv);
   const run = getRun(ledger, id);
+  const by = opt(argv, "by");
+  if (!by) throw new Error("--by <고른 사람 또는 근거> 가 필요하다 (Opus 최고점이면 --best --by 'opus-review (owner: …, 날짜)')");
+  const best = argv.includes("--best") ? currentPasses(run)[0] : undefined;
+  if (argv.includes("--best") && !best) throw new Error(`판 ${run.id}: Opus 검수를 통과한 후보가 없다 — review 를 보고 다시 만든다`);
+  const letter = best?.letter ?? letterArg;
   const c = run.candidates.find((x) => x.letter === letter);
   if (!c?.nativePixelSha256) throw new Error(`후보 ${letter} 의 도트 그림이 없다`);
-  const by = opt(argv, "by");
-  if (!by) throw new Error("--by <고른 사람> 이 필요하다 — 감독·에이전트는 고르지 않는다");
   const dir = runDir(run.id);
   const native = readPng(path.join(dir, `native-${c.letter}.png`));
   const stored = readPng(path.join(dir, `stored-${c.letter}.png`));
   if (pixelSha(native) !== c.nativePixelSha256 || pixelSha(stored) !== c.storedPixelSha256) throw new Error("그림이 기록된 해시와 다르다 — pixelize·sheet 를 다시 하고 다시 고른다");
-  run.pick = { letter: c.letter, nativePixelSha256: c.nativePixelSha256, storedPixelSha256: c.storedPixelSha256!, by, at: now() };
+  run.pick = { letter: c.letter, nativePixelSha256: c.nativePixelSha256, storedPixelSha256: c.storedPixelSha256!, by, at: now(), ...(best ? { score: best.score, batch: best.batch } : {}) };
   writeJson(LEDGER, ledger);
   console.log(JSON.stringify(run.pick));
   return 0;
@@ -534,7 +633,8 @@ function status(argv: string[]): number {
       const j = c.judge ? (c.judge.findings.length ? "판정지적" : "판정ok") : "판정-";
       return `${c.letter}:${c.nativePixelSha256 ? (m ? "기계ok" : "기계X") : "없음"}/${j}`;
     }).join(" ");
-    console.log(`${run.id} · ${run.facts.mapName} · ${run.facts.timeOfDay}/${run.facts.light} · 후보 ${run.candidates.length} [${cands}] · 선택 ${run.pick ? `${run.pick.letter}(${run.pick.by})` : "없음"} · 설치 ${run.builds?.length ?? 0}`);
+    const passes = currentPasses(run).map((p) => `${p.letter}:${p.score}`).join(",") || "없음";
+    console.log(`${run.id} · ${run.facts.mapName} · ${run.facts.timeOfDay}/${run.facts.light} · 후보 ${run.candidates.length} [${cands}] · Opus 통과 ${passes} · 선택 ${run.pick ? `${run.pick.letter}(${run.pick.by})` : "없음"} · 설치 ${run.builds?.length ?? 0}`);
   }
   if (!runs.length) console.log("판 없음 — capture 부터");
   return 0;
@@ -542,17 +642,47 @@ function status(argv: string[]): number {
 
 export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
+  if (stage && LEDGER_WRITERS.has(stage)) {
+    const release = lockLedger(stage);
+    try { return await runStage(stage, argv); } finally { release(); }
+  }
+  return runStage(stage, argv);
+}
+
+/** 단계마다 원장을 읽고 몇 분 일한 뒤 통째로 쓴다 — 둘이 동시에 돌면 서로의 판·후보·검수 기록을 지운다(2026-11-04 실측). 기다리지 않고 거절한다. */
+const LEDGER_WRITERS = new Set(["capture", "produce", "pixelize", "check", "review", "pick", "build"]);
+const LOCK = path.join(DATA, ".ledger.lock");
+function lockLedger(stage: string): () => void {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      fs.writeFileSync(LOCK, `${process.pid} ${stage} ${now()}`, { flag: "wx" });
+      return () => { if (fs.readFileSync(LOCK, "utf8").startsWith(`${process.pid} `)) fs.rmSync(LOCK); };
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+      const held = fs.readFileSync(LOCK, "utf8");
+      const pid = Number(held.split(" ")[0]);
+      let alive = Number.isInteger(pid) && pid > 0;
+      if (alive) { try { process.kill(pid, 0); } catch { alive = false; } }
+      if (alive) throw new Error(`다른 battle-backdrop 단계가 원장을 잡고 있다(${held}) — 단계는 하나씩 돌린다`);
+      fs.rmSync(LOCK, { force: true });
+    }
+  }
+  throw new Error(`원장 잠금을 잡지 못했다: ${LOCK}`);
+}
+
+async function runStage(stage: string | undefined, argv: string[]): Promise<number> {
   switch (stage) {
     case "capture": return capture(argv);
     case "produce": return produce(argv);
     case "pixelize": return pixelize(argv);
     case "check": return check(argv);
+    case "review": return review(argv);
     case "sheet": return sheet(argv);
     case "pick": return pick(argv);
     case "build": return build(argv);
     case "status": case "list": return status(argv);
     default:
-      console.error("battle-backdrop capture|produce|pixelize|check|sheet|pick|build|status — 문서 openwiki/harnesses/battle-backdrop.md");
+      console.error("battle-backdrop capture|produce|pixelize|check|review|sheet|pick|build|status — 문서 openwiki/harnesses/battle-backdrop.md");
       return 2;
   }
 }

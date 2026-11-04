@@ -6,7 +6,7 @@ import type { PixelEnemyMotion } from "@/assets/pixelEnemySheets";
 export interface RetroMonsterPlan {
   readonly slug: string;
   readonly name: string;
-  readonly cell: 48 | 64 | 96;
+  readonly cell: 48 | 64 | 96 | 128 | 192 | 256;
   readonly motion: PixelEnemyMotion;
   readonly design: string;
 }

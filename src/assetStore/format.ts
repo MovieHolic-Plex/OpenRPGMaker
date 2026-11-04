@@ -390,7 +390,7 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
  * missingCells(9~14 만)는 그리지 않은 칸 — 완전 투명이어야 하고, 적지 않은 9~14 칸은 비어 있으면 안 된다(storeMonsterSheetCellProblems).
  */
 export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
-export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96] as const;
+export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96, 128, 192, 256] as const;
 export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
 export const STORE_MONSTER_SHEET_GRIDS = ["3x3", "4x4"] as const;
 /** 4x4 시트에서 비울 수 있는 칸 번호. 0~8 은 늘 그려야 하고 15 는 늘 비어 있다. */

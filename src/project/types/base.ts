@@ -736,7 +736,7 @@ export interface UploadedAsset {
 export interface UploadedPixelEnemySheetMeta {
   /** 전투 도트 시트 PNG(3×3 또는 4×4) 를 담은 uploaded 자산 id. */
   sheetResourceId: string;
-  cell: 48 | 64 | 96;
+  cell: 48 | 64 | 96 | 128 | 192 | 256;
   motion: "hop" | "swoop" | "stomp" | "dash" | "float" | "shoot" | "breath";
   idleFrameMs: number;
   skillCell?: true;
