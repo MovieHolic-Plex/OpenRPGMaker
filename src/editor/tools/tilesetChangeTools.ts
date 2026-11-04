@@ -5,6 +5,7 @@
 
 import { tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { activeGenreLock, genreLockAllowsTileset, GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import { familyBaselineMap } from "@/project/tilesetBaseline";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const ASK_TILESET_CHANGE_TOOL = "ask_tileset_change";
@@ -70,6 +71,15 @@ const askTilesetChange: ToolDefinition = {
       throw new ToolError(
         `${toTilesetId} 는 지금 맵 칩셋(${map.tilesetId})과 같은 ${tilesetFamilyLabel(project, fromFamily)} 계열이다 — 묻지 말고 그대로 써라.`,
         { code: "tileset-same-family" },
+      );
+    }
+    // 빈 시작 맵뿐인 새 프로젝트는 아직 고른 그림체가 없다 — 물을 것이 없으니 바로 짓게 한다(실행기 계열 검사도 이때는 막지 않는다). 장르 잠금 밖 칩셋은 그대로 묻는다.
+    // 실측(2026-11-05 gpt-only-game, Terra 혼자): 「학교 배경 연애 게임」·「좀비 생존 게임」이 여기서 물고 턴을 끝내 맵 없는 게임이 됐다.
+    if (!familyBaselineMap(project, map) && (!activeGenreLock(project) || genreLockAllowsTileset(project, toTilesetId))) {
+      throw new ToolError(
+        `아직 그림체를 고른 맵이 없다(${map.id} 는 손대지 않은 빈 시작 맵) — 묻지 말고 ${toTilesetId} 로 바로 지어라. `
+        + `새 맵은 create_map(tilesetId:"${toTilesetId}") 또는 그 칩셋의 짓기 도구로 만들면 된다. 처음 고른 계열이 이 게임의 그림체가 된다.`,
+        { code: "tileset-no-baseline" },
       );
     }
     const question: TilesetChangeQuestion = {

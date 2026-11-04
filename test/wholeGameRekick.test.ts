@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { unbuiltGameSigns, wholeGameRekickPrompt } from "@/ai/v2/shipChecks";
+import { unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "@/ai/v2/shipChecks";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 Salad S3: 9/58 builds stopped with only the skeleton 「기억의 조각 → 첫 구간 끝」.
@@ -15,9 +15,20 @@ describe("whole-game rekick signs", () => {
     p.endings.push({ id: "ending_stay", name: "항구에 남는 두 사람", conditions: [], priority: 10 });
     expect(unbuiltGameSigns(p, "바닷가 카페 연애 게임 만들어 줘. 엔딩까지.")).toHaveLength(0);
   });
-  it("no ending at all when the request asks for one", () => {
+  // 2026-11-05 gpt-only-game (Terra alone): 「좀비 생존 게임 만들어줘」 ended with an opening only — no ending, only the blank start map.
+  it("a whole-game build with no ending or only the blank start map is unbuilt, ending word or not", () => {
     const p = createBlankProject() as Project;
-    expect(unbuiltGameSigns(p, "짧은 모험 게임 만들어 줘. 엔딩까지.")).toEqual(["엔딩이 하나도 없다"]);
-    expect(unbuiltGameSigns(p, "짧은 모험 게임 만들어 줘")).toEqual([]);
+    const noMap = "플레이할 맵이 없다 — 손대지 않은 빈 시작 맵뿐이다";
+    expect(unbuiltGameSigns(p, "짧은 모험 게임 만들어 줘. 엔딩까지.")).toEqual(["엔딩이 하나도 없다", noMap]);
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual(["엔딩이 하나도 없다", noMap]);
+    p.maps[p.startMapId!]!.events.push({ id: "ev_gate", name: "대피소 문", x: 2, y: 2, pages: [] } as never);
+    p.endings = [{ id: "ending_escape", name: "대피 성공", conditions: [], priority: 0 }];
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+  });
+  it("a request ending in …게임으로 is a whole game; an edit that mentions 게임 is not", () => {
+    expect(wantsWholeGame("마을 하나 만들어줘. 거기서 시작하는 모험 게임으로")).toBe(true);
+    expect(wantsWholeGame("마을 이름을 게임으로 바꿔")).toBe(false);
+    expect(wantsWholeGame("이 상점을 미니게임으로")).toBe(false);
+    expect(wantsWholeGame("대사를 게임으로")).toBe(false);
   });
 });

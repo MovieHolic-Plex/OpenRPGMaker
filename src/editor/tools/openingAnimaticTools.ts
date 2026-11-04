@@ -679,11 +679,31 @@ export function openingCameraZoomWarning(camera: OpeningAnimatic['camera'] | und
 }
 
 /**
+ * camera.x/y/zoom/rotation 에 키 배열([{atMs,value}])을 직접 넣은 호출을 keys 로 옮긴다 — 첫 키 값이 시작 값이다.
+ * 실측(2026-11-05 gpt-only-game, Terra 혼자 학교 연애): camera.x 에 배열을 넣어 세 번 연속 「camera.x: number required」로 거절돼 오프닝 카메라가 빠졌다.
+ */
+function cameraKeyArraysToKeys(raw: Record<string, unknown>): Record<string, unknown> {
+  const camera: Record<string, unknown> = { ...raw };
+  const keys: Record<string, unknown> = { ...((raw.keys as Record<string, unknown> | undefined) ?? {}) };
+  let moved = false;
+  for (const k of ['x', 'y', 'zoom', 'rotation']) {
+    const value = camera[k];
+    if (!Array.isArray(value) || !value.length || !value.every((key) => key && typeof key === 'object' && typeof (key as { value?: unknown }).value === 'number')) continue;
+    keys[k] = value;
+    camera[k] = (value[0] as { value: number }).value;
+    moved = true;
+  }
+  if (moved) camera.keys = keys;
+  return camera;
+}
+
+/**
  * camera:{from:{x,y,zoom},to:{x,y,zoom}} 를 정본 모양(시작 값 + 샷 길이에 걸친 keys)으로 옮긴다.
  * 실측(2026-10-22 조용한 현대 거리, Sonnet 5.5): from/to 로 보내 「camera.from: unsupported field」로 거부됐다 — 뜻이 하나뿐인 모양이다.
  */
 function cameraFromTo(raw: unknown, durationMs: number): unknown {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  raw = cameraKeyArraysToKeys(raw as Record<string, unknown>);
   const { from, to, ...rest } = raw as Record<string, unknown>;
   if (!from || typeof from !== 'object' || !to || typeof to !== 'object') return raw;
   const a = from as Record<string, unknown>, b = to as Record<string, unknown>;
