@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 8001KB / 약 2,351,227 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 8001KB / 약 2,351,382 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -38,10 +38,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~32,956 |
+| `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~33,069 |
 | `openwiki/runtime-battle.md` | 459KB | 32KB | 2518 | ~135,098 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
-| `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,046 |
+| `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,088 |
 | `openwiki/runtime-project-schema.md` | 269KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1853 | ~76,290 |
 | `openwiki/runtime-sessions.md` | 177KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,623 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
@@ -2281,7 +2281,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L180` 건물 문 ↔ 방 잇기 `link_joseon_interior` (2026-10-30)
 - `L192` 한계
 
-### `openwiki/jp-city.md` — 111KB · 511줄 · ~32,956 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 111KB · 511줄 · ~33,069 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
@@ -2949,7 +2949,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L335` 그림 컷 준비와 direction (2026-10-04)
 - `L343` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 215KB · 1271줄 · ~64,046 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 215KB · 1271줄 · ~64,088 토큰 · 통째읽기 잘림
 
 - `L1` 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
 - `L13` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
