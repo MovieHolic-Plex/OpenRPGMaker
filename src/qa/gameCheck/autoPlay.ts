@@ -299,6 +299,15 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
   }
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {
+    // 증거 제시 보기는 그 아이템을 가져야 열린다 — 아이템을 주는 상자·대화를 먼저 계획한다.
+    // (2026-11-05 gpt-only-game 좀비 생존: 봉쇄선 탈출구 presentItem(낡은 열쇠)→triggerEnding 을 열쇠 상자보다 먼저 돌려
+    //  「다른 페이지가 실행됐거나 … 분기가 목표 명령을 건너뜀」으로 막힘 판정 — 실제 플레이는 열쇠를 줍고 엔딩까지 갔다.)
+    if (segment.kind === "option" && segment.command.kind === "presentItem") {
+      const options = Array.isArray(segment.command.options) ? segment.command.options as { itemId?: unknown }[] : [];
+      const itemId = options[segment.index]?.itemId;
+      if (typeof itemId === "string" && itemId) reqs.push({ kind: "item", id: itemId });
+      continue;
+    }
     if (segment.kind !== "fork") continue;
     if (segment.branch === "then") {
       const leaves = leafRequirements(segment.command.condition, visit.page);
