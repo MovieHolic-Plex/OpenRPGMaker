@@ -10,7 +10,7 @@ import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
 import { createAiSuggestionPeek } from "./aiSuggestionPeek";
-import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
+import { focusEditorRegion, navigateToEditorReference } from "@/editor/editorReferenceNavigation";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { readLatestRunCheckpoint } from "@/ai/runCheckpointStore";
 import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
@@ -28,7 +28,12 @@ import {
   peekPreviousProject,
   revertToHistoryMarker,
   undoMapEdit,
+  applyProjectWithHistory,
 } from "@/editor/mapEditHistory";
+import { createChangeSummaryCard, type ChangeItemKind } from "@/editor/panels/aiChangeSummaryCard";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
+import type { DatabaseTab } from "@/editor/panels/database";
+import { showConfirm } from "@/editor/ui/modal";
 import {
   clearAiApplyCompletion,
   completionUndoIsCurrent,
@@ -354,6 +359,10 @@ let activeAiChatPanelCleanup: (() => void) | null = null;
 // 패널이 띄운 비동기 저장·복원 작업. 대화 기록이 IndexedDB 로 가면서 «렌더 직후» 에는 아직 복원이
 // 안 끝나 있다 — 테스트·헤드리스 하네스는 이걸로 정착을 기다린다.
 const panelPendingWork = createPendingWorkTracker();
+
+const CHANGE_ITEM_DATABASE_TAB: Readonly<Record<ChangeItemKind, DatabaseTab | undefined>> = {
+  map: undefined, event: undefined, actor: "actors", item: "items", enemy: "enemies", skill: "skills", equipment: "equipment",
+};
 
 // 바로 깔기 주문 대기열은 패널보다 오래 산다(스튜디오 장면 추가마다 패널이 다시 만들어진다).
 // 실제 러너·스토어 배선은 여기서 한 번 건다. 대기열 모듈은 스토어를 import 하지 않는다.
@@ -901,6 +910,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   const showPiChangeReceipt = (input: PiChangeReceipt, targetCard?: AiWorkCard): void => {
     // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
+    const summary = createChangeSummaryCard(input.before, input.after, {
+      getCurrent: () => store.getCurrent(),
+      commit: (project, label) => applyProjectWithHistory(project, label),
+      reveal: (item) => {
+        const tab = CHANGE_ITEM_DATABASE_TAB[item.kind];
+        if (tab) { openDatabaseModalLazy(tab); return; }
+        if (!item.mapId) return;
+        if (item.at) focusEditorRegion({ mapId: item.mapId, x: item.at.x, y: item.at.y, w: 1, h: 1 }, { highlight: true });
+        else navigateToEditorReference({ kind: "map", mapId: item.mapId });
+      },
+      confirmOverwrite: (item) => showConfirm({ title: "손으로 고친 내용이 있어요", message: `조수가 끝난 뒤 「${item.label}」을(를) 직접 고쳤어요. 되돌리면 그 손편집도 함께 사라져요.`, confirmLabel: "그래도 되돌리기", danger: true }),
+    });
+    if (summary) { log.append(summary); followConversationLog(log); }
     if (!input.mapId) return;
     const preview: ChangePreviewInput = {
       before: input.before,
