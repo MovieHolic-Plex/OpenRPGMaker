@@ -1685,6 +1685,13 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
   (`createFlagshipDemoProject(id).project` 를 `npx vite-node --script` 로 덤프). 세트에 넣고 그 체크포인트만 돌려 PNG 를 눈으로
   확인한 뒤 커밋한다. 체크포인트가 통과해도 그림이 그 단계가 아니면 거짓이다 — 샷을 연다.
 
+- **VQA 가 «보이는 것»만 판정하게 한다 (2026-11-05, 폴른 스타 1.36 VQA #1·#2·#6·#21).** `readPlayState` 는 `testids`(DOM 에 있는 전부)와 별도로
+  `visibleTestids`(숨김이 아니고 상자가 0 이 아닌 것)를 준다. 손 슬롯·목표 카드는 설계상 숨는 때가 많아 `testids` 만 보면
+  «선언됐는데 안 보인다» 거짓 양성이 난다 — 시각 판정은 `visibleTestids` 를 쓴다.
+  전투 진입 프레임: `.battle-scene` 의 `data-battle-entry` 가 `covering`(진입 막이 닫혀 있거나 첫 그림이 준비되기 전) → `revealed`(막이 걷힘)로 바뀐다.
+  `covering` 동안의 검은 프레임은 진행 불가가 아니라 설계된 진입 연출이다 — 판정에서 빼고, `revealed` 뒤에도 명령창이 안 뜨면 그때 결함으로 본다.
+  (1.36 의 «전투 진입 검은 화면» 두 건은 이 구간 한 프레임이었다: 실측 타임라인 flash 340ms → close 260ms → reveal, 명령창은 그 뒤 약 0.9초에 뜬다.)
+
 좁은 예외는 `scripts/qa/testplay-recovery-browser-qa.mts` 하나다. 편집기 **테스트 플레이**
 경로의 게이트라 편집기 셸을 통과한다. 결함이 톱바 `mode-play` 뒤의 저장·예비검사·복구 흐름에
 있어 `player.html` 로는 진입할 수 없기 때문이다. 살아 있는 WebGL 캔버스를 `drawImage` /
