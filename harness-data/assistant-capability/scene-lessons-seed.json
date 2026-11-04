@@ -840,6 +840,21 @@
     "no new arrow, glow or hint line is added to say where to hide",
     "in the shipped player, a frame next to a bunk shows no yellow examine marker over it, and a frame taken 5 seconds after hiding shows no bottom prompt band"
    ]
+  },
+  {
+   "id": "patrol-walks-steady",
+   "label": "막사 순찰병: 걸음마다 서지 않고 고르게 걷고, 끝에서만 멈춰 두리번거린다",
+   "port": 19545,
+   "lessons": [
+    "patrol-steps-chain",
+    "pause-only-at-turns"
+   ],
+   "prompt": "막사에서 순찰병 둘이 오가는데 한 칸 휙 옮기고 잠깐 서고, 또 한 칸 휙 옮기고 서. 쫓을 때 빠르기는 그대로 두고, 순찰할 때는 칸 사이에 서지 않고 고르게 걷다가 끝에 닿았을 때만 멈춰서 두리번거리게 해 줘.",
+   "requirements": [
+    "the patrols keep their make_chase_scene waypoints, lookAround and set_field_detection chaseStepMs (chase pace unchanged)",
+    "the patrol route has no wait between two consecutive move steps; waits appear only at the waypoint ends",
+    "in a 1x video of the shipped player, a patrol crossing at least 5 cells never stands still between cells for more than 60ms, and stands still for at least 600ms only at the ends"
+   ]
   }
  ]
 }

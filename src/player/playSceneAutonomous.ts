@@ -222,7 +222,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       }
       // 쫓는 추격자는 걸음이 끝난 그 프레임에 다음 칸을 뗀다(남은 시간을 이어받아 칸 경계에서 서지 않는다).
       const chaseGlide = mover.strategy === "chase" && mover.chaseActive === true && !mover.chaseTarget && !mover.kite;
-      if (!routeForced && !(strolling && strollChainPending(mover)) && !chaseGlide) continue;
+      // 순찰하는 추격자도 다음 명령이 또 걸음이면 서지 않고 잇는다 — 칸마다 결정 간격만큼 서던 「걸음마다 쉬는 순찰」(폴른 스타 B1·B2, 2026-11-04).
+      const patrolChain = mover.strategy === "chase" && !chaseGlide && patrolStepChains(mover);
+      if (!routeForced && !(strolling && strollChainPending(mover)) && !chaseGlide && !patrolChain) continue;
       // 이번 프레임 시간은 걸음과 추격 판정(위)이 이미 썼다 — 이어지는 결정에서 두 번 세지 않는다.
       if (chaseGlide) chaseDeltaMs = 0;
     } else {
@@ -253,7 +255,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       mover.timer += Math.max(0, deltaMs);
       if (mover.timer < (mover.routeWaitMs ?? 0)) continue;
       mover.routeWaitMs = 0;
-    } else if (!(strolling && strollChainPending(mover))) {
+    } else if (!(strolling && strollChainPending(mover)) && !(mover.strategy === "chase" && patrolStepChains(mover))) {
       mover.timer += Math.max(0, deltaMs);
       if (mover.timer < mover.moveIntervalMs * (strolling ? mover.pauseScale ?? 1 : 1)) continue;
     }
@@ -930,6 +932,18 @@ function routeDetourBlocked(scene: AutonomousNpcSceneContext, eventId: string, m
   if (path === null) return;
   if (path.length === 0) { mover.step = detour.resumeStep; mover.routeDetour = undefined; return; }
   detour.moves = path;
+}
+
+/**
+ * 순찰 중인 추격자(경로가 있고 지금 쫓지 않는다)가 방금 한 칸을 걸었고 다음 명령도 걸음이면 true — 칸 경계에서 서지 않고 잇는다.
+ * 끝에서 멈춰 서기·고개 돌리기(경로의 wait·turn)는 그대로 쉰다. 쫓는 동안은 chaseGlide 가 맡는다.
+ */
+function patrolStepChains(mover: AutonomousMover): boolean {
+  const n = mover.moves.length;
+  if (mover.chaseTarget || mover.chaseActive === true || n === 0 || mover.step <= 0 || mover.routeDetour) return false;
+  if (!mover.repeat && mover.step >= n) return false;
+  // 바로 앞 명령이 걸음이었고(쉼·돌아보기 뒤가 아니다) 다음도 걸음일 때만.
+  return mover.moves[(mover.step - 1) % n]?.kind === "move" && mover.moves[mover.step % n]?.kind === "move";
 }
 
 function completeRouteCommand(mover: AutonomousMover): void {
