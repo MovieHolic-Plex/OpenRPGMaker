@@ -29,6 +29,7 @@ import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { withFrozenTowns } from "./fallen/frozenTowns";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { applyFallenDisplayNames } from "./fallen/displayNames";
 import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
 import { applyFallenBattleDepth, applyFallenGrowthCurves } from "./fallen/battleDepth";
 import { swOn, fadeOut } from "./firstLoveKit";
@@ -2519,6 +2520,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStoryIndex(project);
   // pixelfx 코드 픽셀 효과 — 기술·필드·이야기 한 번 효과를 id 로 찾아 덧붙인다(fallen/pixelfx.ts). 맨 끝.
   applyFallenPixelFx(project);
+  // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
+  applyFallenDisplayNames(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
