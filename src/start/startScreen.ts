@@ -23,7 +23,12 @@ import { getLocale, initI18n, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { START_PLAY_URL, writeStartScreenIntent } from "./startIntent";
 import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
-import { launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
+import { conceptProjectTitle, launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
+import { createPromptHome, type PromptHome } from "./firstRun/promptHome";
+import { firstRunBrief, firstRunTitle, pickFirstRunPreset } from "./firstRun/firstRunBrief";
+import { conceptBrief } from "@/concepts/brief";
+import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import { createConceptSource } from "@/concepts/source";
 // 게임 파일 읽기·직렬화는 번들 타일셋(80MB)을 끌고 오므로 «게임 파일 열기» 를 누를 때만 받는다 — 첫 화면 번들에 넣지 않는다.
 import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
@@ -383,6 +388,46 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       refreshAiStatus();
     }
   };
+  // ── 첫 사용자 프롬프트 홈(보이는 게임 0개) ───────────────────────────────
+  // 보낼 때 AI 연결을 묻는다. 연결되면 문장 → 컨셉 초안 → 기획, 거절했거나 초안이 실패하면 낱말로 장르를 고른 기획으로
+  // 그래도 폴더를 만든다 — 빈 화면으로 되돌리지 않는다. 편집기는 연결을 기다렸다가 이어 짓는다(projectInterviewStartup).
+  const submitFirstRun = (text: string): Promise<void> => run(async () => {
+    if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+    const preset = pickFirstRunPreset(text);
+    const connected = await ensureAiConnected(NEW_PROJECT_CHOICES.find((choice) => choice.id === preset)?.label ?? firstRunTitle(text));
+    let brief: GameDesignBrief = firstRunBrief(text, preset);
+    let title = firstRunTitle(text);
+    if (connected) {
+      try {
+        // 초안은 편집기 AI 모듈을 끌고 온다 — 보낼 때만 받는다(첫 화면 번들을 키우지 않게).
+        const concept = await (await import("@/concepts/draft")).draftConceptFromText(text);
+        brief = conceptBrief(concept, "");
+        title = conceptProjectTitle(concept);
+      } catch (error) {
+        console.warn("[start] 컨셉 초안을 만들지 못해 낱말로 장르를 골랐습니다:", error);
+      }
+    }
+    await launcherBriefHandler(bridge, {
+      ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: text,
+    })(brief, title);
+  });
+  let promptHome: PromptHome | null = null;
+  const isFirstRun = (): boolean => state.loaded && partitionRecentEntries(state.entries).visible.length === 0;
+  const promptShown = (): boolean => promptHome?.element.parentElement === host;
+  const showPromptHome = (): void => {
+    promptHome ??= createPromptHome({
+      submit: submitFirstRun,
+      openLocale: () => openSettings("general"),
+      builtin: () => go("builtin"),
+      openFolder,
+      blank: createBlank,
+    });
+    if (promptShown()) return;
+    host.replaceChildren(promptHome.element, errorBox);
+    promptHome.focus();
+  };
+  const showShell = (): void => { if (shell.element.parentElement !== host) host.replaceChildren(shell.element, errorBox); };
+
   /** 「새로 만들기」 칸 맨 위 — AI 엔진이 없을 때만 안내가 들어간다. */
   const createLead = el("div", { class: "hm-create-lead" });
   const renderCreateLead = (): void => { createLead.replaceChildren(...(state.aiReady ? [] : [aiNotice(actions)])); };
@@ -481,7 +526,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   /** 칸을 상태에서 그려 틀에 꽂는다. */
   const mount = (section: StartSection): void => {
+    // 보이는 게임이 없으면 홈 칸 대신 레일 없는 프롬프트 홈. 목록을 다 읽기 전(!state.loaded)에는 자리표 — 기존 사용자에게 비치지 않게.
+    if (section === "home" && isFirstRun()) {
+      host.dataset.view = "first-run";
+      showPromptHome();
+      return;
+    }
     host.dataset.view = section;
+    showShell();
     shell.setActive(section === "join" ? null : section);
     if (section === "create") {
       renderCreateLead();
@@ -533,8 +585,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   function refresh(what: "entries" | "lineup" | "ai"): void {
     const section = state.section;
     if (what === "ai") { if (section === "create") renderCreateLead(); return; }
-    if (section === "home") renderHomeSection();
-    else if (section === "games" && what === "entries") renderGamesSection();
+    if (section === "home") {
+      if (isFirstRun() !== promptShown()) mount("home");
+      else if (!promptShown()) renderHomeSection();
+    } else if (section === "games" && what === "entries") renderGamesSection();
   }
   // 마우스 뒤로 단추·Alt+← — 칸 기록을 따라간다. 바꿀 수 없는 때(만드는 중)면 지금 칸을 다시 기록에 둔다.
   window.addEventListener("popstate", (event) => {

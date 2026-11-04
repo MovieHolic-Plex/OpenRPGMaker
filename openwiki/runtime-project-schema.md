@@ -153,6 +153,17 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 첫 화면은 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
 명령줄에 `project.sqlite` 가 있는 폴더, 또는 그 파일 자체를 넘기면 이 홈을 건너뛰고 그 프로젝트를 연다 — `openwiki/architecture.md` 「명령줄 프로젝트 폴더」.
 
+**2026-11-03 첫 사용자 프롬프트 홈(P1, 제안 http://mdc-server:18301/oprn-first-run-proposal/).** 최근 목록을 다 읽었고(`state.loaded`)
+보이는 게임이 0개(`partitionRecentEntries(entries).visible.length === 0`, 임시·사라진 폴더는 센다지 않는다)면 `#home` 칸 대신
+레일 없는 전체 화면 `src/start/firstRun/promptHome.ts`(+ `.css`, `fr-` 접두, 편집기 새 토큰·`base/theme.css` 다크)을 올린다(`mount`·`refresh` 의 `isFirstRun`).
+읽는 동안은 예전 자리표라 기존 사용자에게 비치지 않는다. 게임이 있으면 아래 라이브러리 홈 그대로(아래 「처음이라면 먼저 해 보세요」 배너는 이제 `#home` 에서는 안 보인다).
+제목·입력창(Enter 보내기, Shift+Enter 줄바꿈, 400자)·예시 칩 4개·「만들기 시작」·오른쪽 위 언어(설정 「일반」 탭)·아래 「먼저 기본 게임 해 보기」(`#builtin`)·「폴더 열기」·「빈 프로젝트」.
+보내면 `ensureAiConnected`(지연 로드) → 연결되면 `draftConceptFromText`(지연 로드) → `conceptBrief`. 「나중에」거나 초안이 실패하면
+`firstRunBrief.ts` 가 낱말로 장르 틀을 고르고(`pickFirstRunPreset`, 기본 모험 JRPG) 문장을 기획 요약 첫 줄·「핵심 경험」(사용자 원문)에 싣는다 — 그래도 폴더를 만든다.
+`launcherBriefHandler` 의 `allowWithoutAi` 는 이 경로만 켜고(컨셉 카드 경로는 거절하면 여전히 아무것도 만들지 않는다), 인계에 `intent`(문장)와
+`firstBuild: true` 를 싣는다. 편집기 부팅 로더(`public/boot-splash.js`, `index.html` `.oprn-boot-first`)는 이 표시가 있으면 문장과 「세계를 펼치는 중」을 보인다(읽기만, textContent).
+확정 기획이 있으므로 편집기는 문장을 따로 조수에게 보내지 않고 기획 경로(`generationPending` → `prepareProjectInterviewStartup`)로 간다. 참고 그림·라이브 빌드 화면은 P2·P3.
+
 **2026-10-21 칸 나누기(사용자 신고 「왼쪽 버튼 누르면 상태 관리 엉망 · 홈은 지금 만들 수 있는 것만」).** 10-20 판은 한 긴 본문을 레일 단추로 스크롤했고
 스크롤 위치가 레일 표시를 다시 정했다. 실측 결함: (1) 누르자마자 표시가 「홈」으로 되돌아갔다가 스크롤이 끝나야 맞음, (2) 컨셉 상세·검색어가
 다른 단추를 눌러도 남음, (3) 검색어를 치면 격자가 줄어 스크롤이 당겨지고 표시가 「내 게임」으로 튐, (4) AI 상태가 바뀌면 홈 전체를 다시 그림,

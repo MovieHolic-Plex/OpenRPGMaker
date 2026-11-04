@@ -140,6 +140,20 @@
         animation: oprn-boot-reveal 0s linear 60s forwards;
       }
       @keyframes oprn-boot-reveal { to { opacity: 1; visibility: visible; } }
+      /* 첫 빌드(public/boot-splash.js data-first-build): 시작 화면에 적은 문장을 로고 아래에 두고, 팁 줄은 거둔다. */
+      #oprn-boot-loader .oprn-boot-first { display: none; }
+      #oprn-boot-loader[data-first-build]:not([data-failed]) .oprn-boot-first {
+        display: block;
+        max-width: min(100% - 32px, 36rem);
+        margin: 4px 0 2px;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.45;
+        text-align: center;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+      }
+      #oprn-boot-loader[data-first-build] .oprn-boot-lines { display: none; }
       #oprn-boot-loader .oprn-boot-retry {
         display: inline-block;
         text-decoration: none;
@@ -263,6 +277,7 @@
         </svg>
         <span>OPRN Studio</span>
       </div>
+      <p class="oprn-boot-first"></p>
       <div class="oprn-boot-text">앱 불러오는 중…</div>
       <ol class="oprn-boot-steps" aria-hidden="true">
         <li data-state="active"></li>

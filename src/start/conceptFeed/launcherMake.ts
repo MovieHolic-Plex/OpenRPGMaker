@@ -29,18 +29,31 @@ export function launcherMakeHandler(bridge: OprnBridgeStart, deps: LauncherMakeD
 }
 
 /** 확정 기획 하나로 만들기 — 컨셉 카드와 빠른 인터뷰(src/start/quickInterview)가 같이 쓴다. */
-export function launcherBriefHandler(bridge: OprnBridgeStart, deps: Omit<LauncherMakeDeps, "made">): (brief: GameDesignBrief, title: string) => Promise<boolean> {
+export type LauncherBriefDeps = Omit<LauncherMakeDeps, "made"> & {
+  /**
+   * 첫 사용자 프롬프트 홈(src/start/firstRun) 전용: AI 연결을 거절해도 폴더·기획을 만든다.
+   * 편집기는 연결을 기다렸다가 이어 짓는다(src/editor/projectInterviewStartup.ts).
+   */
+  readonly allowWithoutAi?: boolean;
+  /** 첫 빌드 표시 — 부팅 로더가 이 문장과 「세계를 펼치는 중」을 보인다(public/boot-splash.js). */
+  readonly firstBuildText?: string;
+};
+
+export function launcherBriefHandler(bridge: OprnBridgeStart, deps: LauncherBriefDeps): (brief: GameDesignBrief, title: string) => Promise<boolean> {
   return async (base, rawTitle) => {
     const label = NEW_PROJECT_CHOICES.find((choice) => choice.id === base.presetId)?.label ?? rawTitle;
     // 연결을 거절하면 폴더를 만들지 않는다 — 빈 폴더만 남기고 편집기로 가면 「아무 일도 안 일어났다」가 된다.
-    if (!(await deps.ensureAiConnected(label))) return false;
+    // 첫 사용자 경로는 기획이 있어 연결 뒤 이어 지을 수 있으므로 막지 않는다.
+    if (!(await deps.ensureAiConnected(label)) && !deps.allowWithoutAi) return false;
     const title = rawTitle.trim().slice(0, 80) || "새 게임";
     const brief = { ...base, generationPending: true };
     const suggested = await bridge.suggestProjectDir?.({ title }).catch(() => null);
     const created = await bridge.createProject({ title, ...(suggested?.projectDir ? { projectDir: suggested.projectDir } : {}) });
     if (!created) throw new Error("새 게임 폴더를 만들지 못했습니다.");
+    const firstBuildText = deps.firstBuildText?.trim() ?? "";
     writeStartScreenIntent(deps.storage, {
-      projectDir: created.projectDir, title, choiceId: base.presetId, intent: "", startMode: "ai", screenSize: "wide", gameDesignBrief: brief,
+      projectDir: created.projectDir, title, choiceId: base.presetId, intent: firstBuildText, startMode: "ai", screenSize: "wide", gameDesignBrief: brief,
+      ...(firstBuildText ? { firstBuild: true } : {}),
     });
     deps.goEditor();
     return true;
