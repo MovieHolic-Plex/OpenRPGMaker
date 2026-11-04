@@ -656,10 +656,11 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-m);
   box-shadow: var(--shadow-modal);
-  height: min(820px, calc(100dvh - 48px));
+  /* 목업 창은 1200×790 이다 — 1440×900 화면에서 가장자리 32px 까지 번지지 않고 가운데에 앉는다. */
+  height: min(790px, calc(100dvh - 48px));
   inset: auto;
   max-height: calc(100dvh - 32px);
   max-width: calc(100vw - 32px);
   place-self: center;
-  width: min(1440px, calc(100vw - 64px));
+  width: min(1200px, calc(100vw - 64px));
 }
