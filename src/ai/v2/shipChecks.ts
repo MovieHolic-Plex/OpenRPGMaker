@@ -593,7 +593,10 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
-/** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
+/**
+ * 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다, 싸우는데 회복할 길이 없다, 첫 화면(제목·오프닝)이 편집기 기본이다.
+ * 기본 HUD·창·전투 곡 같은 나머지 마감 항목은 여기서 보지 않는다(플레이를 막거나 첫인상을 깨지 않는다).
+ */
 export const WHOLE_GAME_REKICKS = 3;
 export function unbuiltGameSigns(project: Project, _task: string): string[] {
   const out: string[] = [];
@@ -606,6 +609,13 @@ export function unbuiltGameSigns(project: Project, _task: string): string[] {
   if (!Object.values(project.maps).some((map) => !isBlankCanvasMap(map))) out.push("플레이할 맵이 없다 — 손대지 않은 빈 시작 맵뿐이다");
   const skeletonEvents = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((ev) => PLACEHOLDER_NAMES.has(String(ev.name ?? "").trim())).map((ev) => `「${ev.name}」(${m.name})`));
   if (skeletonEvents.length && !real.length) out.push(`뼈대 이벤트가 그대로다: ${skeletonEvents.slice(0, 3).join(" · ")}`);
+  // 실측(2026-11-05 gpt-only-game, Terra 혼자): 엔딩까지 지은 게임도 실제 플레이에서 막혔다 — 「마을부터」는 숲길 슬라임 조우에 회복 수단이 0이라
+  // 두 번째 전투에서 게임 오버, 판타지·고양이는 첫 화면이 기본 오프닝(「강을 낀 왕국…」), 마을은 타이틀이 「새 프로젝트」였다. v2 끝맺음은 이것을 채우지만 v1 은 못 본다.
+  const sites = battleSites(project);
+  if (sites.length && !healingSources(project).length) out.push(`전투가 있는데(${sites.slice(0, 2).join(", ")}) 회복 수단이 하나도 없다 — 몇 번 싸우면 게임 오버다. place_savepoint{mapId:시작 맵, heal:true} 나 set_session_start{inventory:{item_potion:3}} 로 회복 길을 넣는다`);
+  for (const left of editorDefaultsLeft(project)) {
+    if (left.id === "title-name" || left.id === "opening") out.push(left.message);
+  }
   return out;
 }
 export function wholeGameRekickPrompt(missing: readonly string[]): string {

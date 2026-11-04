@@ -8,7 +8,7 @@ import references from '@/assets/openingReferences.json';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { findCharsetAsset } from '@/assets/charsetCatalog';
 import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex, type CharsetDirection } from '@/assets/easyrpgRtp';
-import { isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
+import { defaultOpeningSequence, isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
 import { openingMapViewCrop, openingMapViewMapId, openingMapViewResourceId } from '@/project/openingMapView';
 type Shot = Extract<CinematicScene, { kind: 'animatic' }>;
 function text(v: unknown, label: string): string { if (typeof v !== 'string' || !v.trim()) throw new ToolError(label + ' 문자열이 필요합니다.', { code: 'invalid-args' }); return v.trim(); }
@@ -395,7 +395,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const id = text(args.shotId, 'shotId'), duration = Number(args.durationMs), opening = structuredClone(trackSequence(p, track) ?? { enabled: true, skippable: true, scenes: [] });
     const existing = opening.scenes.findIndex(s => s.id === id); if (existing >= 0 && args.replace !== true) throw new ToolError('기존 샷입니다. 명시적 replace:true 필요.', { code: 'scene-exists' });
     if (existing >= 0 && args.clearLayers !== true) throw new ToolError('기존 샷의 레이어를 지우려면 clearLayers:true를 명시하세요. 아니면 새 shotId를 사용하세요.', { code: 'replace-would-erase-layers' });
-    if (!opening.scenes.some(sc => sc.kind === 'animatic') && opening.scenes.every(sc => sc.kind === 'text' && isTitleCardNarration(sc.narration, p.system?.titleScreen?.title ?? p.meta?.title))) {
+    if (!opening.scenes.some(sc => sc.kind === 'animatic') && opening.scenes.every(sc => (sc.kind === 'text' && isTitleCardNarration(sc.narration, p.system?.titleScreen?.title ?? p.meta?.title)) || isFactoryOpeningScene(sc))) {
       opening.scenes = [];
     }
     const width = Number(args.width ?? 1280), height = Number(args.height ?? 720);
@@ -679,13 +679,36 @@ export function openingCameraZoomWarning(camera: OpeningAnimatic['camera'] | und
 }
 
 /**
+ * 새 프로젝트 씨앗이 넣은 기본 오프닝(kingdom-prologue) 장면 그대로인가 — 그림·글이 둘 다 같아야 한다.
+ * 실측(2026-11-05 gpt-only-game, Terra 혼자 고양이 탐험): 이어 짓기가 「기본 오프닝이 남았다」고 알려 샷 6개를 새로 만들었지만 기본 장면 4개 뒤에 붙어
+ * 새 게임을 누르면 여전히 「강을 낀 왕국…」이 먼저 떴다. 첫 애니메틱 샷을 만들 때 손대지 않은 기본 장면은 제목 카드처럼 치운다.
+ */
+function isFactoryOpeningScene(scene: CinematicScene): boolean {
+  if (scene.kind !== 'image' || typeof scene.resourceId !== 'string') return false;
+  const key = `${scene.resourceId}|${scene.narration ?? ''}`;
+  return defaultOpeningSequence().scenes.some(sc => sc.kind === 'image' && `${sc.resourceId}|${sc.narration ?? ''}` === key);
+}
+
+/**
  * camera.x/y/zoom/rotation 에 키 배열([{atMs,value}])을 직접 넣은 호출을 keys 로 옮긴다 — 첫 키 값이 시작 값이다.
  * 실측(2026-11-05 gpt-only-game, Terra 혼자 학교 연애): camera.x 에 배열을 넣어 세 번 연속 「camera.x: number required」로 거절돼 오프닝 카메라가 빠졌다.
  */
 function cameraKeyArraysToKeys(raw: Record<string, unknown>): Record<string, unknown> {
   const camera: Record<string, unknown> = { ...raw };
-  const keys: Record<string, unknown> = { ...((raw.keys as Record<string, unknown> | undefined) ?? {}) };
+  // 실측(2026-11-05 고양이 탐험): keys 를 시간마다 한 칸인 배열([{atMs,x,y,zoom}])로 보내 「camera.keys.0: unsupported field」로 거절됐다 — 속성별 트랙으로 돌린다.
+  const frames = Array.isArray(raw.keys) && raw.keys.length && raw.keys.every((f) => f && typeof f === 'object' && typeof (f as { atMs?: unknown }).atMs === 'number')
+    ? raw.keys as Record<string, unknown>[] : undefined;
+  const keys: Record<string, unknown> = frames ? {} : { ...((raw.keys as Record<string, unknown> | undefined) ?? {}) };
   let moved = false;
+  if (frames) {
+    for (const k of ['x', 'y', 'zoom', 'rotation']) {
+      const track = frames.filter((f) => typeof f[k] === 'number').map((f) => ({ atMs: f.atMs as number, value: f[k] as number, ...(typeof f.ease === 'string' ? { ease: f.ease } : {}) }));
+      if (!track.length) continue;
+      keys[k] = track;
+      if (typeof camera[k] !== 'number') camera[k] = track[0]!.value;
+    }
+    moved = true;
+  }
   for (const k of ['x', 'y', 'zoom', 'rotation']) {
     const value = camera[k];
     if (!Array.isArray(value) || !value.length || !value.every((key) => key && typeof key === 'object' && typeof (key as { value?: unknown }).value === 'number')) continue;
