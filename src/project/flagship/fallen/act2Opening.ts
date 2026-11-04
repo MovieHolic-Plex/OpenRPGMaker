@@ -25,6 +25,7 @@ import { applyFallenAct2Tower } from "./act2Tower";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
+import act2TitleCard from "./backdrops/act2-title.json";
 import { primeWavePlaces, ASH_SPOTS, COURT_SPOTS, DAWN_SPOTS, ICE_SPOTS, FS2_ICE_LAKE_ID, WAVE_ASH_PLAIN, WAVE_ICE_AGE_FIELD, WAVE_MOUNTAIN_FORTRESS, WAVE_RUINED_VILLAGE } from "./act2Places";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
@@ -36,6 +37,8 @@ type Rec = Record<string, unknown>;
 const KAEL = FS_NAMES.hero;
 const ELENA = FS_NAMES.mage;
 const RINO = "리노";
+const IRIS = FS_NAMES.android;
+const VALEN = FS_NAMES.inquisitor;
 
 // ── id ─────────────────────────────────────────────────────────────────
 export const FS2_CELL_ID = "fs2_cell";
@@ -90,6 +93,18 @@ const CELL_ROOM = {
     { id: "shackles", x: 5, y: 1 },
     { id: "shackles", x: 8, y: 1 },
     { id: "drip puddle", x: 4, y: 5 },
+    // 감방이 한 면으로 읽혔다(B1 검수 2026-11-04: 「감방이 단조롭다」) — 구석마다 다른 것을 둔다:
+    // 흩어진 짚·거미줄·금 간 벽·녹은 촛농(감방), 물동이·돌 걸상(복도), 열쇠 꾸러미·술 탁자·무기 상자(간수실).
+    { id: "straw pile", x: 3, y: 5 }, // 5,3 은 앞줄 죄수 모자 위에 얹혀 보였다(argon 검수 2026-11-04)
+    { id: "straw pile", x: 11, y: 5 },
+    { id: "cobweb", x: 1, y: 1 },
+    { id: "cracked wall", x: 11, y: 1 },
+    { id: "candle stubs", x: 1, y: 3 },
+    { id: "stone bench", x: 2, y: 8 },
+    { id: "water bucket", x: 11, y: 8 },
+    { id: "key ring hook", x: 18, y: 1 },
+    { id: "table:mug+bottle", x: 17, y: 7 },
+    { id: "weapon crate", x: 19, y: 7 },
     { id: "iron gate", x: CELL.gate.x, y: CELL.gate.y },
     { id: "stairs up stone", x: CELL.stairs[0]!.x, y: CELL.stairs[0]!.y },
     { id: "wall torch", x: 14, y: 1 },
@@ -98,6 +113,8 @@ const CELL_ROOM = {
     { id: "barrel", x: 19, y: 5 },
   ],
   lines: [{ id: "bars", cells: Array.from({ length: 12 }, (_, i) => ({ x: i + 1, y: 6 })).filter((c) => c.x !== CELL.gate.x) }],
+  // 간수실은 판석 — 감방·복도의 젖은 돌과 갈린다.
+  zones: [{ x0: 14, y0: 1, x1: 19, y1: 9, floor: "flag" }],
 };
 
 // ── 막사 평면(28×15) ─────────────────────────────────────────────────────
@@ -324,6 +341,8 @@ function cellMap(project: Project, exec: Exec): GameMap {
   });
   const map = M(project, FS2_CELL_ID);
   (map as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  // 제2막 막 제목 카드(코드 손 그림 backdrops/draw_act2_title.py) — 여는 장면이 showPicture 로 띄운다.
+  exec(project, "upsert_resource", { resource: act2TitleCard.resource });
   // 횃불 둘만 밝다 — 감방 쪽은 거의 어둡다.
   exec(project, "set_lighting_volume", {
     mapId: FS2_CELL_ID, ambient: 0.5, color: "#0b0f1a", applyMode: "map",
@@ -331,6 +350,8 @@ function cellMap(project: Project, exec: Exec): GameMap {
       { id: "t1", at: { x: 14, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
       { id: "t2", at: { x: 19, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
       { id: "grate", at: { x: 7, y: 2 }, radius: 3, intensity: 0.35, color: "#8fa6d8" },
+      // 감방 구석의 녹은 촛농 — 쇠창살 안쪽에도 작은 불 한 점.
+      { id: "stub", at: { x: 1, y: 3 }, radius: 1.6, intensity: 0.55, color: "#ffc070", flicker: true },
     ],
   });
   return map;
@@ -355,16 +376,41 @@ function cellEvents(map: GameMap): void {
       // B11 렌즈 대기실에서 다시 합류한다(act2Tower changeParty add).
       { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
       fadeOut(1),
-      wait(600),
-      narrate("제2막 「빌린 불」", { position: "center", context: "narration" }),
+      wait(700),
+      // 붙잡히던 밤의 회상 — 1막 끝 「…잡아라」 와 감방 사이를 잇는다(1막→2막 연결 검수 2026-11-04: 크레딧 뒤 곧장 감방이라
+      // 어떻게 갇혔는지가 빠졌다). 어둠 위 네 줄. 하넬의 「작은 것부터」 가 빵 속 열쇠(「작은 일들이 먼저 대답을 해」)로 이어진다.
+      se("cc0-se-orp-inventory-cloth"),
+      narrate("손목에 밧줄이 감겼다.", { position: "center", context: "narration" }),
+      say(IRIS, "카엘…!"),
+      say(VALEN, "아이는 따로 모셔라.\n선생님은 천문대에."),
+      say(HANEL, "…별을 세거라, 카엘. 작은 것부터."),
+      wait(900),
+      // 막 제목 카드 — 1막 끝 카드와 같은 꼴(작은 머리글·큰 제목·금빛 밑줄)의 그림 한 장. 대화창에 띄우지 않는다.
+      // 화면 효과(페이드)는 다음 「멈추는」 명령 뒤 화면 갱신 때 칠해진다 — 페이드 바로 뒤 wait(1) 로 그 자리에서 칠하게 한다.
+      // 없으면 「fadeIn → wait → fadeOut」 의 fadeIn 이 한 번도 칠해지지 않아 카드가 검은 막 밑에 묻혔다(QA 2026-11-04 탐침).
+      { kind: "showPicture", pictureId: "fs2_act2_title_9", resourceId: act2TitleCard.resource.id, x: 0, y: 0, scale: 100, opacity: 255, waitForPicture: false } as unknown as Command,
+      fadeIn(1400),
+      wait(1),
+      wait(3000),
+      fadeOut(1000),
+      wait(1),
+      wait(1100),
+      { kind: "erasePicture", pictureId: "fs2_act2_title_9" } as unknown as Command,
       wait(300),
       narrate("이튿날 밤, 심문회 초소 지하.", { position: "center", context: "narration" }),
-      fadeIn(1200),
+      // 첫 장면 — 카엘이 젖은 바닥에 엎어져 있다가 몸을 일으킨다.
+      m2("m2-225-sprite-look", { target: "player", pose: "fallen" }),
+      fadeIn(1400),
+      wait(1),
+      wait(1500),
       se("cc0-se-osx-splash-01"),
-      wait(500),
+      wait(600),
+      se("cc0-se-orp-inventory-cloth"),
+      m2("m2-225-sprite-look", { target: "player", reset: true }),
+      wait(300),
       emote("player", "ellipsis", 900),
-      say(ELENA, "…이리스가 없어.\n발렌이 따로 데려갔어."),
-      say(KAEL, "선생님은 천문대에 갇히셨대.\n간수들이 떠드는 걸 들었어."),
+      say(ELENA, "이리스가 없어!"),
+      say(KAEL, "선생님도."),
       se("cc0-se-osx-door-open"),
       route(rinoId, [{ kind: "setThrough", enabled: true }, ...walk(toGate), { kind: "setThrough", enabled: false }, { kind: "turn", dir: "up" }]),
       say(RINO, "저녁이다. …토마 아저씨가 구운 거다."),
@@ -398,7 +444,7 @@ function cellEvents(map: GameMap): void {
         setSw(SW_KEY),
         narrate("「빵 속 감방 열쇠」를 얻었다.", { context: "system" }),
         say(ELENA, "토마 아저씨…!\n「꼭꼭 씹어라」가 이 뜻이었구나."),
-        say(KAEL, "선생님 말씀이 맞았어.\n작은 일들이 먼저 대답을 해."),
+        say(KAEL, "선생님 말씀이 맞았어. 작은 것부터.\n작은 일들이 먼저 대답을 해."),
       ], { priority: "same" }),
       page(`${id}_after`, "짚 침대", [sw(SW_KEY)], [narrate("빵 부스러기만 남았다.")], { priority: "same" }),
     ]);
@@ -512,6 +558,9 @@ function barracks(project: Project, exec: Exec): void {
       caughtPenalty: caught,
       // 침상(2층 침대) 앞에서 조사하면 밑으로 숨는다 — 숨는 걸 못 본 순찰병은 지나간다.
       ...(g.hides ? { hidingSpots: BARRACKS.nooks.slice(0, 3).flatMap((n) => [n.x0, n.x0 + 1, n.x0 + 2, n.x0 + 3].map((x) => ({ x, y: 3 }))) } : {}),
+      // 숨을 곳 위 ▼ 표식은 달지 않는다 — 침상이 숨을 곳이라는 건 엘레나의 「침상 그늘이면 안 보여」와 침상 모양이 말한다
+      // (B1 검수 2026-11-04: 표식·늘 떠 있는 「숨어 있음」 띠가 손잡이였다).
+      hidingMarkers: false,
       checkpointOnEntry: false,
       mood: false,
     }) as { eventId?: string } | undefined;
@@ -592,7 +641,7 @@ function barracks(project: Project, exec: Exec): void {
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
       say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
       se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
-      narrate("「회복약」 5개, 「마력약」 2개,\n「만병통치약」 1개를 챙겼다.", { context: "system" }),
+      narrate("「회복약」 5개, 「마력약」 2개,\n「만능약」 1개를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀어 올렸다."),
@@ -827,7 +876,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       // 잔 일 Q4 「꺼진 등」 — 기사들이 거둬 간 집집 등을 몰래 문고리에 다시 건다(계획 4-6).
       { name: "문틈(다시)·꺼진 등", conditions: [sw(SW_MIRE)], commands: [
         say(MIRE, "우물로 가렴. 등불 든 순찰병 앞으론 가지 말고."),
-        say(MIRE, "…하나만 더 부탁하자.\n기사들이 집집 등을 죄다 거둬 갔어."),
+        say(MIRE, "하나만 더 부탁하자.\n기사들이 집집 등을 죄다 거둬 갔어."),
         say(MIRE, "이 등 셋, 문고리에 몰래 걸어 줄래?\n불은 안 켜도 돼. 걸려만 있으면 다들 알아들어."),
         say(MIRE, "서쪽 끝 별지기 할아버지 댁,\n장터 옆 약방, 천문대 곁 리사네 집."),
         say(MIRE, "셋 다 창이 캄캄할 거야.\n등을 뺏긴 집이거든."),
@@ -862,7 +911,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
         item(FS_SILVER_SPOON, 1),
         narrate("「은수저」를 받았다.", { context: "system" }),
         say(TOBY, "별한테 줄 선물. 이번엔 형이 갖다 줘."),
-        say(KAEL, "…응. 꼭 전할게."),
+        say(KAEL, "응. 꼭 전할게."),
         setSw(SW_SPOON),
       ] },
       { name: "기둥 뒤(다시)", conditions: [sw(SW_SPOON)], commands: [say(TOBY, "엄마가 깨기 전에 들어가야 해. 형도 조심해.")] },
@@ -918,12 +967,16 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   exec(project, "build_hand_interior_room", {
     mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
     floor: "wetstone", wall: "dungeonw", ceiling: "dark",
-    objects: [{ id: "wall torch", x: 5, y: 1 }, { id: "wall torch", x: 9, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 }],
+    // 승강 장치가 기계로 읽히게(B3 검수 2026-11-04: 「발판 한 장이라 기계로 안 읽힌다」) — 발판(6..7,4..5) 바로 위 벽면에 도는 톱니,
+    // 곁에 감는 고패·쇠사슬 더미·계기판·레버. 발판 칸과 그 앞 칸(6..7,6)은 비워 둔다.
+    objects: [{ id: "wall torch", x: 4, y: 1 }, { id: "wall torch", x: 10, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 },
+      { id: "gear wall", x: 6, y: 1 }, { id: "gauge panel", x: 8, y: 1 },
+      { id: "gate winch", x: 8, y: 4 }, { id: "anchor chain", x: 5, y: 5 }, { id: "wall lever", x: 9, y: 1 }],
   });
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
-    sources: [{ id: "t1", at: { x: 5, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 9, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
+    sources: [{ id: "t1", at: { x: 4, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 10, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
       // 승강 발판 — 위(천문대)에서 새는 푸른 별빛. 발판이 어둠에 묻혀 안 보였다(2026-10-29 결함 목록).
       { id: "lift", at: { x: SHAFT.lift.x + 1, y: SHAFT.lift.y + 1 }, radius: 2.5, intensity: 0.7, color: "#9fb8ff" }],
   });
@@ -984,7 +1037,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     cutBegin(),
     emote("ev_fs2_obs_hanel", "exclamation", 700),
     say(HANEL, "…밑으로 올 줄 알았다.\n정문으로 왔으면 혼쭐을 냈을 게다."),
-    say(ELENA, "선생님! 이리스가──"),
+    say(ELENA, "선생님! 이리스가…"),
     say(HANEL, "안다. 발렌이 쇠 마차에 태워 북쪽으로 데려갔지."),
     say(HANEL, "서른 해 전, 둘째 아이에게 대답한 건\n숲에 드나들던 젊은 것 셋이었다.\n나, 브람, 그리고 세린."),
     say(HANEL, "세린은 나보다 별 이름을 잘 외웠다.\n대답하자고 먼저 말한 것도 세린이었지."),
@@ -1106,7 +1159,7 @@ function northGateEvents(project: Project, exec: Exec): void {
   addEv(project, FS2_SMITHY_ID, "ev_fs2_smithy_rohan", ROHAN, SMITHY.rohan, [
     page("ev_fs2_smithy_rohan_p", "로한(창)", [], [
       cutBegin(),
-      say(ROHAN, "…왔구나. 하넬이 보낼 줄 알았다."),
+      say(ROHAN, "왔구나. 하넬이 보낼 줄 알았다."),
       say(ROHAN, "약속한 몫이다. 별쇠를 섞었다."),
       se("cc0-se-orp-inventory-cloth"),
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
@@ -1550,7 +1603,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     wait(2400),
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.8, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
-    say("순찰병", "…숲지기 땅이다. 더는 못 들어가.", top),
+    say("순찰병", "숲지기 땅이다. 더는 못 들어가.", top),
     // 물러나며 꺼진다 — 얼굴은 숲 쪽 그대로 다섯 걸음 뒷걸음질, 걸음마다 흐려져 끝에 0(들고 있던 등불도 같이 꺼진다).
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
       ...[0, 1, 2, 3, 4].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -51 }])], i === allIds.length - 1)),
@@ -1917,7 +1970,7 @@ function dawnwellEvents(project: Project): void {
       narrate("이 집만 무너지지 않았다.\n빗장이 바깥에 걸려 있다."),
       narrate("문 아래쪽, 아이 키 높이에 작은 주먹 자국 셋."),
       say(ELENA, "문이 바깥에서 잠겨 있었어.\n안에 있던 사람이 못 나오게."),
-      say(KAEL, "…마을부터 둘러보자."),
+      say(KAEL, "마을부터 둘러보자."),
     ]),
     page("ev_fs2_dawn_door_open", "빗장을 연다", [...allMems, sw(SW_CERT, false)], [
       cutBegin(),
@@ -2497,7 +2550,7 @@ function fortressEvents(project: Project, exec: Exec): void {
     page("ev_fs2_fort_cell_run", "깬다", [sw(SW_SARAH_LOST)], [
       fadeIn(900),
       narrate("차가운 돌바닥. 요새 감방이다."),
-      say(ELENA, "…창살이 열려 있어. 일부러 안 잠갔나 봐."),
+      say(ELENA, "창살이 열려 있어. 일부러 안 잠갔나 봐."),
       say(KAEL, "한 번 더 가 보자. 이번엔 개부터."),
       setSw(SW_SARAH_LOST, false),
       setSw(SW_ON_WALL, false),
@@ -2606,7 +2659,7 @@ function snowPass(project: Project, exec: Exec): void {
   if (!fire) throw new Error("[fallen-star act2] 고개 모닥불 자리가 없다");
   exec(project, "configure_party_bonds", {
     members: [
-      { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "…이리스 몫까지 세 줘."] },
+      { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "이리스 몫까지 세어 줘."] },
       { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 망치를 쥐라고 했어. 난 창을 골랐고.\n…그 뒤로 서로 말을 잘 안 했지.", "발렌 님이 날 북문에 세우면서 그러더라.\n「고개 들어라」. …아버지가 하던 말인데."] },
     ],
     // 모닥불과 여관 밤(B8 여관 주인)이 같은 장면을 쓴다 — 어느 불가에도 맞는 한 줄.

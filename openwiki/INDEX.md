@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7968KB / 약 2,341,581 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7972KB / 약 2,342,853 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 718KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4650 | ~211,017 |
 | `openwiki/editor-ai-tools.md` | 627KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4056 | ~183,995 |
-| `openwiki/editor-database.md` | 458KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,655 |
+| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,745 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 83KB | 33KB | 340 | ~23,089 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
@@ -39,11 +39,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/object-gate.md` | 89KB | 12KB | 642 | ~26,964 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~32,956 |
-| `openwiki/runtime-battle.md` | 456KB | 32KB | 2509 | ~134,049 |
+| `openwiki/runtime-battle.md` | 457KB | 32KB | 2516 | ~134,469 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
-| `openwiki/runtime-pre-edit-routing.md` | 213KB | 103KB ⚠상한 초과 — 절을 더 쪼개라 | 1264 | ~63,457 |
+| `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,046 |
 | `openwiki/runtime-project-schema.md` | 266KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1834 | ~75,297 |
-| `openwiki/runtime-sessions.md` | 175KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,140 |
+| `openwiki/runtime-sessions.md` | 176KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,313 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 266KB | 48KB | 2413 | ~75,025 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
@@ -109,7 +109,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 22 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 3 | `capture.png`, `facts.json`, `reference.png` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -1024,7 +1024,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4014` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
 - `L4053` 일정표 도구 (upsert_schedule)
 
-### `openwiki/editor-database.md` — 458KB · 2681줄 · ~134,655 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-database.md` — 459KB · 2681줄 · ~134,745 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 - `L29` 대사 탭 화면 다듬기 (2026-10-27, 독립 검수 지적 4건)
@@ -2801,7 +2801,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 456KB · 2509줄 · ~134,049 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 457KB · 2516줄 · ~134,469 토큰 · 통째읽기 잘림
 
 - `L1` pixelfx 코드 효과 애니메이션 (2026-10-31)
 - `L7` 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)
@@ -2924,6 +2924,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2469` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
 - `L2479` 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
 - `L2490` 결투 규칙 — TroopRecord.duel (2026-10-30)
+- `L2510` 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 58KB · 352줄 · ~15,674 토큰 · 통째읽기 잘림
 
@@ -2944,7 +2945,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L335` 그림 컷 준비와 direction (2026-10-04)
 - `L343` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 213KB · 1264줄 · ~63,457 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 215KB · 1271줄 · ~64,046 토큰 · 통째읽기 잘림
 
 - `L1` 이식 아틀라스 워커 굽기(#3963)는 되돌렸다 — 텍스처 등록만 `addImage` (2026-10-30)
 - `L13` 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
@@ -2954,36 +2955,36 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L93` ★ 기물 뒤에 가려진 주인공 실루엣 (2026-10-29)
 - `L104` 도트 게임은 정수 배율로 보인다 (2026-10-30)
 - `L118` 작은 방은 화면을 채운다 · 어둠 막은 맵 안에만 (2026-10-28)
-- `L149` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
-- `L166` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
-- `L747` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L776` 맵별 16/32/48px 좌표
-- `L780` ESC skill thumbnails (2026-09-06)
-- `L791` Recovered head emotes (2026-09-05)
-- `L797` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L805` 가구 밀기 애니메이션 (2026-09-05)
-- `L814` Recovered head emotes (2026-09-05)
-- `L820` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L841` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L870` 맵 배경 다중 레이어 (2026-09-21)
-- `L922` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
-- `L970` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
-- `L1015` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
-- `L1043` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
-- `L1051` 8차 맵 진입 (2026-09-28)
-- `L1084` 화면 주변 타일 유지 (2026-10-01)
-- `L1113` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-- `L1125` Independent opening timelines
-- `L1129` Monster authoring dogfood (2026-10-03)
-- `L1140` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
-  - `L1147` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
-- `L1164` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
-  - `L1195` 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
-- `L1207` 엔딩 카드 글자는 게임 언어 (2026-10-22)
-- `L1221` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
-  - `L1232` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
-- `L1244` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L1258` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
+- `L154` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
+- `L171` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+- `L754` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L783` 맵별 16/32/48px 좌표
+- `L787` ESC skill thumbnails (2026-09-06)
+- `L798` Recovered head emotes (2026-09-05)
+- `L804` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L812` 가구 밀기 애니메이션 (2026-09-05)
+- `L821` Recovered head emotes (2026-09-05)
+- `L827` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L848` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L877` 맵 배경 다중 레이어 (2026-09-21)
+- `L929` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L977` 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
+- `L1022` 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
+- `L1050` 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+- `L1058` 8차 맵 진입 (2026-09-28)
+- `L1091` 화면 주변 타일 유지 (2026-10-01)
+- `L1120` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+- `L1132` Independent opening timelines
+- `L1136` Monster authoring dogfood (2026-10-03)
+- `L1147` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+  - `L1154` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+- `L1171` 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+  - `L1202` 초상이 준비된 뒤에 창을 연다 · 양쪽 초상이면 선택지는 가운데 (2026-10-30, 이세계 고딩 리뷰)
+- `L1214` 엔딩 카드 글자는 게임 언어 (2026-10-22)
+- `L1228` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+  - `L1239` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+- `L1251` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L1265` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
 ### `openwiki/runtime-project-schema.md` — 266KB · 1834줄 · ~75,297 토큰 · 통째읽기 잘림
 
@@ -3091,7 +3092,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1822` 상태의 부위 손실·전투 오라 (2026-10-27)
 - `L1826` 효과음 자리 표 `system.seCues` (2026-10-30)
 
-### `openwiki/runtime-sessions.md` — 175KB · 943줄 · ~48,140 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 176KB · 943줄 · ~48,313 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)

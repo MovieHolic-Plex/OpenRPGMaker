@@ -47,7 +47,7 @@ import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
-import { normalizeActorRecord } from "@/project/actorModel";
+import { floorActorExperience, normalizeActorRecord } from "@/project/actorModel";
 import { nextSessionRandom } from "@/project/session";
 // 데미지 숫자·파티클·텔레그래프·스윙 아크는 **타일 중앙**(characterSpriteX)이 맞다 —
 // 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 적 스프라이트를 다시 놓는
@@ -888,6 +888,8 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
     const recipients = rewardActorIds(project, scene.session.partyActorIds, scene.session.partyActorIds);
     for (const actorId of recipients) {
       const gained = expForRewardActor(enemy.exp, scene.session.actorLevels[actorId] ?? 1, undefined, project.system.rewardPolicy);
+      // 턴제 전투 보상 적립과 같은 바닥에서 더한다 — 저장 EXP 0 에 더하면 Lv14 동료도 누적 전체를 다시 모아야 했다(ultrabrain #4216 검토).
+      floorActorExperience(project, scene.session, actorId);
       scene.session.actorExperience[actorId] = (scene.session.actorExperience[actorId] ?? 0) + gained;
       if (applyActorLevelUp(scene.session, project, actorId)) leveledUp = true;
     }

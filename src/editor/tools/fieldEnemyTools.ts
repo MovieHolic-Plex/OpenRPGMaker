@@ -355,6 +355,19 @@ export function chaseStepTiming(stepMs: number): { speed: number; moveIntervalMs
 }
 
 /**
+ * 순찰 한 칸 시간(ms)에 가장 가까운 걸음 빠르기(speed 1~7). 같은 거리면 느린 쪽 — 잠입에서 순찰이 몰래 빨라지지 않게.
+ * 런타임은 이어지는 순찰 걸음을 칸 사이에 서지 않고 잇는다(playSceneAutonomous patrolStepChains) — 한 칸 = 걸음 그림 시간.
+ */
+export function patrolWalkSpeed(patrolMs: number): number {
+  let best = 1;
+  for (let rank = 1; rank <= 7; rank += 1) {
+    // 같은 거리면 앞(느린 쪽)을 둔다.
+    if (Math.abs(npcMoveDurationMs(rank) - patrolMs) < Math.abs(npcMoveDurationMs(best) - patrolMs)) best = rank;
+  }
+  return best;
+}
+
+/**
  * 추격 페이지의 시야·박자·놀람·기억을 바꾼다(나머지는 그대로). 순찰 경로가 있으면 칸 사이 쉼을 늘려 순찰 걸음은 예전 빠르기를 지킨다
  * — 추격만 빨라지고 시야 밖 순찰이 같이 빨라지지 않게.
  */
@@ -381,8 +394,12 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
     // 멈춤이라 같은 시간만큼 새 박자로 옮긴다 — 예전엔 쉼을 다 지워 순찰이 끝에서 멈추지 않고 곧장 돌아섰다(2026-10-29 막사 잠입).
     const stepWaits = moves.filter((m, i) => (m as { kind?: string }).kind === 'wait' && (moves[i - 1] as { kind?: string } | undefined)?.kind === 'move').length;
     if (next.route && steps > 0) {
-      const patrolMs = before.duration + (stepWaits / steps) * before.interval;
-      const perStep = Math.max(1, Math.ceil((patrolMs - npcMoveDurationMs(timing.speed)) / timing.moveIntervalMs));
+      // 순찰 한 칸은 예전 빠르기 그대로, 칸 사이에 서지 않고 그 시간 동안 걷는다. 예전엔 추격 박자에 맞춘 빠른 걸음(80ms) 뒤에
+      // 쉼을 여럿 붙여 빠르기를 맞췄다 — 칸마다 휙 옮겨 가 0.3초씩 서는 「걸음마다 오래 쉬는 순찰」이었다(폴른 스타 B1 막사, 2026-11-04 실측
+      // 걸음 80ms·섬 320ms). 이제 걸음 뒤 쉼을 빼고 걸음 그림 시간(speed)을 순찰 한 칸으로 둔다. 쫓는 빠르기는 chaseStepMs 가 따로 정한다
+      // (런타임은 쫓을 때 chaseStepMs 로 미끄러진다). 예전 런타임 한 칸 = 걸음 그림 + 명령마다 결정 간격 한 번(걸음 자신 + 걸음 뒤 쉼들).
+      const patrolMs = before.duration + (1 + stepWaits / steps) * before.interval;
+      next.speed = patrolWalkSpeed(patrolMs);
       const perPause = Math.max(1, Math.round(before.interval / timing.moveIntervalMs));
       const rebuilt: typeof moves = [];
       let stepBeat = false;
@@ -395,7 +412,6 @@ export function applyFieldDetection(movement: EventPageMovement, tuning: FieldDe
         }
         rebuilt.push(m);
         stepBeat = kind === 'move';
-        if (kind === 'move') for (let i = 0; i < perStep; i += 1) rebuilt.push({ kind: 'wait' } as (typeof moves)[number]);
       }
       next.route = { ...next.route, moves: rebuilt };
     }
