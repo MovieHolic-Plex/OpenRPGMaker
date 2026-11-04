@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 8002KB / 약 2,351,714 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 8003KB / 약 2,351,913 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 197KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1227 | ~57,926 |
-| `openwiki/editor-validation.md` | 62KB | 16KB | 415 | ~17,605 |
+| `openwiki/editor-validation.md` | 63KB | 17KB | 417 | ~17,804 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
 | `openwiki/harnesses/assistant-capability.md` | 61KB | 8KB | 397 | ~18,807 |
@@ -141,7 +141,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/i18n.md` | 1 | `docs/terminology/product-terminology.md` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 8 | `-x2.png`, `.css`, `.empty.json`, `scripts/tmp-jp-gen.mts`, `src/ai/modernTilesetPolicy.ts`, `town-x3.png`, `verify-shots/jp-city/editor-town-full.png`, `verify-shots/jp-city/town-1x.png` |
-| `openwiki/licensing.md` | 2 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md` |
+| `openwiki/licensing.md` | 3 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md`, `node_modules/phaser/LICENSE.md` |
 | `openwiki/location-layer-affordance-audit.md` | 2 | `src/styles/editor/map-location-layer.css`, `verify-shots/loc-draw-cta/SUMMARY.md` |
 | `openwiki/modern-campus-interior.md` | 1 | `modernCampusInteriorSpec.json` |
 | `openwiki/modern-campus.md` | 8 | `campus_layout.py`, `campus_props.py`, `mc_core.py`, `preview/_all-x4.png`, `props_a.py`, `props_b.py`, `props_c.py`, `src/assets/modernCampusLayouts.json` |
@@ -1422,27 +1422,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L5` Storage chest authoring
 
-### `openwiki/editor-validation.md` — 62KB · 415줄 · ~17,605 토큰 · 통째읽기 잘림
+### `openwiki/editor-validation.md` — 63KB · 417줄 · ~17,804 토큰 · 통째읽기 잘림
 
 - `L5` 스크립트 effects 를 읽는 검증기 (2026-10-31)
 - `L13` 계단 입구 검사 `stair-*` (2026-10-22)
 - `L17` 장면 다듬기 경고 `scene-*` (2026-10-21)
-- `L68` 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
-- `L76` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
-- `L113` AI blocked-event relocation recovery (2026-09-06)
-- `L207` AI 타일 후검증 (2026-09-05)
-- `L212` 이벤트 초안 검증 표면 (2026-08-28)
-- `L217` event-unreachable lint rule (2026-08-27)
-- `L224` P2 생활 시스템 무결성 (2026-08-25)
-- `L229` 생활 저작 표면 집중 검증 (2026-08-24)
-- `L245` AI editor-wide tool validation (2026-08-25)
-- `L251` Roguelike run validation (2026-08-24)
-- `L258` Validation Expectations
-- `L282` Desktop UI integration matrix (2026-08-11)
-- `L292` Event editor aggregate gate (2026-07-30)
-- `L301` P2 spatial integrity (2026-08-25)
-- `L308` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
-  - `L354` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
+- `L70` 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
+- `L78` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
+- `L115` AI blocked-event relocation recovery (2026-09-06)
+- `L209` AI 타일 후검증 (2026-09-05)
+- `L214` 이벤트 초안 검증 표면 (2026-08-28)
+- `L219` event-unreachable lint rule (2026-08-27)
+- `L226` P2 생활 시스템 무결성 (2026-08-25)
+- `L231` 생활 저작 표면 집중 검증 (2026-08-24)
+- `L247` AI editor-wide tool validation (2026-08-25)
+- `L253` Roguelike run validation (2026-08-24)
+- `L260` Validation Expectations
+- `L284` Desktop UI integration matrix (2026-08-11)
+- `L294` Event editor aggregate gate (2026-07-30)
+- `L303` P2 spatial integrity (2026-08-25)
+- `L310` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
+  - `L356` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
 ### `openwiki/editor-workflows-misc.md` — 91KB · 636줄 · ~25,541 토큰 · 통째읽기 잘림
 

@@ -67,6 +67,8 @@ import {
 } from "@/player/characterDepth";
 // ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
+import { applySeatedPose } from "@/player/seatedPoseRender";
+import { isSeatedGraphic } from "@/project/seatedPose";
 import { keptEventOpacity } from "@/player/eventOpacityOverrides";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
@@ -167,6 +169,9 @@ interface RenderedEventSprite extends RenderedTileImage {
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
   setScale(value: number): void;
+  readonly scaleY?: number;
+  readonly frame?: { readonly realHeight?: number; readonly realWidth?: number };
+  setCrop?(x: number, y: number, width: number, height: number): unknown;
   /** 저작 섞기 방식. 테스트 스텁에는 없을 수 있다. */
   setBlendMode?(value: number): unknown;
   /** 경로가 남긴 불투명도를 다시 입힌다. 테스트 스텁에는 없을 수 있다. */
@@ -926,7 +931,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const signature = [texture, scene.textures?.get?.(texture), spriteTexture?.frame, spriteTexture?.fitSize, spriteTexture?.charset,
       spriteTexture?.origin?.x, spriteTexture?.origin?.y,
       authoredPattern, overrideFrame, view.page?.graphic.scale, view.page?.graphic.scaleMode,
-      size, referenceSize, view.priority, view.page?.graphic.blendMode];
+      size, referenceSize, view.priority, view.page?.graphic.blendMode, view.page?.graphic.pose];
     const blendMode = phaserBlendMode(view.page?.graphic.blendMode);
     let marker = scene.eventSprites.get(event.id);
     const previous = marker && eventGraphicSignatures.get(marker);
@@ -953,6 +958,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     setCharacterBaseOrigin(marker, spriteTexture?.origin);
     placeCharacterSprite(marker, view.priority);
     marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterSizeFactor(scene.map)));
+    if (isSeatedGraphic(view.page?.graphic) && marker.scaleY !== undefined) applySeatedPose(marker as Parameters<typeof applySeatedPose>[0], size);
     scene.eventSprites.set(event.id, marker);
     orderedSprites.push([event.id, marker]);
   }
