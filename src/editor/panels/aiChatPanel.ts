@@ -31,7 +31,13 @@ import {
   undoMapEdit,
   applyProjectWithHistory,
 } from "@/editor/mapEditHistory";
-import { createChangeSummaryCard, type ChangeItemKind } from "@/editor/panels/aiChangeSummaryCard";
+import { createChangeSummaryCard, type ChangeItem, type ChangeItemKind } from "@/editor/panels/aiChangeSummaryCard";
+import { createCreationFeed, type CreationFeed } from "@/editor/panels/aiCreationCards";
+import { changeItemThumbnail } from "@/editor/panels/aiChangeThumbnails";
+import { announceAiPlacement } from "@/editor/aiPlacementPop";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import type { DatabaseTab } from "@/editor/panels/database";
 import { showConfirm } from "@/editor/ui/modal";
@@ -42,7 +48,8 @@ import {
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
+import type { ChangeSummary, MapId, Project, TilesetDef } from "@/project/types";
+import type { DatabaseCollection } from "@/editor/databaseActions";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
@@ -364,8 +371,22 @@ let activeAiChatPanelCleanup: (() => void) | null = null;
 const panelPendingWork = createPendingWorkTracker();
 
 const CHANGE_ITEM_DATABASE_TAB: Readonly<Record<ChangeItemKind, DatabaseTab | undefined>> = {
-  map: undefined, event: undefined, actor: "actors", item: "items", enemy: "enemies", skill: "skills", equipment: "equipment",
+  map: undefined, event: undefined, actor: "actors", item: "items", enemy: "enemies", skill: "skills", equipment: "equipment", state: "states", music: "system",
 };
+
+/** 「바뀐 것」·생성 카드의 열기 — 자료집 항목은 그 탭의 그 기록에서, 이벤트는 이벤트 편집기, 맵은 그 자리. */
+function openChangeItem(item: ChangeItem, options: { readonly eventEditor: boolean }): void {
+  const tab = CHANGE_ITEM_DATABASE_TAB[item.kind];
+  if (tab) {
+    if (tab !== "system") setSelectedRecordId(tab as DatabaseCollection, item.id, { reveal: true });
+    openDatabaseModalLazy(tab);
+    return;
+  }
+  if (!item.mapId) return;
+  if (item.kind === "event" && options.eventEditor) { openEventEditorModal(item.mapId as MapId, item.id); return; }
+  if (item.at) focusEditorRegion({ mapId: item.mapId, x: item.at.x, y: item.at.y, w: 1, h: 1 }, { highlight: true });
+  else navigateToEditorReference({ kind: "map", mapId: item.mapId });
+}
 
 // 바로 깔기 주문 대기열은 패널보다 오래 산다(스튜디오 장면 추가마다 패널이 다시 만들어진다).
 // 실제 러너·스토어 배선은 여기서 한 번 건다. 대기열 모듈은 스토어를 import 하지 않는다.
@@ -437,6 +458,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let disposed = false;
   let canvasProgress: AiCanvasProgress | null = null;
   let liveStatus: AiLiveStatus | null = null;
+  let creationFeed: CreationFeed | null = null;
   // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
   // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
   let heavyWireWarmupScheduled = false;
@@ -604,6 +626,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 진행을 그리게 되어 같은 거짓말이 반대 방향으로 난다.
     if (!ownerless) workCard = card;
     return card;
+  };
+  const changeUndoDeps = {
+    getCurrent: () => store.getCurrent(),
+    commit: (project: Project, label: string) => applyProjectWithHistory(project, label),
+    confirmOverwrite: (item: ChangeItem) => showConfirm({ title: "손으로 고친 내용이 있어요", message: `조수가 끝난 뒤 「${item.label}」을(를) 직접 고쳤어요. 되돌리면 그 손편집도 함께 사라져요.`, confirmLabel: "그래도 되돌리기", danger: true }),
   };
   const finishWorkCard = (result: { readonly ok: boolean; readonly message?: string }): void => {
     const card = workCard;
@@ -914,16 +941,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const showPiChangeReceipt = (input: PiChangeReceipt, targetCard?: AiWorkCard): void => {
     // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
     const summary = createChangeSummaryCard(input.before, input.after, {
-      getCurrent: () => store.getCurrent(),
-      commit: (project, label) => applyProjectWithHistory(project, label),
-      reveal: (item) => {
-        const tab = CHANGE_ITEM_DATABASE_TAB[item.kind];
-        if (tab) { openDatabaseModalLazy(tab); return; }
-        if (!item.mapId) return;
-        if (item.at) focusEditorRegion({ mapId: item.mapId, x: item.at.x, y: item.at.y, w: 1, h: 1 }, { highlight: true });
-        else navigateToEditorReference({ kind: "map", mapId: item.mapId });
-      },
-      confirmOverwrite: (item) => showConfirm({ title: "손으로 고친 내용이 있어요", message: `조수가 끝난 뒤 「${item.label}」을(를) 직접 고쳤어요. 되돌리면 그 손편집도 함께 사라져요.`, confirmLabel: "그래도 되돌리기", danger: true }),
+      ...changeUndoDeps,
+      reveal: (item) => openChangeItem(item, { eventEditor: false }),
+      thumbnail: (item) => changeItemThumbnail(input.after, item),
     });
     if (summary) { log.append(summary); followConversationLog(log); }
     if (!input.mapId) return;
@@ -1256,7 +1276,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const startNewConversation = (reason: "manual"): void => {
     workspace.showChat();
     resetConversationState(reason);
-    if (!turnBusy) { liveStatus?.root.remove(); liveStatus = null; }
+    if (!turnBusy) { liveStatus?.root.remove(); liveStatus = null; creationFeed?.root.remove(); creationFeed = null; }
     toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
   };
 
@@ -2195,6 +2215,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     liveStatus = turnLiveStatus;
     composerShell.commandBar.before(turnLiveStatus.root);
     const turnReference = createAiReferenceView({ images: opts?.images ?? [], baseProject: store.getCurrent() });
+    // 만든 것 카드 — 실행 중 체크포인트가 스토어에 들어올 때마다 새 항목을 카드로(aiCreationCards.ts). 한 줄 상태 바로 위에 쌓인다.
+    creationFeed?.root.remove();
+    const turnCreations: CreationFeed = createCreationFeed(store.getCurrent(), {
+      ...changeUndoDeps,
+      open: (item) => openChangeItem(item, { eventEditor: true }),
+      announcePlacement: (project, item) => announceAiPlacement(project, item),
+      reducedMotion: prefersReducedMotion,
+    });
+    creationFeed = turnCreations;
+    turnLiveStatus.root.before(turnCreations.root);
+    const unsubscribeCreations = store.subscribe((project) => turnCreations.observe(project));
     runSurface.turnBusy = true;
     refreshSendEnabled();
     await progress.paint();
@@ -2276,6 +2307,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ...(opts?.polish ? { polish: opts.polish, timeoutMs: opts.polish.budgetMs + 10 * 60_000, maxTurns: Math.max(plan?.maxTurns ?? 0, 40 + 20 * opts.polish.maxRounds) } : {}),
       });
     } finally {
+      unsubscribeCreations();
+      turnCreations.observe(store.getCurrent());
       progress.finish();
       turnLiveStatus.finish();
       turnReference.finish();
