@@ -930,6 +930,9 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_jihu_kon", dirToward(jihuStop, clerkSpot)),
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
+      // 편의점 맵은 화면보다 작아 1배로 두면 두 사람이 점이 되고 선택창이 선반을 덮는다(블라인드 1차) — 두 사람 사이를 배율 2로 잡고,
+      // 갈래가 계산대로 걸어가기 전에 풀어 준다(skill 29).
+      panTo(Math.round((heroTalk.x + jihuStop.x) / 2), heroTalk.y, 900, 2),
       faceHero("ev_fl_jihu_kon"),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
       ifCond(swOn("sw_fl_admitted"),
@@ -941,6 +944,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       choices([
         { text: "(바나나우유 두 개를 계산한다)", then: [
           setSw(SW_MILK, true),
+          panBack(700),
           // 둘이 계산대 앞까지 걸어가고, 점원은 계산하러 온 서하를 보고 묻는다.
           walkRoute(project, FL_MAP.konbini, "@player", heroTalk, registerFront, [jihuStop], true, dirToward(registerFront, clerkSpot)),
           walkRoute(project, FL_MAP.konbini, "ev_fl_jihu_kon", jihuStop, jihuRegister, [registerFront, heroTalk], true, dirToward(jihuRegister, registerFront)),
@@ -959,6 +963,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           ...like(2, "ev_fl_jihu_kon"),
         ] },
         { text: "(하나만 계산하고 가볍게 인사한다)", then: [
+          panBack(700),
           ...say("seoha", "base", "먼저 들어가 보겠습니다. 내일 뵐게요."),
           ...say("jihu", "base", "…네. 조심히 들어가요."),
           // 「먼저 들어가 보겠습니다」 뒤엔 실제로 문 쪽으로 걸어간다(VQA r28: 말만 하고 서 있다가 회상으로 넘어갔다).
