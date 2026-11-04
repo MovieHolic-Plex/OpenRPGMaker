@@ -105,7 +105,10 @@
 .fr-builtin { width: 100%; margin-top: var(--space-6); text-align: left; }
 .fr-builtin-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
 .fr-builtin-title { margin: 0; color: var(--text-3); font-size: var(--font-12); font-weight: var(--font-weight-regular); }
-.fr-builtin-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+/* 목업: 썸네일 세 장 200px, 간격 14px, 「모두 보기」 없음(세 장이 전부다). 링크는 DOM 에 남긴다. */
+.fr-builtin { max-width: 640px; margin-inline: auto; }
+.fr-builtin-head > .fr-link { display: none; }
+.fr-builtin-row { display: grid; grid-template-columns: repeat(3, 200px); justify-content: center; gap: 14px; }
 .fr-bcard {
   display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 0; border: 0;
   background: transparent; color: var(--text-1); font: inherit; text-align: left; cursor: pointer;

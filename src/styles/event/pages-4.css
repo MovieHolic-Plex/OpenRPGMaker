@@ -645,3 +645,12 @@
     content: none;
   }
 }
+
+/* ── 승인 목업(mock-event) 맞춤 — 머리는 이름 · 위치 한 줄, 왼쪽은 네 묶음 ─────────────────────────────
+   초보자가 처음 30분에 쓰지 않는 것은 감춘다. DOM·testid 는 남기고(진단·테스트가 읽는다) 보이기만 걷는다.
+   · 이벤트 ID 칩: 조수·진단에 붙여넣을 때만 필요하다 — 왼쪽 요약 카드의 「고급」 안에 같은 값이 있다.
+   · 「NPC와 일정」 묶음: 목업 왼쪽은 모습·조건·움직임·겹침 넷이다. */
+.event-editor-modal-header .meta > .event-id-readout,
+.event-editor-modal-header .meta > .event-id-readout + .dot-sep,
+.event-editor-modal-header .meta > .dot-sep:has(+ .event-id-readout) { display: none; }
+.event-editor-modal-window [data-testid="evt-rail-group-npc"] { display: none; }
