@@ -5,6 +5,31 @@
 
 <!-- releases -->
 
+## 0.397.0 — 2026-11-05
+
+### 기능
+
+- **start** — 서브화면을 둘러보기 한 화면으로 — 라이트 토큰·탭 셋·카드 ⋯ 메뉴·오른쪽 시트 (Studio/런타임 분리 6/6) (`252b218`)
+- **ai** — 첫 실행 AI 설정을 상태마다 쉬운 카드 한 장으로 — 모델 이름은 「자세히」 안, 주 버튼 하나 (#4283) (`40753c9`)
+- **assistant** — 그림 도안 먼저 — ChatGPT 도안을 빌더 입력으로 (기본 켬) (#4264) (`12226f7`)
+- **assistant** — 참고 그림·도안을 캔버스 옆에 작게 — 지금 짓는 자리 표시 (`73e8b3f`)
+- **assistant** — 끝에 「바뀐 것」 카드 — 종류별 개수, 항목마다 보기·되돌리기 (`8f6711c`)
+- **assistant** — 입력창 위 한 줄 실시간 상태 — 단계 목록과 전/후 작은 그림 (`43e488f`)
+- **assistant** — 조수가 쓰는 맵을 화면이 따라간다 — 맵 열기·바뀐 칸 반짝임·따라가기 알약·PiP (`e0b92ee`)
+
+### 수정
+
+- **first-love,engine,assistant** — 적대 VQA — 차에 막힌 남자 걸음·대화창 하단·옥상 배율·부딪힘 칸 (#4286) (`c2f5ef4`)
+- **battle,runtime** — 1.36 Fallen Star VQA — escape/combo reasons, badges, plate spacing, party MP, status windows, toggle overlaps, shop names, door prompt, VQA harness (#4282) (`d40b035`)
+
+### 잡무
+
+- **gen-kits** — char-gen 6d04f27 - grey paint board, blonde and white keep an outline (#4285) (`3248934`)
+
+### 기타
+
+- 첫사랑 r7 블라인드 4차 — 첫 만남 ∩ 대형·탕비실 QA 접근 방향 (#4275) (`f70d1df`)
+
 ## 0.396.2 — 2026-11-05
 
 ### 수정
