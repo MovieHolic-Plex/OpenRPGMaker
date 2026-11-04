@@ -75,7 +75,8 @@ describe("inn dialog accessibility", () => {
     const { scene } = sceneFixture(0);
     const pending = playInn(scene, { kind: "inn", price: 40 });
     expect(document.querySelector(".runtime-inn-pixel")).not.toBeNull();
-    const press = (key: string) => window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    const overlay = document.querySelector<HTMLElement>("[data-testid='inn-scene']")!;
+    const press = (key: string) => overlay.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
     press("ArrowDown");
     expect(document.querySelector("[data-testid='inn-cancel']")?.getAttribute("aria-current")).toBe("true");
     press("Enter");
