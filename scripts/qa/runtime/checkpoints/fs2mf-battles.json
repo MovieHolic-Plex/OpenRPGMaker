@@ -133,7 +133,6 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_29786021-6408-43e8-8690-448a46a4c5f8",
    "beats": [
     {
      "id": "enter",
@@ -187,7 +186,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_starved_dogs"
   },
   {
    "id": "vault",
@@ -591,7 +591,6 @@
      "level": 13
     }
    ],
-   "startEventId": "ev_field_enemy_3f99a4da-2a17-4a4b-bf9a-4ee957dec215",
    "beats": [
     {
      "id": "enter",
@@ -645,7 +644,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_curfew_patrol"
   },
   {
    "id": "dawnwell",
@@ -677,7 +677,6 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_49297d40-f720-47bd-ac5b-fef9d319cfb6",
    "beats": [
     {
      "id": "enter",
@@ -731,7 +730,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_ash_wisps_pair"
   },
   {
    "id": "ash-field",
@@ -763,7 +763,6 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_0bc75703-642c-4df4-b09d-786e8e8f6d03",
    "beats": [
     {
      "id": "enter",
@@ -817,7 +816,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_cinder_golem"
   },
   {
    "id": "fort-court",
@@ -849,7 +849,6 @@
      "level": 16
     }
    ],
-   "startEventId": "ev_field_enemy_31d435d6-9dc9-4499-82aa-cc78dc652bba",
    "beats": [
     {
      "id": "enter",
@@ -903,7 +902,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_fort_dogs_out"
   },
   {
    "id": "fortress",
@@ -935,7 +935,6 @@
      "level": 16
     }
    ],
-   "startEventId": "ev_field_enemy_643c51d9-feff-41e6-997c-1b00ac6d56ee",
    "beats": [
     {
      "id": "enter",
@@ -989,7 +988,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_fort_knights"
   },
   {
    "id": "snow-road",
@@ -1021,7 +1021,6 @@
      "level": 17
     }
    ],
-   "startEventId": "ev_field_enemy_31fa6591-3199-4bf4-8cb9-8b1a577989fd",
    "beats": [
     {
      "id": "enter",
@@ -1075,7 +1074,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_frost_wolves"
   },
   {
    "id": "snow-pass",
@@ -1107,7 +1107,6 @@
      "level": 17
     }
    ],
-   "startEventId": "ev_field_enemy_61e094d5-8df5-4e86-8177-f7631b874d51",
    "beats": [
     {
      "id": "enter",
@@ -1161,7 +1160,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_frost_wolves"
   },
   {
    "id": "ice-lake",
@@ -1193,7 +1193,6 @@
      "level": 18
     }
    ],
-   "startEventId": "ev_field_enemy_142fe0af-4ff9-4b2b-b50b-c92ad9052e34",
    "beats": [
     {
      "id": "enter",
@@ -1247,7 +1246,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_frost_wolves_lake"
   },
   {
    "id": "sky-tower",
@@ -1280,7 +1280,6 @@
      "level": 19
     }
    ],
-   "startEventId": "ev_field_enemy_2b7cef16-d75e-4f15-a648-bf17b5727497",
    "beats": [
     {
      "id": "enter",
@@ -1334,7 +1333,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_tower_sentinel"
   },
   {
    "id": "glade",
