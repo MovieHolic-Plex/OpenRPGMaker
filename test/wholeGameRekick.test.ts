@@ -53,6 +53,26 @@ describe("whole-game rekick signs", () => {
     expect(heal).toHaveLength(1);
     expect(heal[0]).toContain("회복 수단이 하나도 없다");
   });
+  // 2026-11-05 round 4: zombie survival lost its exit event to a dungeon rebuild (ending left, nothing triggers it);
+  // the village had endless forest encounters and one chest potion as its only heal.
+  it("an ending nobody triggers and one-shot healing against random encounters count as unbuilt", () => {
+    const p = createBlankProject() as Project;
+    finishFirstScreen(p);
+    p.endings = [{ id: "ending_rescue", name: "새벽의 구조", conditions: [], priority: 0 }];
+    const map = p.maps[p.startMapId!]!;
+    map.events.push({ id: "ev_sign", name: "표지판", x: 2, y: 2, pages: [] } as never);
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘").some((s) => s.includes("어떤 이벤트도 부르지 않는다"))).toBe(true);
+    map.events.push({ id: "ev_exit", name: "출구", x: 3, y: 3, pages: [{ commands: [{ kind: "triggerEnding", endingId: "ending_rescue" }] }] } as never);
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+    (map as { encounterTable?: unknown; encounterRate?: number }).encounterTable = [{ troopId: p.database.troops[0]!.id, weight: 1 }];
+    (map as { encounterRate?: number }).encounterRate = 18;
+    p.session.inventory = { ...p.session.inventory, item_potion: 1 };
+    const signs = unbuiltGameSigns(p, "좀비 생존 게임 만들어줘");
+    expect(signs).toHaveLength(1);
+    expect(signs[0]).toContain("회복은 한 번 주는 것뿐");
+    map.events.push({ id: "ev_rest", name: "쉬터", x: 4, y: 4, pages: [{ commands: [{ kind: "recoverAll" }] }] } as never);
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+  });
   it("a request ending in …게임으로 is a whole game; an edit that mentions 게임 is not", () => {
     expect(wantsWholeGame("마을 하나 만들어줘. 거기서 시작하는 모험 게임으로")).toBe(true);
     expect(wantsWholeGame(`마을 하나 만들어줘. 거기서 시작하는 모험 게임으로${INTENT_NOTE_BOUNDARY}[새로하기 오프닝·타이틀] …`)).toBe(true);
