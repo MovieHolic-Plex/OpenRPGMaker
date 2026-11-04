@@ -8,7 +8,10 @@
 .editor-layout .map-sidebar-section .map-sidebar-list { padding: 0 2px 6px; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header { margin: 6px 0 2px; padding: 0 8px; min-height: 24px; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header h3 { font: 500 11.5px/1.2 var(--font-ui); color: var(--text-3); }
-.editor-layout .map-sidebar-section .map-tree-panel .map-tree-title { color: var(--text-3); }
+.editor-layout .map-sidebar-section .map-tree-panel .map-tree-title { color: var(--text-3); font-weight: 500; }
+/* 목업 「맵」은 갈매기 없는 작은 회색 글자다 — 접기 토글은 DOM 에 남기고 갈매기·테두리만 감춘다(누르면 접힌다). */
+.editor-layout .map-sidebar-section .map-tree-panel .map-tree-section-toggle { font-weight: 500; font-size: 11.5px; padding: 0; height: 24px; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-tree-section-toggle > span:first-child { display: none; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-count { color: var(--text-3); opacity: 0; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action { opacity: 0; width: 24px; height: 24px; min-width: 24px; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header:hover .map-tree-count,
@@ -17,24 +20,33 @@
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header:focus-within .map-tree-header-actions .map-tree-action { opacity: 1; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action.has-text .map-tree-action-text { display: none; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action.has-text { width: 24px; padding: 0; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item { min-height: 28px; color: var(--text-2); }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item { min-height: 28px; color: var(--text-2); padding: 0 8px; column-gap: 0; font-weight: 400; }
+/* 목업 행은 갈매기와 이름 사이가 8px 하나다 — 접어 둔 손잡이·썸네일 칸이 간격을 더하지 않게 간격은 이름 쪽에서 준다. */
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-copy { margin-left: 8px; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-name { font-weight: 400; color: inherit; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item:not(.map-root) { margin-left: calc(var(--map-depth, 1) * 18px - 10px); width: calc(100% - var(--map-depth, 1) * 18px + 10px); }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item:hover { background: var(--bg-hover); }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item.active { background: var(--bg-active); color: var(--text-1); }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item.active { background: var(--accent-muted); color: var(--text-1); }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item.active .map-tree-meta { display: none; }
+/* 목업 갈매기는 10px 회색 삼각형(▾ 펼침 · ▸ 접힘)이다 — 전용 아이콘의 굵은 V 자 대신 글자 삼각형을 그린다. */
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-toggle { color: var(--text-3); }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-toggle > span::after { content: none; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-toggle > span { font-size: 10px; line-height: 16px; text-align: center; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-toggle[aria-expanded="true"] > span::before { content: "▾"; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-toggle[aria-expanded="false"] > span::before { content: "▸"; }
 /* 목업 행은 갈매기 + 이름뿐이다. 손잡이·「시작」 표식은 자리를 비우고(DOM·testid 는 남는다), 썸네일은 올렸을 때만, 행 메뉴 ⋮ 도 올렸을 때만.
    격자 칸은 map-panel.modern.css 의 6칸(갈매기·손잡이·썸네일·이름·표식·메뉴) 순서를 그대로 쓰고 폭만 바꾼다. */
 .editor-layout .map-sidebar-section .map-tree-panel { --map-row-handle: 0px; --map-row-thumb: 18px; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item { grid-template-columns: var(--map-row-toggle) 0 18px minmax(0, 1fr) 0 auto; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item { grid-template-columns: var(--map-row-toggle) 0 0 minmax(0, 1fr) 0 auto; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-drag-handle,
 .editor-layout .map-sidebar-section .map-tree-panel .start-mark { visibility: hidden; width: 0; min-width: 0; padding: 0; overflow: hidden; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-thumb { width: 18px; height: 14px; opacity: 0; transition: opacity 120ms; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item:hover .map-tree-thumb,
-.editor-layout .map-sidebar-section .map-tree-panel .map-item:focus-within .map-tree-thumb { opacity: 1; }
+/* 목업 행에는 썸네일이 없다 — 캔버스는 DOM 에 남기되(e2e 가 그린 그림을 읽는다) 칸을 0 으로 접고 겹쳐 그리지 않는다. */
+.editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-thumb { width: 18px; height: 14px; margin-right: -18px; opacity: 0; pointer-events: none; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item .map-tree-action,
 .editor-layout .map-sidebar-section .map-tree-panel .map-item.active .map-tree-action { opacity: 0; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item:hover .map-tree-action,
 .editor-layout .map-sidebar-section .map-tree-panel .map-item:focus-within .map-tree-action { opacity: 1; }
-.editor-layout .map-sidebar-section .map-tree-panel .map-item.active { font-weight: 500; }
+.editor-layout .map-sidebar-section .map-tree-panel .map-item.active,
 .editor-layout .map-sidebar-section .map-tree-panel .map-item.active .map-tree-name { font-weight: 500; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-filter.is-facets-only { padding: 0 6px 4px; }
 
