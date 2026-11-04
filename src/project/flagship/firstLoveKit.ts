@@ -177,6 +177,22 @@ export function memoryPictureOut(ms = 1400): Command[] {
   return [{ kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity: 0, durationMs: ms, easing: "easeInOut", waitForPicture: false } as Command];
 }
 export const memoryPictureErase = (): Command => ({ kind: "erasePicture", pictureId: MEMORY_PICTURE } as Command);
+
+/** 이야기 중간의 한 장면 CG — 그림이 다 뜬 뒤에 대사가 나오고(waitForPicture), 갤러리에 기록된다. 그림 속 두 사람 위에는 흉상을 두지 않는다(sayOver). */
+const CG_PICTURE = "fl_cg";
+const CG_FRAME = { x: -4, y: -3, scale: 29 } as const;
+export function cgIn(resourceId: string, ms = 1100): Command[] {
+  return [
+    { kind: "showPicture", pictureId: CG_PICTURE, resourceId, ...CG_FRAME, opacity: 0, waitForPicture: false } as Command,
+    { kind: "showPicture", pictureId: CG_PICTURE, resourceId, ...CG_FRAME, opacity: 255, durationMs: ms, easing: "easeOut", waitForPicture: true, recordInGallery: true } as Command,
+  ];
+}
+export function cgOut(resourceId: string, ms = 700): Command[] {
+  return [
+    { kind: "showPicture", pictureId: CG_PICTURE, resourceId, ...CG_FRAME, opacity: 0, durationMs: ms, easing: "easeIn", waitForPicture: true } as Command,
+    { kind: "erasePicture", pictureId: CG_PICTURE } as Command,
+  ];
+}
 export const hidePlayer = (): Command => m2("Sprite Look", { target: "player", opacity: "0" });
 export const showPlayer = (): Command => m2("Sprite Look", { target: "player", reset: true });
 

@@ -38,6 +38,7 @@
 | `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
 | `scene-talk-stacked` | 대사 화자–듣는 인물(또는 선택지의 NPC–주인공)이 **같은 열에서 세로 1~2칸**이다 — 아래 인물은 3/4 시점에서 뒷모습만 보이고 둘의 그림이 겹친다(첫사랑 r7 재회). 말을 건 사람 곁으로 «추측한» 주인공 칸은 제외 |
 | `scene-text-during-picture-fade` | 거의 불투명(opacity ≥ 200)하게 번지는 `showPicture`(`waitForPicture:false`, `durationMs>0`)가 다 보이기 전에 `text` 가 뜬다 — 지도와 그림이 반투명으로 겹쳐 «깨진 화면»이 대사 내내 보인다(첫사랑 r7 고백 정점). 처음부터 흐린 겹침(opacity < 200)은 의도로 본다. 같은 목록의 `wait` ms 로 남은 번짐을 덜어 낸다 |
+| `romance-few-cg-scenes` | 연애(관계 메뉴) 게임인데 갤러리에 기록되는 CG(showPicture recordInGallery)가 5장 미만이면 알린다(목표 8장 이상). 도트 지도와 대사만으로는 설레는 순간이 글로만 남는다. 첫사랑 CG 14장 작업(2026-11-04). |
 | `scene-seated-standing` | 의자 칸(타일 태그 「의자」)에 선 자세 그림을 놓았고 앉은 페이지(`graphic.pose: "seated"`)가 하나도 없다 — 서 있는 그림이 의자를 가려 앉은 사람이 줄 선 사람으로 읽힌다(첫사랑 r7 금요일 회의). 앉았다 일어서는 인물은 앉은 페이지가 있으면 조용하다. 구현 `src/project/lint/seatedPoseLint.ts` |
 | `scene-seated-off-chair` | `pose: "seated"` 인데 의자 칸이 아니다 — 앉은 그림이 맨바닥에 낮게 선다. 앉은 그림은 `SEATED_LOWER_PX`(5)·`SEATED_CLIP_PX`(8) 로 그림을 내리고 아랫단을 자른다(`src/player/seatedPoseRender.ts`) |
 | `scene-npc-vanish-short` | 출구 «한 칸 앞»(이동 이벤트 1칸 안·문 그림 이웃·가장자리 2칸 안)에서 경로가 끝난 NPC 가 그 뒤 지우기·«떠남» 페이지·경로 속 불투명도 0 으로 사라진다. 사라져도 되는 칸은 이동 이벤트 칸·문 그림 칸·맵 끝 칸 «바로 그 칸»뿐 → exitVia. exitVia 경로는 문 칸에서 사라진 것으로 본다(런타임과 같은 문 칸 규칙) |

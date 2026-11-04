@@ -21,8 +21,8 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, faceEachOther, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTintUnderBlack, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  bgm, call, callTo, caption, CAST, cgIn, cgOut, choices, m2, clearTintKeepBlack, emote, event, face, faceEachOther, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
+  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTintUnderBlack, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, drawnOverActor, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening, buildFirstLoveOpeningStage } from "./firstLoveOpening";
@@ -467,8 +467,10 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     ...think("아. 서류가, 봄바람에, 날아간다."),
     m2("Screen Effect", { effect: "unfreeze", value: "", durationMs: 300 }),
     wait(300),
+    ...cgIn("oprn-first-love-cg-op-collision"),
     ...voice("남자", "죄송합니다…! 괜찮으세요? 제가 지금 너무 늦어서—"),
     ...think("고개를 들기도 전에, 남자는 떨어진 종이 한 장을 내 손에 쥐여 주고 다시 뛰어갔다."),
+    ...cgOut("oprn-first-love-cg-op-collision"),
     panBack(500),
     // 남자는 회사 쪽(늘봄 빌딩)으로 달려가 사라진다 — 얼굴은 못 봤다.
     { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "approach", x: rusher.x, y: rusher.y, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
@@ -683,8 +685,10 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     // 재회가 1배 먼 화면이라 밋밋했다(r4 블라인드) — 금요일 만남처럼 두 사람 사이로 배율 2 까지 다가간다. 선택지가 끝나면 돌아온다.
     panTo(Math.round((heroMeet.x + jihuMeetStop.x) / 2), Math.round((heroMeet.y + jihuMeetStop.y) / 2), 1100, 2),
     ...emote("player", "exclamation", 1300),
+    ...cgIn("oprn-first-love-cg-meet"),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
     ...think("금요일 점심, 방송실 창가. 스피커에서 흘러나오던 그 목소리."),
+    ...cgOut("oprn-first-love-cg-meet"),
     ...sayAt("lead", "right", "base", "강지후 선임. 앱 개발 4년 차고, 이번 ‘하루끝’ 리뉴얼 메인 개발자예요. 모르는 건 이 사람한테 물어봐요."),
     ...say("jihu", "base", "…처음 뵙겠습니다. 강지후입니다."),
     // 오프닝 A 의 횡단보도 — 그 목소리였다.
@@ -823,10 +827,12 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       { text: "(말없이 캔커피 하나를 내민다)", then: [
         setSw(SW_COFFEE, true),
         playSe(SE_CAN),
-        ...say("jihu", "surprised", "…나 주는 거예요?"),
-        ...say("seoha", "base", "두 개 챙겨 왔어요. 모르는 사이끼리도 커피 정도는 마시잖아요."),
-        ...say("jihu", "happy", "…여전하네요. 남 거 먼저 챙기는 거."),
+        ...cgIn("oprn-first-love-cg-roof-coffee"),
+        ...sayOver("jihu", "…나 주는 거예요?"),
+        ...sayOver("seoha", "두 개 챙겨 왔어요. 모르는 사이끼리도 커피 정도는 마시잖아요."),
+        ...sayOver("jihu", "…여전하네요. 남 거 먼저 챙기는 거."),
         ...think("여전하다는 말은, 기억한다는 뜻이다."),
+        ...cgOut("oprn-first-love-cg-roof-coffee"),
         ...like(1, "ev_fl_jihu_roof"),
       ] },
       { text: "“…알겠습니다, 선임님.”", then: [
@@ -948,11 +954,13 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       // 갈래가 계산대로 걷는 동안에도 같은 배율을 유지한다(skill 29·32).
       panTo(Math.round((heroTalk.x + jihuStop.x) / 2), heroTalk.y, 900, 2),
       faceHero("ev_fl_jihu_kon"),
-      ...say("jihu", "base", "…아직 그거 마셔요?"),
+      ...cgIn("oprn-first-love-cg-konbini"),
+      ...sayOver("jihu", "…아직 그거 마셔요?"),
       ifCond(swOn("sw_fl_admitted"),
-        say("seoha", "base", "회사에선 모르는 사이라면서요. 그런 건 기억하시네요."),
-        say("seoha", "base", "선임님은 기억 못 하시는 줄 알았는데요."),
+        sayOver("seoha", "회사에선 모르는 사이라면서요. 그런 건 기억하시네요."),
+        sayOver("seoha", "선임님은 기억 못 하시는 줄 알았는데요."),
       ),
+      ...cgOut("oprn-first-love-cg-konbini"),
       ...emote("ev_fl_jihu_kon", "sweat"),
       ...say("jihu", "sad", "…"),
       choices([
@@ -1026,18 +1034,22 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     ...say("seohaYoung", "surprised", "아, 아니요! 그냥 지나가다가요!"),
     ...say("jihuYoung", "happy", "바나나우유 들고?"),
     ...emote("ev_fl_y_seoha", "sweat"),
-    ...say("jihuYoung", "happy", "윤서하, 맞지? 2학년 3반."),
-    ...say("seohaYoung", "surprised", "제 이름을 어떻게 알아요?"),
-    ...say("jihuYoung", "happy", "사연함 앞에서 맨날 서성이는 애를 모를 수가 있나."),
+    ...cgIn("oprn-first-love-cg-flash-meet"),
+    ...sayOver("jihuYoung", "윤서하, 맞지? 2학년 3반."),
+    ...sayOver("seohaYoung", "제 이름을 어떻게 알아요?"),
+    ...sayOver("jihuYoung", "사연함 앞에서 맨날 서성이는 애를 모를 수가 있나."),
+    ...cgOut("oprn-first-love-cg-flash-meet"),
     ...fadeOut(900),
     setSw("sw_fl_jihu_gone", true),
     ...caption("그해 겨울, 마지막 금요일."),
     ...fadeIn(900),
     walkRoute(project, FL_MAP.broadcast, "ev_fl_y_seoha", youngSeoha, nearestFree(project, bc, { x: b.mailbox.x - 1, y: b.mailbox.y }, 2, [b.mailbox, b.start])),
     face("ev_fl_y_seoha", "right"),
+    ...cgIn("oprn-first-love-cg-flash-letter"),
     ...think("처음으로, 진짜 이름을 썼다.", "‘바나나우유가 아니라, 윤서하가요. 선배를 좋아해요.’"),
     playSe(SE_PAPER),
     wait(800),
+    ...cgOut("oprn-first-love-cg-flash-letter"),
     ...caption("그날 점심 방송은 나가지 않았다.", "월요일, 선배의 자리는 비어 있었다. 전학이라고 했다. 인사도 없이."),
     ...fadeOut(1200),
     stopBgm(),
@@ -1154,7 +1166,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         // 선택지 두 갈래가 모두 끝난 뒤 한 번 되돌린다(갈래마다 되돌리면 한 쪽이 빠진다).
         panBack(700),
         ...say("jihu", "embarrassed", "아, 라면 불겠다."),
+        ...cgIn("oprn-first-love-cg-wed-ramen"),
         ...think("둘이 컵라면을 먹었다. 10년 전 매점 앞 벤치처럼. 그 사람은 여전히 국물부터 마셨다."),
+        ...cgOut("oprn-first-love-cg-wed-ramen"),
         ...fadeOut(900),
         stopBgm(),
         ...caption("그리고, 금요일."),
@@ -1242,7 +1256,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("lead", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, seoStand, [jihuBeside], true, "up"),
         ...comeBeside(),
+        ...cgIn("oprn-first-love-cg-wed-monitor"),
         ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
+        ...cgOut("oprn-first-love-cg-wed-monitor"),
         ...like(1, "ev_fl_w_jihu"),
         // 팀장은 화면 안에서 걸어 나간다 — 시간 건너뛰기(반쯤 어두운 화면)에 자리에서 사라지지 않는다(VQA r12).
         leadOut.begin,
@@ -1367,7 +1383,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_f_jihu", dirToward(jihuSpot, o.meetingSeat)),
     face("@player", dirToward(o.meetingSeat, jihuSpot)),
     ...say("jihu", "happy", "윤서하 디자이너가 설명드리겠습니다."),
+    ...cgIn("oprn-first-love-cg-fri-present"),
     ...think("숨을 한 번 고른다."),
+    ...cgOut("oprn-first-love-cg-fri-present"),
     // 발표는 손님(본부장)을 보고 한다.
     face("@player", dirToward(o.meetingSeat, clientSpot)),
     choices([
@@ -1506,7 +1524,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(street, scene("ev_fl_end_b_street", { x: 4, y: 1 }, S.END_B_STREET, [
     panBack(0),
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
-    ...fadeIn(900),
+    ...endingOpen("oprn-first-love-cg-end-b"),
     wait(700),
     stage(S.PLATFORM + 100),
     { kind: "triggerEnding", endingId: END_B } as Command,
@@ -1520,6 +1538,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(700),
     ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
     // 에필로그는 비 오는 회사 앞(서하가 보이는 화면) 위로 흐른다 — 연인 그림(낮 카페)은 그를 놓친 밤과 맞지 않았다(VQA r11).
+    ...cgIn("oprn-first-love-cg-end-c", 1400),
     stopBgm(),
     stage(S.PLATFORM + 100),
     { kind: "triggerEnding", endingId: END_C } as Command,
@@ -1592,8 +1611,10 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     // 클라이맥스는 두 사람에게 다가간다 — 배율 1 의 먼 화면에서 작은 두 사람이 고백했다(r4 검수). 두 사람 아래로 선로가 보이게 조금 아래를 잡는다.
     panTo(jihuSpot.x, jihuSpot.y + 1, 1400, 2),
     ...emote("ev_fl_p_jihu", "exclamation", 1300),
-    ...say("jihu", "surprised", "…서하야?"),
+    ...cgIn("oprn-first-love-cg-platform"),
+    ...sayOver("jihu", "…서하야?"),
     ...think("처음이다. 회사에서 만나고, ‘씨’를 떼고 부른 건."),
+    ...cgOut("oprn-first-love-cg-platform"),
     ...say("seoha", "sad", "또… 인사도 없이 가려고 했죠."),
     ...say("jihu", "sad", "…인사하면, 못 갈 것 같아서."),
     { kind: "playAudio", resourceId: BGM_CONFESS, loop: true, channel: "bgm", fadeInMs: 2000 } as Command,
@@ -1634,13 +1655,11 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
           // r7 블라인드 3차(S1): 그림이 번지는 동안 대사가 뜨면 승강장과 회상 그림이 반투명으로 겹쳐 «깨진 화면»으로 읽혔다 —
           // 그림은 섬광 아래서 600ms 로 다 띄우고, 다 보인 뒤에 첫 대사를 낸다(대사엔 흉상을 두지 않는다 — 그림 속 두 사람을 가리지 않게, VQA r23).
-          ...memoryPictureIn(255, 600),
           flash("white", 700),
-          wait(600),
+          ...cgIn("oprn-first-love-cg-confess"),
           ...sayOver("jihu", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
-          ...memoryPictureOut(1600),
+          ...cgOut("oprn-first-love-cg-confess"),
           ...emote("ev_fl_p_jihu", "heart", 1600),
-          memoryPictureErase(),
           ...say("jihu", "base", "부산은 가야 해요. 아버지 혼자 계시니까. 근데—"),
           ...say("jihu", "happy", "KTX로 두 시간 사십 분이에요. 금요일마다 올게요. 이번엔, 진짜 약속해요."),
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
@@ -1648,15 +1667,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...fadeOut(1200),
           panBack(0), // 승강장 배율(2)을 엔딩 그림으로 들고 가지 않는다
           stopBgm(),
-          ...endingOpen("oprn-first-love-ending-a"),
+          ...endingOpen("oprn-first-love-cg-end-a"),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
-          ...memoryPictureIn(255, 600),
-          wait(600),
+          ...cgIn("oprn-first-love-cg-confess"),
           ...sayOver("seoha", "좋아했어요. 그 금요일에도. 지금도."),
-          ...memoryPictureOut(1400),
+          ...cgOut("oprn-first-love-cg-confess"),
           ...say("jihu", "sad", "…고마워요. 정말로."),
-          memoryPictureErase(),
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),
@@ -1697,7 +1714,7 @@ function endingOpenNight(a: FirstLoveAnchors): Command[] {
 }
 function endingOpen(resourceId: string): Command[] {
   return [
-    { kind: "showPicture", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity: 255, waitForPicture: false } as Command,
+    { kind: "showPicture", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity: 255, waitForPicture: false, recordInGallery: true } as Command,
     ...fadeIn(900),
   ];
 }
@@ -1723,11 +1740,11 @@ function defineEndings(project: Project): void {
     id: END_A,
     name: "다시, 첫사랑",
     conditions: [],
-    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-a", textSide: "left" },
+    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-cg-end-a", textSide: "left" },
     epilogue: [
       // 노을 옥상 난간 앞에 나란히 선 서하·지후 — 게임과 같은 도트(걷기 칩·옥상 맵·노을 파노라마)로 지은 장면(r3, bake_ending_cards.py).
       // 인물은 오른쪽 삼분선, 카드 글 판은 왼쪽 기둥(textSide, r4) — 가운데 판이 인물을 덮지 않는다.
-      epiloguePicture("oprn-first-love-ending-a"),
+      epiloguePicture("oprn-first-love-cg-end-a"),
       { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
       { kind: "say", text: "‘이번 금요일에도 서울로 갈게요. 약속대로. 급식 줄은 이제 안 서도 돼요.’" },
@@ -1739,7 +1756,7 @@ function defineEndings(project: Project): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-b", textSide: "left" },
+    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-cg-end-b", textSide: "left" },
     epilogue: [
       { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라왔다. 그날 밤, 회사 옥상에 올라가 연두색 편지지를 다시 펼쳤다. 뒷면에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
@@ -1753,7 +1770,7 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "비 오는 금요일", // 「우리 팀의 봄」인데 팀은 나오지 않고 서하 혼자 비 속에 섰다(VQA r23)
     conditions: [],
-    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c", textSide: "right", particles: "none" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-cg-end-c", textSide: "right", particles: "none" },
     epilogue: [
       { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
       { kind: "say", text: "오후 9시 40분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
@@ -1856,7 +1873,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     minho: { displayName: "차민호", note: "지난주에 들어온 백엔드 신입. 자칭 동기, 탕비실 간식 담당." },
     lead: { displayName: "오정민 팀장", note: "프로덕트팀 팀장. 말은 부드럽지만, 보고는 정확해야 한다." } };
   project.meta.oprnFieldMenu = { version: 1, entries: [
-    { command: "relationships", label: "호감도" }, { command: "backlog", label: "대화 기록" }, { command: "endings", label: "엔딩" },
+    { command: "relationships", label: "호감도" }, { command: "backlog", label: "대화 기록" }, { command: "endings", label: "엔딩" }, { command: "gallery", label: "갤러리" },
     { command: "save", label: "저장" }, { command: "load", label: "불러오기" }, { command: "options", label: "설정" }, { command: "to-title", label: "타이틀로" },
   ] };
   // 대사창·메뉴 룩: 어두운 유리 + 금빛 이름 탭(진지한 관계극). 연애 기본(분홍 카드)은 이 이야기의 씁쓸한 톤과 도트에 안 맞는다.

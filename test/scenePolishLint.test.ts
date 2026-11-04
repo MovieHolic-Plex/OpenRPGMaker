@@ -285,3 +285,23 @@ describe("scene-text-during-picture-fade", () => {
     expect(codesOf([picture({ opacity: 140, durationMs: 1600, waitForPicture: false }), text()])).toEqual([]);
   });
 });
+
+describe("romance-few-cg-scenes: 연애 게임인데 CG 컷이 거의 없다", () => {
+  const cgShow = (n: number): Command => ({ kind: "showPicture", pictureId: "cg", resourceId: `cg-${n}`, x: 0, y: 0, opacity: 255, waitForPicture: true, recordInGallery: true } as Command);
+  function codesFor(options: { romance: boolean; cg: number }): string[] {
+    const { project, out } = fixture();
+    if (options.romance) project.system.genreLock = { preset: "romance", mode: "enforce" } as never;
+    out.events = [ev("e", 3, 3, [page(Array.from({ length: options.cg }, (_, n) => cgShow(n)), { trigger: { kind: "action" } as EventPage["trigger"] })])];
+    return lintScenePolish(project).filter((i) => i.code === "romance-few-cg-scenes").map((i) => i.code);
+  }
+
+  it("연애 게임에 갤러리 CG 가 2장이면 경고한다", () => {
+    expect(codesFor({ romance: true, cg: 2 })).toEqual(["romance-few-cg-scenes"]);
+  });
+  it("5장이면 조용하다", () => {
+    expect(codesFor({ romance: true, cg: 5 })).toEqual([]);
+  });
+  it("연애가 아닌 게임은 CG 가 0장이어도 조용하다", () => {
+    expect(codesFor({ romance: false, cg: 0 })).toEqual([]);
+  });
+});
