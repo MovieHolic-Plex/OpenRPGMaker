@@ -41,8 +41,8 @@ export type PromptHomeActions = {
   readonly submit: (text: string, images: readonly string[]) => Promise<void>;
   readonly openLocale: () => void;
   readonly builtin: () => void;
-  /** 기본 게임 카드 — 그 게임을 바로 플레이한다. */
-  readonly builtinPlay: (id: BuiltinGameId) => void;
+  /** 예제 행 — 그 게임을 편집기에서 연다(플레이는 편집기 「테스트 실행」). */
+  readonly builtinEdit: (id: BuiltinGameId) => void;
   readonly openFolder: () => void;
   readonly blank: () => void;
 };
@@ -172,20 +172,26 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 맵·인물·이야기를 지금 바로 만들어요." }),
       el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [attach, thumbs, fileInput, submit] })] }),
       el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: chips }),
-      // 목업: 「기본 게임으로 먼저 둘러보기」 썸네일 세 장(장르·분량 한 줄). 누르면 그 게임을 바로 플레이한다.
+      // 「예제 열어 보기」 작은 행 세 개(2026-11-04, Studio/런타임 분리 B안 http://mdc-server:18301/studio-runtime-split.html).
+      // 누르면 편집기에서 연다 — 첫 화면이 「할 게임 고르기」로 보이지 않게, 바로 플레이하는 그림 카드를 버렸다.
       el("section", { class: "fr-builtin", attrs: { "aria-labelledby": "fr-builtin-h" }, children: [
         el("div", { class: "fr-builtin-head", children: [
-          el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, text: "기본 게임으로 먼저 둘러보기" }),
+          el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, children: [
+            el("span", { text: "예제 열어 보기" }),
+            el("span", { class: "fr-builtin-tag", text: "고쳐 보며 배우기" }),
+          ] }),
           link("모두 보기", PROMPT_HOME_TESTIDS.builtin, actions.builtin),
         ] }),
         el("div", { class: "fr-builtin-row", children: BUILTIN_GAMES.map((game) => el("button", {
-          class: "fr-bcard", attrs: { type: "button", "aria-label": game.title },
+          class: "fr-bcard", attrs: { type: "button", "aria-label": `${game.title} — 편집기에서 열기` },
           dataset: { testid: `${PROMPT_HOME_TESTIDS.builtinCard}-${game.id}` },
-          on: { click: () => { if (!busy) actions.builtinPlay(game.id); } },
+          on: { click: () => { if (!busy) actions.builtinEdit(game.id); } },
           children: [
             el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
-            el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim(), attrs: { translate: "no" } }),
-            el("span", { class: "fr-bcard-meta", text: game.genre }),
+            el("span", { class: "fr-bcard-text", children: [
+              el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim(), attrs: { translate: "no" } }),
+              el("span", { class: "fr-bcard-meta", text: game.genre }),
+            ] }),
           ],
         })) }),
       ] }),
