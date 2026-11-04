@@ -999,6 +999,37 @@
     "the project saves and reloads"
    ],
    "lint0": []
+  },
+  {
+   "id": "small-room-hold-zoom",
+   "label": "화면보다 작은 방은 방에 있는 동안 배율을 한 번 정해 유지한다",
+   "port": 19556,
+   "lessons": [
+    "small-room-hold-zoom"
+   ],
+   "prompt": "화면보다 작은 편의점 방을 만들고, 들어서는 장면과 선택지가 있는 대화를 넣어 줘. 방 안 장면마다 화면이 다르게 보이지 않게 해 줘.",
+   "requirements": [
+    "the entry scene pans the camera to the room centre at zoom 2 (Camera Control panTo, 0 ms) before the first line",
+    "choice branches keep the same zoom (panTo, not panBack) and the zoom is released once with panBack(0) when leaving the room",
+    "run_lint reports no scene-map-smaller-than-screen for the room, or the room keeps the zoom for the whole visit",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "picture-before-first-line",
+   "label": "전체 화면 그림 위의 첫 대사는 그림이 다 보인 뒤에 낸다",
+   "port": 19557,
+   "lessons": [
+    "picture-before-first-line"
+   ],
+   "prompt": "고백 장면 한가운데 10년 전 추억 그림을 화면 가득 띄우고 그 위에서 주인공이 대사를 하게 해 줘. 그림이 반쯤 투명한 채로 대사가 나오지 않게 해 줘.",
+   "requirements": [
+    "the picture fades in over about 600 ms and the scene waits that long (wait command or waitForPicture true) before the first text",
+    "run_lint reports no scene-text-during-picture-fade",
+    "the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

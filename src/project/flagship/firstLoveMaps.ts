@@ -241,6 +241,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   for (let y = 0; y < konbiniRoom.height; y++) for (let x = 0; x < konbiniRoom.width; x++) {
     if (x <= 2 || x >= konbiniRoom.width - 3 || y >= konbiniRoom.height - 3) clearMapCellForBackground(konbiniRoom, y * konbiniRoom.width + x);
   }
+  // r7 블라인드 3차(S3): 그려진 부분이 20×16칸뿐이라 1배면 화면의 37% 가 검다 — 방의 기본 배율을 2 로 둔다(입장 장면의 panTo 가 가게 가운데를 잡는다).
+  konbiniRoom.cameraZoom = 2;
   // 옥상(24칸)을 화면 폭 30칸으로: 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
   padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (_y, side) => (side === "left" ? 0 : 23));
   // 난간 너머는 하늘이다 — 같은 크기의 길·벤치·우체통(땅에서 본 거리)을 그리면 옥상이 1층 광장으로 읽힌다(VQA r10).
