@@ -757,7 +757,7 @@ function lanternNightEvents(project: Project): void {
         narrate("제2막 「빌린 불」은 여기까지", { position: "center", context: "narration" }),
         narrate("얼음 위의 등, 하늘탑, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
         fadeIn(700),
-        narrate("다음 판본에서 이 여관부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
+        narrate("다음 업데이트에서 이 여관부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
         { kind: "openSaveMenu" } as unknown as Command,
       ], { graphic: look })
       : page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
@@ -826,7 +826,7 @@ function towerReleaseStop(project: Project): void {
       narrate("하늘탑의 위층, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
       fadeIn(700),
       setSw(SW_STOP_B9),
-      narrate("다음 판본에서 하늘탑 1층부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
+      narrate("다음 업데이트에서 하늘탑 1층부터 이어 하려면\n지금 저장해 두자.", { context: "system" }),
       { kind: "openSaveMenu" } as unknown as Command,
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_tower_stop_done", "끝", [sw(SW_STOP_B9)], [], { priority: "below" }),

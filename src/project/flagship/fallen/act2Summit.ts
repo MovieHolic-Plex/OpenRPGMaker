@@ -364,7 +364,7 @@ function summitScenes(project: Project): void {
     narrate("제3막 「귀환선」은\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
     fadeIn(800),
     setSw(FS2_SW_STOP_B13),
-    sys("다음 판본에서 하늘탑 꼭대기부터 이어 하려면 지금 저장해 두자."),
+    sys("다음 업데이트에서 하늘탑 꼭대기부터 이어 하려면 지금 저장해 두자."),
     { kind: "openSaveMenu" } as unknown as Command,
   ];
   addEv(project, FS2_TOP, "ev_fs2_top_collector", "재의 회수자", { x: 0, y: 1 }, [
