@@ -100,7 +100,7 @@ function ensureVariable(project: Project, id: string, name: string): void {
 
 /** 광장 포고 직후 — 엘레나가 약과 무기를 건네는 줄이 안내문처럼 읽혔다. */
 function plazaLines(hub: GameMap): void {
-  rewordAll(hub, "들었지, 카엘", "…들었지, 카엘?\n얼른 선생님께 가자. 기다리실 거야.");
+  rewordAll(hub, "들었지, 카엘", "들었지, 카엘?\n얼른 선생님께 가자. 기다리실 거야.");
   rewordAll(hub, "아, 이것도 챙겨. 숲에 짐승이 많대.", "이거 챙겨.\n천문대 약장에서 가져왔어.");
   rewordAll(hub, "그리고 이거, 천문대 창고에서 나온 거야.", "창고에 굴러다니던 검이랑 창도.\n손에 붙는 쪽으로 들어.");
 }
@@ -122,7 +122,7 @@ function bramLines(forest: GameMap): void {
   const bramId = `ev_${FS_PREFIX}_bram`;
   const at = findLine(forest, "사람 목소리도 들리더군", bramId);
   at.list.splice(at.index + 1, 0,
-    say(KAEL, "…안에 정말 누가 있나 봐."),
+    say(KAEL, "안에 정말 누가 있나 봐."),
     say(BRAM, "갈 거면 서둘러라.\n그 목소리, 밤새 점점 잦아들더군."),
   );
   rewordAll(forest, "『살아 있는 손만 연다』", "자국 둘레에 옛 별지기 글자가 있어.\n「살아 있는 손만 연다」…\n선생님 책에서 봤어.");
@@ -169,7 +169,7 @@ function irisJoins(project: Project, forest: GameMap): void {
     say(IRIS, "저 위요.\n거기서 부르는 소리를 따라왔어요."),
     say(IRIS, "대답하려면 하늘을 보는 큰 눈이 있어야 해요.\n제 눈은 떨어질 때 깨졌어요."),
     say(ELENA, "큰 눈이면… 망원경 말이구나.\n천문대에 선생님 렌즈가 있어."),
-    narrate("이리스가 관 테두리를 붙잡고\n두 사람을 번갈아 본다."),
+    narrate("이리스가 알 테두리를 붙잡고\n두 사람을 번갈아 본다."),
     say(IRIS, "…그럼 저도 데려가 줄래요?\n여기 혼자 남는 건 싫어요."),
     dock(),
     {
@@ -183,16 +183,16 @@ function irisJoins(project: Project, forest: GameMap): void {
           emote(irisId, "ellipsis", 800),
           say(ELENA, "카엘, 숲에 심문관들 쫙 깔렸어.\n여기 혼자 두면 금방 잡혀."),
           say(KAEL, "…그래, 내 생각이 짧았어.\n같이 가자, 이리스."),
-          say(IRIS, "…네. 따라갈게요.\n이번엔 안 무서워할게요."),
+          say(IRIS, "네. 따라갈게요.\n이번엔 안 무서워할게요."),
         ] },
       ],
     } as unknown as Command,
     se("easyrpg-sound-chime2"),
-    narrate("이리스가 관 밖으로 나와\n처음으로 땅을 밟는다."),
+    narrate("이리스가 알 밖으로 나와\n처음으로 땅을 밟는다."),
     wait(500),
     say(IRIS, "…땅이 따뜻해요. 카엘, 이게 「아침」이에요?"),
     say(ELENA, "…응. 이게 아침이야."),
-    say(IRIS, "아, 이것도요. 관 안쪽에 박혀 있었어요.\n별 모양이에요."),
+    say(IRIS, "아, 이것도요. 알 안쪽에 박혀 있었어요.\n별 모양이에요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
     say(ELENA, "이 별 무늬… 서고 바닥 돌뚜껑에\n똑같은 홈이 있어!"),
@@ -213,7 +213,7 @@ function hanelMeetsIris(project: Project, obs: GameMap): void {
   let end = at.index;
   while (end + 1 < list.length && list[end + 1]!.kind === "text") end += 1;
   list.splice(at.index, end + 1 - at.index, fork(sw(SW_HANEL_MET_IRIS, false), [
-    say(H, "…그 아이가, 너희가 숲에서 찾은 별이냐."),
+    say(H, "그 아이가 너희가 숲에서 찾은 별이냐."),
     say(IRIS, "이리스예요.\n하늘에 대답할 렌즈를 찾고 있어요."),
     say(H, "렌즈라면 이 밑에 있다.\n서고 바닥 돌뚜껑 아래, 옛 별지기 방에."),
     say(H, "그 방은 내가 닫지 않았다.\n…내 스승이 닫으셨지. 그것만 안다."),

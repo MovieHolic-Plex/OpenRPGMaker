@@ -324,7 +324,7 @@ function toma(project: Project): void {
       shop(full),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
-      say(TOMA, "…어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
+      say(TOMA, "어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
       say(TOMA, "기계 아가씨도 빵을 먹나요?\n…먹는 흉내라도 내면 하나 싸 줄게요."),
       shop(full),
     ] },
