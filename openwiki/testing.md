@@ -1665,7 +1665,7 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
   4~5초 → 1초 아래로 줄였다(출하 플레이어도 같다). 체크포인트 하나의 필드:
   `mapId x y facing`, `switches variables selfSwitches`, `party: [{ actorId, level }]`(그 레벨 최대 HP/MP 로 채움),
   `items gold`, `sessionPatch`(호감도 `relationships`·`friendship`, 몬스터 `monsterInstances/monsterParty` 등 세션 최상위 키에
-  깊게 합침, 배열은 통째로 교체), `startEventId`(불러온 직후 실행할 맵 이벤트), `beats`(그 단계에서 할 일 — 없으면 세트의
+  깊게 합침, 배열은 통째로 교체), `startEventId`(불러온 직후 실행할 맵 이벤트), `startTroopId`(그 부대와 싸우는 맵 이벤트를 찾아 실행 — 플레이어 자리에서 가장 가까운 것. 필드 적 `ev_field_enemy_<uuid>` 처럼 굽기마다 id 가 바뀌는 이벤트는 이것을 쓴다; `startEventId` 가 있으면 그것이 우선), `beats`(그 단계에서 할 일 — 없으면 세트의
   `defaultBeats`, 그것도 없으면 1.5초 뒤 한 장), `snapshot`(실제 저장). 타입 정본은 `src/player/qaCheckpoint.ts` 의 `QaCheckpoint`.
 - **실제 저장이 정본이다.** 손으로 적은 상태는 흐름 코드를 읽고 그 단계에 실제 플레이어가 가진 값을 적은 것이어야 한다
   (`note` 에 근거 파일:줄). 가능하면 그 지점까지 가는 시나리오에 `{ "kind": "captureCheckpoint", "id": "boss" }` op 을 넣고
