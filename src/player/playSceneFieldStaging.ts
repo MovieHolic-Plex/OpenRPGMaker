@@ -839,7 +839,7 @@ const EXAMINE_MARKER_TEX = "oprn-fx-examine-marker-v2";
 type ExamineMarkerState = { mapId: string; markers: Map<string, Phaser.GameObjects.Image>; nextCheck: number; want: Map<string, { x: number; y: number; person: boolean }> };
 const examineMarkerStates = new WeakMap<PlaySceneContext, ExamineMarkerState>();
 
-function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
+export function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
   const map = scene.map;
   if (!map || !scene.session || !scene.add) return;
   let state = examineMarkerStates.get(scene);
@@ -892,6 +892,12 @@ function syncExamineMarkers(scene: PlaySceneContext, now: number): void {
       state.markers.set(id, scene.add.image(0, 0, EXAMINE_MARKER_TEX).setDepth(MAP_UPPER_LAYER_DEPTH + 900));
     }
   }
+  // 장면(컷신·대화)이 도는 동안은 숨긴다 — 재회 컷신 내내 팀장·민호 머리 위에 노란 표식이 떠 있었다
+  // (첫사랑 처음 하는 사람 검수 2026-10-30, #4002). #4001 이 옛 기준에서 머지되며 이 줄을 지워 다시 떴다(r7) —
+  // test/examineMarkersHideDuringScenes.test.ts 가 지킨다. 끝나면 다음 프레임에 다시 보인다.
+  const hidden = scene.running === true;
+  for (const marker of state.markers.values()) if (marker.visible === hidden) marker.setVisible(!hidden);
+  if (hidden) return;
   const bob = Math.sin((now / 520) * Math.PI);
   for (const [id, marker] of state.markers) {
     const at = state.want.get(id);
