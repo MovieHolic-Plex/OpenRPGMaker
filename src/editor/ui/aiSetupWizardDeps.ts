@@ -47,7 +47,9 @@ async function detectEnvironment(): Promise<WizardEnvironment> {
   });
   const claude = clis.find((cli) => cli.id === "claude");
   const codex = clis.find((cli) => cli.id === "codex");
+  const expiredAccount = accountRows.find((row) => row.expired === true && row.env !== true);
   return {
+    ...(expiredAccount ? { expired: expiredAccount.providerId === CODEX_ACCOUNT_PROVIDER_ID ? "chatgpt" as const : "google" as const } : {}),
     os,
     clis,
     accounts: accountRows,
