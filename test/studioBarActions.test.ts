@@ -54,6 +54,7 @@ vi.mock("@/editor/aiBootIntent", async (importOriginal) => {
 vi.mock("@/editor/conceptFeedOverlay", () => ({ openConceptFeedOverlay: mocks.openConceptFeedOverlay }));
 
 const { renderTopbar, autosaveStatusText, projectMenuLabel } = await import("@/editor/panels/menu");
+const { listEditorCommands } = await import("@/editor/commandRegistry");
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -163,7 +164,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   it("동작마다 testid 는 톱바+팝업 전체에서 한 번씩만 나온다", () => {
     // Break: 같은 동작이 두 자리에 놓여 testid 가 겹친다(예: 테스트 실행 네 자리).
     const topbar = render();
-    for (const menuId of ["menu-project", "menu-more-tools"]) {
+    for (const menuId of ["menu-project"]) {
       if (findByTestId(topbar, menuId)) openMenu(topbar, menuId);
     }
     const ids = allTestIds(topbar).filter((id) => !id.startsWith("menu-popup-"));
@@ -273,36 +274,28 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
       for (const child of node.children) walk(child);
     };
     walk(trailing);
-    const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play", "menu-more-tools"];
+    const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play"];
     expect(order.filter((id) => shown.includes(id))).toEqual(shown);
     // ⌘K 로만 닿는 것 — 톱바 어디에도 단추가 없다.
     for (const gone of [
       "toolbar-world", "toolbar-sound-test", "toolbar-search", "topbar-battle-test", "topbar-ai-studio",
       "workspace-panels-button", "workspace-command-palette-button", "commit-history-toggle", "topbar-identity",
       "window-fullscreen", "topbar-save-status", "studio-status-strip", "ai-connection-chip", "studio-run-group",
+      "menu-more-tools",
     ]) {
       expect(findByTestId(topbar, gone), gone).toBeNull();
     }
   });
 
-  it("⋯ 더 보기는 도움말 · 언어 · AI 설정만 담고, AI 설정이 모달을 연다", () => {
+  it("⋯ 더 보기는 톱바에 없다 — AI 설정 · 언어 · 도움말은 ⌘K 명령이고 AI 설정 명령이 모달을 연다", async () => {
+    // Break: ⋯ 단추가 시안과 달리 되살아나거나, 그 항목이 ⌘K 명령으로 옮겨지지 않아 닿을 길이 사라진다.
     const topbar = render();
-    const more = findByTestId(topbar, "menu-more-tools");
-    expect(more?.getAttribute("aria-label")).toBe("더 보기");
-    const popup = openMenu(topbar, "menu-more-tools");
-    expect((popup?.children ?? []).map((child) => child.dataset.testid).filter(Boolean)).toEqual(["menu-help", "menu-language", "topbar-ai-settings"]);
-    expect(findByTestId(popup as FakeElement, "topbar-ai-settings")?.textContent).toContain("AI 설정");
-    findByTestId(popup as FakeElement, "topbar-ai-settings")?.click();
-    expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);
-  });
-
-  it("도움말은 ⋯ 안의 하위 메뉴다 — 단축키·가이드·정보", () => {
-    const topbar = render();
-    const body = fake(document.body as unknown as HTMLElement);
-    openMenu(topbar, "menu-more-tools");
-    findByTestId(body, "menu-help")?.click();
-    const popup = findByTestId(body, "menu-popup-help");
-    expect((popup?.children ?? []).map((child) => child.dataset.testid)).toEqual(["menu-help-shortcuts", "menu-help-guide", "menu-help-about"]);
+    expect(findByTestId(topbar, "menu-more-tools")).toBeNull();
+    const commands = listEditorCommands();
+    const ids = commands.map((command) => command.id);
+    for (const id of ["topbar-ai-settings", "menu-help-guide", "help-shortcuts", "menu-language-ko", "menu-language-en"]) expect(ids, id).toContain(id);
+    commands.find((command) => command.id === "topbar-ai-settings")?.run();
+    await vi.waitFor(() => expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1));
   });
 
   it("가운데 칸은 편집 칸 한 분절이다 — 지형 · 바닥 · 상위 · 이벤트", () => {
