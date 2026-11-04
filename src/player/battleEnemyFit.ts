@@ -26,7 +26,7 @@ export function fitEnemyImage(field: Size, image: Size, anchor: Point, top: numb
   };
 }
 
-type Measured = { readonly width: number; readonly height: number; readonly groupTop: number; readonly groupHeight: number; readonly box: Size };
+type Measured = { readonly width: number; readonly height: number; readonly groupTop: number; readonly groupHeight: number; readonly box: Size; readonly bigBoss: boolean };
 
 /** 필드 논리 크기와 요청 상자(기본 치수 × 배율). 레이아웃·스킨 CSS 가 아직 없으면 undefined. */
 function measure(field: HTMLElement, node: HTMLElement, requestedScale: number): Measured | undefined {
@@ -42,7 +42,8 @@ function measure(field: HTMLElement, node: HTMLElement, requestedScale: number):
   // Only supported skins expose base dimensions; CSS may not have loaded on first mount.
   if (!(baseWidth > 0 && baseHeight > 0)) return undefined;
   const groupTop = node.parentElement?.offsetTop ?? 0;
-  return { width, height, groupTop, groupHeight: height - groupTop, box: { width: baseWidth * requestedScale, height: baseHeight * requestedScale } };
+  const bigBoss = field.closest<HTMLElement>(".battle-scene")?.dataset.battleBigBoss === "true";
+  return { width, height, groupTop, groupHeight: height - groupTop, box: { width: baseWidth * requestedScale, height: baseHeight * requestedScale }, bigBoss };
 }
 
 const bigCell = (node: HTMLElement): boolean => (Number(node.dataset.pixelEnemyCell) || 0) > 96;
@@ -52,9 +53,10 @@ const bigCell = (node: HTMLElement): boolean => (Number(node.dataset.pixelEnemyC
  * (1440×900 실측: 칸 192·256 이 모두 같은 131 무대 px 로 눌렸고 머리가 전장 위 안내 창 뒤로 들어갔다)
  * 위 한계를 적 무리 상자 위끝(안내 창 아래)으로 두고, 통째로 들어갈 만큼만 발을 아래로 내린다 —
  * 전장 아래 여백과 이름표 바닥(plateFloor, 저작 단위)을 넘지 않는다.
+ * 큰 보스 전투(씬 data-battle-big-boss)는 스킨이 무대 위 여백을 윗창 자리까지 줄였으므로 위 여백(32)을 두지 않고 그 위끝까지 쓴다.
  */
 function bigSheetFoot(m: Measured, authoredY: number, plateFloor: number | undefined): { readonly top: number; readonly y: number } {
-  const top = Math.max(GUTTER.top, m.groupTop);
+  const top = Math.max(m.bigBoss ? 0 : GUTTER.top, m.groupTop);
   const floor = plateFloor === undefined ? Infinity : m.groupTop + plateFloor / 160 * m.groupHeight;
   const lowest = Math.min(m.height - GUTTER.bottom, floor);
   const authoredPx = m.groupTop + authoredY / 160 * m.groupHeight;
