@@ -3793,6 +3793,16 @@
         "age": "청년"
       },
       "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-konbini-clerk-expressions-bust-base",
+      "label": "편의점 점원 · 남색 조끼 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "첫사랑 r7(2026-11-04) — 편의점 계산대 점원용. 칩(Modern3 4번 카페 앞치마)과 같은 검은 올림머리·남색 윗몸이지만 남색 조끼·명찰·반소매 차림이라 편의점 직원으로 읽힌다. 칩 대응표는 카페 흉상 그대로다. 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
     }
   ]
 }

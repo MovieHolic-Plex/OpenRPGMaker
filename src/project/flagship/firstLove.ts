@@ -179,9 +179,15 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
  */
 function seatedPages(id: string, conds: Parameters<typeof page>[1], who: string, upSw?: string): ReturnType<typeof page>[] {
   return [
-    page(`${id}_sit`, conds, [], { who, dir: "up", priority: "above" } as Parameters<typeof page>[3]),
+    seatedGraphic(page(`${id}_sit`, conds, [], { who, dir: "up", priority: "above" } as Parameters<typeof page>[3])),
     ...(upSw ? [page(`${id}_up`, [...conds, swOn(upSw)], [], { who, dir: "up", priority: "same" } as Parameters<typeof page>[3])] : []),
   ];
+}
+
+/** 앉은 그림 — 의자가 사람 아래로 보이게 서 있는 정지 프레임을 내려 그린다(graphic.pose, 엔진). */
+function seatedGraphic(p: ReturnType<typeof page>): ReturnType<typeof page> {
+  (p as unknown as { graphic: { pose?: "seated" } }).graphic.pose = "seated";
+  return p;
 }
 
 /** 의자에서 옆 바닥으로 일어선다(통과를 켜고 한 걸음). upSw 를 주면 일어선 뒤 같은 층 페이지로 바꾼다. */
@@ -507,7 +513,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
   // 흉상 자리는 장면 내내 고정(서하 왼쪽, 상대 오른쪽, VQA r16) — 민호도 서하 오른쪽(팀장 옆)에 선다.
   // 민호는 탕비실(왼쪽)에서 와 서하 왼쪽에 선다 — 팀장 오른쪽에 세우면 팀장을 사이에 두고 서하에게 말했다(VQA r18).
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y }, [...taken, leadMeetStop, jihuMeetStop]);
+  // r7 블라인드 4차(M1): 서하 왼쪽 «옆 줄»이 아니라 한 줄 앞의 왼쪽 바깥(15,5)에 세운다 — 핵심 둘(서하·지후)만 한 줄에서 마주 서고 둘레가 안쪽을 본다(∩).
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y + 1 }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -548,6 +555,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("minho_desk", [stageIs(V_STAGE, S.STREET)], [], { who: "minho", dir: "up" }),
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
       ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
+      // r7 블라인드 3차(S2): 같은 탕비실의 수요일 대화(panTo 배율 2)와 배율을 맞춘다 — 맵 폭 26 이 화면보다 좁아 1배면 두 사람이 점이다.
+      panTo(minhoSpot.x, minhoSpot.y + 1, 900, 2),
       // 사용자 2026-10-30 「탕비실 — 커피 머신 쓰는 법 알려 준다더니 안 알려 줌」: 예전엔 민호가 등을 돌려 혼자 누르고 끝났다(머신 그림도 없었다).
       // 이제 탕비실 카운터에 머신이 있고(firstLoveRooms.json ox-coffee-counter), 민호가 버튼을 짚어 준 뒤 서하가 직접 누른다.
       ...say("minho", "happy", "왔어요? 커피 머신 쓰는 법 알려 준다고 했죠. 이거 우리 회사 최대 기밀이에요."),
@@ -598,6 +607,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
           ...think("민호 씨는 더 묻지 않았다. 대신 커피를 한 잔 더 내렸다. 눈치가 빠른 사람이다."),
         ] },
       ]),
+      panBack(700), // 선택지 두 갈래가 모두 끝난 뒤 한 번
       ...say("minho", "base", "점심 같이 먹자고 하고 싶은데, 나 오늘 점심 미팅이에요."),
       ...say("minho", "happy", "대신 팁. 엘리베이터에서 R 누르면 옥상이에요. 사람 별로 없고, 바람 좋고. 캔커피 두 개 챙겨 가요."),
       playSe(SE_CAN),
@@ -647,15 +657,15 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
-    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, dirToward(leadMeetStop, heroMeet)),
-    face("ev_fl_lead", dirToward(leadMeetStop, heroMeet)),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, "left"),
+    face("ev_fl_lead", "left"), // 대각선(18,5)→(16,4)는 dirToward 가 빈 칸을 보게 해서 안쪽(왼쪽)으로 명시한다
     face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...sayAt("lead", "right", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
     // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
-    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, dirToward(minhoMeetStop, heroMeet)),
-    face("ev_fl_minho", dirToward(minhoMeetStop, heroMeet)),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, "right"),
+    face("ev_fl_minho", "right"), // 대각선(15,5)→(16,4)도 안쪽(오른쪽)으로 명시
     face("@player", dirToward(heroMeet, minhoMeetStop)),
     ...sayAt("minho", "right", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
@@ -894,6 +904,9 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_jihu_kon", "강지후", k.door, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
   add(kon, scene("ev_fl_kon_enter", { x: 1, y: 1 }, S.EVENING, [
+    // r7 블라인드 3차(S3): 편의점은 그린 부분이 20×16칸이라 1배면 화면의 37% 가 검다 — 들어서는 순간부터 가게 가운데를 배율 2 로 잡고
+    // 방을 나설 때까지 둔다(방문 도중 1배↔2배가 오가면 «장면마다 다른 화면»으로 읽힌다). 잡은 배율은 떠나는 장면(fadeOut 뒤)에서 푼다.
+    panTo(12, 10, 0, 2),
     // 점원은 들어오는 손님(문) 쪽을 보며 맞는다 — 왼쪽을 보고 인사했다(VQA r31).
     faceHero("ev_fl_clerk"),
     ...call("clerk", "happy", "어서 오세요~"),
@@ -924,6 +937,9 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_jihu_kon", dirToward(jihuStop, clerkSpot)),
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
+      // 편의점 맵은 화면보다 작아 1배로 두면 두 사람이 점이 되고 선택창이 선반을 덮는다(블라인드 1차) — 두 사람 사이를 배율 2로 잡고,
+      // 갈래가 계산대로 걷는 동안에도 같은 배율을 유지한다(skill 29·32).
+      panTo(Math.round((heroTalk.x + jihuStop.x) / 2), heroTalk.y, 900, 2),
       faceHero("ev_fl_jihu_kon"),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
       ifCond(swOn("sw_fl_admitted"),
@@ -935,6 +951,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       choices([
         { text: "(바나나우유 두 개를 계산한다)", then: [
           setSw(SW_MILK, true),
+          panTo(12, 10, 700, 2),
           // 둘이 계산대 앞까지 걸어가고, 점원은 계산하러 온 서하를 보고 묻는다.
           walkRoute(project, FL_MAP.konbini, "@player", heroTalk, registerFront, [jihuStop], true, dirToward(registerFront, clerkSpot)),
           walkRoute(project, FL_MAP.konbini, "ev_fl_jihu_kon", jihuStop, jihuRegister, [registerFront, heroTalk], true, dirToward(jihuRegister, registerFront)),
@@ -953,6 +970,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           ...like(2, "ev_fl_jihu_kon"),
         ] },
         { text: "(하나만 계산하고 가볍게 인사한다)", then: [
+          panTo(12, 10, 700, 2),
           ...say("seoha", "base", "먼저 들어가 보겠습니다. 내일 뵐게요."),
           ...say("jihu", "base", "…네. 조심히 들어가요."),
           // 「먼저 들어가 보겠습니다」 뒤엔 실제로 문 쪽으로 걸어간다(VQA r28: 말만 하고 서 있다가 회상으로 넘어갔다).
@@ -962,6 +980,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ]),
       ...think("윤서하 씨.", "10년 전, 그 사람이 내 이름을 처음 불렀던 곳은 방송실 앞이었다."),
       ...fadeOut(900),
+      panBack(0), // 편의점 배율(2)을 회상 방송실로 들고 가지 않는다
       stopBgm(),
       setSw("sw_fl_flashback", true),
       // 화면은 이미 검다 — 옮기기 자체의 밝아짐을 끄고 회상 장면이 주인공(어른 서하)을 감춘 뒤에 밝힌다(VQA r5: 첫 칸에 어른 서하가 보였다).
@@ -1095,6 +1114,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
         ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry, true),
+        // r7: 맵 폭 26 이 화면(30칸)보다 좁아 카메라가 가로로 못 움직여, 왼쪽 위 구석의 두 사람이 16px 점으로 흉상 밑에 눌렸다 —
+        // 금요일 회의처럼 둘 사이를 배율 2 로 잡는다. 선택지 창이 화면 가운데 아래에 뜨므로 중점을 한 칸 아래로 잡는다.
+        panTo(jihuPantry.x, jihuPantry.y + 1, 900, 2),
         ...say("jihu", "base", "물 부었어요. 3분."),
         ...say("seoha", "base", "회사에서 이렇게 늦게까지 있는 거, 자주 해요?"),
         ...say("jihu", "base", "발표 주간엔요. …그리고 이번이 마지막이라."),
@@ -1122,6 +1144,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
             ...like(1, "ev_fl_w_jihu_pantry"),
           ] },
         ]),
+        // 선택지 두 갈래가 모두 끝난 뒤 한 번 되돌린다(갈래마다 되돌리면 한 쪽이 빠진다).
+        panBack(700),
         ...say("jihu", "embarrassed", "아, 라면 불겠다."),
         ...think("둘이 컵라면을 먹었다. 10년 전 매점 앞 벤치처럼. 그 사람은 여전히 국물부터 마셨다."),
         ...fadeOut(900),
@@ -1601,8 +1625,11 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "base", "이번엔 내가 먼저 말할게요."),
           ...say("seoha", "embarrassed", "선배. 나 아직도, 금요일마다 급식 줄 늦게 서는 사람이에요."),
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
+          // r7 블라인드 3차(S1): 그림이 번지는 동안 대사가 뜨면 승강장과 회상 그림이 반투명으로 겹쳐 «깨진 화면»으로 읽혔다 —
+          // 그림은 섬광 아래서 600ms 로 다 띄우고, 다 보인 뒤에 첫 대사를 낸다(대사엔 흉상을 두지 않는다 — 그림 속 두 사람을 가리지 않게, VQA r23).
+          ...memoryPictureIn(255, 600),
           flash("white", 700),
-          ...memoryPictureIn(255, 1800),
+          wait(600),
           ...sayOver("jihu", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
@@ -1617,7 +1644,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...endingOpen("oprn-first-love-ending-a"),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
-          ...memoryPictureIn(255, 1600),
+          ...memoryPictureIn(255, 600),
+          wait(600),
           ...sayOver("seoha", "좋아했어요. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),

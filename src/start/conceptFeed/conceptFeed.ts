@@ -23,7 +23,6 @@ export type BuiltinDemoId = BuiltinGameId;
 /** 덮는 창의 「기본 데모 게임」 카드 — 첫 화면 「기본 게임」 선반과 같은 표(src/start/home/builtinGames.ts)를 쓴다. */
 const BUILTIN_DEMO_CARDS = BUILTIN_GAMES.map((game) => ({
   ...game,
-  playTestId: `builtin-demo-play-${game.id}`,
   openTestId: `builtin-demo-open-${game.id}`,
 }));
 
@@ -238,7 +237,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
         class: "cf-builtin-head",
         children: [
           el("h2", { class: "cf-builtin-title", text: "기본 게임" }),
-          el("p", { class: "cf-builtin-sub", text: "설치되어 있어 AI 없이 바로 플레이할 수 있어요" }),
+          el("p", { class: "cf-builtin-sub", text: "열어서 고쳐 보며 배우기 — 해 보려면 편집기 「테스트 실행」" }),
         ],
       }),
       el("div", {
@@ -264,13 +263,6 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
                   el("div", {
                     class: "cf-builtin-actions",
                     children: [
-                      el("button", {
-                        class: "cf-builtin-btn cf-builtin-btn-play",
-                        attrs: { type: "button" },
-                        dataset: { testid: demo.playTestId },
-                        text: "▶ 플레이",
-                        on: { click: () => runBuiltinDemo(demo.id, "play") },
-                      }),
                       el("button", {
                         class: "cf-builtin-btn cf-builtin-btn-open",
                         attrs: { type: "button" },

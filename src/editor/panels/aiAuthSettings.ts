@@ -43,6 +43,11 @@ import {
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { isOpenAiCompatProviderId } from "@/ai/openAiCompat";
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
+
+/** 동반 서비스가 AI 워커를 띄우다 실패한 오류인가(scripts/lib/ohMyPiPiAi.mjs 의 `oh-my-pi worker exited (…)` · 기동 시간 초과). */
+export function isWorkerStartFailure(detail: string): boolean {
+  return /oh-my-pi worker (exited|start timed out)/u.test(detail);
+}
 import {
   refreshAiConnectionStatus,
   resetAiConnectionStatusCache,
@@ -497,6 +502,10 @@ export function renderAiAuthSettings(
     actionsRow.hidden = custom;
     providerHelp.textContent = custom
       ? `${label} (사용자 지정) 로 쓰는 중 — 아래에서 바꿔요.`
+      : providerKind === "local"
+      // 내 PC 의 에이전트 CLI(local-cli:*) — 설정 마법사가 고르는 길이다. 자격은 그 프로그램이 갖고, 여기서는 상태만 본다.
+      // 예전엔 oauth 가 아니면 모두 「자격 종류는 지원하지 않아요」로 떠서 마법사가 고른 연결을 부정했다(2026-11-04).
+      ? stored ? `${label} — 이 PC 의 프로그램으로 연결됨` : `${label} — 이 PC 에 설치·로그인된 프로그램을 써요`
       : providerKind !== "oauth"
       ? `${label} 자격 종류는 지원하지 않아요.`
       : stored
@@ -619,6 +628,14 @@ export function renderAiAuthSettings(
       renderCardPill(providerId);
       return;
     }
+    if (isWorkerStartFailure(detail)) {
+      // AI 엔진(워커)이 켜지자마자 죽었다 — 사용자가 할 수 있는 일은 앱 업데이트·재시작뿐이다. curl 안내 같은 원문은 맨 끝에만 둔다.
+      setStatus("AI 엔진을 시작하지 못했어요", "offline");
+      serverError.textContent = `앱에 들어 있는 AI 엔진이 켜지지 않았어요. 앱을 완전히 닫았다가 다시 열고, 그래도 안 되면 최신 버전으로 설치해 주세요. 직접 무엇을 내려받을 필요는 없어요. (기술 정보: ${detail.slice(0, 160)})`;
+      cardAuth.set(providerId, "error");
+      renderCardPill(providerId);
+      return;
+    }
     serverError.textContent = `연결 서비스가 응답했지만 오류가 났어요. ‘연결 확인’을 눌러 다시 확인하세요. 계속 안 되면 서버 관리자에게 아래 오류 내용을 알려주세요. 오류 내용: ${detail}`;
     cardAuth.set(providerId, "error");
     renderCardPill(providerId);
@@ -658,7 +675,8 @@ export function renderAiAuthSettings(
     } else if (auth.expired === true) {
       setStatus("자격 만료 — 다시 로그인하세요", "disconnected");
     } else {
-      setStatus(ohMyPiAuthKind(providerId) === "oauth" ? "로그인 필요" : "키 필요", "disconnected");
+      const kindNow = ohMyPiAuthKind(providerId);
+      setStatus(kindNow === "oauth" ? "로그인 필요" : kindNow === "local" ? "프로그램 확인 필요" : "키 필요", "disconnected");
     }
     // 선택 제공자 카드의 필도 같은 상태로 맞춘다 — 카드가 곧 상태 표시다.
     cardAuth.set(providerId, auth);
@@ -899,10 +917,14 @@ export function renderAiAuthSettings(
 
   function showLoginFailure(detail: string): void {
     stopPolling();
-    setStatus("로그인 실패 — 다시 시도하세요", "disconnected");
+    const local = ohMyPiAuthKind(providerId) === "local";
+    setStatus(local ? "프로그램 확인 필요" : "로그인 실패 — 다시 시도하세요", "disconnected");
     hint.hidden = true;
     serverError.hidden = false;
-    serverError.textContent = `로그인을 완료하지 못했어요. 다시 로그인하거나 다른 계정을 선택하세요. 오류 내용: ${detail}`;
+    // 내 PC 프로그램은 우리가 로그인을 시키지 않는다 — 「다른 계정」 안내 대신 할 일(설치·로그인 후 다시 확인)을 말한다.
+    serverError.textContent = local
+      ? `아직 쓸 수 없어요 — ${detail}. 이 PC 에서 그 프로그램을 설치하고 로그인한 뒤 ‘연결 확인’을 누르세요.`
+      : `로그인을 완료하지 못했어요. 다시 로그인하거나 다른 계정을 선택하세요. 오류 내용: ${detail}`;
     stored = false;
     cardAuth.set(providerId, { connected: false, lastLoginError: detail });
     renderCardPill(providerId);

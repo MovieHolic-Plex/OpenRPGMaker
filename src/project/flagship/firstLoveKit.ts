@@ -29,7 +29,7 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   // 팀장은 버건디 카디건 — 정장 차림 본부장·출근길 회사원과 칩에서 바로 갈린다(VQA 7차).
   lead: { name: "오 팀장", stem: "teacher-cardigan", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 7, side: "right" },
   client: { name: "박 본부장", stem: "suit-boy-charcoal", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 1, side: "right" },
-  clerk: { name: "점원", stem: "apron-navy", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 4, side: "right" },
+  clerk: { name: "점원", stem: "konbini-clerk", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 4, side: "right" },
   seohaYoung: { name: "열일곱의 서하", stem: "uni-girl-long", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 0, side: "left" },
   jihuYoung: { name: "열아홉의 지후", stem: "uni-boy-navy", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 0, side: "right" },
   // 엑스트라 — 주요 인물과 겹치지 않는 칩(승강장에서 팀장·본부장 칩을 미리 보이면 같은 사람으로 읽힌다).

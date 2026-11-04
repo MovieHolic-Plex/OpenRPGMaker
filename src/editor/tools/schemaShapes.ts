@@ -447,6 +447,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
           enum: ["normal", "add", "screen", "multiply"],
           description: "아래 화면과 섞는 법. add=불꽃·빛기둥·유령·마법진처럼 밝게, screen=부드러운 빛, multiply=그림자·물들임. 생략=normal.",
         },
+        pose: {
+          type: "string",
+          enum: ["seated"],
+          description: "의자 칸(타일 태그 「의자」)에 앉은 사람은 seated — 선 자세 그림을 조금 내리고 아랫단을 잘라 의자가 사람 아래로 보인다. 서 있는 사람·의자 아닌 칸에는 쓰지 않는다(run_lint scene-seated-standing/scene-seated-off-chair). 생략=선 자세.",
+        },
       },
     },
     priority: { type: "string", enum: ["below", "same", "above"] },

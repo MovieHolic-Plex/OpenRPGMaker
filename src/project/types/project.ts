@@ -126,6 +126,8 @@ export interface GameMap {
   bgmWhileSwitch?: MapSwitchBgm[];
   /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
   battleBackground?: string;
+  /** 이 맵에서 열리는 일반 전투의 곡. 없으면 프로젝트 전투곡(system.battleBgmResourceId). 이벤트가 건 전투곡(보스전)이 이것보다 먼저다. */
+  battleBgmResourceId?: string;
   /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
   loop?: import("../mapLoop").MapLoop;
   /**

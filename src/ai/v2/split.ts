@@ -6,6 +6,8 @@
 //   `worker:` 칸은 받기만 한다(기록용) — 워커는 이 실행의 주 모델(편집기에서 고른 조수 모델)이다.
 // 모델에게 가는 글은 영어(사용자 지시 2026-10-30). 순수 함수만 — 호출은 실행기(scripts/lib/assistantV2Runtime.ts)가 한다.
 import type { Project } from "../../project/types";
+import { isOpenAiCompatProviderId } from "../openAiCompat.ts";
+import { parseOhMyPiProvider } from "../ohMyPiProviders.ts";
 
 export interface SplitRole { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
 export interface SplitConfig { readonly lead: SplitRole; readonly worker?: string; readonly raw: string }
@@ -41,14 +43,37 @@ export function parseSplitConfig(raw: string | undefined): SplitConfig | undefin
 
 /**
  * 이 실행의 나누기 설정. OPRN_V2_SPLIT 이 있으면 그 값이 이긴다(`off`·`0` = 끄기). 없으면 요청이 실어 온 팀장을 쓴다 —
- * 로컬 CLI 팀장만 받는다(사용자가 그 CLI 에 로그인해 있어 키가 필요 없다). 계정 모델 팀장은 키를 푸는 경로가 환경 변수에만 있다.
+ * 로컬 CLI 팀장(키 없음), 사용자 지정 엔드포인트(`openai-compat:<slug>`)·레지스트리 계정 팀장(키는 동반 서비스가 runAgent 에서 푼다)을 받는다.
+ * 워커와 다른 제공자여도 된다(Claude 팀장 + ChatGPT 워커). 모르는 제공자는 받지 않는다.
  */
 export function resolveSplitConfig(raw: string | undefined, requested?: { readonly provider: string; readonly model: string; readonly thinkingLevel?: string }): SplitConfig | undefined {
   if (raw !== undefined && raw.trim() !== "") return parseSplitConfig(raw.trim());
-  const cli = requested ? /^local-cli:(claude|codex|gemini)$/u.exec(requested.provider)?.[1] : undefined;
-  if (!cli || !requested?.model.trim()) return undefined;
-  const effort = EFFORTS.has(requested.thinkingLevel ?? "") ? `:${requested.thinkingLevel}` : "";
-  return parseSplitConfig(`lead:${cli}:${requested.model.trim()}${effort}`);
+  const model = requested?.model.trim();
+  if (!requested || !model) return undefined;
+  const cli = /^local-cli:(claude|codex|gemini)$/u.exec(requested.provider)?.[1];
+  if (cli) {
+    const effort = EFFORTS.has(requested.thinkingLevel ?? "") ? `:${requested.thinkingLevel}` : "";
+    return parseSplitConfig(`lead:${cli}:${model}${effort}`);
+  }
+  const provider = requested.provider;
+  if (!isOpenAiCompatProviderId(provider) && parseOhMyPiProvider(provider, "") !== provider) return undefined;
+  // 글로 되돌려 parseSplitRole 을 거치지 않는다 — 모델 id 에 `/` 가 든 계정(openrouter `openai/gpt-5.5`)을 잘못 자른다.
+  const effort = EFFORTS.has(requested.thinkingLevel ?? "") ? (requested.thinkingLevel as SplitRole["effort"]) : undefined;
+  return { lead: { provider, model, ...(effort ? { effort } : {}) }, raw: `lead:${provider}/${model}${effort ? `@${effort}` : ""}` };
+}
+
+type RequestLead = { readonly provider: string; readonly model: string; readonly thinkingLevel?: string };
+
+/**
+ * 요청에 실을 팀장(src/ai/piAgent/client.ts). 요청이 실어 온 팀장이 먼저, 없으면 v2 실행에만 엔진 선택의 팀장(engineLead).
+ * 워커와 같은 제공자면 예전처럼 그대로 싣는다. 다른 제공자면 요청이 직접 실어 온 팀장 중 resolveSplitConfig 가 받는 것만 싣는다
+ * (섞인 팀: Claude 팀장 + ChatGPT 워커). 엔진 선택의 팀장은 그 엔진으로 도는 실행에만 — 다른 계정으로 돌면 버린다.
+ */
+export function leadForRequest<L extends RequestLead>(request: { readonly provider: string; readonly lead?: L; readonly assistantVersion?: string }, engineLead: () => L | undefined): L | undefined {
+  const lead = request.lead ?? (request.assistantVersion === "v2" ? engineLead() : undefined);
+  if (!lead) return undefined;
+  if (lead.provider === request.provider) return lead;
+  return request.lead && resolveSplitConfig(undefined, request.lead) ? request.lead : undefined;
 }
 
 /**

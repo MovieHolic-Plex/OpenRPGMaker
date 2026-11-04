@@ -32,9 +32,20 @@ export type LocalCliStatus = {
   readonly models: readonly LocalCliModel[];
   readonly defaults: { readonly routine: string; readonly deep: string };
   readonly install: { readonly command: string; readonly help: string; readonly url: string };
+  readonly installByOs?: LocalCliInstallByOs;
   readonly login: { readonly command: string; readonly help: string };
+  readonly binaryPath?: string;
   readonly problem?: string;
 };
+
+export type LocalCliInstallStep = {
+  readonly command: string;
+  readonly help: string;
+  readonly requires?: "node";
+  readonly alt?: readonly { readonly label: string; readonly command: string; readonly requires?: "node" }[];
+};
+
+export type LocalCliInstallByOs = { readonly win32: LocalCliInstallStep; readonly darwin: LocalCliInstallStep; readonly linux: LocalCliInstallStep };
 
 export type LocalAgentsReport = {
   readonly clis: readonly LocalCliStatus[];
@@ -43,7 +54,10 @@ export type LocalAgentsReport = {
 
 export type HealthResult = { readonly ok: boolean; readonly ms: number; readonly reply?: string; readonly problem?: string };
 
+export type InstallResult = { readonly ok: boolean; readonly code: string; readonly message: string };
+
 export type LocalAgentsApi = {
+  install(id: "claude" | "codex"): Promise<InstallResult>;
   detect(fresh?: boolean): Promise<LocalAgentsReport>;
   health(id: LocalCliId): Promise<HealthResult>;
 };
@@ -94,6 +108,7 @@ export function createLocalAgentsApi(): LocalAgentsApi {
   return {
     detect: (fresh = false) => call<LocalAgentsReport>("GET", fresh ? "/local-agents?fresh=1" : "/local-agents"),
     health: (id) => call<HealthResult>("POST", "/local-agents/health", { cli: id }),
+    install: (id) => call<InstallResult>("POST", "/local-agents/install", { cli: id }),
   };
 }
 
@@ -109,6 +124,7 @@ export function mockLocalAgentsApi(): LocalAgentsApi {
       defaults: { routine: "", deep: "" }, install: { command: "npm install -g @google/gemini-cli", help: "", url: "https://github.com/google-gemini/gemini-cli" } },
   ];
   return {
+    install: async () => ({ ok: true, code: "ok", message: "설치했어요." }),
     detect: async () => ({ clis, recommended: "claude" }),
     health: async (id) => (id === "claude" ? { ok: true, ms: 1900, reply: "OK" } : { ok: false, ms: 300, problem: "로그인이 필요해요" }),
   };

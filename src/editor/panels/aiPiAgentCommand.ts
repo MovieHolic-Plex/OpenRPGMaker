@@ -3,6 +3,7 @@ import { formatLocalCliCost } from "@/ai/localCliEngine";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
 import { createAssistantViewNavigation } from "@/editor/assistantViewNavigation";
+import { createAiFollowCamera } from "@/editor/aiFollowCamera";
 import { defaultYieldToUi, isUiInBackground } from "@/ai/yieldToUi";
 import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPreparation";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
@@ -331,8 +332,10 @@ async function runOwnedPiCommand(
   projectKey: string,
 ): Promise<boolean> {
   const humanEdits = createAssistantHumanEdits();
-  try { return await runPiCommandProtected(command, surface, options, humanEdits, projectKey); }
-  finally { humanEdits.dispose(); }
+  const follow = createAiFollowCamera({ baseProject: store.getCurrent(), ...(surface.background ? { background: true } : {}) });
+  const followed: PiCommandSurface = { ...surface, onEvent: (event) => { follow.observe(event); surface.onEvent?.(event); } };
+  try { return await runPiCommandProtected(command, followed, options, humanEdits, projectKey); }
+  finally { follow.dispose(); humanEdits.dispose(); }
 }
 
 async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits, projectKey: string): Promise<boolean> {

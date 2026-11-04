@@ -4,7 +4,7 @@ import { clearConversations } from "@/ai/conversationStore";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { AI_BACKGROUND_OPACITY_KEY } from "@/editor/panels/aiPanelLayout";
-import { closeAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { closeAiSettingsModal, openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderTopbar } from "@/editor/panels/menu";
 import { listEditorCommands } from "@/editor/commandRegistry";
 import { requestAiStudioToggle } from "@/editor/aiStudioMode";
@@ -52,10 +52,10 @@ async function boot(): Promise<HTMLElement> {
   return panel;
 }
 
-/** AI 설정은 ⋯ 더 보기 안의 항목이다(2026-11 개편). 팝업이 열려 있지 않으면 ⋯ 를 누른다. */
+/** AI 설정의 집은 ⌘K 「화면: AI 설정 열기」 명령이다(2026-11 개편, 톱바에 ⋯ 가 없다). 명령은 모달을 실행 때 불러오므로 같은 함수를 동기로 부른다. */
 function openTopbarAiSettings(): void {
-  if (!document.querySelector('[data-testid="topbar-ai-settings"]')) control("menu-more-tools").click();
-  control("topbar-ai-settings").click();
+  expect(listEditorCommands().some((entry) => entry.id === "topbar-ai-settings"), "⌘K AI 설정 명령").toBe(true);
+  openAiSettingsModal();
 }
 
 /**

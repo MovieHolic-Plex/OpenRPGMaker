@@ -212,14 +212,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       await page.keyboard.press("End");
       expect(await page.getByTestId("ai-panel").evaluate((n) => n.style.getPropertyValue("--ai-background-opacity"))).toBe("100%");
       await page.getByTestId("ai-settings-close").click();
-      // 2026-11 톱바 개편: AI 설정은 ⋯ 안의 항목이라 팝업이 닫힌 뒤 초점은 ⋯ 단추로 돌아간다.
-      await expect(page.getByTestId("menu-more-tools")).toBeFocused();
+      // 2026-11 톱바 개편: AI 설정의 집은 ⌘K 명령이다 — 닫으면 창이 사라진다(열어 준 팔레트 입력칸은 이미 없다).
+      await expect(page.getByTestId("ai-settings-modal")).toBeHidden();
     });
 
     for (const kind of ["settings", "history"]) {
       test(`F7 ${kind} contains focus and restores opener`, async ({ page }) => {
-        // 설정의 톱바 진입점은 ⋯ 안의 항목이다 — 닫으면 초점은 ⋯ 단추로 돌아간다(2026-11 톱바 개편).
-        const opener = page.getByTestId(kind === "settings" ? "menu-more-tools" : "ai-open-conversations");
+        // 설정의 진입점은 ⌘K 명령이다(2026-11 톱바 개편) — 열어 준 팔레트 입력칸이 사라지므로 초점 복귀 단언은 기록 창만 한다.
+        const opener = page.getByTestId("ai-open-conversations");
         if (kind === "settings") await openTopbarAiSettings(page);
         else await opener.click();
         await page.getByTestId(`ai-${kind}-close`).focus();
@@ -239,7 +239,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
         }
         await page.keyboard.press("Escape");
         await expect(page.getByTestId(`ai-${kind}-modal`)).toBeHidden();
-        await expect(opener).toBeFocused();
+        if (kind === "history") await expect(opener).toBeFocused();
       });
     }
 

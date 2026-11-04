@@ -1,6 +1,7 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
+import { createAiLiveStatus, type AiLiveStatus } from "@/editor/panels/aiLiveStatus";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
@@ -425,6 +426,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   let disposed = false;
   let canvasProgress: AiCanvasProgress | null = null;
+  let liveStatus: AiLiveStatus | null = null;
   // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
   // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
   let heavyWireWarmupScheduled = false;
@@ -514,6 +516,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 적용 실패 같은 멈춤을 로그 export로 진단한다.
   const setStatus = (text: string, record = true): void => {
     canvasProgress?.status(text);
+    liveStatus?.status(text);
     status.textContent = text;
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
@@ -1230,6 +1233,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const startNewConversation = (reason: "manual"): void => {
     workspace.showChat();
     resetConversationState(reason);
+    if (!turnBusy) { liveStatus?.root.remove(); liveStatus = null; }
     toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
   };
 
@@ -2163,6 +2167,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
+    liveStatus?.root.remove();
+    const turnLiveStatus = createAiLiveStatus({ baseProject: store.getCurrent() });
+    liveStatus = turnLiveStatus;
+    composerShell.commandBar.before(turnLiveStatus.root);
     runSurface.turnBusy = true;
     refreshSendEnabled();
     await progress.paint();
@@ -2200,7 +2208,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     try {
       await runPiCommand(command, {
-        onEvent: event => { progress.event(event); featureChecklist.event(event); },
+        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2245,6 +2253,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
     } finally {
       progress.finish();
+      turnLiveStatus.finish();
       if (canvasProgress === progress) canvasProgress = null;
       const phase = currentTeamActivity()?.phase;
       finishWorkCard({ ok: phase !== "실패" && phase !== "중단", message: phase === "검토 대기" ? "검토 필요" : phase === "실패" ? "실패" : phase === "중단" ? "중단" : undefined });

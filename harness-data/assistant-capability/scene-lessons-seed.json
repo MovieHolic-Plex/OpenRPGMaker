@@ -918,6 +918,149 @@
     "event names are the object name only, so the runtime prompt reads 「Z 조사 · 물레방아」 once, not 「Z 조사 · 조사 · …」",
     "no walkable cell became blocked, and the project saves and reloads"
    ]
+  },
+  {
+   "id": "area-battle-music",
+   "label": "지역마다 전투곡, 보스는 보스곡 — 전투 하나에 곡 하나로 몰지 않는다",
+   "port": 19551,
+   "lessons": [
+    "area-battle-bgm",
+    "boss-has-own-bgm",
+    "se-one-job"
+   ],
+   "prompt": "숲 마을 하나, 숲 둘, 얼음 동굴 둘을 만들고 숲에는 늑대·슬라임, 얼음 동굴에는 얼음 박쥐가 나오는 전투를 각 맵에 하나씩 넣어 줘. 얼음 동굴 끝에는 「서리 군주」 보스전을 하나 두고. 숲 전투와 동굴 전투는 다른 전투곡이 나오게, 보스전은 보스곡이 나오게 해 줘. 상자에서 물건을 받을 때와 문을 열 때 소리도 따로 넣어 줘.",
+   "requirements": [
+    "the forest maps and the ice cave maps resolve to two different normal battle cues (map battleBgmResourceId or an equivalent per-area binding), and run_lint has no audio-battle-bgm-uniform",
+    "the 「서리 군주」 battle plays a boss cue that differs from both area cues (set_game_audio role:boss), and run_lint has no audio-boss-uses-default",
+    "every bound cue is a bundled catalog track that exists and plays, picked from recommend_bgm scene battle/boss candidates",
+    "the chest and the door use different sound effects and run_lint has no audio-se-overused; the project saves and reloads"
+   ]
+  },
+  {
+   "id": "reunion-side-by-side",
+   "label": "첫 만남·재회는 위아래 한 열이 아니라 한 줄 옆 칸에서 마주 본다",
+   "port": 19552,
+   "lessons": [
+    "talk-not-stacked",
+    "close-up-camera"
+   ],
+   "prompt": "회사 사무실 맵 하나를 만들고, 첫 출근한 신입 서하가 엘리베이터에서 내리면 사수 지후가 다가와 인사하는 장면을 넣어 줘. 서하가 놀라서 「…지후 선배?」 하고 부르는 선택지도 하나 넣고, 이 순간은 카메라가 두 사람 사이로 가까이 다가가 보여 줘.",
+   "requirements": [
+    "the reunion beat places the senior beside the newcomer on the same row (not directly above or below in the same column), and both face each other",
+    "a camera pan/zoom toward the midpoint of the two characters runs before the choice and returns after it",
+    "run_lint has no scene-talk-stacked and no scene-talk-facing; the project saves and reloads"
+   ],
+   "lint0": [
+    "scene-talk-stacked",
+    "scene-talk-facing",
+    "scene-talk-far"
+   ]
+  },
+  {
+   "id": "venue-matched-bust",
+   "label": "편의점 점원은 카페 점원 흉상을 빌려 쓰지 않는다 — 없으면 없다고 알린다",
+   "port": 19553,
+   "lessons": [
+    "bust-matches-venue"
+   ],
+   "prompt": "편의점 맵 하나를 만들고 계산대에 점원 NPC를 세워 「어서 오세요」 하고 말하게 해 줘. 점원의 얼굴 그림(흉상)도 붙여 줘.",
+   "requirements": [
+    "the clerk speaks with a bust whose name/description fits a convenience-store worker, OR the assistant tells the user no matching bust exists and either speaks without a bust or asks to create one — it must not attach a bust named 「카페 점원 …」",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "narrow-map-edge-talk-pan",
+   "label": "화면보다 좁은 맵의 가장자리 대화는 카메라를 두 사람 쪽으로 잡는다",
+   "port": 19554,
+   "lessons": [
+    "narrow-map-edge-talk-pan"
+   ],
+   "prompt": "폭 26칸짜리 사무실 맵을 하나 만들고, 맵 왼쪽 위 구석 탕비실에서 두 동료가 선택지가 있는 대화를 하게 해 줘. 화면이 구석에 몰려 작게 보이지 않게 해 줘.",
+   "requirements": [
+    "the corner conversation runs a Camera Control panTo (zoom >= 2) toward the pair before the dialogue and returns the camera once after the choice's branches end",
+    "the choice window does not cover the speakers' feet (the pan aims about one tile below the midpoint if needed)",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "seated-listeners-chair-visible",
+   "label": "의자에 앉은 사람은 앉은 자세(pose seated)로 그려 의자가 보이게 한다",
+   "port": 19555,
+   "lessons": [
+    "seated-listeners-chair-visible"
+   ],
+   "prompt": "회의실에 긴 탁자를 놓고 탁자 아래쪽 의자 세 칸에 동료 셋이 앉아 발표자를 올려다보게 해 줘. 의자가 보이게 앉은 모습으로 그려 줘.",
+   "requirements": [
+    "each of the three seated people's event page uses graphic pose 'seated' (not a standing frame) on a chair cell (tile tag 의자)",
+    "run_lint reports no scene-seated-standing and no scene-seated-off-chair",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "small-room-hold-zoom",
+   "label": "화면보다 작은 방은 방에 있는 동안 배율을 한 번 정해 유지한다",
+   "port": 19556,
+   "lessons": [
+    "small-room-hold-zoom"
+   ],
+   "prompt": "화면보다 작은 편의점 방을 만들고, 들어서는 장면과 선택지가 있는 대화를 넣어 줘. 방 안 장면마다 화면이 다르게 보이지 않게 해 줘.",
+   "requirements": [
+    "the entry scene pans the camera to the room centre at zoom 2 (Camera Control panTo, 0 ms) before the first line",
+    "choice branches keep the same zoom (panTo, not panBack) and the zoom is released once with panBack(0) when leaving the room",
+    "run_lint reports no scene-map-smaller-than-screen for the room, or the room keeps the zoom for the whole visit",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "picture-before-first-line",
+   "label": "전체 화면 그림 위의 첫 대사는 그림이 다 보인 뒤에 낸다",
+   "port": 19557,
+   "lessons": [
+    "picture-before-first-line"
+   ],
+   "prompt": "고백 장면 한가운데 10년 전 추억 그림을 화면 가득 띄우고 그 위에서 주인공이 대사를 하게 해 줘. 그림이 반쯤 투명한 채로 대사가 나오지 않게 해 줘.",
+   "requirements": [
+    "the picture fades in over about 600 ms and the scene waits that long (wait command or waitForPicture true) before the first text",
+    "run_lint reports no scene-text-during-picture-fade",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "group-talk-arc-not-row",
+   "label": "셋 이상이 모인 첫 만남은 한 줄이 아니라 ∩ 대형으로 세운다",
+   "port": 19558,
+   "lessons": [
+    "group-talk-arc-not-row"
+   ],
+   "prompt": "엘리베이터 홀에서 신입이 팀장·동료·사수를 처음 만나는 장면을 만들어 줘. 네 사람이 줄 선 것처럼 보이지 않게 해 줘.",
+   "requirements": [
+    "at most two actors share one row: the speaking pair stands face to face one tile apart, the others stand one row nearer the camera on the outer columns",
+    "every listener faces inward (explicit face commands for diagonal cells), nobody faces an empty tile",
+    "nobody stacks in one column",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "qa-talkto-walkable-cell",
+   "label": "QA 순간이동 접근 칸은 사람이 설 수 있는 바닥 칸으로 고른다",
+   "port": 19559,
+   "lessons": [
+    "qa-talkto-walkable-cell"
+   ],
+   "prompt": "탕비실 카운터 앞에서 동료가 말하는 장면의 QA 시나리오를 만들어 줘. 주인공이 카운터 위에 서 있는 것처럼 찍히지 않게 해 줘.",
+   "requirements": [
+    "the scenario approaches the talker from the side that has walkable floor (never teleports the player onto a solid counter or furniture cell)",
+    "if a capture shows a sprite inside furniture the review checks whether it is a harness teleport before calling it a game defect",
+    "the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

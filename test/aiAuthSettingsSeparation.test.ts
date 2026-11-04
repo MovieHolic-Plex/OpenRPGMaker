@@ -203,6 +203,48 @@ describe("안내와 오류를 구분하고 오진하지 않는다", () => {
   });
 });
 
+// 설정 마법사가 고르는 「내 PC」 프로그램(local-cli:*) 을 패널이 부정하지 않는다(2026-11-04 윈도우 제보).
+describe("내 PC 프로그램과 엔진 기동 실패", () => {
+  it("local-cli 제공자를 「지원하지 않아요」로 말하지 않고, 준비되면 연결됨이다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "local" });
+    const { root, dispose } = await render("local-cli:codex");
+    await Promise.resolve();
+    await Promise.resolve();
+    const help = findByTestId(root, "ai-auth-provider-help")?.textContent ?? "";
+    expect(help).not.toContain("지원하지 않아요");
+    expect(help).toContain("이 PC");
+    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
+    dispose();
+  });
+
+  it("local-cli 가 아직 준비 안 됐으면 「다른 계정」이 아니라 설치·로그인을 안내한다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, authKind: "local", lastLoginError: "Codex · ChatGPT (내 PC): 로그인 필요" });
+    const { root, dispose } = await render("local-cli:codex");
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("프로그램 확인 필요");
+    const error = findByTestId(root, "ai-oauth-server-error")?.textContent ?? "";
+    expect(error).toContain("설치하고 로그인");
+    expect(error).not.toContain("다른 계정");
+    dispose();
+  });
+
+  it("AI 워커가 켜지다 죽으면 원문 대신 앱 다시 열기·업데이트를 말한다", async () => {
+    const { ChatGptCompanionResponseError } = await import("@/ai/chatgptOAuthClient");
+    fetchChatGptAuthStatus.mockRejectedValue(new ChatGptCompanionResponseError(500, "oh-my-pi worker exited (1): baseline.node\" curl -fsSL \"https://github.com/can1357/oh-my-pi/releases/latest/download/pi_natives.win32-x64.node\""));
+    const { root, dispose } = await render("local-cli:codex");
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("AI 엔진을 시작하지 못했어요");
+    const error = findByTestId(root, "ai-oauth-server-error")?.textContent ?? "";
+    expect(error).toContain("다시 열고");
+    expect(error).toContain("직접 무엇을 내려받을 필요는 없어요");
+    expect(error.startsWith("앱에 들어 있는 AI 엔진")).toBe(true);
+    dispose();
+  });
+});
+
 describe("환경 변수 키", () => {
   it("동의한 환경 변수 키는 연결됨으로 말한다", async () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true, envScan: "allow" });

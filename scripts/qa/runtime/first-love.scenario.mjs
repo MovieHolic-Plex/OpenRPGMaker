@@ -36,6 +36,8 @@ const choose = (index) => [toChoice(), ...pick(index)];
 const untilStage = (n, max = 80) => ({ kind: "pressUntilJs", key: "Enter", fn: stage(n), maxPresses: max, settleMs: 450 });
 const closeDialogue = (max = 30) => ({ kind: "pressUntilJs", key: "Enter", fn: `() => !(${DIALOG}) && !(${CHOICES})`, maxPresses: max, settleMs: 450 });
 const untilEnding = { kind: "pressUntilJs", key: "Enter", fn: "() => !!document.querySelector(\"[data-testid='ending-screen']\")", maxPresses: 80, settleMs: 600 };
+/** 호감 알림은 고른 갈래의 마지막 줄 뒤에 3.2초만 떠 있다 — 고르기 전에 감시를 걸어 떴던 적이 있는지를 본다(누르기가 그 순간을 지나치지 않게). 선택지가 떠 있어 참을 돌려주므로 누르지 않는다. */
+const pulseLatch = { kind: "pressUntilJs", key: "Enter", maxPresses: 1, settleMs: 50, fn: "() => { if (!window.__flPulseObs) { window.__flPulseSeen = false; window.__flPulseObs = new MutationObserver(() => { if (document.querySelector(\"[data-testid='relationship-pulse']\")) window.__flPulseSeen = true; }); window.__flPulseObs.observe(document.body, { childList: true, subtree: true }); } return true; }" };
 /** 문 칸 바로 옆에서 그쪽으로 걸어 밟는다. */
 function stepInto(mapId, cell, dir) {
   const from = { up: { x: cell.x, y: cell.y + 1 }, down: { x: cell.x, y: cell.y - 1 }, left: { x: cell.x + 1, y: cell.y }, right: { x: cell.x - 1, y: cell.y } }[dir];
@@ -47,6 +49,8 @@ function stepInto(mapId, cell, dir) {
   ];
 }
 /** 이벤트 옆에 서서 그쪽을 보고 말을 건다. */
+// dir 은 «대상을 보는 방향» 이다 — 순간이동 칸은 그 반대편이다. 그 칸이 막힌 칸(카운터·가구)이면 사람이 설 수 없는 자리라 스프라이트가 가구에 박힌 채 찍힌다
+// (첫사랑 r7 4차: 탕비실 라면 비트가 "down" 으로 카운터 칸에 순간이동 → 블라인드가 «카운터에 낀 머리»로 지적). 바닥이 있는 쪽에서 접근하게 dir 을 고른다.
 function talkTo(mapId, cell, dir = "up") {
   const from = { up: { x: cell.x, y: cell.y + 1 }, down: { x: cell.x, y: cell.y - 1 }, left: { x: cell.x + 1, y: cell.y }, right: { x: cell.x - 1, y: cell.y } }[dir];
   return [
@@ -108,9 +112,9 @@ export default {
     { id: "street", note: "부딪힌 뒤 거리(낮) — 조작 가능", ops: [untilStage(2), shotPause(600)], shot: true },
     { id: "office-arrive", note: "사무실 도착 — 팀장 인사", ops: [...stepInto("fl_street", officeDoor, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1200)], shot: true },
     { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 500 }, shotPause(1200)], shot: true },
-    { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },
+    { id: "c1", note: "선택 1", ops: [toChoice(), ...(A ? [pulseLatch] : []), shotPause(500)], shot: true },
     { id: "after-c1", note: "선택 1 결과", ops: [...pick(pickC1), shotPause(900)], shot: true },
-    ...(A ? [{ id: "pulse", note: "호감 알림 — 오른쪽 위 ♥", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => !!document.querySelector(\"[data-testid='relationship-pulse']\")", maxPresses: 12, settleMs: 250 }, shotPause(300)], shot: true }] : []),
+    ...(A ? [{ id: "pulse", note: "호감 알림 — 오른쪽 위 ♥", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => !!window.__flPulseSeen", maxPresses: 25, settleMs: 450 }, shotPause(300)], shot: true }] : []),
     { id: "office-free", note: "사무실 자유 이동", ops: [untilStage(3), shotPause(800)], shot: true },
     openMenu("menu-mon", "ESC 메뉴 — 연애 메뉴(호감도·대화 기록·엔딩·저장)"),
     closeMenu("menu-mon-close"),
@@ -131,7 +135,7 @@ export default {
     openMenu("menu-wed", "ESC 메뉴 — 수요일 호감도"),
     closeMenu("menu-wed-close"),
     { id: "notebook", note: "지후 수첩", ops: [...talkTo("fl_office_pm", notebook, "up"), toChoice(), shotPause(500)], shot: true },
-    { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "down"), toChoice(), shotPause(500)], shot: true },
+    { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "friday", note: "금요일 발표", ops: [...pick(pickC6), { kind: "pressUntilJs", key: "Enter", fn: "() => /핵심이 뭡니까/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 600 }, shotPause(1200)], shot: true },
     { id: "c7", note: "발표 선택", ops: [toChoice(), ...pick(pickC7), shotPause(900)], shot: true },
     { id: "c8", note: "역으로 / 회식", ops: [toChoice(), shotPause(500)], shot: true },

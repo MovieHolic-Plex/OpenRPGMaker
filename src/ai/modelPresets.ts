@@ -32,12 +32,15 @@ export interface ModelPreset {
 
 /**
  * 제공자별 티어 → 모델 ID. 두 제공자의 카탈로그(modelCatalog) 첫/대표 항목으로 맞춘다.
- * fast: 각 제공자의 기본 모델(레지스트리 defaultModel 과 일치), strong: 최상위 모델.
+ * fast: 각 제공자의 기본 모델(레지스트리 defaultModel 과 일치), strong: 최상위 모델. 예외는 anthropic(fast = Haiku).
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
   [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-4-argon", strong: "gemini-4-argon" },
   // Codex 는 두 티어 모두 gpt-6.1-sol 이고 사고 강도로만 가른다(2026-10-07 조수 시험에서 기본으로 채택).
   [CODEX_PROVIDER_ID]: { fast: "gpt-6.1-sol", strong: "gpt-6.1-sol" },
+  // Claude 계정: 로컬 Claude CLI 기본(src/ai/planDefaults.ts routine haiku · deep opus)과 같은 짝이다. 티어가 없으면
+  // configForProviderSelection 이 이전 제공자의 모델 id(gemini-4-argon 등)를 Claude 계정에 그대로 남긴다.
+  anthropic: { fast: "claude-haiku-5-5", strong: "claude-opus-5-5" },
 };
 
 /** 티어의 실제 모델 ID. 매핑이 없는 제공자면 null — 호출부는 그 역할의 모델을 건드리지 않는다. */

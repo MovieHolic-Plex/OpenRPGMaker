@@ -85,7 +85,7 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 // 2026-11 개편안 배치(시안 mock-editor-*.png) — 처음 30분 쓰는 사람에게 필요한 것만 보인다:
 //   • 왼쪽  = 상품 점 · 경로 「프로젝트 ▾ / 지금 맵」.
 //   • 가운데 = 편집 칸 지형 · 바닥 · 상위 · 이벤트(한 분절).
-//   • 오른쪽 = 자료집 · 소재 · 조수 · 저장됨(글자) · ▷ 테스트 실행 · ⋯ 더 보기(도움말·언어·AI 설정).
+//   • 오른쪽 = 자료집 · 소재 · 조수 · 저장됨(글자) · ▷ 테스트 실행. (⋯ 더 보기는 없다 — 도움말·언어·AI 설정은 ⌘K.)
 // 세계관·음악·찾기·랜덤 전투·AI 스튜디오·보기·명령 팔레트 칩·저장 기록·편집 이름·전체화면은 ⌘K 명령으로만
 // 닿는다(commandRegistry). 단추를 그리던 함수는 아래 「⌘K 로 옮긴 톱바 단추」 묶음에 남겨 되살릴 수 있게 했다.
 
@@ -203,7 +203,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   // 왼쪽 — 상품 점과 경로 「프로젝트 ▾ / 지금 맵」.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
-  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 메뉴 — ${projectLabel}` });
+  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { className: "studio-project-button", title: `프로젝트 메뉴 — ${projectLabel}` });
   disposeProjectLabel = watchProjectMenuLabel(projectButton);
   lead.append(renderProductBrand(), projectButton, ...(mode === "edit" ? [renderMapCrumb()] : []));
   menuBar.append(lead);
@@ -242,8 +242,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
-  // 늘 보인다 — 숨긴 단추의 집이 아니라 도움말·언어·AI 설정의 집이다. 항목은 열 때마다 만든다(연결 상태가 이름에 붙는다).
-  trailing.append(renderMenu("more-tools", "더 보기", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" }));
+  // ⋯ 더 보기는 없다(시안에 없다) — 도움말·언어·AI 설정은 ⌘K 명령이다(commandRegistry). 되살리려면 RETIRED_TOPBAR_CONTROLS.moreMenu.
   menuBar.append(trailing);
 
   topbar.append(menuBar);
@@ -275,7 +274,7 @@ export function autosaveStripText(state: AutoSaveState): string {
     case "error":
       return state.code === "session-not-persisted" ? "저장 안 함(임시)" : "저장 실패";
     default:
-      return "변경 없음";
+      return "저장됨";
   }
 }
 
@@ -417,6 +416,7 @@ export const RETIRED_TOPBAR_CONTROLS = {
   panels: renderWorkspaceBar,
   battleTest: renderQuickBattleTestButton,
   fullscreen: renderFullscreenButton,
+  moreMenu: (topbar: HTMLElement): HTMLElement => renderMenu("more-tools", "더 보기", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" }),
   worldButton: (): HTMLElement => toolButton({ testId: "toolbar-world", icon: TOPBAR_ICONS.world, title: headerLabel("world"), keys: "Control+Alt+W", onClick: () => openWorldPanel() }),
   audioButton: (): HTMLElement => toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
   searchButton: (): HTMLElement => toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
@@ -1046,16 +1046,15 @@ function installTopbarChords(): void {
 }
 
 /** 예제 프로젝트 하위 메뉴 — 전부 「현재 작업을 지우고 시작」 확인을 거치는 로더다.
+ * 2026-11-04: 「— 바로 플레이 ▶」 줄은 뺐다. Studio 는 만드는 앱이라 플레이는 예제를 연 뒤 「테스트 실행」 하나로 한다
+ * (설계 http://mdc-server:18301/studio-runtime-split.html B안).
  * 지운 칩셋 위의 데모(이슬 마을·천공의 계단·학습 예시·설산·얼음 평원·포켓몬풍·농장)는 2026-10-07 저작권 정리로 뺐다. */
 function sampleProjectCommands(): readonly MenuCommand[] {
   return [
     item("폴른 스타: 추락한 별과 태엽의 성녀 (기본 JRPG 데모)", "menu-project-demo-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell")),
-    item("폴른 스타: 추락한 별과 태엽의 성녀 — 바로 플레이 ▶", "menu-project-play-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell", true)),
     item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown")),
-    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown", true)),
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     item("첫사랑 (기본 오피스 로맨스 데모)", "menu-project-demo-first-love", () => void loadFlagshipDemoInEditor("first-love")),
-    item("첫사랑 — 바로 플레이 ▶", "menu-project-play-first-love", () => void loadFlagshipDemoInEditor("first-love", true)),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];

@@ -3,6 +3,7 @@ import { isPixelFxEffectIdFormat } from "@/project/pixelFxSpec";
 import { CHASE_BRAINS, isChaseBrain } from "@/project/chaseBrain";
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { isBlendModeName } from "@/project/blendMode";
+import { isEventPose } from "@/project/seatedPose";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import {
   CHARACTER_FOOTPRINT_AXIS_MAX,
@@ -317,6 +318,7 @@ function validateEventGraphic(label: string, value: unknown): void {
     assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.scaleMode must be auto or manual`);
   }
   if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.blendMode must be normal, add, screen or multiply`);
+  if (graphic.pose !== undefined) assert(isEventPose(graphic.pose), `${label}.pose must be seated`);
 }
 
 /**
@@ -507,6 +509,7 @@ function validatePageShape(label: string, value: unknown): void {
     assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.graphic.scaleMode must be auto or manual`);
   }
   if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.graphic.blendMode must be normal, add, screen or multiply`);
+  if (graphic.pose !== undefined) assert(isEventPose(graphic.pose), `${label}.graphic.pose must be seated`);
   validateCharacterFootprintFields(label, page);
   validateTrigger(`${label}.trigger`, page.trigger);
   requireString(`${label}.priority`, page.priority);

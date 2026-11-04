@@ -39,6 +39,8 @@ export function isCompanionPath(url = "") {
     || path === "/auth/openai-compat/test"
     || path === "/auth/openai-compat/delete"
     || path === "/auth/openai-compat/connect"
+    || path === "/auth/key-sources"
+    || path === "/auth/key-adopt"
     || path === "/auth/logout"
     || path === "/auth/refresh"
     || path === "/auth/oauth-paste"
@@ -57,6 +59,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/workshop/gate/cancel"
     || path === "/v1/local-agents"
     || path === "/v1/local-agents/health"
+    || path === "/v1/local-agents/install"
   );
 }
 
@@ -258,6 +261,26 @@ export async function handleCompanionRequest(req, adapters) {
     return json(405, { error: "Method not allowed" });
   }
 
+  // 이미 가진 API 키: 목록은 출처 이름만, 입양은 동반 서비스가 키를 꺼내 고정 주소로 시험한다. 주소·키는 본문에서 받지 않는다.
+  if (path === "/auth/key-sources" || path === "/auth/key-adopt") {
+    if (method === "GET" && path === "/auth/key-sources") {
+      if (typeof adapters.keySources !== "function") return json(501, { error: "이 동반 서비스는 API 키 찾기를 지원하지 않습니다." });
+      return json(200, await adapters.keySources());
+    }
+    if (method === "POST" && path === "/auth/key-adopt") {
+      if (typeof adapters.keyAdopt !== "function") return json(501, { error: "이 동반 서비스는 API 키 연결을 지원하지 않습니다." });
+      const sourceId = typeof body.sourceId === "string" ? body.sourceId.trim() : "";
+      if (!sourceId) return json(400, { error: "sourceId is required" });
+      const model = typeof body.model === "string" && body.model.trim() ? body.model.trim() : undefined;
+      return json(200, await adapters.keyAdopt({
+        sourceId,
+        ...(model ? { model } : {}),
+        ...(body.testBaseUrl !== undefined ? { testBaseUrl: body.testBaseUrl } : {}),
+      }));
+    }
+    return json(405, { error: "Method not allowed" });
+  }
+
   if (method === "POST" && path === "/v1/images/generations") {
     if (typeof adapters.generateImage !== "function") {
       return json(501, { error: "이 동반 서비스는 이미지 생성을 지원하지 않습니다." });
@@ -309,6 +332,11 @@ export async function handleCompanionRequest(req, adapters) {
     if (typeof adapters.localAgents !== "function") return json(501, { error: "로컬 에이전트 감지를 지원하지 않습니다." });
     const query = new URL(req.url ?? "", "http://companion.local").searchParams;
     return json(200, await adapters.localAgents({ fresh: query.get("fresh") === "1" }));
+  }
+  // 앱이 대신 설치한다 — 설치할 수 있는 프로그램은 고정 목록뿐이고(localCliAgent/installer.ts) 명령은 본문에서 받지 않는다.
+  if (method === "POST" && path === "/v1/local-agents/install") {
+    if (typeof adapters.localAgentInstall !== "function") return json(501, { error: "앱이 대신 설치하는 기능을 지원하지 않습니다." });
+    return json(200, await adapters.localAgentInstall({ cli: typeof body.cli === "string" ? body.cli : "" }));
   }
   if (method === "POST" && path === "/v1/local-agents/health") {
     if (typeof adapters.localAgentHealth !== "function") return json(501, { error: "로컬 에이전트 확인을 지원하지 않습니다." });

@@ -8,7 +8,8 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines, type SpawnedLines } from "./process.ts";
-import type { LocalCliAdapter, LocalCliBlock, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage, LocalCliImage } from "./types.ts";
+import { resolveBinary } from "./resolveBinary.ts";
+import { installFields, type LocalCliAdapter, type LocalCliBlock, type LocalCliInstallByOs, type LocalCliSession, type LocalCliSessionOptions, type LocalCliStatus, type LocalCliUsage, type LocalCliImage } from "./types.ts";
 
 export const CLAUDE_MCP_SERVER_NAME = "oprn";
 export const MCP_TOKEN_ENV = "OPRN_MCP_TOKEN";
@@ -180,6 +181,32 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
 
 }
 
+const ACCOUNT_HELP = "Claude 계정(Pro·Max)이 있으면 설치 후 한 번 로그인하면 됩니다.";
+const NPM_INSTALL = { label: "npm (Node.js 22 이상)", command: "npm install -g @anthropic-ai/claude-code", requires: "node" as const };
+
+/** 공식 설치 안내(https://code.claude.com/docs/en/setup, 2026-11-04 확인). */
+export const CLAUDE_INSTALL_BY_OS: LocalCliInstallByOs = {
+  win32: {
+    command: "irm https://claude.ai/install.ps1 | iex",
+    help: `PowerShell 에서 실행하세요(관리자 권한 필요 없음). ${ACCOUNT_HELP}`,
+    alt: [
+      { label: "명령 프롬프트(CMD)", command: "curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd" },
+      { label: "WinGet", command: "winget install Anthropic.ClaudeCode" },
+      NPM_INSTALL,
+    ],
+  },
+  darwin: {
+    command: "curl -fsSL https://claude.ai/install.sh | bash",
+    help: `터미널에서 실행하세요. ${ACCOUNT_HELP}`,
+    alt: [{ label: "Homebrew", command: "brew install --cask claude-code" }, NPM_INSTALL],
+  },
+  linux: {
+    command: "curl -fsSL https://claude.ai/install.sh | bash",
+    help: `터미널에서 실행하세요. ${ACCOUNT_HELP}`,
+    alt: [NPM_INSTALL],
+  },
+};
+
 export const claudeAdapter: LocalCliAdapter = {
   id: "claude",
   label: "Claude Code",
@@ -187,23 +214,24 @@ export const claudeAdapter: LocalCliAdapter = {
   async detect(binary = "claude"): Promise<LocalCliStatus> {
     const base = {
       id: "claude" as const, label: "Claude Code", models: MODELS, defaults: { routine: "sonnet", deep: "sonnet" },
-      install: { command: "curl -fsSL https://claude.ai/install.sh | bash", help: "Claude 계정(Pro·Max)이 있으면 설치 후 한 번 로그인하면 됩니다.", url: "https://claude.com/claude-code" },
-      login: { command: "claude", help: "터미널에서 claude 를 한 번 실행해 브라우저로 로그인하세요." },
+      ...installFields(CLAUDE_INSTALL_BY_OS, "https://claude.com/claude-code"),
+      login: { command: "claude auth login", help: "터미널에서 claude auth login 을 실행해 브라우저로 로그인하세요." },
     };
-    const version = runShort(binary, ["--version"], 15_000);
-    if (!version.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
-    const status = runShort(binary, ["auth", "status"], 20_000);
+    const binaryPath = resolveBinary(binary);
+    const version = binaryPath ? runShort(binaryPath, ["--version"], 15_000) : undefined;
+    if (!binaryPath || !version?.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
+    const status = runShort(binaryPath, ["auth", "status"], 20_000);
     try {
       const parsed = JSON.parse(status.stdout) as { loggedIn?: boolean; authMethod?: string };
       const loggedIn = parsed.loggedIn === true;
       return {
-        ...base, found: true, version: version.stdout.trim(), loggedIn,
+        ...base, found: true, binaryPath, version: version.stdout.trim(), loggedIn,
         ...(parsed.authMethod ? { authMethod: parsed.authMethod } : {}),
         billing: parsed.authMethod === "oauth_token" ? "subscription" : parsed.authMethod === "api_key" ? "api" : "unknown",
         state: loggedIn ? "ready" : "login-required", stateLabel: loggedIn ? "연결됨" : "로그인 필요",
       };
     } catch {
-      return { ...base, found: true, version: version.stdout.trim(), billing: "unknown", state: "error", stateLabel: "확인 실패", problem: "로그인 상태를 읽지 못했습니다" };
+      return { ...base, found: true, binaryPath, version: version.stdout.trim(), billing: "unknown", state: "error", stateLabel: "확인 실패", problem: "로그인 상태를 읽지 못했습니다" };
     }
   },
   openSession(options) {

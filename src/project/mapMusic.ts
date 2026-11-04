@@ -88,3 +88,17 @@ export function resolveMapBgs(project: Pick<Project, "maps">, mapId: MapId): Map
   const volume = typeof setting.volume === "number" && Number.isFinite(setting.volume) ? Math.min(100, Math.max(0, setting.volume)) : undefined;
   return volume === undefined ? { kind: "play", resourceId } : { kind: "play", resourceId, volume };
 }
+
+/**
+ * 전투곡 해석 순서 하나: 세션 덮어쓰기(m2-027 cue battle — 보스전) → M2 시스템 슬롯 → 그 맵의 전투곡 → 프로젝트 전투곡.
+ * 런타임(player/battleAudio.ts enterBattleAudio)·lint(ai/v2/audioVarietyLint.ts)·get_soundtrack 이 같이 쓴다.
+ */
+export function resolveBattleBgmResourceId(
+  project: Pick<Project, "system" | "maps">,
+  mapId: MapId | undefined,
+  overrideResourceId?: string,
+  slotResourceId?: string,
+): string | undefined {
+  const mapBattle = mapId ? project.maps[mapId]?.battleBgmResourceId?.trim() : undefined;
+  return overrideResourceId ?? slotResourceId ?? (mapBattle || undefined) ?? project.system.battleBgmResourceId;
+}

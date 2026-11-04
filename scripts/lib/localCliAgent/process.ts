@@ -3,6 +3,7 @@ import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:chil
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { planSpawn } from "./resolveBinary.ts";
 
 /** 빈 임시 작업 폴더 — 사용자 프로젝트 폴더의 지침 파일·MCP 설정이 섞이지 않게. */
 export function emptyWorkDir(prefix: string): { readonly dir: string; readonly remove: () => void } {
@@ -30,7 +31,11 @@ export interface SpawnedLines {
 }
 
 export function spawnJsonLines(options: SpawnLinesOptions): SpawnedLines {
-  const child = spawn(options.binary, [...options.args], { cwd: options.cwd, env: options.env, stdio: ["pipe", "pipe", "pipe"] });
+  const plan = planSpawn(options.binary, options.args, { env: options.env });
+  const child = spawn(plan.command, [...plan.args], {
+    cwd: options.cwd, env: options.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true,
+    ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}),
+  });
   let buffer = "";
   child.stdout.setEncoding("utf8");
   child.stdout.on("data", (chunk: string) => {
@@ -61,13 +66,23 @@ export function spawnJsonLines(options: SpawnLinesOptions): SpawnedLines {
     exited,
     write: (line) => { if (!child.stdin.destroyed && child.exitCode === null) child.stdin.write(line.endsWith("\n") ? line : `${line}\n`); },
     endInput: () => { if (!child.stdin.destroyed) child.stdin.end(); },
-    kill: () => { if (child.exitCode === null && !child.killed) child.kill("SIGTERM"); },
+    kill: () => {
+      if (child.exitCode !== null || child.killed) return;
+      // cmd.exe 로 띄운 .cmd 는 cmd 만 죽이면 그 아래 node CLI 가 남는다 — 프로세스 나무째 끝낸다.
+      if (plan.windowsVerbatimArguments && child.pid) spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true }).on("error", () => child.kill());
+      else child.kill("SIGTERM");
+    },
   };
 }
 
 /** `--version` 같은 짧은 명령. 찾지 못하면 ok:false. */
 export function runShort(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): { ok: boolean; stdout: string; stderr: string } {
-  const out = spawnSync(binary, [...args], { encoding: "utf8", timeout: timeoutMs, ...(env ? { env } : {}) });
+  let plan: ReturnType<typeof planSpawn>;
+  try { plan = planSpawn(binary, args, env ? { env } : {}); } catch (error) { return { ok: false, stdout: "", stderr: error instanceof Error ? error.message : String(error) }; }
+  const out = spawnSync(plan.command, [...plan.args], {
+    encoding: "utf8", timeout: timeoutMs, windowsHide: true,
+    ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}), ...(env ? { env } : {}),
+  });
   return { ok: !out.error && out.status === 0, stdout: out.stdout ?? "", stderr: out.stderr ?? "" };
 }
 

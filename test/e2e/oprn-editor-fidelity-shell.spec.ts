@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { showIndividualTiles } from "./showIndividualTiles";
-import { clickMoreMenuItem } from "./topbarNavigation";
+import { openHelpShortcuts } from "./topbarNavigation";
 
 // 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
 test.beforeEach(async ({ page }) => {
@@ -19,8 +19,9 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
   await expect(page.getByTestId("menu-project")).toBeVisible();
   await expect(page.getByTestId("menu-project")).toHaveAttribute("title", /^프로젝트 메뉴 — /);
-  await clickMoreMenuItem(page, "menu-help");
-  await expect(page.getByTestId("menu-popup-help")).toBeVisible();
+  await expect(page.getByTestId("menu-more-tools")).toHaveCount(0);
+  await openHelpShortcuts(page);
+  await expect(page.getByTestId("help-modal")).toBeVisible();
   await page.keyboard.press("Escape");
   for (const gone of ["menu-map", "menu-game", "menu-tools", "oprn-toolbar", "authoring-task-launcher"]) {
     await expect(page.getByTestId(gone)).toHaveCount(0);

@@ -51,10 +51,6 @@ export const BUILTIN_GAMES: readonly BuiltinGame[] = [
   },
 ];
 
-export function builtinGamePlayUrl(id: BuiltinGameId): string {
-  return `/index.html?demo=${id}&play=1`;
-}
-
 export function builtinGameEditUrl(id: BuiltinGameId): string {
   return `/index.html?demo=${id}`;
 }

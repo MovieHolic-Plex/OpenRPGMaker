@@ -331,6 +331,11 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
   양식 고르기: 마을 bbox 와 버들항 강·해안은 grass, 사막은 sand, 설원·얼음은 snow, 늪은 peat, 던전 기본은 cave 다.
   jp_city·joseon_baram·modern·wizarding 등 relief 양식이 없는 칩셋은 기본 흙 절벽이며, 이 조각을 쓰지 않는다(계단 기물만 있다).
   동·서향 깎은 길은 아직 없다. 굽기는 같은 `bake-relief-cut-pieces.py` 로 하며, 160장 모두 관문을 지나야 한다(`--check --only=<라벨 앞부분>`).
+- **조수 빌더가 같은 모양으로 깐다(2026-11-04):** 버들항 마을(`beodeulVillage.ts` 3b `placeCut`), 던전 높이 단(`dungeonKit/reliefPlan.ts`), bbox 마을(`bboxVillage.ts`)은 모두 **남북으로만** 계단을 놓는다.
+  북쪽 오르막은 절벽 발치 낮은 단 한 줄이고, 남쪽 오르막은 절벽 북쪽 낮은 단 `rise + 2` 줄이다. 폭은 2~3, 단 차는 1~4 이며, 양옆은 같은 절벽 면이어야 한다. 예전에는 단 차 + 1 칸 계단이라 조각이 하나도 맞지 않았다(0/66).
+  마을 코드 지형의 길 찾기는 이 자리에서만 단을 건넌다(`beodeulCodeLayout.ts` `crossOk`). 한 칸 길은 그 토막만 옆 빈 땅으로 넓힌다.
+  던전은 동서로만 닿는 경계면 통로 안 곧은 남북 자리로 경계를 옮기고(`recut`), 그래도 없으면 높은 방 한쪽 띠를 한 단 낮춰 방 안 절벽을 만든다(`terrace`). 둘 다 안 되면 예전처럼 방을 낮추고 「고침:」으로 알린다.
+  CI 검사: `test/assistantReliefCutPieces.test.ts`(세 빌더의 모든 경사로가 `cutPieceFor` 에 맞고 걸어 오른다).
 - 게임 화면: `scripts/qa/runtime/relief.scenario.mjs` + `relief-fixture.mts`(출하 플레이어 경로). **픽스처는 콘텐츠 카탈로그(r3 브랜치의 fantasy-500 catalog.json, 15MB)를 읽는다 — 이 통합에는 넣지 않았다.** `RELIEF_CATALOG=<경로>` 로 지정한다
   (`git show agent/r3-relief-stairs:tiledata/fantasy-500/catalog.json > .omo/runtime-qa/fantasy-500-catalog.json` — 읽기 전용 추출). 그 맵은 정글 시트(r3 에서 4590칸으로 확장)를 쓰므로 main 의 시트(3900칸)에서는 일부 칸이 비어 보일 수 있다 — 걷기·들림·가림 판정이 목적이다.
 - 편집기 화면: `scripts/qa/relief-editor-capture.mjs <픽스처.json> <출력.png>`(vite 개발 서버를 직접 띄운다 — 워크트리에서는 `VITE_CACHE_DIR` 를 따로 줘라).

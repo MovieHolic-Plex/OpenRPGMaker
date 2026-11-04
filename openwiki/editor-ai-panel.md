@@ -4503,9 +4503,9 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | 클라이언트 | `src/ai/chatgptOAuthClient.ts` `connectOpenAiCompatEndpoint` | 키는 요청 본문으로만 한 번 간다. 실패도 200 + `ok:false` + 사람 말 |
 | 카드 | `src/editor/panels/aiQuickConnect.ts` | OpenRouter 키 / 다른 OpenAI 호환(주소·키·모델) 두 가지. 성공하면 키 칸을 비운다 |
 | 설정 창 | `aiSettingsModal.ts` | 연결 탭 맨 위 「빠른 연결」. 연결 상태가 connected 면 숨긴다. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
-| 관문 | `src/editor/ui/aiConnectGate.ts` | 카드를 관문 안에 바로 둔다. 성공 시 `configForProviderSelection` 으로 저장하고 재판정해 이어 간다. 「다른 방법으로 연결」 은 예전처럼 AI 설정을 연다 |
+| 관문 | `src/editor/ui/aiConnectGate.ts` | 첫 실행 설정 마법사(`aiSetupWizard.ts`)를 띄운다. 무엇이 감지됐는지 보여 주고, 없는 것은 OS 별 설치 안내·로그인·「다시 확인」·키 붙여 넣기로 한 단계씩 안내한다. 모델 선택 표는 `src/ai/teamScoreboard.ts`(점수판 출처 주석), 감지→팀 계산은 `src/ai/teamPlan.ts`, 화면 문구는 `src/ai/setupWizardModel.ts` |
 
-**첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 빠른 연결 카드가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
+**첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 설정 마법사가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 환경 변수 키(OPENAI/ANTHROPIC/GEMINI·GOOGLE/DEEPSEEK `_API_KEY`)는 `GET /auth/key-sources` 가 이름만 알려 주고 값은 화면·로그에 나오지 않는다 — 한 번 확인한 뒤에만 `POST /auth/key-adopt` 로 서버 안에서 쓴다. 윈도에서는 `scripts/lib/localCliAgent/resolveBinary.ts` 가 `.cmd` 래퍼·PATHEXT·`%APPDATA%\npm` 을 해석하고, 앱이 Claude/Codex 를 대신 설치하는 길은 `POST /v1/local-agents/install`(허용 목록만)이다. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
 
 ### 자동 감지 — 이미 로그인된 구독으로 한 번에 시작 (2026-11-03)
 

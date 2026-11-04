@@ -241,6 +241,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   for (let y = 0; y < konbiniRoom.height; y++) for (let x = 0; x < konbiniRoom.width; x++) {
     if (x <= 2 || x >= konbiniRoom.width - 3 || y >= konbiniRoom.height - 3) clearMapCellForBackground(konbiniRoom, y * konbiniRoom.width + x);
   }
+  // r7 블라인드 3차(S3): 그려진 부분이 20×16칸뿐이라 1배면 화면의 37% 가 검다 — 방의 기본 배율을 2 로 둔다(입장 장면의 panTo 가 가게 가운데를 잡는다).
+  konbiniRoom.cameraZoom = 2;
   // 옥상(24칸)을 화면 폭 30칸으로: 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
   padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (_y, side) => (side === "left" ? 0 : 23));
   // 난간 너머는 하늘이다 — 같은 크기의 길·벤치·우체통(땅에서 본 거리)을 그리면 옥상이 1층 광장으로 읽힌다(VQA r10).
@@ -329,7 +331,12 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
       // 사용자 r2: 「대화를 너무 멀리서 한다」 — 팀장은 서하 바로 오른쪽(같은 줄, 한 칸), 민호는 바로 왼쪽, 지후는 두 칸 앞에서 서하를 마주 본다.
       // 위아래로 붙어 서면 3/4 시점에서 그림이 겹치므로(VQA r14) 바로 앞 칸은 비운다.
-      meetLead: { x: 17, y: 4 }, meetJihu: { x: 16, y: 6 },
+      // r7: 지후가 서하 두 칸 «아래»(16,6)에 서면 배율 2 재회 장면이 지후 뒤통수만 찍었다 — 지후는 같은 줄 한 칸 띄운 옆(18,4)에서
+      // 서쪽을 보고, 팀장은 그 사이 아래(17,5)로 물러난다(서하와 한 칸 안, 위아래 한 열 아님). 경고 scene-talk-stacked.
+      // 한 줄 더 아래(17,6)는 선택창 밑이라 팀장 머리만 창 위로 삐져나왔다(블라인드 1차) — 선택창 위(셋째 줄)에 둔다.
+      // r7 블라인드 4차(M1): 세 리뷰어가 «줄 선 무리»로 읽었다 — 서하(16,4) 옆 줄(y4)에 민호·지후까지 셋이 한 줄이었고 팀장(17,5)은 대각선이라 빈 칸을 봤다.
+      // ∩ 대형: 핵심 둘(서하·지후)만 y4 에서 한 칸 사이로 마주 서고, 팀장(18,5)·민호(15,5)는 한 줄 앞(카메라 쪽) 바깥에서 안쪽을 본다. 같은 열은 없다.
+      meetLead: { x: 18, y: 5 }, meetJihu: { x: 17, y: 4 },
       // 한 팀 책상 무리(3열 6자리) 옆에 서하·지후, 팀장 책상은 그 동쪽.
       heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
       jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),

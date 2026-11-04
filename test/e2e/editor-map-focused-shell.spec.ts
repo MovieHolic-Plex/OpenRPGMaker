@@ -16,10 +16,10 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
     "toolbar-resource-manager",
     "topbar-assistant",
     "topbar-test-play",
-    "menu-more-tools",
   ]) {
     await expect(page.getByTestId(testId)).toBeVisible();
   }
+  await expect(page.getByTestId("menu-more-tools")).toHaveCount(0);
   for (const moved of ["toolbar-world", "workspace-panels-button", "workspace-command-palette-button", "topbar-battle-test"]) {
     await expect(page.getByTestId(moved)).toHaveCount(0);
   }

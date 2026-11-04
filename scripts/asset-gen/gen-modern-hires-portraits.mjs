@@ -39,6 +39,8 @@ const CAST = {
   "modern-suit-boy-charcoal": ["an office manager man in his thirties with black hair tied in a low ponytail, charcoal-grey suit, white shirt, black necktie", "checking a wristwatch on his raised left wrist"],
   "modern-apron-navy": ["a cafe barista woman with black hair in a bun, white shirt with rolled sleeves, navy denim apron with a brown pocket, long dark skirt", "holding a small round serving tray at her side, warm welcoming smile"],
   "modern-apron-olive": ["a cafe barista woman with dark-red hair in a bun, white shirt with rolled sleeves, olive-green apron, long dark-grey skirt", "wiping her hands on a small towel, cheerful look"],
+  // 첫사랑 r7: 편의점 점원 — 칩(Modern3 4번)의 검은 올림머리·남색 윗몸·흰 소매를 지키되 카페 줄기(턱받이 앞치마·컵·긴 치마)와 갈리게 한다.
+  "modern-konbini-clerk": ["a young convenience-store clerk woman with black hair in a neat updo bun, short-sleeved white polo shirt under a dark-navy store vest with a small plain blank name tag on the chest, dark trousers; NOT a bib apron, NOT a cafe barista, no rolled sleeves, no skirt, no cup", "standing politely behind a register counter posture, hands lightly clasped in front, a warm welcoming smile"],
 };
 
 const STYLE = "High-resolution Japanese otome visual-novel standing illustration (tachie), modern-day setting, polished anime official art: clean smooth anti-aliased line art, soft cel shading with gentle gradients, glossy detailed eyes, rich hair highlights. Absolutely no pixel art, no visible pixels, no dithering.";

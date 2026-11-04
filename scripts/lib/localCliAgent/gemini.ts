@@ -13,7 +13,18 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines } from "./process.ts";
 import { MCP_TOKEN_ENV } from "./claude.ts";
-import type { LocalCliAdapter, LocalCliSession, LocalCliSessionOptions, LocalCliStatus } from "./types.ts";
+import { resolveBinary } from "./resolveBinary.ts";
+import { installFields, type LocalCliAdapter, type LocalCliInstallByOs, type LocalCliSession, type LocalCliSessionOptions, type LocalCliStatus } from "./types.ts";
+
+const GEMINI_NPM = "npm install -g @google/gemini-cli";
+const GEMINI_HELP = "Node.js 20 이상(npm)이 있어야 합니다. Google 계정이 있으면 설치 후 한 번 로그인하면 됩니다.";
+
+/** 공식 설치 안내(https://geminicli.com/docs/get-started/installation/, 2026-11-04 확인). */
+export const GEMINI_INSTALL_BY_OS: LocalCliInstallByOs = {
+  win32: { command: GEMINI_NPM, help: GEMINI_HELP, requires: "node" },
+  darwin: { command: GEMINI_NPM, help: GEMINI_HELP, requires: "node" },
+  linux: { command: GEMINI_NPM, help: GEMINI_HELP, requires: "node" },
+};
 
 /** 끄는 내장 도구. 이름은 gemini-cli 0.3x 의 도구 이름. */
 const EXCLUDED_BUILTINS = [
@@ -152,11 +163,12 @@ export const geminiAdapter: LocalCliAdapter = {
         { id: "pro", label: "Pro (강함)" },
       ],
       defaults: { routine: "auto", deep: "auto" },
-      install: { command: "npm install -g @google/gemini-cli", help: "Google 계정이 있으면 설치 후 한 번 로그인하면 됩니다.", url: "https://github.com/google-gemini/gemini-cli" },
+      ...installFields(GEMINI_INSTALL_BY_OS, "https://github.com/google-gemini/gemini-cli"),
       login: { command: "gemini", help: "터미널에서 gemini 를 한 번 실행해 「Login with Google」로 로그인하세요." },
     };
-    const version = runShort(binary, ["--version"], 15_000);
-    if (!version.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
+    const binaryPath = resolveBinary(binary);
+    const version = binaryPath ? runShort(binaryPath, ["--version"], 15_000) : undefined;
+    if (!binaryPath || !version?.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
     // gemini 에는 로그인 상태 명령이 없다. 모델을 부르지 않고(한도를 안 쓰게) 로그인 흔적만 본다 —
     // 구글 로그인 자격 파일이 «있는지»만 확인하고 내용은 읽지 않는다. 키 환경 변수가 있으면 API 사용자다.
     const home = process.env.GEMINI_CLI_HOME ?? join(homedir(), ".gemini");
@@ -164,7 +176,7 @@ export const geminiAdapter: LocalCliAdapter = {
     const apiKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENAI_USE_VERTEXAI);
     const loggedIn = oauth || apiKey;
     return {
-      ...base, found: true, version: version.stdout.trim(), loggedIn,
+      ...base, found: true, binaryPath, version: version.stdout.trim(), loggedIn,
       ...(loggedIn ? { authMethod: oauth ? "Google 로그인" : "API key" } : {}),
       billing: oauth ? "subscription" : apiKey ? "api" : "unknown",
       state: loggedIn ? "ready" : "login-required", stateLabel: loggedIn ? "연결됨" : "로그인 필요",

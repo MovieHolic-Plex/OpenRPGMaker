@@ -171,14 +171,17 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 - 레일 단추 하나 = 본문 칸 하나(`home`·`games`·`builtin`·`create`, 위 막대 「팀에 참여」 = `join`). `go(section)` 만 칸을 바꾼다 —
   만드는 중·여는 중(`state.busy`·`feed.busy()`)이면 거절, 떠나는 칸을 `leave` 로 정리(새로 만들기면 `feed.reset()` — 상세·골라서 만들기 창 닫기,
   검색어·분류 비우기, 맨 위), 새 칸을 상태에서 `mount`, 스크롤은 맨 위. 같은 칸을 다시 누르면 그 칸 처음 상태.
-- 비동기 결과(최근 목록·홈 컨셉·AI 상태·팀 목록)는 상태에만 넣고 `refresh(what)` 가 **지금 칸이 그 데이터를 쓸 때만** 그 칸을 다시 그린다.
+- 비동기 결과(최근 목록·AI 상태·팀 목록)는 상태에만 넣고 `refresh(what)` 가 **지금 칸이 그 데이터를 쓸 때만** 그 칸을 다시 그린다.
   팀 목록은 `sectionSeq` 로 늦은 응답을 버린다. 카드 그림은 `data-cover-for` 칸만 바꾼다.
 - 칸마다 `#home` 같은 history 기록 — 마우스 뒤로 단추·Alt+← 가 앞 칸으로 간다(만드는 중이면 되돌려 기록).
-- **홈 = 할 수 있는 것만**: 배너(이어서 만들기 / 처음이면 폴른 스타) · 「최근 게임」(배너 게임 빼고 4장, 「모두 보기 ›」 = 내 게임) ·
-  「지금 만들 수 있는 게임」(컨셉 출처 첫 쪽 8장, 누르면 새로 만들기 칸의 그 상세) · 「기본 게임」(작은 카드, 「자세히 ›」 = 기본 게임 칸).
+- **홈 = 프롬프트 한 장(2026-11-04 Studio/런타임 분리 PR3, 설계 http://mdc-server:18301/studio-runtime-split.html)**: 처음 온 사람이든 다시 온 사람이든
+  `src/start/firstRun/promptHome.ts` 한 장(레일 없음, `view=first-run`). 게임이 있으면 입력창 아래 「내 게임」 줄(최근 3 + 빈 프로젝트, 4개 이상이면
+  「모두 보기 (n)」 = 내 게임 칸), 그 아래 「예제 열어 보기」(편집기에서 연다). 오른쪽 위 AI 상태 · 언어 · 「⋯」(새로 만들기 · 예제 자세히 · 에셋 스토어 ·
+  OPRN PLAY · 설정). 레일 칸(내 게임·예제·새로 만들기)은 「모두 보기」·「⋯」로 들어가고 레일 「홈」이 프롬프트로 돌아온다.
+  예전 홈 칸(배너 · 최근 게임 · 「지금 만들 수 있는 게임」 8장 · 기본 게임 선반)은 걷었다.
   옮긴 것: 컨셉 검색창·분류 칩·무한 격자·골라서 만들기·빈 프로젝트 → 「새로 만들기」, 전체 목록·숨김 보기·게임 파일 열기 → 「내 게임」,
   장면 넘겨 보기·소개 글 → 「기본 게임」, 「AI 엔진이 아직 없어요」 카드 → 「새로 만들기」 맨 위(레일 AI 상태 줄은 그대로).
-- 클릭 행렬 스크립트 `scripts/qa/start-screen-nav.mjs`(vitest 아님, 가짜 브리지, 모든 순서쌍·연타·상세/검색 누수·뒤로 가기·늦은 목록) — 53개 확인.
+- 클릭 행렬 스크립트 `scripts/qa/start-screen-nav.mjs`(vitest 아님, 가짜 브리지, 모든 순서쌍·연타·상세/검색 누수·뒤로 가기·늦은 목록) — 2026-11-04 판은 홈 = 프롬프트 모델로 고쳐 39개 확인.
   증거 `verify-shots/start-screen-ux/`(before = 10-20 판, after, electron = 실제 앱에서 순서쌍 16 + 상세 누수·뒤로 가기 확인).
 - 기본 게임 그림(같은 날 다시 찍음): 데모를 다듬는 브랜치의 스냅숏(`git worktree add --detach`)에서 `home-builtin` 시나리오를 돌리고
   `HOME_SHOTS_FALLEN=… HOME_SHOTS_ASTRA=… python3 scripts/content/bake-home-builtin-art.py` 로 굽는다. 이제 480×270 1배 무손실 webp
@@ -216,9 +219,11 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   고른 로컬 엔진이 없으면 레일 AI 상태 줄·「AI 엔진이 아직 없어요」 안내는 편집기의 AI 연결(`aiConnectionStatus`, Google·ChatGPT 로그인)을 본다 — 연결돼 있으면 「Google 연결됨」.
   시작 화면에서 띄우는 AI 연결 창(`aiConnectGate`)은 `src/start/aiModalStyles.ts` 로 AI 창 CSS 를 같이 받는다(없으면 창이 위치 없이 첫 화면 뒤로 숨는다). 편집기에서는 이 모듈을 가져오지 말 것 — 계층 없는 사본이 `@layer shell` 규칙을 이긴다.
   고르는 것은 사용자다(#3072 D1 opt-in) — 추천은 카드에 「추천 · 눌러서 쓰기」로만 보이고, 고른 값은 `oprn:assistant-engine` 에 남으며 「원래 AI 연결로 되돌리기」가 지운다.
-- **만들기·플레이 동작**: 「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
-  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다. 플레이 기록 `oprn:start-played` 는 `src/start/playFeed/playFeed.ts` 에 남아 있다.
-  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다.
+- **만들기 동작(2026-11-04 Studio/런타임 분리, 설계 http://mdc-server:18301/studio-runtime-split.html)**: 시작 화면에는 「플레이」 입구가 없다.
+  내 게임·예제(기본 게임)는 편집기에서 열고(`start.openRecent` → `/index.html`, 예제는 `/index.html?demo=<id>`), 해 보는 것은 편집기 「테스트 실행」이다.
+  `/index.html?play=1`(`START_PLAY_URL`)·`?demo=<id>&play=1` 부팅 경로는 QA·캡처 스크립트용으로 남아 있다 — 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
+  표시를 읽고 지운 뒤 플레이 모드로 연다. 플레이 기록(`oprn:start-played`, 옛 `src/start/playFeed`)은 지웠다.
+  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 편집기로 연다.
   런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다. 팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.

@@ -100,7 +100,7 @@ function headerStrings(topbar: HTMLElement): Finding[] {
     }
     for (const child of node.children) walk(child, owner);
   };
-  for (const menuId of ["menu-project", "menu-more-tools"]) {
+  for (const menuId of ["menu-project"]) {
     openMenu(topbar, menuId);
     walk(fake(topbar), "editor-topbar");
     // 메뉴 팝업은 document.body 로 붙는다.

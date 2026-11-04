@@ -50,9 +50,9 @@
 
 :is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus,
 :is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus-visible {
-  /* 포커스 링은 셸이 아니라 입력칸이 그린다 — 데크 셸은 border:0 이라 :focus-within 링이 닿지 않는다. 베이스와 같은 14% accent 링. */
+  /* 목업 입력창은 둥근 상자 하나(1px 선)다 — 안쪽에 3px 링을 또 두르지 않는다. 포커스는 상자 테두리 색으로만 말한다. */
   border-color: var(--accent-border);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: none;
   outline: none;
 }
 
@@ -236,20 +236,20 @@
   content: none;
 }
 
-/* 보내기 = 34px 인디고 원, 멈추기 = 같은 자리의 검은 원. 둘 다 상주, 진행 중엔 보내기를 숨긴다. */
+/* 보내기 = 28px 인디고 둥근 사각형(목업), 멈추기 = 같은 자리의 검은 둥근 사각형. 둘 다 상주, 진행 중엔 보내기를 숨긴다. */
 :is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send,
 :is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button {
   align-items: center;
   border: 0;
-  border-radius: 50%;
+  border-radius: 8px;
   display: inline-flex;
   flex: 0 0 auto;
-  height: 34px;
+  height: 28px;
   justify-content: center;
   min-height: 0;
   padding: 0;
   transition: background 150ms, transform 100ms, box-shadow 150ms;
-  width: 34px;
+  width: 28px;
 }
 
 :is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send {

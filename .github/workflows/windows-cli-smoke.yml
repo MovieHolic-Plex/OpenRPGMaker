@@ -1,0 +1,74 @@
+name: windows-cli-smoke
+
+# 윈도에서 로컬 에이전트 CLI(claude·codex·gemini) 감지가 실제로 되는지 본다.
+#
+# 왜 (2026-11-04): 소유자 윈도 PC 에서 AI 연결이 자동 감지되지 않았다. npm 전역 CLI 는 codex.cmd·gemini.cmd 껍데기라
+# 셸 없이 'codex' 를 spawn 하면 ENOENT 였다(scripts/lib/localCliAgent/resolveBinary.ts). 리눅스 CI 는 이걸 못 잡는다.
+# 실제 npm 설치로 .cmd 껍데기를 만들고 detectLocalClis({fresh:true}) 가 found:true 를 내는지, .cmd 인자 이스케이프가
+# 명령 끼어들기 없이 그대로 돌아오는지 본다. 로그인은 하지 않는다(state 는 login-required 가 정상).
+#
+# 러너는 GitHub 호스티드(windows-latest)다. 비밀은 쓰지 않는다. localCliAgent 는 node 내장 모듈만 써서 npm ci 가 필요 없다.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/lib/localCliAgent/**'
+      - 'scripts/qa/windows-cli-detect-smoke.mjs'
+      - 'test/localCliResolve.test.ts'
+      - '.github/workflows/windows-cli-smoke.yml'
+
+concurrency:
+  group: windows-cli-smoke-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - name: codex·gemini 설치 (npm 전역 → .cmd 껍데기)
+        id: npm
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          npm install -g @openai/codex @google/gemini-cli
+          if ($LASTEXITCODE -ne 0) { Write-Host "::warning::npm install -g 실패 (exit $LASTEXITCODE)"; exit $LASTEXITCODE }
+          Get-ChildItem (npm prefix -g) -Filter '*.cmd' | Where-Object Name -match '^(codex|gemini)\.cmd$' | ForEach-Object FullName
+
+      # 공식 PowerShell 설치기(https://code.claude.com/docs/en/setup). %USERPROFILE%\.local\bin 에 깔고 이 잡의 PATH 에는
+      # 넣지 않는다 — resolveBinary 의 설치 위치 대체 탐색을 그대로 시험한다. 설치기가 흔들리면 잡을 막지 않는다.
+      - name: Claude Code 설치 (공식 PowerShell 설치기)
+        id: claude
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -Command 'irm https://claude.ai/install.ps1 | iex'
+          Write-Host "installer exit: $LASTEXITCODE"
+          $exe = Join-Path $env:USERPROFILE '.local\bin\claude.exe'
+          if (-not (Test-Path $exe)) { Write-Host "::warning::Claude Code 설치기가 $exe 를 만들지 않았다"; exit 1 }
+          Write-Host "installed: $exe"
+
+      - name: 감지 스모크
+        shell: pwsh
+        env:
+          EXPECT_INSTALLED: ${{ steps.npm.outcome == 'success' && 'codex,gemini' || '' }}${{ steps.claude.outcome == 'success' && ',claude' || '' }}
+          SMOKE_REPORT: ${{ runner.temp }}\windows-cli-detect-smoke.md
+        run: node scripts/qa/windows-cli-detect-smoke.mjs
+
+      - name: 결과 올리기
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-cli-detect-smoke
+          path: ${{ runner.temp }}\windows-cli-detect-smoke.md
+          if-no-files-found: warn

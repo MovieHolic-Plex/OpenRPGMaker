@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guardLeadChat, leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, resolveSplitConfig, toolCatalog } from "../src/ai/v2/split";
+import { guardLeadChat, leadForRequest, leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, resolveSplitConfig, toolCatalog } from "../src/ai/v2/split";
 
 describe("assistant v2 lead/worker split", () => {
   it("reads the lead from OPRN_V2_SPLIT (local CLI and account/model forms)", () => {
@@ -10,14 +10,33 @@ describe("assistant v2 lead/worker split", () => {
     expect(parseSplitRole("claude:claude-haiku-5-5")).toEqual({ provider: "local-cli:claude", model: "claude-haiku-5-5" });
   });
 
-  it("uses the request lead only without OPRN_V2_SPLIT, and only a local-CLI lead", () => {
+  it("uses the request lead only without OPRN_V2_SPLIT: local CLI, custom endpoint or registry account", () => {
     const opus = { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" };
     expect(resolveSplitConfig(undefined, opus)?.lead).toEqual({ provider: "local-cli:claude", model: "claude-opus-5-5", effort: "medium" });
     expect(resolveSplitConfig("", opus)?.lead.model).toBe("claude-opus-5-5");
     expect(resolveSplitConfig("off", opus)).toBeUndefined();
     expect(resolveSplitConfig("lead:openai-compat:proxy8318/gemini-4-argon@medium", opus)?.lead.model).toBe("gemini-4-argon");
-    expect(resolveSplitConfig(undefined, { provider: "openai-codex", model: "gpt-6.1-sol" })).toBeUndefined();
+    expect(resolveSplitConfig(undefined, { provider: "openai-compat:proxy8318", model: "gemini-4-argon", thinkingLevel: "high" })?.lead)
+      .toEqual({ provider: "openai-compat:proxy8318", model: "gemini-4-argon", effort: "high" });
+    expect(resolveSplitConfig(undefined, { provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" })?.lead)
+      .toEqual({ provider: "anthropic", model: "claude-opus-5-5", effort: "medium" });
+    expect(resolveSplitConfig(undefined, { provider: "openrouter", model: "openai/gpt-5.5" })?.lead).toEqual({ provider: "openrouter", model: "openai/gpt-5.5" });
+    expect(resolveSplitConfig("lead:claude:claude-opus-5-5", { provider: "anthropic", model: "claude-opus-5-5" })?.lead.provider).toBe("local-cli:claude");
+    expect(resolveSplitConfig("off", { provider: "anthropic", model: "claude-opus-5-5" })).toBeUndefined();
+    expect(resolveSplitConfig(undefined, { provider: "made-up", model: "x" })).toBeUndefined();
+    expect(resolveSplitConfig(undefined, { provider: "anthropic", model: "  " })).toBeUndefined();
     expect(resolveSplitConfig(undefined, undefined)).toBeUndefined();
+  });
+
+  it("carries a request lead on another account; the engine lead only on its own engine", () => {
+    const claudeLead = { provider: "anthropic", model: "claude-opus-5-5", thinkingLevel: "medium" };
+    const cliLead = { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" };
+    const none = () => undefined;
+    expect(leadForRequest({ provider: "openai-codex", lead: claudeLead }, none)).toBe(claudeLead);
+    expect(leadForRequest({ provider: "local-cli:claude", assistantVersion: "v2" }, () => cliLead)).toBe(cliLead);
+    expect(leadForRequest({ provider: "openai-codex", assistantVersion: "v2" }, () => cliLead)).toBeUndefined();
+    expect(leadForRequest({ provider: "local-cli:claude" }, () => cliLead)).toBeUndefined();
+    expect(leadForRequest({ provider: "openai-codex", lead: { provider: "made-up", model: "x", thinkingLevel: "medium" } }, none)).toBeUndefined();
   });
 
   it("turns the lead off for the run after one model/plan failure, so the worker continues alone", async () => {
