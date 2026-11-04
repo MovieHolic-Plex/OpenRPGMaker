@@ -101,7 +101,9 @@ const SINGLE_PLACE = /(방|맵|장소|실내|건물)\s*하나만|다른\s*맵은
  * jrpg 첫 차례에 끝맺음 조립이 돌지 않았고, 「공포 게임에 나오는 병실 실내를 만들어 줘. … 이 방 하나만 지어 줘」 같은 방 과제 6개가 true 라
  * 방 하나 짓기에 출하 검사가 걸렸다.
  */
-export function wantsWholeGame(task: string): boolean {
+export function wantsWholeGame(raw: string): boolean {
+  // 실행기는 요청 뒤에 의도 메모(시스템 지침)를 붙여 보낸다 — 사용자 글만 본다. 「… 게임으로」 끝 맞춤이 메모 때문에 어긋났다(2026-11-05 gpt-only-game).
+  const task = withoutIntentNote(raw);
   if (!WHOLE_GAME_WORDS.test(task)) return false;
   const strong = WHOLE_STRONG.test(task);
   if (EDIT_REQUEST.test(task) && !strong && !/(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|완성|제작)/iu.test(task)) return false;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "@/ai/v2/shipChecks";
+import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 Salad S3: 9/58 builds stopped with only the skeleton 「기억의 조각 → 첫 구간 끝」.
@@ -27,6 +28,7 @@ describe("whole-game rekick signs", () => {
   });
   it("a request ending in …게임으로 is a whole game; an edit that mentions 게임 is not", () => {
     expect(wantsWholeGame("마을 하나 만들어줘. 거기서 시작하는 모험 게임으로")).toBe(true);
+    expect(wantsWholeGame(`마을 하나 만들어줘. 거기서 시작하는 모험 게임으로${INTENT_NOTE_BOUNDARY}[새로하기 오프닝·타이틀] …`)).toBe(true);
     expect(wantsWholeGame("마을 이름을 게임으로 바꿔")).toBe(false);
     expect(wantsWholeGame("이 상점을 미니게임으로")).toBe(false);
     expect(wantsWholeGame("대사를 게임으로")).toBe(false);
