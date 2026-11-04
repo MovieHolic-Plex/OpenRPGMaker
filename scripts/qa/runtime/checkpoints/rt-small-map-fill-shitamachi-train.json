@@ -1,0 +1,38 @@
+{
+ "set": "rt-small-map-fill-shitamachi-train",
+ "projectGenerator": {
+  "game": "shitamachi-fourth-season"
+ },
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "checkpoints": [
+  {
+   "id": "train",
+   "label": "저녁 전철(21×8) — 장면 뒤(단계 1)",
+   "note": "smallMapFill 기본 끔 전후 비교 — 장면 카메라(1.5배)를 피하려고 단계 1에서 시작",
+   "mapId": "map_venue_train",
+   "x": 7,
+   "y": 4,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_sm_stage": 1
+   },
+   "beats": [
+    {
+     "id": "view",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
