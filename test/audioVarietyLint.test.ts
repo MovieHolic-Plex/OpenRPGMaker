@@ -60,6 +60,23 @@ describe("audio-*", () => {
     expect(codes(project)).toEqual([]);
   });
 
+  it("보스곡으로 감싼 이야기 적수가 있어도 같은 보스곡을 건 진짜 보스를 오탐하지 않는다", () => {
+    const project = fixture(2);
+    const map = project.maps[project.startMapId]!;
+    project.database.troops.push({ ...structuredClone(project.database.troops[0]!), id: "troop_rival", name: "새라" } as TroopRecord);
+    map.events.push(event("ev_rival", [battleBgm("cc0-bgm-rtp-btl-002"), fight("troop_rival")]));
+    map.events.push(event("ev_boss", [battleBgm("cc0-bgm-rtp-btl-002"), fight("troop_boss")]));
+    expect(codes(project)).toEqual([]);
+  });
+
+  it("감싼 보스전이 많아도 일반 전투가 한 곡뿐이면 경고한다", () => {
+    const project = fixture(3);
+    for (const map of Object.values(project.maps)) {
+      for (let i = 0; i < 3; i += 1) map.events.push(event(`ev_boss_${map.id}_${i}`, [battleBgm("cc0-bgm-rtp-btl-002"), fight("troop_boss")]));
+    }
+    expect(codes(project)).toEqual(["audio-battle-bgm-uniform"]);
+  });
+
   it("효과음 하나가 받기·장비·합류·이동을 다 맡으면 경고하고, 상자처럼 한 가지 일만 하면 조용하다", () => {
     const project = fixture(1);
     const map = project.maps[project.startMapId]!;

@@ -30,7 +30,7 @@ function eachList(node: unknown, visit: (list: Cmd[]) => void, depth = 0): void 
 const isBattleBgmCommand = (c: Cmd): boolean => c.kind === "m2Command" && c.commandId === "m2-027-change-system-bgm" && c.fields?.cue === "battle";
 const isSe = (c: Cmd): boolean => (c.kind === "playAudio" && (c.channel === "se" || (c.channel === undefined && c.loop === false))) || c.kind === "playSe";
 
-type Battle = { mapId: string; eventId: string; troopId: string; bgm: string | undefined };
+type Battle = { mapId: string; eventId: string; troopId: string; bgm: string | undefined; overridden: boolean };
 
 function useAfter(list: readonly Cmd[], from: number): string | undefined {
   for (const next of list.slice(from)) {
@@ -49,7 +49,7 @@ function collect(project: Project): { battles: Battle[]; se: Map<string, { calls
     for (let i = 0; i < list.length; i += 1) {
       const c = list[i]!;
       if (isBattleBgmCommand(c)) cue = c.fields?.operation === "set" ? String(c.fields?.resourceId ?? "").trim() || undefined : undefined;
-      if (c.kind === "battleProcessing" && typeof c.troopId === "string") battles.push({ mapId, eventId, troopId: c.troopId, bgm: resolveBattleBgmResourceId(project, project.maps[mapId] ? mapId : undefined, cue) });
+      if (c.kind === "battleProcessing" && typeof c.troopId === "string") battles.push({ mapId, eventId, troopId: c.troopId, bgm: resolveBattleBgmResourceId(project, project.maps[mapId] ? mapId : undefined, cue), overridden: cue !== undefined });
       if (isSe(c) && typeof c.resourceId === "string" && c.resourceId) {
         const use = useAfter(list, i + 1);
         const row = se.get(c.resourceId) ?? { calls: 0, uses: new Set<string>() };
@@ -82,18 +82,21 @@ const SE_MIN_USES = 4;
 export function lintAudioVariety(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   const { battles, se } = collect(project);
-  const maps = new Set(battles.map((b) => b.mapId));
+  // 일반 전투 = 그 전투 직전에 전투곡을 바꾸지 않은 것(role:boss 가 쓰는 m2-027 덮어쓰기가 없는 것). 덮어쓴 전투(보스·이름 있는 적수)를
+  // 넣으면 보스곡이 「일반 곡」으로 세어져 진짜 보스가 오탐되고, 보스가 많으면 한 곡뿐인 일반 전투가 비율 아래로 숨는다(폴른 스타 r2 판정).
+  const plain = battles.filter((b) => !b.overridden);
+  const maps = new Set(plain.map((b) => b.mapId));
   const perCue = new Map<string, number>();
-  for (const b of battles) perCue.set(b.bgm ?? "", (perCue.get(b.bgm ?? "") ?? 0) + 1);
+  for (const b of plain) perCue.set(b.bgm ?? "", (perCue.get(b.bgm ?? "") ?? 0) + 1);
   const [top, topCount] = [...perCue].sort((a, b) => b[1] - a[1])[0] ?? ["", 0];
-  if (maps.size >= MIN_BATTLE_MAPS && topCount >= battles.length * UNIFORM_SHARE) {
+  if (maps.size >= MIN_BATTLE_MAPS && topCount >= plain.length * UNIFORM_SHARE) {
     const only = top || "(전투곡 없음)";
     issues.push({
       severity: "warning", code: "audio-battle-bgm-uniform",
-      message: `전투 ${battles.length}개(맵 ${maps.size}개) 중 ${topCount}개가 같은 전투곡 ${only} 을 튼다 — 지역(맵)마다 일반 전투곡을 따로 걸고(set_game_audio role:map-battle mapIds), 보스전은 보스곡(role:boss troopIds)으로. 곡은 recommend_bgm scene:battle / boss 로 고른다.`,
+      message: `일반 전투 ${plain.length}개(맵 ${maps.size}개) 중 ${topCount}개가 같은 전투곡 ${only} 을 튼다 — 지역(맵)마다 일반 전투곡을 따로 걸고(set_game_audio role:map-battle mapIds), 보스전은 보스곡(role:boss troopIds)으로. 곡은 recommend_bgm scene:battle / boss 로 고른다.`,
     });
   }
-  const normal = new Set(battles.filter((b) => !looksLikeBoss(project, b.troopId)).map((b) => b.bgm ?? ""));
+  const normal = new Set(plain.map((b) => b.bgm ?? ""));
   const reported = new Set<string>();
   for (const b of battles) {
     if (reported.has(b.troopId) || !looksLikeBoss(project, b.troopId) || !normal.has(b.bgm ?? "")) continue;

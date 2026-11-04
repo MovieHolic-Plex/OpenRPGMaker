@@ -82,7 +82,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 1. **이야기가 들르는 모든 맵에 BGM.** `set_map_properties({mapId, bgm:{mode:"custom",resourceId}})` 또는 들어올 때 BGM 재생. 비우면 앞 맵 곡이 이어지거나 침묵. 일부러 조용하면 `bgm.mode:"none"`. 확인: `scene-map-no-bgm` 0.
 2. **곡은 분류 이름이 아니라 귀로 고른다.** 「마을」「광장」 분류는 현대 장면에 판타지 곡을 주고, 카탈로그 설명이 맞아 보여도 절반은 싸구려 General MIDI 로 울렸다(Fallen). 조수는 `recommend_bgm` 설명에서 장르(현대/판타지)·장면이 맞고 악기·녹음이 구체적인 곡을 고르고, MIDI·칩튠 느낌이 적힌 곡은 장르가 원할 때만 쓴다. 확인(코딩 에이전트): 후보마다 30초 발췌를 소리 판정자에게 3번 들려 어울림·제작 품질을 매기고, 3번 중 2번 이상 «싸구려»로 찍힌 곡은 쓰지 않는다.
 3. **파일이 있는 곡만.** 기본 3곡 밖의 카탈로그 곡은 오프라인 빌드에서 404 일 수 있다.
-4. **전투곡도 지역마다, 보스는 보스곡.** 프로젝트 전투곡(`battle-default`) 하나에 모든 싸움을 맡기지 않는다 — 폴른 스타는 전투 76개 중 75개가 보스곡 하나였고 늑대·슬라임도 그 곡이었다(2026-11-04). 싸움이 있는 지역의 맵마다 `set_game_audio({role:"map-battle", mapIds, resourceId})` 로 일반 전투곡을(이벤트·조우·필드 모두 그 곡), 보스·정예는 `role:"boss", troopIds` 로 보스곡을 건다. 곡은 `recommend_bgm({scene:"battle"|"boss"})` 후보를 2번 규칙대로 귀로 고른다 — 청취 설명·빠르기만 보고 고른 지역 후보 8곡이 실제로는 «평화로운 마을 곡»이었다. 효과음도 같다: 한 소리를 받기·장비·합류·기어 나가기에 두루 쓰지 않는다(「천」 inventory-cloth 가 26번). 확인: `audio-battle-bgm-uniform`·`audio-boss-uses-default`·`audio-se-overused` 0.
+4. **전투곡도 지역마다, 보스는 보스곡.** 프로젝트 전투곡(`battle-default`) 하나에 모든 싸움을 맡기지 않는다 — 폴른 스타는 전투 76개 중 75개가 보스곡 하나였고 늑대·슬라임도 그 곡이었다(2026-11-04). 싸움이 있는 지역의 맵마다 `set_game_audio({role:"map-battle", mapIds, resourceId})` 로 일반 전투곡을(이벤트·조우·필드 모두 그 곡), 보스·정예는 `role:"boss", troopIds` 로 보스곡을 건다. 곡은 `recommend_bgm({scene:"battle"|"boss"})`·`store_find_music` 후보를 2번 규칙대로 귀로 고른다(번들 카탈로그에 전투로 들리는 곡은 많지 않다 — 들어 보고 마을처럼 들리면 lint 를 끄려고 걸지 않는다) — 청취 설명·빠르기만 보고 고른 지역 후보 8곡이 실제로는 «평화로운 마을 곡»이었다. 효과음도 같다: 한 소리를 받기·장비·합류·기어 나가기에 두루 쓰지 않는다(「천」 inventory-cloth 가 26번). 확인: `audio-battle-bgm-uniform`·`audio-boss-uses-default`·`audio-se-overused` 0.
 
 ## 6. 탈것과 움직이는 소품
 
@@ -222,7 +222,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-exit-blocked` | `exitVia` 가 출발하는 순간 서 있는 사람(주인공 포함)에 막혀 문까지 길이 없다 → 제자리에서 깜박 사라졌다 다시 보인다. 문 쪽 사람부터 내보내거나 막은 사람(주인공)을 비키게 한다 |
 | `scene-examine-unreachable` | 조사만 하는 이벤트(확인 키, 이동 없음)에 시작점·착지점에서 걸어 닿을 수 없다 → 같은 물건의 열린 쪽 칸으로 옮기거나 뺀다 |
 | `scene-examine-duplicate` | 기물 하나(같은 그림 덩어리)에 이벤트가 둘이고 그중 하나가 조사다 → 같은 물건이 두 이야기를 한다. 합치거나 다른 물건으로 |
-| `audio-battle-bgm-uniform` | 맵 셋 이상에서 싸우는데 전투 80% 이상이 같은 곡 → 지역 맵마다 `set_game_audio role:map-battle`, 보스는 `role:boss` (5절 4번) |
+| `audio-battle-bgm-uniform` | 맵 셋 이상에서 싸우는데 **일반 전투**(그 전투 직전에 전투곡을 바꾸지 않은 것) 80% 이상이 같은 곡 → 지역 맵마다 `set_game_audio role:map-battle`, 보스는 `role:boss` (5절 4번) |
 | `audio-boss-uses-default` | 보스처럼 보이는 부대(이름에 보스·대장·용…, 또는 쓰러지는 연출 bossSink)의 전투가 일반 전투와 같은 곡 → `role:boss troopIds` 로 보스곡 |
 | `audio-se-overused` | 효과음 하나가 10번 이상, 서로 다른 일 4가지 이상(받기·장비·합류·장소 이동·움직임…) 뒤에 쓰였다 → 일마다 맞는 소리를 카탈로그 설명으로 |
 | `original-ip-name` | 플레이어에게 보이는 글(대사·이름·설명)에 원작 IP 고유명이 있다 → 공개·판매용이면 일반 낱말로 바꾼다. 경로가 메시지에 나온다 |

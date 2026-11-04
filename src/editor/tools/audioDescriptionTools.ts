@@ -1,5 +1,4 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { searchResources } from "@/assets/resourceSearch";
 import {
   resetAudioDescriptionOverride,
@@ -118,20 +117,10 @@ const BGM_SCENE_STORE: Readonly<Record<BgmScene, readonly StoreMusicScene[]>> = 
   town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense", "chase"], ending: ["ending"],
 };
 
-// 이름(분류)만 보면 전투·보스 장면은 카탈로그 281곡 중 두 곡뿐이었다 — 폴른 스타가 76전투에 보스곡 하나를 튼 원인(2026-11-04).
-// 카탈로그 기획 태그가 장면을 말하는 곡(메인 테마 변주 「normal combat」·「corrupted boss」)도 같은 장면으로 친다.
-const BGM_SCENE_PLAN_TAGS: Partial<Record<BgmScene, RegExp>> = {
-  battle: /^(?:normal|standard|repeatable) combat$|^일반 전투$/i,
-  boss: /\bboss\b|^보스/i,
-};
-
 function inScene(project: Project, resource: { id: string; name: string }, scene: BgmScene): boolean {
   const music = readStoreMusicMeta(project.assets.uploaded[resource.id]?.meta);
   if (music) return music.scenes.some((entry) => BGM_SCENE_STORE[scene].includes(entry));
-  if (BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle))) return true;
-  const planTag = BGM_SCENE_PLAN_TAGS[scene];
-  const track = planTag ? BGM_CATALOG.find((entry) => entry.id === resource.id) : undefined;
-  return !!track && track.tags.some((tag) => planTag!.test(tag));
+  return BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle));
 }
 
 function searchBgmMatches(project: Project, query: string): Array<{ resourceId: string; score: number }> {
