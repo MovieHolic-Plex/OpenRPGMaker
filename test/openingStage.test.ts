@@ -58,6 +58,15 @@ describe("author_opening_stage", () => {
     const resets = page.commands.flatMap((command, index) => command.kind === "m2Command" && (command as { fields?: Record<string, unknown> }).fields?.reset ? [index] : []);
     expect(resets).toEqual([clear + 1]);
     expect(transfer).toBe(clear + 2);
+    // 맵 이벤트는 이동에서 끝난다 — 이동 뒤에 명령을 남기지 않는다(scene-commands-after-transfer).
+    expect(transfer).toBe(page.commands.length - 1);
+  });
+
+  it("refuses a letterbox on a stage that has captions (scene-letterbox-dialogue)", () => {
+    const project = createBlankProject();
+    const ctx = { project };
+    const result = runTool(ctx, "author_opening_stage", { mapId: project.startMapId, x: 2, y: 2, beats: [{ kind: "letterbox", show: true }, { kind: "say", text: "봄." }] });
+    expect(result.ok).toBe(false);
   });
 
   it("editing the picture scenes afterwards keeps the stage (edit_opening rebuilds the sequence)", () => {
