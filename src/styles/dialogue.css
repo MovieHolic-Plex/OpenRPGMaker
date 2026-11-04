@@ -83,6 +83,8 @@
 .dialogue-overlay.position-bottom {
   bottom: 0;
   height: var(--runtime-dialogue-panel-height);
+  /* 남는 높이는 위에 둔다 — 자막 줄(내레이션 50px)이 패널 맨 위에 붙어 아래에 지도가 비치던 결함(첫사랑 VQA 2026-11-05). */
+  justify-content: flex-end;
   padding: 0 10px 8px;
   top: auto;
   transform: none;

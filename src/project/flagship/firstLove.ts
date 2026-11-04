@@ -392,7 +392,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   const s = a.street;
   // 부딪히는 자리는 세로 횡단보도(x≈21) 한가운데. 남자는 옆 줄(x+1)로 뛰어 내려오다 서하 쪽으로 꺾어 옆에서 부딪힌다 —
   // 바로 위 칸에서 부딪히면 3/4 시점에서 남자 하반신이 서하 머리를 덮었다(Argon op1).
-  const bumpAt: Cell = nearestFree(project, street, { x: 20, y: 22 }, 1);  // 남쪽 보도, 세로 횡단보도 발치 바로 왼쪽(차도 밖)
+  // 한 칸 더 남쪽(y 24) — y 22 는 보도 가장자리라 배율 2 에서 서하 머리가 줄 선 택시 지붕에 겹쳤다(VQA 2026-11-05). 점프(dx -1) 도착 칸과 남자 정지 칸이 모두 비어 있다.
+  const bumpAt: Cell = nearestFree(project, street, { x: 20, y: 24 }, 1);  // 남쪽 보도, 세로 횡단보도 발치 바로 왼쪽(차도 밖)
   const nearBump: Cell = bumpAt;
   const rusher: Cell = nearestFree(project, street, { x: 21, y: 14 }, 1);   // 북쪽 보도, 횡단보도 머리
   const rushStop: Cell = { x: bumpAt.x + 1, y: bumpAt.y };                   // 횡단보도를 뛰어 내려와 보도에 닿는 칸 — 서하 바로 오른쪽
@@ -440,6 +441,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     // 사람들이 다 빠진 뒤 서하도 계단을 올라온다(숨은 채 계단 앞 칸으로 돌아와 나타난다).
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "move", dir: "left" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     showPlayer(),
+    // 레터박스는 말 없는 출근 인파 컷에만 — 띠를 건 채 대사를 띄우면 대화창이 띠를 피해 위로 올라가 상자 자리가 뛰었다(VQA 2026-11-05, y 414→350).
+    ...letterbox(false, 500),
     ...caption("월요일 오전 8시 41분, 한결역."),
     ...think("첫 출근. 지각은 아니다. 아직은.", "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 늘봄 빌딩은 길 건너, 제일 높은 유리 건물이다."),
     ...say("seoha", "happy", "할 수 있어, 윤서하."),
@@ -471,7 +474,6 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "approach", x: rusher.x, y: rusher.y, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
     // 「…」로 시작하는 줄은 흘림 첫 순간 「…」만 든 상자가 된다 — 말머리 말줄임표를 뺐다.
     ...think("그 목소리, 어디서 들어 본 것 같았는데."),
-    ...letterbox(false, 500),
     wait(600),
     setSw(SW_BUMPED, true),
     ...think("(횡단보도를 건너 늘봄 빌딩으로 가자.)"),
@@ -788,14 +790,18 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     quiet(SE_DOOR_SHUT, 0.7), ...doorFx(roofDoor, false, 500),
     bgm(BGM_ROOF),
     face("ev_fl_jihu_roof", "up"),
-    // 문 앞에서 난간 쪽으로 카메라가 천천히 건너가 그 사람을 찾는다.
-    panTo(jihuRail.x, jihuRail.y, 1600),
+    // 문 앞에서 카메라가 난간 쪽으로 건너가 그 사람을 찾는다 — 짧게(0.7초+0.5초) 한 번만. 예전엔 1.6초+1초로 위아래를 훑어
+    // 3초 넘게 내용 없이 패닝했다(VQA 2026-11-05: scrollY 217→185→242, 맵 아래 검은 띠).
+    panTo(jihuRail.x, jihuRail.y + 1, 700),
     ...think("하늘이 넓다. 그리고… 있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
-    panBack(1000),
+    panBack(500),
     walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
     face("@player", "right"),
     face("ev_fl_jihu_roof", "left"),
+    // 대화하는 동안 카메라를 두 사람 바로 아래 칸으로 당긴다(배율 2, 재회 장면과 같은 방식) — 1배에서는 두 사람이 철망 맨 윗줄에
+    // 손톱만 하게 붙어 좌우 흉상이 덮었다(VQA 2026-11-05, 판정자 둘 다 지적). 떠날 때 돌려놓는다.
+    panTo(Math.round((r.railHero.x + jihuRail.x) / 2), jihuRail.y + 1, 900, 2),
     ...emote("ev_fl_jihu_roof", "ellipsis"),
     ...say("jihu", "base", "…여긴 어떻게 알았어요."),
     ...say("seoha", "base", "민호 씨가요. 회사 유일한 장점이라고."),
@@ -832,6 +838,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     ...say("jihu", "base", "점심시간 끝나요. 먼저 내려가요. 같이 내려가면… 말 나와요."),
+    panBack(600),
     // 옥상을 떠날 때도 실제 문으로 걸어 나간다 — 장면 끝 순간이동 금지(VQA2: 돌아오는 문 없이 거리로).
     face("ev_fl_jihu_roof", "up"),
     walkRoute(project, FL_MAP.rooftop, "@player", r.railHero, r.doorOut),

@@ -123,6 +123,8 @@ export type AutonomousMover = {
    * playSceneAutonomous §retryBlockedStep 참조.
    */
   blockedSteps?: number;
+  /** 명령 경로의 다음 칸에 지나가는 차가 서 있어 기다린 시간(ms). 한계(3초)를 넘으면 걸음을 소비한다 — playSceneAutonomous §waitForPassingVehicle. */
+  transitWaitMs?: number;
   /** 명령 경로가 막혀 주인공을 한 칸 비켜 세웠다(commandRouteDetour.sidestepForPlayer) — 한 번만. */
   playerSidestepped?: boolean;
   /** 페이지 생활 경로만 막힌 걸음을 보존하고 이벤트 점유를 피해 재탐색한다. */
@@ -137,7 +139,8 @@ export type AutonomousMover = {
    *
    * 작가가 쓴 페이지 이동 경로는 세우지 않는다. 그쪽은 막히면 걸음을 소비하고 넘어가는 것이
    * 이 엔진의 기존 동작이고(test/runtimeMoveRouteCommands), 작가는 "이 칸이 막혀 있으면
-   * 이번엔 건너뛴다" 를 전제로 경로를 짠다.
+   * 이번엔 건너뛴다" 를 전제로 경로를 짠다. 단 하나의 예외: 다음 칸을 지나가는 차·버스가 덮고 있으면
+   * 최대 3초 기다린다(`transitWaitMs`, playSceneAutonomous §waitForPassingVehicle).
    */
   retryBlockedSteps?: boolean;
   /** Authored non-skippable patrols never consume a blocked absolute step. */

@@ -1061,6 +1061,24 @@
     "the project saves and reloads"
    ],
    "lint0": []
+  },
+  {
+   "id": "street-crossing-vehicle-wait",
+   "label": "거리 장면: 길 건너는 인물의 걸음은 지나가는 차 때문에 사라지지 않고, 대사 전에 레터박스를 걷는다",
+   "port": 19560,
+   "lessons": [
+    "street-crossing-vehicle-wait"
+   ],
+   "prompt": "출근길 횡단보도에서 서류를 든 주인공이 맞은편에서 뛰어오는 남자와 부딪히는 오프닝을 만들어 줘. 도로에 차가 다니는데도 남자가 반드시 주인공 옆까지 오고, 대사가 뜰 때 화면 띠(레터박스)가 없어야 해.",
+   "requirements": [
+    "the running man's moveEvent reaches the cell next to the heroine even when a car crosses his lane (the runtime waits for a passing vehicle instead of dropping the step)",
+    "letterbox is cleared before the first caption or dialogue line (no scene-letterbox-dialogue warning)",
+    "the bump cell is a sidewalk cell away from parked cars, and the camera closes in on the pair when they talk",
+    "the project saves and reloads"
+   ],
+   "lint0": [
+    "scene-letterbox-dialogue"
+   ]
   }
  ]
 }
