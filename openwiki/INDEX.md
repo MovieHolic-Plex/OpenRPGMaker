@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7999KB / 약 2,350,791 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 8000KB / 약 2,351,036 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,11 +16,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 72KB | 19KB | 468 | ~21,516 |
-| `openwiki/assistant-v2.md` | 275KB | 48KB | 819 | ~83,595 |
+| `openwiki/assistant-v2.md` | 275KB | 48KB | 819 | ~83,646 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
-| `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,376 |
+| `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,419 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
-| `openwiki/editor-ai-panel.md` | 730KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4725 | ~214,428 |
+| `openwiki/editor-ai-panel.md` | 729KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4725 | ~214,237 |
 | `openwiki/editor-ai-tools.md` | 628KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4057 | ~184,468 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,745 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
@@ -141,7 +141,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/i18n.md` | 1 | `docs/terminology/product-terminology.md` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 8 | `-x2.png`, `.css`, `.empty.json`, `scripts/tmp-jp-gen.mts`, `src/ai/modernTilesetPolicy.ts`, `town-x3.png`, `verify-shots/jp-city/editor-town-full.png`, `verify-shots/jp-city/town-1x.png` |
-| `openwiki/licensing.md` | 2 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md` |
+| `openwiki/licensing.md` | 3 | `PUBLIC_EXPORT.json`, `docs/legal/ugc-terms-draft.md`, `node_modules/phaser/LICENSE.md` |
 | `openwiki/location-layer-affordance-audit.md` | 2 | `src/styles/editor/map-location-layer.css`, `verify-shots/loc-draw-cta/SUMMARY.md` |
 | `openwiki/modern-campus-interior.md` | 1 | `modernCampusInteriorSpec.json` |
 | `openwiki/modern-campus.md` | 8 | `campus_layout.py`, `campus_props.py`, `mc_core.py`, `preview/_all-x4.png`, `props_a.py`, `props_b.py`, `props_c.py`, `src/assets/modernCampusLayouts.json` |
@@ -325,7 +325,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L356` 바로 플레이 게임 (2026-10-23)
   - `L460` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2.md` — 275KB · 819줄 · ~83,595 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 275KB · 819줄 · ~83,646 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
@@ -447,7 +447,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 235KB · 1154줄 · ~71,376 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 235KB · 1154줄 · ~71,419 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
@@ -646,7 +646,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L116` 주제 적 (`dungeonThemeTroops.ts`)
 - `L128` 시험
 
-### `openwiki/editor-ai-panel.md` — 730KB · 4725줄 · ~214,428 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 729KB · 4725줄 · ~214,237 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L3` 조수 v2 스위치 (2026-10-23, 기본 꺼짐)
 - `L10` 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)
@@ -2748,7 +2748,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L211` 검증
 - `L222` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 46KB · 343줄 · ~14,301 토큰
+### `openwiki/relief-terrain.md` — 48KB · 348줄 · ~14,643 토큰
 
 - `L14` 파일 지도
 - `L33` depth 규칙(런타임, `playSceneRelief.ts` 머리말)
@@ -2765,7 +2765,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L281` 편집기 높이 지형 위 타일 칠하기·선택·호버 좌표 일치 (2026-10-20)
 - `L290` 알려진 한계 · 결정이 필요한 것
 - `L300` 검증 도구 (이 브랜치에 들어온 것)
-- `L338` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
+- `L343` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
 ### `openwiki/rpg-opening-research.md` — 5KB · 27줄 · ~1,404 토큰
 
