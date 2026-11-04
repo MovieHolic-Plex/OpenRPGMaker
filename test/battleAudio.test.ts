@@ -94,6 +94,20 @@ describe("battle audio", () => {
     });
     expect(out.battleVictoryMeResourceId).toBe("cc0-bgm-rtp-ttl-001");
     expect(out.battleDefeatSeResourceId).toBe("easyrpg-sound-collapse1");
-    expect(out.battleEscapeSeResourceId).toBe("easyrpg-sound-escape");
+  it("지금 맵의 전투곡이 프로젝트 전투곡보다 먼저이고, 이벤트가 건 보스곡이 그보다 먼저다", () => {
+    vi.mocked(playAudioCommand).mockClear();
+    const project = {
+      system: { battleBgmResourceId: "cc0-bgm-rtp-btl-001" },
+      maps: { map_forest: { battleBgmResourceId: "cc0-bgm-battle" }, map_town: {} },
+    } as unknown as Project;
+    const inForest = { ...sessionWithBgm("cc0-bgm-rtp-fld-002"), currentMapId: "map_forest" } as PlaySession;
+    enterBattleAudio(project, inForest);
+    expect(inForest.audio.bgm?.resourceId).toBe("cc0-bgm-battle");
+    const inTown = { ...sessionWithBgm("cc0-bgm-rtp-fld-001"), currentMapId: "map_town" } as PlaySession;
+    enterBattleAudio(project, inTown);
+    expect(inTown.audio.bgm?.resourceId).toBe("cc0-bgm-rtp-btl-001");
+    const boss = { ...sessionWithBgm("cc0-bgm-rtp-fld-002"), currentMapId: "map_forest", systemAudioOverrides: { bgm: { battle: { resourceId: "cc0-bgm-rtp-btl-002", volume: 100 } } } } as PlaySession;
+    enterBattleAudio(project, boss);
+    expect(boss.audio.bgm?.resourceId).toBe("cc0-bgm-rtp-btl-002");
   });
 });

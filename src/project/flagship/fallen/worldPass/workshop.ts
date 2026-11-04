@@ -44,7 +44,7 @@ function recipeOption(project: Project, r: Recipe): Option {
     branch: [
       say(NINA, r.pitch),
       { kind: "craftRecipe", recipeId: r.id, resultVariableId: RESULT } satisfies Command,
-      fork(varCond(RESULT, "==", 1), [se("cc0-se-orp-inventory-cloth"), narrate(`「${out}」을 받았다.`)], [say(NINA, `${need}${r.goldCost ? `에 ${r.goldCost}G` : ""}가 다 있어야 해.\n모자라면 숲에서 더 모아 와.`)]),
+      fork(varCond(RESULT, "==", 1), [se("cc0-se-osx-tools-02"), narrate(`「${out}」을 받았다.`)], [say(NINA, `${need}${r.goldCost ? `에 ${r.goldCost}G` : ""}가 다 있어야 해.\n모자라면 숲에서 더 모아 와.`)]),
       gotoLabel("fs_craft_menu"),
     ],
   };

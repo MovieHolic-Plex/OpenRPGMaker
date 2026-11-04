@@ -387,7 +387,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
       { name: "송어", conditions: [sw(SW_Q5_FISH)], commands: [
         say(HARMA, "오, 은빛이구먼. 첫째 아이의 고기야.\n옛날에 대답을 들은 그 아이도\n이런 물고기를 한 마리 받았단다."),
         item(FS2_TROUT, -1),
-        se("cc0-se-orp-inventory-cloth"),
+        se("cc0-se-osx-bell-01"),
         item(FS2_HARMA_OAR, 1),
         narrate("「하르마의 은빛 노」를 받았다.", { context: "system" }),
         say(HARMA, "우리 집 노다.\n얼음판에서 미끄러지지 말라고 주는 게야."),
@@ -527,7 +527,7 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
       narrate("기슭에 종이 등이 줄지어 있다. 등마다\n한 줄씩 글씨가 적혀 있다.\n「잘 지내」「밥 먹었니」「오늘은 별이 많다」"),
       { kind: "choices", prompt: "등 하나에 한 줄을 적어 띄울까?", options: [
         { text: "「잘 지내」라고 적는다", branch: [
-          se("cc0-se-orp-inventory-cloth"),
+          se("cc0-se-osx-paper-04"),
           narrate("카엘이 등에 「잘 지내」라고 적고 불을 붙였다.\n등이 바람을 타고 호수 위로 떠올랐다."),
           flash("#ffc070", 700),
           say(ELENA, "…이리스한테 닿으면 좋겠다."),

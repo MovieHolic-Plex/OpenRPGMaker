@@ -14,6 +14,7 @@ import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
 import { resolveBgmCatalogAssetUrl } from "./bgmCatalogResolver";
+import { resolveOprnBgmAssetUrl } from "./oprnBgmAssets";
 import { openingStillPackUrl } from "./openingStillPackCdn";
 import { findOpeningStillPackEntry } from "./openingStillPackRuntime";
 import { resolveSeCatalogAssetUrl } from "./seCatalogResolver";
@@ -274,6 +275,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveOgaCraftpixAssetUrl(resourceId) ??
     resolveOprnPanoramaAssetUrl(resourceId) ??
     resolveCc0AudioAssetUrl(resourceId) ??
+    resolveOprnBgmAssetUrl(resourceId) ??
     // 281곡 CC0 BGM 카탈로그. 파일이 레포에 없고 CDN 에서 오므로 절대 URL 이 나올 수 있다.
     resolveBgmCatalogAssetUrl(resourceId) ??
     // 오프닝 스틸 릴리스 팩. 파일이 레포에 없고 CDN/설치 경로에서 온다.

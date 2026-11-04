@@ -1,6 +1,6 @@
 import { parseMusicScore, renderOriginalMusic, musicWavDataUrl } from '@/assets/originalMusic';
 import { parseSoundPatch, renderOriginalSound } from '@/assets/originalSound';
-import { resolveMapBgm } from '@/project/mapMusic';
+import { resolveBattleBgmResourceId, resolveMapBgm } from '@/project/mapMusic';
 import { listAudioResources } from '@/assets/audioResourceCatalog';
 import { genId } from '@/util/id';
 import { setAudioDescriptionOverride } from '@/project/audioDescriptions';
@@ -61,14 +61,14 @@ export const ORIGINAL_MUSIC_TOOLS: readonly ToolDefinition[] = [{
   },
 }, {
   name: 'get_soundtrack', mode: 'read',
-  description: '현재 맵별 BGM·타이틀·오프닝·전투·타이틀 키 입력 효과음 배치를 읽는다. 같은 곡을 무조건 재사용하지 말고 장소 분위기가 바뀌면 원곡/변주를 계획한다.',
+  description: '현재 맵별 BGM·맵별 전투곡(battleBgm — 그 맵 전투가 실제로 트는 곡)·타이틀·오프닝·전투·타이틀 키 입력 효과음 배치를 읽는다. 같은 곡을 무조건 재사용하지 말고 장소 분위기가 바뀌면 원곡/변주를 계획한다.',
   parameters: { type: 'object', additionalProperties: false, properties: {} },
   run(project) {
     const music = new Map(listAudioResources('music', project).map(r => [r.id, r]));
-    const maps = Object.values(project.maps).map(m => ({ mapId: m.id, name: m.name, bgm: m.bgm ?? { mode: 'parent' }, effective: resolveMapBgm(project, m.id) }));
+    const maps = Object.values(project.maps).map(m => ({ mapId: m.id, name: m.name, bgm: m.bgm ?? { mode: 'parent' }, effective: resolveMapBgm(project, m.id), battleBgm: resolveBattleBgmResourceId(project, m.id) ?? null }));
     const usages = new Map<string, string[]>();
     const use = (id: string | undefined, target: string) => { if (id) usages.set(id, [...(usages.get(id) ?? []), target]); };
-    for (const map of maps) use(map.effective.kind === 'play' ? map.effective.resourceId : undefined, map.mapId);
+    for (const map of maps) { use(map.effective.kind === 'play' ? map.effective.resourceId : undefined, map.mapId); use(project.maps[map.mapId]?.battleBgmResourceId, `battle:${map.mapId}`); }
     use(project.system.titleScreen?.musicResourceId, 'title'); use(project.system.opening?.musicResourceId, 'opening'); use(project.system.battleBgmResourceId, 'battle');
     return { summary: `${maps.length}개 맵의 음악·효과음 배치입니다.`, data: { maps, titleSounds: project.system.titleScreen?.sounds,
       tracks: [...usages].map(([resourceId, targets]) => ({ resourceId, targets, name: music.get(resourceId)?.name, description: music.get(resourceId)?.description ?? '' })) } };

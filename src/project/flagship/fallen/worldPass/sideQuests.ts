@@ -47,7 +47,7 @@ export function odenVenomQuest(project: Project): void {
       narrate("독 주머니 둘을 건넸다."),
       say(ODEN, "좋아, 터지지 않게 잘 들고 왔군.\n이걸로 해독초 한 솥이다. 수고비다."),
       item("item_potion", 3),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-bell-01"),
       narrate("「회복약」 3개를 받았다."),
       setSw(Q4_DONE),
     ], [item(VENOM, 1), notYet])], [notYet]),
@@ -71,7 +71,7 @@ export function tobiKiteQuest(project: Project, forestEdgeId: string, kiteAt: Ce
     page("ev_fs_q_kite_spot_idle", "평소", [], [narrate("덤불 위로 빨간 종잇조각이 펄럭인다.")]),
     page("ev_fs_q_kite_spot_on", "의뢰 중", [sw(Q5_ON), sw(Q5_FOUND, false)], [
       narrate("나뭇가지에 빨간 연이 걸려 있다.\n발끝을 세워 조심스레 떼어 냈다."),
-      item(KITE, 1), se("cc0-se-orp-inventory-cloth"), narrate("「빨간 연」을 손에 넣었다."), setSw(Q5_FOUND),
+      item(KITE, 1), se("cc0-se-osx-bell-01"), narrate("「빨간 연」을 손에 넣었다."), setSw(Q5_FOUND),
     ]),
     page("ev_fs_q_kite_spot_done", "가져감", [sw(Q5_FOUND)], [narrate("연이 걸려 있던 가지가 흔들린다.")]),
   ]);
