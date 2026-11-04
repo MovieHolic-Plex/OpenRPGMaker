@@ -287,21 +287,39 @@ describe("scene-text-during-picture-fade", () => {
 });
 
 describe("romance-few-cg-scenes: 연애 게임인데 CG 컷이 거의 없다", () => {
-  const cgShow = (n: number): Command => ({ kind: "showPicture", pictureId: "cg", resourceId: `cg-${n}`, x: 0, y: 0, opacity: 255, waitForPicture: true, recordInGallery: true } as Command);
-  function codesFor(options: { romance: boolean; cg: number }): string[] {
+  const cgShow = (n: number, resourceId = `cg-${n}`): Command => ({ kind: "showPicture", pictureId: "cg", resourceId, x: 0, y: 0, opacity: 255, waitForPicture: true, recordInGallery: true } as Command);
+  type Mode = "lock" | "interview" | "none";
+  function codesFor(options: { mode: Mode; cg: number; sameResource?: boolean; ending?: boolean; extraEvents?: number }): string[] {
     const { project, out } = fixture();
-    if (options.romance) project.system.genreLock = { preset: "romance", mode: "enforce" } as never;
-    out.events = [ev("e", 3, 3, [page(Array.from({ length: options.cg }, (_, n) => cgShow(n)), { trigger: { kind: "action" } as EventPage["trigger"] })])];
+    if (options.mode === "lock") project.system.genreLock = { preset: "romance", mode: "enforce" } as never;
+    if (options.mode === "interview") project.gameDesignBrief = { interview: { genre: "romance" } } as never;
+    if (options.ending !== false) project.endings = [{ id: "end-a", title: "끝" }] as never;
+    const cgs = Array.from({ length: options.cg }, (_, n) => cgShow(n, options.sameResource ? "cg-same" : undefined));
+    out.events = [
+      ev("e", 3, 3, [page(cgs, { trigger: { kind: "action" } as EventPage["trigger"] })]),
+      ...Array.from({ length: options.extraEvents ?? 0 }, (_, n) => ev(`x${n}`, 4 + n, 3, [page([], { trigger: { kind: "action" } as EventPage["trigger"] })])),
+    ];
     return lintScenePolish(project).filter((i) => i.code === "romance-few-cg-scenes").map((i) => i.code);
   }
 
   it("연애 게임에 갤러리 CG 가 2장이면 경고한다", () => {
-    expect(codesFor({ romance: true, cg: 2 })).toEqual(["romance-few-cg-scenes"]);
+    expect(codesFor({ mode: "lock", cg: 2 })).toEqual(["romance-few-cg-scenes"]);
   });
-  it("5장이면 조용하다", () => {
-    expect(codesFor({ romance: true, cg: 5 })).toEqual([]);
+  it("경계: 4장은 경고하고 5장은 조용하다", () => {
+    expect(codesFor({ mode: "lock", cg: 4 })).toEqual(["romance-few-cg-scenes"]);
+    expect(codesFor({ mode: "lock", cg: 5 })).toEqual([]);
+  });
+  it("같은 그림을 다섯 번 띄워도 한 장으로 센다", () => {
+    expect(codesFor({ mode: "lock", cg: 5, sameResource: true })).toEqual(["romance-few-cg-scenes"]);
+  });
+  it("인터뷰 주 장르가 연애인 경로도 경고한다", () => {
+    expect(codesFor({ mode: "interview", cg: 1 })).toEqual(["romance-few-cg-scenes"]);
   });
   it("연애가 아닌 게임은 CG 가 0장이어도 조용하다", () => {
-    expect(codesFor({ romance: false, cg: 0 })).toEqual([]);
+    expect(codesFor({ mode: "none", cg: 0 })).toEqual([]);
+  });
+  it("초안(엔딩 없음, 이벤트 열 개 미만)인 연애 프로젝트는 조용하고, 이벤트가 열 개를 넘으면 경고한다", () => {
+    expect(codesFor({ mode: "lock", cg: 0, ending: false })).toEqual([]);
+    expect(codesFor({ mode: "lock", cg: 0, ending: false, extraEvents: 10 })).toEqual(["romance-few-cg-scenes"]);
   });
 });
