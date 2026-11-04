@@ -81,7 +81,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_hero_rush_pierce", {
     power: 70, elementId: "spear", damageFormula: "power + a.atk * 1.1", weaponAffinity: spearBond, mpCost: { flat: 5, percentMax: 0 },
-    description: "방어를 무시하고 꿰뚫는다. 창을 들면 +40%.\n딱정벌레나 수호상에게 좋다.",
+    description: "방어를 무시하고 꿰뚫는다. 창을 들면 +40%.",
   });
   tune("skill_hero_rising_blade", {
     power: 40, elementId: "sword", stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
@@ -107,7 +107,7 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_mage_blizzard", {
     power: 54, elementId: "ice", mpCost: { flat: 10, percentMax: 0 },
     stateEffects: [{ stateId: "state_agility_down", chance: 40, operation: "add" }],
-    description: "적 전체에 얼음 속성 피해를 준다.\n40% 확률로 둔해진다.\n도깨비불 떼를 한 번에 잡는다.",
+    description: "적 전체에 얼음 속성 피해를 준다.\n40% 확률로 둔해진다.",
   });
   tune("skill_mage_chain_lightning", {
     power: 50, elementId: "thunder", mpCost: { flat: 12, percentMax: 0 },
@@ -116,7 +116,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_sleep_mist", {
     mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_sleep", chance: 85, operation: "add" }],
-    description: "한 대상을 85% 확률로 재운다.\n보스에게는 잘 안 듣는다.\n맞으면 깨고, 길어야 3차례 잔다.",
+    description: "한 대상을 85% 확률로 재운다.\n맞으면 깨고, 길어야 3차례 잔다.",
   });
   tune("skill_weaken", {
     mpCost: { flat: 3, percentMax: 0 }, stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
@@ -178,7 +178,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_gunner_butt_strike", {
     name: "봉 내려치기", power: 50, elementId: "hit", stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
-    description: "사출봉으로 내려쳐 60% 확률로 기절시킨다.\n기절은 2차례를 넘지 않는다.\n보스와 돌 몸은 버틴다.",
+    description: "사출봉으로 내려쳐 60% 확률로 기절시킨다.\n기절은 2차례를 넘지 않는다.",
   });
   // Lv10 이후 기술도 「총·수류탄」이 아니라 사출봉의 빛으로 읽히게 이름과 한 줄 설명을 바꾼다(메커니즘은 그대로).
   tune("skill_gunner_grenade", { name: "성광탄", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },

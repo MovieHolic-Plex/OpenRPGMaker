@@ -795,6 +795,38 @@
     "no single added light has radius above 3 tiles; ambient after the lighting change is at most 0.65",
     "in the shipped player, a frame after the lighting shows several separate warm glows along the arcade instead of one large disc"
    ]
+  },
+  {
+   "id": "battle-pace-and-hidden-weakness",
+   "label": "전투: 차분한 흐름·무기 계열 평타 특성·약점 미리 안 알리기",
+   "port": 19543,
+   "lessons": [
+    "battle-steady-pace",
+    "weapon-family-normal-attack-trait",
+    "weakness-found-by-play"
+   ],
+   "prompt": "전투가 너무 빨리 지나가. 조금 차분하게 해 주고, 검·창·지팡이가 평타에서도 다르게 느껴지게 해 줘. 그리고 아이템이나 기술 설명에 어떤 몬스터한테 잘 듣는지는 쓰지 마 — 플레이어가 직접 알아내게.",
+   "requirements": [
+    "system.battleStaging.pace is steady after the turn",
+    "at least three weapon families differ on a normal-attack field (criticalRate, stateInflictIds/stateInflictionChance or attackElementIds) and each changed weapon description states that one trait without naming an enemy",
+    "no item, skill or equipment description names an enemy together with 약점/잘 듣/먹힌; system.battleStaging.revealWeakness is never or afterDiscovery"
+   ]
+  },
+  {
+   "id": "campfire-fits-base-revive-in-battle",
+   "label": "모닥불은 받침 안에, 부활약은 전투에서도",
+   "port": 19543,
+   "lessons": [
+    "pixelfx-fits-object-base",
+    "battle-revive-item"
+   ],
+   "prompt": "광장 모닥불 불꽃이 받침보다 커서 옆 마을사람 칸까지 번져 보여. 불꽃을 2칸 받침 안에 맞춰 줄이고, 투명한 막는 칸은 깔지 마. 그리고 피닉스 깃털을 전투 중에도 쓰러진 동료에게 쓸 수 있게 해 줘.",
+   "requirements": [
+    "the campfire event's pixelFx keeps its effectId and gets scale below 1 (about 0.75) with offsetX re-centred on the 2-wide base; no new passability-blocking tiles or invisible events are added around it",
+    "the tile of the nearby villager event stays walkable-adjacent and unchanged",
+    "the revive item (onlyEffectiveOnDeadActors) has occasion battle or always and onlyUsableInMenu false",
+    "in the shipped player, the item menu in battle lists the revive item and its target list contains only downed allies"
+   ]
   }
  ]
 }
