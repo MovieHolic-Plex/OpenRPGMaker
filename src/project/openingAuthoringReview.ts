@@ -3,10 +3,34 @@ import { openingAuthoringStatus } from "./openingAuthoringStatus";
 import { animaticCaptionText } from "./openingAnimatic";
 import { measureOpeningAnimatic, openingMeasurementSummary } from "./openingAnimaticMeasure";
 
+/** 갈아끼우는 수치가 다르면 움직인다. */
+const moves = (keys: readonly { value: number }[] | undefined): boolean => !!keys && keys.length > 1 && keys.some(k => k.value !== keys[0]!.value);
+
+/**
+ * 캐릭터를 그림 레이어로 걷게 한 오프닝 장면 — 맵 위 엔진 무대(author_opening_stage)로 할 일이다.
+ * 대상: 코마 시트(sheet)나 걸음(walk)을 가진 그림 레이어가 x/y 키로 움직이는 것(캐릭터셋 보행). 큰 흉상이 미끄러져 들어오는 것은
+ * 엔진이 못 보여 주므로 대상이 아니다(시트·걸음 없음). 무대가 이미 있으면 나머지 그림 장면도 같은 기준으로 본다.
+ */
+export function openingPictureWalkers(project: Pick<Project, 'system'>): { sceneId: string; layerIds: string[] }[] {
+  const found: { sceneId: string; layerIds: string[] }[] = [];
+  for (const scene of project.system.opening?.scenes ?? []) {
+    if (scene.kind !== 'animatic') continue;
+    const layerIds = scene.composition.layers
+      .filter(l => l.kind === 'image' && (l.sheet || l.walk) && (moves(l.keys?.x) || moves(l.keys?.y)))
+      .map(l => l.id);
+    if (layerIds.length) found.push({ sceneId: scene.id, layerIds });
+  }
+  return found;
+}
+
+export const OPENING_PICTURE_WALKERS_CODE = 'opening-picture-walkers';
+
 /** Structural clues for an author, never a score or proof of visual/playback quality. */
 export function reviewOpeningAuthoring(project: Project) {
   const opening = project.system.opening;
   const warnings: string[] = [];
+  const walkers = openingPictureWalkers(project);
+  if (walkers.length) warnings.push(`${OPENING_PICTURE_WALKERS_CODE}: ${walkers.map(w => `${w.sceneId}(${w.layerIds.join(',')})`).join(' · ')} — 캐릭터를 그림 레이어로 걷게 했습니다. 실제 맵 위에서 엔진으로 연출하세요(author_opening_stage: 맵 NPC 가 이동 경로로 걷고 카메라·날씨·조명이 맵 그대로). 그림은 큰 흉상·CG 처럼 엔진이 못 보여 주는 것만 남깁니다.`);
   const scenes = (opening?.scenes ?? []).map((scene, index) => {
     const visibleText = [scene.narration, ...(scene.kind === 'animatic' ? [...scene.composition.layers.filter(l => l.kind === 'text').map(l => l.text ?? ''), ...animaticCaptionText(scene.composition)] : [])].filter(Boolean).join('\n');
     const narrationCharacters = [...visibleText.trim()].length;

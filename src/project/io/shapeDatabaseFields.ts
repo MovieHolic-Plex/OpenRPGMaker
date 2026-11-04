@@ -289,7 +289,14 @@ export function validateSystem(value: unknown): void {
 
 function validateCinematicSequence(label: string, value: unknown): void {
   const sequence = requireRecord(label, value);
-  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" || label === "system.titleIntro" ? ["entry"] : [])]);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" || label === "system.titleIntro" ? ["entry"] : []), ...(label === "system.opening" ? ["stage"] : [])]);
+  if (sequence.stage !== undefined) {
+    const stage = requireRecord(`${label}.stage`, sequence.stage);
+    requireOnlyFields(`${label}.stage`, stage, ["mapId", "x", "y", "eventId"]);
+    requireNonBlankString(`${label}.stage.mapId`, stage.mapId);
+    requireNonBlankString(`${label}.stage.eventId`, stage.eventId);
+    for (const key of ["x", "y"]) assertSafeIntegerInRange(`${label}.stage.${key}`, stage[key], 0, 100000);
+  }
   requireBoolean(`${label}.enabled`, sequence.enabled);
   requireBoolean(`${label}.skippable`, sequence.skippable);
   if (sequence.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, sequence.musicResourceId);

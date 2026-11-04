@@ -18,12 +18,22 @@ export type CinematicScene =
   | { id: string; kind: "animatic"; composition: OpeningAnimatic; narration: string; narrationAudioResourceId?: string; presentation?: CinematicPresentation; durationMs: number }
   | { id: string; kind: "video"; resourceId: string; narration: string; narrationAudioResourceId?: string; presentation?: CinematicPresentation; durationMs: number };
 
+/**
+ * 엔진 무대 오프닝(오프닝 전용). 새 게임을 누르면 그림 장면(scenes) 다음에 이 맵의 이 칸에서 게임을 시작하고,
+ * 그 맵의 eventId(자동 실행 컷신)가 실제 엔진으로 오프닝을 연출한다 — 캐릭성이 이동 경로로 걷고, 카메라·날씨·맵 조명·BGM 이 맵 그대로다.
+ * 컷신 끝(건너뛰기로도)은 프로젝트 시작 위치로 옮긴다(author_opening_stage 가 마지막 transfer 를 붙인다).
+ * 그림 장면은 엔진이 못 보여 주는 것(큰 흉상·CG)만 맡는다.
+ */
+export type OpeningStage = { mapId: string; x: number; y: number; eventId: string };
+
 /** musicResourceId: 시퀀스 전체에 깔리는 배경음악(장면별 내레이션 음성과 별개). */
 export type CinematicSequence = {
   enabled: boolean;
   skippable: boolean;
   musicResourceId?: string;
   scenes: CinematicScene[];
+  /** Opening only. 엔진 무대(실제 맵 위의 컷신) — OpeningStage. */
+  stage?: OpeningStage;
   /** Opening only. Absent preserves the historic New Game entry. */
   entry?: { mode: "new-game" | "before-title" | "attract"; idleMs?: number; repeatDelayMs?: number };
 };
@@ -95,6 +105,7 @@ export function normalizeCinematicSequence(sequence: CinematicSequence): Cinemat
   const musicResourceId = sequence.musicResourceId?.trim();
   return {
     ...(sequence.entry ? { entry: { ...sequence.entry } } : {}),
+    ...(sequence.stage ? { stage: { ...sequence.stage, mapId: sequence.stage.mapId.trim(), eventId: sequence.stage.eventId.trim() } } : {}),
     enabled: sequence.enabled,
     skippable: sequence.skippable,
     ...(musicResourceId ? { musicResourceId } : {}),

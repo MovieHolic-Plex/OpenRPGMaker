@@ -192,7 +192,7 @@ export class PiOpeningProduction {
       if (Math.max(...counts.values()) > Math.ceil(this.plannedAngles.length / 2)) issues.push('계획한 카메라 앵글이 절반 넘게 같습니다. 컷마다 위치·거리를 달리해 같은 엽서 구도를 반복하지 마세요.');
     }
     const opening = project.system.opening;
-    if (!opening?.enabled || !opening.scenes?.length) issues.push('지정한 위치에서 재생할 오프닝이 활성화되지 않았습니다.');
+    if (!opening?.enabled || (!opening.scenes?.length && !opening.stage)) issues.push('지정한 위치에서 재생할 오프닝이 활성화되지 않았습니다.');
     if (this.plannedShotCount && opening?.scenes.length !== this.plannedShotCount && !opening?.scenes.some(s => s.kind === 'video')) issues.push(`제출한 계획 ${this.plannedShotCount}샷과 연결된 ${opening?.scenes.length ?? 0}장면이 다릅니다. 계획을 실제 장면으로 연결하거나 변경 이유를 반영해 계획을 수정하세요.`);
     if (/설명.{0,12}(?:길|대신)|그림.{0,8}중심/iu.test(this.task) && opening?.scenes.some(s => (s.narration?.length ?? 0) > 80)) issues.push('요청은 그림으로 사건을 보여주는 도입입니다. 80자를 넘는 설명을 장면 위에 붙이지 말고 사건/동작을 실제 그림으로 옮기세요.');
     for (const id of new Set((opening?.scenes ?? []).filter(s => s.kind === 'image').map(s => s.resourceId ?? ''))) {

@@ -1,4 +1,5 @@
 import { setCharacterBaseOrigin } from "./characterOrigin";
+import { openingStageEventId, openingStageFlag } from "@/project/openingStage";
 import { phaserBlendMode } from "@/project/blendMode";
 import { invalidateSunlight } from "./sunlightLayer";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -1045,6 +1046,26 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
 }
 
 export function activeRuntimeEvents(
+  scene: PlaySceneContext,
+  triggerKind: Trigger["kind"]
+): RuntimeEventView[] {
+  // 무대 오프닝 동안 그 맵의 자동·병렬 이벤트는 무대 컷신 하나만 돈다. 같은 맵의 본편 자동 실행(첫사랑 거리의 아침 도입
+  // 컷신은 스테이지 변수로 서 있다)이 오프닝과 같이 돌거나 오프닝 끝에 남아 다시 도는 일을 막는다. 사람·차의 자율 이동은 그대로다.
+  const stageEventId = triggerKind === "auto" || triggerKind === "parallel" ? openingStageEventId(scene.session.flags, scene.getMapId()) : undefined;
+  const views = activeRuntimeEventsUngated(scene, triggerKind);
+  if (stageEventId === undefined) return views;
+  // 무대 컷신이 아직 살아 있을 때만 막는다. 무대 페이지가 이미 꺼졌는데 표만 남았으면(무대 중간에 저장한 세이브를 되불러옴)
+  // 그 맵의 자동·병렬 이벤트가 영영 멈추지 않게 표를 내리고 그대로 돌린다.
+  // 무대 페이지는 시작하자마자 셀프 스위치로 꺼지므로(once), 무언가 돌고 있는 동안(scene.running)은 무대가 살아 있다고 본다.
+  const stageViews = activeRuntimeEventsUngated(scene, "auto").filter((event) => event.event.id === stageEventId);
+  if (stageViews.length === 0 && !scene.running) {
+    delete scene.session.flags[openingStageFlag(scene.getMapId(), stageEventId)];
+    return views;
+  }
+  return triggerKind === "auto" ? stageViews : [];
+}
+
+function activeRuntimeEventsUngated(
   scene: PlaySceneContext,
   triggerKind: Trigger["kind"]
 ): RuntimeEventView[] {

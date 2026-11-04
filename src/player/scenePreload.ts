@@ -186,6 +186,8 @@ function titleWarmupUrls(project: Project): Set<string> {
 export function firstPlayableUrls(project: Project): string[] {
   const urls = new Set<string>([
     ...titleSceneUrls(project), ...engineBootUrls(project), ...mapSceneUrls(project, project.startMapId), ...startPartyUrls(project),
+    // 엔진 무대 오프닝은 새 게임의 첫 맵이다.
+    ...(project.system.opening?.stage ? mapSceneUrls(project, project.system.opening.stage.mapId) : []),
   ]);
   return [...urls];
 }

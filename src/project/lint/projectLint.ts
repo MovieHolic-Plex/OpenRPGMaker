@@ -1,4 +1,5 @@
 import { lintHorrorAuthoring } from "./horrorAuthoringLint";
+import { OPENING_PICTURE_WALKERS_CODE, openingPictureWalkers } from "@/project/openingAuthoringReview";
 import { lintHazardEffects } from "./hazardEffectLint";
 // project/lint/projectLint.ts
 // 프로젝트 무결성 정적 검사기. 순수 함수(Node 헤드리스에서도 동작 — 브라우저 전역 접근 금지).
@@ -1120,6 +1121,10 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   // 0. 장르 잠금 위반 — 잠금을 켠 뒤 허용 밖 칩셋으로 생긴/바뀐 맵(조수 경로는 거부하지만 손 편집·옛 도구 경로는 못 막는다). 잠금 이전부터 있던 맵은 경고하지 않는다.
   for (const violation of genreLockViolations(project).filter((entry) => !entry.preexisting)) {
     issues.push({ severity: "warning", code: "opt-in:genre-lock-violation", mapId: violation.mapId, message: `맵 ${violation.mapId}「${violation.mapName}」이 장르 잠금 밖 칩셋(${violation.tilesetId})을 씁니다 — 허용 계열은 check_genre_lock 로 확인하세요.` });
+  }
+  // 오프닝에서 캐릭터를 그림 레이어로 걷게 했다 — 엔진 무대(author_opening_stage)로 할 일이다(오너 2026-11-05).
+  for (const walker of openingPictureWalkers(project)) {
+    issues.push({ severity: "warning", code: OPENING_PICTURE_WALKERS_CODE, message: `오프닝 장면 ${walker.sceneId} 이 캐릭터를 그림 레이어(${walker.layerIds.join(", ")})로 걷게 합니다 — 실제 맵 위 엔진 무대(author_opening_stage)로 연출하세요.` });
   }
   // 1. monsterCollection && no species
   if (system.monsterCollection === true && monsterSpecies.length === 0) {

@@ -12,8 +12,11 @@ export function inspectFirstPresentation(project: Project): string[] {
   if (!title?.logoStyle || !title.sequence || !title.transition) issues.push('타이틀의 로고·등장 순서·새 게임 전환을 작성해야 합니다.');
   if (title?.backgroundFit !== 'cover') issues.push('타이틀 그림은 비율을 보존하면서 화면 전체를 채워야 합니다(backgroundFit:cover).');
   const opening = project.system.opening;
-  if (!opening?.enabled || !opening.scenes.length) issues.push('첫 제작의 오프닝이 꺼져 있거나 비어 있습니다. 작품에 맞는 그림 또는 저작된 글자 연출로 짧은 도입을 작성하세요.');
-  else {
+  // 엔진 무대(system.opening.stage)만으로 된 오프닝도 오프닝이다 — 그림 컷 수 검사는 그림 컷이 있을 때만 한다.
+  if (!opening?.enabled || (!opening.scenes.length && !opening.stage)) issues.push('첫 제작의 오프닝이 꺼져 있거나 비어 있습니다. 작품에 맞는 그림 또는 저작된 글자 연출로 짧은 도입을 작성하세요.');
+  else if (!opening.scenes.length) {
+    if (!opening.musicResourceId && !project.maps[opening.stage!.mapId]?.bgm) issues.push('오프닝 BGM을 고르거나 무대 맵에 BGM을 두어야 합니다.');
+  } else {
     // 자막에 JSON 이스케이프가 그대로 남으면 화면에 「\"……어?\"」로 보인다(2026-10-07 헤드리스 판 실측). 맵 대사는 이미 막고 있었다.
     const escaped = opening.scenes.filter(scene => /\\+["']/u.test(scene.narration ?? '')).map(scene => scene.id);
     if (escaped.length) issues.push(`오프닝 자막에 JSON 이스케이프 문자(\\")가 보입니다: ${escaped.join(', ')}. 따옴표 앞 역슬래시를 지우고 실제 표시할 문장으로 쓰세요.`);

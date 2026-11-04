@@ -29,7 +29,7 @@ export const V2_UP_FRONT: ReadonlySet<string> = new Set([
   "move_event", "remove_event", "patch_event_page", "add_event_page", "upsert_event", "run_scene_test",
   "create_transfer_pair", "place_chest", "declare_story_flag", "set_start_position", "set_field_hud",
   "simulate_battle", "upsert_actor", "upsert_troop", "set_encounter_table", "place_field_enemy", "define_ending", "set_project_settings",
-  "set_opening", "edit_opening", "list_opening_media", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
+  "set_opening", "edit_opening", "list_opening_media", "author_opening_stage", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
   "inspect_opening_timeline", "set_opening_caption", "author_forest_route",
   // TypeScript 이벤트 스크립트(2026-10-31, 새 도구라 기록 없음) — 로직 낱말(SCRIPT_TIER)이 맞는 요청에서만 처음부터 싣는다.
   // 쓰기 둘만 싣는다(2026-10-31 A/B: get_script_api·check_script·dry_run_script 를 처음부터 실으니 쓰기 앞뒤로 매번 불러 왕복이 늘었다).

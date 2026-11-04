@@ -95,6 +95,7 @@ import {
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 import { holdBackgroundPreload, scenePreloadEnabled } from "@/player/scenePreload";
+import { openingStageFlag } from "@/project/openingStage";
 import { createCinematicAssets } from './cinematicAssets';
 import { warmPlayGameRuntime } from './createPlayGame';
 import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
@@ -333,7 +334,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const opening = store.getCurrent().system.opening;
     const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId
       || options.shouldPlayOpening?.() === false;
-    bootRun(request, !bypass && opening?.enabled && (!opening.entry || opening.entry.mode === "new-game") && opening.scenes.length ? opening : undefined);
+    bootRun(request, !bypass && opening?.enabled && (!opening.entry || opening.entry.mode === "new-game") && (opening.scenes.length || opening.stage) ? opening : undefined);
   };
 
   const bootRun = (request: PlayBootRequest, opening?: NonNullable<ReturnType<typeof store.getCurrent>['system']['opening']>): void => {
@@ -385,6 +386,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     // 세션은 고친 프로젝트에서 만든다(요청이 세션을 들고 왔으면 그것을 그대로 쓴다).
     const session = request.session ?? newSession(effectiveSpawn(request, bootProject), bootProject);
+    // 엔진 무대 오프닝: 새 게임을 무대 맵의 그 칸에서 연다. 무대 컷신(자동 실행)이 끝에서 프로젝트 시작 위치로 옮긴다.
+    const stage = opening?.stage;
+    if (stage && !request.session && bootProject.maps[stage.mapId]) {
+      session.currentMapId = stage.mapId; session.x = stage.x; session.y = stage.y;
+      session.flags[openingStageFlag(stage.mapId, stage.eventId)] = true;
+    }
     const clear = readClearRecord(window.localStorage);
     if (!request.session && request.newGamePlus && clear) applyClearCarry(bootProject, session, clear.carry);
     // 회차·본 엔딩·연 CG 는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다(ESC 불러오기는 PlayScene.applySession 이 같은 함수로).
