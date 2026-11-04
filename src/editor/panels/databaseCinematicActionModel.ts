@@ -1,4 +1,4 @@
-import type { CinematicScene, CinematicSequence, GameOverSettings } from "@/project/cinematicSettings";
+import { keepOpeningStage, type CinematicScene, type CinematicSequence, type GameOverSettings } from "@/project/cinematicSettings";
 import type { Project } from "@/project/types";
 
 export type CinematicTarget = "opening" | "gameOver" | { readonly gameOverId: string };
@@ -29,7 +29,7 @@ export function writeSequence(
   target: CinematicTarget,
   sequence: CinematicSequence,
 ): void {
-  if (target === "opening") project.system.opening = sequence;
+  if (target === "opening") project.system.opening = keepOpeningStage(project.system.opening, sequence);
   else requireGameOverSettings(project, target).sequence = sequence;
 }
 

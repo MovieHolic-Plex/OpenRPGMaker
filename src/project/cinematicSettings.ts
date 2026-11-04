@@ -135,3 +135,8 @@ export function normalizeGameOverSettings(settings: GameOverSettings): GameOverS
     ...(backgroundId ? { backgroundResourceId: backgroundId } : {}),
   };
 }
+
+/** 그림 장면을 다시 쓸 때 엔진 무대(author_opening_stage 가 정함)는 그대로 둔다. */
+export function keepOpeningStage(previous: CinematicSequence | undefined, next: CinematicSequence): CinematicSequence {
+  return previous?.stage && !next.stage ? { ...next, stage: previous.stage } : next;
+}

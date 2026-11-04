@@ -16,6 +16,7 @@ import {
   type CinematicScene,
   type CinematicSequence,
   type GameOverSettings,
+  keepOpeningStage,
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
 import { findOpeningStillMood, unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
@@ -554,7 +555,7 @@ const setOpening: ToolDefinition = {
   invalidArgsHint: "미디어 id는 list_opening_media(kind:\"image\"|\"movie\"|\"sound\"|\"music\") 결과에서 고르세요.",
   run(draft, args): ToolExecResult {
     const { sequence, warnings } = buildSequence(draft, args);
-    draft.system.opening = sequence;
+    draft.system.opening = keepOpeningStage(draft.system.opening, sequence);
     const review = reviewOpeningAuthoring(draft);
     warnings.push(...review.warnings);
     return {
@@ -811,7 +812,7 @@ const editOpening: ToolDefinition = {
       ...(music ? { musicResourceId: music } : {}),
       scenes,
     });
-    draft.system.opening = sequence;
+    draft.system.opening = keepOpeningStage(draft.system.opening, sequence);
     const warnings = !sequence.enabled && sequence.scenes.length > 0
       ? ["오프닝 사용이 꺼져 있어 실제 게임에서는 재생되지 않습니다. edit_opening(op:\"settings\", enabled:true)로 켜세요."]
       : [];

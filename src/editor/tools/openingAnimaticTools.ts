@@ -1,6 +1,6 @@
 import { retimeOpeningAnimatic, validateOpeningAnimatic, animaticResourceIds, ANIMATIC_LIMITS, ANIMATIC_EMOTE_PRESETS, sampleAnimaticTrack, type AnimaticLayer, type AnimaticTracks, type OpeningAnimatic } from '@/project/openingAnimatic';
 import type { CinematicScene, CinematicSequence, Project } from '@/project/types';
-import { CINEMATIC_SCENE_LIMIT } from '@/project/cinematicSettings';
+import { CINEMATIC_SCENE_LIMIT, keepOpeningStage } from '@/project/cinematicSettings';
 import { catalogLookup, characterSheetKind, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
 import { unsuitableOpeningStillMessage } from '@/assets/openingStillMoods';
@@ -28,7 +28,7 @@ function trackSequence(project: Project, track: AnimaticTrack): CinematicSequenc
   return track === 'title-intro' ? project.system.titleIntro : project.system.opening;
 }
 function setTrackSequence(project: Project, track: AnimaticTrack, sequence: CinematicSequence): void {
-  if (track === 'title-intro') project.system.titleIntro = sequence; else project.system.opening = sequence;
+  if (track === 'title-intro') project.system.titleIntro = sequence; else project.system.opening = keepOpeningStage(project.system.opening, sequence);
 }
 function trackOfShot(project: Project, id: string): AnimaticTrack | undefined {
   return TRACKS.find(track => trackSequence(project, track)?.scenes.some(s => s.id === id));

@@ -60,6 +60,17 @@ describe("author_opening_stage", () => {
     expect(transfer).toBe(clear + 2);
   });
 
+  it("editing the picture scenes afterwards keeps the stage (edit_opening rebuilds the sequence)", () => {
+    const project = createBlankProject();
+    const ctx = { project };
+    const mapId = project.startMapId;
+    expect(runTool(ctx, "author_opening_stage", { mapId, x: 2, y: 2, beats: [{ kind: "wait", ms: 300 }] }).ok).toBe(true);
+    const first = ctx.project.system.opening!.scenes[0];
+    if (first) expect(runTool(ctx, "edit_opening", { op: "remove", sceneId: first.id }).ok).toBe(true);
+    expect(runTool(ctx, "edit_opening", { op: "append", scene: { kind: "text", narration: "제1장", durationMs: 3000 } }).ok).toBe(true);
+    expect(ctx.project.system.opening?.stage).toEqual({ mapId, x: 2, y: 2, eventId: "ev_opening_stage" });
+  });
+
   it("stage flag names the running stage event for that map only", () => {
     const flags = { [openingStageFlag("m1", "ev_a")]: true, [openingStageFlag("m2", "ev_b")]: false };
     expect(openingStageEventId(flags, "m1")).toBe("ev_a");
