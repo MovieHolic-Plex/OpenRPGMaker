@@ -688,6 +688,7 @@ export function renderAiSettingsForm(options: {
     piApply: normalizePiApplyMode(piApplySelect.value),
     ...(dialoguePolishSelect.value === "off" ? { dialoguePolishAfterBuild: false } : {}),
     ...(imagePlanSelect.value === "off" ? { imagePlanBuild: false } : {}),
+    ...(config.imagePlanCandidates ? { imagePlanCandidates: config.imagePlanCandidates } : {}),
     ...roleMatrixSlots(),
   });
   // 역할 배정 표(잔일·검토자) — 표가 아직 없으면(첫 collect) 저장값을 그대로 둔다.
