@@ -61,7 +61,7 @@ export function quantityValues(text: string): string[] {
     if (value > 0) out.push(String(value));
     return value > 0 ? " " : raw;
   });
-  rest.replace(ALONE, (raw, tens?: string, unit?: string) => {
+  rest.replace(ALONE, (_raw, tens?: string, unit?: string) => {
     out.push(String(lookup(TENS, tens) + lookup(UNIT_ALONE, unit)));
     return " ";
   });
