@@ -44,6 +44,7 @@ import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Final
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
 import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
+import { assertExaminesReachable } from "./fallen/worldPass/examine";
 import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
@@ -2525,6 +2526,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStoryIndex(project);
   // pixelfx 코드 픽셀 효과 — 기술·필드·이야기 한 번 효과를 id 로 찾아 덧붙인다(fallen/pixelfx.ts). 맨 끝.
   applyFallenPixelFx(project);
+  // 조사 칸이 걸어 가서 살필 수 있는 자리인가 — 사람·가구가 다 놓인 뒤(fallen/worldPass/examine.ts).
+  assertExaminesReachable(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {

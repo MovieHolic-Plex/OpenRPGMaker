@@ -40,7 +40,7 @@ export function hangShopSigns(project: Project, hubId: string, signs: readonly S
     if (!door) throw new Error(`[fallen-world] ${sign.title} 문이 왕도에 없다`);
     const at = signCell(hub, door);
     hub.upperOverlayTiles[at.y * hub.width + at.x] = HANGING_SIGN;
-    putEvent(hub, `ev_fs_sign_${sign.mapId}`, `간판 · ${sign.title}`, { x: at.x, y: door.y }, [
+    putEvent(hub, `ev_fs_sign_${sign.mapId}`, sign.title, { x: at.x, y: door.y }, [
       page(`ev_fs_sign_${sign.mapId}_p`, "읽는다", [], [narrate(`「${sign.title}」\n${sign.line}`)]),
     ]);
     hung.push(at);
