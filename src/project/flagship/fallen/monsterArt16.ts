@@ -35,16 +35,17 @@ export function applyFallenMonsterArt16(project: Project): void {
     }
     // 편집기 스킬 미리보기는 시트 파일 이름(slug)으로 스킬 묶음을 찾는다. 업로드 시트에는 파일 이름이 없어 번들 것을 적어 둔다.
     const skillSlug = bundledPixelEnemySheet(art.resourceId)?.path.replace(/^.*\//, "").replace(/\.png$/, "");
+    const frames = art.grid === "4x4" ? 4 : 3;
     const sheet: UploadedAsset = {
-      id: sheetId, name: `${art.name} 16칸 전투 시트`, kind: "picture", dataUrl: art.sheet,
-      meta: { width: art.cell * 4, height: art.cell * 4, frameWidth: art.cell, frameHeight: art.cell, frames: 16 },
+      id: sheetId, name: `${art.name} ${frames * frames - (frames === 4 ? 1 : 0)}칸 전투 시트`, kind: "picture", dataUrl: art.sheet,
+      meta: { width: art.cell * frames, height: art.cell * frames, frameWidth: art.cell, frameHeight: art.cell, frames: frames * frames },
       generatedBy: GENERATED_BY,
     };
     const portrait: UploadedAsset = {
       id: art.resourceId, name: art.name, kind: "monster", dataUrl: art.portrait,
       meta: {
         width: art.cell, height: art.cell,
-        pixelEnemySheet: { sheetResourceId: sheetId, cell: art.cell, motion: art.motion, idleFrameMs: art.idleFrameMs, grid: "4x4", ...(skillSlug ? { skillSlug } : {}) },
+        pixelEnemySheet: { sheetResourceId: sheetId, cell: art.cell, motion: art.motion, idleFrameMs: art.idleFrameMs, ...(art.grid === "4x4" ? { grid: "4x4" as const } : {}), ...(skillSlug ? { skillSlug } : {}) },
       },
       generatedBy: GENERATED_BY,
     };

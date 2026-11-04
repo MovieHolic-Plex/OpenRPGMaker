@@ -50,21 +50,21 @@ def palette_png(a):
     return data
 
 
-def sheet_problems(sheet, portrait):
+def sheet_problems(sheet, portrait, grid=4):
     C = portrait.shape[0]
     if portrait.shape[:2] != (C, C) or C not in gates.ENEMY_CELLS:
         return [f"portrait {portrait.shape[1]}x{portrait.shape[0]} is not a square of {'/'.join(map(str, gates.ENEMY_CELLS))}"]
-    if sheet.shape[:2] != (4 * C, 4 * C):
-        return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {4 * C}x{4 * C}"]
+    if sheet.shape[:2] != (grid * C, grid * C):
+        return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {grid * C}x{grid * C}"]
     out = []
     if not set(np.unique(sheet[..., 3]).tolist()) <= {0, 255}:
         out.append("alpha must be 0 or 255")
-    for k in range(16):
-        cell = sheet[(k // 4) * C:(k // 4 + 1) * C, (k % 4) * C:(k % 4 + 1) * C]
+    for k in range(grid * grid):
+        cell = sheet[(k // grid) * C:(k // grid + 1) * C, (k % grid) * C:(k % grid + 1) * C]
         filled = bool((cell[..., 3] > 0).any())
-        if k == 15 and filled:
+        if grid == 4 and k == 15 and filled:
             out.append("cell 15 must be transparent")
-        if k < 15 and not filled:
+        if k < grid * grid - (grid == 4) and not filled:
             out.append(f"cell {k} is empty")
         if k == 0 and not np.array_equal(cell, portrait):
             out.append("idle_a differs from the portrait")
@@ -74,19 +74,31 @@ def sheet_problems(sheet, portrait):
 items = state.load()
 
 
+def archived_3x3(i):
+    """A redraw row (replaces) whose 4x4 failed its one redo ships its passing 3x3 instead (lead, 2026-11-04: not the old art)."""
+    archive = os.path.join(BG, "art", "motion", "3x3", f"{i}.png")
+    mit = items.get(state.key("motion", i)) or {}
+    if mit.get("status") != "out" or not os.path.exists(archive):
+        return None
+    return archive if review.current_pass("motion", i, pixels=rgba(archive))[0] else None
+
+
 def usable(i):
-    """(ok, why): 4x4 sheet passes now, and the portrait passes or is an owner pick."""
+    """(ok, why, sheet path): 4x4 sheet passes now (or a redraw's 3x3 after a failed 4x4 redo), and the portrait passes or is an owner pick."""
     pit, mit = items.get(state.key("portrait", i)), items.get(state.key("motion", i))
     if not pit or not pit.get("art") or not mit or not mit.get("art"):
-        return False, "no portrait or motion sheet"
+        return False, "no portrait or motion sheet", None
     if mit.get("grid") != "4x4":
-        return False, "no 4x4 motion sheet yet"
+        return False, "no 4x4 motion sheet yet", None
     portrait_ok, portrait_why = review.current_pass("portrait", i)
     picked = stages.owner_picked(pit)
     motion_ok, motion_why = review.current_pass("motion", i)
+    sheet = os.path.join(BG, mit["art"])
+    if not motion_ok and catalog.enemy(i).get("replaces") and (fallback := archived_3x3(i)):
+        motion_ok, sheet = True, fallback
     if not motion_ok or (not portrait_ok and not picked):
-        return False, f"portrait {portrait_why if not picked else 'owner pick'} / motion {motion_why}"
-    return True, ""
+        return False, f"portrait {portrait_why if not picked else 'owner pick'} / motion {motion_why}", None
+    return True, "", sheet
 
 
 rows = [r for r in catalog.enemies() if r.get("pack") == "fallen-star"]
@@ -97,14 +109,15 @@ for row in rows:
     if i in replaced:
         skipped.append(f"{i}: replaced by {replaced[i]}")
         continue
-    ok, why = usable(i)
+    ok, why, sheet_path = usable(i)
     if not ok:
         skipped.append(f"{i}: {why}" + (f" (keeps {row['replaces']})" if row.get("replaces") else ""))
         continue
-    pit, mit = items[state.key("portrait", i)], items[state.key("motion", i)]
+    pit = items[state.key("portrait", i)]
     portrait_ok = review.current_pass("portrait", i)[0]
-    portrait, sheet = rgba(os.path.join(BG, pit["art"])), rgba(os.path.join(BG, mit["art"]))
-    probs = sheet_problems(sheet, portrait)
+    portrait, sheet = rgba(os.path.join(BG, pit["art"])), rgba(sheet_path)
+    grid = 4 if sheet.shape[0] == 4 * portrait.shape[0] else 3
+    probs = sheet_problems(sheet, portrait, grid)
     if probs:
         bad.append(f"{i}: {'; '.join(probs)}")
         continue
@@ -114,9 +127,9 @@ for row in rows:
     note = f"초상 Opus {pv[-1].get('score')} ({pv[-1]['batch']})"
     if not portrait_ok:
         note += f" · 오너 선택(「{pit['ownerPick']['quote']}」)"
-    note += f" · 16칸 Opus {mv[-1].get('score')} ({mv[-1]['batch']})"
+    note += f" · {grid * grid - (grid == 4)}칸 Opus {mv[-1].get('score')} ({mv[-1]['batch']})"
     url = lambda a: "data:image/png;base64," + base64.b64encode(palette_png(a)).decode()
-    entries.append({"resourceId": row["fallenStarResourceId"], "name": row["ko"], "cell": int(portrait.shape[0]),
+    entries.append({"resourceId": row["fallenStarResourceId"], "name": row["ko"], "cell": int(portrait.shape[0]), "grid": f"{grid}x{grid}",
                     "motion": row["motion"], "idleFrameMs": int(row["idleFrameMs"]), "note": f"{row['ko']} {i[3:]} · {note}",
                     "portrait": url(portrait), "sheet": url(sheet)})
 
@@ -125,17 +138,18 @@ if bad:
 js = lambda v: json.dumps(v, ensure_ascii=False)
 with open(OUT, "w") as f:
     f.write("// 생성 파일 — python3 scripts/content/fallen-monster16/export.py. 손으로 고치지 말 것.\n")
-    f.write("// 『폴른 스타』 몬스터 새 그림: battle-gen 16칸(4×4) 전투 시트와 한 칸 초상(idle_a). 설치는 monsterArt16.ts.\n")
+    f.write("// 『폴른 스타』 몬스터 새 그림: battle-gen 전투 시트(16칸 4×4, 16칸이 두 번 떨어진 새 항목은 통과한 3×3)와 한 칸 초상(idle_a). 설치는 monsterArt16.ts.\n")
     f.write('import type { UploadedPixelEnemySheetMeta } from "@/project/types";\n\n')
     f.write("export interface FallenMonsterSheet16 {\n")
     f.write("  /** 번들 시트 id(generated-enemy-<slug>) — 적 기록의 monsterResourceId 그대로. */\n")
     f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: UploadedPixelEnemySheetMeta[\"cell\"];\n")
+    f.write('  readonly grid: "3x3" | "4x4";\n')
     f.write('  readonly motion: UploadedPixelEnemySheetMeta["motion"];\n  readonly idleFrameMs: number;\n')
     f.write("  readonly portrait: string;\n  readonly sheet: string;\n}\n\n")
     f.write("export const FS_MONSTER_SHEETS_16: readonly FallenMonsterSheet16[] = [\n")
     for e in entries:
         f.write(f"  // {e['note']}\n")
-        f.write(f"  {{ resourceId: {js(e['resourceId'])}, name: {js(e['name'])}, cell: {e['cell']}, motion: {js(e['motion'])}, "
+        f.write(f"  {{ resourceId: {js(e['resourceId'])}, name: {js(e['name'])}, cell: {e['cell']}, grid: {js(e['grid'])}, motion: {js(e['motion'])}, "
                 f"idleFrameMs: {e['idleFrameMs']}, portrait: {js(e['portrait'])}, sheet: {js(e['sheet'])} }},\n")
     f.write("];\n")
 print(json.dumps({"out": os.path.relpath(OUT, ROOT), "sheets": len(entries), "bytes": os.path.getsize(OUT), "skipped": skipped}, ensure_ascii=False, indent=1))

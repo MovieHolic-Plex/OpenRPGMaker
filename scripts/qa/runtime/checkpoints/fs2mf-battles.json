@@ -1,0 +1,1429 @@
+{
+ "set": "fs2mf-battles",
+ "query": {
+  "demo": "fallen-star",
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "checkpoints": [
+  {
+   "id": "forest",
+   "label": "forest fs_forest_edge troop_fs_wolves",
+   "mapId": "fs_forest_edge",
+   "x": 11,
+   "y": 18,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 7
+    }
+   ],
+   "startEventId": "ev_fs_forest_edge_foe1",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "north-forest",
+   "label": "north-forest map_field_north_1 troop_fs2_starved_dogs",
+   "mapId": "map_field_north_1",
+   "x": 14,
+   "y": 4,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    }
+   ],
+   "startEventId": "ev_field_enemy_61bed466-805b-4db6-99eb-873b71be1965",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "vault",
+   "label": "지하 3층 순찰대 매복 — 서쪽 손잡이로 열린 쇠살문 앞, 고행자·방패병·석궁수가 문을 박차고 나온다",
+   "note": "act1Finale.ts ambush b3_patrol 밟는 칸 (32~33,17~18) → troop_fs_inq_patrol",
+   "mapId": "fs_vault_b3",
+   "x": 31,
+   "y": 17,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true
+   },
+   "selfSwitches": {
+    "ev_fs_b3_arrive": {
+     "A": true
+    }
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4
+   },
+   "beats": [
+    {
+     "id": "trip",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1400
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rush",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "fight",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "town-night",
+   "label": "town-night fs2_hub_night troop_fs2_curfew_patrol",
+   "mapId": "fs2_hub_night",
+   "x": 45,
+   "y": 18,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 13
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 13
+    }
+   ],
+   "startEventId": "ev_field_enemy_0b02a769-a715-4c79-8b09-97995adace1f",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "dawnwell",
+   "label": "dawnwell fs2_dawnwell troop_fs2_ash_wisps_pair",
+   "mapId": "fs2_dawnwell",
+   "x": 12,
+   "y": 34,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    }
+   ],
+   "startEventId": "ev_field_enemy_f6f62bf5-3fc3-42aa-a651-9773d18f2f2a",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "ash-field",
+   "label": "ash-field map_field_north_2 troop_fs2_cinder_golem",
+   "mapId": "map_field_north_2",
+   "x": 59,
+   "y": 10,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    }
+   ],
+   "startEventId": "ev_field_enemy_dd040fbb-a55c-4b95-a736-dca697338f41",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "fort-court",
+   "label": "fort-court fs2_fort_court troop_fs2_fort_dogs_out",
+   "mapId": "fs2_fort_court",
+   "x": 44,
+   "y": 41,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 16
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 16
+    }
+   ],
+   "startEventId": "ev_field_enemy_f9bc3074-6c53-4055-8012-289f369733bf",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "fortress",
+   "label": "fortress fs2_fortress troop_fs2_fort_knights",
+   "mapId": "fs2_fortress",
+   "x": 22,
+   "y": 10,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 16
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 16
+    }
+   ],
+   "startEventId": "ev_field_enemy_4a98bbda-2906-4dd7-9d21-78f5758a108a",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "snow-road",
+   "label": "snow-road map_snow_north_1 troop_fs2_frost_wolves",
+   "mapId": "map_snow_north_1",
+   "x": 24,
+   "y": 26,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 17
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 17
+    }
+   ],
+   "startEventId": "ev_field_enemy_d615a97e-830d-42da-8b71-8958ad2e2f63",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "snow-pass",
+   "label": "snow-pass map_snow_north_2 troop_fs2_frost_wolves",
+   "mapId": "map_snow_north_2",
+   "x": 14,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 17
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 17
+    }
+   ],
+   "startEventId": "ev_field_enemy_baf512df-d3c8-4e86-a373-5166477366a6",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "ice-lake",
+   "label": "ice-lake fs2_ice_lake troop_fs2_frost_wolves_lake",
+   "mapId": "fs2_ice_lake",
+   "x": 20,
+   "y": 41,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 18
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 18
+    }
+   ],
+   "startEventId": "ev_field_enemy_c2138e66-4430-4750-94d9-d8a7db843e11",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "sky-tower",
+   "label": "sky-tower fs2_sky_tower troop_fs2_tower_sentinel",
+   "mapId": "fs2_sky_tower",
+   "x": 13,
+   "y": 19,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 19
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 19
+    }
+   ],
+   "startEventId": "ev_field_enemy_daf289e3-1581-4e3e-9037-979e6fd9e3dd",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "glade",
+   "label": "glade fs_forest_glade troop_fs_glade_poachers",
+   "mapId": "fs_forest_glade",
+   "x": 16,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 7
+    }
+   ],
+   "startEventId": "ev_fs_forest_glade_foe1",
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "command",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "actor-command-attack",
+       "state": "present",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "attack",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "commands": 1,
+       "stopAfter": "attack",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
