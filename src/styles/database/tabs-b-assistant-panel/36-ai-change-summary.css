@@ -1,0 +1,57 @@
+.ai-change-summary {
+  margin: var(--space-2) 0;
+  padding: var(--space-3);
+  border: var(--stroke-1) solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  color: var(--text-1);
+}
+.ai-change-summary-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.ai-change-summary-head strong { font-weight: var(--font-weight-medium); }
+.ai-change-summary-counts { color: var(--text-2); }
+.ai-change-summary-list { margin: 0; padding: 0; list-style: none; }
+.ai-change-summary-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  border-top: var(--stroke-1) solid var(--border-subtle);
+}
+.ai-change-summary-row:first-child { border-top: 0; }
+.ai-change-summary-kind {
+  padding: 1px var(--space-2);
+  border-radius: 999px;
+  background: var(--bg-inset);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.ai-change-summary-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-change-summary-verb { color: var(--text-3); white-space: nowrap; }
+.ai-change-summary-view,
+.ai-change-summary-undo,
+.ai-change-summary-more {
+  padding: 2px var(--space-2);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--text-1);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ai-change-summary-view:disabled,
+.ai-change-summary-undo:disabled { color: var(--text-3); cursor: default; }
+.ai-change-summary-view:focus-visible,
+.ai-change-summary-undo:focus-visible,
+.ai-change-summary-more:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.ai-change-summary-row.is-reverted .ai-change-summary-label { color: var(--text-3); text-decoration: line-through; }
+.ai-change-summary-more { margin-top: var(--space-2); border-style: dashed; }
+.ai-change-summary-note { margin: var(--space-2) 0 0; color: var(--text-3); }
