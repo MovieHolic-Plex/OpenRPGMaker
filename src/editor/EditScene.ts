@@ -70,6 +70,9 @@ import {
 import { editorState, EDITOR_ZOOM_LEVELS, type Layer, type TileClipboard, type TileSelection } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
+  EVENT_BADGE_HOVER_ALPHA,
+  EVENT_BADGE_REST_ALPHA,
+  EVENT_BADGE_TILE_KEY,
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
@@ -470,6 +473,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private regionSizeBadge: HTMLElement | null = null;
   private eventMarkerTooltipEl: HTMLElement | null = null;
   private eventMarkerTooltipKey = "";
+  /** 마우스가 올라가 진하게 올려 둔 배지 칸(`"x,y"`) — 칸이 바뀌면 이전 칸을 옅게 되돌린다. */
+  private highlightedEventBadgeKey = "";
   private readonly handleEventEditorClosed = (): void => {
     this.clearEventLayerClickFeedback();
   };
@@ -1702,6 +1707,7 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.lastPointerTile = pointerTile;
     this.updateEventMarkerTooltip(x, y);
+    this.highlightEventBadgeAt(`${x},${y}`);
     // 공방 캐릭터 놓기 중: 바닥 칸 대신 그 캐릭터를 커서 칸에(DOM 그림, mapPickHook).
     if (hasMapPickGhost()) {
       this.clearHoverPreviewLayer();
@@ -1719,6 +1725,7 @@ export class EditScene extends PhaserRuntime.Scene {
     placeMapPickGhost(null);
     this.lastPointerTile = null;
     this.clearEventMarkerTooltip();
+    this.highlightEventBadgeAt("");
     this.clearHoverPreviewLayer();
     requestEditRenderFrame(this.game);
   }
@@ -3128,6 +3135,25 @@ export class EditScene extends PhaserRuntime.Scene {
     }
 
     this.positionEventMarkerTooltip(x, y);
+  }
+
+  /**
+   * 타일 레이어의 Ⓔ 배지는 평소 옅다(EVENT_BADGE_REST_ALPHA). 마우스가 올라간 칸의 배지만 진하게 올린다.
+   * 오버레이를 다시 짓지 않고 그 칸 배지의 알파만 바꾼다 — 마우스 이동마다 맵 오버레이를 다시 그리면 비싸다.
+   */
+  private highlightEventBadgeAt(key: string): void {
+    if (key === this.highlightedEventBadgeKey) return;
+    const layer = this.overlayLayer;
+    if (layer) {
+      for (const child of layer.list) {
+        const tile = (child as Phaser.GameObjects.Container).getData?.(EVENT_BADGE_TILE_KEY);
+        if (typeof tile !== "string") continue;
+        if (tile === key) (child as Phaser.GameObjects.Container).setAlpha(EVENT_BADGE_HOVER_ALPHA);
+        else if (tile === this.highlightedEventBadgeKey) (child as Phaser.GameObjects.Container).setAlpha(EVENT_BADGE_REST_ALPHA);
+      }
+      requestEditRenderFrame(this.game);
+    }
+    this.highlightedEventBadgeKey = key;
   }
 
   private clearEventMarkerTooltip(): void {
