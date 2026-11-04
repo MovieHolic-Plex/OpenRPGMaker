@@ -36,6 +36,7 @@
 | `scene-speaker-absent` | 대사 한 줄의 화자(이름 → 맵 인물, `project/staging/dialogueActors.ts`)나 명시 듣는 인물이 그 줄 시점에 **보이지 않는다** — 페이지를 명령 순서대로 재생(Set Event Location·moveEvent 경로 끝·approach 계획·Erase·스위치·모습 효과 투명 주인공), 분기는 사본으로. 선택지는 «방금 말한 인물»(lastSpoken)이 없으면 같은 코드 |
 | `scene-talk-far` | 화자–듣는 인물 체비쇼프 > 2(`TALK_DISTANCE_LIMIT`). 부르는 줄(`text.calling`·외침 context·말풍선)은 제외 |
 | `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
+| `scene-talk-stacked` | 대사 화자–듣는 인물(또는 선택지의 NPC–주인공)이 **같은 열에서 세로 1~2칸**이다 — 아래 인물은 3/4 시점에서 뒷모습만 보이고 둘의 그림이 겹친다(첫사랑 r7 재회). 말을 건 사람 곁으로 «추측한» 주인공 칸은 제외 |
 | `scene-npc-vanish-short` | 출구 «한 칸 앞»(이동 이벤트 1칸 안·문 그림 이웃·가장자리 2칸 안)에서 경로가 끝난 NPC 가 그 뒤 지우기·«떠남» 페이지·경로 속 불투명도 0 으로 사라진다. 사라져도 되는 칸은 이동 이벤트 칸·문 그림 칸·맵 끝 칸 «바로 그 칸»뿐 → exitVia. exitVia 경로는 문 칸에서 사라진 것으로 본다(런타임과 같은 문 칸 규칙) |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화(한 번 −200 이하 또는 여러 번 나눠 합이 −200 이하 — `leave()` 의 −64×4 퇴장), 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |

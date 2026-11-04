@@ -1095,6 +1095,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
         ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry, true),
+        // r7: 맵 폭 26 이 화면(30칸)보다 좁아 카메라가 가로로 못 움직여, 왼쪽 위 구석의 두 사람이 16px 점으로 흉상 밑에 눌렸다 —
+        // 금요일 회의처럼 둘 사이를 배율 2 로 잡는다. 선택지 창이 화면 가운데 아래에 뜨므로 중점을 한 칸 아래로 잡는다.
+        panTo(jihuPantry.x, jihuPantry.y + 1, 900, 2),
         ...say("jihu", "base", "물 부었어요. 3분."),
         ...say("seoha", "base", "회사에서 이렇게 늦게까지 있는 거, 자주 해요?"),
         ...say("jihu", "base", "발표 주간엔요. …그리고 이번이 마지막이라."),
@@ -1122,6 +1125,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
             ...like(1, "ev_fl_w_jihu_pantry"),
           ] },
         ]),
+        // 선택지 두 갈래가 모두 끝난 뒤 한 번 되돌린다(갈래마다 되돌리면 한 쪽이 빠진다).
+        panBack(700),
         ...say("jihu", "embarrassed", "아, 라면 불겠다."),
         ...think("둘이 컵라면을 먹었다. 10년 전 매점 앞 벤치처럼. 그 사람은 여전히 국물부터 마셨다."),
         ...fadeOut(900),
