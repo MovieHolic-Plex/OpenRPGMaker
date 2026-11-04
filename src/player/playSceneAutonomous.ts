@@ -33,6 +33,7 @@ import {
   nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
+import { transitBlocksCell } from "@/player/playSceneTransit";
 import { detourAroundPlayer, detourSegment, shortestPathAvoiding, sidestepForPlayer } from "@/player/commandRouteDetour";
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { animationStepsWhileStopped, applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
@@ -421,7 +422,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         routeDetourBlocked(scene, eventId, mover, position);
         continue;
       }
-      retryBlockedStep(mover);
+      if (!waitForPassingVehicle(scene, mover, routeForced, nx, ny, deltaMs)) retryBlockedStep(mover);
       if (command.kind === "move") maybeStartRouteDetour(scene, eventId, mover, view, position, nx, ny);
       if (mover.livingRoute) {
         const blocker = findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
@@ -968,6 +969,24 @@ const MAX_BLOCKED_STEP_RETRIES = 8;
  * 한계를 넘으면 예전처럼 소비해 계획이 소진되고 시간표가 다시 계획한다. 반복(repeat)
  * 경로는 moves 를 비울 수 없으므로 포기 대신 소비로 푼다.
  */
+/**
+ * 작가가 쓴 명령 경로(moveEvent)의 다음 칸에 **지나가는 차·버스**가 서 있으면 그 걸음을 버리지 않고 잠깐 기다린다.
+ * 차는 곧 비킨다 — 걸음을 소비하면 절대 방향 배열 전체가 한 칸 어긋나 인물이 목적지 앞에서 멈춘다(첫사랑 오프닝: 횡단보도를
+ * 뛰어 내려오던 남자가 차선에서 막혀 부딪히는 자리에 7칸 못 미쳐 섰다, 2026-11-05 적대 VQA 5/9회).
+ * 지형·다른 인물에 막힌 걸음은 그대로 소비한다(작가가 「막히면 건너뛴다」를 전제로 짠다 — playSceneTypes §retryBlockedSteps).
+ * 서 있는 차(고장·정류장 대기)는 TRANSIT_WAIT_LIMIT_MS 만 기다리고 예전처럼 소비한다 — 영구 대기 없음.
+ * 기다렸으면 true(호출측은 retryBlockedStep 을 건너뛴다).
+ */
+const TRANSIT_WAIT_LIMIT_MS = 3000;
+function waitForPassingVehicle(scene: Pick<PlaySceneContext, "map">, mover: AutonomousMover, routeForced: boolean, nx: number, ny: number, elapsedMs: number): boolean {
+  if (!routeForced || mover.retryBlockedSteps === true || mover.stopOnBlocked) return false;
+  if (!transitBlocksCell(scene, nx, ny)) { mover.transitWaitMs = 0; return false; }
+  mover.transitWaitMs = (mover.transitWaitMs ?? 0) + Math.max(0, elapsedMs);
+  if (mover.transitWaitMs > TRANSIT_WAIT_LIMIT_MS) { mover.transitWaitMs = 0; return false; }
+  mover.step -= 1;
+  return true;
+}
+
 function retryBlockedStep(mover: AutonomousMover): void {
   if (mover.retryBlockedSteps !== true) return;
   const attempts = (mover.blockedSteps ?? 0) + 1;
