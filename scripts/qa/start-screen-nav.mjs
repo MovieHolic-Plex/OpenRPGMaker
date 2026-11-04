@@ -166,7 +166,10 @@ try {
   await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-create']"); await expectSection(page, "⋯ 새로 만들기", "create");
   await page.click("[data-testid='start-nav-home']");
   await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-builtin']"); await expectSection(page, "⋯ 예제 자세히", "builtin");
-  if ((await page.locator("button:has-text('플레이')").count()) > 0) fail("플레이 입구", "시작 화면에 「플레이」 단추가 있다");
+  if ((await page.locator("button:has-text('플레이'):not([data-testid='first-run-more-play-web'])").count()) > 0) fail("플레이 입구", "시작 화면에 「플레이」 단추가 있다");
+  await page.click("[data-testid='start-nav-home']"); await page.click("[data-testid='first-run-more']");
+  if (!(await page.$("[data-testid='first-run-more-play-web']"))) fail("⋯ 메뉴", "OPRN PLAY 링크가 없다");
+  await page.click("[data-testid='first-run-more-builtin']"); await expectSection(page, "⋯ 다시 예제", "builtin");
 
   // 2026-10-21: 사람 팀 협업을 접었다(electron/shared/teamCollab.ts TEAM_COLLAB_ENABLED=false). 단추가 없어야 한다.
   console.log("· 팀에 참여 단추 없음(팀 협업 접힘)");

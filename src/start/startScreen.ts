@@ -51,6 +51,7 @@ export const START_SCREEN_TESTIDS = {
 } as const;
 
 const BLANK_TITLE = "새 게임";
+const OPRN_PLAY_URL = "https://play.openrpgmaker.com";
 /** 카드 그림 굽기를 시작하기 전 기다림 — 첫 그림·프로젝트 코어 미리 읽기(fast-start, 1.5초)와 겹치지 않게. */
 const COVER_IDLE_DELAY_MS = 2_500;
 
@@ -432,6 +433,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         { label: "새로 만들기 — 컨셉에서 고르기", testid: "first-run-more-create", run: () => { go("create"); } },
         { label: "예제 자세히", testid: "first-run-more-builtin", run: () => { go("builtin"); } },
         { label: "에셋 스토어 ↗", testid: "first-run-more-store", run: () => { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); } },
+        // 다른 사람이 만든 게임을 하는 곳은 웹(OPRN PLAY)이다 — Studio 는 만드는 앱이라 앱 안에서 돌리지 않는다(2026-11-04 B안).
+        { label: "OPRN PLAY 에서 게임 하기 ↗", testid: "first-run-more-play-web", run: () => { window.open(OPRN_PLAY_URL, "_blank", "noopener"); } },
         { label: "설정", testid: "first-run-more-settings", run: () => openSettings("ai") },
       ],
     });
