@@ -290,6 +290,30 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("does not reopen an ally target menu on the cancel row after cancelling from it", () => {
+    // ultrabrain #4216 후속: 「뒤로」 역할(data-command-icon=back)은 목록 뒤로와 대상 취소 모두 복원하지 않는다.
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    const itemRow = cursor()!;
+    controller.root.querySelector<HTMLButtonElement>(`[data-testid='${itemRow}']`)?.click();
+    expect(runtime.snapshot().phase).toBe("targetSelect");
+    const cancel = controller.root.querySelector<HTMLButtonElement>("[data-testid='battle-target-cancel']")!;
+    cancel.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    expect(cursor()).toBe("battle-target-cancel");
+    cancel.click();
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+
+    if (!controller.root.querySelector(`[data-testid='${itemRow}']`)) controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    controller.root.querySelector<HTMLButtonElement>(`[data-testid='${itemRow}']`)?.click();
+    expect(runtime.snapshot().phase).toBe("targetSelect");
+    expect(cursor()).not.toBe("battle-target-cancel");
+    controller.destroy();
+  });
+
   // 적대 리뷰 2차 계약: 적 대상 선택도 하단 패널에 대상 메뉴를 유지한다(빈 밴드 금지).
   // 필드의 선택 링(브래킷)과 메뉴의 selected 표시가 같은 대상을 가리켜야 한다.
   it("keeps the bottom target menu and the field ring in sync during target select", () => {

@@ -26,6 +26,7 @@ import {
 } from "./relationshipState";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
+import { actorExperienceFloor, floorActorExperience } from "@/project/actorModel";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
 import { initializeCollections, markDiscovered, validProgress, type CollectionProgress } from "@/project/collections";
@@ -635,10 +636,15 @@ export function nextSessionRandom(session: PlaySessionLike, stream: RngStreamNam
 function initialActorExperience(project: Project): Record<string, number> {
   const experience: Record<string, number> = {};
   for (const actorId of startStateOf(project).partyActorIds) {
-    experience[actorId] = 0;
+    experience[actorId] = actorExperienceFloor(project, actorId, actorInitialLevel(project, actorId));
   }
   return experience;
 }
+
+function actorInitialLevel(project: Project, actorId: string): number {
+  return project.database.actors.find((actor) => actor.id === actorId)?.initialLevel ?? 1;
+}
+
 
 function initialActorLevels(project: Project): Record<string, number> {
   const levels: Record<string, number> = {};
@@ -789,7 +795,12 @@ export function changeParty(
       return;
     }
     if (!session.partyActorIds.includes(actorId)) session.partyActorIds.push(actorId);
-    if (project) syncActorVitals(project, session.actorVitals, actorId);
+    if (project) {
+      syncActorVitals(project, session.actorVitals, actorId);
+      session.actorLevels ??= {};
+      session.actorLevels[actorId] ??= actorInitialLevel(project, actorId);
+      floorActorExperience(project, session, actorId);
+    }
     return;
   }
   // 정본이 아닌 값(예: 옛 op:"+=")을 「제외」로 읽으면 합류하라는 명령이 동료를 빼 버린다.

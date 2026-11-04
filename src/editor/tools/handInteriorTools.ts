@@ -634,6 +634,17 @@ function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandIn
   return input;
 }
 
+/**
+ * 조수가 직접 깔 발깔개(2칸)가 출구 칸 바로 안쪽에 다 들어가지 않으면 경고한다 — 한 칸이 벽 앞에 붙으면
+ * 깔개 위 두 칸 중 한 칸에서만 나간다(fs2 스웜 I24 후속, ultrabrain #4216 검토). 자동 깔개(withDoormat)는 따로 맞춘다.
+ */
+function doormatExitWarnings(objects: HandInteriorInput["objects"], shape: HandInteriorShape): string[] {
+  const inside = new Set(shape.openings.map((o) => shape.inwardOf(o)).filter((c): c is { x: number; y: number } => !!c).map((c) => `${c.x},${c.y}`));
+  return (objects ?? []).filter((o) => o.id === "doormat")
+    .filter((o) => ![o.x, o.x + 1].every((x) => inside.has(`${x},${o.y}`)))
+    .map((o) => `발깔개 (${o.x},${o.y}) 가 출구 칸 바로 안쪽에 다 들어가지 않는다 — 발깔개는 2칸 출구 전용이다. 1칸 출구면 빼고, 2칸 출구면 두 칸이 모두 출구 안쪽에 오게 옮긴다`);
+}
+
 
 type XYLike = { x: number; y: number };
 /**
@@ -1068,6 +1079,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         : `평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 이 방이 요청(방 수·쓰임·크기)을 이미 충족하면 그대로 두고 끝낸다(예제와 같다는 것만으로 다시 짓지 않는다). 요청과 다른데 예제를 베낀 것이면 rooms 로 방 사각형을 요청에 맞게 다시 놓는다. 예제는 문법을 배우는 자료다`);
     }
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
+    if (fitsGapDoors) warnings.unshift(...doormatExitWarnings((args as unknown as HandInteriorInput).objects, shape));
     // 엘리베이터 문·계단은 북벽 벽면에 박히고 그 앞 첫 바닥 줄이 탈 자리다 — 층 이동 출입구를 엉뚱한 칸에 두어 장식만 남은 엘리베이터가 생겼다(r4-rom-d 4대 중 3대).
     const travelSpots = [...new Map(built.travel.map((t) => [t.label, t] as const)).values()];
     const travelNote = travelSpots.length

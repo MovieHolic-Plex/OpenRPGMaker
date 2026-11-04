@@ -1,4 +1,5 @@
 import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
+import { floorActorExperience } from "@/project/actorModel";
 import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
 import { FREEZE_STYLES, type FreezeStyle } from "@/player/interpreter/screenEffectPlan";
@@ -921,6 +922,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorRageEnemyIds) session.actorRageEnemyIds = structuredClone(snapshot.session.actorRageEnemyIds);
   if (snapshot.session.knownWeaknesses) session.knownWeaknesses = structuredClone(snapshot.session.knownWeaknesses);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
+  // 옛 저장은 레벨만 있고 EXP 가 0 일 수 있다 — 불러올 때 한 번 레벨 바닥으로 올린다(fs2 I02 후속).
+  for (const actorId of Object.keys(session.actorLevels ?? {})) floorActorExperience(project, session, actorId);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
   session.detectionEncounterCompletions = structuredClone(snapshot.session.detectionEncounterCompletions);
