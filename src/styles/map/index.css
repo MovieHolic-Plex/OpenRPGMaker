@@ -22,6 +22,7 @@
 @import "./ai-canvas-progress.css" layer(map);
 @import "./ai-follow-camera.css" layer(map);
 @import "./ai-reference-view.css" layer(map);
+@import "./ai-place-pop.css" layer(map);
 @import "./from-shell-figma-editor-02-menus-toolbar-tools.css" layer(map);
 @import "./from-shell-figma-editor-03-layout-left-palette.css" layer(map);
 @import "./from-shell-figma-editor-04-chipset-events.css" layer(map);

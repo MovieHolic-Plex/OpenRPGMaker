@@ -8,7 +8,7 @@
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-export type ChangeItemKind = "map" | "event" | "actor" | "item" | "enemy" | "skill" | "equipment";
+export type ChangeItemKind = "map" | "event" | "actor" | "item" | "enemy" | "skill" | "equipment" | "state" | "music";
 
 export interface ChangeItem {
   readonly kind: ChangeItemKind;
@@ -20,18 +20,38 @@ export interface ChangeItem {
   readonly at?: { readonly x: number; readonly y: number };
 }
 
-type RecordCollection = "actors" | "items" | "enemies" | "skills" | "equipment";
+export type RecordCollection = "actors" | "items" | "enemies" | "skills" | "equipment" | "states";
 const RECORD_KINDS: readonly { readonly key: RecordCollection; readonly kind: ChangeItemKind }[] = [
   { key: "actors", kind: "actor" },
   { key: "items", kind: "item" },
   { key: "enemies", kind: "enemy" },
   { key: "skills", kind: "skill" },
   { key: "equipment", kind: "equipment" },
+  { key: "states", kind: "state" },
 ];
 
+/** 데이터베이스 항목 종류 → 컬렉션(맵·이벤트·음악은 없다). */
+export function recordCollectionOf(kind: ChangeItemKind): RecordCollection | undefined {
+  return RECORD_KINDS.find((entry) => entry.kind === kind)?.key;
+}
+
 export const CHANGE_KIND_LABEL: Readonly<Record<ChangeItemKind, string>> = {
-  map: "맵", event: "이벤트", actor: "캐릭터", item: "아이템", enemy: "몬스터", skill: "스킬", equipment: "장비",
+  map: "맵", event: "이벤트", actor: "캐릭터", item: "아이템", enemy: "몬스터", skill: "스킬", equipment: "장비", state: "상태", music: "음악",
 };
+
+/** 프로젝트 곡 칸 — 조수가 「전투 음악 정해줘」 로 바꾸는 자리. 맵 곡은 맵 칸 변경으로 센다. */
+const SYSTEM_MUSIC_FIELDS = [
+  { field: "battleBgmResourceId", label: "전투 음악" },
+  { field: "defaultBgmResourceId", label: "기본 배경 음악" },
+  { field: "battleVictoryMeResourceId", label: "승리 음악" },
+] as const;
+type SystemMusicField = typeof SYSTEM_MUSIC_FIELDS[number]["field"];
+const systemMusic = (project: Project, field: string): string | undefined =>
+  (project.system as unknown as Record<string, string | undefined> | undefined)?.[field];
+/** 음악 항목이 가리키는 곡 id(지금 값). */
+export function musicResourceOf(project: Project, item: ChangeItem): string | undefined {
+  return item.kind === "music" ? systemMusic(project, item.id) : undefined;
+}
 
 const same = (a: unknown, b: unknown): boolean => a === b || JSON.stringify(a) === JSON.stringify(b);
 
@@ -46,16 +66,19 @@ function mapTilesOf(map: Project["maps"][string]): unknown {
 }
 
 /** 실행 전/후 프로젝트에서 바뀐 항목 목록(순수). 맵의 칸 변경과 맵 안 이벤트는 따로 센다. */
-export function listChangeItems(before: Project, after: Project): ChangeItem[] {
+export function listChangeItems(before: Project, after: Project, options: { readonly skipMapTiles?: boolean } = {}): ChangeItem[] {
   const items: ChangeItem[] = [];
   const mapIds = new Set([...Object.keys(before.maps ?? {}), ...Object.keys(after.maps ?? {})]);
   for (const mapId of mapIds) {
     const a = before.maps?.[mapId];
     const b = after.maps?.[mapId];
+    if (a === b) continue;
     const mapLabel = (b ?? a)?.name?.trim() || mapId;
-    if (!a && b) items.push({ kind: "map", change: "added", id: mapId, mapId, label: mapLabel });
-    else if (a && !b) { items.push({ kind: "map", change: "removed", id: mapId, mapId, label: mapLabel }); continue; }
-    else if (a && b && !same(mapTilesOf(a), mapTilesOf(b))) items.push({ kind: "map", change: "modified", id: mapId, mapId, label: mapLabel });
+    if (!options.skipMapTiles) {
+      if (!a && b) items.push({ kind: "map", change: "added", id: mapId, mapId, label: mapLabel });
+      else if (a && !b) { items.push({ kind: "map", change: "removed", id: mapId, mapId, label: mapLabel }); continue; }
+      else if (a && b && !same(mapTilesOf(a), mapTilesOf(b))) items.push({ kind: "map", change: "modified", id: mapId, mapId, label: mapLabel });
+    }
     if (!b) continue;
     const beforeEvents = new Map((a?.events ?? []).map((event) => [event.id, event]));
     const afterEvents = new Map(b.events.map((event) => [event.id, event]));
@@ -79,6 +102,12 @@ export function listChangeItems(before: Project, after: Project): ChangeItem[] {
     }
     for (const [id, record] of old) if (!now.has(id)) items.push({ kind, change: "removed", id, label: record.name?.trim() || `#${id}` });
   }
+  for (const { field, label } of SYSTEM_MUSIC_FIELDS) {
+    const a = systemMusic(before, field);
+    const b = systemMusic(after, field);
+    if (a === b) continue;
+    items.push({ kind: "music", change: !a ? "added" : !b ? "removed" : "modified", id: field, label });
+  }
   return items;
 }
 
@@ -91,6 +120,7 @@ export function changeCountsLine(items: readonly ChangeItem[]): string {
 
 function currentValue(project: Project, item: ChangeItem): unknown {
   if (item.kind === "map") { const map = project.maps?.[item.id]; return map ? mapTilesOf(map) : undefined; }
+  if (item.kind === "music") return systemMusic(project, item.id);
   if (item.kind === "event") return project.maps?.[item.mapId!]?.events.find((event) => event.id === item.id);
   const key = RECORD_KINDS.find((entry) => entry.kind === item.kind)!.key;
   return recordsOf(project, key).find((record) => String(record.id) === item.id);
@@ -106,6 +136,13 @@ export function changedSinceRun(item: ChangeItem, after: Project, current: Proje
  * 맵 「추가」 되돌리기는 맵을 지우고, 「삭제」 되돌리기는 맵을 되살린다. 맵 칸 되돌리기는 그 맵의 이벤트를 지금 그대로 둔다.
  */
 export function revertChangeItem(current: Project, before: Project, item: ChangeItem): Project {
+  if (item.kind === "music") {
+    const system = { ...current.system } as unknown as Record<string, string | undefined>;
+    const old = systemMusic(before, item.id);
+    if (old === undefined) delete system[item.id as SystemMusicField];
+    else system[item.id as SystemMusicField] = old;
+    return { ...current, system: system as unknown as Project["system"] };
+  }
   if (item.kind === "map") {
     const maps = { ...current.maps };
     const old = before.maps?.[item.id];
@@ -131,12 +168,26 @@ export function revertChangeItem(current: Project, before: Project, item: Change
   return { ...current, database: { ...current.database, [key]: next } } as Project;
 }
 
-export interface ChangeSummaryCardDeps {
+export interface ChangeUndoDeps {
   readonly getCurrent: () => Project;
   /** 기록에 남기며 적용 — 편집기 실행 취소 스택에 한 칸으로 오른다. 바뀐 게 없으면 false. */
   readonly commit: (project: Project, label: string) => boolean;
-  readonly reveal: (item: ChangeItem) => void;
   readonly confirmOverwrite: (item: ChangeItem) => boolean | Promise<boolean>;
+}
+
+export interface ChangeSummaryCardDeps extends ChangeUndoDeps {
+  readonly reveal: (item: ChangeItem) => void;
+  /** 줄 앞 작은 그림(아이콘·얼굴·맵 조각). 없으면 종류 글자만. */
+  readonly thumbnail?: (item: ChangeItem) => HTMLElement | null;
+}
+
+/**
+ * 그 항목만 실행 전 값으로 되돌린다 — 「바뀐 것」 카드와 생성 카드가 같은 길을 쓴다(되돌리기 장치는 하나).
+ * 실행 뒤 손으로 고쳤으면 먼저 묻는다. 적용했으면 true.
+ */
+export async function undoChangeItem(item: ChangeItem, before: Project, after: Project, deps: ChangeUndoDeps): Promise<boolean> {
+  if (changedSinceRun(item, after, deps.getCurrent()) && !await deps.confirmOverwrite(item)) return false;
+  return deps.commit(revertChangeItem(deps.getCurrent(), before, item), `조수 변경 되돌림 — ${CHANGE_KIND_LABEL[item.kind]} ${item.label}`);
 }
 
 const VISIBLE_ROWS = 8;
@@ -150,7 +201,9 @@ export function createChangeSummaryCard(before: Project, after: Project, deps: C
       attrs: { type: "button", "aria-label": `${item.label} 되돌리기` }, dataset: { testid: "ai-change-summary-undo" } }) as HTMLButtonElement;
     const view = el("button", { class: "ai-change-summary-view", text: "보기",
       attrs: { type: "button", "aria-label": `${item.label} 보기` }, dataset: { testid: "ai-change-summary-view" } }) as HTMLButtonElement;
-    const row = el("li", { class: "ai-change-summary-row", dataset: { kind: item.kind, change: item.change }, children: [
+    const thumb = item.change === "removed" ? null : deps.thumbnail?.(item) ?? null;
+    const row = el("li", { class: `ai-change-summary-row${thumb ? " has-thumb" : ""}`, dataset: { kind: item.kind, change: item.change }, children: [
+      ...(thumb ? [el("span", { class: "ai-change-summary-thumb", attrs: { "aria-hidden": "true" }, dataset: { testid: "ai-change-summary-thumb" }, children: [thumb] })] : []),
       el("span", { class: "ai-change-summary-kind", text: CHANGE_KIND_LABEL[item.kind] }),
       el("span", { class: "ai-change-summary-label", text: item.label }),
       el("span", { class: "ai-change-summary-verb", text: CHANGE_VERB[item.change] }),
@@ -159,10 +212,7 @@ export function createChangeSummaryCard(before: Project, after: Project, deps: C
     view.disabled = item.change === "removed" && item.kind !== "map" ? !item.mapId : item.change === "removed";
     view.addEventListener("click", () => deps.reveal(item));
     undo.addEventListener("click", async () => {
-      if (changedSinceRun(item, after, deps.getCurrent()) && !await deps.confirmOverwrite(item)) return;
-      const current = deps.getCurrent();
-      const ok = deps.commit(revertChangeItem(current, before, item), `조수 변경 되돌림 — ${CHANGE_KIND_LABEL[item.kind]} ${item.label}`);
-      if (!ok) return;
+      if (!await undoChangeItem(item, before, after, deps)) return;
       row.classList.add("is-reverted");
       undo.disabled = true;
       undo.textContent = "되돌림";
