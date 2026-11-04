@@ -43,6 +43,12 @@ const authorOpeningStage: ToolDefinition = {
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : "ev_opening_stage";
     const startMap = draft.maps[draft.startMapId];
     if (!startMap) throw new ToolError("프로젝트 시작 맵이 없습니다 — 무대가 끝난 뒤 옮길 곳이 필요합니다.", { code: "opening-stage-invalid" });
+    // 다시 지을 때 예전 무대 이벤트를 걷어 낸다 — 남으면 본편에서 그 맵에 들어서는 순간 자동 실행되어 시작 위치로 되돌려 보낸다.
+    const previous = draft.system.opening?.stage;
+    if (previous && (previous.mapId !== map.id || previous.eventId !== eventId)) {
+      const oldMap = draft.maps[previous.mapId];
+      if (oldMap) oldMap.events = oldMap.events.filter((event) => event.id !== previous.eventId);
+    }
     const authored = (args.beats as CutsceneBeat[]).filter((beat) => beat?.kind !== "transfer");
     const hidesPlayer = authored.some((beat) => beat?.kind === "look" && (beat.target === "player" || beat.target === undefined) && typeof beat.alpha === "number" && beat.alpha <= 0.05);
     const beats: CutsceneBeat[] = [
