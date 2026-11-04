@@ -125,6 +125,8 @@ export interface RouteGrid {
   ford: (c: number) => boolean;
   /** 칸마다 덧붙는 값(절벽 끝·물가 가까움 등). */
   extra?: (c: number) => number;
+  /** 단을 건너는 한 걸음(from → to, 단이 다르다)을 받는가 — 깎은 계단 조각이 설 자리만(마을 3b, cutPieces.ts). 없으면 단 차·곧은 걸음만 본다. */
+  crossOk?: (from: number, to: number) => boolean;
 }
 export interface RouteOpts {
   /** 이웃 칸 단 차 최대(계단 한 번에 오르는 단 수). */
@@ -196,6 +198,7 @@ export function routePath(g: RouteGrid, starts: number[], isGoal: (c: number) =>
         const need = step !== 0 ? Math.abs(step) - 1 : 0;
         if (nd !== d || run < o.before + need || lock > 0) continue;
         if (step !== 0 && o.climbNS && nd % 2 === 0) continue;
+        if (step !== 0 && g.crossOk && !g.crossOk(c, n)) continue;
         // 물(널다리) 칸으로 들어가거나 나오면서 단을 바꾸지 않는다 — 계단이 널다리 위에 놓일 수 없다(2026-10-30 산촌 강둑)
         if (step !== 0 && (onFord || g.ford(c))) continue;
         nlock = Math.min(LOCK - 1, o.after + need);
