@@ -4,6 +4,7 @@ import { DungeonComposeError } from "./errors";
 import { planMine, planSewer, planTemple } from "./grammar";
 import type { DungeonDir, DungeonLayout, DungeonLayoutFamily, DungeonRoomInput, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom, Rect } from "./types";
 import { DUNGEON_DIRS } from "./types";
+import { hasRoomPositions, layoutPositioned } from "./layoutPositioned";
 
 const DEFAULT_SIZE: Record<DungeonRoomKind, [number, number]> = {
   // 2026-10-23: 큰 방을 한 단 줄였다 — 홀·보스방이 맨바닥 넓은 방으로 읽혔다(VQA 「빈 바닥 15% 초과」). 빈 바닥은 메우지 않고 줄인다.
@@ -97,6 +98,7 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
   const inputs = spec.rooms?.length ? spec.rooms : planDungeonRooms(spec);
   if (inputs.length < 1) throw new DungeonComposeError("rooms 에 방이 하나 이상 있어야 한다.", "invalid-args");
   if (inputs.length > 12) throw new DungeonComposeError("방은 12개까지다 — 한 층을 둘로 나눠라.", "invalid-args");
+  if (hasRoomPositions(inputs)) return layoutPositioned(spec, inputs, DEFAULT_SIZE);
   let best: { layout: DungeonLayout; score: number } | null = null;
   let lastError: unknown = null;
   for (let salt = 0; salt < 64; salt += 1) {
