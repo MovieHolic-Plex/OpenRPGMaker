@@ -30,6 +30,12 @@
   border-left: 1px solid var(--border-default); box-shadow: -12px 0 32px color-mix(in srgb, var(--text-1) 12%, transparent);
 }
 .ai-workspace-tabs { display: flex; gap: 0; flex: 0 0 auto; margin: 4px 12px 8px; padding: 2px; border-radius: 8px; background: var(--bg-inset); }
+/* 목업 조수 패널은 머리(이름 · 맵 · ⋯) 바로 아래가 대화다 — 「작업/대화」 탭, 로그 추출, 살펴볼 것, 크게 보기는 얹지 않는다.
+   DOM·testid 는 남긴다(진입은 ⌘K 「AI: 살펴볼 것 보기」·팀 이벤트·⋯ 메뉴). 새 대화와 접기는 e2e 계약이 있어 그대로 둔다. */
+.ai-chat-panel.is-workspace .ai-workspace-tabs,
+.ai-chat-panel .ai-deck-rail-actions .ai-workspace-log-trigger,
+.ai-chat-panel .ai-deck-rail-actions .ai-suggestion-peek-header,
+.ai-chat-panel .ai-deck-rail-actions .ai-deck-wide-open { display: none; }
 .ai-chat-panel.is-workspace .ai-chat-body { position: relative; }
 .ai-workspace-tabs button { flex: 1; border: 0; border-radius: 6px; padding: 5px 8px; background: transparent; color: var(--text-2); font: 500 12px var(--font-ui); cursor: pointer; }
 .ai-workspace-tabs button[aria-selected="true"] { background: var(--bg-raised); box-shadow: 0 0 0 1px var(--border-subtle), var(--shadow-pop); color: var(--text-1); font-weight: 600; }
