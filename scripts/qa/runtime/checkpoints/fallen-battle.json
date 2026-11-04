@@ -9,7 +9,7 @@
   "checkpoints": [
     {
       "id": "blizzard-wisps",
-      "label": "엘레나 블리자드 — 도깨비불 넷에게 동시에",
+      "label": "엘레나 얼음 폭풍 — 도깨비불 넷에게 동시에",
       "mapId": "fs_forest_edge",
       "x": 14,
       "y": 22,
@@ -44,7 +44,7 @@
         },
         {
           "id": "act",
-          "note": "엘레나 블리자드 — 도깨비불 넷에게 동시에",
+          "note": "엘레나 얼음 폭풍 — 도깨비불 넷에게 동시에",
           "ops": [
             {
               "kind": "battle",
