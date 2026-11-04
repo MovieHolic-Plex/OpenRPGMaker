@@ -5,6 +5,51 @@
 
 <!-- releases -->
 
+## 0.391.0 — 2026-11-04
+
+### 기능
+
+- **start,ai** — 첫 화면 「참고 그림」 — 붙인 그림을 첫 조수 턴에 image_url 로 싣는다 (#4222) (`d51e7e1`)
+- **brand** — one mark everywhere — black rounded square with a white O (app icons, favicon/PWA, launcher, first-run, splash fallback) (#4221) (`47fb7ac`)
+- **editor,start** — 첫 실행 기본 게임 카드 3장 · 예제 띠 문구 · 접힌 조수 띠 제거 (#4218) (`014e5f2`)
+- **start** — prompt-first first-run screen (P1) (#4198) (`aca257f`)
+- **editor** — 오른쪽 인스펙터 — 고른 것의 이름과 라벨/값 행, 조수가 펼치면 그 자리를 쓴다 (#4214) (`ab35d02`)
+- **editor** — 캔버스 도구를 가운데 알약 하나로 — 나머지는 ⌘K (#4210) (`8759a89`)
+- **battle** — accept 128/192/256-cell monster sheets and fit big boxes whole (#4209) (`406f14b`)
+- **editor** — 왼쪽을 목업 한 칸으로 — 검색·맵·타일·진행/기물, 막대 제거 (#4207) (`670a40b`)
+- **ai** — widen vague create requests into a feasible scene instead of asking (#4203) (`c216274`)
+- **editor** — redesign step 3 — 톱바 배치를 시안대로 (가운데 편집 칸, 오른쪽 자료집·소재·조수·저장됨·테스트 실행·⋯, 나머지는 ⌘K) (#4206) (`009d224`)
+- **editor** — redesign step 9 — test-play window chrome (12px corners, quiet title bar) (#4197) (`afb0458`)
+- **editor** — redesign step 7 — assistant panel inset segment tabs, one accent (drop indigo/purple literals) (#4196) (`f3fdef6`)
+- **ai** — first-run gate detects a signed-in subscription and picks the plan's team (#4186) (`8623718`)
+- **editor** — redesign step 6 — database window follows editor tokens (neutral light/grey dark, one blue accent) (#4195) (`93da7b8`)
+- **editor** — redesign step 5 — event editor single accent, 1px column lines, neutral line tokens (#4193) (`afe151b`)
+- **editor** — redesign step 4 — map settings as Apple-style grouped rows (label left, value right) (#4192) (`6b42af2`)
+- **editor** — redesign step 3 — Notion-style left sidebar (neutral map rows, inset palette tabs, borderless tile cards) (#4191) (`e6a1a18`)
+- **editor** — redesign step 2 — app shell top bar (44px, brand dot, project/map crumb, inset layer segment) (#4188) (`1df86ae`)
+
+### 수정
+
+- **runtime** — status next-level floor, submenu back cursor, stacked inn cursor, doormat only on 2-wide exits (fs2 swarm I02 N01 I23 I24) (#4216) (`bcd3025`)
+- **runtime** — stealth patrols walk steadily, pause only at waypoints (#4211) (`7ec3ce6`)
+- **runtime** — hiding prompt shows briefly like other prompts; make_chase_scene hidingMarkers:false drops the examine marker over hiding spots (#4212) (`1d7091e`)
+- **assistant** — interior layout rejections name the wall a rail sits on and the piece blocking a room; unknown command kinds get a did-you-mean; make_chase_scene with an existing chaser id rebuilds it (`2010942`)
+- **runtime** — cutscene skip keeps the scene's state; act 2 no longer inherits act 1's letterbox (#4201) (`733a05e`)
+- **assistant** — an interior rebuild keeps an indoor-to-indoor entrance door at the entrance and never hands it another map's ladder (`5ea57aa`)
+- **lighting** — hard-edged sight lights drop faster inside so they read as lantern pools, not plates (`7f17a4c`)
+- **assistant** — party-member conditions under other names, run_scene_test set.party, gap requests load place_field_obstacle (`70b3df5`)
+- **lighting** — hard-edged sight lights fall off like a lantern instead of a flat plate (#4190) (`1d9aa8a`)
+- **ai** — set_scene_mood can set map sunlight; village make_place summary lists door-front cells (`7ac8299`)
+- **assistant** — a broken-down wagon may stand on a route map; snow route result points each ice gap at place_field_obstacle (`d93c2e8`)
+- **assistant** — accept turnUp/moveActor/setEventLocation steps, keep a ladder exit on the ladder when an interior is rebuilt (`a9c0ebf`)
+- **runtime** — a move route's changeOpacity outlives the route (#4184) (`ee2db84`)
+
+### 잡무
+
+- **deps-dev** — bump the development-dependencies group across 1 directory with 5 updates (#4219) (`64faec7`)
+- **deps** — bump @oh-my-pi/pi-agent-core (#4025) (`bbab79c`)
+- **assistant** — scene lessons for a dressed prison cell, a lift that reads as a machine, and an act bridge with a flashback and title card (#4213) (`962bfc4`)
+
 ## 0.390.0 — 2026-11-03
 
 ### 기능
