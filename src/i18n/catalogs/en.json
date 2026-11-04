@@ -19112,4 +19112,13 @@
 "먼저 기본 게임 해 보기":"Try a built-in game first",
 "참고 그림 붙이기":"Attach reference image",
 "참고 그림 빼기":"Remove reference image",
-"이 AI 엔진은 그림을 읽지 못해 참고 그림 없이 글만 보냈습니다.":"This AI engine can't read images, so only the text was sent without the reference images."}
+"이 AI 엔진은 그림을 읽지 못해 참고 그림 없이 글만 보냈습니다.":"This AI engine can't read images, so only the text was sent without the reference images.",
+"예제 열어 보기":"Open an example",
+"고쳐 보며 배우기":"Learn by editing",
+"예제":"Examples",
+"열어서 고쳐 보며 배우기":"Open one and learn by editing",
+"열어서 고쳐 보며 배우기 — 해 보려면 편집기 「테스트 실행」":"Open one and learn by editing — to play, use Test play in the editor",
+"이 앱으로 만든 게임이에요 — 열어서 고쳐 보고, 「테스트 실행」으로 해 볼 수 있어요":"Made with this app — open it, change things, and try it with Test play",
+"AI 없이도 예제 열기·편집·빈 프로젝트는 돼요. 조수가 맵을 지어 주게 하려면 이 PC 의 Claude Code · Codex · Gemini CLI 를 연결하세요.":"You can open examples, edit and start blank projects without AI. To let the assistant build maps, connect Claude Code, Codex or Gemini CLI on this PC.",
+"OPRN PLAY 에서 게임 하기 ↗":"Play games on OPRN PLAY ↗",
+"여기서 올리면 play.openrpgmaker.com 에서 누구나 바로 해 볼 수 있어요.":"Upload here and anyone can play it right away on play.openrpgmaker.com."}

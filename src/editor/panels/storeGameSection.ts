@@ -110,6 +110,8 @@ export function createStoreGameSection(options: {
     attrs: { style: "display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid #c7d2fe; border-radius: 10px; background: #eef2ff;" },
     children: [
       el("h3", { attrs: { style: "margin: 0; font-size: 13px; color: #1e1b4b;" }, text: "스토어에서 바로 플레이" }),
+      // Studio 는 만드는 앱이다 — 완성한 게임을 다른 사람이 하는 곳은 웹 OPRN PLAY 다(2026-11-04 Studio/런타임 분리).
+      el("p", { attrs: { style: "margin: 0; font-size: 12px; color: #475569;" }, text: "여기서 올리면 play.openrpgmaker.com 에서 누구나 바로 해 볼 수 있어요." }),
       line,
       el("div", {
         attrs: { style: "display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: 12px;" },
