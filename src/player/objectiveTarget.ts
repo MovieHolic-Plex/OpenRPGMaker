@@ -152,7 +152,9 @@ export function promptTargetName(project: Pick<Project, "maps">, view: RuntimeEv
     const targets = new Set<string>();
     transferMapIds(view.page?.commands, targets);
     const name = [...targets].map((id) => project.maps[id]?.name?.trim()).find(Boolean);
-    return name ? clip(name) : undefined;
+    // 가는 맵 이름은 12자로 자르지 않는다 — 「우물 밑 · 서고 승…」처럼 목적지가 잘려 어디로 가는 문인지 안 읽혔다(1.36 VQA #32 #33).
+    // 알약은 max-width 안에서 줄을 바꾸므로 길어도 넘치지 않는다. 자르기는 id 같은 잡음이 섞일 수 있는 이벤트·화자·칸 이름만.
+    return name;
   }
   const raw = String(view.event.name ?? "").replace(/^숨을\s*곳\s*:\s*/u, "").trim();
   if (raw && !GENERIC_NAME.test(raw) && !ID_LIKE.test(raw) && /[\p{L}]/u.test(raw)) return clip(raw);

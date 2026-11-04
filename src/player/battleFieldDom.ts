@@ -803,8 +803,13 @@ function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, posit
     const node = image.closest<HTMLElement>(".battle-enemy");
     const chrome = node?.querySelector<HTMLElement>(".battle-enemy-chrome");
     const drop = node ? enemyPlateDrop(node, unitY) : undefined;
+    // 이름표 높이를 아직 못 쟀으면(drop 미정) 그림 상자만으로 벌린 결과를 굳히지 않는다 — 그 자리가 캐시에 남아 이름표 모서리가
+    // 서로 겹친 채 굳었다(1.36 VQA #29, 1.35 #24).
+    if (chrome && drop === undefined) complete = false;
     if (!chrome || drop === undefined) return sprite;
-    const half = chrome.offsetWidth / 2 / unitX;
+    // 이름표는 scale(필드 위 전투 최대 2.2배)이 걸릴 수 있어 offsetWidth 만으로는 좁게 잰다.
+    const plateScale = Number.parseFloat(chrome.style.scale) || 1;
+    const half = (chrome.offsetWidth * plateScale) / 2 / unitX;
     return { left: Math.min(sprite.left, -half), right: Math.max(sprite.right, half), top: sprite.top, bottom: Math.max(sprite.bottom, drop) };
   });
   // 이름표가 상자에 들어가면 겹침 허용폭을 거의 없앤다 — 그림은 가장자리가 투명해 조금 겹쳐도 되지만 이름표 판은 모서리째 겹쳐 보인다.

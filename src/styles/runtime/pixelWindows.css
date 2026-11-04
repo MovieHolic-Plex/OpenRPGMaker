@@ -242,25 +242,38 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-header { display: contents; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-heading { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] :is(.status-menu-gold, .status-menu-time, .status-menu-location, .status-menu-chapter) { display: none; }
+/* 오른쪽 열(돈·시간·장·장소)은 한 줄기 flex 열이다 — 창마다 박아 둔 top 값이 서로 2~4px 겹쳐 시간 창 아래 줄이 장소 창 위를 덮었다
+   (1.36 VQA #22, 1.35 #18). 간격은 gap 이 맡아 글자 크기가 바뀌어도 겹치지 않는다. DOM 순서는 장소·장·돈·시간이라 order 로 세운다. */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-header {
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  left: auto;
+  padding: 0;
+  position: absolute;
+  right: 6px;
+  top: calc(var(--px-dock-h, 94px) + 10px);
+  width: 78px;
+  z-index: 2;
+}
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-gold, .status-menu-time, .status-menu-location, .status-menu-chapter) {
   display: block;
   overflow: hidden;
   padding: 3px 6px;
-  position: absolute;
-  right: 6px;
+  position: static;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 78px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 12px; top: calc(var(--px-dock-h, 94px) + 10px); }
-/* 장소 이름은 맨 아래 창에서 줄을 바꿔 다 보인다 — 78px 한 줄 말줄임이라 「잊힌 지하묘…」처럼 층수가 잘렸다(장부 hud #47). 시간 창을 위로 올렸다.
-   좌우 안쪽 여백은 3px — 6px 이면 「멈춘 시계의 방」(10px 글자 68px)이 「멈춘 / 시계의 방」으로 접혔다(VQA vm 28·50). */
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); line-height: 12px; overflow: visible; text-overflow: clip; top: calc(var(--px-dock-h, 94px) + 52px); white-space: normal; text-wrap: balance; word-break: keep-all; padding-inline: 3px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"]:has(.status-menu-chapter) .status-menu-location { top: calc(var(--px-dock-h, 94px) + 92px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 32px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 12px; order: 1; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); order: 2; }
 /* 장(NG+ 회차) — 시간 창 아래 같은 폭. 이야기 진행이 첫 화면에서 보인다. */
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 52px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); order: 3; }
+/* 장소 이름은 맨 아래 창에서 줄을 바꿔 다 보인다 — 78px 한 줄 말줄임이라 「잊힌 지하묘…」처럼 층수가 잘렸다(장부 hud #47).
+   좌우 안쪽 여백은 3px — 6px 이면 「멈춘 시계의 방」(10px 글자 68px)이 「멈춘 / 시계의 방」으로 접혔다(VQA vm 28·50). */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); line-height: 12px; order: 4; overflow: visible; text-overflow: clip; white-space: normal; text-wrap: balance; word-break: keep-all; padding-inline: 3px; }
 
 /* 명령 창 — 오른쪽 위, 손가락 커서. 두 모드에서 같은 자리라 화면을 넘겨도 창이 움직이지 않는다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
@@ -446,7 +459,8 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .mp .status-menu-target-preview { background: rgba(214, 230, 255, 1); }
 /* 파티 트레이(파티 ▸)의 구형 파티 판 — 왼쪽 창 아래쪽을 나눠 쓴다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"].has-party-overview .status-menu-detail { bottom: 120px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-party { bottom: 36px; left: 6px; padding: 3px; right: 88px; top: 124px; }
+/* 파티 카드 줄 높이는 내용을 따른다 — edge-dock 의 고정 33px 트랙이 3배 무대에서 99px 이 되어 MP 줄(약 109px 필요)이 카드 아래로 잘렸다(1.36 VQA #11 #12 #16 #18 #19). */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-party { bottom: 36px; grid-auto-rows: minmax(33px, max-content); left: 6px; padding: 3px; right: 88px; top: 124px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-party-row { background: transparent; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .life-ledger-tab { font-size: 10px; font-family: var(--px-small-font); }
 @media (prefers-reduced-motion: reduce) {

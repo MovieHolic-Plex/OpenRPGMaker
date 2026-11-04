@@ -188,6 +188,13 @@ export async function readPlayState(page) {
       }
     }
     const testids = [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid);
+    // 화면에 실제로 그려진 것만(hidden 이 아니고 상자가 0 이 아닌 노드). 손 슬롯·목표 카드는 설계상 숨는 때가 많아 testids 만 보면
+    // 「선언됐는데 안 보인다」로 오판한다(1.36 VQA #6 #21 — 거짓 양성). VQA·시각 판정은 이 목록을 쓴다.
+    const visibleTestids = [...document.querySelectorAll("[data-testid]")].filter((node) => {
+      if (node.hidden || node.closest("[hidden]")) return false;
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && getComputedStyle(node).display !== "none";
+    }).map((node) => node.dataset.testid);
     const textOf = (id) => {
       const node = document.querySelector(`[data-testid="${id}"]`);
       return node ? (node.textContent ?? "").replace(/\s+/g, " ").trim() : null;
@@ -228,6 +235,7 @@ export async function readPlayState(page) {
       switches: snapshot?.switches ?? null,
       variables: snapshot?.variables ?? null,
       testids,
+      visibleTestids,
     };
   });
 }
