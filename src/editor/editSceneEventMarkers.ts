@@ -48,6 +48,15 @@ const EVENT_BADGE_FILL_ALPHA = 0.72;
 const EVENT_BADGE_STROKE_COLOR = 0xcbd5e1;
 const EVENT_BADGE_STROKE_ALPHA = 0.95;
 const EVENT_BADGE_ALPHA = 0.95;
+/**
+ * 타일 레이어(바닥·상위·높이)에서 배지가 평소에 쉬는 불투명도. 2026-11 목업 대조: 칠하는 동안 Ⓔ 가 맵 전체에 진하게
+ * 박혀 타일을 가린다는 지적 → 리드 결정 「흐리게」 — 숨기지 않고 옅게 두었다가, 마우스를 올린 칸만 진하게(EVENT_BADGE_ALPHA).
+ * 이벤트 레이어에서는 배지 대신 캐릭터 그림·마커를 원래 진하기로 그린다(아래 renderEventMarkers 의 이벤트 레이어 갈래).
+ */
+export const EVENT_BADGE_REST_ALPHA = 0.35;
+export const EVENT_BADGE_HOVER_ALPHA = EVENT_BADGE_ALPHA;
+/** 배지 컨테이너에 붙이는 칸 표지(`"x,y"`). EditScene 이 마우스가 올라간 칸의 배지만 진하게 할 때 찾는다. */
+export const EVENT_BADGE_TILE_KEY = "eventBadgeTile";
 const EVENT_CLICK_FILL_COLOR = 0xd9e8f6;
 const EVENT_CLICK_FILL_ALPHA = 0.55;
 const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
@@ -163,7 +172,7 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
     } else {
       // 타일 레이어(바닥·상위·높이)에서는 그림이 있어도 E 배지만 그린다(2026-08-31 결정, 2026-09-27 복구).
       // 캐릭터 그림은 칠하는 타일을 가리고, 이벤트 레이어와 구분도 안 된다. 그림은 이벤트 레이어 전용이다.
-      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
+      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize).setData(EVENT_BADGE_TILE_KEY, `${event.x},${event.y}`));
     }
     if (event.id === selectedId) addSelectedEventRing(context, position, tileSize);
   }
@@ -393,6 +402,7 @@ function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number, tileS
   marker.add(label);
   // 배지는 이벤트 레이어가 아닐 때(바닥·상위·높이) 그림 없는 이벤트를 알리는 유일한 표시다.
   // 예전에는 여기서 알파를 0.45 배로 더 낮춰(2026-09-21) 채움이 거의 투명해지고 「E」가 안 읽혔다.
-  marker.setAlpha(EVENT_BADGE_ALPHA);
+  // 평소엔 옅게 쉬고(EVENT_BADGE_REST_ALPHA), 마우스를 올린 칸만 EditScene 이 진하게 올린다(highlightEventBadgeAt).
+  marker.setAlpha(EVENT_BADGE_REST_ALPHA);
   return marker;
 }
