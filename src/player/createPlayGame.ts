@@ -106,7 +106,7 @@ export function holdRenderWhilePresentationPending(game: Phaser.Game): void {
   let warmRender = false;
   game.events.once('playscene-ready', () => { warmRender = true; });
   game.step = function (this: Phaser.Game, time: number, delta: number): void {
-    if (this.pendingDestroy || this.isPaused || this.registry.get('initialPresentationPending') !== true || warmRender) { warmRender = false; step.call(this, time, delta); return; }
+    if ((this as unknown as { pendingDestroy?: boolean }).pendingDestroy || this.isPaused || this.registry.get('initialPresentationPending') !== true || warmRender) { warmRender = false; step.call(this, time, delta); return; }
     this.events.emit('prestep', time, delta);
     this.events.emit('step', time, delta);
     this.scene.update(time, delta);
