@@ -358,7 +358,7 @@ function frostRoad(project: Project, mapId: string, start: Cell, gaps: readonly 
       item("item_hi_potion", 1),
       se("cc0-se-orp-inventory-cloth"),
       narrate("「상급 회복약」을 손에 넣었다."),
-      say(who.elena, "…카엘, 이거 봐. 바퀴 홈이 하나 더 있어.\n좁고 깊은 쇠바퀴."),
+      say(who.elena, "카엘, 이거 봐. 바퀴 홈이 하나 더 있어.\n좁고 깊은 쇠바퀴."),
       say(who.kael, "쇠 마차야. 이 길로 올라갔어."),
       setSelf("A"),
     ]),
@@ -441,7 +441,7 @@ function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readon
   addEvent(map, "ev_fs2_snow_ruin", "얼음 속 파수꾼", warriorFront, [
     page("ev_fs2_snow_ruin_p", "살핀다", [], [
       narrate("무너진 초소 터에 파수꾼 하나가 얼음에 갇혀 서 있다.\n창을 든 채, 북쪽을 보고 있다."),
-      say(who.sarah, "…서른 해 전에 버린 고개 초소다.\n한겨울에 교대가 끊겨 그대로 얼었다지."),
+      say(who.sarah, "서른 해 전에 버린 고개 초소다.\n한겨울에 교대가 끊겨 그대로 얼었다지."),
       say(who.kael, "창을 놓지 않았네요."),
       narrate("얼음 발치에 굳은 마력약 병이 하나 박혀 있다.\n엘레나가 손바닥으로 녹여 빼냈다."),
       item("item_ether", 1),
