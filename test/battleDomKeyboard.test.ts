@@ -267,6 +267,29 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("reopens a submenu on its first usable row after it was closed from the back row", () => {
+    // fs2 스웜 N01: 「뒤로」로 닫으면 다시 열 때 커서가 「뒤로」에 서서, 확인키 두 번이 닫히지 않는 목록처럼 보였다.
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    const firstRow = cursor();
+    expect(firstRow).toMatch(/^actor-item-/);
+    const back = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-back']")!;
+    back.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    expect(cursor()).toBe("actor-command-back");
+    pressKey("z");
+    expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeNull();
+
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
+    expect(cursor()).toBe(firstRow);
+    controller.destroy();
+  });
+
   // 적대 리뷰 2차 계약: 적 대상 선택도 하단 패널에 대상 메뉴를 유지한다(빈 밴드 금지).
   // 필드의 선택 링(브래킷)과 메뉴의 selected 표시가 같은 대상을 가리켜야 한다.
   it("keeps the bottom target menu and the field ring in sync during target select", () => {

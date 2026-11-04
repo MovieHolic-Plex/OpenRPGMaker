@@ -70,6 +70,19 @@ describe("inn dialog accessibility", () => {
     expect(document.querySelector("[data-testid='inn-scene']")).toBeNull();
   });
 
+  it("moves from stay to cancel with the down arrow in the stacked pixel window", async () => {
+    // fs2 스웜 I23: 도트 창은 예/아니오를 위아래로 쌓는다. 2열 커서여서 ↓ 가 먹지 않았고, 돈이 모자라면 「예」에 갇혔다.
+    const { scene } = sceneFixture(0);
+    const pending = playInn(scene, { kind: "inn", price: 40 });
+    expect(document.querySelector(".runtime-inn-pixel")).not.toBeNull();
+    const press = (key: string) => window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    press("ArrowDown");
+    expect(document.querySelector("[data-testid='inn-cancel']")?.getAttribute("aria-current")).toBe("true");
+    press("Enter");
+    await pending;
+    expect(document.querySelector("[data-testid='inn-scene']")).toBeNull();
+  });
+
   it("names the rest blackout and skips the fade when menu motion is reduced", async () => {
     updatePlayerPreferences({ reduceMenuMotion: true });
     const { scene, waits } = sceneFixture(80);
