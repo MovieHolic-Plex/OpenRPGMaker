@@ -6,6 +6,7 @@ import "./promptHome.css";
 import { el } from "@/util/dom";
 import { getLocale, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { startIcon } from "../icons";
+import { BRAND_MARK_SVG } from "../brandMark";
 import { FIRST_RUN_TEXT_LIMIT } from "./firstRunBrief";
 import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
 
@@ -101,7 +102,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
 
   const root = el("div", { class: "fr-root", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
     el("header", { class: "fr-top", children: [
-      el("span", { class: "fr-brand", text: "OPRN Studio", attrs: { translate: "no" } }),
+      el("span", { class: "fr-brand", attrs: { translate: "no" }, children: [el("span", { class: "fr-brand-mark", html: BRAND_MARK_SVG }), el("span", { text: "OPRN Studio" })] }),
       el("button", {
         class: "fr-locale", attrs: { type: "button", "aria-label": "언어" }, dataset: { testid: PROMPT_HOME_TESTIDS.locale },
         on: { click: () => { if (!busy) actions.openLocale(); } },

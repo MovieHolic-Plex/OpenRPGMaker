@@ -40,7 +40,7 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .ln-rail { display: flex; flex-direction: column; gap: 4px; min-height: 0; padding: 16px 12px 14px; border-right: 2px solid var(--ln-line); background: var(--ln-rail); }
 .ln-brand { display: flex; align-items: center; gap: 10px; padding: 2px 8px 16px; font-size: 16px; letter-spacing: -0.01em; }
 .ln-brand strong { font-weight: 800; white-space: nowrap; }
-.ln-brand-mark svg { display: block; width: 26px; height: 26px; image-rendering: pixelated; }
+.ln-brand-mark svg { display: block; width: 26px; height: 26px; }
 .ln-navs { display: flex; flex-direction: column; gap: 4px; }
 .ln-nav {
   display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px 12px; border: 0; border-radius: 6px;
