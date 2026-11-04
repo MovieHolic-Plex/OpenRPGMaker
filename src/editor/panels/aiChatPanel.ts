@@ -2375,10 +2375,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   /** 그림 도안 먼저(설정, src/ai/imagePlan.ts): 넓힌 새 장소면 도안 한 장을 받아 첨 요청 그림으로 싣는다. 계정이 없거나 실패하면 한 줄만 남기고 도안 없이 짓는다. */
   const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string }> => {
     if (!widen || loadAiConfig().imagePlanBuild === false) return { images: [] };
-    setStatus("그림 도안 그리는 중(약 1분)…");
-    const outcome = await requestImagePlanMockup(widen);
+    setStatus((loadAiConfig().imagePlanCandidates ?? 1) > 1 ? "그림 도안 여러 장 그려 고르는 중(약 1~2분)…" : "그림 도안 그리는 중(약 1분)…");
+    const candidates = loadAiConfig().imagePlanCandidates ?? 1;
+    const outcome = await requestImagePlanMockup(widen, undefined, candidates);
     console.info(`imagePlan: outcome=${outcome.kind} read=${outcome.kind === "mockup" && outcome.read ? "ok" : "none"}`);
     if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
+    if (outcome.pickLine) say(outcome.pickLine);
     if (outcome.readLine) say(outcome.readLine);
     return { images: [outcome.dataUrl], note: imagePlanBuildNote(widen, outcome.read) };
   };
