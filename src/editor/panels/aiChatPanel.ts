@@ -2307,8 +2307,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly widen?: ImagePlanScene; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   /** 그림 도안 먼저(설정, src/ai/imagePlan.ts): 넓힌 새 장소면 도안 한 장을 받아 첨 요청 그림으로 싣는다. 계정이 없거나 실패하면 한 줄만 남기고 도안 없이 짓는다. */
   const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string }> => {
-    if (!widen || loadAiConfig().imagePlanBuild !== true) return { images: [] };
-    setStatus("그림 도안 그리는 중…");
+    if (!widen || loadAiConfig().imagePlanBuild === false) return { images: [] };
+    setStatus("그림 도안 그리는 중(약 1분)…");
     const outcome = await requestImagePlanMockup(widen);
     console.info(`imagePlan: outcome=${outcome.kind} read=${outcome.kind === "mockup" && outcome.read ? "ok" : "none"}`);
     if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
