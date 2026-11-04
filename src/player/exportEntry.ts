@@ -346,12 +346,14 @@ async function withDevCheckpointParam(boot: OpenRpgBootConfig): Promise<OpenRpgB
 /** QA 체크포인트 세션. 계측이 켜진 부팅에서만 만든다 — 아니면 일반 타이틀 부팅이다. */
 async function qaCheckpointStart(boot: OpenRpgBootConfig, project: Project) {
   if (boot.qaInstrumentation !== true || boot.qaCheckpoint === undefined) return undefined;
-  const { parseQaCheckpointBoot, sessionFromQaCheckpoint } = await import("@/player/qaCheckpoint");
+  const { parseQaCheckpointBoot, qaCheckpointStartEventId, sessionFromQaCheckpoint } = await import("@/player/qaCheckpoint");
   const checkpoint = parseQaCheckpointBoot(boot.qaCheckpoint);
   if (!checkpoint) throw new Error("QA 체크포인트 모양이 틀렸다(id 필요)");
+  const initialSession = sessionFromQaCheckpoint(project, checkpoint);
+  const startEventId = qaCheckpointStartEventId(project, checkpoint, initialSession.currentMapId);
   return {
-    initialSession: sessionFromQaCheckpoint(project, checkpoint),
-    ...(checkpoint.startEventId ? { initialEventTestId: checkpoint.startEventId } : {}),
+    initialSession,
+    ...(startEventId ? { initialEventTestId: startEventId } : {}),
   };
 }
 
