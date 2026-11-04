@@ -17,7 +17,7 @@ import {
 } from "@/assets/sharedPortraitAssets";
 
 describe("공용 표정 세트 흉상·전신", () => {
-  it("76세트 × 2모양 × 16표정 + 현대 연애 24세트 × 2모양 × 5표정 = 2672장이고 파일이 모두 있다", () => {
+  it("76세트 × 2모양 × 16표정 + 현대 연애 25세트 × 2모양 × 5표정 = 2682장이고 파일이 모두 있다", () => {
     expect(FACE_EXPRESSION_SETS).toHaveLength(76);
     expect(SHARED_PORTRAIT_ASSETS).toHaveLength(2432 + MODERN_PORTRAIT_SETS.length * 2 * MODERN_PORTRAIT_EXPRESSIONS.length);
     const missing = SHARED_PORTRAIT_ASSETS.filter((asset) => !existsSync(path.join("public", asset.path))).map((asset) => asset.path);
@@ -81,10 +81,10 @@ describe("공용 표정 세트 흉상·전신", () => {
     expect(resolveAppearancePortrait(project, "m", "full")).toMatchObject({ resourceId: "shared-modern-uni-girl-navy-expressions-full-base", presentation: "full" });
     expect(resolveAppearancePortrait(project, "m", "bust")).toMatchObject({ resourceId: bust, presentation: "bust" });
     expect(resolveAppearancePortrait(project, "m", "face")).toMatchObject({ resourceId: bust, presentation: "bust" });
-    // 현대 칩 24종은 모두 짝이 있다(Modern1 #1 회색 블레이저도 2026-10-17 부터).
+    // 현대 칩 24종은 모두 짝이 있다(Modern1 #1 회색 블레이저도 2026-10-17 부터). 25번째는 칩에 없는 편의점 점원 전용 세트다(첫사랑, 칩 대응표는 카페 점원 그대로).
     const second = { database: { characterAppearances: [{ id: "u", name: "", description: "", charset: { resourceId: "oprn-charset-modern1", characterIndex: 1 } }] } } as unknown as Project;
     expect(resolveAppearancePortrait(second, "u", "full")).toMatchObject({ resourceId: "shared-modern-uni-boy-grey-expressions-full-base", presentation: "full" });
-    expect(MODERN_PORTRAIT_SETS).toHaveLength(24);
+    expect(MODERN_PORTRAIT_SETS).toHaveLength(25);
   });
 
   it("현대 연애 초상은 한 그림체(고해상도 일러스트)로 잠겨 있다 - 거친 도트 인물이 섞이지 않는다", () => {

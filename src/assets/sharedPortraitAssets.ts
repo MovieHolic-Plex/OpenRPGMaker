@@ -79,6 +79,7 @@ export const MODERN_PORTRAIT_SETS: readonly { readonly stem: string; readonly na
   { stem: "modern-suit-boy-charcoal", name: "정장 남 · 차콜" },
   { stem: "modern-apron-navy", name: "카페 점원 · 남색 앞치마" },
   { stem: "modern-apron-olive", name: "카페 점원 · 올리브 앞치마" },
+  { stem: "modern-konbini-clerk", name: "편의점 점원 · 남색 조끼" },
 ];
 
 const faceSetPortraits = FACE_EXPRESSION_SETS.flatMap((set) => {

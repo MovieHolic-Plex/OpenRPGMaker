@@ -9,6 +9,7 @@
 //  - scene-speaker-absent   대사의 화자(또는 선택지를 받는 NPC)가 이 맵 인물인데 그 순간 무대에 없다(페이지가 꺼짐·지워짐·투명)
 //  - scene-talk-far         화자와 듣는 인물이 TALK_DISTANCE_LIMIT(2) 칸보다 멀다(체비쇼프)
 //  - scene-talk-facing      대사 자동 돌아보기를 적용한 뒤에도 둘이 서로를 보지 않는다
+//  - scene-talk-stacked     화자와 듣는 인물이 같은 열에서 세로 1~2칸 — 아래 사람은 뒷모습만 보인다(첫사랑 r7 재회)
 //  - scene-bust-unstaged     무대 흉상 대사인데 듣는 사람이 안 풀린다(장면 첫마디를 주인공이 연다) — 곁에 사람이 있으면 addressee 로 못박는다
 //  - scene-turn-overridden  말하기 직전에 손으로 돌려 세운 화자를 자동 돌아보기가 다른 상대(최근 화자) 쪽으로 되돌린다 — addressee 누락
 //
@@ -35,6 +36,8 @@ type Replay = {
   self: Map<string, boolean>; // `${eventId}:${key}`
   actors: Map<string, ActorState>;
   player: { x: number; y: number; dir: Dir } | null;
+  /** 주인공 칸이 «인물 바로 앞» 추측이다(말을 건 사람 곁) — 같은 열이 늘 나오므로 위·아래 한 열 검사는 건너뛴다. */
+  playerGuessed?: boolean;
   playerHidden: boolean;
   recent: string[]; // 최근 NPC 화자(맨 앞이 방금)
   lastSpoken: string | null; // 마지막으로 «소리 내어» 말한 인물(속마음·자막은 건너뜀). 선택지의 상대.
@@ -158,6 +161,7 @@ function cloneReplay(st: Replay): Replay {
     vars: new Map(st.vars), switches: new Map(st.switches), self: new Map(st.self),
     actors: new Map([...st.actors].map(([k, v]) => [k, { ...v }])),
     player: st.player ? { ...st.player } : null,
+    playerGuessed: st.playerGuessed,
     playerHidden: st.playerHidden,
     recent: [...st.recent],
     turned: new Map(st.turned ?? []),
@@ -399,6 +403,14 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
     return;
   }
   if (calling) return; // 부르는 한마디 — 듣는 쪽은 아직 딴 데를 봐도 된다(부름을 듣고 돈다).
+  // 위·아래 한 열로 서서 말한다 — 3/4 시점에서 아래 사람은 뒷모습만 보이고 위·아래 그림이 겹친다(첫사랑 r7 재회: 지후가 서하 두 칸 아래).
+  // 바로 위·아래 칸(세로 1)부터 말하기 거리 문턱(TALK_DISTANCE_LIMIT) 안까지, 같은 열일 때만.
+  const guessedPlayer = st.playerGuessed && (speakerId === PLAYER_ACTOR || addresseeId === PLAYER_ACTOR);
+  if (!guessedPlayer && a.x === b.x && Math.abs(a.y - b.y) >= 1 && Math.abs(a.y - b.y) <= TALK_DISTANCE_LIMIT) {
+    const lower = a.y > b.y ? speakerId : addresseeId;
+    report(ctx, "scene-talk-stacked", pair, b,
+      `${where}: ${nameOf(ctx, speakerId)} 와 ${nameOf(ctx, addresseeId)} 가 위·아래 한 열로 서서 말한다 — 아래쪽 ${nameOf(ctx, lower)} 은 3/4 시점에서 뒷모습만 보인다. 한 줄 옆 칸에서 마주 보게 세운다(skill 장면 다듬기 3.12).`);
+  }
   const aSees = facesToward(a, a.dir, b), bSees = facesToward(b, b.dir, a);
   if (!aSees || !bSees) {
     const away = !bSees ? addresseeId : speakerId;
@@ -442,6 +454,13 @@ function checkChoice(ctx: Ctx, st: Replay, where: string): void {
   if (dist > TALK_DISTANCE_LIMIT && !acrossFurniture(ctx, a, st.player, dist)) {
     report(ctx, "scene-talk-far", `choice:${npc}`, a,
       `${where}: 선택지가 ${dist}칸 떨어진 ${nameOf(ctx, npc)} 에게 하는 대답이다 — 선택지 앞에서 approach 로 마주 세운다.`);
+    return;
+  }
+  // 위·아래 한 열(세로 1~2칸): 아래 사람은 뒷모습만 보인다 — scene-talk-stacked(대사 쪽과 같은 규칙).
+  if (!st.playerGuessed && a.x === st.player.x && Math.abs(a.y - st.player.y) >= 1 && Math.abs(a.y - st.player.y) <= TALK_DISTANCE_LIMIT) {
+    const lower = a.y > st.player.y ? nameOf(ctx, npc) : "주인공";
+    report(ctx, "scene-talk-stacked", `choice:${npc}`, a,
+      `${where}: 선택지가 위·아래 한 열로 서 있는 ${nameOf(ctx, npc)} 에게 하는 대답이다 — 아래쪽 ${lower} 은 3/4 시점에서 뒷모습만 보인다. 한 줄 옆 칸으로 세운다.`);
   }
 }
 
@@ -577,6 +596,7 @@ export function checkSceneStaging(project: Project, issues: LintIssue[]): void {
             const dir = (page.graphic?.direction as Dir | undefined) ?? "down";
             const front = { x: host.x + DIR_DELTA[dir].x, y: host.y + DIR_DELTA[dir].y };
             st.player = { ...front, dir: dirToward(front, host) ?? "up" };
+            st.playerGuessed = true;
           }
         } else if (project.startMapId === map.id && project.startPos && holdsAtNewGame((page.conditions ?? []) as EventPageConditionLike[])) {
           // 시작 맵의 첫 자동 장면(조건이 새 게임 상태 — 변수 0·스위치 꺼짐 — 에서 참): 주인공은 시작 칸에 있다.
