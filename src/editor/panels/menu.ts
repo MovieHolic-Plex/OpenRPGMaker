@@ -1046,16 +1046,15 @@ function installTopbarChords(): void {
 }
 
 /** 예제 프로젝트 하위 메뉴 — 전부 「현재 작업을 지우고 시작」 확인을 거치는 로더다.
+ * 2026-11-04: 「— 바로 플레이 ▶」 줄은 뺐다. Studio 는 만드는 앱이라 플레이는 예제를 연 뒤 「테스트 실행」 하나로 한다
+ * (설계 http://mdc-server:18301/studio-runtime-split.html B안).
  * 지운 칩셋 위의 데모(이슬 마을·천공의 계단·학습 예시·설산·얼음 평원·포켓몬풍·농장)는 2026-10-07 저작권 정리로 뺐다. */
 function sampleProjectCommands(): readonly MenuCommand[] {
   return [
     item("폴른 스타: 추락한 별과 태엽의 성녀 (기본 JRPG 데모)", "menu-project-demo-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell")),
-    item("폴른 스타: 추락한 별과 태엽의 성녀 — 바로 플레이 ▶", "menu-project-play-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell", true)),
     item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown")),
-    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown", true)),
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     item("첫사랑 (기본 오피스 로맨스 데모)", "menu-project-demo-first-love", () => void loadFlagshipDemoInEditor("first-love")),
-    item("첫사랑 — 바로 플레이 ▶", "menu-project-play-first-love", () => void loadFlagshipDemoInEditor("first-love", true)),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];
