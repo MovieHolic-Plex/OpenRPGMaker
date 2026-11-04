@@ -17,7 +17,7 @@ const ZERO_FLAGS = {
 /** 검 계열 — 빠르고 급소가 잘 난다. 시작 무기 청동 검(equip_sword) 위. */
 export const FS_SWORD_GALE = "equip_fs_sword_gale";
 export const FS_SWORD_STAR = "equip_fs_sword_star";
-/** 창 계열 — 공격이 높고 회피를 무시하며 창이 약점인 적을 뚫는다. 느리다. */
+/** 창 계열 — 공격이 높고 느리다. 평타는 가끔 방어를 깎는다(weaponTraits.ts). */
 export const FS_SPEAR_PIKE = "equip_fs_spear_pike";
 export const FS_SPEAR_STAR = "equip_fs_spear_star";
 /** 회복(기존 id 유지, 값만 바꾼다). */
@@ -108,16 +108,16 @@ export function applyFallenBattleItems(project: Project): void {
   cloneSkill("skill_item_thunder_stone", "skill_fs_water_flask", { name: "물 주머니 효과", power: 76, elementId: "water", description: "물을 끼얹어 물 속성 피해를 준다." });
   cloneItem("item_gen2_frost_vial", FS_FIRE_FLASK, {
     name: "불씨 병", price: 90, skillId: "skill_fs_fire_flask", activateSkillId: "skill_fs_fire_flask",
-    description: "던지면 불 속성 피해를 준다.\n늑대에게 잘 듣는다.",
+    description: "던지면 불 속성 피해를 준다.",
     iconResourceId: "cc0-jetrel-fire-bomb", imageResourceId: "cc0-jetrel-fire-bomb",
   });
   cloneItem("item_gen2_frost_vial", FS_WATER_FLASK, {
     name: "물 주머니", price: 70, skillId: "skill_fs_water_flask", activateSkillId: "skill_fs_water_flask",
-    description: "던지면 물 속성 피해를 준다.\n도깨비불을 단번에 꺼 버린다.",
+    description: "던지면 물 속성 피해를 준다.",
   });
-  // 뇌전석·서리 유리병은 기존 것을 그대로 쓰되 설명에 상성을 밝힌다.
-  byId<ItemRecord>(db.items, FS_THUNDER_STONE).description = "던지면 번개 속성 피해를 준다.\n돌 수호상에게 잘 듣고, 거미에게는 덜 듣는다.";
-  byId<ItemRecord>(db.items, FS_FROST_VIAL).description = "던지면 얼음 속성 피해를 준다.\n도깨비불에게 잘 듣는다.";
+  // 뇌전석·서리 유리병은 기존 것을 그대로 쓰되 설명은 속성만 말한다 — 어느 적에게 듣는지는 플레이어가 찾는다(2026-11-03 사용자).
+  byId<ItemRecord>(db.items, FS_THUNDER_STONE).description = "던지면 번개 속성 피해를 준다.";
+  byId<ItemRecord>(db.items, FS_FROST_VIAL).description = "던지면 얼음 속성 피해를 준다.";
 
   // ── 연막: 전투에서 확정으로 빠져나간다(엔진: skill.type "escape") ─────────────
   upsert(db.skills, normalizeSkillRecord({
@@ -139,7 +139,7 @@ export function applyFallenBattleItems(project: Project): void {
   });
   cloneItem("item_guard_talisman", FS_TONIC, {
     name: "투지 강장제", price: 120, skillId: "skill_fs_tonic", activateSkillId: "skill_fs_tonic",
-    description: "아군 하나의 공격이 전투 끝까지 오른다.\n수호상처럼 단단한 적과 싸울 때 좋다.",
+    description: "아군 하나의 공격이 전투 끝까지 오른다.\n길게 싸울 때 좋다.",
     iconResourceId: "cc0-jetrel-elixir", imageResourceId: "cc0-jetrel-elixir",
   });
   // 독 — 거미가 독침을 쏜다(전투가 끝나도 독이 남는다). 해독초가 그 답이다.
@@ -232,13 +232,13 @@ export function applyFallenBattleItems(project: Project): void {
   });
   weapon(FS_SPEAR_PIKE, {
     name: "푸른 불꽃 창", price: 220,
-    description: "공격 22, 민첩 -3. 회피를 무시해 날랜 적도 꿰뚫는다.\n푸른 불씨를 먹은 쇠라 식어도 푸르다.",
+    description: "공격 22, 민첩 -3.\n푸른 불씨를 먹은 쇠라 식어도 푸르다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: -3 }, attackElementIds: ["spear"], criticalRate: 2, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });
   weapon(FS_SPEAR_STAR, {
     name: "별꿰기 창", price: 640,
-    description: "공격 34, 민첩 -2. 회피를 무시한다.\n푸른 불꽃 창보다 한 수 위다.\n별빛 맺힌 창끝은 수호상의 돌 몸도 꿰뚫는다.",
+    description: "공격 34, 민첩 -2.\n푸른 불꽃 창보다 한 수 위다.\n창끝에 별빛이 맺혀 있다.",
     statBonuses: { attack: 34, defense: 0, mind: 0, agility: -2 }, attackElementIds: ["spear"], criticalRate: 3, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });

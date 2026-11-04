@@ -14,12 +14,23 @@ export type BattleComboFx = "spectacular" | "simple";
 export type BattleSkillHint = "line" | "window";
 /** 적 약점·저항을 대상 고르기에서 보이는가 — 약점은 플레이어가 알아 가는 것(src/battle/weaknessDiscovery.ts). */
 export type BattleRevealWeakness = "never" | "afterDiscovery" | "always";
+/** 전투 흐름 빠르기 — 행동 비트(접근·돌진·회복·이펙트)와 행동 사이 쉼. quick = 지금 그대로, steady = 한 박자 느긋하게. */
+export type BattlePace = "quick" | "steady";
 
 export const BATTLE_ENEMY_LUNGES: readonly BattleEnemyLunge[] = ["fast", "normal", "classic"];
 export const BATTLE_COMBO_CUT_INS: readonly BattleComboCutIn[] = ["faces", "band", "off"];
 export const BATTLE_COMBO_FXS: readonly BattleComboFx[] = ["spectacular", "simple"];
 export const BATTLE_SKILL_HINTS: readonly BattleSkillHint[] = ["line", "window"];
 export const BATTLE_REVEAL_WEAKNESSES: readonly BattleRevealWeakness[] = ["never", "afterDiscovery", "always"];
+export const BATTLE_PACES: readonly BattlePace[] = ["quick", "steady"];
+
+/**
+ * steady 의 동작 템포 배율(battleSequencer motionTempo 에 곱한다 — 1 보다 작으면 느려진다). 히트스톱·대사 읽기 시간은 그대로다.
+ * 2026-11-03 폴른 스타 시연 「전투도 지금 너무 빠름」: 아군 한 번의 행동이 1.35~1.53초였다.
+ */
+export const BATTLE_STEADY_MOTION_TEMPO = 0.75;
+/** steady 의 행동 사이 쉼 배율(battleSequencer interludeScale). 도트 측면 quick 은 0.6(격파 대사 400ms), steady 는 엔진 원래 길이(660ms). */
+export const BATTLE_STEADY_INTERLUDE_SCALE = 1;
 
 export const BATTLE_ENEMY_LUNGE_LABELS: Readonly<Record<BattleEnemyLunge, string>> = {
   fast: "빠르게(사람 적 걸음이 기준, 짐승은 더 빠르게)",
@@ -45,6 +56,10 @@ export const BATTLE_REVEAL_WEAKNESS_LABELS: Readonly<Record<BattleRevealWeakness
   afterDiscovery: "알아낸 뒤에만(처음 맞힌 「약점 발견!」 뒤로 대상 고를 때 표시)",
   always: "처음부터(대상 고를 때 늘 표시)",
 };
+export const BATTLE_PACE_LABELS: Readonly<Record<BattlePace, string>> = {
+  quick: "빠르게(기본)",
+  steady: "차분하게(행동·격파 대사 사이를 넉넉히)",
+};
 
 export interface BattleStagingSettings {
   /** 생략 = fast. */
@@ -57,6 +72,8 @@ export interface BattleStagingSettings {
   readonly skillHint?: BattleSkillHint;
   /** 생략 = afterDiscovery. */
   readonly revealWeakness?: BattleRevealWeakness;
+  /** 생략 = quick. */
+  readonly pace?: BattlePace;
 }
 
 export interface ResolvedBattleStaging {
@@ -65,9 +82,10 @@ export interface ResolvedBattleStaging {
   readonly comboFx: BattleComboFx;
   readonly skillHint: BattleSkillHint;
   readonly revealWeakness: BattleRevealWeakness;
+  readonly pace: BattlePace;
 }
 
-const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line", revealWeakness: "afterDiscovery" };
+const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line", revealWeakness: "afterDiscovery", pace: "quick" };
 
 const pick = <T extends string>(list: readonly T[], value: unknown): T | undefined =>
   typeof value === "string" && (list as readonly string[]).includes(value) ? (value as T) : undefined;
@@ -87,6 +105,8 @@ export function normalizeBattleStaging(value: unknown): BattleStagingSettings | 
   if (hint && hint !== DEFAULTS.skillHint) out.skillHint = hint;
   const reveal = pick(BATTLE_REVEAL_WEAKNESSES, raw.revealWeakness);
   if (reveal && reveal !== DEFAULTS.revealWeakness) out.revealWeakness = reveal;
+  const pace = pick(BATTLE_PACES, raw.pace);
+  if (pace && pace !== DEFAULTS.pace) out.pace = pace;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
@@ -97,6 +117,7 @@ export function resolveBattleStaging(value: BattleStagingSettings | undefined): 
     comboFx: pick(BATTLE_COMBO_FXS, value?.comboFx) ?? DEFAULTS.comboFx,
     skillHint: pick(BATTLE_SKILL_HINTS, value?.skillHint) ?? DEFAULTS.skillHint,
     revealWeakness: pick(BATTLE_REVEAL_WEAKNESSES, value?.revealWeakness) ?? DEFAULTS.revealWeakness,
+    pace: pick(BATTLE_PACES, value?.pace) ?? DEFAULTS.pace,
   };
 }
 

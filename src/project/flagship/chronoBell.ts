@@ -54,6 +54,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
+import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
 const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
@@ -130,6 +131,10 @@ function setupCast(project: Project): void {
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
   // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
+  // 2026-11-03 사용자 시연 「전투도 지금 너무 빠름」·「약점을 자세히 설명하면 곤란 — 사용자가 찾아가야 재밌다」.
+  // pace steady = 행동 비트·이펙트 0.75배 템포, 격파 대사·적 차례 정리 쉼을 엔진 원래 길이로. revealWeakness never = 대상 고를 때 약점 글자를 안 띄운다
+  // (맞힌 순간의 「약점 발견!」·숫자 크기는 남는다).
+  project.system.battleStaging = { ...project.system.battleStaging, pace: "steady", revealWeakness: "never" };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -2514,6 +2519,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
   // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
   applyFallenMobBalance(project, execTool);
+  // 무기 계열 특성(검 급소·창 방어 깎기·지팡이 기절·사출봉 둔화) — 대장간·2막 무기까지 다 생긴 뒤(fallen/weaponTraits.ts).
+  applyFallenWeaponTraits(project);
 
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.

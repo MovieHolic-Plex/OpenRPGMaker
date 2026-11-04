@@ -322,7 +322,7 @@ function summitScenes(project: Project): void {
         setSw(SW_VALEN_GUEST, false),
       ] },
     ] } as unknown as Command,
-    say(ELENA, "재야, 전부. 불은 안 먹혀.\n…서리로 끊자."),
+    say(ELENA, "재야, 전부.\n…어디든 틈은 있어."),
     cutLabel(), cutEnd(),
     se("cc0-se-ors-creature-roar-02"), shake(5, 800), flash("red", 300),
     { kind: "battleProcessing", troopId: FS2_TROOP_COLLECTOR, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
