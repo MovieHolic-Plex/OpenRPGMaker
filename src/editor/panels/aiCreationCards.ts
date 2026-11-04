@@ -12,6 +12,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { findBgmTrack } from "@/assets/bgmCatalog";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
 import type { ActorRecord, Command, EnemyRecord, EquipmentRecord, EquipmentStatBonuses, EventPageGraphic, GameEvent, ItemRecord, Project, SkillRecord, StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { audioPlayback } from "./audioResourcePresentation";
@@ -180,6 +181,8 @@ export function walkingCharset(project: Project, resourceId: string | undefined,
   node.style.setProperty("--walk-x", `${-first.x * scale}px`);
   node.style.setProperty("--walk-y", `${-first.y * scale}px`);
   node.style.setProperty("--walk-span", `${-3 * CHARSET_FRAME_WIDTH * scale}px`);
+  // RTP 걷기 칩은 단색 배경 시트다 — 맵 위·카드 위에서 청록 상자로 보이지 않게 키아웃한다(투명 PNG 면 그대로).
+  queueMicrotask(() => applyAutoChromaKeyToBackground(node, url));
   return node;
 }
 

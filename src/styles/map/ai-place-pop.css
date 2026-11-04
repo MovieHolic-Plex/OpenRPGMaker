@@ -8,7 +8,20 @@
   transform: translate(-50%, -100%);
   pointer-events: none;
   font-family: var(--font-ui);
-  animation: canvas-ai-place-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.4) both, canvas-ai-place-out 300ms ease-in 2300ms both;
+  animation: canvas-ai-place-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.4) both, canvas-ai-place-out 300ms ease-in 2900ms both;
+}
+.canvas-ai-place-pop::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 72px;
+  height: 24px;
+  margin-left: -36px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, color-mix(in srgb, #ffd54a 75%, transparent), transparent 70%);
+  animation: canvas-ai-place-ring 400ms ease-out both;
+  z-index: -1;
 }
 .canvas-ai-place-tag {
   padding: 1px var(--space-2);
@@ -32,11 +45,12 @@
   to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
 }
 @keyframes canvas-ai-place-out { to { opacity: 0; } }
+@keyframes canvas-ai-place-ring { from { opacity: 1; transform: scale(0.2); } to { opacity: 0; transform: scale(1.6); } }
 @keyframes canvas-ai-place-walk {
   from { background-position: var(--walk-x) var(--walk-y); }
   to { background-position: calc(var(--walk-x) + var(--walk-span)) var(--walk-y); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .canvas-ai-place-pop { animation: canvas-ai-place-out 1ms linear 2300ms both; }
+  .canvas-ai-place-pop { animation: canvas-ai-place-out 1ms linear 2900ms both; }
   .canvas-ai-place-sprite { animation: none; }
 }

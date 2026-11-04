@@ -42,6 +42,7 @@ import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, norma
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { fillDefaultItemIcon } from "./defaultItemIcon";
 import { findOpeningStillScene, parseOpeningStill } from "@/project/openingStill";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
@@ -1402,8 +1403,10 @@ const upsertItem: ToolDefinition = {
     if ((record.occasion === "field" || record.occasion === "always") && record.stateEffects.some((effect) => effect.operation === "add") && !itemAllowsFieldMenu(draft, record)) {
       warnings.push(`'${record.name}' 은 상태를 거는 물건인데 type '${record.type}' 이라 필드 가방에서 쓸 수 없습니다 — 바르는 기름·축복 부적처럼 쓰게 하려면 type:"special" 로 주세요(skillId·activateSkillId 없이).`);
     }
+    const itemIconAsked = Boolean(record.iconResourceId);
     resolveIconResourceId(draft, record, "item", warnings);
     autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
+    if (!itemIconAsked) fillDefaultItemIcon(draft, record, record.type, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
@@ -2497,9 +2500,11 @@ const upsertEquipment: ToolDefinition = {
     if ((record.apGrants?.length ?? 0) > 0 && !draft.database.enemies.some((enemy) => (normalizeEnemyRecord(enemy).rewards.ap ?? 0) > 0)) {
       warnings.push("apGrants 는 설정했지만 AP 를 주는 적이 없습니다 — upsert_enemy 의 rewards.ap 를 정해야 마석이 자랍니다(승리 시 트룹 합계를 받음).");
     }
+    const equipmentIconAsked = Boolean(record.iconResourceId);
     resolveIconResourceId(draft, record, "equipment", warnings);
     autoStoreIcon(draft, record, { target: "equipment", name: record.name, description: record.description, itemType: record.slot,
       element: draft.database.elements?.find((element) => element.id === record.attackElementIds[0])?.name ?? record.attackElementIds[0] }, "equipment", warnings);
+    if (!equipmentIconAsked) fillDefaultItemIcon(draft, record, record.slot, "equipment", warnings);
     dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

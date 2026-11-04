@@ -114,12 +114,12 @@ describe("store icon kind", () => {
     expect(inferIconElement("독")).toBe("poison");
   });
 
-  it("upsert_* auto-picks a confident store icon and leaves others empty", () => {
+  it("upsert_* auto-picks a confident store icon and falls back to the bundled default for the rest", () => {
     const project = projectWithIcons();
     const item = tool("upsert_item").run(project, { item: { id: "item_hp", name: "회복 물약", type: "medicine", price: 50 } });
     expect((item as { data: { iconResourceId?: string } }).data.iconResourceId).toBe(storeProjectId(SLUG, "potion-red"));
     const odd = tool("upsert_item").run(project, { item: { id: "item_odd", name: "Mysterious thing", price: 5 } });
-    expect((odd as { data: { iconResourceId?: string } }).data.iconResourceId).toBeUndefined();
+    expect((odd as { data: { iconResourceId?: string } }).data.iconResourceId).toBe("cc0-jetrel-coin-pouch");
     const given = tool("upsert_item").run(project, { item: { id: "item_given", name: "회복 물약", iconResourceId: storeProjectId(SLUG, "sword-iron") } });
     expect((given as { data: { iconResourceId?: string } }).data.iconResourceId).toBe(storeProjectId(SLUG, "sword-iron"));
     const skill = tool("upsert_skill").run(project, { skill: { id: "skill_fire_test", name: "파이어", elementId: "fire" } });

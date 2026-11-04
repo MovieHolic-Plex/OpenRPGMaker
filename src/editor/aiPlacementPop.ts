@@ -9,7 +9,7 @@ import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-const SHOW_MS = 2600;
+const SHOW_MS = 3200;
 const MAX_LIVE = 6;
 
 export function announceAiPlacement(project: Project, item: ChangeItem): void {
@@ -31,7 +31,7 @@ function place(host: HTMLElement, project: Project, event: Project["maps"][strin
   if (left < 0 || top < 0 || left > box.width || top > box.height) return;
   for (const stale of [...host.querySelectorAll(".canvas-ai-place-pop")].slice(0, -MAX_LIVE + 1)) stale.remove();
   const graphic = eventCharsetGraphic(event);
-  const size = Math.max(24, Math.round(cell.height * 2));
+  const size = Math.max(48, Math.round(cell.height * 2));
   const sprite = graphic?.sprite?.id ? walkingCharset(project, graphic.sprite.id, 0, size, "canvas-ai-place-sprite") : null;
   const pop = el("div", {
     class: "canvas-ai-place-pop", dataset: { testid: "ai-place-pop", eventId: item.id },
