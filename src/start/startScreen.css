@@ -1,5 +1,5 @@
 /* start-screen.html 문서 바탕. 화면 틀·카드는 src/start/launcher.css, 컨셉 피드는 src/start/conceptFeed/conceptFeed.css 가 맡는다.
-   여기는 편집기와 같은 토큰(글꼴 등)을 싣고, 틀이 그려지기 전 한 순간의 바탕을 틀과 같은 어두운 색으로 둔다. */
+   여기는 편집기와 같은 토큰(글꼴 등)을 싣고, 틀이 그려지기 전 한 순간의 바탕은 부팅 뼈대(start-screen.html)가 맡는다. */
 @layer tokens, start;
 
 @import "../styles/tokens.css" layer(tokens);
@@ -10,8 +10,8 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background: #111214;
-    color: #ececee;
+    background: var(--bg-base, #111214);
+    color: var(--text-1, #ececee);
     font-family: var(--font-ui);
     font-size: 14px;
     line-height: 1.5;
