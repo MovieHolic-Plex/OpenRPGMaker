@@ -52,7 +52,9 @@ export function odenVenomQuest(project: Project): void {
       setSw(Q4_DONE),
     ], [item(VENOM, 1), notYet])], [notYet]),
   ]);
-  for (const p of oden.pages) {
+  // 계산대 뒤 오든은 계산대 칸의 대리 이벤트(_counter)로 말을 받는다 — 둘 다에 끼운다.
+  const counter = mustMap(project, "fs_apothecary").events.find((e) => e.id === "ev_fs_apothecary_counter");
+  for (const p of [...oden.pages, ...(counter?.pages ?? [])]) {
     const list = p.commands as Command[];
     const at = list.findIndex((c) => c.kind === "text");
     list.splice(at < 0 ? 0 : at, 0, turnIn, offer);
