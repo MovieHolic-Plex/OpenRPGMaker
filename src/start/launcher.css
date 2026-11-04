@@ -111,36 +111,8 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .ln-link:hover { color: var(--ln-fg); text-decoration: underline; text-underline-offset: 3px; }
 .ln-link .ln-icon svg { width: 14px; height: 14px; }
 
-/* ── 홈: 배너 ─────────────────────────────────────────────────────────── */
-.hm-home { display: flex; flex-direction: column; gap: 26px; }
-.hm-hero {
-  position: relative; flex: none; height: clamp(240px, 27vh, 380px); overflow: hidden; border-radius: 8px; background: #000;
-}
-.hm-hero.is-loading { background: linear-gradient(90deg, #151826, #1b1e2c); }
-.hm-hero-bg {
-  position: absolute; inset: -30px; background: #10131f center / cover no-repeat;
-  filter: blur(14px) brightness(0.38) saturate(1.2);
-}
-.hm-hero-shade {
-  position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg, rgb(11 12 18 / 0.85) 0%, rgb(11 12 18 / 0) 58%), linear-gradient(0deg, rgb(11 12 18 / 0.6) 0%, rgb(11 12 18 / 0) 40%);
-}
-.hm-hero-frame-hit { position: absolute; top: 22px; right: 28px; bottom: 22px; aspect-ratio: 16 / 9; padding: 0; border: 0; background: none; cursor: pointer; }
-.hm-hero-frame {
-  display: block; width: 100%; height: 100%; overflow: hidden; background: #000;
-  box-shadow: 0 0 0 2px #000, 0 0 0 4px #40466a, 0 12px 30px rgb(0 0 0 / 0.66);
-}
-.hm-hero-frame img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
-.hm-hero-frame.is-empty { display: grid; place-items: center; }
-.hm-hero-info { position: absolute; left: 30px; bottom: 26px; max-width: min(640px, 48%); }
-.hm-kicker {
-  display: inline-block; margin-bottom: 10px; padding: 2px 8px; border-radius: 3px; background: var(--ln-gold); color: var(--ln-gold-ink);
-  font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em;
-}
-.hm-hero h2 { margin: 0 0 6px; font-size: clamp(26px, 2.1vw, 36px); font-weight: 900; line-height: 1.2; text-shadow: 0 2px 0 #000; overflow-wrap: anywhere; }
-.hm-hero-meta { margin: 0 0 16px; color: var(--ln-sub); font-size: 13.5px; }
+/* ── 칸: 단추 줄 ─────────────────────────────────────────────────────── */
 .hm-acts { display: flex; flex-wrap: wrap; gap: 8px; }
-.hm-hero .hm-acts { gap: 10px; }
 
 /* ── 홈: 단추 ─────────────────────────────────────────────────────────── */
 .hm-btn {
@@ -176,11 +148,10 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .hm-cov { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
 .hm-cov img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; transition: transform 200ms ease; }
 .hm-card:hover .hm-cov img { transform: scale(1.03); }
-.hm-cov.is-empty, .hm-hero-frame.is-empty { background: repeating-linear-gradient(45deg, #1c2032 0 8px, #191c2c 8px 16px); }
+.hm-cov.is-empty { background: repeating-linear-gradient(45deg, #1c2032 0 8px, #191c2c 8px 16px); }
 .hm-ph { display: grid; place-items: center; align-content: center; width: 100%; height: 100%; color: var(--ln-faint); text-align: center; }
 .hm-ph b { font-size: 34px; font-weight: 900; line-height: 1.1; opacity: .55; }
 .hm-ph em { display: block; font-size: 11.5px; font-style: normal; font-weight: 600; }
-.hm-hero-frame .hm-ph b { font-size: 48px; }
 .hm-cap { display: block; padding: 9px 11px 10px; }
 .hm-nm { display: block; overflow: hidden; font-size: 14px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
 .hm-mt { display: block; overflow: hidden; color: var(--ln-faint); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
@@ -190,12 +161,7 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 }
 .hm-card:is(:hover, :focus-within) .hm-card-acts { opacity: 1; transform: none; }
 .hm-games .hm-card:first-child { box-shadow: 0 0 0 2px var(--ln-gold); }
-/* 홈 칸(2026-10-21): 최근 게임 · 지금 만들 수 있는 게임 · 기본 게임을 같은 칸 너비(4열)로 */
-.hm-recent, .hm-concepts, .hm-builtin-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.hm-skel .hm-cov { background: linear-gradient(90deg, #161927, #1d2133); }
-.hm-skel .hm-nm, .hm-skel .hm-mt { width: 70%; border-radius: 3px; background: #1d2133; color: transparent; }
 .hm-notice.hm-notice-inline { height: auto; margin: 0 0 18px; }
-.hm-bmini .hm-cov img { image-rendering: pixelated; }
 .hm-new {
   display: grid; place-items: center; align-content: center; gap: 4px; min-height: 100%; border: 2px dashed #3a4060; background: transparent;
   color: var(--ln-sub); font: inherit; font-weight: 800; cursor: pointer;
@@ -286,8 +252,6 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 }
 @media (max-width: 1100px) {
   .hm-builtins, .hm-first { grid-template-columns: minmax(0, 1fr); }
-  .hm-hero-frame-hit { display: none; }
-  .hm-hero-info { max-width: none; right: 30px; }
 }
 @media (max-width: 760px) {
   .ln-root { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }

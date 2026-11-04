@@ -35,8 +35,7 @@ import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
 import { startIcon } from "./icons";
 import { builtinGameEditUrl } from "./home/builtinGames";
-import { aiNotice, builtinHomeShelf, builtinShelf, conceptShelf, continueHero, displayTitles, fillCover, firstRunHero, firstRunShelf, myGamesShelf, recentShelf, type HomeActions } from "./home/homeView";
-import type { GameConcept } from "@/concepts/format";
+import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, myGamesShelf, type HomeActions } from "./home/homeView";
 import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
 import type { AiStatusSummary, SettingsTab } from "./settings/settingsDialog";
 
@@ -64,8 +63,6 @@ type State = {
   sectionSeq: number;
   entries: readonly RecentProjectEntry[];
   loaded: boolean;
-  /** 홈의 「지금 만들 수 있는 게임」. null = 아직 안 옴. */
-  lineup: readonly GameConcept[] | null;
   showHidden: boolean;
   busy: boolean;
   joinUrl: string;
@@ -179,7 +176,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     sectionSeq: 0,
     entries: [],
     loaded: false,
-    lineup: null,
     showHidden: false,
     busy: false,
     joinUrl: "",
@@ -283,6 +279,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   let settingsOpen = false;
   const applyAiStatus = (summary: AiStatusSummary): void => {
     shell.setAiStatus(summary);
+    promptHome?.setAiStatus(summary);
+    lastAiStatus = summary;
     const ready = summary.tone === "ok";
     if (ready !== state.aiReady) { state.aiReady = ready; refresh("ai"); }
   };
@@ -399,9 +397,22 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: text, referenceImages,
     })(brief, title);
   });
+  // 2026-11-04 Studio/런타임 분리(B안 · PR3): 홈은 처음 온 사람이든 다시 온 사람이든 프롬프트 한 장이다.
+  // 게임이 있으면 입력창 아래에 「내 게임」 줄이 더해진다. 어두운 레일 런처는 「모두 보기」·⋯ 메뉴의 칸(내 게임·예제·새로 만들기)으로만 열린다.
   let promptHome: PromptHome | null = null;
-  const isFirstRun = (): boolean => state.loaded && partitionRecentEntries(state.entries).visible.length === 0;
+  let lastAiStatus: AiStatusSummary | null = null;
   const promptShown = (): boolean => promptHome?.element.parentElement === host;
+  const renderPromptGames = (): void => {
+    if (!promptHome) return;
+    const worlds = state.loaded ? partitionRecentEntries(state.entries).visible : [];
+    const titles = displayTitles(worlds, getLocale());
+    promptHome.setGames(worlds.map((entry) => ({
+      key: entry.projectDir,
+      title: titles.get(entry.projectDir) ?? entry.title,
+      meta: makingMeta(entry),
+      cover: coverArt(entry, "fr-gcard-cov"),
+    })), worlds.length);
+  };
   const showPromptHome = (): void => {
     promptHome ??= createPromptHome({
       submit: submitFirstRun,
@@ -410,7 +421,22 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       builtinEdit: (id) => actions.builtinEdit(id),
       openFolder,
       blank: createBlank,
+      openGame: (projectDir) => {
+        const entry = state.entries.find((candidate) => candidate.projectDir === projectDir);
+        if (entry) actions.edit(entry);
+      },
+      allGames: () => go("games"),
+      openGameFile,
+      openAi: () => openSettings("ai"),
+      more: [
+        { label: "새로 만들기 — 컨셉에서 고르기", testid: "first-run-more-create", run: () => { go("create"); } },
+        { label: "예제 자세히", testid: "first-run-more-builtin", run: () => { go("builtin"); } },
+        { label: "에셋 스토어 ↗", testid: "first-run-more-store", run: () => { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); } },
+        { label: "설정", testid: "first-run-more-settings", run: () => openSettings("ai") },
+      ],
     });
+    if (lastAiStatus) promptHome.setAiStatus(lastAiStatus);
+    renderPromptGames();
     if (promptShown()) return;
     host.replaceChildren(promptHome.element, errorBox);
     promptHome.focus();
@@ -478,32 +504,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const inner = el("div", { class: "ln-page" });
     return { scroll: el("div", { class: "ln-scroll", children: [inner] }), inner };
   };
-  const homePage = page();
   const gamesPage = page();
   const builtinPage = page();
   const joinPage = page();
   joinPage.inner.classList.add("ln-join");
 
-  const renderHomeSection = (): void => {
-    const lead = !state.loaded
-      ? el("div", { class: "hm-hero is-loading", attrs: { "aria-hidden": "true" } })
-      : null;
-    const worlds = listed();
-    const titles = displayTitles(worlds, getLocale());
-    const [first] = worlds;
-    homePage.inner.replaceChildren(el("div", { class: "hm-home", children: [
-      lead ?? (first ? continueHero(first, titles.get(first.projectDir) ?? first.title, makingMeta(first), actions) : firstRunHero(actions)),
-      // 배너에 올린 게임은 빼고 그다음 몇 개 — 같은 게임을 두 번 보이지 않는다.
-      ...(state.loaded && worlds.length > 1 ? [recentShelf({ entries: worlds.slice(1), total: worlds.length, titles, meta: makingMeta, actions, onMore: () => go("games") })] : []),
-      conceptShelf({
-        concepts: state.lineup,
-        onOpen: (concept) => { if (go("create")) feed.openConcept(concept); },
-        onMore: () => go("create"),
-        thumb: (concept) => source.thumbUrl(concept, "card"),
-      }),
-      builtinHomeShelf(actions, () => go("builtin")),
-    ] }));
-  };
   const renderGamesSection = (): void => {
     if (!state.loaded) { gamesPage.inner.replaceChildren(el("p", { class: "ln-loading", text: "불러오는 중…" })); return; }
     const worlds = listed();
@@ -515,8 +520,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   /** 칸을 상태에서 그려 틀에 꽂는다. */
   const mount = (section: StartSection): void => {
-    // 보이는 게임이 없으면 홈 칸 대신 레일 없는 프롬프트 홈. 목록을 다 읽기 전(!state.loaded)에는 자리표 — 기존 사용자에게 비치지 않게.
-    if (section === "home" && isFirstRun()) {
+    // 홈은 항상 레일 없는 프롬프트 한 장. 목록을 다 읽기 전에는 「내 게임」 줄 없이 뜨고, 오면 줄만 더해진다.
+    if (section === "home") {
       host.dataset.view = "first-run";
       showPromptHome();
       return;
@@ -529,11 +534,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       shell.show({ search: feed.searchBox, actions: topActions }, feed.element);
       return;
     }
-    if (section === "home") renderHomeSection();
-    else if (section === "games") renderGamesSection();
+    if (section === "games") renderGamesSection();
     else if (section === "builtin") renderBuiltinSection();
     else renderJoinView();
-    const target = section === "home" ? homePage : section === "games" ? gamesPage : section === "builtin" ? builtinPage : joinPage;
+    const target = section === "games" ? gamesPage : section === "builtin" ? builtinPage : joinPage;
     shell.show({ search: null, actions: topActions }, target.scroll);
     target.scroll.scrollTop = 0;
   };
@@ -571,13 +575,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     return true;
   }
   /** 데이터가 바뀌었다 — 지금 칸이 그 데이터를 쓰면 그 칸만 다시 그린다(스크롤은 그대로). */
-  function refresh(what: "entries" | "lineup" | "ai"): void {
+  function refresh(what: "entries" | "ai"): void {
     const section = state.section;
     if (what === "ai") { if (section === "create") renderCreateLead(); return; }
-    if (section === "home") {
-      if (isFirstRun() !== promptShown()) mount("home");
-      else if (!promptShown()) renderHomeSection();
-    } else if (section === "games" && what === "entries") renderGamesSection();
+    if (section === "home" && what === "entries") renderPromptGames();
+    else if (section === "games" && what === "entries") renderGamesSection();
   }
   // 마우스 뒤로 단추·Alt+← — 칸 기록을 따라간다. 바꿀 수 없는 때(만드는 중)면 지금 칸을 다시 기록에 둔다.
   window.addEventListener("popstate", (event) => {
@@ -684,8 +686,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   try { history.replaceState({ section: initial }, "", `#${initial}`); } catch { /* 무시 */ }
   whenIdle(600, refreshAiStatus);
 
-  // 홈의 「지금 만들 수 있는 게임」 — 피드와 같은 출처의 첫 쪽(지금 칩셋으로 지을 수 있는 컨셉만 온다).
-  void source.page({}, null).then((result) => { state.lineup = result.items; }, () => { state.lineup = []; }).finally(() => refresh("lineup"));
 
   if (!bridge) {
     state.loaded = true;

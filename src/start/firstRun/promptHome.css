@@ -31,6 +31,33 @@
   transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 .fr-locale:hover { background: var(--bg-hover); color: var(--text-1); }
+.fr-top-right { display: flex; align-items: center; gap: var(--space-2); }
+.fr-ai {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--hit-min); padding: 0 var(--space-3);
+  border: 0; border-radius: var(--radius-2); background: transparent; color: var(--text-2);
+  font: inherit; font-size: var(--font-13); white-space: nowrap; cursor: pointer;
+}
+.fr-ai[hidden] { display: none; }
+.fr-ai:hover { background: var(--bg-hover); color: var(--text-1); }
+.fr-ai-dot { display: none; width: 7px; height: 7px; border-radius: var(--radius-pill); background: var(--success); }
+.fr-ai[data-tone="ok"] .fr-ai-dot { display: inline-block; }
+.fr-more-wrap { position: relative; }
+.fr-more {
+  min-width: var(--hit-min); min-height: var(--hit-min); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-2);
+  background: transparent; color: var(--text-2); font: inherit; font-size: var(--font-16); cursor: pointer;
+}
+.fr-more:hover, .fr-more[aria-expanded="true"] { background: var(--bg-hover); color: var(--text-1); }
+.fr-more-menu {
+  position: absolute; top: calc(100% + var(--space-1)); right: 0; z-index: 10; display: flex; flex-direction: column; min-width: 200px;
+  padding: var(--space-1); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-3);
+  background: var(--bg-overlay); box-shadow: var(--shadow-pop); text-align: left;
+}
+.fr-more-menu[hidden] { display: none; }
+.fr-more-item {
+  min-height: var(--hit-min-dense); padding: var(--space-1) var(--space-3); border: 0; border-radius: var(--radius-2);
+  background: transparent; color: var(--text-1); font: inherit; font-size: var(--font-13); text-align: left; cursor: pointer;
+}
+.fr-more-item:hover { background: var(--bg-hover); }
 
 .fr-main {
   display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 720px;
@@ -101,13 +128,33 @@
 .fr-link:hover { color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
 .fr-dot { color: var(--text-disabled); }
 
+/* 「내 게임」 줄 — 최근 3개 + 빈 프로젝트(설계 studio-runtime-split 시안). 게임이 있으면 위 여백을 줄여 한 화면에 들어오게 한다. */
+.fr-root.has-games .fr-main { padding-top: clamp(var(--space-6), 8vh, 96px); }
+.fr-games { width: 100%; max-width: 812px; margin: var(--space-6) auto 0; text-align: left; }
+.fr-games[hidden] { display: none; }
+.fr-games-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.fr-gcard {
+  display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 0; border: 0;
+  background: transparent; color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
+}
+.fr-gcard-cov {
+  position: relative; display: grid; place-items: center; overflow: hidden; width: 100%; aspect-ratio: 16 / 10; margin-bottom: var(--space-1);
+  border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-3); background: var(--bg-inset); color: var(--text-3);
+}
+.fr-gcard-cov img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.fr-gcard-cov .hm-ph b { font-size: var(--font-22); font-weight: var(--font-weight-semibold); }
+.fr-gcard:hover .fr-gcard-cov { border-color: var(--border-default); }
+.fr-gcard-new .fr-gcard-cov { border-style: dashed; background: transparent; font-size: var(--font-22); }
+.fr-gcard-name { overflow: hidden; font-size: var(--font-13); font-weight: var(--font-weight-medium); white-space: nowrap; text-overflow: ellipsis; }
+.fr-gcard-meta { overflow: hidden; color: var(--text-3); font-size: var(--font-12); white-space: nowrap; text-overflow: ellipsis; }
+
 /* 「예제 열어 보기」 작은 행 세 개(설계 studio-runtime-split 시안). 누르면 편집기에서 연다. */
 .fr-builtin { width: 100%; max-width: 812px; margin: var(--space-6) auto 0; text-align: left; }
 .fr-builtin-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
 .fr-builtin-title { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; color: var(--text-1); font-size: var(--font-14); font-weight: var(--font-weight-semibold); }
 .fr-builtin-tag { padding: 0 6px; border-radius: var(--radius-1); background: var(--accent-muted); color: var(--accent); font-size: var(--font-12); font-weight: var(--font-weight-medium); }
 /* 세 행이 전부다 — 「모두 보기」 링크는 DOM 에만 남긴다. */
-.fr-builtin-head > .fr-link { display: none; }
+.fr-builtin > .fr-builtin-head > .fr-link, .fr-games .fr-link[hidden] { display: none; }
 .fr-builtin-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .fr-bcard {
   display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 0; border-radius: var(--radius-3);
@@ -133,6 +180,10 @@
   .fr-title { font-size: var(--font-22); }
   .fr-sub { font-size: var(--font-14); }
   .fr-builtin-row { grid-template-columns: 1fr; gap: 8px; }
+  .fr-games-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .fr-root.has-games .fr-chip:nth-child(n+3) { display: none; }
+  .fr-ai span:last-child { display: none; }
+  .fr-locale span:last-child { display: none; }
 }
 
 /* 데스크톱 창 단추(shell/window-controls.css): 단추 밑으로 들어가지 않게 양 끝을 비우고, 빈 곳은 창 끌기 영역으로 쓴다. */
