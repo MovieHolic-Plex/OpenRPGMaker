@@ -213,7 +213,7 @@ function hanelMeetsIris(project: Project, obs: GameMap): void {
   let end = at.index;
   while (end + 1 < list.length && list[end + 1]!.kind === "text") end += 1;
   list.splice(at.index, end + 1 - at.index, fork(sw(SW_HANEL_MET_IRIS, false), [
-    say(H, "그 아이가 너희가 숲에서 찾은 별이냐."),
+    say(H, "그 아이가, 너희가 숲에서 찾은 별이냐."),
     say(IRIS, "이리스예요.\n하늘에 대답할 렌즈를 찾고 있어요."),
     say(H, "렌즈라면 이 밑에 있다.\n서고 바닥 돌뚜껑 아래, 옛 별지기 방에."),
     say(H, "그 방은 내가 닫지 않았다.\n…내 스승이 닫으셨지. 그것만 안다."),
