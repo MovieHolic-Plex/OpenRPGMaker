@@ -13,7 +13,7 @@ import type {
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
-import { noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
+import { noEscapeInlineReason } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -182,6 +182,24 @@ function syncBattleSkillHintLine(host: HTMLElement, selected: HTMLElement | unde
   const skillId = lineMode ? selected?.dataset.skillHelpId : undefined;
   const skill = skillId ? project.database.skills.find((record) => record.id === skillId) : undefined;
   let hint = windowNode.querySelector<HTMLElement>(".battle-message-hint");
+  // 커서가 선 루트 명령이 못 쓰는 것이고 사유가 버튼 안에 안 들어갈 만큼 길면, 질문 줄 자리에 그 사유를 보인다.
+  const rootReason = !skill && selected?.dataset.battleCommandInert === "true" && selected.dataset.testid?.startsWith("actor-command-")
+    ? selected.dataset.battleCommandInertReason
+    : undefined;
+  if (!skill && rootReason && rootReason.length > ROOT_INLINE_REASON_MAX) {
+    if (!hint) {
+      hint = document.createElement("div");
+      hint.className = "battle-message-line battle-message-hint";
+      hint.dataset.testid = "battle-skill-hint";
+      const lines = windowNode.querySelector<HTMLElement>(".battle-message-lines") ?? windowNode;
+      lines.prepend(hint);
+    }
+    delete hint.dataset.skillId;
+    hint.dataset.inert = "true";
+    hint.textContent = rootReason;
+    windowNode.dataset.skillHint = "true";
+    return;
+  }
   if (!skill) {
     hint?.remove();
     delete windowNode.dataset.skillHint;
@@ -416,7 +434,7 @@ function pokemonRootCommands(
     }, targetMode || switches.length === 0),
     commandButton(snapshot.duel?.forfeit ? "기권" : "도망간다", "actor-command-run", "boot", "", () => {
       if (!targetMode) options.runActorCommand({ kind: "escape" });
-    }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot)),
+    }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeInlineReason(snapshot)),
   ];
 }
 
@@ -486,7 +504,7 @@ function commandControl(
     case "escape":
       return commandButton(label, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
-      }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot));
+      }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeInlineReason(snapshot));
     case "commonEvent": {
       // RM2003 「이벤트 연결」 — 대상 없이 바로 행동이 되고, 차례가 오면 공통 이벤트를 실행한다.
       const commonEventId = command.commonEventId;
@@ -1200,6 +1218,9 @@ function setCommandIconImage(button: HTMLElement, resourceId: string | undefined
   button.dataset.recordIcon = "true";
 }
 
+/** 루트 명령 버튼 안에 그대로 남기는 사유의 최대 글자 수. 넘으면 커서 질문 줄로 옮긴다. */
+const ROOT_INLINE_REASON_MAX = 8;
+
 function commandButton(
   label: string,
   testId: string,
@@ -1244,7 +1265,10 @@ function commandButton(
   }
   // 사유는 눈으로도 읽혀야 한다 — 예전엔 `aria-label` 에만 넣어서 화면을 보는 사람에겐 없는 정보였다.
   // `detail` 이 이미 같은 말이면 두 번 쓰지 않는다.
-  if (inertReason && inertReason !== detail) {
+  // 루트 명령(공격·연계·도주…)의 긴 사유는 버튼 아래 한 줄이 둘째 줄로 넘쳐 아래 행(아이템·도주) 글자를 덮었다(1.36 VQA #25 #37).
+  // 짧은 사유(「도주 불가」)만 그 자리에 남기고, 긴 것은 커서가 설 때 질문 줄(syncBattleSkillHintLine)에서 읽는다.
+  const rootLongReason = testId.startsWith("actor-command-") && inertReason.length > ROOT_INLINE_REASON_MAX;
+  if (inertReason && inertReason !== detail && !rootLongReason) {
     const reasonNode = document.createElement("small");
     reasonNode.className = "battle-command-reason";
     reasonNode.dataset.testid = `${testId}-reason`;

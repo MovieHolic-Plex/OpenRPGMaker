@@ -50,6 +50,21 @@
 [data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle[aria-pressed="true"] {
   opacity: 1;
 }
+/* 메인 메뉴가 열려 있는 동안 ⛶ 는 숨긴다 — 메뉴는 모달(Esc 로 닫힘)이고, 토글이 우상단 첫 명령 「아이템」 끝을 덮었다(1.36 VQA #10).
+   특이도는 위 기본·hover 규칙과 같은 접두를 써서 이긴다. 터치 배치는 토글이 무대 밖이라 이 규칙이 닿지 않는다. */
+[data-play-input-owner="keyboard-only"] .play-viewport:has([data-testid="main-menu"]) > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle,
+[data-play-input-owner="keyboard-only"] .play-viewport:has([data-testid="main-menu"]) > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle:hover {
+  opacity: 0;
+  pointer-events: none;
+}
+/* 컷신 건너뛰기 안내는 토글이 있을 때만 그 폭(22px + 여백 8px = 30 화면 px)만큼 왼쪽으로 비킨다 — 토글은 화면 px, 안내는 무대 논리 px 라 배율로 환산한다
+   (1.36 VQA #30). 토글이 없는 게임은 그대로. */
+[data-play-input-owner="keyboard-only"] .play-viewport:has(> .play-fullscreen-toggle) .play-stage > .runtime-overlay[data-testid="cutscene-skip-hint"] {
+  right: calc(var(--play-crop-right, 0px) + 6px + 30px / var(--play-scale, 1) / var(--hires-ui-zoom, 1));
+}
+[data-play-input-owner="keyboard-only"] .play-viewport:has(> .play-fullscreen-toggle) .cinematic-skip-hint {
+  right: calc(10px + 30px / var(--play-scale, 1) / var(--hires-ui-zoom, 1));
+}
 .play-stage {
   /* 한국어는 어절(공백) 단위로 줄을 바꾼다 — 기본값은 글자 사이에서 꺾어 「암호/를」「가운/데」가 됐다(장부 hud.json).
      무대 안 모든 창(목표 안내·대사·메뉴·엔딩)이 물려받는다. 공백 없는 긴 낱말은 anywhere 가 넘칠 때만 끊는다. */
