@@ -91,9 +91,9 @@
       },
       {
        "kind": "pressUntilJs",
-       "key": "Shift",
-       "maxPresses": 2000,
-       "settleMs": 30,
+       "key": "Enter",
+       "maxPresses": 3000,
+       "settleMs": 25,
        "fn": "() => !!document.querySelector('.battle-enemy[data-battle-pose-frame=\"attack_mid\"]')"
       }
      ],
