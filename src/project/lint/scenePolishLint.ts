@@ -23,6 +23,7 @@
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
 //  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
+//  - scene-text-during-picture-fade 거의 불투명하게 번지는(waitForPicture:false) 그림이 다 보이기 전에 대사가 뜬다 — 지도와 그림이 반투명으로 겹친다
 //  - scene-seated-standing / scene-seated-off-chair  의자 칸의 선 그림 / 의자 아닌 칸의 앉은 그림 — seatedPoseLint.ts
 //  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
@@ -36,6 +37,7 @@
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
 import { canMove, isPassable } from "../collision";
+import { resolveMapCameraZoom } from "../cameraZoom";
 import { passageMarkForTile } from "../tilesetPassage";
 import { createTransitSim, transitPose, transitRectCells } from "../mapTransit";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
@@ -1552,7 +1554,24 @@ const MAX_VOID_SHARE = 0.15;
  * 맵이 화면(playResolution ÷ 칸 크기)보다 좁거나 낮으면 카메라가 맵을 가운데 두고 둘레를 검게 비운다(첫사랑: 아침 승강장 18×10,
  * 옥상 24칸 폭 = 화면 20% 검정). 장면이 있는 맵(이벤트가 있는 맵)만 본다. 배경 그림을 둔 맵은 건너뛴다.
  * 고치기: 바깥 풍경·벽 줄을 덧대 맵을 화면 크기까지 넓힌다(좌표가 박힌 앵커는 덧댄 만큼 민다).
+ *
+ * 첫사랑 r7(블라인드 3차): 편의점 방은 26×19칸이라 맵 크기로는 검정 13% 로 통과했지만, 바깥 열·아랫줄을 배경 자리로 비워(clearMapCellForBackground)
+ * 그려진 부분이 20×16칸뿐이라 실제 화면의 37% 가 검었다. 그래서 «맵 크기»가 아니라 «그려진 칸(어느 층이든 타일이 있는 칸)의 경계 상자»로 재고,
+ * 화면은 맵의 기본 카메라 배율(map.cameraZoom → system.cameraZoom)로 나눈다(배율 2 면 화면이 절반 칸만 담는다). 연출 명령(panTo)의 일시 배율은 모른다.
  */
+function drawnBox(map: GameMap): { w: number; h: number } | null {
+  const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles] as readonly (ArrayLike<number> | undefined)[];
+  let x0 = map.width, y0 = map.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const i = y * map.width + x;
+      if (!layers.some((layer) => (layer?.[i] ?? -1) >= 0)) continue;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+  }
+  return x1 < 0 ? null : { w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
 function checkMapSmallerThanScreen(project: Project, issues: LintIssue[]): void {
   const res = (project.system as { playResolution?: { width?: number; height?: number } } | undefined)?.playResolution;
   const sw = res?.width ?? 0, sh = res?.height ?? 0;
@@ -1561,13 +1580,51 @@ function checkMapSmallerThanScreen(project: Project, issues: LintIssue[]): void 
     if (!(map.events ?? []).length) continue;
     if ((map as { background?: unknown }).background) continue;
     const ts = map.tileSize ?? 16;
-    const covered = Math.min(1, (map.width * ts) / sw) * Math.min(1, (map.height * ts) / sh);
+    const box = drawnBox(map) ?? { w: map.width, h: map.height };
+    const zoom = resolveMapCameraZoom(project.system, map);
+    const covered = Math.min(1, (box.w * ts * zoom) / sw) * Math.min(1, (box.h * ts * zoom) / sh);
     const voidShare = 1 - covered;
     if (voidShare <= MAX_VOID_SHARE) continue;
     issues.push({
       severity: "warning", code: "scene-map-smaller-than-screen", mapId: map.id,
-      message: `맵 ${map.id}(${map.width}×${map.height}칸) 이 화면 ${sw}×${sh}(${Math.ceil(sw / ts)}×${Math.ceil(sh / ts)}칸) 보다 작아 화면의 ${Math.round(voidShare * 100)}% 가 검은 둘레다 — 바깥 풍경·벽 줄을 덧대 화면 크기까지 넓힌다.`,
+      message: `맵 ${map.id}(그려진 칸 ${box.w}×${box.h}, 기본 배율 ${zoom}배) 이 화면 ${sw}×${sh}(${Math.ceil(sw / ts)}×${Math.ceil(sh / ts)}칸) 보다 작아 화면의 ${Math.round(voidShare * 100)}% 가 검은 둘레다 — 바깥 풍경·벽 줄을 덧대 화면 크기까지 넓히거나, 방에 있는 동안 카메라 배율을 올려 둔다(방 맵의 cameraZoom).`,
     });
+  }
+}
+
+// ---------------------------------------------------------------------------- 그림이 번지는 동안의 대사
+
+/**
+ * 첫사랑 r7(블라인드 3차 S1): 고백 정점의 회상 그림이 `waitForPicture:false`·1.8초 페이드인이라 첫 대사가 그림이 반쯤 보일 때 떠, 승강장 지도와
+ * 회상 그림이 반투명으로 겹친 «깨진 화면»이 대사 내내 보였다(두 리뷰어 모두 지적). 거의 불투명하게(opacity ≥ 200) 번지는 그림은
+ * 다 보인 뒤(durationMs 이상 wait 하거나 waitForPicture:true) 대사를 낸다. 처음부터 흐린 겹침(opacity < 200)은 의도라 건너뛴다.
+ * 걷기 순서대로 본다: showPicture(번짐 시작) 뒤 wait 없이 나온 첫 text 를 알린다. waitForPicture 가 켜진 showPicture 는 번짐이 끝난 것으로 본다.
+ */
+const PICTURE_FADE_MIN_OPACITY = 200;
+function checkTextDuringPictureFade(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        let remaining = 0;
+        let reported = false;
+        for (const command of walk(page.commands)) {
+          if (command.kind === "showPicture") {
+            const c = command as Extract<Command, { kind: "showPicture" }>;
+            const fading = c.waitForPicture === false && (c.durationMs ?? 0) > 0 && (c.opacity ?? 255) >= PICTURE_FADE_MIN_OPACITY;
+            if (fading) remaining = Math.max(remaining, c.durationMs ?? 0);
+            else if (c.waitForPicture !== false) remaining = 0;
+            continue;
+          }
+          if (command.kind === "wait") { remaining = Math.max(0, remaining - ((command as { ms?: number }).ms ?? 0)); continue; }
+          if (command.kind !== "text" || remaining <= 0 || reported) continue;
+          reported = true;
+          issues.push({
+            severity: "warning", code: "scene-text-during-picture-fade", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+            message: `이벤트 ${host.id} 가 그림이 아직 ${remaining}ms 더 번지는 동안(waitForPicture:false) 대사를 띄운다 — 지도와 그림이 반투명으로 겹친 «깨진 화면»이 대사 내내 보인다. 그림은 600ms 안팎으로 짧게 띄우고 그만큼 wait 한 뒤 대사를 낸다(또는 waitForPicture:true).`,
+          });
+        }
+      }
+    }
   }
 }
 
@@ -1721,6 +1778,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkExitBlocked);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
+  guard(checkTextDuringPictureFade);
   guard(checkCommandsAfterTransfer);
   guard(checkEndingUnderFade);
   guard(checkEndingCardsDistinct);

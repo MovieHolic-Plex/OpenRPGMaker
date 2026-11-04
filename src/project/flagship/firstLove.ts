@@ -554,6 +554,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("minho_desk", [stageIs(V_STAGE, S.STREET)], [], { who: "minho", dir: "up" }),
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
       ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
+      // r7 블라인드 3차(S2): 같은 탕비실의 수요일 대화(panTo 배율 2)와 배율을 맞춘다 — 맵 폭 26 이 화면보다 좁아 1배면 두 사람이 점이다.
+      panTo(minhoSpot.x, minhoSpot.y + 1, 900, 2),
       // 사용자 2026-10-30 「탕비실 — 커피 머신 쓰는 법 알려 준다더니 안 알려 줌」: 예전엔 민호가 등을 돌려 혼자 누르고 끝났다(머신 그림도 없었다).
       // 이제 탕비실 카운터에 머신이 있고(firstLoveRooms.json ox-coffee-counter), 민호가 버튼을 짚어 준 뒤 서하가 직접 누른다.
       ...say("minho", "happy", "왔어요? 커피 머신 쓰는 법 알려 준다고 했죠. 이거 우리 회사 최대 기밀이에요."),
@@ -604,6 +606,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
           ...think("민호 씨는 더 묻지 않았다. 대신 커피를 한 잔 더 내렸다. 눈치가 빠른 사람이다."),
         ] },
       ]),
+      panBack(700), // 선택지 두 갈래가 모두 끝난 뒤 한 번
       ...say("minho", "base", "점심 같이 먹자고 하고 싶은데, 나 오늘 점심 미팅이에요."),
       ...say("minho", "happy", "대신 팁. 엘리베이터에서 R 누르면 옥상이에요. 사람 별로 없고, 바람 좋고. 캔커피 두 개 챙겨 가요."),
       playSe(SE_CAN),
@@ -900,6 +903,9 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_jihu_kon", "강지후", k.door, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
   add(kon, scene("ev_fl_kon_enter", { x: 1, y: 1 }, S.EVENING, [
+    // r7 블라인드 3차(S3): 편의점은 그린 부분이 20×16칸이라 1배면 화면의 37% 가 검다 — 들어서는 순간부터 가게 가운데를 배율 2 로 잡고
+    // 방을 나설 때까지 둔다(방문 도중 1배↔2배가 오가면 «장면마다 다른 화면»으로 읽힌다). 잡은 배율은 떠나는 장면(fadeOut 뒤)에서 푼다.
+    panTo(12, 10, 0, 2),
     // 점원은 들어오는 손님(문) 쪽을 보며 맞는다 — 왼쪽을 보고 인사했다(VQA r31).
     faceHero("ev_fl_clerk"),
     ...call("clerk", "happy", "어서 오세요~"),
@@ -931,7 +937,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
       // 편의점 맵은 화면보다 작아 1배로 두면 두 사람이 점이 되고 선택창이 선반을 덮는다(블라인드 1차) — 두 사람 사이를 배율 2로 잡고,
-      // 갈래가 계산대로 걸어가기 전에 풀어 준다(skill 29).
+      // 갈래가 계산대로 걷는 동안에도 같은 배율을 유지한다(skill 29·32).
       panTo(Math.round((heroTalk.x + jihuStop.x) / 2), heroTalk.y, 900, 2),
       faceHero("ev_fl_jihu_kon"),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
@@ -944,7 +950,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       choices([
         { text: "(바나나우유 두 개를 계산한다)", then: [
           setSw(SW_MILK, true),
-          panBack(700),
+          panTo(12, 10, 700, 2),
           // 둘이 계산대 앞까지 걸어가고, 점원은 계산하러 온 서하를 보고 묻는다.
           walkRoute(project, FL_MAP.konbini, "@player", heroTalk, registerFront, [jihuStop], true, dirToward(registerFront, clerkSpot)),
           walkRoute(project, FL_MAP.konbini, "ev_fl_jihu_kon", jihuStop, jihuRegister, [registerFront, heroTalk], true, dirToward(jihuRegister, registerFront)),
@@ -963,7 +969,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           ...like(2, "ev_fl_jihu_kon"),
         ] },
         { text: "(하나만 계산하고 가볍게 인사한다)", then: [
-          panBack(700),
+          panTo(12, 10, 700, 2),
           ...say("seoha", "base", "먼저 들어가 보겠습니다. 내일 뵐게요."),
           ...say("jihu", "base", "…네. 조심히 들어가요."),
           // 「먼저 들어가 보겠습니다」 뒤엔 실제로 문 쪽으로 걸어간다(VQA r28: 말만 하고 서 있다가 회상으로 넘어갔다).
@@ -973,6 +979,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ]),
       ...think("윤서하 씨.", "10년 전, 그 사람이 내 이름을 처음 불렀던 곳은 방송실 앞이었다."),
       ...fadeOut(900),
+      panBack(0), // 편의점 배율(2)을 회상 방송실로 들고 가지 않는다
       stopBgm(),
       setSw("sw_fl_flashback", true),
       // 화면은 이미 검다 — 옮기기 자체의 밝아짐을 끄고 회상 장면이 주인공(어른 서하)을 감춘 뒤에 밝힌다(VQA r5: 첫 칸에 어른 서하가 보였다).
@@ -1617,8 +1624,11 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "base", "이번엔 내가 먼저 말할게요."),
           ...say("seoha", "embarrassed", "선배. 나 아직도, 금요일마다 급식 줄 늦게 서는 사람이에요."),
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
+          // r7 블라인드 3차(S1): 그림이 번지는 동안 대사가 뜨면 승강장과 회상 그림이 반투명으로 겹쳐 «깨진 화면»으로 읽혔다 —
+          // 그림은 섬광 아래서 600ms 로 다 띄우고, 다 보인 뒤에 첫 대사를 낸다(대사엔 흉상을 두지 않는다 — 그림 속 두 사람을 가리지 않게, VQA r23).
+          ...memoryPictureIn(255, 600),
           flash("white", 700),
-          ...memoryPictureIn(255, 1800),
+          wait(600),
           ...sayOver("jihu", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
@@ -1633,7 +1643,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...endingOpen("oprn-first-love-ending-a"),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
-          ...memoryPictureIn(255, 1600),
+          ...memoryPictureIn(255, 600),
+          wait(600),
           ...sayOver("seoha", "좋아했어요. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),

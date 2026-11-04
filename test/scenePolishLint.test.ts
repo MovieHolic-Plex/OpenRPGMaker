@@ -222,3 +222,66 @@ describe("scene-ceiling-tile", () => {
     expect(codes()).toEqual(["scene-ceiling-tile"]);
   });
 });
+
+// 첫사랑 r7 블라인드 3차 — 비운 칸을 뺀 «그려진 칸»과 맵 배율로 둘레 검정을 잰다(편의점 방: 맵 크기로는 13%, 그려진 칸으로는 37%).
+describe("scene-map-smaller-than-screen — 그려진 칸과 맵 배율", () => {
+  function voidProject(): { project: Project; map: GameMap } {
+    const project = createBlankProject();
+    const map = Object.values(project.maps)[0]!;
+    (project.system as { playResolution?: { width: number; height: number } }).playResolution = { width: 480, height: 270 };
+    map.width = 26; map.height = 19;
+    const n = map.width * map.height;
+    (map as unknown as { lowerTiles: number[] }).lowerTiles = Array.from({ length: n }, () => 1);
+    (map as unknown as { upperTiles: number[] }).upperTiles = Array.from({ length: n }, () => -1);
+    (map as unknown as { lowerOverlayTiles?: number[] }).lowerOverlayTiles = undefined;
+    (map as unknown as { upperOverlayTiles?: number[] }).upperOverlayTiles = undefined;
+    map.events = [ev("e", 5, 5, [npcPage()])];
+    return { project, map };
+  }
+  const codes = (project: Project): string[] => lintScenePolish(project).filter((i) => i.code === "scene-map-smaller-than-screen").map((i) => i.code);
+
+  it("맵 크기로는 통과하지만 바깥 열·아랫줄을 비워 그려진 칸이 작으면 경고한다", () => {
+    const { project, map } = voidProject();
+    expect(codes(project)).toEqual([]);
+    const lower = (map as unknown as { lowerTiles: number[] }).lowerTiles;
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (x <= 2 || x >= map.width - 3 || y >= map.height - 3) lower[y * map.width + x] = -1;
+    expect(codes(project)).toEqual(["scene-map-smaller-than-screen"]);
+  });
+
+  it("맵 기본 배율을 올리면(2배) 화면이 담는 칸이 줄어 경고가 사라진다", () => {
+    const { project, map } = voidProject();
+    const lower = (map as unknown as { lowerTiles: number[] }).lowerTiles;
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (x <= 2 || x >= map.width - 3 || y >= map.height - 3) lower[y * map.width + x] = -1;
+    expect(codes(project)).toEqual(["scene-map-smaller-than-screen"]);
+    map.cameraZoom = 2;
+    expect(codes(project)).toEqual([]);
+  });
+});
+
+// 첫사랑 r7 블라인드 3차 S1 — 거의 불투명하게 번지는 그림이 다 보이기 전에 대사가 뜨면 «깨진 화면».
+describe("scene-text-during-picture-fade", () => {
+  const picture = (extra: Record<string, unknown>): Command => ({ kind: "showPicture", pictureId: "p", resourceId: "r", x: 0, y: 0, ...extra } as unknown as Command);
+  const text = (): Command => ({ kind: "text", speaker: "지후", body: "…", position: "bottom" } as unknown as Command);
+  const wait = (ms: number): Command => ({ kind: "wait", ms } as unknown as Command);
+  function codesOf(commands: Command[]): string[] {
+    const { project, out } = fixture();
+    out.events = [ev("e", 3, 3, [page(commands, { trigger: { kind: "action" } as EventPage["trigger"] })])];
+    return lintScenePolish(project).filter((i) => i.code === "scene-text-during-picture-fade").map((i) => i.code);
+  }
+
+  it("1.8초 페이드인 뒤 바로 대사는 경고한다", () => {
+    expect(codesOf([picture({ opacity: 255, durationMs: 1800, waitForPicture: false }), text()])).toEqual(["scene-text-during-picture-fade"]);
+  });
+  it("번지는 시간만큼 wait 한 뒤 대사면 조용하다", () => {
+    expect(codesOf([picture({ opacity: 255, durationMs: 600, waitForPicture: false }), wait(600), text()])).toEqual([]);
+  });
+  it("wait 가 모자라면(300 < 600) 경고한다", () => {
+    expect(codesOf([picture({ opacity: 255, durationMs: 600, waitForPicture: false }), wait(300), text()])).toEqual(["scene-text-during-picture-fade"]);
+  });
+  it("waitForPicture 가 켜져 있으면 조용하다", () => {
+    expect(codesOf([picture({ opacity: 255, durationMs: 1800, waitForPicture: true }), text()])).toEqual([]);
+  });
+  it("처음부터 흐린 겹침(opacity 140)은 의도라 조용하다", () => {
+    expect(codesOf([picture({ opacity: 140, durationMs: 1600, waitForPicture: false }), text()])).toEqual([]);
+  });
+});
