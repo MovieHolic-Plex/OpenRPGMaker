@@ -17,6 +17,7 @@ import {
   TILE_SIZE,
 } from "@/assets/bundled";
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
+import { noteUserViewMove } from "@/editor/aiFollowCamera";
 import {
   planCameraFocus,
   shouldDeferCameraFocus,
@@ -381,6 +382,7 @@ export class EditScene extends PhaserRuntime.Scene {
     event.stopImmediatePropagation();
     // A zoom cannot change the coordinates of an edit already in flight.
     if (event.deltaY === 0 || shouldDeferCameraFocus(this.pointerGestureState())) return;
+    noteUserViewMove();
     this.cancelCameraFocus();
     const camera = this.cameras.main;
     const canvas = this.game.canvas.getBoundingClientRect();
@@ -598,6 +600,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameraPanController = new CameraPanController(this, {
       onPanStart: () => {
         // 손으로 화면을 밀었다 — 이 맵에서는 더 맞추지 않는다.
+        noteUserViewMove();
         this.autoFit = null;
         this.cancelCameraFocus();
         this.isPainting = false;
@@ -2156,6 +2159,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private panCameraBy(deltaX: number, deltaY: number): void {
+    noteUserViewMove();
     this.autoFit = null;
     this.cancelCameraFocus();
     this.cameraPanController?.panBy(deltaX, deltaY);
