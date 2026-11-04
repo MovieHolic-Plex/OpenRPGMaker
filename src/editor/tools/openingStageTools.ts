@@ -54,7 +54,7 @@ const authorOpeningStage: ToolDefinition = {
     // 무대 표 내리기는 건너뛰기 착지 뒤(맵 이동 바로 앞)에 둔다 — 건너뛰어도 표가 남아 무대 맵의 다른 이벤트가 영영 멈추는 일이 없게.
     const event = map.events.find((entry) => entry.id === eventId);
     const page = event?.pages?.find((entry) => entry.name === "컷신");
-    const transferIndex = page ? page.commands.findLastIndex((command) => command.kind === "transfer") : -1;
+    const transferIndex = page ? page.commands.map((command) => command.kind).lastIndexOf("transfer") : -1;
     if (!page || transferIndex < 0) throw new ToolError("무대 컷신을 만들지 못했습니다(맵 이동 줄 없음).", { code: "opening-stage-invalid", mapId: map.id });
     // 주인공 모습 되돌리기(look reset)도 여기 둔다 — 세션에 남는 상태라 건너뛰기로 head 를 건너면 숨은 채 본편이 시작됐다.
     // 무대가 모습을 바꾼 대상(주인공·숨긴 행인 등)을 모두 되돌린다.
