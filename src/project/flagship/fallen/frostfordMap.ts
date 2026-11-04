@@ -25,8 +25,6 @@ export const FROST_ICE_GROUP = "beodeul_dungeon_ice";
 export const FROST_WATER_GROUP = "beodeul_dungeon_water_C";
 /** 밟힌 눈길·광장 — 던전 얼음굴 바닥(회색 다진 눈, 테두리가 부드러운 오토타일). 마을 길 키트(줄 단위 그림)는 옆 테두리가 없어 계단 모양 직선으로 끊겼다(감독 r3). */
 const PATH_GROUP = "beodeul_dungeon_ice_ground";
-/** beodeul_city 의 완전 투명·네 방향 막힘 칸(성벽 됫개 자리, 그림 0화소) — 집 몸의 ★ 지붕 칸 아래를 막는다. */
-const ROOF_BLOCK_TILE = 67;
 
 export type FrostHouseRole = "harma" | "inn" | "warehouse" | "lamp" | "fisher" | "smoke" | "east";
 export interface FrostHouse { role: FrostHouseRole; kit: string; at: Cell; door: Cell; front: Cell }
@@ -415,14 +413,6 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
     pathAdd([{ x: front.x, y: front.y + 0.2 }, ...lane], houses.length + 20);
     for (let j = 0; j < kit.rows.length; j += 1) for (let i = 0; i < kit.width; i += 1) path.delete(idx(x + i, y + j));
     stampCast(kitId, x, y, { force: true });
-    // 지붕 ★ 칸은 캐릭터 위에 그려져 「뒤로 지나가는」 칸이다. 맨 윗줄(처마) 만 남기고 그 아래는 집 몸이라 막는다 —
-    // 다 열어 두었더니 여관 지붕 안쪽 세 줄까지 걸어 들어가 파티가 지붕 위에 서 있었다(fs2 스웜 I04, 2026-11-04).
-    // 막기는 2층(lowerOverlay)의 투명 막힘 칸 — 그림은 그대로다.
-    for (let j = 1; j < kit.rows.length; j += 1) for (let i = 0; i < kit.width; i += 1) {
-      const up = kit.rows[j]!.upperTiles?.[i] ?? -1;
-      const c = idx(x + i, y + j);
-      if (up >= 0 && tileset.tileMeta?.[up]?.passage === "star" && inMap(x + i, y + j) && map.lowerOverlayTiles![c] === -1) map.lowerOverlayTiles![c] = ROOF_BLOCK_TILE;
-    }
     keepClear.add(idx(front.x, front.y));
     houses.push({ role, kit: kitId, at: { x, y }, door, front });
   };
