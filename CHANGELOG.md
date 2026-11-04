@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.394.0 — 2026-11-04
+
+### 기능
+
+- **qa** — checkpoint startTroopId finds the field enemy by troop (#4240) (`7e5ea64`)
+
 ## 0.393.0 — 2026-11-04
 
 ### 기능
