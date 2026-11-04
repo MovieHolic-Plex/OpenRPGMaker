@@ -1,0 +1,98 @@
+name: windows-worker-smoke
+
+# 데스크톱 앱에 실리는 AI 워커(oh-my-pi-worker.exe)가 깨끗한 윈도우 사용자에서 바로 켜지는지 본다.
+#
+# 왜 (2026-11-04): 소유자 윈도우 PC 에서 연결 확인이 「oh-my-pi worker exited (1) … pi_natives.win32-x64.node
+# … curl -fsSL … -o C:\Users\…\.omp\natives\18.14.2\…」 로 죽었다. 워커 옆에는 pi-natives 18.13.2 애드온만 실렸는데
+# 워커가 쓰는 pi-ai 는 18.14.2 로더를 끌어와 버전 도장이 다른 그 파일을 버렸다. 리눅스에서 만든 패키지라
+# 리눅스 CI 는 윈도우 exe 를 켜 보지 않는다.
+#
+# 순서: 리눅스에서 릴리스와 같은 build-electron.mjs 로 exe·애드온을 만든다 → 윈도우 러너로 넘긴다 →
+# ~/.omp 가 없는 새 사용자 폴더(USERPROFILE·LOCALAPPDATA 를 빈 폴더로)에서 exe 를 띄워 READY 를 기다리고,
+# 워커의 /local-agents(설정 마법사의 「내 PC」 연결 확인 경로)가 200 으로 답하는지 본다.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/build-electron.mjs'
+      - 'scripts/electron-builder.config.mjs'
+      - 'scripts/oh-my-pi-worker.ts'
+      - '.github/workflows/windows-worker-smoke.yml'
+
+concurrency:
+  group: windows-worker-smoke-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+      - run: npm ci --ignore-scripts
+      - name: 워커·애드온 만들기 (릴리스와 같은 스크립트)
+        run: node scripts/build-electron.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: win-worker
+          path: |
+            dist-electron/oh-my-pi-worker.exe
+            dist-electron/pi_natives.win32-x64-baseline.node
+          retention-days: 3
+
+  smoke:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: win-worker
+          path: app
+      - name: 새 사용자 폴더에서 워커 띄우기
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $profileDir = Join-Path $env:RUNNER_TEMP 'fresh-user'
+          New-Item -ItemType Directory -Force -Path (Join-Path $profileDir 'AppData\Local') | Out-Null
+          $env:USERPROFILE = $profileDir
+          $env:HOME = $profileDir
+          $env:LOCALAPPDATA = Join-Path $profileDir 'AppData\Local'
+          $env:OPRN_OH_MY_PI_WORKER_PORT = '0'
+          Get-ChildItem app | Format-Table Name, Length
+          $out = Join-Path $env:RUNNER_TEMP 'worker.out'
+          $err = Join-Path $env:RUNNER_TEMP 'worker.err'
+          $p = Start-Process -FilePath (Resolve-Path 'app\oh-my-pi-worker.exe') -RedirectStandardOutput $out -RedirectStandardError $err -PassThru -NoNewWindow
+          $port = $null
+          for ($i = 0; $i -lt 120 -and -not $port; $i++) {
+            if ($p.HasExited) { break }
+            $text = if (Test-Path $out) { Get-Content $out -Raw } else { '' }
+            if ($text -match 'READY (\d+)') { $port = $Matches[1] } else { Start-Sleep -Milliseconds 500 }
+          }
+          Write-Host '--- stdout'; if (Test-Path $out) { Get-Content $out }
+          Write-Host '--- stderr'; if (Test-Path $err) { Get-Content $err | Select-Object -First 60 }
+          if (-not $port) { if (-not $p.HasExited) { $p.Kill() }; throw "워커가 READY 를 내지 않았다 (exited=$($p.HasExited) code=$($p.ExitCode))" }
+          $errText = if (Test-Path $err) { Get-Content $err -Raw } else { '' }
+          if ($errText -match 'Failed to load pi_natives') { $p.Kill(); throw '애드온 로드 실패' }
+          $r = Invoke-WebRequest -UseBasicParsing -Method Post -Uri "http://127.0.0.1:$port/local-agents" -ContentType 'application/json' -Body '{}'
+          Write-Host "POST /local-agents -> $($r.StatusCode)"
+          Write-Host $r.Content
+          $p.Kill()
+          if ($r.StatusCode -ne 200) { throw "local-agents $($r.StatusCode)" }
+          $omp = Join-Path $profileDir '.omp'
+          Write-Host ".omp 폴더 생김: $(Test-Path $omp) (사용자 다운로드 없이 워커 옆 애드온으로 떴다)"
+          "READY $port / local-agents $($r.StatusCode)" | Out-File (Join-Path $env:RUNNER_TEMP 'smoke-result.txt')

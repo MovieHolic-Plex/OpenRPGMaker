@@ -209,6 +209,14 @@ for (const [target, name] of [["bun-linux-x64", "oh-my-pi-worker"], ["bun-window
 const lock = JSON.parse(readFileSync(resolve(REPO_ROOT, "package-lock.json"), "utf8"));
 const nativesVersion = lock.packages["node_modules/@oh-my-pi/pi-natives"]?.version;
 if (!nativesVersion) throw new Error("package-lock 에 @oh-my-pi/pi-natives 가 없습니다");
+// 로더는 자기 패키지 버전과 애드온 안의 버전 도장이 다르면 그 파일을 버린다. 의존이 pi-natives 를 두 버전으로
+// 끌어오면(예: pi-agent-core 18.13.2 + pi-ai 18.14.2) 워커 옆에는 한 버전만 놓이고, 다른 버전 로더는
+// ~/.omp/natives/<그 버전>/ 을 찾다가 curl 안내만 남기고 죽는다 — 윈도우 사용자가 본 오류다(2026-11-04).
+// 그래서 lock 안의 pi-natives 가 모두 한 버전일 때만 굽는다. 어긋나면 @oh-my-pi/* 를 같은 버전으로 고정한다.
+const strayNatives = Object.entries(lock.packages)
+  .filter(([key, entry]) => /(^|\/)node_modules\/@oh-my-pi\/pi-natives$/.test(key) && entry.version !== nativesVersion)
+  .map(([key, entry]) => `${key}@${entry.version}`);
+if (strayNatives.length) throw new Error(`@oh-my-pi/pi-natives 가 ${nativesVersion} 하나가 아닙니다: ${strayNatives.join(", ")} — package.json 의 @oh-my-pi/* 를 같은 버전으로 고정하세요`);
 const ADDON_CACHE = resolve(REPO_ROOT, "node_modules/.cache/oprn-pi-natives");
 
 function verifiedTarball(entry, tag) {
