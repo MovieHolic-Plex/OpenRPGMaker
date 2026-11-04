@@ -901,6 +901,23 @@
     "the player is posed with sprite-look pose fallen during the fade-in and reset after, and the act 1 ending card, credits and 「제2막으로」 button still lead into this cell",
     "in the shipped player, a frame of the title card shows no dialogue box, and a frame right after fade-in shows Kael lying down"
    ]
+  },
+  {
+   "id": "village-examine-lore",
+   "label": "마을 기물 다섯에 세계 이야기 한 줄씩 — 걸어 닿는 칸, 같은 물건에 하나",
+   "port": 19550,
+   "lessons": [
+    "examine-reachable",
+    "examine-one-per-object",
+    "examine-name-no-prefix"
+   ],
+   "prompt": "마을 광장의 우물·망원경·게시판·궤짝·물레방아 같은 기물 다섯 개에, 확인 키를 누르면 이 세계 이야기 한 줄이 나오게 해 줘. 이미 말을 하는 물건(사당·수레처럼 이벤트가 있는 것)은 건드리지 말고, 길은 막지 마.",
+   "requirements": [
+    "five new action-only examine events sit on blocked object cells and each is reachable on foot from the start or an arrival (run_lint has no scene-examine-unreachable)",
+    "no object carries two events (run_lint has no scene-examine-duplicate) and no existing event's text changed",
+    "event names are the object name only, so the runtime prompt reads 「Z 조사 · 물레방아」 once, not 「Z 조사 · 조사 · …」",
+    "no walkable cell became blocked, and the project saves and reloads"
+   ]
   }
  ]
 }

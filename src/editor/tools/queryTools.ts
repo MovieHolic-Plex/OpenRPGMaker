@@ -7,6 +7,7 @@ import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
+import { lintExamineEvents } from "@/ai/v2/examineLint";
 import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
@@ -827,6 +828,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...areaUseIssues(project),
     ...deadEndExitIssues(project),
     ...lintScenePolish(project),
+    ...lintExamineEvents(project),
     ...lintOriginalIpNames(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;
