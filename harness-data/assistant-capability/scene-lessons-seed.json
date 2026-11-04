@@ -825,6 +825,21 @@
     "no extra uniform light disc is layered over the vision lights, and visionLight intensity is at most 0.6 (0.7 still read as yellow plates on grass)",
     "in the shipped player, a frame shows each lamp brighter at the carrier than at mid-radius, with a thin readable rim, the brightness drop from centre to just inside the rim is several times the rim step, and the overlap of two lamps is not brighter than either lamp's centre"
    ]
+  },
+  {
+   "id": "stealth-without-handholds",
+   "label": "막사 잠입: 숨을 곳은 침상 모양으로 읽히고, 숨은 동안 화면 아래 띠·▼ 표식이 계속 남지 않는다",
+   "port": 19546,
+   "lessons": [
+    "hiding-spots-unmarked",
+    "hiding-prompt-brief"
+   ],
+   "prompt": "막사 잠입이 너무 친절해. 침상 위에 노란 ▼ 가 떠서 숨을 곳을 알려 주고, 숨으면 화면 아래 「숨어 있음 · 나오기」 띠가 계속 붙어 있어. 숨는 규칙은 그대로 두고, 표식은 빼고 안내 글은 처음에 잠깐만 보이게 해 줘. 침상이 숨을 곳이라는 건 엘레나 한 마디나 가구 모양으로 읽히면 충분해.",
+   "requirements": [
+    "the barracks hiding pages keep interaction.kind hiding and the same cells, created through make_chase_scene with hidingMarkers false (no page.nearSparkle on them)",
+    "no new arrow, glow or hint line is added to say where to hide",
+    "in the shipped player, a frame next to a bunk shows no yellow examine marker over it, and a frame taken 5 seconds after hiding shows no bottom prompt band"
+   ]
   }
  ]
 }
