@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.392.1 — 2026-11-04
+
+### 수정
+
+- **battle** — spread enemy damage targets, battle revive items, inn clears states, EXP level floor (fs2 swarm R2) (#4232) (`60dae21`)
+
 ## 0.392.0 — 2026-11-04
 
 ### 기능
