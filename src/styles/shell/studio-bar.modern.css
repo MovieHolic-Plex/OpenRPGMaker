@@ -13,9 +13,9 @@
    ───────────────────────────────────────────────────────────────────────────────────────── */
 
 /* ── 1. 바 ─────────────────────────────────────────────────────────────────────────────── */
+/* 하단선은 안쪽 바(.oprn-menu-bar.studio-bar) 한 줄뿐이다 — 바깥 .topbar 에도 그리면 2px 로 겹친다(목업은 1px). */
 .topbar {
   background: var(--bg-base);
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .oprn-menu-bar.studio-bar {
@@ -79,7 +79,7 @@
   gap: 8px;
   letter-spacing: 0;
   margin-right: 2px;
-  padding: 0 4px;
+  padding: 0;
 }
 
 /* 브랜드 점 — 글자색 사각형 안의 「O」. 강조색은 「테스트 실행」 하나에만 쓴다. */
