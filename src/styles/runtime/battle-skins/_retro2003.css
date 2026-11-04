@@ -38,6 +38,14 @@
   transition: none;
 }
 
+/* 큰 보스 전투(data-battle-big-boss — battleFieldDom BIG_BOSS_PIXEL_CELL, 칸 128 이상 도트 시트 적):
+   무대 위 여백을 윗창 자리(위 8px)까지 줄여 전장이 윗창 몫을 쓴다. 윗창은 그대로 필드 위에 떠 있고(z 12)
+   글이 있을 때만 보인다(29-impact-contact.css). 아래 창(적 이름·파티·명령)은 그대로다.
+   위쪽에 늘 떠 있는 꾸미기(위 파티 상자·작은 상자·위 명령 줄·차례 줄·영화 띠)는 그 자리를 쓰므로 예전 여백을 둔다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-big-boss="true"]:not([data-look-party="boxesTop"], [data-look-party="mini"], [data-look-command="top"], [data-look-turns="on"], [data-look-letterbox="on"]) {
+  --battle-stage-skin-inset-top: 8px;
+}
+
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-window,
