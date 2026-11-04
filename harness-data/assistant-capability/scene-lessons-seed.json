@@ -855,6 +855,52 @@
     "the patrol route has no wait between two consecutive move steps; waits appear only at the waypoint ends",
     "in a 1x video of the shipped player, a patrol crossing at least 5 cells never stands still between cells for more than 60ms, and stands still for at least 600ms only at the ends"
    ]
+  },
+  {
+   "id": "cell-corners-differ",
+   "label": "지하 감방: 감방·복도·간수실이 구석마다 다른 물건으로 갈려 한 면으로 읽히지 않는다",
+   "port": 19547,
+   "lessons": [
+    "dungeon-cell-dressing",
+    "zone-floor-guardroom"
+   ],
+   "prompt": "지하 감방이 너무 단조로워. 짚 침대 둘하고 족쇄뿐이라 바닥·벽이 한 면으로 보여. 감방 안에는 흩어진 짚·거미줄·금 간 벽·녹은 촛불 같은 걸, 복도에는 돌 걸상과 물동이를, 간수실에는 열쇠 꾸러미·술 탁자·무기 상자를 두고 간수실 바닥은 다른 돌로 깔아 줘. 침대·쇠살문·계단 자리는 그대로.",
+   "requirements": [
+    "the cell is rebuilt with build_hand_interior_room replace:true and keeps the bed, gate and stairs cells and their events",
+    "the cell side, the corridor and the guard room each get at least two objects the others do not have, and the guard room floor is a different floor id from the cell (zones)",
+    "in the shipped player, a full-room frame shows no 4x4 patch of bare identical floor inside the cell and the guard room floor reads as a different stone"
+   ]
+  },
+  {
+   "id": "lift-reads-as-machine",
+   "label": "우물 밑 승강구: 승강 발판 둘레에 톱니·고패·쇠사슬이 있어 기계로 읽힌다",
+   "port": 19548,
+   "lessons": [
+    "lift-machine-dressing"
+   ],
+   "prompt": "우물 밑 승강구의 승강 장치가 바닥 그림 한 장이라 기계로 안 보여. 발판 바로 위 벽에 도는 톱니를 걸고, 곁에 감는 고패·쇠사슬 더미·계기판·레버를 둬서 「이걸로 오르내린다」가 보이게 해 줘. 발판 칸과 발판 앞 칸은 비워 두고, 타는 법(발판 위에서 조사)은 그대로.",
+   "requirements": [
+    "the shaft room keeps the place_lift event and plate cells; no object sits on the plate or on the cell in front of it",
+    "an animated gear wall hangs on the wall row directly above the plate, and at least two of gate winch, anchor chain, gauge panel or wall lever sit within two cells of the plate",
+    "in the shipped player, a frame of the shaft room shows the moving gear above the plate, and riding the lift still works from the plate"
+   ]
+  },
+  {
+   "id": "act-bridge-flashback-title-card",
+   "label": "막 사이 다리: 붙잡히던 밤 회상 네 줄 → 막 제목 카드(대화창 아님) → 엎어져 있던 주인공이 일어난다",
+   "port": 19549,
+   "lessons": [
+    "act-title-card-not-dialogue",
+    "bridge-flashback",
+    "fallen-then-rise"
+   ],
+   "prompt": "1막 끝 「…잡아라」 다음에 크레딧이 지나고 검은 화면 대화창에 「제2막 「빌린 불」」 이 떠서 곧장 감방이야. 감방 여는 장면 맨 앞에 어둠 위 회상 네 줄(손목에 밧줄이 감겼다 → 이리스 「카엘…!」 → 발렌 「아이는 따로 모셔라. 선생님은 천문대에.」 → 하넬 「…별을 세거라, 카엘. 작은 것부터.」)을 넣고, 막 제목은 1막 끝 카드처럼 화면 가운데 큰 제목 카드로 띄운 뒤 「이튿날 밤, 심문회 초소 지하.」 자막. 첫 감방 장면에선 카엘이 엎어져 있다가 일어나게 해 줘.",
+   "requirements": [
+    "the cell director starts with the four flashback lines on a black screen before the title, and Hanel's line ties to the later bread-key line",
+    "the act title is shown as a full-screen picture card (showPicture of an uploaded picture) with a kicker, a large title and an underline, not as a dialogue line",
+    "the player is posed with sprite-look pose fallen during the fade-in and reset after, and the act 1 ending card, credits and 「제2막으로」 button still lead into this cell",
+    "in the shipped player, a frame of the title card shows no dialogue box, and a frame right after fade-in shows Kael lying down"
+   ]
   }
  ]
 }
