@@ -116,6 +116,7 @@ try {
       else if (kind === "shot") await shot(a);
       else if (kind === "read") report.lines.push(`[read:${await read(a ?? {})}]`);
       else if (kind === "state") report.states.push(await readState());
+      else if (kind === "prompt") report.lines.push(`[prompt:${await page.evaluate(() => document.querySelector("[data-testid='zone-feedback']")?.textContent?.trim() ?? "")}]`);
       else if (kind === "esc") { await page.keyboard.press("Escape"); await page.waitForTimeout(600); }
     }
   }
