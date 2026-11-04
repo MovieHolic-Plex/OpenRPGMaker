@@ -391,7 +391,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   // ── 첫 사용자 프롬프트 홈(보이는 게임 0개) ───────────────────────────────
   // 보낼 때 AI 연결을 묻는다. 연결되면 문장 → 컨셉 초안 → 기획, 거절했거나 초안이 실패하면 낱말로 장르를 고른 기획으로
   // 그래도 폴더를 만든다 — 빈 화면으로 되돌리지 않는다. 편집기는 연결을 기다렸다가 이어 짓는다(projectInterviewStartup).
-  const submitFirstRun = (text: string): Promise<void> => run(async () => {
+  const submitFirstRun = (text: string, referenceImages: readonly string[]): Promise<void> => run(async () => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const preset = pickFirstRunPreset(text);
     const connected = await ensureAiConnected(NEW_PROJECT_CHOICES.find((choice) => choice.id === preset)?.label ?? firstRunTitle(text));
@@ -408,7 +408,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       }
     }
     await launcherBriefHandler(bridge, {
-      ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: text,
+      ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: text, referenceImages,
     })(brief, title);
   });
   let promptHome: PromptHome | null = null;

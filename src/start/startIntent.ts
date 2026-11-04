@@ -9,6 +9,7 @@
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { ProjectStartMode, ProjectStartScreenSize } from "./projectStart";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { parseUserImageDataUrls } from "@/ai/piAgent/userImages";
 
 export const START_SCREEN_INTENT_KEY = "oprn:start-screen-intent";
 /** 만들기 → 편집기 부팅은 수 초다. 10분이 지난 값은 다른 작업의 찌꺼기로 본다. */
@@ -30,6 +31,8 @@ export type StartScreenIntent = {
   readonly gameDesignBrief?: GameDesignBrief;
   /** 첫 사용자 프롬프트 홈에서 왔다 — 부팅 로더(public/boot-splash.js)가 intent 문장과 「세계를 펼치는 중」을 보인다. */
   readonly firstBuild?: boolean;
+  /** 첫 화면 「참고 그림」(축소한 data URL, 최대 2장). 첫 조수 턴의 사용자 메시지에 그림으로 실린다. */
+  readonly referenceImages?: readonly string[];
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -56,7 +59,10 @@ export function takeStartScreenIntent(storage: StorageLike, openedProjectDir: st
   if (value.firstBuild !== undefined && typeof value.firstBuild !== "boolean") return null;
   if (now - value.createdAt > MAX_AGE_MS || value.createdAt > now + 60_000) return null;
   if (value.projectDir !== openedProjectDir) return null;
-  return value as StartScreenIntent;
+  // 그림은 부가물이다 — 틀린 항목만 버리고 인계 자체는 살린다.
+  const { referenceImages: rawImages, ...rest } = value as StartScreenIntent;
+  const referenceImages = parseUserImageDataUrls(rawImages);
+  return (referenceImages.length ? { ...rest, referenceImages } : rest) as StartScreenIntent;
 }
 
 /**

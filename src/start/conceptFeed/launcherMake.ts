@@ -37,6 +37,8 @@ export type LauncherBriefDeps = Omit<LauncherMakeDeps, "made"> & {
   readonly allowWithoutAi?: boolean;
   /** 첫 빌드 표시 — 부팅 로더가 이 문장과 「세계를 펼치는 중」을 보인다(public/boot-splash.js). */
   readonly firstBuildText?: string;
+  /** 첫 사용자 프롬프트 홈의 참고 그림 — 첫 조수 턴에 그림으로 실린다(src/editor/aiBootIntent.ts). */
+  readonly referenceImages?: readonly string[];
 };
 
 export function launcherBriefHandler(bridge: OprnBridgeStart, deps: LauncherBriefDeps): (brief: GameDesignBrief, title: string) => Promise<boolean> {
@@ -54,6 +56,7 @@ export function launcherBriefHandler(bridge: OprnBridgeStart, deps: LauncherBrie
     writeStartScreenIntent(deps.storage, {
       projectDir: created.projectDir, title, choiceId: base.presetId, intent: firstBuildText, startMode: "ai", screenSize: "wide", gameDesignBrief: brief,
       ...(firstBuildText ? { firstBuild: true } : {}),
+      ...(deps.referenceImages?.length ? { referenceImages: deps.referenceImages } : {}),
     });
     deps.goEditor();
     return true;

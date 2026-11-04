@@ -55,6 +55,8 @@ export interface PiAgentRequest {
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
   readonly task: string;
+  /** 사용자가 첫 화면에서 붙인 참고 그림(data URL, 최대 2장). 워커가 첫 사용자 차례에만 싣는다(userImages.ts). */
+  readonly userImages?: readonly string[];
   /** 에이전트가 소유하는 맵. 비우면 프로젝트 전체가 작업 범위다. */
   readonly mapIds: readonly string[];
   /**

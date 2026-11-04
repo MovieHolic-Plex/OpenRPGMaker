@@ -187,6 +187,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     applyPendingAiBootIntent,
     peekPendingAiBootIntent,
     markWelcomeIntentAppliedThisBoot,
+    setPendingAiBootReferenceImages,
     setPendingWelcomePipeline,
     wasWelcomeIntentAppliedThisBoot,
   } = await import("@/editor/aiBootIntent");
@@ -225,6 +226,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (startHandoff) {
       // 시작 화면을 거친 사용자는 첫 방문 브리핑을 이미 본 셈이다 — 다음 부팅에도 띄우지 않는다.
       setEditorWelcomeDismissed(true);
+      if (startHandoff.intent.referenceImages?.length) setPendingAiBootReferenceImages(startHandoff.intent.referenceImages);
       if (startHandoff.intent.gameDesignBrief) {
         // 프리셋 장르는 셸이 뜬 뒤 인터뷰로 간다(아래). 코치마크가 인터뷰 위에 뜨지 않게 지금 표시한다.
         markWelcomeIntentAppliedThisBoot();
