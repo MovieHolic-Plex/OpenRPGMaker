@@ -1,0 +1,394 @@
+{
+  "set": "fs2-137",
+  "note": "fs2-137 lane probe set (before/after for 1.36 VQA fixes)",
+  "projectFixture": "dist/demos/chrono-bell.project.json",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "crows",
+      "label": "crows north_1",
+      "mapId": "map_field_north_1",
+      "x": 14,
+      "y": 4,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true,
+        "sw_fs2_b5_forest_path": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "probe",
+          "ops": [
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const es=[...document.querySelectorAll('.battle-enemy')]; es.forEach((e,i)=>{ if(e.querySelector(':scope > .battle-status-icons')) return; const c=document.createElement('span'); c.className='battle-status-icons'; const kinds=[['paralysis','마비'],['burn','화상'],['def-down',null]]; const k=kinds[i%3]; const s=document.createElement('span'); s.className='battle-status-icon battle-status-icon-'+k[0]; s.dataset.statusIcon=k[0]; if(k[1]) s.dataset.statusLabel=k[1]; c.append(s); e.append(c); }); return es.length; }",
+              "out": "/tmp/fs137.IRInrc/probe/crows-inject.json"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const out={tag:'crows'}; const q=(s)=>[...document.querySelectorAll(s)]; const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; out.enemies=q('.battle-enemy').map(n=>({id:n.dataset.testid||n.className.slice(0,40),node:R(n),img:n.querySelector('img,canvas,.battle-enemy-image')?R(n.querySelector('img,canvas,.battle-enemy-image')):null,chrome:n.querySelector('.battle-enemy-chrome')?R(n.querySelector('.battle-enemy-chrome')):null, z:getComputedStyle(n).zIndex, pos:getComputedStyle(n).position, filter:getComputedStyle(n).filter, ctx:getComputedStyle(n).isolation})); out.reasons=q('.battle-command-reason').map(n=>({t:n.textContent,box:R(n),sh:n.scrollHeight,ch:n.clientHeight,sw:n.scrollWidth,cw:n.clientWidth})); out.menu=q('.battle-command-menu').map(R); out.stage=document.querySelector('.battle-scene')?R(document.querySelector('.battle-scene')):null; out.cmdparty=q('[data-testid=battle-party-panel],.battle-party').map(R); out.topwin=q('[data-testid=battle-message],.battle-message-window,.battle-help-window').map(R); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/crows.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startTroopId": "troop_fs2_ash_crows"
+    },
+    {
+      "id": "wolves",
+      "label": "forest fs_forest_edge troop_fs_wolves",
+      "mapId": "fs_forest_edge",
+      "x": 11,
+      "y": 18,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_step0": true,
+        "sw_fs_valen_marched": true,
+        "sw_fs_main_step1": true,
+        "sw_fs_iris_awake": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs_valen_crash_on": true,
+        "sw_fs_valen_crash_met": true,
+        "sw_fs_main_step2": true,
+        "sw_fs_vault_seal_open": true,
+        "sw_fs_b3_west_lever": true,
+        "sw_fs_b3_sun_lever": true,
+        "sw_fs_b3_moon_lever": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 7
+        }
+      ],
+      "startEventId": "ev_fs_forest_edge_foe1",
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "probe",
+          "ops": [
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const es=[...document.querySelectorAll('.battle-enemy')]; es.forEach((e,i)=>{ if(e.querySelector(':scope > .battle-status-icons')) return; const c=document.createElement('span'); c.className='battle-status-icons'; const kinds=[['paralysis','마비'],['burn','화상'],['def-down',null]]; const k=kinds[i%3]; const s=document.createElement('span'); s.className='battle-status-icon battle-status-icon-'+k[0]; s.dataset.statusIcon=k[0]; if(k[1]) s.dataset.statusLabel=k[1]; c.append(s); e.append(c); }); return es.length; }",
+              "out": "/tmp/fs137.IRInrc/probe/wolves-inject.json"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const out={tag:'wolves'}; const q=(s)=>[...document.querySelectorAll(s)]; const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; out.enemies=q('.battle-enemy').map(n=>({id:n.dataset.testid||n.className.slice(0,40),node:R(n),img:n.querySelector('img,canvas,.battle-enemy-image')?R(n.querySelector('img,canvas,.battle-enemy-image')):null,chrome:n.querySelector('.battle-enemy-chrome')?R(n.querySelector('.battle-enemy-chrome')):null, z:getComputedStyle(n).zIndex, pos:getComputedStyle(n).position, filter:getComputedStyle(n).filter, ctx:getComputedStyle(n).isolation})); out.reasons=q('.battle-command-reason').map(n=>({t:n.textContent,box:R(n),sh:n.scrollHeight,ch:n.clientHeight,sw:n.scrollWidth,cw:n.clientWidth})); out.menu=q('.battle-command-menu').map(R); out.stage=document.querySelector('.battle-scene')?R(document.querySelector('.battle-scene')):null; out.cmdparty=q('[data-testid=battle-party-panel],.battle-party').map(R); out.topwin=q('[data-testid=battle-message],.battle-message-window,.battle-help-window').map(R); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/wolves.json"
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "fortdogs",
+      "label": "fort-court fs2_fort_court troop_fs2_fort_dogs_out",
+      "mapId": "fs2_fort_court",
+      "x": 44,
+      "y": 41,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 16
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 16
+        }
+      ],
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "probe",
+          "ops": [
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const es=[...document.querySelectorAll('.battle-enemy')]; es.forEach((e,i)=>{ if(e.querySelector(':scope > .battle-status-icons')) return; const c=document.createElement('span'); c.className='battle-status-icons'; const kinds=[['paralysis','마비'],['burn','화상'],['def-down',null]]; const k=kinds[i%3]; const s=document.createElement('span'); s.className='battle-status-icon battle-status-icon-'+k[0]; s.dataset.statusIcon=k[0]; if(k[1]) s.dataset.statusLabel=k[1]; c.append(s); e.append(c); }); return es.length; }",
+              "out": "/tmp/fs137.IRInrc/probe/fortdogs-inject.json"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const out={tag:'fortdogs'}; const q=(s)=>[...document.querySelectorAll(s)]; const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; out.enemies=q('.battle-enemy').map(n=>({id:n.dataset.testid||n.className.slice(0,40),node:R(n),img:n.querySelector('img,canvas,.battle-enemy-image')?R(n.querySelector('img,canvas,.battle-enemy-image')):null,chrome:n.querySelector('.battle-enemy-chrome')?R(n.querySelector('.battle-enemy-chrome')):null, z:getComputedStyle(n).zIndex, pos:getComputedStyle(n).position, filter:getComputedStyle(n).filter, ctx:getComputedStyle(n).isolation})); out.reasons=q('.battle-command-reason').map(n=>({t:n.textContent,box:R(n),sh:n.scrollHeight,ch:n.clientHeight,sw:n.scrollWidth,cw:n.clientWidth})); out.menu=q('.battle-command-menu').map(R); out.stage=document.querySelector('.battle-scene')?R(document.querySelector('.battle-scene')):null; out.cmdparty=q('[data-testid=battle-party-panel],.battle-party').map(R); out.topwin=q('[data-testid=battle-message],.battle-message-window,.battle-help-window').map(R); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/fortdogs.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startTroopId": "troop_fs2_fort_dogs_out"
+    },
+    {
+      "id": "vault",
+      "label": "지하 3층 순찰대 매복 — 서쪽 손잡이로 열린 쇠살문 앞, 고행자·방패병·석궁수가 문을 박차고 나온다",
+      "note": "act1Finale.ts ambush b3_patrol 밟는 칸 (32~33,17~18) → troop_fs_inq_patrol",
+      "mapId": "fs_vault_b3",
+      "x": 31,
+      "y": 17,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_step0": true,
+        "sw_fs_valen_marched": true,
+        "sw_fs_main_step1": true,
+        "sw_fs_iris_awake": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs_valen_crash_on": true,
+        "sw_fs_valen_crash_met": true,
+        "sw_fs_main_step2": true,
+        "sw_fs_vault_seal_open": true,
+        "sw_fs_b3_west_lever": true
+      },
+      "selfSwitches": {
+        "ev_fs_b3_arrive": {
+          "A": true
+        }
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "items": {
+        "item_potion": 4
+      },
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "probe",
+          "ops": [
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const es=[...document.querySelectorAll('.battle-enemy')]; es.forEach((e,i)=>{ if(e.querySelector(':scope > .battle-status-icons')) return; const c=document.createElement('span'); c.className='battle-status-icons'; const kinds=[['paralysis','마비'],['burn','화상'],['def-down',null]]; const k=kinds[i%3]; const s=document.createElement('span'); s.className='battle-status-icon battle-status-icon-'+k[0]; s.dataset.statusIcon=k[0]; if(k[1]) s.dataset.statusLabel=k[1]; c.append(s); e.append(c); }); return es.length; }",
+              "out": "/tmp/fs137.IRInrc/probe/vault-inject.json"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const out={tag:'vault'}; const q=(s)=>[...document.querySelectorAll(s)]; const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; out.enemies=q('.battle-enemy').map(n=>({id:n.dataset.testid||n.className.slice(0,40),node:R(n),img:n.querySelector('img,canvas,.battle-enemy-image')?R(n.querySelector('img,canvas,.battle-enemy-image')):null,chrome:n.querySelector('.battle-enemy-chrome')?R(n.querySelector('.battle-enemy-chrome')):null, z:getComputedStyle(n).zIndex, pos:getComputedStyle(n).position, filter:getComputedStyle(n).filter, ctx:getComputedStyle(n).isolation})); out.reasons=q('.battle-command-reason').map(n=>({t:n.textContent,box:R(n),sh:n.scrollHeight,ch:n.clientHeight,sw:n.scrollWidth,cw:n.clientWidth})); out.menu=q('.battle-command-menu').map(R); out.stage=document.querySelector('.battle-scene')?R(document.querySelector('.battle-scene')):null; out.cmdparty=q('[data-testid=battle-party-panel],.battle-party').map(R); out.topwin=q('[data-testid=battle-message],.battle-message-window,.battle-help-window').map(R); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/vault.json"
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "ash",
+      "label": "ash-field map_field_north_2 troop_fs2_cinder_golem",
+      "mapId": "map_field_north_2",
+      "x": 59,
+      "y": 10,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "probe",
+          "ops": [
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const es=[...document.querySelectorAll('.battle-enemy')]; es.forEach((e,i)=>{ if(e.querySelector(':scope > .battle-status-icons')) return; const c=document.createElement('span'); c.className='battle-status-icons'; const kinds=[['paralysis','마비'],['burn','화상'],['def-down',null]]; const k=kinds[i%3]; const s=document.createElement('span'); s.className='battle-status-icon battle-status-icon-'+k[0]; s.dataset.statusIcon=k[0]; if(k[1]) s.dataset.statusLabel=k[1]; c.append(s); e.append(c); }); return es.length; }",
+              "out": "/tmp/fs137.IRInrc/probe/ash-inject.json"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const out={tag:'ash'}; const q=(s)=>[...document.querySelectorAll(s)]; const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; out.enemies=q('.battle-enemy').map(n=>({id:n.dataset.testid||n.className.slice(0,40),node:R(n),img:n.querySelector('img,canvas,.battle-enemy-image')?R(n.querySelector('img,canvas,.battle-enemy-image')):null,chrome:n.querySelector('.battle-enemy-chrome')?R(n.querySelector('.battle-enemy-chrome')):null, z:getComputedStyle(n).zIndex, pos:getComputedStyle(n).position, filter:getComputedStyle(n).filter, ctx:getComputedStyle(n).isolation})); out.reasons=q('.battle-command-reason').map(n=>({t:n.textContent,box:R(n),sh:n.scrollHeight,ch:n.clientHeight,sw:n.scrollWidth,cw:n.clientWidth})); out.menu=q('.battle-command-menu').map(R); out.stage=document.querySelector('.battle-scene')?R(document.querySelector('.battle-scene')):null; out.cmdparty=q('[data-testid=battle-party-panel],.battle-party').map(R); out.topwin=q('[data-testid=battle-message],.battle-message-window,.battle-help-window').map(R); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/ash.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startTroopId": "troop_fs2_cinder_golem"
+    }
+  ]
+}
