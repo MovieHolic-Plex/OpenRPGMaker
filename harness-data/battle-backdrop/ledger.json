@@ -1302,6 +1302,6157 @@
      "reloaded": true
     }
    ]
+  },
+  "fs2-town-night": {
+   "id": "fs2-town-night",
+   "createdAt": "2026-11-04T02:09:29Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_hub_night",
+   "window": {
+    "x": 12,
+    "y": 17,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "03a04057e1d4342dca315a06c72433e5d943afd010d6a455327f5f4f96e52e22",
+   "referenceSha256": "de6c22153c47fcee4e813b813e659eaa3e8505b008a590748ebeec4c5196007e",
+   "facts": {
+    "mapId": "fs2_hub_night",
+    "mapName": "왕도 아스텔 · 통금의 밤",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.78 · #0f1a4c → 밝기 ×0.30",
+     "낱말 「밤」: 왕도 아스텔 · 통금의 밤"
+    ],
+    "placeWords": [
+     "왕도 아스텔 · 통금의 밤"
+    ],
+    "captureLuma": 0.258,
+    "palette": [
+     "#0b163a",
+     "#0b183c",
+     "#0b1b36",
+     "#0c1c35",
+     "#0b1c37",
+     "#212c48",
+     "#153048",
+     "#352732",
+     "#313c58",
+     "#344d44",
+     "#3e4360",
+     "#2f3550",
+     "#3a2e3a",
+     "#374773",
+     "#1f4a6f",
+     "#3a5348",
+     "#354d4a",
+     "#325344",
+     "#4a516b",
+     "#3f584c",
+     "#606782",
+     "#726f83",
+     "#606375",
+     "#6a6d7f"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "e57686707c53effb4f96acd15c88dc9238c6c4a8172008e4da0501e29d0becc3",
+     "rawSha256": "5c5eb9707ec10ea21c6bf27a5e049c6c846437f6a9532a0f7017449ab4fab5f4",
+     "nativePixelSha256": "7014cba961c353fd512f37f1557544f47a8680f7891e71b0bd6e91520ec11f40",
+     "storedPixelSha256": "d2932ab5247bde6d59e20aa5038260167a5eca922a37c5d2ceb99f2421eba267",
+     "colors": 29,
+     "palette": [
+      "#0b163a",
+      "#0b183c",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#374773",
+      "#354d4a",
+      "#325344",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#6b243a",
+      "#6b243b",
+      "#653841",
+      "#663944",
+      "#4b6d4a",
+      "#4f7246",
+      "#877f98",
+      "#8b829b"
+     ],
+     "extras": [
+      "#6b243a",
+      "#6b243b",
+      "#653841",
+      "#663944",
+      "#4b6d4a",
+      "#4f7246",
+      "#877f98",
+      "#8b829b"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.639 / 위 0.488",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.19 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "2bd5a90e634435310151e8332ad33c69b36d23fa0c633b0cad9e1bcba88a906f",
+     "rawSha256": "d81155d039d2661070ca4bc72c3edfdd12fc18c50ed220a84997f910aac15e57",
+     "nativePixelSha256": "38b5278f960a0cc298b8011b654054f905994bac9a4cee6b9267b7932882cdc1",
+     "storedPixelSha256": "f1d680599383d7d7dfa035e2227e51f11ef3a2009d300b5f0a65b608832a75f3",
+     "colors": 29,
+     "palette": [
+      "#0b163a",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#374773",
+      "#3a5348",
+      "#354d4a",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#6a6d7f",
+      "#5a303a",
+      "#5b333b",
+      "#5e343b",
+      "#60353c",
+      "#61363d",
+      "#65393e",
+      "#6c3c41",
+      "#784746"
+     ],
+     "extras": [
+      "#5a303a",
+      "#5b333b",
+      "#5e343b",
+      "#60353c",
+      "#61363d",
+      "#65393e",
+      "#6c3c41",
+      "#784746"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.487 / 위 0.524",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.19 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "db51159ec85fc71b5cf137da2caec70a89619bd8a7087de11ebd51aeb6071e01",
+     "rawSha256": "eff69379b9ba455c764640adbb0dc2ff6e461092b749a4c5e7fd4680210f95e4",
+     "nativePixelSha256": "3c448dd93708823a7e9b4f0a15210af1530d76a236ef697b2b9669d0dc56ea6f",
+     "storedPixelSha256": "893ada712fb26045798a0fd8b47afdda93db77a02ff75fee77026d5fd77431ca",
+     "colors": 29,
+     "palette": [
+      "#0b163a",
+      "#0b183c",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#374773",
+      "#354d4a",
+      "#325344",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#6a6d7f",
+      "#1e3d38",
+      "#5a3440",
+      "#5f363f",
+      "#436943",
+      "#7b3043",
+      "#8b7f8d",
+      "#978688"
+     ],
+     "extras": [
+      "#1e3d38",
+      "#5a3440",
+      "#5f363f",
+      "#436943",
+      "#7b3043",
+      "#8b7f8d",
+      "#978688"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.589 / 위 0.554",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.18 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "ebf8555267bb1ecfaf6e7a6fbc3e9bce81b85dc94d888be42d2d8f3724087a74",
+     "rawSha256": "9ef4cedd36c940f97a8e6d97319650e75be874486668b41f9f832b5e8721cc4d",
+     "nativePixelSha256": "4f45f63c96a3dcda16c10d4cd2a684ce94c73a04826b4742b57aeba483c3d4ba",
+     "storedPixelSha256": "124731e24a94b9733dece84b59895cb17126e64b01671872ed9e508eb0055b31",
+     "colors": 29,
+     "palette": [
+      "#0b163a",
+      "#0b183c",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#374773",
+      "#3a5348",
+      "#354d4a",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#6a6d7f",
+      "#501632",
+      "#5a1b33",
+      "#702839",
+      "#64393e",
+      "#794a4a",
+      "#7a80a2",
+      "#7d81a3"
+     ],
+     "extras": [
+      "#501632",
+      "#5a1b33",
+      "#702839",
+      "#64393e",
+      "#794a4a",
+      "#7a80a2",
+      "#7d81a3"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.623 / 위 0.594",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.18 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ]
+  },
+  "fs2-north-forest": {
+   "id": "fs2-north-forest",
+   "createdAt": "2026-11-04T02:09:34Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "map_field_north_1",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "b98c209533af2fe219c4f25f0c74c77d94f0fb61c1c42e897a4c64d833b57beb",
+   "referenceSha256": "cebda1b30d615c0258fdfa3f2030f09b82db11bc13c1b90520b6417fc3ac0eeb",
+   "facts": {
+    "mapId": "map_field_north_1",
+    "mapName": "북쪽 숲 어귀",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.66 · #0a1024 → 밝기 ×0.38",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "북쪽 숲 어귀"
+    ],
+    "captureLuma": 0.212,
+    "palette": [
+     "#091620",
+     "#082026",
+     "#1a171e",
+     "#0d2b29",
+     "#282122",
+     "#0a2d2b",
+     "#1e3125",
+     "#21262f",
+     "#18362c",
+     "#233929",
+     "#382d29",
+     "#213b32",
+     "#1d3d29",
+     "#26422f",
+     "#234531",
+     "#3a4e38",
+     "#344834",
+     "#493b32",
+     "#415261",
+     "#434757",
+     "#474b55",
+     "#394f32",
+     "#485939",
+     "#455f3f"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "6565468d2786fc00b23cbda90da33aa749be7509c548b4f112fda7a8d77d9fd0",
+     "rawSha256": "d5cc1182702efd9fd69d9384d183c364c57c93aaf8437b1a53762ddaf5183bc2",
+     "nativePixelSha256": "8002ac67897e036058617fef3c18d8da33dcdcb5d6e84de1953271864fedbf9c",
+     "storedPixelSha256": "39a4f3d4c0478a196397f0483a67c54c1adf962543a4432a20c05490badc6eb4",
+     "colors": 22,
+     "palette": [
+      "#091620",
+      "#082026",
+      "#1a171e",
+      "#0d2b29",
+      "#282122",
+      "#0a2d2b",
+      "#21262f",
+      "#18362c",
+      "#382d29",
+      "#213b32",
+      "#1d3d29",
+      "#26422f",
+      "#234531",
+      "#3a4e38",
+      "#344834",
+      "#493b32",
+      "#415261",
+      "#434757",
+      "#394f32",
+      "#000817",
+      "#061940",
+      "#5b5f70"
+     ],
+     "extras": [
+      "#000817",
+      "#061940",
+      "#5b5f70"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "22",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.040 / 위 0.444",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.12 (캡처 0.21)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "5203c23d6e25ddd2a8e0dd59af6b0e524fd349ad1387a6473423bed651a3ddca",
+     "rawSha256": "de0eb6a19aae92abf1ad07e1a4aa3916fcc5afca2d3ccd85cbe3fbaee00451cd",
+     "nativePixelSha256": "5e1a9a7ee59d5dca20900d7e47f05fd0822878872ed80eb63342cf9c8d471235",
+     "storedPixelSha256": "9413951993b9c0089e1855179c1a0c0b3ab21cf24cd79bd287e1f7648fb19f67",
+     "colors": 24,
+     "palette": [
+      "#091620",
+      "#082026",
+      "#1a171e",
+      "#0d2b29",
+      "#282122",
+      "#0a2d2b",
+      "#1e3125",
+      "#21262f",
+      "#18362c",
+      "#233929",
+      "#382d29",
+      "#213b32",
+      "#1d3d29",
+      "#26422f",
+      "#234531",
+      "#344834",
+      "#493b32",
+      "#415261",
+      "#434757",
+      "#394f32",
+      "#000913",
+      "#5d5f6c",
+      "#5d606c",
+      "#1c7584"
+     ],
+     "extras": [
+      "#000913",
+      "#5d5f6c",
+      "#5d606c",
+      "#1c7584"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.466",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.13 (캡처 0.21)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "7ec0cd57d29a0d31ab51dc9cf9ab7b1661991c36fe1a0c9890dc7c8d5fe2d133",
+     "rawSha256": "761b3c09a449b0e4c238e20db48873a0a802db7a12eff099d3f26c95b18179a6",
+     "nativePixelSha256": "8f9837f30e0c989ccd4e55e73d963fcbc9132e4e9e776b8b60dc967af8228305",
+     "storedPixelSha256": "7c7f15bc69f111a2ba5d48a5f896fa2b33cae5ca44f5e07b7cafb9960dc8f2c4",
+     "colors": 23,
+     "palette": [
+      "#091620",
+      "#082026",
+      "#1a171e",
+      "#0d2b29",
+      "#282122",
+      "#0a2d2b",
+      "#21262f",
+      "#18362c",
+      "#382d29",
+      "#213b32",
+      "#26422f",
+      "#234531",
+      "#3a4e38",
+      "#344834",
+      "#493b32",
+      "#415261",
+      "#434757",
+      "#474b55",
+      "#394f32",
+      "#485939",
+      "#455f3f",
+      "#000818",
+      "#5c5f6c"
+     ],
+     "extras": [
+      "#000818",
+      "#5c5f6c"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "23",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.041 / 위 0.387",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.14 (캡처 0.21)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "18915481fb07ce6033621ec6d339c3ea7f4cdf2e448a7a5a36a27ee514b71d6b",
+     "rawSha256": "c810d70ac32673d053a655e597b3632876da13f71da3aa36d730df135578777c",
+     "nativePixelSha256": "6d9f85359b10917d79e8d3eca45b52b0762d2faa83db1338437ec4df7bed7009",
+     "storedPixelSha256": "2b37349ea177fa37a50ca6e872c46aee0e821cbf46fa9d36ef2aa0753b81383c",
+     "colors": 24,
+     "palette": [
+      "#091620",
+      "#082026",
+      "#1a171e",
+      "#0d2b29",
+      "#282122",
+      "#0a2d2b",
+      "#1e3125",
+      "#21262f",
+      "#18362c",
+      "#233929",
+      "#382d29",
+      "#213b32",
+      "#1d3d29",
+      "#26422f",
+      "#234531",
+      "#3a4e38",
+      "#344834",
+      "#434757",
+      "#394f32",
+      "#485939",
+      "#00011e",
+      "#01021f",
+      "#000819",
+      "#00081a"
+     ],
+     "extras": [
+      "#00011e",
+      "#01021f",
+      "#000819",
+      "#00081a"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.332 / 위 0.558",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.12 (캡처 0.21)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-024805-fs2-north-forest",
+     "at": "2026-11-04T02:48:36Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-637bde214f874bb2824e022e8d8346fb",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-024805-fs2-north-forest.json",
+     "rawSha256": "a70a05e12bcd436fed5b3f7d84ca93cd1066926823fd0ba950bab0ddba5c693d",
+     "entries": [
+      {
+       "label": "14",
+       "pixelSha256": "ae3518a24e2d239ceff16b6f13d64645755b54eeb81c75a51933cd7af5855760",
+       "control": "top-down"
+      },
+      {
+       "label": "67",
+       "pixelSha256": "840457f38b2ce3d36c2dab2cb2c9b3f331300ebdd4da3e6b6e5d92030b51de0b",
+       "control": "flipped"
+      },
+      {
+       "label": "34",
+       "pixelSha256": "8f9837f30e0c989ccd4e55e73d963fcbc9132e4e9e776b8b60dc967af8228305",
+       "letter": "C"
+      },
+      {
+       "label": "77",
+       "pixelSha256": "5e1a9a7ee59d5dca20900d7e47f05fd0822878872ed80eb63342cf9c8d471235",
+       "letter": "B"
+      },
+      {
+       "label": "72",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "24",
+       "pixelSha256": "8002ac67897e036058617fef3c18d8da33dcdcb5d6e84de1953271864fedbf9c",
+       "letter": "A"
+      }
+     ],
+     "answers": {
+      "14": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a downscaled copy of the top-down map, not a side or eye-level battle view."
+      },
+      "24": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "This eye-level night forest gateway has a glimpse of dark sky, two stone pillars flanking the path, and a flat, calm grass floor across the lower half, in a limited pixel palette."
+      },
+      "34": {
+       "v": "pass",
+       "score": 4,
+       "why": "This eye-level night forest edge has the two stone pillars and calm dark grass, but the ground rises into a slope on the right, so the floor is not fully flat."
+      },
+      "67": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The perspective is broken: a flat green band fills the top, the stone pillars float over the treetops, and the lower half is busy canopy foliage with a blue stream instead of standable ground."
+      },
+      "72": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a daytime desert with cacti and mesas, which does not match the night forest entrance on the map."
+      },
+      "77": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "This crisp night view of the forest entrance shows the two pillars with teal panels matching the map, and the lower half is clean, flat, dark grass."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "8002ac67897e036058617fef3c18d8da33dcdcb5d6e84de1953271864fedbf9c",
+    "storedPixelSha256": "39a4f3d4c0478a196397f0483a67c54c1adf962543a4432a20c05490badc6eb4",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:12:10Z",
+    "score": 4.5,
+    "batch": "20261104-024805-fs2-north-forest"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:12:43Z",
+     "target": "map:map_field_north_1",
+     "resourceId": "battle_backdrop_fs2_north_forest_39a4f3d4",
+     "storedPixelSha256": "39a4f3d4c0478a196397f0483a67c54c1adf962543a4432a20c05490badc6eb4",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-north-forest/battle_backdrop_fs2_north_forest_39a4f3d4.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-forest": {
+   "id": "fs2-forest",
+   "createdAt": "2026-11-04T02:09:39Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs_forest_edge",
+   "window": {
+    "x": 0,
+    "y": 9,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "d3d0552a9bf0fc533842e373a7b7181b96af54e61097daffc38d0577caa7b45d",
+   "referenceSha256": "c0c7ebb16efe3ca3ae37444ad9b02fc8e82684e02a19afcefe4d83b88dc3b851",
+   "facts": {
+    "mapId": "fs_forest_edge",
+    "mapName": "속삭이는 숲 · 어귀",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 ambient 0.22 · #2c4a38 → 밝기 ×0.84",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "속삭이는 숲 · 어귀"
+    ],
+    "captureLuma": 0.355,
+    "palette": [
+     "#0f2721",
+     "#0e382c",
+     "#132b27",
+     "#164c31",
+     "#453a25",
+     "#35562b",
+     "#4e493b",
+     "#2a5f36",
+     "#3d6330",
+     "#614f30",
+     "#604829",
+     "#43733b",
+     "#557d3a",
+     "#5b7d44",
+     "#44613a",
+     "#5f5745",
+     "#756b54",
+     "#736d4f",
+     "#6e634f",
+     "#65884c",
+     "#857d5a",
+     "#7d9c4d",
+     "#759657",
+     "#77a556"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "fd0d104cb1b757a764d05d279cdf556d73fccb07e5600ed2f98443ee71f722f1",
+     "rawSha256": "e11f629403d582347b704c7384409b57844d7e832de9c6070438bc04fafe8573",
+     "nativePixelSha256": "6cde803ca1022e67e09bcbae43c5414c6fc46a0dff6b97cd8e7e9b38efb2e77b",
+     "storedPixelSha256": "282316e552751b16b8b8d2a955090a839a6716e0b8ea4a7b350cdb524ad68201",
+     "colors": 24,
+     "palette": [
+      "#0f2721",
+      "#0e382c",
+      "#132b27",
+      "#164c31",
+      "#453a25",
+      "#35562b",
+      "#4e493b",
+      "#2a5f36",
+      "#3d6330",
+      "#614f30",
+      "#604829",
+      "#43733b",
+      "#557d3a",
+      "#44613a",
+      "#5f5745",
+      "#756b54",
+      "#736d4f",
+      "#6e634f",
+      "#65884c",
+      "#857d5a",
+      "#7d9c4d",
+      "#759657",
+      "#77a556",
+      "#81bac8"
+     ],
+     "extras": [
+      "#81bac8"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.036 / 위 0.555",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.40 (캡처 0.35)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "492b1bcd8a18c8bc6ff7849b356f422af0e09aaf71ec7ffbc97d9c83dff14f53",
+     "rawSha256": "56840b03614b458a8bd5012e700992e1f26d33a61424fa594976a757c6750533",
+     "nativePixelSha256": "40083c5fae5cf077702b2b73ca3131bf2d685d9fd4bd8cc1909b4410dfba3c25",
+     "storedPixelSha256": "5ec501edd82b5357f60e354382134a97711452ba7e2f4188b1f42fa515985d54",
+     "colors": 26,
+     "palette": [
+      "#0f2721",
+      "#0e382c",
+      "#132b27",
+      "#164c31",
+      "#453a25",
+      "#35562b",
+      "#2a5f36",
+      "#3d6330",
+      "#614f30",
+      "#604829",
+      "#43733b",
+      "#557d3a",
+      "#5b7d44",
+      "#5f5745",
+      "#756b54",
+      "#736d4f",
+      "#6e634f",
+      "#65884c",
+      "#857d5a",
+      "#7d9c4d",
+      "#759657",
+      "#77a556",
+      "#b4be59",
+      "#b5bf5a",
+      "#91cbdb",
+      "#91cbda"
+     ],
+     "extras": [
+      "#b4be59",
+      "#b5bf5a",
+      "#91cbdb",
+      "#91cbda"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.276 / 위 0.459",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.39 (캡처 0.35)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "dcf1caa208433f18ee09921b0ec2e17645d95ab3232c3e69cd69728610fcf9d0",
+     "rawSha256": "530c4d5c718a18eba072f6daed05e2fffe723779fee09c2e5076caf0e05dde9f",
+     "nativePixelSha256": "86037347f9044762bb6beb0bf60cc106b0899ee56d269f4afedeca93589f6c19",
+     "storedPixelSha256": "fe6c7b34b3d3e09e348f16ec8a5402ffc59d59ede7b7f3420a8061499f4d243d",
+     "colors": 29,
+     "palette": [
+      "#0f2721",
+      "#0e382c",
+      "#132b27",
+      "#164c31",
+      "#453a25",
+      "#35562b",
+      "#4e493b",
+      "#2a5f36",
+      "#3d6330",
+      "#614f30",
+      "#604829",
+      "#43733b",
+      "#557d3a",
+      "#5b7d44",
+      "#44613a",
+      "#5f5745",
+      "#756b54",
+      "#736d4f",
+      "#6e634f",
+      "#65884c",
+      "#857d5a",
+      "#7d9c4d",
+      "#759657",
+      "#77a556",
+      "#93b54f",
+      "#9eb848",
+      "#90cee6",
+      "#90cde5",
+      "#90cde4"
+     ],
+     "extras": [
+      "#93b54f",
+      "#9eb848",
+      "#90cee6",
+      "#90cde5",
+      "#90cde4"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.302 / 위 0.582",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.41 (캡처 0.35)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "397e742109261e763a86df9c8b82779b36d81d2efadb4c8984801da16702d85f",
+     "rawSha256": "48d37eea8ea6ff60c3422f290ff6a1be06dd597185f4c1e95e69269441172ca5",
+     "nativePixelSha256": "fa56f5b778d762402d41c63ca041f19ac66ddef1aacc2875284700526b6606ec",
+     "storedPixelSha256": "1db4146af8ff4b6080b62705709c272eebe273f73b13b2c9f29d1cc856022de3",
+     "colors": 23,
+     "palette": [
+      "#0f2721",
+      "#0e382c",
+      "#132b27",
+      "#164c31",
+      "#453a25",
+      "#35562b",
+      "#4e493b",
+      "#2a5f36",
+      "#3d6330",
+      "#614f30",
+      "#604829",
+      "#43733b",
+      "#557d3a",
+      "#5f5745",
+      "#756b54",
+      "#736d4f",
+      "#6e634f",
+      "#65884c",
+      "#857d5a",
+      "#7d9c4d",
+      "#759657",
+      "#1c160b",
+      "#382917"
+     ],
+     "extras": [
+      "#1c160b",
+      "#382917"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "23",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.143 / 위 0.516",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.39 (캡처 0.35)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-021733-fs2-forest",
+     "at": "2026-11-04T02:17:51Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-0272d3373ee04f448da2f929463d9be4",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-021733-fs2-forest.json",
+     "rawSha256": "7e54fc9cd0cd93d6ca1562ffb8d6420d0fda350cbbbff3fbf53c265bf58d0146",
+     "entries": [
+      {
+       "label": "99",
+       "pixelSha256": "6cde803ca1022e67e09bcbae43c5414c6fc46a0dff6b97cd8e7e9b38efb2e77b",
+       "letter": "A"
+      },
+      {
+       "label": "58",
+       "pixelSha256": "fa56f5b778d762402d41c63ca041f19ac66ddef1aacc2875284700526b6606ec",
+       "letter": "D"
+      },
+      {
+       "label": "63",
+       "pixelSha256": "38af84773cea064930f45fa349c227e4f3c9d0d87f268c102046147164dbf085",
+       "control": "top-down"
+      },
+      {
+       "label": "49",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "97",
+       "pixelSha256": "2ade0bd2e6db9fcadb80f4e310786c62100023a8a5acc86c859e36748b45744e",
+       "control": "flipped"
+      }
+     ],
+     "answers": {
+      "49": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "A desert canyon with cacti and sand does not match the forest-entrance biome on the map."
+      },
+      "58": {
+       "v": "pass",
+       "score": 3.5,
+       "why": "Matches the forest entrance with its path and signpost, but the dark, sky-less canopy and the scattered dirt patches on the grass floor add busy pattern behind sprites."
+      },
+      "63": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map itself, not a side-view battleback."
+      },
+      "97": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The image is upside down, with the dirt ground at the top and the tree canopy filling the bottom where characters would stand."
+      },
+      "99": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Eye-level daytime view of the forest entrance with the dirt path, signpost and square bush from the map, and a wide, plain dirt floor across the lower half."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "6cde803ca1022e67e09bcbae43c5414c6fc46a0dff6b97cd8e7e9b38efb2e77b",
+    "storedPixelSha256": "282316e552751b16b8b8d2a955090a839a6716e0b8ea4a7b350cdb524ad68201",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:11:16Z",
+    "score": 4.5,
+    "batch": "20261104-021733-fs2-forest"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:11:41Z",
+     "target": "map:fs_forest_edge",
+     "resourceId": "battle_backdrop_fs2_forest_282316e5",
+     "storedPixelSha256": "282316e552751b16b8b8d2a955090a839a6716e0b8ea4a7b350cdb524ad68201",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-forest/battle_backdrop_fs2_forest_282316e5.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-vault": {
+   "id": "fs2-vault",
+   "createdAt": "2026-11-04T02:28:59Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs_vault_b3",
+   "window": {
+    "x": 11,
+    "y": 7,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "9bca640b1fa09032fa6ac3622f6646316846c2b82dc5a8c2969044b2ab2632f6",
+   "referenceSha256": "1f79b2e85220a5577c7e0c5ee9cb4bfc63ce323040bc63f42a10975054f1ee44",
+   "facts": {
+    "mapId": "fs_vault_b3",
+    "mapName": "천문대 지하 · 가라앉은 회랑",
+    "tilesetName": "실내 · 손 도트 v5 (아틀라스)",
+    "indoor": true,
+    "timeOfDay": "day",
+    "timeCertain": false,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.6 · #121a36 → 밝기 ×0.46",
+     "시간 낱말 없음 · 실내 → 시간은 정하지 않고 조명만 맞춘다"
+    ],
+    "placeWords": [
+     "천문대 지하 · 가라앉은 회랑"
+    ],
+    "captureLuma": 0.171,
+    "palette": [
+     "#0a0e1e",
+     "#121526",
+     "#121728",
+     "#232637",
+     "#282b3d",
+     "#2f3142",
+     "#332c21",
+     "#1f1f33",
+     "#3b2927",
+     "#1d3662",
+     "#393c4d",
+     "#3a3421",
+     "#333649",
+     "#3a384c",
+     "#4f3436",
+     "#183d6d",
+     "#1d4171",
+     "#3f4052",
+     "#474032",
+     "#3f475a",
+     "#464a5e",
+     "#535c6f",
+     "#6a5e43",
+     "#646c7b"
+    ],
+    "note": "The underground vault floor is plain flat dark stone slabs with almost no pattern; keep the lower half calm and dark, put the bookshelves, pillars and star chart on the back wall only."
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "4eaa320583b6126d5ab8fde068a87b19c821d8c3f348b8ba1fc137406a3cfddf",
+     "rawSha256": "bd73a91a93d26fc488f39ded874ee1f9dea13fd2e0b709fd6b36e770e5860bf1",
+     "nativePixelSha256": "18da280c56dbb97821858345182105b8ea6981777337642c8a2c13f21471681c",
+     "storedPixelSha256": "e4ef9a7e61af012dc3a3262ac92babe0b3e19d1ae2f028316c0b91aa8aae752f",
+     "colors": 28,
+     "palette": [
+      "#0a0e1e",
+      "#121526",
+      "#121728",
+      "#232637",
+      "#282b3d",
+      "#2f3142",
+      "#1f1f33",
+      "#3b2927",
+      "#1d3662",
+      "#393c4d",
+      "#333649",
+      "#3a384c",
+      "#4f3436",
+      "#3f4052",
+      "#474032",
+      "#3f475a",
+      "#464a5e",
+      "#535c6f",
+      "#6a5e43",
+      "#646c7b",
+      "#684030",
+      "#624a40",
+      "#714732",
+      "#8089a3",
+      "#a28763",
+      "#a88d67",
+      "#aa8f6a",
+      "#b0956e"
+     ],
+     "extras": [
+      "#684030",
+      "#624a40",
+      "#714732",
+      "#8089a3",
+      "#a28763",
+      "#a88d67",
+      "#aa8f6a",
+      "#b0956e"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.256 / 위 0.549",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.15 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "e8f3a9eda025977e9ed9c639884ee96e5db6c50486bd294128eb88bb2591de0b",
+     "rawSha256": "cb4de2ac884f7d154dbf57756e22d6e5bb753a5df453555dc7f89dba2b9c5851",
+     "nativePixelSha256": "9072752e21632c3027fd6e44d6eeafc6189a3d84f038ced3e67ee3d2c4045ae1",
+     "storedPixelSha256": "2b257400ca9e1457a67024381b62235d1ee1a683dc3b11cb7c5fd4e20d9f5290",
+     "colors": 26,
+     "palette": [
+      "#0a0e1e",
+      "#121526",
+      "#121728",
+      "#232637",
+      "#282b3d",
+      "#2f3142",
+      "#1f1f33",
+      "#3b2927",
+      "#393c4d",
+      "#3a3421",
+      "#333649",
+      "#3a384c",
+      "#4f3436",
+      "#3f4052",
+      "#474032",
+      "#3f475a",
+      "#464a5e",
+      "#535c6f",
+      "#6a5e43",
+      "#646c7b",
+      "#624a2d",
+      "#86683a",
+      "#80725d",
+      "#837560",
+      "#857762",
+      "#8e8881"
+     ],
+     "extras": [
+      "#624a2d",
+      "#86683a",
+      "#80725d",
+      "#837560",
+      "#857762",
+      "#8e8881"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.236 / 위 0.499",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.17 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "52e0c1acfda153aea91cd2130419230a2aa6adfea07879e2765dece239c91b1a",
+     "rawSha256": "cc51dab0ba27fb8246cbd861233d5b2fa57aa237d7ac572042c3cb32ad2ecda2",
+     "nativePixelSha256": "ce313c3c4aae15e7605ce6f16555e75fb192a8a8ba145d68f59be30f9baeccf1",
+     "storedPixelSha256": "1b3b7ea63593b882d05d705b1e01d131f5b91a4d04b9c128f78a5e001fb4bb28",
+     "colors": 27,
+     "palette": [
+      "#0a0e1e",
+      "#121526",
+      "#121728",
+      "#232637",
+      "#282b3d",
+      "#2f3142",
+      "#1f1f33",
+      "#3b2927",
+      "#393c4d",
+      "#333649",
+      "#3a384c",
+      "#4f3436",
+      "#3f4052",
+      "#474032",
+      "#3f475a",
+      "#464a5e",
+      "#535c6f",
+      "#6a5e43",
+      "#646c7b",
+      "#684239",
+      "#6c453b",
+      "#7b4839",
+      "#9a846e",
+      "#9c866f",
+      "#a68f75",
+      "#a79076",
+      "#a99277"
+     ],
+     "extras": [
+      "#684239",
+      "#6c453b",
+      "#7b4839",
+      "#9a846e",
+      "#9c866f",
+      "#a68f75",
+      "#a79076",
+      "#a99277"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.080 / 위 0.527",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.17 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "60c9f5e6e070311a13c59b8ef0f6f03dfbd9c5b7dff9983658fd8a7ea5d3e9b9",
+     "rawSha256": "c7c01100db1a78f1462d87c3142efc7d8422125511940c534ea26adab7949ecc",
+     "nativePixelSha256": "9a0a78de251e5e6756af76e1dae6926633d542c7bd02106530c95422c52a495b",
+     "storedPixelSha256": "b741ecd7b76322300bb267979ca183a1f86df6533797bc1f3f69f1ef4f5c3b49",
+     "colors": 27,
+     "palette": [
+      "#0a0e1e",
+      "#121526",
+      "#121728",
+      "#232637",
+      "#282b3d",
+      "#2f3142",
+      "#332c21",
+      "#1f1f33",
+      "#3b2927",
+      "#393c4d",
+      "#3a3421",
+      "#333649",
+      "#3a384c",
+      "#4f3436",
+      "#3f4052",
+      "#474032",
+      "#3f475a",
+      "#464a5e",
+      "#535c6f",
+      "#6a5e43",
+      "#646c7b",
+      "#634929",
+      "#66492b",
+      "#7f6e4c",
+      "#837351",
+      "#8a7a56",
+      "#82848a"
+     ],
+     "extras": [
+      "#634929",
+      "#66492b",
+      "#7f6e4c",
+      "#837351",
+      "#8a7a56",
+      "#82848a"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.251 / 위 0.643",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.16 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025138-fs2-vault",
+     "at": "2026-11-04T02:51:50Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-af9cf0afbb534e70843a475c6fe9c441",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025138-fs2-vault.json",
+     "rawSha256": "2b483806591b2e4b627327a379cea98e137a806dd47d7ffc0ef66ed5d8f8f4ec",
+     "entries": [
+      {
+       "label": "19",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "79",
+       "pixelSha256": "7220e99b5ec785f1d3a7db2da97c4e9fe2c8f025c6eb370c6d25c792946c4971",
+       "control": "top-down"
+      },
+      {
+       "label": "81",
+       "pixelSha256": "da28ba74a478ef97d1f5f2c355bb17626a25a20b0d6bd5b2784c7014748be330",
+       "control": "flipped"
+      },
+      {
+       "label": "96",
+       "pixelSha256": "ce313c3c4aae15e7605ce6f16555e75fb192a8a8ba145d68f59be30f9baeccf1",
+       "letter": "C"
+      }
+     ],
+     "answers": {
+      "19": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a sunlit outdoor desert canyon with cacti and sky, which does not match the dark indoor stone observatory corridor on the map."
+      },
+      "79": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map, not a side or eye-level view."
+      },
+      "81": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The image is upside down, with the arches and ceiling at the bottom and the empty floor at the top."
+      },
+      "96": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "It is an eye-level view of a dim stone corridor with star-chart panels, an armillary sphere, wall torches and arches that match the map, and its lower half is a plain, calm dark floor in clean limited-palette pixel art."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "C",
+    "nativePixelSha256": "ce313c3c4aae15e7605ce6f16555e75fb192a8a8ba145d68f59be30f9baeccf1",
+    "storedPixelSha256": "1b3b7ea63593b882d05d705b1e01d131f5b91a4d04b9c128f78a5e001fb4bb28",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:13:12Z",
+    "score": 4.5,
+    "batch": "20261104-025138-fs2-vault"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:13:39Z",
+     "target": "map:fs_vault_b3",
+     "resourceId": "battle_backdrop_fs2_vault_1b3b7ea6",
+     "storedPixelSha256": "1b3b7ea63593b882d05d705b1e01d131f5b91a4d04b9c128f78a5e001fb4bb28",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-vault/battle_backdrop_fs2_vault_1b3b7ea6.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-dawnwell": {
+   "id": "fs2-dawnwell",
+   "createdAt": "2026-11-04T02:11:27Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_dawnwell",
+   "window": {
+    "x": 0,
+    "y": 25,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "bdbe136d5c95b74cf47690554eab06586099edf4c3306e49dcb83703f5e4e815",
+   "referenceSha256": "cda99e5111017c8bacffaa236020bb5d1957a109f7ba78f5b674a11dd127a430",
+   "facts": {
+    "mapId": "fs2_dawnwell",
+    "mapName": "새벽샘 터",
+    "tilesetName": "새벽샘 터 · 재",
+    "indoor": false,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.45 · #45444c → 밝기 ×0.67",
+     "낱말 「새벽」: 새벽샘 터"
+    ],
+    "placeWords": [
+     "새벽샘 터"
+    ],
+    "captureLuma": 0.292,
+    "palette": [
+     "#2a292b",
+     "#2c2b30",
+     "#2e2d32",
+     "#333032",
+     "#3b383b",
+     "#423c3a",
+     "#3e3e43",
+     "#414045",
+     "#474649",
+     "#47474b",
+     "#48474c",
+     "#4d4643",
+     "#48484d",
+     "#48484b",
+     "#49484d",
+     "#4c4c50",
+     "#505054",
+     "#5f5754",
+     "#665f5d",
+     "#666669",
+     "#6c6869",
+     "#6d6a6b",
+     "#6e6d70",
+     "#787779"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "47b870b4621c1094c2be2f38696f947a6faaa867efca66908ba48c5eb6eae6e3",
+     "rawSha256": "de7a6959f8dc2039c91773b743e793b771ef4f2733de6e6788fabae025c987dd",
+     "nativePixelSha256": "f70de5eb923198bc80416a113b8c4612c2bdfb908c640c80fcb494d9e8df0dea",
+     "storedPixelSha256": "1ee500a5d796336c0d64dd50825854886e80a06df7775b84b8006db1aca19dc8",
+     "colors": 25,
+     "palette": [
+      "#2a292b",
+      "#2c2b30",
+      "#2e2d32",
+      "#333032",
+      "#3b383b",
+      "#423c3a",
+      "#3e3e43",
+      "#414045",
+      "#474649",
+      "#48474c",
+      "#4d4643",
+      "#49484d",
+      "#4c4c50",
+      "#505054",
+      "#5f5754",
+      "#665f5d",
+      "#666669",
+      "#6c6869",
+      "#6d6a6b",
+      "#6e6d70",
+      "#787779",
+      "#191b24",
+      "#9b7d6e",
+      "#9d8070",
+      "#a88672"
+     ],
+     "extras": [
+      "#191b24",
+      "#9b7d6e",
+      "#9d8070",
+      "#a88672"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.258 / 위 0.488",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.23 (캡처 0.29)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "205e5c72d81a53131ace24731d9dbae2676789bef32b16517abf7913513c7b80",
+     "rawSha256": "7e0e192a00576fb3bb9814ba1cafedf8c07c358ce43ac435a124e388f7bd8ec5",
+     "nativePixelSha256": "b07b131cbf8b809f78bcd20c21c3af16970b8f5b92f3b89a0dd881d4538b4157",
+     "storedPixelSha256": "a3a9b0284240fa3c4eaf459cf4ee4b88990f0843079ece3567581cc2c76c700c",
+     "colors": 25,
+     "palette": [
+      "#2a292b",
+      "#2c2b30",
+      "#2e2d32",
+      "#333032",
+      "#3b383b",
+      "#423c3a",
+      "#3e3e43",
+      "#414045",
+      "#474649",
+      "#48474c",
+      "#4d4643",
+      "#48484d",
+      "#49484d",
+      "#4c4c50",
+      "#505054",
+      "#5f5754",
+      "#665f5d",
+      "#10121e",
+      "#11131f",
+      "#131521",
+      "#151925",
+      "#161a27",
+      "#1b1a24",
+      "#171c2a",
+      "#966d4a"
+     ],
+     "extras": [
+      "#10121e",
+      "#11131f",
+      "#131521",
+      "#151925",
+      "#161a27",
+      "#1b1a24",
+      "#171c2a",
+      "#966d4a"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.061 / 위 0.586",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.18 (캡처 0.29)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "413511baf190b27fee9c72aa2c09dcbf04e3f6c867c8e82b5949610988d1f9f4",
+     "rawSha256": "8c9ad28d9a9d4bae11557baa5f881d407521ec8fd1ab80089c3d7f0d7ad0efaa",
+     "nativePixelSha256": "1f817b05e140c241f78a86e566429581e2919fe4aa8df0ea72c9307be4d42379",
+     "storedPixelSha256": "54b84117d47213752424ee7e23e6f13dddcb446cedf7b76e2c3e1039a6a2c2df",
+     "colors": 26,
+     "palette": [
+      "#2a292b",
+      "#2c2b30",
+      "#2e2d32",
+      "#333032",
+      "#3b383b",
+      "#423c3a",
+      "#3e3e43",
+      "#414045",
+      "#48474c",
+      "#4d4643",
+      "#49484d",
+      "#4c4c50",
+      "#505054",
+      "#5f5754",
+      "#665f5d",
+      "#666669",
+      "#6c6869",
+      "#6d6a6b",
+      "#6e6d70",
+      "#14171e",
+      "#151b28",
+      "#161b28",
+      "#161c28",
+      "#161c29",
+      "#171c2a",
+      "#aa7f61"
+     ],
+     "extras": [
+      "#14171e",
+      "#151b28",
+      "#161b28",
+      "#161c28",
+      "#161c29",
+      "#171c2a",
+      "#aa7f61"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.084 / 위 0.565",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.19 (캡처 0.29)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "ec1acd8a4a17a613d126c653c65f49f4ff2553fe3af8ce3f8aee259e04a4e541",
+     "rawSha256": "1ffa0181f26b8db9b5dcd8af74a8b4f356cb3be74313358405fe8e457045882e",
+     "nativePixelSha256": "11e183275c89ef774327b6b26bcfa00f42be9c262b3ce2ac36c42c890cf44d0d",
+     "storedPixelSha256": "13d7d8e4dd437ecdeff5c0900183f9812b309754966065e314262792cb0cdf30",
+     "colors": 23,
+     "palette": [
+      "#2a292b",
+      "#2c2b30",
+      "#2e2d32",
+      "#333032",
+      "#3b383b",
+      "#423c3a",
+      "#3e3e43",
+      "#414045",
+      "#474649",
+      "#4d4643",
+      "#49484d",
+      "#4c4c50",
+      "#505054",
+      "#5f5754",
+      "#665f5d",
+      "#666669",
+      "#6c6869",
+      "#6d6a6b",
+      "#6e6d70",
+      "#787779",
+      "#1c1a21",
+      "#8a694d",
+      "#9f8063"
+     ],
+     "extras": [
+      "#1c1a21",
+      "#8a694d",
+      "#9f8063"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "23",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.031 / 위 0.366",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.22 (캡처 0.29)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-024901-fs2-dawnwell",
+     "at": "2026-11-04T02:49:25Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-d0db67fe1f064b599f83ecfc89977db5",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-024901-fs2-dawnwell.json",
+     "rawSha256": "9300eb2aa71751ab6bf63932aec291a6c38b875ee6428719f27c7c23bfcde9f6",
+     "entries": [
+      {
+       "label": "40",
+       "pixelSha256": "b07b131cbf8b809f78bcd20c21c3af16970b8f5b92f3b89a0dd881d4538b4157",
+       "letter": "B"
+      },
+      {
+       "label": "60",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "35",
+       "pixelSha256": "d223cb88d5400c385d3f21e9952839e5c1c322a6a13dc565f104b365b7d5f457",
+       "control": "flipped"
+      },
+      {
+       "label": "57",
+       "pixelSha256": "42c6c15e05837581f339fefd46394aa27b5a69ba4219aa967a738982d2a637cb",
+       "control": "top-down"
+      },
+      {
+       "label": "15",
+       "pixelSha256": "1f817b05e140c241f78a86e566429581e2919fe4aa8df0ea72c9307be4d42379",
+       "letter": "C"
+      },
+      {
+       "label": "89",
+       "pixelSha256": "11e183275c89ef774327b6b26bcfa00f42be9c262b3ce2ac36c42c890cf44d0d",
+       "letter": "D"
+      }
+     ],
+     "answers": {
+      "15": {
+       "v": "pass",
+       "score": 4,
+       "why": "The night village with the stone hut, timber cottage, dead trees and lit lamp post matches the map, though the flat untextured grey ground looks slightly unfinished next to the detailed backdrop."
+      },
+      "35": {
+       "v": "reject",
+       "score": 1,
+       "why": "The image is upside down, with the buildings hanging from the bottom and the ground occupying the top."
+      },
+      "40": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Eye-level night view of the map's stone chapel, half-timbered cottage and ruined stone wall above a dark, calm dirt field that fills the lower half and leaves clean room for sprites."
+      },
+      "57": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a downscaled copy of the top-down map, not a side-view battleback."
+      },
+      "60": {
+       "v": "reject",
+       "score": 1,
+       "why": "A bright daytime desert with mesas and cacti does not match the dim, dead-grass village ruins on the map."
+      },
+      "89": {
+       "v": "pass",
+       "score": 4,
+       "why": "It shows the map's fence, stone house, timber cottage and stone tower at night above open ground, but the scattered dark marks on the floor add mild visual noise under sprites."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "b07b131cbf8b809f78bcd20c21c3af16970b8f5b92f3b89a0dd881d4538b4157",
+    "storedPixelSha256": "a3a9b0284240fa3c4eaf459cf4ee4b88990f0843079ece3567581cc2c76c700c",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:15:44Z",
+    "score": 4.5,
+    "batch": "20261104-024901-fs2-dawnwell"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:16:07Z",
+     "target": "map:fs2_dawnwell",
+     "resourceId": "battle_backdrop_fs2_dawnwell_a3a9b028",
+     "storedPixelSha256": "a3a9b0284240fa3c4eaf459cf4ee4b88990f0843079ece3567581cc2c76c700c",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-dawnwell/battle_backdrop_fs2_dawnwell_a3a9b028.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-ash-field": {
+   "id": "fs2-ash-field",
+   "createdAt": "2026-11-04T02:11:31Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "map_field_north_2",
+   "window": {
+    "x": 31,
+    "y": 3,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "1fe02f615ed654a7180d1e96fe598b199d815dfdfd9f4abe0681a9644edff255",
+   "referenceSha256": "dbc0f6b6ad2c9d1004a4cf16342e4d281f1c8f1767f225dd1cff47d34d9154b6",
+   "facts": {
+    "mapId": "map_field_north_2",
+    "mapName": "재의 들판",
+    "tilesetName": "버들항 웨이브 장소 (원본 그림 칸)",
+    "indoor": false,
+    "timeOfDay": "dusk",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.4 · #4c4c54 → 밝기 ×0.72",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "재의 들판"
+    ],
+    "captureLuma": 0.272,
+    "palette": [
+     "#212026",
+     "#232129",
+     "#222229",
+     "#242326",
+     "#25232e",
+     "#25252c",
+     "#29272f",
+     "#272830",
+     "#292734",
+     "#2d292b",
+     "#3e3942",
+     "#333038",
+     "#2a2737",
+     "#443536",
+     "#3b3550",
+     "#3f3534",
+     "#4b454d",
+     "#454146",
+     "#595258",
+     "#604946",
+     "#696264",
+     "#715752",
+     "#7d7573",
+     "#9e9241"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "bb8e878fab3bb417304e725a829ce69a4ebe901cba0c18ca9a94d4c1cfd24cd3",
+     "rawSha256": "eec6087415fb7fca809d8ac4595629dca0115d239ee324b0fa42dab26d066f60",
+     "nativePixelSha256": "60e8e43c8ff3953a523b9d5c2b4a57608d50546aad6cee1920d25ac4278eb353",
+     "storedPixelSha256": "20adbe7ef3810fb8b8332d4675c2bc04a2061d74869d486dc8113fbfcf16110e",
+     "colors": 28,
+     "palette": [
+      "#212026",
+      "#232129",
+      "#25232e",
+      "#29272f",
+      "#272830",
+      "#292734",
+      "#2d292b",
+      "#3e3942",
+      "#333038",
+      "#2a2737",
+      "#443536",
+      "#3b3550",
+      "#4b454d",
+      "#454146",
+      "#595258",
+      "#604946",
+      "#696264",
+      "#715752",
+      "#7d7573",
+      "#9e9241",
+      "#7b4053",
+      "#7c4053",
+      "#7f4051",
+      "#8b4147",
+      "#a04542",
+      "#ca5036",
+      "#e2632c",
+      "#a9aaae"
+     ],
+     "extras": [
+      "#7b4053",
+      "#7c4053",
+      "#7f4051",
+      "#8b4147",
+      "#a04542",
+      "#ca5036",
+      "#e2632c",
+      "#a9aaae"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.117 / 위 0.408",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.26 (캡처 0.27)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "ca7fd683a74a680d29b1e017a55691e34c86725333fc658a034d4be9c5a34d58",
+     "rawSha256": "56c4fbf41c9b15054ceebc5ea3b07966fede2c3186a1e53dc1853e42d6b71ff5",
+     "nativePixelSha256": "6791503f2a6f20840a5908f8b5b35aeb8c6388a6fa3d203981d1f92570a599c2",
+     "storedPixelSha256": "108fa9533281d00e6526abe9cf77f775be04a34854ccab8bbc1a8c203da1de7a",
+     "colors": 22,
+     "palette": [
+      "#3e3942",
+      "#333038",
+      "#2a2737",
+      "#443536",
+      "#3b3550",
+      "#3f3534",
+      "#4b454d",
+      "#454146",
+      "#595258",
+      "#604946",
+      "#696264",
+      "#715752",
+      "#7d7573",
+      "#9e9241",
+      "#57416b",
+      "#b23d2b",
+      "#8f6f26",
+      "#b95d32",
+      "#aba8b0",
+      "#aba7af",
+      "#cf6d2f",
+      "#f1a138"
+     ],
+     "extras": [
+      "#57416b",
+      "#b23d2b",
+      "#8f6f26",
+      "#b95d32",
+      "#aba8b0",
+      "#aba7af",
+      "#cf6d2f",
+      "#f1a138"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "22",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.045 / 위 0.306",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.28 (캡처 0.27)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "60af2442e1af8199f51495f629be9cd4c65f77b1057738591c99e37e4bc7e3d5",
+     "rawSha256": "914e640dc460ec0a7c7adad18c932634fa72cb2c0b6762016a0aa3788fccec52",
+     "nativePixelSha256": "bc8823d3a3b8679a86273d715083eb895b936b04f6aeeafac8deab59221723b7",
+     "storedPixelSha256": "84d4b445f5c618ff4c156ccfcbf54e0d6d622a7597b9a2750eeee49b57dcfcf2",
+     "colors": 25,
+     "palette": [
+      "#29272f",
+      "#292734",
+      "#2d292b",
+      "#3e3942",
+      "#333038",
+      "#2a2737",
+      "#443536",
+      "#3b3550",
+      "#3f3534",
+      "#4b454d",
+      "#454146",
+      "#595258",
+      "#604946",
+      "#696264",
+      "#715752",
+      "#7d7573",
+      "#9e9241",
+      "#93524a",
+      "#97544a",
+      "#975247",
+      "#995449",
+      "#a75644",
+      "#aa9d9a",
+      "#de6b30",
+      "#df6d32"
+     ],
+     "extras": [
+      "#93524a",
+      "#97544a",
+      "#975247",
+      "#995449",
+      "#a75644",
+      "#aa9d9a",
+      "#de6b30",
+      "#df6d32"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.219 / 위 0.401",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.27 (캡처 0.27)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "5f57e5873ba5f56a047b553876e32b1b9d6f564427eaca76a805c046d188bdae",
+     "rawSha256": "f2a39b428da7fa0994db353b7a8107209218b3a6799ad17233fd3d3fdcf9105d",
+     "nativePixelSha256": "061ca3463604a22b450e33ed837839173eebd84b30312613a39ac3c7d5fc9928",
+     "storedPixelSha256": "c25ef58baf4d17bd5133b6a34b60803e5bdcea24878f754e9fce3b866b5e03a2",
+     "colors": 29,
+     "palette": [
+      "#212026",
+      "#232129",
+      "#25232e",
+      "#25252c",
+      "#29272f",
+      "#292734",
+      "#2d292b",
+      "#3e3942",
+      "#333038",
+      "#2a2737",
+      "#443536",
+      "#3b3550",
+      "#3f3534",
+      "#4b454d",
+      "#454146",
+      "#595258",
+      "#604946",
+      "#696264",
+      "#715752",
+      "#7d7573",
+      "#9e9241",
+      "#5d5125",
+      "#8f4a4c",
+      "#964d4e",
+      "#974e4f",
+      "#ac5945",
+      "#b55d44",
+      "#cd6f3e",
+      "#999390"
+     ],
+     "extras": [
+      "#5d5125",
+      "#8f4a4c",
+      "#964d4e",
+      "#974e4f",
+      "#ac5945",
+      "#b55d44",
+      "#cd6f3e",
+      "#999390"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.170 / 위 0.466",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.24 (캡처 0.27)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-024950-fs2-ash-field",
+     "at": "2026-11-04T02:50:09Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-63781d8ab473434eb613e51958823be3",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-024950-fs2-ash-field.json",
+     "rawSha256": "bd604d1e35385751b5d2a750a05a94e4e2bf853930113ac70207c3fa15473411",
+     "entries": [
+      {
+       "label": "38",
+       "pixelSha256": "6791503f2a6f20840a5908f8b5b35aeb8c6388a6fa3d203981d1f92570a599c2",
+       "letter": "B"
+      },
+      {
+       "label": "67",
+       "pixelSha256": "bc8823d3a3b8679a86273d715083eb895b936b04f6aeeafac8deab59221723b7",
+       "letter": "C"
+      },
+      {
+       "label": "59",
+       "pixelSha256": "996ababbcc189bf54012ff6942d655834c78f4bd2aeb117f8bf34fbcbc98465f",
+       "control": "flipped"
+      },
+      {
+       "label": "40",
+       "pixelSha256": "061ca3463604a22b450e33ed837839173eebd84b30312613a39ac3c7d5fc9928",
+       "letter": "D"
+      },
+      {
+       "label": "43",
+       "pixelSha256": "60e8e43c8ff3953a523b9d5c2b4a57608d50546aad6cee1920d25ac4278eb353",
+       "letter": "A"
+      },
+      {
+       "label": "73",
+       "pixelSha256": "0a54a192f7af527452502de264895109324f30316a5641e4a08d4207c2ae9b10",
+       "control": "top-down"
+      },
+      {
+       "label": "37",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      }
+     ],
+     "answers": {
+      "37": {
+       "v": "reject",
+       "score": 1,
+       "why": "It shows a bright daytime sandy desert with cacti and red mesas, which does not match the dusk volcanic ash field of the map."
+      },
+      "38": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Eye-level dusk view of the ash field with the map's lava pool, purple crystal spires and steaming yellow vents along the horizon, above a flat, calm gray ash floor filling the lower half."
+      },
+      "40": {
+       "v": "pass",
+       "score": 4,
+       "why": "It matches the map's cliffs, lava pool, spires and steaming vents at dusk, but the very dark, faintly noisy floor gives sprites less contrast than the other passing images."
+      },
+      "43": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Dim dusk vista with layered mountains, a lava pool, crystal spires and smoking yellow vents on reddish soil, with a broad, flat, uncluttered ash floor in the lower half."
+      },
+      "59": {
+       "v": "reject",
+       "score": 1,
+       "why": "The image is upside down: the ash ground fills the top and the sunset sky sits at the bottom, so it fails the side-view orientation rule."
+      },
+      "67": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Side view at sunset with the basalt cliffs, crystal spires, lava pool and fumarole field from the map on a clean horizon line, with an open, lightly speckled ash floor below."
+      },
+      "73": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down map nearly identical to the reference, not a side or eye-level battleback."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "60e8e43c8ff3953a523b9d5c2b4a57608d50546aad6cee1920d25ac4278eb353",
+    "storedPixelSha256": "20adbe7ef3810fb8b8332d4675c2bc04a2061d74869d486dc8113fbfcf16110e",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:16:27Z",
+    "score": 4.5,
+    "batch": "20261104-024950-fs2-ash-field"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:16:52Z",
+     "target": "map:map_field_north_2",
+     "resourceId": "battle_backdrop_fs2_ash_field_20adbe7e",
+     "storedPixelSha256": "20adbe7ef3810fb8b8332d4675c2bc04a2061d74869d486dc8113fbfcf16110e",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-ash-field/battle_backdrop_fs2_ash_field_20adbe7e.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-fort-court": {
+   "id": "fs2-fort-court",
+   "createdAt": "2026-11-04T02:13:14Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_fort_court",
+   "window": {
+    "x": 20,
+    "y": 19,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "38365d7e428c5933191e5cdfaa2a57c84bae50969f8702e458dfe230eb1a7696",
+   "referenceSha256": "570ecda3111ab7475a11b17f00be7650f0272a490ebdeb3defd80e0ddec0c55e",
+   "facts": {
+    "mapId": "fs2_fort_court",
+    "mapName": "북방 관문 요새",
+    "tilesetName": "버들항 웨이브 장소 (원본 그림 칸)",
+    "indoor": false,
+    "timeOfDay": "dusk",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.35 · #5a6478 → 밝기 ×0.79",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "북방 관문 요새"
+    ],
+    "captureLuma": 0.489,
+    "palette": [
+     "#233333",
+     "#3c424e",
+     "#4b515b",
+     "#514949",
+     "#5c6168",
+     "#54585d",
+     "#566177",
+     "#5e6268",
+     "#596375",
+     "#5f6368",
+     "#576a93",
+     "#51638a",
+     "#61636e",
+     "#59647c",
+     "#5d6574",
+     "#717679",
+     "#736862",
+     "#898c8d",
+     "#848687",
+     "#a3b1c5",
+     "#a1a2a2",
+     "#9fa4a9",
+     "#b5bfcd",
+     "#c5c9d0"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "8aa64b668cc487c5bef9734db01591d1717012a3ad028fdcbbaff2c016848e23",
+     "rawSha256": "856e5997154c197be12e9823444afd5bd0d6f7bec7b74870ce297f8062174852",
+     "nativePixelSha256": "307cf4e3d3e32455be3a90de8ac95166983ed836352fe3d7f3a897e0ebaed0d9",
+     "storedPixelSha256": "46fbcfb415669d17a288972c7964c829f88f13449028c365f88588c763ea000f",
+     "colors": 31,
+     "palette": [
+      "#233333",
+      "#3c424e",
+      "#4b515b",
+      "#514949",
+      "#5c6168",
+      "#54585d",
+      "#566177",
+      "#5e6268",
+      "#596375",
+      "#576a93",
+      "#51638a",
+      "#61636e",
+      "#59647c",
+      "#5d6574",
+      "#717679",
+      "#736862",
+      "#898c8d",
+      "#848687",
+      "#a3b1c5",
+      "#a1a2a2",
+      "#9fa4a9",
+      "#b5bfcd",
+      "#c5c9d0",
+      "#16222f",
+      "#3b4573",
+      "#3c4574",
+      "#765343",
+      "#7380aa",
+      "#7784ad",
+      "#8a94b7",
+      "#8c95b7"
+     ],
+     "extras": [
+      "#16222f",
+      "#3b4573",
+      "#3c4574",
+      "#765343",
+      "#7380aa",
+      "#7784ad",
+      "#8a94b7",
+      "#8c95b7"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "31",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.454 / 위 0.662",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.35 (캡처 0.49)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "355560d29e60ab84a377fdcdfae87a428b921e877aeb41463d5148746b47808b",
+     "rawSha256": "f53f872867e92a72d49ac47a95089862e3beccf72b928cf8e2e67256c9a19924",
+     "nativePixelSha256": "631ace3a1005f06dbae6fe79859d17c2db50258f098bb6b9d59741e841e4b247",
+     "storedPixelSha256": "56294c10f6635307ea44de4a9d78258a79cc4e12152ac0098067331e5579138a",
+     "colors": 30,
+     "palette": [
+      "#233333",
+      "#3c424e",
+      "#4b515b",
+      "#514949",
+      "#5c6168",
+      "#54585d",
+      "#566177",
+      "#5e6268",
+      "#596375",
+      "#5f6368",
+      "#576a93",
+      "#61636e",
+      "#59647c",
+      "#5d6574",
+      "#717679",
+      "#736862",
+      "#898c8d",
+      "#848687",
+      "#a3b1c5",
+      "#9fa4a9",
+      "#b5bfcd",
+      "#c5c9d0",
+      "#131b2a",
+      "#171f2f",
+      "#1a2232",
+      "#926573",
+      "#926673",
+      "#a7686c",
+      "#e0795b",
+      "#e07a5c"
+     ],
+     "extras": [
+      "#131b2a",
+      "#171f2f",
+      "#1a2232",
+      "#926573",
+      "#926673",
+      "#a7686c",
+      "#e0795b",
+      "#e07a5c"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.136 / 위 0.541",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.46 (캡처 0.49)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "a0c21dcbc80b10b95e7d2f27a040e6b9f2b8c8d1858373016be0df3e7b3ba2d3",
+     "rawSha256": "e911553ca3b9db9e269be36fc86b283e4e319b28dffde4b5993e6d8ba921f6ea",
+     "nativePixelSha256": "5e1288d123c1ce84f8070e896b1974ce9ddf58d6f273bc9c2afb415775e3c4cf",
+     "storedPixelSha256": "3f20702337fe9b6344fb9811283f380935c7c68c389f75eb0e7e54255b5e1746",
+     "colors": 31,
+     "palette": [
+      "#233333",
+      "#3c424e",
+      "#4b515b",
+      "#514949",
+      "#5c6168",
+      "#54585d",
+      "#566177",
+      "#5e6268",
+      "#596375",
+      "#5f6368",
+      "#576a93",
+      "#61636e",
+      "#59647c",
+      "#5d6574",
+      "#717679",
+      "#736862",
+      "#898c8d",
+      "#848687",
+      "#a3b1c5",
+      "#a1a2a2",
+      "#9fa4a9",
+      "#b5bfcd",
+      "#c5c9d0",
+      "#1b212c",
+      "#1b222d",
+      "#734f38",
+      "#778cba",
+      "#a26f4c",
+      "#c47e62",
+      "#869bc6",
+      "#efa66b"
+     ],
+     "extras": [
+      "#1b212c",
+      "#1b222d",
+      "#734f38",
+      "#778cba",
+      "#a26f4c",
+      "#c47e62",
+      "#869bc6",
+      "#efa66b"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "31",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.206 / 위 0.598",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.35 (캡처 0.49)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "686bb87c2bf51d50435ba54fa3eb24340872254a8ab607d265e992975157bf55",
+     "rawSha256": "5df4d1f2899f02b5928fc68f5459cca9b4b7e6e8702314dbca53ccf082181c61",
+     "nativePixelSha256": "c5b15ac251adb2c6769d7458ff3dc10b08ac269b1a6ba9fe8895580519a84bbf",
+     "storedPixelSha256": "55e78e3179349a3753bb5aa2d71449848562f56881561b8a6f6dbd7a039f87cb",
+     "colors": 28,
+     "palette": [
+      "#233333",
+      "#3c424e",
+      "#4b515b",
+      "#514949",
+      "#5c6168",
+      "#54585d",
+      "#566177",
+      "#596375",
+      "#576a93",
+      "#61636e",
+      "#59647c",
+      "#5d6574",
+      "#717679",
+      "#736862",
+      "#898c8d",
+      "#848687",
+      "#a3b1c5",
+      "#a1a2a2",
+      "#9fa4a9",
+      "#b5bfcd",
+      "#c5c9d0",
+      "#1d2337",
+      "#977077",
+      "#be8068",
+      "#c38368",
+      "#c48469",
+      "#8899bf",
+      "#cc9a74"
+     ],
+     "extras": [
+      "#1d2337",
+      "#977077",
+      "#be8068",
+      "#c38368",
+      "#c48469",
+      "#8899bf",
+      "#cc9a74"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.126 / 위 0.629",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.46 (캡처 0.49)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025030-fs2-fort-court",
+     "at": "2026-11-04T02:50:53Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-442d59c1e59f4a7ebb00d116beb5fa06",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025030-fs2-fort-court.json",
+     "rawSha256": "6afb22ec8182c84a373055829e23f75857fa83c83f9ef9cf334a69a9730ef715",
+     "entries": [
+      {
+       "label": "79",
+       "pixelSha256": "c5b15ac251adb2c6769d7458ff3dc10b08ac269b1a6ba9fe8895580519a84bbf",
+       "letter": "D"
+      },
+      {
+       "label": "18",
+       "pixelSha256": "5e1288d123c1ce84f8070e896b1974ce9ddf58d6f273bc9c2afb415775e3c4cf",
+       "letter": "C"
+      },
+      {
+       "label": "65",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "81",
+       "pixelSha256": "e250ecea9801ba4b9d941d336faceb03b40c07a90742849dd168e04237023dd0",
+       "control": "top-down"
+      },
+      {
+       "label": "43",
+       "pixelSha256": "631ace3a1005f06dbae6fe79859d17c2db50258f098bb6b9d59741e841e4b247",
+       "letter": "B"
+      },
+      {
+       "label": "82",
+       "pixelSha256": "3587291554ef6bde2e907881b5b0871508341593cf59635ec2f2806f8ef5ff8b",
+       "control": "flipped"
+      }
+     ],
+     "answers": {
+      "18": {
+       "v": "pass",
+       "score": 3.5,
+       "why": "The angled view of the wall, stairway and torches at dusk matches the map, but the grey ground has a mottled, noisy texture and rocks at the edges, which makes it busier than ideal behind sprites."
+      },
+      "43": {
+       "v": "pass",
+       "score": 4,
+       "why": "A frontal eye-level view of the gate wall, stairway and glowing torches at dusk matches the map in crisp pixel art, though the flat snow floor fills slightly less than the lower 45%."
+      },
+      "65": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a sunny desert canyon with cacti, which matches neither the snowy northern gate fortress nor the dusk lighting."
+      },
+      "79": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "An eye-level view of the snowy fortress wall with the central stairway, torches and fences matches the map under a dusk sky, and the lower half is open, calm snow ground in clean limited-palette pixel art."
+      },
+      "81": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map rather than a side-view battleback, with boulders, trees and cliffs covering the lower area."
+      },
+      "82": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The fortress scene is upside down, with the dusk sky at the bottom and the ground at the top."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "D",
+    "nativePixelSha256": "c5b15ac251adb2c6769d7458ff3dc10b08ac269b1a6ba9fe8895580519a84bbf",
+    "storedPixelSha256": "55e78e3179349a3753bb5aa2d71449848562f56881561b8a6f6dbd7a039f87cb",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:17:12Z",
+    "score": 4.5,
+    "batch": "20261104-025030-fs2-fort-court"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:17:31Z",
+     "target": "map:fs2_fort_court",
+     "resourceId": "battle_backdrop_fs2_fort_court_55e78e31",
+     "storedPixelSha256": "55e78e3179349a3753bb5aa2d71449848562f56881561b8a6f6dbd7a039f87cb",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-fort-court/battle_backdrop_fs2_fort_court_55e78e31.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-fortress": {
+   "id": "fs2-fortress",
+   "createdAt": "2026-11-04T02:30:36Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_fortress",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 37,
+    "h": 25
+   },
+   "captureSha256": "accb5464044da776baed7de6a626f2f8e216aed07f4287226ab46cbda4d1ab83",
+   "referenceSha256": "b4f3860015f704a511b228d762c997b1c623ea9e701801be1f56415c4cecab3c",
+   "facts": {
+    "mapId": "fs2_fortress",
+    "mapName": "북방 관문 요새 1층",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "dusk",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.55 · #40485a → 밝기 ×0.60",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "북방 관문 요새 1층",
+     "입구 홀 gate",
+     "큰 홀 yard",
+     "감방 cells",
+     "창고 armory",
+     "큰 홀 stair",
+     "던전 입구"
+    ],
+    "captureLuma": 0.301,
+    "palette": [
+     "#282b38",
+     "#272c36",
+     "#2a2b3a",
+     "#282d36",
+     "#292d37",
+     "#2a2c3b",
+     "#292e37",
+     "#2a2f38",
+     "#2d2d3e",
+     "#363b46",
+     "#3a3f4c",
+     "#423b3c",
+     "#454a53",
+     "#4e545d",
+     "#4a5159",
+     "#555864",
+     "#5c616a",
+     "#5d626b",
+     "#656a73",
+     "#61676f",
+     "#6a6f78",
+     "#798191",
+     "#696e76",
+     "#7b8189"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "d863817c5a8cac563a20a1d974744c75a615d64dd5425462a3ed72f976824fde",
+     "rawSha256": "a06ad42e84d3f155a40f38c0452e75f1d3d5a854de2b75e88b6b849cfffd29ca",
+     "nativePixelSha256": "2c5f06134d034f3bc00858a0ac279689421c7c559644451314a3ececa0fa2256",
+     "storedPixelSha256": "57d4993f4e4dfdfc99844f095a1559ec157122fd6ec2bc25ff49d28fde5e9481",
+     "colors": 26,
+     "palette": [
+      "#282b38",
+      "#272c36",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#7b8189",
+      "#70272d",
+      "#71282e",
+      "#75282d",
+      "#92676a",
+      "#949397",
+      "#93686a",
+      "#9b9a9d",
+      "#aaa6a5"
+     ],
+     "extras": [
+      "#70272d",
+      "#71282e",
+      "#75282d",
+      "#92676a",
+      "#949397",
+      "#93686a",
+      "#9b9a9d",
+      "#aaa6a5"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.231 / 위 0.539",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.32 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "2625107bcb69cce07817d1824741d6d494317272bbc5045a7cf357178bcbf604",
+     "rawSha256": "b210f90683e7844e0592cc44f67fd438c3d0cc115e835cd0b7d5d31be0bab653",
+     "nativePixelSha256": "55f9e68fdabf2af55211adb932177462be645d48148d75cb1b0577e8b8e69d29",
+     "storedPixelSha256": "a9a2bb0208976226b2f10caa73cd67f358d413638858c1734d26358fa0a152ab",
+     "colors": 25,
+     "palette": [
+      "#282b38",
+      "#2a2c3b",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#7b8189",
+      "#263662",
+      "#263763",
+      "#273764",
+      "#293967",
+      "#7e5164",
+      "#855465",
+      "#a56a2a",
+      "#90939b"
+     ],
+     "extras": [
+      "#263662",
+      "#263763",
+      "#273764",
+      "#293967",
+      "#7e5164",
+      "#855465",
+      "#a56a2a",
+      "#90939b"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.222 / 위 0.535",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.33 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "ba084a8ad1e19502013ac68dadfb76bc8dde52b7dbba518c4507e13fdbaceeab",
+     "rawSha256": "fc029e53def5dbf1b5c2dedc0fcff136d94630f145ececc75f5978244927bc13",
+     "nativePixelSha256": "e873d107fdc8001719165c5a11ad4e3216f956b1ed759da92a09414ab3d354a1",
+     "storedPixelSha256": "9182b19a74339f230f55175a2bd80675ec70d3395491383cc50b7bc215ee6581",
+     "colors": 28,
+     "palette": [
+      "#282b38",
+      "#272c36",
+      "#2a2b3a",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#7b8189",
+      "#141723",
+      "#181c2d",
+      "#4f4374",
+      "#504475",
+      "#6f4668",
+      "#794764",
+      "#b65752",
+      "#e57e42"
+     ],
+     "extras": [
+      "#141723",
+      "#181c2d",
+      "#4f4374",
+      "#504475",
+      "#6f4668",
+      "#794764",
+      "#b65752",
+      "#e57e42"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.304 / 위 0.540",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.30 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "6fbba651c714fbe5dc398de82100739f796d2ee3cd4dd711f17a3178eb584d6a",
+     "rawSha256": "d9bd6c25a985512a609a445aa3509173602c1b975a8e49fd280fe04b0b12b2d3",
+     "nativePixelSha256": "e1d4ed84babaca4bab115ae055c5b057e9e2c10f8cf349181995fda800922af9",
+     "storedPixelSha256": "5fda80e4826a9ad7d40235307981de8d443d44cb6aeb7fdd724017a97429e915",
+     "colors": 26,
+     "palette": [
+      "#282b38",
+      "#2a2b3a",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#632534",
+      "#652634",
+      "#672734",
+      "#735245",
+      "#825843",
+      "#8a644c",
+      "#977135",
+      "#8e93a0"
+     ],
+     "extras": [
+      "#632534",
+      "#652634",
+      "#672734",
+      "#735245",
+      "#825843",
+      "#8a644c",
+      "#977135",
+      "#8e93a0"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.431 / 위 0.563",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.29 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ]
+  },
+  "fs2-snow-road": {
+   "id": "fs2-snow-road",
+   "createdAt": "2026-11-04T02:32:14Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "map_snow_north_1",
+   "window": {
+    "x": 0,
+    "y": 17,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "fbc62819095f079390f723c676164a58eb0bd0eec8591fcdb4032561132304fe",
+   "referenceSha256": "731d4bb52fee14fa0acfa5d7a6622353ca07f09196a2a4fe9f7b1120088dfcd9",
+   "facts": {
+    "mapId": "map_snow_north_1",
+    "mapName": "서리 가도",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "서리 가도"
+    ],
+    "captureLuma": 0.574,
+    "palette": [
+     "#0a1822",
+     "#64749c",
+     "#7c8cb1",
+     "#818ca8",
+     "#808da5",
+     "#8c8d8d",
+     "#898d95",
+     "#7b8db2",
+     "#818da8",
+     "#769871",
+     "#818da9",
+     "#828eaa",
+     "#789973",
+     "#7e8eb3",
+     "#7f8eb2",
+     "#8a8f98",
+     "#828faa",
+     "#838faa",
+     "#8f8f8f",
+     "#799a74",
+     "#7f90b3",
+     "#8090b5",
+     "#e6f0fa",
+     "#f6faff"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "f606e7567e20ef6b253fba75388b3ded49ae74794ced3bc845af486c3df2869a",
+     "rawSha256": "e77bf69196a4c161506e61abdec8d1f929b717acf0a07738e24fe2425528f711",
+     "nativePixelSha256": "be03f2c326d1b5ef717462a52c49a4fbf58c2b2b41aafb8447a2caffd744a9d7",
+     "storedPixelSha256": "c478e877c6a1e02aa2ab372b7e23bd781885819875490e561678cdf4b6085665",
+     "colors": 19,
+     "palette": [
+      "#0a1822",
+      "#64749c",
+      "#7c8cb1",
+      "#8c8d8d",
+      "#7b8db2",
+      "#769871",
+      "#7e8eb3",
+      "#8f8f8f",
+      "#799a74",
+      "#8090b5",
+      "#e6f0fa",
+      "#f6faff",
+      "#143247",
+      "#334370",
+      "#61391b",
+      "#334471",
+      "#643a1b",
+      "#495e8e",
+      "#e5d5c2"
+     ],
+     "extras": [
+      "#143247",
+      "#334370",
+      "#61391b",
+      "#334471",
+      "#643a1b",
+      "#495e8e",
+      "#e5d5c2"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "19",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.460",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.70 (캡처 0.57)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "2cda60b1a57a87e845f9bb32dc08ef8fbb2de0a5fe1be44d24e0fabc3f84102b",
+     "rawSha256": "b90439c4336c50b5515bd88b9fad936101505777ad3c43a84207809fee7fb801",
+     "nativePixelSha256": "ef5cce30e56d4555b2ec61f33d1ccd3d94375e8ecd5bfc20c3104e9e320c56e9",
+     "storedPixelSha256": "ab59f3d39a9beced08a3db185499f80e2f1cf52553bbb1ea8df994de35e410d8",
+     "colors": 14,
+     "palette": [
+      "#0a1822",
+      "#64749c",
+      "#8c8d8d",
+      "#8f8f8f",
+      "#e6f0fa",
+      "#f6faff",
+      "#07263a",
+      "#0a2f45",
+      "#163c56",
+      "#384c72",
+      "#2b6c65",
+      "#87a2d5",
+      "#c8d6ea",
+      "#c8d7ea"
+     ],
+     "extras": [
+      "#07263a",
+      "#0a2f45",
+      "#163c56",
+      "#384c72",
+      "#2b6c65",
+      "#87a2d5",
+      "#c8d6ea",
+      "#c8d7ea"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "14",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.495",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.75 (캡처 0.57)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "5e7d591aea9b26975083d9d10b99c1915cdc65d13787af6608c27a326a45d55f",
+     "rawSha256": "138ff9e530768b6f49b30eb5db9b858d2a506a4205ae077e3bc891bb141e4c89",
+     "nativePixelSha256": "7fe30ec372ebe585911b0b77ca507c84db75f5f943493833a24d2720db7be23f",
+     "storedPixelSha256": "7e2b71e057799832a11e49edd63b556280948348b48bf5ba129a13ddcb64a329",
+     "colors": 17,
+     "palette": [
+      "#0a1822",
+      "#64749c",
+      "#7c8cb1",
+      "#8c8d8d",
+      "#8f8f8f",
+      "#799a74",
+      "#8090b5",
+      "#e6f0fa",
+      "#f6faff",
+      "#112939",
+      "#173f40",
+      "#2e557b",
+      "#174540",
+      "#466092",
+      "#82b9fd",
+      "#83bafd",
+      "#8abffc"
+     ],
+     "extras": [
+      "#112939",
+      "#173f40",
+      "#2e557b",
+      "#174540",
+      "#466092",
+      "#82b9fd",
+      "#83bafd",
+      "#8abffc"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "17",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.443",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.74 (캡처 0.57)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "1c5cfc1a9ad9ebb8de792d966515fd9f43298fa05a2bfef4448ffa4aa434b663",
+     "rawSha256": "f3201b1d43a5421519e3c1bcc53fd649d06015a13e3ebe13d9d45dca232615f8",
+     "nativePixelSha256": "a4f180ac62e63446db9c69e6065f9617e98e14111ec3cdc5c5cd66ddabc38311",
+     "storedPixelSha256": "42a994b0e8ea4a43538a9a9547759bb5763a76312c740adefa49a4cb3e090934",
+     "colors": 17,
+     "palette": [
+      "#0a1822",
+      "#64749c",
+      "#8c8d8d",
+      "#7b8db2",
+      "#769871",
+      "#8f8f8f",
+      "#8090b5",
+      "#e6f0fa",
+      "#f6faff",
+      "#0d233f",
+      "#102b4b",
+      "#173b58",
+      "#294ca1",
+      "#2f605f",
+      "#b8aa9d",
+      "#9ec1e4",
+      "#b0d6fd"
+     ],
+     "extras": [
+      "#0d233f",
+      "#102b4b",
+      "#173b58",
+      "#294ca1",
+      "#2f605f",
+      "#b8aa9d",
+      "#9ec1e4",
+      "#b0d6fd"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "17",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.554",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.65 (캡처 0.57)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025244-fs2-snow-road",
+     "at": "2026-11-04T02:53:10Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-f217c7406fd24c96bd3b2919fde25ec3",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025244-fs2-snow-road.json",
+     "rawSha256": "3f8b48c1dc7c601933858941cad342a2e58656346e2170d9ca2cc7058ef43242",
+     "entries": [
+      {
+       "label": "88",
+       "pixelSha256": "a4f180ac62e63446db9c69e6065f9617e98e14111ec3cdc5c5cd66ddabc38311",
+       "letter": "D"
+      },
+      {
+       "label": "68",
+       "pixelSha256": "c0dc0fe44cc321f6d817f19f51d3a7773a4dc273de9d4798b49e3d828294030c",
+       "control": "flipped"
+      },
+      {
+       "label": "60",
+       "pixelSha256": "7fe30ec372ebe585911b0b77ca507c84db75f5f943493833a24d2720db7be23f",
+       "letter": "C"
+      },
+      {
+       "label": "49",
+       "pixelSha256": "095c3d502bc906264b7f0e1225ac51fdff57fb9be5940bdf85b5022f2876c2de",
+       "control": "top-down"
+      },
+      {
+       "label": "19",
+       "pixelSha256": "ef5cce30e56d4555b2ec61f33d1ccd3d94375e8ecd5bfc20c3104e9e320c56e9",
+       "letter": "B"
+      },
+      {
+       "label": "54",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "85",
+       "pixelSha256": "be03f2c326d1b5ef717462a52c49a4fbf58c2b2b41aafb8447a2caffd744a9d7",
+       "letter": "A"
+      }
+     ],
+     "answers": {
+      "19": {
+       "v": "pass",
+       "score": 4,
+       "why": "The crisp eye-level snowy forest road under a daytime sky fits 서리 가도 and has a calm, flat snow foreground, but it drops the banner, cairn and signpost landmarks."
+      },
+      "49": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map, not a side-view battleback."
+      },
+      "54": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a desert canyon with cacti and sand, a completely different biome from the snowy pine forest road."
+      },
+      "60": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "This bright daytime side view of a snowy pine clearing with a blue sky includes the wagon, banner, cairn, signpost, log pile and bench along the horizon, over a clean, flat lower half of snow."
+      },
+      "68": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The forest and props such as the wagon, banner and signpost are drawn upside down below a blank sky band, so this is not a valid side view."
+      },
+      "85": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "The side view matches the map's wagon, banner, cairn, signpost, log pile and bench in front of snowy pines and mountains, with an open, flat lower half of snow and a clean limited palette."
+      },
+      "88": {
+       "v": "pass",
+       "score": 4,
+       "why": "The eye-level snowy pine clearing includes the map's wagon, blue banner, cairn, log pile and bench, and the lower half is open flat snow, but the dark forest wall shows almost no sky, so it reads dimmer than a bright day."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "be03f2c326d1b5ef717462a52c49a4fbf58c2b2b41aafb8447a2caffd744a9d7",
+    "storedPixelSha256": "c478e877c6a1e02aa2ab372b7e23bd781885819875490e561678cdf4b6085665",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:18:30Z",
+    "score": 4.5,
+    "batch": "20261104-025244-fs2-snow-road"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:18:46Z",
+     "target": "map:map_snow_north_1",
+     "resourceId": "battle_backdrop_fs2_snow_road_c478e877",
+     "storedPixelSha256": "c478e877c6a1e02aa2ab372b7e23bd781885819875490e561678cdf4b6085665",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-snow-road/battle_backdrop_fs2_snow_road_c478e877.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-snow-pass": {
+   "id": "fs2-snow-pass",
+   "createdAt": "2026-11-04T02:33:51Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "map_snow_north_2",
+   "window": {
+    "x": 0,
+    "y": 3,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "e68087866a62b8e6de5f77c8556018dc3029cdb38b1e23bc4b940820de8361d1",
+   "referenceSha256": "68ceeb25df7fc98c7ca28b66552c5a3415726bb7e59d0c6e7dfeedd01ec6bfe2",
+   "facts": {
+    "mapId": "map_snow_north_2",
+    "mapName": "눈보라 고개",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "dusk",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.72 · #9fb2c8 → 밝기 ×0.78",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "눈보라 고개"
+    ],
+    "captureLuma": 0.622,
+    "palette": [
+     "#5c6d7d",
+     "#8496b4",
+     "#8396b6",
+     "#809c9c",
+     "#8797ae",
+     "#7a9e9c",
+     "#8897ad",
+     "#7a9e9d",
+     "#8699a6",
+     "#8697b2",
+     "#819c9d",
+     "#8997ae",
+     "#8797b2",
+     "#829c9e",
+     "#8897b2",
+     "#8b98a6",
+     "#8998af",
+     "#8a98ad",
+     "#8898b2",
+     "#8698b7",
+     "#8a99aa",
+     "#8998b2",
+     "#bfcedf",
+     "#c6d2e1"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "e4d65ecb74c376e053e8829a76df03fcf22bf3f67a02044b8bb22f1f7d2f2c19",
+     "rawSha256": "d9b1280aaa7dbed55bfd9b478af9c6c314909d954ff4d6ffff814c98db238aee",
+     "nativePixelSha256": "16287d1d98c3745efe3254c78b6f28ee16ecf3ae92bbd5a155546f11cde4eaed",
+     "storedPixelSha256": "765b90ae3ab9e627d45a5971fdf848d13eb5cde0f6380f17dc57550882f32891",
+     "colors": 15,
+     "palette": [
+      "#5c6d7d",
+      "#8396b6",
+      "#8897b2",
+      "#8698b7",
+      "#8998b2",
+      "#bfcedf",
+      "#c6d2e1",
+      "#2e405d",
+      "#314360",
+      "#324765",
+      "#3c557b",
+      "#415d85",
+      "#be99a7",
+      "#9cb1d7",
+      "#a7bcde"
+     ],
+     "extras": [
+      "#2e405d",
+      "#314360",
+      "#324765",
+      "#3c557b",
+      "#415d85",
+      "#be99a7",
+      "#9cb1d7",
+      "#a7bcde"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "15",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.267 / 위 0.495",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.62 (캡처 0.62)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "e8dd17764fb2e2214bcd5cde68c19e35325da40df60e6b0496d3a2dfdccb59e7",
+     "rawSha256": "1d95a46488b9926f7a9d4ed1d7264a83b31e0208f1ef138f3aea46bac4cb9178",
+     "nativePixelSha256": "24712faacb23122f3ef22095ce80400d4cb8cb02547a6db9fcd27ee79fddb8e3",
+     "storedPixelSha256": "c77b8f880700c58e8556f6db0bdc1d7880cd1a68adb744d40112896fefae33bc",
+     "colors": 16,
+     "palette": [
+      "#5c6d7d",
+      "#8496b4",
+      "#8396b6",
+      "#8b98a6",
+      "#8698b7",
+      "#8998b2",
+      "#bfcedf",
+      "#c6d2e1",
+      "#2c3b50",
+      "#364c60",
+      "#374f62",
+      "#425e6d",
+      "#817d9b",
+      "#827e9c",
+      "#a3b3cd",
+      "#a4b4ce"
+     ],
+     "extras": [
+      "#2c3b50",
+      "#364c60",
+      "#374f62",
+      "#425e6d",
+      "#817d9b",
+      "#827e9c",
+      "#a3b3cd",
+      "#a4b4ce"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "16",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.011 / 위 0.532",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.61 (캡처 0.62)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "99e38e5ab49956289974eacf04e2975bcce839b4f741a5007e638793aafa29c6",
+     "rawSha256": "adcbd4b46ab1db1ab55f36c3f9300d2178d0bc9f2af0be7b852e4818cf5f326f",
+     "nativePixelSha256": "d1013f2124ae5a1407009364e28348091ed50307323ceeeeee9c386e3de2c4cb",
+     "storedPixelSha256": "eeaa687a84d07f07088c9b22311bef120b088c79eeb52e3c98429977c00d91f8",
+     "colors": 18,
+     "palette": [
+      "#5c6d7d",
+      "#8496b4",
+      "#8396b6",
+      "#8997ae",
+      "#8b98a6",
+      "#8a98ad",
+      "#8698b7",
+      "#8a99aa",
+      "#bfcedf",
+      "#c6d2e1",
+      "#283a50",
+      "#364965",
+      "#455a7c",
+      "#6e7b9e",
+      "#6f7c9f",
+      "#7881a2",
+      "#97aed2",
+      "#edb5a0"
+     ],
+     "extras": [
+      "#283a50",
+      "#364965",
+      "#455a7c",
+      "#6e7b9e",
+      "#6f7c9f",
+      "#7881a2",
+      "#97aed2",
+      "#edb5a0"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "18",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.464",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.63 (캡처 0.62)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "172e8472208ce53fb6804b33ba40955efbe5d40c77c8ecab16fdc1870b370319",
+     "rawSha256": "49e6502736e9e0bc81ca7465432b409fc652c2f65c77709e68bf9a51977617b7",
+     "nativePixelSha256": "2acd354c80393fe34df3b4d340c578d397d58cfd94cf81cc0af9691f601229e2",
+     "storedPixelSha256": "fe9e352a48eddd22842c89a5bd13ac876ab3f925bf8bca3fa5bcff4956baec12",
+     "colors": 15,
+     "palette": [
+      "#5c6d7d",
+      "#8496b4",
+      "#8396b6",
+      "#8698b7",
+      "#8998b2",
+      "#bfcedf",
+      "#c6d2e1",
+      "#293d53",
+      "#334c69",
+      "#344c69",
+      "#445a78",
+      "#9fb4d3",
+      "#a4b8d5",
+      "#a6b9d6",
+      "#a8bbd7"
+     ],
+     "extras": [
+      "#293d53",
+      "#334c69",
+      "#344c69",
+      "#445a78",
+      "#9fb4d3",
+      "#a4b8d5",
+      "#a6b9d6",
+      "#a8bbd7"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "15",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.496",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.62 (캡처 0.62)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025337-fs2-snow-pass",
+     "at": "2026-11-04T02:54:01Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-3163de2a64254815be0b521306d6d5d6",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025337-fs2-snow-pass.json",
+     "rawSha256": "267b1132c4aec7154085959608de1722447a9d23022837ef036611ffa9bebd92",
+     "entries": [
+      {
+       "label": "61",
+       "pixelSha256": "24712faacb23122f3ef22095ce80400d4cb8cb02547a6db9fcd27ee79fddb8e3",
+       "letter": "B"
+      },
+      {
+       "label": "88",
+       "pixelSha256": "e8131f0092dbef27ab06362e6c67f7392cc6f334156e35c6a50c4ac689b96938",
+       "control": "top-down"
+      },
+      {
+       "label": "20",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "77",
+       "pixelSha256": "d1013f2124ae5a1407009364e28348091ed50307323ceeeeee9c386e3de2c4cb",
+       "letter": "C"
+      },
+      {
+       "label": "69",
+       "pixelSha256": "2acd354c80393fe34df3b4d340c578d397d58cfd94cf81cc0af9691f601229e2",
+       "letter": "D"
+      },
+      {
+       "label": "11",
+       "pixelSha256": "93dd6c6170c1acb0cd9c7697d397c1e6339f359a027ffb18b585fa187f79ec25",
+       "control": "flipped"
+      }
+     ],
+     "answers": {
+      "11": {
+       "v": "reject",
+       "score": 1,
+       "why": "The image is upside down, with the forest and purple sky at the bottom and the snow floor at the top."
+      },
+      "20": {
+       "v": "reject",
+       "score": 1,
+       "why": "A sunny desert with cacti and mesas does not match the snowy pine pass at dusk, and dry grass tufts scatter across the floor."
+      },
+      "61": {
+       "v": "pass",
+       "score": 4,
+       "why": "Eye-level snowy pine pass under a dim purple dusk sky with a frozen stream echoing the map, and the lower half is clean flat snow, though the snow-covered bench shapes add slight clutter at the horizon."
+      },
+      "69": {
+       "v": "pass",
+       "score": 4,
+       "why": "Dim snowy pine corridor with icy rocks fits the map and the lower half is open flat snow, though the gray monolith at the far end is an invented landmark and the light reads more overcast than dusk."
+      },
+      "77": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Snow-laden pines frame a distant mountain gap under a dim sunset sky, matching the dusk pass, and the lower half is calm, flat snow in a crisp limited palette."
+      },
+      "88": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map itself, not a side-view battleback."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "C",
+    "nativePixelSha256": "d1013f2124ae5a1407009364e28348091ed50307323ceeeeee9c386e3de2c4cb",
+    "storedPixelSha256": "eeaa687a84d07f07088c9b22311bef120b088c79eeb52e3c98429977c00d91f8",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:19:03Z",
+    "score": 4.5,
+    "batch": "20261104-025337-fs2-snow-pass"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:19:19Z",
+     "target": "map:map_snow_north_2",
+     "resourceId": "battle_backdrop_fs2_snow_pass_eeaa687a",
+     "storedPixelSha256": "eeaa687a84d07f07088c9b22311bef120b088c79eeb52e3c98429977c00d91f8",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-snow-pass/battle_backdrop_fs2_snow_pass_eeaa687a.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-ice-lake": {
+   "id": "fs2-ice-lake",
+   "createdAt": "2026-11-04T02:35:31Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_ice_lake",
+   "window": {
+    "x": 9,
+    "y": 9,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "a4b3ced0b1f57bfa20123189d382aeb304ad7ebe047c6fc844da1c5241db1e91",
+   "referenceSha256": "dc1f2683a197d6dc4cf791cff98ca0987f9b7314a32809f46f0204cba8585d77",
+   "facts": {
+    "mapId": "fs2_ice_lake",
+    "mapName": "얼음 호수",
+    "tilesetName": "버들항 웨이브 장소 (원본 그림 칸)",
+    "indoor": false,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.88 · #5e4a8c → 밝기 ×0.41",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "얼음 호수"
+    ],
+    "captureLuma": 0.467,
+    "palette": [
+     "#3a3c6c",
+     "#4b599b",
+     "#5064a0",
+     "#647aae",
+     "#7c74a3",
+     "#7777a5",
+     "#7e76a6",
+     "#6c7baf",
+     "#7c77ae",
+     "#757aaf",
+     "#6c7db3",
+     "#797ca3",
+     "#7c78b0",
+     "#8079a5",
+     "#707db0",
+     "#7080aa",
+     "#827ba7",
+     "#7c7bb3",
+     "#817da7",
+     "#867ba7",
+     "#7e7db0",
+     "#847dad",
+     "#9b95be",
+     "#a69bc0"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "0dbecb41a694f2443e195c4ecdbaa2970561949ccd5845efde3cc771c290213e",
+     "rawSha256": "65a7a08f26e75559dc1773d3e4bb3491687aa6f65bec7233173d0f22b0ed8f05",
+     "nativePixelSha256": "dd61eff97b00334b22c05d1a9744eb1ff27b462c7e45c9f0504900b370f20e4d",
+     "storedPixelSha256": "354ed97de4840df95a35fcf00bc8a09609a39a4114ddac8252ac84360ffaaeb3",
+     "colors": 18,
+     "palette": [
+      "#3a3c6c",
+      "#4b599b",
+      "#5064a0",
+      "#647aae",
+      "#6c7baf",
+      "#6c7db3",
+      "#7c78b0",
+      "#7c7bb3",
+      "#9b95be",
+      "#a69bc0",
+      "#0f0f36",
+      "#0f0f37",
+      "#1d1b46",
+      "#1d2962",
+      "#1e2a63",
+      "#1f2c66",
+      "#7290cf",
+      "#7392d0"
+     ],
+     "extras": [
+      "#0f0f36",
+      "#0f0f37",
+      "#1d1b46",
+      "#1d2962",
+      "#1e2a63",
+      "#1f2c66",
+      "#7290cf",
+      "#7392d0"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "18",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.002 / 위 0.537",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.22 (캡처 0.47)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "67264c6b4beb4b8dad7d220ce6bb8b121a2dcd31e4a23d999bb6aaac07b9b78e",
+     "rawSha256": "fb671a2988aa4136efac12a070cb597043036efc282cf3e28245439126678927",
+     "nativePixelSha256": "6c6f0aedef7ec0ef25ecaf90f70ca86bfa9b01512a894ec19a7239c5777ba21b",
+     "storedPixelSha256": "9b9070ece8793645baaca4604cec528e694b646daab379f064bae4e689a0ab99",
+     "colors": 19,
+     "palette": [
+      "#3a3c6c",
+      "#4b599b",
+      "#5064a0",
+      "#647aae",
+      "#6c7baf",
+      "#757aaf",
+      "#6c7db3",
+      "#7c7bb3",
+      "#7e7db0",
+      "#9b95be",
+      "#a69bc0",
+      "#121b38",
+      "#162246",
+      "#162247",
+      "#1a2c4e",
+      "#1c3153",
+      "#1c3255",
+      "#1d3456",
+      "#30498d"
+     ],
+     "extras": [
+      "#121b38",
+      "#162246",
+      "#162247",
+      "#1a2c4e",
+      "#1c3153",
+      "#1c3255",
+      "#1d3456",
+      "#30498d"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "19",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.003 / 위 0.481",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.29 (캡처 0.47)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "2ae525e0b311ce844e3cd807cabdf4a28eae8fadf9fd4e283b5b7b7968f94393",
+     "rawSha256": "6c55534bc05f8062fc0462b60039a83041fa9e14fad93845dc6cd92d4efda083",
+     "nativePixelSha256": "b025f369a563e91d2172fad521e374fa55d26203bdb0545a0ba76274770ac23d",
+     "storedPixelSha256": "a4f6c36c67376c203e08b7518b3ca3c4ca4b228ed115b5b7a40138a85fc24ed9",
+     "colors": 20,
+     "palette": [
+      "#3a3c6c",
+      "#4b599b",
+      "#5064a0",
+      "#647aae",
+      "#6c7baf",
+      "#6c7db3",
+      "#7080aa",
+      "#7c7bb3",
+      "#7e7db0",
+      "#847dad",
+      "#9b95be",
+      "#a69bc0",
+      "#12163f",
+      "#121740",
+      "#131740",
+      "#282452",
+      "#2f2a5b",
+      "#293c47",
+      "#344743",
+      "#3b5043"
+     ],
+     "extras": [
+      "#12163f",
+      "#121740",
+      "#131740",
+      "#282452",
+      "#2f2a5b",
+      "#293c47",
+      "#344743",
+      "#3b5043"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "20",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.443",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.33 (캡처 0.47)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "38a0ed3c89fbb3bc8f230e632e6d8485eddc4488dfad8e14921824e8339e6c1d",
+     "rawSha256": "bca85c2c68c159ad757684a3dd9720e0278e4c9a6737b8da1a8380d1976bb802",
+     "nativePixelSha256": "02908f1fc9d05307b85c8910911ed6af29d25b636b570f9cc2fa0bf1423414f9",
+     "storedPixelSha256": "8fb722c3f0d846f70c47d991b1281060157b9340b048531839f6eec1e5cb50d7",
+     "colors": 18,
+     "palette": [
+      "#3a3c6c",
+      "#4b599b",
+      "#5064a0",
+      "#647aae",
+      "#6c7db3",
+      "#7c7bb3",
+      "#7e7db0",
+      "#847dad",
+      "#9b95be",
+      "#a69bc0",
+      "#141c43",
+      "#161e46",
+      "#172048",
+      "#1c2765",
+      "#212d71",
+      "#314391",
+      "#334593",
+      "#344694"
+     ],
+     "extras": [
+      "#141c43",
+      "#161e46",
+      "#172048",
+      "#1c2765",
+      "#212d71",
+      "#314391",
+      "#334593",
+      "#344694"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "18",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.011 / 위 0.478",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.30 (캡처 0.47)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025433-fs2-ice-lake",
+     "at": "2026-11-04T02:54:54Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-a80d1490014941c1adcc13ec263161c5",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025433-fs2-ice-lake.json",
+     "rawSha256": "9fb782413cdc1e8779184c73e507591eae268b9b4f7c84850de186cb4f3c1295",
+     "entries": [
+      {
+       "label": "37",
+       "pixelSha256": "02908f1fc9d05307b85c8910911ed6af29d25b636b570f9cc2fa0bf1423414f9",
+       "letter": "D"
+      },
+      {
+       "label": "75",
+       "pixelSha256": "b025f369a563e91d2172fad521e374fa55d26203bdb0545a0ba76274770ac23d",
+       "letter": "C"
+      },
+      {
+       "label": "65",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "42",
+       "pixelSha256": "6c6f0aedef7ec0ef25ecaf90f70ca86bfa9b01512a894ec19a7239c5777ba21b",
+       "letter": "B"
+      },
+      {
+       "label": "41",
+       "pixelSha256": "08a356a540cee844ec024b7cb2e2b29296aca7412c7f6b4c9f2d2a29aa2ba11a",
+       "control": "top-down"
+      },
+      {
+       "label": "44",
+       "pixelSha256": "b4be59b4ba23f651e551af3e351e6aa91a195a08bffc51c4f9ec96be4b725123",
+       "control": "flipped"
+      },
+      {
+       "label": "22",
+       "pixelSha256": "dd61eff97b00334b22c05d1a9744eb1ff27b462c7e45c9f0504900b370f20e4d",
+       "letter": "A"
+      }
+     ],
+     "answers": {
+      "22": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Night lake shore with snowy pines, rocks and the map's wooden dock above a dark water edge, leaving a clean flat ice floor in the lower half."
+      },
+      "37": {
+       "v": "pass",
+       "score": 4,
+       "why": "Eye-level night view of a frozen lake with snowy pines and a cracked-ice band; the lower floor is flat ice with only a few faint grass marks."
+      },
+      "41": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map itself, not a side-view battleback."
+      },
+      "42": {
+       "v": "pass",
+       "score": 4,
+       "why": "Snowy night forest behind a cracked ice slab and dark water strip, with a flat calm snow floor across the lower half that suits sprites."
+      },
+      "44": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The scene is upside down, with the pine forest hanging at the bottom and the empty sky area at the top, so no usable floor exists."
+      },
+      "65": {
+       "v": "reject",
+       "score": 1,
+       "why": "A daytime desert with cacti and red mesas does not match the night ice-lake biome at all."
+      },
+      "75": {
+       "v": "pass",
+       "score": 4,
+       "why": "Night snowy pine shoreline with a dark sky and a wide, plain, flat ice floor; it lacks the map's cracked-ice and dock details but reads clearly as the same lake."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "dd61eff97b00334b22c05d1a9744eb1ff27b462c7e45c9f0504900b370f20e4d",
+    "storedPixelSha256": "354ed97de4840df95a35fcf00bc8a09609a39a4114ddac8252ac84360ffaaeb3",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:19:47Z",
+    "score": 4.5,
+    "batch": "20261104-025433-fs2-ice-lake"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:20:09Z",
+     "target": "map:fs2_ice_lake",
+     "resourceId": "battle_backdrop_fs2_ice_lake_354ed97d",
+     "storedPixelSha256": "354ed97de4840df95a35fcf00bc8a09609a39a4114ddac8252ac84360ffaaeb3",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-ice-lake/battle_backdrop_fs2_ice_lake_354ed97d.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-sky-tower": {
+   "id": "fs2-sky-tower",
+   "createdAt": "2026-11-04T02:37:24Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_sky_tower",
+   "window": {
+    "x": 0,
+    "y": 10,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "570955f8ac6bc9af712ddcb5053cc8df1f18bcec6b99067d236d135c0b0d1479",
+   "referenceSha256": "3a880d853402ad7484b6516662835b60a982bc60f0109f41ec69d9b7a18f6ccd",
+   "facts": {
+    "mapId": "fs2_sky_tower",
+    "mapName": "하늘탑 1층",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "day",
+    "timeCertain": true,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 → 낮으로 둔다"
+    ],
+    "placeWords": [
+     "하늘탑 1층",
+     "입구 홀 gate",
+     "큰 홀 hub",
+     "제단 방 hall",
+     "undefined study",
+     "창고 store",
+     "던전 입구"
+    ],
+    "captureLuma": 0.502,
+    "palette": [
+     "#0e0a14",
+     "#161b23",
+     "#3e403d",
+     "#452a17",
+     "#384454",
+     "#566577",
+     "#55391f",
+     "#702023",
+     "#633712",
+     "#782225",
+     "#7b2326",
+     "#6f716e",
+     "#8c282c",
+     "#be463c",
+     "#3e84b8",
+     "#7a7f86",
+     "#7fb6e6",
+     "#a8cdef",
+     "#80827f",
+     "#8e908d",
+     "#929491",
+     "#cfe3f6",
+     "#ffffff",
+     "#ecd282"
+    ]
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "873cd6cf0e9b36235524e4891ab2d79a4385194c6255d48d51d99ccbf6ea3bfb",
+     "rawSha256": "046453603bf215ebe0cedb800a3826cf680b8c381a6ed1da297feb78df66586e",
+     "nativePixelSha256": "5ab6c70b071e3e340704f5f3612c3e80debdbc081c57eff9381d81767401f0ab",
+     "storedPixelSha256": "c4de9245a5d7fba5ae43be990feb41d89c880e57d8d34fb32f9de1f53322930b",
+     "colors": 27,
+     "palette": [
+      "#0e0a14",
+      "#161b23",
+      "#3e403d",
+      "#384454",
+      "#566577",
+      "#702023",
+      "#6f716e",
+      "#8c282c",
+      "#be463c",
+      "#3e84b8",
+      "#7a7f86",
+      "#7fb6e6",
+      "#a8cdef",
+      "#80827f",
+      "#8e908d",
+      "#929491",
+      "#cfe3f6",
+      "#ffffff",
+      "#ecd282",
+      "#281450",
+      "#2b2351",
+      "#2b2552",
+      "#2d325b",
+      "#555555",
+      "#a9a8a6",
+      "#dc9c48",
+      "#c1c0bf"
+     ],
+     "extras": [
+      "#281450",
+      "#2b2351",
+      "#2b2552",
+      "#2d325b",
+      "#555555",
+      "#a9a8a6",
+      "#dc9c48",
+      "#c1c0bf"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.138 / 위 0.541",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.50 (캡처 0.50)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "cb47c79c6868c9fc47d999a20324412937370df2dc6dd254d5ae5b965bb43131",
+     "rawSha256": "5705882ba24cb35ea266e5e7e98d51fda31ef2629f68140b5788edc6f1dbd65a",
+     "nativePixelSha256": "ad955f7ecd1c3a59d6bae895a2e0ceaeee856f381332b2c347d1624108e9fdd2",
+     "storedPixelSha256": "dfd0b6efb3bd40f8314f399866880ea3a144f063d656485f012e064f4e15c599",
+     "colors": 26,
+     "palette": [
+      "#0e0a14",
+      "#161b23",
+      "#3e403d",
+      "#452a17",
+      "#384454",
+      "#566577",
+      "#633712",
+      "#6f716e",
+      "#8c282c",
+      "#be463c",
+      "#7a7f86",
+      "#7fb6e6",
+      "#a8cdef",
+      "#80827f",
+      "#8e908d",
+      "#929491",
+      "#cfe3f6",
+      "#ffffff",
+      "#1d103a",
+      "#1f1340",
+      "#201342",
+      "#361560",
+      "#505258",
+      "#505257",
+      "#d99b53",
+      "#da9c54"
+     ],
+     "extras": [
+      "#1d103a",
+      "#1f1340",
+      "#201342",
+      "#361560",
+      "#505258",
+      "#505257",
+      "#d99b53",
+      "#da9c54"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.216 / 위 0.447",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.42 (캡처 0.50)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "21db4caadfc1f309535f136f04f202adb1ed59d6ae4eea5d6e758a5758c57b54",
+     "rawSha256": "7a0f4ade36d727dea70b4b74b6744331cf5fc9e84a5af75f80ff802808c544e4",
+     "nativePixelSha256": "666695e42d94d1d7374cca0ad85d7b7d2091ba2d87c7735f6d1eafc048aa6417",
+     "storedPixelSha256": "5c47fe6f23c0d965e437bf48399985495aaae3e7c73906e83c701254bccbd3f2",
+     "colors": 26,
+     "palette": [
+      "#161b23",
+      "#452a17",
+      "#384454",
+      "#566577",
+      "#702023",
+      "#6f716e",
+      "#8c282c",
+      "#be463c",
+      "#3e84b8",
+      "#7a7f86",
+      "#7fb6e6",
+      "#a8cdef",
+      "#80827f",
+      "#8e908d",
+      "#929491",
+      "#cfe3f6",
+      "#ffffff",
+      "#ecd282",
+      "#22133e",
+      "#28144a",
+      "#2a154c",
+      "#2f1e59",
+      "#384878",
+      "#50535e",
+      "#a5a6a5",
+      "#aeaeae"
+     ],
+     "extras": [
+      "#22133e",
+      "#28144a",
+      "#2a154c",
+      "#2f1e59",
+      "#384878",
+      "#50535e",
+      "#a5a6a5",
+      "#aeaeae"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.502 / 위 0.610",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.46 (캡처 0.50)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "e4d8572c8ff098fda822a08003a2e039819e51385e90864cb375e20ac6c7be35",
+     "rawSha256": "e8a4f3f5e6edc69890a5640c83e1a08a0699981628f76894c7fa2698e024f007",
+     "nativePixelSha256": "3c28e85d5bcc446818fd0c11512796fe08a3b5a222d3585b8b7ced872c396beb",
+     "storedPixelSha256": "ca420f50c0b655dbe1393298bef3c08cdde4d183ad0c918c52d21851ca3317ef",
+     "colors": 27,
+     "palette": [
+      "#0e0a14",
+      "#161b23",
+      "#3e403d",
+      "#384454",
+      "#566577",
+      "#702023",
+      "#6f716e",
+      "#8c282c",
+      "#be463c",
+      "#3e84b8",
+      "#7a7f86",
+      "#7fb6e6",
+      "#a8cdef",
+      "#80827f",
+      "#8e908d",
+      "#929491",
+      "#cfe3f6",
+      "#ffffff",
+      "#ecd282",
+      "#1f113a",
+      "#241248",
+      "#2d165f",
+      "#2b2b54",
+      "#515557",
+      "#aab3b8",
+      "#966a50",
+      "#feefcb"
+     ],
+     "extras": [
+      "#1f113a",
+      "#241248",
+      "#2d165f",
+      "#2b2b54",
+      "#515557",
+      "#aab3b8",
+      "#966a50",
+      "#feefcb"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.106 / 위 0.518",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.49 (캡처 0.50)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-025527-fs2-sky-tower",
+     "at": "2026-11-04T02:55:54Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-05ce4e2434104fb693a899180afee978",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-025527-fs2-sky-tower.json",
+     "rawSha256": "762525e2166878d81737405d0864c7aa8253815953efb324fb970d2fa519b26c",
+     "entries": [
+      {
+       "label": "60",
+       "pixelSha256": "ad955f7ecd1c3a59d6bae895a2e0ceaeee856f381332b2c347d1624108e9fdd2",
+       "letter": "B"
+      },
+      {
+       "label": "78",
+       "pixelSha256": "5ab6c70b071e3e340704f5f3612c3e80debdbc081c57eff9381d81767401f0ab",
+       "letter": "A"
+      },
+      {
+       "label": "38",
+       "pixelSha256": "3c28e85d5bcc446818fd0c11512796fe08a3b5a222d3585b8b7ced872c396beb",
+       "letter": "D"
+      },
+      {
+       "label": "76",
+       "pixelSha256": "4fb294d8fca707394ef6becf9c4ff330f6979100acdf9dfd0518bd4cc764542d",
+       "control": "top-down"
+      },
+      {
+       "label": "12",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "18",
+       "pixelSha256": "1ee4e0a0554a36f5017c2ec81a73cf5749075d2327431767e40246d2ca7156ed",
+       "control": "flipped"
+      }
+     ],
+     "answers": {
+      "12": {
+       "v": "reject",
+       "score": 1,
+       "why": "A desert canyon with cacti and mesas does not match the grey-stone sky tower biome or materials."
+      },
+      "18": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "The tower scene is upside down, with the stone floor at the top and sky at the bottom."
+      },
+      "38": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Side view of crenellated grey-brick walls carrying the star mosaic, rune circle, orange pillars, crystal and statue from the map, with a clean daylight sky and a wide plain stone floor for sprites."
+      },
+      "60": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Eye-level daytime view of the grey-brick tower facade with the map's crystal braziers, orange pillars and purple windows under blue sky, above a calm flat stone floor covering roughly the lower 42% in clean limited-palette pixel art."
+      },
+      "76": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map, not a side view, and it has no standable floor band."
+      },
+      "78": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Sky-lit stone courtyard that reuses the map's star mosaic, blue rune circle, crystal pedestal and pillars on the back wall, with a central stair and an open, lightly lined flat floor across the lower ~45%."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "5ab6c70b071e3e340704f5f3612c3e80debdbc081c57eff9381d81767401f0ab",
+    "storedPixelSha256": "c4de9245a5d7fba5ae43be990feb41d89c880e57d8d34fb32f9de1f53322930b",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:20:28Z",
+    "score": 4.5,
+    "batch": "20261104-025527-fs2-sky-tower"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:20:44Z",
+     "target": "map:fs2_sky_tower",
+     "resourceId": "battle_backdrop_fs2_sky_tower_c4de9245",
+     "storedPixelSha256": "c4de9245a5d7fba5ae43be990feb41d89c880e57d8d34fb32f9de1f53322930b",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-sky-tower/battle_backdrop_fs2_sky_tower_c4de9245.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-town-night-b": {
+   "id": "fs2-town-night-b",
+   "createdAt": "2026-11-04T02:58:46Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_hub_night",
+   "window": {
+    "x": 12,
+    "y": 17,
+    "w": 32,
+    "h": 18
+   },
+   "captureSha256": "03a04057e1d4342dca315a06c72433e5d943afd010d6a455327f5f4f96e52e22",
+   "referenceSha256": "de6c22153c47fcee4e813b813e659eaa3e8505b008a590748ebeec4c5196007e",
+   "facts": {
+    "mapId": "fs2_hub_night",
+    "mapName": "왕도 아스텔 · 통금의 밤",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "night",
+    "timeCertain": true,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.78 · #0f1a4c → 밝기 ×0.30",
+     "낱말 「밤」: 왕도 아스텔 · 통금의 밤"
+    ],
+    "placeWords": [
+     "왕도 아스텔 · 통금의 밤"
+    ],
+    "captureLuma": 0.258,
+    "palette": [
+     "#0b163a",
+     "#0b183c",
+     "#0b1b36",
+     "#0c1c35",
+     "#0b1c37",
+     "#212c48",
+     "#153048",
+     "#352732",
+     "#313c58",
+     "#344d44",
+     "#3e4360",
+     "#2f3550",
+     "#3a2e3a",
+     "#374773",
+     "#1f4a6f",
+     "#3a5348",
+     "#354d4a",
+     "#325344",
+     "#4a516b",
+     "#3f584c",
+     "#606782",
+     "#726f83",
+     "#606375",
+     "#6a6d7f"
+    ],
+    "note": "The town square floor is one flat, plain, dark cobblestone surface in shadow with almost no visible stone pattern; houses, lamps and the well stay on the far back edge only. Keep the lower half calm and nearly uniform."
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "6e59a381e822392a22f2e1a40bf5375396597d32fb412e2d001b0e1e8b68f87f",
+     "rawSha256": "5ad328aac73afe9037b56270b0820a95eeffed42a33fe426f64f63fbb0e19fe9",
+     "nativePixelSha256": "13e82e291ea6ffb0ea7a8ba370ec1234538f0e184716c71f54258a33922efde1",
+     "storedPixelSha256": "4a6fda067aa345e8f9391d66f1d0285e7864686fcd7b5482a1d806a0bd0b40dd",
+     "colors": 24,
+     "palette": [
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#354d4a",
+      "#4a516b",
+      "#3f584c",
+      "#726f83",
+      "#606375",
+      "#6a6d7f",
+      "#0c0918",
+      "#58222c",
+      "#5b3038",
+      "#5d2f3a",
+      "#6a363e",
+      "#81484a",
+      "#8c7d7f"
+     ],
+     "extras": [
+      "#0c0918",
+      "#58222c",
+      "#5b3038",
+      "#5d2f3a",
+      "#6a363e",
+      "#81484a",
+      "#8c7d7f"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "24",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.495",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.17 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "51730a6ffe87e68564a13caa51f170f7255566dc6795b125ab0fb567205859cf",
+     "rawSha256": "4d61c7c1aac7dd1e04e1724f1737db76a646bba1ac8bb30d9eb37b54d3f69b86",
+     "nativePixelSha256": "42017ebefe0844fed06c11cb501bfed17d87805e073f4724968a43140e8b725e",
+     "storedPixelSha256": "7a1704777c980153b8bec08e94e0b1c748abcbfbcb8dbe7b5c39ae09e181ec36",
+     "colors": 23,
+     "palette": [
+      "#0b163a",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#354d4a",
+      "#4a516b",
+      "#606375",
+      "#57272f",
+      "#582830",
+      "#592830",
+      "#5a2931",
+      "#602a32",
+      "#685542",
+      "#6d5944",
+      "#f4bc63"
+     ],
+     "extras": [
+      "#57272f",
+      "#582830",
+      "#592830",
+      "#5a2931",
+      "#602a32",
+      "#685542",
+      "#6d5944",
+      "#f4bc63"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "23",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.362",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.16 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "787346d0af557d4a2116de70635704839cd415fe243b51da1cec9f27ea380508",
+     "rawSha256": "d755770d0cfda2f4ba7f70502ccabe766a9018d9be403d056808d97216b14cb3",
+     "nativePixelSha256": "60b602b4ca8a9129a0919b72618c997ee13430ad6a2260ba30023166c5290e87",
+     "storedPixelSha256": "faf490204f8631bb6590a0cb4f9a939cf7b4520e9c6486f18aed09c169c871c5",
+     "colors": 29,
+     "palette": [
+      "#0b163a",
+      "#0b183c",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#3a5348",
+      "#354d4a",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#6a6d7f",
+      "#551b38",
+      "#6b2338",
+      "#693040",
+      "#6a303f",
+      "#6a3f46",
+      "#6a3c44",
+      "#71434b",
+      "#77494b"
+     ],
+     "extras": [
+      "#551b38",
+      "#6b2338",
+      "#693040",
+      "#6a303f",
+      "#6a3f46",
+      "#6a3c44",
+      "#71434b",
+      "#77494b"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.378",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.16 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "c5154473f8fb7337fb55ebf51cef39075c3bb3491bb71e968c73956dabb578a9",
+     "rawSha256": "d64a6ea0252f0afc0398fcf3f0ce71c3083fdefa0ddd74d942c8d5ffab8ce5de",
+     "nativePixelSha256": "985dc0ea7a29d6d4738b019433b9889ebeff4cd50a10adc33ce84756e550f96a",
+     "storedPixelSha256": "cc604920b238a0814262c0e111ccbe9be0e26b7ce2bdb0cbe1731b16b043ba95",
+     "colors": 26,
+     "palette": [
+      "#0b163a",
+      "#0b1b36",
+      "#0c1c35",
+      "#0b1c37",
+      "#212c48",
+      "#153048",
+      "#352732",
+      "#313c58",
+      "#344d44",
+      "#3e4360",
+      "#2f3550",
+      "#3a2e3a",
+      "#374773",
+      "#325344",
+      "#4a516b",
+      "#3f584c",
+      "#606782",
+      "#726f83",
+      "#606375",
+      "#040b22",
+      "#213d34",
+      "#5c2f37",
+      "#67212b",
+      "#7882a3",
+      "#83838f",
+      "#838dae"
+     ],
+     "extras": [
+      "#040b22",
+      "#213d34",
+      "#5c2f37",
+      "#67212b",
+      "#7882a3",
+      "#83838f",
+      "#838dae"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.002 / 위 0.483",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.15 (캡처 0.26)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-030408-fs2-town-night-b",
+     "at": "2026-11-04T03:04:37Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-235e8ec8c6f8455699af71e95ce8fbb9",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-030408-fs2-town-night-b.json",
+     "rawSha256": "38a920f3af334c37847a85fe67a2651377facaefde308e20362e3c587a6d905f",
+     "entries": [
+      {
+       "label": "70",
+       "pixelSha256": "13e82e291ea6ffb0ea7a8ba370ec1234538f0e184716c71f54258a33922efde1",
+       "letter": "A"
+      },
+      {
+       "label": "57",
+       "pixelSha256": "42017ebefe0844fed06c11cb501bfed17d87805e073f4724968a43140e8b725e",
+       "letter": "B"
+      },
+      {
+       "label": "88",
+       "pixelSha256": "bac417611e96e50550d8b362160d21c7e955833444fad76f658c41f3a4f5a887",
+       "control": "flipped"
+      },
+      {
+       "label": "56",
+       "pixelSha256": "60b602b4ca8a9129a0919b72618c997ee13430ad6a2260ba30023166c5290e87",
+       "letter": "C"
+      },
+      {
+       "label": "73",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "82",
+       "pixelSha256": "3584e842aa976ad767fd50c03afc51d9c352a160e5d8ee376e53c2cc1f78d910",
+       "control": "top-down"
+      },
+      {
+       "label": "35",
+       "pixelSha256": "985dc0ea7a29d6d4738b019433b9889ebeff4cd50a10adc33ce84756e550f96a",
+       "letter": "D"
+      }
+     ],
+     "answers": {
+      "35": {
+       "v": "pass",
+       "score": 3.5,
+       "why": "Eye-level night street with the bridge arches, well, timber-framed houses and stall over a flat floor, but speckled noise on the roofs and stray dots on the ground make it muddier than the others."
+      },
+      "56": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Eye-level night plaza with the map's timber-framed house, striped market stall, crystal pillar, well, benches and banner over a calm, flat cobbled floor in crisp limited-palette pixels."
+      },
+      "57": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "Clean eye-level night scene of two timber-framed houses, a roofed well, lit lamps and cypresses above a fully open flat floor, though it leaves out the map's bridge and canal."
+      },
+      "70": {
+       "v": "pass",
+       "score": 4,
+       "why": "Eye-level night street with the map's arched bridge, tower, timber-framed house, striped stall, well and red banner over a flat, calm lower half, though the speckled roof texture reads slightly noisy."
+      },
+      "73": {
+       "v": "reject",
+       "score": 1,
+       "why": "Daytime desert canyon with cacti, which matches neither the night royal-capital setting nor its materials."
+      },
+      "82": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map, not a side view."
+      },
+      "88": {
+       "v": "reject",
+       "score": 1,
+       "why": "The town strip is upside down, with buildings hanging from the middle and the flat area at the top instead of the bottom."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "42017ebefe0844fed06c11cb501bfed17d87805e073f4724968a43140e8b725e",
+    "storedPixelSha256": "7a1704777c980153b8bec08e94e0b1c748abcbfbcb8dbe7b5c39ae09e181ec36",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:14:09Z",
+    "score": 4.5,
+    "batch": "20261104-030408-fs2-town-night-b"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:14:41Z",
+     "target": "map:fs2_hub_night",
+     "resourceId": "battle_backdrop_fs2_town_night_b_7a170477",
+     "storedPixelSha256": "7a1704777c980153b8bec08e94e0b1c748abcbfbcb8dbe7b5c39ae09e181ec36",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-town-night-b/battle_backdrop_fs2_town_night_b_7a170477.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-fortress-b": {
+   "id": "fs2-fortress-b",
+   "createdAt": "2026-11-04T03:00:47Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_fortress",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 37,
+    "h": 25
+   },
+   "captureSha256": "accb5464044da776baed7de6a626f2f8e216aed07f4287226ab46cbda4d1ab83",
+   "referenceSha256": "b4f3860015f704a511b228d762c997b1c623ea9e701801be1f56415c4cecab3c",
+   "facts": {
+    "mapId": "fs2_fortress",
+    "mapName": "북방 관문 요새 1층",
+    "tilesetName": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+    "indoor": false,
+    "timeOfDay": "dusk",
+    "timeCertain": true,
+    "light": "dim",
+    "evidence": [
+     "맵 기본 조명 ambient 0.55 · #40485a → 밝기 ×0.60",
+     "야외인데 조명이 어둡다"
+    ],
+    "placeWords": [
+     "북방 관문 요새 1층",
+     "입구 홀 gate",
+     "큰 홀 yard",
+     "감방 cells",
+     "창고 armory",
+     "큰 홀 stair",
+     "던전 입구"
+    ],
+    "captureLuma": 0.301,
+    "palette": [
+     "#282b38",
+     "#272c36",
+     "#2a2b3a",
+     "#282d36",
+     "#292d37",
+     "#2a2c3b",
+     "#292e37",
+     "#2a2f38",
+     "#2d2d3e",
+     "#363b46",
+     "#3a3f4c",
+     "#423b3c",
+     "#454a53",
+     "#4e545d",
+     "#4a5159",
+     "#555864",
+     "#5c616a",
+     "#5d626b",
+     "#656a73",
+     "#61676f",
+     "#6a6f78",
+     "#798191",
+     "#696e76",
+     "#7b8189"
+    ],
+    "note": "The fortress hall floor is plain flat grey flagstone with almost no pattern or cracks; banners, braziers and walls stay on the back wall only. Keep the lower half calm and nearly uniform."
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "d0a6d0befef4638f50b570e409e8a924ba203dfc27d83d91166dab3ba5c8dec4",
+     "rawSha256": "42650c6fdef391d01bdd7769f096fa466c44d845a935ce5e4b6cffedc68635a0",
+     "nativePixelSha256": "b2b3c0e93bad4304361dab0ef8a3cd28384b08f8657e6c5776ba8287a66646b2",
+     "storedPixelSha256": "f967cb19dc438a0094cf8d32f6da880537ecc10ee0f7797128fa8ef5fd0d6de4",
+     "colors": 26,
+     "palette": [
+      "#282b38",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#7b8189",
+      "#69222c",
+      "#6a232d",
+      "#835369",
+      "#6f503b",
+      "#85556a",
+      "#86556a",
+      "#8d5a6e",
+      "#8d94a3"
+     ],
+     "extras": [
+      "#69222c",
+      "#6a232d",
+      "#835369",
+      "#6f503b",
+      "#85556a",
+      "#86556a",
+      "#8d5a6e",
+      "#8d94a3"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.254 / 위 0.431",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.32 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "57e0f0a71859f12504e2dae1420b1cd443926bd86e5b707cf6331b546b209a1e",
+     "rawSha256": "bb78c4b64b9b4a43529e9fb5b4dd6442ef0142c13b8ddffbbeecc41f25b1c7df",
+     "nativePixelSha256": "ed8ddf6d2e260d007dbc6a593e7a232c789f9711bc7511a8a26a3cfecf4865e2",
+     "storedPixelSha256": "56e92608cea9ea515e317ef9c70f498cb6c8981dbc38060460558d4f02c94fd5",
+     "colors": 25,
+     "palette": [
+      "#282b38",
+      "#2a2b3a",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#6a6f78",
+      "#7b8189",
+      "#171b2d",
+      "#181c2e",
+      "#632128",
+      "#632127",
+      "#8a5660",
+      "#8d5861",
+      "#926735",
+      "#a77f4c"
+     ],
+     "extras": [
+      "#171b2d",
+      "#181c2e",
+      "#632128",
+      "#632127",
+      "#8a5660",
+      "#8d5861",
+      "#926735",
+      "#a77f4c"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.134 / 위 0.472",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.30 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "e9f09d2d39aeaf87d4cb15d53d1c62b07982bf1f0b8cefb17ed096ac0d37adee",
+     "rawSha256": "4740facb297bd447992c5d5041d46f0d8e84d2679eb0a598684f1916381f6653",
+     "nativePixelSha256": "1f33e484eb5e6056b1a7f3db9217aa5fc8d9238773b8de36f8ee45b2d6f9ee72",
+     "storedPixelSha256": "0df2dccba47ed8f688a065c311ccb25dd466921e332a2e69d060e8b5a9ecf7cb",
+     "colors": 27,
+     "palette": [
+      "#282b38",
+      "#2a2b3a",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#7b8189",
+      "#151d31",
+      "#631831",
+      "#444875",
+      "#704c39",
+      "#805a3d",
+      "#8a93a6",
+      "#8c95a7",
+      "#99a3b3"
+     ],
+     "extras": [
+      "#151d31",
+      "#631831",
+      "#444875",
+      "#704c39",
+      "#805a3d",
+      "#8a93a6",
+      "#8c95a7",
+      "#99a3b3"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.247 / 위 0.529",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.36 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "001b4fbdf2c35948e9897307c2f6e47ce09e25e7e7fa71cc9d468288b6c1750a",
+     "rawSha256": "50a845eed8f18c0eca23541e5cbafeef207f1e85cdeb817573ba17c5e9fd0827",
+     "nativePixelSha256": "065dffe3e705fa339745d2755afc4a41cb6a9bbb5756d9ff661078007324e42a",
+     "storedPixelSha256": "4e493b355e14c915a0f3c721450a0c612370302fe1245a3c8c12c4b550b67d0f",
+     "colors": 27,
+     "palette": [
+      "#282b38",
+      "#2a2b3a",
+      "#2a2c3b",
+      "#2a2f38",
+      "#2d2d3e",
+      "#363b46",
+      "#3a3f4c",
+      "#423b3c",
+      "#454a53",
+      "#4e545d",
+      "#4a5159",
+      "#555864",
+      "#5c616a",
+      "#5d626b",
+      "#656a73",
+      "#61676f",
+      "#6a6f78",
+      "#798191",
+      "#7b8189",
+      "#6c212a",
+      "#6c222b",
+      "#6d222b",
+      "#634635",
+      "#7a583f",
+      "#a17345",
+      "#8f94a0",
+      "#ea8f37"
+     ],
+     "extras": [
+      "#6c212a",
+      "#6c222b",
+      "#6d222b",
+      "#634635",
+      "#7a583f",
+      "#a17345",
+      "#8f94a0",
+      "#ea8f37"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.298 / 위 0.510",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.32 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-030507-fs2-fortress-b",
+     "at": "2026-11-04T03:05:19Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-b8df2e0b98b64728b4d30de5baca8df9",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-030507-fs2-fortress-b.json",
+     "rawSha256": "bfc0614df7d3d396ce9472246e5409a9f5162d7a3897066b0f7bb5cbf8ad8562",
+     "entries": [
+      {
+       "label": "94",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "61",
+       "pixelSha256": "a56b89fb17dc84579514c692eec789fcb6cc95f7e4c0758d523e8dd2c63c9d62",
+       "control": "top-down"
+      },
+      {
+       "label": "86",
+       "pixelSha256": "5ee955479b29461c50348f190cea579494fced945ecca6e563815e00dc69fc7c",
+       "control": "flipped"
+      },
+      {
+       "label": "10",
+       "pixelSha256": "ed8ddf6d2e260d007dbc6a593e7a232c789f9711bc7511a8a26a3cfecf4865e2",
+       "letter": "B"
+      }
+     ],
+     "answers": {
+      "10": {
+       "v": "pass",
+       "score": 4,
+       "why": "The eye-level stone gate has red banners, armor racks, torches and a dim red dusk sky that match the map's gate hall, and the lower ~45% is open, calm ground, though that ground is a flat untextured gray that looks slightly unfinished."
+      },
+      "61": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is the top-down dungeon map itself, not a side-view battleback."
+      },
+      "86": {
+       "v": "reject",
+       "score": 1,
+       "why": "The fortress wall is flipped vertically, with the flat gray ground at the top, the arch upside down, and the red-tinged dusk clouds along the bottom where the floor should be."
+      },
+      "94": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "A bright daytime desert canyon with cacti and sandstone mesas does not match the stone fortress gate, and the cacti and rocks crowd the edges of the floor."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "B",
+    "nativePixelSha256": "ed8ddf6d2e260d007dbc6a593e7a232c789f9711bc7511a8a26a3cfecf4865e2",
+    "storedPixelSha256": "56e92608cea9ea515e317ef9c70f498cb6c8981dbc38060460558d4f02c94fd5",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:17:53Z",
+    "score": 4,
+    "batch": "20261104-030507-fs2-fortress-b"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:18:13Z",
+     "target": "map:fs2_fortress",
+     "resourceId": "battle_backdrop_fs2_fortress_b_56e92608",
+     "storedPixelSha256": "56e92608cea9ea515e317ef9c70f498cb6c8981dbc38060460558d4f02c94fd5",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-fortress-b/battle_backdrop_fs2_fortress_b_56e92608.json",
+     "reloaded": true
+    }
+   ]
+  },
+  "fs2-prison": {
+   "id": "fs2-prison",
+   "createdAt": "2026-11-04T03:08:16Z",
+   "project": {
+    "file": "/tmp/fs2mf.YLID/fs-project.json",
+    "sha256": "6ff10f095dfad94b304a64c3750e0e000c6cac566f91ff615ca76fbf3b343307",
+    "title": "폴른 스타"
+   },
+   "assetsRoot": "/home/main/z-project/fs2mf-rpg-zzu",
+   "mapId": "fs2_barracks",
+   "troopId": "troop_fs2_barracks_guards",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 28,
+    "h": 15
+   },
+   "captureSha256": "9e35dbdc828ce2ddd5d68bc64ae01a6a7547e32dbe6ed0a3cbd598311b5844c5",
+   "referenceSha256": "2e9e1a17772d3f2a9e4cfa0bfc964db46023b242fdba8f938dd742bf8f9e0860",
+   "facts": {
+    "mapId": "fs2_barracks",
+    "mapName": "심문회 초소 · 막사",
+    "tilesetName": "실내 · 손 도트 v5 (아틀라스)",
+    "indoor": true,
+    "timeOfDay": "day",
+    "timeCertain": false,
+    "light": "dark",
+    "evidence": [
+     "맵 기본 조명 ambient 0.62 · #0a0e1c → 밝기 ×0.41",
+     "시간 낱말 없음 · 실내 → 시간은 정하지 않고 조명만 맞춘다"
+    ],
+    "placeWords": [
+     "심문회 초소 · 막사",
+     "초소 순찰병"
+    ],
+    "captureLuma": 0.175,
+    "palette": [
+     "#0d0e14",
+     "#0e101a",
+     "#1a1925",
+     "#231512",
+     "#0d1f3b",
+     "#1d232e",
+     "#2e303b",
+     "#2a2a34",
+     "#2d2d37",
+     "#312621",
+     "#2d211c",
+     "#372219",
+     "#13375f",
+     "#34353f",
+     "#3e3027",
+     "#3b404c",
+     "#4d3731",
+     "#49382e",
+     "#583b2f",
+     "#60573d",
+     "#655748",
+     "#655734",
+     "#6d6c6d",
+     "#636061"
+    ],
+    "note": "An underground inquisition guard post and prison: rough stone walls, iron bars of cells, a few wall torches, weapon racks on the back wall. The floor is plain flat dark stone with almost no pattern; keep the lower half calm."
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "08edd12ce28ad7c92e950826a97649a38f29e922a0299bd8fea794aadc425d31",
+     "rawSha256": "40d295f991b0601763b638df1c2d3f43b3594c6f60650ef3e75c9d4d82a2a8d9",
+     "nativePixelSha256": "f87f970d4effd869f4a90958cff51aed82d4f6a0ea5e355a0befb6c559c0234e",
+     "storedPixelSha256": "cb3e28624b2eef3e95bce4de6ed828aa8673a5085bcac29384595de8a58c75be",
+     "colors": 29,
+     "palette": [
+      "#0d0e14",
+      "#0e101a",
+      "#1a1925",
+      "#231512",
+      "#1d232e",
+      "#2e303b",
+      "#2a2a34",
+      "#2d2d37",
+      "#312621",
+      "#2d211c",
+      "#372219",
+      "#34353f",
+      "#3e3027",
+      "#3b404c",
+      "#4d3731",
+      "#49382e",
+      "#583b2f",
+      "#655748",
+      "#655734",
+      "#6d6c6d",
+      "#636061",
+      "#5d1025",
+      "#601126",
+      "#4e4f62",
+      "#885f32",
+      "#8d7f7d",
+      "#8e817f",
+      "#908380",
+      "#a29b9b"
+     ],
+     "extras": [
+      "#5d1025",
+      "#601126",
+      "#4e4f62",
+      "#885f32",
+      "#8d7f7d",
+      "#8e817f",
+      "#908380",
+      "#a29b9b"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.033 / 위 0.563",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.16 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "b5a0bb6a2fea894f87ebc1e28d16f100fafba2f38ca22719268937f0b1dc86a3",
+     "rawSha256": "1fe59afde52ce8b73a90625ea1a47dcf584ef1d4d12f7cc06b112eb0b2cda820",
+     "nativePixelSha256": "bcd6f9a274bf256fd9037e45b4190bdd2913b4c7fc6ebd1d194b4fa120914eb1",
+     "storedPixelSha256": "91a4a43064104bea80de48b22e645b390466508b416fd57febbfc0d7eb279e7a",
+     "colors": 26,
+     "palette": [
+      "#0d0e14",
+      "#0e101a",
+      "#1a1925",
+      "#231512",
+      "#1d232e",
+      "#2e303b",
+      "#2a2a34",
+      "#2d2d37",
+      "#312621",
+      "#2d211c",
+      "#34353f",
+      "#3e3027",
+      "#3b404c",
+      "#4d3731",
+      "#583b2f",
+      "#655748",
+      "#655734",
+      "#6d6c6d",
+      "#636061",
+      "#5f2029",
+      "#61212a",
+      "#865f3f",
+      "#817c81",
+      "#878286",
+      "#908c8c",
+      "#9e9996"
+     ],
+     "extras": [
+      "#5f2029",
+      "#61212a",
+      "#865f3f",
+      "#817c81",
+      "#878286",
+      "#908c8c",
+      "#9e9996"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.459 / 위 0.588",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.16 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "67732da53640807840db38574f08098d9b97ddd82bfab3a88b90a314d8a878c3",
+     "rawSha256": "7a57a240c3c0e16b0b423d406b5df00207504d688e9f632ae8eebf1f91f6f1d6",
+     "nativePixelSha256": "ed40dc6527c506308731aa8c68f40d438b53d694f864423e10530c60fccc9b44",
+     "storedPixelSha256": "618465a9179f4f4c364dfe6a29d54f17012cb3eb8392a2b6ecb45f59a0bdfadb",
+     "colors": 25,
+     "palette": [
+      "#0d0e14",
+      "#0e101a",
+      "#1a1925",
+      "#231512",
+      "#1d232e",
+      "#2e303b",
+      "#2a2a34",
+      "#2d2d37",
+      "#312621",
+      "#2d211c",
+      "#372219",
+      "#34353f",
+      "#3e3027",
+      "#3b404c",
+      "#4d3731",
+      "#49382e",
+      "#583b2f",
+      "#655748",
+      "#6d6c6d",
+      "#636061",
+      "#00030d",
+      "#54191c",
+      "#764122",
+      "#8a512a",
+      "#fbc936"
+     ],
+     "extras": [
+      "#00030d",
+      "#54191c",
+      "#764122",
+      "#8a512a",
+      "#fbc936"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.080 / 위 0.500",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.13 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "daee7eba73852a6b5a474bcf8794129292f19856af8436e62fd9d3580b3a7c92",
+     "rawSha256": "1e4c60ee74bed4b3b701e0d40d589e8edb9d426bc47830d2bd536d97ea80cd3d",
+     "nativePixelSha256": "63f507be102e8c87f5eea96b9f14290f37a4fd3c3fff8b73b4c97956635d09ba",
+     "storedPixelSha256": "dee08ce314ee6699d13f924f65e4e458086333b694d38613a5e1bfb7348be9e4",
+     "colors": 27,
+     "palette": [
+      "#0d0e14",
+      "#0e101a",
+      "#1a1925",
+      "#231512",
+      "#1d232e",
+      "#2e303b",
+      "#2a2a34",
+      "#2d2d37",
+      "#312621",
+      "#2d211c",
+      "#372219",
+      "#34353f",
+      "#3e3027",
+      "#3b404c",
+      "#4d3731",
+      "#583b2f",
+      "#655748",
+      "#655734",
+      "#6d6c6d",
+      "#636061",
+      "#02030d",
+      "#4d111f",
+      "#501220",
+      "#875535",
+      "#8d8786",
+      "#8f5c38",
+      "#9a9493"
+     ],
+     "extras": [
+      "#02030d",
+      "#4d111f",
+      "#501220",
+      "#875535",
+      "#8d8786",
+      "#8f5c38",
+      "#9a9493"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "27",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.668",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "위쪽 밝기 0.15 (캡처 0.17)",
+       "rule": "밤·어두운 장면: 위쪽 평균 밝기 ≤0.42"
+      }
+     }
+    }
+   ],
+   "reviews": [
+    {
+     "id": "20261104-031025-fs2-prison",
+     "at": "2026-11-04T03:10:42Z",
+     "standard": "battle-backdrop-opus/1",
+     "model": "claude-opus-5.5",
+     "runId": "chatcmpl-e85c98ea01644b4caed89c9fac779aab",
+     "rawFile": "harness-data/battle-backdrop/reviews/20261104-031025-fs2-prison.json",
+     "rawSha256": "1b2ffa3602018b7eb75384bf968280d02ca71371f94cb660ae20fb7258eaf5b7",
+     "entries": [
+      {
+       "label": "99",
+       "pixelSha256": "a7b6e35132f34a2ace88df5a53b26cc0029901858878bf211bca42aac5ba139a",
+       "control": "wrong-place"
+      },
+      {
+       "label": "46",
+       "pixelSha256": "ed40dc6527c506308731aa8c68f40d438b53d694f864423e10530c60fccc9b44",
+       "letter": "C"
+      },
+      {
+       "label": "23",
+       "pixelSha256": "7fb41e59f5a3c06c1724c8b9f5ac573295a9db0723e28abe182ba2757a077bc1",
+       "control": "top-down"
+      },
+      {
+       "label": "66",
+       "pixelSha256": "f87f970d4effd869f4a90958cff51aed82d4f6a0ea5e355a0befb6c559c0234e",
+       "letter": "A"
+      },
+      {
+       "label": "48",
+       "pixelSha256": "f6a77fc5445837dc6040a65291c50cdc792fc3c6a17021266219553c3d540001",
+       "control": "flipped"
+      },
+      {
+       "label": "36",
+       "pixelSha256": "63f507be102e8c87f5eea96b9f14290f37a4fd3c3fff8b73b4c97956635d09ba",
+       "letter": "D"
+      }
+     ],
+     "answers": {
+      "23": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is a top-down copy of the map itself, not a side-view battleback."
+      },
+      "36": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "This is a crisp eye-level stone barracks with paired bunk beds, red banners, sconces, a spear rack and a red chest that matches the map, and below the walkway the floor is plain and dark."
+      },
+      "46": {
+       "v": "pass",
+       "score": 4,
+       "why": "This is an eye-level barracks interior with bunk beds, torches, weapon racks, barrels and a red chest that match the map, and its dark, empty lower floor leaves room for sprites, though the upper loft detail is fairly busy."
+      },
+      "48": {
+       "v": "reject",
+       "score": 1.5,
+       "why": "This is image 66 flipped upside down, so the bunks hang from the bottom and the empty floor area sits at the top."
+      },
+      "66": {
+       "v": "pass",
+       "score": 4.5,
+       "why": "This is a dim side view of a stone barracks wall with bunk beds, red banners, torches, weapon racks and a red chest that matches the map, and its lower half is a plain calm floor."
+      },
+      "99": {
+       "v": "reject",
+       "score": 1,
+       "why": "This is an outdoor daytime desert with cacti and mesas, which does not match the indoor stone-and-wood barracks on the map."
+      }
+     },
+     "counted": true,
+     "reason": "all hidden controls rejected"
+    }
+   ],
+   "pick": {
+    "letter": "A",
+    "nativePixelSha256": "f87f970d4effd869f4a90958cff51aed82d4f6a0ea5e355a0befb6c559c0234e",
+    "storedPixelSha256": "cb3e28624b2eef3e95bce4de6ed828aa8673a5085bcac29384595de8a58c75be",
+    "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+    "at": "2026-11-04T03:15:05Z",
+    "score": 4.5,
+    "batch": "20261104-031025-fs2-prison"
+   },
+   "builds": [
+    {
+     "at": "2026-11-04T03:15:26Z",
+     "target": "troop:troop_fs2_barracks_guards",
+     "resourceId": "battle_backdrop_fs2_prison_cb3e2862",
+     "storedPixelSha256": "cb3e28624b2eef3e95bce4de6ed828aa8673a5085bcac29384595de8a58c75be",
+     "into": "/tmp/fs2mf.YLID/emit/fs2-prison/battle_backdrop_fs2_prison_cb3e2862.json",
+     "reloaded": true
+    }
+   ]
   }
  }
 }

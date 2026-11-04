@@ -795,6 +795,21 @@
     "no single added light has radius above 3 tiles; ambient after the lighting change is at most 0.65",
     "in the shipped player, a frame after the lighting shows several separate warm glows along the arcade instead of one large disc"
    ]
+  },
+  {
+   "id": "area-battle-backdrops",
+   "label": "지역마다 그 장소를 그린 측면 전투 배경",
+   "port": 19543,
+   "lessons": [
+    "battle-backdrop-per-area"
+   ],
+   "prompt": "숲·지하 서고·밤 광장·감옥·설원 길·얼음 호수·탑마다 전투가 모두 같은 숲·동굴 배경에서 벌어져. 전투가 나는 맵마다 그 장소를 보고 측면 전투 배경을 새로 그려 걸어 줘. 아래쪽은 캐릭터가 설 수 있게 비워 두고.",
+   "requirements": [
+    "every map that starts a battle gets battleBackground set to an uploaded backdrop resource (kind backdrop), not a battle-scenery-* biome id",
+    "troops fought on those maps do not keep a battle-scenery-* previewBackgroundResourceId that would override the map backdrop",
+    "maps of different areas (forest, underground, night town, prison, snow road, ice lake, tower) get different backdrop resources",
+    "in the shipped player, a battle frame on each area shows its own backdrop with the lower part empty behind the battlers"
+   ]
   }
  ]
 }
