@@ -642,6 +642,35 @@ function status(argv: string[]): number {
 
 export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
+  if (stage && LEDGER_WRITERS.has(stage)) {
+    const release = lockLedger(stage);
+    try { return await runStage(stage, argv); } finally { release(); }
+  }
+  return runStage(stage, argv);
+}
+
+/** 단계마다 원장을 읽고 몇 분 일한 뒤 통째로 쓴다 — 둘이 동시에 돌면 서로의 판·후보·검수 기록을 지운다(2026-11-04 실측). 기다리지 않고 거절한다. */
+const LEDGER_WRITERS = new Set(["capture", "produce", "pixelize", "check", "review", "pick", "build"]);
+const LOCK = path.join(DATA, ".ledger.lock");
+function lockLedger(stage: string): () => void {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      fs.writeFileSync(LOCK, `${process.pid} ${stage} ${now()}`, { flag: "wx" });
+      return () => { if (fs.readFileSync(LOCK, "utf8").startsWith(`${process.pid} `)) fs.rmSync(LOCK); };
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+      const held = fs.readFileSync(LOCK, "utf8");
+      const pid = Number(held.split(" ")[0]);
+      let alive = Number.isInteger(pid) && pid > 0;
+      if (alive) { try { process.kill(pid, 0); } catch { alive = false; } }
+      if (alive) throw new Error(`다른 battle-backdrop 단계가 원장을 잡고 있다(${held}) — 단계는 하나씩 돌린다`);
+      fs.rmSync(LOCK, { force: true });
+    }
+  }
+  throw new Error(`원장 잠금을 잡지 못했다: ${LOCK}`);
+}
+
+async function runStage(stage: string | undefined, argv: string[]): Promise<number> {
   switch (stage) {
     case "capture": return capture(argv);
     case "produce": return produce(argv);
