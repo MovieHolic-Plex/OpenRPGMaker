@@ -258,7 +258,6 @@ describe("톱바 저장 글자", () => {
       "toolbar-save",
       "menu-project",
       "topbar-test-play",
-      "menu-more-tools",
       "editor-topbar-trailing",
     ]) {
       expect(findByTestId(topbar, testId), testId).not.toBeNull();

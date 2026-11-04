@@ -11,10 +11,9 @@ const VIEWPORTS = [
 ] as const;
 const MODES = ["editor"] as const;
 // 맵 메뉴(2026-08-26)·게임 메뉴(2026-09-03)·도구 메뉴(2026-09-27)는 사라졌다.
-// 2026-11 톱바 개편: 도움말은 ⋯ 더 보기(menu-more-tools) 안으로 갔다 — Tab 으로 닿을 톱바 단추는 ⋯ 다.
+// 2026-11 톱바 개편: ⋯ 더 보기는 시안에 없어 걷었다(도움말은 ⌘K) — Tab 으로 닿을 톱바 단추는 프로젝트 메뉴와 이벤트 칸이다.
 const REQUIRED_FOCUS_TARGETS = [
   "menu-project",
-  "menu-more-tools",
   "layer-event",
 ] as const;
 

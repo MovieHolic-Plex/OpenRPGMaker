@@ -146,7 +146,7 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     // Break: 레이어·되돌리기·맵 트리 동작이 다시 상단 메뉴/툴바로 새어 들어온다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
-    for (const menuId of ["menu-project", "menu-more-tools"]) {
+    for (const menuId of ["menu-project"]) {
       if (findByTestId(fake(topbar), menuId)) openMenu(topbar, menuId);
     }
 
@@ -178,7 +178,6 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     // Break: 「도구 ▾」 메뉴나 인라인 아이콘이 되살아나 ⌘K 와 같은 동작을 두 자리에 놓는다(2026-11 개편).
     const topbar = document.createElement("div");
     renderTopbar(topbar);
-    openMenu(topbar, "menu-more-tools");
 
     const ids = topRegionTestIds(topbar);
     for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search", "menu-tools"]) {

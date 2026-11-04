@@ -6,7 +6,7 @@ import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { dockZoneHasHost, LEFT_DOCK_TASK_HOST } from "@/editor/workspace/leftDockPanels";
-import { t } from "@/i18n";
+import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t } from "@/i18n";
 import { withJosa } from "@/util/josa";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
@@ -108,6 +108,28 @@ const TOPBAR_MOVED_COMMANDS: readonly EditorCommand[] = [
     keywords: ["fullscreen", "window", "전체화면", "창"],
     run: () => { void import("@/editor/panels/menu").then((mod) => mod.toggleFullscreen()); },
   },
+  // ⋯ 더 보기가 품던 셋(2026-11 개편 — 시안 톱바에는 ⋯ 가 없다). id 는 옛 메뉴 항목의 testid 다.
+  {
+    id: "topbar-ai-settings",
+    label: "화면: AI 설정 열기",
+    category: "화면",
+    keywords: ["ai", "settings", "connect", "model", "key", "AI 설정", "AI 연결", "연결", "모델", "설정"],
+    run: () => { void import("@/editor/panels/aiSettingsModal").then((mod) => mod.openAiSettingsModal()); },
+  },
+  {
+    id: "menu-help-guide",
+    label: "도움말: 에디터 가이드",
+    category: "화면",
+    keywords: ["help", "guide", "manual", "도움말", "가이드", "설명서"],
+    run: () => { void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal()); },
+  },
+  ...SUPPORTED_LOCALES.map((locale): EditorCommand => ({
+    id: `menu-language-${locale}`,
+    label: `언어: ${LOCALE_NATIVE_NAMES[locale]}`,
+    category: "화면",
+    keywords: ["language", "locale", "언어", locale, LOCALE_NATIVE_NAMES[locale]],
+    run: () => { if (locale !== getLocale()) void setLocale(locale); },
+  })),
 ];
 
 // 캔버스 위에서 ⌘K 로 옮긴 단추들(2026-11 캔버스 알약 개편). id 는 옛 단추의 testid 다 — 팔레트 행이

@@ -1,14 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { openHelpMenu } from "./topbarNavigation";
+import { openHelpShortcuts } from "./topbarNavigation";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
-/** 도움말은 스튜디오 바 오른쪽 ⋯ 더 보기의 하위 메뉴(menu-help → 단축키 · 도움말)로 연다(2026-11 톱바 개편). */
+/** 도움말은 ⌘K 「도움말: 단축키 보기」 명령으로 연다(2026-11 톱바 개편 — 톱바에 ⋯ 가 없다). */
 async function openHelpFromTopbar(page: import("@playwright/test").Page): Promise<void> {
-  await openHelpMenu(page);
-  await page.getByTestId("menu-help-shortcuts").click();
+  await openHelpShortcuts(page);
 }
 
 test("help button opens a wiki-style editor guide", async ({ page }, testInfo) => {
@@ -54,8 +53,7 @@ test("help button opens a wiki-style editor guide", async ({ page }, testInfo) =
 test("help menu item opens the same modal", async ({ page }) => {
   await page.goto("/?freshProject=1");
 
-  await openHelpMenu(page);
-  await page.getByTestId("menu-help-shortcuts").click();
+  await openHelpShortcuts(page);
 
   await expect(page.getByTestId("help-modal")).toBeVisible();
   await page.keyboard.press("Escape");

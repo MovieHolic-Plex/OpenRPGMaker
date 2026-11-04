@@ -153,7 +153,6 @@ describe("에디터 헤더 복구", () => {
       "toolbar-database",
       "toolbar-resource-manager",
       "topbar-assistant",
-      "menu-more-tools",
       "topbar-test-play",
     ]) {
       expect(findByTestId(surface, testId), testId).not.toBeNull();
@@ -166,20 +165,16 @@ describe("에디터 헤더 복구", () => {
     }
   });
 
-  it("헤더 ⋯ 메뉴의 AI 설정 항목이 설정 모달을 연다", () => {
-    // Break: settings remains buried in the assistant panel instead of the header.
+  it("⌘K 「AI 설정 열기」 명령이 설정 모달을 연다 — 톱바에는 ⋯ 가 없다", async () => {
+    // Break: settings remains buried in the assistant panel, or the ⋯ button returns without a ⌘K home for it.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
+    expect(findByTestId(fakeElement(topbar), "menu-more-tools")).toBeNull();
 
-    const more = findByTestId(fakeElement(topbar), "menu-more-tools");
-    more?.click();
-    const body = fakeElement(document.body as unknown as HTMLElement);
-    if (!findByTestId(body, "menu-popup-more-tools")) more?.click();
-    const settings = findByTestId(body, "topbar-ai-settings");
-    expect(settings?.textContent).toContain("AI 설정");
-    settings?.click();
+    const { listEditorCommands } = await import("@/editor/commandRegistry");
+    listEditorCommands().find((command) => command.id === "topbar-ai-settings")?.run();
 
-    expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1));
   });
 
   it("legacy openVillageInfoModal 진입점은 세계관 패널로 리다이렉트한다", async () => {
