@@ -407,3 +407,51 @@ it("forwards one-use project checkpoint decisions through the companion", async 
   const missing = await handleCompanionRequest({ method: "POST", url: "/v1/agent/checkpoint", body: decision }, {});
   assert.equal(missing.status, 501);
 });
+
+it("API 키 찾기·입양 경로: 어댑터가 없으면 501, 있으면 그대로 넘기고 주소는 받지 않는다", async () => {
+  assert.equal(isCompanionPath("/auth/key-sources"), true);
+  assert.equal(isCompanionPath("/auth/key-adopt"), true);
+
+  assert.equal((await handleCompanionRequest({ method: "GET", url: "/auth/key-sources" }, {})).status, 501);
+  assert.equal((await handleCompanionRequest({ method: "POST", url: "/auth/key-adopt", body: { sourceId: "env:DEEPSEEK_API_KEY" } }, {})).status, 501);
+
+  const listed = { sources: [{ id: "env:DEEPSEEK_API_KEY", family: "deepseek", label: "DEEPSEEK_API_KEY (환경 변수)", adoptable: true, model: "deepseek" }], envScan: "allow" };
+  let adopted;
+  const adapters = {
+    keySources: async () => listed,
+    keyAdopt: async (input) => { adopted = input; return { ok: true, code: "ok", message: "연결됐어요.", model: "deepseek-flash", endpoints: [] }; },
+  };
+  const sources = await handleCompanionRequest({ method: "GET", url: "/auth/key-sources" }, adapters);
+  assert.equal(sources.status, 200);
+  assert.deepEqual(sources.body, listed);
+
+  const noId = await handleCompanionRequest({ method: "POST", url: "/auth/key-adopt", body: {} }, adapters);
+  assert.equal(noId.status, 400);
+
+  const ok = await handleCompanionRequest({
+    method: "POST", url: "/auth/key-adopt",
+    body: { sourceId: " env:DEEPSEEK_API_KEY ", model: "deepseek", baseUrl: "http://evil.example/v1", apiKey: "sk-injected" },
+  }, adapters);
+  assert.equal(ok.status, 200);
+  assert.deepEqual(adopted, { sourceId: "env:DEEPSEEK_API_KEY", model: "deepseek" });
+
+  assert.equal((await handleCompanionRequest({ method: "POST", url: "/auth/key-sources" }, adapters)).status, 405);
+});
+
+it("앱이 대신 설치하는 경로: 어댑터가 없으면 501, 있으면 프로그램 이름만 넘기고 명령은 받지 않는다", async () => {
+  assert.equal(isCompanionPath("/v1/local-agents/install"), true);
+
+  assert.equal((await handleCompanionRequest({ method: "POST", url: "/v1/local-agents/install", body: { cli: "claude" } }, {})).status, 501);
+
+  let received;
+  const adapters = { localAgentInstall: async (input) => { received = input; return { ok: true, code: "ok", message: "설치했어요." }; } };
+  const ok = await handleCompanionRequest({
+    method: "POST", url: "/v1/local-agents/install",
+    body: { cli: "claude", command: "calc.exe", args: ["--evil"] },
+  }, adapters);
+  assert.equal(ok.status, 200);
+  assert.deepEqual(received, { cli: "claude" });
+
+  await handleCompanionRequest({ method: "POST", url: "/v1/local-agents/install", body: { cli: 7 } }, adapters);
+  assert.deepEqual(received, { cli: "" });
+});

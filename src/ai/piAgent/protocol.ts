@@ -45,8 +45,9 @@ export interface PiAgentRequest {
    */
   readonly assistantRoles?: { readonly smol?: RoleModel | "off"; readonly advisor?: RoleModel | "off" };
   /**
-   * 조수 v2 팀장(src/ai/v2/split.ts). 편집기 엔진 선택이 팀장을 켠 때만 실린다(localCliEngine.assistantEngineLead).
-   * 워커는 OPRN_V2_SPLIT 이 없을 때만 이 값을 쓴다. 로컬 CLI 팀장만 받는다.
+   * 조수 v2 팀장(src/ai/v2/split.ts). 편집기 엔진 선택의 팀장(localCliEngine.assistantEngineLead) 또는 요청이 직접 실어 온 팀장.
+   * 워커는 OPRN_V2_SPLIT 이 없을 때만 이 값을 쓴다. 로컬 CLI·사용자 지정 엔드포인트·레지스트리 계정 팀장을 받고, 워커와 다른 계정이어도 된다
+   * (계정 키는 동반 서비스 runAgent 가 푼다. 키가 없으면 워커 혼자 한다).
    */
   readonly lead?: RoleModel;
   readonly provider: string;

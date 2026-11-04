@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-03T09:44:37.116Z",
+  "generatedAt": "2026-11-04T11:21:18.580Z",
   "metrics": {
-    "hexLiterals": 2799,
+    "hexLiterals": 2757,
     "important": 385,
     "undefinedVars": 56,
     "globalRootFiles": 11,
-    "cssFileCount": 424
+    "cssFileCount": 428
   },
   "details": {
     "hexByFile": {
@@ -46,30 +46,30 @@
       "src/styles/database/spatial-places.css": 4,
       "src/styles/database/spatial-shell.css": 17,
       "src/styles/database/spatial-spaces.css": 5,
-      "src/styles/database/studio-theme.css": 25,
+      "src/styles/database/studio-theme.css": 9,
       "src/styles/database/system-studio.css": 2,
       "src/styles/database/tabs-a.part-2.css": 3,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css": 4,
+      "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css": 2,
       "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css": 4,
-      "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 4,
+      "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 2,
       "src/styles/database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css": 9,
       "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css": 1,
       "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css": 2,
       "src/styles/database/tabs-b-assistant-panel/27-assistant-wide.css": 6,
       "src/styles/database/tabs-b-assistant-panel/28-activity-media.css": 10,
-      "src/styles/database/tabs-b-assistant-panel/29-creation-choice.css": 3,
-      "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 2,
+      "src/styles/database/tabs-b-assistant-panel/29-creation-choice.css": 2,
+      "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 1,
       "src/styles/database/tabs-b-assistant-panel/31-map-run-card.css": 11,
       "src/styles/database/tabs-b-assistant-panel/33-store-card.css": 2,
       "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 78,
       "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 6,
+      "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 3,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
       "src/styles/database/tabs-b-status-menu-main.css": 2,
       "src/styles/database/tabs-b-title-screen.css": 19,
       "src/styles/database/tileset-ai-workspace.css": 2,
-      "src/styles/database/tileset-references.css": 20,
+      "src/styles/database/tileset-references.css": 4,
       "src/styles/database/tilesets-terrain.css": 4,
       "src/styles/database/tilesets.css": 4,
       "src/styles/database/tilesets.part-2.css": 10,
@@ -100,7 +100,7 @@
       "src/styles/event/previews/command-preview-4.css": 2,
       "src/styles/event/previews/command-preview.css": 23,
       "src/styles/event/shell-2.css": 10,
-      "src/styles/event/shell.css": 5,
+      "src/styles/event/shell.css": 4,
       "src/styles/event/subdialogs/dialogs-2.css": 10,
       "src/styles/event/subdialogs/dialogs-3.css": 4,
       "src/styles/event/subdialogs/dialogs-4.css": 10,
@@ -483,14 +483,11 @@
         "src/styles/shell/studio-bar.modern.css"
       ],
       "--surface-1": [
-        "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css",
-        "src/styles/database/tileset-references.css",
-        "src/styles/database/tileset-references.css"
+        "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css"
       ],
       "--surface-2": [
-        "src/styles/database/tileset-references.css",
-        "src/styles/database/tileset-references.css",
-        "src/styles/database/tileset-references.css"
+        "src/styles/shell/dialogs/ai-settings-modal.css",
+        "src/styles/shell/studio-bar.modern.css"
       ],
       "--surface-soft": [
         "src/styles/event/subdialogs/dialogs-2.css"
@@ -512,6 +509,7 @@
       "src/styles/base/index.css",
       "src/styles/base/theme.css",
       "src/styles/base/ui-font.css",
+      "src/styles/components/ai-quick-connect.css",
       "src/styles/components/app-modal.css",
       "src/styles/components/empty-state.css",
       "src/styles/components/from-database-tabs-b-resource-manager.css",
@@ -747,6 +745,7 @@
       "src/styles/map/ai-canvas-activity.css",
       "src/styles/map/ai-canvas-progress.css",
       "src/styles/map/build-palette.css",
+      "src/styles/map/canvas-tool-pill.css",
       "src/styles/map/core.part-1.css",
       "src/styles/map/core.part-2.css",
       "src/styles/map/delayed-tooltip.css",
@@ -774,6 +773,7 @@
       "src/styles/map/index.css",
       "src/styles/map/inline-assist.css",
       "src/styles/map/layout-bbox-overlay.css",
+      "src/styles/map/left-column.css",
       "src/styles/map/left-sidebar.modern.css",
       "src/styles/map/left-sidebar.modern.part-10.css",
       "src/styles/map/left-sidebar.modern.part-2.css",
@@ -802,6 +802,7 @@
       "src/styles/map/region-task.part-9.css",
       "src/styles/map/resource-system.part-1.css",
       "src/styles/map/responsive-a.css",
+      "src/styles/map/right-inspector.css",
       "src/styles/map/rule-audit.css",
       "src/styles/map/tile-palette-clusters.css",
       "src/styles/map/tile-palette-smart.css",

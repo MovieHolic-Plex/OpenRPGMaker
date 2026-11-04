@@ -334,84 +334,188 @@
     font-size: 12px;
     font-weight: 600;
   }
-  .ai-connect-gate-team {
-    display: grid;
-    gap: var(--space-2);
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .ai-connect-gate-member {
-    background: var(--accent-muted);
-    border-radius: var(--radius-m);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: var(--space-2);
-  }
-  .ai-connect-gate-role {
-    font-size: 13px;
-    font-weight: 600;
-  }
-  .ai-connect-gate-job {
-    color: var(--text-2);
-    font-size: 12px;
-    line-height: 1.4;
-  }
   .ai-connect-gate-status {
     color: var(--text-2);
     font-size: 12px;
     margin: 0;
   }
-  /* 이 PC 에 로그인된 구독 카드(findSignedInPlans). 찾는 동안에는 한 줄, 찾으면 시작 버튼 + 구성 한 줄. */
-  .app-modal-gate-detected {
-    background: var(--accent-muted);
+}
+
+/* 첫 실행 AI 설정 마법사 (editor/ui/aiSetupWizardView.ts) — 한 화면에 한 가지 행동. 색·간격은 tokens.css 만 쓴다. */
+@layer components {
+  .app-modal-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .app-modal-wizard-title {
+    font-size: var(--font-22);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    word-break: keep-all;
+  }
+  .app-modal-wizard-body {
+    color: var(--text-1);
+    font-size: var(--font-16);
+    line-height: 1.6;
+    margin: 0;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+  }
+  .app-modal-wizard-button {
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-l);
+    cursor: pointer;
+    font: inherit;
+    justify-content: center;
+    text-align: center;
+  }
+  .app-modal-wizard-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-raised);
+    font-size: var(--font-18);
+    font-weight: 700;
+    min-height: 56px;
+    padding: var(--space-3) var(--space-4);
+    width: 100%;
+  }
+  .app-modal-wizard-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .app-modal-wizard-primary:disabled,
+  .app-modal-wizard-choice:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+  .app-modal-wizard-choices {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-modal-wizard-choice {
+    background: var(--control-bg);
+    color: var(--text-1);
+    font-size: var(--font-16);
+    font-weight: 600;
+    min-height: 56px;
+    padding: var(--space-3);
+  }
+  .app-modal-wizard-choice:hover:not(:disabled) {
+    background: var(--control-bg-hover);
+  }
+  .app-modal-wizard-button-label {
+    display: block;
+  }
+  .app-modal-wizard-button-hint {
+    color: var(--text-2);
+    display: block;
+    font-size: var(--font-13);
+    font-weight: 400;
+    margin-top: var(--space-1);
+  }
+  .app-modal-wizard-link {
+    background: none;
+    border: 0;
+    color: var(--accent);
+    font-size: var(--font-16);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-2);
+    text-decoration: underline;
+  }
+  .app-modal-wizard-link.app-modal-wizard-outline {
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-l);
+    font-weight: 600;
+    text-decoration: none;
+    width: 100%;
+  }
+  .app-modal-wizard-secondary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+  .app-modal-wizard-advanced {
+    color: var(--text-2);
+    font-size: var(--font-14);
+  }
+  .app-modal-wizard-advanced > summary {
+    cursor: pointer;
+    padding: var(--space-1) 0;
+  }
+  .app-modal-wizard-advanced-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-top: var(--space-2);
+  }
+  .app-modal-wizard-command {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-m);
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
     padding: var(--space-3);
   }
-  .app-modal-gate-detected[hidden] {
-    display: none;
-  }
-  .app-modal-gate-start {
-    justify-content: center;
-    width: 100%;
-  }
-  .app-modal-gate-plan {
+  .app-modal-wizard-command-where {
     color: var(--text-1);
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: var(--font-14);
     margin: 0;
   }
-  .app-modal-gate-switches {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
+  .app-modal-wizard-command-text {
+    font-family: var(--font-mono);
+    font-size: var(--font-14);
+    overflow-wrap: anywhere;
+    user-select: all;
   }
-  .app-modal-gate-switch {
-    background: none;
-    border: 0;
-    color: var(--accent);
-    cursor: pointer;
+  .app-modal-wizard-key {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
     font: inherit;
-    font-size: 12px;
-    padding: 0;
-    text-decoration: underline;
+    font-size: var(--font-16);
+    min-height: 48px;
+    padding: var(--space-2) var(--space-3);
+    width: 100%;
   }
-  .app-modal-gate-link[hidden] {
-    display: none;
+  .app-modal-wizard-busy,
+  .app-modal-wizard-notice {
+    font-size: var(--font-14);
+    margin: 0;
   }
-  /* 키 카드(빠른 연결 폼, display:flex)는 로그인을 찾으면 접힌다 — [hidden] 이 작성자 display 에 지지 않게. */
-  .app-modal-gate-keycard[hidden] {
-    display: none;
+  .app-modal-wizard-busy {
+    color: var(--text-2);
+  }
+  .app-modal-wizard-notice[data-tone="error"] {
+    color: var(--danger);
+  }
+  .app-modal-wizard-notice[data-tone="ok"] {
+    color: var(--text-1);
+  }
+  .app-modal-wizard-spinner {
+    animation: app-modal-wizard-spin 0.9s linear infinite;
+    border: 4px solid var(--border-default);
+    border-radius: 50%;
+    border-top-color: var(--accent);
+    height: 32px;
+    margin: var(--space-2) auto;
+    width: 32px;
+  }
+  @keyframes app-modal-wizard-spin {
+    to { transform: rotate(360deg); }
   }
   @media (max-width: 420px) {
-    .ai-connect-gate-team {
+    .app-modal-wizard-choices {
       grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .app-modal-wizard-spinner {
+      animation: none;
     }
   }
 }

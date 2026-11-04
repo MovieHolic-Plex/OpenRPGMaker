@@ -12,6 +12,8 @@ import {
   parseOhMyPiProvider,
   type OhMyPiAuthKind,
 } from "@/ai/ohMyPiProviders";
+import type { KeySourcePublic } from "@/ai/keyRoutes";
+import { TEAM_MODELS, type ModelFamily, type TeamModelKey } from "@/ai/teamScoreboard";
 
 const DEFAULT_ORIGINLESS_COMPANION = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
 
@@ -581,6 +583,80 @@ export async function connectOpenAiCompatEndpoint(request: OpenAiCompatConnectRe
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    throw new ChatGptCompanionUnreachableError(error, controller.signal.aborted ? "timeout" : "network");
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  const payload = await readJsonBody(response);
+  setKnownOpenAiCompatEndpoints(readCompatEndpoints(payload));
+  return {
+    ok: payload?.ok === true,
+    code: typeof payload?.code === "string" ? payload.code : "unknown",
+    message: typeof payload?.message === "string" ? payload.message : "",
+    model: typeof payload?.model === "string" ? payload.model : "",
+    endpoint: readCompatEndpoints({ endpoints: [payload?.endpoint] })[0],
+  };
+}
+
+// ── 이미 가진 API 키 (/auth/key-sources, /auth/key-adopt) ─────────────────────────────
+// 목록에는 출처 이름만 있다. 키 값은 동반 서비스 밖으로 나오지 않고, 입양도 출처 id 하나만 보낸다.
+
+export type { KeySourcePublic };
+
+export interface KeySourcesResponse {
+  readonly sources: readonly KeySourcePublic[];
+  readonly envScan: "ask" | "allow" | "deny";
+}
+
+export interface KeyAdoptResponse {
+  readonly ok: boolean;
+  readonly code: string;
+  readonly message: string;
+  readonly model: string;
+  readonly endpoint: OpenAiCompatEndpointPublic | undefined;
+}
+
+const MODEL_FAMILIES = new Set<string>(["claude", "openai", "google", "deepseek"]);
+
+function readKeySources(payload: Record<string, unknown> | null): KeySourcePublic[] {
+  const rows = Array.isArray(payload?.sources) ? payload.sources : [];
+  return rows.flatMap((row): KeySourcePublic[] => {
+    const item = objectValue(row);
+    if (!item || typeof item.id !== "string" || typeof item.label !== "string" || typeof item.family !== "string" || !MODEL_FAMILIES.has(item.family)) return [];
+    return [{
+      id: item.id,
+      family: item.family as ModelFamily,
+      label: item.label,
+      adoptable: item.adoptable === true,
+      ...(typeof item.model === "string" && item.model in TEAM_MODELS ? { model: item.model as TeamModelKey } : {}),
+      ...(typeof item.note === "string" ? { note: item.note } : {}),
+    }];
+  });
+}
+
+export async function fetchKeySources(): Promise<KeySourcesResponse> {
+  const payload = await compatJson("/auth/key-sources");
+  const envScan = payload?.envScan;
+  return { sources: readKeySources(payload), envScan: envScan === "allow" || envScan === "deny" ? envScan : "ask" };
+}
+
+/**
+ * 찾은 키 하나를 연결한다 — 동반 서비스가 그 제공자의 고정 주소로 도구 달린 채팅을 보내 보고 통과하면 저장한다.
+ * 실패도 200 으로 오고 ok=false 와 사람 말 message 를 담는다(connectOpenAiCompatEndpoint 와 같다).
+ */
+export async function adoptKeySource(sourceId: string, model?: string): Promise<KeyAdoptResponse> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 130_000);
+  let response: Response;
+  try {
+    response = await fetchCompanion(`${companionOrigin()}/auth/key-adopt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sourceId, ...(model ? { model } : {}) }),
       signal: controller.signal,
     });
   } catch (error) {

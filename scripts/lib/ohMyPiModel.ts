@@ -6,8 +6,11 @@ import { resolveOpenAiCompatModel } from "./openAiCompatModel.ts";
 /**
  * GPT-6 계열은 설치된 pi-catalog 17.4.0 보다 나중에 나왔다. pi-catalog 18.3.2 의 openai-codex 항목이
  * gpt-5.6-sol 과 같은 전송(api openai-codex-responses · baseUrl chatgpt.com/backend-api · 사고 강도
- * low..max)이고 다른 것은 이름·컨텍스트 창(272k)뿐이다 — 그래서 번들 gpt-5.6-sol 메타데이터에
+ * low..max)이고 다른 것은 이름·컨텍스트 창뿐이다 — 그래서 번들 gpt-5.6-sol 메타데이터에
  * 그 두 값만 덮어 쓴다. 번들이 올라오면 exact 경로가 먼저 잡으므로 이 표는 저절로 안 쓰인다.
+ * 창(2026-11-04 재확인): astra·luna 272000(~/.codex/models_cache.json context_window), 6.1-sol 500000(package-lock 의
+ * pi-catalog 18.13.2 와 codex 0.164.0 08:53Z 캐시), 6.1-terra 272000(보수값 — 500000 은 지금은 사라진 이른 캐시 한 곳에만 있었고
+ * 다른 출처는 272000 이다. 모자라게 잡으면 압축이 일찍 걸릴 뿐이고, 넘치게 잡으면 실행이 실패한다). 번들에 있는 id 는 번들 값이 먼저다.
  */
 const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
   readonly name: string;
@@ -19,7 +22,7 @@ const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
   "gpt-6-luna": { name: "GPT-6 Luna", contextWindow: 272000 },
   // codex-rs 0.155 카탈로그가 use_responses_lite: true 로 내려 준다. 이 헤더 없이 보내면
   // 「not supported when using Codex with a ChatGPT account」 400 이다(실측 2026-10-07).
-  "gpt-6.1-sol": { name: "GPT-6.1 Sol", contextWindow: 272000, useResponsesLite: true },
+  "gpt-6.1-sol": { name: "GPT-6.1 Sol", contextWindow: 500000, useResponsesLite: true },
   // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). Codex CLI 카탈로그의 Terra 계열(gpt-5.6-terra)이 use_responses_lite: true 다.
   "gpt-6.1-terra": { name: "GPT-6.1 Terra", contextWindow: 272000, useResponsesLite: true },
 };
