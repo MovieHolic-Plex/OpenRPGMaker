@@ -1,5 +1,7 @@
 {
  "set": "fs2mf-battles",
+ "note": "Bake first (npm run bake:demos -- --only chrono-bell). The baked play.json is set explicitly so a src/ edit after the bake does not fall back to the 10-minute in-page build.",
+ "projectFixture": "dist/demos/chrono-bell.project.json",
  "query": {
   "demo": "fallen-star",
   "e2eVitals": "1"
@@ -131,7 +133,7 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_61bed466-805b-4db6-99eb-873b71be1965",
+   "startEventId": "ev_field_enemy_7ccd4940-2ed2-4b74-9bf8-f2a7f97f8afe",
    "beats": [
     {
      "id": "enter",
@@ -589,7 +591,7 @@
      "level": 13
     }
    ],
-   "startEventId": "ev_field_enemy_0b02a769-a715-4c79-8b09-97995adace1f",
+   "startEventId": "ev_field_enemy_5831979d-189e-4205-86c9-395e2db8336c",
    "beats": [
     {
      "id": "enter",
@@ -675,7 +677,7 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_f6f62bf5-3fc3-42aa-a651-9773d18f2f2a",
+   "startEventId": "ev_field_enemy_02bebe82-1273-4fd7-acdb-e675c6c0fe64",
    "beats": [
     {
      "id": "enter",
@@ -761,7 +763,7 @@
      "level": 14
     }
    ],
-   "startEventId": "ev_field_enemy_dd040fbb-a55c-4b95-a736-dca697338f41",
+   "startEventId": "ev_field_enemy_83a2acbe-b464-4d69-b028-e736d7b9063d",
    "beats": [
     {
      "id": "enter",
@@ -847,7 +849,7 @@
      "level": 16
     }
    ],
-   "startEventId": "ev_field_enemy_f9bc3074-6c53-4055-8012-289f369733bf",
+   "startEventId": "ev_field_enemy_ad945e9a-6f02-4111-b0a0-5e105574435b",
    "beats": [
     {
      "id": "enter",
@@ -933,7 +935,7 @@
      "level": 16
     }
    ],
-   "startEventId": "ev_field_enemy_4a98bbda-2906-4dd7-9d21-78f5758a108a",
+   "startEventId": "ev_field_enemy_c2926463-a9d5-41c5-a37a-20f456d051f4",
    "beats": [
     {
      "id": "enter",
@@ -1019,7 +1021,7 @@
      "level": 17
     }
    ],
-   "startEventId": "ev_field_enemy_d615a97e-830d-42da-8b71-8958ad2e2f63",
+   "startEventId": "ev_field_enemy_7184aa4a-11a8-4d8a-bd94-fc82bb284a65",
    "beats": [
     {
      "id": "enter",
@@ -1105,7 +1107,7 @@
      "level": 17
     }
    ],
-   "startEventId": "ev_field_enemy_baf512df-d3c8-4e86-a373-5166477366a6",
+   "startEventId": "ev_field_enemy_8e65308f-9b99-4347-a8ca-3db89c30a1b8",
    "beats": [
     {
      "id": "enter",
@@ -1191,7 +1193,7 @@
      "level": 18
     }
    ],
-   "startEventId": "ev_field_enemy_c2138e66-4430-4750-94d9-d8a7db843e11",
+   "startEventId": "ev_field_enemy_7f9db7e6-b311-411d-9b62-4c2bec5148d0",
    "beats": [
     {
      "id": "enter",
@@ -1265,7 +1267,8 @@
     "sw_fs2_heard_carriage": true,
     "sw_fs2_hanel_told": true,
     "sw_fs2_rohan_spear": true,
-    "sw_fs2_bram_hole": true
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_t1_arrive": true
    },
    "party": [
     {
@@ -1277,7 +1280,7 @@
      "level": 19
     }
    ],
-   "startEventId": "ev_field_enemy_daf289e3-1581-4e3e-9037-979e6fd9e3dd",
+   "startEventId": "ev_field_enemy_6a65b8c7-2b8a-404e-b234-55a83ddc5d1f",
    "beats": [
     {
      "id": "enter",
