@@ -1945,7 +1945,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }));
     noteDamageHit(actor, target, result, targetMaxHpBefore, normalAttackElementMultiplier(actor, target));
     if (result.hit && result.amount > 0) recoverHitStates(target);
-    if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
       { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, normalAttackElementId(actor), target) * damageTypeMultiplier(options.project, "physical", target, normalAttackElementId(actor)) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, normalAttackElementId(actor), "physical", target)) : {}) },
       result.hit ? "damage" : "miss",
@@ -1956,6 +1955,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    // 장비 평타 상태는 피해·애니메이션 기록 뒤에 건다 — 앞에 걸면 「방어 하락」이 타격보다 먼저 떠 명령 문장을 가로채고, 그 타격에 쓰러진 적에게도 떴다
+    // (2026-11-04 ultrabrain #4202). 기술 경로(applySkill 의 applyStates)와 같은 순서다. 맞아서 깬 줄은 피해 엔트리 바로 뒤에 이미 나간다.
+    if (result.hit && target.hp > 0) applyNormalAttackEquipmentStates(actor, target);
     if (result.hit) queueCounter(actor, target, "attack", normalAttackElementId(actor));
     if (result.hit) queueStateCounter(actor, target);
   }

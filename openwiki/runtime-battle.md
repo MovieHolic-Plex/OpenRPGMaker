@@ -2481,9 +2481,9 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 
 사용자(폴른 스타 시연): 「무기별 특징이 전투에 잘 반영이 안 되는기분. 그리고 전투도 지금 너무 빠름. 그리고 전투에서 약점이건 뭐 이런걸 자세히 설명하면 곤란함.」
 
-- **전투 흐름** `system.battleStaging.pace`: quick(기본, 저장 안 함) · steady. steady 는 `battleDom` 의 `motionTempo` 에 `BATTLE_STEADY_MOTION_TEMPO`(0.75)를 곱하고(행동 비트·이펙트 프레임 간격·착탄 오프셋이 같이 늘어난다 — 히트스톱·대사 읽기 시간은 그대로), `interludeScale` 을 도트 측면 0.6 대신 `BATTLE_STEADY_INTERLUDE_SCALE`(1)로 둠다(격파 대사 400 → 660ms, 적 차례 정리 156 → 260ms). 루트에 `data-battle-pace="steady"`. Shift 배속은 그 위에 그대로 곱해진다. 자료집 「전투 연출 → 전투 흐름」(`db-battle-staging-pace`), 조수 `set_project_settings {battle:{staging:{pace}}}`.
-- **무기 계열 평타 특성**(폴른 스타 `fallen/weaponTraits.ts`, chronoBell 이 `applyFallenMobBalance` 다음에 부른다) — 기존 장비 칸만 쓴다: 검 급소 +10%p, 창 맞히면 30% 방어 하락, 지팡이 20% 스톱(최대 2차례, 보스는 상태 저항), 사출봉·석궁 35% 민첩 하락. 설명에 「평타: …」 한 줄. 장비 효과 `effectFlags.ignoreDodge` 는 전투 엔진이 읽지 않는다(편집기·타입만) — 창 설명에서 「회피 무시」를 나벌다.
-- **약점 문구** — 폴른 스타는 `revealWeakness: never`. 아이템·기술·무기 설명과 보스 전투 중 대사에서 「늑대에게 잘 듣는다」「번개면 먹혀요」 같은 적별 상성을 나벌다. 맞힌 순간의 「약점 발견!」·「효과가 굉장했다!」·숫자 크기는 남는다. 던전 안 문서(수첩·명령서·다친 광신도)는 찾아 읽는 단서라 두었다.
+- **전투 흐름** `system.battleStaging.pace`: quick(기본, 저장 안 함) · steady. steady 는 `battleDom` 의 `motionTempo` 에 `BATTLE_STEADY_MOTION_TEMPO`(0.75)를 곱하고(행동 비트·이펙트 프레임 간격·착탄 오프셋이 같이 늘어난다 — 히트스톱·대사 읽기 시간은 그대로), `interludeScale` 을 도트 측면 0.6 대신 `BATTLE_STEADY_INTERLUDE_SCALE`(1)로 둔다(격파 대사 400 → 660ms, 적 차례 정리 156 → 260ms). 루트에 `data-battle-pace="steady"`. Shift 배속은 그 위에 그대로 곱해진다. 자료집 「전투 연출 → 전투 흐름」(`db-battle-staging-pace`), 조수 `set_project_settings {battle:{staging:{pace}}}`.
+- **무기 계열 평타 특성**(폴른 스타 `fallen/weaponTraits.ts`, chronoBell 이 `applyFallenMobBalance` 다음에 부른다) — 기존 장비 칸만 쓴다: 검 급소 +10%p, 창 맞히면 30% 방어 하락, 지팡이 20% 스톱(최대 2차례, 보스는 상태 저항), 사출봉·석궁 35% 민첩 하락. 설명에 「평타: …」 한 줄. 장비 효과 `effectFlags.ignoreDodge` 는 전투 엔진이 읽지 않는다(편집기·타입만) — 창 설명에서 「회피 무시」를 뺐다.
+- **약점 문구** — 폴른 스타는 `revealWeakness: never`. 아이템·기술·무기 설명과 보스 전투 중 대사에서 「늑대에게 잘 듣는다」「번개면 먹혀요」 같은 적별 상성을 뺐다. 맞힌 순간의 「약점 발견!」·「효과가 굉장했다!」·숫자 크기는 남는다. 던전 안 문서(수첩·명령서·다친 광신도)는 찾아 읽는 단서라 두었다.
 - 실측(출하 player, 1440×900, 숲늑대×2+이끼 슬라임 통상 공격, `scripts/qa/runtime/fallen-combat-feel.probe.mjs`): 값은 PR 본문과 `~/claude-viz/fs2-overhaul/combat.md`.
 
 ## 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
