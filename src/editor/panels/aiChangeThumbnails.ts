@@ -6,7 +6,7 @@ import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { recordCollectionOf, type ChangeItem } from "./aiChangeSummaryCard";
-import { eventCharsetGraphic, walkingCharset } from "./aiCreationCards";
+import { eventCharsetGraphic, walkingCharset, withoutPlaceholder } from "./aiCreationCards";
 
 const THUMB = 32;
 const MAP_THUMB_WIDTH = 56;
@@ -44,5 +44,5 @@ export function changeItemThumbnail(project: Project, item: ChangeItem): HTMLEle
   if (!collection) return null;
   const list = (project.database as unknown as Record<string, readonly { id: unknown }[] | undefined>)[collection];
   const record = list?.find((entry) => String(entry.id) === item.id);
-  return record ? recordListThumbnail(collection, record as never, project, THUMB) : null;
+  return record ? withoutPlaceholder(recordListThumbnail(collection, record as never, project, THUMB)) : null;
 }

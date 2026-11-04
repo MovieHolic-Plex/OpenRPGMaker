@@ -186,7 +186,12 @@ function cardArt(project: Project, model: CreationCardModel): HTMLElement | null
   if (item.kind === "music") return null;
   if (!collection) return null;
   const record = recordOf<never>(project, collection, item.id);
-  return record ? recordListThumbnail(collection, record, project, 48) : null;
+  return record ? withoutPlaceholder(recordListThumbnail(collection, record, project, 48)) : null;
+}
+
+/** 그림이 없는 기록(아이콘 없이 만든 아이템)은 깨진 그림 표시 대신 이름 첫 글자 — 게임 상자 창과 같다. */
+export function withoutPlaceholder(thumb: HTMLElement | null): HTMLElement | null {
+  return thumb && !thumb.classList.contains("empty") && !thumb.classList.contains("db-image-placeholder") ? thumb : null;
 }
 
 function playButton(project: Project, musicId: string): HTMLElement {
@@ -261,7 +266,7 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
     const art = cardArt(project, model);
     const undo = el("button", { class: "ai-work-creation-undo", text: "되돌리기", attrs: { type: "button", "aria-label": `${model.title} 되돌리기` }, dataset: { testid: "ai-creation-undo" } }) as HTMLButtonElement;
     const open = el("button", { class: "ai-work-creation-open", attrs: { type: "button", "aria-label": `${model.title} 열기` }, dataset: { testid: "ai-creation-open" }, children: [
-      el("span", { class: "ai-work-creation-art", attrs: { "aria-hidden": "true" }, children: art ? [art] : [el("span", { class: "ai-work-creation-glyph", text: CHANGE_KIND_LABEL[item.kind].slice(0, 1) })] }),
+      el("span", { class: "ai-work-creation-art", attrs: { "aria-hidden": "true" }, children: art ? [art] : [el("span", { class: "ai-work-creation-glyph", text: model.musicId ? "♪" : [...model.title.trim()][0] ?? CHANGE_KIND_LABEL[item.kind].slice(0, 1) })] }),
       el("span", { class: "ai-work-creation-text", children: [
         el("span", { class: "ai-work-creation-kind", text: model.kindLine }),
         el("strong", { class: "ai-work-creation-title", text: model.title }),
@@ -269,9 +274,8 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       ] }),
     ] }) as HTMLButtonElement;
     const card = el("li", { class: `ai-work-creation is-${item.kind}${reduced() ? " is-still" : ""}`, dataset: { testid: "ai-creation-card", kind: item.kind, id: item.id }, children: [open] });
+    card.append(el("span", { class: "ai-work-creation-actions", children: [...(model.musicId ? [playButton(project, model.musicId)] : []), undo] }));
     if (model.speech) card.append(speechBubble(model.speech, reduced()));
-    const actions = el("span", { class: "ai-work-creation-actions", children: [...(model.musicId ? [playButton(project, model.musicId)] : []), undo] });
-    card.append(actions);
     open.addEventListener("click", () => deps.open(item));
     undo.addEventListener("click", async () => {
       const ok = await undoChangeItem(item, base, last, deps);
