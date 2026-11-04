@@ -292,20 +292,22 @@ function beamExtent(lx: number, ly: number, width: number, height: number, sprea
  * 예전에는 매 프레임 1×1 칸마다 fillRect 와 색 문자열을 새로 만들어(폴른 스타 타이틀 컷 한 프레임에 ~16,000회)
  * 컷 하나가 초당 2~3프레임으로 떨어졌다(2026-11-05 실측). 세기는 1/64 단계로 끊는다 — 디더 임계값이 16단계라 눈에 띄는 차이가 없다.
  */
-const SHAFT_INTENSITY_STEPS = 256;
+const SHAFT_INTENSITY_STEPS = 64;
+/** 레이어마다 남겨 두는 몸통 수(최근에 쓴 순). 맥동하는 빛기둥도 몇 단계를 오가므로 이 정도면 거의 다 맞고, 메모리가 커지지 않는다. */
+const SHAFT_BODY_CACHE = 24;
 const shaftBodies = new WeakMap<AnimaticLayer, Map<string, HTMLCanvasElement>>();
 function shaftBody(l: AnimaticLayer, intensity: number, cell: number, column: number, snapping: number): HTMLCanvasElement | null {
   const level = Math.round(intensity * SHAFT_INTENSITY_STEPS), key = `${level}:${cell}:${column}:${snapping}`;
   let bodies = shaftBodies.get(l);
   if (!bodies) shaftBodies.set(l, (bodies = new Map()));
   const hit = bodies.get(key);
-  if (hit) return hit;
+  if (hit) { bodies.delete(key); bodies.set(key, hit); return hit; }
   const scale = 1 / cell, width = Math.max(1, Math.ceil(l.width * scale)), height = Math.max(1, Math.ceil(l.height * scale));
   const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
   const body = canvas.getContext('2d'); if (!body) return null;
   body.scale(scale, scale);
   drawShaftCells(body, l, level / SHAFT_INTENSITY_STEPS, cell, column, snapping);
-  if (bodies.size > SHAFT_INTENSITY_STEPS * 2) bodies.clear();
+  if (bodies.size >= SHAFT_BODY_CACHE) bodies.delete(bodies.keys().next().value as string);
   bodies.set(key, canvas);
   return canvas;
 }

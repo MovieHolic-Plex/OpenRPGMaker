@@ -45,10 +45,13 @@ function decodeImagesBeforeUpload(PhaserRuntime: typeof Phaser): void {
     this.data = image;
     const url = URL.createObjectURL(this.xhrLoader.response as Blob);
     image.src = url;
-    image.decode().then(
-      () => { URL.revokeObjectURL(url); this.onProcessComplete(); },
-      () => { URL.revokeObjectURL(url); this.onProcessError(); },
-    );
+    const finish = (ok: boolean): void => { URL.revokeObjectURL(url); if (ok) this.onProcessComplete(); else this.onProcessError(); };
+    // WebKit 등은 멀쩡한 큰 그림에도 decode() 를 거절한다 — 그때는 예전처럼 load 를 기다려 텍스처가 빠지지 않게 한다.
+    image.decode().then(() => finish(true), () => {
+      if (image.complete) { finish(image.naturalWidth > 0); return; }
+      image.onload = () => finish(true);
+      image.onerror = () => finish(false);
+    });
   };
 }
 
