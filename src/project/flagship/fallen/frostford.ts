@@ -368,7 +368,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
       { name: "처음", commands: [
         say(HARMA, "별지기 옷이구먼. 오랜만에 보는 옷이야."),
         say(HARMA, "우리 증조할미가 달에서 온 아이한테\n「잘 지내」 했대. 그 뒤로 이 호숫가에선\n얼어 죽는 사람이 없어."),
-        say(KAEL, "…세린이라는 분을 아세요?"),
+        say(KAEL, "세린이라는 분을 아세요?"),
         say(HARMA, "세린이? 알지. 등을 제일 멀리 띄우던 애야.\n…그 애 아들이 이번에 탑으로 올라갔어."),
         say(KAEL, "그 사람, 등 띄우는 법은 안 잊었어요."),
         say(HARMA, "그럼 됐다. 밤에 얼음 위로 나가 보렴.\n섬 사당 앞에 등이 하나 떠 있을 게다."),
@@ -378,7 +378,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         setSw(SW_HARMA),
         say(HARMA, "그 전에 부탁 하나 하자. 심문회가 썰매를\n죄다 끌어가서 고기 잡을 사람이 없어.\n동쪽 얼음 구멍에서 송어 한 마리만 낚아 다오."),
         setSw(SW_Q5_TAKEN),
-        narrate("잔 일 「첫째 아이의 고기」를 맡았다.\n동쪽 낚시터 얼음 구멍에서 송어를 낚아\n하르마에게 가져가자.", { context: "system" }),
+        narrate("의뢰 「첫째 아이의 고기」를 맡았다.\n동쪽 낚시터 얼음 구멍에서 송어를 낚아\n하르마에게 가져가자.", { context: "system" }),
       ] },
       { name: "송어 기다림", conditions: [sw(SW_Q5_TAKEN)], commands: [
         say(HARMA, "구멍 앞에 서서 줄을 내리면 돼.\n급하게 당기면 놓친다. 기다리는 게 요령이지."),
@@ -433,7 +433,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
         { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
         fadeIn(600),
-        narrate("잔 일 「징발된 장작」을 마쳤다.\n장작 썰매가 마을로 돌아갔다.\n(여관 무료, 새라 유대 +1)", { context: "system" }),
+        narrate("의뢰 「징발된 장작」을 마쳤다.\n장작 썰매가 마을로 돌아갔다.\n(여관 무료, 새라 유대 +1)", { context: "system" }),
         say(SARAH, "어릴 때 아버지 손 잡고\n이 마을에 장작 사러 왔었지."),
       ] },
       { name: "물러남", conditions: [sw(SW_Q6_DONE)], commands: [] },
@@ -452,7 +452,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         say("탑 문 기사", "얼음 위로 여기까지 왔나? 미끄러지기 전에\n마을로 돌아가라."),
       ] : [
         say("탑 문 기사", "발렌 님 명령이다. 돌아가."),
-        say(SARAH, "…발렌 님은 탑 안에 계신가?"),
+        say(SARAH, "발렌 님은 탑 안에 계신가?"),
         say("탑 문 기사", "새라 님…? 그건 말씀드릴 수 없습니다."),
       ] }],
     });
@@ -610,7 +610,7 @@ function lanternNight(project: Project, exec: Exec): void {
     page("ev_fs2_lake_valen_p", "얼음 위의 발렌", [], [
       cutBegin(),
       narrate("사당 앞에 등 하나. 발렌이 혼자\n그 등에 불을 붙이고 있다."),
-      say(VALEN, "…기사들은 탑에 두고 왔다.\n싸우러 왔으면 칼을 뽑아라."),
+      say(VALEN, "기사들은 탑에 두고 왔다.\n싸우러 왔으면 칼을 뽑아라."),
       say(KAEL, "등 띄우는 법, 여기서 배우셨죠?"),
       say(VALEN, "대답하면 시험이 또 내려온다.\n언젠가 다시 문을 잠그는 마을이 생기지."),
       say(VALEN, "그러니 줄을 끊는다. 아이가 다시는\n떨어지지 않게. 그게 내 대답이다."),
@@ -778,7 +778,7 @@ function lanternNightEvents(project: Project): void {
     page("ev_fs2_night_arrive_run", "나선다", [sw(SW_NIGHT)], [
       fadeIn(900),
       wait(300),
-      say(SARAH, "…발렌 님이다. 섬 사당 앞에 혼자 있어."),
+      say(SARAH, "발렌 님이다. 섬 사당 앞에 혼자 있어."),
       say(ELENA, "탑 문 앞 기사들도 안 보여."),
       say(KAEL, "부두에서 장대를 따라가자. 칼은 넣어 두고."),
       setSw(SW_NIGHT, false),
