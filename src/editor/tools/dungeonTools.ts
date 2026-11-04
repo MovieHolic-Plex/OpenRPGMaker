@@ -62,6 +62,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   const typeArg = (DUNGEON_TYPES as readonly string[]).includes(String(args.type)) ? (args.type as DungeonSpec["type"]) : undefined;
   const spec: DungeonSpec = {
     ...(rooms.length ? { rooms } : {}),
+    ...(rooms.length && Array.isArray(args.links) ? { links: args.links as DungeonSpec["links"] } : {}),
     ...(typeArg ? { type: typeArg } : {}),
     style: (DUNGEON_STYLES as readonly string[]).includes(String(args.style)) ? (args.style as DungeonSpec["style"]) : undefined,
     seed: floor.seed,
@@ -850,6 +851,8 @@ const DUNGEON_ROOM_ITEM_SCHEMA: JsonSchema = {
     h: { type: "integer", description: "바닥 세로 5~22(벽 앞면 3줄은 위에 따로 붙는다)" },
     len: { type: "integer", description: "앞 방과 잇는 통로 길이(칸, 선택 — 긴 갱도·곧은 신전 축에)" },
     shift: { type: "integer", description: "앞 방 가운데에서 옆으로 어긋나는 칸 수(선택 — 0 이면 정중앙 대칭)" },
+    x: { type: "integer", description: "(선택, 그림 도안의 방 자리) 방 바닥 왼쪽 위 칸 x. 방 하나라도 x·y 를 주면 모든 방을 그 자리에 놓는다(겹치면 가까운 빈자리로 밀고 알린다). 통로는 links 로." },
+    y: { type: "integer", description: "(선택) 방 바닥 왼쪽 위 칸 y" },
     from: { type: "string", description: "이어지는 앞 방 id 또는 kind(생략하면 바로 앞 방)" },
     dir: { type: "string", enum: [...DUNGEON_DIRS], description: "앞 방의 어느 쪽 문에서 뻗나 N 북·S 남·W 서·E 동(생략하면 자동)" },
   },
@@ -918,6 +921,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
       design: DUNGEON_DESIGN_SCHEMA,
       floorDesigns: { type: "array", maxItems: 5, items: DUNGEON_DESIGN_SCHEMA, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
+      links: { type: "array", items: { type: "array", items: { type: "string" } }, description: "(rooms 에 x·y 자리를 줬을 때) 잇는 통로 [[방 id, 방 id], …] — 고리는 닫히는 통로를 하나 더. 생략하면 방 순서대로 잇는다." },
       rooms: {
         type: "array",
         minItems: 1,

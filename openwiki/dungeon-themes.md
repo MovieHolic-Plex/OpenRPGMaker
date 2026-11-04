@@ -44,6 +44,8 @@ profiles·dress·gimmick 는 키트를 **후보 목록**(`KitPref`)으로 받는
 `linear` 사슬(곁방 하나, 고리 0) · `hub` 가운데 홀에서 갈래 · `loop` 고리 2~3 · `vertical` 층 쌓기(floors 생략 시 2층, tower 는 3층 위로).
 생략하면 `layoutFamilyOf` 가 시드로 linear/hub/loop 중 하나를 고른다. rooms 문법은 `planDungeonRooms` 가 가족별 방 그래프를, blob 문법은 고리 수를 가족으로 정한다.
 
+**방 자리 직접 주기 (2026-11-04, `layoutPositioned.ts`):** `rooms[]` 중 하나라도 `x`·`y`(바닥 왼쪽 위 칸)가 있으면 `layoutDungeon` 이 가족·시드 배치를 건너뛰고 그 자리에 방을 놓는다(`links` = `[[id,id],…]`, 생략하면 방 순서대로). 겹치는 방은 가장 가까운 빈자리로 밀고 「고침:」 줄을 남기며, 곧게 닿지 못하는 쌍은 ㄴ자 통로, `links` 가 입구에서 못 닿는 방은 가장 가까운 방과 통로를 더한다. 그림 도안 읽기(`imagePlan.ts dungeonPlanFromRead`)가 쓴다. 주지 않으면 이전과 같다.
+
 ## 게임 참고 (`inspiration`, `DUNGEON_REFERENCES` in `grammar.ts`)
 
 `inferDungeonRequest(text)` — 종류 낱말이 있으면 그 낱말(「크로노트리거 같은 마계 성」 → otherworld), 없으면 게임의 대표 던전.

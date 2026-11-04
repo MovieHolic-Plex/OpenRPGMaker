@@ -1391,10 +1391,10 @@ vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변�
 고를 장면이 없으면 넓히지 않고 원래 경로로 간다. `widenSubject` 가 없는 되묻기(실내/야외가 갈리는 「방 만들어줘」 등)는 그대로 묻는다. 활동 로그 첫 줄에 `widen=<주제>` 와 ` · 넓힘 <장면 id>` 가 남는다.
 
 **그림 도안 먼저 (AI 설정, 기본 꺼짐, 2026-11-04).** `AiConfig.imagePlanBuild` 가 켜져 있고 이 턴이 넓힌 장면이면, 입력창(앞 턴 `send` 와 맵별 대기열 실행 둘 다)이 짓기 전에
-`src/editor/imagePlanMockup.ts` 로 이미지 모델(설정의 그림 경로 — 기본 GPT Image, ChatGPT 연결이 없으면 Antigravity)에 3/4 탑뷰 맵 도안 한 장을 청한다(프롬프트 `src/ai/imagePlan.ts imagePlanPrompt`).
-받은 그림은 긴 변 768px JPEG 로 줄여 첫 요청 참고 그림(`userImages`)으로 싣고, 의도 노트 앞에 `IMAGE_PLAN_NOTE`(구도는 따르되 칸은 이 프로젝트 칩셋만)를 붙인다.
-그림 계정이 둘 다 없으면 「그림 도안은 건너뛰었어요 — …」, 요청이 실패하면 「…도안 없이 지을게요」 한 줄만 남기고 그대로 짓는다. 그림을 못 읽는 엔진(로컨 CLI)은 `firstPromptImages` 가 글만 보낸다.
-기본 꺼짐인 이유: 모호한 요청 10쌍(같은 장면을 도안 켬/끔으로) 눈가림 짝 비교에서 뚜렷하게 낫지 않았다 — 측정과 그림은 http://mdc-server:18301/assistant-ramps-imageplan.html .
+`src/editor/imagePlanMockup.ts` 로 **ChatGPT 이미지 모델(codex-image-default)** 에 맵 도안 한 장을 청한다 — 이 기능의 도안은 설정의 그림 경로와 무관하게 ChatGPT 로 고정이고 Google(Antigravity)은 대체 경로로도 쓰지 않는다(한도 소진으로 도안이 조용히 빠진 일이 있었다, 오너 지시 2026-11-04). 프롬프트는 `src/ai/imagePlan.ts imagePlanPrompt` — 집은 실내 평면도, 던전·성은 방 평면도, 그 밖은 바깥 탑뷰.
+받은 그림은 긴 변 768px JPEG 로 줄여 첫 요청 참고 그림(`userImages`)으로 싣는다. 그림만 붙이면 조수가 빌더를 기본 인자로 불러 도안이 사라졌으므로(실측), 도안 위에 칸 번호 격자를 그려 비전 모델이 배치를 JSON 으로 읽게 하고(`imagePlanReadPrompt`), 그 값을 빌더가 이미 받는 인자로 바꿔 노트로 싣는다: 마을 `author_beodeul_town`(layout 자리·landform·tiers·water·exits), 숲 `author_forest_route`(designs[0]), 던전·성 `author_dungeon`(rooms[]{id,kind,x,y,w,h} + links — 방 자리를 주면 `dungeonKit/layoutPositioned.ts` 가 그 자리에 놓고, 겹침은 가까운 빈자리로 밀며 「고침:」 줄을 남기고, 통로는 곧게·ㄴ자로 잇는다). 조수는 이 인자를 그대로 보낸다.
+그림 계정이 없으면 「그림 도안은 건너뛰었어요 — …」, 요청이 실패하면 「…도안 없이 지어요」, 배치를 못 읽으면 「도안 그림만 보여 주고 지어요」 한 줄을 채팅에 남기고 그대로 짓는다. 그림을 못 읽는 엔진(로컬 CLI)은 `firstPromptImages` 가 글만 보낸다.
+기본 꺼짐: 도안 일치도(도안과 결과를 같은 격자로 놓은 칸 겹침 + 눈가림 「이 맵이 도안을 따랐나」 1~5)를 도안이 실제로 조수에게 닿은 판만 세어 잰 결과로 기본값을 정한다 — 측정과 그림은 http://mdc-server:18301/assistant-ramps-imageplan.html .
 
 의도 판정 모델은 `AiConfig.intentModel`(제공자·모델·강도) 칸으로 따로 줄 수 있다. 있으면 먼저 그 모델을 부르고, 실패·스키마 밖 답이면 같은 벽시계 안에서 옛 경로(`configForLiteModel`)로 한 번 더 부른다.
 실측 비교표는 http://mdc-server:18301/assistant-widen.html.

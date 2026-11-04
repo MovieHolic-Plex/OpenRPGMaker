@@ -44,6 +44,9 @@ export interface DungeonRoomInput {
   /** 통로 길이(칸)와 앞 방 가운데에서의 옆 어긋남(칸) — 지정하면 그 값만 시도한다(대칭 신전·곧은 갱도). */
   readonly len?: number;
   readonly shift?: number;
+  /** 방 왼쪽 위 바닥 칸(그림 도안 자리). 한 방이라도 주면 모든 방을 이 자리에 놓고(겹치면 가까운 빈자리로 밀고 알린다) 통로는 spec.links 로 잇는다. */
+  readonly x?: number;
+  readonly y?: number;
   /** ring = 둥근 탑 링 키트(bd-dg-tower-ring-<w+2>, 바닥 w×h = 링 지름-2 × 지름-4, 통로는 남쪽 가운데 2칸 — 시공기가 링으로 찍고, 키트가 없으면 round 와 같다).
    *  round = 네 모서리를 비스듬히 깎은 팔각 방(탑 층 — 둥근 탑 안으로 읽히게, 2026-10-23). apse = 아래 두 모서리만 깎는다(북쪽 벽은 문·계단을 달 만큼 평평하게). */
   readonly shape?: "round" | "apse" | "ring";
@@ -57,6 +60,8 @@ export interface DungeonSpec {
   readonly exact?: { readonly layout: DungeonLayout; readonly liqKind: Uint8Array };
   /** 방 목록. 생략하면 size(기본 medium)로 방 구성을 정한다(입구 → … → 보스방, 곁방 갈래). */
   readonly rooms?: readonly DungeonRoomInput[];
+  /** 방 자리(rooms[].x,y)를 줬을 때 잇는 통로: [["a","b"]] · [{from,to}] · ["a-b"] (방 id 또는 kind). 생략하면 방 순서대로 잇는다. */
+  readonly links?: readonly (readonly string[] | { readonly from: string; readonly to: string } | string)[];
   /** 던전 종류. 생략하면 style(옛 인자) → catacomb. */
   readonly type?: DungeonType;
   readonly style?: DungeonStyle;

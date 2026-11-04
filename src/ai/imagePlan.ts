@@ -40,7 +40,7 @@ export function imagePlanReadPrompt(subject: WidenSubject, cols: number, rows: n
   if (subject === "forest") {
     return `${head}\n숲길의 본길과 갈림길을 읽어라. {"entryAt":0~1(길이 그림 아래 가장자리에서 들어오는 가로 위치, 0=왼쪽),"exitAt":0~1(위쪽으로 나가는 가로 위치),"bends":1~6(굽이 수),"width":"narrow|normal|wide","branches":[{"at":0~1(본길 진행 위치, 0=아래),"toward":"left|right","end":"chest|clearing|nothing"}],"clearings":[{"at":0~1,"size":"small|medium|large","toward":"left|right|center"}],"cliffs":true|false(절벽 단·돌계단이 있나),"landmark":"그림 속 눈에 띄는 것 한 줄"}`;
   }
-  return `${head}\n방(바닥이 보이는 구역)을 읽어라. {"rooms":[{"kind":"entrance|hall|side|boss|treasure|living|kitchen|bedroom|other","x":,"y":,"w":,"h":}](칸 번호로 왼쪽 위 칸과 칸 수),"start":{"x":,"y":},"landmark":{"x":,"y":}|null,"stairs":{"x":,"y":}|null}`;
+  return `${head}\n방(바닥이 보이는 구역)과 방을 잇는 통로를 읽어라. {"rooms":[{"kind":"entrance|hall|side|boss|treasure|living|kitchen|bedroom|other","x":,"y":,"w":,"h":}](칸 번호로 왼쪽 위 칸과 가로·세로 칸 수, 입구 방이 첫째),"links":[[0,1],[1,2]](통로가 잇는 두 방의 rooms 순번 0부터, 고리 통로도 모두),"start":{"x":,"y":},"landmark":{"x":,"y":}|null,"stairs":{"x":,"y":}|null}`;
 }
 
 export interface ImagePlanRead {
@@ -118,20 +118,33 @@ export function forestDesignFromRead(read: ImagePlanRead): Record<string, unknow
   return design;
 }
 
-const ROOM_KINDS: Record<string, string> = { entrance: "entrance", hall: "hall", side: "side", boss: "boss", treasure: "treasure" };
+const ROOM_KINDS: Record<string, string> = { entrance: "entrance", hall: "hall", side: "crypt", boss: "boss", treasure: "vault" };
+const DUNGEON_CELL_SCALE = 1.5;
 
-/** 방 도안 → author_dungeon rooms[] (왼쪽 위에서 오른쪽 아래 순서, 입구 먼저). 칸 수는 도안 칸 수를 맵 크기 비율로 옮긴다. */
-export function dungeonRoomsFromRead(read: ImagePlanRead): Array<Record<string, unknown>> {
-  const rooms = Array.isArray(read.data.rooms) ? read.data.rooms.slice(0, 12) : [];
-  const out: Array<Record<string, unknown>> = [];
-  for (const raw of rooms) {
-    const r = raw as Record<string, unknown>;
-    const w = Number(r.w), h = Number(r.h);
-    if (!Number.isFinite(w) || !Number.isFinite(h)) continue;
-    const kind = ROOM_KINDS[String(r.kind)] ?? "hall";
-    out.push({ kind, w: Math.max(6, Math.min(40, Math.round(w * 1.4))), h: Math.max(5, Math.min(22, Math.round(h * 1.4))) });
+/** 방 도안 → author_dungeon {rooms[]{id,kind,x,y,w,h}, links}. 도안 칸 좌표·크기를 같은 배율로 키워 방 사이 간격을 지킨다(입구 먼저). */
+export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: string[][] } {
+  const raw = Array.isArray(read.data.rooms) ? read.data.rooms.slice(0, 12) : [];
+  const rooms: Array<Record<string, unknown>> = [];
+  const indexOf = new Map<number, string>();
+  raw.forEach((item, i) => {
+    const r = item as Record<string, unknown>;
+    const x = Number(r.x), y = Number(r.y), w = Number(r.w), h = Number(r.h);
+    if (![x, y, w, h].every(Number.isFinite)) return;
+    const id = `r${rooms.length + 1}`;
+    indexOf.set(i, id);
+    rooms.push({
+      id, kind: rooms.length === 0 ? "entrance" : ROOM_KINDS[String(r.kind)] ?? "hall",
+      x: Math.max(0, Math.round(x * DUNGEON_CELL_SCALE)), y: Math.max(0, Math.round(y * DUNGEON_CELL_SCALE)),
+      w: Math.max(6, Math.min(40, Math.round(w * DUNGEON_CELL_SCALE))), h: Math.max(5, Math.min(22, Math.round(h * DUNGEON_CELL_SCALE))),
+    });
+  });
+  const links: string[][] = [];
+  for (const pair of Array.isArray(read.data.links) ? read.data.links : []) {
+    if (!Array.isArray(pair) || pair.length < 2) continue;
+    const a = indexOf.get(Number(pair[0])), b = indexOf.get(Number(pair[1]));
+    if (a && b && a !== b) links.push([a, b]);
   }
-  return out;
+  return { rooms, links };
 }
 
 /** 조수에게 가는 짓기 지시 — 읽은 배치를 그대로 빌더 인자로 보내게 한다. */
@@ -146,9 +159,9 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
     return `${head}\n읽은 숲길 설계: author_forest_route 를 부를 때 designs[0] 을 이대로 보낸다: ${JSON.stringify(forestDesignFromRead(read))}. 이 설계를 빼거나 기본값으로 바꾸지 않는다.`;
   }
   if (scene.subject === "dungeon" || scene.subject === "castle") {
-    const rooms = dungeonRoomsFromRead(read);
-    return rooms.length
-      ? `${head}\n읽은 방 배치: author_dungeon 을 부를 때 rooms 를 이대로 보낸다(첫 방 = 입구): ${JSON.stringify(rooms)}. 이 방 목록을 빼거나 기본값으로 바꾸지 않는다.`
+    const plan = dungeonPlanFromRead(read);
+    return plan.rooms.length
+      ? `${head}\n읽은 방 배치: author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.`
       : head;
   }
   return `${head}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
