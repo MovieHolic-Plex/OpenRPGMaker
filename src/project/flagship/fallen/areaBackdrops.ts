@@ -18,7 +18,7 @@ import snowRoad from "./backdrops/area/snow-road.json";
 import townNight from "./backdrops/area/town-night.json";
 import vault from "./backdrops/area/vault.json";
 
-type Emitted = { readonly resource: { readonly id: string; readonly name: string; readonly kind: "backdrop"; readonly dataUrl: string } };
+type Emitted = { readonly resource: { readonly id: string; readonly name: string; readonly kind: string; readonly dataUrl: string } };
 type Exec = (tool: string, args: Record<string, unknown>) => unknown;
 
 export const FS_AREA_BACKDROPS: readonly { readonly art: Emitted; readonly maps: readonly string[] }[] = [
