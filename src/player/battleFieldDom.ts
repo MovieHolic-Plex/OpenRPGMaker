@@ -648,6 +648,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
       if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
     }
   }
+  // 위치를 재기 전에 단다 — 큰 보스 전투는 무대 위 여백(--battle-stage-inset-top)이 바뀌어 적 무리 상자 위끝이 달라진다.
+  syncBigBossScene(field, group as HTMLElement, Boolean(presentation?.onField));
   const onFieldPositions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField);
   // 쓰기 전에 한 번에 읽는다(적마다 읽고 쓰면 레이아웃을 적 수만큼 다시 계산한다).
   const plateFloors = presentation?.onField ? undefined : enemyPlateFloors(field, group as HTMLElement, snapshot);
@@ -724,6 +726,24 @@ function enemyPlateFloors(field: HTMLElement, group: HTMLElement, snapshot: Batt
     floors.set(enemy.id, visibleBottom - drop - 4 / unitY);
   }
   return floors;
+}
+
+/** 큰 보스 전투의 기준: 도트 시트 칸이 이 값 이상인 적이 하나라도 있으면 씬에 `data-battle-big-boss` 를 단다. */
+export const BIG_BOSS_PIXEL_CELL = 128;
+
+/**
+ * 큰 보스 전투 표식. 칸 128 이상 시트의 보스는 윗창 아래에 맞추면 131 무대 px 안팎으로 눌리고 머리가 창 뒤로 들어갔다
+ * (1440×900 실측, 숯덩이 골렘 공격·달빛의 용 대기). 표식이 있으면 _retro2003.css 가 무대 위 여백을 윗창 자리까지 줄이고,
+ * 윗창은 예전처럼 필드 위에 떠서 글이 있을 때만 보인다. 필드 위 전투(onField)는 심볼 자리에 서므로 달지 않는다.
+ */
+function syncBigBossScene(field: HTMLElement, group: HTMLElement, onField: boolean): void {
+  const scene = field.closest<HTMLElement>(".battle-scene");
+  if (!scene) return;
+  const big = !onField && [...group.querySelectorAll<HTMLElement>(":scope > .battle-enemy[data-pixel-enemy-cell]")]
+    .some((node) => Number(node.dataset.pixelEnemyCell) >= BIG_BOSS_PIXEL_CELL);
+  if (big) {
+    if (scene.dataset.battleBigBoss !== "true") scene.dataset.battleBigBoss = "true";
+  } else if (scene.dataset.battleBigBoss !== undefined) delete scene.dataset.battleBigBoss;
 }
 
 /**
