@@ -210,7 +210,6 @@ function stageBeats(): CutsceneBeat[] {
   return [
     { kind: "fade", direction: "out", durationMs: 1, wait: true },
     { kind: "look", target: "player", alpha: 0 },
-    { kind: "letterbox", show: true, size: 12, durationMs: 1, wait: false },
     { kind: "camera", mode: "pan", x: 34, y: 30, durationMs: 1, wait: true },
     { kind: "particles", preset: "petals", x: 34, y: 28, durationMs: 15000, sizePercent: 180, wait: false },
     { kind: "fade", direction: "in", durationMs: 900, wait: true },
