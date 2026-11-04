@@ -1,0 +1,11 @@
+OPRN BGM license (draft, v0.1)
+
+1. You may use, edit, remix, loop and ship these tracks in any game or interactive project, free or commercial,
+   on any platform, without paying royalties and without asking.
+2. You may use them in trailers, streams and videos that promote or show that game.
+3. You may NOT resell, re-license or redistribute the raw audio files on their own or as part of a music,
+   sound or stock library (for example re-uploading them to another asset store as a music pack).
+4. These tracks are AI-generated with Google Lyria 3.5 (Flow Music) and carry an inaudible SynthID watermark.
+   OPRN claims no copyright in them and gives no warranty that they are free of third-party claims.
+5. Do not present them as composed by a human. Attribution is appreciated but not required:
+   "Music: OPRN BGM (AI-generated, Google Lyria)".

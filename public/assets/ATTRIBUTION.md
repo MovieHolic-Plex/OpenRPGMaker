@@ -1,5 +1,9 @@
 # Asset Attribution
 
+## OPRN BGM — Fallen Star battle music (2026-11-04)
+
+`oprn-bgm/fallen/*.ogg` are 8 battle/boss tracks from the OPRN BGM library, generated with Google Lyria 3.5 (Flow Music) and carrying an inaudible SynthID watermark. They are **not CC0**: they may be used, edited, looped and shipped in any game (free or commercial) without royalties, but the raw audio may not be resold or redistributed on its own. Full terms in `oprn-bgm/LICENSE.txt`. Credit line shown in the Fallen Star ending credits: "Music: OPRN BGM (AI-generated, Google Lyria)". Registered in `src/assets/oprnBgmAssets.ts` (ids `oprn-bgm-<file stem>`).
+
 ## Hero magic redraw and reused hydra cel (2026-10-05)
 
 The current fire, ice, lightning and Holy effect cels are original OPRN art written

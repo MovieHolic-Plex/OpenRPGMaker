@@ -243,7 +243,7 @@ function layerOf(map: GameMap, at: Cell, tile: number): "lower" | "upper" | "low
 /** 쇠살문(iron gate, 손 도트 v5 6421 위·6422 아래) 열기 — 제1막 지하 3층 openGate 와 같은 칸 바꾸기. */
 function openGate(map: GameMap, at: Cell): Command[] {
   return [
-    se("cc0-se-osx-metal-03"),
+    se("cc0-se-osx-metal-04"),
     { kind: "changeTile", mapId: map.id, layer: layerOf(map, { x: at.x, y: at.y - 1 }, 6421), x: at.x, y: at.y - 1, tile: 6423 } as unknown as Command,
     { kind: "changeTile", mapId: map.id, layer: layerOf(map, at, 6422), x: at.x, y: at.y, tile: -1 } as unknown as Command,
   ];
@@ -379,7 +379,7 @@ function cellEvents(map: GameMap): void {
       wait(700),
       // 붙잡히던 밤의 회상 — 1막 끝 「…잡아라」 와 감방 사이를 잇는다(1막→2막 연결 검수 2026-11-04: 크레딧 뒤 곧장 감방이라
       // 어떻게 갇혔는지가 빠졌다). 어둠 위 네 줄. 하넬의 「작은 것부터」 가 빵 속 열쇠(「작은 일들이 먼저 대답을 해」)로 이어진다.
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-orp-inventory-cloth-heavy"),
       narrate("손목에 밧줄이 감겼다.", { position: "center", context: "narration" }),
       say(IRIS, "카엘…!"),
       say(VALEN, "아이는 따로 모셔라.\n선생님은 천문대에."),
@@ -405,7 +405,7 @@ function cellEvents(map: GameMap): void {
       wait(1500),
       se("cc0-se-osx-splash-01"),
       wait(600),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-orp-inventory-cloth-heavy"),
       m2("m2-225-sprite-look", { target: "player", reset: true }),
       wait(300),
       emote("player", "ellipsis", 900),
@@ -415,7 +415,7 @@ function cellEvents(map: GameMap): void {
       route(rinoId, [{ kind: "setThrough", enabled: true }, ...walk(toGate), { kind: "setThrough", enabled: false }, { kind: "turn", dir: "up" }]),
       say(RINO, "저녁이다. …토마 아저씨가 구운 거다."),
       say(RINO, "딱딱하니까 꼭꼭 씹어라. 꼭."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-bell-01"),
       item("fs_bread_flat", 1),
       item(FS2_BREAD_ITEM, 1),
       narrate("「납작빵」과 「무거운 납작빵」을 받았다.", { context: "system" }),
@@ -436,7 +436,7 @@ function cellEvents(map: GameMap): void {
       page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누워 있을 데가 못 된다.")], { priority: "same" }),
       page(`${id}_bread`, "빵을 쪼갠다", [sw(SW_BREAD), sw(SW_KEY, false)], [
         narrate("납작빵을 침대 모서리에 힘껏 내리쳤다."),
-        se("cc0-se-osx-wooded-box-open"),
+        se("cc0-se-orp-inventory-cloth-heavy"),
         shake(1, 200),
         narrate("빠각! 갈라진 빵 속에서 쇠붙이가 튀어나왔다."),
         item(FS2_BREAD_ITEM, -1),
@@ -591,7 +591,7 @@ function barracks(project: Project, exec: Exec): void {
     addEv(project, FS2_BARRACKS_ID, id, "첫 침상 알코브(중간 지점)", c, [
       page(`${id}_p`, "숨 고르기", [sw(SW_BARRACKS_MID, false)], [
         setSw(SW_BARRACKS_MID),
-        se("cc0-se-orp-inventory-cloth"),
+        se("cc0-se-osx-paper-03"),
         say(ELENA, "(속삭임) …휴. 침상 그늘이면 안 보여."),
       ], { priority: "below", trigger: { kind: "playerTouch" } }),
     ]);
@@ -640,10 +640,10 @@ function barracks(project: Project, exec: Exec): void {
     page(`${ladderId}_go`, "오른다", [sw(SW_BARRACKS)], [
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
       say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
-      se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
+      se("cc0-se-osx-bell-01"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
       narrate("「회복약」 5개, 「마력약」 2개,\n「만능약」 1개를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
-      se("cc0-se-osx-wooded-box-open"),
+      se("cc0-se-ors-wood-03"),
       narrate("사다리를 올라 뚜껑 문을 밀어 올렸다."),
       setSw(SW_OUT),
       transfer(FS2_HUB_NIGHT_ID, HUB_ARRIVE, "down"),
@@ -882,7 +882,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
         say(MIRE, "셋 다 창이 캄캄할 거야.\n등을 뺏긴 집이거든."),
         { kind: "choices", prompt: "등을 맡을까?", options: [
           { text: "맡는다", branch: [
-            se("cc0-se-orp-inventory-cloth"), item(FS2_UNLIT_LAMP, 3),
+            se("cc0-se-osx-bell-01"), item(FS2_UNLIT_LAMP, 3),
             narrate("「꺼진 등」 3개를 받았다.\n별지기 할아버지 댁, 약방, 리사네 집\n문고리에 걸자.", { context: "system" }),
             setSw(SW_Q4_TAKEN),
           ] },
@@ -893,7 +893,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       { name: "꺼진 등(다 걸었다)", conditions: [sw(`${SW_Q4_LAMP}0`), sw(`${SW_Q4_LAMP}1`), sw(`${SW_Q4_LAMP}2`)], commands: [
         say(MIRE, "…봤어. 캄캄하던 창에 불이 들었더라.\n다들 알아들었을 거야."),
         say(MIRE, "이거 가져가. 우리 토마가\n숨겨 둔 반죽으로 구운 거야."),
-        se("cc0-se-orp-inventory-cloth"), item("fs_bread_starlight", 2),
+        se("cc0-se-osx-bell-01"), item("fs_bread_starlight", 2),
         narrate("「별빛빵」 2개를 받았다.", { context: "system" }),
         setSw(SW_Q4_DONE),
       ] },
@@ -907,7 +907,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       { name: "기둥 뒤", commands: [
         say(TOBY, "형! 여기, 여기."),
         say(TOBY, "형, 이거. 은수저.\n이번엔 말하고 가져가는 거야. 형한테."),
-        se("cc0-se-orp-inventory-cloth"),
+        se("cc0-se-osx-bell-01"),
         item(FS_SILVER_SPOON, 1),
         narrate("「은수저」를 받았다.", { context: "system" }),
         say(TOBY, "별한테 줄 선물. 이번엔 형이 갖다 줘."),
@@ -1002,7 +1002,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       page(`${id}_p`, "우물", [], [narrate("깊은 우물이다. 바닥이 안 보인다.")]),
       page(`${id}_down`, "사다리", [sw(SW_MIRE)], [
         narrate("우물 안쪽 벽에 쇠 사다리가 박혀 있다.\n미레 아주머니 말대로다."),
-        se("cc0-se-osx-wooded-box-open"),
+        se("cc0-se-osx-tools-02"),
         transfer(FS2_SHAFT_ID, SHAFT.arrive, "down"),
       ]),
     ]);
@@ -1047,7 +1047,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       say(HANEL, "숲 지하에서 별지기 인장을 주웠다지.\n그게 하늘탑 두 번째 렌즈를 여는 열쇠다."),
     ], else: [
       say(HANEL, "내 인장을 가져가거라.\n하늘탑 두 번째 렌즈를 여는 열쇠다."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-bell-01"),
       item(FS_KEEPER_SEAL, 1),
       narrate("「별지기 인장」을 받았다.", { context: "system" }),
     ] } as unknown as Command,
@@ -1161,7 +1161,7 @@ function northGateEvents(project: Project, exec: Exec): void {
       cutBegin(),
       say(ROHAN, "왔구나. 하넬이 보낼 줄 알았다."),
       say(ROHAN, "약속한 몫이다. 별쇠를 섞었다."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-orp-battle-sword-unsheathe"),
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
       narrate("카엘이 「로한의 별쇠 창」을 받아 들었다.", { context: "system" }),
       say(KAEL, "아저씨, 이거… 자루 무늬가 특이해요."),
@@ -1223,14 +1223,14 @@ function northGateEvents(project: Project, exec: Exec): void {
       { kind: "changeTile", mapId: FS2_HUB_NIGHT_ID, layer: "upper", x: HOLE.rubble.x, y: HOLE.rubble.y, tile: HOLE_RUBBLE } as unknown as Command,
       route("ev_fs2_hub_bram", [{ kind: "setDirectionFix", enabled: false }, { kind: "turn", dir: "down" }]),
       say(BRAM, "됐다. 내가 먼저 간다. 바로 따라붙어라."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-paper-03"),
       route("ev_fs2_hub_bram", [{ kind: "turn", dir: "up" }, { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "changeOpacity", delta: -255 }]),
       setSw(SW_B4_BRAM_OUT),
       wait(300),
       // 들키는 외침은 성벽 너머 숲 어귀 맵에서 — 순찰병이 화면에 보일 때(ev_fs2_edge_spotted). 여기선 뒤따라 기어 나갈 뿐.
       setSw(SW_B4_ALARM),
       // 기어 나간다 — 구멍 칸으로 두 걸음(성벽을 통과해) 들어가며 화면이 어두워진다.
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-paper-03"),
       { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }, { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "changeSpeed", delta: -1 }, { kind: "move", dir: "up" }, { kind: "changeSpeed", delta: 1 }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
       cutLabel(),
       cutEnd(),
@@ -1239,7 +1239,7 @@ function northGateEvents(project: Project, exec: Exec): void {
     // 붙잡혀 도로 끌려온 뒤 — 구멍은 이미 뚫려 있다. 조사하면 곧장 다시 기어 나간다(돌 빼기 연출을 되풀이하지 않는다).
     page("ev_fs2_hub_hole_again", "개구멍(다시)", [sw(SW_B4_ALARM)], [
       narrate("등불이 아직 성벽 밖을 훑고 있다. 숨을 죽이고 다시 기어 나갔다."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-paper-03"),
       { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }, { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
       crawl,
     ]),
@@ -1977,7 +1977,7 @@ function dawnwellEvents(project: Project): void {
       se("cc0-se-osx-door-open"),
       narrate("빗장을 들어 올렸다. 서른 해 만에 문이 열렸다."),
       narrate("안은 텅 비어 있다. 탁자 위에 반쯤 탄 종이 한 장."),
-      se("cc0-se-orp-inventory-cloth"),
+      se("cc0-se-osx-bell-01"),
       item(FS2_CERT_ITEM, 1),
       narrate("「반쯤 탄 정착 확인서」를 얻었다.", { context: "system" }),
       say(ELENA, "천문대 서랍에 있던 양식이랑 같아.\n서명란에… 「기록자 세린」."),
@@ -2492,14 +2492,14 @@ function fortressEvents(project: Project, exec: Exec): void {
       { text: "창을 맡아 둔다", branch: [
         say(KAEL, "북쪽까지는 제가 들고 갈게요.\n돌려드리는 건 그다음에."),
         say(SARAH, "…그래. 대신 내 창끝 별쇠는 떼어 가라.\n아버지라면 그걸로 네 창을 한 번 더 벼릴 거다."),
-        se("cc0-se-orp-inventory-cloth"),
+        se("cc0-se-osx-bell-01"),
         item(FS2_STAR_IRON, 1),
         narrate("「별쇠 조각」을 받았다.", { context: "system" }),
         setSw(SW_SPEAR_KEPT),
       ] },
     ] } as unknown as Command,
     say(SARAH, "발렌 님한테 가는 길이면 나도 간다.\n물어볼 게 있어. 왜 날 북문에 세웠는지."),
-    se("cc0-se-orp-inventory-cloth"),
+    se("cc0-se-osx-bell-02"),
     { kind: "changeParty", actorId: FS2_SARAH_ACTOR, action: "add" } as unknown as Command,
     narrate("새라가 동료가 되었다.", { context: "system" }),
     setSw(SW_SARAH),

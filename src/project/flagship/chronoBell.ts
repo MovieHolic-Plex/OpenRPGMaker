@@ -58,6 +58,7 @@ import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
 import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
+import { applyFallenBattleMusic } from "./fallen/battleMusic";
 import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
@@ -1392,7 +1393,7 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string, from?: {
  * 사운드트랙(사용자 검토 2026-10-21 「기본 곡처럼 들린다」). 광장 fld-003·전투 btl-001·타이틀 ttl-001 은 새 프로젝트 기본곡이었다.
  * 곡 설명만으로 고른 1차 배치는 귀 검수에서 절반이 「싸구려 MIDI」였다 — 장면마다 후보 3~10곡을 Gemini 4 Argon 에 소리째 붙여
  * (30초 발췌, 3회 평균) 「장면 적합·제작 품질」을 매겨 가장 높은 곡을 쓴다. 점수표: 아래 각 줄 (적합/품질).
- * 일반 전투에 맞는 곡은 카탈로그에 없다(btl-002 4.0/6.3 이 최고 — 무겁다). 보스와 같은 곡을 쓰는 임시 배치다.
+ * 전투곡(일반·보스)은 fallen/battleMusic.ts 가 모든 전투를 놓은 뒤에 건다.
  */
 const FS_MUSIC = {
   title: "cc0-bgm-rtp-flt-016",        // 구름 사이의 첫 항로 7.0/6.0
@@ -1402,11 +1403,9 @@ const FS_MUSIC = {
   forest: "cc0-bgm-rtp-fld-002",       // 바람길 숲 8.0/7.0
   vaultGate: "cc0-bgm-rtp-rui-001",    // 가라앉은 천문대 8.0/7.0
   vault: "cc0-bgm-rtp-dng-001",        // 이끼빛 회랑 8.0/7.0
-  battle: "cc0-bgm-rtp-btl-002",       // 재의 왕관 4.0/6.3 — 맞는 일반 전투곡 없음
-  boss: "cc0-bgm-rtp-btl-002",         // 재의 왕관 8.7/7.0
   ending: "cc0-bgm-rtp-flt-023",       // 말이 멎은 뒤의 별 8.0/7.0
 } as const;
-function applyFallenSoundtrack(project: Project, maps: { hub: GameMap; observatory: GameMap; forest: GameMap; vault: GameMap }, bossId: string | undefined): void {
+function applyFallenSoundtrack(project: Project, maps: { hub: GameMap; observatory: GameMap; forest: GameMap; vault: GameMap }): void {
   const bgm = (resourceId: string) => ({ mode: "custom", resourceId }) as GameMap["bgm"];
   maps.hub.bgm = bgm(FS_MUSIC.hub);
   maps.observatory.bgm = bgm(FS_MUSIC.observatory);
@@ -1414,20 +1413,9 @@ function applyFallenSoundtrack(project: Project, maps: { hub: GameMap; observato
   maps.vault.bgm = bgm(FS_MUSIC.vault);
   const gate = project.maps["fs_vault_gate"];
   if (gate) gate.bgm = bgm(FS_MUSIC.vaultGate);
-  project.system.battleBgmResourceId = FS_MUSIC.battle;
   if (project.system.titleScreen) project.system.titleScreen.musicResourceId = FS_MUSIC.title;
   if (project.system.opening) project.system.opening.musicResourceId = FS_MUSIC.opening;
   for (const ending of project.endings ?? []) ending.presentation = { ...ending.presentation, musicResourceId: FS_MUSIC.ending };
-  // 결전만 보스 변주로 — 전투 직전 시스템 전투곡을 바꾸고, 끝나면(이기든 지든) 되돌린다.
-  const boss = bossId ? maps.vault.events.find((e) => e.id === bossId) : undefined;
-  const systemBgm = (fields: Record<string, string>) => ({ kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { cue: "battle", ...fields } }) as unknown as Command;
-  for (const list of boss ? eventCommandLists(boss) : []) {
-    for (let i = list.length - 1; i >= 0; i -= 1) {
-      if (list[i]!.kind !== "battleProcessing") continue;
-      list.splice(i + 1, 0, systemBgm({ operation: "reset" }));
-      list.splice(i, 0, systemBgm({ operation: "set", resourceId: FS_MUSIC.boss, volume: "100" }));
-    }
-  }
 }
 
 /** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
@@ -1817,6 +1805,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
         "그날 밤 북쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 집이 부르는 곳, 북쪽 하늘탑으로.", "",
         "OPRN Studio 공식 데모", "",
+        "Music: OPRN BGM (AI-generated, Google Lyria)", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
     },
@@ -2426,7 +2415,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
   if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id, FS_VALEN_START);
-  applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
+  applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) });
   // 마을 집 안 — 여관·약방·집 셋을 손 도트 실내로 짓고 부딪힘 문으로 잇는다. 나머지 집 문은 잠겼다고 말한다(사용자 「집에 들어갈 수 없다」).
   // 행렬보다 먼저 짓는다 — 행렬(열 명)이 큰길 두 줄에 서면 리사네 문 앞이 막혀 문 잇기가 거절됐다.
   ensureFallenTownDatabase(project);
@@ -2542,6 +2531,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenPixelFx(project);
   // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
   applyFallenDisplayNames(project);
+  // 전투곡 — 일반은 프로젝트·지역 맵 곡, 보스·우두머리만 보스곡(fallen/battleMusic.ts). 전투가 다 놓인 뒤.
+  applyFallenBattleMusic(project);
   // 조사 칸이 걸어 가서 살필 수 있는 자리인가 — 사람·가구가 다 놓인 뒤(fallen/worldPass/examine.ts).
   assertExaminesReachable(project);
   const serialized = serialize(project);

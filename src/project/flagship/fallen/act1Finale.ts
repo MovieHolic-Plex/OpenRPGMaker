@@ -113,8 +113,6 @@ const cutEnd = (): Command => ({ kind: "cutsceneControl", mode: "end" } as unkno
 const cutLabel = (): Command => ({ kind: "label", name: "cutscene_end" } as unknown as Command);
 const transfer = (mapId: string, at: Cell, direction: Dir = "down"): Command =>
   ({ kind: "transfer", mapId, x: at.x, y: at.y, direction, fade: "black" } as unknown as Command);
-const battleBgm = (resourceId: string): Command => m2("m2-027-change-system-bgm", { cue: "battle", operation: "set", resourceId, volume: "100" });
-const battleBgmReset = (): Command => m2("m2-027-change-system-bgm", { cue: "battle", operation: "reset" });
 const battle = (troopId: string, canLose: boolean, canEscape = false): Command => ({ kind: "battleProcessing", troopId, canEscape, canLose } as unknown as Command);
 const won = (then: Command[], otherwise: Command[] = []): Command => fork({ kind: "battleResult", result: "victory" }, then, otherwise);
 const item = (itemId: string, amount = 1): Command => ({ kind: "changeItem", itemId, op: "+=", amount } as unknown as Command);
@@ -589,14 +587,12 @@ function crashSite(project: Project, forestId: string): void {
   ];
   const fight = (): Command[] => [
     setSw(SW_CRASH_MET),
-    battleBgm("cc0-bgm-rtp-btl-002"),
     fork(sw(SW_SQUAD_DOWN, false), [
       battle(FS_VALEN_SQUAD_TROOP, true),
-      won([setSw(SW_SQUAD_DOWN), ...squadDown], [battleBgmReset(), ...pushedBack]),
+      won([setSw(SW_SQUAD_DOWN), ...squadDown], pushedBack),
     ]),
     fork(sw(SW_SQUAD_DOWN), [
       battle(FS_VALEN_CRASH_TROOP, true),
-      battleBgmReset(),
       won([setSw(SW_SOLDIERS_GONE), ...vanish], rescue),
     ]),
   ];
@@ -850,7 +846,7 @@ function openGate(map: GameMap, cells: Cell[]): Command[] {
     shake(1, 400),
     // 열린 문 아래 칸(6424)은 칩셋 통행이 막혀 있다 — 들어 올린 문짝(6423)만 남기고 발밑은 비운다(-1).
     ...swapTiles(map, cells.flatMap((c) => [{ x: c.x, y: c.y - 1, from: 6421, to: 6423 }, { x: c.x, y: c.y, from: 6422, to: -1 }])),
-    se("cc0-se-osx-metal-03"),
+    se("cc0-se-osx-metal-04"),
   ];
 }
 
@@ -1112,9 +1108,7 @@ function foeEntrances(project: Project, map: GameMap, ids: string[], foes: Ambus
 /** 싸움과 뒤처리 — 이기면 done, 지면 몸을 빼 물러서고(게임 오버 없음) 다시 그 자리에 서면 또 덮친다. */
 function ambushFight(on: string, done: string, stage: AmbushStage): Command[] {
   return [
-    battleBgm("cc0-bgm-rtp-btl-002"),
     battle(stage.troopId, true),
-    battleBgmReset(),
     won([setSw(done), ...stage.after], [
       { kind: "recoverAll" } as unknown as Command,
       ...["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((actorId) => ({ kind: "changeActorHp", actorId, op: "=", amount: 30, amountMode: "percent" } as unknown as Command)),
@@ -1225,9 +1219,7 @@ function floorB4(project: Project): GameMap {
   const dragonGfx = { sprite: { type: "uploaded", id: "generated-enemy-dragon-blue" }, direction: "down", pattern: 0, scale: 2.2, scaleMode: "manual" };
   const dragonFight = (): Command[] => [
     setSw(SW_DRAGON_CRACK, false),
-    battleBgm("cc0-bgm-rtp-btl-001"),
     battle(FS_DRAGON_TROOP, true),
-    battleBgmReset(),
     won([
       se("cc0-se-ors-creature-roar-03"),
       shake(4, 900),
@@ -1608,7 +1600,7 @@ function ending(project: Project): void {
       "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 넷째 아이, 중계기", "",
       "천문대장 하넬", "숲지기 브람", "심문관 발렌", "교단 광신도들", "달빛의 용 — 문지기", "",
       "그날 밤 북쪽 숲에 떨어진 것은 별이 아니었다.", "달이 보낸 넷째 아이였고,", "누군가 그 아이에게 대답했다.", "",
-      "OPRN Studio 공식 데모", "", "제2막에서 계속됩니다.",
+      "OPRN Studio 공식 데모", "", "Music: OPRN BGM (AI-generated, Google Lyria)", "", "제2막에서 계속됩니다.",
     ].join("\n"),
   };
 }

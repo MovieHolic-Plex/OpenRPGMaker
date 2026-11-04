@@ -252,7 +252,7 @@ function summitScenes(project: Project): void {
     { kind: "stopAudio", channel: "bgm", fadeOutMs: 1200 } as unknown as Command,
     player(walk(["up", "up", "up"])),
     camTo("ev_fs2_top_valen", 1300, 2, 16),
-    se("cc0-se-osx-metal-03"),
+    se("cc0-se-osx-machine-03"),
     narrate("커다란 렌즈 앞, 발렌이 단말에 손을 얹고 있다.\n렌즈 속 글자가 붉게 흐른다."),
     say(VALEN, "반은 보냈다. 나머지 반만 넣으면\n달은 다시는 아이를 내려보내지 않는다."),
     say(KAEL, "그 신호, 이리스한테 「오지 마」라고 하는 거잖아요."),

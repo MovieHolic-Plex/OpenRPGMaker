@@ -330,15 +330,15 @@ function floorOne(project: Project, exec: Exec): void {
     page("ev_fs2_t1_arrive_run", "기사와 기계", [sw(SW_VALEN_MET)], [
       cutBegin(),
       wait(500),
-      se("cc0-se-osx-metal-03"), shake(1, 300),
+      se("cc0-se-ors-metal-01"), shake(1, 300),
       say(SARAH, "…쇳소리다. 안쪽 홀에서."),
       // 1배로는 기사·기계가 손톱만 해서 「쳐 낸다」가 안 읽혔다(첫 플레이 검수 2026-11-01) — 2배로 당겨 본다.
       camTo("ev_fs2_t1_stage_knight", 1300, 2),
       wait(300),
       route("ev_fs2_t1_stage_knight", [{ kind: "move", dir: "left" }]),
-      se("cc0-se-osx-metal-03"), flash("white", 200),
+      se("cc0-se-ors-metal-01"), flash("white", 200),
       route("ev_fs2_t1_stage_machine", [{ kind: "turn", dir: "right" }]),
-      se("cc0-se-osx-metal-03"), shake(3, 500),
+      se("cc0-se-ors-metal-01"), shake(3, 500),
       route("ev_fs2_t1_stage_knight", [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 2, dy: 0, heightPx: 10, durationMs: 420 }, { kind: "setDirectionFix", enabled: false }]),
       emote("ev_fs2_t1_stage_knight", "sweat", 700),
       route("ev_fs2_t1_stage_knight", [{ kind: "turn", dir: "right" }, ...walk(["right", "right", "down"])]),
@@ -596,7 +596,7 @@ function floorThree(project: Project, exec: Exec): void {
     const turn: Command = { kind: "choices", prompt: "어느 쪽으로 돌릴까?", cancelBehavior: "branch", cancelBranch: [], options: [
       ...dirs.map((d, v) => ({ text: `${DIR_WORD[d]}쪽`, branch: [
         { kind: "setVariable", variableId: varOf(m.key), op: "=", value: v } as unknown as Command,
-        se("cc0-se-osx-metal-03"), callBeam,
+        se("cc0-se-osx-machine-02"), callBeam,
       ] })),
       { text: "그대로 둔다", branch: [] },
     ] } as unknown as Command;
@@ -789,7 +789,7 @@ function floorFour(project: Project, exec: Exec): void {
   T4.doorway.forEach((c, i) => addEv(project, FS2_T4, `ev_fs2_t4_room_${i}`, "렌즈 대기실", c, [
     page(`ev_fs2_t4_room_${i}_p`, "관", [], [
       cutBegin(),
-      se("cc0-se-osx-metal-03"),
+      se("cc0-se-ors-stones-01"),
       camTo("ev_fs2_t4_coffin", 1200, 2),
       narrate("커다란 렌즈 앞에 석관이 하나 놓여 있다.\n뚜껑 틈으로 초록 글자가 흘러나온다."),
       say(ELENA, "은빛 알 안쪽이랑 같은 글자야.\n…이리스는 저 안이야."),
@@ -826,7 +826,7 @@ function floorFour(project: Project, exec: Exec): void {
     wait(900),
     narrate("관은 조용했다. 뚜껑 위로 초록 글자만 깜빡였다."),
     say(KAEL, "…열게."),
-    se("cc0-se-osx-metal-03"), shake(1, 600),
+    se("cc0-se-ors-stones-01"), shake(1, 600),
     ...lidOpen,
     narrate("카엘이 무거운 뚜껑을 힘껏 밀어젖혔다."),
     // 이리스는 관 속(오른쪽 칸)에서 일어나 관 밖으로 뛰어내린다 — 「원래 서 있던 사람」으로 읽혔다(적대 VQA 2026-10-30).

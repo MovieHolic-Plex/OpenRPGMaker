@@ -39,6 +39,7 @@ import type { TilesetReferenceCategory } from "../tilesetReferences";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
@@ -635,6 +636,10 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       name: asset.name,
       assetId: asset.id,
     });
+  }
+  for (const asset of OPRN_BGM_ASSETS) {
+    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    profiles.push({ kind: asset.kind, name: asset.name, assetId: asset.id });
   }
   // 얼굴은 낱장 파일이 리소스다. 4x4 시트(EASYRPG_RTP_ASSETS 의 faceset 행)는 v3 로드 해석용으로만
   // 남아 있는 레거시라 저자에게 보이는 리소스 목록에는 등록하지 않는다. 생성 시리즈(hero-XX-face)
