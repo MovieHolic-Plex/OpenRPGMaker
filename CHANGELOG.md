@@ -5,6 +5,30 @@
 
 <!-- releases -->
 
+## 0.395.0 — 2026-11-04
+
+### 기능
+
+- **editor** — 예제 프로젝트 메뉴의 「바로 플레이 ▶」 3줄을 걷는다 — 플레이는 예제를 연 뒤 테스트 실행으로 (#4259) (`ad36989`)
+- **assistant** — lay stairs in the carved cut shapes the baked pieces cover (#4243) (`f3ccf97`)
+- **editor** — 이벤트 편집기 머리의 ID 칩·NPC 묶음, 첫 화면의 「모두 보기」를 걷고 카드를 목업 크기로 (`1a9459a`)
+- **ai** — first-run setup wizard auto-configures the AI team from what the user has (Claude/ChatGPT/Gemini/DeepSeek), latest models only; Windows CLI detection (#4249) (`40ec049`)
+- **editor** — 조수 패널 머리를 목업대로 — 작업/대화 탭·로그·살펴볼 것·크게 보기를 감춘다 (`28e6e91`)
+- **editor** — 다크 안쪽 면을 목업 #2A2A2C 로, 인스펙터 바탕과 톱바 저장·실행 단추 높이를 목업 값으로 (`51bd3f9`)
+- **ai** — per-map battle music, audio variety lint, battle/boss scene matching (`82a64e5`)
+- **editor** — 왼쪽 열을 목업 행으로 — 맵 머리는 갈매기 없는 회색 글자, 행은 ▾/▸ 삼각형·18px 들여쓰기·파란 선택 틴트, 인스펙터 「고급」 줄 감춤 (`f023c92`)
+- **editor** — 톱바를 목업대로 — ⋯ 더 보기와 프로젝트 ▾ 화살표를 걷고 AI 설정·언어·가이드는 ⌘K 로, 저장 글자는 「저장됨」 (`c1b1df9`)
+
+### 수정
+
+- **ai** — 「내 PC」 프로그램 연결을 「자격 종류는 지원하지 않아요」로 부정하지 않는다 (#4256) (`49648c8`)
+- **ai** — audio lint counts only un-overridden battles as normal; drop catalog plan-tag battle matching (`4d3eb4c`)
+- **editor** — 이벤트 편집 창을 목업 크기 1200×790 으로 (`3b4344d`)
+- **desktop** — ship one pi-natives version so the Windows AI worker starts without a download (#4255) (`a8e4457`)
+- **editor** — 조수 입력창의 안쪽 3px 링을 걷고 보내기 단추를 28px 둥근 사각형으로 (`f45581a`)
+- **harness** — open the assistant from the topbar when the inspector covers the folded strip (`663552c`)
+- **editor** — 톱바 하단선을 1px 하나로, 브랜드 안쪽 여백을 목업 12px 로 (`b2f2b69`)
+
 ## 0.394.0 — 2026-11-04
 
 ### 기능
