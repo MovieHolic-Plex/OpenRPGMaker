@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.393.0 — 2026-11-04
+
+### 기능
+
+- **ai** — run_lint warns on unreachable examine events and two events on one object (scene-examine-*), skill rule and scene lesson (#4238) (`9117be6`)
+- **ai** — 대사 고치기 뜻 보존 관문 — 숫자·인용·고유명사·유보·부정이 바뀌면 거절 (#4231) (`0eb7337`)
+- **runtime** — smallMapFill option, default off; fix 1x rooms zoomed by the half-tile margin (#4230) (`d82f789`)
+
+### 수정
+
+- **battle** — hide the top window in big-boss command/target steps (#4239) (`971cb16`)
+
 ## 0.392.1 — 2026-11-04
 
 ### 수정
