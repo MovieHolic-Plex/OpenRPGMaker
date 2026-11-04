@@ -1,0 +1,30 @@
+{
+ "set": "rt-small-map-fill-shitamachi-train",
+ "projectGenerator": {
+  "game": "shitamachi-fourth-season"
+ },
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "checkpoints": [
+  {
+   "id": "train",
+   "label": "저녁 전철(21×8) — 시작 맵",
+   "note": "smallMapFill 기본 끔 전후 비교",
+   "beats": [
+    {
+     "id": "view",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
