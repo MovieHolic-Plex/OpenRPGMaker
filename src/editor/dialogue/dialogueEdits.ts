@@ -5,10 +5,12 @@
 //   3. 이벤트 편집기에서 초안으로 열린 이벤트는 고치지 않는다(초안 취소가 고친 글을 되돌리고, 적용이 덮는다).
 //   4. 제어 코드(\C[n]·\N[n]·\.·[흔들]…[/]·{name})의 묶음이 원문과 같다.
 //   5. 글 길이: 대화창 줄은 창 한 장(최대 줄 수)을 원문보다 더 넘기지 않는다 — allowOverflow 로만 푼다.
+//   6. (조수 도구만) 뜻 닻 — 숫자·인용·고유명사·유보·부정이 그대로다(dialogueMeaningGuard.ts). 사람 편집은 이 검사를 쓰지 않는다.
 
 import type { Project } from "@/project/types";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { collectDialogueLines, dialogueLineUsesMessageWindow, dialogueTextHash, resolveDialogueSlot, type DialogueLine } from "./dialogueIndex";
+import { checkMeaningPreserved, meaningGuardMessage, type MeaningGuardIssue } from "./dialogueMeaningGuard";
 import { compareControlCodes, estimateDialogueWindowMetrics, measureDialogueFit, visibleDialogueText, type DialogueFit } from "./dialogueText";
 
 export const DIALOGUE_TEXT_LIMIT = 2000;
@@ -27,7 +29,8 @@ export type DialogueEditRejection =
   | "too-long"
   | "overflow"
   | "empty"
-  | "unchanged";
+  | "unchanged"
+  | "meaning";
 
 export interface DialogueEditVerdict {
   readonly id: string;
@@ -39,11 +42,15 @@ export interface DialogueEditVerdict {
   readonly fitBefore?: DialogueFit;
   readonly fitAfter?: DialogueFit;
   readonly warning?: string;
+  /** reason "meaning" 일 때 바뀐 닻. */
+  readonly meaningIssues?: readonly MeaningGuardIssue[];
 }
 
 export interface DialogueEditOptions {
   /** 창 넘침을 늘리는 고치기도 받는다. */
   readonly allowOverflow?: boolean;
+  /** 주면 뜻 닻(숫자·인용·고유명사·유보·부정)이 바뀐 고치기를 거절한다. names = 지킬 고유명사. */
+  readonly meaningGuard?: { readonly names: readonly string[] };
 }
 
 export function actorNamesOf(project: Project): string[] {
@@ -126,6 +133,10 @@ export function checkDialogueEdit(project: Project, edit: DialogueEditRequest, o
       codes.added.length ? `새로 생김 ${codes.added.join(" ")}` : "",
     ].filter(Boolean).join(" · ");
     return { id: edit.id, ok: false, reason: "control-codes", message: `제어 코드는 원문 그대로 둔다(${parts}).`, before: slot.text };
+  }
+  if (options.meaningGuard) {
+    const meaningIssues = checkMeaningPreserved(slot.text, text, { names: options.meaningGuard.names });
+    if (meaningIssues.length) return { id: edit.id, ok: false, reason: "meaning", message: meaningGuardMessage(meaningIssues), before: slot.text, after: text, meaningIssues };
   }
   const line = (lines ?? collectDialogueLines(project)).find((candidate) => candidate.id === edit.id);
   const shape = line ?? { kind: "description" as const, withFace: false };

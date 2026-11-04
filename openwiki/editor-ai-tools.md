@@ -132,7 +132,8 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
   - 예산: 한 차례 `DIALOGUE_POLISH_ROUND_TURNS`(10) 모델 차례·`DIALOGUE_POLISH_ROUND_TOKENS`(입력+출력 60만) — 넘으면 「멈추고 보고」 를 한 번 알리고 윤문 도구가 거절한다(실행을 끊지 않는다). 두 번째 차례는 첫 차례보다 적중이 줄었을 때만.
   - 차례마다 실행기가 다시 린트한다(`dialogue_polish.relint`). 숫자는 모델 보고가 아니라 실행기가 센 값이다.
   - **로컬 CLI 엔진(Claude Code 등)은 차례마다 새 대화로 연다**(`dialogue_polish.context_reset`, 스킬 관문도 다시 건다). CLI 는 MCP `tools/list` 를 대화 시작 때 받아 두므로 도구 배열만 바꾸면 옛 목록을 본다 — 고치기 전 opus 실측: 「대사를 고칠 수단이 주어지지 않았다」, 적중 21 → 21·호출 0. 같이 `localCliLoop.prompt` 가 요청 전에 바뀐 도구 목록을 알린다(`announceToolChanges`).
-- **보고**: 실행 기록 `execution_status` `dialogue_polish.lint` · `.round` · `.relint` · `dialogue_polish`(data = `DialoguePolishReport`: 전/후 적중·계열별·차례·바로 고친 줄·제안 수·전/후 줄 쌍 80개·토큰), `done.dialoguePolish`. 편집기는 마지막 보고 하나만 말풍선으로 보이므로, 짓기 보고를 지우지 않고 **짓기 보고 + 윤문 차례의 조수 보고 + 실행기 숫자 한 줄**을 합친 최종 보고를 다시 낸다.
+- **뜻 보존 관문(2026-11-04)**: 윤문 차례의 `rewrite_dialogue` 는 실행기가 편집마다 `src/editor/dialogue/dialogueMeaningGuard.ts` 로 원문과 고친 글의 닻을 견준다(모델 없음, HAWW 의 «앵커가 바뀌면 거절» 방식만 따름 — HAWW 는 라이선스가 없어 코드·낱말 목록은 가져오지 않았다). 닻: `number`(숫자 다중집합, 고유어 수량 포함 — 「세 개」↔「셋」은 같은 수) · `quote`(「」『』"" 안 글) · `name`(프로젝트 DB 배우·아이템·장비·스킬·적·상태·맵 이름과 퀘스트 제목, 편집기 기본 DB 이름은 뺀다 — `dialogueGuardNames`) · `hedge`(아마·어쩌면·혹시·~지도·~것 같다 수가 줄면) · `polarity`(안·못·않·없·아니·말고·지 마 수가 바뀌면). 어미·어순·감탄사·말줄임 정리는 통과한다. 걸린 편집은 도구에 넘기지 않고(적용·제안 모두 안 함) 도구 결과에 줄마다 한 줄 이유를 붙여 같은 차례 예산 안에서 다시 고치게 한다. 모델이 보낸 `allowMeaningChange` 는 윤문 차례에서 버린다. 집계는 `execution_status dialogue_polish.meaning_guard`(통과·거절·닻별·예시 12개)와 `DialoguePolishReport.meaningGuard`, 마지막 보고 한 줄. 근거·재측정: http://mdc-server:18301/polish-guard.html
+- **보고**: 실행 기록 `execution_status` `dialogue_polish.lint` · `.round` · `.relint` · `.meaning_guard` · `dialogue_polish`(data = `DialoguePolishReport`: 전/후 적중·계열별·차례·바로 고친 줄·제안 수·전/후 줄 쌍 80개·토큰), `done.dialoguePolish`. 편집기는 마지막 보고 하나만 말풍선으로 보이므로, 짓기 보고를 지우지 않고 **짓기 보고 + 윤문 차례의 조수 보고 + 실행기 숫자 한 줄**을 합친 최종 보고를 다시 낸다.
 - **끄기**: AI 설정 「동작」 → 「완성 뒤 대사 윤문」(켬/끔, `AiConfig.dialoguePolishAfterBuild:false` → 요청 `dialoguePolish:false`). 시험용 `OPRN_DIALOGUE_POLISH_HOOK=0`.
 - **맵 소유권**: 같은 실행 안의 단계라 그 실행이 쥔 맵 예약을 그대로 쓴다(새 실행·새 예약 없음). 묶음 실행의 범위 검사(`piMapScopeGuard`)도 윤문 도구에 그대로 걸린다.
 - **하네스**: `wholeGameSession.mjs` 차례 기록에 `dialoguePolish`(이름·요약·data) 칸, `editorDriver.mjs` 가 `dialogue_polish*` 의 data 를 담는다.
@@ -155,9 +156,9 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
   줄마다 `{id, hash, speaker, text, where, lines "쓴줄/한장", overflow, locked, pendingProposal}`. 첫 쪽에는 화자 목록(수·말투 메모)·`styleRules`·걸린 제안 수.
   화자는 자유 문자열이라 정확히 같은 이름이 없으면 낱말 포함으로 넓히고 요약에 그 사실을 적는다(「발렌」→「심문관 발렌」).
 - `get_dialogue_context` (read) — 같은 이벤트 쪽 안의 앞뒤 줄, 화자 말투 메모, 창 맞춤 추정, 걸린 제안.
-- `rewrite_dialogue` (write) — `edits:[{id,hash,text,reason}]`(≤80), `mode: propose(기본)|apply`, `instruction`, `allowOverflow`.
+- `rewrite_dialogue` (write) — `edits:[{id,hash,text,reason}]`(≤80), `mode: propose(기본)|apply`, `instruction`, `allowOverflow`, `allowMeaningChange`.
   propose 는 게임 대사를 바꾸지 않고 `project.dialogueDesk.proposals` 에 남긴다(같은 줄의 옛 제안은 대체) — 사람이 「대사」 탭에서 받는다.
-  거절 사유: unknown-line · stale-hash · drafted · control-codes · too-long · overflow · empty · unchanged. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
+  거절 사유: unknown-line · stale-hash · drafted · control-codes · meaning(뜻 닻, 위 「뜻 보존 관문」 — 사람이 뜻을 바꾸라고 했을 때만 `allowMeaningChange:true`) · too-long · overflow · empty · unchanged. 결과 `data.meaningGuard` = {on, accepted, rejected, byKind}. 사람 편집(「대사」 탭)은 뜻 관문을 쓰지 않는다. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
 - `set_speaker_voice` (write) — `{speaker, note}`(빈 note 는 지움, 800자).
 - 스키마: 자유 키 객체·빈 enum 없음, 배열은 `items` 를 단다(Gemini 400 규칙).
 - 도구 창 넘침: 도구는 Pi 워커(bun, DOM 없음)에서 돈다. 그래서 편집기가 런타임 CSS 로 잰 대화창 기준(글 폭·글꼴 크기·한 장 줄 수, 얼굴×이름표 4가지)을

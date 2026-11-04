@@ -14,6 +14,8 @@
 // 맵 소유권: 같은 실행 안의 단계라 그 실행이 쥔 맵 예약을 그대로 쓴다(새 실행·새 예약을 만들지 않는다). 묶음 실행의 범위 검사도 그대로 걸린다.
 
 import { collectDialogueLines, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
+import { normalizeEditedDialogueText } from "@/editor/dialogue/dialogueEdits";
+import { checkMeaningPreserved, MEANING_ANCHOR_KINDS, type MeaningAnchorKind, type MeaningGuardIssue } from "@/editor/dialogue/dialogueMeaningGuard";
 import { flattenDialogueText, lintDialogueTexts, type DialoguePolishHit } from "@/editor/dialogue/dialoguePolishLint";
 import { isSpeakerLabelHit } from "@/editor/dialogue/dialogueSpeakerLabel";
 import { buildStory, lineRefLabel } from "@/editor/dialogue/storyScript";
@@ -77,6 +79,19 @@ export interface DialoguePolishReport {
   readonly pairs: readonly DialoguePolishPair[];
   readonly ms: number;
   readonly tokens?: number;
+  /** 뜻 보존 관문(dialogueMeaningGuard.ts) — 윤문 차례의 rewrite_dialogue 편집 중 통과·거절 수와 닻별 거절. */
+  readonly meaningGuard?: MeaningGuardTally;
+}
+
+export interface MeaningGuardTally {
+  /** 관문을 통과해 도구로 넘긴 편집 수. */
+  passed: number;
+  /** 뜻이 바뀌어 거절한 편집 수. */
+  rejected: number;
+  /** 닻별 거절(한 편집이 여러 닻을 건드리면 각각 센다). */
+  byKind: Record<MeaningAnchorKind, number>;
+  /** 거절 예시(앞 12개). */
+  examples: { id: string; before: string; after: string; kinds: MeaningAnchorKind[] }[];
 }
 
 export interface PolishLintRow {
@@ -194,6 +209,7 @@ export function dialoguePolishRoundPrompt(project: Project, lint: PolishLint, ro
     `2. 장면 문맥을 읽는다: read_story_script({scenes:${JSON.stringify(scenes.slice(0, 12))}})${scenes.length ? "" : " 또는 get_dialogue_context({id})"} — 앞뒤 흐름과 인물 말투를 본다.`,
     "3. rewrite_dialogue({edits:[{id, hash, text, reason}], mode:'apply'}) 로 아래 줄만 고친다. 이번 실행이 쓴 줄은 실행기가 바로 반영하고, 사람이 쓴 줄을 건드리면 실행기가 「대사」 탭 제안으로 돌린다.",
     "   지킬 것: 각 화자의 말투(아래 말투 메모·이미 쓴 어미), 대사 안 줄 수(\\n 개수), 제어 코드·자리표시자(\\C[n] \\N[n] {name} [흔들]…[/])는 바이트 그대로, 숫자·단서·고유명사·화자 이름은 그대로. 고칠 필요가 없는 줄은 넣지 않는다.",
+    "   실행기가 뜻 닻을 검사해 어기면 적용하지 않는다: 숫자·수량, 「」『』 인용, DB 고유명사, 유보(아마·혹시·~지도·~것 같다) 수, 부정(안·못·않·없·아니) 수. 「A가 아니라 B」는 「A 말고 B」처럼 부정을 남겨 고친다.",
     "   말투가 그 어미를 요구해 남기는 적중은 reason 이 아니라 보고에 «남김: 이유» 로 적는다.",
     "   대사는 대사로 둔다: 3인칭 서술·지문(「직원이 말한다. …」「~라고 외쳤다」「~라고 적혀 있다」)로 바꾸지 않는다. 글 맨 앞의 「이름: 」 라벨은 실행기가 이미 화자 칸으로 옮겼다 — 남은 라벨은 지우지도 풀어 쓰지도 않는다.",
     "4. lint_dialogue({lineIds:[…]}) 로 고친 줄을 다시 검사한다. 끝나면 두세 줄로 보고한다(고친 줄 수, 남긴 적중과 이유). 실행기가 전/후 적중 수를 따로 센다 — 숫자를 지어내지 않는다.",
@@ -210,8 +226,38 @@ export function dialoguePolishReportText(report: DialoguePolishReport): string {
     ? ` 남은 적중 ${report.after}건(${familySummary(report.afterByFamily)}) — 말투 때문에 남긴 것이면 위 보고의 이유를 보세요.`
     : "";
   const labels = report.labelsLifted ? ` 글 앞 「이름:」 라벨 ${report.labelsLifted}줄은 화자 칸(이름표)으로 옮겼다.` : "";
+  const guard = report.meaningGuard?.rejected
+    ? ` 뜻이 바뀐 편집 ${report.meaningGuard.rejected}건은 적용하지 않았다(${familySummary(Object.fromEntries(Object.entries(report.meaningGuard.byKind).filter(([, n]) => n > 0)))}).`
+    : "";
   return `대사 윤문(완성 뒤 자동 단계, 실행기가 센 숫자): 새로 쓴 글 ${report.newLines}줄에서 고칠 규칙 적중 ${report.before}건 → ${report.after}건`
-    + ` (${report.rounds}차례, 바로 고친 줄 ${report.applied} · 「대사」 탭 제안 ${report.proposed}).${labels}${left}${report.reason ? ` ${report.reason}` : ""}`;
+    + ` (${report.rounds}차례, 바로 고친 줄 ${report.applied} · 「대사」 탭 제안 ${report.proposed}).${labels}${guard}${left}${report.reason ? ` ${report.reason}` : ""}`;
+}
+
+/** rewrite_dialogue 윤문 편집을 뜻 닻으로 거른다. 거절된 편집은 도구에 넘기지 않고, 모델에게 줄마다 한 줄 이유를 돌려준다. */
+export function screenPolishEdits(
+  edits: readonly unknown[],
+  resolve: (edit: Record<string, unknown>) => DialogueLine | undefined,
+  names: readonly string[],
+  tally: MeaningGuardTally,
+): { readonly kept: unknown[]; readonly notes: string[] } {
+  const kept: unknown[] = [], notes: string[] = [];
+  for (const edit of edits) {
+    const record = edit && typeof edit === "object" ? edit as Record<string, unknown> : undefined;
+    const line = record ? resolve(record) : undefined;
+    if (!record || !line || typeof record.text !== "string") { kept.push(edit); continue; }
+    const after = normalizeEditedDialogueText(line.text, record.text);
+    const issues: MeaningGuardIssue[] = checkMeaningPreserved(line.text, after, { names });
+    if (!issues.length) { tally.passed += 1; kept.push(edit); continue; }
+    tally.rejected += 1;
+    for (const issue of issues) tally.byKind[issue.kind] += 1;
+    if (tally.examples.length < 12) tally.examples.push({ id: line.id, before: line.text, after, kinds: issues.map((issue) => issue.kind) });
+    notes.push(`${String(record.ref ?? line.id)}: ${issues.map((issue) => issue.message).join(" / ")}`);
+  }
+  return { kept, notes };
+}
+
+export function emptyMeaningTally(): MeaningGuardTally {
+  return { passed: 0, rejected: 0, byKind: Object.fromEntries(MEANING_ANCHOR_KINDS.map((kind) => [kind, 0])) as Record<MeaningAnchorKind, number>, examples: [] };
 }
 
 export function emptyPolishReport(reason: string, newLines = 0, ms = 0): DialoguePolishReport {
