@@ -844,6 +844,11 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 - 게임 전체 이어 짓기(`whole_game_rekick`, `src/ai/v2/shipChecks.ts` `unbuiltGameSigns`): `wantsWholeGame` 요청이면 엔딩이 하나도 없거나(요청에 「엔딩」 낱말이 없어도)
   모든 맵이 손대지 않은 빈 시작 맵이면(「플레이할 맵이 없다」) 최대 3번 이어 짓게 한다(2026-11-05 gpt-only-game). 「… 모험 게임으로」처럼
   「<낱말> 게임으로」로 끝나는 요청도 게임 하나다(앞 낱말이 을/를로 끝나면 고치기 요청 — 「대사를 게임으로」 아님). 회귀 `test/wholeGameRekick.test.ts`.
+  신호 셋째·넷째(2026-11-05 두 번째): 전투가 있는데 회복 수단이 0(`battleSites`·`healingSources`, v2 `combat-no-healing` 과 같은 정의 — 「마을부터」가 숲길 슬라임에 게임 오버),
+  첫 화면이 편집기 기본(`editorDefaultsLeft` 의 `title-name`·`opening` 만 — 판타지·고양이가 「강을 낀 왕국…」으로 시작). v2 끝맺음은 이것을 채우지만 v2 는 기본 꺼짐이다.
+  오프닝을 새로 지어도 기본 장면 뒤에 붙으면 소용없어서, `create_opening_animatic_shot` 은 첫 애니메틱 샷을 만들 때 손대지 않은 기본 오프닝 그림 장면도
+  제목 카드처럼 치운다(`isFactoryOpeningScene` — 그림·글 둘 다 씨앗과 같을 때만). `animate_opening_camera` 는 `camera.keys` 를 시간별 칸 배열(`[{atMs,x,y,zoom}]`)로 보내도
+  속성별 트랙으로 돌린다(전에는 「camera.keys.0: unsupported field」). 회귀 `test/openingCameraKeyArrays.test.ts`.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.
