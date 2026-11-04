@@ -119,6 +119,15 @@ export function noEscapeNoticeLine(snapshot: Pick<BattleSnapshot, "troopId">): s
   return `이 싸움에서는 ${resolveTerms(store.getCurrent()).escape}할 수 없습니다.`;
 }
 
+/**
+ * 명령 메뉴 안(버튼 아래 한 줄)에 붙는 짧은 사유. 전체 문장은 2열 메뉴 폭에서 두 줄로도 모자라 「도주할 수…」로 잘렸다
+ * (1.36 VQA #4 #5 #8 #9 #27). 전체 문장은 위 배너(noEscapeNoticeLine)가 그대로 말한다.
+ */
+export function noEscapeInlineReason(snapshot: Pick<BattleSnapshot, "troopId">): string {
+  if (store.getCurrent().system.battleUiStyle === "pokemon") return emeraldNoEscapeLine(snapshot);
+  return `${resolveTerms(store.getCurrent()).escape} 불가`;
+}
+
 export function emeraldTrainerSendOutLine(trainerName: string, monsterName: string): string {
   return `${withJosa(emeraldShortName(trainerName), "은/는")} ${withJosa(emeraldShortName(monsterName), "을/를")} 내보냈다!`;
 }

@@ -449,6 +449,8 @@ export async function playBattle(
         // 첫 프레임 그림(적·배우·배경·시트·얼굴·창 스킨)이 다 디코드될 때까지 진입 커버를 유지한다(상한 6초).
         // 인트로·ATB 시계는 커버가 걷힐 때 시작해 보이지 않는 전투가 흘러가지 않는다.
         const mounted = battleScene;
+        const entryRoot = host.querySelector<HTMLElement>("[data-testid='battle-scene']");
+        if (entryRoot) entryRoot.dataset.battleEntry = "covering";
         await Promise.race([
           // 무대 그림이 필수, 겹 배경은 그 뒤 짧은 말미만 기다린다(늦으면 단일 배경 위에 나중에 덮인다).
           mounted.ready.then(() => Promise.race([
@@ -460,7 +462,9 @@ export async function playBattle(
         if (!current() || settled || battleScene !== mounted) { abort(); return; }
         markBattleEntry(startedAt);
         mounted.begin();
-        return entryTransition.reveal();
+        // QA·VQA 가 「진입 막이 걷혀 전투 화면이 실제로 보이는가」를 읽는 표지(1.36 VQA #1 #2: 진입 중 검은 프레임을 진행 불가로 오판).
+        // covering → revealed. 막이 닫힌 구간(overlay 가 없어도 첫 그림이 준비되기 전)의 프레임은 판정에서 뺀다.
+        return entryTransition.reveal().then(() => { if (entryRoot) entryRoot.dataset.battleEntry = "revealed"; });
       }).catch(fail);
     });
   } catch (error) {

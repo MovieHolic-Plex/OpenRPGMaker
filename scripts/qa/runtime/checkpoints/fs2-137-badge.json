@@ -1,0 +1,284 @@
+{
+  "set": "fs2-137-badge",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "projectFixture": "dist/demos/chrono-bell.project.json",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "dogs-skill",
+      "label": "north-forest map_field_north_1 troop_fs2_starved_dogs",
+      "mapId": "map_field_north_1",
+      "x": 14,
+      "y": 4,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true,
+        "sw_fs2_b5_forest_path": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "s1",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "ArrowRight",
+              "times": 1
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; return [...document.querySelectorAll('.battle-status-icon')].map(n=>({t:n.dataset.statusIcon,label:n.dataset.statusLabel,box:R(n),parent:n.parentElement.className,gp:n.parentElement.parentElement.className.slice(0,60),gpbox:R(n.parentElement.parentElement)})); }",
+              "out": "/tmp/fs137.IRInrc/probe/dogs-skill-badges.json"
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "s2",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "ArrowRight",
+              "times": 1
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            },
+            {
+              "kind": "key",
+              "key": "ArrowDown",
+              "times": 1
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; return [...document.querySelectorAll('.battle-status-icon')].map(n=>({t:n.dataset.statusIcon,label:n.dataset.statusLabel,box:R(n),parent:n.parentElement.className,gp:n.parentElement.parentElement.className.slice(0,60),gpbox:R(n.parentElement.parentElement)})); }",
+              "out": "/tmp/fs137.IRInrc/probe/dogs-skill2-badges.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startTroopId": "troop_fs2_starved_dogs"
+    },
+    {
+      "id": "sarah-combo",
+      "label": "제2막 B6 — 성벽 위 결투장, 새라 + 경비견 하나(파티 Lv8), 이기면 선택 1·합류",
+      "note": "act2Opening.ts fortressEvents — 성벽 문으로 나온 자리(17,14) 바로 앞 새라(19,14)·경비견(20,14) — y15 는 망루 지붕·장작더미 줄, 성벽 위에서 바로 전투(SW_ON_WALL 자동 페이지)",
+      "mapId": "fs2_fort_court",
+      "x": 17,
+      "y": 14,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true,
+        "sw_fs2_dawn_mem_0": true,
+        "sw_fs2_dawn_mem_1": true,
+        "sw_fs2_dawn_mem_2": true,
+        "sw_fs2_serin_form": true,
+        "sw_fs2_fort_on_wall": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 15
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 15
+        }
+      ],
+      "beats": [
+        {
+          "id": "enter",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "state": "present",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "c1",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "ArrowDown",
+              "times": 1
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 1
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4000
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)}}; return [...document.querySelectorAll('.battle-status-icon')].map(n=>({t:n.dataset.statusIcon,label:n.dataset.statusLabel,box:R(n),parent:n.parentElement.className,gp:n.parentElement.parentElement.className.slice(0,60),gpbox:R(n.parentElement.parentElement)})); }",
+              "out": "/tmp/fs137.IRInrc/probe/sarah-badges.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_fs2_rohan_spear"
+          }
+        }
+      },
+      "items": {
+        "item_potion": 4
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ]
+}
