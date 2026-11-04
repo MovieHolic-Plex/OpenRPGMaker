@@ -59,6 +59,8 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { IMAGE_PLAN_NOTE } from "@/ai/imagePlan";
+import { requestImagePlanMockup } from "@/editor/imagePlanMockup";
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
@@ -2302,7 +2304,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly widen?: { readonly label: string; readonly traits: readonly string[] }; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  /** 그림 도안 먼저(설정, src/ai/imagePlan.ts): 넓힌 새 장소면 도안 한 장을 받아 첨 요청 그림으로 싣는다. 계정이 없거나 실패하면 한 줄만 남기고 도안 없이 짓는다. */
+  const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string }> => {
+    if (!widen || loadAiConfig().imagePlanBuild !== true) return { images: [] };
+    setStatus("그림 도안 그리는 중…");
+    const outcome = await requestImagePlanMockup(widen);
+    if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
+    return { images: [outcome.dataUrl], note: IMAGE_PLAN_NOTE };
+  };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
     /** 같이 도는 실행(맵별 대기열)은 보낸 순간의 맵·선택으로 해석한다 — 사용자는 그 사이 다른 맵으로 옮겼을 수 있다. */
@@ -2359,7 +2369,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
       ...(classified.clarify ? { clarify: classified.clarify } : {}),
-      ...(classified.widen ? { widenLine: classified.widen.startLine } : {}),
+      ...(classified.widen ? { widenLine: classified.widen.startLine, widen: { label: classified.widen.label, traits: classified.widen.traits } } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
@@ -2405,8 +2415,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       options = piRunOptionsFor(classified.plan, { timing: classified.timing, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
       if (classified.widenLine) card.say("assistant", classified.widenLine);
+      const planImages = await imagePlanImages(classified.widen, (line) => card.say("system", line));
+      if (planImages.images.length) options = { ...options, userImages: [...(run.images ?? []), ...planImages.images], ...(planImages.note ? { intentNote: [planImages.note, classified.intentNote].filter(Boolean).join("\n\n") } : {}) };
     }
-    if (run.images?.length) options = { ...options, userImages: run.images };
+    if (run.images?.length && !options.userImages) options = { ...options, userImages: run.images };
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
@@ -2624,7 +2636,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const line = appendBubble("assistant", classified.widenLine);
         if (workCard?.root.isConnected) workCard.root.before(line);
       }
-      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(handoff?.images?.length ? { images: handoff.images } : {}) });
+      const planImages = await imagePlanImages(classified.widen, (note) => { const line = appendBubble("system", note); if (workCard?.root.isConnected) workCard.root.before(line); });
+      const turnImages = [...(handoff?.images ?? []), ...planImages.images];
+      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: planImages.note ? [planImages.note, classified.intentNote].filter(Boolean).join("\n\n") : classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(turnImages.length ? { images: turnImages } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
     } finally {
