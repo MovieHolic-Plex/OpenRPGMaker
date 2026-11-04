@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { listChangeItems, revertChangeItem } from "@/editor/panels/aiChangeSummaryCard";
-import { creationCardModel, firstSpokenLine } from "@/editor/panels/aiCreationCards";
+import { creationCardModel, firstPlayedMusic, firstSpokenLine } from "@/editor/panels/aiCreationCards";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
@@ -49,5 +49,15 @@ describe("firstSpokenLine", () => {
       { kind: "choices", options: [{ text: "네", branch: [{ kind: "text", speaker: "상인", body: "\n어서 오세요!\n둘째 줄" }] }] },
     ] }] } as unknown as GameEvent;
     expect(firstSpokenLine(event)).toEqual({ speaker: "상인", text: "어서 오세요!" });
+  });
+});
+
+describe("firstPlayedMusic", () => {
+  it("finds the boss track an event plays as background music, ignoring sound effects", () => {
+    const event = { id: "ev", x: 0, y: 0, pages: [{ commands: [
+      { kind: "playAudio", resourceId: "cc0-se-roar", loop: false },
+      { kind: "playAudio", resourceId: "cc0-bgm-boss", loop: true },
+    ] }] } as unknown as GameEvent;
+    expect(firstPlayedMusic(event)).toBe("cc0-bgm-boss");
   });
 });

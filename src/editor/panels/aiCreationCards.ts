@@ -75,6 +75,24 @@ export function firstSpokenLine(event: GameEvent): { readonly speaker?: string; 
   return visit((event as { commands?: readonly Command[] }).commands);
 }
 
+/** 이벤트가 틀어 주는 첫 곡(보스전 음악처럼 이벤트 안 playAudio 로 고른 것). */
+export function firstPlayedMusic(event: GameEvent): string | undefined {
+  const visit = (commands: readonly Command[] | undefined): string | undefined => {
+    for (const command of commands ?? []) {
+      if (command.kind === "playAudio" && command.resourceId && (command.channel ?? (command.loop ? "bgm" : "se")) === "bgm") return command.resourceId;
+      const nested = command as { branch?: readonly Command[]; then?: readonly Command[]; else?: readonly Command[]; options?: readonly { branch?: readonly Command[] }[] };
+      const inner = visit(nested.then) ?? visit(nested.else) ?? visit(nested.branch) ?? nested.options?.map((option) => visit(option.branch)).find(Boolean);
+      if (inner) return inner;
+    }
+    return undefined;
+  };
+  for (const page of event.pages ?? []) {
+    const found = visit(page.commands);
+    if (found) return found;
+  }
+  return visit((event as { commands?: readonly Command[] }).commands);
+}
+
 function eventOf(project: Project, item: ChangeItem): GameEvent | undefined {
   return item.mapId ? project.maps[item.mapId]?.events.find((event) => event.id === item.id) : undefined;
 }
@@ -127,7 +145,10 @@ export function creationCardModel(project: Project, item: ChangeItem): CreationC
       if (!event) return null;
       const mapName = project.maps[item.mapId!]?.name?.trim() || item.mapId!;
       const speech = firstSpokenLine(event);
-      return { item, title: event.name?.trim() || item.id, kindLine: `${speech ? "대사" : "이벤트"} · ${mapName} (${event.x}, ${event.y})${verb}`, stats: "", ...(speech ? { speech } : {}) };
+      const musicId = firstPlayedMusic(event);
+      const track = musicId ? findBgmTrack(musicId) : undefined;
+      return { item, title: event.name?.trim() || item.id, kindLine: `${speech ? "대사" : "이벤트"} · ${mapName} (${event.x}, ${event.y})${verb}`,
+        stats: musicId ? `♪ ${track?.title ?? musicId}` : "", ...(speech ? { speech } : {}), ...(musicId ? { musicId } : {}) };
     }
     case "music": {
       const musicId = musicResourceOf(project, item);
