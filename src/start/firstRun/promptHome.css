@@ -101,24 +101,25 @@
 .fr-link:hover { color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
 .fr-dot { color: var(--text-disabled); }
 
-/* 기본 게임 썸네일 세 장(목업 「기본 게임으로 먼저 둘러보기」). */
-.fr-builtin { width: 100%; margin-top: var(--space-6); text-align: left; }
+/* 「예제 열어 보기」 작은 행 세 개(설계 studio-runtime-split 시안). 누르면 편집기에서 연다. */
+.fr-builtin { width: 100%; max-width: 812px; margin: var(--space-6) auto 0; text-align: left; }
 .fr-builtin-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
-.fr-builtin-title { margin: 0; color: var(--text-3); font-size: var(--font-12); font-weight: var(--font-weight-regular); }
-/* 목업: 썸네일 세 장 200px, 간격 14px, 「모두 보기」 없음(세 장이 전부다). 링크는 DOM 에 남긴다. */
-.fr-builtin { max-width: 640px; margin-inline: auto; }
+.fr-builtin-title { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; color: var(--text-1); font-size: var(--font-14); font-weight: var(--font-weight-semibold); }
+.fr-builtin-tag { padding: 0 6px; border-radius: var(--radius-1); background: var(--accent-muted); color: var(--accent); font-size: var(--font-12); font-weight: var(--font-weight-medium); }
+/* 세 행이 전부다 — 「모두 보기」 링크는 DOM 에만 남긴다. */
 .fr-builtin-head > .fr-link { display: none; }
-.fr-builtin-row { display: grid; grid-template-columns: repeat(3, 200px); justify-content: center; gap: 14px; }
+.fr-builtin-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .fr-bcard {
-  display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 0; border: 0;
-  background: transparent; color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 0; border-radius: var(--radius-3);
+  background: var(--bg-surface); color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
+  transition: background var(--transition-fast);
 }
+.fr-bcard:hover { background: var(--bg-active); }
 .fr-bcard-img {
-  display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; image-rendering: pixelated;
-  margin-bottom: var(--space-1); border-radius: var(--radius-3); background: var(--bg-sunken);
-  border: var(--stroke-1) solid var(--border-subtle); transition: transform var(--transition-fast);
+  display: block; flex: none; width: 72px; height: 45px; object-fit: cover; image-rendering: pixelated;
+  border-radius: var(--radius-2); background: var(--bg-inset);
 }
-.fr-bcard:hover .fr-bcard-img { transform: translateY(-1px); border-color: var(--border-default); }
+.fr-bcard-text { display: flex; flex-direction: column; min-width: 0; }
 .fr-bcard-name { overflow: hidden; font-size: var(--font-13); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
 .fr-bcard-meta { overflow: hidden; color: var(--text-3); font-size: var(--font-12); white-space: nowrap; text-overflow: ellipsis; }
 .fr-root ~ .ln-error {
@@ -131,7 +132,7 @@
   .fr-main { padding: var(--space-6) var(--space-4); }
   .fr-title { font-size: var(--font-22); }
   .fr-sub { font-size: var(--font-14); }
-  .fr-builtin-row { grid-template-columns: 1fr; }
+  .fr-builtin-row { grid-template-columns: 1fr; gap: 8px; }
 }
 
 /* 데스크톱 창 단추(shell/window-controls.css): 단추 밑으로 들어가지 않게 양 끝을 비우고, 빈 곳은 창 끌기 영역으로 쓴다. */
