@@ -281,14 +281,6 @@
   cursor: pointer;
   transition: filter 120ms ease, background-color 120ms ease;
 }
-.cf-builtin-btn-play {
-  border: 0;
-  background: var(--cf-accent, #ff4d5e);
-  color: #ffffff;
-}
-.cf-builtin-btn-play:hover {
-  filter: brightness(1.08);
-}
 .cf-builtin-btn-open {
   border: 1px solid #3c3f52;
   background: #21232e;

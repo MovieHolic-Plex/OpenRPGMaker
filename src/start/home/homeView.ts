@@ -14,10 +14,8 @@ import { BUILTIN_GAMES, type BuiltinGame, type BuiltinGameId } from "./builtinGa
 export const HOME_TESTIDS = {
   hero: "start-hero",
   heroContinue: "start-continue",
-  heroPlay: "start-hero-play",
   games: "start-my-games",
   game: "start-world",
-  gamePlay: "start-world-play",
   gameEdit: "start-world-edit",
   newGame: "start-new-game",
   showAll: "start-show-all",
@@ -40,12 +38,12 @@ export const HOME_CONCEPTS = 8;
 /** 선반 한 줄에 놓는 카드 수(마지막 칸은 「새 게임」). 넘으면 「모두 보기」. */
 export const SHELF_GAMES = 5;
 
+// 2026-11-04 Studio/런타임 분리(B안, http://mdc-server:18301/studio-runtime-split.html): 시작 화면에는 「플레이」 입구가 없다.
+// 내 게임·기본 게임은 편집기에서 열고, 플레이는 편집기 「테스트 실행」 하나로 한다.
 export type HomeActions = {
   readonly edit: (entry: RecentProjectEntry) => void;
-  readonly play: (entry: RecentProjectEntry) => void;
   readonly newGame: () => void;
   readonly openGameFile: () => void;
-  readonly builtinPlay: (id: BuiltinGameId) => void;
   readonly builtinEdit: (id: BuiltinGameId) => void;
   readonly openSettings: () => void;
 };
@@ -114,14 +112,13 @@ export function continueHero(entry: RecentProjectEntry, title: string, meta: str
       el("h2", { text: title, attrs: { translate: "no" } }),
       el("p", { class: "hm-hero-meta", text: meta }),
       el("div", { class: "hm-acts", children: [
-        button("이어서 만들기", "hm-btn hm-btn-pri", HOME_TESTIDS.heroContinue, () => actions.edit(entry), "play"),
-        button("플레이", "hm-btn hm-btn-sec", HOME_TESTIDS.heroPlay, () => actions.play(entry)),
+        button("이어서 만들기", "hm-btn hm-btn-pri", HOME_TESTIDS.heroContinue, () => actions.edit(entry)),
       ] }),
     ] }),
   ] });
 }
 
-/** 처음 켠 상태의 배너 — 기본 게임 「폴른 스타」를 먼저 해 보게 한다. */
+/** 처음 켠 상태의 배너 — 기본 게임 「폴른 스타」를 편집기에서 열어 보게 한다. */
 export function firstRunHero(actions: HomeActions): HTMLElement {
   const game = BUILTIN_GAMES[0]!;
   const bg = el("span", { class: "hm-hero-bg", attrs: { "aria-hidden": "true" } });
@@ -129,16 +126,15 @@ export function firstRunHero(actions: HomeActions): HTMLElement {
   return el("section", { class: "hm-hero is-first", dataset: { testid: HOME_TESTIDS.hero }, attrs: { "aria-label": "처음이라면 먼저 해 보세요" }, children: [
     bg,
     el("span", { class: "hm-hero-shade", attrs: { "aria-hidden": "true" } }),
-    el("button", { class: "hm-hero-frame-hit", attrs: { type: "button", tabindex: "-1", "aria-hidden": "true" }, on: { click: () => actions.builtinPlay(game.id) }, children: [
+    el("button", { class: "hm-hero-frame-hit", attrs: { type: "button", tabindex: "-1", "aria-hidden": "true" }, on: { click: () => actions.builtinEdit(game.id) }, children: [
       el("span", { class: "hm-hero-frame", children: [el("img", { attrs: { src: game.cover, alt: "", decoding: "async", draggable: "false" } })] }),
     ] }),
     el("div", { class: "hm-hero-info", children: [
-      el("span", { class: "hm-kicker", text: "처음이라면 먼저 해 보세요" }),
+      el("span", { class: "hm-kicker", text: "예제 열어 보기" }),
       el("h2", { text: game.title, attrs: { translate: "no" } }),
-      el("p", { class: "hm-hero-meta", text: "이 앱으로 만든 게임이에요 — 열어서 어떻게 만들었는지 볼 수 있어요" }),
+      el("p", { class: "hm-hero-meta", text: "이 앱으로 만든 게임이에요 — 열어서 고쳐 보고, 「테스트 실행」으로 해 볼 수 있어요" }),
       el("div", { class: "hm-acts", children: [
-        button("플레이", "hm-btn hm-btn-pri", HOME_TESTIDS.heroPlay, () => actions.builtinPlay(game.id), "play"),
-        button("편집기에서 보기", "hm-btn hm-btn-sec", HOME_TESTIDS.heroContinue, () => actions.builtinEdit(game.id)),
+        button("편집기에서 열기", "hm-btn hm-btn-pri", HOME_TESTIDS.heroContinue, () => actions.builtinEdit(game.id)),
       ] }),
     ] }),
   ] });
@@ -163,8 +159,7 @@ function gameCard(entry: RecentProjectEntry, title: string, meta: string, index:
       ] })],
     }),
     el("div", { class: "hm-card-acts", children: [
-      button("플레이", "hm-btn hm-btn-pri hm-btn-xs", `${HOME_TESTIDS.gamePlay}-${index}`, () => actions.play(entry), "play"),
-      button("편집", "hm-btn hm-btn-sec hm-btn-xs", `${HOME_TESTIDS.gameEdit}-${index}`, () => actions.edit(entry)),
+      button("편집", "hm-btn hm-btn-pri hm-btn-xs", `${HOME_TESTIDS.gameEdit}-${index}`, () => actions.edit(entry)),
     ] }),
   ] });
 }
@@ -222,7 +217,7 @@ export function firstRunShelf(actions: HomeActions): HTMLElement {
 export function aiNotice(actions: HomeActions): HTMLElement {
   return el("div", { class: "hm-notice hm-notice-inline", dataset: { testid: HOME_TESTIDS.aiNotice }, children: [
     el("b", { children: [el("span", { class: "ln-dot is-off", attrs: { "aria-hidden": "true" } }), "AI 엔진이 아직 없어요"] }),
-    el("p", { text: "AI 없이도 플레이·편집·빈 프로젝트는 돼요. 조수가 맵을 지어 주게 하려면 이 PC 의 Claude Code · Codex · Gemini CLI 를 연결하세요." }),
+    el("p", { text: "AI 없이도 예제 열기·편집·빈 프로젝트는 돼요. 조수가 맵을 지어 주게 하려면 이 PC 의 Claude Code · Codex · Gemini CLI 를 연결하세요." }),
     button("설정 열기", "hm-btn hm-btn-sec hm-btn-sm", "start-ai-notice-settings", actions.openSettings, "gear"),
   ] });
 }
@@ -243,7 +238,7 @@ function builtinCard(game: BuiltinGame, actions: HomeActions): HTMLElement {
     thumbs.forEach((thumb, other) => thumb.classList.toggle("is-on", other === index));
   }
   return el("article", { class: "hm-bcard", dataset: { testid: `start-builtin-demo-${game.id}` }, on: { mouseleave: () => show(0) }, children: [
-    el("button", { class: "hm-bcov", attrs: { type: "button", tabindex: "-1", "aria-hidden": "true" }, on: { click: () => actions.builtinPlay(game.id) }, children: [
+    el("button", { class: "hm-bcov", attrs: { type: "button", tabindex: "-1", "aria-hidden": "true" }, on: { click: () => actions.builtinEdit(game.id) }, children: [
       cover, el("span", { class: "hm-badge is-gold", text: "공식" }),
     ] }),
     el("div", { class: "hm-bside", children: [
@@ -251,8 +246,7 @@ function builtinCard(game: BuiltinGame, actions: HomeActions): HTMLElement {
       el("p", { class: "hm-bgenre", text: game.genre }),
       el("p", { class: "hm-bdesc", text: game.description }),
       el("div", { class: "hm-acts", children: [
-        button("플레이", "hm-btn hm-btn-pri hm-btn-sm", `start-builtin-play-${game.id}`, () => actions.builtinPlay(game.id), "play"),
-        button("편집기에서 보기", "hm-btn hm-btn-ghost hm-btn-sm", `start-builtin-edit-${game.id}`, () => actions.builtinEdit(game.id)),
+        button("편집기에서 열기", "hm-btn hm-btn-pri hm-btn-sm", `start-builtin-edit-${game.id}`, () => actions.builtinEdit(game.id)),
       ] }),
       el("div", { class: "hm-thumbs", attrs: { "aria-hidden": "true" }, children: thumbs }),
     ] }),
@@ -261,7 +255,7 @@ function builtinCard(game: BuiltinGame, actions: HomeActions): HTMLElement {
 
 export function builtinShelf(actions: HomeActions): HTMLElement {
   return el("section", { class: "hm-shelf-sec", dataset: { testid: HOME_TESTIDS.builtin }, attrs: { "aria-labelledby": "hm-builtin-h" }, children: [
-    shelfHead("기본 게임", "설치되어 있어 AI 없이 바로 플레이할 수 있어요", [], "hm-builtin-h"),
+    shelfHead("예제", "열어서 고쳐 보며 배우기 — 해 보려면 편집기 「테스트 실행」", [], "hm-builtin-h"),
     el("div", { class: "hm-shelf hm-builtins", children: BUILTIN_GAMES.map((game) => builtinCard(game, actions)) }),
   ] });
 }
@@ -326,23 +320,22 @@ export function conceptShelf(options: {
   ] });
 }
 
-/** 홈의 「기본 게임」 — 그림 · 제목 · 플레이만. 장면 넘겨 보기와 소개 글은 「기본 게임」 칸에 있다. */
+/** 홈의 「예제」 — 그림 · 제목 · 열기만. 장면 넘겨 보기와 소개 글은 「예제」 칸에 있다. */
 export function builtinHomeShelf(actions: HomeActions, onMore: () => void): HTMLElement {
   return el("section", { class: "hm-shelf-sec", dataset: { testid: HOME_TESTIDS.builtinHome }, attrs: { "aria-labelledby": "hm-builtin-home-h" }, children: [
-    shelfHead("기본 게임", "AI 없이 바로 플레이", [
+    shelfHead("예제", "열어서 고쳐 보며 배우기", [
       el("button", { class: "hm-more", attrs: { type: "button" }, dataset: { testid: HOME_TESTIDS.builtinMore }, text: "자세히 ›", on: { click: onMore } }),
     ], "hm-builtin-home-h"),
     el("div", { class: "hm-shelf hm-builtin-row", children: BUILTIN_GAMES.map((game) => el("article", { class: "hm-card hm-bmini", dataset: { testid: `start-home-builtin-${game.id}` }, children: [
       el("button", {
-        class: "hm-card-hit", attrs: { type: "button", "aria-label": game.title }, on: { click: () => actions.builtinPlay(game.id) },
+        class: "hm-card-hit", attrs: { type: "button", "aria-label": game.title }, on: { click: () => actions.builtinEdit(game.id) },
         children: [
           el("span", { class: "hm-cov", children: [el("img", { attrs: { src: game.cover, alt: "", decoding: "async", draggable: "false" } }), el("span", { class: "hm-badge is-gold", text: "공식" })] }),
           el("span", { class: "hm-cap", children: [el("span", { class: "hm-nm", text: game.title, attrs: { translate: "no" } }), el("span", { class: "hm-mt", text: game.genre })] }),
         ],
       }),
       el("div", { class: "hm-card-acts", children: [
-        button("플레이", "hm-btn hm-btn-pri hm-btn-xs", `start-home-builtin-play-${game.id}`, () => actions.builtinPlay(game.id), "play"),
-        button("편집", "hm-btn hm-btn-sec hm-btn-xs", `start-home-builtin-edit-${game.id}`, () => actions.builtinEdit(game.id)),
+        button("편집기에서 열기", "hm-btn hm-btn-pri hm-btn-xs", `start-home-builtin-edit-${game.id}`, () => actions.builtinEdit(game.id)),
       ] }),
     ] })) }),
   ] });
