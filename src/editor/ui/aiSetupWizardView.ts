@@ -1,5 +1,5 @@
 import { el } from "@/util/dom";
-import type { WizardAction, WizardScreen } from "@/ai/setupWizardModel";
+import type { WizardAction, WizardDetails, WizardScreen, WizardService } from "@/ai/setupWizardModel";
 
 export const AI_SETUP_WIZARD_TESTIDS = {
   host: "ai-setup-wizard",
@@ -15,6 +15,7 @@ export const AI_SETUP_WIZARD_TESTIDS = {
   notice: "ai-setup-wizard-notice",
   busy: "ai-setup-wizard-busy",
   manual: "ai-setup-wizard-manual",
+  alert: "ai-setup-wizard-alert",
 } as const;
 
 export interface WizardViewState {
@@ -29,17 +30,34 @@ export interface WizardViewHandlers {
   readonly onAction: (action: WizardAction, keyText?: string) => void;
 }
 
+const SERVICE_MARK: Readonly<Record<WizardService, string>> = { chatgpt: "G", claude: "C", google: "G", deepseek: "D" };
+
 function actionButton(action: WizardAction, kind: "primary" | "choice" | "link", testid: string, onClick: () => void, disabled: boolean): HTMLButtonElement {
   const button = el("button", {
-    class: `app-modal-wizard-button app-modal-wizard-${kind}${action.outline ? " app-modal-wizard-outline" : ""}`,
+    class: `app-modal-wizard-button app-modal-wizard-${kind}`,
     attrs: { type: "button" },
     dataset: { testid, action: action.id, ...(action.arg ? { arg: action.arg } : {}) },
   });
-  button.append(el("span", { class: "app-modal-wizard-button-label", text: action.label }));
-  if (action.hint) button.append(el("span", { class: "app-modal-wizard-button-hint", text: action.hint }));
+  if (kind === "choice" && action.arg && action.arg in SERVICE_MARK) {
+    button.append(el("span", { class: "app-modal-wizard-mark is-small", dataset: { service: action.arg }, text: SERVICE_MARK[action.arg as WizardService], attrs: { "aria-hidden": "true" } }));
+  }
+  const text = el("span", { class: "app-modal-wizard-button-text" });
+  text.append(el("span", { class: "app-modal-wizard-button-label", text: action.label }));
+  if (action.hint) text.append(el("span", { class: "app-modal-wizard-button-hint", text: action.hint }));
+  button.append(text);
   button.disabled = disabled;
   button.addEventListener("click", onClick);
   return button;
+}
+
+function commandBox(command: { readonly command: string }, copied: boolean, onCopy: (() => void) | undefined): HTMLElement {
+  const children: Node[] = [el("code", { class: "app-modal-wizard-command-text", text: command.command })];
+  if (onCopy) {
+    const copyButton = el("button", { class: "app-modal-wizard-copy", text: copied ? "✓ 복사됨" : "복사", attrs: { type: "button" }, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.copy } });
+    copyButton.addEventListener("click", onCopy);
+    children.push(copyButton);
+  }
+  return el("div", { class: "app-modal-wizard-command", dataset: { testid: AI_SETUP_WIZARD_TESTIDS.command }, children });
 }
 
 export function renderAiSetupWizard(state: WizardViewState, handlers: WizardViewHandlers): HTMLElement {
@@ -54,56 +72,49 @@ export function renderAiSetupWizard(state: WizardViewState, handlers: WizardView
     : undefined;
 
   const fire = (action: WizardAction) => () => {
-    if (busy) return;
+    if (busy && action.id !== "later" && action.id !== "back") return;
     handlers.onAction(action, keyInput?.value.trim() || undefined);
     if (keyInput && action.id === "paste-key") keyInput.value = "";
   };
+  const copy = (command: string) => () => handlers.onAction({ id: "copy-command", label: "복사", arg: command });
 
-  const children: (Node | string)[] = [
+  const children: Node[] = [];
+  if (screen.service) {
+    children.push(el("span", { class: "app-modal-wizard-mark", dataset: { service: screen.service }, text: SERVICE_MARK[screen.service], attrs: { "aria-hidden": "true" } }));
+  }
+  children.push(
     el("h2", { class: "app-modal-wizard-title", text: screen.title, attrs: { id: "ai-setup-wizard-title" }, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.title } }),
     el("p", { class: "app-modal-wizard-body", text: screen.body, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.body } }),
-  ];
+  );
 
   if (screen.id === "finding") children.push(el("div", { class: "app-modal-wizard-spinner", attrs: { role: "progressbar", "aria-label": "찾는 중" } }));
 
-  const afterPrimary: Node[] = [];
-  if (screen.command) {
-    const command = screen.command;
-    const copyButton = el("button", { class: "app-modal-wizard-button app-modal-wizard-choice", text: state.copied ? "✓ 복사됨" : "복사하기", attrs: { type: "button" }, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.copy } });
-    copyButton.addEventListener("click", () => handlers.onAction({ id: "copy-command", label: "복사하기", arg: command.command }));
-    const box = el("div", {
-      class: "app-modal-wizard-command",
-      dataset: { testid: AI_SETUP_WIZARD_TESTIDS.command },
-      children: [
-        el("p", { class: "app-modal-wizard-command-where", text: `열리는 곳: ${command.opens}` }),
-        el("code", { class: "app-modal-wizard-command-text", text: command.command }),
-        copyButton,
-      ],
-    });
-    if (screen.commandFold) {
-      afterPrimary.push(el("details", {
-        class: "app-modal-wizard-advanced app-modal-wizard-manual",
-        attrs: screen.commandFold.open ? { open: "" } : {},
-        dataset: { testid: AI_SETUP_WIZARD_TESTIDS.manual },
-        children: [el("summary", { text: "자동 설치가 안 되면 직접 설치하기" }), box],
-      }));
-    } else children.push(box);
+  if (screen.alert) {
+    children.push(el("p", { class: "app-modal-wizard-alert", text: screen.alert, attrs: { role: "alert" }, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.alert } }));
   }
 
+  if (screen.command) children.push(commandBox(screen.command, Boolean(state.copied), screen.primary?.id === "copy-command" ? undefined : copy(screen.command.command)));
   if (keyInput) children.push(keyInput);
 
   if (screen.choices.length) {
     children.push(el("div", {
       class: "app-modal-wizard-choices",
-      attrs: { role: "group", "aria-label": "서비스 고르기" },
+      attrs: { role: "group", "aria-label": "AI 고르기" },
       children: screen.choices.map((choice) => actionButton(choice, "choice", AI_SETUP_WIZARD_TESTIDS.choice, fire(choice), busy)),
     }));
   }
 
-  if (screen.primary) children.push(actionButton(screen.primary, "primary", AI_SETUP_WIZARD_TESTIDS.primary, fire(screen.primary), busy));
+  if (busy) {
+    children.push(el("div", {
+      class: "app-modal-wizard-waiting",
+      attrs: { role: "status" },
+      dataset: { testid: AI_SETUP_WIZARD_TESTIDS.busy },
+      children: [el("span", { class: "app-modal-wizard-spinner is-inline", attrs: { "aria-hidden": "true" } }), el("span", { text: state.busy ?? "" })],
+    }));
+  } else if (screen.primary) {
+    children.push(actionButton(screen.primary, "primary", AI_SETUP_WIZARD_TESTIDS.primary, fire(screen.primary), false));
+  }
 
-  children.push(...afterPrimary);
-  if (state.busy) children.push(el("p", { class: "app-modal-wizard-busy", text: state.busy, attrs: { role: "status" }, dataset: { testid: AI_SETUP_WIZARD_TESTIDS.busy } }));
   if (state.notice) {
     children.push(el("p", {
       class: "app-modal-wizard-notice",
@@ -113,28 +124,38 @@ export function renderAiSetupWizard(state: WizardViewState, handlers: WizardView
     }));
   }
 
-  if (screen.secondary.length) {
+  const secondary = busy ? screen.secondary.filter((action) => action.id === "later" || action.id === "back") : screen.secondary;
+  if (secondary.length) {
     children.push(el("div", {
       class: "app-modal-wizard-secondary",
-      children: screen.secondary.map((action) => actionButton(action, "link", AI_SETUP_WIZARD_TESTIDS.secondary, fire(action), false)),
+      children: secondary.map((action) => actionButton(busy && action.id === "later" ? { ...action, label: "취소" } : action, "link", AI_SETUP_WIZARD_TESTIDS.secondary, fire(action), false)),
     }));
   }
 
-  if (screen.advanced.length) {
-    children.push(el("details", {
-      class: "app-modal-wizard-advanced",
-      dataset: { testid: AI_SETUP_WIZARD_TESTIDS.advanced },
-      children: [
-        el("summary", { text: "고급" }),
-        el("div", { class: "app-modal-wizard-advanced-body", children: screen.advanced.map((action) => actionButton(action, "link", AI_SETUP_WIZARD_TESTIDS.secondary, fire(action), false)) }),
-      ],
-    }));
-  }
+  if (screen.details && !busy) children.push(detailsFold(screen.details, state, fire, screen.primary?.id === "copy-command" ? undefined : copy));
 
   return el("section", {
     class: "app-modal-wizard",
     attrs: { "aria-labelledby": "ai-setup-wizard-title", "aria-busy": String(busy) },
     dataset: { testid: AI_SETUP_WIZARD_TESTIDS.host, screen: screen.id },
     children,
+  });
+}
+
+function detailsFold(details: WizardDetails, state: WizardViewState, fire: (action: WizardAction) => () => void, copy: ((command: string) => () => void) | undefined): HTMLElement {
+  const body: Node[] = [];
+  if (details.rows.length) {
+    body.push(el("dl", {
+      class: "app-modal-wizard-facts",
+      children: details.rows.flatMap((row) => [el("dt", { text: row.label }), el("dd", { text: row.value })]),
+    }));
+  }
+  if (details.command) body.push(commandBox(details.command, Boolean(state.copied), copy?.(details.command.command)));
+  for (const action of details.actions) body.push(actionButton(action, "link", AI_SETUP_WIZARD_TESTIDS.secondary, fire(action), false));
+  return el("details", {
+    class: `app-modal-wizard-advanced${details.command ? " app-modal-wizard-manual" : ""}`,
+    attrs: details.open ? { open: "" } : {},
+    dataset: { testid: details.command ? AI_SETUP_WIZARD_TESTIDS.manual : AI_SETUP_WIZARD_TESTIDS.advanced },
+    children: [el("summary", { text: details.summary }), el("div", { class: "app-modal-wizard-advanced-body", children: body })],
   });
 }
