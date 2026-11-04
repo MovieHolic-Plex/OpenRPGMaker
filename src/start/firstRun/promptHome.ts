@@ -7,6 +7,7 @@ import { el } from "@/util/dom";
 import { getLocale, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { startIcon } from "../icons";
 import { FIRST_RUN_TEXT_LIMIT } from "./firstRunBrief";
+import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
 
 export const PROMPT_HOME_TESTIDS = {
   root: "first-run-home",
@@ -15,6 +16,7 @@ export const PROMPT_HOME_TESTIDS = {
   chip: "first-run-chip",
   locale: "first-run-locale",
   builtin: "first-run-builtin",
+  builtinCard: "first-run-builtin-card",
   openFolder: "first-run-open-folder",
   blank: "first-run-blank",
 } as const;
@@ -30,6 +32,8 @@ export type PromptHomeActions = {
   readonly submit: (text: string) => Promise<void>;
   readonly openLocale: () => void;
   readonly builtin: () => void;
+  /** 기본 게임 카드 — 그 게임을 바로 플레이한다. */
+  readonly builtinPlay: (id: BuiltinGameId) => void;
   readonly openFolder: () => void;
   readonly blank: () => void;
 };
@@ -109,8 +113,24 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 맵·인물·이야기를 지금 바로 만들어요." }),
       el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [submit] })] }),
       el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: chips }),
+      // 목업: 「기본 게임으로 먼저 둘러보기」 썸네일 세 장(장르·분량 한 줄). 누르면 그 게임을 바로 플레이한다.
+      el("section", { class: "fr-builtin", attrs: { "aria-labelledby": "fr-builtin-h" }, children: [
+        el("div", { class: "fr-builtin-head", children: [
+          el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, text: "기본 게임으로 먼저 둘러보기" }),
+          link("모두 보기", PROMPT_HOME_TESTIDS.builtin, actions.builtin),
+        ] }),
+        el("div", { class: "fr-builtin-row", children: BUILTIN_GAMES.map((game) => el("button", {
+          class: "fr-bcard", attrs: { type: "button", "aria-label": game.title },
+          dataset: { testid: `${PROMPT_HOME_TESTIDS.builtinCard}-${game.id}` },
+          on: { click: () => { if (!busy) actions.builtinPlay(game.id); } },
+          children: [
+            el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
+            el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim(), attrs: { translate: "no" } }),
+            el("span", { class: "fr-bcard-meta", text: game.genre }),
+          ],
+        })) }),
+      ] }),
       el("nav", { class: "fr-links", children: [
-        link("먼저 기본 게임 해 보기", PROMPT_HOME_TESTIDS.builtin, actions.builtin), dot(),
         link("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), dot(),
         link("빈 프로젝트", PROMPT_HOME_TESTIDS.blank, actions.blank),
       ] }),

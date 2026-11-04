@@ -184,8 +184,8 @@ test.describe("줌만 바꿀 때 look-at 보존", () => {
 
   test("기록을 펼치면 가시 사각형이 캔버스 전체와 같지 않다", async ({ page }) => {
     await bootEditor(page);
-    const restore = page.getByTestId("ai-collapsed-restore");
-    if (await restore.isVisible().catch(() => false)) await restore.click();
+    // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+    if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
     await expect(page.getByTestId("ai-command-bar")).toBeVisible();
 
     await page.evaluate(() => {

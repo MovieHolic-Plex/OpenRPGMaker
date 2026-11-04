@@ -138,13 +138,12 @@ test.describe("AI 감독 console contract", () => {
       // 접기 버튼은 화면에 없다(숨은 훅 컨테이너로 옮겼다). 검사 대상은 버튼의 가시성이 아니라
       // **접기 상태 기계**이므로 DOM 으로 직접 눌러 같은 경로를 태운다.
       await page.getByTestId("ai-collapse").evaluate((n) => (n as HTMLButtonElement).click());
-      const restore = page.getByTestId("ai-collapsed-restore");
+      // 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추다(2026-11 목업).
+      await expect(page.getByTestId("ai-collapsed-restore")).toBeHidden();
+      const restore = page.getByTestId("topbar-assistant");
       await expect(restore).toBeVisible();
-      await expect(restore).toHaveAttribute("aria-label", "조수");
+      await expect(restore).toContainText("조수");
       await expect(restore).not.toContainText("🤖");
-      const restoreBox = await restore.boundingBox();
-      expect(restoreBox?.width ?? 0).toBeGreaterThanOrEqual(48);
-      expect(restoreBox?.height ?? 0).toBeGreaterThanOrEqual(48);
       await shot(page, `restore-${viewport.name}`);
     });
   }

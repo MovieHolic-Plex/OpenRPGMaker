@@ -419,6 +419,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       submit: submitFirstRun,
       openLocale: () => openSettings("general"),
       builtin: () => go("builtin"),
+      builtinPlay: (id) => actions.builtinPlay(id),
       openFolder,
       blank: createBlank,
     });

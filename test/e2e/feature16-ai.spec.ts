@@ -3,8 +3,8 @@ import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 const output = 'verify-shots/feature16-ai';
 async function openTool(page: Page, tool: 'library' | 'dialogue' | 'inspector') {
-  const restore = page.getByTestId('ai-collapsed-restore');
-  if (await restore.isVisible()) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
   await page.getByTestId('ai-command-menu-toggle').click();
   await page.getByTestId(`feature16-open-${tool}-composer`).click();
   await expect(page.getByTestId(`feature16-${tool}`)).toBeVisible();

@@ -71,7 +71,7 @@ export async function bootEditor(page: Page): Promise<void> {
   // Hidden mounted alternatives must not mask the visible boot surface.
   const ready = guest
     .or(page.getByTestId("ai-input"))
-    .or(page.getByTestId("ai-collapsed-restore"))
+    .or(page.getByTestId("topbar-assistant"))
     .filter({ visible: true })
     .first()
     .waitFor({ state: "visible", timeout: 90_000 });
@@ -83,8 +83,8 @@ export async function bootEditor(page: Page): Promise<void> {
   if (await guest.isVisible()) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible()) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
   await expect(page.getByTestId("ai-input")).toBeVisible();
   await expect(page.getByTestId("ai-open-conversations")).toBeVisible();
   const remote = await page.evaluate(async () => {

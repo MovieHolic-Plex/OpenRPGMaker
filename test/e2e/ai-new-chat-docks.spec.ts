@@ -36,8 +36,8 @@ async function bootWithSeededConversation(page: Page): Promise<void> {
   await page.goto("/?freshProject=1");
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
 }
 
 test("「새 대화」 컨트롤이 보이고, 누르면 대화가 비워진다", async ({ page }) => {

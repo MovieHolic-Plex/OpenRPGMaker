@@ -234,7 +234,7 @@ test("real panel rejects early completion, verifies applied dimensions and keeps
     await page.getByTestId("oprn-tool-undo").click();
     await expect(page.getByTestId("ai-sticky-item").first()).not.toHaveAttribute("data-status", "verified");
     artifacts.invalidated = await capture(page, "sticky-invalidated");
-    await page.getByTestId("ai-collapsed-restore").click();
+    await page.getByTestId("topbar-assistant").click();
     await page.getByTestId("ai-new-chat").click();
     await expect(note).toHaveCount(0);
     artifacts.newChat = { noteCount: await note.count() };

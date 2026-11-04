@@ -185,8 +185,8 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
 
     // 접혀 부팅했으면 복귀 알약으로 펼친다. (구 유리 카드의 본문 접힘 `is-glass-folded` 은
     // 도크 축과 함께 2026-08-31 에 삭제됐다 — 접힘 축은 `is-collapsed` 하나다.)
-    const restore = page.getByTestId("ai-collapsed-restore");
-    if (await restore.isVisible().catch(() => false)) await restore.click();
+    // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+    if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
     await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
 
     // 펼친 뒤 복원된 대화는 추가 조작 없이 보여야 한다 — 이전엔 패널이 유휴 상태로
@@ -265,8 +265,8 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     // 그래서 카드도 "숨김" 이 된다(첫 테스트와 같은 조건을 만든다).
     expect((await seedConversationRecord(page, CONVERSATION_KEY)).length).toBeGreaterThan(0);
     await bootEditor(page);
-    const restore = page.getByTestId("ai-collapsed-restore");
-    if (await restore.isVisible().catch(() => false)) await restore.click();
+    // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+    if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
     await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
 
     const mount = await mountNonMapChangeCard(page);
@@ -314,8 +314,8 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     await bootEditor(page);
     expect((await seedConversationRecord(page, CONVERSATION_KEY)).length).toBeGreaterThan(0);
     await bootEditor(page);
-    const restore = page.getByTestId("ai-collapsed-restore");
-    if (await restore.isVisible().catch(() => false)) await restore.click();
+    // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+    if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
     await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
 
     const mount = await mountLargeChangeCard(page);

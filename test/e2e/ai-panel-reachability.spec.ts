@@ -160,8 +160,8 @@ async function boot(page: Page, width: number, height: number): Promise<void> {
   await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 90_000 });
   const welcome = page.getByTestId("standard-welcome-start");
   if (await welcome.isVisible({ timeout: 4_000 }).catch(() => false)) await welcome.click();
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible({ timeout: 2_000 }).catch(() => false)) await restore.click();
+  // 접힌 조수는 띠를 남기지 않는다 — 상단바 「조수」 단추로 연다(2026-11).
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
   await page.getByTestId("ai-input").waitFor({ state: "visible", timeout: 20_000 });
   await page.waitForFunction(() =>
     document.querySelectorAll("[data-testid^='ai-command-row']").length > 0, undefined, { timeout: 20_000 });
