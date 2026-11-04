@@ -217,7 +217,7 @@
   cursor: pointer;
   display: inline-flex;
   font: 400 12px/1 var(--font-ui);
-  height: 32px;
+  height: 28px;
   margin: 0 4px;
   padding: 0 6px;
   white-space: nowrap;
@@ -256,7 +256,7 @@
   display: inline-flex;
   font: 500 13px/1 var(--font-ui);
   gap: 6px;
-  height: 32px;
+  height: 28px;
   padding: 0 12px 0 10px;
   white-space: nowrap;
 }

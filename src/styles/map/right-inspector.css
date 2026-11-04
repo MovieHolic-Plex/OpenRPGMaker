@@ -3,7 +3,7 @@
    조수를 펼치면(.is-assistant-open) 숨고 조수 도크가 그 자리를 쓴다. 1200px 보다 좁으면 캔버스 폭을 위해 숨는다. */
 .right-inspector {
   flex: 0 0 300px; width: 300px; min-width: 0; min-height: 0; box-sizing: border-box; overflow-y: auto;
-  padding: 16px; border-left: 1px solid var(--border-subtle); background: var(--bg-raised);
+  padding: 16px; border-left: 1px solid var(--border-subtle); background: var(--bg-base);
   color: var(--text-1); font: 400 13px/1.45 var(--font-ui);
 }
 .editor-layout.is-assistant-open > .right-inspector { display: none; }
