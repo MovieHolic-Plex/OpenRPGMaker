@@ -25,6 +25,8 @@ export type AiBootIntentTarget = {
  */
 export type AiBootIntentRunOptions = {
   readonly team?: boolean;
+  /** 첫 화면 참고 그림(축소한 data URL). 첫 조수 턴의 사용자 메시지에 그림으로 실린다. */
+  readonly images?: readonly string[];
 };
 
 /**
@@ -46,6 +48,11 @@ let pendingIntent: string | null = null;
 let pendingDisplay: string | null = null;
 let pendingAutoSend = false;
 let pendingTeam = false;
+/**
+ * 첫 화면 참고 그림. 핸드오프 문장과 따로 든다 — 확정 기획 경로는 같은 부팅에서 문장을 두 번 싣는다
+ * (입력창 미리 담기 → 저장 뒤 자동 전송, projectInterviewStartup.ts). 그림은 실제로 보낼 때(send) 비운다.
+ */
+let pendingImages: readonly string[] = [];
 let target: AiBootIntentTarget | null = null;
 let welcomeIntentAppliedThisBoot = false;
 let suppressCoachForMount = false;
@@ -64,6 +71,14 @@ export function setPendingAiBootIntent(text: string, options?: { readonly autoSe
   pendingAutoSend = options?.autoSend === true;
   pendingTeam = options?.team === true;
   suppressCoachForMount = true;
+}
+
+export function setPendingAiBootReferenceImages(images: readonly string[]): void {
+  pendingImages = images.slice();
+}
+
+export function peekPendingAiBootReferenceImages(): readonly string[] {
+  return pendingImages;
 }
 
 export function setPendingWelcomePipeline(pipeline: PendingWelcomePipeline): void {
@@ -104,6 +119,7 @@ export function peekPendingAiBootAutoSend(): boolean {
 }
 
 export function clearPendingAiBootIntent(): void {
+  pendingImages = [];
   pendingIntent = null;
   pendingDisplay = null;
   pendingAutoSend = false;
@@ -145,10 +161,11 @@ export function shouldSuppressCoachMarksForWelcomeIntent(): boolean {
 function applyIntentToTarget(text: string, t: AiBootIntentTarget, autoSend: boolean, displayText: string | null = null, team = false): boolean {
   try {
     t.open();
-    // 보이는 문장·팀 옵션이 있을 때만 인자를 더 싣는다 — 없으면 예전 호출 모양 그대로다.
-    if (team) {
-      const options: AiBootIntentRunOptions = { team: true };
-      if (autoSend && t.send) void t.send(text, displayText ?? undefined, options);
+    // 보이는 문장·팀 옵션·그림이 있을 때만 인자를 더 싣는다 — 없으면 예전 호출 모양 그대로다.
+    const images = pendingImages;
+    if (team || images.length) {
+      const options: AiBootIntentRunOptions = { ...(team ? { team: true } : {}), ...(images.length ? { images } : {}) };
+      if (autoSend && t.send) { pendingImages = []; void t.send(text, displayText ?? undefined, options); }
       else t.prefill(text, displayText ?? undefined, options);
     } else if (autoSend && t.send) {
       void (displayText ? t.send(text, displayText) : t.send(text));

@@ -36,6 +36,7 @@ import { tilesetQuestionFromEvent } from "./aiTilesetChangeCard";
 import { storeCardFromEvent } from "./aiStoreCard";
 import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
+import { USER_IMAGES_DROPPED_STATUS } from "@/ai/piAgent/userImages";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentStats, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
   createTeamBoardState,
@@ -231,6 +232,8 @@ export interface PiRunOptions {
   readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
   /** 조수 v2(src/ai/v2, 기본 꺼짐) — 계획 턴·조화 검수 없이 v2 실행기로 보낸다. 판단·짓기·비평·고치기는 워커의 v2 루프가 한다. */
   readonly assistantVersion?: "v2";
+  /** 사용자가 붙인 참고 그림(data URL). 계획·실행 요청의 첫 사용자 차례에 그림으로 실린다(워커가 엔진별로 판정). */
+  readonly userImages?: readonly string[];
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -573,10 +576,15 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   });
   /** 성공한 도구 이름(쓰기 도구만 골라 끊긴 실행의 보고에 쓴다, G43). */
   const succeededTools: string[] = [];
+  let userImagesDroppedShown = false;
   const showConstructionEvent = (event: PiAgentEvent): void => {
     surface.onEvent?.(event);
     let nested = event;
     while (nested.type === "agent_event") nested = nested.event;
+    if (nested.type === "execution_status" && nested.name === USER_IMAGES_DROPPED_STATUS && !userImagesDroppedShown) {
+      userImagesDroppedShown = true;
+      surface.appendBubble("system", nested.summary);
+    }
     if (nested.type === "tool_end" && nested.ok) {
       succeededTools.push(nested.name);
       const result = nested.result as { data?: unknown } | undefined;
@@ -683,6 +691,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const line = formatLocalCliCost({ ...(billing ? { billing } : {}), ...(costUsd !== undefined ? { costUsd } : {}), usage: { input: tokens, output: 0, cacheRead: 0, cacheWrite: 0 } });
     if (line) surface.appendProcess?.(`이번 차례 · ${line}`);
   };
+  const userImagesPart = options.userImages?.length ? { userImages: options.userImages } : {};
   const modelTask = composePiTask(command.goalMode && !isGoalCampaignTask(command.task) ? goalCampaignTask(command.task) : command.task, options.intentNote);
   let executionTask = modelTask;
   try {
@@ -698,7 +707,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, { signal: surface.signal, onEvent: raw => {
+      }), ...userImagesPart, ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") {
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
@@ -736,7 +745,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
         ...(options.polish ? { polish: options.polish } : {}),
-      }), ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+      }), ...userImagesPart, ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).

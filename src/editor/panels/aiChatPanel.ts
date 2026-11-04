@@ -2103,12 +2103,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 쓴 그대로 보낸다 — 고친 문장 뒤에 숨은 지시를 몰래 붙이지 않는다.
    */
   // `team`: 프리셋 첫 생성 핸드오프 — 이 한 턴만 팀으로 돈다(사용자 팀 설정은 그대로다).
-  let composerHandoff: { readonly display: string; readonly full: string; readonly team?: boolean } | null = null;
+  let composerHandoff: { readonly display: string; readonly full: string; readonly team?: boolean; readonly images?: readonly string[] } | null = null;
   /** 입력창을 되살릴 때 — 보낼 지시문이 보이는 문장과 다르면 핸드오프도 함께 되살린다. */
-  const restoreComposer = (display: string, full?: string, team?: boolean): void => {
+  const restoreComposer = (display: string, full?: string, team?: boolean, images?: readonly string[]): void => {
     input.value = display;
-    composerHandoff = team
-      ? { display, full: full ?? display, team: true }
+    const withImages = images?.length ? { images } : {};
+    composerHandoff = team || images?.length
+      ? { display, full: full ?? display, ...(team ? { team: true } : {}), ...withImages }
       : full && full !== display ? { display, full } : null;
     syncInputHeight();
     refreshSendEnabled();
@@ -2144,7 +2145,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
      *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
     readonly timing?: TurnTimingRecorder;
     /** 다듬기 실행(확인표의 「다듬기」 단추) — 계획 턴 없이 1배 확인·독립 비평→고치기를 길게 돈다. */
-    readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions }): Promise<void> => {
+    readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
+    /** 첫 화면 참고 그림 — 이 턴의 첫 사용자 차례에 그림으로 실린다. */
+    readonly images?: readonly string[] }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2233,6 +2236,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         },
       }, {
         ...piRunOptionsFor(plan, opts),
+        ...(opts?.images?.length ? { userImages: opts.images } : {}),
         ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
         // 다듬기: 바퀴마다 모델 차례가 10~20번 든다 — 차례·시간 상한을 다듬기 한도에 맞춘다.
         ...(opts?.polish ? { polish: opts.polish, timeoutMs: opts.polish.budgetMs + 10 * 60_000, maxTurns: Math.max(plan?.maxTurns ?? 0, 40 + 20 * opts.polish.maxRounds) } : {}),
@@ -2372,6 +2376,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly selection: PanelMapContext["selection"];
     /** 대기열에서 잡는 맵 키("*" = 프로젝트 전체) — 이 실행의 확인 카드가 어느 요청을 붙잡는지(aiDecisionPrompt). */
     readonly runKey?: string;
+    readonly images?: readonly string[];
   }
   /** 앞 턴도 표에 올린다 — 같은 맵의 다음 요청이 그 뒤에 줄 선다. 돌려준 함수로 자리를 푼다. */
   const claimForegroundMapRun = (mapKey: string, label: string, exclusive: boolean): (() => void) => {
@@ -2401,6 +2406,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
       if (classified.widenLine) card.say("assistant", classified.widenLine);
     }
+    if (run.images?.length) options = { ...options, userImages: run.images };
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
@@ -2552,7 +2558,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncInputHeight();
       refreshSendEnabled();
       const selection = mapContext().selection;
-      enqueueMapRun({ text: runText, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null }, mapKey, exclusive);
+      enqueueMapRun({ text: runText, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null, ...(handoff?.images?.length ? { images: handoff.images } : {}) }, mapKey, exclusive);
       return;
     }
     const releaseMapRun = claimForegroundMapRun(mapKey, shown, exclusive);
@@ -2572,7 +2578,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
       // 명시 `team …`·`/team …`·`/pi …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다.
       if (explicit) {
-        await runPiTurn(explicit, shown, null, { slotClaimed: true, ...(handoff ? { sentText: text } : {}) });
+        await runPiTurn(explicit, shown, null, { slotClaimed: true, ...(handoff ? { sentText: text } : {}), ...(handoff?.images?.length ? { images: handoff.images } : {}) });
         return;
       }
       // 선택 영역도 Pi 턴으로 간다 — 영역은 resolveTurnScope 가 턴 범위로 붙인다. 예전의 별도 영역 파이프라인
@@ -2618,7 +2624,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const line = appendBubble("assistant", classified.widenLine);
         if (workCard?.root.isConnected) workCard.root.before(line);
       }
-      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
+      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(handoff?.images?.length ? { images: handoff.images } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
     } finally {
@@ -4335,8 +4341,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // AI 연결 전에 담아 둔 첫 화면 프롬프트 — 입력창에는 사용자 쪽 요약만, 보낼 때 전체 지시문이 간다.
       input.value = displayText ?? text;
       // 팀 옵션은 보이는 문장이 곧 보낼 문장일 때도 따라가야 한다 — 그래서 핸드오프를 그 경우에도 만든다.
-      composerHandoff = runOptions?.team
-        ? { display: displayText ?? text, full: text, team: true }
+      composerHandoff = runOptions?.team || runOptions?.images?.length
+        ? { display: displayText ?? text, full: text, ...(runOptions.team ? { team: true } : {}), ...(runOptions.images?.length ? { images: runOptions.images } : {}) }
         : displayText && displayText !== text ? { display: displayText, full: text } : null;
       syncInputHeight();
       refreshComposerPlaceholder();
@@ -4352,7 +4358,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const current = (): boolean => !disposed && projectScope === JSON.stringify(store.getProjectIdentity());
       const shown = displayText?.trim() || text;
       const preserve = (): void => {
-        if (current() && (!input.value.trim() || input.value.trim() === shown)) restoreComposer(shown, text, runOptions?.team);
+        if (current() && (!input.value.trim() || input.value.trim() === shown)) restoreComposer(shown, text, runOptions?.team, runOptions?.images);
       };
       // Project creation emits before IndexedDB conversation adoption finishes. Its reset
       // must complete before the preset enters the composer or starts a turn.
@@ -4392,7 +4398,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
       try {
         if (!current()) return;
-        await runPiTurn(command, shown, plan, { slotClaimed: true, questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}) });
+        await runPiTurn(command, shown, plan, { slotClaimed: true, questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}), ...(runOptions?.images?.length ? { images: runOptions.images } : {}) });
       } catch (error) {
         preserve();
         if (current()) appendBubble("system", `첫 요청을 실행하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);

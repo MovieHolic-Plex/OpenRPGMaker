@@ -162,6 +162,14 @@ export function teamTimeoutLeftMs(totalMs: number, startedAt: number, now: numbe
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
+  // 첫 화면 참고 그림은 팀에서 처음 도는 실행(핵심 플레이 제작 또는 팀장) 하나의 첫 차례에만 싣는다 — 팀원마다 같은 그림을 다시 보내지 않는다.
+  let firstRunImages = request.userImages;
+  request = { ...request, userImages: undefined };
+  const takeUserImages = (): Pick<PiAgentRequest, "userImages"> => {
+    const images = firstRunImages;
+    firstRunImages = undefined;
+    return images?.length ? { userImages: images } : {};
+  };
   const base = request.project;
   let working: Project = cloneProjectSharingSharedDictionaries(base);
   const started = Date.now();
@@ -988,7 +996,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       mailbox.register(agentId, member.label, null);
       emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '핵심 플레이 제작' });
       try {
-        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, ...takeUserImages(), mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
           initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 16 : 32),
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), '이번 단계에서는 기존 뼈대의 핵심 플레이만 작성한다. 제공된 도구 범위는 고정이다. 장식 도구를 검색하거나 다른 쓰기를 우회하지 않는다. 종료 전에 report_first_play를 호출한다.'] },
@@ -1221,7 +1229,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, openingProduction: false, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
+      { ...request, ...takeUserImages(), initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, openingProduction: false, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       // 팀장 도구는 읽기뿐이다 — 팀원이 발행할 때마다 바뀌는 작업 사본을 읽게 한다.
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools, liveProject: () => working },
     );
