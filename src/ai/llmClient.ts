@@ -106,7 +106,7 @@ export interface AiConfig {
   dialoguePolishAfterBuild?: boolean;
   /** 그림 도안 먼저(src/ai/imagePlan.ts) — 모호한 새로 짓기를 넓힌 장면을 짓기 전에 ChatGPT 이미지 모델 도안 한 장을 첫 요청에 싣는다. 기본 켜짐(2026-11-04 측정: 도안 일치 판정 켬 2.8 · 끔 1.9). false 만 저장한다. */
   imagePlanBuild?: boolean;
-  /** 도안 후보 수(1~3). 기본 2 — 2장을 동시에 그려 비전 판정자가 고른다(미달이면 3장째). 1 이면 한 장만(전 동작). 기본값이 아니면 저장한다. */
+  /** 도안 후보 수(1~3). 기본 1(한 장). 2이면 두 장을 동시에 그려 비전 판정자가 고르고(미달이면 3장째), 3이면 세 장에서 고른다. 2026-11-05 측정에서 2장 선택이 1장보다 나아지지 않아 기본은 1. 기본값이 아니면 저장한다. */
   imagePlanCandidates?: number;
   /**
    * 역할 모델 정책 버전. 1 = 2026-09-26 이동 이후 저장분.
@@ -461,7 +461,7 @@ function loadStoredAiConfig(): AiConfig {
       roleModelsPolicyVersion: 1,
       ...(parsed.dialoguePolishAfterBuild === false ? { dialoguePolishAfterBuild: false } : {}),
       ...(parsed.imagePlanBuild === false ? { imagePlanBuild: false } : {}),
-      ...(parsed.imagePlanCandidates === 1 || parsed.imagePlanCandidates === 3 ? { imagePlanCandidates: parsed.imagePlanCandidates } : {}),
+      ...(parsed.imagePlanCandidates === 2 || parsed.imagePlanCandidates === 3 ? { imagePlanCandidates: parsed.imagePlanCandidates } : {}),
     };
   } catch {
     return defaultAiConfig();

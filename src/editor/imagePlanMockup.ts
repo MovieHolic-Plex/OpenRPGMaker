@@ -11,7 +11,7 @@ import {
 } from "@/ai/imagePlan";
 import { shrinkReferenceImage } from "@/start/firstRun/referenceImage";
 import {
-  IMAGE_PLAN_FIRST_ROUND, IMAGE_PLAN_MAX_CANDIDATES, imagePlanJudgePrompt, parsePlanJudge, pickBest, pickLine,
+  IMAGE_PLAN_MAX_CANDIDATES, imagePlanJudgePrompt, parsePlanJudge, pickBest, pickLine,
   type PlanCandidate, type PlanJudge,
 } from "@/ai/imagePlanPick";
 
@@ -134,7 +134,7 @@ async function judgeCandidates(scene: ImagePlanScene, drawn: readonly Drawn[], s
 }
 
 /** 도안 후보 수: 1 이면 한 장만(전과 같다), 2 이상이면 그만큼 동시에 뽑아 판정자가 고르고 기준 미달이면 1장씩 더(최대 3장). */
-export async function requestImagePlanMockup(scene: ImagePlanScene, signal?: AbortSignal, candidates: number = IMAGE_PLAN_FIRST_ROUND): Promise<ImagePlanOutcome> {
+export async function requestImagePlanMockup(scene: ImagePlanScene, signal?: AbortSignal, candidates: number = 1): Promise<ImagePlanOutcome> {
   if (await companionCredentialMissing(RECOMMENDED_IMAGE_PROVIDER_ID)) return { kind: "skipped", line: IMAGE_PLAN_SKIPPED_LINE };
   const first = Math.max(1, Math.min(IMAGE_PLAN_MAX_CANDIDATES, Math.round(candidates)));
   const drawn: Drawn[] = (await Promise.all(Array.from({ length: first }, () => drawOne(scene, signal)))).filter((d): d is Drawn => d !== null);

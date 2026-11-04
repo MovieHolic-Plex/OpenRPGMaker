@@ -4,7 +4,6 @@
 import type { ImagePlanRead, ImagePlanScene } from "./imagePlan";
 
 export const IMAGE_PLAN_MAX_CANDIDATES = 3;
-export const IMAGE_PLAN_FIRST_ROUND = 2;
 
 const MIN_YIELD: Record<string, number> = { village: 6, forest: 3, dungeon: 8, castle: 8, house: 3 };
 
