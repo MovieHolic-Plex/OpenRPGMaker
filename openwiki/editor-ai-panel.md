@@ -1390,6 +1390,13 @@ vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변�
 고른 장면의 짓는 법은 의도 노트 맨 앞에 가고, 입력창은 「언덕 위 풍차 마을로 만들게요. 다른 느낌이면 말해 주세요.」 한 줄을 띄우고 기다리지 않고 실행한다.
 고를 장면이 없으면 넓히지 않고 원래 경로로 간다. `widenSubject` 가 없는 되묻기(실내/야외가 갈리는 「방 만들어줘」 등)는 그대로 묻는다. 활동 로그 첫 줄에 `widen=<주제>` 와 ` · 넓힘 <장면 id>` 가 남는다.
 
+**그림 도안 먼저 (AI 설정, 기본 켬 — 설정에서 끌 수 있다, 2026-11-04).** `AiConfig.imagePlanBuild` 가 `false` 가 아니고(저장은 `false` 만 한다) 이 턴이 넓힌 장면이면, 입력창(앞 턴 `send` 와 맵별 대기열 실행 둘 다)이 짓기 전에
+`src/editor/imagePlanMockup.ts` 로 **ChatGPT 이미지 모델(codex-image-default)** 에 맵 도안 한 장을 청한다 — 이 기능의 도안은 설정의 그림 경로와 무관하게 ChatGPT 로 고정이고 Google(Antigravity)은 대체 경로로도 쓰지 않는다(한도 소진으로 도안이 조용히 빠진 일이 있었다, 오너 지시 2026-11-04). 프롬프트는 `src/ai/imagePlan.ts imagePlanPrompt` — 집은 실내 평면도, 던전·성은 방 평면도, 그 밖은 바깥 탑뷰.
+받은 그림은 긴 변 768px JPEG 로 줄여 첫 요청 참고 그림(`userImages`)으로 싣는다. 그림만 붙이면 조수가 빌더를 기본 인자로 불러 도안이 사라졌으므로(실측), 도안 위에 칸 번호 격자를 그려 비전 모델이 배치를 JSON 으로 읽게 하고(`imagePlanReadPrompt`), 그 값을 빌더가 이미 받는 인자로 바꿔 노트로 싣는다: 마을 `author_beodeul_town`(layout 자리·landform·tiers·water·exits), 숲 `author_forest_route`(designs[0]), 던전·성 `author_dungeon`(rooms[]{id,kind,x,y,w,h} + links — 방 자리를 주면 `dungeonKit/layoutPositioned.ts` 가 그 자리에 놓고, 겹침은 가까운 빈자리로 밀며 「고침:」 줄을 남기고, 통로는 곧게·ㄴ자로 잇는다). 조수는 이 인자를 그대로 보낸다.
+그림 계정이 없으면 「그림 도안은 건너뛰었어요 — …」, 요청이 실패하면 「…도안 없이 지어요」, 배치를 못 읽으면 「도안 그림만 보여 주고 지어요」 한 줄을 채팅에 남기고 그대로 짓는다. 그림을 못 읽는 엔진(로컬 CLI)은 `firstPromptImages` 가 글만 보낸다.
+기본 켬: 도안 일치도(눈가림 「이 맵이 도안을 따랐나」 1~5, 도안이 조수에게 닿은 10판)가 켬 2.8 · 끔 1.9(켬 우세 7 · 같음 3 · 열세 0), 마을 지형 단 일치 0.72/0.38·0.89/0.62, 물 IoU 0.49/0.00·0.41/0.01 라서 켠다. 도안을 그리는 동안 상태 줄에 「그림 도안 그리는 중(약 1분)…」 이 보이고, 계정이 없거나 실패하면 채팅에 알리고 도안 없이 짓는다.
+한계(빌더 입력이 없다): 마을 폭포는 강으로 그려지고 한옥 지붕·장터 가판·큰 나무는 칩셋에 없으며, 숲 빌더에는 절벽 단·정자 입력이 없고, 던전은 방 위치를 따르지만 이웃한 방이 붙고 링 모양 재현은 불완전하다. 측정과 그림은 http://mdc-server:18301/assistant-ramps-imageplan.html .
+
 의도 판정 모델은 `AiConfig.intentModel`(제공자·모델·강도) 칸으로 따로 줄 수 있다. 있으면 먼저 그 모델을 부르고, 실패·스키마 밖 답이면 같은 벽시계 안에서 옛 경로(`configForLiteModel`)로 한 번 더 부른다.
 실측 비교표는 http://mdc-server:18301/assistant-widen.html.
 `runPiCommand`는 쓰기가 허용된 단독 실행이며 기존 맵 하나가 지정된 경우만 이 힌트를 사용한다.

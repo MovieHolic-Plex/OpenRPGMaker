@@ -18,7 +18,7 @@ import { BEODEUL_YARD_QUARTERS, beodeulYardReserve } from "./villageQuarterTool"
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
 import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, resolveVillageForm, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
-import { generateCodeTerrain, TERRAIN_CHARACTERS, type CodeTerrain, type TerrainCharacter, type TerrainHigh, type TerrainWater } from "./beodeulTerrainGen";
+import { generateCodeTerrain, TERRAIN_CHARACTERS, TERRAIN_MAP_CHARS, type CodeTerrain, type TerrainCharacter, type TerrainHigh, type TerrainWater } from "./beodeulTerrainGen";
 import { LAYOUT_EDGES, parseLayout } from "./beodeulCodeLayout";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
@@ -96,6 +96,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽 밑으로 길이 지나는 쪽문(작은 문루)을 낼지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
       terrainGen: { type: "string", enum: ["code", "bands"], description: "땅 짓기(theme 마을, 성벽 없음): code(기본) 코드가 높이맵·침식·강으로 자연 지형을 만들고 그 위에 layout 자리대로 짓는다 · bands 예전 등고선 띠 지형(지형 먼저)." },
       terrainSeed: { type: "integer", description: "코드 지형 씨앗(지형 미리보기에서 받은 값 — 같은 값 = 같은 땅). 생략하면 seed." },
+      terrainMap: { type: "array", items: { type: "string" }, description: "(선택, 그림 도안에서 읽은 지형 칸 지도) 행 문자열 배열(위에서 아래, 한 글자 = 한 칸): 0–3 땅 단 · ~ 강 · | 폭포(강으로 그린다) · o 못·연못. 주면 코드가 만드는 단·물 대신 이 모양을 맵 크기에 맞춰 늘려 단과 물을 깔고, 계단은 단 경계에 절개 조각 규칙으로 자동 배치한다(못 놓으면 경고). 안 주면 지금처럼." },
       layout: { type: "object", description: "코드 지형 위 자리(지형 미리보기의 좌표, x 오른쪽·y 아래). 함수는 가장 가까운 놓을 수 있는 자리로 옮기고 길을 잇고 옮김·실패를 보고한다. 생략하면 함수가 대신 고른다.",
         properties: {
           gather: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, plaza: { type: "boolean", description: "판석 광장(기본 true) · false 면 우물·좌판만" } }, required: ["x", "y"], description: "모이는 곳(광장·우물)" },
@@ -621,7 +622,8 @@ export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: 
   const tiers = Number.isFinite(tiers0) && tiers0 > 0 ? tiers0 : plain && ch === "hill" ? 1 : undefined;
   // 땅 모양 낱말이 없는 강·평지 요청은 동서 띠 하나만(남북 단 경계 토막·평지 한가운데 계단 금지, 2026-10-30 ab19)
   const bands = !(Number.isFinite(tiers0) && tiers0 > 0) && water !== "bog" && ((plain && ch === "hill") || ch === "flat"); // 평지(낱말·기본 모두)도 덩이 둔덕 대신 띠
-  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}) });
+  const mapRows = Array.isArray(args.terrainMap) && args.terrainMap.length >= 6 && args.terrainMap.every((r) => typeof r === "string" && TERRAIN_MAP_CHARS.test(r)) ? (args.terrainMap as string[]) : undefined;
+  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}), ...(mapRows ? { given: { rows: mapRows } } : {}) });
 }
 
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {

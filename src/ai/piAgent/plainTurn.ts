@@ -12,6 +12,7 @@ import { formatIntentAudit, formatIntentClarifyMessage, type IntentDeclaration, 
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import { decideWiden, widenToolNames, type WidenDecision } from "@/ai/vagueWiden";
 import { rememberWiden, widenHistory } from "@/ai/vagueWidenHistory";
+import type { WidenSubject } from "@/ai/vagueWidenCatalog";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools, SCENE_SETTING_NOTE, SCENE_SETTING_PATTERN } from "@/ai/sessionToolExposure";
 import { monsterAssetsAllowed, toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
@@ -109,7 +110,7 @@ export interface PlainPiTurnClassification {
    */
   readonly clarify?: string;
   /** 모호한 새로 짓기를 넓힌 장면. 있으면 호출자(입력창)는 시작 한 줄(startLine)을 보이고 기다리지 않고 실행한다. */
-  readonly widen?: { readonly id: string; readonly label: string; readonly traits: readonly string[]; readonly startLine: string };
+  readonly widen?: { readonly id: string; readonly subject: WidenSubject; readonly label: string; readonly traits: readonly string[]; readonly startLine: string };
 }
 
 /** 되묻기에 대한 사용자 답을 원래 요청과 묶은 문장의 표지 — 이 표지가 있는 턴은 다시 되묻지 않는다. */
@@ -376,7 +377,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   if (clarify) routingAudit += " · 되묻기";
   if (widen) routingAudit += ` · 넓힘 ${widen.modifier.id}`;
   return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}), ...(clarify ? { clarify } : {}),
-    ...(widen ? { widen: { id: widen.modifier.id, label: widen.modifier.label, traits: widen.modifier.traits, startLine: widen.startLine } } : {}) };
+    ...(widen ? { widen: { id: widen.modifier.id, subject: widen.modifier.subject, label: widen.modifier.label, traits: widen.modifier.traits, startLine: widen.startLine } } : {}) };
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */
