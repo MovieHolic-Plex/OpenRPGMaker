@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 8013KB / 약 2,355,067 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 8014KB / 약 2,355,155 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 197KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1227 | ~57,926 |
-| `openwiki/editor-validation.md` | 63KB | 17KB | 418 | ~17,931 |
+| `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
 | `openwiki/harnesses/assistant-capability.md` | 61KB | 8KB | 397 | ~18,807 |
@@ -1422,27 +1422,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L5` Storage chest authoring
 
-### `openwiki/editor-validation.md` — 63KB · 418줄 · ~17,931 토큰 · 통째읽기 잘림
+### `openwiki/editor-validation.md` — 64KB · 419줄 · ~18,019 토큰 · 통째읽기 잘림
 
 - `L5` 스크립트 effects 를 읽는 검증기 (2026-10-31)
 - `L13` 계단 입구 검사 `stair-*` (2026-10-22)
 - `L17` 장면 다듬기 경고 `scene-*` (2026-10-21)
-- `L71` 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
-- `L79` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
-- `L116` AI blocked-event relocation recovery (2026-09-06)
-- `L210` AI 타일 후검증 (2026-09-05)
-- `L215` 이벤트 초안 검증 표면 (2026-08-28)
-- `L220` event-unreachable lint rule (2026-08-27)
-- `L227` P2 생활 시스템 무결성 (2026-08-25)
-- `L232` 생활 저작 표면 집중 검증 (2026-08-24)
-- `L248` AI editor-wide tool validation (2026-08-25)
-- `L254` Roguelike run validation (2026-08-24)
-- `L261` Validation Expectations
-- `L285` Desktop UI integration matrix (2026-08-11)
-- `L295` Event editor aggregate gate (2026-07-30)
-- `L304` P2 spatial integrity (2026-08-25)
-- `L311` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
-  - `L357` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
+- `L72` 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
+- `L80` Event validation location and UNSENT handoff (issue 693, 2026-09-08)
+- `L117` AI blocked-event relocation recovery (2026-09-06)
+- `L211` AI 타일 후검증 (2026-09-05)
+- `L216` 이벤트 초안 검증 표면 (2026-08-28)
+- `L221` event-unreachable lint rule (2026-08-27)
+- `L228` P2 생활 시스템 무결성 (2026-08-25)
+- `L233` 생활 저작 표면 집중 검증 (2026-08-24)
+- `L249` AI editor-wide tool validation (2026-08-25)
+- `L255` Roguelike run validation (2026-08-24)
+- `L262` Validation Expectations
+- `L286` Desktop UI integration matrix (2026-08-11)
+- `L296` Event editor aggregate gate (2026-07-30)
+- `L305` P2 spatial integrity (2026-08-25)
+- `L312` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
+  - `L358` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
 ### `openwiki/editor-workflows-misc.md` — 91KB · 636줄 · ~25,541 토큰 · 통째읽기 잘림
 

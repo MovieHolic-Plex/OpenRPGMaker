@@ -43,6 +43,8 @@ import { createTransitSim, transitPose, transitRectCells } from "../mapTransit";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
+import { listGallerySlots } from "../vnExtras";
+import { usesRelationshipMenu } from "../relationshipMenu";
 import { checkSceneStaging } from "./sceneStagingLint";
 import { checkSeatedPose } from "./seatedPoseLint";
 import { checkStairEntrances } from "./stairEntranceLint";
@@ -1601,6 +1603,26 @@ function checkMapSmallerThanScreen(project: Project, issues: LintIssue[]): void 
  * 걷기 순서대로 본다: showPicture(번짐 시작) 뒤 wait 없이 나온 첫 text 를 알린다. waitForPicture 가 켜진 showPicture 는 번짐이 끝난 것으로 본다.
  */
 const PICTURE_FADE_MIN_OPACITY = 200;
+/**
+ * 연애 게임인데 화면 가득 CG 장면(showPicture recordInGallery)이 거의 없다 — 도트 지도와 대사만으로는 설레는 순간이 «글»로만 남는다
+ * (첫사랑 2026-11-04: 오너 「연애물이니까 컷씬이 최소 생성형 이미지로 한 10장쯤 이상」). 첫 만남·고백·엔딩마다 한 장씩, 8장 이상을 목표로 한다.
+ * 갤러리에 기록되는 CG 만 센다 — 엔딩 카드나 타이틀 그림은 세지 않는다. 하한 5장은 린트가 경고하는 선이고 목표는 8장 이상이다.
+ * 아직 초안인 프로젝트(엔딩이 없고 이벤트가 열 개 미만)에는 알리지 않는다.
+ */
+const ROMANCE_MIN_CG_SCENES = 5;
+const ROMANCE_CG_LINT_MIN_EVENTS = 10;
+function checkRomanceFewCgScenes(project: Project, issues: LintIssue[]): void {
+  if (!usesRelationshipMenu(project)) return;
+  const sceneCount = Object.values(project.maps ?? {}).reduce((n, map) => n + (map.events?.length ?? 0), 0);
+  if ((project.endings?.length ?? 0) === 0 && sceneCount < ROMANCE_CG_LINT_MIN_EVENTS) return;
+  const cg = listGallerySlots(project).length;
+  if (cg >= ROMANCE_MIN_CG_SCENES) return;
+  issues.push({
+    severity: "warning", code: "romance-few-cg-scenes",
+    message: `연애 게임인데 갤러리에 기록되는 CG 장면이 ${cg}장뿐이다(린트 하한 ${ROMANCE_MIN_CG_SCENES}장, 목표 8장 이상). 첫 만남·함께하는 순간·고백·엔딩마다 한 장씩 화면 가득 그림(showPicture, recordInGallery:true, 페이드 인 뒤 대사)을 넣는다 — 인물 일관성은 기존 고해상 초상화를 참고 이미지로 쓴다. skill game-scene-polish 58번.`,
+  });
+}
+
 function checkTextDuringPictureFade(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     for (const host of map.events ?? []) {
@@ -1779,6 +1801,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkTextDuringPictureFade);
+  guard(checkRomanceFewCgScenes);
   guard(checkCommandsAfterTransfer);
   guard(checkEndingUnderFade);
   guard(checkEndingCardsDistinct);
