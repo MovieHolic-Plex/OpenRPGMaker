@@ -165,21 +165,30 @@ try {
     // 카엘이 창(푸른 불꽃 창)을 들고 엄니멧돼지 무리를 친다 — 무기 특성이 붙은 타격의 숫자·상태 팝업.
     const patch = { actorEquipment: { actor_hero: { weapon: "equip_fs_spear_pike", shield: "equip_oak_shield", armor: "equip_leather_armor", helmet: "equip_traveler_hat", accessory: "equip_focus_charm" } } };
     const page = await boot(checkpoint("weapon", "edge_boar", duo, patch));
+    // 카엘의 피해 숫자가 뜨면 한 장, 그 뒤에 같은 대상의 상태 글자가 뜨면 한 장 더(상태는 피해 다음에 와야 한다 — #4202).
+    const hero = [];
     let shot = 0;
-    for (let n = 0; n < 10 && shot < 2; n++) {
+    for (let n = 0; n < 12 && shot < 2; n++) {
       const s = await waitReady(page);
       if (!s.scene || s.result) break;
       const before = await page.evaluate(() => window.__feel.popups.length);
       await attack(page, 0);
       if (s.active !== "actor_hero") continue;
-      // 카엘의 첫 숫자 팝업이 뜨면 바로, 이어 상태 글자 팝업이 뜨면 한 장 더.
-      const got = await page.waitForFunction((b) => window.__feel.popups.length > b, before, { timeout: 15_000 }).then(() => true, () => false);
-      if (!got) continue;
-      if (shot === 0) { await sleep(60); await page.screenshot({ path: resolve(out, "combat-weapon-hit.png") }); shot = 1; }
-      const label = await page.waitForFunction((b) => window.__feel.popups.slice(b).some((p) => !/^\d/.test(p.text ?? "")), before, { timeout: 2500 }).then(() => true, () => false);
+      const dmg = await page.waitForFunction((b) => window.__feel.popups.slice(b).findIndex((p) => /^\d/.test(p.text ?? "")) >= 0, before, { timeout: 15_000 }).then(() => true, () => false);
+      if (!dmg) continue;
+      if (shot === 0) { await sleep(60); await page.screenshot({ path: resolve(out, "combat-weapon-hit.png") }); }
+      const label = await page.waitForFunction((b) => {
+        const list = window.__feel.popups.slice(b);
+        const d = list.findIndex((p) => /^\d/.test(p.text ?? ""));
+        return d >= 0 && list.slice(d + 1).some((p) => !/^\d/.test(p.text ?? "") && p.target === list[d].target);
+      }, before, { timeout: 4000 }).then(() => true, () => false);
+      const seq = await page.evaluate((b) => window.__feel.popups.slice(b).map((p) => ({ t: p.t, text: p.text, target: p.target })), before);
+      hero.push(seq);
       if (label) { await sleep(60); await page.screenshot({ path: resolve(out, "combat-weapon-trait.png") }); shot = 2; }
+      else if (shot === 0) shot = 1;
     }
     report.scenes.weapon = await page.evaluate(() => ({ popups: window.__feel.popups, lines: window.__feel.lines.map((l) => l.text) }));
+    report.scenes.weapon.heroSequences = hero;
     await page.close();
   }
 
