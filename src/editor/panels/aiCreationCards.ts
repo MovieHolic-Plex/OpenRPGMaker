@@ -12,7 +12,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { findBgmTrack } from "@/assets/bgmCatalog";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
-import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
+import { loadKeyedCharsetImage } from "@/ai/toolImageCanvas";
 import type { ActorRecord, Command, EnemyRecord, EquipmentRecord, EquipmentStatBonuses, EventPageGraphic, GameEvent, ItemRecord, Project, SkillRecord, StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { audioPlayback } from "./audioResourcePresentation";
@@ -181,8 +181,11 @@ export function walkingCharset(project: Project, resourceId: string | undefined,
   node.style.setProperty("--walk-x", `${-first.x * scale}px`);
   node.style.setProperty("--walk-y", `${-first.y * scale}px`);
   node.style.setProperty("--walk-span", `${-3 * CHARSET_FRAME_WIDTH * scale}px`);
-  // RTP 걷기 칩은 단색 배경 시트다 — 맵 위·카드 위에서 청록 상자로 보이지 않게 키아웃한다(투명 PNG 면 그대로).
-  queueMicrotask(() => applyAutoChromaKeyToBackground(node, url));
+  // RTP 걷기 칩은 왼쪽 위 픽셀 색이 투명색인 시트다(청록 배경) — 테두리 추정 키아웃은 그걸 못 잡아
+  // 맵 위·카드 위에 청록 상자가 남았다(2026-11-05 캐프처). 편집기·도구 그림과 같은 칩 키아웃(loadKeyedCharsetImage)을 쓴다.
+  void loadKeyedCharsetImage(url).then((image) => {
+    if (image.src && image.src !== url) node.style.backgroundImage = `url("${image.src}")`;
+  }).catch(() => undefined);
   return node;
 }
 
