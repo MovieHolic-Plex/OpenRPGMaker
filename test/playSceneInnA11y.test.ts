@@ -75,12 +75,24 @@ describe("inn dialog accessibility", () => {
     const { scene } = sceneFixture(0);
     const pending = playInn(scene, { kind: "inn", price: 40 });
     expect(document.querySelector(".runtime-inn-pixel")).not.toBeNull();
-    const press = (key: string) => window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    const overlay = document.querySelector<HTMLElement>("[data-testid='inn-scene']")!;
+    const press = (key: string) => overlay.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
     press("ArrowDown");
     expect(document.querySelector("[data-testid='inn-cancel']")?.getAttribute("aria-current")).toBe("true");
     press("Enter");
     await pending;
     expect(document.querySelector("[data-testid='inn-scene']")).toBeNull();
+  });
+
+  it("clears every party state on a stay, not only states whose removal text mentions rest", () => {
+    // fs2 스웜 R2: 창은 「독 → 정상」을 보여 주는데 해제 문구에 「휴식」이 없는 상태는 남았다(RM2003 FullHeal 과 어긋남).
+    const { scene } = sceneFixture(80);
+    const project = store.getCurrent();
+    project.database.states.push({ ...project.database.states[0]!, id: "state_curse", name: "저주", removalCondition: "전투 종료 시" });
+    scene.session.actorStateIds = { [DEFAULT_ACTOR_ID]: [DEFAULT_STATE_ID, "state_curse"] };
+    void playInn(scene, { kind: "inn", price: 10 });
+    document.querySelector<HTMLButtonElement>("[data-testid='inn-stay']")?.click();
+    expect(scene.session.actorStateIds?.[DEFAULT_ACTOR_ID] ?? []).toEqual([]);
   });
 
   it("names the rest blackout and skips the fade when menu motion is reduced", async () => {

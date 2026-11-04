@@ -72,7 +72,7 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
         recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds, {
           recoverMp: step.recoverMp !== false,
         });
-        clearRestEndedStates(scene);
+        clearPartyStates(scene);
         scene.syncRuntimeState();
         // 여관 휴식 징글(innRest 자리, ME 채널). 자리가 비면 예전처럼 연출만.
         playProjectSeCue("innRest");
@@ -384,15 +384,13 @@ function delay(scene: PlaySceneContext, ms: number): Promise<void> {
   });
 }
 
-/** 상태의 해제 조건에 「휴식」이 들어 있으면(빵의 힘이 오른다 등) 여관에서 묵을 때 풀린다 — 상태 정의가 정한다. */
-function clearRestEndedStates(scene: { session: { actorStateIds?: Record<string, string[]>; partyActorIds: string[] } }): void {
+/**
+ * 여관에서 묵으면 파티의 모든 상태가 풀린다 — RM2003 여관(EasyRPG FinishInn → FullHeal → RemoveAllStates)과
+ * 엔진의 전원 회복(recoverAll)과 같다. 예전에는 해제 조건 문구에 「휴식」이 든 상태만 풀어,
+ * 창은 「독 → 정상」을 약속하고 독은 남았다(fs2 스웜 R2, 서리나루·마르타 여관 실측).
+ */
+function clearPartyStates(scene: { session: { actorStateIds?: Record<string, string[]>; partyActorIds: string[] } }): void {
   const held = scene.session.actorStateIds;
   if (!held) return;
-  const states = store.getCurrent().database.states ?? [];
-  const ending = new Set(states.filter((st) => /휴식/.test(st.removalCondition ?? "")).map((st) => st.id));
-  if (!ending.size) return;
-  for (const actorId of scene.session.partyActorIds) {
-    const list = held[actorId];
-    if (list?.length) held[actorId] = list.filter((id) => !ending.has(id));
-  }
+  for (const actorId of scene.session.partyActorIds) delete held[actorId];
 }

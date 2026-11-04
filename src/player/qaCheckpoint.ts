@@ -7,7 +7,7 @@
 // 프로젝트 데이터는 건드리지 않는다 — 세션만 만든다.
 // 문서: openwiki/testing.md 「런타임 QA 체크포인트」.
 import { applyMapDefaultLighting } from "@/project/lightingRules";
-import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { normalizeActorRecord, parameterValueAtLevel, floorActorExperience } from "@/project/actorModel";
 import { startSession, type PlaySession } from "@/project/session";
 import type { Dir, Project } from "@/project/types";
 import { applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
@@ -78,6 +78,7 @@ function applyParty(project: Project, session: PlaySession, party: readonly QaCh
     const actor = normalizeActorRecord(project.database.actors.find((entry) => entry.id === member.actorId)!);
     const level = Math.max(1, Math.min(99, Math.floor(member.level ?? session.actorLevels[member.actorId] ?? actor.initialLevel)));
     session.actorLevels[member.actorId] = level;
+    floorActorExperience(project, session, member.actorId);
     const maxHp = parameterValueAtLevel(actor.parameterCurves.maxHp, level);
     const maxMp = parameterValueAtLevel(actor.parameterCurves.maxMp, level);
     session.actorVitals[member.actorId] = { maxHp, maxMp, hp: maxHp, mp: maxMp };
