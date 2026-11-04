@@ -256,6 +256,14 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 확정 기획(`gameDesignBrief`)이 있으면 같은 부팅의 `prepareProjectInterviewStartup` 이
   저장 → 첫 구간 뼈대 → 팀 첫 생성을 넘긴다. 인계가 있으면 첫 방문 창을 다시 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다.
+- **참고 그림 `referenceImages?`**(2026-11-04): 첫 사용자 홈(`src/start/firstRun/promptHome.ts`)의 「참고 그림」 버튼·붙여넣기로 최대 2장,
+  긴 변 768px JPEG data URL(`referenceImage.ts`, 장당 약 40~300KB)로 줄여 인계에 싣는다. 꺼낼 때 `parseUserImageDataUrls`(`src/ai/piAgent/userImages.ts`)가
+  `data:image/(png|jpeg|webp|gif);base64,` 이 아닌 항목만 버린다(인계 자체는 살림). 경로: `mode.ts` → `setPendingAiBootReferenceImages` →
+  `aiBootIntent` 가 실제 전송(`send`) 때 `AiBootIntentRunOptions.images` 로 넘기고 비운다(미리 담기 동안은 입력창 핸드오프가 들고 있다) →
+  패널 `runPiTurn({ images })` → `PiRunOptions.userImages` → 계획·실행 `PiAgentRequest.userImages` → 워커 `runPiAgent` 의 **첫 사용자 차례**에만
+  `agent.prompt(text, images)` 로 그림 파트(`detail: "high"`)를 싣는다(OpenAI 호환은 `image_url`). 팀(`runPiTeam`)은 처음 도는 실행 하나에만 넘긴다.
+  그림을 못 받는 엔진(로컬 CLI, 모델 `input` 에 `image` 없음)이면 글만 보내고 `execution_status user_images.dropped` 를 내며, 패널이 「이 AI 엔진은 그림을 읽지 못해
+  참고 그림 없이 글만 보냈습니다.」 한 줄을 띄운다. 조수 세션 경로(`assistantSession.ts`)는 조수 채팅이 Pi 하나로 옮긴 뒤(2026-09-11) 이 첫 턴에 쓰이지 않아 바꾸지 않았다.
 - **편집기 안 입구**: 메뉴 「새 프로젝트」와 첫 부팅 환영은 같은 피드를 덮는 창으로 연다(`src/editor/conceptFeedOverlay.ts`, `modalStack` 등록 —
   Escape 는 상세면 피드로, 피드면 닫기). 처리기는 `src/editor/conceptMake.ts`: 메뉴는 새 폴더에 씨앗 + 기획을 저장하고 다시 읽는다,
   환영은 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고(화면 크기 보존) 기획을 심는다. 「빈 프로젝트로 시작」은 장르 없는 새 폴더(메뉴) 또는 그냥 닫기(환영).
