@@ -1079,6 +1079,24 @@
    "lint0": [
     "scene-letterbox-dialogue"
    ]
+  },
+  {
+   "id": "opening-engine-stage",
+   "label": "걷는 인물이 나오는 오프닝은 그림 레이어가 아니라 실제 맵 무대에서 연출한다",
+   "port": 19561,
+   "lessons": [
+    "opening-engine-stage"
+   ],
+   "prompt": "오프닝 만들어줘. 마을 사람들이 아침 길을 걷고 카메라가 마을을 한 바퀴 훑은 다음 게임이 시작되게 해 줘.",
+   "requirements": [
+    "system.opening.stage is set and its event is an autorun cutscene on a real map (author_opening_stage)",
+    "no opening animatic shot slides a charset walker across the picture (lint opening-picture-walkers stays silent)",
+    "after the stage the player is moved to the project start and the stage map's other autoruns are not blocked",
+    "the project saves and reloads"
+   ],
+   "lint0": [
+    "opening-picture-walkers"
+   ]
   }
  ]
 }

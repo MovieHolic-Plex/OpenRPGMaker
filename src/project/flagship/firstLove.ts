@@ -25,7 +25,7 @@ import {
   playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTintUnderBlack, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, drawnOverActor, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
-import { buildFirstLoveOpening } from "./firstLoveOpening";
+import { buildFirstLoveOpening, buildFirstLoveOpeningStage } from "./firstLoveOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 import { doorValue, type DoorSpec, type MapDoorDef } from "@/project/eventCommands/doorAnimation";
 
@@ -1886,6 +1886,8 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   // 오프닝 A: 게임은 출근길 거리의 지하철 출구에서 시작한다(오프닝 몽타주 C 바로 뒤).
   project.startMapId = FL_MAP.street;
   project.startPos = anchors.street.arrive;
+  // 엔진 무대: 벚꽃 거리 컷을 실제 거리 맵에서 연출한다(공원 쪽 걷는 칸에서 열리고, 끝에 위 시작 위치로 옮긴다).
+  buildFirstLoveOpeningStage((name, args) => execTool(project, name, args), nearestFree(project, project.maps[FL_MAP.street]!, { x: 34, y: 30 }));
   project.mapTree = {
     mapId: FL_MAP.platformAm,
     children: [FL_MAP.street, FL_MAP.office, FL_MAP.rooftop, FL_MAP.streetPm, FL_MAP.konbini, FL_MAP.broadcast, FL_MAP.officePm, FL_MAP.officeFri, FL_MAP.platformPm]
