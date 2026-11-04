@@ -41,6 +41,27 @@ export function rememberRecentProject(projectDir: string, title: string): void {
 
 export function recentProjectsPath(): string { return recentPath(); }
 
+/** 최근 목록에서만 뺀다. 폴더·파일·카드 그림 캐시는 건드리지 않는다. 목록에 없던 경로면 false. */
+export function forgetRecentProject(projectDir: unknown): boolean {
+  if (typeof projectDir !== "string" || !projectDir) return false;
+  const entries = listRecentProjects();
+  const kept = entries.filter((entry) => entry.projectDir !== projectDir);
+  if (kept.length === entries.length) return false;
+  writeFileSync(recentPath(), JSON.stringify(kept, null, 2));
+  return true;
+}
+
+/** 최근 목록에 적힌 제목만 바꾼다 — 아직 편집기에서 저장한 적 없는 폴더(저장 문서가 없음)는 이 제목이 카드 이름이다. */
+export function renameRecentEntry(projectDir: string, title: string): void {
+  const entries = listRecentProjects().map((entry) => entry.projectDir === projectDir ? { ...entry, title } : entry);
+  writeFileSync(recentPath(), JSON.stringify(entries, null, 2));
+}
+
+/** 시작 화면이 이름을 바꿀 수 있는 폴더 — 최근 목록에 있고 project.sqlite 가 있는 것만. */
+export function renamableRecentDir(projectDir: unknown): string | null {
+  return recentProjectDir(projectDir);
+}
+
 const MAX_RECENT_TEAMS = 8;
 
 function recentTeamsPath(): string {

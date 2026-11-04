@@ -1,294 +1,184 @@
-/* 새 게임 컨셉 피드. 런처 「만들기」 본문·편집기 덮는 창이 같이 쓴다. 층(@layer) 밖에 두어 편집기 층 순서와 싸우지 않는다 — 클래스는 cf- 접두로만.
-   런처 틀(위 막대·레일·색)은 src/start/launcher.css 가 맡고, 여기의 .cf-launcher 규칙은 본문 안의 차이만 적는다. */
+/* 새 게임 컨셉 피드. 런처 「아이디어」 탭 본문·편집기 덮는 창이 같이 쓴다. 층(@layer) 밖 — 클래스는 cf- 접두로만.
+   색·글자·모서리는 편집기 토큰만 쓴다(홈 src/start/firstRun/promptHome.css 와 같은 한 벌). 런처 틀은 src/start/launcher.css. */
 .cf-root {
-  --cf-bg: #0f0f12;
-  --cf-raised: #17171c;
-  --cf-chip: #23232b;
-  --cf-line: #2a2a33;
-  --cf-fg: #f1f1f3;
-  --cf-sub: #a2a2ae;
-  --cf-accent: #ff4d5e;
-  --cf-accent-hover: #ff6676;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: var(--cf-bg);
-  color: var(--cf-fg);
-  font: 14px/1.45 var(--font-ui, system-ui, "Pretendard", "Noto Sans KR", sans-serif);
-  color-scheme: dark;
+  background: var(--bg-base);
+  color: var(--text-1);
+  font: var(--font-14) / 1.45 var(--font-ui);
 }
 .cf-root *, .cf-root *::before, .cf-root *::after { box-sizing: border-box; }
-.cf-root.cf-launcher { flex: 1; }
-.cf-root.cf-overlay { position: fixed; inset: 0; z-index: var(--z-modal, 2100); }
+.cf-root.cf-launcher { flex: 1; position: relative; }
+.cf-root.cf-overlay { position: fixed; inset: 0; z-index: var(--z-modal); }
 .cf-root [hidden] { display: none !important; }
- .cf-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
- .cf-main > .cf-body { flex: 1; }
+.cf-root :is(button, input, textarea, select):focus-visible, .cf-card:focus-visible { outline: var(--focus-outline); outline-offset: var(--focus-offset); }
+.cf-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
+.cf-main > .cf-body { flex: 1; }
 
- .cf-top {
-   position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
-   border-bottom: 1px solid var(--cf-line); background: rgba(15, 15, 18, 0.96); backdrop-filter: blur(16px);
- }
-.cf-brand { font-weight: 800; font-size: 18px; white-space: nowrap; }
-.cf-search {
-  flex: 1;
-  max-width: 680px;
-  display: flex;
-  border: 1px solid #33333d;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #1c1c23;
+.cf-top {
+  position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-5);
+  border-bottom: var(--stroke-1) solid var(--border-subtle); background: var(--bg-glass); backdrop-filter: blur(16px);
 }
-.cf-search:focus-within { border-color: #5b7cff; }
-.cf-search-input { flex: 1; min-width: 0; background: none; border: 0; color: var(--cf-fg); padding: 10px 18px; font: inherit; outline: none; }
-.cf-search-input::placeholder { color: #7c7c88; }
-.cf-search-go { border: 0; background: #2b2b35; color: var(--cf-fg); padding: 0 18px; font: inherit; font-weight: 700; cursor: pointer; }
-.cf-search-go:hover { background: #363642; }
-.cf-top-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cf-close { display: grid; place-items: center; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; }
-.cf-close:hover { background: #33333d; }
+.cf-brand { font-weight: var(--font-weight-semibold); font-size: var(--font-18); white-space: nowrap; }
+.cf-search {
+  flex: 1; max-width: 680px; display: flex; align-items: center; overflow: hidden;
+  border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-pill); background: var(--bg-raised);
+}
+.cf-search:focus-within { border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-muted); }
+.cf-search-input { flex: 1; min-width: 0; padding: var(--space-2) var(--space-4); border: 0; background: none; color: var(--text-1); font: inherit; outline: none; }
+.cf-search-input::placeholder { color: var(--text-placeholder); }
+.cf-search-icon { display: inline-grid; margin-left: var(--space-3); color: var(--text-3); }
+.cf-search-icon svg { display: block; width: 16px; height: 16px; }
+.cf-search-go { align-self: stretch; padding: 0 var(--space-4); border: 0; background: var(--accent); color: var(--on-accent); font: inherit; font-weight: var(--font-weight-semibold); cursor: pointer; }
+.cf-search-go:hover { background: var(--accent-hover); }
+.cf-launcher-search { margin: 0 0 var(--space-4); }
+.cf-launcher-search .cf-search { max-width: none; height: 40px; }
+.cf-top-actions { margin-left: auto; display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+.cf-close { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: var(--radius-pill); background: var(--control-bg); color: var(--text-1); cursor: pointer; }
+.cf-close:hover { background: var(--control-bg-hover); }
 .cf-close-icon, .cf-close-icon svg { display: block; width: 16px; height: 16px; }
 
- .cf-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
- .cf-feed { padding: 0 24px 48px; }
-.cf-root.cf-launcher .cf-feed { padding: 28px 32px 72px; }
-.cf-root.cf-launcher .cf-grid { grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); }
-.cf-root.cf-launcher .cf-chips { position: static; padding: 0 0 18px; flex-wrap: wrap; overflow: visible; }
- .cf-chips { position: sticky; top: 0; z-index: 2; display: flex; gap: 8px; padding: 14px 0 12px; overflow-x: auto; background: var(--cf-bg); scrollbar-width: none; }
- .cf-chip { white-space: nowrap; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
- .cf-chip:hover { background: #2f2f39; }
- .cf-chip.is-on { background: var(--cf-fg); color: #0b0b0e; font-weight: 700; }
- .cf-root button:focus-visible, .cf-root input:focus-visible, .cf-root select:focus-visible { outline: 2px solid #9b91ff; outline-offset: 2px; }
+.cf-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.cf-feed { padding: 0 var(--space-5) var(--space-6); }
+.cf-root.cf-launcher .cf-feed { max-width: 1080px; margin: 0 auto; padding: var(--space-2) var(--space-6) var(--space-6); }
+.cf-root.cf-launcher .cf-grid { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
+.cf-root.cf-launcher .cf-chips { position: static; padding: 0 0 var(--space-4); flex-wrap: wrap; overflow: visible; }
+.cf-chips { position: sticky; top: 0; z-index: 2; display: flex; gap: var(--space-2); padding: var(--space-3) 0; overflow-x: auto; background: var(--bg-base); scrollbar-width: none; }
+.cf-chip { min-height: 30px; padding: 0 var(--space-3); white-space: nowrap; border: 0; border-radius: var(--radius-pill); background: var(--bg-inset); color: var(--text-2); font: inherit; font-size: var(--font-13); cursor: pointer; }
+.cf-chip:hover { background: var(--control-bg-hover); color: var(--text-1); }
+.cf-chip.is-on { background: var(--text-1); color: var(--bg-base); }
 
-.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 28px 18px; }
-.cf-card { cursor: pointer; border-radius: 12px; outline: none; }
-.cf-card:focus-visible { box-shadow: 0 0 0 3px #5b7cff; }
-.cf-thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #22222a; }
-.cf-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; image-rendering: pixelated; transition: transform 0.25s ease; }
-.cf-card:hover .cf-thumb-img { transform: scale(1.04); }
-.cf-badge { position: absolute; right: 8px; bottom: 8px; background: rgba(0, 0, 0, 0.8); font-size: 11px; padding: 2px 7px; border-radius: 4px; }
-.cf-meta { padding: 10px 2px 0; }
-.cf-title { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.35; }
-.cf-hook { margin: 3px 0 0; color: var(--cf-sub); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.cf-tags { margin: 3px 0 0; color: #82828e; font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-.cf-made { color: #b6b6c2; }
-.cf-custom .cf-custom-thumb { display: grid; place-items: center; background: #1b1b22; border: 2px dashed #3a3a46; color: var(--cf-sub); }
+.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: var(--space-5) var(--space-4); }
+.cf-card { cursor: pointer; border-radius: var(--radius-3); outline: none; }
+.cf-thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-3); background: var(--bg-inset); }
+.cf-card:hover .cf-thumb { border-color: var(--border-default); box-shadow: var(--shadow-pop); }
+.cf-thumb-img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.cf-badge {
+  position: absolute; left: var(--space-2); top: var(--space-2); padding: 1px var(--space-2); border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-1);
+  background: var(--bg-glass); color: var(--text-1); font-size: var(--font-12); font-weight: var(--font-weight-medium);
+}
+.cf-meta { padding: var(--space-2) 2px 0; }
+.cf-title { margin: 0; font-size: var(--font-14); font-weight: var(--font-weight-semibold); line-height: 1.35; }
+.cf-hook { margin: 2px 0 0; display: -webkit-box; overflow: hidden; color: var(--text-2); font-size: var(--font-13); -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.cf-tags { margin: 2px 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); color: var(--text-3); font-size: var(--font-12); }
+.cf-made { color: var(--text-2); }
+.cf-custom .cf-custom-thumb { display: grid; place-items: center; border-style: dashed; border-color: var(--border-default); background: transparent; color: var(--text-2); }
 .cf-custom-mark svg { display: block; width: 32px; height: 32px; }
 .cf-skeleton { pointer-events: none; }
-.cf-skeleton .cf-meta { height: 52px; margin-top: 10px; border-radius: 8px; background: #1b1b22; }
+.cf-skeleton .cf-meta { height: 52px; margin-top: var(--space-2); border-radius: var(--radius-2); background: var(--bg-inset); }
 .cf-skeleton .cf-thumb, .cf-skeleton .cf-meta { animation: cf-pulse 1.2s ease-in-out infinite alternate; }
 @keyframes cf-pulse { from { opacity: 0.55; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .cf-skeleton .cf-thumb, .cf-skeleton .cf-meta { animation: none; } .cf-thumb-img { transition: none; } }
-.cf-empty { grid-column: 1 / -1; color: var(--cf-sub); }
-.cf-more { display: block; margin: 28px auto 0; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 999px; padding: 9px 22px; font: inherit; cursor: pointer; }
-.cf-offline { text-align: center; color: var(--cf-sub); margin: 22px 0 0; }
-.cf-blank { text-align: center; color: var(--cf-sub); margin: 30px 0 0; display: flex; gap: 10px; justify-content: center; align-items: center; }
-.cf-link { background: none; border: 0; color: #9fb4ff; font: inherit; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+.cf-empty { grid-column: 1 / -1; color: var(--text-2); }
+.cf-more { display: block; margin: var(--space-5) auto 0; padding: var(--space-2) var(--space-5); border: 0; border-radius: var(--radius-pill); background: var(--control-bg); color: var(--text-1); font: inherit; cursor: pointer; }
+.cf-more:hover { background: var(--control-bg-hover); }
+.cf-offline { margin: var(--space-4) 0 0; text-align: center; color: var(--text-2); }
+.cf-blank { display: flex; align-items: center; justify-content: center; gap: var(--space-3); margin: var(--space-6) 0 0; color: var(--text-2); }
+.cf-link { padding: 0; border: 0; background: none; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cf-feed-head { display: flex; align-items: baseline; gap: var(--space-3); margin: var(--space-6) 0 var(--space-3); }
+.cf-root.cf-launcher .cf-feed-head { margin-top: 0; }
+.cf-feed-head h2 { margin: 0; font-size: var(--font-22); font-weight: var(--font-weight-semibold); line-height: var(--line-height-tight); }
+.cf-feed-head p { margin: 0; color: var(--text-3); font-size: var(--font-13); }
 
-.cf-detail { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; padding: 18px 24px 60px; }
-.cf-back { margin-bottom: 12px; display: inline-block; text-decoration: none; color: var(--cf-sub); }
-.cf-hero { aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #1b1b22; }
-.cf-hero-img { width: 100%; height: 100%; object-fit: cover; display: block; image-rendering: pixelated; }
-.cf-drafting { display: grid; place-items: center; color: var(--cf-sub); animation: cf-pulse 1.2s ease-in-out infinite alternate; }
-.cf-detail-title { margin: 16px 0 4px; font-size: 24px; }
-.cf-detail-hook { margin: 0; color: #d8d8de; font-size: 16px; }
-.cf-detail-desc { color: var(--cf-sub); margin: 12px 0 0; }
-.cf-make-row { display: flex; align-items: center; gap: 14px; margin: 16px 0 4px; flex-wrap: wrap; }
-.cf-make { background: var(--cf-accent); color: #fff; border: 0; border-radius: 999px; padding: 12px 28px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
-.cf-make:hover:not(:disabled) { background: var(--cf-accent-hover); }
+/* 상세. 편집기 덮는 창은 본문 전체를 바꿔 보이고, 런처는 오른쪽 시트로 뜬다(아래). */
+.cf-detail { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); padding: var(--space-4) var(--space-5) var(--space-6); }
+.cf-back { display: inline-block; margin-bottom: var(--space-3); color: var(--text-2); text-decoration: none; }
+.cf-hero { aspect-ratio: 16 / 9; overflow: hidden; border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-3); background: var(--bg-inset); }
+.cf-hero-img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.cf-drafting { display: grid; place-items: center; color: var(--text-2); animation: cf-pulse 1.2s ease-in-out infinite alternate; }
+.cf-detail-title { margin: var(--space-4) 0 var(--space-1); font-size: var(--font-22); line-height: var(--line-height-tight); }
+.cf-detail-hook { margin: 0; color: var(--text-1); font-size: var(--font-16); }
+.cf-detail-desc { margin: var(--space-3) 0 0; color: var(--text-2); }
+.cf-make-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin: var(--space-4) 0 var(--space-1); }
+.cf-make {
+  min-height: 44px; padding: 0 var(--space-5); border: 0; border-radius: var(--radius-3); background: var(--accent); color: var(--on-accent);
+  font: inherit; font-size: var(--font-16); font-weight: var(--font-weight-semibold); cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+.cf-make:hover:not(:disabled) { background: var(--accent-hover); }
 .cf-make:disabled { opacity: 0.7; cursor: progress; }
-.cf-make-hint { color: #85858f; font-size: 12px; }
-.cf-box { background: var(--cf-raised); border-radius: 12px; padding: 16px; margin-top: 14px; }
-.cf-box h3 { margin: 0 0 10px; font-size: 13px; color: var(--cf-sub); font-weight: 600; }
-.cf-box dl { display: grid; grid-template-columns: 76px 1fr; gap: 6px 12px; margin: 0; }
-.cf-box dt { color: var(--cf-sub); }
+.cf-make-hint { color: var(--text-3); font-size: var(--font-12); }
+.cf-box { margin-top: var(--space-3); padding: var(--space-4); border-radius: var(--radius-3); background: var(--bg-surface); }
+.cf-box h3 { margin: 0 0 var(--space-2); color: var(--text-2); font-size: var(--font-13); font-weight: var(--font-weight-semibold); }
+.cf-box dl { display: grid; grid-template-columns: 76px 1fr; gap: var(--space-1) var(--space-3); margin: 0; }
+.cf-box dt { color: var(--text-3); }
 .cf-box dd { margin: 0; }
-.cf-tweak { width: 100%; min-height: 72px; resize: vertical; background: #0e0e13; color: var(--cf-fg); border: 1px solid #2f2f39; border-radius: 8px; padding: 10px; font: inherit; }
-.cf-similar h3 { margin: 30px 0 12px; font-size: 14px; color: var(--cf-sub); font-weight: 600; }
-.cf-mini { display: flex; gap: 10px; width: 100%; background: none; border: 0; padding: 0; margin-bottom: 12px; color: inherit; text-align: left; font: inherit; cursor: pointer; }
-.cf-mini-img { flex: 0 0 160px; width: 160px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; image-rendering: pixelated; }
+.cf-tweak { width: 100%; min-height: 72px; resize: vertical; padding: var(--space-2) var(--space-3); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-2); background: var(--bg-raised); color: var(--text-1); font: inherit; }
+.cf-tweak:focus { outline: none; border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-muted); }
+.cf-tweak::placeholder { color: var(--text-placeholder); }
+.cf-similar h3 { margin: var(--space-6) 0 var(--space-3); color: var(--text-2); font-size: var(--font-14); font-weight: var(--font-weight-semibold); }
+.cf-mini { display: flex; gap: var(--space-3); width: 100%; margin-bottom: var(--space-3); padding: 0; border: 0; background: none; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.cf-mini-img { flex: 0 0 160px; width: 160px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-2); image-rendering: pixelated; }
 .cf-mini-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.cf-mini-meta strong { font-size: 13px; line-height: 1.35; }
+.cf-mini-meta strong { font-size: var(--font-13); line-height: 1.35; }
+.cf-error { margin: 0; padding: var(--space-3) var(--space-5); background: var(--danger-muted); color: var(--danger); }
 
-.cf-error { margin: 0; padding: 10px 24px; background: #3b1d22; color: #ffd0d5; }
+/* 런처 「아이디어」 탭: 컨셉 상세는 오른쪽 시트. 뒤의 목록과 스크롤은 그대로 둔다. 「비슷한 컨셉」은 시트에서 접는다. */
+.cf-scrim { position: fixed; inset: 0; z-index: calc(var(--z-modal) - 1); background: var(--bg-scrim); }
+.cf-root.cf-launcher .cf-detail {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: var(--z-modal); display: block; width: min(480px, 100%); overflow-y: auto; padding: 0 0 var(--space-5);
+  border-left: var(--stroke-1) solid var(--border-subtle); background: var(--bg-base); box-shadow: var(--shadow-modal);
+}
+.cf-root.cf-launcher .cf-detail[hidden] { display: none; }
+.cf-root.cf-launcher .cf-detail-main { position: relative; }
+.cf-root.cf-launcher .cf-detail-main > .cf-hero { margin-right: 0; margin-left: 0; }
+.cf-root.cf-launcher .cf-back {
+  position: absolute; top: calc(var(--space-3) + 44px); right: var(--space-3); z-index: 2; display: grid; place-items: center; width: 32px; height: 32px; margin: 0;
+  border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-pill); background: var(--bg-glass); color: var(--text-1); cursor: pointer; text-decoration: none;
+}
+.cf-root.cf-launcher .cf-hero { margin-top: 48px; border: 0; border-radius: 0; }
+.cf-root.cf-launcher .cf-detail-main > :not(.cf-hero):not(.cf-back) { margin-right: var(--space-5); margin-left: var(--space-5); }
+.cf-root.cf-launcher .cf-detail-title { font-size: var(--font-18); }
+.cf-root.cf-launcher .cf-detail-hook { font-size: var(--font-14); color: var(--text-2); }
+.cf-root.cf-launcher .cf-make-row { flex-direction: column; align-items: stretch; gap: var(--space-2); }
+.cf-root.cf-launcher .cf-make { width: 100%; }
+.cf-root.cf-launcher .cf-make-hint { text-align: center; }
+.cf-root.cf-launcher .cf-similar { display: none; }
 
 @media (max-width: 900px) {
   .cf-detail { grid-template-columns: 1fr; }
   .cf-top { flex-wrap: wrap; }
   .cf-search { order: 3; max-width: none; flex-basis: 100%; }
-  .cf-root.cf-launcher .cf-feed { padding: 20px 16px 56px; }
+  .cf-root.cf-launcher .cf-feed { padding: var(--space-4) var(--space-4) var(--space-6); }
 }
+@media (prefers-reduced-motion: reduce) { .cf-skeleton .cf-thumb, .cf-skeleton .cf-meta, .cf-drafting { animation: none; } }
 
-/* 런처의 「새로 만들기」 한 줄 — 장르를 고르면 빠른 인터뷰, 끝에 빈 프로젝트. 그림 띠(.cf-quick)는 덮는 창만 쓴다. */
-.cf-newband { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin: 40px 0 0; padding: 14px 18px; border: 1px solid var(--cf-line); border-radius: 8px; }
-.cf-newband-copy { flex: 1 1 280px; min-width: 0; }
-.cf-newband-copy h2 { margin: 0; font-size: 14.5px; }
-.cf-newband-copy p { margin: 0; color: var(--cf-faint, #6f7078); font-size: 13px; }
-.cf-newband-actions { display: flex; flex: none; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; }
-.cf-newband-genre, .cf-newband-blank { min-height: 32px; padding: 0 12px; border: 0; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 140ms ease, color 140ms ease; }
-.cf-newband-genre { background: #24252a; color: var(--cf-fg); }
-.cf-newband-genre:hover { background: #2e2f35; }
-.cf-newband-blank { background: transparent; color: var(--cf-sub); }
-.cf-newband-blank:hover { background: #1f2024; color: var(--cf-fg); }
-.cf-newband-sep { width: 1px; height: 22px; margin: 0 8px; background: var(--cf-line); }
-.cf-feed-head { display: flex; align-items: baseline; gap: 12px; margin: 40px 0 14px; }
-/* 런처 「새로 만들기」 칸은 이 머리가 맨 위다(앞의 홈 선반은 2026-10-21 홈 칸으로 옮겼다). */
-.cf-root.cf-launcher .cf-feed-head { margin-top: 0; }
-.cf-feed-head h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
-.cf-feed-head p { margin: 0; color: var(--cf-faint, #6f7078); font-size: 13px; }
-.cf-newband:first-child, :empty + .cf-newband { margin-top: 0; }
-@media (prefers-reduced-motion: reduce) { .cf-newband-genre, .cf-newband-blank { transition: none; } }
-
-/* 「골라서 만들기」 띠 — 빠른 인터뷰(src/start/quickInterview) 입구. 피드 맨 위, 인터뷰 첫 장면을 배경으로. */
+/* 덮는 창(편집기 「새 프로젝트」·환영)만 쓰는 것 — 빠른 인터뷰 띠와 「기본 게임」 카드. */
 .cf-quick {
-  position: relative; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-  min-height: 116px; margin: 4px 0 16px; padding: 18px 22px; border-radius: 14px; overflow: hidden;
-  background: #1a1c24; isolation: isolate;
+  position: relative; display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; min-height: 116px; margin: var(--space-1) 0 var(--space-4); padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-4); overflow: hidden; background: #1a1c24; isolation: isolate;
 }
-.cf-quick-art {
-  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center 42%;
-  image-rendering: pixelated; opacity: 0.85;
-}
-.cf-quick::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(90deg, rgba(10, 11, 16, 0.92) 0%, rgba(10, 11, 16, 0.72) 42%, rgba(10, 11, 16, 0.25) 100%);
-}
-.cf-quick-text { display: flex; flex-direction: column; gap: 2px; min-width: 220px; }
-.cf-quick-text strong { font-size: 20px; font-weight: 800; }
-.cf-quick-text span { color: #d4d2cc; font-size: 13.5px; }
-.cf-quick-genres { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.cf-quick-art { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; image-rendering: pixelated; opacity: 0.85; }
+.cf-quick::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(10 11 16 / 0.92) 0%, rgb(10 11 16 / 0.72) 42%, rgb(10 11 16 / 0.25) 100%); }
+.cf-quick-text { display: flex; flex-direction: column; gap: 2px; min-width: 220px; color: #fff; }
+.cf-quick-text strong { font-size: var(--font-22); font-weight: var(--font-weight-bold); }
+.cf-quick-text span { color: rgb(255 255 255 / 0.8); font-size: var(--font-13); }
+.cf-quick-genres { margin-left: auto; display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .cf-quick-genre, .cf-quick-go {
-  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; padding: 8px 14px;
-  background: rgba(12, 14, 20, 0.6); color: var(--cf-fg); font: inherit; font-size: 13.5px; cursor: pointer; backdrop-filter: blur(6px);
+  padding: var(--space-2) var(--space-3); border: var(--stroke-1) solid rgb(255 255 255 / 0.22); border-radius: var(--radius-pill);
+  background: rgb(12 14 20 / 0.6); color: #fff; font: inherit; font-size: var(--font-13); cursor: pointer; backdrop-filter: blur(6px);
 }
-.cf-quick-genre:hover { border-color: rgba(255, 255, 255, 0.55); }
-.cf-quick-go { background: var(--accent, #e5484d); border-color: transparent; color: #fff; font-weight: 800; }
-.cf-quick-go:hover { filter: brightness(1.08); }
-
-/* 「기본 데모 게임」 공식 대표작 2종 카드 — AI 연결 없이 즉시 실행 및 편집기 로드 */
-.cf-builtin-demos {
-  margin: 14px 0 18px;
-  padding: 16px 20px 18px;
-  border: 1px solid #303344;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(26, 28, 38, 0.94) 0%, rgba(18, 19, 25, 0.96) 100%);
-}
-.cf-builtin-head {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.cf-builtin-kicker {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(91, 124, 255, 0.18);
-  border: 1px solid rgba(91, 124, 255, 0.42);
-  color: #b7c8ff;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-}
-.cf-builtin-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--cf-fg);
-}
-.cf-builtin-sub { margin: 0; color: var(--cf-faint, #6f7078); font-size: 13px; }
-.cf-builtin-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 14px;
-}
-.cf-builtin-card {
-  display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
-  gap: 14px;
-  padding: 12px;
-  border: 1px solid #2d303f;
-  border-radius: 12px;
-  background: #14151c;
-  align-items: center;
-}
-.cf-builtin-thumb {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #1f212c;
-}
-.cf-builtin-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  image-rendering: pixelated;
-}
-.cf-builtin-badge {
-  position: absolute;
-  left: 8px;
-  top: 8px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: rgba(10, 12, 18, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #f3d27a;
-  font-size: 11px;
-  font-weight: 700;
-}
-.cf-builtin-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.cf-builtin-card-title {
-  margin: 0;
-  font-size: 15.5px;
-  font-weight: 800;
-  color: #ffffff;
-  line-height: 1.3;
-}
-.cf-builtin-card-sub {
-  margin: 0;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #9fb4ff;
-}
-.cf-builtin-card-desc {
-  margin: 2px 0 6px;
-  font-size: 12px;
-  color: var(--cf-sub);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.cf-builtin-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.cf-builtin-btn {
-  border-radius: 8px;
-  padding: 7px 14px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: filter 120ms ease, background-color 120ms ease;
-}
-.cf-builtin-btn-open {
-  border: 1px solid #3c3f52;
-  background: #21232e;
-  color: var(--cf-fg);
-}
-.cf-builtin-btn-open:hover {
-  background: #2b2e3c;
-}
+.cf-quick-genre:hover { border-color: rgb(255 255 255 / 0.55); }
+.cf-quick-go { border-color: transparent; background: var(--accent); color: var(--on-accent); font-weight: var(--font-weight-semibold); }
+.cf-quick-go:hover { background: var(--accent-hover); }
+.cf-newband { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin: var(--space-6) 0 0; padding: var(--space-3) var(--space-4); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-3); }
+.cf-newband:first-child, :empty + .cf-newband { margin-top: 0; }
+.cf-builtin-demos { margin: var(--space-3) 0 var(--space-4); padding: var(--space-4) var(--space-5); border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-4); background: var(--bg-surface); }
+.cf-builtin-head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-3); }
+.cf-builtin-title { margin: 0; font-size: var(--font-16); font-weight: var(--font-weight-semibold); }
+.cf-builtin-sub { margin: 0; color: var(--text-3); font-size: var(--font-13); }
+.cf-builtin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--space-4); }
+.cf-builtin-card { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: var(--space-4); align-items: center; padding: var(--space-3); border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-3); background: var(--bg-raised); }
+.cf-builtin-thumb { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-2); background: var(--bg-inset); }
+.cf-builtin-thumb-img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.cf-builtin-badge { position: absolute; left: var(--space-2); top: var(--space-2); padding: 1px var(--space-2); border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-1); background: var(--bg-glass); color: var(--text-1); font-size: var(--font-12); font-weight: var(--font-weight-medium); }
+.cf-builtin-body { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.cf-builtin-card-title { margin: 0; font-size: var(--font-16); font-weight: var(--font-weight-semibold); line-height: 1.3; }
+.cf-builtin-card-sub { margin: 0; color: var(--text-3); font-size: var(--font-13); }
+.cf-builtin-card-desc { margin: 2px 0 var(--space-2); display: -webkit-box; overflow: hidden; color: var(--text-2); font-size: var(--font-13); line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.cf-builtin-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.cf-builtin-btn { min-height: var(--hit-min); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-2); background: var(--control-bg); color: var(--text-1); font: inherit; font-size: var(--font-13); font-weight: var(--font-weight-semibold); cursor: pointer; }
+.cf-builtin-btn:hover { background: var(--control-bg-hover); }
 @media (max-width: 720px) {
   .cf-builtin-grid { grid-template-columns: 1fr; }
   .cf-builtin-card { grid-template-columns: 1fr; }

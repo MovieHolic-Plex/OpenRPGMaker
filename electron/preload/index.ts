@@ -105,6 +105,8 @@ const bridge = {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
     openFolder: invoke(OPRN_CHANNELS.startOpenFolder),
     openRecent: invoke(OPRN_CHANNELS.startOpenRecent),
+    renameProject: invoke(OPRN_CHANNELS.startRenameProject),
+    forgetRecent: invoke(OPRN_CHANNELS.startForgetRecent),
     createProject: invoke(OPRN_CHANNELS.startCreateProject),
     importFile: invoke(OPRN_CHANNELS.startImportFile),
     suggestProjectDir: invoke(OPRN_CHANNELS.startSuggestProjectDir),

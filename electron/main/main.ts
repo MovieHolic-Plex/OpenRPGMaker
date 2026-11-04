@@ -22,7 +22,7 @@ import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
-import { describeRecentProjects, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { describeRecentProjects, forgetRecentProject, renameRecentEntry, renamableRecentDir, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
@@ -1007,6 +1007,25 @@ export async function startApp(boot: BootContext): Promise<void> {
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, projectId: session.store.projectId };
   });
+  ipcMain.handle(OPRN_CHANNELS.startRenameProject, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+    const input = payload as { readonly projectDir?: unknown; readonly title?: unknown } | null;
+    const dir = renamableRecentDir(input?.projectDir);
+    const title = typeof input?.title === "string" ? input.title.trim().slice(0, 80) : "";
+    if (!dir || !title) return null;
+    // 다른 창이 이미 연 폴더면 그 스토어를 빌려 쓰고, 아니면 잠깐 열었다 닫는다 — 같은 SQLite 에 두 번째 연결을 만들지 않는다.
+    const key = `rename:${dir}:${Date.now()}`;
+    try {
+      const session = await sessions.open(key, dir);
+      const snapshot = session.store.loadSnapshot();
+      if (snapshot) await session.store.saveProject({ ...snapshot.project, meta: { ...snapshot.project.meta, title } });
+      renameRecentEntry(dir, title);
+      return { projectDir: dir, title };
+    } finally {
+      sessions.close(key);
+    }
+  });
+  ipcMain.handle(OPRN_CHANNELS.startForgetRecent, (_event: IpcMainInvokeEvent, payload: unknown) =>
+    forgetRecentProject((payload as { readonly projectDir?: unknown } | null)?.projectDir));
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
