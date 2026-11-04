@@ -2,6 +2,7 @@ import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } 
 import type { AudioTrackState, PlaySession } from "@/project/session";
 import type { Project, SystemRecords } from "@/project/types";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
+import { resolveBattleBgmResourceId } from "@/project/mapMusic";
 
 export type BattleResultCueKind = "victory" | "defeat" | "escape";
 
@@ -18,7 +19,7 @@ export function enterBattleAudio(project: Project, session: PlaySession): Battle
   // Two authoring surfaces choose the battle track: the override record (carries volume)
   // and the M2 system-audio slot. The record wins when present.
   const slotResourceId = systemAudioOverride(session.m2Runtime, "battle");
-  const battleBgmResourceId = override?.resourceId ?? slotResourceId ?? project.system.battleBgmResourceId;
+  const battleBgmResourceId = resolveBattleBgmResourceId(project, session.currentMapId, override?.resourceId, slotResourceId);
   if (override && !battleBgmResourceId) {
     stopAudioChannel("bgm", 0);
     session.audio.bgm = undefined;
