@@ -3840,36 +3840,17 @@
      "id": "hanel",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter"
+       "kind": "pressUntilText",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "text": "작은 것부터",
+       "maxPresses": 8,
+       "settleMs": 900
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 600
+       "ms": 1500
       }
      ],
      "shot": true
@@ -3878,13 +3859,26 @@
      "id": "title",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter"
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 500
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 3000
+       "ms": 2600
       }
      ],
      "shot": true
@@ -3893,15 +3887,15 @@
      "id": "caption",
      "ops": [
       {
-       "kind": "waitFor",
+       "kind": "waitForText",
        "testid": "dialogue-box",
-       "state": "present",
+       "text": "이튿날 밤",
        "timeoutMs": 12000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 700
+       "ms": 1200
       }
      ],
      "shot": true
@@ -4299,36 +4293,17 @@
      "id": "hanel",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter"
+       "kind": "pressUntilText",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "text": "작은 것부터",
+       "maxPresses": 8,
+       "settleMs": 900
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 900
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 600
+       "ms": 1500
       }
      ],
      "shot": true
@@ -4337,13 +4312,26 @@
      "id": "title",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter"
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 500
+        }
+       ]
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 3000
+       "ms": 2600
       }
      ],
      "shot": true
@@ -4352,15 +4340,15 @@
      "id": "caption",
      "ops": [
       {
-       "kind": "waitFor",
+       "kind": "waitForText",
        "testid": "dialogue-box",
-       "state": "present",
+       "text": "이튿날 밤",
        "timeoutMs": 12000
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 700
+       "ms": 1200
       }
      ],
      "shot": true

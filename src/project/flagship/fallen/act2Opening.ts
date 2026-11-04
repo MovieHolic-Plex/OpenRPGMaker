@@ -386,17 +386,23 @@ function cellEvents(map: GameMap): void {
       say(HANEL, "…별을 세거라, 카엘. 작은 것부터."),
       wait(900),
       // 막 제목 카드 — 1막 끝 카드와 같은 꼴(작은 머리글·큰 제목·금빛 밑줄)의 그림 한 장. 대화창에 띄우지 않는다.
+      // 화면 효과(페이드)는 다음 「멈추는」 명령 뒤 화면 갱신 때 칠해진다 — 페이드 바로 뒤 wait(1) 로 그 자리에서 칠하게 한다.
+      // 없으면 「fadeIn → wait → fadeOut」 의 fadeIn 이 한 번도 칠해지지 않아 카드가 검은 막 밑에 묻혔다(QA 2026-11-04 탐침).
       { kind: "showPicture", pictureId: "fs2_act2_title_9", resourceId: act2TitleCard.resource.id, x: 0, y: 0, scale: 100, opacity: 255, waitForPicture: false } as unknown as Command,
       fadeIn(1400),
-      wait(2600),
+      wait(1),
+      wait(3000),
       fadeOut(1000),
+      wait(1),
+      wait(1100),
       { kind: "erasePicture", pictureId: "fs2_act2_title_9" } as unknown as Command,
-      wait(400),
+      wait(300),
       narrate("이튿날 밤, 심문회 초소 지하.", { position: "center", context: "narration" }),
       // 첫 장면 — 카엘이 젖은 바닥에 엎어져 있다가 몸을 일으킨다.
       m2("m2-225-sprite-look", { target: "player", pose: "fallen" }),
       fadeIn(1400),
-      wait(700),
+      wait(1),
+      wait(1500),
       se("cc0-se-osx-splash-01"),
       wait(600),
       se("cc0-se-orp-inventory-cloth"),
