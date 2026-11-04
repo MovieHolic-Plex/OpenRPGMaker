@@ -14,6 +14,7 @@ import { applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { applyStatePreset } from "@/testing/debugSession";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { collectCommands } from "@/project/mapInspection";
 
 export type QaCheckpointPartyMember = {
   readonly actorId: string;
@@ -51,6 +52,13 @@ export type QaCheckpoint = {
   readonly objective?: string;
   /** 불러온 직후 이 이벤트를 실행한다(맵 이벤트 id). */
   readonly startEventId?: string;
+  /**
+   * 불러온 직후 이 부대와 싸우는 맵 이벤트를 실행한다 — 그 이벤트 명령에 battleProcessing troopId 가 있는 것.
+   * 여러 개면 플레이어 자리(x·y)에서 맨해튼 거리가 가장 가까운 것. startEventId 가 있으면 그것이 우선이다.
+   * 왜(2026-11-04): 필드 적 이벤트 id(`ev_field_enemy_<uuid>`)는 굽기마다 새로 뽑혀, id 를 적어 둔 체크포인트가
+   * 다음 굽기에서 «이벤트가 없다»로 부팅을 못 했다(폴른 스타 1.36 점검, 숯덩이 골렘).
+   */
+  readonly startTroopId?: string;
 };
 
 export type QaCheckpointBoot = {
@@ -126,6 +134,19 @@ export function sessionFromQaCheckpoint(project: Project, checkpoint: QaCheckpoi
     }
   }
   return session;
+}
+
+/** 불러온 직후 실행할 맵 이벤트 id. startEventId 가 우선, 없으면 startTroopId 로 그 부대와 싸우는 이벤트를 찾는다. */
+export function qaCheckpointStartEventId(project: Project, checkpoint: QaCheckpoint, mapId: string): string | undefined {
+  if (checkpoint.startEventId) return checkpoint.startEventId;
+  if (!checkpoint.startTroopId) return undefined;
+  const matches = (project.maps[mapId]?.events ?? []).filter((event) =>
+    collectCommands([event]).some((command) => command.kind === "battleProcessing" && command.troopId === checkpoint.startTroopId));
+  if (matches.length === 0) throw new Error(`QA 체크포인트 ${checkpoint.id}: 맵 ${mapId} 에 부대 ${checkpoint.startTroopId} 와 싸우는 이벤트가 없다`);
+  const x = checkpoint.x ?? 0;
+  const y = checkpoint.y ?? 0;
+  return matches.reduce((best, event) =>
+    Math.abs(event.x - x) + Math.abs(event.y - y) < Math.abs(best.x - x) + Math.abs(best.y - y) ? event : best).id;
 }
 
 /** 부팅 설정의 qaCheckpoint 를 방어적으로 읽는다. 모양이 틀리면 null(→ 일반 부팅이 아니라 오류). */

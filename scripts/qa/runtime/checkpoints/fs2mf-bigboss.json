@@ -48,7 +48,6 @@
      }
     }
    },
-   "startEventId": "ev_field_enemy_0bc75703-642c-4df4-b09d-786e8e8f6d03",
    "beats": [
     {
      "id": "idle",
@@ -99,7 +98,8 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "startTroopId": "troop_fs2_cinder_golem"
   },
   {
    "id": "dragon",
