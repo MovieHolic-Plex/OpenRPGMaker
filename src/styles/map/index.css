@@ -63,3 +63,4 @@
 @import "./event-marker-tooltip.css" layer(map);
 @import "./left-column.css" layer(map);
 @import "./canvas-tool-pill.css" layer(map);
+@import "./right-inspector.css" layer(map);

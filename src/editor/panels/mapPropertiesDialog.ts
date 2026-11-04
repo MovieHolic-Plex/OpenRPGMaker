@@ -24,7 +24,7 @@ const FOCUS_TESTID: Record<MapPropertiesFocus, string> = {
 export function openMapPropertiesDialog(
   mapId: MapId,
   mapName: string,
-  options: { readonly focus?: MapPropertiesFocus } = {},
+  options: { readonly focus?: MapPropertiesFocus; readonly section?: string } = {},
 ): void {
   selectEditorMap(mapId);
   resetMapPropsSectionForOpen();
@@ -37,6 +37,8 @@ export function openMapPropertiesDialog(
     width: "wide",
   });
   if (options.focus) focusMapPropertiesControl(mapId, FOCUS_TESTID[options.focus]);
+  // 항목 이름(mapProps.ts SECTION_ORDER, 예: "bgm")만 받으면 그 항목 행을 눌러 설정을 바로 연다 — 오른쪽 인스펙터 행이 쓴다.
+  else if (options.section) focusMapPropertiesControl(mapId, `map-props-tab-${options.section}`);
 }
 
 /**
