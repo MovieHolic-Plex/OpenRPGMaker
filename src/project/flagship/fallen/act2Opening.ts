@@ -409,7 +409,7 @@ function cellEvents(map: GameMap): void {
       m2("m2-225-sprite-look", { target: "player", reset: true }),
       wait(300),
       emote("player", "ellipsis", 900),
-      say(ELENA, "…이리스가 없어."),
+      say(ELENA, "이리스가 없어!"),
       say(KAEL, "선생님도."),
       se("cc0-se-osx-door-open"),
       route(rinoId, [{ kind: "setThrough", enabled: true }, ...walk(toGate), { kind: "setThrough", enabled: false }, { kind: "turn", dir: "up" }]),
@@ -641,7 +641,7 @@ function barracks(project: Project, exec: Exec): void {
       // 독립 판정: 2막 내내 회복약이 하나도 없어 쓰러진 동료를 못 일으켰다 — 되찾은 짐 속 약을 챙긴다(한 번).
       say(ELENA, "꾸러미에 약 주머니도 그대로 있어.\n…다행이다. 챙겨 가자."),
       se("cc0-se-orp-inventory-cloth"), item("item_potion", 5), item("item_ether", 2), item("item_panacea", 1),
-      narrate("「회복약」 5개, 「마력약」 2개,\n「만병통치약」 1개를 챙겼다.", { context: "system" }),
+      narrate("「회복약」 5개, 「마력약」 2개,\n「만능약」 1개를 챙겼다.", { context: "system" }),
       setSw(SW_MEDS),
       se("cc0-se-osx-wooded-box-open"),
       narrate("사다리를 올라 뚜껑 문을 밀어 올렸다."),
@@ -876,7 +876,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
       // 잔 일 Q4 「꺼진 등」 — 기사들이 거둬 간 집집 등을 몰래 문고리에 다시 건다(계획 4-6).
       { name: "문틈(다시)·꺼진 등", conditions: [sw(SW_MIRE)], commands: [
         say(MIRE, "우물로 가렴. 등불 든 순찰병 앞으론 가지 말고."),
-        say(MIRE, "…하나만 더 부탁하자.\n기사들이 집집 등을 죄다 거둬 갔어."),
+        say(MIRE, "하나만 더 부탁하자.\n기사들이 집집 등을 죄다 거둬 갔어."),
         say(MIRE, "이 등 셋, 문고리에 몰래 걸어 줄래?\n불은 안 켜도 돼. 걸려만 있으면 다들 알아들어."),
         say(MIRE, "서쪽 끝 별지기 할아버지 댁,\n장터 옆 약방, 천문대 곁 리사네 집."),
         say(MIRE, "셋 다 창이 캄캄할 거야.\n등을 뺏긴 집이거든."),
@@ -911,7 +911,7 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
         item(FS_SILVER_SPOON, 1),
         narrate("「은수저」를 받았다.", { context: "system" }),
         say(TOBY, "별한테 줄 선물. 이번엔 형이 갖다 줘."),
-        say(KAEL, "…응. 꼭 전할게."),
+        say(KAEL, "응. 꼭 전할게."),
         setSw(SW_SPOON),
       ] },
       { name: "기둥 뒤(다시)", conditions: [sw(SW_SPOON)], commands: [say(TOBY, "엄마가 깨기 전에 들어가야 해. 형도 조심해.")] },
@@ -1037,7 +1037,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     cutBegin(),
     emote("ev_fs2_obs_hanel", "exclamation", 700),
     say(HANEL, "…밑으로 올 줄 알았다.\n정문으로 왔으면 혼쭐을 냈을 게다."),
-    say(ELENA, "선생님! 이리스가──"),
+    say(ELENA, "선생님! 이리스가…"),
     say(HANEL, "안다. 발렌이 쇠 마차에 태워 북쪽으로 데려갔지."),
     say(HANEL, "서른 해 전, 둘째 아이에게 대답한 건\n숲에 드나들던 젊은 것 셋이었다.\n나, 브람, 그리고 세린."),
     say(HANEL, "세린은 나보다 별 이름을 잘 외웠다.\n대답하자고 먼저 말한 것도 세린이었지."),
@@ -1159,7 +1159,7 @@ function northGateEvents(project: Project, exec: Exec): void {
   addEv(project, FS2_SMITHY_ID, "ev_fs2_smithy_rohan", ROHAN, SMITHY.rohan, [
     page("ev_fs2_smithy_rohan_p", "로한(창)", [], [
       cutBegin(),
-      say(ROHAN, "…왔구나. 하넬이 보낼 줄 알았다."),
+      say(ROHAN, "왔구나. 하넬이 보낼 줄 알았다."),
       say(ROHAN, "약속한 몫이다. 별쇠를 섞었다."),
       se("cc0-se-orp-inventory-cloth"),
       { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
@@ -1603,7 +1603,7 @@ function forestEdgeChase(project: Project, exec: Exec, mapId: string, bramChip: 
     wait(2400),
     ...allIds.map((id) => emote(id, "question", 700)),
     { kind: "setLighting", ambient: 0.8, color: "#0a1024", transitionMs: 1200 } as unknown as Command,
-    say("순찰병", "…숲지기 땅이다. 더는 못 들어가.", top),
+    say("순찰병", "숲지기 땅이다. 더는 못 들어가.", top),
     // 물러나며 꺼진다 — 얼굴은 숲 쪽 그대로 다섯 걸음 뒷걸음질, 걸음마다 흐려져 끝에 0(들고 있던 등불도 같이 꺼진다).
     ...allIds.map((id, i) => route(id, [{ kind: "setDirectionFix", enabled: true }, { kind: "setThrough", enabled: true },
       ...[0, 1, 2, 3, 4].flatMap(() => [{ kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -51 }])], i === allIds.length - 1)),
@@ -1970,7 +1970,7 @@ function dawnwellEvents(project: Project): void {
       narrate("이 집만 무너지지 않았다.\n빗장이 바깥에 걸려 있다."),
       narrate("문 아래쪽, 아이 키 높이에 작은 주먹 자국 셋."),
       say(ELENA, "문이 바깥에서 잠겨 있었어.\n안에 있던 사람이 못 나오게."),
-      say(KAEL, "…마을부터 둘러보자."),
+      say(KAEL, "마을부터 둘러보자."),
     ]),
     page("ev_fs2_dawn_door_open", "빗장을 연다", [...allMems, sw(SW_CERT, false)], [
       cutBegin(),
@@ -2550,7 +2550,7 @@ function fortressEvents(project: Project, exec: Exec): void {
     page("ev_fs2_fort_cell_run", "깬다", [sw(SW_SARAH_LOST)], [
       fadeIn(900),
       narrate("차가운 돌바닥. 요새 감방이다."),
-      say(ELENA, "…창살이 열려 있어. 일부러 안 잠갔나 봐."),
+      say(ELENA, "창살이 열려 있어. 일부러 안 잠갔나 봐."),
       say(KAEL, "한 번 더 가 보자. 이번엔 개부터."),
       setSw(SW_SARAH_LOST, false),
       setSw(SW_ON_WALL, false),
@@ -2659,7 +2659,7 @@ function snowPass(project: Project, exec: Exec): void {
   if (!fire) throw new Error("[fallen-star act2] 고개 모닥불 자리가 없다");
   exec(project, "configure_party_bonds", {
     members: [
-      { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "…이리스 몫까지 세 줘."] },
+      { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "이리스 몫까지 세어 줘."] },
       { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 망치를 쥐라고 했어. 난 창을 골랐고.\n…그 뒤로 서로 말을 잘 안 했지.", "발렌 님이 날 북문에 세우면서 그러더라.\n「고개 들어라」. …아버지가 하던 말인데."] },
     ],
     // 모닥불과 여관 밤(B8 여관 주인)이 같은 장면을 쓴다 — 어느 불가에도 맞는 한 줄.
