@@ -2259,6 +2259,8 @@ dedicated exported player passed. Do not describe this as all browser checks gre
   ③ 목표 상한(`targetCaps`): 같은 이벤트 뒤 페이지가 목표 페이지 조건 전부 + 문턱 하나(호감 ≥·변수 ≥/>)를 더 가지면 그 문턱 미만, 목표 triggerEnding 앞에 같은 길로 도는 triggerEnding 의 엔딩 호감 문턱 미만. 길 밖 선택지는 0번 대신 그 값을 올리지 않는 보기를 고른다(평범 엔딩을 고백 페이지가 덮거나 혼자 엔딩 앞에서 평범 엔딩이 터지지 않게).
   재생 `bun scripts/qa/assistant-v2/dayCycleReplay.mts <project.json>... --negatives --as-variable`: romance 엔딩 셋(regular·alone·together)이 각자 엔딩에 닿고, 반례(날 += 지움·호감 + 지움·스위치 끄기 지움)는 여전히 막힌다(호감을 지워도 혼자 엔딩은 정상 도달). `--as-variable` 은 호감을 변수 하나(일과 점수)로 바꾼 사본으로 변수형 다일 반복을 본다 — 엔딩 조건을 비우므로 혼자 엔딩 판은 조건 없는 평범 엔딩이 먼저 터진다(사본의 부산물). standin slice·errand 는 하루 안의 부탁·배달이라 다일 구조가 아니고, 바꾸기 전후 결과가 같다. 다른 장르 standin 9판·옛 연애 픽스처 15개도 결과 불변.
 - 증거 제시(`presentItem`, 2026-10-29 추리 사건): 목표가 증거 제시 보기 안에 있으면 그 보기의 아이템을 낸다(`choiceSequence` 의 `{present:itemId}`), 길 밖 증거 제시는 닫는다. 선택지 대신 증거 제시 창이 떠 있으면 닫고 이어 간다. 전에는 `choose` 가 「대기 중 선택지가 없습니다」로 끝나 증거 제시 갈래 속 목표를 못 채웠다.
+  그 보기의 아이템은 선행 조건이다(`baseRequirementsOf`, 2026-11-05 gpt-only-game 좀비 생존) — 열쇠를 주는 상자(changeItem)를 먼저 계획한다.
+  전에는 탈출구 presentItem(낡은 열쇠)→triggerEnding 을 열쇠 없이 돌려 「분기가 목표 명령을 건너뜀」 막힘을 냈다(실제 플레이는 엔딩 도달). 회귀 `test/qaGameCheck.test.ts`.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 

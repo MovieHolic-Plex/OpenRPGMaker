@@ -205,6 +205,31 @@ describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고
   });
 });
 
+// 2026-11-05 gpt-only-game zombie survival: the exit gate's presentItem(old key) -> triggerEnding was tried before the key chest,
+// so autoplay reported a blocker although real play found the key and reached the ending.
+describe("qa gameCheck — presentItem option needs its item first", () => {
+  it("plans the chest that gives the key before the gate that takes it", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.database.items.push({ ...project.database.items[0]!, id: "item_gate_key", name: "낡은 열쇠" } as never);
+    project.endings = [{ id: "ending_gate", name: "봉쇄선 너머", conditions: [], priority: 0 }] as never;
+    for (const map of Object.values(project.maps)) map.events = map.events.filter((event) => !JSON.stringify(event).includes("triggerEnding"));
+    const page = (id: string, commands: unknown[]) => ({
+      id, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands,
+    });
+    project.maps[project.startMapId]!.events.push(
+      { id: "ev_gate", name: "봉쇄선 탈출구", x: 3, y: 3, pages: [page("g", [{ kind: "presentItem", prompt: "열쇠를 쓰자.", consume: false,
+        options: [{ itemId: "item_gate_key", branch: [{ kind: "triggerEnding", endingId: "ending_gate" }] }],
+        otherwiseBranch: [{ kind: "text", body: "맞지 않는다." }], cancelBranch: [] }])] } as never,
+      { id: "ev_key_chest", name: "열쇠 상자", x: 7, y: 7, pages: [page("c", [{ kind: "changeItem", itemId: "item_gate_key", op: "+=", amount: 1 }])] } as never,
+    );
+    const report = runGameCheck(project, { autoPlayBudgetMs: 20_000 });
+    const run = report.autoPlay?.runs?.[0];
+    expect(run?.ok, JSON.stringify(run?.steps?.map((s) => s.detail))).toBe(true);
+    expect(report.findings.filter((f) => f.code === "autoplay-failed").map((f) => f.message)).toEqual([]);
+  }, 30_000);
+});
+
 describe("qa gameCheck — changeItem 은 장비 id 도 소지품이다(r4 보물상자)", () => {
   function chestWith(itemId: string): Project {
     const project = deserialize(serialize(buildQaFixture("clean")));
