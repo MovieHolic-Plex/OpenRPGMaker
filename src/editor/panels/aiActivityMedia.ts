@@ -179,6 +179,16 @@ function figure(ref: ActivityVisualRef, compact = false): HTMLElement {
   void (async () => {
     const record = await readActivityMedia(ref.id);
     if (!record) { picture.textContent = "보관된 이미지 없음"; return; }
+    // 번들 그림 한 장(아이콘·얼굴·전투 그림)은 유휴 대기열을 기다리지 않고 바로 띄운다 — 실행 중에는 유휴가 오지 않아
+    // 「미리보기 준비 중…」 회색 상자가 오래 남았다(2026-11-05). 저장용 래스터는 뒤에서 그대로 돈다.
+    const quick = !record.blob && record.visual.kind === "asset" && record.visual.pattern === undefined && !record.visual.uploaded && !record.visual.uploadedAsset
+      ? resolveAssetResourceUrl(record.visual.resourceId) : undefined;
+    if (quick) {
+      const image = el("img", { attrs: { alt: ref.title, src: quick, decoding: "async" } });
+      image.style.imageRendering = "pixelated";
+      picture.replaceChildren(image);
+      picture.dataset.ready = "true";
+    }
     const blob = await prepare(ref.id);
     if (blob) attachImage(picture, blob, ref.title);
     else { picture.textContent = record.visual.resourceId || record.visual.kind === "map" ? "이미지를 불러오지 못했어요" : "등록된 이미지 없음"; picture.classList.add("is-unavailable"); if (record.visual.kind === "record" && record.visual.stats?.length) picture.hidden = true; }
