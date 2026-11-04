@@ -23,6 +23,7 @@
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
 //  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
+//  - scene-seated-standing / scene-seated-off-chair  의자 칸의 선 그림 / 의자 아닌 칸의 앉은 그림 — seatedPoseLint.ts
 //  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
 //  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
@@ -41,6 +42,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
 import { checkSceneStaging } from "./sceneStagingLint";
+import { checkSeatedPose } from "./seatedPoseLint";
 import { checkStairEntrances } from "./stairEntranceLint";
 import { cellIs, doorCacheKey, isDoorArtCell, LAYERS, type TileMetaLike } from "../staging/doorCells";
 
@@ -1723,6 +1725,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkEndingUnderFade);
   guard(checkEndingCardsDistinct);
   guard((p, out) => checkSceneStaging(p, out)); // 인물 연출: 화자 부재·먼 대화·서로 안 봄(sceneStagingLint.ts)
+  guard((p, out) => checkSeatedPose(p, out)); // 앉은 자세: 의자 칸에 선 그림·맨바닥에 앉은 그림(seatedPoseLint.ts)
   guard((p, out) => checkStairEntrances(p, out)); // 계단 입구: 앞 칸 막힘·방향 어긋남·이동 칸 어긋남(stairEntranceLint.ts)
   return issues;
 }

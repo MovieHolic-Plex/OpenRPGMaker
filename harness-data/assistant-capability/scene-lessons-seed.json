@@ -984,6 +984,21 @@
     "the project saves and reloads"
    ],
    "lint0": []
+  },
+  {
+   "id": "seated-listeners-chair-visible",
+   "label": "의자에 앉은 사람은 앉은 자세(pose seated)로 그려 의자가 보이게 한다",
+   "port": 19555,
+   "lessons": [
+    "seated-listeners-chair-visible"
+   ],
+   "prompt": "회의실에 긴 탁자를 놓고 탁자 아래쪽 의자 세 칸에 동료 셋이 앉아 발표자를 올려다보게 해 줘. 의자가 보이게 앉은 모습으로 그려 줘.",
+   "requirements": [
+    "each of the three seated people's event page uses graphic pose 'seated' (not a standing frame) on a chair cell (tile tag 의자)",
+    "run_lint reports no scene-seated-standing and no scene-seated-off-chair",
+    "the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

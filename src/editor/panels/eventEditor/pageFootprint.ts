@@ -84,6 +84,11 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     children: BLEND_MODE_NAMES.map((name) => el("option", { attrs: { value: name }, text: BLEND_MODE_LABELS[name] })),
   }) as HTMLSelectElement;
   blendSelect.value = page.graphic.blendMode ?? "normal";
+  const seatedToggle = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-page-pose-seated" },
+  }) as HTMLInputElement;
+  seatedToggle.checked = page.graphic.pose === "seated";
   /** 이 컨트롤이 마지막으로 쓴 그림 설정. 배율·겹치기를 따로 커밋해도 서로의 값을 덮지 않는다. */
   let latestGraphic: EventPage["graphic"] = page.graphic;
 
@@ -115,10 +120,10 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     const scale = manualToggle.checked
       ? normalizeCharacterScale(Number.parseFloat(scaleInput.value))
       : derivedScaleForBody(footprint);
-    const graphic: EventPage["graphic"] = withBlendMode(
+    const graphic: EventPage["graphic"] = withPose(withBlendMode(
       { ...latestGraphic, scale, scaleMode: manualToggle.checked ? "manual" : "auto" },
       blendSelect.value,
-    );
+    ), seatedToggle.checked);
     latestGraphic = graphic;
     updateEventPage(mapId, eventId, page.id, { footprint, passRows: rows, graphic });
     reflect(footprint, rows, graphic);
@@ -147,6 +152,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     input.addEventListener("change", () => commit(currentFields()));
   }
   blendSelect.addEventListener("change", () => commit(currentFields()));
+  seatedToggle.addEventListener("change", () => commit(currentFields()));
   manualToggle.addEventListener("change", () => {
     scaleInput.disabled = !manualToggle.checked;
     commit(currentFields());
@@ -179,10 +185,17 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
         }),
         labeled("배율", scaleInput, "그림 크기. 몸 사각과 독립이다"),
         labeled("겹치기", blendSelect, "아래 화면과 섞는 법. 더하기=불꽃·빛기둥·유령, 곱하기=그림자·물들임"),
+        labeled("앉은 자세", seatedToggle, "의자 칸에 앉은 사람 — 그림을 조금 내리고 아랫단을 잘라 의자가 보인다. 의자 칸에만 쓴다"),
       ],
     })
   );
   return control;
+}
+
+/** 앉은 자세를 그림 설정에 반영한다. 끄면 키를 지워 옛 저장 바이트를 유지한다. */
+function withPose(graphic: EventPage["graphic"], seated: boolean): EventPage["graphic"] {
+  const { pose: _previous, ...rest } = graphic;
+  return seated ? { ...rest, pose: "seated" } : rest;
 }
 
 /** 겹치기 값을 그림 설정에 반영한다. 보통이면 키를 지워 옛 저장 바이트를 유지한다. */

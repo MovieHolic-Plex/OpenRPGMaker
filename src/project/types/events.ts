@@ -825,6 +825,11 @@ export interface EventPageGraphic {
   scaleMode?: "auto" | "manual";
   /** 아래 화면과 섞는 방식(생략 = 보통). 빛·유령은 add, 그림자는 multiply. `@/project/blendMode`. */
   blendMode?: Exclude<BlendModeName, "normal">;
+  /**
+   * 자세(생략 = 선 자세). `seated` = 의자에 앉은 사람 — 서 있는 정지 프레임을 조금 내려 그리고 아랫단을 잘라
+   * 의자가 사람 아래로 보인다. 걸음 흉내를 내지 않는다. 의자 칸(타일 태그 「의자」)에 놓는 그림에만 쓴다. `@/project/seatedPose`.
+   */
+  pose?: "seated";
 }
 
 export interface NpcLivingDestination {

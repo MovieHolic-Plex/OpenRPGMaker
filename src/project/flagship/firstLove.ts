@@ -179,9 +179,15 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
  */
 function seatedPages(id: string, conds: Parameters<typeof page>[1], who: string, upSw?: string): ReturnType<typeof page>[] {
   return [
-    page(`${id}_sit`, conds, [], { who, dir: "up", priority: "above" } as Parameters<typeof page>[3]),
+    seatedGraphic(page(`${id}_sit`, conds, [], { who, dir: "up", priority: "above" } as Parameters<typeof page>[3])),
     ...(upSw ? [page(`${id}_up`, [...conds, swOn(upSw)], [], { who, dir: "up", priority: "same" } as Parameters<typeof page>[3])] : []),
   ];
+}
+
+/** 앉은 그림 — 의자가 사람 아래로 보이게 서 있는 정지 프레임을 내려 그린다(graphic.pose, 엔진). */
+function seatedGraphic(p: ReturnType<typeof page>): ReturnType<typeof page> {
+  (p as unknown as { graphic: { pose?: "seated" } }).graphic.pose = "seated";
+  return p;
 }
 
 /** 의자에서 옆 바닥으로 일어선다(통과를 켜고 한 걸음). upSw 를 주면 일어선 뒤 같은 층 페이지로 바꾼다. */
