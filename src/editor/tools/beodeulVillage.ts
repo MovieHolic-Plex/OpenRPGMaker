@@ -746,7 +746,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const rows = Array.from({ length: len + 1 }, (_, j) => b0 - j * up);
       if (rows.some((y) => y < 0 || y >= H)) return false;
       const colOk = (X: number, extra: boolean) => X >= 0 && X < W && lv[(b0 + up) * W + X] === hi && rows.every((y) => { const k = y * W + X; return lv[k] === lo && !codeT.water[k] && occ[k] !== RESV && occ[k] !== BLD && occ[k] !== KEEP && !(extra && network.has(k)); });
-      const flank = (X: number) => X < 0 || X >= W || !!codeT.water[b0 * W + X] || (lv[b0 * W + X] === lo && lv[(b0 + up) * W + X] === hi);
+      const flank = (X: number) => X < 0 || X >= W || !!codeT.water[b0 * W + X] || (lv[b0 * W + X] === lo && lv[(b0 + up) * W + X] === hi)
+        // 3b 가 다듬을 수 있는 옆면(두 칸 다 빈 땅) — placeCut trueFlank 와 같다
+        || [b0 * W + X, (b0 + up) * W + X].every((k) => occ[k] === FREE && !codeT.water[k] && !network.has(k));
       const a = side > 0 ? x : x - 1;
       return colOk(x, false) && colOk(x + side, fresh) && flank(a - 1) && flank(a + 2);
     };
@@ -1280,20 +1282,32 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         let x0 = xs[0]!, x1 = xs[xs.length - 1]!;
         if (x1 - x0 + 1 !== xs.length || xs.length > 3) return "폭";
         const flank = (x: number) => x < 0 || x >= W || occ[idx(x, b0)] === WATERC || occ[idx(x, b0)] === KEEP || (lv[idx(x, b0)] === lo && lv[idx(x, b0 + up)] === hi);
+        // 옆면이 같은 절벽 면이 아니고 그 두 칸이 빈 땅이면 절벽을 한 칸 곧게 다듬는다(발치 칸 = lo, 그 너머 = hi) — 계단 옆벽이 절벽에 묻힌다
+        const trueFlank = (x: number): boolean => {
+          if (flank(x)) return true;
+          const a = idx(x, b0), b = idx(x, b0 + up);
+          if (![a, b].every((n) => occ[n] === FREE && !codeT?.water[n] && !rampCells.has(n))) return false;
+          lv[a] = lo; lv[b] = hi; cutCells += 1;
+          return true;
+        };
         const side = (x: number) => x < 0 || x >= W || flight.every((y) => { const n = idx(x, y); return !rampCells.has(n) && (relax || !isRoad(n)); });
-        const fits = (a: number, b: number) => flank(a - 1) && flank(b + 1) && side(a - 1) && side(b + 1);
+        const canTrue = (x: number) => x >= 0 && x < W && [idx(x, b0), idx(x, b0 + up)].every((n) => occ[n] === FREE && !codeT?.water[n] && !rampCells.has(n));
+        const fits = (a: number, b: number) => (flank(a - 1) || canTrue(a - 1)) && (flank(b + 1) || canTrue(b + 1)) && side(a - 1) && side(b + 1);
         let add = -1;
         if (xs.length === 1) {
-          const east = ps.every((y) => freeAt(x1 + 1, y)), west = ps.every((y) => freeAt(x0 - 1, y));
+          // 층계참 줄(양 끝)은 이미 다른 길이어도 된다(그 길로 이어진다) — 계단 줄만 빈 땅이어야 한다
+          const widen = (x: number) => ps.every((y, j) => freeAt(x, y) || ((j === 0 || j === ps.length - 1) && x >= 0 && x < W && isRoad(idx(x, y)) && lv[idx(x, y)] === L(y)));
+          const east = widen(x1 + 1), west = widen(x0 - 1);
           if (east && fits(x0, x1 + 1)) add = ++x1;
           else if (west && fits(x0 - 1, x1)) add = --x0;
           else return east || west ? "옆 절벽" : "폭";
         } else if (!fits(x0, x1)) return "옆 절벽";
+        if (!trueFlank(x0 - 1) || !trueFlank(x1 + 1)) return "옆 절벽";
         if (add >= 0) {
           // 넓힌 열은 층계참 너머로 한 줄씩 더(길이 곧게 이어질 때) — 세 줄짜리 혹은 도시 형태 자가 막다른 토막으로 짚는다
           const orig = String(add === x1 ? x0 : x1), track = [...st.cells].some((c) => trackCells.has(c));
           const rows = [...ps, ...[ps[0]! - up, ps[ps.length - 1]! + up].filter((y) => sec.has(y) && key(y) === orig && freeAt(add, y))];
-          for (const y of rows) { const n = idx(add, y); occ[n] = ROAD; st.cells.add(n); sec.get(y)!.push(n); if (track) trackCells.add(n); }
+          for (const y of rows) { const n = idx(add, y); if (isRoad(n)) continue; occ[n] = ROAD; st.cells.add(n); sec.get(y)!.push(n); if (track) trackCells.add(n); }
         }
         for (const y of flight) for (const c of sec.get(y)!) { ramps[c] = rampCode(up > 0 ? "s" : "n", true); rampCells.add(c); }
         return "";
@@ -1310,6 +1324,18 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           if (Math.abs(lp - lq) > CUT_MAX_RISE) { lowerSec(up > 0 ? q : p, hi); fixed = true; break; }
           let why = placeCut(p, q, lo, hi, up, false);
           if (why && codeT && !placeCut(p, q, lo, hi, up, true)) why = "";
+          // 그 자리에 못 놓으면 높은 쪽으로 k칸 밀어(그만큼 길을 낮은 단으로 깎아) 곧은 절벽 자리를 찾는다 — 길이 언덕을 깎고 오르는 모습(예전 3b 와 같다).
+          // 깎은 칸이 더 낮아지면 옆 칸과 절벽 면이 달라지므로 한 칸씩 밀며 본다. 못 놓으면 되돌린다.
+          for (let k = 1; why && k <= 6; k += 1) {
+            const between = Array.from({ length: k }, (_, j) => (up > 0 ? q : p) + j * up), beyond = (up > 0 ? q : p) + k * up;
+            if (!between.every((y) => sec.has(y) && L(y) === hi) || !sec.has(beyond) || L(beyond) !== hi || !straight([...between, beyond])) break;
+            const saved = between.flatMap((y) => (sec.get(y) ?? []).map((c) => [c, lv[c]!] as const));
+            for (const y of between) lowerSec(y, lo);
+            const pp = up > 0 ? between[k - 1]! : beyond, qq = up > 0 ? beyond : between[k - 1]!;
+            why = placeCut(pp, qq, lo, hi, up, false);
+            if (why && codeT && !placeCut(pp, qq, lo, hi, up, true)) why = "";
+            if (why) for (const [c, v] of saved) lv[c] = v;
+          }
           if (!why) rampCount += 1;
           else {
             rampFails += 1; failWhy.set(why, (failWhy.get(why) ?? 0) + 1);
