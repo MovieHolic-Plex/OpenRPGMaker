@@ -1,4 +1,4 @@
-﻿import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
+import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { Layer } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { callMapEventTargetStatus } from "@/editor/eventCallTargetStatus";
@@ -415,7 +415,7 @@ function primaryEventPage(event: Pick<GameEvent, "pages">): EventPage | undefine
   return pages[0];
 }
 
-function triggerLabel(trigger: Trigger | undefined): string {
+export function triggerLabel(trigger: Trigger | undefined): string {
   if (!trigger) return "트리거 없음";
   // 구역 트리거만 매개변수가 있다 — 어느 구역인지가 보이지 않으면 호버 카드가 반준만 말한다.
   if (trigger.kind === "locationTransition") return locationTransitionSentence(trigger);

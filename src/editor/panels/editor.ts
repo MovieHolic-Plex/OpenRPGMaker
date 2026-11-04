@@ -37,6 +37,7 @@ import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
+import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
@@ -132,6 +133,7 @@ let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = null;
 let aiDockRoot: HTMLElement | null = null;
+let rightInspector: RightInspectorMount | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
 let disposeCanvasStatus: (() => void) | null = null;
@@ -266,15 +268,20 @@ export function renderEditor(main: HTMLElement): void {
     children: [chatFloatHost],
   });
   aiDockRoot = aiDock;
-  layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea, aiDock);
+  // 오른쪽 인스펙터(목업 300px 열). 조수를 펼치면 레이아웃에 is-assistant-open 이 붙어 이 열은 숨고 조수 도크가 그 자리를 쓴다.
+  rightInspector?.dispose();
+  rightInspector = mountRightInspector(cursorDiagnostics);
+  layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea, rightInspector.root, aiDock);
   const aiPanel = renderAiChatPanel();
   const syncAiDockCollapsed = (): void => {
     aiDock.classList.toggle("is-collapsed", aiPanel.classList.contains("is-collapsed"));
+    layout.classList.toggle("is-assistant-open", !aiPanel.classList.contains("is-collapsed"));
     applyLayout();
     scheduleFitCanvas();
   };
   aiPanel.addEventListener("oprn:ai-panel-collapse", syncAiDockCollapsed);
   aiDock.classList.toggle("is-collapsed", aiPanel.classList.contains("is-collapsed"));
+  layout.classList.toggle("is-assistant-open", !aiPanel.classList.contains("is-collapsed"));
   // 조수 느낌표 버튼은 **캔버스 영역 안**에 놓는다. 오른쪽 아래는 팀 레일(84px)이 이미 쓰고
   // 있는데, absolute 로 canvas-area 안에 두면 레일이 시작하는 곳에서 자동으로 끝나
   // 겹침 계산이 필요 없다(실측 1440×1000: 레일 왼쪽 1357px, 버튼 오른쪽 1341px).
@@ -552,6 +559,8 @@ export function teardownEditor(): void {
   disposeReliefToolbar = null;
   chatFloatRoot = null;
   aiDockRoot = null;
+  rightInspector?.dispose();
+  rightInspector = null;
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
@@ -748,7 +757,9 @@ function applyLayout(): void {
     // AI 복원 레일만 예약한다. 작업 창은 지도 위에 펼쳐지므로 지도 폭은 그대로다.
     const dockWidth = aiDockRoot ? 44 : 0;
     if (aiDockRoot) aiDockRoot.style.width = `${dockWidth}px`;
-    const room = usableWidth - dockWidth - MIN_CANVAS_WIDTH - resizerWidth;
+    // 오른쪽 인스펙터는 CSS 가 보이기를 정한다(조수 펼침·좁은 창이면 숨음) — 보일 때만 폭을 뺀다.
+    const inspectorWidth = rightInspector?.root.offsetWidth ?? 0;
+    const room = usableWidth - dockWidth - inspectorWidth - MIN_CANVAS_WIDTH - resizerWidth;
     // 목업 폭 260px(기본). 저장 폭은 220~340 안에서 쓴다.
     const width = collapsed ? LEFT_COLUMN_HANDLE_WIDTH : Math.max(220, Math.min(340, leftWidth, room));
     aiSidebarWorkspace.root.style.width = `${width}px`;

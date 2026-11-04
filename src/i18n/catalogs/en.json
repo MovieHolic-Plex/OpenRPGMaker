@@ -19091,4 +19091,13 @@
 "격자선":"Grid lines",
 "눈금":"Ticks",
 "여정":"Journey",
-"단계":"Step"}
+"단계":"Step",
+"이 칸":"This tile",
+"지나감":"Passable",
+"상위 맵을 따름":"Follows parent map",
+"곡 미지정":"No track chosen",
+"맵 · {0} × {1} 칸":"Map · {0} × {1} tiles",
+"이벤트 · {0}, {1}":"Event · {0}, {1}",
+"{0} × {1}":"{0} × {1}",
+"{0}, {1}":"{0}, {1}",
+"이벤트 편집":"Edit event"}
