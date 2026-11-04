@@ -130,6 +130,11 @@ function labelIndex(commands: Command[]): LabelIndex {
   if (labelPass) (labelPass.validated ??= new WeakSet()).add(commands);
   return cached;
 }
+/** gotoLabel 이 이 이름으로 뛸 수 있는가(스택은 그대로 둔다). */
+export function hasLabel(stack: Frame[], name: string): boolean {
+  return stack.some((frame) => frame !== undefined && labelIndex(frame.commands).first.has(name));
+}
+
 export function gotoLabel(stack: Frame[], name: string): boolean {
   for (let i = stack.length - 1; i >= 0; i -= 1) {
     const frame = stack[i];

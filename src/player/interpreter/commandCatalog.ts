@@ -781,6 +781,7 @@ export function executeCommand(
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "label":
+      if (state.fastForwardLabel === command.name) state.fastForwardLabel = undefined;
       return resumeNext(frame);
     case "gotoLabel":
       if (!gotoLabel(state.stack, command.name)) {
@@ -1022,7 +1023,7 @@ export function executeCommand(
       changeActorExperience(state.session, command);
       return resumeNext(frame);
     case "changeLevel":
-      changeActorLevel(state.session, command);
+      changeActorLevel(state.session, command, state.project);
       return resumeNext(frame);
     case "changeLifeSkillExp": {
       if (state.project) {

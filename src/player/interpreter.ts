@@ -4,7 +4,7 @@ import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
 import { disposeScriptRuns } from "@/player/interpreter/scriptCommand";
-import { advanceCompletedFrame, gotoLabel, topFrame, withLabelIndexPass, invalidateLabelIndexPass } from "@/player/interpreter/stack";
+import { advanceCompletedFrame, gotoLabel, hasLabel, topFrame, withLabelIndexPass, invalidateLabelIndexPass } from "@/player/interpreter/stack";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type {
   Interpreter,
@@ -122,6 +122,18 @@ export function createInterpreter(
       if (!gotoLabel(state.stack, name)) return { kind: "done" };
       pending = "none";
       return run();
+    },
+    beginFastForward(name: string): boolean {
+      if (done || !hasLabel(state.stack, name)) return false;
+      state.waitUntil = undefined;
+      state.fastForwardLabel = name;
+      return true;
+    },
+    isFastForwarding(): boolean {
+      return !done && state.fastForwardLabel !== undefined;
+    },
+    endFastForward(): void {
+      state.fastForwardLabel = undefined;
     },
     isDone(): boolean {
       return done;

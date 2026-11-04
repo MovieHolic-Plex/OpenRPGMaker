@@ -52,6 +52,8 @@ export function itemAllowsBattle(item: ItemRecord): boolean {
   // 포획 도구는 captureProfile 이 계약이다 — 종류가 special 이 아니어도(조수가 normalGoods 로 저장) 전투에서 던진다.
   if (isCaptureTool(item)) return true;
   if (isFieldUtilityItem(item)) return false;
-  if (item.type === "medicine") return !item.onlyEffectiveOnDeadActors;
+  // 부활약(onlyEffectiveOnDeadActors)도 occasion 이 battle/always 면 전투에서 쓴다 — 대상은 런타임이 쓰러진 아군만 남긴다.
+  // 예전에는 여기서 막혀 전투 중 동료를 일으킬 아이템이 하나도 없었다(fs2 스웜 I21).
+  if (item.type === "medicine") return true;
   return item.type === "special" && !item.careProfile;
 }
