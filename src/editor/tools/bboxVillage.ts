@@ -13,6 +13,7 @@ import { translateTiles } from "@/project/objectStamp";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { planBeodeulCanopy } from "./beodeulForest";
 import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/relief/walk";
+import { CUT_MAX_RISE, reverseCutLength } from "@/project/relief/cutPieces";
 import { createBeodeulGroundTileset } from "@/project/defaults/beodeulGround";
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
 import type { ReliefData } from "@/project/relief/types";
@@ -108,7 +109,7 @@ export const BBOX_VILLAGE_RULES: readonly string[] = [
   "Buildings, props, trees, fields, fences and plazas lie on ONE level each (no straddling a cliff) and on dry land. Boats lie fully on water. Do not put a building where higher ground lies within the 2 rows just south of it.",
   "Every building's door front cell must be a road/track/plaza cell of the connected network, on the building's own level.",
   "All road/track/pier/plaza/stair cells form ONE connected network (walking rules), and at least one road reaches a dry map edge cell (the village entrance).",
-  "Paths change level ONLY by stairs, and only north-south. Stairs rect: on the LOWER level, directly against the cliff; the row just beyond it (north for dir \"north\") is the higher level; h = level difference + 1 (a 2-level step needs h = 3); w = 1..3. The cells just above and below the stairs are road/track/plaza (landings). Stair cells count as path; do not also list them as road.",
+  "Paths change level ONLY by stairs, and only north-south. Stairs are carved into the cliff and drawn as one piece, so the shape is fixed: w = 2 or 3; the cliff may be 1 to 4 levels high. dir \"north\" (the higher ground lies north): the rect is ONE row (h = 1) on the lower level right at the cliff foot, and the row just north of it is the higher level. dir \"south\" (the higher ground lies south, a north-facing cliff): the rect is h = level difference + 2 rows on the lower level directly north of the cliff, and the row just south of it is the higher level. The cliff on both sides of the stairs must be the same face (the stairs' bottom row continues as the same low level and the row beyond as the same high level, or water/map edge). The cells just above and below the stairs are road/track/plaza (landings). Stair cells count as path; do not also list them as road.",
   "A road on a river is drawn as a plank bridge; only kind \"pier\" may go onto the sea.",
   "Fence: the rect is the fence ring itself (border cells), with one gate cell on the ring (not a corner); the cell just outside the gate must be a road/track cell.",
   "zones are labels only (harbour, market, residential, farms...). Empty cells stay plain grass and nothing is added for you: design a lived-in village with a clear centre and landmark, distinct zones, roads that follow the land, stairs where it climbs, and fields, woods, orchards (rows of trees) and props so no large area is empty grass. Use the whole map.",
@@ -187,7 +188,7 @@ export function checkBboxVillage(cat: readonly VillageKit[], L: BboxVillageLayou
     if (!rectOk(s, tag)) return;
     if (s.kind !== undefined && !(BBOX_VILLAGE_CLIMBS as readonly string[]).includes(s.kind)) { errors.push(`${tag}.kind "${s.kind}" is not supported (supported: ${BBOX_VILLAGE_CLIMBS.join(", ")}).`); return; }
     if (s.dir !== "north" && s.dir !== "south") { errors.push(`${tag}.dir must be "north" or "south" (the direction you walk to climb; there are no east-west stair pieces).`); return; }
-    if (s.w > 3) errors.push(`${tag} is ${s.w} wide — stairs are 1 to 3 cells wide.`);
+    if (s.w < 2 || s.w > 3) errors.push(`${tag} is ${s.w} wide — carved stairs are 2 or 3 cells wide.`);
     const cs = cellsOf(s), lo = lv[cs[0]!]!;
     if (cs.some((c) => lv[c] !== lo || water[c])) { errors.push(`${tag} (${s.x},${s.y},${s.w}x${s.h}): all stair cells must be dry land on the LOWER level (found levels ${[...new Set(cs.map((c) => lv[c]))].join("/")}).`); return; }
     const hiY = s.dir === "north" ? s.y - 1 : s.y + s.h, loY = s.dir === "north" ? s.y + s.h : s.y - 1;
@@ -195,8 +196,14 @@ export function checkBboxVillage(cat: readonly VillageKit[], L: BboxVillageLayou
     const his = new Set<number>(); for (let x = s.x; x < s.x + s.w; x += 1) his.add(lv[idx(x, hiY)]!);
     const hi = [...his][0]!;
     if (his.size > 1 || hi <= lo) { errors.push(`${tag}: the row just ${s.dir} of it (y=${hiY}) must be ONE higher level than the stair cells (level ${lo}); it is level ${[...his].join("/")}. Put the stairs on the low side directly against the cliff.`); return; }
-    if (hi - lo > 2) { errors.push(`${tag}: the cliff there is ${hi - lo} levels high — stairs climb at most 2 levels; choose another spot.`); return; }
-    if (s.h !== hi - lo + 1) errors.push(`${tag}: a climb from level ${lo} to ${hi} needs a stair flight exactly ${hi - lo + 1} cells long (h=${hi - lo + 1}), got h=${s.h}.`);
+    if (hi - lo > CUT_MAX_RISE) { errors.push(`${tag}: the cliff there is ${hi - lo} levels high — carved stairs climb at most ${CUT_MAX_RISE} levels; choose another spot.`); return; }
+    // 절벽을 깎은 계단 조각(cutPieces.ts): 북쪽 오르막 = 발치 한 줄, 남쪽 오르막 = 단 차 + 2줄 — 그 밖 모양은 그림이 없다
+    const needH = s.dir === "north" ? 1 : reverseCutLength(hi - lo);
+    if (s.h !== needH) errors.push(`${tag}: a ${s.dir} climb from level ${lo} to ${hi} is carved as ${needH} row${needH > 1 ? "s" : ""} (h=${needH}${s.dir === "north" ? ", the cliff foot row" : ", level difference + 2, north of the cliff"}), got h=${s.h}.`);
+    // 옆면(lay.mts): 계단 양옆은 같은 절벽 면(발치 줄 lo · 그 너머 hi)이거나 물·맵 밖 — 절벽이 꺾이는 자리면 조각 옆벽이 풀밭에 선다
+    const footY = s.dir === "north" ? s.y : s.y + s.h - 1;
+    const flankOk = (fx: number) => !inMap(fx, footY) || water[idx(fx, footY)] || (lv[idx(fx, footY)] === lo && inMap(fx, hiY) && lv[idx(fx, hiY)] === hi);
+    if (!flankOk(s.x - 1) || !flankOk(s.x + s.w)) errors.push(`${tag}: the cliff beside it (column ${!flankOk(s.x - 1) ? s.x - 1 : s.x + s.w}) is not the same level-${lo}-to-${hi} face — the carved stairs' side wall would stand in the grass. Move the stairs along the cliff to a straight stretch.`);
     for (let x = s.x; x < s.x + s.w; x += 1) {
       const top = idx(x, hiY), bot = idx(x, loY);
       if (!["road", "track", "plaza"].includes(kind[top]!)) errors.push(`${tag}: upper landing ${P(top)} must be a road/path/plaza cell.`);
@@ -278,7 +285,7 @@ export function checkBboxVillage(cat: readonly VillageKit[], L: BboxVillageLayou
       if (!pathy(n) || lv[c] === lv[n] || stairCells.has(c) || stairCells.has(n)) continue;
       const key = `${Math.min(lv[c]!, lv[n]!)}-${dx}-${Math.floor(x / 3)}-${Math.floor(y / 3)}`; if (reported.has(key)) continue; reported.add(key);
       errors.push(dx ? `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across an east-west level change — paths cannot climb sideways; route the path north/south through stairs.`
-        : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a cliff without stairs — add a stairs rect there (on the low side, h = level difference + 1).`);
+        : `path cells ${P(c)} (level ${lv[c]}) and ${P(n)} (level ${lv[n]}) meet across a cliff without stairs — add a stairs rect there (on the low side, 2-3 wide; h = 1 when the higher ground is north, level difference + 2 when it is south).`);
     }
   }
   const pathCells = [...Array(W * H).keys()].filter(pathy);
