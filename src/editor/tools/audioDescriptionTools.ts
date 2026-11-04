@@ -1,4 +1,5 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { searchResources } from "@/assets/resourceSearch";
 import {
   resetAudioDescriptionOverride,
@@ -117,10 +118,20 @@ const BGM_SCENE_STORE: Readonly<Record<BgmScene, readonly StoreMusicScene[]>> = 
   town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense", "chase"], ending: ["ending"],
 };
 
+// 이름(분류)만 보면 전투·보스 장면은 카탈로그 281곡 중 두 곡뿐이었다 — 폴른 스타가 76전투에 보스곡 하나를 튼 원인(2026-11-04).
+// 카탈로그 기획 태그가 장면을 말하는 곡(메인 테마 변주 「normal combat」·「corrupted boss」)도 같은 장면으로 친다.
+const BGM_SCENE_PLAN_TAGS: Partial<Record<BgmScene, RegExp>> = {
+  battle: /^(?:normal|standard|repeatable) combat$|^일반 전투$/i,
+  boss: /\bboss\b|^보스/i,
+};
+
 function inScene(project: Project, resource: { id: string; name: string }, scene: BgmScene): boolean {
   const music = readStoreMusicMeta(project.assets.uploaded[resource.id]?.meta);
   if (music) return music.scenes.some((entry) => BGM_SCENE_STORE[scene].includes(entry));
-  return BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle));
+  if (BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle))) return true;
+  const planTag = BGM_SCENE_PLAN_TAGS[scene];
+  const track = planTag ? BGM_CATALOG.find((entry) => entry.id === resource.id) : undefined;
+  return !!track && track.tags.some((tag) => planTag!.test(tag));
 }
 
 function searchBgmMatches(project: Project, query: string): Array<{ resourceId: string; score: number }> {
@@ -207,7 +218,7 @@ const recommendBgm: ToolDefinition = {
         candidates, total, ...(sceneFallback ? { sceneFallback: true } : {}), originalCompositionTool: "generate_original_bgm",
         guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. music 칸이 있는 곡은 장르·장면·분위기를 대조해 고르고, loopable:false(징글)는 맵 BGM 말고 승리 음악(set_game_audio role victory)에 쓴다. "
           + "후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 원하는 장르(조선풍·무협 …)·장면에 꼭 맞는 곡이 없으면 store_find_music{scene, query, mood, need}로 스토어 음악 팩에서 곡 단위로 찾는다(기본은 묻지 않고 store_install 로 넣는다, 사용자가 「먼저 묻기」를 켰으면 카드가 묻는다). "
-          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title, 엔딩·크레딧 ending, 추격자가 쫓아올 때 chase. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
+          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 지역(맵)마다 일반 전투곡 map-battle+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title, 엔딩·크레딧 ending, 추격자가 쫓아올 때 chase. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
       },
     };
   },

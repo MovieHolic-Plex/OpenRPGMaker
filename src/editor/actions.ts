@@ -399,6 +399,17 @@ export function setMapBattleBackground(mapId: MapId, resourceId: string | null):
   }, { scope: "map", mapId });
 }
 
+/** 이 맵에서 열리는 일반 전투의 곡. null = 프로젝트 전투곡. */
+export function setMapBattleBgm(mapId: MapId, resourceId: string | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (resourceId) map.battleBgmResourceId = resourceId;
+    else delete map.battleBgmResourceId;
+  }, { scope: "map", mapId });
+}
+
 export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disableTeleport?: boolean; disableEscape?: boolean }): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {

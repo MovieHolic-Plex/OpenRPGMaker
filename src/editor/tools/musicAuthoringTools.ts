@@ -31,7 +31,7 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
   }else if(/\.(mid|midi)(?:[?#]|$)/i.test(url))throw new ToolError('브라우저가 재생하지 못하는 MIDI입니다.',{code:'invalid-audio'});
   return url;
 }
-const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss','chase','ending','se','sfx-style','bgs'] as const;
+const ROLES=['title','opening','field-default','battle-default','map-battle','victory','defeat','cursor','confirm','cancel','maps','boss','chase','ending','se','sfx-style','bgs'] as const;
 /** 효과음 자리 하나(role:'se'+cue)·화풍 통째(role:'sfx-style') — 자리 표 project.system.seCues(`@/project/seCues`). */
 const SOUND_ROLES=new Set(['cursor','confirm','cancel','defeat','se','bgs']);
 
@@ -241,10 +241,10 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  withSfxStyle(tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 목록의 mapId 값. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다. 효과음 자리 하나는 role:se+cue(confirm·damage·actorDamage·critical·faint·bossCollapse·equip·save·levelUp·itemGet·magic-fire·footstep-grass … — 프로젝트 전체, mapIds 없음). 효과음을 화풍 하나로 통째로(「효과음 전부 레트로로」) 맞추려면 role:sfx-style+style(retro|modern, variant 기본 a, cues 로 자리 좁히기) 한 번 — 스토어 팩에서 자리마다 한 소리를 골라 넣고 자리 표에 건다(store_install·store_find_sound 불필요). 마법 자리(magic-<속성>)는 그 속성 기술을 쓸 때 울린다. 맵 환경음(BGS — 비·바람·동굴 물방울·모닥불처럼 음악 밑에 계속 깔리는 루프)은 role:bgs+mapIds(maps 와 같이 비우면 지금 보는 맵·시작 맵, resourceId 를 비우면 그 맵 환경음을 끔) — store_find_sound{ambient:true, query} 로 찾은 환경음(kind sound 루프)을 건다, BGM 을 바꾸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,cue:{type:'string',description:"role:'se' 의 효과음 자리(confirm·damage·equip·levelUp·magic-fire·footstep-grass … — set_game_audio 결과·store_find_sound 의 cue). 알려진 자리: "+SE_CUE_IDS.join(', ')},style:{type:'string',enum:[...STORE_SOUND_STYLES],description:"role:'sfx-style' 의 화풍(retro 레트로 칩 · modern 현대)"},variant:{type:'string',enum:['a','b','c'],description:"role:'sfx-style' 에서 자리마다 고를 안(기본 a)"},cues:{type:'array',items:str,description:"role:'sfx-style' 에서 이 자리만 건다(비우면 그 화풍 팩이 가진 모든 자리)"},userAsked:{type:'boolean',description:"role:'sfx-style': 사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 true"},mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str},currentMapId:{type:'string',description:'(실행기가 채운다 — 넣지 않는다) 사용자가 지금 보는 맵'}},['role']),(p,args)=>{
+  withSfxStyle(tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds(맵 목록의 mapId 값. 사용자가 맵을 말하지 않았으면 시작 맵·지금 보는 맵에 건다, 곡과 이름이 비슷한 맵을 고르지 않는다), 모든 전투는 battle-default, 지역(맵)마다 일반 전투곡은 role:map-battle+mapIds(그 맵에서 열리는 전투 — 이벤트·조우·필드 몹 모두, resourceId 를 비우면 지움), 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다. 엔딩·크레딧 곡은 role:ending(+endingIds — 비우면 모든 엔딩과 이벤트의 엔딩 명령). 추격 곡(쫓아올 때)은 role:chase(+mapIds — 추격자가 있는 맵, 비우면 모든 추격자): 스위치로 깨우는 추격자는 그 스위치를 켤 때 곡을 바꾸고 끌 때 되돌리며 스위치가 켜진 동안은 그 맵에 다시 들어오거나 잡혀서 다시 시작해도 추격 곡이 이어지고, 늘 있는 추격자는 그 맵 배경음이 된다. 추격자가 없으면 거절한다(새로 만들지 말 것) — 추격 곡을 전투 곡에 걸지 않는다. 효과음 자리 하나는 role:se+cue(confirm·damage·actorDamage·critical·faint·bossCollapse·equip·save·levelUp·itemGet·magic-fire·footstep-grass … — 프로젝트 전체, mapIds 없음). 효과음을 화풍 하나로 통째로(「효과음 전부 레트로로」) 맞추려면 role:sfx-style+style(retro|modern, variant 기본 a, cues 로 자리 좁히기) 한 번 — 스토어 팩에서 자리마다 한 소리를 골라 넣고 자리 표에 건다(store_install·store_find_sound 불필요). 마법 자리(magic-<속성>)는 그 속성 기술을 쓸 때 울린다. 맵 환경음(BGS — 비·바람·동굴 물방울·모닥불처럼 음악 밑에 계속 깔리는 루프)은 role:bgs+mapIds(maps 와 같이 비우면 지금 보는 맵·시작 맵, resourceId 를 비우면 그 맵 환경음을 끔) — store_find_sound{ambient:true, query} 로 찾은 환경음(kind sound 루프)을 건다, BGM 을 바꾸지 않는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,cue:{type:'string',description:"role:'se' 의 효과음 자리(confirm·damage·equip·levelUp·magic-fire·footstep-grass … — set_game_audio 결과·store_find_sound 의 cue). 알려진 자리: "+SE_CUE_IDS.join(', ')},style:{type:'string',enum:[...STORE_SOUND_STYLES],description:"role:'sfx-style' 의 화풍(retro 레트로 칩 · modern 현대)"},variant:{type:'string',enum:['a','b','c'],description:"role:'sfx-style' 에서 자리마다 고를 안(기본 a)"},cues:{type:'array',items:str,description:"role:'sfx-style' 에서 이 자리만 건다(비우면 그 화풍 팩이 가진 모든 자리)"},userAsked:{type:'boolean',description:"role:'sfx-style': 사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 true"},mapIds:{type:'array',items:str},troopIds:{type:'array',items:str},endingIds:{type:'array',items:str},currentMapId:{type:'string',description:'(실행기가 채운다 — 넣지 않는다) 사용자가 지금 보는 맵'}},['role']),(p,args)=>{
     const role=String(args.role);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
     // bgs 는 resourceId 를 비우면 그 맵 환경음을 끈다 — 다른 역할은 리소스가 필요하다.
-    const id=role==='bgs'&&(args.resourceId===undefined||args.resourceId==='')?'':text(args.resourceId);
+    const id=(role==='bgs'||role==='map-battle')&&(args.resourceId===undefined||args.resourceId==='')?'':text(args.resourceId);
     const kind=SOUND_ROLES.has(role)?'sound':'music';
     if(id)playable(p,id,kind);
     if(role==='se'){
@@ -270,6 +270,13 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       for(const mapId of maps)p.maps[mapId].bgs=id?{mode:'custom',resourceId:id}:{mode:'none'};
       return {summary:(id?`맵 ${maps.length}개에 환경음(BGS 루프)을 걸었습니다 — 맵에 들어오면 BGM 밑에 깔리고, 환경음 설정이 없는 맵으로 나가도 이어집니다(끄려면 그 맵에 resourceId 없이 role:bgs).`:`맵 ${maps.length}개의 환경음을 껐습니다.`)+mapNote,data:{role,resourceId:id||null,kind,mapIds:maps,verificationScope:'authored-binding'}};
     }
+    if(role==='map-battle'){
+      if(args.troopIds!==undefined||Array.isArray(args.endingIds)&&args.endingIds.length)throw new ToolError('map-battle 역할은 mapIds 만 받습니다.',{code:'invalid-args'});
+      if(!mapList.length||mapList.length>256||mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
+      maps=[...new Set(mapList as string[])];
+      for(const mapId of maps){if(id)p.maps[mapId].battleBgmResourceId=id;else delete p.maps[mapId].battleBgmResourceId;}
+      return {summary:id?`맵 ${maps.length}개의 일반 전투곡을 걸었습니다 — 그 맵에서 열리는 전투(이벤트·조우·필드 몹)가 이 곡을 틀고, 보스전(role:boss)은 보스곡이 먼저입니다.`:`맵 ${maps.length}개의 전투곡을 지워 프로젝트 전투곡(battle-default)으로 되돌렸습니다.`,data:{role,resourceId:id||null,kind,mapIds:maps,verificationScope:'authored-binding'}};
+    }
     if(role==='chase'){
       if(mapList.some(m=>typeof m!=='string'||!p.maps[m]))throw new ToolError(mapIdsError(p,mapList),{code:'map-not-found'});
       if(args.troopIds!==undefined||Array.isArray(args.endingIds)&&args.endingIds.length)throw new ToolError('chase 역할은 mapIds 만 받습니다.',{code:'invalid-args'});
@@ -288,7 +295,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
         maps=[...new Set(mapList as string[])];
       }
     }
-    else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps·chase 역할에서만 사용합니다.',{code:'invalid-args'});
+    else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps·map-battle·chase·bgs 역할에서만 사용합니다.',{code:'invalid-args'});
     if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
     const endingIds=Array.isArray(args.endingIds)?(args.endingIds as unknown[]).filter((e):e is string=>typeof e==='string'):[];
     if(endingIds.length&&role!=='ending')throw new ToolError('endingIds는 ending 역할에서만 사용합니다.',{code:'invalid-args'});

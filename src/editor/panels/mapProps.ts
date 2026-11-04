@@ -4,7 +4,7 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBgs, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBgm, setMapBgs, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
   setMapCloudShadows, setMapClimate, setMapSunlight, setMapTransit,
 } from "@/editor/actions";
 import { mapRoadBands, planMapTransit } from "@/editor/tools/transitTools";
@@ -1013,7 +1013,25 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
   }
 
   host.append(section);
+  host.append(renderBattleBgmSection(host, map));
   host.append(renderBgsSection(host, map));
+}
+
+/** 이 맵의 일반 전투곡 — 비우면 프로젝트 전투곡. 보스전 곡(이벤트가 건 것)이 먼저다. */
+function renderBattleBgmSection(host: HTMLElement, map: import("@/project/types").GameMap): HTMLElement {
+  const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-battle-bgm-section" } });
+  section.append(mapResourceField({
+    label: "전투 BGM",
+    resourceId: map.battleBgmResourceId,
+    kind: "music",
+    testid: "map-battle-bgm-resource",
+    dialogTitle: "이 맵의 전투 BGM",
+    allowClear: true,
+    onChange: (result) => setMapBattleBgm(map.id, result.resourceId || null),
+    rerender: () => rerender(host, "map-battle-bgm-resource-set"),
+  }));
+  section.append(el("p", { class: "map-props-hint", text: "비워두면 프로젝트 전투 BGM 을 씁니다. 보스전처럼 이벤트가 곡을 바꾸면 그 곡이 먼저입니다." }));
+  return section;
 }
 
 /** 맵 환경음(BGS) — BGM 밑에 깔리는 루프. 「유지」는 앞 맵·이벤트의 환경음을 이어 간다(설정 없음). */
