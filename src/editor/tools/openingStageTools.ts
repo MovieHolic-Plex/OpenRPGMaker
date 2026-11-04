@@ -16,7 +16,7 @@ const authorOpeningStage: ToolDefinition = {
   description:
     "게임 오프닝을 «실제 맵 위 엔진 연출»로 만든다 — 인물이 움직이는 오프닝은 이것이 기본이다. 그림 레이어로 걷는 캐릭터(place_opening_charset_actor·animatic walk)를 만들지 말고 이 도구를 쓴다. " +
     "새 게임을 누르면 (그림 장면 system.opening.scenes 가 있으면 그 뒤에) mapId 의 x,y 에서 게임이 시작되고, beats 컷신이 자동으로 한 번 재생된 뒤 프로젝트 시작 위치(startMapId·startPos)로 옮긴다. Esc 로 건너뛰어도 옮긴다. " +
-    "beats 는 script_cutscene 과 같다 — letterbox, look{target:'player',alpha:0}(주인공 숨기기; 도구가 맨 앞에 자동으로 넣는다), camera{mode:'pan',x,y,durationMs}, moveActor{eventId,moves|route}(맵 NPC 가 이동 경로로 걷는다), approach, weather, particles{preset:'petals'}, emote, say{context:'narration',text}(자막처럼 쓰는 내레이션), fade, wait, parallel. " +
+    "beats 는 script_cutscene 과 같다(자막 say 가 있으면 letterbox 는 쓰지 않는다) — look{target:'player',alpha:0}(주인공 숨기기; 도구가 맨 앞에 자동으로 넣는다), camera{mode:'pan',x,y,durationMs}, moveActor{eventId,moves|route}(맵 NPC 가 이동 경로로 걷는다), approach, weather, particles{preset:'petals'}, emote, say{context:'narration',text}(자막처럼 쓰는 내레이션), fade, wait, parallel. " +
     "걷는 사람은 맵에 이벤트로 먼저 둔다(place_npc·upsert_event, 그래픽=캐릭터셋). 그 맵의 다른 자동·병렬 이벤트는 오프닝 동안 멈춘다(본편 도입 컷신과 겹치지 않는다). " +
     "그림 장면은 엔진이 못 보여 주는 것(큰 흉상·클로즈업 CG·제목 카드)만 set_opening/create_opening_animatic_shot 으로 남긴다. 끝나면 preview_cutscene 으로 확인한다.",
   mode: "write",
@@ -50,6 +50,10 @@ const authorOpeningStage: ToolDefinition = {
       if (oldMap) oldMap.events = oldMap.events.filter((event) => event.id !== previous.eventId);
     }
     const authored = (args.beats as CutsceneBeat[]).filter((beat) => beat?.kind !== "transfer");
+    // 레터박스 속 대사는 대화창을 띠 위로 밀어 올려 화면을 가린다(린트 scene-letterbox-dialogue, 첫사랑 r9 오너 지적). 무대에 대사·자막이 있으면 막는다.
+    if (authored.some((beat) => beat?.kind === "letterbox" && beat.show !== false) && authored.some((beat) => beat?.kind === "say")) {
+      throw new ToolError("무대에 대사·자막(say)이 있으면 레터박스를 켜지 마세요 — 대화창이 띠를 피해 올라가 화면을 가립니다. letterbox 비트를 빼고 페이드·카메라로 연출하세요.", { code: "opening-stage-invalid" });
+    }
     const hidesPlayer = authored.some((beat) => beat?.kind === "look" && (beat.target === "player" || beat.target === undefined) && typeof beat.alpha === "number" && beat.alpha <= 0.05);
     const beats: CutsceneBeat[] = [
       ...(hidesPlayer ? [] : [{ kind: "look", target: "player", alpha: 0 } as CutsceneBeat]),
@@ -71,6 +75,10 @@ const authorOpeningStage: ToolDefinition = {
     }
     const reset = [...lookTargets.values()].flatMap((beat) => compileCutscene([beat]).filter((command) => command.kind === "m2Command").slice(0, 1));
     page.commands.splice(transferIndex, 0, clearOpeningStageCommand(map.id, eventId), ...reset);
+    // 맵 이벤트는 장소 이동에서 끝난다 — 이동 뒤의 명령(컷신 끝 표시 등)은 돌지 않고 린트 scene-commands-after-transfer 를 낸다.
+    // 컷신 제어는 이벤트가 끝날 때 엔진이 풀어 준다(releaseCutsceneControlForOwner). 끝 이동 뒤는 비운다.
+    const lastTransfer = page.commands.map((command) => command.kind).lastIndexOf("transfer");
+    page.commands.splice(lastTransfer + 1);
     const opening = draft.system.opening ?? { enabled: true, skippable: true, scenes: [] };
     draft.system.opening = { ...opening, enabled: true, stage: { mapId: map.id, x, y, eventId } };
     return {
