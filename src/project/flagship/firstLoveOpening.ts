@@ -11,6 +11,8 @@ import { firstLoveOpeningBackdrop, type FirstLoveOpeningBackdropId } from "@/ass
 import { validateOpeningAnimatic, type AnimaticKey, type AnimaticLayer, type OpeningAnimatic } from "@/project/openingAnimatic";
 import type { Project } from "@/project/types";
 import { CAST, bustId, type Who } from "./firstLoveKit";
+import { FL_MAP } from "./firstLoveMaps";
+import type { CutsceneBeat } from "@/editor/cutscene";
 
 const STAGE = { width: 480, height: 270 } as const;
 const CAPTION = "#fff1e6";
@@ -196,8 +198,42 @@ const SHOTS: readonly { id: string; build: () => OpeningAnimatic }[] = [
   { id: "fl_op_cast2", build: () => castShot([{ who: "minho", role: "백엔드 신입 · 동기", expr: "happy" }, { who: "lead", role: "프로덕트팀 팀장" }], "#22304a", true) },
 ];
 
+/**
+ * 엔진 무대(2026-11-05 오너: 「오프닝 만들 때, 캐릭들이 움직이는 걸 넣는 건 좋은데, 게임 엔진을 너무 무시하는데」).
+ * 예전 1컷(벚꽃 거리)은 맵을 구운 그림 위에 걸음 칩을 그림 레이어로 밀었다. 이제 실제 거리 맵(fl_street)에서 엔진이 연출한다 —
+ * 맵의 아침 행인(add_street_walkers 의 이동 경로)이 제 길을 걷고, 카메라가 공원에서 북쪽 보도를 따라 늘봄 빌딩까지 팬하고, 꽃잎이 날린다.
+ * 그림 장면(지하철·사무실·옥상·인물 카드)은 그대로 앞에 둔다. 무대가 끝나면 시작 위치(출구 계단)로 옮겨 본편 도입이 시작된다.
+ */
+const STAGE_EVENT_ID = "ev_fl_opening_stage";
+function stageBeats(): CutsceneBeat[] {
+  const caption = (text: string): CutsceneBeat => ({ kind: "say", text, context: "narration", position: "bottom", autoAdvance: true } as CutsceneBeat);
+  return [
+    { kind: "fade", direction: "out", durationMs: 1, wait: true },
+    { kind: "look", target: "player", alpha: 0 },
+    { kind: "letterbox", show: true, size: 12, durationMs: 1, wait: false },
+    { kind: "camera", mode: "pan", x: 34, y: 30, durationMs: 1, wait: true },
+    { kind: "particles", preset: "petals", x: 34, y: 28, durationMs: 15000, sizePercent: 180, wait: false },
+    { kind: "fade", direction: "in", durationMs: 900, wait: true },
+    caption("봄. 새 회사로 가는 첫 월요일."),
+    { kind: "parallel", beats: [
+      { kind: "camera", mode: "pan", x: 30, y: 16, durationMs: 4200, wait: false },
+      { kind: "particles", preset: "petals", x: 30, y: 16, durationMs: 9000, sizePercent: 160, wait: false },
+    ] },
+    { kind: "wait", ms: 1800 },
+    caption("서른 명 남짓한 작은 앱 회사, 스튜디오 늘봄."),
+    { kind: "camera", mode: "pan", x: 12, y: 16, durationMs: 4200, wait: true },
+    { kind: "wait", ms: 600 },
+    { kind: "fade", direction: "out", durationMs: 700, wait: true },
+  ] as CutsceneBeat[];
+}
+
+/** 무대는 맵·행인이 다 지어진 뒤에 건다(buildFirstLoveMaps 뒤). exec = 게임을 짓는 같은 도구 실행기 — 조수와 같은 길이다. */
+export function buildFirstLoveOpeningStage(exec: (name: string, args: Record<string, unknown>) => unknown, stageCell: { x: number; y: number }): void {
+  exec("author_opening_stage", { mapId: FL_MAP.street, x: stageCell.x, y: stageCell.y, eventId: STAGE_EVENT_ID, beats: stageBeats() });
+}
+
 export function buildFirstLoveOpening(project: Project, musicResourceId?: string): void {
-  const scenes = SHOTS.map(({ id, build }) => {
+  const scenes = SHOTS.filter(({ id }) => id !== "fl_op_blossom").map(({ id, build }) => {
     const composition = build();
     validateOpeningAnimatic(composition, SHOT_MS, `opening.${id}`);
     return { id, kind: "animatic" as const, composition, durationMs: SHOT_MS, narration: "" };
