@@ -85,9 +85,9 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
-import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
+import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyMeaningTally, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, screenPolishEdits, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
 import { knownSpeakerNames, liftDialogueSpeakerLabelsTool, parseSpeakerLabel, type SpeakerLabelOutcome } from "../../src/editor/dialogue/dialogueSpeakerLabel.ts";
-import { resolveDialogueEditLine } from "../../src/editor/tools/dialogueTools.ts";
+import { dialogueGuardNames, resolveDialogueEditLine } from "../../src/editor/tools/dialogueTools.ts";
 import { collectDialogueLines } from "../../src/editor/dialogue/dialogueIndex.ts";
 import { readDialogueDesk } from "../../src/project/dialogueDesk.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
@@ -1683,6 +1683,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return report;
     }
     const first = lint;
+    const meaningTally = emptyMeaningTally();
     const linesAtStart = new Map(collectDialogueLines(ctx.project, { includeDescriptions: true }).map((line) => [line.id, line]));
     const proposalsAtStart = new Set(readDialogueDesk(ctx.project).proposals.map((proposal) => proposal.id));
     emit({ type: "execution_status", name: "dialogue_polish.lint", ok: lint.target === 0,
@@ -1696,8 +1697,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const splitRewrite = (shape: PiToolShape): PiToolShape => ({ ...shape, async execute(id, params, signal) {
       const gate = dialoguePolishRewriteGate(dialoguePolishState);
       if (gate) throw new Error(gate);
-      const args = params && typeof params === "object" ? params as Record<string, unknown> : {};
-      const edits = Array.isArray(args.edits) ? args.edits : [];
+      const { allowMeaningChange: _ignored, ...args } = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      // 뜻 보존 관문(dialogueMeaningGuard.ts) — 윤문은 뜻을 바꾸지 않는다. 거절한 편집은 도구에 넘기지 않고 이유를 돌려준다(같은 예산 안에서 다시 고친다).
+      const screened = screenPolishEdits(Array.isArray(args.edits) ? args.edits : [], (edit) => resolveDialogueEditLine(ctx.project, edit), dialogueGuardNames(ctx.project), meaningTally);
+      const guardNote = screened.notes.length ? `뜻 보존 관문이 ${screened.notes.length}줄을 거절했다(적용 안 함) — 뜻은 그대로 두고 말투만 다시 고쳐 보낸다:\n${screened.notes.map((note) => `- ${note}`).join("\n")}` : "";
+      if (!screened.kept.length) throw new Error(guardNote || "고칠 줄이 없다.");
+      const edits = screened.kept;
       const owned: unknown[] = [], human: unknown[] = [];
       for (const edit of edits) {
         const line = edit && typeof edit === "object" ? resolveDialogueEditLine(ctx.project, edit as Record<string, unknown>) : undefined;
@@ -1713,10 +1718,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           errors.push(error instanceof Error ? error.message : String(error));
         }
       }
-      if (!parts.length) throw new Error(errors.join(" / ") || "고칠 줄이 없다.");
+      if (!parts.length) throw new Error([...errors, guardNote].filter(Boolean).join(" / ") || "고칠 줄이 없다.");
       const note = [
         ...(human.length ? [`실행기: 사람이 쓴 줄 ${human.length}개는 바꾸지 않고 「대사」 탭 제안으로 남겼다. 이번 실행이 쓴 줄 ${owned.length}개는 바로 고쳤다.`] : []),
         ...errors.map((message) => `일부 거절: ${message.slice(0, 400)}`),
+        ...(guardNote ? [guardNote] : []),
       ].join("\n");
       return { content: [...parts.flatMap((part) => part.content), ...(note ? [{ type: "text" as const, text: note }] : [])], details: parts[0]!.details };
     } });
@@ -1768,8 +1774,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       newLines: written.length, before: first.target, after: lint.target, beforeByFamily: first.byFamily, afterByFamily: lint.byFamily,
       beforeAll: first.all, afterAll: lint.all, rounds, applied: pairs.filter((pair) => pair.how === "apply").length, proposed: proposals.length,
       labelsLifted: labelPairs.length, labelsKept: labelOutcomes.length - labelPairs.length,
-      pairs: pairs.slice(0, 80), ms: Date.now() - t0, tokens: tokensNow() - tokens0,
+      pairs: pairs.slice(0, 80), ms: Date.now() - t0, tokens: tokensNow() - tokens0, meaningGuard: meaningTally,
     };
+    emit({ type: "execution_status", name: "dialogue_polish.meaning_guard", ok: true,
+      summary: `뜻 보존 관문: 윤문 편집 통과 ${meaningTally.passed} · 거절 ${meaningTally.rejected}(${Object.entries(meaningTally.byKind).map(([kind, n]) => `${kind} ${n}`).join(", ")})`,
+      data: meaningTally });
     emit({ type: "execution_status", name: "dialogue_polish", ok: report.after === 0, summary: dialoguePolishReportText(report), data: report });
     const polishReply = rounds && lastAssistantText !== buildReport ? lastAssistantText : "";
     emit({ type: "assistant", text: [buildReport, polishReply ? `[대사 윤문 차례의 조수 보고]\n${polishReply}` : "", dialoguePolishReportText(report)].filter(Boolean).join("\n\n") });

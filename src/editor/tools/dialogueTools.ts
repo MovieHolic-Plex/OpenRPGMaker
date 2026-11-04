@@ -18,7 +18,9 @@ import {
   speakerSummary,
   type DialogueLine,
 } from "@/editor/dialogue/dialogueIndex";
-import { applyDialogueEdits, checkDialogueEdit, estimateLineFit, hasMeasuredDialogueFit, type DialogueEditRequest } from "@/editor/dialogue/dialogueEdits";
+import { applyDialogueEdits, checkDialogueEdit, estimateLineFit, hasMeasuredDialogueFit, type DialogueEditRequest, type DialogueEditVerdict } from "@/editor/dialogue/dialogueEdits";
+import { factoryRecordNames, meaningGuardNames, MEANING_ANCHOR_KINDS, type MeaningAnchorKind } from "@/editor/dialogue/dialogueMeaningGuard";
+import { defaultDatabase } from "@/project/defaults/defaultDatabase";
 import { buildStory, lineRefLabel, resolveStoryRef, type Story } from "@/editor/dialogue/storyScript";
 import { renderOutlineText, renderSceneText, selectScenes, storyCast, STORY_HASH_PREFIX } from "@/editor/dialogue/storyScriptText";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -263,6 +265,20 @@ export function resolveDialogueEditLine(project: Project, record: Record<string,
 }
 
 const lineMaps = new WeakMap<Project, Map<string, DialogueLine>>();
+let factoryNamesCache: Set<string> | undefined;
+
+/** 뜻 닻으로 지킬 이 프로젝트의 고유명사(기본 DB 이름은 뺀다). */
+export function dialogueGuardNames(project: Project): string[] {
+  factoryNamesCache ??= factoryRecordNames(defaultDatabase());
+  return meaningGuardNames(project, factoryNamesCache);
+}
+
+/** 닻 종류별 거절 수(한 줄이 여러 닻을 건드리면 각각 센다). */
+export function meaningRejectionTally(verdicts: readonly DialogueEditVerdict[]): Record<MeaningAnchorKind, number> {
+  const tally = Object.fromEntries(MEANING_ANCHOR_KINDS.map((kind) => [kind, 0])) as Record<MeaningAnchorKind, number>;
+  for (const verdict of verdicts) for (const issue of verdict.meaningIssues ?? []) tally[issue.kind] += 1;
+  return tally;
+}
 function collectDialogueLinesCached(project: Project): Map<string, DialogueLine> {
   let map = lineMaps.get(project);
   if (!map) { map = new Map(collectDialogueLines(project).map((line) => [line.id, line])); lineMaps.set(project, map); }
@@ -277,7 +293,9 @@ const rewriteDialogue: ToolDefinition = {
     "한 번에 한두 장면(30줄 안팎)씩 나눠 부른다 — 수십 줄을 한 호출에 몰면 응답이 길어져 끊길 수 있다. 고칠 필요가 없는 줄은 넣지 않는다. " +
     "기본 mode:\"propose\" 는 게임 대사를 바꾸지 않고 «윤문 제안» 으로 남긴다 — 사람이 자료집 「대사」 탭에서 바꾸기 전·후를 보고 줄마다 받거나 버린다. " +
     "사람이 «바로 바꿔» 라고 분명히 말했을 때만 mode:\"apply\" 로 곧장 쓴다. " +
-    "거절: 낡은 hash(원문이 바뀜)·없는 id·이벤트 편집기에서 열린 이벤트·제어 코드가 빠지거나 새로 생김·대화창 한 장을 원문보다 더 넘김(allowOverflow 로만 허용). " +
+    "거절: 낡은 hash(원문이 바뀜)·없는 id·이벤트 편집기에서 열린 이벤트·제어 코드가 빠지거나 새로 생김·대화창 한 장을 원문보다 더 넘김(allowOverflow 로만 허용)·" +
+    "뜻이 바뀜(숫자·수량, 「」『』\"\" 인용, 프로젝트 DB 고유명사, 아마·혹시·~지도 같은 유보가 줄거나 안·못·없·아니 부정 수가 바뀜 — 사람이 그 뜻을 바꾸라고 분명히 말했을 때만 allowMeaningChange). " +
+    "어미·어순·감탄사·말줄임 같은 말투 고치기는 된다. " +
     "고치기 전에 list_dialogue 첫 쪽의 화자 말투 메모(voice)와 styleRules 를 따른다. 화자 이름·이벤트 구조는 바꾸지 않는다.",
   mode: "write",
   parameters: {
@@ -287,6 +305,7 @@ const rewriteDialogue: ToolDefinition = {
       mode: { type: "string", enum: ["propose", "apply"], description: "propose(기본)=사람 검토용 제안, apply=곧장 적용." },
       instruction: { type: "string", description: "사용자가 한 요청을 그대로(제안 묶음에 함께 보인다)." },
       allowOverflow: { type: "boolean", description: "대화창 한 장을 넘기는 것이 의도일 때만 true." },
+      allowMeaningChange: { type: "boolean", description: "사람이 숫자·이름·인용·부정 같은 뜻을 바꾸라고 분명히 요청했을 때만 true. 윤문에는 쓰지 않는다." },
     },
     required: ["edits"],
     additionalProperties: false,
@@ -307,11 +326,16 @@ const rewriteDialogue: ToolDefinition = {
     });
     const mode = str(args.mode) === "apply" ? "apply" : "propose";
     const instruction = str(args.instruction).trim().slice(0, 600);
-    const options = { allowOverflow: args.allowOverflow === true };
+    const options = {
+      allowOverflow: args.allowOverflow === true,
+      ...(args.allowMeaningChange === true ? {} : { meaningGuard: { names: dialogueGuardNames(draft) } }),
+    };
     const lines = collectDialogueLines(draft);
     const verdicts = mode === "apply"
       ? applyDialogueEdits(draft, edits, options)
       : edits.map((edit) => checkDialogueEdit(draft, edit, options, lines));
+    const meaningTally = meaningRejectionTally(verdicts);
+    const meaningRejected = verdicts.filter((verdict) => verdict.reason === "meaning").length;
     const accepted = verdicts.filter((verdict) => verdict.ok);
     const rejected: { id: string; reason?: string; message?: string }[] = verdicts.filter((verdict) => !verdict.ok).map((verdict) => ({ id: verdict.id, reason: verdict.reason, message: verdict.message }));
     if (accepted.length === 0) {
@@ -366,6 +390,7 @@ const rewriteDialogue: ToolDefinition = {
           ...(verdict.fitAfter ? { lines: `${verdict.fitAfter.lines}/${verdict.fitAfter.maxLines}`, overflow: verdict.fitAfter.overflow } : {}),
         })),
         rejected,
+        meaningGuard: { on: args.allowMeaningChange !== true, accepted: accepted.length, rejected: meaningRejected, byKind: meaningTally },
       },
     };
   },
