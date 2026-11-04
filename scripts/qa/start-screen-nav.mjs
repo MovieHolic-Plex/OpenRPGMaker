@@ -28,10 +28,11 @@ const ENTRIES = [
   { projectDir: "/games/school", title: "방과 후 옥상", updatedAt: day(30), cover: S + "jp-school.png", mapCount: 5 },
   { projectDir: "/games/potion", title: "물약 공방", updatedAt: day(41), cover: S + "wz-potions.png", mapCount: 2 },
 ];
-const NAVS = ["home", "games", "builtin", "create"];
+// 2026-11-04: 홈은 레일 없는 프롬프트 한 장이다. 레일이 있는 칸은 내 게임·예제·새로 만들기뿐이고, 레일 「홈」이 프롬프트로 돌아간다.
+const NAVS = ["games", "builtin", "create"];
 /** 칸마다 본문에 있어야 하는 표식. */
 const MARK = {
-  home: "[data-testid='start-home-concepts']",
+  home: "[data-testid='first-run-home']",
   games: "[data-testid='start-my-games']",
   builtin: "[data-testid='start-builtin-demos']",
   create: "[data-testid='concept-feed']",
@@ -54,7 +55,7 @@ async function openPage(browser, { entriesDelayMs = 300, entries = ENTRIES } = {
     } };
   }, { entries, delay: entriesDelayMs });
   await page.goto(`${BASE}/start-screen.html`, { waitUntil: "load" });
-  await page.waitForSelector("[data-testid='start-nav-home']", { timeout: 60000 });
+  await page.waitForSelector("[data-testid='first-run-home']", { timeout: 60000 });
   return { page, errors };
 }
 
@@ -66,7 +67,8 @@ async function probe(page) {
     const detail = document.querySelector("[data-testid='concept-detail']");
     const feedRoot = document.querySelector("[data-testid='concept-feed']");
     const search = document.querySelector("[data-testid='concept-feed-search']");
-    const marks = Object.fromEntries(Object.entries(MARK).map(([k, sel]) => [k, !!body?.querySelector(sel)]));
+    const host = document.getElementById("start-app");
+    const marks = Object.fromEntries(Object.entries(MARK).map(([k, sel]) => [k, k === "home" ? !!host?.querySelector(sel) : !!body?.querySelector(sel)]));
     return {
       view: document.getElementById("start-app")?.dataset.view ?? null,
       active: current.map((b) => b.getAttribute("data-nav")),
@@ -84,8 +86,9 @@ async function probe(page) {
 async function expectSection(page, label, section, extra = {}) {
   checks += 1;
   const s = await probe(page);
-  if (s.view !== section) fail(label, `view=${s.view} (기대 ${section})`);
-  const wantActive = section === "join" ? [] : [section];
+  const wantView = section === "home" ? "first-run" : section;
+  if (s.view !== wantView) fail(label, `view=${s.view} (기대 ${wantView})`);
+  const wantActive = section === "join" || section === "home" ? [] : [section];
   if (JSON.stringify(s.active) !== JSON.stringify(wantActive)) fail(label, `레일 표시=${JSON.stringify(s.active)} (기대 ${JSON.stringify(wantActive)})`);
   if (!s.marks[section]) fail(label, `본문에 ${section} 표식이 없다`);
   for (const [other, present] of Object.entries(s.marks)) if (other !== section && present) fail(label, `본문에 다른 칸(${other}) 표식이 남았다`);
@@ -105,10 +108,11 @@ const shot = async (page, name) => { if (OUT) await page.screenshot({ path: `${O
 const browser = await chromium.launch({ args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const { page, errors } = await openPage(browser);
-  await page.waitForSelector("[data-testid='start-hero']:not(.is-loading)", { timeout: 30000 });
-  await page.waitForSelector("[data-testid='start-home-concept']", { timeout: 30000 });
+  await page.waitForSelector("[data-testid='first-run-my-games']:not([hidden])", { timeout: 30000 });
   await expectSection(page, "처음", "home");
+  if (await page.$("[data-testid='start-rail']")) fail("처음", "홈인데 레일이 보인다");
   await shot(page, "home");
+  await page.click("[data-testid='first-run-my-games-more']"); await expectSection(page, "홈 → 내 게임", "games");
 
   console.log("· 모든 순서쌍 A→B (바로 확인, 기다리지 않음)");
   for (const a of NAVS) for (const b of NAVS) {
@@ -127,7 +131,7 @@ try {
   await nav(page, "create"); await page.waitForSelector("[data-testid='concept-feed-card']");
   await page.locator("[data-testid='start-body'] .cf-body").evaluate((e) => { e.scrollTop = 900; });
   await nav(page, "home"); await expectSection(page, "스크롤 create→home", "home");
-  await nav(page, "create"); await expectSection(page, "스크롤 home→create", "create");
+  await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-create']"); await expectSection(page, "스크롤 home→create", "create");
 
   console.log("· 컨셉 상세 → 다른 칸 → 새로 만들기");
   await page.locator("[data-testid='concept-feed-card']").first().click();
@@ -153,27 +157,23 @@ try {
   await page.waitForSelector("[data-testid='quick-interview']");
   await page.keyboard.press("Escape");
   await nav(page, "home"); await expectSection(page, "골라서 만들기 닫고 홈", "home");
+  await page.click("[data-testid='first-run-my-games-more']");
 
-  console.log("· 홈 카드 → 그 컨셉 상세");
-  await page.locator("[data-testid='start-home-concept']").first().click();
-  await page.waitForSelector("[data-testid='concept-detail-make']");
-  await expectSection(page, "홈 컨셉 카드", "create", { fresh: false });
-  if (!(await probe(page)).detailOpen) fail("홈 컨셉 카드", "상세가 열리지 않았다");
-
-  console.log("· 홈 「모두 보기」 링크");
-  await nav(page, "home");
-  await page.click("[data-testid='start-home-recent-more']"); await expectSection(page, "최근 게임 모두 보기", "games");
-  await nav(page, "home");
-  await page.click("[data-testid='start-home-concepts-more']"); await expectSection(page, "컨셉 모두 보기", "create");
-  await nav(page, "home");
-  await page.click("[data-testid='start-home-builtin-more']"); await expectSection(page, "기본 게임 자세히", "builtin");
+  console.log("· 홈 「내 게임 · 모두 보기」·「⋯」 메뉴");
+  await nav(page, "games"); await page.click("[data-testid='start-nav-home']"); await expectSection(page, "레일 홈 → 프롬프트", "home");
+  await page.click("[data-testid='first-run-my-games-more']"); await expectSection(page, "내 게임 모두 보기", "games");
+  await page.click("[data-testid='start-nav-home']");
+  await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-create']"); await expectSection(page, "⋯ 새로 만들기", "create");
+  await page.click("[data-testid='start-nav-home']");
+  await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-builtin']"); await expectSection(page, "⋯ 예제 자세히", "builtin");
+  if ((await page.locator("button:has-text('플레이')").count()) > 0) fail("플레이 입구", "시작 화면에 「플레이」 단추가 있다");
 
   // 2026-10-21: 사람 팀 협업을 접었다(electron/shared/teamCollab.ts TEAM_COLLAB_ENABLED=false). 단추가 없어야 한다.
   console.log("· 팀에 참여 단추 없음(팀 협업 접힘)");
   if (await page.$("[data-testid='start-join-team']")) fail("팀에 참여", "팀 협업을 접었는데 단추가 보인다");
 
   console.log("· 뒤로 가기(마우스 뒤로 단추)");
-  await nav(page, "home"); await nav(page, "builtin"); await nav(page, "create");
+  await page.click("[data-testid='start-nav-home']"); await page.click("[data-testid='first-run-more']"); await page.click("[data-testid='first-run-more-builtin']"); await nav(page, "create");
   await page.goBack(); await expectSection(page, "뒤로 1", "builtin");
   await page.goBack(); await expectSection(page, "뒤로 2", "home");
   await page.goForward(); await expectSection(page, "앞으로", "builtin");
@@ -184,24 +184,23 @@ try {
   console.log("· 최근 목록이 늦게 와도 지금 칸을 덮지 않음");
   {
     const late = await openPage(browser, { entriesDelayMs: 2500 });
-    await nav(late.page, "create");
+    await late.page.click("[data-testid='first-run-more']"); await late.page.click("[data-testid='first-run-more-create']");
     await late.page.waitForTimeout(3200);
     await expectSection(late.page, "늦은 목록 동안 새로 만들기", "create");
-    await nav(late.page, "home");
-    const s = await expectSection(late.page, "늦은 목록 뒤 홈", "home");
-    if (!(await late.page.$("[data-testid='start-hero']:not(.is-loading)"))) fail("늦은 목록 뒤 홈", "배너가 아직 불러오는 중");
-    void s;
+    await late.page.click("[data-testid='start-nav-home']");
+    await expectSection(late.page, "늦은 목록 뒤 홈", "home");
+    if (!(await late.page.$("[data-testid='first-run-my-games']:not([hidden])"))) fail("늦은 목록 뒤 홈", "내 게임 줄이 없다");
     if (late.errors.length) fail("페이지 오류(늦은 목록)", late.errors.join(" | "));
     await late.page.close();
   }
   console.log("· 처음 켠 상태(게임 없음)");
   {
     const first = await openPage(browser, { entries: [] });
-    await first.page.waitForSelector("[data-testid='start-hero']:not(.is-loading)");
+    await first.page.waitForTimeout(800);
     await expectSection(first.page, "처음 켠 홈", "home");
-    if (await first.page.$("[data-testid='start-home-recent']")) fail("처음 켠 홈", "게임이 없는데 최근 게임 줄이 있다");
+    if (await first.page.$("[data-testid='first-run-my-games']:not([hidden])")) fail("처음 켠 홈", "게임이 없는데 내 게임 줄이 있다");
     await shot(first.page, "home-first-run");
-    await nav(first.page, "games"); await expectSection(first.page, "처음 켠 내 게임", "games");
+    await first.page.click("[data-testid='first-run-more']"); await first.page.click("[data-testid='first-run-more-create']"); await nav(first.page, "games"); await expectSection(first.page, "처음 켠 내 게임", "games");
     await first.page.click("[data-testid='start-new-game']"); await expectSection(first.page, "첫 게임 만들기 → 새로 만들기", "create");
     await first.page.close();
   }
