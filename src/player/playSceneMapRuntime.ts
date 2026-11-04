@@ -1,4 +1,5 @@
 import { setCharacterBaseOrigin } from "./characterOrigin";
+import { openingStageEventId } from "@/project/openingStage";
 import { phaserBlendMode } from "@/project/blendMode";
 import { invalidateSunlight } from "./sunlightLayer";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -1045,6 +1046,17 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
 }
 
 export function activeRuntimeEvents(
+  scene: PlaySceneContext,
+  triggerKind: Trigger["kind"]
+): RuntimeEventView[] {
+  // 무대 오프닝 동안 그 맵의 자동·병렬 이벤트는 무대 컷신 하나만 돈다. 같은 맵의 본편 자동 실행(첫사랑 거리의 아침 도입
+  // 컷신은 스테이지 변수로 서 있다)이 오프닝과 같이 돌거나 오프닝 끝에 남아 다시 도는 일을 막는다. 사람·차의 자율 이동은 그대로다.
+  const stageEventId = triggerKind === "auto" || triggerKind === "parallel" ? openingStageEventId(scene.session.flags, scene.getMapId()) : undefined;
+  if (stageEventId !== undefined) return activeRuntimeEventsUngated(scene, triggerKind).filter((event) => event.event.id === stageEventId);
+  return activeRuntimeEventsUngated(scene, triggerKind);
+}
+
+function activeRuntimeEventsUngated(
   scene: PlaySceneContext,
   triggerKind: Trigger["kind"]
 ): RuntimeEventView[] {

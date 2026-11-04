@@ -460,6 +460,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   configure_title_intro: system("타이틀 앞 인트로 설정", "gear"),
   configure_opening_music: system("오프닝 음악 설정", "gear"),
   create_opening_animatic_shot: build("오프닝 샷 추가", "spark"),
+  author_opening_stage: build("맵 위 오프닝 연출", "spark"),
   upsert_opening_layer: build("오프닝 레이어 넣기", "spark"),
   remove_opening_layer: build("오프닝 레이어 빼기", "x"),
   animate_opening_layer: build("오프닝 레이어 움직이기", "spark"),
