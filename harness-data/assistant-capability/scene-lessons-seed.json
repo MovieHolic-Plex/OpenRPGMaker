@@ -1030,6 +1030,37 @@
     "the project saves and reloads"
    ],
    "lint0": []
+  },
+  {
+   "id": "group-talk-arc-not-row",
+   "label": "셋 이상이 모인 첫 만남은 한 줄이 아니라 ∩ 대형으로 세운다",
+   "port": 19558,
+   "lessons": [
+    "group-talk-arc-not-row"
+   ],
+   "prompt": "엘리베이터 홀에서 신입이 팀장·동료·사수를 처음 만나는 장면을 만들어 줘. 네 사람이 줄 선 것처럼 보이지 않게 해 줘.",
+   "requirements": [
+    "at most two actors share one row: the speaking pair stands face to face one tile apart, the others stand one row nearer the camera on the outer columns",
+    "every listener faces inward (explicit face commands for diagonal cells), nobody faces an empty tile",
+    "nobody stacks in one column",
+    "the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "qa-talkto-walkable-cell",
+   "label": "QA 순간이동 접근 칸은 사람이 설 수 있는 바닥 칸으로 고른다",
+   "port": 19559,
+   "lessons": [
+    "qa-talkto-walkable-cell"
+   ],
+   "prompt": "탕비실 카운터 앞에서 동료가 말하는 장면의 QA 시나리오를 만들어 줘. 주인공이 카운터 위에 서 있는 것처럼 찍히지 않게 해 줘.",
+   "requirements": [
+    "the scenario approaches the talker from the side that has walkable floor (never teleports the player onto a solid counter or furniture cell)",
+    "if a capture shows a sprite inside furniture the review checks whether it is a harness teleport before calling it a game defect",
+    "the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

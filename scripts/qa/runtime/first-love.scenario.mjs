@@ -49,6 +49,8 @@ function stepInto(mapId, cell, dir) {
   ];
 }
 /** 이벤트 옆에 서서 그쪽을 보고 말을 건다. */
+// dir 은 «대상을 보는 방향» 이다 — 순간이동 칸은 그 반대편이다. 그 칸이 막힌 칸(카운터·가구)이면 사람이 설 수 없는 자리라 스프라이트가 가구에 박힌 채 찍힌다
+// (첫사랑 r7 4차: 탕비실 라면 비트가 "down" 으로 카운터 칸에 순간이동 → 블라인드가 «카운터에 낀 머리»로 지적). 바닥이 있는 쪽에서 접근하게 dir 을 고른다.
 function talkTo(mapId, cell, dir = "up") {
   const from = { up: { x: cell.x, y: cell.y + 1 }, down: { x: cell.x, y: cell.y - 1 }, left: { x: cell.x + 1, y: cell.y }, right: { x: cell.x - 1, y: cell.y } }[dir];
   return [
@@ -133,7 +135,7 @@ export default {
     openMenu("menu-wed", "ESC 메뉴 — 수요일 호감도"),
     closeMenu("menu-wed-close"),
     { id: "notebook", note: "지후 수첩", ops: [...talkTo("fl_office_pm", notebook, "up"), toChoice(), shotPause(500)], shot: true },
-    { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "down"), toChoice(), shotPause(500)], shot: true },
+    { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "friday", note: "금요일 발표", ops: [...pick(pickC6), { kind: "pressUntilJs", key: "Enter", fn: "() => /핵심이 뭡니까/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 600 }, shotPause(1200)], shot: true },
     { id: "c7", note: "발표 선택", ops: [toChoice(), ...pick(pickC7), shotPause(900)], shot: true },
     { id: "c8", note: "역으로 / 회식", ops: [toChoice(), shotPause(500)], shot: true },
