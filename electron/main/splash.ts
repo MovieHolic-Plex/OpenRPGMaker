@@ -38,7 +38,7 @@ function iconMarkup(rendererDir: string): string {
     const png = readFileSync(join(rendererDir, "icons", "pwa-192.png"));
     return `<img class="icon" alt="" src="data:image/png;base64,${png.toString("base64")}">`;
   } catch {
-    return `<svg class="icon" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#4a57d6"/><rect x="6" y="6" width="7" height="7" rx="1.5" fill="#fff"/><rect x="15" y="6" width="7" height="7" rx="1.5" fill="#fff" fill-opacity="0.55"/><rect x="6" y="15" width="7" height="7" rx="1.5" fill="#fff" fill-opacity="0.55"/><rect x="15" y="15" width="7" height="7" rx="1.5" fill="#fff"/></svg>`;
+    return `<svg class="icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><rect x="0.25" y="0.25" width="17.5" height="17.5" rx="4.75" fill="#18181b" stroke="#52525b" stroke-width="0.5"/><ellipse cx="9" cy="9" rx="3.56" ry="4.14" fill="none" stroke="#fff" stroke-width="1.9"/></svg>`;
   }
 }
 

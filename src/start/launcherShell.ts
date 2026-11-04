@@ -6,6 +6,7 @@
 // 레일의 홈·내 게임·기본 게임·새로 만들기는 본문 칸을 바꾼다(2026-10-21). 예전에는 한 긴 본문 안의 선반으로 스크롤했는데,
 // 스크롤 위치가 레일 표시를 다시 정해 누른 단추와 표시가 어긋나고, 앞 칸의 검색·상세가 남았다. 지금 칸의 주인은 startScreen.ts 하나다.
 import "./launcher.css";
+import { BRAND_MARK_SVG } from "./brandMark";
 import { el } from "@/util/dom";
 import { startIcon, type StartIconName } from "./icons";
 
@@ -20,7 +21,7 @@ export const LAUNCHER_TESTIDS = {
   settings: "start-settings-open",
 } as const;
 
-const BRAND_MARK = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" shape-rendering="crispEdges"><rect width="16" height="16" fill="#1f6fc5"/><rect x="3" y="3" width="4" height="4" fill="#fff"/><rect x="9" y="3" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="3" y="9" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="9" y="9" width="4" height="4" fill="#f3c34f"/></svg>';
+const BRAND_MARK = BRAND_MARK_SVG;
 
 /** 위 막대 오른쪽의 글자 단추(폴더 열기·팀에 참여 — 팀에 참여는 @deprecated, 2026-10-21 팀 협업 접힘). */
 export function topButton(label: string, testid: string, icon: StartIconName, onClick: () => void): HTMLButtonElement {
