@@ -43,6 +43,9 @@ await mkdir(join(out, "frames"), { recursive: true });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await context.newPage();
 page.on("pageerror", (e) => report.errors.push(String(e?.message ?? e)));
+page.on("console", (m) => { if (m.type() === "error") report.errors.push(`console: ${m.text().slice(0, 200)}`); });
+page.on("requestfailed", (r) => report.errors.push(`requestfailed: ${r.url().slice(0, 160)} ${r.failure()?.errorText ?? ""}`));
+page.on("response", (r) => { if (r.status() >= 400) report.errors.push(`http ${r.status()}: ${r.url().slice(0, 160)}`); });
 const opening = def.opening === true;
 await page.addInitScript(([c, op]) => {
   try { localStorage.clear(); } catch {}
