@@ -1,6 +1,7 @@
 import { phaserEaseName, type EasingName } from "@/project/easing";
 import { mapTileSize } from "@/project/tileGeometry";
 import { smallMapFitScale } from "@/project/mapViewScale";
+import { resolveSmallMapFill } from "@/project/smallMapFill";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import type { GameMap } from "@/project/types";
@@ -118,7 +119,8 @@ export function smallMapFillZoom(
   const mapHeight = Math.max(tile, map.height * tile + overhang) + tile;
   // 기본 시야(base) 대비 비율로 고른다 — 한 축만 넘치는 길쭉한 맵은 좁은 축을 채우는 만큼(상한 1.5배) 키운다(smallMapFitScale).
   const base = options.base !== undefined && Number.isFinite(options.base) && options.base > 0 ? options.base : 1;
-  const fit = base * smallMapFitScale(camera.width / mapWidth / base, camera.height / mapHeight / base);
+  const mapFits = camera.width / base >= mapWidth - tile && camera.height / base >= mapHeight - tile;
+  const fit = base * smallMapFitScale(camera.width / mapWidth / base, camera.height / mapHeight / base, mapFits);
   return options.integer === false ? fit : Math.floor(fit + 1e-6);
 }
 
@@ -357,7 +359,9 @@ function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): voi
   // 작은 방은 화면을 채우도록 정수 캔버스 배율까지 키운다. 연출이 멀리 보기(<1)를 걸었으면 그 뜻을 따른다.
   // 기본 배율이 이미 정수가 아니면(양쪽 전신 대화창 3.2배 등) 도트가 이미 고르지 않으니 맞춤도 소수까지 쓴다.
   const integerBase = Math.abs(base - Math.round(base)) < 1e-6;
-  const next = authored >= 1 ? Math.max(base, smallMapFillZoom(camera, scene.map, { integer: integerBase, base })) : base;
+  // 채우기는 프로젝트가 켰을 때만(system.smallMapFill, 생략 = 끔 — project/smallMapFill.ts). 끄면 작은 맵은 원래 크기로 가운데에 놓인다.
+  const fill = authored >= 1 && resolveSmallMapFill(store.getCurrent());
+  const next = fill ? Math.max(base, smallMapFillZoom(camera, scene.map, { integer: integerBase, base })) : base;
   if (camera.zoom !== next) camera.setZoom(next);
   syncRuntimeCameraBounds(camera, scene.map);
 }
