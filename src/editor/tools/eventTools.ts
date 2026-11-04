@@ -3214,7 +3214,7 @@ function chaseStepMs(speed: number, frequency: number): number {
  * 은신처 칸들을 실제 은신 이벤트로 만든다(configure_object_behavior 의 hiding 과 같은 페이지 모양).
  * 칸에 조사 이벤트가 있으면 그 페이지들을 은신처로 바꾸고, 없으면 투명 이벤트를 새로 둔다.
  */
-function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
+function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chaserId: string, marked = true): { eventIds: string[]; warnings: string[] } {
   const eventIds: string[] = [];
   const warnings: string[] = [];
   if (!Array.isArray(raw)) return { eventIds, warnings };
@@ -3229,7 +3229,8 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
     if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
     const hideIn = (page: EventPage): void => {
       page.interaction = { kind: "hiding" };
-      page.nearSparkle ??= { ...HIDING_SPARKLE };
+      if (marked) page.nearSparkle ??= { ...HIDING_SPARKLE };
+      else delete page.nearSparkle;
       page.movement = { ...page.movement, type: "fixed" };
       page.trigger = { kind: "action" };
       page.priority = "same";
@@ -3531,6 +3532,7 @@ const makeChaseScene: ToolDefinition = {
       emotes: { type: "string", enum: ["none", "default"], description: "none = 알아챈 「!」·숨 고르기 땀 말풍선을 띄우지 않는다(호러 기본). default = 띄운다" },
       hidingSound: { type: "object", description: "은신처 소리 — {enterSe?(숨을 때, 생략 = 사물함 문 소리), exitSe?, heartbeat?(true 면 숨어 있는 동안 심장 고동 고리, 공포 장르 기본 true)}. false 면 무음", properties: { enterSe: { type: "string" }, exitSe: { type: "string" }, heartbeat: { type: "boolean" } } },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다. 생략하면 맵에 있는 옷장·사물함·침대·커튼 1~2곳(순찰 길에서 걸어서 2~14걸음)을 스스로 고른다. [] 면 은신처 없음." },
+      hidingMarkers: { type: "boolean", description: "false = 은신처 위에 가까이 가면 뜨는 ▼ 표식(nearSparkle)을 달지 않는다. 장면(가구 모양·대사)이 숨을 곳을 보여 주는 잠입에서 손잡이를 줄일 때. 바로 곁에 서면 「숨기」 안내는 한 번 뜬다. 기본 true" },
     },
     required: ["mapId", "chaser"],
   },
@@ -3672,12 +3674,15 @@ const makeChaseScene: ToolDefinition = {
     // 한 번도 만지지 않았다. 이미 조명을 정했거나 mood:false 면 두고, 무엇을 했는지 요약에 싣는다.
     const darkened = args.mood !== false && draft.system?.genre === "horror-chase" && !map.defaultLighting;
     if (darkened) map.defaultLighting = normalizeLightingState({ ambient: 0.5, color: "#1a1020", sources: [] });
-    const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
+    if (args.hidingMarkers !== undefined && typeof args.hidingMarkers !== "boolean") throw new ToolError("hidingMarkers 는 true|false 입니다.", { code: "invalid-args" });
+    const hidingMarked = args.hidingMarkers !== false;
+    const hiding = placeHidingSpots(draft, map, args.hidingSpots, id, hidingMarked);
     // hidingSpots 를 안 주면 맵에 이미 있는 숨을 만한 가구(옷장·사물함·침대·커튼) 1~2곳을 순찰 길 가까이에서 고른다 —
     // 2026-10-29 standin horror: 순찰·즉사 추격자가 있는데 숨을 곳이 0곳이었다. hidingSpots:[] 를 명시하면 두지 않는다.
     if (args.hidingSpots === undefined) {
       const auto = ensureChaserHidingSpots(draft, map, id);
       hiding.eventIds.push(...auto.placed.map((pick) => pick.eventId));
+      if (!hidingMarked) for (const pick of auto.placed) for (const page of map.events.find((e) => e.id === pick.eventId)?.pages ?? []) delete page.nearSparkle;
       if (auto.placed.length) hiding.warnings.push(`은신처 자동: ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")} — 다른 칸을 원하면 hidingSpots 로 준다.`);
       else if (auto.note) hiding.warnings.push(`${auto.note} — 숨을 곳이 0곳이다. 옷장·사물함을 놓고(place_object) hidingSpots 로 그 칸을 준다.`);
     }
