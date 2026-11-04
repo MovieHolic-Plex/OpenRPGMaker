@@ -639,7 +639,7 @@ function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandIn
  * 깔개 위 두 칸 중 한 칸에서만 나간다(fs2 스웜 I24 후속, ultrabrain #4216 검토). 자동 깔개(withDoormat)는 따로 맞춘다.
  */
 function doormatExitWarnings(objects: HandInteriorInput["objects"], shape: HandInteriorShape): string[] {
-  const inside = new Set(shape.openings.map((o) => shape.inwardOf(o)).filter((c): c is { x: number; y: number } => !!c).map((c) => `${c.x},${c.y}`));
+  const inside = new Set(shape.openings.flatMap((o) => { const c = shape.inwardOf(o); return c ? [`${c.x},${c.y}`] : []; }));
   return (objects ?? []).filter((o) => o.id === "doormat")
     .filter((o) => ![o.x, o.x + 1].every((x) => inside.has(`${x},${o.y}`)))
     .map((o) => `발깔개 (${o.x},${o.y}) 가 출구 칸 바로 안쪽에 다 들어가지 않는다 — 발깔개는 2칸 출구 전용이다. 1칸 출구면 빼고, 2칸 출구면 두 칸이 모두 출구 안쪽에 오게 옮긴다`);
