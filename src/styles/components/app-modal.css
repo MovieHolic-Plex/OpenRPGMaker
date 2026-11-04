@@ -338,7 +338,7 @@
 
 /* 첫 실행 AI 설정 마법사 (editor/ui/aiSetupWizardView.ts) — 목업(oprn-ui-redesign) 결: 흰 면·얇은 선·파랑 하나. 색·간격은 tokens.css 만 쓴다. */
 @layer components {
-  .ai-connect-gate-card:has(.app-modal-wizard) {
+  .app-modal-card:has(.app-modal-wizard) {
     border-color: var(--border-default);
     border-radius: 14px;
     max-width: 400px;
@@ -351,9 +351,9 @@
   }
   .app-modal-wizard-mark {
     align-items: center;
-    background: var(--text-2);
+    background: var(--accent-muted);
     border-radius: 12px;
-    color: #fff;
+    color: var(--accent);
     display: inline-flex;
     flex: none;
     font-size: 18px;
@@ -362,10 +362,6 @@
     justify-content: center;
     width: 44px;
   }
-  .app-modal-wizard-mark[data-service="claude"] { background: #D97757; }
-  .app-modal-wizard-mark[data-service="chatgpt"] { background: #10A37F; }
-  .app-modal-wizard-mark[data-service="google"] { background: #4285F4; }
-  .app-modal-wizard-mark[data-service="deepseek"] { background: #4D6BFE; }
   .app-modal-wizard-mark.is-small {
     border-radius: 8px;
     font-size: 13px;
