@@ -467,6 +467,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     runtime: options.runtime,
     submenu: null,
     setSubmenu(next) {
+      if (next === null) forgetSubmenuBackCursor(options.runtime.snapshot());
       submenu = next;
       panelOptions.submenu = next;
     },
@@ -1066,6 +1067,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return `command:${snapshot.activeActorId ?? ""}`;
   }
 
+  /** 목록을 닫을 때 「뒤로」에 선 커서는 기억하지 않는다. 기억하면 다시 열 때마다 커서가 「뒤로」에 서서
+   *  확인키 두 번(닫기 → 다시 열기)이 「닫히지 않는 목록」처럼 보였다(fs2 스웜 N01, 2026-11-04). */
+  function forgetSubmenuBackCursor(snapshot: BattleSnapshot): void {
+    if (!submenu) return;
+    const context = menuContext(snapshot);
+    if (cursorByContext.get(context) === "actor-command-back") cursorByContext.delete(context);
+  }
+
   function enabledMenuButtons(): HTMLButtonElement[] {
     return Array.from(commandHost.querySelectorAll<HTMLButtonElement>("button.battle-command:not(:disabled)"));
   }
@@ -1319,6 +1328,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     if (submenu !== null) {
       playBattleCue("command-cancel");
+      forgetSubmenuBackCursor(snapshot);
       submenu = null;
       panelOptions.submenu = null;
       syncView();

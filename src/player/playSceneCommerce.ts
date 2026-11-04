@@ -91,13 +91,16 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
     overlay.append(question, actions);
     // 도트 창(기본 메뉴 스킨 pixel) — 묵기 전에 누가 얼마나 회복되는지와 소지금 전후를 한 화면에 보인다.
     const project = store.getCurrent();
-    if (menuSkinFor(project).partyStats) layoutPixelInn(overlay, project, scene.session, step);
+    const pixelLayout = menuSkinFor(project).partyStats;
+    if (pixelLayout) layoutPixelInn(overlay, project, scene.session, step);
     mountCommerceOverlay(scene, overlay);
-    // 예/아니오 를 방향키(←→)로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
+    // 예/아니오 를 방향키로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
+    // 도트 창은 예/아니오를 위아래로 쌓는다 — 2열이면 ↓ 가 먹지 않아 소지금이 모자랄 때
+    // 「예」에 갇혀 여관을 못 나갔다(fs2 스웜 I23, 2026-11-04).
     detachCursor = attachCursorMenu(overlay, {
       items: [stayButton, cancelButton],
       cancelEl: cancelButton,
-      columns: 2,
+      columns: pixelLayout ? 1 : 2,
     });
   });
 }

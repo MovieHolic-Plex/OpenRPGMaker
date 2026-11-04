@@ -617,7 +617,9 @@ function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandIn
   if ((input.objects ?? []).some((o) => o.id === "doormat") || !HAND_INTERIOR_SPEC.objects.doormat) return input;
   const first = shape.openings.find((o) => o.y === shape.height - 1);
   const gap = first && nearestOpening(shape, first);   // 이어진 틈의 가운데 — 문 이벤트가 서는 칸과 같다.
-  // 2칸 틈이면 깔개(2칸)가 틈과 딱 맞는다. 1칸 틈은 반 칸 어긋날 수밖에 없다.
+  // 2칸 틈이면 깔개(2칸)가 틈과 딱 맞는다. 1칸 틈에 2칸 깔개를 깔면 한 칸이 나가지 못하는 벽 앞에 붙어,
+  // 깔개 위 두 칸 중 한 칸에서만 나간다(fs2 스웜 I24 서리나루 여관, 2026-11-04) — 1칸 틈에는 깔지 않는다.
+  if (!first || !shape.openings.some((o) => o.y === first.y && Math.abs(o.x - first.x) === 1)) return input;
   const inward = gap && shape.inwardOf(gap);
   if (!inward) return input;
   const taken = (x: number, y: number) => (input.objects ?? []).some((o) => o.x === x && o.y === y)
