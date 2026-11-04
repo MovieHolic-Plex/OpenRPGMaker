@@ -80,7 +80,7 @@ describe("UX2 collapsed and unchanged Progress", () => {
   it("does no evaluation while collapsed, including queued work, and refreshes on reopening", () => {
     find("sidebar-progress").click();
     const evaluate = vi.spyOn(journey, "evaluateAuthoringJourney");
-    paint(); // Queue a visible update, then collapse before its frame.
+    paint(); // Queue a visible update, then close the drawer before its frame.
     find("sidebar-progress").click();
     expect(find("left-progress-pane").hidden).toBe(true);
     expect(find("left-progress-pane").parentElement?.hidden).toBe(true);

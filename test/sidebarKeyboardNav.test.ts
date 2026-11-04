@@ -27,7 +27,7 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
     });
 
     it("maintains focus on the same tool button across re-renders when activated", () => {
-      const fillBtn = findByTestId(container as unknown as FakeElement, "tool-fill");
+      const fillBtn = findByTestId(container as unknown as FakeElement, "palette-tool-fill");
       expect(fillBtn).not.toBeNull();
       fillBtn!.focus();
       expect(document.activeElement).toBe(fillBtn);
@@ -36,14 +36,14 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       fillBtn!.click();
       renderTilePalette(container);
 
-      const newFillBtn = findByTestId(container as unknown as FakeElement, "tool-fill");
+      const newFillBtn = findByTestId(container as unknown as FakeElement, "palette-tool-fill");
       expect(newFillBtn).not.toBeNull();
       expect(document.activeElement).toBe(newFillBtn);
     });
 
     it("has roving tabindex (1 tab stop in toolbar) and moves focus via arrow keys", () => {
       const selectBtn = findByTestId(container as unknown as FakeElement, "tool-select");
-      const paintBtn = findByTestId(container as unknown as FakeElement, "tool-paint");
+      const paintBtn = findByTestId(container as unknown as FakeElement, "palette-tool-paint");
       expect(selectBtn).not.toBeNull();
       expect(paintBtn).not.toBeNull();
 

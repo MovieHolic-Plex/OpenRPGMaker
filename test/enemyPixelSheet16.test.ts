@@ -88,8 +88,8 @@ function pngHeader(width: number, height: number, salt = 0): Uint8Array {
 }
 const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
 
-function pack(patch: Record<string, unknown> = {}, sheetSize = 256, frames = 16): { manifest: StorePackManifest; blobs: Map<string, Uint8Array>; sheetSha: string } {
-  const portrait = pngHeader(64, 64, 1);
+function pack(patch: Record<string, unknown> = {}, sheetSize = 256, frames = 16, portraitSize = 64): { manifest: StorePackManifest; blobs: Map<string, Uint8Array>; sheetSha: string } {
+  const portrait = pngHeader(portraitSize, portraitSize, 1);
   const sheet = pngHeader(sheetSize, sheetSize, 2);
   const blobs = new Map([[sha(portrait), portrait], [sha(sheet), sheet]]);
   const manifest: StorePackManifest = {
@@ -150,6 +150,13 @@ describe("store format for 16-cell sheets", () => {
     const empty = { tilesets: {}, assets: { uploaded: {} }, database: {}, resourceProfiles: [] } as unknown as Project;
     const context = { slug: "oprn-slimes", version: 1, author: "OPRN", storeUrl: "https://s", itemUrl: "https://s/i", blob: (key: string) => small.blobs.get(key)! };
     expect(() => applyPackToProject(empty, small.manifest, context)).toThrow("256×256");
+  });
+
+  it.each([[128, "3x3"], [192, "4x4"], [256, "3x3"], [256, "4x4"]] as const)("accepts big cell %s (%s) with a cell×cell portrait and n·cell sheet", (cell, grid) => {
+    const side = grid === "4x4" ? 4 : 3;
+    const big = pack({ cell, ...(grid === "3x3" ? { grid: undefined } : {}) }, cell * side, side * side, cell);
+    expect(validateManifest(big.manifest).ok).toBe(true);
+    expect(storeMonsterSheetSizeProblems(big.manifest, (key) => pngSize(big.blobs.get(key)!))).toEqual([]);
   });
 
   it("requires cells 0..8 and unlisted 9..14 drawn, listed missing cells and cell 15 fully transparent", () => {

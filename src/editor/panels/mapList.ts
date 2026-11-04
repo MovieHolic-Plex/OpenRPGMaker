@@ -66,11 +66,14 @@ type MapActionContext = {
 };
 
 export type MapListVariant = "panel" | "basic" | "switcher";
+/** `externalFilter`: 이름 검색칸을 목록 밖(왼쪽 열 맨 위 「맵·이벤트 찾기」)이 가진다 — 목록은 패싯 줄만 그린다. */
+export type MapListOptions = { readonly variant?: MapListVariant; readonly externalFilter?: boolean };
 
 const COLLAPSED_STORAGE_KEY = "oprn:map-tree-collapsed";
 const collapsedMapIds = loadCollapsedMapIds();
 let currentMapListContainer: HTMLElement | null = null;
 let currentMapListVariant: MapListVariant = "panel";
+let currentExternalFilter = false;
 let mapFilterQuery = "";
 type MapFilterFacet = "all" | "empty" | "nolink" | "encounter";
 let mapFilterFacet: MapFilterFacet = "all";
@@ -88,9 +91,10 @@ let lastClickedMapId: MapId | null = null;
 // container render so subscribed panes and standalone switchers both refresh once.
 const mapListRenderVersions = new WeakMap<HTMLElement, number>();
 
-export function renderMapList(container: HTMLElement, options?: { readonly variant?: MapListVariant }): void {
+export function renderMapList(container: HTMLElement, options?: MapListOptions): void {
   currentMapListContainer = container;
   currentMapListVariant = options?.variant ?? "panel";
+  currentExternalFilter = currentMapListVariant === "panel" && options?.externalFilter === true;
   clearChildren(container);
   const project = store.getCurrent();
   const state = editorState.get();
@@ -330,6 +334,7 @@ function isFilterExpanded(mapCount: number): boolean {
  *  결과가 그대로라, 눌러도 아무 일 없는 죽은 버튼이 된다(행 접기 화살표가 disabled 표시 없이
  *  죽어 있던 것과 같은 결함 형태 — 이번엔 아예 렌더하지 않는 쪽으로 막는다). */
 function canToggleMapFilter(mapCount: number): boolean {
+  if (currentExternalFilter) return false;
   return currentMapListVariant !== "switcher" && !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
 }
 
@@ -405,6 +410,11 @@ function makeFilterField(mapCount: number): HTMLElement {
   // 글자마다 목록을 다시 짓는다. 그때 입력칸도 새 노드가 되므로, 커서를 끝으로 밀면
   // 단어 중간에 끼워 넣은 글자 다음이 아니라 맨 끝에서 이어서 치게 된다. 한글·일본어 IME 는
   // 그 교체만으로 조합 중인 음절이 끊기므로, 조합이 끝나기 전에는 목록을 건드리지 않는다.
+  if (currentExternalFilter) {
+    const facets = el("div", { class: "map-tree-filter is-facets-only" + (mapFilterFacet !== "all" ? " has-active-facet" : ""), children: [chips] });
+    if (!hasActiveMapFilter()) facets.setAttribute("hidden", "");
+    return facets;
+  }
   let composing = false;
   const wrap = el("div", {
     class: "map-tree-filter" + (mapFilterFacet !== "all" ? " has-active-facet" : ""),
@@ -1061,8 +1071,19 @@ function pathToMap(node: MapTreeNode, mapId: MapId, path: MapId[] = []): readonl
 
 function rerenderMapList(): void {
   if (currentMapListContainer) {
-    renderMapList(currentMapListContainer, { variant: currentMapListVariant });
+    renderMapList(currentMapListContainer, { variant: currentMapListVariant, externalFilter: currentExternalFilter });
   }
+}
+
+/** 목록 밖 검색칸이 쓰는 입구. 같은 필터 상태(mapFilterQuery)를 바꾸고 목록을 다시 그린다. */
+export function setMapFilterQuery(value: string): void {
+  if (value === mapFilterQuery) return;
+  mapFilterQuery = value;
+  rerenderMapList();
+}
+
+export function getMapFilterQuery(): string {
+  return mapFilterQuery;
 }
 
 /** Reveal in the existing dock owner, including its markup, filters and branches. */
@@ -1388,12 +1409,13 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
   clearMapDissolveVeil();
   const container = currentMapListContainer;
   const variant = currentMapListVariant;
+  const externalFilter = currentExternalFilter;
   const renderedBeforeSelection = container ? mapListRenderVersions.get(container) : undefined;
   selectEditorMap(mapId);
   // Same-map/chord selection and unsubscribed surfaces still need an explicit
   // refresh. A different-map click in the activity pane has already refreshed it.
   if (container && mapListRenderVersions.get(container) === renderedBeforeSelection) {
-    renderMapList(container, { variant });
+    renderMapList(container, { variant, externalFilter });
   }
   focusMapRow(mapId);
 }

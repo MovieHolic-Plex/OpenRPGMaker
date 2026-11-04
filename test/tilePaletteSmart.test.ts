@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { clearFavoriteTilesForTest, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
-import { PALETTE_CARD_ROW_PX, PALETTE_CARD_WINDOW, PALETTE_THUMB_PX, resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
+import { CARD_COLUMNS, PALETTE_CARD_ROW_PX, PALETTE_CARD_WINDOW, PALETTE_THUMB_PX, resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef, TilesetDef } from "@/project/types";
@@ -199,7 +199,7 @@ describe("smart tile palette", () => {
     expect(body?.clientHeight ?? 0).toBe(0);
     expect(host.querySelectorAll(".palette-card").length).toBeLessThanOrEqual(PALETTE_CARD_WINDOW);
     expect(host.querySelectorAll(".palette-card").length).toBeGreaterThan(0);
-    const rows = Math.ceil(80 / 3);
+    const rows = Math.ceil(80 / CARD_COLUMNS);
     expect(host.querySelector<HTMLElement>(".palette-card-spacer")?.style.height).toBe(`${rows * PALETTE_CARD_ROW_PX - 4}px`);
   });
 

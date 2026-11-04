@@ -1,6 +1,6 @@
 import { makeSvgIcon } from "./tileToolbarIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
-import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
+import { EDITOR_ZOOM_LEVELS, editorState } from "@/editor/editorState";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
 import { renderCanvasAiWorkbench } from "@/editor/panels/canvasAiWorkbench";
 import { store } from "@/project/store";
@@ -10,6 +10,7 @@ import { toast } from "@/util/toast";
 import { openWalkEncounterList } from "@/editor/panels/walkEncounterModal";
 import { locationLayerState, toggleLocationLayer } from "@/editor/mapLocationLayerState";
 import { mapBackgroundPreviewEnabled, toggleMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
+import { renderCanvasToolPill, stepEditorZoom } from "@/editor/panels/canvasToolPill";
 
 let mapScreenshotRequestSeq = 0;
 
@@ -34,12 +35,14 @@ function strokeIcon(d: string): SVGSVGElement {
 
 export const CANVAS_TOOLBAR_EXPANDED_KEY = "oprn:canvas-toolbar-expanded";
 
-export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], current: EditorZoom): EditorZoom {
-  const index = Math.max(0, levels.indexOf(current));
-  const next = index + delta;
-  if (next < 0) return levels[0] ?? current;
-  if (next >= levels.length) return levels[levels.length - 1] ?? current;
-  return levels[next] ?? current;
+export { stepEditorZoom };
+
+/**
+ * 캔버스 위 떠 있는 도구는 가운데 알약 하나다(2026-11 개편, canvasToolPill.ts). 컨테이너(.canvas-toolbar ·
+ * editor-zoom-controls)는 그대로라 AI 스튜디오 머리띠가 같은 노드를 입양한다.
+ */
+export function renderCanvasToolbar(container: HTMLElement): void {
+  renderCanvasToolPill(container);
 }
 
 /**
@@ -50,7 +53,12 @@ export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], cur
  */
 const toolbarRenderMemo = new WeakMap<HTMLElement, { readonly key: string; readonly first: Element | null }>();
 
-export function renderCanvasToolbar(container: HTMLElement): void {
+/**
+ * 은퇴한 오른쪽 위 막대(2026-11 개편 전). 더는 마운트하지 않는다 — 로케이션·배경 미리보기·걷기 전투·AI 빠른 작업·
+ * 격자·맵 PNG 는 ⌘K 명령(commandRegistry.ts CANVAS_MOVED_COMMANDS)이 같은 함수를 부른다. 「기능을 빼도 코드는 지우지
+ * 않는다」는 개편 규칙에 따라 되살릴 수 있게 남긴다(톱바의 menu.ts RETIRED_TOPBAR_CONTROLS 와 같은 처리).
+ */
+export function renderRetiredCanvasToolbar(container: HTMLElement): void {
   const currentZoom = editorState.get().zoom;
   const showGrid = editorState.get().showGrid;
   const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}|${showGrid ? 1 : 0}`;

@@ -195,24 +195,18 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
     expect(text).not.toContain("freshProject");
   });
 
-  it("캔버스 툴바에서 줌 그룹과 맵 저장 액션을 분리한다", () => {
-    // 맵 저장/펼침 버튼은 dense 크롬(표준/전문가)에서만 렌더된다 — 기본(초보) 크롬은 줌 전용.
-    try {
-      const toolbar = document.createElement("div");
+  it("캔버스 알약은 배율 그룹을 두고, 맵 저장·펼침 단추는 두지 않는다(⌘K 「현재 맵 PNG 저장」)", () => {
+    // 2026-11 캔버스 알약 개편: 옛 「더 보기」(격자·맵 PNG)는 ⌘K 명령으로만 닿는다.
+    editorState.set({ zoom: 2 });
+    const toolbar = document.createElement("div");
 
-      renderCanvasToolbar(toolbar);
+    renderCanvasToolbar(toolbar);
 
-      const zoomGroup = findByTestId(fakeElement(toolbar), "editor-zoom-group");
-      const saveGroup = findByTestId(fakeElement(toolbar), "editor-map-save-group");
-      const expand = findByTestId(fakeElement(toolbar), "editor-canvas-toolbar-expand");
-      // P2-11: 줌 그룹은 스테퍼(−/+)와 배율 버튼(1x/2x/4x)만 노출 — "확대"는 title/aria로 이동.
-      expect(zoomGroup?.textContent).toContain("2x");
-      expect(zoomGroup?.textContent).not.toContain("맵 저장");
-      expect(saveGroup?.textContent).toContain("맵 저장");
-      expand?.click();
-      expect(fakeElement(toolbar).classList.contains("is-expanded")).toBe(true);
-    } finally {
-    }
+    const zoomGroup = findByTestId(fakeElement(toolbar), "editor-zoom-group");
+    expect(zoomGroup?.textContent).toContain("200%");
+    expect(zoomGroup?.textContent).not.toContain("맵 저장");
+    expect(findByTestId(fakeElement(toolbar), "editor-map-save-group")).toBeNull();
+    expect(findByTestId(fakeElement(toolbar), "editor-canvas-toolbar-expand")).toBeNull();
   });
 
   it("AI 패널 언독 버튼 툴팁을 패널 분리로 보정한다", () => {

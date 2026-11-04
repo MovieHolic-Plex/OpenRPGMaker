@@ -26,6 +26,7 @@ import {
   type IntentSelectionFact,
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
+import { configForRoleModel } from "./modelRoles";
 import { projectWikiContext } from "./projectWikiContext";
 import { parseRequestCoverageResult, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage,
   type RequestRequirement } from "./requestCoverage";
@@ -113,6 +114,13 @@ export function createLlmIntentDeclarer(
     const config = configForLiteModel(getConfig());
     return { ...config, reasoningEffort: "off", maxTokens: Math.min(config.maxTokens, 4096) };
   };
+  /** 의도 판정 전용 칸(intentModel)이 있으면 그 모델, 없으면 null — 없거나 실패하면 routingConfig(옛 모델)가 맡는다. */
+  const intentModelConfig = (): AiConfig | null => {
+    const base = getConfig();
+    if (!base.intentModel) return null;
+    const config = configForRoleModel(base, base.intentModel);
+    return { ...config, reasoningEffort: "off", maxTokens: Math.min(config.maxTokens, 4096) };
+  };
   return async (facts, signal) => {
     const started = Date.now();
     const text = facts.userText.trim();
@@ -195,7 +203,19 @@ export function createLlmIntentDeclarer(
         signal: controller.signal,
         disableTransientRetry: true,
       };
-      const routing = chat(config, request);
+      const routing = (async () => {
+        // 싼 모델 먼저 — 답이 없거나 스키마 밖이면 같은 벽시계 안에서 옛 모델로 한 번 더 부른다.
+        const fast = intentModelConfig();
+        if (fast) {
+          try {
+            const first = await chat(fast, request);
+            if (parseIntentDeclaration(contentText(first), facts).intent) return first;
+          } catch (cause) {
+            if (signal?.aborted || controller.signal.aborted) throw cause;
+          }
+        }
+        return chat(config, request);
+      })();
       if (options.parallelAudit && options.coverageAudit !== false) earlyAudit = startAudit();
       const result = await routing;
       const parsed = parseIntentDeclaration(contentText(result), facts);

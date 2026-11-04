@@ -86,7 +86,7 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 ```
 
 - 칸 배치·기준선은 번들 시트와 같다(`src/assets/pixelEnemySheets.ts` 머리 주석): 1행 idle a·b·c, 2행 windup·move·attack, 3행 recover(skillCell 이면 스킬 방출)·hit·dead, 오른쪽 보기, 가로 중심 cell/2, 바닥 y=cell−4. 초상은 idle_a 와 같은 그림.
-- `validateManifest`(`monsterSheetProblems`): 몬스터 에셋에만, `sheetResourceId` 는 같은 팩의 다른 picture PNG, `cell` 48·64·96, `motion` 은 `STORE_MONSTER_MOTIONS`(런타임 7종), `idleFrameMs` 60~2000 정수, `skillCell` 은 true 또는 없음.
+- `validateManifest`(`monsterSheetProblems`): 몬스터 에셋에만, `sheetResourceId` 는 같은 팩의 다른 picture PNG, `cell` 48·64·96·128·192·256(128 이상은 업로드·스토어 시트만 — 공방 생성기는 48·64·96 만 그린다), `motion` 은 `STORE_MONSTER_MOTIONS`(런타임 7종), `idleFrameMs` 60~2000 정수, `skillCell` 은 true 또는 없음.
 - 크기 검사 `storeMonsterSheetSizeProblems`(초상 cell×cell, 시트 3cell×3cell)는 바이트가 있는 곳에서 돈다: `applyPackToProject`(프로젝트를 건드리기 전)·`scripts/store/agentStore.mts` check/submit.
 - 넣기: `applyPackToProject` 가 `sheetResourceId` 를 `storeProjectId` 로 바꾼다. 그 뒤로는 전투(`projectPixelEnemySheet`)·자료집 미리보기·웹 내보내기(`collectUsedUploadedAssetIds` 가 meta 로 이어진 시트를 함께 싣는다)가 공방 시트와 같은 길을 탄다. 다른 종류 에셋에 붙은 표식은 넣을 때 버린다.
 - 올리기: `closeSelection` 이 몬스터의 시트 자산을 의존으로 딸려 보낸다.

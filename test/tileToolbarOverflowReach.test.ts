@@ -15,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
+import { resetBrushSettingsForTests, setBrushSettingsOpen } from "@/editor/panels/brushSettingsDisclosure";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -54,11 +55,14 @@ describe("도구막대 오버플로 도달성", () => {
     host = document.createElement("div");
     host.dataset.testid = "left-palette-root";
     document.body.append(host);
+    // 도구 줄·붓 크기는 왼쪽 열의 접힌 「붓 설정」 안에 있다 — 펼친 상태에서 도달성을 본다.
+    setBrushSettingsOpen(true);
     render();
   });
 
   afterEach(() => {
     resetTileToolbarMenusForTests();
+    resetBrushSettingsForTests();
     host.remove();
   });
 
@@ -68,7 +72,7 @@ describe("도구막대 오버플로 도달성", () => {
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll");
     expect(scroll).toBeTruthy();
     expect(scroll!.parentElement).toBe(row);
-    for (const testid of ["tool-select", "tool-paint", "tool-erase", "tool-fill", "oprn-tool-undo"]) {
+    for (const testid of ["tool-select", "palette-tool-paint", "tool-erase", "palette-tool-fill", "oprn-tool-undo"]) {
       expect(scroll!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
     // 「도구」 메뉴는 삭제됐다 — 복사·붙여넣기는 Ctrl+C/V 와 선택 칩이 맡는다.

@@ -14,6 +14,7 @@ import type { GameMap, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { INSPECTION_COMMANDS, inspectionPins, toggleInspectionPin, type InspectionCommand } from '@/editor/panels/sidebarInspectionPins';
 import { resetSidebarSurfaceForTests, SIDEBAR_SURFACE_OPEN } from '@/editor/panels/sidebarSurface';
+import { setBrushSettingsOpen } from '@/editor/panels/brushSettingsDisclosure';
 import { hasOpenModalLayer } from '@/editor/ui/modalStack';
 
 export { RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
@@ -283,9 +284,11 @@ export function makeInspectionControls(model: TileToolbarModel): HTMLElement {
 
 /** The command palette opens the same inspection state, never a duplicate panel. */
 export function openSidebarInspection(id: InspectionCommand): void {
+  // 검사 메뉴는 「붓 설정」 안의 도구 줄에 붙어 뜬다 — 접혀 있으면 트리거가 보이지 않으므로 먼저 편다.
+  setBrushSettingsOpen(true);
   document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
   openMenu = id;
-  railAnchorRequested = typeof document !== "undefined" && document.querySelector(RAIL_INSPECT_SELECTOR) !== null;
+  railAnchorRequested = visibleRailInspect() !== null;
   latestRerender?.();
   const panel = openAnchor?.menu;
   if (!panel) return;
@@ -300,9 +303,16 @@ export function openSidebarInspection(id: InspectionCommand): void {
  * (그 상태로는 anchorMenuToViewport 가 아무것도 못 하고 조용히 빠져나간다 — 실제로 그렇게
  * 한 번 놓쳤다). 프레임 하나 뒤에 재고, 창 크기가 바뀌면 다시 잡는다.
  */
+/** 왼쪽 열의 검사 칩은 위반이 있을 때만 보인다. 숨은 칩(크기 0)에 붙이면 메뉴 위치를 못 잡는다. */
+function visibleRailInspect(): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  const rail = document.querySelector<HTMLElement>(RAIL_INSPECT_SELECTOR);
+  return rail && !rail.hidden && !rail.closest("[hidden]") ? rail : null;
+}
+
 function scheduleMenuAnchor(menu: HTMLElement, toolbarTrigger: HTMLElement): void {
   if (typeof window === "undefined") return;
-  const rail = railAnchorRequested ? document.querySelector<HTMLElement>(RAIL_INSPECT_SELECTOR) : null;
+  const rail = railAnchorRequested ? visibleRailInspect() : null;
   const trigger = rail ?? toolbarTrigger;
   openAnchor = { menu, trigger };
   const apply = (): void => {

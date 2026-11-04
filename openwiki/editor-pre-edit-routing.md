@@ -1120,7 +1120,7 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 | 세션 묶음 | ? 도움말(`menu-help` 아이콘 메뉴) · 기록 · 신원 · ⚙ AI 설정(아이콘, testid 유지) · ⤢ 전체화면. 「툴바 접기(─)」 삭제 | 접을 두 번째 행이 없다 |
 | 작업 칩 4개 | 삭제. `runAuthoringTask` 는 Ctrl+K 「작업: …」 용으로 남고 **도크 프리셋 결합을 풀었다**(`setWorkspacePreset` 삭제) | 「데이터 중심」이 모달 뒤에서 좌측 도크를 비워 모달을 닫으면 팔레트가 사라진 채 남는 함정 |
 | 선택 이벤트 테스트 | 이벤트 편집기 「테스트」 + 이벤트 우클릭 「이 이벤트 테스트」(`event-layer-test-event`) | 클래식 툴바 `toolbar-event-test` 의 집 이전 |
-| 캔버스 툴바 | 구조·testid 그대로, 32px 컨트롤 유리 pill 로 재도색(같은 시트 §10) | — |
+| 캔버스 툴바 | 2026-11-04 가운데 위 알약 하나로 바뀜(아래 「개편안 4단계」) | — |
 
 **넘침 맞춤 (2026-10-21, UI 감사 01-shell-01):** 3열 그리드의 왼쪽 칸이 내용보다 좁으면 넘친 버튼이 가운데·오른쪽
 버튼 위에 그려져 클릭을 가로챘다(영어 1440 찾기→전투, 1024 레이어 전환→명령 팔레트). 폭 경계 미디어 쿼리 대신
@@ -1165,6 +1165,27 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 `scrollWidth` 가 넘침을 못 봤다(영어 1024 에서 자료집이 레이어 분절 위에 그려짐 실측). `window-controls.css` 는 여백 사본만 둔다.
 AI 설정 모달을 ⋯ 항목에서 열면 닫을 때 초점은 ⋯ 단추로 돌아간다(`aiModalFocus.ts`). e2e 는 `test/e2e/topbarNavigation.ts`
 (`runPaletteCommand`·`clickMoreMenuItem`·`openTopbarAiSettings`·`openHelpMenu`)로 새 길을 지난다.
+
+**개편안 4단계 — 캔버스 도구 알약 (2026-11-04, 시안 `mock-editor-*.png`, 3단계와 같은 사용자 결정):**
+캔버스 위에 떠 있는 것은 **가운데 위 알약 하나**다 — `src/editor/panels/canvasToolPill.ts` `renderCanvasToolPill`.
+컨테이너는 여전히 `.canvas-toolbar`(`editor-zoom-controls`)라 AI 스튜디오 머리띠가 같은 노드를 입양하고(배율만 보인다),
+`editorZoomToolbar.ts` `renderCanvasToolbar` 는 알약에 위임한다. 옛 오른쪽 위 막대는 `renderRetiredCanvasToolbar` 로 남겨 두었다(마운트 안 함).
+상태는 `editorState` 하나 — 도구 단추는 `selectTileTool`/`selectMapModeTool` 을 불러 단축키와 같은 전이를 탄다. `editor.ts` 의
+editorState 구독은 제자리 동기화 분기보다 **먼저** 알약을 맞춘다(입력 키 `배율|도구|붓 모양|레이어|구역 그리기|되돌리기` 가 같으면 DOM 그대로).
+되돌리기 가능 여부는 `MAP_EDIT_HISTORY_EVENT` 로 따로 맞춘다(스트로크 중에는 손을 뗄 때 한 번).
+
+| 자리 | 컨트롤(testid) | 집 |
+|---|---|---|
+| 알약 | `tool-paint` 칠하기(B) · `tool-rect` 사각형으로 칠하기(paintShape rect) · `tool-fill` 채우기(G) · `tool-pan` 화면 밀기(Space) | 묶음 — 왼쪽 도구 줄에서 왔다. 왼쪽 줄의 같은 두 단추는 `palette-tool-paint`/`palette-tool-fill` 로 물러났다(한 화면 같은 testid 둘 금지). 왼쪽 줄 자체는 왼쪽 열 재구성 레인(`rpg-zzu-ui-leftcol`)이 접는다 |
+| 알약 | 구분선 뒤 `canvas-tool-undo` 되돌리기(`runUndoWithFeedback`, 단축키와 같은 토스트). 다시실행은 Ctrl+Shift+Z | 묶음 |
+| 알약 | 「200%」 `editor-zoom-stepper` → 팝오버 `editor-zoom-menu`(첫 줄 − `editor-zoom-prev` · + `editor-zoom-next`, 아래 `editor-zoom-<n>`). Escape·바깥 누름으로 닫히고 바깥 누름은 칠하지 않는다 | 그대로(모양만) |
+| 캔버스 왼쪽 아래 | `canvas-status` 옛은 글자 「x 18 · y 12 · 바닥 레이어」. 좌표는 숨은 `cursor-position` 진단 노드를 MutationObserver 로 따라간다(좌표 조각 `translate=no`, 레이어 조각은 DOM 번역) | 새로 |
+| ⌘K 만 | `walk-encounter-list-open` 걷기 전투 · `map-location-layer-toggle` 구역 그리기 · `map-background-preview-toggle` 맵 배경 미리보기 · `editor-grid-toggle` 격자 · `map-screenshot` 현재 맵 PNG · `canvas-ai-create/polish/inspect/ask` · `authoring-journey-toggle` 저작 진행(`OPEN_AUTHORING_JOURNEY_EVENT`) · `ai-suggestion-peek` 살펴볼 것(`OPEN_AI_SUGGESTIONS_EVENT`, 조수 패널 머리 단추도 같은 팝오버) · `tool-pan` | `commandRegistry.ts` `CANVAS_MOVED_COMMANDS`, 행 testid `command-palette-item-command-<id>` |
+| 벌 | 캔버스 위 「더 보기 ⋯」(`editor-canvas-toolbar-expand`)와 넘침 판 | 알약에 넘칠 단추가 없다. 격자·PNG 는 ⌘K |
+
+지우기·영역 선택·타일 집기는 알약에 없다 — 단축키 E·V·I 와 ⌘K 「도구: …」. 이벤트 레이어에서는 타일 도구 넷을 숨기고 되돌리기·배율만 남는다.
+위치는 `map/from-shell-figma-editor-11-canvas-toolbar-uxc.css`(left 50% · top 16px · translateX), 모양은 `map/canvas-tool-pill.css`.
+조수 도크가 오버레이로 캔버스를 덮으면(≤999px) 알약은 덮이지 않은 폭의 가운데로 옮긴다(`32-ai-workspace.css`).
 
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 

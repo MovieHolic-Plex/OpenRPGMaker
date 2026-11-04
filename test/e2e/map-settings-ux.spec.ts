@@ -15,7 +15,7 @@ async function openSettings(page: Page, mode = "standard"): Promise<void> {
   }, mode);
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-  if (mode === "beginner") await page.getByTestId("sidebar-maps").click();
+  // 맵 트리는 왼쪽 열에 늘 떠 있다 — 모드와 무관하게 누를 탭이 없다.
   await page.locator('[data-testid^="map-tree-node-"]').first().dblclick();
   await expect(page.getByRole("dialog", { name: "맵 설정", exact: true })).toBeVisible();
 }

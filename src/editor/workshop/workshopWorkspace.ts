@@ -57,7 +57,7 @@ export async function openWorkshop(harnessId: string, options: OpenWorkshopOptio
     on: { click: (event) => { if (event.target === host) closeWorkshop(); } },
   });
   if (typeof document !== "undefined") {
-    if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+    { const column = document.querySelector<HTMLElement>('[data-testid="editor-ai-sidebar"]'); if (column) host.style.left = `${Math.round(column.getBoundingClientRect().width)}px`; }
     if (document.querySelector('[data-testid="oprn-menu-bar"]')) host.style.top = "48px";
   }
   host.append(el("div", { class: "workshop-loading", text: "공방을 여는 중…" }));

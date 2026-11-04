@@ -1,15 +1,18 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
+import { listEditorCommands } from "@/editor/commandRegistry";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
-describe("left activity bar", () => {
+// 왼쪽 한 칸(2026-11-03 목업): 검색칸 → 맵 → 타일 → 아래 링크(진행·기물). 세로 아이콘 막대는 없다.
+describe("left column", () => {
   let tools: HTMLElement;
   let workspace: ReturnType<typeof createAiSidebarWorkspace>;
   let resizes = 0;
   const find = (id: string) => workspace.root.querySelector<HTMLElement>(`[data-testid="${id}"]`);
+  const command = (id: string) => listEditorCommands().find((entry) => entry.id === id);
   const mount = () => {
     workspace = createAiSidebarWorkspace(tools, null, () => { resizes += 1; });
     document.body.append(workspace.root);
@@ -26,69 +29,108 @@ describe("left activity bar", () => {
     workspace.root.remove();
   });
 
-  it("starts on the drawing pane with no AI pane in the left sidebar", () => {
+  it("stacks search, map tree, tiles and the two bottom links with no activity rail", () => {
     mount();
-    expect(workspace.root.dataset.pane).toBe("tools");
+    expect(find("left-activity-bar")).toBeNull();
+    expect(workspace.root.dataset.pane).toBe("main");
     expect(tools.hidden).toBe(false);
-    expect(find("sidebar-tools")?.getAttribute("aria-pressed")).toBe("true");
+    expect(find("map-sidebar-section")?.hidden).toBe(false);
+    expect(find("map-tree")).not.toBeNull();
+    const order = [find("map-tree-filter"), find("map-sidebar-section"), tools, find("sidebar-progress"), find("sidebar-props")];
+    for (let index = 1; index < order.length; index += 1) {
+      expect(order[index - 1]!.compareDocumentPosition(order[index]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+    for (const gone of ["sidebar-tools", "sidebar-maps", "sidebar-links", "sidebar-workshop", "sidebar-store"]) expect(find(gone), gone).toBeNull();
     expect(find("sidebar-ai")).toBeNull();
-    expect(workspace.root.querySelector('[data-testid="ai-panel"]')).toBeNull();
   });
 
-  it("collapses on a second click of the active item and switches on another", () => {
+  it("filters the map tree from the top search box", () => {
+    const project = createBlankProject();
+    store.replace(project);
     mount();
-    find("sidebar-tools")?.click();
-    expect(workspace.isCollapsed()).toBe(true);
-    expect(find("sidebar-tools")?.getAttribute("aria-pressed")).toBe("false");
-    expect(resizes).toBe(1);
-    find("sidebar-maps")?.click();
-    expect(workspace.isCollapsed()).toBe(false);
-    expect(workspace.root.dataset.pane).toBe("maps");
-    expect(tools.hidden).toBe(true);
-    expect(find("sidebar-maps")?.getAttribute("aria-pressed")).toBe("true");
-    expect(resizes).toBe(2);
-    // 펼친 채 다른 패널로 바꾸면 폭이 그대로다 — 레이아웃을 다시 잴 이유가 없다.
-    find("sidebar-tools")?.click();
-    expect(resizes).toBe(2);
+    const search = find("map-tree-filter") as HTMLInputElement;
+    search.value = "없는 이름 zz";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(find("map-tree-filter-empty")).not.toBeNull();
+    search.value = "";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(find("map-tree-filter-empty")).toBeNull();
   });
 
-  it("remembers the last pane and collapsed state across mounts", () => {
+  it("opens a bottom link as a drawer over maps and tiles and returns with back", () => {
     mount();
-    find("sidebar-maps")?.click();
-    find("sidebar-maps")?.click();
-    workspace.dispose();
-    workspace.root.remove();
-    mount();
-    expect(workspace.root.dataset.pane).toBe("maps");
-    expect(workspace.isCollapsed()).toBe(true);
-  });
-
-  it("opens the drawing pane when another surface asks for tools", () => {
-    mount();
-    find("sidebar-maps")?.click();
-    window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
-    expect(workspace.root.dataset.pane).toBe("tools");
-    expect(workspace.isCollapsed()).toBe(false);
-  });
-
-  it("lists every pane, renders a pane only when it is opened, and restores the saved one", () => {
-    mount();
-    const bar = [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-activity-bar"] button')].map((b) => b.dataset.testid);
-    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-props", "sidebar-progress", "sidebar-links", "sidebar-workshop", "sidebar-store", "sidebar-inspect"]);
-    expect(find("left-progress-pane")?.childElementCount).toBe(0);
     find("sidebar-progress")?.click();
     expect(workspace.root.dataset.pane).toBe("progress");
+    expect(find("sidebar-progress")?.getAttribute("aria-pressed")).toBe("true");
     expect(find("left-progress-pane")?.hidden).toBe(false);
     expect(find("left-progress-count")?.textContent).toMatch(/^\d\/5$/);
     expect(tools.hidden).toBe(true);
-    find("sidebar-links")?.click();
-    expect(find("left-links-summary")?.textContent).toContain("맵");
-    expect(find("left-progress-pane")?.hidden).toBe(true);
+    expect(find("map-sidebar-section")?.hidden).toBe(true);
+    find("left-drawer-back")?.click();
+    expect(workspace.root.dataset.pane).toBe("main");
+    expect(tools.hidden).toBe(false);
+    find("sidebar-props")?.click();
+    expect(workspace.root.dataset.pane).toBe("props");
+    find("sidebar-props")?.click();
+    expect(workspace.root.dataset.pane).toBe("main");
+  });
+
+  it("collapses to a restore handle and remembers it across mounts", () => {
+    mount();
+    find("left-column-collapse")?.click();
+    expect(workspace.isCollapsed()).toBe(true);
+    expect(resizes).toBe(1);
+    expect(find("left-column-restore")?.hidden).toBe(false);
+    expect(tools.hidden).toBe(true);
     workspace.dispose();
     workspace.root.remove();
     mount();
+    expect(workspace.isCollapsed()).toBe(true);
+    find("left-column-restore")?.click();
+    expect(workspace.isCollapsed()).toBe(false);
+    expect(tools.hidden).toBe(false);
+  });
+
+  it("returns to maps and tiles when another surface asks for tools or maps", () => {
+    mount();
+    find("sidebar-progress")?.click();
+    window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
+    expect(workspace.root.dataset.pane).toBe("main");
+    find("sidebar-props")?.click();
+    window.dispatchEvent(new Event("oprn:ai-sidebar-maps"));
+    expect(workspace.root.dataset.pane).toBe("main");
+    expect(workspace.isCollapsed()).toBe(false);
+  });
+
+  it("reaches links, workshop and store only through ⌘K commands", () => {
+    mount();
+    command("left-drawer-links")?.run();
     expect(workspace.root.dataset.pane).toBe("links");
-    expect(find("left-links-pane")?.hidden).toBe(false);
+    expect(find("left-links-summary")?.textContent).toContain("맵");
+    command("left-drawer-workshop")?.run();
+    expect(workspace.root.dataset.pane).toBe("workshop");
+    expect(find("left-workshop-pane")?.hidden).toBe(false);
+    command("left-drawer-store")?.run();
+    expect(workspace.root.dataset.pane).toBe("store");
+    expect(find("left-store-pane")?.hidden).toBe(false);
+    expect(document.querySelector(".store-host")).toBeNull();
+    expect(command("left-drawer-links")?.label).toBe("화면: 맵 연결 보기");
+    expect(command("left-drawer-workshop")?.label).toBe("화면: 공방 열기");
+    expect(command("left-drawer-store")?.label).toBe("화면: 에셋 스토어 열기");
+    expect(command("inspect-rule-violations")?.label).toBe("검사: 규칙 위반 보기");
+  });
+
+  it("toggles the column through ⌘K", () => {
+    mount();
+    command("left-column-toggle")?.run();
+    expect(workspace.isCollapsed()).toBe(true);
+    command("left-column-toggle")?.run();
+    expect(workspace.isCollapsed()).toBe(false);
+  });
+
+  it("shows the inspect chip only when there are violations", () => {
+    mount();
+    expect(find("sidebar-inspect")?.hidden).toBe(true);
   });
 
   it("selects a complete prop without painting and clears its stamp on a foreign chipset", () => {
@@ -118,49 +160,5 @@ describe("left activity bar", () => {
     expect(editorState.get().activePaletteStamp).not.toBeNull();
     editorState.set({ currentMapId: "qa-other-map" });
     expect(editorState.get().activePaletteStamp).toBeNull();
-  });
-
-  it("restores the old favorites preference as the props pane", () => {
-    localStorage.setItem("oprn:left-activity-pane", "favorites");
-    mount();
-    expect(workspace.root.dataset.pane).toBe("props");
-    expect(find("sidebar-props")?.getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("returns from relief mode to paint tools without collapsing when sidebar-tools is clicked", () => {
-    mount();
-    editorState.set({ tool: "relief", layer: "lower" });
-    find("sidebar-tools")?.click();
-    expect(workspace.isCollapsed()).toBe(false);
-    expect(workspace.root.dataset.pane).toBe("tools");
-    expect(editorState.get().tool).toBe("paint");
-    expect(editorState.get().layer).toBe("lower");
-  });
-
-  it("returns from event layer to paint tools without collapsing when sidebar-tools is clicked", () => {
-    mount();
-    editorState.set({ tool: "event", layer: "event" });
-    find("sidebar-tools")?.click();
-    expect(workspace.isCollapsed()).toBe(false);
-    expect(workspace.root.dataset.pane).toBe("tools");
-    expect(editorState.get().tool).toBe("paint");
-    expect(editorState.get().layer).toBe("lower");
-  });
-
-  it("opens the maps pane when oprn:ai-sidebar-maps is dispatched", () => {
-    mount();
-    expect(workspace.root.dataset.pane).toBe("tools");
-    window.dispatchEvent(new Event("oprn:ai-sidebar-maps"));
-    expect(workspace.isCollapsed()).toBe(false);
-    expect(workspace.root.dataset.pane).toBe("maps");
-    expect(find("sidebar-maps")?.getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("switches to the store sidebar pane without forcing a full-screen store modal", () => {
-    mount();
-    find("sidebar-store")?.click();
-    expect(workspace.root.dataset.pane).toBe("store");
-    expect(find("left-store-pane")?.hidden).toBe(false);
-    expect(document.querySelector(".store-host")).toBeNull();
   });
 });

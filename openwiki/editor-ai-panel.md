@@ -745,7 +745,29 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   사용하므로 라이브 모델의 자발적 분업·협의 품질을 증명하는 테스트는 아니다.
 
 
-## 오른쪽 AI 도크 + 왼쪽 활동 막대 (2026-09-26, 아래 2026-09-18 절을 대체)
+## 왼쪽 한 칸 — 검색 · 맵 · 타일 · 하단 링크 (2026-11-03, 아래 활동 막대 절을 대체)
+
+사용자 결정(「화면 배치까지 공격적으로 바꿔야… 기능을 좀 없애도 상관없음」, 「초보자에게 어울리지 않는 것들은 공격적으로 빼도 좋아」):
+승인 목업(`~/claude-viz/oprn-ui-redesign/mock-editor-*.png`)대로 세로 활동 막대를 없애고 왼쪽을 한 칸(기본 260px, 220~340)으로 쌓는다.
+
+- 순서(`aiSidebarWorkspace.ts`): 검색칸 「맵·이벤트 찾기」(`map-tree-filter`, 입력 = 맵 트리 이름 필터 `setMapFilterQuery`,
+  Enter = 맵·이벤트 찾기 창, 오른쪽 `⌘K` 글자 단추 = 명령 팔레트) → 「맵」 트리(`mapSidebarSection.ts`, 늘 보임,
+  머리 단추·개수는 올렸을 때만) → 「타일 · 타일셋」 팔레트(`tilePalette.ts`) → 하단 링크 「진행」(`sidebar-progress`)·「기물」(`sidebar-props`).
+- 하단 링크는 **서랍**을 연다: 맵·타일 자리를 잠시 덮고 「← 맵·타일」(`left-drawer-back`)로 돌아온다. 같은 링크를 다시 눌러도 닫힌다.
+- ⌘K 에만 남은 것(`commandRegistry.ts`): 「화면: 맵 연결 보기」(`left-drawer-links`) · 「화면: 공방 열기」(`left-drawer-workshop`) ·
+  「화면: 에셋 스토어 열기」(`left-drawer-store`) — 같은 서랍을 연다(`leftColumnDrawer.ts` 신호) — 와 「검사: 규칙 위반 보기」
+  (`inspect-rule-violations`), 「화면: 왼쪽 열 접기/펴기」. 검사 칩(`sidebar-inspect`)은 위반이 1건 이상일 때만 검색칸 옆에 뜬다.
+- 타일 섹션: 머리 「타일 · <타일셋>」(타일셋 이름 = 맵 설정 열기, `palette-tileset-name`)과 접힌 「붓 설정」(`palette-brush-settings-toggle`).
+  도구 줄(`oprn-tile-toolbar`)·크기·모양·이웃 연결·구조 보조·선택 타일 칩·붓 보조/내 구조물은 모두 「붓 설정」 안에 있다(DOM 에는 늘 있고
+  `hidden` 만 바뀐다 — 단축키·⌘K·제자리 갱신이 그대로 닿는다). 펼침은 `oprn:brush-settings-open` 에 저장(`brushSettingsDisclosure.ts`).
+  검사 메뉴를 열면(`openSidebarInspection`) 먼저 편다. 맵 트리가 같은 열에 있으면 팔레트 머리의 맵 스위처(`sidebar-map-header`)는 그리지 않는다.
+- 접힘: `oprn:left-column-collapsed`. 접히면 12px 펴기 손잡이(`left-column-restore`)만 남는다. 「보기 ▾」 메뉴의 패널 항목은
+  열의 `[data-left-pane]` 단추(왼쪽 열·진행·기물)를 비춘다(`workspaceBar.syncPanelItems`).
+- 공방·스토어 큰 화면의 왼쪽 여백은 열의 실제 폭을 잰다(예전 고정 48px).
+- 스타일: 열 겉은 `18-assistant-deck.css` 「왼쪽 한 칸」 절(`left-column-*`), 두 섹션은 `map/left-column.css`.
+- 회귀: `test/leftActivityBar.test.ts`(배치·서랍·⌘K·접힘), e2e 는 붓 도구를 누르는 스펙이 `oprn:brush-settings-open=1` 로 시작한다.
+
+## 오른쪽 AI 도크 + 왼쪽 활동 막대 (2026-09-26, 위 2026-11-03 절이 왼쪽을 대체)
 
 사용자 결정: AI 는 **오른쪽**에 항상 보이고, 왼쪽은 그리기·맵 만 단다. 예전 「맵 | 그리기 | AI」 가로 탭은
 AI 를 여는 순간 팔레트가 사라져 "시키고 바로 손보기"가 한 화면에서 안 됐다.
@@ -1349,6 +1371,17 @@ vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변�
 현재 맵의 단일 시공으로 명시하고, 생성에도 기존 대상 맵 ID를 선언하도록 한다.
 집 한 채의 도구가 부속 실내·출입구까지 만드는 것은 별도 계획의 근거가 아니다.
 새 분류 호출·설정·키워드 판정은 없다. 기존 의도 선언 내부의 요청 범위 감사 호출은 유지한다.
+
+## 모호한 새로 짓기는 묻지 않고 넓힌다 (2026-11-03)
+
+「마을 만들어줘」「던전 만들어줘」「숲」「집」「성」처럼 대상만 말한 요청은 의도 선언이 `widenSubject`(village·dungeon·forest·house·castle)를 적고 `clarify:null` 로 둔다.
+`classifyPlainPiTurn` 은 `src/ai/vagueWidenCatalog.ts` 의 장면 수식어 중 **이 프로젝트에 그림이 있는 것**만 남기고(필요한 타일셋·구조 키트·버들항 던전 어댑터 종류 — `feasibleModifiers`),
+같은 프로젝트에서 쓴 장면(저장된 맵 이름에 장면 이름이 남는다 + 이 세션에서 고른 것)을 피해 무작위로 하나를 고른다.
+고른 장면의 짓는 법은 의도 노트 맨 앞에 가고, 입력창은 「언덕 위 풍차 마을로 만들게요. 다른 느낌이면 말해 주세요.」 한 줄을 띄우고 기다리지 않고 실행한다.
+고를 장면이 없으면 넓히지 않고 원래 경로로 간다. `widenSubject` 가 없는 되묻기(실내/야외가 갈리는 「방 만들어줘」 등)는 그대로 묻는다. 활동 로그 첫 줄에 `widen=<주제>` 와 ` · 넓힘 <장면 id>` 가 남는다.
+
+의도 판정 모델은 `AiConfig.intentModel`(제공자·모델·강도) 칸으로 따로 줄 수 있다. 있으면 먼저 그 모델을 부르고, 실패·스키마 밖 답이면 같은 벽시계 안에서 옛 경로(`configForLiteModel`)로 한 번 더 부른다.
+실측 비교표는 http://mdc-server:18301/assistant-widen.html.
 `runPiCommand`는 쓰기가 허용된 단독 실행이며 기존 맵 하나가 지정된 경우만 이 힌트를 사용한다.
 
 - 이 경우 Deep이 바로 실행한다. 별도 Ultrabrain 계획을 만들지 않는다.

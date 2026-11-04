@@ -314,7 +314,7 @@ export function projectPixelEnemySheet(resourceId: string | undefined, project: 
   if (!resourceId || !project) return undefined;
   const uploaded = project.assets.uploaded;
   const meta = Object.hasOwn(uploaded, resourceId) ? uploaded[resourceId]?.meta.pixelEnemySheet : undefined;
-  if (!meta || ![48, 64, 96].includes(meta.cell) || !Object.hasOwn(PIXEL_ENEMY_MOTIONS, meta.motion)) return undefined;
+  if (!meta || ![48, 64, 96, 128, 192, 256].includes(meta.cell) || !Object.hasOwn(PIXEL_ENEMY_MOTIONS, meta.motion)) return undefined;
   const sheetAsset = Object.hasOwn(uploaded, meta.sheetResourceId) ? uploaded[meta.sheetResourceId] : undefined;
   if (!sheetAsset) return undefined;
   const cached = projectSheetCache.get(sheetAsset);

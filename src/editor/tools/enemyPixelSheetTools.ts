@@ -54,6 +54,12 @@ import type { SkillChoreographyLayer } from "@/project/types/database";
 import { DB_TOOLS } from "./dbTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
+/** 공방이 다시 그릴 수 있는 칸인가. 스토어·업로드 시트는 128·192·256 칸도 있지만 공방 생성기는 48·64·96 만 그린다. */
+function studioCell(cell: number): MonsterSheetCell {
+  if ((MONSTER_SHEET_CELLS as readonly number[]).includes(cell)) return cell as MonsterSheetCell;
+  throw new ToolError(`칸 ${cell}px 시트는 도트 몬스터 공방이 다시 그릴 수 없다(공방은 ${MONSTER_SHEET_CELLS.join("·")}px 만 그린다).`, { code: "unsupported-cell" });
+}
+
 /** 원형마다 미리보기·전투 스킬로 쓰는 번들 몬스터 스킬 묶음(RETRO_MONSTER_SKILLSETS 키). */
 export const ARCHETYPE_SKILL_SLUGS: Readonly<Record<MonsterArchetype, string>> = {
   beast: "wolf-grey",
@@ -602,7 +608,7 @@ const inspectEnemyPixelSheet: ToolDefinition = {
         ...savedRecipe,
         name: enemy?.name ?? uploadedAsset.name,
         archetype: normalizeMonsterArchetype(savedRecipe.archetype) ?? "beast",
-        cell: meta.cell,
+        cell: studioCell(meta.cell),
         motion: meta.motion,
       });
       const cells = Object.fromEntries(
@@ -934,7 +940,7 @@ const editEnemyPixelSheet: ToolDefinition = {
       secondaryColor: (typeof args.secondaryColor === "string" ? args.secondaryColor : undefined) ?? palettePreset?.secondaryColor ?? priorRecipe.secondaryColor,
       accentColor: (typeof args.accentColor === "string" ? args.accentColor : undefined) ?? palettePreset?.accentColor ?? priorRecipe.accentColor,
       weapon: incoming.weapon ?? priorRecipe.weapon,
-      cell: incoming.cell ?? priorRecipe.cell ?? existingAuthored?.cell ?? 64,
+      cell: incoming.cell ?? priorRecipe.cell ?? (existingAuthored ? studioCell(existingAuthored.cell) : 64),
       motion: incoming.motion ?? priorRecipe.motion ?? existingAuthored?.motion ?? "dash",
       spikes: resolveFlag("spikes", "spikes"),
       horns: resolveFlag("horns", "horns"),
@@ -1312,7 +1318,7 @@ const setEnemySkillChoreography: ToolDefinition = {
       const regenerated = generateMonsterPixelSheet({
         ...updatedRecipe,
         name: enemy.name,
-        cell: meta.cell,
+        cell: studioCell(meta.cell),
         motion: meta.motion,
       });
       writeAuthoredMonsterAssets(draft, targetResId, regenerated, {

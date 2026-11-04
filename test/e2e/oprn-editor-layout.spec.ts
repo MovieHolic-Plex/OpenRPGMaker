@@ -3,6 +3,12 @@ import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { showIndividualTiles } from "./showIndividualTiles";
 
+// 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:brush-settings-open", "1"));
+});
+
+
 const COMPACT_SHELL_VIEWPORTS = [
   { width: 1024, height: 768 },
   { width: 1280, height: 800 },

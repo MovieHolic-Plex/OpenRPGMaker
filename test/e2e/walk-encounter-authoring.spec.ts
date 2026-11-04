@@ -1,4 +1,14 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { runPaletteCommand } from "./topbarNavigation";
+
+// 2026-11 캔버스 알약 개편: 걷기 전투 목록 단추는 캔버스 위에서 빠졌고 ⌘K 「화면: 걷기 전투 — 적 출현 범위」로 연다.
+const openWalkEncounterList = (page: Page) => runPaletteCommand(page, "걷기 전투", "walk-encounter-list-open");
+
+// 왼쪽 열의 그리기 도구·붓 옵션·선택 타일은 접힌 「붓 설정」 안에 있다(2026-11-03) — 이 스펙은 그걸 직접 누르므로 펴 두고 시작한다.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:brush-settings-open", "1"));
+});
+
 
 type BrowserSignals = Window & {
   walkSceneReady: Promise<void>;
@@ -122,8 +132,7 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
         game.events.once("postrender", done);
       });
     });
-    await assertReachable(page, "walk-encounter-list-open");
-    await clickVisibleControl(page, page.getByTestId("walk-encounter-list-open"));
+    await openWalkEncounterList(page);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-select-area"));
     await dragRegion(page, 7, 5);
     await assertReachable(page, "selection-chip-walk-encounter");
@@ -169,7 +178,7 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
     await clickVisibleControl(page, page.getByTestId("oprn-tool-undo"));
     await page.evaluate(() => (window as BrowserSignals).walkChange);
 
-    await clickVisibleControl(page, page.getByTestId("walk-encounter-list-open"));
+    await openWalkEncounterList(page);
     expect(await page.locator('[data-testid^="walk-encounter-region-"]').count()).toBe(1);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-edit-0"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-conditions-0").locator("summary"));
@@ -178,7 +187,7 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
     await assertReachable(page, "walk-encounter-save");
     await page.screenshot({ path: testInfo.outputPath(`conditions-${width}.png`) });
     await page.keyboard.press("Escape");
-    await clickVisibleControl(page, page.getByTestId("walk-encounter-list-open"));
+    await openWalkEncounterList(page);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-edit-0"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-delete"));
     await armProjectChange(page, 0);
