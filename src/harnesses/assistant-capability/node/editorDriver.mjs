@@ -198,8 +198,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
   const welcome=page.getByTestId('editor-welcome-skip');if(await welcome.isVisible().catch(()=>false))await welcome.click();
   // A fresh editor now starts with the conversation folded. Open it through
   // the visible restore control before using the actual input/settings UI.
-  const restore = page.getByTestId('ai-collapsed-restore');
-  if (await restore.isVisible().catch(()=>false)) await restore.click();
+  await openAssistant(page);
   await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   // 로컬 CLI 엔진: 부팅 직후 첫 연결 확인이 부하로 시간 초과하면 그 결과(unreachable)를 캐시해 입력칸이 끝까지 잠긴다
   // (2026-10-30 실측, 부하 80: 「Claude Code (내 PC) 연결 확인 필요」 → fill 120초 초과). 워커는 그사이 데워지므로 다시 읽어 확인을 새로 받는다(최대 2번).
@@ -212,11 +211,18 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     await page.reload({waitUntil:'domcontentloaded',timeout:HARNESS_WAIT_MS});
     await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
     await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
-    const again=page.getByTestId('ai-collapsed-restore');
-    if (await again.isVisible().catch(()=>false)) await again.click();
+    await openAssistant(page);
     await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   }
   return { page,context,loads };
+}
+// 오른쪽 인스펙터가 접힌 조수 띠를 덮으면(2026-11-04 #4214) 클릭이 막힌다 — 톱바 「조수」 버튼이 같은 창을 연다.
+async function openAssistant(page){
+  if(await page.getByTestId('ai-input').isVisible().catch(()=>false))return;
+  const top=page.getByTestId('topbar-assistant');
+  if(await top.isVisible().catch(()=>false)){await top.click();return;}
+  const restore=page.getByTestId('ai-collapsed-restore');
+  if(await restore.isVisible().catch(()=>false))await restore.click();
 }
 async function saveThroughUi(page) {
   await page.getByTestId('toolbar-save').click();
