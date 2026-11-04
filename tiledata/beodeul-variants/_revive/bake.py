@@ -188,7 +188,7 @@ def write_references(built, report, n):
     json.dump(refs, open(os.path.join(ROOT, 'src/assets/beodeulWavePlacesReferences.json'), 'w'), ensure_ascii=False, indent=1)
     ts = ('// tiledata/beodeul-variants/_revive/bake.py 가 쓴다(손으로 고치지 말 것). 버들항 웨이브 장소 — 원본 그림 칸으로 되살린 장소 맵.\n'
           '// 스냅숏 src/project/regionReferences/beodeul-wave-places.json(여러 맵 한 파일).\n'
-          'export const BEODEUL_WAVE_PLACE_REFERENCES = ' + json.dumps(places, ensure_ascii=False, indent=2) + ';\n')
+          'export const BEODEUL_WAVE_PLACE_REFERENCES = ' + json.dumps(places, ensure_ascii=False, indent=2) + ' as const;\n')
     open(os.path.join(ROOT, 'src/project/beodeulWavePlaceReferences.ts'), 'w').write(ts)
 
 if __name__ == '__main__':

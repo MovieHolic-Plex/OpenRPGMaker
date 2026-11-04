@@ -2,6 +2,7 @@ import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } fr
 import { authoredChoiceIndex, choiceView, choicesHaveConditions, type ChoiceView } from "@/project/choiceView";
 import { withJosa } from "@/util/josa";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
+import { floorActorExperience } from "@/project/actorModel";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
@@ -805,6 +806,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           const level = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
           options.state.actorLevels[id] = level;
           actor.level = level;
+          // EXP 도 새 레벨 바닥 이상으로(필드 changeLevel 과 같은 규칙).
+          floorActorExperience(options.project, options.state, id);
           options.refreshActorDerivedStats?.(actor, { refreshSkills: true });
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeLevel ${command.actorId}` });

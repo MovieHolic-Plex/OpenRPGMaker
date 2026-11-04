@@ -29,6 +29,7 @@ import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { withFrozenTowns } from "./fallen/frozenTowns";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { applyFallenDisplayNames } from "./fallen/displayNames";
 import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
 import { applyFallenBattleDepth, applyFallenGrowthCurves } from "./fallen/battleDepth";
 import { swOn, fadeOut } from "./firstLoveKit";
@@ -43,6 +44,8 @@ import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
+import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
+import { assertExaminesReachable } from "./fallen/worldPass/examine";
 import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
@@ -55,6 +58,7 @@ import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
 import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
+import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
 
 /** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
 const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
@@ -131,6 +135,10 @@ function setupCast(project: Project): void {
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
   // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
   project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
+  // 2026-11-03 사용자 시연 「전투도 지금 너무 빠름」·「약점을 자세히 설명하면 곤란 — 사용자가 찾아가야 재밌다」.
+  // pace steady = 행동 비트·이펙트 0.75배 템포, 격파 대사·적 차례 정리 쉼을 엔진 원래 길이로. revealWeakness never = 대상 고를 때 약점 글자를 안 띄운다
+  // (맞힌 순간의 「약점 발견!」·숫자 크기는 남는다).
+  project.system.battleStaging = { ...project.system.battleStaging, pace: "steady", revealWeakness: "never" };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -468,7 +476,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
     const Q1 = "sw_fs_q_bread_done";
     const nine_a: Command[] = [
       say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
-      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
+      say(FS_NAMES.hero, "작아 보이는 건 멀어서야."),
       say("이리스", "저렇게 많이 반짝이는데…\n소리는 하나도 안 들려요."),
     ];
     const nine_b: Command[] = [
@@ -485,7 +493,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
       wait(500),
       narrate("(카엘이 일지에 한 줄을 적는다.)"),
       narrate("「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」"),
-      say("이리스", "…이게 「기록」이에요?\n이 줄도 언젠가는 지워지겠죠?"),
+      say("이리스", "이게 「기록」이에요?\n이 줄도 언젠가는 지워지겠죠?"),
       say("엘레나", "지워지면 우리가 다시 써 줄게. 몇 번이고."),
       say("이리스", "몇 번이고. …그 말도 적어 둘게요.\n엘레나가 한 말이라고."),
       wait(600),
@@ -1685,7 +1693,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       stageLabels.push(label);
       list.splice(at, 0, { kind: "label", name: label } as Command);
       ask.cancelBehavior = "branch";
-      ask.cancelBranch = [narrate("관에서 한 걸음 물러선다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
+      ask.cancelBranch = [narrate("알에서 한 걸음 물러선다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
       for (const option of ask.options) {
         if (isWrong(option.branch)) option.branch.push({ kind: "gotoLabel", name: label } as Command);
         else wire(option.branch);
@@ -1742,7 +1750,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
-      narrate("「바람결 검」과 「철심 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
+      narrate("「바람결 검」과 「푸른 불꽃 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
@@ -1868,7 +1876,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         );
       } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
         // VQA 2026-10-31: 엘레나가 석판 답을 그대로 읊어 추론이 사라졌다 — 석판으로 돌려보내기만 한다.
-        list.splice(i + 1, 0, say("엘레나", "…석판을 다시 읽어 보자."));
+        list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자."));
       } else if (rec.body === "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!") {
         // 바로 뒤 줄이 「쇠창살이 끌려 올라간다」라 창살이 녹았다는 말과 어긋났다(VQA 2026-10-31).
         rec.body = "네 화로가 하나의 불길로 이어진다.";
@@ -2423,6 +2431,9 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 행렬보다 먼저 짓는다 — 행렬(열 명)이 큰길 두 줄에 서면 리사네 문 앞이 막혀 문 잇기가 거절됐다.
   ensureFallenTownDatabase(project);
   buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
+  // 월드 정비 — 니나의 재료 공방 실내를 짓는다(fallen/worldPass). 수납 단계 앞이라 공방 가구에도 뒤지기가 붙는다.
+  // 왕도 문은 2막 통금의 밤 복제 뒤에 잇는다(통금 밤 광장은 그 문을 잠긴 문으로 둔다).
+  applyFallenWorldPassTown(project, execTool);
   // 집 안 수납(한 번만 뒤짐)·리사네 들킴·출입 금지 — 실내가 지어진 뒤에 얹는다.
   buildFallenTownLife(project, ids.hub);
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
@@ -2481,6 +2492,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenAct1Finale(project, execTool, ids);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
+  // 월드 정비 — 가게 간판·광장 이정표·게시판과 서브 퀘스트 둘, 서리 가도 보급 행상(fallen/worldPass). 통금의 밤 복제(2막) 뒤라 밤 광장에는 안 붙는다.
+  applyFallenWorldPass(project, execTool, { hub: ids.hub, forestEdge: "fs_forest_edge", snowRoad: "map_snow_north_1" });
   // 1막 맵 마감 — 추락지 빈터의 줄 지은 들꽃·불씨·덤불을 충격 자국으로 다시 짠다(fallen/act1MapPolish.ts). 모든 숲 단계 뒤.
   polishFallenCrashClearing(project, ids.forest);
   // 떨어진 별 — 관 그림 둘레 어디서든, 브람 전·퀘스트 전에도 조사된다(fallen/act1MapPolish.ts, 1.26 사용자 신고).
@@ -2519,12 +2532,18 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenMonsterArt16(project);
   // 지역별 전투 배경 13장(battle-backdrop · Opus 최고점) — 맵·트룹 배경을 모두 지은 뒤에 덮는다(fallen/areaBackdrops.ts).
   applyFallenAreaBackdrops(project, (name, args) => execTool(project, name, args));
+  // 무기 계열 특성(검 급소·창 방어 깎기·지팡이 기절·사출봉 둔화) — 대장간·2막 무기까지 다 생긴 뒤(fallen/weaponTraits.ts).
+  applyFallenWeaponTraits(project);
 
   applyFallenStarLore(project, (target, name, args) => execTool(target, name, args));
   // 자료집 「이야기」 색인 — 본줄 단계 목표·이야기 스위치 이름·임무/엔딩 배선 검사(fallen/storyIndex.ts). 맨 끝.
   applyFallenStoryIndex(project);
   // pixelfx 코드 픽셀 효과 — 기술·필드·이야기 한 번 효과를 id 로 찾아 덧붙인다(fallen/pixelfx.ts). 맨 끝.
   applyFallenPixelFx(project);
+  // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
+  applyFallenDisplayNames(project);
+  // 조사 칸이 걸어 가서 살필 수 있는 자리인가 — 사람·가구가 다 놓인 뒤(fallen/worldPass/examine.ts).
+  assertExaminesReachable(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {

@@ -4,13 +4,14 @@ import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { CAMERA_ZOOM_LIMITS, pixelZoomWarning, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { SMALL_MAP_FILL_DEFAULT } from "@/project/smallMapFill";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { BATTLE_FANFARE_STYLES, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare } from "@/project/battleFanfare";
-import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
+import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_PACES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
@@ -197,6 +198,10 @@ const setProjectSettings: ToolDefinition = {
         enum: ["none", "scanlines", "crt"],
         description: "화면 표시 필터 — 맵·전투·대화를 덮는 옛 TV 느낌. scanlines 가로줄만, crt 가로줄+색 결+가장자리 어둡게. 레트로 감성 게임에만 켠다(생략 = 그대로).",
       },
+      smallMapFill: {
+        type: "boolean",
+        description: "화면보다 작은 방을 정수 배율로 키워 화면을 채울지(생략 = 끔: 작은 방은 원래 크기로 가운데, 남는 곳은 여백). 방탈출처럼 작은 방의 단서를 크게 보여야 할 때만 true.",
+      },
       cameraZoom: {
         type: "number",
         minimum: CAMERA_ZOOM_LIMITS.min,
@@ -338,6 +343,7 @@ const setProjectSettings: ToolDefinition = {
               comboFx: { type: "string", enum: [...BATTLE_COMBO_FXS], description: "연계기 화려함. spectacular = 번쩍임·확대·흔들림·참가자별 빛 → 합쳐진 마무리·착탄 느린 화면·피해 숫자 폭발 · simple = 번쩍임만" },
               skillHint: { type: "string", enum: [...BATTLE_SKILL_HINTS], description: "전투 기술 도움말. line = 「○○은 무엇을 할까?」 자리에 한 줄(MP6 · 적 전체 · 냉기 · 둔화) · window = 긴 도움말 창" },
               revealWeakness: { type: "string", enum: [...BATTLE_REVEAL_WEAKNESSES], description: "battle.revealWeakness 와 같다" },
+              pace: { type: "string", enum: [...BATTLE_PACES], description: "전투 흐름. quick(기본) = 지금 속도 · steady = 행동 동작·이펙트 0.75배 템포에 격파 대사·차례 정리 쉼을 넉넉히. 「전투가 너무 빠르다」면 steady" },
             },
             additionalProperties: false,
           },
@@ -563,6 +569,11 @@ const setProjectSettings: ToolDefinition = {
       else delete draft.system.displayFilter;
       changed.push(`화면 필터=${DISPLAY_FILTER_LABELS[args.displayFilter]}`);
     }
+    if (typeof args.smallMapFill === "boolean") {
+      if (args.smallMapFill === SMALL_MAP_FILL_DEFAULT) delete draft.system.smallMapFill;
+      else draft.system.smallMapFill = args.smallMapFill;
+      changed.push(`작은 방 화면 채우기=${args.smallMapFill ? "켬" : "끔"}`);
+    }
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);
       changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
@@ -608,10 +619,10 @@ const setProjectSettings: ToolDefinition = {
       }
       if (battle.staging !== undefined || battle.revealWeakness !== undefined) {
         if (battle.staging !== undefined && (!battle.staging || typeof battle.staging !== "object" || Array.isArray(battle.staging))) {
-          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?, revealWeakness?} 객체여야 합니다.", { code: "invalid-args" });
+          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?, revealWeakness?, pace?} 객체여야 합니다.", { code: "invalid-args" });
         }
         const patch: Record<string, unknown> = { ...(battle.staging as Record<string, unknown> | undefined), ...(battle.revealWeakness !== undefined ? { revealWeakness: battle.revealWeakness } : {}) };
-        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS, revealWeakness: BATTLE_REVEAL_WEAKNESSES };
+        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS, revealWeakness: BATTLE_REVEAL_WEAKNESSES, pace: BATTLE_PACES };
         for (const [key, list] of Object.entries(lists)) {
           if (patch[key] !== undefined && !list.includes(String(patch[key]))) {
             throw new ToolError(`battle.staging.${key} 는 ${list.join(" · ")} 중 하나입니다(받은 값 ${JSON.stringify(patch[key])}).`, { code: "invalid-args" });

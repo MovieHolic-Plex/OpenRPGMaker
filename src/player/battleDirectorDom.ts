@@ -1090,7 +1090,7 @@ function expGaugeProgress(snapshot: BattleSnapshot): { fromPct: number; toPct: n
   const base = totalExpForLevel(actor.expCurve, level);
   const next = totalExpForLevel(actor.expCurve, level + 1);
   if (!(next > base)) return undefined;
-  const current = snapshot.eventState.actorExperience?.[lead.recordId] ?? base;
+  const current = Math.max(snapshot.eventState.actorExperience?.[lead.recordId] ?? 0, base);
   const gained = expForRewardActor(snapshot.rewards.exp, level, snapshot.rewards.enemyLevel, project.system.rewardPolicy);
   const clampPct = (value: number): number => Math.max(0, Math.min(100, value * 100));
   const fromPct = clampPct((current - base) / (next - base));

@@ -13,8 +13,9 @@ function pressKey(key: string): void {
   window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 }
 
-function setup(troopId = "troop_slime") {
+function setup(troopId = "troop_slime", tweak?: (project: ReturnType<typeof deserialize>) => void) {
   const project = deserialize(JSON.stringify(battleFixture));
+  tweak?.(project);
   store.replace(project);
   const host = document.createElement("div");
   document.body.append(host);
@@ -264,6 +265,57 @@ describe("battle dom keyboard and status rows", () => {
     const attack = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']");
     expect(attack?.dataset.battleCommandCursor).toBe("true");
     expect(document.activeElement).toBe(attack);
+    controller.destroy();
+  });
+
+  it("reopens a submenu on its first usable row after it was closed from the back row", () => {
+    // fs2 스웜 N01: 「뒤로」로 닫으면 다시 열 때 커서가 「뒤로」에 서서, 확인키 두 번이 닫히지 않는 목록처럼 보였다.
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    const firstRow = cursor();
+    expect(firstRow).toMatch(/^actor-item-/);
+    const back = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-back']")!;
+    back.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    expect(cursor()).toBe("actor-command-back");
+    pressKey("z");
+    expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeNull();
+
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
+    expect(cursor()).toBe(firstRow);
+    controller.destroy();
+  });
+
+  it("does not reopen an ally target menu on the cancel row after cancelling from it", () => {
+    // ultrabrain #4216 후속: 「뒤로」 역할(data-command-icon=back)은 목록 뒤로와 대상 취소 모두 복원하지 않는다.
+    vi.useFakeTimers();
+    const { runtime, controller } = setup("troop_slime", (project) => {
+      project.database.items = project.database.items.map((item) => ({ ...item, scope: "ally" as never, type: "medicine" as never, occasion: "always" as never,
+        hpRecovery: { flat: 10, percentMax: 0 }, effects: [] as never }));
+    });
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    const itemRow = cursor()!;
+    controller.root.querySelector<HTMLButtonElement>(`[data-testid='${itemRow}']`)?.click();
+    expect(runtime.snapshot().phase).toBe("targetSelect");
+    expect(runtime.snapshot().targetSelection?.side).toBe("actor");
+    const cancel = controller.root.querySelector<HTMLButtonElement>("[data-testid='battle-target-cancel']")!;
+    cancel.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    expect(cursor()).toBe("battle-target-cancel");
+    cancel.click();
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+
+    if (!controller.root.querySelector(`[data-testid='${itemRow}']`)) controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    controller.root.querySelector<HTMLButtonElement>(`[data-testid='${itemRow}']`)?.click();
+    expect(runtime.snapshot().phase).toBe("targetSelect");
+    expect(cursor()).not.toBe("battle-target-cancel");
     controller.destroy();
   });
 

@@ -185,6 +185,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
       "battle.allowAutoBattle": "false = no player auto-battle.",
       "battle.clearStatesAfterBattle": "true = clear party ailments after battle.",
       "battle.revealWeakness": "never | afterDiscovery (default) | always.",
+      "battle.staging.pace": "quick (default) | steady = slower action motion and longer pauses between actions (use when the battle feels too fast).",
       saveAccess: "savePoints = save only at save points (place_savepoint). anywhere (default).",
       dialogue: "Default NPC dialogue window look, font and text sound for the whole game.",
       "dialogue.style": "Pick one for the game's tone: glass (default, neutral) · dual-fullbody-veil (romance, two full portraits) · pixel-cinematic (16-bit relationship scenes) · classic (windowskin PC RPG) · retro-black (8/16-bit fantasy JRPG) · retro-blue (epic kingdom JRPG) · handheld (monster collecting) · double-line (modern quirky adventure) · mono-heavy (comic/creepy, school ghost story) · white-card (emotional platformer) · wood (farm/life sim) · joseon (Korean historical) · cream (cute animal village) · gold (myth/tragedy cutscenes) · skew (urban action) · float (quiet gothic horror) · terminal (SF/cyberpunk).",

@@ -121,7 +121,7 @@ interface FieldFx {
 
 export const FALLEN_FIELD_FX: readonly FieldFx[] = [
   // 서리나루 광장 모닥불 — 칩셋의 작은 모닥불 자리에 장작·불꽃·연기·불티가 움직이는 모닥불을 얹는다(눈밭에 따뜻한 빛).
-  { map: "fs2_frostford", key: "bonfire", at: { x: 19, y: 45 }, fx: { effectId: "fire/campfire", light: 0.9, offsetX: 6, offsetY: -2, seed: 29, layer: "auto" }, note: "서리나루 광장 모닥불" },
+  { map: "fs2_frostford", key: "bonfire", at: { x: 19, y: 45 }, fx: { effectId: "fire/campfire", light: 0.9, scale: 0.75, offsetX: 8, offsetY: -2, seed: 29, layer: "auto" }, note: "서리나루 광장 모닥불 — 2칸 받침에 맞춰 0.75배(불이 받침 밖 우물 마을사람 칸까지 번졌다)" },
   // 우물 밑 — 천장에서 바닥 물웅덩이로 떨어지는 물방울.
   { map: "fs2_well_shaft", key: "drip", at: { x: 3, y: 6 }, fx: { effectId: "water/drip", light: 0.6, offsetY: -4, layer: "back" }, note: "우물 밑 물방울" },
   // 화면 층 — 반딧불. 화면 층은 효과 그림(320×180)을 시야를 덮도록 정수배로 키운다 — 눈(weather/snow)은 눈송이가

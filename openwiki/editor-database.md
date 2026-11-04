@@ -2542,7 +2542,7 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 
 `scripts/content/inspect-shared-item-defaults.mts`는 공용 빈 프로젝트를 프로덕션 `serialize`로 파일에 내보낸 뒤 실제 파일을 다시 읽고 `deserialize`로 재로드한다. 확인 결과 아이템 1,000종이 동일했고 삭제한 신규 행도 재로드 후 부활하지 않았다. 이는 공용 기본값의 저장 형식 계약 확인이며 별도의 사용자 SQLite 프로젝트에 쓰지 않는다. 이미지 생성의 완료 판단은 이 데이터 재로드 결과로 대신하지 않는다.
 
-신규 부활 깃털 16종은 `onlyEffectiveOnDeadActors`가 설정된 약이다. 엔진의 `itemAllowsBattle`은 이 조건을 전투 사용에서 제외하므로 저작 `occasion`도 `field`로 맞추고 설명에 필드 사용을 명시했다(2026-10-02). 기존 불사조 깃도 같은 계약이다. `scripts/content/inspect-shared-item-defaults.mts`는 신규 772종의 저작 필드/전투 사용 설정과 실제 사용 허용 함수 사이의 불일치도 보고하며, 빈 프로젝트와 기본 예제 모두 불일치 0개를 확인했다. 픽스처는 부활 16종만 갱신됐고 총 1,000종과 다른 파생 테이블은 유지됐다.
+신규 부활 깃털 16종은 `onlyEffectiveOnDeadActors`가 설정된 약이다. 엔진의 `itemAllowsBattle`은 이 조건을 전투 사용에서 제외하므로 저작 `occasion`도 `field`로 맞추고 설명에 필드 사용을 명시했다(2026-10-02). 2026-11-04 부터 엔진은 occasion battle/always 인 부활약을 전투에서도 허용하고 대상을 쓰러진 아군으로 좁힌다(`openwiki/runtime-battle.md` 「적 피해 대상 추첨 · 전투 부활약」) — 기본 16종은 여전히 `field` 라 전투 목록에 나오지 않는다. 기존 불사조 깃도 같은 계약이다. `scripts/content/inspect-shared-item-defaults.mts`는 신규 772종의 저작 필드/전투 사용 설정과 실제 사용 허용 함수 사이의 불일치도 보고하며, 빈 프로젝트와 기본 예제 모두 불일치 0개를 확인했다. 픽스처는 부활 16종만 갱신됐고 총 1,000종과 다른 파생 테이블은 유지됐다.
 
 공용 아이콘은 새 `oprn-item-*` ID도 기존 이미지 리소스 해석기를 거쳐 게임 내보내기에 포함된다. `scripts/content/inspect-shared-item-export.mts`는 위에서 저장한 새 프로젝트 파일을 읽어 프로덕션 `collectWebExportAssets`를 호출한다. 2026-10-02 확인에서 등록 아이콘 1,054개의 리소스 ID와 실제 내보내기 경로가 모두 일치했고 누락 0개였다. 생성된 파일 수·바이트와 미생성 그림 수는 별도로 집계한다. 경로가 내보내기에 등록됐다는 사실만으로 미생성 그림까지 완료라고 보고하지 않는다.
 
@@ -2678,3 +2678,4 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.
 - (2026-10-25, fs-battle-3) 「전투 화면」 탭 **전투 연출** 카드(`db-battle-staging-card`): `db-battle-staging-lunge`·`-cutin`·`-fx`·`-hint` → `system.battleStaging`. 적 탭 「달려드는 속도 (%)」 슬라이더(`db-field-enemy-lunge-speed`, 25~300, 100 이면 필드 삭제). 연계기 카드 안 접힌 「컷인 · 착탄 연출」(`db-combo-tint-<id>` 색, 흔들림, 느린 화면, 작은 글) → `SkillRecord.comboStaging`(`updateSkillRecord` 화이트리스트).
 - (2026-10-25) 「전투 연출」 카드에 **적 약점 표시** 고르기(`db-battle-staging-reveal-weakness`: 안 보임 · 알아낸 뒤에만(기본) · 처음부터) → `system.battleStaging.revealWeakness`.
+- (2026-11-03) 같은 카드에 **전투 흐름** 고르기(`db-battle-staging-pace`: 빠르게(기본) · 차분하게) → `system.battleStaging.pace`. 동작 규칙은 `runtime-battle.md` 「폴른 스타 전투 체감」.

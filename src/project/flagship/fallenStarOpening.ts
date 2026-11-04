@@ -329,6 +329,26 @@ function bellShot(): OpeningAnimatic {
   ]);
 }
 
+// ── 4½. 왕도의 밤 거리 ──
+/**
+ * 게임 안 왕도(fs_hub)를 1배로 구운 그림(town-street) 위로 카메라가 광장에서 남쪽 거리로 내려간다 — 이정표·게시판·
+ * 대장간·공방 간판. 마을을 고치면 그림도 다시 뽑는다(scripts/content/fallen-star-opening-town-street.mts, 사용자 2026-11-04 「마을이 바뀌면 오프닝도」).
+ * 그림 좌표 = (맵 칸 − (16,27))×16.
+ */
+function streetShot(): OpeningAnimatic {
+  const cam: CamKeys = { x: [key(0, 244), key(3000, 284, "ease-in-out")], y: [key(0, 138), key(3000, 160, "ease-in-out")] };
+  const px = (tx: number, ty: number) => ({ x: (tx - 16) * 16 + 8, y: (ty - 27) * 16 + 8 });
+  return shot([
+    art("town-street", { x: 0, y: 0 }, { tint: NIGHT }),
+    flicker("smithy-sign", px(30, 41), 22), flicker("workshop-sign", px(37, 41), 22),
+    flicker("board", px(39, 32), 20, "#ffd890", 0.35), flicker("post", px(24, 35), 18, "#ffd890", 0.35),
+    particles("street-motes", "dust", "#d8ff88", { x: 20, y: 40, width: 480, height: 220 }, 10, 53, { opacity: 0.5 }),
+    caption("line-street", [{ atMs: 300, text: "왕도는 아직 아무것도 모르고 잠들어 있었다." }], 2700),
+  ], { keys: cam }, { kind: "fade", durationMs: 400 }, [
+    { id: "street-bell", resourceId: SE.bell, atMs: 0, durationMs: 3000, volume: 0.35, fadeOutMs: 1800 },
+  ]);
+}
+
 // ── 5. 제목 ─────────────────────────────────────────────────────────────
 /** 키아트 위로 빛줄기가 내려오고, 공기가 차오르다 마디 첫 박에 제목이 떠오른다(징·서브 붐·짧은 섬광). 끝은 검게 닫혀 맵으로 넘어간다. */
 function titleShot(): OpeningAnimatic {
@@ -366,6 +386,7 @@ const SHOTS: readonly { id: string; build: () => OpeningAnimatic; ms: number }[]
   { id: "fs_op_aftermath", build: aftermathShot, ms: AFTERMATH_MS },
   { id: "fs_op_observatory", build: observatoryShot, ms: 3000 },
   { id: "fs_op_bell", build: bellShot, ms: 6000 },
+  { id: "fs_op_street", build: streetShot, ms: 3000 },
   { id: "fs_op_title", build: titleShot, ms: 9000 },
 ];
 

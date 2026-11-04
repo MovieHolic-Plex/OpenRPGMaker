@@ -189,7 +189,7 @@ function plazaPeople(project: Project, hubId: string): void {
     { name: "기본", conditions: [], commands: [
       gateQ1,
       say(GATE, "문 나서면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
-      say(GATE, "숲길은 브람 영감이 훤하다.\n북쪽 숲은 이틀 안에 심문관이 직접 뒤진다더군."),
+      say(GATE, "숲길은 브람 영감이 훤하다.\n북쪽 숲엔 이틀 안에 심문관이 직접 온다더군."),
       say(GATE, "별지기가 숲엔 왜 가나. …묻지 않겠다.\n길에서 벗어나지 마라. 늑대가 사납다."),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
@@ -291,7 +291,7 @@ function toma(project: Project): void {
     say(TOMA, "바구니에 누운 아기가\n배곯을까 봐서요. …이제야 말하네요."),
     say(KAEL, "…토마 아저씨였어요?\n계단에 있던 빵이."),
     say(TOMA, "열일곱 해 동안 한 번도 안 들켰는데,\n오늘 반죽이 안 부풀어서 들켜 버렸어요."),
-    narrate("「별빛빵」을 받았다.\n이제 토마네 가게에서 「별빛빵」도 판다."),
+    narrate("「별빛빵」을 받았다.\n토마네 가게에서 「별빛빵」을 팔기 시작했다."),
     item(FS_BREAD_STARLIGHT, 1),
     setSw(Q1_DONE),
   ];
@@ -324,7 +324,7 @@ function toma(project: Project): void {
       shop(full),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
-      say(TOMA, "…어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
+      say(TOMA, "어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
       say(TOMA, "기계 아가씨도 빵을 먹나요?\n…먹는 흉내라도 내면 하나 싸 줄게요."),
       shop(full),
     ] },
@@ -384,7 +384,7 @@ function marta(project: Project): void {
   ];
   const complete: Command[] = [
     say(MARTA, "은수저 여섯 벌, 다 있어요. 누가 가져갔어요?\n…토비군요. 알겠어요. 화 안 낼게요."),
-    say(MARTA, "자, 하룻밤은 공짜로 재워 줄게요.\n토비한테는 내가 따로 얘기할게요."),
+    say(MARTA, "약속대로 하룻밤은 공짜예요.\n토비한테는 내가 따로 얘기할게요."),
     item(FS_SILVER_SPOON, -6),
     narrate("「무료 숙박권」을 받았다."),
     item(FS_FREE_NIGHT, 1),

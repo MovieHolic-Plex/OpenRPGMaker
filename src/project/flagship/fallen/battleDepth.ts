@@ -182,9 +182,11 @@ const GROWTH_ANCHOR_LEVEL = 6;
 /** [기준 레벨 값, 1막 레벨당 증가, 2막 이후 레벨당 증가] — 1막(Lv6~9)은 모든 능력치 +1·HP +7 정도(예전 곡선의 보스 균형에 가깝게), Lv17 까지 역할 폭으로 벌어진다. */
 type GrowthRow = readonly [anchor: number, early: number, late: number];
 // 기준값 = 예전(기본 곡선) Lv6 값(1막 시작 레벨). 역할 차이는 레벨이 오를수록 증가폭에서 난다.
+// 카엘·엘레나가 Lv6 에서 HP·MP 까지 같아 직업 차이가 안 보였다(fs2 스웜 I25, 2026-11-04) — 카엘 HP +20, 엘레나 MP +4.
+// 낮추지는 않는다: keep() 이 Lv5 아래를 옛 곡선 이상으로 묶어, 기준값을 낮추면 Lv6 부터 레벨당 +1 로 눌린다.
 const FS_GROWTH: Readonly<Record<string, Readonly<Record<"maxHp" | "maxMp" | "attack" | "defense" | "mind" | "agility", GrowthRow>>>> = {
-  [KAEL]: { maxHp: [526, 5, 26], maxMp: [43, 1, 2], attack: [45, 1, 3.2], defense: [57, 1, 2.6], mind: [45, 1, 1.2], agility: [43, 1, 1.6] },
-  [ELENA]: { maxHp: [526, 5, 17], maxMp: [43, 1, 4.4], attack: [45, 1, 1.2], defense: [57, 1, 1.5], mind: [45, 1, 3.4], agility: [43, 1, 1.6] },
+  [KAEL]: { maxHp: [546, 5, 26], maxMp: [43, 1, 2], attack: [45, 1, 3.2], defense: [57, 1, 2.6], mind: [45, 1, 1.2], agility: [43, 1, 1.6] },
+  [ELENA]: { maxHp: [526, 5, 17], maxMp: [49, 1, 4.4], attack: [45, 1, 1.2], defense: [57, 1, 1.5], mind: [45, 1, 3.4], agility: [43, 1, 1.6] },
   [IRIS]: { maxHp: [447, 5, 20], maxMp: [39, 1, 2.2], attack: [54, 1, 3.2], defense: [39, 1, 1.5], mind: [38, 1, 1.2], agility: [47, 1, 2.8] },
 };
 

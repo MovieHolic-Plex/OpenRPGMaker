@@ -139,6 +139,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
+import { drawDamageTargetIndex } from "@/battle/enemyTargetDraw";
 import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, comboLockedBy, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGauges } from "@/battle/battleGauges";
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
@@ -1712,7 +1713,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function resolvedCommandTargets(user: MutableBattler, command: TargetedActorCommand & { readonly targetEnemyId?: string; readonly targetActorId?: string }) {
-    const resolution = resolveBattleTargets({
+    const resolution = deadOnlyItemResolution(command, resolveBattleTargets({
       scope: commandScope(user, command),
       includeDefeatedAllies: commandRevives(command),
       user,
@@ -1720,7 +1721,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       enemies: visibleEnemies(),
       requestedTargetId: requestedTargetId(command),
       area: command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined,
-    });
+    }));
     // strict 는 라운드 시작에 대상을 고르고 나중에 실행한다. 그 사이 쓰러진 단일 상대는
     // 같은 편 다음 생존자로 돌린다. 없는 id 는 돌리지 않고, 아군 힐은 아래 가장-아픈-동료 규칙을 유지한다.
     if (resolution.targets.length === 0 && resolution.scope === "enemy") {
@@ -1736,6 +1737,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       if (ally) return { ...resolution, targets: [ally] };
     }
     return resolution;
+  }
+
+  /**
+   * 부활약(onlyEffectiveOnDeadActors)은 쓰러진 아군만 대상이다. includeDefeatedAllies 는 살아 있는 아군도 남겨,
+   * 전투에서 불사조 깃으로 살아 있는 동료를 50% 채울 수 있었다(ultrabrain 스웜 R2 조건).
+   */
+  function deadOnlyItemResolution<T extends BattleTargetResolution<MutableBattler>>(command: TargetedActorCommand, resolution: T): T {
+    if (command.kind !== "item") return resolution;
+    const item = options.project.database.items.find((record) => record.id === command.itemId);
+    if (!item?.onlyEffectiveOnDeadActors) return resolution;
+    const downed = (entry: MutableBattler) => entry.hp <= 0;
+    return { ...resolution, candidates: resolution.candidates.filter(downed), targets: resolution.targets.filter(downed) };
   }
 
   /**
@@ -1945,7 +1958,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }));
     noteDamageHit(actor, target, result, targetMaxHpBefore, normalAttackElementMultiplier(actor, target));
     if (result.hit && result.amount > 0) recoverHitStates(target);
-    if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
       { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, normalAttackElementId(actor), target) * damageTypeMultiplier(options.project, "physical", target, normalAttackElementId(actor)) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, normalAttackElementId(actor), "physical", target)) : {}) },
       result.hit ? "damage" : "miss",
@@ -1956,6 +1968,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    // 장비 평타 상태는 피해·애니메이션 기록 뒤에 건다 — 앞에 걸면 「방어 하락」이 타격보다 먼저 떠 명령 문장을 가로채고, 그 타격에 쓰러진 적에게도 떴다
+    // (2026-11-04 ultrabrain #4202). 기술 경로(applySkill 의 applyStates)와 같은 순서다. 맞아서 깬 줄은 피해 엔트리 바로 뒤에 이미 나간다.
+    if (result.hit && target.hp > 0) applyNormalAttackEquipmentStates(actor, target);
     if (result.hit) queueCounter(actor, target, "attack", normalAttackElementId(actor));
     if (result.hit) queueStateCounter(actor, target);
   }
@@ -2038,7 +2053,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     for (const [stateId, chance] of chances) {
-      applyStateEffectsWithEmotion(options.project, target, [{ stateId, chance, operation: "add" }], rng);
+      // applyStates 는 걸린 상태를 타임라인(stateAdded)에 남긴다 — 예전엔 조용히 걸어 화면에 상태 글자가 안 떴다(2026-11-03 폴른 스타 무기 특성).
+      applyStates(actor, target, [{ stateId, chance, operation: "add" }]);
     }
   }
 
@@ -2531,13 +2547,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!activeActorId) return;
     const user = actors.find((entry) => entry.recordId === activeActorId);
     if (!user) return;
-    const resolution = resolveBattleTargets({
+    const resolution = deadOnlyItemResolution(command, resolveBattleTargets({
       scope: commandScope(user, command),
       includeDefeatedAllies: commandRevives(command),
       user,
       actors: activeActors(),
       enemies: visibleEnemies(),
-    });
+    }));
     if (resolution.candidates.length === 0) return;
     if (!resolution.requiresSelection) {
       const targetId = targetIdFor(resolution.targets[0] ?? user);
@@ -3604,7 +3620,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       .filter((action) => !action.skillId || !battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))
       .flatMap((action) => {
         if (!action.skillId) {
-          const target = chooseBasicEnemyTarget(enemy);
+          // 계획 점수는 argmax 대상으로 매긴다. 추첨은 고른 계획에만 한 번(redrawDamageTarget) — 추첨이 행동 고르기를 바꾸지 않게.
+          const target = pickBestByUtility(tauntCandidates(enemy, activeActors().filter((actor) => actor.hp > 0)), (candidate) => enemyDamageUtility(enemy, candidate));
           return target ? [{ action: { ...action, targetIds: [target.id] }, score: Math.max(1, action.priority) * 10 + enemyDamageUtility(enemy, target) }] : [];
         }
         const skill = lookupSkill(action.skillId);
@@ -3674,15 +3691,55 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const bestScore = Math.max(...plans.map((plan) => plan.score));
     const ties = plans.filter((plan) => plan.score === bestScore);
-    if (ties.length === 1) return ties[0]?.action;
-    return ties[Math.min(ties.length - 1, Math.floor(rng() * ties.length))]?.action;
+    const chosen = ties.length === 1 ? ties[0]?.action : ties[Math.min(ties.length - 1, Math.floor(rng() * ties.length))]?.action;
+    return chosen ? redrawDamageTarget(enemy, chosen) : chosen;
   }
 
   function chooseBasicEnemyTarget(enemy: MutableBattler): MutableBattler | undefined {
-    return pickBestByUtility(tauntCandidates(enemy, activeActors().filter((actor) => actor.hp > 0)), (target) => enemyDamageUtility(enemy, target));
+    const candidates = tauntCandidates(enemy, activeActors().filter((actor) => actor.hp > 0));
+    return drawDamageTarget(candidates, (target) => enemyDamageUtility(enemy, target), (target) => enemyExpectedDamage(enemy, target));
+  }
+
+  function drawDamageTarget<T extends MutableBattler>(candidates: readonly T[], utility: (value: T) => number, expected: (value: T) => number): T | undefined {
+    if (gen1 || candidates.length <= 1) return pickBestByUtility(candidates, utility);
+    const index = drawDamageTargetIndex(candidates.map((c) => ({ score: utility(c), expected: expected(c), hp: c.hp })), rng);
+    return index < 0 ? pickBestByUtility(candidates, utility) : candidates[index];
+  }
+
+  function enemyExpectedDamage(user: MutableBattler, target: MutableBattler, skill?: NonNullable<ReturnType<typeof lookupSkill>>): number {
+    if (!skill) return enemyDamageExpected(user, target);
+    if (!skill.damageFormula && !skill.hitSequence && skill.criticalRate === undefined && skill.criticalMultiplier === undefined && !skill.cooldownTurns) {
+      return enemyDamageExpected(user, target, skill.power, skill.effect.kind === "damage" ? skill.effect.statistic : "attack", skill.elementId);
+    }
+    return predictSkillDamageFor(options.project, battlerSnapshot(user), skill, battlerSnapshot(target)).amount;
+  }
+
+  /** 고른 계획이 상대편 단일 피해면 그 대상만 다시 뽑는다(행동 고르기는 argmax 그대로). */
+  function redrawDamageTarget(enemy: MutableBattler, action: EnemyActionChoice): EnemyActionChoice {
+    if (gen1 || (action.targetIds?.length ?? 0) !== 1) return action;
+    const skill = action.skillId ? lookupSkill(action.skillId) : undefined;
+    if (action.skillId && (!skill || skill.effect.kind !== "damage" || skill.area)) return action;
+    const candidates = skill
+      ? tauntCandidates(enemy, resolveBattleTargets({ scope: skill.scope, user: enemy, actors: activeActors(), enemies: visibleEnemies() }).candidates)
+      : tauntCandidates(enemy, activeActors().filter((actor) => actor.hp > 0));
+    if (candidates.some((candidate) => battlerSide(candidate) === battlerSide(enemy))) return action;
+    const utility = (target: MutableBattler) => (skill ? enemySkillUtility(enemy, target, skill) : enemyDamageUtility(enemy, target));
+    const target = drawDamageTarget(candidates, utility, (target) => enemyExpectedDamage(enemy, target, skill));
+    return target ? { ...action, targetIds: [target.id] } : action;
   }
 
   function enemyDamageUtility(
+    user: MutableBattler,
+    target: MutableBattler,
+    power = gen1 ? 50 : user.attackPower,
+    statistic: "attack" | "mind" = "attack",
+    elementId?: string,
+  ): number {
+    const expected = enemyDamageExpected(user, target, power, statistic, elementId);
+    return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
+  }
+
+  function enemyDamageExpected(
     user: MutableBattler,
     target: MutableBattler,
     power = gen1 ? 50 : user.attackPower,
@@ -3700,7 +3757,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           battlerSnapshot(target),
         ).amount
       : Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
-    return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
+    return expected;
   }
 
   /**
