@@ -1741,7 +1741,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
-      narrate("「바람결 검」과 「철심 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
+      narrate("「바람결 검」과 「푸른 불꽃 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
