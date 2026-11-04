@@ -6,6 +6,7 @@
 import type { Project } from "@/project/types";
 import { type Exec, mustMap } from "./common";
 import { placeSnowMerchant } from "./act2Merchant";
+import { placeExamines } from "./examine";
 import { noticeBoard, odenVenomQuest, sideQuestJournal, tobiKiteQuest } from "./sideQuests";
 import { doorOf, hangShopSigns, placeNoticeBoard, plantSignpost } from "./signage";
 import { FS_WORKSHOP_ID, buildWorkshop, linkWorkshopDoor, workshopExit } from "./workshop";
@@ -47,4 +48,5 @@ export function applyFallenWorldPass(project: Project, exec: Exec, ids: FallenWo
   tobiKiteQuest(project, ids.forestEdge, { x: 11, y: 31 });
   sideQuestJournal(project);
   placeSnowMerchant(project, ids.snowRoad, { x: 20, y: 35 }, { x: 19, y: 38 });
+  placeExamines(project);
 }
