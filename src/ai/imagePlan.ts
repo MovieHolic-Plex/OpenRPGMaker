@@ -124,9 +124,10 @@ export function forestDesignFromRead(read: ImagePlanRead): Record<string, unknow
 }
 
 const ROOM_KINDS: Record<string, string> = { entrance: "entrance", hall: "hall", side: "crypt", boss: "boss", treasure: "vault" };
-const DUNGEON_CELL_SCALE = 1.5;
+const DUNGEON_POS_SCALE = 2;
+const DUNGEON_SIZE_SCALE = 1.25;
 
-/** 방 도안 → author_dungeon {rooms[]{id,kind,x,y,w,h}, links}. 도안 칸 좌표·크기를 같은 배율로 키워 방 사이 간격을 지킨다(입구 먼저). */
+/** 방 도안 → author_dungeon {rooms[]{id,kind,x,y,w,h}, links}. 자리는 크기보다 더 크게 키워(위치 2배·크기 1.25배) 방 사이에 벨·통로 자리를 남긴다(입구 먼저). */
 export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: string[][] } {
   const raw = Array.isArray(read.data.rooms) ? read.data.rooms.slice(0, 12) : [];
   const rooms: Array<Record<string, unknown>> = [];
@@ -139,8 +140,8 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
     indexOf.set(i, id);
     rooms.push({
       id, kind: rooms.length === 0 ? "entrance" : ROOM_KINDS[String(r.kind)] ?? "hall",
-      x: Math.max(0, Math.round(x * DUNGEON_CELL_SCALE)), y: Math.max(0, Math.round(y * DUNGEON_CELL_SCALE)),
-      w: Math.max(6, Math.min(40, Math.round(w * DUNGEON_CELL_SCALE))), h: Math.max(5, Math.min(22, Math.round(h * DUNGEON_CELL_SCALE))),
+      x: Math.max(0, Math.round(x * DUNGEON_POS_SCALE)), y: Math.max(0, Math.round(y * DUNGEON_POS_SCALE)),
+      w: Math.max(6, Math.min(40, Math.round(w * DUNGEON_SIZE_SCALE))), h: Math.max(5, Math.min(22, Math.round(h * DUNGEON_SIZE_SCALE))),
     });
   });
   const links: string[][] = [];

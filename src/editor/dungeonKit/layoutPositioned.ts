@@ -31,7 +31,7 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
   const placed: PlacedRoom[] = [];
   const ids = new Set<string>();
   const freeSpot = (wantX: number, wantY: number, w: number, h: number): { x: number; y: number } => {
-    const clear = (x: number, y: number) => placed.every((o) => !inter(footprint({ x, y, w, h }), footprint(o)));
+    const clear = (x: number, y: number) => placed.every((o) => !inter(footprint({ x, y, w, h }), o) && !inter({ x, y, w, h }, footprint(o)));
     if (clear(wantX, wantY)) return { x: wantX, y: wantY };
     for (let r = 1; r <= 80; r += 1) {
       let best: { x: number; y: number; d: number } | null = null;
