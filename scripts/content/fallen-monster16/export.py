@@ -1,8 +1,9 @@
 """폴른 스타 몬스터 새 그림(16칸 4×4 전투 시트)을 battle-gen 에서 가져와 src/project/flagship/fallen/monsterSheets16.ts 로 쓴다.
 
-그림은 battle-gen 이 만든다(새 초상 → 3x3 → 4x4, 기계 게이트, Opus 검수 4점 이상). 이 스크립트는 그림을 바꾸지 않는다.
+그림은 battle-gen 이 만든다(새 초상 → 3x3 → 4x4, 기계 게이트, Opus 검수 통과 = review.PASS_SCORE 이상). 이 스크립트는 그림을 바꾸지 않는다.
   - battle-gen catalog 의 pack "fallen-star" 행 중 4x4 동작 시트에 지금 Opus 통과(review.current_pass)가 있고
     초상이 통과했거나 오너가 고른(stages.owner_picked) 종만 싣는다. 나머지는 번들 3×3 그대로 남는다.
+  - "replaces": <id> 가 있는 행(큰 칸으로 다시 그린 새 항목)이 실을 수 있으면 그 <id> 대신 싣는다. 못 실으면 <id> 가 그대로 남는다.
   - PNG 는 무손실 팔레트 PNG 로 다시 싸고(다시 풀어 화소 비교), 칸 규칙을 한 번 더 본다:
     시트 = 4cell 정사각, idle_a = 초상 그대로, 0~14 칸은 채움, 15 칸은 완전 투명, 알파 0/255.
 
@@ -21,7 +22,7 @@ ap.add_argument("--battle-gen", default=os.environ.get("BATTLE_GEN", "~/z-projec
 BG = os.path.abspath(os.path.expanduser(ap.parse_args().battle_gen))
 os.environ["BATTLEGEN_ROOT"] = BG
 sys.path.insert(0, BG)
-from battlegen import catalog, review, stages, state  # noqa: E402
+from battlegen import catalog, gates, review, stages, state  # noqa: E402
 from battlegen.imageutil import pixel_sha  # noqa: E402
 
 
@@ -51,8 +52,8 @@ def palette_png(a):
 
 def sheet_problems(sheet, portrait):
     C = portrait.shape[0]
-    if portrait.shape[:2] != (C, C) or C not in (48, 64, 96):
-        return [f"portrait {portrait.shape[1]}x{portrait.shape[0]} is not a 48/64/96 square"]
+    if portrait.shape[:2] != (C, C) or C not in gates.ENEMY_CELLS:
+        return [f"portrait {portrait.shape[1]}x{portrait.shape[0]} is not a square of {'/'.join(map(str, gates.ENEMY_CELLS))}"]
     if sheet.shape[:2] != (4 * C, 4 * C):
         return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {4 * C}x{4 * C}"]
     out = []
@@ -71,21 +72,37 @@ def sheet_problems(sheet, portrait):
 
 
 items = state.load()
-entries, skipped, bad = [], [], []
-for row in catalog.enemies():
-    if row.get("pack") != "fallen-star":
-        continue
-    i = row["id"]
+
+
+def usable(i):
+    """(ok, why): 4x4 sheet passes now, and the portrait passes or is an owner pick."""
     pit, mit = items.get(state.key("portrait", i)), items.get(state.key("motion", i))
     if not pit or not pit.get("art") or not mit or not mit.get("art"):
-        skipped.append(f"{i}: no portrait or motion sheet")
-        continue
+        return False, "no portrait or motion sheet"
+    if mit.get("grid") != "4x4":
+        return False, "no 4x4 motion sheet yet"
     portrait_ok, portrait_why = review.current_pass("portrait", i)
     picked = stages.owner_picked(pit)
     motion_ok, motion_why = review.current_pass("motion", i)
     if not motion_ok or (not portrait_ok and not picked):
-        skipped.append(f"{i}: portrait {portrait_why if not picked else 'owner pick'} / motion {motion_why}")
+        return False, f"portrait {portrait_why if not picked else 'owner pick'} / motion {motion_why}"
+    return True, ""
+
+
+rows = [r for r in catalog.enemies() if r.get("pack") == "fallen-star"]
+replaced = {r["replaces"]: r["id"] for r in rows if r.get("replaces") and usable(r["id"])[0]}
+entries, skipped, bad = [], [], []
+for row in rows:
+    i = row["id"]
+    if i in replaced:
+        skipped.append(f"{i}: replaced by {replaced[i]}")
         continue
+    ok, why = usable(i)
+    if not ok:
+        skipped.append(f"{i}: {why}" + (f" (keeps {row['replaces']})" if row.get("replaces") else ""))
+        continue
+    pit, mit = items[state.key("portrait", i)], items[state.key("motion", i)]
+    portrait_ok = review.current_pass("portrait", i)[0]
     portrait, sheet = rgba(os.path.join(BG, pit["art"])), rgba(os.path.join(BG, mit["art"]))
     probs = sheet_problems(sheet, portrait)
     if probs:
@@ -112,7 +129,7 @@ with open(OUT, "w") as f:
     f.write('import type { UploadedPixelEnemySheetMeta } from "@/project/types";\n\n')
     f.write("export interface FallenMonsterSheet16 {\n")
     f.write("  /** 번들 시트 id(generated-enemy-<slug>) — 적 기록의 monsterResourceId 그대로. */\n")
-    f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: 64 | 96;\n")
+    f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: UploadedPixelEnemySheetMeta[\"cell\"];\n")
     f.write('  readonly motion: UploadedPixelEnemySheetMeta["motion"];\n  readonly idleFrameMs: number;\n')
     f.write("  readonly portrait: string;\n  readonly sheet: string;\n}\n\n")
     f.write("export const FS_MONSTER_SHEETS_16: readonly FallenMonsterSheet16[] = [\n")
