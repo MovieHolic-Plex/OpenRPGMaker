@@ -758,9 +758,11 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     // 사람 앞: 다음 몸 칸 전체와 머리 앞 두 칸에 사람(주인공·걷는 인물)이 있으면 선다. 새로 들어갈 칸만 보면 몸 밑으로
     // 걸어 들어온 사람 위를 그대로 밀고 지나갔고, 머리 바로 앞에서야 서면 범퍼가 사람에게 닿은 뒤였다(첫사랑 r4 횡단보도).
     // 사람이 비키면(isBlocked 가 거짓이 되면) 다음 걸음에 다시 간다.
-    const ahead2 = transitHeadAt(r, next + 2);
     // 몸 칸은 그림이 땅에 닿는 사각(transitGroundRect)으로 본다 — 몸보다 넓게 그린 차가 옆 행인 위에 겹쳐 서지 않게.
-    const yieldCells = [...transitRectCells(transitGroundRect(v.def, nextPose)), ...aheadCells, ...transitRectCells(transitFootprintRect(ahead2.head, ahead2.dir, 1))];
+    // 머리 앞 두 칸도 차선 맞춤(laneShift)이 들어간 몸 사각으로 본다 — 폭 6 도로(shift 0.5)에서 몸이 덮는 셋째 줄의 사람을
+    // 못 보고 범퍼가 닿을 때까지 다가갔다(첫사랑 r7: 사람 앞 0.07칸, 다른 줄은 2.07칸).
+    const groundCells = (pos: number) => transitRectCells(transitGroundRect(v.def, transitPose(sim, { ...v, pos })));
+    const yieldCells = [...transitRectCells(transitGroundRect(v.def, nextPose)), ...groundCells(next + 1), ...groundCells(next + 2)];
     // 건널목: 정지선을 넘으려는데 앞 횡단보도·교차로·건너편 횡단보도에 사람이 있으면 정지선에서 선다(r5: 횡단보도 위에서 섰다).
     const byPlayer = yieldCells.some((c) => isBlocked(c.x, c.y)) || crossingHasPerson(sim, v, curRect, curPose.dir, nextPose.rect, nextPose.dir, isBlocked);
     const blockers = new Set<TransitVehicleState>();
