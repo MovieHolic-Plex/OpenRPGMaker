@@ -29,6 +29,8 @@ export interface TerrainGenInput {
   tiers?: number;
   /** 평지 요청(땅 모양 낱말 없음): 단은 북쪽의 동서 띠 하나뿐 — 남북 경계 토막·평지 한가운데 계단이 없다. 물이 띠를 가로지르면 단 없음. */
   bands?: boolean;
+  /** 그림 도안에서 읽은 칸 지도(행 문자열, 칸 하나 = 글자 하나): 0~3 땅 단 · ~ 강 · | 폭포(강으로 그린다) · o 못. 주면 생성한 단·물 대신 이 모양(맵 크기에 맞춰 늘린다). */
+  given?: { readonly rows: readonly string[] };
 }
 
 export interface TerrainArea {
@@ -59,6 +61,33 @@ export interface CodeTerrain {
   cliffBreaks: { x: number; y: number }[];
   maxLevel: number;
   note: string;
+}
+
+export const TERRAIN_MAP_CHARS = /^[0-3~|o]+$/u;
+
+/** 도안 칸 지도를 단(lv, 0~3)·물(water, 1 강 · 2 못)에 덮어쓴다 — 물 칸은 닿은 땅 중 가장 낮은 단, 이웃 단 차는 1 이하로 깎는다. */
+function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Uint8Array, water: Uint8Array, river: number[], notes: string[]): void {
+  const R = rows.length, C = Math.max(...rows.map((r) => r.length));
+  water.fill(0); lv.fill(0); river.length = 0;
+  let falls = 0;
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const ch = rows[Math.min(R - 1, Math.floor(((y + 0.5) * R) / H))]![Math.min(C - 1, Math.floor(((x + 0.5) * C) / W))] ?? "0";
+    const c = y * W + x;
+    if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else lv[c] = Number(ch);
+  }
+  const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
+  for (const cs of list) {
+    let low = 99;
+    for (const c of cs) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!water[n]) low = Math.min(low, lv[n]!); } }
+    if (low === 99) low = 0;
+    for (const c of cs) { lv[c] = low; const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; const n = Y * W + X; if (!water[n] && lv[n]! > low) lv[n] = low; } }
+  }
+  for (let pass = 0; pass < 8; pass += 1) {
+    let changed = false;
+    for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; if (lv[c]! - lv[Y * W + X]! > 1) { lv[c] -= 1; changed = true; break; } } }
+    if (!changed) break;
+  }
+  notes.push(`도안 지형 칸 지도 ${C}×${R}${falls ? ` (폭포 ${falls}칸은 그림 조각이 없어 강으로)` : ""}`);
 }
 
 // ── 시드 잡음 ──
@@ -499,7 +528,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   // 잡음 덩이 단을 버리고 북쪽에 맵 폭 전체를 가로지르는 띠 하나만 둔다. 띠 아래 경계는 7~13열 토막마다 1~2줄 어긋날 뿐 남북으로 길게 서지 않는다.
   // 물(강·못·바다)이 띠 자리에 들어오면 띠를 물 위 3칸까지 올리고, 그래도 3줄이 안 남는 열이 있으면 단을 아예 없앤다(평지).
   const bandGaps: { x: number; y: number }[] = [];
-  if (input.bands && input.water !== "bog") {
+  if (input.bands && input.water !== "bog" && !input.given) {
     // 3판(2026-10-30 ab20 판정 「맵 전폭을 자로 그은 직선 절벽」): 띠 아래 경계를 높이맵 등고선처럼 굽히고(큰 물결 ±4.5줄 + 잔물결 ±1.5줄,
     // 열마다 1줄까지·같은 줄 3열 이상), 띠를 한두 곳에서 끊는다 — 끊긴 곳은 단이 없고 어깨(열마다 2줄씩 낮아짐)를 숲이 덮는다(bandGaps → cliffBreaks).
     // 강·못이 띠 자리를 지나면 그 열이 끊긴 곳이 된다(예전엔 띠를 통째로 없앴다). 남은 띠 토막이 8열보다 짧으면 지운다.
@@ -538,6 +567,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; lv[c] = ok && !water[c] && y < b[x]! ? 1 : 0; }
     notes.push(ok ? `평지 요청: 북쪽 굽은 띠(끊긴 곳 어깨 ${bandGaps.length / 2 | 0}곳)` : "평지 요청: 물이 띠를 가로질러 단 없음");
   }
+  if (input.given) applyGivenTerrain(input.given.rows, W, H, lv, water, river, notes);
   tidyLevels(lv, W, H);
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
   // 3/4 에서 남향 절벽면이 두 칸 높이로 그려지고, 길은 세 칸 계단으로 오른다.

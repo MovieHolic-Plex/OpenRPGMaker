@@ -35,7 +35,7 @@ export function gridSizeFor(width: number, height: number): { readonly cols: num
 export function imagePlanReadPrompt(subject: WidenSubject, cols: number, rows: number): string {
   const head = `이 그림은 RPG 맵 도안 위에 노란 칸 격자(가로 0~${cols - 1}, 세로 0~${rows - 1}, 칸 번호가 가장자리에 적혀 있다)를 그린 것이다. 칸 번호 기준으로 배치를 읽어 JSON 하나만 답하라. 그림에 없는 항목은 빈 배열·null 로 둔다.`;
   if (subject === "village") {
-    return `${head}\n{"gather":{"x":,"y":}|null(우물·광장 가운데),"landmark":{"x":,"y":}|null(가장 눈에 띄는 높은 곳 건물),"anchor":{"x":,"y":}|null(큰 건물),"work":{"x":,"y":}|null(헛간·방앗간),"houses":[{"x":,"y":,"kind":"small|medium|large"}](집 한 채마다 건물 가운데),"fields":[{"x":,"y":}](밭 가운데),"forests":[{"x":,"y":}](숲 덩이 가운데),"exits":["north|south|east|west"](큰길이 그림 밖으로 나가는 쪽),"water":"river|coast|none","high":"north|center|west|east|none"(가장 높은 단 자리),"tiers":1~4(절벽 단 수)}`;
+    return `${head}\n{"gather":{"x":,"y":}|null(우물·광장 가운데),"landmark":{"x":,"y":}|null(가장 눈에 띄는 높은 곳 건물),"anchor":{"x":,"y":}|null(큰 건물),"work":{"x":,"y":}|null(헛간·방앗간),"houses":[{"x":,"y":,"kind":"small|medium|large"}](집 한 채마다 건물 가운데),"fields":[{"x":,"y":}](밭 가운데),"forests":[{"x":,"y":}](숲 덩이 가운데),"exits":["north|south|east|west"](큰길이 그림 밖으로 나가는 쪽),"water":"river|coast|none","high":"north|center|west|east|none"(가장 높은 단 자리),"tiers":1~4(절벽 단 수),"terrain":["${cols}글자 행", … ${rows}줄](칸 하나당 글자 하나, 위에서 아래: 0가장 낮은 땅 1·2·3 점점 높은 단(절벽·돌담으로 갈리는 단 하나가 +1) ~강 |폭포 o연못·호수; 집·길·숲·밭은 그 칸의 땅 단으로 적는다)}`;
   }
   if (subject === "forest") {
     return `${head}\n숲길의 본길과 갈림길을 읽어라. {"entryAt":0~1(길이 그림 아래 가장자리에서 들어오는 가로 위치, 0=왼쪽),"exitAt":0~1(위쪽으로 나가는 가로 위치),"bends":1~6(굽이 수),"width":"narrow|normal|wide","branches":[{"at":0~1(본길 진행 위치, 0=아래),"toward":"left|right","end":"chest|clearing|nothing"}],"clearings":[{"at":0~1,"size":"small|medium|large","toward":"left|right|center"}],"cliffs":true|false(절벽 단·돌계단이 있나),"landmark":"그림 속 눈에 띄는 것 한 줄"}`;
@@ -94,7 +94,12 @@ export function villageArgsFromRead(read: ImagePlanRead, width: number, height: 
     args.tiers = Math.max(1, Math.min(4, Math.round(tiers) - 1 || 1));
   }
   if (["north", "center", "west", "east"].includes(String(d.high))) args.high = d.high;
-  if (d.water === "none") args.water = "none";
+  const terrain = Array.isArray(d.terrain) ? d.terrain.map((r) => String(r).replace(/[^0-3~|o]/gu, "0")) : [];
+  if (terrain.length >= 6 && terrain.every((r) => r.length >= 6)) {
+    args.terrainMap = terrain;
+    if (!args.landform) args.landform = "terraces";
+  }
+  if (d.water === "none" && !args.terrainMap) args.water = "none";
   return args;
 }
 
