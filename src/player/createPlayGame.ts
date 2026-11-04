@@ -55,11 +55,36 @@ function decodeImagesBeforeUpload(PhaserRuntime: typeof Phaser): void {
   };
 }
 
+/**
+ * Phaser 3 의 setTextureFilter 는 필터만 바꿔도 텍스처 전체를 texImage2D 로 다시 올린다. antialias:false 면 모든 그림이
+ * 만들자마자(이미 NEAREST 로 올라간 뒤) setFilter(1) 을 한 번 더 불러, 큰 칩셋이 두 번씩 올라갔다(2026-11-05 폴른 스타 오프닝 중
+ * 1.3초 멈춤의 절반). 같은 필터면 다시 올리지 않고, 다르면 파라미터만 바꾼다(픽셀은 그대로다).
+ */
+function skipFilterReupload(PhaserRuntime: typeof Phaser): void {
+  type Wrapper = { webGLTexture: WebGLTexture | null; minFilter: number; magFilter: number };
+  type Renderer = { gl: WebGLRenderingContext; glTextureUnits: { units: (Wrapper | null)[]; bind(texture: Wrapper | null, unit: number): void }; setTextureFilter(texture: Wrapper, filter: number): unknown; __oprnFilter?: true };
+  const proto = (PhaserRuntime.Renderer.WebGL.WebGLRenderer as unknown as { prototype: Renderer }).prototype;
+  if (proto.__oprnFilter) return;
+  proto.__oprnFilter = true;
+  proto.setTextureFilter = function (this: Renderer, texture: Wrapper, filter: number) {
+    const gl = this.gl, glFilter = filter === 0 ? gl.LINEAR : gl.NEAREST;
+    if (!texture?.webGLTexture || (texture.minFilter === glFilter && texture.magFilter === glFilter)) return this;
+    const current = this.glTextureUnits.units[0] ?? null;
+    this.glTextureUnits.bind(texture, 0);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, glFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, glFilter);
+    texture.minFilter = glFilter; texture.magFilter = glFilter;
+    if (current) this.glTextureUnits.bind(current, 0);
+    return this;
+  };
+}
+
 let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof import('@/player/PlayScene')['PlayScene'] }> | undefined;
 function preparePlayRuntime() {
   // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
   return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
       decodeImagesBeforeUpload(PhaserRuntime);
+      skipFilterReupload(PhaserRuntime);
       const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
       return { PhaserRuntime, PlayScene };
     })
