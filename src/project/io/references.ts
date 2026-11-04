@@ -1262,6 +1262,7 @@ function validateMapRecords(
     if (backgroundImageId) {
       capture(issues, () => validateOptionalResource(`map ${map.id}: background.imageId`, backgroundImageId, resourceIds));
     }
+    capture(issues, () => validateOptionalResource(`map ${map.id}: battleBgmResourceId`, map.battleBgmResourceId, resourceIds));
     // 「다른 맵을 줄여 그린 배경」: 그 맵이 있어야 하고 자기 자신은 안 된다.
     for (const [index, layer] of [map.background, ...(map.background?.layers ?? [])].entries()) {
       const fromMapId = layer?.fromMap?.mapId;

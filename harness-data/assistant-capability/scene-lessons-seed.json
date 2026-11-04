@@ -842,6 +842,23 @@
     "the revive item (onlyEffectiveOnDeadActors) has occasion battle or always and onlyUsableInMenu false",
     "in the shipped player, the item menu in battle lists the revive item and its target list contains only downed allies"
    ]
+  },
+  {
+   "id": "area-battle-music",
+   "label": "지역마다 전투곡, 보스는 보스곡 — 전투 하나에 곡 하나로 몰지 않는다",
+   "port": 19551,
+   "lessons": [
+    "area-battle-bgm",
+    "boss-has-own-bgm",
+    "se-one-job"
+   ],
+   "prompt": "숲 마을 하나, 숲 둘, 얼음 동굴 둘을 만들고 숲에는 늑대·슬라임, 얼음 동굴에는 얼음 박쥐가 나오는 전투를 각 맵에 하나씩 넣어 줘. 얼음 동굴 끝에는 「서리 군주」 보스전을 하나 두고. 숲 전투와 동굴 전투는 다른 전투곡이 나오게, 보스전은 보스곡이 나오게 해 줘. 상자에서 물건을 받을 때와 문을 열 때 소리도 따로 넣어 줘.",
+   "requirements": [
+    "the forest maps and the ice cave maps resolve to two different normal battle cues (map battleBgmResourceId or an equivalent per-area binding), and run_lint has no audio-battle-bgm-uniform",
+    "the 「서리 군주」 battle plays a boss cue that differs from both area cues (set_game_audio role:boss), and run_lint has no audio-boss-uses-default",
+    "every bound cue is a bundled catalog track that exists and plays, picked from recommend_bgm scene battle/boss candidates",
+    "the chest and the door use different sound effects and run_lint has no audio-se-overused; the project saves and reloads"
+   ]
   }
  ]
 }
