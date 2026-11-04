@@ -331,8 +331,10 @@ export function createPlayerStatusMenuSnapshot(
     const hpRatio = vitalRatio(vitals?.hp, vitals?.maxHp);
     const classId = effectiveActorClassId(project, session, actorId);
     const normalized = normalizeActorRecord(actor);
-    const exp = session.actorExperience?.[actorId] ?? totalExpForLevel(normalized.expCurve, level);
     const levelBase = totalExpForLevel(normalized.expCurve, level);
+    // 시작 레벨이 1보다 높거나 레벨을 직접 정한 동료는 누적 EXP 가 0 으로 남는다 — 보상 적립(battleRewardsToSession)과
+    // 같은 바닥에서 센다. 안 그러면 Lv14 에서 「다음 7306」(누적 전체)이 나오다 첫 승리 뒤 갑자기 725 로 떨어졌다(fs2 I02).
+    const exp = Math.max(session.actorExperience?.[actorId] ?? 0, levelBase);
     const levelNext = totalExpForLevel(normalized.expCurve, level + 1);
     const nextLevel = level < normalized.maxLevel && levelNext > levelBase
       ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }

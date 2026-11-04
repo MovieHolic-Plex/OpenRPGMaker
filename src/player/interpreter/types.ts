@@ -285,6 +285,8 @@ export interface InterpreterState {
   maxInstructions: number;
   /** Live script sandboxes, one per frame that is inside a `script` command (scriptCommand.ts). Disposed on finish. */
   scriptRuns?: Map<Frame, import("@/player/script/scriptRun").ScriptRun>;
+  /** 컷신 건너뛰기 빨리 감기 중이면 멈출 라벨 이름. 그 라벨 명령을 실행하면 지운다(commandCatalog «label»). */
+  fastForwardLabel?: string;
 }
 
 export interface InterpreterOptions {
@@ -312,6 +314,15 @@ export interface Interpreter {
   skip(): StepResult;
   // 컷신 스킵처럼 외부 입력이 현재 큐를 특정 라벨로 보낼 때 사용한다.
   jumpToLabel(name: string): StepResult;
+  /**
+   * 컷신 건너뛰기 — 라벨까지 **빨리 감는다**. jumpToLabel 은 사이 명령을 버려 그 장면이 주던 아이템·동료·스위치·
+   * 레터박스 해제를 잃었다(폴른 스타 2026-11-04). 이 표식이 있는 동안 호출자는 기다리는 단계(대사·대기·연출)를
+   * 즉시 넘기고 상태를 바꾸는 명령은 그대로 실행한다. 라벨을 지나면 스스로 풀린다. 라벨이 없으면 false.
+   */
+  beginFastForward(name: string): boolean;
+  isFastForwarding(): boolean;
+  /** 빨리 감기를 멈춘다(선택지·전투·맵 이동처럼 대신할 수 없는 걸음 앞에서). */
+  endFastForward(): void;
   isDone(): boolean;
 }
 

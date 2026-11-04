@@ -1,3 +1,4 @@
+import { chaseCellMs, chaseTempoAuthored } from '@/project/chaseTempo';
 import { isPassableLanding } from '@/project/collision';
 import { passageBounds, rectCells, rectsOverlap } from '@/project/footprint';
 import { resolvePlayerBody } from '@/project/playerFootprint';
@@ -45,6 +46,8 @@ function travelMs(steps: number, movement: EventPageMovement, mover?: Autonomous
   const active = mover?.activeMove;
   const remaining = active ? Math.max(0, (active.durationMs ?? duration) - active.elapsedMs) : 0;
   const credit = !active && steps > 0 ? Math.min(interval, Math.max(0, mover?.timer ?? 0)) : 0;
+  // 박자를 적은 추격자는 쫓을 때 그 박자로 한 칸씩 미끄러진다(speed 는 순찰 걸음).
+  if (chaseTempoAuthored(movement)) return steps * chaseCellMs(movement) + remaining;
   return steps * (duration + interval) + remaining - credit;
 }
 

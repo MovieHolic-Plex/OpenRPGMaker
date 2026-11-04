@@ -4,6 +4,7 @@ import { ensurePhaser } from "@/app/phaserRuntime";
 import type { PlaySession } from "@/project/session";
 import { resolveCameraZoom } from "@/project/cameraZoom";
 import { playPixelDensity, smallMapFillDensity } from "@/project/mapViewScale";
+import { resolveSmallMapFill } from "@/project/smallMapFill";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 import { importWithRetry } from "@/util/dynamicImport";
@@ -52,7 +53,7 @@ export async function createPlayGame(
   // 캔버스 CSS 는 논리 해상도에 맞춰지므로(playSurface.css) 레이아웃·DOM 좌표는 그대로다.
   // 한 크기뿐인 프로젝트에 작은 방이 있으면 그 방을 정수 캔버스 배율로 화면에 채울 밀도를 고른다(smallMapFillDensity).
   const mixedDensity = playPixelDensity(project, resolution, resolveCameraZoom(project.system));
-  const density = mixedDensity > 1 ? mixedDensity : smallMapFillDensity(project, resolution, resolveCameraZoom(project.system));
+  const density = mixedDensity > 1 ? mixedDensity : resolveSmallMapFill(project) ? smallMapFillDensity(project, resolution, resolveCameraZoom(project.system)) : 1;
   return new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,

@@ -77,10 +77,13 @@ export const PARTIAL_FILL_MAX_SCALE = 1.5;
  * - 한 축만 넘치면(13×17 여관·24×10 서재처럼 길쭉한 맵) 좁은 축을 채우는 만큼, 기본 시야의 1.5배까지. 긴 축은 원래도 따라가며 스크롤한다.
  *   2026-10-29 vm4 판정 E: 13×17 여관이 320×240 에서 가로 65% 만 쓰고 양옆이 비었다 — 둘 다 들어가야만 키우던 규칙이라 확대가 0이었다.
  * - 둘 다 넘치면 1 미만(확대 없음).
+ * - `mapFits`: 반 칸 여백 없이 맵 자체는 기본 시야에 다 들어가는가. 들어가면 한 축 채우기를 하지 않는다 —
+ *   여백 한 칸 때문에 「한 축만 넘침」으로 잡혀 20×16 별지기 집이 480×270 에서 1.333배로 커지고 세로가 잘려 스크롤됐다(2026-11-04 폴른 스타).
  */
-export function smallMapFitScale(widthRatio: number, heightRatio: number): number {
+export function smallMapFitScale(widthRatio: number, heightRatio: number, mapFits = false): number {
   const fit = Math.min(widthRatio, heightRatio);
   if (fit >= 1) return fit;
+  if (mapFits) return 1;
   const narrow = Math.max(widthRatio, heightRatio);
   return narrow > 1 ? Math.min(narrow, PARTIAL_FILL_MAX_SCALE) : fit;
 }
@@ -115,6 +118,7 @@ export function smallMapFillDensity(
       // 사방 반 칸 여백을 둔 크기(playSceneCamera.smallMapFillZoom 과 같은 기준).
       resolution.width / mapZoom / ((Math.max(1, map.width) + 1) * reference),
       resolution.height / mapZoom / ((Math.max(1, map.height) + 1) * reference),
+      resolution.width / mapZoom >= Math.max(1, map.width) * reference && resolution.height / mapZoom >= Math.max(1, map.height) * reference,
     );
     if (ratio >= SMALL_MAP_FILL_MIN_RATIO) ratios.push(ratio);
   }

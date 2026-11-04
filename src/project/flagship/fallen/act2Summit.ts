@@ -183,7 +183,7 @@ function summitData(project: Project, exec: Exec): void {
     mpCosts: [{ actorId: HERO, mp: 8 }, { actorId: ELENA_ID, mp: 10 }, { actorId: SARAH_ID, mp: 8 }, { actorId: IRIS_ID, mp: 10 }],
     scope: "allEnemies", kind: "damage", statistic: "mind", power: 46, elementId: "holy", combinedStats: true, gaugeShift: -40,
     choreographyId: "skill_mage_starfall",
-    staging: { tint: "#fff3c0", shake: "heavy", slowMo: true, kicker: "잘 지내 ── 오늘도", partners: "auto" },
+    staging: { tint: "#fff3c0", shake: "heavy", slowMo: true, kicker: "잘 지내, 오늘도", partners: "auto" },
   });
 }
 
@@ -239,7 +239,7 @@ function summitScenes(project: Project): void {
   ]);
   addEv(project, FS2_TOP, "ev_fs2_top_hanel", HANEL, TOP.hanel, [
     page("ev_fs2_top_hanel_none", "없음", [], [], { priority: "below" }),
-    page("ev_fs2_top_hanel_on", "하넬", [sw(SW_HANEL_COME)], [say(HANEL, "…일지는 계속 쓰거라.\n나도 오늘부터 한 줄씩 쓰마.")], { graphic: chip(HANEL_CHIP[0], HANEL_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
+    page("ev_fs2_top_hanel_on", "하넬", [sw(SW_HANEL_COME)], [say(HANEL, "일지는 계속 쓰거라.\n나도 오늘부터 한 줄씩 쓰마.")], { graphic: chip(HANEL_CHIP[0], HANEL_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
   ]);
   addEv(project, FS2_TOP, "ev_fs2_top_bram", BRAM, TOP.bram, [
     page("ev_fs2_top_bram_none", "없음", [], [], { priority: "below" }),
@@ -274,7 +274,7 @@ function summitScenes(project: Project): void {
     say(VALEN, "…선생님."),
     say(BRAM, "숨 차서 죽는 줄 알았다.\n하넬, 할 말 있으면 지금 해라."),
     camTo("ev_fs2_top_hanel", 1000, 2, 12),
-    say(HANEL, "거부를 보낸 건 나다, 발렌.\n회의가 시켰고, 나는 손을 떨지 않았다."),
+    say(HANEL, "거부를 보낸 건 나다, 발렌.\n별지기 회의가 정했고, 나는 손을 떨지 않았다."),
     say(VALEN, "그럼 그 아이가 두드린 문은…\n선생님이 보낸 답장이었습니까."),
     say(HANEL, "그래. 그래서 나는 서른 해 동안\n너에게 별 이름만 가르쳤다."),
     say(HANEL, "…다른 걸 가르칠 낯이 없어서."),
@@ -309,7 +309,7 @@ function summitScenes(project: Project): void {
   ];
   const fight: Command[] = [
     cutBegin(),
-    say(VALEN, "…내가 연 일이다. 내 칼로 막는다."),
+    say(VALEN, "내가 연 일이다. 내 칼로 막는다."),
     { kind: "choices", prompt: "발렌을 어떻게 할까?", options: [
       { text: "같이 싸워요", branch: [
         say(KAEL, "같이 막아요. 혼자 하지 마요."),
@@ -318,7 +318,7 @@ function summitScenes(project: Project): void {
       ] },
       { text: "물러나 계세요", branch: [
         say(KAEL, "단말 지켜 주세요.\n거부 신호, 더 나가지 않게요."),
-        say(VALEN, "…알았다. 쓰러지면 바로 나간다."),
+        say(VALEN, "알았다. 쓰러지면 바로 나간다."),
         setSw(SW_VALEN_GUEST, false),
       ] },
     ] } as unknown as Command,
@@ -364,7 +364,7 @@ function summitScenes(project: Project): void {
     narrate("제3막 「귀환선」은\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
     fadeIn(800),
     setSw(FS2_SW_STOP_B13),
-    sys("다음 판본에서 하늘탑 꼭대기부터 이어 하려면 지금 저장해 두자."),
+    sys("다음 업데이트에서 하늘탑 꼭대기부터 이어 하려면 지금 저장해 두자."),
     { kind: "openSaveMenu" } as unknown as Command,
   ];
   addEv(project, FS2_TOP, "ev_fs2_top_collector", "재의 회수자", { x: 0, y: 1 }, [

@@ -7,11 +7,12 @@ import { isSpatialPlacementBlocking } from '@/project/spatialOccupancy';
 import type { Dir, NpcSight } from '@/project/types';
 import { isInSafeZone, type ChasePoint } from './chaseAi';
 import type { PursuitWorld } from './pursuitNavigation';
+import { withinSightRange } from '@/project/npcBehavior';
 
 /** Explicit policy, current facing, and a supercover ray (including corner-touching cells). */
 export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target: ChasePoint, sight: NpcSight, facing: Dir = view.direction ?? 'down', seeThroughWalls = false): boolean {
   const dx = target.x - view.x, dy = target.y - view.y;
-  if (isInSafeZone(world.map.safeZones, target) || Math.abs(dx) + Math.abs(dy) > terrainVisionRange(world.map, view, sight.range)) return false;
+  if (isInSafeZone(world.map.safeZones, target) || !withinSightRange(dx, dy, terrainVisionRange(world.map, view, sight.range), sight.shape)) return false;
   if (sight.facing === 'forward') {
     const forward = facing === 'down' ? dx === 0 && dy >= 0 : facing === 'up' ? dx === 0 && dy <= 0
       : facing === 'right' ? dy === 0 && dx >= 0 : dy === 0 && dx <= 0;
