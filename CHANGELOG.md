@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.392.0 — 2026-11-04
+
+### 기능
+
+- **battle** — big-boss battles give the top message window's space to the field (#4224) (`527af7e`)
+
 ## 0.391.0 — 2026-11-04
 
 ### 기능
