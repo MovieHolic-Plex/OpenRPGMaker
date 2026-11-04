@@ -54,6 +54,8 @@ export interface WoodSpec {
   readonly open?: (x: number, y: number) => boolean;
   /** 길이 아니면 숲으로 막는 칸(길섶이 벌어지지 않는 좁은 틈). open·빈터·길섶보다 나중에 적용한다. */
   readonly closed?: (x: number, y: number) => boolean;
+  /** 길 칸에 모랫길을 깔지 않는다 — 걷는 칸(나무 없는 틈)은 그대로, 바닥은 둘레와 같은 잔디. 흙길이 「정비된 등산로」로 읽히는 숲 어귀용. */
+  readonly bareTrail?: boolean;
 }
 
 /**
@@ -248,7 +250,7 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
   for (const c of water) if (editable(c % W, Math.floor(c / W)) && full !== undefined) map.lowerTiles[c] = full;
   // 모랫길 — 줄마다 이어진 칸을 사각형 하나로.
   const fillRegion = CONSTRUCTION_TOOLS_V3.find((t) => t.name === "fill_region")!;
-  const sand = [...path].filter((c) => !deck.has(c) && editable(c % W, Math.floor(c / W))).sort((a, b) => a - b);
+  const sand = spec.bareTrail ? [] : [...path].filter((c) => !deck.has(c) && editable(c % W, Math.floor(c / W))).sort((a, b) => a - b);
   for (let i = 0; i < sand.length;) {
     const start = sand[i]!, y = Math.floor(start / W);
     let end = start;

@@ -480,7 +480,13 @@ function cachedFacingPrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFee
 }
 
 function facingPrompt(scene: ZoneFeedbackScene): string | null {
-  if (scene.session.horror?.hiding) return scene.session.horror.hiding.witnessedBy.length ? "발각 위험 · 나오기" : "숨어 있음 · 나오기";
+  // 숨어 있는 동안의 안내도 다른 안내처럼 처음 몇 초만 — 늘 떠 있는 띠는 잠입 내내 답을 불러 주는 손잡이였다
+  // (폴른 스타 B1 막사 검수 2026-11-04: 「숨어 있음 · 나오기」 가 숨을 때마다 화면 아래에 계속 남았다).
+  const hiding = scene.session.horror?.hiding;
+  if (hiding) {
+    const label = hiding.witnessedBy.length ? "발각 위험 · 나오기" : "숨어 있음 · 나오기";
+    return rememberPrompt(scene.session, `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:hiding:${label}`) ? label : null;
+  }
   const delta = facingDelta(scene.facing);
   const targetX = scene.tileX + delta.x;
   const targetY = scene.tileY + delta.y;

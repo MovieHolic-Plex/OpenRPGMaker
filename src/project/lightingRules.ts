@@ -13,6 +13,11 @@ export type LightTilePosition = {
   readonly y: number;
   /** 부채꼴 빛(source.cone)의 방향 — 이벤트 앵커면 그 이벤트가 지금 보는 쪽. */
   readonly facing?: "up" | "down" | "left" | "right";
+  /**
+   * 0~1 — 빛을 든 몸이 얼마나 보이는가(이벤트 그림의 불투명도). 광원 세기에 곱한다. 생략 = 1.
+   * 몸이 흐려지며 물러나면 들고 있던 등불도 같이 흐려진다(빛만 남아 떠 있던 「유령 등불」, 폴른 스타 2막 숲 어귀 2026-11-01).
+   */
+  readonly fade?: number;
 };
 
 export type LightAnchorResolver = (
@@ -123,6 +128,7 @@ export function normalizeLightSource(value: LightSource): LightSource {
     ...(value.cone && Number.isFinite(value.cone.degrees)
       ? { cone: { degrees: clamp(20, 180, value.cone.degrees), ...(value.cone.facing && ["up", "down", "left", "right"].includes(value.cone.facing) ? { facing: value.cone.facing } : {}) } }
       : {}),
+    ...(value.edge === "hard" ? { edge: "hard" as const } : {}),
   };
 }
 
@@ -168,7 +174,7 @@ export function lightAtTile(
   for (const source of state.sources) {
     const position = resolveAnchor(source.at, source);
     if (!position) continue;
-    const intensity = lightSourceIntensity(source, timeMs);
+    const intensity = lightSourceIntensity(source, timeMs) * (position.fade ?? 1);
     if (intensity <= 0) continue;
     const dx = position.x - x;
     const dy = position.y - y;
@@ -236,14 +242,30 @@ function clamp(min: number, max: number, value: number): number {
  */
 export const LIGHT_FALLOFF: readonly (readonly [number, number])[] = [[0, 1], [0.25, 0.8], [0.5, 0.45], [0.75, 0.15], [1, 0]];
 
+/**
+ * 가장자리가 읽히는 빛(LightSource.edge hard) — 시야 등불은 「원 안 = 보인다」가 규칙이라 원의 테두리가 화면에서 읽혀야 한다.
+ * 안쪽은 등불처럼 들고 있는 사람 곁이 밝고 바깥으로 빨리 사위며(가운데 1 → 반지름 0.45 에서 0.42), 끝 7% 의 짧은 띠에서 0.2 → 0 으로 끊긴다.
+ * 예전 곡선(0.8 까지 0.62, 0.96 까지 0.56 을 버팀)은 안이 고른 반투명 노란 원판이라 등불 빛이 아니라 화면 표시 원으로 읽혔고,
+ * 두 빛이 겹치면 겹친 자리가 한 단 더 밝은 판이 됐다(폴른 스타 2막 숲 어귀, 감독 검수 2026-11-04).
+ * 그다음 곡선(가운데 0.9 → 끝 0.22)도 화면에서는 안쪽 밝기 차(휘도 98→75)가 테두리 계단(75→56)과 비슷해 여전히 판으로 읽혔다.
+ * 그래서 가운데를 1 로 올리고 반지름 절반 안에서 0.42 까지 빨리 떨군다 — 안쪽 차가 테두리 계단의 서너 배가 되어야 등불로 읽힌다.
+ */
+export const LIGHT_FALLOFF_HARD: readonly (readonly [number, number])[] = [[0, 1], [0.2, 0.72], [0.45, 0.42], [0.75, 0.26], [0.93, 0.2], [1, 0]];
+
+/** 그 광원의 빛 곡선. */
+export function lightFalloffCurve(edge: LightSource["edge"]): readonly (readonly [number, number])[] {
+  return edge === "hard" ? LIGHT_FALLOFF_HARD : LIGHT_FALLOFF;
+}
+
 /** 빛 곡선을 t(0~1, 반지름 비율)에서 잇는다. */
-export function lightFalloffAt(t: number): number {
+export function lightFalloffAt(t: number, edge?: LightSource["edge"]): number {
   if (!(t > 0)) return 1;
   if (t >= 1) return 0;
-  for (let i = 1; i < LIGHT_FALLOFF.length; i += 1) {
-    const [t1, k1] = LIGHT_FALLOFF[i]!;
+  const curve = lightFalloffCurve(edge);
+  for (let i = 1; i < curve.length; i += 1) {
+    const [t1, k1] = curve[i]!;
     if (t <= t1) {
-      const [t0, k0] = LIGHT_FALLOFF[i - 1]!;
+      const [t0, k0] = curve[i - 1]!;
       return k0 + ((k1 - k0) * (t - t0)) / (t1 - t0);
     }
   }

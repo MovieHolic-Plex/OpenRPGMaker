@@ -471,7 +471,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
     const Q1 = "sw_fs_q_bread_done";
     const nine_a: Command[] = [
       say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
-      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
+      say(FS_NAMES.hero, "작아 보이는 건 멀어서야."),
       say("이리스", "저렇게 많이 반짝이는데…\n소리는 하나도 안 들려요."),
     ];
     const nine_b: Command[] = [
@@ -488,7 +488,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
       wait(500),
       narrate("(카엘이 일지에 한 줄을 적는다.)"),
       narrate("「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」"),
-      say("이리스", "…이게 「기록」이에요?\n이 줄도 언젠가는 지워지겠죠?"),
+      say("이리스", "이게 「기록」이에요?\n이 줄도 언젠가는 지워지겠죠?"),
       say("엘레나", "지워지면 우리가 다시 써 줄게. 몇 번이고."),
       say("이리스", "몇 번이고. …그 말도 적어 둘게요.\n엘레나가 한 말이라고."),
       wait(600),
@@ -1688,7 +1688,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       stageLabels.push(label);
       list.splice(at, 0, { kind: "label", name: label } as Command);
       ask.cancelBehavior = "branch";
-      ask.cancelBranch = [narrate("관에서 한 걸음 물러선다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
+      ask.cancelBranch = [narrate("알에서 한 걸음 물러선다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
       for (const option of ask.options) {
         if (isWrong(option.branch)) option.branch.push({ kind: "gotoLabel", name: label } as Command);
         else wire(option.branch);
@@ -1871,7 +1871,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         );
       } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
         // VQA 2026-10-31: 엘레나가 석판 답을 그대로 읊어 추론이 사라졌다 — 석판으로 돌려보내기만 한다.
-        list.splice(i + 1, 0, say("엘레나", "…석판을 다시 읽어 보자."));
+        list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자."));
       } else if (rec.body === "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!") {
         // 바로 뒤 줄이 「쇠창살이 끌려 올라간다」라 창살이 녹았다는 말과 어긋났다(VQA 2026-10-31).
         rec.body = "네 화로가 하나의 불길로 이어진다.";
