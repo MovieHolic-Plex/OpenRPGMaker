@@ -558,6 +558,18 @@ export function renderAiSettingsForm(options: {
   imagePlanSelect.value = config.imagePlanBuild === false ? "off" : "on";
   imagePlanSelect.addEventListener("change", () => persist(false));
   const imagePlanRow = settingsRow("그림 도안 먼저", "「마을 만들어 줘」처럼 넓혀 짓는 새 장소는 짓기 전에 그림 모델(ChatGPT)로 도안을 한 장 그려 조수에게 보여 줍니다(약 1분). 그림 계정이 없거나 실패하면 채팅에 알리고 도안 없이 짓습니다.", imagePlanSelect);
+  const imagePlanCountSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-image-plan-count" },
+    children: [
+      el("option", { attrs: { value: "1" }, text: "1장" }),
+      el("option", { attrs: { value: "2" }, text: "2장 중 선택" }),
+      el("option", { attrs: { value: "3" }, text: "3장 중 선택" }),
+    ],
+  }) as HTMLSelectElement;
+  imagePlanCountSelect.value = String(config.imagePlanCandidates ?? 1);
+  imagePlanCountSelect.addEventListener("change", () => persist(false));
+  const imagePlanCountRow = settingsRow("도안 장 수", "여러 장을 동시에 그려 비전 판정자가 고릅니다. 측정에서는 1장보다 나아지지 않았고 시간만 늘어 기본은 1장입니다.", imagePlanCountSelect);
   const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
@@ -688,6 +700,7 @@ export function renderAiSettingsForm(options: {
     piApply: normalizePiApplyMode(piApplySelect.value),
     ...(dialoguePolishSelect.value === "off" ? { dialoguePolishAfterBuild: false } : {}),
     ...(imagePlanSelect.value === "off" ? { imagePlanBuild: false } : {}),
+    ...(imagePlanCountSelect.value === "2" || imagePlanCountSelect.value === "3" ? { imagePlanCandidates: Number(imagePlanCountSelect.value) } : {}),
     ...roleMatrixSlots(),
   });
   // 역할 배정 표(잔일·검토자) — 표가 아직 없으면(첫 collect) 저장값을 그대로 둔다.
@@ -1274,7 +1287,7 @@ export function renderAiSettingsForm(options: {
         settingsSection("behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다.",
           // The autonomy dial stays first: it is the only way to reach the read-only (ask)
           // rail now that the composer has no mode chips, so it must not be pushed down.
-          [autonomyRow, piApplyRow, dialoguePolishRow, imagePlanRow, maxTokens.row, behaviorAdvanced]),
+          [autonomyRow, piApplyRow, dialoguePolishRow, imagePlanRow, imagePlanCountRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
         settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
