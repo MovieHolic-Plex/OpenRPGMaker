@@ -286,7 +286,7 @@ try {
       if (line && line !== msgs.at(-1)) {
         msgs.push(line);
         if (/비늘이 갈라졌다|관통상에 걸렸다/.test(line) && !cracked) { cracked = Date.now(); plan.카엘 = "attack"; shot(page, "dragon-crack", 200); }
-        if (cracked && /엘레나가 파이어볼/.test(line)) { castsAfter += 1; shot(page, `dragon-magic-${castsAfter}`, 700); }
+        if (cracked && /엘레나가 불덩이/.test(line)) { castsAfter += 1; shot(page, `dragon-magic-${castsAfter}`, 700); }
       }
       if (cracked && castsAfter >= 2) { await page.waitForTimeout(3500); break; }
       const step = await battleStep(page, plan);

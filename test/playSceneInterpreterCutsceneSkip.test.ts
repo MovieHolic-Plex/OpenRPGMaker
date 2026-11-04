@@ -99,8 +99,9 @@ async function expectDoubleEscapeSkips(fixture: Fixture, commands: readonly Comm
   pressEscape();
   await running;
 
-  // Then: execution jumps past the blocked content to the cutscene end label.
-  expect(fixture.scene.session.switches[SKIPPED_SWITCH]).toBe(false);
+  // Then: execution fast-forwards to the cutscene end label — the blocked wait ends, and the state the
+  // skipped content sets (here a switch; in Fallen Star items and party members) is still applied.
+  expect(fixture.scene.session.switches[SKIPPED_SWITCH]).toBe(true);
   expect(fixture.scene.session.switches[FINISHED_SWITCH]).toBe(true);
 }
 
@@ -206,6 +207,69 @@ describe("skippable cutscene blocking waits", () => {
     });
 
     await expectDoubleEscapeSkips(fixture, commands);
+  });
+
+  it("keeps item and party changes and clears the letterbox the skipped scene would have cleared", async () => {
+    // Given: a skippable scene that opens a letterbox, waits on a camera move, then gives an item,
+    // adds a party member and clears the letterbox — all before the end label.
+    const fixture = createFixture();
+    store.replaceProject(fixture.project);
+    const itemId = fixture.project.database.items[0]?.id ?? "item_potion";
+    const actorId = fixture.project.database.actors.find((actor) => !fixture.scene.session.partyActorIds.includes(actor.id))?.id;
+    const before = fixture.scene.session.inventory[itemId] ?? 0;
+    const screenEffect = (effect: string, value: string): Command => ({
+      kind: "m2Command", commandId: "m2-202-screen-effect", fields: { effect, value, durationMs: 400 },
+    });
+    const running = runCommands(fixture.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      screenEffect("letterbox", "12"),
+      { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "panTo", target: "screen", x: 3, y: 4, durationMs: 300, wait: true } },
+      { kind: "changeItem", itemId, op: "+=", amount: 2 },
+      ...(actorId ? [{ kind: "changeParty", actorId, action: "add" } as Command] : []),
+      screenEffect("clearLetterbox", ""),
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+
+    // When: the player double-presses Escape during the camera wait.
+    await Promise.resolve();
+    pressEscape();
+    pressEscape();
+    await running;
+
+    // Then: the gift and the new member are kept, and no letterbox stays on screen.
+    expect(fixture.scene.session.inventory[itemId]).toBe(before + 2);
+    if (actorId) expect(fixture.scene.session.partyActorIds).toContain(actorId);
+    expect(fixture.scene.session.m2Runtime?.screen.letterbox).toBeUndefined();
+  });
+
+  it("stops fast-forwarding at a choice so the player still decides the branch", async () => {
+    // Given: a skippable scene with a choice after the blocking camera wait.
+    const fixture = createFixture();
+    const dialogue = fixture.scene.game.registry.get("dialogue") as { showChoices: ReturnType<typeof vi.fn> };
+    dialogue.showChoices.mockResolvedValue(1);
+    store.replaceProject(fixture.project);
+    const running = runCommands(fixture.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "panTo", target: "screen", x: 3, y: 4, durationMs: 300, wait: true } },
+      { kind: "choices", prompt: "?", options: [
+        { text: "a", branch: [{ kind: "setSwitch", switchId: "sw_a", value: true }] },
+        { text: "b", branch: [{ kind: "setSwitch", switchId: "sw_b", value: true }] },
+      ] } as unknown as Command,
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+
+    // When: the player skips during the camera wait.
+    await Promise.resolve();
+    pressEscape();
+    pressEscape();
+    await running;
+
+    // Then: the choice was still shown and the player's pick decided the branch.
+    expect(dialogue.showChoices).toHaveBeenCalledOnce();
+    expect(fixture.scene.session.switches.sw_b).toBe(true);
+    expect(fixture.scene.session.switches.sw_a).toBeUndefined();
   });
 });
 

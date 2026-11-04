@@ -1035,7 +1035,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
   ]);
 
   // 막다른 길의 보상.
-  chest(map, "b3_chest_sw", B3.chestSW, [["item_elixir", 1, "엘릭서"], ["item_phoenix_down", 1, "불사조 깃"]]);
+  chest(map, "b3_chest_sw", B3.chestSW, [["item_elixir", 1, "영약"], ["item_phoenix_down", 1, "불사조 깃"]]);
   chest(map, "b3_chest_ne", B3.chestNE, [["item_ether", 2, "마력약"], ["item_hi_potion", 2, "상급 회복약"]]);
 
   // 광신도 넷 — 지하 2층 견본(추격·도망·쓰러진 자리 페이지)을 그대로 복제.

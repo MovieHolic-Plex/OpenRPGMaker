@@ -353,3 +353,21 @@ function clampInteger(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, Math.trunc(value)));
 }
+
+/**
+ * 그 레벨의 누적 EXP 바닥. 레벨을 정하는 모든 곳(시작·레벨 변경·합류·QA 체크포인트·저장 불러오기)이
+ * EXP 를 여기로 올린다 — RPG 만들기(MV initExp/changeLevel, EasyRPG ChangeLevel)와 같다.
+ * 안 그러면 Lv14 로 시작한 동료의 EXP 가 0 으로 남아 「다음」이 누적 전체로 보였다(fs2 I02).
+ */
+export function actorExperienceFloor(project: { readonly database: { readonly actors: readonly ActorRecord[] } }, actorId: string, level: number): number {
+  const record = project.database.actors.find((actor) => actor.id === actorId);
+  return record ? totalExpForLevel(normalizeActorRecord(record).expCurve, level) : 0;
+}
+
+/** 저장된 EXP 를 현재 레벨 바닥 이상으로 올린다(내리지 않는다). */
+export function floorActorExperience(project: { readonly database: { readonly actors: readonly ActorRecord[] } }, session: { actorExperience?: Record<string, number>; actorLevels?: Record<string, number> }, actorId: string): void {
+  const level = session.actorLevels?.[actorId];
+  if (level === undefined) return;
+  session.actorExperience ??= {};
+  session.actorExperience[actorId] = Math.max(session.actorExperience[actorId] ?? 0, actorExperienceFloor(project, actorId, level));
+}

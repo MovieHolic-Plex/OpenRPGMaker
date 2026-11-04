@@ -118,6 +118,7 @@ import {
 import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { PLAY_SURFACE_SCALE_MODES, normalizePlaySurfaceScale, resolvePlaySurfaceScaleMode, type PlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import { SMALL_MAP_FILL_DEFAULT, resolveSmallMapFill } from "@/project/smallMapFill";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
 
@@ -996,9 +997,18 @@ function surfaceScaleField(project: Project): HTMLElement {
       else delete draft.system.playSurfaceScale;
     }, "system:surface-scale");
   });
+  const fill = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-field-system-small-map-fill" } }) as HTMLInputElement;
+  fill.checked = resolveSmallMapFill(project);
+  fill.addEventListener("change", () => {
+    updateSystem((draft) => {
+      if (fill.checked === SMALL_MAP_FILL_DEFAULT) delete draft.system.smallMapFill;
+      else draft.system.smallMapFill = fill.checked;
+    }, "system:small-map-fill");
+  });
   return rm2k3Fieldset("화면 맞춤", [
     el("p", { class: "db-system-resolution-help", text: "게임 화면을 창 크기에 맞춰 키우는 방식입니다. 480 × 270 은 FHD 에서 4배, 4K 에서 8배로 꽉 차고 QHD 에서만 얇은 여백이 남습니다. 다음 플레이부터 적용됩니다." }),
     field("맞춤", select),
+    field("작은 방 화면 채우기", fill),
   ]);
 }
 

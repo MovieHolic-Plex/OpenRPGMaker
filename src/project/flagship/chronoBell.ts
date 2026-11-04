@@ -29,6 +29,7 @@ import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { withFrozenTowns } from "./fallen/frozenTowns";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { applyFallenDisplayNames } from "./fallen/displayNames";
 import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
 import { applyFallenBattleDepth, applyFallenGrowthCurves } from "./fallen/battleDepth";
 import { swOn, fadeOut } from "./firstLoveKit";
@@ -1745,7 +1746,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
-      narrate("「바람결 검」과 「철심 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
+      narrate("「바람결 검」과 「푸른 불꽃 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
@@ -2526,6 +2527,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStoryIndex(project);
   // pixelfx 코드 픽셀 효과 — 기술·필드·이야기 한 번 효과를 id 로 찾아 덧붙인다(fallen/pixelfx.ts). 맨 끝.
   applyFallenPixelFx(project);
+  // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
+  applyFallenDisplayNames(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {

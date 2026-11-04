@@ -4,6 +4,7 @@ import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { CAMERA_ZOOM_LIMITS, pixelZoomWarning, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { SMALL_MAP_FILL_DEFAULT } from "@/project/smallMapFill";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -196,6 +197,10 @@ const setProjectSettings: ToolDefinition = {
         type: "string",
         enum: ["none", "scanlines", "crt"],
         description: "화면 표시 필터 — 맵·전투·대화를 덮는 옛 TV 느낌. scanlines 가로줄만, crt 가로줄+색 결+가장자리 어둡게. 레트로 감성 게임에만 켠다(생략 = 그대로).",
+      },
+      smallMapFill: {
+        type: "boolean",
+        description: "화면보다 작은 방을 정수 배율로 키워 화면을 채울지(생략 = 끔: 작은 방은 원래 크기로 가운데, 남는 곳은 여백). 방탈출처럼 작은 방의 단서를 크게 보여야 할 때만 true.",
       },
       cameraZoom: {
         type: "number",
@@ -563,6 +568,11 @@ const setProjectSettings: ToolDefinition = {
       if (next) draft.system.displayFilter = next;
       else delete draft.system.displayFilter;
       changed.push(`화면 필터=${DISPLAY_FILTER_LABELS[args.displayFilter]}`);
+    }
+    if (typeof args.smallMapFill === "boolean") {
+      if (args.smallMapFill === SMALL_MAP_FILL_DEFAULT) delete draft.system.smallMapFill;
+      else draft.system.smallMapFill = args.smallMapFill;
+      changed.push(`작은 방 화면 채우기=${args.smallMapFill ? "켬" : "끔"}`);
     }
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);

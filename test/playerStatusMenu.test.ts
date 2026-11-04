@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject, DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
 import { startSession } from "@/project/session";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
+import { createPlayerStatusMenuSnapshot } from "@/player/playerStatusMenuModel";
 import { useItemFromMenu, type MenuItemUseResult } from "@/player/playerItemUse";
 import { createSaveSnapshot, type SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
@@ -104,6 +106,20 @@ describe("player status menu", () => {
     } finally {
       restoreDom();
     }
+  });
+
+  it("counts next-level EXP from the current level floor when stored EXP is still 0", () => {
+    // fs2 I02: Lv14 체크포인트(누적 EXP 0)가 「다음 7306」을 보이다 첫 승리 뒤 725 로 떨어졌다.
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0]!;
+    const actor = normalizeActorRecord(project.database.actors.find((entry) => entry.id === actorId)!);
+    session.actorLevels[actorId] = 14;
+    session.actorExperience[actorId] = 0;
+    const base = totalExpForLevel(actor.expCurve, 14);
+    const next = totalExpForLevel(actor.expCurve, 15);
+    const row = createPlayerStatusMenuSnapshot(project, session).partyRows[0]!;
+    expect(row.nextLevel).toEqual({ remaining: next - base, ratio: 0 });
   });
 
   it("shows empty save slots as empty and keeps the selected cursor", () => {

@@ -811,6 +811,22 @@
     "at least three weapon families differ on a normal-attack field (criticalRate, stateInflictIds/stateInflictionChance or attackElementIds) and each changed weapon description states that one trait without naming an enemy",
     "no item, skill or equipment description names an enemy together with 약점/잘 듣/먹힌; system.battleStaging.revealWeakness is never or afterDiscovery"
    ]
+  },
+  {
+   "id": "campfire-fits-base-revive-in-battle",
+   "label": "모닥불은 받침 안에, 부활약은 전투에서도",
+   "port": 19543,
+   "lessons": [
+    "pixelfx-fits-object-base",
+    "battle-revive-item"
+   ],
+   "prompt": "광장 모닥불 불꽃이 받침보다 커서 옆 마을사람 칸까지 번져 보여. 불꽃을 2칸 받침 안에 맞춰 줄이고, 투명한 막는 칸은 깔지 마. 그리고 피닉스 깃털을 전투 중에도 쓰러진 동료에게 쓸 수 있게 해 줘.",
+   "requirements": [
+    "the campfire event's pixelFx keeps its effectId and gets scale below 1 (about 0.75) with offsetX re-centred on the 2-wide base; no new passability-blocking tiles or invisible events are added around it",
+    "the tile of the nearby villager event stays walkable-adjacent and unchanged",
+    "the revive item (onlyEffectiveOnDeadActors) has occasion battle or always and onlyUsableInMenu false",
+    "in the shipped player, the item menu in battle lists the revive item and its target list contains only downed allies"
+   ]
   }
  ]
 }
