@@ -513,7 +513,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
   // 흉상 자리는 장면 내내 고정(서하 왼쪽, 상대 오른쪽, VQA r16) — 민호도 서하 오른쪽(팀장 옆)에 선다.
   // 민호는 탕비실(왼쪽)에서 와 서하 왼쪽에 선다 — 팀장 오른쪽에 세우면 팀장을 사이에 두고 서하에게 말했다(VQA r18).
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y }, [...taken, leadMeetStop, jihuMeetStop]);
+  // r7 블라인드 4차(M1): 서하 왼쪽 «옆 줄»이 아니라 한 줄 앞의 왼쪽 바깥(15,5)에 세운다 — 핵심 둘(서하·지후)만 한 줄에서 마주 서고 둘레가 안쪽을 본다(∩).
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y + 1 }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -656,15 +657,15 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
-    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, dirToward(leadMeetStop, heroMeet)),
-    face("ev_fl_lead", dirToward(leadMeetStop, heroMeet)),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, "left"),
+    face("ev_fl_lead", "left"), // 대각선(18,5)→(16,4)는 dirToward 가 빈 칸을 보게 해서 안쪽(왼쪽)으로 명시한다
     face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...sayAt("lead", "right", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
     // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
-    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, dirToward(minhoMeetStop, heroMeet)),
-    face("ev_fl_minho", dirToward(minhoMeetStop, heroMeet)),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, "right"),
+    face("ev_fl_minho", "right"), // 대각선(15,5)→(16,4)도 안쪽(오른쪽)으로 명시
     face("@player", dirToward(heroMeet, minhoMeetStop)),
     ...sayAt("minho", "right", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
