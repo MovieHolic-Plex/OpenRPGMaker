@@ -4,7 +4,6 @@ import { entriesNeedingCover, formatRelativeTime, partitionRecentEntries } from 
 import { displayTitles } from "@/start/home/homeView";
 import { conceptStageArt } from "@/start/conceptFeed/stageArt";
 import { isMostlyEmptyMap } from "@/editor/mapCoverRender";
-import { PLAYED_KEY, readPlayedLog, recordPlayed, worldsByLastPlayed } from "@/start/playFeed/playFeed";
 import { startScreenPrompt } from "@/editor/startScreenHandoff";
 import { projectCoverSchema } from "../electron/shared/schemas";
 import { interviewBrief } from "./helpers/gameDesignBrief";
@@ -148,28 +147,7 @@ describe("라이브러리 홈", () => {
   });
 });
 
-describe("플레이 기록", () => {
-  it("플레이 기록은 최근에 플레이한 순서로, 플레이한 적 없는 월드는 빼고 고른다", () => {
-    const storage = memoryStorage();
-    recordPlayed(storage, "/games/a", Date.parse("2026-10-17T09:00:00Z"));
-    recordPlayed(storage, "/games/b", Date.parse("2026-10-17T10:00:00Z"));
-    const log = readPlayedLog(storage);
-    const order = worldsByLastPlayed([
-      { projectDir: "/games/a", title: "A" },
-      { projectDir: "/games/never", title: "안 함" },
-      { projectDir: "/games/b", title: "B" },
-    ], log);
-    expect(order.map((entry) => entry.title)).toEqual(["B", "A"]);
-  });
-
-  it("깨진 플레이 기록은 빈 기록으로 읽는다", () => {
-    const storage = memoryStorage();
-    storage.setItem(PLAYED_KEY, "not json");
-    expect(readPlayedLog(storage)).toEqual({});
-    storage.setItem(PLAYED_KEY, JSON.stringify({ "/a": "어제", "/b": "2026-10-17T10:00:00Z" }));
-    expect(readPlayedLog(storage)).toEqual({ "/b": "2026-10-17T10:00:00Z" });
-  });
-
+describe("편집기 플레이 부팅 표시", () => {
   it("플레이 표시는 편집기 부팅이 한 번 읽고 주소에서 지운다", () => {
     let replaced = "";
     const history = { state: null, replaceState: (_state: unknown, _title: string, url?: string | URL | null) => { replaced = String(url); } };

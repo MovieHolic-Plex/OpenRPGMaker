@@ -2,7 +2,7 @@
 // 데스크톱 첫 화면의 틀(2026-10-20 「라이브러리 홈」, 설계 http://mdc-server:18301/home-redesign-1.html A안):
 // 왼쪽 레일(홈 · 내 게임 · 기본 게임 · 새로 만들기 · 에셋 스토어, 바닥에 AI 상태 줄 · 설정 · 판 번호) + 위 막대 + 본문 한 칸.
 //
-// 2026-10-17 판의 「플레이」·「만들기」 두 갈래는 없앴다 — 내 게임 카드마다 「플레이」와 「편집」이 같이 있어서 갈래를 나눌 이유가 없다.
+// 2026-10-17 판의 「플레이」·「만들기」 두 갈래는 없앴다. 2026-11-04 부터는 카드의 「플레이」도 없다(Studio 는 만드는 앱, 플레이는 편집기 「테스트 실행」).
 // 레일의 홈·내 게임·기본 게임·새로 만들기는 본문 칸을 바꾼다(2026-10-21). 예전에는 한 긴 본문 안의 선반으로 스크롤했는데,
 // 스크롤 위치가 레일 표시를 다시 정해 누른 단추와 표시가 어긋나고, 앞 칸의 검색·상세가 남았다. 지금 칸의 주인은 startScreen.ts 하나다.
 import "./launcher.css";
@@ -34,7 +34,7 @@ export function topButton(label: string, testid: string, icon: StartIconName, on
 const NAV: readonly { readonly id: LauncherNav; readonly label: string; readonly icon: StartIconName }[] = [
   { id: "home", label: "홈", icon: "home" },
   { id: "games", label: "내 게임", icon: "games" },
-  { id: "builtin", label: "기본 게임", icon: "play" },
+  { id: "builtin", label: "예제", icon: "games" },
   { id: "create", label: "새로 만들기", icon: "plus" },
 ];
 

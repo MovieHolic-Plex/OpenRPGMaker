@@ -6,7 +6,7 @@
 //   홈 = 할 수 있는 것만 — 이어서 만들기 배너 · 최근 게임 몇 개 · 지금 만들 수 있는 게임(컨셉 8개) · 기본 게임(작은 카드).
 //   검색·분류·상세·골라서 만들기·빈 프로젝트는 「새로 만들기」, 전체 목록·숨김·게임 파일 열기는 「내 게임」 칸으로 옮겼다.
 // 지금 칸의 주인은 state.section 하나(go/mount/leave/refresh). 칸마다 #해시 기록이 남아 마우스 뒤로 단추가 앞 칸으로 간다.
-// 바닥에 AI 상태 줄과 「설정」(AI 엔진·모델, 언어)이 있다. 「플레이」는 그 폴더를 열고 편집기 문서를 플레이 모드로 부팅한다(START_PLAY_URL).
+// 바닥에 AI 상태 줄과 「설정」(AI 엔진·모델, 언어)이 있다. 2026-11-04: 「플레이」 입구는 없앴다 — 게임은 편집기에서 열고 「테스트 실행」으로 해 본다.
 //
 // 첫 화면은 가볍게 뜬다(agent/fast-start 와 같은 원칙): 게임 파일 읽기·카드 그림 굽기·설정 창은 누르거나 한가할 때만 받는다.
 // 카드 그림은 첫 그림이 뜬 뒤 한가할 때 한 장씩 굽고, 호스트가 프로젝트 해시로 디스크에 남긴다(electron/main/recent.ts).
@@ -20,7 +20,7 @@ import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, t } from "@/i18n";
-import { START_PLAY_URL, writeStartScreenIntent } from "./startIntent";
+import { writeStartScreenIntent } from "./startIntent";
 import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
 import { conceptProjectTitle, launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
@@ -33,9 +33,8 @@ import { createConceptSource } from "@/concepts/source";
 // 게임 파일 읽기·직렬화는 번들 타일셋(80MB)을 끌고 오므로 «게임 파일 열기» 를 누를 때만 받는다 — 첫 화면 번들에 넣지 않는다.
 import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
-import { recordPlayed } from "./playFeed/playFeed";
 import { startIcon } from "./icons";
-import { builtinGameEditUrl, builtinGamePlayUrl } from "./home/builtinGames";
+import { builtinGameEditUrl } from "./home/builtinGames";
 import { aiNotice, builtinHomeShelf, builtinShelf, conceptShelf, continueHero, displayTitles, fillCover, firstRunHero, firstRunShelf, myGamesShelf, recentShelf, type HomeActions } from "./home/homeView";
 import type { GameConcept } from "@/concepts/format";
 import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
@@ -108,31 +107,31 @@ export function partitionRecentEntries(entries: readonly RecentProjectEntry[]): 
   };
 }
 
-type ActivityKind = "edited" | "opened" | "played";
+type ActivityKind = "edited" | "opened";
 
 /**
- * 「2시간 전 편집」「어제 플레이」를 한 문장으로 만든다. 「{0} 편집」 조각은 카탈로그에서 Edit {0} 라
+ * 「2시간 전 편집」「어제 열어 봄」을 한 문장으로 만든다. 「{0} 편집」 조각은 카탈로그에서 Edit {0} 라
  * 이어 붙이면 번역이 틀리므로, 경우마다 통째로 적어 번역 카탈로그가 문장 단위로 찾게 한다.
  */
 function activityLabel(iso: string | null | undefined, kind: ActivityKind, now = Date.now()): string {
   if (!iso) return "";
   const at = Date.parse(iso);
   if (!Number.isFinite(at)) return "";
-  const pick = (edited: string, opened: string, played: string): string => kind === "edited" ? edited : kind === "opened" ? opened : played;
+  const pick = (edited: string, opened: string): string => kind === "edited" ? edited : opened;
   const minutes = Math.floor((now - at) / 60_000);
-  if (minutes < 1) return pick("방금 편집", "방금 열어 봄", "방금 플레이");
-  if (minutes < 60) return pick(`${minutes}분 전 편집`, `${minutes}분 전 열어 봄`, `${minutes}분 전 플레이`);
+  if (minutes < 1) return pick("방금 편집", "방금 열어 봄");
+  if (minutes < 60) return pick(`${minutes}분 전 편집`, `${minutes}분 전 열어 봄`);
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return pick(`${hours}시간 전 편집`, `${hours}시간 전 열어 봄`, `${hours}시간 전 플레이`);
+  if (hours < 24) return pick(`${hours}시간 전 편집`, `${hours}시간 전 열어 봄`);
   const days = Math.floor(hours / 24);
-  if (days === 1) return pick("어제 편집", "어제 열어 봄", "어제 플레이");
-  if (days < 7) return pick(`${days}일 전 편집`, `${days}일 전 열어 봄`, `${days}일 전 플레이`);
+  if (days === 1) return pick("어제 편집", "어제 열어 봄");
+  if (days < 7) return pick(`${days}일 전 편집`, `${days}일 전 열어 봄`);
   const date = new Date(at);
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  if (date.getFullYear() === new Date(now).getFullYear()) return pick(`${month}월 ${day}일 편집`, `${month}월 ${day}일 열어 봄`, `${month}월 ${day}일 플레이`);
+  if (date.getFullYear() === new Date(now).getFullYear()) return pick(`${month}월 ${day}일 편집`, `${month}월 ${day}일 열어 봄`);
   const year = date.getFullYear();
-  return pick(`${year}년 ${month}월 ${day}일 편집`, `${year}년 ${month}월 ${day}일 열어 봄`, `${year}년 ${month}월 ${day}일 플레이`);
+  return pick(`${year}년 ${month}월 ${day}일 편집`, `${year}년 ${month}월 ${day}일 열어 봄`);
 }
 
 /** 만들기 쪽 한 줄 — 편집 시각(없으면 마지막으로 연 시각)과 맵 수. */
@@ -163,10 +162,6 @@ function hiddenEntriesNote(temporary: number, missing: number, showing: boolean)
 /** 시작 화면이 그림을 다시 구울 항목 — 그림이 없거나(빈 맵 표식도 없다) 낡았고, 숨김(임시·사라진 폴더)이 아닌 것. */
 export function entriesNeedingCover(entries: readonly RecentProjectEntry[]): readonly RecentProjectEntry[] {
   return entries.filter((entry) => !entry.hiddenReason && (entry.coverStale === true || (!entry.cover && entry.coverEmpty !== true)));
-}
-
-function localStore(): Storage | null {
-  try { return window.localStorage; } catch { return null; }
 }
 
 /** 첫 화면을 다 그린 뒤 한가할 때. requestIdleCallback 이 없는 곳(사파리)은 시간만 기다린다. */
@@ -202,11 +197,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const goEditor = (): void => {
     window.location.href = "/index.html";
   };
-  /** 열어 둔 폴더를 플레이 모드로 부팅한다. */
-  const goPlay = (projectDir: string): void => {
-    recordPlayed(localStore(), projectDir);
-    window.location.href = START_PLAY_URL;
-  };
 
   const run = async (work: () => Promise<void>): Promise<void> => {
     if (state.busy) return;
@@ -240,8 +230,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   /**
-   * 받은 게임 파일(.oprn)을 플레이한다. 플레이는 폴더 단위라 기본 위치에 그 게임의 폴더를 하나 만들어 풀고 연다 —
-   * 그 뒤로는 「내 게임」에 남아 다시 플레이하거나 고쳐 볼 수 있다.
+   * 받은 게임 파일(.oprn)을 연다. 편집은 폴더 단위라 기본 위치에 그 게임의 폴더를 하나 만들어 풀고 편집기로 연다 —
+   * 그 뒤로는 「내 게임」에 남는다. 해 보려면 편집기 「테스트 실행」(2026-11-04 Studio/런타임 분리).
    */
   const openGameFile = (): void => {
     if (state.busy) return;
@@ -259,7 +249,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         const suggested = await bridge.suggestProjectDir?.({ title }).catch(() => null);
         const created = await bridge.createProject({ title, seed: serialize(read.project), ...(suggested?.projectDir ? { projectDir: suggested.projectDir } : {}) });
         if (!created) throw new Error("게임 파일을 풀 폴더를 만들지 못했습니다.");
-        goPlay(created.projectDir);
+        goEditor();
       });
     }, { once: true });
     input.click();
@@ -354,10 +344,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const listed = (): readonly RecentProjectEntry[] => state.showHidden ? state.entries : partitionRecentEntries(state.entries).visible;
   const actions: HomeActions = {
     edit: (entry) => void run(async () => { await openRecentFolder(entry); goEditor(); }),
-    play: (entry) => void run(async () => { await openRecentFolder(entry); goPlay(entry.projectDir); }),
     newGame: () => go("create"),
     openGameFile,
-    builtinPlay: (id) => { if (!state.busy) window.location.href = builtinGamePlayUrl(id); },
     builtinEdit: (id) => { if (!state.busy) window.location.href = builtinGameEditUrl(id); },
     openSettings: () => openSettings("ai"),
   };
