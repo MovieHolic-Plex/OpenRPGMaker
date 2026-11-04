@@ -5,6 +5,7 @@ import { effectiveActorClassId } from "@/project/sessionClass";
 import { transitionActorEquipment, type EquipmentTransitionResult } from "@/project/equipmentRules";
 import { recoverMonsterInstance } from "@/project/monsterCollection";
 import { getCharacterAppearance } from "./characterAppearances";
+import { floorActorExperience } from "@/project/actorModel";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;
@@ -94,13 +95,15 @@ export function changeActorExperience(session: PlaySessionLike, command: Extract
   }
 }
 
-export function changeActorLevel(session: PlaySessionLike, command: Extract<Command, { kind: "changeLevel" }>): void {
+export function changeActorLevel(session: PlaySessionLike, command: Extract<Command, { kind: "changeLevel" }>, project?: Pick<Project, "database">): void {
   session.actorLevels ??= {};
   session.actorLevels[command.actorId] = clamp(
     applyAmount(session.actorLevels[command.actorId] ?? 1, command.op, command.amount),
     1,
     99
   );
+  // 레벨을 올리면 EXP 도 그 레벨 바닥으로(내릴 때는 그대로) — RPG 만들기 ChangeLevel 과 같다.
+  if (project) floorActorExperience(project, session, command.actorId);
 }
 
 export function changeActorEquipment(

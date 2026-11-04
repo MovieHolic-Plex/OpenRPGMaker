@@ -2508,3 +2508,10 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - 헤드리스 `simulate_battle`(`battle/simulate.ts`)도 같은 규칙을 따르고, 결투 그룹이면 `outcomes {victory, defeat, escape, undecided}` 를 돌려준다.
 - 편집기: 적 그룹 탭의 접이식 「결투 규칙」(`databaseTroopRecordView.ts` `duelRulesField`, `updateTroopRecord` 가 `duel` 을 그대로 덮는다).
 - 조수: `upsert_troop.troop.duel {yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, `additionalProperties:false`), 지우기는 `clearFields:["duel"]`.
+
+## 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
+
+- 적 피해 대상(`battle/enemyTargetDraw.ts` `drawDamageTargetIndex`): 행동 고르기는 계획 점수 argmax 그대로이고, 고른 계획이 상대편 단일 피해(일반 공격·단일 damage 기술)일 때만 대상을 다시 뽑는다. 도발 필터 뒤 후보에서 막타 가능 후보가 있으면 그중 점수 최고(rng 없음), 없으면 점수² 비례로 뽑되 기대 피해가 있는 후보는 최소 15%. 후보 하나·gen1 은 rng 를 쓰지 않는다. `targetRate` 는 쓰지 않는다. 회복·부활·상태 대상은 argmax.
+- 전투 부활약: `itemAllowsBattle` 은 `onlyEffectiveOnDeadActors` 약도 occasion battle/always 면 허용한다. 런타임 `deadOnlyItemResolution` 이 대상 후보·자동 대상을 쓰러진 아군으로 좁힌다(살아 있는 동료에게 쓰지 못한다).
+- 여관(`player/playSceneCommerce.ts`): 숙박은 파티의 상태를 전부 푼다(RM2003 FullHeal, 엔진 `recoverAll` 과 같다). 해제 문구의 「휴식」만 보던 옛 규칙은 없어졌다.
+- EXP 레벨 바닥(`project/actorModel.ts` `floorActorExperience`): 시작·changeLevel(필드·전투)·합류·QA 체크포인트·액션 전투 적립이 EXP 를 그 레벨 누적 바닥 이상으로 맞추고, 저장 불러오기가 한 번 맞춘다(내리지 않는다).
