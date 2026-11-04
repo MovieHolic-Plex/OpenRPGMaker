@@ -287,12 +287,40 @@ function beamExtent(lx: number, ly: number, width: number, height: number, sprea
   if (lx < left || lx > width - left) return -1;
   return Math.min(lx - left, width - left - lx);
 }
-function drawShaft(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, reduced: boolean, snapping = 0): void {
+/**
+ * 빛기둥 몸통은 (레이어, 세기 단계) 마다 한 번만 칸 단위로 그려 두고 프레임마다 통째로 붙인다.
+ * 예전에는 매 프레임 1×1 칸마다 fillRect 와 색 문자열을 새로 만들어(폴른 스타 타이틀 컷 한 프레임에 ~16,000회)
+ * 컷 하나가 초당 2~3프레임으로 떨어졌다(2026-11-05 실측).
+ */
+const SHAFT_INTENSITY_STEPS = 8;
+/**
+ * 레이어마다 남겨 두는 몸통 수(최근에 쓴 순). 몸통은 칸 해상도(1/cell 배율, 대개 120×70 안팎)라 한 장이 수십 KB 다.
+ * 맥동하는 기둥은 모든 단계를 돌므로 단계 수보다 작으면 매번 놓쳐 오히려 느려진다 — 단계 전부를 담는다.
+ * 단계는 1/8 로 거칠게 두고(디더 무늬), 그 사이 밝기는 붙일 때 globalAlpha 로 맞춘다 — 1/64 단계일 때는 맥동이 단계 30여 개를
+ * 처음 지날 때마다 몸통을 새로 그려 타이틀 컷이 초당 캔버스 30여 장을 만들었다(2026-11-05 폴른 스타 실측).
+ */
+const SHAFT_BODY_CACHE = SHAFT_INTENSITY_STEPS * 2 + 1; // 맥동은 세기 1 을 넘는다(1 + amount).
+const shaftBodies = new WeakMap<AnimaticLayer, Map<string, HTMLCanvasElement>>();
+function shaftBody(l: AnimaticLayer, intensity: number, cell: number, column: number, snapping: number): HTMLCanvasElement | null {
+  const level = Math.max(1, Math.ceil(intensity * SHAFT_INTENSITY_STEPS - 1e-6)), key = `${level}:${cell}:${column}:${snapping}`;
+  let bodies = shaftBodies.get(l);
+  if (!bodies) shaftBodies.set(l, (bodies = new Map()));
+  const hit = bodies.get(key);
+  if (hit) { bodies.delete(key); bodies.set(key, hit); return hit; }
+  const scale = 1 / cell, width = Math.max(1, Math.ceil(l.width * scale)), height = Math.max(1, Math.ceil(l.height * scale));
+  const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+  const body = canvas.getContext('2d'); if (!body) return null;
+  body.scale(scale, scale);
+  drawShaftCells(body, l, level / SHAFT_INTENSITY_STEPS, cell, column, snapping);
+  if (bodies.size >= SHAFT_BODY_CACHE) bodies.delete(bodies.keys().next().value as string);
+  bodies.set(key, canvas);
+  return canvas;
+}
+function drawShaftCells(ctx: CanvasRenderingContext2D, l: AnimaticLayer, intensity: number, cell: number, column: number, snapping: number): void {
   const shaft = l.shaft ?? {}, width = l.width, height = l.height, spread = shaft.spread ?? 0.6, softness = shaft.softness ?? 0.7;
-  const color = l.color ?? '#ffffff', intensity = animaticPulseValue(shaft.pulse, t, l.startMs ?? 0);
-  // One drawn cell is one grid pixel in pixelGrid mode, otherwise one stage pixel.
-  const cell = snapping > 0 ? 1 / snapping : 1;
-  const column = Math.max(cell, Math.round(width / 120 / cell) * cell);
+  const color = l.color ?? '#ffffff';
+  const fills = new Map<number, string>();
+  const fill = (alpha: number): string => { const k = Math.round(alpha * 1000); let s = fills.get(k); if (!s) fills.set(k, (s = withAlpha(color, alpha))); return s; };
   for (let lx = 0; lx < width; lx += column) {
     for (let ly = 0; ly < height; ly += cell) {
       const depth = beamExtent(lx + column / 2, ly + cell / 2, width, height, spread);
@@ -301,12 +329,28 @@ function drawShaft(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, r
       const edge = softness > 0 ? Math.min(1, depth / Math.max(0.5, softness * width * 0.18)) : 1;
       const alpha = intensity * vertical * edge * 0.85;
       if (alpha <= 0.02) continue;
-      // Solid core with a dithered feather at the silhouette, so the beam keeps a pixel-art edge.
       if (alpha < 0.62 && !dithered(alpha, lx / cell, ly / cell)) continue;
-      ctx.fillStyle = withAlpha(color, snapping > 0 ? (alpha >= 0.45 ? 0.94 : 0.72) : Math.min(1, alpha * 1.5));
+      ctx.fillStyle = fill(snapping > 0 ? (alpha >= 0.45 ? 0.94 : 0.72) : Math.min(1, alpha * 1.5));
       ctx.fillRect(lx, ly, column, cell);
     }
   }
+}
+function drawShaft(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, reduced: boolean, snapping = 0): void {
+  const shaft = l.shaft ?? {}, width = l.width, height = l.height, spread = shaft.spread ?? 0.6;
+  const color = l.color ?? '#ffffff', intensity = animaticPulseValue(shaft.pulse, t, l.startMs ?? 0);
+  // One drawn cell is one grid pixel in pixelGrid mode, otherwise one stage pixel.
+  const cell = snapping > 0 ? 1 / snapping : 1;
+  const column = Math.max(cell, Math.round(width / 120 / cell) * cell);
+  // 도트 격자(pixelGrid) 무대는 칸이 팔레트 양자화와 얽혀 예전 그림과 같아야 하므로 칸마다 그린다(격자는 칸 수가 1/4 이라 싼다).
+  const body = snapping > 0 || intensity <= 0 ? null : shaftBody(l, intensity, cell, column, snapping);
+  if (body) {
+    const smoothing = ctx.imageSmoothingEnabled, alpha = ctx.globalAlpha; ctx.imageSmoothingEnabled = false;
+    // 몸통은 위 단계(level/8 ≥ intensity)로 그려 두었으니 실제 세기만큼 흐리게 붙인다.
+    const level = Math.max(1, Math.ceil(intensity * SHAFT_INTENSITY_STEPS - 1e-6)) / SHAFT_INTENSITY_STEPS;
+    ctx.globalAlpha = alpha * Math.min(1, intensity / level);
+    ctx.drawImage(body, 0, 0, body.width * cell, body.height * cell);
+    ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = smoothing;
+  } else drawShaftCells(ctx, l, intensity, cell, column, snapping);
   if (!shaft.dust) return;
   const dust = shaft.dust, seconds = (reduced ? 0 : t - (l.startMs ?? 0)) / 1000;
   const size = Math.max(cell, Math.round((dust.size ?? 1) / cell) * cell);
