@@ -2050,6 +2050,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         longestRepair = Math.max(longestRepair, Date.now() - repairStarted);
       }
       if (featureChecklist.roundCount) { featureChecklist.finish(); emitFeatureChecklist(featureChecklist.latest()?.verdicts.every((v) => v.state === "pass") ?? false); }
+      // 고치기 두르기가 지은 게임을 되돌릴 수 있다 — 이어 짓기 신호를 한 번 더 본다(위 이어 짓기는 두르기 전에 돈다).
+      // 실측(2026-11-05 gpt-only-game 좀비 생존 4차): 확인표 고치기에서 author_dungeon{rebuild:true} 가 엔딩 출구 포함 이벤트 8개를 지웠다.
+      if (!options.v2 && !fatal && !rejected && turns < maxTurns && !options.signal?.aborted && wantsWholeGame(request.task)) {
+        const missing = unbuiltGameSigns(ctx.project, request.task);
+        if (missing.length) {
+          emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `고치기 뒤 게임이 다시 덜 지어졌다 — 이어 짓게 합니다: ${missing.join(" / ").slice(0, 300)}` });
+          await promptResuming(wholeGameRekickPrompt(missing));
+        }
+      }
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).

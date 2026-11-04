@@ -91,24 +91,37 @@ export function healingItemIds(project: Project): Set<string> {
  * 시작 파티의 회복 기술, 쓰러지면 회복해 깨어나는 게임 오버(blackout/recover). 비면 회복할 길이 없다.
  */
 export function healingSources(project: Project): string[] {
-  const out: string[] = [];
+  return healingSourceList(project).map((s) => s.label);
+}
+
+/**
+ * 되풀이되는 회복(여관·전원 회복·HP 올리기 명령·상점·드롭·회복 기술·회복 게임 오버) — 아이템을 한 번 주는 이벤트·시작 소지품은 빠진다.
+ * 무작위 조우는 끝이 없어 한 번 주는 회복약으로는 모자라다(2026-11-05 gpt-only-game 「마을부터」 4차: 상자 회복약 하나로 숲길을 오가다 게임 오버).
+ */
+export function repeatableHealingSources(project: Project): string[] {
+  return healingSourceList(project).filter((s) => s.repeatable).map((s) => s.label);
+}
+
+function healingSourceList(project: Project): { label: string; repeatable: boolean }[] {
+  const out: { label: string; repeatable: boolean }[] = [];
+  const add = (label: string, repeatable = true) => out.push({ label, repeatable });
   const items = healingItemIds(project);
   for (const r of allCommands(project)) {
     const c = r.cmd;
-    if (c.kind === "inn" || c.kind === "recoverAll") out.push(`${r.eventName}: ${String(c.kind)}`);
-    else if (c.kind === "changeActorHp" && c.op === "+=" && Number(c.amount) > 0) out.push(`${r.eventName}: HP 회복`);
-    else if (c.kind === "changeItem" && c.op !== "-=" && typeof c.itemId === "string" && items.has(c.itemId)) out.push(`${r.eventName}: ${c.itemId} 지급`);
+    if (c.kind === "inn" || c.kind === "recoverAll") add(`${r.eventName}: ${String(c.kind)}`);
+    else if (c.kind === "changeActorHp" && c.op === "+=" && Number(c.amount) > 0) add(`${r.eventName}: HP 회복`);
+    else if (c.kind === "changeItem" && c.op !== "-=" && typeof c.itemId === "string" && items.has(c.itemId)) add(`${r.eventName}: ${c.itemId} 지급`, false);
     else if (c.kind === "shop") {
       const ids = [...((c.itemIds as string[] | undefined) ?? []), ...(((c.stock as Obj[] | undefined) ?? []).map((s) => String(s.itemId)))];
       const sold = ids.find((id) => items.has(id));
-      if (sold) out.push(`${r.eventName}: 상점 ${sold}`);
+      if (sold) add(`${r.eventName}: 상점 ${sold}`);
     }
   }
-  for (const [id, n] of Object.entries(project.session.inventory ?? {})) if (n > 0 && items.has(id)) out.push(`시작 소지품 ${id}`);
+  for (const [id, n] of Object.entries(project.session.inventory ?? {})) if (n > 0 && items.has(id)) add(`시작 소지품 ${id}`, false);
   for (const e of project.database.enemies) {
     const r = e.rewards;
     const drops = r?.drops ?? (r?.dropItemId ? [{ itemId: r.dropItemId, ratePercent: r.dropRatePercent }] : []);
-    for (const d of drops) if (d.ratePercent > 0 && items.has(d.itemId)) out.push(`${e.name} 드롭 ${d.itemId}`);
+    for (const d of drops) if (d.ratePercent > 0 && items.has(d.itemId)) add(`${e.name} 드롭 ${d.itemId}`);
   }
   const heals = healingSkillIds(project);
   for (const id of project.system.startActorIds ?? []) {
@@ -117,11 +130,11 @@ export function healingSources(project: Project): string[] {
     const actor = normalizeActorRecord(raw);
     const known = [...actor.learnedSkills.filter((l) => l.tp === undefined && l.level <= actor.initialLevel).map((l) => l.skillId), ...classLearnedSkillIdsUpToLevel(project, actor.classId, actor.initialLevel)];
     const skill = known.find((s) => heals.has(s));
-    if (skill) out.push(`${actor.name} 회복 기술 ${skill}`);
+    if (skill) add(`${actor.name} 회복 기술 ${skill}`);
   }
   const system = project.system as unknown as Obj;
   const overs = [obj(system.gameOver), ...(((system.gameOvers as Obj[] | undefined) ?? []).map((g) => obj(g.settings)))].filter((g): g is Obj => !!g);
-  if (overs.some((g) => g.outcome === "recover" || (g.outcome === undefined && g.presentation === "blackout"))) out.push("게임 오버 = 회복해 깨어남");
+  if (overs.some((g) => g.outcome === "recover" || (g.outcome === undefined && g.presentation === "blackout"))) add("게임 오버 = 회복해 깨어남");
   return out;
 }
 

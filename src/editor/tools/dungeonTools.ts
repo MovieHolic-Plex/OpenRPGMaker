@@ -41,6 +41,14 @@ const ROOM_LABEL: Record<string, string> = {
 };
 const TYPE_LIST = DUNGEON_TYPES.map((t) => `${t} ${GRAMMAR[t].label}`).join(" · ");
 
+/** 이 이벤트가 게임을 끝내는가 — 엔딩 명령(triggerEnding·ending)을 직접 또는 부르는 공통 이벤트 안에서. */
+function endsGame(draft: Project, ev: GameEvent): boolean {
+  const text = JSON.stringify(ev);
+  if (/"kind":"(?:triggerEnding|ending)"/u.test(text)) return true;
+  const called = [...text.matchAll(/"commonEventId":"([^"]+)"/gu)].map((m) => m[1]);
+  return (draft.commonEvents ?? []).some((ce) => called.includes(ce.id) && /"kind":"(?:triggerEnding|ending)"/u.test(JSON.stringify(ce)));
+}
+
 function isBlankMap(map: GameMap): boolean {
   if (map.events.length > 0 || (map.structurePlacements?.length ?? 0) > 0) return false;
   const first = map.lowerTiles[0];
@@ -108,6 +116,11 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     // 다시 짓기: 이 도구가 지은 던전 맵(mapRole dungeon)만 rebuild:true 로 그 자리에서 다시 짓는다 — 거절되자 조수가 새 맵을 또 만들어
     // 같은 이름 던전 두 장이 남았다(2026-10-23 dg-r2 puzzle). 이벤트·스택을 비우고 아래에서 타일을 통째로 덮는다.
     if (!isBlankMap(existing) && args.rebuild === true && existing.mapRole === "dungeon") {
+      // 엔딩을 부르는 이벤트(출구·마지막 사건)가 있으면 다시 짓지 않는다 — 이벤트를 비우면 게임을 끝낼 길이 사라진다.
+      // 실측(2026-11-05 gpt-only-game, Terra 혼자 좀비 생존 4차): 엔딩·열쇠 상자·보스까지 잇고 장면 시험 11/11 을 통과한 뒤,
+      // 1배 확인표 고치기에서 rebuild:true 로 다시 지어 이벤트 8개가 사라졌고(revert_last_edit 도 빈 기록), 끝낼 수 없는 게임으로 남았다.
+      const ending = existing.events.find((ev) => endsGame(draft, ev));
+      if (ending) throw new ToolError(`던전 맵 ${mapId} 의 이벤트 「${ending.name ?? ending.id}」(${ending.x},${ending.y})가 엔딩을 부른다 — 다시 짓기는 맵의 이벤트 ${existing.events.length}개를 모두 지워 게임을 끝낼 길이 사라진다. 다시 짓지 말고 장식·길을 타일 도구로 고치거나, 정말 다시 지어야 하면 그 이벤트들을 새 맵에 다시 놓는다(다른 mapId).`, { code: "rebuild-would-erase-ending", mapId });
       existing.events = [];
       delete existing.lowerTileStacks; delete existing.upperTileStacks;
       notes.push(`던전 맵 ${mapId} 을 그 자리에서 다시 지었다(rebuild).`);

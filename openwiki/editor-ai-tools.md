@@ -851,6 +851,10 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   속성별 트랙으로 돌린다(전에는 「camera.keys.0: unsupported field」). 회귀 `test/openingCameraKeyArrays.test.ts`.
   `set_opening_caption`·`set_opening_transition` 의 `letterbox` 가 1 이상이면 막대 화소 높이로 보고 무대 격자(`pixelGrid.height`, 없으면 샷 높이) 비율로 바꾼다(상한 0.25, 결과에 환산을 적는다).
   실측(2026-11-05 고양이 4차): `letterbox:14` 로 다섯 번 거절돼 오프닝 자막이 전부 빠졌다.
+  신호 다섯째·여섯째(2026-11-05 4차): 엔딩은 있는데 부르는 이벤트가 없다(스크립트가 부르면 제외), 무작위 조우(`encounterMaps`)가 있는데 되풀이되는 회복
+  (`repeatableHealingSources` — 한 번 주는 회복약·시작 소지품 제외)이 없다. 이어 짓기는 1배 특징 확인 고치기 뒤에 신호를 한 번 더 본다(고치기가 지은 것을 되돌릴 수 있다).
+  `author_dungeon{rebuild:true}` 는 그 맵에 엔딩을 부르는 이벤트(직접·공통 이벤트 호출)가 있으면 `rebuild-would-erase-ending` 으로 거절한다 — 다시 짓기는 이벤트를 모두 지운다.
+  실측(좀비 생존 4차): 장면 시험 11/11 뒤 고치기에서 다시 지어 출구·열쇠 상자·보스 8개가 사라져 끝낼 수 없는 게임이 됐다. 회귀 `test/dungeonRebuildKeepsEnding.test.ts`.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.

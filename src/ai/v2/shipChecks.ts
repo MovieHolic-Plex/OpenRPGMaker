@@ -23,7 +23,8 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { strayStepCopies, walkBlueprint } from "./blueprint";
 import { assemblyTimeMismatches, blueprintStoryText } from "@/project/blueprintAssembly";
-import { battleSites, healingSources } from "./combatChecks";
+import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
+import { projectScriptMentionsCmdKind } from "@/project/script/effects";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -613,11 +614,23 @@ export function unbuiltGameSigns(project: Project, _task: string): string[] {
   // 두 번째 전투에서 게임 오버, 판타지·고양이는 첫 화면이 기본 오프닝(「강을 낀 왕국…」), 마을은 타이틀이 「새 프로젝트」였다. v2 끝맺음은 이것을 채우지만 v1 은 못 본다.
   const sites = battleSites(project);
   if (sites.length && !healingSources(project).length) out.push(`전투가 있는데(${sites.slice(0, 2).join(", ")}) 회복 수단이 하나도 없다 — 몇 번 싸우면 게임 오버다. place_savepoint{mapId:시작 맵, heal:true} 나 set_session_start{inventory:{item_potion:3}} 로 회복 길을 넣는다`);
+  else if (encounterMaps(project).length && !repeatableHealingSources(project).length) {
+    // 실측(2026-11-05 「마을부터」 4차): 숲길 무작위 조우(18%)에 회복은 상자 회복약 하나뿐 — 돌아오는 길 네 번째 전투에서 게임 오버.
+    // 조우는 끝이 없으니 한 번 주는 회복약·시작 소지품으로는 모자라다 — 되풀이되는 회복(여관·회복 세이브·상점·드롭·회복 기술)이 있어야 한다.
+    out.push(`무작위 조우(${encounterMaps(project).slice(0, 2).map((id) => project.maps[id]?.name ?? id).join(", ")})가 끝없이 나오는데 회복은 한 번 주는 것뿐이다 — 오가다 게임 오버다. place_savepoint{heal:true} 를 조우 맵 입구나 마을에 두거나 회복약 파는 상점을 둔다`);
+  }
   for (const left of editorDefaultsLeft(project)) {
     if (left.id === "title-name" || left.id === "opening") out.push(left.message);
   }
+  // 실측(2026-11-05 「좀비 생존」 4차): 이야기를 다 지은 뒤 고치기 두르기에서 author_dungeon{rebuild:true} 가 맵 이벤트를 전부 지워
+  // 엔딩을 부르는 출구·열쇠 상자가 사라졌다. 엔딩은 남아 「엔딩이 없다」는 안 떠 이어 짓기가 멈췄다.
+  if (real.length && !allCommands(project).some((r) => r.cmd.kind === "triggerEnding" || r.cmd.kind === "ending")
+    && !projectScriptMentionsCmdKind(project, "triggerEnding") && !projectScriptMentionsCmdKind(project, "ending")) {
+    out.push(`엔딩(${real.slice(0, 2).map((e) => `「${e.name}」`).join("·")})은 있는데 어떤 이벤트도 부르지 않는다 — 끝낼 수 없는 게임이다. 마지막 사건 이벤트에 {kind:"triggerEnding", endingId:"${real[0]!.id}"} 를 넣는다`);
+  }
   return out;
 }
+
 export function wholeGameRekickPrompt(missing: readonly string[]): string {
   return [
     "[이어 짓기] 게임이 아직 다 지어지지 않았다:",
