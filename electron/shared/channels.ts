@@ -19,6 +19,10 @@ export const OPRN_CHANNELS = {
   companionOrigin: "oprn:companion.origin",
   companionToken: "oprn:companion.token",
   startOpenRecent: "oprn:start.openRecent",
+  /** 시작 화면 「이름 바꾸기」 — 프로젝트 폴더의 제목만 바꾼다. */
+  startRenameProject: "oprn:start.renameProject",
+  /** 시작 화면 「목록에서 지우기」 — 최근 목록에서만 뺀다. 폴더와 파일은 그대로. */
+  startForgetRecent: "oprn:start.forgetRecent",
   projectStatus: "oprn:project.status",
   projectProbe: "oprn:project.probe",
   projectOpen: "oprn:project.open",

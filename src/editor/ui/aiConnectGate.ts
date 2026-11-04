@@ -58,7 +58,7 @@ async function connectedNow(): Promise<boolean> {
  * AI 가 연결돼 있으면 곧바로 true. 아니면 연결 안내 창을 띄우고, 연결을 마치면 true, 「나중에」 면 false.
  * DOM 이 없는 환경(노드 스크립트)에서는 막지 않는다.
  */
-export async function ensureAiConnectedForPreset(options: AiConnectGateOptions = {}): Promise<boolean> {
+export async function ensureAiConnectedForPreset(_options: AiConnectGateOptions = {}): Promise<boolean> {
   if (!domReady()) return true;
   if (await connectedNow()) return true;
   const [{ createAiSetupWizard }, { realWizardDeps }] = await Promise.all([import("./aiSetupWizard"), import("./aiSetupWizardDeps")]);
@@ -83,10 +83,7 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
     const card = el("div", {
       class: "app-modal-card ai-connect-gate-card",
       attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "ai-setup-wizard-title" },
-      children: [
-        ...(options.presetLabel ? [el("span", { class: "ai-connect-gate-kicker", text: `${options.presetLabel} 프리셋` })] : []),
-        wizard.element,
-      ],
+      children: [wizard.element],
     });
     const overlay = el("div", {
       class: "app-modal-overlay ai-connect-gate-overlay",

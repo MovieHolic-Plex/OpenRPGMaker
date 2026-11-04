@@ -11,6 +11,7 @@ export interface WizardEnvironment {
   readonly keys: readonly DetectedKey[];
   readonly installable: WizardInputs["installable"];
   readonly claudeInstalledNotSignedIn: boolean;
+  readonly expired?: "chatgpt" | "google";
 }
 
 export interface WizardDeps extends TeamApplyDeps {
@@ -39,6 +40,8 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
   let failure: string | undefined;
   let keyEntry = false;
   let copied = false;
+  let picking = false;
+  let runId = 0;
 
   const plan = (): TeamPlan | undefined => (env ? buildTeamPlan({ clis: env.clis, accounts: env.accounts, keys: env.keys } satisfies TeamInputs) : undefined);
 
@@ -51,8 +54,11 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       keySources: !current && env ? env.keys.map((key) => ({ id: key.id, label: key.label })) : [],
       installable: env?.installable ?? {},
       claudeInstalledNotSignedIn: env?.claudeInstalledNotSignedIn ?? false,
+      ...(env?.expired ? { expired: env.expired } : {}),
+      ...(picking ? { picking } : {}),
       ...(chosen ? { chosen } : {}),
       ...(failure ? { failure } : {}),
+      ...(copied ? { copied } : {}),
     };
     const screen = wizardScreen(inputs);
     const state: WizardViewState = { screen, ...(busy ? { busy } : {}), ...(notice ? { notice } : {}), ...(keyEntry ? { keyEntry: { service: chosen ?? "key" } } : {}), ...(copied ? { copied } : {}) };
@@ -60,10 +66,14 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
   };
 
   const run = async (label: string, work: () => Promise<void>): Promise<void> => {
+    const id = ++runId;
     busy = label;
     notice = undefined;
+    failure = undefined;
     paint();
-    try { await work(); } finally { busy = undefined; paint(); }
+    try { await work(); } finally {
+      if (id === runId) { busy = undefined; paint(); }
+    }
   };
 
   const refresh = async (): Promise<void> => {
@@ -74,26 +84,27 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
   const startPlan = async (target: TeamPlan): Promise<void> => {
     const result = await applyTeamPlan(target, deps);
     if (result.ok) { deps.onDone(true); return; }
-    notice = { tone: "error", text: result.problem ?? "시작하지 못했어요. 다시 눌러 주세요." };
+    failure = `${result.problem ?? "시작하지 못했어요."} 인터넷이 연결돼 있는지 확인하고 다시 눌러 주세요.`;
   };
 
   async function handle(action: WizardAction, keyText?: string): Promise<void> {
     switch (action.id) {
       case "start-plan": {
         const target = plan();
-        if (target) await run("AI 팀을 준비하고 있어요…", () => startPlan(target));
+        if (target) await run("준비하고 있어요…", () => startPlan(target));
         return;
       }
       case "use-key": {
         const key = env?.keys.find((row) => row.id === action.arg);
         const target = key && env ? buildTeamPlan({ clis: [], accounts: [], keys: [key] }) : undefined;
         if (target) await run("키를 확인하고 있어요…", () => startPlan(target));
-        else notice = { tone: "error", text: "이 키로는 AI 팀을 만들 수 없어요. 다른 방법을 골라 주세요." };
+        else failure = "이 키로는 시작할 수 없어요. 다른 AI를 골라 주세요.";
         paint();
         return;
       }
       case "choose-service":
         chosen = (action.arg as WizardService | undefined);
+        picking = chosen === undefined;
         copied = false;
         failure = undefined;
         notice = undefined;
@@ -101,7 +112,9 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
         paint();
         return;
       case "back":
+        if (busy) { runId++; busy = undefined; }
         copied = false;
+        picking = true;
         chosen = undefined; failure = undefined; notice = undefined; keyEntry = false;
         paint();
         return;
@@ -109,11 +122,13 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       case "login-google":
       case "login-claude": {
         const service = action.id === "login-chatgpt" ? "chatgpt" : action.id === "login-google" ? "google" : "claude";
-        await run(`${SERVICE_LOGIN[service]} 로그인 창을 열었어요. 로그인을 마치면 이 화면이 알아서 넘어가요…`, async () => {
+        const id = runId + 1;
+        await run(`인터넷 창에서 ${SERVICE_LOGIN[service]}에 로그인해 주세요…`, async () => {
           const ok = await deps.login(service);
-          if (!ok) { failure = "아직 로그인이 끝나지 않았어요. 인터넷 창에서 「허용」을 눌렀는지 확인하고 다시 눌러 주세요."; return; }
+          if (id !== runId) return;
+          if (!ok) { failure = "로그인이 끝나지 않았어요. 인터넷 창에서 「허용」을 눌렀는지 확인해 주세요."; return; }
           await refresh();
-          chosen = undefined; failure = undefined;
+          chosen = undefined; failure = undefined; picking = false;
           const target = plan();
           if (target) await startPlan(target);
         });
@@ -122,11 +137,11 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       case "install-claude":
       case "install-chatgpt-helper": {
         const cli = action.id === "install-claude" ? "claude" : "codex";
-        await run("설치하고 있어요. 1~2분 걸려요. 검은 창이 잠깐 보일 수 있어요. 닫지 마세요…", async () => {
+        await run("설치하고 있어요. 1~2분 걸려요. 검은 창이 잠깐 보여도 닫지 마세요…", async () => {
           const ok = await deps.install(cli);
-          failure = ok ? undefined : "설치가 끝나지 않았어요. 아래 「직접 설치하기」를 열어서 따라 해 볼 수도 있어요.";
           await refresh();
-          if (ok && plan()) { chosen = undefined; failure = undefined; }
+          if (ok && plan()) { chosen = undefined; failure = undefined; picking = false; return; }
+          failure = ok ? undefined : "설치가 끝나지 않았어요. 「직접 설치하기」를 열어 따라 해 볼 수도 있어요.";
         });
         return;
       }
@@ -135,7 +150,8 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
         const text = action.arg && action.arg !== "claude" && action.arg !== "codex" ? action.arg : guide?.command;
         if (text) {
           await deps.copy(text);
-          { copied = true; notice = { tone: "ok", text: "복사했어요. 열어 둔 창을 클릭한 뒤 Ctrl+V 로 붙여 넣고 Enter 를 눌러요." }; }
+          copied = true;
+          notice = { tone: "ok", text: "복사했어요. 열어 둔 창에 Ctrl+V 로 붙여 넣고 Enter 를 눌러요." };
         }
         paint();
         return;
@@ -143,8 +159,8 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       case "recheck":
         await run("다시 찾고 있어요…", async () => {
           await refresh();
-          if (plan()) { chosen = undefined; failure = undefined; return; }
-          if (!env?.claudeInstalledNotSignedIn) notice = { tone: "error", text: "아직 Claude가 보이지 않아요. 설치가 끝나려면 1~2분 걸려요. 조금 기다렸다가 「설치했어요, 다시 확인」을 한 번 더 눌러 주세요." };
+          if (plan()) { chosen = undefined; failure = undefined; picking = false; return; }
+          if (!env?.claudeInstalledNotSignedIn) failure = "아직 Claude가 보이지 않아요. 설치가 끝나려면 1~2분 걸려요. 조금 뒤 다시 눌러 주세요.";
         });
         return;
       case "paste-key": {
@@ -160,6 +176,7 @@ export function createAiSetupWizard(deps: WizardDeps): WizardController {
       case "advanced":
         return;
       case "later":
+        if (busy) { runId++; busy = undefined; paint(); return; }
         deps.onDone(false);
         return;
     }

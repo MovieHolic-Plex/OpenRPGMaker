@@ -329,11 +329,6 @@
   .ai-connect-gate-card {
     max-width: 460px;
   }
-  .ai-connect-gate-kicker {
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 600;
-  }
   .ai-connect-gate-status {
     color: var(--text-2);
     font-size: 12px;
@@ -341,44 +336,67 @@
   }
 }
 
-/* 첫 실행 AI 설정 마법사 (editor/ui/aiSetupWizardView.ts) — 한 화면에 한 가지 행동. 색·간격은 tokens.css 만 쓴다. */
+/* 첫 실행 AI 설정 마법사 (editor/ui/aiSetupWizardView.ts) — 목업(oprn-ui-redesign) 결: 흰 면·얇은 선·파랑 하나. 색·간격은 tokens.css 만 쓴다. */
 @layer components {
+  .app-modal-card:has(.app-modal-wizard) {
+    border-color: var(--border-default);
+    border-radius: 14px;
+    max-width: 400px;
+    padding: 28px 28px 18px;
+  }
   .app-modal-wizard {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: 14px;
+  }
+  .app-modal-wizard-mark {
+    align-items: center;
+    background: var(--accent-muted);
+    border-radius: 12px;
+    color: var(--accent);
+    display: inline-flex;
+    flex: none;
+    font-size: 18px;
+    font-weight: 700;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+  .app-modal-wizard-mark.is-small {
+    border-radius: 8px;
+    font-size: 13px;
+    height: 30px;
+    width: 30px;
   }
   .app-modal-wizard-title {
-    font-size: var(--font-22);
+    font-size: 19px;
     font-weight: 700;
-    line-height: 1.3;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
     margin: 0;
     word-break: keep-all;
   }
   .app-modal-wizard-body {
-    color: var(--text-1);
-    font-size: var(--font-16);
-    line-height: 1.6;
+    color: var(--text-2);
+    font-size: 14px;
+    line-height: 1.55;
     margin: 0;
     overflow-wrap: break-word;
     word-break: keep-all;
   }
   .app-modal-wizard-button {
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-l);
+    border: 0;
     cursor: pointer;
     font: inherit;
-    justify-content: center;
-    text-align: center;
   }
   .app-modal-wizard-primary {
     background: var(--accent);
-    border-color: var(--accent);
-    color: var(--bg-raised);
-    font-size: var(--font-18);
-    font-weight: 700;
-    min-height: 56px;
-    padding: var(--space-3) var(--space-4);
+    border-radius: 10px;
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 44px;
+    padding: 0 var(--space-4);
     width: 100%;
   }
   .app-modal-wizard-primary:hover:not(:disabled) {
@@ -390,128 +408,196 @@
     opacity: 0.6;
   }
   .app-modal-wizard-choices {
-    display: grid;
-    gap: var(--space-2);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .app-modal-wizard-choice {
-    background: var(--control-bg);
+    align-items: center;
+    background: none;
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
     color: var(--text-1);
-    font-size: var(--font-16);
-    font-weight: 600;
-    min-height: 56px;
-    padding: var(--space-3);
+    display: flex;
+    gap: 12px;
+    min-height: 52px;
+    padding: 8px 14px;
+    text-align: left;
   }
   .app-modal-wizard-choice:hover:not(:disabled) {
-    background: var(--control-bg-hover);
+    background: var(--bg-hover);
+    border-color: var(--accent-border);
+  }
+  .app-modal-wizard-button-text {
+    display: flex;
+    flex-direction: column;
   }
   .app-modal-wizard-button-label {
-    display: block;
+    font-size: 14px;
+    font-weight: 600;
   }
   .app-modal-wizard-button-hint {
-    color: var(--text-2);
-    display: block;
-    font-size: var(--font-13);
-    font-weight: 400;
-    margin-top: var(--space-1);
+    color: var(--text-3);
+    font-size: 12px;
   }
   .app-modal-wizard-link {
     background: none;
-    border: 0;
-    color: var(--accent);
-    font-size: var(--font-16);
-    min-height: 44px;
-    padding: var(--space-2) var(--space-2);
-    text-decoration: underline;
+    border-radius: 6px;
+    color: var(--text-2);
+    font-size: 13px;
+    min-height: 32px;
+    padding: 4px 6px;
   }
-  .app-modal-wizard-link.app-modal-wizard-outline {
-    border: 2px solid var(--accent);
-    border-radius: var(--radius-l);
-    font-weight: 600;
-    text-decoration: none;
-    width: 100%;
+  .app-modal-wizard-link .app-modal-wizard-button-label {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .app-modal-wizard-link:hover {
+    background: var(--bg-hover);
+    color: var(--text-1);
   }
   .app-modal-wizard-secondary {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    justify-content: center;
+    justify-content: space-between;
+    margin: -4px -6px 0;
   }
   .app-modal-wizard-advanced {
-    color: var(--text-2);
-    font-size: var(--font-14);
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-3);
+    font-size: 13px;
+    padding-top: 10px;
   }
   .app-modal-wizard-advanced > summary {
     cursor: pointer;
-    padding: var(--space-1) 0;
+    list-style: none;
+    padding: 2px 0;
+    width: max-content;
+  }
+  .app-modal-wizard-advanced > summary::-webkit-details-marker {
+    display: none;
+  }
+  .app-modal-wizard-advanced > summary::after {
+    content: " ▾";
+  }
+  .app-modal-wizard-advanced[open] > summary::after {
+    content: " ▴";
   }
   .app-modal-wizard-advanced-body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
-    padding-top: var(--space-2);
+    gap: 8px;
+    padding-top: 10px;
   }
-  .app-modal-wizard-command {
-    background: var(--bg-inset);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-m);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-3);
+  .app-modal-wizard-advanced-body .app-modal-wizard-link {
+    align-self: flex-start;
+    color: var(--accent);
+    margin-left: -6px;
   }
-  .app-modal-wizard-command-where {
-    color: var(--text-1);
-    font-size: var(--font-14);
+  .app-modal-wizard-facts {
+    display: grid;
+    gap: 4px 14px;
+    grid-template-columns: max-content 1fr;
     margin: 0;
   }
+  .app-modal-wizard-facts dt {
+    color: var(--text-3);
+  }
+  .app-modal-wizard-facts dd {
+    color: var(--text-2);
+    margin: 0;
+  }
+  .app-modal-wizard-command {
+    align-items: center;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    padding: 8px 8px 8px 12px;
+  }
   .app-modal-wizard-command-text {
+    color: var(--text-1);
+    flex: 1;
     font-family: var(--font-mono);
-    font-size: var(--font-14);
+    font-size: 12px;
     overflow-wrap: anywhere;
     user-select: all;
+  }
+  .app-modal-wizard-copy {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-1);
+    cursor: pointer;
+    flex: none;
+    font: inherit;
+    font-size: 12px;
+    min-height: 28px;
+    padding: 0 10px;
   }
   .app-modal-wizard-key {
     background: var(--bg-surface);
     border: 1px solid var(--border-strong);
-    border-radius: var(--radius-m);
+    border-radius: 10px;
     color: var(--text-1);
     font: inherit;
-    font-size: var(--font-16);
-    min-height: 48px;
-    padding: var(--space-2) var(--space-3);
+    font-size: 14px;
+    min-height: 44px;
+    padding: 0 var(--space-3);
     width: 100%;
   }
-  .app-modal-wizard-busy,
-  .app-modal-wizard-notice {
-    font-size: var(--font-14);
+  .app-modal-wizard-alert {
+    background: var(--warning-muted);
+    border-radius: 10px;
+    color: var(--text-1);
+    font-size: 13px;
+    line-height: 1.5;
     margin: 0;
+    padding: 10px 12px;
+    word-break: keep-all;
   }
-  .app-modal-wizard-busy {
+  .app-modal-wizard-waiting {
+    align-items: center;
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
     color: var(--text-2);
+    display: flex;
+    font-size: 13px;
+    gap: 10px;
+    justify-content: center;
+    min-height: 44px;
+    padding: 6px 12px;
+    text-align: center;
+    word-break: keep-all;
+  }
+  .app-modal-wizard-notice {
+    font-size: 13px;
+    margin: 0;
   }
   .app-modal-wizard-notice[data-tone="error"] {
     color: var(--danger);
   }
   .app-modal-wizard-notice[data-tone="ok"] {
-    color: var(--text-1);
+    color: var(--text-2);
   }
   .app-modal-wizard-spinner {
     animation: app-modal-wizard-spin 0.9s linear infinite;
-    border: 4px solid var(--border-default);
+    border: 3px solid var(--border-default);
     border-radius: 50%;
     border-top-color: var(--accent);
-    height: 32px;
-    margin: var(--space-2) auto;
-    width: 32px;
+    height: 28px;
+    margin: 4px auto;
+    width: 28px;
+  }
+  .app-modal-wizard-spinner.is-inline {
+    border-width: 2.5px;
+    flex: none;
+    height: 18px;
+    margin: 0;
+    width: 18px;
   }
   @keyframes app-modal-wizard-spin {
     to { transform: rotate(360deg); }
-  }
-  @media (max-width: 420px) {
-    .app-modal-wizard-choices {
-      grid-template-columns: 1fr;
-    }
   }
   @media (prefers-reduced-motion: reduce) {
     .app-modal-wizard-spinner {

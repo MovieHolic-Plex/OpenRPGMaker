@@ -15,11 +15,10 @@ import "./startScreen.css";
 // 창 단추의 지연 툴팁 모양. 편집기는 지도 스타일 층에서 싣지만 시작 화면에는 그 층이 없다 — 없으면 「닫기」가 맨글자로 레일 위에 남았다.
 import "@/styles/map/delayed-tooltip.css";
 import { mountWindowControls } from "./windowControls";
-import { APP_VERSION } from "@/brand";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
-import { getLocale, initI18n, LOCALE_NATIVE_NAMES, t } from "@/i18n";
+import { getLocale, initI18n, t } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
@@ -35,7 +34,8 @@ import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
 import { startIcon } from "./icons";
 import { builtinGameEditUrl } from "./home/builtinGames";
-import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, myGamesShelf, type HomeActions } from "./home/homeView";
+import { aiNotice, builtinShelf, coverArt, displayTitles, fillCover, firstRunShelf, HOME_TESTIDS, myGamesShelf, type HomeActions } from "./home/homeView";
+import { BUILTIN_GAMES } from "./home/builtinGames";
 import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
 import type { AiStatusSummary, SettingsTab } from "./settings/settingsDialog";
 
@@ -56,7 +56,7 @@ const OPRN_PLAY_URL = "https://play.openrpgmaker.com";
 const COVER_IDLE_DELAY_MS = 2_500;
 
 /** 지금 본문 칸. 레일 단추 넷 + 팀에 참여(@deprecated — 사람 팀 협업은 아직 지원하지 않는다, 2026-10-21. TEAM_COLLAB_ENABLED 가 꺼져 있으면 열리지 않는다). */
-export type StartSection = Exclude<LauncherNav, "store"> | "join";
+export type StartSection = LauncherNav | "join";
 
 type State = {
   section: StartSection;
@@ -279,7 +279,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   // ── 설정 · AI 상태 줄 ─────────────────────────────────────────────────
   let settingsOpen = false;
   const applyAiStatus = (summary: AiStatusSummary): void => {
-    shell.setAiStatus(summary);
     promptHome?.setAiStatus(summary);
     lastAiStatus = summary;
     const ready = summary.tone === "ok";
@@ -343,8 +342,22 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const listed = (): readonly RecentProjectEntry[] => state.showHidden ? state.entries : partitionRecentEntries(state.entries).visible;
   const actions: HomeActions = {
     edit: (entry) => void run(async () => { await openRecentFolder(entry); goEditor(); }),
-    newGame: () => go("create"),
+    newGame: createBlank,
+    home: () => { go("home"); },
     openGameFile,
+    rename: async (entry, title) => {
+      if (!bridge?.renameProject) throw new Error("데스크톱 앱에서만 이름을 바꿀 수 있습니다.");
+      const done = await bridge.renameProject({ projectDir: entry.projectDir, title });
+      if (!done) throw new Error("이름을 바꾸지 못했습니다. 폴더가 아직 있는지 확인해 주세요.");
+      state.entries = state.entries.map((candidate) => candidate.projectDir === entry.projectDir ? { ...candidate, title: done.title } : candidate);
+      refresh("entries");
+    },
+    forget: async (entry) => {
+      if (!bridge?.forgetRecent) throw new Error("데스크톱 앱에서만 목록에서 지울 수 있습니다.");
+      if (!(await bridge.forgetRecent({ projectDir: entry.projectDir }))) throw new Error("목록에서 지우지 못했습니다.");
+      state.entries = state.entries.filter((candidate) => candidate.projectDir !== entry.projectDir);
+      refresh("entries");
+    },
     builtinEdit: (id) => { if (!state.busy) window.location.href = builtinGameEditUrl(id); },
     openSettings: () => openSettings("ai"),
   };
@@ -430,8 +443,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       openGameFile,
       openAi: () => openSettings("ai"),
       more: [
-        { label: "새로 만들기 — 컨셉에서 고르기", testid: "first-run-more-create", run: () => { go("create"); } },
-        { label: "예제 자세히", testid: "first-run-more-builtin", run: () => { go("builtin"); } },
+        { label: "아이디어 둘러보기", testid: "first-run-more-create", run: () => { go("create"); } },
+        { label: "예제 모두 보기", testid: "first-run-more-builtin", run: () => { go("builtin"); } },
         { label: "에셋 스토어 ↗", testid: "first-run-more-store", run: () => { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); } },
         // 다른 사람이 만든 게임을 하는 곳은 웹(OPRN PLAY)이다 — Studio 는 만드는 앱이라 앱 안에서 돌리지 않는다(2026-11-04 B안).
         { label: "OPRN PLAY 에서 게임 하기 ↗", testid: "first-run-more-play-web", run: () => { window.open(OPRN_PLAY_URL, "_blank", "noopener"); } },
@@ -453,17 +466,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     mode: "launcher",
     source,
     lead: createLead,
-    onBlank: createBlank,
-    onInterview: async (brief, title) => {
-      if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
-      if (state.busy) return false;
-      state.busy = true;
-      try {
-        return await launcherBriefHandler(bridge, { ensureAiConnected, goEditor, storage: window.sessionStorage })(brief, title);
-      } finally {
-        state.busy = false;
-      }
-    },
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onMake: async (concept, tweak) => {
       if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
@@ -483,21 +485,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   });
 
   // ── 틀 ────────────────────────────────────────────────────────────────
-  const localeButton = el("button", {
-    class: "ln-foot-locale", attrs: { type: "button", translate: "no", "aria-label": "언어" }, dataset: { testid: "start-locale-open" },
-    text: LOCALE_NATIVE_NAMES[getLocale()], on: { click: () => openSettings("general") },
-  });
-  const shell = createLauncherShell({
-    onNav: (nav) => {
-      // 스토어는 웹 스토어를 브라우저로 연다(프로젝트를 연 편집기 안에서 넣는다) — 지금 칸은 그대로 둔다.
-      if (nav === "store") { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); return; }
-      go(nav);
-    },
-    onSettings: () => openSettings("ai"),
-    foot: [el("span", { class: "ln-version", text: APP_VERSION, attrs: { translate: "no" } }), el("span", { class: "ln-foot-dot", text: "·", attrs: { "aria-hidden": "true" } }), localeButton],
-  });
+  const shell = createLauncherShell({ onNav: (nav) => { go(nav); } });
+  shell.setCount("builtin", BUILTIN_GAMES.length);
   const topActions = [
     topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
+    topButton("게임 파일 열기", HOME_TESTIDS.openGameFile, "file", openGameFile),
     // @deprecated multi-user team collaboration is not supported yet (2026-10-21). 스위치를 켜면 돌아온다.
     ...(TEAM_COLLAB_ENABLED ? [topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => go("join"))] : []),
   ];
@@ -516,7 +508,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!state.loaded) { gamesPage.inner.replaceChildren(el("p", { class: "ln-loading", text: "불러오는 중…" })); return; }
     const worlds = listed();
     gamesPage.inner.replaceChildren(worlds.length > 0
-      ? myGamesShelf({ entries: worlds, titles: displayTitles(worlds, getLocale()), meta: makingMeta, showAll: true, onToggleAll: () => undefined, note: hiddenNote(), actions })
+      ? myGamesShelf({ entries: worlds, titles: displayTitles(worlds, getLocale()), meta: makingMeta, note: hiddenNote(), actions })
       : el("div", { children: [firstRunShelf(actions), ...(hiddenNote() ? [hiddenNote()!] : [])] }));
   };
   const renderBuiltinSection = (): void => { builtinPage.inner.replaceChildren(builtinShelf(actions)); };
@@ -534,14 +526,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     shell.setActive(section === "join" ? null : section);
     if (section === "create") {
       renderCreateLead();
-      shell.show({ search: feed.searchBox, actions: topActions }, feed.element);
+      shell.show({ actions: topActions }, feed.element);
       return;
     }
     if (section === "games") renderGamesSection();
     else if (section === "builtin") renderBuiltinSection();
     else renderJoinView();
     const target = section === "games" ? gamesPage : section === "builtin" ? builtinPage : joinPage;
-    shell.show({ search: null, actions: topActions }, target.scroll);
+    shell.show({ actions: topActions }, target.scroll);
     target.scroll.scrollTop = 0;
   };
   /** 떠나는 칸의 잠깐 상태를 비운다 — 다음에 돌아오면 처음 화면이다. */
@@ -581,6 +573,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   function refresh(what: "entries" | "ai"): void {
     const section = state.section;
     if (what === "ai") { if (section === "create") renderCreateLead(); return; }
+    if (what === "entries") shell.setCount("games", state.loaded ? listed().length : null);
     if (section === "home" && what === "entries") renderPromptGames();
     else if (section === "games" && what === "entries") renderGamesSection();
   }

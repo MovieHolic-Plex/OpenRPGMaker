@@ -81,12 +81,11 @@ body.has-window-chrome .cf-top {
   -webkit-app-region: drag;
 }
 body.has-window-chrome .ln-top {
-  padding-right: calc(32px + var(--window-inset-right, 0px));
+  padding-right: calc(24px + var(--window-inset-right, 0px));
+  padding-left: calc(24px + var(--window-inset-left, 0px));
   -webkit-app-region: drag;
 }
-/* 시작 화면은 왼쪽 레일 맨 위(브랜드)가 창 모서리다 — macOS 신호등이 거기 뜨므로 레일을 내리고, 브랜드 줄도 끌 수 있게 한다. */
 body.has-window-chrome .ln-brand { -webkit-app-region: drag; }
-body.window-chrome-darwin:not(.is-window-fullscreen) .ln-rail { padding-top: 44px; }
 /* 모달이 열리면 끌기 영역을 끈다. 크로미움은 끌기 영역을 층 순서와 무관하게 모으므로, 톱바 밑을 지나는 모달 머리줄의
    단추(데이터베이스 닫기 등)가 끌기에 먹혀 눌리지 않는다(실측 2026-10-14, 실제 X 클릭). */
 body.has-window-chrome:has([aria-modal="true"]:not([aria-hidden="true"] *), dialog[open]) :is(.oprn-menu-bar.studio-bar, .cf-top, .ln-top, .ln-brand) { -webkit-app-region: no-drag; }
