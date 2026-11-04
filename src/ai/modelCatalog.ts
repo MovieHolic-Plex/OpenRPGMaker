@@ -10,15 +10,16 @@ export interface AiModelCatalogGroup {
 /** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — 감독 지시(2026-09-27)의 넷에 gpt-6.1-sol 을 더했고 기본으로 올렸다(2026-10-07).
  * 예전엔 pi-catalog 번들 8종(gpt-5.4-mini·codex-spark·daybreak …)을 다 떠서 보여 줘 고를 이유가 없는
  * 선택지가 목록을 덮었다. 순서가 공장 기본 우선순위다(첫 항목 = 기본, ohMyPiProviders 와 일치).
- * gpt-6-* 는 설치 번들(17.4.0) 밖이라 동반 서비스가 scripts/lib/ohMyPiModel.ts 의 로컬 확장으로 풀어 준다. */
+ * gpt-6-* 는 설치 번들(17.4.0) 밖이라 동반 서비스가 scripts/lib/ohMyPiModel.ts 의 로컬 확장으로 풀어 준다.
+ * 2026-11-04: 최신 우선으로 줄 세웠다. 끝의 둘(gpt-6-sol·gpt-5.6-sol)은 옛 모델이라 LEGACY_MODEL_IDS 에 있다. */
 const CODEX_MODELS: readonly string[] = [
   "gpt-6.1-sol",
-  "gpt-5.6-sol",
-  "gpt-6-astra",
-  "gpt-6-sol",
-  "gpt-6-luna",
   // ChatGPT 구독 첫 실행 기본값(src/ai/planDefaults.ts). 2026-11-03 앱 경로(openai-codex) 실제 호출 통과.
   "gpt-6.1-terra",
+  "gpt-6-astra",
+  "gpt-6-luna",
+  "gpt-6-sol",
+  "gpt-5.6-sol",
 ];
 
 /**
@@ -61,13 +62,42 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
 ];
 
 /**
- * 제공자별 모델 목록. 에디터가 고를 수 있는 제공자가 둘뿐이므로 카탈로그도 둘뿐이다.
+ * Claude 계정(제공자 anthropic)의 5.5 세 모델. 첫 항목 = ohMyPiProviders 의 defaultModel.
+ * pi-catalog(18.9.1·18.13.2) anthropic 제공자에 세 id 가 다 있고, 2026-11-04 Anthropic messages 호출이 세 모델 모두 통과했다.
+ */
+const ANTHROPIC_MODELS: readonly string[] = [
+  "claude-opus-5-5",
+  "claude-sonnet-5-5",
+  "claude-haiku-5-5",
+];
+
+/**
+ * 제공자별 모델 목록. 카탈로그 행이 없는 제공자는 레지스트리 defaultModel 하나로 떨어진다(modelCatalogForAuthMode).
  * 옛 게이트웨이 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
  */
 const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
   [CODEX_PROVIDER_ID]: CODEX_MODELS,
+  anthropic: ANTHROPIC_MODELS,
 };
+
+/** 각 제공자에서 최신으로 치는 모델(2026-11-04 기준). 그 밖의 카탈로그 항목은 옛 모델이다. */
+const LATEST_MODEL_IDS: Readonly<Record<string, readonly string[]>> = {
+  [ANTIGRAVITY_PROVIDER_ID]: ["gemini-4-argon", "gemini-3.8-flash"],
+  [CODEX_PROVIDER_ID]: ["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"],
+  anthropic: ANTHROPIC_MODELS,
+};
+
+/**
+ * 제공자별 옛 모델 id. 설정 화면은 여전히 이 모델들을 보여 주고 고를 수 있다(저장된 선택을 지킨다) —
+ * 첫 실행·기본 선택 목록만 latestModelsFor 로 이들을 뺀다. 같은 id 가 제공자마다 다를 수 있어 제공자별로 둔다.
+ */
+export const LEGACY_MODEL_IDS: Readonly<Record<string, ReadonlySet<string>>> = Object.fromEntries(
+  Object.entries(PROVIDER_MODELS).map(([id, models]) => {
+    const latest = new Set(LATEST_MODEL_IDS[id] ?? []);
+    return [id, new Set(models.filter((model) => !latest.has(model)))];
+  }),
+);
 
 /**
  * 그 제공자에서 고를 수 있는 모델 그룹.
@@ -103,6 +133,17 @@ export function modelCatalogForAuthMode(
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {
   const groups = modelCatalogForAuthMode(authMode, providerId);
   return groups[0]?.models[0] ?? "";
+}
+
+/**
+ * 첫 실행·기본 선택 목록용: 그 제공자 카탈로그에서 옛 모델(LEGACY_MODEL_IDS)을 뺼 목록. 순서는 카탈로그 순서라
+ * 첫 항목이 defaultModelForAuthMode 와 같다. 설정 화면은 modelCatalogForAuthMode(전부)를 쓴다.
+ */
+export function latestModelsFor(providerId?: string): readonly string[] {
+  const id = parseOhMyPiProvider(providerId);
+  const legacy = LEGACY_MODEL_IDS[id];
+  const models = modelCatalogForAuthMode("chatgpt", id).flatMap((group) => group.models);
+  return legacy ? models.filter((model) => !legacy.has(model)) : models;
 }
 
 /**

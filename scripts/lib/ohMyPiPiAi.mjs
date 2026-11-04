@@ -32,6 +32,8 @@ import {
   testOpenAiCompat,
   connectOpenAiCompat,
 } from "./openAiCompatRuntime.ts";
+import { adoptKeySource, currentEnvScanDecision, listKeySources } from "./detectedKeys.ts";
+import { runInstall } from "./localCliAgent/installer.ts";
 
 applyLegacyEnvAliases();
 
@@ -290,6 +292,9 @@ export async function createOhMyPiAdapters() {
     async compatDelete(id) { return deleteOpenAiCompat(String(id ?? "")); },
     async compatTest(body) { return testOpenAiCompat(body ?? {}); },
     async compatConnect(body) { return connectOpenAiCompat(body ?? {}); },
+    // 이미 가진 API 키 — 목록에는 출처 이름만, 입양은 키를 이 프로세스에서만 꺼낸다(scripts/lib/detectedKeys.ts).
+    async keySources() { return { sources: listKeySources(), envScan: currentEnvScanDecision() }; },
+    async keyAdopt(body) { return adoptKeySource(body ?? { sourceId: "" }); },
     async complete(provider, body) {
       // 호스트 직전 검사 — 차단·비허용 모델은 키를 꺼내거나 워커를 부르기 전에 거절한다(폴백 없음).
       assertOpenAiCompatModelsAllowed([{ provider, model: body?.model }]);
@@ -306,6 +311,7 @@ export async function createOhMyPiAdapters() {
     /** 로컬 에이전트 CLI 감지 — 워커(Bun)가 CLI 를 띄워 버전·로그인 상태만 읽는다. */
     async localAgents(body) { return workerJson("/local-agents", body ?? {}); },
     async localAgentHealth(body) { return workerJson("/local-agents/health", body ?? {}); },
+    async localAgentInstall(body) { return runInstall(String(body?.cli ?? "")); },
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
     async resolveRender(body) { return workerJson("/agent/render", body); },
     async resolveCheckpoint(body) {
@@ -314,11 +320,14 @@ export async function createOhMyPiAdapters() {
     /** runAgent 가 options.heavy(해시·글)를 받아 워커까지 해시째 넘긴다 — 중계가 프로젝트를 되살리지 않는다. */
     runAgentHeavyRefs: true,
     async runAgent(provider, body, options = {}) {
-      // 이 실행이 쓸 수 있는 모든 (제공자, 모델) 쌍 — 기본 모델과 역할 넷. 하나라도 막히면 모델·워커를 부르기 전에 끝낸다.
+      // 요청이 실어 온 v2 팀장(body.lead, src/ai/v2/split.ts resolveSplitConfig) — OPRN_V2_SPLIT 이 비었을 때만 쓰이고, 로컬 CLI 팀장은 키가 없다.
+      const requestLead = body.assistantVersion === "v2" && !String(process.env.OPRN_V2_SPLIT ?? "").trim() && typeof body.lead?.provider === "string" && !body.lead.provider.startsWith("local-cli:") ? body.lead : undefined;
+      // 이 실행이 쓸 수 있는 모든 (제공자, 모델) 쌍 — 기본 모델과 역할 넷, 팀장. 하나라도 막히면 모델·워커를 부르기 전에 끝낸다.
       assertOpenAiCompatModelsAllowed([
         { provider, model: body.model },
         ...["deep", "writer", "vision", "build"].map((role) => ({ provider: body.roleModels?.[role]?.provider, model: body.roleModels?.[role]?.model })),
         ...["smol", "advisor"].map((role) => ({ provider: body.assistantRoles?.[role]?.provider, model: body.assistantRoles?.[role]?.model })),
+        ...(requestLead ? [{ provider: requestLead.provider, model: requestLead.model }] : []),
       ]);
       // 로컬 CLI 엔진(local-cli:*)은 키가 없다 — 사용자가 그 CLI 에 직접 로그인해 있다. 키를 찾지 않는다.
       const apiKey = String(provider).startsWith("local-cli:") ? undefined : await resolveRequestApiKey(provider);
@@ -332,6 +341,14 @@ export async function createOhMyPiAdapters() {
         ...["smol", "advisor"].map((role) => body.assistantRoles?.[role]?.provider),
         leadProvider,
       ].filter((id) => typeof id === "string"));
+      // 요청 팀장의 엔드포인트는 따로 푼다 — 지워진 엔드포인트면 실행을 끝내지 않고 키 없음(워커 혼자, v2.split.no_key)으로 둔다.
+      if (requestLead && isOpenAiCompatProviderId(requestLead.provider) && !(requestLead.provider in compat.endpoints)) {
+        try {
+          const leadCompat = await resolveOpenAiCompatRun([requestLead.provider]);
+          Object.assign(compat.endpoints, leadCompat.endpoints);
+          Object.assign(compat.keys, leadCompat.keys);
+        } catch { /* 키 없음 — 아래에서 undefined 로 남는다 */ }
+      }
       for (const role of ["vision", "build"]) {
         const selected = body.roleModels?.[role];
         if (selected?.provider in compat.endpoints && !(selected.provider in providerApiKeys)) providerApiKeys[selected.provider] = compat.keys[selected.provider];
@@ -352,6 +369,10 @@ export async function createOhMyPiAdapters() {
       if (leadProvider && !(leadProvider in providerApiKeys)) {
         if (leadProvider in compat.endpoints) providerApiKeys[leadProvider] = compat.keys[leadProvider];
         else { try { providerApiKeys[leadProvider] = await resolveRequestApiKey(leadProvider); } catch { providerApiKeys[leadProvider] = undefined; } }
+      }
+      if (requestLead && !(requestLead.provider in providerApiKeys)) {
+        if (isOpenAiCompatProviderId(requestLead.provider)) providerApiKeys[requestLead.provider] = compat.keys[requestLead.provider];
+        else { try { providerApiKeys[requestLead.provider] = await resolveRequestApiKey(requestLead.provider); } catch { providerApiKeys[requestLead.provider] = undefined; } }
       }
       for (const role of ["smol", "advisor"]) {
         const selected = body.assistantRoles?.[role];

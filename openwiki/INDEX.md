@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 7998KB / 약 2,350,600 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **191쪽 / 7999KB / 약 2,350,791 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 235KB | 19KB | 1154 | ~71,376 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
-| `openwiki/editor-ai-panel.md` | 729KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4725 | ~214,237 |
+| `openwiki/editor-ai-panel.md` | 730KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4725 | ~214,428 |
 | `openwiki/editor-ai-tools.md` | 628KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4057 | ~184,468 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2681 | ~134,745 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
@@ -646,7 +646,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L116` 주제 적 (`dungeonThemeTroops.ts`)
 - `L128` 시험
 
-### `openwiki/editor-ai-panel.md` — 729KB · 4725줄 · ~214,237 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 730KB · 4725줄 · ~214,428 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L3` 조수 v2 스위치 (2026-10-23, 기본 꺼짐)
 - `L10` 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)

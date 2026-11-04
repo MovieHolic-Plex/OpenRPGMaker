@@ -25,6 +25,7 @@ import {
   OPENROUTER_DEFAULT_MODEL,
   type OpenAiCompatEndpointPublic,
   type OpenAiCompatLastTest,
+  type OpenAiCompatReasoningMode,
   type OpenAiCompatWorkerEndpoint,
 } from "../../src/ai/openAiCompat.ts";
 import {
@@ -553,8 +554,26 @@ export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetch
   if (!model) return reject("invalid", "쓸 모델 ID 를 넣어 주세요.");
   const check = checkOpenAiCompatBaseUrl(openRouter ? OPENROUTER_BASE_URL : input.baseUrl);
   if (!check.ok || !check.url) return reject("invalid", check.error ?? "기본 주소가 올바르지 않아요.");
-  const baseUrl = check.url;
+  return connectOpenAiCompatTested({ name, baseUrl: check.url, apiKey, model, ...(openRouter ? { reasoningMode: "field" } : {}) }, fetchImpl);
+}
 
+/** 이미 검증한 주소·이름으로 시험(도구 달린 채팅)하고 통과하면 저장한다. 빠른 연결과 키 입양(detectedKeys.ts)이 같이 쓴다. */
+export interface OpenAiCompatTestedConnect {
+  readonly name: string;
+  /** checkOpenAiCompatBaseUrl 를 통과한 정규화 주소. */
+  readonly baseUrl: string;
+  readonly apiKey: string;
+  readonly model: string;
+  readonly reasoningMode?: OpenAiCompatReasoningMode;
+  readonly contextWindow?: number;
+  readonly maxOutputTokens?: number;
+}
+
+export async function connectOpenAiCompatTested(input: OpenAiCompatTestedConnect, fetchImpl: FetchLike = fetch): Promise<OpenAiCompatConnectResult> {
+  const { name, baseUrl, apiKey, model } = input;
+  const reject = (code: string, message: string, test?: OpenAiCompatTestResult): OpenAiCompatConnectResult => ({
+    ok: false, code, message, model, endpoints: listOpenAiCompatPublic(), ...(test ? { test } : {}),
+  });
   const test = await testOpenAiCompat({ name, baseUrl, ...(apiKey ? { apiKey } : {}), model, probeTools: true }, fetchImpl);
   if (test.chat && !test.chat.ok) return reject(test.code === "ok" ? "chat" : test.code, test.chat.message || test.message, test);
   if (!test.ok || !test.chat?.ok) return reject(test.code, test.message, test);
@@ -570,7 +589,9 @@ export async function connectOpenAiCompat(input: OpenAiCompatConnectInput, fetch
     baseUrl,
     apiKey,
     defaultModel: model,
-    ...(openRouter ? { reasoningMode: "field" } : {}),
+    ...(input.reasoningMode ? { reasoningMode: input.reasoningMode } : {}),
+    ...(input.contextWindow ? { contextWindow: input.contextWindow } : {}),
+    ...(input.maxOutputTokens ? { maxOutputTokens: input.maxOutputTokens } : {}),
   });
   openAiCompatStore.recordTest(endpoint.id, {
     models: test.models,

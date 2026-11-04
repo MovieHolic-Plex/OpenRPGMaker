@@ -12,7 +12,8 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines } from "./process.ts";
 import { MCP_TOKEN_ENV } from "./claude.ts";
-import type { LocalCliAdapter, LocalCliModel, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage, LocalCliImage } from "./types.ts";
+import { resolveBinary } from "./resolveBinary.ts";
+import { installFields, type LocalCliAdapter, type LocalCliInstallByOs, type LocalCliModel, type LocalCliSession, type LocalCliSessionOptions, type LocalCliStatus, type LocalCliUsage, type LocalCliImage } from "./types.ts";
 
 const DISABLED_FEATURES = [
   "shell_tool", "unified_exec", "apps", "browser_use", "browser_use_external", "computer_use", "image_generation",
@@ -183,6 +184,16 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
   };
 }
 
+const CODEX_NPM = "npm install -g @openai/codex";
+const CODEX_HELP = "Node.js(npm)가 있어야 합니다. ChatGPT 유료 계정이 있으면 설치 후 한 번 로그인하면 됩니다.";
+
+/** 공식 설치 안내(https://github.com/openai/codex README, WinGet id 는 microsoft/winget-pkgs manifests/o/OpenAI/Codex, 2026-11-04 확인). */
+export const CODEX_INSTALL_BY_OS: LocalCliInstallByOs = {
+  win32: { command: CODEX_NPM, help: CODEX_HELP, requires: "node", alt: [{ label: "WinGet", command: "winget install -e --id OpenAI.Codex" }] },
+  darwin: { command: CODEX_NPM, help: CODEX_HELP, requires: "node", alt: [{ label: "Homebrew", command: "brew install --cask codex" }] },
+  linux: { command: CODEX_NPM, help: CODEX_HELP, requires: "node" },
+};
+
 export const codexAdapter: LocalCliAdapter = {
   id: "codex",
   label: "Codex (ChatGPT)",
@@ -193,17 +204,18 @@ export const codexAdapter: LocalCliAdapter = {
     const base = {
       id: "codex" as const, label: "Codex (ChatGPT)", models,
       defaults: { routine: has("gpt-6-luna") ? "gpt-6-luna" : models[0]!.id, deep: has("gpt-6.1-sol") ? "gpt-6.1-sol" : models[0]!.id },
-      install: { command: "npm install -g @openai/codex", help: "ChatGPT 유료 계정이 있으면 설치 후 한 번 로그인하면 됩니다.", url: "https://developers.openai.com/codex/cli" },
+      ...installFields(CODEX_INSTALL_BY_OS, "https://developers.openai.com/codex/cli"),
       login: { command: "codex login", help: "터미널에서 codex login 을 실행해 ChatGPT 계정으로 로그인하세요." },
     };
-    const version = runShort(binary, ["--version"], 15_000);
-    if (!version.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
-    const status = runShort(binary, ["login", "status"], 20_000);
+    const binaryPath = resolveBinary(binary);
+    const version = binaryPath ? runShort(binaryPath, ["--version"], 15_000) : undefined;
+    if (!binaryPath || !version?.ok) return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown" };
+    const status = runShort(binaryPath, ["login", "status"], 20_000);
     const said = `${status.stdout}\n${status.stderr}`.trim();
     const loggedIn = status.ok && /logged in/iu.test(said) && !/not logged in/iu.test(said);
     const chatgpt = /chatgpt/iu.test(said);
     return {
-      ...base, found: true, version: version.stdout.trim(), loggedIn,
+      ...base, found: true, binaryPath, version: version.stdout.trim(), loggedIn,
       ...(loggedIn ? { authMethod: chatgpt ? "ChatGPT" : "API key" } : {}),
       billing: loggedIn ? (chatgpt ? "subscription" : "api") : "unknown",
       state: loggedIn ? "ready" : "login-required", stateLabel: loggedIn ? "연결됨" : "로그인 필요",

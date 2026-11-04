@@ -34,15 +34,22 @@ const ANTIGRAVITY_BUNDLED = [
   "tab_jump_flash_lite_preview",
 ];
 
-/** ChatGPT 경로에서 고를 수 있는 모델(2026-09-27 넷 + 2026-10-07 gpt-6.1-sol). 순서 = 화면 순서, 첫 항목 = 기본. */
+/** ChatGPT 경로에서 고를 수 있는 모델. 순서 = 화면 순서(최신 우선, 2026-11-04), 첫 항목 = 기본, 끝의 둘은 옛 모델. */
 const CODEX_SUPPORTED = [
   "gpt-6.1-sol",
-  "gpt-5.6-sol",
-  "gpt-6-astra",
-  "gpt-6-sol",
-  "gpt-6-luna",
   "gpt-6.1-terra",
+  "gpt-6-astra",
+  "gpt-6-luna",
+  "gpt-6-sol",
+  "gpt-5.6-sol",
 ];
+
+/** 최신 모델(2026-11-04 오너 목록). 제공자 id → 카탈로그·창 표에 반드시 있어야 하는 id. */
+const TARGET_MODELS: Readonly<Record<string, readonly string[]>> = {
+  anthropic: ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"],
+  [CODEX_PROVIDER_ID]: ["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"],
+  [ANTIGRAVITY_PROVIDER_ID]: ["gemini-4-argon", "gemini-3.8-flash"],
+};
 
 describe("modelCatalog — 두 제공자만 해석한다", () => {
   it("Antigravity 목록은 pi-catalog + 로컬 확장과 같고 첫 항목이 gemini-4-argon 이다", async () => {
@@ -56,7 +63,7 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
 
-  it("Codex 목록은 정확히 여섯 모델이고 첫 항목이 gpt-6.1-sol 다", async () => {
+  it("Codex 목록은 정확히 여섯 모델(최신 우선)이고 첫 항목이 gpt-6.1-sol 다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", CODEX_PROVIDER_ID).flatMap((g) => g.models);
 
@@ -89,6 +96,58 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     const { modelCatalogForAuthMode } = await loadCatalog();
     expect(modelCatalogForAuthMode("chatgpt", "zai")[0]?.models[0]).toBe("gemini-4-argon");
     expect(modelCatalogForAuthMode("chatgpt")[0]?.models[0]).toBe("gemini-4-argon");
+  });
+
+  it("Claude 계정 목록은 5.5 세 모델이고 Opus 가 기본이다", async () => {
+    const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
+    expect(modelCatalogForAuthMode("chatgpt", "anthropic").flatMap((g) => g.models))
+      .toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
+    expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe("claude-opus-5-5");
+  });
+});
+
+describe("latestModelsFor — 첫 실행 목록은 옛 모델을 뺀다", () => {
+  it("제공자별 최신 모델만 카탈로그 순서로 돌려주고 첫 항목이 기본 모델이다", async () => {
+    const { defaultModelForAuthMode, latestModelsFor } = await loadCatalog();
+    expect(latestModelsFor(CODEX_PROVIDER_ID)).toEqual(["gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-astra", "gpt-6-luna"]);
+    expect(latestModelsFor(ANTIGRAVITY_PROVIDER_ID)).toEqual(["gemini-4-argon", "gemini-3.8-flash"]);
+    expect(latestModelsFor("anthropic")).toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
+    for (const provider of OH_MY_PI_PROVIDERS) {
+      expect(latestModelsFor(provider.id)[0], provider.id).toBe(defaultModelForAuthMode("chatgpt", provider.id));
+    }
+  });
+
+  it("옛 모델은 첨 실행 목록에서 빠지지만 설정 카탈로그에는 남고 여전히 유효하다", async () => {
+    const { LEGACY_MODEL_IDS, isModelValidForAuthMode, latestModelsFor, modelCatalogForAuthMode } = await loadCatalog();
+    expect([...LEGACY_MODEL_IDS[CODEX_PROVIDER_ID]!]).toEqual(["gpt-6-sol", "gpt-5.6-sol"]);
+    expect([...LEGACY_MODEL_IDS[ANTIGRAVITY_PROVIDER_ID]!].sort()).toEqual([...ANTIGRAVITY_BUNDLED].sort());
+    for (const [provider, legacy] of Object.entries(LEGACY_MODEL_IDS)) {
+      const settings = modelCatalogForAuthMode("chatgpt", provider).flatMap((g) => g.models);
+      for (const model of legacy) {
+        expect(latestModelsFor(provider), `${provider}/${model}`).not.toContain(model);
+        expect(settings, `${provider}/${model}`).toContain(model);
+        expect(isModelValidForAuthMode("chatgpt", model, provider), `${provider}/${model}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe("최신 모델은 카탈로그와 창 표에 다 있다", () => {
+  it("목표 id 마다 제공자 최신 목록과 ORIGINAL_MODEL_WINDOWS 에 양수 창이 있다", async () => {
+    const { latestModelsFor } = await loadCatalog();
+    const { ORIGINAL_MODEL_WINDOWS } = await import("@/ai/originalContext");
+    for (const [provider, ids] of Object.entries(TARGET_MODELS)) {
+      for (const id of ids) {
+        expect(latestModelsFor(provider), `${provider}/${id}`).toContain(id);
+        expect(ORIGINAL_MODEL_WINDOWS[provider]?.[id], `${provider}/${id}`).toBeGreaterThan(0);
+      }
+    }
+    expect(ORIGINAL_MODEL_WINDOWS[CODEX_PROVIDER_ID]).toMatchObject({
+      "gpt-6-astra": 272000, "gpt-6-luna": 272000, "gpt-6.1-sol": 500000, "gpt-6.1-terra": 272000,
+    });
+    expect(ORIGINAL_MODEL_WINDOWS.anthropic).toEqual({
+      "claude-opus-5-5": 1000000, "claude-sonnet-5-5": 1000000, "claude-haiku-5-5": 1000000,
+    });
   });
 });
 

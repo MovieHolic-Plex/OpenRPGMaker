@@ -10,8 +10,10 @@ import { getOhMyPiProvider } from "./ohMyPiProviders";
 import type { AiConfig } from "./llmClient";
 import type { ToolReadEvidence } from "./toolReadEvidence";
 
-// Browser-safe projection of @oh-my-pi/pi-catalog 17.4.0 (not its 9 MB runtime catalog).
-// The installed-catalog contract test must pass when that dependency changes.
+// Browser-safe projection of @oh-my-pi/pi-catalog (not its 9 MB runtime catalog). The google-antigravity and
+// openai-codex blocks were projected from 17.4.0 and are only partly refreshed; the anthropic block lists just the
+// catalog rows the app offers (src/ai/modelCatalog.ts), from 18.13.2. Local extensions (scripts/lib/ohMyPiModel.ts)
+// are not in the bundle. test/originalContext.quarantine.test.ts checks every listed bundled id against the installed catalog.
 export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<string, number>>>> = {
   "google-antigravity": {
     "claude-opus-4-5": 200000,
@@ -23,7 +25,7 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     "gemini-2.5-pro": 1048576,
     "gemini-3-flash": 1048576,
     "gemini-3-pro": 1048576,
-    "gemini-3.1-flash-image": 200000,
+    "gemini-3.1-flash-image": 65536,
     "gemini-3.1-flash-lite": 1048576,
     "gemini-3.1-pro": 1048576,
     "gemini-3.5-flash": 1048576,
@@ -47,12 +49,21 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     "gpt-5.6-sol": 1000000,
     "gpt-5.6-terra": 1000000,
     "gpt-daybreak-blue-latest": 272000,
-    // GPT-6 계열은 설치 번들 밖 로컬 확장이다(scripts/lib/ohMyPiModel.ts, pi-catalog 18.3.2 값). 명시하지 않으면
-    // 기본 모델(gpt-5.6-sol, 1M) 창으로 떨어져 실제(272k)보다 크게 본다.
+    // GPT-6 계열은 17.4.0 번들 밖이라 로컬 확장(scripts/lib/ohMyPiModel.ts)과 같은 값을 쓴다. 명시하지 않으면
+    // 접두 폴백(128k)이나 기본 모델 창으로 떨어진다. astra·sol·luna 272k = ~/.codex/models_cache.json context_window,
+    // 6.1-sol 500k = pi-catalog 18.13.2 와 codex 0.164.0 08:53Z 캐시. 6.1-terra 는 보수값 272k(500k 는 사라진 이른 캐시 한 곳뿐).
     "gpt-6-astra": 272000,
     "gpt-6-sol": 272000,
     "gpt-6-luna": 272000,
+    "gpt-6.1-sol": 500000,
     "gpt-6.1-terra": 272000
+  },
+  // Claude 계정(제공자 anthropic) 카탈로그 세 모델. pi-catalog 18.9.1·18.13.2 contextWindow, 프록시 /v1/models 실측도 1M(2026-11-04).
+  // 없으면 접두 폴백(claude- 200k)으로 떨어져 창을 5분의 1로 본다.
+  "anthropic": {
+    "claude-opus-5-5": 1000000,
+    "claude-sonnet-5-5": 1000000,
+    "claude-haiku-5-5": 1000000
   }
 };
 

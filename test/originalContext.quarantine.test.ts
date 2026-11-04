@@ -345,21 +345,22 @@ describe("task recipe contracts", () => {
 
 
 describe("installed model window contract", () => {
-  it("matches every supported bundled provider model without importing the 9 MB catalog into the app", () => {
+  it("matches every listed bundled provider model without importing the 9 MB catalog into the app", () => {
     const catalog = JSON.parse(readFileSync("node_modules/@oh-my-pi/pi-catalog/src/models.json", "utf8")) as Record<string, Record<string, { contextWindow: number }>>;
-    // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts) — 번들에 없는 것이 정상이다.
-    const localExtensions: Record<string, readonly string[]> = {
-      "google-antigravity": ["gemini-4-argon", "gemini-3.8-flash"],
-      "openai-codex": ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-6.1-terra"],
-    };
+    // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts)과 앱 표가 일부만 싣는 제공자(anthropic)가 있어
+    // 표의 모든 항목이 아니라 번들에 있는 항목의 창만 대조한다.
     for (const [provider, windows] of Object.entries(ORIGINAL_MODEL_WINDOWS)) {
-      const local = new Set(localExtensions[provider] ?? []);
-      const bundledOnly = Object.fromEntries(Object.entries(windows).filter(([id]) => !local.has(id)));
-      expect(bundledOnly).toEqual(Object.fromEntries(Object.entries(catalog[provider]!).map(([id, model]) => [id, model.contextWindow])));
+      const bundled = catalog[provider] ?? {};
+      const listed = Object.entries(windows).filter(([id]) => bundled[id]);
+      expect(Object.fromEntries(listed), provider).toEqual(Object.fromEntries(listed.map(([id]) => [id, bundled[id]!.contextWindow])));
     }
     expect(originalContextWindow({ model: "gpt-6-astra", providerId: "openai-codex" })).toBe(272000);
+    expect(originalContextWindow({ model: "gpt-6.1-sol", providerId: "openai-codex" })).toBe(500000);
+    expect(originalContextWindow({ model: "gpt-6.1-terra", providerId: "openai-codex" })).toBe(272000);
+    expect(originalContextWindow({ model: "claude-sonnet-5-5", providerId: "anthropic" })).toBe(1000000);
     expect(originalContextWindow({ model: "gpt-5.3-codex-spark", providerId: "openai-codex" })).toBe(128000);
     expect(originalContextWindow({ model: "gpt-5.6-sol", providerId: "openai-codex" })).toBe(1000000);
-    expect(originalContextWindow({ model: "unknown", providerId: "openai-codex", authMode: "chatgpt" })).toBe(1000000);
+    // 모르는 id 는 동반 서비스처럼 제공자 defaultModel(gpt-6.1-sol) 창을 쓴다.
+    expect(originalContextWindow({ model: "unknown", providerId: "openai-codex", authMode: "chatgpt" })).toBe(500000);
   });
 });

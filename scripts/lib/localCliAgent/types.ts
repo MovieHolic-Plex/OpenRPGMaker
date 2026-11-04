@@ -49,8 +49,37 @@ export interface LocalCliStatus {
   readonly defaults: { readonly routine: string; readonly deep: string };
   /** 설치·로그인 안내. 한 번 눌러 실행할 명령과 사람이 읽을 설명. */
   readonly install: { readonly command: string; readonly help: string; readonly url: string };
+  /** 운영체제별 설치 안내. install.command 는 컴패니언이 도는 운영체제의 것이다. */
+  readonly installByOs?: LocalCliInstallByOs;
   readonly login: { readonly command: string; readonly help: string };
+  /** 찾은 실행 파일 경로(윈도: PATH·PATHEXT 로 푼 것, 그 밖: 이름 그대로). 설치됐을 때만. */
+  readonly binaryPath?: string;
   readonly problem?: string;
+}
+
+/** 한 운영체제의 설치 명령. requires:"node" 면 Node.js(npm) 가 먼저 있어야 한다. */
+export interface LocalCliInstallStep {
+  readonly command: string;
+  readonly help: string;
+  readonly requires?: "node";
+  readonly alt?: readonly { readonly label: string; readonly command: string; readonly requires?: "node" }[];
+}
+
+export interface LocalCliInstallByOs {
+  readonly win32: LocalCliInstallStep;
+  readonly darwin: LocalCliInstallStep;
+  readonly linux: LocalCliInstallStep;
+}
+
+/** 이 운영체제의 설치 안내. win32·darwin 밖(freebsd 등)은 linux 것을 쓴다. */
+export function installStepFor(byOs: LocalCliInstallByOs, platform: NodeJS.Platform = process.platform): LocalCliInstallStep {
+  return platform === "win32" ? byOs.win32 : platform === "darwin" ? byOs.darwin : byOs.linux;
+}
+
+/** 어댑터 detect 의 install 칸 — 이 운영체제의 명령과 운영체제별 전체. */
+export function installFields(byOs: LocalCliInstallByOs, url: string, platform: NodeJS.Platform = process.platform): Pick<LocalCliStatus, "install" | "installByOs"> {
+  const step = installStepFor(byOs, platform);
+  return { install: { command: step.command, help: step.help, url }, installByOs: byOs };
 }
 
 /** 어댑터가 낸 사용량 — 모델 호출 합계. 비용은 CLI 가 알려 줄 때만(claude). */

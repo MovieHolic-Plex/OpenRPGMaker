@@ -28,5 +28,8 @@ describe("piAgent resolvePiModel fallback", () => {
       expect(model.contextWindow).toBe(272000);
     }
     expect(() => resolvePiModel("openai-codex", "gpt-6-unknown")).toThrow("대체하지 않았습니다");
+    // 6.1 둘은 500k(~/.codex/models_cache.json 2026-11-04). 6.1-sol 은 번들(18.13.2)에도 같은 값으로 있다.
+    expect(resolvePiModel("openai-codex", "gpt-6.1-sol").contextWindow).toBe(500000);
+    expect(resolvePiModel("openai-codex", "gpt-6.1-terra").contextWindow).toBe(272000);
   });
 });
