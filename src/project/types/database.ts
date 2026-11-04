@@ -2253,6 +2253,11 @@ export interface SystemRecords {
    * 생략하면 해상도를 저장한 프로젝트는 integer, 옛 320×240 프로젝트는 fit.
    */
   playSurfaceScale?: "integer" | "fit";
+  /**
+   * 화면보다 작은 맵을 정수 캔버스 배율로 키워 화면을 채울지(project/smallMapFill.ts).
+   * 생략 = SMALL_MAP_FILL_DEFAULT(끔, 2026-11-04 오너 결정) — 작은 맵은 원래 크기로 가운데.
+   */
+  smallMapFill?: boolean;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
