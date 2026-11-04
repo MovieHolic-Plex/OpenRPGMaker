@@ -283,7 +283,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   // 런처(첫 화면 「라이브러리 홈」)는 배너·내 게임·기본 게임 선반을 lead 로 받고, 여기서는 「컨셉에서 시작」 선반만 그린다.
   // 장르 질문(골라서 만들기)과 빈 프로젝트는 선반 머리 오른쪽 글자 단추로 둔다.
   const launcherHead = launcher ? el("div", { class: "cf-feed-head", dataset: { nav: "create" }, children: [
-    el("h2", { text: "컨셉에서 시작", attrs: { id: "cf-feed-h" } }),
+    el("h2", { text: "이런 게임은 어때요?", attrs: { id: "cf-feed-h" } }),
     el("p", { text: "고르면 이름·폴더·화면 크기는 자동으로 정해져요" }),
     el("div", { class: "cf-feed-head-right", children: [
       ...(options.onInterview ? [el("button", { class: "cf-head-link", attrs: { type: "button" }, dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, text: "골라서 만들기 ›", on: { click: () => void openQuick() } })] : []),
@@ -292,6 +292,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   ] }) : null;
   const feed = el("section", { class: "cf-feed", children: [
     ...(options.lead ? [options.lead] : []),
+    ...(launcher ? [el("div", { class: "cf-launcher-search", children: [searchBox] })] : []),
     ...(launcher ? [] : [builtinDemosSection]),
     ...(quickBand ? [quickBand] : []),
     ...(launcherHead ? [launcherHead] : []),
@@ -300,7 +301,8 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   ] });
   const detail = el("section", { class: "cf-detail", dataset: { testid: CONCEPT_FEED_TESTIDS.detail } });
   detail.hidden = true;
-  const body = el("div", { class: "cf-body", children: [feed, detail] });
+  const scrim = el("div", { class: "cf-scrim", attrs: { hidden: "" }, on: { click: () => { returnToFeed(); } } });
+  const body = el("div", { class: "cf-body", children: [feed, ...(launcher ? [scrim] : []), detail] });
   const main = el("div", { class: "cf-main", children: [...(top ? [top] : []), body, errorLine] });
   root.append(main);
 
@@ -457,6 +459,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const showFeed = (): void => {
     detailSeq += 1;
     detail.hidden = true;
+    scrim.hidden = true;
     feed.hidden = false;
     detail.replaceChildren();
     setError("");
@@ -499,7 +502,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     const facts: [string, string][] = [["장르 틀", presetLabel(concept.presetId)], ["주인공", concept.protagonist], ["무대", concept.stage], ["첫 장면", concept.firstScene]];
     detail.replaceChildren(
       el("div", { class: "cf-detail-main", children: [
-        el("button", { class: "cf-back cf-link", attrs: { type: "button" }, text: "← 피드로", dataset: { testid: CONCEPT_FEED_TESTIDS.back }, on: { click: showFeed } }),
+        el("button", { class: "cf-back cf-link", attrs: { type: "button", "aria-label": launcher ? "닫기" : "피드로" }, text: launcher ? "✕" : "← 피드로", dataset: { testid: CONCEPT_FEED_TESTIDS.back }, on: { click: showFeed } }),
         el("div", { class: "cf-hero", children: [hero] }),
         el("h2", { class: "cf-detail-title", text: local.title, attrs: { translate: "no" } }),
         el("p", { class: "cf-detail-hook", text: local.hook, attrs: { translate: "no" } }),
@@ -542,9 +545,10 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const enterDetail = (): void => {
     if (!detail.hidden) return;
     feedScroll = body.scrollTop;
-    feed.hidden = true;
+    // 런처의 상세는 오른쪽 시트다 — 뒤의 피드는 그대로 두고 스크롤도 지킨다.
+    if (!launcher) { feed.hidden = true; body.scrollTop = 0; }
+    scrim.hidden = !launcher;
     detail.hidden = false;
-    body.scrollTop = 0;
   };
 
   function openDetail(concept: GameConcept): void {

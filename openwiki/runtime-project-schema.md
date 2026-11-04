@@ -196,9 +196,9 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 바탕 시트, layer `tokens, start`)
   + 지연 툴팁 시트(`@/styles/map/delayed-tooltip.css` — 없으면 창 단추 툴팁 「닫기」가 레일 위에 맨 글자로 남았다).
-  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-`·`hm-` 접두, 층 밖): 레일(브랜드 · 홈 · 내 게임 · 기본 게임 · 새로 만들기 | 에셋 스토어,
-  바닥에 AI 상태 줄 `start-ai-status` · 설정 `start-settings-open` · 판 번호 · 언어), 위 막대(컨셉 입력창 + 「폴더 열기」·「팀에 참여」), 본문 한 칸.
-  레일의 홈·내 게임·기본 게임·새로 만들기는 본문 칸을 바꾼다(2026-10-21, 위). 위 막대 입력창은 「새로 만들기」 칸에서만 보인다. 에셋 스토어는 브라우저 창.
+  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-`·`hm-` 접두, 층 밖, 색은 편집기 토큰만 — `--ln-*`·`--cf-*` 남색+금색 팔레트는 2026-11-04 삭제): 위 막대 하나(← 홈 · 탭 「내 게임 / 예제 / 아이디어」(`start-nav-games|builtin|create`, 작은 숫자) · 「폴더 열기」·「게임 파일 열기」·「팀에 참여」)와 본문 한 칸.
+  왼쪽 레일·AI 상태 줄·설정·판 번호·언어는 없앴다(홈 오른쪽 위 AI 상태·언어·「⋯」가 맡는다). 탭은 본문 칸을 바꾼다(2026-10-21, 위). 「아이디어」 탭의 컨셉 상세는 오른쪽 시트(`cf-detail`, 480px, Esc·바깥 클릭으로 닫힘)이고 「골라서 만들기」 4단계 마법사 입구는 런처에서 없앴다(편집기 덮는 창에는 남음).
+  내 게임 카드 「⋯」(`start-world-menu-N`): 열기 · 이름 바꾸기(`oprn:start.renameProject` — 폴더 문서의 meta.title, 저장 문서가 없는 폴더는 최근 목록 제목만) · 목록에서 지우기(`oprn:start.forgetRecent` — 최근 목록에서만 뺀다, 폴더·파일은 그대로, 확인 창에 「파일은 지워지지 않아요」). 에셋 스토어는 홈 「⋯」의 브라우저 링크.
   아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
 - **본문 위쪽**: `src/start/home/homeView.ts` 가 그리고 컨셉 피드(`mode: "launcher"`)의 `lead` 로 넘긴다.
   - 배너: 표지를 흐린 배경 + 오른쪽 16:9 액자, 주 단추 금색 「▶ 이어서 만들기」, 곁 「플레이」. 게임이 없으면 「처음이라면 먼저 해 보세요」 — 기본 게임 폴른 스타.

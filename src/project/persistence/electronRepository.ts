@@ -112,6 +112,10 @@ export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
   readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
   readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  /** 데스크톱 전용 — 최근 목록 프로젝트의 제목(문서 meta.title)을 바꾼다. 목록에 없는 경로·빈 제목이면 null. */
+  readonly renameProject?: (payload: { readonly projectDir: string; readonly title: string }) => Promise<{ readonly projectDir: string; readonly title: string } | null>;
+  /** 데스크톱 전용 — 최근 목록에서만 뺀다(폴더·파일은 그대로). 목록에 없던 경로면 false. */
+  readonly forgetRecent?: (payload: { readonly projectDir: string }) => Promise<boolean>;
   /**
    * 새 폴더 프로젝트를 만든다. `seed` 를 주면 그 직렬화 문서를 새 폴더에 심는다(장르 프리셋 등).
    * `projectDir` 를 주면(데스크톱 시작 화면) 대화상자 없이 그 새 폴더에 만든다.
