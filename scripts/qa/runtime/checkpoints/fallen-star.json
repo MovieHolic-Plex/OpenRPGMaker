@@ -3908,9 +3908,15 @@
        "key": "Enter"
       },
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "timeoutMs": 4000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1100
       }
      ],
      "shot": true
@@ -4361,9 +4367,15 @@
        "key": "Enter"
       },
       {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "timeoutMs": 4000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1100
       }
      ],
      "shot": true
