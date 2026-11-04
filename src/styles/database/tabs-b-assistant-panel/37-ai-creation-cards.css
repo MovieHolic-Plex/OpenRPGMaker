@@ -53,7 +53,7 @@
 }
 .ai-work-creation-art .db-list-thumb { width: 48px; height: 48px; image-rendering: pixelated; }
 .ai-work-creation-art .db-list-thumb img { width: 48px; height: 48px; }
-.ai-work-creation-glyph { font-size: var(--font-size-lg, 18px); }
+.ai-work-creation-glyph { font-size: calc(var(--font-size-sm) * 1.4); }
 .ai-work-creation-art img { image-rendering: pixelated; }
 .ai-work-creation-glyph { color: var(--text-2); font-weight: var(--font-weight-medium); }
 .ai-work-creation-pair { display: flex; align-items: flex-end; gap: var(--space-1); padding: 0 var(--space-1); }
@@ -73,8 +73,8 @@
   inset: -10px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, #fff6c8 90%, transparent) 0 10%, transparent 40%),
-    conic-gradient(from 0deg, transparent 0 8%, color-mix(in srgb, #ffd54a 85%, transparent) 10% 12%, transparent 14% 33%, color-mix(in srgb, #ffd54a 85%, transparent) 35% 37%, transparent 39% 58%, color-mix(in srgb, #ffd54a 85%, transparent) 60% 62%, transparent 64% 83%, color-mix(in srgb, #ffd54a 85%, transparent) 85% 87%, transparent 89%);
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--bg-raised) 90%, transparent) 0 10%, transparent 40%),
+    conic-gradient(from 0deg, transparent 0 8%, color-mix(in srgb, var(--warning) 85%, transparent) 10% 12%, transparent 14% 33%, color-mix(in srgb, var(--warning) 85%, transparent) 35% 37%, transparent 39% 58%, color-mix(in srgb, var(--warning) 85%, transparent) 60% 62%, transparent 64% 83%, color-mix(in srgb, var(--warning) 85%, transparent) 85% 87%, transparent 89%);
   pointer-events: none;
   animation: ai-work-creation-sparkle 400ms ease-out both;
 }
@@ -130,7 +130,7 @@
 .ai-change-summary-thumb { display: grid; place-items: center; min-width: 32px; min-height: 32px; border-radius: var(--radius-s, 4px); background: var(--bg-inset); overflow: hidden; }
 .ai-change-summary-thumb canvas { display: block; max-width: 56px; height: auto; image-rendering: pixelated; }
 .ai-change-summary-thumb .db-list-thumb { width: 32px; height: 32px; image-rendering: pixelated; }
-.ai-change-summary-thumb-glyph { color: var(--accent); font-size: var(--font-size-md, 15px); }
+.ai-change-summary-thumb-glyph { color: var(--accent); font-size: calc(var(--font-size-sm) * 1.2); }
 .ai-change-summary-thumb-map { display: block; }
 .ai-change-thumb-walk { display: inline-block; background-repeat: no-repeat; background-position: var(--walk-x) var(--walk-y); image-rendering: pixelated; }
 @keyframes ai-work-creation-in {
@@ -144,7 +144,7 @@
   to { opacity: 0; transform: scale(1.4) rotate(45deg); }
 }
 @keyframes ai-work-creation-glow {
-  from { box-shadow: 0 0 0 0 color-mix(in srgb, #ffd54a 70%, transparent); transform: scale(0.7); }
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--warning) 70%, transparent); transform: scale(0.7); }
   60% { transform: scale(1.12); }
   to { box-shadow: 0 0 0 10px transparent; transform: none; }
 }

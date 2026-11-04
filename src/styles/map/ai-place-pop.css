@@ -19,7 +19,7 @@
   height: 24px;
   margin-left: -36px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, color-mix(in srgb, #ffd54a 75%, transparent), transparent 70%);
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--warning) 75%, transparent), transparent 70%);
   animation: canvas-ai-place-ring 400ms ease-out both;
   z-index: -1;
 }

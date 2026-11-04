@@ -320,17 +320,16 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       last = project;
       // 이번 체크포인트가 새로 들인 항목만(맵 칸 제외). 실행 기준에 이미 있던 것은 「새로 만든 것」이 아니다 —
       // 고친 것은 끝의 「바뀐 것」 카드가 보인다. 음악은 곡 칸을 「정한」 것이므로 고침도 카드로 낸다.
-      const fresh = listChangeItems(previous, project, { skipMapTiles: true })
-        .filter((item) => item.change === "added" || (item.kind === "music" && item.change === "modified"));
+      // 고친 기록도 카드로 낸다(「· 고침」) — 「보스 몬스터 하나랑 전투 음악」을 조수가 있던 보스를 강화하고 곡을 건 이벤트를
+      // 고쳐 해내면 새로 만든 것만 보는 카드 줄이 텐 빈 채로 끝났다(2026-11-05 녹화). 이벤트는 대사나 곡이 있을 때만.
+      const fresh = listChangeItems(previous, project, { skipMapTiles: true }).filter((item) => item.change !== "removed");
       if (!fresh.length) return;
-      const addedSinceBase = new Set(listChangeItems(base, project, { skipMapTiles: true })
-        .filter((entry) => entry.change === "added").map((entry) => `${entry.kind}:${entry.id}`));
       for (const item of fresh) {
         const key = `${item.kind}:${item.mapId ?? ""}:${item.id}`;
         if (seen.has(key)) continue;
-        if (item.kind !== "music" && !addedSinceBase.has(`${item.kind}:${item.id}`)) continue;
         const model = creationCardModel(project, item);
         if (!model) continue;
+        if (item.kind === "event" && item.change === "modified" && !model.speech && !model.musicId) continue;
         const card = buildCard(project, model);
         seen.set(key, card);
         root.append(card);
