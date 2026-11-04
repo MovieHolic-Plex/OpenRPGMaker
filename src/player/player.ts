@@ -94,7 +94,7 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
-import { scenePreloadEnabled } from "@/player/scenePreload";
+import { holdBackgroundPreload, scenePreloadEnabled } from "@/player/scenePreload";
 import { createCinematicAssets } from './cinematicAssets';
 import { warmPlayGameRuntime } from './createPlayGame';
 import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
@@ -397,6 +397,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopTitleBgm();
     const controller = new AbortController();
     openingController = controller;
+    // 오프닝이 도는 동안 뒤 받기(수천 개)는 쉬게 한다 — 맵으로 넘기거나 런이 끝나면 푼다.
+    const releasePreload = holdBackgroundPreload();
+    controller.signal.addEventListener('abort', releasePreload, { once: true });
     let lastFrame = '#000', handoffFadeMs = 500;
     const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
       signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, holdClockThroughStalls: true, softCutTails: true,
@@ -427,7 +430,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const prepared = Promise.race([playback.firstFrame, new Promise<void>((resolve) => window.setTimeout(resolve, 4000))])
       .then(() => run === startRun && shellActive ? bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true) : undefined);
     void playback.done.then(async result => {
-      if (result === 'aborted' || run !== startRun || !shellActive) return;
+      if (result === 'aborted' || run !== startRun || !shellActive) { releasePreload(); return; }
       openingController = null;
       // Retain the last composition if a short opening/early skip beats map readiness.
       const cover = el('div', { class: 'cinematic-sequence', dataset: { testid: 'opening-map-handoff' } });
@@ -449,9 +452,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       const fadeMs = result === 'skipped' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : handoffFadeMs;
       if (fadeMs > 0) await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' }).finished.catch(() => undefined);
       cover.remove();
+      releasePreload();
       if (run !== startRun || !shellActive) return;
       surface.stage.focus({ preventScroll: true });
-    });
+    }).finally(releasePreload);
   };
 
   // 예비검사가 시작 맵/좌표를 재배선했으면 그 결과가 곧 이번 런의 스폰이다.

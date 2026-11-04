@@ -27,10 +27,36 @@ export type PlayGameBootOptions = {
   readonly onPlaySceneReady?: () => void;
 };
 
+/**
+ * Phaser 의 XHR 그림 처리(ImageFile.onProcess)는 <img>.onload 에서 곧바로 텍스처를 올린다. onload 는 디코드를 기다리지 않아
+ * texImage2D 가 메인 스레드에서 큰 칩셋(2048×4256 등)을 풀며 0.4~1초씩 멈췄다 — 오프닝 위에서 그대로 보인 끊김(2026-11-05 폴른 스타·첫사랑 실측).
+ * decode() 는 디코드를 다른 스레드에서 끝내 두므로, 끝난 뒤에 올리면 업로드만 남는다. 한 번만 깔다.
+ */
+function decodeImagesBeforeUpload(PhaserRuntime: typeof Phaser): void {
+  type ImageFileProto = { onProcess: () => void; onProcessComplete: () => void; onProcessError: () => void; data: HTMLImageElement; xhrLoader: XMLHttpRequest; crossOrigin?: string; state: number; __oprnDecode?: true };
+  const proto = (PhaserRuntime.Loader.FileTypes.ImageFile as unknown as { prototype: ImageFileProto }).prototype;
+  if (proto.__oprnDecode) return;
+  proto.__oprnDecode = true;
+  const PROCESSING = PhaserRuntime.Loader.FILE_PROCESSING;
+  proto.onProcess = function (this: ImageFileProto): void {
+    this.state = PROCESSING;
+    const image = new Image();
+    if (this.crossOrigin !== undefined) image.crossOrigin = this.crossOrigin;
+    this.data = image;
+    const url = URL.createObjectURL(this.xhrLoader.response as Blob);
+    image.src = url;
+    image.decode().then(
+      () => { URL.revokeObjectURL(url); this.onProcessComplete(); },
+      () => { URL.revokeObjectURL(url); this.onProcessError(); },
+    );
+  };
+}
+
 let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof import('@/player/PlayScene')['PlayScene'] }> | undefined;
 function preparePlayRuntime() {
   // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
   return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
+      decodeImagesBeforeUpload(PhaserRuntime);
       const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
       return { PhaserRuntime, PlayScene };
     })
@@ -38,6 +64,27 @@ function preparePlayRuntime() {
 }
 /** Fetch/parse engine chunks while the title is visible; never creates a game/session. */
 export async function warmPlayGameRuntime(): Promise<void> { await preparePlayRuntime(); }
+
+/**
+ * 오프닝이 덮고 있는 동안 엔진은 맵을 짓기만 하고 그리지 않는다(update 는 돌고 render 는 건너뛴다).
+ * 가려진 WebGL 캔버스를 매 프레임 그리면 합성기가 그 캔버스를 되읽어(소프트웨어 합성 ReadPixels) 오프닝이 프레임마다
+ * 50~130ms 씩 끊겼다(2026-11-05 폴른 스타 1.17 실측: 50ms 넘는 프레임 467/512). 넘겨받을 때(pending=false) 원래 step 으로 돌아간다.
+ * loop.start 가 texturesReady 에서 this.step 을 묶기 전에(preBoot) 바꿔 끼운다.
+ */
+export function holdRenderWhilePresentationPending(game: Phaser.Game): void {
+  const step = game.step;
+  // 맵이 다 지어지면 덮개 뒤에서 딱 한 번 그려 둔다(셰이더·타일 묶음·텍스처 바인딩 준비). 안 그리면 그 일이 오프닝이 끝난 뒤 첫 프레임에
+  // 한꺼번에 몰려 넘겨받기가 300ms 멈췄다(2026-11-05 폴른 스타 실측).
+  let warmRender = false;
+  game.events.once('playscene-ready', () => { warmRender = true; });
+  game.step = function (this: Phaser.Game, time: number, delta: number): void {
+    if (this.pendingDestroy || this.isPaused || this.registry.get('initialPresentationPending') !== true || warmRender) { warmRender = false; step.call(this, time, delta); return; }
+    this.events.emit('prestep', time, delta);
+    this.events.emit('step', time, delta);
+    this.scene.update(time, delta);
+    this.events.emit('poststep', time, delta);
+  };
+}
 
 export async function createPlayGame(
   parent: HTMLElement,
@@ -74,6 +121,7 @@ export async function createPlayGame(
     callbacks: {
       preBoot: (game) => {
         game.registry.set('initialPresentationPending', options.initialPresentationPending === true);
+        if (options.initialPresentationPending === true) holdRenderWhilePresentationPending(game);
         game.registry.set(PLAY_PIXEL_DENSITY_KEY, density);
         if (options.qaInstrumentation === true) {
           game.registry.set("qaInstrumentation", true);

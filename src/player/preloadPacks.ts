@@ -3,7 +3,7 @@
 // 형식·보안 규칙은 project/storeGamePacks.ts. 서비스 워커를 못 쓰는 곳(사파리 일부·사생활 창)은 false 를 돌려주고,
 // 부르는 쪽(exportEntry.ts)이 그 파일들을 낱개로 받는다.
 import { PACK_IMAGE_PATH, PRELOAD_SW_NAME } from "@/project/storeGamePacks";
-import { fetchBlobWithRetry, markUrlsReady } from "@/player/scenePreload";
+import { backgroundPreloadTurn, fetchBlobWithRetry, markUrlsReady } from "@/player/scenePreload";
 
 export interface PreloadPack { readonly path: string; readonly files: readonly string[] }
 
@@ -67,6 +67,7 @@ export async function loadPacks(base: URL, packs: readonly PreloadPack[], option
   const failed: string[] = [];
   const worker = async (): Promise<void> => {
     for (let pack = queue.shift(); pack; pack = queue.shift()) {
+      await backgroundPreloadTurn();
       const urls = pack.files.filter((path) => PACK_IMAGE_PATH.test(path)).map((path) => new URL(path, base).href);
       try {
         const blob = await fetchBlobWithRetry(new URL(pack.path, base).href, "low");
@@ -76,7 +77,15 @@ export async function loadPacks(base: URL, packs: readonly PreloadPack[], option
         if (body.v !== 1 || !Array.isArray(body.files)) throw new Error("묶음 형식이 아닙니다");
         const listed = new Set(pack.files);
         const puts: Promise<void>[] = [];
+        let sliceStart = performance.now();
         for (const item of body.files) {
+          // 묶음 하나(그림 수백 장)를 한 태스크에서 다 풀면(base64 → 바이트 → cache.put) 메인 스레드가 수백 ms 멈춰
+          // 오프닝·필드 프레임이 끊겼다(2026-11-05 폴른 스타 프로파일: put 2.6초). 8ms 마다 한 번 양보하고, 앞에서 연출이 돌면 기다린다.
+          if (performance.now() - sliceStart > 8) {
+            await new Promise<void>((resolve) => setTimeout(resolve, 0));
+            await backgroundPreloadTurn();
+            sliceStart = performance.now();
+          }
           if (!Array.isArray(item) || typeof item[0] !== "string" || typeof item[1] !== "string") continue;
           const path = item[0];
           // 목록에 적힌 그림 경로만(작가가 묶음 안에 다른 경로·형식을 끼워 넣어도 캐시에 들이지 않는다). 형식은 확장자로만 정한다.

@@ -330,6 +330,30 @@ function fetchOne(url: string, priority: "high" | "low", onBytes: (bytes: number
 }
 
 /**
+ * 앞에서 연출(오프닝)이 도는 동안 뒤 받기를 쉬게 하는 문. 뒤 받기는 파일 하나가 끝날 때마다 여기서 기다린다.
+ * 왜: 오프닝이 시작되고 1.5초 뒤부터 수천 개 파일의 스트림 읽기·묶음 풀기(base64→캐시)가 메인 스레드에서 돌아
+ * 오프닝 프레임을 수십 ms 씩 끊었다(2026-11-05 첫사랑·폴른 스타 실측). 화면이 부르는 받기(high)는 막지 않는다.
+ */
+let foregroundHolds = 0;
+let foregroundWaiters: (() => void)[] = [];
+export function holdBackgroundPreload(): () => void {
+  foregroundHolds += 1;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    foregroundHolds -= 1;
+    if (foregroundHolds > 0) return;
+    const waiters = foregroundWaiters;
+    foregroundWaiters = [];
+    for (const resolve of waiters) resolve();
+  };
+}
+export function backgroundPreloadTurn(): Promise<void> {
+  return foregroundHolds > 0 ? new Promise((resolve) => { foregroundWaiters.push(resolve); }) : Promise.resolve();
+}
+
+/**
  * 주소들을 동시에 몇 개씩 받는다. 진행은 «파일 수» 로 센다(gzip 으로 오는 파일은 크기를 미리 알 수 없다).
  * signal 이 끊기면 새 파일을 시작하지 않는다(이미 받는 것은 캐시를 위해 끝까지 받는다).
  */
@@ -346,6 +370,7 @@ export async function preloadUrls(
   const worker = async (): Promise<void> => {
     for (let url = queue.shift(); url !== undefined; url = queue.shift()) {
       if (options.signal?.aborted) return;
+      if (options.priority === "low") await backgroundPreloadTurn();
       await fetchOne(url, options.priority ?? "high", (chunk) => { bytes += chunk; report(); }, options.retainAudio === true);
       doneFiles += 1;
       report();
