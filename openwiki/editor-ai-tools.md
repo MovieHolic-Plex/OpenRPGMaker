@@ -841,12 +841,19 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   실측(2026-10-03 조선 시험): 빈 버들항 시작 맵 때문에 한양 고을을 로마풍 버들항으로 깔았다. 업로드 칩셋을 고른 빈 맵은 선택이므로 기준으로 남는다.
   그림체를 알려 주는 쪽은 `edit_world_terrain` 결과 `data.townArt`(테마 → 같은 문화권 야외 칩셋·완성 마을, `THEME_TOWN_TILESETS`)와 장소별 「입구 x,y」.
   실내는 테마별 야외 칩셋을 쓰지 않고 `build_hand_interior_room` + `atlas_biome_interior`(손 도트 v5), 배·던전은 `atlas_biome_dungeon` 안내를 함께 준다.
+- 게임 전체 이어 짓기(`whole_game_rekick`, `src/ai/v2/shipChecks.ts` `unbuiltGameSigns`): `wantsWholeGame` 요청이면 엔딩이 하나도 없거나(요청에 「엔딩」 낱말이 없어도)
+  모든 맵이 손대지 않은 빈 시작 맵이면(「플레이할 맵이 없다」) 최대 3번 이어 짓게 한다(2026-11-05 gpt-only-game). 「… 모험 게임으로」처럼
+  「<낱말> 게임으로」로 끝나는 요청도 게임 하나다(앞 낱말이 을/를로 끝나면 고치기 요청 — 「대사를 게임으로」 아님). 회귀 `test/wholeGameRekick.test.ts`.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
-- `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
+- `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
+- `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.
+  `tileset-no-baseline`(2026-11-05): 기준 맵이 없으면(손대지 않은 빈 시작 맵뿐) 묻지 않고 「그 칩셋으로 바로 지어라」로 거절한다 — 실행기 계열 검사도 이때는 막지 않으므로 물을 것이 없다.
+  장르 잠금이 그 칩셋을 막으면 그대로 묻는다. 실측(gpt-only-game, ChatGPT 구독 Terra 혼자): 「학교 배경 연애 게임」·「좀비 생존 게임」이 새 프로젝트에서 칩셋을 묻고 턴을 끝내
+  타이틀·오프닝만 있고 맵은 빈 풀밭인 게임이 됐다.
   data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널
   `aiTilesetChangeCard.ts` 가 턴 끝에 견본 두 장 카드로 띄운다. 전체 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
 - 회귀: `test/tilesetFamilyGuard.test.ts`(업로드 계열 맵 + 던전 파이프라인 거부 / 같은 계열 통과 / 승인 통과 / currentMapId 없음 / reset·revert /
-  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change / 빈 시작 맵 기준 아님·칠한 맵 기준(h, h')), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
+  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change(빈 시작 맵이면 `tileset-no-baseline`) / 빈 시작 맵 기준 아님·칠한 맵 기준(h, h')), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
 
 ### 남은 일 (네 층)
 

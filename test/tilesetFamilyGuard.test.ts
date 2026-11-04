@@ -186,6 +186,7 @@ describe("칩셋 계열 검사", () => {
 describe("ask_tileset_change", () => {
   it("지금 보는 맵을 from 으로 질문 자료를 돌려주고 프로젝트는 그대로 둔다", () => {
     const project = createBlankProject();
+    project.maps[MAP_ID]!.events.push({ id: "ev_sign", name: "표지판", x: 1, y: 1, pages: [] } as never);
     const snapshot = JSON.stringify(project);
     const ctx: ToolContext = { project, currentMapId: MAP_ID };
     const result = runTool(ctx, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "성 안을 만들려면 성채 타일이 필요해요.", purpose: "castle_interior" });
@@ -198,6 +199,16 @@ describe("ask_tileset_change", () => {
       reason: "성 안을 만들려면 성채 타일이 필요해요.", purpose: "castle_interior",
     });
     expect(JSON.stringify(ctx.project)).toBe(snapshot);
+  });
+
+  it("손대지 않은 빈 시작 맵뿐이면 묻지 않고 바로 짓게 한다(실행기 계열 검사와 같은 기준)", () => {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project, currentMapId: MAP_ID };
+    const asked = runTool(ctx, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "x" });
+    expect(asked.ok).toBe(false);
+    expect(asked.issues?.[0]?.code).toBe("tileset-no-baseline");
+    const built = runTool(ctx, "create_map", { id: "map_castle", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    expect(built.ok, built.summary).toBe(true);
   });
 
   it("없는 타일셋·같은 계열·지금 맵 모름은 거부", () => {

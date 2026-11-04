@@ -9,6 +9,7 @@ import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { isBlankCanvasMap } from "@/project/tilesetBaseline";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { unreachableCriticalEvents } from "./puzzleChecks";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
@@ -80,7 +81,8 @@ export function selfLoopTransfers(project: Project): { mapId: string; eventId: s
 /** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
 // 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
 // 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
-export const WHOLE_GAME_WORDS = /(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game|RPG|알피지)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
+// 「… 게임으로」으로 끝나는 요청도 게임 하나다(2026-11-05 gpt-only-game: 「마을 하나 만들어줘. 거기서 시작하는 모험 게임으로」가 마을만 짓고 엔딩 없이 끝났다).
+export const WHOLE_GAME_WORDS = /(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game|RPG|알피지)|(?:^|[\s.,!?])[^\s.,!?]{0,9}[^\s.,!?을를]\s+(게임|game|RPG|알피지)\s*(으로|로)\s*(해\s*줘|부탁해)?\s*[.!]?\s*$|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
 /** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
 const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
 /** 「게임」 뒤에 바로 만들기 동사(「추리 게임 만들어 줘」·「RPG 하나 만들어」) — 게임 자체가 만들 대상이다. */
@@ -99,7 +101,9 @@ const SINGLE_PLACE = /(방|맵|장소|실내|건물)\s*하나만|다른\s*맵은
  * jrpg 첫 차례에 끝맺음 조립이 돌지 않았고, 「공포 게임에 나오는 병실 실내를 만들어 줘. … 이 방 하나만 지어 줘」 같은 방 과제 6개가 true 라
  * 방 하나 짓기에 출하 검사가 걸렸다.
  */
-export function wantsWholeGame(task: string): boolean {
+export function wantsWholeGame(raw: string): boolean {
+  // 실행기는 요청 뒤에 의도 메모(시스템 지침)를 붙여 보낸다 — 사용자 글만 본다. 「… 게임으로」 끝 맞춤이 메모 때문에 어긋났다(2026-11-05 gpt-only-game).
+  const task = withoutIntentNote(raw);
   if (!WHOLE_GAME_WORDS.test(task)) return false;
   const strong = WHOLE_STRONG.test(task);
   if (EDIT_REQUEST.test(task) && !strong && !/(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|완성|제작)/iu.test(task)) return false;
@@ -591,12 +595,15 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
 export const WHOLE_GAME_REKICKS = 3;
-export function unbuiltGameSigns(project: Project, task: string): string[] {
+export function unbuiltGameSigns(project: Project, _task: string): string[] {
   const out: string[] = [];
   const skeleton = (project.endings ?? []).filter((e) => PLACEHOLDER_NAMES.has(e.name.trim()));
   const real = (project.endings ?? []).filter((e) => !PLACEHOLDER_NAMES.has(e.name.trim()));
   if (skeleton.length && !real.length) out.push(`엔딩이 뼈대 자리표시(${skeleton.map((e) => `「${e.name}」`).join("·")})뿐이다 — 요청한 이야기의 엔딩이 없다`);
-  else if (!real.length && /엔딩|결말|ending/iu.test(task)) out.push("엔딩이 하나도 없다");
+  // 게임 하나를 만드는 요청(호출자가 wantsWholeGame 으로 거른다)에 엔딩이 없으면 끝낼 수 없는 게임이다 — 요청에 「엔딩」 낱말이 없어도.
+  // 실측(2026-11-05 gpt-only-game, Terra 혼자): 「좀비 생존 게임 만들어줘」가 오프닝만 짓고 엔딩·맵 없이 턴을 끝냈는데 이어 짓기가 돌지 않았다.
+  else if (!real.length) out.push("엔딩이 하나도 없다");
+  if (!Object.values(project.maps).some((map) => !isBlankCanvasMap(map))) out.push("플레이할 맵이 없다 — 손대지 않은 빈 시작 맵뿐이다");
   const skeletonEvents = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((ev) => PLACEHOLDER_NAMES.has(String(ev.name ?? "").trim())).map((ev) => `「${ev.name}」(${m.name})`));
   if (skeletonEvents.length && !real.length) out.push(`뼈대 이벤트가 그대로다: ${skeletonEvents.slice(0, 3).join(" · ")}`);
   return out;
