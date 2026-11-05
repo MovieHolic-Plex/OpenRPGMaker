@@ -26,7 +26,10 @@ const MIME = {
   ".svg": "image/svg+xml", ".mp3": "audio/mpeg", ".ogg": "audio/ogg", ".wav": "audio/wav", ".woff2": "font/woff2",
   ".woff": "font/woff", ".ttf": "font/ttf", ".wasm": "application/wasm",
 };
-const stats = { served: 0, planted: 0, upstream: 0, notFound: 0, refused: 0 };
+const stats = { served: 0, planted: 0, upstream: 0, notFound: 0, refused: 0, negativeHits: 0 };
+// Paths the mirror answered 404 for are remembered, so a missing asset asked by 100 sessions reaches the
+// caching mirror (and through it the origin) once, not 100 times.
+const missing = new Set();
 const logLine = (row) => { if (values.log) fs.appendFileSync(values.log, JSON.stringify({ t: Date.now(), ...row }) + "\n"); };
 
 /** /fallen-star/1.37~p1/assets/x.js -> { slug, version, plant, rest } ; anything else -> null */
@@ -69,11 +72,19 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   // Cache miss: the caching mirror fetches once from the origin and stores it. Sessions never leave the VM.
+  const key = `${r.slug}/${r.version}${rel}`;
+  if (missing.has(key)) {
+    stats.negativeHits += 1;
+    res.writeHead(404);
+    res.end("not in mirror");
+    return;
+  }
   stats.upstream += 1;
   try {
     const up = await fetch(`${values.upstream}/${r.slug}/${r.version}${rel}`, { signal: AbortSignal.timeout(180000) });
     logLine({ kind: "upstream", path: `${r.slug}/${r.version}${rel}`, status: up.status });
     if (up.status !== 200) stats.notFound += 1;
+    if (up.status === 404) missing.add(key);
     const buf = Buffer.from(await up.arrayBuffer());
     res.writeHead(up.status, { "content-type": up.headers.get("content-type") ?? "application/octet-stream", "access-control-allow-origin": "*" });
     res.end(buf);
