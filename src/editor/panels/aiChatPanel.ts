@@ -73,8 +73,9 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
-import { imagePlanBuildNote, type ImagePlanScene } from "@/ai/imagePlan";
+import { imagePlanBuildNote, type ImagePlanRead, type ImagePlanScene } from "@/ai/imagePlan";
 import { requestImagePlanMockup } from "@/editor/imagePlanMockup";
+import { builtMapOf, checkPlanFollow } from "@/editor/imagePlanFollowCheck";
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
@@ -2373,7 +2374,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly widenLine?: string; readonly widen?: ImagePlanScene; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   /** 그림 도안 먼저(설정, src/ai/imagePlan.ts): 넓힌 새 장소면 도안 한 장을 받아 첨 요청 그림으로 싣는다. 계정이 없거나 실패하면 한 줄만 남기고 도안 없이 짓는다. */
-  const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string }> => {
+  const imagePlanImages = async (widen: PlainPiTurn["widen"], say: (line: string) => void): Promise<{ readonly images: readonly string[]; readonly note?: string; readonly read?: ImagePlanRead | null }> => {
     if (!widen || loadAiConfig().imagePlanBuild === false) return { images: [] };
     setStatus((loadAiConfig().imagePlanCandidates ?? 1) > 1 ? "그림 도안 여러 장 그려 고르는 중(약 1~2분)…" : "그림 도안 그리는 중(약 1분)…");
     const candidates = loadAiConfig().imagePlanCandidates ?? 1;
@@ -2382,7 +2383,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
     if (outcome.pickLine) say(outcome.pickLine);
     if (outcome.readLine) say(outcome.readLine);
-    return { images: [outcome.dataUrl], note: imagePlanBuildNote(widen, outcome.read) };
+    return { images: [outcome.dataUrl], note: imagePlanBuildNote(widen, outcome.read), read: outcome.read };
+  };
+  /** 지은 뒤 도안과 맞대기(imagePlanFollowCheck.ts): 기준 아래면 없는 요소만 고치는 후속 요청을 평소 전송 경로로 한 번 보낸다. */
+  const planFollowAfterTurn = async (before: Project, plan: { readonly images: readonly string[]; readonly read?: ImagePlanRead | null }): Promise<void> => {
+    const planUrl = plan.images[0];
+    if (!planUrl || disposed) return;
+    const map = builtMapOf(before, store.getCurrent());
+    if (!map) return;
+    const owner = conversationId;
+    try {
+      setStatus("지은 맵을 도안과 맞대는 중…");
+      const result = await checkPlanFollow(store.getCurrent(), map, planUrl, plan.read ?? null);
+      if (!result || disposed || owner !== conversationId) return;
+      const pct = Math.round(result.check.score * 100);
+      console.info(`imagePlan: follow=${pct} layout=${result.check.layout} missing=${result.check.elements.filter((e) => e.mark !== "present").length}`);
+      appendBubble("system", result.fix ? `도안과 맞대 보니 ${pct}% 따랐어요 — 빠진 것만 고칠게요.` : `도안과 맞대 보니 ${pct}% 따랐어요.`);
+      if (result.fix) { restoreComposer(result.fix); void send(); }
+    } catch (error) {
+      console.info(`imagePlan: follow check failed ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setStatus("대기");
+    }
   };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
@@ -2709,9 +2731,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       const planImages = await imagePlanImages(classified.widen, (note) => { const line = appendBubble("system", note); if (workCard?.root.isConnected) workCard.root.before(line); });
       const turnImages = [...(handoff?.images ?? []), ...planImages.images];
+      const beforePlanTurn = planImages.images.length ? structuredClone(store.getCurrent()) : null;
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: planImages.note ? [planImages.note, classified.intentNote].filter(Boolean).join("\n\n") : classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(turnImages.length ? { images: turnImages } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
+      if (beforePlanTurn) void planFollowAfterTurn(beforePlanTurn, planImages);
     } finally {
       releaseMapRun();
       foregroundRunKey = undefined;
