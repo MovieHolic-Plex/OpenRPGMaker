@@ -34,17 +34,7 @@ const factory = (): Project => (factoryCache ??= createBlankProject() as Project
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
 export function applyShipDefaults(project: Project, task = project.gameBlueprint?.request ?? ""): string[] {
-  const applied: string[] = [];
-  const left = new Set(editorDefaultsLeft(project).map((b) => b.id));
-  if (left.has("battle-bgm")) applied.push(...fillBattleBgm(project));
-  if (left.has("battle-background")) applied.push(...fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? ""));
-  if (left.has("hero-look") || left.has("party-faces")) applied.push(...fillPartyLooks(project));
-  // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
-  if (left.has("party-names")) applied.push(...fillPartyNames(project));
-  if (left.has("window-look")) applied.push(...fillWindowLook(project));
-  if (left.has("game-over")) applied.push(...fillGameOver(project));
-  applied.push(...keepProgressOnDefeat(project));
-  if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
+  const applied = applyLookDefaults(project);
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
@@ -77,6 +67,27 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   return applied;
 }
 
+/**
+ * 겉모습 기본값만 채운다 — 전투 곡·전투 배경·파티 모습/얼굴/이름·창 모양·게임 오버·전투 없는 게임의 전투 메뉴. 이벤트·목표·엔딩은 건드리지 않는다.
+ * applyShipDefaults 의 앞부분이고, v1 조수(piAgentRuntime)도 게임 하나를 만드는 요청의 끝에서 부른다 — 실측(2026-11-05 gpt-only-game, Terra 혼자 v1):
+ * 다섯 판 모두 엔딩까지 플레이되는데 전투 곡·전투 배경·게임 오버·창 모양이 편집기 기본으로 남았다(v2 끝맺음만 이것을 채웠다).
+ */
+export function applyLookDefaults(project: Project, story = ""): string[] {
+  // 청사진 없는 v1 게임은 요청 글(story)을 이야기로 읽는다 — 제목만으로는 성별·장르를 못 고른다.
+  const applied: string[] = [];
+  const left = new Set(editorDefaultsLeft(project).map((b) => b.id));
+  if (left.has("battle-bgm")) applied.push(...fillBattleBgm(project, story));
+  if (left.has("battle-background")) applied.push(...fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? ""));
+  if (left.has("hero-look") || left.has("party-faces")) applied.push(...fillPartyLooks(project, story));
+  // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
+  if (left.has("party-names")) applied.push(...fillPartyNames(project, story));
+  if (left.has("window-look")) applied.push(...fillWindowLook(project, story));
+  if (left.has("game-over")) applied.push(...fillGameOver(project, story));
+  applied.push(...keepProgressOnDefeat(project));
+  if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
+  return applied;
+}
+
 // ── 전투 곡 ─────────────────────────────────────────────────────────────
 
 const BATTLE_MUSIC = /전투|battle|보스|boss|결전/iu;
@@ -88,9 +99,12 @@ const DARK_MUSIC = /어둡|묵직|긴장|위협|시네마틱|오케스트라|보
  * 전투 곡: 이 프로젝트에서 실제로 재생되는 음악 목록(listAudioResources — 런타임·도구가 쓰는 같은 목록)의 전투 곡 중 편집기 기본이 아닌 것.
  * 어두운 이야기(마왕·공포)는 어둡고 묵직한 곡, 아니면 그 밖의 곡을 먼저. 같은 프로젝트 → 같은 곡.
  */
-function fillBattleBgm(project: Project): string[] {
+/** 이야기 글 — 청사진이 있으면 그것, 없으면(v1) 제목 + 요청 글. */
+const premiseOf = (project: Project, story: string): string => project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : `${project.meta.title ?? ""} ${story}`.trim();
+
+function fillBattleBgm(project: Project, story: string): string[] {
   const fallback = String((factory().system as unknown as Obj).battleBgmResourceId ?? "");
-  const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : `${project.meta.title ?? ""}`;
+  const premise = premiseOf(project, story);
   const dark = DARK_PREMISE.test(premise);
   const candidates = listAudioResources("music", project)
     .filter((r) => r.id !== fallback && BATTLE_MUSIC.test(`${r.id} ${r.name} ${r.tags.join(" ")}`) && !NOT_BATTLE_LOOP.test(`${r.id} ${r.name} ${r.tags.join(" ")}`))
@@ -222,11 +236,11 @@ function pickChip(text: string, avoid: ReadonlySet<string>, overrides: Project["
  * 시작 파티 중 편집기 기본 칩·기본 얼굴이 남은 인물: 이름·청사진 이야기(장르·제목·목표·요청)로 공용 칩을 고르고 그 칩의 검토된 짝 얼굴을 준다.
  * 모델이 고른 칩은 두고 얼굴만 기본이면 그 칩의 짝 얼굴, 짝이 없으면 얼굴을 비운다(다른 인물 얼굴을 붙이지 않는다).
  */
-function fillPartyLooks(project: Project): string[] {
+function fillPartyLooks(project: Project, story: string): string[] {
   const f = factory();
   const fActors = new Map(f.database.actors.map((a) => [a.id, a]));
   const party = (project.system.startActorIds ?? []).map((id) => project.database.actors.find((a) => a.id === id)).filter((a): a is NonNullable<typeof a> => !!a);
-  const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : String(project.meta.title ?? "");
+  const premise = premiseOf(project, story);
   const used = new Set<string>([...f.database.actors.filter((a) => (project.system.startActorIds ?? []).includes(a.id)).map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`),
     ...party.map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`)]);
   const out: string[] = [];
@@ -266,7 +280,7 @@ const hashText = (text: string): number => { let h = 2166136261; for (let i = 0;
  * 시작 파티 중 편집기 기본 이름(「주인공」)이 남은 인물에 이름을 준다 — 칩 이름표·이야기 낱말이 여성을 말하면 여성 이름, 아니면 남성 이름에서
  * 청사진 제목+인물 id 해시로 하나. 프로젝트의 다른 인물·이벤트 이름과 겹치는 이름은 건너뛴다.
  */
-function fillPartyNames(project: Project): string[] {
+function fillPartyNames(project: Project, story: string): string[] {
   const f = factory();
   const fActors = new Map(f.database.actors.map((a) => [a.id, a]));
   const taken = new Set<string>([...project.database.actors.map((a) => a.name.trim()), ...Object.values(project.maps).flatMap((m) => (m.events ?? []).map((e) => String(e.name ?? "").trim()))]);
@@ -276,16 +290,32 @@ function fillPartyNames(project: Project): string[] {
     const actor = project.database.actors.find((a) => a.id === id);
     if (!actor || fActors.get(id)?.name !== actor.name) continue;
     const chip = sharedChipLabel(actor.characterResourceId ?? "", actor.characterIndex ?? 0);
-    const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : "";
+    const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : story;
     const pool = FEMALE.test(`${chip} ${premise}`) ? FEMALE_NAMES : MALE_NAMES;
     const start = hashText(`${seed}|${id}`) % pool.length;
     const name = Array.from({ length: pool.length }, (_, i) => pool[(start + i) % pool.length]!).find((n) => !taken.has(n));
     if (!name) continue;
-    out.push(`${actor.name} 이름 → ${name}`);
+    const relabeled = renameSpeaker(project, actor.name, name);
+    out.push(`${actor.name} 이름 → ${name}${relabeled ? ` (대사 화자 ${relabeled}줄)` : ""}`);
     actor.name = name;
     taken.add(name);
   }
   return out;
+}
+
+/** 이름을 바꾼 인물의 옛 이름을 화자로 쓴 대사(text.speaker)를 새 이름으로 — 안 그러면 대사창에 「주인공」이 남는다. 바꾼 줄 수. */
+function renameSpeaker(project: Project, from: string, to: string): number {
+  let n = 0;
+  const visit = (node: unknown, depth = 0): void => {
+    if (depth > 24 || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const item of node) visit(item, depth + 1); return; }
+    const o = node as Obj;
+    if (o.kind === "text" && typeof o.speaker === "string" && o.speaker.trim() === from) { o.speaker = to; n += 1; }
+    for (const value of Object.values(o)) if (value && typeof value === "object") visit(value, depth + 1);
+  };
+  for (const map of Object.values(project.maps)) visit(map.events ?? []);
+  visit(project.commonEvents ?? []);
+  return n;
 }
 
 /** 칩 이름표(「젊은 여성 마법사」) — 성별 낱말을 읽는 데만 쓴다. */
@@ -298,8 +328,8 @@ function sharedChipLabel(resourceId: string, index: number): string {
  * 대화창·메뉴 모양을 아무도 고르지 않았다 — 장르로 ESC 메뉴 모양(menuUiStyle)을 고른다: 싸우는 판타지는 고전 청색 창, 추리·탈출·공포는 수첩,
  * 그 밖은 여행 세로 명령창. 대사창 룩(연애 VN)·창 스킨은 건드리지 않는다.
  */
-function fillWindowLook(project: Project): string[] {
-  const premise = project.gameBlueprint ? `${blueprintPremiseText(project, project.gameBlueprint)} ${project.gameBlueprint.ending.how}` : String(project.meta.title ?? "");
+function fillWindowLook(project: Project, story: string): string[] {
+  const premise = project.gameBlueprint ? `${blueprintPremiseText(project, project.gameBlueprint)} ${project.gameBlueprint.ending.how}` : premiseOf(project, story);
   const style: NonNullable<Project["system"]["menuUiStyle"]> = /추리|탐정|미스터리|사건|탈출|밀실|escape|공포|호러|귀신|유령|horror/iu.test(premise) ? "journal"
     : /마왕|용사|기사|판타지|RPG|던전|전투|모험/iu.test(premise) || battleSitesExist(project) ? "classic" : "field-list";
   project.system.menuUiStyle = style;
@@ -437,8 +467,8 @@ function clearCombatLeftovers(project: Project): string[] {
 /**
  * 죽거나 질 수 있는데 게임 오버 화면이 기본이다 — 공포는 공포 연출(잡혔다), 그 밖은 고전(쓰러졌다). 글은 주인공 이름으로 짧게, 다시 하기·타이틀 단추는 기본.
  */
-function fillGameOver(project: Project): string[] {
-  const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : String(project.meta.title ?? "");
+function fillGameOver(project: Project, story: string): string[] {
+  const premise = premiseOf(project, story);
   const hero = project.database.actors.find((a) => a.id === project.system.startActorIds?.[0])?.name?.trim() ?? "";
   const horror = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise);
   const settings = horror

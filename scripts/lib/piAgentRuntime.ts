@@ -85,6 +85,7 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
+import { applyLookDefaults } from "../../src/ai/v2/shipDefaults.ts";
 import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyMeaningTally, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, screenPolishEdits, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
 import { knownSpeakerNames, liftDialogueSpeakerLabelsTool, parseSpeakerLabel, type SpeakerLabelOutcome } from "../../src/editor/dialogue/dialogueSpeakerLabel.ts";
 import { dialogueGuardNames, resolveDialogueEditLine } from "../../src/editor/tools/dialogueTools.ts";
@@ -2059,6 +2060,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           await promptResuming(wholeGameRekickPrompt(missing));
         }
       }
+    }
+    // v1 게임 하나를 만드는 요청: 모델이 끝내 안 고른 겉모습 기본값(전투 곡·전투 배경·파티 모습·창 모양·게임 오버)을 v2 끝맺음과 같은 규칙으로 채운다.
+    // 실측(2026-11-05 gpt-only-game 5차, Terra 혼자): 다섯 판 모두 엔딩까지 플레이됐지만 네 판이 편집기 기본 전투 곡·배경·게임 오버를 그대로 냈다.
+    // 맵 범위 실행(scopeStrict + mapIds)은 체크포인트가 그 맵만 합친다 — system·database·meta 채움이 사라지므로 부르지 않는다.
+    const mapScoped = request.scopeStrict !== false && request.mapIds.length > 0;
+    if (!options.v2 && !mapScoped && !fatal && !rejected && !request.readOnly && !options.readOnlyTools && !options.signal?.aborted && wantsWholeGame(request.task)) {
+      // v1 은 database 등을 accepted 와 참조로 공유한다(ownHeavyForInPlaceEdits 는 v2 전용) — 제자리로 고치면 마지막 체크포인트가 변경을 못 본다.
+      // 채우기가 만지는 네 키(system·maps·database·meta)만 복제한 초안에 적용한다.
+      const draft: Project = { ...ctx.project, system: structuredClone(ctx.project.system), maps: structuredClone(ctx.project.maps), database: structuredClone(ctx.project.database), meta: structuredClone(ctx.project.meta) };
+      const filled = applyLookDefaults(draft, request.task);
+      if (filled.length) ctx.project = draft;
+      if (filled.length) emit({ type: "execution_status", name: "look_defaults", ok: true, summary: `편집기 기본 겉모습을 채움: ${filled.join(" · ").slice(0, 300)}` });
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).

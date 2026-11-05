@@ -855,6 +855,9 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   (`repeatableHealingSources` — 한 번 주는 회복약·시작 소지품 제외)이 없다. 이어 짓기는 1배 특징 확인 고치기 뒤에 신호를 한 번 더 본다(고치기가 지은 것을 되돌릴 수 있다).
   `author_dungeon{rebuild:true}` 는 그 맵에 엔딩을 부르는 이벤트(직접·공통 이벤트 호출)가 있으면 `rebuild-would-erase-ending` 으로 거절한다 — 다시 짓기는 이벤트를 모두 지운다.
   실측(좀비 생존 4차): 장면 시험 11/11 뒤 고치기에서 다시 지어 출구·열쇠 상자·보스 8개가 사라져 끝낼 수 없는 게임이 됐다. 회귀 `test/dungeonRebuildKeepsEnding.test.ts`.
+  v1 겉모습 기본값(`look_defaults`, 2026-11-05 5차): 이어 짓기·특징 확인 뒤 `src/ai/v2/shipDefaults.ts` `applyLookDefaults`(v2 `applyShipDefaults` 의 앞부분 —
+  전투 곡·전투 배경·파티 모습/얼굴/이름·창 모양·게임 오버·전투 없는 게임의 전투 메뉴)를 결정적으로 채운다. 고른 값은 덮지 않는다. HUD 는 채우지 않는다.
+  실측: 다섯 판 모두 엔딩까지 플레이됐지만 넷이 편집기 기본 전투 곡·배경·게임 오버·「주인공」을 그대로 냈다. 회귀 `test/lookDefaults.test.ts`.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.
