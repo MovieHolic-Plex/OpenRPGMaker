@@ -134,7 +134,7 @@ export const WIDEN_MODIFIERS: readonly WidenModifier[] = [
   { id: "castle-fortress-dungeon", subject: "castle", label: "감옥과 병영이 있는 요새 내부", traits: ["요새", "감옥", "병영"],
     recipe: "author_dungeon({type:\"castle\", layout:\"hub\"})", needs: [ts(BD), dg("castle")] },
   { id: "castle-twin-floor", subject: "castle", label: "옥좌가 있는 2층 성채", traits: ["성채", "2층", "옥좌"],
-    recipe: "author_dungeon({type:\"castle\", floors:2, direction:\"up\"})", needs: [ts(BD), dg("castle")] },
+    recipe: "author_dungeon({type:\"castle\", name:\"성채\", floors:2, direction:\"up\", floorRooms:[[{kind:\"entrance\"},{kind:\"hall\"},{kind:\"library\"},{kind:\"storage\"}],[{kind:\"shrine\"},{kind:\"boss\"}]]})", needs: [ts(BD), dg("castle")] },
   { id: "castle-walled-town", subject: "castle", label: "망루가 선 성곽 도시", traits: ["성곽", "망루", "남북 성문"],
     recipe: "author_beodeul_town({theme:\"river\", walls:true, wallGate:\"NS\", form:\"plaza\", roofs:\"slate\"})",
     needs: [ts(BD), kit("bd-wall-gatehouse"), kit("bd-wall-tower")] },
