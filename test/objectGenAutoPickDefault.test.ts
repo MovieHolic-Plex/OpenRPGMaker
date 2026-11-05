@@ -12,6 +12,13 @@ const store = new Map<string, string>();
 
 const { OBJECT_GEN_AUTO_PICK_KEY, objectGenAutoPick } = await import("@/editor/workshop/assistantObjectGen");
 const { outcomeText } = await import("@/editor/panels/aiObjectGenCard");
+const { jobState } = await import("@/editor/workshop/queue/jobModel");
+
+const job = (source: "assistant" | "oneclick" | "workshop") => ({
+  id: "j", projectKey: "p", generator: "object-gen", source, title: "고목", createdAt: 0, harnessId: "map-objects", itemKey: "new:x",
+  roundId: "r1", startedAt: 0, finishedAt: 0, pause: null, cancelled: false, installWait: null, installed: null,
+  error: "검수를 통과한 그림이 나오지 않았어요.", calls: 0, timeline: [],
+}) as never;
 
 describe("object-gen auto pick default", () => {
   afterEach(() => store.clear());
@@ -29,5 +36,10 @@ describe("object-gen auto pick default", () => {
     expect(text).toContain("[공방에서 못 그림]");
     expect(text).toContain("「뿌리 뻗은 고목」");
     expect(text).toContain("generate_missing_object 를 다시 부르지 마라");
+  });
+
+  it("ends an assistant job with no passing drawing as failed instead of waiting for a pick", () => {
+    expect(jobState(job("assistant"), null)).toBe("failed");
+    expect(jobState(job("oneclick"), null)).toBe("failed");
   });
 });

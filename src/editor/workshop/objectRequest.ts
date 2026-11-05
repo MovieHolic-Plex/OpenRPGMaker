@@ -97,5 +97,5 @@ export function objectGenFollowUp(request: ObjectGenRequest, baked: { readonly o
     : `stamp_tileset_object({mapId:"${request.mapId}", objectId:"${baked.objectId}", base:{x,y}}) — 자리는 원래 요청에 맞게 정하라`;
   const who = how === "auto" ? "「알아서 고르기」가 검수 통과 후보를 골라" : "사용자가 후보를 골라";
   return `[공방에서 그려 넣음] ${who} 「${baked.title}」(${baked.columns}×${baked.rows}칸)을 칩셋 ${baked.tilesetId} 에 넣었다. 물체 id ${baked.objectId}. `
-    + `이제 ${where} 로 놓고, 막힌 칸이면 다른 빈 바닥으로 옮겨 다시 놓아라. 다시 그리거나 generate_missing_object 를 또 부르지 마라. 원래 요청: ${request.need}`;
+    + `이제 ${where} 로 놓고, 막힌 칸이면 다른 빈 바닥으로 옮겨 다시 놓아라. 다시 그리거나 generate_missing_object·draw_object 를 또 부르지 마라. 원래 요청: ${request.need}`;
 }

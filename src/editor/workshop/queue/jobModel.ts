@@ -134,7 +134,8 @@ export function jobState(job: WorkshopJob, round: WorkshopRound | null): JobStat
   if (job.installWait !== null) return "installing";
   if (job.pause) return "paused";
   // 「한 번에 만들기」 물건이 다시 그려도 검수 통과 후보가 없으면 못 그림으로 끝낸다 — 사람에게 관문 판정을 넘기지 않는다(2026-10-23 사용자 규칙).
-  if (job.error && job.roundId && job.source === "oneclick") return "failed";
+  // 조수 요청도 같다(2026-11-05): 알아서 고르기가 다시 그려도 통과 후보가 없으면 오류를 적는다 — 「고를 차례」로 사람을 기다리지 않는다.
+  if (job.error && job.roundId && (job.source === "oneclick" || job.source === "assistant")) return "failed";
   if (job.remote && !job.pack) {
     if (job.error) return "failed";
     const st = job.remote.status;

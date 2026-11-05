@@ -162,6 +162,8 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
     loaded = await modules;
     const [{ workshopQueue }, , chat] = loaded;
     if (!chat.workshopAiReady()) {
+      // 알아서 고르기면 사람을 기다리지 않는다 — 조수가 있는 기물로 잇게 알린다(연결하면 「다시 그리기」로 그릴 수 있다).
+      if (autoPickOn()) { finish(`그리려면 내 AI 계정을 연결해야 해요. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title }); return; }
       status.textContent = "그리려면 내 AI 계정을 연결해야 해요. 연결한 뒤 「다시 그리기」를 눌러 주세요.";
       if (!footer.querySelector('[data-testid="ai-objectgen-connect"]')) {
         footer.prepend(button("AI 연결하기", "ai-objectgen-connect", () => {
@@ -180,7 +182,11 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
   };
   const start = (): void => {
     if (settled || jobId) return;
-    begin().catch((error: unknown) => { status.textContent = `그리기를 시작하지 못했어요: ${error instanceof Error ? error.message : String(error)}`; });
+    begin().catch((error: unknown) => {
+      const message = `그리기를 시작하지 못했어요: ${error instanceof Error ? error.message : String(error)}`;
+      if (autoPickOn()) finish(`${message} 조수가 있는 기물로 이어요.`, { failed: request.title });
+      else status.textContent = message;
+    });
   };
 
   const redraw = button("다시 그리기", "ai-objectgen-redraw", () => {
@@ -284,7 +290,7 @@ export function outcomeText(outcomes: readonly Outcome[], requests: readonly Obj
   const lines = [...placed];
   if (failed.length) {
     const need = requests.find((request) => failed.includes(request.title))?.need ?? "";
-    lines.push(`[공방에서 못 그림] ${failed.map((title) => `「${title}」`).join(", ")}은(는) 검수를 통과한 그림이 나오지 않았다. 있는 기물로 가장 가까운 것을 그 자리에 놓고 보고에 «그리지 못해 대신 놓음»으로 적어라. generate_missing_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
+    lines.push(`[공방에서 못 그림] ${failed.map((title) => `「${title}」`).join(", ")}은(는) 검수를 통과한 그림이 나오지 않았다. 있는 기물로 가장 가까운 것을 그 자리에 놓고 보고에 «그리지 못해 대신 놓음»으로 적어라. generate_missing_object·draw_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
   }
   if (declined.length) {
     const need = requests.find((request) => declined.includes(request.title))?.need ?? "";

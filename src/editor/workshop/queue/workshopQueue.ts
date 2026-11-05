@@ -42,6 +42,11 @@ const RUNS_PER_JOB = 3;
 const NETWORK_PAUSE_NOTE = "연결이 끊김";
 const NETWORK_REDRAW_NOTE = "연결이 끊긴 후보를 잠깐 뒤 다시 그림";
 /** 「한 번에 만들기」 물건이 검수 통과 없이 끝나 판정 이유로 한 번 더 그린다 */
+/** 조수 요청의 「알아서 고르기」 — 기본 켜짐, 사용자가 카드에서 끈 기기("0")만 사람이 고른다(assistantObjectGen.objectGenAutoPick 과 같은 규칙). */
+function assistantAutoPick(): boolean {
+  try { return localStorage.getItem("oprn:assistant-objectgen-autopick") !== "0"; } catch { return true; }
+}
+
 const ONE_CLICK_REROLL_NOTE = "검수 불통과 — 이유를 주고 한 번 더 그림";
 export const WORKSHOP_JOB_INSTALLED_EVENT = "oprn:workshop-job-installed";
 export type WorkshopJobInstalledDetail = { readonly jobId: string; readonly job: WorkshopJob; readonly baked: WorkshopBakedDetail | null; readonly auto: boolean; readonly reason?: string };
@@ -188,7 +193,7 @@ class WorkshopQueue {
       else if (ACTIVE_STATES.has(state)) counts.active += 1;
       else if (state === "queued") counts.queued += 1;
       // 「한 번에 만들기」의 고르기·넣기는 사람 차례가 아니다 — 알약에 「고를 차례」로 잠깐 떴다(2026-10-23 UX 검수 2차). 진행으로 센다.
-      else if ((state === "ready" || state === "installing") && job.source === "oneclick" && job.autoPick !== false) counts.active += 1;
+      else if ((state === "ready" || state === "installing") && ((job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick()))) counts.active += 1;
       else if (state === "ready" || state === "installing") counts.ready += 1;
       else if (state === "paused") counts.paused += 1;
       else if (state === "failed") counts.failed += 1;
@@ -466,7 +471,7 @@ class WorkshopQueue {
       await this.startRemote(job);
       return;
     }
-    if (job.source === "oneclick" && job.roundId) {
+    if ((job.source === "oneclick" || (job.source === "assistant" && assistantAutoPick())) && job.roundId) {
       // 새 판으로 처음부터(검수 불통과 장은 redrawStuckRuns 가 다시 그리지 않는다)
       this.byRound.delete(job.roundId);
       job.roundId = null;
@@ -768,9 +773,7 @@ class WorkshopQueue {
    * 통과가 둘 이상이면 object-gen 고르기(assistantObjectGen.chooseAutoPick — 고르기 3번 다수결)를 한 번 거친다.
    */
   private maybeAutoPick(job: WorkshopJob, round: WorkshopRound): void {
-    let on = job.source === "oneclick" && job.autoPick !== false;
-    // 조수 요청은 기본 켜짐 — 사용자가 카드에서 끈 경우("0")만 사람이 고른다(assistantObjectGen.objectGenAutoPick).
-    try { on ||= job.source === "assistant" && localStorage.getItem("oprn:assistant-objectgen-autopick") !== "0"; } catch { on ||= job.source === "assistant"; }
+    const on = (job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick());
     if (!on || job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) return;
     const runSignature = round.runs.map((run) => `${run.letter}:${run.status}:${run.finishedAt ?? ""}:${run.attempts.length}`).join("|");
     if (this.rerollFrom.get(job.id) === runSignature) return;
@@ -892,7 +895,7 @@ class WorkshopQueue {
       if (job.cancelled) return;
       // 판을 열기 전에 판 id 를 알 수 없으므로, 열리는 동안 낸 호출은 onChange 가 판을 넘겨 줄 때 이어 붙인다.
       // 「한 번에 만들기」: 미리 보기 고치기 1번만(object-gen 기본 3번) — 그리기 호출이 첫 결과 시간의 대부분이다. 검수(3/4·품질 판정)는 그대로.
-      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}), ...(job.source === "oneclick" && job.autoPick !== false ? { gate: "receipt" as const } : {}) });
+      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}), ...((job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick()) ? { gate: "receipt" as const } : {}) });
       job.roundId = round.id;
       job.startedAt = now();
       this.byRound.set(round.id, job.id);

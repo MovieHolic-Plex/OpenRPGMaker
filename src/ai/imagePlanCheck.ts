@@ -43,6 +43,6 @@ export function planFollowFixRequest(check: PlanFollowCheck): string | null {
   return [
     `[도안 맞대기] 방금 지은 맵이 도안을 ${Math.round(check.score * 100)}% 따른다(기준 ${Math.round(PLAN_FOLLOW_BAR * 100)}%). 아래 요소만 고친다 — 맞은 부분과 맵 전체는 다시 짓지 않는다.`,
     ...lines,
-    "칩셋에 맞는 조각이 없으면 비슷한 것으로 때우지 말고 generate_missing_object 로 만든다. 고친 뒤 무엇을 고쳤는지 한 줄씩 말한다.",
+    "칩셋에 맞는 조각이 없으면 비슷한 것으로 때우지 말고 generate_missing_object 로 만든다(이미 「[공방에서 못 그림]」으로 돌아온 물건은 다시 부르지 않고 있는 기물로 둔다). 고친 뒤 무엇을 고쳤는지 한 줄씩 말한다.",
   ].join("\n");
 }
