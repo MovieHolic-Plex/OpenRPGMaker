@@ -2,6 +2,7 @@
 // 도안 여러 장 중 고르기(2026-11-05): 도안을 2장 동시에 뽑아 비전 판정자가 요청에 맞는 쪽을 고르고, 둘 다 기준 미달이면 1장 더(최대 3장).
 // 이 파일은 순수 계산만 한다 — 읽은 배치에서 빌더 입력이 몇 개 나오는지(읽기 성공도), 판정 지시문, 판정 JSON 해석, 고르기.
 import type { ImagePlanRead, ImagePlanScene } from "./imagePlan";
+import { dungeonPlanFromCells, forestDesignFromCells, villageArgsFromCells } from "./imagePlanCells";
 
 export const IMAGE_PLAN_MAX_CANDIDATES = 3;
 
@@ -13,6 +14,13 @@ const present = (v: unknown): number => (v && typeof v === "object" ? 1 : 0);
 /** 읽은 배치에서 빌더 입력(칸 좌표·방·통로·설계)이 몇 개 나오는가. 못 읽었으면 0. */
 export function readYield(read: ImagePlanRead | null): number {
   if (!read) return 0;
+  if (read.cells) {
+    const c = read.cells;
+    if (read.subject === "village") { const a = villageArgsFromCells(c); const l = a.layout as Record<string, unknown>; return 1 + count(l.houses) + count(l.forests) + present(l.gather) + present(l.landmark) + present(l.work) + c.landmarks.length; }
+    if (read.subject === "forest") return Object.keys(forestDesignFromCells(c)).length + c.landmarks.length;
+    const p = dungeonPlanFromCells(c);
+    return p.rooms.length + p.links.length + c.landmarks.length;
+  }
   const d = read.data;
   if (read.subject === "village") {
     const terrain = Array.isArray(d.terrain) && d.terrain.length >= 6 ? 1 : 0;

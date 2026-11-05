@@ -3,6 +3,7 @@
 // 도안 위에 칸 번호 격자를 그려 비전 모델이 배치(길·집·광장·높은 단·방)를 칸 좌표로 읽게 한 뒤, 그 좌표를 빌더가 이미 받는 인자로 조수에게 건넨다.
 // 도안 그림만 붙이면 조수는 빌더를 기본 인자로 불러 도안이 사라졌다(2026-11-04 실측). 호출(이미지·비전·계정)은 editor/imagePlanMockup.ts 가 한다.
 import type { WidenSubject } from "./vagueWidenCatalog";
+import { dungeonPlanFromCells, forestDesignFromCells, villageArgsFromCells, type CellMap } from "./imagePlanCells";
 
 export const IMAGE_PLAN_PROVIDER = "ChatGPT";
 
@@ -48,6 +49,9 @@ export interface ImagePlanRead {
   readonly cols: number;
   readonly rows: number;
   readonly data: Record<string, unknown>;
+  /** 칸 지도 읽기(imagePlanCells.ts) — 있으면 빌더 인자는 이것에서 옮긴다. fixedRegions = 겹쳐 보고 고친 영역 수. */
+  readonly cells?: CellMap;
+  readonly fixedRegions?: number;
 }
 
 function scaleCell(value: unknown, from: number, to: number): number | null {
@@ -157,6 +161,7 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
 export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | null): string {
   const head = `[그림 도안] 짓기 전에 이 장면을 ChatGPT 이미지 모델로 그린 도안(첫 요청에 붙은 그림)과, 그 도안에서 칸 번호로 읽은 배치를 함께 싣는다. 도안의 큰 구도(장소 윤곽·구역 자리·길·높낮이·랜드마크 위치)를 따르되 칸과 물건은 이 프로젝트의 실제 칩셋 조각만 쓴다. 도안의 색·질감을 베끼지 않는다.`;
   if (!read) return head;
+  if (read.cells) return `${head}\n${cellBuildNote(scene.subject, read.cells)}`;
   if (scene.subject === "village") {
     const a = villageArgsFromRead(read, 56, 44);
     return `${head}\n읽은 마을 배치: author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height}, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.`;
@@ -171,6 +176,25 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
       : head;
   }
   return `${head}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
+}
+
+function cellBuildNote(subject: WidenSubject, cells: CellMap): string {
+  const marks = cells.landmarks.map((l) => `${l.id}=${l.label ?? l.kind}(${l.x},${l.y} ${l.w}×${l.h})`).join(" · ");
+  const markLine = marks ? ` 도안의 랜드마크(빠짐없이 짓는다 — 칩셋에 맞는 조각이 없으면 비워 두지 말고 가장 가까운 조각으로 자리를 채우고 그렇게 말한다): ${marks}.` : "";
+  if (subject === "village") {
+    const a = villageArgsFromCells(cells);
+    return `읽은 마을 칸 지도(${cells.cols}×${cells.rows}): author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height} = 도안 가로세로비, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.${markLine}`;
+  }
+  if (subject === "forest") {
+    return `읽은 숲길 설계: author_forest_route 를 부를 때 designs[0] 을 이대로 보낸다: ${JSON.stringify(forestDesignFromCells(cells))}. 이 설계를 빼거나 기본값으로 바꾸지 않는다.${markLine}\n도안 칸 지도(_ 바깥 · 0~3 땅 단 · ~ 물 · | 폭포 · = 길 · t 나무 · h 건물 · A~Z 랜드마크):\n${cells.cells.join("\n")}`;
+  }
+  if (subject === "dungeon" || subject === "castle") {
+    const plan = dungeonPlanFromCells(cells);
+    return plan.rooms.length
+      ? `읽은 방 배치(도안 칸 = 맵 칸, 늘리지 않는다): author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구, 한 층): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.${markLine}`
+      : markLine;
+  }
+  return `읽은 실내 칸 지도(${cells.cols}×${cells.rows}, _ 바깥 · # 벽 · . 바닥 · = 복도 · ~ 물 · A~Z 랜드마크): 방 구획·문·가구 자리를 이 지도대로 정한다.${markLine}\n${cells.cells.join("\n")}`;
 }
 
 export const IMAGE_PLAN_SKIPPED_LINE = "그림 도안을 건너뛰었어요 — ChatGPT 계정이 연결돼 있지 않습니다. 도안 없이 지어요.";
