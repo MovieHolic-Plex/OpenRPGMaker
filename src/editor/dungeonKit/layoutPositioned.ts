@@ -44,6 +44,20 @@ export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
   return out;
 }
 
+/** 사각형들이 두 방을 4방향으로 끊김없이 잇는가(방 바닥과 맞닿거나 겹치는 사각형에서 시작해 다른 방에 닿는가). */
+function drawnLinks(rects: readonly Rect[], a: Rect, b: Rect): boolean {
+  const near = (p: Rect, q: Rect) => p.x <= q.x + q.w && q.x <= p.x + p.w && p.y <= q.y + q.h && q.y <= p.y + p.h && !((p.x + p.w === q.x || q.x + q.w === p.x) && (p.y + p.h === q.y || q.y + q.h === p.y));
+  const seen = new Set<number>();
+  const queue = rects.map((r, i) => (near(r, a) ? i : -1)).filter((i) => i >= 0);
+  for (const i of queue) seen.add(i);
+  for (let k = 0; k < queue.length; k += 1) {
+    const r = rects[queue[k]!]!;
+    if (near(r, b)) return true;
+    rects.forEach((q, j) => { if (!seen.has(j) && near(r, q)) { seen.add(j); queue.push(j); } });
+  }
+  return false;
+}
+
 export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], defaultSize: Record<DungeonRoomKind, [number, number]>): DungeonLayout {
   const notes: string[] = [];
   const placed: PlacedRoom[] = [];
@@ -159,7 +173,9 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
   for (const [a, b] of edges.values()) {
     const tree = treeEdges.has(edgeKey(a, b));
     const [from, to] = tree && parent.get(b.id) === a ? [a, b] : tree && parent.get(a.id) === b ? [b, a] : [a, b];
-    const cells = drawn.get(edgeKey(a, b));
+    const drawnCells = drawn.get(edgeKey(a, b));
+    // 그린 통로가 두 방에 실제로 닿고(방 바닥과 칸이 겹치거나 바로 옆) 서로 이어져 있을 때만 그대로 깔다 — 아니면 빌더 통로(줄 내림·얼기에 끊긴 통로로 방이 외따로 남았다).
+    const cells = drawnCells && drawnLinks(drawnCells, from, to) ? drawnCells : undefined;
     const pieces = cells
       ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: rect.w > rect.h ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N", rect, ...(!tree ? { loop: true } : {}) }))
       : connect(from, to, !tree);

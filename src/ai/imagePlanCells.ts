@@ -165,8 +165,18 @@ export function dungeonCellScale(map: CellMap): number {
   return Math.max(1, Math.min(2, 78 / map.cols, 68 / map.rows));
 }
 
+/** 문·통로를 바닥(.)으로 그린 도안이 방 둘을 한 덩이로 잇는다(r1 p4 성: 종탑방과 서고가 43×16 한 방) — 가로나 세로 두께가 2칸 이하인 바닥 칸은 통로(=)로 본다. */
+function withNecks(map: CellMap): CellMap {
+  const { cols: W, rows: H } = map;
+  const floor = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && /[.~A-Z=]/u.test(map.cells[y]![x]!);
+  const thick = (x: number, y: number, dx: number, dy: number) => { let n = 1; for (let s = 1; s <= 2 && floor(x + dx * s, y + dy * s); s += 1) n += 1; for (let s = 1; s <= 2 && floor(x - dx * s, y - dy * s); s += 1) n += 1; return n; };
+  const cells = map.cells.map((row, y) => [...row].map((ch, x) => (ch === "." && (thick(x, y, 0, 1) <= 2 || thick(x, y, 1, 0) <= 2) ? "=" : ch)).join(""));
+  return { ...map, cells };
+}
+
 /** 칸 지도 → author_dungeon rooms·links. 방 = 바닥(.·~·랜드마크) 덩이의 칸 상자, 자리·크기 모두 같은 배율(dungeonCellScale). 통로 = 덩이 사이 = 칸이 닿는 방끼리. */
 export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<{ id: string; kind: string; x: number; y: number; w: number; h: number }>; links: Array<{ from: string; to: string; rects: Array<{ x: number; y: number; w: number; h: number }> }> } {
+  map = withNecks(map);
   const roomish = (ch: string) => ch === "." || ch === "~" || LANDMARK.test(ch);
   const comps = components(map, roomish).filter((c) => c.cells.length >= 6).slice(0, 16);
   if (!comps.length) return { rooms: [], links: [] };
