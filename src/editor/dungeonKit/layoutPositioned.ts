@@ -26,6 +26,24 @@ export function readRoomLinks(raw: unknown): [string, string][] {
   return out;
 }
 
+/** 통로가 그림 도안에서 읽은 칸을 실어 왔으면({from,to,rects:[{x,y,w,h}]}) 그 칸을 그대로 깔다 — 곧은·휘는 통로, 폭 1~2, 고리(2026-11-05 imageplan-follow). */
+export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
+  const out = new Map<string, Rect[]>();
+  if (!Array.isArray(raw)) return out;
+  for (const item of raw) {
+    if (!item || typeof item !== "object" || Array.isArray(item) || !("rects" in item)) continue;
+    const o = item as { from?: unknown; to?: unknown; rects?: unknown };
+    if (!Array.isArray(o.rects)) continue;
+    const rects = o.rects.flatMap((r) => {
+      const q = r as Record<string, unknown>;
+      return [q.x, q.y, q.w, q.h].every((v) => Number.isInteger(v)) && (q.w as number) > 0 && (q.h as number) > 0 ? [{ x: q.x as number, y: q.y as number, w: q.w as number, h: q.h as number }] : [];
+    });
+    const a = String(o.from), b = String(o.to);
+    if (rects.length) out.set(a < b ? `${a}|${b}` : `${b}|${a}`, rects);
+  }
+  return out;
+}
+
 export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], defaultSize: Record<DungeonRoomKind, [number, number]>): DungeonLayout {
   const notes: string[] = [];
   const placed: PlacedRoom[] = [];
@@ -136,11 +154,15 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
     return [mk(pieceDir(firstHorizontal, goesForward), first), mk(pieceDir(!firstHorizontal, firstHorizontal ? b.y >= a.y : bx >= ax), second)];
   };
 
+  const drawn = readRoomLinkRects(spec.links);
   const corridors: PlacedCorridor[] = [];
   for (const [a, b] of edges.values()) {
     const tree = treeEdges.has(edgeKey(a, b));
     const [from, to] = tree && parent.get(b.id) === a ? [a, b] : tree && parent.get(a.id) === b ? [b, a] : [a, b];
-    const pieces = connect(from, to, !tree);
+    const cells = drawn.get(edgeKey(a, b));
+    const pieces = cells
+      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: rect.w > rect.h ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N", rect, ...(!tree ? { loop: true } : {}) }))
+      : connect(from, to, !tree);
     corridors.push(...pieces);
     if (tree) { to.from = from.id; to.dir = pieces[0]!.dir; }
   }

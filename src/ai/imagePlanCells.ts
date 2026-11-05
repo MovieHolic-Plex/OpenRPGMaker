@@ -166,7 +166,7 @@ export function dungeonCellScale(map: CellMap): number {
 }
 
 /** 칸 지도 → author_dungeon rooms·links. 방 = 바닥(.·~·랜드마크) 덩이의 칸 상자, 자리·크기 모두 같은 배율(dungeonCellScale). 통로 = 덩이 사이 = 칸이 닿는 방끼리. */
-export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<Record<string, unknown>>; links: string[][] } {
+export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<{ id: string; kind: string; x: number; y: number; w: number; h: number }>; links: Array<{ from: string; to: string; rects: Array<{ x: number; y: number; w: number; h: number }> }> } {
   const roomish = (ch: string) => ch === "." || ch === "~" || LANDMARK.test(ch);
   const comps = components(map, roomish).filter((c) => c.cells.length >= 6).slice(0, 16);
   if (!comps.length) return { rooms: [], links: [] };
@@ -189,8 +189,8 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
     const x = Math.round(c.x0 * scale), y = Math.round(c.y0 * scale);
     return { id, kind: kindOf(c, i), x, y, w: Math.round((c.x1 + 1) * scale) - x, h: Math.round((c.y1 + 1) * scale) - y };
   });
-  const pairs = new Set<string>();
-  const add = (a: number, b: number) => { if (a !== b && a >= 0 && b >= 0) pairs.add(a < b ? `${a}|${b}` : `${b}|${a}`); };
+  const pairs = new Map<string, Comp[]>();
+  const add = (a: number, b: number, corr: Comp) => { if (a === b || a < 0 || b < 0) return; const k = a < b ? `${a}|${b}` : `${b}|${a}`; pairs.set(k, [...(pairs.get(k) ?? []), corr]); };
   for (const corr of components(map, (ch) => ch === "=")) {
     const touch = new Set<number>();
     for (const k of corr.cells) {
@@ -202,8 +202,9 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
       }
     }
     const list = [...touch];
-    for (let a = 0; a < list.length; a += 1) for (let b = a + 1; b < list.length; b += 1) add(list[a]!, list[b]!);
+    for (let a = 0; a < list.length; a += 1) for (let b = a + 1; b < list.length; b += 1) add(list[a]!, list[b]!, corr);
   }
+  const baseY = rooms.map((r) => r.y);
   // 벽 앞면 자리: 방 위로 4줄(벽 앞면 3 + 천장 1)이 비어야 빌더가 방 하나만 옆으로 밀지 않는다. 모자라면 그 방 줄부터 아래 전부를 같이 내려
   // (한 방만 옮기지 않는다) 고리·대칭·좌우 자리가 그대로 남는다. 바닥 세로는 빌더 최소 5줄.
   const GAP = 4;
@@ -218,7 +219,21 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
     if (!worst) break;
     for (const r of rooms) if (r.y >= worst.y) r.y += worst.need;
   }
-  const links = [...pairs].map((p) => p.split("|").map((n) => idOf.get(Number(n))!));
+  // 통로는 도안의 = 칸 그대로(곧은·휘는 길) — 방과 같은 배율·같은 줄 내림으로 옮기고, 가로로 잇닿은 칸은 한 사각형으로 묶는다.
+  const shifts = rooms.map((r, i) => [baseY[i]!, r.y - baseY[i]!] as const).sort((a, b) => a[0] - b[0]);
+  const mapY = (v: number) => { const sy = Math.round(v * scale); let d = 0; for (const [from, by] of shifts) if (sy >= from) d = Math.max(d, by); return sy + d; };
+  const rectsOf = (corrs: readonly Comp[]): Array<{ x: number; y: number; w: number; h: number }> => {
+    const cells = new Set(corrs.flatMap((c) => c.cells));
+    const out: Array<{ x: number; y: number; w: number; h: number }> = [];
+    for (let y = 0; y < map.rows; y += 1) for (let x = 0; x < W; x += 1) {
+      if (!cells.has(y * W + x) || cells.has(y * W + x - 1) && x > 0) continue;
+      let x1 = x; while (x1 + 1 < W && cells.has(y * W + x1 + 1)) x1 += 1;
+      const rx = Math.round(x * scale), ry = mapY(y);
+      out.push({ x: rx, y: ry, w: Math.round((x1 + 1) * scale) - rx, h: Math.max(1, mapY(y + 1) - ry) });
+    }
+    return out;
+  };
+  const links = [...pairs].map(([p, corrs]) => { const [a, b] = p.split("|").map((n) => idOf.get(Number(n))!); return { from: a!, to: b!, rects: rectsOf(corrs) }; });
   return { rooms, links };
 }
 
