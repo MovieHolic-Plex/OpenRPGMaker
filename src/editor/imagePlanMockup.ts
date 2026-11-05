@@ -109,9 +109,16 @@ async function readDescription(blob: Blob, scene: ImagePlanScene, signal?: Abort
 }
 
 async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
-  const [layout, description] = await Promise.all([readLayoutOnly(blob, scene, signal), loadAiConfig().imagePlanDescribe === false ? Promise.resolve(null) : readDescription(blob, scene, signal)]);
+  const layoutRead = readLayoutOnly(blob, scene, signal).catch((error: unknown) => {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: layout read failed ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  });
+  const [layout, description] = await Promise.all([layoutRead, loadAiConfig().imagePlanDescribe === false ? Promise.resolve(null) : readDescription(blob, scene, signal)]);
   if (description) console.info(`imagePlan: describe keep=${description.mustKeep.length} landmarks=${description.landmarks.length}`);
-  return layout && description ? { ...layout, description } : layout;
+  if (!description) return layout;
+  // 배치를 못 읽어도 묘사(아이디어)는 조수에게 간다 — 빈 data 는 «배치 없음»
+  return layout ? { ...layout, description } : { subject: scene.subject, cols: 0, rows: 0, data: {}, description };
 }
 
 async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {

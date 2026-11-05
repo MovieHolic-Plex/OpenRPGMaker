@@ -463,6 +463,7 @@ function loadStoredAiConfig(): AiConfig {
       roleModelsPolicyVersion: 1,
       ...(parsed.dialoguePolishAfterBuild === false ? { dialoguePolishAfterBuild: false } : {}),
       ...(parsed.imagePlanBuild === false ? { imagePlanBuild: false } : {}),
+      ...(parsed.imagePlanDescribe === false ? { imagePlanDescribe: false } : {}),
       ...(parsed.imagePlanCandidates === 2 || parsed.imagePlanCandidates === 3 ? { imagePlanCandidates: parsed.imagePlanCandidates } : {}),
     };
   } catch {

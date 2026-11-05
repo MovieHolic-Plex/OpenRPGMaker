@@ -700,6 +700,8 @@ export function renderAiSettingsForm(options: {
     piApply: normalizePiApplyMode(piApplySelect.value),
     ...(dialoguePolishSelect.value === "off" ? { dialoguePolishAfterBuild: false } : {}),
     ...(imagePlanSelect.value === "off" ? { imagePlanBuild: false } : {}),
+    // 묘사 끄기는 설정 화면에 칸이 없다(측정용) — 저장할 때 지우지 않고 그대로 넘긴다.
+    ...(config.imagePlanDescribe === false ? { imagePlanDescribe: false } : {}),
     ...(imagePlanCountSelect.value === "2" || imagePlanCountSelect.value === "3" ? { imagePlanCandidates: Number(imagePlanCountSelect.value) } : {}),
     ...roleMatrixSlots(),
   });
