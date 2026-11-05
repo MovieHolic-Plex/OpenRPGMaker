@@ -16,6 +16,7 @@ import { loadKeyedCharsetImage } from "@/ai/toolImageCanvas";
 import type { ActorRecord, Command, EnemyRecord, EquipmentRecord, EquipmentStatBonuses, EventPageGraphic, GameEvent, ItemRecord, Project, SkillRecord, StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { isPlaceholderIcon, type IconCollection } from "@/editor/tools/itemIconTools";
+import { getCharacterAppearance, resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { audioPlayback } from "./audioResourcePresentation";
 import {
   CHANGE_KIND_LABEL, listChangeItems, musicResourceOf, recordCollectionOf, undoChangeItem,
@@ -177,6 +178,11 @@ function baseCreationCardModel(project: Project, item: ChangeItem): CreationCard
   return null;
 }
 
+/** 이 이벤트의 외형이 공방에서 걷기 칩을 그리는 중인가 — 작업 줄 상태로 본다(실패·취소면 바로 꺼진다). */
+export function eventAppearanceId(project: Project, item: ChangeItem): string | undefined {
+  return item.kind === "event" ? eventOf(project, item)?.pages?.find((page) => page.graphic?.appearanceId)?.graphic.appearanceId : undefined;
+}
+
 export function eventCharsetGraphic(event: GameEvent): EventPageGraphic | undefined {
   const pages = event.pages ?? [];
   return pages.find((page) => page.graphic?.sprite?.id && !page.graphic.transparent)?.graphic
@@ -223,8 +229,14 @@ function cardArt(project: Project, model: CreationCardModel): HTMLElement | null
   }
   if (item.kind === "event") {
     const event = eventOf(project, item);
-    const graphic = event ? eventCharsetGraphic(event) : undefined;
-    return graphic ? walkingCharset(project, graphic.sprite?.id, charsetIndexOf(graphic)) : null;
+    const raw = event ? eventCharsetGraphic(event) ?? event.pages?.find((page) => page.graphic?.appearanceId)?.graphic : undefined;
+    const graphic = raw ? resolveEventAppearanceGraphic(project, raw) : undefined;
+    const walk = graphic ? walkingCharset(project, graphic.sprite?.id, charsetIndexOf(graphic)) : null;
+    const faceId = getCharacterAppearance(project, raw?.appearanceId)?.face?.resourceId;
+    const faceUrl = faceId ? resolveAssetResourceUrl(faceId, { project }) : undefined;
+    const face = faceUrl ? el("img", { class: "ai-work-creation-face", attrs: { src: faceUrl, alt: "", width: "48", height: "48" }, dataset: { testid: "ai-creation-face" } }) : null;
+    const parts = [face, walk].filter((node): node is HTMLElement => Boolean(node));
+    return parts.length > 1 ? el("span", { class: "ai-work-creation-pair", children: parts }) : parts[0] ?? null;
   }
   if (item.kind === "music") return null;
   if (!collection) return null;
@@ -285,17 +297,27 @@ export interface CreationFeedDeps extends ChangeUndoDeps {
   /** 맵에 놓인 인물·이벤트를 맵 위에 잠깐 보인다(이름표). */
   readonly announcePlacement?: (project: Project, item: ChangeItem) => void;
   readonly reducedMotion?: () => boolean;
+  /** 이 외형의 걷기 칩을 공방이 그리는 중인가(작업 줄). */
+  readonly makingAppearance?: (appearanceId: string | undefined) => boolean;
 }
 
 export interface CreationFeed {
   readonly root: HTMLElement;
   /** 스토어에 새 프로젝트가 들어올 때마다. 이번 실행 기준(base)에서 새로 생긴 것만 카드로. */
   observe(project: Project): void;
+  /** 작업 줄·스토어가 바뀌면(턴이 끝난 뒤에도) 「걷기 칩 만드는 중」과 그림을 다시 본다. */
+  refreshCharacters(project: Project): void;
   readonly count: number;
 }
 
 /** 카드가 너무 많으면 마지막 몇 장만 펼쳐 둔다(작업 줄이 카드로 뒤덮이지 않게). */
 const VISIBLE_CARDS = 12;
+
+function makingBadge(shown: boolean): HTMLElement {
+  const badge = el("span", { class: "ai-work-creation-standin", text: "걷기 칩 만드는 중", attrs: { title: "맞는 걷기 칩이 없어 가장 비슷한 칩을 잠시 세웠습니다 — 공방이 이 인물의 칩을 그리면(보통 5~12분) 저절로 바뀝니다." }, dataset: { testid: "ai-creation-making" } });
+  badge.hidden = !shown;
+  return badge;
+}
 
 function placeholderBadge(shown: boolean): HTMLElement {
   const badge = el("span", { class: "ai-work-creation-standin", text: "대신 쓴 그림", attrs: { title: "이름에 맞는 그림이 없어 종류 기본 그림을 잠시 대신 썼습니다 — 조수가 이름에 맞게 새로 그립니다." }, dataset: { testid: "ai-creation-standin" } });
@@ -319,6 +341,7 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       el("span", { class: "ai-work-creation-text", children: [
         el("span", { class: "ai-work-creation-kind", text: model.kindLine }),
         placeholderBadge(model.placeholderArt === true),
+        makingBadge(deps.makingAppearance?.(eventAppearanceId(project, item)) === true),
         el("strong", { class: "ai-work-creation-title", text: model.title }),
         ...(model.stats ? [el("span", { class: "ai-work-creation-stats", dataset: { testid: "ai-creation-stats" }, text: model.stats })] : []),
       ] }),
@@ -337,9 +360,29 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
     return card;
   };
 
+  // 외형을 입은 인물 카드: 작업 줄 상태로 「걷기 칩 만드는 중」을 켜고 끄고, 칩·얼굴이 바뀌었으면 그림을 다시 그린다.
+  const artKeys = new Map<HTMLElement, string>();
+  const refreshCharacterCards = (project: Project): void => {
+    for (const { card, item } of seen.values()) {
+      const making = card.querySelector<HTMLElement>("[data-testid=ai-creation-making]");
+      const appearanceId = eventAppearanceId(project, item);
+      if (!making || !appearanceId) continue;
+      making.hidden = deps.makingAppearance?.(appearanceId) !== true;
+      const app = getCharacterAppearance(project, appearanceId);
+      const key = JSON.stringify([app?.charset, app?.face]);
+      if (artKeys.get(card) === key) continue;
+      artKeys.set(card, key);
+      const model = creationCardModel(project, item);
+      const art = model ? cardArt(project, model) : null;
+      const slot = card.querySelector(".ai-work-creation-art");
+      if (art && slot) slot.replaceChildren(art);
+    }
+  };
+
   return {
     root,
     get count() { return seen.size; },
+    refreshCharacters: (project) => refreshCharacterCards(project),
     observe(project) {
       if (project === last) return;
       const previous = last;
@@ -349,6 +392,7 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       // 고친 기록도 카드로 낸다(「· 고침」) — 「보스 몬스터 하나랑 전투 음악」을 조수가 있던 보스를 강화하고 곡을 건 이벤트를
       // 고쳐 해내면 새로 만든 것만 보는 카드 줄이 텐 빈 채로 끝났다(2026-11-05 녹화). 이벤트는 대사나 곡이 있을 때만.
       // 대신 쓴 그림을 나중에 그려 바꾸면(실행 끝 자동 그리기) 이미 나온 카드의 그림·표시도 바꾼다.
+      refreshCharacterCards(project);
       for (const { card, item } of seen.values()) {
         const badge = card.querySelector<HTMLElement>("[data-testid=ai-creation-standin]");
         if (!badge || badge.hidden || cardShowsPlaceholder(project, item)) continue;

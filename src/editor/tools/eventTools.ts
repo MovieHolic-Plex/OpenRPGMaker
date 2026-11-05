@@ -15,6 +15,7 @@ import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
+import { characterRoleText, charsetEntryOf, chipFitsRole, eventRoleText, setCharacterRole } from "@/ai/characterFit";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
@@ -1438,6 +1439,7 @@ const placeNpc: ToolDefinition = {
       },
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
+      role: { type: "string", maxLength: 80, description: "이 사람이 누구인지(역할·생김새, 예: 은퇴한 기사, 꽃집 소녀, 무기점 주인). 이름이 고유 이름(게오르크)이면 꼭 준다 — 그림이 역할과 맞는지 판정해 맞지 않으면 실행 끝에 걷기 칩과 얼굴을 새로 만든다." },
       face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 고정 거점(상점 주인·문지기·간판·안내판·동상)→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
       pages: {
@@ -1615,6 +1617,7 @@ const placeNpc: ToolDefinition = {
     const warnings = [
       ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),
       ...normalizationWarnings,
+      ...roleChipWarning(draft, map.id, event, args.role),
     ];
     const pageCount = event.pages?.length ?? 0;
     const normalizationSummary = normalizationWarnings.length > 0 ? ` — SimplePage 정규화 경고 ${normalizationWarnings.length}건` : "";
@@ -1679,6 +1682,16 @@ const setNpcSchedule: ToolDefinition = {
   },
 };
 
+/** 이름이 말하는 역할(무기점·꽃집·어부…)이 고른 번들 칩에 보이지 않으면 알린다 — 실행 끝에 엔진이 새로 그리지만 모델이 먼저 고칠 수 있게. */
+function roleChipWarning(draft: Project, mapId: string, event: GameEvent, role: unknown): string[] {
+  if (typeof role === "string" && role.trim()) setCharacterRole(draft, mapId, event.id, role);
+  const g = event.pages?.find((page) => page.graphic?.sprite?.id && !page.graphic.transparent && !page.graphic.appearanceId)?.graphic;
+  if (!g?.sprite || !event.name) return [];
+  const told = characterRoleText(draft, mapId, event.id);
+  const fit = chipFitsRole(charsetEntryOf(g.sprite.id, decodeCharsetFrameIndex(typeof g.pattern === "number" ? g.pattern : 0).characterIndex), `${told} ${eventRoleText(event)}`, `${told} ${event.name}`);
+  return fit.fits ? [] : [`그림이 역할과 맞지 않는다: ${fit.why}. 맞는 칸이 없으면 이대로 두거나 generate_walk_chip 을 부른다 — 부르지 않아도 실행 끝에 걷기 칩과 얼굴을 새로 만든다.`];
+}
+
 const makeVillager: ToolDefinition = {
   name: "make_villager",
   description:
@@ -1690,6 +1703,7 @@ const makeVillager: ToolDefinition = {
       mapId: { type: "string" },
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
+      role: { type: "string", maxLength: 80, description: "이 사람이 누구인지(역할·생김새, 예: 은퇴한 기사, 꽃집 소녀, 무기점 주인). 이름이 고유 이름(게오르크)이면 꼭 준다 — 그림이 역할과 맞는지 판정해 맞지 않으면 실행 끝에 걷기 칩과 얼굴을 새로 만든다." },
       home: COORD_SCHEMA,
       face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·고정 거점→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
@@ -1927,7 +1941,7 @@ const makeVillager: ToolDefinition = {
     const pageCount = event.pages?.length ?? 0;
     const reuseSummary = reused ? " — 기존 NPC 병합 갱신" : "";
     // 시간표를 붙였는데 시간 시스템이 꺼져 있으면 그 시간표는 실행되지 않는다(set_npc_schedule 과 동일).
-    warnings.push(...timeSystemOffWarnings(draft, schedule.length));
+    warnings.push(...timeSystemOffWarnings(draft, schedule.length), ...roleChipWarning(draft, map.id, event, args.role));
     return {
       summary: `${map.name}에 주민 '${name}' 생성 (${finalX}, ${finalY}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pageCount}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}${reuseSummary}`,
       data: { eventId: id, characterId, x: finalX, y: finalY, scheduleCount: schedule.length, pageCount, shopStockCount: shopStock?.length ?? 0, reused },

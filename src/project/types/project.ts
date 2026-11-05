@@ -899,6 +899,8 @@ export interface Project {
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     /** 이름에 맞는 아이콘이 없어 종류 기본 그림을 「대신 쓴」 레코드("items/<id>" 등) — generate_item_icon 이 그려 바꾸면 지운다. editor/tools/itemIconTools.ts */
     oprnPlaceholderIcons?: Record<string, import('../../editor/tools/itemIconTools').PlaceholderIconMark>;
+    /** 조수가 놓은 인물의 역할(「<mapId>/<eventId>」 → 「은퇴한 기사」) — 그림이 역할과 맞는지 판정한다. ai/characterFit.ts */
+    oprnCharacterRoles?: Record<string, string>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;
     author: string;

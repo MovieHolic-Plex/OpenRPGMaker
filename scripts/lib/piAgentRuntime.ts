@@ -104,6 +104,8 @@ import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
 import { drawItemIcons, itemIconSummary } from './piItemIcons.ts';
+import { APPEARANCE_GENERATION_TOOL, prepareAppearanceGeneration } from '../../src/editor/tools/characterAppearanceTools.ts';
+import { CHARACTER_MAKE_WALL_MS, characterMakeSummary, drawFaces, eventsWearing, facelessNewAppearances, makeCharacters, misfitCharacters } from './piCharacterMaking.ts';
 import { runToolDefinition } from '../../src/editor/tools/toolRunner.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
@@ -730,10 +732,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped);
   };
-  // 걷기 칩 생성 시작 수(실행당 상한 3 — 한 장 5~12분, 이름 붙은 주요 인물만).
-  const WALK_CHIP_RUN_BUDGET = 3;
+  // 걷기 칩 생성 시작 수(실행당 상한 5 — 한 장 5~12분, 이름 붙은 인물만). 모델 호출과 실행 끝 자동 만들기(piCharacterMaking.ts)가 같이 쓴다.
+  const WALK_CHIP_RUN_BUDGET = 5;
   let walkChipStarts = 0;
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL].includes(tool.name) ? tool : ({ ...tool,
+  // 얼굴 그림 수(실행당 상한 — 한 장이 생성 브로커 한 번, 모델 호출과 실행 끝이 같이 쓴다).
+  const PORTRAIT_RUN_BUDGET = 6;
+  let portraitDraws = 0;
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL, APPEARANCE_GENERATION_TOOL].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -868,6 +873,25 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           recordCall({ toolCallId: id, name: tool.name, args: params, result: execution, visuals });
           if (!execution.ok) throw new Error(execution.summary);
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else if (tool.name === APPEARANCE_GENERATION_TOOL) {
+          // 외형의 빈 얼굴·흉상 칸을 그려 바로 채운다. 레지스트리 run 은 ui-required 만 돌려주고 Pi 에서는 아무도 그리지 않았다(2026-11-05 레인 assistant-make-characters).
+          // 채운 칸은 바꾸지 않는다(prepareAppearanceGeneration 이 거부) — 교체는 사람만 한다.
+          const { record, slot } = prepareAppearanceGeneration(ctx.project, { slot: 'face', ...(params as Record<string, unknown>) });
+          if (slot !== 'face') throw new Error('이 조수 실행은 외형의 빈 얼굴(face) 칸만 그립니다 — slot 을 빼고 다시 부르세요. 흉상은 캐릭터 외형 DB 에서 사람이 그립니다.');
+          if (!options.generateOpeningImage) throw new Error('그림 생성 경로가 없습니다(편집기 연결 필요). 얼굴을 그리지 못했습니다 — 그렸다고 보고하지 마세요.');
+          if (portraitDraws >= PORTRAIT_RUN_BUDGET) throw new Error(`이번 실행에서 얼굴을 이미 ${PORTRAIT_RUN_BUDGET}장 그렸습니다(상한). 이 인물은 짝 얼굴로 두고 보고에 적으세요.`);
+          portraitDraws += 1;
+          const events = eventsWearing(ctx.project, base, record.id);
+          const [outcome] = await drawFaces([{ target: { mapId: events[0]?.mapId ?? '', eventId: events[0]?.eventId ?? '', name: record.name, role: { rule: { role: /$^/u, label: '인물', looks: [], brief: '' }, elder: false, child: false }, why: '' }, appearanceId: record.id, description: record.description || record.name, chipStarted: false, events }], {
+            ctx, runTool: (c, n, a) => runTool(c, n, a), drawFace: (args, s) => options.generateOpeningImage!(openingImageProject(ctx.project, []), args, s), ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}),
+          });
+          const execution = outcome?.faceResourceId
+            ? { ok: true, summary: `${record.name} 얼굴(${outcome.faceResourceId})을 그려 외형 ${record.id} 의 ${slot === 'face' ? '얼굴' : '얼굴(흉상 대신)'} 칸에 넣고, 이 외형을 쓰는 이벤트 대사 얼굴을 외형으로 돌렸습니다.`, data: { status: 'generated', appearanceId: record.id, resourceId: outcome.faceResourceId } }
+            : { ok: false, summary: `${record.name} 얼굴을 그리지 못했습니다: ${outcome?.reason ?? ''} 짝 얼굴이 그대로입니다.` };
+          const uploaded = outcome?.faceDataUrl ? await activityThumbnail(outcome.faceDataUrl).catch(() => undefined) : undefined;
+          recordCall({ toolCallId: id, name: tool.name, args: params, result: execution, ...(uploaded && outcome?.faceResourceId ? { visuals: [{ kind: 'asset' as const, title: `${record.name} 얼굴`, caption: '새로 그린 얼굴', phase: 'read' as const, target: `resource:${outcome.faceResourceId}`, resourceId: outcome.faceResourceId, uploaded }] } : {}) });
+          if (!execution.ok) throw new Error(execution.summary);
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
         } else if (tool.name === 'generate_walk_chip' && walkChipStarts >= WALK_CHIP_RUN_BUDGET) {
           // 걷기 칩은 한 장에 5~12분·사용자 계정 한도를 쓴다 — 실행당 상한(이름 붙은 주요 인물만, 2026-11-05 ultrabrain AMEND).
           const failure = { ok: false, summary: `이번 실행에서 걷기 칩을 이미 ${WALK_CHIP_RUN_BUDGET}명 만들기 시작했습니다(상한). 이 인물은 가장 가까운 번들 칩으로 두고 보고에 적으세요.` };
@@ -985,7 +1009,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         emit({ type: 'execution_status', name: 'presentation.image.delivered',
           ...imageStatus('연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.'), data: { toolCallId: id, resourceIds: ids } });
       }
-      if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
+      if ((tool.concurrency === "exclusive" || tool.name === APPEARANCE_GENERATION_TOOL) && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },
   });
@@ -2130,6 +2154,36 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const targets = prepareItemIconTargets(ctx.project, { targets: pending.map(({ collection, id }) => ({ collection, id })) });
         const outcomes = await drawItemIcons(targets, { ctx, generate: options.generateOpeningImage, runTool: (c, n, a) => runTool(c, n, a), progress: say, ...(options.signal ? { signal: options.signal } : {}), deadline: Date.now() + ITEM_ICON_AUTO_WALL_MS });
         emit({ type: 'execution_status', name: 'item.icon.auto', ok: outcomes.every(o => o.ok), summary: itemIconSummary(outcomes), data: { made: outcomes.filter(o => o.ok).length, failed: outcomes.filter(o => !o.ok).length } });
+      }
+      // 역할과 맞지 않는 번들 칩으로 선 이름 붙은 사람(「무기점 주인」이 여관 앞치마 칩)을 만든다 — 걷기 칩은 공방 작업, 얼굴은 생성 브로커.
+      // 모델이 generate_walk_chip 으로 만든 외형도 얼굴이 없으면 여기서 그린다(도구 응답 45초를 막지 않는다). 사람이 고르거나 적용하지 않는다.
+      const misfits = misfitCharacters(ctx.project, base);
+      const chipsLeft = Math.max(0, WALK_CHIP_RUN_BUDGET - walkChipStarts);
+      const faceless = facelessNewAppearances(ctx.project, base, new Set());
+      if (misfits.length || faceless.length) {
+        const say = (summary: string) => emit({ type: 'execution_status', name: 'character.make.progress', ok: true, summary });
+        const deadline = Date.now() + CHARACTER_MAKE_WALL_MS;
+        const deps = {
+          ctx, runTool: (c: ToolContext, n: string, a: Record<string, unknown>) => runTool(c, n, a), progress: say, deadline,
+          drawFace: (args: Record<string, unknown>, signal?: AbortSignal) => options.generateOpeningImage!(openingImageProject(ctx.project, []), args, signal),
+          ...(options.signal ? { signal: options.signal } : {}),
+        };
+        const startChip = options.renderToolImage ? async (appearanceId: string, description: string, name: string) => {
+          walkChipStarts += 1;
+          await options.renderToolImage!(ctx.project, 'generate_walk_chip', { appearanceId, description, name }, options.signal);
+        } : undefined;
+        const facesLeft = () => Math.max(0, PORTRAIT_RUN_BUDGET - portraitDraws);
+        const countedDraw = (args: Record<string, unknown>, signal?: AbortSignal) => {
+          if (facesLeft() <= 0) return Promise.resolve({ ok: false as const, code: 'budget', summary: `이번 실행의 얼굴 상한 ${PORTRAIT_RUN_BUDGET}장을 다 썼다` });
+          portraitDraws += 1;
+          return deps.drawFace(args, signal);
+        };
+        const made = await makeCharacters(misfits, { ...deps, drawFace: countedDraw, chipsLeft, ...(startChip ? { startChip } : {}) });
+        const madeIds = new Set(made.flatMap(o => o.appearanceId ? [o.appearanceId] : []));
+        const faces = await drawFaces(faceless.filter(job => !madeIds.has(job.appearanceId)), { ...deps, drawFace: countedDraw });
+        const outcomes = [...made, ...faces];
+        emit({ type: 'execution_status', name: 'character.make.auto', ok: outcomes.every(o => o.faceResourceId), summary: characterMakeSummary(outcomes, misfits.slice(chipsLeft)),
+          data: { characters: outcomes.map(o => ({ name: o.target.name, appearanceId: o.appearanceId, chipStarted: o.chipStarted, faceResourceId: o.faceResourceId, reason: o.reason })) } });
       }
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
