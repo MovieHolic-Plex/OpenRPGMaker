@@ -71,6 +71,35 @@ describe("Pi 에이전트 중단 사유", () => {
     expect(errors.join("\n")).not.toContain("Request was aborted");
   });
 
+  // 2026-11-05 gpt-only-game 6차 고양이: 200턴을 다 쓴 게임 만들기가 겉모습 기본값 채움·마지막 체크포인트 없이 끝났다.
+  test("턴 상한에서 멈춘 게임 만들기도 겉모습 기본값을 채워 마지막 체크포인트로 보낸다", async () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId!]!;
+    map.events.push({ id: "ev_slime", name: "슬라임", x: 3, y: 3, pages: [{ conditions: [], trigger: "action", commands: [{ kind: "battleProcessing", troopId: project.database.troops[0]?.id ?? "troop_1" }] }] } as never);
+    const factoryBgm = project.system.battleBgmResourceId;
+    const events: PiAgentEvent[] = [];
+    const published: { battleBgmResourceId?: string }[] = [];
+    await runPiAgent(request({ task: "좀비 생존 게임 만들어줘", project, maxTurns: 2, applyMode: "default" }), {
+      streamFn: endlessToolStream() as never,
+      onEvent: (event) => events.push(event),
+      onCheckpoint: async (checkpoint) => { published.push({ battleBgmResourceId: checkpoint.project.system?.battleBgmResourceId }); },
+    });
+    expect(errorMessages(events)).toContain("턴 상한(2)을 넘어 중단했습니다.");
+    expect(events.some((event) => event.type === "execution_status" && event.name === "look_defaults")).toBe(true);
+    expect(published.at(-1)?.battleBgmResourceId).toBeDefined();
+    expect(published.at(-1)?.battleBgmResourceId).not.toBe(factoryBgm);
+  });
+
+  test("턴 상한 끝마무리 체크포인트가 거부돼도 실행은 던지지 않고 턴 상한 중단으로 끝난다", async () => {
+    const project = createBlankProject();
+    project.maps[project.startMapId!]!.events.push({ id: "ev_slime", name: "슬라임", x: 3, y: 3, pages: [{ conditions: [], trigger: "action", commands: [{ kind: "battleProcessing", troopId: "troop_1" }] }] } as never);
+    const done = await runPiAgent(request({ task: "좀비 생존 게임 만들어줘", project, maxTurns: 2, applyMode: "default" }), {
+      streamFn: endlessToolStream() as never,
+      onCheckpoint: async () => { throw new Error("적용 실패(authority) 시험"); },
+    });
+    expect(done.stoppedEarly).toBe("턴 상한(2)을 넘어 중단했습니다.");
+  });
+
   test("클라이언트가 끊으면 끊김 문구가 실린다", async () => {
     const events: PiAgentEvent[] = [];
     const controller = new AbortController();
