@@ -1421,6 +1421,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let polishBudget: { startTurns: number; startTokens: number; over: boolean } | undefined;
   let dialoguePolishReport: DialoguePolishReport | undefined;
   let fatal: string | undefined;
+  // 턴 상한으로 멈춘 실행 — 모델은 더 못 부르지만 모델 없는 결정적 끝마무리(겉모습 기본값·마지막 체크포인트)는 해도 된다.
+  let stoppedAtTurnCap = false;
   // 제공자 스트림이 도중에 끊긴 오류. 실행을 끝내지 않고 같은 기록 위에서 이어 가기 턴을 연다(providerRetry.ts).
   let resumeAfter: string | undefined;
   let providerRetries = 0;
@@ -1474,6 +1476,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // errorMessage 가 일반 문구 "Request was aborted" 가 되고, 아래 message_end 가 그것을 사용자에게
         // 보낸다(실측 2026-09-17: 「마을 만들어달라」가 균형 레벨 16턴을 넘길 때마다 그 영문만 보였다).
         fatal = `턴 상한(${maxTurns})을 넘어 중단했습니다.`;
+        stoppedAtTurnCap = true;
         agent.abort(fatal);
       }
       return;
@@ -2065,7 +2068,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 실측(2026-11-05 gpt-only-game 5차, Terra 혼자): 다섯 판 모두 엔딩까지 플레이됐지만 네 판이 편집기 기본 전투 곡·배경·게임 오버를 그대로 냈다.
     // 맵 범위 실행(scopeStrict + mapIds)은 체크포인트가 그 맵만 합친다 — system·database·meta 채움이 사라지므로 부르지 않는다.
     const mapScoped = request.scopeStrict !== false && request.mapIds.length > 0;
-    if (!options.v2 && !mapScoped && !fatal && !rejected && !request.readOnly && !options.readOnlyTools && !options.signal?.aborted && wantsWholeGame(request.task)) {
+    // 턴 상한으로 멈췄어도 채운다 — 실측(2026-11-05 gpt-only-game 6차 고양이): 200턴을 다 쓴 게임이 끝까지 플레이되는데 창 모양·전투 메뉴가 기본으로 남았다.
+    if (!options.v2 && !mapScoped && (!fatal || stoppedAtTurnCap) && !rejected && !request.readOnly && !options.readOnlyTools && !options.signal?.aborted && wantsWholeGame(request.task)) {
       // v1 은 database 등을 accepted 와 참조로 공유한다(ownHeavyForInPlaceEdits 는 v2 전용) — 제자리로 고치면 마지막 체크포인트가 변경을 못 본다.
       // 채우기가 만지는 네 키(system·maps·database·meta)만 복제한 초안에 적용한다.
       const draft: Project = { ...ctx.project, system: structuredClone(ctx.project.system), maps: structuredClone(ctx.project.maps), database: structuredClone(ctx.project.database), meta: structuredClone(ctx.project.meta) };
@@ -2121,11 +2125,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (rejected) throw new Error(fatal || "적용이 중단되었습니다.");
   // 마지막 한 방울 — 툴 경계 밖에서 바뀐 것까지 캔버스에 닿게 한다. 이미 보낸 것은 diff 가 걸러낸다.
-  if (!fatal && !rejected) {
+  // 턴 상한으로 멈춘 실행도 보낸다 — 위 겉모습 채움처럼 모델 없이 바뀐 것이 있다.
+  if ((!fatal || (stoppedAtTurnCap && !options.signal?.aborted)) && !rejected) {
     // 마지막 체크포인트의 내용 거부는 되돌린 상태(마지막 수용본)로 마무리한다.
+    const capFatal = stoppedAtTurnCap ? fatal : undefined;
     try { await checkpoint("마지막 단계", "finish_stage"); }
     catch (error) {
-      if (rejected) throw error;
+      // 턴 상한 실행의 끝마무리가 거부됐다 — 모델 작업은 이미 도구마다 보냈다. 끝마무리만 버리고 턴 상한 중단으로 끝낸다(실행을 던지지 않는다).
+      if (capFatal) {
+        rejected = false;
+        fatal = capFatal;
+        ctx.project = snapshotProjectKeepingHeavy(accepted);
+      } else if (rejected) throw error;
       emit({ type: "error", message: error instanceof Error ? error.message : String(error) });
     }
   }
