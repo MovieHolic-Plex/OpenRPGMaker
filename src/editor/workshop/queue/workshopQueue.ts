@@ -764,18 +764,20 @@ class WorkshopQueue {
   }
 
   /**
-   * 조수 요청 작업은 사용자가 켠 「알아서 고르기」면 검수 통과 후보를 넣는다(카드가 닫혀 있어도).
+   * 조수 요청 작업은 「알아서 고르기」(기본 켜짐, 끈 기기 제외)로 검수 통과 후보를 넣는다(카드가 닫혀 있어도). 통과가 없으면 한 번 더 그리고, 그래도 없으면 실패 — 카드가 조수에게 알린다.
    * 통과가 둘 이상이면 object-gen 고르기(assistantObjectGen.chooseAutoPick — 고르기 3번 다수결)를 한 번 거친다.
    */
   private maybeAutoPick(job: WorkshopJob, round: WorkshopRound): void {
     let on = job.source === "oneclick" && job.autoPick !== false;
-    try { on ||= localStorage.getItem("oprn:assistant-objectgen-autopick") === "1"; } catch { /* restricted */ }
+    // 조수 요청은 기본 켜짐 — 사용자가 카드에서 끈 경우("0")만 사람이 고른다(assistantObjectGen.objectGenAutoPick).
+    try { on ||= job.source === "assistant" && localStorage.getItem("oprn:assistant-objectgen-autopick") !== "0"; } catch { on ||= job.source === "assistant"; }
     if (!on || job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) return;
     const runSignature = round.runs.map((run) => `${run.letter}:${run.status}:${run.finishedAt ?? ""}:${run.attempts.length}`).join("|");
     if (this.rerollFrom.get(job.id) === runSignature) return;
     if (!autoPickRun(usableRuns(round))) {
       // 「한 번에 만들기」는 사람에게 관문을 넘기지 않는다(2026-10-23): 판정 이유를 주고 한 번 더 그리고, 그래도 없으면 못 그림.
-      if (job.source === "oneclick" && job.harnessId) {
+      // 조수 요청도 알아서 고르기면 같은 길(사람을 기다리지 않는다) — 실패하면 카드가 조수에게 알린다.
+      if ((job.source === "oneclick" || job.source === "assistant") && job.harnessId) {
         const rerolled = job.timeline.some((entry) => entry.note === ONE_CLICK_REROLL_NOTE);
         // 그림 확인기(관문)를 이 컴퓨터에서 돌릴 수 없으면 다시 그려도 소용없다 — 바로 알린다(관문 없이 넣지 않는다).
         const unavailable = round.runs.map((run) => run.verdict?.codes.includes("GATE_UNAVAILABLE") ? run.gate?.reasons[0] ?? "" : null).find((reason) => reason !== null);

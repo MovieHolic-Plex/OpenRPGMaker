@@ -2,7 +2,7 @@
 /**
  * 조수의 「없는 기물 만들기」(generate_missing_object) 요청 — 도구·카드·시험 구동기가 함께 쓰는 순수 모듈(DOM 없음).
  * 도구는 요청만 만들고, 편집기 카드(aiObjectGenCard.ts)가 공방 실행기(object-gen)로 후보를 그린 뒤
- * 사용자가 고르거나(기본) 사용자가 켠 「알아서 고르기」가 검수 통과 후보를 골라 칩셋에 굽는다. 놓는 것은 후속 턴의 조수다.
+ * 「알아서 고르기」(기본 켜짐)가 검수 통과 후보를 골라 칩셋에 굽는다(사용자가 끈 기기에서만 사람이 고른다). 놓는 것은 후속 턴의 조수다.
  */
 import type { Grid, ItemDefinition, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { newItemKey } from "@/harnesses/interior-props/editor/items";
@@ -95,7 +95,7 @@ export function objectGenFollowUp(request: ObjectGenRequest, baked: { readonly o
   const where = request.base
     ? `stamp_tileset_object({mapId:"${request.mapId}", objectId:"${baked.objectId}", base:{x:${request.base.x}, y:${request.base.y}}})`
     : `stamp_tileset_object({mapId:"${request.mapId}", objectId:"${baked.objectId}", base:{x,y}}) — 자리는 원래 요청에 맞게 정하라`;
-  const who = how === "auto" ? "사용자 설정 「알아서 고르기」로 검수 통과 후보를 골라" : "사용자가 후보를 골라";
+  const who = how === "auto" ? "「알아서 고르기」가 검수 통과 후보를 골라" : "사용자가 후보를 골라";
   return `[공방에서 그려 넣음] ${who} 「${baked.title}」(${baked.columns}×${baked.rows}칸)을 칩셋 ${baked.tilesetId} 에 넣었다. 물체 id ${baked.objectId}. `
     + `이제 ${where} 로 놓고, 막힌 칸이면 다른 빈 바닥으로 옮겨 다시 놓아라. 다시 그리거나 generate_missing_object 를 또 부르지 마라. 원래 요청: ${request.need}`;
 }

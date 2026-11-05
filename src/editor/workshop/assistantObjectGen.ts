@@ -15,11 +15,14 @@ import { bakeWorkshopPick } from "./workshopBake";
 import type { WorkshopBakedDetail } from "./workshopEvents";
 import { getWorkshopSession, type WorkshopSession } from "./workshopSession";
 
-/** 사용자가 카드에서 켜는 「알아서 고르기」 — 이 기기에 남는다. 기본은 꺼짐(사람이 고른다). */
+/**
+ * 「알아서 고르기」 — 기본은 켜짐(2026-11-05 오너 「필요한 에셋은 만들게 하고」: 조수는 사람이 고르기를 기다리지 않고 검수 통과 후보를 넣고 이어 놓는다).
+ * 카드에서 끄면("0") 이 기기에서는 사람이 고른다.
+ */
 export const OBJECT_GEN_AUTO_PICK_KEY = "oprn:assistant-objectgen-autopick";
 
 export function objectGenAutoPick(): boolean {
-  try { return localStorage.getItem(OBJECT_GEN_AUTO_PICK_KEY) === "1"; } catch { return false; }
+  try { return localStorage.getItem(OBJECT_GEN_AUTO_PICK_KEY) !== "0"; } catch { return true; }
 }
 
 export function setObjectGenAutoPick(on: boolean): void {

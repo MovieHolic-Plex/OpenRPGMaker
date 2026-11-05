@@ -1,9 +1,9 @@
 // editor/panels/aiObjectGenCard.ts
 // 조수의 generate_missing_object(objectGenTool.ts)가 돌려준 요청을 턴이 끝난 뒤 카드로 보여 준다(2026-10-21).
 // 요청은 공방 작업 줄(editor/workshop/queue)에 선다 — 한 턴에 여러 개면 모두 함께 줄 서서 동시에 그린다(하나씩 막지 않는다).
-// 카드는 작업 줄의 그 작업을 비추기만 한다: 후보가 나오면 사용자가 「이걸로 넣기」를 누르거나, 사용자가 켠 「알아서 고르기」가
-// 검수 통과 첫 후보를 그 맵 칩셋에 굽는다(작업 줄이 굽는다 — 카드가 닫혀 있어도). 작업 줄 판에서 골라도 같다.
-// 묶음의 요청이 모두 끝나면(넣음·그만둠) 조수에게 후속 요청 하나로 물체 id·자리를 한꺼번에 보낸다.
+// 카드는 작업 줄의 그 작업을 비추기만 한다: 기본은 「알아서 고르기」(켜짐)가 검수 통과 후보를 그 맵 칩셋에 굽고(작업 줄이 굽는다 —
+// 카드가 닫혀 있어도), 사용자가 끈 기기에서만 「이걸로 넣기」를 기다린다. 작업 줄 판에서 골라도 같다.
+// 묶음의 요청이 모두 끝나면(넣음·못 그림·그만둠) 조수에게 후속 요청 하나로 물체 id·자리를 한꺼번에 보낸다.
 // 굽기는 공방 칸(이 게임에만)이다 — 스토어 올리기·공용 DB 로는 나가지 못한다(storePublishBlockReason, object-gate 미배선).
 // 위키: openwiki/editor-ai-tools.md 「없는 기물 그리기」, openwiki/editor-workshop.md 「작업 줄」.
 
@@ -24,14 +24,15 @@ const AUTO_PICK_KEY = "oprn:assistant-objectgen-autopick";
 const INSTALLED_EVENT = "oprn:workshop-job-installed";
 
 function autoPickOn(): boolean {
-  try { return localStorage.getItem(AUTO_PICK_KEY) === "1"; } catch { return false; }
+  // 기본 켜짐 — 끈 사람만 "0"(assistantObjectGen.objectGenAutoPick 과 같은 규칙)
+  try { return localStorage.getItem(AUTO_PICK_KEY) !== "0"; } catch { return true; }
 }
 
 function button(text: string, testid: string, onClick: () => void, primary = false): HTMLButtonElement {
   return el("button", { text, class: primary ? "is-primary" : "", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick } });
 }
 
-type Outcome = { readonly text: string } | { readonly declined: string };
+type Outcome = { readonly text: string } | { readonly declined: string } | { readonly failed: string };
 type CardHandle = { readonly root: HTMLElement; readonly settled: Promise<Outcome> };
 
 type QueueModule = typeof import("@/editor/workshop/queue/workshopQueue");
@@ -136,6 +137,8 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
       status.textContent = `후보를 그리는 중이에요(${done}/${round?.runs.length ?? 0}). 한 판에 4~8분 걸려요(참고 그림·고치기·검수). 다른 물건도 함께 그려요. 맵을 계속 고쳐도 돼요.`;
     } else if (state === "paused") status.textContent = `멈춤: ${job.pause?.reason ?? ""}. 작업 줄에서 이어서 그려요.`;
     else if (state === "installing") status.textContent = job.installWait ?? "넣는 중…";
+    // 알아서 고르기면 사람을 기다리지 않는다 — 못 그린 것은 조수에게 알려 가장 가까운 있는 기물로 잇게 한다.
+    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」은(는) 검수를 통과한 그림이 나오지 않아 넣지 못했어요. 조수가 있는 기물로 이어요.`, { failed: request.title });
     else if (state === "failed") status.textContent = "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요.";
     else if (state === "cancelled") finish("그리기를 그만뒀어요. 있는 기물로 할게요.", { declined: request.title });
     else if (state === "ready" && autoPickOn() && job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") && !job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) {
@@ -274,10 +277,15 @@ export function createObjectGenBatch(requests: readonly ObjectGenRequest[], foll
 }
 
 /** 끝난 카드들 → 조수에게 보낼 후속 요청 하나. */
-function outcomeText(outcomes: readonly Outcome[], requests: readonly ObjectGenRequest[]): string {
+export function outcomeText(outcomes: readonly Outcome[], requests: readonly ObjectGenRequest[]): string {
   const placed = outcomes.filter((outcome): outcome is { text: string } => "text" in outcome).map((outcome) => outcome.text);
   const declined = outcomes.filter((outcome): outcome is { declined: string } => "declined" in outcome).map((outcome) => outcome.declined);
+  const failed = outcomes.filter((outcome): outcome is { failed: string } => "failed" in outcome).map((outcome) => outcome.failed);
   const lines = [...placed];
+  if (failed.length) {
+    const need = requests.find((request) => failed.includes(request.title))?.need ?? "";
+    lines.push(`[공방에서 못 그림] ${failed.map((title) => `「${title}」`).join(", ")}은(는) 검수를 통과한 그림이 나오지 않았다. 있는 기물로 가장 가까운 것을 그 자리에 놓고 보고에 «그리지 못해 대신 놓음»으로 적어라. generate_missing_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
+  }
   if (declined.length) {
     const need = requests.find((request) => declined.includes(request.title))?.need ?? "";
     lines.push(`[사용자 선택] ${declined.map((title) => `「${title}」`).join(", ")}은(는) 새로 그리지 말고 있는 기물로 가장 가까운 대안을 만들어라. generate_missing_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
