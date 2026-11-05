@@ -200,7 +200,10 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
   const roomOf = new Int16Array(map.cols * map.rows).fill(-1);
   comps.forEach((c, i) => { for (const k of c.cells) roomOf[k] = i; });
   // 입구: 맵 아래 가장자리에 가장 가까운 방(가로 가운데 쪽 우선)
-  const entry = comps.map((c, i) => ({ i, score: c.y1 * 4 - Math.abs((c.x0 + c.x1) / 2 - W / 2) })).sort((a, b) => b.score - a.score)[0]!.i;
+  // 도안이 입구를 랜드마크로 짚었으면(「입구 양옆 석상」·entrance·gate) 그 랜드마크가 있는 방이 입구다 — 아래 가장자리 가까운 방으로 고르면 작은 곁방이 입구가 됐다(r2 p6).
+  const entryMark = map.landmarks.find((l) => /입구|정문|entrance|entry|gate/iu.test(`${l.label ?? ""} ${l.kind}`));
+  const markRoom = entryMark ? roomOf[Math.min(map.rows - 1, entryMark.y + Math.floor(entryMark.h / 2)) * W + Math.min(W - 1, entryMark.x + Math.floor(entryMark.w / 2))]! : -1;
+  const entry = markRoom >= 0 ? markRoom : comps.map((c, i) => ({ i, score: c.y1 * 4 - Math.abs((c.x0 + c.x1) / 2 - W / 2) })).sort((a, b) => b.score - a.score)[0]!.i;
   const kindOf = (c: Comp, i: number): string => {
     if (i === entry) return "entrance";
     const marks = map.landmarks.filter((l) => l.x + l.w / 2 >= c.x0 && l.x + l.w / 2 <= c.x1 + 1 && l.y + l.h / 2 >= c.y0 && l.y + l.h / 2 <= c.y1 + 1);

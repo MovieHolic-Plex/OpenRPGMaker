@@ -94,6 +94,14 @@ describe("imagePlanCells", () => {
     }
   });
 
+  it("takes the entrance room from an entrance landmark before the bottom edge", () => {
+    const rows = Array.from({ length: 16 }, (_, y) => (y >= 2 && y <= 5 ? ".........." + "_".repeat(4) + ".........." : y >= 12 && y <= 14 ? "____" + "......" + "_".repeat(14) : "_".repeat(24)));
+    const map = parseCellMap({ cells: rows, landmarks: [{ id: "A", kind: "statue", label: "입구 석상", x: 15, y: 3 }] }, "dungeon", 24, 16)!;
+    const plan = dungeonPlanFromCells(map);
+    expect(plan.rooms[0]!.kind).toBe("entrance");
+    expect(plan.rooms[0]!.x).toBeGreaterThan(20);
+  });
+
   it("gives a fix-pass landmark without an id the next free letter", () => {
     const map = parseCellMap({ cells: Array.from({ length: 12 }, () => "...." + "_".repeat(20)), landmarks: [{ id: "A", kind: "altar", x: 1, y: 1 }] }, "dungeon", 24, 12)!;
     const fixed = applyCellFixes(map, { fixes: [], landmarks: [{ kind: "statue", x: 2, y: 2 }] }).map;
