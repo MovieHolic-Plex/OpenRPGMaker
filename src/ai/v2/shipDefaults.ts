@@ -87,7 +87,56 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
   if (left.has("hud")) applied.push(...fillFieldHud(project, story));
+  if (left.has("title-image")) applied.push(...fillTitleImage(project, story));
+  if (left.has("ending-screen")) applied.push(...fillEndingScreens(project, story));
   return applied;
+}
+
+/** 이야기에 맞는 번들 스틸 — 청사진이면 endingArt, 없으면(v1) 제목 + 요청 글을 같은 표(강한 타이틀 그림 → 이야기 종류별 스틸)에 대본다. */
+function storyStill(project: Project, story: string): string {
+  const fromBlueprint = endingArt(project);
+  if (fromBlueprint) return fromBlueprint;
+  const text = premiseOf(project, story);
+  // 좀비·생존은 표의 전용 줄이 먼저다 — 공포 타이틀 그림(저택 초상화 복도)은 좀비 생존 결말에 맞지 않는다.
+  if (ZOMBIE_ENDING.re.test(text)) return ZOMBIE_ENDING.id;
+  const strong = pickTitleArtForStory(text);
+  if (strong && findOpeningStillMood(strong.id)) return strong.id;
+  return (ENDING_STILLS.find((s) => s.re.test(text)) ?? { id: "oprn-still-farm-golden" }).id;
+}
+
+/**
+ * 타이틀 그림이 편집기 기본(풀밭) 그대로다 — 이야기에 맞는 번들 스틸로. 실측(2026-11-05 gpt-only-game 8차 「마을부터」): 제목은 「새싹 마을과 오래된 유적」인데
+ * 타이틀 배경은 편집기 기본 oprn-title-field 였다.
+ */
+function fillTitleImage(project: Project, story: string): string[] {
+  const still = storyStill(project, story);
+  const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
+  if (title.backgroundResourceId === still) return [];
+  project.system.titleScreen = { ...project.system.titleScreen!, backgroundResourceId: still };
+  return [`타이틀 그림 → ${still}`];
+}
+
+/**
+ * 연출 없는 엔딩(편집기 기본 엔딩 카드)에 이야기에 맞는 마지막 그림·분위기를 준다 — 글·크레딧은 만들지 않는다(글은 런타임 기본).
+ * 실측(2026-11-05 gpt-only-game 6~8차): 학교·좀비·판타지 다섯 판이 엔딩에 도달하면 기본 카드만 뗴다.
+ */
+function fillEndingScreens(project: Project, story: string): string[] {
+  // 청사진(v2)은 출하 검사가 모델에게 엔딩 연출(마지막 장 글·크레딧·곡)을 짓게 한다 — 여기서 채우면 그 요구가 사라진다. v1 만.
+  if (project.gameBlueprint) return [];
+  // 타이틀 그림을 이 게임에 맞게 이미 골랐으면(연애 캠퍼스 그림 등) 엔딩도 그것을 이어 쓴다 — 런타임 기본도 타이틀 배경이다.
+  const fs = factory().system as unknown as { titleScreen?: { backgroundResourceId?: string }; titleResourceId?: string };
+  const titleBg = (project.system.titleScreen as { backgroundResourceId?: string } | undefined)?.backgroundResourceId;
+  const still = titleBg && titleBg !== fs.titleScreen?.backgroundResourceId && titleBg !== fs.titleResourceId ? titleBg : storyStill(project, story);
+  const scary = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premiseOf(project, story));
+  const out: string[] = [];
+  for (const ending of project.endings ?? []) {
+    if (ending.presentation && Object.keys(ending.presentation).length) continue;
+    // 어두운 분위기는 공포 이야기나 나쁜 결말(id·이름)만 — 좋은 탈출 엔딩에 「평범」 배지·어두운 머리글이 붙지 않게.
+    const bad = /bad|dead|fail|gameover|배드|죽음|실패|최악/iu.test(`${ending.id} ${ending.name}`);
+    ending.presentation = { backgroundResourceId: still, tone: scary || bad ? "dark" : "warm" };
+    out.push(`엔딩 「${ending.name}」 화면 → ${still}`);
+  }
+  return out;
 }
 
 /**
@@ -727,9 +776,12 @@ const sentence = (text: string): string => { const t = text.trim().replace(/[.�
 const isClause = (text: string): boolean => /다[.!?]?$/u.test(text.trim());
 
 /** 엔딩 그림 — 청사진 이야기에 강하게 맞는 번들 그림, 없으면 이야기 종류별 맺음 스틸(풍토가 이야기와 부딪치지 않는 것). */
+/** 좀비·생존 결말 — 푸른 불빛의 폐병원(탈출의 시작). 저택 초상화 복도(공포 줄)는 좀비 생존에 맞지 않는다. */
+const ZOMBIE_ENDING = { re: /좀비|생존|감염|폐허 도시|zombie/iu, id: "oprn-still-ride" } as const;
 const ENDING_STILLS: readonly { readonly re: RegExp; readonly id: string }[] = [
   { re: /눈 덮인|설원|겨울|얼음/u, id: "oprn-still-snow-village" },
   { re: /사막|피라미드|오아시스/u, id: "oprn-still-desert-ruin" },
+  ZOMBIE_ENDING,
   { re: /공포|호러|귀신|유령|괴담|저택|horror/iu, id: "oprn-still-festival" },
   { re: /마왕|왕국|용사|영웅|기사|판타지|모험|RPG/iu, id: "oprn-still-kingdom-day" },
   { re: /추리|탐정|미스터리|사건|범인|여관/u, id: "oprn-still-moon-meadow" },

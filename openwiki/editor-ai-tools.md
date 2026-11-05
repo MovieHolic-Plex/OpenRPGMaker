@@ -864,6 +864,9 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   실측(6차 고양이): 200턴을 다 쓴 게임이 끝까지 플레이되는데 창 모양·전투 메뉴가 기본으로 남았다. 회귀 `test/piAgentAbortReason.bun.test.ts`.
   필드 HUD(`hud`, 6차): 아무도 안 고른 기본 HUD(하트 체력·숫자)도 채운다 — 체력이 줄 일(`projectCanLoseHp`)이 없으면 끈다(목표 줄만), 있으면 공포 horror·판타지 classic·그 밖 hearts.
   실측: 전투 없는 학교 연애가 하트와 「514 / 514」를 내내 띄웠다.
+  타이틀 그림·엔딩 화면(`title-image`·`ending-screen`, 8차): 편집기 기본 타이틀 풀밭은 이야기 스틸(`storyStill` — 청사진 endingArt, 없으면 제목+요청 글로 좀비 줄 → 강한 타이틀 그림 → 표)로,
+  연출 없는 엔딩 카드는 v1(청사진 없음)만 — 이미 고른 타이틀 그림(없으면 storyStill)과 분위기(공포·좀비 이야기나 bad·실패 엔딩만 dark)로. 청사진 게임은 출하 검사가 모델에게 엔딩 연출을 짓게 둔다.
+  실측: 6~8차 다섯 판이 기본 엔딩 카드, 8차 마을이 기본 타이틀 풀밭.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.
