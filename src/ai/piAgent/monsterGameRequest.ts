@@ -65,7 +65,8 @@ const SCHOOL_OR_FITNESS = /(?:학교|농구|배구|헬스|피트니스|운동|�
 const SPORT_LEAGUE = /(?:축구|야구|농구|배구|하키|골프|테니스|e\s*스포츠|이스포츠|프로|풋살|리그\s*오브\s*레전드|롤)\s*(?:\S{0,4}\s*)?리그|(?:soccer|football|baseball|basketball|hockey|esports?|premier|nba|nfl)\s+(?:league)|league\s+of\s+legends/giu;
 const MONSTER_REFERENCE_TERMS: readonly RegExp[] = [
   // 마을 사이를 오가며 동료를 모으는 구조(「마을 사이를 오가며 동료를 모으는 게임」) — 동료 모으기와 마을 오가기가 함께 있을 때만. 동료 모으기만으로는 일반 파티 RPG 다.
-  /(?=[\s\S]*동료\s*(?:를|을|들을)?\s*(?:모으|모아|수집|영입))(?=[\s\S]*(?:마을|도시|\btowns?\b|\bvillages?\b)\S{0,4}\s*(?:사이|간|를\s*오가|을\s*오가|\s*오가|을\s*돌|를\s*돌|\s*between))/iu,
+  // ^ 로 묶는다 — 없으면 앞보기가 글자마다 처음부터 다시 훑어 긴 요청(그림 도안 묘사 8~15천 자)에서 수십 초·브라우저 「too much recursion」으로 턴이 죽었다(2026-11-05 imageplan-describe).
+  /^(?=[\s\S]*동료\s*(?:를|을|들을)?\s*(?:모으|모아|수집|영입))(?=[\s\S]*(?:마을|도시|\btowns?\b|\bvillages?\b)\S{0,4}\s*(?:사이|간|를\s*오가|을\s*오가|\s*오가|을\s*돌|를\s*돌|\s*between))/iu,
   /디지몬|\bdigimon\b|digital\s*monsters?|다마고치|tamagotchi|테이머|\btamers?\b/iu,
   // 체육관을 도는·관장·배지 — 학교 체육관이 아니라 체육관 순회 구조.
   /체육관\s*(?:을|를)?\s*(?:도|돌|순회|순례|도전|깨|격파|정복|여행)|체육관.{0,8}(?:관장|배지)|(?:관장|배지).{0,8}체육관|\bgym\s*(?:leaders?|badges?|challenge|hopping)/iu,
