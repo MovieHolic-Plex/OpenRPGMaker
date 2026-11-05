@@ -10,6 +10,7 @@ import { iconWantRows, planIconAssignments, rankStoreIcons, readStoreIconMeta, S
 import type { PreparedStoreItem } from "@/editor/assetStore/storeApply";
 import { addStoreProfiles } from "@/editor/assetStore/storeProfiles";
 import { listAllStorePacksOfKind, load, prepareFromWorker, take, UNTRUSTED_NOTE } from "./storeTools";
+import { markPlaceholderIcon } from "./itemIconTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Collection = IconAssignment["collection"];
@@ -134,9 +135,11 @@ const assignStoreIcons: ToolDefinition = {
       done.push({ collection: pick.collection, id: pick.id, name: pick.name, iconResourceId: pick.iconResourceId });
     }
     const left = iconWantRows(draft, { ...optionsOf(args), overwrite: false }).map((row) => ({ collection: row.collection, id: row.id, name: row.name }));
+    // 비워 둔 레코드는 「대신 쓴 그림」(빈칸)으로 적는다 — 실행 끝에 이름에 맞게 그려진다(itemIconTools.ts).
+    for (const row of left) markPlaceholderIcon(draft, row.collection, row.id, undefined);
     return {
       summary: `아이콘 ${done.length}개를 붙였다(스토어에서 새로 받은 아이콘 ${installed.length}개).`
-        + (left.length ? ` 맞는 아이콘이 없어 ${left.length}개는 비워 뒀다 — 그대로 두거나 사용자에게 알린다.` : "")
+        + (left.length ? ` 맞는 아이콘이 없어 ${left.length}개는 비워 뒀다 — generate_item_icon 으로 이름에 맞는 아이콘을 그린다(부르지 않으면 실행 끝에 저절로 그린다).` : "")
         + (prepared.storeError ? ` 스토어는 쓰지 못했다(${prepared.storeError.slice(0, 120)}).` : ""),
       data: { assigned: done.slice(0, 120), skipped: left.slice(0, 60), installedIconIds: installed.slice(0, 120), storeIconsSeen: prepared.storeIcons, note: UNTRUSTED_NOTE },
     };

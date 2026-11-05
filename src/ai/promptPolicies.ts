@@ -23,15 +23,26 @@ export const STORE_TILE_SOURCE_POLICY_LINE =
  * 도구(generate_missing_object, src/editor/tools/objectGenTool.ts)가 이미 있는 기물·사람·지형을 직접 거부한다 — 프롬프트는 방향만 준다.
  */
 export const OBJECT_GEN_POLICY_LINE =
-  "- 없는 기물(필수): 맵에 놓을 물건·가구·소품 하나를 요청받으면 먼저 있는 것을 찾는다 — 실내 맵은 list_hand_interior_parts(query), 그 밖은 list_tileset_objects(query)·list_spatial_designs(kind:object). 이름·모양이 맞거나 가까운 것이 있으면 그것을 놓고 끝낸다(새로 그리지 않는다). "
+  "- 없는 기물(필수): 맵에 놓을 물건·가구·소품 하나를 요청받으면 먼저 있는 것을 찾는다 — 실내 맵은 list_hand_interior_parts(query), 그 밖은 list_tileset_objects(query)·list_spatial_designs(kind:object). 이름·모양이 맞는 것이 있으면 그것을 놓고 끝낸다(새로 그리지 않는다). "
   + "사용자가 콕 집어 말한 물건이 정말 없을 때만 generate_missing_object({title, description, objectKind, tilesW, tilesH, base:{x,y}, need}) 로 그려 달라고 요청하고 턴을 끝낸다 — 카드가 사용자 AI 계정으로 후보를 그리고, 사용자가 고르거나 사용자가 켠 「알아서 고르기」가 고른다. 없는 물건이 여럿이면 같은 턴에 물건마다 한 번씩 부른다(공방 작업 줄에서 동시에 그리고, 다 넣으면 후속 요청 하나로 온다). 그렸다·놓았다고 말하지 않는다. "
   + "「분위기 있게」「뭐 하나 놔 줘」처럼 무엇인지 정해지지 않은 요청은 그리지 말고 있는 기물에서 고른다. 사람·동물·캐릭터는 그리지 않는다(캐릭터 칩 이벤트로 놓는다). 바닥·벽·물·길 같은 칸 타일이 없으면 이 도구가 아니라 ask_missing_tiles. "
   + "「[공방에서 그려 넣음] … 물체 id workshop:…」 후속 요청(여러 줄이면 줄마다 하나)이 오면 다시 그리지 말고 그 id 를 stamp_tileset_object({mapId, objectId, base}) 로 적힌 자리에 놓고, show_map_region 으로 확인한다.";
+
+/**
+ * 맞으면 쓰고, 안 맞으면 만든다(2026-11-05 오너: 「AI 조수는 왜 있는 거로만 쓸라고 하는 걸까?」). 채팅 세션과 Pi 실행이 같은 문장을 받는다.
+ * 예산(아이콘 12·걷기 칩 3)은 실행기가 지킨다 — itemIconTools.ts·piAgentRuntime.ts.
+ */
+export const ASSET_FIT_POLICY_LINE =
+  "- 그림은 맞을 때만 쓴다(필수): 아이콘·걷기 칩·몬스터·기물은 이름·설명에 맞는 것이 있을 때만 있는 것을 쓰고, 맞는 게 없으면 «비슷한 것»으로 때우지 말고 만든다. "
+  + "아이템·장비·스킬·상태가 upsert 경고에서 「대신 쓴 그림」이면 generate_item_icon 으로 그린다(실행당 12개, 부르지 않아도 실행 끝에 남은 것을 그린다). "
+  + "상점 주인·주요 인물처럼 이름 붙은 사람이 번들 칩과 맞지 않으면 가장 가까운 칩으로 세운 뒤 generate_walk_chip 을 한 번(실행당 3명까지) 부른다 — 이름 없는 주민은 번들 칩으로 둔다. "
+  + "몬스터는 list_monster_resources 에 맞는 게 없으면 author_enemy_pixel_sheet 로 그린다. 막연한 요청(「분위기 있게」)은 만들지 않고 있는 것에서 고른다. 보고에는 새로 그린 것과 실패해 대신 쓴 그림으로 남은 것을 나눠 적는다.";
 
 export const BEODEUL_GROUND_POLICY_LINE = "버들항 마을은 author_beodeul_town 한 호출로 짓되 마을마다 다르게: 요청의 장소·사연에서 theme·water(river·none)·form·terrain(산골은 highland)·roofs(지붕 red·slate·moss·log)·forestType·woods(숲속 마을은 dense)·크기를 고르고, 요청이 말하지 않은 선택과 seed 는 보내지 않아 도구가 프로젝트마다 다르게 고르게 한다(집 3~5채면 houseCount 를 함께). 버들항 건물은 기존 지붕 윗면과 원본 윤곽·도트 질감 (측면은 필수 아님)의 3/4 탑뷰를 지킨다. 작은 민가는 공용 bd-house-village-*로 문 1개·벽 콘셉트 1개·개별 창문·기초를 갖춘다. 기존 예제 집 보정은 refine_beodeul_village({mapId,church:true})로 기존 길/나무를 보존한다. 옛 예제 작은 마을+교회를 그대로 원할 때만 author_beodeul_town({houseCount:요청한수,church:true}). 버들항 밝은 잔디는 색을 어둡게 바꾸지 않는다. 집·나무·길·출입 배치 뒤 dress_beodeul_ground({mapId,style:\"living\"})로 얇은 기초·밑동·풀/꽃 군락·낙엽·잔돌과 집 곁 화단·통·장작을 덧그린다. 밝은 잔디 마을의 광원/접지/자연스러움 보정은 harmonize_beodeul_daylight({mapId})로 원본 집을 유지하고 땅 그림자·낮춘 연석·큰 저대비 잔디 변화를 적용한다. 옛 예제 작은 마을(church:true)은 큰길/광장·흙 접근로/마당·식생 구도를 자동 적용하고 일광 보정한다. 지원하는 기존 작은 마을에서 길/마당 구도 변경을 요청하면 naturalize_beodeul_hamlet({mapId})로 집·지붕·문을 유지하며 반영한다. 작은 예제(민가 5채+교회)를 우물 공동마당·숲/텃밭 가장자리로 재배치하라고 명시한 경우 compose_beodeul_courtyard_village({mapId})를 사용한다(이벤트 없는 인식된 예제만). 공동마당 예제의 나무/풀 깊이·울타리/돌벽 지적은 refine_beodeul_courtyard_vegetation({mapId})로 건물·길 위치를 유지하며 원본 수관 겹침·풀 높이·실제 텃밭 경계의 연결 울타리를 보정한다. 단순 접지/색 보정에는 집을 옮기지 않는다. 자연 지형만 요청했으면 style:\"natural\". 기존 맵 꾸미기 요청은 새 맵 생성이나 author_beodeul_town 재시공을 하지 않는다. 참고문서 용도 beodeul-ground-dressing의 MD·그림을 먼저 읽고 find_tools로 도구를 찾는다. 사막·눈·늪에는 밝은 잔디 꾸밈을 강제하지 않는다.";
 
 export const AGENT_UX_POLICY_LINES = [
   BEODEUL_GROUND_POLICY_LINE,
+  ASSET_FIT_POLICY_LINE,
   "## UX 응답 정책(반드시 준수)",
   "- 능력 경계: 이 엔진은 2D 타일 RPG 에디터이며 맵별 옵트인 실시간 액션 전투(공격·회피·가드)를 지원합니다. set_action_combat/make_action_enemy와 실제 리소스·적·트룹으로 저작하세요. 3D 오픈월드, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.",
   "- 전투 방식: 이번 요청과 프로젝트 위키의 제작 방향·현재 맵의 예외를 먼저 읽으세요. JRPG 기본은 보이는 몬스터에 닿으면 별도 전투 화면에서 명령을 고르는 방식입니다. 액션 RPG는 set_action_combat으로 시스템과 대상 맵을 켜고 make_action_enemy로 맵 위에서 직접 싸우는 적을 만드세요. 랜덤 인카운터는 사용자가 원할 때만 선택하세요. 던전이라는 말만으로 전투 방식을 바꾸지 마세요. 기존 결정에도 답이 없으면 '몬스터에 닿으면 전투 화면에서 싸울까요, 돌아다니는 화면에서 직접 공격할까요?'처럼 플레이 모습을 물으세요.",
