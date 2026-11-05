@@ -214,6 +214,7 @@ export function actorCommandDirectorState(
   const result = commandEntry
     ? {
       userRecordId: commandEntry.userRecordId ?? actor?.recordId ?? "",
+      userId: commandEntry.userId ?? actor?.id ?? "",
       targetId: commandEntry.targetId ?? target?.id ?? "",
       hit: commandEntry.kind !== "miss" && commandEntry.hit !== false,
       amount: commandEntry.amount ?? 0,
