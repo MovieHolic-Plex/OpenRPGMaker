@@ -178,7 +178,8 @@ function withNecks(map: CellMap): CellMap {
 export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<{ id: string; kind: string; x: number; y: number; w: number; h: number }>; links: Array<{ from: string; to: string; rects: Array<{ x: number; y: number; w: number; h: number }> }> } {
   map = withNecks(map);
   const roomish = (ch: string) => ch === "." || ch === "~" || LANDMARK.test(ch);
-  const comps = components(map, roomish).filter((c) => c.cells.length >= 6).slice(0, 16);
+  // 빌더는 한 층 방 12개까지 — 더 있으면 작은 덩이부터 버린다(버린 덩이에 닿던 통로는 빌더가 잇는다).
+  const comps = components(map, roomish).filter((c) => c.cells.length >= 6).sort((a, b) => b.cells.length - a.cells.length).slice(0, 12).sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
   if (!comps.length) return { rooms: [], links: [] };
   const W = map.cols;
   const roomOf = new Int16Array(map.cols * map.rows).fill(-1);
