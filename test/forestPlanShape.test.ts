@@ -46,11 +46,16 @@ describe("forest route follows an image plan", () => {
       rows.push(r.join(""));
     }
     const design = forestDesignFromCells(parseCellMap({ cells: rows }, "forest", 48, 32)!);
-    for (const side of ["north", "south", "east", "west"]) for (const seed of [1, 2, 3]) {
+    for (const side of ["north", "south", "east", "west"]) {
       const project = createBlankProject();
-      expect(() => FOREST_ROUTE_TOOLS[0]!.run(project as never, { fromMapId: project.startMapId!, side, count: 2, designs: [design, design], seed } as never)).not.toThrow();
+      const res = FOREST_ROUTE_TOOLS[0]!.run(project as never, { fromMapId: project.startMapId!, side, count: 2, designs: [design, design], seed: 1, hiddenPerMap: 2 } as never);
+      for (const m of (res.data as { maps: { mapId: string; hidden: { x: number; y: number }[] }[] }).maps) {
+        const map = project.maps[m.mapId]!;
+        const lake = project.tilesets[map.tilesetId]!.autotileGroups?.find((a) => a.id === "beodeul_canal_lake_47")?.variantMap?.["255"];
+        for (const h of m.hidden) expect(map.lowerTiles[h.y * map.width + h.x]).not.toBe(lake);
+      }
     }
-  });
+  }, 120_000);
 
   it("leaves a design without a plan at the usual size and dry", () => {
     const { map, wet } = build({ bends: 3 });

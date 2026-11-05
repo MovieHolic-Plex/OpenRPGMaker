@@ -109,6 +109,14 @@ describe("imagePlanCells", () => {
     expect(plan.rooms[0]!.y).toBeGreaterThan(20);
   });
 
+  it("does not make the throne room the entrance because its door is labelled an entrance", () => {
+    const rows = Array.from({ length: 16 }, (_, y) => (y >= 2 && y <= 5 ? ".........." + "_".repeat(4) + ".........." : y >= 12 && y <= 14 ? "____" + "......" + "_".repeat(14) : "_".repeat(24)));
+    const map = parseCellMap({ cells: rows, landmarks: [{ id: "A", kind: "gate", label: "왕좌의 방 입구", x: 15, y: 3 }, { id: "B", kind: "throne", label: "옥좌", x: 18, y: 2 }] }, "dungeon", 24, 16)!;
+    const plan = dungeonPlanFromCells(map);
+    expect(plan.rooms[0]!.y).toBeGreaterThan(20);
+    expect(plan.rooms.some((r) => r.kind === "boss")).toBe(true);
+  });
+
   it("gives a fix-pass landmark without an id the next free letter", () => {
     const map = parseCellMap({ cells: Array.from({ length: 12 }, () => "...." + "_".repeat(20)), landmarks: [{ id: "A", kind: "altar", x: 1, y: 1 }] }, "dungeon", 24, 12)!;
     const fixed = applyCellFixes(map, { fixes: [], landmarks: [{ kind: "statue", x: 2, y: 2 }] }).map;

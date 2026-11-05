@@ -206,7 +206,7 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
   const entryRooms = new Set(map.landmarks
     .filter((l) => /입구|정문|현관|\bentrance\b|\bentry\b/iu.test(l.label ?? "") && !/보스|비밀|숨은|\bboss\b|\bsecret\b|\bhidden\b/iu.test(l.label ?? ""))
     .map((l) => roomOf[Math.min(map.rows - 1, l.y + Math.floor(l.h / 2)) * W + Math.min(W - 1, l.x + Math.floor(l.w / 2))]!)
-    .filter((r) => r >= 0));
+    .filter((r) => r >= 0 && !map.landmarks.some((m) => /throne|altar|boss|rose_window|chest|treasure/u.test(m.kind) ? roomOf[Math.min(map.rows - 1, m.y + Math.floor(m.h / 2)) * W + Math.min(W - 1, m.x + Math.floor(m.w / 2))] === r : false)));
   const candidates = entryRooms.size ? [...entryRooms] : comps.map((_, i) => i);
   const entry = candidates.sort((a, b) => roomScore(b) - roomScore(a))[0]!;
   const kindOf = (c: Comp, i: number): string => {
