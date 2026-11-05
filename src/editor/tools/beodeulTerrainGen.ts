@@ -63,7 +63,7 @@ export interface CodeTerrain {
   note: string;
 }
 
-export const TERRAIN_MAP_CHARS = /^[0-3~|o]+$/u;
+export const TERRAIN_MAP_CHARS = /^[0-3~|o_]+$/u;
 
 /** 도안 칸 지도를 단(lv, 0~3)·물(water, 1 강 · 2 못)에 덮어쓴다 — 물 칸은 닿은 땅 중 가장 낮은 단, 이웃 단 차는 1 이하로 깎는다. */
 function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Uint8Array, water: Uint8Array, river: number[], notes: string[]): void {
@@ -73,8 +73,9 @@ function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Ui
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const ch = rows[Math.min(R - 1, Math.floor(((y + 0.5) * R) / H))]![Math.min(C - 1, Math.floor(((x + 0.5) * C) / W))] ?? "0";
     const c = y * W + x;
-    if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else lv[c] = Number(ch);
+    if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else if (ch === "_") water[c] = 3; else lv[c] = Number(ch);
   }
+  const sea = water.reduce((n, v) => n + (v === 3 ? 1 : 0), 0);
   const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
   for (const cs of list) {
     let low = 99;
@@ -87,7 +88,7 @@ function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Ui
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; if (lv[c]! - lv[Y * W + X]! > 1) { lv[c] -= 1; changed = true; break; } } }
     if (!changed) break;
   }
-  notes.push(`도안 지형 칸 지도 ${C}×${R}${falls ? ` (폭포 ${falls}칸은 그림 조각이 없어 강으로)` : ""}`);
+  notes.push(`도안 지형 칸 지도 ${C}×${R}${falls ? ` (폭포 ${falls}칸은 그림 조각이 없어 강으로)` : ""}${sea ? ` · 섬 바깥 ${sea}칸은 바다` : ""}`);
 }
 
 // ── 시드 잡음 ──

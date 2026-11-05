@@ -3,7 +3,7 @@
 // 도안 위에 칸 번호 격자를 그려 비전 모델이 배치(길·집·광장·높은 단·방)를 칸 좌표로 읽게 한 뒤, 그 좌표를 빌더가 이미 받는 인자로 조수에게 건넨다.
 // 도안 그림만 붙이면 조수는 빌더를 기본 인자로 불러 도안이 사라졌다(2026-11-04 실측). 호출(이미지·비전·계정)은 editor/imagePlanMockup.ts 가 한다.
 import type { WidenSubject } from "./vagueWidenCatalog";
-import { dungeonPlanFromCells, forestDesignFromCells, villageArgsFromCells, type CellMap } from "./imagePlanCells";
+import { dungeonPlanFromCells, forestDesignFromCells, landmarkFootprints, villageArgsFromCells, type CellMap } from "./imagePlanCells";
 
 export const IMAGE_PLAN_PROVIDER = "ChatGPT";
 
@@ -179,10 +179,14 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
 }
 
 function cellBuildNote(subject: WidenSubject, cells: CellMap): string {
-  const marks = cells.landmarks.map((l) => `${l.id}=${l.label ?? l.kind}(${l.x},${l.y} ${l.w}×${l.h})`).join(" · ");
-  const markLine = marks ? ` 도안의 랜드마크(빠짐없이 짓는다 — 칩셋에 맞는 조각이 없으면 비워 두지 말고 가장 가까운 조각으로 자리를 채우고 그렇게 말한다): ${marks}.` : "";
-  if (subject === "village") {
-    const a = villageArgsFromCells(cells);
+  const village = subject === "village" ? villageArgsFromCells(cells) : null;
+  const foot = village ? landmarkFootprints(cells, Number(village.width), Number(village.height)) : cells.landmarks.map((l) => ({ ...l, label: l.label ?? l.kind }));
+  const marks = foot.map((l) => `${l.id}=${l.label}[${l.kind}] (${l.x},${l.y}) ${l.w}×${l.h}칸`).join(" · ");
+  const markLine = marks
+    ? ` 도안의 랜드마크(${village ? "맵 칸 좌표" : "도안 칸 좌표"} — 빠짐없이 그 자리에 짓는다): ${marks}. 지은 뒤 랜드마크마다 list_spatial_designs({kind:"object", query}) 로 맞는 조각을 찾아 stamp_object 로 그 자리에 찍는다. 맞는 것이 없으면 비슷한 것으로 때우지 않고 generate_missing_object 로 만든다(물건마다 한 번, base 는 그 자리의 발밑 줄).`
+    : "";
+  if (village) {
+    const a = village;
     return `읽은 마을 칸 지도(${cells.cols}×${cells.rows}): author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height} = 도안 가로세로비, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.${markLine}`;
   }
   if (subject === "forest") {

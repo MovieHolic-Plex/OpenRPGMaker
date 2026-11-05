@@ -248,7 +248,7 @@ export function villageArgsFromCells(map: CellMap, longSide = 56): Record<string
   const terrain = map.cells.map((row) => {
     const chars = row.split("");
     return chars.map((ch, x) => {
-      if (/[0-3~|]/u.test(ch)) return ch;
+      if (/[0-3~|_]/u.test(ch)) return ch;
       for (let d = 1; d < chars.length; d += 1) {
         const l = chars[x - d], r = chars[x + d];
         if (l && /[0-3]/u.test(l)) return l;
@@ -280,6 +280,15 @@ export function villageArgsFromCells(map: CellMap, longSide = 56): Record<string
   const args: Record<string, unknown> = { width, height, terrainGen: "code", landform: "terraces", terrainMap: terrain, layout };
   if (houses.length >= 3 && houses.length <= 5) args.houseCount = houses.length;
   return args;
+}
+
+/** 도안 랜드마크 → 맵 칸 발자국(같은 배율). 짓기 뒤 랜드마크마다 맞는 조각을 찾아 찍고, 없으면 만들게 하는 목록. */
+export function landmarkFootprints(map: CellMap, width: number, height: number): Array<{ id: string; kind: string; label: string; x: number; y: number; w: number; h: number }> {
+  const sx = width / map.cols, sy = height / map.rows;
+  return map.landmarks.map((l) => {
+    const x = Math.round(l.x * sx), y = Math.round(l.y * sy);
+    return { id: l.id, kind: l.kind, label: l.label ?? l.kind, x, y, w: Math.max(1, Math.round((l.x + l.w) * sx) - x), h: Math.max(1, Math.round((l.y + l.h) * sy) - y) };
+  });
 }
 
 /** 칸 지도 → author_forest_route designs[0](본길 = 길 글자 칸의 아래·위 끝, 갈림·빈터는 길 덩이·나무 없는 땅). */
