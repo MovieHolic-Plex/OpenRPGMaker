@@ -303,7 +303,8 @@ export function landmarkFootprints(map: CellMap, width: number, height: number):
 
 /** 칸 지도 → author_forest_route designs[0](본길 = 길 글자 칸의 아래·위 끝, 갈림·빈터는 길 덩이·나무 없는 땅). */
 export function forestDesignFromCells(map: CellMap): Record<string, unknown> {
-  const path = components(map, (ch) => ch === "=").sort((a, b) => b.cells.length - a.cells.length)[0];
+  // 랜드마크·다리 칸이 길을 끊으면 본길이 두 토막이 됐다(r1 p3: 석상 B 가 길 한가운데) — 길과 랜드마크를 한 덩이로 본다.
+  const path = components(map, (ch) => ch === "=" || LANDMARK.test(ch)).filter((c) => c.cells.some((k) => map.cells[Math.floor(k / map.cols)]![k % map.cols] === "=")).sort((a, b) => b.y1 - b.y0 - (a.y1 - a.y0) || b.cells.length - a.cells.length)[0];
   const design: Record<string, unknown> = {};
   if (path) {
     const W = map.cols;
@@ -312,8 +313,35 @@ export function forestDesignFromCells(map: CellMap): Record<string, unknown> {
     if (bottom.length) design.entryAt = Math.round(100 * (bottom.reduce((a, b) => a + b, 0) / bottom.length) / (W - 1)) / 100;
     if (top.length) design.exitAt = Math.round(100 * (top.reduce((a, b) => a + b, 0) / top.length) / (W - 1)) / 100;
   }
-  if (map.cells.some((r) => /[123]/u.test(r))) design.cliffs = true;
-  const marks = map.landmarks.map((l) => l.label ?? l.kind);
-  if (marks.length) design.landmarks = marks.slice(0, 4);
+  if (path) {
+    // 본길 줄마다 가운데 x(아래→위). 방향이 바뀌는 곳 = 굽이, 줄 폭 = 길 폭, 줄 안 본길에서 떨어진 덩이 = 갈림길(도안 자리 → 진행 위치 0~1).
+    const W = map.cols, span = Math.max(1, path.y1 - path.y0);
+    const rowsXs: number[][] = [];
+    for (let y = path.y1; y >= path.y0; y -= 1) rowsXs.push(path.cells.filter((k) => Math.floor(k / W) === y).map((k) => k % W).sort((a, b) => a - b));
+    const mids = rowsXs.map((xs) => (xs.length ? (xs[0]! + xs[xs.length - 1]!) / 2 : NaN)).filter((v) => !Number.isNaN(v));
+    let bends = 0, dir = 0;
+    for (let i = 3; i < mids.length; i += 3) { const d = Math.sign(Math.round(mids[i]! - mids[i - 3]!)); if (d && d !== dir) { if (dir) bends += 1; dir = d; } }
+    design.bends = Math.max(1, Math.min(6, bends + 1));
+    const widths = rowsXs.map((xs) => { let run = 0, best = 0; xs.forEach((x, j) => { run = j && x === xs[j - 1]! + 1 ? run + 1 : 1; best = Math.max(best, run); }); return best; }).filter(Boolean).sort((a, b) => a - b);
+    const w = widths[Math.floor(widths.length / 2)] ?? 2;
+    design.width = w <= 1 ? "narrow" : w >= 4 ? "wide" : "normal";
+    const branches: Array<Record<string, unknown>> = [];
+    const onPath = new Set(path.cells);
+    for (const other of components(map, (ch) => ch === "=")) {
+      if (other.cells.some((k) => onPath.has(k)) || other.cells.length < 4 || branches.length >= 4) continue;
+      const cy = (other.y0 + other.y1) / 2, cx = (other.x0 + other.x1) / 2;
+      const at = Math.max(0, Math.min(1, Math.round(100 * (path.y1 - cy) / span) / 100));
+      const near = mids[Math.max(0, Math.min(mids.length - 1, Math.round(at * (mids.length - 1))))] ?? W / 2;
+      branches.push({ at, toward: cx < near ? "left" : "right", end: "clearing" });
+    }
+    if (branches.length) design.branches = branches;
+    const clearings = map.landmarks.slice(0, 4).map((l) => {
+      const at = Math.max(0, Math.min(1, Math.round(100 * (path.y1 - (l.y + l.h / 2)) / span) / 100));
+      const near = mids[Math.max(0, Math.min(mids.length - 1, Math.round(at * (mids.length - 1))))] ?? W / 2;
+      const lx = l.x + l.w / 2;
+      return { at, size: l.w * l.h >= 12 ? "large" : l.w * l.h >= 4 ? "medium" : "small", toward: Math.abs(lx - near) < 3 ? "center" : lx < near ? "left" : "right" };
+    });
+    if (clearings.length) design.clearings = clearings;
+  }
   return design;
 }
