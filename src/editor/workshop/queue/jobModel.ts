@@ -26,8 +26,6 @@ export type RemoteGen = {
   readonly appearanceId?: string;
   /** 캐릭터 사진·글: 후보 1위(오류 검사 → Opus 쌍 비교)를 호스트가 알아서 고른다. 없으면 사람이 고른다 */
   readonly autoPick?: boolean;
-  /** 조수 요청의 알아서 고르기가 끝내 넣지 못했다(다시 그려도 통과 없음·관문 불가) — 못 그림으로 보인다. */
-  autoFailed?: boolean;
   jobId: string | null;
   /** 마지막으로 읽은 호스트 상태(짧게) */
   status: { state: string; stage?: string; progress?: number; elapsedMs?: number; expectMs?: number; engine?: string; error?: string | null; reviewing?: boolean; attempts?: number } | null;
@@ -86,6 +84,8 @@ export type WorkshopJob = {
   readonly remote?: RemoteGen;
   /** 「한 번에 만들기」: 검수 통과 첫 후보를 알아서 골라 넣는다(사람이 「자세히」에서 끄면 false) */
   readonly autoPick?: boolean;
+  /** 조수 요청의 알아서 고르기가 끝내 넣지 못했다(다시 그려도 통과 없음·관문 불가) — 못 그림으로 보인다. */
+  autoFailed?: boolean;
   roundId: string | null;
   startedAt: number | null;
   finishedAt: number | null;
