@@ -74,7 +74,7 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
-import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
+import { canExamineFrom, pickNearbyActionTarget } from "@/player/nearbyActionTarget";
 import { objectiveMarkerIds } from "@/player/playSceneFieldStaging";
 import { interactionPromptLabel } from "@/player/zoneFeedback";
 import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
@@ -967,6 +967,9 @@ function findEventOnFacedObject(
   let bestD = Infinity;
   for (const i of cluster.cells) {
     const x = i % map.width, y = (i - x) / map.width;
+    // 몸 안쪽에 묻힌 이벤트는 몸이 손 닿는 링에 걸릴 때만, 나머지는 이벤트 칸이 링에 있어야 열린다.
+    // 예전에는 가장 가까운 것만 골라서 1×1 기물도 두 칸 건너에서 발동했다(2026-11-05 사장 보고).
+    if (!canExamineFrom(cluster.cells, map.width, scene.tileX, scene.tileY, x, y)) continue;
     const view = findRuntimeEventInScene(scene, x, y, "action");
     const d = Math.abs(x - tx) + Math.abs(y - ty);
     if (view && d < bestD) { best = view; bestD = d; }
@@ -988,8 +991,11 @@ function findEventAcrossCounter(
   const tileset = project.tilesets[scene.map.tilesetId];
   let found: RuntimeEventView | undefined;
   counterReachTarget(tileset, scene.map, { x: tx, y: ty }, delta, (x, y) => {
-    found = findRuntimeEventInScene(scene, x, y, "action");
-    return found !== undefined;
+    const view = findRuntimeEventInScene(scene, x, y, "action");
+    // 카운터 너머 손이 닿는 것은 사람뿐이다(상점 주인·식탁 건너편). 기물은 건너서 열리면 안 된다.
+    if (!view || !view.sprite) return false;
+    found = view;
+    return true;
   });
   return found;
 }

@@ -585,8 +585,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actionLog.push(entry);
     recordTimeline({
       kind,
-      side: actors.some((actor) => actor.recordId === entry.userRecordId || actor.id === entry.userRecordId) ? "actor" : "enemy",
+      side: actors.some((actor) => actor.id === entry.userId) ? "actor" : "enemy",
       userRecordId: entry.userRecordId,
+      userId: entry.userId,
       targetId: entry.targetId,
       commandKind,
       hit: entry.hit,
@@ -852,10 +853,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const result = applyStateEffectsWithEmotion(options.project, target, effects, rng);
     for (const stateId of result.added) {
-      recordTimeline({ kind: "stateAdded", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
+      recordTimeline({ kind: "stateAdded", side: battlerSide(user), userRecordId: user.recordId, userId: user.id, targetId: target.id, stateId, reason: "effect" });
     }
     for (const stateId of result.removed) {
-      recordTimeline({ kind: "stateRemoved", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(user), userRecordId: user.recordId, userId: user.id, targetId: target.id, stateId, reason: "effect" });
     }
     refreshAfterStateChange(target, [...result.added, ...result.removed]);
   }
@@ -913,7 +914,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         recordTimeline({
           kind: "stateRemoved",
           side: battlerSide(user),
-          userRecordId: user.recordId,
+          userRecordId: user.recordId, userId: user.id,
           targetId: target.id,
           stateId: effect.stateId,
           reason: "effect",
@@ -949,7 +950,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       recordTimeline({
         kind: "stateAdded",
         side: battlerSide(user),
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: target.id,
         stateId: effect.stateId,
         reason: "effect",
@@ -1113,7 +1114,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       consumeHeldItem(holder);
       holder.hp = Math.min(holder.maxHp, holder.hp + heal);
       recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 체력을 회복했다!`);
-      recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+      recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, userId: holder.id, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
       return;
     }
     const status = gen1MajorStatusOf(holder);
@@ -1135,7 +1136,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const name = options.project.database.items.find((record) => record.id === holder.heldItemId)?.name ?? "도구";
     holder.hp += heal;
     recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${name} 덕분에 체력을 회복했다!`);
-    recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+    recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, userId: holder.id, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
   }
 
   /** 기술 결과 뒤에 흘리는 특성 줄(타입 무효·버티기). applyExactGen1Damage 가 쌓고 applyGen1Skill 이 비운다. */
@@ -1882,12 +1883,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       case "defend":
         actor.defending = true;
-        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "defend" });
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, commandKind: "defend" });
         applyGen1Residual(actor);
         break;
       case "escape":
         attemptEscape();
-        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "escape", success: escaped });
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, commandKind: "escape", success: escaped });
         // 도망에 성공하면 전투가 끝난다. 실패만 그 차례의 잔여 피해를 받는다.
         if (!escaped) applyGen1Residual(actor);
         break;
@@ -1898,7 +1899,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "commonEvent":
         // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
         battleEvents.queueCommonEvent(command.commonEventId);
-        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, commandKind: "commonEvent" });
         applyGen1Residual(actor);
         break;
     }
@@ -1959,7 +1960,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     noteDamageHit(actor, target, result, targetMaxHpBefore, normalAttackElementMultiplier(actor, target));
     if (result.hit && result.amount > 0) recoverHitStates(target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, normalAttackElementId(actor), target) * damageTypeMultiplier(options.project, "physical", target, normalAttackElementId(actor)) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, normalAttackElementId(actor), "physical", target)) : {}) },
+      { userRecordId: actor.recordId, userId: actor.id, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, normalAttackElementId(actor), target) * damageTypeMultiplier(options.project, "physical", target, normalAttackElementId(actor)) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, normalAttackElementId(actor), "physical", target)) : {}) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -2013,7 +2014,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
     recordAction(
       {
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: target.id,
         hit: result.hit,
         amount: result.amount,
@@ -2030,7 +2031,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({
       kind: "damage",
       side: battlerSide(user),
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: user.id,
       commandKind,
       hit: true,
@@ -2884,7 +2885,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     noteDamageHit(enemy, target, result, targetMaxHpBefore, 1);
     if (result.hit && result.amount > 0) recoverHitStates(target);
     recordAction(
-      { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
+      { userRecordId: enemy.recordId, userId: enemy.id, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
       result.hit ? "damage" : "miss",
       "enemyAttack",
     );
@@ -3140,14 +3141,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       delete actor.stateTurns[reraise.stateId];
       actor.hp = autoReviveHp(actor.maxHp, reraise.percent);
       recordTimeline({ kind: "stateRemoved", side: "actor", targetId: actor.id, stateId: reraise.stateId, reason: "effect" });
-      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, targetId: actor.id, amount: actor.hp });
+      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, amount: actor.hp });
     }
     for (const actor of actors) {
       const percent = actor.equipmentEffects?.autoRevive;
       if (actor.hp > 0 || !percent || autoRevivedIds.has(actor.id)) continue;
       autoRevivedIds.add(actor.id);
       actor.hp = autoReviveHp(actor.maxHp, percent);
-      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, targetId: actor.id, amount: actor.hp });
+      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, userId: actor.id, targetId: actor.id, amount: actor.hp });
     }
   }
 
@@ -3226,7 +3227,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       if (unchanged.length === targets.length && unchanged[0]) {
         recordAction({
-          userRecordId: user.recordId,
+          userRecordId: user.recordId, userId: user.id,
           targetId: unchanged[0].id,
           hit: true,
           amount: 0,
@@ -3304,7 +3305,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (hp > 0 && beforeHp > 0 && invertsHealingForStates(options.project, target)) {
       target.hp = Math.max(0, beforeHp - hp);
       if (mp > 0) target.mp = Math.min(target.maxMp, target.mp + mp);
-      recordAction({ userRecordId: user.recordId, targetId: target.id, hit: true, amount: beforeHp - target.hp, critical: false }, "damage", "item", "hp");
+      recordAction({ userRecordId: user.recordId, userId: user.id, targetId: target.id, hit: true, amount: beforeHp - target.hp, critical: false }, "damage", "item", "hp");
       return;
     }
     if (hp > 0) target.hp = Math.min(target.maxHp, target.hp + hp);
@@ -3317,7 +3318,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const pp = restoredMovePp(options.project, target.skillIds, target.skillPp, item.ppRecovery);
     if (pp.changed) {
       target.skillPp = pp.skillPp;
-      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId,
+      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, userId: user.id,
         targetId: target.id, commandKind: "item", success: true,
         message: `${target.name}의 기술 PP가 ${pp.after - pp.before} 회복되었다!` });
       // PP is its own resource: never send a PP amount to the HP/MP ledger.
@@ -3328,7 +3329,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (hpGain === 0 && mpGain === 0) return;
     const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: target.id,
       hit: true,
       amount: resource === "hp" ? hpGain : mpGain,
@@ -3359,7 +3360,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       recordTimeline({
         kind: "capture",
         side: "actor",
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: next.targetId,
         commandKind: "capture",
         success: next.success,
@@ -3462,7 +3463,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     target.hp = 0;
     target.gauge = 0;
     capturedMonsters.push(capture);
-    actionLog.push({ userRecordId: user.recordId, targetId: target.id, hit: true, amount: 0, critical: false });
+    actionLog.push({ userRecordId: user.recordId, userId: user.id, targetId: target.id, hit: true, amount: 0, critical: false });
     lastActionResult = actionLog[actionLog.length - 1];
     options.onMonsterCaptured?.(capture);
     // 도감에 처음 오르는 종이면 등록 문장을 한 줄 남긴다. 영수증(mx_caught_)은 여기서 찍지 않는다 — 캠페인 포획은 승리·도주 커밋 때
@@ -3477,7 +3478,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (newDexEntry) {
       const text = campaign?.dexRegisteredText?.trim() || "{name}의 데이터가 도감에 등록되었다!";
       recordTimeline({
-        kind: "special", side: "actor", userRecordId: user.recordId, targetId: target.id,
+        kind: "special", side: "actor", userRecordId: user.recordId, userId: user.id, targetId: target.id,
         message: text.replace(/\{name\}/gu, species.name), aside: "dex",
       });
     }
@@ -3492,7 +3493,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({
       kind: "damage",
       side: battlerSide(user),
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: user.id,
       commandKind,
       hit: true,
@@ -3518,7 +3519,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({
       kind: "healing",
       side: battlerSide(user),
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: user.id,
       commandKind,
       hit: true,
@@ -3549,7 +3550,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       recordTimeline({
         kind: "damage",
         side: battlerSide(user),
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: user.id,
         commandKind,
         hit: true,
@@ -3560,7 +3561,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         resource: "hp",
         aside: "recoil",
       });
-      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: user.id, message: `${withJosa(user.name, "은/는")} 반동 피해를 입었다!`, recoil: true });
+      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, userId: user.id, targetId: user.id, message: `${withJosa(user.name, "은/는")} 반동 피해를 입었다!`, recoil: true });
     }
     const chance = skill.flinchChance ?? 0;
     if (chance > 0 && target !== user && target.hp > 0 && !flinchedBattlerIds.has(target.id) && actsLaterThisRound(target)) {
@@ -3922,7 +3923,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     gimmicks.set(gimmickStatus(user, recipient, skill, kind));
     recordAction(
       {
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: recipient.id,
         hit: true,
         amount: 0,
@@ -3997,7 +3998,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (fixed !== undefined) target.hp = Math.max(0, before - applied.amount);
     recordAction(
       {
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: target.id,
         hit: applied.hit,
         amount: applied.amount,
@@ -4038,7 +4039,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({
       kind: "healing",
       side: battlerSide(user),
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: user.id,
       skillId: skill.id,
       skillName: skill.name,
@@ -4201,7 +4202,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   /** 대열 섞기: 그 편 활성 배우의 자리 순서와 앞/뒤 열을 무작위로 뒤섞는다. 적 편은 자리가 없어 영향이 없다. */
   function shuffleBattleParty(user: MutableBattler, aimed: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>, commandKind: BattleTimelineEntrySnapshot["commandKind"]): void {
     if (rng() * 100 >= (combinedSkillHitRate(skill) ?? 100)) {
-      recordAction({ userRecordId: user.recordId, targetId: aimed.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
+      recordAction({ userRecordId: user.recordId, userId: user.id, targetId: aimed.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
       return;
     }
     if (battlerSide(aimed) !== "actor") {
@@ -4226,7 +4227,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const aimed of targets) {
       if (battlerSide(aimed) !== "actor" || aimed.hp <= 0) continue;
       if (rng() * 100 >= (combinedSkillHitRate(skill) ?? 100)) {
-        recordAction({ userRecordId: user.recordId, targetId: aimed.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
+        recordAction({ userRecordId: user.recordId, userId: user.id, targetId: aimed.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
         continue;
       }
       const reserve = switchCandidateActors();
@@ -4272,7 +4273,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (skill?.effect.kind === "sketch") {
       const primary = targets[0] ?? user;
       if (rng() * 100 >= (combinedSkillHitRate(skill) ?? 100)) {
-        recordAction({ userRecordId: user.recordId, targetId: primary.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
+        recordAction({ userRecordId: user.recordId, userId: user.id, targetId: primary.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
         return;
       }
       const pool = sketchableSkills(options.project, [...primary.skillIds, ...(primary.enemyActions ?? []).map((action) => action.skillId).filter(Boolean)]);
@@ -4481,7 +4482,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function recordSpecial(user: MutableBattler, target: MutableBattler, message: string, skillId?: SkillId, commandKind?: BattleTimelineEntrySnapshot["commandKind"]): void {
-    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message, ...(skillId ? { skillId, skillName: lookupSkill(skillId)?.name, commandKind } : {}) });
+    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, userId: user.id, targetId: target.id, message, ...(skillId ? { skillId, skillName: lookupSkill(skillId)?.name, commandKind } : {}) });
   }
 
   /** 배우의 영구 기술 목록과 전투 중 목록에 한 기술을 더한다(이벤트 learnSkill 과 같은 권위). */
@@ -4496,7 +4497,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function applySpecialSkill(user: MutableBattler, target: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>, commandKind: BattleTimelineEntrySnapshot["commandKind"]): void {
     const hitRate = combinedSkillHitRate(skill) ?? 100;
     if (rng() * 100 >= hitRate) {
-      recordAction({ userRecordId: user.recordId, targetId: target.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
+      recordAction({ userRecordId: user.recordId, userId: user.id, targetId: target.id, hit: false, amount: 0, critical: false, skillName: skill.name, skillId: skill.id }, "miss", commandKind);
       return;
     }
     const enemyRecord = battlerSide(target) === "enemy"
@@ -4667,7 +4668,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
             : "action";
     recordAction(
       {
-        userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
+        userRecordId: user.recordId, userId: user.id, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
         ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target, skill?.elementId)) : {}),
         ...(effectKind === "damage" && result.hit ? partsField(effectivenessParts(options.project, skill?.elementId, statistic === "mind" ? "magic" : "physical", target)) : {}),
         ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
@@ -4767,7 +4768,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ? "damage"
           : "action";
     recordAction({
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: target.id,
       hit: applied.hit,
       amount: applied.amount,
@@ -4823,7 +4824,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     weather = { kind, turnsLeft: turns };
-    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message: WEATHER_START_LINES[kind], weatherKind: kind, weatherAfter: { ...weather } });
+    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, userId: user.id, targetId: target.id, message: WEATHER_START_LINES[kind], weatherKind: kind, weatherAfter: { ...weather } });
   }
 
   /**
@@ -4874,7 +4875,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       recordTimeline({
         kind: "special",
         side: battlerSide(user),
-        userRecordId: user.recordId,
+        userRecordId: user.recordId, userId: user.id,
         targetId: subject.id,
         message: statStageMessage(subject.name, shifted.change),
         statStage: { stat: effect.stat, before: shifted.change.before, after: shifted.change.after, requested: shifted.change.requested },
@@ -4899,7 +4900,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({
       kind: "stateRemoved",
       side: battlerSide(user),
-      userRecordId: user.recordId,
+      userRecordId: user.recordId, userId: user.id,
       targetId: target.id,
       stateId: frozen.stateId,
       reason: "effect",

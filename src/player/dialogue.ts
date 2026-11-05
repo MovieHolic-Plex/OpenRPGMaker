@@ -159,6 +159,11 @@ export type DialogueLogEntry = {
 const DIALOGUE_LOG_LIMIT = 200;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
+/**
+ * 선택지에서 방향키를 누르고 있을 때 커서가 한 줄씩 움직이는 간격. OS 자동반복(초당 30번쯤)을 그대로 받으면
+ * 네 줄짜리 선택지가 한 바퀴 돌아 손을 뗀 자리와 다른 줄이 골라진다. 사람이 훑는 속도에 맞춘다(2026-11-05 사장 보고).
+ */
+const CHOICE_REPEAT_STEP_MS = 120;
 const WHEEL_OPEN_WINDOW_MS = 300;
 const WHEEL_OPEN_THRESHOLD = 40;
 /** 말풍선 본문 폭(논리 px). 넘으면 줄을 바꾸고, 세 줄을 넘으면 상자로 간다. */
@@ -1893,6 +1898,7 @@ export function createDialogueUI(
         finish(index);
       };
       let selectedIndex = Math.max(0, request.options.findIndex((option) => !option.disabled));
+      let lastCursorStepAt = Number.NEGATIVE_INFINITY;
       const buttons: HTMLButtonElement[] = [];
       const setSelected = (nextIndex: number): void => {
         selectedIndex = nextIndex;
@@ -1932,6 +1938,20 @@ export function createDialogueUI(
           e.preventDefault();
           return;
         }
+        // 방향키를 누르고 있으면 OS 자동반복이 초당 30번쯤 커서를 돌린다 — 4지선다는 손을 조금만
+        // 오래 눌러도 한 바퀴 돌아 엉뚱한 줄에서 손을 뗀다(2026-11-05 사장 보고 「선택지 움직임이 이상함」).
+        // 반복(repeat)만 CHOICE_REPEAT_STEP_MS 간격으로 늦춘다. 새로 누른 키는 늘 바로 옮긴다 —
+        // 빠르게 두 번 찍어 두 줄 내리는 손을 막지 않는다. 스틱·가상패드도 같은 규칙을 받는다.
+        const dir = directionForKey(key);
+        if (dir === "up" || dir === "down") {
+          e.preventDefault();
+          const now = performance.now();
+          if (e.repeat && now - lastCursorStepAt < CHOICE_REPEAT_STEP_MS) return;
+          lastCursorStepAt = now;
+          const delta = dir === "up" ? request.options.length - 1 : 1;
+          setSelected((selectedIndex + delta) % request.options.length);
+          return;
+        }
         const n = parseInt(key, 10);
         if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
@@ -1950,13 +1970,6 @@ export function createDialogueUI(
         }
         // 필드·전투·상태 메뉴와 같이 W/S 도 위아래다. ←→ 는 받지 않는다 — 패드 스틱이
         // 대각선이면 ArrowDown 과 ArrowRight 가 한 번에 오고, 둘 다 「다음」이면 한 줄을 건너뛴다.
-        const dir = directionForKey(key);
-        if (dir === "up" || dir === "down") {
-          e.preventDefault();
-          const delta = dir === "up" ? request.options.length - 1 : 1;
-          setSelected((selectedIndex + delta) % request.options.length);
-          return;
-        }
         // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
         if (isConfirmKey(key)) {

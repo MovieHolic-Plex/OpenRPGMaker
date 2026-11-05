@@ -822,7 +822,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           ?? retroEnemyReach(field, entry)?.approachMs;
         // QA 흔적: 최근 적 달려들기 시간 12개(「늑대가 고블린보다 느리다」 실측) — data-enemy-lunges="적 id:ms …".
         if (ms !== undefined) {
-          const row = `${entry.userRecordId ?? entry.userId}:${Math.round(ms)}`;
+          const row = `${entry.userId ?? entry.userRecordId}:${Math.round(ms)}`;
           root.dataset.enemyLunges = [...(root.dataset.enemyLunges ?? "").split(" ").filter(Boolean).slice(-11), row].join(" ");
         }
         return ms;
