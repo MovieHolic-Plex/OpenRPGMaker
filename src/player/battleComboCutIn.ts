@@ -17,7 +17,6 @@
  * 피해·위력 계산과 무관한 표시 전용이다. 기술의 도트 연출은 기존 경로(retroChoreographyId) 그대로 그 뒤에 재생된다.
  */
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { resolveSharedPortraitUrl } from "@/assets/sharedPortraitAssets";
 import { comboBustResourceId } from "@/project/comboBust";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import { COMBO_ELEMENT_TINT, comboTint, resolveBattleStaging, type ComboShake, type ResolvedBattleStaging } from "@/project/battleStaging";
@@ -57,7 +56,7 @@ function memberTint(project: Project, skill: SkillRecord | undefined, actorId: s
 export function actorBustImage(project: Project, actorId: string): { readonly url: string; readonly kind: "bust" | "face" } | undefined {
   // 고르는 순서는 project/comboBust.ts 하나 — 내보내기(webExportAssets)가 같은 그림을 싣는다.
   for (const candidate of comboBustResourceId(project, actorId)) {
-    const url = resolveSharedPortraitUrl(candidate.resourceId) ?? resolveAssetResourceUrl(candidate.resourceId, { project }) ?? undefined;
+    const url = resolveAssetResourceUrl(candidate.resourceId, { project });
     if (url) return { url, kind: candidate.kind };
   }
   return undefined;
