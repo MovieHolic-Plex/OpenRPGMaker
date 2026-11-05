@@ -74,7 +74,7 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
-import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
+import { pickNearbyActionTarget, withinActionReach } from "@/player/nearbyActionTarget";
 import { objectiveMarkerIds } from "@/player/playSceneFieldStaging";
 import { interactionPromptLabel } from "@/player/zoneFeedback";
 import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
@@ -967,6 +967,9 @@ function findEventOnFacedObject(
   let bestD = Infinity;
   for (const i of cluster.cells) {
     const x = i % map.width, y = (i - x) / map.width;
+    // 기물 몸 전체를 훑되, 손이 닿는 칸만 본다. 예전에는 가장 가까운 것만 골라서
+    // 큰 기물의 이벤트가 몸 안쪽에 있으면 두 칸 건너에서도 발동했다(2026-11-05 사장 보고).
+    if (!withinActionReach(scene.tileX, scene.tileY, x, y)) continue;
     const view = findRuntimeEventInScene(scene, x, y, "action");
     const d = Math.abs(x - tx) + Math.abs(y - ty);
     if (view && d < bestD) { best = view; bestD = d; }

@@ -16,8 +16,15 @@ import type { RuntimeEventView } from "@/project/runtimeEventState";
  * 왜(2026-10-31 jb3c terra jrpg): 3×2 몸 보스는 그림이 몸보다 크게 그려져, 판정자가 몸 바로 위 칸에 서서 위를 보고 눌렀을 때
  * 아무 일이 없었다(「정확히 아래 칸에서 위를 봐야 전투가 열린다」). 여러 칸 몸이면 몸에 닿은 어느 칸에서든 열린다.
  */
-export type NearbyActionTarget = {
-  readonly view: RuntimeEventView;
+/** 조사 손이 닿는 칸 거리 — 몸 사각의 어느 칸이든 주인공 칸에서 상하좌우·대각 한 칸까지. */
+export const ACTION_REACH_CELLS = 1;
+
+export function withinActionReach(tileX: number, tileY: number, x: number, y: number): boolean {
+  const dx = Math.abs(x - tileX), dy = Math.abs(y - tileY);
+  return dx <= ACTION_REACH_CELLS && dy <= ACTION_REACH_CELLS && (dx > 0 || dy > 0);
+}
+
+export type NearbyActionTarget = {  readonly view: RuntimeEventView;
   /** 주인공이 돌아설 방향. 대각이면 가로 방향. */
   readonly face: Dir;
   readonly diagonal: boolean;
