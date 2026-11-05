@@ -10,13 +10,19 @@ const COMPATIBLE = {
   "out-of-bounds-transfer": ["bad-transfer", "stuck", "C15", "C11", "page-error", "session-fatal"],
   "long-shop-name": ["text-clipped", "offscreen-ui", "C01", "C14", "C12"],
   "broken-npc-sprite": ["missing-texture", "page-error", "console-error", "C04", "C03"],
-  "void-tiles": ["C08", "C11", "C04", "missing-texture"],
+  "void-tiles": ["C08", "C11", "C04", "missing-texture", "cannot-move", "C15"],
 };
 
 export function measurePlants(truth, reviewed, jobs) {
   const jobById = new Map(jobs.map((j) => [j.id, j]));
+  // The planted text itself is the strongest locator: a frame from a map walk can show an event's planted line.
+  const signature = (plant) => (plant.type === "garbled-text" ? "ë¸Œ" : plant.type === "placeholder-text" ? "TODO" : null);
+  const mapOf = (c) => c.target?.mapId ?? /map=(\S+)/.exec(c.state ?? "")?.[1] ?? null;
   const touches = (c, plant) => {
+    const sig = signature(plant);
+    if (sig && `${c.claim ?? ""} ${c.quote ?? ""} ${c.domText ?? ""} ${c.review?.evidence_ko ?? ""} ${c.review?.title_ko ?? ""}`.includes(sig)) return true;
     if (plant.eventId && c.target?.eventId === plant.eventId) return true;
+    if (!plant.eventId && mapOf(c) === plant.mapId && c.source !== "static") return true;
     if (plant.eventId && /\bev[_-]/.test(c.where ?? "") && (c.where ?? "").includes(plant.eventId)) return true;
     const jobsOf = (c.jobs ?? []).map((id) => jobById.get(id)).filter(Boolean);
     if (plant.eventId) return jobsOf.some((j) => j.target?.eventId === plant.eventId);
