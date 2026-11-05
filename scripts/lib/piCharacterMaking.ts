@@ -6,12 +6,14 @@ import type { Command, Project } from '../../src/project/types';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration';
 import type { ToolContext, ToolResult } from '../../src/editor/tools/types';
 import { decodeCharsetFrameIndex } from '../../src/assets/easyrpgRtp';
+import { reviewedFaceIdForCharset } from '../../src/assets/reviewedCharsetFaces';
 import { characterBrief, characterRoleText, charsetEntryOf, chipFitsRole, eventRoleText, type CharacterRole } from '../../src/ai/characterFit';
 import { linkWalkChipAppearance } from '../../src/editor/tools/walkChipTools';
 import { nestedCommandLists } from '../../src/project/authoredCommandIndex';
 import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone';
 
 export const CHARACTER_FACE_CONCURRENCY = 3;
+const FACE_ONLY_WHY = '칩은 맞지만 맞는 얼굴이 없다';
 export const CHARACTER_MAKE_WALL_MS = 6 * 60_000;
 
 export interface MisfitCharacter {
@@ -20,6 +22,8 @@ export interface MisfitCharacter {
   readonly name: string;
   readonly role: CharacterRole;
   readonly why: string;
+  /** 같은 칩을 입은 다른 이벤트까지(얼굴만 그릴 때 한 외형으로 묶는다) */
+  readonly events?: { mapId: string; eventId: string }[];
 }
 
 type EventLike = Project['maps'][string]['events'][number];
@@ -49,6 +53,33 @@ export function misfitCharacters(project: Project, base: Project): MisfitCharact
   return out;
 }
 
+/** 칩은 역할에 맞지만 검토된 짝 얼굴이 없고 대사 얼굴도 없는 이름 붙은 사람(REFMAP 칩 대부분) — 얼굴만 그린다. */
+function hasFaceCommand(list: readonly Command[]): boolean {
+  return list.some(command => (command.kind === 'changeFace' && Boolean(command.resourceId || command.appearanceId)) || nestedCommandLists(command).some(hasFaceCommand));
+}
+
+/** 같은 칩을 쓴 사람(경비 여럿)은 한 외형·한 얼굴을 나눠 쓴다 — 얼굴 상한을 같은 얼굴에 다 쓰지 않게. */
+export function facelessFitCharacters(project: Project, base: Project): MisfitCharacter[] {
+  const out: (MisfitCharacter & { chipKey: string; events: { mapId: string; eventId: string }[] })[] = [];
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    const before = new Set((base.maps[mapId]?.events ?? []).map(event => event.id));
+    for (const event of map.events) {
+      if (before.has(event.id) || !event.name?.trim()) continue;
+      const sprite = visibleSprite(event);
+      if (!sprite || reviewedFaceIdForCharset(sprite.id, sprite.characterIndex)) continue;
+      if ((event.pages ?? []).some(page => hasFaceCommand(page.commands ?? []))) continue;
+      const told = characterRoleText(project, mapId, event.id);
+      const fit = chipFitsRole(charsetEntryOf(sprite.id, sprite.characterIndex), `${told} ${eventRoleText(event)}`, `${told} ${event.name}`);
+      const chipKey = `${sprite.id}#${sprite.characterIndex}`;
+      if (!fit.fits || !fit.role) continue;
+      const same = out.find(entry => entry.chipKey === chipKey);
+      if (same) { same.events.push({ mapId, eventId: event.id }); continue; }
+      out.push({ mapId, eventId: event.id, name: told ? `${event.name.trim()} (${told})` : event.name.trim(), role: fit.role, why: FACE_ONLY_WHY, chipKey, events: [{ mapId, eventId: event.id }] });
+    }
+  }
+  return out.map(({ chipKey: _chipKey, ...entry }) => entry);
+}
+
 export interface CharacterMakeOutcome {
   readonly target: MisfitCharacter;
   readonly appearanceId?: string;
@@ -64,6 +95,8 @@ export interface MakeCharactersDeps {
   readonly startChip?: (appearanceId: string, description: string, name: string) => Promise<void>;
   readonly drawFace?: (args: Record<string, unknown>, signal?: AbortSignal) => Promise<CinematicStillResult>;
   readonly chipsLeft: number;
+  /** 칩은 맞다 — 외형을 잇고 얼굴만 그린다(공방 작업 없음). */
+  readonly faceOnly?: boolean;
   readonly progress?: (summary: string) => void;
   readonly signal?: AbortSignal;
   readonly deadline?: number;
@@ -87,7 +120,7 @@ export function pointFacesAtAppearance(project: Project, mapId: string, eventId:
 
 function link(deps: MakeCharactersDeps, target: MisfitCharacter, description: string): string | undefined {
   const draft = cloneProjectSharingSharedDictionaries(deps.ctx.project);
-  const { record } = linkWalkChipAppearance(draft, { name: target.name, description, events: [{ mapId: target.mapId, eventId: target.eventId }] });
+  const { record } = linkWalkChipAppearance(draft, { name: target.name, description, events: target.events ?? [{ mapId: target.mapId, eventId: target.eventId }] });
   deps.ctx.project = draft;
   return record.id;
 }
@@ -100,19 +133,27 @@ export async function makeCharacters(targets: readonly MisfitCharacter[], deps: 
   const picked = targets.slice(0, Math.max(0, deps.chipsLeft));
   const linked: FaceJob[] = [];
   for (const target of picked) {
-    const description = characterBrief(target.name, target.role);
+    const description = deps.faceOnly ? chipLookBrief(deps.ctx.project, target) : characterBrief(target.name, target.role);
     let appearanceId: string | undefined;
     try { appearanceId = link(deps, target, description); }
     catch (error) { linked.push({ target, appearanceId: '', description, chipStarted: false, reason: error instanceof Error ? error.message : String(error) }); continue; }
     let chipStarted = false, reason: string | undefined;
-    if (deps.startChip && appearanceId) {
+    if (deps.startChip && appearanceId && !deps.faceOnly) {
       try { await deps.startChip(appearanceId, description, target.name); chipStarted = true; }
       catch (error) { reason = `걷기 칩 작업을 세우지 못했다: ${error instanceof Error ? error.message : String(error)}`; }
     }
-    linked.push({ target, appearanceId: appearanceId ?? '', description, chipStarted, ...(reason ? { reason } : {}) });
+    linked.push({ target, appearanceId: appearanceId ?? '', description, chipStarted, ...(reason ? { reason } : {}), ...(target.events ? { events: target.events } : {}) });
   }
   if (linked.length) deps.progress?.(`맞는 칩이 없는 ${linked.length}명을 만드는 중: ${linked.map(entry => entry.target.name).join(', ')}`);
   return drawFaces(linked, deps);
+}
+
+/** 칩이 맞을 때 얼굴은 그 칩의 생김새(카탈로그 외형 글)를 따른다 — 칩과 얼굴이 같은 사람으로 보이게. */
+function chipLookBrief(project: Project, target: MisfitCharacter): string {
+  const event = project.maps[target.mapId]?.events.find(entry => entry.id === target.eventId);
+  const sprite = event ? visibleSprite(event) : undefined;
+  const entry = sprite ? charsetEntryOf(sprite.id, sprite.characterIndex) : undefined;
+  return `${target.name}: ${entry?.appearance ?? entry?.label ?? ''} — ${target.role.rule.brief}`.slice(0, 600);
 }
 
 export interface FaceJob {
@@ -178,7 +219,8 @@ export async function drawFaces(linked: readonly FaceJob[], deps: Omit<MakeChara
 }
 
 export function characterMakeSummary(outcomes: readonly CharacterMakeOutcome[], skipped: readonly MisfitCharacter[]): string {
-  const lines = outcomes.map(o => `${o.target.name}(${o.target.role.rule.label}): ${o.chipStarted ? '걷기 칩 만드는 중' : '걷기 칩 못 세움'} · ${o.faceResourceId ? '얼굴 그림' : `얼굴 없음 — ${o.reason ?? ''}`}`);
+  const chipLine = (o: CharacterMakeOutcome) => o.target.why === FACE_ONLY_WHY ? '칩은 맞음' : o.chipStarted ? '걷기 칩 만드는 중' : '걷기 칩 못 세움';
+  const lines = outcomes.map(o => `${o.target.name}(${o.target.role.rule.label}): ${chipLine(o)} · ${o.faceResourceId ? '얼굴 그림' : `얼굴 없음 — ${o.reason ?? ''}`}`);
   const rest = skipped.length ? [`상한이라 가장 가까운 칩으로 둔 사람: ${skipped.map(s => s.name).join(', ')}`] : [];
-  return [`번들 칩이 역할과 맞지 않는 사람 ${outcomes.length}명을 새로 만들었습니다 — ${lines.join(' / ')}.`, ...rest].join(' ');
+  return [`인물 ${outcomes.length}명을 새로 만들거나 얼굴을 그렸습니다 — ${lines.join(' / ')}.`, ...rest].join(' ');
 }

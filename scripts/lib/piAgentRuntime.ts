@@ -105,7 +105,7 @@ import { runTool } from '../../src/editor/tools/index.ts';
 import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
 import { drawItemIcons, itemIconSummary } from './piItemIcons.ts';
 import { APPEARANCE_GENERATION_TOOL, prepareAppearanceGeneration } from '../../src/editor/tools/characterAppearanceTools.ts';
-import { CHARACTER_MAKE_WALL_MS, characterMakeSummary, drawFaces, eventsWearing, facelessNewAppearances, makeCharacters, misfitCharacters } from './piCharacterMaking.ts';
+import { CHARACTER_MAKE_WALL_MS, characterMakeSummary, drawFaces, eventsWearing, facelessFitCharacters, facelessNewAppearances, makeCharacters, misfitCharacters } from './piCharacterMaking.ts';
 import { runToolDefinition } from '../../src/editor/tools/toolRunner.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
@@ -2160,7 +2160,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const misfits = misfitCharacters(ctx.project, base);
       const chipsLeft = Math.max(0, WALK_CHIP_RUN_BUDGET - walkChipStarts);
       const faceless = facelessNewAppearances(ctx.project, base, new Set());
-      if (misfits.length || faceless.length) {
+      if (misfits.length || faceless.length || facelessFitCharacters(ctx.project, base).length) {
         const say = (summary: string) => emit({ type: 'execution_status', name: 'character.make.progress', ok: true, summary });
         const deadline = Date.now() + CHARACTER_MAKE_WALL_MS;
         const deps = {
@@ -2181,7 +2181,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const made = await makeCharacters(misfits, { ...deps, drawFace: countedDraw, chipsLeft, ...(startChip ? { startChip } : {}) });
         const madeIds = new Set(made.flatMap(o => o.appearanceId ? [o.appearanceId] : []));
         const faces = await drawFaces(faceless.filter(job => !madeIds.has(job.appearanceId)), { ...deps, drawFace: countedDraw });
-        const outcomes = [...made, ...faces];
+        // 칩은 역할에 맞는데 검토된 짝 얼굴이 없어 대사창에 얼굴이 없는 사람(REFMAP 칩 대부분) — 외형을 잇고 얼굴만 그린다.
+        const fitFaceless = facelessFitCharacters(ctx.project, base);
+        const faceOnly = fitFaceless.length ? await makeCharacters(fitFaceless, { ...deps, drawFace: countedDraw, chipsLeft: facesLeft(), faceOnly: true }) : [];
+        const outcomes = [...made, ...faces, ...faceOnly];
         emit({ type: 'execution_status', name: 'character.make.auto', ok: outcomes.every(o => o.faceResourceId), summary: characterMakeSummary(outcomes, misfits.slice(chipsLeft)),
           data: { characters: outcomes.map(o => ({ name: o.target.name, appearanceId: o.appearanceId, chipStarted: o.chipStarted, faceResourceId: o.faceResourceId, reason: o.reason })) } });
       }
