@@ -57,6 +57,9 @@ export function detectRun(runs) {
     if (job.kind === "event" && summary?.result && summary.result.free && (summary.result.steps ?? 0) === 0 && (job.target?.kinds ?? []).some((k) => k === "text" || k === "choices" || k === "shop")) {
       add({ ...base, check: "event-no-response", severity: "function", claim: `이벤트 ${job.target.eventId} 를 실행했는데 대사·선택지·상점이 나오지 않았다 (페이지 ${job.target.page})`, key: `noresp|${job.target.eventId}`, evidence: rows.slice(0, 2).map((r) => frameRef(job, r)) });
     }
+    if (job.kind === "battle" && summary?.result?.noBattle) {
+      add({ ...base, check: "battle-not-started", severity: "function", claim: `체크포인트로 부대 ${job.target?.troopId} 전투를 시작했는데 전투 화면이 나오지 않았다(이벤트 페이지 조건이나 출발 연출 확인)`, key: `nobattle|${job.target?.troopId}`, evidence: rows.slice(-2).map((r) => frameRef(job, r)) });
+    }
     if (job.script === "walk") {
       const walks = rows.filter((r) => /^walk-(up|right|down|left)$/.test(r.label ?? ""));
       if (walks.length === 4 && walks.every((r) => r.state?.screen === "field" && !r.state?.dialogue) && new Set(walks.map((r) => `${r.state?.x},${r.state?.y}`)).size === 1) {

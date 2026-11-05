@@ -59,6 +59,12 @@ function pathConditions(commands, kind) {
   return null;
 }
 
+function battlePath(commands, troopId) {
+  const marked = (list) => (list ?? []).map((c) => (c.kind === "battleProcessing" && c.troopId === troopId ? { ...c, kind: "__target_battle" } : c));
+  const remap = (list) => marked(list).map((c) => (c.kind === "fork" ? { ...c, then: remap(c.then), else: remap(c.else) } : c));
+  return pathConditions(remap(commands), "__target_battle");
+}
+
 /** Fold conditions into checkpoint state; null when they contradict each other or need something unsupported. */
 function solveConditions(conditions) {
   const state = { switches: {}, items: {}, variables: {} };
@@ -110,7 +116,12 @@ export function planCoverage(project, { game, maxEvents = 400, partyLevel = 12 }
       for (const page of event.pages ?? []) {
         walkCommands(page.commands, (c) => {
           if (c.kind === "transfer" && c.mapId && !transferIn.has(c.mapId)) transferIn.set(c.mapId, { x: c.x, y: c.y, facing: c.direction ?? "down" });
-          if (c.kind === "battleProcessing" && c.troopId && !battleEvents.has(c.troopId)) battleEvents.set(c.troopId, { mapId: map.id, x: event.x, y: event.y });
+          if (c.kind !== "battleProcessing" || !c.troopId) return;
+          // The runtime runs the event's current page, so the checkpoint must make the page holding the battle
+          // current and its path to the battle true; story battles gated by switches otherwise run another page.
+          const solved = solveConditions([...(page.conditions ?? []), ...(battlePath(page.commands, c.troopId) ?? [])]);
+          const prev = battleEvents.get(c.troopId);
+          if (!prev || (!prev.state && solved)) battleEvents.set(c.troopId, { mapId: map.id, x: event.x, y: event.y, state: solved });
         });
       }
     }
@@ -159,7 +170,13 @@ export function planCoverage(project, { game, maxEvents = 400, partyLevel = 12 }
   for (const job of eventJobs.slice(0, maxEvents)) push(job);
 
   for (const [troopId, at] of battleEvents) {
-    push({ kind: "battle", label: `전투 ${project.database.troops.find((t) => t.id === troopId)?.name ?? troopId}`, target: { troopId, mapId: at.mapId }, checkpoint: { id: `battle-${troopId}`, mapId: at.mapId, x: at.x, y: Math.min(at.y + 1, (project.maps[at.mapId]?.height ?? 2) - 1), party, startTroopId: troopId }, script: "battle" });
+    const st = at.state ?? { switches: {}, items: {}, variables: {} };
+    push({ kind: "battle", label: `전투 ${project.database.troops.find((t) => t.id === troopId)?.name ?? troopId}`, target: { troopId, mapId: at.mapId }, checkpoint: {
+      id: `battle-${troopId}`, mapId: at.mapId, x: at.x, y: Math.min(at.y + 1, (project.maps[at.mapId]?.height ?? 2) - 1), party, startTroopId: troopId,
+      ...(Object.keys(st.switches).length ? { switches: st.switches } : {}),
+      ...(Object.keys(st.items).length ? { items: st.items } : {}),
+      ...(Object.keys(st.variables).length ? { variables: st.variables } : {}),
+    }, script: "battle" });
   }
 
   const inputs = ["keyboard", "mouse", "touch"];

@@ -276,6 +276,7 @@ async function battle({ maxTurns = 8, label = "battle" } = {}) {
     await sleep(250);
   }
   gridMs = Date.now() - t0;
+  if ((await readState()).screen !== "battle") return { gridMs, noBattle: true };
   await snap(`${label}-grid`);
   for (let turn = 0; turn < maxTurns && Date.now() - T0 < HARD_MS; turn += 1) {
     const s = await readState();
@@ -347,8 +348,14 @@ try {
       if (s.state.dialogue || s.state.screen !== "field") await driveUntilFree({ maxSteps: 12, label: "walk-ev" });
     }
   } else if (job.script === "battle") {
+    // Story battles open with a cutscene: drive it until the battle screen shows up, then fight.
+    for (let i = 0; i < 40 && Date.now() - T0 < HARD_MS && (await readState()).screen !== "battle"; i += 1) {
+      const s = await readState();
+      if (s.choices) await pickChoice(0); else if (s.dialogue) await confirm(); else await sleep(700);
+      await sleep(300);
+    }
     summary.result = await battle({ maxTurns: 10 });
-    summary.after = await driveUntilFree({ maxSteps: 12, label: "after-battle" });
+    summary.after = await driveUntilFree({ maxSteps: 24, label: "after-battle" });
   } else {
     await snap("start");
     summary.result = await driveUntilFree({ maxSteps: 50, label: "ev" });

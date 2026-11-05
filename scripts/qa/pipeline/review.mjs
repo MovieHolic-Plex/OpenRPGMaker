@@ -58,7 +58,9 @@ function candidatePrompt(c) {
  * reviewer cannot overturn by looking at a frame that does not show them: the reviewer ranks and explains them,
  * and only `environment` (a QA-harness artifact) may remove one.
  */
-const MEASURED = new Set(["garbled-text", "placeholder-text", "text-clipped", "offscreen-ui", "asset-request", "missing-resource", "missing-texture", "page-error", "stuck", "black-screen", "bad-transfer", "bad-shop", "endless-loop", "portrait-kind", "sprite-cell-range", "session-fatal", "event-no-response"]);
+const MEASURED = new Set(["garbled-text", "placeholder-text", "text-clipped", "offscreen-ui", "asset-request", "missing-resource", "missing-texture", "page-error", "black-screen", "bad-transfer", "bad-shop", "endless-loop", "portrait-kind", "sprite-cell-range", "session-fatal", "event-no-response"]);
+// Harness-dependent signals (stuck / battle-not-started / input-mode-ignored) are NOT measured facts: they depend on
+// how the scripted player drove the game, so the reviewer may reject them.
 export function isMeasured(c) {
   return (c.source === "deterministic" || c.source === "static") && MEASURED.has(c.check);
 }
