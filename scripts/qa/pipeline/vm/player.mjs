@@ -258,7 +258,8 @@ async function battle({ maxTurns = 8, label = "battle" } = {}) {
 
 async function shop(label) {
   await snap(`${label}-shop`);
-  for (const [k, l] of [["ArrowDown", "down"], ["ArrowDown", "down2"], ["Enter", "detail"]]) { note(`shop:${k}`); await page.keyboard.press(k); await sleep(450); await snap(`${label}-shop-${l}`); }
+  // Open the buy list first (the first command), then walk it: item names only exist on screen inside the list.
+  for (const [k, l] of [["Enter", "buy-list"], ["ArrowDown", "down"], ["ArrowDown", "down2"], ["Enter", "detail"]]) { note(`shop:${k}`); await page.keyboard.press(k); await sleep(450); await snap(`${label}-shop-${l}`); }
   for (let i = 0; i < 5 && (await readState()).screen === "shop"; i += 1) { await cancel(); await sleep(350); }
 }
 

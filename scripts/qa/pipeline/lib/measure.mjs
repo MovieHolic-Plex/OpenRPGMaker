@@ -5,18 +5,18 @@
 const COMPATIBLE = {
   "garbled-text": ["C10", "C05", "C01", "C12", "C17"],
   "placeholder-text": ["C10", "C05", "C17", "C01"],
-  "wrong-portrait": ["C04", "C05", "C06", "C16", "C03"],
+  "wrong-portrait": ["portrait-kind", "C04", "C05", "C06", "C16", "C03"],
   "soft-lock-loop": ["stuck", "endless-loop", "C08", "C11"],
   "out-of-bounds-transfer": ["bad-transfer", "stuck", "C15", "C11", "page-error", "session-fatal"],
-  "long-shop-name": ["text-clipped", "offscreen-ui", "C01", "C14", "C12"],
-  "broken-npc-sprite": ["missing-texture", "page-error", "console-error", "C04", "C03"],
+  "long-shop-name": ["text-clipped", "text-ellipsized", "offscreen-ui", "C01", "C14", "C12"],
+  "broken-npc-sprite": ["sprite-cell-range", "missing-texture", "page-error", "console-error", "C04", "C03"],
   "void-tiles": ["C08", "C11", "C04", "missing-texture", "cannot-move", "C15"],
 };
 
 export function measurePlants(truth, reviewed, jobs) {
   const jobById = new Map(jobs.map((j) => [j.id, j]));
   // The planted text itself is the strongest locator: a frame from a map walk can show an event's planted line.
-  const signature = (plant) => (plant.type === "garbled-text" ? "ë¸Œ" : plant.type === "placeholder-text" ? "TODO" : null);
+  const signature = (plant) => (plant.type === "garbled-text" ? "ë¸Œ" : plant.type === "placeholder-text" ? "TODO" : plant.type === "long-shop-name" ? "전설적인 고대" : null);
   const mapOf = (c) => c.target?.mapId ?? /map=(\S+)/.exec(c.state ?? "")?.[1] ?? null;
   const touches = (c, plant) => {
     const sig = signature(plant);

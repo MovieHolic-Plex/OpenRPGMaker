@@ -24,6 +24,8 @@ const SYSTEM = [
   "by_design (intended presentation: greyed disabled items, cutscene letterbox, hidden HUD during events, pixel-art style, intended empty space),",
   "not_visible (the claimed defect cannot be seen in any provided frame), environment (QA harness artifact: loading screen, error page, 429).",
   "Be strict: if you cannot point at the defect in a specific frame, it is not real.",
+  "Text that does not fit its box (a name, label or line cut at the box edge in a list, menu, shop, HUD or a finished dialogue page) is never a transition.",
+  "Typewriter reveal is only a transition when the next frame shows the same box with more text and the page indicator; say which frame shows it.",
   "Owner: game-data (fix in this game's project data: text, map, event, balance, asset choice) vs engine (player/runtime code affecting every game)",
   "vs editor (authoring tool lets authors create it) vs assistant (the AI assistant generated it and should be prevented).",
   "Answer with one JSON object only.",
@@ -41,6 +43,7 @@ function candidatePrompt(c) {
     c.inputs ? `Inputs before the frame: ${c.inputs}` : "",
     c.domText ? `DOM text on screen (ground truth): ${c.domText.slice(0, 1500)}` : "",
     c.signals ? `Deterministic signals: ${JSON.stringify(c.signals).slice(0, 1200)}` : "",
+    isMeasured(c) ? "This finding was MEASURED by the harness (DOM geometry, network, runtime state or project data), not guessed from pixels. It stands unless the evidence shows a QA-harness artifact (verdict environment). Rank it, name the owner, explain it." : "",
     (c.frames ?? []).length ? `Frames attached in order: ${c.frames.map((f) => f.role).join(", ")}` : "No frames attached.",
     "",
     "Return JSON: {\"verdict\":\"" + VERDICTS.join("|") + "\",\"confidence\":0.0-1.0,\"severity\":\"" + SEVERITIES.join("|") + "\",",
@@ -48,6 +51,20 @@ function candidatePrompt(c) {
     "\"repro_ko\":\"재현 절차 한 줄(입력·위치)\",\"fix_hint_ko\":\"고칠 곳 한 줄\"}",
   ];
   return lines.filter(Boolean).join("\n");
+}
+
+/**
+ * Machine-measured findings (DOM overflow, HTTP 404, page errors, stuck state, static data checks) are facts the
+ * reviewer cannot overturn by looking at a frame that does not show them: the reviewer ranks and explains them,
+ * and only `environment` (a QA-harness artifact) may remove one.
+ */
+const MEASURED = new Set(["text-clipped", "offscreen-ui", "asset-request", "missing-resource", "missing-texture", "page-error", "stuck", "black-screen", "bad-transfer", "bad-shop", "endless-loop", "portrait-kind", "sprite-cell-range", "session-fatal", "event-no-response"]);
+export function isMeasured(c) {
+  return (c.source === "deterministic" || c.source === "static") && MEASURED.has(c.check);
+}
+function applyMeasuredFloor(c, row) {
+  if (!isMeasured(c) || row.verdict === "real" || row.verdict === "environment" || row.verdict === null) return row;
+  return { ...row, reviewerVerdict: row.verdict, verdict: "real", confidence: Math.min(row.confidence || 0.6, 0.6), floor: "measured" };
 }
 
 export async function reviewCandidates(candidates, { client, poolSize = 6, onRow }) {
@@ -65,7 +82,7 @@ export async function reviewCandidates(candidates, { client, poolSize = 6, onRow
       res = await client([...content, { type: "text", text: "Return only the JSON object now." }], { system: SYSTEM, maxTokens: 1200 });
       parsed = res.ok ? extractJson(res.text, ["verdict"]) : null;
     }
-    const row = {
+    const row = applyMeasuredFloor(c, {
       id: c.id,
       verdict: VERDICTS.includes(parsed?.verdict) ? parsed.verdict : null,
       confidence: Number(parsed?.confidence ?? 0),
@@ -76,7 +93,7 @@ export async function reviewCandidates(candidates, { client, poolSize = 6, onRow
       repro_ko: parsed?.repro_ko ?? null,
       fix_hint_ko: parsed?.fix_hint_ko ?? null,
       error: res.ok ? (parsed ? null : "unparsed") : res.error,
-    };
+    });
     onRow?.(row);
     return row;
   });

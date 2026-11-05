@@ -133,13 +133,30 @@ export function staticLint(project, { game, maxLineChars = 34 } = {}) {
     ...(project.resourceProfiles ?? []).map((r) => r.assetId),
     ...Object.keys(project.assets?.uploaded ?? {}),
   ]);
-  const add = (f) => findings.push({ game, source: "static", id: `S${String(findings.length + 1).padStart(3, "0")}`, ...f });
+  const seen = new Set();
+  const add = (f) => {
+    const key = `${f.check}|${f.where}|${f.claim}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    findings.push({ game, source: "static", id: `S${String(findings.length + 1).padStart(3, "0")}`, ...f });
+  };
+  const profileKind = new Map((project.resourceProfiles ?? []).map((r) => [r.assetId, r]));
+  const uploaded = project.assets?.uploaded ?? {};
+  /** Cells in a charset sheet, or null when the sheet size is unknown. */
+  const charsetCells = (sprite) => {
+    const meta = sprite.type === "uploaded" ? uploaded[sprite.id]?.meta : profileKind.get(sprite.id);
+    const w = meta?.width ?? meta?.imageWidth, h = meta?.height ?? meta?.imageHeight;
+    const fw = meta?.frameWidth ?? meta?.tileWidth, fh = meta?.frameHeight ?? meta?.tileHeight;
+    return w && h && fw && fh ? Math.floor(w / fw) * Math.floor(h / fh) : null;
+  };
   const reachable = new Set([project.startMapId]);
   for (const map of Object.values(project.maps)) {
     for (const event of map.events ?? []) {
       for (const page of event.pages ?? []) {
         const sprite = page.graphic?.sprite;
         if (sprite?.type === "uploaded" && sprite.id && !resourceIds.has(sprite.id)) add({ check: "missing-resource", severity: "visual", where: `${map.id} ${event.id}`, claim: `이벤트 그림 자원 ${sprite.id} 이 프로젝트에 없다`, target: { mapId: map.id, eventId: event.id } });
+        const cells = sprite && Number.isInteger(page.graphic?.pattern) ? charsetCells(sprite) : null;
+        if (cells && (page.graphic.pattern < 0 || page.graphic.pattern >= cells)) add({ check: "sprite-cell-range", severity: "visual", where: `${map.id} ${event.id}`, claim: `NPC 그림 ${sprite.id} 의 칸 번호 ${page.graphic.pattern} 이 시트 칸 수 ${cells} 밖이다 — 엉뚱한 칸이나 빈 그림이 그려진다`, target: { mapId: map.id, eventId: event.id } });
         walkCommands(page.commands, (c) => {
           if (c.kind === "transfer" && c.mapId) {
             reachable.add(c.mapId);
@@ -148,6 +165,8 @@ export function staticLint(project, { game, maxLineChars = 34 } = {}) {
             else if (c.x < 0 || c.y < 0 || c.x >= dest.width || c.y >= dest.height) add({ check: "bad-transfer", severity: "blocker", where: `${map.id} ${event.id}`, claim: `${c.mapId} 밖 좌표 (${c.x},${c.y}) 로 이동 (맵 ${dest.width}x${dest.height})`, target: { mapId: map.id, eventId: event.id } });
           }
           if (c.kind === "changeFace" && c.resourceId && !resourceIds.has(c.resourceId) && !/^shared-|^oprn_|^cc0-|^generated-/.test(c.resourceId)) add({ check: "missing-resource", severity: "visual", where: `${map.id} ${event.id}`, claim: `초상 자원 ${c.resourceId} 이 프로젝트에 없다`, target: { mapId: map.id, eventId: event.id } });
+          const faceKind = c.kind === "changeFace" && c.resourceId ? (profileKind.get(c.resourceId)?.kind ?? uploaded[c.resourceId]?.kind) : null;
+          if (faceKind && !["faceset", "portrait", "bust"].includes(faceKind)) add({ check: "portrait-kind", severity: "visual", where: `${map.id} ${event.id}`, claim: `대사 초상에 얼굴이 아닌 자원(${faceKind}: ${c.resourceId})을 썼다`, target: { mapId: map.id, eventId: event.id } });
           if (c.kind === "text") {
             const longest = Math.max(...String(c.body ?? "").split("\n").map((l) => [...l].length));
             if (longest > maxLineChars * 2) add({ check: "long-line", severity: "text", where: `${map.id} ${event.id}`, claim: `대사 한 줄이 ${longest}자(기준 ${maxLineChars * 2}자 초과): ${String(c.body).slice(0, 60)}…`, target: { mapId: map.id, eventId: event.id } });

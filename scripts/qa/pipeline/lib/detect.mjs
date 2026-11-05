@@ -38,9 +38,10 @@ export function detectRun(runs) {
       if (darkRun.length === 1) add({ ...base, check: "black-screen", severity: "blocker", claim: `화면이 ${row.darkMs / 1000}초 넘게 검은색 (전환 프레임이 아니라 지속)`, key: `black|${row.state?.screen}|${row.state?.mapId}`, evidence: ev, state: row.state, inputs: row.inputs });
       for (const o of row.dom?.overflow ?? []) {
         if (!o.text || o.text.length < 2) continue;
-        const kind = o.offscreen ? "offscreen-ui" : "text-clipped";
-        if (o.ellipsis && !o.offscreen) continue; // deliberate ellipsis truncation is a design choice, the reviewer sees it via observer if it matters
-        add({ ...base, check: kind, severity: "visual", claim: `${o.el} 글자 "${o.text}" ${o.offscreen ? "화면 밖으로 나감" : "자기 상자에서 잘림"} rect=${o.rect.join(",")} (${job.viewportName})`, key: `${kind}|${o.el}|${o.text.slice(0, 24)}|${job.viewportName}`, evidence: ev, state: row.state, dom: o });
+        // An ellipsis is still a name the player cannot read; it is reported (as text severity) and the reviewer
+        // decides whether that row is meant to truncate.
+        const kind = o.offscreen ? "offscreen-ui" : o.ellipsis ? "text-ellipsized" : "text-clipped";
+        add({ ...base, check: kind, severity: kind === "text-ellipsized" ? "text" : "visual", claim: `${o.el} 글자 "${o.text}" ${o.offscreen ? "화면 밖으로 나감" : "자기 상자에서 잘림"} rect=${o.rect.join(",")} (${job.viewportName})`, key: `${kind}|${o.el}|${o.text.slice(0, 24)}|${job.viewportName}`, evidence: ev, state: row.state, dom: o });
       }
       frames.push({ ...base, seq: row.seq, file: row.file, label: row.label, settled: row.settled, darkMs: row.darkMs, lum: row.lum, hash: row.hash, state: row.state, domText: row.dom?.text ?? "", inputs: row.inputs });
     }
