@@ -132,7 +132,7 @@ const DUNGEON_POS_SCALE = 2;
 const DUNGEON_SIZE_SCALE = 1.25;
 
 /** 방 도안 → author_dungeon {rooms[]{id,kind,x,y,w,h}, links}. 자리는 크기보다 더 크게 키워(위치 2배·크기 1.25배) 방 사이에 벨·통로 자리를 남긴다(입구 먼저). */
-export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: string[][] } {
+export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: Array<{ from: string; to: string }> } {
   const raw = Array.isArray(read.data.rooms) ? read.data.rooms.slice(0, 12) : [];
   const rooms: Array<Record<string, unknown>> = [];
   const indexOf = new Map<number, string>();
@@ -148,11 +148,12 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
       w: Math.max(6, Math.min(40, Math.round(w * DUNGEON_SIZE_SCALE))), h: Math.max(5, Math.min(22, Math.round(h * DUNGEON_SIZE_SCALE))),
     });
   });
-  const links: string[][] = [];
+  // links 는 {from,to} 객체로(도구 스키마가 객체 전용 — Gemini 는 배열|객체 합집합 items 를 400 으로 막는다)
+  const links: Array<{ from: string; to: string }> = [];
   for (const pair of Array.isArray(read.data.links) ? read.data.links : []) {
     if (!Array.isArray(pair) || pair.length < 2) continue;
     const a = indexOf.get(Number(pair[0])), b = indexOf.get(Number(pair[1]));
-    if (a && b && a !== b) links.push([a, b]);
+    if (a && b && a !== b) links.push({ from: a, to: b });
   }
   return { rooms, links };
 }

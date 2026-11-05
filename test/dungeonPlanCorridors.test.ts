@@ -47,4 +47,10 @@ describe("author_dungeon keeps an image plan's ring", () => {
     expect(res.ok, res.summary).toBe(true);
     expect((res.warnings ?? []).filter((w) => w.includes("빌더 통로로 이었다"))).toEqual([]);
   });
+
+  // r2 2026-11-05: links items typed ["array","object"] made Gemini answer 400 for every build turn (all tools, not just this one).
+  it("keeps the links schema a single type Gemini accepts", () => {
+    const links = (AUTHOR_BEODEUL_DUNGEON_ALIAS.parameters.properties as Record<string, { items?: { type?: unknown } }>).links!;
+    expect(links.items?.type).toBe("object");
+  });
 });
