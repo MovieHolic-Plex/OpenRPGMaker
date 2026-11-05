@@ -159,6 +159,7 @@ import { WALK_CHIP_TOOLS } from "./walkChipTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
 import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
+import { BUILD_FROM_PLAN_TOOL } from "./planGridBuild";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
@@ -439,6 +440,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
   ...DUNGEON_LINK_TOOLS,
   ...BBOX_PLACE_TOOLS,
+  BUILD_FROM_PLAN_TOOL,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),

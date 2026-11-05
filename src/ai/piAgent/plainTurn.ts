@@ -341,7 +341,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
         ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
         ...villageTypeExposedTools(villageType),
-        ...(widen ? widenToolNames(widen.modifier) : []),
+        ...(widen ? [...widenToolNames(widen.modifier), "build_from_plan", "generate_missing_object"] : []),
         ...(requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text) ? OPENING_ANIMATIC_AUTHORING_TOOLS : []),
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
