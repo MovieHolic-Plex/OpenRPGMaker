@@ -615,6 +615,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // (토큰 만료 등)와 구별해야 한다 — 그쪽은 끝까지 갔으면 성공이 맞다.
   const STOPPED_PATTERNS = [TURN_CAP_PATTERN, /^시간 상한을 넘어 중단했습니다\.$/, /^Request was aborted$/];
   let stoppedByLimit = false;
+  /** 계획 턴이 읽기만 하다 끝난 한도(턴·시간) — 계획 없이 실행으로 넘어간다. */
+  const PLAN_CAP_PATTERNS = [TURN_CAP_PATTERN, /^시간 상한을 넘어 중단했습니다\.$/];
   const explainTurnCap = (message: string): string => {
     const text = message.trim();
     if (STOPPED_PATTERNS.some((pattern) => pattern.test(text))) stoppedByLimit = true;
@@ -704,6 +706,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
+      let planHitCap = false;
+      const planErrorMark = streamErrors.length;
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "계획" });
       const planned = await stage("plan", () => runPiAgentViaCompanion({ ...buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
@@ -719,6 +723,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         if (question) surface.onTilesetChangeQuestion?.(question);
         const storeCard = storeCardFromEvent(raw);
         if (storeCard) surface.onStoreCard?.(storeCard);
+        if (raw.type === "error" && PLAN_CAP_PATTERNS.some(pattern => pattern.test(raw.message.trim()))) planHitCap = true;
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         showConstructionEvent(scopePiGhostEvent(event, "ultrabrain-plan"));
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
@@ -728,12 +733,24 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         if (event.type === "error") planError = event.message;
       } }));
       surface.signal?.throwIfAborted();
-      if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
-      spendStats.push(planned.stats);
-      push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
-        stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
-      (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
-      executionTask = withUltrabrainPlan(modelTask, plan);
+      // 계획 턴이 읽기만 하다 턴 상한에 걸렸다(계획 글 없음) — 계획은 조언일 뿐이고 실행 턴이 어차피 다시 읽는다. 요청 전체를 죽이지 않고
+      // 계획 없이 실행한다. 실측(2026-11-05 gpt-only-game 9차 고양이, ChatGPT Terra): 계획 턴 31턴·읽기 30번 뒤 「작업을 끝내지 못했어요」 — 빈 게임.
+      const planCapped = !plan.trim() && !planned.changedKeys.length && (planHitCap || PLAN_CAP_PATTERNS.some(pattern => pattern.test(String(planned.stoppedEarly ?? "").trim())));
+      if (planCapped) {
+        // 계획 턴의 턴 상한 오류는 실행 결과가 아니다 — 실패·한도 판정에서 뺀다(실행 턴이 제 상한에 걸리면 다시 선다).
+        stoppedByLimit = false;
+        streamErrors.length = planErrorMark;
+        push({ type: "agent_done", agentId: "ultrabrain-plan", ok: false, summary: "계획 턴이 턴 상한에 닿아 계획 없이 실행합니다.",
+          stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
+        spendStats.push(planned.stats);
+      } else {
+        if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
+        spendStats.push(planned.stats);
+        push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
+          stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
+        (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
+        executionTask = withUltrabrainPlan(modelTask, plan);
+      }
     }
     results = await stage("exec", () => settleMapRuns(groups.map((mapIds, index) => runPiAgentViaCompanion(
       { ...buildPiRunRequest({

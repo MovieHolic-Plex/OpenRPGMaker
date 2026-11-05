@@ -10,6 +10,8 @@ import { DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 const h = vi.hoisted(() => ({
   villageIssues: [] as string[],
   planError: false,
+  /** 계획 턴이 읽기만 하다 턴 상한에 걸려 계획 글 없이 끝난다(2026-11-05 gpt-only-game 9차 고양이). */
+  planCapped: false,
   harmony: true,
   verdicts: [] as boolean[],
   /** 검수 호출마다 돌려줄 지적. 비우면 매번 같은 ["density"] — 수리가 아무것도 못 바꾼 경우다. */
@@ -70,6 +72,10 @@ vi.mock("@/ai/piAgent/client", () => ({
   runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void; onCheckpoint?: (event: unknown) => Promise<unknown> }) => {
     h.requests.push(request);
     if (request.readOnly && String(request.task).startsWith("[계획 턴]")) {
+      if (h.planCapped) {
+        options?.onEvent?.({ type: "error", message: "턴 상한(30)을 넘어 중단했습니다." });
+        return { type: "done", project: request.project, changedKeys: [], stoppedEarly: "턴 상한(30)을 넘어 중단했습니다.", stats: { ms: 1, turns: 31, toolCalls: 30, toolErrors: 0 } };
+      }
       if (h.planError) options?.onEvent?.({ type: "error", message: "plan failed" });
       options?.onEvent?.({ type: "assistant", text: "1. 요청 범위에 변경을 적용하고 검증한다." });
       return { type: "done", project: request.project, changedKeys: [], stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 } };
@@ -156,7 +162,7 @@ beforeEach(() => {
   configureProjectInterviewBootPreparation(async () => {});
   h.saveKind = "saved";
   h.villageIssues.length = 0;
-  h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
+  h.planError = false; h.planCapped = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.compareCalls = 0; h.compareWinners.length = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.roleModels = undefined;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
@@ -467,6 +473,15 @@ describe("model role routing", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
     expect(h.requests).toHaveLength(1);
     expect(h.process.some(text => text.includes("plan failed"))).toBe(true);
+  });
+  it("계획 턴이 계획 글 없이 턴 상한에 걸리면 계획 없이 실행한다", async () => {
+    h.planCapped = true;
+    h.results.push({ project: projectWith("숲길") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    expect(h.requests).toHaveLength(2);
+    expect(h.requests[1]!.readOnly).not.toBe(true);
+    expect(h.requests[1]!.task).not.toContain("Ultrabrain 실행 계획");
+    expect(h.boardStates.at(-1)?.phase).not.toBe("실패");
   });
   it("plans with Ultrabrain before Deep edits", async () => {
     // 다이얼 값을 싣는다 — 안 실으면 실행 요청은 역할 폴백(이제 "low")을 쓴다. 이 케이스는

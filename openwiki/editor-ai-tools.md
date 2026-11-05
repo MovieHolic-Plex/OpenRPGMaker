@@ -395,6 +395,8 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
 이 대화의 마지막 인자(다듬기 판은 `polish.lastBuilds`)에 합쳐 통째 인자로 바꾼다. 도구까지 edit 가 오면 `edit-without-base` 오류. set 은 plan·ceiling·start·exitWidth·name 만(스키마 크기).
 
 **속도.** 실내 만들기·고치기는 읽기 전용 계획 턴(Ultrabrain)을 건너뛴다(`skipPlanTurn`, 한 방에 10분을 쓰고 시공 도구 없이 끝났다).
+계획 턴이 계획 글 없이 턴·시간 상한에 걸리면(`PLAN_CAP_PATTERNS`) 요청을 죽이지 않고 계획 없이 실행 턴으로 넘어간다 — 계획 단계 오류는 실패 판정에서 빠진다.
+실측(2026-11-05 gpt-only-game 9차 고양이): codex 로컬 CLI 는 차례 중간에 `[턴 예산]` 알림을 못 받아 읽기 30번 뒤 상한에 걸렸고 빈 게임으로 끝났다.
 점검표 프롬프트에 `FEATURE_BUILD_PACE_PROMPT`(조회는 두 턴 안에 묶고 첫 시공은 초안). 손 도트 실내 맵의 `show_map_region` 은 그림이 있으면
 층 칸 배열을 빼고 막힌 칸 수만 준다(다듬기 한 판에 133K 자). 인게임 오프닝은 애니메틱 도구 40여 개 대신 12개(`IN_GAME_OPENING_TOOLS`).
 `stats.exposure` 에 systemSections·listTop·requests(턴별 대기·캐시)·results 가, `stats.review` 에 판정자·비평 호출 수·시간·토큰이 붙는다 — 시간·토큰 합계에 이것도 센다.
