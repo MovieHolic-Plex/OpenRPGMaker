@@ -146,6 +146,11 @@ async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortS
   return data ? { subject: scene.subject, cols, rows, data } : null;
 }
 
+/** 배치(칸 지도나 점 읽기)를 읽었나 — 묘사만 있는 읽기는 아니다. */
+export function hasLayout(read: ImagePlanRead | null | undefined): boolean {
+  return !!read && (!!read.cells || Object.keys(read.data).length > 0);
+}
+
 interface Drawn { readonly blob: Blob; readonly model: string; read: ImagePlanRead | null }
 
 async function drawOne(scene: ImagePlanScene, signal?: AbortSignal): Promise<Drawn | null> {
@@ -234,7 +239,8 @@ export async function requestImagePlanMockup(scene: ImagePlanScene, signal?: Abo
   try {
     return {
       kind: "mockup", dataUrl: await shrinkReferenceImage(chosen.blob), model: chosen.model, read: chosen.read, candidates: drawn.length,
-      ...(chosen.read ? {} : { readLine: IMAGE_PLAN_READ_FAILED_LINE }),
+      // 묘사만 읽힌 경우도 «배치 읽기 실패»로 알린다(아이디어는 실려 가지만 배치는 없다)
+      ...(hasLayout(chosen.read) ? {} : { readLine: IMAGE_PLAN_READ_FAILED_LINE }),
       ...(drawn.length > 1 ? { pickLine: pickLine(drawn.length, best.index, judge?.reason ?? "") } : {}),
     };
   } catch (error) {

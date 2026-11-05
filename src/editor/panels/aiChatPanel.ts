@@ -74,7 +74,7 @@ import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { imagePlanBuildNote, type ImagePlanRead, type ImagePlanScene } from "@/ai/imagePlan";
-import { requestImagePlanMockup } from "@/editor/imagePlanMockup";
+import { hasLayout, requestImagePlanMockup } from "@/editor/imagePlanMockup";
 import { builtMapOf, checkPlanFollow } from "@/editor/imagePlanFollowCheck";
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
@@ -2404,7 +2404,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     setStatus((loadAiConfig().imagePlanCandidates ?? 1) > 1 ? "그림 도안 여러 장 그려 고르는 중(약 1~2분)…" : "그림 도안 그리는 중(약 1분)…");
     const candidates = loadAiConfig().imagePlanCandidates ?? 1;
     const outcome = await requestImagePlanMockup(widen, undefined, candidates);
-    console.info(`imagePlan: outcome=${outcome.kind} read=${outcome.kind === "mockup" && outcome.read ? "ok" : "none"}`);
+    console.info(`imagePlan: outcome=${outcome.kind} read=${outcome.kind === "mockup" && hasLayout(outcome.read) ? "ok" : outcome.kind === "mockup" && outcome.read ? "describe-only" : "none"}`);
     if (outcome.kind !== "mockup") { say(outcome.line); return { images: [] }; }
     if (outcome.pickLine) say(outcome.pickLine);
     if (outcome.readLine) say(outcome.readLine);
