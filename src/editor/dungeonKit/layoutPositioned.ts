@@ -44,7 +44,7 @@ export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
   return out;
 }
 
-/** 조각이 이웃(방·다른 조각)과 맞닿은 면으로 방향을 정한다 — 위·아래로 닿으면 세로(N/S), 옆으로 닿으면 가로(E/W). 짧은 세로 토막이 모양만 보고 가로로 읽혔다(AMEND3 2). */
+/** 조각의 통로 축 — 이웃(방·조각)과 닿은 자리들의 가운데가 더 넓게 퍼진 축(Z·U 가운데 다리도 가로로), 비기면 모양으로. */
 function touchDir(rect: Rect, neighbours: readonly Rect[]): DungeonDir | null {
   // 이웃(방·조각)과 닿은 자리들의 가운데가 퍼진 축 = 통로가 흐르는 축(AMEND5 2). 닿은 곳이 하나뿐이면 그 점과 조각 가운데 사이로 본다.
   // Z·U 가운데 다리(위·아래 면에 닿지만 양 끝에서)는 가로로, 옆방 사이 짧은 문은 가로로, 세로 다리는 세로로 읽힌다. 비기면 모양으로.
