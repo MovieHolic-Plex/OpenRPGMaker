@@ -58,6 +58,7 @@
 .ai-work-creation-glyph { color: var(--text-2); font-weight: var(--font-weight-medium); }
 .ai-work-creation-pair { display: flex; align-items: flex-end; gap: var(--space-1); padding: 0 var(--space-1); }
 .ai-work-creation.is-actor .ai-work-creation-pair .db-list-thumb { animation: ai-work-creation-fade 400ms ease-out both; }
+.ai-work-creation-face { width: 48px; height: 48px; object-fit: contain; image-rendering: auto; animation: ai-work-creation-fade 400ms ease-out both; }
 .ai-work-creation-walk {
   display: inline-block;
   background-repeat: no-repeat;

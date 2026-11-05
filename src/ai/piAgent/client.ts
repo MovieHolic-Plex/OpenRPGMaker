@@ -170,7 +170,13 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         options.signal?.throwIfAborted();
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
         const itemIcon = event.toolName === 'generate_opening_image' ? (event.data as { itemIcon?: import('../../editor/tools/itemIconTools').ItemIconTarget } | undefined)?.itemIcon : undefined;
-        if (itemIcon) {
+        const appearancePortrait = event.toolName === 'generate_opening_image' ? (event.data as { appearancePortrait?: import('../../editor/characterAppearanceGeneration').AppearancePortraitTarget } | undefined)?.appearancePortrait : undefined;
+        if (appearancePortrait) {
+          // 인물 얼굴(실행 끝 캐릭터 만들기·generate_character_appearance) — 같은 생성 브로커(300초 시한), 등록·연결은 실행기가 한다.
+          const { generateAppearancePortraitStill } = await import('../../editor/characterAppearanceGeneration');
+          still = await generateAppearancePortraitStill(appearancePortrait, { signal: options.signal });
+          if (!still.ok) { issue = still.summary; still = undefined; }
+        } else if (itemIcon) {
           // generate_item_icon — 같은 생성 브로커(300초 시한)로 한 장 그려 32×32 아이콘으로 내린다(src/editor/itemIconGeneration.ts).
           const { generateItemIcon } = await import('../../editor/itemIconGeneration');
           still = await generateItemIcon(itemIcon, { signal: options.signal });

@@ -240,6 +240,27 @@ import {
 } from "./aiChatPanelHelpers";
 import { sourceAttributeOf, sourceTextOf } from "@/i18n/domTranslator";
 
+// 만든 것 카드의 「걷기 칩 만드는 중」 — 공방 작업 줄이 이 외형의 char-gen 작업을 아직 돌리는가. 줄 모듈은 처음 쓸 때 불러 둔다.
+let workshopQueueModule: typeof import("@/editor/workshop/queue/workshopQueue") | undefined;
+void import("@/editor/workshop/queue/workshopQueue").then((module) => { workshopQueueModule = module; }).catch(() => undefined);
+/** 카드가 보이는 동안(턴이 끝난 뒤에도) 작업 줄·스토어 변화로 인물 카드를 고친다 — 칩이 5~12분 뒤 들어오거나 실패해도 표시가 맞게. */
+function watchCharacterMaking(feed: CreationFeed): () => void {
+  const refresh = () => feed.refreshCharacters(store.getCurrent());
+  const offStore = store.subscribe(refresh);
+  let offQueue: (() => void) | undefined;
+  let released = false;
+  void import("@/editor/workshop/queue/workshopQueue").then((module) => {
+    workshopQueueModule = module;
+    if (!released) offQueue = module.workshopQueue().subscribe(refresh);
+  }).catch(() => undefined);
+  return () => { released = true; offStore(); offQueue?.(); };
+}
+function appearanceChipMaking(appearanceId: string | undefined): boolean {
+  if (!appearanceId || !workshopQueueModule) return false;
+  return workshopQueueModule.workshopQueue().snapshot().jobs.some((view) => view.job.remote?.kind === "char-gen" && view.job.remote.appearanceId === appearanceId
+    && !["installed", "failed", "cancelled"].includes(view.state));
+}
+
 // ── 테스트/외부 호환 re-export (기존 import 경로 유지) ──────────────
 export {
   AI_FONT_SIZE_KEY,
@@ -459,6 +480,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let canvasProgress: AiCanvasProgress | null = null;
   let liveStatus: AiLiveStatus | null = null;
   let creationFeed: CreationFeed | null = null;
+  let creationFeedRelease: (() => void) | null = null;
   // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
   // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
   let heavyWireWarmupScheduled = false;
@@ -1276,7 +1298,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const startNewConversation = (reason: "manual"): void => {
     workspace.showChat();
     resetConversationState(reason);
-    if (!turnBusy) { liveStatus?.root.remove(); liveStatus = null; creationFeed?.root.remove(); creationFeed = null; }
+    if (!turnBusy) { liveStatus?.root.remove(); liveStatus = null; creationFeed?.root.remove(); creationFeed = null; creationFeedRelease?.(); creationFeedRelease = null; }
     toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
   };
 
@@ -2222,8 +2244,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       open: (item) => openChangeItem(item, { eventEditor: true }),
       announcePlacement: (project, item) => announceAiPlacement(project, item),
       reducedMotion: prefersReducedMotion,
+      makingAppearance: (appearanceId) => appearanceChipMaking(appearanceId),
     });
     creationFeed = turnCreations;
+    creationFeedRelease?.();
+    creationFeedRelease = watchCharacterMaking(turnCreations);
     turnLiveStatus.root.before(turnCreations.root);
     const unsubscribeCreations = store.subscribe((project) => turnCreations.observe(project));
     runSurface.turnBusy = true;
@@ -4513,6 +4538,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (disposed) return;
     disposed = true;
     logScroll.dispose();
+    creationFeedRelease?.();
+    creationFeedRelease = null;
     canvasProgress?.finish();
     canvasProgress = null;
     lockScrim.dispose();

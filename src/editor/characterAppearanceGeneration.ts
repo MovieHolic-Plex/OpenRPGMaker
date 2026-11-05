@@ -3,7 +3,9 @@ import type { ImageReference } from "@/ai/imageReferences";
 import { collectAppearanceReferences } from "@/editor/characterAppearanceReferences";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store, type ProjectIdentity, type ProjectChangeDescriptor } from "@/project/store";
-import type { CharacterAppearanceRecord, Project } from "@/project/types";
+import type { CharacterAppearanceRecord, Command, Project } from "@/project/types";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { genId } from "@/util/id";
 import { prepareAppearanceGeneration } from "@/editor/tools/characterAppearanceTools";
 import { ToolError, type ToolResult } from "@/editor/tools/types";
@@ -12,7 +14,7 @@ export type AppearanceGenerationSlot = "face" | "bust";
 export interface AppearanceGenerationRequest {
   readonly appearanceId: string;
   readonly slot: AppearanceGenerationSlot;
-  /** Human per-slot replacement gesture only. Assistant requests never set this. */
+  /** Human per-slot replacement gesture only. Assistant requests never set this: the assistant fills empty slots only (auto-applied), replacing stays human. */
   readonly replace?: boolean;
 }
 export interface AppearanceGenerationCandidate {
@@ -55,6 +57,32 @@ function buildAppearanceImagePrompt(slot: AppearanceGenerationSlot, name: string
     "Fill the entire background with one perfectly uniform, opaque light gray at sRGB #D9D9D9, or RGB 217, 217, 217. This background and the framing requirements take precedence over the references and appearance brief. Do not introduce a gradient, vignette, paper grain, texture, scenery, room, marketplace, workshop, floor, counter or decorative pattern. Do not imitate transparency with a checkerboard, and do not inherit a background color from a reference image.",
     "Return only the finished single-character image. Do not add other characters, alternate views, walking frames, sprite sheets, borders, interface elements, captions, letters, color labels, signatures or watermarks.",
   ].filter(Boolean).join("\n\n");
+}
+
+export interface AppearancePortraitTarget {
+  readonly name: string;
+  readonly description: string;
+}
+
+const PORTRAIT_MAX_SIDE = 256;
+
+/** Pi 실행기 본량(render_request, data.appearancePortrait): 외형 설명만으로 얼굴 한 장 — 편집기는 그리기만, 등록·연결은 실행기가 한다. */
+export async function generateAppearancePortraitStill(
+  target: AppearancePortraitTarget,
+  options: { readonly signal?: AbortSignal; readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset> } = {},
+): Promise<import("@/editor/openingImageGeneration").CinematicStillResult> {
+  const prompt = buildAppearanceImagePrompt("face", target.name, target.description);
+  try {
+    options.signal?.throwIfAborted();
+    const image = await (options.generateImage ?? generateAiImage)({ prompt, purpose: "character-appearance", ...(options.signal ? { signal: options.signal } : {}) });
+    options.signal?.throwIfAborted();
+    const { decodeImage, encodePng, fitWithin } = await import("@/editor/cutsceneArt/imageProcess");
+    const dataUrl = await encodePng(fitWithin(await decodeImage(image.dataUrl), PORTRAIT_MAX_SIDE));
+    return { ok: true, resourceId: genId("appearance-face"), name: `${target.name} 얼굴`, prompt, dataUrl };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    return { ok: false, code: "image-generation-failed", summary: `「${target.name}」 얼굴을 그리지 못했습니다: ${error instanceof Error ? error.message : String(error)}` };
+  }
 }
 
 /** One detached DB-owned candidate. Only apply() is allowed to mutate the project. */
@@ -180,6 +208,33 @@ export function registerAppearanceGenerationUI(open: (appearanceId: string) => v
   return () => { if (openAppearanceUI === open) openAppearanceUI = undefined; };
 }
 
+/**
+ * 이 외형을 입은 이벤트의 대사 얼굴 중 「그 칩의 검토된 짝 얼굴」(place_npc 가 자동으로 넣은 것)만 외형으로 돌린다.
+ * 저자가 직접 고른 다른 얼굴은 그대로 둔다. -> 바꾼 명령 수
+ */
+export function pointPairedFacesAtAppearance(project: Project, appearanceId: string): number {
+  const charset = project.database.characterAppearances?.find((entry) => entry.id === appearanceId)?.charset;
+  const paired = new Set<string>();
+  if (charset) { const id = reviewedFaceIdForCharset(charset.resourceId, charset.characterIndex); if (id) paired.add(id); }
+  let changed = 0;
+  const walk = (list: Command[]): void => {
+    for (let i = 0; i < list.length; i += 1) {
+      const command = list[i]!;
+      for (const nested of nestedCommandLists(command)) walk(nested as Command[]);
+      if (command.kind !== "changeFace" || command.appearanceId || !command.resourceId || !paired.has(command.resourceId)) continue;
+      list[i] = { ...command, appearanceId, resourceId: "" };
+      changed += 1;
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (!event.pages?.some((page) => page.graphic?.appearanceId === appearanceId)) continue;
+      for (const page of event.pages) walk(page.commands);
+    }
+  }
+  return changed;
+}
+
 /** Session-only handoff: no image bytes enter the model transcript or tool draft. */
 export interface AppearanceGenerationHandoff {
   readonly status: "generating" | "ui-required";
@@ -219,10 +274,18 @@ export async function startAppearanceGenerationFromAssistant(
     await open(record.id);
     signal?.throwIfAborted();
     checkCurrent();
-    void appearanceGenerationController.generate({ appearanceId: record.id, slot });
+    // 조수가 요청한 후보는 빈 칸에만 들어가므로 사람을 기다리지 않고 바로 적용한다(apply 가 외형이 그대로인지 다시 보고, 바뀌었으면 버린다).
+    // 교체(replace)는 여전히 사람만 한다. 2026-11-05 오너: 「이제 사람이 고르지 않아. AI 가 해야함」.
+    void appearanceGenerationController.generate({ appearanceId: record.id, slot }).then(() => {
+      const state = appearanceGenerationController.getState();
+      if (state.status !== "candidate" || state.appearanceId !== record.id || state.slot !== slot) return;
+      if (appearanceGenerationController.apply(slot) && slot === "face") {
+        store.update((draft) => { pointPairedFacesAtAppearance(draft, record.id); }, { scope: "project", label: "대사 얼굴을 외형 얼굴로", origin: "ai" });
+      }
+    });
     return {
       ok: true,
-      summary: "캐릭터 외형 DB에서 그림 후보 생성을 시작했습니다. 완료 후 미리보기를 확인하고 직접 적용하세요. 아직 저장되지 않았습니다.",
+      summary: "캐릭터 외형의 빈 칸에 그림을 그리는 중입니다. 다 그리면 바로 적용됩니다(되돌리기 가능) — 기다리지 말고 다음 작업을 계속하세요.",
       data: { status: "generating", appearanceId: record.id, slot },
     };
   } catch (error) {

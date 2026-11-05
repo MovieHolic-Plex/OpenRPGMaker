@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { listChangeItems, revertChangeItem } from "@/editor/panels/aiChangeSummaryCard";
-import { creationCardModel, firstPlayedMusic, firstSpokenLine } from "@/editor/panels/aiCreationCards";
+import { creationCardModel, eventAppearanceId, firstPlayedMusic, firstSpokenLine } from "@/editor/panels/aiCreationCards";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
@@ -70,5 +70,15 @@ describe("firstPlayedMusic", () => {
       { kind: "playAudio", resourceId: "cc0-bgm-boss", loop: true },
     ] }] } as unknown as GameEvent;
     expect(firstPlayedMusic(event)).toBe("cc0-bgm-boss");
+  });
+
+  it("finds the appearance an assistant-made character event wears, so the card can follow its generated chip", () => {
+    const before = createBlankProject();
+    const placed = run(before, "make_villager", { mapId: before.startMapId, id: "ev_smith", name: "무기점 주인 도르간", home: { x: 3, y: 3 }, dialogue: [{ text: "어서 오게." }] });
+    const linked = run(placed, "generate_walk_chip", { name: "도르간", description: "dwarf weapon-shop owner with a sword", events: [{ mapId: before.startMapId, eventId: "ev_smith" }] });
+    const item = listChangeItems(before, linked).find((entry) => entry.kind === "event" && entry.id === "ev_smith")!;
+    const appearanceId = linked.database.characterAppearances!.find((app) => app.name === "도르간")!.id;
+    expect(eventAppearanceId(linked, item)).toBe(appearanceId);
+    expect(eventAppearanceId(placed, item)).toBeUndefined();
   });
 });
