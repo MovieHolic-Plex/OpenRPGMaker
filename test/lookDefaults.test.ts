@@ -60,4 +60,30 @@ describe("applyLookDefaults (v1 whole-game finish)", () => {
     applyLookDefaults(action, "판타지 액션 게임 만들어줘");
     expect(action.system.fieldHud?.theme).toBe("hearts");
   });
+  it("gives bare endings and the default title backdrop a story still, and keeps authored ones", () => {
+    const p = battleGame();
+    p.endings = [{ id: "ending_escape", name: "탈출", conditions: [], priority: 0 }, { id: "ending_kept", name: "남은 자", conditions: [], priority: 1, presentation: { backgroundResourceId: "mine" } }] as never;
+    expect(ids(p)).toContain("ending-screen");
+    applyLookDefaults(p, "좀비 생존 게임 만들어줘");
+    expect(p.endings[0]!.presentation?.backgroundResourceId).toBeTruthy();
+    expect(p.endings[0]!.presentation?.tone).toBe("dark");
+    expect(p.endings[1]!.presentation?.backgroundResourceId).toBe("mine");
+    expect(ids(p)).not.toContain("ending-screen");
+    expect(ids(p)).not.toContain("title-image");
+    expect(applyLookDefaults(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+  });
+
+  it("a romance ending follows the chosen title art, a bad ending is dark, and a blueprint game keeps its ending for the model", () => {
+    const p = createBlankProject() as Project;
+    p.endings = [{ id: "ending_love", name: "함께 걷는 길", conditions: [], priority: 0 }, { id: "ending_bad", name: "엇갈린 마음", conditions: [], priority: 1 }] as never;
+    (p.system.titleScreen as { backgroundResourceId?: string }).backgroundResourceId = "oprn-title-romance-campus";
+    applyLookDefaults(p, "학교 연애 게임 만들어줘");
+    expect(p.endings[0]!.presentation).toEqual({ backgroundResourceId: "oprn-title-romance-campus", tone: "warm" });
+    expect(p.endings[1]!.presentation?.tone).toBe("dark");
+    const planned = createBlankProject() as Project;
+    planned.endings = [{ id: "ending_home", name: "귀향", conditions: [], priority: 0 }] as never;
+    planned.gameBlueprint = { request: "마을 모험", title: "귀향", premise: "마을 모험", steps: [], ending: { name: "귀향", how: "돌아온다" } } as never;
+    applyLookDefaults(planned);
+    expect(planned.endings[0]!.presentation).toBeUndefined();
+  });
 });
