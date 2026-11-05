@@ -44,8 +44,50 @@ export function imagePlanReadPrompt(subject: WidenSubject, cols: number, rows: n
   return `${head}\n방(바닥이 보이는 구역)과 방을 잇는 통로를 읽어라. {"rooms":[{"kind":"entrance|hall|side|boss|treasure|living|kitchen|bedroom|other","x":,"y":,"w":,"h":}](칸 번호로 왼쪽 위 칸과 가로·세로 칸 수, 입구 방이 첫째),"links":[[0,1],[1,2]](통로가 잇는 두 방의 rooms 순번 0부터, 고리 통로도 모두),"start":{"x":,"y":},"landmark":{"x":,"y":}|null,"stairs":{"x":,"y":}|null}`;
 }
 
+/** 도안 묘사(2026-11-05 오너: 「이미지는 LLM 의 빈곤한 상상력을 극복하는 용도로」) — 무엇이 있고 어떤 느낌인지. 기하는 칸 지도가 가볍게 맡는다. */
+export interface ImagePlanDescription {
+  readonly mustKeep: readonly string[];
+  readonly landmarks: readonly { readonly name: string; readonly look: string; readonly where: string }[];
+  readonly mood: string;
+  readonly materials: string;
+}
+
+export function imagePlanDescribePrompt(subject: WidenSubject): string {
+  return `이 그림은 RPG ${subject === "village" ? "마을" : subject === "forest" ? "숲" : subject === "dungeon" ? "던전" : subject === "castle" ? "성" : "집 실내"} 맵의 도안이다. 맵을 지을 조수가 이 도안의 아이디어를 살리도록, 도안에서 눈에 띄는 것을 한국어로 묘사하라. 칸 좌표·픽셀 위치는 쓰지 말고 「북쪽 가운데」「오른쪽 아래 구석」처럼 말로 쓴다.
+JSON 하나만: {"mustKeep":[맵에 꼭 살릴 것 8개, 각 40자 이내 — 랜드마크·구성·분위기 중 도안을 그 도안답게 만드는 것],"landmarks":[{"name":"이름","look":"생김새(크기·재질·색·특징 30자 이내)","where":"자리(말로)"}] 최대 10개,"mood":"분위기·조명 한 줄","materials":"바닥·벽·지형 재질 한 줄"}`;
+}
+
+export function parseImagePlanDescription(data: Record<string, unknown> | null): ImagePlanDescription | null {
+  if (!data) return null;
+  const str = (v: unknown, n: number) => (typeof v === "string" ? v.replace(/\s+/gu, " ").trim().slice(0, n) : "");
+  const mustKeep = (Array.isArray(data.mustKeep) ? data.mustKeep : []).map((v) => str(v, 60)).filter(Boolean).slice(0, 8);
+  const landmarks = (Array.isArray(data.landmarks) ? data.landmarks : []).flatMap((v) => {
+    const o = v && typeof v === "object" ? v as Record<string, unknown> : {};
+    const name = str(o.name, 30);
+    return name ? [{ name, look: str(o.look, 50), where: str(o.where, 30) }] : [];
+  }).slice(0, 10);
+  if (!mustKeep.length && !landmarks.length) return null;
+  return { mustKeep, landmarks, mood: str(data.mood, 80), materials: str(data.materials, 80) };
+}
+
+/** 묘사 메모(최대 약 1.5천 자): 꼭 살릴 것 → 랜드마크(생김새·자리) → 분위기·재질. 랜드마크는 칩셋에서 찾고 없으면 만든다. */
+export function describeNote(d: ImagePlanDescription): string {
+  // 넘치면 끝을 자르지 않고 랜드마크를 뒤에서부터 덜어 낸다(규칙 문장·분위기 줄이 잘려 나갔다)
+  const build = (marks: ImagePlanDescription["landmarks"]) => [
+    `도안의 아이디어(꼭 살릴 것): ${d.mustKeep.map((m, i) => `${i + 1}. ${m}`).join(" ")}`,
+    marks.length ? `랜드마크 생김새: ${marks.map((l) => `${l.name}(${[l.look, l.where].filter(Boolean).join(" · ")})`).join(" / ")} — 칸 배치의 랜드마크(A~Z)와 같은 것이면 그 랜드마크를 이 생김새로 짓고, 칸 배치에 없는 것만 따로 놓는다. 칩셋에 맞는 조각이 없으면 비슷한 것으로 때우지 않고 generate_missing_object 로 만든다(물건마다 한 번).` : "",
+    d.mood || d.materials ? `분위기·재질: ${[d.mood, d.materials].filter(Boolean).join(" / ")}` : "",
+  ].filter(Boolean).join("\n");
+  let n = d.landmarks.length;
+  let note = build(d.landmarks);
+  while (note.length > 1600 && n > 0) note = build(d.landmarks.slice(0, --n));
+  return note.slice(0, 1600);
+}
+
 export interface ImagePlanRead {
   readonly subject: WidenSubject;
+  /** 도안 묘사 — 있으면 메모 앞에 아이디어로 싣는다. */
+  readonly description?: ImagePlanDescription;
   readonly cols: number;
   readonly rows: number;
   readonly data: Record<string, unknown>;
@@ -160,23 +202,25 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
 
 /** 조수에게 가는 짓기 지시 — 읽은 배치를 그대로 빌더 인자로 보내게 한다. */
 export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | null): string {
-  const head = `[그림 도안] 짓기 전에 이 장면을 ChatGPT 이미지 모델로 그린 도안(첫 요청에 붙은 그림)과, 그 도안에서 칸 번호로 읽은 배치를 함께 싣는다. 도안의 큰 구도(장소 윤곽·구역 자리·길·높낮이·랜드마크 위치)를 따르되 칸과 물건은 이 프로젝트의 실제 칩셋 조각만 쓴다. 도안의 색·질감을 베끼지 않는다.`;
+  const head = `[그림 도안] 짓기 전에 이 장면을 ChatGPT 이미지 모델로 그린 도안(첫 요청에 붙은 그림)과, 읽어 낸 만큼의 묘사·칸 배치를 함께 싣는다. 도안은 상상력을 보태는 참고다 — 랜드마크·소품·분위기·구성 아이디어를 맵에 살리고, 큰 윤곽·높낮이·통로는 칸 배치를 따르되 칸 하나하나를 베끼는 데 매달리지 않는다. 칸과 물건은 이 프로젝트의 실제 칩셋 조각만 쓰고, 도안의 색·질감을 베끼지 않는다.`;
   if (!read) return head;
-  if (read.cells) return `${head}\n${cellBuildNote(scene.subject, read.cells)}`;
+  const idea = read.description ? `\n${describeNote(read.description)}` : "";
+  if (read.cells) return `${head}${idea}\n${cellBuildNote(scene.subject, read.cells)}`;
+  if (!Object.keys(read.data).length) return `${head}${idea}`;
   if (scene.subject === "village") {
     const a = villageArgsFromRead(read, 56, 44);
-    return `${head}\n읽은 마을 배치: author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height}, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.`;
+    return `${head}${idea}\n읽은 마을 배치: author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height}, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.`;
   }
   if (scene.subject === "forest") {
-    return `${head}\n읽은 숲길 설계: author_forest_route 를 부를 때 designs[0] 을 이대로 보낸다: ${JSON.stringify(forestDesignFromRead(read))}. 이 설계를 빼거나 기본값으로 바꾸지 않는다.`;
+    return `${head}${idea}\n읽은 숲길 설계: author_forest_route 를 부를 때 designs[0] 을 이대로 보낸다: ${JSON.stringify(forestDesignFromRead(read))}. 이 설계를 빼거나 기본값으로 바꾸지 않는다.`;
   }
   if (scene.subject === "dungeon" || scene.subject === "castle") {
     const plan = dungeonPlanFromRead(read);
     return plan.rooms.length
-      ? `${head}\n읽은 방 배치: author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.`
-      : head;
+      ? `${head}${idea}\n읽은 방 배치: author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.`
+      : `${head}${idea}`;
   }
-  return `${head}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
+  return `${head}${idea}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
 }
 
 function cellBuildNote(subject: WidenSubject, cells: CellMap): string {

@@ -200,7 +200,15 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
   const roomOf = new Int16Array(map.cols * map.rows).fill(-1);
   comps.forEach((c, i) => { for (const k of c.cells) roomOf[k] = i; });
   // 입구: 맵 아래 가장자리에 가장 가까운 방(가로 가운데 쪽 우선)
-  const entry = comps.map((c, i) => ({ i, score: c.y1 * 4 - Math.abs((c.x0 + c.x1) / 2 - W / 2) })).sort((a, b) => b.score - a.score)[0]!.i;
+  // 도안이 입구를 랜드마크로 짚었으면(「입구 양옆 석상」·entrance·gate) 그 랜드마크가 있는 방이 입구다 — 아래 가장자리 가까운 방으로 고르면 작은 곁방이 입구가 됐다(r2 p6).
+  // 이름표가 입구를 말하는 랜드마크(보스방·비밀 통로의 입구는 빼고)가 있는 방만 후보 — 여럿이면 아래 가장자리 점수로 고른다. kind 「gate」만으로는 안쪽 문일 수 있어 보지 않는다(AMEND #4326).
+  const roomScore = (i: number) => { const c = comps[i]!; return c.y1 * 4 - Math.abs((c.x0 + c.x1) / 2 - W / 2); };
+  const entryRooms = new Set(map.landmarks
+    .filter((l) => /입구|정문|현관|\bentrance\b|\bentry\b/iu.test(l.label ?? "") && !/보스|비밀|숨은|\bboss\b|\bsecret\b|\bhidden\b/iu.test(l.label ?? ""))
+    .map((l) => roomOf[Math.min(map.rows - 1, l.y + Math.floor(l.h / 2)) * W + Math.min(W - 1, l.x + Math.floor(l.w / 2))]!)
+    .filter((r) => r >= 0 && !map.landmarks.some((m) => /throne|altar|boss|rose_window|chest|treasure|shrine|library|armory/u.test(m.kind) ? roomOf[Math.min(map.rows - 1, m.y + Math.floor(m.h / 2)) * W + Math.min(W - 1, m.x + Math.floor(m.w / 2))] === r : false)));
+  const candidates = entryRooms.size ? [...entryRooms] : comps.map((_, i) => i);
+  const entry = candidates.sort((a, b) => roomScore(b) - roomScore(a))[0]!;
   const kindOf = (c: Comp, i: number): string => {
     if (i === entry) return "entrance";
     const marks = map.landmarks.filter((l) => l.x + l.w / 2 >= c.x0 && l.x + l.w / 2 <= c.x1 + 1 && l.y + l.h / 2 >= c.y0 && l.y + l.h / 2 <= c.y1 + 1);
@@ -424,6 +432,9 @@ export function forestDesignFromCells(map: CellMap): Record<string, unknown> {
       return { at, size: l.w * l.h >= 12 ? "large" : l.w * l.h >= 4 ? "medium" : "small", toward: Math.abs(lx - near) < 3 ? "center" : lx < near ? "left" : "right" };
     });
     if (clearings.length) design.clearings = clearings;
+    // 도안 비율·연못(~ 덩이, 4칸 이상) — 숲 빌더가 맵 크기와 물 자리를 도안대로 짓는다(r2 p7: 32×40 고정이라 가로로 넓은 도안·연못이 빠졌다)
+    const ponds = components(map, (ch) => ch === "~").filter((c) => c.cells.length >= 4).slice(0, 12).map((c) => ({ x: c.x0, y: c.y0, w: c.x1 - c.x0 + 1, h: c.y1 - c.y0 + 1 }));
+    design.plan = { cols: map.cols, rows: map.rows, ...(ponds.length ? { ponds } : {}) };
   }
   return design;
 }

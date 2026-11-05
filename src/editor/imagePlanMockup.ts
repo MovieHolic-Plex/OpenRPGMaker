@@ -7,7 +7,7 @@ import { generateAiImage } from "@/ai/imageGenerationClient";
 import { RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import {
   IMAGE_PLAN_FAILED_LINE, IMAGE_PLAN_READ_FAILED_LINE, IMAGE_PLAN_SKIPPED_LINE,
-  gridSizeFor, imagePlanPrompt, imagePlanReadPrompt, type ImagePlanRead, type ImagePlanScene,
+  gridSizeFor, imagePlanDescribePrompt, imagePlanPrompt, imagePlanReadPrompt, parseImagePlanDescription, type ImagePlanDescription, type ImagePlanRead, type ImagePlanScene,
 } from "@/ai/imagePlan";
 import { shrinkReferenceImage } from "@/start/firstRun/referenceImage";
 import { applyCellFixes, cellColor, cellGridSize, cellMapFixPrompt, cellMapReadPrompt, parseCellMap, type CellMap } from "@/ai/imagePlanCells";
@@ -96,7 +96,32 @@ async function readCells(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal
   return { subject: scene.subject, cols, rows, data: { cells: cells.cells, landmarks: cells.landmarks }, cells, fixedRegions };
 }
 
+/** 도안 묘사(랜드마크·생김새·분위기·꼭 살릴 것) — 칸 읽기와 같이 돈다. 실패하면 null(칸 지도만으로 짓는다). */
+async function readDescription(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanDescription | null> {
+  try {
+    const url = await shrinkReferenceImage(blob);
+    return parseImagePlanDescription(await askVision([{ type: "text", text: imagePlanDescribePrompt(scene.subject) }, { type: "image_url", image_url: { url, detail: "high" } }], 3000, signal));
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: describe failed ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
 async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
+  const layoutRead = readLayoutOnly(blob, scene, signal).catch((error: unknown) => {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: layout read failed ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  });
+  const [layout, description] = await Promise.all([layoutRead, loadAiConfig().imagePlanDescribe === false ? Promise.resolve(null) : readDescription(blob, scene, signal)]);
+  if (description) console.info(`imagePlan: describe keep=${description.mustKeep.length} landmarks=${description.landmarks.length}`);
+  if (!description) return layout;
+  // 배치를 못 읽어도 묘사(아이디어)는 조수에게 간다 — 빈 data 는 «배치 없음»
+  return layout ? { ...layout, description } : { subject: scene.subject, cols: 0, rows: 0, data: {}, description };
+}
+
+async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
   try {
     const cells = await readCells(blob, scene, signal);
     if (cells) return cells;
@@ -119,6 +144,11 @@ async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSigna
   const text = typeof content === "string" ? content : Array.isArray(content) ? content.map((p) => (p.type === "text" ? p.text : "")).join("") : "";
   const data = lastJson(text);
   return data ? { subject: scene.subject, cols, rows, data } : null;
+}
+
+/** 배치(칸 지도나 점 읽기)를 읽었나 — 묘사만 있는 읽기는 아니다. */
+export function hasLayout(read: ImagePlanRead | null | undefined): boolean {
+  return !!read && (!!read.cells || Object.keys(read.data).length > 0);
 }
 
 interface Drawn { readonly blob: Blob; readonly model: string; read: ImagePlanRead | null }
@@ -209,7 +239,8 @@ export async function requestImagePlanMockup(scene: ImagePlanScene, signal?: Abo
   try {
     return {
       kind: "mockup", dataUrl: await shrinkReferenceImage(chosen.blob), model: chosen.model, read: chosen.read, candidates: drawn.length,
-      ...(chosen.read ? {} : { readLine: IMAGE_PLAN_READ_FAILED_LINE }),
+      // 묘사만 읽힌 경우도 «배치 읽기 실패»로 알린다(아이디어는 실려 가지만 배치는 없다)
+      ...(hasLayout(chosen.read) ? {} : { readLine: IMAGE_PLAN_READ_FAILED_LINE }),
       ...(drawn.length > 1 ? { pickLine: pickLine(drawn.length, best.index, judge?.reason ?? "") } : {}),
     };
   } catch (error) {
