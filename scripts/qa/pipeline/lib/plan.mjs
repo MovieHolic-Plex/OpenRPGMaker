@@ -37,6 +37,42 @@ function pageSummary(page) {
   return { kinds, textLines };
 }
 
+/**
+ * Conditions on the path from a page's top to the first command of `kind`: fork `then` takes the condition,
+ * `else` its negation (switches only). Returns null when the command is not on the page.
+ */
+function pathConditions(commands, kind) {
+  for (const c of commands ?? []) {
+    if (c.kind === kind) return [];
+    if (c.kind === "fork") {
+      const inThen = pathConditions(c.then, kind);
+      if (inThen) return [c.condition, ...inThen];
+      const inElse = pathConditions(c.else, kind);
+      if (inElse) return [c.condition?.kind === "switch" ? { ...c.condition, value: c.condition.value === false } : { kind: "unsolvable" }, ...inElse];
+    }
+    for (const v of Object.values(c)) {
+      if (!Array.isArray(v) || !v.length || typeof v[0] !== "object" || v[0] === null || c.kind === "fork") continue;
+      const nested = v[0].kind ? pathConditions(v, kind) : v.map((x) => pathConditions(x?.branch ?? x?.commands, kind)).find(Boolean);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
+
+/** Fold conditions into checkpoint state; null when they contradict each other or need something unsupported. */
+function solveConditions(conditions) {
+  const state = { switches: {}, items: {}, variables: {} };
+  const visit = (c) => {
+    if (!c) return true;
+    if (c.kind === "all") return (c.conditions ?? []).every(visit);
+    if (c.kind === "switch") { const v = c.value !== false; if (c.switchId in state.switches && state.switches[c.switchId] !== v) return false; state.switches[c.switchId] = v; return true; }
+    if (c.kind === "item") { if (c.present === false) return true; state.items[c.itemId] = Math.max(state.items[c.itemId] ?? 0, c.amount ?? 1); return true; }
+    if (c.kind === "variable" && [">=", "==", "="].includes(c.op)) { state.variables[c.variableId] = c.value; return true; }
+    return c.kind === "selfSwitch" || c.kind === "actor" || c.kind === "partyKnowsSkill";
+  };
+  return conditions.every(visit) ? state : null;
+}
+
 function pageCheckpointState(page) {
   const switches = {};
   const selfSwitches = {};
@@ -92,8 +128,17 @@ export function planCoverage(project, { game, maxEvents = 400, partyLevel = 12 }
         .filter((p) => ["action", "auto", "playerTouch"].includes(p.page.trigger?.kind) && [...p.kinds].some((k) => CONTENT_KINDS.has(k)));
       if (pages.length === 0) continue;
       // One job per event: the page with the most player-facing content (dialogue lines, shops, choices).
-      const best = pages.sort((a, b) => b.textLines + b.kinds.size - (a.textLines + a.kinds.size))[0];
-      const { switches, selfSwitches } = pageCheckpointState(best.page);
+      // A shop/inn event is planned on a page whose conditions plus the path to the shop are satisfiable together.
+      const ranked = pages.sort((a, b) => b.textLines + b.kinds.size - (a.textLines + a.kinds.size));
+      let best = ranked[0];
+      let extra = { switches: {}, items: {}, variables: {} };
+      for (const target of ["shop", "inn"]) {
+        const options = ranked.map((p) => ({ p, path: pathConditions(p.page.commands, target) })).filter((x) => x.path);
+        const solved = options.map((x) => ({ ...x, state: solveConditions([...(x.p.page.conditions ?? []), ...x.path]) })).find((x) => x.state);
+        if (solved) { best = solved.p; extra = solved.state; break; }
+      }
+      const { switches: pageSwitches, selfSwitches } = pageCheckpointState(best.page);
+      const switches = { ...pageSwitches, ...extra.switches };
       const stand = standTile(map, event);
       const kind = best.kinds.has("triggerEnding") ? "ending" : best.kinds.has("shop") || best.kinds.has("inn") ? "shop" : "event";
       eventJobs.push({
@@ -101,6 +146,8 @@ export function planCoverage(project, { game, maxEvents = 400, partyLevel = 12 }
         target: { mapId: map.id, eventId: event.id, page: best.index, kinds: [...best.kinds].filter((k) => CONTENT_KINDS.has(k)) },
         checkpoint: {
           id: `ev-${event.id}`, mapId: map.id, ...stand, party, switches,
+          ...(Object.keys(extra.items).length ? { items: extra.items } : {}),
+          ...(Object.keys(extra.variables).length ? { variables: extra.variables } : {}),
           ...(Object.keys(selfSwitches).length ? { selfSwitches: { [event.id]: selfSwitches } } : {}),
           startEventId: event.id,
         },

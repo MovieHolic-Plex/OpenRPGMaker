@@ -28,6 +28,7 @@ function tinyProject() {
           { id: "npc", x: 3, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [text("안녕"), { kind: "transfer", mapId: "m2", x: 40, y: 2 }] }] },
           { id: "shop", x: 5, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [{ kind: "shop", itemIds: ["potion", "ghost"] }] }] },
           { id: "loop", x: 6, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [text("기다려"), { kind: "loop", body: [{ kind: "wait", ms: 100 }] }] }] },
+          { id: "smith", x: 2, y: 5, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [text("어서 와"), { kind: "fork", condition: { kind: "switch", switchId: "sw_quest_done", value: true }, then: [{ kind: "shop", itemIds: ["potion"] }], else: [text("일이 먼저다")] }] }] },
           { id: "foe", x: 7, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [{ kind: "battleProcessing", troopId: "t1" }] }] },
           { id: "face", x: 8, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [{ kind: "changeFace", resourceId: "bg-sky" }, text("얼굴")] }] },
           { id: "npc2", x: 9, y: 3, pages: [{ trigger: { kind: "action" }, conditions: [], graphic: { sprite: { type: "bundled", id: "chars" }, pattern: 96 }, commands: [text("칸")] }] },
@@ -48,6 +49,7 @@ describe("qa pipeline planner", () => {
     expect(kinds).toContain("shop");
     expect(jobs.find((job) => job.kind === "battle")?.checkpoint.startTroopId).toBe("t1");
     expect(jobs.find((job) => job.target?.eventId === "npc")?.checkpoint.startEventId).toBe("npc");
+    expect(jobs.find((job) => job.target?.eventId === "smith")?.checkpoint.switches).toEqual({ sw_quest_done: true });
     expect(new Set(jobs.map((job) => job.input))).toEqual(new Set(["keyboard", "mouse", "touch"]));
     expect(jobs.filter((job) => job.input === "touch").every((job) => job.viewport.touch === true)).toBe(true);
   });
