@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "@/ai/v2/shipChecks";
+import { thinGameSign, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt, widenGamePrompt } from "@/ai/v2/shipChecks";
 import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 import type { Project } from "@/project/types";
 
@@ -72,6 +72,30 @@ describe("whole-game rekick signs", () => {
     expect(signs[0]).toContain("회복은 한 번 주는 것뿐");
     map.events.push({ id: "ev_rest", name: "쉬터", x: 4, y: 4, pages: [{ commands: [{ kind: "recoverAll" }] }] } as never);
     expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+  });
+  // 2026-11-05 rounds 1-7: 「학교 연애」 and 「좀비 생존」 kept ending on one map with 1-4 events.
+  it("a finished but one-map, one-character game is thin; two maps, two talkers and five events are not", () => {
+    const p = createBlankProject() as Project;
+    const talker = (id: string, x: number) => ({ id, name: id, x, y: 2, pages: [{ graphic: { sprite: { type: "bundled", id: "tex" } }, commands: [{ kind: "text", body: "안녕" }] }] });
+    const start = p.maps[p.startMapId!]!;
+    start.events.push(talker("ev_seoa", 2) as never);
+    expect(thinGameSign(p)).toContain("맵이 1장");
+    expect(widenGamePrompt(thinGameSign(p)!)).toContain("다시 묻지 않는다");
+    const second = { ...structuredClone(start), id: "map_hall", name: "복도", events: [] as unknown[] };
+    p.maps.map_hall = second as never;
+    second.events.push(talker("ev_friend", 3), { id: "ev_note", name: "쪽지", x: 4, y: 4, pages: [] }, { id: "ev_door", name: "문", x: 5, y: 5, pages: [] }, { id: "ev_box", name: "상자", x: 6, y: 6, pages: [] });
+    expect(thinGameSign(p)).toBeUndefined();
+  });
+  it("a one-room escape request only needs enough to do, and a busy one-talker game is not thin", () => {
+    const p = createBlankProject() as Project;
+    const start = p.maps[p.startMapId!]!;
+    for (let i = 0; i < 5; i++) start.events.push({ id: `ev_clue${i}`, name: `단서${i}`, x: 2 + i, y: 2, pages: [] } as never);
+    expect(thinGameSign(p, "방 하나만 있는 방탈출 게임 만들어줘")).toBeUndefined();
+    expect(thinGameSign(p, "좀비 생존 게임 만들어줘")).toContain("맵이 1장");
+    const hall = { ...structuredClone(start), id: "map_hall", name: "복도", events: [] as unknown[] };
+    p.maps.map_hall = hall as never;
+    for (let i = 0; i < 3; i++) hall.events.push({ id: `ev_box${i}`, name: `상자${i}`, x: 2 + i, y: 3, pages: [] });
+    expect(thinGameSign(p, "좀비 생존 게임 만들어줘")).toBeUndefined();
   });
   it("a request ending in …게임으로 is a whole game; an edit that mentions 게임 is not", () => {
     expect(wantsWholeGame("마을 하나 만들어줘. 거기서 시작하는 모험 게임으로")).toBe(true);

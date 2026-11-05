@@ -84,7 +84,7 @@ import { isModelStallError, isTransientProviderStreamError, modelStallFailure, m
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
-import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
+import { WHOLE_GAME_REKICKS, thinGameSign, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt, widenGamePrompt } from "../../src/ai/v2/shipChecks.ts";
 import { applyLookDefaults } from "../../src/ai/v2/shipDefaults.ts";
 import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyMeaningTally, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, screenPolishEdits, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
 import { knownSpeakerNames, liftDialogueSpeakerLabelsTool, parseSpeakerLabel, type SpeakerLabelOutcome } from "../../src/editor/dialogue/dialogueSpeakerLabel.ts";
@@ -1818,6 +1818,20 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `게임이 아직 다 지어지지 않아 이어 짓게 합니다(${kick}/${WHOLE_GAME_REKICKS}): ${missing.join(" / ").slice(0, 300)}` });
         await promptResuming(wholeGameRekickPrompt(missing));
         if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
+      }
+      // 다 지어졌는데(엔딩·맵·회복) 너무 얇으면 한 번 넓혀 짓게 한다 — 실측(2026-11-05 gpt-only-game 1~7차): 「학교 연애」·「좀비 생존」이 매번 맵 1장·이벤트 1~4개로 끝났다.
+      // 한 번만 민다(너비는 취향이라 없어도 끝낼 수 있는 게임이다). 더 급한 이어 짓기 신호가 남아 있으면 미룬다.
+      // 턴이 40 이상 남았을 때만 넓힌다 — 상한 가까이에서 넓히면 문을 못 잇은 맵이 남는다.
+      const thin = turns <= maxTurns - 40 && !fatal && !rejected && !options.signal?.aborted && !unbuiltGameSigns(ctx.project, request.task).length ? thinGameSign(ctx.project, request.task) : undefined;
+      if (thin) {
+        emit({ type: "execution_status", name: "whole_game_widen", ok: false, summary: `게임이 얇아 한 번 넓혀 짓게 합니다: ${thin}` });
+        await promptResuming(widenGamePrompt(thin));
+        // 넓히다 끊긴 것(엔딩 출구·문)이 있으면 한 번 더 이어 짓는다.
+        const broken = turns < maxTurns && !fatal && !rejected && !options.signal?.aborted ? unbuiltGameSigns(ctx.project, request.task) : [];
+        if (broken.length) {
+          emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `넓힌 뒤 게임이 다시 덜 지어졌다 — 이어 짓게 합니다: ${broken.join(" / ").slice(0, 300)}` });
+          await promptResuming(wholeGameRekickPrompt(broken));
+        }
       }
     }
     // v2 할 일 고리(src/ai/v2/loop): 모델이 멈출 때마다 afterMain 이 열린 항목·기계 확인 ✗·관문·비평·화면 검수를 보고 숨은 재주입 글을 돌려준다.

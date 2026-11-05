@@ -599,6 +599,50 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
  * 기본 HUD·창·전투 곡 같은 나머지 마감 항목은 여기서 보지 않는다(플레이를 막거나 첫인상을 깨지 않는다).
  */
 export const WHOLE_GAME_REKICKS = 3;
+/** 기록에서 말을 거는 사람(그림이 있고 대사 명령이 있는 이벤트). */
+function talkingCharacters(project: Project): number {
+  let n = 0;
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const pages = (ev.pages ?? []) as unknown as { graphic?: { sprite?: unknown; appearanceId?: unknown }; commands?: unknown }[];
+    if (pages.some((p) => (p.graphic?.sprite || p.graphic?.appearanceId) && JSON.stringify(p.commands ?? []).includes('"kind":"text"'))) n += 1;
+  }
+  return n;
+}
+
+/**
+ * 게임이 너무 얇다 — 플레이할 맵이 한 장이거나, 말 거는 인물이 하나 이하거나, 이벤트가 다섯 개 미만.
+ * 실측(2026-11-05 gpt-only-game 1~7차, Terra 혼자): 「학교 연애 게임 만들어줘」는 일곱 번 모두 맵 1장·이벤트 1~2개, 「좀비 생존」은 맵 1장·이벤트 1~7개로
+ * 몇 초 만에 끝났다. 판타지·마을(맵 2장·이벤트 11~12개·말 거는 인물 3~9)은 걸리지 않는다. 짧은 요청도 구체적인 변형으로 넓혀 바로 짓게 한다.
+ */
+export function thinGameSign(project: Project, task = ""): string | undefined {
+  const maps = Object.values(project.maps).filter((m) => !isBlankCanvasMap(m) && (m.events ?? []).length > 0);
+  const events = maps.reduce((n, m) => n + (m.events ?? []).length, 0);
+  const talkers = talkingCharacters(project);
+  // 방 하나·혼자 갇힌 게임(「방 하나만 있는 방탈출」)은 요청이 좌은 것이다 — 맵·인물 수는 보지 않고 할 일(이벤트)만 본다.
+  const onePlace = SINGLE_PLACE.test(withoutIntentNote(task)) || ONE_ROOM_GAME.test(withoutIntentNote(task));
+  const short: string[] = [];
+  if (!onePlace && maps.length < 2) short.push(`플레이할 맵이 ${maps.length}장`);
+  // 인물이 적어도 할 일이 넉넉하면(이벤트 8개 이상) 얇은 게임이 아니다.
+  if (!onePlace && talkers < 2 && events < 8) short.push(`말 거는 인물이 ${talkers}명`);
+  if (events < 5) short.push(`이벤트가 ${events}개`);
+  if (!short.length) return undefined;
+  return `게임이 너무 얇다(${short.join(", ")})`;
+}
+/** 방 하나짜리 게임 요청 — 방탈출·밀실·한 방. */
+const ONE_ROOM_GAME = /방\s*탈출|밀실|한\s*방|방\s*하나|escape\s*room|one[-\s]room/iu;
+
+/** 다 지어진(엔딩·맵·회복) 게임이 얇을 때 한 번 넓혀 짓게 하는 글 — 「덜 지어졌다」가 아니라 「넓힌다」다. */
+export function widenGamePrompt(sign: string): string {
+  return [
+    `[넓혀 짓기] 끝까지 플레이되는 게임이지만 ${sign}.`,
+    "짧은 요청이어도 구체적인 변형으로 넓혀 지금 바로 짓는다 — 다시 묻지 않는다:",
+    "- 장소를 2~3곳(예: 교실·복도·옥상, 대피소·폐허 거리·탈출구)으로 나눠 문으로 잇는다.",
+    "- 말 거는 인물을 2명 이상 둔다.",
+    "- 단서·선택·사건 이벤트를 더해 엔딩 전에 해야 할 일이 세 가지 이상 되게 한다.",
+    "지금 있는 엔딩·출구·이벤트는 지우지 않고 그 앞에 잇는다.",
+  ].join("\n");
+}
+
 export function unbuiltGameSigns(project: Project, _task: string): string[] {
   const out: string[] = [];
   const skeleton = (project.endings ?? []).filter((e) => PLACEHOLDER_NAMES.has(e.name.trim()));
