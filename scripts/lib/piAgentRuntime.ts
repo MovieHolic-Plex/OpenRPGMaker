@@ -102,6 +102,8 @@ import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
+import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
+import { drawItemIcons, itemIconSummary } from './piItemIcons.ts';
 import { runToolDefinition } from '../../src/editor/tools/toolRunner.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
@@ -728,7 +730,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped);
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -848,6 +850,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const visible = await composeVisiblePanorama(far.dataUrl, near?.dataUrl, args.view, visibleTop).catch(() => undefined);
           if (visible?.startsWith('data:image/png;base64,')) result.content.push({ type: 'image', mimeType: 'image/png', data: visible.slice(visible.indexOf(',') + 1) });
           emit({ type: 'execution_status', name: 'map.background.delivered', ...imageStatus('생성한 맵 배경 그림을 모델에게 전달했습니다.'), data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
+        } else if (tool.name === ITEM_ICON_TOOL) {
+          // 이름에 맞는 아이콘 그리기 — 편집기 그림 경로(generateOpeningImage 브로커, data.itemIcon)로 한 장씩 받아 등록·연결한다(scripts/lib/piItemIcons.ts).
+          const targets = prepareItemIconTargets(ctx.project, params as Record<string, unknown>);
+          if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서는 아이콘 그림 리소스를 등록할 수 없습니다. 프로젝트 범위로 실행하세요.');
+          if (!options.generateOpeningImage) throw new Error('그림 생성 경로가 없습니다(편집기 연결 필요). 아이콘을 그리지 못했습니다 — 대신 쓴 그림이 그대로이니 그렸다고 보고하지 마세요.');
+          const say = (summary: string) => emit({ type: 'execution_status', name: 'item.icon.progress', ok: true, summary, data: { toolCallId: id } });
+          say(`이름에 맞는 아이콘 ${targets.length}개를 그리는 중: ${targets.map(t => t.name).join(', ')}`);
+          const outcomes = await drawItemIcons(targets, { ctx, generate: options.generateOpeningImage, runTool: (c, n, a) => runTool(c, n, a), progress: say, signal: signal ?? options.signal });
+          const made = outcomes.filter(o => o.ok);
+          const execution = { ok: made.length > 0, summary: itemIconSummary(outcomes), data: { status: made.length === outcomes.length ? 'generated' : made.length ? 'partial' : 'failed', icons: outcomes.map(o => ({ collection: o.target.collection, id: o.target.id, name: o.target.name, ok: o.ok, ...(o.resourceId ? { resourceId: o.resourceId } : {}), ...(o.reason ? { reason: o.reason } : {}) })) } };
+          const visuals: ActivityVisual[] = [];
+          for (const o of made) { const uploaded = await activityThumbnail(o.dataUrl!).catch(() => undefined); if (uploaded) visuals.push({ kind: 'asset', title: o.target.name, caption: '새로 그린 아이콘', phase: 'read', target: `resource:${o.resourceId}`, resourceId: o.resourceId!, uploaded }); }
+          recordCall({ toolCallId: id, name: tool.name, args: params, result: execution, visuals });
+          if (!execution.ok) throw new Error(execution.summary);
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
         } else if (tool.name === 'generate_walk_chip') {
           // 외형 만들기·잇기는 보통 쓰기로 하고, 걷기 칩 생성은 편집기의 공방 작업 줄에 세운다(render_request 'generate_walk_chip'). 작업은 수 분
           // 걸리고 편집기가 끝내면 외형 칩을 바꾼다 — 조수는 기다리지 않는다. 레지스트리 run 의 ui-required 만 남기면 아무도 작업을 세우지 않았다.
@@ -2090,6 +2107,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const filled = applyLookDefaults(draft, request.task);
       if (filled.length) ctx.project = draft;
       if (filled.length) emit({ type: "execution_status", name: "look_defaults", ok: true, summary: `편집기 기본 겉모습을 채움: ${filled.join(" · ").slice(0, 300)}` });
+    }
+    // 이름에 맞는 아이콘이 없어 「대신 쓴 그림」(종류 기본 그림)이 붙은 레코드는 모델이 generate_item_icon 을 안 불렀어도 여기서 그린다 —
+    // 사람이 고르지 않는다(2026-11-05 오너: 「이제 사람이 고르지 않아. AI 가 해야함」). 이어 짓기가 다 끝난 뒤라 이름·삭제가 확정됐고,
+    // 마지막 체크포인트 전이라 연결이 함께 발행된다. 팀 구성원은 리드가 맡는다. 두 번 실패한 레코드는 대신 쓴 그림으로 남긴다.
+    const iconMapScoped = request.scopeStrict !== false && request.mapIds.length > 0;
+    if (options.generateOpeningImage && !options.subscribeTeamMessages && !iconMapScoped && !(scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem)
+      && (!fatal || stoppedAtTurnCap) && !rejected && !request.readOnly && !options.readOnlyTools && !options.signal?.aborted) {
+      const pending = livePlaceholderIcons(ctx.project).filter(entry => entry.mark.attempts < ITEM_ICON_MAX_ATTEMPTS).slice(0, ITEM_ICON_RUN_BUDGET);
+      if (pending.length) {
+        const say = (summary: string) => emit({ type: 'execution_status', name: 'item.icon.progress', ok: true, summary });
+        say(`이름에 맞는 아이콘이 없어 대신 쓴 그림 ${pending.length}개를 새로 그립니다: ${pending.map(entry => iconRecordOf(ctx.project, entry.collection, entry.id)?.name ?? entry.id).join(', ')}`);
+        const targets = prepareItemIconTargets(ctx.project, { targets: pending.map(({ collection, id }) => ({ collection, id })) });
+        const outcomes = await drawItemIcons(targets, { ctx, generate: options.generateOpeningImage, runTool: (c, n, a) => runTool(c, n, a), progress: say, ...(options.signal ? { signal: options.signal } : {}), deadline: Date.now() + ITEM_ICON_AUTO_WALL_MS });
+        emit({ type: 'execution_status', name: 'item.icon.auto', ok: outcomes.every(o => o.ok), summary: itemIconSummary(outcomes), data: { made: outcomes.filter(o => o.ok).length, failed: outcomes.filter(o => !o.ok).length } });
+      }
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).

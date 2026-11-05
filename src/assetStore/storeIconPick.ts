@@ -122,6 +122,15 @@ export function scoreStoreIcon(icon: StoreIconMeta, want: StoreIconWant): number
   return Math.max(0, score);
 }
 
+/**
+ * 이름 낱말이 아이콘 이름·태그에 맞는가. 점수는 종류(+4)·속성(+3)·설명 낱말(+2)만으로도 6 을 넘을 수 있어,
+ * 「이름에 맞는 그림」인지는 따로 본다(2026-11-05 ultrabrain AMEND — 맞지 않으면 「대신 쓴 그림」이다).
+ */
+export function storeIconNameHit(icon: StoreIconMeta, name: string): boolean {
+  const haystack = [...tokens(icon.nameEn), ...tokens(icon.nameKo), ...icon.tags.flatMap(tokens)];
+  return tokens(name).some((word) => haystack.includes(word) || haystack.some((tag) => (word.length >= 2 && tag.length >= 2 && (tag.includes(word) || word.includes(tag))) || hangulPartial(word, tag)));
+}
+
 /** 점수 순 후보(점수 0 은 뺀다). 같으면 id 순. */
 export function rankStoreIcons<T extends IconCandidate>(icons: readonly T[], want: StoreIconWant, limit = 5): (T & { readonly score: number })[] {
   return icons

@@ -43,6 +43,7 @@ import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { fillDefaultItemIcon } from "./defaultItemIcon";
+import { clearPlaceholderIcon, markPlaceholderIcon, type IconCollection } from "./itemIconTools";
 import { findOpeningStillScene, parseOpeningStill } from "@/project/openingStill";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
@@ -108,7 +109,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { closestDeclaredKey } from "./argRepair";
-import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_SCORE, type StoreIconWant } from "@/assetStore/storeIconPick";
+import { projectStoreIcons, rankStoreIcons, stateIconWant, STORE_ICON_CONFIDENT_SCORE, storeIconNameHit, type StoreIconWant } from "@/assetStore/storeIconPick";
 import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
 import { itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 
@@ -1316,12 +1317,23 @@ function resolveIconResourceId(project: Project, record: { iconResourceId?: stri
  * 자신 있는 짝(STORE_ICON_CONFIDENT_SCORE 이상)만 쓰고, 붙였으면 경고 줄로 알린다(바꾸려면 iconResourceId 를 주면 된다).
  * 아이콘 팩을 안 넣은 프로젝트는 아무 일도 없다.
  */
-function autoStoreIcon(project: Project, record: { iconResourceId?: string }, want: StoreIconWant, label: string, warnings: string[]): void {
-  if (record.iconResourceId) return;
+/**
+ * 아이콘 끝정리: 직접 준 아이콘·스토어 짝·이름에 맞는 기본 그림이면 「대신 쓴 그림」 표식을 지우고, 그렇지 않으면(종류 기본 그림·빈칸) 표식을 적는다.
+ * 스킬·상태는 번들 기본 그림이 없어 빈칸으로 표식만 적는다.
+ */
+function settleIconFit(draft: Project, collection: IconCollection, record: { id: string; name: string; iconResourceId?: string }, fits: boolean, label: string, warnings: string[]): void {
+  if (fits) { clearPlaceholderIcon(draft, collection, record.id); return; }
+  markPlaceholderIcon(draft, collection, record.id, record.iconResourceId);
+  if (!record.iconResourceId) warnings.push(`${label} '${record.name}' 에 맞는 아이콘이 없습니다 — generate_item_icon 으로 이 이름에 맞는 아이콘을 그리세요(호출하지 않으면 실행 끝에 저절로 그립니다).`);
+}
+
+function autoStoreIcon(project: Project, record: { iconResourceId?: string }, want: StoreIconWant, label: string, warnings: string[]): boolean {
+  if (record.iconResourceId) return false;
   const [best] = rankStoreIcons(projectStoreIcons(project), want, 1);
-  if (!best || best.score < STORE_ICON_CONFIDENT_SCORE) return;
+  if (!best || best.score < STORE_ICON_CONFIDENT_SCORE) return false;
   record.iconResourceId = best.id;
   warnings.push(`${label} 아이콘을 스토어 아이콘 「${best.meta.nameKo || best.meta.nameEn}」(${best.id})로 붙였습니다. 다른 그림을 쓰려면 iconResourceId 를 주세요.`);
+  return storeIconNameHit(best.meta, want.name);
 }
 
 /** captureProfile.condition 을 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 허용 값을 담아 거절한다. */
@@ -1404,9 +1416,11 @@ const upsertItem: ToolDefinition = {
       warnings.push(`'${record.name}' 은 상태를 거는 물건인데 type '${record.type}' 이라 필드 가방에서 쓸 수 없습니다 — 바르는 기름·축복 부적처럼 쓰게 하려면 type:"special" 로 주세요(skillId·activateSkillId 없이).`);
     }
     const itemIconAsked = Boolean(record.iconResourceId);
+    const itemIconKept = Boolean(existing?.iconResourceId) && existing?.iconResourceId === record.iconResourceId;
     resolveIconResourceId(draft, record, "item", warnings);
-    autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
-    if (!itemIconAsked) fillDefaultItemIcon(draft, record, record.type, "item", warnings);
+    const itemStore = autoStoreIcon(draft, record, { target: "item", name: record.name, description: record.description, itemType: record.type }, "item", warnings);
+    const itemDefault = itemIconAsked ? undefined : fillDefaultItemIcon(draft, record, record.type, "item", warnings);
+    if (!itemIconKept) settleIconFit(draft, "items", record, (itemIconAsked && Boolean(record.iconResourceId)) || itemStore || itemDefault?.fits === true, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
@@ -2429,9 +2443,12 @@ const upsertSkill: ToolDefinition = {
     }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
+    const skillIconKept = Boolean(record.iconResourceId) && draft.database.skills.find((entry) => entry.id === record.id)?.iconResourceId === record.iconResourceId;
     resolveIconResourceId(draft, record, "skill", warnings);
-    autoStoreIcon(draft, record, { target: "skill", name: record.name, description: record.description,
+    const skillIconAsked = Boolean(record.iconResourceId);
+    const skillStore = autoStoreIcon(draft, record, { target: "skill", name: record.name, description: record.description,
       element: draft.database.elements?.find((element) => element.id === record.elementId)?.name ?? record.elementId }, "skill", warnings);
+    if (!skillIconKept) settleIconFit(draft, "skills", record, skillIconAsked || skillStore, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
     const auto = autoChoreographyNote(draft, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2501,10 +2518,12 @@ const upsertEquipment: ToolDefinition = {
       warnings.push("apGrants 는 설정했지만 AP 를 주는 적이 없습니다 — upsert_enemy 의 rewards.ap 를 정해야 마석이 자랍니다(승리 시 트룹 합계를 받음).");
     }
     const equipmentIconAsked = Boolean(record.iconResourceId);
+    const equipmentIconKept = equipmentIconAsked && draft.database.equipment.find((entry) => entry.id === record.id)?.iconResourceId === record.iconResourceId;
     resolveIconResourceId(draft, record, "equipment", warnings);
-    autoStoreIcon(draft, record, { target: "equipment", name: record.name, description: record.description, itemType: record.slot,
+    const equipmentStore = autoStoreIcon(draft, record, { target: "equipment", name: record.name, description: record.description, itemType: record.slot,
       element: draft.database.elements?.find((element) => element.id === record.attackElementIds[0])?.name ?? record.attackElementIds[0] }, "equipment", warnings);
-    if (!equipmentIconAsked) fillDefaultItemIcon(draft, record, record.slot, "equipment", warnings);
+    const equipmentDefault = equipmentIconAsked ? undefined : fillDefaultItemIcon(draft, record, record.slot, "equipment", warnings);
+    if (!equipmentIconKept) settleIconFit(draft, "equipment", record, (equipmentIconAsked && Boolean(record.iconResourceId)) || equipmentStore || equipmentDefault?.fits === true, "equipment", warnings);
     dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
@@ -2683,8 +2702,11 @@ const upsertState: ToolDefinition = {
     }
     if (record.gen1MajorStatus === "toxic") warnings.push("맹독(toxic)은 차례 말마다 1/16 × (1,2,3…15) 피해가 커지고 교체하면 처음부터 셉니다. runtimeEffects.hpDamagePercentPerTurn 을 따로 주지 마세요(이중 피해). 보통 독은 gen1MajorStatus:\"poison\"(고정 1/16).");
     if (record.volatileStatus === "confusion") warnings.push("혼란(volatileStatus:\"confusion\")은 주요 상태와 겹쳐 걸리고 2~5 행동 지속, 행동마다 절반이 위력 40 자해로 행동을 잃으며 교체·전투 종료로 풀립니다. removalCondition 은 '전투 종료' 로 두세요.");
+    const stateIconKept = Boolean(record.iconResourceId) && draft.database.states.find((entry) => entry.id === record.id)?.iconResourceId === record.iconResourceId;
     resolveIconResourceId(draft, record, "state", warnings);
-    autoStoreIcon(draft, record, stateIconWant(record), "state", warnings);
+    const stateIconAsked = Boolean(record.iconResourceId);
+    const stateStore = autoStoreIcon(draft, record, stateIconWant(record), "state", warnings);
+    if (!stateIconKept) settleIconFit(draft, "states", record, stateIconAsked || stateStore, "state", warnings);
     if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

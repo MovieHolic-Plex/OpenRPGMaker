@@ -897,6 +897,8 @@ export interface Project {
     /** 이야기 일지(ESC 메뉴 「일지」 제목·필체) — project/storyJournal.ts. 줄 자체는 세이브(session.storyJournal)에 쌓인다. */
     oprnStoryJournal?: import('../storyJournal').AuthoredStoryJournal;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
+    /** 이름에 맞는 아이콘이 없어 종류 기본 그림을 「대신 쓴」 레코드("items/<id>" 등) — generate_item_icon 이 그려 바꾸면 지운다. editor/tools/itemIconTools.ts */
+    oprnPlaceholderIcons?: Record<string, import('../../editor/tools/itemIconTools').PlaceholderIconMark>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;
     author: string;
