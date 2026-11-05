@@ -31,6 +31,7 @@ export function detectRun(runs) {
         const asset = n.url.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+/, "");
         add({ ...base, check: "asset-request", severity: "visual", claim: `${n.status ?? n.why} ${asset}`, key: `net|${asset}`, evidence: ev, state: row.state });
       }
+      for (const t of textFindings(row)) add({ ...base, check: t.check, severity: "text", claim: `${t.why}: "${t.text}"`, key: `${t.check}|${t.text.slice(0, 40)}`, evidence: ev, state: row.state, inputs: row.inputs });
       if (row.state?.missingResource) add({ ...base, check: "missing-resource", severity: "visual", claim: row.state.missingResource, key: `missing|${row.state.missingResource}`, evidence: ev, state: row.state });
       if ((row.state?.missingTextures ?? 0) > 0) add({ ...base, check: "missing-texture", severity: "visual", claim: `화면에 그림 없는(__MISSING) 객체 ${row.state.missingTextures}개`, key: `mtex|${row.state.mapId}`, evidence: ev, state: row.state });
       if (/stuck$/.test(row.label ?? "")) add({ ...base, check: "stuck", severity: "blocker", claim: `입력 6번에도 화면 상태가 바뀌지 않음 (screen=${row.state?.screen} map=${row.state?.mapId} dialogue=${(row.state?.dialogue ?? "").slice(0, 40)})`, key: `stuck|${row.state?.mapId}|${(row.state?.dialogue ?? "").slice(0, 30)}`, evidence: ev, state: row.state, inputs: row.inputs });
@@ -70,6 +71,20 @@ export function groupDeterministic(findings) {
   return [...groups.values()].map((g) => ({ ...g, sessions: g.jobs.size, jobs: [...g.jobs].slice(0, 12) }));
 }
 
+/**
+ * Text the player reads, checked without a model: mojibake (UTF-8 read as Latin-1), replacement characters,
+ * authoring placeholders, raw ids leaking into dialogue. The DOM text is exactly what was printed.
+ */
+const TEXT_RULES = [
+  { check: "garbled-text", re: /[\u00c2-\u00ef][\u0080-\u00bf\u0152-\u0192\u02c6\u02dc\u2013-\u203a\u20ac\u2122]{1,2}(?:[\u00c2-\u00ef][\u0080-\u00bf\u0152-\u0192\u02c6\u02dc\u2013-\u203a\u20ac\u2122]{1,2})+|\ufffd/u, why: "깨진 글자(모지바케·대체 문자)" },
+  { check: "placeholder-text", re: /\b(?:TODO|TBD|FIXME|placeholder|lorem ipsum)\b|\{\{[^}]*\}\}|\$\{[^}]*\}/iu, why: "작성 중 자리표시 문구" },
+  { check: "raw-id-text", re: /\b(?:ev|sw|item|actor|troop|map|var)_[a-z0-9_]{3,}\b/u, why: "내부 id 가 화면 글자로 노출" },
+];
+export function textFindings(row) {
+  const visible = [row.state?.dialogue, row.state?.choices].filter(Boolean).join(" ");
+  return TEXT_RULES.filter((rule) => rule.re.test(visible)).map((rule) => ({ check: rule.check, why: rule.why, text: visible.slice(0, 160) }));
+}
+
 /** Frames worth showing the vision observer: settled, not dark, one per perceptual-hash bucket per screen. */
 export function selectForObserver(frames, { maxPerScreen = 400, hamming = 6 } = {}) {
   const kept = [];
@@ -82,8 +97,10 @@ export function selectForObserver(frames, { maxPerScreen = 400, hamming = 6 } = 
     if (f.state?.screen === "loading" || f.state?.screen === "unreadable") continue;
     const sk = f.state?.screen ?? "?";
     if ((perScreen[sk] ?? 0) >= maxPerScreen) continue;
-    if (seen.some((s) => s.screen === sk && s.viewport === f.viewport && dist(s.hash, f.hash) <= hamming)) continue;
-    seen.push({ screen: sk, viewport: f.viewport, hash: f.hash });
+    // Dialogue frames look alike at 8x8 but carry different lines; a new line is a new thing to read.
+    const words = `${f.state?.dialogue ?? ""}|${f.state?.choices ?? ""}`.slice(0, 80);
+    if (seen.some((s) => s.screen === sk && s.viewport === f.viewport && s.words === words && dist(s.hash, f.hash) <= hamming)) continue;
+    seen.push({ screen: sk, viewport: f.viewport, hash: f.hash, words });
     perScreen[sk] = (perScreen[sk] ?? 0) + 1;
     kept.push(f);
   }

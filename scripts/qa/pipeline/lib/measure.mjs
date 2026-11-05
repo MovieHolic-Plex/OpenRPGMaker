@@ -3,8 +3,8 @@
 // exists; caught after review = one of those candidates got verdict "real" from the reviewer.
 
 const COMPATIBLE = {
-  "garbled-text": ["C10", "C05", "C01", "C12", "C17"],
-  "placeholder-text": ["C10", "C05", "C17", "C01"],
+  "garbled-text": ["garbled-text", "C10", "C05", "C01", "C12", "C17"],
+  "placeholder-text": ["placeholder-text", "C10", "C05", "C17", "C01"],
   "wrong-portrait": ["portrait-kind", "C04", "C05", "C06", "C16", "C03"],
   "soft-lock-loop": ["stuck", "endless-loop", "C08", "C11"],
   "out-of-bounds-transfer": ["bad-transfer", "stuck", "C15", "C11", "page-error", "session-fatal"],

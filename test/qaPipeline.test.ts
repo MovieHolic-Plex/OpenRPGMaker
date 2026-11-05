@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { planCoverage, staticLint } from "../scripts/qa/pipeline/lib/plan.mjs";
-import { detectRun, groupDeterministic, selectForObserver } from "../scripts/qa/pipeline/lib/detect.mjs";
+import { detectRun, groupDeterministic, selectForObserver, textFindings } from "../scripts/qa/pipeline/lib/detect.mjs";
 import { measurePlants } from "../scripts/qa/pipeline/lib/measure.mjs";
 import { extractJson } from "../scripts/qa/pipeline/lib/models.mjs";
 import { reviewCandidates } from "../scripts/qa/pipeline/review.mjs";
@@ -88,6 +88,14 @@ describe("qa pipeline deterministic detection", () => {
     expect(byCheck["black-screen"]).toBeDefined();
     expect(byCheck["text-clipped"].claim).toContain("아주 긴 이름");
     expect(selectForObserver(frames).some((f) => f.seq === 4)).toBe(false);
+  });
+
+  it("대사 글자를 모델 없이 검사한다: 모지바케·자리표시·내부 id, 정상 한국어는 통과", () => {
+    const checksOf = (dialogue: string) => textFindings({ state: { dialogue } }).map((f: { check: string }) => f.check);
+    expect(checksOf("ë¸Œëžœ ì§€ê¸ˆ 숭으로")).toEqual(["garbled-text"]);
+    expect(checksOf("TODO: 여기에 대사 넣기")).toEqual(["placeholder-text"]);
+    expect(checksOf("문을 열려면 sw_gate_open 을 켜라")).toEqual(["raw-id-text"]);
+    expect(checksOf("난 été 카페에서 일해. 숫자는 12·34 — 괜찮아")).toEqual([]);
   });
 
   it("한 장짜리 전환 암전은 결함이 아니다", () => {
