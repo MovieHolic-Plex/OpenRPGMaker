@@ -228,7 +228,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 기기마다 다른 소수 배율은 도트를 흐리고 「폰마다 다르게 보인다」를 만들었다. 남는 자리는 레터박스다.
   const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
   const emeraldStyle = options.pointerInput === true;
-  // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 키보드 전용 계약은 데스크톱에서만 남는다.
+  // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 그 밖에 기본 런타임은 마우스를 쓰지 않는다
+  // (2026-08-03 감독 결정) — 단, 전투 커맨드·대상처럼 누를 수 있게 열어 둔 곳은 playInputBlocker 의
+  // POINTER_MENU_ITEM_SELECTOR 를 거쳐 마우스 click 도 받는다(사장 1.37 VQA D1, 2026-11-05).
   const pointerInput = emeraldStyle || options.touchInput === true;
   // 터치 UI: 조작이 게임을 가리지 않게 자리를 떼는 배치 + 모든 화면(타이틀·메뉴·상점·전투)에 조작 패드(2026-10-24).
   const touchUi = pointerInput && isTouchDevice();

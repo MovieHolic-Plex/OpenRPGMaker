@@ -85,8 +85,19 @@ function releaseStrandedTextEntryFocus(pressed: EventTarget | null): void {
   (active as HTMLElement).blur?.();
 }
 
-/** 마우스로 고를 수 있는 메뉴 항목. 누름·클릭만 통과시킨다(호버·끌기는 여전히 막는다). */
-const POINTER_MENU_ITEM_SELECTOR = ".oprn-status-menu .status-menu-command";
+/**
+ * 마우스로 고를 수 있는 게임 UI. 누름·클릭만 통과시킨다(호버·끌기·휠은 여전히 막는다).
+ *
+ * 전투 커맨드·대상은 사장 1.37 VQA D1(2026-11-05)로 추가했다 — 데스크톱 1440 에서 여섯 버튼이
+ * 모두 눌리지 않았다(같은 버튼 Enter 는 대상 선택을 열었다). 여기서는 click·pointerdown 계열만
+ * 통과시키므로 전투 패널에 호버·끌기·휠이 새로 열리지 않는다. 커맨드 단추는 안쪽 <strong> 이
+ * 실제 target 이므로 closest 로 조상까지 본다.
+ */
+const POINTER_MENU_ITEM_SELECTOR = [
+  ".oprn-status-menu .status-menu-command",
+  ".battle-scene button.battle-command",
+  ".battle-scene [data-battle-targetable='true']",
+].join(", ");
 const POINTER_MENU_EVENTS = new Set<string>(["click", "mousedown", "mouseup", "pointerdown", "pointerup"]);
 
 export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {

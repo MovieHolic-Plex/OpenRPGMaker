@@ -1,13 +1,20 @@
-/* 전투는 키보드 전용 — 감독 결정(2026-08-03): 이 에디터의 게임 플레이 런타임은
-   마우스를 쓰지 않는다. 클릭 핸들러를 떼는 것만으로는 호버 강조와 손가락 커서가 남아
-   "눌러도 반응 없는 버튼"처럼 보이므로, 포인터 자체를 통과시켜 클릭할 수 있다는 신호를
-   지운다. 키보드 포커스/커서 표시와 Z/Enter 의 .click() 디스패치는 그대로 동작한다. */
+/* 전투 커맨드는 마우스·키보드 둘 다 받는다.
+   2026-08-03 감독 결정은 「플레이 런타임은 마우스를 쓰지 않는다」였고, 그래서 포인터를 통째로
+   통과시켰다(pointer-events: none). 그 결과 데스크톱에서 커맨드가 실제로 눌리지 않았다 —
+   사장 1.37 VQA(D1, 2026-11-05): 1440 브라우저에서 여섯 버튼 모두 pe=none,
+   elementFromPoint(버튼 중앙) = .battle-command-grid, 마우스 클릭 무반응(같은 버튼 Enter 는 동작).
+   클릭 핸들러(battleCommandDom 의 button click · battleDom 의 commandHost 위임)는 그대로 있었으므로
+   막던 것은 이 CSS 한 줄뿐이었다. 키보드 계약은 그대로 둔다(포커스·커서·Z/Enter .click()). */
 .battle-scene .battle-command,
 .battle-scene .battle-command *,
 .battle-scene [data-battle-targetable="true"] {
-  /* 공통 키보드 계약. 뒤의 pokemon UI 스타일만 더 구체적인 규칙으로 포인터를 연다. */
-  cursor: default;
-  pointer-events: none;
+  /* 커서 모양은 아래 `button.battle-command:not([aria-disabled="true"])` 규칙이 정한다. */
+  pointer-events: auto;
+}
+
+/* 누를 수 있는 커맨드만 손가락 커서 — 비활성 행(aria-disabled)은 클릭해도 사유만 말하므로 기본 커서. */
+.battle-scene button.battle-command:not([aria-disabled="true"]) {
+  cursor: pointer;
 }
 
 /* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
