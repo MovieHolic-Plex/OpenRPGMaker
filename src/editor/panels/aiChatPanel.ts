@@ -2392,6 +2392,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const map = builtMapOf(before, store.getCurrent());
     if (!map) return;
     const owner = conversationId;
+    let sentFix = false;
     try {
       setStatus("지은 맵을 도안과 맞대는 중…");
       const result = await checkPlanFollow(store.getCurrent(), map, planUrl, plan.read ?? null);
@@ -2399,11 +2400,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const pct = Math.round(result.check.score * 100);
       console.info(`imagePlan: follow=${pct} layout=${result.check.layout} missing=${result.check.elements.filter((e) => e.mark !== "present").length}`);
       appendBubble("system", result.fix ? `도안과 맞대 보니 ${pct}% 따랐어요 — 빠진 것만 고칠게요.` : `도안과 맞대 보니 ${pct}% 따랐어요.`);
-      if (result.fix) { restoreComposer(result.fix); void send(); }
+      // 맞대는 동안 사용자가 입력창에 쓰고 있거나 다른 턴이 돌면 덮어쓰지 않고 고침 문장만 보여 준다(ultrabrain AMEND 6).
+      if (result.fix && (input.value.trim() || turnBusy)) appendBubble("system", `고칠 것(보내려면 입력창에 붙여 넣으세요): ${result.fix}`);
+      else if (result.fix) { restoreComposer(result.fix); sentFix = true; void send(); }
     } catch (error) {
       console.info(`imagePlan: follow check failed ${error instanceof Error ? error.message : String(error)}`);
     } finally {
-      setStatus("대기");
+      if (!sentFix) setStatus("대기");
     }
   };
   const plainPiTurn = async (text: string, turnOptions?: {

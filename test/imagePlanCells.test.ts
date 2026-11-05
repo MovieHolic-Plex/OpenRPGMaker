@@ -58,4 +58,18 @@ describe("imagePlanCells", () => {
     expect((args.terrainMap as string[])[20]).toBe("0".repeat(48));
     expect((args.layout as { landmark: unknown }).landmark).toEqual({ x: 25, y: 6 });
   });
+
+  it("pads short outdoor rows with the row's own ground, not sea", () => {
+    const rows = Array.from({ length: 32 }, (_, y) => (y < 20 ? "0".repeat(46) : ""));
+    const map = parseCellMap({ cells: rows.slice(0, 20) }, "village", 48, 32)!;
+    expect(map.cells[0]).toBe("0".repeat(48));
+    expect(map.cells[31]).toBe("0".repeat(48));
+    expect((villageArgsFromCells(map).terrainMap as string[]).join("")).not.toContain("_");
+  });
+
+  it("gives a fix-pass landmark without an id the next free letter", () => {
+    const map = parseCellMap({ cells: Array.from({ length: 12 }, () => "...." + "_".repeat(20)), landmarks: [{ id: "A", kind: "altar", x: 1, y: 1 }] }, "dungeon", 24, 12)!;
+    const fixed = applyCellFixes(map, { fixes: [], landmarks: [{ kind: "statue", x: 2, y: 2 }] }).map;
+    expect(fixed.landmarks.map((l) => l.id)).toEqual(["A", "B"]);
+  });
 });

@@ -51,15 +51,18 @@ export function cellMapFixPrompt(subject: WidenSubject, cols: number, rows: numb
 
 const int = (v: unknown): number | null => { const n = Number(v); return Number.isFinite(n) ? Math.round(n) : null; };
 
-function readLandmarks(raw: unknown, cols: number, rows: number): CellLandmark[] {
+function readLandmarks(raw: unknown, cols: number, rows: number, taken: readonly string[] = []): CellLandmark[] {
   if (!Array.isArray(raw)) return [];
   const out: CellLandmark[] = [];
+  const used = (id: string) => taken.includes(id) || out.some((l) => l.id === id);
   for (const item of raw.slice(0, 26)) {
     if (!item || typeof item !== "object") continue;
     const o = item as Record<string, unknown>;
-    const id = typeof o.id === "string" && LANDMARK.test(o.id.trim().slice(0, 1).toUpperCase()) ? o.id.trim().slice(0, 1).toUpperCase() : String.fromCharCode(65 + out.length);
+    const given = typeof o.id === "string" && LANDMARK.test(o.id.trim().slice(0, 1).toUpperCase()) ? o.id.trim().slice(0, 1).toUpperCase() : null;
+    // id 없이 온 랜드마크는 빈 글자를 준다("A" 로 두면 중복으로 버려졌다 — AMEND 5)
+    const id = given ?? [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].find((c) => !used(c));
     const x = int(o.x), y = int(o.y);
-    if (x === null || y === null || out.some((l) => l.id === id)) continue;
+    if (!id || x === null || y === null || (given !== null && used(id))) continue;
     const w = Math.max(1, int(o.w) ?? 1), h = Math.max(1, int(o.h) ?? 1);
     const cx = Math.max(0, Math.min(cols - 1, x)), cy = Math.max(0, Math.min(rows - 1, y));
     out.push({ id, kind: typeof o.kind === "string" && o.kind.trim() ? o.kind.trim().toLowerCase() : "other", ...(typeof o.label === "string" && o.label.trim() ? { label: o.label.trim().slice(0, 40) } : {}), x: cx, y: cy, w: Math.min(w, cols - cx), h: Math.min(h, rows - cy) });
@@ -77,11 +80,16 @@ export function parseCellMap(data: Record<string, unknown> | null, subject: Wide
   if (!data || !Array.isArray(data.cells)) return null;
   const raw = data.cells.map((r) => String(r ?? ""));
   if (raw.length < Math.round(rows * 0.6)) return null;
-  const cells = Array.from({ length: rows }, (_, y) => fitRow(raw[y] ?? "", cols, "_"));
+  // 바깥(마을·숲)은 모자란 줄을 그 줄 끝 글자로, 빠진 줄은 윗줄로 메운다("_" 는 바다로 읽히므로 — AMEND 4). 실내·던전은 허공("_")으로.
+  const outdoor = subject === "village" || subject === "forest";
+  const cells: string[] = [];
+  for (let y = 0; y < rows; y += 1) {
+    const r = raw[y] ?? (outdoor && y > 0 ? cells[y - 1]! : "");
+    cells.push(fitRow(r, cols, outdoor && r.length ? r[r.length - 1]!.replace(/[^_~=0123|th.#A-Z]/u, "0") : "_"));
+  }
   const filled = cells.join("").replace(/_/gu, "").length;
   if (filled < cols * rows * 0.1) return null;
   const landmarks = readLandmarks(data.landmarks, cols, rows);
-  void subject;
   return { cols, rows, cells, landmarks };
 }
 
@@ -107,7 +115,7 @@ export function applyCellFixes(map: CellMap, data: Record<string, unknown> | nul
     });
     if (touched) fixed += 1;
   }
-  const extra = readLandmarks(data.landmarks, map.cols, map.rows).filter((l) => !map.landmarks.some((m) => m.id === l.id));
+  const extra = readLandmarks(data.landmarks, map.cols, map.rows, map.landmarks.map((m) => m.id));
   return { map: { ...map, cells: grid.map((r) => r.join("")), landmarks: [...map.landmarks, ...extra] }, fixed };
 }
 
@@ -175,12 +183,12 @@ function withNecks(map: CellMap): CellMap {
 }
 
 /** 칸 지도 → author_dungeon rooms·links. 방 = 바닥(.·~·랜드마크) 덩이의 칸 상자, 자리·크기 모두 같은 배율(dungeonCellScale). 통로 = 덩이 사이 = 칸이 닿는 방끼리. */
-export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<{ id: string; kind: string; x: number; y: number; w: number; h: number }>; links: Array<{ from: string; to: string; rects: Array<{ x: number; y: number; w: number; h: number }> }> } {
+export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)): { rooms: Array<{ id: string; kind: string; x: number; y: number; w: number; h: number }>; links: Array<{ from: string; to: string; rects: Array<{ x: number; y: number; w: number; h: number }> }>; landmarkSpots: Array<{ id: string; room: string; dx: number; dy: number; w: number; h: number }> } {
   map = withNecks(map);
   const roomish = (ch: string) => ch === "." || ch === "~" || LANDMARK.test(ch);
   // 빌더는 한 층 방 12개까지 — 더 있으면 작은 덩이부터 버린다(버린 덩이에 닿던 통로는 빌더가 잇는다).
   const comps = components(map, roomish).filter((c) => c.cells.length >= 6).sort((a, b) => b.cells.length - a.cells.length).slice(0, 12).sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
-  if (!comps.length) return { rooms: [], links: [] };
+  if (!comps.length) return { rooms: [], links: [], landmarkSpots: [] };
   const W = map.cols;
   const roomOf = new Int16Array(map.cols * map.rows).fill(-1);
   comps.forEach((c, i) => { for (const k of c.cells) roomOf[k] = i; });
@@ -231,21 +239,42 @@ export function dungeonPlanFromCells(map: CellMap, scale = dungeonCellScale(map)
     for (const r of rooms) if (r.y >= worst.y) r.y += worst.need;
   }
   // 통로는 도안의 = 칸 그대로(곧은·휘는 길) — 방과 같은 배율·같은 줄 내림으로 옮기고, 가로로 잇닿은 칸은 한 사각형으로 묶는다.
-  const shifts = rooms.map((r, i) => [baseY[i]!, r.y - baseY[i]!] as const).sort((a, b) => a[0] - b[0]);
-  const mapY = (v: number) => { const sy = Math.round(v * scale); let d = 0; for (const [from, by] of shifts) if (sy >= from) d = Math.max(d, by); return sy + d; };
-  const rectsOf = (corrs: readonly Comp[]): Array<{ x: number; y: number; w: number; h: number }> => {
+  // 통로 칸은 닿는 두 방 중 가까운 방의 내림 폭만큼 옮긴다(다른 열의 방 내림을 따라가면 방에서 떨어졌다 — ultrabrain AMEND 3).
+  const roomIdx = new Map(order.map((i, k) => [i, k] as const));
+  const rectsOf = (corrs: readonly Comp[], ka: number, kb: number): Array<{ x: number; y: number; w: number; h: number }> => {
+    const ra = rooms[ka]!, rb = rooms[kb]!, da = ra.y - baseY[ka]!, db = rb.y - baseY[kb]!;
+    const runs: Array<{ x0: number; x1: number; y0: number; y1: number }> = [];
     const cells = new Set(corrs.flatMap((c) => c.cells));
-    const out: Array<{ x: number; y: number; w: number; h: number }> = [];
     for (let y = 0; y < map.rows; y += 1) for (let x = 0; x < W; x += 1) {
-      if (!cells.has(y * W + x) || cells.has(y * W + x - 1) && x > 0) continue;
+      if (!cells.has(y * W + x) || (x > 0 && cells.has(y * W + x - 1))) continue;
       let x1 = x; while (x1 + 1 < W && cells.has(y * W + x1 + 1)) x1 += 1;
-      const rx = Math.round(x * scale), ry = mapY(y);
-      out.push({ x: rx, y: ry, w: Math.round((x1 + 1) * scale) - rx, h: Math.max(1, mapY(y + 1) - ry) });
+      // 같은 열 폭으로 바로 위 줄에 이어진 토막은 한 사각형으로(세로 통로가 줄마다 조각나지 않게 — AMEND 2)
+      const up = runs.find((r) => r.y1 === y - 1 && r.x0 === x && r.x1 === x1);
+      if (up) up.y1 = y; else runs.push({ x0: x, x1, y0: y, y1: y });
     }
-    return out;
+    return runs.map((r) => {
+      const sy = Math.round(r.y0 * scale), ey = Math.round((r.y1 + 1) * scale);
+      const mid = (sy + ey) / 2, near = Math.abs(mid - (baseY[ka]! + ra.h / 2)) <= Math.abs(mid - (baseY[kb]! + rb.h / 2)) ? da : db;
+      const top = sy + Math.min(da, db), bottom = ey + Math.max(da, db);
+      // 세로 토막은 두 방 내림 차이만큼 늘려 양쪽에 닿게, 가로 토막은 가까운 방 내림으로(두꺼워지지 않게)
+      const vertical = r.y1 - r.y0 + 1 > r.x1 - r.x0 + 1;
+      const span = da !== db && vertical ? { y: top, h: Math.max(1, bottom - top) } : { y: sy + near, h: Math.max(1, ey - sy) };
+      const x = Math.round(r.x0 * scale);
+      return { x, y: span.y, w: Math.max(1, Math.round((r.x1 + 1) * scale) - x), h: span.h };
+    });
   };
-  const links = [...pairs].map(([p, corrs]) => { const [a, b] = p.split("|").map((n) => idOf.get(Number(n))!); return { from: a!, to: b!, rects: rectsOf(corrs) }; });
-  return { rooms, links };
+  const links = [...pairs].map(([p, corrs]) => {
+    const [ia, ib] = p.split("|").map(Number) as [number, number];
+    return { from: idOf.get(ia)!, to: idOf.get(ib)!, rects: rectsOf(corrs, roomIdx.get(ia)!, roomIdx.get(ib)!) };
+  });
+  // 랜드마크 자리 = 방 id + 방 안 떨어진 칸(방은 배율·줄 내림·원점 이동을 거치므로 도안 칸 좌표는 맵에서 어긋난다 — AMEND 5)
+  const landmarkSpots = map.landmarks.flatMap((l) => {
+    const room = roomOf[Math.min(map.rows - 1, l.y + Math.floor(l.h / 2)) * W + Math.min(W - 1, l.x + Math.floor(l.w / 2))]!;
+    if (room < 0) return [];
+    const c = comps[room]!, r = rooms[roomIdx.get(room)!]!;
+    return [{ id: l.id, room: r.id, dx: Math.max(0, Math.min(r.w - 1, Math.round((l.x - c.x0) * scale))), dy: Math.max(0, Math.min(r.h - 1, Math.round((l.y - c.y0) * scale))), w: Math.max(1, Math.round(l.w * scale)), h: Math.max(1, Math.round(l.h * scale)) }];
+  });
+  return { rooms, links, landmarkSpots };
 }
 
 /** 칸 지도 → author_beodeul_town 인자. 땅 단·물은 terrainMap 그대로, 집·숲·랜드마크는 덩이 가운데, 맵 크기는 도안 가로세로비. */
@@ -256,10 +285,13 @@ export function villageArgsFromCells(map: CellMap, longSide = 56): Record<string
   const pt = (x: number, y: number) => ({ x: Math.round((x + 0.5) * sx - 0.5), y: Math.round((y + 0.5) * sy - 0.5) });
   const centre = (c: Comp) => pt((c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2);
   // 땅 단 칸 지도: 길·나무·집·랜드마크·허공 칸은 그 줄에서 가장 가까운 단 글자로 메운다
+  // "_"(허공)을 바다로 두는 건 허공이 맵 네 가장자리 중 3곳 이상에 닿을 때(떠 있는 섬)만 — 한두 줄이 비어 있다고 바다 띠가 생기지 않게(ultrabrain AMEND 4).
+  const last = map.rows - 1, edgeVoid = [map.cells[0]!.includes("_"), map.cells[last]!.includes("_"), map.cells.some((r) => r[0] === "_"), map.cells.some((r) => r[r.length - 1] === "_")];
+  const island = edgeVoid.filter(Boolean).length >= 3;
   const terrain = map.cells.map((row) => {
     const chars = row.split("");
     return chars.map((ch, x) => {
-      if (/[0-3~|_]/u.test(ch)) return ch;
+      if (/[0-3~|]/u.test(ch) || (ch === "_" && island)) return ch;
       for (let d = 1; d < chars.length; d += 1) {
         const l = chars[x - d], r = chars[x + d];
         if (l && /[0-3]/u.test(l)) return l;
@@ -335,6 +367,18 @@ export function forestDesignFromCells(map: CellMap): Record<string, unknown> {
       const near = mids[Math.max(0, Math.min(mids.length - 1, Math.round(at * (mids.length - 1))))] ?? W / 2;
       branches.push({ at, toward: cx < near ? "left" : "right", end: "clearing" });
     }
+    // 본길에 붙은 갈림길: 한 줄에서 본길이 두 토막 이상으로 갈라지는 첫 줄(떨어진 덩이만 세면 본길에 닿는 갈림은 빠졌다 — AMEND 7)
+    let wasSplit = false;
+    rowsXs.forEach((xs, i) => {
+      const runs: number[][] = [];
+      xs.forEach((x, j) => { if (j && x === xs[j - 1]! + 1) runs[runs.length - 1]!.push(x); else runs.push([x]); });
+      const split = runs.length >= 2 && runs.every((r) => r.length >= 1);
+      if (split && !wasSplit && branches.length < 4 && i > 0 && i < rowsXs.length - 1) {
+        const mid = mids[i] ?? W / 2, far = runs.reduce((a, b) => (Math.abs((b[0]! + b[b.length - 1]!) / 2 - mid) > Math.abs((a[0]! + a[a.length - 1]!) / 2 - mid) ? b : a));
+        branches.push({ at: Math.round(100 * i / span) / 100, toward: (far[0]! + far[far.length - 1]!) / 2 < mid ? "left" : "right", end: "clearing" });
+      }
+      wasSplit = split;
+    });
     if (branches.length) design.branches = branches;
     const clearings = map.landmarks.slice(0, 4).map((l) => {
       const at = Math.max(0, Math.min(1, Math.round(100 * (path.y1 - (l.y + l.h / 2)) / span) / 100));

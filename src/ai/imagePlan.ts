@@ -194,8 +194,13 @@ function cellBuildNote(subject: WidenSubject, cells: CellMap): string {
   }
   if (subject === "dungeon" || subject === "castle") {
     const plan = dungeonPlanFromCells(cells);
+    // 던전·성 랜드마크는 도안 칸 좌표가 아니라 방 id + 방 안 칸으로(방이 배율·줄 내림으로 옮겨지므로)
+    const spots = plan.landmarkSpots.map((s) => { const l = cells.landmarks.find((m) => m.id === s.id)!; return `${s.id}=${l.label ?? l.kind}[${l.kind}] 방 ${s.room} 안 (${s.dx},${s.dy}) ${s.w}×${s.h}칸`; }).join(" · ");
+    const roomMarks = spots
+      ? ` 도안의 랜드마크(방 id 와 그 방 바닥 왼쪽 위에서 떨어진 칸 — 지은 뒤 그 방 자리를 읽어 더해 찍는다): ${spots}. 랜드마크마다 list_spatial_designs({kind:"object", query}) 로 맞는 조각을 찾아 stamp_object 로 찍고, 맞는 것이 없으면 비슷한 것으로 때우지 않고 generate_missing_object 로 만든다.`
+      : "";
     return plan.rooms.length
-      ? `읽은 방 배치(도안 칸 = 맵 칸, 늘리지 않는다): author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구, 한 층): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.${markLine}`
+      ? `읽은 방 배치(도안 칸 = 맵 칸, 늘리지 않는다): author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구, 한 층): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.${roomMarks}`
       : markLine;
   }
   return `읽은 실내 칸 지도(${cells.cols}×${cells.rows}, _ 바깥 · # 벽 · . 바닥 · = 복도 · ~ 물 · A~Z 랜드마크): 방 구획·문·가구 자리를 이 지도대로 정한다.${markLine}\n${cells.cells.join("\n")}`;
