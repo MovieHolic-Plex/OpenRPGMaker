@@ -13,6 +13,10 @@ const VERDICT_KO = { real: "실제 결함", misread: "오독", transition: "전�
 const SEV_KO = { blocker: "진행 막힘", "save-data": "저장 데이터", function: "기능", visual: "시각", text: "글자" };
 const OWNER_KO = { "game-data": "게임 데이터", engine: "엔진", editor: "에디터", assistant: "AI 조수" };
 const fmt = (n) => (n == null ? "-" : Number(n).toLocaleString("ko-KR"));
+const KIND_KO = { title: "타이틀", menu: "메뉴", map: "맵", event: "이벤트", shop: "상점·여관", ending: "엔딩", battle: "전투" };
+const INPUT_KO = { keyboard: "키보드", mouse: "마우스", touch: "터치" };
+const VIEW_KO = { desktop: "1440×900", laptop: "1280×720", phoneLandscape: "844×390", phonePortrait: "390×844" };
+const kv = (obj, names) => Object.entries(obj ?? {}).map(([k, v]) => `${esc(names[k] ?? k)} ${fmt(v)}`).join(" · ");
 const sec = (ms) => (ms == null ? "-" : `${Math.round(ms / 1000)}초`);
 
 function copyImage(file, assetDir, assetRel) {
@@ -32,7 +36,7 @@ function candidateCard(c, assetDir, assetRel) {
   const r = c.review ?? {};
   return `<article class="card v-${esc(r.verdict)}">
   <header><span class="vid">${esc(c.id)}</span> <b>${esc(r.title_ko || c.title)}</b>
-   <span class="tag">${esc(VERDICT_KO[r.verdict] ?? r.verdict)}</span>${r.severity ? `<span class="tag sev">${esc(SEV_KO[r.severity] ?? r.severity)}</span>` : ""}${r.owner ? `<span class="tag own">${esc(OWNER_KO[r.owner] ?? r.owner)}</span>` : ""}
+   <span class="tag">${esc(VERDICT_KO[r.verdict] ?? r.verdict)}</span>${r.floor === "measured" ? `<span class="tag floor">측정값으로 유지 · 검토자 판정: ${esc(VERDICT_KO[r.reviewerVerdict] ?? r.reviewerVerdict)}</span>` : ""}${r.severity ? `<span class="tag sev">${esc(SEV_KO[r.severity] ?? r.severity)}</span>` : ""}${r.owner ? `<span class="tag own">${esc(OWNER_KO[r.owner] ?? r.owner)}</span>` : ""}
    <span class="tag src">${esc(c.source)} · ${esc(c.check)}</span>${r.confidence ? `<span class="tag">신뢰도 ${Number(r.confidence).toFixed(2)}</span>` : ""}</header>
   ${imgs.length ? `<div class="imgs">${imgs.map((i) => `<figure><a href="${esc(i.src)}" target="_blank"><img loading="lazy" src="${esc(i.src)}" alt="${esc(i.role)}"></a><figcaption>${esc(i.role)}</figcaption></figure>`).join("")}</div>` : ""}
   <dl><dt>주장</dt><dd>${esc(c.claim)}</dd>
@@ -65,7 +69,8 @@ export function runSection(dir, { assetDir, assetRel, title }) {
  <div><b>${sec(totalMs)}</b><span>전체 시간</span></div>
 </div>
 <h3>커버리지 계획</h3>
-<p>맵 ${fmt(s.coverage.plannedMaps)}/${fmt(s.coverage.maps)} · 전투 ${fmt(s.coverage.plannedBattles)}/${fmt(s.coverage.troops)}부대 · 종류 ${esc(JSON.stringify(s.coverage.byKind))} · 입력 ${esc(JSON.stringify(s.coverage.byInput))} · 해상도 ${esc(JSON.stringify(s.coverage.byViewport))}</p>
+<p>맵 ${fmt(s.coverage.plannedMaps)}/${fmt(s.coverage.maps)} · 전투 ${fmt(s.coverage.plannedBattles)}/${fmt(s.coverage.troops)}부대</p>
+<p>작업 종류 ${kv(s.coverage.byKind, KIND_KO)}<br>입력 ${kv(s.coverage.byInput, INPUT_KO)}<br>화면 ${kv(s.coverage.byViewport, VIEW_KO)}</p>
 <p>동시 세션 최고 ${fmt(s.play.peakSessions)} · cgroup 메모리 최고 ${s.play.peakMemGB} GB · 실패 세션 ${fmt(s.detect.fatal)} · 외부 요청(차단) ${fmt(s.detect.blockedRequests)}</p>
 <h3>단계별 시간 · 모델 토큰</h3>
 <table><tr><th>단계</th><th>시간</th></tr>${Object.entries(s.timings ?? {}).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${sec(v)}</td></tr>`).join("")}</table>
@@ -76,7 +81,7 @@ ${m ? `<h3>심은 결함 포착</h3><table><tr><th>결함</th><th>위치</th><th
 <p>심은 결함과 무관한 후보 ${fmt(m.nonPlantCandidates)}건 중 Opus가 실제로 남긴 것 ${fmt(m.nonPlantKept)}건 (${esc(m.nonPlantKeptIds.join(", "))}) — 아래 수정 큐에서 확인.</p>` : ""}
 <h3>수정 큐 (Opus 병합·순위)</h3>
 <table><tr><th>순위</th><th>제목</th><th>심각도</th><th>트랙</th><th>신뢰도</th><th>후보</th></tr>${queue.map((q) => `<tr><td>${q.rank}</td><td>${esc(q.title_ko)}</td><td>${esc(SEV_KO[q.severity] ?? q.severity)}</td><td>${esc(q.track)} · ${esc(OWNER_KO[q.owner] ?? q.owner)}</td><td>${q.confidence ?? "-"}</td><td>${esc(q.candidates.join(", "))}</td></tr>`).join("")}</table>
-<h3>남긴 결함 (증거)</h3>${kept.map((c) => candidateCard(byId.get(c.id), assetDir, assetRel)).join("")}
+<h3>남긴 결함 (증거)</h3>${kept.some((c) => c.review?.floor) ? `<p class="sub">노란 표식 = 측정된 결함이라 검토가 기각하지 못하고 신뢰도 0.6 으로 남은 것(검토자의 원래 판정을 같이 표시). ${kept.filter((c) => c.review?.floor).length}건.</p>` : ""}${kept.map((c) => candidateCard(byId.get(c.id), assetDir, assetRel)).join("")}
 <details><summary>기각한 후보 ${rejected.length}건 (사유별)</summary>${rejected.slice(0, 60).map((c) => candidateCard(c, assetDir, assetRel)).join("")}</details>
 </section>`;
 }
@@ -117,13 +122,13 @@ main{max-width:1180px;margin:0 auto;padding:24px 18px 80px}h1{font-size:26px;mar
 .sub{color:#93a0b4}.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}.kpis div{background:#171c24;border:1px solid #263041;border-radius:10px;padding:10px 12px}.kpis b{display:block;font-size:22px}.kpis span{color:#93a0b4;font-size:13px}
 table{border-collapse:collapse;width:100%;margin:8px 0;font-size:14px;display:block;overflow-x:auto}td,th{border:1px solid #263041;padding:6px 8px;text-align:left;vertical-align:top}th{background:#171c24}
 .card{background:#151a21;border:1px solid #263041;border-left:4px solid #556;border-radius:8px;padding:10px 12px;margin:12px 0}.card.v-real{border-left-color:#3fb950}.card.v-misread{border-left-color:#f85149}.card.v-transition{border-left-color:#d29922}.card.v-by_design{border-left-color:#8b949e}
-.tag{display:inline-block;font-size:12px;background:#222b38;border-radius:6px;padding:1px 7px;margin:2px 3px}.tag.sev{background:#3a2430}.tag.own{background:#1f3326}.vid{color:#93a0b4;font-family:monospace}
+.tag{display:inline-block;font-size:12px;background:#222b38;border-radius:6px;padding:1px 7px;margin:2px 3px}.tag.floor{background:#4a3a12}.tag.sev{background:#3a2430}.tag.own{background:#1f3326}.vid{color:#93a0b4;font-family:monospace}
 .imgs{display:flex;gap:8px;overflow-x:auto;margin:8px 0}.imgs figure{margin:0;flex:0 0 auto}.imgs img{height:190px;max-width:340px;object-fit:contain;background:#000;border-radius:4px}figcaption{font-size:12px;color:#93a0b4}
 a{color:#79c0ff}
 pre{background:#171c24;border:1px solid #263041;border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-all}
-dl{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;margin:6px 0;font-size:14px}dt{color:#93a0b4}dd{margin:0}code{font-size:12px}details summary{cursor:pointer;color:#9ecbff;margin:12px 0}
+dl{display:grid;grid-template-columns:90px minmax(0,1fr);gap:4px 10px;margin:6px 0;font-size:14px}dt{color:#93a0b4}dd{margin:0;min-width:0;overflow-wrap:anywhere}.card{min-width:0;overflow-wrap:anywhere}code{font-size:12px}details summary{cursor:pointer;color:#9ecbff;margin:12px 0}
 .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}.flow span{background:#1d2633;border:1px solid #2f3b4f;border-radius:8px;padding:6px 10px;font-size:14px}.flow i{color:#93a0b4;font-style:normal}
-@media (max-width:600px){main{padding:14px 10px}h1{font-size:21px}.imgs img{height:140px;max-width:250px}dl{grid-template-columns:70px 1fr}}`;
+@media (max-width:600px){main{padding:14px 10px}h1{font-size:21px}.imgs img{height:140px;max-width:250px}dl{grid-template-columns:70px minmax(0,1fr)}td,th{padding:4px 5px;font-size:12px}}`;
 
 /**
  * One table across runs: planted catch before/after review, and the false-positive side. "Unconfirmed candidates"
@@ -144,17 +149,24 @@ export function compareSection(dirs, { title, notes = {} }) {
   return `<section id="compare"><h2>${esc(title)}</h2><table><tr><th>실행</th><th>심은 결함 포착(검토 전)</th><th>심은 결함 포착(검토 후)</th><th>심지 않은 후보(검토 전 오탐 후보)</th><th>그중 Opus 가 남긴 것</th><th>후보 → 실제</th><th>deepseek 호출·입력/출력 토큰</th><th>Opus 호출·입력/출력 토큰</th><th>전체 시간</th></tr>${rows.join("")}</table></section>`;
 }
 
-export function renderReport(dirs, { outDir, name, intro = "", extra = "", bench = "" }) {
+export function renderReport(dirs, { outDir, name, intro = "", extra = "", bench = "", compare = [], notes = {}, detailed = null }) {
   const assetDir = path.join(outDir, name);
   fs.mkdirSync(assetDir, { recursive: true });
-  const sections = (bench ? benchSection(bench, { assetDir, assetRel: name, title: "검토 단계 단독 측정: 지난 3데모 VQA 「확정」 재판정" }) : "") + dirs.map((d) => runSection(d, { assetDir, assetRel: name })).join("\n");
+  const shown = detailed ?? dirs;
+  const sections = (compare.length ? compareSection(compare, { title: "실행별 비교 — 심은 결함 포착·오탐·비용·시간", notes }) : "")
+    + (bench ? benchSection(bench, { assetDir, assetRel: name, title: "검토 단계 단독 측정: 지난 3데모 VQA 「확정」 재판정" }) : "")
+    + shown.map((d) => runSection(d, { assetDir, assetRel: name })).join("\n");
   const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>게임 QA 파이프라인 보고서</title><style>${STYLE}</style></head><body><main>${intro}${extra}${sections}</main></body></html>`;
   fs.writeFileSync(path.join(outDir, `${name}.html`), html);
   return path.join(outDir, `${name}.html`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { out: { type: "string" }, name: { type: "string", default: "qa-pipeline" }, bench: { type: "string", default: "" }, intro: { type: "string", default: "" } } });
-  const intro = values.intro ? fs.readFileSync(values.intro, "utf8") : "";
-  console.log(renderReport(positionals, { outDir: values.out, name: values.name, bench: values.bench, intro }));
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: {
+    out: { type: "string" }, name: { type: "string", default: "qa-pipeline" }, bench: { type: "string", default: "" }, intro: { type: "string", default: "" },
+    // --compare <runDir> (repeatable): rows of the comparison table; --notes notes.json: { tag: "one-line note" }; --extra extra.html
+    compare: { type: "string", multiple: true, default: [] }, notes: { type: "string", default: "" }, extra: { type: "string", default: "" },
+  } });
+  const read = (f) => (f ? fs.readFileSync(f, "utf8") : "");
+  console.log(renderReport(positionals, { outDir: values.out, name: values.name, bench: values.bench, intro: read(values.intro), extra: read(values.extra), compare: values.compare, notes: values.notes ? JSON.parse(read(values.notes)) : {} }));
 }
