@@ -116,6 +116,11 @@ export const FS_TROOP_SPLITS: readonly { readonly mapId: string; readonly fromTr
 /**
  * 같은 적이 레벨이 다른 여러 무리에 나와 위 한 표로는 다 못 맞추는 무리 — 그 무리 적만 따로 떼어(`<적>_t_<무리>`, 이름·그림 같음)
  * 힘을 배수만큼 고친다(HP 와 공격·마력을 √배수씩). 숫자는 fs-mob-balance-solve 로 잰 값.
+ *
+ * ⚠ 밸런스 시뮬의 기준값을 정할 때 **내보낸(export) 프로젝트의 적 능력치를 쓰지 마라** — 거기에는 이 표가 이미
+ * 적용돼 있다. 1.37 export 로 배수를 다시 곱해 잰 바람에 늑대가 0.9×0.81 로 두 번 깎여 「승률 88%」라는
+ * 틀린 수가 나왔고, 실제로는 1.06 에서 이미 99.2%·동료 0.16명이었다(2026-11-05 fs2-bugs4).
+ * 기준은 항상 `FS_MOB_STATS` 의 `to` 값(표를 적용하기 전 바닥)이나 `createFlagshipDemoProject()` 의 원본을 써라.
  */
 export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
   troop_fs_wolves: 1.06,
