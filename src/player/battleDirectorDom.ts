@@ -774,8 +774,8 @@ function resultHead(project: Project, snapshot: BattleSnapshot): HTMLElement {
     dataset: { testid: "battle-result-summary" },
     // 0 인 경험치·돈은 적지 않는다(rewardRows 와 같은 규칙).
     children: [
-      ...(snapshot.rewards.exp > 0 ? [el("span", { class: "battle-result-summary-item", children: ["EXP ", el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.exp.toLocaleString("ko-KR")}` })] })] : []),
-      ...(snapshot.rewards.gold > 0 ? [el("span", { class: "battle-result-summary-gold", children: [`+${snapshot.rewards.gold.toLocaleString("ko-KR")} `, currencyUnitNode(resolveTerms(project).gold.trim() || "G")] })] : []),
+      ...(snapshot.rewards.exp > 0 ? [el("span", { class: "battle-result-summary-item", children: ["EXP ", el("span", { class: "battle-result-summary-value", text: rewardValue(snapshot.rewards.exp) })] })] : []),
+      ...(snapshot.rewards.gold > 0 ? [el("span", { class: "battle-result-summary-gold", children: [`${rewardValue(snapshot.rewards.gold)} `, currencyUnitNode(resolveTerms(project).gold.trim() || "G")] })] : []),
       ...(loot ? [el("span", { class: "battle-result-summary-loot", text: loot })] : []),
     ],
   });
@@ -1165,6 +1165,15 @@ export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
   return rewardRows(snapshot).length;
 }
 
+/**
+ * 보상 수치 표기 — 적립과 같은 규칙(0 미만은 버린다)을 쓴다. 세션 적립이 Math.max(0, …)로
+ * 깎기 때문에 패널이 음수를 보여 주면 플레이어가 받지 않는 손실을 보여 주게 된다.
+ * 예전에는 부호를 무조건 "+" 로 붙여 음수가 「경험치+-28」로 찍혔다(사장 1.37 VQA D2, 2026-11-05).
+ */
+export function rewardValue(value: number): string {
+  return `+${Math.max(0, Math.trunc(value))}`;
+}
+
 function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
@@ -1173,8 +1182,8 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 0 인 경험치·돈 줄은 뺀다 — 이야기 전투(보상 없는 연출 전투)에서 「EXP +0 · +0 G」, 「소지금 0 G → 0 G」만 남아
   // 처음 하는 사람이 보상 계산이 고장 났다고 읽었다(마왕 편의점 처음 하는 사람 검수 2026-10-29).
   const rows: { kind: string; label: string; value: string }[] = [
-    ...(snapshot.rewards.exp > 0 ? [{ kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` }] : []),
-    ...(snapshot.rewards.gold > 0 ? [{ kind: "gold", label: battleCurrencyUnit(), value: `+${snapshot.rewards.gold}` }] : []),
+    ...(snapshot.rewards.exp > 0 ? [{ kind: "exp", label: "경험치", value: rewardValue(snapshot.rewards.exp) }] : []),
+    ...(snapshot.rewards.gold > 0 ? [{ kind: "gold", label: battleCurrencyUnit(), value: rewardValue(snapshot.rewards.gold) }] : []),
   ];
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
   // 같은 아이템은 한 행에 ×n — 드롭 6개가 「아이템」 라벨 6줄·같은 아이콘 6개로 늘어나
@@ -1189,7 +1198,7 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
     rows.push({ kind: "levelup", label: `${levelUp.actorName} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
   }
   // 기술 포인트 — 저작된 TP 가 있는 전투에서만 행이 생긴다. 배운 기술은 배우별로 한 행.
-  if (snapshot.rewards.tp) rows.push({ kind: "tp", label: "기술 포인트", value: `+${snapshot.rewards.tp}` });
+  if ((snapshot.rewards.tp ?? 0) > 0) rows.push({ kind: "tp", label: "기술 포인트", value: rewardValue(snapshot.rewards.tp ?? 0) });
   for (const tech of snapshot.rewards.techLearned ?? []) {
     for (const skillId of tech.skillIds) rows.push({ kind: "skill", label: `${tech.actorName} 기술 습득`, value: skillName(skillId) });
   }

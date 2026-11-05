@@ -14,8 +14,10 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
   const tp = rewardedEnemies.reduce((sum, enemy) => sum + (enemyReward(project, enemy).tp ?? 0), 0);
   const ap = rewardedEnemies.reduce((sum, enemy) => sum + (enemyReward(project, enemy).ap ?? 0), 0);
   return {
-    exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
-    gold: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),
+    // 적립(battleRewardsToSession)과 같은 규칙으로 0 미만을 여기서 버린다. 표기 단계에서만 막으면
+    // 스냅샷·패널·적립이 서로 다른 값을 들고 있을 수 있다(1.37 「경험치+-28」의 재발 경로).
+    exp: Math.max(0, rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0)),
+    gold: Math.max(0, rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0)),
     // 기술 포인트는 저작된 적이 있을 때만 실는다(없는 옛 프로젝트는 스냅샷 모양 그대로).
     ...(tp > 0 ? { tp } : {}),
     // 마석 AP 도 저작된 적이 있을 때만 싣는다.
