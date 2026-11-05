@@ -8,6 +8,7 @@ import {
   resolveManualFrontalRow,
   resolveSkinEnemyPosition,
   resolveSkinEnemyPositions,
+  spreadEnemyFormation,
 } from "@/battle/battlerPlacements";
 import { BATTLE_SKINS } from "@/battle/skins/registry";
 import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
@@ -170,5 +171,33 @@ describe("resolveSkinEnemyPositions", () => {
     expect(sideview.length).toBeGreaterThan(0);
     expect(frontal.length).toBeGreaterThan(0);
     expect(new Set([...sideview, ...frontal]).size).toBe(SKIN_IDS.length);
+  });
+});
+
+describe("spreadEnemyFormation screen edge", () => {
+  // QA-FS137-001: four wisps' boxes (sprite + name plate) together are wider than the [minX, maxX] corridor, so the old
+  // nudge was 0 and the left-most plate stayed left of the screen (x < 0).
+  const wide = { left: -40, right: 40, top: -60, bottom: 14 };
+
+  it("keeps the left-most box on screen when the group is wider than the allowed corridor", () => {
+    // Given four enemies on one row whose boxes (80 units wide each) need more than the 8..206 corridor
+    const seats = [20, 70, 120, 170].map((x) => ({ x, y: 96 }));
+
+    // When the formation is spread
+    const spread = spreadEnemyFormation(seats, seats.map(() => wide));
+
+    // Then no box leaves the left edge of the 320-unit stage (the right side may use the party corridor)
+    expect(Math.min(...spread.map((p) => p.x + wide.left))).toBeGreaterThanOrEqual(0);
+  });
+
+  it("leaves a group that already fits untouched by the edge rule", () => {
+    // Given two well-separated enemies inside the corridor
+    const seats = [{ x: 100, y: 96 }, { x: 180, y: 96 }];
+
+    // When spread
+    const spread = spreadEnemyFormation(seats, seats.map(() => ({ left: -20, right: 20, top: -30, bottom: 10 })));
+
+    // Then the seats do not move
+    expect(spread).toEqual(seats);
   });
 });

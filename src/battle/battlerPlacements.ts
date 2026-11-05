@@ -222,6 +222,10 @@ export interface FormationBox {
   readonly bottom: number;
 }
 
+/** 저작 좌표계(0..320)에서 적 상자가 항상 지켜야 하는 화면 안쪽 여백. */
+const SCREEN_EDGE_X = 2;
+const SCREEN_RIGHT_X = 318;
+
 /**
  * 도트 측면 진형을 그림 상자로 벌린다(battle-feel r3). 진형 자리는 고정 오프셋이라 정수 배율로 그림이 커지면
  * (640×360 = 1.33배) 같은 열의 앞뒤 적이 겹쳤다(녹화 실측: 늑대 다리를 도깨비불이 덮었다).
@@ -263,6 +267,10 @@ export function spreadEnemyFormation(
   const shift = centre - live.reduce((sum, i) => sum + xs[i]!, 0) / live.length;
   let lo = Infinity, hi = -Infinity;
   for (const i of live) { xs[i] = xs[i]! + shift; lo = Math.min(lo, xs[i]! + boxes[i]!.left); hi = Math.max(hi, xs[i]! + boxes[i]!.right); }
-  const nudge = lo < minX ? Math.min(minX - lo, Math.max(0, maxX - hi)) : hi > maxX ? -Math.min(hi - maxX, Math.max(0, lo - minX)) : 0;
+  let nudge = lo < minX ? Math.min(minX - lo, Math.max(0, maxX - hi)) : hi > maxX ? -Math.min(hi - maxX, Math.max(0, lo - minX)) : 0;
+  // 상자(그림 + 이름표) 무리가 [minX, maxX] 보다 넓으면 위 보정이 0 이 되어 왼쪽 끝 적이 화면 밖(음수 x → 0 으로 잘림)에 남았다
+  // (폴른 스타 1.37 QA-FS137-001: 도깨비불 넷·사냥개지기 무리의 맨 왼쪽 이름표·HP 가 1440x900 에서 -139px, 390x844 에서 -38px).
+  // 이 경우에도 화면 안(왼쪽 SCREEN_EDGE_X)이 아군 앞 한계(maxX)보다 먼저다 — 한계를 넘는 만큼은 오른쪽 끝이 아군 쪽으로 겹친다.
+  if (lo + nudge < SCREEN_EDGE_X) nudge = Math.min(SCREEN_EDGE_X - lo, Math.max(0, SCREEN_RIGHT_X - hi));
   return seats.map((seat, i) => ({ x: Math.round((xs[i]! + (live.includes(i) ? nudge : 0)) * 10) / 10, y: seat.y }));
 }
