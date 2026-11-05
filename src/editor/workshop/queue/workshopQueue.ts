@@ -41,6 +41,11 @@ const RUNS_PER_JOB = 3;
 /** 시간표에 남기는 연결 끊김 기록(재시도 횟수를 센다) */
 const NETWORK_PAUSE_NOTE = "연결이 끊김";
 const NETWORK_REDRAW_NOTE = "연결이 끊긴 후보를 잠깐 뒤 다시 그림";
+/** 조수 요청의 「알아서 고르기」 — 기본 켜짐, 사용자가 카드에서 끈 기기("0")만 사람이 고른다(assistantObjectGen.objectGenAutoPick 과 같은 규칙). */
+function assistantAutoPick(): boolean {
+  try { return localStorage.getItem("oprn:assistant-objectgen-autopick") !== "0"; } catch { return true; }
+}
+
 /** 「한 번에 만들기」 물건이 검수 통과 없이 끝나 판정 이유로 한 번 더 그린다 */
 const ONE_CLICK_REROLL_NOTE = "검수 불통과 — 이유를 주고 한 번 더 그림";
 export const WORKSHOP_JOB_INSTALLED_EVENT = "oprn:workshop-job-installed";
@@ -188,7 +193,7 @@ class WorkshopQueue {
       else if (ACTIVE_STATES.has(state)) counts.active += 1;
       else if (state === "queued") counts.queued += 1;
       // 「한 번에 만들기」의 고르기·넣기는 사람 차례가 아니다 — 알약에 「고를 차례」로 잠깐 떴다(2026-10-23 UX 검수 2차). 진행으로 센다.
-      else if ((state === "ready" || state === "installing") && job.source === "oneclick" && job.autoPick !== false) counts.active += 1;
+      else if ((state === "ready" || state === "installing") && ((job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick()))) counts.active += 1;
       else if (state === "ready" || state === "installing") counts.ready += 1;
       else if (state === "paused") counts.paused += 1;
       else if (state === "failed") counts.failed += 1;
@@ -455,6 +460,7 @@ class WorkshopQueue {
     if (!job || job.installed) return;
     job.cancelled = false;
     job.error = null;
+    job.autoFailed = false;
     job.pause = null;
     job.finishedAt = null;
     if (job.remote && !job.pack) {
@@ -466,7 +472,7 @@ class WorkshopQueue {
       await this.startRemote(job);
       return;
     }
-    if (job.source === "oneclick" && job.roundId) {
+    if ((job.source === "oneclick" || (job.source === "assistant" && assistantAutoPick())) && job.roundId) {
       // 새 판으로 처음부터(검수 불통과 장은 redrawStuckRuns 가 다시 그리지 않는다)
       this.byRound.delete(job.roundId);
       job.roundId = null;
@@ -598,9 +604,19 @@ class WorkshopQueue {
         job.installWait = null;
         this.pendingInstall.delete(id);
         job.error = error instanceof Error ? error.message : String(error);
+        if (pending.auto) this.failAutoPick(job);
         this.emit();
       });
     }
+  }
+
+  /** 조수 요청의 알아서 고르기가 넣지 못했다(고르기·굽기 오류) — 못 그림으로 끝내 카드가 조수에게 알린다(같은 판을 다시 고르고 굽지 않게). */
+  private failAutoPick(job: WorkshopJob): void {
+    if (job.source !== "assistant") return;
+    job.autoFailed = true;
+    job.finishedAt = now();
+    this.mark(job, "failed", "알아서 고르기: 넣지 못함");
+    void this.persist(job);
   }
 
   // ── dev 시험 고리 ──────────────────────────────────────
@@ -764,24 +780,25 @@ class WorkshopQueue {
   }
 
   /**
-   * 조수 요청 작업은 사용자가 켠 「알아서 고르기」면 검수 통과 후보를 넣는다(카드가 닫혀 있어도).
+   * 조수 요청 작업은 「알아서 고르기」(기본 켜짐, 끈 기기 제외)로 검수 통과 후보를 넣는다(카드가 닫혀 있어도). 통과가 없으면 한 번 더 그리고, 그래도 없으면 실패 — 카드가 조수에게 알린다.
    * 통과가 둘 이상이면 object-gen 고르기(assistantObjectGen.chooseAutoPick — 고르기 3번 다수결)를 한 번 거친다.
    */
   private maybeAutoPick(job: WorkshopJob, round: WorkshopRound): void {
-    let on = job.source === "oneclick" && job.autoPick !== false;
-    try { on ||= localStorage.getItem("oprn:assistant-objectgen-autopick") === "1"; } catch { /* restricted */ }
+    const on = (job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick());
     if (!on || job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) return;
     const runSignature = round.runs.map((run) => `${run.letter}:${run.status}:${run.finishedAt ?? ""}:${run.attempts.length}`).join("|");
     if (this.rerollFrom.get(job.id) === runSignature) return;
     if (!autoPickRun(usableRuns(round))) {
       // 「한 번에 만들기」는 사람에게 관문을 넘기지 않는다(2026-10-23): 판정 이유를 주고 한 번 더 그리고, 그래도 없으면 못 그림.
-      if (job.source === "oneclick" && job.harnessId) {
+      // 조수 요청도 알아서 고르기면 같은 길(사람을 기다리지 않는다) — 실패하면 카드가 조수에게 알린다.
+      if ((job.source === "oneclick" || job.source === "assistant") && job.harnessId) {
         const rerolled = job.timeline.some((entry) => entry.note === ONE_CLICK_REROLL_NOTE);
         // 그림 확인기(관문)를 이 컴퓨터에서 돌릴 수 없으면 다시 그려도 소용없다 — 바로 알린다(관문 없이 넣지 않는다).
         const unavailable = round.runs.map((run) => run.verdict?.codes.includes("GATE_UNAVAILABLE") ? run.gate?.reasons[0] ?? "" : null).find((reason) => reason !== null);
         if (unavailable !== undefined) {
           job.error = `그림을 확인하지 못해 넣지 않았어요. ${unavailable}`.trim().slice(0, 200);
           job.finishedAt = now();
+          if (job.source === "assistant") job.autoFailed = true;
           this.mark(job, "failed", job.error);
           void this.persist(job);
           return;
@@ -796,6 +813,7 @@ class WorkshopQueue {
         }
         job.error = "검수를 통과한 그림이 나오지 않았어요. 설명을 조금 바꿔 다시 만들어 보세요.";
         job.finishedAt = now();
+        if (job.source === "assistant") job.autoFailed = true;
         this.mark(job, "failed", job.error);
         void this.persist(job);
         return;
@@ -819,6 +837,7 @@ class WorkshopQueue {
       .catch((error: unknown) => {
         this.choosing.delete(job.id);
         job.error = error instanceof Error ? error.message : String(error);
+        this.failAutoPick(job);
         this.emit();
       });
   }

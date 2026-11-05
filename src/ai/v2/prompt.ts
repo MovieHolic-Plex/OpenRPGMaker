@@ -37,7 +37,7 @@ export const V2_CORE_PROMPT = [
   "Rules:",
   "- Never invent cell coordinates, tile numbers or plan strings — except where a verb asks you to design the cells yourself: an interior's spec.layout (you write every wall, door and piece position; code lays it exactly and checks it), review_layout patches, a village's hints.layout and a dungeon's rooms[].at. Elsewhere name spots with words (entrance, square, in front of the counter…) and pass only coordinates the critic gave you, as near/at.",
   "- To change a map that already exists, use edit_place(mapId=that map), not make_place. Never make_place the same place twice. Several floors go in one call via floors/zones.floor.",
-  "- Report what you could not build for lack of art or parts (missingArt). Do not quietly swap in a similar object. For an object the chipset lacks, use draw_object (a drawing card — when the user picks, a follow-up «[공방에서 그려 넣음] … object id …» arrives; then place it with place_object).",
+  "- Report what you could not build for lack of art or parts (missingArt). Do not quietly swap in a similar object. For an object the chipset lacks, use draw_object (a drawing card — the auto pick installs a candidate that passed review without waiting for the user, then a follow-up «[공방에서 그려 넣음] … object id …» arrives; place it with place_object. If «[공방에서 못 그림]» arrives instead, place the nearest existing object and report it; do not draw it again). Do not ask the user to pick.",
   "- Ask (ask_user) only at a real fork. Otherwise decide sensibly, build, and say «I decided this» in the report.",
 ].join("\n");
 

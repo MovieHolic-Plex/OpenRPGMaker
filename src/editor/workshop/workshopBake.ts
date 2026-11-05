@@ -73,7 +73,7 @@ export function armWorkshopStamp(item: WorkshopItem, grid: Grid): string | null 
 
 /**
  * 고른 후보를 칩셋에 굽는다. 되돌리기 한 번으로 뺄 수 있다.
- * autoPicked = 사람이 아니라 사용자가 켠 「알아서 고르기」(조수 요청 카드)가 골랐다 — 설명서에 사람 선택(review.pick)을 적지 않는다.
+ * autoPicked = 사람이 아니라 「알아서 고르기」(조수 요청 카드, 기본 켜짐)가 골랐다 — 설명서에 사람 선택(review.pick)을 적지 않는다.
  */
 export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv, options: { readonly autoPicked?: boolean; readonly gate?: GateAdvice | null; readonly base?: BaseInfo | null } = {}): WorkshopBakedDetail {
   if (!KINDS.has(item.kind)) throw new Error(`이 기물 종류(${item.kind})는 칩셋에 넣을 수 없습니다.`);

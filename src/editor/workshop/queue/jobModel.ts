@@ -84,6 +84,8 @@ export type WorkshopJob = {
   readonly remote?: RemoteGen;
   /** 「한 번에 만들기」: 검수 통과 첫 후보를 알아서 골라 넣는다(사람이 「자세히」에서 끄면 false) */
   readonly autoPick?: boolean;
+  /** 조수 요청의 알아서 고르기가 끝내 넣지 못했다(다시 그려도 통과 없음·관문 불가) — 못 그림으로 보인다. */
+  autoFailed?: boolean;
   roundId: string | null;
   startedAt: number | null;
   finishedAt: number | null;
@@ -134,7 +136,9 @@ export function jobState(job: WorkshopJob, round: WorkshopRound | null): JobStat
   if (job.installWait !== null) return "installing";
   if (job.pause) return "paused";
   // 「한 번에 만들기」 물건이 다시 그려도 검수 통과 후보가 없으면 못 그림으로 끝낸다 — 사람에게 관문 판정을 넘기지 않는다(2026-10-23 사용자 규칙).
-  if (job.error && job.roundId && job.source === "oneclick") return "failed";
+  // 조수 요청도 같다(2026-11-05): 알아서 고르기가 다시 그려도 통과 후보가 없으면(autoFailed) 못 그림 — 「고를 차례」로 사람을 기다리지 않는다.
+  // 사람이 고르는 기기의 설치 오류는 여기 오지 않는다(고를 차례로 남아 다시 고를 수 있다).
+  if (job.error && job.roundId && (job.source === "oneclick" || (job.source === "assistant" && job.autoFailed))) return "failed";
   if (job.remote && !job.pack) {
     if (job.error) return "failed";
     const st = job.remote.status;
