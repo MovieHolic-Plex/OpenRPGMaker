@@ -10,6 +10,7 @@ import {
   gridSizeFor, imagePlanPrompt, imagePlanReadPrompt, type ImagePlanRead, type ImagePlanScene,
 } from "@/ai/imagePlan";
 import { shrinkReferenceImage } from "@/start/firstRun/referenceImage";
+import { applyCellFixes, cellColor, cellGridSize, cellMapFixPrompt, cellMapReadPrompt, parseCellMap, type CellMap } from "@/ai/imagePlanCells";
 import {
   IMAGE_PLAN_MAX_CANDIDATES, imagePlanJudgePrompt, parsePlanJudge, pickBest, pickLine,
   type PlanCandidate, type PlanJudge,
@@ -25,7 +26,7 @@ function toBlob(dataUrl: string): Blob {
   return new Blob([bytes], { type: /^data:([^;]+)/u.exec(head ?? "")?.[1] ?? "image/png" });
 }
 
-async function gridPicture(blob: Blob, cols: number, rows: number): Promise<string> {
+async function gridPicture(blob: Blob, cols: number, rows: number, every = 1, overlay?: CellMap): Promise<string> {
   const bitmap = await createImageBitmap(blob);
   try {
     const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
@@ -35,12 +36,22 @@ async function gridPicture(blob: Blob, cols: number, rows: number): Promise<stri
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("캔버스를 열 수 없습니다.");
     ctx.drawImage(bitmap, 0, 0, w, h);
-    ctx.strokeStyle = "#ffff00"; ctx.lineWidth = 1;
-    for (let c = 0; c <= cols; c += 1) { const x = Math.round(c * w / cols) + 0.5; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-    for (let r = 0; r <= rows; r += 1) { const y = Math.round(r * h / rows) + 0.5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-    ctx.font = "bold 16px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "#000"; ctx.fillStyle = "#fff";
-    for (let c = 0; c < cols; c += 1) { const x = Math.round((c + 0.5) * w / cols) - 6; ctx.strokeText(String(c), x, 16); ctx.fillText(String(c), x, 16); }
-    for (let r = 0; r < rows; r += 1) { const y = Math.round((r + 0.5) * h / rows) + 5; ctx.strokeText(String(r), 2, y); ctx.fillText(String(r), 2, y); }
+    if (overlay) {
+      ctx.globalAlpha = 0.5;
+      for (let r = 0; r < overlay.rows; r += 1) for (let c = 0; c < overlay.cols; c += 1) {
+        const [cr, cg, cb] = cellColor(overlay.cells[r]![c]!);
+        ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
+        const x0 = Math.round(c * w / cols), y0 = Math.round(r * h / rows);
+        ctx.fillRect(x0, y0, Math.round((c + 1) * w / cols) - x0, Math.round((r + 1) * h / rows) - y0);
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.lineWidth = 1;
+    for (let c = 0; c <= cols; c += 1) { ctx.strokeStyle = c % every === 0 ? "#ffff00" : "rgba(255,255,0,0.35)"; const x = Math.round(c * w / cols) + 0.5; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let r = 0; r <= rows; r += 1) { ctx.strokeStyle = r % every === 0 ? "#ffff00" : "rgba(255,255,0,0.35)"; const y = Math.round(r * h / rows) + 0.5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    ctx.font = `bold ${every > 1 ? 13 : 16}px sans-serif`; ctx.lineWidth = 3; ctx.strokeStyle = "#000"; ctx.fillStyle = "#fff";
+    for (let c = 0; c < cols; c += every) { const x = Math.round((c + 0.5) * w / cols) - 6; ctx.strokeText(String(c), x, 14); ctx.fillText(String(c), x, 14); }
+    for (let r = 0; r < rows; r += every) { const y = Math.round((r + 0.5) * h / rows) + 5; ctx.strokeText(String(r), 2, y); ctx.fillText(String(r), 2, y); }
     return canvas.toDataURL("image/jpeg", 0.85);
   } finally {
     bitmap.close();
@@ -53,7 +64,46 @@ function lastJson(text: string): Record<string, unknown> | null {
   try { const parsed: unknown = JSON.parse(text.slice(start, end + 1)); return parsed && typeof parsed === "object" ? parsed as Record<string, unknown> : null; } catch { return null; }
 }
 
+async function askVision(parts: ContentPart[], maxTokens: number, signal?: AbortSignal): Promise<Record<string, unknown> | null> {
+  const config = loadAiConfig();
+  const vision = configForRoleModel(config, modelForRole(config, "vision"));
+  const result = await chatCompletion({ ...vision, reasoningEffort: "off", maxTokens }, { messages: [{ role: "user", content: parts }], response_format: { type: "json_object" }, temperature: 0.1, ...(signal ? { signal } : {}) });
+  const content = result.message.content;
+  const text = typeof content === "string" ? content : Array.isArray(content) ? content.map((p) => (p.type === "text" ? p.text : "")).join("") : "";
+  return lastJson(text);
+}
+
+/** 칸 지도 읽기(imagePlanCells.ts): 긴 변 48칸 → 읽은 지도를 도안 위에 격쳐 틀린 영역만 한 번 고친다. 실패하면 null(옛 점 읽기로 간다). */
+async function readCells(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
+  const bitmap = await createImageBitmap(blob);
+  const { cols, rows } = cellGridSize(bitmap.width, bitmap.height);
+  bitmap.close();
+  const picture = await gridPicture(blob, cols, rows, 4);
+  const first = await askVision([{ type: "text", text: cellMapReadPrompt(scene.subject, cols, rows) }, { type: "image_url", image_url: { url: picture, detail: "high" } }], 8000, signal);
+  const map = parseCellMap(first, scene.subject, cols, rows);
+  if (!map) return null;
+  let cells = map, fixedRegions = 0;
+  try {
+    const overlay = await gridPicture(blob, cols, rows, 4, map);
+    const fix = await askVision([{ type: "text", text: cellMapFixPrompt(scene.subject, cols, rows) }, { type: "image_url", image_url: { url: picture, detail: "high" } }, { type: "image_url", image_url: { url: overlay, detail: "high" } }], 4000, signal);
+    const applied = applyCellFixes(map, fix);
+    cells = applied.map; fixedRegions = applied.fixed;
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: cell fix failed ${error instanceof Error ? error.message : String(error)}`);
+  }
+  console.info(`imagePlan: cells ${cols}x${rows} landmarks=${cells.landmarks.length} fixed=${fixedRegions}`);
+  return { subject: scene.subject, cols, rows, data: { cells: cells.cells, landmarks: cells.landmarks }, cells, fixedRegions };
+}
+
 async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
+  try {
+    const cells = await readCells(blob, scene, signal);
+    if (cells) return cells;
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: cell read failed ${error instanceof Error ? error.message : String(error)}`);
+  }
   const bitmap = await createImageBitmap(blob);
   const { cols, rows } = gridSizeFor(bitmap.width, bitmap.height);
   bitmap.close();

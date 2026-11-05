@@ -63,7 +63,7 @@ export interface CodeTerrain {
   note: string;
 }
 
-export const TERRAIN_MAP_CHARS = /^[0-3~|o]+$/u;
+export const TERRAIN_MAP_CHARS = /^[0-3~|o_]+$/u;
 
 /** 도안 칸 지도를 단(lv, 0~3)·물(water, 1 강 · 2 못)에 덮어쓴다 — 물 칸은 닿은 땅 중 가장 낮은 단, 이웃 단 차는 1 이하로 깎는다. */
 function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Uint8Array, water: Uint8Array, river: number[], notes: string[]): void {
@@ -73,8 +73,25 @@ function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Ui
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const ch = rows[Math.min(R - 1, Math.floor(((y + 0.5) * R) / H))]![Math.min(C - 1, Math.floor(((x + 0.5) * C) / W))] ?? "0";
     const c = y * W + x;
-    if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else lv[c] = Number(ch);
+    if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else if (ch === "_") water[c] = 3; else lv[c] = Number(ch);
   }
+  // 도안 칸을 늘리면 휘는 물길이 계단꼴로 보이고 대각으로만 잇닿은 칸에서 끊겼다(r1 p1) — 대각으로만 닿는 물 두 칸 사이를 한 칸 채우고,
+  // 8이웃 중 5칸 이상이 물인 땅 칸을 물로 두 번 채워 모서리를 굴린다. 물을 깎지는 않는다(가는 물길이 끊는다).
+  for (let y = 0; y + 1 < H; y += 1) for (let x = 0; x + 1 < W; x += 1) {
+    const a = y * W + x, b = a + 1, c2 = a + W, d = c2 + 1;
+    if (water[a] && water[d] && !water[b] && !water[c2]) water[b] = water[a]!;
+    else if (water[b] && water[c2] && !water[a] && !water[d]) water[a] = water[b]!;
+  }
+  for (let pass = 0; pass < 2; pass += 1) {
+    const out = Uint8Array.from(water);
+    for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+      const c = y * W + x; if (water[c]) continue; const kinds = [0, 0, 0, 0];
+      for (const [dx, dy] of N8) kinds[water[(y + dy) * W + x + dx]!]! += 1;
+      if (kinds[1]! + kinds[2]! + kinds[3]! >= 5) out[c] = kinds[1]! >= kinds[2]! && kinds[1]! >= kinds[3]! ? 1 : kinds[2]! >= kinds[3]! ? 2 : 3;
+    }
+    water.set(out);
+  }
+  const sea = water.reduce((n, v) => n + (v === 3 ? 1 : 0), 0);
   const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
   for (const cs of list) {
     let low = 99;
@@ -87,7 +104,7 @@ function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Ui
     for (let c = 0; c < W * H; c += 1) { const x = c % W, y = (c - x) / W; for (const [dx, dy] of N4) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue; if (lv[c]! - lv[Y * W + X]! > 1) { lv[c] -= 1; changed = true; break; } } }
     if (!changed) break;
   }
-  notes.push(`도안 지형 칸 지도 ${C}×${R}${falls ? ` (폭포 ${falls}칸은 그림 조각이 없어 강으로)` : ""}`);
+  notes.push(`도안 지형 칸 지도 ${C}×${R}${falls ? ` (폭포 ${falls}칸은 그림 조각이 없어 강으로)` : ""}${sea ? ` · 섬 바깥 ${sea}칸은 바다` : ""}`);
 }
 
 // ── 시드 잡음 ──

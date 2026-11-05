@@ -939,7 +939,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
       design: DUNGEON_DESIGN_SCHEMA,
       floorDesigns: { type: "array", maxItems: 5, items: DUNGEON_DESIGN_SCHEMA, description: "층마다 설계(아래층부터, floors 2 이상) — 각 원소는 design 과 같은 형식." },
-      links: { type: "array", items: { type: "array", items: { type: "string" } }, description: "(rooms 에 x·y 자리를 줬을 때) 잇는 통로 [[방 id, 방 id], …] — 고리는 닫히는 통로를 하나 더. 생략하면 방 순서대로 잇는다." },
+      links: { type: "array", items: { type: "object", properties: { from: { type: "string", description: "방 id" }, to: { type: "string", description: "방 id" }, rects: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } } }, description: "(그림 도안) 이 통로가 차지하는 바닥 칸 사각형들 — 주면 그 칸 그대로(곧은·휘는 길) 깔고, 두 방을 잇지 못하면 빌더 통로로 바꾸고 알린다" } } }, description: "(rooms 에 x·y 자리를 줬을 때) 잇는 통로 [{from:방 id, to:방 id, rects?}, …] — 고리는 닫히는 통로를 하나 더. 생략하면 방 순서대로 잇는다." },
       rooms: {
         type: "array",
         minItems: 1,

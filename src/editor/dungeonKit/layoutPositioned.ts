@@ -26,6 +26,56 @@ export function readRoomLinks(raw: unknown): [string, string][] {
   return out;
 }
 
+/** 통로가 그림 도안에서 읽은 칸을 실어 왔으면({from,to,rects:[{x,y,w,h}]}) 그 칸을 그대로 깔다 — 곧은·휘는 통로, 폭 1~2, 고리(2026-11-05 imageplan-follow). */
+export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
+  const out = new Map<string, Rect[]>();
+  if (!Array.isArray(raw)) return out;
+  for (const item of raw) {
+    if (!item || typeof item !== "object" || Array.isArray(item) || !("rects" in item)) continue;
+    const o = item as { from?: unknown; to?: unknown; rects?: unknown };
+    if (!Array.isArray(o.rects)) continue;
+    const rects = o.rects.flatMap((r) => {
+      const q = r as Record<string, unknown>;
+      return [q.x, q.y, q.w, q.h].every((v) => Number.isInteger(v)) && (q.w as number) > 0 && (q.h as number) > 0 ? [{ x: q.x as number, y: q.y as number, w: q.w as number, h: q.h as number }] : [];
+    });
+    const a = String(o.from), b = String(o.to);
+    if (rects.length) out.set(a < b ? `${a}|${b}` : `${b}|${a}`, rects);
+  }
+  return out;
+}
+
+/** 조각의 통로 축 — 이웃(방·조각)과 닿은 자리들의 가운데가 더 넓게 퍼진 축(Z·U 가운데 다리도 가로로), 비기면 모양으로. */
+function touchDir(rect: Rect, neighbours: readonly Rect[]): DungeonDir | null {
+  // 이웃(방·조각)과 닿은 자리들의 가운데가 퍼진 축 = 통로가 흐르는 축(AMEND5 2). 닿은 곳이 하나뿐이면 그 점과 조각 가운데 사이로 본다.
+  // Z·U 가운데 다리(위·아래 면에 닿지만 양 끝에서)는 가로로, 옆방 사이 짧은 문은 가로로, 세로 다리는 세로로 읽힌다. 비기면 모양으로.
+  const pts: { x: number; y: number }[] = [];
+  for (const n of neighbours) {
+    const x0 = Math.max(rect.x, n.x), x1 = Math.min(rect.x + rect.w, n.x + n.w), y0 = Math.max(rect.y, n.y), y1 = Math.min(rect.y + rect.h, n.y + n.h);
+    if (x1 < x0 || y1 < y0 || (x1 === x0 && y1 === y0)) continue;
+    pts.push({ x: (x0 + x1) / 2, y: (y0 + y1) / 2 });
+  }
+  if (pts.length === 1) pts.push({ x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 });
+  const dx = pts.length ? Math.max(...pts.map((p) => p.x)) - Math.min(...pts.map((p) => p.x)) : 0;
+  const dy = pts.length ? Math.max(...pts.map((p) => p.y)) - Math.min(...pts.map((p) => p.y)) : 0;
+  if (dx === dy) return rect.w === rect.h ? null : rect.w > rect.h ? "E" : "S";
+  return dy > dx ? "S" : "E";
+}
+
+/** 사각형들이 두 방을 4방향으로 끊김없이 잇으면 그 길에 닿은 사각형만(돌아간 가지는 빼고) 돌려주고, 못 잇으면 null. */
+function drawnLinks(rects: readonly Rect[], a: Rect, b: Rect): Rect[] | null {
+  const near = (p: Rect, q: Rect) => p.x <= q.x + q.w && q.x <= p.x + p.w && p.y <= q.y + q.h && q.y <= p.y + p.h && !((p.x + p.w === q.x || q.x + q.w === p.x) && (p.y + p.h === q.y || q.y + q.h === p.y));
+  const seen = new Set<number>();
+  const queue = rects.map((r, i) => (near(r, a) ? i : -1)).filter((i) => i >= 0);
+  for (const i of queue) seen.add(i);
+  const parent = new Map<number, number>();
+  for (let k = 0; k < queue.length; k += 1) {
+    const i = queue[k]!, r = rects[i]!;
+    if (near(r, b)) { const path: Rect[] = []; for (let j: number | undefined = i; j !== undefined; j = parent.get(j)) path.push(rects[j]!); return path; }
+    rects.forEach((q, j) => { if (!seen.has(j) && near(r, q)) { seen.add(j); parent.set(j, i); queue.push(j); } });
+  }
+  return null;
+}
+
 export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], defaultSize: Record<DungeonRoomKind, [number, number]>): DungeonLayout {
   const notes: string[] = [];
   const placed: PlacedRoom[] = [];
@@ -136,11 +186,21 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
     return [mk(pieceDir(firstHorizontal, goesForward), first), mk(pieceDir(!firstHorizontal, firstHorizontal ? b.y >= a.y : bx >= ax), second)];
   };
 
+  const drawn = readRoomLinkRects(spec.links);
   const corridors: PlacedCorridor[] = [];
   for (const [a, b] of edges.values()) {
     const tree = treeEdges.has(edgeKey(a, b));
     const [from, to] = tree && parent.get(b.id) === a ? [a, b] : tree && parent.get(a.id) === b ? [b, a] : [a, b];
-    const pieces = connect(from, to, !tree);
+    const drawnCells = drawn.get(edgeKey(a, b));
+    // 그린 통로가 두 방에 실제로 닿고(방 바닥과 칸이 겹치거나 바로 옆) 서로 이어져 있을 때만 그대로 깔다 — 아니면 빌더 통로(줄 내림·얼기에 끊긴 통로로 방이 외따로 남았다).
+    const cells = drawnCells ? drawnLinks(drawnCells, from, to) : null;
+    if (drawnCells && !cells) notes.push(`고침: 도안에 그린 통로 ${from.id}-${to.id} 가 두 방에 닿지 않아 빌더 통로로 이었다.`);
+    // 방향은 조각 자기 모양에서, 네모 조각만 통로 전체 상자에서(L 통로의 꺾인 다리까지 한 방향으로 두면 문턱·벽 여백이 틀렸다 — AMEND2 2)
+    const box = cells ? cells.reduce((m, r) => ({ x0: Math.min(m.x0, r.x), y0: Math.min(m.y0, r.y), x1: Math.max(m.x1, r.x + r.w), y1: Math.max(m.y1, r.y + r.h) }), { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity }) : null;
+    const dirAll: DungeonDir = box && box.x1 - box.x0 > box.y1 - box.y0 ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N";
+    const pieces = cells
+      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: ((d) => (d === "S" ? (to.y >= from.y ? "S" : "N") : d === "E" ? (to.x >= from.x ? "E" : "W") : dirAll))(touchDir(rect, [from, to, ...cells.filter((c) => c !== rect)])), rect, ...(!tree ? { loop: true } : {}) }))
+      : connect(from, to, !tree);
     corridors.push(...pieces);
     if (tree) { to.from = from.id; to.dir = pieces[0]!.dir; }
   }

@@ -3,6 +3,7 @@
 // 도안 위에 칸 번호 격자를 그려 비전 모델이 배치(길·집·광장·높은 단·방)를 칸 좌표로 읽게 한 뒤, 그 좌표를 빌더가 이미 받는 인자로 조수에게 건넨다.
 // 도안 그림만 붙이면 조수는 빌더를 기본 인자로 불러 도안이 사라졌다(2026-11-04 실측). 호출(이미지·비전·계정)은 editor/imagePlanMockup.ts 가 한다.
 import type { WidenSubject } from "./vagueWidenCatalog";
+import { dungeonPlanFromCells, forestDesignFromCells, landmarkFootprints, villageArgsFromCells, type CellMap } from "./imagePlanCells";
 
 export const IMAGE_PLAN_PROVIDER = "ChatGPT";
 
@@ -48,6 +49,9 @@ export interface ImagePlanRead {
   readonly cols: number;
   readonly rows: number;
   readonly data: Record<string, unknown>;
+  /** 칸 지도 읽기(imagePlanCells.ts) — 있으면 빌더 인자는 이것에서 옮긴다. fixedRegions = 겹쳐 보고 고친 영역 수. */
+  readonly cells?: CellMap;
+  readonly fixedRegions?: number;
 }
 
 function scaleCell(value: unknown, from: number, to: number): number | null {
@@ -128,7 +132,7 @@ const DUNGEON_POS_SCALE = 2;
 const DUNGEON_SIZE_SCALE = 1.25;
 
 /** 방 도안 → author_dungeon {rooms[]{id,kind,x,y,w,h}, links}. 자리는 크기보다 더 크게 키워(위치 2배·크기 1.25배) 방 사이에 벨·통로 자리를 남긴다(입구 먼저). */
-export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: string[][] } {
+export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<string, unknown>>; links: Array<{ from: string; to: string }> } {
   const raw = Array.isArray(read.data.rooms) ? read.data.rooms.slice(0, 12) : [];
   const rooms: Array<Record<string, unknown>> = [];
   const indexOf = new Map<number, string>();
@@ -144,11 +148,12 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
       w: Math.max(6, Math.min(40, Math.round(w * DUNGEON_SIZE_SCALE))), h: Math.max(5, Math.min(22, Math.round(h * DUNGEON_SIZE_SCALE))),
     });
   });
-  const links: string[][] = [];
+  // links 는 {from,to} 객체로(도구 스키마가 객체 전용 — Gemini 는 배열|객체 합집합 items 를 400 으로 막는다)
+  const links: Array<{ from: string; to: string }> = [];
   for (const pair of Array.isArray(read.data.links) ? read.data.links : []) {
     if (!Array.isArray(pair) || pair.length < 2) continue;
     const a = indexOf.get(Number(pair[0])), b = indexOf.get(Number(pair[1]));
-    if (a && b && a !== b) links.push([a, b]);
+    if (a && b && a !== b) links.push({ from: a, to: b });
   }
   return { rooms, links };
 }
@@ -157,6 +162,7 @@ export function dungeonPlanFromRead(read: ImagePlanRead): { rooms: Array<Record<
 export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | null): string {
   const head = `[그림 도안] 짓기 전에 이 장면을 ChatGPT 이미지 모델로 그린 도안(첫 요청에 붙은 그림)과, 그 도안에서 칸 번호로 읽은 배치를 함께 싣는다. 도안의 큰 구도(장소 윤곽·구역 자리·길·높낮이·랜드마크 위치)를 따르되 칸과 물건은 이 프로젝트의 실제 칩셋 조각만 쓴다. 도안의 색·질감을 베끼지 않는다.`;
   if (!read) return head;
+  if (read.cells) return `${head}\n${cellBuildNote(scene.subject, read.cells)}`;
   if (scene.subject === "village") {
     const a = villageArgsFromRead(read, 56, 44);
     return `${head}\n읽은 마을 배치: author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height}, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.`;
@@ -171,6 +177,37 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
       : head;
   }
   return `${head}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
+}
+
+function cellBuildNote(subject: WidenSubject, cells: CellMap): string {
+  const village = subject === "village" ? villageArgsFromCells(cells) : null;
+  const foot = village ? landmarkFootprints(cells, Number(village.width), Number(village.height)) : cells.landmarks.map((l) => ({ ...l, label: l.label ?? l.kind }));
+  const marks = foot.map((l) => `${l.id}=${l.label}[${l.kind}] (${l.x},${l.y}) ${l.w}×${l.h}칸`).join(" · ");
+  const markLine = marks
+    ? ` 도안의 랜드마크(${village ? "맵 칸 좌표" : "도안 칸 좌표"} — 빠짐없이 그 자리에 짓는다): ${marks}. 지은 뒤 랜드마크마다 list_spatial_designs({kind:"object", query}) 로 맞는 조각을 찾아 stamp_object 로 그 자리에 찍는다. 맞는 것이 없으면 비슷한 것으로 때우지 않고 generate_missing_object 로 만든다(물건마다 한 번, base 는 그 자리의 발밑 줄).`
+    : "";
+  if (village) {
+    const a = village;
+    return `읽은 마을 칸 지도(${cells.cols}×${cells.rows}): author_beodeul_town 을 부를 때 이 인자를 그대로 보낸다(맵 크기 ${a.width}×${a.height} = 도안 가로세로비, 자리는 맵 칸 좌표): ${JSON.stringify(a)}. 이 인자를 빼거나 기본값으로 바꾸지 않는다.${markLine}`;
+  }
+  if (subject === "forest") {
+    return `읽은 숲길 설계: author_forest_route 를 부를 때 designs[0] 을 이대로 보낸다: ${JSON.stringify(forestDesignFromCells(cells))}. 이 설계를 빼거나 기본값으로 바꾸지 않는다.${markLine}\n도안 칸 지도(_ 바깥 · 0~3 땅 단 · ~ 물 · | 폭포 · = 길 · t 나무 · h 건물 · A~Z 랜드마크):\n${cells.cells.join("\n")}`;
+  }
+  if (subject === "dungeon" || subject === "castle") {
+    const plan = dungeonPlanFromCells(cells);
+    // 던전·성 랜드마크는 도안 칸 좌표가 아니라 방 id + 방 안 칸으로(방이 배율·줄 내림으로 옮겨지므로)
+    const spots = plan.landmarkSpots.map((s) => { const l = cells.landmarks.find((m) => m.id === s.id)!; return `${s.id}=${l.label ?? l.kind}[${l.kind}] 방 ${s.room} 안 (${s.dx},${s.dy}) ${s.w}×${s.h}칸`; }).join(" · ");
+    const roomMarks = spots
+      ? ` 도안의 랜드마크(방 id 와 그 방 바닥 왼쪽 위에서 떨어진 칸 — 지은 뒤 그 방 자리를 읽어 더해 찍는다): ${spots}. 랜드마크마다 list_spatial_designs({kind:"object", query}) 로 맞는 조각을 찾아 stamp_object 로 찍고, 맞는 것이 없으면 비슷한 것으로 때우지 않고 generate_missing_object 로 만든다.`
+      : "";
+    // 방 밖(통로·작은 방·12개 상한으로 빠진 방)에 있는 랜드마크는 도안 칸 좌표로라도 남긴다(AMEND2 5)
+    const loose = cells.landmarks.filter((m) => !plan.landmarkSpots.some((s) => s.id === m.id));
+    const looseLine = loose.length ? ` 방 밖 랜드마크(도안 칸 좌표 — 맵에서 가장 가까운 통로·방에 놓는다): ${loose.map((m) => `${m.id}=${m.label ?? m.kind}[${m.kind}] (${m.x},${m.y})`).join(" · ")}.` : "";
+    return plan.rooms.length
+      ? `읽은 방 배치(도안 칸 = 맵 칸, 늘리지 않는다): author_dungeon 을 부를 때 rooms 와 links 를 이대로 보낸다(x·y 는 방 자리, 첫 방 = 입구, 한 층): rooms=${JSON.stringify(plan.rooms)} links=${JSON.stringify(plan.links)}. 방 자리·크기·통로를 빼거나 기본값으로 바꾸지 않는다.${roomMarks}${looseLine}`
+      : markLine;
+  }
+  return `읽은 실내 칸 지도(${cells.cols}×${cells.rows}, _ 바깥 · # 벽 · . 바닥 · = 복도 · ~ 물 · A~Z 랜드마크): 방 구획·문·가구 자리를 이 지도대로 정한다.${markLine}\n${cells.cells.join("\n")}`;
 }
 
 export const IMAGE_PLAN_SKIPPED_LINE = "그림 도안을 건너뛰었어요 — ChatGPT 계정이 연결돼 있지 않습니다. 도안 없이 지어요.";
