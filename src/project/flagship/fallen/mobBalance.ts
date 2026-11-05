@@ -118,7 +118,11 @@ export const FS_TROOP_SPLITS: readonly { readonly mapId: string; readonly fromTr
  * 힘을 배수만큼 고친다(HP 와 공격·마력을 √배수씩). 숫자는 fs-mob-balance-solve 로 잰 값.
  */
 export const FS_TROOP_TUNE: Readonly<Record<string, number>> = {
-  troop_fs_wolves: 1.06,
+  // 숲 입구 첫 늑대 무리 — 1.06 일 때 Lv6 기본 파티(영웅·엘레나)가 300판 중 88% 이기지만 매 판
+  // 0.48명이 쓰러지고 남는 HP 가 35% 였다(2026-11-05 실측). 첫 전투에서 동료를 잃으면 그 뒤가
+  // 회복 불가라 사장이 「처음 등장하는 늑대 난이도가 너무 어렵다」고 했다. 0.81 로 내리면
+  // 99% 이기고 남는 HP 56%, 쓰러지는 동료 0.09명 — 반피는 그대로 쓰게 만든다.
+  troop_fs_wolves: 0.81,
   troop_fs_inq_zeal: 1.38,
   troop_fs_inq_phalanx: 1.11,
   troop_fs_inq_vigil: 0.63,
