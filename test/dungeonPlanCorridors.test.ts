@@ -49,7 +49,7 @@ describe("author_dungeon keeps an image plan's ring", () => {
     expect((res.warnings ?? []).filter((w) => w.includes("빌더 통로로 이었다"))).toEqual([]);
   });
 
-  it("stretches a one-row neck across the wall-face shift and keeps an L corridor off a third room", () => {
+  it("stretches drawn legs across the wall-face shift without touching a third room", () => {
     const grid = (h: number) => Array.from({ length: h }, () => "_".repeat(30).split(""));
     const put = (g: string[][], x0: number, y0: number, w: number, h: number, ch: string) => { for (let y = y0; y < y0 + h; y += 1) for (let x = x0; x < x0 + w; x += 1) g[y]![x] = ch; };
     const neck = grid(16); put(neck, 2, 1, 24, 3, "."); put(neck, 10, 4, 2, 1, "="); put(neck, 2, 5, 24, 9, ".");
@@ -61,6 +61,15 @@ describe("author_dungeon keeps an image plan's ring", () => {
       if (g === pushed) {
         const leg = plan.links[0]!.rects[0]!;
         expect(leg.y + leg.h).toBeGreaterThan(Math.round(16 * 2));
+      }
+      for (const link of plan.links) for (const r of link.rects) {
+        const others = plan.rooms.filter((o) => o.id !== link.from && o.id !== link.to);
+        expect(others.some((o) => r.x < o.x + o.w && o.x < r.x + r.w && r.y < o.y + o.h && o.y < r.y + r.h)).toBe(false);
+      }
+      if (g === ell) {
+        const out = layoutPositioned({ rooms: plan.rooms, links: plan.links } as never, plan.rooms as never, { entrance: [8, 6], hall: [8, 6], boss: [8, 6], vault: [8, 6] } as never);
+        const middle = out.corridors.find((c) => c.rect.w > c.rect.h * 4)!;
+        expect(["E", "W"]).toContain(middle.dir);
       }
       const project = createBlankProject();
       const res = runToolDefinition({ project }, AUTHOR_BEODEUL_DUNGEON_ALIAS, { mapId: project.startMapId!, type: "castle", seed: 3, populate: false, rooms: plan.rooms, links: plan.links });
