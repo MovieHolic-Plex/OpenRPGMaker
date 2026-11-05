@@ -210,16 +210,38 @@ async function driveUntilFree({ maxSteps = 40, label = "ev" } = {}) {
   let same = 0;
   let last = "";
   let choiceRound = 0;
+  let lastChoices = null;
   for (let step = 0; step < maxSteps && Date.now() - T0 < HARD_MS; step += 1) {
     const s = await readState();
     const now = sig(s);
     same = now === last ? same + 1 : 0;
     last = now;
-    if (same >= 6) { await snap(`${label}-stuck`); return { stuck: true, steps: step, state: s }; }
+    if (same >= 6) {
+      // Before calling it stuck, try the plain keyboard path: if Enter moves the game where touch/mouse did not,
+      // the defect is "this input mode is ignored here", not a soft-lock.
+      if (job.input !== "keyboard") {
+        note("fallback:Enter");
+        await page.keyboard.press("Enter");
+        await sleep(600);
+        if (sig(await readState()) !== now) { await snap(`${label}-input-ignored`); same = 0; last = ""; continue; }
+      }
+      await snap(`${label}-stuck`);
+      return { stuck: true, steps: step, state: s };
+    }
+    if (await visible("[data-testid='runtime-name-entry']")) {
+      // Name entry: accept the default name through the confirm button (a scripted player cannot type a name).
+      await snap(`${label}-name-entry`);
+      note("name-entry:confirm");
+      await page.locator("[data-testid='runtime-name-entry-confirm']").evaluate((n) => n.click()).catch(() => page.keyboard.press("Escape"));
+      await sleep(600);
+      continue;
+    }
     if (s.screen === "battle") { await battle({ maxTurns: 6, label: `${label}-battle` }); continue; }
     if (s.screen === "shop") { await shop(label); continue; }
     if (s.screen === "ending" || s.screen === "gameover" || s.screen === "title") { await snap(`${label}-${s.screen}`); return { ended: s.screen, steps: step }; }
-    if (s.choices) { await snap(`${label}-choice`); await pickChoice(choiceRound++); await sleep(400); continue; }
+    // Vary choices across prompts for coverage, but take the first option when the same prompt comes back
+    // (a "no" that re-asks would otherwise loop forever and read as a soft-lock).
+    if (s.choices) { await snap(`${label}-choice`); await pickChoice(s.choices === lastChoices ? 0 : choiceRound++); lastChoices = s.choices; await sleep(400); continue; }
     if (s.dialogue) { if (step % 2 === 0) await snap(`${label}-dlg`); await confirm(); await sleep(350); continue; }
     if (s.menu) { await cancel(); await sleep(300); continue; }
     if (s.inputEnabled === true && s.running === false) { await snap(`${label}-free`); return { free: true, steps: step }; }

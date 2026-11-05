@@ -125,6 +125,25 @@ dl{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;margin:6px 0;font-si
 .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}.flow span{background:#1d2633;border:1px solid #2f3b4f;border-radius:8px;padding:6px 10px;font-size:14px}.flow i{color:#93a0b4;font-style:normal}
 @media (max-width:600px){main{padding:14px 10px}h1{font-size:21px}.imgs img{height:140px;max-width:250px}dl{grid-template-columns:70px 1fr}}`;
 
+/**
+ * One table across runs: planted catch before/after review, and the false-positive side. "Unconfirmed candidates"
+ * are candidates that are not planted and that review did not keep — the noise review removed. "Kept, not planted"
+ * are real findings in the shipped build (checked by hand where the report says so) or review misses.
+ */
+export function compareSection(dirs, { title, notes = {} }) {
+  const rows = dirs.map((d) => {
+    const s = JSON.parse(fs.readFileSync(path.join(d, "summary.json"), "utf8"));
+    const m = s.measure;
+    const total = s.final.candidates;
+    const totalMs = Object.values(s.timings ?? {}).reduce((a, b) => a + b, 0);
+    const tok = (stage) => Object.values(s.usage ?? {}).filter((u) => u.stage === stage).reduce((a, u) => ({ in: a.in + u.in + (u.cacheRead ?? 0), out: a.out + u.out, calls: a.calls + u.calls }), { in: 0, out: 0, calls: 0 });
+    const obs = tok("observe");
+    const rev = tok("review");
+    return `<tr><td>${esc(s.tag)}${notes[s.tag] ? `<br><span class="sub">${esc(notes[s.tag])}</span>` : ""}</td><td>${m ? `${m.caughtBefore}/${m.planted}` : "-"}</td><td><b>${m ? `${m.caughtAfter}/${m.planted}` : "-"}</b></td><td>${m ? fmt(m.nonPlantCandidates) : fmt(total)}</td><td>${m ? fmt(m.nonPlantKept) : fmt(s.final.verdictCounts.real)}</td><td>${fmt(total)} → ${fmt(s.final.verdictCounts.real)}</td><td>${fmt(obs.calls)}회 · ${fmt(obs.in)}/${fmt(obs.out)}</td><td>${fmt(rev.calls)}회 · ${fmt(rev.in)}/${fmt(rev.out)}</td><td>${sec(totalMs)}</td></tr>`;
+  });
+  return `<section id="compare"><h2>${esc(title)}</h2><table><tr><th>실행</th><th>심은 결함 포착(검토 전)</th><th>심은 결함 포착(검토 후)</th><th>심지 않은 후보(검토 전 오탐 후보)</th><th>그중 Opus 가 남긴 것</th><th>후보 → 실제</th><th>deepseek 호출·입력/출력 토큰</th><th>Opus 호출·입력/출력 토큰</th><th>전체 시간</th></tr>${rows.join("")}</table></section>`;
+}
+
 export function renderReport(dirs, { outDir, name, intro = "", extra = "", bench = "" }) {
   const assetDir = path.join(outDir, name);
   fs.mkdirSync(assetDir, { recursive: true });
