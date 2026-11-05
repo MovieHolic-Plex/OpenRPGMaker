@@ -797,7 +797,9 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   for (const f of floorAfter) f();
   // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
   // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
-  if (floors > 1 && direction === "up") for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
+  // 구름 하늘은 탑(type tower·종류 생략)이나 하늘을 청했을 때만 — 2층 성(vagueWiden 성 레시피)이 구름 위에 떠 그림 도안과 달랐다(2026-11-05 imageplan-honest p4·p10).
+  const skyAsked = args.sky === true || (args.sky !== false && /하늘|구름|천공|공중|sky|cloud/iu.test(`${typeof args.name === "string" ? args.name : ""} ${insp}`));
+  if (floors > 1 && direction === "up" && (skyAsked || (args.sky !== false && (args.type === undefined || args.type === "tower")))) for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
   // 레버 쇠창살을 안 놓았으면 잠긴 문 계획을 지운다 — 남겨 두면 조수가 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
   if (gimmickPlaced !== "lever") for (const d of datas) { const pop = field(d, "population"); if (pop && typeof pop === "object") delete (pop as Record<string, unknown>).lockedGate; }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
@@ -914,6 +916,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       seed: { type: "integer", description: "배치·장식 변주 시드(같은 값 = 같은 층). 생략하면 맵 id·이름으로 정한다(던전마다 다르다)" },
       sourceMapId: { type: "string", description: "요청이 온 맵 id(생략하면 실행기가 지금 보는 맵으로 채운다). entrance 를 안 주면 이 맵과 던전 입구 계단을 잇는다 — 이 맵이 비었거나 던전 자신이면 연결 자리표시 출구를 둔다." },
       rebuild: { type: "boolean", description: "true 면 mapId 의 기존 던전 맵(이 도구가 지은 것)을 그 자리에서 다시 짓는다. 결과가 마음에 안 들 때 새 맵을 또 만들지 말고 이것을 쓴다(한 층만)." },
+      sky: { type: "boolean", description: "위로 쌓은 층(direction up) 바깥 깊은 천장을 구름 바다 하늘로 비울지. 생략하면 탑(type tower)만 하늘, 성·신전 등은 어두운 천장 그대로. 사용자가 하늘·구름 위를 말했을 때만 true." },
       floors: { type: "integer", description: "층 수 1~5(기본 1). 2 이상이면 층마다 맵을 하나씩 짓고 계단으로 잇는다(이동 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등진다). 「3층 탑」「지하 2층까지」는 이 인자 하나로 — 층마다 author_dungeon 을 따로 부르고 create_transfer_pair 로 잇지 말 것. 버들항만." },
       direction: { type: "string", enum: ["down", "up"], description: "floors 가 2 이상일 때 층 방향: down(기본) 지하로 내려가는 던전(이름 「지하 N층」, 입구 방 북벽 오르는 계단 ↔ 깊은 방 바닥 내려가는 계단) · up 탑(이름 「N층」, 깊은 방 북벽 오르는 계단 ↔ 위층 입구 방 바닥 내려가는 계단, 꼭대기 층에 보스방·보물 방)." },
       populate: { type: "boolean", description: "rpg 장르 채우기(기본 true): 계획된 자리에 보이는 적(순찰)·상자(보물 방 먼저)·마지막 층 보스방 보스(도망 불가)·보스 앞 방 회복 세이브 포인트·그 아래층 층 수문장. 적 그룹은 troops 또는 데이터베이스에서 세기 순으로 고른다. false 면 data.population 계획만 돌려준다." },
