@@ -933,15 +933,32 @@ function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: fal
 const NO_PENDING = "대기 중 선택지가 없습니다";
 const NO_PENDING_PRESENT = "대기 중 아이템 제시가 없습니다";
 
+/**
+ * 기다리는 애니메이션(showAnimation wait:true)에 멈춘 이벤트를 끝까지 돌린다 — 실제 플레이어는 애니메이션이 끝나면 이어 간다.
+ * 실측(2026-11-05 gpt-only-game 8차 「마을부터」): 던전 출구 문이 「fx:door-open(wait) → changeTile → transfer」인데 자동 플레이는
+ * 애니메이션에서 멈춘 채 「문을 썼지만 이동하지 않았다」로 떨어졌다(실제 플레이어에서는 마을로 돌아감).
+ */
+function finishHeldAnimations(driver: Driver): string | null {
+  // 이벤트가 애니메이션을 기다릴 때만 시간을 흘린다 — 기다리지 않는 연출(맵 장식 애니메이션)에 시계·추격·타이머가 흘르지 않게.
+  for (let guard = 0; guard < 8 && driver.last.heldMode === "animation"; guard += 1) {
+    const waited = tryCommit(driver, [{ kind: "wait", ticks: 60 }]);
+    if (!waited.ok) return waited.reason;
+  }
+  return driver.last.heldMode === "animation" ? "기다리는 애니메이션(showAnimation wait)이 게임 시간 약 8초 뒤에도 끝나지 않았습니다" : null;
+}
+
 /** 조사·접촉 뒤 대기 중인 선택지를 고른다. 선택지가 더 없으면 멈춘다. */
 function resolveChoices(driver: Driver, sequence: readonly Answer[]): string | null {
   const pending = [...sequence];
   for (let guard = 0; guard < 12; guard += 1) {
+    // 선택 뒤에도 기다리는 애니메이션이 올 수 있다(선택지 → 문 열림 연출 → 이동) — 매 번 끝까지 돌린 뒤 다음 선택을 본다.
+    const animation = finishHeldAnimations(driver);
+    if (animation) return animation;
     const next = pending.shift() ?? 0;
     if (typeof next === "object") {
       const shown = tryCommit(driver, [{ kind: "present", ...(next.present ? { itemId: next.present } : {}) }]);
       if (shown.ok) continue;
-      if (shown.reason.includes(NO_PENDING_PRESENT)) return null;
+      if (shown.reason.includes(NO_PENDING_PRESENT)) return finishHeldAnimations(driver);
       return shown.reason;
     }
     const index = next;
@@ -951,12 +968,12 @@ function resolveChoices(driver: Driver, sequence: readonly Answer[]): string | n
       // 선택지가 아니라 증거 제시가 떠 있으면(계획에 없던 presentItem) 닫고 이어 간다.
       const closed = tryCommit(driver, [{ kind: "present" }]);
       if (closed.ok) continue;
-      return null;
+      return finishHeldAnimations(driver);
     }
     if (/out of range/u.test(attempt.reason) && index !== 0) {
       const fallback = tryCommit(driver, [{ kind: "choose", index: 0 }]);
       if (fallback.ok) continue;
-      return fallback.reason.includes(NO_PENDING) ? null : fallback.reason;
+      return fallback.reason.includes(NO_PENDING) ? finishHeldAnimations(driver) : fallback.reason;
     }
     return attempt.reason;
   }
@@ -1300,6 +1317,7 @@ function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: bool
         if (!trial.ok || worldFingerprint(trial.session) === worldFingerprint(driver.last.session)) continue;
         const used = tryCommit(driver, useSteps);
         if (!used.ok) continue;
+        if (finishHeldAnimations(driver)) continue;
         progressed = true;
         if (pathExists()) return { unlocked: true, note: "" };
         break;
@@ -1616,6 +1634,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     const itemId = escaped ? null : switchEscapeItemId(project, driver.last.session);
     if (itemId) {
       const used = tryCommit(driver, wakeSteps(project, itemId));
+      if (used.ok) finishHeldAnimations(driver);
       if (!used.ok) return trace(goal.label, false, `스위치 아이템 ${itemId} 사용 실패: ${used.reason}`, driver, visit.where);
       return executeGoal(driver, goal, true);
     }

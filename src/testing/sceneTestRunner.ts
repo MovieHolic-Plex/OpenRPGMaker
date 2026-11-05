@@ -331,6 +331,8 @@ export interface SceneSetupFailure {
 
 export interface SceneTestResult {
   readonly interactions: readonly SceneInteractionReceipt[];
+  /** 끝난 뒤에도 이벤트가 기다리는 것(선택지·아이템 제시·기다리는 애니메이션·상점). 없으면 비어 있다 — 자동 플레이가 기다리는 애니메이션만 시간을 흘려 마친다. */
+  readonly heldMode?: "choices" | "present" | "animation" | "shop";
   readonly setupFailure?: SceneSetupFailure;
   /** Explicit intent that failed selection, never an executed interaction. */
   readonly failedSelection?: SceneInteractionReceipt;
@@ -779,7 +781,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     autoReason = cause instanceof Error ? cause.message : String(cause);
   }
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure);
+    return withHeld(result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure), state);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
@@ -804,11 +806,11 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure, state.failedSelection);
+      return withHeld(result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure, state.failedSelection), state);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions);
+  return withHeld(result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions), state);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -3185,6 +3187,8 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
     }
   }
 }
+
+const withHeld = (out: SceneTestResult, state: RunnerState): SceneTestResult => state.held ? { ...out, heldMode: state.held.mode } : out;
 
 function result(
   ok: boolean,

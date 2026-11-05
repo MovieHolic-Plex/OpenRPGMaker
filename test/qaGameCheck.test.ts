@@ -230,6 +230,56 @@ describe("qa gameCheck — presentItem option needs its item first", () => {
   }, 30_000);
 });
 
+// 2026-11-05 gpt-only-game round 8 village: the dungeon exit door ran fx:door-open (wait) before its transfer, and autoplay
+// stopped on the held animation ("used the door but did not move") although the real player walked back to the village.
+describe("qa gameCheck — a touch door that waits on an animation still transfers", () => {
+  it("finishes the held showAnimation before checking the map change", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.endings = [{ id: "ending_home", name: "귀향", conditions: [], priority: 0 }] as never;
+    for (const map of Object.values(project.maps)) map.events = map.events.filter((event) => !JSON.stringify(event).includes("triggerEnding"));
+    const start = project.maps[project.startMapId]!;
+    const dungeon = { ...structuredClone(start), id: "map_dungeon", name: "유적", events: [] as unknown[] };
+    project.maps.map_dungeon = dungeon as never;
+    const page = (id: string, kind: string, commands: unknown[]) => ({
+      id, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind }, priority: "below",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands,
+    });
+    const ev = (id: string, name: string, x: number, y: number, p: ReturnType<typeof page>) => ({ id, name, x, y, trigger: p.trigger, commands: [], pages: [p] });
+    start.events.push(
+      ev("ev_in", "유적 입구", 3, 3, page("i", "playerTouch", [{ kind: "transfer", mapId: "map_dungeon", x: 5, y: 6, direction: "down" }])) as never,
+      ev("ev_home", "집", 8, 8, { ...page("h", "action", [{ kind: "triggerEnding", endingId: "ending_home" }]), conditions: [{ kind: "switch", switchId: "sw_relic", value: true }] as never[] }) as never,
+    );
+    dungeon.events.push(
+      ev("ev_relic", "유물", 7, 7, page("r", "action", [{ kind: "setSwitch", switchId: "sw_relic", value: true }])),
+      ev("ev_out", "출구", 5, 5, page("o", "playerTouch", [
+        { kind: "showAnimation", target: { x: 5, y: 5 }, animationId: "fx:door-open", wait: true },
+        { kind: "transfer", mapId: project.startMapId, x: 3, y: 4, direction: "down" },
+      ])),
+    );
+    const report = runGameCheck(project, { autoPlayBudgetMs: 20_000 });
+    const run = report.autoPlay?.runs?.[0];
+    expect(run?.ok, JSON.stringify(run?.steps?.map((s) => s.detail))).toBe(true);
+    // 선택지 뒤에 기다리는 애니메이션이 와도(「나갈까?」 → 문 열림 → 이동) 끝까지 간다.
+    const out = dungeon.events.find((e) => (e as { id: string }).id === "ev_out") as { pages: { commands: unknown[] }[] };
+    out.pages[0]!.commands = [{ kind: "choices", options: [{ text: "나간다", branch: out.pages[0]!.commands }], cancelBehavior: "disallow" }];
+    const chose = runGameCheck(project, { autoPlayBudgetMs: 20_000 }).autoPlay?.runs?.[0];
+    expect(chose?.ok, JSON.stringify(chose?.steps?.map((s) => s.detail))).toBe(true);
+  }, 30_000);
+  it("reports a held animation only when the event waits on it", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    const start = project.maps[project.startMapId]!;
+    const sparkle = { kind: "showAnimation", target: { x: 4, y: 4 }, animationId: "fx:door-open", wait: false };
+    start.events.push({ id: "ev_spark", name: "반짝임", x: 4, y: 4, trigger: { kind: "action" }, commands: [], pages: [{ id: "s", name: "s", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [sparkle] }] } as never);
+    const steps = [{ kind: "face", dir: "up" }, { kind: "interact", eventId: "ev_spark" }] as const;
+    const free = runSceneTest(project, { mapId: project.startMapId, start: { x: 4, y: 5 }, steps: [...steps] });
+    expect(free.ok, free.failureReason).toBe(true);
+    expect(free.heldMode).toBeUndefined();
+    sparkle.wait = true;
+    const held = runSceneTest(project, { mapId: project.startMapId, start: { x: 4, y: 5 }, steps: [...steps] });
+    expect(held.heldMode).toBe("animation");
+  });
+});
+
 describe("qa gameCheck — changeItem 은 장비 id 도 소지품이다(r4 보물상자)", () => {
   function chestWith(itemId: string): Project {
     const project = deserialize(serialize(buildQaFixture("clean")));
