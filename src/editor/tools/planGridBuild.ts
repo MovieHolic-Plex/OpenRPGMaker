@@ -3,7 +3,7 @@
 // 방을 옮기고 늘려 도안이 사라졌다. 이제 던전·성은 lay_dungeon_layout, 마을·숲은 lay_village_layout, 집 실내는 build_hand_interior_room 이 도면 칸을 그대로 깐다.
 // 칩셋에 없어 놓지 못한 도안 물건은 결과 data.missing 으로 돌려준다 — 조수가 generate_missing_object 로 만든다(#4331).
 import { compilePlan, parsePlanCode, type PlanCode } from "@/ai/planGrid";
-import { bboxDungeonCatalog } from "../dungeonKit/bboxFloor";
+import { bboxDungeonCatalog, layBboxDungeon, type BboxDungeonLayout } from "../dungeonKit/bboxFloor";
 import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
 import { bboxVillageCatalog, checkBboxVillage } from "./bboxVillage";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
@@ -16,6 +16,28 @@ let lastPlan: PlanCode | null = null;
 /** 이번 턴 도안을 읽은 칸 도면 — editor/imagePlanMockup.ts 가 읽기 직후 넣는다. */
 export function setPlanGrid(code: PlanCode | null): void { lastPlan = code; }
 export function getPlanGrid(): PlanCode | null { return lastPlan; }
+
+/** 칸 배치 던전 층이 «걸어서 못 간다»로 거절한 적·보스·상자 칸을 빼고(보스는 남은 적 자리로) 다시 잰다 — 2026-11-05 실측 p2, 도면 읽기가 달라지면 방 하나가 끊길 수 있다. */
+export function repairUnreachableActors(ts: Parameters<typeof layBboxDungeon>[0], L: BboxDungeonLayout, notes: string[]): void {
+  for (let round = 0; round < 4; round += 1) {
+    const res = layBboxDungeon(ts, L);
+    const bad = new Set(res.errors.filter((e) => /cannot be reached|must be on walkable floor/u.test(e)).flatMap((e) => [...e.matchAll(/\((\d+),(\d+)\)/gu)].slice(0, 1).map((m) => `${m[1]},${m[2]}`)));
+    if (!bad.size) return;
+    const at = (p: { x: number; y: number }) => bad.has(`${p.x},${p.y}`);
+    const enemies = (L.enemies ?? []).filter((e) => !at(e)), chests = (L.chests ?? []).filter((c) => !at(c));
+    notes.push(`unreachable on the laid floor, dropped: ${[...bad].map((c) => `(${c})`).join(" ")}`);
+    L.enemies = enemies;
+    L.chests = chests;
+    if (L.boss && at(L.boss)) {
+      const room = (L.rooms ?? []).find((r) => r.purpose === "boss");
+      const inRoom = (p: { x: number; y: number }) => (room?.rects ?? []).some((q) => p.x >= q.x && p.x < q.x + q.w && p.y >= q.y && p.y < q.y + q.h);
+      const k = enemies.findIndex(inRoom);
+      const next = k >= 0 ? enemies.splice(k, 1)[0]! : undefined;
+      if (next) L.boss = next; else delete L.boss;
+      notes.push(next ? `boss moved to (${next.x},${next.y}) in its room` : "boss dropped (no reachable cell in the boss room)");
+    }
+  }
+}
 
 const TEMPLE = /신전|사원|피라미드|파라오|아누비스|temple|pyramid/iu;
 
@@ -50,6 +72,7 @@ export const BUILD_FROM_PLAN_TOOL: ToolDefinition = {
       if (!ts) throw new ToolError("버들항 칩셋이 이 프로젝트에 없다.", { code: "tileset-missing" });
       const theme = subject === "castle" ? "castle" : code.zones.some((z) => TEMPLE.test(z.name)) ? "temple" : "catacomb";
       const res = planToDungeon(g, theme, bboxDungeonCatalog(ts));
+      repairUnreachableActors(ts, res.layout, res.notes);
       const lay = BBOX_PLACE_TOOLS.find((t) => t.name === "lay_dungeon_layout")!;
       const r = lay.run(draft, { layout: res.layout, name }) as ToolExecResult;
       const mapId = (r.data as { mapId: string }).mapId;

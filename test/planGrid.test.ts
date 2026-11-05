@@ -8,7 +8,7 @@ import { planToDungeon } from "@/editor/tools/planGridDungeon";
 import { planToVillage } from "@/editor/tools/planGridVillage";
 import { planToInterior } from "@/editor/tools/planGridInterior";
 import type { WidenSubject } from "@/ai/vagueWidenCatalog";
-import { BUILD_FROM_PLAN_TOOL, setPlanGrid } from "@/editor/tools/planGridBuild";
+import { BUILD_FROM_PLAN_TOOL, repairUnreachableActors, setPlanGrid } from "@/editor/tools/planGridBuild";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildPiRunRequest } from "@/ai/piAgent/plainTurn";
 
@@ -73,6 +73,21 @@ describe("planGrid", () => {
     setPlanGrid(null);
     expect(r.data.kind).toBe("dungeon");
     expect(project.maps[r.data.mapId]?.name).toBe("도안 던전");
+  });
+
+  it("drops enemies and moves the boss off cells the laid floor cannot reach or stand on, then the floor lays", () => {
+    const ts = createBeodeulCityTileset();
+    const res = planToDungeon(grid("p2"), "catacomb", bboxDungeonCatalog(ts));
+    const L = res.layout;
+    const bossAt = L.boss!;
+    L.enemies = [...(L.enemies ?? []), { x: 0, y: 0 }, bossAt];
+    L.boss = { x: 1, y: 0 };
+    expect(layBboxDungeon(ts, L).errors.some((e) => /must be on walkable floor/u.test(e))).toBe(true);
+    const notes: string[] = [];
+    repairUnreachableActors(ts, L, notes);
+    expect(layBboxDungeon(ts, L).errors).toEqual([]);
+    expect(L.boss).toEqual(bossAt);
+    expect(notes.join(" ")).toMatch(/boss moved/u);
   });
 
   it("carries the read plan into the worker run request", () => {
