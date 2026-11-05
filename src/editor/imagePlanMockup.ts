@@ -7,7 +7,7 @@ import { generateAiImage } from "@/ai/imageGenerationClient";
 import { RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import {
   IMAGE_PLAN_FAILED_LINE, IMAGE_PLAN_READ_FAILED_LINE, IMAGE_PLAN_SKIPPED_LINE,
-  gridSizeFor, imagePlanPrompt, imagePlanReadPrompt, type ImagePlanRead, type ImagePlanScene,
+  gridSizeFor, imagePlanDescribePrompt, imagePlanPrompt, imagePlanReadPrompt, parseImagePlanDescription, type ImagePlanDescription, type ImagePlanRead, type ImagePlanScene,
 } from "@/ai/imagePlan";
 import { shrinkReferenceImage } from "@/start/firstRun/referenceImage";
 import { applyCellFixes, cellColor, cellGridSize, cellMapFixPrompt, cellMapReadPrompt, parseCellMap, type CellMap } from "@/ai/imagePlanCells";
@@ -96,7 +96,25 @@ async function readCells(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal
   return { subject: scene.subject, cols, rows, data: { cells: cells.cells, landmarks: cells.landmarks }, cells, fixedRegions };
 }
 
+/** 도안 묘사(랜드마크·생김새·분위기·꼭 살릴 것) — 칸 읽기와 같이 돈다. 실패하면 null(칸 지도만으로 짓는다). */
+async function readDescription(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanDescription | null> {
+  try {
+    const url = await shrinkReferenceImage(blob);
+    return parseImagePlanDescription(await askVision([{ type: "text", text: imagePlanDescribePrompt(scene.subject) }, { type: "image_url", image_url: { url, detail: "high" } }], 3000, signal));
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: describe failed ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
 async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
+  const [layout, description] = await Promise.all([readLayoutOnly(blob, scene, signal), loadAiConfig().imagePlanDescribe === false ? Promise.resolve(null) : readDescription(blob, scene, signal)]);
+  if (description) console.info(`imagePlan: describe keep=${description.mustKeep.length} landmarks=${description.landmarks.length}`);
+  return layout && description ? { ...layout, description } : layout;
+}
+
+async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
   try {
     const cells = await readCells(blob, scene, signal);
     if (cells) return cells;
