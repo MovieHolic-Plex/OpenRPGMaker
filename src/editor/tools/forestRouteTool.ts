@@ -107,7 +107,7 @@ export interface ForestDesign {
 const n01 = (v: unknown, d: number) => (v !== undefined && v !== null && v !== "" && Number.isFinite(Number(v)) ? Math.max(0, Math.min(1, Number(v))) : d);
 const towardOf = (v: unknown): -1 | 1 | 0 => (/left|왼|좌|west|서/iu.test(String(v ?? "")) ? -1 : /right|오른|우|east|동/iu.test(String(v ?? "")) ? 1 : 0);
 
-function designedForestSpec(id: string, name: string, side: Side, seed: number, last: boolean, field: boolean, d: ForestDesign): { spec: WoodSpec; entry: Cell; exit: Cell | null; deadEnds: { at: Cell; end: string }[]; line: string; clearing: Cell; notes: string[] } {
+function designedForestSpec(id: string, name: string, side: Side, seed: number, last: boolean, field: boolean, d: ForestDesign, edge = false): { spec: WoodSpec; entry: Cell; exit: Cell | null; deadEnds: { at: Cell; end: string }[]; line: string; clearing: Cell; notes: string[] } {
   const rnd = mulberry32(seed);
   // 그림 도안(2026-11-05 imageplan-follow): 도안 가로세로비로 맵 크기를 정한다(진행 축 = 도안 세로) — 고정 32×40 이면 가로로 넓은 숲 도안이 세로로 눌렸다.
   const plan = d.plan && Number(d.plan.cols) > 0 && Number(d.plan.rows) > 0 ? d.plan : undefined;
@@ -191,6 +191,8 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     deadEnds.push({ at: { x: Math.round(at.x), y: Math.round(at.y) }, end: what });
     branchLines.push(`${t.toFixed(2)}${dir < 0 ? "왼" : "오"}${Math.round(pick.len)}→${what}`);
   }
+  // 숲 어귀(edge)를 도안대로 지을 때도 어귀 틀은 지킨다: 들어오는 쪽 풀밭(맵 폭 거의 전체) — treeline 보고가 참이 되게(#4334 게이트).
+  if (edge) clearings.push(centerBlob(side, AC / 2 - 0.5, (EDGE_MEADOW_V + AL) / 2 + 0.5, AC / 2 - 1.5, (AL - EDGE_MEADOW_V) / 2 + 0.5, AC, AL));
   const clearLines: string[] = [];
   for (const c of (d.clearings ?? []).slice(0, 4)) {
     const t = n01(c.at, across(0.3, 0.7));
@@ -207,7 +209,8 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     const to = toMap(side, Math.max(2, Math.min(AC - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1), AC, AL);
     return { from, to };
   });
-  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3, AC, AL), centerBlob(side, across(20, 26) * AC / ACROSS, across(22, 30), 1.8, 1.4, AC, AL)] : [];
+  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3, AC, AL), centerBlob(side, across(20, 26) * AC / ACROSS, across(22, 30), 1.8, 1.4, AC, AL)]
+    : edge ? [centerBlob(side, across(5, 9) * AC / ACROSS, across(27, 30), 1.9, 1.5, AC, AL), centerBlob(side, across(22, 26) * AC / ACROSS, across(31, 34), 1.9, 1.5, AC, AL)] : [];
   const entry = exitCell(side, entryU, AL - 1, AC, AL);
   const exit = last ? null : exitCell(side, exitU, 0, AC, AL);
   const { width: W, height: H } = dims(side, AC, AL);
@@ -224,7 +227,7 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
   if (plan) notes.push(`도안 비율로 맵 ${W}×${H}${pondRects.length ? ` · 연못 ${pondRects.length}곳` : ""}`);
   const water = pondRects.length ? (x: number, y: number) => pondRects.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1) : undefined;
   return {
-    spec: { id, name, width: W, height: H, seed, paths, ...(water ? { pond: water } : {}), exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
+    spec: { id, name, width: W, height: H, seed, paths, ...(water ? { pond: water } : {}), exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field || edge ? { undergrowth: 0.6 } : {}) },
     entry, exit, deadEnds, line, notes,
     // 보스·사당 자리: 마지막 맵은 막다른 빈터, 아니면 길 가운데.
     clearing: (() => { const p = last ? { x: raw[raw.length - 1]!.x, y: endV + 1 } : along(0.5); const c = toMap(side, p.x, p.y, AC, AL); return { x: Math.round(c.x), y: Math.round(c.y) }; })(),
@@ -378,7 +381,7 @@ const authorForestRoute: ToolDefinition = {
     + "moods[i] = normal·dim·dark·night·fog·darkfog(실제 조명·안개, 「밤」은 night). hiddenPerMap 개수만큼 나무 사이 틈에 숨은 물건(조사하면 한 번, 그림 없음)을 둔다. "
     + "terrain:'edge' = 숲 어귀 — 들어오는 쪽 절반이 트인 풀밭(나무 섬 둘)이고 그 너머 들쭉날쭉한 나무 벽 틈으로 숲길이 들어간다(성벽 밑을 빠져 숲으로 달아나는 추격·「숲 가장자리」 장면). "
     + "terrains[i] 로 맵마다 따로 줄 수 있다(예: ['edge','field']). "
-    + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 숲·들판 길 모양은 네가 designs[i] 로 설계한다(edge 맵은 어귀 틀 그대로) — 굽이 수·휘는 폭·들어오고 나가는 자리·길 폭·갈림길(at·toward·length·end)·빈터. "
+    + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 숲·들판 길 모양은 네가 designs[i] 로 설계한다(edge 맵은 어귀 틀 그대로 — 단 그림 도안 설계(plan 있음)는 어귀 풀밭을 지킨 채 도안 비율·길로 짓는다) — 굽이 수·휘는 폭·들어오고 나가는 자리·길 폭·갈림길(at·toward·length·end)·빈터. "
     + "같은 요청이라도 이 장면의 사연에 맞게 짜고, 앞서 지은 숲길과 다르게(결과 warnings 가 거의 같은 설계를 짚는다). "
     + "결과 data.maps[i] = {mapId, entry, exit, clearing, terrain, treeline?, deadEnds[{at, end}](갈림길 끝 — 상자 자리), enemySpots[](적 자리 — 이 도구는 몬스터·조우를 깔지 않는다, encounters:'none'), design} — edge 맵의 treeline = 풀밭이 끝나고 나무 벽이 시작되는 줄(y 또는 x).",
   mode: "write",
@@ -460,8 +463,9 @@ const authorForestRoute: ToolDefinition = {
       const entryU = 10 + mulberry32(seed0 + i * 31)() * 12;
       // 어귀(edge)는 기본 틀로 짓지만, 그림 도안 설계(plan 있음)는 어귀에도 따른다 — 도안이 그린 장면이 첫 맵(어귀)인데 도안 비율·연못이 버려졌다(r3 p3).
       const given = designs[i] && typeof designs[i] === "object" ? designs[i] as ForestDesign : undefined;
-      const d = given && (terrain !== "edge" || given.plan) ? given : undefined;
-      const built = d ? designedForestSpec(id, name, side, seed0 + i * 97, i === count - 1, field, d) : undefined;
+      const planned = !!given?.plan && Number(given.plan.cols) > 0 && Number(given.plan.rows) > 0;
+      const d = given && (terrain !== "edge" || planned) ? given : undefined;
+      const built = d ? designedForestSpec(id, name, side, seed0 + i * 97, i === count - 1, field, d, terrain === "edge") : undefined;
       const { spec, entry, exit } = built ?? forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, terrain);
       const result = paintWoodland(draft, spec);
       if (built) {

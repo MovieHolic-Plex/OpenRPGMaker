@@ -5,6 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import "@/editor/tools/toolRunner";
 import { FOREST_ROUTE_TOOLS } from "@/editor/tools/forestRouteTool";
 import { forestDesignFromCells, parseCellMap } from "@/ai/imagePlanCells";
+import { isPassable } from "@/project/collision";
 
 function wideForestWithPond(): string[] {
   const rows: string[] = [];
@@ -42,8 +43,15 @@ describe("forest route follows an image plan", () => {
     const design = forestDesignFromCells(parseCellMap({ cells: wideForestWithPond() }, "forest", 48, 32)!);
     const project = createBlankProject();
     const res = FOREST_ROUTE_TOOLS[0]!.run(project as never, { fromMapId: project.startMapId!, side: "north", count: 2, terrains: ["edge", "forest"], designs: [design], seed: 7 } as never);
-    const [edge, deep] = (res.data as { maps: { mapId: string }[] }).maps.map((m) => project.maps[m.mapId]!);
+    const data = (res.data as { maps: { mapId: string; treeline?: number }[] }).maps;
+    const [edge, deep] = data.map((m) => project.maps[m.mapId]!);
     expect(edge!.width).toBeGreaterThan(edge!.height);
+    // the entrance meadow stays: open ground south of the reported treeline, trees north of it
+    const line = data[0]!.treeline!;
+    let south = 0, north = 0;
+    for (let y = 0; y < edge!.height; y += 1) for (let x = 0; x < edge!.width; x += 1) if (isPassable(project as never, edge!, x, y)) { if (y >= line) south += 1; else north += 1; }
+    expect(south / ((edge!.height - line) * edge!.width)).toBeGreaterThan(0.6);
+    expect(north / (line * edge!.width)).toBeLessThan(0.4);
     expect(deep!.width).toBe(32);
     const plain = createBlankProject();
     const res2 = FOREST_ROUTE_TOOLS[0]!.run(plain as never, { fromMapId: plain.startMapId!, side: "north", count: 1, terrains: ["edge"], designs: [{ bends: 3 }], seed: 7 } as never);
