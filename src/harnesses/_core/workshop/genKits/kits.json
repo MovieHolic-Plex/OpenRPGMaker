@@ -11,7 +11,7 @@
   "char-gen": {
    "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
    "visibility": "private",
-   "commit": "6d04f27b2e694316bb27323b57ac790e903b8648",
+   "commit": "e56314d733952efa309078a46fca82869d054b29",
    "vendored": false,
    "contract": "ok",
    "fingerprint": {
