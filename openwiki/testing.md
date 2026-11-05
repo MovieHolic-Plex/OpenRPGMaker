@@ -2261,6 +2261,8 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 - 증거 제시(`presentItem`, 2026-10-29 추리 사건): 목표가 증거 제시 보기 안에 있으면 그 보기의 아이템을 낸다(`choiceSequence` 의 `{present:itemId}`), 길 밖 증거 제시는 닫는다. 선택지 대신 증거 제시 창이 떠 있으면 닫고 이어 간다. 전에는 `choose` 가 「대기 중 선택지가 없습니다」로 끝나 증거 제시 갈래 속 목표를 못 채웠다.
   그 보기의 아이템은 선행 조건이다(`baseRequirementsOf`, 2026-11-05 gpt-only-game 좀비 생존) — 열쇠를 주는 상자(changeItem)를 먼저 계획한다.
   전에는 탈출구 presentItem(낡은 열쇠)→triggerEnding 을 열쇠 없이 돌려 「분기가 목표 명령을 건너뜀」 막힘을 냈다(실제 플레이는 엔딩 도달). 회귀 `test/qaGameCheck.test.ts`.
+- 기다리는 애니메이션(`showAnimation{wait:true}`, 2026-11-05 gpt-only-game 8차 마을): 조사·접촉 뒤 `finishHeldAnimations` 가 `wait` 로 애니메이션을 끝까지 돌린 뒤 선택지·맵 이동을 본다.
+  전에는 던전 출구 문(`fx:door-open` wait → transfer)에서 멈춘 채 「문을 썼지만 이동하지 않았다」 막힘을 냈다(실제 플레이어는 마을로 돌아감). 회귀 `test/qaGameCheck.test.ts`.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
