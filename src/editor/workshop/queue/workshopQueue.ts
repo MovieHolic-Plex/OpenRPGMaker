@@ -41,12 +41,12 @@ const RUNS_PER_JOB = 3;
 /** 시간표에 남기는 연결 끊김 기록(재시도 횟수를 센다) */
 const NETWORK_PAUSE_NOTE = "연결이 끊김";
 const NETWORK_REDRAW_NOTE = "연결이 끊긴 후보를 잠깐 뒤 다시 그림";
-/** 「한 번에 만들기」 물건이 검수 통과 없이 끝나 판정 이유로 한 번 더 그린다 */
 /** 조수 요청의 「알아서 고르기」 — 기본 켜짐, 사용자가 카드에서 끈 기기("0")만 사람이 고른다(assistantObjectGen.objectGenAutoPick 과 같은 규칙). */
 function assistantAutoPick(): boolean {
   try { return localStorage.getItem("oprn:assistant-objectgen-autopick") !== "0"; } catch { return true; }
 }
 
+/** 「한 번에 만들기」 물건이 검수 통과 없이 끝나 판정 이유로 한 번 더 그린다 */
 const ONE_CLICK_REROLL_NOTE = "검수 불통과 — 이유를 주고 한 번 더 그림";
 export const WORKSHOP_JOB_INSTALLED_EVENT = "oprn:workshop-job-installed";
 export type WorkshopJobInstalledDetail = { readonly jobId: string; readonly job: WorkshopJob; readonly baked: WorkshopBakedDetail | null; readonly auto: boolean; readonly reason?: string };
@@ -604,9 +604,19 @@ class WorkshopQueue {
         job.installWait = null;
         this.pendingInstall.delete(id);
         job.error = error instanceof Error ? error.message : String(error);
+        if (pending.auto) this.failAutoPick(job);
         this.emit();
       });
     }
+  }
+
+  /** 조수 요청의 알아서 고르기가 넣지 못했다(고르기·굽기 오류) — 못 그림으로 끝내 카드가 조수에게 알린다(같은 판을 다시 고르고 굽지 않게). */
+  private failAutoPick(job: WorkshopJob): void {
+    if (job.source !== "assistant") return;
+    job.autoFailed = true;
+    job.finishedAt = now();
+    this.mark(job, "failed", job.error ?? "넣지 못함");
+    void this.persist(job);
   }
 
   // ── dev 시험 고리 ──────────────────────────────────────
@@ -788,7 +798,7 @@ class WorkshopQueue {
         if (unavailable !== undefined) {
           job.error = `그림을 확인하지 못해 넣지 않았어요. ${unavailable}`.trim().slice(0, 200);
           job.finishedAt = now();
-        if (job.source === "assistant") job.autoFailed = true;
+          if (job.source === "assistant") job.autoFailed = true;
           this.mark(job, "failed", job.error);
           void this.persist(job);
           return;
@@ -827,6 +837,7 @@ class WorkshopQueue {
       .catch((error: unknown) => {
         this.choosing.delete(job.id);
         job.error = error instanceof Error ? error.message : String(error);
+        this.failAutoPick(job);
         this.emit();
       });
   }

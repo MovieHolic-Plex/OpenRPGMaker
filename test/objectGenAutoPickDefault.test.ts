@@ -37,7 +37,7 @@ describe("object-gen auto pick default", () => {
     expect(text).toContain("「뿌리 뻗은 고목」");
     expect(text).toContain("generate_missing_object·draw_object 를 다시 부르지 마라");
     expect(text).toContain("검수를 통과한 그림이 나오지 않음");
-    expect(outcomeText([{ failed: "고목", reason: "로그인 만료" }], [{ title: "고목", need: "" } as never])).toContain("「고목」(로그인 만료)");
+    expect(outcomeText([{ failed: "고목", reason: "AI 계정 로그인 만료" }], [{ title: "고목", need: "" } as never])).toContain("「고목」(AI 계정 로그인 만료)");
   });
 
   it("ends an assistant job with no passing drawing as failed instead of waiting for a pick", () => {

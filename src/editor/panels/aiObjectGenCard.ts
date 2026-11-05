@@ -135,11 +135,15 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
     else if (state === "reference" || state === "drawing" || state === "review") {
       const done = round?.runs.filter((r) => r.status === "done").length ?? 0;
       status.textContent = `후보를 그리는 중이에요(${done}/${round?.runs.length ?? 0}). 한 판에 4~8분 걸려요(참고 그림·고치기·검수). 다른 물건도 함께 그려요. 맵을 계속 고쳐도 돼요.`;
-    } else if (state === "paused" && autoPickOn() && job.pause?.until === null) finish(`멈춤: ${job.pause.reason}. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title, reason: job.pause.reason });
+    } else if (state === "paused" && autoPickOn() && job.pause?.kind === "auth") {
+      // 로그인 만료는 계정 전체 멈춤 — 이 작업을 그만두어(멈춤이 풀려 같은 묶음 작업도 끝난다) 조수가 있는 기물로 잇게 한다. 사용자가 누른 「멈추기」는 기다린다.
+      workshopQueue().cancel(job.id).catch(() => { /* 이미 끝남 */ });
+      finish(`멈춤: ${job.pause.reason}. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title, reason: "AI 계정 로그인 만료" });
+    }
     else if (state === "paused") status.textContent = `멈춤: ${job.pause?.reason ?? ""}. 작업 줄에서 이어서 그려요.`;
     else if (state === "installing") status.textContent = job.installWait ?? "넣는 중…";
     // 알아서 고르기면 사람을 기다리지 않는다 — 못 그린 것은 조수에게 알려 가장 가까운 있는 기물로 잇게 한다.
-    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」을(를) 넣지 못했어요${job.error ? `: ${job.error}` : ""}. 조수가 있는 기물로 이어요.`, { failed: request.title, ...(job.error ? { reason: job.error } : {}) });
+    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」을(를) 넣지 못했어요${job.error ? `: ${job.error}` : ""}. 조수가 있는 기물로 이어요.`, { failed: request.title, reason: job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") ? "고르거나 넣다가 오류" : job.error?.startsWith("그림을 확인하지") ? "그림 확인기를 쓸 수 없음" : "다시 그려도 검수를 통과한 그림이 없음" });
     else if (state === "failed") status.textContent = "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요.";
     else if (state === "cancelled") finish("그리기를 그만뒀어요. 있는 기물로 할게요.", { declined: request.title });
     else if (state === "ready" && autoPickOn() && job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") && !job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) {
@@ -164,7 +168,7 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
     const [{ workshopQueue }, , chat] = loaded;
     if (!chat.workshopAiReady()) {
       // 알아서 고르기면 사람을 기다리지 않는다 — 조수가 있는 기물로 잇게 알린다(연결하면 「다시 그리기」로 그릴 수 있다).
-      if (autoPickOn()) { finish(`그리려면 내 AI 계정을 연결해야 해요. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title }); return; }
+      if (autoPickOn()) { finish(`그리려면 내 AI 계정을 연결해야 해요. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title, reason: "AI 계정이 연결되지 않음" }); return; }
       status.textContent = "그리려면 내 AI 계정을 연결해야 해요. 연결한 뒤 「다시 그리기」를 눌러 주세요.";
       if (!footer.querySelector('[data-testid="ai-objectgen-connect"]')) {
         footer.prepend(button("AI 연결하기", "ai-objectgen-connect", () => {
@@ -185,7 +189,7 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
     if (settled || jobId) return;
     begin().catch((error: unknown) => {
       const message = `그리기를 시작하지 못했어요: ${error instanceof Error ? error.message : String(error)}`;
-      if (autoPickOn()) finish(`${message} 조수가 있는 기물로 이어요.`, { failed: request.title });
+      if (autoPickOn()) finish(`${message} 조수가 있는 기물로 이어요.`, { failed: request.title, reason: "그리기를 시작하지 못함" });
       else status.textContent = message;
     });
   };
