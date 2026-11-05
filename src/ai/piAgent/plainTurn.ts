@@ -457,6 +457,8 @@ export function buildPiRunRequest(input: {
   readonly currentMapId?: string;
   readonly approvedTilesetFamilies?: readonly string[];
   readonly editHistory?: PiAgentRequest["editHistory"];
+  /** 그림 도안을 읽은 칸 도면 — 워커의 build_from_plan 이 읽는다(이 함수가 필드를 하나씩 옮겨 싣으므로 빠지면 워커에 안 간다). */
+  readonly planGrid?: PiAgentRequest["planGrid"];
   readonly project: Project;
   readonly scopedByUser: boolean;
   readonly mapBundleMerge: boolean;
@@ -492,6 +494,7 @@ export function buildPiRunRequest(input: {
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}),
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
     ...(input.editHistory?.length ? { editHistory: input.editHistory } : {}),
+    ...(input.planGrid ? { planGrid: input.planGrid } : {}),
     project: input.project,
     // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
     scopeStrict: input.scopedByUser,

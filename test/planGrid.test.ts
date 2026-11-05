@@ -10,6 +10,7 @@ import { planToInterior } from "@/editor/tools/planGridInterior";
 import type { WidenSubject } from "@/ai/vagueWidenCatalog";
 import { BUILD_FROM_PLAN_TOOL, setPlanGrid } from "@/editor/tools/planGridBuild";
 import { createBlankProject } from "@/project/defaults/blankProject";
+import { buildPiRunRequest } from "@/ai/piAgent/plainTurn";
 
 type Fx = { subject: WidenSubject; cols: number; rows: number; read: Record<string, unknown> };
 const fx = reads as Record<string, Fx>;
@@ -72,6 +73,16 @@ describe("planGrid", () => {
     setPlanGrid(null);
     expect(r.data.kind).toBe("dungeon");
     expect(project.maps[r.data.mapId]?.name).toBe("도안 던전");
+  });
+
+  it("carries the read plan into the worker run request", () => {
+    const f = fx.p8!;
+    const project = createBlankProject();
+    const planGrid = parsePlanCode(f.read, f.subject, f.cols, f.rows)!;
+    const role = { provider: "p", model: "m", thinkingLevel: "high" } as const;
+    const req = buildPiRunRequest({ team: false, readOnly: false, applyMode: "default", brain: { providerId: "p", model: "m", reasoningEffort: "high" }, deep: role, writer: role,
+      modelTask: "t", executionTask: "t", mapIds: [project.startMapId], project, scopedByUser: false, mapBundleMerge: false, planGrid });
+    expect(req.planGrid).toBe(planGrid);
   });
 
   it("turns the house plan into separated rooms with doors between drawn neighbours", () => {
