@@ -130,7 +130,7 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     const base = entryU + ((exitU - entryU) * i) / (n + 1);
     raw.push({ x: Math.max(4, Math.min(AC - 5, base + (i % 2 === 0 ? 1 : -1) * sign * across(a0, a1))), y: v });
   }
-  raw.push({ x: last ? across(10, 22) : exitU, y: endV });
+  raw.push({ x: last ? across(10, 22) * AC / ACROSS : exitU, y: endV });
   // 진행 t(0 = 들어오는 쪽, 1 = 끝)의 길 위 점.
   const along = (t: number): Cell => {
     const v = AL - 1 - t * (AL - 1 - endV);
@@ -204,10 +204,10 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
   const nooks = [raw[1]!, raw[Math.min(raw.length - 2, 3)]!].map((p, k) => {
     const dir = k % 2 === 0 ? 1 : -1;
     const from = toMap(side, Math.round(p.x), Math.round(p.y), AC, AL);
-    const to = toMap(side, Math.max(2, Math.min(AC - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1));
+    const to = toMap(side, Math.max(2, Math.min(AC - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1), AC, AL);
     return { from, to };
   });
-  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3, AC, AL), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4, AC, AL)] : [];
+  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3, AC, AL), centerBlob(side, across(20, 26) * AC / ACROSS, across(22, 30), 1.8, 1.4, AC, AL)] : [];
   const entry = exitCell(side, entryU, AL - 1, AC, AL);
   const exit = last ? null : exitCell(side, exitU, 0, AC, AL);
   const { width: W, height: H } = dims(side, AC, AL);

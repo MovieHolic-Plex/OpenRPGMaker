@@ -192,7 +192,13 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
       }
     }
   }
-  if (spec.pond) for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) if (spec.pond(x, y)) water.add(idx(x, y));
+  // 연못은 길을 끊지 않는다 — 길이 지나는 칸과 그 바로 옆은 비워 둔다(도안의 다리·물가 길이 물에 잠기면 출구에 못 닿았다).
+  if (spec.pond) for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+    if (!spec.pond(x, y)) continue;
+    let nearPath = false;
+    for (let dy = -1; dy <= 1 && !nearPath; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (path.has(idx(x + dx, y + dy))) { nearPath = true; break; }
+    if (!nearPath) water.add(idx(x, y));
+  }
   const deck = new Set<number>();
   if (spec.bridge) for (let dy = 1; dy <= 2; dy += 1) for (let dx = 0; dx < 5; dx += 1) deck.add(idx(spec.bridge.x + dx, spec.bridge.y + dy));
   for (const c of water) path.delete(c);

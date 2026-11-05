@@ -37,6 +37,21 @@ describe("forest route follows an image plan", () => {
     expect(wet).toBeGreaterThan(40);
   });
 
+  it("keeps the path across a bridged river on every side", () => {
+    const rows: string[] = [];
+    for (let y = 0; y < 32; y += 1) {
+      const r = "t".repeat(48).split("");
+      r[23] = "="; r[24] = "=";
+      if (y >= 14 && y <= 17) for (let x = 0; x < 48; x += 1) if (r[x] !== "=") r[x] = "~";
+      rows.push(r.join(""));
+    }
+    const design = forestDesignFromCells(parseCellMap({ cells: rows }, "forest", 48, 32)!);
+    for (const side of ["north", "south", "east", "west"]) for (const seed of [1, 2, 3]) {
+      const project = createBlankProject();
+      expect(() => FOREST_ROUTE_TOOLS[0]!.run(project as never, { fromMapId: project.startMapId!, side, count: 2, designs: [design, design], seed } as never)).not.toThrow();
+    }
+  });
+
   it("leaves a design without a plan at the usual size and dry", () => {
     const { map, wet } = build({ bends: 3 });
     expect([map.width, map.height]).toEqual([32, 40]);
