@@ -298,6 +298,13 @@
   height: auto !important;
   min-height: 0 !important;
 }
+/* 독의 틀은 scale(var(--dock-unscale)) 를 받고, 선택지 칸은 그 틀 위로 absolute 로 튀어 나온다. 칸이 완전 불투명(배경 #f8f8e8 + 안쪽 그림자)이면
+   Chromium 합성기가 칸이 가리는 영역을 배율이 곱해진 좌표로 잘못 잡아, 칸 위 오른쪽의 게임 화면(캔버스)이 통째로 검은 상자로 가려졌다
+   (QA-AH119-002: 아스트라 스타터 3지선다·센터 「동료들을 맡길까요?」, 390x844 에서 가림 비율 1.00/0.81). 칸을 0.1% 비치게 하면 불투명 가림 최적화에서
+   빠져 정상으로 그려진다(눈에 보이는 차이 없음). Chromium 합성기 우회책이니 브라우저가 고치면 걷어도 된다. */
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active.choices-framed:not(.balloon-active) > .dialogue-box.choices {
+  opacity: 0.999;
+}
 
 /* ── 세로 창 칸(data-window-panel, 2026-10-24) ──
    폰 세로는 무대가 1배보다 작아(0.67~0.9배) 메뉴 글자가 8~10px 였다. 무대가 1배 미만이면 ESC 메뉴·상점 창을
