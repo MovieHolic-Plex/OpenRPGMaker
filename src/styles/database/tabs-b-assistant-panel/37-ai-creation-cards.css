@@ -82,6 +82,17 @@
 .ai-work-creation.is-equipment .ai-work-creation-art { animation: ai-work-creation-glow 400ms ease-out both; }
 .ai-work-creation-text { display: flex; flex-direction: column; min-width: 0; }
 .ai-work-creation-kind { color: var(--text-3); font-size: var(--font-size-xs, 11px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-work-creation-standin {
+  align-self: flex-start;
+  margin: 1px 0;
+  padding: 0 var(--space-1);
+  border: var(--stroke-1) dashed var(--border-default);
+  border-radius: var(--radius-s, 4px);
+  color: var(--text-2);
+  font-size: var(--font-size-xs, 11px);
+  white-space: nowrap;
+}
+.ai-work-creation-standin[hidden] { display: none; }
 .ai-work-creation-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--font-weight-medium); }
 .ai-work-creation-stats { color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
 .ai-work-creation-actions { display: flex; align-items: center; gap: var(--space-1); }

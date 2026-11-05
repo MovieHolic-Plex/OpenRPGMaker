@@ -29,6 +29,17 @@ describe("creation card models", () => {
     const item = listChangeItems(before, after).find((entry) => entry.kind === "enemy" && entry.id === "enemy_boss")!;
     expect(creationCardModel(after, item)!.stats).toMatch(/^HP 900 · 공격 40 · 방어 22/u);
   });
+
+  it("marks an item whose icon is a type stand-in, and clears the mark once a fitting icon is set", () => {
+    const before = createBlankProject();
+    const after = run(before, "upsert_item", { item: { id: "item_lunchbox", name: "나그네 도시락", type: "medicine" } });
+    const item = listChangeItems(before, after).find((entry) => entry.id === "item_lunchbox")!;
+    expect(creationCardModel(after, item)!.placeholderArt).toBe(true);
+    const fixed = run(after, "upsert_item", { item: { id: "item_lunchbox", iconResourceId: "cc0-jetrel-bread" } });
+    expect(creationCardModel(fixed, item)!.placeholderArt).toBeUndefined();
+    const tea = run(before, "upsert_item", { item: { id: "item_tea", name: "달빛 차", type: "medicine" } });
+    expect(creationCardModel(tea, listChangeItems(before, tea).find((entry) => entry.id === "item_tea")!)!.placeholderArt).toBeUndefined();
+  });
 });
 
 describe("battle music change", () => {

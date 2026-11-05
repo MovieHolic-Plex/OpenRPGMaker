@@ -15,6 +15,7 @@ import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { loadKeyedCharsetImage } from "@/ai/toolImageCanvas";
 import type { ActorRecord, Command, EnemyRecord, EquipmentRecord, EquipmentStatBonuses, EventPageGraphic, GameEvent, ItemRecord, Project, SkillRecord, StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { isPlaceholderIcon, type IconCollection } from "@/editor/tools/itemIconTools";
 import { audioPlayback } from "./audioResourcePresentation";
 import {
   CHANGE_KIND_LABEL, listChangeItems, musicResourceOf, recordCollectionOf, undoChangeItem,
@@ -31,6 +32,8 @@ export interface CreationCardModel {
   readonly stats: string;
   readonly speech?: { readonly speaker?: string; readonly text: string };
   readonly musicId?: string;
+  /** 이름에 맞는 그림이 없어 종류 기본 그림을 대신 쓴 아이콘(project.meta.oprnPlaceholderIcons) — 「대신 쓴 그림」 표시. */
+  readonly placeholderArt?: boolean;
 }
 
 const ITEM_TYPE_LABEL: Readonly<Record<string, string>> = {
@@ -99,7 +102,20 @@ function eventOf(project: Project, item: ChangeItem): GameEvent | undefined {
 }
 
 /** 카드 내용(순수). 만들 게 없는 항목(맵 칸·지운 것)은 null. */
+const PLACEHOLDER_COLLECTION: Partial<Record<ChangeItem["kind"], IconCollection>> = { item: "items", equipment: "equipment", skill: "skills", state: "states" };
+
+/** 이 카드의 그림이 지금 「대신 쓴 그림」인가. 그려서 바꾸면(실행 끝 자동 그리기) 다음 체크포인트에서 false 가 된다. */
+export function cardShowsPlaceholder(project: Project, item: ChangeItem): boolean {
+  const collection = PLACEHOLDER_COLLECTION[item.kind];
+  return collection ? isPlaceholderIcon(project, collection, item.id) : false;
+}
+
 export function creationCardModel(project: Project, item: ChangeItem): CreationCardModel | null {
+  const model = baseCreationCardModel(project, item);
+  return model && cardShowsPlaceholder(project, item) ? { ...model, placeholderArt: true } : model;
+}
+
+function baseCreationCardModel(project: Project, item: ChangeItem): CreationCardModel | null {
   if (item.change === "removed" || item.kind === "map") return null;
   const verb = item.change === "added" ? "" : " · 고침";
   switch (item.kind) {
@@ -281,10 +297,16 @@ export interface CreationFeed {
 /** 카드가 너무 많으면 마지막 몇 장만 펼쳐 둔다(작업 줄이 카드로 뒤덮이지 않게). */
 const VISIBLE_CARDS = 12;
 
+function placeholderBadge(shown: boolean): HTMLElement {
+  const badge = el("span", { class: "ai-work-creation-standin", text: "대신 쓴 그림", attrs: { title: "이름에 맞는 그림이 없어 종류 기본 그림을 잠시 대신 썼습니다 — 조수가 이름에 맞게 새로 그립니다." }, dataset: { testid: "ai-creation-standin" } });
+  badge.hidden = !shown;
+  return badge;
+}
+
 export function createCreationFeed(base: Project, deps: CreationFeedDeps): CreationFeed {
   const root = el("ol", { class: "ai-work-creation-feed", attrs: { "aria-label": "조수가 만든 것" }, dataset: { testid: "ai-creation-feed" } });
   root.hidden = true;
-  const seen = new Map<string, HTMLElement>();
+  const seen = new Map<string, { readonly card: HTMLElement; readonly item: ChangeItem }>();
   let last: Project = base;
   const reduced = (): boolean => deps.reducedMotion?.() ?? false;
 
@@ -296,6 +318,7 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       el("span", { class: "ai-work-creation-art", attrs: { "aria-hidden": "true" }, children: art ? [art] : [el("span", { class: "ai-work-creation-glyph", text: model.musicId ? "♪" : [...model.title.trim()][0] ?? CHANGE_KIND_LABEL[item.kind].slice(0, 1) })] }),
       el("span", { class: "ai-work-creation-text", children: [
         el("span", { class: "ai-work-creation-kind", text: model.kindLine }),
+        placeholderBadge(model.placeholderArt === true),
         el("strong", { class: "ai-work-creation-title", text: model.title }),
         ...(model.stats ? [el("span", { class: "ai-work-creation-stats", dataset: { testid: "ai-creation-stats" }, text: model.stats })] : []),
       ] }),
@@ -325,6 +348,16 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
       // 고친 것은 끝의 「바뀐 것」 카드가 보인다. 음악은 곡 칸을 「정한」 것이므로 고침도 카드로 낸다.
       // 고친 기록도 카드로 낸다(「· 고침」) — 「보스 몬스터 하나랑 전투 음악」을 조수가 있던 보스를 강화하고 곡을 건 이벤트를
       // 고쳐 해내면 새로 만든 것만 보는 카드 줄이 텐 빈 채로 끝났다(2026-11-05 녹화). 이벤트는 대사나 곡이 있을 때만.
+      // 대신 쓴 그림을 나중에 그려 바꾸면(실행 끝 자동 그리기) 이미 나온 카드의 그림·표시도 바꾼다.
+      for (const { card, item } of seen.values()) {
+        const badge = card.querySelector<HTMLElement>("[data-testid=ai-creation-standin]");
+        if (!badge || badge.hidden || cardShowsPlaceholder(project, item)) continue;
+        badge.hidden = true;
+        const model = creationCardModel(project, item);
+        const art = model ? cardArt(project, model) : null;
+        const slot = card.querySelector(".ai-work-creation-art");
+        if (art && slot) slot.replaceChildren(art);
+      }
       const fresh = listChangeItems(previous, project, { skipMapTiles: true }).filter((item) => item.change !== "removed");
       if (!fresh.length) return;
       for (const item of fresh) {
@@ -334,7 +367,7 @@ export function createCreationFeed(base: Project, deps: CreationFeedDeps): Creat
         if (!model) continue;
         if (item.kind === "event" && item.change === "modified" && !model.speech && !model.musicId) continue;
         const card = buildCard(project, model);
-        seen.set(key, card);
+        seen.set(key, { card, item });
         root.append(card);
         root.hidden = false;
         if (item.kind === "event") deps.announcePlacement?.(project, item);
