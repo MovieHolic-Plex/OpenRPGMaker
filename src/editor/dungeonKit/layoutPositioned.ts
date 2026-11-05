@@ -44,12 +44,9 @@ export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
   return out;
 }
 
-/** 사각형들이 두 방을 4방향으로 끊김없이 잇으면 그 길에 닿은 사각형만(돌아간 가지는 빼고) 돌려주고, 못 잇으면 null. */
 /** 조각이 이웃(방·다른 조각)과 맞닿은 면으로 방향을 정한다 — 위·아래로 닿으면 세로(N/S), 옆으로 닿으면 가로(E/W). 짧은 세로 토막이 모양만 보고 가로로 읽혔다(AMEND3 2). */
 function touchDir(rect: Rect, neighbours: readonly Rect[]): DungeonDir | null {
-  // 길쭉한 조각(한 변이 다른 변의 2배 이상)은 모양대로. 짧은·네모 조각만 이웃과 닿은 자리로 본다 — 위·아래 끝에 닿으면 세로, 옆 끝이면 가로(AMEND3 2).
-  if (rect.w >= rect.h * 2) return "E";
-  if (rect.h >= rect.w * 2) return "S";
+  // 이웃과 닿은 자리로 먼저 본다 — 위·아래 끝에 닿으면 세로, 옆 끝이면 가로(AMEND3·4 2). 옆방 사이 짧은 문도 가로로.
   let v = 0, h = 0;
   const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
   for (const n of neighbours) {
@@ -58,10 +55,12 @@ function touchDir(rect: Rect, neighbours: readonly Rect[]): DungeonDir | null {
     const dx = Math.abs((x0 + x1) / 2 - cx) / Math.max(1, rect.w), dy = Math.abs((y0 + y1) / 2 - cy) / Math.max(1, rect.h);
     if (dy > dx) v += 1; else if (dx > dy) h += 1;
   }
+  // 닿은 자리가 비기면 모양으로(길쭉한 다리), 네모면 통로 전체 상자로
   if (v === h) return rect.w === rect.h ? null : rect.w > rect.h ? "E" : "S";
   return v > h ? "S" : "E";
 }
 
+/** 사각형들이 두 방을 4방향으로 끊김없이 잇으면 그 길에 닿은 사각형만(돌아간 가지는 빼고) 돌려주고, 못 잇으면 null. */
 function drawnLinks(rects: readonly Rect[], a: Rect, b: Rect): Rect[] | null {
   const near = (p: Rect, q: Rect) => p.x <= q.x + q.w && q.x <= p.x + p.w && p.y <= q.y + q.h && q.y <= p.y + p.h && !((p.x + p.w === q.x || q.x + q.w === p.x) && (p.y + p.h === q.y || q.y + q.h === p.y));
   const seen = new Set<number>();
