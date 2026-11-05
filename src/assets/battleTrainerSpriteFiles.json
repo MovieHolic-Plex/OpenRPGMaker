@@ -1,0 +1,76 @@
+{
+  "astra_gardener": [
+    "front.png"
+  ],
+  "astra_hero": [
+    "back.png",
+    "orb.png",
+    "throw.png"
+  ],
+  "astra_muyeong": [
+    "front.png"
+  ],
+  "astra_naru": [
+    "front.png"
+  ],
+  "astra_researcher": [
+    "front.png"
+  ],
+  "astra_stroll_boy": [
+    "front.png"
+  ],
+  "astra_tamer": [
+    "front.png"
+  ],
+  "astra_trainee": [
+    "front.png"
+  ],
+  "astra_vine_keeper": [
+    "front.png"
+  ],
+  "astra_yurim": [
+    "front.png"
+  ],
+  "boy": [
+    "front.png"
+  ],
+  "bug_catcher": [
+    "front.png"
+  ],
+  "elder": [
+    "front.png"
+  ],
+  "fisher": [
+    "front.png"
+  ],
+  "girl": [
+    "front.png"
+  ],
+  "gym_rock": [
+    "front.png"
+  ],
+  "gym_water": [
+    "front.png"
+  ],
+  "hero_f": [
+    "back.png"
+  ],
+  "hero_f_front": [
+    "front.png"
+  ],
+  "hero_m": [
+    "back.png"
+  ],
+  "hero_m_front": [
+    "front.png"
+  ],
+  "hiker": [
+    "front.png"
+  ],
+  "punk": [
+    "front.png"
+  ],
+  "scientist": [
+    "front.png"
+  ]
+}

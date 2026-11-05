@@ -31,6 +31,7 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 import { transitVehicle } from "@/project/mapTransit";
+import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json";
 export { safeFileName } from './webUploadedAssetPath';
 
 const encoder = new TextEncoder();
@@ -141,6 +142,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // 프로젝트 문자열에는 차량 id 만 있고 그림 경로가 없어, 출하 판본에 차·열차 그림이 하나도 실리지 않았다
   // (사용자 2026-10-30 「차가 안 나옴」 — 첫사랑 1.16 판본에서 modern-city/vehicles·jp-city/vehicles 전부 404).
   for (const path of transitVehicleImagePaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  // 트레이너 전투 그림도 런타임이 경로로 읽는다(battleAssetPrefetch.ts:69, emeraldTrainerIntro.ts:40 —
+  // /assets/battle-trainers/<role>/<file>.png). 프로젝트에는 역할 id 만 있어 출하 판본에 폴더가 통째로 빠졌고,
+  // 아스트라 1.19 트레이너 전투 그림 10종이 404 였다(QA-AH119-001).
+  for (const path of trainerSpriteImagePaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   if (ids.has('tex_worldmap_selected')) {
     const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
@@ -149,6 +154,33 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // 따라오므로 조건부로 돌리지 않는다 — 타이틀 화면의 라이선스 표기도 이 파일을 연다.
   assets.set("assets/ATTRIBUTION.md", { kind: "public", sourcePath: "assets/ATTRIBUTION.md", zipPath: "assets/ATTRIBUTION.md" });
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
+}
+
+/**
+ * Troops' trainer battle sprites (troop.trainerSprite.{front,back,throw,backThrow}) as public paths (no leading /).
+ * The runtime composes these paths itself, so they never appear in project strings the collector walks. Only roles
+ * whose art is actually committed are shipped: the file names come from battleTrainerSpriteFiles.json, which
+ * scripts/content/sync-battle-trainer-sprite-files.mjs regenerates from public/assets/battle-trainers/.
+ * Uploaded picture ids are not handled here — collectUsedUploadedAssetIds ships those.
+ */
+export function trainerSpriteImagePaths(project: Project): string[] {
+  const bundled = /^[a-z][a-z0-9_]*$/u;
+  const files = battleTrainerSpriteFiles as Readonly<Record<string, readonly string[]>>;
+  const paths = new Set<string>();
+  const add = (role: string | undefined): void => {
+    if (!role || !bundled.test(role)) return;
+    if (Object.hasOwn(project.assets.uploaded, role)) return;
+    for (const file of Object.hasOwn(files, role) ? files[role]! : []) paths.add(`assets/battle-trainers/${role}/${file}`);
+  };
+  for (const troop of project.database.troops) {
+    const sprite = troop.trainerSprite;
+    if (!sprite) continue;
+    add(sprite.front);
+    add(sprite.back);
+    add(sprite.throw);
+    add(sprite.backThrow);
+  }
+  return [...paths].sort();
 }
 
 /** 맵 탈것 노선(map.transit.routes[].vehicles)이 쓰는 차량 시트의 public 경로(앞 / 없음). 목록에 없는 id 는 건너뛴다. */
