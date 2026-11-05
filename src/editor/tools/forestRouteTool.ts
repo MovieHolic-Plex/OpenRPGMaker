@@ -458,7 +458,9 @@ const authorForestRoute: ToolDefinition = {
       const base = field ? "들판" : "숲";
       const name = names[i] ?? (count > 1 ? `${base} ${i + 1}` : base);
       const entryU = 10 + mulberry32(seed0 + i * 31)() * 12;
-      const d = terrain !== "edge" && designs[i] && typeof designs[i] === "object" ? designs[i] as ForestDesign : undefined;
+      // 어귀(edge)는 기본 틀로 짓지만, 그림 도안 설계(plan 있음)는 어귀에도 따른다 — 도안이 그린 장면이 첫 맵(어귀)인데 도안 비율·연못이 버려졌다(r3 p3).
+      const given = designs[i] && typeof designs[i] === "object" ? designs[i] as ForestDesign : undefined;
+      const d = given && (terrain !== "edge" || given.plan) ? given : undefined;
       const built = d ? designedForestSpec(id, name, side, seed0 + i * 97, i === count - 1, field, d) : undefined;
       const { spec, entry, exit } = built ?? forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, terrain);
       const result = paintWoodland(draft, spec);

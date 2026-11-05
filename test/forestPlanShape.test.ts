@@ -37,6 +37,19 @@ describe("forest route follows an image plan", () => {
     expect(wet).toBeGreaterThan(40);
   });
 
+  it("follows the plan on an edge (forest-entrance) map too", () => {
+    // r3 p3: the assistant built the planned scene as terrains ['edge','forest'] and the edge map dropped designs[0] (32x40, no plan)
+    const design = forestDesignFromCells(parseCellMap({ cells: wideForestWithPond() }, "forest", 48, 32)!);
+    const project = createBlankProject();
+    const res = FOREST_ROUTE_TOOLS[0]!.run(project as never, { fromMapId: project.startMapId!, side: "north", count: 2, terrains: ["edge", "forest"], designs: [design], seed: 7 } as never);
+    const [edge, deep] = (res.data as { maps: { mapId: string }[] }).maps.map((m) => project.maps[m.mapId]!);
+    expect(edge!.width).toBeGreaterThan(edge!.height);
+    expect(deep!.width).toBe(32);
+    const plain = createBlankProject();
+    const res2 = FOREST_ROUTE_TOOLS[0]!.run(plain as never, { fromMapId: plain.startMapId!, side: "north", count: 1, terrains: ["edge"], designs: [{ bends: 3 }], seed: 7 } as never);
+    expect(plain.maps[(res2.data as { maps: { mapId: string }[] }).maps[0]!.mapId]!.width).toBe(32);
+  });
+
   it("keeps the path across a bridged river on every side", () => {
     const rows: string[] = [];
     for (let y = 0; y < 32; y += 1) {
