@@ -45,6 +45,23 @@ export function readRoomLinkRects(raw: unknown): Map<string, Rect[]> {
 }
 
 /** 사각형들이 두 방을 4방향으로 끊김없이 잇으면 그 길에 닿은 사각형만(돌아간 가지는 빼고) 돌려주고, 못 잇으면 null. */
+/** 조각이 이웃(방·다른 조각)과 맞닿은 면으로 방향을 정한다 — 위·아래로 닿으면 세로(N/S), 옆으로 닿으면 가로(E/W). 짧은 세로 토막이 모양만 보고 가로로 읽혔다(AMEND3 2). */
+function touchDir(rect: Rect, neighbours: readonly Rect[]): DungeonDir | null {
+  // 길쭉한 조각(한 변이 다른 변의 2배 이상)은 모양대로. 짧은·네모 조각만 이웃과 닿은 자리로 본다 — 위·아래 끝에 닿으면 세로, 옆 끝이면 가로(AMEND3 2).
+  if (rect.w >= rect.h * 2) return "E";
+  if (rect.h >= rect.w * 2) return "S";
+  let v = 0, h = 0;
+  const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
+  for (const n of neighbours) {
+    const x0 = Math.max(rect.x, n.x), x1 = Math.min(rect.x + rect.w, n.x + n.w), y0 = Math.max(rect.y, n.y), y1 = Math.min(rect.y + rect.h, n.y + n.h);
+    if (x1 < x0 || y1 < y0 || (x1 === x0 && y1 === y0)) continue;
+    const dx = Math.abs((x0 + x1) / 2 - cx) / Math.max(1, rect.w), dy = Math.abs((y0 + y1) / 2 - cy) / Math.max(1, rect.h);
+    if (dy > dx) v += 1; else if (dx > dy) h += 1;
+  }
+  if (v === h) return rect.w === rect.h ? null : rect.w > rect.h ? "E" : "S";
+  return v > h ? "S" : "E";
+}
+
 function drawnLinks(rects: readonly Rect[], a: Rect, b: Rect): Rect[] | null {
   const near = (p: Rect, q: Rect) => p.x <= q.x + q.w && q.x <= p.x + p.w && p.y <= q.y + q.h && q.y <= p.y + p.h && !((p.x + p.w === q.x || q.x + q.w === p.x) && (p.y + p.h === q.y || q.y + q.h === p.y));
   const seen = new Set<number>();
@@ -182,7 +199,7 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
     const box = cells ? cells.reduce((m, r) => ({ x0: Math.min(m.x0, r.x), y0: Math.min(m.y0, r.y), x1: Math.max(m.x1, r.x + r.w), y1: Math.max(m.y1, r.y + r.h) }), { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity }) : null;
     const dirAll: DungeonDir = box && box.x1 - box.x0 > box.y1 - box.y0 ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N";
     const pieces = cells
-      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: rect.w === rect.h ? dirAll : rect.w > rect.h ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N", rect, ...(!tree ? { loop: true } : {}) }))
+      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: ((d) => (d === "S" ? (to.y >= from.y ? "S" : "N") : d === "E" ? (to.x >= from.x ? "E" : "W") : dirAll))(touchDir(rect, [from, to, ...cells.filter((c) => c !== rect)])), rect, ...(!tree ? { loop: true } : {}) }))
       : connect(from, to, !tree);
     corridors.push(...pieces);
     if (tree) { to.from = from.id; to.dir = pieces[0]!.dir; }

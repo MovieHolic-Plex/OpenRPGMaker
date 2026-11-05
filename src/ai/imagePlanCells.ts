@@ -87,10 +87,12 @@ export function parseCellMap(data: Record<string, unknown> | null, subject: Wide
   const cells: string[] = [];
   for (let y = 0; y < rows; y += 1) {
     // 메우는 글자는 땅(0~3)·물(~)·허공(_)만 — 랜드마크 글자·길·집·나무가 줄 끝까지 번지지 않게(AMEND2 4)
-    const terrainOnly = (row: string) => row.replace(/[^0-3~_]/gu, "0");
+    // 땅 아닌 글자는 그 줄에서 가장 가까운 땅·물 글자로(문자 "0" 으로 메우면 1~3단 땅에 구덩이·벼랑이 생겼다 — AMEND3 4)
+    const nearestGround = (row: string, x: number) => { for (let d = 1; d < row.length; d += 1) { for (const c of [row[x - d], row[x + d]]) if (c && /[0-3~]/u.test(c)) return c; } return "0"; };
+    const terrainOnly = (row: string) => [...row].map((c, x) => (/[0-3~_]/u.test(c) ? c : nearestGround(row, x))).join("");
     const r = raw[y] ?? (outdoor && y > 0 ? terrainOnly(cells[y - 1]!) : "");
     const tail = r.length ? r[r.length - 1]! : "";
-    cells.push(fitRow(r, cols, outdoor ? (/[0-3~_]/u.test(tail) ? tail : "0") : "_"));
+    cells.push(fitRow(r, cols, outdoor ? (/[0-3~_]/u.test(tail) ? tail : r.length ? nearestGround(r, r.length - 1) : "0") : "_"));
   }
   const filled = cells.join("").replace(/_/gu, "").length;
   if (filled < cols * rows * 0.1) return null;

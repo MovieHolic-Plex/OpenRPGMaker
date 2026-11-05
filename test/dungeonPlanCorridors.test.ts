@@ -53,8 +53,14 @@ describe("author_dungeon keeps an image plan's ring", () => {
     const put = (g: string[][], x0: number, y0: number, w: number, h: number, ch: string) => { for (let y = y0; y < y0 + h; y += 1) for (let x = x0; x < x0 + w; x += 1) g[y]![x] = ch; };
     const neck = grid(16); put(neck, 2, 1, 24, 3, "."); put(neck, 10, 4, 2, 1, "="); put(neck, 2, 5, 24, 9, ".");
     const ell = grid(24); put(ell, 1, 1, 10, 5, "."); put(ell, 4, 6, 2, 8, "="); put(ell, 4, 14, 18, 2, "="); put(ell, 20, 16, 2, 2, "="); put(ell, 16, 18, 12, 5, "."); put(ell, 14, 2, 12, 7, ".");
-    for (const g of [neck, ell]) {
+    // a third room stacked above the target pushes it down by the wall-face gap, so the drawn leg is stretched past that room
+    const third = grid(26); put(third, 1, 1, 8, 3, "."); put(third, 4, 4, 2, 14, "="); put(third, 4, 18, 20, 2, "="); put(third, 20, 6, 8, 8, "."); put(third, 20, 15, 8, 1, "."); put(third, 18, 20, 10, 5, ".");
+    for (const g of [neck, ell, third]) {
       const plan = dungeonPlanFromCells(parseCellMap({ cells: g.map((r) => r.join("")) }, "dungeon", 30, g.length)!);
+      for (const link of plan.links) for (const r of link.rects) {
+        const others = plan.rooms.filter((o) => o.id !== link.from && o.id !== link.to);
+        expect(others.some((o) => r.x < o.x + o.w && o.x < r.x + r.w && r.y < o.y + o.h && o.y < r.y + r.h)).toBe(false);
+      }
       const project = createBlankProject();
       const res = runToolDefinition({ project }, AUTHOR_BEODEUL_DUNGEON_ALIAS, { mapId: project.startMapId!, type: "castle", seed: 3, populate: false, rooms: plan.rooms, links: plan.links });
       expect(res.ok, res.summary).toBe(true);

@@ -71,6 +71,9 @@ describe("imagePlanCells", () => {
     const map = parseCellMap({ cells: Array.from({ length: 20 }, () => "00AAA" + "0".repeat(10)) }, "village", 48, 32)!;
     expect(map.cells[0]!.slice(5)).toBe("0".repeat(43));
     expect(map.cells[25]).not.toContain("A");
+    const raised = parseCellMap({ cells: ["2222==2222h", ...Array.from({ length: 19 }, () => "2".repeat(13))] }, "village", 48, 32)!;
+    expect(raised.cells[0]!.slice(11)).toBe("2".repeat(37));
+    expect(raised.cells[31]).toBe("2".repeat(48));
   });
 
   it("keeps explicit landmark ids even when an id-less one comes first", () => {
