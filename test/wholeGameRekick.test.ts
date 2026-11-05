@@ -35,6 +35,24 @@ describe("whole-game rekick signs", () => {
     p.endings = [{ id: "ending_escape", name: "대피 성공", conditions: [], priority: 0 }];
     expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
   });
+  // 2026-11-05 gpt-only-game r9 zombie: the last stretch (chests, battles, gate, escape ending) sat on the untouched blank start map.
+  it("events on a bare blank canvas count as unbuilt once another map is built", () => {
+    const p = createBlankProject() as Project;
+    finishFirstScreen(p);
+    p.endings = [{ id: "ending_escape", name: "탈출", conditions: [], priority: 0 }];
+    const start = p.maps[p.startMapId!]!;
+    start.events.push({ id: "ev_gate", name: "봉쇄문", x: 2, y: 2, pages: [{ commands: [{ kind: "triggerEnding", endingId: "ending_escape" }] }] } as never);
+    // Only the blank map: the one-map game is thinGameSign's job, not this sign.
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+    const built = { ...structuredClone(start), id: "map_camp", name: "야영지", events: [] };
+    built.lowerTiles = built.lowerTiles.map((t, i) => (i === 0 ? t + 1 : t));
+    p.maps.map_camp = built;
+    const signs = unbuiltGameSigns(p, "좀비 생존 게임 만들어줘");
+    expect(signs).toHaveLength(1);
+    expect(signs[0]).toContain(p.startMapId!);
+    start.lowerTiles = start.lowerTiles.map((t, i) => (i === 1 ? t + 1 : t));
+    expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
+  });
   // 2026-11-05 gpt-only-game: 「마을부터」 had an ending but no healing (game over in the 2nd forest battle);
   // fantasy and cat kept the factory opening, the village kept the 「새 프로젝트」 title.
   it("combat with no healing and a factory title or opening count as unbuilt", () => {

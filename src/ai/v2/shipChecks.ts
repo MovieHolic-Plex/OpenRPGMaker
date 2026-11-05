@@ -652,6 +652,14 @@ export function unbuiltGameSigns(project: Project, _task: string): string[] {
   // 실측(2026-11-05 gpt-only-game, Terra 혼자): 「좀비 생존 게임 만들어줘」가 오프닝만 짓고 엔딩·맵 없이 턴을 끝냈는데 이어 짓기가 돌지 않았다.
   else if (!real.length) out.push("엔딩이 하나도 없다");
   if (!Object.values(project.maps).some((map) => !isBlankCanvasMap(map))) out.push("플레이할 맵이 없다 — 손대지 않은 빈 시작 맵뿐이다");
+  // 실측(2026-11-05 gpt-only-game 9차 좀비, Terra 혼자): 야영지·보급로는 지었는데 마지막 구간(상자·좀비 전투·봉쇄문·탈출 엔딩)을
+  // 풀밭 한 가지뿐인 빈 시작 맵(「빈 맵」)에 놓았다 — 플레이어는 엔딩 직전을 빈 풀밭에서 논다. 다른 맵을 지었을 때만 본다
+  // (맵 한 장뿐인 게임은 위·thinGameSign 이 다룬다).
+  const bare = Object.values(project.maps).filter((map) => (map.events ?? []).length > 0 && isBlankCanvasMap({ ...map, events: [] }));
+  if (bare.length && Object.values(project.maps).some((map) => !isBlankCanvasMap({ ...map, events: [] }))) {
+    out.push(`맵 ${bare.slice(0, 2).map((m) => `「${m.name}」(${m.id}, 이벤트 ${m.events.length}개)`).join("·")}은 사건이 놓였는데 바닥 한 가지뿐인 빈 캔버스다 — `
+      + "그 맵에 이야기에 맞는 장소(길·건물·지형)를 까고 이름을 붙인다. 이벤트·문·엔딩은 지우지 말고 두거나 다른 지은 맵으로 옮긴다.");
+  }
   const skeletonEvents = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((ev) => PLACEHOLDER_NAMES.has(String(ev.name ?? "").trim())).map((ev) => `「${ev.name}」(${m.name})`));
   if (skeletonEvents.length && !real.length) out.push(`뼈대 이벤트가 그대로다: ${skeletonEvents.slice(0, 3).join(" · ")}`);
   // 실측(2026-11-05 gpt-only-game, Terra 혼자): 엔딩까지 지은 게임도 실제 플레이에서 막혔다 — 「마을부터」는 숲길 슬라임 조우에 회복 수단이 0이라
