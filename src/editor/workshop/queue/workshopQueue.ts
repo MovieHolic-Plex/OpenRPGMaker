@@ -460,6 +460,7 @@ class WorkshopQueue {
     if (!job || job.installed) return;
     job.cancelled = false;
     job.error = null;
+    job.autoFailed = false;
     job.pause = null;
     job.finishedAt = null;
     if (job.remote && !job.pack) {
@@ -787,6 +788,7 @@ class WorkshopQueue {
         if (unavailable !== undefined) {
           job.error = `그림을 확인하지 못해 넣지 않았어요. ${unavailable}`.trim().slice(0, 200);
           job.finishedAt = now();
+        if (job.source === "assistant") job.autoFailed = true;
           this.mark(job, "failed", job.error);
           void this.persist(job);
           return;
@@ -801,6 +803,7 @@ class WorkshopQueue {
         }
         job.error = "검수를 통과한 그림이 나오지 않았어요. 설명을 조금 바꿔 다시 만들어 보세요.";
         job.finishedAt = now();
+        if (job.source === "assistant") job.autoFailed = true;
         this.mark(job, "failed", job.error);
         void this.persist(job);
         return;
@@ -895,7 +898,7 @@ class WorkshopQueue {
       if (job.cancelled) return;
       // 판을 열기 전에 판 id 를 알 수 없으므로, 열리는 동안 낸 호출은 onChange 가 판을 넘겨 줄 때 이어 붙인다.
       // 「한 번에 만들기」: 미리 보기 고치기 1번만(object-gen 기본 3번) — 그리기 호출이 첫 결과 시간의 대부분이다. 검수(3/4·품질 판정)는 그대로.
-      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}), ...((job.source === "oneclick" && job.autoPick !== false) || (job.source === "assistant" && assistantAutoPick()) ? { gate: "receipt" as const } : {}) });
+      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}), ...(job.source === "oneclick" && job.autoPick !== false ? { gate: "receipt" as const } : {}) });
       job.roundId = round.id;
       job.startedAt = now();
       this.byRound.set(round.id, job.id);

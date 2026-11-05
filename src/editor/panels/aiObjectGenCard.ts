@@ -32,7 +32,7 @@ function button(text: string, testid: string, onClick: () => void, primary = fal
   return el("button", { text, class: primary ? "is-primary" : "", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick } });
 }
 
-type Outcome = { readonly text: string } | { readonly declined: string } | { readonly failed: string };
+type Outcome = { readonly text: string } | { readonly declined: string } | { readonly failed: string; readonly reason?: string };
 type CardHandle = { readonly root: HTMLElement; readonly settled: Promise<Outcome> };
 
 type QueueModule = typeof import("@/editor/workshop/queue/workshopQueue");
@@ -135,10 +135,11 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
     else if (state === "reference" || state === "drawing" || state === "review") {
       const done = round?.runs.filter((r) => r.status === "done").length ?? 0;
       status.textContent = `후보를 그리는 중이에요(${done}/${round?.runs.length ?? 0}). 한 판에 4~8분 걸려요(참고 그림·고치기·검수). 다른 물건도 함께 그려요. 맵을 계속 고쳐도 돼요.`;
-    } else if (state === "paused") status.textContent = `멈춤: ${job.pause?.reason ?? ""}. 작업 줄에서 이어서 그려요.`;
+    } else if (state === "paused" && autoPickOn() && job.pause?.until === null) finish(`멈춤: ${job.pause.reason}. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title, reason: job.pause.reason });
+    else if (state === "paused") status.textContent = `멈춤: ${job.pause?.reason ?? ""}. 작업 줄에서 이어서 그려요.`;
     else if (state === "installing") status.textContent = job.installWait ?? "넣는 중…";
     // 알아서 고르기면 사람을 기다리지 않는다 — 못 그린 것은 조수에게 알려 가장 가까운 있는 기물로 잇게 한다.
-    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」은(는) 검수를 통과한 그림이 나오지 않아 넣지 못했어요. 조수가 있는 기물로 이어요.`, { failed: request.title });
+    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」을(를) 넣지 못했어요${job.error ? `: ${job.error}` : ""}. 조수가 있는 기물로 이어요.`, { failed: request.title, ...(job.error ? { reason: job.error } : {}) });
     else if (state === "failed") status.textContent = "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요.";
     else if (state === "cancelled") finish("그리기를 그만뒀어요. 있는 기물로 할게요.", { declined: request.title });
     else if (state === "ready" && autoPickOn() && job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") && !job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) {
@@ -286,11 +287,13 @@ export function createObjectGenBatch(requests: readonly ObjectGenRequest[], foll
 export function outcomeText(outcomes: readonly Outcome[], requests: readonly ObjectGenRequest[]): string {
   const placed = outcomes.filter((outcome): outcome is { text: string } => "text" in outcome).map((outcome) => outcome.text);
   const declined = outcomes.filter((outcome): outcome is { declined: string } => "declined" in outcome).map((outcome) => outcome.declined);
-  const failed = outcomes.filter((outcome): outcome is { failed: string } => "failed" in outcome).map((outcome) => outcome.failed);
+  const failedOutcomes = outcomes.filter((outcome): outcome is { failed: string; reason?: string } => "failed" in outcome);
+  const failed = failedOutcomes.map((outcome) => outcome.failed);
   const lines = [...placed];
   if (failed.length) {
     const need = requests.find((request) => failed.includes(request.title))?.need ?? "";
-    lines.push(`[공방에서 못 그림] ${failed.map((title) => `「${title}」`).join(", ")}은(는) 검수를 통과한 그림이 나오지 않았다. 있는 기물로 가장 가까운 것을 그 자리에 놓고 보고에 «그리지 못해 대신 놓음»으로 적어라. generate_missing_object·draw_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
+    const why = failedOutcomes.map((outcome) => `「${outcome.failed}」(${outcome.reason ?? "검수를 통과한 그림이 나오지 않음"})`).join(", ");
+    lines.push(`[공방에서 못 그림] ${why} — 넣지 못했다. 있는 기물로 가장 가까운 것을 그 자리에 놓고 보고에 «그리지 못해 대신 놓음»으로 적어라. generate_missing_object·draw_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
   }
   if (declined.length) {
     const need = requests.find((request) => declined.includes(request.title))?.need ?? "";

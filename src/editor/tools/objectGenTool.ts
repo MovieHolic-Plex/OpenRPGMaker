@@ -230,7 +230,7 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
     const sizeLine = `크기 ${tilesW}×${tilesH + drawnOver}칸 = 발밑 ${tilesH}줄(막힘)${drawnOver ? ` + 위 ${drawnOver}줄(캐릭터 위에 그려짐${rise !== drawnOver * TILE ? `, ${rise}px` : ""})` : ""}`
       + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
+      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 「알아서 고르기」가 검수 통과 후보를 넣으면 물체 id 가 후속 요청으로 온다(못 그리면 「[공방에서 못 그림]」). 사용자에게 고르라고 하지 말고, 없는 물건이 더 있으면 지금 이어서 부르고, 남은 짓기(다른 방·길·물건)는 이 턴에 마저 끝낸다. 그렸다·놓았다고 말하지 않는다.`,
       data: request,
     };
   }
