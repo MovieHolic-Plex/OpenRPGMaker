@@ -105,6 +105,7 @@ import { runTool } from '../../src/editor/tools/index.ts';
 import { ITEM_ICON_AUTO_WALL_MS, ITEM_ICON_MAX_ATTEMPTS, ITEM_ICON_RUN_BUDGET, ITEM_ICON_TOOL, iconRecordOf, livePlaceholderIcons, prepareItemIconTargets } from '../../src/editor/tools/itemIconTools.ts';
 import { drawItemIcons, itemIconSummary } from './piItemIcons.ts';
 import { APPEARANCE_GENERATION_TOOL, prepareAppearanceGeneration } from '../../src/editor/tools/characterAppearanceTools.ts';
+import { characterBrief, characterRoleOf } from '../../src/ai/characterFit.ts';
 import { CHARACTER_MAKE_WALL_MS, characterMakeSummary, drawFaces, eventsWearing, facelessFitCharacters, facelessNewAppearances, makeCharacters, misfitCharacters } from './piCharacterMaking.ts';
 import { runToolDefinition } from '../../src/editor/tools/toolRunner.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
@@ -906,6 +907,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const want = linked?.ok !== false ? linked?.data : undefined;
           if (want?.appearanceId && want.description) {
             const name = ctx.project.database.characterAppearances?.find(entry => entry.id === want.appearanceId)?.name ?? '';
+            // 모델이 쓴 짧은 설명(「금발에 붉은 앞치마를 두른 무기 상인」)에는 나이·성별이 없어 char-gen 이 소년을 골랐다(2026-11-05 실측) —
+            // 이름·설명에서 역할이 읽히면 그 역할의 영어 생김새(나이·성별·상징 소품)를 덧붙인다.
+            const role = characterRoleOf(`${name} ${want.description}`, `${name} ${want.description}`);
+            if (role) want.description = `${want.description} — ${characterBrief(name, role)}`.slice(0, 600);
             let started: { ok: boolean; note: string };
             try {
               if (!options.renderToolImage) throw new Error('편집기 연결이 없다');

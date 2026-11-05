@@ -22,7 +22,7 @@ const ROLE_RULES: readonly RoleRule[] = [
   { role: /대장장이|대장간|blacksmith|smith\b/iu, label: "대장장이", looks: ["대장장이", "망치", "모루", "가죽 앞치마", "blacksmith", "hammer"], brief: "blacksmith with a heavy hammer, soot-stained leather apron, bare muscular arms" },
   { role: /방어구|갑옷 ?(점|가게|상)|armou?r ?(shop|smith|seller)/iu, label: "방어구점", looks: ["갑옷", "방패", "투구", "armor", "armour", "shield"], brief: "armor-shop owner wearing a breastplate, a round shield on the back" },
   { role: /도구 ?(점|가게|상점)|잡화|만물|item ?shop|general ?store|tool ?shop/iu, label: "도구점", looks: ["잡화", "행상", "가방", "배낭", "상인", "앞치마", "merchant", "peddler", "bag"], brief: "general-goods shopkeeper with a big satchel and a green apron, pouches on the belt" },
-  { role: /약 ?(초|방|국|사|점)|약초|포션|물약|herb|apothecar|potion|alchemist|연금술/iu, label: "약초상", looks: ["약초", "약사", "드루이드", "연금술", "포션", "herb", "druid", "alchemist"], brief: "herbalist in a green robe with dried herbs hanging from the belt and a potion bottle" },
+  { role: /약 ?(초|방|국|사|점|상)|약초|포션|물약|herb|apothecar|potion|alchemist|연금술/iu, label: "약초상", looks: ["약초", "약사", "드루이드", "연금술", "포션", "herb", "druid", "alchemist"], brief: "herbalist in a green robe with dried herbs hanging from the belt and a potion bottle" },
   { role: /꽃 ?(집|가게|장수|파는)|플로리스트|florist|flower ?(girl|shop|seller)/iu, label: "꽃집", looks: ["꽃", "flower"], brief: "flower seller holding a basket of colorful flowers, flower in the hair, light dress and apron" },
   { role: /음유 ?시인|악사|가수|bard|minstrel|musician|troubadour/iu, label: "음유시인", looks: ["음유시인", "악사", "류트", "하프", "bard", "minstrel", "lute"], brief: "wandering bard with a feathered hat, a lute on the back, colorful traveling tunic" },
   { role: /어부|낚시|뱃사람|선원|fisher|sailor/iu, label: "어부", looks: ["어부", "낚시", "선원", "뱃사람", "fisher", "sailor"], brief: "fisherman in a straw hat and rolled trousers holding a fishing rod" },
@@ -109,6 +109,6 @@ export function eventRoleText(event: { readonly name?: string; readonly pages?: 
 export function characterBrief(name: string, role: CharacterRole): string {
   const who = role.child ? (role.gender === "female" ? "young girl" : role.gender === "male" ? "young boy" : "child")
     : role.elder ? (role.gender === "female" ? "elderly woman with grey hair" : "elderly man with a white beard")
-    : role.gender === "female" ? "woman" : role.gender === "male" ? "man" : "adult";
+    : role.gender === "female" ? "middle-aged woman" : role.gender === "male" ? "middle-aged man" : "middle-aged adult (not a child or teenager)";
   return `${who}, ${role.rule.brief}. Name: ${name}.`.slice(0, 600);
 }
