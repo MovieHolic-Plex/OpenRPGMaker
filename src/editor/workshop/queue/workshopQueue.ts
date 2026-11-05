@@ -615,7 +615,7 @@ class WorkshopQueue {
     if (job.source !== "assistant") return;
     job.autoFailed = true;
     job.finishedAt = now();
-    this.mark(job, "failed", job.error ?? "넣지 못함");
+    this.mark(job, "failed", "알아서 고르기: 넣지 못함");
     void this.persist(job);
   }
 

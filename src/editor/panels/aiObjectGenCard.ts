@@ -20,6 +20,8 @@ const RUN_STATUS: Readonly<Record<WorkshopRun["status"], string>> = {
 };
 const BACKGROUND = [150, 120, 90, 255] as const;
 const KIND_LABELS: Readonly<Record<string, string>> = { floor: "바닥에 세움", wall: "벽 앞", hang: "벽에 걺", flat: "바닥 무늬" };
+/** 작업 줄 failAutoPick 이 남기는 시간표 메모(workshopQueue.ts 와 같은 글) */
+const AUTO_PICK_FAILED_NOTE = "알아서 고르기: 넣지 못함";
 const AUTO_PICK_KEY = "oprn:assistant-objectgen-autopick";
 const INSTALLED_EVENT = "oprn:workshop-job-installed";
 
@@ -137,13 +139,14 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
       status.textContent = `후보를 그리는 중이에요(${done}/${round?.runs.length ?? 0}). 한 판에 4~8분 걸려요(참고 그림·고치기·검수). 다른 물건도 함께 그려요. 맵을 계속 고쳐도 돼요.`;
     } else if (state === "paused" && autoPickOn() && job.pause?.kind === "auth") {
       // 로그인 만료는 계정 전체 멈춤 — 이 작업을 그만두어(멈춤이 풀려 같은 묶음 작업도 끝난다) 조수가 있는 기물로 잇게 한다. 사용자가 누른 「멈추기」는 기다린다.
-      workshopQueue().cancel(job.id).catch(() => { /* 이미 끝남 */ });
+      // cancel 이 같은 job 의 pause 를 바로 비우므로 먼저 끝내고(글은 그 전에 읽는다) 그만둔다.
       finish(`멈춤: ${job.pause.reason}. 「${request.title}」은(는) 조수가 있는 기물로 이어요.`, { failed: request.title, reason: "AI 계정 로그인 만료" });
+      workshopQueue().cancel(job.id).catch(() => { /* 이미 끝남 */ });
     }
     else if (state === "paused") status.textContent = `멈춤: ${job.pause?.reason ?? ""}. 작업 줄에서 이어서 그려요.`;
     else if (state === "installing") status.textContent = job.installWait ?? "넣는 중…";
     // 알아서 고르기면 사람을 기다리지 않는다 — 못 그린 것은 조수에게 알려 가장 가까운 있는 기물로 잇게 한다.
-    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」을(를) 넣지 못했어요${job.error ? `: ${job.error}` : ""}. 조수가 있는 기물로 이어요.`, { failed: request.title, reason: job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") ? "고르거나 넣다가 오류" : job.error?.startsWith("그림을 확인하지") ? "그림 확인기를 쓸 수 없음" : "다시 그려도 검수를 통과한 그림이 없음" });
+    else if (state === "failed" && autoPickOn()) finish(`「${request.title}」을(를) 넣지 못했어요${job.error ? `: ${job.error}` : ""}. 조수가 있는 기물로 이어요.`, { failed: request.title, reason: job.timeline.at(-1)?.note === AUTO_PICK_FAILED_NOTE ? "고르거나 넣다가 오류" : job.error?.startsWith("그림을 확인하지") ? "그림 확인기를 쓸 수 없음" : "다시 그려도 검수를 통과한 그림이 없음" });
     else if (state === "failed") status.textContent = "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요.";
     else if (state === "cancelled") finish("그리기를 그만뒀어요. 있는 기물로 할게요.", { declined: request.title });
     else if (state === "ready" && autoPickOn() && job.timeline.some((entry) => entry.note === "알아서 고르기: 고르는 중") && !job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) {
@@ -301,7 +304,7 @@ export function outcomeText(outcomes: readonly Outcome[], requests: readonly Obj
   }
   if (declined.length) {
     const need = requests.find((request) => declined.includes(request.title))?.need ?? "";
-    lines.push(`[사용자 선택] ${declined.map((title) => `「${title}」`).join(", ")}은(는) 새로 그리지 말고 있는 기물로 가장 가까운 대안을 만들어라. generate_missing_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
+    lines.push(`[사용자 선택] ${declined.map((title) => `「${title}」`).join(", ")}은(는) 새로 그리지 말고 있는 기물로 가장 가까운 대안을 만들어라. generate_missing_object·draw_object 를 다시 부르지 마라.${need ? ` 원래 요청: ${need}` : ""}`);
   }
   return lines.join("\n");
 }
