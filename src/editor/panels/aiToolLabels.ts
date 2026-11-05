@@ -333,6 +333,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_game_over: system("게임오버 화면"),
   generate_game_over_image: build("게임오버 그림 만들기", "spark"),
   generate_image_asset: build("그림 만들기", "spark"),
+  generate_item_icon: build("아이콘 그리기", "spark"),
   generate_title_art: build("타이틀 아트 만들기", "spark"),
   generate_battle_backdrop: build("전투 배경 만들기", "spark"),
   improve_title_screen: system("타이틀 단계 개선"),

@@ -144,6 +144,7 @@ import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { PIXEL_FX_TOOLS } from "./pixelFxTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
+import { ITEM_ICON_TOOLS } from "./itemIconTools";
 import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { BATTLE_BACKDROP_TOOLS } from "./battleBackdropTools";
@@ -470,6 +471,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_PC_TOOLS, 'event'),
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
+  ...withDomain(ITEM_ICON_TOOLS, "database"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
   ...withDomain(BATTLE_BACKDROP_TOOLS, "system"),
   ...withDomain(PRESENTATION_TOOLS, "system"),
