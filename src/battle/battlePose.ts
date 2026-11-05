@@ -46,7 +46,7 @@ export function resolveBattlerPose(input: {
   // not show "attack" and the target should not show "hit".
   const isHeal = result && result.amount < 0;
   if (showAction && result && !isHeal) {
-    if (result.userRecordId === input.battler.recordId || result.userRecordId === input.battler.id) {
+    if (result.userId === input.battler.id || result.userRecordId === input.battler.recordId || result.userRecordId === input.battler.id) {
       return "attack";
     }
     if (result.targetId === input.battler.id && result.hit) {

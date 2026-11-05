@@ -370,6 +370,8 @@ export interface BattleAnimationSnapshot {
 // 화면(빗맞음/크리티컬 표시)으로 전달하기 위해 snapshot 에 담는다.
 export interface BattleActionResultSnapshot {
   readonly userRecordId: string;
+  /** 행동한 배틀러의 이번 전투 인스턴스 id. 같은 종족이 둘이면 recordId 가 같아 연출이 둘을 구분하지 못한다. */
+  readonly userId: string;
   readonly targetId: string;
   readonly hit: boolean;
   readonly amount: number;

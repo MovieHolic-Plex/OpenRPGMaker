@@ -924,8 +924,7 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   if (!isEnemyMeleeEntry(entry) || reduced()) return undefined;
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:is([data-pixel-enemy], [data-charset-enemy]):not(.defeated)")];
   const user = enemies.find((node) => node.dataset.testid === entry.userId)
-    ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);
-  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다. 뿌리 박힌 적(식충 식물: stomp 칸이지만 제자리 덩굴 채찍)도 제자리.
+    ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다. 뿌리 박힌 적(식충 식물: stomp 칸이지만 제자리 덩굴 채찍)도 제자리.
   if (user?.dataset.pixelEnemy === "shoot" || user?.dataset.pixelEnemy === "breath") return undefined;
   if (ROOTED_PIXEL_ENEMIES.has(user?.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet ?? "")) return undefined;
   const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")];

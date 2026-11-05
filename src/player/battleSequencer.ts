@@ -319,6 +319,7 @@ export function createBattleSequencer(
     if (!entry.targetId || !entry.userRecordId) return undefined;
     return {
       userRecordId: entry.userRecordId,
+      userId: entry.userId ?? entry.userRecordId,
       targetId: entry.targetId,
       hit: entry.hit !== false,
       amount: entry.amount ?? 0,
@@ -1076,7 +1077,7 @@ export function createBattleSequencer(
     const cinematicBeatMs = cinematicMs * (tempo > 0 ? tempo : 1) * Math.max(0.2, speedMultiplier) / approachScaleFor(weight);
     const planBeats = (animationMs: number | undefined): readonly BattleActionBeat[] => tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
-          userId: entry.userRecordId ?? entry.userId ?? "enemy",
+          userId: entry.userId ?? entry.userRecordId ?? "enemy",
           // 피해가 없는 기술(약화·수면)은 feedback 이 없어 대상이 비었다 — 내 쪽과 같이 엔트리 대상을 넘긴다
           targetId: entry.targetId,
           feedback,
@@ -1152,8 +1153,8 @@ export function createBattleSequencer(
     if (entry.kind === "move") return { step: "acting", lines: [], targetId: entry.targetId };
     if (entry.kind === "special") return { step: "acting", lines: entry.message ? [statStageLine(entry, snapshot) ?? entry.message] : [], targetId: entry.targetId };
     if (entry.kind !== "action") return undefined;
-    const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
-      ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);
+    const user = snapshot.actors.find((actor) => actor.id === entry.userId || actor.recordId === entry.userRecordId)
+      ?? snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
     const name = user?.name ?? "아군";
     if (entry.commandKind === "escape") {
       return {
