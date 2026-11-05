@@ -80,6 +80,7 @@ import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 import { discardConstructionLogs, offerConstructionLogs } from "@/editor/agentConstructionReveal";
 import { describeMergeConflicts } from "@/project/projectMerge";
+import { getPlanGrid } from "@/editor/tools/planGridBuild";
 import { inspectGoalCampaign, goalProductionIssues } from "@/ai/piAgent/goalCampaignInspection";
 import { GOAL_CAMPAIGN_MARKER, GOAL_MAX_TURNS, GOAL_MIN_MAPS, GOAL_TIMEOUT_MS, goalCampaignTask, goalCommandBody, isGoalCampaignTask } from "@/ai/piAgent/goalCommand";
 
@@ -428,6 +429,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
   const approvedTilesetFamilies = surface.getApprovedTilesetFamilies?.() ?? [];
+  const planGrid = getPlanGrid();
   const historyChanges = getMapEditHistoryChanges(5);
   const editHistory = getMapEditHistoryEntries().slice(0, 20).map(entry => {
     const changes = historyChanges.filter(change => change.steps === entry.steps).map(({ steps: _steps, ...rest }) => rest);
@@ -436,6 +438,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const here = {
     ...(currentMapId && base.maps[currentMapId] ? { currentMapId } : {}),
     ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies: [...approvedTilesetFamilies] } : {}),
+    // 그림 도안을 읽은 칸 도면 — build_from_plan 은 워커에서 돌아 편집기 쪽 기억(setPlanGrid)을 못 본다.
+    ...(planGrid ? { planGrid } : {}),
     // 워커는 편집기의 되돌리기 스택을 못 본다 — 라벨만 실어 보내 list_edit_history 가 답하게 한다.
     ...(editHistory.length ? { editHistory } : {}),
   };

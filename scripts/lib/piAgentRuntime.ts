@@ -31,6 +31,7 @@ import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { setClientEditHistory } from "../../src/editor/tools/historyTools.ts";
+import { setPlanGrid } from "../../src/editor/tools/planGridBuild.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
@@ -413,6 +414,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     monsterTurn: request.monsterTurn ?? isMonsterRequestTurn(request.task),
   };
   setClientEditHistory(request.editHistory ?? []);
+  setPlanGrid(request.planGrid ?? null);
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   // 큰 참고 그림은 손실 없을 때만 정수 배율로 줄여 보낸다(D5) — 두 엔진 공통. 관문은 줄인 그 그림의 전달을 확인한다.

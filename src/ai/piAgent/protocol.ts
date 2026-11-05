@@ -1,6 +1,7 @@
 import type { ActivityVisual } from "../activityVisual";
 import type { PiApplyMode } from "./applyMode";
 import type { RoleModel, SpecialistModels } from "../modelRoles";
+import type { PlanCode } from "../planGrid";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
@@ -82,6 +83,8 @@ export interface PiAgentRequest {
    * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
    */
   readonly approvedTilesetFamilies?: readonly string[];
+  /** 이번 턴 그림 도안을 읽은 칸 도면(ai/planGrid.ts). 워커의 build_from_plan 이 읽는다 — 도구는 워커 프로세스에서 돌아 편집기 쪽 기억을 못 본다. */
+  readonly planGrid?: PlanCode;
   /**
    * 편집기가 가진 되돌리기 기록(가까운 것이 먼저). 워커는 별도 프로세스라 편집기의 히스토리 스택을 못 본다 —
    * `list_edit_history` 가 이 목록을 답하고, `revert_last_edit` 는 초안을 건드리지 않고 되돌림을 요청만 한다(편집기가 끝에 실행).

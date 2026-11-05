@@ -8,6 +8,8 @@ import { planToDungeon } from "@/editor/tools/planGridDungeon";
 import { planToVillage } from "@/editor/tools/planGridVillage";
 import { planToInterior } from "@/editor/tools/planGridInterior";
 import type { WidenSubject } from "@/ai/vagueWidenCatalog";
+import { BUILD_FROM_PLAN_TOOL, setPlanGrid } from "@/editor/tools/planGridBuild";
+import { createBlankProject } from "@/project/defaults/blankProject";
 
 type Fx = { subject: WidenSubject; cols: number; rows: number; read: Record<string, unknown> };
 const fx = reads as Record<string, Fx>;
@@ -58,6 +60,18 @@ describe("planGrid", () => {
     expect(rep.errors).toEqual([]);
     expect(rep.layout.buildings!.length).toBeGreaterThanOrEqual(3);
     expect(res.terrain.water.filter((w) => w === 3).length).toBeGreaterThan(0);
+  });
+
+  it("build_from_plan builds the plan the run request carried and refuses loudly without one", () => {
+    const f = fx.p2!;
+    const project = createBlankProject();
+    setPlanGrid(null);
+    expect(() => BUILD_FROM_PLAN_TOOL.run(project, {})).toThrow(/읽은 도면이 없다/u);
+    setPlanGrid(parsePlanCode(f.read, f.subject, f.cols, f.rows));
+    const r = BUILD_FROM_PLAN_TOOL.run(project, { name: "도안 던전" }) as { data: { mapId: string; kind: string } };
+    setPlanGrid(null);
+    expect(r.data.kind).toBe("dungeon");
+    expect(project.maps[r.data.mapId]?.name).toBe("도안 던전");
   });
 
   it("turns the house plan into separated rooms with doors between drawn neighbours", () => {
