@@ -4,6 +4,7 @@
 // 도안 그림만 붙이면 조수는 빌더를 기본 인자로 불러 도안이 사라졌다(2026-11-04 실측). 호출(이미지·비전·계정)은 editor/imagePlanMockup.ts 가 한다.
 import type { WidenSubject } from "./vagueWidenCatalog";
 import { dungeonPlanFromCells, forestDesignFromCells, landmarkFootprints, villageArgsFromCells, type CellMap } from "./imagePlanCells";
+import { planImagePrompt, planSummary, type PlanCode } from "./planGrid";
 
 export const IMAGE_PLAN_PROVIDER = "ChatGPT";
 
@@ -16,7 +17,13 @@ export interface ImagePlanScene {
 const NO_NOISE = "No people, no characters, no monsters, no text, no labels, no UI, no grid lines.";
 const STYLE = "16px-per-tile SNES-era JRPG map, crisp pixel art, orthographic, no perspective, no isometric angle.";
 
+/** 도안 그리기 지시(2026-11-05 오너: 「도안은 그냥 공간을 '기획' 하는 정도로만」) — 예쁜 스크린샷이 아니라 무엇을 어디에 둘지 정한 구역 기획도. */
 export function imagePlanPrompt(scene: ImagePlanScene): string {
+  return planImagePrompt(scene.subject, `${scene.label} (${scene.traits.join(", ")})`);
+}
+
+/** 옛 스크린샷형 도안 지시(비교 측정용으로만 남긴다). */
+export function imagePlanScreenshotPrompt(scene: ImagePlanScene): string {
   const what = `${scene.label} (${scene.traits.join(", ")})`;
   if (scene.subject === "house" || scene.subject === "dungeon" || scene.subject === "castle") {
     const indoor = scene.subject === "house"
@@ -94,6 +101,8 @@ export interface ImagePlanRead {
   /** 칸 지도 읽기(imagePlanCells.ts) — 있으면 빌더 인자는 이것에서 옮긴다. fixedRegions = 겹쳐 보고 고친 영역 수. */
   readonly cells?: CellMap;
   readonly fixedRegions?: number;
+  /** 칸 도면(ai/planGrid.ts) — 있으면 build_from_plan 이 이 도면 칸을 그대로 짓는다. */
+  readonly plan?: PlanCode;
 }
 
 function scaleCell(value: unknown, from: number, to: number): number | null {
@@ -205,6 +214,7 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
   const head = `[그림 도안] 짓기 전에 이 장면을 ChatGPT 이미지 모델로 그린 도안(첫 요청에 붙은 그림)과, 읽어 낸 만큼의 묘사·칸 배치를 함께 싣는다. 도안은 상상력을 보태는 참고다 — 랜드마크·소품·분위기·구성 아이디어를 맵에 살리고, 큰 윤곽·높낮이·통로는 칸 배치를 따르되 칸 하나하나를 베끼는 데 매달리지 않는다. 칸과 물건은 이 프로젝트의 실제 칩셋 조각만 쓰고, 도안의 색·질감을 베끼지 않는다.`;
   if (!read) return head;
   const idea = read.description ? `\n${describeNote(read.description)}` : "";
+  if (read.plan) return `${head}${idea}\n${planBuildNote(read.plan)}`;
   if (read.cells) return `${head}${idea}\n${cellBuildNote(scene.subject, read.cells)}`;
   if (!Object.keys(read.data).length) return `${head}${idea}`;
   if (scene.subject === "village") {
@@ -221,6 +231,14 @@ export function imagePlanBuildNote(scene: ImagePlanScene, read: ImagePlanRead | 
       : `${head}${idea}`;
   }
   return `${head}${idea}\n읽은 방 배치(도안 칸 기준): ${JSON.stringify(read.data)}. 실내 평면도를 따라 방 구획·문·가구 자리를 정한다.`;
+}
+
+function planBuildNote(plan: PlanCode): string {
+  return [
+    `읽은 칸 도면(${plan.cols}×${plan.rows}, 구역 ${plan.zones.length}·길 ${plan.paths.length}·물건 ${plan.objects.length}): 이 장소는 build_from_plan 한 번으로 짓는다(인자 없이, name 만). 도면의 구역·길·물건 칸이 그대로 맵이 된다 — 같은 장소를 author_dungeon·author_beodeul_town·author_forest_route·build_hand_interior_room 으로 다시 짓지 않는다.`,
+    `구역(무엇을 담나): ${planSummary(plan)}`,
+    "지은 뒤 data.missing 에 나온 도안 물건은 비슷한 것으로 때우지 말고 generate_missing_object 로 만든다(물건마다 한 번, base 는 그 칸). build_from_plan 이 거절되면(도면을 규칙에 맞추지 못함) 그때만 평소 빌더로 짓고 보고에 «도면 대신 빌더»라고 적는다.",
+  ].join("\n");
 }
 
 function cellBuildNote(subject: WidenSubject, cells: CellMap): string {

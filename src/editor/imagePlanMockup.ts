@@ -11,6 +11,8 @@ import {
 } from "@/ai/imagePlan";
 import { shrinkReferenceImage } from "@/start/firstRun/referenceImage";
 import { applyCellFixes, cellColor, cellGridSize, cellMapFixPrompt, cellMapReadPrompt, parseCellMap, type CellMap } from "@/ai/imagePlanCells";
+import { applyPlanFix, checkPlan, compilePlan, parsePlanCode, planCellColor, planFixPrompt, planGridSize, planReadPrompt, type PlanCode, type PlanGrid } from "@/ai/planGrid";
+import { setPlanGrid } from "@/editor/tools/planGridBuild";
 import {
   IMAGE_PLAN_MAX_CANDIDATES, imagePlanJudgePrompt, parsePlanJudge, pickBest, pickLine,
   type PlanCandidate, type PlanJudge,
@@ -26,7 +28,7 @@ function toBlob(dataUrl: string): Blob {
   return new Blob([bytes], { type: /^data:([^;]+)/u.exec(head ?? "")?.[1] ?? "image/png" });
 }
 
-async function gridPicture(blob: Blob, cols: number, rows: number, every = 1, overlay?: CellMap): Promise<string> {
+async function gridPicture(blob: Blob, cols: number, rows: number, every = 1, overlay?: CellMap | PlanGrid): Promise<string> {
   const bitmap = await createImageBitmap(blob);
   try {
     const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
@@ -39,7 +41,7 @@ async function gridPicture(blob: Blob, cols: number, rows: number, every = 1, ov
     if (overlay) {
       ctx.globalAlpha = 0.5;
       for (let r = 0; r < overlay.rows; r += 1) for (let c = 0; c < overlay.cols; c += 1) {
-        const [cr, cg, cb] = cellColor(overlay.cells[r]![c]!);
+        const [cr, cg, cb] = "cells" in overlay ? cellColor(overlay.cells[r]![c]!) : planCellColor(overlay, r * cols + c);
         ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
         const x0 = Math.round(c * w / cols), y0 = Math.round(r * h / rows);
         ctx.fillRect(x0, y0, Math.round((c + 1) * w / cols) - x0, Math.round((r + 1) * h / rows) - y0);
@@ -121,7 +123,45 @@ async function readLayout(blob: Blob, scene: ImagePlanScene, signal?: AbortSigna
   return layout ? { ...layout, description } : { subject: scene.subject, cols: 0, rows: 0, data: {}, description };
 }
 
+/** 칸 도면 읽기(ai/planGrid.ts): 도안을 구역·길·물건·입구 도면 코드로 읽고, 검사하고, 구역 색으로 다시 그려 겹쳐 보며 틀린 구역만 고친다(최대 3번). */
+export const PLAN_FIX_ROUNDS = 3;
+async function readPlanGrid(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<PlanCode | null> {
+  const bitmap = await createImageBitmap(blob);
+  const { cols, rows } = planGridSize(bitmap.width, bitmap.height, scene.subject);
+  bitmap.close();
+  const picture = await gridPicture(blob, cols, rows, 5);
+  let code = parsePlanCode(await askVision([{ type: "text", text: planReadPrompt(scene.subject, cols, rows) }, { type: "image_url", image_url: { url: picture, detail: "high" } }], 16000, signal), scene.subject, cols, rows);
+  if (!code) return null;
+  for (let round = 0; round < PLAN_FIX_ROUNDS; round += 1) {
+    const g = compilePlan(code);
+    const check = checkPlan(g);
+    try {
+      const overlay = await gridPicture(blob, cols, rows, 5, g);
+      const fix = await askVision([{ type: "text", text: planFixPrompt(code, check.issues) }, { type: "image_url", image_url: { url: picture, detail: "high" } }, { type: "image_url", image_url: { url: overlay, detail: "high" } }], 12000, signal);
+      const applied = applyPlanFix(code, fix);
+      code = applied.code;
+      console.info(`imagePlan: plan fix round=${round + 1} changed=${applied.changed} issues=${check.issues.length}`);
+      if (fix?.ok === true && applied.changed === 0) break;
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      console.info(`imagePlan: plan fix failed ${error instanceof Error ? error.message : String(error)}`);
+      break;
+    }
+  }
+  const final = checkPlan(compilePlan(code));
+  console.info(`imagePlan: plan ${cols}x${rows} zones=${final.zones} objects=${final.objects} connectivity=${final.connectivity} issues=${final.issues.length}`);
+  return code;
+}
+
 async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortSignal): Promise<ImagePlanRead | null> {
+  setPlanGrid(null);
+  try {
+    const plan = await readPlanGrid(blob, scene, signal);
+    if (plan) { setPlanGrid(plan); return { subject: scene.subject, cols: plan.cols, rows: plan.rows, data: {}, plan }; }
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    console.info(`imagePlan: plan read failed ${error instanceof Error ? error.message : String(error)}`);
+  }
   try {
     const cells = await readCells(blob, scene, signal);
     if (cells) return cells;
@@ -148,7 +188,7 @@ async function readLayoutOnly(blob: Blob, scene: ImagePlanScene, signal?: AbortS
 
 /** 배치(칸 지도나 점 읽기)를 읽었나 — 묘사만 있는 읽기는 아니다. */
 export function hasLayout(read: ImagePlanRead | null | undefined): boolean {
-  return !!read && (!!read.cells || Object.keys(read.data).length > 0);
+  return !!read && (!!read.plan || !!read.cells || Object.keys(read.data).length > 0);
 }
 
 interface Drawn { readonly blob: Blob; readonly model: string; read: ImagePlanRead | null }
