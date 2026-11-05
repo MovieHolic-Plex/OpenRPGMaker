@@ -28,6 +28,9 @@ export function detectRun(runs) {
       }
       for (const n of row.net ?? []) {
         if (IGNORE_NET.test(n.url)) continue;
+        // The browser aborts media and blob requests when music switches or a scene unmounts; only HTTP errors and
+        // failures of non-media assets are defects.
+        if (n.kind === "failed" && /ERR_ABORTED/.test(n.why ?? "") && (/^blob:/.test(n.url) || /\.(mp3|ogg|wav|m4a)(\?|$)/.test(n.url))) continue;
         const asset = n.url.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+/, "");
         add({ ...base, check: "asset-request", severity: "visual", claim: `${n.status ?? n.why} ${asset}`, key: `net|${asset}`, evidence: ev, state: row.state });
       }
@@ -36,7 +39,11 @@ export function detectRun(runs) {
       if ((row.state?.missingTextures ?? 0) > 0) add({ ...base, check: "missing-texture", severity: "visual", claim: `화면에 그림 없는(__MISSING) 객체 ${row.state.missingTextures}개`, key: `mtex|${row.state.mapId}`, evidence: ev, state: row.state });
       if (/input-ignored$/.test(row.label ?? "")) add({ ...base, check: "input-mode-ignored", severity: "function", claim: `${job.input} 입력 6번에는 그대로였는데 Enter 한 번에 진행됨 (screen=${row.state?.screen} 대사/선택지=${(row.state?.choices ?? row.state?.dialogue ?? "").slice(0, 40)}) — 이 입력 방식이 여기서 무시되거나 QA 입력이 빗나감`, key: `ignored|${job.input}|${row.state?.mapId}|${(row.state?.choices ?? "").slice(0, 20)}`, evidence: ev, state: row.state, inputs: row.inputs });
       if (/stuck$/.test(row.label ?? "")) add({ ...base, check: "stuck", severity: "blocker", claim: `입력 6번에도 화면 상태가 바뀌지 않음 (screen=${row.state?.screen} map=${row.state?.mapId} dialogue=${(row.state?.dialogue ?? "").slice(0, 40)})`, key: `stuck|${row.state?.mapId}|${(row.state?.dialogue ?? "").slice(0, 30)}`, evidence: ev, state: row.state, inputs: row.inputs });
-      if (row.darkMs >= 3500) darkRun.push(row); else darkRun = [];
+      // A dark frame is only a defect when nothing is being presented on it: game over / ending screens, narration over
+      // black, and title cards are designed dark screens.
+      const presented = ["gameover", "ending", "title"].includes(row.state?.screen) || !!row.state?.dialogue || !!row.state?.choices
+        || (row.dom?.text ?? "").replace(/\b(ev|map)_[\w-]+/g, "").replace(/[⛶AB]|메뉴/g, "").trim().length > 12;
+      if (row.darkMs >= 3500 && !presented) darkRun.push(row); else darkRun = [];
       if (darkRun.length === 1) add({ ...base, check: "black-screen", severity: "blocker", claim: `화면이 ${row.darkMs / 1000}초 넘게 검은색 (전환 프레임이 아니라 지속)`, key: `black|${row.state?.screen}|${row.state?.mapId}`, evidence: ev, state: row.state, inputs: row.inputs });
       for (const o of row.dom?.overflow ?? []) {
         if (!o.text || o.text.length < 2) continue;

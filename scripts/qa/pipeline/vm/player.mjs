@@ -101,6 +101,19 @@ async function domDump() {
       if (r.width < 2 || r.height < 2) continue;
       const cs = getComputedStyle(el);
       if (cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
+      // Screen-reader-only text (clip / 1px box) is not drawn for players.
+      if ((cs.clip && cs.clip !== "auto") || (cs.clipPath && cs.clipPath !== "none") || /sr-only|visually-hidden/.test(el.className)) continue;
+      // An item scrolled out of a scrolling list is not "off screen": the list is the viewport for it.
+      let scroller = el.parentElement;
+      while (scroller && scroller !== app) {
+        const sc = getComputedStyle(scroller);
+        if (/(auto|scroll)/.test(sc.overflowY + sc.overflowX) && (scroller.scrollHeight > scroller.clientHeight + 2 || scroller.scrollWidth > scroller.clientWidth + 2)) break;
+        scroller = scroller.parentElement;
+      }
+      if (scroller && scroller !== app) {
+        const sr = scroller.getBoundingClientRect();
+        if (r.bottom <= sr.top + 1 || r.top >= sr.bottom - 1 || r.right <= sr.left + 1 || r.left >= sr.right - 1) continue;
+      }
       const txt = (el.innerText || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 80);
       const clipsX = el.scrollWidth > el.clientWidth + 2 && /hidden|clip/.test(cs.overflowX + cs.overflow);
       const clipsY = el.scrollHeight > el.clientHeight + 2 && /hidden|clip/.test(cs.overflowY + cs.overflow);
@@ -209,14 +222,17 @@ function sig(s) { return `${s.screen}|${s.mapId}|${s.x},${s.y}|${(s.dialogue ?? 
 async function driveUntilFree({ maxSteps = 40, label = "ev" } = {}) {
   let same = 0;
   let last = "";
+  let sameSince = Date.now();
   let choiceRound = 0;
   let lastChoices = null;
   for (let step = 0; step < maxSteps && Date.now() - T0 < HARD_MS; step += 1) {
     const s = await readState();
     const now = sig(s);
-    same = now === last ? same + 1 : 0;
+    if (now === last) same += 1; else { same = 0; sameSince = Date.now(); }
     last = now;
-    if (same >= 6) {
+    // Stuck = no visible change for 6 polls AND 15 s: cutscenes with move routes and waits legitimately hold the
+    // same state for several seconds while `running` is true.
+    if (same >= 6 && Date.now() - sameSince >= 15000) {
       // Before calling it stuck, try the plain keyboard path: if Enter moves the game where touch/mouse did not,
       // the defect is "this input mode is ignored here", not a soft-lock.
       if (job.input !== "keyboard") {
@@ -245,7 +261,8 @@ async function driveUntilFree({ maxSteps = 40, label = "ev" } = {}) {
     if (s.dialogue) { if (step % 2 === 0) await snap(`${label}-dlg`); await confirm(); await sleep(350); continue; }
     if (s.menu) { await cancel(); await sleep(300); continue; }
     if (s.inputEnabled === true && s.running === false) { await snap(`${label}-free`); return { free: true, steps: step }; }
-    await sleep(500);
+    // An event is running with nothing to answer (move routes, waits, fades): give it time rather than input.
+    await sleep(1500);
   }
   await snap(`${label}-budget`);
   return { budget: true };

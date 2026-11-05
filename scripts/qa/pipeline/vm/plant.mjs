@@ -45,7 +45,8 @@ const take = (filter) => {
   used.add(e.event.id);
   return e;
 };
-const firstText = (page) => { let t = null; walkCommands(page.commands, (c) => { if (!t && c.kind === "text") t = c; }); return t; };
+// Prefer a top-level line: the first text in document order can sit in a fork branch the runtime never takes.
+const firstText = (page) => { let t = (page.commands ?? []).find((c) => c.kind === "text") ?? null; if (!t) walkCommands(page.commands, (c) => { if (!t && c.kind === "text") t = c; }); return t; };
 const plants = [];
 const add = (p, e) => plants.push({ id: `${values.plant}-${plants.length + 1}`, mapId: e.map.id, mapName: e.map.name, eventId: e.event.id, x: e.event.x, y: e.event.y, ...p });
 

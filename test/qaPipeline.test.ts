@@ -77,7 +77,7 @@ describe("qa pipeline deterministic detection", () => {
       row(1, { net: [{ kind: "http", status: 404, url: "http://127.0.0.1:7812/g/1.0/assets/a.png" }] }),
       row(2, { net: [{ kind: "http", status: 404, url: "http://127.0.0.1:7812/g/1.0/assets/a.png" }] }),
       row(3, { label: "ev-stuck" }),
-      row(4, { darkMs: 3600, lum: 2 }),
+      row(4, { darkMs: 3600, lum: 2, state: { screen: "field", mapId: "m1", dialogue: null }, dom: { text: "", overflow: [] } }),
       row(5, { dom: { text: "", overflow: [{ el: "span.name", text: "아주 긴 이름", clipsX: true, clipsY: false, ellipsis: false, offscreen: false, rect: [1, 2, 3, 4] }] } }),
     ];
     const { findings, frames } = detectRun([{ job, summary: {}, rows }]);
@@ -98,9 +98,22 @@ describe("qa pipeline deterministic detection", () => {
     expect(checksOf("난 été 카페에서 일해. 숫자는 12·34 — 괜찮아")).toEqual([]);
   });
 
-  it("한 장짜리 전환 암전은 결함이 아니다", () => {
-    const { findings } = detectRun([{ job, summary: {}, rows: [row(1, { darkMs: 600, lum: 3 }), row(2)] }]);
+  it("한 장짜리 전환 암전과, 게임 오버·암전 위 내레이션은 결함이 아니다", () => {
+    const { findings } = detectRun([{ job, summary: {}, rows: [
+      row(1, { darkMs: 600, lum: 3 }),
+      row(2, { darkMs: 3600, lum: 2, state: { screen: "gameover" }, dom: { text: "", overflow: [] } }),
+      row(3, { darkMs: 3600, lum: 2, state: { screen: "field", dialogue: "이튿날 밤, 초소 지하." } }),
+    ] }]);
     expect(findings.some((f) => f.check === "black-screen")).toBe(false);
+  });
+
+  it("음악·blob 요청의 ERR_ABORTED 는 결함이 아니고, 그림 404 는 결함이다", () => {
+    const { findings } = detectRun([{ job, summary: {}, rows: [row(1, { net: [
+      { kind: "failed", url: "http://127.0.0.1:7812/g/1.0/assets/bgm/forest.mp3", why: "net::ERR_ABORTED" },
+      { kind: "failed", url: "blob:http://127.0.0.1:7812/abc", why: "net::ERR_ABORTED" },
+      { kind: "http", status: 404, url: "http://127.0.0.1:7812/g/1.0/assets/portraits/a.png" },
+    ] })] }]);
+    expect(findings.filter((f) => f.check === "asset-request").map((f) => f.claim)).toEqual(["404 /assets/portraits/a.png"]);
   });
 });
 
