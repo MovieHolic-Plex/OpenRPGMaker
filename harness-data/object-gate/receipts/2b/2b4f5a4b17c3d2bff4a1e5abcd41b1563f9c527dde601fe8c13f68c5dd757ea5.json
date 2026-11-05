@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b4f5a4b17c3d2bff4a1e5abcd41b1563f9c527dde601fe8c13f68c5dd757ea5",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "firewood snow",
+ "label": "beodeul_city/wave-places/ice-age-field/firewood_snow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 27,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow layer on top of the log pile",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "stacked log ends (front face)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The pile is 7-13 rows tall. Rows 7-9 are an 8px-wide snow-capped top, with white at rows 8-9. Row 10 is a light blue (#cadaee) front-edge line, and the width widens to 12 there. Dark brown rows 11-13 below it show the log ends as the front face, with row 11 acting as shadow under the snow edge. This reads as a small mound with a short top surface and a 3-row front face. It is a small debris-like pile, so the kind plausibly matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a very small snow-capped log pile, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. Its 14 distinct colours match the bench and lamp references, which are also thin props. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown or blue rather than black, which fits dark_material_tone. It shows a white snow cap with a cool shadow tone, plus brown log bodies with darker bark and lighter cut ends. That is about 4 steps against roughly 5 on the references, and the texture is modest but present. It is comparable to the bench and lamp props in density, though not as rich as the stall or well. A careful artist would accept it next to them without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16062
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow layer on top of the log pile",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "stacked log ends (front face)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile shows a narrower 8px snow cap on rows 7-9, widening to 12px on rows 10-13. The snow is white on rows 8-9 and ends in a light blue front-edge line on row 10 (#cadaee). Dark brown log ends sit directly below it on rows 11-13, and row 11 reads as the shadow under the snow. That gives a top band of about 3 rows over a 3-row front face of log ends. It is small and borderline, but the snow band has a front-edge line and shadow, so it counts as a top surface rather than a rim. The object is a compact pile of logs and snow, which fits the debris kind loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small snow-topped log pile, under one tile in size, so the per-tile facts are 0 and I judged it by eye. It has 14 distinct colours, the same count as the bench and lamp references, and its dark edge pixels are 0% neutral, so the outline leans brown and looks like a dark material tone rather than black. The snow cap and the log ends show only about 3-4 lightness steps. The log bodies look like flat brown with little grain, and there are no per-log highlights or clumped snow texture like the 5-6 step ramps and dotted grain on the hedge, well and stall. Next to those references it reads thinner and more sticker-like. I could not find enough evidence of Beodeul-level craft, so it fails on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18049
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cover on firewood pile",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "log ends / front face of stack",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 8 px wide at rows 7-9 and 12 px wide at rows 10-13. The white snow band at rows 8-9 ends in a lighter blue-white front-edge line at row 10 (#cadaee). Dark brown log shadow follows at row 11, with the log ends below at rows 11-13. That gives a top of about 3 rows over a front face of 3 rows. The top is short but meets evidence (a). No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is tiny, under one tile, so the per-tile tone facts read 0 and I judged by eye. It is a snow-capped log pile with a white snow cap, a few brown log tones and a dark brown edge. The measured 0% near-neutral dark edge share supports a tinted outline rather than a black sticker line. The 14 distinct colours match the bench, but the piece is much smaller than any reference. Each material gets about 3-4 steps, where the references use about 5-6. The snow reads as a near-flat white cap with little shading or sparkle variation. The log ends show little individual grain or ring detail, so the pile looks thinner and flatter than the bench, hedge or well next to it. This is not a clear pass, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17015
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cover on log pile",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "log ends / front face of pile",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 8 px wide on rows 7-9 and 12 px wide on rows 10-13. Rows 8-9 are a white snow band, and row 7 is partly a brown log top. The band ends in a light-blue edge line at row 10 (#cadaee). Dark log shadow follows at rows 11-12, then the log ends and a dark base at rows 12-13 form a 4-row front face. The top is small, but it is a snow surface with an edge line and shadow, not just a rim. It is a compact pile rather than flat scattered debris, but it still matches the debris kind loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small firewood pile with a snow cap, only about 11x6 source pixels, so no full 16x16 tile exists and the per-tile facts read 0. It has 14 distinct colours, the same as the bench and lamp references. Its dark edge pixels are 0% neutral, so the outline is tinted brown rather than a black sticker line, which matches Beodeul. It shows a white snow cap, a light snow shade, and a few brown log tones with possibly end-grain dots. That is about 4 visible steps against the 5-6 on the richer references (well, stall). By eye it looks thinner and more compact than the bench, and I can't make out per-log shading or grain at this size. The pile reads as a simple small cluster rather than individually shaded logs, so density is slightly lower than the same-kind reference. Doubt remains, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17451
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.606Z",
+ "cells": {
+  "16": [
+   "2d0994f2edb15271"
+  ],
+  "24": [
+   "647b1e4690d95231",
+   "7b121b0e424b5de6",
+   "a21464bdabc8fbbb",
+   "a884e371209e7f25",
+   "ac999a8b8ff39971",
+   "bfb1abe0ba9e87ca"
+  ],
+  "32": [
+   "246308167e77dbdf",
+   "2f979888248d2ece",
+   "4410af012cec6499",
+   "655c0387ef1ac05d",
+   "bbffef97f8a88226",
+   "cc345dcc488a1ec7"
+  ],
+  "48": [
+   "5507689abaa64dde",
+   "7fb30bda473035eb",
+   "96126aa25f172df3",
+   "d0a13d6bb88694be",
+   "ed3e048d2ab69421",
+   "f8696c6ab3ee9bc9"
+  ]
+ }
+}

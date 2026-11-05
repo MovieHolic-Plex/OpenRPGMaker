@@ -1,0 +1,381 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3faa2c9ca4d766da7884a7e5f2dc8e5fadd9063693c23d8bf99151759d27e9a5",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "wall end w",
+ "label": "beodeul_city/wave-places/mountain-fortress/wall_end_w",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 32,
+  "darkV5": 47,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top / coping band (brown tile pattern)",
+      "rows": "2-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "rounded stone end pier on left with snow patches",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall front face",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column at x=24, rows 2-9 show a brown patterned band with dark dashes, which reads as a sloped coping or tile plane. Row 10 is a light edge line (L=200), and row 11 is a dark eave shadow (L=111) with darker notches in rows 11-12. Below that, the brick front face runs from row 12 to row 47 with mortar courses, so the front face is about 37 rows. The rounded stone end on the left is drawn as a profile of stacked stones. It has no isometric receding side face. The overall structure is a top band over a tall south face, which matches the 'cabinet: top + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone wall-end piece (grey stone blocks with a rounded, tower-like end cap). It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. Its measured tones per tile (19) are above the references (12 and 10), and near-flat coverage is only 3%, so density by the numbers is not the problem. The outline is the issue: 100% of the dark edge pixels are neutral, against 7% and 9% for the references, and the picture shows a dark grey/black line around the blocks and end cap. This is the uniform near-black 'sticker' look rather than a dark tone of the adjacent material. The stone ramp has about 4 steps (white highlight, light grey, mid grey, dark grey), fewer than the roof and wall ramps of the references at 5-6. Blocks are rendered with some texture, but the shading is more uniform than the reference stones, which are shaded one by one. The neutral outline and shallower ramp make it fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17797
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top band (tan patterned coping)",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "rounded stone end pillar with snow cap",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall front face",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=24 and x=35, rows 2-9 form a tan coping band with a dashed pattern. It ends in a light front-edge line at row 10 (L=200), followed by a darker shadow row 11 with notch shadows. Below it, rows 11-47 are a brick front face with mortar courses. The left side is a rounded stone end with a snow cap at the top, drawn as a stack of stones with no isometric side face. The silhouette is 48 wide throughout, apart from a 1-row notch at row 11."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wall-end piece (a stone wall section with a rounded, white/grey cap), not a whole building with roof, walls and door/windows, so it does not match the reference kind. On the numbers, it has 19 visible tones per tile against 12 and 10 for the references, and 3% near-flat coverage against 0%, so density is not the problem. The outline is the problem: 100% of its dark edge pixels are near-neutral, against 7% and 9% for the references, which carry tinted outlines. It reads as a uniform neutral dark line around the stones and the rounded cap, the 'sticker' look, instead of a dark tone of the adjacent material. The stone ramp has about 4 steps against roughly 6 on the references. The brick/stone courses are shaded with some texture but are fairly regular. It fails on the neutral outline and the shallower shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13214
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of wall (brown tile/coping strip)",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "snow cap on left stone corner pillar",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall front face",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall has a brown patterned band in rows 1-9 across the top. A light front-edge line sits at row 10, and dark shadow notches follow in rows 11-13, so the band reads as a horizontal top surface. Below it, rows 11-47 hold a tall south face of stone bricks. The rounded stone corner on the left carries snow and is drawn as a vertical rubble face, which is acceptable for a wall end. The whole object is a front face with a top band above it, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wall-end piece: a grey stone wall segment with a rounded, curled end cap. The references are whole buildings with roofs, doors and windows, so the kind does not match well and the comparison is only partial. Measured facts: 19 visible tones per tile, above the references' 12 and 10, with 3% near-flat coverage, so density by the numbers is fine. But 100% of dark edge pixels are neutral, against 7% and 9% for the references, so the outline is a neutral near-black line. That is the sticker look, while the references use tinted dark material tones. The stone ramp shows about 4 grey steps, compared with 5-6 in the references. The brick courses have some texture, but the curled end reads as a flat grey and white fill with a heavy dark outline. The neutral outline is the deciding weakness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 12971
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / coping of the wall",
+      "rows": "2-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "snow on the rounded stone pier at left",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall front face",
+      "rows": "12-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall's top band spans about rows 2-10 (tan stone with a dashed pattern). It ends in a light front-edge line at row 10, followed by a darker shadow row at row 11 that has notches. Below it, the brick front face runs from row 12 to row 47, which is 36 rows of coursed bricks. The rounded stone pier on the left has snow patches on it and is treated as decor. The silhouette is a constant 48 px wide with no receding side face, so the view is south-facing three-quarter. The top band is somewhat frieze-like, so this reading is moderately confident."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone wall-end piece (a crenellated wall segment with a rounded grey tower or buttress), not a whole building with roof, walls and door/windows, so it does not match the building references. On the measured facts, 19 visible tones per tile is above the references' 12 and 10, and near-flat coverage is 3% against 0%, so density is not the main problem. The 100% near-neutral share of dark edge pixels (references 7% and 9%) shows a neutral black/grey outline around the shapes, which is the sticker look; Beodeul uses tinted dark material tones. The stone ramps are about 4 steps (white, light grey, mid grey, dark grey), against about 6 on the roof tile and plaster of the references. The blocks have some texture, but the rounded part is smooth and cartoonish. Fails mainly on the neutral outline and shallower ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14324
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.010Z",
+ "cells": {
+  "16": [
+   "0702a2f9fc2c757b",
+   "a947086a49245f25",
+   "a9ddf0bf81098563",
+   "ba3ea9a7f3afa616",
+   "bf86f79c2e68a4d6",
+   "c66b79fbb04fb92b",
+   "cdb709aeb0264e76",
+   "d03516c2839272b6",
+   "e5d77c816e08dd9d"
+  ],
+  "24": [
+   "0b43d7b2e03ad91a",
+   "9c4a073103a13193",
+   "a13eb640a64096bf",
+   "f6fd99727245dc79"
+  ],
+  "32": [
+   "1592e60beafb4bc3",
+   "159d7c3530fc080c",
+   "188029a6fd1b085f",
+   "1c36e43901d47ddb",
+   "22a793d63281b696",
+   "25e47b2095ceca82",
+   "3441ea9ec147d85b",
+   "38354899afda9580",
+   "3dc6ec984618c96b",
+   "3e92f10c43f6bf2e",
+   "44c31c6e90372d41",
+   "47ac044dba3cc5d4",
+   "4dab7778f4ce8c65",
+   "5d51b19e48ee6265",
+   "778d45a76e04752c",
+   "9088620c1856d0b5",
+   "a165d477a09e5fd7",
+   "b474657826a9e618",
+   "b73ffb0b04de545a",
+   "c6b48085beb7fee6",
+   "e03c754c649f7f2c",
+   "f09ecf610978d59a",
+   "f7719aac8d11496b",
+   "f97ed1e54ba0e131"
+  ],
+  "48": [
+   "e125c30b9de6f0ce"
+  ]
+ }
+}

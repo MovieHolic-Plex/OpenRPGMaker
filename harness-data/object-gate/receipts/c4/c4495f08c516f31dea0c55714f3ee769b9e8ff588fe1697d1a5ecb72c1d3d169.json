@@ -1,0 +1,525 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c4495f08c516f31dea0c55714f3ee769b9e8ff588fe1697d1a5ecb72c1d3d169",
+ "width": 64,
+ "height": 80,
+ "kind": "structure",
+ "name": "glacier cave",
+ "label": "beodeul_city/wave-places/ice-age-field/glacier_cave",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice arch crown (rim around the opening)",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icicles hanging inside the arch top",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right ice pillars of the arch",
+      "rows": "30-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice boulders at the base, left and right",
+      "rows": "71-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snowy floor threshold inside the opening",
+      "rows": "77-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave is a face-on arch. A pale ice band (rows 24-30) curves over a dark interior (x=32, rows 29-67) and the sides are vertical ice walls. The crown acts as a thin rim like the silhouette outline: it has no front-edge line, no eave-shadow band and no receding top plane. Icicles hang from it, but they are vertical details. The base boulders at rows 71-78 have light highlights but are too small to be a main top surface. The whole read is a flat frontal elevation with no top surface on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small ice-cave arch, much less complex than the full houses. Its outline is a tinted dark blue (0% neutral dark edge pixels), which fits the dark-material-tone approach. The ice rim has about 4 steps (white snow, light ice, mid blue, dark blue), and the dark interior has dithering. Measured visible tones per tile are 10, close to the references (12 and 10). Near-flat coverage is 27% against 0% for both references, so there are flat regions, most likely in the dark cave interior and the ice body. The references carry roof tile scallops, plaster speckle and per-stone shading across every tile, while the candidate has fewer distinct material ramps and less grain. It has no roof, walls, door or windows, so it reads as a simple arch rather than a full building. Because of the flat areas, shallower ramps and lower texture richness, it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14947
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice arch crown (curved frame over the opening)",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icicles hanging under the arch",
+      "rows": "30-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side ice walls of the arch (vertical faces)",
+      "rows": "33-71",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift on the cave floor at the threshold",
+      "rows": "76-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice boulders at the bottom corners",
+      "rows": "72-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 55,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave is a face-on arched ice frame around a dark opening (rows 29-77). The arch crown at rows 24-30 is a curved outline that follows the silhouette. It has no front-edge line, no eave shadow and no ellipse width profile. The only horizontal-looking parts are the thin snow strip at rows 76-78 and the small corner boulders at rows 72-79, and neither reads as a top surface of the main body. The whole object is a vertical front elevation with no readable top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small ice-cave arch, not a building with roof, walls and door/windows, so it is only a loose match for the house references. Measured facts: 10 visible tones per tile against 12 and 10 for the references, which is on par. Near-flat coverage is 27% against 0% for both references, so there are flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark blue), a dark material tone rather than near-black. By eye, the ice rim has about 4 steps (white snow, pale blue, mid blue, deep blue). The dark interior is a dithered navy gradient with some texture. The ice frame and the snow cap on top have little grain or per-chunk shading, and they look thin next to the heavily textured tile roofs and stone walls. The shading ramps are shallower than the 5-6 steps in the references, and the flat areas at 27% are a real gap from the references' 0%. Because of the kind mismatch, the flat fills and the shallower ramps, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13816
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice arch frame (top curve and side jambs)",
+      "rows": "24-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icicles hanging inside the arch top",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave interior (vertical opening)",
+      "rows": "29-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow and ice floor lip with side ice mounds",
+      "rows": "71-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 55,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave is a face-on ice arch around a dark opening. The arch crown (rows 24-30) is a 2-6 row curved light rim. It has no front-edge line and no eave shadow, and it follows the silhouette outline, so it reads as the arch frame seen from the front, not a horizontal top. The column scan at x=32 goes from light ice (rows 24-28) straight into dark interior from row 29, with no roof plane. The interior is a flat vertical dark field with a dither gradient. Rows 71-78 are a small snow and ice lip with mounds at the base, which is not a top surface of the main body. No receding side face is drawn. The whole structure is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small ice-arch cave entrance, not a full roof, wall and door building, and it is much smaller than the references. Its dark edge pixels are 0% neutral, so the outline leans blue and follows the ice, which is a dark material tone. Visible tones per tile are 10 against 12 and 10 for the references, so it is on par on that fact. Ice rim has about 4 steps (white highlight, pale blue, mid blue, deep blue). The cave interior is a dithered navy gradient with some grain. Near-flat coverage is 27% against 0% for both references. The inner dark void and parts of the ice rim are flat blocks of one colour, and there are far fewer distinct colours overall (23 against 66 and 185). The references show per-tile highlights, plaster speckle and stone shaded one by one. The candidate has less variation across the ice surface and less grain. It is clean but plainer than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14240
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice arch crown (frosted rim around the cave mouth)",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icicles hanging inside the arch top",
+      "rows": "29-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice side walls (left and right jambs)",
+      "rows": "29-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark cave interior (vertical opening)",
+      "rows": "29-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow floor sill and ice boulders at base",
+      "rows": "71-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cave is a front-on arch. A 4-5 row ice crown (rows 24-28) follows the arch curve, with icicles hanging below it. It has no horizontal surface, no front-edge line and no eave shadow. It is the outline ring of the opening, not a roof plane. The rest is the ice jambs around a flat dark interior (rows 29-77, column x=32 is L=22-43 almost throughout). The snow sill at rows 71-78 is a thin ground strip, not a top surface. The object reads as a flat frontal elevation with no visible top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's outline is a dark blue-tinted version of the ice, and 0% of its dark edge pixels are neutral, so it is not a sticker-style black line. It reaches 10 visible tones per tile against 12 and 10 for the references, so tone count alone is on par. Near-flat coverage is 27% against 0% for both references. The dark cave interior has dithering but still leaves some large flat navy areas. The ice rim is thin, about 2-3 px wide, with only a few highlight and shadow steps, roughly 5 against the references' 6. The snow cap and icicles are clean but sparse. There is no per-unit grain like the references' roof tiles, plaster speckle or stone-by-stone shading. Next to the references it looks flatter and thinner, so I would not accept it as equal in richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17090
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.678Z",
+ "cells": {
+  "16": [
+   "025734abdeacd9fd",
+   "11d69136aa7e1f30",
+   "147e65d9ba18f2ad",
+   "261755c5739a7058",
+   "3b84c77e84a09f28",
+   "4cd8f75179549f7e",
+   "6202026c9f285bdf",
+   "6e7ab352538a96a1",
+   "7c332598bd9ab14d",
+   "7c9d5598a51825bc",
+   "998a97e7b4971f1d",
+   "9f60047e31f30507",
+   "a6485e17855ad6e8",
+   "e453fbb7394264ef"
+  ],
+  "24": [
+   "02c1183059caf1a8",
+   "09bdb1a7c6da100c",
+   "0ccd3868767d875b",
+   "1a1e26a06ad96c1d",
+   "1a76137a58829d72",
+   "1bd53fc1d11a1500",
+   "22b46c5a62823210",
+   "2751fcdd13c0640d",
+   "35ff626dde00a7ea",
+   "42490267ad0522c2",
+   "54b76ea5eec4051b",
+   "5890ab1a358b99c0",
+   "5a1a2bd73ae346ce",
+   "61fd806604b598eb",
+   "6210cfbcd66025ba",
+   "6421f50bd32644d8",
+   "7705c38367207715",
+   "79237bbe3575e051",
+   "8257679fc558580c",
+   "8478eec231faa527",
+   "8b97e7a375350ea0",
+   "8c23049c0d422d34",
+   "93df7e45a70fc1d4",
+   "9b5a09ee2eb63c00",
+   "a0faa7592976020b",
+   "a75c3b03bc999171",
+   "a7f1e48c85efb1f7",
+   "ac13d88ea5543678",
+   "ade1b572d2d5013d",
+   "b0bcad0a897ffc3e",
+   "b33d28bbdd5aadb9",
+   "b676bc87b260d25d",
+   "b82e2efd87ea076b",
+   "c7138432b7c3d94e",
+   "c8edccce6c2eaf43",
+   "c99864f845b4009d",
+   "d40fad08d863abc0",
+   "d56c3f4be0fd7f4a",
+   "d60b75b4c15d5566",
+   "d9898e14e9644185",
+   "dd17d396a2f882a1",
+   "dfcf94b15eb45341",
+   "e0e34ba19c948b42",
+   "e15a3992dd0647f7",
+   "e214fcf80a14a953",
+   "e807b6176a776d94",
+   "e96d154aeea3eb01",
+   "e9c27dbfc4e54ca7",
+   "eda35aa0fc53c8ab",
+   "f3091b6d345f663f",
+   "f30c51db9546d1ac",
+   "ff83dd5ac3c8bd50"
+  ],
+  "32": [
+   "03b46d256ad641bf",
+   "0a27865b143644c2",
+   "27cf27de154e526e",
+   "39a70cd33318e7bd",
+   "4e43236c64e173f8",
+   "88dea689d236a137",
+   "9e03384738264589",
+   "be993429e10b315d",
+   "e18a980529349111",
+   "f2c9b7f6a8d8992d"
+  ],
+  "48": [
+   "00eae7f3e4123634",
+   "04032a6725ed75c7",
+   "25a3fbd0b1a6570d",
+   "2d3a4eca0af8358e",
+   "34971fc78b397d2c",
+   "45f54887799a856d",
+   "4f6101ea56082e30",
+   "529d99dd726a6805",
+   "5a0a36dfcfb7873c",
+   "67a838cffc6d7368",
+   "71083f53d83d6c21",
+   "997d9d92e3713e21",
+   "9f2bd37542181c88",
+   "b44206c76c792dd8",
+   "b8a8a438ccb6caf5",
+   "bab268085368da2e",
+   "c769c7fc23cd2372",
+   "d3c85a2d1a838b42",
+   "e829fb530fd58f9c",
+   "ec3a880f12cab390",
+   "ef1402473b2fbc95",
+   "fb640d7dbccab27d"
+  ]
+ }
+}

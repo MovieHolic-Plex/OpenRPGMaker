@@ -1,0 +1,273 @@
+{
+  "set": "fs2-137-ui",
+  "note": "fs2-137 UI probe set",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "projectFixture": "dist/demos/chrono-bell.project.json",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "menu-party",
+      "label": "천문대 입구",
+      "note": "fallenStarRooms.ts hub->observatory 착지 (15,21) — 거리 문(15,22) 앞",
+      "mapId": "fs_observatory",
+      "x": 15,
+      "y": 21,
+      "facing": "up",
+      "switches": {
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Escape"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 700
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),ov:s.overflow,fs:s.fontSize,lh:s.lineHeight,pos:s.position}}; const out={tag:'menu-main',vp:[innerWidth,innerHeight]}; for (const s of [\".oprn-status-menu\",\".status-menu-party\",\".status-menu-party-row\",\".status-menu-party-info\",\".status-menu-actor-mp\",\"[class*=mp]\",\".status-menu-gold\",\".status-menu-time\",\".status-menu-location\",\".status-menu-sidebar > *\",\".play-fullscreen-toggle\",\".objective-card\",\".hand-slot\",\".runtime-shop-item-row\",\".runtime-shop-item-name\",\"[class*=skip]\"]) out[s]=[...document.querySelectorAll(s)].slice(0,6).map(n=>({t:(n.textContent||'').trim().slice(0,30),...R(n)})); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/menu-main.json"
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "b",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "ArrowDown",
+              "times": 3
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 700
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),ov:s.overflow,fs:s.fontSize,lh:s.lineHeight,pos:s.position}}; const out={tag:'menu-party',vp:[innerWidth,innerHeight]}; for (const s of [\".oprn-status-menu\",\".status-menu-party\",\".status-menu-party-row\",\".status-menu-party-info\",\".status-menu-actor-mp\",\"[class*=mp]\",\".status-menu-gold\",\".status-menu-time\",\".status-menu-location\",\".status-menu-sidebar > *\",\".play-fullscreen-toggle\",\".objective-card\",\".hand-slot\",\".runtime-shop-item-row\",\".runtime-shop-item-name\",\"[class*=skip]\"]) out[s]=[...document.querySelectorAll(s)].slice(0,6).map(n=>({t:(n.textContent||'').trim().slice(0,30),...R(n)})); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/menu-party.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "id": "hub-card",
+      "label": "제2막 B2 — 통금의 밤: 여관 문간의 마르타 「쇠 마차, 세 번」",
+      "note": "act2Opening.ts curfewHub marta (49,32)",
+      "mapId": "fs2_hub_night",
+      "x": 49,
+      "y": 33,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_key_found": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 13
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 13
+        }
+      ],
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),ov:s.overflow,fs:s.fontSize,lh:s.lineHeight,pos:s.position}}; const out={tag:'hub-card',vp:[innerWidth,innerHeight]}; for (const s of [\".oprn-status-menu\",\".status-menu-party\",\".status-menu-party-row\",\".status-menu-party-info\",\".status-menu-actor-mp\",\"[class*=mp]\",\".status-menu-gold\",\".status-menu-time\",\".status-menu-location\",\".status-menu-sidebar > *\",\".play-fullscreen-toggle\",\".objective-card\",\".hand-slot\",\".runtime-shop-item-row\",\".runtime-shop-item-name\",\"[class*=skip]\"]) out[s]=[...document.querySelectorAll(s)].slice(0,6).map(n=>({t:(n.textContent||'').trim().slice(0,30),...R(n)})); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/hub-card.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "id": "forest-start",
+      "label": "깊은 숲 입구(사당 터에서 북쪽으로 올라옴)",
+      "note": "fallen/forestMaps.ts shrine->deep 착지 (14,34) — 추락지까지 굽은 길, 브람 (14,18), 숨은 물건 (21,28)",
+      "mapId": "fs_forest",
+      "x": 14,
+      "y": 34,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "variables": {
+        "var_fs_main_progress": 0
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "items": {
+        "item_potion": 3
+      },
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),ov:s.overflow,fs:s.fontSize,lh:s.lineHeight,pos:s.position}}; const out={tag:'forest-start',vp:[innerWidth,innerHeight]}; for (const s of [\".oprn-status-menu\",\".status-menu-party\",\".status-menu-party-row\",\".status-menu-party-info\",\".status-menu-actor-mp\",\"[class*=mp]\",\".status-menu-gold\",\".status-menu-time\",\".status-menu-location\",\".status-menu-sidebar > *\",\".play-fullscreen-toggle\",\".objective-card\",\".hand-slot\",\".runtime-shop-item-row\",\".runtime-shop-item-name\",\"[class*=skip]\"]) out[s]=[...document.querySelectorAll(s)].slice(0,6).map(n=>({t:(n.textContent||'').trim().slice(0,30),...R(n)})); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/forest-start.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "id": "shop",
+      "label": "제2막 B7 — 서리 가도 얼음 틈, 새라의 장대 도약",
+      "note": "act2Opening.ts snowPass — author_snow_route paintGaps + place_field_obstacle gap requiresActorId",
+      "mapId": "map_snow_north_1",
+      "x": 20,
+      "y": 34,
+      "facing": "down",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true,
+        "sw_fs2_dawn_mem_0": true,
+        "sw_fs2_dawn_mem_1": true,
+        "sw_fs2_dawn_mem_2": true,
+        "sw_fs2_serin_form": true,
+        "sw_fs2_sarah_joined": true,
+        "sw_fs2_snow_arrived": true,
+        "sw_fs2_spear_returned": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 16
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 16
+        },
+        {
+          "actorId": "actor_fs2_sarah",
+          "level": 16
+        }
+      ],
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 3
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 900
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),ov:s.overflow,fs:s.fontSize,lh:s.lineHeight,pos:s.position}}; const out={tag:'shop',vp:[innerWidth,innerHeight]}; for (const s of [\".oprn-status-menu\",\".status-menu-party\",\".status-menu-party-row\",\".status-menu-party-info\",\".status-menu-actor-mp\",\"[class*=mp]\",\".status-menu-gold\",\".status-menu-time\",\".status-menu-location\",\".status-menu-sidebar > *\",\".play-fullscreen-toggle\",\".objective-card\",\".hand-slot\",\".runtime-shop-item-row\",\".runtime-shop-item-name\",\"[class*=skip]\"]) out[s]=[...document.querySelectorAll(s)].slice(0,6).map(n=>({t:(n.textContent||'').trim().slice(0,30),...R(n)})); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/shop.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startEventId": "ev_fs2_snow_merchant",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ]
+}

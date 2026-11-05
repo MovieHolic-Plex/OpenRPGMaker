@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54599aad261c944935288cbc25cf822533b25c40a5d0f7aa66af68d9bce3aa1a",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "supply bundles",
+ "label": "beodeul_city/wave-places/ice-age-field/supply_bundles",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 27,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left brown bundle, white cloth top",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle grey bundle, pale top",
+      "rows": "8-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right brown bundle, white top strip",
+      "rows": "6-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "far right gold bundle, white strip",
+      "rows": "8-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Four small bundles sit side by side across rows 5-13, with the silhouette widening from 4 to 30 px by row 9. Each bundle has only a thin 1-2 row white or pale band at its top (x=8: row 6 white, row 7 pale blue). Below the band is a 6-row brown or grey front face (x=8: rows 8-13, shading from mid to dark brown). The top bands are rim or cloth strips with no ellipse, no roof plane and no eave shadow, so they do not make a real top surface. The bundles read as front views with a very shallow top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sack and bundle pile, under one tile in size, so the per-tile tone count of 0 can't be used against it. By eye, the cream sacks show highlight, light, mid and shadow steps, and the brown bundles have their own tonal variation. It has 46 distinct colours in a tiny footprint, more than the larger references (about 38-40 for the stall and well), and 0% near-flat coverage. Only 22% of its dark edge pixels are neutral, so the outlines lean brown and follow the material, not a uniform black sticker line. Its shading is slightly shallower than the stall and well, and the texture is fairly modest at this scale. A careful artist would still accept it beside the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17885
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left brown sack, white cloth cap",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey bundle, white wrap on top",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brown crate/sack, white top strip",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold bundle at right",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A row of four small bundles spans rows 5-13 with a 29-30 px width at rows 9-11. Each bundle has only a 1-2 row white highlight or cloth cap at the top (x=8: white at rows 6-7, then brown face rows 8-13). There is no ellipse, no front-edge line with eave shadow, and no visible contents. The bundles read as shaded front faces with a thin rim, not as a foreshortened top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of cream sacks and brown bundles, less than one tile tall, so the per-tile fact is 0 and I judged by eye against the bench and hedge. Total distinct colours are 46, against 14 for the bench and 11 for the hedge, so it carries more tonal variety than the small references. Near-flat coverage is 0%, so there are no large flat fills. Only 22% of dark edge pixels are neutral, so the outlines lean toward tinted dark brown on the sacks and bundles instead of a uniform black sticker line. Each sack and bundle shows about 4 steps (highlight, light, mid, shadow) with some fold and tie detail. That is a bit shallower than the 5-6 steps of the larger props, but it is comparable to the bench and does not look thinner or flatter beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15825
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left brown bundle with white cloth top",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey sack bundle",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brown bundle with white top",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold/yellow bundle at right",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Four lumpy bundles sit side by side across rows 5-13, so this is scattered floor debris. Each has a 1-2 row white or pale-blue highlight at its top (column x=8: white at row 6, pale blue at row 7; x=16: pale blue at row 8, white at row 9). The brown, grey and gold body then runs straight down to row 13 (about 6 rows). There is no front-edge line, eave shadow, ellipse or visible contents, so the white strip reads as a cloth highlight or rim, not a horizontal top surface. The silhouette widens from 4 to 30 px by row 9 and narrows again to 19 px at row 13, which gives a heap outline without a distinct top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small prop, under one tile in size, so the per-tile facts read 0 and I judged by eye. It has 46 distinct colours, more than the bench, hedge and lamp references (11-14) and about the same as the stall (40) and well (38). Only 22% of its dark edge pixels are near-neutral, so the outlines mostly lean brown and follow the adjacent material (sack cloth, rope, wood) rather than a uniform black line. Near-flat coverage is 0%, so no large flat fills. The cream sacks and brown bundles show roughly 4-5 lightness steps with highlights, shadow sides and some grain. This is a bit less layered than the well or stall, but it is not thinner or more sticker-like than the bench or lamp, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16791
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left brown bundle with white cloth top",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey/white middle bundle",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brown bundle with white cloth top",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow/gold bundle on right",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Four small lumpy bundles sit in a row on the floor. Each has only a 2-row pale cloth highlight at the top (rows 6-7 at x=8 and x=23), which reads as a rim or highlight. No ellipse, no clear front-edge line and no eave shadow follow it. Below it the bundle is a vertical face of shaded brown or grey, about 6 rows (rows 8-13 at x=23, rows 8-13 at x=8). The silhouette widens from 4 to 30 px over rows 5-9 and then narrows to 19 px at row 13, so the bundles look rounded and seen from the front rather than as boxes with a visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of cream and brown sacks and bundles, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged it by eye and by the other facts. It has 46 distinct colours, more than the bench (14) and lamp (14), and close to the stall (40) and well (38). Near-flat coverage is 0%, so there are no flat fills. Only 22% of its dark edge pixels are neutral, so the outlines lean brown rather than black, matching the dark-material-tone approach and not the sticker look. The sacks show about 5 lightness steps with highlights, folds and rope or tie details. At this scale the grain is modest rather than abundant, but it is not thinner or flatter than the small references, so it would sit acceptably beside the bench and the stall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17750
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.794Z",
+ "cells": {
+  "16": [
+   "bc9e30ad597f97fc",
+   "f7cd39f3665d6f15"
+  ],
+  "24": [
+   "034d3425b4a6c189",
+   "0ed1ccca1a66d324",
+   "154b4a1a078b6617",
+   "1a84bbfac2568ceb",
+   "34e878e5aa5b3791",
+   "5c7e9cd0c90e7109",
+   "ad5fc3495f6ff917",
+   "befbff7d754e6753",
+   "f824dcc3518d9b35",
+   "f9d172ac0ffa00d6",
+   "fad22cb7fc6833d0",
+   "fcc04e7792f08f1c"
+  ],
+  "32": [
+   "3677db2f8691ddcb",
+   "38c595a04578a1bc"
+  ],
+  "48": [
+   "178f30cf12dc1446",
+   "696a6961c97786a8",
+   "725e97cc9a5a92e3",
+   "79ca683f9644d09a",
+   "922d5c20e8d1476e",
+   "c8ab092fe8b92388"
+  ]
+ }
+}

@@ -1,0 +1,68 @@
+{
+  "set": "fs2-137-hdr",
+  "note": "fs2-137 UI probe set",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "projectFixture": "dist/demos/chrono-bell.project.json",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "menu-hdr",
+      "label": "천문대 입구",
+      "note": "fallenStarRooms.ts hub->observatory 착지 (15,21) — 거리 문(15,22) 앞",
+      "mapId": "fs_observatory",
+      "x": 15,
+      "y": 21,
+      "facing": "up",
+      "switches": {
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Escape"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 900
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); const s=getComputedStyle(n); return {x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height),disp:s.display,pos:s.position,op:s.opacity,z:s.zIndex,vis:s.visibility,bg:s.backgroundColor.slice(0,24)}}; const h=document.querySelector('.oprn-status-menu .status-menu-header'); const out={menu:document.querySelector('.oprn-status-menu')?.dataset, header:h?R(h):null}; for (const c of ['gold','time','chapter','location']) { const n=document.querySelector('.status-menu-'+c); out[c]=n?R(n):null; } out.dock=R(document.querySelector('.status-menu-primary-dock')); return out; }",
+              "out": "/tmp/fs137.IRInrc/probe/menu-hdr.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ]
+}

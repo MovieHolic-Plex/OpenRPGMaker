@@ -1,0 +1,431 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e354c348a00aff6689b5c415436c9f60b9a2b28a87af05d85d82866ed7e93920",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "burnt house pale",
+ "label": "beodeul_city/wave-places/ruined-village/burnt_house_pale",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 0행 < 3 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 0행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 114,
+  "tileColorsP90": 189,
+  "darkV5": 25,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gabled stone roof with rafters",
+      "rows": "15-65",
+      "evidence": "c",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "67-69"
+     },
+     {
+      "part": "front wall with door and window",
+      "rows": "66-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts on roof and ground",
+      "rows": "44-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 51,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 4 px at row 15 to 64 px at row 36, forming a pitched roof. Light snow or edge lines run along the diagonal slopes. The roof is made of gray slab or tile rows with dark rafters running diagonally across them, down to rows 62-65. A light eave line sits at row 66 (L=223 at x=16, 197 at row 67) with darker shadow below it. Under that is a front wall of about 30 rows (rows 66-95) with a dark door opening, a window and brick courses. This reads as a roof plane over a south face, so it is three-quarter. It is a judgement call, because the roof bricks could also be read as a flat gable wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ruined grey stone house with charred beams, vines and grass tufts. It has 39 visible tones per tile against 10-12 for the references, and only 1% near-flat coverage with no exact flat fills. Individual stone blocks are shaded one by one, with highlight, mid and dark steps, cracks, and a lit rim along the broken top edge. The ruin silhouette is irregular, so it does not read as a sticker. The outline is the weak point: 89% of dark edge pixels are near-neutral, against 7-9% for the references. But the main material is itself a neutral grey stone, so these dark edges are mostly that stone's own dark tone, not a uniform black line around every shape. The beams are separated by value and some brown lean, and many forms have no outline at all. I therefore call it mixed, not near_black. Overall the shading depth, texture and information density are at or above the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20936
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gabled stone roof (ruined, with exposed rafters)",
+      "rows": "15-66",
+      "evidence": "c",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left lower roof/wall shelf with light top edge",
+      "rows": "36-65",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts on roof",
+      "rows": "44-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with arched doorway and dark window",
+      "rows": "67-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens stepwise from a peak at row 15 (width 4) to full width 64 at row 36. A light diagonal edge highlight follows the slope, and diagonal rafters cross a stone-tiled plane. This reads as a sloped roof plane of about 50 rows (15-66). A light edge line at row 66-67 marks the eave, with the front wall below it. The wall (rows 67-95) holds an arched dark doorway at x~21-31 and a smaller dark window at x~49-55. The roof plane is partly drawn like a gable end, with stone courses and no clear eave shadow, but the slope silhouette and rafters still count as a roof top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a whole ruined stone house, so it matches the building kind. Its richness is strong: 39 visible tones per tile against 10-12 for the references, and 1% near-flat coverage against 0%. Stones are shaded one by one, with highlights on the rim, vine clumps, grass tufts and charred beams. The stone ramp has about 5 steps, close to the references. The weakness is the outline. 89% of its dark edge pixels are near-neutral, against 7-9% for the references, whose outlines lean visibly brown or red-brown beside wood and tile. The dark edges around the broken wall, the beams and the door/window openings read as neutral dark grey/black with no tint, which gives a partly sticker-like line rather than the dark material tone Beodeul uses. The tinted outline is the clearest gap, so it fails on the outline criterion despite the rich texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23550
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gable wall with snow-lined slope edges and burnt rafters",
+      "rows": "15-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left wing wall with a pale capping strip",
+      "rows": "36-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone wall with arched door and window",
+      "rows": "67-90",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 75,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The house is drawn as a flat front elevation. Rows 15-35 form a triangular gable filled with brick-pattern stone. The pale diagonal line along its edges is only a 1-2 row silhouette outline, not a roof plane. It has no front-edge line and no eave shadow below it. The dark diagonal bars are burnt rafters lying on the vertical face, not a sloped roof surface. The only horizontal strip is a 2-row pale cap at rows 36-37 on the left wing, which counts as a rim, not a top surface. Below that, the stone wall, doorway and window are all vertical faces. No ellipse, contents or visible roof tiles appear, and no part of the building shows a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a burnt, roofless stone house with charred rafters, vines and grass at the base. It is a whole building, so it matches the reference kind. The measured facts put it well above both references on density: 39 visible tones per tile against 12 and 10, and 1% near-flat coverage against 0%. By eye, the stone blocks are shaded one by one with light caps and mortar variation, and there are about 5 steps on the stone ramp. The beams, vines and grass tufts add further variety, and no large area is a flat fill. The 89% near-neutral dark edge share is high, but the main material is neutral grey stone, so its dark tone has no hue to lean toward. Against the references, the stone edges are separated mainly by value, and the dark lines appear only on the charred beams and openings. I call that mixed rather than a uniform black sticker outline. Overall it is not thinner or flatter than the references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20186
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gable / roof triangle drawn as a stone face with burnt diagonal beams",
+      "rows": "15-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left wall block with a thin pale ledge at its top",
+      "rows": "36-65",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone wall with door and window openings",
+      "rows": "66-90",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts on the roof edge and at the base",
+      "rows": "45-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat face-on elevation: the gable triangle (rows 15-35) is filled with stone courses and diagonal charred beams, not a receding roof plane. The pale line along the diagonal edges (x=16 rows 30-32, x=32 rows 16-17, x=47 rows 25-26) is a 1-2 row silhouette outline. There is no horizontal band ending in a front-edge line with eave shadow, and no ellipse. The left wall has a 1-2 row pale ledge at rows 36-37, which counts as a rim only. The roof and walls below are vertical faces with mortar lines and openings, so no real top surface is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ruined stone house with collapsed roof beams, ivy and a dark doorway and window. It has many shaded stones, speckle, grain and moss, and about 6 visible lightness steps on the stone ramp. That matches the references. Visible tones per tile are 39 against 12 and 10 for the references, and near-flat coverage is 1%, so density is at or above the references and there are no flat fills. The one concern is outline: 89% of the dark edge pixels are near-neutral, against 7% and 9% for the references. In the picture the stone edges and the dark openings look grey-black rather than tinted with the adjacent material, which leans toward the sticker look. The outline is not uniform around every shape, though. Many forms are separated by value alone and the pale stone has light edge highlights, so I call it mixed rather than near_black. Structure and shading craft are at the Beodeul bar, so the outline neutrality does not outweigh the richness.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14437
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.284Z",
+ "cells": {
+  "16": [
+   "21d67866acff43aa",
+   "239fe38e35d06c36",
+   "25639ac55636502d",
+   "3f2380bd84f45034",
+   "5300d9e9efbca77a",
+   "54daf1ac023255ff",
+   "69de56983f161dbd",
+   "6d8d2fd0ff05f5ba",
+   "714ab9052795ea86",
+   "714dc84b268a565b",
+   "73a75d3111100129",
+   "78e602c450138bfb",
+   "7fc7bc827e700236",
+   "8207c40ffd41e989",
+   "8fa6c811cc2a160c",
+   "9c9e120de3371d9c",
+   "a0e804ac0b30f9c4",
+   "af96a62742ca1daf",
+   "be8f08411e01950f",
+   "cc7729df2f84ba98",
+   "e7dca93a9b125a38"
+  ],
+  "24": [
+   "09bbaf2059a00494",
+   "0fa01659d05aafc9",
+   "119fa7253fe6a9df",
+   "12c38a42639ab923",
+   "14f6697d928ea79b",
+   "1af75bf12c13fdfd",
+   "2283ca5ca8732dde",
+   "3029c2151cc7701d",
+   "487ce59bbbf48c12",
+   "5661d8790e5483f8",
+   "586a166707a44fcd",
+   "5c6059fc6f93de1f",
+   "5c68a4a02530e926",
+   "67c429760da64c66",
+   "6c7eabc74a8705e6",
+   "6de1a9c1dd907de8",
+   "73071d0dbd63683c",
+   "7758458218fd87ce",
+   "872e616041d8a020",
+   "94a769c8e7c4b149",
+   "9a9bf743b02e31f4",
+   "a297d53b542560f4",
+   "a41bcd7c2debd681",
+   "b5f658eff87a9eec",
+   "b80353123f85673d",
+   "bbc3f01aa70b3db7",
+   "be048add034d7182",
+   "ca22fb16fa02b606",
+   "d9e664905eb807f3",
+   "e639306276ae3d26",
+   "ec51198970f73f07",
+   "efb7a4d062c91221",
+   "f716ad666038c61f"
+  ],
+  "32": [
+   "0902949a0feacda1",
+   "6923b78376bf8485",
+   "8418e2741a13c6ff",
+   "8cb8f481d9c21868",
+   "a9f9cd71924677c8",
+   "fac2ed9ef28100cd"
+  ],
+  "48": [
+   "039a7fa009927933",
+   "2d3c156d763fc86a",
+   "3ddd6244ffc08041",
+   "54e1d1f52fc66f5a",
+   "6db3c9c6632264b9",
+   "7f73eaf678efc477",
+   "a4057114ae6120c8",
+   "aeaca8eb34d0a60f",
+   "bcb40e5ff08a3010",
+   "c2e1d80477916e9f",
+   "dc975be94b8664a9",
+   "ed9ea26c2498fff1"
+  ]
+ }
+}

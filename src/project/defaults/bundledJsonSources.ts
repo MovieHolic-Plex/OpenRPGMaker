@@ -23,6 +23,7 @@ import snowNorthTileset from "@/assets/snowNorthTileset.json";
 import desertEastTileset from "@/assets/desertEastTileset.json";
 import prehistoricTileset from "@/assets/prehistoricTileset.json";
 import skyIslandTileset from "@/assets/skyIslandTileset.json";
+import beodeulWavePlacesTileset from "@/assets/beodeulWavePlacesTileset.json";
 
 const ALL = {
   jpCityTileset,
@@ -42,6 +43,7 @@ const ALL = {
   desertEastTileset,
   prehistoricTileset,
   skyIslandTileset,
+  beodeulWavePlacesTileset,
 };
 
 export type BundledJsonData = typeof ALL;

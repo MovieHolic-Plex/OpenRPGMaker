@@ -291,3 +291,4 @@ harness-data/object-gate/calibration/answers/eye-*/
 
 # dungeon-chipset 관문 실행 기록 잠금 파일
 /harness-data/dungeon-chipset/ledger.json.lock
+/harness-data/battle-backdrop/.ledger.lock

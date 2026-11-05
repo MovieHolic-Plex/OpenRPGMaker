@@ -1,0 +1,448 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9c8a326a13dcfecbadc3166903c5e2c8de2ed01141315462417a8576c598e15",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "tool rack",
+ "label": "beodeul_city/wave-places/mountain-fortress/tool_rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base beam",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging tools",
+      "rows": "8-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top beam (rows 5-7, width 26) has only 2 lighter rows (5-6, L=62) above a darker row 7. This is a rim, with no front-edge line and no real eave shadow, and no depth. The base beam (rows 28-29, width 28) is a uniform 2-row strip (L=45) with no top face. The posts are narrow vertical strips with only a 1-row dark cap at row 4, so no horizontal surface is shown. The hanging tools are drawn in the interior as vertical shapes. The whole frame is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin wooden frame with two posts, a top bar and two small hanging items. It reads more like a swing frame than a tool rack, because no distinct tools are visible. The outline is dark brown and tinted, and only 25% of dark edge pixels are near-neutral, so it is not a sticker-style black line. The posts and bar show only about 3 wood steps (dark brown, mid brown, a faint highlight), and the hanging items are close to flat. The reference bench has the same 14 raw colours but shows plank grain and per-plank highlights. The stall and well are much richer, with 17-20 visible tones per tile. The candidate has no flat 5x5 fills, but it is a thin object, so the tile-density fact says little and I judged by eye. By eye it looks thinner and flatter than the bench and well, with little grain, little highlight and unclear tool detail, so it would not sit comfortably beside the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15549
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crossbeam",
+      "rows": "4-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base beam",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging tools",
+      "rows": "8-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top crossbeam is only about 3 rows (rows 5-7). Rows 5-6 are a lighter strip (L=62) over a darker row 7 (L=48). It reads as a front-facing beam with a rim, and has no distinct front-edge line, no eave shadow, and no ellipse. The base beam is a flat 2-row strip (rows 28-29, L=45) with no top face. The posts and hanging tools are vertical faces. The whole frame is a flat front elevation with no visible horizontal surfaces on the beams or base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin wooden frame with two posts, a top beam and a few hanging items. It reads more like a swing frame than a tool rack, because the tools are barely legible. The wood shows only about 3 lightness steps (dark brown, mid brown, a light edge). It has little grain, no per-plank highlights and no knots, so it looks thinner and flatter than the bench and the well, which carry about 5-6 steps. The measured tile facts are 0 for the candidate and for the thin references (bench, lamp), so I judged density by eye. Only 25% of the dark edge pixels are near-neutral, which points to brown-tinted edges, so the outline is not the problem. The weakness is shallow shading and sparse detail. The candidate has 14 colours, the same as the bench and lamp, but the bench looks richer in grain and shading. A careful artist would not accept the candidate next to the references without it looking sparser and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14294
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts",
+      "rows": "4-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base beam",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging tools",
+      "rows": "8-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The frame is drawn flat-on. The top beam (rows 5-7, 26 wide) is a front-facing strip: rows 5-6 are slightly lighter and row 7 is dark, with no clear front-edge line or eave shadow, and no widening and narrowing that would make an ellipse. The two posts (about 3 px wide, rows 4-27) are plain vertical faces with only a small cap at row 4. The base beam (rows 28-29, 28 wide) is a 2-row strip with no top face. The tools hanging below the beam are decor. No side face is visible. The beams and base show no real top faces, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse wooden frame with two hanging items. The measured facts give no density signal, since visible tones per tile is 0, as for the bench and lamp. By eye it is thinner and flatter than the bench-wood reference, which has a clear 4-5 step wood ramp with highlighted top edges and grain. The candidate's posts and beam look like 2-3 browns with a dark outline, and the hanging pieces are small, near-solid shapes. Its 25% neutral dark edge share means most outline pixels are tinted, but the dark edges still read as a uniform line around the shapes rather than value separation. The hanging items look more like swing seats than tools, so the rack's function is not legible, and it has none of the grain or per-item shading seen in the bench or the stall. Next to the references it looks thinner and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17536
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crossbeam",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right posts",
+      "rows": "4-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base beam",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging tools",
+      "rows": "8-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top crossbeam is only 3 rows tall (rows 5-7, width 26). Rows 5-6 are a lighter 2-row strip and row 7 is a darker row. That reads as a rim or beam face seen head-on, not a horizontal top surface with a front-edge line and eave shadow. The posts (rows 8-27) are vertical faces with no top. The base beam (rows 28-29, width 28) is a 2-row front strip with no visible top plane. The tools hang straight down as flat elevation shapes. No major part shows a top face, so the whole frame is drawn as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin wooden frame with two hanging items. It reads more like a swing set than a tool rack, because no tools with distinct heads, handles or blades can be made out. The posts and crossbar show about 3 brown steps, with a lighter edge and a dark base tone. That is shallower than the bench, the well and the cheese stall, which carry 5 or more steps plus grain and per-part shading. The dark edges are mostly tinted brown (only 25% near-neutral), so the outline is acceptable, and there are no large flat fills. The tile-level facts are 0 because the piece is sparse, so they cannot be used for or against it. By eye it is thinner and less detailed than the references of its kind, such as the well and the stall, and it is no richer than the simple bench. With so little visible content and an unclear object, it would look sticker-like and weak next to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15926
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.980Z",
+ "cells": {
+  "16": [
+   "5255ca720221568f",
+   "d0af23d56b7968c4",
+   "d104400675f9a94c",
+   "f5afb2f541f2979c"
+  ],
+  "24": [
+   "0b04f4dd56d5c3b6",
+   "130a1d9550a9e4f9",
+   "1760ffdc1a537cda",
+   "3566dc348de905aa",
+   "386d5a41c0db8fcc",
+   "40a28c7dbeeda90d",
+   "4319c056ecad7318",
+   "53ce95035ce8d0df",
+   "57d7e617c6105fd4",
+   "5a296cb4ae1417b7",
+   "64deca17f3976329",
+   "6ed34c32c6c79ef1",
+   "71746bf1aa734771",
+   "7188537f0ac6ecd8",
+   "8ed7d58cf94b5d69",
+   "953ce2c765b8add1",
+   "b26004973979317d",
+   "bae794ce16f39f3f",
+   "bc0f7ab31ac67799",
+   "c655ca990771609f",
+   "d0b5d0040c0ec7d0",
+   "dcc14f0d4ada2540",
+   "e870b3c8f98bc48f",
+   "f248050188a22dc8"
+  ],
+  "32": [
+   "7fc0c45bdc642bd9"
+  ],
+  "48": [
+   "2f653796ac8d7220",
+   "37069f6d54e2432b",
+   "95e69fdd2196e41e",
+   "b14207618ff46134",
+   "c45a0ef8f7f9cd53",
+   "d28141f16ce9321a"
+  ]
+ }
+}

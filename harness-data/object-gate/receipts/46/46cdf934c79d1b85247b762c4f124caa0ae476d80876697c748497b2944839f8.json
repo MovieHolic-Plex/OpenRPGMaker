@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46cdf934c79d1b85247b762c4f124caa0ae476d80876697c748497b2944839f8",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "rock heads",
+ "label": "beodeul_city/wave-places/ice-age-field/rock_heads",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 38,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left rock snow cap",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "middle rock snow cap",
+      "rows": "3-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle and left rock stone faces",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small rock",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "11-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three snow-capped rocks sit on a white snow drift. At x=8 the snow cap covers rows 5-7, then dark rows 8-9 act as eave shadow above the gray stone face (rows 8-10), so the left rock shows a top band with an edge line. The middle rock's cap is thinner: snow on rows 3-4 at x=15, then a stone face on rows 5-9. A dark base line at row 10 separates the rocks from the snow bank (rows 11-14). The tops are small and sloped but present, and each rock has a front face of 3+ rows. The reading is a marginal three_quarter because the caps are only about 2-3 rows thick."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey rock-and-snow cluster, not a tree. It is far smaller than the references and has no canopy or trunk, so the kind does not match and the references cannot be compared fairly. By eye it shows only about 3 grey ramp steps with a dark neutral outline. The measured facts agree on the outline: 100% of dark edge pixels are near-neutral, against 0% for both references, which is the sticker look. The 16 visible tones are a misleading figure for a piece this small. By eye it has no clumped foliage, bark grain or per-element shading like the references. It is clearly flatter and thinner than the references, and it is the wrong kind of object, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15863
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "middle rock head snow cap",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rock head snow cap",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small rock head",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tallest rock (x=15) has a snow tip at rows 3-4, then a flat grey face at rows 5-9 and a dark base line at row 10. The width grows steadily from 1 to 25 over rows 2-10, so the silhouette is a dome with no widen-then-narrow ellipse. The snow on the left rock (rows 5-7) and middle rock (rows 3-4) is a thin cap of 1-3 rows with no front-edge line or eave shadow, so it reads as a rim or hat rather than a top plane. The rock faces are vertical and shaded. The white snow band at rows 11-14 is a flat ground strip, not a top surface of the rocks. This is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey rock cluster sitting on a white base, not a tree, bush or other plant. It has no canopy or trunk, so it does not match the reference kind. It is about 1-2 tiles wide and shows only about 3 grey steps on the stones. The 16 visible tones per tile in the measured facts come mostly from antialiased edges and the white base, not from real shading depth. 100% of its dark edge pixels are near-neutral, which indicates a neutral dark outline and a sticker look, whereas both references have 0%. The references have large clustered canopies with 5-6 greens and tinted outlines. Against them the candidate is far smaller, flatter and thinner, with no leaf clumps or grain. Overall it would look much weaker next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14190
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left rock snow cap",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "middle rock snow cap",
+      "rows": "3-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small right rock snow cap",
+      "rows": "8-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift base under the rocks",
+      "rows": "11-14",
+      "evidence": "d",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": true,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three grey boulders stand on a white snow base. The largest, in the middle, has only a 2-row snow cap (rows 3-4) on a 5-row grey face (rows 5-9). Its right side is darker, which reads as a receding side face. The left rock has a 3-row snow cap (rows 5-7) with 2 rows of shadow below it. A dark line at row 10 separates the rocks from the 4-row white base (rows 11-14). The rock tops are only thin, rim-like snow patches, not a real horizontal surface, so the main body reads mostly as a front elevation. The wide white base could be read as a flat drift, but it is ground rather than the rocks' own top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny grey rock-and-cloud-like object about 50x20 px. It is not a tree with a canopy and trunk, so it does not match the reference kind. It is smaller than one 16x16 tile in height, so the per-tile measure of 16 visible tones is unreliable. By eye it shows only about 3 grey/white steps, with no foliage clumps or grain. The dark edge pixels are 100% near-neutral, against 0% in both references, which points to a neutral dark outline with no material tint. It is far thinner and flatter than either reference, which have rich multi-tone canopies, so a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17659
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left rock snow cap",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle rock (largest) snow cap",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock faces (three heads)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three rounded rock heads sit on a white snow drift. The middle rock is the largest, and column x=15 shows only a 1-2 row snow highlight (rows 3-4) before the gray face runs rows 5-9. The left rock has a 3-row snow cap (rows 5-7) but no front-edge line or eave shadow, and its face is drawn straight below as a vertical gray block. The dark line at row 10 separates the rocks from the snow base. The base (rows 11-15) is a flat white band with a shaded bottom row and no ellipse or edge line. No rock shows a distinct horizontal top plane, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sub-tile prop of grey rocks on a pale base, not a tree with canopy and trunk, so it doesn't match the reference kind. It is far smaller than either reference, which are full canopy-and-trunk trees. Facts: it shows 16 visible tones, but the piece is under one tile, so the density figure is unreliable. 100% of its dark edge pixels are near-neutral, which indicates a neutral black/grey outline, while both references have 0% (tinted outlines). By eye it has about 3 grey steps per material, with little clumping or grain, against the references' 5-6 steps and per-clump shading. It reads as a thin, sticker-like small prop, flatter than the references. Near-flat coverage is 0%, but that is due to its small size.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14066
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.760Z",
+ "cells": {
+  "16": [
+   "474fe3aeaadad7d9",
+   "7d3e39a5bef755b5"
+  ],
+  "24": [
+   "2cef83fa07c0f2c9",
+   "38c7b73ac2337429",
+   "3d51101a7434e146",
+   "44ff26e37e4301b6",
+   "497fd091e3aeec3d",
+   "49e540fe3b1ff8ed",
+   "5376371e16724e63",
+   "6630f3b7a0e51618",
+   "83e5ae600a596c3f",
+   "a681b3152d120637",
+   "dcde3633db471c39",
+   "fabd9e77a0f06a94"
+  ],
+  "32": [
+   "2a96e1e87f290b3e",
+   "8a216059344ad10f"
+  ],
+  "48": [
+   "3e0246ea098fea63",
+   "6201ee6c99cdc825",
+   "add32c1e3a6a642f",
+   "b20ad0e686ef0e0c",
+   "ca94ac0a10d4dee0",
+   "cc51e58c7541bb5d"
+  ]
+ }
+}

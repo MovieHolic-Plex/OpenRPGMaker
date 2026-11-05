@@ -1,0 +1,297 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed5a51eaeec44eaacf5d5c6272397b7ddaf24c989a58b0635b3c07470f0c5379",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "sack torn",
+ "label": "beodeul_city/wave-places/ruined-village/sack_torn",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 35,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "torn sack body (lumpy cream heap)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spilled grain specks at lower right",
+      "rows": "12-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is an irregular rounded lump, 10 px wide at its widest (rows 7-10) and narrowing to 4 and 3 px at rows 13-14. It shows no front-edge line and no eave shadow. The dark line at row 6 (#51283d) and the dark patch at rows 9-10 on the right read as a fold or tear, not a rim or ellipse. Rows 7-10 are flat cream with shading at rows 11-12, so it reads as a crumpled sack or heap lying on the floor. A few gold grain pixels spill out at rows 12-14. It has no clear horizontal top surface and no structured front face, so it fits neither the three-quarter nor the front-elevation pattern."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The sack is a small prop, under one tile, so the per-tile facts read 0 and I judged by eye against the bench and lamp, the other small props. It has 17 distinct colours, more than the bench (14) and lamp (14). The body shows about 4 steps of cream and grey shading with fold shadows, and a few yellow-green grain specks are spilled beside it, so there are no flat 5x5 areas (0% near-flat). The dark edge pixels are only 33% near-neutral, so the outline is partly tinted and partly dark grey, which I call mixed. That is no worse than the bench (44%) or lamp (100%). It is not a flat sticker. Next to the references it looks no thinner or flatter than the bench, so it passes, though the outline is not fully material-toned.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15843
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "torn sack body (cream cloth lump with dark tear/shadow bands)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spilled grain bits at lower right",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a rounded lump 10 px wide (rows 7-10), tapering to 4 and 3 px at rows 13-14. It has no front-edge line, no eave shadow, and no ellipse with a back and front rim. The cream cloth (rows 3-10) is shaded as a lumpy heap, with dark tear bands at rows 6 and 9 and a dark shadow at the lower right. Only about 2 darker rows at the bottom (11-12) could count as a front face, which is below the 3-row minimum. Gold grain pixels at rows 12-14 are scattered bits. The object is flat debris lying on the floor with no built top-and-front structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The sack is a small single-tile prop, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged by eye. It still has 17 distinct colours, more than the bench (14) and lamp (14) at similar sparseness. It has no flat 5x5 areas (0% near-flat). Only 33% of its dark edge pixels are neutral, so the outline is mixed, with a visible tint on part of it rather than a uniform black sticker line. The cream body shows about 4 lightness steps with fold and grain variation, and the spilled-grain pixels in yellow add texture. It is a little shallower than the larger references (about 5-6 steps) and is not as dense as the well or stall, but for its size a careful artist would accept it beside the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17265
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "torn sack lump (cream cloth heap with dark mouth/opening)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spilled grain/contents at lower right",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "Small irregular debris pile about 10 px wide and 12 rows tall (rows 3-14). The silhouette widens from 4 to 10 px and narrows to 3 px, a lumpy bag shape rather than a boxy volume. There is no front-edge line or eave shadow, and no band of top rows. The dark rows at 6 and 9-10 are the torn mouth and shading, not a top surface. Grain specks at the lower right (rows 12-14) are scattered debris. It reads as an irregular lying heap, which fits the debris kind, not a standing box with a top and front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sack, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 17 distinct colours in total, against 38-40 for the stall and well. By eye the body is off-white with about 3 tones (light, mid, shadow) and a few dark speckles for the tear and spill. That is shallower than the 5-6 step ramps on the well roof and stall. Its dark edge pixels are 33% neutral, so the outline is partly neutral and partly tinted. That is mixed, and it leans toward the sticker look more than the hedge (0%) or the stall (1%). There are no large flat fills, since the piece is small and has some variation. However, it is thinner and flatter than the richer references (hedge, well, stall) and has less grain and fewer clustered highlights. A careful artist would not accept it beside those references without it looking flatter and more sticker-like, so it fails on the cautious call.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10561
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "torn sack pile body",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spilled grain at lower right",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a small, irregular heap of debris: a torn sack with a cream body, dark maroon opening or tear marks, and a few brown grain specks at the lower right. The silhouette widens from 4 to 10 px across rows 3-7, holds at 10 px through row 10, then narrows to 3 px by row 14. It has no front-edge line, no eave shadow, and no ellipse, so it shows no clear top surface. It also has no clear vertical front face. It reads as scattered debris, not as a standing volume, so the standard 3/4-view classes fit poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The sack is a small, sparse prop under one tile, so the per-tile tone count of 0 is uninformative and I judged by eye. It has 17 distinct colours against 14 for the bench and lamp references, and 0% near-flat coverage, so there are no large flat fills. The body has cream highlight, mid and grey shadow steps, plus a dark torn opening and yellow-green spilled grain at the base, which gives about 4 steps and some grain. Only 33% of its dark edge pixels are near-neutral, less than the bench (44%) and far less than the lamp (100%), so the outline is mixed rather than a uniform black sticker line. It is a little shallower than the richer references (well, stall, hedge) but sits at the level of the bench, a comparable small prop, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13787
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.481Z",
+ "cells": {
+  "16": [
+   "5649bccf56a2bc78"
+  ],
+  "24": [
+   "647f30c9d1eba78b",
+   "77fc62c111330540",
+   "c731fe8e9cf6e2dc",
+   "c97be06a470b0773",
+   "f1625dbcdc9bccb6",
+   "f900506aecec3f58"
+  ],
+  "32": [
+   "070c370152d1f89d",
+   "11d2187bb3f37b2d",
+   "2fe2e612c0268ce7",
+   "527ec8f2dc90b89f",
+   "7699b380ed51bf6a",
+   "edc140f1475802d7"
+  ],
+  "48": [
+   "0c1cc9c57f938548",
+   "5bb4acc1e9d286cd",
+   "72fd13599c033b6d",
+   "d8947843e41e6093",
+   "de2be2c6526fafc1",
+   "e2676b38e1c5de71"
+  ]
+ }
+}

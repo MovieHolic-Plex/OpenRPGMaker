@@ -8,7 +8,7 @@
  * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 타이틀·town·fall·morning 은 다시 짠 왕도(fallenTown.ts)를
  * 참고 그림으로 다시 뽑았다(2026-10-21, ~/claude-viz/fallen-town-match.html, 이름 앞 fallen-town). 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
-export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning' | 'town-ground' | 'fall-ground';
+export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning' | 'town-ground' | 'fall-ground' | 'town-street';
 
 export type FallenStarArt = {
   readonly id: FallenStarArtId;
@@ -35,6 +35,9 @@ export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
   // 뒤에 밤하늘 파노라마 세 겹을 깊이별로 깐다. 생성: scripts/content/fallen-star-opening-cutouts.py
   art('town-ground', 528, 297, 'town 하늘 오림 · scripts/content/fallen-star-opening-cutouts.py'),
   art('fall-ground', 528, 297, 'fall 하늘 오림 · scripts/content/fallen-star-opening-cutouts.py'),
+  // 왕도의 밤 거리(2026-11-04 월드 정비): 구운 왕도 맵(fs_hub)을 1배 그대로 그린 것 — 광장·남쪽 거리의 간판·공방. 새 화소 없음.
+  // 생성: scripts/content/fallen-star-opening-town-street.mts (마을을 고치면 다시 뽑는다).
+  art('town-street', 528, 297, 'fs_hub 1배 렌더 · scripts/content/fallen-star-opening-town-street.mts'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(
@@ -44,3 +47,6 @@ export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Objec
 export function fallenStarArt(id: FallenStarArtId): FallenStarArt {
   return FALLEN_STAR_ART.find(entry => entry.id === id)!;
 }
+
+/** town-street 그림이 왕도 맵에서 자른 자리(화소, 16px 칸). 칸 (16,27) 부터 33×18.5칸 — 광장 서쪽·이정표·게시판·남쪽 거리. */
+export const FS_OPENING_STREET_CROP = { x: 16 * 16, y: 27 * 16, width: 528, height: 297 } as const;

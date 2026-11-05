@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de627a72fd4cef53df39985d2cfc77851573a248b2cf43181b6e054de7ca3a7c",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "snowrock l",
+ "label": "beodeul_city/wave-places/mountain-fortress/snowrock_l",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 17,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on top of rock",
+      "rows": "7-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The white snow mound spans about rows 7-17 and widens from 15 px to 41 px, so it reads as a horizontal top surface seen from above. Its lower edge is irregular, ending around rows 16-18 where the grey stone blocks begin (x=13 snow to row 16, x=24 to row 20). The grey, patchy rock face below runs to row 28, about 11 rows, and a dark ground shadow sits at row 29. The top and the front face are both present, so the object is a 3/4 view and not a flat slab or a front elevation. The snow edge is ragged rather than a clean line, which is typical for an organic rock."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a snow-covered rock, but the references are leafy trees, so the kind does not match well; I judged only craft. The rock has about 4 lightness steps (white highlight, light grey, mid grey, dark grey) against 5-6 per material on the references. All of its dark edge pixels are neutral (100%), so the outline is a grey/black line with no material tint, which is the sticker look; both references measure 0%. Near-flat coverage is 18% against 0% for both references, and the white snow caps and the grey body show visible flat patches. It has 10 visible tones per tile, which is above tree-1a786c (7) but far below tree-d43edd (29). Texture is limited to a few speckles and crack lines, with no per-stone grain. A careful artist would not accept it next to the references: it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13708
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on rock",
+      "rows": "7-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock front face",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 15 px at row 7 to 42 px at row 18, which gives a domed mound. The white snow band at rows 7-17 sits on top as a horizontal surface. It ends in an irregular edge at about rows 17-21, where the grey stone face begins (x=13 changes from white to grey at row 17, x=24 at row 21). Below it, rows 18-28 show a stone front face made of tan and grey blocks. A dark ground shadow sits at rows 28-29. The edge line is irregular and there is no distinct eave shadow, so the top evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a snow-covered rock, while the references are leafy trees with canopy and trunk, so the kind does not match well. It reads as a white snow cap over a grey stone body, with about 4 lightness steps and a few cracks and speckle. The measured facts show 10 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 18% against 0% for both references, so there are flat fills on the snow cap and body. 100% of the dark edge pixels are near-neutral, so the outline is a neutral dark grey/black line, the sticker look, while both references have tinted outlines (0% neutral). Shading and texture are shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13008
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on rock",
+      "rows": "7-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stone front face",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A white snow mound covers rows 7-20 and widens from 15 px to 42 px. This is a heap-like top surface seen from above. In column x=24 the snow ends at a darker edge line on row 21 (#9b988f), and the grey stone face of about 8 rows lies below it (rows 21-28). A dark ground shadow sits on rows 28-29. The snow's lower boundary is uneven: it ends at row 16 in column x=13 and at row 19 in column x=34. The edge line is therefore only clear at x=24, but the top and front face are still distinct."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a snow-covered rock, not a tree, so it only loosely matches the tree references. It shows about 4 lightness steps on the white snow and grey stone, and the references use 5-6 on foliage. The measured facts back this up: 100% of its dark edge pixels are near-neutral, while the references sit at 0%, so the outline reads as a neutral dark line, not a tinted material tone. It has 18% near-flat coverage against 0% for both references, and the snow cap contains flat white patches. Its 10 visible tones per tile beat tree-1a786c (7) but fall well short of tree-d43edd (29). The shading is cleanly drawn, but the neutral outline and flat snow areas make it look more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13542
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow cap on rock",
+      "rows": "7-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock front face with stone blocks",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens gradually from 15px at row 7 to 41px at row 17. This is a mound with a white snow top over rows 7-16. The snow ends in a ragged front edge at about row 17 (x=34 shows a dark L=98 row at 17, x=13 changes from white to grey at 17). Below it, rows 17-28 are a grey-beige rock front face made of several stone blocks, with a dark ground shadow at rows 28-29. The snow band is a large top surface, not a 1-2 row rim. There is no eave shadow, and the front-edge line is irregular. The dark rock patch at right (rows 12-24) is part of the rock face and carries no separate top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a snow-covered rock, not a tree, bush or plant with a canopy and trunk, so it is not the same kind as the references. Judged on craft alone: the rock has about 4 lightness steps (white snow, light grey, mid grey, dark grey). The dark edge pixels are 100% near-neutral, so the outline reads as a neutral dark grey/black line, unlike the references, which sit at 0% and use dark tones tinted to the neighbouring material. Near-flat coverage is 18% against 0% for both references, and the white snow caps and grey stone faces include visible flat patches. Visible tones per tile are 10, above reference 1a786c (7) but well below d43edd (29). Stones are not shaded one by one and the grain is sparse. Overall it is a simpler, stickier piece than the references, with a neutral outline and flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13340
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.958Z",
+ "cells": {
+  "16": [
+   "113c38db0b3c7fb6",
+   "1eb1afada5c06c3c",
+   "25205d658fda5317",
+   "31709b893403a225",
+   "bbefa18a11898125",
+   "fa18989ccd949591"
+  ],
+  "24": [
+   "00a431b1ea722141",
+   "0c11224cf84df185",
+   "1ba81519864f126e",
+   "273fb58790da4e4d",
+   "51581c08030ecd36",
+   "6f233cf31b931ba7",
+   "9b1a76f5c6b1f7e2",
+   "c1f249933235cf42"
+  ],
+  "32": [
+   "3b15743a4e533eca",
+   "4ab0e8b2cf9cf333",
+   "4ece9abff1d29e06",
+   "62efd114e5c569b8",
+   "7535328a6283e6a6",
+   "8c79f0696f14b5a5"
+  ],
+  "48": [
+   "cb4bcad7b12aebfe",
+   "db39e56e47a9f610"
+  ]
+ }
+}

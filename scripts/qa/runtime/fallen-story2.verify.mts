@@ -20,7 +20,7 @@ const p = snap.project;
 const text = JSON.stringify(p.maps);
 const checks: Record<string, boolean> = {
   joinChoice: text.includes("이리스를 데려갈까?") && text.includes("여기 숨어 있는 게 안전해"),
-  hanelForeshadow: text.includes("누가 타고 있었다는 거예요?"),
+  hanelForeshadow: text.includes("그럼 안에 누가 타고 있었어요?"),
   bramForeshadow: text.includes("안에 누가 있어."),
   hanelMeetsIris: text.includes("너희가 숲에서 찾은 별이냐"),
   valenF5: text.includes("나는 그 집에 있었다"),
@@ -28,7 +28,7 @@ const checks: Record<string, boolean> = {
   smokeExit: text.includes("easyrpg-sound-fog1") && text.includes("연기가 걷혔을 때"),
   fanaticTroops: ["troop_fs_fanatics", "troop_fs_fanatic_sermon", "troop_fs_fanatic_cell"].every((t) => p.database.troops.some((x) => x.id === t) && text.includes(`"${t}"`)),
   fanaticEnemies: p.database.enemies.some((e) => e.id === "enemy_fs_fanatic" && e.monsterResourceId === "charset-battler-actor3-2"),
-  scoldHanel: text.includes("그 서랍은 열지 않는 게 좋다"),
+  scoldHanel: text.includes("그 서랍은 열지 마라"),
   scoldRino: text.includes("\"물러서라!\""),
   scoldInquisition: text.includes("그건 심문관님 압수품이다"),
   noValenInTown: !p.maps.fs_hub!.events.some((e) => e.id === "ev_fs_valen_bridge"),

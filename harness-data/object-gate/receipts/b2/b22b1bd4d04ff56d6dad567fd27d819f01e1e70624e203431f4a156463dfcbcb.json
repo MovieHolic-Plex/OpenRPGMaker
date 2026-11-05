@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b22b1bd4d04ff56d6dad567fd27d819f01e1e70624e203431f4a156463dfcbcb",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "juniper",
+ "label": "beodeul_city/wave-places/mountain-fortress/juniper",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 29,
+  "nearBlackEdge": 0.24,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "juniper foliage mound, lit top",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "juniper foliage mound, shaded front",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded bush mound. Width goes 1, 6, 12, then 14 for rows 6-11, then narrows to 12 and 8 at row 14, so it widens and narrows like a dome. Rows 4-8 are the lightest green (L≈113, with a highlight at row 4-5) and read as the lit upper surface. Rows 9-14 darken steadily (L 84, 60, 29) and read as the shaded south face, about 6 rows. There is no hard front-edge line, since the shading is a gradient. The lit crown and dark underside still read as a volume seen from above and in front, not a flat slab or a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny juniper shrub, about 11x9 source pixels, much smaller than the reference trees and less than one tile. It has no trunk. By eye it shows a lighter top with leaf clumps over a darker underside, roughly 5 green steps, with no large flat area. The measured facts support it. It has 9 visible tones per tile against 7 for tree-1a786c, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline leans dark green rather than black. It has far fewer tones than tree-d43edd (29), and its clump texture is limited, but at this size it is comparable to the sparse reference tree-1a786c. It does not read as a flat black-outlined sticker, so it is acceptable next to that reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19241
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mound, lit upper canopy",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The juniper is a single rounded foliage mound, and the width profile grows from 6 to 14 px, holds, then narrows to 8 px at the base. The column scan shows three discrete lightness bands. Rows 4-8 are light green (L=113) with pale highlight pixels. Rows 9-11 are mid green (L=84), which acts as the step down from the top band. Rows 12-14 are dark green (L=22-60) as the shaded underside. There is no hard front-edge line or true eave shadow. The light-to-dark band step at rows 8-9 is the only edge, so the top plane is a soft reading and a borderline call. The mound has a lit top about 5 rows tall above a darker front of about 6 rows. It is not a flat slab and not a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny bush of roughly 12x10 source pixels, set against two full trees. Its dark edge pixels are 0% neutral, so the outline is a dark green tint and not a black sticker line. It has no flat 5x5 fills. It reads as about 4 greens: a lighter top clump, a mid body and a dark base. At this size it has little of the per-clump leaf shading and highlight dots that the Beodeul trees have. Its 9 visible tones are above tree-1a786c (7) but far below tree-d43edd (29), which is the richer standard. The overall read is a smooth lumpy blob. A careful artist would find it flatter and more sticker-like than the references, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21073
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mass upper (lit) surface",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foliage lower shaded front",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The juniper is a single rounded bush blob, rows 3-14. Its width profile runs 1,6,12,14 (rows 3-6), holds at 14 through row 11, then narrows to 12 and 8 by row 14, so it is round at both the top and the bottom. The lighter green rows 4-8 (L about 113, with a white highlight at row 4) form a lit upper foliage surface. Rows 9-14 darken from L 84 to 29 and read as the shaded south face. There is no explicit front-edge line or eave shadow, so the top rests only on the silhouette and the light-to-dark shading. That is a weak reading but acceptable for an organic mound."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny green bush, about one tile, set beside two full trees. It shows roughly 9 visible tones per tile, above tree-1a786c (7) and well below tree-d43edd (29). Near-flat coverage is 0% and the dark edge pixels are tinted (0% neutral), so the outline reads as dark green rather than black. By eye it has only about 4 green steps with a few highlight dots and a dark base, and there are no clear leaf clumps or per-cluster shading. The shape is a small rounded blob with little silhouette variation and no trunk, so it looks flatter and more sticker-like than the references at the same scale. The numbers are acceptable, but the craft is thinner than a careful artist would accept next to the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14277
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mound top (lighter green canopy with highlight pixels)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "foliage mound lower body (darker green front mass)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The juniper is a single rounded bush that spans rows 3-14 and widens from 1 to 14 px by row 6. Rows 4-8 are the lighter upper foliage (L≈113 in the x=8 column), a canopy-like top surface lit from above. Rows 9-14 step down to darker greens (L 84, then 60, then 22-29 at the base), which reads as the shaded south face with a dark underside. There is no crisp 1-row front-edge line, only a tonal step at row 9 and shadow rows 11-14. The light-over-dark split gives it a top plus a front of 6 rows, so the silhouette is not a flat slab or a pure front elevation. It is a soft organic mound, so the evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny dark green bush, smaller than one 16x16 tile, set against two full-size trees with large multi-clump canopies and trunks. The measured facts do not show it as shallow: it has 9 visible tones, 0% near-flat coverage and 0% neutral dark edges, against 7 and 29 for the references. But a bush this small gives the tile statistic little weight, and by eye it reads as a flat dome of about 3 green steps with a dark rim and a few light dots. It lacks the layered leaf clumps, highlight steps and varied dark-to-light ramp (5-6 steps) of the references, so it looks thinner and more sticker-like than either of them. The outline is a dark green tint, which is correct. Because the piece is far less rich than the reference by eye, and when in doubt the rule is fail, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15803
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.925Z",
+ "cells": {
+  "16": [
+   "958ffd3d4ff23851"
+  ],
+  "24": [
+   "04ca893554d67359",
+   "606315d7eab10314",
+   "92406aa6898a5a8c",
+   "9806b52f5c83695c",
+   "b532331fe4894d71",
+   "fe289ee9f2fd967f"
+  ],
+  "32": [
+   "177c42accae3232a",
+   "178281f9906f4fd4",
+   "1bab822c6740793b",
+   "ab081983279f4efa",
+   "b70dd87f1b38926c",
+   "ecc54606ca045f36"
+  ],
+  "48": [
+   "0baf61329c7d9a88",
+   "136e020ca2db9b58",
+   "423064167be48607",
+   "6ac9bce242596845",
+   "776aa7a32b6bc6ce",
+   "b12bbe77b64ba862"
+  ]
+ }
+}

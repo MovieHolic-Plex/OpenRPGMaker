@@ -1,0 +1,210 @@
+object-gate review — 프로필 4d8774b517f41638 (rejected = 미보정, 판정자 Sonnet 5.5 high ×4). 영수증은 조언이며 「통과」가 아니다.
+
+volcano-field: PASS 4 · REFER 3 · FAIL 29  (3/4 ?? 2, 3/4 NO 6, 3/4 ok 28)
+ruined-village: PASS 14 · REFER 1 · FAIL 39  (3/4 ?? 4, 3/4 NO 17, 3/4 ok 33)
+ice-age-field: PASS 10 · REFER 7 · FAIL 30  (3/4 ?? 3, 3/4 NO 12, 3/4 ok 32)
+mountain-fortress: PASS 11 · REFER 2 · FAIL 49  (3/4 ?? 6, 3/4 NO 22, 3/4 ok 34)
+합계 199장: PASS 39 · REFER 13 · FAIL 147
+
+불합격 이유 대부분: 화풍 「윤곽이 근흑」(버들항 기준 그림과 견줌), 일부 3/4 「정면 입면」(성벽 앞면 조각·표지 기둥·무기 걸이).
+
+— 판정 줄 전체 —
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/volcano-field/ash_mound 074f572930c7  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/basalt_boulder 9d11c629b671  [기준 beodeul_city]  화풍: 판정자 fail (3/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/volcano-field/basalt_bridge 643605515f7d  [기준 beodeul_city]  3/4: 투영이 3/4 아님(top_down_slab) (4/4) · 3/4: 앞면 2행 < 3 (3/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/volcano-field/basalt_columns d0190643922a  [기준 beodeul_city]
+REFER  3/4:ok 화풍:?? organic        beodeul_city/wave-places/volcano-field/basalt_columns_low 82bc93a9f559  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4) · 화풍: 명암 3단 < 4 (1/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/basalt_rocks 6ba30f8911c1  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/volcano-field/basalt_step a2ce2a09f417  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/volcano-field/beast_ribs a38506098f47  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4) · 화풍: 명암 3단 < 4 (1/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/volcano-field/beast_skull a595c9cbcb26  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (2/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/volcano-field/burnt_grass ea10fdc1c645  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 질감 없음 (3/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/volcano-field/cave_mouth d8c45f6f398e  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 투영이 3/4 아님(front_elevation) (3/4) · 3/4: 윗면 2행 < 3 (3/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/volcano-field/charred_log e8bd045e2270  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/charred_snag 08094f9c1fff  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/charred_stump 47ffa0fa8ecc  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/charred_tree_a c41549c162e9  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/charred_tree_b 0f4203283d98  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/volcano-field/cooled_lava 789f72c95514  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/crater_mountain 89df53712412  [기준 beodeul_city]  화풍: 판정자 fail (2/4) · 화풍: 평면 채움 (1/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/volcano-field/ember_scatter 4de3d8ccc7de  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:ok column         beodeul_city/wave-places/volcano-field/fire_guardian 720bd808ea60  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (3/4) · 3/4: 윗면 2행 < 4 (3/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/volcano-field/fumarole_crack 314c405bb1be  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/volcano-field/lava_bomb a90a1a3ca28d  [기준 beodeul_city]
+FAIL  3/4:?? 화풍:NO organic        beodeul_city/wave-places/volcano-field/lava_fall 66a857bf6e63  [기준 beodeul_city]  3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/lava_pool bcce7ea695fb  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+REFER  3/4:ok 화풍:?? organic        beodeul_city/wave-places/volcano-field/obsidian_cluster 7cc89463fdf9  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/volcano-field/obsidian_spire 01393d0baf26  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/pilgrim_cairn 405767ed04f0  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (2/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/volcano-field/pumice_scatter 81a08cf95155  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:NO 화풍:ok debris         beodeul_city/wave-places/volcano-field/smoke_column fde7b8f8f0d3  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:?? 화풍:NO structure      beodeul_city/wave-places/volcano-field/stairs_basalt 6b1c70c6341a  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4) · 3/4: 앞면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+FAIL  3/4:NO 화풍:NO debris         beodeul_city/wave-places/volcano-field/steam_wisp fffc13a15608  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/volcano-field/sulfur_crystals 14bc1ae28b21  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/volcano-field/sulfur_vent c2cb63873972  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+REFER  3/4:ok 화풍:?? organic        beodeul_city/wave-places/volcano-field/sulfur_vent_big 0218483fe8b9  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/volcano-field/temple_brazier 75960e1c7210  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (1/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/volcano-field/temple_gate a44f473e4daf  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (1/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/ash_scatter b59a2f5ab85f  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 질감 없음 (3/4)
+FAIL  3/4:NO 화풍:ok debris         beodeul_city/wave-places/ruined-village/barrel_broken 76c6971945c6  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:NO 화풍:ok other          beodeul_city/wave-places/ruined-village/barrel_tipped fc10c50f093b  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 1행 < 3 (3/4) · 3/4: 투영이 3/4 아님(side_profile_no_top) (2/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ruined-village/beams_charred cfe77e1d2115  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/bell_fallen f76ff5e67788  [기준 beodeul_city]  화풍: 판정자 fail (3/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/bench_broken 680ff9dba689  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 평면 채움 (3/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ruined-village/bucket_tipped 22ac92242e13  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/burnt_house 3cebf1280405  [기준 beodeul_city]
+REFER  3/4:?? 화풍:ok structure      beodeul_city/wave-places/ruined-village/burnt_house_pale e354c348a00a  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 투영이 3/4 아님(front_elevation) (2/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/cart_overturned d89c0e910ec5  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (3/4)
+FAIL  3/4:NO 화풍:ok structure      beodeul_city/wave-places/ruined-village/church_ruin 11a17310f059  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/cobweb_big 7530cef78cef  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/cobweb_pair 36124c76f9da  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:ok debris         beodeul_city/wave-places/ruined-village/crate_broken 4956cd2385c5  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ruined-village/crops_dead caf0f95025bf  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/ruined-village/cross_crooked 5066be9accf7  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 4 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:ok frame          beodeul_city/wave-places/ruined-village/crow_post 3d5eb77a22c2  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/crows_ground b48b6a03bcdc  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (2/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)
+FAIL  3/4:?? 화풍:NO structure      beodeul_city/wave-places/ruined-village/crypt_entrance 345d7a35d1cf  [기준 beodeul_city]  3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ruined-village/dead_bush cfb0b9aca3f6  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ruined-village/dead_sapling 81a3eccb957a  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (3/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ruined-village/dead_tree_crooked 5bb84d52c402  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 명암 3단 < 4 (4/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ruined-village/dead_tree_large 94ddb523a350  [기준 beodeul_city]
+FAIL  3/4:?? 화풍:NO flat           beodeul_city/wave-places/ruined-village/drygrass_a 272a127d0e05  [기준 beodeul_city]  3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과 · 화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:?? 화풍:NO flat           beodeul_city/wave-places/ruined-village/drygrass_b 1a431f1b562a  [기준 beodeul_city]  3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과 · 화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/fence_fallen 5c14c2b850e4  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/fog_bank fc51abb02a90  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/fog_small b2f195926500  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/gable_ruin_a ac090cba34bb  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/gable_ruin_log 749ce456f29d  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/gable_ruin_stone ae112a27f6ad  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ruined-village/gate_post_ruin 11bf2af13f73  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ruined-village/grave_wall_broken 0b257e4627eb  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ruined-village/grave_wall_end 3e30cd7dff96  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 1행 < 3 (2/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ruined-village/grave_wall_long 214192e05e12  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/ivy_ground ff6a1884a978  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/ruined-village/lamppost_bent ab75878b2f3b  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 0행 < 4 (3/4)
+FAIL  3/4:NO 화풍:NO flat           beodeul_city/wave-places/ruined-village/nettles c62e413abac8  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/ruined-village/notice_torn f64c6603947b  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/pave_crack cca2fb4e3b70  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/pave_hole 131972b85138  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ruined-village/rubble_church 1877fb07eaf6  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/ruin_house_a 5115e776f83c  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok structure      beodeul_city/wave-places/ruined-village/ruin_house_b fa3c59bf5393  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ruined-village/sack_torn ed5a51eaeec4  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:ok frame          beodeul_city/wave-places/ruined-village/scarecrow_tattered d4058b017aa9  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ruined-village/stall_collapsed ff82f95c6713  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:NO frame          beodeul_city/wave-places/ruined-village/stall_tattered 37739f73219d  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4) · 화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ruined-village/stump_burnt e9d6b78d9d29  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ruined-village/tile_debris 8259316d2dad  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 명암 3단 < 4 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/ruined-village/tomb_broken 3247133c22e4  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 투영이 3/4 아님(front_elevation) (3/4) · 3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (3/4)
+FAIL  3/4:NO 화풍:NO flat           beodeul_city/wave-places/ruined-village/tomb_cracked 22346f491a76  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ruined-village/weeds_crack 8c40c2deea0b  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 명암 3단 < 4 (4/4)
+PASS  3/4:ok 화풍:ok container      beodeul_city/wave-places/ruined-village/well_dry e6fce2ef0c2a  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ice-age-field/bone_scatter ceb9cddcbb12  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/cairn_spear 6024c83389dd  [기준 beodeul_city]  화풍: 판정자 fail (3/4) · 화풍: 명암 3단 < 4 (1/4)
+FAIL  3/4:NO 화풍:ok container      beodeul_city/wave-places/ice-age-field/campfire_snow 11732274e0e8  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 2행 < 4 (3/4)
+REFER  3/4:?? 화풍:ok frame          beodeul_city/wave-places/ice-age-field/cook_tripod ae30086ad881  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/drift_big 27bc13f624b5  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/drift_small e6aa7d427cf2  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+REFER  3/4:ok 화풍:?? organic        beodeul_city/wave-places/ice-age-field/fir_buried 535730ff00ba  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4) · 화풍: 평면 채움 (2/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/fir_laden 66f03c77fe36  [기준 beodeul_city]  화풍: 판정자 fail (3/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4) · 화풍: 명암 3단 < 4 (3/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ice-age-field/firewood_snow 2b4f5a4b17c3  [기준 beodeul_city]  화풍: 판정자 fail (3/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/frost_snag cfd850e4414f  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/frozen_beast d65469d53b47  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ice-age-field/frozen_bush 68f55b3b489e  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ice-age-field/frozen_grass f19c65b8f9ad  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/frozen_reeds 4ad00c1fa55e  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/ice-age-field/fur_pile 3f4988cd9404  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:NO 화풍:ok structure      beodeul_city/wave-places/ice-age-field/fur_tent_cone 9811d00397e4  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/fur_tent_dome 27ae24741e56  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (3/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4) · 3/4: 윗면 2행 < 3 (2/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/glacier_cave c4495f08c516  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 2행 < 3 (3/4)
+REFER  3/4:?? 화풍:ok frame          beodeul_city/wave-places/ice-age-field/hide_rack_fur 18fb1dc006b2  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/hide_windbreak eb74b6e43df6  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/ice_bridge 08435738bc9b  [기준 beodeul_city]  3/4: 투영이 3/4 아님(top_down_slab) (4/4) · 3/4: 앞면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ice-age-field/ice_crack 834613ef2078  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:NO 화풍:NO other          beodeul_city/wave-places/ice-age-field/ice_fishing_hole 83ebda38580d  [기준 beodeul_city]  3/4: 투영이 3/4 아님(top_down_slab) (4/4) · 3/4: 앞면 2행 < 3 (4/4) · 3/4: 윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (2/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/ice_floe 832d5bd9b806  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/ice_floe_s a5a2e322d9df  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ice-age-field/ice_pillar c03142f190bb  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/ice_shards c653533456fd  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ice-age-field/icefall 54d5f1e5d980  [기준 beodeul_city]
+REFER  3/4:ok 화풍:?? debris         beodeul_city/wave-places/ice-age-field/mammoth_ribs c8ae277b809a  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+REFER  3/4:?? 화풍:ok debris         beodeul_city/wave-places/ice-age-field/mammoth_skeleton c0a6fae46ebe  [기준 beodeul_city]  3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과
+REFER  3/4:ok 화풍:?? debris         beodeul_city/wave-places/ice-age-field/mammoth_skull f526b961d11f  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+REFER  3/4:ok 화풍:?? debris         beodeul_city/wave-places/ice-age-field/marker_fallen 2dc9c405199b  [기준 beodeul_city]  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+FAIL  3/4:NO 화풍:ok column         beodeul_city/wave-places/ice-age-field/marker_standing 6ebfd5c39729  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 4 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:ok column         beodeul_city/wave-places/ice-age-field/marker_stub 8de0074d82b1  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 4 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/pressure_ridge 94892e31655a  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/rock_heads 46cdf934c79d  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/rock_outcrop 8a9e8a5411ea  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (2/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/rock_rimed e074b25390b1  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/ice-age-field/rocks_snowy 3ab5bdb4a786  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/ice-age-field/serac 0e28bfc18d28  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:ok container      beodeul_city/wave-places/ice-age-field/sled_loaded 724bac890515  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/ice-age-field/snow_den d775de9aa315  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ice-age-field/snowshoe_trail 5e781902a826  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/supply_bundles 54599aad261c  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/ice-age-field/tracks_beast d90c46aee9aa  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/ice-age-field/tusk_arch 6541e8770f67  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/ice-age-field/tusk_single 3166293d6a3d  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:NO other          beodeul_city/wave-places/mountain-fortress/anvil_block ca73412f22e9  [기준 beodeul_city]  3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 투영이 3/4 아님(front_elevation) (2/4) · 3/4: 윗면 1행 < 3 (1/4)
+FAIL  3/4:?? 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/bastion 8fe6a4f3996f  [기준 beodeul_city]  3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/boulders 087ec385afd7  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:ok container      beodeul_city/wave-places/mountain-fortress/brazier_iron 3fc9c8883440  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (2/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4) · 3/4: 윗면 2행 < 4 (2/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/cairn_mark 25ad48891d41  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_a c4a416592084  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_b b44f7f8b22a4  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_c 736036755c7b  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_d 88e1ad279421  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_e ff27b39b4e8d  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_face_snowlip 87e0424d6198  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_pier_e 29a2b82df062  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/chasm_pier_w 3605dbddcb2c  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/coal_heap 60b83b6a73d6  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/crag_a 8afc9c9eaebb  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (1/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/crag_b 5f4b28f6a86e  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (1/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/dead_snag 75f48377cf66  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4) · 화풍: 명암 3단 < 4 (4/4)
+FAIL  3/4:NO 화풍:ok structure      beodeul_city/wave-places/mountain-fortress/drawbridge a8059e4872ff  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_dusted c36c5ae0a82d  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_dusted_b f0afd4e57031  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_dusted_l 11534d66d1da  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_snow_l 38eb71c7a766  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_snow_m d5224bf14ebc  [기준 beodeul_city]
+PASS  3/4:ok 화풍:ok organic        beodeul_city/wave-places/mountain-fortress/fir_snow_s 5abc34652e37  [기준 beodeul_city]
+FAIL  3/4:?? 화풍:NO container      beodeul_city/wave-places/mountain-fortress/forge_hearth a46044404ba5  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4) · 화풍: 판정자 fail (3/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/gate_tower_a 56079abdd7c2  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/gate_tower_b c3d03d9e8a8e  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4) · 3/4: 윗면 2행 < 3 (3/4)
+FAIL  3/4:NO 화풍:NO other          beodeul_city/wave-places/mountain-fortress/grindstone 304057eb30f5  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO flat           beodeul_city/wave-places/mountain-fortress/icicles 530809df40f9  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/juniper b22b1bd4d04f  [기준 beodeul_city]  화풍: 판정자 fail (3/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4) · 화풍: 명암 3단 < 4 (1/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/log_bundle 782acb380a4d  [기준 beodeul_city]
+FAIL  3/4:ok 화풍:NO container      beodeul_city/wave-places/mountain-fortress/ore_cart 7351f24c458c  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (3/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/mountain-fortress/ore_heap 09468309f2cd  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (3/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/outcrop 7d07c9da5708  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)
+FAIL  3/4:NO 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/plank_bridge 8576c050ca1e  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 0행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:?? 화풍:NO container      beodeul_city/wave-places/mountain-fortress/quench_trough 7c8a8517cadb  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4) · 3/4: 윗면 3행 < 4 (4/4) · 화풍: 판정자 fail (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/mountain-fortress/rockfall 38349f52eb88  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO debris         beodeul_city/wave-places/mountain-fortress/rubble_pile e4f016385a22  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/sacks_heap 10eb1b027024  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/sacks_stack feb6acce44f6  [기준 beodeul_city]  3/4: 종류 불일치
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/mountain-fortress/scree_a 0a6a1ad873dd  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/mountain-fortress/scree_b 8b06d8645188  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/mountain-fortress/snow_patch_l ce6f9909f6a9  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 평면 채움 (4/4) · 화풍: 질감 없음 (4/4)
+FAIL  3/4:ok 화풍:NO flat           beodeul_city/wave-places/mountain-fortress/snow_patch_s bd0f60cf566b  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 질감 없음 (3/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/snowrock_l de627a72fd4c  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/snowrock_m 29bd4bf171e3  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 평면 채움 (4/4)
+FAIL  3/4:ok 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/snowrock_s 4787853f92a6  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)
+FAIL  3/4:NO 화풍:NO organic        beodeul_city/wave-places/mountain-fortress/stairs_rock 46ef6f82a26d  [기준 beodeul_city]  3/4: 종류 불일치 · 화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:NO 화풍:ok structure      beodeul_city/wave-places/mountain-fortress/stone_gate 4243cd0bd800  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO frame          beodeul_city/wave-places/mountain-fortress/tool_rack b9c8a326a13d  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/mountain-fortress/torch_post 73c06a55cf41  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 4 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/wall_3 78757025a618  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4) · 화풍: 명암 3단 < 4 (1/4)
+FAIL  3/4:?? 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/wall_3_drain 5a765ef88ad8  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 투영이 3/4 아님(front_elevation) (2/4) · 3/4: 윗면 0행 < 3 (2/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/wall_4a 549aa9ad81b6  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/wall_end_e 800e54222930  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+FAIL  3/4:ok 화풍:NO structure      beodeul_city/wave-places/mountain-fortress/wall_end_w 3faa2c9ca4d7  [기준 beodeul_city]  화풍: 판정자 fail (4/4) · 화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)
+REFER  3/4:?? 화풍:?? structure      beodeul_city/wave-places/mountain-fortress/wall_gatehouse d2ce0ab1bca1  [기준 beodeul_city]  3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4) · 3/4: 투영이 3/4 아님(front_elevation) (2/4) · 3/4: 윗면 0행 < 3 (2/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/wall_rubble_end 21440b16a6b9  [기준 beodeul_city]
+FAIL  3/4:NO 화풍:NO column         beodeul_city/wave-places/mountain-fortress/waymarker eff449e74837  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 4 (4/4) · 3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (4/4)
+FAIL  3/4:NO 화풍:ok frame          beodeul_city/wave-places/mountain-fortress/weapon_rack 97f61fdb0bf3  [기준 beodeul_city]  3/4: 투영이 3/4 아님(front_elevation) (4/4) · 3/4: 윗면 2행 < 3 (4/4) · 3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)
+PASS  3/4:ok 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/woodpile_long 5bc7972d89e1  [기준 beodeul_city]
+REFER  3/4:?? 화풍:ok debris         beodeul_city/wave-places/mountain-fortress/woodpile_tall faa0cfa805c6  [기준 beodeul_city]  3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과

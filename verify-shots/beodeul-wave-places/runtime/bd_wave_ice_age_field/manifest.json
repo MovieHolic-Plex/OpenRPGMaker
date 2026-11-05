@@ -1,0 +1,287 @@
+{
+  "scenarioId": "wave-bd_wave_ice_age_field",
+  "timing": {
+    "bootMs": 14513,
+    "totalMs": 25443
+  },
+  "projectPath": "output/wave-places/bd_wave_ice_age_field.project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "note": "bd_wave_ice_age_field 입구",
+      "shot": "02-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "bd_wave_ice_age_field",
+        "x": 35,
+        "y": 51,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "walk",
+      "note": "입구 → 볼거리 → 끝",
+      "shot": "03-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "bd_wave_ice_age_field",
+        "x": 45,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "bd_wave_ice_age_field",
+          "x": 45,
+          "y": 11,
+          "timeoutMs": 120000
+        }
+      ]
+    }
+  ]
+}

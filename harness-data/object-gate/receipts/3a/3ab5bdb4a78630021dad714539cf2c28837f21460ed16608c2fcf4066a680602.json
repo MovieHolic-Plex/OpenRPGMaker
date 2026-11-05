@@ -1,0 +1,356 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ab5bdb4a78630021dad714539cf2c28837f21460ed16608c2fcf4066a680602",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "rocks snowy",
+ "label": "beodeul_city/wave-places/ice-age-field/rocks_snowy",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "small rock top (snow cap)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "large left rock snow cap",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right rock snow cap",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tiny cluster of snowy rocks about 9 rows tall. The snow caps are 1-2 white rows (rows 6-7, 10-11) sitting on dark grey faces of about 2-3 rows (rows 12-13). The snow reads as a thin highlight, not a horizontal surface, and there is no front-edge line with eave shadow. Silhouette widths go from 12 at rows 10-11 to 10 and then 6, a plain tapering mound with no ellipse. The top is a rim of 2 rows at most and the front face is under 3 rows, so it reads as a front elevation rather than a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny snowy rock cluster, roughly 10x8 px, shown beside two full trees. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. By eye it has about 3 steps (white highlight, light grey, mid grey) with only a few pixels of shadow, against 5-6+ steps and many leaf clumps in the references. Its dark edge pixels are 100% near-neutral, so the outline is a neutral grey or black line and not a tinted material tone, while both references measure 0% neutral. There is almost no grain, speckle or per-stone shading. The piece is too small and sparse to judge reliably, and nothing in it matches the references' richness, so it looks thinner and more sticker-like. The reference kind is also a canopy tree, which is a poor match for a rock prop. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11170
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large rock with snow cap (left/bottom)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rock with snow cap (upper right)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is two tiny rock clumps with white snow caps. The main clump spans rows 10-13 (widths 12,12,10,6). Rows 10-11 are a snow highlight 2 rows tall, which is only a rim-sized band with no distinct front-edge line and no ellipse. Rows 12-13 are the dark underside or front, only 2 rows, which is fewer than the 3 needed for a front face. The smaller clump on rows 5-9 is a 2-row white cap over a dark body. Neither clump shows a real horizontal top plane with a front face below it, so this reads as a flat silhouette with snow highlights."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of a few grey rocks with snow, far smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is not a tree or plant, and it is much smaller than the references, which are full canopy-and-trunk trees. Its shading is only about 3 steps (white, light grey, dark grey) against 5-7 on the references. Its dark edge pixels are 100% near-neutral, so the outline is a neutral dark line, while the references' outlines are tinted. The stones show almost no per-stone texture or grain, so they look like flat sticker shapes next to the rich leaf clumps and bark of the references. A careful artist would not accept it next to these references: it is thinner, flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21626
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large rock snow cap",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "large rock dark front face",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rock snow cap",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rock dark base",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the larger rock, rows 10-13, 12 px wide. Its white snow cap is only 2 rows (10-11), a rim-level strip with no clear front-edge line or eave shadow. The dark front below is 2 rows (12-13), and the whole rock is 4 rows tall. The small rock above (rows 5-9) has the same structure: a white cap of 2 rows (6-7) over a dark underside. Neither rock shows a foreshortened top plane or an ellipse, so the pair reads as a flat front elevation with snow on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny snowy rock cluster, under one 16x16 tile and far smaller than the full-size trees in the references, so the kind does not really match. Judged by eye it shows only about 3 tones (white snow, light grey, dark grey) with no grain, speckle or per-stone shading. The measured facts show 100% near-neutral dark edge pixels, meaning a neutral dark outline and the sticker look, where both references show 0% and use tinted material-tone edges. Only 11 distinct colours in total, against 10 and 567 for the references, and the per-tile tone count is 0 because the piece is smaller than a tile. Next to the references it looks thinner, flatter and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13544
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large snowy rock, snow cap",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "large rock front face",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rock behind, snow cap",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is two tiny rocks, a small one at rows 5-9 and a larger main one at rows 9-13. The main rock has a 2-row white snow cap at rows 10-11, which reads as a rim. No edge line or eave shadow separates it from the face. The silhouette widens from 4 to 12 px and narrows to 6 px, but it has no ellipse profile. Below the snow, rows 12-13 are only 2-3 rows of dark rock face. The small rock has a 2-row white top (rows 6-7) over 2 rows of dark. Neither rock shows a distinct top plane, so the snow is a thin cap on a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of snowy rocks, well under one 16x16 tile, with only 11 distinct colours. The per-tile facts are 0, so I judged by eye. It shows about 3 lightness steps (white snow cap, grey body, dark base), where the references show 6 or more. All of its dark edge pixels are near-neutral (100%), so the outline is a neutral grey/black line with no material tint. The references measure 0% neutral and use tinted dark greens and browns. The rocks are not shaded stone by stone, and there are no grain dots or clumps. Next to the dense, multi-tone references (7 and 29 visible tones per tile) it looks thin and sticker-like. It is not a 5x5 flat fill, but only because the sprite is so small.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15659
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.773Z",
+ "cells": {
+  "16": [
+   "d26ed4070c1d5c74"
+  ],
+  "24": [
+   "0bab2f8171eea55b",
+   "4adb1c5ef9abf787",
+   "6d43f155d347c8d0",
+   "be99f665a4e0907e",
+   "c9cffbab1f21eb30",
+   "fb9320c1b46846ab"
+  ],
+  "32": [
+   "549c967111e212a2",
+   "5be2e873888df9e0",
+   "bbd0f2af210f1fc5",
+   "c5fc4c0d9218238d",
+   "d124a445fdacc1c0",
+   "de3a75e6c4a82abe"
+  ],
+  "48": [
+   "08eefe8b0a5b4fa9",
+   "1d070485eb39475f",
+   "2ef9aa180919e79f",
+   "56bed0b1ea288919",
+   "5c1be2e38a8d72e7",
+   "c57a5b89b3ecc1ca"
+  ]
+ }
+}

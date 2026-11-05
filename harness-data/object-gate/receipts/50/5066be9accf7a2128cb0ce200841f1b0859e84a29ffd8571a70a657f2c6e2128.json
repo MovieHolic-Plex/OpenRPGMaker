@@ -1,0 +1,427 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5066be9accf7a2128cb0ce200841f1b0859e84a29ffd8571a70a657f2c6e2128",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "cross crooked",
+ "label": "beodeul_city/wave-places/ruined-village/cross_crooked",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 44,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cross vertical beam upper",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cross arms and hub",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin crooked shaft",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 8,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px-wide crooked cross drawn flat as a front elevation. The widest part of the upper section (rows 13-16, width 6-8) is the cross arms, not an overhanging elliptical cap plate. Its width profile goes 2, 6, 8, 6, 4, 2, which is a diamond-shaped hub rather than an ellipse cap, and there is no front-edge line or eave shadow. The base (rows 26-29, width 9-13) is a flat trapezoid mound with a darker centre notch at rows 26-29 and no top band ending in an edge line. No part of the column shows a horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse crooked wooden cross with a small base. The per-tile facts are 0 because it is smaller than one tile, so I judged by eye. It uses only 8 distinct colours in total, against 14 for the bench and lamp references and 38-40 for the stall and well. The cross reads as about 3 brown steps (dark edge, mid, light) with only a few grain dots, while the bench and lamp references carry about 5 steps plus highlights. The outline is tinted (0% neutral dark edge pixels), so it avoids the sticker look, and there are no large flat fills. Even so, the candidate looks thinner and flatter than the same-kind references: little wood grain, no per-plank highlight, and a barely shaded base. A careful artist would not accept it next to the references without adding steps and texture, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13916
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base plinth (mound)",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crooked cross shaft",
+      "rows": "7-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar with central hub",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 2,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px-wide crooked cross on a 13px-wide base. The shaft (rows 17-25) and the upper post (rows 7-12) are 2 px wide throughout, with no widening into a cap plate. The crossbar spans rows 13-16 as a diagonal stroke with a small hub, and it is drawn as a flat front-facing strip. The base (rows 26-29) widens 9 to 13 px, which looks like a low mound or plinth. It has a lighter top row at 26, but rows 27-29 are a uniform face with no front-edge line or eave shadow, so it is at most a 1-2 row rim. No part shows an elliptical top, a front-edge line or visible contents. The drawing reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crooked wooden cross on a tiny base, only about one tile tall. Its 8 distinct colours in total are well below the thin references (bench 14, lamp 14) and far below the stall (40) and well (38). The tile-level facts are 0 because the piece is smaller than one tile, so I judged by eye. The wood reads as roughly 3 steps (light, mid, dark) against about 5 on the bench and well. The dark edge pixels are 0% near-neutral, so the outline is tinted brown and matches the dark-material-tone approach. There are no large flat areas, but the grain and per-plank highlights seen on the bench and well are only lightly suggested. Next to the references it looks thinner and flatter, with a shallow ramp, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14173
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crooked wooden cross (upper post and crossbar)",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin shaft",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 8,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px-wide wooden cross standing on a small trapezoid base. The width profile shows the top post at 2px (rows 7-12), widening only at the crossbar (rows 13-16, widths 6/8/6/4), then back to a 2px shaft (rows 17-25) and a 9-13px base (rows 26-29). The crossbar is a front-facing arm, not a horizontal elliptical cap plate overhanging the shaft. No front-edge line or eave shadow marks a top surface, and the base is drawn with a flat front and a 1-row lighter strip with no visible top plane. The whole thing is a flat front elevation with no top surface or ellipse cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin crooked wooden cross with a tiny soil or grass base, so the per-tile facts are 0 and I judged density by eye. It has only 8 distinct colours in total, against 14 for the bench and lamp, the nearest thin references. The wood reads as about 3 steps (light, mid, dark) with little grain or per-plank highlight, and the base is only a few dots. The bench shows about 5 wood steps with highlighted edges and grain. The outline is tinted brown (0% near-neutral dark edge pixels), which is correct and not a sticker look. There are no large flat fills, but the piece is visibly thinner and shallower than the references. A careful artist would likely want more wood grain and ramp depth next to the bench, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13966
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper post/cross arm assembly (vertical post with crossing arms and a hub)",
+      "rows": "7-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shaft",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 8,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px-wide crooked pole with crossing arms (rows 13-16, widths 6, 8, 6, 4) forming a cross shape. These are a flat front-facing silhouette, not an elliptical cap plate. The shaft is 2px wide in rows 7-12 and 17-25. The base (rows 26-29, widths 9 then 13) is a small mound/plinth with no clear top surface or front-edge line, only a darker outline and a light stripe in rows 27-28. No part shows an ellipse, edge line plus eave shadow, or roof. It reads as a flat front elevation, not a column with an elliptical cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin crooked wooden cross of roughly 10x24 source pixels. It is the same kind as the thin references (bench, lamp), so the per-tile facts of 0 do not count against it. The outline pixels are tinted dark brown (0% near-neutral), which fits the Beodeul approach. Its total palette is only 8 colours, against 14 for the bench and lamp and 38-40 for the stall and well. By eye the wood shows about 3 steps, with little grain or per-plank highlight, where the bench shows 5 or more and has visible slat highlights and shadow. There are no large flat fills, since the object is tiny. A careful artist would still see it as thinner and flatter than the bench next to it, and when in doubt the piece fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13425
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.324Z",
+ "cells": {
+  "16": [
+   "90ecfc0230e8a346",
+   "f593d9c84216a76d"
+  ],
+  "24": [
+   "017dcb5528987a70",
+   "0736378cc16b98e3",
+   "2184f20f36675143",
+   "529bd8a50e840fce",
+   "77f110f98e1e9819",
+   "9d23b862284150b9",
+   "b311a8c8a57155d2",
+   "b9be54b836c09518",
+   "d890aa024f25c493",
+   "dfc51748a8698e7a",
+   "e70e267a0bbb0e48",
+   "ff8a9417794d729f"
+  ],
+  "32": [
+   "a1737136cd96121b",
+   "d8616c6466718efa",
+   "f6198a2564d72517"
+  ],
+  "48": [
+   "248f15a7cbf2b44c",
+   "78ac084ef77e8768",
+   "8080678e3203df0c",
+   "8d81e47e2d0093b6",
+   "a15c425d00024a06",
+   "b311d76e22546a22"
+  ]
+ }
+}

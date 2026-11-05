@@ -1,0 +1,643 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4243cd0bd800070b60d849c327acdfc7895356030a2c558f20a95f8039cc5222",
+ "width": 192,
+ "height": 144,
+ "kind": "structure",
+ "name": "stone gate",
+ "label": "beodeul_city/wave-places/mountain-fortress/stone_gate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 23,
+  "darkV5": 53,
+  "nearBlackEdge": 0.27,
+  "opaqueTiles": 98
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top small cap tier",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second tier (stepped roof course)",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third tier (stepped roof course)",
+      "rows": "17-27",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "main gate facade with lintel, door and side walls",
+      "rows": "28-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base steps",
+      "rows": "137-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 115,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gate is a flat front elevation with a stepped silhouette (widths 42, 91, 145, 181 px). Each tier is brick face drawn straight down. Each tier shows only a 1-2 row pinkish speckled edge or rim at its top (rows 7-8, 17-18, 28-29), and no deeper horizontal top plane, receding roof slope or eave shadow. The lintel with its chevron frieze, the door and the flanking walls are vertical faces. The base steps are also thin bands. There is no real top surface on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's visible tones per tile (11) sit between the references (12 and 10). Near-flat coverage is only 3%, against 0% for both references. Stone blocks are shaded one by one with speckle and chips. The lintel, cornice, door panels and steps each have about 5 lightness steps, from highlight through light, mid and dark to deep. The ragged weathered silhouette and the value-only separation between blocks are not a sticker outline. The measured 100% near-neutral dark edge share is high, but the stone ramp is itself grey, so the dark edge pixels are the darkest step of that grey ramp rather than a separate black line. I therefore call the outline 'mixed', not clean near-black. The tone count is level with the references, and the structure is detailed (chevron frieze, studded doors, diamond plates). It would sit acceptably beside the references, though it is slightly less varied than the roof ramps.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22265
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tier cap",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second tier ledge",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third tier ledge",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "lintel/cornice band with chevrons",
+      "rows": "28-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door and flanking walls",
+      "rows": "46-129",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base steps",
+      "rows": "130-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 125,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gate is a stepped front elevation. Each tier is a front-facing brick strip topped by a 1-2 row tan ledge (rows 8, 17-18) with a thin dark line below. None of these ledges is a real top plane: there is no band of rows ending in a front-edge line with eave shadow, no sloped roof plane, and no ellipse. The lintel with chevrons, the pillars and the double door are all vertical faces. The base steps are also thin front strips. The result reads as a flat front elevation with only rim-like ledges (about 2 rows), not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, against 12 and 10 for the references, so density is on par. Near-flat coverage is 3%, which is close to the references' 0% and means no real flat fills. The stone masonry is shaded block by block, with about 5 grey steps: light cap stones, mid blocks, dark joints and a deep recess. The door panels carry diamond studs, rivets and a dentil lintel, and the ragged edges and stepped crown add variation. The 100% neutral dark-edge figure is partly because grey stone has no hue to lean toward. The dark edges here are the dark grey of the adjacent stone, not a uniform black sticker line around every shape. Forms are separated mostly by value, with dark joints and a recessed door frame, so I rate the outline 'mixed' rather than 'near_black'. It is slightly shallower than the references' 6-step ramps and its outline is less tinted, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19505
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top small tier cap",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-6"
+     },
+     {
+      "part": "second tier ledge (pinkish edge strip)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third tier ledge (pinkish edge strip)",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "main wall and lintel with chevron band",
+      "rows": "28-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door, pilasters and side wall panels",
+      "rows": "56-130",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base steps",
+      "rows": "130-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 140,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gate is drawn as a stepped, flat front facade. The width profile jumps at rows 7, 17 and 28 (44 to 88, 91 to 141, 142 to 180). Each jump is only a 1-2 row pinkish ledge line, then straight brick face. These tiers are thin rims, not sloped roof planes or deep horizontal surfaces. The lintel (rows ~17-35) and chevron frieze are vertical front-facing strips with no edge line and no shadow band. The door, pilasters and side wall panels are all face-on vertical surfaces. The base steps are also thin strips. No part shows a real top surface of 3 or more rows, so the whole drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stone gate is built from individually shaded ashlar blocks, each with a light top edge, a mid face and a darker joint. It also has a stepped cornice, a chevron frieze, studded door panels with diamond relief, and chipped, ragged edges. That gives about 5 distinct lightness steps on the stone, a little under the references' 5-6. The measured facts match the references: 11 visible tones per tile against 12 and 10, and only 3% near-flat coverage against 0% for both. The 100% near-neutral share of dark edge pixels would normally suggest a sticker-style black outline. Here the material is itself neutral grey stone, so the dark pixels are the shadow tone of the adjacent stone, not a separate black contour. The silhouette has no continuous black line. Forms are separated mostly by value, with dark joints and door recesses, which is selective, Beodeul-like use. The tint cannot be confirmed from the numbers, so I report the outline as mixed. Overall it holds up next to the references without looking thinner, flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23977
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap tier",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second stepped roof tier",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third stepped roof tier",
+      "rows": "17-27",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lintel with chevron frieze",
+      "rows": "28-55",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base steps",
+      "rows": "130-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 115,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gate is a flat, face-on stepped facade. The silhouette widens in plateaus (rows 0-6 at 42-44 px, 7-16 at 88-91, 17-27 at 141-146, 28 onward at about 180). Each step has only a 1-2 row pinkish ledge at its top edge, such as rows 7, 17-18 and 28, followed straight away by vertical brick courses. No tier has a band of rows that reads as a sloped roof plane or horizontal top surface. The lintel's chevron frieze, the door panels, the side walls and the pillars are all drawn as vertical faces. The base steps are also thin strips. There is a large front face but no real top surface, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile against 12 and 10 for the references, and 3% near-flat coverage against 0%, so density is on par. By eye, the stone blocks are shaded one by one with lighter top edges, darker joints, speckle and chipped, ragged edges. The door has riveted panels, diamond reliefs and a dotted lintel frieze. The roof steps and the lower stair base each show several value steps. The 100% near-neutral dark edge share is expected here, because the material is grey stone and its dark tone has no hue lean. The forms are mostly separated by value, with darker stone joints and a recessed door shadow, not by a uniform black sticker line around every shape. The door frame and the recess do get a darker, more neutral edge, so I call the outline mixed. Shading depth is slightly below the references' 6 steps, but there are no large flat fills and the piece would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22522
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.971Z",
+ "cells": {
+  "16": [
+   "05da1cbc7f083473",
+   "09a7a23b48a6fc15",
+   "0a6bda23a2f092bc",
+   "0a7dc03875611c15",
+   "0e12f477618bc8b2",
+   "0f672c1b998e52b7",
+   "1f2989f89aa97980",
+   "203b207ebb172ff4",
+   "20b1ee7af5e7e255",
+   "20e3904de2a62604",
+   "297aae06075bf8a7",
+   "2d873187ea0b7100",
+   "3218be2f23a0ba35",
+   "345ff792c3ccbd64",
+   "36bc10a9f40c48c0",
+   "377b7e9b6c58cf2b",
+   "3841fa426b4af83d",
+   "3cd87cd8b5ffdcb3",
+   "3e5e45fc47e47f16",
+   "3f90317b92b570e6",
+   "414945d58a80e765",
+   "42b57f3343660bcb",
+   "433d7d120862f110",
+   "44f450d5b67c48f1",
+   "457e694ecf291505",
+   "47921f324fd8df65",
+   "49eec93429ac6015",
+   "4a8b56e6902f9c0d",
+   "4ae1d3ec99bac2f2",
+   "4b3580f3febca084",
+   "4c8acdee148b3795",
+   "4dce81d6c825b7ce",
+   "4f4d4e5fd62adebb",
+   "5279690001fba2c3",
+   "582ce8a009fe1d8f",
+   "5bef8e34e85cc161",
+   "5c0848731b4fbbb1",
+   "5d331faee154c546",
+   "5ef0e0e0d0f2e1c3",
+   "5f27c67e89327316",
+   "5ffa03e9d7cdc26b",
+   "60cb2db6d4f4c7c4",
+   "6150710e5c66bea7",
+   "61f54282b50ecccc",
+   "683efa121196937d",
+   "6a3e10bc43e5d365",
+   "6b3531efe6831d0b",
+   "6bebe1c63e88a614",
+   "6bf94db63630743e",
+   "6da4272a3d0c6b82",
+   "6de9e069d1b9f804",
+   "714e5f4d2a0e90fb",
+   "72372307b9d2048d",
+   "73752af79edaefff",
+   "749bf0a495ba572e",
+   "75066b7ef24e3f76",
+   "75f5af5da7082c1c",
+   "79d098f40f5dbca8",
+   "7b1542007652d9f9",
+   "7f479f955a32d74d",
+   "8250530ecca06ac0",
+   "877b921466ec4802",
+   "8ca338e159842b1e",
+   "8cbcd454f72bbeee",
+   "8d14e555d29c1303",
+   "8e0553685f9b538f",
+   "92e3bc3beafc9709",
+   "970fbd067a2dfe0c",
+   "9ad63843add647ca",
+   "9ba95b60999b7ee0",
+   "9e3e6b703e07a9bb",
+   "a724fecb47291f21",
+   "a74c14158dee405b",
+   "aa7f6d32e5fd2824",
+   "ab98cd7e52f27a56",
+   "ac5a308b346eb326",
+   "afdf853a2ab22d98",
+   "b058559040cd02d5",
+   "b5a9ebb263adb79e",
+   "b687496120170c4b",
+   "bf886036edac35c0",
+   "bf94718569d2eca7",
+   "c06467a7b22057df",
+   "caeb530f5f931884",
+   "cbb968d2b22c0e95",
+   "cf3ffe2a548db6df",
+   "d2fa31b494e7816b",
+   "d485a899c060ed45",
+   "d5370a8a72512f23",
+   "d6750e3a960a7ff3",
+   "d759296c60432009",
+   "d862310441510b29",
+   "d8f35e804f61e2f0",
+   "e186ddf7f9d4f473",
+   "e4f226ade7455cfb",
+   "e7ca67882d620834",
+   "e8021757b6b4d0a9",
+   "e977aaef22950480",
+   "ee184e3874b8c65a",
+   "f613d864d0ddb4b1",
+   "f912ba0ff3ce3ed9",
+   "fba44a753c18254a"
+  ],
+  "24": [
+   "033df2dcc7538982",
+   "03a7750dcf574d77",
+   "08537542ee3cf3c0",
+   "19b9ca76d3848bf9",
+   "1fc1af82a6ffb3ae",
+   "2963852f25a8baac",
+   "40a62b53a3589918",
+   "455899a41d414207",
+   "52860f95db7fb06f",
+   "54dd035cb68c2355",
+   "5933f2b5b5c4d7ac",
+   "596432d07515f33a",
+   "5a919bcc83ac5d8f",
+   "646c85b1961e1daf",
+   "68264f4a9c433192",
+   "6f1747d383e3c1fd",
+   "6f43a9b6b1a96ba6",
+   "7410df4b35e88ad4",
+   "82966707d671cf57",
+   "82d033c54d159a61",
+   "833b34534bcd5849",
+   "84ff9c99c26a8504",
+   "8ebb6da13f070feb",
+   "9667fd3656b25dd9",
+   "982cf2de4ad5b744",
+   "9f6341f950dbd44a",
+   "a563d8a3abb19970",
+   "a69c146e6a31d99b",
+   "ac1c052287467965",
+   "aea2bc8426afdb72",
+   "af99629e7b129df6",
+   "b11092b9300401ef",
+   "b4846923e94bfdef",
+   "bb52dcc3b8bc53aa",
+   "bcd10361436b1aca",
+   "bfab4a3fe7d7fdbc",
+   "c4d366e2b143fdfd",
+   "cad161e2bb338e6f",
+   "cafce932c6409967",
+   "cbc0cc604141f3f5",
+   "d319f3b2b4a29b2c",
+   "d643d9cecd89a8c1",
+   "e308d15eaf3f0303",
+   "e8a6c4801b15a998",
+   "ecdd6ed2cf8ee73c",
+   "ef8e80efe56b35e0",
+   "eff4b74bc6410bb5",
+   "fa3af961f1d9224c"
+  ],
+  "32": [
+   "05d9d5be2e39e0a0",
+   "0a1f1c23e1c744f2",
+   "10453c739068062d",
+   "133727eaf21e4fd6",
+   "15ebd1dee9a05c3a",
+   "15f1deceb3271d4c",
+   "16e811d8c27be97a",
+   "1b50b518c09c221c",
+   "1e602070521b9f60",
+   "1f14b6d02af51392",
+   "212d57fe7dedb961",
+   "2349966898e90c83",
+   "23e0b9b8003cacb3",
+   "2443fc4b4a08c82e",
+   "2472734dc0e81702",
+   "28d9927ed79d67ed",
+   "290b4f20a7266fab",
+   "2b5c729336cfd373",
+   "2d8e6579b999c76d",
+   "376442579ad923a9",
+   "3aaa8a1a3c26b7bd",
+   "3ad8d5b76fb59095",
+   "41877a48a4fbe0e3",
+   "4445de854bbdb363",
+   "45cd33c2525be0dc",
+   "46267c733d7aaddb",
+   "4fa13fb248eef9ad",
+   "51e46d3e0963394a",
+   "58a02e682bd76bc5",
+   "61f8910f2ddcff6c",
+   "7945d1ec2e75a478",
+   "7d0d96852a4ce485",
+   "818ac9e3ed0fb7d7",
+   "874cdd94677a8314",
+   "89952d42e33e8d55",
+   "8d4cbeae534d9480",
+   "9260cd4d8589753e",
+   "940a6e3c0b2c8425",
+   "a56c7400f80af279",
+   "b1f6208195e63ffb",
+   "bb7d5434bd4e38a8",
+   "c67c947962b9c5bf",
+   "ca8746b42220a686",
+   "cbf63f7e64dec322",
+   "d1d8253bfc82bdea",
+   "d9f303b65830e447",
+   "db8fbf7712e28bfd",
+   "dc8f2ae63460dbf1",
+   "dcccf1cf50a7ba83",
+   "ebe2dc97482c9f16",
+   "ec849c41c40c00cc",
+   "f3eb9984011e5965",
+   "f54b2d85b8dec3e8",
+   "f5fadbb93c4f4c12",
+   "f6ca8b36cfea98c9",
+   "fc3ad770c075f67c",
+   "fc8a5407943505e1",
+   "fe366e67c1070bd0"
+  ],
+  "48": [
+   "0562b46503118dbc",
+   "15be60d53d8d3eec",
+   "1d70f559eaeaabdb",
+   "3ac2338aed7c1bba",
+   "5e4409cf1c01db92",
+   "68dabef474a0bd44",
+   "6aa1a8328242207a",
+   "7361b99c62a5ced6",
+   "7978127385b3de5a",
+   "9b70ec1bbe865547",
+   "ee9a119e168294bc",
+   "fa38bb880d9cbf6c"
+  ]
+ }
+}

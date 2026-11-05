@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bcce7ea695fb57054e8d30992bbf1ffc0e0f696ee2efec75fe4ad2d862455c77",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "lava pool",
+ "label": "beodeul_city/wave-places/volcano-field/lava_pool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 18,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava surface (contents of rock basin)",
+      "rows": "10-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "whole pool silhouette as ellipse (back rim to front rim)",
+      "rows": "4-27",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock rim at back",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 3 px at row 4 to 41 px at rows 14-15, then narrows to 8 px at row 27, which is an elliptical bowl mouth. The glowing lava fills rows 10-22 as visible contents of a rock basin. A dark rock and crust rim about 4 rows tall (rows 23-26) forms the front lip below the lava, with a dark outline at row 27. It is a fairly flat, wide pool seen from above, but it has a back rim, a lava surface and a front rim, so it reads as three-quarter rather than a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small lava pool, not a tree, so it is not the same kind as the references (canopy and trunk plants). It is also under one tile wide, so the per-tile tone count of 12 is a rough guide only. By eye, the molten core has about 4 orange/yellow steps with some grain, which is decent. The rock rim is a dark charcoal with almost no tint, and 100% of its dark edge pixels are near-neutral. The references have 0% neutral edges, with outlines in dark green or brown. This is the neutral black outline of the sticker look, where Beodeul uses a dark tone of the adjacent material. The rim rock is flat and dark, with few highlight steps and little per-stone shading. The overall ramp is shallower than the roughly 6 steps and 20-30 tones of the richer reference tree. Fails on the near-black outline and the shallow rock shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14423
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava surface (pool mouth)",
+      "rows": "10-22",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey rock rim around pool",
+      "rows": "5-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 3 px at row 4 to 41 px at rows 14-15, then narrows to 8 px at row 27. This is a closed ellipse. The lava fills the opening as visible contents (d), shown as orange and yellow rows 10-22. The rocky rim is thicker at the back, rows 5-9, and the front rim and crust are about 4 rows (rows 22-26) in the column scans: x=24 rows 23-26, x=34 rows 22-25 grey. This gives a recessed pool with a visible front lip, not a flat slab. The 'kind' is organic (rocks), so it plausibly matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are leafy trees and the candidate is a small lava pool on dark rock, so the kind match is loose. The lava has about 4 steps (yellow, orange, red-orange, dark red), and the rock rim has only 2-3 neutral dark greys and near-black. That is shallower than the 5-6 steps per material in Beodeul. The measured 100% near-neutral share of dark edge pixels, and the picture, show a black/grey rim with no brown or red lean, unlike the references' tinted edges (0% neutral). Visible tones per tile (12) are above tree-1a786c (7) but well below tree-d43edd (29). There are no flat 5x5 fills (0%), so the interior has some variation. The rock is a dark silhouette without per-stone shading or grain, which gives a slightly sticker-like look. Overall it is slightly below the references on structure and outline craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17915
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava surface (open pool contents)",
+      "rows": "10-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock rim at back and sides",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front rock rim (south face)",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is an ellipse. Width runs 3, 8, 14, 23, 31, 36, 41 and back down to 18 and 8 by row 27. The open lava fills rows about 10-22, which is a wide foreshortened horizontal surface (evidence d). Dark gray rocks ring it. The back rim at rows 5-10 is seen from behind and above. Below the lava, about rows 23-26, the front rocks form a south face of roughly 4 rows, with a dark red crust at the lava edge above them. This is a sunken pool with a thin front lip, so it reads as three-quarter rather than a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are trees, so they only loosely match a lava pool, but they are the assigned kind and I compared against them. The lava itself is decently shaded, with about 4-5 steps from yellow-white core through orange to red-brown, and a few speckles. The charcoal rock rim is shallow, with only about 2-3 steps of near-neutral grey-black and little per-rock shading or grain. The measured near-neutral share of dark edge pixels is 100%, against 0% for both references, so the rim is a colourless dark line rather than a tinted dark tone of the adjacent material. That reads as the sticker look. Visible tones per tile are 12, above tree-1a786c (7) but far below tree-d43edd (29), and near-flat coverage is 0%. The piece is small and not flat, but it has fewer steps than the reference's 5-6 per material, and the neutral rock outline is the main failing, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18709
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lava surface (contents of the pool)",
+      "rows": "8-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back rock rim",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front rock and crust wall",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide, low basin. Lava is visible inside it from about rows 8-22, which counts as contents in an open container (d). Dark rock and crust wrap around it. Back rocks run from rows 4-9, the lava fills the middle (column x=24: rows 11-22), and a darker front wall of crust and gray rock covers rows 22-26 (x=13 rows 19-24, x=24 rows 23-26, x=34 rows 22-25). The width profile widens to 41 and narrows again, which gives a lens shape. This is a top view of the lava with a short front wall of about 4 rows, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small lava pool: a dark charcoal rim around an orange-yellow lava core. It is not a tree, bush or plant, so it does not match the reference kind. The lava ramp has about 4 steps (pale yellow, yellow-orange, orange, dark red), shallower than the 5-6 steps in the references. The dark rim pixels read as neutral black/charcoal, and the measured 100% near-neutral share of dark edge pixels confirms a near-black outline where the references show 0%. Visible tones per tile are 12, above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 0%, so there are no big flat fills, but the rock rim is rather uniformly dark with little grain or per-stone shading. The sticker-like neutral outline and the shallow ramps count against it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 12832
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.171Z",
+ "cells": {
+  "16": [
+   "39218ba7c5e124d7",
+   "3f7b396d4115fa0a",
+   "7231ae7c45667bfa",
+   "7b94ede8ec7e5013",
+   "a6fe61feb00cf930",
+   "ba5aadc312de135f"
+  ],
+  "24": [
+   "2512e79264bd2966",
+   "27f027aebb5012bc",
+   "786257ba54af6f3e",
+   "8a1cb0e40170c032",
+   "9ff4c7befac830c5",
+   "a36b8aa08d829ded",
+   "d60b39199ff35307",
+   "def1ac81253dff32"
+  ],
+  "32": [
+   "0c2ecd6229f2fb3e",
+   "2567c5fa9517b464",
+   "626e763fb173dc3b",
+   "6e4b6a71f6b7c2f3",
+   "71d862ae67c86ea1",
+   "ae353726be4783c1"
+  ],
+  "48": [
+   "31d0ff03b8309588",
+   "ba224dc0a68dba1c"
+  ]
+ }
+}

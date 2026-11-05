@@ -1,0 +1,339 @@
+{
+ "bd-wave-ash-plain": {
+  "name": "재의 들판",
+  "place": "volcano-field",
+  "size": [
+   72,
+   21
+  ],
+  "walkable": 1387,
+  "upperCells": 302,
+  "lavaCellsCovered": 0,
+  "entry": [
+   35,
+   20
+  ],
+  "reached": 1387,
+  "pixelDiffVsOriginal": 0,
+  "pixelDiffCellsVsOriginal": 0,
+  "marks": {
+   "beast_bones": [
+    23,
+    9
+   ],
+   "lava_pool": [
+    41,
+    14
+   ],
+   "vent_field": [
+    57,
+    8
+   ],
+   "south_entrance": [
+    35,
+    20
+   ]
+  }
+ },
+ "bd-wave-volcano-field": {
+  "name": "화산 지대 필드",
+  "place": "volcano-field",
+  "size": [
+   72,
+   52
+  ],
+  "walkable": 2940,
+  "upperCells": 759,
+  "lavaCellsCovered": 0,
+  "entry": [
+   35,
+   51
+  ],
+  "reached": 2940,
+  "pixelDiffVsOriginal": 0,
+  "pixelDiffCellsVsOriginal": 0,
+  "marks": {
+   "lavafall_view": [
+    9,
+    23
+   ],
+   "mountain": [
+    36,
+    15
+   ],
+   "temple_door": [
+    35,
+    17
+   ],
+   "forecourt": [
+    35,
+    19
+   ],
+   "bridge_n": [
+    35,
+    23
+   ],
+   "bridge_s": [
+    35,
+    29
+   ],
+   "stones_n": [
+    56,
+    22
+   ],
+   "stones_s": [
+    57,
+    26
+   ],
+   "cave_door": [
+    62,
+    20
+   ],
+   "beast_bones": [
+    23,
+    40
+   ],
+   "lava_pool": [
+    41,
+    45
+   ],
+   "vent_field": [
+    57,
+    39
+   ],
+   "south_entrance": [
+    35,
+    51
+   ]
+  }
+ },
+ "bd-wave-ruined-village": {
+  "name": "폐허 마을 (새벽샘 터)",
+  "place": "ruined-village",
+  "size": [
+   64,
+   48
+  ],
+  "walkable": 2636,
+  "upperCells": 793,
+  "lavaCellsCovered": 0,
+  "entry": [
+   31,
+   47
+  ],
+  "reached": 2627,
+  "pixelDiffVsOriginal": 0,
+  "pixelDiffCellsVsOriginal": 0,
+  "marks": {
+   "church_door": [
+    32,
+    17
+   ],
+   "well": [
+    30,
+    27
+   ],
+   "plaza": [
+    31,
+    28
+   ],
+   "house_a": [
+    12,
+    24
+   ],
+   "house_b": [
+    18,
+    31
+   ],
+   "burnt_pale": [
+    4,
+    32
+   ],
+   "burnt": [
+    47,
+    23
+   ],
+   "house_c": [
+    53,
+    31
+   ],
+   "house_log": [
+    8,
+    42
+   ],
+   "house_d": [
+    44,
+    39
+   ],
+   "south_gate": [
+    31,
+    47
+   ],
+   "field": [
+    56,
+    40
+   ],
+   "crypt": [
+    55,
+    7
+   ],
+   "graveyard": [
+    50,
+    8
+   ]
+  }
+ },
+ "bd-wave-ice-age-field": {
+  "name": "빙하기 설원 (얼음 호수)",
+  "place": "ice-age-field",
+  "size": [
+   72,
+   52
+  ],
+  "walkable": 2073,
+  "upperCells": 1020,
+  "lavaCellsCovered": 0,
+  "entry": [
+   35,
+   51
+  ],
+  "reached": 2000,
+  "pixelDiffVsOriginal": 0,
+  "pixelDiffCellsVsOriginal": 0,
+  "marks": {
+   "cave_door": [
+    45,
+    10
+   ],
+   "frozen_beast": [
+    22,
+    11
+   ],
+   "icefall": [
+    10,
+    12
+   ],
+   "bridge_s": [
+    35,
+    26
+   ],
+   "bridge_n": [
+    35,
+    20
+   ],
+   "camp": [
+    35,
+    39
+   ],
+   "tusk_gate": [
+    35,
+    47
+   ],
+   "tent_a": [
+    29,
+    41
+   ],
+   "tent_b": [
+    40,
+    40
+   ],
+   "tent_c": [
+    41,
+    46
+   ],
+   "tent_d": [
+    24,
+    45
+   ],
+   "fallen_marker": [
+    30,
+    35
+   ],
+   "beast_bones": [
+    58,
+    43
+   ],
+   "ice_pit": [
+    29,
+    16
+   ],
+   "standing_skeleton": [
+    41,
+    36
+   ],
+   "pond_w": [
+    15,
+    34
+   ],
+   "snow_den": [
+    7,
+    34
+   ],
+   "south_entrance": [
+    35,
+    51
+   ]
+  }
+ },
+ "bd-wave-mountain-fortress": {
+  "name": "산악 요새 (관문 요새)",
+  "place": "mountain-fortress",
+  "size": [
+   72,
+   56
+  ],
+  "walkable": 1617,
+  "upperCells": 1717,
+  "lavaCellsCovered": 0,
+  "entry": [
+   14,
+   55
+  ],
+  "reached": 1464,
+  "pixelDiffVsOriginal": 0,
+  "pixelDiffCellsVsOriginal": 0,
+  "marks": {
+   "gate_door": [
+    35,
+    12
+   ],
+   "tower_w": [
+    27,
+    14
+   ],
+   "tower_e": [
+    44,
+    14
+   ],
+   "gatehouse": [
+    35,
+    18
+   ],
+   "bridge": [
+    35,
+    22
+   ],
+   "forge": [
+    13,
+    14
+   ],
+   "bridge_foot": [
+    35,
+    25
+   ],
+   "entrance": [
+    14,
+    55
+   ],
+   "plank_bridge": [
+    30,
+    50
+   ]
+  }
+ },
+ "_sheet": {
+  "count": 15770,
+  "rows": 124,
+  "cols": 128
+ }
+}

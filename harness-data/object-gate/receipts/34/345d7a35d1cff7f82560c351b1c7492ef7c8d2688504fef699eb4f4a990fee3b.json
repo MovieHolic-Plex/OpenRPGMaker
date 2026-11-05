@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "345d7a35d1cff7f82560c351b1c7492ef7c8d2688504fef699eb4f4a990fee3b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "crypt entrance",
+ "label": "beodeul_city/wave-places/ruined-village/crypt_entrance",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 31,
+  "tileColorsP90": 39,
+  "darkV5": 33,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pitched roof (left and right slopes)",
+      "rows": "1-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "front wall with arched opening and bars, plus lower stone bands",
+      "rows": "13-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts",
+      "rows": "8-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 4 px at row 1 to 40 px at rows 9-13. That forms a sloped roof plane across rows 1-11, with a lighter left slope and a darker right slope. A dark eave line at row 12 ends the roof, and below it the roof overhangs a 30-row front face (rows 13-42). The front face holds the dark arched opening with bars and horizontal stone courses. The roof reads as a real top surface, not just a rim, so this is a three-quarter view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone crypt arch with moss and vines. It has about 4 stone steps (pale highlight, light grey, mid grey, dark grey) and a dark doorway interior. Measured visible tones per tile are 21 against 12 and 10 for the references, and near-flat coverage is 4% against 0%, so the numbers do not flag it as shallow. The outline is the problem: 89% of dark edge pixels are near-neutral, against 7-9% for the references, so it reads as a neutral black/grey line. The references use tinted dark tones (dark brown, red-brown) and separate forms by value. The candidate's stone is shaded in only a few grey steps, against the 5-6 steps per material on the references. The stone blocks show some brick texture and the moss gives variation, but the piece is small and visibly thinner than the references' roof and wall detail. The tone count is probably inflated by the moss and vine accents. The neutral outline gives it the sticker look the standard rejects, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13362
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped roof",
+      "rows": "1-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with dark arched opening and stone slabs",
+      "rows": "13-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass tufts",
+      "rows": "43-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4px at row 1 to 40px at row 9 and stays at 40 through row 13. This is a sloped roof plane (rows 1-11) with moss patches and a light left slope against a darker right slope. A dark 1-row eave/edge line at row 12 (L=63 in every scanned column) closes the roof. Below it is the vertical front face, rows 13-42, about 30 rows. The face has a dark opening with a cross bar (rows 15-24), a stone ledge at rows 25-27, and horizontal slabs and steps down to row 42. No receding side face is drawn. Rows 43-46 are only small moss and grass tufts at the base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone crypt entrance with a pale stone arch, a dark interior, and vines. The measured facts are mixed. Visible tones per tile are 21 against 10-12 for the references, and near-flat coverage is 4%, so the numbers do not say it is thin. But 89% of its dark edge pixels are near-neutral, against 7-9% for the references. That matches the picture, where the dark opening and the lines between stones are neutral black or grey with no brown or purple lean, which is the sticker-style outline the standard rejects. Shading is shallower than the references: the stone has about 4 steps (light, mid, dark, black) and no per-stone shading like the h112 stone wall, with its stones shaded one by one. Texture is present (brick-like courses, moss, vine pixels) but sparse and mostly confined to the arch. At this scale the piece looks flatter and more cut-out than the references, which carry tinted dark tones and richer tile and plaster grain. Neutral-black outlines and shallower ramps mean it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13243
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped stone roof",
+      "rows": "1-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "front wall with dark window and lower recessed door/grate",
+      "rows": "13-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and vegetation patches, plus yellow and green tufts at the base",
+      "rows": "6-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens row by row from 4 px at row 1 to 40 px at row 9. That is a sloped roof plane, with a lighter left slope and a darker right slope. Rows 1-11 form the roof and end in a dark 1-row eave line at row 12 (L=63, #3e403d), followed by a darker band at row 13. Below it the vertical front face runs from row 13 to row 42 (about 30 rows) at a constant width of 36 px. The face holds a dark window opening and a lower recessed grate or door with stone ledges. There is no receding side face. Moss patches are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone crypt entrance, much smaller than the references, which are full houses with roofs. Per-tile tone count is 21 against 12 and 10 for the references, and near-flat coverage is 4% against 0%, so the numbers do not mark it as shallow on density. The outline is the problem: 89% of its dark edge pixels are near-neutral, against 7-9% for the references, whose outlines lean toward the neighbouring material. In the picture the dark opening and the edge lines read as neutral black or grey, which gives a sticker-like look instead of dark material tones. The stone blocks show only about 3-4 lightness steps (light cap, mid blocks, dark joints, black interior) against the roughly 5-6 steps of the references' tile and stone ramps. Stones are textured, but not shaded one by one with per-block highlights, and the moss and vine dots are sparse. The neutral outline and the shallower ramps make it fall short of the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13750
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped roof",
+      "rows": "1-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "moss tufts on roof and lower corners",
+      "rows": "6-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4 px at row 1 to 40 px at rows 9-13. This forms a pitched roof plane over rows 1-11 with a left-right light/dark split. A dark 1-row eave line at row 12 (L=63) closes the roof, with a darker band at row 13 below it. The front (south) face runs from row 13 to row 42, about 30 rows. It holds a dark arched opening at rows 15-24 and stacked stone ledges and slabs below. The 36 px width stays constant over rows 14-42, so no receding side face is drawn. The roof is a real top surface, not a rim, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stone crypt portal about 1.5 tiles wide, with ivy, a dark opening and a stone-brick base. Measured facts favour it: 21 visible tones per tile against 10-12 for the references, 4% near-flat coverage, and no large flat fills. The outline is the problem. 89% of its dark edge pixels are near-neutral, against 7-9% for the references, so the interior of the doorway and the edges read as neutral black and grey lines. This is the sticker look, not the dark material tone outline Beodeul uses. The stone blocks carry only about 4 lightness steps, with a pale top lintel, mid-grey blocks and a near-black opening, and they are shaded less stone by stone than the reference's cobble wall. The piece also has no roof, so it is much simpler than the full houses. Despite the good tone counts, the neutral outline and shallower ramps make it fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13581
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.335Z",
+ "cells": {
+  "16": [
+   "1751c7bd4d57c363",
+   "1e397fb755db8ee5",
+   "6ad937baa5f73c91",
+   "76700913abac6975",
+   "9f0be06c1a2b57e2",
+   "c87e57b87e7aa378",
+   "ce552a64b38cc69b",
+   "e63d8424de2a7198",
+   "f48f026478bb2085"
+  ],
+  "24": [
+   "03ad36d1a57ff596",
+   "4e9e8898f95a1f07",
+   "57a59bc6253180c5",
+   "8fc9999bbf57d855"
+  ],
+  "32": [
+   "1587f158c25cca74",
+   "249e171149c9e74d",
+   "5207799f20281f17",
+   "671c84cddfd86ace",
+   "6b6d3e876f239751",
+   "7255c8f6f83709fa",
+   "78dba0900897c77e",
+   "79e8b93ab991cab2",
+   "7baed1e6cd2d7184",
+   "82024a99287ac361",
+   "86b9a3bc61b4b68c",
+   "87ce17d6a10e232d",
+   "8dcbf7f4bc7abcbb",
+   "8ed839e45c1cb6a2",
+   "94fe08d337ac654e",
+   "95a52e25cac4761c",
+   "99482fbed2b6de9b",
+   "9fc4abb2853a44ec",
+   "a356994578846e61",
+   "aa186b9c4f2661a7",
+   "c993e270e554a5f5",
+   "e14632dde0d971c9",
+   "f7201c9f556689d1",
+   "facc73bce7bef5aa"
+  ],
+  "48": [
+   "bd043c07c611e60a"
+  ]
+ }
+}

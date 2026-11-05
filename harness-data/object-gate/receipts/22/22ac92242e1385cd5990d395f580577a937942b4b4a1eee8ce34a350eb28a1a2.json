@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22ac92242e1385cd5990d395f580577a937942b4b4a1eee8ce34a350eb28a1a2",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "bucket tipped",
+ "label": "beodeul_city/wave-places/ruined-village/bucket_tipped",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 24,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tipped bucket body (wooden staves with grey hoops, dark open mouth at right)",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a bucket lying on its side, 11-12 px wide and 8 rows tall (rows 5-12). The width profile is nearly constant (11, 12, 11), so there is no widening and narrowing that would make an ellipse. Row 5 is only the outline. The column scans show vertical stripes of stave and hoop colour with no band ending in a front-edge line and no eave shadow. The dark mouth at the right is a vertical end face seen in profile, and nothing is visible inside it. No horizontal surface is drawn, so this is a flat side profile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small tipped wooden bucket, less than one tile, so the per-tile tone counts read 0 and I judged by eye. It has 19 distinct colours, more than the bench and lamp references (14 each). Only 8% of its dark edge pixels are near-neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. Near-flat coverage is 0%. I see about 5 lightness steps across the staves, the darker bands and the shadowed opening, with some stave grain. It is simpler than the well and the stall, but it is at least as rich as the bench and lamp, which are its closest references in size and complexity. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13964
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tipped bucket wooden body with metal hoops, lying on its side",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark open mouth at the right end",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is 11-12 px wide and spans rows 5-12 (8 rows). It is a cylinder lying on its side, seen in pure side profile: vertical wood staves and hoop bands run across the body, with a dark mouth at the right end. The width profile is almost constant (11, 12, 11), so there is no widening-then-narrowing ellipse. No row band ends in a front-edge line followed by eave shadow, and no contents are visible. The top outline row is just the silhouette outline. The mouth is a dark vertical face, not a horizontal top. There is no horizontal top surface, so it reads as a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tipped bucket/barrel, under one 16x16 tile, so the per-tile tone count is 0 and I judged density by eye against the bench and lamp. It uses 19 distinct colours, more than the bench (14) and lamp (14). The staves, hoops and end cap show about 5 lightness steps, close to the bench's wood ramp. Only 8% of its dark edge pixels are near-neutral, so the outline leans brown rather than black, matching Beodeul's material-tone outlines (the bench is 44%, the lamp 100%). Near-flat coverage is 0%, so there are no flat fills, and the banding and stave highlights give moderate texture. At this size it does not look thinner or more sticker-like than the bench next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15329
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tipped bucket barrel body with hoops",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket mouth at the right end, seen face-on as a grey and dark vertical disc",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is 8 rows tall (rows 5-12) with width 11-12 and is a bucket lying on its side. The silhouette is a near-rectangle with no widening and narrowing in the width profile, so there is no ellipse. The column scans at x=5, 8 and 10 show only vertical colour bands (dark hoops, brown staves, grey mouth), with no front-edge line and no eave shadow. The grey and dark mouth on the right is an end-on vertical face, not a horizontal surface. This is a flat side profile with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tipped barrel or bucket with metal bands, smaller than one 16x16 tile. Per-tile density is 0, so I judged by eye against the thin references (bench, lamp). Its 19 distinct colours exceed the bench and lamp (14 each), which are the closest in size. Only 8% of its dark edge pixels are neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. Near-flat coverage is 0%. The staves, bands and rim show several lightness steps, with highlight and shadow on the barrel body. It reads as slightly less textured than the large props (well, stall), but it is not thinner or flatter than the bench or lamp, so it holds up next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15669
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bucket body lying on its side with hoop bands",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark open end at the right",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is an 11-12 px wide, 8 row tall tipped bucket seen in side profile (rows 5-12). Its wood staves and gray hoop bands run vertically, and the opening is a dark end on the right. The width profile is a flat rectangle (11, 12, 12, 11) with no widen-then-narrow ellipse. There is no front-edge line with eave shadow, and no roof or visible contents. The top rows 5-6 are just the outline and the first body row. The result is a side elevation with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tiny prop, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged density by eye. It reads as a tipped wooden bucket with lit and shaded staves, a darker band, and a dark opening. It uses 19 distinct colours in roughly 11x9 pixels, which is more than the bench (14) or the lamp (14) for a similarly small footprint. Only 8% of its dark edge pixels are neutral, so the outline leans dark brown beside the wood rather than being a black sticker line. Near-flat coverage is 0%, and no large single-colour area is visible. It has slightly fewer steps than the 6-step references, and its grain is modest because of its size. A careful artist would accept it beside the bench without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17354
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.270Z",
+ "cells": {
+  "16": [
+   "4515473a39a7ae6c"
+  ],
+  "24": [
+   "1652884a52e96f4a",
+   "27f5cafe0bacd728",
+   "295d727f8f431218",
+   "802fd725a5c059a4",
+   "b93e158e87a26e08",
+   "d2fa40c07e755afa"
+  ],
+  "32": [
+   "1414fce48ff19032",
+   "3236e413402cafdc",
+   "872bc463159b1c40",
+   "bb1acce60b0a8eb9",
+   "d3a26fac03be6e9e",
+   "da08662598dc06d4"
+  ],
+  "48": [
+   "4e4f4e7e0b868640",
+   "55346b177c5b5c86",
+   "86ff78efab1076f3",
+   "b50fe2a62bcb16c2",
+   "c10c5897cca759af",
+   "ecd5b63221b706e4"
+  ]
+ }
+}

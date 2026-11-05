@@ -1,0 +1,409 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8259316d2dad72f55d3df285c4344808b3622ab4276ce40c4149a2be9675f5ec",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "tile debris",
+ "label": "beodeul_city/wave-places/ruined-village/tile_debris",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-right tile cluster",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center tile shard",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-left tile shard",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left tile shard",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left and lower-center shards",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The debris is several small tile shards scattered on the floor. Each shard has a 1-row orange top strip (#784824) over 1-3 rows of dark purple. The strip is only a rim-like lip, with no edge line, eave shadow or ellipse that would show a real horizontal top surface. The largest cluster, at x=24, has a 1-row orange top (row 7) over dark rows 8-10. No shard has a top band of 2 or more rows, so the shards read as front faces with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny scatter of a few reddish-brown rubble fragments, about 20x10 source pixels and well under one 16x16 tile, with 10 distinct colours in total. The reference props (bench, hedge, lamp, stall, well) are full standing objects, much larger and carrying 5-6 shading steps per material. Per-tile facts are 0, so I judged by eye. The candidate has only about 2-3 tones per fragment (a light top and a darker brown body), no outline to speak of, and no grain or tile detail. Each chip is just a few pixels, so it reads as sparse specks against the heavily modelled references. It is thinner and flatter than anything on the left and is not a standing prop, so the reference kind does not really match. A careful artist would not accept it next to the references as equal craft. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13564
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-right shard cluster",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-left orange shard",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center shard",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left shard",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-center small shard",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shard",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image shows several separate small tile shards scattered across rows 6-14. Each is a 1-row orange or brown top strip (for example row 7 at x=9, 17 and 24) above 1-3 rows of dark purple or brown underside (rows 8-10). There is no large volume, no ellipse, and no front-edge line with eave shadow. The right cluster at rows 6-10 is the tallest piece, 5 rows, and its lighter top strip is 1 row. The pieces read as flat fragments lying on the floor with a thin lit edge and a dark shadow side, not as a body with a top surface and a front face. The silhouette is 4-14 px wide per row and is broken into pieces. The rows at the top and bottom are transparent."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small scatter of a few reddish-brown tile fragments, only about 10 distinct colours in total. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged density by eye. Each fragment has roughly 2-3 lightness steps (a mid tone, a darker tone and a highlight fleck), against 5-6 steps on the references' main materials (hedge, stall, well). There is no real outline and no clustered form. The pieces are scattered dots with little structure, and no stone or tile is shaded individually. The Beodeul props, even the simple bench and lamp, show a clear silhouette, material ramps and grain. This reads as thinner and flatter than every reference. It is not a standing prop, and it has no mass or clustered rubble shape that a careful artist would accept next to the references. Sparseness alone would not fail it, but the shallow shading and weak form do.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17710
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "right tile fragment, brown top band over purple face",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center tile fragment with orange chip on top",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and lower scattered shards, each a 1-row brown top over 1-2 dark rows",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Several small separate shards lie scattered across rows 6-14. In the column scans each shard is a single light brown row (#784824) sitting directly on 1-3 rows of dark purple (#36182b, #562945, #1a132a). There is no front-edge line with an eave shadow, no ellipse and no visible contents. The brown rows at the top of each shard are 1-2 rows, which is rim-level and not a real top surface. Each shard therefore reads as a thin front face with only a lip on top, not a three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small scatter of a few reddish-brown debris fragments, under one tile in size, with only about 10 distinct colours and roughly 3 tones. It has no real outline (0% neutral edge share, no dark material-tone line), so it is not a sticker look, but it also has no form. The references (well, stall, hedge) are full props with 5-6 shading steps, per-element texture and 9-20 visible tones per tile. The candidate is a flat ground decal, not a standing prop, so it does not match the prop kind and cannot be compared to the references on structure. Its shading is shallow (about 3 steps) and its density is far below the richer references. A careful artist would not accept it next to the well or stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14240
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shard upper left",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shard centre",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shard right cluster",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shard lower left",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shards bottom",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a set of small separate tile shards, each 1-3 rows tall. Every shard is one lighter orange/brown row (e.g. row 7 at x=9, row 8 at x=17, row 7 at x=24) over 1-2 dark purple rows (rows 8, 9, 14). That is a 1-row rim over a dark face. No shard has a front-edge line with a band of 3 or more rows above it, an ellipse, or visible contents. The pieces read as thin edge-on slivers, not as volumes with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a sparse ground scatter of small reddish-brown tile shards, under one tile in size. That makes the per-tile facts (0 tones, 0% flat) uninformative, so I judged by eye. It uses only 10 distinct colours in total, and each shard shows about 2-3 lightness steps (a light edge, a mid tone and a dark tone). The references have 5-6 steps per material and carry per-element highlights, grain and clusters, as in the hedge, well and stall. I see no clear outline, only value separation. The dark edge pixels are 0% neutral, so any dark tone is tinted rather than near-black. That part is fine, but the shards read as thin, flat flecks of colour. They lack the layered shading and surface grain of the reference props. A careful artist would see it as thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14444
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.503Z",
+ "cells": {
+  "16": [
+   "84dd576550626d51",
+   "a9ae89f564beddd3"
+  ],
+  "24": [
+   "1841833754b3b826",
+   "2028eb7147cffb15",
+   "2adcb241bb2caa53",
+   "44cd5dc9bbac411c",
+   "5413b116466baf8f",
+   "68a091cbeaab41f0",
+   "e70e2df67c682b30",
+   "f351d531a052fe7d",
+   "f49b8b0d3401ef38",
+   "f8d0a9381b4b6b4f",
+   "fa468bdcd2574d0b",
+   "fa6517b6dfe4eebb"
+  ],
+  "32": [
+   "0721c8ee71eca3d4",
+   "1c76de07f3dee856"
+  ],
+  "48": [
+   "16a2f2c0fb1f59b4",
+   "305794a108ca614c",
+   "8a5475116b976a59",
+   "bda14ee5ba8a87af",
+   "e6279034b2efb8ed",
+   "f1dffd11c59cc228"
+  ]
+ }
+}

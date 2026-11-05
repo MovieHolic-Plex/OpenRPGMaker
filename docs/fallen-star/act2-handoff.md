@@ -4,10 +4,14 @@
 
 ## ★ 재개 지점 (2026-10-27 밤 — 1.24 에서 멈춤)
 
-감독 지시로 **1.24 게시 뒤 멈췄다. B10~B13 은 0줄.** 이어받는 사람은 여기서 시작한다.
+감독 지시로 **1.24 게시 뒤 멈췄다.** 그 뒤 B10·B11 을 지었다(`agent/fs2-tower`). **B12~B13 은 0줄.**
 
-- **판본 끝 마개:** `act2Opening.ts` 의 `FS2_RELEASE_STOP = "B9"` → `towerReleaseStop(project)`(하늘탑 1층 자동 이벤트 `ev_fs2_tower_stop`: 막 카드·회복·저장, 위층 계단 문구를 「다음 업데이트」로 덮어씀).
-  **B10 을 열 때 `null` 로 바꾼다.** 그러면 카드·계단 덮어쓰기가 함께 빠진다. 체크포인트 `act2-b9-stop` 은 그때 지우거나 B13 끝 막 카드로 옮긴다.
+- **B10·B11:** `src/project/flagship/fallen/act2Tower.ts` 의 `applyFallenAct2Tower` (act2Opening 맨 끝에서 부른다).
+  1층 기사와 파수 기계 장면·다친 기사·관측 일지 / 2층 `author_party_split`(카엘·새라 ↔ 엘레나, 벽 레버·거울 손잡이가 서로 쇠창살을 연다) /
+  3층 `author_map_puzzle mirror_beam_refraction`(4층 계단을 막는다, 문구는 탑 말투로 다시 씀) /
+  4층 `place_field_obstacle dark` + 관에서 이리스 재회, `configure_story_journal` 지우기·다시 읽기로 기술 셋 회복(직업 기술은 「잊기」로 안 지워져서 회수 대기 직업 `class_fs2_iris_relay` 로 옮긴 뒤 잊힌다), 서쪽 골방 일지 쪽 둘 → 「잘 지내」.
+- **판본 끝 마개:** `FS2_RELEASE_STOP = null` — B9 마개(`towerReleaseStop`)는 빠졌다. 판본 끝은 4층 둥근 방 벽 계단 `ev_fs2_t4_stair_up`(이리스 합류 뒤: 막 카드·회복·저장, 스위치 `sw_fs2_release_stop_b11`).
+  체크포인트 `act2-b9-stop` 은 이 계단으로 옮겼다. B12 를 열 때 이 계단 페이지를 5층 이동으로 바꾼다.
 - **하늘탑 맵:** `author_dungeon type:"tower" adapter:"beodeul" floors:4` 가 이미 지었다. 맵은 `fs2_sky_tower`(1층), `fs2_sky_tower_f2`, `fs2_sky_tower_f3`, `fs2_sky_tower_f4`. 입구는 서리나루 밤 맵(`fs2_frostford_night`)의 탑 문이다.
 - **B10~B13 에 쓸 도구**(계획 `act2-plan.md` 7절, 모두 main 에 있음):
   - B10 2층 분리 진행: `author_party_split`. 렌즈·빛 퍼즐: `author_map_puzzle` 의 `mirror_beam_refraction`.
@@ -33,6 +37,18 @@ omp -p --model cb/deepseek-v4.1-flash --thinking high --mode json --max-time 6h 
   1. 순찰에게 지면 HP 0 파티로 계속 걸었다 → `make_chase_scene caughtPenalty` 가 전투 뒤 회복.
   2. 감방 문 앞에서 180걸음 맴돎 → 빵을 들고 문을 조사하면 엘레나가 침대에서 쪼개 보자고 짚는다.
   3. 감방으로 끌려간 뒤 막사 입구에서 즉시 재포획(여섯 번) → 추격자가 주인공을 다른 맵으로 끌고 가면 제자리로 돌아간다(`sendPursuerHome`, 엔진 공통).
+  4. 붙잡힐 때마다 쉬운 전투 → 금화 696G → 막사 벌칙 전투를 빼고 지하로 끌려가기만. 막사에 들어서면 엘레나가 근무표·등불·「깃발 밑 종 줄」을 짚는다.
+  5. 순찰·필드 적에게 지면 타이틀 → 「새 게임」(1막부터) → `place_field_enemy checkpointOnEntry`(맵 입구 체크포인트), 게임 오버 메뉴 Esc 가 「체크포인트에서 다시」.
+  6. 재의 들판 북쪽 길(두 칸)에 출구 이벤트가 한 칸(옆 칸)뿐 → `widenEdgeGates`: 가장자리 한 칸 출구를 길 폭 전체로 복제.
+  7. 「기록 → 임무」에 1막 완료만 있고 할 일이 없음 → `define_quest fs2_main 「빌린 불」`(줄기 스위치 14단계), 임무 목록은 진행 중 → 미시작 → 완료 순(엔진).
+  8. 광장 도착 골목이 캄캄하고 출구 틈이 한 칸 → 틈에 등잔 불빛, 도착 때 엘레나가 「왼쪽 위 불빛 틈 → 광장 서쪽 미레」.
+  9. 2막 내내 회복약 0 → 막사 사다리에서 되찾은 짐에서 회복약 5·마력약 2·만병통치약 1(한 번). 밤 병사 경험 24→80, 재의 들판 적 90→170(골렘 420·공격 165→140).
+- **판정이 짚었지만 1.24 에 안 고친 것(다음 판본 후보):**
+  - 재의 들판(`map_field_north_2`)이 초록 풀밭이다 — 「불탄 들판」 그림이 아니다(칩셋·맵 재칠 필요).
+  - 필드 적·순찰 추격 160ms 가 걷기와 같아 사실상 못 피한다(감독 요청 값 — 되돌리지 말고 보고만).
+  - 광장 소품(가판·화분·벤치)이 걷는 줄에 박혀 한 칸 주머니가 많다. 막힌 걸음에 소리·흔들림 피드백이 없다(엔진 공통 후보).
+  - 전투 적 이름표·HP 숫자가 셋일 때 겹치고 화면 밖으로 잘린다. 「통금 순찰 창병」이 「검격」을 쓴다(1막 병사 기술 복사).
+  - 요새 2층 위 홀(설원 길에서 들어오는 쪽)에서 쇠창살 레버가 반대편 — 정상 진행에선 이미 당겨져 있다. 체크포인트 `act2-play-b7` 에 레버 스위치를 넣었다.
 - 함정: QA 플레이어는 HMR·watch 가 꺼져 있지만, 아직 안 불린 모듈은 요청할 때 현재 소스로 변환된다. 판정 도중 `src/player` 를 고치지 말 것.
 
 ## 0. 지금 진행 중 (2026-10-26)
@@ -85,6 +101,24 @@ omp -p --model cb/deepseek-v4.1-flash --thinking high --mode json --max-time 6h 
   - 함정: 체크포인트 부팅이 부하에서 400~570초 — 부팅 한도를 600초로(`QA_CHECKPOINT_BOOT_MS`).
   - 함정: checkpoints 시나리오는 부팅 때 **현재 소스로** 폴른 프로젝트를 다시 짓는다 — QA 도는 중에 소스를 고치면 그 판이 섞인다.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
+  - **B5·B6 다시 짓기 (2026-10-29, 브랜치 agent/fs2-places)** — 계획 그림의 참고 지도를 실제로 따른다.
+    - 참고 지도(버들항 웨이브 2 「화산 지대 필드」·「폐허 마을」)는 생성 스크립트로만 남아 있고(고아 커밋 0bfba316bc) 공용 칩셋에 구운 적이 없다. 새 도트를 굽지 않고 같은 결을 이미 있는 조각으로 다시 짰다: `src/project/flagship/fallen/act2Places.ts` 의 칸 평면도(`#` 바위 능선 = 던전 바위 오토타일 + 앞면 2단, `.` 광재 땅, `:` 잿길, `f/W` 예배당 돌바닥) + 물건 목록 → `paint_beodeul_plan` 도구(2차).
+    - B5 재의 들판(`map_field_north_2`, 32×40): 숲길 도구 맵을 평면도로 통째 다시 칠한다(잿빛 땅·마른 고목·뼈 무더기·뼈 기둥·검푸른 바위 C 줄). 안개 0.22 + 잿빛 빛, 전투 배경 바위(cave). 숲 어귀(north_1)만 옛 그을림(`scorchAshFields`).
+    - B5 새벽샘 터(36×30): 무너진 예배당·우물 광장·지붕 내려앉은 집 둘(`BurntHouse` l/r)·통째 무너진 집 둘(`c` — 밑동 통나무+잔해)·멀쩡한 집 하나(북동쪽, 빗장 문). 이벤트 칸은 `DAWN_SPOTS`·`FS2_ASH`.
+    - B6 바깥 안뜰 `fs2_fort_court`(새 맵): `author_beodeul_town theme snow walls wallGate NS seed 65` → `resize_map` +8줄 → **`applyMapShift` 직접**(shift_map 도구는 완성된 집 보호 영역을 거절) + `structurePlacements.y` 도 밀기 → `paint_beodeul_plan` 구역 칠하기(북문 밖 눈길·B 줄 바위 벼랑·눈 소나무). 얼음 연못·눈사람은 걷고(연못 물가 덧층까지) 훈련장·교단 깃발(성벽 앞면은 위층 그림이라 **겹 위층**에 건다)·봉화대. 마을 소품 도장은 필드 맵에서 막히므로 `mapRole field` 는 도장 뒤에.
+    - 흐름: 새벽샘 북쪽 ↔ 남문 밖 → 안뜰(경비견 무리·본채 앞 순찰 기사 돌진) → 본채(돌 병영) 문 = `author_dungeon entrance` → 성 던전 2층(레버 쇠창살 그대로) → 2층 마지막 방(옥좌·붉은 융단·붉은 깃발 「성주 홀」) 북벽 `bd-dg-door-closed` 문 → **바깥 북쪽 성벽 위**(망루 서쪽 칸 도착) → 새라. 이기면 서리 가도, 지면 1층 감방. 성벽 계단 밑·북문 터널은 쇠창살 이벤트로 막는다(북문은 합류 뒤 열림). 서리 가도 첫 맵 입구 ↔ 안뜰 북쪽 끝.
+    - 안뜰 무리는 `_out` 무리(같은 적, 눈밭 전투 배경)로 따로 — 요새 안 무리는 돌(cave) 배경. 순찰 기사 `_out` 도 돌진 탐지 프로필에 넣었다. 새라 결투 배경은 눈밭.
+    - 성 던전 도구가 깐 구름 바다 배경(`background`)은 요새 안 두 층에서 지운다(돌방 벽 너머 하늘이 공중 성처럼 보였다).
+    - 체크포인트: act2-b5-field·b5-north·b5-door·b6-enter 좌표 갱신, b6-sarah·b6-lose 는 `fs2_fort_court (22,10) left`, 새로 act2-b6-court(기사 돌진)·act2-b6-wall(홀 문 → 성벽 위).
+    - **2차(감독 검수 B5 6/10·B6 7/10 뒤)**:
+      - 칠하기를 조수 도구로 올렸다. 평면도·불탄 집은 새 도구 `paint_beodeul_plan` 이 칠한다(데모 파일은 계획만 든다).
+        안뜰 연못 걷기·성벽 깃발·계단 쇠창살은 `stamp_layer_block` 이 하고, 본채는 `stamp_object` 로 세운다.
+        직접 코드로 남은 것은 `applyMapShift` 와 이벤트 `addEvent` 다.
+      - 불탄 집은 집터로 짓는다: 돌 기단 테두리·숯 기둥·선 서까래·내려앉은 지붕 판·숯더미. 예배당 메달리온은 뺐다. 꺼진 화톳불 둘을 놓았다.
+      - 들판·마을 빛은 중립 회색이다(분홍 기운 제거). 녹화의 분홍·흰 번쩍임은 전투 진입 번쩍임(`shatter-2003` 스킨 공통)이다.
+      - 본채: 목욕집은 완성된 집 보호 영역이라 도구로 못 걷는다. 옛 연못 자리에 돌 병영(`bd-house-mk-barracks`)을 세워 입구로 삼았다.
+      - 새라 옆 경비견 이벤트, 동쪽 훈련장 소품을 넣었다. 레버 체크포인트는 홀 경비견을 쓰러뜨린 뒤로 시작한다.
+    - 함정: 체크포인트 부팅이 부하(load 60+)에서 600초를 넘었다 — `QA_CHECKPOINT_BOOT_MS=1500000` 와 `flock /tmp/fs2/heavy.lock`.
 
 ## 1. 머지됨 (main)
 

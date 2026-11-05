@@ -690,7 +690,7 @@
         "sw_fs_valen_marched": true
       },
       "id": "weakness-discovery",
-      "label": "약점은 처음 맞힐 때 알게 된다 — 「약점 발견!」 → 다음 대상 고르기에 「약점」",
+      "label": "약점은 처음 맞힐 때 알게 된다 — 「약점 발견!」 뒤에도 대상 고르기에 「약점」 칩이 안 뜬다(revealWeakness never)",
       "startEventId": "qa_fight_wolves",
       "party": [
         {
@@ -772,7 +772,7 @@
         },
         {
           "id": "after",
-          "note": "다음 차례 화염검 대상 고르기 — 알아낸 늑대 위에 「약점」",
+          "note": "다음 차례 화염검 대상 고르기 — 폴른 스타는 revealWeakness never 라 알아낸 늑대 위에도 칩이 없다",
           "ops": [
             {
               "kind": "battle",
@@ -810,8 +810,19 @@
             },
             {
               "kind": "waitFor",
-              "testid": "battle-weakness-reveal",
+              "testid": "battle-target-cancel",
               "timeoutMs": 10000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-weakness-reveal",
+              "state": "absent",
+              "timeoutMs": 2000
             },
             {
               "kind": "hold",

@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "535730ff00bad0caf1e4bd84771f10b557153db1668860804cab81e32dd113a5",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "fir buried",
+ "label": "beodeul_city/wave-places/ice-age-field/fir_buried",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree tiers (upper and middle) with snow bands",
+      "rows": "3-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound top (wide elliptical snow surface with rim)",
+      "rows": "19-27",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the snow mound the fir is buried in. Its width profile widens from 20 to 26 to 28 (rows 19-21) and narrows again from 26 to 24, 20 and 12 (rows 28-31), so it reads as an ellipse. Rows 20-27 are a bright white top surface bounded by a dark back rim at rows 19-20. A lighter-blue edge line at row 27 is followed by darker blue-grey shading at rows 28-30, which acts as the front face and its shadow. The fir tiers rise out of the snow, so they count as decor, as a plant does in a planter. Their snow bands at rows 10 and 16-18 are also drawn as horizontal strips. The result is a top surface of about 9 rows over a front face of 4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny fir about 22x18 source px, sitting in a snow bowl. It has about 3 greens and 3 snow tones. The edge pixels are tinted (0% neutral), so the outline is a dark material tone. The measured 16 visible tones per tile beat tree-1a786c (7) but are well under tree-d43edd (29). Flat coverage is 18% against 0% for both references, and the eye sees it in the snow mound and the rim, which are smooth, uniform bands with little grain or speckle. The fir tiers are small, simple wedges with snow caps and no clump-by-clump leaf variation. Next to the richly clumped, multi-green reference canopies it reads as a flatter, icon-like sticker, even though the outline is not black. Doubt goes to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19715
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree (tiered, snow-dusted) growing out of the mound",
+      "rows": "3-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound (main body, wide elliptical snow surface with a darker front rim)",
+      "rows": "19-31",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tree is a plant standing on the mound, so it counts as decor. The main body is the snow mound. Its width profile goes 20, 26, 28 (rows 19-27), then 26, 24, 20, 12 (rows 28-31). That is an ellipse, from the back rim at row 19-20 to the front rim at about row 29. The white snow surface fills rows 20-28, about 9 rows, with a lighter edge line at row 29. Below it, rows 29-31 form a blue-grey front face and shadow of about 3 rows. This matches the green 'ellipse top' references rather than a flat slab or a rim-only top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-buried fir, about one tile in size, so it is much smaller than the two broadleaf references. I could not read fine detail at this scale. The fir shows roughly 3-4 green steps with snow caps, and the snow mound has a few steps from white through blue-grey shadow. Edges lean dark green or blue-grey rather than black, and the 0% near-neutral share of dark edge pixels agrees. It has 16 visible tones per tile, well above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 18%, which is probably the snow base and is modest. The 0% references have no flat areas, so the candidate is slightly less textured but not a sticker-like flat fill. A careful artist would likely accept it next to the references, given its size and simplicity.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18552
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree (two tiers of boughs with snow bands)",
+      "rows": "3-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound top (wide white snow surface inside a rim)",
+      "rows": "20-27",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "snow mound front face (blue-shaded lower rim)",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the snow mound that the fir is buried in. The silhouette widens from 20 px at row 19 to 28 px at rows 21-27, then narrows to 26, 24, 20 and 12 px at rows 28-31. This is an ellipse-like shape. The white snow surface (rows 20-27, about 8 rows) is visible from above and ends in a light front-edge line at row 27. Blue shaded rows 28-31 form the front face below it. The fir tree on top (rows 3-19) is a plant growing out of the body, so it counts as decor. The column scan at x=16 shows white snow at rows 21-28 with bluish shading at rows 29-31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny snow-dusted fir on a snow mound, so it is much smaller than the two lush reference canopies. Its outline is tinted (0% neutral dark edge pixels, dark green and blue-grey beside the materials), so it is not a sticker line. The measured 16 visible tones per tile is above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 18% against 0% for both references. By eye, the fir has only about 3 green steps plus the snow highlight and shadow, where the references use 5-6 steps with leaf clumps. The snow base and the fir body read as smooth, chunky blocks with little grain or per-clump highlighting. A careful artist would find it flatter and simpler than the references, and with doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19376
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fir tree tiers (plant growing out of the snow)",
+      "rows": "3-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound / drift mouth (main body)",
+      "rows": "20-28",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a snow mound that sits under the fir. Its width profile widens from 20 at row 19 to 26 at row 20 and 28 at rows 21-27, then narrows to 26, 24, 20 and 12 at rows 28-31. That is an ellipse. The white top field runs rows 21-28 with a darker blue-grey front rim at rows 29-31, and the dark row 20 behind it works as the back rim. The top surface is about 8 rows tall, and the front face below it is about 3 rows. The fir tiers above (rows 3-19) are a plant growing out of the mound, so they count as decor and not as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small fir half-buried in a snow mound, less than two tiles across. It shows about 16 visible tones per tile, against 7 for tree-1a786c and 29 for tree-d43edd, so it sits between the two references and well above the sparser one. Its dark edge pixels are 0% neutral, so the outline is tinted: dark green beside the needles and a cool dark tone beside the snow, not a black sticker line. The fir has several green steps, snow caps on the tiers, and a shaded snow base with light, mid and shadow tones. Near-flat coverage is 18% against 0% for the references. That comes from the small smooth snow areas, which is natural for snow and not a flat-fill failure. The needle clumps are less textured than the large leafy references, but this is a small conifer, and it is not thinner or flatter than tree-1a786c. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17895
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.597Z",
+ "cells": {
+  "16": [
+   "b066ac7635324b61",
+   "b62e440fe3ef6074",
+   "e426dd68abc2d30d",
+   "ea8e8b09aba017b1"
+  ],
+  "24": [
+   "01abedbc10b4ace1",
+   "066df00bb249121a",
+   "23c8c28c591196d8",
+   "43e67c93bac52fcc",
+   "4c54b24296040a4b",
+   "52ff7396473e8a7b",
+   "6c18b44da0eec5c7",
+   "815cdbedab7617a2",
+   "9ae64dba77808c51",
+   "a26dcbd4fd6bb8a6",
+   "a3cb771db7146921",
+   "a53ca5a5af26cf0b",
+   "aad8ed2bec1ede4a",
+   "acba88d6c05bf65e",
+   "b15c95eaf786526d",
+   "b8b2681236f6f9d4",
+   "bdf98a001cb76702",
+   "c225caa22ea4daa9",
+   "c6be99a5bd8b5f57",
+   "c930fffb80fadc63",
+   "cc09d4b345d5850a",
+   "f24e59832459ac36"
+  ],
+  "32": [
+   "9417e6b4308e076e"
+  ],
+  "48": [
+   "1e1ce25b6cbb1b43",
+   "5d5bf9a7b697d17e",
+   "d2e2d1d35d927907",
+   "d78295e737c4a9d7",
+   "d7aad1923b218ceb",
+   "e9c9ee990d17e7f2"
+  ]
+ }
+}

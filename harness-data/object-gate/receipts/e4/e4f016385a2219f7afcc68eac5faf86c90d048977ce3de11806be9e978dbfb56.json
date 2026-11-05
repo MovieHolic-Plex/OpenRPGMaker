@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4f016385a2219f7afcc68eac5faf86c90d048977ce3de11806be9e978dbfb56",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "rubble pile",
+ "label": "beodeul_city/wave-places/mountain-fortress/rubble_pile",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 40,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper slab fragment",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-24"
+     },
+     {
+      "part": "lower-left rubble chunk",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-31"
+     },
+     {
+      "part": "lower-right fragment",
+      "rows": "27-27",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a loose scatter of flat grey fragments, about 12 rows tall and not a single standing volume. The upper slab (rows 20-22) is a light band with a dark edge line at row 23 and a shadow at row 24. It has almost no front face below that, only 1-2 rows. The lower-left chunk (rows 26-29) is light on top with a dark base at rows 30-31. The lower-right fragment is 1 light row (27) over a dark edge (28) and 2 mid-tone rows (29-30). The fragments are separated by transparent gaps (for example x=16, rows 25-26). Some pieces show a top and a thin face, but there is no consistent 3+ row front face, so it fits neither three_quarter nor a pure slab. It reads as flat floor debris."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low, sparse grey scatter of rubble, much smaller than the references (hedge, stall, well). It shows about 3 grey tones with little clustering. The stones are not shaded one by one, and there are no per-stone highlights or grain. Dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted material tone. This is the sticker look, unlike the hedge, stall and well, which have tinted edges (0-33% neutral). The tile-density fact is 0 because the piece is smaller than a tile, so I judged by eye. Next to the references it looks thinner, flatter and less shaded than a Beodeul stone element such as the well's stonework. A careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13840
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper right flat slab fragment",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "lower left rubble cluster",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right low fragment",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is low, scattered, flat gray stone shards spread over rows 20-31 with no single volume. The upper slab (rows 20-22) is light and ends in a dark underside line at rows 22-23. That leaves only about 1-2 rows of dark edge or shadow, so no front face reaches 3 rows. The lower left cluster (rows 26-30) and the right fragment (rows 27-30) are also light flat tops with a 1-2 row dark base (rows 30-31). They are seen mostly from above and have no real front face, so the whole piece reads as a flat debris scatter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low, sparse grey scatter of stones, much smaller than one 16x16 tile and far smaller than the references. By eye it shows only about 3 grey tones (light, mid, dark), with stones that are not shaded one by one and no visible grain or clustering. The measured dark edge pixels are 100% near-neutral, so the outline is neutral dark grey/black rather than a tinted dark material tone. That matches the sticker look. The well-roofed and cheese-stall references show 5-6 tones per material with tinted outlines and texture dots. Tile-level facts are 0 for the candidate, so density is judged by eye. It looks thinner, flatter and more sticker-like than the references, and does not read as a pile of rubble with volume. Fails on shallow shading, a neutral outline and low density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12298
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper broken slab/plank fragment",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "lower-left rubble chunks",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right slab fragment",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is low, scattered debris with no single tall body. The upper fragment (rows 20-22, light L=200) ends in a dark edge line at row 23 (L=80) with a thin shadow at row 24, so it has a 3-row top band but only about 1-2 rows of face beneath it. The lower fragments (rows 25-31) are irregular light blobs with dark undersides at rows 28-31 and no clear front-edge line, front face or ellipse. Overall it reads as flat pieces lying on the floor, with no 3+ row front face under a real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse grey scatter of rubble, much smaller than any reference prop and barely a tile in size. By eye it shows only about 3 grey tones (light grey, mid grey, dark) with no clear per-stone shading ramp, and no grain or texture dots. The measured dark-edge pixels are 100% near-neutral, so the outline is a neutral dark line, the sticker look, not a dark tone of the adjacent material. The references with tinted outlines (hedge 0%, stall 1%) and richer ramps (well, stall, hedge) show far more distinct tones, clusters and grain. The per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. It looks flatter and thinner than the references and would not sit comfortably next to them. Even allowing for its sparse nature, the rubble is not shaded stone by stone as Beodeul stones are.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12190
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper broken slab/plank",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "lower left rubble chunks",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower right rubble chunk",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a low scatter of light grey fragments that lie flat on the floor, in about 12 rows. The largest piece (rows 20-24) has a 3-row light top, a dark line at row 23 and a mid-grey strip at row 24, so its front face is only about 2 rows. The lower fragments (rows 25-31) are light blobs with a dark underside at rows 28-31 and no separate front face of 3+ rows. There is no ellipse, roof or tall vertical face. The pile reads as flat debris seen from above, not as a volume with a distinct top and front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low, sparse grey scatter of a few stones, much smaller than the references (bench, hedge, well, stall). It has only about 3 grey values (light, mid, dark) and no per-stone highlight/shadow ramp or grain. The dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted material tone. The hedge, stall and well references show 9-20 visible tones per tile with tinted edges, while the candidate has no full tile to measure. By eye it looks thinner, flatter and more sticker-like than the references. Raw distinct colours (21) are not enough to offset that.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11918
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.937Z",
+ "cells": {
+  "16": [
+   "9356b8b6c6452928",
+   "c55fdc054e600ba4"
+  ],
+  "24": [
+   "2139e468219025b9",
+   "3ba7785ff62d3d5d",
+   "44c6787547da4add",
+   "563c0a8871ab61d4",
+   "5cc8090a1bcc80ca",
+   "77c66da63525cfcf",
+   "796d2fdb5a6cbb66",
+   "8bc792f5c509f22f",
+   "92bd4a8d24f53a7d",
+   "a253003284a2b287",
+   "a99b86536230ea58",
+   "ac2f8746f2c153e6",
+   "ae26d74eb38888cf",
+   "b55b40f60dbce678",
+   "d73a0d0faa5e6f39",
+   "ed595018d17a45dc",
+   "f49f1849d51a682c",
+   "f600d1d958915859"
+  ],
+  "32": [
+   "1c11de7991ac5564"
+  ],
+  "48": [
+   "1858e9e9553e7167",
+   "49b381ced633ac82",
+   "7d74b79c954419b6",
+   "b4a5b5a3b9814cae",
+   "d6e99aec3c3a43a9",
+   "e1a900b2d9e28ecf"
+  ]
+ }
+}

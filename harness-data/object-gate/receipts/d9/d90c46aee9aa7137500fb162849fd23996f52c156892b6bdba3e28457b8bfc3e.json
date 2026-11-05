@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d90c46aee9aa7137500fb162849fd23996f52c156892b6bdba3e28457b8bfc3e",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "tracks beast",
+ "label": "beodeul_city/wave-places/ice-age-field/tracks_beast",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 220,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paw-print shapes (five small separate prints, light blue with a white lower edge)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is five small, separate decal shapes, each about 3-4 rows tall, spread across rows 4-13. Each print is 2 rows of light blue (L=185) with 1 row of white (L=215-255) at the bottom, as in the column scans at x=8, 16 and 23. The white row is a highlight on a flat print, not a front face. No part has 3 or more rows of vertical face, no ellipse, no eave shadow and no receding side face. This is a flat floor decal seen from above, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a tiny sparse cluster of a few pale pixels (about 3 distinct colours) on a dark background, far smaller than one 16x16 tile, so the per-tile facts are 0. By eye it has 2-3 flat tones with no grain, tufts, or soil variation, and no outline structure. The grass reference shows about 3 visible tones with clumps and grain, and the paving reference about 7 with shaded stones. The candidate carries far less information than either and does not read as a ground surface at all. It would look thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13003
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "track print, lower left (rows 10-12)",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "track print, lower middle with a toe pixel (rows 10-13)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "track print, middle (rows 7-9)",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "track print, upper middle (rows 6-9)",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "track print, upper right (rows 4-7)",
+      "rows": "4-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image shows five small separate paw-print shapes, each a light-blue body with a white bottom row, scattered at different heights between rows 4 and 13. They are flat decals with no vertical front face. The column scan gives only 3 rows per print (x=8: rows 10-12, x=16: rows 7-9, x=23: rows 8-10). The white bottom row on each print is a highlight and not a front face of 3 or more rows. The prints have no edge line, eave shadow, ellipse cap or side face. This is a flat ground decal seen from above, so it matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a tiny sparse sprite of a few pixels (about 3 distinct colours) floating on a dark background, so it is a different kind from the grass and paving references. It is smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It shows only 2-3 tones, with no outline, grain, tufts or soil texture. The grass reference shows about 3 visible tones with clump texture and the paving reference about 7 with shaded stones, so the candidate is much thinner, flatter and carries far less information than either. It does not cover a 4x3 tile ground area, so it cannot be accepted next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13207
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "beast paw-print marks (5 separate small prints stepping diagonally upward)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a set of flat footprint decals seen from above. Each print is about 3 rows tall: 2 rows of light blue (L=185) with a 1-row lighter or white bottom highlight (rows 9, 12 and 10 in the column scans). The white row is shading on the print, not a front face or edge line. No print has a vertical south face of 3 or more rows, no eave shadow and no side face. The width profile (rows 4-13, widths 2, 4, 5, 7, 9, 10, 7, 9, 1) comes from the diagonal staggering of the prints, not from a volume. This matches the flat kind and reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny sparse sprite of a few scattered light pixels (about 3 distinct colours) on a flat dark background, smaller than one 16x16 tile, so the per-tile facts read 0. Judged by eye, it has no ground surface, no grass or soil grain, no tile structure, and only 2-3 tones. The references are full grass and paving tiles with 3 and 7 visible tones per tile, multi-step shading and texture dots. The candidate is far thinner and flatter than either reference and does not work as a ground patch, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12132
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "animal track prints (four small pale-blue paw shapes with a white lower edge)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a set of small flat paw-print shapes in pale blue (L about 185) with a 1-row lighter or white lower edge (rows 9-12). The column scans show only 2-3 rows of color change, which is shading on the print and not a vertical face. The silhouette widths (2, 4, 5, 7, 9, 10, 7, 9, 1) form blob and toe shapes with no front face of 3 or more rows. This matches a floor decal seen from above, which is correct for the flat kind. It has no height and no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a handful of tiny light-blue and white marks (3 distinct colours in total) on a dark background, smaller than a single 16x16 tile, so the per-tile facts are 0. By eye it has no covered ground surface, no tile-filling texture, no grass tufts or paving stones, and no real shading ramp, only 2-3 flat tones. The references show 3-7 visible tones per tile, with grass tufts, soil grain and stone shading. The candidate is far thinner and flatter than either, and it does not read as a ground surface of the requested kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11283
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.798Z",
+ "cells": {
+  "16": [
+   "4b0ef5a58971f48a",
+   "8d4df81ec4a146a7"
+  ],
+  "24": [
+   "017b368b1bbc3412",
+   "0efa087092aef721",
+   "2290c0ad334c442e",
+   "2e9a5f029a291ae9",
+   "3c35a7a0623e56b0",
+   "8e09262783ab4bfe",
+   "909cff0647ce0dac",
+   "c0d569ba72443631",
+   "c94466baf5b07b62",
+   "fdc7e6c8b9ec8529",
+   "fe9766ed98b827f5",
+   "fe9af548536d3026"
+  ],
+  "32": [
+   "357e138a8ae32edf",
+   "83843f9f0e04df96"
+  ],
+  "48": [
+   "69bf501416e4078d",
+   "6fed3994903faf50",
+   "83a92e05c8fc9fda",
+   "99aa475204877299",
+   "a6abbe36b830fec7",
+   "bf99833fd0ee9d8b"
+  ]
+ }
+}

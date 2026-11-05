@@ -1,0 +1,490 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0a6fae46ebeebe8cde002149051cb26d81c44c50eda9fc1221b808c999f7bd8",
+ "width": 80,
+ "height": 64,
+ "kind": "debris",
+ "name": "mammoth skeleton",
+ "label": "beodeul_city/wave-places/ice-age-field/mammoth_skeleton",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 23,
+  "darkV5": 48,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 8
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "spine and back ridge with snow highlights",
+      "rows": "7-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ribcage and torso, drawn in side profile",
+      "rows": "19-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head and tusk",
+      "rows": "22-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "44-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at the feet",
+      "rows": "53-59",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a standing mammoth skeleton seen in flat side elevation, facing east with the tusk on the right. The spine and ribs are a profile silhouette. The white snow on the back ridge (rows 12-31) follows the outline and has no front-edge line or eave shadow, so it is not a horizontal top surface. The ribs are see-through vertical bars. The legs stand on two snow patches (rows 53-59), which I counted as decor rather than a top of the main body. No part of the main body shows a top surface. The object is also an upright articulated skeleton, not scattered floor debris, so the kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, within the references' 9-20 range and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no big flat fills. The bone ramp reads as about 4 steps (bright highlight, cream, pinkish shadow, dark maroon), a little below the 5-6 of the references. The outline is partly tinted and partly neutral (43% near-neutral, similar to the bench at 44% and the well at 33%), so I call it mixed. The edges lean dark red-brown beside the bone and are not a uniform black sticker line. The ribs, spine knobs, skull and tusks carry per-bone shading and small gaps of value. The cloud-like white puffs under the feet are a slightly odd base, but they are shaded, not flat. A careful artist would accept it beside the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16722
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "spine and back ridge with snow patches",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "skull and shoulder mass",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rib cage",
+      "rows": "17-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leg bones",
+      "rows": "32-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at feet",
+      "rows": "53-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The mammoth skeleton is drawn as a flat side elevation facing east. The spine, ribs, skull, tusk and legs are outlined in profile with no horizontal surface and no front-edge line or eave shadow. The pale snow patches along the back are scattered highlights, not a top plane. The two snow mounds at the feet (rows 53-59) are the only part with some volume, but they are small details. The kind is debris (scattered bones), yet this reads as a standing skeleton in profile and not as a 3/4-view top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The mammoth skeleton is a sparse, thin prop, but its measured numbers sit inside the reference range. It has 14 visible tones per tile (hedge 9, cheese stall 17, well 20) and 0% near-flat coverage, so there are no large flat fills. The bones show about 4 steps: a pale highlight, a body tone, a shadow tone and a dark joint tone. The ribs, spine knobs, skull and tusks each carry their own shading, and the feet sit on small shaded puffs. The dark edge pixels are 43% near-neutral, close to the bench (44%) and well (33%). The outline looks partly tinted dark red-brown or purple next to the bones and partly near-black, so it is mixed rather than a uniform sticker line. Value separation between the ribs and the body does some of the work. Texture is a little thinner than the well or the cheese stall, since the bones are smooth with few grain dots. A careful artist could still accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15859
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "spine and back ridge with snow",
+      "rows": "12-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rib cage",
+      "rows": "17-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "skull and head",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "43-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at feet",
+      "rows": "53-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is a standing mammoth skeleton in side profile, facing east, with the tusk curling at right. It is not scattered floor debris; it is an upright, full-height skeleton, so the kind does not match. The ribs, legs, skull and spine are all drawn as vertical faces with no horizontal surface. The thin snow highlights along the spine are 1-2 row outlines, not a top plane with a front-edge line or eave shadow. The two snow mounds at the feet are small and read as ground patches rather than a top surface of the body. Overall it is a flat side elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 14 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and well (20), and is well above the bench and lamp, which read 0 because they are sparse. Near-flat coverage is 0%, so there are no big flat fills. The bone ramp has about 4 steps (white, cream, pink-grey shadow, dark socket and gap tone) against roughly 5-6 on the references. The ribs, spine knobs, skull and tusks are shaded individually rather than as one flat silhouette. The outline is mixed: 43% of dark edge pixels are neutral, close to the bench (44%) and well (33%). Many separations are made by value alone, so it does not read as a uniform black sticker outline. The white, cloud-like foot bases are somewhat smooth and flatter than the references' materials, which keeps density slightly below theirs. Overall a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14636
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "spine and back ridge with snow",
+      "rows": "7-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "skull and head block",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rib cage",
+      "rows": "19-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "41-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mounds at feet",
+      "rows": "53-59",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The mammoth skeleton is drawn as a flat side-profile silhouette. The spine, ribs, skull, tusk and legs are all vertical or profile shapes (rows 7-52). There is no band ending in a front-edge line, no ellipse, and no roof plane. The snow dabs along the spine (rows 12-30) are highlights, not a horizontal surface. The snow mounds at the feet (rows 53-59) are small ground patches, so they count as decor. The silhouette is tall (about 50 rows) and has no horizontal top, so it reads as a side elevation, not a pile of debris lying on the floor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts put the candidate at the references' level. It has 14 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well. Near-flat coverage is 0%, so there are no large flat fills. 43% of its dark edge pixels are neutral, which matches the bench (44%) and sits between the well (33%) and the lamp (100%), so I call the outline mixed rather than a uniform black sticker line. By eye, the bones show about 4 steps (bright highlight, bone, shaded bone, dark gap), with pinkish tinted vertebrae and rib gaps that give some grain. This is slightly fewer than the 5-6 steps on the stall and well. The cloud-like feet are the flattest area but still carry blue-grey shading. Overall it is a little leaner than the best references but would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16868
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.737Z",
+ "cells": {
+  "16": [
+   "07d366fe6c09bc59",
+   "1db98ec3573b35d8",
+   "2bf10204ca48f294",
+   "39fe608caa65f6bb",
+   "3daee834d2431b66",
+   "531ee8a8c354aa38",
+   "8763e52c87417051",
+   "9a8652a89e8d1e94",
+   "a1268f360c09d04b",
+   "a84274f71cc5fb85",
+   "c03e04e68a448e18",
+   "c0e0da010867340d",
+   "c112c15b40c571cd",
+   "c1e647387cb0799b",
+   "c4989c27a56e025d",
+   "d1df78ef4baf02b4",
+   "db086900b8920771",
+   "fb1c63d51cc175cb"
+  ],
+  "24": [
+   "010806f3e26e08b3",
+   "02489321620a26fc",
+   "035b989e64b84fc8",
+   "08886b64f1698cc7",
+   "0e51204258f1abef",
+   "13c85835185f78a2",
+   "147d546e595f533e",
+   "1ae3ee18cff41175",
+   "1c6687b5d6c6b877",
+   "1df951663008e478",
+   "1f7c25bda87a7818",
+   "2029141ce2a90e45",
+   "20aaa24ab080e037",
+   "20e73ce88cc042e9",
+   "314e50e65a803a21",
+   "34380f9c10b858ca",
+   "37874c64a550cc8d",
+   "40fb052787d9526a",
+   "4497fd06b187a609",
+   "459564b21368fdc3",
+   "4817e5cd31bd1c72",
+   "4933cae199fb46a2",
+   "4a45a6eaf91aff02",
+   "4be0a98e49b09178",
+   "4f1b46fb50841675",
+   "4f2627a0e3052c19",
+   "4f65308b6b290846",
+   "563f339c3b85fd7b",
+   "56c3176bbde70905",
+   "5cbe9b929fb76a52",
+   "5eb77aea2adeea4a",
+   "61c583167264f7f3",
+   "6988622522ab916b",
+   "6ccf5573f0983669",
+   "6ea5463f7c26e03b",
+   "71d11226eea55513",
+   "7b25a6d14a2d29fb",
+   "7e12e6381d9b240f",
+   "86f4cc981d4a1dd6",
+   "8e1775bc8a02e581",
+   "92d92b2dd06e5072",
+   "9e06849b74a3f07e",
+   "a5db2718f4b87918",
+   "a89e068e095934cc",
+   "aaa0f3397addb7c3",
+   "abcdb9abb94d6684",
+   "af1447b60478af45",
+   "b481a6a3f60c2523",
+   "b6f8eb4834b98755",
+   "bf2964137874e6d7",
+   "c33a4e0b5298af1e",
+   "c716c11afb6dadf6",
+   "c7d20e38233b765a",
+   "d9459b12564b6b56",
+   "dbed31f71f55a62b",
+   "e0caf8010b8671dc",
+   "e213eb5a4a30c7ef",
+   "e7a4e7267fb8e098",
+   "e83a7dedde0fd886",
+   "e8ea7a7636ef0c5a",
+   "f34be3688b1ef80d",
+   "ff20c249bbc3b104"
+  ],
+  "32": [
+   "06c705c92ba99dc3",
+   "0c94b1887d14e7e3",
+   "10a86e506783af3a",
+   "1cb7b1a6eb968889",
+   "26327d0984b10741",
+   "2968d17026b095d5",
+   "300f0a031972ca55",
+   "39bd4e488db58d87",
+   "42c99bd6c9b0263e",
+   "43276cd114d985cf",
+   "4c263b9f886adfc5",
+   "67f21a42f0a79b18",
+   "73070bdafad1d396",
+   "82f6c7e670c8f0b3",
+   "b586001874b40c8e",
+   "bae6cf394b7298b3",
+   "f336cc950c1b84bc",
+   "f4bc1a121ff67e3a"
+  ],
+  "48": [
+   "0bcbcd9fe31ea473",
+   "10717d7a0dfd637a",
+   "198aca25d2721a60",
+   "2529754151c2ad54",
+   "2c2226caf3e04217",
+   "3192a3a9340e5643",
+   "36520739824dba09",
+   "51aee31629fc51ff",
+   "59070802b9acffda",
+   "5d375a03be43c1c2",
+   "727dfd66bb956315",
+   "86be1755d1ddae6e",
+   "898087c944bff690",
+   "92a179622d616f9b",
+   "ac5ee7841d463795",
+   "b3c36309e6a27b3d",
+   "b97737e143db577e",
+   "c60fc9a8115e0146",
+   "c896b6c919905a8d",
+   "c97a2f1fc0a13e69",
+   "ca62633a337330f5",
+   "cff23125a71868f1",
+   "d817acc22567a162",
+   "dc62c425bd420c80"
+  ]
+ }
+}

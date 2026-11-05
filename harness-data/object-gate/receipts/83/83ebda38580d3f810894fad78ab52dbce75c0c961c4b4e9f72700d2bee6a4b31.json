@@ -1,0 +1,399 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83ebda38580d3f810894fad78ab52dbce75c0c961c4b4e9f72700d2bee6a4b31",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "ice fishing hole",
+ "label": "beodeul_city/wave-places/ice-age-field/ice_fishing_hole",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (4/4)",
+  "3/4: 앞면 2행 < 3 (4/4)",
+  "3/4: 윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (2/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (4/4)",
+   "앞면 2행 < 3 (4/4)",
+   "윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice hole opening with dark water and ice rim",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue ice lip below the opening",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fishing rod and line",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is a flat elliptical opening in the ice. The width profile runs 9, 12, 13, 14, 13, 10, 5 across rows 6-14, and dark water fills rows 8-12 inside a pale ice rim. Below the opening there is only a 2-row blue ice lip (rows 13-14) with no real vertical front face of 3 or more rows. The thin rod at the top (rows 2-9, width 2) is decor. The hole is a ground-level feature, so it reads as a flat top-down shape with at most a 2-row front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small oval, under one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It has about 12 colours in total, which is similar to the thin bench and lamp references. Its dark edge pixels are 0% neutral, so the outline is tinted, a dark blue tone beside the ice and water, and it is not a black sticker line. The ramps are shallow: roughly 4 steps for the water and ice rim, with one highlight and no visible per-chunk ice texture such as cracks, snow crust, or shaded rim pieces. The roofed well and cheese stall show 6 or more steps, stones shaded one by one, and grain. Next to them the candidate reads as a flat, icon-like dark ring around a blue pupil, a bit like an eye symbol, rather than a hole cut in ice with a thick, shaded rim. It is not plainly equal to the references in craft, so I fail it, but only narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 8/2 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 8/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19510
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice hole (ice rim and dark water opening)",
+      "rows": "6-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fishing rod and line",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front ice lip below the hole",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The width profile (9, 12, 13, 14, 13, 10, 5 across rows 6-14) is a clear ellipse. It has a pale ice rim, and the dark water in rows 9-12 is visible inside the opening. Only rows 13-14, a 2-row blue ice lip, form a front face, which is under the 3-row minimum. It reads as a flat hole seen from above on the ice with almost no vertical south face. The brown rod in rows 2-9 is decor and does not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny ice hole (about 16x12 px) with only 12 distinct colours. It reads as a dark blue-grey ellipse with a pale rim and a few light ice highlights. The water interior shows about 2-3 steps, and the rim shows about 2-3 steps. This is shallow next to the well, stall and hedge, which carry 5-6 steps per material, per-stone shading, and grain. The outline is a dark rim that leans blue-grey, so it is mixed and not a clean material-tone line. The measured tile facts are 0 because the piece is under one tile, so I judged by eye. The thin or sparse allowance applies in part, but the piece still looks flatter and more sticker-like than the references. The ice rim has no per-chunk shading, no cracks or snow grain, and the water has no depth gradient or ripple. It does not hold up beside the well, whose water and stonework are shaded in detail. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14252
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice hole opening with dark water and light ice rim",
+      "rows": "6-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark water visible inside the hole",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fishing rod / stick rising above the hole",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The width profile widens from 9 at row 6 to 14 at row 11, then narrows to 5 at row 14, so the hole is an ellipse spanning rows 6-14 with dark water inside. This is a flat opening in the ground. The only front structure is a 2-row strip of blue ice below the water (rows 13-14, L=117), with no vertical face of 3+ rows. The rod above is decor. The object reads as a flat top-down hole, not a standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny ice hole, smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It has only 12 distinct colours. It reads as a dark blue-grey oval with a pale rim and a small highlight, so about 3 lightness steps on the water and ice against the 5-6 steps in the well, stall and hedge. The outline is a dark ring that looks only slightly tinted, so I call it mixed. The ice rim shows little grain, crack texture or snow speckle, and the water is nearly one tone with no ripple or depth gradient. The references (well stones shaded one by one, hedge leaf clumps, stall wood grain) carry far more visible detail. Next to them the candidate looks thinner and more sticker-like. The kind is also a weak fit, since it is a ground decal rather than a standing prop. Because it looks flatter and shallower than the references, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 9/2 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 9/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13715
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice hole with water and ice rim (ellipse)",
+      "rows": "6-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice lip below the hole",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fishing rod and line",
+      "rows": "2-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widens from 9 to 14 px and narrows again to 5 px (rows 6-14), which is an elliptical opening. Rows 6-12 hold the dark water and the white and light-blue ice rim, so this is a top surface seen from above. Only rows 13-14, a mid-blue ice lip, could pass as a front face. That is fewer than 3 rows, so no real vertical south face is drawn. The rod and line above (rows 2-10) are decor. The object is essentially a flat hole in the ice with a very thin front lip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small ground-level prop under one tile, so the per-tile facts read 0 and I judged it by eye. Its 12 distinct colours are on par with the bench (14), hedge (11) and lamp (14) references. It shows about 5 steps: a bright ice-rim highlight, light and mid icy blues, dark water and a deep edge. The dark edge pixels are 0% near-neutral, so the outline is tinted dark blue, not black, and it matches the adjacent ice and water. There are no flat 5x5 blocks (0% near-flat). The rim breaks up into chips and the water has a glint. It is simpler than the stall or well, but a hole in the ice is inherently a simple shape, and it is no thinner or more sticker-like than the bench. A careful artist would accept it beside the small references, though the surface texture is modest.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 7/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17678
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.714Z",
+ "cells": {
+  "16": [
+   "a7a77d414a1c046f"
+  ],
+  "24": [
+   "3e1c5874c4aae617",
+   "7691117a0b4c3dcd",
+   "80bd7f12c272bcbf",
+   "ae042d250e92bdc2",
+   "d3cab90249acbb9f",
+   "e5f40521bf992bf8"
+  ],
+  "32": [
+   "1f1fdd6a92c24b01",
+   "4783ee4864d52bd6",
+   "48a39d7657e32e40",
+   "aa2f3b68ed7ed839",
+   "f6f855a172adf614",
+   "f72b5232c20ae04b"
+  ],
+  "48": [
+   "0483855b022ca0a6",
+   "1ef147445fcf9579",
+   "5bd1aad6ab009069",
+   "b44fd791bd2e7f29",
+   "d5bb638b37ccf64b",
+   "f08a4705df660cc0"
+  ]
+ }
+}

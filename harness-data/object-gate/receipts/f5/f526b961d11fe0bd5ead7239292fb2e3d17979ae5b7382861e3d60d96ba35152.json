@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f526b961d11fe0bd5ead7239292fb2e3d17979ae5b7382861e3d60d96ba35152",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "mammoth skull",
+ "label": "beodeul_city/wave-places/ice-age-field/mammoth_skull",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 21,
+  "darkV5": 56,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull cranium dome",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base / cloth or snow strip under the skull",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved tusk on the right",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is a side-view silhouette. The width grows steadily from 8 px at row 6 to 37 px at row 21 and never narrows again, so it is a dome and not an ellipse. There is no front-edge line and no eave shadow, so no horizontal top surface is shown. The dark rows near 20-24 are eye and jaw shading, not an edge. The white strip at rows 24-29 is a flat pale mass with no top band or edge line. The tusk is a thin curved profile. The object reads as a lying profile and not a three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly 1.5-tile skull-and-tusk prop. Measured facts: 16 visible tones per tile, 0% near-flat coverage and 5% near-neutral dark edge pixels. That matches the richer references (stall 17, well 20, hedge 9). The outline is tinted, not a black sticker line, which fits the Beodeul approach. The skull body shows about 4-5 cream and grey-brown steps, with a darker tusk and shadow side. By eye, the surface texture is softer and less detailed than the stall or well. The skull is mostly smooth cream with only a few cracks or grain dots, and the tusk reads as a plain curved band. Per-bone speckle and grain are modest, so the piece looks slightly flatter and less textured than the references. The numbers are fine, but it falls short of the reference level of grain and one-by-one shading. It is not a clear match for the references, so I fail it on the cautious rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13704
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cranium dome (skull profile)",
+      "rows": "6-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved tusk on the right",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white bone/snow base band under the skull",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is a side profile with a rounded dome from rows 6 to 24, widening steadily from 8 to 37 px, and a tusk curving up on the right. The dome has no front-edge line, no eave shadow and no ellipse. The pale highlight at the top is only an outline rim. Nothing in the dome reads as a horizontal surface seen from above. The white band at rows 25-29 under a dark line at row 24 is a flat base and not a top. The dome is not an ellipse cap, since it narrows only toward its top edge and runs straight into the base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per tile, against 17 and 20 for the stall and well references and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. Only 5% of its dark edge pixels are neutral, which means the outline is tinted and follows the material (a warm brown-grey beside the bone). The skull reads with about 5 lightness steps: a highlight, light bone, mid, shadow and deep shadow. It also has cracks, a tusk with curved shading, and a darker rim. The sticker look is avoided because forms are separated by value and not by a black line. The size and richness are comparable to the reference props. The main weakness is that the texture is a bit smooth and the grain is less per-clump than in the stall or well. Overall it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13591
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull dome (cranium)",
+      "rows": "6-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved tusk at right",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base / ground mass under the skull",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is a rounded side-profile silhouette. The width grows steadily from 8 px at row 6 to 33 px at row 17, so it is a dome with no ellipse that widens and then narrows. The pale blue-white highlight on rows 6-12 follows the outline and is a rim, not a surface that ends in a front-edge line or eave shadow. The cranium is shaded as a vertical side face with an eye socket and a dark jaw line at rows 18-24. The tusk is a thin curved line with no top plane. The white mass at rows 25-29 is flat-shaded ground cover with no edge line. No part of the object shows a horizontal top surface, so it reads as a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The skull is drawn as a bone-coloured dome with a shadowed underside, a tusk and curled tusk tips. It has about 5 distinct lightness steps on the bone ramp, from a highlight through light and mid to a shaded underside and a dark crevice tone. The measured facts support this: 16 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. Only 5% of dark edge pixels are neutral, so the outline is a tinted dark brown/grey-brown that separates the bone from its shadow instead of a uniform black sticker line. Texture is moderate: there is some grain and variation across the cranium and the tusk, but less than the heavily textured stall or well. Overall it sits at the level of the references and would not look thinner or flatter next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14430
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull cranium dome",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base / jaw strip under the skull",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "curved tusk at right",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is a single rounded dome seen in side profile. The width grows steadily from 8 px at row 6 to about 38 px at row 23 and never narrows again, so it is not an ellipse. There is no front-edge line with eave shadow. The dark lines at rows 20, 23 and 24 are the eye socket and the shadow under the skull, not an edge between a top and a front face. The white strip at rows 25-29 is a flat base with no horizontal surface. The tusk is a thin curved profile at the right. The object is a lying-profile debris pile with no separate top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a bone-white mammoth skull with a curled tusk. It has 16 visible tones per tile, within the reference range (hedge 9, stall 17, well 20), and 0% near-flat coverage. Only 5% of its dark edge pixels are near-neutral, so the outline is tinted: a brownish-grey tone against the bone, not a uniform black sticker line. The bone ramp shows roughly 4-5 steps (highlight, cream, light grey, shadow grey, dark). Texture is present as cracks and shading on the cranium, but the surface is smoother and softer than the stall, well and hedge references, which carry per-element dots and grain. The tusk and the lower jaw read somewhat flat, and the form is slightly blobby, so the piece looks a little thinner than the references. It does not fall into sticker or flat-fill territory, but it falls short of the reference level on texture detail and density, so I am being cautious.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15070
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.743Z",
+ "cells": {
+  "16": [
+   "2065ab0d3fb2b2a3",
+   "39a334d6d6470de7",
+   "46428343533a07ba",
+   "569048ef96781880",
+   "a625c80d1fcea07a",
+   "fdbc4e61ffeb3edd"
+  ],
+  "24": [
+   "068b9478fccb1224",
+   "3b0603d150c7a9b7",
+   "5329d9bede6dbbe5",
+   "7f3198fbe771834f",
+   "979bd3d1658edda8",
+   "f6927646a767e604",
+   "ff648818ceb563b3"
+  ],
+  "32": [
+   "59ba13aa862cf7d7",
+   "9974eedbb917af84",
+   "9c28a0cba9a20d8a",
+   "a270286065d8611b",
+   "b96e10cf396e5f7f",
+   "f6f15943e4fe2427"
+  ],
+  "48": [
+   "d96b34489b21a26f",
+   "ecfc007c76575f47"
+  ]
+ }
+}

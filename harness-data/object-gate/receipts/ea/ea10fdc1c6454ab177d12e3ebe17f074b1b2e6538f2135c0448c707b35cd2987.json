@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea10fdc1c6454ab177d12e3ebe17f074b1b2e6538f2135c0448c707b35cd2987",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "burnt grass",
+ "label": "beodeul_city/wave-places/volcano-field/burnt_grass",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 40,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burnt grass blades (sparse scorched tufts)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse cluster of scorched grass blades in rows 7-14, at most 6 px wide, with dark tips and brown stalks. It has no solid plate, no front-edge line, no eave shadow, and no ellipse. The silhouette widens steadily from 1 px at row 7 to 6 px at rows 11-14, so there is no vertical front face and no 3/4 volume. It reads as a flat ground decal drawn without a front face, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny tuft-like sprite, about 12x10 source pixels, on a dark background. It is not a 4x3-tile ground patch, so it does not match the ground references (a full grass field and a paving slab). Its measured facts are 0 visible tones per tile because it is smaller than one tile, and it has only 4 distinct colours in total, against 80 for the grass reference. It shows roughly 3 tones with no tile coverage, no grain and no soil or grass texture. It has no real outline and no ground ramp, so there is nothing to compare with the reference's 5-6 steps. It reads as a small sticker-like prop, not a burnt-grass ground surface, and is far thinner than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10113
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burnt grass blades",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse scatter of thin dark and brown blade strokes in rows 7-14, at most 6 px wide. It has no solid body, no front-edge line, no eave shadow and no ellipse. The column scan shows only 1-px dark and brown fragments, with column x=8 empty. There is no front face or volume, so this is a flat ground decal with no top/front split."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate should be a 4x3-tile ground patch but shows only a tiny tuft-like sprite, smaller than one 16x16 tile, on a mostly empty background. It does not cover a ground area, so it is not the same kind as the grass and paving references. The facts report 0 visible tones per tile because the piece is under one tile, and only 4 distinct colours in total. The references have 80 colours (grass) and 7 (paving), with grass showing about 3 visible tones per tile and paving 7. By eye the candidate has about 3 tonal steps against roughly 5 for the references, and no clump, grain or tile-to-tile variation. The edge tint is brownish, not neutral, so the outline reads as dark material tone, but there is too little surface to judge it. The density is far below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12800
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "grass blades / burnt tufts",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a few thin, upright blades and dark tips (rows 7-14, width 1 growing to 6) standing on the ground. The silhouette narrows to a point at the top (rows 7-10: widths 1, 2, 4, 5). It has no plate, no ellipse and no horizontal surface with a front-edge line. It reads as vertical tufts seen from the front, not as a flat decal seen from above, so the 'flat' kind does not fit well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny tuft-like sprite, smaller than one 16x16 tile, on an empty grey background. The references are full grass and paving surfaces. The candidate has only 4 distinct colours in total, against 80 for the reference grass. It shows about 3 tonal steps, with brownish tufts, and no ground coverage, clumps, grain or soil variation. The tile-based measures are 0 because the piece is smaller than a tile, so I judged by eye. By eye it is far thinner and flatter than the references, which carry about 3-7 visible tones per tile, scattered grass tufts and shaded stones. It does not work as a burnt-grass ground surface next to the references. Not a pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11315
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burnt grass blades and scorch marks",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The drawing is a sparse set of thin vertical brown blades with dark tips, in rows 7-14. The silhouette is only 1-6 px wide, with no continuous filled plate. There is no ground patch, no front-edge line, no eave shadow, no ellipse and no roof plane. There is also no front face of 3 or more rows. It reads as scattered tufts or marks on the ground rather than a solid object with a top and a front, so it fits no standing-object category. As a flat decal it is a loose, non-plate scatter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny brownish grass-tuft sprite (about 20x15 px) on a flat dark grey background, so it does not fill even one 16x16 tile. It has only 4 distinct colours and 2-3 tonal steps, against about 5 steps and 3-7 visible tones per tile in the references. The grass reference has varied clumps and grain and the paving reference has per-stone shading. The candidate has no ground texture, no grain and no surface coverage, and the background is a flat fill. The outline is not measurable, with 0% neutral dark edge pixels on a sparse sprite. The per-tile density figures are 0 because the piece is smaller than a tile, so I judged by eye. It reads as thinner and flatter than either reference and does not provide the requested burnt-grass ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14269
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.078Z",
+ "cells": {
+  "16": [
+   "ae70965db1d59928"
+  ],
+  "24": [
+   "2d702ab57d896b37",
+   "5ec3f53cf3d371eb",
+   "6bd4ee4285bc56a3",
+   "85acf0744a8bc062",
+   "9b5494841fc6d240",
+   "ba6d6829959639e7"
+  ],
+  "32": [
+   "0c6b6a92da769e4c",
+   "179135db69dabc9f",
+   "874913a33c69b494",
+   "b32f87011e23ef08",
+   "f75d2924ab09f8c7",
+   "f91b84535090210d"
+  ],
+  "48": [
+   "030151206b5a3e78",
+   "1993dabdf98caf4c",
+   "1b6406fb531c028a",
+   "976fc18ca7a27482",
+   "a4502c1fe133f59c",
+   "bd11dd4c2f0ad36b"
+  ]
+ }
+}

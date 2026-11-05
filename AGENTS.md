@@ -103,8 +103,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → 사람이 http://mdc-server:18321/ 에서 받은 것만 스토어에 게시한다. 감독이 대신 고르지 않는다. 운영 게시는 `--target prod --yes-prod`.
 
 - **전투 배경이 장소와 안 맞을 때(밤 편의점 전투에 낮 풀밭 등) / 트룹·맵의 측면 전투 배경을 그 장소를 보고 새로 그릴 때**
-  → `battle-backdrop` · 시드 `harness-data/battle-backdrop/seed.json` · `npm run harness -- battle-backdrop capture|produce|pixelize|check|sheet|pick|build|status` · 문서 `openwiki/harnesses/battle-backdrop.md`
-  → 맵 캡처를 참고 그림으로 생성형 → 320×180 맵 팔레트 도트화. 생성형은 **전투 배경에 한해** 허용(2026-10-29). 사람이 시트에서 고른 것만(화소 해시) 설치하고 감독은 고르지 않는다. 조수는 `generate_battle_backdrop`.
+  → `battle-backdrop` · 시드 `harness-data/battle-backdrop/seed.json` · `npm run harness -- battle-backdrop capture|produce|pixelize|check|review|sheet|pick|build|status` · 문서 `openwiki/harnesses/battle-backdrop.md`
+  → 맵 캡처를 참고 그림으로 생성형 → 320×180 맵 팔레트 도트화. 생성형은 **전투 배경에 한해** 허용(2026-10-29). 고르기는 사람이 아니라 Claude Opus 검수다(오너 2026-11-04 「이제 사람이 고르지 않아. AI 가 해야함」): `review` 가 숨긴 디코이를 섞어 1~5점(0.5 단위)으로 매기고, 디코이를 모두 떨어뜨린 묶음에서 3.5 이상 받은 후보 중 최고점만 `pick --best --by 'opus-review (owner: …, 날짜)'` 로 화소 해시에 묶어 설치한다. 점수 완화·디코이 빼기·손 기록 금지. 3/4 관문(object-gate)은 타일·기물용이라 전투 배경에 걸리지 않는다(스토어 출구 `GATED_KINDS` = chipset·tileset). 조수는 `generate_battle_backdrop`.
 
 - **새 게임 인터뷰의 누적 선택 배경을 대량 생성·검수·배포할 때**
   → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`

@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68f55b3b489ee8a7fe4e322184386aae1f7d90af4eda935e9148c860eec958ce",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "frozen bush",
+ "label": "beodeul_city/wave-places/ice-age-field/frozen_bush",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 38,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow clump upper left",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "snow clump upper right",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow clump middle",
+      "rows": "13-17",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "snow mound base",
+      "rows": "24-29",
+      "evidence": "d",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "bare branches",
+      "rows": "13-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is an organic shape with rounded snow clumps on top. The clump rows widen then narrow (rows 8-12 go 10, 17, 19, 15; the middle clump at rows 13-17 goes 20 to 26 then narrows), which reads as ellipse-like horizontal snow surfaces. The snow mound at rows 24-29 is a heap whose width profile goes 17, 21, 20, 18, 14, so it widens then narrows. The tangled dark branches and ice-blue twigs at rows 13-23 form the front face, about 10 rows. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-covered bush of about 25x15 source pixels, much smaller than the two reference trees, so I judged it by eye as a small object. It has a white-to-blue snow ramp of about 4-5 steps, plus dark brown twigs poking through and a shaded snow mound at the base. The snow clumps are modelled individually rather than as a flat blob. The measured facts back this up. It shows 17 visible tones per tile, above tree-1a786c at 7 and below tree-d43edd at 29. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% near-neutral, so the outlines lean brown or blue and are not a black sticker line. It is a little less textured than the large leafy canopies, but a careful artist would accept it next to the references. It does not look thinner or flatter than tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18735
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow clumps on the branches (domed white tops with pale-blue shaded undersides)",
+      "rows": "8-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "middle snow clump",
+      "rows": "14-17",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "bare brown branches and twigs",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at the base (white top, blue-grey shaded front, rounded bottom)",
+      "rows": "23-29",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is an irregular organic blob. The snow clumps on top (rows 8-13) widen from 4 to 20 px and then narrow, so they read as domed horizontal snow surfaces. Their undersides are shaded pale blue, which gives volume. Below them the branches (rows 14-22) form the front face, about 9 rows. The base mound (rows 23-29) widens from 17 to 21 px and then narrows to 14 px, which reads as an ellipse with a lit top and a shaded front. The result is a 3/4 volume rather than a flat front elevation, though the tops are soft and clumpy rather than crisp."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small snow-covered bush. It is drawn as lumpy snow clumps in several light steps (white highlight, pale blue-grey, and shadow tones), with dark twig branches poking through and a shaded snow mound at the base. The measured facts support this. It has 17 visible tones per tile, well above tree-1a786c (7) and close to the middle of the two references (7 and 29). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outlines carry a tint (dark twig and shadow tones) and do not form a black sticker line. The clumps are separated by value and are not boxed in. It is smaller and simpler than the big canopy of tree-d43edd, but a careful artist would accept it beside the references without it looking flatter or thinner. The shading is a little shallower than the 5-6 steps in the references, but still adequate for an object this small.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19968
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper snow clumps on branches (left and right)",
+      "rows": "8-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "middle snow clump",
+      "rows": "13-17",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift base, rounded top with shaded front",
+      "rows": "23-29",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "bare branches and twigs with ice",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is an organic tangle of dark branches with snow caps. The snow clumps (rows 8-13 and 13-17) widen and then narrow again, which gives rounded tops with bluish shaded undersides. The base is a snow drift: its top is a lighter band at rows 23-26 and its front is shaded at rows 27-29. The width profile runs 17, 21, 20, 18, 14, a rounded mound. The branch mass in rows 14-22 acts as the front face. The mound's top and front are only loosely separated, so the top-surface evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small snow-covered bush. It is much smaller than the references, but it is the same kind (plant), so size alone is not held against it. Its snow mounds are built from several steps (white highlight, pale blue-grey, mid blue shadow, darker blue-violet base) with dark twig branches poking through. The measured facts back this up: 17 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd, so it sits between the two references. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines carry a tint (dark cool or brown-toned, not a black sticker line), and forms are mostly separated by value. Clumped snow lumps and a shaded base give some texture, though less grain than the large leafy reference. Overall it would sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16895
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow clumps on upper branches (several rounded white caps)",
+      "rows": "8-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bare branches and twigs with icy blue accents",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow mound at the base",
+      "rows": "23-29",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width profile widens and then narrows in two places, which reads as ellipses seen from above. The snow clumps at rows 8-13 go 4,10,17,19,15,20. The base snow mound at rows 23-29 goes 17,21,21,20,20,18,14, with a pale top and a bluish-grey shaded lower edge at rows 27-29. Dark branches and twigs fill rows 14-22 below the upper clumps as a front-facing mass of about 9 rows. The object is an organic bush with snow lying on top of the branches and the ground, not a flat front elevation. The ellipse snow tops count as top surfaces, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-covered bush. The snow clumps step through white, pale blue and blue-grey shadow. The dark twigs poking out are tinted brown-purple, not neutral black, and there is no uniform sticker outline. Measured facts: 17 visible tones per tile, which is well above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, the same as both references, and neutral dark edge pixels are 0%, so the outlines carry a tint. The piece is much smaller than the reference trees and the canopy is simpler than the layered leaf clumps of tree-d43edd. Even so, it has per-clump highlights and shadows, with no flat 5x5 areas. A careful artist would accept it next to the references for a small bush.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16388
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.632Z",
+ "cells": {
+  "16": [
+   "08378f32767cce6f",
+   "2526c88cd4706c91",
+   "386e627931c34b1c",
+   "87a1ea096f4c9d29"
+  ],
+  "24": [
+   "1225da6a58e0d398",
+   "1aa74f1ffa70251c",
+   "1d269e099b3adb04",
+   "1eb99f351bd031fb",
+   "4aa982ba8a12d67c",
+   "4eec34ab2152ed52",
+   "5bafd06a1f5c7cf7",
+   "676aed95e829eb5a",
+   "8ff0e620f1156ebb",
+   "95fc25207b2923f4",
+   "9712547f40e34fa3",
+   "9d1b4539c4043ff0",
+   "9d9b0e9aa8585646",
+   "bf35a38f39f9595c",
+   "bfb0e9ddc1bacdac",
+   "c5592cd3a117101b",
+   "cf47a8ae28a26ba7",
+   "dd16883eb87a69d1",
+   "de1c2c6ee27624c7",
+   "ecacd628833d4224",
+   "fbeb6b802c8e56e6"
+  ],
+  "32": [
+   "11e5653bf5eb19fd"
+  ],
+  "48": [
+   "596957989c8f1a08",
+   "655a93ecbc8665ea",
+   "81b18476355699f6",
+   "ad83ec55827f10f7",
+   "e0f0327521b1be4f",
+   "e88c1f64f9830f98"
+  ]
+ }
+}

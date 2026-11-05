@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8de0074d82b117d22f11c2edfbdd8f54124e84f13eb9e5956673448ef28128f7",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "marker stub",
+ "label": "beodeul_city/wave-places/ice-age-field/marker_stub",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 41,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stub (shaft with slanted broken top)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow/white mound at the base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 4,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The column is a brown stub, rows 5-10, with a width profile of 1, 3, 4, 4, 4, 4. Its top is a slanted, broken point, not a plate that widens and narrows again, so there is no elliptical cap overhanging the shaft. The shaft is a flat vertical face, with a dark band at rows 9-10 and no edge line or eave shadow. Rows 11-15 are a white mound at the base, with widths 10, 14, 14, 12, 10. It sits at the foot of the stub and is a base heap, not a cap. The column therefore shows no top surface and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny sparse prop (a small pale stub on a dark base), smaller than one 16x16 tile. The per-tile facts read 0, so I judged density by eye. It has 13 distinct colours, in line with the bench (14) and lamp (14) references. It shows about 5 lightness steps: highlight cap, light, mid, shadow and a dark base. Its dark edge pixels are 0% near-neutral, so the outline is tinted to the material rather than a black sticker line. Near-flat coverage is 0%, so there are no flat fills, and it has some grain and variation. It is thinner than the stall and well, but those are large multi-material pieces. Next to the simple bench and lamp it would not look flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20229
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brown stub (post)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white mound at base",
+      "rows": "11-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 4,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The column is the brown stub in rows 5-10. It is 4 px wide from row 7 to row 10, with a slanted 1-3 px tip at rows 5-6. It has no overhanging cap plate, because the width never exceeds 4 px above row 10. The stub is only a vertical face with no top surface or front-edge line. The wide light shape in rows 11-15 (widths 10, 14, 14, 12, 10) sits at the base like a snow or rubble heap, not at the top end, so it does not serve as a cap. The column's top end therefore shows no ellipse and the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged it by eye. It has 13 distinct colours, about the same as the thin references (bench 14, lamp 14, hedge 11). Near-flat coverage is 0%, so it has no flat fills. 0% of its dark edge pixels are near-neutral, so the outline is tinted rather than a black sticker line. It shows a lit top, mid tones and a darker base with small highlight clusters, roughly 4 steps. That is a little shallower than the 5-6 steps in the references, but acceptable for such a small, sparse prop. A careful artist would not see it as flatter or more sticker-like than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18994
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "brown stub shaft with slanted chipped top and dark band at row 9",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white/pale-blue mound or drift at the base, with a rounded width profile of 10, 14, 14, 12, 10",
+      "rows": "11-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 4,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The column part is a narrow brown stub, 4 px wide, in rows 5-10. Its top is a slanted, chipped end (widths 1, 3, 4, 4) with no cap plate, no front-edge line and no eave shadow, so it has no top surface. The only wide shape is the pale mound at the base in rows 11-15. It widens and narrows like an ellipse but sits at the bottom, as a drift or heap the stub rises out of, not as a cap overhanging the shaft. The shaft's top end therefore shows no elliptical cap, and the stub reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny sub-tile prop, so the per-tile facts read 0 and I judged by eye. It uses 13 distinct colours, close to the bench (14) and the lamp (14), on a much smaller footprint. Its dark edge pixels are 0% neutral, so the outline leans toward the adjacent material rather than a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fill. It shows a pale highlighted top, mid and dark body tones, and a dark base, which is about 4-5 steps. That is slightly below the 5-6 steps of the references and has less grain than the stall or well, but it is small and simple and does not look thinner or flatter than the bench or lamp. I am accepting it, with low confidence because the object is so small.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22198
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brown stub shaft",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white mound base around the stub foot",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 4,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The shaft is a 4px-wide brown stub at rows 7-10. Its top (rows 5-6) narrows to 1-3 px and is slanted or broken, so it has no cap plate that overhangs the shaft. The width profile (0, 1, 3, 4, 4, 4, 4) never widens at the top, so there is no ellipse cap. The only widening is at the bottom, where a white mound (rows 11-15, widths 10, 14, 14, 12, 10) sits as a base or heap around the foot. It is not a top surface of the column, and it shows no front-edge line or eave shadow. The column reads as a flat vertical stub on a base, which is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sub-tile stub, so the per-tile facts are 0 and I judged by eye. The measured facts do not count against it: 0% flat coverage, 0% neutral dark edge pixels (tinted outline), and 13 distinct colours against 14 for the bench and lamp references. Visually it is a small pale dome on a dark shadow base. It shows roughly 3-4 lightness steps against 5-6 on the references, with little visible grain or per-part shading. It reads as a smooth blob and is thinner and flatter than the bench, lamp or well beside it. Because it looks slightly sticker-like next to the references and I could not confirm material texture at this size, it fails on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18990
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.755Z",
+ "cells": {
+  "16": [
+   "c6ae360a49d7b4af"
+  ],
+  "24": [
+   "1832f211118f6f3a",
+   "933748ce86d676bc",
+   "9e9a63961cc9d897",
+   "abc80518c802fbc7",
+   "d64d3869f2036c2d",
+   "e3b69059816f02d3"
+  ],
+  "32": [
+   "3334413a3ddde7ca",
+   "7a623bc261eb0d16",
+   "9e265fed25b11a6a",
+   "ac84471cab2447d4",
+   "bb40f58afbb61838",
+   "c6d69e935f8e03b3"
+  ],
+  "48": [
+   "2cc9fe5ec9445816",
+   "6217ac6a7b6be632",
+   "9237b367f5091048",
+   "cac3e94d6eea4509",
+   "ec46bc3283ca1ef4",
+   "fb7fb2a89e37739d"
+  ]
+ }
+}

@@ -13,7 +13,8 @@
 | `pixelize` | 16:9 가운데 자르기 → 팔레트 = 맵 팔레트 24 + 원본에서 맵 색으로 표현 안 되는 색만 8 → 원본 양자화(OKLab 최근접, 디더링 없음) → 목표 화소 = 블록 가운데 70% 의 **최빈 팔레트 색**(평균 아님 → 중간색·흐림 없음) → 외톨이 점 청소 → 드문 색 제거 → 2배 최근접 저장 | `native-<글자>.png` 320×180 · `stored-<글자>.png` 640×360 |
 | `check` | 기계: 크기·색 8~32·아래 띠 무늬 밀도·밝기(밤이면 위쪽 ≤0.42, 아니면 캡처와 ±0.25). 판정자: 인물·글자·시간·같은 장소·측면 시점·바닥 비었음·도트로 읽힘. 판정은 도트 화소 해시에 묶인다 | 원장 `machine` · `judge` |
 | `sheet` | 캡처 옆에 후보 1배·3배·**전투 무대 미리보기**(640×480 cover + 배틀러 자리 상자 + 바닥 띠 점선)·검사표·팔레트(덧색 노란 테두리)·프롬프트·원본 | `~/claude-viz/battle-backdrop-<이름>.html` → `http://mdc-server:18301/…` |
-| `pick` | **사람이** 고른 후보를 현재 도트·저장본 화소 해시에 묶는다. `--by` 필수. 감독·에이전트는 고르지 않는다 | 원장 `pick` |
+| `review` | **Claude Opus 검수**(2026-11-04 오너 「이제 사람이 고르지 않아. AI 가 해야함」). 맵 캡처 + 기계 검사를 통과한 미검수 후보 + 숨긴 디코이 3장(위아래 뒤집은 후보·맵 캡처 그대로·다른 장소 번들 배경)을 무작위 두 자리 번호로만 보여 주고 번호마다 `pass/reject`·1~5점(0.5 단위)·이유를 받는다. 통과 = pass 이면서 3.5 이상. 묶음은 모든 번호에 답하고 디코이를 모두 떨어뜨렸을 때만 효력이 있다. 판정은 도트 화소 해시에 묶이고 같은 화소는 다시 묻지 않는다. 모델은 Opus 만(요청·응답 둘 다 확인) | 원장 `reviews[]` · 원본 응답 `harness-data/battle-backdrop/reviews/<묶음>.json` |
+| `pick` | `--best`: 효력 있는 Opus 통과 후보 중 최고점(같으면 글자 순)을 현재 도트·저장본 화소 해시에 묶는다. `--by` 에 근거(오너 원문·날짜)를 적는다. 글자를 직접 주는 선택도 남아 있지만 오너 결정 뒤로는 `--best` 를 쓴다 | 원장 `pick` (+ score·batch) |
 | `build` | 고른 그림이 해시와 같을 때만 `kind:"backdrop"` 자원(`battle_backdrop_<판>_<해시8>`)으로 넣고 트룹 `previewBackgroundResourceId` 또는 맵 `battleBackground` 에 건다. SQLite 프로젝트 폴더는 `openLocalProjectStore` 로 저장 → 다시 열어 확인. JSON 은 `--out` 새 파일(또는 `--in-place`) | 원장 `builds[]` |
 | `build --emit <폴더>` | 프로젝트 없이 `<자원id>.json`(`{ resource, target, run, pixelSha256 }` — `resource` 는 그대로 `upsert_resource` 인자) + `<자원id>.png` 를 쓴다. 코드로 프로젝트를 짓는 빌더(플래그십 데모)가 커밋해 두고 `execTool("upsert_resource", { resource })` → 트룹 `previewBackgroundResourceId`/맵 `battleBackground` 에 id 를 건다. 필드 모드 끄기는 `set_project_settings { battle: { backdrop: "default" } }` | 원장 `builds[]`(into = json) |
 | `status` | 판별 후보·검사·선택·설치 | |
@@ -23,7 +24,8 @@ npm run harness -- battle-backdrop capture --project <project.json|프로젝트 
 npm run harness -- battle-backdrop produce <판> --n 4          # 1분 넘으면 flock /tmp/fs2/short.lock 안에서
 npm run harness -- battle-backdrop check <판> [--judge claude:sonnet|agy:gemini-3.8-flash|none]
 npm run harness -- battle-backdrop sheet <판> [<판>…] --name <이름>
-npm run harness -- battle-backdrop pick <판> <글자> --by <사람>
+npm run harness -- battle-backdrop review <판>                  # Opus 검수(숨긴 디코이). 효력 없는 묶음이면 종료 코드 1
+npm run harness -- battle-backdrop pick <판> --best --by 'opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)'
 npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target troop:<id>|map:<id>] [--out new.json]
 npm run harness -- battle-backdrop build <판> --emit <폴더> [--target troop:<id>|map:<id>]   # 코드 빌더용 자원 파일
 ```
@@ -65,7 +67,7 @@ npm run harness -- battle-backdrop build <판> --emit <폴더> [--target troop:<
 
 - 생성기가 참고 그림을 얼마나 따르는지는 판마다 다르다. 시트에서 캡처와 나란히 보고 판단한다(시범 판 결과는 아래).
 - 이벤트로 놓인 가구(캐릭터 칩 그래픽)는 캡처에서 빠진다(인물을 빼려고 이벤트를 통째로 뺀다).
-- 3/4 관문(object-gate)은 기물·타일용이라 전투 배경에는 걸지 않는다. 대신 사람 선택이 필수다.
+- 3/4 관문(object-gate)은 기물·타일용이라 전투 배경에는 걸지 않는다(스토어 출구 `scripts/store/agentStore.mts` 의 `GATED_KINDS` 도 chipset·tileset 만). 대신 Opus 검수(`review`)를 통과해야 한다. 2026-11-04 전에는 사람 선택이 필수였다.
 
 ## 시범 판 (마왕 편의점, 2026-10-30)
 

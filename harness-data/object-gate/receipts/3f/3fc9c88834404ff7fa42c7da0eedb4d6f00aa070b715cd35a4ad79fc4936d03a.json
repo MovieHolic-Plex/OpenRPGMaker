@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fc9c88834404ff7fa42c7da0eedb4d6f00aa070b715cd35a4ad79fc4936d03a",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "brazier iron",
+ "label": "beodeul_city/wave-places/mountain-fortress/brazier_iron",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame (fire above the bowl)",
+      "rows": "4-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim (red band)",
+      "rows": "18-18",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl body (dark front face)",
+      "rows": "19-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin pole / arm",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bowl is rows 17-21. Its width goes 12, 12, 12, 10, 8, so it only narrows downward and has no widening-then-narrowing ellipse. Row 18 is a single red rim line, and the dark front face sits directly below it at rows 19-21. The flame (rows 4-17) sits directly on that rim and is treated as decor. No bowl mouth or interior is drawn, so the top surface is 1 row at most. The thin pole at rows 22-30 is a vertical strip with no top. The object reads as a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop: an iron bowl on legs with a multi-tone flame. Its 15 distinct colours match the bench (14) and lamp-crook (14), which are the closest sparse references. Per-tile tone counts are 0 for the candidate, the bench and the lamp, so I judged density by eye. Measured near-flat coverage is 0% and there are no large single-colour areas. Dark edge pixels are 0% near-neutral, so the outline is tinted (dark iron-blue/brown beside the metal and flame), not a black sticker line. The bowl shows about 4 steps (highlight rim, mid, dark, deep) and the flame about 3-4 warm tones, a little below the 5-6 steps of the richer references (well, stall). That is expected for such a small object, and it is not thinner or flatter than the bench or lamp it sits beside. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19992
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "4-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim (red band)",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl underside and stem",
+      "rows": "19-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The flame (rows 8-18, widths 3 to 12) is the contents and counts as decor. Under it is a 1-2 row red rim at rows 18-19 (width 12). Below that is a dark bowl front (rows 19-21, width narrowing 12, 10, 8) and a thin 3px stem (rows 22-30). The width profile has no ellipse: the widest rows are 17-19, the silhouette narrows only below them, and the width above the rim is flame. The bowl mouth is not seen from above, only a thin rim line, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The brazier is a small, sparse prop, under one tile wide, so the per-tile tone facts read 0 and I judged density by eye. It has 15 distinct colours, equal to the thin references (bench 14, lamp 14). Its dark edge pixels are 0% near-neutral, so the outline carries a tint rather than being a black sticker line. The iron bowl shows a rim, a darker body and highlight dots, and the flame uses several warm tones. Legs and coals are separated by value. Near-flat coverage is 0%. It is a little flatter than the richer references (well, stall), but a careful artist could place it next to the bench and lamp without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18617
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame and embers above the bowl",
+      "rows": "4-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth (glowing orange and red band at the rim)",
+      "rows": "17-19",
+      "evidence": "d",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "dark iron bowl underside",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stem or leg",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a shallow iron bowl on a thin stem. Its silhouette jumps from width 8 at rows 14-16 (flame) to 12 at rows 17-19 (bowl mouth), then narrows to 10, 8 and 3. Rows 17-19 show the glowing orange fill and a red front-edge line at row 18 with red shadow below, so the fire reads as contents inside the open bowl (d). Below that, the dark iron bowl (rows 20-21) and the stem (rows 22-30) form the front face. The mouth is only about 3 rows deep and is not a clean ellipse, so this is a borderline reading. The flame above is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop, smaller than one 16x16 tile, so the per-tile density fact is 0 and I judged by eye. It has 15 distinct colours, level with the similar thin refs (bench 14, lamp 14). The flame is built from several tones (red, orange, yellow) with spark pixels. The iron bowl and tripod legs show about 3-4 grey-blue steps with highlights, slightly fewer than Beodeul's 5-6. The dark edge pixels are 0% near-neutral, so the outline is tinted and follows the material rather than being a black sticker line. There are no large flat fills (0% near-flat coverage). It is a little simpler than the stall and well, but about as rich as the bench and lamp, so a careful artist could accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23389
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame rising from the bowl (contents)",
+      "rows": "8-17",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim, red-orange band at the widest rows",
+      "rows": "17-19",
+      "evidence": "d",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl underside and stem",
+      "rows": "19-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stray sparks",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bowl is a small shallow cup. The width profile grows from 8 to 12 across rows 17-19 and then narrows to 10, 8 and 3 across rows 20-22. That gives a short rim with a red band at rows 18-19. A flame fills the opening above it (rows 8-17), which counts as contents visible in an open container (d). The dark underside at rows 19-21 is about 3 rows of front face. Below that, a thin 3-wide stem or leg runs down to row 30. The rim is only about 2 rows deep, so the top surface is marginal, and it reads as three-quarter only because of the visible contents."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The brazier is a small, thin prop, about 10x20 source pixels, so it is smaller than one full tile and the per-tile tone counts read 0. I judged by eye against the thin references (lamp-crook, bench-wood). The candidate has 15 distinct colours, in line with their 14. The flame carries about 3-4 tones (red, orange, yellow, light core) with a flicker silhouette. The iron bowl and legs show a dark-to-light ramp with a rim highlight. The measured near-neutral share of dark edge pixels is 0%, so the outline is tinted, a dark version of the iron and flame tones rather than a black sticker line. There are no flat 5x5 fills (0% near-flat). Texture is modest because the object is tiny, with little grain on the bowl. It sits slightly below the richest references (well, stall) but is comparable to the lamp and bench of the same thin, sparse kind. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18610
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.823Z",
+ "cells": {
+  "16": [
+   "39fa72a6e38a1309",
+   "45034f93e252ee19"
+  ],
+  "24": [
+   "0006283810945f0b",
+   "03a81c8450b4d9fc",
+   "0e384b8602684ad4",
+   "543b764ebfc0d8e1",
+   "5e11e5cca25b1943",
+   "863ad31ca01076b9",
+   "89e113730aee3361",
+   "8e95befba0e7de71",
+   "ab8425faf3de33a2",
+   "b344a0a24434c89f",
+   "f10ac6bdf84c1676",
+   "f293a39dcc4d67be"
+  ],
+  "32": [
+   "628891439487ae6e",
+   "6797999d01c84058",
+   "a7b6bf4c17154199"
+  ],
+  "48": [
+   "b5b2d06a0ac03803",
+   "c1aeda10fcb1f2d7",
+   "d19f1333a697f4d3",
+   "ed2382c7f76d8938",
+   "f18244fc3e318d45",
+   "ffb502267b174e8e"
+  ]
+ }
+}

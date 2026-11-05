@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e28bfc18d289ed368f981240ffb2d5f01b87f4f659f09602dcaefb7fee60eee",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "serac",
+ "label": "beodeul_city/wave-places/ice-age-field/serac",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 19,
+  "darkV5": 59,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice spire (main serac body)",
+      "rows": "3-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow base mound",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The serac is a tall jagged ice spire that tapers from a point at row 3 to a wide base. The width profile grows steadily from 2 to 24 with no widening-then-narrowing ellipse. The light and dark facets are vertical or diagonal faces of the ice, with no front-edge line followed by eave shadow. The snow base at rows 41-46 is a white mound 28 px wide, drawn as a front-facing strip with only a slight rounded edge, so it shows no clear top surface. The drawing reads as a front elevation of a pointed shape without a horizontal top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The serac is a small ice spire on a snow mound. Its facets are shaded in about 5 blue steps: pale highlight, light blue, mid blue, dark blue and deep navy edge. The snow base adds a few more grey-blue and white steps. The outline is a dark blue lean of the adjacent ice, not neutral black, which matches the measured 0% near-neutral dark edge pixels. There are no large flat areas (0% near-flat coverage). Visible tones per tile are 17, well above tree-1a786c (7) and below tree-d43edd (29), so the piece sits between the two references. The texture is carried by facet shading and highlight streaks rather than fine grain, so it is less dense than the richer reference. It is still not sticker-like next to the simpler reference, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12967
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice spire (main tapering body, faceted)",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow base mound",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The serac is a tall pointed ice spire drawn as a faceted triangular silhouette, widening from 2 px at row 3 to 24 px at row 41, with a snow base at rows 42-47. The spire has no horizontal top surface: it ends in a point, with no ellipse and no band with a front-edge line or eave shadow. The facets are vertical or sloping faces, and the dark lines at rows 14-26 are crack lines, not edge lines. The snow base (rows 42-46, width 28) is a flat mound with no distinct top and front. For a natural organic shape like this, the front face is the whole spire, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small ice spire on a snow mound. Its measured facts are at or above the references on the primary measures: 17 visible tones per tile against 7 for tree-1a786c (29 for tree-d43edd), 0% near-flat coverage, and 0% neutral dark edge pixels. The outline leans deep blue, matching the ice next to it, rather than a neutral black sticker line. The ice has about 5 lightness steps across the shards, from pale highlight facets through mid blues to dark blue shadow edges. The snow base is shaded in several steps with a darker underside. Facet shapes vary and are separated by value, with no large flat fills. It is simpler than the big canopy tree, but it is not thinner or flatter than the smaller reference, so a careful artist would accept it next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12876
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice spire body (tall pointed serac)",
+      "rows": "3-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow base mound",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The serac is a pointed ice spire whose silhouette narrows steadily from row 3 (width 2) to row 41 (width 24). It has no horizontal top surface: no front-edge line with eave shadow, no ellipse, and no contents. The apex tapers to a point, and the facets (rows 6-40) are vertical or sloped faces drawn face-on. The snow base at rows 41-47 is a flat white mound, widening to 28 and then narrowing again, but it only reads as a base and not as the top of the main body. The main body therefore shows a front face and no top surface, which reads as a front elevation. An organic rock or crystal form can legitimately be pointed, but this drawing still shows no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an ice spire on a snow base, compared against tree references because of its assigned kind. Its faceted blue ice has about 5 lightness steps, from a white highlight through light and mid blue to a deep navy shadow. The edges lean dark blue rather than neutral black, matching the 0% near-neutral edge share. Facets, a crack and highlight pixels give some texture, and the snow base is small and lightly varied. The measured 0% near-flat coverage confirms there are no large flat fills. At 17 visible tones per tile it is well above tree-1a786c (7) and below tree-d43edd (29), so it is not thinner than the simpler reference. The main weakness is that the ice faces are cleaner and less grainy than the leaf clumps in the richer reference. The piece is small and simple, but a careful artist would accept it beside the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14498
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ice spire, main faceted body",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "secondary right ice spike",
+      "rows": "18-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow base pad",
+      "rows": "42-47",
+      "evidence": "b",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The serac is a tall pointed ice spire. Its width grows steadily from 2px at row 3 to 24px at row 41, so it has no widen-then-narrow ellipse and no flat top. The faces are vertical facets in blue and white, with dark crack lines at rows 14-17, 23-26 and 31-34. These are front-facing facets with no edge line or eave shadow. A second shorter spike on the right (rows 18-41) also ends in a point. The only horizontal surface is the white snow pad at rows 42-47. It is a ground base under the ice rather than a top of the main body, so the main body has no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The serac is an ice spire on a snow mound. It is drawn with several facet planes, from pale highlight through mid blue to a deep blue shadow, giving about 5 lightness steps on the ice. Its outline is a dark blue lean of the ice, not neutral black, which fits the 0% near-neutral edge share. It has 17 visible tones per tile, well above tree-1a786c (7) and below the rich tree-d43edd (29). Near-flat coverage is 0%, so no large flat fills. The facets carry some highlight and edge variation, but they have less grain and clustering than the leafy canopy of tree-d43edd, and the snow base is simple. This is a little lighter on texture than the best reference, but it is not a sticker-like or shallow piece, so it passes at roughly the level of the weaker reference or better.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17913
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.775Z",
+ "cells": {
+  "16": [
+   "4aeb58f807dc17d0",
+   "627f9dd70bfa6ec5",
+   "7db2bd145dcd3fc2",
+   "92194469e496dffa",
+   "d8a1abf4388ff795",
+   "de7311e29aae29ae"
+  ],
+  "24": [
+   "110984ab47ded992",
+   "20461096ba6a3316",
+   "2860294415e0f002",
+   "3c533455e7693bd1",
+   "51e6b529356499dc",
+   "69aa3e7d3da96da9",
+   "97f69385ae3eb8a3",
+   "9b755953d6420246",
+   "a19273e77377150b",
+   "aa9a7512effc43b9",
+   "cd3baee5e3ace1ce"
+  ],
+  "32": [
+   "26fba3d494943913",
+   "27c55393e6f87955",
+   "a9c3c22e1edb38a5",
+   "aadf9744d330bc68"
+  ],
+  "48": [
+   "1bd88669a788d9f1",
+   "23d02c42768fc0a2",
+   "2ae349e7f55d88c6"
+  ]
+ }
+}

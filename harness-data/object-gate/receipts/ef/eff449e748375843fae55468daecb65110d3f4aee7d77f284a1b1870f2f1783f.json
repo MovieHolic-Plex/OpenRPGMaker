@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eff449e748375843fae55468daecb65110d3f4aee7d77f284a1b1870f2f1783f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "waymarker",
+ "label": "beodeul_city/wave-places/mountain-fortress/waymarker",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 36,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cap band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with carved panels",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 10,
+     "shaft_width": 8,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The cap is rows 1-3 at width 10, a flat rectangular band that overhangs the shaft by 1 px per side. The silhouette goes 10,10,10 then 8, with no narrowing above the widest rows, so it is not an ellipse. Row 1 is mid-grey, row 2 is a bright highlight (L=238), and row 3 is a dark edge line (L=80). That makes at most a 2-row top strip, which matches the flat-band-cap column reference marked wrong. The shaft (rows 4-29, width 8) is a flat front face with carved panels, a lighter left side and a darker right side. It has no receding side face and no top surface. The base at rows 27-29 is a dark shadow band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow grey stone marker pillar. It is under one tile wide, so the per-tile tone count is 0 and I judged density by eye against the references. It has a light face, a mid grey side and a few dark inset panels, which I read as about 4 lightness steps against the 5-6 on the well and stall. Its dark edge pixels are 100% near-neutral, so the outline is a uniform neutral dark line with no tint toward the adjacent material. The thin lamp-crook reference also scores 100%, but that is a black iron pole. The well (33%), stall (1%) and hedge (0%) use tinted outlines. The candidate's 35 distinct colours suggest some variation, but the surface looks smooth, with little stone grain, chips or per-block shading. Next to the well and stall it looks thinner and more sticker-like, with its near-black outline and shallow ramp.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15567
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cap plate",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with carved segments",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 10,
+     "shaft_width": 8,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "Rows 1-3 form a flat rectangular cap band 10 px wide, overhanging the 8 px shaft by 1 px per side. The width profile is constant at 10 for rows 1-3 and then drops straight to 8, so it never widens and narrows again, and there is no ellipse. Row 2 is a bright highlight and row 3 is a dark edge line (L=80). That makes about 2 rows of top plus an edge, like a thin rim or band, and it matches the 'column: flat band cap' wrong reference. The shaft in rows 4-29 is a vertical front face (26 rows) with carved panel segments and a dark right-hand shade strip. It has no further top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin grey pillar with small sign panels. It has about 3-4 lightness steps, against 5-6 on the stall and well references. The measured near-neutral share of dark edge pixels is 100%, so the outline is a neutral dark line around the whole shape. That is the 'sticker' look, unlike the tinted dark-material outlines on the hedge (0%), stall (1%) and well (33%). The only reference at 100% is the iron lamp, where a neutral dark tone suits the material. The per-tile facts read 0 because the piece is smaller than one tile, so I judged by eye: it looks thinner and flatter than the well and stall, with little grain or per-block highlighting. The 5x5 flat-fill figure is 0%, so there are no large flat areas. Overall it is a clean but shallow prop that a careful artist would not accept beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15358
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cap plate",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with carved segments",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 10,
+     "shaft_width": 8,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The cap is rows 1-3 and is a rectangular band 10 px wide on every row (width profile 1-3:10, then 4-29:8). It has no widening and narrowing, so it is not an ellipse. Row 2 is very light and row 3 is a dark line (L=80), which makes it a thin 2-row rim with a dark lower edge, like the 'column: flat band cap' reference. The shaft (rows 4-29, 8 px wide) is drawn as a vertical face with carved panels and a darker right strip. No horizontal top surface and no isometric side face are visible. The cap overhangs the shaft by 1 px per side, but it is a flat band rather than an elliptical plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The waymarker is a thin grey stone post with a cap and a small sign panel. It has about 3-4 lightness steps on the stone, against 5-6 on the well and stall references. The outline is a fairly uniform dark line around the whole silhouette, and the measured 100% near-neutral dark edge pixels back that up. The only reference with the same 100% figure is the thin lamp, which has a neutral dark pole. The well, hedge and stall use tinted dark edges (0-33% neutral). The stone's own shading is neutral grey, so some of this is the palette. Even so, the dark line reads as a 'sticker' border rather than a darker tone of the stone, and the stone has little per-block grain or chipping. The tile-density facts are 0 because the piece is thin, so I judged by eye. It looks slightly thinner and flatter than the well and stall references. The 35 distinct colours show some variation, and there are no large flat fills. Overall it is a clean but shallow piece, and given the near-black outline and fewer steps I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15478
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cap plate",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with carved panels and stacked blocks",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 10,
+     "shaft_width": 8,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The cap is a flat 3-row band at rows 1-3. Its width is a constant 10 for all three rows, with no narrower rows above, so it is not an ellipse. Row 1 is the outline, row 2 is a light highlight (L=238) and row 3 is a dark edge line (L=80). That leaves roughly 1-2 rows of real top surface, which is a thin rim that overhangs the 8-wide shaft by 1 px per side. This matches the 'column: flat band cap' red reference. Rows 4-29 are a tall vertical front face (26 rows) of stacked panels, with a right-side shade column (x=10, L about 110) that reads as shading on the same south face rather than a receding side face. The stacked blocks at rows 6, 13 and 20 are drawn only as front faces with dark joint lines and no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin grey stone post with a small panel at the top. It has about 4 grey steps (light left edge, mid face, darker right side, deep outline). The references show 5-6 steps per material. The tall shaft is mostly smooth grey with little grain, chipping or per-stone shading. The sparse-object rule means the 0 visible tones per tile is not held against it. The 35 total colours are more than the bench or lamp, but they look spent on the panel rather than on texture. The dark edge pixels are 100% near-neutral, so by the tint rule the outline reads as a uniform near-black line rather than a tinted dark stone tone. That matches the lamp-crook reference numerically, but the lamp is thin metal. Next to the richer references (well, stall, hedge, which are 0-33% neutral) the candidate looks more sticker-like and flatter. Because of this doubt over the outline and the shallower shading, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 22262
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.019Z",
+ "cells": {
+  "16": [
+   "00e8349acbc1244d",
+   "ae1c7ebab5394dc5"
+  ],
+  "24": [
+   "095834f962d5baf1",
+   "0e0ad6c29831713a",
+   "15137fdc5bbfdc34",
+   "347e4653b651a54e",
+   "56e3b443a8b12d88",
+   "6176e198b010be67",
+   "87c1334911d6654b",
+   "9fb8e5fc169f866e",
+   "ae3ff690a64eb9e4",
+   "e38e5e697ee9215d",
+   "e8f07863e132ee07",
+   "fe3ea9f30f734310"
+  ],
+  "32": [
+   "201c2971968693a1",
+   "74ad65cd1b55149b",
+   "7f8536e11889e4bd"
+  ],
+  "48": [
+   "25f708b70c742497",
+   "6fe7a1ddcb38225b",
+   "76815194c115229f",
+   "7f051451f48e4732",
+   "bb56ed266a3f4133",
+   "c8f2360c2b659148"
+  ]
+ }
+}

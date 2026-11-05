@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2cb638739720d6c062fed624fb1932a651e3b490c5e9975f05dc97e207bff5f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "sulfur vent",
+ "label": "beodeul_city/wave-places/volcano-field/sulfur_vent",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 22,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam wisps",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vent mound ring with dark hole (ellipse mouth)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The width profile (rows 6-13: 8,12,14,14,14,14,12,8) is a single ellipse. It is a yellow rim around a dark opening in rows 7-10. The only front thickness is the lower lip in rows 11-13: a bright lip in rows 11-12 and a dark outline in row 13, about 2 rows. That is under 3 rows of vertical face, so the object reads as a flat top-down ring or mound with almost no front face. The 1-pixel wisps in rows 1-5 are steam, which counts as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny yellow ring around a dark hole, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. The outline is tinted (0% neutral dark edge pixels), which matches the references. But the ring has only about 4 steps: a light rim, a mid yellow, a dark olive and the dark hole. It has no grain, clumps, speckle or per-element shading, and only 13 colours in total. The references show 7 and 29 visible tones per tile, with layered leaf clumps and shaded trunk detail. Set next to them it looks thin and flat, like a sticker, with no mineral crust, residue or vapour texture to give it depth. Sparseness alone would not fail it, but the shading is too shallow for a careful artist to accept beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16799
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "smoke wisp",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur crust ring with dark vent mouth",
+      "rows": "6-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The body is a yellow crust ring with a dark hole, rows 6-13. Its width profile (8, 12, 14, 14, 14, 14, 12, 8) widens and then narrows again, so it is an ellipse, and the dark mouth fills most of rows 7-10. Below the mouth there is only a thin front lip: row 12 is lighter yellow and row 13 is the dark outline. That gives about 2 rows of front face, which is under the 3-row minimum, so the whole object reads as a flat ring on the ground. The 1-px smoke wisp at rows 1-5 is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny ground prop of about 12x8 source pixels: a dark ring around a yellow-rimmed hole. It is not a tree or canopy, so the references are only loosely comparable. It has 13 distinct colours, and the measured tones per tile are 0 because it is smaller than one tile. The facts give no density evidence against it, so I judged by eye. The ring has about 3 lightness steps (dark rim, yellow highlight, dark centre) against the references' 6-7 steps with clumped leaf shading. It shows no visible grain, speckle, crust or per-clump variation, so it looks flat and sticker-like beside the richly textured references. The outline pixels are not neutral (0% near-neutral), so they lean toward a material tone and are not a pure black line. The shading is still too shallow and the texture too sparse for a careful artist to accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18506
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam wisps",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vent mound ring with dark hole (ellipse)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The body spans rows 6-13. Its width profile is 8, 12, 14, 14, 14, 14, 12, 8, so it widens and narrows again as an ellipse. A dark opening at rows 7-10 is the vent mouth, with a yellow rim around it. Rows 1-5 are 1px steam wisps, which count as decor. Almost the whole body is the top-down ring. Only about 2 rows at the bottom (rows 12-13, the darker yellow and the dark outline) could be a front face. That is under 3 rows, so the shape reads as a flat top-down mound with no real front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny ground prop, about 12x8 source pixels, a yellow ring around a dark hole. It is not a tree, so the large canopy references are only a loose match for kind. It is smaller than one tile, so the per-tile facts read 0 and I judged by eye. The ring has about 3 tones (a light rim highlight, a mid yellow, a dark interior). It has no grain, no speckle and no crust or mineral clumps. The references show 7 and 29 visible tones per tile with multi-step leaf clumps in several greens, which is much richer shading and texture. The candidate's rim and hole edges are dark but not clearly tinted toward the sulfur material, so the outline reads as mixed. Even allowing for a sparse single-tile prop, a careful artist would not accept it next to the reference: it looks thin, flat and sticker-like, with only 13 distinct colours in total.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16302
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "steam wisps",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sulfur crust ring with dark vent hole (elliptical mound mouth)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The width profile for rows 6-13 is 8, 12, 14, 14, 14, 14, 12, 8, so it widens and narrows again as an ellipse. The dark hole sits in the middle (rows 7-10 at x=8) inside a yellow crust ring. The only front face is a 1-2 row darker lower rim, at rows 12-13 and x=11 rows 10-12, which is under the 3 rows needed. The steam wisps in rows 1-5 are 1 px wide and count as decor. The whole object is a flat top-down ring with almost no south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sulfur vent, a dark ring with a yellow mound, roughly 12x8 pixels and far smaller than one 16x16 tile. The references are full trees with canopies and trunks, so the kind comparison is weak and the per-tile facts (0 visible tones) can't be used. Judged by eye, the vent has only about 3 tones: a dark rim, a yellow body and a darker centre, with a thin highlight. There are no clumps, grain or per-pixel texture, while the references show 6-7 visible tones in layered leaf clumps and trunk grain, and one reaches about 29. The outline is a dark ring and does not clearly lean toward the adjacent material tint. Next to the references it looks thinner, flatter and more sticker-like, and it is not a tree/plant of the same kind or richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13307
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.216Z",
+ "cells": {
+  "16": [
+   "1f0e904c3d7c7edf"
+  ],
+  "24": [
+   "0b9a0a087231c38b",
+   "0e8182d4fa651461",
+   "1d77f0849223f2af",
+   "9dee44b1f49b29df",
+   "aedfff265d63c3cf",
+   "c2a94f6462c87caa"
+  ],
+  "32": [
+   "86b15cdc90754751",
+   "8c7469d96f69d325",
+   "8fd12ce9d76da5a3",
+   "a8a0f79f3867f233",
+   "f57d2355a7e5db67",
+   "fe41fd44ec8b5a33"
+  ],
+  "48": [
+   "0c23354b36e21027",
+   "38e58e35c4e52cec",
+   "7a6f9bfa8d54a932",
+   "a559715c2e38994b",
+   "a819d5266ce22e1c",
+   "f872f57475df2f60"
+  ]
+ }
+}
