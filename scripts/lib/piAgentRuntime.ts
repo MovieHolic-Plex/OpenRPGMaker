@@ -730,6 +730,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped);
   };
+  // 걷기 칩 생성 시작 수(실행당 상한 3 — 한 장 5~12분, 이름 붙은 주요 인물만).
+  const WALK_CHIP_RUN_BUDGET = 3;
+  let walkChipStarts = 0;
   const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
@@ -865,7 +868,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           recordCall({ toolCallId: id, name: tool.name, args: params, result: execution, visuals });
           if (!execution.ok) throw new Error(execution.summary);
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else if (tool.name === 'generate_walk_chip' && walkChipStarts >= WALK_CHIP_RUN_BUDGET) {
+          // 걷기 칩은 한 장에 5~12분·사용자 계정 한도를 쓴다 — 실행당 상한(이름 붙은 주요 인물만, 2026-11-05 ultrabrain AMEND).
+          const failure = { ok: false, summary: `이번 실행에서 걷기 칩을 이미 ${WALK_CHIP_RUN_BUDGET}명 만들기 시작했습니다(상한). 이 인물은 가장 가까운 번들 칩으로 두고 보고에 적으세요.` };
+          recordCall({ toolCallId: id, name: tool.name, args: params, result: failure });
+          throw new Error(failure.summary);
         } else if (tool.name === 'generate_walk_chip') {
+          walkChipStarts += 1;
           // 외형 만들기·잇기는 보통 쓰기로 하고, 걷기 칩 생성은 편집기의 공방 작업 줄에 세운다(render_request 'generate_walk_chip'). 작업은 수 분
           // 걸리고 편집기가 끝내면 외형 칩을 바꾼다 — 조수는 기다리지 않는다. 레지스트리 run 의 ui-required 만 남기면 아무도 작업을 세우지 않았다.
           result = await tool.execute(id, params, signal);

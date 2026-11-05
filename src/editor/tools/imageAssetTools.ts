@@ -64,7 +64,7 @@ const generateImageAsset: ToolDefinition = {
   name: IMAGE_ASSET_TOOL,
   description:
     "범용 그림 리소스를 이미지 모델로 만든다. kind에 따라 아이템 아이콘(picture), 타이틀(title), 맵·전투 배경(backdrop)을 만들며, "
-    + "성공하면 등록한 resourceId를 반환한다. 반환된 id를 upsert_item의 item.iconResourceId, set_title_screen, set_game_over 등에 연결한다. 몬스터 그림은 만들 수 없다 — 전투는 도트 측면이라 list_monster_resources 의 도트 몬스터 140종에서 고른다. "
+    + "성공하면 등록한 resourceId를 반환한다. 반환된 id를 upsert_item의 item.iconResourceId, set_title_screen, set_game_over 등에 연결한다. 몬스터 그림은 이 도구로 만들지 않는다 — 전투는 도트 측면이라 list_monster_resources 에서 맞는 도트 몬스터를 고르고, 맞는 게 없으면 author_enemy_pixel_sheet 로 그린다. 아이템·장비·스킬·상태 아이콘은 generate_item_icon. "
     + "kind=picture 에 pixel:true 를 주면 도트 아이콘·소품이다 — 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트 모델)이 32px 격자를 찍어 투명 PNG 로 만든다. 그림 안에 글자·로고·버튼·워터마크를 넣지 않는다.",
   mode: "read",
   parameters: IMAGE_ASSET_SCHEMA,
