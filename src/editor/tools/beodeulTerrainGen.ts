@@ -75,6 +75,22 @@ function applyGivenTerrain(rows: readonly string[], W: number, H: number, lv: Ui
     const c = y * W + x;
     if (ch === "~" || ch === "|") { water[c] = 1; if (ch === "|") falls += 1; } else if (ch === "o") water[c] = 2; else if (ch === "_") water[c] = 3; else lv[c] = Number(ch);
   }
+  // 도안 칸을 늘리면 휘는 물길이 계단꼴로 보이고 대각으로만 잇닿은 칸에서 끊겼다(r1 p1) — 대각으로만 닿는 물 두 칸 사이를 한 칸 채우고,
+  // 8이웃 중 5칸 이상이 물인 땅 칸을 물로 두 번 채워 모서리를 굴린다. 물을 깎지는 않는다(가는 물길이 끊는다).
+  for (let y = 0; y + 1 < H; y += 1) for (let x = 0; x + 1 < W; x += 1) {
+    const a = y * W + x, b = a + 1, c2 = a + W, d = c2 + 1;
+    if (water[a] && water[d] && !water[b] && !water[c2]) water[b] = water[a]!;
+    else if (water[b] && water[c2] && !water[a] && !water[d]) water[a] = water[b]!;
+  }
+  for (let pass = 0; pass < 2; pass += 1) {
+    const out = Uint8Array.from(water);
+    for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+      const c = y * W + x; if (water[c]) continue; const kinds = [0, 0, 0, 0];
+      for (const [dx, dy] of N8) kinds[water[(y + dy) * W + x + dx]!]! += 1;
+      if (kinds[1]! + kinds[2]! + kinds[3]! >= 5) out[c] = kinds[1]! >= kinds[2]! && kinds[1]! >= kinds[3]! ? 1 : kinds[2]! >= kinds[3]! ? 2 : 3;
+    }
+    water.set(out);
+  }
   const sea = water.reduce((n, v) => n + (v === 3 ? 1 : 0), 0);
   const { list } = components(W, H, (a, b) => water[a] === water[b], (c) => water[c]! > 0);
   for (const cs of list) {
