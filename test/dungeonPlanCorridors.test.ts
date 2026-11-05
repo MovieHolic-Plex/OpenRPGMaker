@@ -48,6 +48,20 @@ describe("author_dungeon keeps an image plan's ring", () => {
     expect((res.warnings ?? []).filter((w) => w.includes("빌더 통로로 이었다"))).toEqual([]);
   });
 
+  it("stretches a one-row neck across the wall-face shift and keeps an L corridor off a third room", () => {
+    const grid = (h: number) => Array.from({ length: h }, () => "_".repeat(30).split(""));
+    const put = (g: string[][], x0: number, y0: number, w: number, h: number, ch: string) => { for (let y = y0; y < y0 + h; y += 1) for (let x = x0; x < x0 + w; x += 1) g[y]![x] = ch; };
+    const neck = grid(16); put(neck, 2, 1, 24, 3, "."); put(neck, 10, 4, 2, 1, "="); put(neck, 2, 5, 24, 9, ".");
+    const ell = grid(24); put(ell, 1, 1, 10, 5, "."); put(ell, 4, 6, 2, 8, "="); put(ell, 4, 14, 18, 2, "="); put(ell, 20, 16, 2, 2, "="); put(ell, 16, 18, 12, 5, "."); put(ell, 14, 2, 12, 7, ".");
+    for (const g of [neck, ell]) {
+      const plan = dungeonPlanFromCells(parseCellMap({ cells: g.map((r) => r.join("")) }, "dungeon", 30, g.length)!);
+      const project = createBlankProject();
+      const res = runToolDefinition({ project }, AUTHOR_BEODEUL_DUNGEON_ALIAS, { mapId: project.startMapId!, type: "castle", seed: 3, populate: false, rooms: plan.rooms, links: plan.links });
+      expect(res.ok, res.summary).toBe(true);
+      expect((res.warnings ?? []).filter((w) => w.includes("빌더 통로로 이었다"))).toEqual([]);
+    }
+  });
+
   // r2 2026-11-05: links items typed ["array","object"] made Gemini answer 400 for every build turn (all tools, not just this one).
   it("keeps the links schema a single type Gemini accepts", () => {
     const links = (AUTHOR_BEODEUL_DUNGEON_ALIAS.parameters.properties as Record<string, { items?: { type?: unknown } }>).links!;

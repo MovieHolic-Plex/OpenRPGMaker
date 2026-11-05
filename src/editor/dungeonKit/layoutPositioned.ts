@@ -178,11 +178,11 @@ export function layoutPositioned(spec: DungeonSpec, inputs: readonly DungeonRoom
     // 그린 통로가 두 방에 실제로 닿고(방 바닥과 칸이 겹치거나 바로 옆) 서로 이어져 있을 때만 그대로 깔다 — 아니면 빌더 통로(줄 내림·얼기에 끊긴 통로로 방이 외따로 남았다).
     const cells = drawnCells ? drawnLinks(drawnCells, from, to) : null;
     if (drawnCells && !cells) notes.push(`고침: 도안에 그린 통로 ${from.id}-${to.id} 가 두 방에 닿지 않아 빌더 통로로 이었다.`);
-    // 방향은 통로 전체 상자에서(세로 통로의 한 줄 조각이 가로로 읽힌다 — ultrabrain AMEND 2)
+    // 방향은 조각 자기 모양에서, 네모 조각만 통로 전체 상자에서(L 통로의 꺾인 다리까지 한 방향으로 두면 문턱·벽 여백이 틀렸다 — AMEND2 2)
     const box = cells ? cells.reduce((m, r) => ({ x0: Math.min(m.x0, r.x), y0: Math.min(m.y0, r.y), x1: Math.max(m.x1, r.x + r.w), y1: Math.max(m.y1, r.y + r.h) }), { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity }) : null;
     const dirAll: DungeonDir = box && box.x1 - box.x0 > box.y1 - box.y0 ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N";
     const pieces = cells
-      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: dirAll, rect, ...(!tree ? { loop: true } : {}) }))
+      ? cells.map((rect): PlacedCorridor => ({ a: from.id, b: to.id, dir: rect.w === rect.h ? dirAll : rect.w > rect.h ? (to.x >= from.x ? "E" : "W") : to.y >= from.y ? "S" : "N", rect, ...(!tree ? { loop: true } : {}) }))
       : connect(from, to, !tree);
     corridors.push(...pieces);
     if (tree) { to.from = from.id; to.dir = pieces[0]!.dir; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyCellFixes, cellGridSize, dungeonPlanFromCells, parseCellMap, villageArgsFromCells } from "@/ai/imagePlanCells";
+import { applyCellFixes, cellGridSize, dungeonPlanFromCells, forestDesignFromCells, parseCellMap, villageArgsFromCells } from "@/ai/imagePlanCells";
 
 const ring = [
   "________________________",
@@ -65,6 +65,30 @@ describe("imagePlanCells", () => {
     expect(map.cells[0]).toBe("0".repeat(48));
     expect(map.cells[31]).toBe("0".repeat(48));
     expect((villageArgsFromCells(map).terrainMap as string[]).join("")).not.toContain("_");
+  });
+
+  it("does not smear landmark letters when padding short outdoor rows", () => {
+    const map = parseCellMap({ cells: Array.from({ length: 20 }, () => "00AAA" + "0".repeat(10)) }, "village", 48, 32)!;
+    expect(map.cells[0]!.slice(5)).toBe("0".repeat(43));
+    expect(map.cells[25]).not.toContain("A");
+  });
+
+  it("keeps explicit landmark ids even when an id-less one comes first", () => {
+    const map = parseCellMap({ cells: Array.from({ length: 12 }, () => "...." + "_".repeat(20)), landmarks: [{ id: "A", kind: "altar", x: 1, y: 1 }, { kind: "well", x: 2, y: 2 }, { id: "B", kind: "statue", x: 3, y: 3 }] }, "dungeon", 24, 12)!;
+    expect(map.landmarks.map((l) => `${l.id}:${l.kind}`).sort()).toEqual(["A:altar", "B:statue", "C:well"]);
+  });
+
+  it("reads a fork joined to the main path and its side", () => {
+    for (const [side, toward] of [[14, "right"], [6, "left"]] as const) {
+      const rows: string[] = [];
+      for (let y = 0; y < 20; y += 1) {
+        const r = "t".repeat(24).split(""); r[10] = "="; r[11] = "=";
+        if (y >= 4 && y <= 8) { r[side] = "="; r[side + 1] = "="; }
+        if (y === 9) for (let x = Math.min(side, 10); x <= Math.max(side + 1, 11); x += 1) r[x] = "=";
+        rows.push(r.join(""));
+      }
+      expect(forestDesignFromCells(parseCellMap({ cells: rows }, "forest", 24, 20)!).branches).toEqual([{ at: 0.58, toward, end: "clearing" }]);
+    }
   });
 
   it("gives a fix-pass landmark without an id the next free letter", () => {

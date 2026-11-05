@@ -2406,7 +2406,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } catch (error) {
       console.info(`imagePlan: follow check failed ${error instanceof Error ? error.message : String(error)}`);
     } finally {
-      if (!sentFix) setStatus("대기");
+      // 맞대는 사이 다른 턴이 시작됐거나 고침 턴을 보냈으면 그 턴의 상태를 덮지 않는다(AMEND2 6)
+      if (!sentFix && !turnBusy) setStatus("대기");
     }
   };
   const plainPiTurn = async (text: string, turnOptions?: {
