@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cca2fb4e3b706cebb3d9fae214aeed9462972261229d7205ffef40d48ffe4539",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "pave crack",
+ "label": "beodeul_city/wave-places/ruined-village/pave_crack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crack decal with grass tufts (flat ground mark)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat decal of dark crack lines (L=63) with light paving edges (L=205) and a few green grass pixels, spanning rows 3-10 and up to 9 px wide. The rows show no front-edge line, no eave shadow, no ellipse and no vertical face. Nothing stands up from the ground, so there is no front face (0 rows). It reads as a plate seen from directly above, which is what the flat kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sub-tile fragment, roughly 20x10 px at 2x, showing a thin crack mark on a flat dark background. It is not a 4x3 tile ground patch, so it does not match the reference kind. It has only 4 distinct colours, and the measured visible tones per full tile is 0 because it is smaller than one tile. The crack line is neutral grey/black, with 100% near-neutral dark edge pixels against 0% on the grass reference and 80% on the paving reference. The paving reference carries stone-by-stone shading, with about 7 visible tones, light bevel edges and speckled grain. The candidate has no stone shading, no grain and no tile variation, so it looks like a flat sticker. By eye it is far thinner and flatter than either reference. Sparseness alone would not fail it, but it also lacks the surface texture and multi-step shading that a careful artist would expect next to the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 9834
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pave crack decal (grey crack lines with a few green moss pixels)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin, irregular crack pattern in rows 3-10. It is drawn as dark and light line pairs, such as rows 6-7 and 9-10, plus a few green moss pixels at x=4 and x=10. It has no front face, no vertical wall, no eave and no ellipse. It lies flat on the ground like a floor decal and is seen straight from above, so it reads as a top-down slab, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, with only 4 distinct colours. It reads as a few thin crack strokes with no surrounding paving surface, so it does not form a 4x3 tile ground patch like the paving reference. Its dark edge pixels are 100% near-neutral, a grey/black line, where the paving reference has stone shading and grain across 7 visible tones. It shows about 2 tonal steps, against 5-6 in the references. The visible-tone and flat-coverage numbers are not usable for a piece this small, so I judged by eye. By eye it is clearly thinner and flatter than the paving reference, with no stone grain, no per-stone highlights and no material-tinted outline. A careful artist would not accept it beside the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10627
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cracked pavement decal (dark crack lines with light edge highlights and a little green grass)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat floor decal about 8 rows tall (rows 3-10) with irregular crack lines: dark rows (L=63) paired with light rows (L=205) at rows 6-7 and 9-10, plus a few green grass pixels at rows 3-6. It has no vertical front face, no eave, and no ellipse. That matches a flat ground decal seen from above, so it is a top-down slab, which is correct for the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny squiggle, well under one 16x16 tile, with only 4 distinct colours. It is meant to be a 4x3-tile ground patch, but it has no paving slabs, no stone grain and no tonal ramp. The paving reference shows about 7 visible tones per tile, with individually shaded slabs, speckled stone texture and tinted edges. The candidate has only about 2 lightness steps against the references' 5-6. 100% of its dark edge pixels are neutral, which is the sticker-like near-black line. The tile-density fact is 0 because the piece is smaller than a tile, so I judged density by eye: it is clearly thinner and flatter than either reference. A careful artist would not accept it beside the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10614
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pavement crack decal (grey crack lines with a light edge and green moss patches)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a thin, irregular decal spanning rows 3-10, with no vertical face. The columns show only 1-row dark and light line pairs (x=7 and x=10: dark #3e403d at rows 6 and 9, light #cccecb at rows 7 and 10, with a gap at row 8). These are crack strokes with a highlight edge, not a front-edge line and eave shadow. The green pixels at x=4 (rows 4-5) and the nearby cluster are moss. The width profile (1, 4, 9, 3, 8, 6) is jagged and has no ellipse. There is no front face of 3 or more rows, so this is a flat decal seen from above, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, much smaller than one 16x16 tile and far smaller than the 4x3 tile ground patch the kind calls for. It has only 4 distinct colours in total, and the stroke is a thin neutral dark line with a lighter highlight line beside it. Its dark edge pixels are 100% near-neutral, so the outline is near-black and untinted. The references show 3 visible tones (grass) and 7 (paving) per tile, with grain, speckle and per-stone shading. The candidate has no ground texture and no surface coverage. It reads as a small sticker-like glyph, not a paving patch. It cannot sit next to the paving reference as a ground surface, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11387
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.431Z",
+ "cells": {
+  "16": [
+   "e395d9a7b87e17de"
+  ],
+  "24": [
+   "0221fe36416ce764",
+   "241c8d285cde906b",
+   "7d31b5612b4285cd",
+   "9bf31502dfbff763",
+   "9c7e5791648923a2",
+   "e3f728dc76b4385b"
+  ],
+  "32": [
+   "08f84f62a7144705",
+   "14f608e034702104",
+   "349fc72a7d41dce3",
+   "8d66b0a0c4663fe0",
+   "b3b9861beaee0048",
+   "ef9515b515ff3c15"
+  ],
+  "48": [
+   "29b9b1f4adb0d728",
+   "6591ffb6c7dd3d60",
+   "a3d6b745edcb199f",
+   "aa67a4b25f5e4d05",
+   "bf127480439fa9bd",
+   "c95b4606ed02fc35"
+  ]
+ }
+}

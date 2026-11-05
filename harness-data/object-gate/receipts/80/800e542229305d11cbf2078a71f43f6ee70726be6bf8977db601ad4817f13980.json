@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "800e542229305d11cbf2078a71f43f6ee70726be6bf8977db601ad4817f13980",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "wall end e",
+ "label": "beodeul_city/wave-places/mountain-fortress/wall_end_e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 28,
+  "darkV5": 49,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (brown brick band)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "stone brick front face",
+      "rows": "10-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble rock pile at right end",
+      "rows": "0-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a brown, brick-patterned band across the full 64px width that reads as a wall top. A light front-edge line sits at row 10 (L=200 at x=16 and x=32). Row 11 is darker (L=111) and the dark notch marks in rows 11-14 read as eave shadow. Below that, rows 12-47 are a grey brick front face about 36 rows tall with mortar courses. The band is ambiguous: its staggered brick pattern could also be a front-facing cornice, but the edge line and shadow below it support a top surface. The rocky mass at the right is a rubble end, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a stone wall end segment (crenellated grey brick wall with a rubble pile), not a whole building with roof, walls and door/windows, so it does not match the reference kind. Measured: 14 visible tones per tile is above the references (12 and 10), and near-flat coverage of 3% is low, so tile density is not the problem. But 100% of its dark edge pixels are near-neutral, against 7% and 9% for the references. By eye, the dark outline around the blocks and the rubble is a neutral grey-black line, which gives the sticker look instead of a dark tone of the adjacent stone. The stone blocks have about 4 grey steps, shallower than the 5-6 on the roof tiles and stone in the references. The brick texture is present but the large block faces are fairly uniform. The outline is the deciding weakness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16122
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top coping (tan brick band)",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "stone block front face with crenel-like shadow notches",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble stone end on the right",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tan brick band at rows 1-9 differs in colour from the grey wall below. It ends in a light front-edge line at row 10 (x=16 L=200), followed by a darker shadow row 11 (L=111) and small dark notches at rows 11-14. That reads as a coping top surface about 9 rows tall. Below it, the grey stone front face runs from about row 12 to row 47 (36 rows), with mortar courses. The right end is a rounded rubble mass drawn as part of the south face, not as a receding side face. The brick pattern on the top band is drawn fairly face-on, so this reading is only moderately confident."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone wall end with a battlement top and a boulder cluster, not a whole building with roof, door and windows. The references are houses, so the kind match is loose and I judged on craft only. Numbers: 14 visible tones per tile against 12 and 10 for the references, and 3% near-flat coverage against 0%, so density by count is on par and flat fills are minor. The outline is the problem: 100% of dark edge pixels are neutral, against 7% and 9% for the references, whose outlines lean brown, red or purple. By eye, uniform dark grey lines box in every block and merlon, which is the sticker look. The references separate forms by value and use tinted dark tones instead. The stone blocks have only about 3-4 grey steps, and each block is mostly one flat tone with a light top edge. The references carry about 5-6 steps, per-tile highlights and speckle. The boulder cluster on the right is better shaded than the wall. Overall it is clean but shallower and more outlined than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20375
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of brick pattern",
+      "rows": "1-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "stone block front face",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble stone pile at the right end",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 1-9) is tan with a brick pattern and differs in colour from the grey face. It ends in a lighter 1-row front-edge line at row 10 (L=200 at x=16). Dark notch shadows follow at rows 11-14, which fits an eave shadow under the cap. Below that is a grey stone-block face from about row 12 to 47, which is more than 3 rows. The rubble pile on the right is a rounded mass with no clear top plane. It is part of the wall end, not a separate decor part. The band could also be read as a face-on cornice, so this reading is less certain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone wall end with a crenellated top and a rock cluster on the right. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. Measured facts are mixed: 14 visible tones per tile against 12 and 10 for the references, and 3% near-flat coverage against 0%, which is close. But 100% of its dark edge pixels are near-neutral, against 7% and 9% for the references, so the outline is a neutral black/grey line, not a dark tone of the adjacent material. That is the sticker look. The stone blocks have only about 3-4 grey steps each with little per-stone speckle, and the dark slits and edge lines are uniform. The boulder cluster on the right has better variation but still reads as outlined shapes. Overall it is shallower than the references in outline craft and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23229
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top cap (tan brick course band)",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "battlement-like notched stone course",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble boulder pile at the right end",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall has a tan brick-patterned band at rows 1-9. Its full width is 64 px, and it ends in a lighter front-edge line at row 10 (L=200 at x=16). Row 11 is a darker shadow row, narrowed to 46 px. Rows 12-14 hold notched stone blocks. Below that, the stone brick front face runs from row 16 to row 47 (about 36 rows counting from row 12). The band could instead be read as a front-facing cornice, but the edge line, the shadow row and the contrasting tan colour make a top surface the better reading. The rubble pile on the right is drawn as rounded boulders with no distinct top, and it is a minor part of the whole."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone wall end with battlements and a rubble pier, not a whole building with roof, walls and door/windows, so the reference kind does not match. On the measured facts it holds up: 14 visible tones per tile against 12 and 10 for the references, and 3% near-flat coverage against 0%. The dark edge pixels are 100% near-neutral against 7-9% for the references, which confirms the uniform near-black outline of the sticker look. The brick courses have only about 4 lightness steps, and the rubble on the right is lumpy with a dark outline, so the shading ramps are shallower than the roof and plaster ramps in the references. The stone blocks carry some speckle but are fairly uniform. The neutral outline and shallower ramps outweigh the tone count, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16407
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:20.006Z",
+ "cells": {
+  "16": [
+   "0b887ee22ee72398",
+   "14f42f96e5997b0b",
+   "1aef10c449108eaf",
+   "45b41daa677db843",
+   "727c7a05aeb0bddb",
+   "91559937c70ef8b1",
+   "a74c832bbf4377b1",
+   "dd75389ef6b53b90",
+   "e25d9a88a4172564",
+   "e6710bc773bd39e8",
+   "fcf92dc2739a3dac",
+   "fdf6d83b2f5b5370"
+  ],
+  "24": [
+   "1a4e9d65faccf62e",
+   "27652079e9d32f66",
+   "35bdc9fc05546405",
+   "64bdf3069bf9dfec",
+   "70160394968655a9",
+   "7a62f501ad2a1570",
+   "7ba1f2db8b439742",
+   "7e3f6b012ff8686f",
+   "848fb3e233674b72",
+   "907525e84a75a933",
+   "96e326604821c00a",
+   "aad185e33575bcb8",
+   "ada3abaac2247598",
+   "c01c97c434b439a8",
+   "cd29da6cab195d20",
+   "d168dcf70a1a0146",
+   "d594ce6872f19441",
+   "f4b603cfff975abd"
+  ],
+  "32": [
+   "0df153e01ad4f246",
+   "1d0b92b166be7980",
+   "2074b27a3851140e",
+   "4ca57eceda57872f",
+   "6f67a29f723ce739",
+   "a4b82324ad1165d5",
+   "b280c1fee3ea5726",
+   "d020c0e8781f6326"
+  ],
+  "48": [
+   "054980f78a117bc5",
+   "108723b1edfd3924",
+   "20c4de0d57bb117b",
+   "64bd1150a5035bb6",
+   "6e5fff23e60a7413",
+   "90e7e429fc7af34c"
+  ]
+ }
+}

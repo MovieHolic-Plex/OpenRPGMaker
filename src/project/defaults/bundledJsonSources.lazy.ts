@@ -21,6 +21,7 @@ import snowNorthTilesetUrl from "@/assets/snowNorthTileset.json?url";
 import desertEastTilesetUrl from "@/assets/desertEastTileset.json?url";
 import prehistoricTilesetUrl from "@/assets/prehistoricTileset.json?url";
 import skyIslandTilesetUrl from "@/assets/skyIslandTileset.json?url";
+import beodeulWavePlacesTilesetUrl from "@/assets/beodeulWavePlacesTileset.json?url";
 
 const URLS: Record<BundledJsonKey, string> = {
   jpCityTileset: jpCityTilesetUrl,
@@ -40,6 +41,7 @@ const URLS: Record<BundledJsonKey, string> = {
   desertEastTileset: desertEastTilesetUrl,
   prehistoricTileset: prehistoricTilesetUrl,
   skyIslandTileset: skyIslandTilesetUrl,
+  beodeulWavePlacesTileset: beodeulWavePlacesTilesetUrl,
 };
 
 export type { BundledJsonData, BundledJsonKey, BundledJsonReader };

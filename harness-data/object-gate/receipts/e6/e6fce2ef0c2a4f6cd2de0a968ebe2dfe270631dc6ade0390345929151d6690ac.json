@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6fce2ef0c2a4f6cd2de0a968ebe2dfe270631dc6ade0390345929151d6690ac",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "well dry",
+ "label": "beodeul_city/wave-places/ruined-village/well_dry",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 33,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening with dark empty interior and stone rim",
+      "rows": "25-34",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone well front wall",
+      "rows": "35-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame posts and crossbeam with rope",
+      "rows": "7-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts below the well",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body is 28 px wide. Rows 25-33 form a wide opening: the silhouette widens from 19 to 28 px, with a light back rim at row 25 and a dark interior with a lighter highlight and blue-black shade through row 33. Row 34 (L=52) is a dark front rim line, below which the grey stone front face runs rows 35-42, which is 8 rows. The inside of the opening is seen from above, so it counts as evidence (d), a top of about 10 rows. The thin wooden posts and slanted beam are structure, drawn as narrow vertical or diagonal strips, not large flat parts. The grass at rows 44-47 is separate decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dry stone well with a thin wooden post-and-beam frame and a rope. It is the same kind as the roofed-well reference. Measured facts: 14 visible tones per tile against 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%. Only 24% of dark edge pixels are neutral, so the outlines are mostly tinted. By eye, the stone ring is shaded stone by stone with a few lightness steps and a dark tinted interior. The wood frame has a grain highlight and shadow. It has no roof tiles, so it carries fewer material ramps and about 4 steps against the reference's 5-6. It is slightly leaner than the roofed well but not flat or sticker-like, and it sits acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16531
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well mouth with dark interior and stone rim",
+      "rows": "25-33",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face of the well",
+      "rows": "34-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame posts, slanted beam and rope",
+      "rows": "7-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body is 28 px wide. Rows 25-33 show the open mouth with a pale rim at the corners and a dark interior (L~20) seen from above. The width grows from 19 to 28 over rows 25-30, which gives the rounded back edge of the opening. Row 34 is a dark front-rim line (#2b3934), and rows 35-42 are the grey stone front face (9 rows). The frame posts and beam are thin and vertical, so they do not count as a missing major top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone-ringed well with a wooden frame and a dark empty shaft, the same kind as the roofed-well reference. It has 14 visible tones per tile against 20 for the roofed well, 17 for the cheese stall and 9 for the hedge, so it sits inside the reference range but slightly below the closest match. Near-flat coverage is 0%, so there are no flat fills. The stones are shaded individually with light and dark faces, and the wood frame has grain, though it has fewer ramp steps and less per-tile highlighting than the roofed well's tiles. Only 24% of the dark edge pixels are near-neutral, so the outlines mostly lean toward the adjacent stone or wood tone and are not a uniform black sticker line. The piece is a little simpler than the reference but would sit acceptably next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14787
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin opening with dark interior and stone rim",
+      "rows": "25-34",
+      "evidence": "b",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face of the well",
+      "rows": "35-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts, sweep beam and rope",
+      "rows": "7-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at the bottom edge",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basin has a light back rim at rows 25-26, then a dark empty interior at rows 27-33 (x=15 L=20, x=23 L=21). A 1-row front rim line at row 34 (#2b3934 at x=8 and x=15) follows, so the opening is seen from above. Below it the grey stone front face runs rows 35-42, which is 8 rows. The silhouette widens from 19 to 28 px over rows 25-30, which fits a rim seen in perspective. The wooden frame is made of thin poles and the rope hangs on the beam, so no horizontal top surface is expected for those parts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone well with a wooden crank frame and a dark empty shaft, so it matches the prop-well-roofed reference in kind. The measured facts are close to that reference: 14 visible tones per tile against 20, and 0% near-flat coverage, the same as the reference. Only 24% of its dark edge pixels are neutral, so the outlines mostly lean toward the adjacent material's tint (dark brown beside wood, dark blue-green beside stone) and are not a uniform black sticker line. The stones appear shaded in about 5 steps, with individual stone highlights and a dark shaft interior, and no large flat fills show. It is slightly leaner than the roofed well, which has a tiled roof ramp and more material variety, but it has one less material and is not shallow. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16912
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening (dark interior seen from above, stone rim)",
+      "rows": "25-34",
+      "evidence": "b",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone well body front face",
+      "rows": "35-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame posts and diagonal beam with rope",
+      "rows": "7-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well mouth spans rows 25-34. The silhouette widens from 19 px at row 25 to 28 px at row 30. The dark interior is drawn as an oval with light stone rim highlights at the top corners, and a dark front rim line at row 34 closes it. Below it the grey stone front face runs rows 35-42, about 8 rows. The empty dark interior counts as an opening seen from above (evidence b). The thin wooden posts and slanted beam are structure; they are narrow vertical elements, not a major mass lacking a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone-ring well with a wooden crank frame and rope, the same kind as prop-well-roofed. It has about 5 steps on the stone, with individually shaded stones and a dark interior, and about 3-4 on the wood. Only 24% of its dark edge pixels are near-neutral, so the outlines lean toward the adjacent material (dark brown beside wood, dark blue-green beside stone) rather than a black sticker line. Near-flat coverage is 0%, with no large single-colour areas. It carries 14 visible tones per tile against 20 for the roofed well and 17 for the cheese stall, so it is slightly lower but well above the 0-tone thin props and the hedge's 9. It is a little simpler than the roofed well because it has no tiled roof to add texture. It is still not flatter or more sticker-like than the references, so it is acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15965
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.530Z",
+ "cells": {
+  "16": [
+   "18ee26235f9a6d77",
+   "3334007bf67041b8",
+   "59bbe20fb3975723",
+   "9530aedace2e7e47",
+   "c3efdbfc99b46168",
+   "e3fff02cb643a1b9"
+  ],
+  "24": [
+   "002b3a1b742be826",
+   "05a0e80f3ee003cb",
+   "15cd679bf558fd6c",
+   "333134d03f61d9d8",
+   "3368fa63060bc5e7",
+   "604b71434bbae261",
+   "9637af537436d7c1",
+   "99e8487222cb9f4d",
+   "a53ec542dfe40fe3",
+   "a9ac5b73abe09d0b",
+   "f6d2fd0b3cdeb251",
+   "ff9c23b9e57e2d75"
+  ],
+  "32": [
+   "0316b3af26162916",
+   "8569fb6f6e4cf1c4",
+   "bf6040a4d9c43b77",
+   "d61a82e6de3b9dd8"
+  ],
+  "48": [
+   "38aa437c52dbd690",
+   "94d01c4790a5a3eb",
+   "dbe03fd114da3424"
+  ]
+ }
+}

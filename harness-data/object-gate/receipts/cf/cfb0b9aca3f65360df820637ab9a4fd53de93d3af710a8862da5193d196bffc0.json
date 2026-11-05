@@ -1,0 +1,289 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfb0b9aca3f65360df820637ab9a4fd53de93d3af710a8862da5193d196bffc0",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "dead bush",
+ "label": "beodeul_city/wave-places/ruined-village/dead_bush",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 27,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "twisted branch tangle (main body)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root/stem base with light tips",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead bush is a tangle of thin, dark brown branches spreading outward from a central stem, with an isolated light pixel at row 2 and a few pale tips at rows 14-15. The silhouette width grows from 4 at row 4 to 11 at row 9 and then narrows to 6-8 near the base. No band ends in a front-edge line, no ellipse, no roof or canopy plane, and no contents are visible. It is a front-facing branch silhouette with no horizontal top surface. It is an organic object, so the missing top is expected, but by the measurement it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The dead bush is a tiny prop, about 11x12 source pixels and smaller than one tile, so the per-tile facts read 0 and I judged it by eye. It has 14 distinct colours, more than tree-1a786c's 10 in total. It reads as a twiggy dark-brown clump with tan and orange-brown highlights, so I count roughly 5 lightness steps. The edge pixels are tinted brown, not neutral (0% near-neutral, matching the references), and there are no flat 5x5 areas. The branches are broken up by value rather than a uniform black line. It is much simpler than the large reference canopies, but for a small dead-plant prop it is not noticeably thinner or more sticker-like than the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12368
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead bush tangle of twigs and branches",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a sparse, irregular tangle of twigs and branches, widest at rows 9-10 (11 px), with a few light pixels at the bottom (rows 14-15) that look like roots or ground. There is no band ending in a front-edge line, no ellipse, no roof plane, and no contents in a container. The silhouette is an organic shape with no clear top surface and no clear south face. It does not match the rules for a box-like object, so 'other' fits better than three_quarter, front_elevation or top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny dead bush, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged by eye. It uses 14 distinct colours in roughly 12x12 source pixels, which is dense for a sprite this small. It shows about 4 brown and ochre steps: dark base, mid brown, lighter twig highlights and a few speckle dots. Its dark edge pixels are 0% neutral, so the outline leans brown and follows the material, not a black sticker line. Near-flat coverage is 0% and no area is a flat fill. It has less canopy mass and fewer steps than the references, but a dead bush is sparse by nature. I would accept it beside the references without it looking flatter or more sticker-like than a twiggy object should.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12683
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "twisted branches and twigs",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base tufts / roots at bottom",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The dead bush is an irregular, sparse cluster of dark brown branches with a few stray light pixels (rows 2-15, width 1-11). It has no flat band, no front-edge line, no ellipse and no eave shadow. It shows no horizontal surface and no distinct front face; it is an organic silhouette of branches, so the top-surface rules do not apply. Rows 14-15 hold pale tan tufts at the base. It reads as a plant sprite and not as a standing block with a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The dead bush is a very small, sparse object, under one 16x16 tile (about 10x12 source px), so the per-tile facts read 0 and I judged by eye. It uses 14 distinct colours in total, more than reference tree-1a786c at 10. The twig clumps show about 5 brown steps with lighter highlight dots on top and deep brown in the shadowed core. The dark edge pixels are 0% near-neutral, so the outline leans brown and follows the material rather than forming a black sticker line. There are no flat fills, since the piece is too small and broken up to hold a 5x5 block of one colour. It is thinner than the big canopy trees, but that comes from the subject (a dead bush) and not from shallow shading. A careful artist would accept it beside tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12779
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dead bush tangle of dark branches",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light stubs at base (roots/twigs)",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is an irregular, sparse cluster of dark branches with a width profile of 1-11 px across rows 2-15, with no lid, band, edge line, eave shadow or ellipse. It is organic and has no built structure, so no horizontal top surface applies. It is a branching silhouette, not a block with a south face, and does not fit a slab or a three-quarter volume. Rows 14-15 hold pale stubs at the base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny dead bush, much smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It uses 14 distinct colours in a very small silhouette. The branches look like 2-3 brown steps with a dark outline and a few lighter twig highlights. That is shallow next to the references, which carry about 5-6 steps per material plus clumped leaves and grain. The outline leans dark brown but is close to uniform around the shape, so it reads partly as sticker-like. There are no large flat fills, but the piece is sparse and thin. It looks flatter and less modelled than the references, so I cannot accept it next to them. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12039
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.339Z",
+ "cells": {
+  "16": [
+   "e6dd866af1bbfecb"
+  ],
+  "24": [
+   "527822ea850f50e2",
+   "70c40a869addfe56",
+   "c01bd17edf7f632e",
+   "dec4e8d4af20efae",
+   "e8d34e0768ea38f8",
+   "fc0990b8841a359e"
+  ],
+  "32": [
+   "1b89a1a1fb516b95",
+   "359728f29ddbcbdf",
+   "556d39c9a1498833",
+   "76cf5cf7d6be6aed",
+   "7d58303ede13e61a",
+   "d6cf2ad8429d8035"
+  ],
+  "48": [
+   "31dd71f33a88f74e",
+   "328b5bc4f4a8733e",
+   "32cd79b4bdbdb41f",
+   "8b52df0414e5e6b9",
+   "ad37fb8fc3b6a4dd",
+   "b34c544c3f999464"
+  ]
+ }
+}

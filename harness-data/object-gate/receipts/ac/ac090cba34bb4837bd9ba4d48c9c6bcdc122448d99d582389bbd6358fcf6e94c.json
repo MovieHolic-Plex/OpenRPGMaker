@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac090cba34bb4837bd9ba4d48c9c6bcdc122448d99d582389bbd6358fcf6e94c",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "gable ruin a",
+ "label": "beodeul_city/wave-places/ruined-village/gable_ruin_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 67,
+  "darkV5": 31,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gable roof (left and right slopes with tile rows)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "63-64"
+     },
+     {
+      "part": "gable wall triangle with round hole",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-framed front wall with door and window",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 56,
+    "front_face_rows": 33,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from row 6 to row 30, then stays at 64 px wide. This is a large sloped tiled roof plane (evidence c), with tile rows running from the ridge at row 6 down to the eave beam at rows 61-62. A dark eave shadow band follows at rows 63-64. The right roof slope is drawn as a receding plane beside the gable triangle. Below the eave is a front face of about 33 rows (rows 63-95): timber frame, plaster, window and door. The roof is a real top surface, not a rim, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a gable-front ruin in the same tile-roof and plaster style as house-h112_0-stone. The roof has scalloped tiles with per-tile highlights in about 5 steps, matching the references. The plaster gable and walls show speckle, with broken timber, a hole, a vine and grass tufts at the base. Measured facts support this: 19 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 5% neutral dark edge pixels, so the outlines are tinted brown/red-brown rather than black. No large flat fills. It is not thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11202
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled gable roof (left slope and right receding slope, with a broken hole at upper left)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "gable end triangle with round hole",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-framed front wall with window and door",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens row by row from the ridge at row 6 to full width at row 31. The tile rows with a central red ridge line (x≈35) form a large sloped roof plane. It ends at a brown eave beam around rows 61-63, followed by dark eave shadow at rows 64-65. Below it is a timber-framed front wall with a window, door and posts across rows 64-95, about 32 rows. The gable triangle under the roof is a vertical face, but the roof plane above it is clearly drawn, so the main body has both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a gable-front house like house-h112_0-stone. Its tile roof has scalloped tiles with per-tile highlights and about 5 lightness steps, matching the references. The plaster gable and walls are speckled, with timber framing. Damage details (a hole in the roof, a broken door, vines and grass tufts) add variation. Measured facts back this up: 19 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 5% near-neutral dark edge pixels, so the outlines are tinted dark brown/red-brown material tones rather than black. No large flat fills, and density is at or above the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14019
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof, right slope with ridge line",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "63-64"
+     },
+     {
+      "part": "tiled roof, left slope and dormer area",
+      "rows": "18-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gable triangle with round hole",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered front wall with window and door",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vine and grass",
+      "rows": "56-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 33,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large sloped tiled roof fills rows 6-62. Its tile stripes form the top surface (evidence c), the ridge is at x~35, and the edge line is at about row 62 with a dark eave shadow at rows 63-64. Below it, the half-timbered south wall (rows 63-95, about 33 rows) shows the door, window and timber frame. The cream gable triangle (rows 40-62) is a vertical face set into the roof. The right roof slope recedes as a side plane, so the roof reads as a real top surface rather than a front-facing strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined gable house with the same roof scallop pattern, plaster gable and timber framing as the references. The tile roof shows highlight, light, mid and dark steps with per-tile highlights, about 5 steps against the reference's 6. The plaster has speckle, and the broken door, window, vines, grass and soot hole add varied detail. Measured facts support this: 19 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 5% neutral dark edge pixels. The outlines therefore carry a tint, a dark brown or red-brown beside the neighbouring material, and are not near-black. No large flat fills. Overall it is at least as rich as the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21652
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof, left slope with ruin hole and right slope (tile rows)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "63-65"
+     },
+     {
+      "part": "gable triangle wall (vertical face)",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-framed front wall with door and window",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 32,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tiled roof planes run from the ridge at row 6 down to the eave beam at rows 62-63. The width grows steadily from 3 to 64 px over rows 6-31. The right slope is a receding plane with its own tile rows and a darker ridge line at x≈35. A beam at row 62 and the dark band at rows 64-65 act as the eave line and its shadow. Below that, a timber-framed front wall about 32 rows tall (rows 64-95) holds a door and a window. The roof is the top surface, the gable and wall are the front face, and the hole in the left roof is damage only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a gable-roofed ruin in the same structure as the h112 reference: scalloped tile roof, plaster gable with timber trim, and a wall below. The roof has per-tile highlights and about 5 lightness steps from highlight to deep, matching the references. The plaster is speckled. The ruin details add more variation than the references have: a broken roof hole, a dark gap, a leaning broken door, vines and grass tufts. Measured facts support this: 19 visible tones per tile against 12 and 10 for the references, near-flat coverage 1% against 0%, and only 5% neutral dark edge pixels. The outlines therefore lean brown or red-brown beside the materials rather than black. No large flat fills are visible. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13108
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.378Z",
+ "cells": {
+  "16": [
+   "0170c05f58a29a28",
+   "13ba7a1fcd482824",
+   "13ca4e20bee73fcd",
+   "19a5b53278b76deb",
+   "2839103c3ab50569",
+   "28a457218cf0324f",
+   "4d60665157942e76",
+   "5363c67aa6300455",
+   "53aca6bd2631f80b",
+   "64f7491e261c82c8",
+   "6d539eb49650c1f3",
+   "979729dea7688087",
+   "a0ddac1cf36bb47a",
+   "ac722341e1010e6c",
+   "b2e780729cf434d6",
+   "b8de4853d62e778b",
+   "bea986a0e8482ce9",
+   "c88cb45b39a7b7fb",
+   "caa0f9f1b6623181",
+   "cddb5331173916bc",
+   "e2ba54472addc37e",
+   "e70f21c01e2373dd"
+  ],
+  "24": [
+   "05439e77429eb624",
+   "0ed9b6254b8f5187",
+   "16961ea46931f758",
+   "17876654225f3376",
+   "1c166efe6d0263f9",
+   "1f5dec6a1a3f50a0",
+   "2609a17436c83f3e",
+   "4ae520ca6bfd8047",
+   "4ba11a0cb345af86",
+   "4c09c1f997bc33eb",
+   "4ec9e37e675a82e4",
+   "5122409769c8d502",
+   "588956fc87f5cf10",
+   "5b3f86b21416ec87",
+   "5d1532370f3adb58",
+   "62e555959baf168c",
+   "6630c9aad3ab6795",
+   "6c6eb3be2f77adbf",
+   "769cb899c2b920f6",
+   "7ef7b71d4941dba3",
+   "8603b8c72b8ff2e1",
+   "882829abfcefcb30",
+   "8b5fdcac66142861",
+   "a8a425319a1107de",
+   "aa1f8251cc472507",
+   "b0155ebc705ec1ca",
+   "b0d6cddbda3f7e63",
+   "b932dbb93c3952f4",
+   "ca64d16d76c645db",
+   "d1399194dca2f7e3",
+   "d162371a01c6468f",
+   "d24468a8191ccd37",
+   "d4fecb39e626617c",
+   "ef864de742dce0a1",
+   "f19be0a3c4687cca",
+   "fbf5e408f2bf2928"
+  ],
+  "32": [
+   "1c37b9ab05550060",
+   "2394c89c16c5fae0",
+   "cf3db723ead65b4d",
+   "d3b997128ce37fdb",
+   "f246f14b01295cf6",
+   "fa6d95d431ffd837"
+  ],
+  "48": [
+   "4937faa8bd04d449",
+   "5f86b69a5f0cbeb5",
+   "6d608e01788ee804",
+   "75e2ed1c68b93923",
+   "799f62b82626d006",
+   "7cb4c297199cec3d",
+   "92d0ed88ff58857b",
+   "9dc6cfe5ce379ca5",
+   "acd3590a530953e3",
+   "b000049d0f92b773",
+   "b21451e2e1fc6063",
+   "b71487a8f19ebc59"
+  ]
+ }
+}

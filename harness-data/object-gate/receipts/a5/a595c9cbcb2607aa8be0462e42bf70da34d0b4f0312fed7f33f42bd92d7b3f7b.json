@@ -1,0 +1,365 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a595c9cbcb2607aa8be0462e42bf70da34d0b4f0312fed7f33f42bd92d7b3f7b",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "beast skull",
+ "label": "beodeul_city/wave-places/volcano-field/beast_skull",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 37,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull body (cranium and snout, side profile)",
+      "rows": "15-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved horn or tusk rising at upper right",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teeth along the lower jaw",
+      "rows": "23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is drawn as a side-profile silhouette with the snout to the west. The width profile grows steadily from 4 at row 8 to 24 at rows 20-21, then narrows to 10 at row 26. There is no ellipse and no band ending in a front-edge line. The column scans at x=16 and x=22 show a 1-row outline, then a single flat body tone down to rows 24-25, then a dark shadow row. The skull is lit and shaded as a vertical side face (eye socket, nostril, teeth), with no horizontal top plane. The horn is also a plain profile curve. The shadow at rows 25-26 is a contact shadow, not an eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The skull is smaller than one tile, so the per-tile facts read 0 and I judged by eye. The bone has about 4 lightness steps (off-white, light grey, mid grey, dark grey) with a few crack and eye-socket dots. The references use about 5-6 steps per material, and the well and stall carry much more grain. 78% of the dark edge pixels are neutral, much higher than the bench (44%), hedge (0%), stall (1%) and well (33%). The skull is therefore ringed by a mostly colourless dark line, the 'sticker' look, instead of a darker tint of the bone or a value-only separation. It has no large flat fills and the form reads clearly, but the shading is shallower and the outline cruder than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14407
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull cranium and snout, side profile",
+      "rows": "15-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved horn or tusk rising at upper right",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teeth row along lower jaw",
+      "rows": "23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull faces west and is drawn as a side profile. The snout is at the left, with an eye socket, teeth and jaw. The width profile grows smoothly from 10 to 24 px over rows 15-21 and then shrinks to 10 px by row 26. That is a rounded silhouette, not a top plane that widens and narrows again. Column x=16 has a highlight on row 17 above a uniform bone-coloured face on rows 18-24. That is at most a 1-2 row rim or highlight, with no front-edge line followed by eave shadow. The horn on rows 8-15 is a thin vertical curve with no horizontal surface. The skull has no real top surface, only a side view, so it is not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The skull is a small, sparse prop, so the per-tile facts (0 tones, 0% flat) can't be held against it and I judged by eye. It reads as a whitish bone mass with about 4 lightness steps: highlight, light, mid, and a dark shadow in the eye sockets and under the jaw. The references use roughly 5-6 steps per material. The outline is a fairly uniform dark line around the whole silhouette. 78% of its dark edge pixels are near-neutral, against 0-1% on the hedge and cheese stall, and 33% on the well. That points to the 'sticker' outline rather than a darker tone of the adjacent bone. There is little per-bone shading, grain or cracking, and the horns and teeth are mostly flat blocks. It is clean and recognisable but looks thinner and flatter than the bench, well and stall references. With the neutral outline and fewer steps, it would sit slightly below the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15439
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horn/curved tusk rising at the back",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "skull cranium and snout body",
+      "rows": "15-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teeth and lower jaw",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is drawn as a side profile with the snout pointing west. The width profile grows steadily from row 15 (10 px) to row 21 (24 px) and then shrinks to row 26, so there is no ellipse. The column scans show no front-edge line or eave shadow. At x=16 the rows 18-24 are one uniform tone, with only a 1-row highlight at row 17. At x=22 there is a single dark row at 18 (the eye socket), and the rest is bone tone. The curved horn (rows 8-15) is a thin vertical profile with no horizontal surface. The teeth sit at rows 23-24 and the dark jaw underside at rows 25-26. So there is a side face of about 10 rows but no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The skull is a small prop, smaller than one tile, so the per-tile facts are 0 and I judged by eye. It has about 15 distinct colours in total, and the bone reads as roughly 3 steps: off-white, grey shade, dark socket and underside. That is shallower than the references, whose wood, roof and stone ramps use 5-6 steps. 78% of its dark edge pixels are near-neutral, so the outline leans neutral dark grey rather than a tint of the adjacent material. That matches the sticker look, unlike the hedge (0%) and cheese stall (1%), whose outlines are tinted. There is some bone grain and crack detail, and no large flat fills (0% near-flat). Next to the bench and lamp it is comparable, but the well and stall carry clearly more shading and texture. A careful artist would likely ask for a tinted outline and more ramp steps on the bone before accepting it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12885
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "skull cranium and snout (side profile)",
+      "rows": "15-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved horn or tusk rising at back",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teeth row along lower jaw",
+      "rows": "23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The skull is drawn as a west-facing side profile. The width profile grows steadily from row 15 (10 px) to row 21 (24 px), then narrows to row 26. It never widens and narrows again as an ellipse would. Column x=16 has only a 1-row highlight at row 17 above a uniform bone-coloured face (rows 18-24). Column x=10 shows the same: a light band of rows 17-22, a white tooth row at 23, then a dark underside. There is no front-edge line followed by eave shadow, so the top reads as at most a 1-2 row highlight. The eye socket (row 18-19), the teeth (rows 23-24) and the dark jaw underside (rows 25-26) are all side-view features. The horn at rows 8-15 is a vertical profile curve with no top surface. The drawing is a flat side silhouette with no horizontal top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The skull is a small, thin prop, so the per-tile facts are 0 and I judged it by eye. 78% of its dark edge pixels are near-neutral, against 44% on the bench and 0-1% on the hedge and stall. The outline is a uniform dark grey line around the whole bone shape, with no warm or tinted bone-shadow tone beside the pale bone. That is the sticker look, not the dark material tone Beodeul uses. The bone body reads as about 3 steps (pale fill, grey shade, dark socket and outline), with only a few crack and speckle dots. The bench, hedge, stall and well each show 4-6 or more graded steps and per-surface grain, so the skull looks flatter and more sticker-like beside them. It has no large flat fills, but the shading is shallow and the outline is neutral, so I cannot accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17406
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.072Z",
+ "cells": {
+  "16": [
+   "1acce48fa3235d33",
+   "8a1814371b942406",
+   "a341053a2da5ff5e",
+   "b22694c9c7a28f21"
+  ],
+  "24": [
+   "129667532e7f165f",
+   "1e5f61ce8eca6d6e",
+   "223f9165e4da03e2",
+   "2ece28f6d8d72f38",
+   "4986e83cdb097dca",
+   "620d21c24d0c3d82",
+   "8cfe4eb67ba6eba9",
+   "8ea10c2f72f09261",
+   "95c52cd883b5280e",
+   "af206924686bb58a",
+   "c618840735f1f2ec",
+   "ca341ec3304fa925",
+   "d7f3c86032e5153b",
+   "e3ea8da60cd6cef9",
+   "e888dd0b68c5ad97",
+   "ee41855a4e66d55f",
+   "fceaf0a04aca8080",
+   "fe5db1b8c0f36608"
+  ],
+  "32": [
+   "c3d28380f6aaac4f"
+  ],
+  "48": [
+   "1952cb6c19cc57cb",
+   "64cdea3a028c59b7",
+   "664c966d0e43a8f2",
+   "77e93a2dedccb03a",
+   "cff9cb9efb98d86f",
+   "dc9bd860e90b7372"
+  ]
+ }
+}

@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6aa7d427cf211370bd34db3b04370731340565f001b67437974205bc4bdeb49",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "drift small",
+ "label": "beodeul_city/wave-places/ice-age-field/drift_small",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 217,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow drift mound top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8px at row 3 to 26px at rows 6-9, then narrows to 22px at rows 10-11 and 14px at row 12, which gives a low mound. Rows 3-9 are near-white and light (L about 238-252) and form the upper surface. Row 10 (#cadaee) is a slightly darker transition line, like a front-edge line. Rows 11-12 are darker blue (L 144-185) and act as the shaded front face. That gives a top of about 7 rows over a front of about 3 rows. The front is thin, so the reading is borderline, but the structure matches a top surface with a front face and not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small flat cloud-like blob, not a tree with a canopy and trunk, so it does not match the reference kind. It uses only 5 distinct colours, with about 3 lightness steps (white, pale blue-grey, and a darker underside), against 6-7 visible tones per tile in the references. Its near-flat coverage is 20% against 0% for both references. The shapes show almost no texture, with no leaf clumps, grain or per-form shading. Its edges are tinted rather than neutral black (0% near-neutral), but the piece is too small and simple to show a selective material-tone outline. It is much thinner and flatter than either tree reference and would look like a sticker next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12314
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow drift mound top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low mound spanning rows 3-12 and growing from 8 to 26 px wide. Columns x=15 and x=21 show a light, almost white top band over rows 4-9. Row 10 is a slightly darker edge line (#cadaee at x=15, #a6bcdc at x=21), followed by darker blue shadow on rows 11-12 (L=185 and 144). That gives a top of about 6 rows and a shaded front face of about 3 rows, narrowing at the bottom (22, then 14 px). No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny pale cloud-like blob, not a tree. It has no trunk or canopy, so it does not match the reference kind. It is smaller than one 16x16 tile and uses only 5 distinct colours, with about 3 shading steps (white, light grey-blue, darker blue-grey). The references show 6+ steps, leaf clumps in many greens and a shaded trunk. The candidate has 20% near-flat coverage against 0% for both references. Its edge pixels are tinted rather than neutral black, but with so little structure that is not enough. It reads as a flat, sticker-like small shape with no leaf clumps, grain or trunk, so it is far shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11245
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow drift mound top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lit white mound occupies rows 3-9, and the silhouette widens from 8 to 26 px. At x=15 and x=21, a slightly darker line at row 10 (#cadaee/#a6bcdc) separates the top from a shaded bluish front face in rows 10-12, which is darker still at rows 11-12. That gives a top of about 7 rows over a front of about 3 rows. The front face is short, so the reading is borderline, but it is a top plus a front, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, cloud-like white/blue lump, not a tree, bush or plant with a canopy and trunk, so it does not match the reference kind. It uses only 5 distinct colours and shows about 3 shading steps. Near-flat coverage is 20%, while both references are at 0%. It is smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged by eye. By eye it is far thinner than the references (7 and 29 visible tones per tile). It has no clump texture, no trunk, and no dark material-tone outline separating forms. The dark edge pixels are not neutral (0%), but that does not offset the shallow shading and missing structure. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11309
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow drift top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "drift front face",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mound has a light top plane in rows 3-9. Columns x=15 and x=21 are uniformly #e6f0fa for rows 4-9. A slightly darker edge line sits at row 10 (#cadaee at x=8 and x=15, #a6bcdc at x=21). Below it, rows 11-12 are bluish shadow (#a6bcdc and #7a92c0), forming a 3-row front face. The width profile swells from 8 to 26 and then narrows to 22 and 14 at the bottom, which fits a rounded mound seen from above and the front. The front face is short and the top/face split is subtle, so this is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small flat white-and-blue cloud-like blob, not a tree, bush or plant with a canopy and trunk, so it does not match the reference kind. It has about 3 shading steps and only 5 distinct colours in total. Its tile measure is 0 because it is smaller than one tile, so I judged by eye. By eye it is far thinner than both references, which have leaf clumps and trunks in several greens and browns. Its near-flat coverage is 20% against 0% for both references. There is no tinted outline, only a pale edge. It is flat, shallow and sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11554
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.594Z",
+ "cells": {
+  "16": [
+   "0982d580e87d4cda",
+   "50e193b58c88a1ca"
+  ],
+  "24": [
+   "03204b4fe688b76f",
+   "0a856e7b62b1f317",
+   "1e79517c549fc948",
+   "200c545aa9561571",
+   "2570fb6e4804256e",
+   "5e083a7107ebc4e6",
+   "6c7176049296b194",
+   "6de36bb03187243e",
+   "9538619ad5c69828",
+   "a31149335a679c54",
+   "bbad0c777ab92203",
+   "d9021709e5f5ce43"
+  ],
+  "32": [
+   "7d50aca95cd2f564",
+   "ad9204c1f747ab1b"
+  ],
+  "48": [
+   "2ab6828c4af8d4b7",
+   "2eee1cae0ee0082f",
+   "31ab89918aef11b5",
+   "51d5a1a40b4edf02",
+   "b9083401282b5543",
+   "e41546ed7b2614de"
+  ]
+ }
+}

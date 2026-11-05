@@ -1,0 +1,421 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "214192e05e126bc43369915e369c4a2cfd8424d5e808bc1969a0a457d17f87b8",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "grave wall long",
+ "label": "beodeul_city/wave-places/ruined-village/grave_wall_long",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 28,
+  "darkV5": 68,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "raised wall blocks (upper segments)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey-violet coping strip across the wall",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main brick wall face",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ivy vine and grass at the base",
+      "rows": "12-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall is a flat brick face with horizontal mortar lines (rows 3, 11, 19, 27). The silhouette is 96 wide from row 12 down. Rows 0-8 are narrower raised blocks, 48 wide. Rows 9-10 form a thin 2-row grey-violet strip (#898a96, #5a5b62) that reads as a rim or lip, not a top plane. It has no front-edge line followed by eave shadow, no ellipse, no roof slope and no visible contents. The raised segments at rows 0-8 are also drawn only as vertical brick faces, with a 1-row light cap at row 0. Ivy and grass at the bottom are decor. There is no receding top plane, so the wall reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a low stone wall with ivy, compared against a stone-walled house. On the measured facts it is not shallow: 16 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. The stone blocks show a light cap, mid face and dark joints, plus green ivy clumps, so there are no flat fills. The craft is weaker than the references in two ways. First, the stone ramp reads as only about 4 steps, against 5-6 for the references, with little per-stone highlight or speckle. Second, 70% of the dark edge pixels are near-neutral, against 7-9% for the references. The joints and outlines look like a grey-black line with no tint, which is the uniform sticker look rather than the references' tinted dark material tones (dark brown, dark plum). The ivy outlines are probably tinted, so I rate the outline mixed. Because the edge pixels are mostly neutral and the stone ramp is shallow, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21535
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "raised wall segments (left-centre and right)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "semi-transparent shadow band across the full width",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main brick wall front face with mortar courses and grass at the foot",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall is a flat south-facing brick elevation. Mortar lines at rows 3, 11, 19 and 27 in the column scan show that rows 0-10 are more brick face and not a horizontal surface. The only top-like marks are a 1-2 row light coping at rows 0-2 on the raised segments and a translucent shadow band at rows 9-10. There is no front-edge line with eave shadow, no ellipse, no roof plane, and no visible contents. So the top counts as a rim at most, and the large face below it is drawn as an elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a low stone wall with ivy, set beside a stone-walled house and a half-timber house. It has about 4 lightness steps on the stone (pale cap highlight, light face, mid, dark joint), against about 5-6 on the references' stone and roof tiles. The 16 visible tones per tile are above the references' 12 and 10, and near-flat coverage is 0%, so it is not flat-filled. Stones are shaded individually and the ivy adds some green clumps. However, 70% of its dark edge pixels are near-neutral, against 7-9% for the references. By the tint rule, the silhouette and joint lines read as neutral dark-grey outlines rather than a dark tone of the adjacent material, which is the sticker-like look. The stone ramp is also shallower and more uniform than the references' scalloped tiles and per-stone shading. Since the facts show mostly neutral outlines, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23773
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "raised wall section with brick courses and a light cap course (rows 0-2, line at row 3)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bluish translucent band at the top of the low wall (rows 9-11), a 2-3 row rim or ledge",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "main low wall face of stone bricks with mortar lines at rows 11, 19 and 27",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and vines along the base",
+      "rows": "26-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall is a flat south-facing brick face. The low main wall (rows 12-29) goes straight up to a thin 2-3 row translucent bluish band at rows 9-11, which is a rim or ledge, not a foreshortened top. The raised sections at rows 0-8 have only brick courses and a 1-2 row light cap strip. That strip is followed by the dark mortar line at row 3, which is the same line that separates every other course. No roof slope, ellipse or visible interior or contents shows anywhere, so no real top surface is drawn. The grass at rows 26-31 is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a long stone wall with ivy, so it is a simpler object than the two houses. It is still comparable to the stone wall section of house-h112. Its stone ramp has about 5 steps: pale cap highlight, light face, mid, shadow and dark mortar. The ivy adds 2-3 greens. Blocks are shaded individually with varied tones, and the ivy clumps and moss dots break up the surface. There are no flat fills: near-flat coverage is 0%. Visible tones per 16x16 tile are 16, against 12 and 10 for the references, so density is at or above them. The weak point is the outline. 70% of dark edge pixels are near-neutral, against 7-9% for the references. The edge lines are mostly a grey, colourless dark between blocks, which leans toward a sticker line. They are dark tones of the grey stone itself, and the ivy edges pick up green, so I rate it mixed rather than near_black. Overall the wall is rich enough to sit beside the reference, though slightly less refined in outline tinting.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23444
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellation blocks (merlons) on top of wall",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall top strip between merlons",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall face with mortar courses",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and vines at base",
+      "rows": "24-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall is a flat south-facing elevation of stone blocks with horizontal mortar lines at rows 3, 11 and 19. The merlons at rows 0-10 are drawn as vertical block faces. Between them, rows 9-10 (width 96) form only a 1-2 row strip with a lighter line at row 9 and a dark line at row 10. That is a rim, not a top surface. The long wall has no sloped cap, no ellipse, no eave shadow band and no receding side face. The column scan at x=24, 48 and 71 shows alternating block-face and dark mortar rows only. Grass at rows 24-31 is decor. The top is under 3 rows, so the wall reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a low grey stone wall with ivy, set against two full houses. It has no roof to compare, so I judged only its stone and ivy craft against the reference stone and tile surfaces. The measured facts are not the problem: 16 visible tones per tile beats the references' 12 and 10, and near-flat coverage is 0%. The weakness is in the structure. Each stone block reads as roughly 3-4 steps (pale top edge, mid face, darker underside, dark joint), where the reference stone and roof ramps have 5-6. The faces are fairly smooth, with little per-stone speckle or grain, and most of the variation comes from the green ivy. 70% of the dark edge pixels are near-neutral, against 7-9% on the references. That points to a grey outline that is almost colourless and a more uniform 'sticker' line, rather than a tinted dark tone of the adjacent stone. Next to the reference's stones, each shaded one by one, it looks thinner and flatter, so I fail it on the shallow ramps and the neutral outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21873
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.413Z",
+ "cells": {
+  "16": [
+   "0e20026ca4a5b8ff",
+   "0e6c0b4b6fd2f421",
+   "123e67014c066e95",
+   "20686d1c8de497d7",
+   "27ad3213ce9e25e7",
+   "573195d8a5e55384",
+   "6adfb4e9b9ada8d0",
+   "b97196f2ae694d4f",
+   "bbe09122aa6f6417",
+   "c7d8c7d7db08c644",
+   "d36ea055a458352d",
+   "e2dfa25dbbd45f66"
+  ],
+  "24": [
+   "08b1754b821bce0e",
+   "1e3814a9c15f6196",
+   "2af432c7df78c4c8",
+   "36ebb21aa17d95da",
+   "43cdb990038d7a3f",
+   "7b459062d90ef6f5",
+   "90801c8fb3a11703",
+   "b071581604cbbdf2",
+   "c736c14432125329",
+   "dba03182a8844ecc",
+   "e3b6df8875976425",
+   "ebbdbf6d33097c13",
+   "f79f79c30a9c6d75",
+   "f87d3bb03895fa33",
+   "f9b2ff14dc703e56",
+   "fd5ae91a4e520956"
+  ],
+  "32": [
+   "0cbe5fdf3b1ee30c",
+   "36124f1996549431",
+   "4fd4066cb612faae"
+  ],
+  "48": [
+   "207d8eab761c6adc",
+   "99718261d76764e0",
+   "ec355b0b73305c41",
+   "fbee3d9dff44e359"
+  ]
+ }
+}

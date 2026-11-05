@@ -207,32 +207,34 @@ export const B4 = {
   lift: { x: 16, y: 3 } as Cell,
 };
 
+/** 달빛 용의 홀 — 줄마다 바닥 [x0, x1]. 좌우를 어긋나게 판 동굴 홀: 서쪽은 결정이 자란 좁은 기슭, 동쪽은 용이 보물을 끌어다 둔 굴(y8~13 깊게).
+ *  예전 홀(1~28 × 4~19, 네 귀만 깎은 좌우 대칭)은 빈 바닥 68% 로 상자·금화만 거울처럼 놓였다(fs-act1-vqa B4 6.0). */
+const B4_HALL: ReadonlyArray<readonly [number, number, number]> = [
+  [4, 7, 22], [5, 6, 23], [6, 5, 23], [7, 5, 24], [8, 4, 27], [9, 3, 27], [10, 3, 27], [11, 3, 27], [12, 4, 27],
+  [13, 5, 27], [14, 5, 24], [15, 6, 23], [16, 7, 22], [17, 9, 20], [18, 11, 18], [19, 12, 17],
+];
+
 export const B4_ROOM: RoomSpec = {
   plan: carve(30, 34, [
     [10, 1, 19, 3],    // 기계 감실(북)
-    [1, 4, 28, 19],    // 달빛 용의 홀
+    ...B4_HALL.map(([y, x0, x1]) => [x0, y, x1, y] as const),   // 달빛 용의 홀
     [14, 20, 15, 23],  // 홀 ↔ 쉼터
     [8, 24, 21, 31],  // 쉼터
     [14, 32, 14, 33],  // 지하 3층으로 오르는 통로(마지막 줄 틈은 1칸)
-  ]).map((row, y) => {
-    // 홀 네 귀를 깎아 둥근 동굴 홀로(직사각 상자 방으로 읽히지 않게).
-    const cut = (r: string, xs: number[]): string => r.split("").map((c, x) => (xs.includes(x) ? "#" : c)).join("");
-    if (y === 4 || y === 5) return cut(row, [1, 2, 3, 26, 27, 28]);
-    if (y === 6) return cut(row, [1, 2, 27, 28]);
-    if (y === 18) return cut(row, [1, 28]);
-    if (y === 19) return cut(row, [1, 2, 27, 28]);
-    return row;
-  }),
+  ]),
   floor: "wetstone",
   wall: "rock",
   ceiling: "dark",
   zones: [
+    // 맵 둘레를 붙잡는 구역 — 짓기 도구는 막힌 칸뿐인 여백을 잘라 좌표를 옮긴다(홀 서쪽이 x3 부터라 2칸이 잘려 이벤트 좌표가 어긋났다).
+    { x0: 1, y0: 1, x1: 28, y1: 32, floor: "wetstone", wall: "rock" },
     { x0: 9, y0: 1, x1: 20, y1: 6, floor: "grate", wall: "riveted" },
     { x0: 8, y0: 24, x1: 21, y1: 31, floor: "flag", wall: "stone" },
   ],
   // 용 자리 단상(dais stone)은 뺐다 — 연한 바둑판 무늬가 투명 자리표시처럼 읽혔다(숲 사당 모자이크와 같은 지적).
+  // 홀은 쓰임 셋: 용의 잠자리(가운데 · 등 뒤 보물 더미) · 동쪽 보물 굴 · 남쪽 입구의 먼저 내려온 광신도들 잔해. 서쪽 기슭엔 달빛 결정이 자란다.
   objects: [
-    // 기계 감실 — 옛 하늘 배의 중계 장치: 콘솔(패널)·눈금판·톱니벽·기관 둘.
+    // 기계 감실 — 옛 하늘 배의 중계 장치: 콘솔(패널)·눈금판·톱니벽·기관 둘(감실을 받치는 한 쌍).
     { id: "control console", x: 14, y: 3 },
     { id: "gauge panel", x: 12, y: 1 },
     { id: "gauge panel", x: 17, y: 1 },
@@ -241,25 +243,44 @@ export const B4_ROOM: RoomSpec = {
     { id: "magitek engine", x: 9, y: 6 },
     { id: "magitek engine", x: 18, y: 6 },
     { id: "mana crystal", x: 11, y: 3 },
-    { id: "mana crystal", x: 18, y: 3 },
-    // 홀 — 기둥 두 줄, 용의 둥지(보물 더미·동전), 입구 쪽엔 먼저 내려온 광신도들의 뼈와 부서진 무기.
-    { id: "column stone", x: 5, y: 8 },
-    { id: "column stone", x: 5, y: 14 },
-    { id: "column stone", x: 24, y: 8 },
-    { id: "column stone", x: 24, y: 14 },
-    { id: "treasure pile", x: 8, y: 11 },
-    { id: "treasure pile", x: 20, y: 11 },
-    { id: "coin pile", x: 10, y: 13 },
-    { id: "coin pile", x: 19, y: 13 },
-    { id: "skull pile", x: 11, y: 17 },
-    { id: "skull pile", x: 18, y: 16 },
-    { id: "weapon crate", x: 8, y: 17 },
-    { id: "bone pillar", x: 3, y: 11 },
-    { id: "bone pillar", x: 26, y: 11 },
-    { id: "lava brazier", x: 7, y: 7 },
-    { id: "lava brazier", x: 22, y: 7 },
-    { id: "drip puddle", x: 4, y: 16 },
-    { id: "drip puddle", x: 25, y: 17 },
+    // 용의 잠자리 — 용(15,11)은 기계를 지키도록 사슬에 묶였다: 발밑에 짚 둥지, 둥지 양옆에 바닥 고리에 감긴 사슬,
+    // 등 뒤(북)에 끌어 모은 보물 더미, 발치엔 흘린 금화.
+    { id: "straw pile", x: 13, y: 12 },
+    { id: "straw pile", x: 14, y: 12 },
+    { id: "straw pile", x: 16, y: 12 },
+    { id: "straw pile", x: 17, y: 11 },
+    { id: "anchor chain", x: 12, y: 10 },
+    { id: "anchor chain", x: 18, y: 12 },
+    { id: "treasure pile", x: 12, y: 8 },
+    { id: "treasure pile", x: 17, y: 9 },
+    { id: "coin pile", x: 14, y: 8 },
+    { id: "coin pile", x: 19, y: 10 },
+    { id: "coin pile", x: 11, y: 13 },
+    // 동쪽 보물 굴 — 깨진 큰 상자·왕관 받침·금화가 굴 안쪽에 몰려 있고, 굴 어귀에 용이 쌓은 뼈 기둥.
+    { id: "treasure chest big open", x: 25, y: 10 },
+    { id: "treasure pile", x: 23, y: 12 },
+    { id: "crown pedestal", x: 27, y: 13 },
+    { id: "coin pile", x: 25, y: 12 },
+    { id: "coin pile", x: 22, y: 10 },
+    { id: "bone pillar", x: 23, y: 8 },
+    { id: "lava brazier", x: 21, y: 7 },
+    // 무너진 천장 — 동쪽 굴 아래에 떨어진 바위(광맥 박힌 돌무더기)와 물웅덩이.
+    { id: "ore pile", x: 20, y: 14 },
+    { id: "drip puddle", x: 19, y: 16 },
+    // 서쪽 기슭 — 옛 별지기 열주 둘이 남았고, 천장 물이 떨어지는 바닥에 달빛 결정이 자란다.
+    { id: "column stone", x: 6, y: 8 },
+    { id: "column stone", x: 7, y: 14 },
+    { id: "lava brazier", x: 8, y: 7 },
+    { id: "mana crystal", x: 4, y: 10 },
+    { id: "mana crystal", x: 3, y: 11 },
+    { id: "mana crystal", x: 5, y: 12 },
+    { id: "rune stone", x: 5, y: 10 },
+    { id: "drip puddle", x: 7, y: 11 },
+    // 남쪽 입구 — 먼저 내려온 광신도들의 뼈와 부서진 무기(입구 통로 x14~15 와 깨우는 줄 y19 는 비운다).
+    { id: "skull pile", x: 10, y: 17 },
+    { id: "skull pile", x: 17, y: 16 },
+    { id: "weapon crate", x: 9, y: 15 },
+    { id: "spear rack", x: 12, y: 18 },
     // 쉼터 — 푸른 결정·치유의 샘·돌 의자, 다친 광신도가 기댄 벽.
     // 기록 결정은 마을·사당과 같은 「받침 위 수정 덩이」 키트로 따로 찍는다(act1Finale applyFallenFieldRules).
     { id: "healing spring", x: 18, y: 27 },

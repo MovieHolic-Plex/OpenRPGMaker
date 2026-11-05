@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11732274e0e82f50db1c94f90b43d1c78884e750a7b2f600cf34c49c9fa11922",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "campfire snow",
+ "label": "beodeul_city/wave-places/ice-age-field/campfire_snow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 29,
+  "nearBlackEdge": 0.31,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log pile (brown band with dark outline above)",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base with light stones/snow",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The flame (rows 2-8) is decor. The main body is a log and stone base in rows 9-15, with a width profile of 12, 14, 16, 16, 14, 12, 6. The brown log band in rows 10-11 is only 2 rows, with a dark outline above and dark rows below. It has no front-edge line, no ellipse widening and narrowing, and no visible contents or heap inside an opening. The body is a front-facing strip of logs over a dark base with light stones at rows 13-14, so it reads as a front elevation, not an open container seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single small prop, smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged by eye and by total colours. It has 28 distinct colours in a very small sprite, more than the bench (14) and lamp (14) and close to the hedge (11) and stall (40). The flame has several orange and yellow steps, the logs have a dark brown and lighter brown ramp, and the snow and stone base shows a few pale tones. Flat coverage is 0%, with no 5x5 flat fills. The dark edge pixels are 45% near-neutral, which is mixed and matches the bench (44%). That means some outlines are tinted dark material tones and some are neutral dark. The shading is a little shallower than the well and stall, but it is a small, simple object. A careful artist would accept it beside the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15703
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log band / fire pit rim",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark front with stones",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The flame in rows 2-8 is decor. The main body in rows 9-15 widens from 12 to 16 px and narrows again to 6 px, but the interior is not visible from above. Rows 10-11 are a brown log band seen face-on, like a front-facing strip. There is no ellipse mouth with a back rim and front rim, and no visible contents or heap inside an opening. Rows 12-15 are dark with grey stone bits and read as a front face. That leaves only a 1-2 row rim-like band on top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small campfire on a snow patch, less than one tile wide, so the per-tile facts read 0 and I judged by eye. It has 28 distinct colours in total, about double the bench, lamp and hedge references (11-14) and close to the well and stall (38-40). That is rich for a piece this size. It shows a flame with several warm steps, logs in about 2-3 tones, and a snow base with shaded stones and soft highlights. Near-flat coverage is 0%, so there are no flat fills. The dark edges are 45% neutral, the same as the bench (44%) and well (33%), so the outline is mixed. Some edges lean to a warm or cool dark tone rather than a uniform black sticker line. It is somewhat simpler than the roofed well or the cheese stall, but a careful artist would accept it next to the bench and lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17218
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log pile / fire base",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The flame (rows 2-8) is decor on top of the base. The main body is the log and stone base in rows 9-15. Its width goes 12, 14, 16, 16, 14, 12, 6 with no widen-then-narrow ellipse of an open mouth. The column scan shows only a dark outline (row 9) and a brown log band (rows 10-11), followed by dark rows (12-13) and light stone or snow at rows 13-14. There is no front-edge line with eave shadow and no visible contents or interior seen from above. The log band is a rim of about 2 rows, so the base reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile campfire: a flame, logs and a snow-dusted base. It has 28 distinct colours, well above the sparse references (bench 14, lamp 14) and close to the stall (40) and well (38). Near-flat coverage is 0%, so there are no flat fills. The flame, logs and snow each show roughly 3-4 steps, a little below the 5-6 on the larger references. Dark edge pixels are 45% near-neutral, matching the bench (44%), so the outline is mixed rather than a uniform black sticker line. The per-tile tone count is 0 because the piece is smaller than a tile, so I judged density by eye. For a small sparse prop it would sit acceptably next to the bench and lamp without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16444
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log pile (horizontal logs seen from the side)",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base with snow patches and stones",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The flame (rows 2-8) is decor rising above the body. The main body is the log pile in rows 9-12, with a dark base in rows 13-15. The width profile grows steadily from 12 to 16 and then narrows, with no ellipse and no widen-then-narrow opening. The log rows (10-11) are flat brown bands with no front-edge line and no eave shadow. No ring, bowl mouth or contents are visible from above. The body is drawn only as a front view, so it shows no top surface and no opening for the container kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small campfire, under one tile, so the per-tile tone counts are 0 and I judged by eye. It has 28 distinct colours, which is more than the bench (14) and the crook lamp (14), the references closest to it in size. By eye the flame has several orange and yellow steps, the logs have a few brown steps, and the snow and stone base is shaded in a few lightness steps. Near-flat coverage is 0%, so there are no flat fills. 45% of the dark edge pixels are neutral, which matches the bench at 44%. The outline is therefore mixed, with some tinted dark tones beside the wood and flame. It is not a uniform black sticker outline. The piece is compact and no thinner or flatter than the small references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14869
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.566Z",
+ "cells": {
+  "16": [
+   "351634d1625ac261"
+  ],
+  "24": [
+   "0569d3852275ae21",
+   "1a8854c9bd951f1e",
+   "56cf06d2335299e6",
+   "5afe56bb4fabed43",
+   "e58fce915ebc276a",
+   "f83368797579c2a1"
+  ],
+  "32": [
+   "0fefd3a4937b367b",
+   "6ff99e8b60853b29",
+   "7b35d59f8bfb05db",
+   "e6c16a284aba0b11",
+   "e7b1dec99dfad81a",
+   "fe0705396c208669"
+  ],
+  "48": [
+   "031b811e77417884",
+   "045c16eefefeb09b",
+   "143e145c5a470d5a",
+   "17c398aca3687ebf",
+   "5edb3464cf45a689",
+   "aae08a6c0f14a976"
+  ]
+ }
+}

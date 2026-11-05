@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d5eb77a22c259feaed8f772db0f130d24c278e317e24ac2f37ea46cc057fbd9",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "crow post",
+ "label": "beodeul_city/wave-places/ruined-village/crow_post",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 24,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "crow perched on top of post",
+      "rows": "6-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post (2px wide pole) with small perch peg at rows 18-21",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a single thin vertical pole, 2px wide in rows 10-29, with a 3-4px peg at rows 18-21. It has no horizontal beam, base or other part with a top face. It is a flat vertical strip with no edge line, eave shadow or ellipse. The crow at rows 6-9 is a decor figure on top. It is not an open frame or rack, so the kind match is weak. The whole object reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin pole with a crow on top, so it is a sparse object and the per-tile tone count of 0 says nothing against it. By eye it is a little smaller and darker than prop-lamp-crook, but it has a comparable ramp of about 4 tones on the pole and the bird, with some lighter highlight pixels. Only 15% of its dark edge pixels are near-neutral, so the outline leans toward tinted dark material tones rather than the black sticker line (the lamp reference is 100% neutral). It has 18 distinct colours against 14 for the lamp and the bench, and 0% near-flat coverage, so there are no flat fills. It is a little thinner than the references but would sit acceptably beside the lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15137
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "crow figure on top of post",
+      "rows": "6-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical post/pole (2px wide)",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small perch peg on post",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a single 2px-wide wooden pole (rows 10-29) with a short peg at rows 18-21 and no base. The width stays at 2 for rows 10-17 and 22-29, with no widening, edge line, shadow or ellipse that would show a top surface. The crow (rows 6-10, beak pointing east) is decor sitting on the post. It is drawn as a flat profile, so there is no top face. This does not read as an open frame (no beams, no base), so it reads as a flat elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The crow post is a thin, sparse prop, so the per-tile tone count of 0 says nothing against it; I judged by eye against prop-lamp-crook, the closest reference. It has 18 distinct colours in total, against 14 for the lamp and the bench. Only 15% of its dark edge pixels are near-neutral, so the outlines lean toward the material tones (dark wood and the bird's dark feathers) rather than the lamp's 100% neutral black line. Near-flat coverage is 0% and no large area is a single flat fill. The pole and the crow show a few lighter highlight pixels on the dark body, roughly 4 lightness steps against about 5 on the references. It is a little simpler than the roofed well and the stall, but those are much larger pieces. Next to the thin lamp reference it would not look flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20330
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "crow perched on top of the post",
+      "rows": "6-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole (main body, 2px wide)",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short side peg/branch on pole",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a single thin vertical pole (width 2 for rows 10-17 and 22-29, widening to 3-4 at rows 18-21 where a small peg sticks out), with a small crow on top (rows 6-10, width 5-7). The pole is a flat vertical strip with no horizontal top surface: no ellipse, no front-edge line, no eave shadow, no visible top contents. The peg is also only a vertical shape. The crow counts as decor. There is no open frame with beams or a base, so the kind 'frame' fits poorly. The drawing is a plain front elevation with no top face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The crow post is a thin, sparse prop, so the per-tile tone count of 0 says nothing about it, and I judged it by eye against the thin lamp-crook and the bench. It has 18 distinct colours, more than the lamp (14) and bench (14). Only 15% of its dark edge pixels are near-neutral, so the outline leans tinted rather than uniform black, unlike the lamp's 100%. The pole and crow head show a few lightness steps (about 4) with highlight pixels and no large flat fills (0% near-flat). It is somewhat simpler than the roofed well and the cheese stall. That is acceptable for a single-pole prop, and it sits next to the lamp-crook without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17043
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "crow figure perched on top of the post",
+      "rows": "6-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical pole",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side perch peg",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a 2px-wide vertical pole (rows 10-29) with a small perch peg 4px wide at rows 18-21. The bird sits on top in side profile, with its beak pointing east at rows 6-9, and counts as decor. No row shows a horizontal top face, front-edge line, eave shadow or ellipse on the pole or the peg. The silhouette widths are 2, 3 and 4 and never form a surface. It is a single flat-shaded pole, not an open frame with beams and a base, so the frame kind fits poorly and no top surface is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The crow post is a thin, sparse prop, so the per-tile tone count of 0 is expected and I did not use it against the piece. It is judged by eye against the lamp-crook and bench, the closest thin references. It has 18 distinct colours, more than the lamp (14) and bench (14). Only 15% of its dark edge pixels are neutral, so the outline leans toward a tinted dark material tone rather than a uniform black sticker line. The pole and bird show about 4 lightness steps, with a lighter crossbar or wing highlight and a darker body, close to the lamp-crook's ramp. There are no large flat fills (0% near-flat). The piece is small and somewhat dark, so it is slightly lower in density than the richer references (well, stall). Next to the lamp-crook and bench it does not look thinner or more sticker-like, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16477
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.327Z",
+ "cells": {
+  "16": [
+   "67af103dbbe00115",
+   "f8cd92e2b1fbef52"
+  ],
+  "24": [
+   "046751292177d74e",
+   "0cb6f845c624100c",
+   "137a3f1da8a152da",
+   "64dffa3a2332a092",
+   "6702d4185fc6c295",
+   "9b172886c78356a7",
+   "9f57e38bded9662a",
+   "be5caabf116f83cf",
+   "cb01b8924f1544dc",
+   "dc73e1829188cf86",
+   "f4be9c4a512a0384",
+   "ff2c8c41725b08b2"
+  ],
+  "32": [
+   "5c3227e638602d96",
+   "936ece647d4c4dda",
+   "eb4c2568a8193d5d"
+  ],
+  "48": [
+   "4ebeb8982c4491ea",
+   "4f4ec821a7843e2c",
+   "ae1b6f7003668eba",
+   "b66ddd517f7008a8",
+   "d51aa66cd98a0af8",
+   "df70c6dca3578c78"
+  ]
+ }
+}

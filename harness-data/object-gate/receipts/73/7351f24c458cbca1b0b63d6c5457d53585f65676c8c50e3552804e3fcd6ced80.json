@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7351f24c458cbca1b0b63d6c5457d53585f65676c8c50e3552804e3fcd6ced80",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "ore cart",
+ "label": "beodeul_city/wave-places/mountain-fortress/ore_cart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 40,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ore heap inside the cart (contents)",
+      "rows": "2-12",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart box front face",
+      "rows": "14-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The brown box has a light 1-row front rim line at row 13 (L=197). Above it, rows 2-12 show a mounded heap of grey ore with gold flecks, and the silhouette widens from 2 to 26 px over rows 2-7. This is contents visible inside an open container (d). Below the rim, rows 14-24 are the brown front face, 11 rows tall, with a dark base line at row 24. Two small wheels sit at rows 25-30. No receding side face is drawn. The heap is read as contents rather than a rim, so the main top surface is about 11 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The ore cart is a small prop. Measured: 15 visible tones per tile is close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 25%, higher than every reference (0-13%), so some flat areas remain, probably on the cart body. 95% of its dark edge pixels are near-neutral, so the outline is a uniform near-black/grey line. The references with comparable structure (well, stall, hedge) have tinted dark-material outlines at 0-33% neutral. By eye, the ore pile has a few grey tones and the cart body is a brown-grey wood with metal bands, but it has fewer ramp steps (about 4) than the 5-6 on the references. The wheels and body read as sticker-like, outlined in neutral dark. The outline and the flat coverage are shallower than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13185
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ore heap inside open cart mouth",
+      "rows": "2-12",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart body front face (brown wooden box) with light rim line",
+      "rows": "13-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-12 show a mound of gray ore with gold flecks inside the open cart. Its width grows from 2 to 26 px across rows 2-7, and brown inner walls show at the sides in rows 11-12. That is contents visible inside an open container (evidence d). Row 13 is a 1-row light front-edge line (#c4c6c3) that ends the top area. Below it rows 14-23 are a brown front face 10 rows tall. The wheels at rows 24-30 are small vertical discs below the body. The cart has a visible top (heap) and a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ore cart is a small grey and brown cart with a rock pile on top. The measured facts show 15 visible tones per tile, which is comparable to the stall (17) and well (20), so density is not the problem. The near-neutral share of dark edge pixels is 95%, which means a neutral black outline. This is the sticker look; the stall (1%), hedge (0%) and well (33%) use tinted outlines instead. The cart body is a flat grey or brown with a dark outline and only about 3 lightness steps on the metal and wood, where the references use around 5. The ore pile has some clumped grey texture, but the cart box and wheels read as flat fills with a uniform dark rim. The neutral outline and shallow ramps make it fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14123
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ore heap visible inside the open cart",
+      "rows": "2-12",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart rim line",
+      "rows": "13-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cart is an open box. Rows 2-12 show a gray ore heap with gold flecks, drawn as contents mounded above the box and spanning the full 26 px width. Row 13 is a light rim line (#c4c6c3) that works as the front-edge line. Rows 14-23 are the brown front face, 10 rows, with the wheels below at rows 24-30. The ore is visible from above, so this counts as evidence (d). There is no separate eave shadow band, and the top is read from the contents rather than a flat plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ore cart is a small piece, about one tile wide. It has 15 visible tones per tile, which is in line with the stall (17) and the well (20). Its near-flat coverage is 25%, against 0-13% for the references that have a measurable value. 95% of its dark edge pixels are near-neutral, so the outline is a uniform near-black/grey line around the cart body and the ore pile. This is the sticker look. The Beodeul references use tinted dark tones next to wood, leaves and roof (hedge 0%, stall 1%), and only the thin lamp pole is neutral. The cart body is a flat grey-brown with about 3-4 steps, and the wheels and rim are flat. The ore pile has some grey clumps with highlights, which gives it the most texture. The references carry 5-6 steps per material and per-element grain. The near-black outline and the flat cart body keep it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13032
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ore heap (contents) in open cart",
+      "rows": "2-12",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart body front face with light rim line",
+      "rows": "13-24",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cart is a brown box (rows 14-24, 11 rows of front face) under a 1-row light rim line at row 13. Above it, rows 2-12 show a grey heap of ore with gold flecks, mounded and full width (26 px) from row 7. This is contents visible in an open container (evidence d), and it reads as a heap seen from above. Two wheels sit below at rows 25-30. The silhouette is symmetric and shows no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 95% near-neutral, so the outline is a uniform near-black/grey line around the cart rather than a dark tone of the adjacent material. The Beodeul stall (1%) and hedge (0%) have tinted outlines, and the well is 33%. The cart body is mostly a flat grey-brown with an outline, with only about 3-4 steps on the wood and metal, which is shallow next to the 5-6 steps on the references. The ore pile on top has some clumped grey variation, which is its best-shaded part. Visible tones per tile (15) are near the stall (17) and well (20) but below them, and near-flat coverage (25%) is higher than any reference (0-13%), so large areas of the body are flat fills. Overall it reads as a sticker-style piece and is shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 11027
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.928Z",
+ "cells": {
+  "16": [
+   "317b5fb59ee5eda7",
+   "8c6951044684cc6b",
+   "de381e241ab492eb",
+   "f49ba21bd1f63f93"
+  ],
+  "24": [
+   "0701a8e56151f71c",
+   "236ea261b3f26b8f",
+   "245f8d6a6a93cb6b",
+   "323a3a75696fc03a",
+   "452d248227e0015b",
+   "491ee4504eb7a623",
+   "501d300296e1eabc",
+   "577f29146cf94f5e",
+   "71f49cbc0ea5fde2",
+   "75faa22f7deeec0a",
+   "78c092af4814b75c",
+   "7f38029996200715",
+   "98a2dd04b619971a",
+   "9e150032c8689fb1",
+   "a2e5501a95ace17e",
+   "a343c114da7a586b",
+   "af9d7d40b68c1cb7",
+   "b1a8bd6ca8b5c7c9",
+   "b53447c5f910863c",
+   "bfbad393db33f60f",
+   "d07410dd6d49e581",
+   "d1087f58450c212b",
+   "f7151cf8803cccf2",
+   "fdab7608819aa52b"
+  ],
+  "32": [
+   "b9312fd7264079c7"
+  ],
+  "48": [
+   "2443d54a6f98879b",
+   "3a76c3b0ae62e21d",
+   "52198eee34ca5193",
+   "ad8e0ca76f2358a8",
+   "b90f3d9388ad8785",
+   "d653f4cda8bd347e"
+  ]
+ }
+}

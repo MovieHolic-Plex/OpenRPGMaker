@@ -1,0 +1,65 @@
+# 새로 찍은 조각 — 폐허 마을·유령 마을 (ruined-village)
+
+- `parts/ruin_house_a.png` (96x96 px) — 반목조 폐가: 용마루가 휘어 내려앉고 앞 지붕에 큰 구멍(서까래·도리·떨어진 기와 바닥)이 난 6칸 반목조 집. 덧문 처진 창, 판자로 막은 창, 문짝 없는 문간, 무너진 굴뚝, 덩굴. / 6x6칸
+- `parts/ruin_house_b.png` (80x96 px) — 기운 돌벽 폐가: 돌 1층 벽에 붉은 기와 지붕, 지붕 두 군데가 꺼지고 집이 오른쪽으로 기운 5칸 집. 경첩 하나로 매달린 문짝, 창마다 그을음. / 5x6칸
+- `parts/gable_ruin_a.png` (64x96 px) — 박공 정면 폐가: 박공이 앞을 향한 4칸 반목조 집: 지붕 왼쪽 경사 구멍(가로 서까래), 박공벽 삼각의 뚫린 구멍(부서진 외), 기운 문짝. / 4x6칸
+- `parts/gable_ruin_log.png` (64x96 px) — 기운 통나무 폐가: 통나무 벽 박공 집(4칸): 지붕 오른쪽이 꺼지고 박공에 구멍, 문과 창은 판자로 막혔다. 집이 기울었다. / 4x6칸
+- `parts/gable_ruin_stone.png` (64x96 px) — 돌벽 박공 폐가: 돌 벽 위 반목조 박공(4칸), 지붕 양쪽 경사에 구멍, 문짝 없는 문간, 덧문 처진 창. / 4x6칸
+- `parts/burnt_house.png` (80x112 px) — 불탄 돌집: 지붕이 타 버린 박공 정면 돌집(5칸): 돌 박공벽만 서 있고 그 뒤로 숯이 된 서까래가 겹겹이 남았다. 오른쪽 박공 어깨가 무너졌고 창·문 위로 그을음, 바닥은 재. / 5x7칸
+- `parts/burnt_house_pale.png` (64x96 px) — 불탄 마름돌 집: 창백한 마름돌 박공 집(4칸), 박공 왼쪽 반이 계단꼴로 무너지고 숯 서까래 두 줄만 남았다. / 4x6칸
+- `parts/church_ruin.png` (160x160 px) — 불탄 교회와 종탑: 왼쪽 네모 종탑(꼭대기가 비스듬히 무너지고 종실에 기운 종) + 박공 정면 신랑(장미창 구멍·큰 아치문·첨두창, 지붕은 타서 숯 서까래 뼈대만). 10x10칸 랜드마크. / 10x10칸
+- `parts/well_dry.png` (32x48 px) — 마른 우물: 물이 마른 둥근 돌 우물(2x3칸): 속은 어둠과 거미줄, 왼 기둥만 서 있고 가로대가 비스듬히 떨어졌다. 끊긴 두레박줄. / 2x3칸
+- `parts/bucket_tipped.png` (16x16 px) — 쓰러진 두레박: 옆으로 누운 쇠테 나무 통(1칸). / 1x1칸
+- `parts/cart_overturned.png` (48x32 px) — 뒤집힌 수레: 엎어진 짐칸(밑판·굴대 받침이 위), 기대 선 바퀴, 쏟아진 건초(3x2칸). / 3x2칸
+- `parts/stall_tattered.png` (48x48 px) — 찢어진 노점: 줄무늬 차양이 찢겨 구멍 나고 늘어진 빈 노점(3x3칸), 판대 위 깨진 항아리. / 3x3칸
+- `parts/stall_collapsed.png` (48x32 px) — 무너진 노점: 기둥이 꺾여 차양 천이 판대 위로 주저앉은 노점(3x2칸), 굴러 나온 바구니와 사과. / 3x2칸
+- `parts/crate_broken.png` (16x16 px) — 부서진 상자: 윗판이 빠지고 앞판이 쪼개진 나무 상자(1칸). / 1x1칸
+- `parts/barrel_tipped.png` (32x16 px) — 누운 술통: 통널 하나가 빠진 누운 술통(2x1칸). / 2x1칸
+- `parts/barrel_broken.png` (16x32 px) — 깨진 술통: 위 통널이 부러진 선 술통(1x2칸). / 1x2칸
+- `parts/sack_torn.png` (16x16 px) — 찢어진 곡식 자루: 옆이 터져 낟알이 쏟아진 자루(1칸). / 1x1칸
+- `parts/bench_broken.png` (32x16 px) — 부러진 의자: 다리가 꺾여 판이 땅에 닿은 나무 의자(2x1칸). / 2x1칸
+- `parts/dead_tree_large.png` (48x64 px) — 잎 없는 큰 고목: 굵게 뒤틀린 줄기·옹이 구멍·앙상한 가지의 큰 고목(3x4칸). / 3x4칸
+- `parts/dead_tree_crooked.png` (32x48 px) — 기운 고목: 왼쪽으로 기울고 꼭대기가 부러진 고목, 가지에 까마귀(2x3칸). / 2x3칸
+- `parts/dead_sapling.png` (16x32 px) — 마른 어린 나무: 가는 줄기에 잔가지 몇 개(1x2칸). / 1x2칸
+- `parts/stump_burnt.png` (16x16 px) — 불탄 그루터기: 숯이 된 윗면에 금 간 그루터기(1칸). / 1x1칸
+- `parts/dead_bush.png` (16x16 px) — 마른 가시덤불: 잎 다 떨어진 잔가지 엉킴(1칸). / 1x1칸
+- `parts/drygrass_a.png` (16x16 px) — 마른 풀 포기: 누렇게 시든 키 큰 풀(1칸). / 1x1칸
+- `parts/drygrass_b.png` (32x16 px) — 마른 풀 덩이: 시든 풀과 푸른 풀이 섞인 덩이(2x1칸). / 2x1칸
+- `parts/weeds_crack.png` (16x16 px) — 돌 틈 잡초: 포석 틈에 돋은 낮은 잡초(1칸). / 1x1칸
+- `parts/nettles.png` (16x16 px) — 쐐기풀: 길을 먹어 들어온 짙은 잡초 덩이(1칸). / 1x1칸
+- `parts/ivy_ground.png` (32x16 px) — 땅 기는 덩굴: 무너진 돌·길가를 덮은 덩굴 줄기(2x1칸). / 2x1칸
+- `parts/crows_ground.png` (16x16 px) — 까마귀 두 마리: 땅을 쪼는 까마귀와 고개 든 까마귀(1칸). / 1x1칸
+- `parts/crow_post.png` (16x32 px) — 까마귀 앉은 말뚝: 부러진 말뚝 꼭대기에 까마귀(1x2칸). / 1x2칸
+- `parts/cobweb_big.png` (16x16 px) — 큰 거미줄: 벽 모서리·문간에 거는 반투명 거미줄(1칸, 왼쪽 위 모서리). / 1x1칸
+- `parts/cobweb_pair.png` (16x16 px) — 늘어진 거미줄: 두 기둥 사이에 처진 거미줄과 작은 거미(1칸). / 1x1칸
+- `parts/crops_dead.png` (32x16 px) — 시든 밭이랑: 흙 이랑 두 줄에 말라 꺾인 작물 대(2x1칸). / 2x1칸
+- `parts/scarecrow_tattered.png` (16x32 px) — 누더기 허수아비: 기운 막대에 찢긴 옷·터진 짚, 처진 머리 자루(1x2칸). / 1x2칸
+- `parts/notice_torn.png` (32x32 px) — 찢긴 게시판: 지붕널 빠진 게시판에 찢긴 빈 종이 쪼가리(2x2칸, 글씨 없음). / 2x2칸
+- `parts/lamppost_bent.png` (16x48 px) — 휜 가로등: 중간에서 꺾인 쇠 가로등, 깨진 빈 등(1x3칸). / 1x3칸
+- `parts/gate_post_ruin.png` (80x48 px) — 무너진 마을 어귀 문: 왼 돌기둥(머리돌)·허리에서 부러진 오른 기둥·떨어진 문 들보·기운 이름 판(5x3칸). / 5x3칸
+- `parts/fence_fallen.png` (32x16 px) — 쓰러진 울타리: 기둥째 넘어져 풀밭에 누운 울타리 한 칸(2x1칸). / 2x1칸
+- `parts/beams_charred.png` (32x16 px) — 숯 들보 더미: 불탄 서까래가 엇갈려 쌓인 더미, 남은 불씨(2x1칸). / 2x1칸
+- `parts/rubble_church.png` (48x32 px) — 교회 돌 잔해 더미: 무너진 박공 어깨에서 쏟아진 분홍빛 마름돌 더미(3x2칸). / 3x2칸
+- `parts/bell_fallen.png` (32x32 px) — 떨어진 종: 종탑에서 떨어져 옆으로 누운 깨진 청동 종(2x2칸). / 2x2칸
+- `parts/tile_debris.png` (32x16 px) — 기와 조각: 지붕에서 떨어져 깨진 기와와 판자 부스러기(2x1칸). / 2x1칸
+- `parts/ash_scatter.png` (16x16 px) — 재 부스러기: 불탄 자리 둘레의 재·숯 가루(1칸). / 1x1칸
+- `parts/tomb_cracked.png` (16x16 px) — 금 간 비석: 가운데 갈라진 둥근 머리 비석, 이끼·마른 풀(1칸). / 1x1칸
+- `parts/tomb_broken.png` (16x16 px) — 부러진 비석: 윗동이 부러져 앞에 떨어진 비석(1칸). / 1x1칸
+- `parts/cross_crooked.png` (16x32 px) — 기운 나무 십자: 흙 봉분에 꽂혀 기운 나무 십자(1x2칸). / 1x2칸
+- `parts/crypt_entrance.png` (48x48 px) — 지하 묘소 입구: 돌 문간(박공 갓돌, 아치 속 어둠, 열린 쇠창살)으로 땅 밑 계단이 내려간다(3x3칸). / 3x3칸
+- `parts/grave_wall_long.png` (96x32 px) — 묘지 돌담 긴 토막: 낮게 무너진 묘지 돌담(6칸), 갓돌 군데군데, 덩굴. / 6x2칸
+- `parts/grave_wall_broken.png` (80x32 px) — 묘지 돌담 터진 토막: 가운데가 무너져 틈이 난 돌담(5칸). / 5x2칸
+- `parts/grave_wall_end.png` (48x32 px) — 묘지 돌담 끝: 계단꼴로 무너져 끝나는 담 끝(3칸). / 3x2칸
+- `parts/fog_bank.png` (48x32 px) — 안개 덩이: 낮게 깔린 회백색 반투명 안개(3x2칸). / 3x2칸
+- `parts/fog_small.png` (32x16 px) — 작은 안개: 반투명 안개 조각(2x1칸). / 2x1칸
+- `parts/pave_crack.png` (16x16 px) — 판석 금: 판석을 가로지른 계단꼴 금과 틈의 풀(1칸). / 1x1칸
+- `parts/pave_hole.png` (32x16 px) — 빠진 판석: 판석 두어 장이 빠져 흙이 드러난 자리(2x1칸). / 2x1칸
+- `parts/ground-crackedflag.png` (48x48 px) — 금 간 자갈 포석: 버들항 회색 자갈 포석에 금·빠진 돌(흙)·줄눈 잡초(3x3칸 표본). / 3x3칸
+- `parts/ground-weedydirt.png` (48x48 px) — 잡초 먹은 흙길: 버들항 흙길에 잡초 덩이가 번졌다(3x3칸 표본). / 3x3칸
+- `parts/ground-drygrass.png` (48x48 px) — 마른 풀밭: 버들항 잔디가 누렇게 시든 풀밭(3x3칸 표본). / 3x3칸
+- `parts/ground-ash.png` (48x48 px) — 불탄 땅: 재·숯 조각이 깔린 불탄 땅(3x3칸 표본). / 3x3칸
+- `parts/autotile-crackedpave.png` (64x64 px) — 금 간 포석(풀 먹은 가장자리): 버들항 자갈 포석 16변형: 가장자리는 테 없이 풀이 먹어 들어오고 속에는 금·줄눈 잡초. / 4x4칸
+- `parts/autotile-weedydirt.png` (64x64 px) — 잡초 흙길: 버들항 흙길 16변형: 가운데까지 잡초가 번지고 가장자리가 풀에 묻혔다. / 4x4칸
+- `parts/autotile-brokenfence.png` (64x64 px) — 끊긴 나무 울타리: 썩은 나무 울타리 16변형: 레일이 군데군데 빠지고 기둥이 기울었다. / 4x4칸
+
+합계: 61 조각

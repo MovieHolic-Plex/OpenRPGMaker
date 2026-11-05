@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81a08cf95155b442c465bf0e76eb07062d409a4b530e7adcd5ebebaafbb68ea8",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "pumice scatter",
+ "label": "beodeul_city/wave-places/volcano-field/pumice_scatter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pumice scatter (small scattered stones on ground)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of a few small stone blobs (widths 2-8 px) spread across rows 4-12 with transparent gaps between them. It has no standing volume, no front-edge line, no eave shadow and no front face of 3+ rows. It reads as a flat decal seen from above, which matches the flat kind. Per the contract this is a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny cluster of a few pixels, smaller than one 16x16 tile, on an empty dark background. It is not the 4x3-tile ground patch the brief asks for, so it does not match the reference kind. The measured facts give 0 visible tones per tile because the piece is under one tile, so I judged by eye. By eye it has only about 2-3 tones (8 distinct colours in total) against the references' 3-7 visible tones per tile with grain and tufts. Its dark edge pixels are 100% near-neutral, which reads as a grey/black sticker outline, while the grass reference is 0% neutral and carries tinted shading. There is no ground coverage, no tiling surface, and no grain or clump texture. It is far thinner and flatter than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11172
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pumice scatter (small scattered stones lying on the ground)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a few small, separate blobs spanning rows 4-12, with widths of 2-8 px. They are irregular pebbles lying flat on the ground. No vertical front face of 3+ rows, no front-edge line and no eave shadow appear in the column scan. The drawing is a flat decal seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate should be a 4x3-tile ground patch, but on the board it is a tiny speck of a few pixels, smaller than one 16x16 tile and sitting on a dark background. It does not cover a ground area, so it does not match the reference kind (grass and paving fill whole tiles). The measured facts agree: 0 full tiles, 8 distinct colours in total, and 100% of dark edge pixels are neutral, against 0% for the grass reference. The grass reference shows about 3 visible tones per tile with tufts, and the paving reference shows 7 with stone-by-stone shading. The candidate has no readable ramp (about 2 steps), no grain or clumps, and no tinted material outline. It looks like a sticker-style scatter of dots, not a tileable ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10445
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered pumice stones (small flat-lying blobs on the ground)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a loose scatter of a few small stone blobs (about 2-8 px wide) spread over rows 4-12, drawn as a flat floor decal. The width profile (4,6,4,2,4,6,6,8,4) shows irregular clusters with no standing volume, no front face of 3+ rows, and no front-edge line or eave shadow. It is seen from above as a flat plate, which suits the kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny speck cluster, well under one 16x16 tile, floating on an empty dark background. It is not a ground patch laid 4x3 tiles, so it does not match the grass and paving references, which fill their whole tiles edge to edge. It has only 8 distinct colours in total, and I read roughly 3 lightness steps, against about 5-6 per material in the references. Its dark edge pixels are 100% near-neutral, so the outline is a neutral grey/black with no material tint, which is the sticker look. The paving reference is also 80% neutral on this fact, but its stones are shaded one by one. The density fact is 0 only because the piece is smaller than a tile. Judged by eye, it has no grain, no tile-to-tile variation and no ground coverage. It is far thinner than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10823
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pumice scatter pebbles (small scattered clusters lying on ground)",
+      "rows": "4-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of small stones, 4-8 px wide, spread over rows 4-12 with transparent gaps between them. It has no standing volume, no front face of 3 or more rows, and no front-edge line or eave shadow. It lies flat on the ground like a decal, which matches the flat kind, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate should be a 4x3-tile ground patch, but on the board it is only a tiny cluster of a few pixels floating on empty background. It covers less than one 16x16 tile, which is why the visible-tone count is 0. It has no continuous ground surface, unlike the grass and paving references, which fill whole tiles with 3 and 7 visible tones. It has only 8 distinct colours in total. The dark edge pixels are 100% near-neutral, so the shading reads as grey/black with no material tint, where the grass reference's dark edge pixels are 0% neutral. There is no tile-level grain, clump or tuft texture to compare with the references. The piece is not a usable ground patch and is far thinner and flatter than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9427
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.193Z",
+ "cells": {
+  "16": [
+   "cd00eb45b2aaf4c8"
+  ],
+  "24": [
+   "9765c310991599f6",
+   "99b826268109afbf",
+   "b2764c80f5dad170",
+   "c0724e0d44cfd243",
+   "f83d5eed2bad7ff9",
+   "f93097b084cebf23"
+  ],
+  "32": [
+   "168a5ea51dcdfd0f",
+   "3de36bb20c1532e4",
+   "59607c81b596d17d",
+   "5f1dabdc39eb1bcf",
+   "8e283c1f73645200",
+   "900034d91633b21f"
+  ],
+  "48": [
+   "1cec0dc04ba3f627",
+   "4a8e76e88e0a0a1f",
+   "7ab1f49774209fb1",
+   "9b2de71f7f34f042",
+   "ad31a572e3a8e497",
+   "ee579da14a92b1c7"
+  ]
+ }
+}

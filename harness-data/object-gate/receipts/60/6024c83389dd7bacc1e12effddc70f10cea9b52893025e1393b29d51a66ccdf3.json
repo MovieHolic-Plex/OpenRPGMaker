@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6024c83389dd7bacc1e12effddc70f10cea9b52893025e1393b29d51a66ccdf3",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "cairn spear",
+ "label": "beodeul_city/wave-places/ice-age-field/cairn_spear",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 24,
+  "darkV5": 35,
+  "nearBlackEdge": 0.12,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stone of cairn with snow tufts",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow ledge on middle tier",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked stone body",
+      "rows": "15-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow base drift",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spear shaft and tip",
+      "rows": "0-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a stack of dark grey stones seen from the front, with a thin spear shaft standing against its right side. The top stone (rows 12-14, width 6) is a rounded lump with white snow at the corners and no ellipse or front-edge line. The snow on the left of the middle tier (rows 16-18, ending at a darker row 19) is a 2-3 row strip and does not read as a horizontal surface. The rest of the body (rows 15-25) is vertical stone faces, and the base at rows 26-30 is a flat snow drift. The overall impression is a front elevation with at most a rim-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cairn of individually shaded stones with a snow cap and a spear. It is much smaller than the tree references, so I judged it by eye as a sparse object as well as by the numbers. It has 24 visible tones per full tile, level with tree-d43edd (29) and well above tree-1a786c (7). Near-flat coverage is 0%, the same as both references, and there are no 5x5 flat fills. Each stone has a light face, mid and dark shading, so I count about 5 steps against roughly 6 on the references. The outline is mixed: 40% of dark edge pixels are near-neutral, so some edges lean black, but the rest are tinted dark stone and shaft tones, so it is not a uniform sticker line. The piece is not thinner or flatter than the references, so a careful artist would likely accept it beside them, though it is not a clear win on outline tint.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22613
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "spear shaft and head",
+      "rows": "0-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow cap on top of cairn",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked stone body of cairn",
+      "rows": "15-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "26-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn is a stacked mound of dark grey stones seen face-on, rows 15-25, with a narrow snow cap at rows 12-14 (width 6, then 7-9). The cap is mostly a highlight with no clear edge line or eave shadow, so it reads as a rim and not a real top surface. The stones are lit as vertical faces with no horizontal plane. The width profile widens steadily from 6 to 11 like a mound, not like an ellipse. The spear is a thin vertical shaft, counted as decor. The snow at rows 26-30 is a flat ground drift, not part of the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny cairn of stacked grey stones with a thin spear, roughly 15x20 source pixels, so it is a sparse prop. The measured 24 visible tones per tile and 0% near-flat coverage look good on paper, but they come from a very small, busy area. By eye the stones show only about 3 lightness steps (a pale cap, grey mid, dark base) and are not shaded stone by stone as in the references. The dark edges are 40% near-neutral, so the outline is mixed, with partly black-grey lines giving a mild sticker look, unlike the references, which are 0% neutral and use dark green or brown edges. The spear shaft and tip are thin and flat. Next to the rich, multi-tone leaf clumps of tree-d43edd, a careful artist would find it thinner and flatter, and the stones carry less grain and fewer tones. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21661
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cairn top stone with snow cap",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cairn stacked stone body",
+      "rows": "14-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow ledge on middle stone",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow drift at base",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spear pole and tip",
+      "rows": "0-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cairn (rows 12-25, width 6-10) is stacked dark stones seen face-on. The top is a narrow snow-capped crown of about 2 rows (12-13) with white pixels only at the corners. There is no front-edge line, no eave shadow and no ellipse. The snow patches at rows 17-18 and 26-30 look like vertical highlights or a ground drift, not horizontal surfaces. The spear is a thin vertical pole at x=11 with no top surface. The overall read is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny stacked-stone cairn with a spear, not a tree, bush or canopy, so the tree references are a poor like-for-like comparison. The measured facts are fine: 24 visible tones per tile (references 7 and 29) and 0% near-flat coverage. But 40% of the dark edge pixels are neutral, so the outline is partly near-black rather than consistently a dark tint of the neighbouring material, which leans toward the sticker look. By eye the stones show about 4 lightness steps, with a white highlight cap and dark grey sides, against the reference canopies' 5-6 steps. The small sparse silhouette carries less shaded texture and fewer per-stone and per-leaf clusters than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19435
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "spear (shaft and tip) rising above the cairn",
+      "rows": "0-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cairn stone stack (main body)",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snow or white base drift",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a stack of dark grey stones from rows 12 to 25, widening from 6 to 10 px, on a white base at rows 26-30 that is 11-16 px wide. The top rows 12-14 are a narrow 6 px cap with a white highlight and no front-edge line, no eave shadow and no ellipse. The stones read as a face-on pile, not a horizontal surface. The spear shaft (x~11, rows 7-25) and its tip (rows 0-3) are a pole rising above the pile, so I count them as decor. The white base is a flat band without a top plane. Overall this is a front elevation with at most a 1-2 row highlight on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny stone cairn with a thin spear, not a tree or plant. It is only about 10x15 source pixels, so it has no canopy or trunk ramps to compare with the references' 5-6 step leaf and bark ramps. The measured 24 tones per tile and 0% flat coverage look generous for a piece smaller than one tile, so I judged by eye. The stones read as roughly 3-4 grey and white steps with little per-stone shading or grain. 40% of the dark edge pixels are neutral, and the outline looks like a dark neutral line on the stones and spear shaft, not a tint of the adjacent material, so I rate it mixed. The references are tinted (0% neutral) and carry clustered leaf texture. Set beside them, the cairn looks thinner and more sticker-like. The 24-tone fact does not offset that, because the piece is too small to carry that many visible tones.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18244
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.555Z",
+ "cells": {
+  "16": [
+   "73cf10f4917b67a8",
+   "ac8457731c483330"
+  ],
+  "24": [
+   "1c32e26654009060",
+   "297e32a5439394ac",
+   "6a52a79222a63b6a",
+   "7d8e5420f0a2286c",
+   "8315e96e32103327",
+   "9d30d0ef565d0aba",
+   "d4a4fd8ee74205d7",
+   "e44fc04a19a4f067",
+   "eaffafb2f53fd55d",
+   "f1d6388714c50e6d",
+   "f43f6d8f6f89f971",
+   "f9845a74324886d6"
+  ],
+  "32": [
+   "1ab64b7a530eb46b",
+   "9220a51c61474781",
+   "d8df7a0f06f8c770"
+  ],
+  "48": [
+   "09750e5a741be8e9",
+   "0fb7320fddcee489",
+   "2271bdd993afc775",
+   "5260cf48f45a369f",
+   "94aaa247101e2efb",
+   "af1a8f9031e65538"
+  ]
+ }
+}

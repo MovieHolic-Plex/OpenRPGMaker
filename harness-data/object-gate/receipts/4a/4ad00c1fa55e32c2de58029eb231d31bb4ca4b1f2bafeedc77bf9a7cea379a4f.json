@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ad00c1fa55e32c2de58029eb231d31bb4ca4b1f2bafeedc77bf9a7cea379a4f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "frozen reeds",
+ "label": "beodeul_city/wave-places/ice-age-field/frozen_reeds",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reed stalks (olive green vertical blades with pale frost tips)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice patch at base (light cyan strip)",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a cluster of thin vertical reed stalks 1-5 px wide (rows 0-14) with pale frost tips, standing on a 1-row ice strip at row 15 (width 11). The stalks are drawn as vertical faces with no horizontal band, front-edge line, eave shadow, or ellipse. The ice strip is a single row, so it is only a rim. Reeds are organic, so a flat top is not expected, but there is no top surface to measure: main_top_rows is 0, and the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sparse cluster of frozen reeds, much smaller than one 16x16 tile, with only 7 distinct colours in total. It has about 3 tones (pale blue-white stalks, a mid tone and a small base highlight). The references are full trees with 6-7 visible tones per tile (tree-1a786c) and 29 (tree-d43edd), layered leaf clumps, shaded trunks and dark-tone outlines. The candidate has no outline, no clumped foliage and no grain, so it looks thinner and flatter than either reference. The per-tile density fact is 0 because the piece is smaller than a tile, so I judged by eye. By eye it is clearly thinner than the reference plants and has too few shading steps. Thin or sparse objects are not failed for sparseness alone, but this one also has shallow shading and no texture variation, so a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9204
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reed stalks",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice base slab",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The reeds are thin vertical stalks, 1-5 px wide, with pale frost tips at the top. No band, ellipse, roof, or visible contents shows a horizontal surface. The only wide element is a 1-row ice strip at row 15 (width 11), which is a rim-like base and not a top surface. The stalks are seen in plain front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sparse reed sprite (about 14x20 px, 7 distinct colours) next to two full tree references. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It shows a few thin pale-green/teal stalks with a small white/blue ice patch at the base. Each material gets only about 2-3 tones, with no clumped foliage, no per-leaf highlights and no grain. There is no real outline, just single-pixel stalks. Next to the references, which have 5-6 shaded green steps and dense leaf clumps (tree-d43edd has about 29 visible tones per tile), the candidate looks thinner, flatter and much simpler. Sparseness alone is not the reason for the fail. The reeds lack the layered tonal ramps and texture of a careful Beodeul-quality plant, so the shading depth is shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8931
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reed stalks with pale ice tips",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice base strip",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of thin vertical reed stalks, 1-5 px wide, in rows 1-14. They are seen face-on, with only a light ice highlight at each tip. No band, ellipse, roof or contents is drawn that would show a horizontal surface. The only horizontal element is a 1-row, 11 px wide pale ice strip at row 15, which is a rim-like base and not a top surface. The stalks are a front-facing vertical elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse sprite of a few thin reed blades on a small base, much smaller than one 16x16 tile (visible tones per tile = 0, only 7 distinct colours in total). By eye it shows about 3 green/pale tones with no real shading ramp, no clumps and no grain. The references are full canopy trees with 6+ ramp steps (tree-d43edd about 29 visible tones per tile), clustered leaf masses and trunk shading. A reed is a thin object, so sparseness alone does not fail it. Even judged as a thin plant, it reads thinner and flatter than the references: reeds are single-width strokes with almost no tonal modelling, no highlight/shadow split within a blade, and no frost texture to suggest ice. The outline is effectively absent, so there is no dark material tone to assess. A careful artist would not accept this next to the references without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12133
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reed stalks",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice base strip",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a cluster of thin vertical reed stalks 1-5 px wide, with pale icy tips at rows 1-2 and 6-9. A 1-row ice strip at row 15 is 11 px wide. The stalks have no horizontal top surface, no ellipse, and no edge line with eave shadow. The shapes are vertical faces only. The ice strip is a 1-row base, which is too thin to count as a top surface. The result is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sparse sprig of reeds, under one tile in size and about 14x20 px. It has only 7 distinct colours in total, with roughly 2-3 tones per blade cluster (pale tip, mid, dark). It has no canopy or trunk, and no clumps or grain comparable to the references' 5-6 step leaf masses and shaded trunks. It also has no outline: forms are separated by value alone, and the edge pixels are not neutral (0%). The per-tile facts are 0 because the piece is smaller than a tile, so density was judged by eye. By eye it is far thinner and flatter than either reference, which are full-tile trees with 7 and 29 visible tones. It reads as a minimal icon rather than a Beodeul-grade plant. The thin, sparse subject excuses its small size, but not the shallow shading and the lack of per-blade highlights, frost texture or soil/base detail. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10779
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.638Z",
+ "cells": {
+  "16": [
+   "7e220f068ed5a36e"
+  ],
+  "24": [
+   "2a3c69dda86aedf1",
+   "40d3136434fbd124",
+   "78ce2824f3807a0e",
+   "a5151f4fda1a5dad",
+   "ba157e39c1c367a6",
+   "c6e15fb60e908414"
+  ],
+  "32": [
+   "0aee32043fe6d697",
+   "7c707433055843ca",
+   "81955088891e85b9",
+   "92fb2f4d92f3e829",
+   "bc753eb0d60be2b4",
+   "c19a65c9660035af"
+  ],
+  "48": [
+   "00d7175fabceda0c",
+   "23e839ab044dcccd",
+   "341be1f6dbf4eaee",
+   "4f5585e516b3fbb0",
+   "5bbbd1c463f61bc2",
+   "7a4b162957dc9441"
+  ]
+ }
+}

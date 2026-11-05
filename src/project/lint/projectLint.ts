@@ -43,6 +43,7 @@ import {
   type M2RuntimeContext,
 } from "@/project/eventCommands/runtimeSupport";
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { autoCropSpriteAsset } from "@/project/farmModel";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -188,6 +189,8 @@ function checkUnplayableAudio(project: Project, issues: LintIssue[]): void {
 function bundledAudioPath(resourceId: string): string | null {
   const cc0 = CC0_AUDIO_ASSETS.find((asset) => asset.id === resourceId);
   if (cc0) return cc0.path;
+  const oprn = OPRN_BGM_ASSETS.find((asset) => asset.id === resourceId);
+  if (oprn) return oprn.path;
   const rtp = EASYRPG_RTP_ASSETS.find((asset) => asset.id === resourceId);
   return rtp ? rtp.path : null;
 }

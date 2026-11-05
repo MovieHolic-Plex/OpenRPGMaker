@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2ce2a09f417de8dcca626ec4ce89be26c9e78d41fa90f34955338dc511fe68f",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "basalt step",
+ "label": "beodeul_city/wave-places/volcano-field/basalt_step",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 33,
+  "nearBlackEdge": 0.23,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basalt block top",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is a rounded hexagonal block. Its width grows from 6 to 14 px over rows 1-5, stays at 14 through row 9, then narrows to 8 px at row 12. Rows 2-7 are a lighter top plane (L=114) with a highlight at row 2 or 4. Row 8 (L=85) is a front-edge line, and rows 9-12 are a darker front face (L=62 at x=4 and x=8, L=28 at x=11). The face is 4 rows, which meets the 3-row minimum. Rows 14-15 hold small detached orange specks that are not part of the body. The darker right-hand columns are shading on the south face, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole timber-and-stone houses with tile roofs, while the candidate is a single small grey boulder, so the kind comparison is only loose. Measured facts: 10 visible tones per tile is on par with house-h112 (10) and just under house-h101 (12). Near-flat coverage is 18% against 0% for both references, so the candidate has real flat patches. By eye, the stone has a dark blue-grey outline that leans toward the material (11% neutral edge pixels, so not near-black). It shows only about 4 lightness steps: a highlight, a light face, a mid tone and a dark base. The surface is mostly a smooth gradient with a few speckle dots, and the dots below the stone read as loose debris, not grain. The references' stones are shaded one by one with per-stone highlights and speckle, and the candidate has no equivalent grain, so it looks flatter and more sticker-like. A careful artist would not accept it next to the reference without more facet and grain work.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16052
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basalt block top",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "basalt block front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=8 shows a highlight row at 2 and a lighter top band (L=114) over rows 3-7. A darker 1-row edge line at row 8 (L=85) follows, then a darker front face at rows 9-11 (L=62) and an outline at row 12. Column x=4 repeats this pattern. Column x=11 is a darker shaded right side, with the top band ending at row 7 and L=28 below. The silhouette widens from 6 to 14 over rows 1-5 and narrows again to 8 by row 12, giving a rounded block. It reads as a top surface of about 6 rows over a front face of about 4 rows. The two small marks at rows 14-15 are not part of the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small grey boulder, roughly 14x12 source pixels. It is not a whole building with roof, walls and door, so the house references are not the same kind and cannot serve as a like-for-like bar. Measured facts: 10 visible tones per tile against 12 and 10 for the references. Only 11% of its dark edge pixels are near-neutral, so the outline leans bluish-grey and reads as dark_material_tone, which is acceptable. Near-flat coverage is 18% against 0% for both references, and the boulder body shows broad single-tone patches. It has about 4 lightness steps (highlight, light, mid, dark) against the references' 5-6 on their roofs and stone walls. Texture is limited to a few yellow speck pixels at the base and a small highlight, with no per-stone grain or surface speckle, so it looks flatter than the stone wall of house-h112_0. Because the kind does not match and the piece is shallower and flatter than the references, a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16496
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basalt step top (lit upper plane of the rounded block)",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "front face (dark lower band)",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=8 and x=4, rows 2-7 form a lighter top plane (L=114, with a highlight at row 2 or 4). Row 8 (L=85) is a front-edge line. Rows 9-11 (L=62) are a darker shadow/front band, and row 12 is the outline. So there is a top of about 6 rows above a front face of about 4 rows. At x=11 the right side goes dark from row 8 to 12, which is shading on the front face rather than a receding side face. The silhouette is a rounded or hexagonal block that widens from 6 to 14 and narrows again to 8, with no separate cap. Rows 14-15 hold only a few isolated sparkle pixels, which I ignored."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small grey basalt rock, about 14x14 source pixels, with a few sparkle dots beneath it. The references are full buildings with tiled roofs, plaster, timber and stone walls. The kinds don't match, so the comparison is only approximate. The rock has about 4 lightness steps (highlight, light, mid, dark) against 5-6 per material on the references. Its dark edge pixels are only 11% neutral, so the outline leans toward a tinted dark tone rather than a sticker-like black line. The measured density is on par with the references (10 visible tones per tile against 10-12), but that comes from a very small area. Near-flat coverage is 18% against 0% for both references. By eye, the main body has smooth flat patches and little per-stone grain, such as facets, cracks or speckle, whereas the references show per-tile and per-stone shading throughout. For a sparse prop the numbers alone don't fail it, but I see no clear craft beyond the rock's basic shape. It would look flatter and simpler than the references beside them, and I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17831
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basalt block top",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "basalt block front face",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=8 shows a lighter highlight at row 2 and a uniform mid-tone top plane in rows 3-7. A 1-row darker edge line at row 8 (L=85) follows it, then a much darker front face in rows 9-11 and an outline at row 12. At x=11 the mid-tone top plane covers rows 3-7, then a dark face covers rows 8-12. The width profile grows from 6 to 14 and shrinks back to 8, so the top reads as a rounded, octagon-like slab with a 5-row front face below it. The orange pixels in rows 14-15 are small detached specks and not part of the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with roof, walls and door, but the candidate is a single small grey basalt stone, so the kind does not match. It is drawn at a much smaller scale and has no roof, walls or door to compare. The measured facts are not an issue: 10 visible tones per tile against 12 and 10 for the references, and a dark-edge neutral share of 11% against 7% and 9%, which suggests tinted outlines. Near-flat coverage is 18% against 0% for both references, so some areas are flat. By eye the stone shows about 4 lightness steps (highlight, light, mid, dark) against 5-6 in the references, and it has little grain or per-facet texture. The facts do not point to a clear failure, but the kind mismatch and the flatter, shallower shading mean it cannot be called equal to the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14236
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.064Z",
+ "cells": {
+  "16": [
+   "50236eda497555f3"
+  ],
+  "24": [
+   "16d75dac1d18533d",
+   "4682586ebf15d506",
+   "5ec83eed7fe052fa",
+   "6058f5b0b606e4f6",
+   "6eb1cd6f145c0222",
+   "fc3363ccf5af7871"
+  ],
+  "32": [
+   "3cff0dc6228d16b0",
+   "3f09f67aabc27da9",
+   "c02ffe97b6697452",
+   "ddbb74f85ce1c452",
+   "e7ab5c0227ed5b06",
+   "eb4290808e45031d"
+  ],
+  "48": [
+   "0717e535738d6bb4",
+   "5352e93f4b8018c3",
+   "68ee9c4467b5691e",
+   "831006fba8a61950",
+   "8d9fb1dd558a81ca",
+   "a2be31402700bcbd"
+  ]
+ }
+}

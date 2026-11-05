@@ -33,7 +33,9 @@ export const EDGE_SPEC: WoodSpec = {
 export const STREAM_SPEC: WoodSpec = {
   id: M.stream, name: "속삭이는 숲 · 옛 수로", width: 40, height: 32, seed: 91,
   paths: [
-    { pts: [{ x: 7.5, y: 31 }, { x: 8, y: 26 }, { x: 11.5, y: 21 }, { x: 15, y: 15.5 }, { x: 19, y: 15.5 }], w: [2.2, 3.2] },
+    // 다리 서쪽이 x15 에서 꺾이며 빈터 쪽으로 뭉툭하게 끝나 「다리가 서쪽 끝으로 들어가 막힌다」로 읽혔다(fs-act1-vqa) —
+    // 다리에서 바로 남서로 휘어 내려가는 한 줄기 길로.
+    { pts: [{ x: 7.5, y: 31 }, { x: 8, y: 27 }, { x: 10.5, y: 22.5 }, { x: 14, y: 18.5 }, { x: 17, y: 16 }, { x: 19, y: 15.5 }], w: [2.2, 3.2] },
     { pts: [{ x: 25, y: 15.5 }, { x: 29, y: 14 }, { x: 31, y: 9 }, { x: 29.5, y: 4 }, { x: 28.5, y: 0 }], w: [2, 3] },
     { pts: [{ x: 29, y: 14 }, { x: 33, y: 17 }, { x: 36, y: 18.5 }, { x: 39, y: 18.5 }], w: [2, 2.8] },
   ],
@@ -70,7 +72,8 @@ export const SHRINE_SPEC: WoodSpec = {
 
 /** ⑥ 사냥꾼 쉼터 32×28 — 옛 수로 동쪽 곁길 끝 막다른 빈터. 모닥불·사냥 표지·상자. */
 export const GLADE_SPEC: WoodSpec = {
-  id: M.glade, name: "속삭이는 숲 · 사냥꾼 쉼터", width: 32, height: 28, seed: 79,
+  // 높이 28 은 빈터 아래 40% 가 통짜 나무였다(fs-act1-vqa) — 23 으로 줄여 아래 숲은 밑동 줄까지만 남긴다.
+  id: M.glade, name: "속삭이는 숲 · 사냥꾼 쉼터", width: 32, height: 23, seed: 79,
   paths: [{ pts: [{ x: 0, y: 13.5 }, { x: 6, y: 15 }, { x: 11, y: 12 }, { x: 17, y: 13.5 }], w: [2, 3] }],
   exits: [{ x: 0, y: 13 }],
   clearings: [{ cx: 22, cy: 13, rx: 6, ry: 5 }],

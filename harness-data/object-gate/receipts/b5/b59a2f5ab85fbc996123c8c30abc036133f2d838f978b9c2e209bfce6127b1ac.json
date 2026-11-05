@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b59a2f5ab85fbc996123c8c30abc036133f2d838f978b9c2e209bfce6127b1ac",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "ash scatter",
+ "label": "beodeul_city/wave-places/ruined-village/ash_scatter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 34,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered ash specks",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse, irregular scatter of grey pixels (silhouette widths 1-7 px) spread over rows 3-14. It has no front face, no edge line, no eave shadow, no ellipse and no roof. It is a flat decal seen from above with no vertical faces, which is consistent with the flat kind, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse speck, smaller than one 16x16 tile, with only 4 distinct colours in total. It is not a 4x3 tile ground patch like the grass and paving references, which fill whole tiles with 3-7 visible tones, clustered grain and tile detail. The candidate has no covering surface, no visible shading ramp (about 2 steps) and no texture clusters. Per-tile facts read 0 because the piece is smaller than a tile, so I judged by eye: it looks far thinner and flatter than either reference. The 50% neutral dark edge share is on a handful of pixels and says little. A ground patch this sparse would not sit next to the references without looking like a sticker, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8423
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ash scatter (sparse flat specks)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse, irregular scatter of grey specks. The width profile is 1, 5, 7, 2, 3, 2, 1 with transparent gaps, and the densest rows are 6-7. It has no front-edge line, no eave shadow and no vertical face of 3 or more rows. It reads as a flat decal seen from above, which is correct for a flat kind, but it has no front face, so it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny speck of a few scattered pixels, smaller than one 16x16 tile, on an otherwise empty field. It uses only 4 distinct colours in total, so about 3 shading steps against the references' 3 visible grass tones and 7 paving tones. A 4x3-tile ground patch should carry grain, clumps and variation across the whole area, as the grass and paving references do. Here nothing covers the area, so it reads as a sparse sticker-like decal. The scattered dots are not flat fills and there is no real outline, so the 50% neutral share of dark edge pixels is not meaningful. It does not match the references' richness or coverage, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13405
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered ash specks",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of a few isolated grey and dark pixels (widest row 7 px at rows 6-7) with no solid body, no front-edge line, and no vertical face. It is a flat ground decal seen from above, with no front face (fewer than 3 rows), so it reads as a flat top-down slab, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse speck of a few pixels (4 distinct colours in total) in the right panel, much smaller than the 4x3-tile ground patch it should be. It covers no full 16x16 tile, so the per-tile tone count is 0. By eye it is only a small scatter of 2-3 grey/tan pixels on an empty background. The grass reference shows about 3 visible tones per tile and the paving reference about 7, and both cover their whole tile area with grain and clumps. The candidate has no ground coverage, no tonal ramp, no grain and no clustering. The 50% neutral dark-edge share rests on a handful of pixels and is not meaningful. It does not read as a 4x3 ground patch and sits far below both references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8823
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered ash specks",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of a few gray pixels across rows 3-13, with a widest row of 7 px at row 7. It has no solid body, no front face (fewer than 3 rows of any mass), no front-edge line and no eave shadow. It reads as a flat floor decal seen from above, which matches the flat kind. There is no vertical face, so it is a top-down flat plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse speck cluster, much smaller than one 16x16 tile and nowhere near a 4x3 tile patch. It has only 4 distinct colours in total, so the per-tile facts read 0 and say little. By eye it has 2-3 tones of grey scatter on a transparent or dark ground, with no ramp, grain, clumps or per-pixel shading. The grass reference carries about 3 visible tones per tile and the paving about 7, with layered shading and texture dots. The candidate does not cover a 4x3 ground patch and looks thinner and flatter than either reference. It has no real outline; the 50% neutral share of dark edge pixels comes from a few scattered pixels. It would not sit next to the references as an equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9410
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.242Z",
+ "cells": {
+  "16": [
+   "2fd52338e574c71c"
+  ],
+  "24": [
+   "0700eeb7be3cb310",
+   "30c8d57041672f81",
+   "4aa87f9822eafe95",
+   "96fcb10fea3d28eb",
+   "9f9d8e49828fcbb3",
+   "b9002eb31a7e184a"
+  ],
+  "32": [
+   "81b84813da0daf05",
+   "88a480a02e69e573",
+   "d6a12b6d4a3234d4",
+   "e349c9e60d3a9656",
+   "e9c8d762edf75892",
+   "fd53657eaf95d061"
+  ],
+  "48": [
+   "209717d40f997035",
+   "59b7d81078dcdf45",
+   "a07c594a1c430158",
+   "b27cb6372895bf17",
+   "c15349f4bdcef58a",
+   "e68052aafee6cd91"
+  ]
+ }
+}

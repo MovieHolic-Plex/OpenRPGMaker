@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bb84d52c402eea3ba16f69c533de6961a085b244195a59c7bddfb0fd05cab9e",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "dead tree crooked",
+ "label": "beodeul_city/wave-places/ruined-village/dead_tree_crooked",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 29,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper branches and left twig",
+      "rows": "6-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right branch with crow",
+      "rows": "13-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crow perched on branch",
+      "rows": "13-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a thin, crooked trunk with branches drawn as a vertical profile silhouette. The trunk is 5-7 px wide with no cap, no ellipse, and no edge line. Its base at rows 44-47 shows only grass tufts, with no ellipse or visible ground contact. Branches taper to points with no top surface. The crow and grass are decor. The result is a flat elevation view with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin dead trunk with a bird, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. Against the references it looks sparse and flat. The trunk has about 3 brown steps (a light edge, a mid tone and a dark side) where the references carry 5-6 steps per material and a layered canopy. Dark edge pixels are only 3% neutral, so the outlines lean brown rather than black, which is acceptable. Texture is limited to a few grain dots on the trunk and a small tuft of grass at the base, with no bark detail, knots or broken-branch shading. A dead tree is naturally sparse and I do not fail it for that alone. But the trunk is narrow and its branches are one or two pixels wide, so it looks thinner and flatter than the references, and it would not sit next to them as an equal piece. Its 28 total colours are well under the references' 10 per tile and 567 in total, and the shading is shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9808
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "6-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crow perched on branch",
+      "rows": "13-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a crooked vertical trunk with thin branches. The trunk is a single-colour vertical face with no horizontal top surface, ellipse, or front-edge line. The branch tips are thin and end in points. Neither the trunk nor the branches show a top plane. The crow and the grass tufts are decor. For an organic kind, this reads as a flat front view of the trunk."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, thin dead trunk with a bird and a few grass tufts, about 28 colours in total. It is smaller than one 16x16 tile, so the per-tile facts read 0 and do not count against it; I judged density by eye. Outline: only 3% of dark edge pixels are neutral, so the edges lean brown and read as dark material tone rather than sticker black. Shading: the trunk has roughly 3 brown steps (dark, mid, a light edge), against 5-6 on the reference trunks and canopies. Texture: there is a little grain and a few bark highlights, but no clumps or per-part shading like the references' canopies and roots. It is clean and plausible, but it looks thinner and flatter than the references, and its root base is a simple grass tuft with no shaded roots. A careful artist would not accept it beside the references without more shading steps and bark texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9905
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left upper branch",
+      "rows": "6-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right branch",
+      "rows": "19-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crow perched on branch end",
+      "rows": "13-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The dead tree is a tall, narrow trunk (5-7 px wide) with thin branches, drawn as a side-on silhouette. No horizontal surface is visible: the trunk ends at row 11 in a ragged broken tip with no ellipse or edge line, and the branches taper to single pixels. The base at rows 44-47 widens only because of the grass tufts and roots. The trunk is a vertical face without a top, so it reads as a front elevation. The organic kind makes this plausible, but the drawing has no top-surface evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin, sparse dead tree: a crooked brown trunk with a few bare branches, a small bird and a tuft of grass at the base. It is smaller than one tile, so the per-tile facts read 0 and I judged by eye. Only 28 distinct colours in total, against 567 and 10 for the references. Its trunk shows about 3 brown steps (dark edge, mid, light streak), which is shallow next to the references' 5-6 steps per material. Dark edge pixels are only 3% near-neutral, so the outlines lean brown and count as material-toned, which is a good sign. The trunk has little grain or bark texture and the branches are thin one-tone strokes with no highlight or clump structure. Next to the references' rich canopies and shaded trunks it looks thinner and flatter. A dead tree is naturally sparse, but the trunk is too plain to sit beside the references without looking lower in craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11753
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "11-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left branch",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right branch with crow",
+      "rows": "13-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "44-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A dead tree drawn as a crooked trunk with thin branches, a silhouette typical of an organic form. The trunk is a vertical form (rows 11-47) with no horizontal top surface, which is expected for a tree. Branch tips are narrow and end in points, and the base is flared with grass tufts (rows 44-47). Organic shapes have no flat top to measure, so I report main_top_rows as 0 and use 'other' rather than front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin dead trunk with a small bird and a few grass dots at the base. It is much smaller than the references and has no full 16x16 tile, so the per-tile tone count of 0 can't be used against it. Judged by eye, the trunk has only about 3 brown steps (light edge, mid, dark) and little bark grain or knot detail. The references carry 5-6 steps plus clumped leaf texture and shaded roots. The dark edge pixels are tinted (3% neutral), so the outline is a dark brown material tone, which is good. The thin crooked branches are plain 1-2 px strokes with no highlight and shadow modelling. The bird and grass tuft are tiny and add little. Next to the references it looks thinner and flatter, so a careful artist would not accept it as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10217
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.345Z",
+ "cells": {
+  "16": [
+   "5ffb8200762615c1",
+   "9d45be7e954d410b",
+   "b35faf4382dfef87",
+   "bf73135dbcef100b",
+   "d6bca601e878cb16",
+   "f59c26ecdc282907"
+  ],
+  "24": [
+   "11741baa6c60458f",
+   "14c7e875cfe49a26",
+   "1c39d53111fd1686",
+   "1f44bb2eabb2a9a4",
+   "69aa42f0f06b1420",
+   "78827768b95cd269",
+   "871cdf33df6d3064",
+   "9f6c833833b7d009",
+   "a5a3d3fa46120e44",
+   "d1e069a92fb896ca",
+   "d7f083ec01046e3c"
+  ],
+  "32": [
+   "222ea516f807958c",
+   "2608cb2722b5dca6",
+   "48df2b0b30f7e010",
+   "fa79eb99759d7f03"
+  ],
+  "48": [
+   "1e868b1cc1ac4c6e",
+   "25c0b36348fb129c",
+   "9890b31310c28b76"
+  ]
+ }
+}

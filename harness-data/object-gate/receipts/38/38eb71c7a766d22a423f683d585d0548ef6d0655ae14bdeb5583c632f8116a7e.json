@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38eb71c7a766d22a423f683d585d0548ef6d0655ae14bdeb5583c632f8116a7e",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "fir snow l",
+ "label": "beodeul_city/wave-places/mountain-fortress/fir_snow_l",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 16,
+  "darkV5": 35,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-capped fir tree (stacked conical foliage tiers with snow tip)",
+      "rows": "15-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fir is drawn as a conical silhouette of stacked foliage tiers. The width profile grows steadily from 4 at row 15 to 28 at rows 58-60, with small notches at rows 29, 39-40 and 49-50 where one tier ends and the next begins. These tiers are shaded dark-to-light bands. No horizontal ellipse or top plane is drawn. The snow at rows 16-22 is the tip of the cone, and the snow patches at rows 42-43 and 53-54 are small highlights on branch edges, not top surfaces. For an organic object like a tree, a conical elevation is acceptable, but under the measurement rules there is no top surface (main_top_rows 0). The form reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-laden fir with scalloped tiers. Its green ramp has about 4 steps, from deep teal-green shadow under each tier to lighter green, plus white and pale snow caps on the tiers and the tip. That makes about 5 steps overall, close to the references. Edges are a dark, tinted green with no neutral black line (0% near-neutral dark edge pixels, same as both references), and forms are separated by value. There are no flat fills (0% near-flat coverage). Snow clumps and green speckle on the tiers give some grain. The measured 12 visible tones per tile sit between tree-1a786c (7) and tree-d43edd (29). The fir is smaller and simpler than the big leafy tree, so it reads slightly less dense than that one, but it is at least as rich as the other reference and does not look like a flat sticker. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14693
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-capped top tier",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second foliage tier",
+      "rows": "31-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "39-40"
+     },
+     {
+      "part": "third foliage tier with snow ledge",
+      "rows": "41-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "bottom foliage tier with snow patch",
+      "rows": "52-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A symmetrical conical fir with four stacked foliage tiers (silhouette width grows from 4 at row 15 to 28 at rows 58-60, with notches at rows 29-30, 39-40 and 49-51). The tiers are drawn as front-facing foliage with blue-grey shadow lines at rows 31, 40-41 and 52. No tier has a band that ends in a front-edge line, and no ellipse widens and then narrows again. The only light horizontal marks are 2-row snow patches at rows 42-43 and 53-54 and the snow cap at rows 16-22, which are the size of a rim or highlight. So the tree reads as a front elevation of a cone with snow highlights, not as a surface seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-covered fir with stacked, scalloped tiers. Its green ramp runs deep, dark, mid and light, and the snow caps add a white and pale blue-grey step, giving about 5 steps against roughly 6 for the references. The outline is a dark green that leans toward the foliage, and the measured 0% near-neutral dark-edge share confirms it is tinted, so it does not read as a black sticker line. Texture comes from snow clumps on each tier and darker scallops between them. The measured near-flat coverage is 0%, and no 5x5 area is a flat fill. It shows 12 visible tones per tile, well above tree-1a786c (7) and below the lush tree-d43edd (29). That is roughly equal to the simpler reference, and a small conifer is naturally less busy than a broadleaf canopy. It is a bit less rich than the best reference but does not look thinner or flatter than tree-1a786c, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17849
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-capped tip",
+      "rows": "15-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top tier foliage",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "second tier foliage",
+      "rows": "31-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "39-40"
+     },
+     {
+      "part": "third tier foliage with snow patches",
+      "rows": "41-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "51-52"
+     },
+     {
+      "part": "bottom tier foliage with snow patch",
+      "rows": "52-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fir is a stack of four tiers in a stepped cone silhouette (width 4 at row 15, widening to 28 at rows 58-60). Each tier is drawn mostly as a front-facing foliage mass with shaded texture. The only top-like areas are small white snow patches at rows 16-22 (the tip), 42-43 and 53-54. They are small and are not bounded by a front-edge line or an ellipse. The blue-grey dashes at rows 31, 39-40 and 52 read as shadow under the tiers, not as horizontal surfaces. No tier shows a horizontal top plane with a front edge, so the tree reads as a front elevation with at most a rim-like snow top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small snow-laden fir built from stacked scalloped tiers. Its greens run about 4 steps (deep teal-green shadow, mid green, lighter green rim), plus 1-2 white and pale-blue snow tones, so about 5 steps overall. The edge pixels are dark green-teal and tinted, matching the 0% near-neutral measure, so there is no black sticker outline. Tier shadows and snow clumps break up the surface, and near-flat coverage is 0%. It has 12 visible tones per tile, above tree-1a786c (7) and below the lush oak tree-d43edd (29). Against the oak it is simpler and slightly lower in density, but that fits a small conifer. It holds up against the simpler reference without looking flat or like a sticker, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17387
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-capped top cone",
+      "rows": "15-24",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper fir tier",
+      "rows": "24-31",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "middle fir tier",
+      "rows": "32-41",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "39-41"
+     },
+     {
+      "part": "lower fir tier with snow ledge",
+      "rows": "42-52",
+      "evidence": "c",
+      "front_edge_line_row": 51,
+      "eave_shadow_rows": "51-52"
+     },
+     {
+      "part": "bottom fir tier with snow patch",
+      "rows": "53-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-59"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a symmetric, tiered conical fir. Each tier is a sloped, foliage-covered plane that ends in a darker, blue-grey eave line: rows 30-31 for the upper tier, 40-41 for the middle, and 51-52 for the lower. Snow sits on the tier ledges at rows 42-43 and 53-54 and on the tip at rows 15-23. The widest tier, rows 53-57, shows a sloped top with a snow patch. Below it, the ragged skirt at rows 58-62 forms a front face of about 5 rows. The silhouette widens stepwise from 4 to 28 px, which gives volume, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small snow-covered fir with tiered boughs. It shows about 5 steps on the green ramp (deep teal-green, mid, light) plus white and pale snow highlights. Its outline is a dark green-teal tone, tinted rather than neutral, which matches the 0% near-neutral edge share. It has 12 visible tones per tile, above tree-1a786c (7) and well below tree-d43edd (29). Near-flat coverage is 0%, so no large flat fills. Tier scallops and snow clumps give some texture, but they are fairly regular and less varied than the leaf clumps of the large reference tree. The fir is small and simple, and it is not thinner or more sticker-like than the smaller reference. It is slightly below the richer reference in clump variety and trunk/branch detail, but it would be accepted next to tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14242
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.895Z",
+ "cells": {
+  "16": [
+   "07d9a53d8f1d481f",
+   "6f7c580c0065a53c",
+   "9f2ed15f08e5f4f1",
+   "ab1875848710948a",
+   "b85b3658cd4e0fe7",
+   "eb74be98120355c6",
+   "ef96d48c4000ac59"
+  ],
+  "24": [
+   "16ddb31ba4be5c84",
+   "2516de5e6abd8661",
+   "29fe0d086c02ec1c",
+   "5c3fca643787273d",
+   "6ceafbc97e940c68",
+   "7c11bfc7d8dfe779",
+   "9cd947fe819d0214",
+   "b9ffccab131d5365",
+   "ca839ab5f3135485",
+   "eab56f791781ff3f"
+  ],
+  "32": [
+   "6867961ef5fa5140",
+   "7960d08dc8522796",
+   "85c31e0d08bbb805",
+   "92727fa669d1b6f8",
+   "b98483f0f3501005",
+   "c3e601169205e7f0",
+   "dfec4f3f75ebc105",
+   "edef48ff76a42564",
+   "ff261fc582bd16da"
+  ],
+  "48": [
+   "45b19eda7df9fa93",
+   "48786462ceaa557e",
+   "623cbb7d168d99fa",
+   "81af430a72c3bb36"
+  ]
+ }
+}

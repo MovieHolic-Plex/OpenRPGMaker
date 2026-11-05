@@ -12,6 +12,7 @@
  * 넷은 갈 길이 없는 맵이었다(VQA before: tmp/vqa raw-argon-before / raw-sonnet-before). 지금은 거리 문(link_jp_city_interior)
  * 으로 걸어 들어가고, 쓰지 않는 맵은 두지 않는다.
  */
+import { applyShitamachiLore } from "./shitamachiLore";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import modernCityRoomSpec from "@/assets/modernCityRoomSpec.json";
@@ -1023,6 +1024,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
   }
   for (const id of Object.keys(project.tilesets)) if (!keepTilesets.has(id)) delete project.tilesets[id];
 
+  applyShitamachiLore(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   return {

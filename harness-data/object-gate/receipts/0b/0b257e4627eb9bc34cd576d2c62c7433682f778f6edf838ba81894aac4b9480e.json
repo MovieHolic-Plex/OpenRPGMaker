@@ -1,0 +1,476 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b257e4627eb9bc34cd576d2c62c7433682f778f6edf838ba81894aac4b9480e",
+ "width": 80,
+ "height": 32,
+ "kind": "structure",
+ "name": "grave wall broken",
+ "label": "beodeul_city/wave-places/ruined-village/grave_wall_broken",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 27,
+  "darkV5": 61,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall left block top strip",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle block top strip",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle-left block top strip",
+      "rows": "12-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "low right wall segments top strip",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass at base",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The broken wall is a set of stepped stone blocks, each drawn as a flat front face of about 7 rows. Each block has only a 1-2 row light rim at its top, followed by a dark edge line (rows 2-3, 11, 20). The column scan at x=53 shows the rim at rows 17-18 and a dark line at row 20, then face rows 21-26. At x=18 the rim at rows 9-10 and 12 is likewise followed by a vertical face. No block has a horizontal top band of 3 or more rows with a front-edge line and eave shadow, and there is no ellipse or roof plane. The silhouette widths also show no widening for a top surface. The grass and moss along the base (rows 27-31) is decor. The blocks therefore read as a front elevation with rim-only tops."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses with tile roofs, timber and stone walls. The candidate is a small broken stone-wall prop, so the match is loose. By the numbers it does well: 19 visible tones per tile against 12 and 10, and 0% near-flat coverage like the references. By eye the stone blocks read as pale, mostly one-tone faces with a thin grey edge and little per-stone highlight and shadow. That is about 3-4 steps on the stone, against roughly 5-6 on the reference stone wall. Much of the measured tone count comes from the moss and grass tufts at the base, not from the masonry. 60% of the dark edge pixels are near-neutral, against 7-9% for the references. That is a partly neutral, sticker-like outline rather than a consistent dark tone of the adjacent material. Texture is present (moss, grass tufts, some chipped edges), but the stone is thinner and flatter than the reference stone wall. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21958
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper left wall block cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall block cap",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower wall and right fragments cap",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and moss at base",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The broken wall is a stepped stack of stone blocks. Each block has only a 1-2 row light cap (rows 0-1, 9-10, 17-18) followed by a dark mortar line (rows 2, 11, 19), then a flat front face of pale stone (about rows 20-26 for the main lower body). The caps are rim-width strips with no ellipse, no sloped plane, and no visible contents. They are too thin to read as horizontal surfaces seen from above, so the wall reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small broken stone wall with a few moss tufts, set beside two full houses. It is tiny and simple, so size alone does not count against it. The measured facts are mixed. Visible tones per tile are 19, above the references (12 and 10). Near-flat coverage is 0%. Those numbers come partly from the green moss and grass tufts, which add variety. But the grey stone blocks look shallow by eye: each block has only about 2-3 grey steps (a light top face, a mid face and a dark edge), against the 5-6 steps of the references' stone and tile ramps. The dark edge pixels are 60% near-neutral, against 7-9% for the references. That means the outlines are grey-black, close to the sticker look, and not tinted by the neighbouring material. The stones are not shaded one by one with grain or speckle the way the reference stonework is. The moss gives some texture, but the stone mass is cleaner and flatter than the Beodeul standard. A careful artist would likely say it is thinner and more sticker-like beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13421
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper left wall block cap",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall block cap",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower wall blocks cap (left and right fragments)",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and grass at the base",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wall is a set of stepped stone blocks seen face-on. The main lower blocks (x=18 and x=53) have a 2-row gray cap at rows 17-18 and a dark edge line at row 19. The cap is a thin rim with no eave shadow and no foreshortened top plane. Below it is a pale stone face at rows 20-26. The upper steps have 1-3 row caps over tall flat faces (rows 4-9 and 12-18) with no visible horizontal surface. Moss and grass at rows 27-31 is decor. The result reads as a front elevation with only rim-like tops, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small broken grave wall (two low stone fragments with moss), not a whole building with roof, walls and door/windows, so it does not match the reference kind. Measured facts are fine: 19 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. But 60% of its dark edge pixels are near-neutral, against 7% and 9% for the references, which points to a grey outline rather than a tinted dark material tone. By eye, the stone blocks are light grey with only about 3-4 lightness steps and little per-stone shading, and the moss tufts are sparse. The references have a richer 5-6 step ramp with tinted outlines and detailed tile and stone texture. The piece is passable as a prop, but its outline reads grey and its shading is shallower than the references, so it should not pass when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15155
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall left block cap",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step cap",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower wall and right fragment top strip",
+      "rows": "17-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ruined wall is a stack of stone blocks, stepped down toward the right. The largest volume is the lower wall at width 56, rows 17-27. Its top is only a 2-row gray strip (rows 17-18) over a dark joint line at row 19, which is a rim and not a real top surface. The tall left block has a lighter band at rows 0-2 and a dark line at row 3, but the band is shallow and the steps below show only 1-2 row ledges. All the stone faces (rows 4-10, 12-18, 20-26) are flat vertical faces with brick joints. The whole drawing reads as a front elevation with thin caps, not a 3/4 view with visible roof or slab surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a broken stone wall fragment with moss tufts, while the references are whole roofed houses, so the kind only loosely matches. The measured facts are favourable: 19 visible tones per tile against 12 and 10, 0% near-flat coverage, and no exact flat fills. By eye the stone blocks are mostly one pale grey with only a few shade steps (about 4), well short of the 5-6 steps on the reference stone wall, which shades each stone individually. 60% of the dark edge pixels are near-neutral, against 7-9% on the references. That is a grey, barely tinted outline around each block, which reads as the sticker look rather than a dark tone of the neighbouring material. The moss and grass at the base add some variation, but the stone faces lack per-stone grain and speckle. A careful artist would see it as thinner and flatter than the reference stonework, and the neutral outlines count against it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20054
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.400Z",
+ "cells": {
+  "16": [
+   "1430ba0829c0dd7c",
+   "29251e20f438df91",
+   "3dae5d0e899a3778",
+   "4096c45eb8a18069",
+   "78ac4208a4cb1105",
+   "c651cb783bced386",
+   "e54e6f5c3deab29d"
+  ],
+  "24": [
+   "097b04da3fbdd7da",
+   "0ea5af59bae237c7",
+   "111ad35f92d59a43",
+   "14eb1e6ea0383b1b",
+   "1cb8d9bf81049abf",
+   "266f3ccea63c17d3",
+   "38f2a8913c146695",
+   "450af2535d24d6fb",
+   "4c3233cbcb5b0a28",
+   "4cd463e2ed5d0e76",
+   "546b36ecdf11ee70",
+   "54c91d896af58701",
+   "5cd9a3c5dcf06028",
+   "6e7398a0003249cf",
+   "6fd7461c25c69365",
+   "72201e3196b1c6eb",
+   "7ddddfc86dba59b2",
+   "80b1e550c53bc7ff",
+   "888bebd300f59ebc",
+   "8cdb9be010331e08",
+   "8eaf486d726c0d66",
+   "94bb9809829e3961",
+   "962cb996835cf3a6",
+   "9b16e6c68cf30d55",
+   "9cd54295b97f6538",
+   "9e4925070ca416f2",
+   "a024b599fc1b84ac",
+   "aa54c1f690df4f3d",
+   "ada88c5b24a29ca5",
+   "b11346f5f0dfcb1e",
+   "bf17ac738666ea83",
+   "d073e707c177ca5b",
+   "d990e41bdbb00a55",
+   "db2c1cf493b123ef",
+   "dec9955d8c40637b",
+   "fcd75970b7039a1f",
+   "fd474183dff28087"
+  ],
+  "32": [
+   "0fc1d0c571c419c3",
+   "1f0df1fa58b1419e",
+   "4c88f938c13f5cfb",
+   "5664f138525dd747",
+   "820fb314faf9168d",
+   "95da47c4af157bed",
+   "cc180b0eed9956e9",
+   "d015ddb1823009b2",
+   "e1505e9b1415895b"
+  ],
+  "48": [
+   "082897a342d65536",
+   "1da672d1556343fe",
+   "6a50a823dbf0638d",
+   "6c200de23dd8c681",
+   "72d1f1e75dcae523",
+   "7b107ebab6473bde",
+   "8e4ac9d5a29cdcf8",
+   "9eca999f6a791ad7",
+   "e0a6abdc5e63a55e",
+   "e78ed3401081d2c9",
+   "f7ffd917145f16b4",
+   "f8d1a225ea5beeac"
+  ]
+ }
+}

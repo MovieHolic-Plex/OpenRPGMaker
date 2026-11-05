@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4de3d8ccc7de886d6d51d3fd647f85f4f546cbd09ced98d4c4aa286459060ece",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "ember scatter",
+ "label": "beodeul_city/wave-places/volcano-field/ember_scatter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.33,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered ember specks (about 6 clusters of 2-3 px each)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of tiny ember specks on a transparent ground, not a single standing body. Each speck is a 2-3 px orange or yellow row (for example rows 3-4, 7-8, 10-11, 13-14) with a 1-row dark #221d26 shadow or underside beneath it. The silhouette widths are 1-5 px per row, with empty rows at 0-2, 6 and 15. No part has a front face of 3 or more rows, no front-edge line, and no side face. This is a flat floor decal seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse scatter of a few orange/red ember pixels on a dark grey-blue background. It is nowhere near a 4x3-tile ground patch, so it doesn't cover a full 16x16 tile (measured visible tones per tile = 0). Only 6 distinct colours in total, with about 2-3 visible steps. The dark edge pixels are 100% near-neutral, and the dark background is a uniform fill with no grain, tufts or variation. The references (grass at 3 visible tones per tile, paving at 7) carry texture across the whole surface with per-stone or per-tuft shading. Next to them the candidate looks thinner and flatter, and it does not read as a ground surface patch of the same kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11907
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ember fleck top (orange/red, with dark shadow pixel below)",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember fleck (red/orange with dark pixel below)",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember fleck (orange with dark pixel below)",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ember flecks along the bottom (orange/red with dark pixels below)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of separate 2-3 pixel ember flecks over a transparent background. Each fleck is a 1-2 row bright orange or yellow top with a single dark pixel row beneath it, and the silhouette width never exceeds 5 px. There is no large body, no front face of 3 or more rows, no front-edge line and no eave shadow. It is a flat floor decal seen from above, which matches the flat kind, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse scatter of a few red/orange ember pixels (6 distinct colours in total) on a flat dark grey background. It is nowhere near a 4x3-tile ground patch, so the per-tile facts (0 visible tones) cannot be used and I judged by eye. By eye it covers a small fraction of the area, with no surface grain, no ramps and no tile-scale variation. The references fill whole tiles with grass tufts (about 3 visible tones) and shaded paving stones (about 7 visible tones), each with 5+ shading steps and per-stone highlights. The candidate has about 2 shading steps per material, no real outline (the 100% neutral dark edge share comes from the dark background pixels), and the empty background is a flat fill. It looks thinner and flatter than either reference and does not read as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18732
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ember scatter (small glowing ember specks with dark shadow pixels, drawn flat on the floor)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a handful of separate 2-3 px wide ember specks (orange #f07014 with a yellow #ffe478 highlight) spread over rows 3-14. Each speck has a 1 px dark #221d26 pixel directly below it. The specks have no vertical face of 3 or more rows, no front-edge line and no eave shadow. The column scans show only 1-row runs. It reads as a flat floor decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3-tile ground patch. It is a tiny sparse cluster of a few ember pixels (6 distinct colours) on a transparent or dark background, smaller than one 16x16 tile, so the per-tile facts read 0. Judged by eye, it has no ground surface at all, whereas the grass and paving references fill their whole tiles with grain, clumps and per-stone shading. The ember specks show about 2-3 tones, with no ramp, no texture and no material body. The 100% near-neutral dark edge share comes from the background, not from a drawn outline. Even allowing for a sparse object, it would look far thinner and flatter than the references next to them, and it does not deliver the requested 4x3 ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11723
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered ember specks (small orange/yellow pixel clusters with dark shadow pixel beneath)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of tiny ember clusters, each 1-3 px wide and 2 rows tall (a bright pixel row over a dark #221d26 row), spread across rows 3-14 with no connected body. There is no large body, no front face of 3 or more rows, no eave or front-edge line, and no ellipse. It lies flat on the ground like a floor decal, which fits the flat kind, and it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sparse scatter of a few red/orange ember pixels on a transparent or dark background, not a 4x3-tile ground patch. It is smaller than one tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours and about 2 visible tones, against the grass reference (3 visible tones, 26 raw colours per tile) and the paving reference (7 tones, stones shaded one by one). It has no ground coverage, no grain, no clustering and no material ramp. The 100% near-neutral share of dark edge pixels comes from a handful of dark pixels and does not describe a real outline. Next to the references it looks thinner and far less developed, so it fails on sparseness and lack of ground-surface structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8850
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.134Z",
+ "cells": {
+  "16": [
+   "ba8c8c51b16d16fe"
+  ],
+  "24": [
+   "1042cd2001ec0ec9",
+   "2c326f47d674ab30",
+   "4c79eb9af8e656d0",
+   "7bcdea248b0e0618",
+   "9d11783636ff5e2b",
+   "b98f90eceb1b5ec3"
+  ],
+  "32": [
+   "08ac919c95eea8ae",
+   "3891ad6cccbfd392",
+   "602f2f9aa42a642f",
+   "a9cac52a412f1a59",
+   "dbc5138a61c7e184",
+   "df98e8b1189175c6"
+  ],
+  "48": [
+   "0ab4e33a31d6f6d7",
+   "3fcb6f2eff0a4305",
+   "43445949aa20e2a3",
+   "d5dff913e994bfa1",
+   "ea20a8469d4eb180",
+   "fbc4595d82dd7a80"
+  ]
+ }
+}

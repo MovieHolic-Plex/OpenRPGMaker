@@ -1,0 +1,382 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29a2b82df062944fe5aaa74b5c79cc185ff8754f7feadd682a1de4b55aad4b59",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "chasm pier e",
+ "label": "beodeul_city/wave-places/mountain-fortress/chasm_pier_e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 22,
+  "darkV5": 24,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "stone brick pier wall",
+      "rows": "0-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark chasm water or abyss at base",
+      "rows": "46-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 16 px wide for all 64 rows, so there is no roof, ellipse or widening band. The columns show stone-brick courses (x=4 and x=8 have light block faces, with mortar lines at rows 7, 13 and 25). Row 13 is a dark mortar line between blocks, not a front-edge line with eave shadow. No horizontal top surface is drawn at the top: rows 0-12 are face-on blocks. Rows 46-63 are dark blue-green abyss or water texture. The whole image reads as a flat, face-on stone wall, so it is a front elevation with no top, and it does not look like a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow strip, about one tile wide, showing grey stone blocks with a dark foliage patch at the bottom. It has no roof, door or windows, so it is not a whole building like the references, and the kind comparison is weak. The measured facts are not shallow: 17 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. But 85% of its dark edge pixels are near-neutral, against 7% and 9% for the references, and by eye the dark lines between the stones look neutral grey-black rather than tinted. That is the 'sticker' outline the standard rejects, where the references use dark brown or red-brown tones beside the adjacent material. The stones have only about 3-4 lightness steps with little per-stone highlighting. The references carry about 5-6 steps with scalloped roof tiles, plaster speckle and shaded stones. Because of the neutral near-black outline and the shallower ramps, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13689
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "stone block wall face (pier shaft)",
+      "rows": "0-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark chasm/water base with green growth",
+      "rows": "46-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16px-wide rectangle for all 64 rows. Rows 0-12 are light stone bricks with mortar lines at rows 7 and 13-14, and these read as face-on masonry courses. There is no band ending in a front-edge line followed by eave shadow, no ellipse, no roof or canopy plane, and no visible contents. The top rows 0-1 have the same lightness (L=194) as the blocks below, so they continue the vertical wall face rather than forming a top surface. Rows 25-45 are a darker, weathered stone face, and rows 46-63 are a dark chasm/water zone with green. Nothing is drawn as a horizontal surface seen from above, so this is a flat front elevation of a wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 4,
+    "evidence": "The candidate is a narrow strip, about one tile wide, showing grey stone blocks with a dark clump of foliage or water at the bottom. It has no roof, door or windows, so it is not comparable to the two reference houses, which have multi-tone tile roofs, timber framing and plaster speckle. Tile density is fine: 17 visible tones against 12 and 10 for the references, and 0% near-flat coverage. But 85% of the dark edge pixels are near-neutral, against 7% and 9% for the references. That matches the dark neutral outline of the 'sticker' look rather than outlines tinted to the adjacent material. The grey stones carry only about 4 lightness steps, fewer than the references' 5-6 per material. With the wrong piece kind and the neutral outline, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13245
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone masonry pier wall",
+      "rows": "0-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark chasm water / foliage base",
+      "rows": "46-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 16 px wide for all 64 rows, so there is no widening or narrowing that would indicate an ellipse. The column scan shows stone blocks (light and dark masonry courses) running from row 0 to about row 45, with no front-edge line followed by eave shadow at the top. Rows 0-1 are the same light stone tone as the blocks below, not a separate top band. Below row 46 the drawing turns into dark water or chasm with green foliage, which is not a top surface of the pier either. The whole image is a vertical masonry face, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow sliver, about one tile wide. It shows grey stone blocks with a dark foliage patch at the bottom. It has no roof, door, windows or timber framing, so it is not a whole building like the two references. Its visible tones per tile (17) are above the references (12 and 10), and near-flat coverage is 0%, so it is not flat-filled. But 85% of its dark edge pixels are near-neutral, against 7% and 9% for the references. That means a neutral black or grey outline instead of the dark material-tone edges Beodeul uses. The stone blocks look uniformly outlined and fairly evenly shaded, with only about 4 steps, compared with the references' 5-6 on roof tiles and plaster. The piece cannot be judged as a complete building, and its outline fails the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 12890
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pier wall face (brick blocks)",
+      "rows": "0-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water or chasm base with green plants",
+      "rows": "45-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is 16 px wide and 64 rows tall, with a constant silhouette width of 16 on every row. The upper part (rows 0-44) is a vertical stone-brick wall seen face-on, with block seams and highlights. Below it, rows 45-63 are dark water and plants. The only light line, at row 14 in column x=4, is a block seam in the face and not an edge line with eave shadow. The width profile has no ellipse, no sloped roof or canopy plane, and no contents visible inside an open container. No horizontal top surface is drawn for the pier, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow, roughly one-tile-wide strip of grey stone blocks with a dark base. It has no roof, no door or window, and no readable building structure, whereas the references are full houses with multi-step tile roofs, plaster or stone walls and doors. On the measured facts it is not shallow: 17 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. But 85% of its dark edge pixels are near-neutral, against 7% and 9% for the references. That is the neutral black/grey outline look, not the dark-material-tone outlining Beodeul uses next to stone, roof and wood. By eye the stone has only about 4 lightness steps, fewer than the references' 5-6 on roof and wall. The dark base reads as a heavy black block, not a tinted material shade. The piece also lacks the roof tile scallops and per-tile highlights that give the references their richness. With the kind mismatch, the neutral outline and the thinner shading ramps, it should fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14562
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.852Z",
+ "cells": {
+  "16": [
+   "39a58a789a02f622",
+   "50420ca1dff6c54d",
+   "667177cce3146bd2",
+   "828f4243848577b8"
+  ],
+  "24": [
+   "0c55cd3eba1dd71f",
+   "197afcd2d364356b",
+   "2dc9486576c5dac2",
+   "37a52a5447c17d98",
+   "5886cde221b855c9",
+   "5899f8f0c3528f6a",
+   "6520649ed7d26594",
+   "6b533df990dfac18",
+   "70e5c8b29f1eedaf",
+   "876e489e53113e1f",
+   "ac487c9f93b283d3",
+   "b031c2fc8d8b48a8",
+   "b1c66eb17ce41560",
+   "cd3036e3328d00b8",
+   "d30f986fedaa8d90",
+   "d6b6414b83ba1018",
+   "d915e87eceab6d93",
+   "e5f2566a21649871"
+  ],
+  "32": [
+   "11fcddf7d6966a82",
+   "310d131302f2bda9",
+   "6f62fe69589c00ef",
+   "9bcce48b4707e098",
+   "ee2a9ecd2ca413b6",
+   "f0f2433194bd1309"
+  ],
+  "48": [
+   "02d54ec9091deca3",
+   "04d18b077b10ce51",
+   "0a88e6d4351b059f",
+   "170b37b64312d542",
+   "1d317760add8ef85",
+   "5dcff0932a638df3",
+   "8aa12a5715a51f82",
+   "918bff123dbe61b9",
+   "b9a8fb28cd2435c2",
+   "bf1314c4edf1474e",
+   "d06cc1a1a67d079f",
+   "f88d6b06dce9d923"
+  ]
+ }
+}

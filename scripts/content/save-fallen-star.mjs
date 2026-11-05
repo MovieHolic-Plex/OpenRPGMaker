@@ -11,6 +11,11 @@ const dirArg = process.argv.indexOf("--dir");
 const rel = dirArg > 0 ? process.argv[dirArg + 1] : ".oprn-projects/fallen-star";
 const dir = rel.startsWith("/") ? rel : process.cwd() + "/" + rel;
 const project = JSON.parse(fs.readFileSync(src, "utf8"));
+// The bake writes bundled tilesets as a diff against the bundled definition (store format 3); the store reloads them whole.
+// Compare against the restored form so a diff-shaped bake is not reported as a reload mismatch.
+let expected = JSON.parse(JSON.stringify(project));
+await withTsModule("src/project/bundledTilesetDiff.ts", "fallen-star-diff.mjs", async (d) => { d.restoreBundledTilesetDiffs(expected); });
+expected = JSON.parse(JSON.stringify(expected)); // the restore can leave undefined fields / holes that a JSON reload drops
 await withTsModule("electron/local-store/store.ts", "fallen-star-store.mjs", async (api) => {
   let s = await api.initLocalProjectStore({ projectDir: dir }), id;
   try {
@@ -25,10 +30,10 @@ await withTsModule("electron/local-store/store.ts", "fallen-star-store.mjs", asy
     const got = JSON.parse(JSON.stringify(a.project));
     // The store's load migrates the legacy opening scene shape (image → animatic); everything else must be byte-identical.
     for (const key of ["maps", "database", "tilesets", "mapTree", "startMapId", "startPos", "assets"]) {
-      assert(isDeepStrictEqual(got[key], project[key]), `Reload differs in ${key}`);
+      assert(isDeepStrictEqual(got[key], expected[key]), `Reload differs in ${key}`);
     }
     const strip = (p) => ({ ...p, system: { ...p.system, opening: undefined } });
-    if (!isDeepStrictEqual(strip(got), strip(project))) {
+    if (!isDeepStrictEqual(strip(got), strip(expected))) {
       const diff = [];
       const walk = (x, y, path) => {
         if (diff.length > 8) return;
@@ -37,7 +42,7 @@ await withTsModule("electron/local-store/store.ts", "fallen-star-store.mjs", asy
           for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) walk(x[k], y[k], path + "." + k);
         } else diff.push(path + " saved=" + JSON.stringify(y)?.slice(0, 80) + " reloaded=" + JSON.stringify(x)?.slice(0, 80));
       };
-      walk(strip(got), strip(project), "");
+      walk(strip(got), strip(expected), "");
       throw new Error("Reload differs:\n" + diff.join("\n"));
     }
     console.log(JSON.stringify({ projectId: id, projectDir: rel, revision: a.revision, sha256: a.sha256, saved: true, reopened: true, maps: Object.keys(project.maps).length }));

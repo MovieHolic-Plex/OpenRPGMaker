@@ -1,0 +1,440 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca73412f22e9596fbd9009277fd81d451f8552a3621131c29d5d825770a6210e",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "anvil block",
+ "label": "beodeul_city/wave-places/mountain-fortress/anvil_block",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 1행 < 3 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 1행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "anvil top plate (face and horn)",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "waist",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hammer lying on the right (head and handle)",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top plate spans rows 3-6. The width profile runs 19, 24, 22, 20, so it widens and then narrows. Row 4 is a bright highlight line (L=197) and row 5 is a mid-tone line. Row 6 is a dark shadow band, followed by a narrow waist of 9 px at row 7. This reads as a flat working surface seen from above, with a front edge and shadow. Below it, the base block (rows 8-14, 15 px wide) has a light 1-row top edge at row 9 and a flat gray front face over rows 10-13 (4 rows). That base has no real top depth, only a 1-row rim, so it is drawn as a front elevation. The hammer on the right is a separate small object and is treated as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The anvil is a small, thin grey object, less than one tile, with only 11 distinct colours. It has roughly 3 visible grey steps: a light top face, a mid body and a dark base. It does not have the per-surface highlights or grain of the references. 76% of its dark edge pixels are near-neutral, so the outline reads as a neutral dark line, close to the sticker look. The well, stall and hedge references carry 9-20 visible tones per tile and tinted edges (0-33% neutral), and the candidate is clearly flatter and thinner than these. The object is small, so the per-tile density fact is not used against it. By eye, the metal has no stepped shading, no specular glints, no surface pitting and no material-toned edge, so a careful artist would not accept it beside the references. The anvil's shape is recognisable and cleanly drawn, but that is not enough to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 24842
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "anvil head (horn plate)",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "waist",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block top edge",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block front face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hammer with handle leaning at right",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The anvil head at rows 3-6 has a light highlight row (4) and a dark row (6), so it shows a small top band. The largest volume is the base block at rows 8-14. Its top is only a 1-row light edge line at row 9, with a dark row 8 above it. Rows 10-13 are a flat, uniform front face. The base has no real top surface, only a rim, so the main body reads as a front elevation. The hammer at the right is a decor prop."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate anvil is small, about 1 tile wide and under 1 tile tall, so the per-tile tone count is 0 and I judged by eye. It reads as a grey body with a lighter top face and a dark base, roughly 3 grey steps, against about 5-6 steps on the references (well, stall, hedge). 76% of its dark edge pixels are near-neutral, which points to a neutral dark outline and the sticker look. The well and hedge references have tinted outlines (0-33% neutral). The lamp reference is 100% neutral, but it is a thin metal object. The anvil has no visible grain, no per-facet highlights and no surface speckle such as scratches or forge wear. It has only 11 distinct colours, compared with 38-40 for the richer references. It looks thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17488
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "anvil top plate with horn",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "waist between plate and base",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hammer leaning at right",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The anvil's working plate (rows 3-5) is a horizontal surface. Row 4 is a light highlight (L=197), and row 6 is a dark shadow row beneath the front edge. Below it, the waist (rows 7-8) and the base block (rows 9-14) form a front face of about 9 rows. The base block has only a 1-row light top edge at row 9, so it reads as a vertical face with a rim and no top of its own. The hammer on the right is a separate decor item."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The anvil is a small, thin grey-steel prop with only about 11 distinct colours in total. By eye it shows roughly 3 lightness steps (a light top face, a mid body and a dark base) on a flat body. There is little per-pixel grain, no visible highlight clusters, and no dither or scratch texture on the steel. 76% of its dark edge pixels are near-neutral, so the outline reads as a neutral dark line, not a dark tone of the adjacent material, which is the sticker look. The per-tile tone counts are 0 because the piece is smaller than one tile, so I judged density by eye. Against the richer references (the well and the cheese stall at 17-20 visible tones, plus the hedge's clustered leaf shading) it looks thinner, flatter and more sticker-like. It matches the sparse lamp and bench in kind, but those are thin objects, and the anvil is a solid mass that should carry more shading. A careful artist would not accept it next to the references without more steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17584
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "anvil top plate (face)",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "waist",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hammer lying beside the anvil",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The anvil is drawn mostly as a side profile. The top plate (rows 3-6, width 19-24) has a light highlight at row 4 and dark rows 5-6 under it. It looks like a thin face-on strip of about 2 rows, not a foreshortened top surface. The waist (rows 7-8, width 9) is a vertical face. The base block (rows 8-14, width 15) is the largest volume. It has only a 1-row light highlight at row 9 as its top edge, then a flat front face on rows 10-13 and a dark bottom row 14. No ellipse, roof or visible contents show a real horizontal surface on the base. The result is a front elevation with only a rim-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate anvil is a small, thin grey object about 1 tile wide, so the per-tile density fact is 0 and does not count against it. Judged by eye against the references, it reads as a flat grey body with a near-black edge: about 3 grey steps (a light top face, a mid body, a dark base) where the Beodeul props use 5-6. Its dark edge pixels are 76% near-neutral, so the outline leans neutral black or grey rather than a tinted dark tone of the material, like the lamp-crook at 100% and unlike the hedge, stall and well, which are tinted. It has only 11 distinct colours in total, against 38-40 for the stall and well. I see no per-surface texture such as metal grain, specular dots or wear marks, and no stone-by-stone detail like the well. Next to the references it looks thinner, flatter and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17103
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.812Z",
+ "cells": {
+  "16": [
+   "3bacdd9077cfab3b",
+   "4e39cd212f063da5"
+  ],
+  "24": [
+   "08eab3f5febec6ba",
+   "102c995817dba077",
+   "2b7527e35254c988",
+   "5449c83542ea47ab",
+   "7a527337c7912a49",
+   "819ca5c10a77227a",
+   "ac389c6386108502",
+   "c9430150220d272f",
+   "cc6b5e4b0970c5e5",
+   "cf4bac9624faaecc",
+   "eb3b667df7c2e6e9",
+   "ed05a0e2b803c2ef"
+  ],
+  "32": [
+   "a9e32cbd1cfb2598",
+   "fa8c8b76c978e93a"
+  ],
+  "48": [
+   "2b194341d286dd67",
+   "49efa62d5ae36c3f",
+   "55510b56a00f3bdf",
+   "678e92a20d4d1707",
+   "85e50a937e5750bd",
+   "df502e8f0bdaf156"
+  ]
+ }
+}

@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "87e0424d6198463e1dc986a608909e6bf98703040dcaab2d0423c589fec870a1",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "chasm face snowlip",
+ "label": "beodeul_city/wave-places/mountain-fortress/chasm_face_snowlip",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 24,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "snow lip at top of cliff",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey rock cliff face",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark green foliage / water base",
+      "rows": "42-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 61,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 16px-wide, 64-row vertical cliff face. Rows 1-3 are a white snow strip, which is a 2-3 row rim with no front-edge line or eave shadow and no widening or narrowing. Below it, rows 3-41 are grey rock with dark crack lines, and rows 42-63 are green foliage or water. The silhouette is a constant 16 wide on every row, so there is no ellipse, no roof or canopy, and no visible contents. The whole drawing is a flat vertical face with only a thin snow rim at the top, so it reads as front elevation. It does not read as a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow, tile-sized strip of grey rock with a dark green patch at the bottom. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. The references are full houses with scalloped tile roofs, half-timber or stone walls, and doors. The candidate shows 9 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, which is comparable. Its dark edge pixels are 86% near-neutral, against 7-9% for the references. That means its outline is a neutral black/grey line rather than a dark tone of the adjacent material, which is the sticker look. Its rock ramp has only about 3 distinct lightness steps against roughly 6 on the references. Texture is some, but the stones are not shaded individually the way the reference stones are.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11392
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "snow lip on top of cliff",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock cliff face with cracks",
+      "rows": "3-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frosted dark green foliage or water at base",
+      "rows": "42-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 60,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a tall vertical cliff face, 16 px wide and 64 rows high. The only top-like feature is the white snow lip in rows 1-2, with a darker edge line at row 3 (x=8: rows 1-2 L~247, row 3 L=126). That is a 2-3 row rim, not a top surface. Below it are rock rows 3-41 with dark crack lines and no horizontal surface. Rows 42-63 are frosted dark green foliage or water, also drawn as a flat vertical face. It does not read as a gate, pavilion or building, and it has no roof slope or lintel top, so it reads as a front elevation with no real top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow cliff-face strip (grey rock with a snow lip and a dark green clump at the bottom), not a building with roof, walls and door/windows, so it does not match the reference kind. Measured facts: 9 visible tones per tile against 12 and 10 for the references, which is a bit lower but not far off. Near-flat coverage is 0%, the same as the references. 86% of dark edge pixels are near-neutral, against 7% and 9% for the references, so the outline reads as neutral black/grey, the sticker look, where the references use tinted material-tone outlines. The rock shows only about 3 lightness steps, against 5-6 per material in the references. The stones are not shaded one by one, and the snow lip is thin. It is acceptable as a simple tile, but it is shallower than the Beodeul standard on outline and shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12636
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "snow lip cap",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey rock cliff face",
+      "rows": "4-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icy blue and dark green base",
+      "rows": "41-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 61,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a tall vertical cliff wall, 16 px wide and 64 rows high. The white snow lip at rows 1-3 is a 2-3 row rim. It has no clear front-edge line and no eave shadow; the rock below simply starts at row 3-4. Rows 4-40 are a flat face with dark crack lines and no horizontal surface. Rows 41-63 are icy blue and dark green foliage, also drawn face-on. The width stays 16 for all rows, so nothing widens and narrows into an ellipse and there is no roof or slope. The object reads as a terrain wall in front elevation with only a rim on top, and as terrain it is not really a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow vertical strip: a grey rock face with a snow cap at the top and a dark green and black patch at the bottom. It is not a building, with no roof, walls, door or windows, so it does not match the building reference kind. Measured facts: 9 visible tones per tile against 12 and 10 for the references, which is only slightly lower. Near-flat coverage is 0%, so there are no large flat fills. 86% of its dark edge pixels are near-neutral, against 7% and 9% for the references, so the outline is a neutral black or grey line rather than a dark tone of the adjacent material. That is the sticker look. The rock ramp shows about 3 grey steps, against 5-6 per material on the references. The texture is some cracks and speckle, but it is shallower than the per-tile shingle scallops and stone-by-stone shading on the references. The kind mismatch, neutral outline and shallow ramps make this a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13651
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "snow lip strip along the top",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cracked rock cliff face",
+      "rows": "4-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "icy blue transition and dark green foliage at the base",
+      "rows": "41-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 60,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a full-width vertical cliff face, 16 px wide and 64 rows tall. Rows 1-3 are a white snow strip, only about 2 rows thick (rows 1-2 are near-white, row 3 is a grey transition). It has no front-edge line and no eave shadow, so it reads as a rim, not a horizontal top surface. Below it, rows 4-40 are grey rock with dark crack lines, rows 41-47 are an icy blue transition, and rows 48-63 are dark green foliage. All of that is vertical face. No ellipse, no roof or canopy plane and no visible contents are drawn. It looks like a terrain wall tile rather than a gate, pavilion or building, so the kind match is doubtful."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow one-tile-wide strip of grey rock with a dark green patch at the bottom. It is not a building: there is no roof, no walls and no door or window, so it does not match the reference kind. The measured facts agree with the picture. It has 9 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, so the rock has some grain. But 86% of its dark edge pixels are near-neutral, against 7% and 9% for the references. That is the neutral black outline of the sticker look, where Beodeul uses dark material tones. The rock ramp shows only about 3 distinct steps against 5-6 in the references. As a piece of a building it is far thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12286
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.848Z",
+ "cells": {
+  "16": [
+   "038556f01a22cba6",
+   "196d2acf983d0315",
+   "5ef3b9068b57781f",
+   "b0ae1d5a30656bc6"
+  ],
+  "24": [
+   "065cbf22e7946ac5",
+   "067372aed2d56f67",
+   "0a0f17a189b9211b",
+   "0a38275d73d03b91",
+   "156980eac3c36374",
+   "1ca7a43f14e18c43",
+   "6a9f68b2dfa9c776",
+   "7a21373d3e488902",
+   "a21a9cf7df84702b",
+   "a537241c5359c452",
+   "b8ce3bbbe78f4db0",
+   "bed59486436b7886",
+   "c21f3a0530333988",
+   "c48f0df5b15f28b7",
+   "ce4f0750461daa70",
+   "d6da2ca3557e6870",
+   "e7ab3b1a57bf8be7",
+   "ecd6ae03c620a39b"
+  ],
+  "32": [
+   "70951d479f4365c3",
+   "a8509cab384a6335",
+   "ac330755dda7ce0f",
+   "b434ac33fa1d339b",
+   "c42a66b4e465ee05",
+   "ed143d0dc00bc339"
+  ],
+  "48": [
+   "23b7cd968303c9ad",
+   "44b96b7ebebf1689",
+   "5ec9281e5b1c162a",
+   "78bd8b44edb0bc42",
+   "b5434e2176f867e8",
+   "beffe804a0bb35ef",
+   "bfc3c82372e7bbe0",
+   "d41f334c7ba769e1",
+   "d5699165ad010a9c",
+   "dd6f29f2d9d55999",
+   "ebed6148dcd21853",
+   "f1d516792576ecbd"
+  ]
+ }
+}

@@ -1,0 +1,417 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "749ce456f29d989affd71ea283366186bf6ea18f6588c4571e2990c31bce277d",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "gable ruin log",
+ "label": "beodeul_city/wave-places/ruined-village/gable_ruin_log",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 25,
+  "tileColorsP90": 54,
+  "darkV5": 33,
+  "nearBlackEdge": 0.2,
+  "opaqueTiles": 19
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (left and right slopes meeting at the ridge)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-67"
+     },
+     {
+      "part": "front dormer gable with round window (log-plank vertical face)",
+      "rows": "38-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log wall front face with door and window",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vine and grass",
+      "rows": "60-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 3 px at row 6 to 63 px at row 31. The tiled roof planes (rows 6-62) have a ridge line at the center and shingle stripes, so they read as sloped roof planes seen from above (evidence c). The roof ends at a dark eave band at rows 63-67, which is the front-edge line and eave shadow. Below it is a log-plank front wall about 33 rows tall (rows 63-95) with a door and window. The small dormer gable in front of the roof is drawn as a vertical log face with no roof of its own. It is minor next to the main roof, so the main body still has a clear top and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a gable building with a tiled roof, a log wall, a ruined hole, a door and a window, so it matches the reference kind. Measured facts: 20 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 3% of dark edge pixels near-neutral, so the outline carries a tint. It reads as dark brown beside the wood and dark red-brown beside the roof tiles, not a black sticker line. The roof tiles have scallops and per-tile highlights, in about 5 steps from highlight to dark. The log wall has horizontal grain and several brown steps, with a plank and debris detail. Grass tufts at the base add more texture. The ruined roof gap and dark opening add variation. Nothing is a flat fill and density is at or above the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15636
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (two sloped planes either side of the ridge at x=32)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-66"
+     },
+     {
+      "part": "front log gable / dormer triangle with round window",
+      "rows": "38-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log wall front face with door and plank",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vine and grass",
+      "rows": "56-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from a peak at row 6 (width 3) to full width by row 31. The orange and maroon tile courses of the roof are visible as a large sloped plane from rows 6-62, with a ridge line at x=32. A dark beam or eave line at rows 63-66 forms the front-edge line with its shadow, below which the log wall front face runs from rows 64-95 (about 32 rows). A small front gable with a round window sits on the roof. Roof tile rows count as the top surface under rule (c)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined gable log building: a tiled roof with a hole, and a log-plank wall with a doorway, a window and ivy. It matches the building kind of the references. The roof has scalloped tile rows with highlight, light, mid and dark steps, close to the references' roof ramp. The log wall shows plank grain and several browns. The measured facts support this: 20 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 3% neutral dark edge pixels, so the outlines carry a tint (dark brown beside wood, dark red-brown beside tiles) and are not a black sticker line. Grass tufts and ivy add small-scale variation at the base. No large flat fills are visible. Density and texture are equal to or richer than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14784
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (left and right slopes, ridge from row 6)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-67"
+     },
+     {
+      "part": "log gable front wall with round window and small triangular gable",
+      "rows": "38-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vine on right edge",
+      "rows": "55-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass at base",
+      "rows": "89-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 56,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from a ridge peak at row 6 (width 3) to full width 63 at row 31. The tiled roof planes (rows 6-62) are a sloped roof with a tile pattern, so they count as a top surface under (c). The roof ends in a dark eave line at about row 63, followed by dark shadow rows 64-67, and below that a log wall front face runs from about rows 64-95 (32 rows) with a window and horizontal log courses. A small triangular gable with a round window (rows 38-62) is drawn as a vertical face in front of the roof. It sits on the wall below and is not a major part missing a top. The vine and grass are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined gable log building with a tile roof, a log wall with horizontal grain, a broken hole in the roof, a dark window opening, debris and grass at the base. The roof has several tile tones with per-tile highlights, comparable to the references. Log walls show plank grain and several brown steps. The measured facts support this: 20 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage against 0%, and only 3% neutral dark edge pixels, so the outlines are tinted dark brown and red-brown rather than black. It has no large flat fills. The ruin details add variation and the piece is not thinner or more sticker-like than the references. Shading is slightly shallower than the references on the wall, but it is not a significant gap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13838
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (left slope and right slope with dormer hole)",
+      "rows": "6-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "64-66"
+     },
+     {
+      "part": "log gable end / dormer triangle with round window",
+      "rows": "38-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log wall front face with door slot and vines",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vine on right edge",
+      "rows": "60-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 56,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped tiled roof (rows 6-62) whose silhouette widens steadily from 3 px at row 6 to 63 px at row 31. The tile stripe rows are the top surface (evidence c). Its lower edge is a horizontal beam and eave line around rows 62-64, followed by a dark shadow band at rows 64-66. Below that is a log wall front face of about 32 rows (63-95) with a door opening, a small window and vines. The log gable triangle with a round window (38-62) is a vertical face set into the roof. The roof slope is the dominant top surface, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined gable log house. Its tile roof has highlight, light, mid and dark tile tones with scalloped per-tile highlights, close to the reference roofs. The log wall shows horizontal plank and grain variation in several browns, with moss tufts and grass at the base. The measured facts support this: 20 visible tones per tile against 12 and 10 in the references, 1% near-flat coverage, and only 3% neutral dark edge pixels, so the outlines are tinted dark brown or red-brown beside wood and roof rather than black. There are no large flat fills. The broken roof hole and the debris add variation. Shading depth and texture are comparable to the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15178
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.383Z",
+ "cells": {
+  "16": [
+   "091010b7c1609540",
+   "1915f11600caa264",
+   "20969074c664d16b",
+   "23be795df7cb4a69",
+   "2813a2880624a738",
+   "3356f36a222417d0",
+   "418fa99c09896616",
+   "449b3504a2e0f7d5",
+   "57d4d97bac933314",
+   "5bf5121011da18b1",
+   "688cb74c0ba6c9d2",
+   "77b1e5550f1ad662",
+   "792f8a58a317172f",
+   "8e839ebb3067146e",
+   "984736783461cd54",
+   "c57ed1efffa8c02e",
+   "cf8ee964649ac1e0",
+   "e3932255193468ef",
+   "e7f0a25a38c245df",
+   "eca198276ec9242b",
+   "f2d78cc8638becef",
+   "f55284ba0b8f45f9"
+  ],
+  "24": [
+   "0630748efed52078",
+   "0683d888f8b617d9",
+   "1242ad8ac143dd1b",
+   "190802f9ba47eaf7",
+   "250522fa7d378c06",
+   "27a5e62c4b9351f3",
+   "3b993f16a5d16300",
+   "50977fde9dae5ecd",
+   "52a62bb44279e8fd",
+   "554dd40fcb449b03",
+   "56363d0938bd7f80",
+   "5a2a0f6acd2ef171",
+   "74986dbe39077423",
+   "769ac89f0b97afd1",
+   "7e1394eb05ddb5e1",
+   "8d96c18ac26b2e41",
+   "922a68ef5df43352",
+   "92eea1dc7cc02cc3",
+   "95324d1130d44eb0",
+   "9bdecd5f1dee5315",
+   "a42178f967957d18",
+   "a8ee2e43564eddbd",
+   "afa64e9979be2145",
+   "b52609ca4822abcd",
+   "b65f88b5fa98a1b2",
+   "bd29d87ef6aace3b",
+   "bd45cb1982c76f6e",
+   "be0363f2903d6e12",
+   "cac51d603d58cd5f",
+   "dc324145f42730ce",
+   "df32244c572d5feb",
+   "e860df02d05b6f4c",
+   "ecf63b13c34fdbef",
+   "ee6546c44fa90167",
+   "eee291ead076396a",
+   "facbcc14a2764f65"
+  ],
+  "32": [
+   "3911242d24dfadb5",
+   "666551c7a3f53e43",
+   "69cbadaeb0d47614",
+   "a72d4b4bd4032a64",
+   "a89683ededc37991",
+   "ae3199a96e7bab6e"
+  ],
+  "48": [
+   "2b794aba18a52d55",
+   "3940a4170e38497b",
+   "470d838582e8fc67",
+   "478e3c8c969fd19f",
+   "6c6c8e98a45f1a34",
+   "858207d05a934b14",
+   "982e8f6e493a8e22",
+   "994bbe32fc660ef0",
+   "cef7c8524037c58e",
+   "ed406786ea46f13d",
+   "f74019150a11a7ae",
+   "f7e24fb6d437dc4a"
+  ]
+ }
+}

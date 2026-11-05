@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "074f572930c742d14eb50664b56dea9b355822010bd5c43b94ac0b4bcbd75327",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "ash mound",
+ "label": "beodeul_city/wave-places/volcano-field/ash_mound",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ash mound heap upper surface",
+      "rows": "6-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound lower flank / base shadow",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a lens-shaped heap that widens from 10px at row 6 to 28px at rows 10-11, then narrows to 6px at row 15. The upper rows 6-9 carry the lighter highlights (L about 115-147 in columns x=9, 16 and 22) and read as the heap's sloped upper surface. Rows 10-15 step down to darker values (L about 43-90), which read as the shaded front flank and base, about 5-6 rows tall. There is no hard front-edge line, because the shading grades softly as expected for a loose pile. A heap with a lit top and a shaded front still reads as a volume, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The ash mound is a low, flat grey oval, smaller than one tile, so the per-tile tone count is 0 and I judged density by eye. It has only about 3 visible grey steps: a lighter top, a mid body and a dark rim, plus a few speckle dots. The references (well, hedge, stall) carry about 5-6 steps per material and per-piece highlights. All of its dark edge pixels (100%) are neutral, so the rim reads as a neutral dark line rather than a darker tone of the ash. That is the 'sticker' look. The hedge and well outlines are tinted at 0% and 33% neutral. The bench and lamp references are also small or thin, so size alone is not the issue. Next to them the mound still looks flatter and less shaded, with little grain, no clumps and no individually shaded lumps. Because of the neutral outline and shallow ramp, I would not accept it beside the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16000
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ash heap upper surface (lighter highlights, speckled)",
+      "rows": "6-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker lower flank of the heap",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low lens-shaped heap. Its width grows from 10 at row 6 to 28 at rows 10-11, then narrows to 6 at row 15, so it reads as an ellipse-like mound. Rows 6-10 are lighter and speckled (L about 90-147 in columns x=9, 16 and 22), which reads as the heap's upper surface. Rows 11-15 are noticeably darker (L about 43-68), which reads as the shaded front flank. There is no crisp front-edge line or eave shadow, so the top surface is judged by the heap contents (evidence d) and the light-to-dark shading. It is not a flat slab, because there are at least 5 rows of darker front flank. Confidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The ash mound is a small, low, flat grey lens with only about 10 distinct colours and roughly 3 visible grey tones. It has a dark neutral rim; the measured near-neutral share of dark edge pixels is 100%, so the outline is near_black rather than a tinted dark material tone. The references with richer shading (hedge, well, stall) use tinted outlines and 9-20 visible tones per tile. The mound has no visible ash grain, speckle, individual stones or clumps, so the interior reads as a smooth shaded blob. The sparseness measure does not count against it, because the object is a low prop, but by eye it still looks flatter and more sticker-like than the hedge or the well. It would sit noticeably thinner next to the Beodeul pieces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13727
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ash mound heap",
+      "rows": "6-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Low flat debris heap, width profile 10-19-24-26-28-28-26-24-18-6 over rows 6-15, an elliptical mound. Lighter upper rows 6-9 (L~115-147) show the heap's top surface, with darker lower rows 10-15 (L~43-90) as its shaded front. The heap has no hard edge line, but it reads as a lumpy pile of debris lying on the floor with a lit top and a shaded south side, which fits the debris kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, low grey ellipse with about 3 visible lightness steps: a lighter top, a mid body and a dark rim. The references use 5-6 steps (hedge, well, stall). All of its dark edge pixels are near-neutral (100%), so the outline is a uniform dark grey line, which gives the sticker look. The reference hedge has 0% neutral edges and the well has 33%, because theirs are tinted to the material. The mound shows few texture dots and no ash clumps, flecks or per-stone shading, so it reads as one smooth lump. The tile-level facts are 0 because the piece is smaller than one tile, so I judged density by eye. Next to the hedge and well it looks thinner, flatter and less detailed. It has 10 distinct colours against 38-40 for the richer references. It is a sparse, low prop and I did not fail it for size alone, but the shallow shading, neutral outline and lack of grain do not meet the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10406
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ash mound upper lit surface",
+      "rows": "6-10",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound lower shaded flank",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low oval lump. Its width goes 10, 19, 24, 26, 28, 28 and then narrows 26, 24, 18, 6 over rows 6-15, which is an ellipse profile. The upper rows 6-9 hold the lighter highlights (x=9 and x=16 at L~147, x=22 at L~116), so they read as the lit top of the heap. Rows 10-15 get darker (L~43-68) and read as the shaded front flank. There is no crisp front-edge line or eave shadow, so the top/front split is soft. It still shows a lit top and a darker front of about 5 rows each, which is a weak three-quarter read for a flat debris mound."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey oval mound, about 20x8 source pixels, with only 10 distinct colours. It reads as a flat grey body with one lighter top patch and a dark outline all the way round, with only about 3 lightness steps. The measured facts back this up: 100% of its dark edge pixels are neutral, with no tint. That points to a uniform neutral outline, the 'sticker' look, rather than a darker version of the adjacent material. Little ash grain, speckle or individually shaded clumps are visible on the body. The references that show per-tile tones (hedge 9, stall 17, well 20) have much richer clustered texture and tinted shading. The candidate is a single-tile-sized prop, so the per-tile fact is 0 and I judged density by eye. By eye it is clearly thinner and flatter than the hedge and well. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15476
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:18.980Z",
+ "cells": {
+  "16": [
+   "02ff5dd731c10e05",
+   "410e5eb4117822bc"
+  ],
+  "24": [
+   "139b19266f114753",
+   "2d8795453f2668e4",
+   "4ba74e51d94c4dc8",
+   "6dbac04b3b62a01d",
+   "7904e522ef6c32a1",
+   "875d8cbe08dd58d9",
+   "a516e4e2e7c973e9",
+   "a96b78f7d0414f19",
+   "b5ad1ee5c177dd61",
+   "bd8bf90b7ef75fbf",
+   "c5d3274628eb4812",
+   "db2bfc1a1a16eee9"
+  ],
+  "32": [
+   "5b194e308f3c7352",
+   "ab07663f7a8203ff"
+  ],
+  "48": [
+   "26ea6177520949d3",
+   "6918020064bca728",
+   "a77ab0f742a18536",
+   "ada38b14cd0bcfa2",
+   "dd5879ec9b4cc66a",
+   "f3628c0d15b25b0b"
+  ]
+ }
+}

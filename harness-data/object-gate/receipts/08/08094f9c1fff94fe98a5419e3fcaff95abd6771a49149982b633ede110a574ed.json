@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08094f9c1fff94fe98a5419e3fcaff95abd6771a49149982b633ede110a574ed",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "charred snag",
+ "label": "beodeul_city/wave-places/volcano-field/charred_snag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 8,
+  "nearBlackEdge": 0.62,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken jagged top of the snag (trunk tip)",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "charred trunk body with glowing ember spots",
+      "rows": "12-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare at base",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The snag is a narrow vertical trunk 5-6 px wide from rows 12 to 30. Its top (rows 9-12) tapers to a jagged broken tip, widths 1, 2, 5, 7. That is a pointed silhouette, not a horizontal surface, with no front-edge line, eave shadow, or ellipse. The trunk's front face runs rows 12-30, with ember glow at rows 18-19 and 25-26 and a root flare at rows 28-31 (widths 7-9). There is no visible top plane, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin, tiny snag, much smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. It shows about 3 tones: a dark trunk body, a lighter edge and a few orange ember dots. The references carry 5-6 shading steps per material, with clumped foliage and trunk grain. The candidate's dark edge pixels are 72% near-neutral, which indicates a near-black outline, while the references are tinted (0% neutral). Its 13 distinct colours are close to the reference's 10, but the visible structure is still thin. There is no bark grain, no branch breakup and no root flare. Next to the references it looks thinner, flatter and more sticker-like. Thin or sparse objects should not fail for sparseness alone, but the shallow shading and the neutral outline are real shortfalls here.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10092
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken jagged top of snag",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "charred trunk body with glowing ember spots",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare at base",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The snag is a vertical charred trunk, about 5-6 px wide, running from row 11 to row 31. The top (rows 9-12) is a jagged broken tip that narrows from 7 px to 1 px. It has no front-edge line, no eave shadow, no ellipse and no visible interior. The column scan shows a light row at row 10-11 (L=73) over dark trunk rows, which reads as a broken-edge highlight rather than a horizontal surface. Below it the trunk is a flat vertical face with ember glows at rows 18-19 and 25-26. The base flares at rows 28-30 into roots. There is no top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a very small, thin snag, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It shows about 3 tones: a near-black body, a slightly lighter edge strip, and a few orange ember dots. The dark edge pixels are 72% near-neutral, so the outline leans neutral black rather than a tinted dark tone of the adjacent material, which is the sticker look. Both references use 7 to 29 visible tones per tile with tinted dark edges (0% neutral). They also carry layered canopies, bark grain and root detail, while the candidate has only a dark trunk with no bark grain, no branch structure and no root flare. Even for a sparse object it looks thinner and flatter than the references, so it does not meet the Beodeul bar. The 13 distinct colours and 0% flat coverage come from the tiny size, not from richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17330
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred trunk body",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken jagged top tip",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The snag is a narrow trunk, 5-7 px wide, running from about row 11 to row 31 and flaring into roots at rows 28-30. The top is a jagged broken tip (rows 9-12) that tapers from width 1 to 7. It has no flat band, no front-edge line, no eave shadow and no ellipse. The glowing ember spots at rows 18-19 and 25-27 are details on the vertical face. The trunk is a vertical face with no horizontal top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a very small, thin charred stump, much narrower than the reference trees and smaller than one 16x16 tile, so the per-tile facts are 0 and I judged it by eye. It has about 13 raw colours, but the visible ramp is only about 3 steps: a near-black body, a dark brown highlight edge and a few orange ember dots. The dark edge pixels are 72% near-neutral, so the outline reads as a near-black line rather than the dark tone of the adjacent material, which is the sticker look. The references show 5-6 steps with clumped texture and tinted dark edges (0% neutral). The candidate has no visible bark grain, no per-segment shading and no root or branch structure. Even allowing for a thin, sparse object, it looks thinner, flatter and more sticker-like than the references, so it would not be accepted next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9154
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred trunk (main body)",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken jagged top tip",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared root base",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The snag is a narrow vertical charred trunk, 5-6 px wide from rows 11-27, widening to 9 px at the root flare (rows 28-30). The top (rows 9-12) is a jagged broken tip that tapers from 1 to 7 px wide. It has no front-edge line, no eave shadow and no ellipse, so it does not read as a horizontal surface. The glowing ember spots at rows 12, 18 and 26 are small details on the vertical face. The column scan shows only vertical bands of bark shading and no horizontal top band, so the trunk is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, thin charred snag, smaller than one 16x16 tile (visible tones per tile = 0, so the density fact is not used against it). By eye it is a dark vertical trunk with a couple of orange ember pixels and only about 3 value steps. Both references show 5-6+ steps of canopy and trunk ramps with clumped leaves and grain. The trunk has no bark grain or per-section highlights. 72% of its dark edge pixels are near-neutral, while the references are at 0%. That reads as a neutral near-black outline rather than a dark tone of the adjacent material, which is the sticker look. Next to the references it looks thinner, flatter and less shaded, so it does not meet the Beodeul bar. 13 distinct colours overall is not itself the problem; the lack of visible shading steps and texture is.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9263
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.093Z",
+ "cells": {
+  "16": [
+   "4442047a16157155",
+   "6e587544a625002a"
+  ],
+  "24": [
+   "4a5a3759fba015c5",
+   "635bb0d67c53212a",
+   "74678b971d846d66",
+   "8e9cd9b12a41a25e",
+   "bfbc59ce878c6deb",
+   "c57fd262ef7878a3",
+   "cf1cacba0f248368",
+   "fabbb61676e76fae",
+   "fc260fd0725e4424"
+  ],
+  "32": [
+   "0d711a2d52073c16",
+   "57c9b9f5d4e84b02",
+   "5fc3389ebbb23110"
+  ],
+  "48": [
+   "456fd5a2594ac1c8",
+   "513932123d30e0e3",
+   "6415e9ad78cd2371",
+   "970ecf4891edb0ad",
+   "ae9cd12abc78262f",
+   "af79a8dbaaefe315"
+  ]
+ }
+}

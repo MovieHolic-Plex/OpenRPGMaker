@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5115e776f83cc0b81b7237b6c8af52cbee8c0fa05424d34ee845a3ff7a5343db",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "ruin house a",
+ "label": "beodeul_city/wave-places/ruined-village/ruin_house_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 54,
+  "tileColorsP90": 82,
+  "darkV5": 25,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (sloped plane with dormer and chimney)",
+      "rows": "23-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "dormer window on roof",
+      "rows": "28-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-framed plaster front wall",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof spans rows 23-63, a large sloped tile plane whose width grows from 2 to 96 px. It ends at a dark eave line at row 63 with an eave shadow in rows 64-65 above the front wall. Below it, the half-timbered wall (rows 64-95) is a clear south front face with a door and windows. The roof slope reads as the top surface (evidence c) over a vertical front, so the building is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined timber-framed house, the same kind as the references. Its tile roof has several lightness steps (highlight, light, mid, dark, deep) with scalloped per-tile texture. The collapsed hole shows exposed rafters, and creeping vines and grass add variation. Walls have plaster speckle and timber frames, and the windows are broken. Measured: 23 visible tones per tile against 12 and 10 for the references, 2% near-flat coverage against 0%, and only 4% of dark edge pixels near-neutral. That means the outlines are tinted dark brown and red-brown rather than a black sticker line. It is slightly less crisp than the references in the wall shading, but not shallower, and density is at or above the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8969
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (main sloped plane, including the broken dormer opening and the brick chimney section on the right)",
+      "rows": "23-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-66"
+     },
+     {
+      "part": "timber-framed front wall with door and windows",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 2 px at row 23 to 96 px at row 40, which is a sloped roof plane. It is covered in tile rows down to row 63 and ends at the eave. Rows 64-66 are dark eave shadow. Below that, rows 64-95 are a south-facing timber-frame wall with a door, windows and posts, so the front face is well over 3 rows. The roof is the top surface (evidence c), and the wall is the front face. The brick chimney section on the right and the dormer opening sit on the roof plane and read as part of the roof, so I count no major part as a vertical face only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building, the same kind as the references. Measured facts favour it: 23 visible tones per tile against 12 and 10 for the references, 2% near-flat coverage against 0%, and only 4% neutral dark edge pixels, so the outlines are tinted. By eye, the roof has scalloped tiles in several red-orange steps with highlights, and the collapsed section shows dark brown beams and a dark hole. The plaster walls are speckled, and the timber, vines and grass tufts at the base add variation. The windows are broken and the door is dark. The outlines follow the neighbouring material (dark brown beside wood, dark red-brown beside tiles) and are not a uniform black line. There are no large flat fills. It sits at or above the references in structure and density, with only slightly fewer shading steps on the roof because of the damage. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13942
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (sloped plane with dormer and chimney)",
+      "rows": "23-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "half-timbered front wall with door and windows",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "climbing vines and grass at base",
+      "rows": "58-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette narrows from 96 px wide at row 40 to 2 px at row 23, forming a large sloped tile roof (rows 23-63) with visible tile courses, a dormer and a chimney. It ends at a dark eave line at rows 63-65 with shadow below. Beneath it is a half-timbered front wall about 30 rows tall (rows 65-95) with a door and windows. The roof is a clear top plane (evidence c) above the front face, so the building reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building (roof, timber-framed walls, door, windows), the same kind as the references. The measured facts support it: 23 visible tones per 16x16 tile against 12 and 10 for the references, 2% near-flat coverage against 0%, and only 4% of dark edge pixels near-neutral, so the outlines carry a tint. By eye, the roof has per-tile scallops with highlights and shadow in about 5 steps, and the broken section shows exposed rafters. The walls have plaster speckle and timber shading. Ivy, grass tufts and damaged windows add variation. The outlines are dark brown or red-brown beside their materials, not a uniform black line. The wall ramp is a little shallower than the reference's, but there are no flat fills and the candidate looks at least as rich as the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8931
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (sloped plane with dormer and chimney strip)",
+      "rows": "23-63",
+      "evidence": "c",
+      "front_edge_line_row": 63,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "timber-framed plaster front wall",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane spanning rows 23-63. Its silhouette widens from 2 px at row 23 to 96 px at row 40, and the tile rows end in a straight eave edge at row 63. Dark eave shadow follows at rows 64-65, with the half-timbered plaster front wall below it (rows 64-95, about 31 rows) holding a door and windows. The roof carries a dormer and a chimney strip that are part of the roof structure. The top surface is clearly visible above a south front face, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined timber-frame house with a tile roof, a collapsed hole showing rafters, vines, and broken windows. This matches the reference kind (a whole building). It carries 23 visible tones per tile against 12 and 10 for the references, and 2% near-flat coverage against 0%. Only 4% of its dark edge pixels are near-neutral, so the outlines are tinted: dark red-brown beside the roof tiles and dark brown beside the wood. The roof tiles have scalloped rows with per-tile highlights and about 5 lightness steps. The plaster walls are speckled, the timber is grained, and grass tufts and vines add variation. There are no large flat fills. Its shading is slightly shallower than the references on the wall ramps, but the density and texture are at or above the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9208
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.460Z",
+ "cells": {
+  "16": [
+   "113716b6d6f53a3e",
+   "153b5104b333b85c",
+   "2166e1e222117b54",
+   "22bc17ba116edf01",
+   "319b1e091fdf12a1",
+   "3afb31743450157e",
+   "3ddd81bc4a930ba4",
+   "539b77eb2be8ef8d",
+   "5667d6f6c1ac78a5",
+   "60a121ff58718114",
+   "6457c8a4eca53201",
+   "8470c3c64afdcd54",
+   "9ae20a5f8b03bda5",
+   "a10d8c0dabd387ac",
+   "a51065c753e1a3fa",
+   "a689c9aee4351b60",
+   "a6d729716f8a8281",
+   "a7500fa1d3794b73",
+   "c37f7c2039fd2c59",
+   "c976bb6d5c36b310",
+   "ca32dfff13748984",
+   "d1405d325a3837e2",
+   "dd17d679844568d7",
+   "e6d6f26ad038cbaf",
+   "e9c6e30dbdd78861",
+   "ef6a3e8119ea7a15",
+   "f41fa21a23f7707b",
+   "f734c5a4e569fd14",
+   "fa81de5d90fcead9"
+  ],
+  "24": [
+   "0c5faca8a4398152",
+   "0f0d133ddb005661",
+   "1ef599379ce7f852",
+   "3441bdc9457541d7",
+   "4d4e71d9939b9854",
+   "6c56bd5c975a89e9",
+   "8fe5abff93a260e9",
+   "bfa10f3f68896ca9",
+   "c3c8fb388836e51c",
+   "cec7bea41cac7216",
+   "dd0f387ddd8e5ea4",
+   "e5b6791a7cb7f51d",
+   "f189c3c176dd84c8"
+  ],
+  "32": [
+   "0e55c212a2938a10",
+   "25482af88ddb52bf",
+   "28effa8e2f6ae95e",
+   "2b2659699fd6467e",
+   "46358af2f833f7e1",
+   "72b538fd06122ca4",
+   "dde1471a93b3c39b",
+   "f310631723148609",
+   "f70c899490f0d297"
+  ],
+  "48": [
+   "2c00dc0b03b56e95",
+   "41bf1290be7d7039",
+   "8628d62a3c69d99e",
+   "fb5cf2cbcf20195b"
+  ]
+ }
+}

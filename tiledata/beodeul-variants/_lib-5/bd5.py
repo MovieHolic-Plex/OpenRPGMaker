@@ -1,7 +1,7 @@
 # 버들항 변형(변형 5) 공용 도우미 — 필드 4곳이 함께 쓴다.
 # 버들항 파이프라인(scripts/content/lib/city_v6)의 땅·절벽·길·물 그리기를 그대로 부르고, 없는 조각은 손 도트(hand_*.py)로 채운다.
 import sys, os, json, math, random, colorsys
-ROOT = '/home/main/.t3/worktrees/rpg-zzu/beodeul-var5'
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 V6 = ROOT + '/scripts/content/lib/city_v6'
 sys.path.insert(0, V6)
 import numpy as np

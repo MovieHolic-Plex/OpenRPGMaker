@@ -11,6 +11,7 @@ import { getAudioAiDescription } from "./audioAiDescriptions";
 import { isBgmFileInstalled } from "./installedBgm";
 import { BGM_CATALOG, bgmTrackLabel } from "./bgmCatalog";
 import { CC0_AUDIO_ASSETS } from "./cc0AudioAssets";
+import { OPRN_BGM_ASSETS } from "./oprnBgmAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "./easyrpgRtp";
 import { builtinGeneratedResourceIds } from "./generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "./oprnGeneratedAssetPlan";
@@ -57,7 +58,7 @@ export type AudioResource = {
 };
 
 const AUDIO_ID_PREFIXES = {
-  music: ["easyrpg-music-", "cc0-music-", "cc0-bgm-"],
+  music: ["easyrpg-music-", "cc0-music-", "cc0-bgm-", "oprn-bgm-"],
   sound: ["easyrpg-sound-", "cc0-sound-", "cc0-se-"],
 } as const satisfies Record<AudioResourceKind, readonly string[]>;
 
@@ -121,6 +122,15 @@ export function listAudioResources(
     add(asset.id, asset.name, {
       tags: ["cc0", kind],
       description: `${asset.name} (${kind})`,
+      descriptionSource: "metadata-derived",
+    });
+  }
+
+  for (const asset of OPRN_BGM_ASSETS) {
+    if (asset.kind !== kind) continue;
+    add(asset.id, asset.name, {
+      tags: ["oprn-bgm", "ai-generated", kind],
+      description: `${asset.name} — ${asset.sourceName}`,
       descriptionSource: "metadata-derived",
     });
   }

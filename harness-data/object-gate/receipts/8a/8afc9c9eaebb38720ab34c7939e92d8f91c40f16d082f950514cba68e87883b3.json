@@ -1,0 +1,362 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8afc9c9eaebb38720ab34c7939e92d8f91c40f16d082f950514cba68e87883b3",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "crag a",
+ "label": "beodeul_city/wave-places/mountain-fortress/crag_a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 16,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper peak of rock, lit facets",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower ledge, lit sloped plane",
+      "rows": "26-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-39"
+     },
+     {
+      "part": "front face of rock base",
+      "rows": "37-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock is a faceted mound that widens from a pointed peak (width 3 at row 1) to 28 px at rows 31-34, then narrows to a rounded base at rows 40-44. The main body has a bright lit plane at rows 26-36 (column x=16 is white, L=255, for rows 28-36). It ends at an edge, and darker, shaded face rows follow at 37-43 (L≈126 and 96-126). That reads as a top or sloped plane over a front face. The upper peak at rows 1-14 is lit facets with no edge line or ellipse. The evidence is moderate: it is an irregular organic shape, not a built volume, but it does have a top plane and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey, gourd-shaped rock stack (crag), not a tree with a canopy and trunk, so it does not match the reference kind. It has about 4 grey steps: white highlight, light grey, mid grey and dark grey. The measured facts show 100% near-neutral dark edge pixels, which matches the visible near-black outline, whereas both references have 0% and use tinted dark-material edges. Its visible tones per tile (10) are above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 12%, against 0% for both references, and the large smooth highlight patches on the top lobes read as flat fills. The stones are not shaded one by one, and the sticker-like neutral outline is the shallow look the Beodeul standard avoids. Fail on the neutral outline, flat patches and shallow ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14995
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper rock spire with white highlight facets",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower boulder ledge (white lit top plane)",
+      "rows": "26-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "lower boulder front face",
+      "rows": "37-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock is a peaked, faceted mound, 28 px wide at its base, with a flat shadow strip on the ground at rows 44-46. The upper spire (rows 1-17) is made of shaded facets and has no flat top. The lower boulder has a wide white lit plane at rows 26-36 (x=16 rows 28-36 and x=22 rows 26-31 are white). Darker, grayer rows follow it: x=22 rows 32-37 at L=96 and x=16 rows 37-44 at L=126. That change reads as a front edge below a top plane, with the front face beneath it at about rows 37-44. This is a borderline call: the lit plane could also be read as a highlight facet on an elevation view. I read it as a top surface with a front face, so the drawing reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock stack (gourd-shaped boulder) and not a tree, bush or plant, so it does not match the reference kind (leafy canopy and trunk). Measured facts: 10 visible tones per tile is above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 12% against 0% for both references. 100% of the dark edge pixels are near-neutral, so the outline is a neutral near-black line, the sticker look; the references are 0% neutral and use tinted dark material tones. By eye, the stones have about 4 grey steps (white highlight, light grey, mid grey, dark) with a few facets but no per-stone grain or tint variation. The top of the stack is a thin, mostly flat white-grey shape.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16010
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper spire / peak of the crag",
+      "rows": "1-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid ledge, lit planes stepping down the right side",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower boulder lit top plane (white patch)",
+      "rows": "26-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "lower boulder front face, darker grey and shaded on the right",
+      "rows": "32-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crag is an irregular faceted rock mound whose width grows steadily from 3 px at row 1 to 28 px at rows 31-34, then narrows to 9 px at row 44. It has no ellipse and no clean front-edge line. The lower boulder does show a bright lit plane at rows 26-31 (white in columns 16 and 22) over a darker front face at rows 32-43 (L about 96-126). That reads as a lit upper surface above a south-facing front. Lit ledges higher up, such as the white patches at rows 13-14 and 18-22, add to the sense of stepped upward-facing planes. This is a moderate call, since the top plane is a rock facet and not a crisp edge-lined band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a gourd-shaped grey rock stack (crag), not a tree with canopy and trunk, so it does not match the reference kind. It has about 4 grey steps (white highlight, light grey, mid grey, dark grey) with facet blocks. The measured 10 visible tones per tile is above the 7 of tree-1a786c but far below the 29 of tree-d43edd. Its dark edge pixels are 100% near-neutral, which matches the visible black/grey outline around the whole silhouette. That is the sticker look, whereas the references use tinted dark green or brown edges. The 12% near-flat coverage shows some flat facets, against 0% for both references. Shading is shallower than the 5-6 steps in Beodeul, and the neutral outline is the main shallow trait.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15072
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "summit highlight plane",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid ledge top (lit white patch)",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "21-24"
+     },
+     {
+      "part": "lower main ledge top (lit white patch)",
+      "rows": "26-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-37"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock is a tapering mound, 3 px wide at row 1 and 28 px wide by rows 31-34. Its lit white planes are the upward-facing surfaces. The main one is the ledge at rows 26-31, where the x=22 scan shows white L=255 turning to dark L=96 at row 32. The x=16 scan shows a white ledge at rows 28-36 above the darker face at rows 37-44. A grey rocky front face of about 13 rows (32-44) sits below the lit ledge. The upper plane at rows 18-22 is bounded below by dark rows 21-24 in the x=16 and x=22 scans. There is no isometric side face; the dark patches on the right are shading on the south-facing rock. Because it is irregular rock rather than a built form, the top evidence is looser than for a cabinet or table, but lit tops over darker faces are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey, gourd-shaped rock stack (crag), not a tree with a canopy and trunk, so it is a different kind from the references. It has about 4 grey steps (white highlight, light grey, mid grey, dark grey). Its dark edge pixels are 100% near-neutral, which matches the sticker look of a neutral dark outline, whereas the references use tinted dark green and brown edges (0% neutral). The facets are large and smooth, with several areas of one flat tone and little grain or per-stone dotting. The candidate's 10 visible tones per tile beat reference 1a786c (7) but sit far below d43edd (29). The small bright highlight patches look pasted on rather than modelled. Overall it is shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13630
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.866Z",
+ "cells": {
+  "16": [
+   "1a4d129b006bde3e",
+   "317ca23e26149289",
+   "56c612649a25615c",
+   "740c9bb1e80a4472",
+   "828d62f77101caa2",
+   "eb09f4c128b9a7f0"
+  ],
+  "24": [
+   "1ca33656bff5e808",
+   "3ffcdfdede96da6c",
+   "5d408494a8b15a8e",
+   "5ffeedd6686581c2",
+   "640251a2ab381c00",
+   "736c37e55810e02a",
+   "77d250a6bab67e0d",
+   "92eb919855c21d49",
+   "cc500d6356632295",
+   "dd2da28d2bd9f123",
+   "ec18bb4b1209a5f7"
+  ],
+  "32": [
+   "0903f976d4656ffb",
+   "60f29635d8163d5a",
+   "aa1554e9723348e2",
+   "e2c53c319cacab67"
+  ],
+  "48": [
+   "13c5eb258bf3df64",
+   "2fa9027cbcfd2193",
+   "6b8c00a0a621b290"
+  ]
+ }
+}

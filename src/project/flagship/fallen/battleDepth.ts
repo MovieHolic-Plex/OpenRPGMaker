@@ -71,25 +71,25 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // ── 카엘: 앞에서 버티는 검사 — 도발·반격 + 둔화된 적을 노리는 십자베기 ─────────────────────
   tune("skill_hero_cross_slash", {
     exploitStates: { stateIds: ["state_agility_down"], bonusPercent: 50 },
-    description: "두 번 벤다(급소 30%, 검을 들면 +40%). 둔해진 적은 +50% — 엘레나의 블리자드 다음에.",
+    description: "두 번 벤다. 급소 30%, 검을 들면 +40%.\n둔해진 적에게 +50%, 블리자드 다음에 좋다.",
   });
   tune("skill_hero_flame_sword", {
     stateEffects: [{ stateId: FS_BURN_STATE, chance: 60, operation: "add" }],
-    description: "불 속성 베기 + 60% 화상(매 차례 HP 3%).",
+    description: "불 속성으로 벤다. 60% 확률로 화상을 입힌다.\n화상은 매 차례 HP 3%를 깎는다.",
   });
   make("skill_focus", FS_TAUNT_SKILL, {
     name: "도발", scope: "self", power: 0, mpCost: { flat: 3, percentMax: 0 },
     effect: { kind: "support" },
     stateEffects: [{ stateId: "state_taunt", chance: 100, operation: "add" }],
     retroChoreographyId: "skill_guard_taunt",
-    description: "적의 공격을 자신에게 끈다(방어 +20%). 엘레나가 큰 마법을 모을 때.",
+    description: "적의 공격을 자기에게 끈다. 방어 +20%.\n엘레나가 큰 마법을 모을 때 좋다.",
   });
   make("skill_focus", FS_COUNTER_SKILL, {
     name: "반격 자세", scope: "self", power: 0, mpCost: { flat: 5, percentMax: 0 },
     effect: { kind: "support" },
     stateEffects: [{ stateId: "state_counter", chance: 100, operation: "add" }],
     retroChoreographyId: "skill_guard_counter",
-    description: "물리 공격을 맞으면 60% 로 되받아 벤다. 도발과 함께 쓰면 적이 스스로 칼을 맞는다.",
+    description: "물리 공격을 받으면 60% 확률로 되받아 벤다.\n도발과 같이 쓰면 적이 제 발로 칼에 걸린다.",
   });
   learn("class_hero", 4, FS_TAUNT_SKILL);
   learn("class_hero", 8, FS_COUNTER_SKILL);
@@ -97,12 +97,12 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // ── 엘레나: 깔고 지키는 마도사 — 기세 꺾기(약화 대신)·정화·마법탄 흡수 ─────────────────────
   tune("skill_arcane_bolt", {
     drainPercent: 30,
-    description: "MP 2. 가장 싼 공격 마법 — 준 피해의 30% 만큼 HP 를 되찾는다.",
+    description: "준 피해의 30%만큼 HP를 되찾는다.\nMP 2로 쓰는 가장 싼 공격 마법이다.",
   });
   make("skill_weaken", FS_DAMPEN_SKILL, {
     name: "기세 꺾기", mpCost: { flat: 3, percentMax: 0 },
     stateEffects: [{ stateId: "state_attack_down", chance: 100, operation: "add" }],
-    description: "한 대상의 공격을 반으로(확정). 센 한 방을 준비하는 적에게 먼저. (방어 깎기는 카엘의 올려베기)",
+    description: "적 하나의 공격을 반드시 반으로 깎는다.\n큰 한 방을 모으는 적에게 먼저 쓴다.\n방어 깎기는 카엘의 올려베기가 맡는다.",
   });
   make("skill_heal", FS_PURIFY_SKILL, {
     // 회복량 없는 support — 회복 기술이면 자동 전투 AI 가 치유 대신 고른다(모의전 실측: 용전 치유 절반이 정화로 샜다).
@@ -111,7 +111,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
       .filter((id) => db.states.some((s) => s.id === id))
       .map((stateId) => ({ stateId, chance: 100, operation: "remove" as const })),
     retroChoreographyId: "skill_cleric_purify",
-    description: "아군 하나의 독·마비·잠·침묵·화상·능력 하락을 한 번에 씻는다.",
+    description: "아군 하나의 독, 마비, 잠, 침묵, 화상과\n능력 하락을 한 번에 씻는다.",
   });
   learn("class_mage", 1, FS_DAMPEN_SKILL, "skill_weaken");
   learn("class_mage", 4, FS_PURIFY_SKILL);
@@ -119,11 +119,11 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // ── 이리스: 멈춘 적을 노리는 저격수 + 게이지 늦추기 ────────────────────────────────────
   tune("skill_gunner_shot", {
     exploitStates: { stateIds: ["state_stop", "state_sleep", "state_paralysis"], bonusPercent: 50 },
-    description: "급소 50%(두 배), 사출봉 +40%. 기절·잠·마비로 멈춘 적은 +50%.",
+    description: "급소 확률 50%, 급소는 두 배로 들어간다.\n사출봉을 들면 +40%.\n기절, 잠, 마비로 멈춘 적에게 +50%.",
   });
   tune("skill_gunner_rapid_fire", {
     gaugeShift: -10,
-    description: "약한 빛 네 발(사출봉 +40%). 맞힐 때마다 적의 다음 행동을 늦춘다. 잠든 적은 깬다.",
+    description: "약한 빛을 네 발 쏜다. 사출봉을 들면 +40%.\n맞힐 때마다 적의 다음 차례가 늦어진다.\n잠든 적은 깨어난다.",
   });
 
   // ── 달려드는 속도(2026-10-25 「늑대가 고블린보다 느리네」) — 전역 기본(fast)에서 짐승은 이미 사람 적보다 빠르다.
@@ -134,7 +134,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FLAME_CROSS,
     name: "불꽃 십자참",
-    description: "엘레나가 검에 불을 붙이고 카엘이 십자로 벤다. 두 번 불 속성 + 화상 60%.",
+    description: "불로 두 번 벤다. 60% 확률로 화상을 입힌다.\n엘레나가 붙인 불로 카엘이 십자로 벤다.",
     actorIds: [KAEL, ELENA],
     requires: [{ actorId: KAEL, skillId: "skill_hero_cross_slash" }, { actorId: ELENA, skillId: "skill_mage_fireball" }],
     mpCosts: [{ actorId: KAEL, mp: 3 }, { actorId: ELENA, mp: 5 }],
@@ -145,7 +145,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FROST_LANCE,
     name: "성광 빙폭",
-    description: "엘레나의 얼음 안개를 이리스의 빛이 꿰뚫어 터뜨린다. 적 전체 얼음 + 확정 둔화 — 카엘의 십자베기가 이어 받는다.",
+    description: "적 전체에 얼음 피해를 주고 반드시 둔화를 건다.\n엘레나의 얼음 안개를 이리스의 빛이 꿰뚫는다.\n카엘의 십자베기로 이어 가기 좋다.",
     actorIds: [ELENA, IRIS],
     requires: [{ actorId: ELENA, skillId: "skill_mage_blizzard" }, { actorId: IRIS, skillId: "skill_gunner_snipe" }],
     mpCosts: [{ actorId: ELENA, mp: 8 }, { actorId: IRIS, mp: 5 }],
@@ -156,7 +156,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_STARFALL,
     name: "폴른 스타",
-    description: "셋이 힘을 모아 별 하나를 떨어뜨린다. 적 전체 빛 — 세 사람의 공격력·마력 합으로 친다.",
+    description: "적 전체에 빛 피해를 준다.\n위력은 셋의 공격력과 마력을 더한 값이다.\n셋이 힘을 모아 별 하나를 떨어뜨린다.",
     actorIds: [KAEL, ELENA, IRIS],
     requires: [
       { actorId: KAEL, skillId: "skill_hero_flame_sword" },
@@ -182,9 +182,11 @@ const GROWTH_ANCHOR_LEVEL = 6;
 /** [기준 레벨 값, 1막 레벨당 증가, 2막 이후 레벨당 증가] — 1막(Lv6~9)은 모든 능력치 +1·HP +7 정도(예전 곡선의 보스 균형에 가깝게), Lv17 까지 역할 폭으로 벌어진다. */
 type GrowthRow = readonly [anchor: number, early: number, late: number];
 // 기준값 = 예전(기본 곡선) Lv6 값(1막 시작 레벨). 역할 차이는 레벨이 오를수록 증가폭에서 난다.
+// 카엘·엘레나가 Lv6 에서 HP·MP 까지 같아 직업 차이가 안 보였다(fs2 스웜 I25, 2026-11-04) — 카엘 HP +20, 엘레나 MP +4.
+// 낮추지는 않는다: keep() 이 Lv5 아래를 옛 곡선 이상으로 묶어, 기준값을 낮추면 Lv6 부터 레벨당 +1 로 눌린다.
 const FS_GROWTH: Readonly<Record<string, Readonly<Record<"maxHp" | "maxMp" | "attack" | "defense" | "mind" | "agility", GrowthRow>>>> = {
-  [KAEL]: { maxHp: [526, 5, 26], maxMp: [43, 1, 2], attack: [45, 1, 3.2], defense: [57, 1, 2.6], mind: [45, 1, 1.2], agility: [43, 1, 1.6] },
-  [ELENA]: { maxHp: [526, 5, 17], maxMp: [43, 1, 4.4], attack: [45, 1, 1.2], defense: [57, 1, 1.5], mind: [45, 1, 3.4], agility: [43, 1, 1.6] },
+  [KAEL]: { maxHp: [546, 5, 26], maxMp: [43, 1, 2], attack: [45, 1, 3.2], defense: [57, 1, 2.6], mind: [45, 1, 1.2], agility: [43, 1, 1.6] },
+  [ELENA]: { maxHp: [526, 5, 17], maxMp: [49, 1, 4.4], attack: [45, 1, 1.2], defense: [57, 1, 1.5], mind: [45, 1, 3.4], agility: [43, 1, 1.6] },
   [IRIS]: { maxHp: [447, 5, 20], maxMp: [39, 1, 2.2], attack: [54, 1, 3.2], defense: [39, 1, 1.5], mind: [38, 1, 1.2], agility: [47, 1, 2.8] },
 };
 

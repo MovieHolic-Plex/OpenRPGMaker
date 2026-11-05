@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dc9c405199b31daa19c3a465be065b264b03d8be9eac81cb137511576c2e4a5",
+ "width": 48,
+ "height": 16,
+ "kind": "debris",
+ "name": "marker fallen",
+ "label": "beodeul_city/wave-places/ice-age-field/marker_fallen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 37,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen beam, white-covered top band with brown flecks",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "brown upright end block at the left",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red scraps at the right end",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The long low body fills rows 7-12 and is 37-43 px wide. Rows 7-9 are a white band speckled with brown. Row 10 is a lighter blue-white line (#cadaee) that works as the front-edge line. Rows 10-12 are brown and then very dark, which gives a thin front face of about 3 rows, with a dark shadow underside on rows 12-13. The brown end block at the left is drawn mostly as a vertical face with no clear top. The red bits at the right end read as decor. The piece is one connected fallen marker, not scattered debris, but it plausibly passes as floor debris. The top is thin (3 rows), but it has an edge line and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, low fallen post, about 37x7 source pixels, so the per-tile facts read 0 and I judged density by eye. Against the closest reference, prop-bench-wood, it holds up. It has 19 distinct colours to the bench's 14. The dark edge pixels carry a brown tint (0% neutral), unlike the bench (44% neutral) and the lamp (100% neutral). The wood shows a light-to-dark ramp of about 4 steps, with pale highlight dabs and some grain breaks along its length. There are no flat 5x5 areas (0% near-flat). It is somewhat simpler than the roofed well or the cheese stall, but it is a sparse single-piece prop, and it looks no thinner or more sticker-like than the bench. The small size makes the fine detail hard to read, so this is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18495
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-covered top of the fallen beam",
+      "rows": "7-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown front face of the beam",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upright end post at the left",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red debris at the right end",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A long, low object lies horizontally across rows 7-12, about 40px wide. Rows 7-10 are a white snow or heap band with a ragged lower edge over brown wood, which I read as a top surface (contents heaped on top). Rows 10-11 are the brown front face and row 12 is a dark shadow or underside line, giving a front face of about 3 rows. There is no clear front-edge line. A taller end post on the left (rows 5-13) is drawn only as a vertical face. Small red fragments sit at the right end. The object is very flat and the top-surface evidence is weak, so this reading is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop (a fallen post, about 40x8 source px), so the per-tile facts of 0 do not count against it. It has 19 distinct colours, more than the bench (14) and the lamp (14). Its dark edge pixels are 0% neutral, so the outline is tinted rather than a near-black sticker line, and near-flat coverage is 0%. By eye it shows a dark wood body with pale highlight flecks and reddish end accents. That gives roughly 4 tone steps, a little fewer than the bench's 5, but there are no flat fills and it holds up beside the bench, the closest reference. It is slightly simpler than the references but would be acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18134
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen log/beam body with pale snow-like top band",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left end stub (brown block with small red/white details)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right end red-brown scraps",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a long horizontal object from row 7 to 12. Its top is a white band on rows 8-9 with a light scalloped front edge on row 10 (#cadaee in x=24). Below it come dark brown rows 11-12, which include a dark bottom shadow, so the front face is about 3 rows. The top band is thin at 3 rows but separate from the face, and it has an edge line. The left stub is a small vertical end block and does not count against the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse fallen post lying horizontally. The per-tile facts are 0 because it is smaller than one tile, so I judged by eye. Its dark edge pixels are 0% neutral, so the outline is tinted and not a black sticker line. It has 19 distinct colours, more than the bench (14) and the lamp (14), and no flat 5x5 fills. The main shaft is only about 4 lightness steps, against 5-6 on the bench and well. It has little grain, no per-segment highlights and little breakup along its length, so it reads thinner and flatter than the bench and the roofed well beside it. The splintered or tipped ends add some variation, but a careful artist would likely say it needs more shading steps and surface texture to match the references. Since it is borderline, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17027
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen beam, white top band",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "square post end at left",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red debris specks at right end",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a long horizontal beam, about 40 px wide, at rows 7-12. Its pale band at rows 7-9 is the top surface. It ends in a ragged, lumpy brown edge at rows 10-11, and a dark shadow row at 12 sits under it. The front face is rows 10-12, which is only 3 rows and thin. The left post end is a vertical face, which is acceptable here. The top is thin and the white band could also be read as a flat decoration, so this is a borderline reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, low fallen post about 4px tall, smaller than a tile, so the per-tile facts are 0 and I judged by eye. The measured facts do not count against it: 19 distinct colours (more than the bench's 14 and the lamp's 14), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline leans brown rather than black. By eye the body shows only about 4 tones (pale top highlight and speckle, mid wood, dark underside) with a few grain dots and a jagged broken end. The reference bench and lamp have clearer 5-step ramps, and the bench has distinct slat-by-slat shading. The candidate reads slightly thinner and less modelled than those, with little grain along the length. I could not clearly confirm Beodeul-level craft, so I fail it on the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19226
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.748Z",
+ "cells": {
+  "16": [
+   "2d364c2b014f2aca",
+   "80c75ddd0cb19516",
+   "8e2c99ddb39a142c"
+  ],
+  "24": [
+   "10adab6a66a96fb3",
+   "6fe0721bc14994e9",
+   "7b3ac14c983a45ec",
+   "8fe4c604ca5cbff6"
+  ],
+  "32": [
+   "126accf2ac7b6905",
+   "3714066cff90a668",
+   "3bac6e21ad18b071",
+   "4e52023f1b6f5b54",
+   "6557b0562db20d92",
+   "9c6b6ff4bc53ae68",
+   "9fe9a929d3c99d02",
+   "b29f84266c091afc",
+   "c7cd6f1ddcaf32bc",
+   "dcf4421dd7038666",
+   "e7f7a5d475ae34d2",
+   "f2833518775d9ef0"
+  ],
+  "48": [
+   "04971f2dfa32cc9d",
+   "ca4cf141f66ba8e3"
+  ]
+ }
+}

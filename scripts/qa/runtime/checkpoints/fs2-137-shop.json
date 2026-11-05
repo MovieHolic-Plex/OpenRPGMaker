@@ -1,0 +1,100 @@
+{
+  "set": "fs2-137-shop",
+  "note": "fs2-137 UI probe set",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "projectFixture": "dist/demos/chrono-bell.project.json",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checkpoints": [
+    {
+      "id": "shop-list",
+      "label": "제2막 B7 — 서리 가도 얼음 틈, 새라의 장대 도약",
+      "note": "act2Opening.ts snowPass — author_snow_route paintGaps + place_field_obstacle gap requiresActorId",
+      "mapId": "map_snow_north_1",
+      "x": 20,
+      "y": 34,
+      "facing": "down",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_heard_carriage": true,
+        "sw_fs2_hanel_told": true,
+        "sw_fs2_rohan_spear": true,
+        "sw_fs2_bram_hole": true,
+        "sw_fs2_dawn_mem_0": true,
+        "sw_fs2_dawn_mem_1": true,
+        "sw_fs2_dawn_mem_2": true,
+        "sw_fs2_serin_form": true,
+        "sw_fs2_sarah_joined": true,
+        "sw_fs2_snow_arrived": true,
+        "sw_fs2_spear_returned": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 16
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 16
+        },
+        {
+          "actorId": "actor_fs2_sarah",
+          "level": 16
+        }
+      ],
+      "beats": [
+        {
+          "id": "a",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter",
+              "times": 3
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 900
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 900
+            },
+            {
+              "kind": "evalToFile",
+              "fn": "() => { const R=(n)=>{const r=n.getBoundingClientRect(); return {x:Math.round(r.left),w:Math.round(r.width),h:Math.round(r.height),sw:n.scrollWidth,cw:n.clientWidth}}; return [...document.querySelectorAll('.runtime-shop-item-row')].map(r=>({name:r.querySelector('.runtime-shop-item-name')?.textContent, row:R(r), nm:R(r.querySelector('.runtime-shop-item-name')), own:R(r.querySelector('.runtime-shop-item-owned')), pr:R(r.querySelector('.runtime-shop-item-price')), cols:getComputedStyle(r).gridTemplateColumns, preset:r.closest('.runtime-shop-overlay')?.className.slice(0,120)})); }",
+              "out": "/tmp/fs137.IRInrc/probe/shop-rows.json"
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startEventId": "ev_fs2_snow_merchant",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ]
+}

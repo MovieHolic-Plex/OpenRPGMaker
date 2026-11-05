@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d07c9da57085cc1d10855d7af2b9cfb24a06b42ca74c01c242cbd4db5bf2bcb",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "outcrop",
+ "label": "beodeul_city/wave-places/mountain-fortress/outcrop",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 17,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock mound upper lit facets (top planes)",
+      "rows": "6-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "rock mound lower front faces",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock pile's silhouette widens gradually from 12px at row 5 to 44px by row 17, so it has a sloped, lit upper mass. In column x=13 the light facets (white at rows 7-11, L=196 at rows 13-17) end in a darker edge line at row 18 (L=152). Row 19 is darker (L=125), and a darker front face follows to row 29, so the top planes are followed by an edge line, shadow and a vertical front. Column x=34 shows the same pattern: light rows 15-20, edge line at row 21, shadow at row 22, then darker front rows 23-28. The top-to-front structure is irregular, as expected for a natural rock, but it reads as a top surface plus a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock outcrop, not a tree, bush or plant. It has no canopy or trunk, so the references do not match its kind. It also reads as a small, sparse object next to the full trees. The rock body has about 4 grey steps (white highlight patch, light, mid, dark). The measured dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted material tone. This is the sticker look the standard rejects. Visible tones per tile (11) are above tree-1a786c (7) but well below tree-d43edd (29). Flat coverage is 12% against 0% for both references, and the white highlight patches are flat fills. Stones are shaded as large blocks, not one by one, and the grain is thin. Overall it is shallower than the references: neutral outline, some flat areas, and fewer steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 12681
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock mass upper lit facets (white/light planes)",
+      "rows": "5-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "rock front face (darker facets)",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The outcrop is a faceted mound. In column x=13, rows 5-17 are light and white planes ending in an edge line at row 18 (L=152), then a darker row 19 and a darker front face in rows 20-28. Column x=34 shows the same pattern: light rows 15-20, an edge line at row 21, dark row 22, then front facets in rows 23-28. The silhouette widens steadily from 12px at row 5 to 44px at row 17, so the upper rows read as a top surface seen from above. Rows 19-29 form a front face of about 11 rows. The top has no crisp front-edge line across its full width, so this is a moderate-confidence reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock outcrop, so it is only loosely a plant-kind match, but judged as a tree-kind prop. It has about 4 grey steps (white highlight, light grey, mid grey, dark grey) plus a dark underside. That is fewer than the references' 5-6 steps per material. The dark edge pixels are 100% near-neutral, so the outline is a neutral dark grey/black line, the sticker look the standard rejects. Both references measure 0% neutral, with tinted outlines. Visible tones per tile are 11, above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 12% against 0% for both references. The white highlight patches and parts of the stone faces are broad, mostly flat areas with little grain or per-stone variation. The stones are shaded somewhat individually, but the texture is only moderate and lacks the speckle and clumping of the references. The neutral outline and flat patches mean it would look flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14093
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper rock facets / white highlighted top planes",
+      "rows": "5-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "right rock lobe top",
+      "rows": "12-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-22"
+     },
+     {
+      "part": "front face of rock mass (darker facets)",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scans show light upper facets with a lighter peak (x=13 rows 7-17 at L=196-255, x=24 rows 14-19, x=34 rows 15-20). Each ends in a 1-row edge line (L=152 at row 18 for x=13, row 21 for x=34) with a darker band below (x=24 rows 20-25 at L=65, x=34 rows 22-28). The upper part reads as sunlit top planes and the darker rows 19-29 as the front face. The silhouette is a rock mound that widens from 12 px at row 5 to 44 px at rows 17-22 and then narrows to the base. This is an irregular organic shape, so the top/front split is looser than on a built object, but both are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey rock outcrop, not a tree, bush or plant, so it does not match the reference kind. It has about 4 grey steps plus white highlight patches, against 5-6 greens per canopy in the references. The dark edge pixels are 100% near-neutral, so the outline is a neutral dark grey/black line with no material tint. This is the sticker look that Beodeul avoids. Measured density is 11 visible tones per tile, above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 12% against 0% for both references. By eye, the large white patch and the cave opening read as smooth, flat fills, and the stones are not shaded one by one. The result is flatter and thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13487
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper lit rock plateau (white and light facets)",
+      "rows": "5-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "lower shadowed rock face",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock mound is a rounded silhouette that widens from 12 px at row 5 to 44 px at rows 17-22, then narrows to 13 px at row 29. The upper part (rows 5-18) is light and white-highlighted. In column x=13 a 1-row edge line at row 18 (L=152) is followed by darker rows 19-27 (L=125-160). In column x=34 the light facets end at an edge line at row 21 (L=152) and a darker row 22 (L=98) before the mid-dark face at rows 23-28. In column x=24 the light band at rows 14-19 drops to a very dark band at rows 20-25 (L=65). This gives a lit top plane of about 13 rows over a shadowed front face of about 11 rows. It is an organic mass with no hard vertical elevation, so it reads as three-quarter, though weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey rock outcrop beside two leafy trees. It shows about 4 grey steps (white highlight, light grey, mid grey, dark grey) plus a dark base. Its dark edge pixels are 100% near-neutral, which matches the measured facts and the visible black-grey line around the stones, so this is the sticker-style outline. The references use tinted dark tones (0% neutral). Visible tones per tile are 11, above tree-1a786c (7) but well below tree-d43edd (29). Near-flat coverage is 12% against 0% for both references. The white patch on top and some of the stone faces are flat fills with no grain, and the stones are not shaded one by one. It is acceptable as a small simple object, but the neutral outline and the flat areas make it look flatter than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14527
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.931Z",
+ "cells": {
+  "16": [
+   "039fdc865e42f4e6",
+   "262b3e1b112c24a4",
+   "70e6fe41815b1701",
+   "9cc9216ed57663a1",
+   "b5f95bee00e98cb1",
+   "df1272e5bb43349a"
+  ],
+  "24": [
+   "02d5bf2e10135656",
+   "0c64c05120cc5e4f",
+   "5e8a45b5331a5303",
+   "7f83818120fc7190",
+   "8c641f1a9b45c0b4",
+   "908aef8e9cfab171",
+   "b67426f88331cfc1",
+   "edaf1173e98e9cd4"
+  ],
+  "32": [
+   "006d326a7e81746c",
+   "0143ba26c05ecc9e",
+   "06b8b20cecaa6ae3",
+   "33c72982fbd2c105",
+   "c2fb2251192c41c7",
+   "c8c2a7ddc7a1e7e2"
+  ],
+  "48": [
+   "22c385a3bd034356",
+   "9ab045019367e54e"
+  ]
+ }
+}

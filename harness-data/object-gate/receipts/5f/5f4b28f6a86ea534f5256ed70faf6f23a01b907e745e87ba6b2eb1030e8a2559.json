@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f4b28f6a86ea534f5256ed70faf6f23a01b907e745e87ba6b2eb1030e8a2559",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "crag b",
+ "label": "beodeul_city/wave-places/mountain-fortress/crag_b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 14,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "summit rock, pale lit top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "upper-left ledge, white top",
+      "rows": "13-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left mid boulder, white top",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lower-left boulder, large white top",
+      "rows": "30-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crag is a stack of boulders. The main lower-left boulder has a white top band on rows 30-37 (x=8). A darker edge line at row 29 sits above the band and another at row 38 closes it. A grey front face of about 4 rows (39-42) hangs below it. At x=15 the front is darker, rows 37-43. The upper boulders repeat this pattern: pale top bands at rows 3-5, 13-15 and 21-22, each followed by an edge line (rows 6, 16, 19/23) and grey faces below. The dark right-hand column (x=21, rows 20-41) is shading on the south face, not a receding side face. The object has horizontal top planes and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey rock pile (crag), not a tree, so the tree references are only a loose match for kind. Judged on craft alone, it still falls short. It shows about 3-4 grey steps (white highlight, light grey, mid grey, dark grey) and no real ramp, where the references have 5-6 greens plus a trunk ramp. Its dark edge pixels are 100% near-neutral, which gives a neutral black/grey sticker-style outline. The references measure 0% on that fact, with tinted dark-green and brown edges. The stones are mostly smooth, flat-shaded blobs with large plain light patches and little per-stone grain or speckle. The 11 visible tones per tile beat tree-1a786c (7) but sit far below tree-d43edd (29). That tone count comes mostly from the neutral outline and a few flat greys, not from real texture. The candidate does not match the richness of the Beodeul reference trees, which carry leaf clumps and bark grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18336
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "summit peak snow/light cap",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-middle boulder light top",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left shoulder boulder light top",
+      "rows": "21-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "large lower-left boulder top",
+      "rows": "30-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front face of boulder",
+      "rows": "39-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crag is a stack of boulders. Several of them have a light, horizontal-looking top plane that ends in a darker edge line, with a face below. The biggest is the lower-left boulder: at x=8, rows 30-37 are white, row 38 is a darker edge line (#9b988f), and rows 39-42 are a beige front face above the base shadow on row 43. The upper boulders repeat this pattern: rows 13-16 at x=15 (white, then edge line on row 16), and rows 21-22 (white) with the beige face on rows 23-28 below. The right side is a darker shaded vertical mass at x=21, rows 20-41. It reads as the shaded south face of the rock, not an isometric receding side face. Overall it is a three-quarter rock with tops and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock formation (crag), not a tree, and is much smaller than the references. It has about 4 grey steps: white highlight, light grey, mid grey, dark grey. The dark edge pixels are 100% near-neutral, so the outline is a neutral dark line, not a tint of the neighbouring material. The references have 0% neutral edges. Its 11 visible tones per tile are above tree-1a786c (7) but far below tree-d43edd (29). Flat coverage is low at 10%, but the white and grey faces are smooth with little grain or speckle. The references have layered clumps and per-leaf highlights. Neutral outlines and shallow ramps give a sticker look next to the Beodeul trees. It would not pass beside them as equally rich.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14042
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "summit cap (white lit plane)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "upper ledge (white lit plane)",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left shoulder ledge",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lower ledge (large white lit plane)",
+      "rows": "30-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "37-39"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a stacked rock mass. Each ledge has a pale lit plane on top, a darker front-edge line, and a darker face below. The lowest ledge is the largest: rows 30-37 are white (8 rows) and end at an edge line at row 38 (x=8). Below it, rows 38-43 are darker (L about 96-126 at x=15), giving a front face of about 6-7 rows. The upper ledges repeat the pattern, with the white cap at rows 2-6 ending in a darker row 6 and the ledge at rows 13-16 ending in an edge at row 16. The silhouette widens steadily from 3 to 27 px and narrows at the base. The dark column on the right is the shaded south face, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock stack (crag), not a tree with canopy and trunk, so it is not the same kind as the references. It has about 4 grey steps with white highlights. Its dark edge pixels are 100% near-neutral, which is the sticker-like near-black outline; both references have 0% and use tinted material-tone edges. Its 11 visible tones per tile sit between the references (7 and 29). Near-flat coverage is 10% against 0% for both references, so some flat fills remain on the rock faces. The rocks show little per-stone grain compared with the leaf clumps and bark in the references. Shading is shallower than the 5-6 steps in the Beodeul standard, and the neutral outline is the clearest failure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 12857
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "summit ledge (white lit patch)",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle ledge (white lit patch)",
+      "rows": "13-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-left ledge (white lit patch)",
+      "rows": "21-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lower ledge (large white lit patch)",
+      "rows": "30-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock front faces (grey and dark)",
+      "rows": "38-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a stacked rock crag. Each tier has a lit white horizontal patch with an edge-line row at its lower boundary, then a grey or dark vertical face below it. The main lower mass at x=8 has white on rows 30-37 (8 rows), an edge line on row 38 (L=152), then a 4-row face on rows 39-42. At x=15 the white on rows 30-36 sits over a dark face on rows 37-43. The upper tiers repeat this pattern, with white on rows 3-5 and 13-15 followed by darker rows. The darker right side reads as shading on the same south-facing mass, not a receding side face. The top surfaces are foreshortened and irregular, as expected for rock."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey rock formation (a crag), not a tree with a canopy and trunk, so it does not match the reference kind. The measured facts back up the outline problem: 100% of its dark edge pixels are neutral, against 0% on both references, which means a neutral black or grey line. That is the sticker look, not a dark tone of the adjacent material. It shows about 4 grey steps on the stones, with a few highlight dots, which is shallower than the 5-6 steps in the references. Its 11 visible tones per tile sit between the two references (7 and 29), well below the richer tree-d43edd. Near-flat coverage is 10%, against 0% on the references, so there are some flat patches on the stone faces. The outline and the shallower shading keep it from matching the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17333
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.870Z",
+ "cells": {
+  "16": [
+   "06450d3a11c61a95",
+   "092f8810e5ce4bda",
+   "3fa098ced8753cd5",
+   "4cab53066ae8ce2e",
+   "80e4a4ff31671ebf",
+   "c9afb7ff1f8b9519"
+  ],
+  "24": [
+   "08ef60b7d9e75d87",
+   "0ac0bb6a67d0dad6",
+   "27ff7f07a30fc5b3",
+   "4d69c8bcbcfdab15",
+   "50a3928d84ef4e60",
+   "566a122ce7cc8f94",
+   "5c2cd57997bf1b6b",
+   "6c5e916287855d1a",
+   "7385cf2512b4a316",
+   "ac0b2490071c363e",
+   "b35dbb874930c9d1",
+   "b737d86306ab79d2"
+  ],
+  "32": [
+   "2aee1f94f12e6273",
+   "34fd4733559319c6",
+   "40e7bdc23629f4fc",
+   "9c03eb938e171882"
+  ],
+  "48": [
+   "0b57ab0fba7b59c7",
+   "39b9c2af81ee7683",
+   "458a21bef52557ad"
+  ]
+ }
+}

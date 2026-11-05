@@ -1,0 +1,415 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3605dbddcb2c2af20f3012c4dedb1911cfab48f0daeed1a81d690ee61ade9356",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "chasm pier w",
+ "label": "beodeul_city/wave-places/mountain-fortress/chasm_pier_w",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 24,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pier wall, upper blocks",
+      "rows": "0-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone pier wall, lower shaded blocks",
+      "rows": "28-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water and moss base (dithered fade)",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 16x64 sprite is a face-on masonry wall of stacked stone blocks with dark outline joints, which is a vertical face. The column scan shows light block faces (L~180-197) split by thin dark joint lines at rows 7, 13, 24-27 and 33. The pale 1-row lines at rows 14-15 and 25 are block highlights between joints. None is followed by eave shadow, and no band above them reads as a horizontal surface. The silhouette is 16 wide on every row, with no ellipse, roof or slope, and no visible contents. The base from row 48 dithers into dark water and green moss. This is a front elevation with no readable top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow grey stone column with a dark green base. It has no roof, door or windows, so it does not read as a whole building like the two references (tiled roofs, timber and plaster walls, doors). Its measured density is fine: 15 visible tones per tile against 12 and 10, with 0% near-flat coverage. The stones are shaded one by one, but only about 4 grey steps are visible, against roughly 5-6 per material in the references. 85% of its dark edge pixels are near-neutral, against 7% and 9% in the references, so the outline is a neutral near-black line rather than the dark tone of the adjacent material. That is the sticker look, and it counts against the piece. It fails on kind mismatch, neutral outline and shallower shading ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 13219
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone block wall (pier body)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water / green growth at base",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16px-wide, 64-row strip is a face-on stone brick wall. Rows 0-47 are block faces separated by dark mortar lines (for example x=8 rows 24-27 and x=11 row 13). The light 1-row streaks at rows 14-15 and 25 are bevel highlights on individual blocks, not a front-edge line with eave shadow. No band, ellipse, roof or slope reads as a horizontal top surface. Rows 48-63 dissolve into a dithered water/green area that shows no top plane either. The silhouette stays 16 wide on every row, so nothing widens and narrows into a cap. The result is a vertical elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow sliver, about one tile wide, of grey stone blocks with a small dark-green patch at the bottom. It has no roof, door, windows or wall structure, so it does not read as a whole building like the two references (tiled roofs with per-tile highlights, plaster and timber, stone walls). The measured facts are mixed. Visible tones per tile (15) are at or above the references (12 and 10), and near-flat coverage is 0%, so the surface is not flat. But 85% of its dark edge pixels are near-neutral, against 7% and 9% for the references. That matches the neutral black/grey 'sticker' outline instead of the dark material-tone outlines Beodeul uses. The stones show only about 3-4 lightness steps, fewer than the 5-6 on the references' roof tiles. It cannot be judged as a full building and its outline style is shallow, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15249
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light stone block face (right side)",
+      "rows": "0-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker stone pier face (left and lower)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crumbling base with water and moss",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 16x64 sprite is a vertical stack of stone block faces, drawn face-on. The light blocks on the right have 1-row highlights (rows 14 and 25) and dark joint lines, which are bevels on a vertical face. The dark bands at rows 24-27 and 33 are block joints and shadow, not eave shadow under a top band. No band ends in a front-edge line with a horizontal surface above it. There is no ellipse, roof or canopy, and no contents visible. The lower rows 48-63 are a dithered crumble into water and moss, with no top surface. The object reads as a flat front elevation with no visible top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a narrow stone-wall or cliff strip with a bit of grass at the bottom. It has no roof, door or windows, so it is not a whole building like the two house references. On the measured facts it is not shallow: 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. But 85% of its dark edge pixels are near-neutral, against 7% and 9% for the references, which fits the grey/black sticker-style outline I see. Its stones carry only about 4 lightness steps, fewer than the 5-6 steps the references use on their roof tiles and plaster. The kind mismatch and the neutral outline together make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15294
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone block wall, light blocks on right",
+      "rows": "0-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker stone wall face on left and lower area",
+      "rows": "28-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dithered water and green growth at the base",
+      "rows": "48-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 16x64 sprite is a vertical stone wall. Its block-pattern lines (rows 6-7, 13-14, 24-29) are mortar joints and shadows between front faces, not top surfaces. The dark rows 24-27 at x=8 sit below a light block and read as a shadow or joint, not an eave under a top band. No band ends in a front-edge line with a face below it, no ellipse is present, and no roof, canopy or contents are visible. The pier has no visible horizontal top surface and the lower rows fade into dithered water and green, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a narrow sliver, roughly one tile wide, showing gray stone blocks with a dark grass or plant patch at the bottom. It has no roof, no walls with a door or window, and no building structure, so it does not match the whole-building reference kind. The measured facts look fine (15 visible tones per tile, 0% near-flat), but 85% of its dark edge pixels are near-neutral against 7-9% for the references. That points to a neutral black outline, the sticker look, rather than outlines tinted to the adjacent material. The stone blocks have only about 3 lightness steps, against 5-6 for the roof tiles and plaster in the references. The references carry per-tile scallop highlights, timber framing and plaster speckle, and the candidate has no comparable structure. A careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14566
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.860Z",
+ "cells": {
+  "16": [
+   "3d0c853937dc4753",
+   "49c51910bc0fb035",
+   "85c6382d87956a13",
+   "c790cf6de81d7983"
+  ],
+  "24": [
+   "0aaf5c004db773cd",
+   "0bbdf97fc77be8db",
+   "17ea7bd0a3b9a0de",
+   "227b7b4a9b8cd4a1",
+   "2f071807bfd8b3d1",
+   "342e0e8c6b707fe2",
+   "409960bb74ff1b51",
+   "73c0823dad3c2037",
+   "7feaf6e359264284",
+   "8f7f1feedc7fdaa4",
+   "a9f39960e9beefc1",
+   "b1e548214a8f4754",
+   "b2304da56f197d14",
+   "b71770501e4515f7",
+   "bde399fd3d1019ad",
+   "d1244950ee5cbe5a",
+   "d382fbafe971d66f",
+   "f3cba3f13f795cba"
+  ],
+  "32": [
+   "3bb1c39aeececb7e",
+   "46a2e612a7fbde15",
+   "7423e8a42dc9dca4",
+   "9158f495e0400803",
+   "c7705307b0f93c95",
+   "c8995f575b04ee7a"
+  ],
+  "48": [
+   "0d380eed77c16dc2",
+   "13551e43730aa3af",
+   "140a6c0e7f40505b",
+   "3290a23de2d1fee8",
+   "393acf4d1e64a3d4",
+   "43fead80bbe205bc",
+   "975ae960f33f8255",
+   "a1f4473120e05097",
+   "b42950ef39ab5562",
+   "f1fbfa699b42e2c6",
+   "fd096e26e61b9645",
+   "ff3a9e474ff18f53"
+  ]
+ }
+}

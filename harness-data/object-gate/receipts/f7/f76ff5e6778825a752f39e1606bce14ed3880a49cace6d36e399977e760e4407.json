@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f76ff5e6778825a752f39e1606bce14ed3880a49cace6d36e399977e760e4407",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "bell fallen",
+ "label": "beodeul_city/wave-places/ruined-village/bell_fallen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bell body lying on its side (dome and flank)",
+      "rows": "7-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark bell mouth at right, seen as an opening",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden beam or plank under the bell",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bell is drawn as a tilted side silhouette, with the dome at the upper left and the dark mouth at the right (x about 21-25, rows 17-25). The width profile grows smoothly from 4 to 22 and then narrows. It has no band ending in a front-edge line, no eave shadow and no ellipse with a back rim and front rim. The dark mouth is a vertical-ish opening face, not a horizontal top surface. The 3-row plank at rows 26-28 is a flat strip with no top either. The object is a single bell profile on a plank, not a scatter of debris, but it is plausibly 'fallen debris'. Overall there is no horizontal top surface anywhere."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small fallen bell prop, smaller than one 16x16 tile, so the per-tile tone count of 0 does not count against it. By eye it has about 4 steps on the bronze/gold bell and the brown wood frame, with a few highlight pixels on the bell rim. Its dark edge pixels are only 1% neutral, so the outline is tinted dark brown, matching the material-tone approach. There are no flat 5x5 areas (0%). It has 25 distinct colours, which is more than the bench and lamp references. Compared with the richer references (well, stall), the bell reads a bit thinner: the small frame has little grain and the bell body is a few broad shades without per-surface speckle. It is clean and acceptable, but slightly under the reference density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17099
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bell body, tilted on its side with gold dome and teal patina",
+      "rows": "7-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark bell mouth opening on the right, vertical and facing east",
+      "rows": "16-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken wooden beam or plank under the bell",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The main body is a bell lying tilted on a plank, drawn as a side profile. The width profile grows from 4 to 22 px over rows 7-12 and then narrows steadily to 8 px by row 24. This is a rounded silhouette with no flat back-to-front band. No row has a front-edge line or an eave shadow. The dark mouth at x≈23-29, rows 17-25, is a flat vertical opening, not a horizontal ellipse. It shows no contents or water. The plank at rows 26-28 is only 3 rows and has no separate top surface. No part of the object shows a horizontal top, so it reads as a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small fallen bell prop, smaller than one tile, so the per-tile tone count is 0 and I judged density by eye. Its edge pixels are 1% near-neutral, so the outline is tinted dark brown beside the wood and bronze, not black sticker lines. It has about 25 distinct colours and 0% flat coverage, with no large flat fills. The bell body shows roughly 4 steps (highlight, mid, dark, deep) with some grain on the wooden frame. It is thinner than the stall and well references, which carry 5-6 steps and more per-element texture. It is roughly comparable to the bench and lamp, which are also small, but the bell is a compact object and the shading is a little shallow. A careful artist would probably see it as slightly less rich than the references, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15470
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bell body lying tilted, with patina",
+      "rows": "7-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark mouth opening of bell (right side)",
+      "rows": "16-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken wooden beam under the bell",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bell is a tilted side silhouette whose width profile grows diagonally from row 7 to 12 and then tapers to row 25. The column scans show no front-edge line, eave shadow or ellipse. The brown body just shades down the diagonal, and the teal patches are details on the vertical face. The dark mouth at x~23, rows 17-25, is a flat dark shape with no visible rim ellipse or interior contents. The beam at rows 26-28 is a thin 3-row strip with no top band. Nothing reads as a horizontal surface, so this is a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small fallen bell prop, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. Its dark edge pixels are only 1% neutral, so the outline is tinted brown and follows the adjacent material, as in the hedge and cheese stall references. It has no near-flat coverage and 25 distinct colours in total, which is more than the bench and lamp references and fewer than the stall and well. By eye the bell body has about 4 steps of brass/bronze shading plus a wooden mount with some grain. The tones are a little compressed, the forms are small and fairly blobby, and the texture is thinner than the well or stall. It would sit acceptably beside the simpler bench and lamp but looks slightly less rich than the well and stall. I am not confident it meets the standard, so it fails as borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15732
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fallen bell body (rounded brown dome with teal patina)",
+      "rows": "7-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark bell mouth opening on the east side",
+      "rows": "16-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken wooden plank/beam pieces under the bell",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bell lies on its side, tilted, with its mouth facing east. The silhouette widens smoothly from 4px at row 7 to 22px at row 12, then narrows to 8px at row 24. This is a rounded profile, not a horizontal top plane. No row shows a front-edge line followed by eave shadow, so there is no band-type top surface. The dark mouth (rows 16-25, column x=23 is dark at rows 17-25) is a vertical opening seen from the side, not an ellipse lid seen from above. The planks at rows 26-28 are a thin 3-row strip with no top surface. The overall reading is a side profile with no readable top, so it counts as front elevation or profile rather than 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small fallen bell, smaller than one full tile, so the per-tile tone count of 0 can't be used against it. Judged by eye, it has about 4 lightness steps on the brass/bronze body and dark wood-brown tones on the frame, with some highlight and shadow variation. The edge pixels are tinted (1% near-neutral), so the outline is a dark material tone and not a black sticker line. Near-flat coverage is 0%, so there are no flat fills. It has 25 distinct colours, more than the bench (14) and lamp (14), which are also thin props. It looks thinner and less textured than the stall and well, which show about 17-20 visible tones, and the bell's surface carries only light grain with no per-element texture. It sits at the level of the simple props (bench, lamp) but a bit below the richer references. A careful artist might accept it, but it reads slightly flatter and more compact than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16076
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.259Z",
+ "cells": {
+  "16": [
+   "1526c64d587294db",
+   "43cadcda1bca85a2",
+   "b7be129232fc2d71",
+   "d62f81e89098fcf4"
+  ],
+  "24": [
+   "030027754c63707f",
+   "0506cd217eefcf2b",
+   "0932fc17c5d565bd",
+   "09d562daeb03ab4c",
+   "2c4326304ccfbd45",
+   "3531a207465194a1",
+   "3a28538a039ddf43",
+   "45807d821dff280c",
+   "688a77f45614ddf5",
+   "6ac1493853f32868",
+   "8862731d158cbee0",
+   "982e7cd9773da200",
+   "9c8dfb726e6af2f4",
+   "a7de59ecdfbe8c7e",
+   "b4cd6acb4fb4fdcd",
+   "b6db2f4a9bc70ee2",
+   "d2afc2e1a130fe93",
+   "df62846520bb8566",
+   "eea1b22c1c6e6948",
+   "f4bb41c6665b2aa1",
+   "f55a0fb4c98e323f",
+   "f8ad816dbf0d7060"
+  ],
+  "32": [
+   "e866e881c985300a"
+  ],
+  "48": [
+   "6ea2b088d7a4060c",
+   "6efdd936a4ef7595",
+   "7fbe6b56b585c278",
+   "9a7955eef5f54b16",
+   "d32561b8e0928d1c",
+   "f9eae7639e81fb48"
+  ]
+ }
+}

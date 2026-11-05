@@ -434,7 +434,18 @@
 .oprn-status-menu .has-item-facts .status-menu-item-facts { align-self: start; width: 100%; }
 .oprn-status-menu .has-item-facts .status-menu-showcase-description { display: none; }
 .oprn-status-menu .status-menu-detail-value { max-width: 100%; }
-.oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value { justify-self: stretch; text-align: left; }
+/* 장착 목록은 여러 장비 이름을 쉼표로 잇는다 — 한 줄 말줄임이면 뒤쪽 장비가 통째로 사라진다
+   (QA 실측: '청동 검, 참나무 방패, 여행자 …' 에서 잘려 5개 맵에서 반복 확인).
+   값 자체가 여러 항목을 담을 때는 줄바꿈해서 모두 보여 준다.
+   선택자를 두 번 쓴 것은 위쪽 `.status-menu-detail-row:not(.has-description) .status-menu-detail-value { white-space: nowrap }`
+   보다 명확도를 높이기 위해서다(그냥 단일 클래스로는 nowrap 이 이긴다 — build 후 실측). */
+.oprn-status-menu .status-menu-detail-row [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value,
+.oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 
 /* Story journal lines: full-width prose; erased lines fade, re-read lines keep a quiet mark. */
 .oprn-status-menu .status-menu-detail-row[data-journal-state] {

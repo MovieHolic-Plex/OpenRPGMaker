@@ -79,7 +79,7 @@ import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } fr
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
-import { resolveBattleStaging } from "@/project/battleStaging";
+import { BATTLE_STEADY_INTERLUDE_SCALE, BATTLE_STEADY_MOTION_TEMPO, resolveBattleStaging } from "@/project/battleStaging";
 import { keepResultPanelOffParty } from "@/player/battleResultPlacement";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
@@ -205,8 +205,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleSkin = skinId;
   const retroMotion = skin.motionStyle === "retro";
   // 포켓몬 스킨의 동작 템포 — 돌진·넉백·이펙트를 1.5배 빠르게 돈다(사용자 요청 2026-10-02). 히트스톱·대사는 그대로.
-  const motionTempo = root.dataset.battleUiStyle === "pokemon" ? POKEMON_MOTION_TEMPO : 1;
+  // 프로젝트 전투 흐름(system.battleStaging.pace) steady 는 그 위에 0.75배를 곱해 행동 비트·이펙트를 늘인다.
+  const steadyPace = resolveBattleStaging(store.getCurrent().system.battleStaging).pace === "steady";
+  const motionTempo = (root.dataset.battleUiStyle === "pokemon" ? POKEMON_MOTION_TEMPO : 1) * (steadyPace ? BATTLE_STEADY_MOTION_TEMPO : 1);
   if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
+  if (steadyPace) root.dataset.battlePace = "steady";
   // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
   // 포켓몬 안무의 이펙트 재생 계획 — animationImpactMs 가 정하고 onEntryAnimation 이 씬 루트에 건너뛸 프레임 수로 넘긴다.
@@ -801,7 +804,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     collapseHoldMs: () => remainingEnemyCollapseMs(field),
     // battle-feel r2: 보스(쓰러짐 연출 bossSink) 등장은 실루엣 → 땅울림 → 색 입기로 1.4초를 쓴다 — 커버가 걷힌 뒤 다 보이게 인트로를 늘린다.
-    interludeScale: () => (root.dataset.battleMotion === "retro" ? BATTLE_RETRO_INTERLUDE_SCALE : undefined),
+    interludeScale: () => (steadyPace ? BATTLE_STEADY_INTERLUDE_SCALE : root.dataset.battleMotion === "retro" ? BATTLE_RETRO_INTERLUDE_SCALE : undefined),
     introHoldMs: () => (root.dataset.battleMotion === "retro" && field.querySelector(".battle-enemy[data-collapse='bossSink']") ? BATTLE_BOSS_INTRO_MS : undefined),
     motionTempo: () => motionTempo,
     // 상성 문장은 모든 스킨이 말한다(포켓몬은 문장만, 그 밖은 피해 숫자 뒤에 덧붙임 — battleDirectorDom.withEffectiveness).

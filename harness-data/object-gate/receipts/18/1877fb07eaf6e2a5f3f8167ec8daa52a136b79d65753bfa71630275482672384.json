@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1877fb07eaf6e2a5f3f8167ec8daa52a136b79d65753bfa71630275482672384",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "rubble church",
+ "label": "beodeul_city/wave-places/ruined-village/rubble_church",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 41,
+  "tileColorsP90": 51,
+  "darkV5": 77,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rubble block pile (stacked stone blocks, stepped silhouette)",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "29-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a stepped pile that widens from 11px at rows 9-10 to 44px at rows 22-28. Every column scan shows alternating light block faces (L~190-210) and dark outline or mortar rows (#3a2b55, #975575), which looks like a grid of front-facing block faces. No row has a front-edge line followed by eave shadow, no ellipse is present, and no horizontal surface is visible. The top rows 9-10 are only a dark purple outline. The grass at rows 29-31 is a base decoration. For a debris object this is a flat front view of stacked blocks with no top planes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a rubble heap of individually shaded stones and brick chunks, with light, mid and dark pink-grey tones, highlight dots and darker gaps between pieces. I count about 5 lightness steps on the stone material, in line with the references. Measured facts support this: 34 visible tones per tile against 17-20 for the stall and well, 0% near-flat coverage, and only 2% neutral dark edge pixels. The edges lean toward a tinted dark rose-brown rather than a black sticker line. A rubble pile is a reasonable standing prop next to the stall and well. It is somewhat messy at 2x, but nothing reads as flat or thin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13107
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rubble heap of stacked stone blocks (main mass)",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "29-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pile is a stepped silhouette (widths 11, 20, 29, 35, then 44) built from face-on block faces with dark purple outlines. Rows 9-10 (width 11) are only an outline-like cap on the highest block. No band with a front-edge line and eave shadow, no ellipse, and no visible contents. The step edges at rows 11, 15 and 22 do not read as horizontal surfaces. The mass is a front view of stacked blocks (rows 11-30) with no horizontal top planes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a pile of rubble stones with small plant tufts. Its measured 34 visible tones per 16x16 tile are well above prop-well-roofed (20), prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. Only 2% of its dark edge pixels are neutral, so the outlines lean toward the tint of the neighbouring stone and vegetation rather than a black sticker line. By eye, the stones are shaded one by one with light and dark clumps and speckle, which matches Beodeul's per-stone shading. I estimate about 5 lightness steps on the stone ramp, close to the references' 5-6. The image is small and the detail is hard to confirm, but the measurements and the visible clustering support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13985
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central rubble block stack",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid-tier block wall",
+      "rows": "15-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower wide base of blocks",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at the base",
+      "rows": "29-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a stepped pile of pink-grey stone blocks with dark outlines, widening from 11 px at rows 9-10 to 44 px at rows 22-28. Each tier is drawn as front-facing block faces: pale block faces sit between dark mortar lines, and the dark rows at x=24 (13, 20, 23-24) are joints, not eave shadow. There is no single front-edge line, no ellipse, and no visible contents of a container. The top rows 9-10 are only the outline and one row of block, about 2 rows, so this is a rim at most. The silhouette is a tiered heap seen face-on, so it reads as front elevation rather than a 3/4 volume. Green grass sits at the bottom (rows 29-31)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a low rubble pile of pinkish stones with pale highlights. It reads as a prop of the same kind as the references. Measured facts: 34 visible tones per 16x16 tile, above the well (20) and cheese stall (17). Near-flat coverage is 0%, so there are no flat fills. Only 2% of dark edge pixels are neutral, which means the dark edges lean toward the material tone rather than a black sticker line. By eye, individual stones and chunks are shaded one by one, with highlights, mid tones and dark gaps, about 5 steps. This matches the per-stone shading of the references. The piece sits within the range of the references in density and shading, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13540
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top brick cluster of the pile",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle brick tier",
+      "rows": "15-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower brick tier and base",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at the base",
+      "rows": "29-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rubble is a stepped heap of brick and plaster blocks, and each block is drawn face-on with dark outlines. The silhouette steps outward from width 11 at rows 9-10 to 20 at rows 11-14, 35 at rows 16-21 and about 44 at rows 22-28. The steps are only 1-2 row ledges. None of them has a front-edge line followed by eave shadow, and there is no ellipse or sloped plane. The columns at x=24 and x=35 alternate light block faces with dark outline rows (rows 13, 17, 20, 23-24). That pattern reads as vertical brick faces, not horizontal tops. The pale highlights at rows 11-16 are brick faces or rims. The stepped silhouette gives a mound outline, but no clear foreshortened top plane is visible. The pile reads as a front elevation of stacked blocks."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a pile of rubble stones with small greenery. It has 34 visible tones per full tile, above the well (20) and cheese stall (17) references. Near-flat coverage is 0%, so there are no flat fills. Only 2% of dark edge pixels are neutral, so the outlines lean toward the colour of the neighbouring stone instead of forming a black sticker line. The stones are shaded individually with light and dark faces and clustered speckle, which matches the Beodeul habit of shading each stone and varying the grain. I count about 5 lightness steps on the main stone ramp, close to the references' 5-6. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14725
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.449Z",
+ "cells": {
+  "16": [
+   "3040bef778f12402",
+   "318a2bdfe2adac48",
+   "7834a37e467e95e0",
+   "8dbf378037b75ea1",
+   "c21198cd48914587",
+   "d2478e78e67559e9"
+  ],
+  "24": [
+   "2cf92c9845c87dfb",
+   "78e3d3d43ddb7930",
+   "d8caea168724adc4",
+   "dcc44bce33310cdb",
+   "e038f80bb279e02d",
+   "f1606f8ead96097e"
+  ],
+  "32": [
+   "327ee6aecf37bdb0",
+   "61b312037cb9889e",
+   "6c68fdf535a7085d",
+   "703c720145d0441f",
+   "e320be9a737dbbbe",
+   "e37dce411be8fb6e"
+  ],
+  "48": [
+   "805a5a10056662ef",
+   "839097789117af5e"
+  ]
+ }
+}

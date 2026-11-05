@@ -528,9 +528,20 @@ function renderDetailText(entry: StatusMenuDetailEntry, inlineDescription: boole
 // 아이템 7개 중 2개만 온전히 들어갔다 — 셋째 행은 문장 중간에서 잘렸다.
 // 전문은 푸터(status-menu-message)가 보여주므로 행 안의 사본은 높이만 먹는다.
 function renderDetailTextChildren(entry: StatusMenuDetailEntry, inlineDescription: boolean): HTMLElement[] {
+  // "장착 중" 요약은 장비 이름을 쉼표로 여러 장씩 담는다 — 한 줄 말줄임 규칙
+  // (.status-menu-detail-value { text-overflow: ellipsis; white-space: nowrap })
+  // 이 걸리면 뒤쪽 장비가 통째로 사라진다(QA 실측: 8벌 중 3벌만 보이고 '…' 로 끊김,
+  // 5개 맵에서 반복). 스킨 CSS 가 어디서 오든 이기도록 행 자체에 인라인으로 펼진다.
+  const wraps = entry.testId === "status-menu-owned-equipment-worn";
   const children = [
     el("span", { class: "status-menu-detail-label", text: entry.label }),
-    el("span", { class: "status-menu-detail-value", text: entry.value }),
+    el("span", {
+      class: "status-menu-detail-value",
+      text: entry.value,
+      ...(wraps
+        ? { attrs: { style: "white-space:normal;text-overflow:clip;overflow:visible;overflow-wrap:anywhere;text-align:left;justify-self:stretch" } }
+        : {}),
+    }),
   ];
   if (entry.description && inlineDescription) {
     children.push(el("span", { class: "status-menu-detail-description", text: entry.description }));

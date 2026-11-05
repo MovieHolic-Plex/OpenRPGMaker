@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce6f9909f6a9d70174437a272a983747d156857a9c282b5cfbbe6dc6911d34d5",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "snow patch l",
+ "label": "beodeul_city/wave-places/mountain-fortress/snow_patch_l",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 192,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow patch top",
+      "rows": "5-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The irregular blob has a large light snow top at rows 5-23, about 19 rows. At the bottom there is a 1-row lighter edge line (#cadaee, row 24 at x=14, row 25 at x=24, row 22 at x=33), followed by 2-3 rows of darker blue shade (#a6bcdc and #7a92c0, rows 25-27). That shade reads as a thin front lip about 3 rows tall. The silhouette widens to 38 px and then narrows again toward the bottom. The top is a big flat plate with a short thickness edge, which suits a flat ground decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small isometric ice slab with a raised rim, sitting on a dark background. The references are flat top-down ground tiles that fill the whole cell, so the kind does not match a 4x3 ground patch. The measured facts: 5 visible tones per tile (grass 3, paving 7), 32% near-flat coverage (both references 0%), and 0% neutral dark edge pixels, so any edge tone is tinted. It has only 5 colours in total, which gives about 4 lightness steps on the snow ramp against about 6 in Beodeul. There are no texture dots, grain or per-clump variation, and the white/pale-blue faces are large smooth fills. Its form is a clean sticker-like silhouette with no outline, not tile-by-tile ground texture. Tone count is close to the references, but the shallow shading, the flat fills and the wrong shape and kind make it weaker than the Beodeul ground tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16708
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow patch top (blob surface)",
+      "rows": "5-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blob's silhouette widens from 3 px at row 5 to 38 px at rows 11-12, then narrows to 3 px at row 28. The main snow surface is the near-white fill in rows 5-24. In the column scan (x=14, 24, 33) it ends in a lighter edge line (#cadaee, L=215) at row 24 or 25 depending on the column. Below that line are 2 progressively darker rows (#a6bcdc, then #7a92c0, L=185 and 144), which act as a thin south-facing thickness or shadow band. This gives a top surface of about 19 rows and a front edge of about 3 rows. That is slight, but it meets the 3-row minimum, so the object is not a pure flat slab. It is still a flat ground decal and should be judged as such."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small isometric snow slab, not a flat top-down ground patch laid 4x3 tiles like the grass and paving references. It has about 4-5 flat blue-white tones with smooth bands and almost no grain, speckle, drift texture or per-clump variation. Measured near-flat coverage is 32%, against 0% for both references. It has 5 visible tones per tile, more than grass (3) but below paving (7), and the raw count is only 5, so the tones are flat bands rather than texture. Outline pixels are tinted (0% neutral), a bluish-grey edge, which is acceptable. The piece is a sticker-like isolated block with large flat fills on the top face and a smooth, uniform side face, so it reads as shallower than the references. It does not look like a tileable ground surface and lacks the dotted texture of the grass and paving.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15019
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow patch top",
+      "rows": "5-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "24-27"
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The irregular white and pale-blue blob spans rows 5-23 and is the horizontal top surface, with only faint streaks inside. Below it, rows 24-27 step down through three darker blue tones (#cadaee, #a6bcdc, #7a92c0). This forms a thin shaded front edge about 3 rows tall along the south side. The silhouette widens from 3 px to 38 px and narrows again to 3 px. There is no separate receding side face. It reads as a flat patch with a slight thickness lip, so the top and a 3-row front face are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The references are flat top-down ground tiles that fill the whole tile area. The candidate is a small isometric snow slab with a thick side edge, floating on a dark background, so it does not read as a 4x3 ground patch and looks like a sticker. It has only 5 colours in total and 32% near-flat coverage, against 0% for both references. The white and pale-blue top is large and smooth with almost no grain, speckle, drift texture or tile-by-tile variation. Its 5 visible tones per tile are above the grass (3) and below the paving (7), but those tones sit in large flat bands rather than texture. Outline pixels are 0% neutral, so they lean blue and are not near-black, which is fine. The shading is shallow at about 4 steps, against the references' richer grain. Verdict: fail on kind mismatch, flat fills and lack of texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14123
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow patch main surface (flat white and pale-blue plate)",
+      "rows": "5-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker blue underside shading along the bottom edge",
+      "rows": "25-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "25-27"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular blob, 38 px wide and about 23 rows tall (rows 5-28), lying flat on the ground. Its interior is near-white and pale blue with a few scattered lighter and darker speckles, and the faint horizontal streaks at rows 7, 15-16 and 24-25 are texture, not edge lines. Only the lowest 2-3 rows are a darker blue gradient (#cadaee, #a6bcdc, #7a92c0 in the scans at x=14, 24 and 33). That is a thin thickness edge or shadow, not a vertical south face, and it has no front-edge line separating it from a distinct top band. No vertical face, side face or ellipse is drawn. It reads as a flat decal seen from above, consistent with the kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small isometric snow/ice slab, about 80x45 px, not a 4x3 tile ground patch. It looks like a floating chunk with a thick side wall, so it does not tile like the flat top-down grass and paving references. It has about 5 distinct colours, which gives roughly 4 shading steps of white-blue. The outline is a tinted blue-grey, with 0% neutral dark edge pixels, so it is not near-black. Texture is minimal: there is no grain, speckle or clumping, and near-flat coverage is 32% against 0% for both references. Visible tones per tile are 5, above the grass reference's 3 and below the paving's 7, but the numbers are inflated by the slab's edge and side-wall bands. The surface itself is smooth blocks of one tone, so by eye it is much flatter than the references, which have tufts, grain and per-stone shading. It also lacks a ground-patch silhouette and fill that would blend in on a map.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16602
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.955Z",
+ "cells": {
+  "16": [
+   "06317c8844e3002c",
+   "06cf56d2866a1437",
+   "b71df5b2e97c1991",
+   "cc77b4f005e8da1c",
+   "f66a0b5ddf9c73f9",
+   "f693da2b7fcb505b"
+  ],
+  "24": [
+   "073b93a168e99a39",
+   "18713d65aefdda05",
+   "5ec9f1d756622c09",
+   "8881cefc45e2b4cc",
+   "9db01f4938500ffa",
+   "d8e9b70c030a1eb9",
+   "ef205c239a54e7f2",
+   "fbf910981a8506e4"
+  ],
+  "32": [
+   "0639da111f335a10",
+   "3fbbe401eda4f400",
+   "b740f8a9e419cbf8",
+   "cebc69011d74ece5",
+   "dbddbac59f91829f",
+   "ec4e67b7712e4391"
+  ],
+  "48": [
+   "33dff2bec072327c",
+   "3fef47abe3788d16"
+  ]
+ }
+}

@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa3c59bf53932e55468aa7f981197dd73eb2e34300b8981e92e0b5dd07f3cc00",
+ "width": 80,
+ "height": 96,
+ "kind": "structure",
+ "name": "ruin house b",
+ "label": "beodeul_city/wave-places/ruined-village/ruin_house_b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 61,
+  "tileColorsP90": 83,
+  "darkV5": 26,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (sloped plane with shingles, ridge at top)",
+      "rows": "20-63",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "chimney / dormer brick stack on roof",
+      "rows": "33-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall front face with door and windows",
+      "rows": "66-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4 px at row 20 to 79 px at row 50 and stays wide. This is a sloped tiled roof plane covering rows 20-63. It ends in a dark eave line and shadow at rows 64-65 (L=15 across the columns scanned). Below it is a stone front wall of about 30 rows (66-95) with a door and two windows. The roof is the top surface and the wall is the front face, so this is a 3/4 view. The brick stack on the roof is part of the roof plane and is drawn on the same slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined house with a tiled roof, stone walls, a broken door and overgrowth. It sits at 27 visible tones per tile against 12 and 10 for the references, and its near-flat coverage is 0% like theirs. Only 10% of its dark edge pixels are near-neutral (references 7% and 9%), so its outlines carry a tint and read as dark material tones, not a black sticker line. The roof has per-tile highlights and scallops with about 5 lightness steps, close to the references. Moss, vines, holes and debris add grain and variation. The stone wall is shaded stone by stone and shows no large flat areas. It looks a little busier and more broken than the clean references, which fits a ruin, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8960
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof slope",
+      "rows": "20-63",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "stone wall front face",
+      "rows": "66-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dormer window with brick chimney-like panel",
+      "rows": "31-58",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass at base",
+      "rows": "91-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped tile roof occupying rows 20-63, with the silhouette widening from 4 to 79 px, a dark eave line at rows 64-65 and shadow beneath. Below it, the stone wall with door and windows forms a front face of about 30 rows (66-95). The roof is the top surface (evidence c) and the wall is the front face, so it reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole ruined house (tile roof, stone walls, broken door, window, vines, moss, a hole in the roof with a chimney) at the same scale as the references. The roof has about 5 tile steps with per-tile scallops and highlights, comparable to the references. The stone walls are shaded block by block and show weathering and moss. Measured facts: 27 visible tones per tile versus 12 and 10 for the references; near-flat coverage 0%, same as the references; only 10% of dark edge pixels are neutral, in line with the references' 7% and 9%. The outlines are tinted dark brown or red-brown beside the roof and wood, with no uniform black sticker line. The only drawback is that the ruin details (the debris on the roof, the vines) make it noisier than the references. That is intended for a ruin and not a flat fill or a shallow area. Overall it is at least as rich as the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9118
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (main sloped plane with dormer windows)",
+      "rows": "20-63",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "brick chimney or dormer on the roof",
+      "rows": "33-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with windows and door",
+      "rows": "66-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane in rows 20-63. The silhouette widens from 4 to 79 px, so it reads as a roof receding upward. It ends in a dark eave line and shadow at rows 64-65, and the stone front wall with two windows and a door fills rows 66-95 (30 rows). The wall is the south face and no side face is drawn. The brick chimney or dormer on the roof is drawn mostly face-on with only a thin cap at about rows 33-36. It is small next to the roof, so I do not count it as a major part lacking a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined tiled-roof house with a stone lower wall, the same kind as the references. Its roof has several tile tones with per-tile highlights and scallops, broken patches, a chimney, and moss and vine overgrowth. The stone wall is shaded stone by stone with grain. Measured facts: 27 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 10% neutral dark edge pixels, so the outlines lean toward dark brown or red-brown tints rather than neutral black. The ruin damage adds variation, not noise. No flat fills are visible. It matches the Beodeul references on shading, outline, texture and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13102
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (sloped plane with ridge, dormers and chimney)",
+      "rows": "20-63",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": "64-65"
+     },
+     {
+      "part": "chimney on roof",
+      "rows": "33-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall front face with door and windows",
+      "rows": "66-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane over rows 20-63 and widens from 4 to 79 px. It ends in a dark eave line and shadow at rows 64-65. Below it, the stone front wall (rows 66-95) holds a door and two windows, giving a front face of about 30 rows. The roof reads as the top surface above the front face. The chimney sits on the roof and is part of its structure, so it does not need a separate top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ruined house with a tiled roof, a chimney, damaged areas, vines and a broken door, drawn at the same scale as the references. Its roof has about 5 tile steps, with scallops and per-tile highlights, and the stone and plaster walls have speckle. The measured facts support this: 27 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage like the references, and only 10% neutral dark edge pixels, so the outlines lean toward tinted dark brown and red-brown rather than a uniform black. Overall it is no shallower than the references, with the extra tone count coming from the ruin details such as moss, vines and holes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8777
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.471Z",
+ "cells": {
+  "16": [
+   "07a21be6273bf52c",
+   "204a660caece25c5",
+   "2c630b6112717e13",
+   "3303fb89370acdf7",
+   "372d8a9f5f73e8a6",
+   "386cb17d4308caa2",
+   "4fd1cf24a74d67ee",
+   "5019314273f91972",
+   "8e167677e8a2ca9f",
+   "92072e04ccc805ba",
+   "945c67c7f07bfeb2",
+   "95c66adb796a14b8",
+   "9800a696cd2938a5",
+   "99f474462bdc096d",
+   "9d8ac96c35f5b8d0",
+   "af1b9dbf669a5fb1",
+   "b4812ecd57594faf",
+   "b5aa3465b8ca7b0e",
+   "b8790d4ef8512172",
+   "c344dd93a0a0e93e",
+   "da722513153a2676",
+   "e9503ba92a7b2b56",
+   "ea9d28ff2c7f45a0",
+   "f2de5d01b011195b"
+  ],
+  "24": [
+   "0af74424fa3d99d6",
+   "181807d25d996290",
+   "1994d8cd4efdaa7d",
+   "2e85071b37f5e501",
+   "2ec94c34c0bda8b3",
+   "455f76c22544995f",
+   "4951de14c0133001",
+   "5177580f0983668e",
+   "5301323a165b27fe",
+   "559bf34761774da6",
+   "55be9d459644747b",
+   "57bebff82db69b18",
+   "5cfa182084426f38",
+   "6f9d300f5f5182f4",
+   "759c1d9c11a42335",
+   "7a57cdc2ddba29c7",
+   "7d9c9e7a7de5cc41",
+   "83b8a9ac4f86940a",
+   "86ee50ee2cc5182f",
+   "8c8746557d0a09cd",
+   "909287e939eb0635",
+   "90addbfdc6ef3297",
+   "90f72fd30623e31c",
+   "97782a3af4acbf4d",
+   "9f2d401d54d51d13",
+   "a0a335855e186184",
+   "a80a5e729c9ac5a3",
+   "aacfea1032af9d3b",
+   "b1e7e230198d0adb",
+   "b4aad008c7cc2d83",
+   "b82095f8db6e77df",
+   "c1bf070d0751d1e6",
+   "c5788e36455ef7bd",
+   "ca6f1da8d57a035d",
+   "e05ef245792e97e4",
+   "e355a2e18d2f0a13",
+   "e4f106c7363d6abb",
+   "f0d3d59d28fd33c2",
+   "facdc9f05f8dcf00",
+   "fe4e764a1bf470da",
+   "fe50ad17340cc952"
+  ],
+  "32": [
+   "15f2ffdd6539b305",
+   "264e9b3b13e1a582",
+   "27fe513bf6145422",
+   "318851fcc02eb520",
+   "341611a9fd07475a",
+   "385e6bdbf249c29a",
+   "388fd96174959e8a",
+   "45cb064b5aad307d",
+   "560aa9892b39000a",
+   "5df76ac07a21c922",
+   "607144dfb53a4835",
+   "6aefa77a93ae377d",
+   "6fef69c500341a14",
+   "750451a58c19b795",
+   "7d1585f8e06df432",
+   "8317b50ea138e123",
+   "834520dd3bffdb09",
+   "835e7218dc373c74",
+   "9f5154832959c289",
+   "b033a447064cfe37",
+   "bba7fdfc44e40752",
+   "bbee0d773b661bca",
+   "c74d1a2469555254",
+   "cc0a172622aada79",
+   "cfcfb13fb2dcc77e",
+   "ec23c1b87ba3dba8"
+  ],
+  "48": [
+   "1d70d83c2e9b3c0d",
+   "2e22ee7ad17b623e",
+   "2e5f14c7311498f3",
+   "34c69d3f9e335cbc",
+   "4cd7ad49da62a9bf",
+   "5d982e39edbc073b",
+   "78a8afaf7f112552",
+   "8a6e3eb6ff35ed37",
+   "99af127f60e1c659",
+   "ae1bbcf051668de4",
+   "e3fd97802516d410",
+   "ef16f1f949f4601a"
+  ]
+ }
+}

@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36124c76f9da9424032c89d0ea6054f9d4da12279f4fc2b00ee31cdb7ef9c698",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "cobweb pair",
+ "label": "beodeul_city/wave-places/ruined-village/cobweb_pair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 40,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobweb strands and spider, drawn as a flat decal seen from above",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse, flat floor decal in rows 1-7: light web strands (x=4 and x=11 at row 4, L=239) form a V and converge on a dark spot (x=8, rows 6-7). Silhouette widths are 2-5 px with no widening and narrowing ellipse, no front-edge line, no eave shadow and no vertical face. Rows 8-15 are empty. It is a flat plate seen from above with no front face, which fits the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite of two white or grey cobwebs on a flat dark background. It is far smaller than one 16x16 tile and has only 2 distinct colours, so the per-tile facts read 0 and cannot be used for or against it. By eye it has about 2 tone steps (light web, dark ground) against 5-6 in the references. The grass reference has clumps in several greens and the paving has stones shaded one by one. The candidate has no grain, no tufts, no per-stone or per-tile shading, and no ground surface to cover a 4x3 patch. It reads as a flat sticker. There is no real outline, only the web strands themselves. It is plainly thinner and flatter than either reference, so it would not be accepted next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11602
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobweb pair (two small web fragments drawn flat, light pixels forming V/X strands with a dark spider-like pixel at rows 6-7)",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is only 7 rows tall (rows 1-7, widths 2-5), with sparse light strand pixels and one dark pixel cluster at rows 6-7. Rows 8-15 are transparent. It is a flat decal seen from above with no front face, no front-edge line, no eave shadow and no vertical face. This matches the flat kind, so it reads as a flat plate with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of a white cobweb pair, smaller than one 16x16 tile. It is not a 4x3-tile ground patch like the grass and paving references, so the kind does not match. It has only 2 distinct colours (white and a grey), which gives about 2 shading steps against roughly 5 on the references. The measured facts give 0 visible tones per tile because the piece is under one tile, so I judged by eye. By eye it is a flat two-tone sticker-like icon with no ground texture, grain, or tile variation. The references carry grass tufts and shaded stone cobbles. The candidate does not meet the ground-surface brief and falls well below the references in craft and information density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 10860
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobweb strands and dark spider/knot spot",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing fills rows 1-7 only, in thin pale V-shaped strands with a dark spot at rows 6-7, and rows 8-15 are empty. The width profile peaks at 5 px. There is no front face, eave line or shadow, ellipse or roof. It is a flat decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny pair of cobweb icons on a dark backdrop, not a 4x3-tile ground patch, so it does not match the grass and paving references. It has only 2 distinct colours (a pale web tone and the dark ground) and no ramp, grain, tufts or per-stone shading. The references carry about 3 visible tones per tile (grass) and 7 (paving), with grass and stone texture dots. The candidate is smaller than one tile, so the per-tile facts read 0 and I judged by eye. Even by eye it is much flatter and thinner than either reference, with no mid-tones and no shading steps. The measured facts give no sign of a tinted outline, and the pale-on-dark web lines read as a flat sticker. It cannot work as ground at this scale.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12143
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobweb pair (two small web decals, light gray strands with a dark spot)",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette occupies only rows 1-7, 2-5 px wide, in a V-shaped pattern of light strands with a dark spot at rows 6-7 around x=8. There is no front face (0 rows), no front-edge line and no eave shadow. It lies flat like a decal seen from above, which fits the flat kind. Rows 8-15 are transparent."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite (two small white cobwebs on a dark background), not a 4x3 tile ground patch like the grass and paving references. It has only 2 distinct colours and is smaller than one 16x16 tile, so the per-tile facts read 0 and cannot be used for or against it. By eye it is just white web strands on a flat dark ground, with about 2 tonal steps and no grain, tufts or per-element shading. The references carry 3 to 7 visible tones per tile with clear texture. Outlines are not meaningful here, since the webs are drawn as thin light lines. It looks much thinner and flatter than the references and does not fill a ground patch, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 7932
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.315Z",
+ "cells": {
+  "16": [
+   "78f30095f6dd6f66"
+  ],
+  "24": [
+   "12ab7fb00def0380",
+   "17ac6679d11d33ca",
+   "31f97fb6c415144a",
+   "3f329f2ba1a31194",
+   "49c7703aa7dc6bf9",
+   "60e70b79ca126027"
+  ],
+  "32": [
+   "11a6124cf8612069",
+   "1533770fe539d2f5",
+   "29958aad4b9db36b",
+   "bbb52d2b10f92fa2",
+   "c37b0daa521bd0fd",
+   "e816a055d89fc5b1"
+  ],
+  "48": [
+   "3561d6289dc5d52b",
+   "645a5f80fa69f231",
+   "d4275ecfe5c46f24",
+   "ecf9972087bdaa2a",
+   "ed34b5642b8f5615",
+   "f3f920adc51c6005"
+  ]
+ }
+}

@@ -1,0 +1,396 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8059e4872ff5a959bf1972bfb99dce2cbd4a69090dbfb9d5e3c6b6c779a102b",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "drawbridge",
+ "label": "beodeul_city/wave-places/mountain-fortress/drawbridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden plank deck of drawbridge (flat planks with iron bands, face-on)",
+      "rows": "14-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chains at left and right edges",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 14-79) is a rectangle of horizontal planks with metal bands at rows 22, 46 and 70. It has constant width of 48 px and no top band ending in a front-edge line, no eave shadow, no ellipse and no roof plane. Plank rows repeat the same light/dark pattern all the way down (the light row at 15, 20, 25, 30, 35 and so on is only plank texture). The bottom rows 77-79 are a dark base. The drawing reads as a flat face-on elevation of a raised bridge or gate leaf. Rows 0-13 are only chains (width 2-6). There is no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a plank deck with grey chains, set against house references, so the match is loose but accepted under the given building kind. The planks show about 4 brown steps: a lit top edge, a mid body, dark seams and a deep shadow edge. That is a little under the references' 5-6 on roof tiles. The outline and seams are dark brown, a tinted tone of the wood, and the measured 0% neutral dark edge pixels confirms there is no black sticker line. Measured visible tones per 16x16 tile are 12, equal to house-h101_0 (12) and above house-h112_0-stone (10). Near-flat coverage is 0%, so there are no flat fills, and the planks carry grain variation and the chains have link dots. The raw total of 13 colours is low, but that reflects the locked palette and is not a reason to fail. Next to the references it is slightly simpler but not thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13926
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "chains rising above the planks (thin 2-6 px links)",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank deck / raised bridge leaf, seen face-on with horizontal plank courses and iron bands at rows 22, 46 and 70",
+      "rows": "14-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a single flat wooden plank panel (rows 14-79, 48 px wide). The light, mid and dark stripes in each plank course are plank faces and shadow lines. They repeat every 5 rows down the whole height, so they are not a top surface with an edge line and eave shadow. The iron bands at rows 22, 46 and 70 are vertical straps. Rows 0-13 are only chain links 2-6 px wide, with no horizontal surface. The bottom rows 77-79 are a dark base outline. No ellipse, roof, canopy or visible contents appear anywhere. The drawing is a flat face-on elevation, as in the 'front elevation: top 1' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden plank deck with chains. Each plank has a light top edge, a mid body, grain dashes and a dark gap, which gives about 5 brown steps against roughly 6 on the reference roofs and walls. The outline is a dark brown that leans toward the wood, and the measured near-neutral share of dark edge pixels is 0%, so it is not a black sticker line. Measured facts are at or above the references: 12 visible tones per tile against 12 and 10, and 0% near-flat coverage like both references. The total of 13 raw colours is low, but that follows from the locked palette, and the visible tone count matches. The chain links are thin and sparse but carry highlight dots. A careful artist would accept it beside the reference, though it is a little simpler than the tiled roofs.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15393
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck / bridge leaf with iron bands",
+      "rows": "14-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chains rising above the leaf (rows 0-13, 2-6 px wide)",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 14-79, constant width 48) is a flat wooden panel. It is made of repeating horizontal plank stripes, each a light row over darker rows, plus grey iron bands at rows 22, 46 and 70. The plank stripes are a repeating texture, not an edge line followed by eave shadow. No band at the top ends in a front-edge line with shadow, and there is no ellipse, roof or visible contents. The top rows 14-15 are only the outline and one light plank row. The chains above (rows 0-13) are narrow vertical strands. Rows 77-79 are a dark base. The whole thing reads as a door-like raised drawbridge seen face-on, with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a plank deck with chains, so it only loosely matches the house references, and I judged it by material craft. The measured facts put it level with the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted dark brown beside the wood, not a black sticker line. The planks show about 5 wood steps (highlight, light, mid, dark, deep gap line) with some grain dots, and no large flat fills. It is plainer than the roof tiles and plaster of the houses, and the chains are thin and only 2-3 tones. The total palette of 13 colours is far smaller than the references (185 and 66), but that is expected for a locked palette and the visible tones hold up. A careful artist would likely accept it beside the references, though with slightly less variety.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17535
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "chains rising above the planks (thin vertical links on left and right edges)",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank deck / gate leaf with iron bands (main body)",
+      "rows": "14-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 14-79, 48 px wide) is a flat face-on wooden plank panel. It has horizontal plank courses with dark gap lines and grey iron bands at rows 22, 46 and 70, plus thin chains running up the sides. The column scan at x=12, 24 and 35 repeats the same plank cycle (light edge #b77541, mid #885a26, dark gap #452a17) from row 15 to the bottom. There is no back rim, front-edge line with eave shadow, ellipse, roof plane or visible contents, so no top surface is drawn. The 1-row dark outline at row 14 is only the silhouette edge. The silhouette is a plain rectangle with no receding side face. Rows 0-13 are narrow chain links, not a top surface. The object reads as a vertical front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a plank drawbridge with side chains, compared against two house references. The planks are separated by dark brown gaps, each with a light top edge and darker lower rows, giving about 5 brown steps. The grey chain links and nail dots add small-scale detail. Outlines are a dark brown that leans toward the wood, not neutral black, which matches the 0% near-neutral edge share. The primary facts also hold up: 12 visible tones per tile equals house-h101_0 (12) and beats house-h112_0-stone (10), and near-flat coverage is 0% like both references. The raw total of 13 colours is far below the references, but that reflects the locked palette and is not a density failure. Grain is modest, being mostly plank lines and nails rather than per-plank speckle. That makes it slightly simpler than the roofs, but it would not look thinner or more sticker-like beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15365
+  }
+ ],
+ "decidedAt": "2026-10-29T05:08:19.880Z",
+ "cells": {
+  "16": [
+   "0360208075f7915b",
+   "28c2869ea09110a9",
+   "29c3fb9da386dab1",
+   "3d3265a8a3980845",
+   "45d23b55b4162216",
+   "465660347a35f166",
+   "4ffb087f28bb07ee",
+   "73cbdaa55df02e05",
+   "77d5c0abaf8202e8",
+   "84b62dcfd2b3eee8",
+   "8a710b9759eaf021",
+   "baa0527c7bdc8bff",
+   "d61849376d9c19e9",
+   "d7cac310b33d2365",
+   "d99105d4b359c0db"
+  ],
+  "24": [
+   "12a6c04433426a32",
+   "18cd36a73426b286",
+   "1aafa76b216d4256",
+   "23027b0895c92950",
+   "28044d91ec53bd79",
+   "3e62d32233d62939",
+   "81cb6ea23db147c6",
+   "8c7d06758f7f7e17",
+   "9843c39b27048e43",
+   "cad47d95b2c0f688",
+   "dc0d809956ac1a2f",
+   "e715b5ff309ba29c",
+   "ed35a1d51ca8a370",
+   "f2841c529847ad1d",
+   "f53f36f212384f96",
+   "fcf2f49e4c845306"
+  ],
+  "32": [
+   "21457a69dff5332c",
+   "26769aaf9cad23c1",
+   "3241e8462da097b6",
+   "37596718e8a42970",
+   "3b2aa8e1b3edbb5d",
+   "420c6da763a6bfde",
+   "45f086eac1b3332c",
+   "4f335443fbf1488e",
+   "56bc28b59707c34c",
+   "593f2b4e549e36b1",
+   "5fe873e2ae8c580b",
+   "6658dda598b40279",
+   "7a5a707bd8bec47c",
+   "7d05380280729c60",
+   "828ebb3499991e6f",
+   "94cc92488f1556e5",
+   "9e64684953faef1b",
+   "a16f8bbb79f032cc",
+   "a9062cda41bfd263",
+   "b284ff5174af01be",
+   "b60e15d8d88f262a",
+   "b7dad80ddf12ed2f",
+   "bac3b1317a96572d",
+   "c058a277ad055e91",
+   "c4d6017eb96dd76c",
+   "c9aeeb4664100d26",
+   "d3b3f67e44b4dfc6",
+   "d7c607c3788d1c29",
+   "d949bcf3fcf5cb69",
+   "dc6e07009a5bb05a",
+   "de86c03626daf9b6",
+   "e697c1e187501860",
+   "e7106820bc57a262",
+   "ee0937acc8518621",
+   "f3d221da3be50d15",
+   "fcbe75008a2621fb"
+  ],
+  "48": [
+   "265978b68c0373a9",
+   "68ccb0f71b39d452",
+   "aa9dec8b1548befe",
+   "f9ea4fa27ccea6da"
+  ]
+ }
+}

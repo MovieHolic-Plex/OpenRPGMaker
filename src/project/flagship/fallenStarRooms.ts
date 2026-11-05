@@ -181,7 +181,7 @@ const GATE_ROOM: RoomSpec = {
     "###............................#",
     "###............................#",
     "#########..............#########",
-    "#.........#####..#####.........#",
+    "#..............................#",
     "#..............................#",
     "#..............................#",
     "#..............................#",
@@ -219,12 +219,13 @@ const GATE_ROOM: RoomSpec = {
     {id: "rune stone", x: 16, y: 9},
     {id: "paschal candle", x: 11, y: 9},
     {id: "paschal candle", x: 20, y: 9},
+    // 아래 칸막이 두 덩이(천장 한 줄)가 방 한가운데 검은 구멍으로 읽혔다(fs-act1-vqa) — 칸막이를 걷어 화로 단을 홀에 열고 기둥으로 테를 잡는다.
+    {id: "column stone", x: 10, y: 14},
+    {id: "column stone", x: 21, y: 14},
     {id: "great stone brazier lit", x: 11, y: 16},
     {id: "great stone brazier lit", x: 19, y: 16},
     {id: "seal stone", x: 13, y: 16},
     {id: "seal stone", x: 18, y: 16},
-    {id: "wall torch", x: 14, y: 14},
-    {id: "wall torch", x: 17, y: 14},
     {id: "wall torch", x: 5, y: 1},
     {id: "moon pool", x: 4, y: 5},
     {id: "bench 2", x: 7, y: 6},
@@ -664,7 +665,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
       id: `ev_fs_vault_gate_bars${dx}`, name: "쇠창살 문", x, y: PORTCULLIS.y + 1, trigger: { kind: "action" }, commands: [],
       pages: [
         quietPage(`ev_fs_vault_gate_bars${dx}_shut`, "닫힘", [], "action", [
-          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다.\n손으로는 꿈쩍도 하지 않는다." } as unknown as Command,
+          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다.\n손으로 밀어도 꿈쩍 않는다." } as unknown as Command,
         ], "same"),
         quietPage(`ev_fs_vault_gate_bars${dx}_open`, "열림", [solved], "action", []),
       ],
