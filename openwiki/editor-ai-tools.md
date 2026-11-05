@@ -858,6 +858,8 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   v1 겉모습 기본값(`look_defaults`, 2026-11-05 5차): 이어 짓기·특징 확인 뒤 `src/ai/v2/shipDefaults.ts` `applyLookDefaults`(v2 `applyShipDefaults` 의 앞부분 —
   전투 곡·전투 배경·파티 모습/얼굴/이름·창 모양·게임 오버·전투 없는 게임의 전투 메뉴)를 결정적으로 채운다. 고른 값은 덮지 않는다. HUD 는 채우지 않는다.
   실측: 다섯 판 모두 엔딩까지 플레이됐지만 넷이 편집기 기본 전투 곡·배경·게임 오버·「주인공」을 그대로 냈다. 회귀 `test/lookDefaults.test.ts`.
+  필드 HUD(`hud`, 6차): 아무도 안 고른 기본 HUD(하트 체력·숫자)도 채운다 — 체력이 줄 일(`projectCanLoseHp`)이 없으면 끈다(목표 줄만), 있으면 공포 horror·판타지 classic·그 밖 hearts.
+  실측: 전투 없는 학교 연애가 하트와 「514 / 514」를 내내 띄웠다.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `familyBaselineMap`·`isBlankCanvasMap`·`isWorldmapKitMap` 은 `src/project/tilesetBaseline.ts` 한 곳에 있다(실행기·`ask_tileset_change`·이어 짓기 신호가 같이 쓴다).
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`·`tileset-no-baseline`.

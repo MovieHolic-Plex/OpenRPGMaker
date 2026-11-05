@@ -24,6 +24,7 @@ import { doorCellBlocked, lateStartObjective, objectiveCommand, offArtEntrances,
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
+import { normalizeFieldHud, projectCanLoseHp } from "@/project/fieldHud";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { equipMonsterCampaign, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
@@ -85,7 +86,29 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   if (left.has("game-over")) applied.push(...fillGameOver(project, story));
   applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
+  if (left.has("hud")) applied.push(...fillFieldHud(project, story));
   return applied;
+}
+
+/**
+ * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 체력이 줄 일(전투·피해·조우)이
+ * 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
+ * 실측(2026-11-05 gpt-only-game 6차): 전투 없는 학교 연애가 체력 하트와 「514 / 514」를 내내 띄웠다.
+ */
+function fillFieldHud(project: Project, story: string): string[] {
+  // 2D 액션 전투는 명령 없이 체력을 깎는다(projectCanLoseHp 는 턴제 전투·피해 명령만 본다).
+  const action = project.system.actionCombat?.enabled === true;
+  if (!action && !projectCanLoseHp(project)) {
+    project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
+    return ["필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
+  }
+  const premise = premiseOf(project, story);
+  const theme = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise) ? "horror" : !action && /마왕|용사|기사|판타지|RPG|던전/iu.test(premise) ? "classic" : "hearts";
+  // 목표 줄은 둔다(기본 HUD 에서도 보이던 줄) — normalizeFieldHud 는 빠진 objective 를 끈다.
+  const next = normalizeFieldHud({ theme, objective: true });
+  delete next.widgets;
+  project.system.fieldHud = next;
+  return [`필드 HUD → ${theme}`];
 }
 
 // ── 전투 곡 ─────────────────────────────────────────────────────────────
