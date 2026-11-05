@@ -26,20 +26,20 @@ export function call(project: Project, name: string, args: Record<string, unknow
 }
 
 /** 추상 좌표(u = 가로지름 0..31, v = 진행 0..39, v=39 가 들어오는 쪽, v=0 이 나가는 쪽)를 실제 맵 칸으로. */
-export function toMap(side: Side, u: number, v: number): Cell {
+export function toMap(side: Side, u: number, v: number, across = ACROSS, along = ALONG): Cell {
   switch (side) {
     case "north": return { x: u, y: v };
-    case "south": return { x: ACROSS - 1 - u, y: ALONG - 1 - v };
-    case "east": return { x: ALONG - 1 - v, y: u };
-    case "west": return { x: v, y: ACROSS - 1 - u };
+    case "south": return { x: across - 1 - u, y: along - 1 - v };
+    case "east": return { x: along - 1 - v, y: u };
+    case "west": return { x: v, y: across - 1 - u };
   }
 }
-export const dims = (side: Side): { width: number; height: number } =>
-  side === "north" || side === "south" ? { width: ACROSS, height: ALONG } : { width: ALONG, height: ACROSS };
+export const dims = (side: Side, across = ACROSS, along = ALONG): { width: number; height: number } =>
+  side === "north" || side === "south" ? { width: across, height: along } : { width: along, height: across };
 /** 두 칸 폭 문은 「왼쪽/위쪽 칸」 — 가로지름 축이 뒤집히는 쪽은 한 칸 당긴다. */
-export function exitCell(side: Side, u: number, v: number): Cell {
+export function exitCell(side: Side, u: number, v: number, across = ACROSS, along = ALONG): Cell {
   const flip = side === "south" || side === "west";
-  const c = toMap(side, Math.floor(u) + (flip ? 1 : 0), v);
+  const c = toMap(side, Math.floor(u) + (flip ? 1 : 0), v, across, along);
   return { x: Math.round(c.x), y: Math.round(c.y) };
 }
 
@@ -101,16 +101,21 @@ export interface ForestDesign {
   readonly bends?: unknown; readonly sway?: unknown; readonly entryAt?: unknown; readonly exitAt?: unknown; readonly width?: unknown;
   readonly branches?: readonly { readonly at?: unknown; readonly toward?: unknown; readonly length?: unknown; readonly end?: unknown }[];
   readonly clearings?: readonly { readonly at?: unknown; readonly size?: unknown; readonly toward?: unknown }[];
+  /** 그림 도안에서 읽은 크기·연못(도안 칸 좌표, 위 = 나가는 쪽). */
+  readonly plan?: { readonly cols?: unknown; readonly rows?: unknown; readonly ponds?: readonly unknown[] };
 }
 const n01 = (v: unknown, d: number) => (v !== undefined && v !== null && v !== "" && Number.isFinite(Number(v)) ? Math.max(0, Math.min(1, Number(v))) : d);
 const towardOf = (v: unknown): -1 | 1 | 0 => (/left|왼|좌|west|서/iu.test(String(v ?? "")) ? -1 : /right|오른|우|east|동/iu.test(String(v ?? "")) ? 1 : 0);
 
 function designedForestSpec(id: string, name: string, side: Side, seed: number, last: boolean, field: boolean, d: ForestDesign): { spec: WoodSpec; entry: Cell; exit: Cell | null; deadEnds: { at: Cell; end: string }[]; line: string; clearing: Cell; notes: string[] } {
   const rnd = mulberry32(seed);
+  // 그림 도안(2026-11-05 imageplan-follow): 도안 가로세로비로 맵 크기를 정한다(진행 축 = 도안 세로) — 고정 32×40 이면 가로로 넓은 숲 도안이 세로로 눌렸다.
+  const plan = d.plan && Number(d.plan.cols) > 0 && Number(d.plan.rows) > 0 ? d.plan : undefined;
+  const AL = ALONG, AC = plan ? Math.max(ACROSS - 8, Math.min(64, Math.round(AL * Number(plan.cols) / Number(plan.rows)))) : ACROSS;
   const across = (lo: number, hi: number) => lo + rnd() * (hi - lo);
-  const clampU = (u: number) => Math.max(3, Math.min(ACROSS - 4, u));
-  const entryU = 4 + n01(d.entryAt, rnd()) * (ACROSS - 9);
-  const exitU = Math.round(4 + n01(d.exitAt, rnd()) * (ACROSS - 9)) + 0.5;
+  const clampU = (u: number) => Math.max(3, Math.min(AC - 4, u));
+  const entryU = 4 + n01(d.entryAt, rnd()) * (AC - 9);
+  const exitU = Math.round(4 + n01(d.exitAt, rnd()) * (AC - 9)) + 0.5;
   const endV = last ? across(6, 9) : 0;
   const bendsRaw = Math.floor(Number(d.bends));
   const n = Number.isFinite(bendsRaw) && bendsRaw > 0 ? Math.min(6, bendsRaw) : 2 + Math.floor(rnd() * 4);
@@ -119,27 +124,27 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
   const width = String(d.width ?? "");
   const w: [number, number] = /narrow|좁/iu.test(width) ? [1.6, 2.4] : /wide|넓/iu.test(width) ? [3, 4.4] : [2.2, 3.4];
   const sign = rnd() < 0.5 ? 1 : -1;
-  const raw: Cell[] = [{ x: entryU, y: ALONG - 1 }];
+  const raw: Cell[] = [{ x: entryU, y: AL - 1 }];
   for (let i = 1; i <= n; i += 1) {
-    const v = ALONG - 1 - ((ALONG - 1 - endV) * i) / (n + 1);
+    const v = AL - 1 - ((AL - 1 - endV) * i) / (n + 1);
     const base = entryU + ((exitU - entryU) * i) / (n + 1);
-    raw.push({ x: Math.max(4, Math.min(ACROSS - 5, base + (i % 2 === 0 ? 1 : -1) * sign * across(a0, a1))), y: v });
+    raw.push({ x: Math.max(4, Math.min(AC - 5, base + (i % 2 === 0 ? 1 : -1) * sign * across(a0, a1))), y: v });
   }
   raw.push({ x: last ? across(10, 22) : exitU, y: endV });
   // 진행 t(0 = 들어오는 쪽, 1 = 끝)의 길 위 점.
   const along = (t: number): Cell => {
-    const v = ALONG - 1 - t * (ALONG - 1 - endV);
+    const v = AL - 1 - t * (AL - 1 - endV);
     for (let k = 1; k < raw.length; k += 1) {
       const p = raw[k - 1]!, q = raw[k]!;
       if (v <= p.y && v >= q.y) { const f = p.y === q.y ? 0 : (p.y - v) / (p.y - q.y); return { x: p.x + (q.x - p.x) * f, y: v }; }
     }
     return raw[raw.length - 1]!;
   };
-  const paths: { pts: Cell[]; w: [number, number] }[] = [{ pts: raw.map((p) => toMap(side, p.x, p.y)), w }];
+  const paths: { pts: Cell[]; w: [number, number] }[] = [{ pts: raw.map((p) => toMap(side, p.x, p.y, AC, AL)), w }];
   const clearings = [
-    centerBlob(side, entryU, ALONG - 4, across(3, 4.5), 2.6),
-    ...(last ? [centerBlob(side, raw[raw.length - 1]!.x, endV + 1, 5.5, 4)] : []),
-    ...(field ? raw.slice(1, -1).filter((_, k) => k % 2 === 0).map((p) => centerBlob(side, Math.max(9, Math.min(ACROSS - 10, p.x)), p.y, across(8, 11), across(5, 7))) : []),
+    centerBlob(side, entryU, AL - 4, across(3, 4.5), 2.6, AC, AL),
+    ...(last ? [centerBlob(side, raw[raw.length - 1]!.x, endV + 1, 5.5, 4, AC, AL)] : []),
+    ...(field ? raw.slice(1, -1).filter((_, k) => k % 2 === 0).map((p) => centerBlob(side, Math.max(9, Math.min(AC - 10, p.x)), p.y, across(8, 11), across(5, 7))) : []),
   ];
   const deadEnds: { at: Cell; end: string }[] = [];
   const notes: string[] = [];
@@ -160,13 +165,13 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
   for (const b of (d.branches ?? []).slice(0, 4)) {
     const t = n01(b.at, across(0.25, 0.75));
     const p = along(Math.max(0.12, Math.min(0.88, t)));
-    const want = towardOf(b.toward) || (p.x < ACROSS / 2 ? 1 : -1);
+    const want = towardOf(b.toward) || (p.x < AC / 2 ? 1 : -1);
     const len = 4 + n01(b.length, 0.5) * 12;
     let pick: { end: Cell; dir: number; len: number; room: number } | undefined;
     for (const dir of [want, -want]) {
       for (const l of [len, len * 0.75, len * 0.5, 4]) {
         for (const dv of [-4, -2, -6, 0, 2]) {
-          const end = { x: clampU(p.x + dir * l), y: Math.max(endV + 3, Math.min(ALONG - 5, p.y + dv)) };
+          const end = { x: clampU(p.x + dir * l), y: Math.max(endV + 3, Math.min(AL - 5, p.y + dv)) };
           const room = clear(end);
           if (room >= 5 && (!pick || (pick.dir !== dir ? false : room > pick.room))) pick = { end, dir, len: l, room };
         }
@@ -179,10 +184,10 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     const { end, dir } = pick;
     const mid = { x: (p.x + end.x) / 2, y: (p.y + end.y) / 2 + across(-1, 1) };
     taken.push([p, mid, end]);
-    paths.push({ pts: [p, mid, end].map((c) => toMap(side, c.x, c.y)), w: [1.8, 2.6] });
+    paths.push({ pts: [p, mid, end].map((c) => toMap(side, c.x, c.y, AC, AL)), w: [1.8, 2.6] });
     const what = String(b.end ?? "chest");
-    if (!/nothing|없/iu.test(what)) clearings.push(centerBlob(side, end.x, end.y, 2.4, 2));
-    const at = toMap(side, end.x, end.y);
+    if (!/nothing|없/iu.test(what)) clearings.push(centerBlob(side, end.x, end.y, 2.4, 2, AC, AL));
+    const at = toMap(side, end.x, end.y, AC, AL);
     deadEnds.push({ at: { x: Math.round(at.x), y: Math.round(at.y) }, end: what });
     branchLines.push(`${t.toFixed(2)}${dir < 0 ? "왼" : "오"}${Math.round(pick.len)}→${what}`);
   }
@@ -193,25 +198,36 @@ function designedForestSpec(id: string, name: string, side: Side, seed: number, 
     const size = String(c.size ?? "");
     const [ru, rv] = /small|작/iu.test(size) ? [2.6, 2] : /large|big|크|넓/iu.test(size) ? [5, 3.8] : [3.8, 2.8];
     const shift = towardOf(c.toward) * 5;
-    clearings.push(centerBlob(side, clampU(p.x + shift), p.y, ru, rv));
+    clearings.push(centerBlob(side, clampU(p.x + shift), p.y, ru, rv, AC, AL));
     clearLines.push(`${t.toFixed(2)}${size || "medium"}`);
   }
   const nooks = [raw[1]!, raw[Math.min(raw.length - 2, 3)]!].map((p, k) => {
     const dir = k % 2 === 0 ? 1 : -1;
-    const from = toMap(side, Math.round(p.x), Math.round(p.y));
-    const to = toMap(side, Math.max(2, Math.min(ACROSS - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1));
+    const from = toMap(side, Math.round(p.x), Math.round(p.y), AC, AL);
+    const to = toMap(side, Math.max(2, Math.min(AC - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1));
     return { from, to };
   });
-  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4)] : [];
-  const entry = exitCell(side, entryU, ALONG - 1);
-  const exit = last ? null : exitCell(side, exitU, 0);
-  const { width: W, height: H } = dims(side);
-  const line = `굽이 ${n} · 휨 ${sway || "보통"} · 폭 ${width || "보통"} · 들어옴 ${(entryU / ACROSS).toFixed(2)} · 나감 ${last ? "막다른 빈터" : (exitU / ACROSS).toFixed(2)} · 갈림 ${branchLines.join(" ") || "없음"} · 빈터 ${clearLines.join(" ") || "-"}`;
+  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3, AC, AL), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4, AC, AL)] : [];
+  const entry = exitCell(side, entryU, AL - 1, AC, AL);
+  const exit = last ? null : exitCell(side, exitU, 0, AC, AL);
+  const { width: W, height: H } = dims(side, AC, AL);
+  const line = `굽이 ${n} · 휨 ${sway || "보통"} · 폭 ${width || "보통"} · 들어옴 ${(entryU / AC).toFixed(2)} · 나감 ${last ? "막다른 빈터" : (exitU / AC).toFixed(2)} · 갈림 ${branchLines.join(" ") || "없음"} · 빈터 ${clearLines.join(" ") || "-"}`;
+  // 도안 연못(~): 도안 칸 사각형을 같은 비율로 맵 칸에 옮겨 물로 판다(진행 축 방향은 toMap 이 돌린다).
+  const pondRects = plan ? (Array.isArray(plan.ponds) ? plan.ponds : []).slice(0, 12).flatMap((r) => {
+    const q = r as { x?: unknown; y?: unknown; w?: unknown; h?: unknown };
+    const [x, y, w2, h2] = [q.x, q.y, q.w, q.h].map(Number);
+    if (![x, y, w2, h2].every(Number.isFinite) || w2! <= 0 || h2! <= 0) return [];
+    const su = AC / Number(plan.cols), sv = AL / Number(plan.rows);
+    const a = toMap(side, x! * su, y! * sv, AC, AL), b = toMap(side, (x! + w2!) * su - 1, (y! + h2!) * sv - 1, AC, AL);
+    return [{ x0: Math.round(Math.min(a.x, b.x)), y0: Math.round(Math.min(a.y, b.y)), x1: Math.round(Math.max(a.x, b.x)), y1: Math.round(Math.max(a.y, b.y)) }];
+  }) : [];
+  if (plan) notes.push(`도안 비율로 맵 ${W}×${H}${pondRects.length ? ` · 연못 ${pondRects.length}곳` : ""}`);
+  const water = pondRects.length ? (x: number, y: number) => pondRects.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1) : undefined;
   return {
-    spec: { id, name, width: W, height: H, seed, paths, exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
+    spec: { id, name, width: W, height: H, seed, paths, ...(water ? { pond: water } : {}), exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
     entry, exit, deadEnds, line, notes,
     // 보스·사당 자리: 마지막 맵은 막다른 빈터, 아니면 길 가운데.
-    clearing: (() => { const p = last ? { x: raw[raw.length - 1]!.x, y: endV + 1 } : along(0.5); const c = toMap(side, p.x, p.y); return { x: Math.round(c.x), y: Math.round(c.y) }; })(),
+    clearing: (() => { const p = last ? { x: raw[raw.length - 1]!.x, y: endV + 1 } : along(0.5); const c = toMap(side, p.x, p.y, AC, AL); return { x: Math.round(c.x), y: Math.round(c.y) }; })(),
   };
 }
 
@@ -259,8 +275,8 @@ function enemySpotsOf(project: Project, map: GameMap, entry: Cell, avoid: readon
   return out;
 }
 
-export function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
-  const c = toMap(side, u, v);
+export function centerBlob(side: Side, u: number, v: number, ru: number, rv: number, across = ACROSS, along = ALONG) {
+  const c = toMap(side, u, v, across, along);
   const vertical = side === "north" || side === "south";
   return { cx: c.x, cy: c.y, rx: vertical ? ru : rv, ry: vertical ? rv : ru };
 }
@@ -397,6 +413,9 @@ const authorForestRoute: ToolDefinition = {
               end: { type: "string", description: "끝에 둘 것: chest 상자 자리 · clearing 빈터 · nothing" } } } },
             clearings: { type: "array", maxItems: 4, description: "본길 옆 빈터", items: { type: "object", properties: {
               at: { type: "number", description: "진행 위치 0~1" }, size: { type: "string", description: "small·medium·large" }, toward: { type: "string", description: "left·right·center" } } } },
+            plan: { type: "object", description: "(그림 도안) 도안 칸 격자 크기와 연못 — 주면 맵을 도안 가로세로비로 짓고 연못을 그 자리에 판다. 도안 읽기 메모가 준 그대로 보낸다.", properties: {
+              cols: { type: "integer" }, rows: { type: "integer" },
+              ponds: { type: "array", maxItems: 12, items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } } } } } },
           },
         },
       },

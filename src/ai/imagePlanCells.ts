@@ -424,6 +424,9 @@ export function forestDesignFromCells(map: CellMap): Record<string, unknown> {
       return { at, size: l.w * l.h >= 12 ? "large" : l.w * l.h >= 4 ? "medium" : "small", toward: Math.abs(lx - near) < 3 ? "center" : lx < near ? "left" : "right" };
     });
     if (clearings.length) design.clearings = clearings;
+    // 도안 비율·연못(~ 덩이, 4칸 이상) — 숲 빌더가 맵 크기와 물 자리를 도안대로 짓는다(r2 p7: 32×40 고정이라 가로로 넓은 도안·연못이 빠졌다)
+    const ponds = components(map, (ch) => ch === "~").filter((c) => c.cells.length >= 4).slice(0, 12).map((c) => ({ x: c.x0, y: c.y0, w: c.x1 - c.x0 + 1, h: c.y1 - c.y0 + 1 }));
+    design.plan = { cols: map.cols, rows: map.rows, ...(ponds.length ? { ponds } : {}) };
   }
   return design;
 }

@@ -42,6 +42,8 @@ export interface WoodSpec {
   readonly groves?: readonly Blob[];
   /** 굽은 개울. straight 는 다리 자리처럼 정확한 물 사각형(곡선 위에 덮는다). */
   readonly stream?: { readonly pts: readonly Cell[]; readonly w: readonly [number, number]; readonly straight?: { x: number; y: number; w: number; h: number } };
+  /** 연못 칸(그림 도안의 물 — 2026-11-05 imageplan-follow). 개울과 같은 물로 판다. */
+  readonly pond?: (x: number, y: number) => boolean;
   /** 다리(돌다리 5×4 키트 원점) — 바닥 두 줄(y+1·y+2)이 길로 이어진다. */
   readonly bridge?: Cell;
   /** 길섶·빈터 덤불 밀도 배수(기본 1) — 가시덤불 샛길은 덤불이 빽빽하다. */
@@ -190,6 +192,7 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
       }
     }
   }
+  if (spec.pond) for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) if (spec.pond(x, y)) water.add(idx(x, y));
   const deck = new Set<number>();
   if (spec.bridge) for (let dy = 1; dy <= 2; dy += 1) for (let dx = 0; dx < 5; dx += 1) deck.add(idx(spec.bridge.x + dx, spec.bridge.y + dy));
   for (const c of water) path.delete(c);
