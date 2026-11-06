@@ -6,6 +6,7 @@
 // 처음부터 싣는 도구(V2_UP_FRONT)는 p 에 없는 한국어 파라미터 설명을 지운다(형·enum·required 는 그대로). 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다(그 도구를 싣는 일은 드물고, 뜻을 잃지 않게).
 // 한국어 enum 값·코드가 맞추는 글(예: '버들항 물')은 그대로 두고 영어 풀이를 붙인다.
 
+import { DEFINE_ENDING_DESCRIPTION, RUN_SCENE_TEST_DESCRIPTION } from "@/ai/agentRules";
 export interface ToolTextEn {
   /** 도구 설명. */
   readonly d: string;
@@ -82,7 +83,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     },
   },
   run_scene_test: {
-    d: "Run a scene headlessly at a fixed tick and check the result. Input {mapId, start:{x,y}, steps:[…]}. Steps: wait{ticks} · face{dir} · move{dir|to} (stepping on touch events triggers them) · interact{eventId?} · choose{index} · present{itemId?} · set{switches?,variables?,inventory?,mapId?,x?,y?} · snapshotRewards · gift · useFieldSkill · retryCheckpoint · advanceDays · expect{…}. expect keys: playerAt, switchOn/switchOff, variableEquals, variableAtLeast, eventAt, eventOnMap, partyIncludes, followerCount, bgmPlaying, gameOver, endingReached (ending id), mapId, inventoryCount, goldDelta, inventoryDelta, interactionComplete, lastTransfer{fromMapId,toMapId}, and more. For rewards: snapshotRewards right before the interact, then expect goldDelta/inventoryDelta. Field action battles are not run here.",
+    d: RUN_SCENE_TEST_DESCRIPTION,
     p: { steps: "SceneStep[]", "steps[].kind": "Step kind.", "steps[].skillId": "useFieldSkill: field skill id.", "steps[].target": "useFieldSkill: event id in front (check).", "steps[].actorId": "useFieldSkill: who uses it (omit = first who knows it)." },
   },
   create_transfer_pair: {
@@ -151,7 +152,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     },
   },
   define_ending: {
-    d: "Save an ending definition (id, name, epilogue, presentation). It does nothing alone: put {kind:'triggerEnding',endingId} in a reachable event's commands. If the ending has conditions they are checked at the trigger — false = no ending, the next command runs. epilogue = script_cutscene beats. Act-end cards: presentation.finalTitle '제1막 끝' (End of Act 1).",
+    d: DEFINE_ENDING_DESCRIPTION,
     p: {
       conditions: "Ending conditions (same shape as page conditions).",
       priority: "Higher wins. Default 0.",

@@ -114,7 +114,8 @@
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
     "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --",
-    "store:publish-game": "node scripts/store/publish-game.mjs"
+    "store:publish-game": "node scripts/store/publish-game.mjs",
+    "agent-rules:skill": "vite-node --script scripts/content/build-agent-rules-skill.mts && node scripts/content/bundle-assistant-skills.mjs"
   },
   "dependencies": {
     "@jitl/quickjs-singlefile-browser-release-sync": "0.32.0",

@@ -8,10 +8,11 @@
 // 이 모듈은 환경 변수를 그대로 넘길 뿐 자격 증명을 읽지 않는다.
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { delimiter, join } from "node:path";
 import { createInterface } from "node:readline";
+import { AGENT_RULES_SKILL_ID, agentRulesPromptLines, renderAgentRulesSkill } from "../../src/ai/agentRules";
 import { createAgentInstaller, type AgentInstaller, type InstallableAgent, type InstallerPaths, type SetupEvent } from "./agentInstaller";
 
 export type AgentKind = "claude" | "codex" | "opencode";
@@ -117,16 +118,35 @@ export type AgentHostOptions = {
   readonly installer?: Omit<InstallerPaths, "env">;
 };
 
-/** 에이전트에게 붙이는 지시. 쓰기는 oprn 도구로만, 파일 도구 없음, 결과는 짧게. */
+/** 에이전트에게 붙이는 지시. 쓰기는 oprn 도구로만, 파일 도구 없음, 결과는 짧게 — 게임 짓기 규칙은 src/ai/agentRules.ts 한 곳에 있다. */
 export const AGENT_SYSTEM_APPEND = [
   "You are working inside OPRN Studio, an RPG map/game editor that is open on the user's screen.",
   "Edit the game ONLY through the `oprn` MCP tools. You have no file or shell tools; never try to edit project files.",
   "Every successful write tool call is applied to the open editor at once; the user watches the map change live and can undo your whole turn with one click.",
   "The direct tools are the most common ones. For anything else, search with oprn_tools (a word like 'npc', 'door', 'paint', 'event'), read one schema with oprn_schema, and call it with oprn_call.",
   "Start by reading the project summary when you need map ids or coordinates. Keep replies short and in the user's language.",
+  ...agentRulesPromptLines(),
 ].join("\n");
 
 const POLL_WAIT_MS = 25_000;
+
+/**
+ * 에이전트 작업 폴더에 게임 짓기 규칙을 파일로도 둔다 — 시스템 프롬프트(_meta.systemPrompt.append)를 무시하는 어댑터
+ * (codex-acp·opencode)는 cwd 의 AGENTS.md 를 직접 읽고, Claude Code 는 CLAUDE.md 와 skills/ 를 읽는다.
+ * 한 글을 두 경로로 주므로 어느 어댑터로 돌려도 같은 규칙을 받는다(원문은 src/ai/agentRules.ts 하나).
+ */
+export function writeAgentRulesFiles(workDir: string): readonly string[] {
+  const skill = renderAgentRulesSkill();
+  const dirs = [join(workDir, "skills", AGENT_RULES_SKILL_ID), join(workDir, ".claude", "skills", AGENT_RULES_SKILL_ID)];
+  const written: string[] = [];
+  for (const dir of dirs) {
+    mkdirSync(dir, { recursive: true });
+    written.push(join(dir, "SKILL.md"));
+  }
+  written.push(join(workDir, "AGENTS.md"), join(workDir, "CLAUDE.md"));
+  for (const file of written) writeFileSync(file, skill, "utf8");
+  return written;
+}
 const TOOL_TIMEOUT_MS = 5 * 60_000;
 const MAX_EVENTS = 2000;
 
@@ -283,6 +303,7 @@ export function createAgentHost(options: AgentHostOptions) {
       push({ type: "status", state: "starting", detail: spec.label });
       const port = await ensureMcpServer();
       mkdirSync(options.workDir, { recursive: true });
+      writeAgentRulesFiles(options.workDir);
       // 윈도 .cmd 래퍼는 shell 없이 띄울 수 없다.
       const spawned = spawn(launch.command, [...launch.args], { cwd: options.workDir, env: { ...hostEnv, ...launch.env }, stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" && /\.(cmd|bat)$/i.test(launch.command), windowsHide: true });
       child = spawned;

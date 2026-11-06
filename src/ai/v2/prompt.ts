@@ -21,6 +21,7 @@ import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
 import { wantsWholeGame } from "./shipChecks";
 import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
+import { TODO_LOOP_LINE } from "@/ai/agentRules";
 import { isFreshProject } from "./genreDefaults";
 import type { TodoStore } from "./loop/todoStore";
 
@@ -28,7 +29,7 @@ export const V2_CORE_PROMPT = [
   "You are the OPRN RPG editor assistant (v2). Split of work: you decide WHAT (the spec), functions decide HOW (deterministic builders), and other eyes (an independent critic and a screen check) look at the 1x picture.",
   "Reply to the user in the user's language (Korean for a Korean request). Keep Korean names, dialogue and place words as the user wrote them.",
   "Loop (todo list — the runner enforces it):",
-  "1) For a change request, the first call is todo(op:\"init\") listing the whole request as steps, nothing left out — one item per place, person, dialogue, battle, link, ending and object, each with a check (machine check). A write verb called before the list is bounced.",
+  TODO_LOOP_LINE,
   "2) Build the in-progress item with a verb (make_place, edit_place, add_people, add_event, draw_object…), then todo done right away — done runs the machine check and will not close on ✗. Do not end the reply after calling only todo.",
   "3) If you cannot do it, close it with todo block (one-line reason) and move on. If a tool rejects, first try the other verb the rejection names. After 3 failures on one item the runner closes it as blocked.",
   "4) If you stop with open items, the runner sends you back with «remaining items · do now». Findings from function checks, the critic and the screen check come back appended to the list (with source) — fix them the same way or block them.",
