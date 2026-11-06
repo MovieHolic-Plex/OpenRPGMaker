@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
+import { clearSelectionRegion, copySelection, pasteClipboard, selectTileRegion } from "@/editor/mapClipboard";
 import { paintTile } from "@/editor/tileActions";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { topTileInStack } from "@/project/mapOverlayTiles";
@@ -110,5 +110,50 @@ describe("영역 복사/붙여넣기 — 두 레이어 통째로", () => {
     const map = currentMap();
     expect(lowerAt(map, 9, 9)).toBe(TILE.GRASS);
     expect(upperAt(map, 9, 9)).toBe(TILE.EMPTY);
+  });
+});
+
+describe("보호(잠금) 칸 — 붙여넣기·영역 지우기도 못 바꾼다", () => {
+  function lockCells(mapId: MapId, cells: readonly (readonly [number, number])[]): void {
+    store.update((project) => {
+      const map = project.maps[mapId]!;
+      map.terrainDesign = { ...(map.terrainDesign ?? {}), lockedCells: cells.map(([x, y]) => y * map.width + x) };
+    });
+  }
+
+  it("붙여넣기는 보호 칸을 건너뛰고 나머지 칸만 바꾼다", () => {
+    const mapId = startMapId();
+    paintTile(mapId, "lower", 1, 1, TILE.WATER);
+    paintTile(mapId, "lower", 2, 1, TILE.WATER);
+    paintTile(mapId, "lower", 5, 5, TILE.GRASS);
+    paintTile(mapId, "lower", 6, 5, TILE.GRASS);
+    lockCells(mapId, [[5, 5]]);
+    const locked = lowerAt(currentMap(), 5, 5);
+    const source = lowerAt(currentMap(), 2, 1);
+    expect(locked).not.toBe(source);
+
+    selectTileRegion(mapId, { mapId, x: 1, y: 1, width: 2, height: 1 });
+    expect(copySelection(mapId)).toBe(true);
+    expect(pasteClipboard(mapId, 5, 5)).toBe(true);
+
+    const map = currentMap();
+    expect(lowerAt(map, 5, 5)).toBe(locked);
+    expect(lowerAt(map, 6, 5)).toBe(source);
+  });
+
+  it("영역 지우기는 보호 칸을 남기고 나머지 칸만 비운다", () => {
+    const mapId = startMapId();
+    paintTile(mapId, "lower", 3, 3, TILE.WATER);
+    paintTile(mapId, "lower", 4, 3, TILE.WATER);
+    lockCells(mapId, [[3, 3]]);
+    const locked = lowerAt(currentMap(), 3, 3);
+    expect(locked).not.toBe(TILE.EMPTY);
+
+    selectTileRegion(mapId, { mapId, x: 3, y: 3, width: 2, height: 1 });
+    expect(clearSelectionRegion(mapId)).toBe(true);
+
+    const map = currentMap();
+    expect(lowerAt(map, 3, 3)).toBe(locked);
+    expect(lowerAt(map, 4, 3)).toBe(TILE.EMPTY);
   });
 });
