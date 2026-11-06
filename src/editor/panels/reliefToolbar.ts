@@ -363,9 +363,24 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     landSizeButtons.set(size, button);
     landSizes.append(button);
   }
+  const frameLock = el("button", {
+    class: "relief-bar-toggle relief-frame-lock", text: "틀 고정",
+    attrs: { type: "button", "aria-pressed": "false", title: "높이·경사로·물을 잠근다 — AI 는 타일·소품만 채우고 틀을 바꾸는 쓰기는 거부된다. 사람 붓은 그대로 쓴다." },
+    dataset: { testid: "terrain-frame-lock" },
+    on: { click: () => {
+      const { mapId } = currentMapAndTileset();
+      if (!mapId) return;
+      const on = store.getCurrent().maps[mapId]?.terrainDesign?.frameLock !== true;
+      recordMapEditIfChanged(mapId, () => store.updateMap(mapId, (draft) => {
+        const next = { ...draft.terrainDesign };
+        if (on) next.frameLock = true; else delete next.frameLock;
+        draft.terrainDesign = Object.keys(next).length ? next : undefined;
+      }, { label: on ? "틀 고정" : "틀 고정 풀기" }), { label: on ? "틀 고정" : "틀 고정 풀기" });
+    } },
+  }) as HTMLButtonElement;
   const landPalette = el("section", {
     class: "relief-land-palette", dataset: { testid: "terrain-land-palette" },
-    children: [el("h4", { class: "relief-side-subtitle", text: "땅 칸" }), landSwatches, landSizes],
+    children: [el("h4", { class: "relief-side-subtitle", text: "땅 칸" }), landSwatches, landSizes, frameLock],
   });
   const rampQuickAction = el("button", {
     class: "relief-ramp-quick-action",
@@ -564,6 +579,9 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     designButton.setAttribute("aria-pressed", String(state.terrainDesignOpen));
     designButton.setAttribute("aria-expanded", String(state.terrainDesignOpen));
     const landMode = state.terrainBrush === "land" && !state.reliefDoodad;
+    const framed = !!state.currentMapId && store.getCurrent().maps[state.currentMapId]?.terrainDesign?.frameLock === true;
+    frameLock.classList.toggle("is-active", framed); frameLock.setAttribute("aria-pressed", String(framed));
+    frameLock.textContent = framed ? "틀 고정됨 — AI 는 타일만" : "틀 고정";
     for (const [land, button] of landButtons) { const on = landMode && land === state.terrainLand; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for (const [size, button] of landSizeButtons) { const on = landMode && size === state.terrainLandSize; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for(const [value,b] of terrainButtons){const on=value===state.terrainBrush&&!state.reliefDoodad;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}

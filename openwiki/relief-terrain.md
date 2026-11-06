@@ -223,6 +223,17 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - 물 칸은 물 타일·바닥 0단과 함께 `terrainDesign.waterDepth` 를 **늘** 기록한다(마른 땅까지 거리: 물가 1 = 얕은 물, 안쪽 2.. = 깊은 물). 물 위를 땅으로 칠하면 물 깊이가 0 이 되고 풀로 돌아온다. 잠긴 칸·경사로 칸은 건너뛴다.
 - 실측(20×15 빈 맵, Playwright): 10×8 고원+절벽 6조작 → 2, 호수 6 → 2. 테스트 `test/terrainLandBrush.test.ts`.
 
+## 틀 고정 (2026-11-06)
+
+- 맵 단위 `terrainDesign.frameLock: true`. 땅 칸 팔레트 아래 「틀 고정」 버튼으로 켜고 끈다(되돌리기 한 번).
+- 강제는 도구 실행기 확정 단계 한 곳(`toolRunner.ts` `runToolDefinition`, `terrainFrameViolations` in `src/project/terrainFrame.ts`). 조수(assistantRun)와 코딩 에이전트 호스트(`oprn-agent-host.mjs` → `runHeadlessToolWithProject`, assistantRun 없음) 모두 이 길을 지난다.
+  - 틀 고정: 높이·경사로·물 깊이가 바뀐 칸이 하나라도 있으면 거부. 타일은 열려 있다.
+  - 칸 잠금(`lockedCells`): 그 칸의 타일 4층·그림자·높이·경사로·물 무엇이든 바뀌면 거부. 예전에는 사람 붓 경로(`updateMapTiles`)에서만 되돌렸고 AI `fill_region` 은 60/60칸을 덮었다.
+  - 틀이 있는 맵 지우기·크기 변경·잠금 풀기도 AI 쓰기에서는 거부. 사람 붓·되돌리기는 막지 않는다.
+  - 거부는 조용한 되돌림이 아니다: `ok:false`, 이슈 코드 `terrain-frame-locked`, 메시지에 칸 좌표(최대 40곳).
+- 실측: 3틀×3채우기×(조수/코딩 에이전트) 전 12/18 → 후 18/18 틀 칸 불변. 테스트 `test/terrainFrameLock.test.ts`.
+- 남은 일: `lay_village_layout`·`author_beodeul_town` 은 맵 전체 높이를 다시 깔아 틀 고정 맵에서는 거부된다. 사각형 안만·높이 유지 모드는 별도 작업이다(제안서 어림 1~2주).
+
 ## 러프 붓·지형지물 막대 (2026-10-03)
 
 - 「지형」 기본은 러프 붓. S/M/L/XL 반지름 2/4/6/9칸, 기본 M·상한 4단. 올리기·내리기는 누르고 있는 동안 350ms마다 한 단씩, 산·골짜기는 한 번에 봉우리·바닥을 만든다. Shift로 시작한 스트로크는 정밀 붓(한 단·작은 원), 우클릭은 반대 방식이다.

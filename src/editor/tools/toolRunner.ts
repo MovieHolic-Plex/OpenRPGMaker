@@ -37,6 +37,7 @@ import { applyArgAliases, describeArgError } from "./argRepair";
 import { getTool } from "./toolRegistry";
 import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
 import { rejectUnavailablePackStills } from "./stillPackGuard";
+import { formatTerrainFrameViolations, terrainFrameViolations } from "@/project/terrainFrame";
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
@@ -595,6 +596,11 @@ export function runToolDefinition(
     const seedNote = ctx.assistantRun && tool.mode === "write" ? seedMapPlacementNote(before, draft) : null;
     if (seedNote) exec = { ...exec, warnings: [...(exec.warnings ?? []), seedNote] };
 
+    const frame = terrainFrameViolations(before, draft);
+    if (frame.length > 0) {
+      const message = `고정된 틀(높이·경사로·물·잠긴 칸)을 바꾸는 쓰기는 거부합니다 — ${formatTerrainFrameViolations(frame)}. 그 칸을 피해서 다시 호출하세요.`;
+      return { ok: false, summary: `'${name}' 틀 고정으로 거부`, issues: [{ severity: "error", code: "terrain-frame-locked", message }] };
+    }
     // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
     finishDraftTilesets(draft);
     const diff = summarizeChanges(before, draft);

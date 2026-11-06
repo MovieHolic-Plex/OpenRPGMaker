@@ -1,6 +1,8 @@
 /** Optional map authoring metadata. Water depth is also used by runtime collision. */
 export interface TerrainDesignData {
   lockedCells?: number[];
+  /** 틀 고정 — AI 쓰기는 높이·경사로·물 깊이를 바꿀 수 없다(타일은 열림). terrainFrame.ts. */
+  frameLock?: boolean;
   features?: TerrainFeature[];
   gameplay?: TerrainGameplayRules;
   /** 0 dry, 1 walkable shallows, 2..14 deep water. Surface height lives in relief.levels. */
@@ -64,6 +66,7 @@ export function normalizeTerrainDesign(value: unknown, count: number): TerrainDe
     const cells = [...new Set(data.lockedCells.filter(i => Number.isInteger(i) && i >= 0 && i < count))].sort((a, b) => a - b);
     if (cells.length) out.lockedCells = cells;
   }
+  if (data.frameLock === true) out.frameLock = true;
   if (Array.isArray(data.waterDepth) && data.waterDepth.length === count) {
     const depth = data.waterDepth.map(v => Number.isFinite(v) ? Math.min(14, Math.max(0, Math.round(v))) : 0);
     if (depth.some(Boolean)) out.waterDepth = depth;
@@ -91,7 +94,7 @@ export function remapTerrainDesign(data: TerrainDesignData | undefined, count: n
   if (!data) return undefined;
   const locks = new Set(data.lockedCells), lockedCells: number[] = [], waterDepth = data.waterDepth ? new Array<number>(count).fill(0) : undefined;
   for (let i = 0; i < count; i++) { const from = source(i); if (from < 0) continue; if (locks.has(from)) lockedCells.push(i); if (waterDepth) waterDepth[i] = data.waterDepth![from] ?? 0; }
-  return normalizeTerrainDesign({ lockedCells, waterDepth, gameplay: data.gameplay }, count);
+  return normalizeTerrainDesign({ lockedCells, waterDepth, gameplay: data.gameplay, frameLock: data.frameLock }, count);
 }
 export function normalizeTerrainStamps(value: unknown): TerrainStamp[] | undefined {
   if (!Array.isArray(value)) return undefined;
