@@ -30,10 +30,10 @@ export function terrainFrameViolations(before: Project, after: Project): Terrain
     const locks = prev.terrainDesign?.lockedCells ?? [];
     if (!frame && !locks.length) continue;
     const next = after.maps[mapId];
-    if (!next) { out.push({ mapId, mapName: prev.name, cells: [], reason: "틀이 있는 맵을 지울 수 없습니다" }); continue; }
+    if (!next) { out.push({ mapId, mapName: prev.name, cells: [], reason: "땅 모양이 잠긴 맵을 지울 수 없습니다" }); continue; }
     if (next === prev) continue;
-    if (next.width !== prev.width || next.height !== prev.height) { out.push({ mapId, mapName: prev.name, cells: [], reason: "틀이 있는 맵의 크기를 바꿀 수 없습니다" }); continue; }
-    if (frame && next.terrainDesign?.frameLock !== true) { out.push({ mapId, mapName: prev.name, cells: [], reason: "틀 고정은 사람만 풀 수 있습니다" }); continue; }
+    if (next.width !== prev.width || next.height !== prev.height) { out.push({ mapId, mapName: prev.name, cells: [], reason: "땅 모양이 잠긴 맵의 크기를 바꿀 수 없습니다" }); continue; }
+    if (frame && next.terrainDesign?.frameLock !== true) { out.push({ mapId, mapName: prev.name, cells: [], reason: "땅 모양 잠금은 사람만 풀 수 있습니다" }); continue; }
     const kept = new Set(next.terrainDesign?.lockedCells ?? []);
     if (locks.some((i) => !kept.has(i))) { out.push({ mapId, mapName: prev.name, cells: [], reason: "잠긴 칸은 사람만 풀 수 있습니다" }); continue; }
     const cells: { x: number; y: number; what: TerrainFrameViolation["cells"][number]["what"] }[] = [];
@@ -55,6 +55,6 @@ export function formatTerrainFrameViolations(violations: readonly TerrainFrameVi
   return violations.map((v) => {
     if (v.reason) return `${v.mapName}(${v.mapId}): ${v.reason}`;
     const shown = v.cells.slice(0, limit).map((c) => `(${c.x},${c.y}) ${c.what}`).join(", ");
-    return `${v.mapName}(${v.mapId}): 고정된 틀 칸 ${v.cells.length}곳을 바꾸려 했습니다 — ${shown}${v.cells.length > limit ? ` 외 ${v.cells.length - limit}곳` : ""}`;
+    return `${v.mapName}(${v.mapId}): 잠긴 땅 모양 칸 ${v.cells.length}곳을 바꾸려 했습니다 — ${shown}${v.cells.length > limit ? ` 외 ${v.cells.length - limit}곳` : ""}`;
   }).join(" / ");
 }
