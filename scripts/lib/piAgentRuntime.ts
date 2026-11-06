@@ -1366,12 +1366,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...systemPrompt,
   ];
   const sessionKey = request.sessionKey;
+  const sessionReuseEnabled = Boolean(localCli) && engineSessionReuseOn(process.env);
   const sessionDecision = decideSessionResume({
     requestedSessionId: recallEngineSession(sessionKey)?.sessionId,
     previous: recallEngineSession(sessionKey)?.fingerprint,
     current: { systemPrompt: localLoopSystemPrompt.join("\n\n"), toolNames: tools.map((tool) => tool.name), model: request.model ?? "" },
     engineCanResume: true,
-    reuseEnabled: Boolean(localCli) && engineSessionReuseOn(process.env),
+    reuseEnabled: sessionReuseEnabled,
   });
   const resumeSessionId = sessionDecision.kind === "resume" ? sessionDecision.sessionId : undefined;
   // 조용한 폐기가 없게: 못 이었으면 왜인지 상태 줄로 남긴다(측정·문의 대응의 근거).
@@ -1387,7 +1388,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.model ? { model: request.model } : {}),
     ...(request.thinkingLevel === "low" || request.thinkingLevel === "medium" || request.thinkingLevel === "high" ? { effort: request.thinkingLevel } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
-    ...(sessionKey ? { promptKey: sessionKey } : {}),
+    ...(sessionKey && sessionReuseEnabled ? { promptKey: sessionKey } : {}),
     ...(resumeSessionId ? { resumeSessionId } : {}),
     onStatus: (name, summary, data) => emit({ type: "execution_status", name, ok: true, summary, data }),
   }) : undefined;
@@ -1824,9 +1825,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 프로세스를 다시 열어 윤문 도구 목록을
         // 다시 받게 하되 **대화는 잇는다** — 예전에는 새 대화로 열어 지시문+도구(72~89k 토큰)를 통째로 다시 썼다.
         if (localLoop) {
-          await localLoop.restartSession();
+          // 재사용을 끈 실행(OPRN_ENGINE_SESSION=0)은 예전 그대로 새 대화로 연다 — 끄면 옛 동작이 그대로 재현되게.
+          if (sessionReuseEnabled) {
+            await localLoop.restartSession();
+          } else {
+            contextEpoch += 1;
+            await localLoop.resetSession();
+          }
           dialoguePolishState.skillRead = false;
-          emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: "로컬 CLI — 윤문 도구 목록을 다시 받도록 프로세스를 다시 연다(대화는 이어 간다)" });
+          emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: sessionReuseEnabled
+            ? "로컬 CLI — 윤문 도구 목록을 다시 받도록 프로세스를 다시 연다(대화는 이어 간다)"
+            : "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
         }
         polishBudget = { startTurns: turns, startTokens: tokensNow(), over: false };
         emit({ type: "execution_status", name: "dialogue_polish.round", ok: true, summary: `완성 뒤 대사 윤문 ${round}/${DIALOGUE_POLISH_MAX_ROUNDS}차례 — 고칠 적중 ${lint.target}건, 줄 ${lint.rows.length}개를 조수에게 맡김(윤문 도구만)` });
