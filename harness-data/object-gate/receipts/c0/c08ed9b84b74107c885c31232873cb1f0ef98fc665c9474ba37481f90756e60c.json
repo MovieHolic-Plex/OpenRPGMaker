@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c08ed9b84b74107c885c31232873cb1f0ef98fc665c9474ba37481f90756e60c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "호숫가(모래) 마스크 4",
+ "label": "beodeul-lakeshore/sand/4",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-lakeshore",
+   "fallback": true,
+   "reason": "칩셋 beodeul-lakeshore 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand border with dark water inset (terrain autotile)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain tile: a sand-colored border (rows 0-4 on the left and top) around an arched dark teal water area (rows 2-15). The width is 16 on every row, and the column scan shows sand then water with no front-edge line, eave shadow or vertical front face. It is a flat top-down autotile mask, not a standing object, so there is no front face to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny arched doorway or cave object, brown with a dark teal interior. It is not a 4x3-tile sand shoreline mask, so it does not match the ground kind. It also covers far less than the 64x48 px a 4x3 patch would need, so it has no ground-patch structure: no sand tones, no edge transitions, no grain across tiles. The measured 9 tones per tile and 10% flat coverage come from a few pixels packed into one small sprite, so they do not show a rich ground surface. The brown and teal ramps have about 3 steps, against roughly 5-6 in the references. The dark edge pixels are tinted (0% neutral), so the outline is a material tone, but that does not offset the wrong kind and shallow shading. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10751
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand border frame (top and sides)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water area with arched top",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain autotile (lakeshore sand mask) filling the full 16x16 tile. It shows a sand border on top and sides with a dark teal water region inside that has an arched upper edge. There is no standing object, no front-edge line, no eave shadow and no vertical south face. It is drawn as a flat top-down ground tile, with a lighter sand band at rows 0-4 and water in rows 5-15 at the sampled columns. The scan shows no cap, ellipse or roof evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate does not read as a 4x3 sand ground patch. It shows a small arch or door-like object, brown with a dark teal-green interior, much smaller than the 64x48 source footprint the 4x3 ground patch should fill. It has no lakeshore sand, no shoreline mask edge and no repeating ground texture. The measured facts (9 visible tones per tile, 10% near-flat, 0% neutral dark edges) look fine on paper, but they cannot describe this picture, so I did not rely on them. By eye the object has about 3 lightness steps against 5-6 in the references. It also has small flat fills in the teal interior and the brown frame, and no grain, speckle or tuft texture like the grass and paving references. Its outline is tinted dark brown, which is acceptable, but the piece is the wrong kind of object and shallower than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13507
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand border frame (tan rim around the water inlet)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water area in an arch shape",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain autotile mask: a 16x16 tile with a tan sand border across the top and sides, and a dark teal water region with an arched upper edge. It fills the full 16x16 square (width 16 on every row). The column scans show sand at rows 0-4 and water below, with no front-edge line, no eave shadow and no vertical face. Seen as a terrain tile it is a flat top-down ground piece, not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate does not look like a 4x3-tile sand ground patch. It is a tiny arched doorway or cave-mouth icon, a brown arch around a dark teal opening, about one tile in size. It has no lakeside sand, no mask edges and no ground coverage, so it is the wrong kind of piece next to the grass and paving references. The facts show 9 visible tones per tile and 10% near-flat coverage, which is above the grass reference's 3 tones. The outline is tinted brown (0% near-neutral edge pixels), so it is not a sticker line. These numbers come from a small object with a few distinct materials, not from sand texture, so they do not support a ground patch. By eye the arch has about 3 lightness steps per material, against about 5-6 on the references, and little grain. The wrong subject alone is enough to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10953
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sand border frame around the water",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water area (arched interior)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain autotile (width 16 on every row) with a sand border on the top and sides and an arched dark teal water area inside. It is a flat, ground-level tile with no standing volume, no front-edge line, no eave shadow and no vertical front face of 3 or more rows. The sand rows 0-4 at the top are just the shore edge of the mask, not a raised top surface. The whole tile reads as flat top-down terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate should be a 4x3-tile sand lakeside ground patch, but the board shows only a tiny arch or doorway-like sprite (brown frame, dark green-teal interior) on the right. It is far smaller than the ground references and is not a ground surface, so it does not match the requested kind. The measured facts (9 tones, 10% near-flat, 0% neutral edges) come from this small sprite and say little about a sand patch. By eye, the sprite has about 3 lightness steps, a dark interior block that is nearly flat, and no sand grain, speckle or pebble texture like the grass and paving references. Wrong content and too shallow, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11589
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.468Z",
+ "cells": {
+  "16": [
+   "d4f19852a419678d"
+  ],
+  "24": [
+   "0bc738b2c944e30d",
+   "102c8a75c87995a4",
+   "4ea13838cadebec3",
+   "99a354af50d00480",
+   "ce597c23599f13c7",
+   "e27a42f9621bea7f"
+  ],
+  "32": [
+   "2781cd661dfc8413",
+   "4316158907f22c44",
+   "bab92a1e807361ad",
+   "c9a1cc5ae9fa3d1c",
+   "dfaefbedd97bfca3",
+   "e4aa3b8dbf8e5723"
+  ],
+  "48": [
+   "3a1ee48bb8707086",
+   "62da114e56c5ef49",
+   "7078dc5d57d7b3e3",
+   "d1214769ca522065",
+   "d43aedde00fde102",
+   "f5f7162d400c1717"
+  ]
+ }
+}

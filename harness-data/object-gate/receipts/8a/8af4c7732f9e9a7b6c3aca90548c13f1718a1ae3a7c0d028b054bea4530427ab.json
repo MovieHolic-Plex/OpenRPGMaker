@@ -1,0 +1,278 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8af4c7732f9e9a7b6c3aca90548c13f1718a1ae3a7c0d028b054bea4530427ab",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "긴 비탈 조각 ramp:n:2:long-cut",
+ "label": "beodeul-long-ramp/ramp:n:2:long-cut",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-long-ramp",
+   "fallback": true,
+   "reason": "칩셋 beodeul-long-ramp 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 47,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground fill (dithered sand texture, dark left edge, light right edge)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x16 rectangle with a constant width of 32 on every row. The column scans show only mottled alternation between #8a745c, #9e8b64 and #76634f, with no front-edge line, no eave shadow and no ellipse. The left columns are a dark vertical edge and the right columns a light one, so the slope is shown as a flat textured surface. There is no distinct south face of 3 or more rows, so it reads as a flat terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sandy-tan ramp patch with a dark brown edge along the top and bottom. The edge is tinted (0% near-neutral dark edge pixels), so it reads as the dark tone of the adjacent soil, not a black sticker line. The tan body has about 5 lightness steps, with speckle and grain dots, and no flat 5x5 areas (0% near-flat coverage). It shows 11 visible tones per tile, above the paving reference (7) and the grass reference (3). It looks a little simpler than the full grass tile and has less clump variety, but it is not thinner or flatter than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15808
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground surface (mottled tan texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left dark brown edge strip",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right orange edge strip",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32x16 rectangle with a constant width on every row (rows 0-15: 32). Its interior is a noisy, dithered tan texture with no front-edge line, no eave shadow and no band change. The column scans at x=8, 16 and 23 alternate between the same few similar tones (L=95-140) in no consistent order, so there is no horizontal tread with a vertical riser below it. Only the left dark brown edge and the right orange edge are drawn as vertical strips. No south-facing front face of 3 or more rows is drawn, so it reads as a flat ground texture seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a sandy-tan ramp strip with a dark brown rim along its top and bottom edges. The rim leans brown like the soil beside it, and the measured near-neutral share of dark edge pixels is 0%, so it is not a black sticker outline. The surface has grain dots and several tan steps (about 5, from light sand through mid to dark brown). Measured facts: 11 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage, the same as both references. Raw colours are few (13 in total), but they are spread into distinguishable tones rather than near-duplicates. It is somewhat simpler than the best grass and paving tiles and shows no per-tile clumps, so texture is 'some' rather than 'rich'. A careful artist would still accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15881
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground surface with dark left edge strip and light right edge strip",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x16 rectangle (width 32 on every row). The interior is a speckled earth texture. The column scans alternate between about L=120 and L=140 in irregular runs of 1-5 rows, with no front-edge line and no eave shadow band. There is no ellipse and no roof plane. The dark strip on the left and the light strip on the right are vertical edge bands, not a front face. The tile shows no horizontal-top / vertical-front split, so it reads as a flat top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sandy/dirt ramp strip. It has a dark brown top lip and a dark brown bottom edge, and both lean brown rather than neutral, which matches the 0% near-neutral share of dark edge pixels. The interior has dithered grain and speckle across about 5 lightness steps, with no flat blocks (0% near-flat coverage). It shows 11 visible tones per tile, above the grass reference (3) and the paving reference (7). The total palette is only 13 colours, but the visible grain compensates. It is not a flat sticker and has tinted outlines, so it holds up next to the references. It is a bit plain compared with the paving, so it scores a little under reference level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14940
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground texture, full 32x16 tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is fully opaque at width 32 on every row 0-15. It is a mottled tan texture with a dark brown and black strip on the left and an orange strip on the right. The column scans show only speckled alternation between similar lightness values (L about 116-140). No row has a front-edge line, eave shadow, ellipse, or a distinct vertical south face. It reads as a flat ground or slope texture seen from above, with no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a sandy-tan ramp strip with a dark brown rim on the top and bottom edges. Those edges lean brown, matching the 0% near-neutral share of dark edge pixels, so this is not a black sticker outline. The tan body carries grain dots and several light-to-dark steps, roughly 5 against about 5-6 in the references, and shows no large flat areas (0% near-flat coverage). It has 11 visible tones per tile, above the paving reference (7) and the grass reference (3), so density is at least equal. The piece is small and simple and its details are hard to read at this size, but it does not look thinner or flatter than the references. The one caveat is that it may have less variation than the richest reference tiles. A careful artist would still accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15174
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.571Z",
+ "cells": {
+  "16": [
+   "149c864966fa888b",
+   "e149902fc63918ee"
+  ],
+  "24": [
+   "02e1d64cb79f1f55",
+   "41b9234c41435681",
+   "63d6be21c1d990bb",
+   "78ef34e193752a51",
+   "9b1effd77b9a05ca",
+   "c42bf2d4226bc549",
+   "c55c9eaab4ec7ef6",
+   "c714868aa7051550",
+   "e125952644c5bffa",
+   "ecd7f32fc55d2706",
+   "f64287d33f0a5cfa",
+   "fdce7bf0463e5563"
+  ],
+  "32": [
+   "9f08241e5f70d87b",
+   "b81be56737be81d7"
+  ],
+  "48": [
+   "2758467f004fb6f3",
+   "4213c1f54f1a116a",
+   "9a2ce946fce8c33c",
+   "a334af45e2298427",
+   "b2bc7a3124a15d5d",
+   "fc35535447161eda"
+  ]
+ }
+}

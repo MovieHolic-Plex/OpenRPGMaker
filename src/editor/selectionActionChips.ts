@@ -18,6 +18,9 @@ import {
   enterPastePreview,
 } from "@/editor/mapClipboard";
 import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
+import { planSelectionVillage } from "@/editor/selectionVillage";
+import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModal";
 import { buildSvgIcon, makeSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
@@ -69,6 +72,38 @@ export const SELECTION_PLACE_PRESETS: readonly SelectionChipPreset[] = [
   { id: "forest", label: "숲", title: "이 자리에 숲 — 나무·빈터·오솛길", instruction: "이 선택 영역 안에만 숲을 만들어 줘. 나무 군집·빈터·오솛길만 깔고 절벽 칸·물은 피하며 높이·경사로·물은 그대로 둔다." },
   { id: "harbor", label: "항구", title: "이 자리에 항구 — 물가에 부두·배", instruction: "이 선택 영역 안에만 항구를 만들어 줘. 물가에 부두·배·창고를 놓고, 물이 없으면 물가를 포함해 다시 고르라고 알려 줘. 높이·경사로·물은 그대로 둔다." },
 ] as const;
+
+/**
+ * 「마을」 칩: 선택 안에만 집·길을 직접 짓는다(높이·경사로·물 안 건드림). 지었거나 사람에게 이유와 빠져나갈 길을 보였으면 true,
+ * 이 칩셋에 바로 앉힐 집이 없으면 false(호출자가 조수에게 넘긴다).
+ */
+export function buildVillageInSelection(selection: TileSelection): boolean {
+  const project = store.getCurrent(), map = project.maps[selection.mapId], tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!map || !tileset) return false;
+  if (!canEditMap(selection.mapId)) { toast(mapEditLockNotice(selection.mapId), "error"); return true; }
+  const rect = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
+  const plan = planSelectionVillage(map, tileset, rect);
+  if (plan.apply) {
+    const cells = plan.cells.flatMap((i) => [{ x: i % map.width, y: Math.floor(i / map.width), layer: "lower" as const }, { x: i % map.width, y: Math.floor(i / map.width), layer: "upper" as const }]);
+    recordMapEditIfChanged(selection.mapId, () => store.updateMapTiles(selection.mapId, plan.apply!, { label: `마을 · ${plan.reason}`, cells }), { label: "마을" });
+    toast(`마을을 지었습니다 — ${plan.reason} · 땅 모양은 그대로`, "ok");
+    return true;
+  }
+  if (plan.reason.startsWith("이 칩셋에는")) return false;
+  if (plan.blockedByLocks) {
+    toast(`${plan.reason} — 이 사각형의 칸 잠금만 풀고 지을 수 있습니다`, { kind: "info", action: { label: "여기만 잠금 풀고 짓기", testid: "village-unlock-here", onClick: () => {
+      const inRect = (i: number) => { const x = i % map.width, y = Math.floor(i / map.width); return x >= rect.x && y >= rect.y && x < rect.x + rect.width && y < rect.y + rect.height; };
+      recordMapEditIfChanged(selection.mapId, () => store.updateMap(selection.mapId, (draft) => {
+        const kept = (draft.terrainDesign?.lockedCells ?? []).filter((i) => !inRect(i));
+        draft.terrainDesign = { ...draft.terrainDesign, lockedCells: kept.length ? kept : undefined };
+      }, { label: "칸 잠금 풀기" }), { label: "칸 잠금 풀기" });
+      buildVillageInSelection(selection);
+    } } });
+    return true;
+  }
+  toast(plan.reason, { kind: "info", action: { label: "조수에게 맡기기", testid: "village-hand-to-assistant", onClick: () => { requestAiRegionHandoff(selectionHandoff(selection, SELECTION_PLACE_PRESETS[0]!.instruction ?? "", false)); } } });
+  return true;
+}
 
 /** 바가 조수에게 넘기는 모양. 순수 함수 — 테스트가 이 계약을 본다. */
 export function selectionHandoff(
@@ -318,9 +353,12 @@ export function renderSelectionActionChips(
     text: preset.label,
     attrs: { type: "button", title: preset.title },
     dataset: { testid: `selection-chip-${preset.id}` },
-    on: { click: () => { handOff(preset.instruction ?? "", false); } },
+    on: { click: () => {
+      if (preset.id === "village" && buildVillageInSelection(selection)) return;
+      handOff(preset.instruction ?? "", false);
+    } },
   }) as HTMLButtonElement);
-  for (const button of placeButtons) button.disabled = !aiReady;
+  for (const [index, button] of placeButtons.entries()) button.disabled = !aiReady && SELECTION_PLACE_PRESETS[index]!.id !== "village";
 
   const encounterButton = iconButton({
     testid: "walk-encounter",

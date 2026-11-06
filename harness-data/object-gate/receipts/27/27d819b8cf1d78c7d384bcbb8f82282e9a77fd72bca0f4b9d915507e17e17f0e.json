@@ -1,0 +1,263 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27d819b8cf1d78c7d384bcbb8f82282e9a77fd72bca0f4b9d915507e17e17f0e",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "긴 비탈 조각 ramp:n:3:long-out6",
+ "label": "beodeul-long-ramp/ramp:n:3:long-out6",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-long-ramp",
+   "fallback": true,
+   "reason": "칩셋 beodeul-long-ramp 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 55,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground, tan textured fill with a brown dirt strip on the left and an orange strip on the right, bordered by grass",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48x16 and every row has the same width of 48. The columns show only a noisy speckle of similar tan and brown values, with no front-edge line, no eave shadow and no ellipse. Vertical strips (grass, dark dirt, tan fill, orange, grass) run the full height, so it reads as a flat texture seen from above. There is no distinct south face of 3 or more rows, and no horizontal band changes into a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a sandy ramp strip with dark brown edge bands at the top and bottom. Those edges lean brown, not neutral, which matches the 0% near-neutral share of dark edge pixels. The sand body has grain dots and several visible lightness steps, about 5 across the sand and the brown edge. There are no flat fills: near-flat coverage is 0%. It shows 12 visible tones per tile against 3 for the grass reference and 7 for the paving reference, so it is above both on density. Its total palette is small at 17 colours, but the visible texture is still comparable to the references. The strip is plain and simple, but it is not thinner or flatter than the references, so a careful artist could accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13296
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat ground strip with grass edge on left, dark brown dirt band, speckled stone/dirt center and orange-tan band on right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 48x16 tile is a terrain autotile block with vertical bands (grass, dark dirt, speckled ground, orange band) running top to bottom. Column scans show only noisy texture variation in lightness across rows, with no front-edge line, eave shadow, ellipse or distinct front face. The width is a constant 48 on every row, so there is no silhouette change. It reads as a flat top-down ground strip with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a sandy ramp strip with a brown lip on top and a dark brown edge below. The sand carries speckle and grain in several lightness steps, with no flat blocks (near-flat coverage 0%). Its measured 12 visible tones per tile are above the grass reference (3) and the paving reference (7). The dark edge pixels are tinted brown, with 0% neutral, so this is not a sticker-style black outline. Each material edge uses the dark tone of its own material. Against the references it is a little small and simple, but it does not look thinner or flatter, and the measured facts support it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11885
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground texture (tan dirt center with dark brown strip on left, orange strip on right, grass at both edges)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is 48 px wide and fills all 16 rows with the same width. The pattern is a mottled dirt texture seen from above. Vertical bands (grass, dark brown strip, tan dirt, orange strip, grass) run the full height. There is no front-edge line, no eave shadow, no ellipse, and no distinct south face. The column scans show only noise-like lightness alternation (L about 100-140) with no band structure. This reads as a flat top-down terrain tile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin ramp strip with a brown top lip, a sandy body and a darker bottom edge. The body carries speckle and grain in several sand tones. Measured facts support this: 12 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage, the same as both references. Dark edge pixels are 0% near-neutral, so the edges lean brown rather than black, matching Beodeul's dark-material-tone outlines. There are no large flat fills. The strip is small and simple, with about 5 lightness steps against roughly 6 in the references. This is slightly shallow but not a sticker look, and it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12793
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground surface (textured dirt/stone slope, full tile)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x16 terrain strip filled edge to edge with a dithered dirt texture. Grass runs along the left edge and a dark brown earth strip sits beside it. A lighter orange-tan strip runs along the right edge with grass at the far right. The width is constant at 48 across rows 0-15. There is no front-edge line, no eave shadow, no ellipse, and no vertical front face. The columns show only noisy texture variation in lightness (L 76-140) with no band structure. It reads as a flat top-down terrain tile, which is expected for the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a sand/dirt ramp strip with brown top and bottom edges. The edges are a dark, visibly brown-tinted version of the sand, not a neutral black line, and the measured near-neutral share of dark edge pixels is 0%. The body has speckled grain and several sand tones, so there are no flat fills (near-flat coverage 0%). It carries 12 visible tones per 16x16 tile against 3 for the grass reference and 7 for the paving reference. It is a small, simple piece, and its texture is a little sparser than the stone paving's per-stone shading, so I rate texture 'some' rather than 'rich'. At the same scale it would sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12988
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.592Z",
+ "cells": {
+  "16": [
+   "1d5f1d0bfe4312da",
+   "425347c7c09cdf2a",
+   "de9629eaf9b4173a"
+  ],
+  "24": [
+   "50b946e0ebbf246d",
+   "b07a5f9d58bbf560",
+   "bbbf76481c995e71",
+   "fbe95a6f687a8490"
+  ],
+  "32": [
+   "0af1229a1d3739ef",
+   "2642ad74872c61b1",
+   "2fc1bd36ed94aab1",
+   "31371286e78d405c",
+   "59e23146281ef75f",
+   "5ccd93981f14f873",
+   "825ff26b35e1c255",
+   "a6366301306998fe",
+   "bcfe0a541783409d",
+   "bd9793d8ed70d222",
+   "c6cdaae65315c73c",
+   "d9fb065bfaad0dba"
+  ],
+  "48": [
+   "ab5a34db213b8654",
+   "c11f7be0da9d593f"
+  ]
+ }
+}

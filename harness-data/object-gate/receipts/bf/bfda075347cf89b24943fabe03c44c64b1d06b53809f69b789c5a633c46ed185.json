@@ -1,0 +1,261 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfda075347cf89b24943fabe03c44c64b1d06b53809f69b789c5a633c46ed185",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "호숫가(풀) 마스크 0",
+ "label": "beodeul-lakeshore/grass/0",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-lakeshore",
+   "fallback": true,
+   "reason": "칩셋 beodeul-lakeshore 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 34,
+  "tileColorsP90": 34,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark water pond patch",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square of grass with a dark teal water patch in the middle (rows 3-12). It is a flat terrain tile seen from above. There is no front face, eave line or standing volume, and the column scans show only color changes from grass to water to grass. This matches the terrain kind, so it is a flat top-down surface with no front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small piece, roughly one tile: a dark green grass square with a teal pond blob. By the measured facts it holds 15 visible tones per tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, the same as the references. The dark edge pixels are 0% neutral, so the outline leans dark green and teal rather than black. By eye the grass shows a few green steps with speckle and the pond has a darker rim and lighter centre, so there are no large flat fills. It is not as large or as varied as the 4x3 grass reference. Even so, the structure and shading craft match the Beodeul grass tile, and nothing in the numbers or the picture marks it as a shallow sticker-style piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12385
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with a dark teal water patch in the middle",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 square (width 16 on every row) of grass with a darker teal water patch in the middle (rows 3-12). It is a flat top-down ground/autotile block with no front face, no edge line and no eave shadow. That fits the terrain kind, where a flat top-down view is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small and hard to read on the board. It shows a dark teal pool with a ring of grass in several greens. The measured facts favour it: 15 visible tones per tile against 3 for the grass reference and 7 for the paving, and 0% near-flat coverage like both references. Dark edge pixels are 0% neutral, so the edges lean green or teal rather than black, which matches the dark-material-tone outline of the references. The grass ring and pool edge show several lightness steps, with no large single-colour areas and no sticker-style black outline. The texture looks somewhat less dense than the reference grass clumps, but the tile information density is at or above the references, so I rate texture 'some'. The main uncertainty is that the board shows only a small crop of the 4x3 patch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13341
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground with dark water pond patch (lakeside autotile mask)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 square (width 16 on every row). It shows a green grass border around a dark teal water patch in rows ~3-12. There is no front-edge line, eave shadow, ellipse cap or vertical face. This is a flat top-down terrain autotile with no front face, which is expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lake-edge grass mask, roughly one tile in the board, so I judged it mostly by the measured facts. It has 15 visible tones per tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, and no area of 5x5 pixels or more is a single flat colour. The dark edge pixels are 0% neutral, so the outline is tinted. It reads as dark green around the grass and a dark teal ring around the water, not a black sticker line. The grass border and the pond ring show several lightness steps, about 5, comparable to the grass reference. Grass-texture dots are less visible than in the reference grass because of the small size. Overall it is at least as rich as the references, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11368
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark pond/water patch (autotile mask), flat top-down terrain",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row) showing green grass with a dark teal pond patch in the middle, seen straight from above. The column scans show only color changes for grass, water and grass, with no front-edge line, no eave shadow and no vertical face. It is a flat terrain autotile with no front face, so it reads as a top-down slab, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lake-edge piece: a dark teal pond with a lighter rim, ringed by several greens. At this size I can only make out about 4-5 lightness steps, so the shading count is approximate. The edge pixels lean green and teal rather than neutral, which matches the measured 0% near-neutral dark edge share, so the outline reads as a dark material tone and not a black sticker line. Measured facts support it: 15 visible tones per tile against 3 for the reference grass and 7 for the paving, and 0% near-flat coverage, so there are no large flat fills. The dithering and variation inside the ring give grain comparable to the grass reference's clumps. The piece is much smaller than a 4x3 patch, so I could not judge tiling across the full area. On shading craft and density it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17637
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.284Z",
+ "cells": {
+  "16": [
+   "99179d676f16cf65"
+  ],
+  "24": [
+   "26aedf75c1ced1c6",
+   "7040c5aea8f22fa9",
+   "b4356df4b17bb8dc",
+   "bb6bf10a91a4ac06",
+   "cc8f015ed733393b",
+   "dd158531e2df51cd"
+  ],
+  "32": [
+   "043ad4874cf2458c",
+   "6bd3c62afee83a24",
+   "78b2ec884d974310",
+   "9eae48123668829b",
+   "b1b490dbf57d82ac",
+   "f72efcecabaf4eb1"
+  ],
+  "48": [
+   "0c474dd86de39ca7",
+   "7517783cac03ca58",
+   "c5378435aaaf20ff",
+   "cc582125da2a0ce1",
+   "d6fda88000540719",
+   "f45b1a4ae414e994"
+  ]
+ }
+}

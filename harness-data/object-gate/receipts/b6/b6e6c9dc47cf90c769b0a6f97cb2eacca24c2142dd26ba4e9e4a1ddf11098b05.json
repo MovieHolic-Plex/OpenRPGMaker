@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6e6c9dc47cf90c769b0a6f97cb2eacca24c2142dd26ba4e9e4a1ddf11098b05",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "호숫가(풀) 마스크 78",
+ "label": "beodeul-lakeshore/grass/78",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-lakeshore",
+   "fallback": true,
+   "reason": "칩셋 beodeul-lakeshore 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass strip at top of tile",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lake water body",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 autotile block: a grass strip in rows 0-2 over dark teal water in rows 3-15, with a lighter pixel at about row 13. It is flat ground-and-water terrain seen from above, not a standing object. It has no front face and no raised top surface, so it reads as a flat top-down slab, which is expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark teal patch whose interior is mostly one flat colour, with only a thin lighter band and a darker edge. Near-flat coverage is 45%, while both references are at 0%. The reference grass has tufts, clumps and speckle in several greens, and the paving has stones shaded one by one. The candidate shows none of this. Its 8 visible tones per tile beat the grass reference's 3, but that number is probably inflated by edge and border pixels. By eye the interior reads as 2-3 steps with no grain, so it looks flatter than the references. The edge pixels are tinted (0% neutral), so it is not a black sticker outline. That is not enough to offset the flat fills and missing texture, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11683
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass strip along the top edge of the lakeside tile",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water fill",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full-width 16x16 autotile of terrain. Rows 0-2 are a green grass band and rows 3-15 are dark teal water, with a lighter teal edge at x=4 near rows 3-6 and a small light pixel near row 13. There is no standing volume, no front-edge line with eave shadow, no ellipse and no vertical front face. Every column is opaque for all 16 rows. It reads as a flat top-down ground and water tile, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny dark teal patch, far smaller than a 4x3 tile layout. Most of its area is one flat colour, with only a lighter speckle band and a darker edge. The measured 45% near-flat coverage confirms this, against 0% for both references. The 8 visible tones per tile beat the grass reference's 3, but those tones sit in a few large blocks and do not form grain or tufts. The grass reference has varied tufts and mottling across every tile. There is no outline to speak of, and the dark edge pixels are tinted (0% neutral), so the outline is not near-black. Shading is about 3 steps against roughly 5 on the references. The flat fills and lack of grain make it look flatter than the reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11699
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass strip at top of the tile (rows 0-2)",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water field (rows 3-15)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain tile: a grass band in rows 0-2 above a dark teal water surface in rows 3-15, with one light pixel highlight near row 13. The silhouette is 16 wide on every row. It shows no standing volume, no front-edge line, no eave shadow and no vertical front face. It is a flat ground or water autotile seen from above, so it reads as a top-down slab. That is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark teal patch with a lighter band along the top edge and a few sparse dots. Most of its surface is one flat colour. The measured facts agree: 45% of it is near-flat, against 0% for both references. The grass reference is covered in tufts and mottled clumps in several greens, and the paving reference has individually shaded stones. The candidate has no tufts, grain or per-clump shading. Its 8 visible tones per tile beat the grass reference's 3, but those tones sit in a few large blocks rather than being spread as texture, so they do not read as richer. I count about 3 usable lightness steps on the main ramp, against about 5 for the references. The edge pixels are tinted (0% neutral), so there is no black sticker outline, but the piece has no real outline structure either. It would look flatter than the grass reference beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11997
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass strip at top of tile",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lake water fill",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain autotile (grass shore over water), not a standing object. The whole tile is a flat ground texture, grass in rows 0-2 and dark teal water in rows 3-15, with no front face and no front-edge line. The scan shows only a color change from grass to water at row 3. It reads as a top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark teal patch with a lighter band along the top and a few scattered dots. Large areas are one flat colour. Near-flat coverage is 45%, against 0% for both references, which is the clearest sign of flat fills. The visible-tone count (8 per tile) is higher than the grass reference (3), but those tones sit in a few broad bands, not in the clumps and tufts the grass reference shows. The reference grass has varied tufts and speckle on every tile. The patch has no outline to judge, and the dark edge pixels are tinted (0% neutral), so there is no sticker-black problem. It has about 3 effective shading steps against the references' 5 or so, and there is no per-tile grain, so it reads as shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11569
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.395Z",
+ "cells": {
+  "16": [
+   "026d3bb32a84f40e"
+  ],
+  "24": [
+   "1b31eb688d93adff",
+   "4ec1f1839804f00d",
+   "cf3bf5535ecb3a86",
+   "d6a1f7f6ca611704",
+   "da7b19f82339dc3a",
+   "ec243aa1e1efc387"
+  ],
+  "32": [
+   "128123f88e35eb79",
+   "5f77e73be59d21b4",
+   "a55781eb07898e51",
+   "a6e0547a0f21abdf",
+   "a7e26859d1a60755",
+   "aba3a455d3a2e106"
+  ],
+  "48": [
+   "0c7b2e0dc051f073",
+   "57414ebfd66d27d0",
+   "589d3119fd89d487",
+   "9e7eec45ebc5de23",
+   "cfc53eeb24afb522",
+   "d6631a5583362dec"
+  ]
+ }
+}

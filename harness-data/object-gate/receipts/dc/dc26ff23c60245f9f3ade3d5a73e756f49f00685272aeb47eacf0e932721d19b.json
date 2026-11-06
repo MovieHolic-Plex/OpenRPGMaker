@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc26ff23c60245f9f3ade3d5a73e756f49f00685272aeb47eacf0e932721d19b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "호숫가(모래) 마스크 27",
+ "label": "beodeul-lakeshore/sand/27",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-lakeshore",
+   "fallback": true,
+   "reason": "칩셋 beodeul-lakeshore 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water area (dark teal fill with lighter highlights)",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sand strip along the bottom edge",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain tile. Rows 0-12 are a flat dark teal water fill with a few lighter highlight pixels, and rows 13-15 are a sand and shore strip. The width is 16 on every row, so there is no standing silhouette, no front-edge line, no eave shadow and no vertical front face. It reads as a flat top-down terrain autotile (a lake shore mask) and not as a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate renders as a tiny, mostly flat dark-teal block with a thin brown sand strip along the bottom edge. It does not read as a 4x3-tile sand shoreline patch. The teal body has almost no visible grain, speckle or clumping, and the sand edge is only a band of 2-3 tones. The measured 34% near-flat coverage is far above the references, which are both at 0%. The 10 visible tones per tile beat the grass reference's 3, but by eye they come from a few broad bands rather than varied texture dots. The grass reference carries tufts and mottling in several greens, and the paving reference has per-stone shading. Outline is not a factor: the dark edge pixels are tinted (0% neutral), but there is no real outline work. Overall it is shallower and flatter than both references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11850
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water (dark teal, with a few lighter ripple pixels)",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sand shore strip (brown/tan)",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque block, 16 px wide on every row. Rows 0-12 are dark teal water and rows 13-15 are a sand strip along the bottom edge. No eave line, shadow band, ellipse or vertical face is drawn. The sand strip is a 3-row shoreline edge, not a front face. The tile is a flat ground/water autotile seen from above, with no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small teal block with a brown sand strip along the bottom edge. It reads as a few broad colour bands rather than a textured 4x3 sand/shore patch. The measured visible tones per tile (10) are above both references (3 and 7), but 34% near-flat coverage against 0% for both references shows large single-colour areas with no grain, speckle or tuft variation. The references have none. The sand strip has no per-grain shading or scattered dots. The water/teal body has only a few steps and no ripple or highlight texture. Edge pixels are tinted (0% neutral), so there is no sticker-style black outline, but there is also no selective dark-material edging. Overall it is flatter and more banded than the Beodeul grass and paving, which have dense grain and clumps. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14493
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill (dark teal) rows 0-12",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sand/shore strip at bottom",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain autotile: a full 16-wide block, with dark teal water filling rows 0-12 and a brownish-tan sand strip in rows 13-15. The water is a flat top-down ground surface with no front-edge line, eave shadow or vertical face. The sand strip at the bottom is a 3-row shoreline edge, not a standing front face. The whole tile reads as flat ground seen from above, so there is no standing 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small piece, mostly one dark teal block with a thin brown/tan band along the bottom. By eye I see only about 3 ramp steps and no grain, tufts or per-grain shading, so the sand surface reads as a flat fill. The measured facts agree: 34% near-flat coverage against 0% for both references. The 10 visible tones per tile are above the references (grass 3, paving 7), but they appear to be spread over a few large flat regions, not the dotted texture Beodeul uses, so I don't treat that count as richness. Dark edge pixels are 0% neutral, so any outline is tinted rather than black, which is fine. The fail rests on the flat fills and shallow shading, not on the outline, and I fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11653
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark teal water tile area",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sand strip at bottom",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain autotile (lakeside sand, mask 27) that fills the full 16x16 tile. Rows 0-12 are dark teal water and rows 13-15 are a sandy brown strip along the bottom edge. The silhouette is 16 wide on every row. There is no standing volume, no front-edge line with eave shadow, no ellipse and no roof plane. The sand strip is a ground-edge transition, not a vertical face, so it reads as a flat top-down tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate renders as a tiny dark teal block with a thin brown strip along the bottom edge. It is far smaller than a 4x3-tile ground patch and has no visible grain, speckle or tufts. By eye it has about 3 lightness steps: a flat teal body, a slightly darker edge and the brown strip. The measured facts support this: 34% near-flat coverage against 0% for both references, so it has large flat fills where the grass and paving references carry texture throughout. The 10 visible tones per tile are higher than the grass reference (3) and the paving reference (7). That count comes from separate bands such as teal body, edge and brown strip, not from varied texture within a material. The dark edge pixels are tinted (0% neutral), so there is no black sticker outline, but the piece has no real outline structure to judge either. Overall it is flatter and shallower than the references and does not read as a textured sand shore patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12980
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.510Z",
+ "cells": {
+  "16": [
+   "0f9b1467fc15210e"
+  ],
+  "24": [
+   "07853741e7629528",
+   "37f6fae5e5ac8c44",
+   "561f0d9bf587928b",
+   "7c3afc509264ef90",
+   "a5c55070c186963d",
+   "d15719f1d99963f7"
+  ],
+  "32": [
+   "0314b390fc326a46",
+   "5a3d4f0ca9b23306",
+   "8e834dd55a29dc78",
+   "cb31d5403de488f7",
+   "d87d11fb7deed60f",
+   "df7c1cf1a2ae2b53"
+  ],
+  "48": [
+   "104d0752f1c3f2ea",
+   "3141d26f8a0b94c5",
+   "361684372d6f775a",
+   "5c44468515e3a3da",
+   "7c60b7128575363f",
+   "b08dd777a0e6eaa3"
+  ]
+ }
+}

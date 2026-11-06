@@ -89,13 +89,15 @@ function neighbourhood(map: Pick<GameMap, "width" | "height">, cells: readonly n
  * 물 칸: 물 타일을 깔고 바닥을 0단으로 내리고 물 깊이를 늘 기록한다(가장자리 1 = 얕은 물, 안쪽 2 이상 = 깊은 물).
  * 경사로·잠긴 칸은 건너뛴다.
  */
-function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
+function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean): boolean {
   const project = store.getCurrent(), map = project.maps[mapId];
   if (!map) return false;
   const tileset = project.tilesets[map.tilesetId];
-  const tile = terrainMaterialTile(tileset, "water");
+  // 자연 호숫가 오토타일(풀·모래로 스며드는 물가, bake_lakeshore.py)이 있는 칩셋은 그것을 기본으로 — 운하 물은 돌 둑 가장자리다.
+  const lakeshore = tileset ? autotileGroupsForTileset(tileset).find((g) => g.id === "beodeul_lakeshore_grass") : undefined;
+  const tile = lakeshore ? lakeshore.variantMap["255"] : terrainMaterialTile(tileset, "water");
   if (tile === undefined || tile < 0) return false;
-  const points = cells.filter((i) => !terrainLocked(map.terrainDesign, i) && (map.relief?.ramps?.[i] ?? 0) === 0);
+  const points = (soften ? softenShore(map, cells) : [...cells]).filter((i) => !terrainLocked(map.terrainDesign, i) && (map.relief?.ramps?.[i] ?? 0) === 0);
   if (!points.length) return false;
   const depthBefore = map.terrainDesign?.waterDepth;
   const wet = new Set<number>(points);
@@ -119,13 +121,17 @@ function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
   const unchanged = points.every((i) => layerTileAt(map, 1, i) === tile && layerTileAt(map, 2, i) < 0 && (map.relief?.levels[i] ?? 0) === 0)
     && depth.every((d, i) => (depthBefore?.[i] ?? 0) === d || terrainLocked(map.terrainDesign, i));
   if (unchanged) return false;
+  const groups = autotileGroupsForTileset(tileset).filter((g) => (g.layer ?? "lower") === "lower");
+  const waterGroup = lakeshore ?? groups.find((g) => g.memberTileIds.includes(tile));
   const previous = points.map((i) => layerTileAt(map, 1, i));
   const xy = points.map((i) => ({ x: i % map.width, y: Math.floor(i / map.width) }));
   store.updateMapTiles(mapId, (draft) => {
     for (const i of points) { clearTileStack(draft, "lower", i); setLayerTileAt(draft, 1, i, tile); setLayerTileAt(draft, 2, i, -1); }
     const nextDepth = depth.map((d, i) => (terrainLocked(map.terrainDesign, i) ? depthBefore?.[i] ?? 0 : d));
     draft.terrainDesign = { ...draft.terrainDesign, waterDepth: nextDepth };
-    for (const group of autotileGroupsForTileset(tileset)) if ((group.layer ?? "lower") === "lower" && previous.some((v) => autotileEditTriggersGroup(group, v, tile))) shapeAutotileGroupAround(draft, group, xy);
+    for (const group of groups) if (group !== waterGroup && previous.some((v) => autotileEditTriggersGroup(group, v, tile))) shapeAutotileGroupAround(draft, group, xy);
+    // 물 자체도 가장자리 조각으로 — 강·운하 물 오토타일이 풀과 섞이는 물가 칸을 고른다(가운데는 꽉 찬 물 그대로).
+    if (waterGroup) shapeAutotileGroupAround(draft, waterGroup, xy);
     if (draft.relief) {
       const levels = draft.relief.levels.slice(), ramps = draft.relief.ramps?.slice();
       for (const i of points) { levels[i] = 0; if (ramps) ramps[i] = 0; }
@@ -135,10 +141,27 @@ function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
   return true;
 }
 
+/**
+ * 호수 물가 다듬기: 사각형으로 끌어 깔 물의 네 모서리를 반지름 1~2칸(짧은 변 길이의 1/4)로 둥글게 깎는다.
+ * 4×4 미만(붓 한 칸·가는 줄)은 그대로.
+ */
+export function softenShore(map: Pick<GameMap, "width" | "height">, cells: readonly number[]): number[] {
+  const xs = cells.map((i) => i % map.width), ys = cells.map((i) => Math.floor(i / map.width));
+  if (Math.max(...xs) - Math.min(...xs) < 3 || Math.max(...ys) - Math.min(...ys) < 3) return [...cells];
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const radius = Math.min(2, Math.floor((Math.min(x1 - x0, y1 - y0) + 1) / 4));
+  return cells.filter((i) => {
+    const x = i % map.width, y = Math.floor(i / map.width);
+    const cx = x < x0 + radius ? x0 + radius : x > x1 - radius ? x1 - radius : x;
+    const cy = y < y0 + radius ? y0 + radius : y > y1 - radius ? y1 - radius : y;
+    return (x - cx) ** 2 + (y - cy) ** 2 <= radius * radius + 0.5;
+  });
+}
+
 /** 땅 칸 한 번 — 고른 칸을 그 땅으로 정확히 맞춘다. 바뀐 것이 있으면 true. */
-export function paintLandCells(mapId: MapId, cells: readonly number[], land: TerrainLand, topGrass: boolean): boolean {
+export function paintLandCells(mapId: MapId, cells: readonly number[], land: TerrainLand, topGrass: boolean, softenWater = false): boolean {
   if (!cells.length) return false;
-  if (land === "water") return paintWaterCells(mapId, cells);
+  if (land === "water") return paintWaterCells(mapId, cells, softenWater);
   dryWaterCells(mapId, cells);
   const map = store.getCurrent().maps[mapId];
   if (!map) return false;

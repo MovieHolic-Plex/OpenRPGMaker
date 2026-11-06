@@ -1,0 +1,275 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "25dc0ec7879f31488f6ba0fa1fa6f913f7690d81b388fa9ac6ca090988e9a051",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "호숫가(풀) 마스크 6",
+ "label": "beodeul-lakeshore/grass/6",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-lakeshore",
+   "fallback": true,
+   "reason": "칩셋 beodeul-lakeshore 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 23,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass-to-water lakeshore terrain tile (grass on top-left edges, dark water fill)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque autotile block (width 16 on every row). It shows grass along the top and left edges and dark teal water filling the rest. There is no front-edge line, eave shadow, ellipse, or vertical south face; this is a flat top-down terrain mask, not a standing object. The column scans show only a grass-to-water gradient, with no front face rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lakeside grass/water-edge patch with a mid-green rim blending into a dark teal-green interior. It shows about 4-5 visible lightness steps and some speckle variation. The measured facts support it: 14 visible tones per tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 10%, low and not far from the references' 0%. Dark edge pixels are 0% neutral, so the edges lean green or teal rather than black, which matches the dark-material-tone approach. It is a little less textured than the reference grass tufts, and the piece is tiny in the board, so my read of it is limited. Even so, it is not flat or sticker-like and is at least as rich as the references on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11685
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass border (top and left edge) with water fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is fully opaque, 16 columns wide in every row (rows 0-15). Light-green grass runs along the top and left edge and darker teal water fills the rest. The columns show only a grass band (x=4: rows 0-5 grass, 6-15 water; x=8 and x=11: rows 0-2 grass, 3-15 water). There is no front-edge line, no eave shadow and no vertical south face, so the tile is a flat top-down terrain autotile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small patch in the board, so I leaned on the measured facts. It shows about 14 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 10%, low and close to the references' 0%, so there are no large flat fills. Its dark edge pixels are 0% near-neutral, which means they carry a colour tint like the grass reference. The grass-to-dark-water transition has no sticker-style black outline and is separated by value, as in Beodeul. By eye it shows grass clumps and speckle in several greens, plus a darker teal water area with its own tonal variation. It is a little less tufted than the reference grass, but it is at least as rich on the primary facts and reads as the same kind of ground piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12485
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass border (top and left edge strip)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water fill",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 opaque autotile, 16 px wide on every row. A light-green grass strip runs along the top and left edges. It shades from the light #669442 at row 0 to the darker #375a27, and meets the dark teal water #143c36 / #1a4640 that fills the rest. The columns show only a grass-to-water transition, with no front-edge line, no eave shadow, no vertical face and no ellipse. It is a flat terrain tile seen from above, with no front face of 3 or more rows. As a terrain tile this is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small, so I leaned on the measured facts. It shows about 14 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 10%, which is low and far from a flat-fill look. Its dark edge pixels are 0% neutral, so the edges lean toward dark teal and green material tones and not a black sticker line, matching the grass reference. By eye, the patch shows a green grass edge, a dark green shoreline band and deep teal water, which gives a ramp of roughly 5 steps with visible grain. It does not look thinner or flatter than the references. The small size limits how much I can verify, but nothing contradicts the numbers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12712
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass border strip, top and left edges",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark teal water fill",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 terrain autotile with a lakeside grass mask. Grass runs along the top and left edges and dark teal water fills the lower right. Every row is 16 px wide and there is no standing body, front face, eave or edge line, so it reads as flat top-down terrain. The column scan shows only color bands (grass at rows 0-5, water from row 3 onward), not a volume with a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows a grass rim and a dark teal water area. It is small and hard to read at this scale, so I leaned on the measured facts. It has 14 visible tones per 16x16 tile, against 3 for the reference grass and 7 for the paving. Near-flat coverage is only 10%, and the water and grass areas show some variation rather than a single flat colour. The dark edge pixels are 0% neutral, so the outline is tinted dark green or teal rather than a black sticker line. Total distinct colours is only 23 against 80 for the reference grass, and I estimate about 4 shading steps per material against 5-6 for Beodeul. That is slightly shallow, but the visible tone density is well above both references and there is no sign of the sticker look, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13853
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.312Z",
+ "cells": {
+  "16": [
+   "f572bef94dcc03d3"
+  ],
+  "24": [
+   "2299c9241d52c860",
+   "24396c8f313cde38",
+   "57efdc797697623e",
+   "6fc8092af89b9d63",
+   "859130a8add03301",
+   "99caca36acfa3cb6"
+  ],
+  "32": [
+   "0a43a85bd07aae31",
+   "12fdaac22154f77f",
+   "2a3542b5219c43f4",
+   "7bd6a892f2314c94",
+   "7e10a08e8ef240cb",
+   "9c352edfc22c1287"
+  ],
+  "48": [
+   "188a6365a598e5e0",
+   "21399eeb6409b93a",
+   "53c13a4b6b50347f",
+   "a77f4309ab23e570",
+   "dd877dd82c4d5e41",
+   "df21a96334c0ae57"
+  ]
+ }
+}
