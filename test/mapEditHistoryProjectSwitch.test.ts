@@ -108,6 +108,23 @@ describe("project switch invalidates map edit history", () => {
 
     expect(getMapEditHistoryState().canUndo).toBe(false);
   });
+
+  it("drops the undo stack when the saved copy is reloaded, so Ctrl+Z cannot resurrect the pre-reload document", async () => {
+    await stubRemoteProject(projectNamed("저장본 맵"));
+    await expect(store.reconnectRemotePersistence()).resolves.toEqual({ kind: "connected", source: "remote" });
+    recordProjectSnapshot("맵 이름 변경");
+    store.update((draft) => {
+      draft.maps[firstMapId(draft)]!.name = "재로드 전 편집";
+    });
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+
+    await expect(store.reloadFromRemote({ force: true })).resolves.toMatchObject({ kind: "reloaded" });
+    expect(currentMapName()).toBe("저장본 맵");
+
+    expect(getMapEditHistoryState().canUndo).toBe(false);
+    expect(undoMapEdit()).toBe(false);
+    expect(currentMapName()).toBe("저장본 맵");
+  });
 });
 
 describe("tile undo history bounds", () => {

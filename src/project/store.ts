@@ -844,8 +844,9 @@ class ProjectStore {
       this.dirtySinceLastPersist = false;
       await this.normalizeCurrentProject();
       this.syncProjectUrlBar();
-      // 같은 projectId의 원격 저장본을 다시 읽는 경로라 의도적으로 프로젝트 전환 표시를 하지 않는다.
-      this.emit({ scope: "project" });
+      // 문서를 저장본으로 통째로 갈았다 — 외부 변경 수용(위 adopt 경로)과 같이 전환 표시를 단다. 표시가 없으면
+      // 실행 취소 스택이 살아 있어 Ctrl+Z 가 재로드 전 문서를 되살리고 자동 저장이 그것을 저장본 위에 다시 쓴다.
+      this.emit({ scope: "project", origin: "system", projectSwitch: true });
       // 대상은 세션의 저장소가 정본이다 — 설정을 직접 읽으면 로컬 세션에서도 환경의 id 를 돌려준다.
       return { kind: "reloaded", projectId: this.repository.currentTarget()?.projectId ?? "", title: this.current.meta?.title ?? "" };
     } catch (error) {
