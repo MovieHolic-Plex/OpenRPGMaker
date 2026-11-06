@@ -9,6 +9,7 @@ import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
+import { PRODUCT_BRAND } from "../../src/brand";
 import { AGENT_CHANNELS, createAgentHost, dispatchAgentChannel, type AgentHost } from "./agentHost";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
@@ -60,7 +61,21 @@ function agentMcpScript(): string | null {
   return [
     join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", "oprn-agent-mode-mcp.mjs"),
     join(app.getAppPath(), "dist-electron", "oprn-agent-mode-mcp.mjs"),
+    // dist-electron/main.cjs 를 직접 띄우면 앱 경로가 dist-electron 자체다 — 번들 옆을 본다.
+    join(__dirname, "oprn-agent-mode-mcp.mjs"),
     join(app.getAppPath(), "scripts", "oprn-agent-mode-mcp.mjs"),
+  ].find((candidate) => existsSync(candidate)) ?? null;
+}
+/** 윈도는 %LOCALAPPDATA%\\OPRN Studio\\agents(로밍 프로필에 수백 MB 를 싣지 않는다), 그 밖은 앱 데이터 폴더. */
+function agentsInstallDir(): string {
+  const local = process.platform === "win32" ? process.env.LOCALAPPDATA : undefined;
+  return local ? join(local, PRODUCT_BRAND, "agents") : join(app.getPath("appData"), PRODUCT_BRAND, "agents");
+}
+function agentNpmCli(): string | null {
+  return [
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", "agent-npm", "bin", "npm-cli.js"),
+    join(app.getAppPath(), "dist-electron", "agent-npm", "bin", "npm-cli.js"),
+    join(__dirname, "agent-npm", "bin", "npm-cli.js"),
   ].find((candidate) => existsSync(candidate)) ?? null;
 }
 function requireAgentHost(): AgentHost {
@@ -71,6 +86,12 @@ function requireAgentHost(): AgentHost {
     // Electron 바이너리를 node 로 돌린다 — 사용자 PC 에 node 가 없어도 된다.
     mcpCommand: { command: process.execPath, args: [script], env: { ELECTRON_RUN_AS_NODE: "1" } },
     workDir: join(app.getPath("userData"), "agent-workspace"),
+    installer: {
+      agentsDir: agentsInstallDir(),
+      npmCli: agentNpmCli(),
+      nodeCommand: process.execPath,
+      nodeEnv: { ELECTRON_RUN_AS_NODE: "1" },
+    },
   });
   return agentHost;
 }

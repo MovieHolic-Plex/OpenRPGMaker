@@ -192,6 +192,11 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     toolResult: invoke("oprn:agent.toolResult"),
     poll: invoke("oprn:agent.poll"),
     stop: invoke("oprn:agent.stop"),
+    install: invoke("oprn:agent.install"),
+    uninstall: invoke("oprn:agent.uninstall"),
+    login: invoke("oprn:agent.login"),
+    loginCode: invoke("oprn:agent.loginCode"),
+    cancelLogin: invoke("oprn:agent.cancelLogin"),
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),

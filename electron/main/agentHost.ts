@@ -12,6 +12,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { delimiter, join } from "node:path";
 import { createInterface } from "node:readline";
+import { createAgentInstaller, type AgentInstaller, type InstallableAgent, type InstallerPaths, type SetupEvent } from "./agentInstaller";
 
 export type AgentKind = "claude" | "codex" | "opencode";
 
@@ -25,6 +26,10 @@ export type AgentAvailability = {
   readonly ready: boolean;
   readonly installHint: string;
   readonly loginHint: string;
+  /** 앱 전용 폴더에 설치한 것인가(앱이 설치·제거할 수 있다). */
+  readonly appInstalled: boolean;
+  /** 공식 상태 명령으로 물은 로그인 여부. 모르면 null. */
+  readonly loggedIn: boolean | null;
 };
 
 type AgentSpec = {
@@ -41,17 +46,17 @@ const AGENT_SPECS: readonly AgentSpec[] = [
   {
     id: "claude", label: "Claude Code", cli: "claude", adapter: "claude-agent-acp", adapterArgs: [],
     installHint: "npm install -g @anthropic-ai/claude-code @agentclientprotocol/claude-agent-acp",
-    loginHint: "터미널에서 claude 를 한 번 실행해 본인 계정으로 로그인하세요(OPRN 은 로그인 정보를 보지 않습니다).",
+    loginHint: "Claude 공식 로그인 창(브라우저)에서 본인 계정으로 로그인합니다. OPRN 은 로그인 정보를 보지 않습니다.",
   },
   {
     id: "codex", label: "Codex", cli: "codex", adapter: "codex-acp", adapterArgs: [],
-    installHint: "npm install -g @openai/codex @zed-industries/codex-acp",
-    loginHint: "터미널에서 codex login 으로 본인 ChatGPT 계정이나 API 키로 로그인하세요.",
+    installHint: "npm install -g @agentclientprotocol/codex-acp",
+    loginHint: "Codex 공식 로그인 창(브라우저)에서 본인 ChatGPT 계정으로 로그인합니다.",
   },
   {
     id: "opencode", label: "opencode", cli: "opencode", adapter: "opencode", adapterArgs: ["acp"],
     installHint: "npm install -g opencode-ai",
-    loginHint: "터미널에서 opencode auth login 으로 쓸 모델 제공자에 로그인하세요.",
+    loginHint: "로그인 없이 무료 모델로 바로 쓸 수 있습니다. 다른 제공자는 opencode 의 auth login 으로 추가합니다.",
   },
 ];
 
@@ -74,8 +79,18 @@ export function detectAgents(env: NodeJS.ProcessEnv = process.env): readonly Age
   return AGENT_SPECS.map((spec) => {
     const cliFound = findOnPath(spec.cli, env) !== null;
     const adapterFound = findOnPath(spec.adapter, env) !== null;
-    return { id: spec.id, label: spec.label, cliFound, adapterFound, ready: cliFound && adapterFound, installHint: spec.installHint, loginHint: spec.loginHint };
+    return { id: spec.id, label: spec.label, cliFound, adapterFound, ready: cliFound && adapterFound, installHint: spec.installHint, loginHint: spec.loginHint, appInstalled: false, loggedIn: null };
   });
+}
+
+type LaunchCommand = { readonly command: string; readonly args: readonly string[]; readonly env: Readonly<Record<string, string>> };
+
+/** 앱 폴더에 설치한 것을 먼저, 없으면 PATH 의 것을 쓴다. */
+function resolveAdapter(spec: AgentSpec, installer: AgentInstaller | null, env: NodeJS.ProcessEnv): LaunchCommand | null {
+  const installed = installer?.installed(spec.id);
+  if (installed) return installed.adapter;
+  const onPath = findOnPath(spec.adapter, env);
+  return onPath ? { command: onPath, args: spec.adapterArgs, env: {} } : null;
 }
 
 /** 패널이 poll 로 받는 이벤트. ACP session/update 는 그대로 싣고, 도구 실행·승인은 요청 id 로 짝을 맞춘다. */
@@ -86,7 +101,8 @@ export type AgentEvent =
   | { readonly seq: number; readonly type: "tool-request"; readonly requestId: string; readonly kind: "list" | "call"; readonly name?: string; readonly args?: unknown }
   | { readonly seq: number; readonly type: "turn-start"; readonly turnId: string; readonly prompt: string }
   | { readonly seq: number; readonly type: "turn-end"; readonly turnId: string; readonly stopReason: string; readonly error?: string }
-  | { readonly seq: number; readonly type: "log"; readonly text: string };
+  | { readonly seq: number; readonly type: "log"; readonly text: string }
+  | ({ readonly seq: number; readonly type: "setup" } & SetupEvent);
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 type NewEvent = DistributiveOmit<AgentEvent, "seq">;
@@ -97,6 +113,8 @@ export type AgentHostOptions = {
   /** 에이전트 작업 폴더(프로젝트 파일이 아닌 빈 폴더). 내장 파일 도구를 꺼도 cwd 는 필요하다. */
   readonly workDir: string;
   readonly env?: NodeJS.ProcessEnv;
+  /** 앱 안 설치기. 없으면(브라우저 로컬 호스트) PATH 감지만 한다. */
+  readonly installer?: Omit<InstallerPaths, "env">;
 };
 
 /** 에이전트에게 붙이는 지시. 쓰기는 oprn 도구로만, 파일 도구 없음, 결과는 짧게. */
@@ -127,6 +145,10 @@ export function createAgentHost(options: AgentHostOptions) {
   let mcpServer: Server | null = null;
   let mcpPort = 0;
   const mcpToken = randomUUID();
+  const hostEnv = options.env ?? process.env;
+  const installer: AgentInstaller | null = options.installer
+    ? createAgentInstaller({ ...options.installer, env: hostEnv }, (event: SetupEvent) => push({ type: "setup", ...event }))
+    : null;
 
   const push = (event: NewEvent): void => {
     seq += 1;
@@ -207,8 +229,44 @@ export function createAgentHost(options: AgentHostOptions) {
   }
 
   return {
-    detect(): readonly AgentAvailability[] {
-      return detectAgents(options.env ?? process.env);
+    async detect(): Promise<readonly AgentAvailability[]> {
+      const onPath = detectAgents(hostEnv);
+      return await Promise.all(onPath.map(async (agent) => {
+        const installed = installer?.installed(agent.id);
+        if (!installed) return agent;
+        return { ...agent, cliFound: true, adapterFound: true, appInstalled: true, loggedIn: await installer!.loggedIn(agent.id), ready: true };
+      }));
+    },
+
+    canInstall(): boolean {
+      return installer !== null;
+    },
+
+    install(kind: AgentKind): { started: boolean } {
+      if (!installer) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다(데스크톱 앱에서 설치하세요)");
+      if (installer.isBusy(kind)) return { started: false };
+      if (agent === kind && child) stopChild();
+      void installer.install(kind as InstallableAgent);
+      return { started: true };
+    },
+
+    uninstall(kind: AgentKind): void {
+      if (!installer) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다");
+      if (agent === kind) { stopChild(); push({ type: "status", state: "stopped", detail: "에이전트를 지워 세션을 닫았습니다" }); }
+      installer.uninstall(kind as InstallableAgent);
+    },
+
+    login(kind: AgentKind): void {
+      if (!installer) throw new Error("이 화면에서는 앱 안 로그인을 쓸 수 없습니다");
+      installer.login(kind as InstallableAgent);
+    },
+
+    loginCode(kind: AgentKind, code: string): boolean {
+      return installer?.loginCode(kind as InstallableAgent, code) ?? false;
+    },
+
+    cancelLogin(kind: AgentKind): void {
+      installer?.cancelLogin(kind as InstallableAgent);
     },
 
     state() {
@@ -218,16 +276,15 @@ export function createAgentHost(options: AgentHostOptions) {
     async start(kind: AgentKind): Promise<{ sessionId: string }> {
       const spec = AGENT_SPECS.find((candidate) => candidate.id === kind);
       if (!spec) throw new Error(`unknown agent ${kind}`);
-      const env = options.env ?? process.env;
-      const adapterPath = findOnPath(spec.adapter, env);
-      if (!adapterPath) throw new Error(`${spec.label} ACP 어댑터(${spec.adapter})가 설치되어 있지 않습니다. 설치: ${spec.installHint}`);
+      const launch = resolveAdapter(spec, installer, hostEnv);
+      if (!launch) throw new Error(`${spec.label} 이(가) 설치되어 있지 않습니다. 「설치」를 눌러 주세요.`);
       stopChild();
       agent = kind;
       push({ type: "status", state: "starting", detail: spec.label });
       const port = await ensureMcpServer();
       mkdirSync(options.workDir, { recursive: true });
       // 윈도 .cmd 래퍼는 shell 없이 띄울 수 없다.
-      const spawned = spawn(adapterPath, [...spec.adapterArgs], { cwd: options.workDir, env, stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" && /\.(cmd|bat)$/i.test(adapterPath), windowsHide: true });
+      const spawned = spawn(launch.command, [...launch.args], { cwd: options.workDir, env: { ...hostEnv, ...launch.env }, stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" && /\.(cmd|bat)$/i.test(launch.command), windowsHide: true });
       child = spawned;
       spawned.stderr.on("data", (chunk: Buffer) => {
         const text = chunk.toString("utf8").trim();
@@ -350,6 +407,7 @@ export function createAgentHost(options: AgentHostOptions) {
 
     close(): void {
       stopChild();
+      installer?.close();
       for (const [, pending] of pendingTools) clearTimeout(pending.timer);
       pendingTools.clear();
       mcpServer?.close();
@@ -370,9 +428,20 @@ export const AGENT_CHANNELS = {
   toolResult: "oprn:agent.toolResult",
   poll: "oprn:agent.poll",
   stop: "oprn:agent.stop",
+  install: "oprn:agent.install",
+  uninstall: "oprn:agent.uninstall",
+  login: "oprn:agent.login",
+  loginCode: "oprn:agent.loginCode",
+  cancelLogin: "oprn:agent.cancelLogin",
 } as const;
 
 const AGENT_KINDS: ReadonlySet<string> = new Set(["claude", "codex", "opencode"]);
+
+function agentKind(input: Record<string, unknown>): AgentKind {
+  const kind = String(input.agent ?? "");
+  if (!AGENT_KINDS.has(kind)) throw new Error("agent must be claude, codex or opencode");
+  return kind as AgentKind;
+}
 
 function record(payload: unknown): Record<string, unknown> {
   return payload && typeof payload === "object" && !Array.isArray(payload) ? payload as Record<string, unknown> : {};
@@ -382,7 +451,16 @@ function record(payload: unknown): Record<string, unknown> {
 export async function dispatchAgentChannel(host: AgentHost, channel: string, payload: unknown): Promise<unknown> {
   const input = record(payload);
   switch (channel) {
-    case AGENT_CHANNELS.detect: return { agents: host.detect(), state: host.state() };
+    case AGENT_CHANNELS.detect: return { agents: await host.detect(), state: host.state(), canInstall: host.canInstall() };
+    case AGENT_CHANNELS.install: return host.install(agentKind(input));
+    case AGENT_CHANNELS.uninstall: host.uninstall(agentKind(input)); return { ok: true };
+    case AGENT_CHANNELS.login: host.login(agentKind(input)); return { ok: true };
+    case AGENT_CHANNELS.loginCode: {
+      const code = typeof input.code === "string" ? input.code.trim() : "";
+      if (!code || code.length > 4000) throw new Error("code is required");
+      return { ok: host.loginCode(agentKind(input), code) };
+    }
+    case AGENT_CHANNELS.cancelLogin: host.cancelLogin(agentKind(input)); return { ok: true };
     case AGENT_CHANNELS.start: {
       const kind = String(input.agent ?? "");
       if (!AGENT_KINDS.has(kind)) throw new Error("agent must be claude, codex or opencode");

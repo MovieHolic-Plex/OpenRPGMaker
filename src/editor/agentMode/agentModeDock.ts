@@ -24,14 +24,26 @@ export function mountAgentModeDock(host: HTMLElement): () => void {
       agentTab.setAttribute("aria-selected", String(agentMode));
     };
     const assistantTab = el("button", { class: "agent-mode-tab", text: "조수", attrs: { type: "button", role: "tab" }, dataset: { testid: "agent-mode-tab-assistant" }, on: { click: () => select(false) } });
-    const agentTab = el("button", { class: "agent-mode-tab", text: "에이전트 (실험)", attrs: { type: "button", role: "tab" }, dataset: { testid: "agent-mode-tab-agent" }, on: { click: () => select(true) } });
+    const agentTab = el("button", { class: "agent-mode-tab", text: "에이전트", attrs: { type: "button", role: "tab" }, dataset: { testid: "agent-mode-tab-agent" }, on: { click: () => select(true) } });
     const tabs = el("div", { class: "agent-mode-tabs", attrs: { role: "tablist" }, children: [assistantTab, agentTab] });
-    const panel = renderAgentModePanel(bridge);
+    // 처음엔 조수 탭. 쓸 수 있는 에이전트가 생기면(설치·로그인 완료) 사용자가 탭을 직접 고르기 전까지 에이전트 탭을 기본으로 연다.
+    let userPicked = false;
+    assistantTab.addEventListener("click", () => { userPicked = true; });
+    agentTab.addEventListener("click", () => { userPicked = true; });
+    let wasReady: boolean | null = null;
+    const panel = renderAgentModePanel(bridge, (ready) => {
+      if (ready === wasReady) return;
+      const first = wasReady === null;
+      wasReady = ready;
+      agentTab.classList.toggle("is-setup-needed", !ready);
+      agentTab.title = ready ? "" : "에이전트 설치·로그인이 필요합니다";
+      if (!userPicked && (ready || first)) select(ready);
+    });
     host.classList.add("has-agent-mode");
     host.prepend(tabs);
     host.append(panel.root);
     mounted = { tabs, panel };
-    select(true);
+    select(false);
   };
 
   const sync = (): void => {
