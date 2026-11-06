@@ -4,6 +4,7 @@
 import { activeTools } from "@/editor/tools/toolRegistry";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 
 interface ToolCategory {
   readonly label: string;
@@ -232,16 +233,14 @@ export function openToolBrowserModal(): HTMLElement {
 
   const close = (): void => {
     backdrop.remove();
-    document.removeEventListener?.("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
+    unregisterModal(backdrop);
   };
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener?.("keydown", onKeyDown);
+  // Esc 는 모달 계층이 가져간다(캡처 단계) — 뒤의 맵이 같은 Esc 로 선택을 지우거나 도구를 바꾸지 않는다.
+  registerModal(backdrop, close);
 
   renderList("");
   document.body.append(backdrop);

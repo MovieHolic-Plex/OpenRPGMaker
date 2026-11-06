@@ -84,6 +84,9 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     // 공방(전면 오버레이)이 떠 있으면 키는 공방의 것이다 — 배경 맵 편집기로 새면 안 된다.
     if (document.querySelector("[data-testid='workshop-host']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
+    // 도구 목록·AI 내부 로그·마을 정보 창은 .database-modal-backdrop 을 써서 위 조상 검사에 안 걸린다 —
+    // 포커스가 본문에 있으면 B·Delete·1~7 이 창 뒤의 맵을 바꿨다.
+    if (document.querySelector("[data-testid='tool-browser-modal'], [data-testid='ai-harness-modal'], [data-testid='village-info-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']:not([hidden])")) return true;
   }

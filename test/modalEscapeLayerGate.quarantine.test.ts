@@ -49,7 +49,6 @@ const EXEMPT: Readonly<Record<string, string>> = {
   // 아직 정리되지 않은 백로그. 데이터베이스 위에 뜰 수 있으면 같은 버그가 난다.
   // PR #430 범위 밖 — 각각 동작 확인이 필요해 별도로 다룬다.
   "panels/aiChangePreview.ts": "백로그: 자체 Escape 처리, 계층 미참여",
-  "panels/aiHarnessModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/clusterAiModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/eventEditor/characterIdAutocomplete.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/eventEditor/commandListContextMenu.ts": "백로그: 자체 Escape 처리, 계층 미참여",
@@ -58,8 +57,6 @@ const EXEMPT: Readonly<Record<string, string>> = {
   "panels/tilesetAiWorkspaceModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/tilesetPassageModal.ts": "백로그: Escape 처리 없음",
   "panels/tilesetReviewWizard.ts": "백로그: Escape 처리 없음",
-  "panels/toolBrowserModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
-  "panels/villageInfoModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
 };
 
 function collectTsFiles(dir: string, out: string[] = []): string[] {
@@ -138,6 +135,7 @@ describe("Escape 계층 게이트", () => {
     const fixed = [
       "panels/actorRecordCurveEditors.ts",
       "panels/aiConversationHistoryModal.ts",
+      "panels/aiHarnessModal.ts",
       "panels/aiInstructionsModal.ts",
       "panels/commandPalette.ts",
       "panels/databaseAnimationPreview.ts",
@@ -149,6 +147,8 @@ describe("Escape 계층 게이트", () => {
       "panels/helpModal.ts",
       "panels/quickBattleModal.ts",
       "panels/resourceModal.ts",
+      "panels/toolBrowserModal.ts",
+      "panels/villageInfoModal.ts",
     ];
     const missing = fixed.filter((relative) => {
       const source = readFileSync(path.join(EDITOR_ROOT, relative), "utf8");

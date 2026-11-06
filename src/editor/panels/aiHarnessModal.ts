@@ -7,6 +7,7 @@ import type { AuditEntry, HarnessSnapshot } from "@/ai/assistantSession";
 import { EMPTY_SESSION_USAGE, type SessionUsageTotals } from "@/ai/sessionUsage";
 import type { AiUiEvent } from "@/ai/uiEventTypes";
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { deckIcon } from "./aiDeckIcons";
 
 // aiChatPanel의 StatusTransition과 같은 모양 — 순환 의존을 피하려고 구조만 받는다.
@@ -321,16 +322,14 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
 
   const close = (): void => {
     backdrop.remove();
-    document.removeEventListener?.("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
+    unregisterModal(backdrop);
   };
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener?.("keydown", onKeyDown);
+  // Esc 는 모달 계층이 가져간다(캡처 단계) — 뒤의 맵이 같은 Esc 로 선택을 지우거나 도구를 바꾸지 않는다.
+  registerModal(backdrop, close);
 
   document.body.append(backdrop);
   return backdrop;
