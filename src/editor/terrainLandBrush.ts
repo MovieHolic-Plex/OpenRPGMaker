@@ -121,24 +121,6 @@ function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean
   if (unchanged) return false;
   const groups = autotileGroupsForTileset(tileset).filter((g) => (g.layer ?? "lower") === "lower");
   const waterGroup = groups.find((g) => g.memberTileIds.includes(tile));
-  const sand = groups.find((g) => /sand|모래/i.test(`${g.id} ${g.name}`) && !/dungeon|던전|ceiling|천장/i.test(`${g.id} ${g.name}`));
-  const shoreTile = sand ? sand.variantMap[sand.neighborhood === 8 ? "255" : "15"] ?? sand.memberTileIds[0] : undefined;
-  const shore: number[] = [];
-  if (shoreTile !== undefined) {
-    const seen = new Set<number>();
-    for (const i of points) {
-      const x = i % map.width, y = Math.floor(i / map.width);
-      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
-        const X = x + dx, Y = y + dy, j = Y * map.width + X;
-        if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (Math.abs(dx) + Math.abs(dy) > 3 || (((X * 73856093) ^ (Y * 19349663)) >>> 0) % 3 !== 0)) continue;
-        if (X < 0 || Y < 0 || X >= map.width || Y >= map.height || wet.has(j) || seen.has(j)) continue;
-        seen.add(j);
-        if (terrainLocked(map.terrainDesign, j) || (map.relief?.levels[j] ?? 0) !== 0 || (map.relief?.ramps?.[j] ?? 0) > 0) continue;
-        if (layerTileAt(map, 3, j) >= 0 || layerTileAt(map, 4, j) >= 0 || (waterGroup?.memberTileIds.includes(layerTileAt(map, 1, j)) ?? false)) continue;
-        shore.push(j);
-      }
-    }
-  }
   const previous = points.map((i) => layerTileAt(map, 1, i));
   const xy = points.map((i) => ({ x: i % map.width, y: Math.floor(i / map.width) }));
   store.updateMapTiles(mapId, (draft) => {
@@ -146,17 +128,14 @@ function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean
     const nextDepth = depth.map((d, i) => (terrainLocked(map.terrainDesign, i) ? depthBefore?.[i] ?? 0 : d));
     draft.terrainDesign = { ...draft.terrainDesign, waterDepth: nextDepth };
     for (const group of groups) if (group !== waterGroup && previous.some((v) => autotileEditTriggersGroup(group, v, tile))) shapeAutotileGroupAround(draft, group, xy);
-    if (sand && shoreTile !== undefined && shore.length) {
-      for (const i of shore) { clearTileStack(draft, "lower", i); setLayerTileAt(draft, 1, i, shoreTile); setLayerTileAt(draft, 2, i, -1); }
-      const beach = { ...sand, connectTileIds: [...(sand.connectTileIds ?? []), ...(waterGroup?.memberTileIds ?? [tile])] };
-      shapeAutotileGroupAround(draft, beach, shore.map((i) => ({ x: i % draft.width, y: Math.floor(i / draft.width) })));
-    }
+    // 물 자체도 가장자리 조각으로 — 강·운하 물 오토타일이 풀과 섞이는 물가 칸을 고른다(가운데는 꽉 찬 물 그대로).
+    if (waterGroup) shapeAutotileGroupAround(draft, waterGroup, xy);
     if (draft.relief) {
       const levels = draft.relief.levels.slice(), ramps = draft.relief.ramps?.slice();
       for (const i of points) { levels[i] = 0; if (ramps) ramps[i] = 0; }
       draft.relief = { ...draft.relief, levels, ...(ramps ? { ramps } : {}) };
     }
-  }, { label: "땅 칸 · 물", cells: neighbourhood(map, [...points, ...shore]), relief: true });
+  }, { label: "땅 칸 · 물", cells: neighbourhood(map, points), relief: true });
   return true;
 }
 
