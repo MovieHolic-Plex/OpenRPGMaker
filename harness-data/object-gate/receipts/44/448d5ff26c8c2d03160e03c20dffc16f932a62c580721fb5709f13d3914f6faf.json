@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "448d5ff26c8c2d03160e03c20dffc16f932a62c580721fb5709f13d3914f6faf",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "긴 비탈 조각 ramp:n:3:long-top",
+ "label": "beodeul-long-ramp/ramp:n:3:long-top",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-long-ramp",
+   "fallback": true,
+   "reason": "칩셋 beodeul-long-ramp 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 64,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandy ramp surface (main body)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and dirt edge at left, dirt strip at right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x16 tile is one tan field of uniform lightness (L=140) with sparse darker speckle and chevron noise pixels. The column scans at x=12, 24 and 35 show only isolated 1-row darker pixels at rows 4, 8, 9, 12, with no front-edge line, no eave shadow and no vertical south face. The grass and dirt strips at the left and right edges are vertical terrain borders, not a front face. The tile has no front face of 3 or more rows, so it reads as a flat top-down slab. That is typical for a terrain tile, but the ramp slope is not shown by any face or edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin sandy-brown ramp strip with small green end caps. Its dark edge pixels are tinted brown (0% neutral), so the outline is a dark material tone rather than a black sticker line. Shading is shallow: the sand body has about 3-4 steps, with a few diagonal grain or crack lines and a lighter top edge. Large areas of the sand are one flat tan. The measured near-flat coverage is 31%, against 0% for both references, so the fills are visibly flat next to the grass and paving, which are speckled and shaded stone by stone. The 9 visible tones per tile come mostly from the edge, outline and end-cap pixels, not from texture across the surface. The grain is sparse and the piece looks flatter than the references, so a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14051
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandy ground slab with crack texture",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass patch top-left and dirt/rock edges left and right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x16 rectangle (width 48 on every row). The column scans at x=12, 24 and 35 show uniform sand color (L=140) from row 0 to row 15. The only breaks are single dark crack pixels at rows 4, 8-9 and 12, which are texture and not edge lines. There is no front-edge line, no eave shadow and no darker vertical face band at the bottom. The grass and dirt strips sit at the far left and right edges. The drawing reads as a flat top-down ground texture with no south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin tan, sand-like strip with a few diagonal crack lines and small green tufts at the ends. It has about 4 lightness steps on the main material, against about 5-6 on the references. The measured 9 visible tones per tile is above the grass reference (3) and the paving reference (7), but the picture does not back that up. Most of the surface is one flat tan with only sparse line detail, and 31% near-flat coverage against 0% for both references confirms large flat fills. The edge pixels are tinted brown/green (0% neutral), so the outline reads as a dark material tone and is not a sticker line. There is no per-stone shading, grain or clumping like the references have. The piece also looks like a plain wedge with little form, so a careful artist would see it as flatter and thinner than the reference grass or paving beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13396
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp surface (tan ground texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left dark earth edge with grass corner",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right orange earth edge",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x16 field of uniform tan (L=140) with sparse darker speckle and crack lines. The column scans show only 1-row texture dashes at rows 4, 8-9, 12, with no front-edge line, no eave shadow and no band change. No south face of 3+ rows sits below a top. The left and right edges are narrow vertical earth and grass strips, not a front face. The whole tile reads as a flat top-down ground surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin sandy-tan slope strip with green caps at both ends. It has about 4 visible lightness steps: a light tan body, a mid tan, a few darker crack lines and a dark brown edge. The edges are tinted dark brown and green (0% neutral dark pixels), so the outline is a material tone and not a black sticker line. The 9 visible tones per tile is above the grass reference (3) and the paving reference (7), so the density numbers are not the problem. The problem is flatness: near-flat coverage is 31%, while both references are 0%. The tan body has broad patches of one colour with only a few diagonal crack lines and no speckle, grain or per-stone variation, unlike the grass tufts and the individually shaded paving stones. The piece also reads as a thin single-row strip, not a fully textured 4x3 ground patch. A careful artist would find it flatter and plainer than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14384
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp/ground fill (tan, with diagonal chevron texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass patch top-left and dirt/earth strips at left and right edges",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 48x16 fully opaque rectangle (width 48 on every row). The columns at x=12, 24 and 35 are one tan tone (L=140) from row 0 to row 15, broken only by isolated darker texture pixels (rows 4, 9, 12). There is no front-edge line, no eave shadow and no change of tone that would mark a vertical south face, so no front face of 3 or more rows exists. The diagonal chevron pattern is a surface texture, not a ramp face. The grass corner and the dirt strips at the left and right edges are autotile edge details. This reads as a flat top-down terrain slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin tan, sand-like slab with a few diagonal crack lines and small green end caps. It reads as roughly 3-4 lightness steps, against about 5-6 on the grass and paving references. Its edge pixels are tinted brown/green, with 0% near-neutral, so the outline is dark_material_tone and not a sticker line. The measured 9 visible tones per tile beat the references (3 grass, 7 paving), but 31% near-flat coverage against 0% in both references matches what I see: broad areas of one tan with only sparse grain. The grass and paving references carry per-pixel grain, tufts, and stones shaded one by one, and the candidate's surface looks flatter and more minimal than either. It also reads as a small strip, much smaller than a 4x3-tile patch. A careful artist would not accept it next to the references without it looking flatter and thinner, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15978
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.587Z",
+ "cells": {
+  "16": [
+   "0969231b225c80e4",
+   "8059fa019061ad52",
+   "c8ed4a1d793a7001"
+  ],
+  "24": [
+   "252ef6de49842814",
+   "96fba923ef15d415",
+   "c46f91b054e89d3d",
+   "d82c83744b0dc55c"
+  ],
+  "32": [
+   "0282b9f03df2bb1b",
+   "10e9af30c4fb7fbe",
+   "3f8b5155951aa2d0",
+   "6a42d5cd43acace6",
+   "6ce530dda8f94116",
+   "82b9642926325706",
+   "882014b67861f562",
+   "945de23f7ddcb694",
+   "a67fa59676f2d855",
+   "ad207973ac1aa1eb",
+   "c2fcf5a6e7f6fef9",
+   "da9a5513d1166a2a"
+  ],
+  "48": [
+   "0b034e7b464819b3",
+   "6a9fbac2467bf801"
+  ]
+ }
+}

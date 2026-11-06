@@ -135,6 +135,13 @@ def bake_item(st, item, img, origin):
     return [tg], [k]
 
 
+def retail_lakeshore():
+    """동굴 꼬리를 다시 쓰면 시트가 그 끝에서 잘린다 — 뒤의 호숫가 꼬리(beodeul-lakeshore/bake_lakeshore.py, 34,048~)를 저장소대로 다시 붙인다."""
+    import subprocess
+    if (ROOT / "tiledata/beodeul-lakeshore/tiles.json").exists() and G.SHEET_PATH == ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
+        subprocess.run([sys.executable, str(ROOT / "scripts/content/beodeul-lakeshore/bake_lakeshore.py"), "--from-store"], cwd=ROOT, check=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", nargs="?", default="bake", choices=["bake", "import"])
@@ -166,6 +173,7 @@ def main():
     if a.from_store:
         if st.cells:
             print(f"동굴 기물 꼬리 다시 씀: {G.BASE}..{G.write_out(st) - 1}")
+            retail_lakeshore()
         return
     if sheet_count < G.BASE:
         sys.exit(f"시트 count {sheet_count} < 동굴 꼬리 시작 {G.BASE} — 주제 2 꼬리(bake_theme2.py)부터 굽는다")
@@ -223,6 +231,7 @@ def main():
     elif st.cells:
         st.save()
         print(f"썼다 (count {G.write_out(st)}) → {G.SHEET_PATH}")
+        retail_lakeshore()
     if blocked:
         print("3/4 관문 미통과 — 굽지 않은 항목:", *blocked, sep="\n  ", file=sys.stderr)
         sys.exit(2)

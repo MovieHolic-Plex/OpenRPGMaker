@@ -1,0 +1,285 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e804c794f0eed99d769e350fa9c7d3786e376f63ae1c39227994c0a809e6a54",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "긴 비탈 조각 ramp:n:2:long-out3",
+ "label": "beodeul-long-ramp/ramp:n:2:long-out3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul-long-ramp",
+   "fallback": true,
+   "reason": "칩셋 beodeul-long-ramp 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 50,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp/slope ground surface (dirt with grass strip on left, darker edge strip, lighter strip on right)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32-wide block for all 16 rows (0-15). The column scans show only mottled dirt texture with scattered lighter pixels, such as the 1-row #9e8b64 highlights at rows 0, 2, 5, 10 and 13. There is no front-edge line followed by eave shadow, no ellipse, and no distinct vertical south face. The V-shaped chevron pattern and the grass and dark-earth strips run vertically along the sides, so the tile reads as a flat ground texture seen from above. It has no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small dirt/earth ramp strip with a dark brown top edge and diagonal tan and brown bands. It reads as roughly 5 lightness steps with grain. The dark edge pixels are brown-tinted (0% near-neutral), so the outline is dark_material_tone rather than a black sticker line. Measured facts support it: 14 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage like both references. Raw colours are few (17 in total), but they are spread into distinct visible tones with no 5x5 flat areas. The grain is fairly regular and less varied than the grass, which is why texture is 'some' rather than 'rich'. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14519
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp slope surface (brown dirt with chevron texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass strip and dark dirt edge on the left",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x16 rectangle (width 32 on every row 0-15). The columns show only a uniform brown fill with scattered 1-row lighter and darker texture pixels at rows 0, 2, 5, 7, 10 and 13. There is no front-edge line, no eave shadow and no ellipse. No vertical south face of 3 or more rows is drawn. The chevron pattern and the grass and dirt strips on the left read as a flat terrain tile seen from above, so the front face is 0 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a brown dirt or sand ramp strip with diagonal ridges and darker edge bands. It reads as a ground patch, so it matches the reference kind. The measured facts favour it: 14 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. 0% of its dark edge pixels are near-neutral, so the edges carry a brown tint and are not a black sticker line. By eye, the ramp shows about 5 lightness steps (light sand, mid, shadow, dark edge, deep). It also has grain and ridge variation, with no large flat fills. The piece is small and fairly simple, and its texture is less rich than the paving reference's stone-by-stone shading. It still holds up next to the references on the primary facts, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14140
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp ground surface (brown dirt with a faint chevron pattern)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass strip on the left edge with a dark seam",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan dirt strip on the right edge",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a 32x16 block that is opaque in every row (width 32 for rows 0-15). It is one continuous ground surface, with no front-edge line, no eave shadow and no separate vertical south face. The column scans at x=8, 16 and 23 show only texture speckle and 1-row lighter flecks (#9e8b64) inside one tone, with no band break. The chevron pattern, the grass strip on the left and the tan strip on the right are all drawn flat and seen from above. So there is no front face of 3 or more rows, and as a terrain tile this reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dirt ramp with a green top edge and a brown-edged sloped path face. The soil carries diagonal grain strokes in about 4-5 tan and brown steps, so it is not a flat fill. The measured facts back this up. It has 14 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% near-neutral, so the outline is a brown tint of the adjacent material, not a neutral black line. The candidate shows only 17 distinct colours in total, fewer than the grass reference's 80, but this is a locked-palette piece and the visible tone count is higher. The ground kind matches the references. The texture is somewhat less varied than the grass and paving tiles, but I see no sticker look and no flat areas of 5x5 pixels or more.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14207
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ramp dirt surface with chevron texture, grass strip on the left and a dark edge column",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 32x16 opaque block (width 32 on every row). The column scans show only small texture speckles (single lighter rows at 0, 5, 10 and 13) and no front-edge line, eave shadow or ellipse. The tan dirt surface with a chevron pattern fills every row, with grass on the left and a dark vertical edge. No vertical south face of 3 or more rows is drawn, so it reads as a flat top-down terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small earthen ramp with a lighter slope face and darker edge strips. The picture is tiny, so I leaned on the measured facts. It shows 14 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no large single-colour fills. The ramp face carries stepped diagonal banding and grain across roughly 5 lightness steps. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the soil rather than a black sticker line. Its texture is somewhat more regular than the grass reference's scattered tufts. Overall it holds up next to the references on structure and density without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14146
+  }
+ ],
+ "decidedAt": "2026-11-06T17:51:57.582Z",
+ "cells": {
+  "16": [
+   "d41fc03e14d3d693",
+   "ea25ad52b798366f"
+  ],
+  "24": [
+   "042d2f4a34ac1b06",
+   "0f9247927eb35f46",
+   "352eab1b02f0189c",
+   "3b410a55ca5dc9b1",
+   "470d14f7028f4564",
+   "7177dd937a4828ce",
+   "8960f3ce718b7dfc",
+   "a16a45a978fe1a44",
+   "daab7e317d8c1ea0",
+   "f14166ea18942c4d",
+   "f2f4e0745e43241c",
+   "ffe8eb4d14a9713e"
+  ],
+  "32": [
+   "88d59becebac0b6f",
+   "f4306f34e689c230"
+  ],
+  "48": [
+   "23a7341df59dc98d",
+   "2af3184b22b7cf38",
+   "7ce136129bace178",
+   "c0673d28f5ac713a",
+   "c1f74776a9ac041a",
+   "effc74d52cf02e6a"
+  ]
+ }
+}

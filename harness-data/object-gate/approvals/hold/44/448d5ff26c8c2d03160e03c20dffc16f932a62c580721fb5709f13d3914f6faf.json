@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "448d5ff26c8c2d03160e03c20dffc16f932a62c580721fb5709f13d3914f6faf",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "terrain-easy 레인(감독 위임)",
+ "decidedAt": "2026-11-06T18:44:18.043Z",
+ "by": "delegated",
+ "delegatedBy": "foronlyonename_70515 (1306168476288679976)",
+ "evidence": "/home/main/z-project/rpg-zzu-terrain-easy/tiledata/beodeul-lakeshore/owner-delegation-2026-11-06.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "note": "묶음 허용: 버들항 긴 비탈 14 — 오너 그림 OK 2026-11-07 — delegated by owner foronlyonename_70515 via Discord msg 1568334035820749003 '아 걍 통과시켜' (2026-11-06)",
+ "sig": "b2a18f06286ec140938b38f24c05ae54c6756436d9f74914de940797e74a63bd"
+}

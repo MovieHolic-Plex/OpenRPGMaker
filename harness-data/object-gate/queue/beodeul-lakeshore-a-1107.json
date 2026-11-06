@@ -1,0 +1,575 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-lakeshore-a-1107",
+ "title": "버들항 자연 호숫가 A안 94 (737 풀) — 오너 그림 OK 2026-11-07",
+ "note": "오너 '그래 이게 낫다'(2026-11-07). 앞 묶음 beodeul-lakeshore-longramp-1107 의 호숫가 94장은 480 풀로 그린 옛 판이라 쓰지 않는다(긴 비탈 14장만 유효).",
+ "explainImage": "beodeul-lakeshore-a-explain.png",
+ "explainText": "호수 물가를 돌 둑 대신 풀·모래로 스며드는 자연 물가로 바꾸는 오토타일 47+47장(편집기 바닥 풀 737 기준, 물가선 A안). 허용하면 버들항 번들에 굽혀 물 붓이 기본으로 씁니다.",
+ "createdAt": "2026-11-06T18:11:36.712Z",
+ "items": [
+  {
+   "sha": "24a0574f99a9e74a0b42bbc354ed5b9fa15fe153a7fa6f1d07e611d10d9c8f1b",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/0",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-0.png"
+  },
+  {
+   "sha": "09601e34432cd608a434cca335275b48aeaf2eefebe252887f81a813f6da649e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/1",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-1.png"
+  },
+  {
+   "sha": "cae7564c2d9fa986913a11ee600281e3b599e74e0755b362258f3c319c3c4728",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/2",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-2.png"
+  },
+  {
+   "sha": "57657be9b38958cd23728f4289fb0804c1d7157321cc7cc87d65accffe03ca49",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/3",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-3.png"
+  },
+  {
+   "sha": "02029b7a8c247292b8e249a6a2f8ea8e9eaf9dd743621e4023033d098a8dd925",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/4",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-4.png"
+  },
+  {
+   "sha": "7d9a10ae95f08e5871481af631b560a50c5464b60f4812af0b5814f1dbf74dd6",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/5",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-5.png"
+  },
+  {
+   "sha": "fc88a4708fc6b2dbdc1386cbbc705f58bebcdf1cea5c54bc598fd71d0974acc0",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/6",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-6.png"
+  },
+  {
+   "sha": "3949dc4d0a4ef97dc034a31b63eb8971be6c5b6b682f90d990d1dd3eb2fe7fea",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/7",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-7.png"
+  },
+  {
+   "sha": "978f5a2a7ec3ff8cc0d68275a8be6f1e37d088768f50fcabb355a01f7ff17143",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/8",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-8.png"
+  },
+  {
+   "sha": "9e0ad5ac1313b19e35b64d44864444a569a3e73d42fbe0216a247051fbb692cb",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/9",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-9.png"
+  },
+  {
+   "sha": "d96bb75fbca1fe8a4f0dd6d2caad01507fec6d79e38dd19d8ceb479e3ba069ee",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/10",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-10.png"
+  },
+  {
+   "sha": "32331af85ad2f21a21bcfddc9592c2727bc4f043de9e6e680ad7433c908896f5",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/11",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-11.png"
+  },
+  {
+   "sha": "2fc396c27be3005d64ac65d05ba9dc08b918cb27c010d291511667374499207e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/12",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-12.png"
+  },
+  {
+   "sha": "12f9643c4db3d11909c8364ba0f046203420c274c6cf16a5cdb7d28954331056",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/13",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-13.png"
+  },
+  {
+   "sha": "1f4aefd2e36674c91581e8f91cfd0422187b7db2e6884e5fc0063b9a10f4b326",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/14",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-14.png"
+  },
+  {
+   "sha": "f509424f651377a8c6e58e8681123cfbdd9ff05fada471696889fa71ccbe3c4e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/15",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-15.png"
+  },
+  {
+   "sha": "9c4bd5529786bb5b1212b47549e1f3989d2f324dc0a21683c9da9d44473aff59",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/19",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-19.png"
+  },
+  {
+   "sha": "29352416b52df645bb32d50631baa77f5a54029b90209b28e9fae495942d3334",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/23",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-23.png"
+  },
+  {
+   "sha": "5548fb35f3a5f7166d438ad014b35d11fe28c94f0efb725b5d39e9aa2b707536",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/27",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-27.png"
+  },
+  {
+   "sha": "32b4c32edeec9842a96bd7fde267a7c1f54de79e4f6c9fcc28ad92354b1b2973",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/31",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-31.png"
+  },
+  {
+   "sha": "fc88a4708fc6b2dbdc1386cbbc705f58bebcdf1cea5c54bc598fd71d0974acc0",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/38",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-38.png"
+  },
+  {
+   "sha": "3949dc4d0a4ef97dc034a31b63eb8971be6c5b6b682f90d990d1dd3eb2fe7fea",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/39",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-39.png"
+  },
+  {
+   "sha": "1f4aefd2e36674c91581e8f91cfd0422187b7db2e6884e5fc0063b9a10f4b326",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/46",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-46.png"
+  },
+  {
+   "sha": "f509424f651377a8c6e58e8681123cfbdd9ff05fada471696889fa71ccbe3c4e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/47",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-47.png"
+  },
+  {
+   "sha": "29352416b52df645bb32d50631baa77f5a54029b90209b28e9fae495942d3334",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/55",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-55.png"
+  },
+  {
+   "sha": "32b4c32edeec9842a96bd7fde267a7c1f54de79e4f6c9fcc28ad92354b1b2973",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/63",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-63.png"
+  },
+  {
+   "sha": "fdba4a8eca29e77abeacde5d649b0dbbfff8e3db421f96dbe178bf7d77f791a2",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/76",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-76.png"
+  },
+  {
+   "sha": "80f40fc3b2fe4bf0c54ecfe73e4010241cf2ed116928496939ac1539a05371d6",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/77",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-77.png"
+  },
+  {
+   "sha": "7ea58a0ece615b1022faa23934a794edecbc25e2a8ef58038102e043903acc8f",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/78",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-78.png"
+  },
+  {
+   "sha": "786515e65a496e9b111f84b3b05fe287cc5da7b8fd23c9758bc49ad706613902",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/79",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-79.png"
+  },
+  {
+   "sha": "53b701d4ffd76a31e7e1335d571c7a247ab935f651f49c161e3209266b410b3a",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/95",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-95.png"
+  },
+  {
+   "sha": "7ea58a0ece615b1022faa23934a794edecbc25e2a8ef58038102e043903acc8f",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/110",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-110.png"
+  },
+  {
+   "sha": "786515e65a496e9b111f84b3b05fe287cc5da7b8fd23c9758bc49ad706613902",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/111",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-111.png"
+  },
+  {
+   "sha": "53b701d4ffd76a31e7e1335d571c7a247ab935f651f49c161e3209266b410b3a",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/127",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-127.png"
+  },
+  {
+   "sha": "98f88f73dab76f5fd75525353770e75c9442d7d5133f8c980dd62bc93f2d3eec",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/137",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-137.png"
+  },
+  {
+   "sha": "d136f52ce07bcdf2137c39c2bb967d00e9065369d3ce7ced32f8eebf5d311807",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/139",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-139.png"
+  },
+  {
+   "sha": "0292232ae5619dd3636df9fb316248950fb96e0678817d346836cd18ed9d82d1",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/141",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-141.png"
+  },
+  {
+   "sha": "b7f39a7211600c5481f5ddf16c6c9b26d8eb80bbe688025b3b756da86d0ad691",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/143",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-143.png"
+  },
+  {
+   "sha": "339d5d3eb5aaa620c9cae0e600cbecbd004fbdedb14aa9532ee26d97cbcd80bd",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/155",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-155.png"
+  },
+  {
+   "sha": "643e73ae3d06b1c929b578c1824196731ba2eabdd071831d49af3dd6520c2344",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/159",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-159.png"
+  },
+  {
+   "sha": "b7f39a7211600c5481f5ddf16c6c9b26d8eb80bbe688025b3b756da86d0ad691",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/175",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-175.png"
+  },
+  {
+   "sha": "643e73ae3d06b1c929b578c1824196731ba2eabdd071831d49af3dd6520c2344",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/191",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-191.png"
+  },
+  {
+   "sha": "e5168a7c34df7ed3006e870e88d689b40765f7da3f8a30f52fb2426ca1c492e9",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/205",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-205.png"
+  },
+  {
+   "sha": "bd7c9305767f4d2ed53a11014e710bac1587a80756cc4e284ba6b7dc3ab11565",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/207",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-207.png"
+  },
+  {
+   "sha": "b7b1a934519d1bff2875b91a8e3abe1ccd041e0775c645fa4567c7d25453112c",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/223",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-223.png"
+  },
+  {
+   "sha": "bd7c9305767f4d2ed53a11014e710bac1587a80756cc4e284ba6b7dc3ab11565",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/239",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-239.png"
+  },
+  {
+   "sha": "b7b1a934519d1bff2875b91a8e3abe1ccd041e0775c645fa4567c7d25453112c",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/grass/255",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-grass-255.png"
+  },
+  {
+   "sha": "edc6c7af80485367f8ac36b2f86e1e191aab130847d3b0a677171bf5cf0a5b86",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/0",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-0.png"
+  },
+  {
+   "sha": "2f918d7f01ae6300e6f4f3114885ec68e95ec0220bd06e32de2bb093f99cc6fb",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/1",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-1.png"
+  },
+  {
+   "sha": "d8a6ba61e4a22d481aebc53c28fb6c64a24b70174fe271abcc081671ee1f65fb",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/2",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-2.png"
+  },
+  {
+   "sha": "958e467d2640825896d996e54b74e9209472fe6838361f54a8d7ca993240a5e1",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/3",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-3.png"
+  },
+  {
+   "sha": "d5ef4fdc625e965e5ae36b455694d41060a7ca786d06a802ecfd6701433a9c5b",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/4",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-4.png"
+  },
+  {
+   "sha": "3e91631d13679f6646e9d3cfee23f912a7dbed2c5bedc138fad2f81c05b3bc12",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/5",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-5.png"
+  },
+  {
+   "sha": "96e3bb2040111aa7c857d1f172ec641977b2374ca06f8959d1231b1ad7cb59cd",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/6",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-6.png"
+  },
+  {
+   "sha": "d6f2986432ef6524f970e3f513927ac82b08bdd848f8053168259cd709084bbe",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/7",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-7.png"
+  },
+  {
+   "sha": "5feb931bdf317ce0217392a02beb436f4600b4f866eb1e0debcdd0e17cc20476",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/8",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-8.png"
+  },
+  {
+   "sha": "282c2b136f3a3368a8115cde3f6bc3f58bb3ab3e69bd2aaebea7b18ac4b85220",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/9",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-9.png"
+  },
+  {
+   "sha": "1b1ff7550770fbec56df64690a45b68d3de4555b70177ab82cd1823fb6c17076",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/10",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-10.png"
+  },
+  {
+   "sha": "fbfb7087c29238fadc2cc75e877d11687a1c94c1189ec6d108a2c1fe80fd49dc",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/11",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-11.png"
+  },
+  {
+   "sha": "8e424e1d1d9d13b907110492f8dd0dd3bd216dcee67d3a4985effb096f160c98",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/12",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-12.png"
+  },
+  {
+   "sha": "1a346b83b4d9d6bf459951a1577b02d1f94f2946d824a72122ca443a73b115ce",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/13",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-13.png"
+  },
+  {
+   "sha": "5aab5e465081ba6918848c9cdb3b384a7b3f9aaf291be69e42e951721d711d85",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/14",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-14.png"
+  },
+  {
+   "sha": "f509424f651377a8c6e58e8681123cfbdd9ff05fada471696889fa71ccbe3c4e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/15",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-15.png"
+  },
+  {
+   "sha": "ad483aa49a36c383a70e63cb8df871e8e8f704ce45aca42aae51c45297d2b624",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/19",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-19.png"
+  },
+  {
+   "sha": "df15f4061e4227247dc26adb64a4c486446590f175e7c666184e06cc0a665099",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/23",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-23.png"
+  },
+  {
+   "sha": "fc9448a3886315da662f41d4029ab9b1bcfe96c4d9d9600601d8dceec7b74c53",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/27",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-27.png"
+  },
+  {
+   "sha": "32b4c32edeec9842a96bd7fde267a7c1f54de79e4f6c9fcc28ad92354b1b2973",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/31",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-31.png"
+  },
+  {
+   "sha": "96e3bb2040111aa7c857d1f172ec641977b2374ca06f8959d1231b1ad7cb59cd",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/38",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-38.png"
+  },
+  {
+   "sha": "d6f2986432ef6524f970e3f513927ac82b08bdd848f8053168259cd709084bbe",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/39",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-39.png"
+  },
+  {
+   "sha": "5aab5e465081ba6918848c9cdb3b384a7b3f9aaf291be69e42e951721d711d85",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/46",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-46.png"
+  },
+  {
+   "sha": "f509424f651377a8c6e58e8681123cfbdd9ff05fada471696889fa71ccbe3c4e",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/47",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-47.png"
+  },
+  {
+   "sha": "df15f4061e4227247dc26adb64a4c486446590f175e7c666184e06cc0a665099",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/55",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-55.png"
+  },
+  {
+   "sha": "32b4c32edeec9842a96bd7fde267a7c1f54de79e4f6c9fcc28ad92354b1b2973",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/63",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-63.png"
+  },
+  {
+   "sha": "a926d792939923208b9118341a014c95c3ad245c9b14f97e20010a808360eb45",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/76",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-76.png"
+  },
+  {
+   "sha": "01e4d3ef72af25381072c4eedb967f5dfd9a39ad32fd10c3d870beef3149326f",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/77",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-77.png"
+  },
+  {
+   "sha": "c9b3f1e1e0bc143d9508f1c20a56478b1ae1535320b8838add2dcfbdbf70cc83",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/78",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-78.png"
+  },
+  {
+   "sha": "786515e65a496e9b111f84b3b05fe287cc5da7b8fd23c9758bc49ad706613902",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/79",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-79.png"
+  },
+  {
+   "sha": "53b701d4ffd76a31e7e1335d571c7a247ab935f651f49c161e3209266b410b3a",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/95",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-95.png"
+  },
+  {
+   "sha": "c9b3f1e1e0bc143d9508f1c20a56478b1ae1535320b8838add2dcfbdbf70cc83",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/110",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-110.png"
+  },
+  {
+   "sha": "786515e65a496e9b111f84b3b05fe287cc5da7b8fd23c9758bc49ad706613902",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/111",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-111.png"
+  },
+  {
+   "sha": "53b701d4ffd76a31e7e1335d571c7a247ab935f651f49c161e3209266b410b3a",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/127",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-127.png"
+  },
+  {
+   "sha": "0b33abf8d2ba648e6250f3ea6aab682bf350f5071bce87e682e1ae461409b339",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/137",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-137.png"
+  },
+  {
+   "sha": "e28cbf2ed43e4a3457a89f6f7a5aa86393b8067d94493ab7b34b9749de573224",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/139",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-139.png"
+  },
+  {
+   "sha": "2656627332ca32ac2280fb83339acb0c6649167f6ce3544e12767134fedd4685",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/141",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-141.png"
+  },
+  {
+   "sha": "b7f39a7211600c5481f5ddf16c6c9b26d8eb80bbe688025b3b756da86d0ad691",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/143",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-143.png"
+  },
+  {
+   "sha": "d8b204ca7ccc899bfef30d4cdf1025a9bf97656cefb0a4c129673f5792655bc2",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/155",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-155.png"
+  },
+  {
+   "sha": "643e73ae3d06b1c929b578c1824196731ba2eabdd071831d49af3dd6520c2344",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/159",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-159.png"
+  },
+  {
+   "sha": "b7f39a7211600c5481f5ddf16c6c9b26d8eb80bbe688025b3b756da86d0ad691",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/175",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-175.png"
+  },
+  {
+   "sha": "643e73ae3d06b1c929b578c1824196731ba2eabdd071831d49af3dd6520c2344",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/191",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-191.png"
+  },
+  {
+   "sha": "6ef7256092010fceeac21bece0777763b99a134ee99fff761a7c1555c4fa9553",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/205",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-205.png"
+  },
+  {
+   "sha": "bd7c9305767f4d2ed53a11014e710bac1587a80756cc4e284ba6b7dc3ab11565",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/207",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-207.png"
+  },
+  {
+   "sha": "b7b1a934519d1bff2875b91a8e3abe1ccd041e0775c645fa4567c7d25453112c",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/223",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-223.png"
+  },
+  {
+   "sha": "bd7c9305767f4d2ed53a11014e710bac1587a80756cc4e284ba6b7dc3ab11565",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/239",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-239.png"
+  },
+  {
+   "sha": "b7b1a934519d1bff2875b91a8e3abe1ccd041e0775c645fa4567c7d25453112c",
+   "kind": "terrain",
+   "label": "beodeul-lakeshore-a/sand/255",
+   "source": "/tmp/tmp.zFZppofukm/gateA/shore-sand-255.png"
+  }
+ ]
+}

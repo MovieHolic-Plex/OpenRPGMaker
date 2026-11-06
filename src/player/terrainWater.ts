@@ -13,7 +13,8 @@ export function drawTerrainWater(scene: Phaser.Scene, map: GameMap, add: (g: Pha
       const i=y*map.width+x,depth=depths[i]??0;if(!depth || map.relief?.ramps?.[i]===9)continue;
       g ??= scene.add.graphics();
       const height=terrainHeight(map,x,y), top=(y-height)*size;
-      g.fillStyle(depth===1?0x6ae0d7:0x082b57,depth===1?.14:Math.min(.48,.1+depth*.055));g.fillRect(x*size,top,size,size);
+      // 물가 두 줄(깊이 1·2)은 칠하지 않는다 — 물가 타일(오토타일)이 그 칸의 둥근 물가를 그리는데 네모 덧칠이 그것을 칸 상자로 덮었다(2026-11-07 리드 리뷰).
+      if(depth>2){g.fillStyle(0x082b57,Math.min(.4,(depth-2)*.08));g.fillRect(x*size,top,size,size);}
       const below=(y+1)*map.width+x, drop=height-terrainHeight(map,x,y+1);
       if(y+1<map.height && (depths[below]??0)>0 && drop>.5) {
         const bottom=(y+1-terrainHeight(map,x,y+1))*size;

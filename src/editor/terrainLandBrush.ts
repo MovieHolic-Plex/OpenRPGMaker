@@ -93,7 +93,9 @@ function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean
   const project = store.getCurrent(), map = project.maps[mapId];
   if (!map) return false;
   const tileset = project.tilesets[map.tilesetId];
-  const tile = terrainMaterialTile(tileset, "water");
+  // 자연 호숫가 오토타일(풀·모래로 스며드는 물가, bake_lakeshore.py)이 있는 칩셋은 그것을 기본으로 — 운하 물은 돌 둑 가장자리다.
+  const lakeshore = tileset ? autotileGroupsForTileset(tileset).find((g) => g.id === "beodeul_lakeshore_grass") : undefined;
+  const tile = lakeshore ? lakeshore.variantMap["255"] : terrainMaterialTile(tileset, "water");
   if (tile === undefined || tile < 0) return false;
   const points = (soften ? softenShore(map, cells) : [...cells]).filter((i) => !terrainLocked(map.terrainDesign, i) && (map.relief?.ramps?.[i] ?? 0) === 0);
   if (!points.length) return false;
@@ -120,7 +122,7 @@ function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean
     && depth.every((d, i) => (depthBefore?.[i] ?? 0) === d || terrainLocked(map.terrainDesign, i));
   if (unchanged) return false;
   const groups = autotileGroupsForTileset(tileset).filter((g) => (g.layer ?? "lower") === "lower");
-  const waterGroup = groups.find((g) => g.memberTileIds.includes(tile));
+  const waterGroup = lakeshore ?? groups.find((g) => g.memberTileIds.includes(tile));
   const previous = points.map((i) => layerTileAt(map, 1, i));
   const xy = points.map((i) => ({ x: i % map.width, y: Math.floor(i / map.width) }));
   store.updateMapTiles(mapId, (draft) => {

@@ -1,0 +1,95 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-long-ramp-1107",
+ "title": "버들항 긴 비탈 14 — 오너 그림 OK 2026-11-07",
+ "note": "오너 '그래 이게 낫다'(2026-11-07). 옛 묶음 beodeul-lakeshore-longramp-1107 은 철회(480 풀 호숫가가 섞여 있었음).",
+ "explainImage": "beodeul-long-ramp-explain.png",
+ "explainText": "높은 절벽에 길이만큼 내려와 발치 아래 두 칸에서 끝나는 흙 비탈 조각(꼭대기·절벽 면 반복·낮은 땅 위 옆벽 6→3px·발치). 허용하면 2단 이상 경사로가 이 그림을 씁니다.",
+ "createdAt": "2026-11-06T18:25:35.549Z",
+ "items": [
+  {
+   "sha": "4f1253d2a1aac67498093e9e281bac415610aaa45c0ddc785a9c5d3e0f9ba14e",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-top",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-top.png"
+  },
+  {
+   "sha": "8af4c7732f9e9a7b6c3aca90548c13f1718a1ae3a7c0d028b054bea4530427ab",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-cut",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-cut.png"
+  },
+  {
+   "sha": "32cc52c8f9532416c12f3d085fe6aba0f3e3a36f93c60bab96d468cd7a4fb40a",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out6",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-out6.png"
+  },
+  {
+   "sha": "0267c11d6091d6d2cddf50f817cca9d77f2cdaba15b92f61470fc4a75123c89a",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out5",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-out5.png"
+  },
+  {
+   "sha": "3758c69114c45ab42e26220278a308c39e940f192ebc5f7be5465c282956d81c",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out4",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-out4.png"
+  },
+  {
+   "sha": "8e804c794f0eed99d769e350fa9c7d3786e376f63ae1c39227994c0a809e6a54",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out3",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-out3.png"
+  },
+  {
+   "sha": "7b02021062c5748ff5a815ea7c89ca77fece5db02d849df9010a68bd8e3da3b9",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-toe",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-2-long-toe.png"
+  },
+  {
+   "sha": "448d5ff26c8c2d03160e03c20dffc16f932a62c580721fb5709f13d3914f6faf",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-top",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-top.png"
+  },
+  {
+   "sha": "ac10471d0c640a9b6da39334731e048374c7e17323a3157afd2a22d6341b66e8",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-cut",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-cut.png"
+  },
+  {
+   "sha": "27d819b8cf1d78c7d384bcbb8f82282e9a77fd72bca0f4b9d915507e17e17f0e",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out6",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-out6.png"
+  },
+  {
+   "sha": "50693984bf291f460673083b05ed503670522b640623abdf2d689fe5bdcefded",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out5",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-out5.png"
+  },
+  {
+   "sha": "bd31a4901471a631eebf12613b6c5e9929abd59a79498240adbd2b0329692992",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out4",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-out4.png"
+  },
+  {
+   "sha": "32463c9640a71dc35975f188dd698b15ac1b5a558c7730445fee3afe03f74220",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out3",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-out3.png"
+  },
+  {
+   "sha": "d1f2096d090dd82b70e503e1808f893b4c8fd6fddbd328c179031e7535a168c8",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-toe",
+   "source": "/tmp/tmp.zFZppofukm/gateR/ramp-n-3-long-toe.png"
+  }
+ ]
+}
