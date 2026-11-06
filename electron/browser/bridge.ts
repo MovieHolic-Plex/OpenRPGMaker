@@ -182,6 +182,17 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     restoreBackup: invoke(OPRN_CHANNELS.projectRestoreBackup),
     onChanged: subscribeProjectChanges,
   },
+  /** 에이전트 모드(실험) — electron/main/agentHost.ts. */
+  agent: {
+    detect: invoke("oprn:agent.detect"),
+    start: invoke("oprn:agent.start"),
+    prompt: invoke("oprn:agent.prompt"),
+    cancel: invoke("oprn:agent.cancel"),
+    permission: invoke("oprn:agent.permission"),
+    toolResult: invoke("oprn:agent.toolResult"),
+    poll: invoke("oprn:agent.poll"),
+    stop: invoke("oprn:agent.stop"),
+  },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),
     list: invoke(OPRN_CHANNELS.commitsList),

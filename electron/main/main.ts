@@ -9,6 +9,7 @@ import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { folderSwitchFlushOk, isAppRendererFrame } from "../shared/folderSwitch";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
+import { AGENT_CHANNELS, createAgentHost, dispatchAgentChannel, type AgentHost } from "./agentHost";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
@@ -53,6 +54,26 @@ const sessions = createProjectSessionRegistry();
 const hosting = new Set<string>();
 const teamHosts = new Map<string, LocalProjectServer>();
 let companionServer: CompanionServer | null = null;
+/** 에이전트 모드(실험). 패널이 처음 부를 때 만든다 — 꺼 둔 사용자에게는 포트도 프로세스도 생기지 않는다. */
+let agentHost: AgentHost | null = null;
+function agentMcpScript(): string | null {
+  return [
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", "oprn-agent-mode-mcp.mjs"),
+    join(app.getAppPath(), "dist-electron", "oprn-agent-mode-mcp.mjs"),
+    join(app.getAppPath(), "scripts", "oprn-agent-mode-mcp.mjs"),
+  ].find((candidate) => existsSync(candidate)) ?? null;
+}
+function requireAgentHost(): AgentHost {
+  if (agentHost) return agentHost;
+  const script = agentMcpScript();
+  if (!script) throw new Error("에이전트 모드 MCP 서버(oprn-agent-mode-mcp.mjs)를 찾지 못했습니다");
+  agentHost = createAgentHost({
+    // Electron 바이너리를 node 로 돌린다 — 사용자 PC 에 node 가 없어도 된다.
+    mcpCommand: { command: process.execPath, args: [script], env: { ELECTRON_RUN_AS_NODE: "1" } },
+    workDir: join(app.getPath("userData"), "agent-workspace"),
+  });
+  return agentHost;
+}
 /** 첫 실행 스플래시. 부팅 중에 두 번째 실행이 프로젝트를 열면 시작 화면 신호를 기다리지 않고 닫는다. */
 let activeSplash: Splash | undefined;
 const rendererDir = rendererDirectory();
@@ -1098,6 +1119,9 @@ export async function startApp(boot: BootContext): Promise<void> {
     const projectDir = sessions.get(webContentsId)?.projectDir;
     if (window && projectDir) scheduleLastViewAfterSave(window, projectDir);
   });
+  for (const channel of Object.values(AGENT_CHANNELS)) {
+    ipcMain.handle(channel, (_event: IpcMainInvokeEvent, payload: unknown) => dispatchAgentChannel(requireAgentHost(), channel, payload));
+  }
   registerAssetBrowser();
   registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
   registerDeepLinkProtocol();
@@ -1163,5 +1187,6 @@ app.on("window-all-closed", () => {
 
 app.on("will-quit", () => {
   void companionServer?.close();
+  agentHost?.close();
   for (const host of teamHosts.values()) void host.close();
 });

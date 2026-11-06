@@ -1,4 +1,5 @@
 import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
+import { agentModeAvailable, isAgentModeEnabled, setAgentModeEnabled } from "@/editor/agentMode/agentModeSetting";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 import { PIXEL_MODEL_CHOICES, resolvePixelModel } from "@/ai/pixelModel";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
@@ -570,6 +571,19 @@ export function renderAiSettingsForm(options: {
   imagePlanCountSelect.value = String(config.imagePlanCandidates ?? 1);
   imagePlanCountSelect.addEventListener("change", () => persist(false));
   const imagePlanCountRow = settingsRow("도안 장 수", "여러 장을 동시에 그려 비전 판정자가 고릅니다. 측정에서는 1장보다 나아지지 않았고 시간만 늘어 기본은 1장입니다.", imagePlanCountSelect);
+  const externalAgentSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-agent-mode" },
+    children: [
+      el("option", { attrs: { value: "off" }, text: "끔" }),
+      el("option", { attrs: { value: "on" }, text: "켬" }),
+    ],
+  }) as HTMLSelectElement;
+  externalAgentSelect.value = isAgentModeEnabled() ? "on" : "off";
+  externalAgentSelect.addEventListener("change", () => setAgentModeEnabled(externalAgentSelect.value === "on"));
+  const externalAgentRow = settingsRow("에이전트 모드 (실험)", agentModeAvailable()
+    ? "이 PC 에 설치한 코딩 에이전트(Claude Code·Codex·opencode)를 조수 창의 「에이전트」 탭에서 씁니다. 로그인은 각 에이전트가 하고 OPRN 은 토큰을 보지 않습니다."
+    : "데스크톱 앱(또는 이 PC 의 로컬 호스트)에서만 쓸 수 있습니다.", externalAgentSelect);
   const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
@@ -1289,7 +1303,7 @@ export function renderAiSettingsForm(options: {
         settingsSection("behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다.",
           // The autonomy dial stays first: it is the only way to reach the read-only (ask)
           // rail now that the composer has no mode chips, so it must not be pushed down.
-          [autonomyRow, piApplyRow, dialoguePolishRow, imagePlanRow, imagePlanCountRow, maxTokens.row, behaviorAdvanced]),
+          [autonomyRow, piApplyRow, externalAgentRow, dialoguePolishRow, imagePlanRow, imagePlanCountRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
         settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),

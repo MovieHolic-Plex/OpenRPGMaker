@@ -145,6 +145,17 @@ export type OprnAssetBrowser = {
   onDownload(callback: (payload: unknown) => void): () => void;
 };
 
+export type OprnAgentBridge = {
+  detect(): Promise<unknown>;
+  start(payload: { readonly agent: string }): Promise<unknown>;
+  prompt(payload: { readonly text: string }): Promise<unknown>;
+  cancel(): Promise<unknown>;
+  permission(payload: { readonly requestId: string; readonly optionId: string | null }): Promise<unknown>;
+  toolResult(payload: { readonly requestId: string; readonly result: unknown }): Promise<unknown>;
+  poll(payload: { readonly after: number; readonly waitMs?: number }): Promise<unknown>;
+  stop(): Promise<unknown>;
+};
+
 export type OprnBridge = {
   readonly windowControl?: (action: import("../../../electron/shared/windowControl").WindowControlAction) => Promise<boolean>;
   /** 데스크톱 전용 — 창 단추 방식. darwin 은 OS 신호등, 그 밖은 렌더러가 직접 그린다. */
@@ -182,6 +193,8 @@ export type OprnBridge = {
   readonly start: OprnBridgeStart;
   /** 데스크톱 앱에서만 있다. 제작자 페이지를 창 안에 열고, 받은 파일은 이 프로젝트로만 넘긴다. */
   readonly assetBrowser?: OprnAssetBrowser;
+  /** 에이전트 모드(실험) — 데스크톱과 루프백 브라우저 호스트에만 있다(electron/main/agentHost.ts). */
+  readonly agent?: OprnAgentBridge;
   /** 데스크톱 앱에서만 있다. 에셋 스토어 중계(openwiki/asset-store.md). */
   readonly store?: import("../../assetStore/bridgeTypes").OprnStoreBridge;
 };

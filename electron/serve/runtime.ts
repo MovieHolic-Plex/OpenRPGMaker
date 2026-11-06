@@ -25,6 +25,7 @@ import { BridgeRequestBodyError, readBridgeRequestBody } from "./bridgeRequestBo
 import { localNetworkHosts, preferredLanAddresses } from "./localNetwork";
 import { createAssetBlobIndex } from "./assetBlobs";
 import { createProjectEventHub } from "./projectEvents";
+import { createAgentHost, dispatchAgentChannel, isAgentChannel, type AgentHost } from "../main/agentHost";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
@@ -84,6 +85,11 @@ export type LocalProjectServerOptions = {
   readonly localNetwork?: boolean;
   /** Explicit host-owner access to the host AI credentials. Other members remain denied. */
   readonly enableOwnerAi?: boolean;
+  /**
+   * 에이전트 모드(실험): 이 컴퓨터의 코딩 에이전트를 띄울 MCP 서버 스크립트. 루프백 호스트에서만 켠다 —
+   * 공유 호스트의 접속자가 호스트 PC 에 프로세스를 띄우면 안 된다.
+   */
+  readonly agentMcpScript?: string;
 };
 
 export type LocalProjectServer = {
@@ -207,10 +213,20 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     return path;
   };
 
+  let agentHost: AgentHost | null = null;
+  const requireAgentHost = (): AgentHost => {
+    if (shared || !options.agentMcpScript) throw new Error("이 호스트에서는 에이전트 모드를 쓸 수 없습니다");
+    agentHost ??= createAgentHost({
+      mcpCommand: { command: process.execPath, args: [options.agentMcpScript] },
+      workDir: resolve(projectDir, ".oprn-agent-workspace"),
+    });
+    return agentHost;
+  };
   const dispatchBridge = async (payload: unknown, key: string): Promise<unknown> => {
     if (!payload || typeof payload !== "object") throw new Error("invalid request");
     const body = payload as { readonly channel?: unknown; readonly payload?: unknown };
     const channel = typeof body.channel === "string" ? body.channel : "";
+    if (isAgentChannel(channel)) return await dispatchAgentChannel(requireAgentHost(), channel, body.payload);
     if (channel === OPRN_CHANNELS.startRecentProjects) {
       const entries = await readdir(projectsRoot, { withFileTypes: true }).catch(() => []);
       return entries.filter((entry) => entry.isDirectory() && isProjectId(entry.name)).map((entry) => ({ projectDir: entry.name, title: entry.name }));
@@ -563,6 +579,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     async close(): Promise<void> {
       clearInterval(cleanup);
       projectEvents.close();
+      agentHost?.close();
       companion.dispose();
       await new Promise<void>((resolvePromise) => server.close(() => resolvePromise()));
       for (const key of clients.keys()) sessions.close(key);
