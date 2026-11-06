@@ -1269,7 +1269,7 @@ export class EditScene extends PhaserRuntime.Scene {
         const tile = this.pointerToTile(ptr);
         if (mid && consumeMapPick(mid, tile.x, tile.y)) return;
       }
-      if (this.isRightClick(ptr) && editorState.get().tool !== "relief") {
+      if (this.isRightClick(ptr) && (editorState.get().tool !== "relief" || (ptr.event as { shiftKey?: boolean } | undefined)?.shiftKey === true)) {
         // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).
         // 높이 붓만은 예외다 — 오른쪽 버튼이 왼쪽의 반대 방식으로 칠한다(TilePaintEngine · reliefInverseMode).
         this.updateHoverPreview(ptr);
