@@ -36,3 +36,11 @@ export function shouldRetryQuit(input: {
 }): boolean {
   return input.quitRequested && input.quitHeld && input.windowsStillFlushing === 0;
 }
+
+/**
+ * 닫기 저장 보고(flush-done)를 받은 뒤의 결정. 렌더러는 저장이 끝나 메모리와 디스크가 같을 때만 ok=true 를 보낸다
+ * (새로고침과 같은 판정, reloadFlushAllowsReload). 실패·충돌·남은 편집이면 창을 없애지 않는다 — 없애면 그 편집이 사라진다.
+ */
+export function decideAfterCloseFlush(ok: unknown): "destroy" | "keep-open" {
+  return ok === true ? "destroy" : "keep-open";
+}

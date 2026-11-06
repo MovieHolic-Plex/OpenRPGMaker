@@ -94,7 +94,8 @@ export type OprnBridgeAssets = {
 };
 export type OprnBridgeLifecycle = {
   readonly onFlushBeforeClose: (callback: () => void) => void;
-  readonly flushDone: () => Promise<unknown>;
+  /** 닫기 저장 보고. ok=false 면 메인이 창을 닫지 않는다. */
+  readonly flushDone: (ok: boolean) => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
   /** 보기 → 새로고침. 데스크톱만. 저장이 안전할 때만 flushReloadDone(true). */

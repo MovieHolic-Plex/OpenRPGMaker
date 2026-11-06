@@ -68,7 +68,14 @@ if (typeof window !== "undefined" && window.location) {
   if (window.oprn?.closeIsHostDriven === true) {
     // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
     window.oprn.lifecycle.onFlushBeforeClose(() => {
-      void store.flush().finally(() => { void window.oprn?.lifecycle.flushDone(); });
+      // 저장이 끝나 메모리와 디스크가 같을 때만 닫아도 된다고 알린다(새로고침과 같은 판정). 실패면 메인이 창을 남긴다.
+      void store.flush().then(
+        (result) => { void window.oprn?.lifecycle.flushDone(reloadFlushAllowsReload(result.kind, store.hasUnsavedChanges())); },
+        (error: unknown) => {
+          console.error("[store] 닫기 전 저장 실패:", error);
+          void window.oprn?.lifecycle.flushDone(false);
+        },
+      );
     });
     // 파일 → 저장(CmdOrCtrl+S). 저장은 store 가 소유하므로 메뉴는 요청만 보내고 여기서 flush 한다.
     window.oprn?.lifecycle.onSaveRequest(() => {
