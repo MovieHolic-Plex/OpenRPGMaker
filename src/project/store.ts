@@ -806,7 +806,7 @@ class ProjectStore {
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     const storageOnly = this.persistedBaseline ? await isMediaSeparationOnly(this.persistedBaseline, snapshot.project) : false;
     const externalPatch = storageOnly ? null
-      : await diffProjectDocumentsSliced(this.persistedBaseline ?? projectWithoutEventDrafts(this.current), snapshot.project, yieldToTask);
+      : await externalChangePatch(this.persistedBaseline ?? projectWithoutEventDrafts(this.current), snapshot.project);
     // Hashing may yield. A new edit/save/project switch must win over this earlier snapshot.
     if (generation !== this.mutationGeneration || lineage !== this.contentLineage
       || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
@@ -833,7 +833,7 @@ class ProjectStore {
     const base = this.persistedBaseline;
     if (!base) return false;
     if (jsonEqual(snapshot.project, base)) return true;
-    let externalPatch = await diffProjectDocumentsSliced(base, snapshot.project, yieldToTask);
+    let externalPatch = await externalChangePatch(base, snapshot.project);
     // 차이를 세는 동안 양보했다. 그 사이 저장·전환이 끼었으면 이 스냅숏은 낡았다.
     if (lineage !== this.contentLineage || this.persistInFlight || this.persistedBaseline !== base
       || !sameProjectTarget(target, this.repository.currentTarget())) return false;
@@ -2035,6 +2035,21 @@ function ensureProjectMapConnections(project: Project): boolean {
 
 function faceMatchesRepaired(result: { readonly actors: number; readonly eventFaces: number }): boolean {
   return result.actors + result.eventFaces > 0;
+}
+
+/**
+ * 바깥 저장을 얹을 때 실행 취소 기록에 줄 차이(기준본 → 받은 저장본). 타일셋은 객체 동일성으로만 가른다 —
+ * 내용 요약으로 대조하면 받은 저장본의 새 타일셋 객체를 전부 해시해 반영이 수 초 늦는다(2026-11-06 실측 2.4s).
+ * 내용이 같은 타일셋이 차이에 들어가도 기록은 같은 내용을 얹을 뿐이다.
+ */
+async function externalChangePatch(base: Project, next: Project): Promise<ProjectDocumentPatch> {
+  const { tilesets: baseTilesets, ...baseRest } = base;
+  const { tilesets: nextTilesets, ...nextRest } = next;
+  const patch = await diffProjectDocumentsSliced(baseRest, nextRest, yieldToTask);
+  const set = Object.fromEntries(Object.entries(nextTilesets).filter(([id, tileset]) => baseTilesets[id] !== tileset));
+  const del = Object.keys(baseTilesets).filter((id) => !Object.hasOwn(nextTilesets, id));
+  if (Object.keys(set).length === 0 && del.length === 0) return patch;
+  return { ...patch, tilesets: { ...(Object.keys(set).length > 0 ? { set } : {}), ...(del.length > 0 ? { del } : {}) } };
 }
 
 function ensureMapTreeCoversAllMaps(project: Project): boolean {

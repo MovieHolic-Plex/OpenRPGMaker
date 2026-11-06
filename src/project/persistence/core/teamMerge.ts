@@ -3,8 +3,8 @@ import type { Project } from '../../types';
 import { canonicalJsonString } from './canonicalJson';
 import type { MapSaveConflict } from './mapMerge';
 
-const equal = (a: unknown, b: unknown): boolean => a === undefined || b === undefined
-  ? a === b : canonicalJsonString(a) === canonicalJsonString(b);
+const equal = (a: unknown, b: unknown): boolean => a === b || (a !== undefined && b !== undefined
+  && canonicalJsonString(a) === canonicalJsonString(b));
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 
 /** Conservative three-way merge. Maps and individual DB records are atomic editing units.
