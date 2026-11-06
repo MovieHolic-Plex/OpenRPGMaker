@@ -46,9 +46,37 @@ function widenedPiece(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "r
   cache.set(key, out);
   return out;
 }
-/** 경사로 하나의 통째 조각: 키가 있으면 그것, 북쪽 h=2 이면 정본 나눔으로 낱조각 둘을 이어 붙인다. */
+/**
+ * 긴 비탈(북향, 길이 = 단 차 ≥ 2): 16px 모듈 넷을 위에서 아래로 쌓는다 — 꼭대기 · 절벽 면 줄 × (단 차−1) · 낮은 땅 위 줄 × (길이−1, 옆벽 6→3px 로 좁아짐) · 발치.
+ * 모듈은 `ramp:n:<2|3>:long-<top|cut|out6|out5|out4|out3|toe>`(scripts/experiments/long-ramp/pieces.py). 폭 4 이상은 폭 3 모듈의 왼·가운데·오른 칸으로 늘린다.
+ */
+function longRampPiece(pieces: Readonly<Record<string, ReliefArtPatch>>, w: number, h: number, rise: number, key: string): ReliefArtPatch | null {
+  let cache = composed.get(pieces);
+  if (!cache) { cache = new Map(); composed.set(pieces, cache); }
+  if (cache.has(key)) return cache.get(key)!;
+  const mw = Math.min(3, w), mod = (n: string) => pieces[`ramp:n:${mw}:long-${n}`];
+  const walls = [6, 5, 4, 3], outs = Array.from({ length: h - 1 }, (_, k) => `out${walls[Math.min(walls.length - 1, Math.floor((k * walls.length) / Math.max(1, h - 1)))]}`);
+  const seq = ["top", ...Array<string>(rise - 1).fill("cut"), ...outs, "toe"].map(mod);
+  let out: ReliefArtPatch | null = null;
+  if (seq.every(Boolean)) {
+    const cell = seq[0]!.w / mw, width = cell * w, height = seq.length * 16;
+    const rgba = new Uint8ClampedArray(width * height * 4);
+    seq.forEach((m, k) => {
+      for (let col = 0; col < w; col++) {
+        const from = (w <= 3 ? col : col === 0 ? 0 : col === w - 1 ? 2 : 1) * cell;
+        for (let y = 0; y < 16; y++) for (let c = 0; c < cell * 4; c++) rgba[((k * 16 + y) * width + col * cell) * 4 + c] = m!.rgba[(y * m!.w + from) * 4 + c]!;
+      }
+    });
+    out = { w: width, h: height, rgba };
+  }
+  cache.set(key, out);
+  return out;
+}
+
+/** 경사로 하나의 통째 조각: 북향 긴 비탈(길이 = 단 차 ≥ 2)은 모듈로, 키가 있으면 그것, 북쪽 h=2 이면 정본 나눔으로 낱조각 둘을 이어 붙인다. */
 export function cutPieceFor(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "ramp" | "stairs", dir: string, w: number, h: number, rise: number): ReliefArtPatch | null {
   const key = `${kind}:${dir}:${w}x${h}:${rise}`;
+  if (kind === "ramp" && dir === "n" && rise >= 2 && h === rise && pieces["ramp:n:3:long-top"]) return longRampPiece(pieces, w, h, rise, key);
   const direct = pieces[key];
   if (direct) return direct;
   if (w > 3 && (dir === "n" || dir === "s")) return widenedPiece(pieces, kind, dir, w, h, rise, key);
