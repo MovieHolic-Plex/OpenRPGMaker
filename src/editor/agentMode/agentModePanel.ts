@@ -77,6 +77,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
   let currentMessageId: string | null = null;
   let toolQueue: Promise<void> = Promise.resolve();
   const cards = new Map<string, ToolCard>();
+  let availWrap: HTMLDetailsElement | null = null;
 
   const agentSelect = el("select", { class: "agent-mode-select", dataset: { testid: "agent-mode-select" } }) as HTMLSelectElement;
   const availability = el("div", { class: "agent-mode-availability", dataset: { testid: "agent-mode-availability" } });
@@ -241,7 +242,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
       }
       case "status": {
         const state = String(event.state ?? "");
-        if (state === "ready") { connected = true; statusLine.textContent = `${String(event.detail ?? "")} 연결됨`; }
+        if (state === "ready") { connected = true; statusLine.textContent = `${String(event.detail ?? "")} 연결됨`; if (availWrap) availWrap.open = false; }
         else if (state === "starting") statusLine.textContent = `${String(event.detail ?? "")} 시작하는 중…`;
         else if (state === "busy") statusLine.textContent = "작업 중…";
         else if (state === "idle") statusLine.textContent = "대기 중";
@@ -309,7 +310,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
       el("div", { class: "agent-mode-top", children: [
         el("div", { class: "agent-mode-row", children: [agentSelect, connectButton] }),
         statusLine,
-        el("details", { class: "agent-mode-avail-wrap", children: [el("summary", { text: "이 PC 의 에이전트" }), availability] }),
+        availWrap = el("details", { class: "agent-mode-avail-wrap", children: [el("summary", { text: "이 PC 의 에이전트" }), availability] }),
       ] }),
       plan,
       log,
