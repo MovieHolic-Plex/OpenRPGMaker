@@ -146,6 +146,8 @@ function openGeminiSession(options: LocalCliSessionOptions, toolsEnabled = true)
     },
     steer(text) { queued.push(text); },
     kill() { current?.kill(); },
+    async restartSession() { current?.kill(); current = undefined; },
+    conversationId: () => (started ? "latest" : undefined),
     async close() { if (closed) return; closed = true; options.signal?.removeEventListener("abort", abort); current?.kill(); work.remove(); },
   };
 }

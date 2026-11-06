@@ -90,7 +90,8 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
   const work = emptyWorkDir("codex");
   const instructionsPath = join(work.dir, "instructions.md");
   writeFileSync(instructionsPath, options.systemPrompt, { mode: 0o600 });
-  let thread: string | undefined;
+  // 재개를 요청받았으면 첫 차례는 그 스레드를 잇는다(thread.started 가 오면 그 값이 정본이 된다).
+  let thread: string | undefined = options.resumeSessionId;
   let current: ReturnType<typeof spawnJsonLines> | undefined;
   let queued: string[] = [];
   let closed = false;
@@ -174,6 +175,9 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
     // codex exec 는 진행 중인 차례에 말을 끼울 수 없다 — 다음 차례 앞에 붙인다.
     steer(text) { queued.push(text); },
     kill() { current?.kill(); },
+    // codex exec 는 차례마다 프로세스 하나다 — 대화(thread)는 이미 이어지므로 프로세스를 닫기만 하면 된다.
+    async restartSession() { current?.kill(); current = undefined; },
+    conversationId: () => thread,
     async close() {
       if (closed) return;
       closed = true;

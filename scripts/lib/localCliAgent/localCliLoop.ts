@@ -33,6 +33,13 @@ export interface LocalCliLoopSetup {
   readonly signal?: AbortSignal;
   readonly onRaw?: (line: unknown) => void;
   readonly onStatus?: (name: string, summary: string, data?: unknown) => void;
+  /**
+   * 대화를 홈에 남길 열쇠(클라이언트가 요청마다 붙이는 값). 있으면 이 실행은 대화를 남겨 뒤 실행이
+   * `--resume` 으로 이어 씀 수 있게 한다 — 없으면 예전처럼 아무것도 남기지 않는다.
+   */
+  readonly promptKey?: string;
+  /** 앞선 워커 실행의 CLI 대화. 지시문·도구·모델이 같을 때만 클라이언트가 싣는다(sessionResume.ts). */
+  readonly resumeSessionId?: string;
 }
 
 export interface LocalCliLoopStats {
@@ -73,6 +80,15 @@ export interface LocalCliLoop {
   stats(): LocalCliLoopStats;
   /** 지금 CLI 대화를 닫는다 — 다음 prompt 는 빈 대화(같은 시스템 지시·같은 MCP 도구)로 시작한다. */
   resetSession(): Promise<void>;
+  /**
+   * 프로세스를 다시 열되 **대화는 잇는다**. CLI 가 도구 목록을 다시 받아야 하는데 모델에게는 지난 일을 기억시켜야 할 때
+   * (완성 뒤 윤문 차례) 쓴다. 이을 수 없는 엔진은 새 대화가 된다.
+   */
+  restartSession(): Promise<void>;
+  /** 이 실행의 CLI 대화 식별자(보고·측정용). */
+  conversationId(): string | undefined;
+  /** 이 대화를 재개할 수 있는지 판정할 지문(sessionResume.sameEngineSession). */
+  conversationFingerprint(): { readonly systemPrompt: string; readonly toolNames: readonly string[]; readonly model: string };
 }
 
 /** 쓰기(배타) 도구는 혼자, 읽기 도구는 겹쳐 돈다 — Pi 코어의 순서 규칙과 같다. CLI 가 병렬로 불러도 지킨다. */
@@ -272,6 +288,8 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     mcpUrl: mcp!.url, mcpToken: mcp!.token, systemPrompt: setup.systemPrompt.join("\n\n"), binary,
     ...(setup.model ? { model: setup.model } : {}), ...(setup.effort ? { effort: setup.effort } : {}),
     ...(setup.signal ? { signal: setup.signal } : {}), ...(setup.onRaw ? { onRaw: setup.onRaw } : {}),
+    ...(setup.promptKey ? { promptKey: setup.promptKey } : {}),
+    ...(setup.resumeSessionId ? { resumeSessionId: setup.resumeSessionId } : {}),
     onEvent: onCliEvent,
   });
 
@@ -294,6 +312,11 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       session = undefined;
       await previous?.close().catch(() => undefined);
     },
+    async restartSession() {
+      if (session) await session.restartSession().catch(() => undefined);
+    },
+    conversationId: () => session?.conversationId(),
+    conversationFingerprint: () => ({ systemPrompt: setup.systemPrompt.join("\n\n"), toolNames: setup.tools.map((tool) => tool.name), model: setup.model ?? "" }),
     async dispose() {
       await session?.close().catch(() => undefined);
       await mcp?.close();

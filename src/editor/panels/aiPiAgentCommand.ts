@@ -27,6 +27,7 @@ import { executionRoleFor } from "@/ai/buildRole";
 
 import { compareMapVersions, HARMONY_REPAIR_ROUNDS, reviewMapHarmony, unresolvedReviewSignature } from "@/ai/ultrabrainReview";
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
+import { genId as newSessionKeyId } from "@/util/id";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
@@ -236,6 +237,11 @@ export interface PiRunOptions {
   readonly assistantVersion?: "v2";
   /** 사용자가 붙인 참고 그림(data URL). 계획·실행 요청의 첫 사용자 차례에 그림으로 실린다(워커가 엔진별로 판정). */
   readonly userImages?: readonly string[];
+  /**
+   * 이 사용자 요청 하나의 단계(계획·실행·목표)를 같은 CLI 대화로 이을 열쇠. 패널이 턴마다 새로 만들어
+   * 그 턴의 모든 요청에 같이 싣는다 — 워커는 지시문·도구·모델이 같은 실행만 전 대화를 잇는다(sessionResume.ts).
+   */
+  readonly sessionKey?: string;
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -701,6 +707,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (line) surface.appendProcess?.(`이번 차례 · ${line}`);
   };
   const userImagesPart = options.userImages?.length ? { userImages: options.userImages } : {};
+  // 이 턴의 모든 워커 실행(계획·실행·목표·수리)이 같은 값을 싣는다 — 워커가 지시문·도구가 같은 실행끼리만 대화를 잇는다.
+  const sessionKey = options.sessionKey ?? `turn-${newSessionKeyId()}`;
+  const sessionPart = { sessionKey };
   const modelTask = composePiTask(command.goalMode && !isGoalCampaignTask(command.task) ? goalCampaignTask(command.task) : command.task, options.intentNote);
   let executionTask = modelTask;
   try {
@@ -718,7 +727,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-      }), ...userImagesPart, ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, { signal: surface.signal, onEvent: raw => {
+        sessionKey,
+      }), ...userImagesPart, ...sessionPart, ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") {
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
@@ -769,7 +779,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
         ...(options.polish ? { polish: options.polish } : {}),
-      }), ...userImagesPart, ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+        sessionKey,
+      }), ...userImagesPart, ...sessionPart, ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).
@@ -887,6 +898,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
+        sessionKey,
       }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, {
         signal: surface.signal,
         returnIncompleteResult: true,
@@ -1049,6 +1061,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
           // 수리 실행도 같은 의도 선별 목록에서 시작한다 — 없으면 새 Agent 가 전체 카탈로그(≈113k 토큰)를 매 호출 받는다.
           ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
           ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}),
+          sessionKey,
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => stage("checkpoint", () => publication.publish(c)) }));
         const preRepair = merged.project;
         merged = { ...merged, project: repaired.project };

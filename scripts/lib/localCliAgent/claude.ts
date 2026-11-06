@@ -24,7 +24,7 @@ const MODELS = [
   { id: "claude-opus-5-5", label: "Opus 5.5" },
 ];
 
-export function buildClaudeArgs(configPath: string, systemPromptPath: string, options: { model?: string; effort?: string; maxBudgetUsd?: number; tools?: boolean }): string[] {
+export function buildClaudeArgs(configPath: string, systemPromptPath: string, options: { model?: string; effort?: string; maxBudgetUsd?: number; tools?: boolean; persistSession?: boolean; resumeSessionId?: string }): string[] {
   return [
     "-p",
     "--input-format", "stream-json",
@@ -36,11 +36,13 @@ export function buildClaudeArgs(configPath: string, systemPromptPath: string, op
       : ["--mcp-config", configPath, "--strict-mcp-config", "--allowedTools", `mcp__${CLAUDE_MCP_SERVER_NAME}`]),
     // 미리 허용 안 된 것은 묻지 않고 거절한다(-p 는 물어볼 사람이 없다).
     "--permission-mode", "dontAsk",
-    "--no-session-persistence",
+    // 대화를 잇지 않을 때는 홈에 아무것도 남기지 않는다(기본). 재개를 쓸 때만 남긴다 — `--resume` 은 남은 대화만 잇는다.
+    ...(options.persistSession || options.resumeSessionId ? [] : ["--no-session-persistence"]),
     "--disable-slash-commands",
     // 사용자 훅이 조수 실행에 끼어들지 않게. 사용자의 다른 설정(로그인·프록시·제공자)은 그대로 쓴다.
     "--settings", JSON.stringify({ disableAllHooks: true }),
     "--system-prompt-file", systemPromptPath,
+    ...(options.resumeSessionId ? ["--resume", options.resumeSessionId] : []),
     ...(options.model ? ["--model", options.model] : []),
     ...(options.effort ? ["--effort", options.effort] : []),
     ...(options.maxBudgetUsd ? ["--max-budget-usd", String(options.maxBudgetUsd)] : []),
@@ -102,9 +104,12 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
   // 이 프로세스가 지금까지 보고한 누적 비용(claudeTurnCost). 새 프로세스(start)마다 0 부터.
   let reportedCost = 0;
   let heldFailure: Extract<Parameters<LocalCliSessionOptions["onEvent"]>[0], { kind: "result" }> | undefined;
+  // 재개를 요청받았고 아직 한 번도 열지 않았으면 첫 프로세스는 그 대화를 잇는다. 새로 열거나 재시작하면 지운다.
+  let resumeId = options.resumeSessionId;
+  let conversation: string | undefined = options.resumeSessionId;
   const start = (): SpawnedLines => { reportedCost = 0; return spawnJsonLines({
     binary: options.binary ?? "claude",
-    args: buildClaudeArgs(configPath, systemPromptPath, { tools: toolsEnabled, ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}) }),
+    args: buildClaudeArgs(configPath, systemPromptPath, { tools: toolsEnabled, ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}), ...(options.promptKey ? { persistSession: true } : {}), ...(resumeId ? { resumeSessionId: resumeId } : {}) }),
     cwd: work.dir,
     // 그림 생성 같은 긴 도구(한 장 수십 초)가 Claude Code 기본 MCP 도구 시간 제한에 끊기지 않게 — codex 의 tool_timeout_sec=900 과 같은 값.
     env: { MCP_TOOL_TIMEOUT: "900000", ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
@@ -136,6 +141,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
           ...(turnCost !== undefined ? { costUsd: turnCost } : {}),
           ...(typeof line.session_id === "string" ? { sessionId: line.session_id } : {}),
         };
+        if (typeof line.session_id === "string") conversation = line.session_id;
         // 실패는 prompt() 가 다시 보낼지 정한 뒤에 낸다 — 중간 실패가 루프의 오류로 새지 않게.
         if (event.ok) options.onEvent(event); else { lastResultError = event.error; heldFailure = event; }
         const pending = waiting; waiting = undefined; pending?.resolve();
@@ -158,6 +164,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
         const exited = current.exited.then((code) => { if (waiting) { waiting = undefined; exitedEarly = `Claude Code 가 코드 ${code} 로 끝났습니다`; } });
         current.write(userLine(text, images));
         await Promise.race([done, exited]);
+        resumeId = undefined;
         if (exitedEarly) { proc = undefined; heldFailure = { kind: "result", ok: false, error: exitedEarly }; }
         const error = exitedEarly ?? lastResultError;
         // 용량·속도 제한만 잠시 뒤 같은 차례를 다시 보낸다. 그 밖의 실패는 루프가 판단한다(이어 가기 차례).
@@ -170,6 +177,13 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
       proc?.write(userLine(text));
     },
     kill() { proc?.kill(); },
+    async restartSession() {
+      const previous = proc;
+      proc = undefined;
+      resumeId = options.promptKey ? conversation : undefined;
+      if (previous) { previous.endInput(); await Promise.race([previous.exited, sleep(5000)]); previous.kill(); }
+    },
+    conversationId: () => conversation,
     async close() {
       if (closed) return;
       closed = true;
