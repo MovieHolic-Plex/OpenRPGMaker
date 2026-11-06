@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "53b701d4ffd76a31e7e1335d571c7a247ab935f651f49c161e3209266b410b3a",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "terrain-easy 레인(감독 위임)",
+ "decidedAt": "2026-11-06T18:44:27.306Z",
+ "by": "delegated",
+ "delegatedBy": "foronlyonename_70515 (1306168476288679976)",
+ "evidence": "/home/main/z-project/rpg-zzu-terrain-easy/tiledata/beodeul-lakeshore/owner-delegation-2026-11-06.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (16/16)",
+  "화풍: 평면 채움 (16/16)",
+  "화풍: 질감 없음 (16/16)"
+ ],
+ "note": "묶음 허용: 버들항 자연 호숫가 A안 94 (737 풀) — 오너 그림 OK 2026-11-07 — delegated by owner foronlyonename_70515 via Discord msg 1568334035820749003 '아 걍 통과시켜' (2026-11-06)",
+ "sig": "a98a46d03c552e61f5654f9706bfc1b715fc3516b4a32dab1219a0c22f5d07f5"
+}
