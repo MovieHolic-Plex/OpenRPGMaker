@@ -126,6 +126,13 @@ export interface LocalCliSessionOptions {
   /** CLI 원본 줄(기록용). */
   readonly onRaw?: (line: unknown) => void;
   readonly binary?: string;
+  /**
+   * 이 요청의 대화 열쇠(sessionResume.promptKey). CLI 가 대화를 재개하려면 대화가 사용자 홈에 남아 있어야 한다
+   * (claude: `--no-session-persistence` 를 끈다). 그래서 재개를 켠 실행에서만 이 값이 실린다.
+   */
+  readonly promptKey?: string;
+  /** 이전 실행의 CLI 대화를 잇는다. 지시문·도구·모델이 같을 때만 호출자가 싣는다. */
+  readonly resumeSessionId?: string;
 }
 
 /** 보조 글 생성에 붙이는 그림(그림 검토·시각 판정). */
@@ -140,6 +147,14 @@ export interface LocalCliSession {
   kill(): void;
   /** 정상 마무리(stdin 닫기·임시 폴더 정리). */
   close(): Promise<void>;
+  /**
+   * 지금 대화를 새 프로세스로 다시 열되, **대화 기록은 잇는다**(claude `--resume`). 도구 목록이 바뀌어 CLI 가
+   * tools/list 를 다시 받아야 하는데 모델에게는 이미 한 일을 기억시켜야 할 때 쓴다. 대화를 이을 수 없는 CLI 는
+   * 그냥 새 대화를 연다 — 호출자는 이 차이를 신경 쓰지 않는다.
+   */
+  restartSession(): Promise<void>;
+  /** 이 대화의 CLI 세션 식별자(보고용). 아직 없으면 undefined. */
+  conversationId(): string | undefined;
 }
 
 export interface LocalCliAdapter {

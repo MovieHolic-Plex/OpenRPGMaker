@@ -419,9 +419,11 @@ export function buildUltrabrainPlanRequest(input: {
   readonly scopedByUser: boolean;
   readonly maxTurns?: number;
   readonly initialToolNames?: readonly string[];
+  readonly sessionKey?: string;
 }): PiAgentRequest {
   return {
     mode: "single", provider: input.brain.providerId!, model: input.brain.model, projectKey: input.projectKey,
+    ...(input.sessionKey ? { sessionKey: input.sessionKey } : {}),
     task: `${PLAN_ONLY_PREFIX}${input.modelTask}`, mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}), project: input.project,
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
@@ -482,6 +484,8 @@ export function buildPiRunRequest(input: {
   readonly preferCallerThinking?: boolean;
   /** 다듬기 모드 — 그대로 요청에 싣는다(featureReview.ts). */
   readonly polish?: PiAgentRequest["polish"];
+  /** 한 사용자 요청의 단계들을 같은 CLI 대화로 이을 열쇠(sessionResume.ts). */
+  readonly sessionKey?: string;
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
   const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
@@ -516,5 +520,6 @@ export function buildPiRunRequest(input: {
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),
     ...(input.polish ? { polish: input.polish } : {}),
+    ...(input.sessionKey ? { sessionKey: input.sessionKey } : {}),
   };
 }

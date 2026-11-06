@@ -46,6 +46,12 @@ export interface PiAgentRequest {
    */
   readonly assistantRoles?: { readonly smol?: RoleModel | "off"; readonly advisor?: RoleModel | "off" };
   /**
+   * 한 사용자 요청의 워커 실행들을 같은 CLI 대화로 이을 열쇠(요청마다 새 값). 있으면 워커가 실행 끝에
+   * 자기 대화를 기억해 두고, 다음 실행이 지시문·도구·모델이 같으면 `--resume` 으로 있다(piEngineSessions.ts).
+   * 없으면 예전처럼 실행마다 새 대화다. 대화를 잇지 않는 편이 나은 호출자(병렬 레인)는 비운다.
+   */
+  readonly sessionKey?: string;
+  /**
    * 조수 v2 팀장(src/ai/v2/split.ts). 편집기 엔진 선택의 팀장(localCliEngine.assistantEngineLead) 또는 요청이 직접 실어 온 팀장.
    * 워커는 OPRN_V2_SPLIT 이 없을 때만 이 값을 쓴다. 로컬 CLI·사용자 지정 엔드포인트·레지스트리 계정 팀장을 받고, 워커와 다른 계정이어도 된다
    * (계정 키는 동반 서비스 runAgent 가 푼다. 키가 없으면 워커 혼자 한다).
@@ -161,6 +167,11 @@ export interface PiAgentStats {
     readonly results?: Readonly<Record<string, { readonly calls: number; readonly textChars: number; readonly images: number; readonly imageBytes: number }>> };
   /** 조수 루프 밖 보조 호출(1배 판정자·독립 비평가·컷신 판정) 사용량. 실행 합계 = usage + review. */
   readonly review?: { readonly calls: number; readonly ms: number; readonly input: number; readonly output: number; readonly cacheRead: number; readonly cacheWrite: number; readonly costUsd: number; readonly totalTokens: number };
+  /**
+   * 엔진 대화 재사용 결과(sessionResume.ts). measured 는 이 실행이 앞 실행의 대화를 실제로 이었는지,
+   * skippedReason 은 못 이은 이유다 — 선택이 아니라 사실을 보고해 조용한 폐기가 없게 한다.
+   */
+  readonly session?: { readonly reused: boolean; readonly conversationId?: string; readonly skippedReason?: string };
 }
 
 /**

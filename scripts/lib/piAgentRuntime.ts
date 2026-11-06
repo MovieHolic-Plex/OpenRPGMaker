@@ -121,6 +121,8 @@ import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
 import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
 import { localCliIdOf } from './localCliAgent/types.ts';
 import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
+import { decideSessionResume, engineSessionReuseOn } from '../src/ai/piAgent/sessionResume.ts';
+import { recallEngineSession, rememberEngineSession } from './piEngineSessions.ts';
 import { shrinkReferenceImage } from './referenceImageShrink.ts';
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
 import { animaticResourceIds } from '../../src/project/openingAnimatic.ts';
@@ -1356,19 +1358,38 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (shape && !exposed.has(name)) declare(shape);
     return shape;
   };
+  const localLoopSystemPrompt = [
+    "너는 OPRN 에디터(RPG 제작 도구)의 조수다. 프로젝트는 oprn MCP 서버의 도구로만 읽고 고친다. 파일·셸·웹 도구는 없다.",
+    cliToolFreezeOn()
+      ? `${CLI_LAZY_TOOLS_LINE} When done, briefly tell the user in Korean what you changed.`
+      : "find_tools 로 찾은 도구는 다음 단계부터 도구 목록에 나타난다(이름 앞에 CLI 가 붙이는 접두가 있을 수 있다). 끝나면 사용자에게 한국어로 무엇을 바꿨는지 짧게 보고한다.",
+    ...systemPrompt,
+  ];
+  const sessionKey = request.sessionKey;
+  const sessionReuseEnabled = Boolean(localCli) && engineSessionReuseOn(process.env);
+  const sessionDecision = decideSessionResume({
+    requestedSessionId: recallEngineSession(sessionKey)?.sessionId,
+    previous: recallEngineSession(sessionKey)?.fingerprint,
+    current: { systemPrompt: localLoopSystemPrompt.join("\n\n"), toolNames: tools.map((tool) => tool.name), model: request.model ?? "" },
+    engineCanResume: true,
+    reuseEnabled: sessionReuseEnabled,
+  });
+  const resumeSessionId = sessionDecision.kind === "resume" ? sessionDecision.sessionId : undefined;
+  // 조용한 폐기가 없게: 못 이었으면 왜인지 상태 줄로 남긴다(측정·문의 대응의 근거).
+  if (localCli && sessionDecision.kind === "fresh" && sessionDecision.reason !== "이어 쓸 대화가 없다(이 요청의 첫 실행)") {
+    emit({ type: "execution_status", name: "engine.session.fresh", ok: true, summary: `이전 대화를 잇지 않고 새로 연다 — ${sessionDecision.reason}` });
+  } else if (resumeSessionId) {
+    emit({ type: "execution_status", name: "engine.session.resume", ok: true, summary: "앞 실행의 CLI 대화를 이어 간다 — 지시문·도구·모델이 같다", data: { sessionId: resumeSessionId } });
+  }
   const localLoop: LocalCliLoop | undefined = localCli ? await createLocalCliLoop({
     cli: localCli,
-    systemPrompt: [
-      "너는 OPRN 에디터(RPG 제작 도구)의 조수다. 프로젝트는 oprn MCP 서버의 도구로만 읽고 고친다. 파일·셸·웹 도구는 없다.",
-      cliToolFreezeOn()
-        ? `${CLI_LAZY_TOOLS_LINE} When done, briefly tell the user in Korean what you changed.`
-        : "find_tools 로 찾은 도구는 다음 단계부터 도구 목록에 나타난다(이름 앞에 CLI 가 붙이는 접두가 있을 수 있다). 끝나면 사용자에게 한국어로 무엇을 바꿨는지 짧게 보고한다.",
-      ...systemPrompt,
-    ],
+    systemPrompt: localLoopSystemPrompt,
     tools, onPayload, resolveFallbackTool,
     ...(request.model ? { model: request.model } : {}),
     ...(request.thinkingLevel === "low" || request.thinkingLevel === "medium" || request.thinkingLevel === "high" ? { effort: request.thinkingLevel } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
+    ...(sessionKey && sessionReuseEnabled ? { promptKey: sessionKey } : {}),
+    ...(resumeSessionId ? { resumeSessionId } : {}),
     onStatus: (name, summary, data) => emit({ type: "execution_status", name, ok: true, summary, data }),
   }) : undefined;
   // 빈 답 지키기(src/ai/piAgent/emptyReply.ts): 그림이 든 요청 뒤 빈 완료면 남은 요청에서 그림을 글로 바꿔 다시 묻는다.
@@ -1801,13 +1822,20 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         tools.splice(0, tools.length, ...polishTools);
         dialoguePolishState.contextRead = false;
         // 로컬 CLI(Claude Code 등)는 MCP tools/list 를 대화 시작 때 받아 둔다 — 배열만 바꾸면 CLI 는 옛 목록을 보고
-        // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 새 대화로 열어 윤문 도구 목록을 다시 받게 한다.
-        // 새 대화라 앞서 읽은 스킬 글도 없으므로 스킬 관문도 다시 건다. 차례 지시는 줄·장면·말투를 스스로 담는다.
+        // 「대사를 고칠 수단이 없다」로 끝냈다(2026-10-30 opus 실측: 적중 21 → 21, 호출 0). 프로세스를 다시 열어 윤문 도구 목록을
+        // 다시 받게 하되 **대화는 잇는다** — 예전에는 새 대화로 열어 지시문+도구(72~89k 토큰)를 통째로 다시 썼다.
         if (localLoop) {
-          contextEpoch += 1;
-          await localLoop.resetSession();
+          // 재사용을 끈 실행(OPRN_ENGINE_SESSION=0)은 예전 그대로 새 대화로 연다 — 끄면 옛 동작이 그대로 재현되게.
+          if (sessionReuseEnabled) {
+            await localLoop.restartSession();
+          } else {
+            contextEpoch += 1;
+            await localLoop.resetSession();
+          }
           dialoguePolishState.skillRead = false;
-          emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
+          emit({ type: "execution_status", name: "dialogue_polish.context_reset", ok: true, summary: sessionReuseEnabled
+            ? "로컬 CLI — 윤문 도구 목록을 다시 받도록 프로세스를 다시 연다(대화는 이어 간다)"
+            : "로컬 CLI — 윤문 도구 목록을 다시 받도록 새 대화로 연다" });
         }
         polishBudget = { startTurns: turns, startTokens: tokensNow(), over: false };
         emit({ type: "execution_status", name: "dialogue_polish.round", ok: true, summary: `완성 뒤 대사 윤문 ${round}/${DIALOGUE_POLISH_MAX_ROUNDS}차례 — 고칠 적중 ${lint.target}건, 줄 ${lint.rows.length}개를 조수에게 맡김(윤문 도구만)` });
@@ -2287,10 +2315,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         ...(local.weight.requests ? { requests: local.weight.requests } : {}), results: local.weight.results } }; })() : {}),
       ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}),
       ...(leadUsage.calls ? { lead: { ...leadUsage, model: split?.lead.model, totalTokens: leadUsage.input + leadUsage.output + leadUsage.cacheRead + leadUsage.cacheWrite } } : {}) },
+    ...(localLoop ? { session: { reused: Boolean(resumeSessionId), ...(localLoop.conversationId() ? { conversationId: localLoop.conversationId()! } : {}), ...(sessionDecision.kind === "fresh" ? { skippedReason: sessionDecision.reason } : {}) } } : {}),
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),
   };
+  // 다음 워커 실행이 같은 지시문·도구·모델이면 이 대화를 이어 쓸 수 있게 남긴다(piEngineSessions.ts).
+  if (localLoop && sessionKey) {
+    const conversationId = localLoop.conversationId();
+    if (conversationId) rememberEngineSession(sessionKey, localLoop.conversationFingerprint(), conversationId);
+  }
   emit(slimDoneEvent(done, base));
   return done;
 }
