@@ -65,10 +65,13 @@ export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: n
   return v >= 1 && v <= 8;
 }
 
+/** 양식을 고르지 않은 맵(기본 흙벽 + 풀 윗면)의 경사로 그림. 없으면 사람이 붙인 경사로가 절벽에 뚫린 구멍처럼 보인다. */
+export const DEFAULT_RAMP_ART_STYLE = "grass-steps";
+
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
 export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOptions["ground"]): ReliefRenderOptions {
   const bridges = reliefBridgeMask(relief);
-  const slopes = reliefSlopes(relief), rampArt = reliefRampArt(relief.style);
+  const slopes = reliefSlopes(relief), rampArt = reliefRampArt(relief.style ?? DEFAULT_RAMP_ART_STYLE);
   // 통째 조각(rampArt.pieces): 경사로마다 종류(코드 1~4 경사로·5~8 계단)·방향·크기·단 차로 고른다(겹친 계단은 정본 나눔으로 이어 붙임, cutPieces.ts)
   const slopeArt = rampArt?.pieces ? slopes.map((s) => {
     const code = relief.ramps?.[s.y * relief.width + s.x] ?? 0;

@@ -23,11 +23,35 @@ export const REVERSE_VISIBLE_ROWS = 2;
 export const reverseCutLength = (rise: number): number => rise + REVERSE_VISIBLE_ROWS;
 
 const composed = new WeakMap<object, Map<string, ReliefArtPatch | null>>();
+
+/** 넓은 경사로(폭 4~8): 폭 2·3 조각을 옆으로 잇는다(4=2+2, 5=2+3, 6=3+3, …). 새 화소는 없다. */
+function widenedPiece(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "ramp" | "stairs", dir: string, w: number, h: number, rise: number, key: string): ReliefArtPatch | null {
+  let cache = composed.get(pieces);
+  if (!cache) { cache = new Map(); composed.set(pieces, cache); }
+  if (cache.has(key)) return cache.get(key)!;
+  const parts: number[] = [];
+  for (let left = w; left > 0;) { const take = left === 4 || left === 2 ? 2 : 3; parts.push(take); left -= take; }
+  const patches = parts.map((part) => cutPieceFor(pieces, kind, dir, part, h, rise));
+  let out: ReliefArtPatch | null = null;
+  if (patches.every(Boolean) && patches.every((p) => p!.h === patches[0]!.h)) {
+    const height = patches[0]!.h, width = patches.reduce((s, p) => s + p!.w, 0);
+    const rgba = new Uint8ClampedArray(width * height * 4);
+    let x0 = 0;
+    for (const p of patches) {
+      for (let y = 0; y < height; y++) for (let k = 0; k < p!.w * 4; k++) rgba[(y * width + x0) * 4 + k] = p!.rgba[y * p!.w * 4 + k]!;
+      x0 += p!.w;
+    }
+    out = { w: width, h: height, rgba };
+  }
+  cache.set(key, out);
+  return out;
+}
 /** 경사로 하나의 통째 조각: 키가 있으면 그것, 북쪽 h=2 이면 정본 나눔으로 낱조각 둘을 이어 붙인다. */
 export function cutPieceFor(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "ramp" | "stairs", dir: string, w: number, h: number, rise: number): ReliefArtPatch | null {
   const key = `${kind}:${dir}:${w}x${h}:${rise}`;
   const direct = pieces[key];
   if (direct) return direct;
+  if (w > 3 && (dir === "n" || dir === "s")) return widenedPiece(pieces, kind, dir, w, h, rise, key);
   if (dir !== "n" || h !== 2) return null;
   let cache = composed.get(pieces);
   if (!cache) { cache = new Map(); composed.set(pieces, cache); }

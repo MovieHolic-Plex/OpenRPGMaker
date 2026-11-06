@@ -108,6 +108,7 @@ export class TilePaintEngine {
   private terrainLast: { x: number; y: number } | null = null;
   private landStrokeLand: TerrainLand = 0;
   private landStrokeRect = false;
+  private rampDrag: { mapId: MapId; start: { x: number; y: number; face: "top" | "wall" }; end: { x: number; y: number } } | null = null;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -354,6 +355,11 @@ export class TilePaintEngine {
       return;
     }
     const doodad = findReliefDoodad(tileset, state.reliefDoodad);
+    if (doodad?.kind === "ramp" && !(ptr.button === 2 || ptr.rightButtonDown())) {
+      if (firstStrokeTile) this.rampDrag = { mapId: mid, start: { x: pick.x, y: pick.y, face: pick.face }, end: { x: pick.x, y: pick.y } };
+      else if (this.rampDrag?.mapId === mid) this.rampDrag.end = { x: pick.x, y: pick.y };
+      return;
+    }
     if (doodad) {
       if (!firstStrokeTile) return;
       if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({ reliefDoodad: null, reliefBridgeStart:null }); return; }
@@ -466,6 +472,9 @@ export class TilePaintEngine {
       if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
       else editorState.set({ terrainPoints: null });
     }
+    const rampDrag = this.rampDrag;
+    this.rampDrag = null;
+    if (commit && rampDrag) this.placeDraggedRamp(rampDrag);
     if (design.terrainLandRect) {
       const rect = design.terrainLandRect;
       editorState.set({ terrainLandRect: null });
@@ -493,6 +502,20 @@ export class TilePaintEngine {
         tidyReliefStroke(rough.mapId,{x0:Math.min(...corners.map(p=>p.x)),y0:Math.min(...corners.map(p=>p.y)),x1:Math.max(...corners.map(p=>p.x)),y1:Math.max(...corners.map(p=>p.y))},topGrass);
       }
     });
+  }
+
+  /** 경사로: 절벽 밑을 눌러 끌면 끌린 길이가 폭(2~8), 그 가운데에 놓는다. 놓고 나면 경사로 도구를 내려놓는다(Esc 불필요). */
+  private placeDraggedRamp(drag: { mapId: MapId; start: { x: number; y: number; face: "top" | "wall" }; end: { x: number; y: number } }): void {
+    const project = store.getCurrent(), map = project.maps[drag.mapId], tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    const state = editorState.get(), doodad = tileset ? findReliefDoodad(tileset, state.reliefDoodad) : undefined;
+    if (!map || !tileset || doodad?.kind !== "ramp") return;
+    const span = Math.max(Math.abs(drag.end.x - drag.start.x), Math.abs(drag.end.y - drag.start.y)) + 1;
+    const width = span >= 2 ? Math.min(8, span) : state.reliefRampWidth;
+    const at = { x: Math.round((drag.start.x + drag.end.x) / 2), y: Math.round((drag.start.y + drag.end.y) / 2), face: drag.start.face };
+    const plan = planReliefDoodad(map, doodad, at, { width });
+    if (!plan.ok || !plan.apply) { toast(`${doodad.label}: ${plan.reason}`, "info"); return; }
+    this.applyStrokeEdit(drag.mapId, () => store.updateMapTiles(drag.mapId, plan.apply!, { label: `지형지물 · ${doodad.label}`, relief: true, cells: plan.cells }));
+    editorState.set({ reliefDoodad: null });
   }
 
   private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean; readonly label?: string } = {}): void {
