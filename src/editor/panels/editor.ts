@@ -182,6 +182,36 @@ function mountMapLoadingIndicator(container: HTMLElement): void {
   }
 }
 
+/**
+ * 맵 판 기동(Phaser 스크립트·EditScene 청크·게임 생성)이 실패하면 도는 표시만 영원히 남고 aria-busy 가 박혀 있었다.
+ * 표시를 걷고 까닭과 「다시 시도」를 둔다. 다시 시도는 같은 기동을 다시 부른다 — 메모리의 편집은 그대로다.
+ */
+function bootEditCanvas(container: HTMLElement): void {
+  container.querySelector("[data-map-load-failed]")?.remove();
+  mountMapLoadingIndicator(container);
+  startEditGame(container).then(() => scheduleFitCanvas(), (error: unknown) => {
+    console.error("[editor] 맵 판을 열지 못했습니다:", error);
+    if (!container.isConnected) return;
+    container.querySelector("[data-map-loading]")?.remove();
+    container.removeAttribute("aria-busy");
+    const retry = el("button", {
+      class: "database-footer-button primary",
+      text: "다시 시도",
+      attrs: { type: "button" },
+      dataset: { testid: "map-load-retry" },
+      on: { click: () => bootEditCanvas(container) },
+    });
+    const notice = el("div", {
+      attrs: { role: "alert" },
+      dataset: { mapLoadFailed: "", testid: "map-load-failed" },
+      children: [el("p", { text: "맵 판을 열지 못했습니다. 편집 내용은 그대로입니다." }), retry],
+    });
+    notice.style.cssText = "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px;"
+      + "padding:16px 20px;border-radius:10px;background:var(--bg-raised);color:var(--text-1);box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:2;text-align:center";
+    container.append(notice);
+  });
+}
+
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
@@ -320,8 +350,7 @@ export function renderEditor(main: HTMLElement): void {
   bindMapSurfaceFocusHandoff(phaserContainer);
   // 맵 판이 그려지기 전(Phaser 기동·텍스처·팔레트 준비, 약 1~2s)에는 셸이 먼저 보인다 — 그동안 맵 칸에 작은 도는 표시를 둔다.
   // EditScene.create 가 걷는다. 글자는 넣지 않는다(DOM 번역 카탈로그 밖) — 상태는 aria-busy 로 알린다.
-  mountMapLoadingIndicator(phaserContainer);
-  void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
+  bootEditCanvas(phaserContainer);
   unsubLayoutBbox = installLayoutBboxOverlay();
   // 명명 로케이션 레이어. 꺼져 있으면 포인터를 받지 않으므로 타일 편집과 겹치지 않는다.
   unsubLocationLayer = installMapLocationLayer();

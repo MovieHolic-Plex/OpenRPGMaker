@@ -172,6 +172,33 @@ function mockEditorDependencies(): void {
   }));
 }
 
+describe("맵 판 기동 실패", () => {
+  it("startEditGame 이 거부되면 도는 표시와 aria-busy 를 걷고 오류 안내·다시 시도를 둔다", async () => {
+    const mode = await import("@/app/mode");
+    const start = vi.mocked(mode.startEditGame);
+    start.mockRejectedValueOnce(new Error("Failed to load phaser.min.js"));
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const main = document.createElement("main");
+    document.body.append(main);
+    renderEditor(main);
+    const root = fakeElement(main);
+
+    await vi.waitFor(() => {
+      if (!findByTestId(root, "map-load-failed")) throw new Error("failure notice not yet rendered");
+    });
+    expect(findByTestId(root, "map-loading")).toBeNull();
+    const host = findByTestId(root, "map-load-failed")?.parentElement as FakeElement | null;
+    expect(host?.getAttribute("aria-busy")).toBeNull();
+    expect(findByTestId(root, "map-load-failed")?.getAttribute("role")).toBe("alert");
+
+    findByTestId(root, "map-load-retry")?.click();
+    expect(findByTestId(root, "map-load-failed")).toBeNull();
+    expect(findByTestId(root, "map-loading")).not.toBeNull();
+    expect(start).toHaveBeenCalledTimes(2);
+  }, 120_000);
+});
+
 beforeEach(() => {
   vi.resetModules();
   store.replace(createBlankProject());
