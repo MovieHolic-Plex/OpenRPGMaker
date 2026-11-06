@@ -25,7 +25,6 @@
   color: var(--editor-text, var(--text-1));
 }
 .relief-side-panel[hidden] { display: none; }
-.relief-side-panel [hidden] { display: none !important; }
 .left-panel-stack[data-testid="left-palette-root"] > .palette-work-shell[hidden] { display: none !important; }
 .relief-side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .relief-side-panel h3 { margin: 0; font-size: 17px; line-height: 1.2; }
@@ -37,10 +36,10 @@
 .relief-land-swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .relief-land-swatch {
   display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 8px;
-  border: 1px solid var(--border-default, #dfe2ea); border-radius: 9px;
+  border: 1px solid var(--border-default); border-radius: 9px;
   background: var(--bg-raised); color: var(--text-1); font: 600 12px/1.2 var(--font-ui); cursor: pointer; text-align: left;
 }
-.relief-land-swatch:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default, #dfe2ea)); }
+.relief-land-swatch:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default)); }
 .relief-land-swatch.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
 .relief-land-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .relief-land-chip { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 -4px 0 rgb(0 0 0 / 18%); }
@@ -385,4 +384,9 @@ body:has(.oprn-team-session-bar) .relief-bar-dock {
 }
 .relief-pop-empty { grid-column: 1 / -1; margin: 6px 0; color: var(--text-2, #667085); }
 .relief-pop-foot { padding: 8px 12px; border-top: 1px solid var(--border-default, #dfe2ea); color: var(--text-2, #667085); font-size: 11.5px; }
+
+/* 사이드 패널 안 그룹은 위쪽 display 규칙보다 뒤에서 숨김을 이긴다. */
+.relief-side-panel .relief-bar-group[hidden],
+.relief-side-panel .relief-bar-level[hidden],
+.relief-side-panel [hidden] { display: none; }
 }
