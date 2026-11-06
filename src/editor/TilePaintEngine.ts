@@ -482,7 +482,7 @@ export class TilePaintEngine {
       if (commit && map) {
         const cells = [...new Set(symmetryVariants(design.terrainSymmetry, map.width, map.height).flatMap((v) => landRectCells(map, transformPoint(rect.start, map.width, map.height, v), transformPoint(rect.end, map.width, map.height, v))))];
         const land = this.landStrokeLand;
-        this.applyStrokeEdit(rect.mapId, () => { paintLandCells(rect.mapId, cells, land, design.reliefTopGrass); }, { label: `땅 칸 · ${terrainLandLabel(land)}` });
+        this.applyStrokeEdit(rect.mapId, () => { paintLandCells(rect.mapId, cells, land, design.reliefTopGrass, true); }, { label: `땅 칸 · ${terrainLandLabel(land)}` });
       }
     }
     if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
