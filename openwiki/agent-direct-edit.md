@@ -82,3 +82,16 @@ claude --mcp-config '{"mcpServers":{"oprn":{"command":"node","args":["scripts/op
 - 같은 항목 충돌로 사람 판이 이긴 맵은 차이에서 뺀다.
 
 시험: `test/storeExternalChange.test.ts`.
+
+## 에이전트 모드 (실험, 2026-11-06)
+
+설정 → 동작 「에이전트 모드 (실험)」(기본 끔, `localStorage oprn:agent-mode`)을 켜면 조수 창 위에 「조수 | 에이전트 (실험)」 탭이 생긴다.
+사용자 PC 의 코딩 에이전트를 **ACP(Agent Client Protocol)** 로 띄운다 — Claude Code(`claude-agent-acp`), Codex(`codex-acp`), opencode(`opencode acp`).
+
+- 호스트: `electron/main/agentHost.ts`. 데스크톱은 IPC, 루프백 `oprn-serve` 는 `/__oprn/bridge` 의 `oprn:agent.*` 채널로 같은 본문(`dispatchAgentChannel`)을 부른다. 공유(LAN·공개) 호스트에서는 거절한다.
+- 세션: `session/new` 에 MCP 서버 `oprn`(= `scripts/oprn-agent-mode-mcp.mjs`, 데스크톱은 Electron 바이너리 + `ELECTRON_RUN_AS_NODE`)을 넘긴다. claude-agent-acp 에는 `_meta.disableBuiltInTools` 로 파일·셸 도구를 끈다.
+- 도구: MCP 호출은 호스트 → 패널 poll 이벤트 → **렌더러가 자기 스토어에서** `runTool` 로 실행(`src/editor/agentMode/agentModeTools.ts`). 직접 도구 12개 + `oprn_tools`/`oprn_schema`/`oprn_call`. MCP 프로세스는 프로젝트 파일을 읽지도 쓰지도 않는다 — 저장은 편집기 자동 저장(브리지)이다.
+- 한 턴 = 되돌리기 한 번: `applyProjectInAgentTurn` 이 턴의 첫 쓰기에만 기록을 만든다. 바뀐 칸은 `focusAcceptedAgentChanges` 로 「✓ 반영됨」 강조.
+- 승인: 읽기 도구는 자동 허용, 쓰기만 「한 번 허용 / 항상 허용 / 거절」. 중지는 `session/cancel`.
+- 로그인: 각 에이전트가 갖는다. OPRN 은 토큰을 읽지 않는다(Claude 구독 로그인은 「설치한 Claude Code 를 그대로 실행」으로만 지원).
+

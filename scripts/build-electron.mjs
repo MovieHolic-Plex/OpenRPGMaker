@@ -186,6 +186,10 @@ for (const { entry, outfile, format, platform, target, external, injectOAuth, ma
   if (maxBytes && readFileSync(outfile).length > maxBytes) throw new Error(`${outfile}: ${readFileSync(outfile).length} bytes > ${maxBytes} — 시작 입구에 무거운 import 가 끌려 왔다`);
 }
 
+// 에이전트 모드(실험)의 MCP 서버. 에이전트가 Electron 바이너리(ELECTRON_RUN_AS_NODE)로 띄우므로 asar 밖에 둔다(asarUnpack).
+copyFileSync(resolve(REPO_ROOT, "scripts/oprn-agent-mode-mcp.mjs"), resolve(OUT_DIR, "oprn-agent-mode-mcp.mjs"));
+process.stdout.write("staged dist-electron/oprn-agent-mode-mcp.mjs\n");
+
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
 const workerEntry = resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");
 for (const [target, name] of [["bun-linux-x64", "oh-my-pi-worker"], ["bun-windows-x64", "oh-my-pi-worker.exe"]]) {

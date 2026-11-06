@@ -350,6 +350,20 @@ export function applyProjectWithHistory(project: Project, label: string): boolea
 }
 
 /**
+ * 에이전트 모드(실험)의 한 턴 = 되돌리기 한 번. 턴의 첫 쓰기만 턴 시작 상태를 기록하고, 이어지는 쓰기는 기록 없이 얹는다 —
+ * 그래서 Ctrl+Z 한 번이 그 턴에서 에이전트가 바꾼 것 전부를 되돌린다(src/editor/agentMode/agentModeTools.ts).
+ */
+export function applyProjectInAgentTurn(project: Project, label: string, recordTurnStart: boolean): boolean {
+  const before = projectWithoutEventDrafts(store.getCurrent());
+  if (jsonEqual(before, projectWithoutEventDrafts(project))) return false;
+  store.replace(project, { change: { label, origin: "ai" }, commitHistory: () => {
+    lastCoalesceKey = null;
+    if (recordTurnStart) pushSnapshot({ kind: "project", before }, label);
+  } });
+  return true;
+}
+
+/**
  * Run a synchronous map edit, inserting its before-state only if it changed data.
  * Store updates replace maps rather than mutating them, so retaining the before
  * reference is enough until commit. No project clone/serialization is needed.

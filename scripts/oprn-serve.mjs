@@ -64,6 +64,8 @@ await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
     host: options.host,
     publicOrigin: options.publicOrigin,
     enableOwnerAi: process.env.OPRN_HOST_OWNER_AI === "1",
+    // 에이전트 모드(실험): 루프백 호스트에서만 runtime 이 켠다.
+    agentMcpScript: resolve(REPO_ROOT, "scripts/oprn-agent-mode-mcp.mjs"),
   });
   if (server.ownerAccessCode) {
     const accessPath = resolve(options.projectDir, '.oprn-host-access');

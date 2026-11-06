@@ -37,6 +37,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { mountAgentModeDock } from "@/editor/agentMode/agentModeDock";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
@@ -164,6 +165,7 @@ let unsubMapBackgroundPreview: (() => void) | null = null;
 let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
 let disposeFirstRunGuide: (() => void) | null = null;
+let disposeAgentModeDock: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
 
@@ -335,6 +337,8 @@ export function renderEditor(main: HTMLElement): void {
   authoringJourneyRoot = authoringJourney;
 
   mountAssistantOverlay();
+  disposeAgentModeDock?.();
+  disposeAgentModeDock = mountAgentModeDock(chatFloatHost);
   applyLayout();
   applyLeftDockLayout();
   refreshPanels();
@@ -587,6 +591,8 @@ export function teardownEditor(): void {
   window.removeEventListener(OPEN_AUTHORING_JOURNEY_EVENT, onOpenAuthoringJourney);
   disposeReliefToolbar?.();
   disposeReliefToolbar = null;
+  disposeAgentModeDock?.();
+  disposeAgentModeDock = null;
   chatFloatRoot = null;
   aiDockRoot = null;
   rightInspector?.dispose();
