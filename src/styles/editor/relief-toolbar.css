@@ -386,7 +386,7 @@ body:has(.oprn-team-session-bar) .relief-bar-dock {
 .relief-pop-foot { padding: 8px 12px; border-top: 1px solid var(--border-default, #dfe2ea); color: var(--text-2, #667085); font-size: 11.5px; }
 
 /* 사이드 패널 안 그룹은 위쪽 display 규칙보다 뒤에서 숨김을 이긴다. */
-.relief-side-panel .relief-bar-group[hidden],
-.relief-side-panel .relief-bar-level[hidden],
+.relief-side-panel .relief-bar-context > .relief-bar-group[hidden]:first-child,
+.relief-side-panel .relief-bar-context > [hidden],
 .relief-side-panel [hidden] { display: none; }
 }
