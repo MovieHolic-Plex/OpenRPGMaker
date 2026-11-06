@@ -5,6 +5,7 @@ import { store, type ProjectChangeCell } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
+import { applyProjectDocumentPatch, type ProjectDocumentPatch } from "@/project/persistence/core/projectPatch";
 
 const MAX_HISTORY = 50;
 const LARGE_HISTORY_LIMIT = 25;
@@ -254,7 +255,35 @@ function installProjectSwitchHistoryReset(): void {
   projectSwitchResetInstalled = true;
   store.subscribe((_project, change) => {
     if (change.projectSwitch === true) resetMapEditHistory();
+    else if (change.external) rebaseHistoryOntoExternalChange(change.external.patch);
   });
+}
+
+/**
+ * 바깥(코딩 에이전트·다른 탭) 저장을 받아 얹었다. 기록을 버리지 않고 각 스냅숏에 같은 차이를 얹는다 —
+ * 그래야 Ctrl+Z 가 사람의 지난 편집만 되돌리고 바깥 작업은 남긴다. 바깥이 통째 바꾼 맵의 기록은 그 맵을 바깥 판으로
+ * 둔다(그 맵에 대한 사람의 이전 편집은 바깥 판이 덮었다). 바깥이 지운 맵의 맵 기록은 되살리지 않도록 버린다.
+ */
+function rebaseHistoryOntoExternalChange(patch: ProjectDocumentPatch): void {
+  const rebase = (entry: HistoryEntry): HistoryEntry | null => {
+    const snapshot = entry.snapshot;
+    if (snapshot.kind === "project") {
+      return { ...entry, snapshot: { kind: "project", before: applyProjectDocumentPatch(snapshot.before, patch) as Project } };
+    }
+    if (patch.set && Object.hasOwn(patch.set, "maps")) return null;
+    if (patch.del?.includes("maps") || patch.maps?.del?.includes(snapshot.mapId)) return null;
+    const externalMap = patch.maps?.set?.[snapshot.mapId] as GameMap | undefined;
+    const beforeTilesets = snapshot.beforeTilesets && (patch.tilesets || (patch.set && Object.hasOwn(patch.set, "tilesets")))
+      ? (applyProjectDocumentPatch({ tilesets: snapshot.beforeTilesets }, { ...(patch.set && Object.hasOwn(patch.set, "tilesets") ? { set: { tilesets: patch.set.tilesets } } : {}), ...(patch.tilesets ? { tilesets: patch.tilesets } : {}) }) as { tilesets: Project["tilesets"] }).tilesets
+      : snapshot.beforeTilesets;
+    if (!externalMap && beforeTilesets === snapshot.beforeTilesets) return entry;
+    return { ...entry, snapshot: { ...snapshot, ...(externalMap ? { before: externalMap } : {}), ...(beforeTilesets ? { beforeTilesets } : {}) } };
+  };
+  const keep = (stack: HistoryEntry[]) => stack.map(rebase).filter((entry): entry is HistoryEntry => entry !== null);
+  undoStack = keep(undoStack);
+  redoStack = keep(redoStack);
+  lastCoalesceKey = null;
+  emitHistoryChange();
 }
 
 installProjectSwitchHistoryReset();

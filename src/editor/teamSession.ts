@@ -2,6 +2,7 @@ import { syncTeamReadOnlyUi } from './teamReadOnlyUi';
 import { setTeamRole } from '@/project/teamAccess';
 import { store } from '@/project/store';
 import type { TeamStatus } from '../../electron/shared/team';
+import { toast } from '@/util/toast';
 import { TEAM_COLLAB_ENABLED } from '../../electron/shared/teamCollab';
 
 let latest: TeamStatus | null = null;
@@ -61,7 +62,11 @@ export function startTeamSession(): void {
       // Our own autosave bumps the revision too; refetching it downloaded and re-hashed
       // the whole project a few seconds after every save.
       if (latest.revision !== seen && store.isOwnSavedHostRevision(latest.revision)) seen = latest.revision;
-      if (latest.revision !== seen && await store.refreshFromHost()) seen = latest.revision;
+      if (latest.revision !== seen && await store.refreshFromHost()) {
+        seen = latest.revision;
+        const kept = store.externalChangeConflict();
+        if (kept) toast(`바깥 변경을 반영했습니다. 같은 곳(${kept.join(', ')})은 저장 안 된 내 편집을 남겼습니다.`, 'info');
+      }
       if (!TEAM_COLLAB_ENABLED) { showBar(false); return; }
       text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 보기 전용 — 변경할 수 없습니다' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
     } catch {
@@ -71,9 +76,21 @@ export function startTeamSession(): void {
       showBar(true);
       text.textContent = TEAM_COLLAB_ENABLED ? '팀 연결 끊김 · 저장 상태를 확인하세요' : '호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다';
     }
-    finally { running = false; }
+    finally {
+      running = false;
+      // 기다리는 동안 또 바뀜 알림이 왔으면 한 번 더 본다.
+      if (again) { again = false; void poll(); }
+    }
   };
+  let again = false;
   void poll();
   const timer = window.setInterval(() => { void poll(); }, 3000);
-  window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+  // 호스트가 저장 리비전을 밀어 주면 3초를 기다리지 않고 바로 본다 — 코딩 에이전트의 저장이 1초 안에 보인다.
+  const unsubscribe = window.oprn?.project?.onChanged?.((revision) => {
+    if (revision === seen || store.isOwnSavedHostRevision(revision)) return;
+    if (running) again = true; else void poll();
+  });
+  // 저장이 날아가는 동안 온 바깥 변경은 refreshFromHost 가 미룬다. 저장이 끝나면 다시 본다.
+  const unsubscribeSave = store.subscribeAutoSave((state) => { if (state.kind === 'saved' && latest && latest.revision !== seen) void poll(); });
+  window.addEventListener('pagehide', () => { clearInterval(timer); unsubscribe?.(); unsubscribeSave(); }, { once: true });
 }

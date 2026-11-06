@@ -3,14 +3,29 @@ import type { Project } from '../../types';
 import { canonicalJsonString } from './canonicalJson';
 import type { MapSaveConflict } from './mapMerge';
 
-const equal = (a: unknown, b: unknown): boolean => a === undefined || b === undefined
-  ? a === b : canonicalJsonString(a) === canonicalJsonString(b);
+const equal = (a: unknown, b: unknown): boolean => a === b || (a !== undefined && b !== undefined
+  && canonicalJsonString(a) === canonicalJsonString(b));
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 
 /** Conservative three-way merge. Maps and individual DB records are atomic editing units.
  * Trees, ordered arrays and other roots conflict rather than inventing a semantic merge. */
 export function mergeTeamProject(base: Project, local: Project, latest: Project):
   { kind: 'merged'; project: Project } | { kind: 'conflict'; conflicts: readonly MapSaveConflict[] } {
+  const { project, conflicts } = mergePreferringLocal(base, local, latest);
+  return conflicts.length ? { kind: 'conflict', conflicts } : { kind: 'merged', project: structuredClone(project) };
+}
+
+/**
+ * 같은 3자 병합이되 충돌한 항목(맵 하나·DB 레코드 하나)은 로컬 값을 남긴 결과도 돌려준다.
+ * 편집기가 바깥 저장(코딩 에이전트)을 받을 때 쓴다: 사람의 저장 안 된 편집이 이기고, 나머지 바깥 변경은 그대로 들어온다.
+ */
+export function mergeTeamProjectPreferringLocal(base: Project, local: Project, latest: Project):
+  { readonly project: Project; readonly conflicts: readonly MapSaveConflict[] } {
+  const { project, conflicts } = mergePreferringLocal(base, local, latest);
+  return { project: structuredClone(project), conflicts };
+}
+
+function mergePreferringLocal(base: Project, local: Project, latest: Project): { project: Project; conflicts: MapSaveConflict[] } {
   const conflicts: MapSaveConflict[] = [];
   function merge(b: unknown, l: unknown, r: unknown, path: string[]): unknown {
     if (equal(l, b)) return r;
@@ -43,8 +58,7 @@ export function mergeTeamProject(base: Project, local: Project, latest: Project)
     conflicts.push({ mapId, name: typeof named === 'string' ? named : mapId });
     return l;
   }
-  const project = merge(base, local, latest, []) as Project;
-  return conflicts.length ? { kind: 'conflict', conflicts } : { kind: 'merged', project: structuredClone(project) };
+  return { project: merge(base, local, latest, []) as Project, conflicts };
 }
 
 export const validateMergedTeamProject = validateProjectReferences;

@@ -73,6 +73,8 @@ export type OprnBridgeProject = {
   saveCover?(payload: { readonly projectDir: string; readonly dataUrl: string }): Promise<boolean>;
   listBackups(payload: { readonly projectDir: string }): Promise<readonly ProjectBackupEntry[]>;
   restoreBackup(payload: { readonly projectDir: string; readonly backupId: string }): Promise<RestoredProject>;
+  /** HTTP 호스트 브리지만 있다. 저장 리비전이 바뀔 때마다 부른다(코딩 에이전트·다른 탭의 저장). 해제 함수를 돌려준다. */
+  onChanged?(listener: (revision: number) => void): () => void;
 };
 export type OprnBridgeCommits = {
   record(payload: unknown): Promise<SaveResult>;

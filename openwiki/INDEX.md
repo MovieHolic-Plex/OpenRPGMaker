@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **191쪽 / 8027KB / 약 2,359,211 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8031KB / 약 2,360,537 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -236,6 +236,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L161` Staleness rule
 - `L167` 지형 설치 도구 (2026-10-03)
 - `L172` Original monster campaign
+
+### `openwiki/agent-direct-edit.md` — 4KB · 57줄 · ~1,326 토큰
+
+- `L6` 쓰기 경로 (하나뿐)
+- `L25` 반영 경로
+- `L33` 충돌 규칙
+- `L47` 실행 취소
 
 ### `openwiki/agent-worktrees.md` — 20KB · 273줄 · ~6,245 토큰
 

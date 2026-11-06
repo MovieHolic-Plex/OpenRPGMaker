@@ -24,12 +24,15 @@ import { sendHttpBody } from "./httpBody";
 import { BridgeRequestBodyError, readBridgeRequestBody } from "./bridgeRequestBody";
 import { localNetworkHosts, preferredLanAddresses } from "./localNetwork";
 import { createAssetBlobIndex } from "./assetBlobs";
+import { createProjectEventHub } from "./projectEvents";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
 /** 이미 열린 페이지가 서버 재시작 뒤 새 토큰을 받아 가는 곳(electron/browser/bridge.ts refreshConnection). */
 const HANDSHAKE_PATH = "/__oprn/handshake";
 const ASSET_PATH_PREFIX = "/__oprn/asset/";
+/** 저장 리비전 푸시(Server-Sent Events). electron/browser/bridge.ts `project.onChanged` 가 구독한다. */
+const EVENTS_PATH = "/__oprn/events";
 const LOOPBACK = "127.0.0.1";
 
 /** Stamp the request title onto a canonical project seed without parsing the rest of the document. */
@@ -164,6 +167,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   await separateInlineMediaOnOpen(sessions.require(SESSION_KEY).store);
   const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
   const handlers = createStoreHandlers(sessions);
+  const projectEvents = createProjectEventHub(sessions);
   // 프로젝트 폴더마다 하나. 참여자 여럿이 같은 본문을 받는다.
   const assetBlobIndexes = new Map<string, ReturnType<typeof createAssetBlobIndex>>();
   const assetBlobIndex = (dir: string) => assetBlobIndexes.get(dir) ?? assetBlobIndexes.set(dir, createAssetBlobIndex()).get(dir)!;
@@ -394,6 +398,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       if (url.pathname === HANDSHAKE_PATH && request.method === 'GET') {
         await sendJson(response, 200, { token, companionToken: shared ? null : companionToken }); return;
       }
+      // 열린 편집기에 저장 리비전을 밀어 준다(코딩 에이전트가 브리지로 저장하면 편집기가 1초 안에 다시 받는다).
+      // EventSource 는 머리글을 못 싣어 브리지 토큰을 주소로 받는다. 호스트·출처·로그인 검사는 이미 지났다.
+      if (url.pathname === EVENTS_PATH && request.method === 'GET') {
+        if (url.searchParams.get('token') !== token) { await sendJson(response, 403, { error: 'token' }); return; }
+        await projectEvents.subscribe(response, await projectPath(url.searchParams.get('hostProject') ?? '')); return;
+      }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
         sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
@@ -552,6 +562,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     projectDir,
     async close(): Promise<void> {
       clearInterval(cleanup);
+      projectEvents.close();
       companion.dispose();
       await new Promise<void>((resolvePromise) => server.close(() => resolvePromise()));
       for (const key of clients.keys()) sessions.close(key);
