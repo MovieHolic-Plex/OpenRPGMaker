@@ -5,6 +5,7 @@ import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
 import { copyRelief, emptyRelief } from "@/project/relief/edit";
 import { RELIEF_MAX_LEVEL, type ReliefData } from "@/project/relief/types";
 import { store, type ProjectChangeCell } from "@/project/store";
+import { restoreLockedTerrainCells } from "@/project/terrainLocks";
 import type { GameMap, MapId } from "@/project/types";
 import { toast } from "@/util/toast";
 
@@ -169,6 +170,8 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
     if (clipboard.relief) {
       applyReliefStamp(targetMap, clipboard.relief, x, y, clipboard.width, clipboard.height);
     }
+    // 보호(잠금) 칸은 붓과 같이 붙여넣기도 못 바꾼다 — store.updateMapTiles 의 같은 규칙.
+    restoreLockedTerrainCells(map, targetMap);
     // 빈 칸을 붙여 마지막 2·4층·그림자 칸이 비면 선택 칸을 뺀다 — 옛 맵 모양으로 돌아간다.
     compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells, ...(clipboard.relief ? { relief: true as const } : {}) });
@@ -212,6 +215,8 @@ export function clearSelectionRegion(mapId: MapId): boolean {
         selection.height,
       );
     }
+    // 보호(잠금) 칸은 영역 지우기도 못 바꾼다 — store.updateMapTiles 의 같은 규칙.
+    restoreLockedTerrainCells(map, targetMap);
     compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells, ...(map.relief ? { relief: true as const } : {}) });
   showClipboardToast("영역 지우기 완료", "ok");
