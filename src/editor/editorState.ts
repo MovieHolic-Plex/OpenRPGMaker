@@ -102,7 +102,10 @@ export interface EditorState {
   reliefDoodad: string | null;
   /** 지형지물 팝업이 열려 있는가. */
   reliefDoodadOpen: boolean;
-  terrainBrush: "height" | "surface" | "river" | "group" | TerrainDesignTool;
+  terrainBrush: "height" | "surface" | "river" | "group" | "land" | TerrainDesignTool;
+  terrainLand: import("./terrainLandBrush").TerrainLand;
+  terrainLandSize: import("./terrainLandBrush").TerrainLandSize;
+  terrainLandRect: { mapId: string; start: { x: number; y: number }; end: { x: number; y: number } } | null;
   terrainDesignOpen: boolean;
   terrainSymmetry: TerrainSymmetry;
   terrainPoints: { mapId: string; points: TerrainPoint[] } | null;
@@ -189,7 +192,10 @@ class EditorStateStore {
     reliefTopGrass: true,
     reliefDoodad: null,
     reliefDoodadOpen: false,
-    terrainBrush: "height",
+    terrainBrush: "land",
+    terrainLand: 2,
+    terrainLandSize: 3,
+    terrainLandRect: null,
     terrainDesignOpen: false,
     terrainSymmetry: "none",
     terrainPoints: null,
@@ -283,7 +289,7 @@ export const editorState = new EditorStateStore();
  * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
  */
 const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
-  "terrainHouseDrag",
+  "terrainHouseDrag", "terrainLandRect",
   "terrainPoints", "terrainRoute", "terrainVisionPreview", "terrainVisionOrigin", "terrainRouteDoorId", "terrainRouteBody", "terrainRouteEvents", "terrainRouteDoors", "terrainRouteSwitches",
   "selection",
   "pastePreview",
@@ -388,7 +394,7 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "reliefTopGrass",
   "reliefDoodad",
   "reliefDoodadOpen",
-  "terrainBrush", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
+  "terrainBrush", "terrainLand", "terrainLandSize", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
   "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",
