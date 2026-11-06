@@ -13,15 +13,15 @@ const current = () => { const p = store.getCurrent(); return p.maps[p.startMapId
 describe("물가·경사로", () => {
   beforeEach(() => { store.replaceProject(createBlankProject()); });
 
-  it("물 칸 둘레 낮은 땅은 돌 둑이 아니라 모래 물가가 된다", () => {
+  it("호수 가장자리는 물 오토타일 가장자리 조각, 둘레 풀밭은 그대로", () => {
     const map = current();
-    const lakeTile = layerTileAt(map, 1, 0);
+    const grass = layerTileAt(map, 1, 0);
     paintLandCells(map.id, landRectCells(map, { x: 5, y: 5 }, { x: 9, y: 8 }), "water", true);
     const after = current();
     const ring = [4 * map.width + 6, 9 * map.width + 6, 6 * map.width + 4, 6 * map.width + 10];
-    expect(ring.every((i) => layerTileAt(after, 1, i) !== lakeTile)).toBe(true);
-    const water = layerTileAt(after, 1, 6 * map.width + 6);
-    expect(ring.every((i) => layerTileAt(after, 1, i) !== water)).toBe(true);
+    expect(ring.every((i) => layerTileAt(after, 1, i) === grass)).toBe(true);
+    const middle = layerTileAt(after, 1, 6 * map.width + 7), edge = layerTileAt(after, 1, 5 * map.width + 7);
+    expect(edge).not.toBe(middle);
   });
 
   it("양식 없는 맵의 경사로도 조각 그림을 고르고, 폭 4~8 은 2·3 조각을 이어 붙인다", () => {
