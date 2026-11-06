@@ -4,7 +4,29 @@ import { rampCode, reliefLevel, reliefSlopes, type RampDir } from "@/project/rel
 import type { GameMap } from "@/project/types";
 import type { ReliefDoodadPlan } from "./reliefDoodads";
 import { terrainLocked } from "@/project/terrainDesign";
-import { reverseCutLength } from "@/project/relief/cutPieces";
+import { CUT_MAX_RISE, reverseCutLength } from "@/project/relief/cutPieces";
+
+/** 경사로 그림이 있는 가장 높은 단 차: 북향은 낱조각(1~4단) 또는 층계참 한 줄을 둔 두 단 계단(5~8단), 남향은 낱조각만. 동서는 칸마다 한 단(그림 무관). */
+export function rampMaxRise(dir: RampDir): number {
+  return dir === "n" ? CUT_MAX_RISE * 2 : dir === "s" ? CUT_MAX_RISE : Number.POSITIVE_INFINITY;
+}
+
+/** 절벽 위 칸 (x,y) 와 이어진 같은 높이 고원을 to 단으로 낮춘다(잠긴 칸이 끼면 아무것도 안 하고 false). */
+function lowerPlateau(draft: GameMap, x: number, y: number, to: number): boolean {
+  const r = draft.relief; if (!r) return false;
+  const from = reliefLevel(r, x, y), seen = new Set<number>(), stack = [y * draft.width + x];
+  while (stack.length) {
+    const i = stack.pop()!; if (seen.has(i)) continue;
+    const cx = i % draft.width, cy = Math.floor(i / draft.width);
+    if ((r.levels[i] ?? 0) !== from) continue;
+    seen.add(i);
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]] as const) { const nx = cx + dx, ny = cy + dy; if (nx >= 0 && ny >= 0 && nx < draft.width && ny < draft.height) stack.push(ny * draft.width + nx); }
+  }
+  if ([...seen].some((i) => terrainLocked(draft.terrainDesign, i))) return false;
+  const levels = r.levels.slice(); for (const i of seen) levels[i] = to;
+  draft.relief = { ...r, levels };
+  return true;
+}
 
 const AXES: readonly [RampDir, number, number][] = [["n",0,-1],["s",0,1],["e",1,0],["w",-1,0]];
 
@@ -37,8 +59,17 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
     // than an extra approach cell that makes it look like a road.
     // North/south cuts follow the cut-piece contract (cutPieces.ts): a north climb is one row at the cliff foot,
     // a reverse (south) climb rise+2 rows. East/west keep one cell per level (no cut pieces there).
+    // 가까운 절벽이 너무 높아 고칠 길을 냈으면, 옆 방향으로 긴 비탈을 대신 깔지 않는다(사용자가 고른 곳은 그 절벽).
+    if (failure.fix && c.dir!==candidates[0]!.dir) continue;
     const {dir,ux,uy,x,y}=c, hi=reliefLevel(r,x,y), lo=reliefLevel(r,x-ux,y-uy), rise=Math.max(1, hi-lo);
-    const length=dir==='n' ? 1 : dir==='s' ? reverseCutLength(rise) : rise;
+    // 북향 5~8단은 두 단 계단(발치 두 줄, 가운데 층계참 — cutPieces.ts 정본 나눔). 그보다 높으면 그림이 없으니 고칠 길을 준다.
+    const max=rampMaxRise(dir);
+    if (rise>max) {
+      if (!failure.fix) failure={ok:false,reason:`${rise}단 절벽은 경사로 그림이 ${max}단까지라 못 놓습니다`,rects:[],
+        fix:{label:`위 땅을 ${lo+max}단으로 낮추고 놓기`,apply:draft=>{ if (lowerPlateau(draft,x,y,lo+max)) planReliefRamp(draft,pick,width,stairs).apply?.(draft); }}};
+      continue;
+    }
+    const length=dir==='n' ? (rise>CUT_MAX_RISE ? 2 : 1) : dir==='s' ? reverseCutLength(rise) : rise;
     // Positive transverse axis avoids direction-dependent centering of even widths.
     const ax=uy!==0 ? 1 : 0, ay=ux!==0 ? 1 : 0, half=Math.floor((width-1)/2);
     const cells: {x:number;y:number}[]=[];
@@ -64,8 +95,8 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
       else if (layerTileAt(map,3,p.y*map.width+p.x)>=0 || layerTileAt(map,4,p.y*map.width+p.x)>=0) reason="나무·물체를 먼저 옮겨야 한다";
     }
     const rects=cells.map(p=>({x:p.x,y:p.y-cellLift(lift,p.x,p.y),w:1,h:1}));
-    if (reason) { if (!failure.rects.length) failure={ok:false,reason,rects}; continue; }
-    return {ok:true,reason:`${{n:"북",s:"남",e:"동",w:"서"}[dir]}쪽 오르막 · 폭 ${width}칸 · 길이 ${length}칸`,rects,
+    if (reason) { if (!failure.rects.length && !failure.fix) failure={ok:false,reason,rects}; continue; }
+    return {ok:true,reason:`${{n:"북",s:"남",e:"동",w:"서"}[dir]}쪽 오르막 · 폭 ${width}칸 · 길이 ${length}칸${dir==='n' && length===2 ? ` · ${rise}단이라 두 단 계단(층계참 한 줄)` : ""}`,rects,
       apply:draft=>{if (!draft.relief) return; const ramps=draft.relief.ramps?.slice()??new Array<number>(draft.width*draft.height).fill(0);
         for (const p of cells) ramps[p.y*draft.width+p.x]=rampCode(dir,stairs);
         draft.relief={...draft.relief,ramps}; }};
