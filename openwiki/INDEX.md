@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8043KB / 약 2,363,890 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8044KB / 약 2,364,379 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -70,6 +70,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 건수 | 참조 |
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
+| `openwiki/agent-direct-edit.md` | 1 | `skills/oprn-game-building-rules/SKILL.md` |
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
@@ -238,7 +239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L167` 지형 설치 도구 (2026-10-03)
 - `L172` Original monster campaign
 
-### `openwiki/agent-direct-edit.md` — 11KB · 110줄 · ~3,213 토큰
+### `openwiki/agent-direct-edit.md` — 12KB · 119줄 · ~3,702 토큰
 
 - `L6` 쓰기 경로 (하나뿐)
   - `L25` 데워 둔 호스트(여러 번 부를 때)
@@ -248,6 +249,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L75` 실행 취소
 - `L86` 에이전트 모드 (2026-11-06)
   - `L91` 앱 안 설치·로그인 (터미널 없음)
+  - `L110` 게임 짓기 규칙은 원문 하나 (2026-11-06)
 
 ### `openwiki/agent-worktrees.md` — 20KB · 273줄 · ~6,245 토큰
 

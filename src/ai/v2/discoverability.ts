@@ -10,6 +10,7 @@
  * 건물 한 채의 벽·문은 «보인다»로 치지 않는다 — 같은 문이 여럿인 거리에서 어느 문인지 모른다(반짝임을 단다).
  * 목표 = 「현재 목표」 줄(UI 명령 objectiveChip). 게임 시작에 하나, 이정표(스위치 켜기·아이템 얻기)마다 새로 — 엔딩이면 필요 없다.
  */
+import { OBJECTIVE_HUD_HIDDEN_MESSAGE, OBJECTIVE_MISSING_MESSAGE, OBJECTIVE_NOT_AT_START_MESSAGE } from "@/ai/agentRules";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type PageRef, type RawCommand } from "@/qa/gameCheck/walk";
 import { objectClusterAt } from "@/project/objectFootprint";
@@ -172,11 +173,11 @@ export function objectiveGaps(project: Project): string[] {
   const hud = project.system.fieldHud as { objective?: boolean } | undefined;
   let any = false;
   for (const page of allPages(project)) visitPageCommands(page, ({ command }) => { if (isObjectiveCommand(command)) any = true; });
-  if (!any) return ["게임 어디에도 「현재 목표」 줄이 없다 — 새 플레이어가 무엇을 해야 하는지 화면에서 읽을 수 없다. set_objective{text, at:'start'} 로 시작 목표를 걸고, 이정표 이벤트마다 set_objective{text, eventId} 로 다음 목표를 건다."];
-  if (hud && hud.objective === false) gaps.push("필드 HUD 가 「현재 목표」 줄을 숨긴다(fieldHud.objective:false) — set_objective 를 한 번 부르면 켜진다.");
+  if (!any) return [OBJECTIVE_MISSING_MESSAGE];
+  if (hud && hud.objective === false) gaps.push(OBJECTIVE_HUD_HIDDEN_MESSAGE);
   let atStart = false;
   for (const page of startPages(project)) visitPageCommands(page, ({ command }) => { if (isObjectiveCommand(command)) atStart = true; });
-  if (!atStart) gaps.push("게임을 시작했을 때 「현재 목표」 줄이 비어 있다 — 시작 맵의 자동 실행(오프닝 뒤 첫 컷신)에서 목표를 건다: set_objective{text, at:'start'}.");
+  if (!atStart) gaps.push(OBJECTIVE_NOT_AT_START_MESSAGE);
   const startGap = startObjectiveReachGap(project);
   if (startGap) gaps.push(startGap);
   // 「어디」 — 다른 장소 이름만 대고 그 입구가 어디인지 말하지 않는 목표(J105: 「지하철역의 지훈」 만 보고 역 입구를 못 찾았다).
