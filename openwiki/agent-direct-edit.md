@@ -22,6 +22,34 @@ node scripts/oprn-agent-edit.mjs --list-tools
 - `put` 은 `get` 으로 받은 문서를 고쳐 통째로 저장한다. 받은 뒤 누가 저장했으면 `conflict` 로 거절된다(exit 2).
 - 접속 코드를 켠 공유 호스트는 아직 지원하지 않는다(핸드셰이크가 401).
 
+### 데워 둔 호스트(여러 번 부를 때)
+
+`oprn-agent-edit.mjs` 는 부를 때마다 헤드리스 번들을 새로 짓는다(도구 한 번 15~150 초). 에이전트가 도구를 수십 번 부르면
+`scripts/oprn-agent-host.mjs serve` 를 한 번 띄워 두고 짧은 동사로 부른다 — 번들·문서를 데워 두어 도구 한 번이 2~5 초다
+(2026-11-06 agent-direct-edit Phase 2 실측, 데우기 22~35 초 한 번). 쓰기 경로는 위와 같다(브리지 `project.save` + 기준 sha, 충돌이면 다시 받아 3번).
+
+```bash
+node scripts/oprn-agent-host.mjs serve --host http://127.0.0.1:9840/ --port 9850 &   # 127.0.0.1 만 듣는다
+node scripts/oprn-agent-host.mjs tools 마을               # 낱말로 도구 찾기
+node scripts/oprn-agent-host.mjs schema place_npc
+node scripts/oprn-agent-host.mjs tool paint_tiles @args.json --map map_town
+node scripts/oprn-agent-host.mjs get /tmp/p.json && node scripts/oprn-agent-host.mjs put /tmp/p.json
+```
+
+### MCP 로 줄 때 — 도구 목록을 통째로 주지 않는다
+
+편집기 도구는 526개, 스키마가 1.24M 자(약 41만 토큰)다. 통째로 MCP `tools/list` 에 실으면 Claude Code 가 첫 차례에
+「Autocompact is thrashing」으로 죽는다(실측: 도구 3번 부르고 끝, 지은 것 없음). 한 줄 설명 + 위 단계 스키마로 줄여도 약 9만 토큰이다.
+`scripts/oprn-agent-mcp.mjs` 는 데워 둔 호스트에 붙어 스키마가 작은 자주 쓰는 도구 25개만 MCP 도구로 바로 주고(약 1.2만 토큰),
+나머지는 `oprn_tools`(찾기) · `oprn_schema`(전체 스키마) · `oprn_call`(이름으로 부르기)로 닿는다. 결과는 3만 자에서 자른다.
+
+```bash
+claude --mcp-config '{"mcpServers":{"oprn":{"command":"node","args":["scripts/oprn-agent-mcp.mjs","--port","9850"]}}}'
+```
+
+실측(Opus 5.5, 같은 과제): MCP 도구를 줘도 에이전트는 쓰기 대부분을 셸 동사로 했다(MCP 11번 대 Bash 49번 — 확인·검사 도구만 MCP 로).
+`scripts/oprn-mcp-server.mjs` 는 파일 하나를 여는 다른 MCP 다(열린 편집기와 함께 쓰지 않는다).
+
 ## 반영 경로
 
 1. 호스트 `GET /__oprn/events?token=<브리지 토큰>[&hostProject=<id>]` (SSE, `electron/serve/projectEvents.ts`). 구독자가 있는

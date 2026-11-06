@@ -88,7 +88,16 @@ export interface PlainPiTurnInput {
   readonly contextWindow?: number;
   /** 넓히기 무작위 선택(시험용 주입). */
   readonly widenRandom?: () => number;
+  /**
+   * 이 차례에 사용자가 참고 그림(첫 화면 도안 등)을 붙였다. 그러면 모호한 요청이라도 무작위 장면으로 넓히지 않는다 —
+   * 넓힌 장면 메모가 그림보다 앞서 「이 장면 인자를 사용자가 말한 것으로 보내라」고 해서 붙인 도안이 무시됐다
+   * (2026-11-06 agent-direct-edit: 한옥 장터 도안을 붙여도 매번 「눈 덮인 비탈 마을」). 대신 그림대로 지으라는 메모를 단다.
+   */
+  readonly hasUserImages?: boolean;
 }
+
+/** 붙인 참고 그림이 있을 때 넓히기 대신 가는 메모. */
+export const ATTACHED_PICTURE_NOTE = "[붙인 그림] 사용자가 이 요청과 함께 그림을 붙였다. 무작위 장면·기본 템플릿을 고르지 말고, 그 그림에 보이는 장소·배치·건물·분위기를 이 프로젝트의 칩셋으로 따라 짓는다. 그림에 없는 것을 지어내지 않는다.";
 
 export interface PlainPiTurnClassification {
   readonly mode: PiAgentMode;
@@ -225,7 +234,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     // 모호한 새로 짓기(「마을 만들어줘」) — 묻지 않고 이 프로젝트가 지을 수 있는 장면 하나로 넓혀 바로 짓는다(vagueWiden.ts, 2026-11-03 사용자).
     // 넓혔으면 되묻기를 지운다. 집은 외장+실내(both)로 짓는다 — 실내/야외가 갈리는 다른 요청(「방 만들어줘」 등)은 그대로 묻는다.
-    if (declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.widenSubject && !plan.readOnly) {
+    if (declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.widenSubject && !plan.readOnly && !input.hasUserImages) {
       const decision = decideWiden(project, declared.intent.widenSubject, widenHistory(project), input.widenRandom);
       if (decision) {
         widen = decision;
@@ -346,6 +355,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
       if (widen) intentNote = intentNote ? `${widen.note}\n\n${intentNote}` : widen.note;
+      else if (input.hasUserImages) intentNote = intentNote ? `${ATTACHED_PICTURE_NOTE}\n\n${intentNote}` : ATTACHED_PICTURE_NOTE;
       if ((requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text)) && !(intentNote ?? "").includes("create_opening_animatic_shot")) {
         const openingNote = "[새로하기 오프닝·타이틀 — #2852 레이어드 도트 애니메틱 6샷 필수] 새 게임 제작 시 타이틀(set_title_screen title + backgroundResourceId:'oprn-still-...')과 새로하기 오프닝 **6샷(shot_1..shot_6)**도 반드시 함께 제작한다(generate_title_art·generate_opening_image 호출 금지, list_opening_media 의 oprn-still-kingdom-day·oprn-still-dark-citadel·oprn-still-snow-village·oprn-still-desert-ruin·oprn-still-farm-golden·oprn-still-forest-path 등(oprn-pack-still-* 는 목록에 보일 때만) 한 장면이 화면을 꽉 채우는 번들 배경 활용 — 분할 화면·게임 UI가 박힌 참고 스틸(suitableForOpening:false, 예 oprn-still-hero-dawn)은 거절된다): plan_opening(bible 포함, 6샷) → 6샷 각각 create_opening_animatic_shot(width:384,height:216,durationMs:6500) → set_opening_pixel_grid(384,216) → place_opening_background(6샷 서로 다른 oprn-still-*/oprn-pack-still-* 배경) → place_opening_charset_actor(charsetResourceId:'oprn-charset-heroes1', characterIndex:0..7, x:72, y:136, toX:200 걷기 포함) → upsert_opening_light_fx + animate_opening_camera → set_opening_caption(전 샷 #fff0dc 통일) → set_opening(6개 animatic shotId 연결) → review_opening. 제목 카드 한 장이나 정지 그림 슬라이드, 6샷 미만으로 끝내지 않는다.";
         intentNote = intentNote ? `${intentNote}\n\n${openingNote}` : openingNote;

@@ -28,18 +28,20 @@ export interface UserImageContent {
 }
 
 /**
- * 첫 차례에 실을 그림. 로컬 CLI 엔진은 사용자 차례에 그림을 넣는 길이 없어 글만 보낸다.
+ * 첫 차례에 실을 그림. 로컬 CLI 엔진 중 Claude Code·Codex 는 사용자 차례에 그림을 싣는다(claude: stream-json 이미지 파트,
+ * codex: -i 파일 — scripts/lib/localCliAgent). 그림을 못 받는 Gemini CLI 만 글만 보낸다. 예전에는 로컬 CLI 를 모두 막아
+ * 구독 사용자가 첫 화면에 붙인 도안이 조용히 버려졌다(2026-11-06 agent-direct-edit 실측: 「그림을 읽지 못해 …」).
  * 카탈로그 모델은 `input` 에 "image" 가 있어야 한다. `input` 을 모르면(바깥에서 넘긴 모델) 보낸다 —
  * 도구 결과 그림 전달 판정(piAgentRuntime modelSeesImages)과 같은 규칙이다.
  * pi-ai 의 OpenAI 호환 변환기가 이 파트를 `image_url` 로 바꾼다.
  */
-export function firstPromptImages(input: { readonly urls: unknown; readonly localCli: boolean; readonly modelInput: unknown }): {
+export function firstPromptImages(input: { readonly urls: unknown; readonly localCli: "claude" | "codex" | "gemini" | undefined; readonly modelInput: unknown }): {
   readonly images: readonly UserImageContent[];
   readonly dropped: number;
 } {
   const urls = parseUserImageDataUrls(input.urls);
   if (urls.length === 0) return { images: [], dropped: 0 };
-  const takesImages = !input.localCli && (!Array.isArray(input.modelInput) || input.modelInput.includes("image"));
+  const takesImages = input.localCli ? input.localCli !== "gemini" : !Array.isArray(input.modelInput) || input.modelInput.includes("image");
   if (!takesImages) return { images: [], dropped: urls.length };
   return {
     images: urls.map((url) => {

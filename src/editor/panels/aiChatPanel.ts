@@ -2441,6 +2441,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly mapId?: string | null;
     readonly selection?: PanelMapContext["selection"];
     readonly onDeclaring?: () => void;
+    /** 이 차례에 사용자가 붙인 참고 그림이 있다 — 모호한 요청을 무작위 장면으로 넓히지 않는다(plainTurn hasUserImages). */
+    readonly hasUserImages?: boolean;
   }): Promise<PlainPiTurn> => {
     const turnMapId = turnOptions?.mapId !== undefined ? turnOptions.mapId : editorState.get().currentMapId ?? null;
     // 기록기는 턴당 하나고 의도 선언부터 산다 — 사용자가 기다리는 시간은 엔터를 누른 순간부터고, 선언 한 번이
@@ -2476,6 +2478,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: turnOptions?.onDeclaring ?? (() => setStatus("의도 읽는 중…")),
         contextWindow: resolveContextWindow(modelForRole(loadAiConfig(), "deep").model),
+        ...(turnOptions?.hasUserImages ? { hasUserImages: true } : {}),
       });
     } finally {
       // 선언이 던진 턴도 그 구간이 얼마였는지 남긴다 — 해석 실패가 그 턴의 지연 전부인 경우가 있다.
@@ -2526,7 +2529,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let options: PiRunOptions = explicit?.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {};
     if (explicit) command = explicit;
     else {
-      const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
+      const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), ...(run.images?.length ? { hasUserImages: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
       if (classified.clarify) {
         pendingClarify = { text: run.text, question: classified.clarify };
         card.say("assistant", clarifyForChat(classified.clarify));
@@ -2729,7 +2732,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
       let classified: PlainPiTurn;
       try {
-        classified = await plainPiTurn(text, handoff?.team ? { team: true } : undefined);
+        classified = await plainPiTurn(text, handoff?.team || handoff?.images?.length ? { ...(handoff.team ? { team: true } : {}), ...(handoff.images?.length ? { hasUserImages: true } : {}) } : undefined);
       } catch (error) {
         // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
         // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
@@ -4520,7 +4523,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       let classified: PlainPiTurn;
       try {
-        classified = await plainPiTurn(text, runOptions?.team ? { team: true } : undefined);
+        classified = await plainPiTurn(text, runOptions?.team || runOptions?.images?.length ? { ...(runOptions.team ? { team: true } : {}), ...(runOptions.images?.length ? { hasUserImages: true } : {}) } : undefined);
       } catch (error) {
         // 해석이 실패해도 요청은 잃지 않는다 — 예전에는 입력창에 남은 전문으로 다시 보낼 수 있었다.
         if (!current()) return;

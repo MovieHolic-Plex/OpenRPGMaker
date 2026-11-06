@@ -65,7 +65,8 @@ export interface LocalCliWeight {
 
 export interface LocalCliLoop {
   subscribe(listener: (event: CoreEvent) => void): () => void;
-  prompt(text: string): Promise<void>;
+  /** 그림은 그 차례에 함께 싣는다(첫 화면 참고 그림 — firstPromptImages). */
+  prompt(text: string, images?: readonly { readonly mimeType: string; readonly data: string }[]): Promise<void>;
   steer(message: { content?: readonly { type: string; text?: string }[] } | string): void;
   abort(reason?: string): void;
   dispose(): Promise<void>;
@@ -276,12 +277,12 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
 
   return {
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
-    async prompt(text) {
+    async prompt(text, images) {
       if (aborted) return;
       lastActivity = Date.now();
       // 실행기가 차례 사이에 도구 배열을 바꿨으면(완성 뒤 윤문 차례 등) 다음 요청 전에 CLI 에 알린다 — 도구 호출 뒤에만 알리면 놓친다.
       announceToolChanges();
-      await open().prompt(text);
+      await open().prompt(text, images?.map(({ mimeType, data }) => ({ mimeType, data })));
     },
     steer(message) {
       const text = typeof message === "string" ? message : (message.content ?? []).filter((part) => part.type === "text").map((part) => part.text ?? "").join("\n");
