@@ -251,6 +251,10 @@ class EditorStateStore {
       patch.terrainBrush !== undefined && patch.terrainBrush !== "house" ||
       patch.terrainVisionPreview === true
     )) patch = { ...patch, terrainHouseDrag: null };
+    // 붙여넣기 고스트는 위치만 들고 맵을 모른다 — 맵을 바꾸면 버린다. 남기면 고스트가 새 맵을 따라오고
+    // 다음 캔버스 클릭이 이전 맵의 클립보드를 새 맵에 찍는다(에디터 적대적 리뷰 F21).
+    if (this.state.pastePreview && patch.currentMapId !== undefined && patch.currentMapId !== this.state.currentMapId
+      && patch.pastePreview === undefined) patch = { ...patch, pastePreview: null };
     // 무변경 set은 통지하지 않는다 — 통지마다 팔레트/맵트리가 전체 재구축되므로,
     // pointerdown~pointerup 사이에 노드가 교체되면 사용자의 클릭이 증발한다(클릭 불가 보고 원인 중 하나).
     let changed = false;
