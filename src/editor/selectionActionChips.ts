@@ -86,7 +86,7 @@ export function buildVillageInSelection(selection: TileSelection): boolean {
   if (plan.apply) {
     const cells = plan.cells.flatMap((i) => [{ x: i % map.width, y: Math.floor(i / map.width), layer: "lower" as const }, { x: i % map.width, y: Math.floor(i / map.width), layer: "upper" as const }]);
     recordMapEditIfChanged(selection.mapId, () => store.updateMapTiles(selection.mapId, plan.apply!, { label: `마을 · ${plan.reason}`, cells }), { label: "마을" });
-    toast(`마을을 지었습니다 — ${plan.reason} · 땅 모양은 그대로`, "success");
+    toast(`마을을 지었습니다 — ${plan.reason} · 땅 모양은 그대로`, "ok");
     return true;
   }
   if (plan.reason.startsWith("이 칩셋에는")) return false;
