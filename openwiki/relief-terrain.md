@@ -341,6 +341,8 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - 구조 검사기: `scripts/content/lib/relief-check.mjs`(`checkRelief`) — 얇은 벽·계단 양옆·층계참·다리 판·도달 오류 코드(목록은 runtime-project-schema 의 r3 항목).
 - 양식 견본: `vite-node scripts/content/relief-style-sheet.mts [out.png]`(작은 지형을 모든 양식으로).
 - 경사로 도트 재생성: `node scripts/content/build-relief-ramp-art.mjs`(`tiledata/relief-art/*.png` → `rampArt.json`).
+- **긴 비탈(2026-11-07, 오너 승인):** 북향 2단 이상 경사로는 `ramp:n:<2|3>:long-<top|cut|out6|out5|out4|out3|toe>` 모듈을 쌓은 한 장(`cutPieces.ts` `longRampPiece`) — 꼭대기 · 절벽 면 × (단 차−1) · 낮은 땅 위 × (`LONG_RAMP_RUNOUT`=2 −1, 옆벽 6→3px) · 발치. 높이 제한 없음, 경사로 칸은 절벽 발치 아래 2줄. 1단과 돌계단은 아래 낱조각. 그림 `scripts/experiments/long-ramp/pieces.py`, 굽기 `scripts/content/beodeul-lakeshore/bake_lakeshore.py`.
+- **자연 호숫가(2026-11-07):** 버들항 시트 꼬리 34,048~ 에 물↔풀·물↔모래 47장(8프레임) 오토타일 `beodeul_lakeshore_grass`/`_sand`. 「땅 칸 → 물」 붓이 기본으로 쓴다(운하 물 `beodeul_canal_lake_47` 은 돌 둑 가장자리). 땅 화소 = 편집기 바닥 풀 737. 물 깊이 덧칠(`src/player/terrainWater.ts`)은 깊이 3 이상에만 — 물가 칸을 네모로 덮지 않는다.
 - **절벽 깎은 경사로·계단 통째 조각(2026-10-31, #4031·#4036 뒤 굽기):** `rampArt.json["grass-steps"].pieces` — 키 `<ramp|stairs>:n:<w>x1:<단 차>`(w 2·3, 단 차 1~4), 조각 = w×16 × (단 차+1)×16, 위 단 차 줄이 남향 절벽 면을 정확히 대신하고 마지막 줄은 그 길(흙길·포장길)이 곧게 이어지는 모습이다.
   그림 원본 `scripts/experiments/bbox-village/ramps/pieces.py`(코드 손 도트, 버들항 색 잠금, 발치 줄은 `sample_foot.py` 가 실제 렌더에서 뜬 길 조각).
   굽기는 `python3 scripts/content/bake-relief-cut-pieces.py` 하나 — 16장 모두 object-gate 를 통과(서명된 사람·위임 허용 포함)해야만 쓴다. `build-relief-ramp-art.mjs` 는 이 `pieces` 를 그대로 옮긴다.
