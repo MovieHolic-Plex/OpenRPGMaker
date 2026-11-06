@@ -89,13 +89,13 @@ function neighbourhood(map: Pick<GameMap, "width" | "height">, cells: readonly n
  * 물 칸: 물 타일을 깔고 바닥을 0단으로 내리고 물 깊이를 늘 기록한다(가장자리 1 = 얕은 물, 안쪽 2 이상 = 깊은 물).
  * 경사로·잠긴 칸은 건너뛴다.
  */
-function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
+function paintWaterCells(mapId: MapId, cells: readonly number[], soften: boolean): boolean {
   const project = store.getCurrent(), map = project.maps[mapId];
   if (!map) return false;
   const tileset = project.tilesets[map.tilesetId];
   const tile = terrainMaterialTile(tileset, "water");
   if (tile === undefined || tile < 0) return false;
-  const points = cells.filter((i) => !terrainLocked(map.terrainDesign, i) && (map.relief?.ramps?.[i] ?? 0) === 0);
+  const points = (soften ? softenShore(map, cells) : [...cells]).filter((i) => !terrainLocked(map.terrainDesign, i) && (map.relief?.ramps?.[i] ?? 0) === 0);
   if (!points.length) return false;
   const depthBefore = map.terrainDesign?.waterDepth;
   const wet = new Set<number>(points);
@@ -128,8 +128,9 @@ function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
     const seen = new Set<number>();
     for (const i of points) {
       const x = i % map.width, y = Math.floor(i / map.width);
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
         const X = x + dx, Y = y + dy, j = Y * map.width + X;
+        if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (Math.abs(dx) + Math.abs(dy) > 3 || (((X * 73856093) ^ (Y * 19349663)) >>> 0) % 3 !== 0)) continue;
         if (X < 0 || Y < 0 || X >= map.width || Y >= map.height || wet.has(j) || seen.has(j)) continue;
         seen.add(j);
         if (terrainLocked(map.terrainDesign, j) || (map.relief?.levels[j] ?? 0) !== 0 || (map.relief?.ramps?.[j] ?? 0) > 0) continue;
@@ -159,10 +160,27 @@ function paintWaterCells(mapId: MapId, cells: readonly number[]): boolean {
   return true;
 }
 
+/**
+ * 호수 물가 다듬기: 사각형으로 끌어 깔 물의 네 모서리를 반지름 1~2칸(짧은 변 길이의 1/4)로 둥글게 깎는다.
+ * 4×4 미만(붓 한 칸·가는 줄)은 그대로.
+ */
+export function softenShore(map: Pick<GameMap, "width" | "height">, cells: readonly number[]): number[] {
+  const xs = cells.map((i) => i % map.width), ys = cells.map((i) => Math.floor(i / map.width));
+  if (Math.max(...xs) - Math.min(...xs) < 3 || Math.max(...ys) - Math.min(...ys) < 3) return [...cells];
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const radius = Math.min(2, Math.floor((Math.min(x1 - x0, y1 - y0) + 1) / 4));
+  return cells.filter((i) => {
+    const x = i % map.width, y = Math.floor(i / map.width);
+    const cx = x < x0 + radius ? x0 + radius : x > x1 - radius ? x1 - radius : x;
+    const cy = y < y0 + radius ? y0 + radius : y > y1 - radius ? y1 - radius : y;
+    return (x - cx) ** 2 + (y - cy) ** 2 <= radius * radius + 0.5;
+  });
+}
+
 /** 땅 칸 한 번 — 고른 칸을 그 땅으로 정확히 맞춘다. 바뀐 것이 있으면 true. */
-export function paintLandCells(mapId: MapId, cells: readonly number[], land: TerrainLand, topGrass: boolean): boolean {
+export function paintLandCells(mapId: MapId, cells: readonly number[], land: TerrainLand, topGrass: boolean, softenWater = false): boolean {
   if (!cells.length) return false;
-  if (land === "water") return paintWaterCells(mapId, cells);
+  if (land === "water") return paintWaterCells(mapId, cells, softenWater);
   dryWaterCells(mapId, cells);
   const map = store.getCurrent().maps[mapId];
   if (!map) return false;
