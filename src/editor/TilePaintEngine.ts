@@ -513,7 +513,15 @@ export class TilePaintEngine {
     const width = span >= 2 ? Math.min(8, span) : state.reliefRampWidth;
     const at = { x: Math.round((drag.start.x + drag.end.x) / 2), y: Math.round((drag.start.y + drag.end.y) / 2), face: drag.start.face };
     const plan = planReliefDoodad(map, doodad, at, { width });
-    if (!plan.ok || !plan.apply) { toast(`${doodad.label}: ${plan.reason}`, "info"); return; }
+    if (!plan.ok || !plan.apply) {
+      const fix = plan.fix;
+      if (fix) toast(`${doodad.label}: ${plan.reason}`, { kind: "info", action: { label: fix.label, testid: "ramp-auto-fix", onClick: () => {
+        store.updateMapTiles(drag.mapId, fix.apply, { label: `지형지물 · ${doodad.label} · ${fix.label}`, relief: true });
+        editorState.set({ reliefDoodad: null });
+      } } });
+      else toast(`${doodad.label}: ${plan.reason}`, "info");
+      return;
+    }
     this.applyStrokeEdit(drag.mapId, () => store.updateMapTiles(drag.mapId, plan.apply!, { label: `지형지물 · ${doodad.label}`, relief: true, cells: plan.cells }));
     editorState.set({ reliefDoodad: null });
   }

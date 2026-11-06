@@ -115,6 +115,8 @@ export interface ReliefDoodadPlan {
   readonly reason: string;
   readonly rects: readonly ReliefDoodadRect[];
   readonly apply?: (draft: GameMap) => void;
+  /** 못 놓을 때 한 번 눌러 고치는 길(경사로: 너무 높은 절벽 → 고원을 그림이 있는 높이로 낮추기). */
+  readonly fix?: { readonly label: string; readonly apply: (draft: GameMap) => void };
   readonly cells?: readonly { x: number; y: number; layer: "lower" | "upper" }[];
   /** 나무·바위: 찍을 칸(상층 스탬프). */
   readonly stamp?: readonly { readonly x: number; readonly y: number; readonly layer: "lower" | "upper"; readonly tile: number }[];
