@@ -598,8 +598,8 @@ export function runToolDefinition(
 
     const frame = terrainFrameViolations(before, draft);
     if (frame.length > 0) {
-      const message = `고정된 틀(높이·경사로·물·잠긴 칸)을 바꾸는 쓰기는 거부합니다 — ${formatTerrainFrameViolations(frame)}. 그 칸을 피해서 다시 호출하세요.`;
-      return { ok: false, summary: `'${name}' 틀 고정으로 거부`, issues: [{ severity: "error", code: "terrain-frame-locked", message }] };
+      const message = `땅 모양 잠금(높이·경사로·물·잠긴 칸)을 바꾸는 쓰기는 거부합니다 — ${formatTerrainFrameViolations(frame)}. 그 칸을 피해서 다시 호출하세요.`;
+      return { ok: false, summary: `'${name}' 땅 모양 잠금으로 거부`, issues: [{ severity: "error", code: "terrain-frame-locked", message }] };
     }
     // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
     finishDraftTilesets(draft);
