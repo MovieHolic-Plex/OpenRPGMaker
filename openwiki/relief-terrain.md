@@ -223,6 +223,12 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - 물 칸은 물 타일·바닥 0단과 함께 `terrainDesign.waterDepth` 를 **늘** 기록한다(마른 땅까지 거리: 물가 1 = 얕은 물, 안쪽 2.. = 깊은 물). 물 위를 땅으로 칠하면 물 깊이가 0 이 되고 풀로 돌아온다. 잠긴 칸·경사로 칸은 건너뛴다.
 - 실측(20×15 빈 맵, Playwright): 10×8 고원+절벽 6조작 → 2, 호수 6 → 2. 테스트 `test/terrainLandBrush.test.ts`.
 
+## 물가·경사로 (2026-11-06)
+
+- 땅 칸 「물」: 물 타일은 물 그룹 모양 다듬기를 하지 않아 돌 둑(운하) 대신 민 물로 남고, 둘레 한 칸(낮은 땅·빈 칸)을 칩셋의 모래 오토타일로 깔아 물가를 만든다(`terrainLandBrush.ts` `paintWaterCells`). 운하 둑은 「설계 → 호수」·「강」 붓에 남아 있다. 「강」 붓도 이제 물 깊이를 늘 기록한다(`terrainBrush.ts`).
+- 경사로: 「경사로 붙이기」 뒤 절벽 발치를 눌러 끌면 끌린 길이(2~8)가 폭이고, 놓고 나면 경사로 도구가 풀린다(Esc 불필요, `TilePaintEngine.placeDraggedRamp`).
+- 양식 없는 맵(기본 흙벽)은 `grass-steps` 경사로 그림을 쓴다(`screen.ts` `DEFAULT_RAMP_ART_STYLE`). 폭 4~8 조각은 폭 2·3 조각을 옆으로 잇는다(`cutPieces.ts` `widenedPiece`, 새 화소 없음).
+
 ## 틀 고정 (2026-11-06)
 
 - 맵 단위 `terrainDesign.frameLock: true`. 땅 칸 팔레트 아래 「틀 고정」 버튼으로 켜고 끈다(되돌리기 한 번).

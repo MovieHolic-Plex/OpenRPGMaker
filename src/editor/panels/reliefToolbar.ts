@@ -405,7 +405,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
         ?? reliefDoodadCatalog(tileset).find((doodad) => doodad.kind === "ramp");
       if (!ramp) return;
       editorState.set({
-        terrainBrush: "height",
+        terrainBrush: "land",
         reliefDoodad: ramp.id,
         reliefDoodadOpen: false,
         reliefBridgeStart: null,
