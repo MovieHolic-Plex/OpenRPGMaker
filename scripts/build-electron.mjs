@@ -190,6 +190,29 @@ for (const { entry, outfile, format, platform, target, external, injectOAuth, ma
 copyFileSync(resolve(REPO_ROOT, "scripts/oprn-agent-mode-mcp.mjs"), resolve(OUT_DIR, "oprn-agent-mode-mcp.mjs"));
 process.stdout.write("staged dist-electron/oprn-agent-mode-mcp.mjs\n");
 
+// 에이전트 모드 설치기(electron/main/agentInstaller.ts)가 쓰는 npm. 사용자 PC 에 node·npm 이 없어도 앱이 Electron 바이너리로 이 npm 을 돌려
+// 공식 에이전트 패키지를 앱 전용 폴더에 받는다. 순수 JS 라 OS 마다 같은 것을 싣는다(약 12MB). 무결성 값으로 검증하고 캐시한다.
+const AGENT_NPM = { version: "12.2.2", integrity: "sha512-KglgbZyacf7jH+FHuNRqVuCzQi8VhI2a7J87Ix43FsPTuZoGWmIXXGdZtBUOA79vwL+IJREqURVzupA7PsQTcA==" };
+{
+  const cacheDir = resolve(REPO_ROOT, "node_modules/.cache/oprn-agent-npm");
+  const tarball = resolve(cacheDir, `npm-${AGENT_NPM.version}.tgz`);
+  const verified = (file) => existsSync(file) && `sha512-${createHash("sha512").update(readFileSync(file)).digest("base64")}` === AGENT_NPM.integrity;
+  if (!verified(tarball)) {
+    mkdirSync(cacheDir, { recursive: true });
+    const response = await fetch(`https://registry.npmjs.org/npm/-/npm-${AGENT_NPM.version}.tgz`);
+    if (!response.ok) throw new Error(`npm ${AGENT_NPM.version} 내려받기 실패: HTTP ${response.status}`);
+    writeFileSync(tarball, Buffer.from(await response.arrayBuffer()));
+    if (!verified(tarball)) throw new Error(`npm ${AGENT_NPM.version} 무결성 값이 맞지 않습니다`);
+  }
+  const target = resolve(OUT_DIR, "agent-npm");
+  rmSync(target, { recursive: true, force: true });
+  mkdirSync(target, { recursive: true });
+  const untar = spawnSync("tar", ["-xzf", tarball, "-C", target, "--strip-components=1"], { stdio: "inherit" });
+  if (untar.status !== 0) throw new Error("npm 압축을 풀지 못했습니다");
+  if (!existsSync(resolve(target, "bin/npm-cli.js"))) throw new Error("dist-electron/agent-npm/bin/npm-cli.js 가 없습니다");
+  process.stdout.write(`staged dist-electron/agent-npm (npm ${AGENT_NPM.version})\n`);
+}
+
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
 const workerEntry = resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");
 for (const [target, name] of [["bun-linux-x64", "oh-my-pi-worker"], ["bun-windows-x64", "oh-my-pi-worker.exe"]]) {

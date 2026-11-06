@@ -154,6 +154,12 @@ export type OprnAgentBridge = {
   toolResult(payload: { readonly requestId: string; readonly result: unknown }): Promise<unknown>;
   poll(payload: { readonly after: number; readonly waitMs?: number }): Promise<unknown>;
   stop(): Promise<unknown>;
+  /** 앱 안 설치(데스크톱만). 진행은 poll 의 setup 이벤트로 온다. */
+  install?(payload: { readonly agent: string }): Promise<unknown>;
+  uninstall?(payload: { readonly agent: string }): Promise<unknown>;
+  login?(payload: { readonly agent: string }): Promise<unknown>;
+  loginCode?(payload: { readonly agent: string; readonly code: string }): Promise<unknown>;
+  cancelLogin?(payload: { readonly agent: string }): Promise<unknown>;
 };
 
 export type OprnBridge = {

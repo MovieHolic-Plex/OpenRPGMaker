@@ -7,7 +7,8 @@ import type { OprnAgentBridge } from "@/project/persistence/electronRepository";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { callAgentModeTool, listAgentModeTools, newAgentTurn, type AgentTurn } from "./agentModeTools";
 
-type Availability = { id: string; label: string; cliFound: boolean; adapterFound: boolean; ready: boolean; installHint: string; loginHint: string };
+type Availability = { id: string; label: string; cliFound: boolean; adapterFound: boolean; ready: boolean; installHint: string; loginHint: string; appInstalled?: boolean; loggedIn?: boolean | null };
+type SetupState = { phase: string; message: string; progress?: number; url?: string };
 type AgentEvent = { seq: number; type: string; [key: string]: unknown };
 type ToolCard = { root: HTMLElement; status: HTMLElement; title: HTMLElement; detail: HTMLElement };
 
@@ -67,7 +68,7 @@ function outputText(update: Record<string, unknown>): string {
   return typeof raw === "string" ? raw.slice(0, 200) : "";
 }
 
-export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLElement; dispose: () => void } {
+export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (ready: boolean) => void): { root: HTMLElement; dispose: () => void } {
   let disposed = false;
   let after = 0;
   let turn: AgentTurn | null = null;
@@ -78,6 +79,9 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
   let toolQueue: Promise<void> = Promise.resolve();
   const cards = new Map<string, ToolCard>();
   let availWrap: HTMLDetailsElement | null = null;
+  let canInstall = false;
+  let agentsNow: Availability[] = [];
+  const setupStates = new Map<string, SetupState>();
 
   const agentSelect = el("select", { class: "agent-mode-select", dataset: { testid: "agent-mode-select" } }) as HTMLSelectElement;
   const availability = el("div", { class: "agent-mode-availability", dataset: { testid: "agent-mode-availability" } });
@@ -105,23 +109,100 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
     return node;
   };
 
-  const renderAvailability = (agents: readonly Availability[]): void => {
-    agentSelect.replaceChildren(...agents.map((agent) => el("option", {
-      attrs: { value: agent.id, ...(agent.ready ? {} : { disabled: "" }) },
-      text: `${agent.label}${agent.ready ? "" : " — 설치 필요"}`,
-    })));
-    const firstReady = agents.find((agent) => agent.ready);
-    if (firstReady) agentSelect.value = firstReady.id;
-    availability.replaceChildren(...agents.map((agent) => el("div", {
-      class: `agent-mode-avail ${agent.ready ? "is-ready" : "is-missing"}`,
-      dataset: { agent: agent.id },
+  const usable = (agent: Availability): boolean => agent.ready && agent.loggedIn !== false;
+  const call = (action: Promise<unknown> | undefined, agentId: string): void => {
+    void action?.catch((error: unknown) => {
+      setupStates.set(agentId, { phase: "install-failed", message: error instanceof Error ? error.message : String(error) });
+      renderAvailability(agentsNow);
+    });
+  };
+  const agentCard = (agent: Availability): HTMLElement => {
+    const state = setupStates.get(agent.id);
+    const installing = state?.phase === "installing" || state?.phase === "removing";
+    const loggingIn = state?.phase === "login-started" || state?.phase === "login-url" || state?.phase === "login-waiting-code";
+    const statusText = installing ? state!.message
+      : !agent.ready ? "설치 안 됨"
+      : agent.loggedIn === false ? (loggingIn ? "브라우저에서 로그인하는 중…" : "로그인 필요")
+      : "사용 가능";
+    const button = (text: string, testid: string, onClick: () => void, kind = ""): HTMLElement => el("button", {
+      class: `agent-mode-btn ${kind}`.trim(), text, attrs: { type: "button", ...(installing ? { disabled: "" } : {}) }, dataset: { testid }, on: { click: onClick },
+    });
+    const actions: HTMLElement[] = [];
+    if (canInstall) {
+      if (!agent.ready && !installing) actions.push(button("설치", `agent-setup-install-${agent.id}`, () => call(bridge.install?.({ agent: agent.id }), agent.id), "primary"));
+      if (agent.ready && agent.loggedIn === false && !loggingIn) actions.push(button("로그인", `agent-setup-login-${agent.id}`, () => call(bridge.login?.({ agent: agent.id }), agent.id), "primary"));
+      if (loggingIn) actions.push(button("로그인 취소", `agent-setup-cancel-login-${agent.id}`, () => { call(bridge.cancelLogin?.({ agent: agent.id }), agent.id); setupStates.delete(agent.id); renderAvailability(agentsNow); }));
+      if (agent.appInstalled && !installing) {
+        actions.push(button("다시 설치", `agent-setup-repair-${agent.id}`, () => call(bridge.install?.({ agent: agent.id }), agent.id)));
+        actions.push(button("지우기", `agent-setup-remove-${agent.id}`, () => {
+          if (window.confirm(`${agent.label} 을(를) 이 앱에서 지울까요? 다시 쓰려면 다시 설치해야 합니다.`)) call(bridge.uninstall?.({ agent: agent.id }), agent.id);
+        }, "danger"));
+      }
+    }
+    const extra: HTMLElement[] = [];
+    if (installing && typeof state?.progress === "number") {
+      extra.push(el("progress", { class: "agent-setup-progress", attrs: { max: "100", value: String(Math.round(state.progress * 100)) }, dataset: { testid: `agent-setup-progress-${agent.id}` } }));
+    }
+    if (state && !installing && state.phase !== "installed" && state.phase !== "login-done" && state.phase !== "removed") {
+      extra.push(el("div", { class: `agent-setup-message ${/failed/u.test(state.phase) ? "is-error" : ""}`.trim(), text: state.message, dataset: { testid: `agent-setup-message-${agent.id}` } }));
+    }
+    if (loggingIn && state?.url) {
+      extra.push(el("a", { class: "agent-setup-link", text: "로그인 페이지 열기", attrs: { href: state.url, target: "_blank", rel: "noopener" }, dataset: { testid: `agent-setup-login-url-${agent.id}` } }));
+    }
+    if (state?.phase === "login-waiting-code") {
+      const codeInput = el("input", { class: "agent-setup-code", attrs: { type: "text", placeholder: "브라우저가 코드를 보여 주면 여기에 붙여 넣기", autocomplete: "off", spellcheck: "false" }, dataset: { testid: `agent-setup-code-${agent.id}` } }) as HTMLInputElement;
+      const submit = el("button", { class: "agent-mode-btn", text: "확인", attrs: { type: "button" }, on: { click: () => { if (codeInput.value.trim()) call(bridge.loginCode?.({ agent: agent.id, code: codeInput.value.trim() }), agent.id); codeInput.value = ""; } } });
+      extra.push(el("div", { class: "agent-mode-row", children: [codeInput, submit] }));
+    }
+    if (!canInstall && !agent.ready) extra.push(el("code", { text: agent.installHint }));
+    return el("div", {
+      class: `agent-mode-avail ${usable(agent) ? "is-ready" : "is-missing"}`,
+      dataset: { agent: agent.id, testid: `agent-setup-${agent.id}` },
       children: [
-        el("strong", { text: `${agent.ready ? "●" : "○"} ${agent.label}` }),
-        el("span", { text: agent.ready ? " 사용 가능" : !agent.cliFound ? " 없음" : " ACP 어댑터 없음" }),
-        ...(agent.ready ? [] : [el("code", { text: agent.installHint })]),
+        el("div", { class: "agent-setup-head", children: [
+          el("strong", { text: `${usable(agent) ? "●" : "○"} ${agent.label}` }),
+          el("span", { class: "agent-setup-status", text: statusText, dataset: { testid: `agent-setup-status-${agent.id}` } }),
+        ] }),
+        ...extra,
+        actions.length ? el("div", { class: "agent-mode-row agent-setup-actions", children: actions }) : el("span"),
         el("small", { text: agent.loginHint }),
       ],
+    });
+  };
+  const renderAvailability = (agents: readonly Availability[]): void => {
+    agentsNow = [...agents];
+    const previous = agentSelect.value;
+    agentSelect.replaceChildren(...agents.map((agent) => el("option", {
+      attrs: { value: agent.id, ...(usable(agent) ? {} : { disabled: "" }) },
+      text: `${agent.label}${usable(agent) ? "" : agent.ready ? " — 로그인 필요" : " — 설치 필요"}`,
     })));
+    const keep = agents.find((agent) => agent.id === previous && usable(agent));
+    const firstReady = keep ?? agents.find(usable);
+    if (firstReady) agentSelect.value = firstReady.id;
+    availability.replaceChildren(...agents.map(agentCard));
+    const anyReady = agents.some(usable);
+    if (availWrap && !anyReady) availWrap.open = true;
+    if (!connected) statusLine.textContent = anyReady ? "에이전트를 고르고 연결하세요." : canInstall ? "아래에서 에이전트를 설치하고 로그인하세요. 터미널은 필요 없습니다." : "이 PC 에 쓸 수 있는 에이전트가 없습니다.";
+    onReadyChange?.(anyReady);
+  };
+  const refreshDetect = async (): Promise<void> => {
+    const value = await bridge.detect() as { agents: Availability[]; canInstall?: boolean };
+    canInstall = value.canInstall === true;
+    renderAvailability(value.agents);
+  };
+  const onSetup = (event: AgentEvent): void => {
+    const agentId = String(event.agent ?? "");
+    const phase = String(event.phase ?? "");
+    setupStates.set(agentId, { phase, message: String(event.message ?? ""), progress: typeof event.progress === "number" ? event.progress : undefined, url: typeof event.url === "string" ? event.url : setupStates.get(agentId)?.url });
+    if (phase === "installed" || phase === "removed" || phase === "login-done" || phase === "login-failed" || phase === "install-failed") {
+      void refreshDetect().then(() => {
+        // 막 설치했는데 로그인이 필요하면 바로 공식 로그인을 띄운다 — 사용자는 「설치」 한 번만 누른다.
+        const agent = agentsNow.find((candidate) => candidate.id === agentId);
+        if (phase === "installed" && agent?.loggedIn === false) call(bridge.login?.({ agent: agentId }), agentId);
+      });
+      return;
+    }
+    renderAvailability(agentsNow);
   };
 
   const card = (id: string, title: string): ToolCard => {
@@ -224,6 +305,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
     switch (event.type) {
       case "update": onUpdate(event.update as Record<string, unknown>); break;
       case "permission": onPermission(event); break;
+      case "setup": onSetup(event); return;
       case "tool-request": onToolRequest(event); break;
       case "turn-start": busy = true; turn = newAgentTurn(String(event.prompt ?? "")); cards.clear(); break;
       case "turn-end": {
@@ -310,7 +392,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
       el("div", { class: "agent-mode-top", children: [
         el("div", { class: "agent-mode-row", children: [agentSelect, connectButton] }),
         statusLine,
-        availWrap = el("details", { class: "agent-mode-avail-wrap", children: [el("summary", { text: "이 PC 의 에이전트" }), availability] }),
+        availWrap = el("details", { class: "agent-mode-avail-wrap", dataset: { testid: "agent-setup" }, children: [el("summary", { text: "에이전트 설치·로그인" }), availability] }),
       ] }),
       plan,
       log,
@@ -320,7 +402,8 @@ export function renderAgentModePanel(bridge: OprnAgentBridge): { root: HTMLEleme
   });
 
   void bridge.detect().then((value) => {
-    const detected = value as { agents: Availability[]; state: { running: boolean; busy: boolean; seq: number } };
+    const detected = value as { agents: Availability[]; state: { running: boolean; busy: boolean; seq: number }; canInstall?: boolean };
+    canInstall = detected.canInstall === true;
     renderAvailability(detected.agents);
     if (detected.state.running) { connected = true; statusLine.textContent = "연결됨"; }
     after = 0;

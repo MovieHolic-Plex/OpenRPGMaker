@@ -19,7 +19,7 @@ export default {
   // 각 OS 가 자기 전체 목록을 갖는다.
   // AI 워커는 실행 파일이라 asar 밖에 있어야 하고, 워커가 require 하는 pi_natives 애드온은 로더가
   // 워커 옆 폴더에서 찾는다(scripts/build-electron.mjs). 둘 다 풀어 둔다.
-  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
+  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 스토어 웹사이트의 「에디터에서 열기」(oprn://store/install?…). macOS Info.plist·Linux .desktop MimeType 에 들어간다.

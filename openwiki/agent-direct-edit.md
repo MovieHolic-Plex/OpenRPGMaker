@@ -83,9 +83,21 @@ claude --mcp-config '{"mcpServers":{"oprn":{"command":"node","args":["scripts/op
 
 시험: `test/storeExternalChange.test.ts`.
 
-## 에이전트 모드 (실험, 2026-11-06)
+## 에이전트 모드 (2026-11-06)
 
-설정 → 동작 「에이전트 모드 (실험)」(기본 끔, `localStorage oprn:agent-mode`)을 켜면 조수 창 위에 「조수 | 에이전트 (실험)」 탭이 생긴다.
+데스크톱 앱(과 이 PC 의 루프백 호스트)에서는 조수 창 위에 「조수 | 에이전트」 탭이 기본으로 생긴다. 설정 → 동작 「에이전트 모드」에서 끌 수 있다(`localStorage oprn:agent-mode` = `"off"` 만 끔 — 처음 PR 의 `"on"` 값도 켬으로 읽는다).
+처음엔 조수 탭이 열리고, 쓸 수 있는(설치+로그인) 에이전트가 생기면 사용자가 탭을 직접 누르기 전까지 에이전트 탭을 기본으로 연다(`agentModeDock.ts` 의 `onReadyChange`).
+
+### 앱 안 설치·로그인 (터미널 없음)
+
+- 설치기: `electron/main/agentInstaller.ts`. 에이전트 탭 「에이전트 설치·로그인」 카드에서 「설치」→ 앱이 **자기 실행 파일(Electron, `ELECTRON_RUN_AS_NODE=1`)로 앱에 실은 npm**(`dist-electron/agent-npm`, `scripts/build-electron.mjs` 가 npm 12.2.2 를 무결성 검증해 싣는다, asarUnpack)을 돌려 공식 npm 패키지를 받는다. 시스템 node·npm 이 필요 없다.
+- 위치: 윈도 `%LOCALAPPDATA%\OPRN Studio\agents\<에이전트>`, 그 밖은 `userData/agents`. `--ignore-scripts` 로 받고 실행 파일은 플랫폼 패키지에서 직접 찾는다(`resolveInstalled`).
+  - Claude: `@agentclientprotocol/claude-agent-acp`(구 `@zed-industries/claude-agent-acp`) 하나. 공식 `claude` 실행 파일이 `@anthropic-ai/claude-agent-sdk-<플랫폼>` 에 함께 온다(`@anthropic-ai/claude-code` 의 바이너리와 동일, 2.1.318 실측) → 어댑터에 `CLAUDE_CODE_EXECUTABLE` 로 넘긴다.
+  - Codex: `@agentclientprotocol/codex-acp`(구 `@zed-industries/codex-acp` 은 폐기) — 공식 `@openai/codex` 를 의존성으로 받는다.
+  - opencode: `opencode-ai` 의 플랫폼 패키지(`opencode-windows-x64[-baseline]`) 실행 파일을 직접 `acp` 로 띄운다. 로그인 없이 무료 모델로 돈다.
+- 로그인: 「설치」가 끝나고 로그아웃 상태면 **공식 로그인 명령**(`claude auth login --claudeai`, `codex login`)을 자동으로 띄운다. 브라우저는 그 명령이 열고(로컬 콜백으로 끝남), 명령이 찍은 주소를 패널 「로그인 페이지 열기」 링크로 옮긴다. 명령이 코드를 물으면 사용자가 붙여 넣은 값을 그 명령의 stdin 으로만 흘린다. 로그인 여부는 `claude auth status` / `codex login status` 로만 묻는다 — **토큰을 읽거나 저장하지 않는다**(Anthropic 정책: 우리 앱이 Claude 로그인을 대신 받지 않는다).
+- 「다시 설치」(폴더를 지우고 같은 고정 판을 받음)·「지우기」. npm 오류는 `explainInstallError` 가 한국어 한 문장으로(인터넷·프록시·인증서·디스크·백신).
+- 감지 순서: 앱 폴더 설치본 → PATH(직접 설치한 사람). 브라우저 루프백 호스트는 설치기 없이 PATH 감지만 한다.
 사용자 PC 의 코딩 에이전트를 **ACP(Agent Client Protocol)** 로 띄운다 — Claude Code(`claude-agent-acp`), Codex(`codex-acp`), opencode(`opencode acp`).
 
 - 호스트: `electron/main/agentHost.ts`. 데스크톱은 IPC, 루프백 `oprn-serve` 는 `/__oprn/bridge` 의 `oprn:agent.*` 채널로 같은 본문(`dispatchAgentChannel`)을 부른다. 공유(LAN·공개) 호스트에서는 거절한다.

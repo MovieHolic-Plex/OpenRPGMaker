@@ -581,8 +581,8 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   externalAgentSelect.value = isAgentModeEnabled() ? "on" : "off";
   externalAgentSelect.addEventListener("change", () => setAgentModeEnabled(externalAgentSelect.value === "on"));
-  const externalAgentRow = settingsRow("에이전트 모드 (실험)", agentModeAvailable()
-    ? "이 PC 에 설치한 코딩 에이전트(Claude Code·Codex·opencode)를 조수 창의 「에이전트」 탭에서 씁니다. 로그인은 각 에이전트가 하고 OPRN 은 토큰을 보지 않습니다."
+  const externalAgentRow = settingsRow("에이전트 모드", agentModeAvailable()
+    ? "코딩 에이전트(Claude Code·Codex·opencode)를 조수 창의 「에이전트」 탭에서 앱 안에 설치·로그인해 씁니다. 로그인은 각 에이전트의 공식 창에서 하고 OPRN 은 토큰을 보지 않습니다."
     : "데스크톱 앱(또는 이 PC 의 로컬 호스트)에서만 쓸 수 있습니다.", externalAgentSelect);
   const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
