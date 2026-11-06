@@ -279,4 +279,19 @@ describe("붙여넣기는 선택 툴바를 따라오지 않는다", () => {
     unsub();
     expect(notifications).toBe(0);
   });
+
+  it("맵을 바꾸면 붙여넣기 고스트를 버린다 — 다른 맵에 이전 클립보드를 찍지 않는다", async () => {
+    const { mapId, copySelection, enterPastePreview, confirmPastePreview } = await setupWithSelection();
+    const { editorState } = await import("@/editor/editorState");
+    editorState.set({ currentMapId: mapId });
+    expect(copySelection(mapId)).toBe(true);
+    expect(enterPastePreview(mapId, 5, 5)).toBe(true);
+    expect(editorState.get().pastePreview).not.toBeNull();
+
+    editorState.set({ currentMapId: "map_other" });
+
+    expect(editorState.get().pastePreview).toBeNull();
+    expect(confirmPastePreview("map_other")).toBe(false);
+    expect(editorState.get().clipboard).not.toBeNull();
+  });
 });
