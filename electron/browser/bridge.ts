@@ -125,6 +125,33 @@ addEventListener("pagehide", () => {
   heldLocks.clear();
 });
 
+/**
+ * 호스트가 저장 리비전이 바뀔 때마다 부른다(electron/serve/projectEvents.ts). 연결이 끊기면 EventSource 가 스스로
+ * 다시 붙는다. 서버가 다시 시작해 토큰이 바뀌었으면 새 토큰을 받아 다시 연다.
+ */
+function subscribeProjectChanges(listener: (revision: number) => void): () => void {
+  let source: EventSource | null = null;
+  let closed = false;
+  const open = () => {
+    if (closed || !window.__OPRN_BRIDGE__) return;
+    const url = new URL("/__oprn/events", location.href);
+    url.searchParams.set("token", window.__OPRN_BRIDGE__.token);
+    if (selectedProject) url.searchParams.set("hostProject", selectedProject);
+    source = new EventSource(url.href);
+    source.addEventListener("revision", (event) => {
+      const revision = Number((JSON.parse((event as MessageEvent<string>).data) as { revision?: unknown }).revision);
+      if (Number.isFinite(revision)) listener(revision);
+    });
+    source.addEventListener("error", () => {
+      if (source?.readyState !== EventSource.CLOSED) return;
+      source = null;
+      void refreshConnection().catch(() => null).then(open);
+    });
+  };
+  open();
+  return () => { closed = true; source?.close(); source = null; };
+}
+
 async function putAsset(payload: Record<string, unknown>): Promise<unknown> {
   const { bytes, ...rest } = payload;
   return await call(OPRN_CHANNELS.assetsPut, { ...rest, bytes: bytesToBase64(bytes as Uint8Array) });
@@ -153,6 +180,7 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     backup: invoke(OPRN_CHANNELS.projectBackup),
     listBackups: invoke(OPRN_CHANNELS.projectListBackups),
     restoreBackup: invoke(OPRN_CHANNELS.projectRestoreBackup),
+    onChanged: subscribeProjectChanges,
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),

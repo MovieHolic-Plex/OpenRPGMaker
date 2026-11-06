@@ -5,7 +5,8 @@ import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTile
 import { bootNormalizationMatches, currentBootNormalizationMarker, stampBootNormalization } from "./bootNormalization";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
-import { mergeTeamProject } from "./persistence/core/teamMerge";
+import { mergeTeamProject, mergeTeamProjectPreferringLocal } from "./persistence/core/teamMerge";
+import { diffProjectDocumentsSliced, type ProjectDocumentPatch } from "./persistence/core/projectPatch";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
@@ -95,6 +96,11 @@ export type ProjectChangeAnnotation = {
   readonly reason?: string;
   /** 프로젝트 전체 교체 표시 — true면 프로젝트 단위 에디터 캐시가 무효화되고, false면 명시적으로 제외된다. */
   readonly projectSwitch?: boolean;
+  /**
+   * 이 편집기 밖(코딩 에이전트·다른 탭)의 저장을 받아 얹은 변경. `patch` 는 받기 전 기준본 → 받은 저장본의 차이이고,
+   * 값은 지금 문서의 객체다. 실행 취소 기록이 이 차이를 자기 스냅숏에 얹어, Ctrl+Z 가 바깥 작업을 되돌리지 않게 한다.
+   */
+  readonly external?: { readonly patch: ProjectDocumentPatch };
 };
 
 export type ProjectChangeDescriptor =
@@ -294,6 +300,7 @@ class ProjectStore {
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
   private dirtySinceLastPersist = false;
+  private externalConflict: readonly string[] | null = null;
   /** Bumps on every local edit. Used so in-flight remote saves cannot rewind paint. */
   private mutationGeneration = 0;
   /**
@@ -767,15 +774,30 @@ class ProjectStore {
     return this.lastSavedHostRevision !== null && this.lastSavedHostRevision === revision;
   }
 
-  /** A host notification may refresh only a clean, unchanged editor. Never overwrite edits made during I/O. */
+  /** 마지막 바깥 변경 반영에서 사람의 저장 안 된 편집이 이긴(바깥 판을 덮은) 항목 이름. 없으면 null. */
+  externalChangeConflict(): readonly string[] | null {
+    return this.externalConflict;
+  }
+
+  /**
+   * 바깥 저장(코딩 에이전트·다른 탭)을 이 편집기에 얹는다. 충돌 규칙(openwiki/agent-direct-edit.md):
+   * - 저장 안 된 사람 편집이 없으면 받은 저장본을 그대로 쓴다.
+   * - 있으면 맵 하나·DB 레코드 하나 단위 3자 병합(기준본 · 지금 문서 · 받은 저장본)으로 둘 다 살린다. 사람 편집은 dirty 로
+   *   남아 다음 자동저장이 새 기준 위에 보낸다.
+   * - 같은 항목을 둘 다 고쳤으면 그 항목만 사람 편집이 이긴다(다음 자동저장이 호스트의 바깥 판을 덮는다). 나머지
+   *   바깥 변경은 들어오고, 덮인 항목 이름은 `externalChangeConflict()` 로 알린다 — 아무 쪽 작업도 조용히 사라지지 않는다.
+   * 실행 취소 기록은 버리지 않는다(`change.external` 로 기록이 바깥 차이를 자기 스냅숏에 얹는다).
+   * 저장이 날아가는 중이면 그 저장이 끝난 뒤 다시 부른다(false).
+   */
   async refreshFromHost(): Promise<boolean> {
-    if (!this.loaded || !this.remotePersistenceEnabled || this.dirtySinceLastPersist || this.persistInFlight) return false;
+    if (!this.loaded || !this.remotePersistenceEnabled || this.persistInFlight) return false;
     const generation = this.mutationGeneration, lineage = this.contentLineage;
     const target = this.repository.currentTarget();
     if (!target) return false;
     const snapshot = await this.repository.loadSnapshot(target);
-    if (!snapshot || generation !== this.mutationGeneration || lineage !== this.contentLineage
-      || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
+    if (!snapshot || lineage !== this.contentLineage
+      || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
+    if (this.dirtySinceLastPersist || generation !== this.mutationGeneration) return await this.mergeExternalSnapshot(snapshot, lineage, target);
     // 호스트가 들고 있는 문서가 지금 기준본과 같은가. 전역 직렬화 대신 값 바교를 한다 —
     // 3초 팀 폴링(editor/teamSession.ts)이 이 경로를 통과하고, `serializeForComparison` 는 한 번에
     // 프로젝트 전체를 stringify→parse→검사→정렬 재-stringify 한다(2026-09-25 실측 2,486ms × 2).
@@ -783,6 +805,8 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     const storageOnly = this.persistedBaseline ? await isMediaSeparationOnly(this.persistedBaseline, snapshot.project) : false;
+    const externalPatch = storageOnly ? null
+      : await diffProjectDocumentsSliced(this.persistedBaseline ?? projectWithoutEventDrafts(this.current), snapshot.project, yieldToTask);
     // Hashing may yield. A new edit/save/project switch must win over this earlier snapshot.
     if (generation !== this.mutationGeneration || lineage !== this.contentLineage
       || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
@@ -795,8 +819,41 @@ class ProjectStore {
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
     if (!storageOnly) resetManualProjectCommitBaseline(this.current);
-    // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
-    this.emit({ scope: 'project', origin: 'system', projectSwitch: !storageOnly });
+    this.externalConflict = null;
+    // 바깥 작업은 실행 취소 기록을 지우지 않는다. 기록이 바깥 차이를 자기 스냅숏에 얹어 Ctrl+Z 가 그 작업을 되돌리지 않게 한다.
+    this.emit({ scope: 'project', origin: 'system', projectSwitch: false, label: '바깥 변경 반영', ...(externalPatch ? { external: { patch: externalPatch } } : {}) });
+    return true;
+  }
+
+  private async mergeExternalSnapshot(
+    snapshot: { readonly project: Project; readonly authority: ProjectWriteAuthority },
+    lineage: number,
+    target: ProjectTarget,
+  ): Promise<boolean> {
+    const base = this.persistedBaseline;
+    if (!base) return false;
+    if (jsonEqual(snapshot.project, base)) return true;
+    let externalPatch = await diffProjectDocumentsSliced(base, snapshot.project, yieldToTask);
+    // 차이를 세는 동안 양보했다. 그 사이 저장·전환이 끼었으면 이 스냅숏은 낡았다.
+    if (lineage !== this.contentLineage || this.persistInFlight || this.persistedBaseline !== base
+      || !sameProjectTarget(target, this.repository.currentTarget())) return false;
+    const merged = mergeTeamProjectPreferringLocal(base, projectWithoutEventDrafts(this.current), snapshot.project);
+    // 사람 편집이 이긴 맵은 실행 취소 기록에도 바깥 판을 얹지 않는다.
+    const lostMapIds = new Set(merged.conflicts.map((conflict) => conflict.mapId));
+    if (lostMapIds.size && externalPatch.maps?.set) {
+      const set = Object.fromEntries(Object.entries(externalPatch.maps.set).filter(([mapId]) => !lostMapIds.has(mapId)));
+      externalPatch = { ...externalPatch, maps: { ...externalPatch.maps, set } };
+    }
+    this.current = preserveEventDraftsOnProject(merged.project, this.current);
+    this.persistedBaseline = this.baselineFrom(snapshot.project, { owned: true });
+    this.writeAuthority = snapshot.authority;
+    this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
+    this.externalConflict = merged.conflicts.length ? merged.conflicts.map((conflict) => conflict.name) : null;
+    // 사람 편집은 아직 저장되지 않았다 — 새 기준 위의 변경분으로 다음 자동저장이 보낸다.
+    this.dirtySinceLastPersist = true;
+    this.emit({ scope: 'project', origin: 'system', projectSwitch: false, label: '바깥 변경 반영', external: { patch: externalPatch } });
+    this.scheduleAutoSave();
     return true;
   }
 
