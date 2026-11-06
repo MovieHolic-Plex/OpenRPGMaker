@@ -30,6 +30,18 @@ describe("vague create requests widen instead of asking", () => {
     expect(result.widen).toBeUndefined();
   });
 
+  it("does not pick a random scene when the user attached a picture — the memo says to build from the picture", async () => {
+    const project = createBlankProject();
+    const result = await classifyPlainPiTurn({
+      project, text: "마을 하나 만들어줘", currentMapId: project.startMapId, selection: null, hasActivePlan: false, piTeam: false,
+      autonomy: resolveAutonomy("balanced"), declarer: () => fixedDeclarer({ mode: "create", widenSubject: "village" }), widenRandom: () => 0,
+      hasUserImages: true,
+    });
+    expect(result.widen).toBeUndefined();
+    expect(result.intentNote).toContain("[붙인 그림]");
+    expect(result.intentNote).not.toContain("[넓힌 요청]");
+  });
+
   it("does not repeat a scene already used in the same project", async () => {
     const first = await classify("마을 만들어줘", { mode: "create", widenSubject: "village" });
     const second = await classify("마을 만들어줘 ", { mode: "create", widenSubject: "village" });
