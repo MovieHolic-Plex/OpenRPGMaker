@@ -1853,8 +1853,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       catch (error) { emit({ type: "execution_status", name: "v2.first_prompt_suffix", ok: false, summary: `첫 지시 덧붙이기 실패 — 요청만 보낸다: ${error instanceof Error ? error.message : String(error)}` }); }
     }
     const firstText = firstSuffix ? `${request.task}\n\n${firstSuffix}` : request.task;
-    // 첫 화면 참고 그림은 첫 사용자 차례에만 싣는다. 그림을 못 받는 엔진(로컬 CLI·글 전용 모델)이면 글만 보내고 알린다.
-    const userImages = firstPromptImages({ urls: request.userImages, localCli: Boolean(localCli), modelInput: (model as { input?: unknown }).input });
+    // 첫 화면 참고 그림은 첫 사용자 차례에만 싣는다. 그림을 못 받는 엔진(Gemini CLI·글 전용 모델)이면 글만 보내고 알린다.
+    const userImages = firstPromptImages({ urls: request.userImages, localCli, modelInput: (model as { input?: unknown }).input });
     if (userImages.dropped) emit({ type: "execution_status", name: USER_IMAGES_DROPPED_STATUS, ok: false, summary: USER_IMAGES_DROPPED_TEXT, data: { dropped: userImages.dropped } });
     else if (userImages.images.length) emit({ type: "execution_status", name: USER_IMAGES_ATTACHED_STATUS, ok: true, summary: `참고 그림 ${userImages.images.length}장을 첫 요청에 실었습니다.`, data: { count: userImages.images.length } });
     await promptResuming(userImages.images.length ? `${firstText}\n\n${userImagesPromptNote(userImages.images.length)}` : firstText, userImages.images);

@@ -35,15 +35,22 @@ describe("첫 화면 참고 그림", () => {
   });
 
   it("그림을 받는 모델이면 첫 차례에 그림 파트를 싣고, 못 받는 엔진이면 글만 보낸다", () => {
-    const vision = firstPromptImages({ urls: [PNG, JPEG], localCli: false, modelInput: ["text", "image"] });
+    const vision = firstPromptImages({ urls: [PNG, JPEG], localCli: undefined, modelInput: ["text", "image"] });
     expect(vision.dropped).toBe(0);
     expect(vision.images).toEqual([
       { type: "image", mimeType: "image/png", data: PNG.split(",")[1], detail: "high" },
       { type: "image", mimeType: "image/jpeg", data: JPEG.split(",")[1], detail: "high" },
     ]);
-    expect(firstPromptImages({ urls: [PNG], localCli: false, modelInput: ["text"] })).toEqual({ images: [], dropped: 1 });
-    expect(firstPromptImages({ urls: [PNG], localCli: true, modelInput: undefined })).toEqual({ images: [], dropped: 1 });
-    expect(firstPromptImages({ urls: undefined, localCli: false, modelInput: ["text"] })).toEqual({ images: [], dropped: 0 });
+    expect(firstPromptImages({ urls: [PNG], localCli: undefined, modelInput: ["text"] })).toEqual({ images: [], dropped: 1 });
+    expect(firstPromptImages({ urls: [PNG], localCli: "gemini", modelInput: undefined })).toEqual({ images: [], dropped: 1 });
+    expect(firstPromptImages({ urls: undefined, localCli: undefined, modelInput: ["text"] })).toEqual({ images: [], dropped: 0 });
+  });
+
+  it("로컬 Claude Code·Codex 엔진은 첫 차례에 그림을 싣는다(구독 경로에서 도안이 버려지던 결함)", () => {
+    for (const cli of ["claude", "codex"] as const) {
+      const local = firstPromptImages({ urls: [PNG], localCli: cli, modelInput: ["text"] });
+      expect(local).toEqual({ images: [{ type: "image", mimeType: "image/png", data: PNG.split(",")[1], detail: "high" }], dropped: 0 });
+    }
   });
 
   it("시작 화면 인계는 틀린 그림만 버리고 인계 자체는 살린다", () => {
