@@ -54,6 +54,7 @@ import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail } from "@/editor/aiRegionHandoff";
+import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
   clearAgentGhostPreview,
@@ -1618,6 +1619,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const map = ctx.mapId ? store.getCurrent().maps[ctx.mapId] : undefined;
       const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
       if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
+      if (inBounds && map) parts.push(formatSelectionTerrain(map, sel));
     }
     // 컴포저 모드(제안서 D4·§06). 강제는 세션이 한다(sendUserMessage 옵션 composerMode — 쓰기 툴 미노출·
     // 거부, 계획만 수립). 여기 한 절은 모델이 상황을 알게 하는 안내일 뿐이다. 지시(기본)는 덧붙이지 않는다 —

@@ -51,8 +51,8 @@ export interface SelectionChipPreset {
   readonly instruction: string | null;
 }
 
-// 구조물/길 같은 "무엇을 만들지" 단축 칩은 여기 두지 않는다 — 그건 입력창에 한 문장으로 쓰면 된다.
-// 다만 **다듬기는 지시문을 고를 것이 없다**(대상=이 사각형, 목표=주변 어울림)라 원탭으로 둔다.
+// 다듬기는 지시문을 고를 것이 없다(대상=이 사각형, 목표=주변 어울림)라 원탭으로 둔다.
+// 「무엇을 만들지」 칩은 예전엔 두지 않았지만, 오너가 지형을 깔 뒤 「마을·던전·숲·항구」를 한 번에 얹는 흐름을 승인했다(2026-11-06).
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "AI", title: "이 영역에 AI 지시 실행 (Enter)", instruction: null },
   {
@@ -61,6 +61,13 @@ export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
     title: "다듬기 — 주변과 어울리게 AI가 다시 짜기",
     instruction: POLISH_INSTRUCTION,
   },
+] as const;
+
+export const SELECTION_PLACE_PRESETS: readonly SelectionChipPreset[] = [
+  { id: "village", label: "마을", title: "이 자리에 마을 — 지형은 둔 채 집·길만", instruction: "이 선택 영역 안에만 마을을 지어 줘. 집·길·울타리·소품만 깔고 높이·경사로·물은 그대로 둠다." },
+  { id: "dungeon", label: "던전", title: "이 자리에 던전 입구 — 안쪽은 새 던전 맵", instruction: "이 선택 영역 안에 던전 입구를 두고, 그 입구로 이어지는 새 던전 맵을 만들어 줘(author_dungeon 의 entrance 로 이 맵의 그 칸을 가리킨다). 이 맵의 높이·경사로·물은 그대로 둔다." },
+  { id: "forest", label: "숲", title: "이 자리에 숲 — 나무·빈터·오솛길", instruction: "이 선택 영역 안에만 숲을 만들어 줘. 나무 군집·빈터·오솛길만 깔고 절벽 칸·물은 피하며 높이·경사로·물은 그대로 둔다." },
+  { id: "harbor", label: "항구", title: "이 자리에 항구 — 물가에 부두·배", instruction: "이 선택 영역 안에만 항구를 만들어 줘. 물가에 부두·배·창고를 놓고, 물이 없으면 물가를 포함해 다시 고르라고 알려 줘. 높이·경사로·물은 그대로 둔다." },
 ] as const;
 
 /** 바가 조수에게 넘기는 모양. 순수 함수 — 테스트가 이 계약을 본다. */
@@ -306,6 +313,15 @@ export function renderSelectionActionChips(
     onClick: () => { handOff(polishPreset.instruction ?? "", false); },
   });
 
+  const placeButtons = SELECTION_PLACE_PRESETS.map((preset) => el("button", {
+    class: "selection-action-chip selection-action-place",
+    text: preset.label,
+    attrs: { type: "button", title: preset.title },
+    dataset: { testid: `selection-chip-${preset.id}` },
+    on: { click: () => { handOff(preset.instruction ?? "", false); } },
+  }) as HTMLButtonElement);
+  for (const button of placeButtons) button.disabled = !aiReady;
+
   const encounterButton = iconButton({
     testid: "walk-encounter",
     title: "걸을 때 적 만나기",
@@ -378,6 +394,7 @@ export function renderSelectionActionChips(
   const tools = el("div", {
     class: "selection-action-tools",
     children: [
+      ...placeButtons,
       polishButton,
       copyButton,
       ...(pasteButton ? [pasteButton] : []),
