@@ -24,22 +24,22 @@ export const reverseCutLength = (rise: number): number => rise + REVERSE_VISIBLE
 
 const composed = new WeakMap<object, Map<string, ReliefArtPatch | null>>();
 
-/** 넓은 경사로(폭 4~8): 폭 2·3 조각을 옆으로 잇는다(4=2+2, 5=2+3, 6=3+3, …). 새 화소는 없다. */
+/**
+ * 넓은 경사로(폭 4~8): 폭 3 조각을 왼쪽 가장자리 칸 · 가운데 칸 × (폭−2) · 오른쪽 가장자리 칸으로 늘린다.
+ * 옆벽은 양끝에 한 번씩만 나오므로 한 장짜리 비탈로 읽힌다. 새 화소는 없다.
+ */
 function widenedPiece(pieces: Readonly<Record<string, ReliefArtPatch>>, kind: "ramp" | "stairs", dir: string, w: number, h: number, rise: number, key: string): ReliefArtPatch | null {
   let cache = composed.get(pieces);
   if (!cache) { cache = new Map(); composed.set(pieces, cache); }
   if (cache.has(key)) return cache.get(key)!;
-  const parts: number[] = [];
-  for (let left = w; left > 0;) { const take = left === 4 || left === 2 ? 2 : 3; parts.push(take); left -= take; }
-  const patches = parts.map((part) => cutPieceFor(pieces, kind, dir, part, h, rise));
+  const base = cutPieceFor(pieces, kind, dir, 3, h, rise);
   let out: ReliefArtPatch | null = null;
-  if (patches.every(Boolean) && patches.every((p) => p!.h === patches[0]!.h)) {
-    const height = patches[0]!.h, width = patches.reduce((s, p) => s + p!.w, 0);
+  if (base && base.w % 3 === 0) {
+    const cell = base.w / 3, width = cell * w, height = base.h;
     const rgba = new Uint8ClampedArray(width * height * 4);
-    let x0 = 0;
-    for (const p of patches) {
-      for (let y = 0; y < height; y++) for (let k = 0; k < p!.w * 4; k++) rgba[(y * width + x0) * 4 + k] = p!.rgba[y * p!.w * 4 + k]!;
-      x0 += p!.w;
+    for (let col = 0; col < w; col++) {
+      const from = (col === 0 ? 0 : col === w - 1 ? 2 : 1) * cell;
+      for (let y = 0; y < height; y++) for (let k = 0; k < cell * 4; k++) rgba[(y * width + col * cell) * 4 + k] = base.rgba[(y * base.w + from) * 4 + k]!;
     }
     out = { w: width, h: height, rgba };
   }

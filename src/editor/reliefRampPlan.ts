@@ -4,6 +4,7 @@ import { rampCode, reliefLevel, reliefSlopes, type RampDir } from "@/project/rel
 import type { GameMap } from "@/project/types";
 import type { ReliefDoodadPlan } from "./reliefDoodads";
 import { terrainLocked } from "@/project/terrainDesign";
+import { reverseCutLength } from "@/project/relief/cutPieces";
 
 const AXES: readonly [RampDir, number, number][] = [["n",0,-1],["s",0,1],["e",1,0],["w",-1,0]];
 
@@ -34,7 +35,10 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
     // A ramp occupies one cell per cliff level. The low and high landings sit
     // outside that strip, so a three-level cliff gets a three-cell ramp rather
     // than an extra approach cell that makes it look like a road.
-    const {dir,ux,uy,x,y}=c, hi=reliefLevel(r,x,y), lo=reliefLevel(r,x-ux,y-uy), length=Math.max(1, hi-lo);
+    // North/south cuts follow the cut-piece contract (cutPieces.ts): a north climb is one row at the cliff foot,
+    // a reverse (south) climb rise+2 rows. East/west keep one cell per level (no cut pieces there).
+    const {dir,ux,uy,x,y}=c, hi=reliefLevel(r,x,y), lo=reliefLevel(r,x-ux,y-uy), rise=Math.max(1, hi-lo);
+    const length=dir==='n' ? 1 : dir==='s' ? reverseCutLength(rise) : rise;
     // Positive transverse axis avoids direction-dependent centering of even widths.
     const ax=uy!==0 ? 1 : 0, ay=ux!==0 ? 1 : 0, half=Math.floor((width-1)/2);
     const cells: {x:number;y:number}[]=[];
@@ -43,6 +47,12 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
       const X=x+(a-half)*ax, Y=y+(a-half)*ay;
       if (reliefLevel(r,X,Y)!==hi || reliefLevel(r,X-ux,Y-uy)!==lo) reason="벽 높이가 고르지 않다 — 곧은 절벽에 대 보라";
       for (let d=1;d<=length;d++) cells.push({x:X-d*ux,y:Y-d*uy});
+    }
+    // Both flanks must be the same cliff (foot at lo under hi), or the cut's side wall stands loose in the grass.
+    if (dir==='n' || dir==='s') for (const a of [-1,width]) {
+      const X=x+(a-half)*ax, Y=y;
+      if (X<0 || X>=map.width) continue;
+      if (reliefLevel(r,X,Y)!==hi || reliefLevel(r,X-ux,Y-uy)!==lo) reason="경사로 양옆도 같은 절벽이어야 한다 — 절벽 가운데로 옮기세요";
     }
     const replaceable=slopes.filter(s=>s.dir===dir && s.lo===lo && s.hi===hi && cells.some(p=>p.x===s.x && p.y===s.y)
       && cells.some(p=>p.x===s.x+s.w-1 && p.y===s.y+s.h-1));
