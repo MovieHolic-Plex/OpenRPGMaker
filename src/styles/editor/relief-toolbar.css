@@ -25,12 +25,30 @@
   color: var(--editor-text, var(--text-1));
 }
 .relief-side-panel[hidden] { display: none; }
+.relief-side-panel [hidden] { display: none !important; }
 .left-panel-stack[data-testid="left-palette-root"] > .palette-work-shell[hidden] { display: none !important; }
 .relief-side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .relief-side-panel h3 { margin: 0; font-size: 17px; line-height: 1.2; }
 .relief-side-back { flex: 0 0 auto; min-height: 26px; padding: 2px 8px; font: 600 11px/1.2 var(--font-ui); }
 .relief-side-subtitle { margin: 8px 0 -4px; font-size: 13px; line-height: 1.2; }
 .relief-side-description { margin: 0; color: var(--text-2); font-size: 12px; line-height: 1.45; }
+.relief-land-palette { display: flex; flex-direction: column; gap: 6px; }
+.relief-land-palette .relief-side-subtitle { margin: 0; }
+.relief-land-swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.relief-land-swatch {
+  display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 8px;
+  border: 1px solid var(--border-default, #dfe2ea); border-radius: 9px;
+  background: var(--bg-raised); color: var(--text-1); font: 600 12px/1.2 var(--font-ui); cursor: pointer; text-align: left;
+}
+.relief-land-swatch:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default, #dfe2ea)); }
+.relief-land-swatch.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
+.relief-land-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.relief-land-chip { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 -4px 0 rgb(0 0 0 / 18%); }
+.relief-land-swatch > span:nth-child(2) { flex: 1; min-width: 0; }
+.relief-land-swatch kbd { color: var(--text-2); font: 600 10px/1 var(--font-ui); }
+.relief-land-sizes { display: flex; gap: 4px; }
+.relief-land-sizes .relief-bar-size { flex: 1; white-space: nowrap; padding-inline: 4px; }
+.relief-land-sizes .relief-bar-size:last-child { flex: 1.6; }
 .relief-ramp-quick-action {
   display: flex;
   align-items: center;

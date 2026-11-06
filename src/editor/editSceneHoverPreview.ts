@@ -12,6 +12,7 @@ import { findReliefDoodad, RELIEF_DOODAD_HOVER_EVENT, type ReliefDoodadHoverDeta
 import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
 import { groupAt } from "./terrainClusters";
 import { terrainBrushPoints } from "./terrainBrush";
+import { landBrushCells } from "./terrainLandBrush";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { cellLift, reliefLiftField, reliefPickCell, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
 import { isTerrainDesignTool } from "./terrainDesignActions";
@@ -66,6 +67,15 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     const lift=map.relief?reliefLiftField(map.relief):null;
     const rects=plan?.rects??(group??selected)?.cells.map(c=>{const x=c.index%map.width,y=Math.floor(c.index/map.width);return{x,y:y-(lift?cellLift(lift,x,y):0),w:1,h:1};})??[];
     for (const rect of rects) spec.layer.add(spec.scene.add.rectangle(rect.x*tileSize,rect.y*tileSize,tileSize,tileSize,plan?.ok===false?0xe03131:0x329af0,.25).setOrigin(0,0).setStrokeStyle(1,0x329af0));
+    return;
+  }
+  if (state.terrainBrush === "land" && !doodad) {
+    if (state.terrainLandRect || state.terrainLandSize === "rect") return;
+    const lift = map.relief ? reliefLiftField(map.relief) : null;
+    for (const center of symmetricPoints(pick, state.terrainSymmetry, map.width, map.height)) for (const i of landBrushCells(map, center, state.terrainLandSize)) {
+      const x = i % map.width, y = Math.floor(i / map.width);
+      spec.layer.add(spec.scene.add.rectangle(x * tileSize, (y - (lift ? cellLift(lift, x, y) : 0)) * tileSize, tileSize, tileSize, 0xffffff, .12).setOrigin(0, 0).setStrokeStyle(1, 0xffffff, .9));
+    }
     return;
   }
   if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
@@ -137,7 +147,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     reliefSignature(store.getCurrent().maps[spec.mapId]?.relief),
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainLand, state.terrainLandSize, JSON.stringify(state.terrainLandRect), state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
       : []),
   ].join("|");
 }

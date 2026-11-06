@@ -30,6 +30,7 @@ import { findReliefDoodad } from "@/editor/reliefDoodads";
 import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
 import { groupAt } from "./terrainClusters";
 import { paintTerrainBrush } from "./terrainBrush";
+import { landBrushCells, landRectCells, paintLandCells, terrainLandLabel, type TerrainLand } from "./terrainLandBrush";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
@@ -105,6 +106,8 @@ export class TilePaintEngine {
   private reliefStrokePrecise = false;
   private reliefRough: ReliefRoughStroke | null = null;
   private terrainLast: { x: number; y: number } | null = null;
+  private landStrokeLand: TerrainLand = 0;
+  private landStrokeRect = false;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -324,6 +327,25 @@ export class TilePaintEngine {
       }
       return;
     }
+    if (state.terrainBrush === "land" && !state.reliefDoodad) {
+      if (firstStrokeTile) {
+        this.stopReliefGrowth();
+        this.terrainLast = null;
+        this.landStrokeLand = ptr.button === 2 || ptr.rightButtonDown() ? 0 : state.terrainLand;
+        this.landStrokeRect = state.terrainLandSize === "rect" || pointerShiftKey(ptr);
+      }
+      if (this.landStrokeRect) {
+        const start = firstStrokeTile || state.terrainLandRect?.mapId !== mid ? { x: pick.x, y: pick.y } : state.terrainLandRect.start;
+        editorState.set({ terrainLandRect: { mapId: mid, start, end: { x: pick.x, y: pick.y } } });
+        return;
+      }
+      const size = state.terrainLandSize === "rect" ? 1 : state.terrainLandSize;
+      const centers = strokeCenters(this.terrainLast ? `${this.terrainLast.x},${this.terrainLast.y}` : "", pick.x, pick.y);
+      const cells = [...new Set(centers.flatMap((c) => symmetricPoints(c, state.terrainSymmetry, map.width, map.height)).flatMap((p) => landBrushCells(map, p, size)))];
+      this.applyStrokeEdit(mid, () => { paintLandCells(mid, cells, this.landStrokeLand, state.reliefTopGrass); }, { label: `땅 칸 · ${terrainLandLabel(this.landStrokeLand)}` });
+      this.terrainLast = { x: pick.x, y: pick.y };
+      return;
+    }
     if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
       if (firstStrokeTile) {this.stopReliefGrowth();this.terrainLast=null;this.reliefStrokeBase=map.relief?.levels[pick.y*map.width+pick.x]??0;}
       const centers=strokeCenters(this.terrainLast?`${this.terrainLast.x},${this.terrainLast.y}`:"",pick.x,pick.y);
@@ -443,6 +465,16 @@ export class TilePaintEngine {
     if (design.tool === "relief" && design.terrainBrush === "road" && design.terrainRoadDrag && !design.terrainFeatureId && !design.terrainVisionPreview) {
       if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
       else editorState.set({ terrainPoints: null });
+    }
+    if (design.terrainLandRect) {
+      const rect = design.terrainLandRect;
+      editorState.set({ terrainLandRect: null });
+      const map = store.getCurrent().maps[rect.mapId];
+      if (commit && map) {
+        const cells = [...new Set(symmetryVariants(design.terrainSymmetry, map.width, map.height).flatMap((v) => landRectCells(map, transformPoint(rect.start, map.width, map.height, v), transformPoint(rect.end, map.width, map.height, v))))];
+        const land = this.landStrokeLand;
+        this.applyStrokeEdit(rect.mapId, () => { paintLandCells(rect.mapId, cells, land, design.reliefTopGrass); }, { label: `땅 칸 · ${terrainLandLabel(land)}` });
+      }
     }
     if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;

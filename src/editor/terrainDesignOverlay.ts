@@ -11,6 +11,7 @@ import { designOutline } from "./terrainDesignActions";
 import { lineCells, polygonCells, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
 import { planQuickHouseDrag, quickHouseOptions } from "./quickHouse";
 import { drawQuickHousePreview } from "./quickHousePreview";
+import { landRectCells } from "./terrainLandBrush";
 
 const cache = new WeakMap<GameMap, { project: Project; tileset: TilesetDef; key: string; result: TerrainRouteResult }>();
 export function terrainRouteResult(project: Project, map: GameMap, route: NonNullable<EditorState["terrainRoute"]>, width: number, state?: EditorState): TerrainRouteResult {
@@ -32,6 +33,10 @@ export function renderTerrainDesignOverlay(scene: Phaser.Scene, layer: Phaser.Ga
     const origin=state.terrainVisionOrigin??project.startPos;
     addTerrainVisionPreview(scene,layer,map,project.tilesets[map.tilesetId],origin);
     cell(origin.x,origin.y,0x64e3a2,.8,true);
+  }
+  if (state.terrainLandRect?.mapId === map.id) {
+    const { start, end } = state.terrainLandRect, color = state.terrainLand === "water" ? 0x3f86c9 : 0xffffff;
+    for (const variant of symmetryVariants(state.terrainSymmetry, map.width, map.height)) for (const i of landRectCells(map, transformPoint(start, map.width, map.height, variant), transformPoint(end, map.width, map.height, variant))) cell(i % map.width, Math.floor(i / map.width), color, .28, true);
   }
   for (const i of map.terrainDesign?.lockedCells ?? []) { const x = i % map.width, y = Math.floor(i / map.width); cell(x, y, 0x9a78cf, .19, true); }
   if (state.terrainBrush === "lake") for (let i = 0; i < (map.terrainDesign?.waterDepth?.length ?? 0); i++) {
