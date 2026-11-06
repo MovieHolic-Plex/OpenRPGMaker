@@ -13,7 +13,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
-import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
+import { decideAfterCloseFlush, decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
 import { planWindowReload } from "../shared/reloadFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
@@ -89,6 +89,33 @@ function destroyWindow(window: BrowserWindow): void {
   if (timer) clearTimeout(timer);
   closeTimers.delete(id);
   window.destroy();
+}
+
+/**
+ * 닫기 전 저장이 실패했다(디스크 오류·충돌·남은 편집). 창을 없애면 그 편집이 사라지므로 닫기를 취소하고 창을 다시 보인다.
+ * 저장 때문에 막아 둔 Quit 도 취소한다 — 다시 걸면 같은 실패로 돌 뿐이다. 사용자가 고르면 저장 없이 닫는다.
+ */
+function keepWindowAfterFailedCloseFlush(window: BrowserWindow): void {
+  const id = window.webContents.id;
+  closing.delete(id);
+  const timer = closeTimers.get(id);
+  if (timer) clearTimeout(timer);
+  closeTimers.delete(id);
+  quitRequested = false;
+  quitHeld = false;
+  if (!window.isDestroyed()) window.show();
+  void dialog.showMessageBox(window, {
+    type: "warning",
+    message: "저장하지 못해 창을 닫지 않았습니다.",
+    detail: "방금 한 편집이 아직 디스크에 없습니다. 저장 상태를 확인한 뒤 다시 닫아 주세요.",
+    buttons: ["창 유지", "저장하지 않고 닫기"],
+    defaultId: 0,
+    cancelId: 0,
+  }).then(({ response }) => {
+    if (response === 1 && !window.isDestroyed()) destroyWindow(window);
+  }, (error: unknown) => {
+    console.warn("[project] 닫기 저장 실패 안내를 띄우지 못했습니다:", error);
+  });
 }
 
 function abandonReloadFlush(id: number): void {
@@ -193,7 +220,8 @@ function installCloseFlow(window: BrowserWindow): void {
     closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
     // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 곧 치운다 — 숨기기 전에 마지막 편집 화면을 찍는다(상한 250ms, lastView.ts).
     // 다음 실행에서 이 프로젝트를 열면 편집기가 부팅하는 동안 이 그림이 바로 보인다.
-    void captureLastViewBeforeClose(window, session.projectDir).finally(() => { if (!window.isDestroyed()) window.hide(); });
+    // 저장이 먼저 실패해 창을 다시 보였으면(keepWindowAfterFailedCloseFlush) 늦게 끝난 캡처가 숨기지 않는다.
+    void captureLastViewBeforeClose(window, session.projectDir).finally(() => { if (!window.isDestroyed() && closing.has(id)) window.hide(); });
   });
   window.on("closed", () => {
     forgetLastViewWindow(id);
@@ -891,12 +919,16 @@ export async function startApp(boot: BootContext): Promise<void> {
   // 렌더러는 이 동기 블록이 끝나기 전에는 IPC 를 보낼 수 없다 — 문서를 먼저 걸고 아래 처리기를 같은 틱에 붙인다(약 50ms 앞당김).
   if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow);
   mainMark("windowLoading");
-  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event, ok: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender);
     // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
     if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
-    destroyWindow(window);
-    return true;
+    if (decideAfterCloseFlush(ok) === "destroy") {
+      destroyWindow(window);
+      return true;
+    }
+    keepWindowAfterFailedCloseFlush(window);
+    return false;
   });
   ipcMain.on(OPRN_CHANNELS.lifecycleFlushReady, (event) => {
     if (event.senderFrame?.parent == null) flushReady.add(event.sender.id);

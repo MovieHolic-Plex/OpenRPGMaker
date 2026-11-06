@@ -80,7 +80,7 @@ const bridge = {
     onFlushBeforeClose: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, () => callback());
     },
-    flushDone: invoke(OPRN_CHANNELS.lifecycleFlushDone),
+    flushDone: (ok: boolean) => ipcRenderer.invoke(OPRN_CHANNELS.lifecycleFlushDone, ok === true),
     onSaveRequest: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleSave, () => callback());
     },

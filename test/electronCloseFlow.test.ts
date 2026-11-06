@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "../electron/main/closeFlow";
+import { decideAfterCloseFlush, decideWindowClose, nextQuitHeld, shouldRetryQuit } from "../electron/main/closeFlow";
+import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
 
 describe("window close while a project save is in progress", () => {
   it("starts a save only when a project is open and a close is not already waiting", () => {
@@ -31,5 +32,16 @@ describe("window close while a project save is in progress", () => {
     held = nextQuitHeld(held, true, "flush");
     expect(shouldRetryQuit({ quitRequested: true, quitHeld: held, windowsStillFlushing: 1 })).toBe(false);
     expect(shouldRetryQuit({ quitRequested: true, quitHeld: held, windowsStillFlushing: 0 })).toBe(true);
+  });
+
+  it("destroys the window only when the renderer reports a clean save", () => {
+    // 렌더러는 reloadFlushAllowsReload(결과, 남은 편집) 를 그대로 보낸다(src/main.ts onFlushBeforeClose).
+    expect(decideAfterCloseFlush(reloadFlushAllowsReload("saved", false))).toBe("destroy");
+    expect(decideAfterCloseFlush(reloadFlushAllowsReload("saved-local", false))).toBe("destroy");
+    expect(decideAfterCloseFlush(reloadFlushAllowsReload("conflict", true))).toBe("keep-open");
+    expect(decideAfterCloseFlush(reloadFlushAllowsReload("saved", true))).toBe("keep-open");
+    // 저장이 던지면 렌더러는 false 를 보낸다. 옛 렌더러처럼 값 없이 ack 해도 닫지 않는다.
+    expect(decideAfterCloseFlush(false)).toBe("keep-open");
+    expect(decideAfterCloseFlush(undefined)).toBe("keep-open");
   });
 });
