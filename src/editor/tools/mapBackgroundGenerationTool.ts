@@ -6,6 +6,7 @@
 // 배경 그림은 타일·기물이 아니라서 3/4 관문(object-gate) 대상이 아니다.
 
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { imageGenerationUnavailableError } from "@/editor/imageGenerationNotice";
 import { MAP_BACKGROUND_MOTIONS, type MapBackgroundMotion } from "@/project/mapBackground";
 import type { Project } from "@/project/types";
 
@@ -77,7 +78,7 @@ const generateMapBackground: ToolDefinition = {
   parameters: SCHEMA,
   run(project, args): ToolExecResult {
     prepareMapBackgroundGeneration(project, args);
-    throw new ToolError("이 실행에는 그림 생성 경로가 연결되어 있지 않습니다(편집기 조수 실행에서만 가능). 새 배경 그림을 만들지 못했습니다 — 생성 성공으로 보고하지 마세요.", { code: "image-generation-unavailable" });
+    throw imageGenerationUnavailableError();
   },
 };
 
