@@ -9,6 +9,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync,
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkDesktopAssets } from "./lib/releaseAssets.mjs";
 
 const repo = process.cwd();
 const buildRoot = process.env.OPRN_DESKTOP_BUILD || join(homedir(), ".cache", "oprn-desktop-release");
@@ -73,6 +74,11 @@ function assetNames(tag) {
   const raw = run("gh", ["release", "view", tag, "--json", "assets"]);
   const assets = JSON.parse(raw).assets ?? [];
   return assets.map((asset) => asset.name);
+}
+
+function assetList(tag) {
+  const raw = run("gh", ["release", "view", tag, "--json", "assets"]);
+  return JSON.parse(raw).assets ?? [];
 }
 
 /** zip 을 SFTP 로 올리고 원격 크기를 대조한 뒤 원격에서 버전 폴더로 푼다. */
@@ -213,6 +219,16 @@ try {
   }
   runInherit("gh", ["release", "upload", tag, ...files, ...stable, "--clobber"], repo);
   console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable].map((file) => file.split("/").pop()).join(", ")}`);
+
+  // 같은 순서 계약: 업로드한 이름·크기를 다시 읽어 확인한 뒤에만 발행한다.
+  const check = checkDesktopAssets(tag.replace(/^v/, ""), assetList(tag));
+  if (!check.ok) {
+    throw new Error(`자산 검증 실패 — 발행하지 않는다(초안 유지). 없음: ${check.missing.join(", ") || "없음"} / 빈 파일: ${check.empty.join(", ") || "없음"}`);
+  }
+  if (process.env.OPRN_DESKTOP_NO_PUBLISH !== "1") {
+    run("gh", ["release", "edit", tag, "--draft=false"]);
+    console.log(`[release-desktop] ${tag} 자산 6개 검증 후 발행`);
+  }
 
   if (dropDir) {
     const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
