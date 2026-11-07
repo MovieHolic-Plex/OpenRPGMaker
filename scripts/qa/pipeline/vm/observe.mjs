@@ -3,7 +3,9 @@
 // selected. The DOM text of the same moment is given as ground truth so pixel-font misreads are caught at source.
 //
 // usage: node vm/observe.mjs --frames <observe-frames.json> --run <runDir> --out <observations.jsonl> [--pool 16]
-// env:   OC_JSON=/root/vqa-sinkiru/oc.json (baseUrl, apiKey)
+// env:   OC_JSON=/root/vqa-sinkiru/oc-exempt.json (baseUrl, apiKey). This is OUR key (omo provider `oc`,
+//        sha256 prefix 0e4b4369), not the shared /root/vqa-sinkiru/oc.json that hits the daily cap. The file is mode 600;
+//        the key never reaches this log, the run directory or any error string.
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
@@ -19,9 +21,14 @@ const { values } = parseArgs({
     model: { type: "string", default: "deepseek-v4.1-flash-free" },
   },
 });
-const oc = JSON.parse(fs.readFileSync(process.env.OC_JSON ?? "/root/vqa-sinkiru/oc.json", "utf8"));
+const KEY_FILE = process.env.OC_JSON ?? "/root/vqa-sinkiru/oc-exempt.json";
+const oc = JSON.parse(fs.readFileSync(KEY_FILE, "utf8"));
+const mode = fs.statSync(KEY_FILE).mode & 0o777;
+if (mode & 0o077) throw new Error(`${KEY_FILE} must not be readable by group/other (mode ${mode.toString(8)})`);
+const keyId = oc.keyId ?? "unknown";
 const log = usageLedger(path.join(values.run, "usage.jsonl"));
 const chat = ocClient({ baseUrl: oc.baseUrl, apiKey: oc.apiKey, model: values.model, effort: "max", log, stage: "observe" });
+console.log(JSON.stringify({ stage: "observe", keyFile: KEY_FILE, keyId, mode: mode.toString(8), base: oc.baseUrl }));
 const frames = JSON.parse(fs.readFileSync(values.frames, "utf8"));
 const done = new Set(fs.existsSync(values.out) ? fs.readFileSync(values.out, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l).key) : []);
 const todo = frames.filter((f) => !done.has(`${f.jobId}/${f.seq}`));
@@ -58,10 +65,10 @@ async function observe(f) {
     '형식: {"issues":[{"check":"C01","where":"화면 위치","desc":"무엇이 어떻게 잘못됐는지(근거)","quote":"관련 화면 글자 그대로 또는 빈칸","confidence":0.0-1.0}]} 결함이 없으면 {"issues":[]}',
   ].join("\n");
   const messages = [{ role: "system", content: SYS }, { role: "user", content: [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: `data:image/jpeg;base64,${img.toString("base64")}` } }] }];
-  let res = await chat(messages, { maxTokens: 12000 });
+  let res = await chat(messages, { maxTokens: 16000 });
   let parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   if (res.ok && !parsed) {
-    res = await chat([...messages, { role: "user", content: "분석 없이 JSON 한 줄만." }], { maxTokens: 6000 });
+    res = await chat([...messages, { role: "user", content: "분석 없이 JSON 한 줄만." }], { maxTokens: 8000 });
     parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   }
   return { key: `${f.jobId}/${f.seq}`, ok: !!parsed, error: res.ok ? (parsed ? null : "unparsed") : res.error, issues: (parsed?.issues ?? []).filter((i) => CHECKS[i.check]).slice(0, 4) };

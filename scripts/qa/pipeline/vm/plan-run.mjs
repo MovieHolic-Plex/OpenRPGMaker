@@ -6,6 +6,19 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { planCoverage, staticLint } from "../lib/plan.mjs";
 
+/** Story levels/gear for the game, when the pipeline ships a table for it (scripts/qa/pipeline/data/<slug>.json or story-levels.json). */
+function loadStory(slug) {
+  const dataDir = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "data");
+  for (const name of [`${slug}.json`, "story-levels.json"]) {
+    const file = path.join(dataDir, name);
+    if (!fs.existsSync(file)) continue;
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (data.game && data.game !== slug) continue;
+    return data;
+  }
+  return null;
+}
+
 const { values } = parseArgs({
   options: {
     cache: { type: "string", default: "/root/vqa-sinkiru/mirror" },
@@ -28,7 +41,8 @@ if (values["lint-only"]) {
 }
 const project = JSON.parse(fs.readFileSync(path.join(values.cache, values.slug, values.version, "project.json"), "utf8"));
 fs.mkdirSync(values.out, { recursive: true });
-let jobs = planCoverage(project, { game: values.slug, maxEvents: Number(values["max-events"]) })
+const story = loadStory(values.slug);
+let jobs = planCoverage(project, { game: values.slug, maxEvents: Number(values["max-events"]), story })
   .map((job) => ({ ...job, slug: values.slug, version: values.version, ...(values.plant ? { plant: values.plant } : {}) }));
 const max = Number(values["max-jobs"]);
 if (max > 0 && jobs.length > max) {
@@ -52,6 +66,10 @@ const coverage = {
   plannedMaps: new Set(jobs.filter((j) => j.target?.mapId).map((j) => j.target.mapId)).size,
   troops: project.database.troops.length,
   plannedBattles: jobs.filter((j) => j.kind === "battle").length,
+  plannedBattleTroops: new Set(jobs.filter((j) => j.kind === "battle").map((j) => j.target.troopId)).size,
+  battleStates: Object.fromEntries([...new Set(jobs.filter((j) => j.kind === "battle").map((j) => j.target.state))].map((s) => [s, jobs.filter((j) => j.kind === "battle" && j.target.state === s).length])),
+  checkpointLevels: [...new Set(jobs.map((j) => j.checkpoint?.party?.[0]?.level).filter((v) => typeof v === "number"))].sort((a, b) => a - b),
+  storyTable: story ? { troops: Object.keys(story.byTroop ?? {}).length, source: story.source } : null,
   byKind: count("kind"), byInput: count("input"), byViewport: count("viewportName"),
   staticFindings: lint.length,
 };

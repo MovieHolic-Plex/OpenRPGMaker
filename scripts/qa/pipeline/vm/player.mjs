@@ -317,6 +317,138 @@ async function menuTour() {
   for (let i = 0; i < 3 && (await readState()).menu; i += 1) { await cancel(); await sleep(300); }
 }
 
+/**
+ * Adversarial input track. Each case does what a real player does on purpose and records what the game answered:
+ * dialogue mashed through every input at once, menus opened mid-battle, a shop attempted with no gold, the party
+ * shoved into every map edge, save/load in a loop, and mixed keyboard+mouse+touch in one session.
+ * A finding is not "the script broke" but "the game got stuck / fell out of a screen / lost state" — those show up
+ * in the settled frames and the deterministic checks the triage stage runs over this trace.
+ */
+async function adversarialScript(kind) {
+  const s0 = await readState();
+  await snap(`adv-${kind}-start`);
+  if (kind === "mash-dialogue") {
+    // Enter, arrows and a click at the same time: a dialogue that reads "press" as a state machine should advance and
+    // never dead-end; an event that only handles one input shows up as a stuck frame.
+    for (let i = 0; i < 30; i += 1) {
+      note(`mash:${i}`);
+      await Promise.all([
+        page.keyboard.press("Enter").catch(() => {}),
+        page.keyboard.press(i % 2 ? "ArrowDown" : "ArrowRight").catch(() => {}),
+        page.mouse.click(700, 500).catch(() => {}),
+      ]);
+      await sleep(120);
+      if (i % 6 === 0) await snap(`adv-mash-${i}`);
+      const s = await readState();
+      if (s.screen === "ending" || s.screen === "gameover") break;
+    }
+    await snap("adv-mash-end");
+  } else if (kind === "mash-dialogue-touch") {
+    for (let i = 0; i < 24; i += 1) {
+      note(`mash-touch:${i}`);
+      const box = await page.locator("[data-testid='dialogue-box']").first().boundingBox().catch(() => null);
+      if (box) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
+      else await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
+      await sleep(150);
+      if (i % 8 === 0) await snap(`adv-touch-mash-${i}`);
+    }
+    await snap("adv-touch-mash-end");
+  } else if (kind === "menu-mid-battle" || kind === "menu-mid-battle-mouse") {
+    // Enter the fight, then open the menu / cancel in the middle of command selection, then keep fighting.
+    for (let i = 0; i < 40 && Date.now() - T0 < HARD_MS && (await readState()).screen !== "battle"; i += 1) {
+      const s = await readState();
+      if (s.choices) await pickChoice(0); else if (s.dialogue) await confirm(); else await sleep(700);
+    }
+    await snap("adv-battle-open");
+    for (let round = 0; round < 4; round += 1) {
+      note(`adv-battle:menu ${round}`);
+      await page.keyboard.press("Escape"); await sleep(250);
+      await snap(`adv-battle-menu-${round}`);
+      await page.keyboard.press("Escape"); await sleep(200);
+      await page.keyboard.press("ArrowDown"); await sleep(120);
+      if (kind === "menu-mid-battle-mouse") {
+        for (const sel of ["[data-testid='actor-command-fight']", "[data-testid='actor-command-item']"]) {
+          if (await visible(sel)) { await page.locator(sel).first().click({ timeout: 2000 }).catch(() => {}); await sleep(200); }
+        }
+      }
+      await page.keyboard.press("Enter"); await sleep(900);
+      await page.keyboard.press("Enter"); await sleep(1400);
+      await snap(`adv-battle-round-${round}`);
+      if ((await readState()).screen !== "battle") break;
+    }
+    summary.after = await driveUntilFree({ maxSteps: 20, label: "adv-after-battle" });
+  } else if (kind === "broke-shopper" || kind === "broke-shopper-touch") {
+    // Walk to the shopkeeper and try to buy with zero gold: the game must refuse, not go negative or hang.
+    await driveUntilFree({ maxSteps: 10, label: "adv-shop-enter" });
+    for (let i = 0; i < 25 && Date.now() - T0 < HARD_MS * 0.6; i += 1) {
+      const s = await readState();
+      if (s.screen === "shop") break;
+      if (s.choices) await pickChoice(0);
+      else if (s.dialogue) await confirm();
+      else {
+        // Try every direction and the interact key; a shopkeeper indoors is usually adjacent.
+        for (const dir of ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"]) { await move(dir, 220); await confirm(); await sleep(120); if ((await readState()).screen === "shop") break; }
+      }
+      await sleep(400);
+    }
+    const at = await readState();
+    summary.shopReached = at.screen === "shop";
+    await snap("adv-shop-open");
+    if (at.screen === "shop") {
+      for (const key of ["Enter", "ArrowDown", "Enter", "Enter", "ArrowDown", "Enter"]) {
+        note(`broke-shop:${key}`);
+        await page.keyboard.press(key);
+        await sleep(400);
+        await snap(`adv-shop-${key}`);
+      }
+      for (let i = 0; i < 6 && (await readState()).screen === "shop"; i += 1) { await cancel(); await sleep(300); }
+    }
+    await snap("adv-shop-end");
+  } else if (kind === "map-edges" || kind === "map-edges-mouse") {
+    // Shove into each edge for a while; the player must stop at the border, never leave the map or the camera.
+    for (const dir of ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"]) {
+      note(`edge:${dir}`);
+      for (let i = 0; i < 6; i += 1) await move(dir, 500);
+      const s = await snap(`adv-edge-${dir.toLowerCase()}`);
+      const map = s.state;
+      summary[`edge${dir.replace("Arrow", "")}`] = map ? { x: map.x, y: map.y, screen: map.screen } : null;
+    }
+    await snap("adv-edge-end");
+  } else if (kind === "save-load") {
+    // Open the save menu three times, saving and cancelling alternately; the session must survive every round.
+    for (let round = 0; round < 3; round += 1) {
+      note(`save-load:${round}`);
+      await driveUntilFree({ maxSteps: 8, label: `adv-save-${round}` });
+      await page.keyboard.press("Escape"); await sleep(600);
+      await snap(`adv-save-menu-${round}`);
+      for (let i = 0; i < 4; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(150); }
+      await page.keyboard.press("Enter"); await sleep(700);
+      await snap(`adv-save-detail-${round}`);
+      await page.keyboard.press("Enter"); await sleep(900);
+      await snap(`adv-save-confirm-${round}`);
+      await page.keyboard.press("Enter"); await sleep(900);
+      await snap(`adv-save-done-${round}`);
+      for (let i = 0; i < 3; i += 1) { await page.keyboard.press("Escape"); await sleep(300); }
+      await snap(`adv-save-close-${round}`);
+    }
+  } else if (kind === "mixed-input") {
+    // Keyboard for one action, a click for the next, a tap for the third — a state machine that reads them from
+    // different places dead-ends here.
+    for (let i = 0; i < 18; i += 1) {
+      const s = await readState();
+      note(`mixed:${i}:${s.screen}`);
+      if (i % 3 === 0) await page.keyboard.press("Enter").catch(() => {});
+      else if (i % 3 === 1) await page.mouse.click(vp.width / 2, vp.height * 0.62).catch(() => {});
+      else await page.touchscreen.tap(vp.width / 2, vp.height * 0.62).catch(() => {});
+      await sleep(350);
+      if (i % 4 === 0) await snap(`adv-mixed-${i}`);
+      if (s.dialogue) { await page.keyboard.press("ArrowDown").catch(() => {}); await sleep(120); }
+    }
+    await snap("adv-mixed-end");
+  }
+  return { kind, start: s0?.screen ?? null };
+}
+
 const summary = { id: job.id, kind: job.kind, input: job.input, viewport: job.viewportName, plant: job.plant ?? null, target: job.target ?? null };
 try {
   await page.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded", timeout: 120000 });
@@ -356,6 +488,8 @@ try {
     }
     summary.result = await battle({ maxTurns: 10 });
     summary.after = await driveUntilFree({ maxSteps: 24, label: "after-battle" });
+  } else if (job.script === "adversarial") {
+    summary.result = await adversarialScript(job.adversarial);
   } else {
     await snap("start");
     summary.result = await driveUntilFree({ maxSteps: 50, label: "ev" });

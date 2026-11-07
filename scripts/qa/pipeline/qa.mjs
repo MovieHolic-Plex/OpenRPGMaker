@@ -12,7 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import { parseArgs } from "node:util";
-import { anthropicClient, readUsage, usageLedger } from "./lib/models.mjs";
+import { defaultReviewerChain, readUsage, reviewerChain, usageLedger } from "./lib/models.mjs";
 import { buildFixQueue, mergeReport, reviewCandidates } from "./review.mjs";
 import { measurePlants } from "./lib/measure.mjs";
 import { renderReport } from "./report.mjs";
@@ -27,7 +27,7 @@ const { values } = parseArgs({
     host: { type: "string", default: process.env.QA_HOST ?? "root@am3685-1" },
     "vm-root": { type: "string", default: "/root/qa-pipeline" },
     mirror: { type: "string", default: "/root/vqa-sinkiru/mirror" },
-    pool: { type: "string", default: "20" },
+    pool: { type: "string", default: "40" },
     "observe-pool": { type: "string", default: "16" },
     "review-pool": { type: "string", default: "6" },
     "max-events": { type: "string", default: "120" },
@@ -70,8 +70,10 @@ async function stage(name, fn) {
   log(`stage ${name} done ${(timings[name] / 1000).toFixed(0)}s`);
 }
 
-// Code sync + overlay: always, idempotent.
-execFileSync("bash", ["-c", `tar czf - -C ${path.dirname(HERE)} pipeline | ssh -o BatchMode=yes ${values.host} 'mkdir -p ${VM}/code ${VM}/plants ${VM}/logs && tar xzf - -C ${VM}/code && ln -sfn /root/vqa-sinkiru/node_modules ${VM}/code/pipeline/node_modules'`], { stdio: "inherit" });
+// Code sync + overlay: always, idempotent. The observer key file ships with the code dir but stays mode 600 on the VM
+// (ensured here, so a re-sync never leaves it world-readable).
+const KEY_FILE = `${VM}/oc-exempt.json`;
+execFileSync("bash", ["-c", `tar czf - -C ${path.dirname(HERE)} pipeline | ssh -o BatchMode=yes ${values.host} 'mkdir -p ${VM}/code ${VM}/plants ${VM}/logs && tar xzf - -C ${VM}/code && ln -sfn /root/vqa-sinkiru/node_modules ${VM}/code/pipeline/node_modules && chmod 600 ${KEY_FILE} 2>/dev/null || true'`], { stdio: "inherit" });
 ssh(`curl -sf 127.0.0.1:7812/health >/dev/null || (cd ${VM}/code/pipeline && setsid nohup node vm/overlay.mjs --cache ${values.mirror} --plants ${VM}/plants --port 7812 --log ${VM}/logs/overlay.jsonl > ${VM}/logs/overlay.out 2>&1 & sleep 2; curl -sf 127.0.0.1:7812/health)`);
 const plantFile = `${VM}/plants/${values.game}@${values.version}~${values.plant}.json`;
 
@@ -84,8 +86,7 @@ await stage("plan", async () => {
 });
 await stage("play", async () => node("vm/play.mjs", `--jobs ${VMRUN}/jobs.json --out ${VMRUN} --pool ${values.pool}`));
 await stage("detect", async () => node("vm/triage.mjs", `--run ${VMRUN} --phase detect --max-observe ${values["max-observe"]}`));
-await stage("observe", async () => node("vm/observe.mjs", `--frames ${VMRUN}/observe-frames.json --run ${VMRUN} --out ${VMRUN}/observations.jsonl --pool ${values["observe-pool"]}`));
-await stage("cluster", async () => node("vm/triage.mjs", `--run ${VMRUN} --phase cluster`));
+await stage("observe", async () => node("vm/observe.mjs", `--frames ${VMRUN}/observe-frames.json --run ${VMRUN} --out ${VMRUN}/observations.jsonl --pool ${values["observe-pool"]}`));await stage("cluster", async () => node("vm/triage.mjs", `--run ${VMRUN} --phase cluster`));
 await stage("pull", async () => {
   // Only the files the reviewer and the report need: metadata + every evidence frame of every candidate.
   const list = `${VMRUN}/pull.txt`;
@@ -94,16 +95,17 @@ await stage("pull", async () => {
 });
 await stage("review", async () => {
   const usage = usageLedger(path.join(LOCAL, "review-usage.jsonl"));
-  const client = anthropicClient({ baseUrl: process.env.ANTHROPIC_BASE_URL, apiKey: process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.ANTHROPIC_API_KEY, model: values.model, log: usage, stage: "review" });
+  const chain = reviewerChain(defaultReviewerChain(), { log: usage, stage: "review" });
+  log(`reviewer chain ${chain.chain.join(" -> ")}`);
   const candidates = JSON.parse(fs.readFileSync(path.join(LOCAL, "candidates.json"), "utf8"));
   for (const c of candidates) c.frames = c.frames.map((f) => ({ ...f, file: path.join(LOCAL, f.rel) }));
   const cacheFile = path.join(LOCAL, "review.jsonl");
   const cached = new Map(fs.existsSync(cacheFile) ? fs.readFileSync(cacheFile, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((r) => r.verdict).map((r) => [r.id, r]) : []);
-  await reviewCandidates(candidates.filter((c) => !cached.has(c.id)), { client, poolSize: Number(values["review-pool"]), onRow: (row) => { fs.appendFileSync(cacheFile, JSON.stringify(row) + "\n"); if (row.verdict) cached.set(row.id, row); } });
+  await reviewCandidates(candidates.filter((c) => !cached.has(c.id)), { client: chain, poolSize: Number(values["review-pool"]), onRow: (row) => { fs.appendFileSync(cacheFile, JSON.stringify(row) + "\n"); if (row.verdict) cached.set(row.id, row); } });
   const reviewed = candidates.map((c) => ({ ...c, review: cached.get(c.id) ?? { verdict: null, error: "no verdict" } }));
   const kept = reviewed.filter((c) => c.review.verdict === "real");
-  const merged = await mergeReport(kept, { client: anthropicClient({ baseUrl: process.env.ANTHROPIC_BASE_URL, apiKey: process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.ANTHROPIC_API_KEY, model: values.model, log: usage, stage: "merge" }) });
-  const final = { game: values.game, version: values.version, plant: values.plant || null, model: values.model, reviewedAt: new Date().toISOString(), candidates: candidates.length,
+  const merged = await mergeReport(kept, { client: chain });
+  const final = { game: values.game, version: values.version, plant: values.plant || null, model: values.model, reviewerChain: chain.chain, reviewerAnsweredBy: chain.answeredBy(), reviewedAt: new Date().toISOString(), candidates: candidates.length,
     verdictCounts: Object.fromEntries(["real", "misread", "transition", "by_design", "not_visible", "environment", "null"].map((v) => [v, reviewed.filter((c) => String(c.review.verdict) === v).length])),
     groups: merged.groups, mergeError: merged.mergeError ?? null };
   fs.writeFileSync(path.join(LOCAL, "reviewed.json"), JSON.stringify(reviewed, null, 1));
