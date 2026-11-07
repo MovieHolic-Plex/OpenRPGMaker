@@ -14,18 +14,21 @@ describe("generic image asset authoring", () => {
     ]);
   });
 
-  it("returns a UI handoff in a headless tool call and rejects invalid requests", () => {
+  it("rejects invalid requests and fails hard with the shared code when no generator is wired", () => {
     const ctx = { project: createBlankProject() };
-    const handoff = runTool(ctx, "generate_image_asset", { kind: "picture", prompt: "푸른 수정 검" });
-    expect(handoff.ok).toBe(true);
-    expect(handoff.data).toMatchObject({ status: "ui-required", kind: "picture", prompt: "푸른 수정 검" });
+    const refused = runTool(ctx, "generate_image_asset", { kind: "picture", prompt: "푸른 수정 검" });
+    expect(refused.ok).toBe(false);
+    expect(refused.issues?.map((issue) => issue.code)).toEqual(["image-generation-unavailable"]);
+    expect(refused.data).toBeUndefined();
 
     expect(runTool(ctx, "generate_image_asset", { kind: "unknown", prompt: "몬스터" }).ok).toBe(false);
     expect(runTool(ctx, "generate_image_asset", { kind: "picture", prompt: "짧" }).ok).toBe(false);
     // 몬스터 그림은 더 만들지 않는다 — 전투 몬스터는 도트 측면 시트에서 고른다.
     expect(runTool(ctx, "generate_image_asset", { kind: "monster", prompt: "눈 덮인 산의 얼음 늑대", tags: ["늑대"] }).ok).toBe(false);
-    // tags 는 이제 어느 kind 에도 필수가 아니다.
-    expect(runTool(ctx, "generate_image_asset", { kind: "backdrop", prompt: "불타는 화산 동굴" }).ok).toBe(true);
+    // tags 는 이제 어느 kind 에도 필수가 아니지만, 생성기는 여전히 없으므로 실패한다.
+    const backdrop = runTool(ctx, "generate_image_asset", { kind: "backdrop", prompt: "불타는 화산 동굴" });
+    expect(backdrop.ok).toBe(false);
+    expect(backdrop.summary).toContain("generate_map_background");
   });
 
   it("generates a resource-shaped result without putting text in the art prompt", async () => {

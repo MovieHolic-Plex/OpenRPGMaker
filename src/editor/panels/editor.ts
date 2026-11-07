@@ -37,6 +37,8 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { createImageGenerationNotice } from "@/editor/panels/imageGenerationGate";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { mountAgentModeDock } from "@/editor/agentMode/agentModeDock";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
@@ -142,6 +144,7 @@ let disposeCanvasStatus: (() => void) | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
 // 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
 let persistenceBannerHost: HTMLElement | null = null;
+let imageGenerationNoticeRoot: ReturnType<typeof createImageGenerationNotice> | null = null;
 let persistenceBannerObserver: ResizeObserver | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
@@ -278,6 +281,10 @@ export function renderEditor(main: HTMLElement): void {
   const bannerHost = el("div", { class: "persistence-banner-host" });
   canvasArea.append(bannerHost);
   persistenceBannerHost = bannerHost;
+  const imageGenerationNotice = createImageGenerationNotice({ onOpenSettings: () => openAiSettingsModal() });
+  canvasArea.append(imageGenerationNotice.element);
+  imageGenerationNoticeRoot = imageGenerationNotice;
+  void imageGenerationNotice.sync();
   // 조수 패널이 도킹해 캠버스 열이 좁아지면 배너가 두 줄로 접힌다 — 떠 있는 캠버스 도구 막대의 top 이 그 높이를 따라간다.
   persistenceBannerObserver?.disconnect();
   persistenceBannerObserver = typeof ResizeObserver === "function"
@@ -601,6 +608,8 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
   persistenceBannerHost = null;
+  imageGenerationNoticeRoot?.dispose();
+  imageGenerationNoticeRoot = null;
   persistenceBannerObserver?.disconnect();
   persistenceBannerObserver = null;
   authoringJourneyOpen = false;

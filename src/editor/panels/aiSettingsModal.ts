@@ -295,9 +295,10 @@ export function renderAiSettingsForm(options: {
     imageStatus.textContent = entry?.supported
       ? `${entry.providerLabel} 로그인이 필요합니다.`
       : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
-    const routeNote = entry?.supported && entry.providerId !== DEFAULT_IMAGE_PROVIDER_ID
-      ? "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다."
-      : "";
+    const routeNote = !entry?.supported ? ""
+      : entry.providerId === CODEX_PROVIDER_ID
+        ? "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다."
+        : "Google Antigravity 구독 경로로 생성합니다 — 직접 고른 경우에만 쓰입니다.";
     imageRouteNote.textContent = routeNote;
     imageRouteNote.hidden = routeNote === "";
   };

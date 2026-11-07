@@ -1,5 +1,6 @@
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { findBattleSites } from "@/editor/battleBackdropCore";
+import { imageGenerationHandoffRefusedError } from "@/editor/imageGenerationNotice";
 import type { Project } from "@/project/types";
 
 /**
@@ -68,10 +69,8 @@ const generateBattleBackdrop: ToolDefinition = {
   parameters: SCHEMA,
   run(project, args): ToolExecResult {
     const request = prepareBattleBackdropRequest(project, args);
-    return {
-      summary: `전투 배경 생성 요청을 준비했습니다(맵 ${request.mapId}${request.troopId ? `, 트룹 ${request.troopId}` : ""}). 생성에는 편집기가 필요하며 아직 등록되지 않았습니다.`,
-      data: { status: "ui-required", ...request },
-    };
+    throw imageGenerationHandoffRefusedError(BATTLE_BACKDROP_TOOL,
+      `전투 배경은 지금 환경에서 생성할 수 없습니다(대상 맵 ${request.mapId}). 기본 바이옴 배경(battle-scenery-*)을 upsert_troop/set_map_properties 로 고르거나, 사용자에게 그림 생성을 요청하세요.`);
   },
 };
 

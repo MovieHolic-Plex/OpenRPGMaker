@@ -8,6 +8,7 @@ import {
 } from "god-tibo-imagen";
 import { CODEX_PROVIDER_ID, decodeJwtPayload } from "../../src/ai/oauth/credentials.ts";
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences.ts";
+import { reportedImageModel } from "../../src/ai/imageModelResolution.ts";
 import type { GeneratedImage } from "./ohMyPiImageRuntime.ts";
 
 // Stable app selection ID; never send this sentinel upstream.
@@ -22,7 +23,7 @@ function statusError(message: string, status: number): Error & { status: number 
   return Object.assign(new Error(message), { status });
 }
 
-const AUTH_MESSAGE = "Codex 이미지 생성에 유효한 ChatGPT 로그인이 필요합니다. AI 설정에서 Codex 연결을 확인하거나 `codex login` 으로 로그인해 주세요.";
+const AUTH_MESSAGE = "Codex 이미지 생성에 유효한 ChatGPT 로그인이 필요합니다. AI 설정 → 「그림·도트 모델」에서 ChatGPT 를 연결하거나 `codex login` 으로 로그인하세요. Google 로 그리려면 같은 화면에서 Google 을 직접 고르세요(자동으로 바뀌지 않습니다).";
 
 /** 앱의 Codex 로그인 토큰이 있으면 그것을, 없으면 codex CLI 로그인(~/.codex/auth.json)을 쓴다. */
 async function resolveSession(apiKey: string | undefined, config: ReturnType<typeof resolveConfig>) {
@@ -35,6 +36,15 @@ async function resolveSession(apiKey: string | undefined, config: ReturnType<typ
   const session = await loadCodexSession(config).catch(() => null);
   if (!session?.accessToken || !session.accountId || session.authMode !== "chatgpt") throw statusError(AUTH_MESSAGE, 401);
   return { accessToken: session.accessToken, accountId: session.accountId, installationId: session.installationId };
+}
+
+/**
+ * 응답이 되돌려 준 그림 모델. Codex 는 요청을 그대로 에코하면서 `tools[{type:"image_generation", model}]` 에
+ * 자기 목록에서 고른 값을 넣어 보내고, 그 값이 지금 이 라우트가 실제로 쓰는 모델이다.
+ */
+function reportedCodexImageModel(text: string): string | null {
+  const match = /"type"\s*:\s*"image_generation"[\s\S]{0,400}?"model"\s*:\s*"([^"]+)"/u.exec(text);
+  return reportedImageModel(match?.[1]);
 }
 
 /** Codex 이미지 생성. 참조 그림은 최대 2장(parseImageReferences 경계), 크기는 god-tibo-imagen 이 받는 값만. */
@@ -60,6 +70,8 @@ export async function generateCodexImage(
 
   const config = resolveConfig();
   const session = await resolveSession(options?.apiKey, config);
+  // 모델을 보내지 않는다 — 보내면 그 이름이 박혀서 제공자가 더 새 그림 모델을 내놓아도 계속 옛 이름으로 그린다.
+  const requestedImageModel = CODEX_IMAGE_MODEL;
   const request = buildResponsesRequest({
     baseUrl: config.baseUrl,
     session,
@@ -68,7 +80,6 @@ export async function generateCodexImage(
     originator: config.defaultOriginator,
     images: references.map((image) => `data:${image.mimeType};base64,${image.data}`),
     size,
-    imageModel: config.defaultImageModel,
   });
 
   let response: Response;
@@ -97,9 +108,10 @@ export async function generateCodexImage(
     throw statusError("Codex 이미지 생성 실패 (HTTP " + response.status + ").", response.status >= 400 ? response.status : 502);
   }
   let base64: string;
+  let parsed: { events: unknown[]; items: unknown[] };
   try {
     const trimmed = text.trimStart();
-    const parsed = trimmed.startsWith("event:") || trimmed.startsWith("data:")
+    parsed = trimmed.startsWith("event:") || trimmed.startsWith("data:")
       ? parseSseText(text)
       : { events: [], items: JSON.parse(text)?.output ?? [] };
     base64 = extractImageGeneration(parsed).resultBase64;
@@ -118,5 +130,7 @@ export async function generateCodexImage(
         ? "image/webp"
         : "";
   if (!mimeType) throw statusError("Codex 응답의 이미지 형식을 확인할 수 없습니다.", 502);
-  return { provider: CODEX_PROVIDER_ID, model: config.defaultImageModel, mimeType, base64 };
+  // 응답이 그림 모델을 되돌려 주면 그것을 기록한다 — 앱이 고정한 이름이 아니라 라우트가 실제로 쓴 모델이다.
+  const reported = reportedCodexImageModel(text);
+  return { provider: CODEX_PROVIDER_ID, model: reported ?? requestedImageModel, mimeType, base64 };
 }

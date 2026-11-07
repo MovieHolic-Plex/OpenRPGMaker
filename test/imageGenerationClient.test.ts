@@ -15,8 +15,9 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 describe("imageGenerationClient", () => {
-  it("defaults to the actual image-output model", () => {
-    expect(IMAGE_GENERATION_MODEL).toBe("gemini-3.1-flash-image");
+  it("defaults to the ChatGPT image provider, not Gemini", () => {
+    expect(IMAGE_GENERATION_PROVIDER_ID).toBe("openai-codex");
+    expect(IMAGE_GENERATION_MODEL).toBe("codex-image-default");
   });
 
   it("동반 서비스의 같은 오리진 /v1 경로를 친다", () => {
@@ -105,10 +106,9 @@ describe("imageGenerationClient", () => {
   it("대화 제공자와 그림 제공자가 같을 때만 다른 제공자 안내가 필요 없다", () => {
     // 기본 대화는 Google(#2535), 기본 그림은 ChatGPT(da29a9f402)라 새 설정은 안내가 뜬다.
     const config = defaultAiConfig();
-    expect(config.providerId).toBe(IMAGE_GENERATION_PROVIDER_ID);
-    expect(config.imageProviderId).toBe(RECOMMENDED_IMAGE_PROVIDER_ID);
+    expect(config.providerId).not.toBe(IMAGE_GENERATION_PROVIDER_ID);
+    expect(config.imageProviderId).toBe(IMAGE_GENERATION_PROVIDER_ID);
     expect(imageGenerationUsesOtherProvider(config)).toBe(true);
-    expect(imageGenerationUsesOtherProvider({ ...config, imageProviderId: IMAGE_GENERATION_PROVIDER_ID })).toBe(false);
-    expect(imageGenerationUsesOtherProvider({ ...config, providerId: "openai-codex", imageProviderId: IMAGE_GENERATION_PROVIDER_ID })).toBe(true);
+    expect(imageGenerationUsesOtherProvider({ ...config, imageProviderId: config.providerId })).toBe(false);
   });
 });

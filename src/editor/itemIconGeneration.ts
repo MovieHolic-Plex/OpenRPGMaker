@@ -2,6 +2,7 @@
 // 실행기(scripts/lib/piAgentRuntime.ts)가 render_request(generate_opening_image, data.itemIcon)로 부른다 — 생성 시한 300초 경로다.
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import type { CinematicStillResult } from "@/editor/openingImageGeneration";
+import { imageGenerationFailureCode } from "@/editor/imageGenerationNotice";
 import { itemIconImagePrompt, type ItemIconTarget } from "@/editor/tools/itemIconTools";
 import { genId } from "@/util/id";
 
@@ -44,6 +45,6 @@ export async function generateItemIcon(target: ItemIconTarget, options: ItemIcon
     return { ok: true, resourceId: genId(prefix), name: `${target.name} 아이콘`, prompt: itemIconImagePrompt(target), dataUrl };
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    return { ok: false, code: "image-generation-failed", summary: `「${target.name}」 아이콘을 그리지 못했습니다: ${error instanceof Error ? error.message : String(error)}` };
+    return { ok: false, code: imageGenerationFailureCode(error), summary: `「${target.name}」 아이콘을 그리지 못했습니다: ${error instanceof Error ? error.message : String(error)}` };
   }
 }

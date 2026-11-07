@@ -3,6 +3,7 @@
 // 등록은 호출자가 upsert_resource 로 수행해 쓰기 회계(diff·제안)를 그대로 탄다.
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import { prepareGameOverImageRequest, prepareOpeningImageRequest, prepareOpeningLayerRequest, type OpeningImageBrief } from "@/editor/tools/cinematicTools";
+import { imageGenerationFailureCode } from "@/editor/imageGenerationNotice";
 import { ToolError } from "@/editor/tools/types";
 import { genId } from "@/util/id";
 import type { Project } from "@/project/types";
@@ -147,13 +148,13 @@ export async function generateCinematicStill(
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };
   } catch (error) {
     if (error instanceof ImageGenerationError) {
-      return { ok: false, summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`, error), code: "image-generation-failed" };
+      return { ok: false, summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`, error), code: imageGenerationFailureCode(error) };
     }
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     return {
       ok: false,
       summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`, error),
-      code: "image-generation-failed",
+      code: imageGenerationFailureCode(error),
     };
   }
 }
