@@ -3,6 +3,7 @@
 // 프리셋이 없으면 자유 모드 — 설명만으로 그림을 만들고, 비전 모델이 그림을 보고 효과 종류와 자리를 고른다.
 // 실제 생성은 세션(assistantSession)이 맡는다 — 이 툴은 인자 검사와 ui-required 핸드오프만 한다.
 import { findTitleOpeningPreset, TITLE_OPENING_PRESETS, type TitleOpeningPreset } from "@/project/titleEffects";
+import { imageGenerationHandoffRefusedError } from "@/editor/imageGenerationNotice";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const TITLE_ART_TOOL = "generate_title_art";
@@ -110,11 +111,10 @@ const generateTitleArt: ToolDefinition = {
     },
   },
   run(_project, args): ToolExecResult {
-    const request = prepareTitleArtRequest(args);
-    return {
-      summary: "타이틀 키아트 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 만들어지지 않았습니다.",
-      data: { status: "ui-required", preset: request.preset?.id ?? "free", prompt: request.prompt, name: request.name },
-    };
+    // 인자 검증은 그대로 한다 — 잘못된 요청은 그림이 없다는 사실과 다른 이유다.
+    prepareTitleArtRequest(args);
+    throw imageGenerationHandoffRefusedError(TITLE_ART_TOOL,
+      "타이틀 키아트는 지금 환경에서 생성할 수 없습니다. 대신 upsert_resource 로 그림을 등록해 set_title_screen 으로 걸거나, 사용자에게 그림 생성을 요청하세요.");
   },
 };
 

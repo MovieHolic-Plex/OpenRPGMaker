@@ -1,3 +1,4 @@
+import { imageGenerationHandoffRefusedError } from "@/editor/imageGenerationNotice";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const IMAGE_ASSET_TOOL = "generate_image_asset";
@@ -70,10 +71,10 @@ const generateImageAsset: ToolDefinition = {
   parameters: IMAGE_ASSET_SCHEMA,
   run(_project, args): ToolExecResult {
     const request = prepareImageAssetRequest(args);
-    return {
-      summary: `${request.kind} 그림 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 등록되지 않았습니다.`,
-      data: { status: "ui-required", ...request },
-    };
+    throw imageGenerationHandoffRefusedError(IMAGE_ASSET_TOOL,
+      request.kind === "backdrop"
+        ? "맵 뒤 하늘·지평선 배경은 generate_map_background 로 만들어 바로 연결하세요. 아이콘·소품은 generate_item_icon, 타이틀은 generate_title_art, 오프닝은 generate_opening_image 입니다."
+        : "아이콘·소품은 generate_item_icon, 타이틀은 generate_title_art, 오프닝은 generate_opening_image 를 쓰세요. 또는 upsert_resource 로 그림을 등록하고 사용자에게 그림 생성을 요청하세요.");
   },
 };
 

@@ -327,11 +327,11 @@ describe("opening cinematic AI tools", () => {
     expect(read.data).toMatchObject({ gameOver: { backgroundResourceId: "oprn-still-corridor" } });
   });
 
-  it("prepares a game-over image generation handoff", () => {
+  it("fails a game-over image request hard when the environment has no generator", () => {
     const ctx = context();
     const result = runTool(ctx, "generate_game_over_image", { prompt: "비가 내리는 폐허의 왕좌" });
-    expect(result.ok, failure(result)).toBe(true);
-    expect((result.data as { status?: string } | undefined)?.status).toBe("ui-required");
+    expect(result.ok).toBe(false);
+    expect(result.issues?.map((issue) => issue.code)).toEqual(["image-generation-unavailable"]);
     expect(getTool("generate_game_over_image")?.name).toBe("generate_game_over_image");
   });
 });

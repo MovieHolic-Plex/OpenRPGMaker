@@ -193,14 +193,14 @@ describe("appearance assistant handoff", () => {
     expect(isWriteToolName(toolName)).toBe(true);
   });
 
-  it("reports UI-required preparation synchronously to headless tools without mutation", () => {
+  it("fails a headless appearance request hard instead of reporting a prepared handoff", () => {
     const project = projectFixture();
     const before = JSON.stringify(project);
 
     const result = runTool({ project }, toolName, { appearanceId: "appearance", slot: "face" });
 
-    expect(result.ok).toBe(true);
-    expect(result.data).toMatchObject({ status: "ui-required", appearanceId: "appearance", slot: "face" });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.map((issue) => issue.code)).toEqual(["image-generation-unavailable"]);
     expect(JSON.stringify(project)).toBe(before);
   });
 

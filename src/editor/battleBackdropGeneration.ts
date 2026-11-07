@@ -10,6 +10,7 @@ import {
   type BackdropFacts, type MachineCheck, type Rgba,
 } from "@/editor/battleBackdropCore";
 import { renderMapCoverCanvas } from "@/editor/mapCoverRender";
+import { imageGenerationFailureCode } from "@/editor/imageGenerationNotice";
 import { loadTilesetImage } from "@/editor/mapTileDraw";
 import { prepareBattleBackdropRequest, type BattleBackdropRequest } from "@/editor/tools/battleBackdropTools";
 import { ToolError } from "@/editor/tools/types";
@@ -120,6 +121,6 @@ export async function generateBattleBackdrop(
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, summary: `전투 배경 생성에 실패했습니다: ${message}`, code: error instanceof ImageGenerationError ? "image-generation-failed" : "battle-backdrop-failed" };
+    return { ok: false, summary: `전투 배경 생성에 실패했습니다: ${message}`, code: error instanceof ImageGenerationError ? imageGenerationFailureCode(error) : "battle-backdrop-failed" };
   }
 }

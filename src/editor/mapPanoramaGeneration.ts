@@ -9,6 +9,7 @@ import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, typ
 import { imageFailureNextStep } from "./imageGenerationFallback";
 import { genId } from "@/util/id";
 import type { RgbaImage } from "@/editor/cutsceneArt/imageProcess";
+import { imageGenerationFailureCode } from "@/editor/imageGenerationNotice";
 import type { CinematicStillResult } from "./openingImageGeneration";
 
 export type MapPanoramaLayer = "far" | "near";
@@ -196,6 +197,6 @@ export async function generateMapPanoramaLayer(args: Record<string, unknown>, op
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, code: error instanceof ImageGenerationError ? "image-generation-failed" : "image-processing-failed", summary: `맵 배경 그림 생성에 실패했습니다: ${message}${error instanceof ImageGenerationError ? ` ${imageFailureNextStep("backdrop", prompt, error)}` : ""}` };
+    return { ok: false, code: error instanceof ImageGenerationError ? imageGenerationFailureCode(error) : "image-processing-failed", summary: `맵 배경 그림 생성에 실패했습니다: ${message}${error instanceof ImageGenerationError ? ` ${imageFailureNextStep("backdrop", prompt, error)}` : ""}` };
   }
 }
