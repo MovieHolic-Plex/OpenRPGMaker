@@ -25,6 +25,8 @@ const CAP_MIN = Number(opt("cap-min", SPECS.protocol?.capMin ?? 90));
 const SMOKE_SEC = Number(opt("smoke-sec", 60));
 const RETRIES = Number(opt("retries", 1));
 const WITH_HINT = !argv.includes("--no-hint");
+const MIN_MEM_GB = Number(opt("min-mem-gb", process.env.GF_MIN_MEM_GB ?? 25));
+const ADOPT = argv.includes("--adopt");
 const CHECKER = opt("checker", process.env.GF_CHECKER ?? "/home/main/claude-viz/save-check/check.py");
 const only = opt("only") ? new Set(opt("only").split(",")) : null;
 let games = SPECS.games.filter((g) => !only || only.has(g.id));
@@ -40,6 +42,9 @@ if (argv.includes("--dry")) { for (const g of games) emit("queued", g, { genre: 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const readRun = (dir) => { try { return Object.fromEntries(readFileSync(resolve(dir, "RUN.txt"), "utf8").split(/\s+/).filter((w) => w.includes("=")).map((w) => w.split(/=(.*)/s).slice(0, 2))); } catch { return {}; } };
 const lines = (file) => { try { return readFileSync(file, "utf8").split("\n").filter(Boolean).length; } catch { return 0; } };
+const memAvailGb = () => { try { return Number(/MemAvailable:\s+(\d+)/.exec(readFileSync("/proc/meminfo", "utf8"))[1]) / 1048576; } catch { return 0; } };
+const builderAlive = (dir) => { try { return execFileSync("bash", ["-c", `pgrep -f '[b]uild-one.sh ${dir}( |$)' | wc -l`]).toString().trim() !== "0"; } catch { return false; } };
+const adoptableDir = (dir) => existsSync(resolve(dir, "RUN.txt")) && (builderAlive(dir) || Boolean(readRun(dir).state));
 const globalAgents = () => { try { return Number(execFileSync("bash", ["-c", "pgrep -fc '[b]uild-one.sh'"]).toString().trim()); } catch { return 0; } };
 const run = (cmd, args, opts) => new Promise((done) => { const c = spawn(cmd, args, { cwd: REPO, stdio: ["ignore", "pipe", "pipe"], ...opts }); let out = ""; let err = ""; c.stdout.on("data", (d) => { out += d; }); c.stderr.on("data", (d) => { err = (err + d).slice(-4000); }); c.on("close", (code) => done({ code, out, err })); });
 
@@ -49,9 +54,21 @@ for (const g of games) emit("queued", g, { genre: g.genre, theme: g.theme });
 
 let active = 0;
 const queue = [...games];
+async function adopt(game, dir, r) {
+  r.state = "building"; r.attempts = 1; r.adopted = true;
+  emit("ack", game, { attempt: 1, adopted: true });
+  while (builderAlive(dir)) { emit("progress", game, { phase: "build", hostCalls: lines(resolve(dir, "host-calls.jsonl")), adopted: true }); await sleep(20000); }
+  const runTxt = readRun(dir);
+  r.buildSec = Number(runTxt.wall_sec ?? 0) || null; r.agentSec = Number(runTxt.agent_sec ?? 0) || null; r.hostCalls = lines(resolve(dir, "host-calls.jsonl"));
+  r.state = runTxt.state === "finished" ? "finished" : runTxt.state === "capped" ? "capped" : "failed";
+  if (r.state === "failed") r.reason = runTxt.reason ?? "adopted build ended without state";
+  return r.state === "finished";
+}
+
 async function build(game) {
   const dir = resolve(OUT, game.id);
   const r = results.get(game.id);
+  if (ADOPT && adoptableDir(dir)) return adopt(game, dir, r);
   for (let attempt = 1; attempt <= 1 + RETRIES; attempt += 1) {
     if (attempt > 1) execFileSync("rm", ["-rf", dir]);
     mkdirSync(dir, { recursive: true });
@@ -115,10 +132,16 @@ async function worker(game) {
   writeSummary();
 }
 
-const gauge = setInterval(() => log.emit("gauge", null, { builders: active, queued: queue.length, globalAgents: globalAgents() }), 10000);
+const gauge = setInterval(() => log.emit("gauge", null, { builders: active, queued: queue.length, globalAgents: globalAgents(), memAvailGb: Math.round(memAvailGb() * 10) / 10 }), 10000);
 const running = [];
+const adoptable = ADOPT ? queue.filter((g) => adoptableDir(resolve(OUT, g.id))) : [];
+for (const game of adoptable) { queue.splice(queue.indexOf(game), 1); active += 1; running.push(worker(game)); }
+let heldForMem = false;
 while (queue.length) {
   if (active >= CONCURRENCY || globalAgents() >= MAX_GLOBAL_AGENTS) { await sleep(5000); continue; }
+  const mem = memAvailGb();
+  if (mem < MIN_MEM_GB) { if (!heldForMem) log.emit("gauge", null, { held: "memory", memAvailGb: Math.round(mem * 10) / 10, minMemGb: MIN_MEM_GB, builders: active }); heldForMem = true; await sleep(15000); continue; }
+  heldForMem = false;
   const game = queue.shift();
   active += 1;
   running.push(worker(game));

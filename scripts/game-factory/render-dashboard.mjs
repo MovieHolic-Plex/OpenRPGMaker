@@ -20,12 +20,12 @@ if (!RUNS.length) { console.error("--runs required"); process.exit(2); }
 
 // Several batches (pilot, rest) are laid end to end on one clock: each batch's mono is shifted by the wall-clock gap.
 const rows = [];
-const firstWall = Math.min(...RUNS.map((d) => Date.parse(JSON.parse(readFileSync(resolve(d, "events.jsonl"), "utf8").split("\n")[0]).at)));
-for (const dir of RUNS) {
-  const list = readFileSync(resolve(dir, "events.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
-  const shift = (Date.parse(list[0].at) - firstWall) / 1000 - list[0].mono / 1000;
-  for (const r of list) rows.push({ ...r, t: r.mono / 1000 + shift, dir });
-}
+// One events.jsonl may hold several dispatcher runs (an --adopt restart); each run has its own mono origin.
+const all = RUNS.flatMap((dir) => readFileSync(resolve(dir, "events.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => ({ ...JSON.parse(l), dir })));
+const firstWall = Math.min(...all.map((r) => Date.parse(r.at)));
+const origin = new Map();
+for (const r of all) if (!origin.has(r.run)) origin.set(r.run, (Date.parse(r.at) - firstWall) / 1000 - r.mono / 1000);
+for (const r of all) rows.push({ ...r, t: r.mono / 1000 + origin.get(r.run) });
 rows.sort((a, b) => a.t - b.t);
 const T_END = rows.at(-1).t;
 const games = [...new Set(rows.filter((r) => r.id).map((r) => r.id))].sort();
