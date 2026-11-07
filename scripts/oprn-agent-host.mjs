@@ -112,23 +112,31 @@ async function serve(args) {
   // 요청은 하나씩 처리한다 — 같은 기준본 위에서 두 도구가 겹쳐 저장하지 않게.
   let queue = Promise.resolve();
   const serial = (fn) => { const next = queue.then(fn, fn); queue = next.catch(() => {}); return next; };
+  // 그리기 한 판(3~8분) 동안 status 가 줄에 서면 에이전트가 「편집기 연결이 끊겼다」고 판단하고 멈춘다(2026-11-07 실측).
+  // 읽기 전용 경로는 줄을 건너뛰고, 지금 도는 도구를 busy 로 알려준다.
+  let busy = null;
+  const QUEUE_FREE = new Set(["/status", "/tools", "/schema"]);
   const readBody = (req) => new Promise((done, fail) => { let s = ""; req.on("data", (c) => { s += c; }); req.on("end", () => { try { done(s ? JSON.parse(s) : {}); } catch (e) { fail(e); } }); });
   const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1");
     let payload;
     try {
       const input = req.method === "POST" ? await readBody(req) : {};
-      payload = await serial(async () => {
+      const handle = async () => {
         switch (url.pathname) {
-          case "/status": return { revision: (await call("oprn:team.status")).revision, tools: tools.length };
+          case "/status": return { revision: (await call("oprn:team.status")).revision, tools: tools.length, busy };
           case "/tools": return tools.map((t) => ({ name: t.name, mode: t.mode, description: String(t.description).split("\n")[0].slice(0, 220) }));
           case "/schema": return tools.find((t) => t.name === url.searchParams.get("name")) ?? { ok: false, error: "unknown tool" };
           case "/get": { const w = await current(); writeFileSync(resolve(input.file), JSON.stringify(JSON.parse(H.serializeHeadlessProject(w.project)), null, 1)); return { file: input.file, revision: w.revision }; }
           case "/put": return await saveProject(H.normalizeHeadlessProject(H.loadHeadlessProject(readFileSync(resolve(input.file), "utf8"))));
-          case "/tool": return { name: input.name, ...(await runTool(input.name, input.args ?? {}, input.map)) };
+          case "/tool": {
+            busy = { tool: input.name, since: new Date().toISOString(), ...(input.args?.title ? { title: input.args.title } : {}) };
+            try { return { name: input.name, ...(await runTool(input.name, input.args ?? {}, input.map)) }; } finally { busy = null; }
+          }
           default: return { ok: false, error: `unknown path ${url.pathname}` };
         }
-      });
+      };
+      payload = QUEUE_FREE.has(url.pathname) ? await handle() : await serial(handle);
     } catch (error) {
       payload = { ok: false, error: String(error instanceof Error ? error.message : error).slice(0, 2000) };
     }
