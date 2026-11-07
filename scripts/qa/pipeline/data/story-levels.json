@@ -1,0 +1,866 @@
+{
+ "game": "fallen-star",
+ "generatedAt": "2026-11-07T11:41:03.769Z",
+ "source": "scripts/qa/runtime/fs-story-levels.mts (ACTS story order + troop rewards; gear tiers from fs-gear-lib)",
+ "gearSets": {
+  "1": {
+   "actor_hero": {
+    "armor": "equip_gen_armor_plate",
+    "helmet": "equip_gen_helm_iron",
+    "shield": "equip_gen_shield_iron"
+   },
+   "actor_fs_elena": {
+    "armor": "equip_gen_robe_mage",
+    "helmet": "equip_mage_hat"
+   },
+   "actor_fs_iris": {
+    "armor": "equip_gen_armor_leather"
+   }
+  },
+  "2": {
+   "actor_hero": {
+    "armor": "equip_gen_armor_plate",
+    "helmet": "equip_gen_helm_iron",
+    "shield": "equip_gen_shield_iron",
+    "weapon": "equip_fs_spear_star"
+   },
+   "actor_fs_elena": {
+    "armor": "equip_gen_robe_mage",
+    "helmet": "equip_mage_hat",
+    "weapon": "equip_gen_staff_crystal"
+   },
+   "actor_fs_iris": {
+    "armor": "equip_gen_armor_leather"
+   }
+  }
+ },
+ "byTroop": {
+  "troop_fs_wolves": {
+   "act": "1막",
+   "map": "fs_forest_edge",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 6,
+   "exp": 1145,
+   "gold": 0,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_edge_boar": {
+   "act": "1막",
+   "map": "fs_forest_edge",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 6,
+   "exp": 1265,
+   "gold": 40,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_stream_crabs": {
+   "act": "1막",
+   "map": "fs_forest_stream",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 6,
+   "exp": 1393,
+   "gold": 82,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_stream_eels": {
+   "act": "1막",
+   "map": "fs_forest_stream",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 6,
+   "exp": 1551,
+   "gold": 144,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_spiders": {
+   "act": "1막",
+   "map": "fs_forest_thicket",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 7,
+   "exp": 1689,
+   "gold": 192,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_thicket_moths": {
+   "act": "1막",
+   "map": "fs_forest_thicket",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 7,
+   "exp": 1813,
+   "gold": 230,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_glade_poachers": {
+   "act": "1막",
+   "map": "fs_forest_glade",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 7,
+   "exp": 1929,
+   "gold": 270,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_edge_hornets": {
+   "act": "1막",
+   "map": "fs_forest_glade",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 7,
+   "exp": 2061,
+   "gold": 370,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_elite_thornback": {
+   "act": "1막",
+   "map": "fs_forest_glade",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 8,
+   "exp": 2133,
+   "gold": 394,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_wisps": {
+   "act": "1막",
+   "map": "fs_forest",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 8,
+   "exp": 2393,
+   "gold": 514,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_valen_squad": {
+   "act": "1막",
+   "map": "fs_forest",
+   "kind": "boss",
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 8,
+   "exp": 2545,
+   "gold": 570,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_valen_crash": {
+   "act": "1막",
+   "map": "fs_forest",
+   "kind": "boss",
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 9,
+   "exp": 2641,
+   "gold": 618,
+   "gearTier": 0,
+   "storyGear": null
+  },
+  "troop_fs_inq_zeal": {
+   "act": "1막",
+   "map": "fs_vault",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 9,
+   "exp": 3121,
+   "gold": 918,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_shieldwall": {
+   "act": "1막",
+   "map": "fs_vault",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 9,
+   "exp": 3217,
+   "gold": 948,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_bolts": {
+   "act": "1막",
+   "map": "fs_vault",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 10,
+   "exp": 3373,
+   "gold": 1006,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_false_prisoner": {
+   "act": "1막",
+   "map": "fs_vault",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 10,
+   "exp": 3523,
+   "gold": 1058,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_alarm": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 10,
+   "exp": 3675,
+   "gold": 1128,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_phalanx": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 10,
+   "exp": 3853,
+   "gold": 1182,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_vigil": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 11,
+   "exp": 4021,
+   "gold": 1240,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_kennel": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 11,
+   "exp": 4227,
+   "gold": 1312,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_penance": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 11,
+   "exp": 4389,
+   "gold": 1336,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_patrol": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 11,
+   "exp": 4609,
+   "gold": 1426,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_inq_ledge": {
+   "act": "1막",
+   "map": "fs_vault_b3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 12,
+   "exp": 4819,
+   "gold": 1492,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs_dragon": {
+   "act": "1막",
+   "map": "fs_vault_b4",
+   "kind": "boss",
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs_iris"
+   ],
+   "level": 12,
+   "exp": 4983,
+   "gold": 1546,
+   "gearTier": 1,
+   "storyGear": null
+  },
+  "troop_fs2_curfew_patrol": {
+   "act": "2막",
+   "map": "fs2_hub_night",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 13,
+   "exp": 5623,
+   "gold": 2026,
+   "gearTier": 2,
+   "storyGear": null
+  },
+  "troop_fs2_starved_dogs": {
+   "act": "2막",
+   "map": "map_field_north_1",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 13,
+   "exp": 5683,
+   "gold": 2042,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_ash_crows": {
+   "act": "2막",
+   "map": "map_field_north_1",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 13,
+   "exp": 5848,
+   "gold": 2084,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_ash_wisps": {
+   "act": "2막",
+   "map": "map_field_north_2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 13,
+   "exp": 6013,
+   "gold": 2126,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_ash_snakes": {
+   "act": "2막",
+   "map": "map_field_north_2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 13,
+   "exp": 6223,
+   "gold": 2168,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_cinder_golem": {
+   "act": "2막",
+   "map": "map_field_north_2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 6408,
+   "gold": 2210,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_ash_wisps_pair": {
+   "act": "2막",
+   "map": "fs2_dawnwell",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 6688,
+   "gold": 2300,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_fort_dogs_out": {
+   "act": "2막",
+   "map": "fs2_fort_court",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 6828,
+   "gold": 2328,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_fort_knights_out": {
+   "act": "2막",
+   "map": "fs2_fort_court",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 6898,
+   "gold": 2348,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_fort_dogs": {
+   "act": "2막",
+   "map": "fs2_fortress",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 7018,
+   "gold": 2388,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_fort_knights": {
+   "act": "2막",
+   "map": "fs2_fortress",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 7088,
+   "gold": 2408,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_elite_warden": {
+   "act": "2막",
+   "map": "fs2_fortress",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 14,
+   "exp": 7208,
+   "gold": 2448,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_fort_crossbows": {
+   "act": "2막",
+   "map": "fs2_fortress_f2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 15,
+   "exp": 7358,
+   "gold": 2528,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_sarah": {
+   "act": "2막",
+   "map": "fs2_fort_court",
+   "kind": "duel",
+   "party": [
+    "actor_hero",
+    "actor_fs_elena"
+   ],
+   "level": 15,
+   "exp": 7448,
+   "gold": 2560,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_frost_wolves": {
+   "act": "2막",
+   "map": "map_snow_north_2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 16,
+   "exp": 8368,
+   "gold": 2660,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_frost_bats": {
+   "act": "2막",
+   "map": "map_snow_north_1",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 15,
+   "exp": 8173,
+   "gold": 2618,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_frost_mixed": {
+   "act": "2막",
+   "map": "fs2_ice_lake",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 17,
+   "exp": 9493,
+   "gold": 2902,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_elite_frost": {
+   "act": "2막",
+   "map": "map_snow_north_2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 16,
+   "exp": 8818,
+   "gold": 2752,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_frost_wolves_lake": {
+   "act": "2막",
+   "map": "fs2_ice_lake",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 16,
+   "exp": 9058,
+   "gold": 2812,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_frost_bats_lake": {
+   "act": "2막",
+   "map": "fs2_ice_lake",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 16,
+   "exp": 9298,
+   "gold": 2860,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_tower_sentinel": {
+   "act": "2막",
+   "map": "fs2_sky_tower",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 17,
+   "exp": 9703,
+   "gold": 2946,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_tower_moths": {
+   "act": "2막",
+   "map": "fs2_sky_tower",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 17,
+   "exp": 9963,
+   "gold": 3006,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_tower_bats": {
+   "act": "2막",
+   "map": "fs2_sky_tower_f2",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 17,
+   "exp": 10251,
+   "gold": 3078,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_tower_spiders": {
+   "act": "2막",
+   "map": "fs2_sky_tower_f3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 17,
+   "exp": 10453,
+   "gold": 3124,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_tower_snakes": {
+   "act": "2막",
+   "map": "fs2_sky_tower_f3",
+   "kind": null,
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah"
+   ],
+   "level": 18,
+   "exp": 10673,
+   "gold": 3172,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  },
+  "troop_fs2_ash_collector": {
+   "act": "2막",
+   "map": "fs2_sky_tower_top",
+   "kind": "boss",
+   "party": [
+    "actor_hero",
+    "actor_fs_elena",
+    "actor_fs2_sarah",
+    "actor_fs_iris"
+   ],
+   "level": 18,
+   "exp": 11033,
+   "gold": 3256,
+   "gearTier": 2,
+   "storyGear": {
+    "actor_hero": {
+     "weapon": "equip_fs2_rohan_spear"
+    }
+   }
+  }
+ }
+}
