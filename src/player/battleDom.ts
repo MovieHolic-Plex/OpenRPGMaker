@@ -3,7 +3,7 @@ import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, isStoreBattleAnimationId, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
-import { retroBattleIntro, retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { retroBattleIntro, retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, clearEnemyMotion, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -2273,6 +2273,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       destroyed = true;
       animationBlendObserver.disconnect();
       stopRetroClassSkill(field);
+      clearEnemyMotion(field);
       impactContact.destroy();
       trainerIntro?.destroy();
       clearBattleTimerScope();
