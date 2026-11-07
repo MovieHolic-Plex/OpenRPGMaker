@@ -127,9 +127,11 @@ const summary = {
   states: STATES,
   useSkills: USE_SKILLS,
   troops: new Set(rows.map((r) => r.troop)).size,
+  // 부대 중 이야기 표에 없는 것(비밀·분기·옛 판·초기 트룹)은 시작 레벨로만 잰 값이라 «결함» 으로 세지 않는다.
   missingStory: [...new Set(rows.filter((r) => r.missingStory).map((r) => r.troop))],
-  unwinnable: rows.filter((r) => r.unwinnable).map((r) => `${r.troop}@${r.state}`),
-  trivial: rows.filter((r) => r.trivial).map((r) => `${r.troop}@${r.state}`),
+  unassessed: rows.filter((r) => r.missingStory).map((r) => `${r.troop}@${r.state}`),
+  unwinnable: rows.filter((r) => r.unwinnable && !r.missingStory).map((r) => `${r.troop}@${r.state}`),
+  trivial: rows.filter((r) => r.trivial && !r.missingStory).map((r) => `${r.troop}@${r.state}`),
   rows,
 };
 if (outPath) writeFileSync(outPath, `${JSON.stringify(summary, null, 1)}\n`);
