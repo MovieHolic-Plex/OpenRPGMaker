@@ -10,7 +10,7 @@
 |---|---|---|
 | 조수·코딩 에이전트(선언) | 게임 짓기 규칙 「3b. Register request arcs as quests」 | `src/ai/agentRules.ts` `REGISTER_QUESTS_RULE` → `npm run agent-rules:skill` |
 | 조수(도구) | `find_quest_candidates`(읽기) · `register_quest_candidate`(쓰기) | `src/editor/tools/questTools.ts` |
-| 편집기 사용자(제안) | 자료집 → 개요 「퀘스트 제안」 — 후보마다 「퀘스트로 등록」 한 번 | `src/editor/panels/databaseOverviewQuestSuggestions.ts` |
+| 편집기 사용자(표) | 자료집 → 개요 「퀘스트」 표 — 등록 퀘스트와 제안을 한 표로(제목·시작·보고·보상·상태), 제안 행의 「퀘스트로 등록」, 시작·보고 칸을 누르면 맵의 그 이벤트로 이동 | `src/editor/panels/databaseOverviewQuestTable.ts` · 행 모델 `src/project/quest/questTable.ts` |
 | 검사기(경고) | `qa:game check` 의 `quest-unregistered` **경고**(막힘 아님) | `src/qa/gameCheck/index.ts` |
 | 탐지기(순수) | `findQuestCandidates` / `pendingQuestCandidates` / `registerQuestCandidate` | `src/project/quest/questCandidates.ts` |
 
@@ -57,6 +57,21 @@ bun scripts/content/measure-quest-candidates.mts <games root> --split tune|repor
 
 테스트(`test/questCandidates.test.ts`)는 저장된 게임 14개의 축소본(`projects/`)으로 게임별 맞힘·오탐 목록, 한 번 등록 후 로그가 차는 것,
 `qa:game` 경고가 퀘스트 0개+후보일 때만 경고(막힘 아님)인 것을 잡는다. 큰 참고 게임 셋은 크기 때문에 측정 스크립트로만 잰다.
+
+## 편집기 「퀘스트」 표 (2026-11-07)
+
+자료집 → 개요의 「퀘스트」 표가 등록 퀘스트(`project.quests`)와 아직 등록하지 않은 제안(`pendingQuestCandidates`)을 한 목록으로 보인다.
+옛 「퀘스트 제안」 목록은 이 표의 제안 행으로 합쳤고, 「이야기 구조」(단계·진행 값·엔딩)는 그대로 둔다.
+
+- 행 모델(순수) `buildQuestTableRows(project)` — 정렬: 닿지 않음 → 등록 → 제안, 그다음 제목. 거르기 `filterQuestTableRows` (전체·등록됨·제안; 등록됨에는 닿지 않음 포함).
+- 시작·보고 자리: 단계 퀘스트는 giver 이벤트(새 NPC 면 컴파일러 id `ev_<key>_giver`)가 시작이자 보고, 보상은 `rewards`.
+  그래프 퀘스트는 첫 노드 진행 값을 켜는 이벤트가 시작, 마지막 노드 값을 켜는 이벤트가 보고, 보상은 그 값을 켜는 명령 목록의 돈·아이템 지급.
+  제안 행은 후보의 giver/turnIn, 보상은 보고 이벤트가 후보 진행 값을 읽는 페이지·분기의 지급.
+- 상태 「닿지 않음」: 단계 퀘스트의 giver 이벤트가 없거나, 그래프 퀘스트의 첫/마지막 진행 값을 켜는 이벤트가 맵·공용 이벤트 어디에도 없을 때.
+  공용 이벤트에서만 켜는 값은 맵 위치가 없어 칸을 누를 수 없지만 「닿지 않음」은 아니다.
+- 이동: `resolveQuestJumpTarget` 이 맵·이벤트 존재를 확인하고, 화면은 자료집을 닫은 뒤 `focusEditorRegion`(채팅 답변 링크와 같은 경로: 맵 선택·카메라·강조)
+  + `editorState` 의 `selectedEventId` 로 그 이벤트를 고른다. 데려갈 수 없는 칸은 비활성 버튼에 이유를 적는다.
+- 테스트 `test/questTable.test.ts`.
 
 ## 다루지 않는 것
 
