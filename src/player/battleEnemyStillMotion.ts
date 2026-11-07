@@ -41,7 +41,7 @@ function slide(dx: number, dy = 0, rotate = "0deg"): Keyframe {
 
 function run(node: HTMLElement, frames: Keyframe[], options: KeyframeAnimationOptions, additive = false): void {
   const image = imageOf(node);
-  if (!image) return;
+  if (!image || typeof image.animate !== "function") return;
   animations.get(node)?.cancel();
   if (prefersReducedBattleMotion()) return;
   image.setAttribute(ANIMATED_ATTR, "true");
