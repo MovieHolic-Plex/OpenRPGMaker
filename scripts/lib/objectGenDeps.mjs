@@ -11,6 +11,9 @@ import { PNG } from "pngjs";
 import { startWorkshopGate, workshopGateStatus, cancelWorkshopGate, workshopGateUnavailable } from "./workshopGate.mjs";
 
 const MODEL = process.env.OPRN_OBJECTGEN_MODEL || "claude-opus-5-5";
+// OPRN_OBJECTGEN_CHAT_URL(OpenAI 호환 /v1, 예: ChatGPT 구독 프록시)이 있으면 `claude -p` 대신 그리로 그리기·검수한다. 키는 OPRN_OBJECTGEN_CHAT_KEY.
+const CHAT_URL = process.env.OPRN_OBJECTGEN_CHAT_URL || "";
+const CHAT_KEY = process.env.OPRN_OBJECTGEN_CHAT_KEY || "";
 const EFFORT = process.env.OPRN_OBJECTGEN_EFFORT || "medium";
 const CHAT_TIMEOUT_MS = 9 * 60_000;
 
@@ -20,7 +23,7 @@ function has(name) {
 
 /** 그릴 수 없는 까닭(없으면 null). */
 export function objectGenUnavailable() {
-  if (!has("claude")) return "기물을 그리고 검수할 Claude Code(claude)가 이 컴퓨터에 없다.";
+  if (!CHAT_URL && !has("claude")) return "기물을 그리고 검수할 Claude Code(claude)가 이 컴퓨터에 없다.";
   const codexHome = process.env.CODEX_HOME || join(homedir(), ".codex");
   if (!existsSync(join(codexHome, "auth.json"))) return "참고 그림을 그릴 ChatGPT(Codex) 로그인이 없다 — `codex login` 으로 로그인한다(Google·유료 API 로 대신 그리지 않는다).";
   return workshopGateUnavailable();
@@ -68,6 +71,25 @@ function claudeChat(log) {
       });
       child.stdin.end(`${JSON.stringify({ type: "user", message: { role: "user", content: blocks } })}\n`);
     });
+  };
+}
+
+/** 공방 ChatRequest → OpenAI 호환 chat/completions 한 번(그림은 image_url 그대로). */
+function openAiChat(log) {
+  return async (surface, request) => {
+    const started = Date.now();
+    const response = await fetch(`${CHAT_URL.replace(/\/$/u, "")}/chat/completions`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...(CHAT_KEY ? { authorization: `Bearer ${CHAT_KEY}` } : {}) },
+      body: JSON.stringify({ model: MODEL, messages: request.messages, ...(request.response_format ? { response_format: request.response_format } : {}), ...(request.temperature !== undefined ? { temperature: request.temperature } : {}) }),
+      signal: request.signal ? AbortSignal.any([request.signal, AbortSignal.timeout(CHAT_TIMEOUT_MS)]) : AbortSignal.timeout(CHAT_TIMEOUT_MS),
+    });
+    const body = await response.json().catch(() => null);
+    log?.(`objectgen chat ${surface} ${Math.round((Date.now() - started) / 1000)}s http=${response.status} model=${MODEL} route=${new URL(CHAT_URL).host}`);
+    if (!response.ok) throw Object.assign(new Error(`그리기 모델(${MODEL}) 호출 실패: HTTP ${response.status} ${JSON.stringify(body?.error ?? "").slice(0, 160)}`), { status: response.status });
+    const content = body?.choices?.[0]?.message?.content;
+    const text = typeof content === "string" ? content : Array.isArray(content) ? content.map((p) => p.text ?? "").join("\n") : "";
+    return text.replace(/^```(?:json)?\s*/iu, "").replace(/```\s*$/u, "").trim();
   };
 }
 
@@ -119,5 +141,5 @@ const png = {
 };
 
 export function createObjectGenDeps({ publicDir, log }) {
-  return { publicDir, png, chat: claudeChat(log), referenceImage: codexReference(log), objectGate: gate(log), log };
+  return { publicDir, png, chat: CHAT_URL ? openAiChat(log) : claudeChat(log), referenceImage: codexReference(log), objectGate: gate(log), log };
 }

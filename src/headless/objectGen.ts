@@ -98,14 +98,14 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
   const runner: WorkshopRunner = request.harnessId === "interior-props" ? createInteriorRunner() : createMapObjectRunner();
   const store = createMemoryWorkshopStore();
   const projectKey = "headless";
-  let palette: string[] = [];
+  let paletteHexes: string[] = [];
   if (request.harnessId === "map-objects") {
     const source = await env.tilesetSource!(request.tilesetId);
     if (!source) return { ok: false, error: `칩셋 ${request.tilesetId} 의 그림을 읽지 못했다 — 기물을 그리지 않았다.`, seconds: seconds(), calls: 0, candidates: [], round: null };
-    palette = mapObjectPaletteFrom(source, request.title, request.description);
+    paletteHexes = mapObjectPaletteFrom(source, request.title, request.description);
   }
   await runner.prepare(env);
-  const def = objectGenDefinition(request, new Set(runner.items([]).map((item) => item.key)), palette);
+  const def = objectGenDefinition(request, new Set(runner.items([]).map((item) => item.key)), paletteHexes);
   await store.putItemDef(projectKey, def);
   const item = runner.items(await store.listItemDefs(projectKey)).find((candidate) => candidate.key === def.key);
   if (!item) return { ok: false, error: "기물 정의를 만들지 못했다.", seconds: seconds(), calls: 0, candidates: [], round: null };
