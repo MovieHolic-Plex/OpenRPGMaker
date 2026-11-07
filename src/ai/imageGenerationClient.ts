@@ -1,6 +1,5 @@
 import { companionRequestBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
-import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 import { imageRouteRefusal, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
@@ -79,8 +78,7 @@ export async function generateAiImage(
   const referenceImages = parseImageReferences(request.referenceImages);
   const config = loadAiConfig();
   let providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
-  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
-  if (request.purpose) {
+  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;  if (request.purpose) {
     // 도트 용도에 이미지 모델이 불리면 네트워크로 나가기 전에 막는다(눈금·팔레트·3/4 시점을 지키지 못한다).
     const route = resolveImageRoute(request.purpose, config, {
       ...(request.providerId ? { providerId: request.providerId } : {}),
@@ -90,13 +88,9 @@ export async function generateAiImage(
     providerId = route.providerId;
     model = route.model;
   }
-  // 사용자가 그림 경로를 고르지 않아 권장값(GPT Image)이 기본으로 들어간 경우에만, ChatGPT 연결이 없을 때 Google 로 대신한다.
-  // 고른 값은 절대 바꾸지 않는다(이 파일의 「조용히 다른 모델로 바꾸지 않는다」 계약).
-  if (!deps.fetch && !request.providerId && !config.modelSelectionOverrides?.image && providerId === RECOMMENDED_IMAGE_PROVIDER_ID
-    && await companionCredentialMissing(providerId) && !await companionCredentialMissing(IMAGE_GENERATION_PROVIDER_ID)) {
-    providerId = IMAGE_GENERATION_PROVIDER_ID;
-    model = IMAGE_GENERATION_MODEL;
-  }
+  // ChatGPT 가 기본이다 — 오너 규칙(2026-11-07): 「이미지는 chatgpt 로 그려」. 예전에는 ChatGPT 자격이 없으면
+  // 조용히 Google 로 갈아탔는데, 그것이 바로 오너가 거절한 행동이다(그림이 Google 화풍으로 나오는데 사용자는 모른다).
+  // 지금은 바꾸지 않고 그대로 보내, 제공자가 401 을 돌려주면 사용자가 그 문구를 보고 연결한다.
 
   const doFetch = deps.fetch ?? fetch;
   const timeout = AbortSignal.timeout(IMAGE_REQUEST_TIMEOUT_MS);

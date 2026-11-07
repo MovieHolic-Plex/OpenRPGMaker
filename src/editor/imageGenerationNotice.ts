@@ -9,7 +9,7 @@
 // 그래서 판정·문장·툴 오류가 이 파일 하나에서 나오고, 에디터 표면과 차단 모달이 같은 문장을 쓴다.
 import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { resolveImageRoute } from "@/ai/imageRoute";
 import type { AiGateNotice } from "@/ai/aiGateNotice";
 import { ToolError } from "@/editor/tools/types";
@@ -29,8 +29,9 @@ export type ImageGenerationAvailability =
   | { readonly available: false; readonly providerId: string };
 
 /**
- * 순수 판정 — 이미 있는 판정기만 쓴다(resolveImageRoute + 주입된 자격 조회 결과). 권장값(GPT Image)이
- * 자격 없이 기본으로 들어간 경우에만 Google 로 물러서는 규칙은 generateAiImage 와 같아야 한다.
+ * 순수 판정 — 이미 있는 판정기만 쓴다(resolveImageRoute + 주입된 자격 조회 결과).
+ * 기본 제공자(ChatGPT)에 자격이 없으면 **다른 제공자로 대신하지 않는다** — 오너 규칙(2026-11-07):
+ * 「이미지는 chatgpt 로 그려」. Google 로 조용히 갈아타는 것이 바로 그 규칙의 위반이다.
  */
 export function imageGenerationAvailability(
   config: AiConfig,
@@ -39,12 +40,7 @@ export function imageGenerationAvailability(
   const route = resolveImageRoute("opening-still", config);
   if (route.kind !== "generative") return { available: false, providerId: DEFAULT_IMAGE_PROVIDER_ID };
   const providerId = route.providerId;
-  if (!credentialMissing(providerId)) return { available: true, providerId };
-  const unpinnedDefault = !config.modelSelectionOverrides?.image && providerId === RECOMMENDED_IMAGE_PROVIDER_ID;
-  if (unpinnedDefault && !credentialMissing(DEFAULT_IMAGE_PROVIDER_ID)) {
-    return { available: true, providerId: DEFAULT_IMAGE_PROVIDER_ID };
-  }
-  return { available: false, providerId };
+  return { available: !credentialMissing(providerId), providerId };
 }
 
 /**
@@ -62,14 +58,23 @@ export async function probeImageGenerationAvailability(
     missing.set(providerId, await companionCredentialMissing(providerId));
   };
   await lookup(route.providerId);
-  if (!config.modelSelectionOverrides?.image && route.providerId === RECOMMENDED_IMAGE_PROVIDER_ID) {
-    await lookup(DEFAULT_IMAGE_PROVIDER_ID);
-  }
   return imageGenerationAvailability(config, (providerId) => missing.get(providerId) === true);
 }
 
 export function imageGenerationUnavailableError(): ToolError {
   return new ToolError(imageGenerationUnavailableInstruction(), { code: IMAGE_GENERATION_UNAVAILABLE_CODE });
+}
+
+/**
+ * 「이 실행 경로에는 그림 생성기가 연결돼 있지 않다」 — 도구 이름과 한 걸음 해결책을 함께 돌려준다.
+ * read 모드 도구가 `{status:"ui-required"}` 를 **성공**으로 돌려주면 모델은 그림이 생겼다고 읽는다(2026-11-07 실측).
+ * 세션은 이 도구들을 run 전에 가로채므로, 여기까지 오는 호출은 생성기가 없는 경로뿐이다.
+ */
+export function imageGenerationHandoffRefusedError(toolName: string, alternative: string): ToolError {
+  return new ToolError(
+    `${toolName}: 이 실행 경로에는 그림 생성기가 붙어 있지 않아 아무 그림도 만들어지지 않았습니다(나중에 도착하지도 않습니다). ${alternative} 생성한 것처럼 보고하지 마라.`,
+    { code: IMAGE_GENERATION_UNAVAILABLE_CODE },
+  );
 }
 
 /** aiGateNotice + ui/aiGateModal 로 올릴 내용. 모달 껍데기는 기존 것을 그대로 쓴다. */

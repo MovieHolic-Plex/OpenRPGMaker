@@ -1,12 +1,34 @@
 import { complete } from "@oh-my-pi/pi-ai";
-import { getBundledModel } from "@oh-my-pi/pi-catalog";
+import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences";
+import { pickNewestImageModel, reportedImageModel, type ImageModelCandidate } from "../../src/ai/imageModelResolution";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 
 applyLegacyEnvAliases();
 
 export const IMAGE_PROVIDER_ID = "google-antigravity";
-export const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
+
+/**
+ * 이 제공자가 **카탈로그에 보고한** 그림 모델 중 가장 새 것을 지금 기본값으로 쓴다.
+ * 상수로 박으면 새 그림 모델이 카탈로그에 올라와도 이 경로만 옛 이름으로 계속 그린다.
+ */
+export function resolveDefaultImageModel(provider: string = IMAGE_PROVIDER_ID): string | null {
+  const listed = getBundledModels(provider as never) as unknown as readonly {
+    readonly id?: unknown;
+    readonly kind?: unknown;
+    readonly identity?: { readonly revision?: unknown } | null;
+  }[];
+  const candidates: ImageModelCandidate[] = listed.flatMap((model) => typeof model.id === "string"
+    ? [{
+      id: model.id,
+      kind: typeof model.kind === "string" ? model.kind : undefined,
+      revision: typeof model.identity?.revision === "string" ? model.identity.revision : null,
+    }]
+    : []);
+  return pickNewestImageModel(candidates);
+}
+
+export const DEFAULT_IMAGE_MODEL = resolveDefaultImageModel() ?? "gemini-3.1-flash-image";
 
 const TRANSPARENT_PNG_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==";
@@ -18,7 +40,7 @@ export interface GeneratedImage {
   readonly base64: string;
 }
 
-const IMAGE_AUTH_MESSAGE = "이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.";
+const IMAGE_AUTH_MESSAGE = "이미지를 만들려면 AI 설정 → 「그림·도트 모델」에서 Google 을 고르고 Google Antigravity 로그인을 연결해 주세요.";
 
 function isCredentialFailure(upstreamStatus: number | undefined, message: string): boolean {
   return upstreamStatus === 401 || upstreamStatus === 403
@@ -152,7 +174,7 @@ export async function generateProviderImage(
   options?.signal?.throwIfAborted();
   if (imageGenerationProviderFor(provider) === "") {
     throw statusError(
-      `${provider} 경로에서는 이미지를 생성할 수 없습니다. 이미지 생성은 Google Antigravity 구독 경로만 지원합니다.`,
+      `${provider} 경로에서는 아직 이미지를 생성할 수 없습니다. 그림은 AI 설정 → 「그림·도트 모델」에서 ChatGPT(GPT Image) 또는 Google 중 하나를 고르면 생성됩니다(사용자 지정 OpenAI 호환 엔드포인트는 그림 생성 미지원).`,
       409,
     );
   }
@@ -167,7 +189,7 @@ export async function generateProviderImage(
   }
 
   const requestedModel = typeof body.model === "string" ? body.model.trim() : "";
-  const modelId = requestedModel || DEFAULT_IMAGE_MODEL;
+  const modelId = requestedModel || resolveDefaultImageModel() || "gemini-3.1-flash-image";
 
   if (testStub()) {
     return { provider, model: modelId, mimeType: "image/png", base64: TRANSPARENT_PNG_BASE64 };
@@ -223,5 +245,4 @@ export async function generateProviderImage(
     if (isCredentialFailure(upstreamFailure.status, reason)) throw statusError(IMAGE_AUTH_MESSAGE, 401);
     throw statusError(`이미지 생성 실패: ${reason.slice(0, 400)}`, 502);
   }
-  return { provider: IMAGE_PROVIDER_ID, model: model.id, mimeType: image.mimeType, base64: image.base64 };
-}
+  return { provider: IMAGE_PROVIDER_ID, model: model.id, mimeType: image.mimeType, base64: image.base64 };}
