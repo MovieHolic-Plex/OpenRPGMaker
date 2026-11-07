@@ -326,9 +326,10 @@ export interface AutotilePoint {
   readonly y: number;
 }
 
-// 8-이웃 variantMap 재계산 — 칠해진 셀 + 8-이웃 링을 재검사한다(기존 엔진의
-// autotileNeighborMask/autotileVariantForMask 재사용). 8비트 마스크 항목이 없으면
-// 4비트(외곽) 폴백으로 조회해 부분 정의 variantMap에도 안전하다.
+// variantMap 재계산 — 칠해진 셀 + 8-이웃 링을 재검사한다. 칸 고르기는 붓 엔진(shapeAutotileGroupAround)과
+// 같은 규칙을 쓴다: 그룹의 neighborhood, 맵 밖 연결(edgeConnects · outsideConnects), 칸 위치 위상(phaseVariants),
+// 깊이 속 변형 보존(interiorVariants). 하나라도 다르면 조수·공간 컴파일이 깔 지형만 붓과 다른 칸이 된다
+// (2026-11-07 감사: 370그룹 중 136그룹이 맵 가장자리에 없는 테두리를 그렸다). 8비트 항목이 없으면 4비트로 내려간다.
 export function resolveAutotile(
   group: AutotileGroup,
   paintedCells: readonly AutotilePoint[],
@@ -338,6 +339,10 @@ export function resolveAutotile(
   const members = new Set<number>(group.memberTileIds);
   const connect = new Set<number>(group.connectTileIds ?? group.memberTileIds);
   const isConnected = (tile: number): boolean => connect.has(tile);
+  const neighborhood = group.neighborhood ?? 4;
+  const edgeConnects = group.edgeConnects === true || group.outsideConnects === true;
+  const interior = new Set((group.interiorVariants ?? []).flat());
+  const full = group.variantMap[String(neighborhood === 8 ? 255 : 15)];
   const visited = new Set<string>();
   let changed = 0;
   for (const point of paintedCells) {
@@ -352,8 +357,9 @@ export function resolveAutotile(
         if (canWrite && !canWrite(cx, cy)) continue;
         const current = map.lowerTiles[cy * map.width + cx];
         if (!members.has(current)) continue;
-        const mask = autotileNeighborMask(map, cx, cy, isConnected, 8, group.outsideConnects === true);
-        const variant = autotileVariantForMask(group, mask) ?? autotileVariantForMask(group, mask & 15);
+        const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, edgeConnects);
+        const variant = autotileVariantForMask(group, mask, cx, cy) ?? autotileVariantForMask(group, mask & 15, cx, cy);
+        if (variant === full && interior.has(current)) continue;
         if (typeof variant === "number" && variant !== current) {
           map.lowerTiles[cy * map.width + cx] = variant;
           changed += 1;
@@ -361,6 +367,8 @@ export function resolveAutotile(
       }
     }
   }
+  // 나무 composer(2~4층 나무 그리기)는 여기서 돌리지 않는다 — 다듬기는 상층을 안 건드리고(terrainPolish),
+  // jp 지역 시공은 집·소품을 다 찍은 뒤 나무를 세운다(jpRegionTool). 1층 칸 고르기만 붓과 맞춘다.
   return changed;
 }
 

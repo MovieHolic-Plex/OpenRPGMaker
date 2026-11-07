@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { RM_TYPE_GRAMMAR_PROFILE } from "@/editor/tools/v3/grammarProfiles";
 import { buildEightNeighborVariantMap, expandRoof, expandWall, resolveAutotile } from "@/editor/tools/v3/rmTypeExpander";
-import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
+import { AUTOTILE_DIR, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
@@ -145,5 +145,66 @@ describe("expandRoof / resolveAutotile", () => {
     const changed = resolveAutotile(group, [{ x: 2, y: 2 }], map);
     expect(changed).toBeGreaterThan(0);
     expect(map.lowerTiles[2 * width + 2]).toBe(11); // inner corner NE
+  });
+
+  // AI 길깔기·재료 칠하기·공간 컴파일은 resolveAutotile, 붓·채우기는 shapeAutotileGroupAround 를 쓴다.
+  // 두 경로가 같은 모양에 다른 칸을 깔면 조수가 깔 지형만 깨져 보인다(2026-11-07 감사: 370그룹 중 136).
+  const paintBoth = (group: AutotileGroup, cells: readonly { x: number; y: number }[], width: number, height: number) => {
+    const body = group.variantMap[group.neighborhood === 8 ? "255" : "15"]!;
+    const fresh = () => { const lowerTiles = Array.from({ length: width * height }, () => -1); for (const c of cells) lowerTiles[c.y * width + c.x] = body; return { width, height, lowerTiles }; };
+    const brush = fresh();
+    shapeAutotileGroupAround(brush, group, cells);
+    const ai = fresh();
+    resolveAutotile(group, cells, ai);
+    return { brush: brush.lowerTiles, ai: ai.lowerTiles };
+  };
+
+  it("resolveAutotile: edgeConnects 그룹은 맵 밖을 이어진 것으로 본다 — 붓과 같은 칸", () => {
+    const tiles = { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 6, cornerNE: 7, cornerSW: 8, cornerSE: 9 };
+    const group: AutotileGroup = {
+      id: "edge8", name: "맵 밖 연결", neighborhood: 8, edgeConnects: true,
+      memberTileIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      variantMap: buildEightNeighborVariantMap(tiles, { innerNW: 10, innerNE: 11, innerSW: 12, innerSE: 13 }),
+    };
+    // 맵 윗줄 전체를 칠한다: 북쪽·양 끝은 맵 밖 = 이어짐, 남쪽만 열려 있다 → 전부 남변(3).
+    const cells = Array.from({ length: 4 }, (_, x) => ({ x, y: 0 }));
+    const { brush, ai } = paintBoth(group, cells, 4, 3);
+    expect(brush.slice(0, 4)).toEqual([3, 3, 3, 3]);
+    expect(ai).toEqual(brush);
+  });
+
+  it("resolveAutotile: phaseVariants 그룹은 칸 위치로 몸통을 고른다 — 붓과 같은 칸", () => {
+    const variantMap: Record<string, number> = {};
+    for (let mask = 0; mask < 256; mask += 1) variantMap[String(mask)] = mask === 255 ? 100 : 50;
+    const phaseMap = (body: number) => ({ "255": body });
+    const group: AutotileGroup = {
+      id: "phase", name: "위상 몸통", neighborhood: 8, edgeConnects: true,
+      memberTileIds: [50, 100, 101, 102, 103],
+      variantMap,
+      phaseVariants: { w: 2, h: 2, maps: [phaseMap(100), phaseMap(101), phaseMap(102), phaseMap(103)] },
+    };
+    const cells = Array.from({ length: 16 }, (_, i) => ({ x: i % 4, y: Math.floor(i / 4) }));
+    const { brush, ai } = paintBoth(group, cells, 4, 4);
+    expect(new Set(brush)).toEqual(new Set([100, 101, 102, 103]));
+    expect(ai).toEqual(brush);
+  });
+
+  it("resolveAutotile: 꽉 찬 칸의 깊이 변형(interiorVariants)을 몸통으로 덮지 않는다 — 붓과 같은 칸", () => {
+    const tiles = { body: 1, edgeN: 2, edgeS: 3, edgeW: 4, edgeE: 5, cornerNW: 6, cornerNE: 7, cornerSW: 8, cornerSE: 9 };
+    const group: AutotileGroup = {
+      id: "depth", name: "깊이 음영", neighborhood: 8,
+      memberTileIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 20],
+      variantMap: buildEightNeighborVariantMap(tiles),
+      interiorVariants: [[20]],
+    };
+    const width = 5;
+    const fresh = () => { const lowerTiles = Array.from({ length: 25 }, () => 1); lowerTiles[2 * width + 2] = 20; return { width, height: 5, lowerTiles }; };
+    const cells = Array.from({ length: 25 }, (_, i) => ({ x: i % width, y: Math.floor(i / width) }));
+    const brush = fresh();
+    shapeAutotileGroupAround(brush, group, cells);
+    const ai = fresh();
+    resolveAutotile(group, cells, ai);
+    expect(ai.lowerTiles[2 * width + 2]).toBe(20);
+    expect(ai.lowerTiles).toEqual(brush.lowerTiles);
   });
 });
