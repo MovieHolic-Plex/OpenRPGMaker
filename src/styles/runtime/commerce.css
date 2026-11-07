@@ -164,66 +164,131 @@
   color: var(--runtime-window-highlight);
 }
 
-/* ── 제작 공방(openCraftShop): 선물 창 틀에 제작법 한 줄 = 산출물 · 재료(가진/필요)·골드 · 못 만드는 이유 ── */
-.runtime-craft-shop-overlay {
-  width: min(440px, calc(100% - 24px));
+/* ── 제작 공방(openCraftShop): 상점 창 틀(runtime-shop-*) 위의 전용 제작 화면 — 목록 | 상세(산출물 큰 틀·재료 칸) · 수량 · 만들기/나가기 ──
+   움직임은 장식이다. .is-still(운영체제 움직임 줄이기 · 플레이어 「메뉴 움직임 줄이기」)이면 전부 끄고 같은 정보만 남긴다. */
+.runtime-craft-shop-overlay { --craft-ember: #f59a2c; --craft-ember-soft: color-mix(in srgb, var(--craft-ember) 22%, transparent); }
+.runtime-craft-shell { position: relative; isolation: isolate; }
+.runtime-craft-shell::before {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 55%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 70% 100% at 50% 100%, var(--craft-ember-soft), transparent 70%);
+  animation: runtime-craft-glow 3.2s ease-in-out infinite alternate;
 }
+.runtime-craft-shell .runtime-shop-topbar { padding: 8px 16px; gap: 12px; }
+.runtime-craft-shell .runtime-shop-merchant-avatar { width: 36px; height: 36px; }
+.runtime-craft-shell .runtime-shop-brand-title { font-size: var(--shop-text-section); }
+.runtime-craft-shell .runtime-shop-gold { flex-direction: row; align-items: center; gap: 6px; }
+.runtime-craft-shell .runtime-shop-gold svg { width: 18px; height: 18px; color: var(--craft-ember); }
+.runtime-craft-shell .runtime-shop-gold-value { font-size: var(--shop-text-section); }
+.runtime-craft-shell .runtime-shop-prompt-panel { padding: 8px 16px; }
+.runtime-craft-shell .runtime-shop-keyhints { padding-top: 4px; }
+.runtime-craft-shell .runtime-shop-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+.runtime-craft-shell .runtime-shop-side { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.runtime-craft-shell .runtime-shop-detail-panel { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 10px 12px; }
+.runtime-craft-shop-overlay.runtime-shop-overlay { padding: 12px; }
+.runtime-craft-shell .runtime-shop-item-row { transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease; }
+.runtime-craft-shell .runtime-shop-item-row.selected { transform: translateX(2px); box-shadow: 0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft); }
+.runtime-craft-row.is-unaffordable .runtime-shop-item-name,
+.runtime-craft-row.is-unaffordable .runtime-shop-item-icon { opacity: 0.5; }
+.runtime-craft-row-max { font-variant-numeric: tabular-nums; }
+.runtime-craft-row:not(.is-unaffordable) .runtime-craft-row-max { color: var(--craft-ember); font-weight: 700; }
 
-.runtime-craft-shop-window {
-  max-height: min(240px, calc(100% - 32px));
+.runtime-craft-detail { display: flex; flex-direction: column; gap: 8px; }
+.runtime-craft-hero { display: flex; align-items: center; gap: var(--shop-space-4); min-width: 0; }
+.runtime-craft-hero-frame {
+  position: relative; flex: none; display: grid; place-items: center;
+  width: 72px; height: 72px; border-radius: var(--shop-radius-small);
+  background: radial-gradient(circle at 50% 60%, var(--craft-ember-soft), var(--shop-inset) 70%);
+  border: 2px solid var(--shop-line-strong);
+  box-shadow: inset 0 0 18px var(--shop-card);
 }
-
-.runtime-craft-shop-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
+.runtime-craft-hero.is-ready .runtime-craft-hero-frame {
+  border-color: color-mix(in srgb, var(--craft-ember) 70%, var(--shop-line-strong));
+  box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft);
+  animation: runtime-craft-ready 1.8s ease-in-out infinite alternate;
 }
-
-.runtime-craft-shop-gold {
-  color: var(--runtime-window-highlight);
-  font-weight: 700;
+.runtime-craft-hero-icon { width: 80%; height: 80%; border: 0; background-color: transparent; background-size: 85%; }
+.runtime-craft-hero-yield {
+  position: absolute; right: -6px; bottom: -6px; padding: 0 6px; border-radius: 999px;
+  background: var(--craft-ember); color: #1a0f05; font-weight: 800; font-size: var(--shop-text-small); font-variant-numeric: tabular-nums;
 }
+.runtime-craft-hero-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.runtime-craft-hero-name { font-size: var(--shop-text-title); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.runtime-craft-hero-owned { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-craft-desc { color: var(--shop-ink-dim); font-size: var(--shop-text-small); line-height: 1.4; }
 
-.runtime-craft-shop-notice {
-  font-weight: 700;
+.runtime-craft-needs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px; }
+.runtime-craft-need {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center; column-gap: 6px; padding: 3px 6px; border-radius: var(--shop-radius-small);
+  background: var(--shop-inset); border: 1px solid var(--shop-line);
 }
-
-.runtime-craft-shop-notice.is-ok {
-  color: var(--runtime-window-highlight);
+.runtime-craft-need-icon { width: 26px; height: 26px; }
+.runtime-craft-coin { display: grid; place-items: center; color: var(--craft-ember); }
+.runtime-craft-coin svg { width: 18px; height: 18px; }
+.runtime-craft-need-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--shop-text-small); color: var(--shop-ink-dim); }
+.runtime-craft-need-count { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--shop-ink); }
+.runtime-craft-need-mark {
+  display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  font-size: 12px; font-weight: 900;
 }
+.runtime-craft-need.is-met { border-color: color-mix(in srgb, var(--shop-gain) 45%, var(--shop-line)); }
+.runtime-craft-need.is-met .runtime-craft-need-mark { background: var(--shop-gain); color: #06140c; }
+.runtime-craft-need.is-short { border-color: var(--shop-loss); background: color-mix(in srgb, var(--shop-loss) 12%, var(--shop-inset)); }
+.runtime-craft-need.is-short .runtime-craft-need-count { color: var(--shop-loss); }
+.runtime-craft-need.is-short .runtime-craft-need-mark { background: var(--shop-loss); color: #1a0505; }
+.runtime-craft-need.is-short { animation: runtime-craft-short 1.2s ease-in-out infinite; }
 
-.runtime-craft-shop-notice.is-fail {
-  color: var(--runtime-window-muted);
+.runtime-craft-prompt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.runtime-craft-status-line { display: flex; flex-direction: column; flex: 1 1 12em; min-width: 0; }
+.runtime-craft-status.is-ok { color: var(--shop-gain); font-weight: 800; }
+.runtime-craft-status.is-fail { color: var(--shop-loss); font-weight: 800; }
+.runtime-craft-status.is-ok { animation: runtime-craft-toast 600ms cubic-bezier(.2,1.4,.4,1) both; }
+.runtime-craft-status.is-shake { animation: runtime-craft-shake 360ms ease both; }
+.runtime-craft-reason { color: var(--shop-loss); font-size: var(--shop-text-small); }
+.runtime-craft-count { display: inline-flex; align-items: center; gap: 4px; }
+.runtime-craft-count[hidden], .runtime-craft-reason[hidden] { display: none; }
+.runtime-craft-step { min-width: 2em; padding: 0 6px; }
+.runtime-craft-count-value { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+.runtime-craft-shell .runtime-shop-confirm:not(:disabled) {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--craft-ember) 35%, var(--shop-card)), var(--shop-card));
+  border-color: var(--craft-ember);
 }
+.runtime-craft-shell .runtime-shop-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.runtime-gift-item.runtime-craft-shop-row {
-  display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  align-items: baseline;
-  row-gap: 2px;
+.runtime-craft-flyer { position: absolute; z-index: 5; margin: 0; pointer-events: none; box-shadow: 0 0 12px var(--craft-ember); }
+.runtime-craft-burst { z-index: 6; }
+.is-crafted .runtime-craft-hero-icon { animation: runtime-craft-pop 520ms 480ms cubic-bezier(.2,1.6,.4,1) both; }
+.is-crafted .runtime-craft-hero-yield { animation: runtime-craft-pop 420ms 760ms cubic-bezier(.2,1.6,.4,1) both; }
+.is-crafted .runtime-craft-hero-frame { animation: runtime-craft-flash 700ms 420ms ease-out both; }
+@keyframes runtime-craft-flash { 0% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 0 var(--craft-ember); } 30% { box-shadow: inset 0 0 30px #ffe7b0, 0 0 36px var(--craft-ember); } 100% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft); } }
+
+@keyframes runtime-craft-glow { from { opacity: .55; } to { opacity: 1; } }
+@keyframes runtime-craft-ready { from { box-shadow: inset 0 0 18px var(--shop-card), 0 0 8px var(--craft-ember-soft); } to { box-shadow: inset 0 0 18px var(--shop-card), 0 0 20px color-mix(in srgb, var(--craft-ember) 40%, transparent); } }
+@keyframes runtime-craft-short { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--shop-loss) 45%, transparent); } }
+@keyframes runtime-craft-pop { 0% { transform: scale(.2); opacity: 0; } 70% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes runtime-craft-toast { 0% { transform: translateY(6px) scale(.96); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes runtime-craft-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+.runtime-craft-shop-overlay.is-still *, .runtime-craft-shop-overlay.is-still *::before, .runtime-craft-shop-overlay.is-still *::after,
+.runtime-craft-shop-overlay.is-still { animation: none !important; transition: none !important; }
+.runtime-craft-shop-overlay.is-still .runtime-shop-item-row.selected { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .runtime-craft-shop-overlay *, .runtime-craft-shop-overlay *::before, .runtime-craft-shop-overlay *::after { animation: none !important; transition: none !important; }
 }
-
-.runtime-craft-shop-output {
-  white-space: nowrap;
+@media (max-width: 860px), (max-height: 600px) {
+  .runtime-craft-shell .runtime-shop-brand-sub, .runtime-craft-shell .runtime-shop-keyhints { display: none; }
+  .runtime-craft-shell .runtime-shop-merchant-avatar { width: 28px; height: 28px; }
+  .runtime-craft-shell .runtime-shop-topbar { padding: 6px 12px; }
+  .runtime-craft-shell .runtime-shop-item-row { min-height: 0; padding-block: 4px; }
+  .runtime-craft-hero-frame { width: 52px; height: 52px; }
+  .runtime-craft-hero-name { font-size: var(--shop-text-section); }
+  .runtime-craft-needs { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .runtime-craft-need-icon { width: 20px; height: 20px; }
+  .runtime-craft-desc { display: none; }
 }
-
-.runtime-craft-shop-cost {
-  overflow: hidden;
-  color: var(--runtime-window-muted);
-  font-weight: 400;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.runtime-craft-shop-reason {
-  grid-column: 1 / -1;
-  color: var(--runtime-window-muted);
-  font-weight: 400;
-}
-
-.runtime-craft-shop-row.is-disabled .runtime-craft-shop-output {
-  opacity: 0.5;
+@media (max-width: 460px), (max-height: 360px) {
+  .runtime-craft-shell .runtime-shop-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .runtime-craft-hero-frame { width: 44px; height: 44px; }
 }
 
 /* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */

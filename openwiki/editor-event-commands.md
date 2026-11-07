@@ -144,7 +144,11 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 
 - **런타임:** 인터프리터가 `craftShop` 걸음으로 멈춘다 — 줄마다 산출물·재료(가진/필요)·골드, 못 만드는 줄은 이유(`재료 부족: 광석 5`·`3G 부족`).
   판정은 `craftRecipes.ts` 의 `canCraft`/`craftRecipe` 그대로(가방 «조합»과 같은 규칙). 제작법 id 로 재개하면 만들고 pc 를 그대로 두어 같은 창이 결과 한 줄과 함께 다시 열린다.
-  닫으면(`undefined`) 다음 명령. 보일 제작법이 0개면 창 없이 지나간다. 목록 계산은 `src/project/craftShop.ts`, 창은 `src/player/playSceneCraftShop.ts`(선물 창 `runtime-gift-*` 틀 + 커서 메뉴).
+  닫으면(`undefined`) 다음 명령. 보일 제작법이 0개면 창 없이 지나간다. 목록 계산은 `src/project/craftShop.ts`(줄마다 `maxCrafts` = 사본 세션에서 실제 차감해 센 횟수, `owned`, 아이콘·설명).
+  재개 값은 제작법 id(한 번) 또는 `[id, "횟수"]`(수량 단계, 상한 99, 모자라면 만든 만큼만).
+- **창:** `src/player/playSceneCraftShop.ts` — 상점 창 틀(`createShopOverlay`·`runtime-shop-*`) 위의 전용 화면. 왼쪽 제작법 목록(아이콘·이름·`×횟수`),
+  오른쪽 상세(산출물 아이콘·설명·보유, 재료마다 `가진/필요`·모자라면 `--shop-loss` 빨강, 골드 비용 vs 소지금), 아래 결과 한 줄·수량 −/+·«만들기»(못 만들면 꺼지고 이유)·«나가기».
+  키보드 ↑↓ 고르기·←→ 수량·결정·취소, 마우스 호버+클릭, 터치는 첫 탭 고르기·같은 줄 다시 탭 만들기. 좁은 화면(≤460px 또는 높이 ≤360px)은 목록 위·상세 아래 한 단. 스타일은 `src/styles/runtime/commerce.css` 의 `runtime-craft-*`.
 - **왜 전용 창인가:** 선택지는 엔진 상한 `MAX_SHOWN_CHOICES = 5`(`src/project/choiceView.ts:13`)로 앞 다섯 줄만 올린다. 제작법이 다섯이면 «그만둔다»가 여섯 번째라 화면에 없다.
   또 `item` 조건은 개수를 보지 않아 «송곳니 2» 제작법이 하나만 가져도 밝게 떴다.
 - **편집기:** 빠른 추가 `command-add-craft-shop`, 본문 `openCraftShopBody`(창 제목·장인 이름·«모든 제작법»·제작법 체크).

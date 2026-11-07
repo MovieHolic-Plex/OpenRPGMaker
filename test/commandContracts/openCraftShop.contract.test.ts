@@ -53,6 +53,28 @@ describe("openCraftShop interpreter contract", () => {
     expect(session.flags.after).toBe(true);
   });
 
+  it("reports how many times each recipe fits and crafts a quantity step in one pick without touching the session while counting", () => {
+    const project = craftProject();
+    const session = createContractSession(project);
+    session.inventory = { ore: 7 };
+    session.gold = 100;
+    const interp = createInterpreter([shop()], session, project);
+    const first = asShop(interp.start());
+    expect(first.rows.map((row) => [row.recipeId, row.maxCrafts, row.owned])).toEqual([["smelt", 3, 0], ["big", 0, 0]]);
+    expect(session.inventory).toEqual({ ore: 7 });
+    expect(session.gold).toBe(100);
+
+    const second = asShop(interp.resume(["smelt", "2"]));
+    expect(session.inventory).toMatchObject({ ore: 3, ingot: 2 });
+    expect(session.gold).toBe(90);
+    expect(second.notice).toEqual({ ok: true, text: "「주괴 2개」를 받았다." });
+    expect(second.rows[0]!.maxCrafts).toBe(1);
+
+    const third = asShop(interp.resume(["smelt", "5"]));
+    expect(session.inventory).toMatchObject({ ore: 1, ingot: 3 });
+    expect(third.notice?.ok).toBe(true);
+  });
+
   it("shows only the named recipes and refuses an id outside that list", () => {
     const project = craftProject();
     const session = createContractSession(project);

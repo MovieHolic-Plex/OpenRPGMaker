@@ -11,10 +11,19 @@ export type CraftShopIngredientView = {
   readonly name: string;
   readonly need: number;
   readonly have: number;
+  readonly iconResourceId?: string;
 };
 
 export type CraftShopRow = {
   readonly recipeId: string;
+  readonly name: string;
+  /** 산출물 아이콘(자료집 iconResourceId → imageResourceId). */
+  readonly iconResourceId?: string;
+  readonly description?: string;
+  /** 지금 재료·골드로 한 번에 만들 수 있는 최대 횟수(0 = 못 만든다). */
+  readonly maxCrafts: number;
+  /** 산출물 현재 보유 수. */
+  readonly owned: number;
   /** 「불씨 병 2개」처럼 산출물 이름과 개수. */
   readonly outputText: string;
   readonly outputItemId: string;
@@ -33,8 +42,9 @@ export function craftShopRecipeIds(project: Project, command: OpenCraftShopComma
 }
 
 export function craftShopRows(project: Project, session: PlaySession, command: OpenCraftShopCommand): CraftShopRow[] {
-  const items = new Map(project.database.items.map((item) => [item.id, item.name]));
-  const name = (id: string): string => items.get(id) ?? id;
+  const items = new Map(project.database.items.map((item) => [item.id, item]));
+  const name = (id: string): string => items.get(id)?.name ?? id;
+  const icon = (id: string): string | undefined => items.get(id)?.iconResourceId ?? items.get(id)?.imageResourceId;
   return craftShopRecipeIds(project, command).flatMap((recipeId) => {
     const recipe = craftRecipesOf(project).find((entry) => entry.id === recipeId);
     if (!recipe) return [];
@@ -45,11 +55,19 @@ export function craftShopRows(project: Project, session: PlaySession, command: O
       name: name(ingredient.itemId),
       need: ingredient.count,
       have: session.inventory[ingredient.itemId] ?? 0,
+      ...(icon(ingredient.itemId) ? { iconResourceId: icon(ingredient.itemId) } : {}),
     }));
     const goldCost = recipe.goldCost ?? 0;
     const reason = check.ok ? undefined : craftShopReason(check, ingredients, goldCost, session.gold);
+    const output = items.get(recipe.outputItemId);
+    const iconResourceId = icon(recipe.outputItemId);
     return [{
       recipeId,
+      name: recipe.name?.trim() || name(recipe.outputItemId),
+      ...(iconResourceId ? { iconResourceId } : {}),
+      ...(output?.description?.trim() ? { description: output.description.trim() } : {}),
+      maxCrafts: check.ok ? maxCraftsOf(project, session, recipeId) : 0,
+      owned: session.inventory[recipe.outputItemId] ?? 0,
       outputText: `${name(recipe.outputItemId)}${outputCount > 1 ? ` ${outputCount}개` : ""}`,
       outputItemId: recipe.outputItemId,
       outputCount,
@@ -64,13 +82,41 @@ export function craftShopRows(project: Project, session: PlaySession, command: O
  * 공방에서 고른 제작법을 한 번 만든다. 목록 밖 id 는 만들지 않는다(화면이 보여 준 것만 고를 수 있다).
  * 판정·차감은 craftRecipe 그대로다 — 가방 «조합»·제작 명령과 같은 규칙.
  */
-export function craftShopOnce(project: Project, session: PlaySession, command: OpenCraftShopCommand, recipeId: string): { ok: boolean; text: string } {
+export function craftShopOnce(project: Project, session: PlaySession, command: OpenCraftShopCommand, recipeId: string, count = 1): { ok: boolean; text: string } {
   const row = craftShopRows(project, session, command).find((entry) => entry.recipeId === recipeId);
   if (!row) return { ok: false, text: "그 제작법은 여기서 만들 수 없다." };
   if (row.disabledReason) return { ok: false, text: row.disabledReason };
-  const result = craftRecipe(project, session, recipeId);
-  if (!result.ok) return { ok: false, text: craftShopReason(result, row.ingredients, row.goldCost, session.gold) };
-  return { ok: true, text: `「${row.outputText}」${josa(row.outputText, "을/를")} 받았다.` };
+  const times = Math.max(1, Math.min(CRAFT_SHOP_MAX_COUNT, Math.trunc(count) || 1));
+  let made = 0;
+  let failure: CraftResult | undefined;
+  for (; made < times; made++) {
+    const result = craftRecipe(project, session, recipeId);
+    if (!result.ok) { failure = result; break; }
+  }
+  if (made === 0) return { ok: false, text: craftShopReason(failure as Extract<CraftResult, { ok: false }>, row.ingredients, row.goldCost, session.gold) };
+  const total = row.outputCount * made;
+  const got = `${craftShopItemName(project, row.outputItemId)}${total > 1 ? ` ${total}개` : ""}`;
+  return { ok: true, text: `「${got}」${josa(got, "을/를")} 받았다.` };
+}
+
+/** 한 번에 만들 수 있는 횟수 상한(상점 수량 상한과 같다). */
+export const CRAFT_SHOP_MAX_COUNT = 99;
+
+function craftShopItemName(project: Project, id: string): string {
+  return project.database.items.find((item) => item.id === id)?.name ?? id;
+}
+
+/** 재료·골드를 사본 세션에서 실제로 차감해 세어 본다 — 넘침·잠금·중복 재료까지 craftRecipe 규칙 그대로. */
+function maxCraftsOf(project: Project, session: PlaySession, recipeId: string): number {
+  const sandbox = {
+    ...session,
+    inventory: { ...session.inventory },
+    ...(session.itemUseCharges ? { itemUseCharges: structuredClone(session.itemUseCharges) } : {}),
+    ...(session.collections ? { collections: structuredClone(session.collections) } : {}),
+  } as PlaySession;
+  let n = 0;
+  while (n < CRAFT_SHOP_MAX_COUNT && craftRecipe(project, sandbox, recipeId).ok) n++;
+  return n;
 }
 
 function craftShopReason(
