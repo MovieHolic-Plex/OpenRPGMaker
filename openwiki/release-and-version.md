@@ -245,3 +245,33 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 경로에서도 사람만 한다.
 
 검증: `node scripts/run-vitest.mjs run test/releaseTooling.test.ts`
+
+## 발행 순서와 릴리스 담당 (2026-11-07)
+
+**사고**: v0.408.0 이 자산 0개로 발행되어 `latest` 가 됐고, README 의
+`/releases/latest/download/OPRN.Studio-windows.exe` 가 404 였다. 데스크톱 빌드는
+`scripts/lib/piAgentRuntime.ts` 의 깨진 import 로 매번 실패했는데, **발행이 산출물보다 먼저**
+일어났기 때문에 빌드 실패가 사용자에게 다운로드 실패로 바로 나갔다.
+
+**순서는 이제 코드가 강제한다.** 사람이 지켜야 하는 규칙이 아니라 워크플로의 구조다:
+
+1. `scripts/release-auto.mjs` 는 릴리스를 항상 **초안(`--draft`)** 으로만 만든다.
+2. `desktop-release.yml` 이 산출물을 만들고 올린 뒤 **이름·크기 6개를 검증**한다.
+3. 검증을 통과한 뒤에만 발행하고, 그 태그가 **가장 높은 버전일 때만** `make_latest` 한다.
+
+업로드가 실패하면 초안으로 남는다 — `releases/latest` 는 계속 이전 정상 릴리스를 준다.
+자산이 빈 채 발행된 릴리스는 `workflow_dispatch` 의 `source_ref` 로 **태그를 다시 쓰지 않고**
+(`tag=v0.408.0`, `source_ref=main`) 다른 커밋의 트리로 채운다. 30분 스케줄이 자산이 모자란
+가장 새 릴리스를 스스로 집으므로, 초안을 아무도 디스패치하지 않아 latest 가 비는 일도 없다.
+
+**담당은 릴리스 레인 하나다.** 다음 파일을 만지는 변경은 그 레인이 맡는다 — 다른 레인이
+고칠 일이 생기면 릴리스 레인에 넘긴다. 두 곳이 동시에 순서를 바꾸면 이 사고가 다시 난다.
+
+- `.github/workflows/desktop-release.yml`
+- `scripts/release.mjs` · `scripts/release-auto.mjs` · `scripts/release-desktop.mjs`
+- `scripts/lib/release*.mjs` (특히 `releaseAssets.mjs` 의 6개 이름 계약)
+
+`desktop-release` 가 빨간 동안에는 새 버전을 발행하지 않는다. 초안이 쌓여도 `latest` 는 안전하다.
+
+검증: `node scripts/run-vitest.mjs run test/releaseAssets.test.ts` — 6개 이름·크기 0·옛 버전
+이름·최고 버전 판정을 케이스로 고정한다.
