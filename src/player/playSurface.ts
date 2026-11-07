@@ -230,7 +230,11 @@ export type TouchLayout = {
    * 칸은 어느 폰이든 같은 논리 크기(WINDOW_PANEL_WIDTH×HEIGHT 게임 px)이고, 들어가면 1배(글자 12px)다.
    * top/left 는 뷰포트 위 화면 px, scale 은 칸 배율. 없으면 null.
    */
-  readonly panel: { readonly top: number; readonly left: number; readonly scale: number; readonly height: number } | null;
+  readonly panel: {
+    readonly top: number; readonly left: number; readonly scale: number; readonly height: number;
+    /** 칸이 들어갈 수 있는 세로 방 전체(화면 px) — 노치 아래~메뉴 단추 줄 위, 안전 영역 폭. 제작 창처럼 320 칸에 안 맞는 창이 이 방을 통째로 쓴다. */
+    readonly room: { readonly top: number; readonly left: number; readonly width: number; readonly height: number };
+  } | null;
   /**
    * 터치 메뉴 한 줄의 최소 높이(게임 px) — 화면에서 44px 가 되게(2026-10-25). 메뉴가 그려지는 배율(창 칸이면 칸 배율,
    * 아니면 무대 배율)로 나눈다. CSS(mobileUi.css)가 ESC 메뉴 명령 줄에 쓴다.
@@ -325,6 +329,7 @@ export function calculateTouchLayout(
           left: Math.round(safe.left + (availW - WINDOW_PANEL_WIDTH * panelScale) / 2),
           scale: panelScale,
           height: logicalH,
+          room: { top: Math.round(stageTop), left: Math.round(safe.left + 4), width: Math.floor(room.w), height: Math.floor(room.h) },
         };
       }
     }
@@ -425,9 +430,13 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
     viewport.style.setProperty("--panel-scale", String(p.scale));
     viewport.style.setProperty("--panel-cx", cssPx(p.left + (WINDOW_PANEL_WIDTH * p.scale) / 2));
     viewport.style.setProperty("--panel-cy", cssPx(p.top + (p.height * p.scale) / 2));
+    viewport.style.setProperty("--panel-room-top", cssPx(p.room.top));
+    viewport.style.setProperty("--panel-room-left", cssPx(p.room.left));
+    viewport.style.setProperty("--panel-room-w", cssPx(p.room.width));
+    viewport.style.setProperty("--panel-room-h", cssPx(p.room.height));
   } else {
     delete viewport.dataset.windowPanel;
-    for (const name of ["--panel-w", "--panel-h", "--panel-top", "--panel-left", "--panel-unscale", "--panel-scale", "--panel-cx", "--panel-cy"]) viewport.style.removeProperty(name);
+    for (const name of ["--panel-w", "--panel-h", "--panel-top", "--panel-left", "--panel-unscale", "--panel-scale", "--panel-cx", "--panel-cy", "--panel-room-top", "--panel-room-left", "--panel-room-w", "--panel-room-h"]) viewport.style.removeProperty(name);
   }
   // 상점 배치: 창 칸 안이면 칸 크기(320×300 = 작은 배치), 아니면 논리 해상도로 고른다.
   viewport.dataset.shopFit = layout.panel ? "tiny" : shopFitFor(resolution);

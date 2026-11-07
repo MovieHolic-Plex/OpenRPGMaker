@@ -46,6 +46,21 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     expect(layout.panel!.top).toBeGreaterThanOrEqual(layout.stageTop);
   });
 
+  // 제작 창은 320 칸 대신 칸이 들어갈 방 통째를 쓴다(2026-11-07 실제 플레이어 390×844 에서 이름이 한 글자씩 감겼다).
+  it.each([
+    ["iPhone 13 portrait", 390, 844],
+    ["Android portrait", 412, 915],
+  ])("%s: the window room is wider than the 320 slot, holds the slot, and ends above the menu row", (_name, w, h) => {
+    const layout = calculateTouchLayout(w, h, 480, 270, zero);
+    const p = layout.panel!;
+    expect(p.room.width).toBeGreaterThan(320);
+    expect(p.room.left + p.room.width).toBeLessThanOrEqual(w);
+    expect(p.room.top).toBe(layout.stageTop);
+    expect(p.top).toBeGreaterThanOrEqual(p.room.top);
+    expect(p.top + p.height * p.scale).toBeLessThanOrEqual(p.room.top + p.room.height + 0.5);
+    expect(p.room.top + p.room.height).toBeLessThanOrEqual(layout.controlsY - layout.stick / 2 - 52);
+  });
+
   it("iPad mini uses the 1.5x step in portrait and landscape", () => {
     expect(calculateTouchLayout(768, 1024, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
     expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);

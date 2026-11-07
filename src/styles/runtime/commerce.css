@@ -321,8 +321,9 @@
 @container craft (max-height: 600px) {
   .runtime-craft-shell :is(.runtime-shop-brand-sub, .runtime-craft-desc) { display: none; }
 }
-/* 세로 폰: 목록 위 · 상세 아래, 화면 폭을 다 쓰고 누를 것은 44px 이상. */
-@container craft (max-aspect-ratio: 3/4) {
+/* 세로 폰: 목록 위 · 상세 아래, 화면 폭을 다 쓰고 누를 것은 44px 이상.
+   9/10: 실제 플레이어 폰 세로의 창 방(노치 아래~메뉴 단추 줄 위)은 382×478(0.80)·404×560 쯤이라 3/4 로는 안 걸렸다. 가로·데스크톱 크기는 모두 1 이상. */
+@container craft (max-aspect-ratio: 9/10) {
   .player-layout .play-viewport > .runtime-shop-overlay.runtime-craft-shop-overlay > .runtime-shop-shell.runtime-craft-shell {
     --shop-text-small: 13px; --shop-text-body: 15px; --shop-text-section: 16px; --shop-text-title: 18px;
     --shop-art-row: 34px; --craft-pad: 8px;
@@ -335,6 +336,22 @@
   .runtime-craft-shell .runtime-craft-status-line { flex: none; }
   .runtime-craft-shell .runtime-shop-prompt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .runtime-craft-shell .runtime-craft-count { justify-content: center; }
+}
+/* 낮은 세로 방(실제 플레이어 폰 세로의 창 방 382×478): 목록이 두 줄, 재료가 한 줄만 보였다 — 머리·그림을 줄이고 재료는 두 칸씩,
+   수량·단추는 한 줄. 누를 것은 그대로 44px, 글자는 12px 이상. */
+@container craft (max-aspect-ratio: 9/10) and (max-height: 600px) {
+  .player-layout .play-viewport > .runtime-shop-overlay.runtime-craft-shop-overlay > .runtime-shop-shell.runtime-craft-shell {
+    --shop-text-small: 12px; --shop-text-body: 14px; --shop-text-section: 14px; --shop-text-title: 16px;
+    --shop-art-row: 26px; --craft-pad: 6px;
+  }
+  .runtime-craft-shell .runtime-shop-merchant-avatar { display: none; }
+  .runtime-craft-shell .runtime-shop-main { grid-template-rows: minmax(0, 11fr) minmax(0, 9fr); }
+  .runtime-craft-shell .runtime-shop-item-row { min-height: 44px; padding-block: 2px; }
+  .runtime-craft-shell .runtime-craft-detail { gap: 4px; }
+  .runtime-craft-shell .runtime-craft-needs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .runtime-craft-shell .runtime-craft-prompt { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .runtime-craft-shell .runtime-craft-status-line { flex: 1 1 100%; }
+  .runtime-craft-shell .runtime-shop-prompt-actions { flex: 1 1 auto; }
 }
 
 /* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */

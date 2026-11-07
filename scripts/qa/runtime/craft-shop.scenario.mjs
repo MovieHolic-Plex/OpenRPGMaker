@@ -79,6 +79,23 @@ const windowBeats = [
   { id: "leave", note: "나가기", ops: [{ kind: "click", testid: "craft-shop-leave" }, absent("craft-shop-scene"), { kind: "pressUntil", key: "z", testid: "dialogue-box", state: "absent", maxPresses: 6, timeoutMs: 2000 }, settle(700), measure("leave", WINDOW_ROWS)], shot: true },
 ];
 
+
+// 폰 세로 대조군(craft-shop-touch 세트): 같은 실제 플레이어에서 ESC 메뉴·상점이 창 칸(320 논리 폭)에 그대로 들어가는지 —
+// 제작 창만 칸에서 빼고 이 둘은 그대로여야 한다. 창 상자(화면 px)와 칸 속성을 떨군다.
+const windowBox = (name) => ({
+  kind: "evalToFile",
+  out: `${OUT}-${name}.json`,
+  fn: `() => { const b = (s) => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]; };
+    const v = document.querySelector(".play-viewport");
+    return { panel: v?.dataset.windowPanel ?? null, shopFit: v?.dataset.shopFit ?? null, menu: b('[data-testid="main-menu"]'), shop: b('[data-testid="shop-scene"]'), shell: b('[data-testid="shop-scene"] .runtime-shop-shell') }; }`,
+});
+const escBeats = [
+  { id: "menu", note: "ESC 메뉴 — 창 칸 그대로", ops: [settle(1200), { kind: "key", key: "Escape" }, present("main-menu"), settle(800), windowBox("esc")], shot: true },
+];
+const shopBeats = [
+  { id: "shop", note: "약재상 계산대 — 상점 창 칸 그대로", ops: [settle(1200), { kind: "action" }, { kind: "pressUntil", key: "z", testid: "shop-scene", state: "present", maxPresses: 8, timeoutMs: 2500 }, settle(900), windowBox("shop")], shot: true },
+];
+
 const beats = process.env.CRAFT_SHOP_MODE === "choices" ? choicesBeats : windowBeats;
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
@@ -89,5 +106,5 @@ export default {
   ...(process.env.CRAFT_SHOP_VIEWPORT ? { viewport: Object.fromEntries(process.env.CRAFT_SHOP_VIEWPORT.split("x").map((n, i) => [i ? "height" : "width", Number(n)])) } : {}),
   ...(still ? { localStorageSeed: { "oprn:player-preferences:v1": JSON.stringify({ reduceMenuMotion: true }) } } : {}),
   beats,
-  checkpointBeats: { "nina-workshop": beats },
+  checkpointBeats: { "nina-workshop": beats, "esc-menu": escBeats, "apothecary-shop": shopBeats },
 };
