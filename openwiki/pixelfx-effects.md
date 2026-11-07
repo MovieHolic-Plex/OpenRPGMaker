@@ -68,6 +68,7 @@
 | 편집기 | `src/editor/panels/pixelFxPicker.ts` · `pixelFxRecordEditor.ts` | 고르기 창, 자료집 애니메이션 탭, 기술·아이템 칸, 「애니메이션 표시」 명령, 이벤트 페이지 「상시 효과」 |
 | 조수 | `src/editor/tools/pixelFxTools.ts` · `src/pixelfx/previewSheet.ts` | `list_pixel_fx` `preview_pixel_fx` `attach_pixel_fx` `set_event_pixel_fx` `place_pixel_fx`, 능력 색인 `pixel-fx` |
 | 목록(편집기만) | `src/pixelfx/catalog.ts` | 검색(한국어 낱말 → 영어 태그), 가까운 id, 한 색 → 6단 띠 |
+| 우리 효과 | `src/pixelfx/custom/<분류>/<이름>.js` (+ `.d.ts`) · `custom/index.ts`(정적 import 표) · `custom/catalog.json`(`node scripts/content/build-pixelfx-custom-catalog.mjs` 가 생성) | 업스트림 밖에서 저작한 효과. sync 가 지우지 않는다. 로더·카탈로그·전투 길이가 vendor 다음으로 본다. 지금 `fallenstar/` 3종(떨어지는 별·화염검·달빛 숨결). 새 효과는 vendor 효과처럼 `meta`·`draw`(또는 `create`)·`act` 를 내보내고, 세 곳 어긋남은 `test/pixelFxCustomEffects.test.ts` 가 잡는다 |
 
 ## 계약
 

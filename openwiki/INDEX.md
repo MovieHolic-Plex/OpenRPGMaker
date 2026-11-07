@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8049KB / 약 2,365,814 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8050KB / 약 2,365,980 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -177,6 +177,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/pixel-art-world-school.md` | 7 | `pixel-art-world-school-stair-reference.mjs`, `pixelArtWorldSchoolBuilding.json`, `prepare-pixel-art-world-school-building.mjs`, `save-pixel-art-world-school-host.mjs`, `scripts/content/prepare-pixel-art-world-school.mjs`, `scripts/qa/pixel-art-world-school-building-capture.mjs`, `src/assets/pixelArtWorldSchoolCatalog.json` |
 | `openwiki/pixel-art-world-static-expansion.md` | 6 | `read-pixel-art-world-host.mjs`, `scripts/content/prepare-pixel-art-world-static-expansion.mjs`, `scripts/content/render-pixel-art-world-static-expansion.mjs`, `src/assets/pixelArtWorldStaticExpansionCatalog.json`, `src/editor/externalTilesetImport.ts`, `src/project/externalTilesetCatalog.ts` |
 | `openwiki/pixel-dot-authoring.md` | 6 | `docs/experiments/ff6-reference-study-20261005/README.md`, `docs/experiments/hand-magic-20261005/README.md`, `docs/experiments/hero-magic-rework-20261005/README.md`, `review-decision.json`, `verify-shots/hero-magic-rework-20261005/SUMMARY.md`, `verify-shots/snes-study-redraw-20261005/SUMMARY.md` |
+| `openwiki/pixelfx-effects.md` | 3 | `.d.ts`, `custom/catalog.json`, `custom/index.ts` |
 | `openwiki/pokemon-like-field-kit.md` | 3 | `compose.mjs`, `lib/musicScore.ts`, `package.mjs` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quest-preset-research.md` | 2 | `verify-shots/quest-library/SUMMARY.md`, `verify-shots/quest-play-proof/SUMMARY.md` |
@@ -2686,7 +2687,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 이전 판 실행 확인 기록
 - `L86` 설정의 도트 저작 모델 (2026-10-16)
 
-### `openwiki/pixelfx-effects.md` — 14KB · 102줄 · ~4,022 토큰
+### `openwiki/pixelfx-effects.md` — 14KB · 103줄 · ~4,188 토큰
 
 - `L8` 0.3.0 (2026-11-07) — 「효과에 몸이 붙는다」
   - `L13` 코어 계약 — 바뀐 것과 그대로인 것
@@ -2694,9 +2695,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L44` 우리 쪽에 실은 것
   - `L51` 아직 우리가 쓰지 않는 것 (의도)
 - `L57` 파일 지도
-- `L72` 계약
-- `L91` 실측 (2026-10-31)
-- `L97` 라이선스
+- `L73` 계약
+- `L92` 실측 (2026-10-31)
+- `L98` 라이선스
 
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
