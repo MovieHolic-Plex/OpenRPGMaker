@@ -4,6 +4,7 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import {
+  ENEMY_MOTION_RECORD_IDS,
   ENEMY_STILL_MOTION_DEFAULT,
   framedArt,
   normalizeEnemyStillMotion,
@@ -25,7 +26,7 @@ function imageOf(root: HTMLElement): HTMLElement | null {
   return root.querySelector<HTMLElement>(".battle-enemy-image");
 }
 
-const STILL = `<button class="battle-enemy"><img class="battle-enemy-image"></button>`;
+const STILL = `<button class="battle-enemy" data-record-id="enemy_fs_wolf"><img class="battle-enemy-image"></button>`;
 
 describe("적 그림 움직임 설정", () => {
   it("기본은 all 이고, 바꾸는 프로젝트만 값을 남긴다", () => {
@@ -83,6 +84,18 @@ describe("엔진 연출 단계", () => {
     expect(stillMotionLevel(sheet, imageOf(sheet), "all")).toBe("translate");
     expect(stillMotionLevel(still, imageOf(still), "off")).toBe("off");
     expect(stillMotionLevel(still, null, "all")).toBe("off");
+  });
+
+  it("허용 목록(오너 선택 A: 숲늑대·엄니멧돼지) 밖의 적은 어떤 모드에서도 움직이지 않는다", () => {
+    expect([...ENEMY_MOTION_RECORD_IDS].sort()).toEqual(["enemy_fs_boar", "enemy_fs_wolf"]);
+    const boar = node(STILL, (element) => { element.dataset.recordId = "enemy_fs_boar"; element.dataset.pixelEnemy = "dash"; });
+    expect(stillMotionLevel(boar, imageOf(boar), "all")).toBe("translate");
+    for (const recordId of ["enemy_fs_spider", ""]) {
+      const other = node(STILL, (element) => { element.dataset.recordId = recordId; element.dataset.pixelEnemy = "dash"; });
+      for (const mode of ["all", "stillOnly", "off"] as const) expect(stillMotionLevel(other, imageOf(other), mode), `${recordId}/${mode}`).toBe("off");
+    }
+    const unlisted = node(`<button class="battle-enemy"><img class="battle-enemy-image"></button>`);
+    expect(stillMotionLevel(unlisted, imageOf(unlisted), "all")).toBe("off");
   });
 
   it("보스 무대·보스 입장은 filter·scale 을 스스로 쓴다", () => {

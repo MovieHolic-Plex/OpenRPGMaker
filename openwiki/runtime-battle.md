@@ -2531,7 +2531,8 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 오너가 `monster-motion-3ways.html` 에서 본 「엔진 몸짓」(정지 적에 숨쉬기·달려듦·피격 번쩍·쓰러짐)을 설정 하나로 만들었다.
 
 - **설정** `system.enemyStillMotion`(`src/project/enemyStillMotion.ts`): `all`(기본) · `stillOnly` · `off`. 기본값은 저장하지 않는다(`databaseRecordModel` 정규화). 편집기 「전투 화면 → 전투 연출」 카드의 「적 그림 움직임」(`db-battle-enemy-still-motion`), 조수 `set_project_settings` 의 `battle.enemyStillMotion`.
-- **두 단계** `stillMotionLevel(node, image, mode)`:
+- **허용 목록(오너 선택 A, 2026-11-08)** `ENEMY_MOTION_RECORD_IDS` = `enemy_fs_wolf`(숲늑대)·`enemy_fs_boar`(엄니멧돼지). 엔진은 적 노드의 `data-record-id` 가 이 목록에 있을 때만 움직인다 — 오너 지시 「A로 몬스터 2마리만」. 몬스터별 수치는 없고 목록은 「누가 받는가」만 정한다. 넓힐 때는 이 목록에 레코드 id 를 더한다.
+- **두 단계** `stillMotionLevel(node, image, mode)`(허용 목록 밖이면 항상 `off`):
   - `full` — 칸이 없는 그림 한 장(업로드 단일 그림 등). 숨쉬기 1px · 예비동작 −2px · 달려듦 · 피격 반동 + 흰 번쩍(filter) · 쓰러짐 기울기 −18° + 아래부터 사라짐(opacity·clip-path).
   - `translate` — 칸 있는 그림(`data-pixel-enemy`·`data-charset-enemy`·`data-battler-extended`·`data-battler-anim`). **정수 이동·기울기만**, 그리고 `composite: "add"` 로 **더한다**. 이 그림들은 이미 자기 이동(바깥 노드 돌진 CSS)·진동(이미지 `translate` WAAPI `vibrateStruck`)을 갖고 있어서, replace 로 걸면 그 연출을 덮는다(측정으로 확인).
   - `off` — `stillOnly` 의 칸 그림, `off` 모드, 또는 reduced-motion.
