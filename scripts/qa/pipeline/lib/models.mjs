@@ -100,7 +100,7 @@ export function ocClient({ baseUrl, apiKey, model = "deepseek-v4.1-flash-free", 
 }
 
 /** OpenAI-compatible chat (Astra/Argon): same content list, image blocks converted to image_url. */
-export function openaiChat({ baseUrl, apiKey, model, log, stage = "review", reasoningEffort }) {
+export function openaiChat({ baseUrl, apiKey, model, log, stage = "review", reasoningEffort, retryDelayMs = 4000 }) {
   if (!baseUrl || !apiKey) throw new Error(`openai reviewer ${model} needs a baseUrl and apiKey`);
   return async function chat(content, { system, maxTokens = 4000, tries = 4, timeoutMs = 300000 } = {}) {
     const oa = toOpenAIContent(content);
@@ -123,10 +123,10 @@ export function openaiChat({ baseUrl, apiKey, model, log, stage = "review", reas
         }
         last = `${res.status} ${(await res.text()).slice(0, 200)}`;
         const retryAfter = Number(res.headers.get("retry-after") ?? 0) * 1000;
-        await sleep(Math.max(retryAfter, 4000 * (attempt + 1)));
+        await sleep(Math.max(retryAfter, retryDelayMs * (attempt + 1)));
       } catch (error) {
         last = String(error).slice(0, 200);
-        await sleep(3000 * (attempt + 1));
+        await sleep(retryDelayMs * (attempt + 1));
       }
     }
     log?.({ stage, model, ms: 0, ok: false, error: last });
@@ -160,7 +160,7 @@ export function defaultReviewerChain(env = process.env) {
   ].filter((m) => m.baseUrl && m.apiKey);
 }
 
-export function reviewerChain(members, { log, stage = "review" } = {}) {
+export function reviewerChain(members, { log, stage = "review", retryDelayMs } = {}) {
   if (!members.length) throw new Error("reviewer chain is empty (needs at least one of Opus / Astra / Argon)");
   const dead = new Set();
   let preferred = 0;
@@ -170,7 +170,11 @@ export function reviewerChain(members, { log, stage = "review" } = {}) {
     for (const index of order) {
       const member = members[index];
       if (dead.has(member.id)) continue;
-      const call = member.kind === "anthropic" ? anthropicClient({ ...member, log, stage: `${stage}:${member.id}` }) : openaiChat({ ...member, log, stage: `${stage}:${member.id}` });
+      // A dead member is skipped from then on, so one failed probe is the whole cost of a dead model.
+      const delay = member.retryDelayMs ?? retryDelayMs;
+      const call = member.kind === "anthropic"
+        ? anthropicClient({ ...member, log, stage: `${stage}:${member.id}`, ...(delay !== undefined ? { retryDelayMs: delay } : {}) })
+        : openaiChat({ ...member, log, stage: `${stage}:${member.id}`, ...(delay !== undefined ? { retryDelayMs: delay } : {}) });
       const res = await call(content, opts);
       if (res.ok) {
         if (index !== preferred) {
@@ -193,7 +197,7 @@ export function reviewerChain(members, { log, stage = "review" } = {}) {
 }
 
 /** Reviewer: Anthropic Messages API (local proxy by default, same env as the claude CLI). */
-export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", log, stage = "review" }) {
+export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", log, stage = "review", retryDelayMs = 5000 }) {
   if (!baseUrl || !apiKey) throw new Error("reviewer needs ANTHROPIC_BASE_URL and ANTHROPIC_AUTH_TOKEN (or --reviewer-*)");
   return async function messages(content, { system, maxTokens = 4000, tries = 5, timeoutMs = 300000 } = {}) {
     let last = null;
@@ -224,10 +228,10 @@ export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", lo
         }
         last = `${res.status} ${(await res.text()).slice(0, 160)}`;
         const retryAfter = Number(res.headers.get("retry-after") ?? 0) * 1000;
-        await sleep(Math.max(retryAfter, 5000 * (attempt + 1)));
+        await sleep(Math.max(retryAfter, retryDelayMs * (attempt + 1)));
       } catch (error) {
         last = String(error).slice(0, 160);
-        await sleep(4000 * (attempt + 1));
+        await sleep(retryDelayMs * (attempt + 1));
       }
     }
     log?.({ stage, model, ms: 0, ok: false, error: last });

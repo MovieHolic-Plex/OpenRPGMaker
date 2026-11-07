@@ -230,13 +230,13 @@ export function planCoverage(project, { game, maxEvents = 400, partyLevel = 12, 
   const inputs = ["keyboard", "mouse", "touch"];
   const desktopViews = ["desktop", "laptop"];
   const touchViews = ["phoneLandscape", "phonePortrait"];
+  for (const job of adversarialJobs(project, { game, partyLevel, story, gearSets, mapStory })) push(job);
   jobs.forEach((job, index) => {
     if (job.input && job.viewportName) { job.viewport = VIEWPORTS[job.viewportName]; return; }
     job.input = inputs[index % inputs.length];
     job.viewportName = job.input === "touch" ? touchViews[Math.floor(index / 3) % 2] : desktopViews[Math.floor(index / 3) % 2];
     job.viewport = VIEWPORTS[job.viewportName];
   });
-  for (const job of adversarialJobs(project, { game, partyLevel, story, gearSets, mapStory })) push(job);
   return jobs;
 }
 
@@ -280,7 +280,7 @@ function adversarialJobs(project, { game, partyLevel, story, gearSets, mapStory 
   const jobs = [];
   const add = (spec) => {
     const party = checkpointParty(project, mapStory(spec.mapId), partyLevel, gearSets);
-    jobs.push({ game, ...spec, checkpoint: { ...(spec.checkpoint ?? {}), id: `adv-${spec.adversarial}`, mapId: spec.mapId, party: party.party, ...party.extra }, kind: "adversarial", script: "adversarial" });
+    jobs.push({ game, ...spec, viewport: VIEWPORTS[spec.viewportName], checkpoint: { ...(spec.checkpoint ?? {}), id: `adv-${spec.adversarial}`, mapId: spec.mapId, party: party.party, ...party.extra }, kind: "adversarial", script: "adversarial" });
   };
   const textMap = pick(withEvents, 0) ?? project.startMapId;
   const textMap2 = pick(withEvents, 3) ?? textMap;
