@@ -41,6 +41,7 @@ export const STATE_SPECS = {
   changeGold: nativeManifestEntry("state", { kind: "changeGold", op: "+=", amount: 10 }),
   changeItem: nativeManifestEntry("state", { kind: "changeItem", itemId: "item_contract", op: "+=", amount: 1 }),
   craftRecipe: nativeManifestEntry("state", { kind: "craftRecipe", recipeId: "recipe_contract" }),
+  openCraftShop: nativeManifestEntry("state", { kind: "openCraftShop", recipeIds: ["recipe_contract"] }),
   applyItemUpgrade: nativeManifestEntry("state", { kind: "applyItemUpgrade", upgradeId: "upgrade_contract" }),
   equipTool: nativeManifestEntry("state", { kind: "equipTool", itemId: "item_contract" }),
   changeFriendship: nativeManifestEntry("state", { kind: "changeFriendship", npcKey: "npc_contract", delta: 5 }),

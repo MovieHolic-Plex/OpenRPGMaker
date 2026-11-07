@@ -164,6 +164,68 @@
   color: var(--runtime-window-highlight);
 }
 
+/* ── 제작 공방(openCraftShop): 선물 창 틀에 제작법 한 줄 = 산출물 · 재료(가진/필요)·골드 · 못 만드는 이유 ── */
+.runtime-craft-shop-overlay {
+  width: min(440px, calc(100% - 24px));
+}
+
+.runtime-craft-shop-window {
+  max-height: min(240px, calc(100% - 32px));
+}
+
+.runtime-craft-shop-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.runtime-craft-shop-gold {
+  color: var(--runtime-window-highlight);
+  font-weight: 700;
+}
+
+.runtime-craft-shop-notice {
+  font-weight: 700;
+}
+
+.runtime-craft-shop-notice.is-ok {
+  color: var(--runtime-window-highlight);
+}
+
+.runtime-craft-shop-notice.is-fail {
+  color: var(--runtime-window-muted);
+}
+
+.runtime-gift-item.runtime-craft-shop-row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: baseline;
+  row-gap: 2px;
+}
+
+.runtime-craft-shop-output {
+  white-space: nowrap;
+}
+
+.runtime-craft-shop-cost {
+  overflow: hidden;
+  color: var(--runtime-window-muted);
+  font-weight: 400;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime-craft-shop-reason {
+  grid-column: 1 / -1;
+  color: var(--runtime-window-muted);
+  font-weight: 400;
+}
+
+.runtime-craft-shop-row.is-disabled .runtime-craft-shop-output {
+  opacity: 0.5;
+}
+
 /* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */
 .runtime-chest-overlay {
   position: absolute;

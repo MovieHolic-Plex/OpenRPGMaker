@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8055KB / 약 2,367,614 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8057KB / 약 2,368,241 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,424 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~134,808 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
-| `openwiki/editor-event-commands.md` | 83KB | 33KB | 340 | ~23,089 |
+| `openwiki/editor-event-commands.md` | 85KB | 33KB | 356 | ~23,716 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
@@ -60,7 +60,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 6 | 1204, 1211, 1212, 1221, 1247, 1250 |
 | `openwiki/editor-event-authoring.md` | 16 | 549, 550, 553, 558, 559, 560, 561, 562 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 160, 173, 174, 176, 179, 180 |
+| `openwiki/editor-event-commands.md` | 6 | 176, 189, 190, 192, 195, 196 |
 | `openwiki/editor-pre-edit-routing.md` | 3 | 923, 933, 946 |
 
 ## 없는 파일을 가리키는 참조
@@ -1269,7 +1269,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 83KB · 340줄 · ~23,089 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 85KB · 356줄 · ~23,716 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 선택지 줄 조건 — 숨김(showWhen)·흐리게(enableWhen) (2026-10-30)
 - `L16` 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
@@ -1279,15 +1279,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L77` 좌표로 이동 — 고정/변수 좌표와 실패 정책 (OPRN-OUT-013, 2026-09-10)
 - `L121` 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
 - `L127` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
-- `L140` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
-- `L152` Roguelike run control (2026-08-24)
-- `L192` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
-- `L233` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L300` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L307` Command picker, validation, and preview trust (2026-07-30)
-- `L316` 회상 스틸과 AI 그림 (2026-09-03)
-- `L327` Recovered native emote command (2026-09-05)
-- `L331` 패배·엔딩 저작 (2026-09-22)
+- `L140` 제작 공방 — `openCraftShop` 한 줄로 장인 메뉴 (2026-11-07)
+- `L156` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L168` Roguelike run control (2026-08-24)
+- `L208` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
+- `L249` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L316` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L323` Command picker, validation, and preview trust (2026-07-30)
+- `L332` 회상 스틸과 AI 그림 (2026-09-03)
+- `L343` Recovered native emote command (2026-09-05)
+- `L347` 패배·엔딩 저작 (2026-09-22)
 
 ### `openwiki/editor-genre-packs.md` — 54KB · 358줄 · ~14,274 토큰 · 통째읽기 잘림
 

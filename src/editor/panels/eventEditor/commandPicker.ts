@@ -131,6 +131,7 @@ const NATIVE_ONLY_LAYOUT = [
   ["playMovie", 115],
   ["ending", 109],
   ["craftRecipe", 211],
+  ["openCraftShop", 215],
   ["applyItemUpgrade", 212],
   ["equipTool", 213],
   ["openChest", 214],

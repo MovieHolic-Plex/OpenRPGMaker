@@ -6,6 +6,8 @@ import { presentItemBranch } from "@/player/interpreter/presentItem";
 import { storeSchedulePlan } from "@/player/interpreter/schedule";
 import { clampName } from "@/player/nameEntry/hangulTable";
 import { changeActorName } from "@/project/sessionActorCommands";
+import { craftShopOnce } from "@/project/craftShop";
+import type { PlaySession } from "@/project/session";
 
 export function advanceResume(
   state: InterpreterState,
@@ -47,6 +49,14 @@ export function advanceResume(
     } else {
       frame.pc += 1;
     }
+  } else if (pending === "craftShop") {
+    const command = frame.commands[frame.pc];
+    // 제작법 id 면 만들고 pc 를 그대로 둔다 — 같은 명령이 다시 실행돼 갱신된 창을 연다. 닫기(undefined)는 다음 명령으로.
+    if (command?.kind === "openCraftShop" && typeof value === "string" && state.project) {
+      state.craftShopNotice = craftShopOnce(state.project, state.session as PlaySession, command, value);
+      return "continue";
+    }
+    frame.pc += 1;
   } else if (pending === "planSchedule") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "planSchedule") storeSchedulePlan(state.project, state.session, command, value);

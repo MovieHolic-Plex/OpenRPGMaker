@@ -1623,6 +1623,11 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         if (!step.repeat) applyMoveEventForRunner(state, step.eventId, step.moves);
         step = interp.resume(undefined);
         break;
+      case "craftShop":
+        // 제작 공방은 플레이어가 고르는 창이다 — 헤드리스는 목록만 기록하고 «그만둔다»로 이어 간다(제작 자체는 craftShop.ts 가 판정).
+        state.log.push(`craftShop: ${step.rows.map((row) => `${row.recipeId}${row.disabledReason ? "(x)" : ""}`).join(", ")}`);
+        step = interp.resume(undefined);
+        break;
       case "shop":
         state.log.push(`shop: ${formatShopItems(step.items ?? step.itemIds.map((itemId) => ({ itemId })))}`);
         return { stop: "shop", step };

@@ -119,6 +119,14 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     // kind 별 필수 참조 필드. 여기 없으면 Gemini 계열은 선언된 칸(speaker·itemId·fields·text)에 id 를 밀어 넣는다
     // (2026-09-24 실측: battleProcessing troopId 를 13번 연속 다른 칸에 넣어 거부, changeParty 는 speciesId 로 보냄).
     troopId: { type: "string", description: "battleProcessing: 조회한 troop ID(트레이너·관장·야생 무리)" },
+    recipeId: { type: "string", description: "craftRecipe: system.craftRecipes 의 제작법 ID(upsert_craft_recipe 로 만든 것)" },
+    recipeIds: {
+      type: "array", items: { type: "string" },
+      description: "openCraftShop: 공방에 내놓을 제작법 ID 목록(생략=전부). 재료를 모아 물건을 만드는 장인·공방·대장간 제작은 " +
+        "choices+craftRecipe+fork+gotoLabel 로 짜지 말고 {kind:\"openCraftShop\",speaker:\"장인 이름\",title:\"공방 이름\"} 한 줄로 쓴다 — " +
+        "재료 개수·골드 표시, 모자란 줄 흐림+이유, 제작 후 같은 창 복귀, «그만둔다»를 명령이 다 한다.",
+    },
+    title: { type: "string", description: "openCraftShop: 창 제목(예: 니나의 공방)" },
     canEscape: { type: "boolean", description: "battleProcessing: 도망 허용" },
     canLose: { type: "boolean", description: "battleProcessing: 져도 게임 오버 없이 계속" },
     actorId: { type: "string", description: "changeParty/changeExp/changeLevel/learnSkill/changeActorHp 등: 조회한 actor ID(몬스터 종 ID 아님)" },

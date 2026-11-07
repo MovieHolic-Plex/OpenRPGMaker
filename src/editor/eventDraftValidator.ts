@@ -1103,6 +1103,16 @@ function validateCommand(
       require("reference.recipe.missing", "제작법", command.recipeId, refs.recipes);
       if (command.resultVariableId !== undefined) require("reference.variable.missing", "결과 변수", command.resultVariableId, refs.variables);
       return;
+    case "openCraftShop":
+      if (command.recipeIds === undefined ? refs.recipes.size === 0 : command.recipeIds.length === 0) issues.push({
+        severity: "error", code: "openCraftShop.empty",
+        message: command.recipeIds === undefined
+          ? "제작 공방에 보여 줄 제작법이 없습니다 — 시스템에 제작법을 먼저 만드세요(이대로면 창 없이 지나갑니다)."
+          : "제작 공방의 제작법 목록이 비었습니다 — 하나 이상 고르거나 «모든 제작법»을 켜세요(이대로면 창 없이 지나갑니다).",
+        pageId, commandPath: path, field: { testId: "craft-shop-all-recipes" },
+      });
+      command.recipeIds?.forEach((id) => require("reference.recipe.missing", "제작 공방 제작법", id, refs.recipes));
+      return;
     case "applyItemUpgrade":
       require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades);
       if (command.resultVariableId !== undefined) require("reference.variable.missing", "결과 변수", command.resultVariableId, refs.variables);

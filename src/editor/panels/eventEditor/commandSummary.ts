@@ -295,6 +295,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(recipeName(cmd.recipeId)),
     ...resultVariableSummaryParts(cmd.resultVariableId),
   ),
+  openCraftShop: (cmd) => commandLine(
+    "제작 공방",
+    valuePart(cmd.title?.trim() || cmd.speaker?.trim() || "제작"),
+    plainPart(" · "),
+    valuePart(cmd.recipeIds === undefined ? "모든 제작법" : cmd.recipeIds.map(recipeName).join(", ") || "(제작법 없음)"),
+  ),
   applyItemUpgrade: (cmd) => commandLine(
     "아이템 업그레이드",
     valuePart(upgradeName(cmd.upgradeId)),

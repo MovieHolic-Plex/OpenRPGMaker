@@ -76,6 +76,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeGold: { kind: "changeGold", op: "+=", amount: 10 },
   changeItem: { kind: "changeItem", itemId: "item1", op: "+=", amount: 1 },
   craftRecipe: { kind: "craftRecipe", recipeId: "recipe1" },
+  openCraftShop: { kind: "openCraftShop", recipeIds: ["recipe1"] },
   applyItemUpgrade: { kind: "applyItemUpgrade", upgradeId: "upgrade1" },
   equipTool: { kind: "equipTool", itemId: "item1" },
   openChest: { kind: "openChest", chestId: "chest1" },

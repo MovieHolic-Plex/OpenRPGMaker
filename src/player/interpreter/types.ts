@@ -54,6 +54,15 @@ export type StepResult =
       settings: MessageWindowSettings;
     }
   | {
+      kind: "craftShop";
+      title?: string;
+      speaker?: string;
+      rows: readonly import("@/project/craftShop").CraftShopRow[];
+      gold: number;
+      /** 바로 앞 제작의 결과. 창을 처음 열 때는 없다. */
+      notice?: CraftShopNotice;
+    }
+  | {
       kind: "planSchedule";
       /** 일정표를 풀어 둔 뷰(조건이 거짓인 활동은 이미 빠져 있다). */
       view: SchedulePlanView;
@@ -239,6 +248,9 @@ export type StepResult =
   | { kind: "gameOver"; message?: string; gameOverId?: string }
   | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo; /** 에필로그 글을 대사창으로 이미 다 보였다 — 엔딩 카드가 같은 글을 다시 싣지 않는다. */ epiloguePlayed?: boolean };
 
+/** 제작 공방 한 번의 결과 — ok 면 받은 물건, 아니면 못 만든 이유. */
+export type CraftShopNotice = { readonly ok: boolean; readonly text: string };
+
 export type ResumeValue = number | boolean | string | readonly string[] | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";
 export type ResumeAdvance = "continue" | "done";
@@ -277,6 +289,8 @@ export interface InterpreterState {
   currentEventId?: string;
   /** 지금 떠 있는 조건 붙은 선택지의 화면 번호 표(choiceView.ts). 조건 없는 선택지면 없다. */
   choiceView?: import("@/project/choiceView").ChoiceView;
+  /** 제작 공방에서 방금 끝난 제작의 결과 — 다시 열리는 같은 창이 한 번 보여 주고 지운다. */
+  craftShopNotice?: CraftShopNotice;
   onFactionStanceChanged?: () => void;
   onFriendshipChanged?: (npcKey: string, delta: number) => void;
   // 루프 무한 반복 가드의 상한. 실제 카운트는 루프 프레임마다 따로 센다(Frame.loopOwner.iterations).

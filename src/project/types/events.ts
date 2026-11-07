@@ -551,6 +551,12 @@ export type Command =
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "craftRecipe"; recipeId: string; resultVariableId?: string }
+  /**
+   * 제작 공방 창을 연다. 제작법마다 재료·골드를 보여 주고, 못 만드는 줄은 이유와 함께 흐리게 둔다.
+   * 고르면 craftRecipe 와 같은 규칙으로 만들고 같은 창으로 돌아온다. 닫으면 다음 명령으로 간다.
+   * recipeIds 를 생략하면 system.craftRecipes 전부.
+   */
+  | { kind: "openCraftShop"; recipeIds?: string[]; title?: string; speaker?: string }
   | { kind: "applyItemUpgrade"; upgradeId: string; resultVariableId?: string }
   | { kind: "equipTool"; itemId?: ItemId }
   | {
