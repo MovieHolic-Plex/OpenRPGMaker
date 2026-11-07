@@ -1,14 +1,15 @@
 // Records the same Fallen Star encounter under each `system.enemyStillMotion` mode, one run per
 // variant, and captures the DOM state that decides whether the engine animator took the picture over.
 //
-//   node mm_record.mjs <worktree> <fixturesDir> <outDir> <runsJson>
+//   node mmeng_record.mjs <worktree> <fixturesDir> <outDir> <runsJson>
 //
-// runsJson: [{ key, enemyId, mapId, mode, kind, troop?, stripSheet? }]
+// runsJson: [{ key, enemyId, mapId, mode, kind, troop?, stripSheet?, reducedMotion? }]
 //   mode        : "all" | "stillOnly" | "off"  → system.enemyStillMotion
 //   kind        : "sheet"  keep the authored multi-frame sheet
 //                 "still"  drop the sheet metadata so the enemy is a single uploaded frame
 //   troop       : [{ enemyId, x, y }] for a multi-enemy fight (defaults to the single enemy)
 //   stripSheet  : true → also drop the idle strip so nothing but one <img> remains
+//   reducedMotion: true → the browser reports prefers-reduced-motion: reduce
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, resolve } from "node:path";
@@ -163,7 +164,7 @@ try {
     const errors = [];
     const frameDir = join(out, "frames", run.key);
     mkdirSync(frameDir, { recursive: true });
-    const context = await browser.newContext({ viewport: { width: 960, height: 540 } });
+    const context = await browser.newContext({ viewport: { width: 960, height: 540 }, reducedMotion: run.reducedMotion ? "reduce" : "no-preference" });
     const page = await context.newPage();
     page.on("pageerror", (error) => errors.push(String(error?.message ?? error)));
     const startedAt = Date.now();
