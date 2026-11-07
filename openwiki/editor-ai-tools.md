@@ -792,6 +792,21 @@ CLI는 UI 의도 분류 요청을 대신하지 않는다. 에디터 채팅과 �
 - **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
   2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
   3·4층은 적은 번호 그대로 둔다 — 옛 `upper` 칠하기와 같다(수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+- **오토타일 재성형은 붓과 한 규칙 (2026-11-07):** 조수의 길 깔기·재료 칠하기(`constructionTools.ts`), `polish_terrain`(`terrainPolish.ts`),
+  공간 지형 컴파일(`compileTerrain.ts`·`geographyTerrain.ts`)은 `rmTypeExpander.resolveAutotile` 을, 붓·채우기·지형 붓은
+  `autotileEngine.shapeAutotileGroupAround` 를 쓴다. 둘은 칸마다 **같은 규칙**으로 고른다 — 그룹의 `neighborhood`, 맵 밖 연결
+  `edgeConnects || outsideConnects`, 칸 위치 위상 `phaseVariants`(x,y 를 넘긴다), 꽉 찬 칸의 깊이 변형 `interiorVariants` 보존.
+  이전 `resolveAutotile` 은 8방 고정·`outsideConnects` 만·좌표 없음·깊이 보호 없음이라, 기본 프로젝트 370그룹 중 136그룹(타일셋 21개)에서
+  조수가 깔 지형이 붓과 달랐다 — 맵 가장자리에 없어야 할 테두리 액자, 버들항 자갈·판석 마당·용암의 2×2 몸통 대신 한 칸 반복,
+  다듬기 뒤 emerald_monster 깊이 음영 사라짐. 회귀: `test/rmTypeExpanderV3.test.ts` 의 붓=AI 비교 세 케이스.
+  전수 비교 도구는 `scripts/autotile-audit/probe-ai-vs-brush.mts`(수정 후 남는 차이는 나무 composer 그룹 둘뿐 — 아래).
+  **나무 composer 는 여기서 돌리지 않는다:** jp `jp-forest4-*` 숲 바닥을 붓으로 칠하면 엔진이 2~4층 나무와 그 그늘 바닥 칸을
+  다시 짜지만, `resolveAutotile` 은 1층 칸 고르기만 한다. 다듬기는 상층을 안 건드리는 계약이고, jp 지역 시공은 집·소품을 다 찍은 뒤 나무를
+  세운다(`jpRegionTool`). 숲은 `paint_jp_forest`(forestPainter) 로 칠한다.
+- **전수 감사 하네스:** `npx vite-node --script scripts/autotile-audit/audit.mts -- <out>/audit.json <out>` 가 기본 프로젝트의 모든 오토타일 그룹을
+  실제 엔진으로 10모양 칠하고 실제 렌더러(`mapTileDrawCore.drawMapTileLayer`)로 아틀라스에서 PNG 를 그린다. 보고서는
+  `node scripts/autotile-audit/report.mjs <before> <html> [--after <dir>] [--aivb-before f] [--aivb-png dir]`. 분류 예외(나무 composer, 「가장자리를
+  그리지 않는다」 문서화 평면, 366 저장 계약, 쿼터 합성 렌더, 16모양 그림의 안쪽 모서리 없음)는 코드에 이유와 함께 있다.
 - **옛 맵(선택 칸 없음)은 어떤 도구를 거쳐도 새 키가 생기지 않는다.** 쓰기는 `setLayerTileAt`/`setShadowAt`(빈 값이면 배열을 만들지 않음),
   비운 뒤엔 도구마다 `compactMapLayers`, 그리고 공유 헬퍼(`setLower`)를 쓰는 다른 도구를 위해 `toolRunner.runToolDefinition` 이
   쓰기 실행 직후 한 번 정리한다(`compactTouchedMapLayers`). **정리는 이 도구가 건드린 맵만** — 새 맵, 칸이 바뀐 맵
@@ -3318,6 +3333,7 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - `set_tile_rules` 항목 `counter: boolean` (2026-10-22): RPG Maker 카운터 속성(`TilesetDef.counterTiles`). 켜진 칸을 마주 보고 조사하면 너머(연속 카운터 2칸까지) 칸의 조사 이벤트에 말이 걸린다. 이름표가 카운터·탁자·책상인 막힘 칸은 기본으로 켜져 있어(손 도트 실내 v5·버들항 등) 보통은 부를 필요가 없다. `get_tile_info` 는 켜진 칸에 `counter: true` 를 돌려준다. `place_npc` 설명이 상점·여관 주인을 카운터 뒤 칸(카운터 윗면)에 세우고 카운터 앞 칸이 설 수 있는 바닥인지 보라고 안내한다. 런타임 계약은 `runtime-sessions.md` 「카운터 너머 말 걸기」.
 - `place_monster_center {mapId,x,y,name?,greeting?,checkpointLabel?,machineCells?[{x,y}≤6],graphic?,id?}`: 몬스터 수집용 센터 간호사. `monsterCenterRecipe` 레시피(맡길까요 → 볼 줄 → 회복 ME·섬광 → 전원 회복 → 센터 기록). 크리스탈 세이브 회복은 아래 `place_savepoint`. 모르는 칸·맵 밖 machineCells 는 거절. 몬스터 수집 잠금에서 보이고(`MONSTER_MARKER_TOOLS`·`MONSTER_GAME_INITIAL_TOOLS`) alias 는 센터·병원·간호사·회복소·포켓몬센터.
 - `place_savepoint {heal?:boolean, mode?:both|slot|checkpoint}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다. `mode` 기본 both = 체크포인트 + 저장 칸 선택 창(`openSaveMenu`), slot = 저장 창만, checkpoint = 체크포인트만.
+- **수정·보석 그림은 걷기 칩에 없다 (2026-11-07):** 물건 2(`tex_easyrpg_charset_object2`) 원본 화소 재대조 — #0 돌 받침 레버 · #1 나무 받침 레버(옛 「밧줄 뭉치」) · #2 원형 바닥 판 · #3 누름 버튼 판(옛 「받침대」) · #4 바닥 스위치 · #5 갈색 바위 · #6 **회색 바위**(옛 「보석」) · #7 광산 수레(옛 「서랍장」). 「보석」「크리스탈」 검색이 바위를 골랐다(오너 지적). 수정이 필요한 그림(`place_savepoint` 기본, JRPG 장 세이브 결정, 퍼즐 발광 상태, 시간문, 채집 표식)은 번들 아이콘 `cc0-jetrel-crystal`(`eventCompile.crystalGraphic`, 런타임은 한 칸에 맞춤)을 쓴다. `resolveGraphic({textureKey:"cc0-jetrel-*"})` 는 칩 시트로 해석하지 않고 그대로 둔다. `place_storage_chest` 의 서랍장 대체는 빨간 상자(object1#6)다. 회귀 `test/charsetObjectSemantics.test.ts`.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, effect?(flash|swirl|pillar|warp|quake), unlockWhen?, lockedMessage?, lockSide?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 전이 앞에 `effect` 연출(화면 왜곡·섬광·흔들림·파티클, 새 그림 없음)을 넣는다. `unlockWhen`({switchId}|{storyFlagId}|{variableId,op,value} 중 정확히 하나)을 주면 **잠긴 페이지를 앞에, 열린 페이지를 뒤에** 둔다(런타임은 조건이 모두 맞는 마지막 페이지를 쓴다). 모르는 키(`swich` 등)·`unlockWhen` 없는 `lockedMessage` 는 거절한다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다. 맵 이벤트는 `transfer` 뒤 명령을 실행하지 않아 왜곡은 전이 전에 스스로 풀린다.
   - **빛 표식(jrpg-loop-1)**: `graphic` 을 안 주면 투명 문이라 플레이어가 문을 찾을 수 없었다. 이제 문 칸마다 `addGateBeacon` 이 파티클(`magic`, target tile, 병렬 이벤트)을 단다(`data.beaconEventIds`). 그림을 주면 달지 않는다.
 - `lock_door {mapId,x,y,unlockWhen|unlockWhenAny,lockedText,stepBack?,speaker?,unlock?}` (`src/editor/tools/lockDoorTools.ts`): 이미 있는 이동 문(`create_transfer_pair`·`build_*` 가 만든 transfer 이벤트)을 이야기 조건이 참일 때까지 잠근다. (x,y)는 문 칸 또는 그 앞 칸, 맞닿은 같은 줄 이동 이벤트(두 칸 폭 문)도 함께. 페이지 순서 [잠김(조건 없음), 열림1, 열림2…] — 런타임은 조건이 모두 맞는 마지막 페이지를 쓴다. `unlockWhen`=조건 하나, `unlockWhenAny`=[[AND 조건들],[AND 조건들]] 의 OR(열림 페이지 여러 장); 둘 중 하나만. 조건 키는 `switchId`·`storyFlagId`·`variableId`·`timePhase`·`itemId`(그 아이템을 가지고 있을 때, 2026-10-31 — 「열쇠+낱장 세 장」은 `unlockWhenAny:[[{itemId},…]]` 하나의 AND). 잠김 페이지는 `lockedText`(+`speaker`)와 `stepBack`(기본 true) 한 걸음 물러남. 다시 부르면 id `_locked`/`_open_N` 페이지를 바꿔 끼우고 `unlock:true` 는 조건 없는 이동 페이지 하나로 되돌린다. 이동 이벤트가 없으면 `no-door`. 레시피 `story-locked-door`, 스킬 game-scene-polish 54.

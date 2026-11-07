@@ -1,0 +1,131 @@
+{
+ "effects": [
+  {
+   "id": "fallenstar/falling-star",
+   "category": "fallenstar",
+   "name": "Falling star",
+   "desc": "One star plunges from the upper left trailing a long white-gold tail, bursts on the ground in a flare and a ground shockwave, and throws star shards that bounce and fade over a cooling crater.",
+   "tags": [
+    "star",
+    "meteor",
+    "holy",
+    "impact",
+    "aoe",
+    "one-shot"
+   ],
+   "size": [
+    220,
+    240
+   ],
+   "origin": [
+    120,
+    214
+   ],
+   "duration": 1.9,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#14123a",
+    "#2b2f7a",
+    "#3f6cc4",
+    "#7fb4f0",
+    "#c8e6ff",
+    "#fff1b8",
+    "#ffd86b",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0,
+   "act": {
+    "windup": 0.8,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
+   "id": "fallenstar/flame-sword",
+   "category": "fallenstar",
+   "name": "Flame sword",
+   "desc": "A sword sweeps a crescent of fire: white-hot at the edge, cooling to red at the tail, tongues of flame rising off the cut and embers drifting up.",
+   "tags": [
+    "fire",
+    "melee",
+    "slash",
+    "sword",
+    "directional",
+    "one-shot"
+   ],
+   "size": [
+    150,
+    124
+   ],
+   "origin": [
+    48,
+    104
+   ],
+   "duration": 0.95,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#2a0a0a",
+    "#6e1308",
+    "#b8280c",
+    "#e8541a",
+    "#ff8a2a",
+    "#ffc23d",
+    "#ffe98a",
+    "#fffbe6"
+   ],
+   "actor": 1,
+   "back": 0,
+   "act": {
+    "windup": 0.55,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
+   "id": "fallenstar/moonlight-breath",
+   "category": "fallenstar",
+   "name": "Moonlight breath",
+   "desc": "A dragon's breath of moonlight rolls in from the left: a white-silver core inside billowing blue haze, swallowing the target, washing past it in a frosted bloom with crescent glints, then settling as frost crystals and drifting moon dust.",
+   "tags": [
+    "moon",
+    "breath",
+    "dragon",
+    "ice",
+    "stream",
+    "directional",
+    "aoe",
+    "one-shot"
+   ],
+   "size": [
+    300,
+    150
+   ],
+   "origin": [
+    210,
+    122
+   ],
+   "duration": 2.1,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#0e1430",
+    "#1d2e63",
+    "#3256a0",
+    "#5e8fd6",
+    "#9cc6f2",
+    "#d4ecff",
+    "#f4fbff",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0
+  }
+ ]
+}

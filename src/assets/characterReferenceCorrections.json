@@ -3296,6 +3296,162 @@
         "quality": "unspecified",
         "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 초록 옷 백발 노학자다. People2 #04 는 People3 #4 집사의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
       }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 0,
+        "label": "레버",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 0,
+        "label": "돌 받침 레버",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 1,
+        "label": "밧줄 뭉치",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 1,
+        "label": "나무 받침 레버",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 3,
+        "label": "받침대",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 3,
+        "label": "누름 버튼 판",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 5,
+        "label": "바위",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 5,
+        "label": "갈색 바위",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 6,
+        "label": "보석",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 6,
+        "label": "회색 바위",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
+    },
+    {
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 7,
+        "label": "서랍장",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 7,
+        "label": "광산 수레",
+        "attributes": {
+          "kind": "사물"
+        },
+        "status": "no-face",
+        "faceResourceId": null,
+        "quality": "unspecified",
+        "note": "2026-11-07 원본 화소 재대조: 6번은 회색 바위(보석·크리스탈 아님), 1번은 나무 받침 레버(밧줄 아님), 3번은 누름 버튼 판, 7번은 광산 수레(서랍장 아님). 사물이라 얼굴을 지정하지 않음."
+      }
     }
   ]
 }

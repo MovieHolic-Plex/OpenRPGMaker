@@ -81,7 +81,7 @@ describe('first playable creation boundary', () => {
     const event = project.maps[project.startMapId]!.events.find(e => e.id === 'ev_segment_starter')!;
     event.name = '회중시계';
     event.pages![0]!.graphic = {sprite:{type:'bundled',id:'tex_easyrpg_charset_object2'},pattern:79};
-    expect(JSON.stringify(firstSceneGraphicEvidence(project, receipt(project)))).toContain('보석');
+    expect(JSON.stringify(firstSceneGraphicEvidence(project, receipt(project)))).toContain('회색 바위');
   });
   it('rejects visible escape characters inside choice results as well as opening dialogue', () => {
     const base = seed(), next = cloneProjectSharingSharedDictionaries(base);

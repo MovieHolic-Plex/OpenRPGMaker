@@ -1144,6 +1144,22 @@
     "the revive item (onlyEffectiveOnDeadActors) has occasion battle or always and onlyUsableInMenu false",
     "in the shipped player, the item menu in battle lists the revive item and its target list contains only downed allies"
    ]
+  },
+  {
+   "id": "distinct-skill-fx-per-heal",
+   "label": "회복 기술마다 다른 효과, 불칼은 불 베기",
+   "port": 19565,
+   "lessons": [
+    "pixelfx-distinct-per-skill",
+    "pixelfx-element-matches-skill"
+   ],
+   "prompt": "회복 기술 네 개(치유·이슬 치유·명상·잘 지내)가 전부 같은 축복 빛이라 누가 뭘 썼는지 모르겠어. 기술마다 다른 픽셀 효과로 바꿔 줘. 그리고 화염검이 그냥 파란 베기에 빨간 색만 칠한 거라 불 베기처럼 안 보여 — 불꽃이 붙은 베기로 바꿔 줘.",
+   "requirements": [
+    "the four heal skills end with four different pixelFx effectIds, none of them a looping aura unless the skill is a lasting buff",
+    "the flame-sword skill's pixelFx effectId is a fire or fire-slash effect (category fire, or an effect whose tags include both fire and slash), not melee/sword-slash with only a palette change",
+    "every assigned effectId is in the catalog (list_pixel_fx) — no invented ids",
+    "in the shipped player, using each heal skill in battle shows a visibly different effect"
+   ]
   }
  ]
 }

@@ -9,7 +9,7 @@
 
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { PlacedMapObjectSummary, StampPlanFacts, StampRect, StampStep, StampTool } from "@/ai/stampPlanner";
-import { charsetGraphic } from "@/editor/tools/eventCompile";
+import { charsetGraphic, CRYSTAL_ICON_ID } from "@/editor/tools/eventCompile";
 import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { captureStructureTiles, makeStructurePlacement } from "@/project/structurePlacements";
 import type {
@@ -1364,7 +1364,7 @@ export function expandExtendedSpatialStep(
             x: cx,
             y: cy,
             name: "전이 마법진",
-            graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 6 },
+            graphic: { textureKey: CRYSTAL_ICON_ID },
             movement: "fixed",
             pages: [
               {
@@ -1758,7 +1758,7 @@ export function expandExtendedSpatialStep(
           x: sparkX,
           y: sparkY,
           name: "반짝이는 유실물",
-          graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 6 },
+          graphic: { textureKey: CRYSTAL_ICON_ID },
           movement: "fixed",
           pages: [{ lines: ["바닥에서 반짝이는 회복약과 금화를 주웠다!"] }],
         },

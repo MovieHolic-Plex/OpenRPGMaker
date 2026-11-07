@@ -13,7 +13,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { questFlagIds } from "@/project/quest/questDef";
 import { EMOTE_KINDS, type EmoteKind } from "@/project/emotes";
 import type { Command, Dir, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
-import { charsetGraphic } from "./eventCompile";
+import { charsetGraphic, crystalGraphic, CRYSTAL_ICON_ID } from "./eventCompile";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { ensureNamedSwitch } from "./flagHelpers";
 import {
@@ -1126,7 +1126,8 @@ function placeDevice(draft: Project, map: GameMap, at: Cell, id: string, device:
 }
 
 function placeSaveCrystal(draft: Project, map: GameMap, at: Cell, id: string): void {
-  const crystalGraphic = statefulObjGraphic({ sheet: "object2", index: 6, beforeDir: "down" }, "before");
+  // 물건 2 의 6번은 회색 바위다 — 수정은 번들 수정 그림으로 세운다(2026-11-07).
+  const saveCrystal = crystalGraphic();
   const commands: Command[] = [
     ...fxCommands(["se:recovery7", "flash:blue", "particles:heal"]),
     say1("푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!"),
@@ -1145,7 +1146,7 @@ function placeSaveCrystal(draft: Project, map: GameMap, at: Cell, id: string): v
         id: `${id}_p1`,
         name: "기억의 세이브 결정",
         conditions: [],
-        graphic: crystalGraphic,
+        graphic: saveCrystal,
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
@@ -1554,7 +1555,7 @@ export function buildJrpgChapter(
       const b = spot("hub", 0.5, 3);
       if (a && b) {
         takenOf(src.id).add(key(a));
-        nested(draft, "create_time_gate", { a: { mapId: src.id, x: a.x, y: a.y }, b: { mapId: hubId, x: b.x, y: b.y }, name: spec.gateName ?? "시간의 문", effect: "swirl", graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 6 } });
+        nested(draft, "create_time_gate", { a: { mapId: src.id, x: a.x, y: a.y }, b: { mapId: hubId, x: b.x, y: b.y }, name: spec.gateName ?? "시간의 문", effect: "swirl", graphic: { textureKey: CRYSTAL_ICON_ID } });
         gateOut = `${src.name} (${a.x},${a.y}) ⇄ ${hub.name} (${b.x},${b.y})`;
       } else warnings.push("시간의 문 자리를 찾지 못했다");
     }
