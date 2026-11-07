@@ -1,0 +1,28 @@
+{
+ "game": "batch1__B-medium__fun-village-1",
+ "quests": [
+  {
+   "id": "star_lock",
+   "title": "별빛 장치 되살리기",
+   "giver": {
+    "mapId": "map_beodeul_river_93178",
+    "eventId": "ev_npc_bdafd27a-e331-4955-8fb8-da22245ff58c"
+   },
+   "turnIn": [
+    {
+     "mapId": "map_beodeul_river_93178",
+     "eventId": "ev_star_lock_password"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "map_beodeul_river_93178",
+     "eventId": "ev_star_lock_password"
+    }
+   ],
+   "completionFlag": "sw_star_lock_solved",
+   "reason": "마을지기의 꺼진 장치를 고쳐 달라는 부탁 → 장치에서 풀면 스위치+엔딩(경계: 보고는 장치 자리에서)"
+  }
+ ],
+ "notQuests": []
+}

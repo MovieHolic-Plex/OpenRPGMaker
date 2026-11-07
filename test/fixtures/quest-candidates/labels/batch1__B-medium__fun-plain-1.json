@@ -1,0 +1,28 @@
+{
+ "game": "batch1__B-medium__fun-plain-1",
+ "quests": [],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "map_blank_start",
+     "eventId": "ev_star_order_seq_1"
+    },
+    {
+     "mapId": "map_blank_start",
+     "eventId": "ev_star_order_seq_2"
+    },
+    {
+     "mapId": "map_blank_start",
+     "eventId": "ev_star_order_seq_3"
+    },
+    {
+     "mapId": "map_blank_start",
+     "eventId": "ev_dawn"
+    }
+   ],
+   "kind": "puzzle",
+   "reason": "메모 한 장과 순서 퍼즐, 부탁하는 인물이 없다"
+  }
+ ]
+}

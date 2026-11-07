@@ -1,0 +1,239 @@
+{
+ "game": "ref_emerald-crown",
+ "quests": [
+  {
+   "id": "gym1_vine_path_badge",
+   "title": "실바나 체육관 덩굴 문을 열고 유림에게 도전",
+   "giver": {
+    "mapId": "mx_map_grove_gym",
+    "eventId": "mx_map_grove_gym_leader"
+   },
+   "turnIn": [
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_leader"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_device_bloom_east"
+    },
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_device_pivot"
+    },
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_device_bloom_west"
+    },
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_device_cut"
+    }
+   ],
+   "completionFlag": "mx_gym_1_puzzle;mx_badge_1",
+   "reason": "유림이 '길을 직접 열고 와 줘'라고 요청 → 4개 장치에서 순서대로 물을 주고 덤불을 정리해 mx_gym_1_puzzle 세팅 → 같은 이벤트에서 유림 대사 분기+배틀, 승리 시 mx_badge_1이 다리·라이벌 대사를 바꾼다"
+  }
+ ],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "mx_map_grove",
+     "eventId": "mx_map_grove_to_mx_map_observatory"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "mx_badge_1만 검사하는 통행 차단문, 아무도 임무를 부탁하지 않음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_grove",
+     "eventId": "mx_map_grove_to_mx_map_league_0"
+    },
+    {
+     "mapId": "mx_map_league_0",
+     "eventId": "mx_map_league_0_league_challenge"
+    },
+    {
+     "mapId": "mx_map_league_0",
+     "eventId": "mx_map_league_0_return_home"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "mx_story_beacon/mx_ending 플래그로 열리는 문과 재대결·귀환 분기뿐, 수주·보고 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_home",
+     "eventId": "mx_map_home_to_mx_map_meadow"
+    },
+    {
+     "mapId": "mx_map_grove",
+     "eventId": "mx_map_grove_to_mx_map_garden"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "mx_starter만 검사하는 진행 차단문"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_0"
+    },
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_1"
+    },
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_2"
+    },
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_3"
+    },
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_4"
+    },
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_legendary_5"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "mx_ending만 검사하는 포스트게임 조우, 부탁·보상 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_observatory",
+     "eventId": "mx_map_observatory_boss"
+    }
+   ],
+   "kind": "other",
+   "reason": "mx_story_beacon/mx_badge_1 분기 스토리 보스, 수주자도 보고 대사도 없음(등대 복구 아크)"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_grove",
+     "eventId": "mx_map_grove_rival"
+    },
+    {
+     "mapId": "mx_map_lab",
+     "eventId": "mx_map_lab_rival"
+    }
+   ],
+   "kind": "other",
+   "reason": "mx_rival_grove/mx_rival_lab 기반 재대결·컷신 배틀, 임무 수행 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_lab",
+     "eventId": "mx_map_lab_professor"
+    },
+    {
+     "mapId": "mx_map_lab",
+     "eventId": "mx_map_lab_professor_greeting_step"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "첫 동료 선택은 같은 이벤트 안 선택+지급이며 mx_starter로 다른 곳이 반응할 뿐 다른 장소 수행 단계가 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_home_house_2f",
+     "eventId": "mx_map_home_house_2f_opening"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "이름·성별 입력 오프닝, mx_intro 자기 플래그만 세팅"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_home_mart",
+     "eventId": "mx_map_home_mart_shop"
+    },
+    {
+     "mapId": "mx_map_grove_mart",
+     "eventId": "mx_map_grove_mart_shop"
+    }
+   ],
+   "kind": "shop",
+   "reason": "상점 UI만 호출"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_home_center",
+     "eventId": "mx_map_home_center_nurse"
+    },
+    {
+     "mapId": "mx_map_grove_center",
+     "eventId": "mx_map_grove_center_nurse"
+    }
+   ],
+   "kind": "other",
+   "reason": "회복소(inn) 전체 회복+체크포인트, 임무 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_school",
+     "eventId": "mx_map_school_teacher"
+    },
+    {
+     "mapId": "mx_map_meadow",
+     "eventId": "mx_map_meadow_first_wild_6"
+    },
+    {
+     "mapId": "mx_map_grove_gym",
+     "eventId": "mx_map_grove_gym_gym_guide"
+    }
+   ],
+   "kind": "tutorial",
+   "reason": "전투 설명·첫 야생 힌트·덩굴 문 공략 안내(mx_first_wild/mx_gym_1_puzzle 게이트)"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_home_house",
+     "eventId": "mx_map_home_house_resident"
+    },
+    {
+     "mapId": "mx_map_grove_house",
+     "eventId": "mx_map_grove_house_resident"
+    }
+   ],
+   "kind": "other",
+   "reason": "mx_starter/아이템 소지 검사 후 무료 회복·구슬 지급, 부탁이나 보고 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "mx_map_garden",
+     "eventId": "mx_map_garden_treasure"
+    },
+    {
+     "mapId": "mx_map_home",
+     "eventId": "mx_map_home_visit"
+    },
+    {
+     "mapId": "mx_map_grove",
+     "eventId": "mx_map_grove_visit"
+    }
+   ],
+   "kind": "other",
+   "reason": "자기 이벤트 안에서 끝나는 보물상자·방문 기록 플래그"
+  }
+ ]
+}

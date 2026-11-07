@@ -1,0 +1,178 @@
+{
+ "game": "ref_first-love",
+ "quests": [],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "fl_office",
+     "eventId": "ev_fl_minho"
+    },
+    {
+     "mapId": "fl_office",
+     "eventId": "ev_fl_coffee"
+    }
+   ],
+   "kind": "tutorial",
+   "reason": "민호의 커피 머신 강습: 같은 사무실 이벤트 안에서 끝나고 var_fl_stage=4만 세팅, 수집·배달 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_office",
+     "eventId": "ev_fl_elev"
+    },
+    {
+     "mapId": "fl_rooftop",
+     "eventId": "ev_fl_roof"
+    },
+    {
+     "mapId": "fl_rooftop",
+     "eventId": "ev_fl_roof_door"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "민호 팁대로 옥상 이동(stage 4→5). 자동 연출+선택지로 sw_fl_admitted/sw_fl_coffee만 갈리고 캔커피는 실제 아이템이 아님"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_konbini",
+     "eventId": "ev_fl_kon_enter"
+    },
+    {
+     "mapId": "fl_konbini",
+     "eventId": "ev_fl_cooler"
+    },
+    {
+     "mapId": "fl_konbini",
+     "eventId": "ev_fl_jihu_kon"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "편의점 바나나우유 장면(stage 6→7→8), sw_fl_milk/sw_fl_flashback 후 회상으로 자동 전환. sw_fl_jihu_in_konbini 게이트는 대사용"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_office_pm",
+     "eventId": "ev_fl_wed"
+    },
+    {
+     "mapId": "fl_office_fri",
+     "eventId": "ev_fl_fri"
+    }
+   ],
+   "kind": "dialogue-branch",
+   "reason": "발표 시안 오전송 수습: 같은 이벤트 안 선택으로 sw_fl_honest만 세팅, 금요일 대사 한 줄이 분기될 뿐 다른 장소 수행 단계 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_office_fri",
+     "eventId": "ev_fl_fri"
+    },
+    {
+     "mapId": "fl_street_pm",
+     "eventId": "ev_fl_run"
+    },
+    {
+     "mapId": "fl_platform_pm",
+     "eventId": "ev_fl_platform"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "21:40 열차로 가는 클라이맥스: 선택 즉시 자동 transfer 연쇄(stage 11→12), 도착하면 자동 연출이 sw_fl_jihu_boarded 세팅 후 triggerEnding — 수집·조사·배달할 대상이 없음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_office",
+     "eventId": "ev_fl_meet"
+    },
+    {
+     "mapId": "fl_office_pm",
+     "eventId": "ev_fl_w_jihu_pantry"
+    },
+    {
+     "mapId": "fl_office_fri",
+     "eventId": "ev_fl_fri"
+    }
+   ],
+   "kind": "affection",
+   "reason": "changeFriendship(minho/jihu/lead) 누적과 var_fl_jihu 임계값으로 대사·엔딩만 갈리는 호감도 시스템"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_office_pm",
+     "eventId": "ev_fl_notebook"
+    }
+   ],
+   "kind": "other",
+   "reason": "수첩 열람 선택지로 sw_fl_saw_letter/sw_fl_closed_note만 세팅, 이후 대사 분기용"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_street",
+     "eventId": "ev_fl_office_door"
+    },
+    {
+     "mapId": "fl_street",
+     "eventId": "ev_fl_konbini_am"
+    },
+    {
+     "mapId": "fl_street",
+     "eventId": "ev_fl_subway_am"
+    },
+    {
+     "mapId": "fl_street_pm",
+     "eventId": "ev_fl_konbini_pm"
+    },
+    {
+     "mapId": "fl_street_pm",
+     "eventId": "ev_fl_subway_pm"
+    },
+    {
+     "mapId": "fl_office_pm",
+     "eventId": "ev_fl_w_elev"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "var_fl_stage 값만 검사하는 이동 차단/해제문, 아무도 임무를 주지 않음"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_broadcast",
+     "eventId": "ev_fl_flashback"
+    },
+    {
+     "mapId": "fl_street",
+     "eventId": "ev_fl_cold_open"
+    },
+    {
+     "mapId": "fl_street",
+     "eventId": "ev_fl_opening_stage"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "10년 전 회상·오프닝 연출: sw_fl_flashback/stage 게이트로 자동 재생되고 이후 stage만 변경"
+  },
+  {
+   "events": [
+    {
+     "mapId": "fl_street_pm",
+     "eventId": "ev_fl_end_b_street"
+    },
+    {
+     "mapId": "fl_street_pm",
+     "eventId": "ev_fl_dinner_rain"
+    }
+   ],
+   "kind": "cutscene",
+   "reason": "stage 20/21 도달 시 자동 재생되는 엔딩 분기(triggerEnding end_fl_normal_team / end_fl_normal_late_reply)"
+  }
+ ]
+}

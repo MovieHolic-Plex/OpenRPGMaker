@@ -1,0 +1,28 @@
+{
+ "game": "batch2__B-medium__fun-cat-1",
+ "quests": [],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "cat_meadow",
+     "eventId": "ev_cat_paw_seq_1"
+    },
+    {
+     "mapId": "cat_meadow",
+     "eventId": "ev_cat_paw_seq_2"
+    },
+    {
+     "mapId": "cat_meadow",
+     "eventId": "cat_ending"
+    },
+    {
+     "mapId": "cat_meadow",
+     "eventId": "cat_friend"
+    }
+   ],
+   "kind": "puzzle",
+   "reason": "주인공 독백으로 시작한 빛 순서 퍼즐, 숲 친구는 힌트만 준다"
+  }
+ ]
+}
