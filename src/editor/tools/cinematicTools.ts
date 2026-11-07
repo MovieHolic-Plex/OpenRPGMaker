@@ -26,7 +26,7 @@ import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
 import { reviewOpeningAuthoring } from "@/project/openingAuthoringReview";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import { imageGenerationUnavailableError } from "@/editor/imageGenerationNotice";
+import { imageGenerationHandoffRefusedError, imageGenerationUnavailableError } from "@/editor/imageGenerationNotice";
 
 const OPENING_MEDIA_KINDS = ["image", "movie", "sound", "music", "charset"] as const;
 type OpeningMediaKind = (typeof OPENING_MEDIA_KINDS)[number];
@@ -1012,10 +1012,8 @@ const generateGameOverImage: ToolDefinition = {
   },
   run(_project, args): ToolExecResult {
     const { prompt, name } = prepareGameOverImageRequest(args);
-    return {
-      summary: "게임오버 그림 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 만들어지지 않았습니다.",
-      data: { status: "ui-required", prompt, name },
-    };
+    throw imageGenerationHandoffRefusedError(GAME_OVER_IMAGE_TOOL,
+      `게임오버 배경은 지금 환경에서 생성할 수 없습니다. 대신 upsert_resource 로 그림을 등록해 set_game_over({backgroundResourceId}) 에 연결하거나, 사용자에게 그림 생성을 요청하세요. (요청: ${prompt}${name ? `, 이름 ${name}` : ""})`);
   },
 };
 

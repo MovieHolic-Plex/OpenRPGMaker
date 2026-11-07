@@ -7,7 +7,7 @@ import { OPENING_IMAGE_TOOL } from '../../src/editor/tools/cinematicTools';
 import { generateTitleArt, titleArtToolCalls } from '../../src/editor/titleArtGeneration';
 import { generateOpeningStill, type OpeningStillRequest } from '../../src/editor/openingImageGeneration';
 import { fitTitleArtEffects } from '../../src/editor/titleArtFitting';
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog';
+import { DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, newestSupportedImageModel } from '../../src/ai/imageModelCatalog';
 import type { PiOpeningProduction } from '../../src/ai/piAgent/openingProduction';
 import type { ActivityVisual } from '../../src/ai/activityVisual';
 import { activityThumbnail, generateBestStill } from './openingStillCritic';
@@ -29,7 +29,8 @@ export function createWorkerImageGenerator(request: PiAgentRequest, keyFor: (pro
       if (route.kind !== 'generative') throw new Error(imageRouteRefusal(route));
     }
     const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
-    const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
+    // 모델을 안 줬으면 그 제공자 목록의 가장 새 그림 모델을 고른다(코드에 이름을 박지 않는다).
+    const model = request.imageModel ?? (provider === 'openai-codex' ? RECOMMENDED_IMAGE_MODEL : newestSupportedImageModel(provider) ?? RECOMMENDED_IMAGE_MODEL);
     const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
     // Codex 는 가끔 그림 대신 글로 답한다 — 같은 요청을 몇 번 더 시도한다(후보 3장이 모두 0장이 되던 실측).
     let image: Awaited<ReturnType<typeof generateCodexImage>> | undefined;
