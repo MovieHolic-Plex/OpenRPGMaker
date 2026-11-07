@@ -32,7 +32,11 @@ for (const game of games) {
   const matched = new Set<string>();
   const verdicts = candidates.map((candidate) => {
     const refs = new Set([candidate.giver, candidate.turnIn, ...candidate.steps].map(k));
-    const hit = label.quests.find((quest) => !matched.has(quest.id) && [quest.giver, ...quest.turnIn, ...quest.stepEvents].some((ref) => refs.has(k(ref))));
+    // 부탁자가 같은 정답 → 보고 자리가 같은 정답 → 수행 이벤트가 겹치는 정답 순. 한 이벤트가 여러 정답의 수행에 들어 있을 수 있다(본편이 곁가지 이벤트를 단계로 쓴다).
+    const open = label.quests.filter((quest) => !matched.has(quest.id));
+    const hit = open.find((quest) => k(quest.giver) === k(candidate.giver))
+      ?? open.find((quest) => quest.turnIn.some((ref) => k(ref) === k(candidate.turnIn)))
+      ?? open.find((quest) => [quest.giver, ...quest.turnIn, ...quest.stepEvents].some((ref) => refs.has(k(ref))));
     if (hit) matched.add(hit.id);
     return { id: candidate.id, title: candidate.title, confidence: candidate.confidence, giver: k(candidate.giver), turnIn: k(candidate.turnIn), steps: candidate.steps.map(k), request: candidate.request, registeredAs: candidate.registeredAs, verdict: hit ? `quest:${hit.id}` : "not-quest" };
   });

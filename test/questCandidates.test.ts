@@ -42,7 +42,10 @@ function verdicts(game: string): { matched: string[]; falsePositives: string[] }
   const falsePositives: string[] = [];
   for (const candidate of pendingQuestCandidates(project(game))) {
     const refs = new Set([candidate.giver, candidate.turnIn, ...candidate.steps].map(key));
-    const hit = truth.find((quest) => !matched.includes(quest.id) && [quest.giver, ...quest.turnIn, ...quest.stepEvents].some((ref) => refs.has(key(ref))));
+    const open = truth.filter((quest) => !matched.includes(quest.id));
+    const hit = open.find((quest) => key(quest.giver) === key(candidate.giver))
+      ?? open.find((quest) => quest.turnIn.some((ref) => key(ref) === key(candidate.turnIn)))
+      ?? open.find((quest) => [quest.giver, ...quest.turnIn, ...quest.stepEvents].some((ref) => refs.has(key(ref))));
     if (hit) matched.push(hit.id); else falsePositives.push(candidate.giver.eventId);
   }
   return { matched: matched.sort(), falsePositives };
@@ -65,7 +68,7 @@ describe("퀘스트 후보 — 저장된 게임 14개 정답표", () => {
       "batch2__B-medium__fun-cat-1": { matched: [], falsePositives: [] },
       "batch2__B-medium__fun-plain-1": { matched: ["star_machine"], falsePositives: [] },
       "batch2__B-medium__fun-village-1": { matched: ["star_lights"], falsePositives: [] },
-      "ref_shitamachi-fourth-season": { matched: ["wish_lanterns"], falsePositives: [] },
+      "ref_shitamachi-fourth-season": { matched: ["wish_lanterns"], falsePositives: ["ev_sm_jiho"] },
     });
   });
 
