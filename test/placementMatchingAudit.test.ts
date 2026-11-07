@@ -51,13 +51,13 @@ describe("못 찾은 그림은 거절한다", () => {
     expect(res.ok).toBe(false);
     expect(res.issues?.[0]?.code).toBe("graphic-not-found");
   });
-  // object2#2 는 원본 대조로 「원형 바닥 판」으로 정정돼 금고 칩이 없다 — 금고 보관 상자는 실패 대신 서랍장(object2#7)으로 선다.
-  it("이름이 「철제 금고」인 보관 상자는 금고 칩이 없으면 서랍장으로 선다", () => {
+  // object2#2 는 「원형 바닥 판」, object2#7 은 「광산 수레」다(원본 대조) — 금고 보관 상자는 실패 대신 빨간 상자(object1#6)로 선다.
+  it("이름이 「철제 금고」인 보관 상자는 금고 칩이 없으면 빨간 상자로 선다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const res = runTool(ctx, "place_storage_chest", { mapId: ctx.project.startMapId, x: 4, y: 4, name: "철제 금고" });
     expect(res.ok, res.summary).toBe(true);
     const event = ctx.project.maps[ctx.project.startMapId]!.events.find((entry) => entry.name === "철제 금고" || entry.pages?.[0]?.name === "철제 금고");
-    expect(slot(event!.pages![0]!.graphic)).toEqual({ sheet: "tex_easyrpg_charset_object2", index: 7 });
+    expect(slot(event!.pages![0]!.graphic)).toEqual({ sheet: "tex_easyrpg_charset_object1", index: 6 });
   });
 });
 

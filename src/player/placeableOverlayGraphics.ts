@@ -9,11 +9,13 @@ export type PlaceableOverlayGraphic = {
   readonly frame: string | number;
 };
 
-/** EasyRPG RTP Object2: 5=rock, 6=gem. */
+/** EasyRPG RTP Object2: 5=brown rock. (6 is a grey rock, not a gem — 2026-11-07 pixel re-check.) */
 const PLACEABLE_CHARSET: Readonly<Record<string, { readonly texture: string; readonly characterIndex: number }>> = {
   rock: { texture: "tex_easyrpg_charset_object2", characterIndex: 5 },
-  gem: { texture: "tex_easyrpg_charset_object2", characterIndex: 6 },
 };
+
+/** Forage pickup marker: a real bundled crystal icon (single image, drawn one tile wide by the event sprite path). */
+export const PLACEABLE_GEM_TEXTURE_KEY = "cc0-jetrel-crystal";
 
 /**
  * Choppable tree: one whole Beodeul warm tree (hand-drawn, 64x80, trunk base on row 61).
@@ -36,10 +38,12 @@ export const PLACEABLE_TREE_GRAPHIC: PlaceableOverlayGraphic = {
 export const PLACEABLE_OVERLAY_TEXTURE_KEYS: readonly string[] = [
   PLACEABLE_CHARSET.rock!.texture,
   PLACEABLE_TREE_GRAPHIC.texture,
+  PLACEABLE_GEM_TEXTURE_KEY,
 ];
 
 export function resolvePlaceableOverlayGraphic(kind: string): PlaceableOverlayGraphic | null {
   if (kind === "tree") return PLACEABLE_TREE_GRAPHIC;
+  if (kind === "gem") return { texture: PLACEABLE_GEM_TEXTURE_KEY, frame: 0 };
   const charset = PLACEABLE_CHARSET[kind];
   if (!charset) return null;
   return {
