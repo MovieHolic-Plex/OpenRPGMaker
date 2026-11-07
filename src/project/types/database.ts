@@ -2246,6 +2246,12 @@ export interface SystemRecords {
   battleFanfare?: import("@/project/battleFanfare").BattleFanfareSettings;
   /** 전투 연출 — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말(project/battleStaging.ts). 생략 = 빠르게·얼굴 교차·화려하게·한 줄. */
   battleStaging?: import("@/project/battleStaging").BattleStagingSettings;
+  /**
+   * 적 그림을 엔진이 움직이는 모드(project/enemyStillMotion.ts). 생략 = "all".
+   * all = 칸 없는 정지 그림은 전체 연출, 칸 있는 도트 시트·걷기 칩은 정수 px 이동·기울이기만.
+   * stillOnly = 칸 없는 정지 그림에만 건다. off = 정지 그림 그대로.
+   */
+  enemyStillMotion?: import("@/project/enemyStillMotion").EnemyStillMotionMode;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**

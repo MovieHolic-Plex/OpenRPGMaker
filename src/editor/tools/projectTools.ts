@@ -12,6 +12,7 @@ import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { BATTLE_FANFARE_STYLES, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare } from "@/project/battleFanfare";
 import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_PACES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
+import { ENEMY_STILL_MOTION_DEFAULT, ENEMY_STILL_MOTION_MODES, isEnemyStillMotionMode } from "@/project/enemyStillMotion";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
@@ -352,6 +353,11 @@ const setProjectSettings: ToolDefinition = {
             enum: [...BATTLE_REVEAL_WEAKNESSES],
             description: "적 약점·저항을 대상 고르기에서 보이는가. 약점은 플레이어가 알아 가는 재미다 — 처음 맞힌 타격에 「약점 발견!」이 뜨고 적 종류별로 세이브에 남는다. never = 대상 고를 때 안 보임 · afterDiscovery(기본) = 알아낸 것만 · always = 처음부터. 기술 설명에 「○○ 약점」처럼 적 이름을 쓰지 말 것",
           },
+          enemyStillMotion: {
+            type: "string",
+            enum: [...ENEMY_STILL_MOTION_MODES],
+            description: "적 그림을 엔진이 움직이는 모드(기본 all). all = 칸 없는 정지 그림은 전체 연출(숨쉬기·돌진·피격 반동·쓰러짐), 칸 있는 도트 시트·걷기 칩은 정수 px 이동·기울이기만. stillOnly = 정지 그림 하나뿐인 적에만. off = 정지 그림 그대로",
+          },
         },
         additionalProperties: false,
       },
@@ -631,6 +637,13 @@ const setProjectSettings: ToolDefinition = {
         const next = normalizeBattleStaging({ ...resolveBattleStaging(draft.system.battleStaging), ...patch });
         if (next) draft.system.battleStaging = next;
         else delete draft.system.battleStaging;
+      }
+      if (battle.enemyStillMotion !== undefined) {
+        if (!isEnemyStillMotionMode(battle.enemyStillMotion)) {
+          throw new ToolError(`battle.enemyStillMotion 은 ${ENEMY_STILL_MOTION_MODES.join(" · ")} 중 하나입니다(받은 값 ${JSON.stringify(battle.enemyStillMotion)}).`, { code: "invalid-args" });
+        }
+        if (battle.enemyStillMotion === ENEMY_STILL_MOTION_DEFAULT) delete draft.system.enemyStillMotion;
+        else draft.system.enemyStillMotion = battle.enemyStillMotion;
       }
       if (isBattleHitFeel(battle.hitFeel)) {
         if (battle.hitFeel === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
