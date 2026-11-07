@@ -11,6 +11,7 @@ import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { resolveImageRoute } from "@/ai/imageRoute";
+import { isImageCredentialFailure } from "@/editor/imageGenerationFallback";
 import type { AiGateNotice } from "@/ai/aiGateNotice";
 import { ToolError } from "@/editor/tools/types";
 
@@ -90,4 +91,13 @@ export function imageUnavailableGateNotice(): AiGateNotice {
 
 export function isImageGenerationUnavailableCode(code: string | undefined): boolean {
   return code === IMAGE_GENERATION_UNAVAILABLE_CODE;
+}
+
+/**
+ * 생성기가 돌려줄 실패 코드. 자격·로그인이 없는 실패는 이번 실행 안에서 풀리지 않으므로
+ * 「연결 없음」과 같은 코드로 올려 캔버스 띠·차단 모달·조수 보고가 같은 문구를 쓰게 한다.
+ * 일시 오류(시간 초과·5xx)는 그대로 「일시 오류」다 — 한 번 더 시도해도 되는 것과 구분한다.
+ */
+export function imageGenerationFailureCode(error: unknown): string {
+  return isImageCredentialFailure(error) ? IMAGE_GENERATION_UNAVAILABLE_CODE : "image-generation-failed";
 }
