@@ -43,14 +43,16 @@ const choicesBeats = [
 ];
 
 // CRAFT_SHOP_STILL=1: 플레이어 설정 「메뉴 움직임 줄이기」를 켜고 같은 흐름 — 연출 없이 같은 정보가 나오는지 본다.
-const stillOps = process.env.CRAFT_SHOP_STILL === "1"
-  ? [{ kind: "evalToFile", out: `${OUT}-still-pref.json`, fn: `() => { const k = "oprn:player-preferences:v1"; const p = JSON.parse(localStorage.getItem(k) || "{}"); p.reduceMenuMotion = true; localStorage.setItem(k, JSON.stringify(p)); return p; }` }]
-  : [];
+// 설정은 부팅 때 한 번 읽혀 캐시되므로 부팅 전에 localStorageSeed 로 심는다(부팅 뒤 localStorage 를 고치면 안 먹는다).
+const still = process.env.CRAFT_SHOP_STILL === "1";
+const stillOps = [];
+/** 연출 한가운데 화면에 떠 있는 연출 요소 수 — 움직임 줄임이면 0 이어야 한다. */
+const fxCount = { kind: "evalToFile", out: `${OUT}-fx.json`, fn: `() => ({ flyers: document.querySelectorAll(".runtime-craft-flyer").length, bursts: document.querySelectorAll(".runtime-craft-burst").length, crafted: document.querySelectorAll(".is-crafted").length, reduce: JSON.parse(localStorage.getItem("oprn:player-preferences:v1") || "{}").reduceMenuMotion === true })` };
 
 const windowBeats = [
   { id: "open", note: "니나에게 말을 건다 → 제작 공방 창", ops: [...stillOps, { kind: "face", dir: "up" }, { kind: "action" }, present("dialogue-box"), { kind: "pressUntil", key: "z", testid: "craft-shop-scene", state: "present", maxPresses: 6, timeoutMs: 2000 }, settle(800), measure("open", WINDOW_ROWS)], shot: true },
   { id: "quantity", note: "→ 로 수량 2 (불씨 병은 재료·골드가 2번 분량)", ops: [{ kind: "key", key: "ArrowRight" }, settle(400), measure("quantity", WINDOW_ROWS)], shot: true },
-  { id: "craft-burst", note: "← 로 수량 1 → 불씨 병 결정 — 연출 한가운데(재료가 날아들고 반짝임)", ops: [{ kind: "key", key: "ArrowLeft" }, settle(200), { kind: "key", key: "z" }, present("craft-shop-notice"), { kind: "hold", dir: null, ms: 330 }], shot: true },
+  { id: "craft-burst", note: "← 로 수량 1 → 불씨 병 결정 — 연출 한가운데(재료가 날아들고 반짝임)", ops: [{ kind: "key", key: "ArrowLeft" }, settle(200), { kind: "key", key: "z" }, present("craft-shop-notice"), { kind: "hold", dir: null, ms: 330 }, fxCount], shot: true },
   { id: "craft-flask", note: "연출이 끝난 뒤 — 같은 창이 결과 한 줄과 함께", ops: [settle(900), measure("craft-flask", WINDOW_ROWS)], shot: true },
   { id: "craft-antidote", note: "해독초", ops: [{ kind: "key", key: "ArrowDown" }, settle(300), { kind: "key", key: "z" }, { kind: "waitForText", testid: "craft-shop-notice", text: "해독초" }, settle(700), measure("craft-antidote", WINDOW_ROWS)], shot: true },
   { id: "try-tonic", note: "투지 강장제를 누른다 — 상세에 송곳니 1/2(빨강), 만들기 꺼짐+이유", ops: [{ kind: "click", testid: "craft-shop-row-fs_craft_tonic" }, settle(500), { kind: "click", testid: "craft-shop-craft" }, settle(500), measure("try-tonic", WINDOW_ROWS)], shot: true },
@@ -65,6 +67,7 @@ export default {
   checkpointSet: "craft-shop",
   // CRAFT_SHOP_VIEWPORT=390x844 처럼 창 크기를 바꿔 같은 흐름을 돌린다(기본은 체크포인트 집합의 960×540).
   ...(process.env.CRAFT_SHOP_VIEWPORT ? { viewport: Object.fromEntries(process.env.CRAFT_SHOP_VIEWPORT.split("x").map((n, i) => [i ? "height" : "width", Number(n)])) } : {}),
+  ...(still ? { localStorageSeed: { "oprn:player-preferences:v1": JSON.stringify({ reduceMenuMotion: true }) } } : {}),
   beats,
   checkpointBeats: { "nina-workshop": beats },
 };
