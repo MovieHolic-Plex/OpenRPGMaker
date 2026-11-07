@@ -99,8 +99,105 @@ export function ocClient({ baseUrl, apiKey, model = "deepseek-v4.1-flash-free", 
   };
 }
 
+/** OpenAI-compatible chat (Astra/Argon): same content list, image blocks converted to image_url. */
+export function openaiChat({ baseUrl, apiKey, model, log, stage = "review", reasoningEffort, retryDelayMs = 4000 }) {
+  if (!baseUrl || !apiKey) throw new Error(`openai reviewer ${model} needs a baseUrl and apiKey`);
+  return async function chat(content, { system, maxTokens = 4000, tries = 4, timeoutMs = 300000 } = {}) {
+    const oa = toOpenAIContent(content);
+    const messages = [...(system ? [{ role: "system", content: system }] : []), { role: "user", content: oa }];
+    let last = null;
+    for (let attempt = 0; attempt < tries; attempt += 1) {
+      const t0 = Date.now();
+      try {
+        const res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+          body: JSON.stringify({ model, max_tokens: maxTokens, ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}), messages }),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+        if (res.status === 200) {
+          const body = await res.json();
+          const usage = body.usage ?? {};
+          log?.({ stage, model: body.model ?? model, in: usage.prompt_tokens ?? 0, out: usage.completion_tokens ?? 0, ms: Date.now() - t0, ok: true });
+          return { ok: true, text: body.choices?.[0]?.message?.content ?? "", model: body.model ?? model };
+        }
+        last = `${res.status} ${(await res.text()).slice(0, 200)}`;
+        const retryAfter = Number(res.headers.get("retry-after") ?? 0) * 1000;
+        await sleep(Math.max(retryAfter, retryDelayMs * (attempt + 1)));
+      } catch (error) {
+        last = String(error).slice(0, 200);
+        await sleep(retryDelayMs * (attempt + 1));
+      }
+    }
+    log?.({ stage, model, ms: 0, ok: false, error: last });
+    return { ok: false, error: last };
+  };
+}
+
+/** Anthropic content list → OpenAI content list (images become data URLs, text stays text). */
+function toOpenAIContent(content) {
+  if (typeof content === "string") return content;
+  return content.map((block) => {
+    if (block.type === "text") return { type: "text", text: block.text };
+    if (block.type === "image" && block.source?.type === "base64") {
+      return { type: "image_url", image_url: { url: `data:${block.source.media_type};base64,${block.source.data}` } };
+    }
+    throw new Error(`cannot convert content block ${block.type} for an OpenAI-compatible reviewer`);
+  });
+}
+
+/**
+ * Reviewer chain: Opus → Astra → Argon (the owner's order, 2026-11-07). The first member that answers serves the
+ * request and stays preferred for later requests; a member that fails is logged once and skipped from then on.
+ * `chain` is JSON in QA_REVIEW_CHAIN so a different box can reorder it without a code change.
+ */
+export function defaultReviewerChain(env = process.env) {
+  const token = env.ANTHROPIC_AUTH_TOKEN ?? env.ANTHROPIC_API_KEY ?? "";
+  return [
+    { id: "opus", model: "claude-opus-5-5", kind: "anthropic", baseUrl: env.ANTHROPIC_BASE_URL ?? "http://127.0.0.1:8319/cc", apiKey: token },
+    { id: "astra", model: "gpt-6-astra", kind: "openai", baseUrl: env.QA_ASTRA_BASE_URL ?? "http://127.0.0.1:10200/v1", apiKey: env.QA_ASTRA_KEY ?? "ocx-local-loopback", reasoningEffort: "high" },
+    { id: "argon", model: "gemini-4-argon-high", kind: "openai", baseUrl: env.QA_ARGON_BASE_URL ?? "http://127.0.0.1:8318/v1", apiKey: env.QA_ARGON_KEY ?? token, reasoningEffort: "high" },
+  ].filter((m) => m.baseUrl && m.apiKey);
+}
+
+export function reviewerChain(members, { log, stage = "review", retryDelayMs } = {}) {
+  if (!members.length) throw new Error("reviewer chain is empty (needs at least one of Opus / Astra / Argon)");
+  const dead = new Set();
+  let preferred = 0;
+  const client = async (content, opts = {}) => {
+    const order = [preferred, ...members.map((_, i) => i).filter((i) => i !== preferred)];
+    let lastError = null;
+    for (const index of order) {
+      const member = members[index];
+      if (dead.has(member.id)) continue;
+      // A dead member is skipped from then on, so one failed probe is the whole cost of a dead model.
+      const delay = member.retryDelayMs ?? retryDelayMs;
+      const call = member.kind === "anthropic"
+        ? anthropicClient({ ...member, log, stage: `${stage}:${member.id}`, ...(delay !== undefined ? { retryDelayMs: delay } : {}) })
+        : openaiChat({ ...member, log, stage: `${stage}:${member.id}`, ...(delay !== undefined ? { retryDelayMs: delay } : {}) });
+      const res = await call(content, opts);
+      if (res.ok) {
+        if (index !== preferred) {
+          preferred = index;
+          log?.({ stage, model: member.id, ms: 0, ok: true, note: `reviewer chain → ${member.id} (${member.model})` });
+          console.log(`[qa reviewer] chain → ${member.id} (${member.model})`);
+        }
+        return { ...res, member: member.id };
+      }
+      lastError = `${member.id}: ${res.error}`;
+      dead.add(member.id);
+      log?.({ stage, model: member.id, ms: 0, ok: false, error: res.error, note: "chain fallback" });
+      console.log(`[qa reviewer] ${member.id} failed (${String(res.error).slice(0, 120)}) — next in chain`);
+    }
+    return { ok: false, error: lastError ?? "every reviewer in the chain failed", member: null };
+  };
+  client.chain = members.map((m) => m.id);
+  client.answeredBy = () => (dead.size === members.length ? null : members[preferred].id);
+  return client;
+}
+
 /** Reviewer: Anthropic Messages API (local proxy by default, same env as the claude CLI). */
-export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", log, stage = "review" }) {
+export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", log, stage = "review", retryDelayMs = 5000 }) {
   if (!baseUrl || !apiKey) throw new Error("reviewer needs ANTHROPIC_BASE_URL and ANTHROPIC_AUTH_TOKEN (or --reviewer-*)");
   return async function messages(content, { system, maxTokens = 4000, tries = 5, timeoutMs = 300000 } = {}) {
     let last = null;
@@ -131,10 +228,10 @@ export function anthropicClient({ baseUrl, apiKey, model = "claude-opus-5-5", lo
         }
         last = `${res.status} ${(await res.text()).slice(0, 160)}`;
         const retryAfter = Number(res.headers.get("retry-after") ?? 0) * 1000;
-        await sleep(Math.max(retryAfter, 5000 * (attempt + 1)));
+        await sleep(Math.max(retryAfter, retryDelayMs * (attempt + 1)));
       } catch (error) {
         last = String(error).slice(0, 160);
-        await sleep(4000 * (attempt + 1));
+        await sleep(retryDelayMs * (attempt + 1));
       }
     }
     log?.({ stage, model, ms: 0, ok: false, error: last });
