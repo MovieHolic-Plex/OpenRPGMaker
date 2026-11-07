@@ -598,7 +598,9 @@ export function renderAiAuthSettings(
       renderCardPill(providerId);
       return;
     }
-    serverError.textContent = `연결 서비스가 응답했지만 오류가 났어요. ‘연결 확인’을 눌러 다시 확인하세요. 계속 안 되면 서버 관리자에게 아래 오류 내용을 알려주세요. 오류 내용: ${detail}`;
+    // 오류 블록은 이미 빨간 상태 점•필 바로 아래에 있다 — 같은 말을 세 번 반복하지 않고
+    // 진단에 필요한 것만 남긴다(2026-11-02 카피 리뷰: 이 모달이 density 8로 최고).
+    serverError.textContent = `연결 확인에 실패했습니다. 서버 관리자에게 아래 내용을 전달하세요: ${detail}`;
     cardAuth.set(providerId, "error");
     renderCardPill(providerId);
   };

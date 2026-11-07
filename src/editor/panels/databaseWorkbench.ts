@@ -17,7 +17,9 @@ export type DatabaseFooterStatus = { readonly text: string; readonly kind: Datab
 export function databaseFooterStatus(state: AutoSaveState): DatabaseFooterStatus {
   // 자동 저장이 아예 없는 세션(shared-demo·임시 세션)은 실패가 아니라 "원래 안 됨"이다.
   // 빨간 오류 필로 칠하면 다시 시도하면 될 줄 알게 된다 — 중립 안내로 말한다.
-  if (state.kind === "error" && state.code === "session-not-persisted") return { text: state.message, kind: "info" };
+  // 문구는 상단 임시 세션 배너와 **같은 말을 반복하지 않는다**. 배너가 이미 "이 탭에만 있습니다"를
+  // 말하고 있으므로 여기서는 저장 대상만 짧게 지목한다(2026-11-02 카피 리뷰: 레인 6개가 중복 지적).
+  if (state.kind === "error" && state.code === "session-not-persisted") return { text: "저장 안 됨", kind: "info" };
   if (state.kind === "error") return { text: `자동 저장 실패 — ${state.message}`, kind: "error" };
   // pending·saving 은 접는다 — 톱바 칩이 같은 이유로 이미 접고 있다(menu.ts 의 paintSaveStatus:
   // 타일 한 칸마다 상태가 떴다 사라지며 옆 버튼이 튀는 것이 오조작을 만든다). 거짓말이었던 건

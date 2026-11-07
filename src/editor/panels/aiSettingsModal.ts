@@ -739,9 +739,10 @@ export function renderAiSettingsForm(options: {
     const workAccounts = workProviderIds(current);
     const mixed = workAccounts.some(id => id !== providerId);
     alignAccountButton.hidden = !mixed;
+    // 「연결을 마치면 바로 시작할 수 있어요」는 버튼이 이미 말하는 결과를 한 번 더 설명한 것이다 — 뻤다.
     modelConnectionHint.textContent = mixed
       ? "직접 지정한 작업 모델은 유지됩니다. 다른 계정을 쓰는 모델이 있으면 그 계정도 연결하세요."
-      : "작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.";
+      : "작업 모델은 이 계정을 씁니다.";
     const status = getAiConnectionStatus(current);
     const valid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean)
       && brainModel.validate(authMode, brainProvider.value);

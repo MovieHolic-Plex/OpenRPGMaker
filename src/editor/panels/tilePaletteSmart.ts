@@ -387,11 +387,20 @@ function makeCardButton(input: {
     dataset: { testid: input.testId },
     children: [
       input.thumb,
-      el("span", { class: "palette-card-name", text: input.name }),
+      el("span", { class: "palette-card-name", text: paletteCardLabel(input.name) }),
       el("span", { class: "palette-card-meta", text: input.meta }),
     ],
     on: { click: input.onClick },
   });
+}
+
+/** 카드 이름 앞의 타일셋 이름을 걷어낸다.
+ *  팔레트는 이미 **한 타일셋 안**에서만 보이므로 `버들항 길 포석` 의 `버들항` 은 매 카드마다 같은 말을
+ *  반복한다(2026-11-02 카피 리뷰: 7/7 카드가 같은 접두사 — 레인 3개 지적). 전체 이름은 title 로 남긴다. */
+function paletteCardLabel(name: string): string {
+  const trimmed = name.trim();
+  const withoutPrefix = trimmed.replace(/^[^\s]{1,12}\s+/, "");
+  return withoutPrefix.length >= 2 ? withoutPrefix : trimmed;
 }
 
 function singleThumb(tileset: TilesetDef, tile: number): HTMLElement {

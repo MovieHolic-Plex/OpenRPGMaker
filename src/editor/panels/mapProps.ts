@@ -130,7 +130,12 @@ function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap
   if (tab === "bgm") {
     if (map.bgm?.mode === "none") return "무음";
     if (map.bgm?.mode === "custom") {
-      return listDatabaseResourceOptions("music", project).find((item) => item.id === map.bgm?.resourceId)?.name ?? "곡 미지정 — 상위 맵을 따름";
+      const wanted = map.bgm?.resourceId;
+      // 리소스를 **고른 적이 없는 것**과 **골랐는데 지워진 것**은 다른 상태다. 예전엔 둘 다
+      // "상위 맵을 따름"으로 나와, 지워진 곡이 의도적 상속처럼 보여 아무도 고치지 않았다.
+      if (!wanted) return "곡 미지정 — 상위 맵을 따름";
+      return listDatabaseResourceOptions("music", project).find((item) => item.id === wanted)?.name
+        ?? `곡 리소스 없음 — ${wanted}`;
     }
     return "상위 맵/기본 BGM";
   }

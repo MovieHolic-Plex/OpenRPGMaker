@@ -107,23 +107,27 @@ function resolveNpcMovement(
 ): EventPage["movement"] {
   if (typeof explicit === "string" && explicit.trim()) {
     const trimmed = explicit.trim();
-    if (trimmed === "random") return WANDER;
-    if (trimmed === "approach") return STALK;
-    return PASSIVE;
+    if (trimmed === "random") return { ...WANDER };
+    if (trimmed === "approach") return { ...STALK };
+    if (trimmed === "fixed") return { ...PASSIVE };
+    // 오타·미지원 값을 조용히 fixed 로 떨어뜨리면 NPC 가 경고 없이 굳는다(이 파일의 2026-10-05 메모가
+    // 바로 그 증상을 기록해 둔다). 다음 호출이 고칠 수 있도록 받은 값과 허용값을 남긴다.
+    warnings.push(`movement:'${trimmed}' 는 지원하지 않습니다 — fixed 로 두었습니다. 허용: random | approach | fixed.`);
+    return { ...PASSIVE };
   }
   switch (inferNpcMovementArchetype(name)) {
     case "roaming":
       warnings.push(`이동 추론 → random(배회): '${name}' 아키타입. 고정하려면 movement:"fixed" 명시.`);
-      return WANDER;
+      return { ...WANDER };
     case "stalking":
       warnings.push(`이동 추론 → approach(접근): '${name}' 아키타입. 고정하려면 movement:"fixed" 명시.`);
-      return STALK;
+      return { ...STALK };
     case "anchored":
       warnings.push(`이동 추론 → fixed(제자리): '${name}' 대화 거점 아키타입. 배회시키려면 movement:"random" 명시.`);
-      return PASSIVE;
+      return { ...PASSIVE };
     case "default":
       warnings.push(`이동 추론 → random(배회): '${name}' 에 고정·추격 표지가 없어 기본 배회로 두었습니다. 제자리면 movement:"fixed", 추격이면 movement:"approach" 명시.`);
-      return WANDER;
+      return { ...WANDER };
   }
 }
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);

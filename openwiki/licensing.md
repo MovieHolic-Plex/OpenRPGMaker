@@ -10,7 +10,8 @@
 | 기본 그림·소리 | `ASSET-LICENSE.md` (OPRN 게임 사용) | 게임 안 자유, 소재 단독 재배포 금지. 스토어 `OPRN-GAME`과 같은 문서 |
 | 이름·로고 | `TRADEMARKS.md` | 어떤 라이선스에도 안 들어간다 |
 | 기여 | `CLA.md` | 재라이선스·승계 가능한 허락. 엑시트 실사 대비 |
-| UGC 약관 | `docs/legal/ugc-terms-draft.md` | 초안. 스토어 약관 보강 조항 |
+| UGC 약관 | `docs/legal/ugc-terms-draft.md` | 초안. 게임 공유 사이트 업로드 약관(등급분류 면제 유지용 비영리 조항, 저작권 신고·임시조치). 유료 스토어 약관은 스토어 저장소 소관 |
+| 게임위 질의 | `docs/legal/grac-inquiry-draft.md` | 초안. 등급분류 면제 확인 신청 안내와 플랫폼 운영 모델 서면 질의서. 근거 조사 `.omo/ulw-research/20261031-175939/` |
 
 ## 코드 경계 (에이전트가 지킬 것)
 

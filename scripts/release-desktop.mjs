@@ -6,7 +6,8 @@
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const repo = process.cwd();
 const buildRoot = process.env.OPRN_DESKTOP_BUILD || join(homedir(), ".cache", "oprn-desktop-release");
@@ -154,6 +155,8 @@ try {
     VITE_CACHE_DIR: join(buildRoot, ".vite-cache"),
     npm_config_fund: "false",
     npm_config_audit: "false",
+    // -mx=9 가 32스레드로 사전을 잡아 15GB 를 쓴다. 래퍼가 -mmemuse=8g 를 붙인다.
+    ELECTRON_BUILDER_7ZIP_PATH: join(dirname(fileURLToPath(import.meta.url)), "7za-memcap.sh"),
   };
   execFileSync("npm", ["ci"], { cwd: buildRoot, stdio: "inherit", env });
   execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildRoot, stdio: "inherit", env });

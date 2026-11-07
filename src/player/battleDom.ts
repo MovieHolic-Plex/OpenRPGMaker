@@ -130,8 +130,10 @@ const POKEMON_EFFECTIVENESS_SHAPE: Readonly<Record<"weak" | "normal" | "super", 
 };
 
 export function destroyBattleSceneOnHost(host: HTMLElement): void {
-  activeBattleControllers.get(host)?.destroy();
+  // 먼저 등록을 지운다 — destroy() 가 콜백 오류로 던지면 다음 마운트가 이미 죽은 컨트롤러를 다시 정리하게 된다.
+  const controller = activeBattleControllers.get(host);
   activeBattleControllers.delete(host);
+  controller?.destroy();
 }
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
@@ -145,8 +147,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     emitContextBattleJuice(event, target, options.audioContext, shape);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
   // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
-  activeBattleControllers.get(options.host)?.destroy();
-  activeBattleControllers.delete(options.host);
+  // destroy 후 등록을 지우지 않으면 마운트 구성이 throw 했을 때 맵이 죽은 컨트롤러를 들고 남는다.
+  destroyBattleSceneOnHost(options.host);
   options.host.querySelector("[data-testid='battle-stage']")?.remove();
   options.host.querySelector("[data-testid='battle-scene']")?.remove();
   const root = document.createElement("section");

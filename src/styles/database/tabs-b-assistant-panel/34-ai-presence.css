@@ -4,13 +4,16 @@
  */
 .ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox {
   --tone-0: #3b5bdb; --tone-1: #12a150; --tone-2: #c2410c; --tone-3: #7c3aed;
+  /* 이름표 전경. 밝은 톤(tone-1 초록)에서는 흰 글씨가 3.37:1 로 WCAG AA(4.5:1) 에 못 미친다.
+     톤마다 전경을 따로 둬서 모든 상태가 4.5:1 이상이 되게 한다(실측: tone-1 흰색 3.37 → 검정 5.02). */
+  --tone-ink-0: #fff; --tone-ink-1: #06240f; --tone-ink-2: #fff; --tone-ink-3: #fff;
   font-family: var(--font-ui);
 }
 
 /* ── 지도 위 이름표 ── */
 .ai-map-presence { position: absolute; inset: 0; pointer-events: none; z-index: var(--z-canvas-chrome, 20); overflow: hidden; }
 .ai-map-region { --tone: var(--tone-0); position: absolute; border: 2px solid var(--tone); border-radius: 4px; background: color-mix(in srgb, var(--tone) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, #fff 55%, transparent); }
-.ai-map-region[data-tone="1"] { --tone: var(--tone-1); }
+.ai-map-region[data-tone="1"] { --tone: var(--tone-1); --tone-ink: var(--tone-ink-1); }
 .ai-map-region[data-tone="2"] { --tone: var(--tone-2); }
 .ai-map-region[data-tone="3"] { --tone: var(--tone-3); }
 .ai-map-region[data-state="waiting"] { border-style: dashed; }
@@ -19,9 +22,9 @@
 .ai-map-region[data-state="draft"] { border-style: dashed; }
 .ai-map-region.is-pulse { animation: ai-presence-pulse 1.8s ease-in-out infinite; }
 /* 이름표는 상자 안쪽 왼쪽 위 — 기존 「초안 완료」 말풍선(상자 위쪽 가운데)과 겹치지 않는다. */
-.ai-map-region-tag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 3px 9px; border-radius: 0 0 6px 0; background: var(--tone); color: #fff; font: 600 12px/1.4 var(--font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-map-region-tag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 3px 9px; border-radius: 0 0 6px 0; background: var(--tone); color: var(--tone-ink, #fff); font: 600 12px/1.4 var(--font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ai-map-region-tag b { font-weight: 700; }
-.ai-map-region-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; flex: 0 0 auto; }
+.ai-map-region-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
 /* 영역을 모를 때(도구가 아직 칸을 만지지 않은 구간)는 지도 왼쪽 위에 이름표만 쌓는다. */
 .ai-map-region.is-cornered { position: static; display: inline-flex; border: 0; background: none; box-shadow: none; animation: none; margin: 0 6px 6px 0; }
 .ai-map-region.is-cornered .ai-map-region-tag { position: static; margin: 0; border-radius: 6px; max-width: 320px; }

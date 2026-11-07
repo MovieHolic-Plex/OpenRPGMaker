@@ -552,12 +552,13 @@ function criticalPanel(actor: ActorRecord): HTMLElement {
 }
 
 function classPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
+  // 「직업은 장비·명령에 영향을 줍니다」 같은 자기설명 문장은 뺐다 — 라벨이 이미 말하고,
+  // 선택하면 아래 빌드 미리보기가 결과를 직접 보여준다(2026-11-02 카피 리뷰: 레인 2개 지적).
   return actorPanel("시작 직업", "actor-class", [
     selectRecord("직업", "db-picker-class", actor.classId, store.getCurrent().database.classes, (classId) => {
       updateDatabaseRecord("actors", actor.id, { classId });
       refreshBuildPreview();
     }),
-    el("p", { class: "actor-field-help", text: "직업은 사용할 수 있는 장비·명령과 성장 방식에 영향을 줍니다." }),
   ]);
 }
 
@@ -584,7 +585,7 @@ function baseStatsPanel(actor: ActorRecord): HTMLElement {
         })
       ),
     }),
-    el("p", { class: "actor-field-help", text: "레벨별 능력치 곡선에서 계산됩니다. 「성장」 탭에서 고칩니다." }),
+    // 계산 위치 설명문은 뺐다 — 값은 이미 여기 있고, 고치는 곳은 「성장」 탭이 스스로 말한다.
   ]);
 }
 

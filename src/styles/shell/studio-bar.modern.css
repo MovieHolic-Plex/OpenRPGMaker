@@ -325,7 +325,9 @@
 }
 
 .studio-bar .ai-connection-chip:focus-visible {
-  outline: 2px solid var(--focus-ring, var(--accent));
+  /* --focus-ring 은 **그림자 값**(`0 0 0 2px …`)이라 outline 색으로는 무효다(outline-style:none 으로
+     계산된다). 이 파일 뒤쪽의 포커스 링 규칙이 그림자를 그리고 고대비 모드 대응은 그쪽에 모았다. */
+  outline: var(--focus-outline);
   outline-offset: 1px;
 }
 
@@ -911,4 +913,16 @@
 .studio-bar .ai-connection-chip:focus-visible {
   box-shadow: var(--focus-ring);
   outline: none;
+}
+
+/* 고대비(forced-colors) 모드에서는 box-shadow 가 통째로 사라져 위 링이 보이지 않는다 — 그때만
+   outline 으로 대신한다. 일반 모드에서는 그림자만 써서 링이 두 겹으로 겹치지 않게 한다. */
+@media (forced-colors: active) {
+  .studio-bar .topbar-ai-studio:focus-visible,
+  .studio-bar .team-history-button:focus-visible,
+  .studio-bar .team-identity-button:focus-visible,
+  .studio-bar .ai-connection-chip:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 1px;
+  }
 }

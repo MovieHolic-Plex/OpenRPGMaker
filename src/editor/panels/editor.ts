@@ -631,7 +631,8 @@ function renderPersistenceModeBanner(): HTMLElement | null {
 
 export function persistenceModeBannerText(reason: string, saveSkipped: boolean): string {
   if (reason === "dev-showcase" && saveSkipped) {
-    return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
+    // 배너 옆에 「내보내기」 버튼이 이미 있다 — 버튼이 할 일을 문장으로 또 설명하지 않는다.
+    return "임시 세션 — 이 탭에만 있습니다.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
   return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.";

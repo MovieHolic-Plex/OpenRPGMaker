@@ -61,7 +61,10 @@ export function disambiguatedBattlerName(
   const duplicates = peers.filter((peer) => peer.name === battler.name);
   if (duplicates.length < 2) return battler.name;
   const index = duplicates.findIndex((peer) => peer.id === battler.id);
-  return `${battler.name} ${Math.max(0, index) + 1}`;
+  // 목록에 없는(방금 쓰러진) 동명 배틀러를 1번으로 단정하지 않는다. 호출자는 departedEnemies 를
+  // 뺀 목록을 넘기므로 findIndex 가 -1 이 되고, Math.max(0,-1)+1 은 살아 있는 1번과 같은 이름을 낸다.
+  if (index < 0) return battler.name;
+  return `${battler.name} ${index + 1}`;
 }
 
 /** targetId(적 id·아군 배틀러 id·recordId)를 실제 DOM 노드로 해석한다.
