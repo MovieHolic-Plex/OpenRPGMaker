@@ -78,7 +78,8 @@ export async function generateAiImage(
   const referenceImages = parseImageReferences(request.referenceImages);
   const config = loadAiConfig();
   let providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
-  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;  if (request.purpose) {
+  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
+  if (request.purpose) {
     // 도트 용도에 이미지 모델이 불리면 네트워크로 나가기 전에 막는다(눈금·팔레트·3/4 시점을 지키지 못한다).
     const route = resolveImageRoute(request.purpose, config, {
       ...(request.providerId ? { providerId: request.providerId } : {}),
