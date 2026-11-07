@@ -27,6 +27,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, renderReleaseNotes } from "./lib/releaseNotes.mjs";
 import { bumpManifestVersion, changelogEntryFor, localDate, writeChangelog } from "./lib/releaseFiles.mjs";
+import { highestReleaseTag } from "./lib/releaseAssets.mjs";
 
 const PROPOSE_BRANCH = "release/next";
 const PROPOSE_BRANCH_TITLE = "release/next";
@@ -103,6 +104,10 @@ function nextReleaseVersion(packageVersion, tag, kind) {
 /**
  * ① 발행 — main 의 package.json 버전과 마지막 태그가 어긋나면 그 버전이 머지된 것이므로
  * 그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 태그 본문은 CHANGELOG 의 그 절이다.
+ *
+ * 릴리스는 **초안(draft)** 으로만 만든다(2026-11-07). 데스크톱 산출물을 올리는
+ * desktop-release 가 이름·크기 검증을 마친 뒤에 발행한다. 이 순서를 뒤집었을 때
+ * v0.408.0 처럼 «자산 0개인 릴리스» 가 latest 가 되어 README 의 다운로드가 404 가 됐다.
  */
 function publish(args) {
   const version = manifestVersionAt("origin/main");
@@ -111,7 +116,7 @@ function publish(args) {
   if (nearestTag("origin/main") === tag || hasTag(tag)) {
     return { step: "publish", result: `${tag} 이미 있음` };
   }
-  if (args.dryRun) return { step: "publish", result: `${tag} 를 만들 것`, dryRun: true };
+  if (args.dryRun) return { step: "publish", result: `${tag} 초안을 만들 것`, dryRun: true };
 
   const commit = (git(["log", "--format=%H", "-1", "-S", `"version": "${version}"`, "origin/main", "--", "package.json"], { allowFailure: true }) ?? "")
     .split("\n")[0];
@@ -121,8 +126,9 @@ function publish(args) {
   const body = changelogEntryFor(changelog, version) ?? `${tag} 릴리스`;
   git(["tag", "-a", tag, "-m", body, commit]);
   git(["push", "origin", tag]);
-  if (args.useGh) gh(["release", "create", tag, "--title", tag, "--notes-from-tag"]);
-  return { step: "publish", result: `${tag} 발행`, commit: commit.slice(0, 9) };
+  // --draft: 자산이 0개인 동안 latest 를 가리키지 않게 한다. desktop-release 가 검증 뒤 발행한다.
+  if (args.useGh) gh(["release", "create", tag, "--title", tag, "--notes-from-tag", "--draft"]);
+  return { step: "publish", result: `${tag} 초안 생성(자산 검증 뒤 desktop-release 가 발행)`, commit: commit.slice(0, 9) };
 }
 
 function prBody(version, kind, notes) {
