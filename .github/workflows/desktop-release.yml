@@ -98,7 +98,9 @@ jobs:
           TAG: ${{ steps.target.outputs.tag }}
         run: |
           set -euo pipefail
-          json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG")"
+          # releases/tags/{tag} 는 초안에 404 를 준다(2026-11-08 v0.410.0 실측) — 초안을 찾으려면 목록에서 고른다.
+          json="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq "map(select(.tag_name == \"$TAG\")) | first // empty")"
+          if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
           version="${TAG#v}"
           missing="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
@@ -224,7 +226,9 @@ jobs:
         run: |
           set -euo pipefail
           version="${TAG#v}"
-          json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG")"
+          # releases/tags/{tag} 는 초안에 404 를 준다(2026-11-08 v0.410.0 실측) — 초안을 찾으려면 목록에서 고른다.
+          json="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq "map(select(.tag_name == \"$TAG\")) | first // empty")"
+          if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
           report="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
             | ["OPRN.Studio-windows.exe","OPRN.Studio-windows.zip","OPRN.Studio-linux.AppImage",
