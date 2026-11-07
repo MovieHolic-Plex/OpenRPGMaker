@@ -38,6 +38,10 @@ const { values } = parseArgs({
     from: { type: "string", default: "plan" },
     out: { type: "string", default: "tmp/qa-pipeline" },
     "report-dir": { type: "string", default: "" },
+    // Opt-in control-room log: play writes <run>/events.jsonl (spawn/ack/progress/done/retry per session, owner id).
+    events: { type: "boolean", default: false },
+    owner: { type: "string", default: process.env.QA_OWNER ?? "" },
+    retries: { type: "string", default: "0" },
   },
 });
 if (!values.game || !values.version) throw new Error("--game and --version are required");
@@ -84,13 +88,13 @@ await stage("plan", async () => {
     node("vm/plan-run.mjs", `--slug ${values.game} --version ${values.version} --out ${VMRUN} --lint-only ${plantFile}`);
   }
 });
-await stage("play", async () => node("vm/play.mjs", `--jobs ${VMRUN}/jobs.json --out ${VMRUN} --pool ${values.pool}`));
+await stage("play", async () => node("vm/play.mjs", `--jobs ${VMRUN}/jobs.json --out ${VMRUN} --pool ${values.pool} --retries ${Number(values.retries)}${values.events ? ` --events ${VMRUN}/events.jsonl --owner ${JSON.stringify(values.owner || "unowned")}` : ""}`));
 await stage("detect", async () => node("vm/triage.mjs", `--run ${VMRUN} --phase detect --max-observe ${values["max-observe"]}`));
 await stage("observe", async () => node("vm/observe.mjs", `--frames ${VMRUN}/observe-frames.json --run ${VMRUN} --out ${VMRUN}/observations.jsonl --pool ${values["observe-pool"]}`));await stage("cluster", async () => node("vm/triage.mjs", `--run ${VMRUN} --phase cluster`));
 await stage("pull", async () => {
   // Only the files the reviewer and the report need: metadata + every evidence frame of every candidate.
   const list = `${VMRUN}/pull.txt`;
-  ssh(`cd ${VMRUN} && node -e 'const c=require("./candidates.json");const s=new Set();for(const x of c)for(const f of x.frames)s.add(f.rel);console.log([...s].join("\\n"))' > ${list} && for f in jobs.json static.json coverage-plan.json play-meta.json detect-meta.json cluster-meta.json candidates.json deterministic.json usage.jsonl; do [ -f $f ] && echo $f >> ${list}; done; ${values.plant ? `cp ${plantFile.replace(/\.json$/, ".truth.json")} ${VMRUN}/plant-truth.json && echo plant-truth.json >> ${list};` : ""} true`);
+  ssh(`cd ${VMRUN} && node -e 'const c=require("./candidates.json");const s=new Set();for(const x of c)for(const f of x.frames)s.add(f.rel);console.log([...s].join("\\n"))' > ${list} && for f in events.jsonl jobs.json static.json coverage-plan.json play-meta.json detect-meta.json cluster-meta.json candidates.json deterministic.json usage.jsonl; do [ -f $f ] && echo $f >> ${list}; done; ${values.plant ? `cp ${plantFile.replace(/\.json$/, ".truth.json")} ${VMRUN}/plant-truth.json && echo plant-truth.json >> ${list};` : ""} true`);
   execFileSync("bash", ["-c", `ssh -o BatchMode=yes ${values.host} 'cd ${VMRUN} && tar cf - -T pull.txt' | tar xf - -C ${LOCAL}`], { stdio: "inherit" });
 });
 await stage("review", async () => {
