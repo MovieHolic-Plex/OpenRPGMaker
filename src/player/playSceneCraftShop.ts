@@ -38,6 +38,46 @@ function craftStill(): boolean {
   return getPlayerPreferences().reduceMenuMotion || prefersReducedMotion();
 }
 
+/**
+ * 목록 높이를 통째 줄 수에 맞춘다 — 줄이 아래에서 반쯤 잘려 보이지 않게(960×540 에서 셋째 줄이 잘렸다).
+ * 더 있으면 위·아래 ▲▼ 표시를 켠다. 돌려주는 함수는 감시 해제.
+ */
+function fitWholeRows(list: HTMLElement, more: HTMLElement): () => void {
+  const [up, down] = [more.children[0] as HTMLElement, more.children[1] as HTMLElement];
+  const marks = (): void => {
+    const scrollable = list.scrollHeight > list.clientHeight + 1;
+    more.hidden = !scrollable;
+    up.dataset.off = list.scrollTop > 4 ? "0" : "1";
+    down.dataset.off = list.scrollTop + list.clientHeight < list.scrollHeight - 4 ? "0" : "1";
+  };
+  const fit = (): void => {
+    list.style.removeProperty("flex");
+    list.style.removeProperty("height");
+    more.hidden = false;
+    const rows = [...list.children] as HTMLElement[];
+    if (!rows.length) return;
+    // 줄 높이를 가장 큰 줄에 맞춰 같게 한다 — 긴 이름이 두 줄이 되면 줄마다 높이가 달라 스크롤 한 칸이 줄을 자른다.
+    for (const row of rows) row.style.removeProperty("height");
+    const tallest = Math.max(...rows.map((row) => row.offsetHeight));
+    for (const row of rows) row.style.height = `${tallest}px`;
+    const gap = parseFloat(getComputedStyle(list).rowGap) || 0;
+    // 가장 큰 줄로 잰다 — 이름이 두 줄인 줄이 있어도 잘리지 않게.
+    const step = Math.max(...rows.map((row) => row.offsetHeight)) + gap;
+    const room = list.clientHeight;
+    const fits = Math.max(1, Math.floor((room + gap) / step));
+    if (fits < rows.length) {
+      list.style.flex = "none";
+      list.style.height = `${fits * step - gap}px`;
+    } else more.hidden = true;
+    marks();
+  };
+  const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(() => fit());
+  observer?.observe(list.parentElement ?? list);
+  list.addEventListener("scroll", marks, { passive: true });
+  requestAnimationFrame(fit);
+  return () => { observer?.disconnect(); list.removeEventListener("scroll", marks); };
+}
+
 /** 방금 만든 제작법 — 창이 결과와 함께 다시 열릴 때 같은 줄에 서서 연출한다. */
 let lastCraft: { recipeId: string; count: number } | undefined;
 
@@ -197,6 +237,10 @@ export async function playCraftShop(scene: PlaySceneContext, step: CraftShopStep
     if (still) overlay.classList.add("is-still");
 
     const rows = step.rows.map((row) => recipeRow(row, gold));
+    const list = el("div", { class: "runtime-shop-item-list", dataset: { testid: "craft-shop-list" }, attrs: { role: "listbox", "aria-label": "제작법" }, children: rows });
+    const more = el("div", { class: "runtime-craft-more", attrs: { "aria-hidden": "true" }, dataset: { testid: "craft-shop-more" }, children: [
+      el("span", { text: "▲ 위에 더" }), el("span", { text: "아래에 더 ▼" }),
+    ] });
     const detailSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "craft-shop-detail-slot" } });
     const countValue = el("span", { class: "runtime-craft-count-value", dataset: { testid: "craft-shop-count" }, text: "1" });
     const minus = el("button", { class: "runtime-shop-menu-choice runtime-craft-step", text: "−", attrs: { type: "button", "aria-label": "하나 덜" }, dataset: { testid: "craft-shop-count-minus" }, on: { click: () => step1(-1) } }) as HTMLButtonElement;
@@ -274,7 +318,8 @@ export async function playCraftShop(scene: PlaySceneContext, step: CraftShopStep
         ] }),
         el("div", { class: "runtime-shop-main", children: [
           el("div", { class: "runtime-shop-panel runtime-shop-list-panel", children: [
-            el("div", { class: "runtime-shop-item-list", dataset: { testid: "craft-shop-list" }, attrs: { role: "listbox", "aria-label": "제작법" }, children: rows }),
+            list,
+            more,
           ] }),
           el("div", { class: "runtime-shop-side", children: [
             el("div", { class: "runtime-shop-panel runtime-shop-detail-panel", children: [detailSlot] }),
@@ -294,6 +339,7 @@ export async function playCraftShop(scene: PlaySceneContext, step: CraftShopStep
     layer.querySelector("[data-testid='craft-shop-scene']")?.remove();
     layer.append(overlay);
     refresh();
+    const unfit = fitWholeRows(list, more);
     if (step.notice?.ok) playProjectSeCue("itemGet");
     const stopFx = justMade && !still ? celebrate(overlay, detailSlot) : undefined;
     if (step.notice && !step.notice.ok && !still) status.classList.add("is-shake");
@@ -309,6 +355,7 @@ export async function playCraftShop(scene: PlaySceneContext, step: CraftShopStep
     });
 
     function resolveWith(pick: CraftShopPick | undefined): void {
+      unfit();
       stopFx?.();
       detachCursor?.();
       detachCursor = null;

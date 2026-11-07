@@ -24,7 +24,27 @@ const measure = (id, rowSelector) => ({
     return { gold: s.gold, inventory: Object.fromEntries(${JSON.stringify(ITEMS)}.map((id) => [id, inv[id] ?? 0])), rows,
       window: craft ? { craftDisabled: craft.disabled, craftLabel: craft.textContent, reason: q("craft-shop-reason")?.hidden ? null : q("craft-shop-reason")?.textContent, count: q("craft-shop-count")?.textContent, quantityShown: !q("craft-shop-quantity")?.hidden, needs,
         leaveInside: !!(vp && leave && leave.width > 0 && leave.left >= vp.left - 1 && leave.right <= vp.right + 1 && leave.top >= vp.top - 1 && leave.bottom <= vp.bottom + 1),
-        overflowX: win ? win.scrollWidth - win.clientWidth : null, overflowY: win ? win.scrollHeight - win.clientHeight : null } : null };
+        overflowX: win ? win.scrollWidth - win.clientWidth : null, overflowY: win ? win.scrollHeight - win.clientHeight : null, layout: craftLayout() } : null };
+    function craftLayout() {
+      // 읽기 좋음을 기계로 잰다: 화면에 보이는 글자의 최소 크기(화면 px), 목록·재료가 줄 중간에서 잘렸는지, 이름이 … 로 잘렸는지, 버튼 높이.
+      const scene = q("craft-shop-scene");
+      const box = (e) => { const r = e.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; };
+      const sliced = (items, clip) => { const c = clip.getBoundingClientRect(); return items.filter((e) => { const r = e.getBoundingClientRect(); const vis = Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top); return vis > 1 && vis < r.height - 1; }).length; };
+      const visibleFull = (items, clip) => { const c = clip.getBoundingClientRect(); return items.filter((e) => { const r = e.getBoundingClientRect(); return r.top >= c.top - 1 && r.bottom <= c.bottom + 1; }).length; };
+      const texts = [...scene.querySelectorAll("span,div,button")].filter((e) => e.childNodes.length && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && e.getClientRects().length && getComputedStyle(e).visibility !== "hidden");
+      const k = scene.getBoundingClientRect().width / (scene.offsetWidth || 1);
+      const minFont = Math.min(...texts.map((e) => parseFloat(getComputedStyle(e).fontSize) * k));
+      const list = q("craft-shop-list"); const rows = [...list.querySelectorAll(".runtime-craft-row")];
+      const panel = scene.querySelector(".runtime-shop-detail-panel"); const needs = [...scene.querySelectorAll(".runtime-craft-need")];
+      const names = [...scene.querySelectorAll(".runtime-craft-need-name, .runtime-shop-item-name")];
+      const btns = [...scene.querySelectorAll("button")].filter((b) => b.getClientRects().length && !b.closest("[hidden]"));
+      return { viewport: [innerWidth, innerHeight], scene: box(scene), shell: box(scene.querySelector(".runtime-shop-shell")), minFont: Math.round(minFont * 10) / 10,
+        listRows: rows.length, listVisible: visibleFull(rows, list), listSliced: sliced(rows, list), listScrollable: list.scrollHeight > list.clientHeight + 1,
+        needs: needs.length, needsVisible: visibleFull(needs, panel), needsSliced: sliced(needs, panel),
+        truncated: names.filter((n) => n.scrollWidth > n.clientWidth + 1).map((n) => n.textContent),
+        vpBox: box(document.querySelector(".play-viewport")), css: (() => { const s = getComputedStyle(scene); const sh = getComputedStyle(scene.querySelector(".runtime-shop-shell")); return { w: s.width, h: s.height, inset: s.inset, transform: s.transform, ct: s.containerType, body: sh.getPropertyValue("--shop-text-body"), fit: document.querySelector(".play-viewport")?.dataset.shopFit }; })(),
+        minButtonH: Math.round(Math.min(...btns.map((b) => b.getBoundingClientRect().height))) };
+    }
   }`,
 });
 const settle = (ms = 500) => ({ kind: "hold", dir: null, ms });
