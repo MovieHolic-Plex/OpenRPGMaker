@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { planCoverage, staticLint } from "../scripts/qa/pipeline/lib/plan.mjs";
 import { detectRun, groupDeterministic, selectForObserver, textFindings } from "../scripts/qa/pipeline/lib/detect.mjs";
 import { measurePlants } from "../scripts/qa/pipeline/lib/measure.mjs";
@@ -156,8 +157,7 @@ describe("qa pipeline deterministic detection", () => {
   });
 });
 
-describe("qa pipeline measurement", () => {
-  it("심은 결함은 그 위치를 가리키고 설명할 수 있는 후보가 real 일 때만 검토 후 포착이다", () => {
+describe("qa pipeline measurement", () => {  it("심은 결함은 그 위치를 가리키고 설명할 수 있는 후보가 real 일 때만 검토 후 포착이다", () => {
     const truth = [
       { id: "p-1", type: "garbled-text", mapId: "m1", eventId: "npc" },
       { id: "p-2", type: "void-tiles", mapId: "m2", eventId: null },
@@ -191,6 +191,15 @@ describe("qa pipeline measurement", () => {
   it("모델 답의 마지막 JSON 을 꺼낸다(생각 글 안의 중괄호는 무시)", () => {
     expect(extractJson('생각 {x} … {"verdict":"real","confidence":0.8}', ["verdict"])).toEqual({ verdict: "real", confidence: 0.8 });
     expect(extractJson("JSON 없음", ["verdict"])).toBeNull();
+  });
+
+  // 왜: 심은 판본 린트가 깨끗한 실행의 static.json 을 덮어쓰면, 심은 결함 4건이 출하본의 결함으로 보고된다
+  // (2026-11-07 실측: bad-transfer·endless-loop·sprite-cell-range·portrait-kind 가 깨끗한 후보에 섞였다).
+  // 실행은 CLI 라 단위 테스트가 import 하지 않으므로, 판본 소스의 출력 경로와 그 행동을 직접 확인한다.
+  it("--lint-only 는 static.json 이 아니라 static-planted.json 에 쓴다", () => {
+    const source = readFileSync(new URL("../scripts/qa/pipeline/vm/plan-run.mjs", import.meta.url), "utf8");
+    expect(source).toContain('static-planted.json');
+    expect(source).not.toMatch(/lint-only[\s\S]{0,400}path\.join\(values\.out, "static\.json"\)/);
   });
 
   // 왜: 검토가 Opus 하나에 묶여 있으면 Claude 한도가 마르는 순간 검토가 통째로 실패한다(2026-11-07 오너 지시:

@@ -19,6 +19,9 @@ const { values } = parseArgs({
     out: { type: "string" },
     pool: { type: "string", default: "16" },
     model: { type: "string", default: "deepseek-v4.1-flash-free" },
+    // deepseek-v4.1-flash-free allows 32k output. At 16k the reply was truncated mid-answer on most frames
+    // (measured 2026-11-07: 12 of 22 capped and unparsable), which silently dropped half the VQA track.
+    "max-tokens": { type: "string", default: "24000" },
   },
 });
 const KEY_FILE = process.env.OC_JSON ?? "/root/vqa-sinkiru/oc-exempt.json";
@@ -68,10 +71,10 @@ async function observe(f) {
     '형식: {"issues":[{"check":"C01","where":"화면 위치","desc":"무엇이 어떻게 잘못됐는지(근거)","quote":"관련 화면 글자 그대로 또는 빈칸","confidence":0.0-1.0}]} 결함이 없으면 {"issues":[]}',
   ].join("\n");
   const messages = [{ role: "system", content: SYS }, { role: "user", content: [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: `data:image/jpeg;base64,${img.toString("base64")}` } }] }];
-  let res = await chat(messages, { maxTokens: 16000 });
+  let res = await chat(messages, { maxTokens: Number(values["max-tokens"]) });
   let parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   if (res.ok && !parsed) {
-    // Retry with the hard no-tools system message: the usual failure is a tool-call envelope, not a bad answer.
+    // Retry with the hard no-tools system message: the usual failure is a tool-call envelope or prose before the JSON.
     res = await chat([{ role: "system", content: SYS_RETRY }, ...messages.slice(1), { role: "user", content: "위 프레임을 다시 판정해 JSON 하나만 출력해." }], { maxTokens: 8000 });
     parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   }
