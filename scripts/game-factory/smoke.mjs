@@ -3,7 +3,7 @@
 // PASS = the player boots, a new game reaches a field map, <seconds> of input runs, and no page error or console error
 // is raised. Writes <game dir>/smoke/{result.json,frames/*.png}. Frames are kept for the dashboard video.
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { firefox } from "playwright";
 
@@ -11,6 +11,7 @@ const game = resolve(process.argv[2] ?? "");
 const secIdx = process.argv.indexOf("--seconds");
 const SECONDS = secIdx > 0 ? Number(process.argv[secIdx + 1]) : 60;
 const out = resolve(game, "smoke");
+rmSync(out, { recursive: true, force: true });
 mkdirSync(resolve(out, "frames"), { recursive: true });
 const t0 = Date.now();
 const result = { seconds: SECONDS, booted: false, reachedMap: null, mapsSeen: [], moves: 0, errors: [], frames: [], verdict: "FAIL", reason: "" };
