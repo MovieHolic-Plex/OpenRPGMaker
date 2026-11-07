@@ -11,6 +11,7 @@ import {
   stageOwnsFilters,
   stillMotionLevel,
 } from "@/project/enemyStillMotion";
+import { enemyDeath, enemyHit, enemyIdle } from "@/player/battleEnemyStillMotion";
 
 function node(markup: string, extra: (element: HTMLElement) => void = () => {}): HTMLElement {
   const host = document.createElement("div");
@@ -95,5 +96,13 @@ describe("엔진 연출 단계", () => {
     expect(stageOwnsFilters(scene("action", true))).toBe(true);
     const sink = node(`<button class="battle-enemy" data-collapse="bossSink"><img class="battle-enemy-image"></button>`);
     expect(stageOwnsFilters(sink)).toBe(true);
+  });
+
+  it("WAAPI 가 없는 환경에서는 조용히 건너뛴다", () => {
+    const still = node(STILL);
+    Object.defineProperty(imageOf(still)!, "animate", { value: undefined });
+    const opts = { level: "full" as const, staged: false };
+    expect(() => { enemyHit(still, opts); enemyDeath(still, opts); enemyIdle(still, opts); }).not.toThrow();
+    expect(imageOf(still)!.hasAttribute("data-enemy-anim")).toBe(false);
   });
 });
