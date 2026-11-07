@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8049KB / 약 2,365,969 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8051KB / 약 2,366,445 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,008 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
-| `openwiki/editor-ai-panel.md` | 738KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4762 | ~216,827 |
+| `openwiki/editor-ai-panel.md` | 735KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4734 | ~215,868 |
 | `openwiki/editor-ai-tools.md` | 635KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4091 | ~186,477 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~134,808 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
@@ -661,7 +661,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L118` 주제 적 (`dungeonThemeTroops.ts`)
 - `L130` 시험
 
-### `openwiki/editor-ai-panel.md` — 738KB · 4762줄 · ~216,827 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 735KB · 4734줄 · ~215,868 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L3` 조수 v2 스위치 (2026-10-23, 기본 꺼짐)
 - `L10` 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)
@@ -831,7 +831,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L4692` 결정 (2026-10-16)
 - `L4721` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4729` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
-- `L4735` 그림 기본값은 ChatGPT, 모델 이름은 런타임에 고른다 (2026-11-07 실측)
 
 ### `openwiki/editor-ai-tools.md` — 635KB · 4091줄 · ~186,477 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
@@ -2687,12 +2686,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 이전 판 실행 확인 기록
 - `L86` 설정의 도트 저작 모델 (2026-10-16)
 
-### `openwiki/pixelfx-effects.md` — 9KB · 52줄 · ~2,587 토큰
+### `openwiki/pixelfx-effects.md` — 14KB · 102줄 · ~4,022 토큰
 
-- `L7` 파일 지도
-- `L22` 계약
-- `L41` 실측 (2026-10-31)
-- `L47` 라이선스
+- `L8` 0.3.0 (2026-11-07) — 「효과에 몸이 붙는다」
+  - `L13` 코어 계약 — 바뀐 것과 그대로인 것
+  - `L29` 새로 더해진 것 (전부 덧붙이기 — 기존 호출 경로 무영향)
+  - `L44` 우리 쪽에 실은 것
+  - `L51` 아직 우리가 쓰지 않는 것 (의도)
+- `L57` 파일 지도
+- `L72` 계약
+- `L91` 실측 (2026-10-31)
+- `L97` 라이선스
 
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 

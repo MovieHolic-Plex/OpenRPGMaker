@@ -1,7 +1,7 @@
 // The hit recipe (a tracer from the right, a flash and a ripple over a hex shell mapped by longitude and
 // latitude, sparks glancing off) is adapted from Sprite Fusion's open-source shield
 // (https://www.spritefusion.com/pixel-art-vfx/shield), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { P, Rng, fit, sparkle, band, bolt, forks, clamp, smooth, rand, hex, TAU, WHITE } from "../../core/index.js";
+import { P, Rng, fit, sparkle, band, bolt, forks, clamp, smooth, rand, hex, TAU, WHITE, READY } from "../../core/index.js";
 import { Ghosts, flash, since } from "./_lib.js";
 
 export const meta = {
@@ -21,6 +21,23 @@ export const meta = {
     radius: 44,
     seed: 5,
   },
+};
+
+const HOLD = { turn: 1, crouch: 3, lean: 1, fx: -9, fy: -38, bx: 10, by: -38, ffx: -5, fbx: 6 };
+const HIT_ = { ...HOLD, x: -2, crouch: 5, lean: -3 };
+export const act = {
+  poses: [
+    [0, HOLD],
+    [0.42, HOLD],
+    [0.42, HIT_, "snap"],
+    [0.7, { ...HOLD, x: -1 }],
+    [1.1, HOLD],
+    [1.5, HOLD],
+    [1.5, { ...HIT_, crouch: 4, lean: -2 }, "snap"],
+    [1.75, HOLD],
+    [2.4, HOLD],
+  ],
+  hits: [{ t: 0.42, stop: 0.07, shake: 0.16, amp: 2 }, { t: 1.5, stop: 0.03, shake: 0.08, amp: 1 }],
 };
 
 const S3 = Math.sqrt(3), SA = 0.13, CA = Math.sqrt(1 - SA * SA); // we look down on the dome a little

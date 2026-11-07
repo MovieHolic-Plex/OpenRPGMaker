@@ -1,4 +1,4 @@
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, seg, lerp, ease, TAU, WHITE, mix, luma, rgb } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, seg, lerp, ease, TAU, WHITE, mix, luma, rgb, READY } from "../../core/index.js";
 import { shapeOf, recolor, oval } from "./_lib.js";
 
 export const meta = {
@@ -13,6 +13,20 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#3d2027", "#7d3f35", "#c97a4a", "#f2b46a", "#ffd994", "#fff0cf", "#fffaf2", "#ffffff"], seed: 2 },
+};
+
+const HURT = { turn: 0.8, crouch: 5, lean: 3, hy: 1, fx: 1, fy: -21, bx: 7, by: -15, ffx: 4, fbx: -3 };
+const UP = { turn: 1.15, crouch: -1, fx: -13, fy: -36, bx: 14, by: -36, hy: -1, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.3, HURT],
+    [0.16, { ...HURT, crouch: 6 }],
+    [0.5, { ...HURT, crouch: 3, lean: 1, hy: 0 }],
+    [0.78, UP],
+    [1.2, { ...UP, crouch: 0, fy: -30, by: -30, hy: 0 }],
+    [1.9, READY],
+  ],
 };
 
 const SY = 0.3, NP = 8, PR = 16, LIFT0 = 0.16, LIFT1 = 0.74, TOPY = -43;

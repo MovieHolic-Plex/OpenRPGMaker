@@ -1,6 +1,6 @@
 // The crescent, trace, glint and spark recipe is adapted from Sprite Fusion's open-source slash
 // (https://www.spritefusion.com/pixel-art-vfx/slash), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, flare, clamp, ease, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, flare, clamp, ease, WHITE, READY } from "../../core/index.js";
 import { through, slash, slashEnd, shavings, sliver } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,30 @@ export const meta = {
     sparks: ["#fff3a6", "#ffe26b", "#ff8a2a", "#f2561d"],
     seed: 6,
   },
+};
+
+const STANCE = { ...READY, weapon: "sword", fx: 12, fy: -21, sa: -0.85 };
+const HIGH = { ...STANCE, x: -7, crouch: 4, lean: -4, fx: -7, fy: -35, sa: -2.65, bx: 9, by: -25, armsFront: true, ffx: 9, fbx: -8 };
+const LOW = { ...STANCE, x: 3, crouch: 6, lean: 6, fx: 22, fy: -20, sa: 0.62, bx: -8, by: -24, ffx: 13, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 62 },
+  poses: [
+    [-0.42, { ...STANCE, x: -7 }],
+    [-0.18, HIGH],
+    [-0.04, { ...HIGH, crouch: 5 }],
+    [0, { ...STANCE, x: 0, crouch: 2, lean: 3, fx: 16, fy: -37, sa: -1.45, bx: -7, by: -24, ffx: 11, fbx: -9, ghost: 1 }, "snap"],
+    [0.06, LOW, "snap"],
+    [0.14, { ...LOW, x: 4, crouch: 6, lean: 5, fx: 20, fy: -17, sa: 0.85, ghost: 1 }],
+    [0.17, { ...LOW, x: 5, crouch: 3, lean: 5, fx: 22, fy: -28, sa: 0.1, by: -18, toeB: true, ghost: 1 }, "snap"],
+    [0.21, { ...LOW, x: 6, crouch: 1, lean: 6, fx: 19, fy: -37, sa: -0.95, by: -18, ffx: 13, fby: -6 }, "snap"],
+    [0.5, { ...LOW, x: 6, crouch: 3, lean: 3, fx: 18, fy: -36, sa: -1.05, by: -19, ffx: 12 }],
+    [0.92, { ...STANCE, x: -7 }],
+  ],
+  hits: [
+    { t: 0.06, stop: 0.05, shake: 0.08, amp: 1, push: 1.4, straw: 8 },
+    { t: 0.16, stop: 0.14, shake: 0.2, amp: 2, push: 2.8, straw: 18, y: -28 },
+  ],
+  dust: [{ t: 0.06, x: 16, n: 5, dir: 1 }, { t: 0.17, x: -8, n: 4, dir: -1 }],
 };
 
 const UP = 0.14; // the second cut starts

@@ -1,7 +1,7 @@
 // The column (bands of the ramp across it, strands, pulses scrolling along it, a guide thread before it lands,
 // rings riding it) is adapted from Sprite Fusion's open-source holy light
 // (https://www.spritefusion.com/pixel-art-vfx/holy-light), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, lerp, ease, rand, mix, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, lerp, ease, rand, mix, TAU, WHITE, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Warp in",
@@ -15,6 +15,19 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#0b1030", "#152a63", "#1d4f9e", "#2582d2", "#36b9ee", "#8ae8ff", "#d4fbff", "#ffffff"], width: 15, seed: 3 },
+};
+
+const IN = { crouch: 7, lean: 3, fx: 9, fy: -12, bx: 12, by: -12, ffx: 8, fbx: -6 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [0, IN],
+    [1.82, IN],
+    [2.05, { crouch: 3, fx: 8, fy: -19, bx: 8, by: -18, ffx: 4, fbx: -3 }],
+    [2.5, READY],
+    [3, READY],
+  ],
 };
 
 // the beats: the guide thread, the slam, the tube opens, the scan, the cooling, the beam narrows, it snaps shut

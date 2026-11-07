@@ -3,7 +3,7 @@ import { GOLD } from "./_lib.js";
 
 export const meta = {
   name: "Halo",
-  desc: "A ring of gold light floats over the head with a glint running round it; fine dust sifts down from it and the hair catches its light.",
+  desc: "A ring of gold light floats over the head with a glint running round it; fine dust sifts down from it and the head catches its light.",
   tags: ["holy", "halo", "saint", "buff", "glow", "character", "loop"],
   size: [56, 80],
   origin: [28, 70],
@@ -13,6 +13,12 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: GOLD, seed: 5 },
+};
+
+const PRAY = { turn: 1.1, fx: -1, fy: -26, bx: 2, by: -26, armsFront: true, hy: 1, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [[0, PRAY], [0.5, { ...PRAY, crouch: 1 }], [1, { ...PRAY, crouch: 1, hy: 2 }], [1.5, { ...PRAY, crouch: 1 }], [2, PRAY]],
 };
 
 const HY = -46, RX = 9.5, RY = 2.6;

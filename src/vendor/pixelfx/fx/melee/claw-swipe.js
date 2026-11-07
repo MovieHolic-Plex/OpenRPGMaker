@@ -1,6 +1,6 @@
 // The shaded smear, its light and the dotted trace follow Sprite Fusion's open-source slash
 // (https://www.spritefusion.com/pixel-art-vfx/slash), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, B, Rng, fit, sparkle, clamp, smooth, ease } from "../../core/index.js";
+import { Particles, Bits, Lights, P, B, Rng, fit, sparkle, clamp, smooth, ease, READY } from "../../core/index.js";
 import { through, onSwing, travel, smear, trace, glowAlong } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,28 @@ export const meta = {
     sparks: ["#fff3c4", "#ffd166", "#ff8a2a", "#c42a1a"],
     seed: 8,
   },
+};
+
+const READY_ = { ...READY, weapon: "claw", offWeapon: "claw", sa: -0.4, sb: -0.9, crouch: 5, lean: 3, fx: 14, fy: -21, bx: 8, by: -25, ffx: 9, fbx: -8 };
+const HIGH = { ...READY_, x: -6, crouch: 4, lean: -3, fx: 3, fy: -41, sa: -1.4, bx: 7, by: -18, sb: -0.3, ffx: 10 };
+export const act = {
+  target: { x: 58 },
+  poses: [
+    [-0.46, { ...READY_, x: -6 }],
+    [-0.2, HIGH],
+    [-0.05, { ...HIGH, crouch: 5 }],
+    [0, { ...READY_, x: 0, crouch: 3, lean: 4, fx: 19, fy: -36, sa: -0.9, bx: -7, by: -24, ghost: 1 }, "snap"],
+    [0.05, { ...READY_, x: 2, crouch: 5, lean: 6, fx: 23, fy: -24, sa: 0.5, bx: -7, by: -24, ffx: 13, fbx: -10, toeB: true }, "snap"],
+    [0.1, { ...READY_, x: 3, crouch: 7, lean: 7, fx: 22, fy: -12, sa: 1.2, bx: -7, by: -24, ffx: 13, fbx: -10, toeB: true }, "snap"],
+    [0.42, { ...READY_, x: 3, crouch: 6, lean: 5, fx: 21, fy: -13, sa: 1.1, bx: -6, by: -22, ffx: 13, fbx: -10 }],
+    [0.9, { ...READY_, x: -6 }],
+  ],
+  hits: [
+    { t: 0.04, stop: 0.03, push: 0.9, straw: 5, y: -30, flash: 0.03 },
+    { t: 0.08, stop: 0.03, push: 0.9, straw: 5, y: -26, flash: 0.03 },
+    { t: 0.12, stop: 0.08, shake: 0.14, amp: 2, push: 1.4, straw: 9, y: -18 },
+  ],
+  dust: [{ t: 0.1, x: 12, n: 6, dir: 1 }],
 };
 
 const RAKE = 0.05; // each mark tears open

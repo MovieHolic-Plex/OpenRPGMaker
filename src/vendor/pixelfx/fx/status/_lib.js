@@ -219,6 +219,12 @@ const EYES = new WeakMap();
 export function eyes(a) {
   let list = EYES.get(a.mask);
   if (list) return list;
+  // a body that says where its eyes would go: a blank head still needs somewhere to go pink, burn or shut
+  if (a.eyes) {
+    list = a.eyes.map(([x, y]) => ({ x0: x, x1: x, y0: y, y1: y + 1, px: [[x, y], [x, y + 1]], skin: colorAt(a, x, y) }));
+    EYES.set(a.mask, list);
+    return list;
+  }
   const S = shape(a), W = S.w, col = (x, y) => (S.on(x, y) ? colorAt(a, x, y) : 0);
   const dark = (x, y) => S.on(x, y) && y < S.h * 0.4 && luma(col(x, y)) < 0.15 && S.on(x - 1, y) && S.on(x + 1, y) && S.on(x, y - 1) && S.on(x, y + 1);
   const seen = new Set();

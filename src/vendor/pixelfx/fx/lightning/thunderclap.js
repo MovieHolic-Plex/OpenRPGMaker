@@ -1,7 +1,7 @@
 // The flash and flare, the bolts and their flicker, the plasma spray, the scorch where bolts land and the dust
 // thrown along the floor follow Sprite Fusion's open-source lightning and explosion
 // (https://www.spritefusion.com/pixel-art-vfx/lightning), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, band, flare, sparkle, clamp, smooth, ease, rng, TAU, WHITE, hex, mix } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, band, flare, sparkle, clamp, smooth, ease, rng, TAU, WHITE, hex, mix, READY } from "../../core/index.js";
 import { VOLT, PLASMA, zigzag, stroke, crackle, scorch } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,28 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: VOLT, sparks: PLASMA, reach: 104, seed: 6 },
+};
+
+const WIDE = { turn: 1.15, crouch: 5, lean: -1, fx: -15, fy: -33, bx: 15, by: -33, ffx: -7, fbx: 8 };
+const CLAP_ = { turn: 1.15, y: -2, crouch: 0, fx: -1, fy: -45, bx: 1, by: -45, ffx: -3, ffy: -5, fbx: 4, fby: -5 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  target: { x: 104 },
+  poses: [
+    [-0.46, READY],
+    [-0.18, WIDE],
+    [0.08, { ...WIDE, crouch: 6 }],
+    [0.12, CLAP_, "snap"],
+    [0.55, { ...CLAP_, y: 0, ffy: -4, fby: -4, crouch: 1 }],
+    [1.05, { turn: 1, crouch: 3, fx: -10, fy: -28, bx: 11, by: -28, ffx: -4, fbx: 5 }],
+    [1.7, READY],
+  ],
+  hits: [
+    { t: 0.12, stop: 0.13, shake: 0.3, amp: 3, target: false },
+    { t: 0.42, push: 2, straw: 14, y: -8, skin: "shock", shiver: 0.5 },
+    { t: 1.2, push: 0, straw: 0, flash: 0, skin: null },
+  ],
 };
 
 const CLAP = 0.12, CY = -22, BK = [1, 0.7, 0.95, 0.5, 0.8, 0.3];

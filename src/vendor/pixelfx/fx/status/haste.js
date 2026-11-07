@@ -18,6 +18,17 @@ export const meta = {
   options: { palette: ["#4c25ab", "#773ae4", "#5b6cff", "#5eb0ff", "#a3dcff", "#ccf6ff", "#ffffff"], dust: "#8a8090", seed: 4 },
 };
 
+const RUN = { turn: 0.25, lean: 4 };
+const R1 = { ...RUN, crouch: 3, ffx: 12, ffy: -5, fbx: -10, fby: -8, toeB: true, fx: -7, fy: -19, bx: 12, by: -27 };
+const R2 = { ...RUN, crouch: 1, ffx: 4, ffy: -8, fbx: -1, fby: -5, fx: 3, fy: -18, bx: 5, by: -19 };
+const R3 = { ...RUN, crouch: 3, ffx: -10, ffy: -8, toeF: true, fbx: 12, fby: -5, fx: 14, fy: -27, bx: -5, by: -19 };
+const R4 = { ...RUN, crouch: 1, ffx: -1, ffy: -5, fbx: 4, fby: -8, fx: 5, fy: -19, bx: 3, by: -18 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [[0, R1], [0.1, R2, "snap"], [0.2, R3, "snap"], [0.3, R4, "snap"], [0.4, R1, "snap"], [0.5, R2, "snap"], [0.6, R3, "snap"], [0.7, R4, "snap"], [0.8, R1, "snap"], [0.9, R2, "snap"], [1, R3, "snap"], [1.1, R4, "snap"], [1.2, R1, "snap"]],
+};
+
 const D = meta.duration;
 
 // the character's shading in three levels (dark outline, mid, light), for the after-images

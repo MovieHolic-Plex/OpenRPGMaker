@@ -1,7 +1,7 @@
 // The bolt and its pop (a layered head with spinning rays, a flash disc, a cross, a ring, plasma sparks and stars)
 // are adapted from Sprite Fusion's open-source energy bolt (https://www.spritefusion.com/pixel-art-vfx/energy),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, PAL, fit, sparkle, clamp, smooth, ease, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, PAL, fit, sparkle, clamp, smooth, ease, TAU, WHITE, READY } from "../../core/index.js";
 
 const HX = 15, HY = -24, TX = 152, TY = -22, N = 5, TRAIL = 18;
 
@@ -17,6 +17,37 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: PAL.arcane, seed: 3 },
+};
+
+const OPEN = { ...READY, x: -3, crouch: 4, lean: 4, fx: 18, fy: -24, bx: -6, by: -22, ffx: 11, fbx: -9 };
+const KICK = { ...OPEN, fx: 15, fy: -26, lean: 2 };
+const GATHER = { ...READY, x: -3, crouch: 4, lean: -2, fx: 6, fy: -24, bx: 8, by: -24, ffx: 9, fbx: -7 };
+export const act = {
+  target: { x: 152 },
+  poses: [
+    [-0.52, { ...READY, x: -3 }],
+    [-0.24, GATHER],
+    [0, { ...GATHER, crouch: 5 }],
+    [0.05, KICK, "snap"],
+    [0.1, OPEN, "snap"],
+    [0.15, KICK, "snap"],
+    [0.2, OPEN, "snap"],
+    [0.25, KICK, "snap"],
+    [0.29, OPEN, "snap"],
+    [0.33, KICK, "snap"],
+    [0.38, OPEN, "snap"],
+    [0.43, KICK, "snap"],
+    [0.48, OPEN, "snap"],
+    [1.2, { ...OPEN, crouch: 3 }],
+    [1.7, { ...READY, x: -3 }],
+  ],
+  hits: [
+    { t: 0.77, stop: 0.02, push: 0.7, straw: 4, y: -24, flash: 0.03 },
+    { t: 0.85, stop: 0.02, push: 0.7, straw: 4, y: -24, flash: 0.03 },
+    { t: 0.95, stop: 0.02, push: 0.7, straw: 4, y: -24, flash: 0.03 },
+    { t: 1.08, stop: 0.02, push: 0.7, straw: 4, y: -24, flash: 0.03 },
+    { t: 1.2, stop: 0.07, shake: 0.14, amp: 1, push: 1.4, straw: 9, y: -24 },
+  ],
 };
 
 export function create(o) {

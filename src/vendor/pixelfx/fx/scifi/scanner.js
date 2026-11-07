@@ -15,6 +15,21 @@ export const meta = {
   options: { palette: ["#03140a", "#06301a", "#0c5a2c", "#16893e", "#2cc256", "#7cf08c", "#d0ffd4", "#ffffff"], seed: 22 },
 };
 
+const STIFF = { turn: 0.9, crouch: -1, fx: -7, fy: -14, bx: 8, by: -14, ffx: -3, fbx: 4 };
+const OK_ = { turn: 0.9, fx: -9, fy: -37, bx: 8, by: -15, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, {}],
+    [0.3, STIFF, "snap"],
+    [1.75, STIFF],
+    [1.85, OK_, "snap"],
+    [2.5, OK_],
+    [2.8, {}],
+    [3.2, {}],
+  ],
+};
+
 const D = meta.duration, LOCK = 0.3, SCAN0 = 0.42, SCAN1 = 1.6, DONE = 1.75, LET = 2.5;
 
 // the body: its outline pixels by row, and each row's extent, worked out once per actor

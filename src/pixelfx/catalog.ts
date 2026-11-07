@@ -18,6 +18,25 @@ export interface PixelFxCatalogEntry {
   readonly actor: number;
   /** 캐릭터 뒤 층을 따로 그린다. */
   readonly back: number;
+  /**
+   * 연기(0.3.0 act): 캐릭터가 준비→타격→회복하는 박자. 효과 코드를 부르지 않고도 「언제 휘두르고 언제 맞는지」를
+   * 알 수 있게 sync 스크립트가 catalog.json 에 싣는다. 없으면 단순 효과다.
+   */
+  readonly act?: PixelFxCatalogAct;
+}
+
+/** act 의 데이터 계약(pixelfx core/act.js `actTiming`). 시간은 효과 자기 초 — 시작이 0 이다. */
+export interface PixelFxCatalogAct {
+  /** 효과가 켜지기 전에 몸이 준비하는 시간(초). */
+  readonly windup: number;
+  /** 효과가 끝난 뒤 몸이 돌아오는 시간(초). */
+  readonly recovery: number;
+  /** 효과가 서 있는 몸 위에 직접 그린다(서리·독·축복 같은 몸 효과). */
+  readonly onBody: boolean;
+  /** 맞는 순간의 수(정지·흔들림이 걸리는 박자). */
+  readonly hits: number;
+  /** 함께 서는 허수아비 대상의 수. */
+  readonly targets: number;
 }
 
 export interface PixelFxCategory {
@@ -34,7 +53,7 @@ const BY_ID = new Map(PIXEL_FX_EFFECTS.map((entry) => [entry.id, entry]));
 
 /** 분류 id → 한국어 이름(편집기 화면용, 원문). */
 export const PIXEL_FX_CATEGORY_LABELS: Readonly<Record<string, string>> = {
-  fire: "불", explosions: "폭발", water: "물", ice: "얼음", lightning: "번개", scifi: "SF", melee: "근접 베기",
+  moves: "기술 연기", fire: "불", explosions: "폭발", water: "물", ice: "얼음", lightning: "번개", scifi: "SF", melee: "근접 베기",
   impacts: "타격", projectiles: "투사체", spawn: "등장·소멸", arcane: "비전", holy: "신성", shadow: "어둠",
   status: "상태", nature: "자연", weather: "날씨", ui: "UI", pickups: "획득", transitions: "전환", critters: "작은 생물",
 };

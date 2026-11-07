@@ -15,6 +15,18 @@ export const meta = {
   options: { palette: GOLD, radius: 29, seed: 8 },
 };
 
+const BRACE = { turn: 0.7, crouch: 3, lean: 1, fx: 5, fy: -33, bx: 10, by: -20, ffx: 4, fbx: -2 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, BRACE],
+    [0.6, { ...BRACE, crouch: 4 }],
+    [1.2, { ...BRACE, fy: -35, crouch: 3 }],
+    [1.8, { ...BRACE, crouch: 4 }],
+    [2.4, BRACE],
+  ],
+};
+
 const CY = -22, TILT = 0.34, N = 4, FLOOR_SY = 0.26;
 
 // a point of the sphere (lat, lon) seen from a little above: screen x, y and depth z (> 0 faces us)

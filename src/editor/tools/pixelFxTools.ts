@@ -1,4 +1,4 @@
-// pixelfx 코드 픽셀 효과(232종, MIT patch-gg/pixelfx) 조수 도구(2026-10-31).
+// pixelfx 코드 픽셀 효과(244종, MIT patch-gg/pixelfx) 조수 도구(2026-10-31, 0.3.0 갱신 2026-11-07).
 //
 //   list_pixel_fx     효과 찾기(낱말·분류·반복만) — id·이름·길이·반복·크기·태그·설명.
 //   preview_pixel_fx  효과 한 개의 시간순 장면 그림(실제 렌더러, 색·뒤집기 반영).
@@ -27,6 +27,7 @@ function brief(entry: PixelFxCatalogEntry) {
   return {
     id: entry.id, name: entry.name, category: entry.category, loop: entry.loop, durationSec: entry.duration,
     size: `${entry.size[0]}x${entry.size[1]}`, ...(entry.actor ? { onCharacter: true } : {}), tags: entry.tags.slice(0, 8),
+    ...(entry.act ? { act: { windupSec: entry.act.windup, recoverySec: entry.act.recovery, onBody: entry.act.onBody, hits: entry.act.hits } } : {}),
     desc: entry.desc.length > 160 ? `${entry.desc.slice(0, 157)}…` : entry.desc,
   };
 }
@@ -70,8 +71,9 @@ function specFromArgs(args: Record<string, unknown>): { spec: PixelFxSpec; entry
 const listPixelFx: ToolDefinition = {
   name: "list_pixel_fx",
   description:
-    "코드로 그리는 픽셀 효과(pixelfx, 232종: 불·폭발·물·얼음·번개·SF·근접·타격·투사체·등장·비전·신성·어둠·상태·자연·날씨·UI·획득·전환·작은 생물)를 찾는다. " +
+    "코드로 그리는 픽셀 효과(pixelfx, 244종: 기술 연기·불·폭발·물·얼음·번개·SF·근접·타격·투사체·등장·비전·신성·어둠·상태·자연·날씨·UI·획득·전환·작은 생물)를 찾는다. " +
     "query 는 영어·한국어 낱말(예 'torch', '횃불', 'heal', '서리 폭발'), category 로 분류를 좁히고, loopOnly:true 면 상시로 돌릴 반복 효과(횃불·모닥불·반딧불·폭포·날씨)만. " +
+    "결과의 act 는 그 효과가 캐릭터 몸으로 연기하는 박자다(준비 windupSec·회복 recoverySec·맞는 박자 hits, onBody = 몸 위에 직접 그림). 분류 moves 는 투사체·휘두름·내려치기 같은 통짜 공격이다. " +
     "결과의 id 를 attach_pixel_fx(기술·아이템·한 번 효과)·set_event_pixel_fx / place_pixel_fx(상시 효과)에 넣는다. 그리기 전에 preview_pixel_fx 로 모양을 본다. query·category 없이 부르면 분류별 개수만 준다.",
   mode: "read",
   parameters: {

@@ -1,7 +1,7 @@
 // The arrival (bits converging, a line of light that opens into the silhouette, a ring on the floor, a burst of
 // stars) is adapted from Sprite Fusion's open-source blink (https://www.spritefusion.com/pixel-art-vfx/movement),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, PAL, fit, band, flare, sparkle, clamp, ease, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, PAL, fit, band, flare, sparkle, clamp, ease, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { shades, squeezed } from "./_lib.js";
 
 const LINE = 0.26, GROW = 0.1, OPEN = 0.12, ARRIVE = LINE + GROW + OPEN;
@@ -18,6 +18,20 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: PAL.arcane, seed: 12 },
+};
+
+const LANDED = { crouch: 7, lean: 3, fx: 9, fy: -12, bx: 12, by: -12, ffx: 8, fbx: -6 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, LANDED],
+    [0.48, LANDED],
+    [0.56, { ...LANDED, crouch: 6 }, "snap"],
+    [0.95, READY],
+    [1.4, READY],
+  ],
+  hits: [{ t: 0.48, stop: 0.03, shake: 0.1, amp: 1 }],
+  dust: [{ t: 0.48, x: 0, n: 7 }],
 };
 
 /** The stand-in character appears once the silhouette has opened. */

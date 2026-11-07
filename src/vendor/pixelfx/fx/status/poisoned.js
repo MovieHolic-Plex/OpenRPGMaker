@@ -15,6 +15,12 @@ export const meta = {
   options: { palette: ["#0e1d14", "#173320", "#23552e", "#318232", "#55b92f", "#8eea3f", "#cfff63", "#f6ffc2"], veins: "#2c1a3a", seed: 5 },
 };
 
+const SICK = { turn: 0.8, crouch: 4, lean: 4, hy: 1, fx: 2, fy: -20, bx: 8, by: -14, ffx: 3, fbx: -3 };
+export const act = {
+  onBody: true,
+  poses: [[0, { ...SICK, x: -1, crouch: 5, lean: 5 }], [0.2, { ...SICK, x: 0 }], [0.5, { ...SICK, x: 1 }], [0.8, { ...SICK, x: 1, crouch: 5, lean: 5 }], [1, { ...SICK, x: 0 }], [1.3, { ...SICK, x: -1 }], [1.6, { ...SICK, x: -1, crouch: 5, lean: 5 }]],
+};
+
 const D = meta.duration, TICK = 0.8, G = 760;
 const since = (t) => (((t % TICK) + TICK) % TICK);
 /** The effect draws the whole (sick, swaying) body, so the stand-in is hidden throughout. */

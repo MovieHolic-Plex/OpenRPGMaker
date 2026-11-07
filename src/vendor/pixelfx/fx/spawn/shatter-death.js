@@ -1,13 +1,13 @@
 // The faceted ice shell, the cracks, and the shards, mist and glints of the burst are adapted from Sprite
 // Fusion's open-source ice (https://www.spritefusion.com/pixel-art-vfx/ice), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, B, Rng, fit, crystal, sparkle, clamp, smooth, ease, rand, TAU, WHITE, mix } from "../../core/index.js";
+import { Particles, Bits, Lights, P, B, Rng, fit, crystal, sparkle, clamp, smooth, ease, rand, TAU, WHITE, mix, READY } from "../../core/index.js";
 import { bodyOf } from "./_lib.js";
 
 export const meta = {
   name: "Shatter death",
   desc: "Frost races up the body and seals it in faceted ice, a glint sweeps it, cracks spread from the chest, then it bursts into its own facets that tumble, bounce and melt.",
   tags: ["spawn", "death", "ice", "freeze", "shatter", "shards", "one-shot"],
-  size: [168, 96],
+  size: [172, 96],
   origin: [84, 84],
   duration: 3.3,
   loop: false,
@@ -18,6 +18,13 @@ export const meta = {
     palette: ["#0e1636", "#1a2f66", "#2557a3", "#3488d6", "#5fc0f0", "#a2e6ff", "#dcf8ff", "#ffffff"],
     seed: 14,
   },
+};
+
+const FEAR = { turn: 0.9, lean: -2, crouch: 2, fx: -9, fy: -31, bx: 9, by: -31, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [[-0.2, READY], [0.08, FEAR, "snap"], [0.3, { ...FEAR, lean: -3, fy: -34 }], [0.5, FEAR], [3.3, FEAR]],
+  hits: [{ t: 0.5, stop: 0.02, shake: 0.06, amp: 1 }, { t: 1.4, stop: 0.09, shake: 0.26, amp: 3 }],
 };
 
 const LOCK = 0.5, CRACK = 1.05, BURST = 1.4;

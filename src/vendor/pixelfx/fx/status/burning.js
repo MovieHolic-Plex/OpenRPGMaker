@@ -24,6 +24,13 @@ export const meta = {
   },
 };
 
+const A_ = { turn: 1, crouch: 2, lean: 2, fx: -13, fy: -38, bx: 12, by: -17, ffx: -3, ffy: -7, fbx: 5 };
+const B_ = { turn: 0.9, crouch: 3, lean: -2, fx: -12, fy: -17, bx: 13, by: -38, ffx: -4, fbx: 4, fby: -7 };
+export const act = {
+  onBody: true,
+  poses: [[0, A_], [0.15, B_, "snap"], [0.3, A_, "snap"], [0.45, B_, "snap"], [0.6, A_, "snap"], [0.75, B_, "snap"], [0.9, A_, "snap"], [1.05, B_, "snap"], [1.2, A_, "snap"]],
+};
+
 const D = meta.duration, TICK = 0.6, WIND = -14;
 const since = (t) => (((t % TICK) + TICK) % TICK);
 const flare = (t) => Math.exp(-since(t) / 0.12);

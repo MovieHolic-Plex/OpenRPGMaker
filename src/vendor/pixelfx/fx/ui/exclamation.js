@@ -1,4 +1,4 @@
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, seg, ease, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, seg, ease, TAU, WHITE, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Exclamation",
@@ -12,6 +12,19 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#2a1405", "#6a2e06", "#b85a0a", "#f08c14", "#ffc23a", "#ffe580", "#fff6c8", "#ffffff"], seed: 3 },
+};
+
+const STARTLED = { turn: 1, y: -5, crouch: -1, fx: -14, fy: -34, bx: 15, by: -34, ffx: -3, ffy: -6, fbx: 4, fby: -6 };
+export const act = {
+  poses: [
+    [-0.08, READY],
+    [0, STARTLED, "snap"],
+    [0.14, { ...STARTLED, y: 0, crouch: 4, ffy: -4, fby: -4, fy: -26, by: -26 }, "in"],
+    [0.3, { turn: 1, fx: -10, fy: -23, bx: 11, by: -23, ffx: -3, fbx: 4 }],
+    [1.1, { turn: 1, fx: -10, fy: -23, bx: 11, by: -23, ffx: -3, fbx: 4 }],
+    [1.4, READY],
+  ],
+  dust: [{ t: 0.14, x: 0, n: 4 }],
 };
 
 const HEAD = -40, REST = -45, POP = 1.1;

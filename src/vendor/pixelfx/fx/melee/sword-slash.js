@@ -1,6 +1,6 @@
 // The crescent, echo, trail, glint and spark recipe is adapted from Sprite Fusion's open-source slash
 // (https://www.spritefusion.com/pixel-art-vfx/slash), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, P, Rng, fit, sparkle, clamp, smooth, ease, TAU } from "../../core/index.js";
+import { Particles, P, Rng, fit, sparkle, clamp, smooth, ease, TAU, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Sword slash",
@@ -19,6 +19,27 @@ export const meta = {
     radius: 42,
     seed: 2,
   },
+};
+
+const GUARD = { ...READY, weapon: "sword", fx: 12, fy: -21, sa: -0.85 };
+// the blade goes back past his head, then lags behind the hand on the way through, so the wrist breaks and it whips
+const WIND = { ...GUARD, x: -8, crouch: 4, lean: -4, fx: -7, fy: -35, sa: -2.65, bx: 9, by: -25, armsFront: true, ffx: 9, fbx: -8 };
+const CUT = { ...GUARD, x: 0, crouch: 2, lean: 3, fx: 16, fy: -37, sa: -1.45, bx: -7, by: -24, ffx: 11, fbx: -10, ghost: 1 };
+const DOWN = { ...GUARD, x: 2, crouch: 5, lean: 5, fx: 20, fy: -21, sa: 0.62, bx: -9, by: -24, ffx: 13, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 58 },
+  poses: [
+    [-0.55, { ...GUARD, x: -8 }],
+    [-0.3, WIND],
+    [-0.08, { ...WIND, crouch: 5, lean: -5 }],
+    [0, CUT, "snap"],
+    [0.06, DOWN, "snap"],
+    [0.3, { ...DOWN, x: 3, crouch: 6 }],
+    [0.58, { ...GUARD, x: 1, crouch: 3, fx: 15, fy: -21, sa: 0.1, bx: -5, by: -21, ffx: 9, fbx: -7 }],
+    [0.86, { ...GUARD, x: -8 }],
+  ],
+  hits: [{ t: 0.06, stop: 0.14, shake: 0.18, amp: 2, push: 2.8, straw: 18 }],
+  dust: [{ t: 0.06, x: 16, n: 7, dir: 1 }, { t: 0.06, x: -11, n: 4, dir: -1 }],
 };
 
 // a point on the slash's tilted ellipse

@@ -1,7 +1,7 @@
 // The crack-and-burst recipe (cracks walking out from a point, a white frame, the ice flung apart as shards
 // with ice dust and glints) is adapted from Sprite Fusion's open-source ice
 // (https://www.spritefusion.com/pixel-art-vfx/ice), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, B, Rng, fit, flare, sparkle, clamp, smooth, seg, ease, rand, mix, TAU, WHITE } from "../../core/index.js";
+import { Particles, Bits, Lights, P, B, Rng, fit, flare, sparkle, clamp, smooth, seg, ease, rand, mix, TAU, WHITE, READY } from "../../core/index.js";
 import { Panes, endBy, inPoly, centroid, splitPoly, iceOf, fractures, drawFractures } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,27 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#151a3d", "#212f6b", "#2c58aa", "#3a8bd8", "#62c8f4", "#a6ecff", "#dcfbff", "#ffffff"], seed: 5 },
+};
+
+const FEAR = { turn: 0.9, lean: -2, crouch: 2, fx: -8, fy: -31, bx: 9, by: -31, ffx: -3, fbx: 4 };
+const FREE = { turn: 1, crouch: 5, fx: -12, fy: -18, bx: 12, by: -18, ffx: -5, fbx: 6 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.2, READY],
+    [0.05, READY],
+    [0.16, FEAR, "snap"],
+    [0.3, { ...FEAR, lean: -1, fx: -10, fy: -34 }],
+    [0.45, { ...FEAR, lean: -3, bx: 11, by: -34, fx: -7, fy: -29 }],
+    [0.62, FEAR],
+    [2.52, FEAR],
+    [2.54, FREE, "snap"],
+    [2.9, { ...FREE, crouch: 4 }],
+    [3.1, { ...FREE, crouch: 3, lean: 1 }],
+    [3.3, { ...FREE, crouch: 3, lean: -1 }],
+    [4, READY],
+  ],
+  hits: [{ t: 0.62, stop: 0.03, shake: 0.08, amp: 1 }, { t: 2.52, stop: 0.05, shake: 0.2, amp: 2 }],
 };
 
 const SNAP = 0.16; // frost lines race in along the floor to the feet

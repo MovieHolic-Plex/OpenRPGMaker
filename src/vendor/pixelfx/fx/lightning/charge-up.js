@@ -1,7 +1,7 @@
 // The charge (streaks spiralling in, a core that swells with an accelerating pulse, little arcs spitting off
 // it) and the release (flash, rings, a spray of motes and stars) follow Sprite Fusion's open-source energy charge
 // (https://www.spritefusion.com/pixel-art-vfx/energy), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, flare, sparkle, clamp, smooth, ease, rng, TAU, WHITE, hex, mix } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, flare, sparkle, clamp, smooth, ease, rng, TAU, WHITE, hex, mix, READY } from "../../core/index.js";
 import { VOLT, PLASMA, zigzag, stroke, crackle } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,25 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: VOLT, sparks: PLASMA, charge: 1.6, seed: 4 },
+};
+
+const HOLD = { ...READY, crouch: 3, lean: -2, fx: 15, fy: -21, bx: 9, by: -17, ffx: 9, fbx: -7 };
+const BURST = { turn: 1.15, y: -2, crouch: 0, lean: -2, fx: -13, fy: -37, bx: 14, by: -36, ffx: -2, ffy: -6, fbx: 3, fby: -6 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [-0.36, READY],
+    [0, HOLD],
+    [0.8, { ...HOLD, crouch: 4 }],
+    [1.4, { ...HOLD, crouch: 6, lean: 0 }],
+    [1.59, { ...HOLD, crouch: 7, lean: 0 }],
+    [1.6, BURST, "snap"],
+    [1.95, { ...BURST, y: 0, crouch: 2, fy: -30, by: -30, ffy: -4, fby: -4 }],
+    [2.7, READY],
+  ],
+  hits: [{ t: 1.6, stop: 0.14, shake: 0.3, amp: 3 }],
+  dust: [{ t: 1.6, x: 10, n: 6, dir: 1 }, { t: 1.6, x: -10, n: 6, dir: -1 }],
 };
 
 const CX = 15, CY = -21, BK = [1, 0.7, 0.95, 0.5, 0.8, 0.35], ASH = hex("#5b5566");

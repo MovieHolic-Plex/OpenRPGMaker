@@ -1,7 +1,7 @@
 // The flame-puff, smoke and spark recipe and the floor ring are adapted from Sprite Fusion's open-source explosion
 // (https://www.spritefusion.com/pixel-art-vfx/explosion), and the tongue from its fire
 // (https://www.spritefusion.com/pixel-art-vfx/fire), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, band, clamp, smooth, ease, noise, rand, TAU, WHITE, hex, mix, rgb } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, band, clamp, smooth, ease, noise, rand, TAU, WHITE, hex, mix, rgb, READY } from "../../core/index.js";
 import { hotFirst, flameTongue, simDraw, LAYERS, BACK_LAYERS } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,29 @@ export const meta = {
     reach: 92,
     seed: 6,
   },
+};
+
+const HIGH = { turn: 1.15, crouch: 0, fx: -7, fy: -44, bx: 8, by: -44, ffx: -5, fbx: 6 };
+const SLAM = { turn: 1.15, crouch: 8, lean: 3, fx: -9, fy: -8, bx: 11, by: -8, ffx: -8, fbx: 9 };
+const EASE = { turn: 1, crouch: 2, fx: -8, fy: -17, bx: 9, by: -17, ffx: -4, fbx: 5 };
+export const act = {
+  target: { x: 70 },
+  poses: [
+    [-0.32, READY],
+    [0.02, HIGH],
+    [0.27, { ...HIGH, y: -1 }],
+    [0.32, SLAM, "snap"],
+    [0.85, { ...SLAM, crouch: 7 }],
+    [1.5, EASE],
+    [2.4, READY],
+    [3.9, READY],
+  ],
+  hits: [
+    { t: 0.32, stop: 0.1, shake: 0.28, amp: 3, target: false },
+    { t: 0.6, push: 1.2, straw: 10, y: -8, skin: "char" },
+    { t: 3.5, push: 0, straw: 0, flash: 0, skin: null },
+  ],
+  dust: [{ t: 0.32, x: 10, n: 6, dir: 1 }, { t: 0.32, x: -10, n: 6, dir: -1 }],
 };
 
 const SY = 0.2, CHARGE = 0.32, SPREAD = 0.75, SOOT = hex("#0d0a12"), SOOT2 = hex("#17121d"), WARM = rgb(255, 176, 96);
