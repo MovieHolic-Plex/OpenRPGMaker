@@ -23,6 +23,13 @@ export const meta = {
   },
 };
 
+const SEETHE = { turn: 1, crouch: 4, fx: -13, fy: -19, bx: 13, by: -19, ffx: -8, fbx: 9 };
+const THUD = { ...SEETHE, crouch: 6, fy: -23, by: -23 };
+export const act = {
+  onBody: true,
+  poses: [[0, SEETHE], [0.05, THUD, "snap"], [0.17, SEETHE, "snap"], [0.29, { ...THUD, crouch: 5 }, "snap"], [0.4, SEETHE, "snap"], [1.2, SEETHE]],
+};
+
 const D = meta.duration, LUB = 0.05, DUB = 0.29, G = 760;
 const pulse = (t, at, w = 0.06) => Math.exp(-((((((t - at) % D) + D + D / 2) % D - D / 2) / w) ** 2));
 const beat = (t) => pulse(t, LUB) + 0.65 * pulse(t, DUB);

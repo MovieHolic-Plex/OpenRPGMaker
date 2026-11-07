@@ -1,6 +1,6 @@
 // The pop's star and slivers follow Sprite Fusion's open-source impact, and the sparks his slash
 // (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, clamp, smooth, ease, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, clamp, smooth, ease, TAU, WHITE, READY } from "../../core/index.js";
 import { star, sliver } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,26 @@ export const meta = {
     length: 76,
     seed: 3,
   },
+};
+
+const STANCE = { ...READY, weapon: "handle", x: -7, sa: -0.3, fx: 13, fy: -21, bx: 7, by: -18 };
+const COCK = { ...STANCE, crouch: 4, lean: -3, fx: -6, fy: -38, sa: -2.2, bx: 9, by: -23, armsFront: true, ffx: 9, fbx: -7 };
+const CRACK_ = { ...STANCE, crouch: 4, lean: 5, fx: 18, fy: -21, sa: 0, bx: -8, by: -23, ffx: 12, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 94 },
+  poses: [
+    [-0.46, STANCE],
+    [-0.22, COCK],
+    [0.02, { ...COCK, lean: -4 }],
+    [0.06, { ...CRACK_, fx: 15, fy: -34, sa: -0.7, lean: 2, ghost: 1 }, "snap"],
+    [0.12, CRACK_, "snap"],
+    [0.21, CRACK_],
+    [0.26, { ...CRACK_, fx: 15, fy: -27, sa: -0.3, lean: 2, crouch: 3 }, "snap"],
+    [0.44, { ...CRACK_, fx: 17, fy: -22, sa: 0.1, lean: 3, crouch: 3 }],
+    [0.92, STANCE],
+  ],
+  hits: [{ t: 0.21, stop: 0.1, shake: 0.14, amp: 2, push: 2.4, straw: 14, y: -28 }],
+  dust: [{ t: 0.06, x: 2, n: 4, dir: 1 }],
 };
 
 const ROLL0 = 0.02, ROLL = 0.19, CRACK = ROLL0 + ROLL; // the loop runs out; the tip cracks when it gets there

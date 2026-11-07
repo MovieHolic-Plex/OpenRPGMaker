@@ -15,6 +15,13 @@ export const meta = {
   options: { palette: ["#081a24", "#0e3446", "#165a6e", "#2a8a9a", "#52bcc4", "#9ee6e0", "#e2fff8", "#ffffff"], seed: 7 },
 };
 
+const S1 = { turn: 0.3, lean: 3, crouch: 3, ffx: 11, ffy: -5, fbx: -9, fby: -5, toeB: true, fx: -5, fy: -19, bx: 11, by: -26 };
+const S2 = { turn: 0.3, lean: 3, crouch: 3, ffx: -9, ffy: -5, toeF: true, fbx: 11, fby: -5, fx: 13, fy: -26, bx: -4, by: -19 };
+export const act = {
+  onBody: true,
+  poses: [[0, S1], [1.2, S2], [2.4, S1]],
+};
+
 const D = meta.duration, TICKS = 4, STEP = D / TICKS, R = 18;
 
 // the hand's angle: it waits, pulls back a little, snaps a quarter turn, overshoots and settles

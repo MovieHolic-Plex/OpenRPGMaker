@@ -47,9 +47,25 @@ cpSync(join(src, "NOTICE.md"), join(dest, "NOTICE.md"));
 const { effects } = await import(pathToFileURL(join(dest, "fx/index.js")).href);
 const { categories } = await import(pathToFileURL(join(dest, "fx/categories.js")).href);
 const out = [];
+/** 0.3.0 연기(act): 몸이 준비·타격·회복하는 시간표. 손님 게임이 자기 캐릭터로 같은 박자를 쓰라고 데이터로 낸다. */
+function actTimingOf(mod) {
+  const a = mod?.act;
+  if (!a) return null;
+  const D = mod.meta?.duration ?? 1, keys = a.poses ?? [];
+  const from = Math.min(0, keys[0]?.[0] ?? 0);
+  const last = keys.length ? keys[keys.length - 1][0] : 0;
+  return {
+    windup: +Math.max(0, -from).toFixed(3),
+    recovery: mod.meta?.loop ? 0 : +Math.max(0, last - D).toFixed(3),
+    onBody: !!a.onBody,
+    hits: (a.hits ?? []).length,
+    targets: (a.targets ?? (a.target ? [a.target] : [])).length,
+  };
+}
 for (const [id, mod] of Object.entries(effects)) {
   const m = mod.meta ?? {};
   const o = m.options ?? {};
+  const act = actTimingOf(mod);
   out.push({
     id,
     category: id.split("/")[0],
@@ -64,6 +80,7 @@ for (const [id, mod] of Object.entries(effects)) {
     palette: Array.isArray(o.palette) ? o.palette : [],
     actor: m.actor ? 1 : 0,
     back: typeof mod.drawBack === "function" || /drawBack/.test(String(mod.create ?? "")) ? 1 : 0,
+    ...(act ? { act } : {}),
   });
 }
 // 효과 파일이 index 에 다 들어 있는지(원본 생성 파일이 낡았으면 바로 알린다)

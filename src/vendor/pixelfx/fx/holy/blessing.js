@@ -15,6 +15,18 @@ export const meta = {
   options: { palette: GOLD, seed: 7 },
 };
 
+const OPEN = { turn: 1.15, fx: -13, fy: -31, bx: 14, by: -31, hy: -1, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, OPEN],
+    [0.75, { ...OPEN, fy: -33, by: -33 }],
+    [1.5, { ...OPEN, crouch: -1, fy: -35, by: -35 }],
+    [2.25, { ...OPEN, fy: -33, by: -33 }],
+    [3, OPEN],
+  ],
+};
+
 const TOP = -108, T = 3;
 const halfW = (y) => lerp(5, 20, (y - TOP) / -TOP);
 // the rays in the cone, each shimmering a whole number of times a loop so it closes

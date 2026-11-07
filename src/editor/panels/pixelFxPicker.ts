@@ -5,6 +5,7 @@ import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import {
   PIXEL_FX_CATEGORIES,
   PIXEL_FX_CATEGORY_LABELS,
+  PIXEL_FX_EFFECTS,
   PIXEL_FX_PALETTE_PRESETS,
   pixelFxEntry,
   pixelFxRampFromColor,
@@ -89,6 +90,11 @@ export function openPixelFxPicker(options: PixelFxPickerOptions): void {
     title.textContent = entry ? `${entry.name}  ·  ${entry.id}` : spec.effectId;
     meta.textContent = entry
       ? `${PIXEL_FX_CATEGORY_LABELS[entry.category] ?? entry.category} · ${entry.loop ? "반복" : "한 번"} · ${entry.duration}초 · ${entry.size[0]}×${entry.size[1]}`
+        + (entry.act
+          ? ` · ${entry.act.onBody ? "몸에 그리기" : "몸이 연기"}`
+            + ` · 준비 ${entry.act.windup.toFixed(2)}초 · 회복 ${entry.act.recovery.toFixed(2)}초`
+            + (entry.act.hits ? ` · 타격 ${entry.act.hits}박자` : "")
+          : "")
       : "";
     desc.textContent = entry?.desc ?? "";
     flip.checked = Boolean(spec.flip);
@@ -163,7 +169,8 @@ export function openPixelFxPicker(options: PixelFxPickerOptions): void {
         children: [
           el("span", { class: "pixel-fx-card-thumb", children: [canvas] }),
           el("span", { class: "pixel-fx-card-name", text: entry.name, attrs: { "data-i18n-skip": "" } }),
-          el("span", { class: "pixel-fx-card-kind", text: entry.loop ? "반복" : "한 번" }),
+          el("span", { class: "pixel-fx-card-kind", text: entry.loop ? "반복" : "한 번", attrs: { "data-i18n-skip": "" } }),
+          ...(entry.act ? [el("span", { class: "pixel-fx-card-kind", text: entry.act.onBody ? "몸" : "연기", attrs: { "data-i18n-skip": "" } })] : []),
         ],
       });
       card.addEventListener("click", () => choose(entry));
@@ -287,7 +294,7 @@ export function pixelFxAnimationPickButton(options: {
   const button = el("button", {
     class: "btn small pixel-fx-pick-button",
     text: "픽셀 효과…",
-    attrs: { type: "button", title: "코드로 그리는 픽셀 효과(232종)에서 고릅니다 — 색·뒤집기를 바꿀 수 있습니다." },
+    attrs: { type: "button", title: `코드로 그리는 픽셀 효과(${PIXEL_FX_EFFECTS.length}종)에서 고릅니다 — 색·뒤집기를 바꿀 수 있습니다.` },
     dataset: { testid: options.testid },
   });
   button.addEventListener("click", () => {

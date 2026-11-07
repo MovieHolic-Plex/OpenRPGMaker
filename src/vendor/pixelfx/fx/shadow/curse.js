@@ -1,6 +1,6 @@
 // The tint that floods the character and the gas round it are adapted from Sprite Fusion's open-source poison
 // aura (https://www.spritefusion.com/pixel-art-vfx/poison), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, P, B, Rng, fit, sparkle, smooth, ease, noise, TAU, WHITE, mix, luma } from "../../core/index.js";
+import { Particles, Bits, P, B, Rng, fit, sparkle, smooth, ease, noise, TAU, WHITE, mix, luma, READY } from "../../core/index.js";
 import { VOID, Puffs, PK, attract, ringFast, unlight } from "./_lib.js";
 
 export const meta = {
@@ -15,6 +15,23 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: VOID, bone: ["#170f26", "#4a3a6e", "#7f6ea6", "#b3a4d4", "#e2d8f6"], seed: 9 },
+};
+
+const COWER = { turn: 1, crouch: 6, lean: 2, hy: 1, fx: -6, fy: -38, bx: 7, by: -38, ffx: -4, fbx: 5 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.2, READY],
+    [0.3, { turn: 0.9, hy: -1, fx: -9, fy: -19, bx: 10, by: -19, ffx: -3, fbx: 4 }],
+    [0.55, COWER, "snap"],
+    [0.8, { ...COWER, crouch: 7 }],
+    [1.2, { ...COWER, crouch: 6, lean: 3 }],
+    [1.72, { ...COWER, crouch: 7, lean: 2 }],
+    [2.1, { turn: 1, crouch: 4, lean: 3, hy: 2, fx: -8, fy: -15, bx: 9, by: -15, ffx: -4, fbx: 5 }],
+    [2.9, { turn: 1, crouch: 3, lean: 1, fx: -8, fy: -16, bx: 9, by: -16, ffx: -3, fbx: 4 }],
+    [3.4, READY],
+  ],
+  hits: [{ t: 0.55, stop: 0.09, shake: 0.2, amp: 2 }],
 };
 
 // where the skull hangs, and the beats: it stamps in, burns, cracks, breaks

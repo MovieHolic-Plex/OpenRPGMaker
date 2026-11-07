@@ -1,6 +1,6 @@
 // The crescent, trace, glint and spark recipe is adapted from Sprite Fusion's open-source slash
 // (https://www.spritefusion.com/pixel-art-vfx/slash), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, ease, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, ease, WHITE, READY } from "../../core/index.js";
 import { swing, slash, slashEnd, shavings, sliver } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,40 @@ export const meta = {
     sparks: ["#ffffff", "#efe9ff", "#c7b8f5", "#9480d8"],
     seed: 12,
   },
+};
+
+const BASE = { ...READY, weapon: "dagger", offWeapon: "dagger", sa: -0.5, sb: -0.9, crouch: 4, lean: 3, ffx: 11, fbx: -9, fx: 12, fy: -24, bx: 9, by: -24 };
+// a stab with one hand while the other comes back to the chest; the shoulders turn into each one
+const near = (fx, fy, sa, o = {}) => ({ ...BASE, fx, fy, sa, bx: 4, by: -24, sb: -1, ...o });
+const far = (bx, by, sb, o = {}) => ({ ...BASE, bx, by, sb, fx: 1, fy: -23, sa: -1, ...o });
+export const act = {
+  target: { x: 60 },
+  poses: [
+    [-0.4, { ...BASE, x: -4 }],
+    [-0.14, { ...BASE, x: -6, lean: -2, crouch: 5, fx: 2, fy: -22, sa: -1.2, bx: 2, by: -26, sb: -1.5 }],
+    [-0.03, { ...BASE, x: -6, lean: -3, crouch: 6, fx: 1, fy: -21, sa: -1.2, bx: 1, by: -25, sb: -1.5 }],
+    [0, near(20, -31, -0.5, { x: 2, ghost: 1 }), "snap"],
+    [0.055, far(21, -23, 0.5, { x: 3 }), "snap"],
+    [0.11, near(18, -36, -1, { x: 4 }), "snap"],
+    [0.165, far(22, -31, -0.6, { x: 5 }), "snap"],
+    [0.22, near(20, -22, 0.2, { x: 5 }), "snap"],
+    [0.275, far(21, -27, 0.05, { x: 6 }), "snap"],
+    [0.33, { ...BASE, x: 4, lean: -3, crouch: 5, fx: -1, fy: -33, sa: -2.5, bx: 2, by: -23, sb: -1.2 }, "snap"],
+    [0.37, { ...BASE, x: 7, lean: 2, crouch: 4, fx: 16, fy: -34, sa: -1, bx: -7, by: -24, sb: -2.4, ghost: 1 }, "snap"],
+    [0.43, { ...BASE, x: 9, lean: 6, crouch: 6, fx: 22, fy: -23, sa: 0.15, bx: -9, by: -24, sb: -2.6, ffx: 13, fbx: -10, toeB: true }, "snap"],
+    [0.68, { ...BASE, x: 9, lean: 5, crouch: 5, fx: 21, fy: -22, sa: 0.2, bx: -8, by: -24, sb: -2.6 }],
+    [1.05, { ...BASE, x: -4 }],
+  ],
+  hits: [
+    { t: 0.05, stop: 0.015, push: 0.5, straw: 3, flash: 0.02 },
+    { t: 0.105, stop: 0.015, push: -0.3, straw: 3, flash: 0.02 },
+    { t: 0.16, stop: 0.015, push: 0.5, straw: 3, flash: 0.02 },
+    { t: 0.215, stop: 0.015, push: -0.3, straw: 3, flash: 0.02 },
+    { t: 0.27, stop: 0.015, push: 0.5, straw: 3, flash: 0.02 },
+    { t: 0.325, stop: 0.015, push: -0.3, straw: 3, flash: 0.02 },
+    { t: 0.42, stop: 0.12, shake: 0.18, amp: 2, push: 2.6, straw: 16 },
+  ],
+  dust: [{ t: 0.43, x: 20, n: 7, dir: 1 }, { t: 0, x: -6, n: 3, dir: -1 }],
 };
 
 const EVERY = 0.055;

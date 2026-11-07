@@ -1,7 +1,7 @@
 // Mapping a lattice onto a dome by longitude and latitude, the ripple measured over its surface, the rim light
 // and the glancing sparks are adapted from Sprite Fusion's open-source shield
 // (https://www.spritefusion.com/pixel-art-vfx/shield), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, clamp, smooth, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, clamp, smooth, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { star, spikes } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,20 @@ export const meta = {
     sparks: ["#fff3a6", "#ffe26b", "#ff8a2a", "#f2561d"],
     seed: 12,
   },
+};
+
+const BRACE = { ...READY, crouch: 4, lean: 2, fx: 13, fy: -28, bx: 6, by: -21, ffx: 9, fbx: -9 };
+export const act = {
+  poses: [
+    [-0.36, READY],
+    [-0.1, BRACE],
+    [0, { ...BRACE, x: -3, crouch: 6, lean: -2, fx: 10, fy: -26 }, "snap"],
+    [0.18, { ...BRACE, x: -4, crouch: 5, lean: 0 }],
+    [0.65, { ...BRACE, x: -3 }],
+    [1.1, { ...READY, x: 0 }],
+  ],
+  hits: [{ t: 0.005, stop: 0.09, shake: 0.2, amp: 2 }],
+  dust: [{ t: 0.01, x: -10, n: 6, dir: -1 }],
 };
 
 const CX = 3, RX = 28, RY = 44, GRID = 3.4; // the dome's flat face, its depth and height, lattice density

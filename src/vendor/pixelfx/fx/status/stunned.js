@@ -23,6 +23,18 @@ export const meta = {
   },
 };
 
+const DAZE = { turn: 1, fx: -7, fy: -15, bx: 8, by: -15, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, { ...DAZE, x: -1, lean: -3, hx: -1 }],
+    [0.5, { ...DAZE, x: 0, lean: 0, crouch: 2, hy: 1, ffx: -2 }],
+    [1, { ...DAZE, x: 1, lean: 3, hx: 1 }],
+    [1.5, { ...DAZE, x: 0, lean: 0, crouch: 2, hy: 1, fbx: 3 }],
+    [2, { ...DAZE, x: -1, lean: -3, hx: -1 }],
+  ],
+};
+
 const D = meta.duration, TURNS = 2, N = 5;
 const STAR7 = ["...#...", "..###..", "#######", ".#####.", "..###..", ".##.##.", ".#...#."];
 // a little bird facing right: body, head, eye, beak, tail, a wing that beats

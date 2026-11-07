@@ -1,7 +1,7 @@
 // The charge recipe (motes spiralling in, pulse rings collapsing onto a layered ball with flickering rays, short
 // crackling sparks) is adapted from Sprite Fusion's open-source energy charge
 // (https://www.spritefusion.com/pixel-art-vfx/energy), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { PAL, fit, cycle, rng, loopNoise, smooth, ease, sparkle, TAU, WHITE } from "../../core/index.js";
+import { PAL, fit, cycle, rng, loopNoise, smooth, ease, sparkle, TAU, WHITE, READY } from "../../core/index.js";
 import { mote, streak, arc, drawArc } from "./_lib.js";
 
 const D = 1.6, HX = 15, HY = -22, RINGS = 4, RT = 0.5;
@@ -18,6 +18,19 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: PAL.arcane, seed: 5 },
+};
+
+const HOLD = { ...READY, x: -3, crouch: 4, lean: 2, fx: 18, fy: -22, bx: 11, by: -17, ffx: 10, fbx: -8 };
+export const act = {
+  poses: [
+    [-0.46, { ...READY, x: -3 }],
+    [-0.12, { ...HOLD, crouch: 3 }],
+    [0, HOLD],
+    [0.4, { ...HOLD, crouch: 5 }],
+    [0.8, { ...HOLD, lean: 3 }],
+    [1.2, { ...HOLD, crouch: 5 }],
+    [1.6, HOLD],
+  ],
 };
 
 // each ring is born at k * D / RINGS and lands RT later; the times it lands, wrapped into the loop

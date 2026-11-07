@@ -14,6 +14,28 @@ export const meta = {
   options: { palette: ["#14101f", "#3b1f5c", "#ff2e63", "#ff7aa8", "#2ef2ff", "#b4fbff", "#ffffff"], seed: 7 },
 };
 
+const TWITCH_A = { turn: 0.3, lean: 3, crouch: 1, fx: 13, fy: -31, bx: 6, by: -14, hx: 1 };
+const TWITCH_B = { turn: 1.2, lean: -3, crouch: 0, fx: -9, fy: -14, bx: 14, by: -31, hx: -1 };
+const FINE = {};
+export const act = {
+  onBody: true,
+  poses: [
+    [0, FINE],
+    [0.3, TWITCH_A, "snap"],
+    [0.37, TWITCH_B, "snap"],
+    [0.44, TWITCH_A, "snap"],
+    [0.53, FINE, "snap"],
+    [1.1, TWITCH_B, "snap"],
+    [1.23, FINE, "snap"],
+    [1.7, TWITCH_A, "snap"],
+    [1.8, { ...TWITCH_B, crouch: 3 }, "snap"],
+    [1.9, TWITCH_A, "snap"],
+    [2, TWITCH_B, "snap"],
+    [2.07, FINE, "snap"],
+    [2.4, FINE],
+  ],
+};
+
 const FPS = 30, NF = Math.round(meta.duration * FPS);
 // the bursts: [first frame, last frame, how hard]
 const BURSTS = [[9, 16, 0.8], [33, 37, 0.5], [51, 62, 1]];

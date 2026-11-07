@@ -1,7 +1,7 @@
 // The blink (a crackling outline as it gathers, a white flash, the silhouette squeezed into a line, a ring on the
 // floor, a fading afterimage) is adapted from Sprite Fusion's open-source blink
 // (https://www.spritefusion.com/pixel-art-vfx/movement), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, PAL, fit, band, flare, sparkle, clamp, ease, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, PAL, fit, band, flare, sparkle, clamp, ease, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { shades, squeezed } from "./_lib.js";
 
 const OUT = 0.32, SQUEEZE = 0.12, COLLAPSE = 0.08, POP = OUT + SQUEEZE + COLLAPSE;
@@ -18,6 +18,18 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: PAL.arcane, seed: 11 },
+};
+
+const IN = { turn: 1, crouch: 4, fx: -2, fy: -25, bx: 2, by: -25, armsFront: true, ffx: 0, fbx: 2 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.36, READY],
+    [-0.1, IN],
+    [0.2, { ...IN, crouch: 5 }],
+    [0.32, { ...IN, crouch: 0 }, "snap"],
+    [1.6, { ...IN, crouch: 0 }],
+  ],
 };
 
 /** The stand-in character is hidden from the flash on: the effect draws it from then. */

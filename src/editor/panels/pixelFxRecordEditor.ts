@@ -2,7 +2,7 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectLiteral } from "@/editor/panels/databaseControls";
 import { openPixelFxPicker } from "@/editor/panels/pixelFxPicker";
-import { PIXEL_FX_CATEGORY_LABELS, pixelFxEntry } from "@/pixelfx/catalog";
+import { PIXEL_FX_CATEGORY_LABELS, PIXEL_FX_EFFECTS, pixelFxEntry } from "@/pixelfx/catalog";
 import { mountPixelFxDom } from "@/pixelfx/domPlayer";
 import type { BattleAnimationRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -36,7 +36,12 @@ export function renderPixelFxRecordEditor(animation: BattleAnimationRecord, rere
     children: [
       el("strong", { text: entry ? `${entry.name} · ${entry.id}` : spec.effectId, attrs: { "data-i18n-skip": "" } }),
       el("p", {
-        text: entry ? `${PIXEL_FX_CATEGORY_LABELS[entry.category] ?? entry.category} · ${entry.loop ? "반복(전투에서는 한 번)" : "한 번"} · ${entry.duration}초` : "목록에 없는 효과 — 게임에서 그려지지 않습니다",
+        text: entry
+          ? `${PIXEL_FX_CATEGORY_LABELS[entry.category] ?? entry.category} · ${entry.loop ? "반복(전투에서는 한 번)" : "한 번"} · ${entry.duration}초`
+            + (entry.act
+              ? ` · 몸이 연기(준비 ${entry.act.windup.toFixed(2)}초 · 회복 ${entry.act.recovery.toFixed(2)}초${entry.act.hits ? ` · 타격 ${entry.act.hits}박자` : ""})`
+              : "")
+          : "목록에 없는 효과 — 게임에서 그려지지 않습니다",
       }),
       el("p", { text: entry?.desc ?? "", attrs: { "data-i18n-skip": "" } }),
       el("p", { text: `색 ${spec.palette ? "바꿈" : "원래 색"} · ${spec.flip ? "뒤집음" : "뒤집기 자동(대상 쪽)"} · 씨앗 ${spec.seed ?? "기본"}` }),
@@ -64,7 +69,7 @@ export function pixelFxConvertRow(animation: BattleAnimationRecord): HTMLElement
     opener: button,
     onPick: (spec) => updateDatabaseRecord("battleAnimations", animation.id, { pixelFx: spec }),
   }));
-  const row = el("div", { children: [button, el("span", { text: "시트 대신 코드로 그리는 효과 232종에서 고릅니다." })] });
+  const row = el("div", { children: [button, el("span", { text: `시트 대신 코드로 그리는 효과 ${PIXEL_FX_EFFECTS.length}종에서 고릅니다.` })] });
   row.style.cssText = "display:flex;gap:8px;align-items:center;margin:0 0 8px";
   return row;
 }

@@ -1,7 +1,7 @@
 // The hold-then-break (it closes round the character, holds with glints, cracks, then bursts into tumbling
 // pieces, mist and light) is adapted from Sprite Fusion's open-source ice freeze (https://www.spritefusion.com/pixel-art-vfx/ice),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, lerp, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, lerp, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { drawRock, stoneShape, drawLeaf, floorCrack } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,24 @@ export const meta = {
     glow: ["#123818", "#2f7a2a", "#6cb83a", "#c8f070"],
     seed: 7,
   },
+};
+
+const GRAB = { turn: 0.9, crouch: 3, fx: -12, fy: -34, bx: 12, by: -28, ffx: -2, fbx: 3 };
+export const act = {
+  poses: [
+    [-0.24, { ...READY, ffx: -2, fbx: 3 }],
+    [0.3, { turn: 0.9, lean: -1, crouch: 2, fx: -10, fy: -24, bx: 11, by: -24, ffx: -2, fbx: 3 }],
+    [0.62, GRAB, "snap"],
+    [0.86, { ...GRAB, lean: -3, fy: -37, by: -27 }],
+    [1.1, { ...GRAB, lean: 3, fy: -27, by: -37 }],
+    [1.34, { ...GRAB, lean: -3, fy: -37, by: -27 }],
+    [1.58, { ...GRAB, lean: 3, fy: -27, by: -37 }],
+    [1.75, { ...GRAB, crouch: 6 }],
+    [1.8, { turn: 1.1, crouch: -1, y: -3, fx: -14, fy: -36, bx: 15, by: -36, ffx: -3, ffy: -6, fbx: 4, fby: -6 }, "snap"],
+    [2.05, { ...READY, y: 0, crouch: 5 }],
+    [2.7, { ...READY, ffx: -2, fbx: 3 }],
+  ],
+  hits: [{ t: 0.62, stop: 0.05, shake: 0.1, amp: 1 }, { t: 1.75, stop: 0.04, shake: 0.14, amp: 2 }],
 };
 
 const SY = 0.34, CINCH = 0.62, BREAK = 1.75, NP = 48;
