@@ -44,6 +44,16 @@ node scripts/qa/pipeline/qa.mjs --game fallen-star --version 1.37 \
 플레이와 CPU 를 다투지 않고, 걸린 시간은 `summary.json` 의 `video.encodeMs` 에 남는다. ffmpeg 는 Playwright 가 받은
 것(`~/.cache/ms-playwright/ffmpeg-*/`)이나 시스템 것을 쓴다(`QA_VIDEO_FFMPEG` 로 지정). 끄면 기존 동작과 같다.
 
+### 관제 이벤트 기록 (선택, 기본 꺼짐)
+
+`qa.mjs --events --owner <레인·에이전트 id> [--retries N]`(또는 `vm/play.mjs --events <파일> --owner …`)을 주면 디스패처가
+`<run>/events.jsonl` 에 세션마다 `queued → spawn → ack → progress… → done`(실패해 다시 띄우면 `retry` 뒤 `spawn` attempt 2)과
+세션이 끝날 때마다 `gauge`(실행 중·완료·대기·cgroup 메모리)를 한 줄씩 남긴다. 모든 행에 `owner`(누가 지휘했나), `run`,
+`mono`(로그를 연 뒤 `process.hrtime` ms, 단조), `at`(벽시계)이 있다. `ack` 는 플레이어가 게임 부팅을 마친 순간,
+`progress` 는 정착 프레임 하나를 저장한 순간이다(`QA_EVENTS=1` 일 때만 player 가 `@@qa-step` 줄을 찍는다).
+읽기 도우미는 `lib/events.mjs` 의 `sessionLifecycles`. `--retries` 기본 0 은 예전과 같다(실패 세션을 다시 띄우지 않음).
+이 기록이 없던 fs139-broad 는 세션 시각을 파일 mtime(1초)으로 되짚어야 했다 — 관제실 영상은 이 파일로 만든다.
+
 ### 수정 큐 규칙
 
 QA 로 찾은 결함을 고칠 때는 (a) 게임 데이터 수정과 (b) 엔진·에디터·AI 조수 개선으로 나누고, 둘 다 적용 전에

@@ -244,6 +244,8 @@ async function snap(label) {
     state, dom, inputs: recent.map((r) => r.a), errors: errors.splice(0), net: net.splice(0), blocked: blocked.length,
   };
   trace.write(JSON.stringify(row) + "\n");
+  // play.mjs --events turns these lines into progress rows (lib/events.mjs); off unless the dispatcher asks.
+  if (process.env.QA_EVENTS === "1") console.log(`@@qa-step ${JSON.stringify({ seq, t, label, screen: state?.screen ?? null })}`);
   return row;
 }
 
@@ -527,6 +529,7 @@ try {
   const ready = job.checkpoint ? "[data-testid='runtime-state-json'], [data-testid='battle-scene'], [data-testid='oprn-game-file-picker']" : "[data-testid='title-screen'], [data-testid='oprn-game-file-picker']";
   await page.waitForSelector(ready, { timeout: 120000, state: "attached" });
   summary.bootMs = Date.now() - T0;
+  if (process.env.QA_EVENTS === "1") console.log(`@@qa-step ${JSON.stringify({ seq: 0, t: summary.bootMs, label: "boot", screen: null })}`);
   if (await page.locator("[data-testid='oprn-game-file-picker']").count()) {
     const why = await page.locator("[data-testid='oprn-game-file-picker-status']").innerText().catch(() => "");
     throw new Error(`boot refused: ${(why || (await page.evaluate(() => document.body.innerText))).replace(/\s+/g, " ").slice(0, 300)}`);
