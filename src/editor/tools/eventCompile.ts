@@ -7,6 +7,7 @@ import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFi
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
@@ -185,6 +186,16 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
   };
 }
 
+/**
+ * 수정·보석 그림. 걷기 칩 시트에는 수정이 없다 — 물건 2 의 6번은 회색 바위다(2026-11-07 원본 화소 재대조,
+ * 「ai 조수가 자꾸 이거 왜 보석이라 판단하는거임」). 번들 CC0 아이콘(모든 프로젝트에 있다)의 진짜 수정 그림을 쓴다.
+ * 런타임은 아이콘을 한 칸(16px)에 맞춰 그린다(eventSpriteResources fitSize).
+ */
+export const CRYSTAL_ICON_ID = "cc0-jetrel-crystal";
+export function crystalGraphic(): EventPageGraphic {
+  return { sprite: { type: "bundled", id: CRYSTAL_ICON_ID } };
+}
+
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
 export type GraphicQueryResolveOptions = NpcGraphicPickOptions;
 
@@ -253,6 +264,8 @@ export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQue
   // 이벤트 페이지 graphic 모양({sprite:{id}, pattern}) — 다른 이벤트의 외형을 베껴 온 경우. 칩 칸은 pattern 에서 읽는다.
   const sprite = loose.sprite && typeof loose.sprite === "object" ? (loose.sprite as Record<string, unknown>) : undefined;
   const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id, sprite?.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+  // 번들 CC0 아이콘(수정·보석 등)은 한 장 그림이다 — 칩 시트로 해석하지 않고 그대로 쓴다.
+  if (textureKey !== undefined && resolveCc0IconAssetUrl(textureKey.trim())) return { sprite: { type: "bundled", id: textureKey.trim() } };
   if (textureKey === undefined) {
     throw new ToolError(
       `graphic 은 {query:"…"} 또는 {textureKey:"<시트>", characterIndex:0~7} 이어야 합니다 — 받은 모양: ${JSON.stringify(spec).slice(0, 120)}. 칩 id 는 textureKey 칸에 문자열로 적고, 그림을 고르려면 list_npc_graphics 로 허용 칩을 보세요.`,

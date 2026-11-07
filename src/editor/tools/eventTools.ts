@@ -58,6 +58,7 @@ import { pickNpcGraphic } from "@/assets/charsetQuery";
 import {
   charsetGraphic,
   compileSimplePages,
+  crystalGraphic,
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
@@ -3950,7 +3951,11 @@ const placeStorageChest: ToolDefinition = {
     // 모든 금고 보관 상자가 graphic-not-found 로 실패했다. 금고 라벨 칩(프로젝트 덮어쓰기 포함)이 없을 때만 서랍장으로 선다.
     const vault = args.template === "vault" || /금고|vault|safe/iu.test(name);
     const pick = { overrides: draft.charsetLabels };
-    const graphic = vault && pickNpcGraphic("금고", pick) ? resolveGraphic({ query: "금고" }, pick) : resolveGraphic({ query: "서랍장" }, pick);
+    // object2#7 은 원본 화소 재대조(2026-11-07)로 「광산 수레」다 — 번들에 서랍장 칩은 없다. 프로젝트가 서랍장 라벨을 붙이지 않았으면
+    // 보물상자(place_chest, object1#7 나무 상자)와 구분되는 빨간 상자(object1#6)로 선다.
+    const graphic = vault && pickNpcGraphic("금고", pick) ? resolveGraphic({ query: "금고" }, pick)
+      : pickNpcGraphic("서랍장", pick) ? resolveGraphic({ query: "서랍장" }, pick)
+      : charsetGraphic("tex_easyrpg_charset_object1", 6);
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
     const chestId = chestIdRaw || `storage_${id}`;
     const templateRaw = typeof args.template === "string" ? args.template.trim() : "farm";
@@ -4014,7 +4019,7 @@ const placeSavepoint: ToolDefinition = {
       glow: { type: "boolean", description: "true(기본) 면 세이브 포인트가 늘 빛난다 — 숨 쉬듯 커졌다 작아지는 빛무리·둘레 반짝임·위로 오르는 빛 알갱이·퍼지는 고리(page.glow). 화면 끝에서도 보인다. false 면 끔" },
       glowColor: { type: "string", description: "빛 색 #rrggbb(기본 푸른 별빛 #8fd8ff)" },
       sparkleRadius: { type: "integer", minimum: 0, maximum: 6, description: "플레이어가 이 칸 수 안으로 다가오면 세이브 포인트에 반짝임이 한 번 터진다(page.nearSparkle). 0 이면 끔. objectId 를 주면 기본 2." },
-      objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 기본 크리스탈 걷기 칩." },
+      objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 한 칸 크기 수정 그림(cc0-jetrel-crystal)." },
     },
     required: ["mapId", "x", "y"],
     additionalProperties: false,
@@ -4068,7 +4073,8 @@ const placeSavepoint: ToolDefinition = {
     const sparkleRadius = Math.max(0, Math.min(6, Math.round(Number(args.sparkleRadius ?? (objectFootprint ? 2 : 0)) || 0)));
     const graphic = objectFootprint
       ? ({ transparent: true } as EventPageGraphic)
-      : resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
+      // 걷기 칩에는 수정이 없다 — 「크리스탈」 검색이 물건 2 의 회색 바위(6번)를 골랐다(2026-11-07). 번들 수정 그림을 쓴다.
+      : crystalGraphic();
     const id = (args.id as string | undefined) ?? genId("ev_save");
     const name = (args.name as string | undefined) ?? "세이브 포인트";
     const trigger: Trigger = { kind: "action" };
