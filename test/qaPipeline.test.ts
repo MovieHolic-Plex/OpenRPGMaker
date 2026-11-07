@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { planCoverage, staticLint } from "../scripts/qa/pipeline/lib/plan.mjs";
 import { detectRun, groupDeterministic, selectForObserver, textFindings } from "../scripts/qa/pipeline/lib/detect.mjs";
 import { measurePlants } from "../scripts/qa/pipeline/lib/measure.mjs";
-import { extractJson } from "../scripts/qa/pipeline/lib/models.mjs";
+import { extractJson, reviewerChain } from "../scripts/qa/pipeline/lib/models.mjs";
 import { reviewCandidates } from "../scripts/qa/pipeline/review.mjs";
 
 // 왜: QA 파이프라인은 모델 앞에서 결정적으로 거르는 단계가 핵심이다. 이 판정이 조용히 0건이 되면
@@ -52,6 +52,43 @@ describe("qa pipeline planner", () => {
     expect(jobs.find((job) => job.target?.eventId === "smith")?.checkpoint.switches).toEqual({ sw_quest_done: true });
     expect(new Set(jobs.map((job) => job.input))).toEqual(new Set(["keyboard", "mouse", "touch"]));
     expect(jobs.filter((job) => job.input === "touch").every((job) => job.viewport.touch === true)).toBe(true);
+  });
+
+  // 왜: 체크포인트 하나에 늘 같은 레벨을 박으면 마지막 보스가 쉬워지고 첫 싸움이 불공평해진다(2026-11-07 실측).
+  // 이야기 순서로 누적한 표(scripts/qa/pipeline/data/story-levels.json)가 체크포인트 레벨·장비 티어를 정하고,
+  // 전투는 예상·−3·+3 세 상태로 갈린다.
+  it("체크포인트 레벨·장비는 이야기 표에서 오고, 전투는 세 상태로 계획된다", () => {
+    const story = {
+      gearSets: { 1: { a1: { weapon: "better" } } },
+      byTroop: {
+        t1: { act: "1막", map: "m1", kind: null, party: ["a1"], level: 9, gold: 120, gearTier: 1 },
+      },
+    };
+    const battles = planCoverage(tinyProject(), { game: "g", story }).filter((job) => job.kind === "battle");
+    expect(battles.map((job) => job.target.state)).toEqual(["expected", "weak", "strong"]);
+    expect(battles.map((job) => job.checkpoint.party[0].level)).toEqual([9, 6, 12]);
+    expect(battles.map((job) => job.target.gearTier)).toEqual([1, 0, 1]);
+    expect(battles[0].checkpoint.sessionPatch).toEqual({ actorEquipment: { a1: { weapon: "better" } } });
+    expect(battles[1].checkpoint.sessionPatch).toBeUndefined();
+    expect(battles[0].checkpoint.gold).toBe(120);
+  });
+
+  it("적대적 입력 트랙을 만들고 입력 방식·화면 크기를 섞는다 (재료가 없으면 그 경우만 빠진다)", () => {
+    const adversarial = planCoverage(tinyProject(), { game: "g" }).filter((job) => job.kind === "adversarial");
+    // The fixture has one shop map and no openSaveMenu event, so broke-shopper-touch and save-load cannot be planned;
+    // the shipped game (45 maps, 10 save points, 2 shop maps) plans all 10 (coverage-plan.json 2026-11-07).
+    expect(adversarial).toHaveLength(9);
+    const kinds = adversarial.map((job) => job.adversarial);
+    expect(kinds).toContain("mash-dialogue");
+    expect(kinds).toContain("menu-mid-battle");
+    expect(kinds).toContain("broke-shopper");
+    expect(kinds).toContain("map-edges");
+    expect(kinds).toContain("mixed-input");
+    expect(kinds).not.toContain("save-load");
+    expect(adversarial.every((job) => job.script === "adversarial" && job.viewport?.width > 0)).toBe(true);
+    expect(new Set(adversarial.map((job) => job.viewportName)).size).toBeGreaterThanOrEqual(3);
+    const broke = adversarial.find((job) => job.adversarial === "broke-shopper");
+    if (broke) expect(broke.checkpoint.gold).toBe(0);
   });
 
   it("정적 검사: 맵 밖 이동·없는 상점 품목·끝나지 않는 반복·못 가는 맵", () => {
@@ -154,5 +191,39 @@ describe("qa pipeline measurement", () => {
   it("모델 답의 마지막 JSON 을 꺼낸다(생각 글 안의 중괄호는 무시)", () => {
     expect(extractJson('생각 {x} … {"verdict":"real","confidence":0.8}', ["verdict"])).toEqual({ verdict: "real", confidence: 0.8 });
     expect(extractJson("JSON 없음", ["verdict"])).toBeNull();
+  });
+
+  // 왜: 검토가 Opus 하나에 묶여 있으면 Claude 한도가 마르는 순간 검토가 통째로 실패한다(2026-11-07 오너 지시:
+  // 검토는 OPUS 또는 ASTRA 또는 ARGON, 남는 것 순서). 체인은 먼저 답한 모델을 쓰고, 실패한 모델은 기록하고 건너뛴다.
+  it("검토 체인은 Opus→Astra→Argon 순서로 답한 첫 모델을 쓰고, 죽은 모델은 건너뛴다", async () => {
+    const calls: string[] = [];
+    const base = "http://127.0.0.1:1";
+    const members = [
+      { id: "opus", model: "claude-opus-5-5", kind: "anthropic", baseUrl: base, apiKey: "k" },
+      { id: "astra", model: "gpt-6-astra", kind: "openai", baseUrl: base, apiKey: "k" },
+      { id: "argon", model: "gemini-4-argon-high", kind: "openai", baseUrl: base, apiKey: "k" },
+    ];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: string) => {
+      const isAnthropic = String(url).endsWith("/v1/messages");
+      const who = isAnthropic ? "opus" : String(url).includes("127.0.0.1:1") ? "other" : "x";
+      calls.push(who);
+      // Opus(with Anthropic shape) fails, so the chain must fall through to Astra.
+      if (isAnthropic) return new Response("exhausted", { status: 429 });
+      return new Response(JSON.stringify({ model: "gpt-6-astra", choices: [{ message: { content: '{"ok":true}' } }], usage: {} }), { status: 200 });
+    }) as unknown as typeof fetch;
+    try {
+      const client = reviewerChain(members.map((member) => ({ ...member, retryDelayMs: 1 })), { stage: "test" });
+      const first = await client([{ type: "text", text: "hi" }], {});
+      expect(first.ok).toBe(true);
+      expect(first.member).toBe("astra");
+      expect(client.answeredBy()).toBe("astra");
+      const opusProbes = calls.filter((c) => c === "opus").length;
+      await client([{ type: "text", text: "again" }], {});
+      // The model that answered stays preferred: the failed Opus is not probed a second time.
+      expect(calls.filter((c) => c === "opus")).toHaveLength(opusProbes);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });

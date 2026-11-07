@@ -8,7 +8,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { anthropicClient, extractJson, imageBlockAnthropic, pool, usageLedger } from "./lib/models.mjs";
+import { defaultReviewerChain, extractJson, imageBlockAnthropic, pool, reviewerChain, usageLedger } from "./lib/models.mjs";
 
 const VERDICTS = ["real", "misread", "transition", "by_design", "not_visible", "environment"];
 const SEVERITIES = ["blocker", "save-data", "function", "visual", "text"];
@@ -152,12 +152,16 @@ async function main() {
       pool: { type: "string", default: "6" },
       model: { type: "string", default: process.env.QA_REVIEW_MODEL ?? "claude-opus-5-5" },
       "base-url": { type: "string", default: process.env.ANTHROPIC_BASE_URL ?? "" },
+      /** Override the reviewer order for this run (default Opus → Astra → Argon). */
+      chain: { type: "string", default: "" },
     },
   });
   if (!values.candidates || !values.out) throw new Error("usage: review.mjs --candidates <file> --out <dir>");
   fs.mkdirSync(values.out, { recursive: true });
   const log = usageLedger(path.join(values.out, "usage.jsonl"));
-  const client = anthropicClient({ baseUrl: values["base-url"], apiKey: process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.ANTHROPIC_API_KEY, model: values.model, log, stage: "review" });
+  const members = values.chain ? values.chain.split(",").map((id) => defaultReviewerChain().find((m) => m.id === id.trim())).filter(Boolean) : defaultReviewerChain();
+  const client = reviewerChain(members, { log, stage: "review" });
+  console.log(JSON.stringify({ stage: "review", reviewerChain: client.chain.join(" -> ") }));
   const candidates = JSON.parse(fs.readFileSync(values.candidates, "utf8"));
   const reviewFile = path.join(values.out, "review.jsonl");
   const done = new Map(fs.existsSync(reviewFile) ? fs.readFileSync(reviewFile, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((r) => r.verdict).map((r) => [r.id, r]) : []);
@@ -167,10 +171,10 @@ async function main() {
   await reviewCandidates(todo, { client, poolSize: Number(values.pool), onRow: (row) => { fs.appendFileSync(reviewFile, JSON.stringify(row) + "\n"); if (row.verdict) done.set(row.id, row); } });
   const reviewed = candidates.map((c) => ({ ...c, review: done.get(c.id) ?? { verdict: null, error: "no verdict" } }));
   const kept = reviewed.filter((c) => c.review.verdict === "real");
-  const merged = await mergeReport(kept, { client: anthropicClient({ baseUrl: values["base-url"], apiKey: process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.ANTHROPIC_API_KEY, model: values.model, log, stage: "merge" }) });
+  const merged = await mergeReport(kept, { client });
   const byId = new Map(reviewed.map((c) => [c.id, c]));
   const verdictCounts = Object.fromEntries([...VERDICTS, "null"].map((v) => [v, reviewed.filter((c) => String(c.review.verdict) === v).length]));
-  const final = { model: values.model, reviewedAt: new Date().toISOString(), ms: Date.now() - t0, candidates: candidates.length, verdictCounts, groups: merged.groups, mergeError: merged.mergeError ?? null };
+  const final = { model: values.model, reviewerChain: client.chain, reviewerAnsweredBy: client.answeredBy(), reviewedAt: new Date().toISOString(), ms: Date.now() - t0, candidates: candidates.length, verdictCounts, groups: merged.groups, mergeError: merged.mergeError ?? null };
   fs.writeFileSync(path.join(values.out, "final.json"), JSON.stringify(final, null, 1));
   fs.writeFileSync(path.join(values.out, "reviewed.json"), JSON.stringify(reviewed, null, 1));
   fs.writeFileSync(path.join(values.out, "fix-queue.json"), JSON.stringify(buildFixQueue(final, byId), null, 1));
