@@ -27,6 +27,16 @@ const RETRIES = Number(opt("retries", 1));
 const WITH_HINT = !argv.includes("--no-hint");
 const MIN_MEM_GB = Number(opt("min-mem-gb", process.env.GF_MIN_MEM_GB ?? 25));
 const ADOPT = argv.includes("--adopt");
+const SETUP_HINT = argv.includes("--setup-hint");
+const promptFor = (game) => {
+  if (!WITH_HINT || !game.hint) return game.prompt;
+  const lines = [`참고: 이 무대에 맞는 편집기 도구·칩셋 — ${game.hint}. ./oprn tools 로 찾아 쓰고, 다른 게임과 같은 마을 칩셋으로 대신하지 마라.`];
+  if (SETUP_HINT) {
+    lines.push("타일셋을 두 가지 이상 써라: 실내는 실내 타일셋(build_hand_interior_room), 야외는 이 무대의 칩셋. 두 맵은 플레이어가 보이는 문·계단으로 잇는다.");
+    lines.push("게임 제목을 지어 타이틀 화면에 넣고(기본 「새 프로젝트」 금지), 대사 설정을 기본값에서 바꿔라(화자 프로필 또는 말풍선·대화창 스타일).");
+  }
+  return `${game.prompt}\n\n(${lines.join(" ")})`;
+};
 const CHECKER = opt("checker", process.env.GF_CHECKER ?? "/home/main/claude-viz/save-check/check.py");
 const only = opt("only") ? new Set(opt("only").split(",")) : null;
 let games = SPECS.games.filter((g) => !only || only.has(g.id));
@@ -36,7 +46,7 @@ mkdirSync(OUT, { recursive: true });
 const runId = `gf-${new Date().toISOString().replace(/[:.]/g, "").slice(0, 15)}`;
 const log = createEventLog(resolve(OUT, "events.jsonl"), { owner: "dispatcher", run: runId });
 const emit = (type, game, extra = {}) => log.emit(type, game?.id, game ? { owner: game.id, ...extra } : extra);
-emit("run", null, { games: games.map((g) => g.id), withHint: WITH_HINT, concurrency: CONCURRENCY, capMin: CAP_MIN, smokeSec: SMOKE_SEC, checker: CHECKER });
+emit("run", null, { games: games.map((g) => g.id), withHint: WITH_HINT, setupHint: SETUP_HINT, concurrency: CONCURRENCY, capMin: CAP_MIN, smokeSec: SMOKE_SEC, checker: CHECKER });
 if (argv.includes("--dry")) { for (const g of games) emit("queued", g, { genre: g.genre }); log.close(); console.log(JSON.stringify(games.map((g) => g.id))); process.exit(0); }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -72,7 +82,7 @@ async function build(game) {
   for (let attempt = 1; attempt <= 1 + RETRIES; attempt += 1) {
     if (attempt > 1) execFileSync("rm", ["-rf", dir]);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(resolve(dir, "prompt.txt"), WITH_HINT && game.hint ? `${game.prompt}\n\n(참고: 이 무대에 맞는 편집기 도구·칩셋 — ${game.hint}. ./oprn tools 로 찾아 쓰고, 다른 게임과 같은 마을 칩셋으로 대신하지 마라.)` : game.prompt);
+    writeFileSync(resolve(dir, "prompt.txt"), promptFor(game));
     writeFileSync(resolve(dir, "spec.json"), JSON.stringify(game, null, 2));
     r.attempts = attempt; r.state = "building";
     emit("spawn", game, { attempt, model: process.env.GF_MODEL ?? "opencodex/gpt-6.1-terra", effort: process.env.GF_EFFORT ?? "high" });
