@@ -68,7 +68,7 @@ async function serve(args) {
   // 없는 기물 그리기(generate_missing_object): 이 컴퓨터에서 그릴 수 있으면 실제로 그려 굽는다. 못 그리면 도구가 이유와 함께 실패한다(조용한 카드 성공 없음).
   const { createObjectGenDeps, objectGenUnavailable } = await import(pathToFileURL(resolve(REPO_ROOT, "scripts/lib/objectGenDeps.mjs")).href);
   const objectGenBlocked = objectGenUnavailable();
-  const objectGen = objectGenBlocked ? null : createObjectGenDeps({ publicDir: resolve(REPO_ROOT, "public"), log: (line) => process.stderr.write(`${line}\n`) });
+  const objectGen = objectGenBlocked ? null : createObjectGenDeps({ publicDir: resolve(REPO_ROOT, "public"), log: (line) => process.stderr.write(`${line}\n`), ...(process.env.OPRN_OBJECTGEN_ARCHIVE ? { archiveDir: resolve(process.env.OPRN_OBJECTGEN_ARCHIVE) } : {}) });
   if (objectGenBlocked) process.stderr.write(`objectgen: 없는 기물 그리기 꺼짐 — ${objectGenBlocked}\n`);
   const call = await connect(args.host);
   const opened = await call("oprn:project.open", { projectDir: "host-project" });

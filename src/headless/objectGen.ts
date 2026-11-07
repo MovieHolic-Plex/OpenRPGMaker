@@ -33,6 +33,22 @@ export type HeadlessObjectGenDeps = {
   readonly objectGate?: WorkshopEnv["objectGate"];
   readonly concurrency?: number;
   readonly log?: (line: string) => void;
+  /** 있으면 판 하나의 그림 기록(참고 그림·시도마다 후보·관문 판정)을 넘긴다 — 무엇이 그려졌는지 사람이 볼 수 있게(2026-11-07 오너 「뭘 그린거임?」). */
+  readonly archive?: (record: HeadlessObjectGenArchive) => void;
+};
+
+export type HeadlessObjectGenArchive = {
+  readonly request: ObjectGenRequest;
+  readonly ok: boolean;
+  readonly seconds: number;
+  readonly calls: number;
+  readonly picked: string | null;
+  readonly reference: { readonly status: string; readonly note: string; readonly source: string | null; readonly accepted: readonly string[]; readonly rejected: readonly { readonly png: string; readonly why: string }[] } | null;
+  readonly runs: readonly {
+    readonly letter: string; readonly status: string; readonly error: string | null;
+    readonly attempts: readonly { readonly attempt: number; readonly png: string | null; readonly verdict: string | null; readonly codes: readonly string[]; readonly reasons: string; readonly fix: string; readonly hard: readonly string[] }[];
+    readonly gate: { readonly state: string; readonly reasons: readonly string[]; readonly receipt: unknown } | null;
+  }[];
 };
 
 /** 후보 하나(검수 결과와 1배 PNG) — 통과·불통과 모두 돌려준다(에이전트·보고서가 무엇이 그려졌는지 본다). */
@@ -117,12 +133,26 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
   const round = (await store.getRound(opened.id)) ?? opened;
   const calls = round.runs.reduce((sum, run) => sum + run.calls, 0);
   const palette = runner.palette(item);
+  const archive = (ok: boolean, picked: string | null): void => {
+    if (!deps.archive) return;
+    const ref = round.reference;
+    deps.archive({
+      request, ok, seconds: seconds(), calls, picked,
+      reference: ref ? { status: ref.status, note: ref.note, source: ref.source ?? null, accepted: [...(ref.dataUrl ? [ref.dataUrl] : []), ...(ref.more ?? []).map((m) => m.dataUrl)], rejected: (ref.rejected ?? []).map((r) => ({ png: r.dataUrl, why: `${r.view} 윗면 ${r.topShare}% — ${r.why}` })) } : null,
+      runs: round.runs.map((run) => ({
+        letter: run.letter, status: run.status, error: run.error,
+        attempts: run.attempts.map((a) => ({ attempt: a.attempt, png: a.grid ? encodePng(renderGrid(a.grid, palette)) : null, verdict: a.verdict?.verdict ?? null, codes: a.verdict?.codes ?? [], reasons: a.verdict?.reasons ?? "", fix: a.verdict?.fix ?? "", hard: a.hard })),
+        gate: run.gate ? { state: run.gate.state, reasons: run.gate.reasons, receipt: run.gate.receipt ?? null } : null,
+      })),
+    });
+  };
   const candidates: HeadlessObjectGenCandidate[] = round.runs.map((run) => ({
     letter: run.letter, verdict: run.verdict?.verdict ?? run.status, codes: run.verdict?.codes ?? [], reasons: (run.verdict?.reasons ?? run.error ?? "").slice(0, 300),
     png: run.grid ? encodePng(renderGrid(run.grid, palette)) : null,
   }));
   const choice = await chooseAutoPickFrom({ runs: round.runs, item, palette: runner.palette(item), env, chat: deps.chat, objectGenFlow: Boolean(runner.review) });
   if (!choice) {
+    archive(false, null);
     const why = round.runs.map((run) => `${run.letter}: ${run.status === "failed" ? run.error ?? "못 그림" : run.verdict ? `${run.verdict.verdict} ${run.verdict.codes.join(",")} ${run.verdict.reasons}`.trim() : run.status}`).join(" / ");
     return { ok: false, error: `「${request.title}」 검수를 통과한 후보가 없어 칩셋에 넣지 않았다 — ${why}`.slice(0, 600), seconds: seconds(), calls, candidates, round };
   }
@@ -134,6 +164,7 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
     else ensureAtlasBiomeInteriorCurrent(project, ATLAS_BIOME_INTERIOR_ID);
   }
   bakeWorkshopObject(project, tilesetId, input);
+  archive(true, choice.letter);
   return {
     ok: true, objectId: input.objectId, tilesetId, columns: input.columns, rows: input.rows, letter: choice.letter, reason: choice.reason,
     seconds: seconds(), calls, reference: round.reference?.note ?? "참고 단계 없음", candidates, round,

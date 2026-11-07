@@ -4,7 +4,7 @@
 //   3/4 관문: object-gate 판정기(scripts/lib/workshopGate.mjs) — 검수 통과 후보도 영수증을 받아야 굽는다.
 // 셋 중 하나라도 이 컴퓨터에서 못 쓰면 objectGenUnavailable() 이 이유를 돌려주고, 호스트는 그리기 요청을 크게 실패시킨다.
 import { spawn, execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { PNG } from "pngjs";
@@ -142,6 +142,33 @@ const png = {
   },
 };
 
-export function createObjectGenDeps({ publicDir, log }) {
-  return { publicDir, png, chat: CHAT_URL ? openAiChat(log) : claudeChat(log), referenceImage: codexReference(log), ...(GATE_OFF ? {} : { objectGate: gate(log) }), log };
+/** 판 그림 기록을 dir/<시각>-<제목>/ 에 PNG 와 record.json 으로 남긴다. */
+function archiveTo(dir, log) {
+  const save = (folder, name, dataUrl) => {
+    const m = /^data:image\/(png|jpeg|webp);base64,(.+)$/su.exec(dataUrl ?? "");
+    if (!m) return null;
+    const file = `${name}.${m[1] === "jpeg" ? "jpg" : m[1]}`;
+    writeFileSync(join(folder, file), Buffer.from(m[2], "base64"));
+    return file;
+  };
+  return (record) => {
+    const slug = `${new Date().toISOString().replace(/[:.]/gu, "-")}-${String(record.request.title).replace(/[^\p{L}\p{N}-]+/gu, "_").slice(0, 40)}`;
+    const folder = join(dir, slug);
+    mkdirSync(folder, { recursive: true });
+    const out = {
+      ...record,
+      reference: record.reference && {
+        ...record.reference,
+        accepted: record.reference.accepted.map((url, i) => save(folder, `reference-${i + 1}`, url)),
+        rejected: record.reference.rejected.map((r, i) => ({ why: r.why, file: save(folder, `reference-rejected-${i + 1}`, r.png) })),
+      },
+      runs: record.runs.map((run) => ({ ...run, attempts: run.attempts.map((a) => ({ ...a, png: save(folder, `${run.letter}-try${a.attempt}`, a.png) })) })),
+    };
+    writeFileSync(join(folder, "record.json"), JSON.stringify(out, null, 1));
+    log?.(`objectgen archive ${folder}`);
+  };
+}
+
+export function createObjectGenDeps({ publicDir, log, archiveDir }) {
+  return { publicDir, png, ...(archiveDir ? { archive: archiveTo(archiveDir, log) } : {}), chat: CHAT_URL ? openAiChat(log) : claudeChat(log), referenceImage: codexReference(log), ...(GATE_OFF ? {} : { objectGate: gate(log) }), log };
 }
