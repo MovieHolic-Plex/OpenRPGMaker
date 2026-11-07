@@ -792,6 +792,21 @@ CLI는 UI 의도 분류 요청을 대신하지 않는다. 에디터 채팅과 �
 - **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
   2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
   3·4층은 적은 번호 그대로 둔다 — 옛 `upper` 칠하기와 같다(수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+- **오토타일 재성형은 붓과 한 규칙 (2026-11-07):** 조수의 길 깔기·재료 칠하기(`constructionTools.ts`), `polish_terrain`(`terrainPolish.ts`),
+  공간 지형 컴파일(`compileTerrain.ts`·`geographyTerrain.ts`)은 `rmTypeExpander.resolveAutotile` 을, 붓·채우기·지형 붓은
+  `autotileEngine.shapeAutotileGroupAround` 를 쓴다. 둘은 칸마다 **같은 규칙**으로 고른다 — 그룹의 `neighborhood`, 맵 밖 연결
+  `edgeConnects || outsideConnects`, 칸 위치 위상 `phaseVariants`(x,y 를 넘긴다), 꽉 찬 칸의 깊이 변형 `interiorVariants` 보존.
+  이전 `resolveAutotile` 은 8방 고정·`outsideConnects` 만·좌표 없음·깊이 보호 없음이라, 기본 프로젝트 370그룹 중 136그룹(타일셋 21개)에서
+  조수가 깔 지형이 붓과 달랐다 — 맵 가장자리에 없어야 할 테두리 액자, 버들항 자갈·판석 마당·용암의 2×2 몸통 대신 한 칸 반복,
+  다듬기 뒤 emerald_monster 깊이 음영 사라짐. 회귀: `test/rmTypeExpanderV3.test.ts` 의 붓=AI 비교 세 케이스.
+  전수 비교 도구는 `scripts/autotile-audit/probe-ai-vs-brush.mts`(수정 후 남는 차이는 나무 composer 그룹 둘뿐 — 아래).
+  **나무 composer 는 여기서 돌리지 않는다:** jp `jp-forest4-*` 숲 바닥을 붓으로 칠하면 엔진이 2~4층 나무와 그 그늘 바닥 칸을
+  다시 짜지만, `resolveAutotile` 은 1층 칸 고르기만 한다. 다듬기는 상층을 안 건드리는 계약이고, jp 지역 시공은 집·소품을 다 찍은 뒤 나무를
+  세운다(`jpRegionTool`). 숲은 `paint_jp_forest`(forestPainter) 로 칠한다.
+- **전수 감사 하네스:** `npx vite-node --script scripts/autotile-audit/audit.mts -- <out>/audit.json <out>` 가 기본 프로젝트의 모든 오토타일 그룹을
+  실제 엔진으로 10모양 칠하고 실제 렌더러(`mapTileDrawCore.drawMapTileLayer`)로 아틀라스에서 PNG 를 그린다. 보고서는
+  `node scripts/autotile-audit/report.mjs <before> <html> [--after <dir>] [--aivb-before f] [--aivb-png dir]`. 분류 예외(나무 composer, 「가장자리를
+  그리지 않는다」 문서화 평면, 366 저장 계약, 쿼터 합성 렌더, 16모양 그림의 안쪽 모서리 없음)는 코드에 이유와 함께 있다.
 - **옛 맵(선택 칸 없음)은 어떤 도구를 거쳐도 새 키가 생기지 않는다.** 쓰기는 `setLayerTileAt`/`setShadowAt`(빈 값이면 배열을 만들지 않음),
   비운 뒤엔 도구마다 `compactMapLayers`, 그리고 공유 헬퍼(`setLower`)를 쓰는 다른 도구를 위해 `toolRunner.runToolDefinition` 이
   쓰기 실행 직후 한 번 정리한다(`compactTouchedMapLayers`). **정리는 이 도구가 건드린 맵만** — 새 맵, 칸이 바뀐 맵

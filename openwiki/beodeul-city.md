@@ -400,7 +400,7 @@ Pi 런타임(`runPiAgent`, 채팅 패널과 같은 도구·참고문서 읽기 �
 
 ### 무엇을 더했나
 - **오토타일 셋**(`terrain7.py`, 16변형 N=1 E=2 S=4 W=8): `버들항 길 포석`(연석 2px) · `버들항 물`(돌 둑, 8장면) · `버들항 모랫길`(잔디 가장자리).
-  `edgeConnects`+`outsideConnects` 둘 다 켰다 — `shapeAutotileGroupAround` 는 앞의 것, `fill_region` 이 쓰는 `resolveAutotile` 은 뒤의 것만 본다.
+  `edgeConnects`+`outsideConnects` 둘 다 켰다 — 당시 `fill_region` 이 쓰는 `resolveAutotile` 은 뒤의 것만 봤다(2026-11-07 부터는 둘 중 하나면 된다 — `openwiki/editor-ai-tools.md` 「오토타일 재성형은 붓과 한 규칙」).
   맵 가장자리는 이어진 것으로 봐서 길·강이 맵 밖으로 나가는 모양이 된다.
 - **강·폭포·다리·항구 키트 10**: 라운드 1 에서 어느 키트에도 없던 윗 강 74칸(`bd-river-upper`), 곧은 강·운하·굽이, 아치 다리, 폭포 둘, 호수 항구(83×15), 항구 광장.
 - **귀족 저택 4 + 정원 2 + 부품 34**(`kits7_manor.py`), **성 밖 목조집·우물 광장·장작 + 부품 49**(`kits7_outskirts.py`). 부품 조립표는 `tiledata/beodeul-city/kits7/*.json` 의 `assembly`.
