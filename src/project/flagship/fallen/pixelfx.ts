@@ -47,16 +47,18 @@ export const FALLEN_SKILL_FX: readonly SkillFx[] = [
   { skill: "skill_sword_slash", spec: fx("melee/sword-slash"), hit: 1, note: "검격" },
   { skill: "skill_hero_cross_slash", spec: fx("melee/double-slash", { palette: [...PAL.steel] }), hit: 2, note: "십자베기" },
   { skill: "skill_hero_rush_pierce", spec: fx("melee/thrust", { palette: [...PAL.steel] }), hit: 1, note: "돌진 찌르기" },
-  { skill: "skill_hero_flame_sword", spec: fx("melee/sword-slash", { palette: [...PAL.fire] }), hit: 1, note: "화염검(불 띠 베기)" },
+  { skill: "skill_hero_flame_sword", spec: fx("fallenstar/flame-sword"), hit: 1, note: "화염검(불꽃 초승달 베기 · 폴른 스타 전용)" },
   // 마도사
   { skill: "skill_mage_fireball", spec: fx("explosions/small-explosion"), hit: 1, note: "파이어볼" },
   { skill: "skill_mage_chain_lightning", spec: fx("lightning/chain-lightning"), hit: 2, note: "연쇄 번개" },
   { skill: "skill_mage_blizzard", spec: fx("ice/frost-nova"), hit: 2, note: "블리자드" },
+  { skill: "skill_mage_meteor", spec: fx("fallenstar/falling-star"), hit: 5, note: "별똥비(별 하나가 내리꽂힌다 · 폴른 스타 전용)" },
   // 회복·보조
-  { skill: "skill_heal", spec: fx("holy/blessing"), hit: 2, note: "치유" },
-  { skill: "skill_fs_moss_dew", spec: fx("holy/blessing"), hit: 2, note: "이슬 치유" },
-  { skill: "skill_fs_meditate", spec: fx("holy/blessing"), hit: 2, note: "명상" },
-  { skill: "skill_fs2_iris_be_well", spec: fx("holy/blessing"), hit: 2, note: "잘 지내" },
+  // 회복 넷은 서로 달라야 한다 — 넷 다 holy/blessing 이라 누가 무엇을 썼는지 화면으로 구분되지 않았다(오너 승인 계획 2026-11-07).
+  { skill: "skill_heal", spec: fx("holy/heal"), hit: 4, note: "치유(발밑 빛 꽃잎과 몸을 오르는 빛 고리)" },
+  { skill: "skill_fs_moss_dew", spec: fx("holy/heal-aoe"), hit: 4, note: "이슬 치유(초록 씨앗이 바닥에 스며 퍼지는 고리)" },
+  { skill: "skill_fs_meditate", spec: fx("holy/halo"), hit: 2, note: "명상(머리 위 금빛 고리)" },
+  { skill: "skill_fs2_iris_be_well", spec: fx("holy/feather-burst"), hit: 2, note: "잘 지내(흰 깃털이 흩날린다)" },
   { skill: "skill_fs_leaf_hymn", spec: fx("nature/healing-bloom"), hit: 4, note: "잎새 노래" },
   { skill: "skill_fs_tonic", spec: fx("holy/divine-shield"), hit: 2, note: "투지 강장제" },
   { skill: "skill_fs_judgment", spec: fx("holy/smite"), hit: 4, note: "심판의 빛" },
@@ -71,7 +73,8 @@ export const FALLEN_SKILL_FX: readonly SkillFx[] = [
   // 적
   { skill: "skill_mon_frost_orb", spec: fx("ice/snowflake-burst"), hit: 1, note: "얼음 구체" },
   { skill: "skill_mon_frost_nova", spec: fx("ice/frost-nova"), hit: 2, note: "서리 폭풍" },
-  { skill: "skill_fs_dragon_breath", spec: fx("ice/frost-nova", { palette: [...PAL.moon] }), hit: 2, note: "달빛 숨결(달빛 용)" },
+  { skill: "skill_fs_dragon_breath", spec: fx("fallenstar/moonlight-breath"), hit: 6, note: "달빛 숨결(달빛 용 · 폴른 스타 전용 숨결)" },
+  { skill: "skill_fs_dragon_roar", spec: fx("ice/frost-nova", { palette: [...PAL.moon] }), hit: 4, note: "만월의 포효(달빛 용 · 큰 달빛 서리 폭발)" },
   { skill: "skill_fs_valen_overload", spec: fx("lightning/thunderclap"), hit: 1, note: "과부하(발렌)" },
   { skill: "skill_fs2_ash_scatter", spec: fx("explosions/smoke-bomb", { palette: [...PAL.ash] }), hit: 2, note: "재 흩뿌리기(회수자)" },
   { skill: "skill_fs2_ash_recall", spec: fx("explosions/small-explosion"), hit: 1, note: "재의 회수(회수자)" },
