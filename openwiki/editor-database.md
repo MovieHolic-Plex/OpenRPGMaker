@@ -2680,3 +2680,4 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - (2026-10-25) 「전투 연출」 카드에 **적 약점 표시** 고르기(`db-battle-staging-reveal-weakness`: 안 보임 · 알아낸 뒤에만(기본) · 처음부터) → `system.battleStaging.revealWeakness`.
 - (2026-11-03) 같은 카드에 **전투 흐름** 고르기(`db-battle-staging-pace`: 빠르게(기본) · 차분하게) → `system.battleStaging.pace`. 동작 규칙은 `runtime-battle.md` 「폴른 스타 전투 체감」.
 - (2026-11-10) 같은 카드에 **맞힌 뒤 상성 알림** 고르기(`db-battle-staging-effectiveness-feedback`: 보임(기본) · 안 보임(피해 숫자만)) → `system.battleStaging.effectivenessFeedback`. 동작 규칙은 `runtime-battle.md` 「약점 발견」 절.
+- (2026-11-07) 같은 카드에 **적 몸짓** 고르기(`db-battle-enemy-still-motion`: 모든 적(기본) · 그림 한 장 적만 · 끄기) → `system.enemyStillMotion`. 동작 규칙은 `runtime-battle.md` 「적 몸짓 엔진」.
