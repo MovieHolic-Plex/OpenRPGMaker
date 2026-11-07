@@ -1,6 +1,7 @@
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import type { ImageReference } from "@/ai/imageReferences";
 import { collectAppearanceReferences } from "@/editor/characterAppearanceReferences";
+import { imageGenerationFailureCode } from "@/editor/imageGenerationNotice";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store, type ProjectIdentity, type ProjectChangeDescriptor } from "@/project/store";
 import type { CharacterAppearanceRecord, Command, Project } from "@/project/types";
@@ -81,7 +82,7 @@ export async function generateAppearancePortraitStill(
     return { ok: true, resourceId: genId("appearance-face"), name: `${target.name} 얼굴`, prompt, dataUrl };
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    return { ok: false, code: "image-generation-failed", summary: `「${target.name}」 얼굴을 그리지 못했습니다: ${error instanceof Error ? error.message : String(error)}` };
+    return { ok: false, code: imageGenerationFailureCode(error), summary: `「${target.name}」 얼굴을 그리지 못했습니다: ${error instanceof Error ? error.message : String(error)}` };
   }
 }
 
