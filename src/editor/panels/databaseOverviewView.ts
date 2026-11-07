@@ -22,7 +22,7 @@ import {
   type PartyPowerCurvePoint,
 } from "@/editor/panels/databaseBalanceCompute";
 import { renderStoryStructure } from "@/editor/panels/databaseOverviewStory";
-import { renderQuestSuggestions } from "@/editor/panels/databaseOverviewQuestSuggestions";
+import { renderQuestTable } from "@/editor/panels/databaseOverviewQuestTable";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { store } from "@/project/store";
 import { prefersReducedMotion } from "@/util/reducedMotion";
@@ -119,7 +119,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
         ],
       }),
       renderGamePulse(project, host),
-      ...[renderQuestSuggestions(project)].filter((section): section is HTMLElement => section !== null),
+      renderQuestTable(),
       renderStoryStructure(project),
     ],
   });
