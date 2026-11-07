@@ -114,6 +114,10 @@ async function build(game) {
   return false;
 }
 
+// One smoke browser at a time per dispatcher: a browser + player server is ~2-3 GB and the box is shared.
+let browserChain = Promise.resolve();
+const oneBrowser = (fn) => { const p = browserChain.then(fn, fn); browserChain = p.catch(() => {}); return p; };
+
 async function verify(game) {
   const dir = resolve(OUT, game.id);
   const r = results.get(game.id);
@@ -125,7 +129,7 @@ async function verify(game) {
   catch { r.checker = null; r.checkerError = c.err.slice(-300); }
   r.state = "smoking";
   emit("progress", game, { phase: "smoke", checker: r.checker ? `${r.checkerPass}/${r.checkerTotal}` : "error" });
-  const s = await run(process.execPath, [resolve(HERE, "smoke.mjs"), dir, "--seconds", String(SMOKE_SEC)]);
+  const s = await oneBrowser(() => run(process.execPath, [resolve(HERE, "smoke.mjs"), dir, "--seconds", String(SMOKE_SEC)]));
   try { const j = JSON.parse(readFileSync(resolve(dir, "smoke", "result.json"), "utf8")); r.smoke = j.verdict; r.smokeReason = j.reason; r.smokeErrors = j.errors.length; }
   catch { r.smoke = "FAIL"; r.smokeReason = `smoke crashed (${s.code}) ${s.err.slice(-200)}`; }
   r.state = "verified";
