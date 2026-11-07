@@ -14,6 +14,8 @@ const MODEL = process.env.OPRN_OBJECTGEN_MODEL || "claude-opus-5-5";
 // OPRN_OBJECTGEN_CHAT_URL(OpenAI 호환 /v1, 예: ChatGPT 구독 프록시)이 있으면 `claude -p` 대신 그리로 그리기·검수한다. 키는 OPRN_OBJECTGEN_CHAT_KEY.
 const CHAT_URL = process.env.OPRN_OBJECTGEN_CHAT_URL || "";
 const CHAT_KEY = process.env.OPRN_OBJECTGEN_CHAT_KEY || "";
+// 3/4 관문 영수증 판정기(object-gate judge.mts)도 `claude -p` 로 돈다. OPRN_OBJECTGEN_GATE=off 면 영수증을 받지 않고(공방 독립 검수·3/4 조언은 그대로) 구운 기물에 영수증이 없다고 남는다.
+const GATE_OFF = process.env.OPRN_OBJECTGEN_GATE === "off";
 const EFFORT = process.env.OPRN_OBJECTGEN_EFFORT || "medium";
 const CHAT_TIMEOUT_MS = 9 * 60_000;
 
@@ -26,7 +28,7 @@ export function objectGenUnavailable() {
   if (!CHAT_URL && !has("claude")) return "기물을 그리고 검수할 Claude Code(claude)가 이 컴퓨터에 없다.";
   const codexHome = process.env.CODEX_HOME || join(homedir(), ".codex");
   if (!existsSync(join(codexHome, "auth.json"))) return "참고 그림을 그릴 ChatGPT(Codex) 로그인이 없다 — `codex login` 으로 로그인한다(Google·유료 API 로 대신 그리지 않는다).";
-  return workshopGateUnavailable();
+  return GATE_OFF ? null : workshopGateUnavailable();
 }
 
 /** 공방 ChatRequest → `claude -p` 한 턴(stream-json, 그림 포함). 이전 대화는 한 메시지 안에 차례로 적는다. */
@@ -141,5 +143,5 @@ const png = {
 };
 
 export function createObjectGenDeps({ publicDir, log }) {
-  return { publicDir, png, chat: CHAT_URL ? openAiChat(log) : claudeChat(log), referenceImage: codexReference(log), objectGate: gate(log), log };
+  return { publicDir, png, chat: CHAT_URL ? openAiChat(log) : claudeChat(log), referenceImage: codexReference(log), ...(GATE_OFF ? {} : { objectGate: gate(log) }), log };
 }
