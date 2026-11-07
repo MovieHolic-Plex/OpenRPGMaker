@@ -175,6 +175,13 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.recipeId`, command.recipeId);
       if (command.resultVariableId !== undefined) requireString(`${label}.resultVariableId`, command.resultVariableId);
       return;
+    case "openCraftShop":
+      if (command.recipeIds !== undefined) {
+        for (const [index, recipeId] of requireArray(`${label}.recipeIds`, command.recipeIds).entries()) requireString(`${label}.recipeIds[${index}]`, recipeId);
+      }
+      if (command.title !== undefined) requireString(`${label}.title`, command.title);
+      if (command.speaker !== undefined) requireString(`${label}.speaker`, command.speaker);
+      return;
     case "applyItemUpgrade":
       requireString(`${label}.upgradeId`, command.upgradeId);
       if (command.resultVariableId !== undefined) requireString(`${label}.resultVariableId`, command.resultVariableId);

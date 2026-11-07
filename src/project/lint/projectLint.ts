@@ -122,6 +122,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkSystemOptInConsistency(project, issues);
   checkShopIntegrity(project, issues);
   checkPresentItemIntegrity(project, issues);
+  checkCraftShopIntegrity(project, issues);
   checkMapNamedLocations(project, issues);
   checkCampusDoors(project, issues);
   return issues;
@@ -995,6 +996,31 @@ function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// 제작 공방: 보여 줄 제작법이 없으면 런타임은 창을 띄우지 않고 지나간다(commandCatalog «openCraftShop») — 그 조용한 건너뜀을 저자에게 알린다.
+// 없는 id 는 로드를 막지 않고(제작법을 지운 뒤 열린 게임도 떠야 한다) 런타임이 건너뛴다. 그래서 lint 가 error 로 잡는다.
+function checkCraftShopIntegrity(project: Project, issues: LintIssue[]): void {
+  const known = new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id));
+  const inspect = (command: Command, where: { mapId?: string; eventId: string }): void => {
+    if (command.kind !== "openCraftShop") return;
+    const missing = (command.recipeIds ?? []).filter((id) => !known.has(id));
+    if (missing.length) {
+      issues.push({ severity: "error", code: "openCraftShop.unknown-recipe", message: `${where.eventId}: 제작 공방이 없는 제작법을 가리킨다: ${missing.join(", ")}`, ...where });
+    }
+    const shown = command.recipeIds === undefined ? known.size : command.recipeIds.length - missing.length;
+    if (shown === 0) {
+      issues.push({ severity: "error", code: "openCraftShop.empty", message: `${where.eventId}: 제작 공방에 보여 줄 제작법이 없다 — 창 없이 지나간다.`, ...where });
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const where = { mapId: map.id, eventId: event.id };
+      visitCommands(event.commands, (command) => inspect(command, where));
+      for (const page of event.pages ?? []) visitCommands(page.commands, (command) => inspect(command, where));
+    }
+  }
+  for (const commonEvent of project.commonEvents) visitCommands(commonEvent.commands, (command) => inspect(command, { eventId: commonEvent.id }));
+}
+
 // 아이템 제시: 없는 아이템은 참조 검증(checkReferences)이 잡는다. 여기서는 저작 실수 둘 —
 // 정답이 후보(itemIds) 밖이라 절대 고를 수 없음, 정답이 하나도 없어 무엇을 내도 틀림.
 function checkPresentItemIntegrity(project: Project, issues: LintIssue[]): void {
@@ -1101,7 +1127,7 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   let itemUpgradeCalls = 0;
   let eventsWithSchedule = 0;
   const visitKind = (command: Command): void => {
-    if (command.kind === "craftRecipe") craftRecipeCalls++;
+    if (command.kind === "craftRecipe" || command.kind === "openCraftShop") craftRecipeCalls++;
     if (command.kind === "applyItemUpgrade") itemUpgradeCalls++;
   };
   for (const map of maps) {

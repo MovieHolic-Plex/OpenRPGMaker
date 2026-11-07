@@ -137,6 +137,26 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - Percentages are unrounded internally; controls/summary use two decimal places or three significant digits for values below 0.01%, so tiny positive odds are not presented as zero. Near-100% counterparts retain enough decimals to represent the small remainder instead of false certainty; only differences within `Number.EPSILON * 100` may display 100%. Invalid/incomplete/out-of-range percent input displays a local error and leaves the last committed table unchanged. `commandEditDialog.ts` calls the scoped `validateWeightedBranchForm` before Confirm: invalid visible inputs retain the dialog and receive focus. There is no native form-submit validation in this button-based dialog; other command bodies are unaffected. Input nodes stay mounted; IME names commit at composition end. Add focuses the new name; removal focuses the nearest remaining name. All mutations use the existing `replaceFields` staged draft path; unrelated fields remain intact.
 - Styles remain in `src/styles/editor/event-editor.part-2.css`, using cream-form tokens and shared `editorIcons`. Regression suites: `npm test -- test/weightedBranchUx.test.ts test/commandEditModalPreview.test.ts` (parser/storage, initial meters, percent redistribution, positive-only mapping, actual modal Confirm/reopen with zero rows, blocked invalid/all-zero Confirm, variable-only preservation, precision, IME and structural focus). Browser validation and broad gates are lead-owned; fake DOM is not a visual approval.
 
+## 제작 공방 — `openCraftShop` 한 줄로 장인 메뉴 (2026-11-07)
+
+재료를 모아 물건을 만드는 장인은 `{ kind: "openCraftShop", recipeIds?, title?, speaker? }` 한 줄이다.
+예전에는 선택지+`craftRecipe`+결과 변수 분기+`gotoLabel` 을 손으로 짰다(폴른 스타 니나 공방 약 50줄, 제작법 5개).
+
+- **런타임:** 인터프리터가 `craftShop` 걸음으로 멈춘다 — 줄마다 산출물·재료(가진/필요)·골드, 못 만드는 줄은 이유(`재료 부족: 광석 5`·`3G 부족`).
+  판정은 `craftRecipes.ts` 의 `canCraft`/`craftRecipe` 그대로(가방 «조합»과 같은 규칙). 제작법 id 로 재개하면 만들고 pc 를 그대로 두어 같은 창이 결과 한 줄과 함께 다시 열린다.
+  닫으면(`undefined`) 다음 명령. 보일 제작법이 0개면 창 없이 지나간다. 목록 계산은 `src/project/craftShop.ts`(줄마다 `maxCrafts` = 사본 세션에서 실제 차감해 센 횟수, `owned`, 아이콘·설명).
+  재개 값은 제작법 id(한 번) 또는 `[id, "횟수"]`(수량 단계, 상한 99, 모자라면 만든 만큼만).
+- **창:** `src/player/playSceneCraftShop.ts` — 상점 창 틀(`createShopOverlay`·`runtime-shop-*`) 위의 전용 화면. 왼쪽 제작법 목록(아이콘·이름·`×횟수`),
+  오른쪽 상세(산출물 아이콘·설명·보유, 재료마다 `가진/필요`·모자라면 `--shop-loss` 빨강, 골드 비용 vs 소지금), 아래 결과 한 줄·수량 −/+·«만들기»(못 만들면 꺼지고 이유)·«나가기».
+  키보드 ↑↓ 고르기·←→ 수량·결정·취소, 마우스 호버+클릭, 터치는 첫 탭 고르기·같은 줄 다시 탭 만들기. 좁은 화면(≤460px 또는 높이 ≤360px)은 목록 위·상세 아래 한 단. 스타일은 `src/styles/runtime/commerce.css` 의 `runtime-craft-*`.
+- **왜 전용 창인가:** 선택지는 엔진 상한 `MAX_SHOWN_CHOICES = 5`(`src/project/choiceView.ts:13`)로 앞 다섯 줄만 올린다. 제작법이 다섯이면 «그만둔다»가 여섯 번째라 화면에 없다.
+  또 `item` 조건은 개수를 보지 않아 «송곳니 2» 제작법이 하나만 가져도 밝게 떴다.
+- **편집기:** 빠른 추가 `command-add-craft-shop`, 본문 `openCraftShopBody`(창 제목·장인 이름·«모든 제작법»·제작법 체크).
+  검사: 초안 검증기 `openCraftShop.empty` + `reference.recipe.missing`, 프로젝트 lint `openCraftShop.empty`·`openCraftShop.unknown-recipe`(둘 다 error).
+  로드는 없는 id 를 막지 않는다 — 제작법을 지운 뒤에도 게임이 열려야 한다. 삭제 가드(`databaseCommandReferences`)는 `recipeIds` 를 참조로 센다.
+- **조수:** `COMMAND_SCHEMA` 의 `recipeIds`·`title` 설명이 손으로 짜는 패턴 대신 한 줄을 쓰라고 알린다. 전투 이벤트에서는 실행하지 않는다(unsupported 로그).
+- **저장 호환:** 명령 추가만, 이름 바꾼 것 없음. SCHEMA_VERSION 불변.
+
 ## 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
 
 - 2026-09-06 저장 계약: `shapeCommandFields.ts`는 피커와 런타임의 정본인 `SHOP_MESSAGE_TYPES`를 그대로 검증한다. `festival`·`closingSale`·`vip`도 다른 세 유형처럼 프로젝트 재로드를 통과하며, 목록 밖 값은 계속 거부한다. `eventCommandRemediationShopMessages.test.ts`가 여섯 유형의 전체 프로젝트 serialize/deserialize와 인접 상점 설정 보존을 검증한다.

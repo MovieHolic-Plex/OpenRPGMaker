@@ -23,6 +23,7 @@ import type { Command, Condition, EndingDef, FaceGraphic, GameEvent, M2CommandFi
 
 import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
+import { craftShopRows } from "@/project/craftShop";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
@@ -1089,6 +1090,22 @@ export function executeCommand(
       const result = state.project && craftRecipe(state.project, state.session as PlaySession, command.recipeId);
       if (command.resultVariableId !== undefined) setVariable(state.session, command.resultVariableId, "=", result?.ok ? 1 : 0);
       return resumeNext(frame);
+    }
+    case "openCraftShop": {
+      if (!state.project) return resumeNext(frame);
+      const rows = craftShopRows(state.project, state.session as PlaySession, command);
+      // 보일 제작법이 하나도 없으면 빈 창에 가두지 않는다(편집기 lint 가 빈 목록·없는 id 를 잡는다).
+      if (rows.length === 0) return resumeNext(frame);
+      const notice = state.craftShopNotice;
+      state.craftShopNotice = undefined;
+      return pause("craftShop", {
+        kind: "craftShop",
+        ...(command.title ? { title: command.title } : {}),
+        ...(command.speaker ? { speaker: command.speaker } : {}),
+        rows,
+        gold: state.session.gold,
+        ...(notice ? { notice } : {}),
+      });
     }
     case "applyItemUpgrade": {
       const result = state.project && applyItemUpgrade(state.project, state.session as PlaySession, command.upgradeId);

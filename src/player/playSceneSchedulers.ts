@@ -443,6 +443,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "text":
     case "choices":
     case "presentItem":
+    case "craftShop":
     case "planSchedule":
     case "wait":
     case "waitForAllMovement":
@@ -470,6 +471,7 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "text" ||
     step.kind === "choices" ||
     step.kind === "presentItem" ||
+    step.kind === "craftShop" ||
     step.kind === "planSchedule" ||
     step.kind === "tacticsBattle" ||
     step.kind === "inputWait" ||

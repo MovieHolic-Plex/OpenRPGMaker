@@ -192,6 +192,20 @@ defineCommand({
 });
 
 defineCommand({
+  kind: "openCraftShop",
+  family: "economy",
+  label: "제작 공방",
+  fields: {
+    title: f.text("창 제목", { optional: true, placeholder: "비우면 «제작»" }),
+    speaker: f.text("장인 이름", { optional: true }),
+  },
+  summary: (c) => {
+    const ids = Array.isArray(c.recipeIds) ? c.recipeIds.length : undefined;
+    return `${str(c.title) || "제작 공방"} · ${ids === undefined ? "모든 제작법" : `제작법 ${ids}개`}`;
+  },
+});
+
+defineCommand({
   kind: "applyItemUpgrade",
   family: "economy",
   label: "아이템 강화",

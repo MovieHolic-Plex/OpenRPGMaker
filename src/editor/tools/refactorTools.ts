@@ -133,6 +133,8 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "applyItemUpgrade":
       if (command.resultVariableId) refs.variables.add(command.resultVariableId);
       break;
+    case "openCraftShop":
+      break;
     case "runSchedule":
       if (command.slotVariableId) refs.variables.add(command.slotVariableId);
       break;

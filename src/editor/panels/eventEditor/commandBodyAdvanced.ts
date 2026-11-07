@@ -24,6 +24,7 @@ import {
   changeGoldBody,
   changeItemBody,
   craftRecipeBody,
+  openCraftShopBody,
   applyItemUpgradeBody,
   equipToolBody,
   changeLevelBody,
@@ -163,6 +164,8 @@ export function renderAdvancedCommandBody(
       return changeItemBody(context, cmd);
     case "craftRecipe":
       return craftRecipeBody(context, cmd);
+    case "openCraftShop":
+      return openCraftShopBody(context, cmd);
     case "applyItemUpgrade":
       return applyItemUpgradeBody(context, cmd);
     case "equipTool":
