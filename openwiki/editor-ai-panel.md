@@ -4731,3 +4731,31 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
 - 오른쪽 AI 도크가 열려 있으면 폭 1100px 이상에서는 **레이아웃 폭을 차지**한다(지도 위를 덮지 않는다). 1100px 미만에서는 예전처럼 덮는 오버레이이고 툴바만 비켜 준다(`32-ai-workspace.css`).
 - 서버가 AI 를 껐을 때(`hostAiDisabled`) 잠금 막(`aiLockScrim`)과 칩은 같은 「AI 서버에서 꺼짐」 문구를 쓰고, 소용없는 로그인 버튼은 숨긴다. AI 입구 4곳은 그대로 둔다. 대화/조수 탭에는 설명 title 이 붙는다.
 - (UI 감사 2026-10-21) 같은 판정을 더 따른다: AI 설정 「연결」 탭의 계정 카드 배지는 503(`OPRN_HOST_OWNER_AI`)이면 「확인 실패」 대신 「AI 서버에서 꺼짐」(`cardAuth` 의 `"hostDisabled"`), 스튜디오 「내 요청」 유휴 줄은 「AI 꺼짐」 / 평소 「요청 없음」(예전 「대기 중」). 잠금 막이 덮는 동안 막 뒤 본문(스타터·대화 기록, `.ai-chat-body` 의 막 아닌 자식)은 `inert` 라 Tab 이 그리로 들어가지 않는다 — 컴포저는 body 밖이라 살아 있다.
+
+## 그림 기본값은 ChatGPT, 모델 이름은 런타임에 고른다 (2026-11-07 실측)
+
+- **기본 제공자**: `DEFAULT_IMAGE_PROVIDER_ID = openai-codex`, `DEFAULT_IMAGE_MODEL = codex-image-default`.
+  새 설정과 「그림 칸이 저장돼 있지 않은 옛 blob」 이 모두 ChatGPT 로 간다. 오너 규칙(그대로): 「엥 ? 이미지는 chatgpt 로 그려」.
+- **자동 대체 없음**: 예전에는 ChatGPT 자격이 없으면 `generateAiImage` 가 조용히 `google-antigravity` 로 갈아탔다.
+  그림은 나오지만 사용자는 Google 화풍으로 그려졌다는 사실을 들을 곳이 없었다 → **그 분기를 삭제**했다.
+  이제 자격이 없으면 제공자가 401 과 「AI 설정 → 「그림·도트 모델」에서 ChatGPT 를 연결 … Google 로 그리려면 같은 화면에서 Google 을 직접 고르세요」를 돌려준다.
+  `FALLBACK_IMAGE_PROVIDER_ID`/`FALLBACK_IMAGE_MODEL` 상수는 없다. Google 은 UI 에서 명시 선택할 때만 쓴다.
+- **모델 이름을 박지 않는다**: `src/ai/imageModelResolution.ts` 의 `pickNewestImageModel` 이 목록에서 고른다
+  (kind=image → priority → revision → id, 결정적). 목록이 비면 `null` 이고 호출자가 자기 최후 수단을 쓴다.
+  `IMAGE_MODEL_ROWS` 에 `revision` 을 넣어 새 줄만 더하면 기본값이 따라온다.
+- **Codex 는 모델을 보내지 않는다**: `scripts/lib/codexImageRuntime.ts` 는 `image_generation.model` 을 **생략**하고,
+  응답이 `tools[{type:"image_generation", model}]` 로 되돌려 준 값을 `GeneratedImage.model` 로 기록한다.
+  실측(2026-11-07 19:49): 모델을 빼자 백엔드가 `gpt-image-2-codex` 를 골랐다(PNG 1,071,169 B). 고정값은
+  god-tibo-imagen 기본 `gpt-image-2.5-sunburst` 였고, 그 값이 라우트가 실제로 쓰는 모델보다 낡았다.
+- **거짓 성공 제거**: read 모드 그림 도구 5종(`generate_title_art` · `generate_image_asset` ·
+  `generate_battle_backdrop` · `generate_game_over_image` · `generate_character_appearance`)이
+  `{status:"ui-required"}` 를 `ok:true` 로 돌려주던 것을 `image-generation-unavailable` 하드 오류로 바꿨다
+  (`imageGenerationHandoffRefusedError`). 세션 v1·Pi 는 run 전에 가로채므로, 여기까지 오는 호출은 생성기가 없는 경로뿐이다.
+- **openai 호환 엔드포인트는 그림 미지원**: `openai-compat:*` 로 그림을 요청하면 409 다. 문구를 「Google Antigravity 경로만 지원」에서
+  실제 사실(ChatGPT·Google 중 하나를 고르라)로 고쳤다. 참고: 프록시(127.0.0.1:10200)는 `/v1/images/generations` 에서
+  **model 을 무시**하고(가짜 모델명도 200, 응답에 model 없음) 그림을 돌려준다 — 그 경로에서는 무엇이 그렸는지 증명할 수 없다.
+- **테스트**: `test/imageModelResolution.test.ts`(신규), `test/imageGenerationUnavailableNotice.test.ts`(문구 고정 제거,
+  코드·ToolError.name/code·게이트 종류/개수·실제 레지스트리 도구의 하드 실패를 검사), `test/aiImageSettings.test.ts`(옛 blob 기본값),
+  `test/imageGenerationClient.test.ts`(기본 제공자 id 단언).
+- **매트릭스**: 인증 × 런타임 실측표는 `~/claude-viz/terra-fun-game.html` 절 5 (http://mdc-server:18301/terra-fun-game.html).
+

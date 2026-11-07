@@ -7,6 +7,7 @@
 // 실제 그리기는 Pi 실행기(scripts/lib/piAgentRuntime.ts)가 편집기의 그림 경로로 한다. 생성 경로가 없는 곳(헤드리스)에서는 run 이 실패한다.
 import type { Project } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { imageGenerationUnavailableError } from "@/editor/imageGenerationNotice";
 
 export const ITEM_ICON_TOOL = "generate_item_icon";
 
@@ -153,7 +154,7 @@ const generateItemIcon: ToolDefinition = {
   parameters: SCHEMA,
   run(project, args): ToolExecResult {
     prepareItemIconTargets(project, args);
-    throw new ToolError("이 실행에는 그림 생성 경로가 연결되어 있지 않습니다(편집기 조수 실행에서만 가능). 아이콘을 그리지 못했습니다 — 대신 쓴 그림이 그대로이니 그렸다고 보고하지 마세요.", { code: "image-generation-unavailable" });
+    throw imageGenerationUnavailableError();
   },
 };
 

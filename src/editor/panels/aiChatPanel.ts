@@ -82,6 +82,9 @@ import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
 import { pendingLazyBundledTilesetIds } from "@/project/bundledTilesetDiff";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
+import type { PiAgentEvent } from "@/ai/piAgent/protocol";
+import { reportImageGenerationUnavailable } from "./imageGenerationGate";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
@@ -433,6 +436,13 @@ export function teardownAiChatPanel(): void {
   unregisterAiAssistantBridge();
   registerAiBootIntentTarget(null);
   clearAiApplyCompletion();
+}
+
+function reportPiImageUnavailable(event: PiAgentEvent): void {
+  const nested = event.type === "agent_event" ? event.event : event;
+  if (nested.type !== "tool_end") return;
+  if (nested.ok) return;
+  reportImageGenerationUnavailable({ summary: nested.summary, result: nested.result, modelText: nested.modelText }, showAiGateNotice);
 }
 
 export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
@@ -2291,7 +2301,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     try {
       await runPiCommand(command, {
-        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); },
+        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); reportPiImageUnavailable(event); },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2556,7 +2566,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       background: true,
       focus: "visible-only",
       signal,
-      onEvent: (event) => card.event(event),
+      onEvent: (event) => { card.event(event); reportPiImageUnavailable(event); },
       onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
