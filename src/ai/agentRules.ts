@@ -37,6 +37,20 @@ export const EXAMINE_FEEDBACK_RULE =
 export const NEW_PLAYER_PLAYTEST_RULE =
   "Before you report done, play it once as a first-time player: start from the new-game opening, follow only the «현재 목표» line and what you can SEE on screen, and reach an ending. Every step of that play must be one of: the objective line says where to go, or you can see the thing to walk to. If you needed a coordinate, an event id, or the project files to move on, a new player cannot — fix the map (visible entrance, sparkle, objective with «where») and play again from the start. On the editing side of OPRN this play is the goal, because a new player cannot read the database. Verify it with run_scene_test through the whole path plus the critic's screen check.";
 
+// 2026-11-07 terra-fun-game 판정: 파일럿 Terra 게임이 «끝까지는 간다»인데 판단·보상 연출이 0이었다(fun 3/10, choice 0 · payoff 1 · again 0).
+// 그래서 «끝까지 간다» 다음 층—— 플레이어가 판단하고, 누르면 화면이 반응하고, 클라이맥스가 연출로 보인다 —— 를 같은 단일 소스에 넣는다.
+export const PLAY_LOOP_RULE =
+  "A game that only walks to an ending is a tutorial, not a game. Before you call it done, the whole path must contain at least one decision the player makes and sees the result of. Author it with a real instrument, not prose: list_puzzle_presets then author_map_puzzle (or compile_puzzle kind:switch-sequence|password|item-gate|push-switches) for the gate, and put the reward inside a branch so the outcome differs. One gate on the way to the ending is the minimum; two is better than one.";
+
+export const ACTION_FEEDBACK_RULE =
+  "Every pickup, unlock and switch-on must be SEEN, not only said. Text alone ('반짝!', '숲이 환하게 빛났어요') reads as nothing happened. Attach the picture to the act: place_pixel_fx / set_event_pixel_fx (fire, sparkle, glow, water) at the spot, attach_pixel_fx for skill and item effects in battle, set_game_audio for field BGM plus the pickup and clear sounds, and a file dialog line from the speaker who reacts. The judge called exactly this out: an ending line said the forest lit up while the field stayed the same.";
+
+export const CLIMAX_STAGING_RULE =
+  "Stage the turn and the ending with script_cutscene (beats: dialogue, camera move, wait, transfer, triggerEnding) or script_cutscene_preset (memory_opening|bedside_monologue|ending_fade). A climax delivered as one dialogue line gets a payoff score of 1; the same beat with a 3-5 second staged scene (light, character entrance, music change, then the ending card) is what players remember. Keep each staged scene under 10 seconds and never stage a scene that the ending card already shows.";
+
+export const OBJECTIVE_MATCHES_PICTURE_RULE =
+  "The thing the objective line names must look like that thing on the map. If the objective says 별나무 (star tree) the player must not find a treasure chest sprite; if it says 창고 the entrance must read as a warehouse. Pick the sprite or tile that matches the words, or change the words to match the picture — a mismatch sent a judge looking at the wrong object and cost the game two major defects.";
+
 const OBJECTIVES: readonly string[] = [
   "one starting objective with at:'start' on the start map's autorun (after the opening cutscene), then",
   "for every event that advances the story (hands over a key, shows a flashback, turns on a switch) the next objective with eventId, placed right after that event's switch-on or item gain,",
@@ -98,6 +112,15 @@ export const AGENT_RULES_SECTIONS: readonly { readonly title: string; readonly l
       MARK_ENTRANCES_RULE,
       EXAMINE_FEEDBACK_RULE,
       NEW_PLAYER_PLAYTEST_RULE,
+    ],
+  },
+  {
+    title: "6. Make it fun, not just finishable",
+    lines: [
+      PLAY_LOOP_RULE,
+      ACTION_FEEDBACK_RULE,
+      CLIMAX_STAGING_RULE,
+      OBJECTIVE_MATCHES_PICTURE_RULE,
     ],
   },
 ];
