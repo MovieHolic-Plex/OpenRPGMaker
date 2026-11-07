@@ -121,7 +121,7 @@ import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
 import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
 import { localCliIdOf } from './localCliAgent/types.ts';
 import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
-import { decideSessionResume, engineSessionReuseOn } from '../src/ai/piAgent/sessionResume.ts';
+import { decideSessionResume, engineSessionReuseOn } from '../../src/ai/piAgent/sessionResume.ts';
 import { recallEngineSession, rememberEngineSession } from './piEngineSessions.ts';
 import { shrinkReferenceImage } from './referenceImageShrink.ts';
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
