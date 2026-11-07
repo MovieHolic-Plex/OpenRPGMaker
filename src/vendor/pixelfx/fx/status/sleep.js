@@ -18,6 +18,12 @@ export const meta = {
   options: { palette: ["#1a1636", "#3c3a7a", "#6f78c8", "#a9b8f0", "#dfe6ff", "#ffffff"], seed: 3 },
 };
 
+const NOD = { turn: 0.9, crouch: 1, lean: 1, hy: 2, fx: -6, fy: -14, bx: 7, by: -14, ffx: -2, fbx: 3 };
+export const act = {
+  onBody: true,
+  poses: [[0, NOD], [1.2, { ...NOD, crouch: 2, lean: 2, hy: 3 }], [2.4, NOD]],
+};
+
 const D = meta.duration, NZ = 3;
 // the letter at four sizes: it grows a step at a time as it rises
 const ZS = [

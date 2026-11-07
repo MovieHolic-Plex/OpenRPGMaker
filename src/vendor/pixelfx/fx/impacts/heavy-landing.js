@@ -1,6 +1,6 @@
 // The rocks, grit and dust are adapted from Sprite Fusion's open-source explosion
 // (https://www.spritefusion.com/pixel-art-vfx/explosion), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, P, B, Rng, fit, band, clamp, smooth, ease, TAU, WHITE, mix, hex } from "../../core/index.js";
+import { Particles, Bits, P, B, Rng, fit, band, clamp, smooth, ease, TAU, WHITE, mix, hex, READY } from "../../core/index.js";
 import { stone, makeCracks, drawCracks, dustRing, rock, rockShape, SOOT } from "./_lib.js";
 
 export const meta = {
@@ -15,6 +15,21 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#1c1a24", "#2f2a3a", "#4a4258", "#6b6280", "#9088a4", "#bdb6cc", "#e6e1ee"], stone: "#4a3f69", seed: 14 },
+};
+
+const FALL = { turn: 0.8, y: -46, crouch: -1, lean: -1, fx: -9, fy: -42, bx: 10, by: -42, ffx: 6, ffy: -8, fbx: -3, fby: -3, toeB: true, ghost: 1 };
+const HERO_ = { y: 0, crouch: 8, lean: 5, fx: 13, fy: -8, bx: -6, by: -23, ffx: 11, fbx: -10 };
+export const act = {
+  poses: [
+    [-0.26, FALL],
+    [-0.01, { ...FALL, y: -6 }, "in"],
+    [0, HERO_, "snap"],
+    [0.55, { ...HERO_, crouch: 7 }],
+    [0.95, { ...HERO_, crouch: 5, lean: 3, fx: 13, fy: -15, bx: -5, by: -20 }],
+    [1.3, READY],
+    [1.6, READY],
+  ],
+  hits: [{ t: 0.005, stop: 0.13, shake: 0.32, amp: 3 }],
 };
 
 // the dent: the floor's edge pressed into a shallow dish, scuffed lips either side

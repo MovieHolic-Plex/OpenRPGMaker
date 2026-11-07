@@ -1,7 +1,7 @@
 {
   "repo": "https://github.com/patch-gg/pixelfx",
-  "commit": "fe7103c36d94e02f2d7df7d8f7a341e493837cde",
-  "committedAt": "2026-10-29T23:58:51-07:00",
+  "commit": "a84159688af3ca37a4be05a0d422b94451b2e24e",
+  "committedAt": "2026-10-31T01:41:17-07:00",
   "license": "MIT",
-  "effects": 232
+  "effects": 244
 }

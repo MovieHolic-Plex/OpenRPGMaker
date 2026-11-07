@@ -18,6 +18,28 @@ export const meta = {
   options: { palette: VOLT, sparks: PLASMA, seed: 5 },
 };
 
+const TENSE = { turn: 0.9, crouch: 3, fx: -8, fy: -17, bx: 9, by: -17, ffx: -3, fbx: 4 };
+const JOLT_A = { turn: 1.1, crouch: 0, y: -1, fx: -13, fy: -36, bx: 13, by: -17, ffx: -4, fbx: 5 };
+const JOLT_B = { turn: 0.7, crouch: 1, y: -1, fx: -13, fy: -16, bx: 13, by: -36, ffx: -4, fbx: 5 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, TENSE],
+    [0.1, JOLT_A, "snap"],
+    [0.17, JOLT_B, "snap"],
+    [0.3, TENSE, "snap"],
+    [0.733, TENSE],
+    [0.733, JOLT_B, "snap"],
+    [0.8, JOLT_A, "snap"],
+    [0.93, TENSE, "snap"],
+    [1.367, TENSE],
+    [1.367, JOLT_A, "snap"],
+    [1.45, JOLT_B, "snap"],
+    [1.58, TENSE, "snap"],
+    [2, TENSE],
+  ],
+};
+
 const FPS = 30, N = 60, P = 2, JOLTS = [[3, 1], [22, 0.7], [41, 0.9]];
 const edges = new WeakMap();
 // the silhouette's edge pixels, in local space

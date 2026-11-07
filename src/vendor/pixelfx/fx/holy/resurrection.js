@@ -1,6 +1,6 @@
 // The lit floor line is adapted from Sprite Fusion's open-source heal (https://www.spritefusion.com/pixel-art-vfx/heal),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, flare, band, clamp, smooth, seg, lerp, ease, TAU, WHITE, mix } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, flare, band, clamp, smooth, seg, lerp, ease, TAU, WHITE, mix, READY } from "../../core/index.js";
 import { GOLD, ASH, shapeOf, recolor, toneOf, feather, Feathers, oval, FAR, NEAR } from "./_lib.js";
 
 export const meta = {
@@ -15,6 +15,28 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: GOLD, ash: ASH, seed: 5 },
+};
+
+const DOWN = { turn: 0.9, crouch: 8, lean: 6, hy: 2, fx: -4, fy: -10, bx: 9, by: -10, ffx: 8, fbx: -7 };
+const RISEN = { turn: 1.15, crouch: -1, fx: -15, fy: -33, bx: 16, by: -33, hy: -1, ffx: -3, ffy: -5, fbx: 4, fby: -5 };
+export const act = {
+  onBody: true,
+  follow: 0.6,
+  poses: [
+    [0, DOWN],
+    [0.5, DOWN],
+    [0.85, { ...DOWN, crouch: 6, lean: 4, hy: 1 }],
+    [1.15, { turn: 1, crouch: 2, fx: -8, fy: -17, bx: 9, by: -17 }],
+    [1.5, { ...RISEN, y: -2 }],
+    [1.95, { ...RISEN, y: -3 }],
+    [2.1, { ...RISEN, y: -2, crouch: 1, fy: -37, by: -37 }],
+    [2.3, { ...RISEN, y: -9, fx: -15, fy: -38, bx: 16, by: -38 }],
+    [2.95, { ...RISEN, y: -6 }],
+    [3.8, { turn: 1, y: 0, crouch: 2, fx: -8, fy: -17, bx: 9, by: -17 }],
+    [4.3, READY],
+    [4.8, READY],
+  ],
+  dust: [{ t: 3.8, x: 0, n: 5 }],
 };
 
 const TOP = -140;

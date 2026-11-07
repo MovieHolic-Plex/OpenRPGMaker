@@ -1,6 +1,6 @@
 // The flames that cool into smoke, the embers and the smouldering glow are adapted from Sprite Fusion's
 // open-source fire (https://www.spritefusion.com/pixel-art-vfx/fire), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, clamp, smooth, ease, rand, noise, WHITE, hex, mix } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, clamp, smooth, ease, rand, noise, WHITE, hex, mix, READY } from "../../core/index.js";
 import { bodyOf } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,20 @@ export const meta = {
     ash: ["#2a2428", "#4a4248", "#6e6670"],
     seed: 16,
   },
+};
+
+const WRITHE = { turn: 1, crouch: 2, fx: -13, fy: -35, bx: 13, by: -26, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.16, READY],
+    [0.4, { turn: 1, crouch: 2, fx: -9, fy: -22, bx: 10, by: -22, ffx: -3, fbx: 4 }],
+    [0.8, WRITHE],
+    [1.2, { ...WRITHE, lean: 2, fy: -26, by: -36 }],
+    [1.6, { ...WRITHE, lean: -2, fy: -36, by: -26 }],
+    [2.1, { ...WRITHE, crouch: 5, lean: 2, fx: -8, fy: -38, bx: 9, by: -38 }],
+    [3.6, { ...WRITHE, crouch: 6, lean: 2, fx: -8, fy: -36, bx: 9, by: -36 }],
+  ],
 };
 
 const IGNITE = 0.15, BURN = 1.9, CHAR = [hex("#100908"), hex("#22130e"), hex("#3a2016")];

@@ -1,7 +1,7 @@
 // The breakup (the outline flickering on, a white hero frame, the body bursting into bits of light) follows
 // Sprite Fusion's open-source blink (https://www.spritefusion.com/pixel-art-vfx/movement), MIT License,
 // Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, lerp, ease, rand, mix, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, lerp, ease, rand, mix, TAU, WHITE, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Warp out",
@@ -15,6 +15,19 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#0b1030", "#152a63", "#1d4f9e", "#2582d2", "#36b9ee", "#8ae8ff", "#d4fbff", "#ffffff"], seed: 4 },
+};
+
+const SET = { turn: 1, crouch: 3, fx: -9, fy: -15, bx: 10, by: -15, ffx: -3, fbx: 4 };
+const RAISED = { ...SET, crouch: 0, fx: -11, fy: -29, bx: 12, by: -29 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [-0.3, READY],
+    [0.1, SET],
+    [0.42, RAISED, "snap"],
+    [2.6, RAISED],
+  ],
 };
 
 // the beats: it charges, flashes white, breaks up into the beam, the beam lifts away

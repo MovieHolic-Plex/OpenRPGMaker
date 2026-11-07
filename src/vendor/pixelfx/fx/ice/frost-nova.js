@@ -1,4 +1,4 @@
-import { Particles, Bits, Lights, P, B, Rng, fit, crystal, band, flare, clamp, smooth, ease, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Bits, Lights, P, B, Rng, fit, crystal, band, flare, clamp, smooth, ease, rand, TAU, WHITE, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Frost nova",
@@ -12,6 +12,29 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#151a3d", "#212f6b", "#2c58aa", "#3a8bd8", "#62c8f4", "#a6ecff", "#dcfbff", "#ffffff"], reach: 104, seed: 4 },
+};
+
+const HIGH = { turn: 1.15, crouch: 0, fx: -7, fy: -44, bx: 8, by: -44, ffx: -5, fbx: 6 };
+const SLAM = { turn: 1.15, crouch: 8, lean: 3, fx: -9, fy: -8, bx: 11, by: -8, ffx: -8, fbx: 9 };
+const EASE = { turn: 1, crouch: 2, fx: -8, fy: -17, bx: 9, by: -17, ffx: -4, fbx: 5 };
+export const act = {
+  target: { x: 76 },
+  poses: [
+    [-0.34, READY],
+    [-0.04, { ...HIGH, crouch: 2, fy: -36, by: -36 }],
+    [0.36, HIGH],
+    [0.42, SLAM, "snap"],
+    [0.9, { ...SLAM, crouch: 7 }],
+    [1.9, { ...SLAM, crouch: 6 }],
+    [2.6, EASE],
+    [3.4, READY],
+  ],
+  hits: [
+    { t: 0.42, stop: 0.1, shake: 0.26, amp: 2, target: false },
+    { t: 0.66, push: 0.9, straw: 6, y: -10, skin: "ice", shiver: 1.7 },
+    { t: 2.9, push: 0.2, straw: 0, flash: 0, skin: null },
+  ],
+  dust: [{ t: 0.42, x: 10, n: 5, dir: 1, c: "#d8f2ff" }, { t: 0.42, x: -10, n: 5, dir: -1, c: "#d8f2ff" }],
 };
 
 const CHARGE = 0.42, SPREAD = 0.62, HOLD = 1.95, MELT = 0.7, CORE_Y = -24;

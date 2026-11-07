@@ -1,7 +1,7 @@
 // The creeping front, the branching cracks and the burst of the body into chunks, grit and dust are
 // adapted from Sprite Fusion's open-source ice freeze and shatter (https://www.spritefusion.com/pixel-art-vfx/ice),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, B, Rng, fit, rand, clamp, luma, smooth, tileFbm, TAU, WHITE } from "../../core/index.js";
+import { Particles, Bits, Lights, P, B, Rng, fit, rand, clamp, luma, smooth, tileFbm, TAU, WHITE, READY } from "../../core/index.js";
 import { shape, colorAt } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,13 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#16141c", "#2a2733", "#433f4d", "#5f5a6a", "#7d7889", "#a29dab", "#cdc8d2", "#f0edf3"], seed: 3 },
+};
+
+const REACH_ = { lean: 3, crouch: 2, fx: 14, fy: -29, bx: -4, by: -22, ffx: 8, fbx: -7, toeB: true };
+export const act = {
+  onBody: true,
+  poses: [[-0.16, READY], [0.08, { turn: 0.9, lean: -1, crouch: 2, fx: -8, fy: -24, bx: 9, by: -24 }, "snap"], [0.5, REACH_], [0.95, REACH_], [3.8, REACH_]],
+  hits: [{ t: 2.2, stop: 0.08, shake: 0.24, amp: 2 }],
 };
 
 const CREEP = 0.95, CRACK = 1.75, SHATTER = 2.2;

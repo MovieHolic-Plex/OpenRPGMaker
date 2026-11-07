@@ -1,6 +1,6 @@
 // The beam's slam, strands, rings and the sparks thrown along the floor are adapted from Sprite Fusion's
 // open-source holy-light (https://www.spritefusion.com/pixel-art-vfx/holy-light), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, ease, rand, TAU, WHITE, mix } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, ease, rand, TAU, WHITE, mix, READY } from "../../core/index.js";
 import { bodyOf, rimOf } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,19 @@ export const meta = {
     width: 15,
     seed: 12,
   },
+};
+
+const SET = { turn: 1, crouch: 4, fx: -9, fy: -14, bx: 10, by: -14, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [0, SET],
+    [1.4, SET],
+    [1.72, { turn: 1.15, crouch: -1, fx: -13, fy: -36, bx: 14, by: -36, hy: -1, ffx: -3, fbx: 4 }],
+    [2.1, READY],
+    [2.5, READY],
+  ],
 };
 
 const SLAM = 0.32, WRITE0 = SLAM + 0.08, WRITE = 0.95, DONE = WRITE0 + WRITE, LIFT = DONE + 0.12;

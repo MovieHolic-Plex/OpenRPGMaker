@@ -1,6 +1,6 @@
 // The pale ghost of the body and the motes it sheds follow Sprite Fusion's open-source movement and heal
 // (https://www.spritefusion.com/pixel-art-vfx/movement), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, band, clamp, smooth, ease, rand, WHITE, hex, luma } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, band, clamp, smooth, ease, rand, WHITE, hex, luma, READY } from "../../core/index.js";
 import { bodyOf, rimOf } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,21 @@ export const meta = {
     height: 50,
     seed: 27,
   },
+};
+
+const SLUMP = { crouch: 8, lean: 6, hy: 2, fx: 7, fy: -9, bx: 11, by: -9, ffx: 9, fbx: -8 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [-0.2, READY],
+    [0.3, { turn: 1, crouch: 2, hy: -1, fx: -10, fy: -24, bx: 11, by: -24, ffx: -3, fbx: 4 }],
+    [0.7, { turn: 0.7, crouch: 4, lean: 3, hy: 1, fx: 2, fy: -14, bx: 8, by: -14, ffx: 4, fbx: -3 }],
+    [1.1, SLUMP],
+    [2.7, SLUMP],
+    [3.2, { ...SLUMP, crouch: 7 }],
+  ],
+  dust: [{ t: 1.1, x: 0, n: 5 }],
 };
 
 const LEAVE = 0.35, TOP = 2.05, GONE = 2.55, SHADOW = hex("#0c0f1e");

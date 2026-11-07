@@ -18,6 +18,13 @@ export const meta = {
   options: { palette: ["#350711", "#5e0c1b", "#931327", "#c71e33", "#f2384a", "#ff8a7a"], seed: 5 },
 };
 
+const CLUTCH = { turn: 0.7, crouch: 3, lean: 2, fx: 2, fy: -21, bx: 8, by: -14, ffx: 3, fbx: -3 };
+const BEAT_ = { ...CLUTCH, crouch: 5, lean: 4, hy: 1 };
+export const act = {
+  onBody: true,
+  poses: [[0, BEAT_], [0.18, CLUTCH], [1.2, CLUTCH], [1.2, BEAT_, "snap"], [1.38, CLUTCH], [2.4, CLUTCH], [2.4, BEAT_, "snap"]],
+};
+
 const D = meta.duration, BEAT = D / 2, G = 900;
 
 // the wounds: two on the edges of the arms and one on the front of the body. Blood runs down the body from each

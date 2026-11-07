@@ -3,7 +3,7 @@ import { shape, colorAt, eyes, travel } from "./_lib.js";
 
 export const meta = {
   name: "Frozen",
-  desc: "Chilled to the bone: frost ferns creep over the body, icicles hang from chin, hands and hair and drip, breath steams, snow settles, a shiver every second, frost spreads underfoot.",
+  desc: "Chilled to the bone: frost ferns creep over the body, icicles hang from chin and hands and drip, breath steams, snow settles, a shiver every second, frost spreads underfoot.",
   tags: ["status", "ice", "freeze", "frozen", "cold", "chill", "debuff", "loop"],
   size: [72, 64],
   origin: [36, 54],
@@ -13,6 +13,12 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#151a3d", "#212f6b", "#2c58aa", "#3a8bd8", "#62c8f4", "#a6ecff", "#dcfbff", "#ffffff"], seed: 4 },
+};
+
+const STIFF = { turn: 0.9, crouch: 1, fx: -6, fy: -15, bx: 7, by: -15, ffx: -2, fbx: 3 };
+export const act = {
+  onBody: true,
+  poses: [[0, { ...STIFF, crouch: 2 }], [0.22, STIFF], [1, STIFF], [1, { ...STIFF, crouch: 2 }, "snap"], [1.22, STIFF], [2, { ...STIFF, crouch: 2 }]],
 };
 
 const D = meta.duration, SHIVER = 1;
