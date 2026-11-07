@@ -35,10 +35,15 @@ export type HeadlessObjectGenDeps = {
   readonly log?: (line: string) => void;
   /** 있으면 판 하나의 그림 기록(참고 그림·시도마다 후보·관문 판정)을 넘긴다 — 무엇이 그려졌는지 사람이 볼 수 있게(2026-11-07 오너 「뭘 그린거임?」). */
   readonly archive?: (record: HeadlessObjectGenArchive) => void;
+  /** 그리기·검수를 맡은 경로(scripts/lib/objectGenRoute.mjs) — 기록과 도구 결과에 그대로 적는다. */
+  readonly route?: HeadlessObjectGenRoute;
 };
+
+export type HeadlessObjectGenRoute = { readonly route: string; readonly model: string; readonly effort: string; readonly gate: string; readonly label: string; readonly note: string | null };
 
 export type HeadlessObjectGenArchive = {
   readonly request: ObjectGenRequest;
+  readonly route: HeadlessObjectGenRoute | null;
   readonly ok: boolean;
   readonly seconds: number;
   readonly calls: number;
@@ -137,7 +142,7 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
     if (!deps.archive) return;
     const ref = round.reference;
     deps.archive({
-      request, ok, seconds: seconds(), calls, picked,
+      request, route: deps.route ?? null, ok, seconds: seconds(), calls, picked,
       reference: ref ? { status: ref.status, note: ref.note, source: ref.source ?? null, accepted: [...(ref.dataUrl ? [ref.dataUrl] : []), ...(ref.more ?? []).map((m) => m.dataUrl)], rejected: (ref.rejected ?? []).map((r) => ({ png: r.dataUrl, why: `${r.view} 윗면 ${r.topShare}% — ${r.why}` })) } : null,
       runs: round.runs.map((run) => ({
         letter: run.letter, status: run.status, error: run.error,

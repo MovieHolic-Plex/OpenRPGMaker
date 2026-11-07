@@ -172,12 +172,14 @@ export async function runHeadlessToolGenerating(
   const request = result.data;
   const next = structuredClone(project);
   const made = await runHeadlessObjectGen(next, request, deps);
+  const route = deps.route ?? null;
+  const routeNote = route?.note ? ` [${route.note}]` : "";
   if (!made.ok) {
-    return { result: { ok: false, summary: made.error, issues: [{ severity: "error", code: "object-gen-failed", message: made.error }], data: { request, seconds: made.seconds, calls: made.calls, candidates: made.candidates } }, project };
+    return { result: { ok: false, summary: made.error, issues: [{ severity: "error", code: "object-gen-failed", message: made.error }], data: { request, route, seconds: made.seconds, calls: made.calls, candidates: made.candidates } }, project };
   }
-  const generated = { objectId: made.objectId, tilesetId: made.tilesetId, columns: made.columns, rows: made.rows, letter: made.letter, reason: made.reason, seconds: made.seconds, calls: made.calls, reference: made.reference, candidates: made.candidates };
+  const generated = { objectId: made.objectId, tilesetId: made.tilesetId, columns: made.columns, rows: made.rows, letter: made.letter, reason: made.reason, seconds: made.seconds, calls: made.calls, reference: made.reference, route, candidates: made.candidates };
   if (!request.base) {
-    return { result: { ok: true, summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초). stamp_tileset_object({mapId:"${request.mapId}", objectId:"${made.objectId}", base:{x,y}}) 로 놓아라.`, data: { generated } }, project: next };
+    return { result: { ok: true, summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초)${routeNote}. stamp_tileset_object({mapId:"${request.mapId}", objectId:"${made.objectId}", base:{x,y}}) 로 놓아라.`, data: { generated } }, project: next };
   }
   const stampCtx = { ...context, project: next };
   const stamp = runToolDefinition(stampCtx, getTool("stamp_tileset_object")!, { mapId: request.mapId, objectId: made.objectId, base: request.base });
@@ -185,7 +187,7 @@ export async function runHeadlessToolGenerating(
   return {
     result: {
       ok: true,
-      summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초). `
+      summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초)${routeNote}. `
         + (placed ? `(${request.base.x},${request.base.y}) 자리에 놓았다.` : `자리 (${request.base.x},${request.base.y}) 에는 못 놓았다: ${stamp.summary} — stamp_tileset_object 로 다른 빈 바닥에 놓아라.`),
       ...(placed ? {} : { warnings: [stamp.summary] }),
       data: { generated, placed },
