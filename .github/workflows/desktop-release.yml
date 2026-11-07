@@ -1,8 +1,24 @@
 name: desktop-release
 
-# 정식 vX.Y.Z 릴리스가 나오면 호스티드 러너에서 리눅스 AppImage, 윈도우 zip,
-# 윈도우 portable exe 를 만들어 그 릴리스에 올린다. 소유자 컴퓨터에서는 돌리지 않는다.
-# 윈도우 패키지도 wine 없이 리눅스에서 만든다(electron-builder 가 makensis 를 받는다).
+# 정식 vX.Y.Z 릴리스의 데스크톱 산출물(AppImage·윈도우 zip·portable exe)을 호스티드 러너에서
+# 만들어 릴리스에 올린다. 소유자 컴퓨터에서는 돌리지 않는다. 윈도우 패키지도 wine 없이
+# 리눅스에서 만든다(electron-builder 가 makensis 를 받는다).
+#
+# 순서 계약 (2026-11-07, 오너 지적 「파일이 실제 업로드 된 후에야 README 가 업데이트 되어야하는거아니냐」):
+#   ① scripts/release-auto.mjs 가 릴리스를 **초안(draft)** 으로 만든다.
+#   ② 이 워크플로가 산출물을 만들어 올리고 이름·크기를 **검증**한다.
+#   ③ 검증을 통과한 뒤에만 발행한다(그리고 그 태그가 가장 높은 버전일 때만 latest 로 표시한다).
+#   업로드가 실패하면 초안으로 남는다 → releases/latest 는 이전 정상 릴리스를 계속 준다.
+#   실측 사고: 2026-11-06 22:05Z v0.408.0 이 자산 0개로 발행돼 latest 가 됐고, 빌드는
+#   scripts/lib/piAgentRuntime.ts 의 깨진 import(`../src/...`)로 매번 실패해 README 의
+#   /releases/latest/download/OPRN.Studio-windows.exe 가 404 였다.
+#
+# 트리거
+#   released/published : 발행된 릴리스(과거 경로·사람이 손으로 발행한 경우) — 산출물이 모자라면 채운다.
+#   workflow_dispatch  : tag 필수. source_ref 를 주면 **다른 커밋의 트리로 빌드해 그 태그에 올린다**
+#                        (자산이 빈 채 발행된 릴리스를 고칠 때. 태그를 다시 쓰지 않는다).
+#   schedule           : 30분마다. 자산이 모자란(=초안이거나 빈) 가장 새 릴리스를 스스로 집어 채운다.
+#                        release-auto 가 만든 초안을 아무도 디스패치하지 않아 latest 가 비는 일을 막는다.
 
 on:
   release:
@@ -10,39 +26,115 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: vX.Y.Z
+        description: vX.Y.Z (산출물을 올릴 릴리스)
         required: true
         type: string
+      source_ref:
+        description: 빌드할 커밋(비우면 태그 자체). 자산이 빈 기존 릴리스를 고칠 때 main 을 준다.
+        required: false
+        type: string
+  schedule:
+    - cron: '*/30 * * * *'
 
 permissions:
   contents: write
 
 concurrency:
-  group: desktop-release-${{ github.event.release.tag_name || inputs.tag }}
+  group: desktop-release-${{ github.event.release.tag_name || inputs.tag || 'scheduled' }}
   cancel-in-progress: false
 
 jobs:
   packages:
-    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+    if: github.event_name != 'release' || github.event.release.prerelease == false
     runs-on: ubuntu-latest
     timeout-minutes: 180
+    outputs:
+      tag: ${{ steps.target.outputs.tag }}
+      source_ref: ${{ steps.target.outputs.source_ref }}
+      needed: ${{ steps.preflight.outputs.needed }}
     steps:
+      # ── ① 대상 결정 ────────────────────────────────────────────────────────────
+      # 초안이면 이벤트의 release.tag_name 이 비어 오는 경우가 있어(발행 전) 입력·스케줄 순으로 찾는다.
+      - name: 대상 릴리스 결정
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_SOURCE_REF: ${{ inputs.source_ref }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          tag="$EVENT_TAG"
+          if [[ -z "$tag" ]]; then tag="${INPUT_TAG:-}"; fi
+          if [[ -z "$tag" ]]; then
+            # 스케줄: 자산이 모자란 가장 새 vX.Y.Z 릴리스(초안 포함). 없으면 할 일이 없다.
+            tag="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" --jq '
+              [ .[] | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
+                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 6)) ]
+              | sort_by(.tag_name | sub("^v"; "") | split(".") | map(tonumber))
+              | last | .tag_name // ""')"
+          fi
+          if [[ -z "$tag" ]]; then
+            echo "미완성 릴리스 없음 — 할 일 없음"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::태그가 vX.Y.Z 가 아님: $tag"
+            exit 1
+          fi
+          src="$tag"
+          if [[ -n "${INPUT_SOURCE_REF:-}" ]]; then src="$INPUT_SOURCE_REF"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "source_ref=$src" >> "$GITHUB_OUTPUT"
+          echo "대상 $tag · 빌드 커밋 $src"
+
+      # ── ② 이미 충분한가 — 무거운 단계 전에 본다 ─────────────────────────────────
+      - name: 자산 검사
+        id: preflight
+        if: steps.target.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          set -euo pipefail
+          json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG")"
+          version="${TAG#v}"
+          missing="$(printf '%s' "$json" | jq -r --arg v "$version" '
+            (.assets // []) as $a
+            | ["OPRN.Studio-windows.exe","OPRN.Studio-windows.zip","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v)-win.zip","OPRN.Studio-\($v).AppImage"]
+            | map(select(. as $n | ($a | map(select(.name == $n and (.size // 0) > 0)) | length) == 0))
+            | join(" ")')"
+          if [[ -z "$missing" ]]; then
+            echo "$TAG 은 자산 6개가 모두 있다 — 빌드를 건너뛴다"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$TAG 에 없는/빈 자산: $missing"
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 디스크 확보
+        if: steps.preflight.outputs.needed == 'true'
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost || true
           df -h /
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.preflight.outputs.needed == 'true'
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          # source_ref 가 있으면 그 커밋의 트리로 빌드한다 — 태그는 «올릴 곳»이지 «빌드할 곳»이 아니다.
+          ref: ${{ steps.target.outputs.source_ref }}
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.preflight.outputs.needed == 'true'
         with:
           node-version: 24
           cache: npm
 
       # 호스티드 러너에는 bun 이 없다. AI 워커(oh-my-pi-worker)를 이 단계에서 컴파일한다.
       - name: bun
+        if: steps.preflight.outputs.needed == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y p7zip-full
@@ -50,25 +142,17 @@ jobs:
           echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
           "$HOME/.bun/bin/bun" --version
 
-      # 체크아웃은 릴리스 태그다. 빌드 절차는 이 파일에 둔다 — 태그 쪽 스크립트가
-      # 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.
+      # 체크아웃은 source_ref(기본: 릴리스 태그)다. 빌드 절차는 이 파일에 둔다 — 태그 쪽
+      # 스크립트가 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.
       - name: 패키지 빌드 후 릴리스에 업로드
+        if: steps.preflight.outputs.needed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          OPRN_DESKTOP_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          OPRN_DESKTOP_TAG: ${{ steps.target.outputs.tag }}
           SEVENZIP_MEMUSE: 2g
         run: |
           set -euo pipefail
           tag="$OPRN_DESKTOP_TAG"
-          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "태그가 vX.Y.Z 가 아님: $tag"
-            exit 1
-          fi
-          names="$(gh release view "$tag" --json assets --jq '.assets[].name')"
-          if grep -Eq '\.AppImage$' <<<"$names" && grep -Eq 'win.*\.zip$' <<<"$names" && grep -Eq '\.exe$' <<<"$names"; then
-            echo "$tag 에 AppImage·윈도우 zip·단일 exe 가 이미 있음"
-            exit 0
-          fi
           npm ci
           node scripts/build-electron.mjs
           # 데스크톱은 카탈로그 BGM 을 처음 재생할 때 공개 CDN 에서 받는다(electron/main/bgmOnDemand.ts) — 편집기가
@@ -128,3 +212,52 @@ jobs:
           done
           gh release upload "$tag" "${files[@]}" "${stable[@]}" --clobber
           echo "업로드 완료: $tag"
+
+      # ── ③ 검증 → 발행 ──────────────────────────────────────────────────────────
+      # 이름·크기를 한 번 더 읽어 확인한다. 발행은 그 뒤에만. 검증에 실패하면 스텝이 실패해
+      # 릴리스는 초안으로 남고 latest 는 이전 정상 릴리스를 계속 가리킨다.
+      - name: 자산 검증 후 발행
+        if: steps.preflight.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG")"
+          report="$(printf '%s' "$json" | jq -r --arg v "$version" '
+            (.assets // []) as $a
+            | ["OPRN.Studio-windows.exe","OPRN.Studio-windows.zip","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v)-win.zip","OPRN.Studio-\($v).AppImage"]
+            | map(. as $n | { name: $n, size: (($a | map(select(.name == $n)) | first | .size) // 0) })')"
+          echo "$report" | jq -r '.[] | "  \(.name): \(.size) bytes"'
+          bad="$(echo "$report" | jq -r '[.[] | select(.size <= 0) | .name] | join(" ")')"
+          if [[ -n "$bad" ]]; then
+            echo "::error::$TAG 자산 검증 실패(없거나 빈 파일): $bad — 발행하지 않는다(초안 유지)."
+            exit 1
+          fi
+          # 이 태그가 가장 높은 버전일 때만 latest 로 표시한다(옛 초안을 뒤늦게 발행하며 latest 를 되돌리지 않는다).
+          highest="$(git ls-remote --tags origin 'v*' | sed 's|.*refs/tags/||; s|\^{}$||' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)"
+          latest_flag="false"
+          if [[ "$highest" == "$TAG" ]]; then latest_flag="true"; fi
+          id="$(printf '%s' "$json" | jq -r '.id')"
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/releases/$id" \
+            -F draft=false -F make_latest="$latest_flag" > /dev/null
+          echo "$TAG 발행 완료 (latest=$latest_flag, 가장 높은 태그=$highest)"
+
+      # 다운로드가 실제로 되는지 마지막으로 확인한다 — 이 링크가 README 의 주소다.
+      - name: latest 다운로드 확인
+        if: steps.preflight.outputs.needed == 'true'
+        env:
+          TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          set -euo pipefail
+          for name in OPRN.Studio-windows.exe OPRN.Studio-windows.zip OPRN.Studio-linux.AppImage; do
+            code="$(curl -sIL -o /dev/null -w '%{http_code}' "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name")"
+            len="$(curl -sIL "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name" | grep -i '^content-length' | tail -1 | tr -d '\r' | awk '{print $2}')"
+            echo "$name HTTP=$code Content-Length=${len:-0}"
+            if [[ "$code" != "200" || -z "${len:-}" || "${len:-0}" -le 0 ]]; then
+              echo "::error::$TAG/$name 다운로드 불가(HTTP $code, ${len:-0} bytes)"
+              exit 1
+            fi
+          done
