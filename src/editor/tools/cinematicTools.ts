@@ -26,6 +26,7 @@ import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
 import { reviewOpeningAuthoring } from "@/project/openingAuthoringReview";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { imageGenerationUnavailableError } from "@/editor/imageGenerationNotice";
 
 const OPENING_MEDIA_KINDS = ["image", "movie", "sound", "music", "charset"] as const;
 type OpeningMediaKind = (typeof OPENING_MEDIA_KINDS)[number];
@@ -971,7 +972,7 @@ const generateOpeningImage: ToolDefinition = {
   },
   run(project, args): ToolExecResult {
     prepareOpeningImageRequest(args, project);
-    throw new ToolError("그림 생성 실행 경로가 연결되지 않았습니다. 실제 이미지와 등록된 resourceId 없이 생성 성공으로 보고할 수 없습니다.", { code: "image-generation-unavailable" });
+    throw imageGenerationUnavailableError();
   },
 };
 

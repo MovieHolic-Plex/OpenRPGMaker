@@ -21,7 +21,9 @@ export type AiGateKind =
   /** 툴 실행이 실패해 턴이 끝났고, 적용된 변경은 0건이다. */
   | "turn-error"
   /** 이벤트 편집기의 명령 AI 가 초안을 만들지 못했다. */
-  | "event-command-assist";
+  | "event-command-assist"
+  /** 그림 생성 경로가 연결되지 않아 이번 요청에서 새 그림이 만들어지지 않았다. */
+  | "image-unavailable";
 
 export interface AiGateNotice {
   readonly kind: AiGateKind;
