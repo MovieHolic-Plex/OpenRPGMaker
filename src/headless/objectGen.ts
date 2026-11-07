@@ -20,7 +20,7 @@ import { applyTransparentColorKeys } from "@/assets/transparentColorKey";
 import { BUNDLED_EASYRPG_CHIPSET_ASSETS } from "@/assets/bundled";
 import { objectGenDefinition, type ObjectGenRequest } from "@/editor/workshop/objectRequest";
 import { ATLAS_BIOME_INTERIOR_ID, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
-import { bakeWorkshopObject } from "@/project/workshopTiles";
+import { bakeWorkshopObject, type WorkshopObjectInput } from "@/project/workshopTiles";
 import type { Project, TilesetDef } from "@/project/types";
 
 export type HeadlessObjectGenDeps = {
@@ -45,6 +45,8 @@ export type HeadlessObjectGenArchive = {
   readonly request: ObjectGenRequest;
   readonly route: HeadlessObjectGenRoute | null;
   readonly ok: boolean;
+  /** 구운 기물의 3/4 영수증: receipt = 영수증 받고 구움, none = 영수증 없이(공방 검수만) 구움, null = 안 구움. */
+  readonly bakedReceipt: "receipt" | "none" | null;
   readonly seconds: number;
   readonly calls: number;
   readonly picked: string | null;
@@ -61,8 +63,21 @@ export type HeadlessObjectGenCandidate = { readonly letter: string; readonly ver
 
 export type HeadlessObjectGenResult =
   | { readonly ok: true; readonly objectId: string; readonly tilesetId: string; readonly columns: number; readonly rows: number; readonly letter: string; readonly reason: string;
-      readonly seconds: number; readonly calls: number; readonly reference: string; readonly candidates: readonly HeadlessObjectGenCandidate[]; readonly round: WorkshopRound }
+      readonly seconds: number; readonly calls: number; readonly reference: string; readonly receipt: "receipt" | "none"; readonly candidates: readonly HeadlessObjectGenCandidate[]; readonly round: WorkshopRound }
   | { readonly ok: false; readonly error: string; readonly seconds: number; readonly calls: number; readonly candidates: readonly HeadlessObjectGenCandidate[]; readonly round: WorkshopRound | null };
+
+/** 구운 기물 설명서에 그린 모델을 남기고, 3/4 영수증 없이 구웠으면 review.vqa 를 「미보정 검수만」으로 박는다.
+ *  영수증 요약(spec.gate)은 적지 않는다 — 없는 영수증을 있는 것처럼 만들지 않는다. */
+export function withRouteProvenance<T extends WorkshopObjectInput>(input: T, route: HeadlessObjectGenRoute | null): T {
+  if (!route) return input;
+  const drawModel = `${route.route}:${route.model}:${route.effort}`.slice(0, 400);
+  const noReceipt = !input.gate;
+  return {
+    ...input,
+    provenance: { aiGenerated: true, ...input.provenance, drawModel },
+    ...(noReceipt ? { review: { ...input.review, vqa: { verdict: "none" as const, judge: `workshop-review-only/${route.route}:${route.model} (no 3/4 receipt)`.slice(0, 400), calibrated: false } } } : {}),
+  };
+}
 
 function loaderFor(publicDir: string, decode: (bytes: Uint8Array) => RgbaImage): (url: string) => Promise<RgbaImage> {
   return async (url) => {
@@ -138,11 +153,11 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
   const round = (await store.getRound(opened.id)) ?? opened;
   const calls = round.runs.reduce((sum, run) => sum + run.calls, 0);
   const palette = runner.palette(item);
-  const archive = (ok: boolean, picked: string | null): void => {
+  const archive = (ok: boolean, picked: string | null, bakedReceipt: "receipt" | "none" | null = null): void => {
     if (!deps.archive) return;
     const ref = round.reference;
     deps.archive({
-      request, route: deps.route ?? null, ok, seconds: seconds(), calls, picked,
+      request, route: deps.route ?? null, ok, bakedReceipt, seconds: seconds(), calls, picked,
       reference: ref ? { status: ref.status, note: ref.note, source: ref.source ?? null, accepted: [...(ref.dataUrl ? [ref.dataUrl] : []), ...(ref.more ?? []).map((m) => m.dataUrl)], rejected: (ref.rejected ?? []).map((r) => ({ png: r.dataUrl, why: `${r.view} 윗면 ${r.topShare}% — ${r.why}` })) } : null,
       runs: round.runs.map((run) => ({
         letter: run.letter, status: run.status, error: run.error,
@@ -162,16 +177,18 @@ export async function runHeadlessObjectGen(project: Project, request: ObjectGenR
     return { ok: false, error: `「${request.title}」 검수를 통과한 후보가 없어 칩셋에 넣지 않았다 — ${why}`.slice(0, 600), seconds: seconds(), calls, candidates, round };
   }
   const picked = round.runs.find((run) => run.letter === choice.letter)!;
-  const input = workshopObjectInput(item, picked.grid!, runner.palette(item), env, { autoPicked: true, gate: picked.gate ?? null, base: picked.base ?? null, tool: `oprn-workshop/${request.harnessId}/headless-auto-pick` });
+  const route = deps.route ?? null;
+  const baked = workshopObjectInput(item, picked.grid!, runner.palette(item), env, { autoPicked: true, gate: picked.gate ?? null, base: picked.base ?? null, tool: `oprn-workshop/${request.harnessId}/headless-auto-pick` });
+  const input = withRouteProvenance(baked, route);
   const tilesetId = request.harnessId === "interior-props" ? ATLAS_BIOME_INTERIOR_ID : request.tilesetId;
   if (tilesetId === ATLAS_BIOME_INTERIOR_ID) {
     if (!project.tilesets[ATLAS_BIOME_INTERIOR_ID]) project.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
     else ensureAtlasBiomeInteriorCurrent(project, ATLAS_BIOME_INTERIOR_ID);
   }
   bakeWorkshopObject(project, tilesetId, input);
-  archive(true, choice.letter);
+  archive(true, choice.letter, input.gate ? "receipt" : "none");
   return {
     ok: true, objectId: input.objectId, tilesetId, columns: input.columns, rows: input.rows, letter: choice.letter, reason: choice.reason,
-    seconds: seconds(), calls, reference: round.reference?.note ?? "참고 단계 없음", candidates, round,
+    seconds: seconds(), calls, reference: round.reference?.note ?? "참고 단계 없음", receipt: input.gate ? "receipt" : "none", candidates, round,
   };
 }
