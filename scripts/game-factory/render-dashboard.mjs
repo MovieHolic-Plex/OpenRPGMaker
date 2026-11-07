@@ -35,26 +35,40 @@ const meta = Object.fromEntries(games.map((id) => [id, { spec: specOf(id), shot:
 
 function stateAt(t) {
   const g = Object.fromEntries(games.map((id) => [id, { state: "queued", attempt: 0, hostCalls: 0, phase: null, code: null, checker: null, smoke: null }]));
-  const c = { retries: 0, done: 0, finished: 0, capped: 0, failed: 0, checkerPass: 0, checkerFail: 0, smokePass: 0, smokeFail: 0, defects: 0 };
-  let gauge = { builders: 0, queued: games.length, globalAgents: 0 };
+  let retries = 0;
+  // Several dispatchers (batches, restarts) run at once: the live builder count is the sum of each run's latest gauge.
+  const lastGauge = new Map();
   const series = [];
   for (const r of rows) {
     if (r.t > t) break;
     const s = r.id ? g[r.id] : null;
-    if (r.type === "gauge") { gauge = r; series.push([r.t, r.builders]); }
+    if (r.type === "gauge" && r.builders != null) {
+      lastGauge.set(r.run, r);
+      const live = [...lastGauge.values()].filter((x) => r.t - x.t < 30);
+      series.push([r.t, live.reduce((n, x) => n + x.builders, 0)]);
+    }
+    if (r.type === "end") lastGauge.delete(r.run);
     if (!s) continue;
-    if (r.type === "spawn") { s.state = "building"; s.attempt = r.attempt; }
+    if (r.type === "spawn") { if (s.code) retries += 1; s.state = "building"; s.attempt = r.attempt; s.code = null; s.checker = null; s.smoke = null; }
     if (r.type === "ack") s.state = "building";
     if (r.type === "progress") { if (r.hostCalls != null) s.hostCalls = r.hostCalls; if (r.phase === "check") s.state = "checking"; if (r.phase === "smoke") { s.state = "smoking"; s.checker = r.checker; } }
-    if (r.type === "retry") { c.retries += 1; s.state = "retry"; }
+    if (r.type === "retry") { retries += 1; s.state = "retry"; }
     if (r.type === "done") {
-      c.done += 1; s.code = r.code; s.checker = r.checker; s.smoke = r.smoke;
+      // An --adopt re-check writes a second done row for the same build; the latest row is the game's state.
+      s.code = r.code; s.checker = r.checker; s.smoke = r.smoke;
       s.state = r.code === "finished" ? (r.smoke === "PASS" ? "pass" : "smokefail") : r.code;
-      if (r.code === "finished") c.finished += 1; else if (r.code === "capped") c.capped += 1; else c.failed += 1;
-      if (r.checker) { const [p, n] = r.checker.split("/").map(Number); c.checkerPass += p; c.checkerFail += n - p; c.defects += n - p; }
-      if (r.smoke === "PASS") c.smokePass += 1; else if (r.smoke) { c.smokeFail += 1; c.defects += 1; }
     }
   }
+  const c = { retries, done: 0, finished: 0, capped: 0, failed: 0, checkerPass: 0, checkerFail: 0, smokePass: 0, smokeFail: 0 };
+  for (const s of Object.values(g)) {
+    if (!s.code) continue;
+    c.done += 1;
+    if (s.code === "finished") c.finished += 1; else if (s.code === "capped") c.capped += 1; else c.failed += 1;
+    if (s.checker) { const [p, n] = s.checker.split("/").map(Number); c.checkerPass += p; c.checkerFail += n - p; }
+    if (s.smoke === "PASS") c.smokePass += 1; else if (s.smoke) c.smokeFail += 1;
+  }
+  const live = [...lastGauge.values()].filter((x) => t - x.t < 30);
+  const gauge = { builders: live.reduce((n, x) => n + x.builders, 0), queued: live.reduce((n, x) => n + (x.queued ?? 0), 0), globalAgents: Math.max(0, ...live.map((x) => x.globalAgents ?? 0)) };
   return { g, c, gauge, series };
 }
 
@@ -83,7 +97,7 @@ function html(t) {
   .tile{border:3px solid;border-radius:10px;overflow:hidden;background:#1b1f28;height:${games.length > 16 ? 150 : 210}px;position:relative}
   .head{display:flex;justify-content:space-between;padding:4px 8px;font-size:15px;color:#fff} .head b{font-size:17px}
   .tile img{position:absolute;inset:28px 0 0 0;width:100%;height:calc(100% - 28px);object-fit:cover;opacity:.92;image-rendering:pixelated}
-  .body{position:relative;padding:6px 8px;font-size:14px;text-shadow:0 1px 3px #000}
+  .body{position:relative;padding:6px 8px;font-size:14px;text-shadow:0 1px 3px #000;background:linear-gradient(#000c,#0006 80%,#0000)}
   .genre{font-size:16px;font-weight:700} .theme{opacity:.8}
   .bar{height:7px;background:#333;border-radius:4px;margin-top:6px} .bar i{display:block;height:100%;background:#7fb2ff;border-radius:4px}
   .sub{font-size:13px;margin-top:3px}
@@ -95,7 +109,7 @@ function html(t) {
   </style><header><h1>게임 공장 관제실 — 게임 ${games.length}개, 게임마다 레인 1개(Terra high)</h1><div class="clock">실제 경과 ${fmt(t)} / ${fmt(T_END)}</div></header>
   <div class="wrap"><div class="grid">${tiles}</div><aside>
   <div class="card"><div class="k">지금 동시에 빌드 중인 레인 (상한 8)</div><div class="big">${gauge.builders ?? 0}</div><svg width="${W}" height="${H}" style="background:#141821;border-radius:6px"><line x1="0" x2="${W}" y1="0" y2="0" stroke="#c43c3c" stroke-dasharray="4 4"/><polyline fill="none" stroke="#7fb2ff" stroke-width="2.5" points="${pts}"/></svg><div class="k">대기열 ${gauge.queued ?? 0} · 박스 전체 omp ${gauge.globalAgents ?? 0}</div></div>
-  <div class="card"><div class="row"><span>끝난 게임</span><b>${c.done}/${games.length}</b></div><div class="row"><span>완료</span><b style="color:#2fa84f">${c.finished}</b></div><div class="row"><span>90분 상한(미완)</span><b style="color:#9a9a9a">${c.capped}</b></div><div class="row"><span>실패</span><b style="color:#c43c3c">${c.failed}</b></div><div class="row"><span>재시도</span><b style="color:#d68a2f">${c.retries}</b></div></div>
+  <div class="card"><div class="row"><span>끝난 게임</span><b>${c.done}/${games.length}</b></div><div class="row"><span>완료</span><b style="color:#2fa84f">${c.finished}</b></div><div class="row"><span>90분 상한(미완)</span><b style="color:#9a9a9a">${c.capped}</b></div><div class="row"><span>실패</span><b style="color:#c43c3c">${c.failed}</b></div><div class="row"><span>재시도·재빌드</span><b style="color:#d68a2f">${c.retries}</b></div></div>
   <div class="card"><div class="k">기계 검사(check.py v2, 7항목) · 스모크(60초 입력)</div><div class="row"><span>검사 PASS 항목</span><b>${c.checkerPass}</b></div><div class="row"><span>검사 FAIL 항목 = 찾은 결함</span><b style="color:#d68a2f">${c.checkerFail}</b></div><div class="row"><span>스모크 통과 / 실패</span><b>${c.smokePass} / ${c.smokeFail}</b></div></div>
   <div class="card legend">${Object.entries(LABEL).map(([k, v]) => `<span><i style="background:${COLORS[k]}"></i>${v}</span>`).join("")}</div>
   </aside></div><footer>모든 숫자·색은 events.jsonl 실측 행에서 계산. 시간은 선형 압축(실제 ${fmt(T_END)} → 영상 ${SECONDS}초). 타일 그림 = 그 게임 스모크 실측 프레임. 빌드 중 막대 = 에이전트 호스트 도구 호출 수(실측, 100칸 = 200회로 맞춘 표시 척도).</footer>`;
