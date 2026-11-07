@@ -71,8 +71,9 @@ describe("게이지 숫자와 톤", () => {
     expect(contextUsageTone(usage({ contextTokens: 120_000, overThreshold: true }))).toBe("warn");
   });
 
-  it("Given 세션 없음 When 라벨 Then 숫자 대신 빗금이다(0% 라고 거짓말하지 않는다)", () => {
-    expect(formatContextMeterLabel(null)).toBe("맥락 —");
+  it("Given 세션 없음 When 라벨 Then 0% 라고 거짓말하지 않고 무엇의 칸인지 말한다(C-71)", () => {
+    // C-71(92a6aba61e): 줄표 자리표시 대신 「맥락 사용량」. 숫자 0% 를 지어내지 않는 계약은 그대로다.
+    expect(formatContextMeterLabel(null)).toBe("맥락 사용량");
     expect(formatContextMeterLabel(usage({ ratio: 0.31 }))).toBe("맥락 31%");
   });
 });
@@ -87,7 +88,7 @@ describe("팝오버 내용", () => {
     });
     const popover = meter.popover as unknown as FakeElement;
 
-    expect((meter.button as unknown as FakeElement).textContent).toBe("맥락 —");
+    expect((meter.button as unknown as FakeElement).textContent).toBe("맥락 사용량");
     expect(findByTestId(popover, "ai-context-headline")!.textContent).toBe("아직 대화가 없습니다");
     expect((findByTestId(popover, "ai-context-compact") as unknown as { disabled: boolean }).disabled).toBe(true);
     expect(findByTestId(popover, "ai-context-usage")!.textContent).toBe("아직 요청 없음");
