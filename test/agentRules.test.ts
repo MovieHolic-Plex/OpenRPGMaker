@@ -68,7 +68,7 @@ describe("게임 짓기 규칙 — 단일 소스", () => {
     }
     for (const rule of [MARK_ENTRANCES_RULE, EXAMINE_FEEDBACK_RULE, NEW_PLAYER_PLAYTEST_RULE]) expect(skill).toContain(rule);
     expect(skill.startsWith(`---\nname: ${AGENT_RULES_SKILL_ID}\n`)).toBe(true);
-    expect(AGENT_RULES_SECTIONS.length).toBe(5);
+    expect(AGENT_RULES_SECTIONS.length).toBe(6);
   });
 
   it("에이전트 모드 시스템 지시가 규칙을 싣고, 작업 폴더 파일도 같은 글이다", async () => {

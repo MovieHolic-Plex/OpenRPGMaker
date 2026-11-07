@@ -93,8 +93,13 @@ export function isOrganicObject(name: string, gateKind?: string | null, cls?: st
   return false;
 }
 
+/**
+ * 건물 이름인가 — 머리 낱말(마지막 낱말)만 본다. 「빵가게 간판」「창고 상자」「대장간 모루」「tavern sign」은 가게·창고 낱말이 앞에 붙은 물건이다(2026-11-07:
+ * 이름 전체를 보던 판정이 이런 물건을 모두 건물로 막아, 테마 소품을 새로 그리지 못하고 스톡 소품만 깔렸다). 「시계탑」「고양이 집」은 그대로 건물이다.
+ */
 export function isBuildingName(name: string): boolean {
-  return pattern(BUILDING).test((name ?? "").trim().toLowerCase());
+  const head = (name ?? "").trim().toLowerCase().split(/[\s·,/()]+/u).filter(Boolean).at(-1) ?? "";
+  return pattern(BUILDING).test(head);
 }
 
 function split(c: KitClass, h: number): [number, number] {

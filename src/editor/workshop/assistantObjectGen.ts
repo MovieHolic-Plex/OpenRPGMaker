@@ -4,9 +4,8 @@
  * 새 기물 정의 → 공방 판(후보 그리기·검수, 사용자 자기 AI 계정) → 사용자가 고르거나 「알아서 고르기」 → 그 맵 칩셋에 굽기.
  * 공방 화면(workshopWorkspace)과 같은 세션·저장소를 쓰므로 판은 공방 「물건·가구」에서도 그대로 보인다.
  */
-import { exemplarSheet, loadAnchors, ogPickerPrompt, ogStyleSetFor } from "@/harnesses/_core/workshop/objectGenFlow";
-import { parsePicker, pickerMajority, pickerMessages, PICK_RUNS } from "@/harnesses/_core/workshop/picker";
-import type { Rgba, RgbaImage, WorkshopItem, WorkshopRound } from "@/harnesses/_core/workshop/types";
+import { chooseAutoPickFrom } from "@/harnesses/_core/workshop/autoInstall";
+import type { WorkshopRound } from "@/harnesses/_core/workshop/types";
 import { store as projectStore } from "@/project/store";
 import { createWorkshopChat } from "./chat";
 import { mapObjectPalette } from "./mapObjectTarget";
@@ -32,7 +31,7 @@ export function setObjectGenAutoPick(on: boolean): void {
 export type ObjectGenRun = { readonly session: WorkshopSession; readonly itemKey: string; readonly roundId: string };
 
 /** 요청을 새 기물로 정의하고 바로 판을 시작한다. 맵·칩셋이 사라졌거나 칩셋 그림을 못 읽으면 던진다. */
-export async function startObjectGenRound(request: ObjectGenRequest): Promise<ObjectGenRun> {
+export async function startObjectGenRound(request: ObjectGenRequest, options: { readonly gate?: "receipt" } = {}): Promise<ObjectGenRun> {
   const project = projectStore.getCurrent();
   const map = project.maps[request.mapId];
   if (!map || map.tilesetId !== request.tilesetId || !project.tilesets[request.tilesetId]) {
@@ -51,7 +50,7 @@ export async function startObjectGenRound(request: ObjectGenRequest): Promise<Ob
   if (!item) throw new Error("새 기물을 공방에 넣지 못했어요.");
   // dev QA(참고 있음/없음 비교): window.__oprnWorkshopNoReference 가 참이면 참고 단계를 끈다. 출하 빌드에는 없다.
   const noReference = import.meta.env.DEV && (window as unknown as Record<string, unknown>).__oprnWorkshopNoReference === true;
-  const round = await session.engine.startRound(item, noReference ? { reference: false } : {});
+  const round = await session.engine.startRound(item, { ...(noReference ? { reference: false } : {}), ...(options.gate ? { gate: options.gate } : {}) });
   await session.reload();
   return { session, itemKey: item.key, roundId: round.id };
 }
@@ -93,41 +92,35 @@ export function autoPickLetter(run: ObjectGenRun): string | null {
  * 「알아서 고르기」(2026-10-21 시험 2): 검수 통과가 하나면 그것, 둘 이상이면 object-gen picker 를 옮긴 고르기 호출 한 번(picker.ts, 숫자 꼬리표 섞음).
  * 고르기 호출이 실패하거나 답을 못 읽으면 통과 첫 장으로 물러선다. 통과가 없으면 null(사람에게 넘긴다).
  */
-/** object-gen 고르기 지시문·견본(실행기가 object-gen 흐름일 때). 견본을 못 읽으면 견본 없이. */
-async function ogPickerExtras(item: WorkshopItem, session: ObjectGenRun["session"]): Promise<{ prompt: string; exemplars: RgbaImage | null; floor: Rgba }> {
-  const floor: Rgba = [149, 107, 68, 255];
-  try {
-    const anchors = await loadAnchors(session.env, ogStyleSetFor(item));
-    return { prompt: ogPickerPrompt(item), exemplars: exemplarSheet(anchors, floor, 8), floor };
-  } catch {
-    return { prompt: ogPickerPrompt(item), exemplars: null, floor };
+/**
+ * 에이전트 모드(코딩 에이전트가 MCP 로 부른 generate_missing_object): 카드를 기다리는 사람이 없으므로 그 자리에서 그리고 고르고 굽는다.
+ * 검수 통과 후보는 3/4 관문 영수증도 받아야 한다(gate receipt) — 통과 후보가 없으면 굽지 않고 이유를 던진다.
+ */
+export async function drawAndBakeNow(request: ObjectGenRequest): Promise<WorkshopBakedDetail & { readonly reason: string; readonly seconds: number }> {
+  const started = Date.now();
+  const run = await startObjectGenRound(request, { gate: "receipt" });
+  await run.session.engine.idle();
+  await run.session.reload();
+  const round = currentRound(run);
+  const choice = await chooseAutoPick(run);
+  if (!round || !choice) {
+    const why = round?.runs.map((r) => `${r.letter}: ${r.status === "failed" ? r.error ?? "못 그림" : r.verdict ? `${r.verdict.verdict} ${r.verdict.reasons}`.trim() : r.status}`).join(" / ") ?? "판을 찾지 못했다";
+    throw new Error(`「${request.title}」 검수를 통과한 후보가 없어 칩셋에 넣지 않았다 — ${why}`.slice(0, 600));
   }
+  const baked = await bakeObjectGenRun(run, choice.letter, true, choice.reason);
+  return { ...baked, reason: choice.reason, seconds: Math.round((Date.now() - started) / 1000) };
 }
 
 export async function chooseAutoPick(run: ObjectGenRun): Promise<{ letter: string; reason: string } | null> {
   const round = currentRound(run);
   if (!round) return null;
-  const passed = round.runs.filter((r): r is typeof r & { grid: NonNullable<typeof r.grid> } => r.status === "done" && r.grid !== null && r.verdict?.verdict === "PASS");
-  if (!passed.length) return null;
-  const first = autoPickRun(round.runs);
-  if (passed.length === 1 || !first) return { letter: passed[0]!.letter, reason: "검수 통과가 하나뿐" };
   const { session } = run;
   const item = session.items().find((candidate) => candidate.key === run.itemKey);
-  if (!item) return { letter: first.letter, reason: "검수 통과 첫 후보" };
-  // object-gen 흐름(원본 picker): 원본 지시문 + 견본 그림, 꼬리표를 매번 섞어 3번 묻고 다수결.
-  const og = session.runner.review ? await ogPickerExtras(item, session) : undefined;
-  const chat = createWorkshopChat();
-  const votes: { letter: string; reason: string }[] = [];
-  for (let i = 0; i < (og ? PICK_RUNS : 1); i++) {
-    try {
-      const board = pickerMessages(item, passed.map((r) => ({ letter: r.letter, grid: r.grid })), session.runner.palette(item), session.env, Math.random, og);
-      const text = await chat("workshop-review", { messages: board.messages, response_format: { type: "json_object" }, temperature: 0.1 });
-      const vote = parsePicker(text, board.labels);
-      if (vote) votes.push(vote);
-    } catch { /* 이 판은 빠진다 */ }
+  if (!item) {
+    const first = autoPickRun(round.runs);
+    return first ? { letter: first.letter, reason: "검수 통과 첫 후보" } : null;
   }
-  const win = og ? pickerMajority(votes) : votes[0] ? { ...votes[0], tally: "" } : null;
-  if (win) return { letter: win.letter, reason: win.tally ? `${win.reason} (고르기 ${win.tally})` : win.reason };
-  if (votes[0]) return { letter: votes[0].letter, reason: `${votes[0].reason} (고르기 의견이 갈려 첫 답)` };
-  return { letter: first.letter, reason: "고르기 답을 못 받아 검수 통과 첫 후보" };
+  return chooseAutoPickFrom({
+    runs: round.runs, item, palette: session.runner.palette(item), env: session.env, chat: createWorkshopChat(), objectGenFlow: Boolean(session.runner.review),
+  });
 }

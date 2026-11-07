@@ -37,6 +37,25 @@ export const EXAMINE_FEEDBACK_RULE =
 export const NEW_PLAYER_PLAYTEST_RULE =
   "Before you report done, play it once as a first-time player: start from the new-game opening, follow only the «현재 목표» line and what you can SEE on screen, and reach an ending. Every step of that play must be one of: the objective line says where to go, or you can see the thing to walk to. If you needed a coordinate, an event id, or the project files to move on, a new player cannot — fix the map (visible entrance, sparkle, objective with «where») and play again from the start. On the editing side of OPRN this play is the goal, because a new player cannot read the database. Verify it with run_scene_test through the whole path plus the critic's screen check.";
 
+// 맞춤 기물 — 2026-11-07 agent-custom-tiles. Terra 게임 15판에서 없는 기물 그리기 호출 0회, 같은 테마끼리 맵 타일 겹침 평균 0.52(고양이 6판 0.89~1.00),
+// 재사용 상위는 버들항 나무·덤불·여관·우물. 오너: 「되도록이면 새로 만들게 하는 게 나을지도 .. 규격에 맞춰서」.
+
+/** 한 맵에 새로 그리는 맞춤 기물 수(최소·최대). 한 개가 모델 호출 약 10~20번·수 분이라 상한을 둔다. */
+export const THEME_SIGNATURE_MIN_OBJECTS = 2;
+export const THEME_SIGNATURE_MAX_OBJECTS = 4;
+
+export const THEME_SIGNATURE_RULE =
+  `Before you build each map, write its theme signature in TODO.md (or the todo list): the landmark, 2–3 hero props and the ground/wall variation that only THIS setting has (a cat village: a paw-print signpost, a fish-drying rack, a scratching post — not a generic well and oak trees). `
+  + `New is the default: for every signature object, call generate_missing_object (one call per object, same turn) to draw it for this map's chipset — draw ${THEME_SIGNATURE_MIN_OBJECTS}–${THEME_SIGNATURE_MAX_OBJECTS} per map. `
+  + "Use a stock kit instead only when its name and look already ARE that object. The tool refuses when a kit shares the name's last word and returns those ids — if they are a different object (a Roman milestone is not a paw-print signpost), call again with notThese:[those ids]. Generic filler (trees, bushes, fences, wells) stays stock.";
+
+export const CUSTOM_OBJECT_SPEC_RULE =
+  "Drawn objects follow the spec, so they sit in the map like the hand-pixel kits: 16 px cells; objectKind floor (stands, feet block), wall (against the north wall), hang (on a wall) or flat (walk-over floor pattern); the tool sets the cell size from the footprint dictionary (feet rows block, upper rows draw over characters) and the colors from the chipset palette; only candidates that pass the 3/4 top-down review are baked. "
+  + "Give base:{x,y} (bottom-left foot cell) on free floor so it is placed right away. Not drawn: people and animals (character chips), whole buildings (house kits), ground/wall/water/road tiles (ask_missing_tiles). Signs, stalls, statues, furniture sets, carts, fountains and flat floor patterns are drawn.";
+
+export const CUSTOM_OBJECT_STOP_RULE =
+  `Stop rule: at most ${THEME_SIGNATURE_MAX_OBJECTS} new objects per map and never redraw one that came back «no candidate passed» — put the closest stock object there and report it as «could not draw, used stock». If the tool says no drawing generator is connected, report «no bespoke objects: generator unavailable»; never claim it was drawn.`;
+
 const OBJECTIVES: readonly string[] = [
   "one starting objective with at:'start' on the start map's autorun (after the opening cutscene), then",
   "for every event that advances the story (hands over a key, shows a flashback, turns on a switch) the next objective with eventId, placed right after that event's switch-on or item gain,",
@@ -98,6 +117,14 @@ export const AGENT_RULES_SECTIONS: readonly { readonly title: string; readonly l
       MARK_ENTRANCES_RULE,
       EXAMINE_FEEDBACK_RULE,
       NEW_PLAYER_PLAYTEST_RULE,
+    ],
+  },
+  {
+    title: "6. Draw the objects that make this setting unique",
+    lines: [
+      THEME_SIGNATURE_RULE,
+      CUSTOM_OBJECT_SPEC_RULE,
+      CUSTOM_OBJECT_STOP_RULE,
     ],
   },
 ];

@@ -7,7 +7,9 @@ import {
   listHeadlessTools,
   loadHeadlessProject,
   loadHeadlessProjectFromPackage,
+  OBJECT_GEN_UNAVAILABLE_CODE,
   runHeadlessTool,
+  runHeadlessToolWithProject,
 } from "@/headless";
 
 describe("headless tool runner", () => {
@@ -62,6 +64,17 @@ describe("headless tool runner", () => {
     expect(result.diff?.mapsAdded).toBe(1);
     expect(result.data).toBeUndefined();
     expect(JSON.stringify(project)).toBe(before);
+  });
+
+  // 2026-11-07 agent-custom-tiles: 화면 없는 경로에서 「카드를 띄운다」 성공이 나가면 아무도 그리지 않는다 — 생성기가 없으면 크게 실패한다.
+  it("refuses generate_missing_object without a drawing generator instead of returning a silent card", () => {
+    const project = createScarloxyDemoProject();
+    const mapId = Object.values(project.maps).find((map) => project.tilesets[map.tilesetId]?.tileSize === 16)!.id;
+    const { result } = runHeadlessToolWithProject(project, "generate_missing_object", {
+      mapId, title: "고양이 스크래처 기둥", description: "밧줄을 감은 나무 기둥 위에 둥근 방석", objectKind: "floor", need: "고양이 마을 광장",
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe(OBJECT_GEN_UNAVAILABLE_CODE);
   });
 
   it("new headless surfaces do not import write commit or remote transport paths", async () => {

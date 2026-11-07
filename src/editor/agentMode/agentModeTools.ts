@@ -7,6 +7,7 @@ import { applyProjectInAgentTurn } from "@/editor/mapEditHistory";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { activeTools, getTool } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
+import { isObjectGenRequest, type ObjectGenRequest } from "@/editor/workshop/objectRequest";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { store } from "@/project/store";
 
@@ -27,6 +28,8 @@ export const AGENT_DIRECT_TOOLS = [
   "get_event",
   "create_map",
   "check_reachability",
+  "generate_missing_object",
+  "stamp_tileset_object",
 ] as const;
 
 const DESCRIPTION_CAP = 1200;
@@ -103,6 +106,24 @@ function resultText(result: { ok: boolean; summary: string; data?: unknown; warn
   return parts.join("\n");
 }
 
+/**
+ * generate_missing_object 의 그리기 요청 — 에이전트 모드에는 카드를 볼 조수 턴이 없으므로 공방으로 지금 그려 굽고(검수·3/4 관문 통과만), base 가 있으면 놓는다.
+ * 못 그리면 isError 로 이유를 돌려준다 — 카드를 띄웠다는 성공으로 끝내지 않는다(2026-11-07, 아무도 그리지 않던 경로).
+ */
+async function drawObjectNow(request: ObjectGenRequest, turn: AgentTurn | null): Promise<McpCallResult> {
+  let baked;
+  try {
+    const { drawAndBakeNow } = await import("@/editor/workshop/assistantObjectGen");
+    baked = await drawAndBakeNow(request);
+  } catch (error) {
+    return { text: `generate_missing_object failed — nothing was drawn: ${error instanceof Error ? error.message : String(error)}. Do not claim it was drawn; place the closest stock object and report «could not draw, used stock».`, isError: true };
+  }
+  const made = `Drew 「${baked.title}」 and baked it into tileset ${baked.tilesetId} as ${baked.objectId} (${baked.columns}×${baked.rows} cells, ${baked.seconds}s).`;
+  if (!request.base) return { text: `${made} Place it with stamp_tileset_object({mapId:"${request.mapId}", objectId:"${baked.objectId}", base:{x,y}}).`, isError: false };
+  const placed = await callAgentModeTool("stamp_tileset_object", { mapId: request.mapId, objectId: baked.objectId, base: request.base }, turn);
+  return { text: `${made}\nPlacing at (${request.base.x},${request.base.y}): ${placed.text}`, isError: false, ...(placed.changed ? { changed: placed.changed } : {}) };
+}
+
 /** 도구 하나를 열린 편집기에서 실행한다. 쓰기가 성공하면 스토어에 얹고 바뀐 칸을 캔버스에 잠깐 표시한다. */
 export async function callAgentModeTool(name: string, rawArgs: unknown, turn: AgentTurn | null): Promise<McpCallResult> {
   const args = rawArgs && typeof rawArgs === "object" && !Array.isArray(rawArgs) ? rawArgs as Record<string, unknown> : {};
@@ -120,6 +141,7 @@ export async function callAgentModeTool(name: string, rawArgs: unknown, turn: Ag
   const ctx = { project: before, ...(currentMapId ? { currentMapId } : {}), assistantRun: true };
   await prepareTool(name, args, before);
   const result = runTool(ctx, name, args);
+  if (result.ok && isObjectGenRequest(result.data)) return await drawObjectNow(result.data, turn);
   if (!result.ok || tool.mode !== "write" || ctx.project === before) return { text: resultText(result), isError: !result.ok };
   if (store.getCurrent() !== before) {
     return { text: `${resultText(result)}\n(not applied: the project changed while the tool ran — call again)`, isError: true };
