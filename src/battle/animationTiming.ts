@@ -3,6 +3,7 @@
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
 import { generatedEffectFrameDurationMs } from "@/assets/generatedEffectSheets";
 import pixelFxTiming from "@/vendor/pixelfx/timing.json";
+import customPixelFxCatalog from "@/pixelfx/custom/catalog.json";
 
 export const BATTLE_ANIMATION_FRAME_MS = 120;
 export const DEFAULT_BATTLE_ANIMATION_DURATION_MS = 360;
@@ -41,8 +42,12 @@ export const PIXEL_FX_BATTLE_HOLD_MS = 1600;
 export const PIXEL_FX_BATTLE_LOOP_MS = 1200;
 
 /** pixelfx 효과의 원래 길이(ms)와 반복 여부. 목록에 없으면 undefined. */
+const CUSTOM_TIMING: Readonly<Record<string, readonly number[]>> = Object.fromEntries(
+  (customPixelFxCatalog as { effects: { id: string; duration: number; loop: boolean }[] }).effects.map((e) => [e.id, [Math.round(e.duration * 1000), e.loop ? 1 : 0]]),
+);
+
 export function pixelFxEffectTiming(effectId: string | undefined): { readonly durationMs: number; readonly loop: boolean } | undefined {
-  const entry = effectId ? (pixelFxTiming as Record<string, readonly number[]>)[effectId] : undefined;
+  const entry = effectId ? (pixelFxTiming as Record<string, readonly number[]>)[effectId] ?? CUSTOM_TIMING[effectId] : undefined;
   return entry ? { durationMs: entry[0] ?? 1000, loop: entry[1] === 1 } : undefined;
 }
 

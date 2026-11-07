@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8054KB / 약 2,367,279 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8055KB / 약 2,367,464 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 735KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4734 | ~215,868 |
 | `openwiki/editor-ai-tools.md` | 635KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4092 | ~186,572 |
-| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2683 | ~134,874 |
+| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2683 | ~134,884 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 83KB | 33KB | 340 | ~23,089 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~33,069 |
 | `openwiki/relief-terrain.md` | 52KB | 8KB | 376 | ~16,109 |
-| `openwiki/runtime-battle.md` | 464KB | 32KB | 2542 | ~136,448 |
+| `openwiki/runtime-battle.md` | 464KB | 32KB | 2542 | ~136,457 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,088 |
 | `openwiki/runtime-project-schema.md` | 271KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1858 | ~76,711 |
@@ -177,6 +177,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/pixel-art-world-school.md` | 7 | `pixel-art-world-school-stair-reference.mjs`, `pixelArtWorldSchoolBuilding.json`, `prepare-pixel-art-world-school-building.mjs`, `save-pixel-art-world-school-host.mjs`, `scripts/content/prepare-pixel-art-world-school.mjs`, `scripts/qa/pixel-art-world-school-building-capture.mjs`, `src/assets/pixelArtWorldSchoolCatalog.json` |
 | `openwiki/pixel-art-world-static-expansion.md` | 6 | `read-pixel-art-world-host.mjs`, `scripts/content/prepare-pixel-art-world-static-expansion.mjs`, `scripts/content/render-pixel-art-world-static-expansion.mjs`, `src/assets/pixelArtWorldStaticExpansionCatalog.json`, `src/editor/externalTilesetImport.ts`, `src/project/externalTilesetCatalog.ts` |
 | `openwiki/pixel-dot-authoring.md` | 6 | `docs/experiments/ff6-reference-study-20261005/README.md`, `docs/experiments/hand-magic-20261005/README.md`, `docs/experiments/hero-magic-rework-20261005/README.md`, `review-decision.json`, `verify-shots/hero-magic-rework-20261005/SUMMARY.md`, `verify-shots/snes-study-redraw-20261005/SUMMARY.md` |
+| `openwiki/pixelfx-effects.md` | 1 | `.d.ts` |
 | `openwiki/pokemon-like-field-kit.md` | 3 | `compose.mjs`, `lib/musicScore.ts`, `package.mjs` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quest-preset-research.md` | 2 | `verify-shots/quest-library/SUMMARY.md`, `verify-shots/quest-play-proof/SUMMARY.md` |
@@ -1043,7 +1044,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4050` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
 - `L4089` 일정표 도구 (upsert_schedule)
 
-### `openwiki/editor-database.md` — 459KB · 2683줄 · ~134,874 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-database.md` — 459KB · 2683줄 · ~134,884 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 - `L29` 대사 탭 화면 다듬기 (2026-10-27, 독립 검수 지적 4건)
@@ -2686,7 +2687,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 이전 판 실행 확인 기록
 - `L86` 설정의 도트 저작 모델 (2026-10-16)
 
-### `openwiki/pixelfx-effects.md` — 14KB · 102줄 · ~4,022 토큰
+### `openwiki/pixelfx-effects.md` — 14KB · 103줄 · ~4,188 토큰
 
 - `L8` 0.3.0 (2026-11-07) — 「효과에 몸이 붙는다」
   - `L13` 코어 계약 — 바뀐 것과 그대로인 것
@@ -2694,9 +2695,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L44` 우리 쪽에 실은 것
   - `L51` 아직 우리가 쓰지 않는 것 (의도)
 - `L57` 파일 지도
-- `L72` 계약
-- `L91` 실측 (2026-10-31)
-- `L97` 라이선스
+- `L73` 계약
+- `L92` 실측 (2026-10-31)
+- `L98` 라이선스
 
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
@@ -2829,7 +2830,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 464KB · 2542줄 · ~136,448 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 464KB · 2542줄 · ~136,457 토큰 · 통째읽기 잘림
 
 - `L1` pixelfx 코드 효과 애니메이션 (2026-10-31)
 - `L7` 프레임 hold — 전투 애니메이션 한 프레임을 길게 (2026-10-31)

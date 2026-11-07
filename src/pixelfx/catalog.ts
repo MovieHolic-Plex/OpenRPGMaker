@@ -1,6 +1,7 @@
 // pixelfx 효과 목록(편집기 고르기 창·조수 도구용). 효과 코드를 불러오지 않고 vendor 가 만든 catalog.json 만 읽는다.
 // 런타임(내보낸 게임)은 이 파일을 쓰지 않는다 — 효과 모듈의 meta 를 직접 본다.
 import catalogJson from "@/vendor/pixelfx/catalog.json";
+import customCatalogJson from "./custom/catalog.json";
 
 export interface PixelFxCatalogEntry {
   readonly id: string;
@@ -47,8 +48,13 @@ export interface PixelFxCategory {
 
 const catalog = catalogJson as unknown as { categories: PixelFxCategory[]; effects: PixelFxCatalogEntry[] };
 
-export const PIXEL_FX_CATEGORIES: readonly PixelFxCategory[] = catalog.categories;
-export const PIXEL_FX_EFFECTS: readonly PixelFxCatalogEntry[] = catalog.effects;
+const custom = (customCatalogJson as unknown as { effects: PixelFxCatalogEntry[] }).effects;
+const customCategories = [...new Set(custom.map((entry) => entry.category))]
+  .filter((id) => !catalog.categories.some((c) => c.id === id))
+  .map((id) => ({ id, name: id, blurb: "this game's own effects (src/pixelfx/custom)" }));
+
+export const PIXEL_FX_CATEGORIES: readonly PixelFxCategory[] = [...catalog.categories, ...customCategories];
+export const PIXEL_FX_EFFECTS: readonly PixelFxCatalogEntry[] = [...catalog.effects, ...custom];
 const BY_ID = new Map(PIXEL_FX_EFFECTS.map((entry) => [entry.id, entry]));
 
 /** 분류 id → 한국어 이름(편집기 화면용, 원문). */
@@ -56,6 +62,7 @@ export const PIXEL_FX_CATEGORY_LABELS: Readonly<Record<string, string>> = {
   moves: "기술 연기", fire: "불", explosions: "폭발", water: "물", ice: "얼음", lightning: "번개", scifi: "SF", melee: "근접 베기",
   impacts: "타격", projectiles: "투사체", spawn: "등장·소멸", arcane: "비전", holy: "신성", shadow: "어둠",
   status: "상태", nature: "자연", weather: "날씨", ui: "UI", pickups: "획득", transitions: "전환", critters: "작은 생물",
+  fallenstar: "폴른 스타 전용",
 };
 
 export function pixelFxEntry(id: string | undefined): PixelFxCatalogEntry | undefined {
