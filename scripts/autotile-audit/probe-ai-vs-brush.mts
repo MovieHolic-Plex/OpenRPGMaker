@@ -81,13 +81,17 @@ if (pngDir) {
   fs.mkdirSync(pngDir, { recursive: true });
   const paths = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a.path]));
   const seen = new Set<string>();
-  const picks = records.filter((r) => r.shape === "edgeRow" && !seen.has(r.tileset) && (seen.add(r.tileset), true)).slice(0, 8);
+  // 수정 후에는 불일치가 거의 없어 같은 그룹을 다시 그리려면 수정 전 그림 폴더를 넘긴다(BEFORE/AFTER 같은 그룹).
+  const picksFrom = cli[2];
+  const picks: { tileset: string; group: string }[] = picksFrom
+    ? fs.readdirSync(picksFrom).filter((f) => f.endsWith(".brush.png")).map((f) => { const [tileset, group] = f.replace(/\.brush\.png$/, "").split("__"); return { tileset: tileset!, group: group! }; })
+    : records.filter((r) => r.shape === "edgeRow" && !seen.has(r.tileset) && (seen.add(r.tileset), true)).slice(0, 8);
   const phasePick = records.find((r) => r.phase && r.shape === "inner3") ?? records.find((r) => r.phase);
-  if (phasePick && !picks.includes(phasePick)) picks.push(phasePick);
+  if (!picksFrom && phasePick && !picks.includes(phasePick)) picks.push(phasePick);
   const SCALE = 3;
   for (const pick of picks) {
     const tileset = project.tilesets[pick.tileset]!;
-    const group = autotileGroupsForTileset(tileset).find((g) => g.id === pick.group)!;
+    const group = autotileGroupsForTileset(tileset).find((g) => g.id.replace(/[^a-zA-Z0-9_.-]/g, "_") === pick.group || g.id === pick.group)!;
     const atlasPath = tileset.image.type === "bundled" ? paths.get(tileset.image.id) : undefined;
     if (!atlasPath) continue;
     const atlas = decodePng(fs.readFileSync(join(process.cwd(), "public", atlasPath)));

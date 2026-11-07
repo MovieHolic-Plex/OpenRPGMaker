@@ -107,7 +107,7 @@ h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:36px 0 10px;border-bot
 table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:12px 0;padding:10px}
 .card img{width:100%;height:auto;image-rendering:pixelated;display:block;border-radius:6px;background:#222}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lbl{font-size:12px;color:var(--muted);margin:2px 0}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lbl{font-size:12px;color:var(--muted);margin:2px 0}
 figcaption{margin:0 0 8px}.tag{display:inline-block;font-size:12px;border-radius:6px;padding:1px 6px;margin:2px 2px 0 0;border:1px solid var(--line)}
 .tag.bad{color:var(--bad);border-color:#5a2a2a}.tag.warn{color:var(--warn);border-color:#5a4a1a}
 code{background:#222733;border-radius:4px;padding:0 4px;overflow-wrap:anywhere;word-break:break-word}
@@ -158,7 +158,7 @@ ${failing.length ? failing.map((g) => card(g, !!after)).join("\n") : `<p class="
 ${overridden.length ? `<h3>기계 검사는 걸렸지만 그림을 보고 PASS 로 판정한 그룹 ${overridden.length}개</h3>${overridden.map((g) => card(g, false)).join("\n")}` : ""}
 
 <h2>붓 ≠ AI 경로 — 실제 그림 예시</h2>
-<p class="muted">같은 모양을 두 경로로 칠한 결과. 왼쪽 = 붓(정본), 오른쪽 = AI·공간 컴파일(수정 전).${after ? " 아래는 수정 후 AI 경로." : ""}</p>
+<p class="muted">같은 모양을 두 경로로 칠한 결과. 첫째 = 붓(정본), 둘째 = AI·공간 컴파일(수정 전) — 맵 가장자리에 없어야 할 테두리가 생긴다.${after ? " 셋째 = 수정 후 AI 경로(붓과 바이트 단위로 같다)." : ""}</p>
 ${AIVB_PAIRS}
 
 <h2>전체 갤러리 — 그룹 ${s.groups}개</h2>
