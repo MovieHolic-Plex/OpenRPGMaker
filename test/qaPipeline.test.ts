@@ -73,10 +73,19 @@ describe("qa pipeline planner", () => {
     expect(battles[0].checkpoint.gold).toBe(120);
   });
 
-  it("적대적 입력 트랙을 10개 만들고 입력 방식·화면 크기를 섞는다", () => {
+  it("적대적 입력 트랙을 만들고 입력 방식·화면 크기를 섞는다 (재료가 없으면 그 경우만 빠진다)", () => {
     const adversarial = planCoverage(tinyProject(), { game: "g" }).filter((job) => job.kind === "adversarial");
-    expect(adversarial).toHaveLength(10);
-    expect(adversarial.every((job) => job.script === "adversarial" && job.adversarial)).toBe(true);
+    // The fixture has one shop map and no openSaveMenu event, so broke-shopper-touch and save-load cannot be planned;
+    // the shipped game (45 maps, 10 save points, 2 shop maps) plans all 10 (coverage-plan.json 2026-11-07).
+    expect(adversarial).toHaveLength(9);
+    const kinds = adversarial.map((job) => job.adversarial);
+    expect(kinds).toContain("mash-dialogue");
+    expect(kinds).toContain("menu-mid-battle");
+    expect(kinds).toContain("broke-shopper");
+    expect(kinds).toContain("map-edges");
+    expect(kinds).toContain("mixed-input");
+    expect(kinds).not.toContain("save-load");
+    expect(adversarial.every((job) => job.script === "adversarial" && job.viewport?.width > 0)).toBe(true);
     expect(new Set(adversarial.map((job) => job.viewportName)).size).toBeGreaterThanOrEqual(3);
     const broke = adversarial.find((job) => job.adversarial === "broke-shopper");
     if (broke) expect(broke.checkpoint.gold).toBe(0);
@@ -204,14 +213,15 @@ describe("qa pipeline measurement", () => {
       return new Response(JSON.stringify({ model: "gpt-6-astra", choices: [{ message: { content: '{"ok":true}' } }], usage: {} }), { status: 200 });
     }) as unknown as typeof fetch;
     try {
-      const client = reviewerChain(members, { stage: "test" });
+      const client = reviewerChain(members.map((member) => ({ ...member, retryDelayMs: 1 })), { stage: "test" });
       const first = await client([{ type: "text", text: "hi" }], {});
       expect(first.ok).toBe(true);
       expect(first.member).toBe("astra");
       expect(client.answeredBy()).toBe("astra");
+      const opusProbes = calls.filter((c) => c === "opus").length;
       await client([{ type: "text", text: "again" }], {});
-      // The model that answered stays preferred: no second probe of the failed Opus.
-      expect(calls.filter((c) => c === "opus")).toHaveLength(1);
+      // The model that answered stays preferred: the failed Opus is not probed a second time.
+      expect(calls.filter((c) => c === "opus")).toHaveLength(opusProbes);
     } finally {
       globalThis.fetch = originalFetch;
     }
