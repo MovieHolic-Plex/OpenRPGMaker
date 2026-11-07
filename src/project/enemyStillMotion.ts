@@ -28,7 +28,7 @@ export const ENEMY_STILL_MOTION_LABELS: Readonly<Record<EnemyStillMotionMode, st
   off: "끄기 (정지 그림 그대로)",
 };
 
-export const ENEMY_STILL_MOTION_DESCRIPTION = "그림 한 장뿐인 적을 엔진이 숨쉬기·돌진·피격 반동·쓰러짐으로 움직입니다. "
+export const ENEMY_STILL_MOTION_DESCRIPTION = "지금은 숲늑대·엄니멧돼지 두 적에만 적용됩니다. 그림 한 장뿐인 적을 엔진이 숨쉬기·돌진·피격 반동·쓰러짐으로 움직입니다. "
   + "공격·피격·쓰러짐 칸이 있는 도트 시트와 걷기 칩은 그 칸을 그대로 쓰고, 이 연출은 정수 픽셀 이동·기울이기만 더합니다. "
   + "플레이어가 「메뉴 움직임 줄이기」나 OS 의 동작 줄이기를 켜면 멈춥니다.";
 
@@ -70,8 +70,21 @@ export function framedArt(node: HTMLElement, image: HTMLElement | null | undefin
   return image?.dataset.battlerAnim !== undefined;
 }
 
+/**
+ * 엔진 몸짓을 받는 적 레코드 id — 오너 선택 A(2026-11-08, 「A로 몬스터 2마리만」). 이 목록 밖의 적은 지금 그대로 둔다.
+ * 몬스터별 수치는 없다: 목록은 「누가 받는가」만 정하고, 받는 몸짓은 위 단계 규칙(칸 있는 그림 = 정수 이동·기울기)이 정한다.
+ * 넓힐 때는 여기에 레코드 id 를 더한다.
+ *   enemy_fs_wolf  숲늑대   — 4×4 도트 시트(dash), 1막 숲 가장자리 부대의 일반 적
+ *   enemy_fs_boar  엄니멧돼지 — 4×4 도트 시트(dash), 같은 부대(troop_fs_edge_boar)의 일반 적
+ */
+export const ENEMY_MOTION_RECORD_IDS: ReadonlySet<string> = new Set(["enemy_fs_wolf", "enemy_fs_boar"]);
+
+export function enemyMotionAllowed(node: HTMLElement): boolean {
+  return ENEMY_MOTION_RECORD_IDS.has(node.dataset.recordId ?? "");
+}
+
 export function stillMotionLevel(node: HTMLElement, image: HTMLElement | null | undefined, mode: EnemyStillMotionMode): StillMotionLevel {
-  if (!image || mode === "off") return "off";
+  if (!image || mode === "off" || !enemyMotionAllowed(node)) return "off";
   if (!framedArt(node, image)) return "full";
   return mode === "all" ? "translate" : "off";
 }
