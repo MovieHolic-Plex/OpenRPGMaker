@@ -621,34 +621,108 @@
 
 .database-modal-backdrop .db-overview-story-ending > strong { color: var(--db-studio-text-1); font-size: 13px; }
 
-.database-modal-backdrop .db-overview-quest-suggest { border-color: var(--db-studio-accent-border); }
+/* 「퀘스트」 표 — 등록 퀘스트와 제안을 한 표로(databaseOverviewQuestTable.ts). */
+.database-modal-backdrop .db-quest-table-section { border-color: var(--db-studio-accent-border); }
 
-.database-modal-backdrop .db-overview-quest-suggest-list { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.database-modal-backdrop .db-quest-table-filters { display: flex; flex-wrap: wrap; gap: 6px; }
 
-.database-modal-backdrop .db-overview-quest-suggest-item {
+.database-modal-backdrop .db-quest-table-filter {
   background: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 6px;
-  display: grid;
-  gap: 4px;
-  padding: 8px 10px;
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  font-size: 11px;
+  min-height: 26px;
+  padding: 0 10px;
 }
 
-.database-modal-backdrop .db-overview-quest-suggest-head { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
+.database-modal-backdrop .db-quest-table-filter.is-active { border-color: var(--db-studio-accent-border); color: var(--db-studio-accent); font-weight: 700; }
 
-.database-modal-backdrop .db-overview-quest-suggest-head > strong { color: var(--db-studio-text-1); font-size: 13px; }
+.database-modal-backdrop .db-quest-table-scroll { max-height: 420px; overflow: auto; }
 
-.database-modal-backdrop .db-overview-quest-suggest-register {
+.database-modal-backdrop .db-quest-table { border-collapse: collapse; font-size: 12px; min-width: 640px; width: 100%; }
+
+.database-modal-backdrop .db-quest-table th {
+  background: var(--db-studio-surface);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 8px;
+  position: sticky;
+  text-align: left;
+  top: 0;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-quest-table td {
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+.database-modal-backdrop .db-quest-table-title { min-width: 160px; }
+
+.database-modal-backdrop .db-quest-table-title > strong { display: block; font-size: 13px; }
+
+.database-modal-backdrop .db-quest-table-request { color: var(--db-studio-text-3); display: block; font-size: 11px; margin-top: 2px; }
+
+.database-modal-backdrop .db-quest-table-jump {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: grid;
+  gap: 1px;
+  max-width: 220px;
+  padding: 3px 6px;
+  text-align: left;
+}
+
+.database-modal-backdrop .db-quest-table-jump:hover:not(:disabled) { border-color: var(--db-studio-accent-border); }
+
+.database-modal-backdrop .db-quest-table-jump:disabled { cursor: not-allowed; }
+
+.database-modal-backdrop .db-quest-table-map { color: var(--db-studio-text-3); font-size: 11px; }
+
+.database-modal-backdrop .db-quest-table-event { color: var(--db-studio-accent); font-weight: 600; }
+
+.database-modal-backdrop .db-quest-table-jump:disabled .db-quest-table-event { color: var(--db-studio-text-2); }
+
+.database-modal-backdrop .db-quest-table-why { color: var(--db-studio-warning); display: block; font-size: 11px; }
+
+.database-modal-backdrop .db-quest-table-reward { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.database-modal-backdrop :is(.db-quest-table-gold, .db-quest-table-item) {
+  background: var(--db-studio-surface-2);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-quest-table-status { display: grid; gap: 4px; justify-items: start; }
+
+.database-modal-backdrop .db-quest-table-chip { border: 1px solid currentcolor; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 0 8px; white-space: nowrap; }
+
+.database-modal-backdrop .db-quest-table-chip.is-registered { color: var(--db-studio-success, var(--db-studio-accent)); }
+
+.database-modal-backdrop .db-quest-table-chip.is-suggested { color: var(--db-studio-accent); border-style: dashed; }
+
+.database-modal-backdrop .db-quest-table-chip.is-unreachable { color: var(--db-studio-warning); }
+
+.database-modal-backdrop .db-quest-table-register {
   background: var(--db-studio-surface);
   border: 1px solid var(--db-studio-accent-border);
   border-radius: 6px;
   color: var(--db-studio-accent);
   font-weight: 700;
-  margin-left: auto;
-  min-height: 28px;
+  min-height: 26px;
   padding: 0 10px;
+  white-space: nowrap;
 }
 
-.database-modal-backdrop .db-overview-quest-suggest-register:disabled { border-color: var(--db-studio-border-subtle); color: var(--db-studio-text-3); }
-
-.database-modal-backdrop .db-overview-quest-suggest-request { color: var(--db-studio-text-2); font-size: 12px; margin: 0; }
+.database-modal-backdrop .db-quest-table-register:disabled { border-color: var(--db-studio-border-subtle); color: var(--db-studio-text-3); }
