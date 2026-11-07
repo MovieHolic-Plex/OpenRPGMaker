@@ -60,10 +60,11 @@ const sim = values.sim ? readJson(values.sim) : null;
 const health = values.health ? readJsonl(values.health) : [];
 const measure = values.plant ? readJson(values.plant) : summary.measure;
 
-/** Every frame row of one job, read from its trace (needed for the per-map gallery). */
+/** Every frame row of one job, read from its trace (needed for the per-map gallery). Missing trace = [] (the
+ *  report may run from pulled summaries + the gallery manifest instead of every trace file). */
 function traceOf(jobId) {
   const file = path.join(RUN, "jobs", jobId, "trace.jsonl");
-  return readJsonl(file);
+  return fs.existsSync(file) ? readJsonl(file) : [];
 }
 function jobSummary(jobId) {
   const file = path.join(RUN, "jobs", jobId, "summary.json");
@@ -132,9 +133,10 @@ const battleShot = new Map((pulled?.battles ?? []).map((entry) => [entry.job, en
 const battlePlay = battleJobs.map((job) => {
   const s = jobSummary(job.id);
   const rows = traceOf(job.id);
-  const sawGrid = rows.some((row) => row.state?.grid === true || row.label?.includes("-grid"));
-  const sawResult = rows.some((row) => row.state?.result);
   const shot = battleShot.get(job.id);
+  // Without traces (summary-only pull) the pulled grid frame is itself the proof the command grid appeared.
+  const sawGrid = rows.length ? rows.some((row) => row.state?.grid === true || row.label?.includes("-grid")) : Boolean(shot);
+  const sawResult = rows.length ? rows.some((row) => row.state?.result) : null;
   const src = shot ? asset(path.join(galleryDir, "jobs", job.id, "shots", shot.file)) : null;
   return { job, summary: s, sawGrid, sawResult, src, fatal: s?.fatal ?? null };
 });
@@ -183,11 +185,14 @@ const endingJob = jobs.find((job) => job.kind === "ending");
 if (endingJob) {
   const s = jobSummary(endingJob.id);
   const rows = traceOf(endingJob.id);
-  const sawEnding = rows.some((row) => row.state?.screen === "ending");
-  if (!sawEnding) notReached.push({ what: "엔딩 화면", why: s?.fatal ?? `도달하지 못함 (마지막 화면: ${rows.at(-1)?.state?.screen ?? "?"})`, job: endingJob });
+  const sawEnding = rows.length ? rows.some((row) => row.state?.screen === "ending") : null;
+  if (sawEnding === false) notReached.push({ what: "엔딩 화면", why: s?.fatal ?? `도달하지 못함 (마지막 화면: ${rows.at(-1)?.state?.screen ?? "?"})`, job: endingJob });
 }
 const shopJobs = jobs.filter((job) => job.kind === "shop");
-const shopMissed = shopJobs.filter((job) => !traceOf(job.id).some((row) => row.state?.screen === "shop"));
+const shopMissed = shopJobs.filter((job) => {
+  const rows = traceOf(job.id);
+  return rows.length ? !rows.some((row) => row.state?.screen === "shop") : false;
+});
 for (const job of shopMissed) notReached.push({ what: `상점·여관 ${job.label}`, why: "상점 화면이 뜨지 않음", job });
 // Observed "teleport" coverage: story fights on maps never walked (a checkpoint just points at the map, so this is
 // the honest statement of what was NOT exercised as a normal player would).

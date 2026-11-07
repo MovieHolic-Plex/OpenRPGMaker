@@ -2,7 +2,9 @@
 // 승률·턴·남은 HP·회복약·전멸을 낸다. 스크린샷 트랙과 같은 상태 정의를 쓰려고 레벨·장비 티어는
 // scripts/qa/pipeline/data/story-levels.json(이야기 순서 누적)에서 읽는다.
 //   node node_modules/vite-node/dist/cli.mjs --script scripts/qa/broad/battle-sim.mts <project.json> [n] [out.json]
-// env: STATES=expected,weak,strong · TROOPS=id,id(쉼표) · SEED=7 · SKILLS=1(자동 전투 AI)
+// env: STATES=expected,weak,strong · TROOPS=id,id(쉼표) · SEED=7 · SKILLS=1(자동 전투 AI) · POTIONS=1(회복약 3개)
+//   두 갈래를 함께 재려면 POTIONS=1 만 준다 — 「공격만」과 「회복약」 승률이 같은 표에 들어간다.
+//   한 갈래만 잴 때는 SKILLS/POTIONS 를 그대로 둔다(기본 = 공격만·아이템 없음).
 import { readFileSync, writeFileSync } from "node:fs";
 import { simulateBattle } from "../../../src/battle/simulate";
 import { parameterValueAtLevel } from "../../../src/project/actorModel";
@@ -29,6 +31,7 @@ const STATE_SPEC: Record<string, { dLevel: number; dTier: number }> = {
 };
 const SEED = Number(process.env.SEED ?? 7);
 const USE_SKILLS = process.env.SKILLS === "1";
+const USE_POTIONS = process.env.POTIONS === "1";
 const TROOP_FILTER = process.env.TROOPS ? new Set(process.env.TROOPS.split(",")) : null;
 
 const party = project.system?.startActorIds ?? [];
@@ -68,6 +71,10 @@ type Row = {
   level: number;
   gearTier: number;
   winRate: number;
+  /** 회복약 3개를 쥐여 줬을 때의 승률 — 실제 플레이어는 아이템을 쓴다. POTIONS=0 이면 없다. */
+  potionWinRate: number | null;
+  potionTurns: number | null;
+  potionUsed: number | null;
   avgTurns: number;
   avgHpPct: number;
   avgPotions: number;
@@ -95,6 +102,9 @@ for (const troopId of targets) {
     const tier = Math.max(0, baseTier + spec.dTier);
     applyGear(tier);
     const result = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: entry?.party ?? party, n, seed: SEED, useSkills: USE_SKILLS });
+    const potion = USE_POTIONS
+      ? simulateBattle({ project, troopId, heroLevel: level, partyActorIds: entry?.party ?? party, n, seed: SEED, useSkills: USE_SKILLS, inventory: { item_potion: 3 }, potionItemId: "item_potion" })
+      : null;
     const totalHp = partyMaxHp(entry?.party ?? party, level) || 1;
     rows.push({
       troop: troopId,
@@ -106,11 +116,14 @@ for (const troopId of targets) {
       level,
       gearTier: tier,
       winRate: Math.round(result.winRate * 1000) / 10,
+      potionWinRate: potion ? Math.round(potion.winRate * 1000) / 10 : null,
+      potionTurns: potion ? Math.round(potion.avgTurns * 10) / 10 : null,
+      potionUsed: potion ? Math.round(potion.avgPotionsUsed * 10) / 10 : null,
       avgTurns: Math.round(result.avgTurns * 10) / 10,
       avgHpPct: Math.round((result.avgHpRemaining / totalHp) * 1000) / 10,
       avgPotions: Math.round(result.avgPotionsUsed * 10) / 10,
       samples: result.samples ?? n,
-      unwinnable: result.winRate < 0.05,
+      unwinnable: result.winRate < 0.05 && (!potion || potion.winRate < 0.05),
       trivial: result.winRate > 0.99 && result.avgTurns < 2.5,
       missingStory: !entry,
     });
@@ -126,6 +139,7 @@ const summary = {
   samplesPerCell: n,
   states: STATES,
   useSkills: USE_SKILLS,
+  usePotions: USE_POTIONS,
   troops: new Set(rows.map((r) => r.troop)).size,
   // 부대 중 이야기 표에 없는 것(비밀·분기·옛 판·초기 트룹)은 시작 레벨로만 잰 값이라 «결함» 으로 세지 않는다.
   missingStory: [...new Set(rows.filter((r) => r.missingStory).map((r) => r.troop))],

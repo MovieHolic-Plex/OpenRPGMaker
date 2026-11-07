@@ -35,8 +35,11 @@ const { values } = parseArgs({
 if (values["lint-only"]) {
   const planted = JSON.parse(fs.readFileSync(values["lint-only"], "utf8"));
   const lint = staticLint(planted, { game: values.slug });
-  fs.writeFileSync(path.join(values.out, "static.json"), JSON.stringify(lint, null, 1));
-  console.log("LINT " + JSON.stringify({ staticFindings: lint.length }));
+  // Separate file: a planted-copy lint must not overwrite the clean run's static.json, or the clean run's review
+  // picks up the planted defects as if the shipped build had them (measured 2026-11-07: 4 plants leaked).
+  const out = path.join(values.out, "static-planted.json");
+  fs.writeFileSync(out, JSON.stringify(lint, null, 1));
+  console.log("LINT " + JSON.stringify({ staticFindings: lint.length, out }));
   process.exit(0);
 }
 const project = JSON.parse(fs.readFileSync(path.join(values.cache, values.slug, values.version, "project.json"), "utf8"));
