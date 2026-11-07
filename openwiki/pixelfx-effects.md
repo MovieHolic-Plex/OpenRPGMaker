@@ -1,8 +1,58 @@
-# pixelfx 코드 픽셀 효과 (2026-10-31)
+# pixelfx 코드 픽셀 효과 (2026-10-31, 0.3.0 반영 2026-11-07)
 
-[patch-gg/pixelfx](https://github.com/patch-gg/pixelfx)(MIT, Patch · Hugo Duprez)의 코드로 그리는 픽셀 효과 232종을 편집기와 런타임에 붙였다.
+[patch-gg/pixelfx](https://github.com/patch-gg/pixelfx)(MIT, Patch · Hugo Duprez)의 코드로 그리는 픽셀 효과 244종(0.3.0)을 편집기와 런타임에 붙였다.
 시트 그림이 아니라 효과마다 `draw(p, t, o)`(순수) 또는 `create(o)`(120Hz 시뮬레이션) 코드가 게임 해상도 화소를 직접 찍는다.
 색 띠(palette)·좌우 뒤집기·각도·씨앗을 바꿔 같은 효과를 여러 모양으로 쓴다.
+
+
+## 0.3.0 (2026-11-07) — 「효과에 몸이 붙는다」
+
+업스트림 [a8415968](https://github.com/patch-gg/pixelfx/commit/a84159688af3ca37a4be05a0d422b94451b2e24e)(2026-10-31, `pixelfx 0.3.0: give the effects a body that performs them`)를 가져왔다.
+`fe7103c..a8415968` = 100 파일 +3,126/−132. **효과 232 → 244**(새 분류 `moves/` 12종), `actor` 를 쓰는 효과 61 → 73.
+
+### 코어 계약 — 바뀐 것과 그대로인 것
+
+| 계약 | 상태 | 근거 |
+|---|---|---|
+| `createFrame` / `clearFrame` / `painterFor` | **그대로** | `src/vendor/pixelfx/core/fx.js:12`·`:23` — `git diff fe7103c..a8415968 -- src/core/fx.js` 가 빈 diff |
+| `createFx(mod, o)` | **그대로** | `core/fx.js:51` — 옵션(`x`,`y`,`flip`,`angle`,`seed`,`palette`,`light`,`actor`)과 `update`/`draw(frame, layer)`/`stop`/`done` 계약 무변경 |
+| `meta.origin` | **그대로** | `core/fx.js:72` `p.place(opts.x, opts.y, flip, angle)`; 우리 `renderer.ts:23` `pixelFxLayout` 이 `mod.meta.origin` 을 그대로 읽는다 |
+| 층 `back`/`front` | **그대로** | `core/fx.js:76`·`:80` — `drawBack` 은 `layer !== "front"`, `draw` 는 `layer !== "back"` |
+| 팔레트 | **그대로** | `core/fx.js:38` `resolveOptions` — 다른 길이의 띠를 기본 길이로 리샘플. `o.palette` 의미 불변 |
+| 빛 버퍼 + `composite` | **그대로** | `core/fx.js:100` `composite(f, out, bg, lightK)` — 시그니처·ABGR 팩킹 불변 |
+| `stockActor` / `drawActor` | **모양만 바뀜** | `core/actor.js:104`·`:111` — 2배 캐릭터(HERO2)가 리그의 서기 자세로 다시 그려지고 중립 팔레트(`DUMMY_PAL`, `:35`)를 쓴다. `chest` 가 `y+22` → `:104` `-26` 으로, `eyes` 추가. **함수 계약은 같다**(mask·pixels·x·y·w·h·k + 새 필드) |
+| `meta.actor` | 의미 그대로 | 1 = 12×19, 2 = 24×38. `resolveOptions` 가 `stockActor(2)` 를 기본으로 넣는다 |
+
+우리 래퍼는 **한 줄도 고칠 필요가 없었다**: `renderer.ts:118` 이 부르는 `createFx` 의 계약이 바이트 동일하고, 몸·대상은 `createAct` 안에서만 그려진다(우리는 부르지 않는다).
+유일한 메타 변화는 `spawn/shatter-death` 크기 `168×96 → 172×96`(리그 몸이 2px 길어짐) — 레이아웃은 `meta.size` 를 매번 읽으므로 자동 반영된다.
+
+### 새로 더해진 것 (전부 덧붙이기 — 기존 호출 경로 무영향)
+
+| API | 파일 | 뜻 |
+|---|---|---|
+| `createAct(mod, o)` | `core/act.js:208` | 효과 하나를 「연기」로 튼다. `update(dt)`·`draw(frame, {body, target})`·`shake`·`frozen`·`done()` |
+| `actBounds(mod)` | `core/act.js:469` | 연기 전체가 들어가는 캔버스 상자(로컬 좌표) |
+| `actSpan(mod)` | `core/act.js:198` | 연기 시작(음수 = 준비)·끝 |
+| `actTiming(mod)` | `core/act.js:454` | 게임이 자기 캐릭터로 같은 박자를 쓰도록 낸 데이터(`windup`·`recovery`·`hits`·`poses`) |
+| `Target` | `core/act.js:111` | 허수아비 대상(휘청·색 번짐·지푸라기) |
+| `skeleton` / `posed` / `STAND` / `READY` / `SKINS` | `core/rig.js:490`·`:42` · `core/poses.js` | 3D 뼈대를 도트로 내리는 자세 해석기 |
+| `chain(cues)` / `shiftKeys` / `shiftHits` | `core/chain.js:10`·`:44` | 여러 효과를 한 동작으로 잇기(`moves/`) |
+
+`export const act = { poses, hits, targets, dust, onBody, ghost }` 가 붙은 효과는 **73종**(그중 `onBody: true` 37종 — 서리·독·축복처럼 서 있는 몸 위에 직접 그리는 효과).
+효과 12종(`moves/*`)는 `act` + `chain` 을 같이 써서 **준비 → 휘두름/발사 → 맞음 정지 → 회복** 을 통째로 담는다.
+
+### 우리 쪽에 실은 것
+
+- `scripts/vendor/sync-pixelfx.mjs` 가 `catalog.json` 에 `act` 를 같이 낸다(`windup`·`recovery`·`onBody`·`hits`·`targets`). 효과 코드를 부르지 않고도 편집기·조수가 박자를 안다. `timing.json` 은 그대로 `[길이 ms, 반복]` — 전투 시퀀서 계약 불변.
+- 편집기 고르기 창 카드에 `몸`/`연기` 표시, 오른쪽 정보줄과 자료집 레코드 편집면에 `준비 N초 · 회복 N초 · 타격 N박자`.
+- 조수 `list_pixel_fx` 결과에 `act: { windupSec, recoverySec, onBody, hits }`.
+- 효과 수 하드코딩(232)을 전부 없애고 `PIXEL_FX_EFFECTS.length` 를 쓴다 — 다음 동기화 때 또 낡지 않는다.
+
+### 아직 우리가 쓰지 않는 것 (의도)
+
+`createAct` 를 전투·필드에 붙이지 않았다. 우리 전투는 **적 스프라이트·아군 배틀러가 이미 무대에 서 있고**, 효과는 그 위에 얹히는 층이다.
+`createAct` 는 라이브러리의 중립 캐릭터(`DUMMY_PAL` 24×38)와 허수아비를 **자기가 직접 그린다** — 그대로 켜면 우리 캐릭터 옆에 낯선 인형이 하나 더 서고, 우리 적은 허수아비로 바뀐다.
+그래서 0.3.0 은 **(a) 효과 그림 갱신 + 12 신규 + (b) 박자 데이터 노출** 까지만 들였다. 몸을 우리 배틀러로 바꾸는 것은 별도 결정이다(아래 「몸 결정」).
 
 ## 파일 지도
 
@@ -18,6 +68,7 @@
 | 편집기 | `src/editor/panels/pixelFxPicker.ts` · `pixelFxRecordEditor.ts` | 고르기 창, 자료집 애니메이션 탭, 기술·아이템 칸, 「애니메이션 표시」 명령, 이벤트 페이지 「상시 효과」 |
 | 조수 | `src/editor/tools/pixelFxTools.ts` · `src/pixelfx/previewSheet.ts` | `list_pixel_fx` `preview_pixel_fx` `attach_pixel_fx` `set_event_pixel_fx` `place_pixel_fx`, 능력 색인 `pixel-fx` |
 | 목록(편집기만) | `src/pixelfx/catalog.ts` | 검색(한국어 낱말 → 영어 태그), 가까운 id, 한 색 → 6단 띠 |
+| 우리 효과 | `src/pixelfx/custom/<분류>/<이름>.js` (+ `.d.ts`) · `custom/index.ts`(정적 import 표) · `custom/catalog.json`(`node scripts/content/build-pixelfx-custom-catalog.mjs` 가 생성) | 업스트림 밖에서 저작한 효과. sync 가 지우지 않는다. 로더·카탈로그·전투 길이가 vendor 다음으로 본다. 지금 `fallenstar/` 3종(떨어지는 별·화염검·달빛 숨결). 새 효과는 vendor 효과처럼 `meta`·`draw`(또는 `create`)·`act` 를 내보내고, 세 곳 어긋남은 `test/pixelFxCustomEffects.test.ts` 가 잡는다 |
 
 ## 계약
 

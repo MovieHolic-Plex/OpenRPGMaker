@@ -1,6 +1,6 @@
 // The crescent recipe is adapted from Sprite Fusion's open-source slash, and the star from his impact
 // (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, hex, clamp, smooth, ease, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, hex, clamp, smooth, ease, TAU, WHITE, READY } from "../../core/index.js";
 import { swing, onSwing, slash, slashEnd, star } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,26 @@ export const meta = {
     sparks: ["#fff3a6", "#ffe26b", "#ff8a2a", "#f2561d"],
     seed: 11,
   },
+};
+
+const FISTS = { ...READY, fx: 12, fy: -25, bx: 9, by: -27, crouch: 3, lean: 1 };
+const COIL = { ...FISTS, crouch: 7, lean: 3, fx: 8, fy: -11, bx: 8, by: -27, ffx: 10, fbx: -9 };
+const TOP = { ...FISTS, x: 1, y: -11, crouch: -1, lean: 2, fx: 12, fy: -42, bx: -6, by: -21, ffx: 8, ffy: -8, fbx: -3, fby: -2, toeB: true, ghost: 1 };
+export const act = {
+  target: { x: 44 },
+  poses: [
+    [-0.42, FISTS],
+    [-0.16, COIL],
+    [0, { ...COIL, crouch: 8 }],
+    [0.03, { ...FISTS, y: -4, crouch: 1, lean: 4, fx: 18, fy: -27, bx: -5, by: -23, ffx: 9, fbx: -7, toeB: true, ghost: 1 }, "snap"],
+    [0.076, TOP, "snap"],
+    [0.3, { ...TOP, y: -13, ghost: undefined }],
+    [0.56, { ...TOP, y: 0, crouch: 2, fx: 13, fy: -31, ffx: 7, ffy: -6, fbx: -5, fby: -5, ghost: undefined }, "in"],
+    [0.6, { ...FISTS, y: 0, crouch: 7, lean: 3, fx: 12, fy: -14, bx: -6, by: -16, ffx: 10, fbx: -9 }, "snap"],
+    [0.98, FISTS],
+  ],
+  hits: [{ t: 0.076, stop: 0.13, shake: 0.18, amp: 2, push: -2.6, straw: 18, y: -34 }],
+  dust: [{ t: 0.03, x: 8, n: 6 }, { t: 0.6, x: 0, n: 6 }],
 };
 
 export function create(o) {

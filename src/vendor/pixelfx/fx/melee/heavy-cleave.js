@@ -1,7 +1,7 @@
 // The crescent and its cooling ramp are adapted from Sprite Fusion's open-source slash
 // (https://www.spritefusion.com/pixel-art-vfx/slash), and the impact star, dust, grit and embers from his
 // impact and explosion (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, PF, B, Rng, fit, sparkle, band, clamp, smooth, ease, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Bits, Lights, P, PF, B, Rng, fit, sparkle, band, clamp, smooth, ease, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { swing, onSwing, smear, trace, glowAlong, stone, rock, cracks, star, sliver, along } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,27 @@ export const meta = {
     stone: "#4a3f69",
     seed: 5,
   },
+};
+
+const REST_ = { ...READY, weapon: "greatsword", two: true, sa: -1, fx: 11, fy: -21 };
+const OVER = { ...REST_, x: -4, crouch: 2, lean: -2, fx: 1, fy: -42, sa: -2.45, ffx: 8, fbx: -7 };
+const FLOOR = { ...REST_, x: 0, crouch: 7, lean: 6, fx: 17, fy: -21, sa: 0.72, ffx: 11, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 66 },
+  poses: [
+    [-0.42, { ...REST_, x: -4 }],
+    [-0.3, { ...REST_, x: -3, crouch: 4, fx: 13, fy: -29, sa: -1.3 }],
+    [-0.12, { ...OVER, crouch: 4 }],
+    [0.2, { ...OVER, crouch: 3 }],
+    [0.27, { ...REST_, x: -1, y: -2, crouch: 0, lean: 2, fx: 11, fy: -42, sa: -1.45, ffx: 10, ghost: 1 }, "snap"],
+    [0.31, { ...REST_, x: 0, y: -1, crouch: 3, lean: 4, fx: 18, fy: -33, sa: -0.45, ffx: 12, ghost: 1 }, "snap"],
+    [0.335, FLOOR, "snap"],
+    [0.85, { ...FLOOR, crouch: 6, lean: 5 }],
+    [1.3, { ...REST_, x: -2, crouch: 4, lean: 2, fx: 15, fy: -23, sa: 0.1 }],
+    [1.7, { ...REST_, x: -4 }],
+  ],
+  hits: [{ t: 0.335, stop: 0.2, shake: 0.34, amp: 3, push: 3.2, straw: 28, y: -8 }],
+  dust: [{ t: 0.335, x: 18, n: 8, dir: 1 }, { t: 0.335, x: -12, n: 5, dir: -1 }],
 };
 
 const RAISE = 0.2; // the glint over the head

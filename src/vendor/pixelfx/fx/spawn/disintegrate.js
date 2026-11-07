@@ -1,7 +1,7 @@
 // The flickering outline, the white silhouette flash and the body's own pixels flying off as bits of light are
 // adapted from Sprite Fusion's open-source movement (https://www.spritefusion.com/pixel-art-vfx/movement),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, ease, rand, noise, noise2, TAU, WHITE, mix, scale } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, band, sparkle, clamp, smooth, ease, rand, noise, noise2, TAU, WHITE, mix, scale, READY } from "../../core/index.js";
 import { bodyOf, rimOf } from "./_lib.js";
 
 export const meta = {
@@ -21,6 +21,17 @@ export const meta = {
     wind: 1,
     seed: 5,
   },
+};
+
+const AGONY = { turn: 1.15, crouch: 0, hy: -1, fx: -14, fy: -36, bx: 15, by: -36, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.2, READY],
+    [0.05, { turn: 1, crouch: 3, fx: -9, fy: -16, bx: 10, by: -16, ffx: -3, fbx: 4 }],
+    [0.3, AGONY],
+    [3.4, AGONY],
+  ],
 };
 
 const FLASH = 0.42, WHITE_T = 0.07, P0 = FLASH + WHITE_T, PEEL = 1.2, CORE_Y = -20;

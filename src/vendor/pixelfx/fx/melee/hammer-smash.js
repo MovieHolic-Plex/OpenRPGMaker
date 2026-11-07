@@ -1,6 +1,6 @@
 // The rocks, grit, rolling dust and floor ring are adapted from Sprite Fusion's open-source explosion, and the
 // dome from his ice nova (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Bits, Lights, P, PF, B, Rng, fit, band, clamp, smooth, ease, rand, hex, TAU, WHITE } from "../../core/index.js";
+import { Particles, Bits, Lights, P, PF, B, Rng, fit, band, clamp, smooth, ease, rand, hex, TAU, WHITE, READY } from "../../core/index.js";
 import { swing, onSwing, smear, stone, rock, cracks, along } from "./_lib.js";
 
 export const meta = {
@@ -19,6 +19,28 @@ export const meta = {
     stone: "#4a3f69",
     seed: 9,
   },
+};
+
+// both hands low on the shaft, the head resting on the floor in front; it comes up, over and down
+const REST_ = { ...READY, weapon: "hammer", two: true, sa: 0.62, fx: 11, fy: -21, crouch: 3 };
+const TOP = { ...REST_, x: -3, crouch: 0, lean: -3, fx: 3, fy: -41, sa: -2.1, ffx: 8, ffy: -8, fbx: -5, toeB: true };
+const SLAM = { ...REST_, x: -1, crouch: 7, lean: 6, fx: 14, fy: -19, sa: 0.62, ffx: 11, fbx: -10 };
+export const act = {
+  target: { x: 66 },
+  poses: [
+    [-0.72, { ...REST_, x: -3 }],
+    [-0.44, { ...REST_, x: -3, crouch: 5, lean: -1, fx: 16, fy: -28, sa: -0.9 }],
+    [-0.2, TOP],
+    [-0.03, { ...TOP, y: -2 }],
+    [0.06, { ...REST_, x: 0, y: -3, crouch: -1, lean: 2, fx: 13, fy: -41, sa: -1.2, ffx: 11, ffy: -8, ghost: 1 }, "snap"],
+    [0.11, { ...REST_, x: 0, y: -1, crouch: 3, lean: 5, fx: 19, fy: -30, sa: -0.15, ffx: 13, ghost: 1 }, "snap"],
+    [0.15, SLAM, "snap"],
+    [0.62, { ...SLAM, crouch: 6, lean: 5 }],
+    [1.02, { ...REST_, x: -2, crouch: 5, lean: 2, fx: 14, fy: -24, sa: 0.3 }],
+    [1.4, { ...REST_, x: -3 }],
+  ],
+  hits: [{ t: 0.15, stop: 0.2, shake: 0.34, amp: 3, push: 3, straw: 26, y: -8 }],
+  dust: [{ t: 0.15, x: 10, n: 8 }, { t: 0.15, x: -12, n: 5, dir: -1 }],
 };
 
 const SOOT = hex("#0d0a12"), HOT = ["#fff3a6", "#ffc23d", "#ff8a2a", "#c9281f"].map(hex);

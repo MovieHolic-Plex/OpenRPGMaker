@@ -2,6 +2,7 @@
 // 내보낸 게임이 내려받지 않는다. 경로 패턴은 Vite 의 dynamic-import-vars 규칙(../ 시작, 확장자, 단계당 변수 하나)을 따른다.
 import type { PixelFxModule } from "@/vendor/pixelfx/core/index.js";
 import { isPixelFxEffectIdFormat } from "@/project/pixelFxSpec";
+import { loadCustomPixelFxModule } from "./custom";
 
 const pending = new Map<string, Promise<PixelFxModule | undefined>>();
 const loaded = new Map<string, PixelFxModule>();
@@ -15,7 +16,7 @@ export function loadPixelFxModule(effectId: string): Promise<PixelFxModule | und
   const [category, name] = effectId.split("/") as [string, string];
   // 밑줄로 시작하는 파일(_lib.js)은 효과가 아니라 분류 안의 공용 함수다.
   if (name.startsWith("_")) return Promise.resolve(undefined);
-  promise = (import(`../vendor/pixelfx/fx/${category}/${name}.js`) as Promise<PixelFxModule>)
+  promise = (loadCustomPixelFxModule(effectId) ?? (import(`../vendor/pixelfx/fx/${category}/${name}.js`) as Promise<PixelFxModule>))
     .then((mod) => {
       if (!mod?.meta || (typeof mod.draw !== "function" && typeof mod.create !== "function")) return undefined;
       loaded.set(effectId, mod);

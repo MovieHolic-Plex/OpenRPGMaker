@@ -18,6 +18,12 @@ export const meta = {
   options: { palette: ["#3a0a1e", "#7a1238", "#c4245a", "#f04e86", "#ff8ab0", "#ffc8da", "#ffffff"], seed: 8 },
 };
 
+const SWOON = { turn: 1.1, fx: -2, fy: -28, bx: 2, by: -28, armsFront: true, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [[0, { ...SWOON, lean: -2 }], [0.6, { ...SWOON, lean: 0, crouch: 1 }], [1.2, { ...SWOON, lean: 2 }], [1.8, { ...SWOON, lean: 0, crouch: 1 }], [2.4, { ...SWOON, lean: -2 }]],
+};
+
 const D = meta.duration, BEAT = D / 2;
 const HEART5 = bitmap([".#.#.", "#####", "#####", ".###.", "..#.."]);
 const HEART7 = bitmap([".##.##.", "#######", "#######", ".#####.", "..###..", "...#..."]);

@@ -1,6 +1,6 @@
 // The crescent and trace recipe is adapted from Sprite Fusion's open-source slash, and the vapour from his
 // ice and poison (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, smooth, ease, rand, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, smooth, ease, rand, WHITE, READY } from "../../core/index.js";
 import { swing, onSwing, travel, smear, glowAlong } from "./_lib.js";
 
 export const meta = {
@@ -18,6 +18,27 @@ export const meta = {
     palette: ["#07040c", "#140a22", "#24113a", "#3b1d58", "#5a3a82", "#7fd6c0", "#d8fff2", "#ffffff"],
     seed: 13,
   },
+};
+
+// the butt rests on the floor in one hand; both hands take it out to the right, and he turns with it round the front
+const REST_ = { ...READY, weapon: "scythe", x: 2, sa: -1.5, fx: 11, fy: -22, bx: 7, by: -16 };
+const OUT_ = { ...REST_, two: true, crouch: 4, lean: 4, fx: 17, fy: -27, sa: -0.45, ffx: 11, fbx: -8 };
+const END = { ...REST_, two: true, x: 0, yaw: 3.14, crouch: 6, lean: 4, fx: 15, fy: -24, sa: 0.3, ffx: 11, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 66 },
+  poses: [
+    [-0.56, REST_],
+    [-0.26, OUT_],
+    [0.08, { ...OUT_, crouch: 5 }],
+    [0.2, { ...OUT_, yaw: 0.8, crouch: 5, lean: 3, fx: 16, fy: -23, sa: 0.1, ghost: 1 }],
+    [0.3, { ...OUT_, x: 1, yaw: 1.9, crouch: 6, lean: 3, fx: 15, fy: -23, sa: 0.2, ghost: 1 }],
+    [0.42, END],
+    [0.92, { ...END, crouch: 5 }],
+    [1.3, { ...REST_, x: 1, yaw: 1.4, crouch: 4 }],
+    [1.7, REST_],
+  ],
+  hits: [{ t: 0.14, stop: 0.12, shake: 0.16, amp: 2, push: 2.4, straw: 20, skin: "shadow" }],
+  dust: [{ t: 0.3, x: 2, n: 6 }],
 };
 
 const WIND = 0.08, SWEEP = 0.34, HANG = 0.14, TEAR = 0.55;

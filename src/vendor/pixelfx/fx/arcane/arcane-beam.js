@@ -1,7 +1,7 @@
 // The beam (banded across, pulses running down it, sine strands that brighten in front, a source flare with
 // spinning rays, an end flare spraying rays and sparks) is adapted from Sprite Fusion's open-source energy beam
 // (https://www.spritefusion.com/pixel-art-vfx/energy), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { PAL, fit, cycle, fly, flyV, loopNoise, fract, ease, sparkle, TAU, WHITE } from "../../core/index.js";
+import { PAL, fit, cycle, fly, flyV, loopNoise, fract, ease, sparkle, TAU, WHITE, READY } from "../../core/index.js";
 import { bayer, mote } from "./_lib.js";
 
 const D = 1.2, HX = 15, HY = -24, L = 168, W = 6;
@@ -18,6 +18,24 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: PAL.arcane, seed: 10 },
+};
+
+const AIM = { ...READY, x: -3, crouch: 4, lean: 4, fx: 18, fy: -24, bx: 13, by: -20, ffx: 11, fbx: -9, toeB: true };
+const PULL = { ...READY, x: -3, crouch: 4, lean: -3, fx: 1, fy: -20, bx: 4, by: -22, ffx: 9, fbx: -7 };
+export const act = {
+  target: { x: 186 },
+  poses: [
+    [-0.62, { ...READY, x: -3 }],
+    [-0.3, PULL],
+    [-0.04, { ...PULL, crouch: 5, lean: -4 }],
+    [0, { ...AIM, crouch: 3 }, "snap"],
+    [0.3, AIM],
+    [0.6, { ...AIM, crouch: 5, lean: 3 }],
+    [0.9, AIM],
+    [1.2, { ...AIM, crouch: 3 }],
+  ],
+  hits: [{ t: 0.1, push: 0.5, straw: 3, flash: 0.02, y: -24 }, { t: 0.7, push: 0.5, straw: 3, flash: 0.02, y: -24 }],
+  dust: [{ t: 0, x: -10, n: 5, dir: -1 }],
 };
 
 export function draw(p, t, o) {

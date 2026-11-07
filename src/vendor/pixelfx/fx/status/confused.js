@@ -22,6 +22,18 @@ export const meta = {
   },
 };
 
+const SHRUG = { turn: 1, fx: -13, fy: -26, bx: 14, by: -26, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  poses: [
+    [0, { ...SHRUG, x: 0, lean: -2 }],
+    [0.6, { ...SHRUG, x: 1, lean: 1, crouch: 1, fy: -23, by: -29, fbx: 5, fby: -6 }],
+    [1.2, { ...SHRUG, x: 2, lean: 2 }],
+    [1.8, { ...SHRUG, x: 1, lean: -1, crouch: 1, fy: -29, by: -23, ffx: -4, ffy: -6 }],
+    [2.4, { ...SHRUG, x: 0, lean: -2 }],
+  ],
+};
+
 const D = meta.duration;
 const QS = [
   [".###.", "#...#", "....#", "...#.", "..#..", ".....", "..#.."],

@@ -1,7 +1,7 @@
 // The pillar's strands of light and the rings climbing it adapt Sprite Fusion's open-source holy light
 // (https://www.spritefusion.com/pixel-art-vfx/holy-light), and the streaks rushing in its power-up
 // (https://www.spritefusion.com/pixel-art-vfx/power-up), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, band, flare, sparkle, clamp, seg, smooth, ease, noise2, fract, rand, scale, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, band, flare, sparkle, clamp, seg, smooth, ease, noise2, fract, rand, scale, TAU, WHITE, READY } from "../../core/index.js";
 import { spell, drawWord, tintActor, lightActor, haloActor } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,30 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#2a1405", "#5c3008", "#9a5a0e", "#d48e18", "#f5b92c", "#ffde5e", "#fff4bc", "#ffffff"], text: "LEVEL UP!", seed: 5 },
+};
+
+const COIL = { turn: 0.9, crouch: 7, lean: 2, fx: -6, fy: -13, bx: 7, by: -13, ffx: -5, fbx: 6 };
+const LEAP = { turn: 1.1, y: -16, crouch: -1, fx: -6, fy: -45, bx: 7, by: -44, ffx: -2, ffy: -8, fbx: 5, fby: -3, toeB: true };
+const PUMP = { turn: 0.9, crouch: 0, fx: -6, fy: -45, bx: 9, by: -15, ffx: -3, fbx: 4 };
+export const act = {
+  onBody: true,
+  follow: 0,
+  poses: [
+    [-0.3, READY],
+    [0.28, COIL],
+    [0.3, LEAP, "snap"],
+    [0.46, { ...LEAP, y: -19 }],
+    [0.72, { ...LEAP, y: 0, ffy: -4, fby: -4 }, "in"],
+    [0.74, { ...COIL, crouch: 5 }, "snap"],
+    [0.95, PUMP, "out"],
+    [1.2, { ...PUMP, crouch: 1, fy: -43 }],
+    [1.45, PUMP],
+    [2.3, { ...PUMP, fy: -41 }],
+    [2.8, READY],
+    [3.2, READY],
+  ],
+  hits: [{ t: 0.28, stop: 0.05, shake: 0.14, amp: 2 }],
+  dust: [{ t: 0.3, x: 0, n: 7 }, { t: 0.74, x: 0, n: 6 }],
 };
 
 // release, pillar lifts off, pillar gone, pillar height, text top, first letter, stagger, shine, letters pop

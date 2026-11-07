@@ -1,7 +1,7 @@
 // The leaves' tumble (turning as they go, flipping over through edge-on, palettes of autumn and green) is adapted
 // from Sprite Fusion's open-source falling leaves (https://www.spritefusion.com/pixel-art-vfx/falling-leaves),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { cycle, fit, rng, smooth, clamp, lerp, TAU, WHITE } from "../../core/index.js";
+import { cycle, fit, rng, smooth, clamp, lerp, TAU, WHITE, READY } from "../../core/index.js";
 import { drawLeaf } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,17 @@ export const meta = {
     leaves: ["#123818", "#2f7a2a", "#6cb83a", "#c8f070", "#4a2a08", "#a8701c", "#e8b42e", "#fff09a", "#3a1010", "#9a2e1c", "#e0642a", "#ffb070"],
     seed: 5,
   },
+};
+
+const UP = { turn: 1.1, crouch: 0, fx: -13, fy: -37, bx: 13, by: -37, ffx: -3, fbx: 4 };
+export const act = {
+  poses: [
+    [0, UP],
+    [0.6, { ...UP, lean: 2, fy: -40, by: -33 }],
+    [1.2, { ...UP, crouch: -1 }],
+    [1.8, { ...UP, lean: -2, fy: -33, by: -40 }],
+    [2.4, UP],
+  ],
 };
 
 const SY = 0.3, TOP = 64;

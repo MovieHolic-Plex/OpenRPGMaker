@@ -1,6 +1,6 @@
 // The crescent, trace and glint recipe is adapted from Sprite Fusion's open-source slash, and the rolling dust and
 // grit from his explosion (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, ease } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, ease, READY } from "../../core/index.js";
 import { swing, onSwing, travel, slash, slashEnd, stone } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,28 @@ export const meta = {
     stone: "#4a3f69",
     seed: 10,
   },
+};
+
+// upright in one hand; two hands take it low across the belt, he winds right round, and it whips through the front
+const REST_ = { ...READY, weapon: "spear", sa: -1.42, fx: 11, fy: -21, bx: 7, by: -16 };
+const COCK = { ...REST_, two: true, yaw: 2.5, crouch: 6, lean: 2, fx: 15, fy: -17, sa: 0.05, ffx: 9, fbx: -8 };
+const OUT_ = { ...REST_, two: true, x: 2, crouch: 6, lean: 6, fx: 20, fy: -15, sa: 0.04, ffx: 12, fbx: -10, toeB: true };
+export const act = {
+  target: { x: 62 },
+  poses: [
+    [-0.56, REST_],
+    [-0.34, { ...REST_, two: true, crouch: 4, fx: 14, fy: -22, sa: -0.7 }],
+    [-0.14, COCK],
+    [-0.02, { ...COCK, crouch: 7, yaw: 2.7 }],
+    [0.045, { ...OUT_, x: 1, yaw: 1.3, ghost: 1 }, "snap"],
+    [0.09, { ...OUT_, ghost: 1 }, "snap"],
+    [0.14, OUT_, "snap"],
+    [0.62, { ...OUT_, crouch: 5, lean: 5 }],
+    [1.12, { ...REST_, two: true, crouch: 4, sa: -0.7, fx: 14, fy: -22 }],
+    [1.5, REST_],
+  ],
+  hits: [{ t: 0.1, stop: 0.12, shake: 0.18, amp: 2, push: 2.6, straw: 18, y: -12 }],
+  dust: [{ t: 0.09, x: 14, n: 6, dir: 1 }, { t: 0.09, x: -10, n: 5, dir: -1 }],
 };
 
 export function create(o) {

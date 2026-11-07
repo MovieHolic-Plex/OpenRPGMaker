@@ -1,6 +1,6 @@
 // The speed lines are adapted from Sprite Fusion's open-source dash and the ray star from his sparkle
 // (https://www.spritefusion.com/pixel-art-vfx), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, TAU, WHITE, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Thrust",
@@ -19,6 +19,25 @@ export const meta = {
     reach: 66,
     seed: 4,
   },
+};
+
+const STANCE = { ...READY, weapon: "sword", x: -14, fx: 12, fy: -21, sa: -0.3 };
+// the hand comes back to the hip with the point forward, then the whole arm goes out along the blade
+const BACK = { ...STANCE, crouch: 5, lean: -3, fx: -3, fy: -19, sa: -0.05, bx: 8, by: -30, armsFront: true, ffx: 10, fbx: -8 };
+const LUNGE = { ...STANCE, crouch: 6, lean: 6, fx: 23, fy: -20, sa: 0, bx: -8, by: -24, ffx: 15, fbx: -11, toeB: true };
+export const act = {
+  target: { x: 80 },
+  poses: [
+    [-0.46, STANCE],
+    [-0.24, BACK],
+    [-0.05, { ...BACK, crouch: 6, fx: -5 }],
+    [0, { ...LUNGE, ghost: 1 }, "snap"],
+    [0.07, LUNGE, "snap"],
+    [0.3, { ...LUNGE, crouch: 5, lean: 5 }],
+    [0.7, STANCE],
+  ],
+  hits: [{ t: 0.07, stop: 0.12, shake: 0.14, amp: 2, push: 2.8, straw: 16, y: -26 }],
+  dust: [{ t: 0, x: -24, n: 6, dir: -1 }, { t: 0.07, x: 1, n: 6, dir: 1 }],
 };
 
 const OUT = 0.07; // the point arrives

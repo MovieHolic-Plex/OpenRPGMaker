@@ -1,4 +1,4 @@
-import { Lights, Rng, fit, clamp, ease, TAU, WHITE, mix, luma, red, green, blue, rgb } from "../../core/index.js";
+import { Lights, Rng, fit, clamp, ease, TAU, WHITE, mix, luma, red, green, blue, rgb, READY } from "../../core/index.js";
 
 export const meta = {
   name: "Hit flash",
@@ -12,6 +12,19 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: ["#14040a", "#3a0a14", "#6a101c", "#a01824", "#d42a30", "#ff5a50", "#ff9a8a"], lines: 7, side: 1, seed: 17 },
+};
+
+const BLOWN = { x: -5, crouch: 4, lean: -5, hx: -1, fx: 8, fy: -33, bx: -11, by: -27, ffx: 9, ffy: -7, fbx: -6 };
+export const act = {
+  onBody: true,
+  poses: [
+    [-0.26, { ...READY, x: 0 }],
+    [0, BLOWN, "snap"],
+    [0.16, { ...BLOWN, x: -8, crouch: 5 }],
+    [0.42, { ...BLOWN, x: -8, crouch: 5, lean: -2, fx: 9, fy: -22, bx: 6, by: -20, ffy: -4 }],
+    [0.86, { ...READY, x: 0 }],
+  ],
+  hits: [{ t: 0, stop: 0.07, shake: 0.14, amp: 2 }],
 };
 
 // the beats, by frame at 30 fps: white, white, red, red, white rim, red cooling off

@@ -1,7 +1,7 @@
 // The hop timing, the link shapes that re-strike every other frame, the glowing nodes and the crawling arcs
 // follow Sprite Fusion's open-source lightning (https://www.spritefusion.com/pixel-art-vfx/lightning),
 // MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, rng, lerp, TAU, WHITE, hex, mix } from "../../core/index.js";
+import { Particles, Lights, P, Rng, fit, sparkle, clamp, smooth, ease, rng, lerp, TAU, WHITE, hex, mix, READY } from "../../core/index.js";
 import { VOLT, PLASMA, zigzag, bowed, stroke, crackle, trace, scorch } from "./_lib.js";
 
 export const meta = {
@@ -16,6 +16,28 @@ export const meta = {
   bg: "ground",
   actor: 2,
   options: { palette: VOLT, sparks: PLASMA, seed: 3 },
+};
+
+const AIM = { ...READY, x: -6, crouch: 4, lean: 4, fx: 16, fy: -16, bx: -6, by: -23, ffx: 11, fbx: -9 };
+const BACK = { ...READY, x: -6, crouch: 4, lean: -3, fx: -5, fy: -32, bx: 8, by: -24, armsFront: true, ffx: 9, fbx: -7 };
+const zap = (at, t, stop = 0.03) => ({ t, at, stop, push: 1.2, straw: 6, skin: "shock", shiver: 0.7, y: -22 });
+export const act = {
+  targets: [{ x: 58 }, { x: 104 }, { x: 150 }],
+  poses: [
+    [-0.46, { ...READY, x: -6 }],
+    [-0.22, BACK],
+    [0, { ...BACK, crouch: 5 }],
+    [0.04, AIM, "snap"],
+    [0.7, { ...AIM, crouch: 3 }],
+    [1.35, { ...AIM, crouch: 3, fy: -18 }],
+    [1.8, { ...READY, x: -6 }],
+  ],
+  hits: [
+    zap(0, 0.05),
+    zap(1, 0.14),
+    { ...zap(2, 0.23, 0.07), shake: 0.14, amp: 1 },
+    { t: 1.35, push: 0, straw: 0, flash: 0, skin: null },
+  ],
 };
 
 const HAND = [10, -16], HOPS = [[58, -22], [104, -30], [150, -19]];

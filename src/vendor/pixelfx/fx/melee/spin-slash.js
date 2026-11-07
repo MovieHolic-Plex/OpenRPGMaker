@@ -1,6 +1,6 @@
 // The crescent shading, cooling ramp, dotted trace, glint and spark recipe is adapted from Sprite Fusion's
 // open-source slash (https://www.spritefusion.com/pixel-art-vfx/slash), MIT License, Copyright (c) 2026 Hugo Duprez.
-import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, smooth, ease, rand, TAU, WHITE } from "../../core/index.js";
+import { Particles, Lights, P, PF, Rng, fit, sparkle, clamp, smooth, ease, rand, TAU, WHITE, READY } from "../../core/index.js";
 import { swing, onSwing, travel, smear, trace, glowAlong } from "./_lib.js";
 
 export const meta = {
@@ -20,6 +20,28 @@ export const meta = {
     radius: 46,
     seed: 3,
   },
+};
+
+const STANCE = { ...READY, weapon: "sword", fx: 12, fy: -21, sa: -0.85 };
+// he really turns: forward, away from us, facing back, towards us, and round to the front
+const WOUND = { ...STANCE, crouch: 6, lean: -2, yaw: 1.1, fx: 13, fy: -20, sa: 0.3, bx: 6, by: -24, ffx: 8, fbx: -8 };
+const WIDE = { ...STANCE, crouch: 5, lean: 3, fx: 21, fy: -21, sa: 0.05, bx: -9, by: -23, ffx: 11, fbx: -11 };
+export const act = {
+  target: { x: 60 },
+  poses: [
+    [-0.46, STANCE],
+    [-0.2, WOUND],
+    [-0.02, { ...WOUND, crouch: 7, yaw: 1.3 }],
+    [0, { ...WIDE, sa: -0.1, ghost: 1 }, "snap"],
+    [0.05, { ...WIDE, yaw: -1.57, ghost: 1 }, "snap"],
+    [0.09, { ...WIDE, yaw: -3.14, ghost: 1 }, "snap"],
+    [0.13, { ...WIDE, yaw: -4.71, ghost: 1 }, "snap"],
+    [0.17, WIDE, "snap"],
+    [0.56, { ...WIDE, crouch: 4, lean: 2 }],
+    [0.92, STANCE],
+  ],
+  hits: [{ t: 0.17, stop: 0.12, shake: 0.16, amp: 2, push: 2.4, straw: 16 }],
+  dust: [{ t: 0, x: 0, n: 6 }, { t: 0.17, x: 12, n: 6, dir: 1 }],
 };
 
 const SW = 0.17; // the edge goes once round
