@@ -78,6 +78,11 @@ export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
       resolved?.texture ?? graphic.texture,
       resolved?.frame ?? graphic.frame
     );
+    // 한 장 그림(채집 표식의 수정 아이콘)은 칸 크기에 맞춘다 — 이벤트 그림과 같은 fitSize 규칙.
+    if (resolved?.fitSize) {
+      const size = resolved.fitSize * mapTileSize(scene.map) / 16;
+      sprite.setDisplaySize?.(size, size);
+    }
     // 캐릭터와 같은 정렬·깊이 규칙 — 플레이어가 바위/나무 앞뒤로 자연스럽게 지나간다.
     sprite.setOrigin?.(0.5, 1);
     sprite.setDepth?.(characterDepth("same", worldY));

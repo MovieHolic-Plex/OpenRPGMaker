@@ -138,11 +138,11 @@ describe("place_storage_chest", () => {
     const storageEvent = project.maps[mapId].events.find((entry) => entry.id === (storage.data as { eventId: string }).eventId)!;
     const chestGraphic = chestEvent.pages![0].graphic;
     const storageGraphic = storageEvent.pages![0].graphic;
-    expect(storageGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object2" });
+    // object2#7 은 광산 수레다(2026-11-07 화소 재대조) — 보관 상자는 빨간 상자(object1#6), 보물상자는 나무 상자(object1#7).
+    expect(storageGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object1" });
     expect(chestGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object1" });
-    // 보물상자도 이제 object1 의 7번 칸(「나무 보물상자」)을 고르므로 칸 번호(pattern)는 같을 수 있다 — 시트가 다르면 다른 그림이다.
-    expect(storageGraphic.sprite).not.toEqual(chestGraphic.sprite);
-    expect(decodeCharsetFrameIndex(storageGraphic.pattern as number).characterIndex).toBe(7);
+    expect(decodeCharsetFrameIndex(storageGraphic.pattern as number).characterIndex).toBe(6);
+    expect(decodeCharsetFrameIndex(chestGraphic.pattern as number).characterIndex).not.toBe(6);
   });
 
   it("chestId를 지정하면 그대로 쓴다", () => {

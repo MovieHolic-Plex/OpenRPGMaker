@@ -41,7 +41,7 @@ import type {
   GameMap,
   Project,
 } from "@/project/types";
-import { charsetGraphic, resolveGraphic } from "./eventCompile";
+import { charsetGraphic, crystalGraphic, resolveGraphic } from "./eventCompile";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { mainComponent, sanitizeId, type Cell } from "./jrpgVolumeTools";
 import { requireMap } from "./mapHelpers";
@@ -186,7 +186,7 @@ const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[
     genres: ["jrpg", "gothic", "cathedral", "chronotrigger", "오르간", "별자리", "비밀계단"],
     summary: "성가대 비문의 별자리 화음 순서를 읽고 파이프 오르간 건반과 페달을 조율해 바닥 카펫 아래 비밀 계단을 드러낸다.",
     mechanics: "성가대 악보 비석 + 2단계 오르간 화음·페달 선택지 + 파이프 화음 SE + changeTile 지하 비밀 계단 드러냄",
-    visualProps: ["파이프 오르간 조율대 (object2#7)", "성가대 별자리 비문 (object2#3)", "지하 비밀 계단/결정 (object2#2→object2#6 + changeTile)"],
+    visualProps: ["파이프 오르간 조율대 (object2#7)", "성가대 별자리 비문 (object2#3)", "지하 비밀 계단/결정 (object2#2→수정 그림 cc0-jetrel-crystal + changeTile)"],
     usesChangeTile: true,
     requiredCells: 3,
     defaultReward: {
@@ -205,7 +205,7 @@ const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[
     genres: ["jrpg", "dungeon", "prehistoric", "temple", "횃불", "화로", "점화", "불"],
     summary: "꺼진 화로 3기를 제1→제2→제3 순서대로 점화하면 화로마다 불꽃 보석이 타오르고 봉인 철창과 통로 타일이 열린다.",
     mechanics: "진행 변수(var_progress 0→1→2→3) + 화로 3기 2상태 그래픽(받침대#3→불꽃보석#6) + 오순서 시 역류 리셋 + changeTile 봉인 개방",
-    visualProps: ["제1·제2·제3 고대 화로 (object2#3 꺼짐 → object2#6 타오르는 불꽃 보석)", "화염 봉인 철창문 (object1#5 차단→개방)"],
+    visualProps: ["제1·제2·제3 고대 화로 (object2#3 꺼짐 → 수정 그림 cc0-jetrel-crystal)", "화염 봉인 철창문 (object1#5 차단→개방)"],
     usesChangeTile: true,
     requiredCells: 4,
     defaultReward: {
@@ -262,7 +262,7 @@ const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[
     genres: ["jrpg", "chronotrigger", "time-travel", "시간의문", "시대연동", "인과"],
     summary: "과거(원점)의 시공 제단에서 마석/씨앗을 공명시키면 changeTile 과 시대 인과 플래그로 미래(대상)의 봉인 유산 상자가 깨어난다.",
     mechanics: "과거 시공 제단(받침대#3→공명 수정#6) + 미래 유산 상자 3단계(풍화 나무상자#7→각성 붉은상자#6→개봉 상자 up) + changeTile 시공 바닥 변화",
-    visualProps: ["과거 시공 공명 제단 (object2#3→object2#6)", "미래 시대 연동 유산 상자 (object1#7→object1#6→개봉)"],
+    visualProps: ["과거 시공 공명 제단 (object2#3→수정 그림 cc0-jetrel-crystal)", "미래 시대 연동 유산 상자 (object1#7→object1#6→개봉)"],
     usesChangeTile: true,
     requiredCells: 2,
     defaultReward: {
@@ -337,8 +337,8 @@ const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[
     category: "stealth",
     genres: ["jrpg", "castle", "prison", "stealth", "경비병", "잠입", "순찰", "시야"],
     summary: "길목을 지키는 경비병을 정면으로는 통과할 수 없으나, 유인 종/연막 통을 울리면 경비병이 옆으로 이동(moveEvent)해 통로와 보급함이 열린다.",
-    mechanics: "경비병 NPC(1페이지 길목 차단 → 2페이지 유인 후 비켜섬) + 유인 종/밧줄(object2#1) + moveEvent 실제 걸음 이동 + changeTile 통로 개방 + 보급 상자 해금",
-    visualProps: ["유인 종/연막 밧줄 (object2#1)", "순찰 경비병 NPC (병사 차셋, moveEvent 이동)", "경비 초소 보급 상자 (object1#6)"],
+    mechanics: "경비병 NPC(1페이지 길목 차단 → 2페이지 유인 후 비켜섬) + 유인 종/레버(object2#1) + moveEvent 실제 걸음 이동 + changeTile 통로 개방 + 보급 상자 해금",
+    visualProps: ["유인 종/연막 레버 (object2#1)", "순찰 경비병 NPC (병사 차셋, moveEvent 이동)", "경비 초소 보급 상자 (object1#6)"],
     usesChangeTile: true,
     requiredCells: 3,
     defaultReward: {
@@ -357,7 +357,7 @@ const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[
     genres: ["jrpg", "final-dungeon", "temple", "boss", "봉인", "결계", "3비석", "마석"],
     summary: "보스방 입구를 막은 결계문 주변의 3개 비석(태양·달·별)을 모두 작동시키면 비석들이 크리스탈로 빛나며 결계문과 바닥 타일이 열린다.",
     mechanics: "3개 봉인 비석(받침대#3→빛나는 보석#6) + allSwitchesFork 3비석 공명 판정 + 결계 파쇄 연출 + changeTile 4칸(비석 3 + 결계문 1) + 결계문(object1#4) 개방",
-    visualProps: ["태양·달·별의 봉인 비석 3기 (object2#3→object2#6)", "보스 봉인 결계문 (object1#4 차단→개방)"],
+    visualProps: ["태양·달·별의 봉인 비석 3기 (object2#3→수정 그림 cc0-jetrel-crystal)", "보스 봉인 결계문 (object1#4 차단→개방)"],
     usesChangeTile: true,
     requiredCells: 4,
     defaultReward: {
@@ -1764,7 +1764,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${organId}_p2`,
               name: "파이프 오르간 (공명 완료)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object2", 6, "down"),
+              graphic: crystalGraphic(),
               commands: [textCmd("파이프 오르간이 성좌의 빛을 머금고 공명하고 있다. 지하 계단이 열려 있다.")],
             }),
           ],
@@ -1790,7 +1790,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${stairId}_revealed`,
               name: "비밀 계단 (개방)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object2", 6, "down"),
+              graphic: { transparent: true },
               priority: "below",
               overlapForbidden: false,
               commands: [textCmd("오르간 조율로 드러난 성당 지하 비밀 계단이다!")],
@@ -1827,7 +1827,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
 
         changeTileCmds = resolveChangeTiles([cSeal, cB1, cB2, cB3]);
         const unlitGraphic = objGraphic("object2", 3, "down");
-        const litGraphic = objGraphic("object2", 6, "down");
+        const litGraphic = crystalGraphic();
 
         const resetBraziers: Command[] = [
           sfx("wrong"),
@@ -2268,7 +2268,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${pastId}_resonating`,
               name: "시공 제단 (공명 중)",
               conditions: [{ kind: "switch", switchId: seededSwitchId, value: true }],
-              graphic: objGraphic("object2", 6, "down"),
+              graphic: crystalGraphic(),
               commands: [
                 textCmd(
                   `시공 제단이 시대를 넘어 공명하고 있다. 이제 ${targetMap.name} (${cFuture.x},${cFuture.y})의 깨어난 유산 상자를 열 수 있다!`,
@@ -2847,7 +2847,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
 
         changeTileCmds = resolveChangeTiles([cBossGate, cM1, cM2, cM3]);
         const dormantMono = objGraphic("object2", 3, "down");
-        const activeMono = objGraphic("object2", 6, "down");
+        const activeMono = crystalGraphic();
 
         const unsealAllSequence: Command[] = [
           se("barrier"),
@@ -2926,7 +2926,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${bossGateId}_unsealed`,
               name: "보스 결계문 (해제됨)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object2", 6, "up"),
+              graphic: { transparent: true },
               priority: "below",
               overlapForbidden: false,
               commands: [textCmd("3비석의 공명으로 봉인 결계가 완전히 걷혔다.")],
@@ -3136,7 +3136,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${m1Id}_aligned`,
               name: "제1 거울 (반사 중)",
               conditions: [{ kind: "switch", switchId: swM1, value: true }],
-              graphic: objGraphic("object2", 6, "down"),
+              graphic: crystalGraphic(),
               commands: [textCmd("제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.")],
             }),
           ],
@@ -3184,7 +3184,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
               id: `${m2Id}_aligned`,
               name: "제2 거울 (굴절 완료)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object2", 6, "down"),
+              graphic: crystalGraphic(),
               commands: [textCmd("제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.")],
             }),
           ],
@@ -3452,7 +3452,7 @@ function authorMapPuzzleCore(draft: Project, args: Record<string, unknown>): Too
                 id: `${evId}_active`,
                 name: `${spec.label} (공명 중)`,
                 conditions: [{ kind: "switch", switchId: spec.swId, value: true }],
-                graphic: objGraphic("object2", 6, "down"),
+                graphic: crystalGraphic(),
                 commands: [textCmd(`「${spec.label}」 위에서 『${spec.relic}』이(가) 원소 마력을 뿜어내고 있다.`)],
               }),
             ],
