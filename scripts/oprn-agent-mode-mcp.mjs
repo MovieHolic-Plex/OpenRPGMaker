@@ -5,6 +5,7 @@
 // 그래서 이 프로세스는 프로젝트 파일을 읽지도 쓰지도 않는다 — 쓰기는 편집기가 자기 저장 경로(브리지)로 한다.
 // 환경 변수: OPRN_AGENT_HOST (http://127.0.0.1:<port>), OPRN_AGENT_TOKEN.
 // Electron 바이너리로도 돈다(ELECTRON_RUN_AS_NODE=1) — node 가 없는 PC 에서도 패키지만으로 실행된다.
+import { request as httpRequest } from "node:http";
 import { createInterface } from "node:readline";
 
 const HOST = process.env.OPRN_AGENT_HOST;
@@ -16,13 +17,21 @@ const cap = (text) => (text.length > RESULT_CAP ? `${text.slice(0, RESULT_CAP)}\
 
 async function ask(kind, payload) {
   if (!HOST) throw new Error("OPRN_AGENT_HOST is not set — this server must be started by OPRN Studio agent mode");
-  const response = await fetch(`${HOST}/agent-mcp`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-oprn-agent-token": TOKEN },
-    body: JSON.stringify({ kind, ...payload }),
+  // fetch(undici) 는 응답 머리를 300초 넘게 기다리면 끊는다 — 없는 기물 그리기는 한 판이 5~15분이다. 시간 상한은 호스트(agentHost toolTimeoutMs)가 정한다.
+  const text = JSON.stringify({ kind, ...payload });
+  const { status, raw } = await new Promise((resolve, reject) => {
+    const req = httpRequest(`${HOST}/agent-mcp`, { method: "POST", headers: { "content-type": "application/json", "content-length": Buffer.byteLength(text), "x-oprn-agent-token": TOKEN } }, (res) => {
+      let chunks = "";
+      res.setEncoding("utf8");
+      res.on("data", (chunk) => { chunks += chunk; });
+      res.on("end", () => resolve({ status: res.statusCode ?? 0, raw: chunks }));
+    });
+    req.on("error", reject);
+    req.end(text);
   });
-  const body = await response.json().catch(() => ({ ok: false, error: `HTTP ${response.status}` }));
-  if (!response.ok || body.ok === false && body.error) throw new Error(body.error ?? `HTTP ${response.status}`);
+  let body;
+  try { body = JSON.parse(raw); } catch { body = { ok: false, error: `HTTP ${status}` }; }
+  if (status < 200 || status >= 300 || body.ok === false && body.error) throw new Error(body.error ?? `HTTP ${status}`);
   return body.result;
 }
 

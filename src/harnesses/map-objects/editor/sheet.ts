@@ -5,6 +5,7 @@
  */
 import type { RgbaImage, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
 import { footprintClass } from "@/harnesses/_core/workshop/footprint";
+import { GROUND_SHADOW, leafLockHexes, ogCastsShadow, ogIsOrganic } from "@/harnesses/_core/workshop/objectGenFlow";
 
 /** 팔레트 색 수 상한. 모델이 고를 수 있는 만큼만 — 많으면 명암 단을 못 고른다. */
 export const MAP_PALETTE_LIMIT = 48;
@@ -178,6 +179,20 @@ export function classObjects(source: WorkshopTilesetSource, cls: string, limit =
     if (image) out.push({ name: object.name, image });
   }
   return out;
+}
+
+/**
+ * 새 맵 기물의 팔레트 — 칩셋에서 닮은 물체 색을 먼저(가중치 8), 시트 전체 색으로 채운다. 편집기(mapObjectTarget.mapObjectPalette)와 헤드리스(src/headless/objectGen.ts)가 같이 쓴다.
+ * 닮은 물체 = 이름이 맞는 것 + 크기 사전 종류가 같은 것(classObjects). 잎 덩이 자연물은 잎 초록을 견본 잎 단으로 잠근다(2026-10-22 Opus VQA).
+ */
+export function mapObjectPaletteFrom(source: WorkshopTilesetSource, title: string, description: string): string[] {
+  const picked = similarObjects(source, title, description, 6, true);
+  const cls = footprintClass(title, description);
+  if (cls) for (const object of classObjects(source, cls, 6)) if (picked.length < 8 && !picked.some((o) => o.name === object.name)) picked.push(object);
+  const similar = (picked.length ? picked : similarObjects(source, title, description, 6)).map((object) => ({ image: object.image, weight: 8 }));
+  const hexes = paletteFromImages([...similar, { image: source.image, weight: 1 }]);
+  const locked = ogIsOrganic({ title }) && (cls === "tree" || cls === "plant") ? leafLockHexes(hexes, source.image) : hexes;
+  return ogCastsShadow({ title, description }) ? [...locked, GROUND_SHADOW] : locked;
 }
 
 /** 시트에서 색이 가장 다양한 조각 하나(정사각, 한 변 최대 maxPx) — 물체가 학습돼 있지 않은 칩셋의 화풍 기준. */

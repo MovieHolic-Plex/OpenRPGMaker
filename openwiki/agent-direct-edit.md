@@ -116,3 +116,17 @@ claude --mcp-config '{"mcpServers":{"oprn":{"command":"node","args":["scripts/op
 - 조수도 같은 글을 읽는다: `assistant-skills/oprn-game-building-rules/SKILL.md` 를 렌더해 `read_assistant_skill` 번들에 넣는다. 다시 굽기 `npm run agent-rules:skill`.
 - 표류는 `test/agentRules.test.ts` 가 막는다: 조수 소스가 같은 문자열 리터럴을 다시 담거나, 커밋된 스킬·번들이 렌더 결과와 다르면 실패한다. 실제로 스킬을 한 줄 덧붙여 CI 에서 실패하는 것을 확인하고 되돌린 커밋이 히스토리에 있다(2026-11-06).
 
+### 맞춤 기물은 새로 그리는 것이 기본 (2026-11-07)
+
+오너: 「되도록이면 새로 만들게 하는 게 나을지도 .. 규격에 맞춰서」. 측정(Terra 6.1 게임 15판): `generate_missing_object` 호출 0회·공방 기물 0개,
+같은 테마끼리 맵 타일 겹침 평균 0.52(고양이 6판 0.89~1.00 — 전부 `create_map{themeScene:"beodeul_field"}`), 재사용 상위 = 버들항 나무 2×2·덤불·여관·우물.
+원인 둘: (1) 코딩 에이전트 경로에서 `generate_missing_object` 가 카드 요청만 돌려주고 아무도 그리지 않았다(조용한 성공), (2) 규칙이 「사용자가 콕 집은 물건이 정말 없을 때만」이었다.
+
+- 규칙: `agentRules.ts` 6절 — 맵마다 테마 시그니처(랜드마크·대표 소품 2~3·바닥/벽 변형)를 적고 `THEME_SIGNATURE_MIN_OBJECTS`~`MAX` (2~4)개를 새로 그린다. 흔한 채움(나무·덤불·울타리·우물)은 스톡. 조수 쪽 `OBJECT_GEN_POLICY_LINE` 도 같은 상수를 쓴다.
+- 규격: 16px 칸 · `objectKind` floor|wall|hang|flat · 크기 사전 `decideFootprint`(발밑 X · 위 * · rise px) · 그 칩셋에서 뽑은 팔레트 · 공방 독립 검수 + 3/4 관문 영수증(`gate:"receipt"`) 통과만 굽는다. 건물 판정은 머리 낱말만(「빵가게 간판」은 물건).
+- 화면 없는 경로: `src/headless/objectGen.ts` `runHeadlessObjectGen` — 편집기와 같은 실행기·엔진·알아서 고르기(`_core/workshop/autoInstall.ts`)·굽기. `runHeadlessToolGenerating` 이 그리고 base 자리에 찍는다.
+  모델·그림·관문은 `scripts/lib/objectGenDeps.mjs`: 그리기·검수 `claude -p`(기본 Opus 5.5 medium, `OPRN_OBJECTGEN_MODEL`), 참고 그림 ChatGPT(Codex) 로그인만, 3/4 관문 `workshopGate.mjs`.
+- 생성기가 없는 실행(`runHeadlessToolWithProject`)은 카드 성공 대신 `ok:false` + `object-gen-unavailable` 로 크게 실패한다(#4377 조용한 계속 금지).
+- 데워 둔 호스트(`oprn-agent-host.mjs serve`)는 생성기를 자동으로 붙이고, 못 붙이면 이유를 stderr 와 도구 결과에 적는다. 한 판이 5~15분이라 클라이언트·서버의 300초 제한을 풀었다.
+- 에이전트 모드: `agentModeTools.ts` 가 그리기 요청을 `drawAndBakeNow`(검수+관문 통과만 굽기)로 그 자리에서 끝내고 놓는다. 직접 도구에 `generate_missing_object`·`stamp_tileset_object` 를 넣었고, 그 도구만 호스트 시간 제한 30분(`toolTimeoutMs`).
+

@@ -4,7 +4,7 @@
 // oprn-agent-edit.mjs 와 같은 쓰기 경로(브리지 project.save + 기준 sha)지만, 부를 때마다 번들을 다시 짓지 않아
 // 도구 한 번이 15~150 초 → 2~5 초가 된다(2026-11-06 agent-direct-edit Phase 2 실측). 열린 편집기는 /__oprn/events 로 바로 다시 그린다.
 import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
-import { createServer } from "node:http";
+import { createServer, request as httpRequest } from "node:http";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -65,6 +65,11 @@ async function serve(args) {
   H.setHeadlessPublicRoot(resolve(REPO_ROOT, "public"));
   H.setHeadlessWorldmapBuilder?.(buildWorldmap);
   const tools = H.listHeadlessTools();
+  // 없는 기물 그리기(generate_missing_object): 이 컴퓨터에서 그릴 수 있으면 실제로 그려 굽는다. 못 그리면 도구가 이유와 함께 실패한다(조용한 카드 성공 없음).
+  const { createObjectGenDeps, objectGenUnavailable } = await import(pathToFileURL(resolve(REPO_ROOT, "scripts/lib/objectGenDeps.mjs")).href);
+  const objectGenBlocked = objectGenUnavailable();
+  const objectGen = objectGenBlocked ? null : createObjectGenDeps({ publicDir: resolve(REPO_ROOT, "public"), log: (line) => process.stderr.write(`${line}\n`) });
+  if (objectGenBlocked) process.stderr.write(`objectgen: 없는 기물 그리기 꺼짐 — ${objectGenBlocked}\n`);
   const call = await connect(args.host);
   const opened = await call("oprn:project.open", { projectDir: "host-project" });
 
@@ -90,7 +95,11 @@ async function serve(args) {
       const base = await current();
       const project = structuredClone(base.project);
       await H.prepareHeadlessTool(name, toolArgs, project);
-      const { result, project: next } = H.runHeadlessToolWithProject(project, name, toolArgs, mapId ? { currentMapId: mapId } : {});
+      const context = mapId ? { currentMapId: mapId } : {};
+      const { result, project: next } = objectGen
+        ? await H.runHeadlessToolGenerating(project, name, toolArgs, context, objectGen)
+        : H.runHeadlessToolWithProject(project, name, toolArgs, context);
+      if (!objectGen && result.issues?.some((issue) => issue.code === H.OBJECT_GEN_UNAVAILABLE_CODE)) result.summary = `${result.summary} (이유: ${objectGenBlocked})`;
       if (!result.ok || isDeepStrictEqual(next, base.project)) return result;
       const saved = await saveProject(next);
       if (saved.kind === "saved") return { ...result, saved: { revision: saved.revision, attempt } };
@@ -126,6 +135,7 @@ async function serve(args) {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify(payload));
   });
+  server.requestTimeout = 0; // 없는 기물 그리기 한 판이 노드 기본 300초보다 길다
   server.listen(args.port, "127.0.0.1", () => {
     process.stdout.write(`${JSON.stringify({ ready: true, port: args.port, tools: tools.length, warmupSec: (Date.now() - started) / 1000 })}\n`);
   });
@@ -134,7 +144,18 @@ async function serve(args) {
 async function client(args) {
   const [verb, ...rest] = args.rest;
   const base = `http://127.0.0.1:${args.port}`;
-  const post = async (path, body) => (await fetch(base + path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })).json();
+  // fetch 는 응답 머리를 300초 넘게 기다리면 끊는다 — 없는 기물 그리기(generate_missing_object)는 한 판이 5~15분이다.
+  const post = (path, body) => new Promise((done, fail) => {
+    const text = JSON.stringify(body);
+    const req = httpRequest(base + path, { method: "POST", headers: { "content-type": "application/json", "content-length": Buffer.byteLength(text) } }, (res) => {
+      let raw = "";
+      res.setEncoding("utf8");
+      res.on("data", (chunk) => { raw += chunk; });
+      res.on("end", () => { try { done(JSON.parse(raw)); } catch (error) { fail(error); } });
+    });
+    req.on("error", fail);
+    req.end(text);
+  });
   let out;
   if (verb === "status") out = await (await fetch(`${base}/status`)).json();
   else if (verb === "tools") {

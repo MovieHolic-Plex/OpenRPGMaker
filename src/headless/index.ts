@@ -19,6 +19,10 @@ import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
+import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
+import { runHeadlessObjectGen, type HeadlessObjectGenDeps } from "./objectGen";
+
+export { runHeadlessObjectGen, type HeadlessObjectGenDeps, type HeadlessObjectGenResult } from "./objectGen";
 
 const decoder = new TextDecoder();
 
@@ -125,13 +129,69 @@ export function runHeadlessToolWithProject(
   name: string,
   args: Record<string, unknown>,
   /** 조수 실행 정책(장르 잠금 등)을 집행하게 하는 문맥 — oprn-tools.mjs --assistant. 생략하면 편집기 UI·스크립트와 같은 무정책 실행. */
-  context: { readonly assistantRun?: boolean; readonly monsterTurn?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] } = {},
+  context: HeadlessToolContext = {},
 ): { result: ToolResult; project: Project } {
   const tool = getTool(name);
   if (!tool) return { result: runHeadlessTool(project, name, args), project };
   const ctx = { project, ...context };
   const result = runToolDefinition(ctx, tool, args);
-  return { result, project: ctx.project };
+  return { result: refuseUnfulfilledDrawCard(result), project: ctx.project };
+}
+
+type HeadlessToolContext = { readonly assistantRun?: boolean; readonly monsterTurn?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] };
+
+export const OBJECT_GEN_UNAVAILABLE_CODE = "object-gen-unavailable";
+
+/**
+ * 편집기 밖에는 공방 카드를 띄울 화면이 없다. generate_missing_object 가 「카드를 띄운다」(ok:true)로 끝나면 아무도 그리지 않는데
+ * 에이전트는 그렸다고 믿는다(2026-11-07 Terra 15판: 호출 0회·공방 기물 0개). 그릴 생성기가 없는 실행에서는 크게 실패한다 — #4377 조용한 계속 금지.
+ */
+function refuseUnfulfilledDrawCard(result: ToolResult): ToolResult {
+  if (!result.ok || !isObjectGenRequest(result.data)) return result;
+  const message = `「${result.data.title}」을(를) 그릴 생성기가 이 실행에 연결돼 있지 않다 — 아무것도 그리지 않았다. `
+    + "데워 둔 호스트(oprn-agent-host serve)나 편집기 에이전트 모드에서 다시 부르거나, 최종 보고에 «그리지 못해 없음»으로 적어라.";
+  return { ok: false, summary: message, issues: [{ severity: "error", code: OBJECT_GEN_UNAVAILABLE_CODE, message }], data: result.data };
+}
+
+/**
+ * runHeadlessToolWithProject 와 같되, generate_missing_object 의 그리기 요청을 그 자리에서 실제로 그려 칩셋에 굽는다(src/headless/objectGen.ts).
+ * base 가 있으면 그 자리에 stamp_tileset_object 로 놓는다. 그리기가 실패하면 ok:false(code object-gen-failed) — 프로젝트는 그대로.
+ */
+export async function runHeadlessToolGenerating(
+  project: Project,
+  name: string,
+  args: Record<string, unknown>,
+  context: HeadlessToolContext,
+  deps: HeadlessObjectGenDeps,
+): Promise<{ result: ToolResult; project: Project }> {
+  const tool = getTool(name);
+  if (!tool) return { result: runHeadlessTool(project, name, args), project };
+  const ctx = { project, ...context };
+  const result = runToolDefinition(ctx, tool, args);
+  if (!result.ok || !isObjectGenRequest(result.data)) return { result, project: ctx.project };
+  const request = result.data;
+  const next = structuredClone(project);
+  const made = await runHeadlessObjectGen(next, request, deps);
+  if (!made.ok) {
+    return { result: { ok: false, summary: made.error, issues: [{ severity: "error", code: "object-gen-failed", message: made.error }], data: { request, seconds: made.seconds, calls: made.calls, candidates: made.candidates } }, project };
+  }
+  const generated = { objectId: made.objectId, tilesetId: made.tilesetId, columns: made.columns, rows: made.rows, letter: made.letter, reason: made.reason, seconds: made.seconds, calls: made.calls, reference: made.reference, candidates: made.candidates };
+  if (!request.base) {
+    return { result: { ok: true, summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초). stamp_tileset_object({mapId:"${request.mapId}", objectId:"${made.objectId}", base:{x,y}}) 로 놓아라.`, data: { generated } }, project: next };
+  }
+  const stampCtx = { ...context, project: next };
+  const stamp = runToolDefinition(stampCtx, getTool("stamp_tileset_object")!, { mapId: request.mapId, objectId: made.objectId, base: request.base });
+  const placed = stamp.ok;
+  return {
+    result: {
+      ok: true,
+      summary: `「${request.title}」을(를) 그려 칩셋 ${made.tilesetId} 에 넣었다(물체 id ${made.objectId}, ${made.columns}×${made.rows}칸, ${made.seconds}초). `
+        + (placed ? `(${request.base.x},${request.base.y}) 자리에 놓았다.` : `자리 (${request.base.x},${request.base.y}) 에는 못 놓았다: ${stamp.summary} — stamp_tileset_object 로 다른 빈 바닥에 놓아라.`),
+      ...(placed ? {} : { warnings: [stamp.summary] }),
+      data: { generated, placed },
+    },
+    project: stampCtx.project,
+  };
 }
 
 export function runHeadlessTool(project: Project, name: string, args: Record<string, unknown>): ToolResult {

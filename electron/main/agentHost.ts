@@ -148,6 +148,9 @@ export function writeAgentRulesFiles(workDir: string): readonly string[] {
   return written;
 }
 const TOOL_TIMEOUT_MS = 5 * 60_000;
+/** 없는 기물 그리기는 편집기가 공방 한 판(참고 그림·그리기·검수·3/4 관문)을 끝내고 돌려준다 — 보통 5~15분. */
+export const DRAW_TOOL_TIMEOUT_MS = 30 * 60_000;
+export const toolTimeoutMs = (name: unknown): number => (name === "generate_missing_object" ? DRAW_TOOL_TIMEOUT_MS : TOOL_TIMEOUT_MS);
 const MAX_EVENTS = 2000;
 
 export function createAgentHost(options: AgentHostOptions) {
@@ -219,7 +222,7 @@ export function createAgentHost(options: AgentHostOptions) {
         const timer = setTimeout(() => {
           pendingTools.delete(requestId);
           response.writeHead(504, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "편집기가 응답하지 않습니다(에이전트 모드 패널이 열려 있는지 확인)" }));
-        }, TOOL_TIMEOUT_MS);
+        }, toolTimeoutMs(body.name === "oprn_call" ? (body.args as { name?: unknown } | undefined)?.name : body.name));
         pendingTools.set(requestId, {
           timer,
           resolve: (result) => {
@@ -230,6 +233,7 @@ export function createAgentHost(options: AgentHostOptions) {
         push({ type: "tool-request", requestId, kind, ...(kind === "call" ? { name: body.name, args: body.args ?? {} } : {}) });
       });
     });
+    server.requestTimeout = 0; // 없는 기물 그리기는 노드 기본 300초보다 길다 — 상한은 toolTimeoutMs 가 정한다
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
     const address = server.address();
     mcpPort = typeof address === "object" && address ? address.port : 0;

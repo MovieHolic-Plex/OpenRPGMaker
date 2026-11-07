@@ -7,43 +7,19 @@
 import { editorState } from "@/editor/editorState";
 import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { workshopBakeSheet, workshopGridHash } from "@/harnesses/_core/workshop/bakeSheet";
+import { workshopObjectInput } from "@/harnesses/_core/workshop/autoInstall";
+import { workshopGridHash } from "@/harnesses/_core/workshop/bakeSheet";
 import type { BaseInfo, GateAdvice, Grid, Palette, WorkshopEnv, WorkshopItem } from "@/harnesses/_core/workshop/types";
 import { ATLAS_BIOME_INTERIOR_ID, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { store } from "@/project/store";
-import type { ObjectSpecV1 } from "@/project/objectSpec";
-import { bakedWorkshopKit, bakeWorkshopObject, workshopAssetId, workshopObjectId, type WorkshopHandKind } from "@/project/workshopTiles";
+import { bakedWorkshopKit, bakeWorkshopObject, workshopObjectId } from "@/project/workshopTiles";
 import { withInstallOwnership } from "./installOwnership";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "./workshopEvents";
 
 
 const TILE = 16;
-const KINDS: ReadonlySet<string> = new Set(["floor", "wall", "hang", "flat"]);
 
 export { workshopGridHash };
-
-/** 설명서 review: 사람 선택(알아서 고르기가 아니면) + 3/4 관문 조언(있으면, 미보정 1표). */
-function reviewOf(options: { readonly autoPicked?: boolean; readonly gate?: GateAdvice | null }): ObjectSpecV1["review"] | undefined {
-  const at = new Date().toISOString();
-  const pick = options.autoPicked ? undefined : { by: "human" as const, at };
-  const gate = options.gate;
-  // 영수증 판(「한 번에 만들기」 알아서 고르기): 영수증 자체는 spec.gate 에 적고(gateOf), 여기에는 REFER 를 정한 적대 검사만 남긴다.
-  const receipt = gate?.receipt;
-  const vqa = receipt
-    ? receipt.refer ? { verdict: receipt.refer.verdict, judge: `object-gate-refer-check/${receipt.refer.judge}`, calibrated: false, at } : undefined
-    : gate && gate.kind ? { verdict: gate.state === "refer" ? "none" as const : gate.state, judge: `workshop-object-gate-advice/${gate.kind}`, calibrated: false, at } : undefined;
-  return pick || vqa ? { ...(pick ? { pick } : {}), ...(vqa ? { vqa } : {}) } : undefined;
-}
-
-/**
- * 설명서 gate: 관문 영수증 요약(호스트 판정기가 낸 것 — 화소 해시·프로필). 프로필이 보정되지 않았으므로 번들·공용·스토어 출구는 이것을 통과로 치지 않는다
- * (그 출구는 영수증 원본·보정 프로필로 다시 본다). 영수증이 없으면(사람이 고른 판 등) 적지 않는다.
- */
-function gateOf(gate: GateAdvice | null | undefined): ObjectSpecV1["gate"] | undefined {
-  const receipt = gate?.receipt;
-  if (!gate || !receipt) return undefined;
-  return { kind: gate.kind as NonNullable<ObjectSpecV1["gate"]>["kind"], verdict: receipt.verdict, pixelSha256: receipt.pixelSha256, profileHash: receipt.profileHash, decidedAt: new Date().toISOString() };
-}
 
 /** 구워 넣을 칩셋: 맵 기물은 정의할 때 적은 칩셋, 실내 기물은 손 도트 실내. */
 export function workshopTargetTileset(item: WorkshopItem): string {
@@ -76,10 +52,8 @@ export function armWorkshopStamp(item: WorkshopItem, grid: Grid): string | null 
  * autoPicked = 사람이 아니라 「알아서 고르기」(조수 요청 카드, 기본 켜짐)가 골랐다 — 설명서에 사람 선택(review.pick)을 적지 않는다.
  */
 export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv, options: { readonly autoPicked?: boolean; readonly gate?: GateAdvice | null; readonly base?: BaseInfo | null } = {}): WorkshopBakedDetail {
-  if (!KINDS.has(item.kind)) throw new Error(`이 기물 종류(${item.kind})는 칩셋에 넣을 수 없습니다.`);
-  const { sheet, cells, columns, rows } = workshopBakeSheet(grid, palette);
-  const dataUrl = env.encodePng(sheet);
-  const objectId = workshopObjectId(item.key);
+  const input = workshopObjectInput(item, grid, palette, env, options);
+  const { objectId, columns, rows } = input;
   const tilesetId = workshopTargetTileset(item);
   if (tilesetId !== ATLAS_BIOME_INTERIOR_ID) {
     const target = store.getCurrent().tilesets[tilesetId];
@@ -94,29 +68,7 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
         if (!draft.tilesets[ATLAS_BIOME_INTERIOR_ID]) draft.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
         else ensureAtlasBiomeInteriorCurrent(draft, ATLAS_BIOME_INTERIOR_ID);
       }
-      bakeWorkshopObject(draft, tilesetId, {
-        objectId,
-        title: item.title,
-        description: item.description,
-        kind: item.kind as WorkshopHandKind,
-        columns,
-        rows,
-        footRows: item.footRows ?? 1,
-        risePx: item.risePx ?? Math.max(0, (rows - (item.footRows ?? 1)) * TILE - item.padTop),
-        use: item.use,
-        gridHash: workshopGridHash(grid),
-        asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
-        cells,
-        // 설명서(ObjectSpec): 공방 판에서 고른 후보다. 「한 번에 만들기」 알아서 고르기는 3/4 관문 영수증(호스트 판정기)이 통과한 것만 여기 온다.
-        provenance: {
-          aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}`,
-          // 칩셋 출발 그림(object-gen base-from-chipset)에서 출발했으면 그 id·출처 칸
-          ...(options.base ? { base: `${options.base.id} (${options.base.label}) from ${options.base.sources.join(", ")}`.slice(0, 400) } : {}),
-        },
-        // 3/4 관문 조언(1표, 미보정)은 review.vqa 에 calibrated:false 로만 남긴다 — 출구 효력 없음(관문 영수증이 아니다).
-        ...(reviewOf(options) ? { review: reviewOf(options) } : {}),
-        ...(gateOf(options.gate) ? { gate: gateOf(options.gate) } : {}),
-      });
+      bakeWorkshopObject(draft, tilesetId, input);
     }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
   });
   const detail: WorkshopBakedDetail = { objectId, title: item.title, tilesetId, kind: item.kind, columns, rows };
