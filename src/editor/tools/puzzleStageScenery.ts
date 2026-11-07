@@ -19,7 +19,7 @@ import type {
   GameMap,
   Project,
 } from "@/project/types";
-import { charsetGraphic } from "./eventCompile";
+import { charsetGraphic, crystalGraphic } from "./eventCompile";
 import { mainComponent, type Cell } from "./jrpgVolumeTools";
 import type { PuzzlePresetId } from "./puzzleAuthoringTools";
 import { buildPuzzleRoomStage, isPuzzleRoomPreset, type PuzzleRoomPresetId } from "./puzzleRoomScenery";
@@ -377,7 +377,8 @@ function makeRevealedCrystalEvent(
         id: `${evId}_glowing`,
         name: `${opts.name} (발광)`,
         conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-        graphic: objGraphic("object2", 6, "up"),
+        // 물건 2 의 6번은 회색 바위다 — 빛나는 수정은 번들 수정 그림(2026-11-07).
+        graphic: crystalGraphic(),
         priority: "below",
         overlapForbidden: false,
         commands: [particles("sparkle", 700), { kind: "text", body: opts.afterText }],
@@ -1086,7 +1087,7 @@ export function buildDramaticPuzzleStage(
           id: `${barrelId}_detonated`,
           name: "화약통 (폭파 후)",
           conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-          graphic: objGraphic("object2", 6, "up"),
+          graphic: crystalGraphic(),
           priority: "below",
           overlapForbidden: false,
           commands: [{ kind: "text", body: "폭파된 암반 자리에서 푸른 마석 광맥이 빛나고 있다!" }],

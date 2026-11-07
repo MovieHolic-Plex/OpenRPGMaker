@@ -11,6 +11,7 @@ import { eventAlwaysBlocks } from '@/project/eventPassageBlock';
 import type { Command, EventPage, GameEvent, GameMap, Project } from '@/project/types';
 import { withJosa } from '@/util/josa';
 import { assertEventShape, upsertEventIntoMap } from './eventTools';
+import { crystalGraphic } from './eventCompile';
 import { ensureNamedSwitch } from './flagHelpers';
 import { inMapBounds, requireMap } from './mapHelpers';
 import { choices, ifSw, makePage, objGraphic, setSw, sfx, shake, textCmd, TRANSPARENT, wait } from './puzzleKit';
@@ -531,7 +532,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         ], [textCmd(optText(args.switchIdleText) ?? '희미하게 빛나는 구슬이다.')]);
         put(group.switchAt, at(group.switchAt, sw(`switch_${group.key}`), `전환 지점 (${group.name})`, [
           HIDDEN(`${id}_switch_${group.key}_p0`),
-          makePage({ id: `${id}_switch_${group.key}_p1`, name: '조작 바꾸기', conditions: [{ kind: 'switch', switchId: SPLIT, value: true }], graphic: switchLook === 'pedestal' ? TRANSPARENT : objGraphic('object2', 6), commands: [mine] }),
+          makePage({ id: `${id}_switch_${group.key}_p1`, name: '조작 바꾸기', conditions: [{ kind: 'switch', switchId: SPLIT, value: true }], graphic: switchLook === 'pedestal' ? TRANSPARENT : crystalGraphic(), commands: [mine] }),
           { ...HIDDEN(`${id}_switch_${group.key}_p2`), conditions: [{ kind: 'switch', switchId: DONE, value: true }] },
         ]), `전환 지점 ${group.key.toUpperCase()}`);
       }
