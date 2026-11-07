@@ -51,6 +51,12 @@ export const CLIMAX_STAGING_RULE =
 export const OBJECTIVE_MATCHES_PICTURE_RULE =
   "The thing the objective line names must look like that thing on the map. If the objective says 별나무 (star tree) the player must not find a treasure chest sprite; if it says 창고 the entrance must read as a warehouse. Pick the sprite or tile that matches the words, or change the words to match the picture — a mismatch sent a judge looking at the wrong object and cost the game two major defects.";
 
+export const REWARD_LOOP_RULE =
+  "A reward the player cannot use is decoration. Every pickup must (a) LAND visibly — the item appears in the inventory with a short line from the finder and a sparkle at the spot (place_pixel_fx) — and (b) have somewhere to go: a shop that sells something useful (place_npc with shop, then set_shop_stock with real stock and prices), an equipment piece the player can wear (upsert_equipment), or a consumable that changes the next fight (upsert_item). One shop with three items the player can actually afford beats five chests of nothing. Judges called exactly this out twice: a star shard that only went back to the quest giver, and a market square with crates but no merchant.";
+
+export const PROGRESSION_RULE =
+  "If the game has any fight or challenge, the player must END stronger than they started, and the difficulty must follow: a starting party (set_party), one skill or weapon gained on the way (upsert_skill / upsert_equipment inside the reward branch), and a second encounter that needs it (place_battle_blocker or a battleProcessing branch with a different troop from upsert_troop). Growth the player never feels is a zero, and so is an HUD number that never changes — either give the number a meaning the player discovers, or hide it with set_field_hud.";
+
 const OBJECTIVES: readonly string[] = [
   "one starting objective with at:'start' on the start map's autorun (after the opening cutscene), then",
   "for every event that advances the story (hands over a key, shows a flashback, turns on a switch) the next objective with eventId, placed right after that event's switch-on or item gain,",
@@ -121,6 +127,13 @@ export const AGENT_RULES_SECTIONS: readonly { readonly title: string; readonly l
       ACTION_FEEDBACK_RULE,
       CLIMAX_STAGING_RULE,
       OBJECTIVE_MATCHES_PICTURE_RULE,
+    ],
+  },
+  {
+    title: "7. Rewards have to be usable and the player has to grow",
+    lines: [
+      REWARD_LOOP_RULE,
+      PROGRESSION_RULE,
     ],
   },
 ];
