@@ -21,6 +21,8 @@ const { values } = parseArgs({
     out: { type: "string" },
     name: { type: "string", default: "fs-broad-qa" },
     title: { type: "string", default: "폴른 스타 1.39 — 광범위 적대적 QA" },
+    /** pull-gallery.mjs output dir (gallery.json + jobs/<id>/shots/). Preferred source for the map/battle images. */
+    gallery: { type: "string", default: "" },
   },
 });
 if (!values.run || !values.out) throw new Error("usage: report.mjs --run <runDir> --out <dir>");
@@ -72,14 +74,24 @@ function shotPath(jobId, file) {
 }
 
 // ---------- per-map gallery: one representative settled frame per map ----------
+const galleryDir = values.gallery ? path.resolve(values.gallery) : "";
+const pulled = galleryDir && fs.existsSync(path.join(galleryDir, "gallery.json")) ? readJson(path.join(galleryDir, "gallery.json")) : null;
 const mapJobs = jobs.filter((job) => job.kind === "map");
 const gallery = [];
-for (const job of mapJobs) {
-  const rows = traceOf(job.id);
-  const pick = rows.find((row) => /^walk-(up|right|down|left)$/.test(row.label ?? "") && row.file && (row.lum ?? 0) > 12)
-    ?? rows.find((row) => row.file && row.label === "enter" && (row.lum ?? 0) > 12)
-    ?? rows.find((row) => row.file && (row.lum ?? 0) > 12);
-  if (pick) gallery.push({ mapId: job.target.mapId, label: job.label, src: asset(shotPath(job.id, pick.file)), row: pick, job });
+if (pulled) {
+  // Pulled manifest: only the frames the VM chose were copied back, so this is the cheap path.
+  for (const entry of pulled.maps ?? []) {
+    const src = asset(path.join(galleryDir, "jobs", entry.job, "shots", entry.file));
+    if (src) gallery.push({ mapId: entry.mapId, label: entry.label, src, row: { seq: entry.seq, state: { screen: entry.screen }, lum: entry.lum }, job: { id: entry.job } });
+  }
+} else {
+  for (const job of mapJobs) {
+    const rows = traceOf(job.id);
+    const pick = rows.find((row) => /^walk-(up|right|down|left)$/.test(row.label ?? "") && row.file && (row.lum ?? 0) > 12)
+      ?? rows.find((row) => row.file && row.label === "enter" && (row.lum ?? 0) > 12)
+      ?? rows.find((row) => row.file && (row.lum ?? 0) > 12);
+    if (pick) gallery.push({ mapId: job.target.mapId, label: job.label, src: asset(shotPath(job.id, pick.file)), row: pick, job });
+  }
 }
 // Maps without a live frame (boot refused, dark, etc.) — reported explicitly, not silently dropped.
 const mapIds = Object.keys(coverageMapIds());
@@ -116,12 +128,15 @@ function simTable() {
 
 // Browser (real play) battle sessions: did the checkpoint reach a battle screen and finish?
 const battleJobs = jobs.filter((job) => job.kind === "battle");
+const battleShot = new Map((pulled?.battles ?? []).map((entry) => [entry.job, entry]));
 const battlePlay = battleJobs.map((job) => {
   const s = jobSummary(job.id);
   const rows = traceOf(job.id);
   const sawGrid = rows.some((row) => row.state?.grid === true || row.label?.includes("-grid"));
   const sawResult = rows.some((row) => row.state?.result);
-  return { job, summary: s, sawGrid, sawResult, fatal: s?.fatal ?? null };
+  const shot = battleShot.get(job.id);
+  const src = shot ? asset(path.join(galleryDir, "jobs", job.id, "shots", shot.file)) : null;
+  return { job, summary: s, sawGrid, sawResult, src, fatal: s?.fatal ?? null };
 });
 
 // ---------- defects ----------
@@ -283,7 +298,7 @@ ${missingMaps.length ? `<p class="sub">그림 없음: ${missingMaps.map(esc).joi
 ${simTable()}
 <p class="sub">브라우저 전투 세션 ${fmt(battlePlay.length)} · 명령 격자 확인 ${fmt(battlePlay.filter((b) => b.sawGrid).length)} · 결과 화면 확인 ${fmt(battlePlay.filter((b) => b.sawResult).length)}</p>
 ${sim ? `<p class="sub">이길 수 없음(&lt;5%) ${fmt(sim.unwinnable.length)}건 · 너무 쉬움(100%·2.5턴 미만) ${fmt(sim.trivial.length)}건 · 이야기 표에 없는 부대 ${fmt(sim.missingStory.length)}개</p>` : ""}
-<details><summary>브라우저 체크포인트 전투 세션 전체 보기</summary><table><tr><th>부대</th><th>상태</th><th>레벨</th><th>격자</th><th>결과</th><th>실패</th></tr>${battlePlay.map((b) => `<tr><td>${esc(b.job.target.troopId)}</td><td>${esc(b.job.target.state ?? "-")}</td><td>Lv${b.job.target.level ?? "-"}</td><td>${b.sawGrid ? "✅" : "❌"}</td><td>${b.sawResult ? "✅" : "—"}</td><td><span class="sub">${esc((b.fatal ?? "").slice(0, 90))}</span></td></tr>`).join("")}</table></details>
+<details><summary>브라우저 체크포인트 전투 세션 전체 보기</summary><table><tr><th>부대</th><th>상태</th><th>레벨</th><th>격자</th><th>결과</th><th>화면</th><th>실패</th></tr>${battlePlay.map((b) => `<tr><td>${esc(b.job.target.troopId)}</td><td>${esc(b.job.target.state ?? "-")}</td><td>Lv${b.job.target.level ?? "-"}</td><td>${b.sawGrid ? "✅" : "❌"}</td><td>${b.sawResult ? "✅" : "—"}</td><td>${b.src ? `<a href="${esc(b.src)}" target="_blank"><img loading="lazy" src="${esc(b.src)}" alt="battle" style="height:72px;border-radius:4px"></a>` : "—"}</td><td><span class="sub">${esc((b.fatal ?? "").slice(0, 90))}</span></td></tr>`).join("")}</table></details>
 
 <h2>3. 결함 — 검토가 남긴 ${fmt(kept.length)}건</h2>
 <p class="sub">후보 ${fmt(summary.final?.candidates)}건 → 검토 판정 ${Object.entries(final.verdictCounts ?? {}).filter(([, n]) => n).map(([k, n]) => `${esc(VERDICT_KO[k] ?? k)} ${n}`).join(" · ")}. 측정된 결함(DOM 잘림·404·페이지 오류·멈춤·대사 글자·정적 데이터)은 검토가 그림만 보고 버릴 수 없다.</p>
@@ -296,6 +311,11 @@ ${unwalked.length ? `<p class="sub">전투는 있으나 걷기 세션이 없는 
 
 <h2>5. 적대적 입력 · 심은 결함</h2>
 <p class="sub">대사 몰아치기(키보드·터치), 전투 중 메뉴·취소 연타, 돈 없이 상점, 맵 가장자리 밀기, 세이브 반복, 키보드+마우스+터치 혼용 — ${fmt(jobs.filter((job) => job.kind === "adversarial").length)}개 시나리오.</p>
+${(pulled?.adversarial ?? []).length ? `<div class="gallery">${pulled.adversarial.map((entry) => {
+  const frame = entry.frames[entry.frames.length - 1];
+  const src = frame ? asset(path.join(galleryDir, "jobs", entry.job, "shots", frame.file)) : null;
+  return src ? `<figure><a href="${esc(src)}" target="_blank"><img loading="lazy" src="${esc(src)}" alt="${esc(entry.kind)}"></a><figcaption><b>${esc(entry.kind)}</b><br><span class="sub">${esc(entry.label ?? "")} · ${esc(entry.input ?? "")} · ${esc(entry.viewport ?? "")}</span></figcaption></figure>` : "";
+}).join("")}</div>` : ""}
 ${measure ? `<table><tr><th>심은 결함</th><th>위치</th><th>보이는 모습</th><th>검토 전</th><th>검토 후</th></tr>${measure.plants.map((plant) => `<tr><td>${esc(plant.type)}</td><td>${esc(plant.mapName ?? plant.mapId)} ${esc(plant.eventId ?? "")}</td><td><span class="sub">${esc(plant.visible ?? "")}</span></td><td>${plant.caughtBefore ? "✅" : "❌"}</td><td>${plant.caughtAfter ? "✅" : "❌"}</td></tr>`).join("")}</table>
 <p class="sub">포착 ${measure.caughtBefore}/${measure.planted} (검토 전) → ${measure.caughtAfter}/${measure.planted} (검토 후) · 심지 않은 후보 ${fmt(measure.nonPlantCandidates)}건 중 검토가 남긴 것 ${fmt(measure.nonPlantKept)}건</p>` : "<p>이 실행은 결함을 심지 않았다(plant 없음).</p>"}
 
