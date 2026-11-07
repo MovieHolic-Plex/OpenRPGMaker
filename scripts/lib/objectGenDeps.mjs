@@ -83,7 +83,7 @@ function openAiChat(log) {
     const response = await fetch(`${CHAT_URL.replace(/\/$/u, "")}/chat/completions`, {
       method: "POST",
       headers: { "content-type": "application/json", ...(CHAT_KEY ? { authorization: `Bearer ${CHAT_KEY}` } : {}) },
-      body: JSON.stringify({ model: MODEL, messages: request.messages, ...(request.response_format ? { response_format: request.response_format } : {}), ...(request.temperature !== undefined ? { temperature: request.temperature } : {}) }),
+      body: JSON.stringify({ model: MODEL, ...(process.env.OPRN_OBJECTGEN_CHAT_EFFORT ? { reasoning_effort: process.env.OPRN_OBJECTGEN_CHAT_EFFORT } : {}), messages: request.messages, ...(request.response_format ? { response_format: request.response_format } : {}), ...(request.temperature !== undefined ? { temperature: request.temperature } : {}) }),
       signal: request.signal ? AbortSignal.any([request.signal, AbortSignal.timeout(CHAT_TIMEOUT_MS)]) : AbortSignal.timeout(CHAT_TIMEOUT_MS),
     });
     const body = await response.json().catch(() => null);
