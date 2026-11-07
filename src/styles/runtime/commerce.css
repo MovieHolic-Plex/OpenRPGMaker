@@ -171,8 +171,8 @@
 .runtime-craft-shell::before {
   content: ""; position: absolute; inset: auto 0 0 0; height: 55%; z-index: -1; pointer-events: none;
   background: radial-gradient(ellipse 70% 100% at 50% 100%, var(--craft-ember-soft), transparent 70%);
-  animation: runtime-craft-glow 3.2s ease-in-out infinite alternate;
 }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell::before { animation: runtime-craft-glow 3.2s ease-in-out infinite alternate; }
 .runtime-craft-shell .runtime-shop-topbar { padding: 8px 16px; gap: 12px; }
 .runtime-craft-shell .runtime-shop-merchant-avatar { width: 36px; height: 36px; }
 .runtime-craft-shell .runtime-shop-brand-title { font-size: var(--shop-text-section); }
@@ -185,8 +185,9 @@
 .runtime-craft-shell .runtime-shop-side { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .runtime-craft-shell .runtime-shop-detail-panel { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 10px 12px; }
 .runtime-craft-shop-overlay.runtime-shop-overlay { padding: 12px; }
-.runtime-craft-shell .runtime-shop-item-row { transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease; }
-.runtime-craft-shell .runtime-shop-item-row.selected { transform: translateX(2px); box-shadow: 0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft); }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell .runtime-shop-item-row { transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease; }
+.runtime-craft-shell .runtime-shop-item-row.selected { box-shadow: 0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft); }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell .runtime-shop-item-row.selected { transform: translateX(2px); }
 .runtime-craft-row.is-unaffordable .runtime-shop-item-name,
 .runtime-craft-row.is-unaffordable .runtime-shop-item-icon { opacity: 0.5; }
 .runtime-craft-row-max { font-variant-numeric: tabular-nums; }
@@ -204,12 +205,12 @@
 .runtime-craft-hero.is-ready .runtime-craft-hero-frame {
   border-color: color-mix(in srgb, var(--craft-ember) 70%, var(--shop-line-strong));
   box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft);
-  animation: runtime-craft-ready 1.8s ease-in-out infinite alternate;
 }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-hero.is-ready .runtime-craft-hero-frame { animation: runtime-craft-ready 1.8s ease-in-out infinite alternate; }
 .runtime-craft-hero-icon { width: 80%; height: 80%; border: 0; background-color: transparent; background-size: 85%; }
 .runtime-craft-hero-yield {
   position: absolute; right: -6px; bottom: -6px; padding: 0 6px; border-radius: 999px;
-  background: var(--craft-ember); color: #1a0f05; font-weight: 800; font-size: var(--shop-text-small); font-variant-numeric: tabular-nums;
+  background: var(--craft-ember); color: var(--shop-inset); font-weight: 800; font-size: var(--shop-text-small); font-variant-numeric: tabular-nums;
 }
 .runtime-craft-hero-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .runtime-craft-hero-name { font-size: var(--shop-text-title); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
@@ -232,18 +233,18 @@
   font-size: 12px; font-weight: 900;
 }
 .runtime-craft-need.is-met { border-color: color-mix(in srgb, var(--shop-gain) 45%, var(--shop-line)); }
-.runtime-craft-need.is-met .runtime-craft-need-mark { background: var(--shop-gain); color: #06140c; }
+.runtime-craft-need.is-met .runtime-craft-need-mark { background: var(--shop-gain); color: var(--shop-inset); }
 .runtime-craft-need.is-short { border-color: var(--shop-loss); background: color-mix(in srgb, var(--shop-loss) 12%, var(--shop-inset)); }
 .runtime-craft-need.is-short .runtime-craft-need-count { color: var(--shop-loss); }
-.runtime-craft-need.is-short .runtime-craft-need-mark { background: var(--shop-loss); color: #1a0505; }
-.runtime-craft-need.is-short { animation: runtime-craft-short 1.2s ease-in-out infinite; }
+.runtime-craft-need.is-short .runtime-craft-need-mark { background: var(--shop-loss); color: var(--shop-inset); }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-need.is-short { animation: runtime-craft-short 1.2s ease-in-out infinite; }
 
 .runtime-craft-prompt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .runtime-craft-status-line { display: flex; flex-direction: column; flex: 1 1 12em; min-width: 0; }
 .runtime-craft-status.is-ok { color: var(--shop-gain); font-weight: 800; }
 .runtime-craft-status.is-fail { color: var(--shop-loss); font-weight: 800; }
-.runtime-craft-status.is-ok { animation: runtime-craft-toast 600ms cubic-bezier(.2,1.4,.4,1) both; }
-.runtime-craft-status.is-shake { animation: runtime-craft-shake 360ms ease both; }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-status.is-ok { animation: runtime-craft-toast 600ms cubic-bezier(.2,1.4,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-status.is-shake { animation: runtime-craft-shake 360ms ease both; }
 .runtime-craft-reason { color: var(--shop-loss); font-size: var(--shop-text-small); }
 .runtime-craft-count { display: inline-flex; align-items: center; gap: 4px; }
 .runtime-craft-count[hidden], .runtime-craft-reason[hidden] { display: none; }
@@ -257,10 +258,10 @@
 
 .runtime-craft-flyer { position: absolute; z-index: 5; margin: 0; pointer-events: none; box-shadow: 0 0 12px var(--craft-ember); }
 .runtime-craft-burst { z-index: 6; }
-.is-crafted .runtime-craft-hero-icon { animation: runtime-craft-pop 520ms 480ms cubic-bezier(.2,1.6,.4,1) both; }
-.is-crafted .runtime-craft-hero-yield { animation: runtime-craft-pop 420ms 760ms cubic-bezier(.2,1.6,.4,1) both; }
-.is-crafted .runtime-craft-hero-frame { animation: runtime-craft-flash 700ms 420ms ease-out both; }
-@keyframes runtime-craft-flash { 0% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 0 var(--craft-ember); } 30% { box-shadow: inset 0 0 30px #ffe7b0, 0 0 36px var(--craft-ember); } 100% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft); } }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-icon { animation: runtime-craft-pop 520ms 480ms cubic-bezier(.2,1.6,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-yield { animation: runtime-craft-pop 420ms 760ms cubic-bezier(.2,1.6,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-frame { animation: runtime-craft-flash 700ms 420ms ease-out both; }
+@keyframes runtime-craft-flash { 0% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 0 var(--craft-ember); } 30% { box-shadow: inset 0 0 30px color-mix(in srgb, var(--craft-ember) 45%, white), 0 0 36px var(--craft-ember); } 100% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft); } }
 
 @keyframes runtime-craft-glow { from { opacity: .55; } to { opacity: 1; } }
 @keyframes runtime-craft-ready { from { box-shadow: inset 0 0 18px var(--shop-card), 0 0 8px var(--craft-ember-soft); } to { box-shadow: inset 0 0 18px var(--shop-card), 0 0 20px color-mix(in srgb, var(--craft-ember) 40%, transparent); } }
@@ -269,12 +270,7 @@
 @keyframes runtime-craft-toast { 0% { transform: translateY(6px) scale(.96); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @keyframes runtime-craft-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
-.runtime-craft-shop-overlay.is-still *, .runtime-craft-shop-overlay.is-still *::before, .runtime-craft-shop-overlay.is-still *::after,
-.runtime-craft-shop-overlay.is-still { animation: none !important; transition: none !important; }
-.runtime-craft-shop-overlay.is-still .runtime-shop-item-row.selected { transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .runtime-craft-shop-overlay *, .runtime-craft-shop-overlay *::before, .runtime-craft-shop-overlay *::after { animation: none !important; transition: none !important; }
-}
+/* 움직임은 전부 :not(.is-still) 아래에만 있다 — .is-still 은 OS 움직임 줄이기·플레이어 설정 둘 다에서 JS 가 붙인다(craftStill). */
 @media (max-width: 860px), (max-height: 600px) {
   .runtime-craft-shell .runtime-shop-brand-sub, .runtime-craft-shell .runtime-shop-keyhints { display: none; }
   .runtime-craft-shell .runtime-shop-merchant-avatar { width: 28px; height: 28px; }
