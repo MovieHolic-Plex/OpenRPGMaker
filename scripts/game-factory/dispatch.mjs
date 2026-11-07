@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Game factory dispatcher: many different games, one owning lane id per game (g01..g30), built in parallel.
 //   node scripts/game-factory/dispatch.mjs --out <runs dir> [--only g01,g02] [--limit 8] [--concurrency 8]
-//        [--specs scripts/game-factory/specs.json] [--cap-min 90] [--smoke-sec 60] [--retries 1] [--dry]
+//        [--specs scripts/game-factory/specs.json] [--cap-min 90] [--smoke-sec 60] [--retries 1] [--no-hint] [--dry]
 // Per game: spawn build-one.sh (coding agent + warm editor host, hard cap) -> save-check v2 (check.py) -> 60 s
 // shipped-player smoke. "capped" (did not finish inside the cap) is its own state and never gets a checker score.
 // <out>/events.jsonl rows follow scripts/qa/pipeline/lib/events.mjs (queued/spawn/ack/progress/done/retry/gauge,
@@ -24,6 +24,7 @@ const MAX_GLOBAL_AGENTS = Number(opt("max-global-agents", process.env.GF_MAX_GLO
 const CAP_MIN = Number(opt("cap-min", SPECS.protocol?.capMin ?? 90));
 const SMOKE_SEC = Number(opt("smoke-sec", 60));
 const RETRIES = Number(opt("retries", 1));
+const WITH_HINT = !argv.includes("--no-hint");
 const CHECKER = opt("checker", process.env.GF_CHECKER ?? "/home/main/claude-viz/save-check/check.py");
 const only = opt("only") ? new Set(opt("only").split(",")) : null;
 let games = SPECS.games.filter((g) => !only || only.has(g.id));
@@ -33,7 +34,7 @@ mkdirSync(OUT, { recursive: true });
 const runId = `gf-${new Date().toISOString().replace(/[:.]/g, "").slice(0, 15)}`;
 const log = createEventLog(resolve(OUT, "events.jsonl"), { owner: "dispatcher", run: runId });
 const emit = (type, game, extra = {}) => log.emit(type, game?.id, game ? { owner: game.id, ...extra } : extra);
-emit("run", null, { games: games.map((g) => g.id), concurrency: CONCURRENCY, capMin: CAP_MIN, smokeSec: SMOKE_SEC, checker: CHECKER });
+emit("run", null, { games: games.map((g) => g.id), withHint: WITH_HINT, concurrency: CONCURRENCY, capMin: CAP_MIN, smokeSec: SMOKE_SEC, checker: CHECKER });
 if (argv.includes("--dry")) { for (const g of games) emit("queued", g, { genre: g.genre }); log.close(); console.log(JSON.stringify(games.map((g) => g.id))); process.exit(0); }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -54,7 +55,7 @@ async function build(game) {
   for (let attempt = 1; attempt <= 1 + RETRIES; attempt += 1) {
     if (attempt > 1) execFileSync("rm", ["-rf", dir]);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(resolve(dir, "prompt.txt"), game.prompt);
+    writeFileSync(resolve(dir, "prompt.txt"), WITH_HINT && game.hint ? `${game.prompt}\n\n(참고: 이 무대에 맞는 편집기 도구·칩셋 — ${game.hint}. ./oprn tools 로 찾아 쓰고, 다른 게임과 같은 마을 칩셋으로 대신하지 마라.)` : game.prompt);
     writeFileSync(resolve(dir, "spec.json"), JSON.stringify(game, null, 2));
     r.attempts = attempt; r.state = "building";
     emit("spawn", game, { attempt, model: process.env.GF_MODEL ?? "opencodex/gpt-6.1-terra", effort: process.env.GF_EFFORT ?? "high" });
