@@ -15,6 +15,7 @@ import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { field, selectField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_CUT_IN_LABELS, BATTLE_COMBO_FXS, BATTLE_COMBO_FX_LABELS, BATTLE_ENEMY_LUNGES, BATTLE_ENEMY_LUNGE_LABELS, BATTLE_PACES, BATTLE_PACE_LABELS, BATTLE_REVEAL_WEAKNESSES, BATTLE_REVEAL_WEAKNESS_LABELS, BATTLE_SKILL_HINTS, BATTLE_SKILL_HINT_LABELS, normalizeBattleStaging, resolveBattleStaging, type BattleComboCutIn, type BattleComboFx, type BattleEnemyLunge, type BattlePace, type BattleRevealWeakness, type BattleSkillHint, type BattleStagingSettings } from "@/project/battleStaging";
 import { BATTLE_FANFARE_STYLES, BATTLE_FANFARE_STYLE_LABELS, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare, type BattleFanfareSettings } from "@/project/battleFanfare";
+import { ENEMY_STILL_MOTION_DESCRIPTION, ENEMY_STILL_MOTION_LABELS, ENEMY_STILL_MOTION_MODES, resolveEnemyStillMotion, type EnemyStillMotionMode } from "@/project/enemyStillMotion";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { applyBattleMethod, BATTLE_METHOD_LABELS, battleMethodOf, type BattleMethod } from "@/project/battleMethod";
@@ -117,7 +118,7 @@ function fanfareCard(project: Project, rerender: () => void): HTMLElement {
   });
 }
 
-/** 전투 연출(system.battleStaging) — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말. */
+/** 전투 연출(system.battleStaging · system.enemyStillMotion) — 적 달려들기 속도·연계기·기술 도움말·적 그림 움직임. */
 function stagingCard(project: Project, rerender: () => void): HTMLElement {
   const current = resolveBattleStaging(project.system.battleStaging);
   const save = (patch: Partial<BattleStagingSettings>): void => {
@@ -139,6 +140,16 @@ function stagingCard(project: Project, rerender: () => void): HTMLElement {
       selectField("기술 도움말", "db-battle-staging-hint", current.skillHint, BATTLE_SKILL_HINTS.map((id) => ({ id, name: BATTLE_SKILL_HINT_LABELS[id] })), (value) => save({ skillHint: value as BattleSkillHint })),
       selectField("적 약점 표시", "db-battle-staging-reveal-weakness", current.revealWeakness, BATTLE_REVEAL_WEAKNESSES.map((id) => ({ id, name: BATTLE_REVEAL_WEAKNESS_LABELS[id] })), (value) => save({ revealWeakness: value as BattleRevealWeakness })),
       selectField("전투 흐름", "db-battle-staging-pace", current.pace, BATTLE_PACES.map((id) => ({ id, name: BATTLE_PACE_LABELS[id] })), (value) => save({ pace: value as BattlePace })),
+      selectField("적 그림 움직임", "db-battle-enemy-still-motion", resolveEnemyStillMotion(project),
+        ENEMY_STILL_MOTION_MODES.map((id) => ({ id, name: ENEMY_STILL_MOTION_LABELS[id] })),
+        (value) => {
+          updateSystem((draft) => {
+            if (value === "all") delete draft.system.enemyStillMotion;
+            else draft.system.enemyStillMotion = value as EnemyStillMotionMode;
+          });
+          rerender();
+        }),
+      el("p", { class: "db-ws-card-hint", text: ENEMY_STILL_MOTION_DESCRIPTION }),
     ],
   });
 }
