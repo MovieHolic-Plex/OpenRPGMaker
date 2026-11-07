@@ -1160,6 +1160,21 @@
     "every assigned effectId is in the catalog (list_pixel_fx) — no invented ids",
     "in the shipped player, using each heal skill in battle shows a visibly different effect"
    ]
+  },
+  {
+   "id": "craft-shop-one-command",
+   "label": "재료 조합 장인은 제작 공방 명령 한 줄로",
+   "port": 19566,
+   "lessons": [
+    "craft-shop-not-hand-built-choices"
+   ],
+   "prompt": "마을 대장간에 재료를 가져오면 물건을 만들어 주는 장인 한 명을 세워 줘. 제작법은 셋: 철광석 2개로 철괴, 철괴 1개+가죽 1개로 가죽 장갑(10G), 철괴 2개+나무 1개로 곡괭이(30G). 재료가 모자라면 왜 못 만드는지 보여 주고, 하나 만든 뒤엔 다시 목록으로 돌아오게.",
+   "requirements": [
+    "the artisan's page uses one {kind:\"openCraftShop\"} command whose recipeIds (or omitted = all) cover exactly the three recipes; no hand-built choices + craftRecipe + gotoLabel loop",
+    "system.craftRecipes holds the three recipes with the stated ingredient counts and goldCost",
+    "projectLint reports no openCraftShop.* error",
+    "in the shipped player, talking to the artisan opens the craft window (data-testid craft-shop-scene) listing three rows, an unaffordable row shows its reason, crafting one returns to the same window, and 그만둔다 closes it"
+   ]
   }
  ]
 }

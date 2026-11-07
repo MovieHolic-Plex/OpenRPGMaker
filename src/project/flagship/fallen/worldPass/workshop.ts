@@ -1,19 +1,17 @@
 /**
  * 재료 조합 공방 — 「재료들 모아서 아이템 조합하는 상점 이런 것도 만들고」(사용자 2026-11-04).
  * 숲에서 줍는 드롭(늑대 송곳니·가죽, 거미 비단·독 주머니, 푸른 불씨)은 지금까지 팔거나 로한의 창에만 썼다.
- * 남쪽 거리의 잠긴 집 하나를 「니나의 공방」으로 열고, 장인 니나가 엔진의 제작 명령(craftRecipe)으로 재료를 쓸모 있는 물건으로 바꾼다.
+ * 남쪽 거리의 잠긴 집 하나를 「니나의 공방」으로 열고, 장인 니나가 제작 공방 명령(openCraftShop) 하나로 재료를 쓸모 있는 물건으로 바꾼다.
+ * (예전에는 선택지+craftRecipe+분기+라벨로 손으로 짠 메뉴였다.)
  * 제작법은 system.craftRecipes 에 둔다 — 같은 제작법이 가방 메뉴 「조합」(두 재료 1개씩)에도 그대로 쓰인다.
  * 실내는 손 도트 실내 v5(build_hand_interior_room) — 약재 작업실 + 작은 대장 작업장 + 재료 창고.
  */
 import type { CraftRecipe } from "@/project/craftRecipes";
 import type { Command, Condition, GameEvent, Project } from "@/project/types";
-import {
-  type Cell, type Exec, type Option, all, chipGraphic, choices, fork, gotoLabel, has, label, mustMap, narrate, page, putEvent, say, se, varCond,
-} from "./common";
+import { type Cell, type Exec, chipGraphic, mustMap, page, putEvent, say } from "./common";
 
 export const FS_WORKSHOP_ID = "fs_workshop";
 const NINA = "공방 장인 니나";
-const RESULT = "var_fs_craft_ok";
 
 type Recipe = CraftRecipe & { readonly pitch: string };
 
@@ -31,25 +29,6 @@ export const FS_WORKSHOP_RECIPES: readonly Recipe[] = [
     outputItemId: "item_fs_star_scent", outputCount: 1, goldCost: 40, pitch: "거미 비단 둘에 푸른 불씨 하나.\n짐승 코를 무디게 하는 향 주머니." },
 ];
 
-const itemName = (project: Project, id: string): string => project.database.items.find((i) => i.id === id)?.name ?? id;
-
-function recipeOption(project: Project, r: Recipe): Option {
-  const need = r.ingredients.map((g) => `${itemName(project, g.itemId)}${g.count > 1 ? ` ${g.count}` : ""}`).join("·");
-  const enough = all(...r.ingredients.map((g) => has(g.itemId)));
-  const out = `${itemName(project, r.outputItemId)}${(r.outputCount ?? 1) > 1 ? ` ${r.outputCount}개` : ""}`;
-  return {
-    text: `${out} ← ${need}${r.goldCost ? ` + ${r.goldCost}G` : ""}`,
-    enableWhen: enough,
-    disabledText: `${need}${r.goldCost ? ` · ${r.goldCost}G` : ""} 가 모자라다`,
-    branch: [
-      say(NINA, r.pitch),
-      { kind: "craftRecipe", recipeId: r.id, resultVariableId: RESULT } satisfies Command,
-      fork(varCond(RESULT, "==", 1), [se("cc0-se-osx-tools-02"), narrate(`「${out}」을 받았다.`)], [say(NINA, `${need}${r.goldCost ? `에 ${r.goldCost}G` : ""}가 다 있어야 해.\n모자라면 숲에서 더 모아 와.`)]),
-      gotoLabel("fs_craft_menu"),
-    ],
-  };
-}
-
 export function buildWorkshop(project: Project, exec: Exec): void {
   const built = exec(project, "build_hand_interior_room", {
     mapId: FS_WORKSHOP_ID, name: "아스텔 · 니나의 공방", ceiling: "wood",
@@ -63,12 +42,10 @@ export function buildWorkshop(project: Project, exec: Exec): void {
   const exitCell = { x: exit.x + Math.floor(((exit.width ?? 1) - 1) / 2), y: exit.y };
   project.system.craftRecipes = [...(project.system.craftRecipes ?? []).filter((r) => !FS_WORKSHOP_RECIPES.some((w) => w.id === r.id)),
     ...FS_WORKSHOP_RECIPES.map(({ pitch: _p, ...r }) => r)];
-  if (!project.variables.some((v) => v.id === RESULT)) project.variables.push({ id: RESULT, name: "공방: 방금 조합 성공(1)" });
   const menu: Command[] = [
-    label("fs_craft_menu"),
     say(NINA, "뭘 만들까? 재료는 네 가방에서 꺼낸다."),
-    choices([...FS_WORKSHOP_RECIPES.map((r) => recipeOption(project, r)), { text: "그만둔다", branch: [say(NINA, "숲에서 주운 건 버리지 말고 가져와.")] }],
-      [say(NINA, "숲에서 주운 건 버리지 말고 가져와.")]),
+    { kind: "openCraftShop", recipeIds: FS_WORKSHOP_RECIPES.map((r) => r.id), title: "니나의 공방", speaker: NINA } satisfies Command,
+    say(NINA, "숲에서 주운 건 버리지 말고 가져와."),
   ];
   putEvent(room, "ev_fs_workshop_nina", NINA, { x: exitCell.x, y: exitCell.y - 4 }, [
     page("ev_fs_workshop_nina_first", "첫 만남", [], [
