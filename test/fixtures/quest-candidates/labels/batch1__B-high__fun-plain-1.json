@@ -1,0 +1,47 @@
+{
+ "game": "batch1__B-high__fun-plain-1",
+ "quests": [
+  {
+   "id": "missing_cake",
+   "title": "사라진 축제 케이크",
+   "giver": {
+    "mapId": "map_moon_bakery",
+    "eventId": "ev_mystery_cake_accuser"
+   },
+   "turnIn": [
+    {
+     "mapId": "map_moon_bakery",
+     "eventId": "ev_mystery_cake_accuser"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "map_moon_bakery",
+     "eventId": "ev_mystery_cake_clue_ribbon"
+    },
+    {
+     "mapId": "map_moon_bakery",
+     "eventId": "ev_mystery_cake_clue_note"
+    }
+   ],
+   "completionFlag": "item_mystery_cake_ribbon",
+   "reason": "달이가 조사를 부탁 → 단서 아이템 두 개 → 달이 페이지 조건(아이템)에서 지목·엔딩"
+  }
+ ],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "map_moon_bakery",
+     "eventId": "ev_mystery_cake_suspect_mori"
+    },
+    {
+     "mapId": "map_moon_bakery",
+     "eventId": "ev_mystery_cake_suspect_nabi"
+    }
+   ],
+   "kind": "dialogue-branch",
+   "reason": "용의자 심문 선택지, 대사 분기뿐"
+  }
+ ]
+}

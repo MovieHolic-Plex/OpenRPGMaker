@@ -57,6 +57,9 @@ export const REWARD_LOOP_RULE =
 export const PROGRESSION_RULE =
   "If the game has any fight or challenge, the player must END stronger than they started, and the difficulty must follow: a starting party (set_party), one skill or weapon gained on the way (upsert_skill / upsert_equipment inside the reward branch), and a second encounter that needs it (place_battle_blocker or a battleProcessing branch with a different troop from upsert_troop). Growth the player never feels is a zero, and so is an HUD number that never changes — either give the number a meaning the player discovers, or hide it with set_field_hud.";
 
+export const REGISTER_QUESTS_RULE =
+  "When the game has a request arc — someone asks the player to fetch, find, collect, defeat, deliver or fix something, the work happens at other events, and the asker (or someone) reacts when it is done — register it in project.quests so the player's quest log shows it: define_quest{id,title,summary,nodes:[{id,description,completesWhen:{kind:'switch',switchId,value:true}}],edges} with the giver's request as summary, one node per step, and completesWhen reading the same switch/variable your events already set (create_quest when you build the arc from scratch). Before you finish, call find_quest_candidates: every candidate it lists is an arc you built but did not register — register it with register_quest_candidate (or define_quest), or leave it only if it is really a key door, a shop, a hint or a puzzle nobody asked for. `qa:game check` warns with code quest-unregistered when quests is empty and candidates exist.";
+
 const OBJECTIVES: readonly string[] = [
   "one starting objective with at:'start' on the start map's autorun (after the opening cutscene), then",
   "for every event that advances the story (hands over a key, shows a flashback, turns on a switch) the next objective with eventId, placed right after that event's switch-on or item gain,",
@@ -103,6 +106,10 @@ export const AGENT_RULES_SECTIONS: readonly { readonly title: string; readonly l
       "In practice:",
       ...STRUCTURE,
     ],
+  },
+  {
+    title: "3b. Register request arcs as quests",
+    lines: [REGISTER_QUESTS_RULE],
   },
   {
     title: "4. Play the whole path to an ending before you report done",

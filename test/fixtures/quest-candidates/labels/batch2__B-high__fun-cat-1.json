@@ -1,0 +1,24 @@
+{
+ "game": "batch2__B-high__fun-cat-1",
+ "quests": [],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "nabi_woods",
+     "eventId": "ev_nabi_stars_seq_1"
+    },
+    {
+     "mapId": "nabi_woods",
+     "eventId": "ev_nabi_stars_seq_3"
+    },
+    {
+     "mapId": "nabi_woods",
+     "eventId": "nabi_star_ending"
+    }
+   ],
+   "kind": "puzzle",
+   "reason": "주인공 독백 + 별 순서 퍼즐, 부탁하는 인물이 없다"
+  }
+ ]
+}

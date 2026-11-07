@@ -1,0 +1,28 @@
+{
+ "game": "batch1__B-high__fun-cat-1",
+ "quests": [
+  {
+   "id": "momo_star",
+   "title": "친구의 별빛 돌",
+   "giver": {
+    "mapId": "momo_forest",
+    "eventId": "momo_friend"
+   },
+   "turnIn": [
+    {
+     "mapId": "momo_forest",
+     "eventId": "momo_friend"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "momo_forest",
+     "eventId": "ev_star_puzzle_password"
+    }
+   ],
+   "completionFlag": "momo_star",
+   "reason": "친구가 별빛 돌을 먼저 찾아 달라 함 → 암호 → 친구에게 가면 엔딩"
+  }
+ ],
+ "notQuests": []
+}

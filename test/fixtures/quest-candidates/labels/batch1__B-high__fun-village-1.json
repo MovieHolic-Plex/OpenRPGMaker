@@ -1,0 +1,32 @@
+{
+ "game": "batch1__B-high__fun-village-1",
+ "quests": [
+  {
+   "id": "star_shard",
+   "title": "별조각 찾아오기",
+   "giver": {
+    "mapId": "map_beodeul_river_95190",
+    "eventId": "ev_npc_dcb5deea-c128-4e25-93df-a9b099e60989"
+   },
+   "turnIn": [
+    {
+     "mapId": "map_beodeul_river_95190",
+     "eventId": "ev_npc_dcb5deea-c128-4e25-93df-a9b099e60989"
+    },
+    {
+     "mapId": "map_beodeul_river_95190",
+     "eventId": "star_well"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "map_beodeul_river_95190",
+     "eventId": "star_shard"
+    }
+   ],
+   "completionFlag": "sw_star_found",
+   "reason": "촌장이 별조각을 받아 오라 부탁 → 별조각 스위치 → 촌장 대사 변화·우물 엔딩"
+  }
+ ],
+ "notQuests": []
+}
