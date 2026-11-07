@@ -1,0 +1,61 @@
+{
+ "game": "L6__L__fun-cat-1",
+ "quests": [
+  {
+   "id": "moon_spring",
+   "title": "달빛 샘의 루미 찾기",
+   "giver": {
+    "mapId": "sunny_village",
+    "eventId": "dotori"
+   },
+   "turnIn": [
+    {
+     "mapId": "sunny_village",
+     "eventId": "dotori"
+    },
+    {
+     "mapId": "moon_spring",
+     "eventId": "lumi"
+    }
+   ],
+   "stepEvents": [
+    {
+     "mapId": "moss_forest",
+     "eventId": "ev_moss_paw_sequence_seq_1"
+    },
+    {
+     "mapId": "moss_forest",
+     "eventId": "ev_moss_paw_sequence_seq_2"
+    },
+    {
+     "mapId": "moon_spring",
+     "eventId": "lumi"
+    }
+   ],
+   "completionFlag": "spring_restored",
+   "reason": "도토리가 루미를 찾아 달라 부탁 → 숲 장치·루미 → spring_restored 로 도토리 대사 변화·엔딩"
+  }
+ ],
+ "notQuests": [
+  {
+   "events": [
+    {
+     "mapId": "moss_forest",
+     "eventId": "ev_gate_3daac218-7280-4db0-96dd-a047687251f9"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "스위치를 보는 막힌 길"
+  },
+  {
+   "events": [
+    {
+     "mapId": "moon_spring",
+     "eventId": "moon_vine"
+    }
+   ],
+   "kind": "key-door",
+   "reason": "스킬로 걷는 덩굴"
+  }
+ ]
+}

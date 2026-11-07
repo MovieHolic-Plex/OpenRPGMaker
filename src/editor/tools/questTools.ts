@@ -15,6 +15,7 @@ import { storyFlagById } from "@/project/storyFlags";
 import type { Project } from "@/project/types";
 import { isStepQuestDef, questDefId, type QuestGraphDef } from "@/project/quest/questDef";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
+import { findQuestCandidates, pendingQuestCandidates, registerQuestCandidate } from "@/project/quest/questCandidates";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { parseQuestDef, QUEST_DEF_SCHEMA, QUEST_DEF_HINT, QUEST_DEF_EXAMPLE, QUEST_GRAPH_CONDITION_SCHEMA, QUEST_GRAPH_HINT } from "./questToolSchemas";
 
@@ -256,7 +257,41 @@ function linkStoryFlagsToQuest(project: Project, graph: QuestGraphDef): void {
   }
 }
 
+const findQuestCandidatesTool: ToolDefinition = {
+  name: "find_quest_candidates",
+  description: "이벤트로만 지은 부탁·심부름 흐름(부탁 대사 → 다른 이벤트가 스위치/변수/아이템을 씀 → 부탁자가 그 값을 보고 반응)을 찾아 퀘스트 후보로 돌려준다. 각 후보는 신뢰도·이벤트 id·define_quest 에 그대로 넘길 draft 를 가진다. 게임을 다 지었는데 project.quests 가 비었으면 부르고, 맞는 후보는 register_quest_candidate 로 등록한다. all:true 면 이미 등록된 흐름·낮은 신뢰도도 보인다.",
+  mode: "read",
+  parameters: { type: "object", properties: { all: { type: "boolean" } } },
+  run(project, args): ToolExecResult {
+    const candidates = args.all === true ? findQuestCandidates(project) : pendingQuestCandidates(project);
+    return {
+      summary: candidates.length === 0 ? "퀘스트처럼 보이는 미등록 흐름 없음" : `${candidates.length}개 흐름이 퀘스트처럼 보입니다 — 등록할까요? ${candidates.map((c) => `${c.title}(${Math.round(c.confidence * 100)}%)`).join(", ")}`,
+      data: { candidates },
+    };
+  },
+};
+
+const registerQuestCandidateTool: ToolDefinition = {
+  name: "register_quest_candidate",
+  description: "find_quest_candidates 의 후보 id 하나를 초안 퀘스트 그래프로 project.quests 에 등록한다. 이벤트는 바꾸지 않는다(진행 값은 이미 이벤트가 쓴다). 등록하면 플레이어 퀘스트 로그에 바로 나타난다. 제목·단계 문구는 등록 뒤 define_quest 로 같은 id 를 다시 써서 다듬는다.",
+  mode: "write",
+  parameters: { type: "object", properties: { candidateId: { type: "string" } }, required: ["candidateId"] },
+  run(draft, args): ToolExecResult {
+    const candidate = findQuestCandidates(draft).find((entry) => entry.id === args.candidateId);
+    if (!candidate) throw new ToolError(`퀘스트 후보를 찾을 수 없습니다: ${String(args.candidateId)} — find_quest_candidates 로 현재 id 를 다시 읽으세요.`, { code: "quest-candidate" });
+    if (candidate.registeredAs) throw new ToolError(`이 흐름은 이미 퀘스트 '${candidate.registeredAs}' 로 등록돼 있습니다.`, { code: "quest-candidate" });
+    try {
+      const quest = registerQuestCandidate(draft, candidate);
+      return { summary: `퀘스트 초안 등록: ${quest.title} (${quest.nodes.length}단계)`, data: { quest } };
+    } catch (cause) {
+      throw new ToolError(cause instanceof Error ? cause.message : String(cause), { code: "quest-candidate" });
+    }
+  },
+};
+
 export const QUEST_TOOLS: readonly ToolDefinition[] = [
+  findQuestCandidatesTool,
+  registerQuestCandidateTool,
   createQuestFlags,
   createQuest,
   defineQuest,

@@ -110,7 +110,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["이벤트", "event"], tools: ["upsert_event", "patch_event_page", "event_command_assist", "place_npc"], label: "이벤트" },
   { terms: ["npc", "주민", "마을 사람", "villager", "대화"], tools: ["place_npc", "make_villager", "author_npc_cast"], label: "NPC" },
   { terms: ["스위치", "변수", "플래그", "story flag", "flag", "switch", "variable"], tools: ["declare_story_flag", "find_flag_usage", "rename_switch", "rename_variable"], label: "스위치·변수·플래그" },
-  { terms: ["퀘스트", "의뢰", "quest"], tools: ["define_quest", "create_quest", "verify_quest"], label: "퀘스트" },
+  { terms: ["퀘스트", "의뢰", "quest"], tools: ["define_quest", "create_quest", "verify_quest", "find_quest_candidates"], label: "퀘스트" },
   { terms: ["배지", "뱃지", "휘장", "배지 획득", "배지 연출", "관장 승리", "badge", "badge ceremony", "gym badge"], tools: ["configure_monster_campaign", "read_monster_game"], label: "배지(체육관 승리 연출·아이콘)" },
   { terms: ["시간문", "시간 여행", "과거로", "time gate", "time travel", "time portal"], tools: ["create_time_gate", "create_transfer_pair"], label: "시간문" },
   { terms: ["잠긴 문", "문 잠그기", "문을 잠", "못 나가는 문", "locked door", "lock door", "lock the door"], tools: ["lock_door", "create_transfer_pair"], label: "잠긴 문" },
