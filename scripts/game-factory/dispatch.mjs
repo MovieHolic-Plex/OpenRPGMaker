@@ -40,7 +40,7 @@ if (argv.includes("--dry")) { for (const g of games) emit("queued", g, { genre: 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const readRun = (dir) => { try { return Object.fromEntries(readFileSync(resolve(dir, "RUN.txt"), "utf8").split(/\s+/).filter((w) => w.includes("=")).map((w) => w.split(/=(.*)/s).slice(0, 2))); } catch { return {}; } };
 const lines = (file) => { try { return readFileSync(file, "utf8").split("\n").filter(Boolean).length; } catch { return 0; } };
-const globalAgents = () => { try { return Number(execFileSync("bash", ["-c", "pgrep -f 'bin/[o]mp -p' | wc -l"]).toString().trim()); } catch { return 0; } };
+const globalAgents = () => { try { return Number(execFileSync("bash", ["-c", "pgrep -fc '[b]uild-one.sh'"]).toString().trim()); } catch { return 0; } };
 const run = (cmd, args, opts) => new Promise((done) => { const c = spawn(cmd, args, { cwd: REPO, stdio: ["ignore", "pipe", "pipe"], ...opts }); let out = ""; let err = ""; c.stdout.on("data", (d) => { out += d; }); c.stderr.on("data", (d) => { err = (err + d).slice(-4000); }); c.on("close", (code) => done({ code, out, err })); });
 
 const results = new Map(games.map((g) => [g.id, { id: g.id, genre: g.genre, state: "queued", attempts: 0 }]));
