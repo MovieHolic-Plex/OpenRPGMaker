@@ -767,9 +767,20 @@ function lootCounts(snapshot: BattleSnapshot): Map<string, number> {
   return counts;
 }
 
+/**
+ * 머리 창 전리품 글자. 한 종이면 「이름 ×n」, 두 종 이상이면 「첫 이름 ×n 외 N종」 — 전부 잇으면 191px 칸에서
+ * 「늑대 가죽 ×1 · 늑대 …」 로 잘렸다(폴른 스타 QA B6). 항목별 수량은 아래 전리품 창이 한 줄에 하나씩 보인다.
+ */
+export function resultHeadLootText(entries: readonly { readonly name: string; readonly count: number }[]): string {
+  const [first, ...rest] = entries;
+  if (!first) return "";
+  const head = `${first.name} ×${first.count}`;
+  return rest.length === 0 ? head : `${head} 외 ${rest.length}종`;
+}
+
 /** 머리 창 — 승리 제목 · EXP · 돈 · 전리품 이름을 한 줄에. */
 function resultHead(project: Project, snapshot: BattleSnapshot): HTMLElement {
-  const loot = [...lootCounts(snapshot)].map(([itemId, count]) => `${itemName(itemId)} ×${count}`).join(" · ");
+  const loot = resultHeadLootText([...lootCounts(snapshot)].map(([itemId, count]) => ({ name: itemName(itemId), count })));
   return el("div", {
     class: "battle-result-summary",
     dataset: { testid: "battle-result-summary" },

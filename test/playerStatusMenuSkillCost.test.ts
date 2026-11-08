@@ -77,6 +77,21 @@ describe("status menu skill cost", () => {
     expect(row.value).toBe("MP 14");
   });
 
+  it("party row shows the skill count, and the drill-down lists every skill", () => {
+    // 이름을 다 잇던 행이 1890px 로 늘어 열 경계에서 잘렸다(폴른 스타 QA, 2026-11-08).
+    const { project, session } = skillMenu();
+    const names = project.database.skills.slice(0, 13);
+    session.actorSkillIds = { ...session.actorSkillIds, actor_hero: names.map((skill) => skill.id) };
+    const party = createStatusMenuDetail({ project, session, slots: [], waitModeEnabled: true, selectedCommand: "skills" });
+    const heroRow = party.entries.find((entry) => entry.testId === "status-menu-skill-actor-actor_hero")!;
+    const listed = createStatusMenuDetail({
+      project, session, slots: [], waitModeEnabled: true, selectedCommand: "skills", skillActorId: "actor_hero",
+    }).entries;
+    expect(listed.length).toBeGreaterThanOrEqual(names.length);
+    expect(heroRow.value).toBe(`스킬 ${listed.length}개`);
+    for (const skill of names) expect(heroRow.value).not.toContain(skill.name);
+  });
+
   it("paints the same cost on the skill screen row", () => {
     const restore = installFakeDom();
     try {

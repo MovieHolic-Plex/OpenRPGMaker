@@ -1,7 +1,7 @@
 import { setCharacterBaseOrigin, characterBaseOrigin } from "./characterOrigin";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
-import { resourceDisplayName } from "@/player/resourceDisplay";
+import { audioIndicatorText } from "@/player/resourceDisplay";
 import type {
   AutonomousNpcSceneContext,
   AutonomousNpcSprite,
@@ -43,5 +43,6 @@ export function playMoveRouteSound(scene: AutonomousNpcSceneContext, resourceId:
   const normalized = resourceId.trim();
   if (!normalized) return;
   setAudioState(scene.session, { channel: "se", resourceId: normalized, loop: false });
-  scene.showRuntimeOverlay?.("audio-indicator", resourceDisplayName(normalized, normalized));
+  const label = audioIndicatorText(normalized);
+  if (label) scene.showRuntimeOverlay?.("audio-indicator", label);
 }

@@ -296,10 +296,8 @@
   right: 52px;
 }
 
+/* 키 안내는 결과 패널 흐름 안에 둔다. 예전 `position:absolute; bottom:-388px` 는 공용 규칙이라
+   grid-area 만 주는 스킨(픽셀·glass)에서도 살아남아 안내가 화면 밖으로 나갔다(2026-11-08 폴른 스타 QA). */
 .battle-result-next-prompt {
-  bottom: -388px;
   color: #fff;
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
 }
