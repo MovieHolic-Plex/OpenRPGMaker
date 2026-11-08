@@ -19,7 +19,10 @@ export async function setup() {
   } catch {
     running = await startPlayerQaServer();
   }
-  process.env.PLAYER_QA_URL = running.url;
+  // The benches open this URL as-is (`page.goto(PLAYER_QA_URL ?? ".../player.html")`). The server root serves the editor's
+  // index.html (src/main.ts), which under the player alias fails with "exportAppModeShim.ts does not provide an export
+  // named 'bootApp'" — the error titleEffectsShader.browser reports. Point at the player page, like the benches' defaults.
+  process.env.PLAYER_QA_URL = `${running.url}/player.html`;
 }
 
 export async function teardown() {
