@@ -562,7 +562,7 @@ export function applyFallenMobBalance(project: Project, exec: Exec): void {
  * 근거: 이야기 순서 50부대를 「특성을 모르는 / 아는」 두 자동 전투 정책으로 200판씩 잰 표에서 잡몹 41부대가 모두 밴드 밖(모름 >40% 또는 앎 >70%)이었다
  * (http://mdc-server:18301/autopilot-usability.html). 지식 의존 부대(도깨비불·재의 회수자·달빛의 용)·보스·결투·우두머리는 넣지 않는다.
  * 규칙: 아래 무리의 적 중 **다른 무리에 나오지 않는 적만**(같은 적을 보스·우두머리 무리와 나눠 쓰면 건드리지 않는다) 약점 B(×1.5)를 A(×2)로,
- * 최대 HP 를 ×1.15. 서리 박쥐 두 무리(눈 북쪽 1·얼음 호수)는 특성 장치 파일럿(#4421, 무기 무효·HP ×1.6)이 따로 맞추므로 뺐다 — 겹치면 HP ×1.84 로 밴드를 벗어난다. 전역 속성 배율(elements.damageMultipliers)은 바꾸지 않는다 — 보스·지식 의존 부대까지 움직이므로(ultrabrain 판정).
+ * 최대 HP 를 ×1.15. 서리 박쥐 두 무리·숯덩이 골렘·탑 파수 기계는 특성 장치(#4421, 무기 무효·HP 배수)가 따로 맞추므로 뺐다 — 겹치면 HP 가 ×1.15 더 붙어 밴드를 벗어난다. 전역 속성 배율(elements.damageMultipliers)은 바꾸지 않는다 — 보스·지식 의존 부대까지 움직이므로(ultrabrain 판정).
  */
 export const FS_WEAKNESS_TRASH_TROOPS: readonly string[] = [
   "troop_fs_wolves",
@@ -588,7 +588,6 @@ export const FS_WEAKNESS_TRASH_TROOPS: readonly string[] = [
   "troop_fs2_ash_wisps",
   "troop_fs2_ash_wisps_pair",
   "troop_fs2_ash_crows",
-  "troop_fs2_cinder_golem",
   "troop_fs2_starved_dogs",
   "troop_fs2_ash_snakes",
   "troop_fs2_fort_dogs",
@@ -598,7 +597,6 @@ export const FS_WEAKNESS_TRASH_TROOPS: readonly string[] = [
   "troop_fs2_fort_knights_out",
   "troop_fs2_frost_wolves",
   "troop_fs2_frost_mixed",
-  "troop_fs2_tower_sentinel",
   "troop_fs2_tower_moths",
   "troop_fs2_tower_bats",
   "troop_fs2_tower_spiders",
