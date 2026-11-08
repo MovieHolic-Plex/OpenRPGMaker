@@ -1444,7 +1444,8 @@ function wrapPageSettingsAsAccordion(
   // 「시작 방식」(말을 걸면/닿으면/자동…)은 «이 NPC 와 어떻게 대화가 시작되는가» 라 「모습과 대화」가
   // 소유한다. 2026-09-19 조건 모달 재설계가 이 묶음을 when 에서 뺀 뒤 아무도 claim 하지 않아
   // 새 이벤트마다 「기타 · 분류 없음 1개」 가 생겼고 핵심 설정이 그 안에 숨었다(2026-09-27 실측).
-  const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic'], [data-testid='event-page-trigger-priority-stack']"));
+  // 「상시 효과」(#4121)는 모습에 붙는 연출이라 같은 그룹이 claim 한다 — 빠지면 모든 이벤트에 「기타」 그룹이 생긴다.
+  const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic'], [data-testid='event-classic-pixel-fx'], [data-testid='event-page-trigger-priority-stack']"));
   // 등장 조건만 모달로 옮긴다. 시작 방식·우선순위·통행은 다른 설정 그룹의 책임이다.
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
