@@ -157,10 +157,15 @@ describe("commandRegistry", () => {
     }
   });
 
-  it("공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다", () => {
+  it("공통 저작 작업은 명령 팔레트에 한 이름으로 정확히 한 번 등록된다", () => {
     const ids = listEditorCommands().map((command) => command.id);
-    for (const task of ["map", "event", "data", "test"]) {
+    for (const task of ["map", "event"]) {
       expect(ids.filter((id) => id === `authoring-task-${task}`)).toHaveLength(1);
+    }
+    // 70b8883f24: 「작업: 데이터」·「작업: 테스트」는 「자료집 열기」·「테스트 실행」과 같은 일이라 걷었다 — 한 명령 한 이름.
+    for (const [task, canonical] of [["data", "open-database"], ["test", "test-play"]] as const) {
+      expect(ids, `authoring-task-${task}`).not.toContain(`authoring-task-${task}`);
+      expect(ids.filter((id) => id === canonical), canonical).toHaveLength(1);
     }
   });
 
