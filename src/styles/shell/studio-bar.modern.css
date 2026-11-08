@@ -938,6 +938,15 @@
   scrollbar-width: thin;
 }
 
+/* 4단계에서 바를 가로로 밀면 오른쪽 끝 「테스트 실행」이 화면 밖으로 나가 폰 폭(390)에서 처음 만든 게임을 돌려 볼 길이 없었다
+   (2026-11-08 autopilot-usability D4: 인터뷰로 만든 직후 mode-play x≥390). 밀어도 그 단추만은 바의 오른쪽 끝에 붙여 둔다. */
+.oprn-menu-bar.studio-bar[data-fit-level="4"] > .studio-bar-trailing {
+  background: var(--bg-base);
+  position: sticky;
+  right: 0;
+  z-index: 1;
+}
+
 
 /* ── 15. 상태 줄 — 지금 도구와 저장 상태를 글자로(IS-009·IS-036) ─────────────────────────── */
 .studio-status-strip {
