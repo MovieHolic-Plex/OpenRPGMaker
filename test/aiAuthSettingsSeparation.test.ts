@@ -67,6 +67,27 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+/**
+ * 패널의 /auth/status 조회 순서를 스크립트한다: (1) 선택 제공자 mount 조회 → (2..N) 비선택 카드 필 조회(미해결) →
+ * (N+1) 첫 follow-up 조회. N 은 레지스트리 크기다 — abaa03e78f(2026-11-02) 이후 17종이라 필 조회가 16건이다.
+ * followUp 이 undefined 면 follow-up 도 미해결로 둔다.
+ */
+async function scriptStatusCalls(
+  mount: Record<string, unknown>,
+  followUp?: (resolve: (value: unknown) => void) => void,
+): Promise<void> {
+  const { providers } = await loadDeps();
+  const mountAndPills = providers.OH_MY_PI_PROVIDERS.length;
+  let calls = 0;
+  fetchChatGptAuthStatus.mockImplementation(() => {
+    calls += 1;
+    if (calls === 1) return Promise.resolve(mount);
+    if (calls <= mountAndPills || !followUp) return new Promise(() => undefined);
+    if (calls === mountAndPills + 1) return new Promise((resolve) => followUp(resolve));
+    return Promise.resolve(mount);
+  });
+}
+
 /** 패널을 렌더하고 루트를 돌려준다. providerId 를 지정하면 그 제공자로 시작한다. */
 async function render(providerId?: string): Promise<{ root: FakeElement; dispose: () => void }> {
   const { llm } = await loadDeps();
@@ -957,15 +978,10 @@ describe("동일 제공자 상태·로그인 경쟁 (결함 A)", () => {
   });
 
   it("재확인 중에는 연결 해제가 막힌다 (상호 배타 — 이전 결함 A 시나리오)", async () => {
-    // 첫 조회: 저장됨 → 연결 해제 버튼이 보인다.
-    fetchChatGptAuthStatus.mockResolvedValueOnce({ connected: true, env: false, planType: "plus" });
-    // 두 번째 호출은 비선택 카드 필 조회다 — 이 계약과 무관하므로 미해결로 둔다.
-    fetchChatGptAuthStatus.mockImplementationOnce(() => new Promise(() => undefined));
-    // 재확인(로그인)이 시작하는 세 번째 조회는 미해결로 붙잡아 둔다.
+    // 첫 조회: 저장됨 → 연결 해제 버튼이 보인다. 비선택 카드 필 조회는 이 계약과 무관하므로 미해결로 둔다.
+    // 재확인(로그인)이 시작하는 follow-up 조회는 미해결로 붙잡아 둔다.
     let resolveRecheck!: (value: unknown) => void;
-    fetchChatGptAuthStatus.mockImplementationOnce(
-      () => new Promise((resolve) => { resolveRecheck = resolve; }),
-    );
+    await scriptStatusCalls({ connected: true, env: false, planType: "plus" }, (resolve) => { resolveRecheck = resolve; });
     refreshCompanionAuth.mockResolvedValue({});
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
@@ -1004,10 +1020,8 @@ describe("동일 제공자 상태·로그인 경쟁 (결함 A)", () => {
     startChatGptLogin.mockImplementationOnce(
       () => new Promise((resolve) => { resolveLogin = resolve; }),
     );
-    fetchChatGptAuthStatus
-      .mockResolvedValueOnce({ connected: false })                             // 첫 render 조회
-      .mockImplementationOnce(() => new Promise(() => undefined))              // 비선택 카드 필 조회
-      .mockImplementationOnce(() => new Promise((resolve) => { resolveFollowUp = resolve; })); // follow-up
+    // 첫 render 조회 → 비선택 카드 필 조회(미해결) → follow-up(미해결로 붙잡는다)
+    await scriptStatusCalls({ connected: false }, (resolve) => { resolveFollowUp = resolve; });
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve(); // 첫 상태 조회 resolve
 
@@ -1083,10 +1097,8 @@ describe("OAuth 액션 상호 배타 — 연결 해제 vs 재확인/로그인", 
   });
 
   it("재확인(로그인)이 status 를 끝까지 기다리는 동안 연결 해제를 막는다", async () => {
-    fetchChatGptAuthStatus
-      .mockResolvedValueOnce({ connected: true, env: false, planType: "plus" })
-      .mockImplementationOnce(() => new Promise<void>(() => {})) // 비선택 카드 필 조회
-      .mockImplementationOnce(() => new Promise<void>(() => {})); // follow-up 재확인 조회
+    // 첫 조회 → 비선택 카드 필 조회(미해결) → follow-up 재확인 조회(미해결)
+    await scriptStatusCalls({ connected: true, env: false, planType: "plus" });
     refreshCompanionAuth.mockResolvedValue({});
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
