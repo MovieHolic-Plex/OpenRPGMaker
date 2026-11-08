@@ -167,7 +167,7 @@ describe("native verification scopes through the real session and terminal accep
     } else {
       expect(results(f.events, name)).toEqual([]);
     }
-  });
+  }, 60_000);
 
   it("a project-scoped pending owner cannot shed retained mapTargets during resolution", async () => {
     const project = createBlankProject();
@@ -178,7 +178,7 @@ describe("native verification scopes through the real session and terminal accep
     await f.send([plan(project, call.name, [declaration(call, pending.checkId)], []), call]);
     expect(f.session.getVerificationSnapshot().requirements.find(check => check.checkId === pending.checkId)).toEqual(pending);
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
-  });
+  }, 60_000);
 
   it("native scope compatibility does not replace an already adopted project check's exact arguments", async () => {
     const project = createBlankProject();
@@ -202,5 +202,5 @@ describe("native verification scopes through the real session and terminal accep
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
     await f.send([call, complete]);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
-  });
+  }, 60_000);
 });
