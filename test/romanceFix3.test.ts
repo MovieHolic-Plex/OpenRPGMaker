@@ -1,6 +1,6 @@
 // 연애 시뮬레이션 두 번째 측정 수리(2026-10-16) — 미실행(이 세션은 테스트·게이트 금지). 기대값은 qa-runs 실측과 같은 방향이다.
 import { describe, expect, it } from "vitest";
-import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { findNpcGraphicMatches } from "@/assets/charsetQuery";
 import { friendshipShortName } from "@/project/friendship";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
@@ -8,8 +8,8 @@ import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
 describe("romance fix 3", () => {
   it("일반 질의(villager)도 Modern 연애 칩을 사람으로 센다", () => {
     // 이 경우는 「Modern 칩이 사람 후보에 든다」를 본다 — 순위가 아니다. scarloxy 사람 시트가 늘어(#2335 뒤 OPRN 사람 칩 추가)
-    // 상위 20 은 다른 시트가 채우므로 후보 전체(최대 100)에서 찾는다.
-    const keys = queryNpcGraphics("villager", 100).map((match) => match.entry.textureKey);
+    // 사람 칩이 100 장을 넘어(queryNpcGraphics 는 최대 100 으로 자른다) 후보 전체(findNpcGraphicMatches)에서 찾는다.
+    const keys = findNpcGraphicMatches("villager").map((match) => match.entry.textureKey);
     expect(keys.some((key) => key.startsWith("tex_oprn_charset_modern"))).toBe(true);
   });
 
