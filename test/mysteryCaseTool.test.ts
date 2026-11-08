@@ -733,8 +733,8 @@ describe("author_mystery_case — 대사 앞 「이름:」", () => {
     expect(lines[1]).toMatchObject({ speaker: "경비대장 로버트", body: "자, 시작하지." });
     const faces = (list: readonly Command[]) => list.map((command) => command.kind === "changeFace" ? (command.resourceId ? "F" : "-") : command.kind === "text" ? (command as { speaker?: string }).speaker : null).filter(Boolean);
     const seq = faces(first);
-    // 탐정 줄 앞에는 얼굴이 내려가 있고, 로버트 줄 앞에서 다시 올라온다.
-    expect(seq.slice(0, 4)).toEqual(["F", "-", "탐정", "F"]);
+    // 얼굴은 이 인물이 말하는 줄 바로 앞에만 놓인다(placeSpeakerFace) — 탐정 줄 앞에는 얼굴이 처음부터 없고(맨 앞 얼굴·지움 쌍이 사라졌다), 로버트 줄 앞에서 올라온다.
+    expect(seq.slice(0, 3)).toEqual(["탐정", "F", "경비대장 로버트"]);
     const solved = allCommands(accuser).filter((command) => command.kind === "text" && command.body.includes("들켰군요"));
     expect(solved[0]).toMatchObject({ speaker: "집사 토마스", body: "…들켰군요." });
   });
