@@ -13,6 +13,7 @@ import { applySetTimeStep } from "@/player/playSceneTime";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import type { RuntimeSafetyStop } from "@/player/runtimeSafetyStop";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
@@ -109,6 +110,7 @@ type TestHookWindow = Window & {
   /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
   __oprnPerf?: () => RuntimePerfCounters | null;
   __oprnEmotes?: () => readonly SceneEmoteDebug[];
+  __oprnSafetyStops?: () => readonly RuntimeSafetyStop[];
   /** 구름 그림자 레이어 관측. 계측이 꺼진 씬에는 없다. */
   __oprnCloudShadows?: () => CloudShadowDebug;
   __oprnSunlight?: () => ReturnType<typeof sunlightDiagnostics>;
@@ -309,6 +311,7 @@ export function installPlaySceneTestHooks(
   w.__oprnSunlight = () => sunlightDiagnostics(scene);
   w.__oprnTransit = () => transitDebugState(scene as PlaySceneContext);
   w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
+  w.__oprnSafetyStops = () => [...((scene as unknown as Partial<PlaySceneContext>).safetyStops ?? [])];
 
   w.__oprnActionCombat = () => actionCombatDebug(scene);
   const proofController = new AbortController();

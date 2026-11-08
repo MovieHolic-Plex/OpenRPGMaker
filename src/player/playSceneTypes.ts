@@ -34,6 +34,9 @@ export type ParallelProcess = {
    * 이것부터 처리한다. 예전에는 버려져서 17번째 명령(타일 변경·대기 등)이 조용히 사라졌다(퍼징 반례).
    */
   pendingResult?: import("./interpreter").StepResult;
+  /** 이 실행이 한 번이라도 대기·블로킹으로 양보했는가. 양보 없이 예산을 다 쓴 실행만 안전 정지로 세운다. */
+  yielded?: boolean;
+  safetyStop?: import("@/player/runtimeSafetyStop").RuntimeSafetyStop;
 };
 
 /** 걷는 NPC 가 떠난 칸을 보고 눌러도 말을 거는 여유(ms). */
@@ -273,6 +276,10 @@ export interface PlaySceneContext extends Phaser.Scene {
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;
   autoStartedKeys: Set<string>;
+  /** 걸음 없이 같은 자동 실행이 다시 시작된 횟수. 맵을 다시 읽어도 지우지 않는다(playSceneSafetyStop.ts). */
+  autorunRepeats?: Map<string, { step: number; count: number }>;
+  /** 이번 플레이에서 테스트 안전 레일이 멈춘 기록. 상태 JSON·__oprnSafetyStops 로 도구가 읽는다. */
+  safetyStops?: import("@/player/runtimeSafetyStop").RuntimeSafetyStop[];
   pageMoveRouteKeys: Set<string>;
   pageMoveRouteEventIds: Set<string>;
   commandMoveRouteEventIds: Set<string>;

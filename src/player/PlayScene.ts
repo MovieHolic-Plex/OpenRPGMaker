@@ -87,6 +87,7 @@ import {
   showEndingScreen as showSceneEndingScreen,
   returnToTitle as returnSceneToTitle,
 } from "@/player/playSceneOverlays";
+import type { RuntimeSafetyStop } from "@/player/runtimeSafetyStop";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
@@ -164,6 +165,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();
   autoStartedKeys: Set<string> = new Set();
+  autorunRepeats: Map<string, { step: number; count: number }> = new Map();
+  safetyStops: RuntimeSafetyStop[] = [];
   pageMoveRouteKeys: Set<string> = new Set();
   pageMoveRouteEventIds: Set<string> = new Set();
   commandMoveRouteEventIds: Set<string> = new Set();

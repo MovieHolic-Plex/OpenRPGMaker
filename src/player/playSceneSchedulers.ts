@@ -33,6 +33,8 @@ import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { reportEndingClear } from "@/player/playSceneOverlays";
+import { recordSceneSafetyStop } from "@/player/playSceneSafetyStop";
+import { createSafetyStop } from "@/player/runtimeSafetyStop";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 import { keptEventOpacity } from "@/player/eventOpacityOverrides";
 
@@ -128,7 +130,7 @@ function createParallelProcess(
   event: { event: { id: string; commands: Command[] }; page?: { commands: Command[] } },
   pageId: string
 ): ParallelProcess {
-  const process = {
+  const process: ParallelProcess = {
     pageId,
     currentEventId: event.event.id,
     interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
@@ -136,6 +138,7 @@ function createParallelProcess(
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+      onSafetyStop: (stop) => { process.safetyStop ??= stop; },
     }),
     waitMs: 0,
     started: false,
@@ -147,12 +150,13 @@ function createParallelProcess(
 function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent): ParallelProcess {
   scene.session.commonEvents = store.getCurrent().commonEvents;
   const project = store.getCurrent();
-  const process = {
+  const process: ParallelProcess = {
     pageId: event.id,
     interpreter: createInterpreter(event.commands, scene.session, project, {
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+      onSafetyStop: (stop) => { process.safetyStop ??= { ...stop, eventId: undefined, commonEventId: event.id }; },
     }),
     waitMs: 0,
     started: false,
@@ -202,11 +206,13 @@ function consumeParallelSteps(
     if (result.kind === "wait") {
       flushSurfaces();
       process.waitMs = result.ms;
+      process.yielded = true;
       return;
     }
     if (result.kind === "battleProcessing") {
       flushSurfaces();
       queueScheduledBattle(scene, key, process, result, consumeParallelSteps);
+      process.yielded = true;
       return;
     }
     if (result.kind === "pathfindMove") {
@@ -233,6 +239,7 @@ function consumeParallelSteps(
           }
           consumeParallelSteps(scene, key, process, process.interpreter.resume(undefined));
         });
+        process.yielded = true;
         return;
       }
       result = process.interpreter.resume(undefined);
@@ -241,6 +248,7 @@ function consumeParallelSteps(
     if (result.kind === "advanceTime" || result.kind === "sleepUntilMorning") {
       flushSurfaces();
       startParallelTimeTransition(scene, key, process, result);
+      process.yielded = true;
       return;
     }
     if (applyNonBlockingStep(scene, result, process.currentEventId)) {
@@ -258,6 +266,7 @@ function consumeParallelSteps(
     }
     flushSurfaces();
     process.waitMs = 100;
+    process.yielded = true;
     return;
   }
   flushSurfaces();
@@ -265,6 +274,12 @@ function consumeParallelSteps(
   if (result.kind !== "done") process.pendingResult = result;
   if (result.kind === "done") {
     releaseCutsceneControlForOwner(scene.session, process.currentEventId);
+    if (process.safetyStop && !process.yielded) {
+      // 한 번도 양보하지 않고 예산을 다 쓴 병렬은 지우면 다음 프레임에 새로 만들어져 매 프레임 같은 예산을 태운다. 멈춘 채 둔다.
+      recordSceneSafetyStop(scene, createSafetyStop({ ...process.safetyStop }));
+      process.stopped = true;
+      return;
+    }
     scene.parallelProcesses.delete(key);
   }
 }

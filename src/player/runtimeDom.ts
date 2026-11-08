@@ -142,6 +142,7 @@ export interface RuntimeStateSnapshot extends LifeRuntimeSnapshot {
   readonly mapId: string;
   readonly inputEnabled: boolean;
   readonly running: boolean;
+  readonly safetyStops?: readonly import("@/player/runtimeSafetyStop").RuntimeSafetyStop[];
   readonly player: { readonly x: number; readonly y: number };
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;

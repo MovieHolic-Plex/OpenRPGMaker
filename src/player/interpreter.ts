@@ -3,6 +3,7 @@ import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
+import { createSafetyStop } from "@/player/runtimeSafetyStop";
 import { disposeScriptRuns } from "@/player/interpreter/scriptCommand";
 import { advanceCompletedFrame, gotoLabel, hasLabel, topFrame, withLabelIndexPass, invalidateLabelIndexPass } from "@/player/interpreter/stack";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -30,6 +31,7 @@ export function createInterpreter(
   const state: InterpreterState = {
     beforeCommand: options?.beforeCommand,
     onUnverified: options?.onUnverified,
+    onSafetyStop: options?.onSafetyStop,
     continueAfterTransfer: options?.continueAfterTransfer,
     currentFace: project ? resolveAppearancePortrait(project, event?.page?.graphic.appearanceId, "face") : undefined,
     stack: [{ commands, pc: 0 }],
@@ -72,6 +74,7 @@ export function createInterpreter(
       if (!command) return finish();
       if (state.instructionsExecuted >= state.maxInstructions) {
         state.onUnverified?.("Interpreter instruction budget exhausted");
+        state.onSafetyStop?.(createSafetyStop({ kind: "instruction-budget", limit: state.maxInstructions, eventId: state.currentEventId }));
         console.warn(
           `[interpreter:instruction-budget-exhausted] maxInstructions=${state.maxInstructions} executed=${state.instructionsExecuted}`
         );
