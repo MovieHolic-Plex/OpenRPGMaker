@@ -24,19 +24,20 @@ function changed() {
 
 describe('charset selection evidence', () => {
   it('credits Gemini multimodal function responses with a legend inside the JSON envelope', () => {
-    const { before, after } = changed(), gate = new PiCharsetSelectionGate();
-    gate.offer('list_npc_graphics', result, 'golem-png');
     // Actual pi-ai google-shared serializer: all text blocks are joined, images
     // are nested in functionResponse.parts on Gemini 3+ (including Antigravity).
     const wire = (output: string) => ({ request: { contents: [{ role: 'user', parts: [{ functionResponse: {
       name: 'list_npc_graphics', response: { output }, parts: [{ inlineData: { mimeType: 'image/png', data: 'golem-png' } }],
     } }] }] } });
-    gate.payload(wire(`${JSON.stringify(result)}\n1: 스톤 골렘`));
-    expect(gate.complete(true)).toEqual([]);
-    expect(gate.afterWrite(before, after)?.ok).toBe(false);
-    gate.payload(wire(JSON.stringify({ ...result, imageLegend: '1: 스톤 골렘' })));
-    expect(gate.complete(true)).toEqual([GOLEM]);
-    expect(gate.afterWrite(before, after)).toBeNull();
+    // 8bb7dc7886: the gate reads the result envelope on its own line, so a legend appended after it ("\n1: …") still credits the picture.
+    for (const output of [`${JSON.stringify(result)}\n1: 스톤 골렘`, JSON.stringify({ ...result, imageLegend: '1: 스톤 골렘' })]) {
+      const { before, after } = changed(), gate = new PiCharsetSelectionGate();
+      gate.offer('list_npc_graphics', result, 'golem-png');
+      expect(gate.afterWrite(before, after)?.ok).toBe(false);
+      gate.payload(wire(output));
+      expect(gate.complete(true)).toEqual([GOLEM]);
+      expect(gate.afterWrite(before, after)).toBeNull();
+    }
   });
   it.each(['responses', 'gemini', 'anthropic'])('accepts the exact pictured candidate after a successful %s turn', shape => {
     const { before, after } = changed(), gate = new PiCharsetSelectionGate();
