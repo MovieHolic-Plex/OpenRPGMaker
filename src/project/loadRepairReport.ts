@@ -34,7 +34,8 @@ export function beginLoadRepairReport(): void {
 }
 
 export function noteLoadRepair(kind: LoadRepairKind, code: string, label: string, where?: string, count = 1): void {
-  if (!active || count <= 0) return;
+  // count 0 은 같은 분류에 자리(where)만 더한다 — 여러 주인에 걸친 수리를 한 번에 센 PruneStats.report 가 쓴다.
+  if (!active || count < 0 || (count === 0 && !active.has(code))) return;
   const bucket = active.get(code) ?? { kind, label, count: 0, where: [] };
   bucket.count += count;
   if (where && bucket.where.length < WHERE_LIMIT && !bucket.where.includes(where)) bucket.where.push(where);
