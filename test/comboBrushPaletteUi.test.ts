@@ -216,8 +216,8 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
     expect(state.dataset.brushKind).toBe("combo");
     expect(state.dataset.stampCells).toBe(String(entry.cells.length));
     expect(state.textContent ?? "").toContain(comboBrushBadge(editorState.get().activePaletteStamp!));
-    // 브러시 크기 선택기는 합성 붓과 함께 뜨지 않는다 — 둘은 다른 개념이다.
-    expect(row.querySelector('[data-testid="brush-size-select"]')).toBe(null);
+    // 브러시 크기 선택기는 합성 붓과 함께 쓸 수 없다 — 둘은 다른 개념이다. 자리는 지키되(3a9d9682e7, 옵션 줄 들썩임 방지) 잠긴다.
+    expect(row.querySelector<HTMLSelectElement>('[data-testid="brush-size-select"]')?.disabled).toBe(true);
   });
 
   it("keeps repeated-tile brush size as its own concept when no combo brush is active", () => {
@@ -231,7 +231,7 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
     expect(row.querySelector<HTMLSelectElement>('[data-testid="brush-size-select"]')?.value).toBe("3");
   });
 
-  it("hides the repeated-size select while a composite combo brush is active (expert chrome)", () => {
+  it("locks the repeated-size select while a composite combo brush is active (expert chrome)", () => {
     const tileset = defaultTileset();
     const entry = comboBrushShelfEntries(tileset)[0]!;
     const shelf = makeComboBrushShelf({ rerender: () => {}, tileset })!;
@@ -239,7 +239,11 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
     shelf.querySelector<HTMLElement>(`[data-testid="combo-brush-${entry.id}"]`)!.click();
 
     const row = makeTileBrushControls(editorState.get(), () => {});
-    expect(row.querySelector('[data-testid="brush-size-select"]')).toBe(null);
+    // 3a9d9682e7: 쓸 수 없는 도구에서도 선택기 자리는 남고 disabled + 이유 title 로 잠긴다.
+    const select = row.querySelector<HTMLSelectElement>('[data-testid="brush-size-select"]');
+    expect(select).toBeTruthy();
+    expect(select!.disabled).toBe(true);
+    expect(select!.getAttribute("title")).toBe("이 도구에서는 크기를 쓰지 않습니다");
     expect(row.querySelector<HTMLElement>('[data-testid="tile-brush-state"]')!.dataset.brushKind).toBe("combo");
   });
 
