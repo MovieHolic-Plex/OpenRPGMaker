@@ -3140,7 +3140,7 @@
       "test/userFacingToolNames.test.ts": "drift",
       "test/ux2EventFocusBoundaries.test.ts": "drift",
       "test/uxcLoadFailure.test.ts": "timeout",
-      "test/verificationFindingOwnership.test.ts": "drift",
+      "test/verificationFindingOwnership.test.ts": "timeout",
       "test/verificationPlanAtomicityReuse.test.ts": "drift",
       "test/villageTreePlacement.test.ts": "drift",
       "test/vnExtras.test.ts": "drift",
