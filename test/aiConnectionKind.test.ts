@@ -92,13 +92,14 @@ describe("에디터의 제공자 선택 — 두 구독 로그인", () => {
     expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("oauth");
   });
 
-  it("종류와 무관하게 두 제공자를 노출하고, 사용자에게 선택권이 있다", () => {
-    // 이전 계약은 "Antigravity 하나만" 이었다. 감독 요구가 바뀌어 Codex 도 1급 선택지다.
+  it("종류와 무관하게 같은 제공자 목록(앞의 둘은 Google·ChatGPT)을 노출하고, 사용자에게 선택권이 있다", () => {
+    // 이전 계약은 "Antigravity 하나만", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐고 앞의 둘 순서만 고정이다.
     for (const kind of ["oauth", "apiKey"] as const) {
-      expect(providersForKind(kind).map((provider) => provider.id)).toEqual([
+      expect(providersForKind(kind).map((provider) => provider.id).slice(0, 2)).toEqual([
         ANTIGRAVITY_PROVIDER_ID,
         CODEX_PROVIDER_ID,
       ]);
+      expect(providersForKind(kind).length).toBeGreaterThan(2);
     }
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
     expect(editorHasProviderChoice()).toBe(true);

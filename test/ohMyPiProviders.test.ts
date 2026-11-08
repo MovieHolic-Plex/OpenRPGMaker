@@ -1,8 +1,7 @@
-// 제공자 레지스트리는 정확히 둘이다 — Antigravity(Gemini) 와 Codex.
+// 제공자 레지스트리: 앞의 둘은 Antigravity(Gemini)·Codex 로 고정이고, 나머지는 뒤에 덧붙는다.
 //
-// 예전 스펙은 oh-my-pi 카탈로그 69종을 그대로 고정했다. 그 목록은 고를 수 없는 선택지였고
-// (동반 서비스에 로그인 경로가 붙은 것은 이 둘뿐이다), 남겨 두면 화면에 거짓 표면이 생겼다.
-// 이제 이 파일은 "둘뿐이고 둘 다 구독 로그인" 을 고정한다.
+// 2026-11-02 abaa03e78f 로 레지스트리가 2종 → 17종(OMP 가 로그인해 둔 제공자)으로 늘었다. 첫 항목이 기본값이라
+// 앞의 둘 순서는 그대로여야 하고, 모든 제공자는 구독 로그인(oauth)이다 — API 키 제공자는 없다.
 import { describe, expect, it } from "vitest";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import {
@@ -17,11 +16,12 @@ import {
 } from "@/ai/ohMyPiProviders";
 
 describe("oh-my-pi provider catalog", () => {
-  it("제공자는 정확히 둘이고 권장 제공자(Google)가 맨 앞이다", () => {
-    expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
+  it("앞의 둘은 고정이고 권장 제공자(Google)가 맨 앞이다", () => {
+    expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id).slice(0, 2)).toEqual([
       ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
     ]);
+    expect(OH_MY_PI_PROVIDERS.length).toBeGreaterThan(2);
     expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
   });
 
@@ -36,18 +36,15 @@ describe("oh-my-pi provider catalog", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("두 제공자 모두 구독 로그인(oauth)이다 — API 키 제공자는 없다", () => {
+  it("모든 제공자가 구독 로그인(oauth)이다 — API 키 제공자는 없다", () => {
     for (const provider of OH_MY_PI_PROVIDERS) {
       expect(provider.authKind, provider.id).toBe("oauth");
       expect(ohMyPiAuthKind(provider.id), provider.id).toBe("oauth");
     }
-    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(2);
+    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(OH_MY_PI_PROVIDERS.length);
     expect(ohMyPiProvidersByAuthKind("apiKey")).toHaveLength(0);
     expect(ohMyPiProvidersByAuthKind("local")).toHaveLength(0);
-    expect(ohMyPiOAuthProviders().map((provider) => provider.id)).toEqual([
-      ANTIGRAVITY_PROVIDER_ID,
-      CODEX_PROVIDER_ID,
-    ]);
+    expect(ohMyPiOAuthProviders().map((provider) => provider.id)).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
   });
 
   it("레코드의 라벨·기본 모델이 계약대로다", () => {
@@ -65,11 +62,15 @@ describe("oh-my-pi provider catalog", () => {
     expect(getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER)?.authKind).toBe("oauth");
   });
 
-  it("두 id 는 그대로 통과하고, 사라진 제공자 id 는 기본 제공자로 되돌린다", () => {
+  it("등록된 id 는 그대로 통과하고, 사라진 제공자 id 는 기본 제공자로 되돌린다", () => {
     expect(parseOhMyPiProvider(ANTIGRAVITY_PROVIDER_ID)).toBe(ANTIGRAVITY_PROVIDER_ID);
     expect(parseOhMyPiProvider(CODEX_PROVIDER_ID)).toBe(CODEX_PROVIDER_ID);
-    // 옛 레지스트리에 있던 id 는 이제 존재하지 않는다 — 저장돼 있어도 기본값으로 스냅한다.
-    for (const gone of ["anthropic", "zai", "openai", "ollama", "github-copilot", "not-a-provider"]) {
+    // anthropic·github-copilot 은 abaa03e78f 로 등록됐다 — 그대로 통과한다.
+    for (const registered of ["anthropic", "github-copilot"]) {
+      expect(parseOhMyPiProvider(registered), registered).toBe(registered);
+    }
+    // 레지스트리에 없는 id 는 저장돼 있어도 기본값으로 스냅한다.
+    for (const gone of ["zai", "openai", "ollama", "not-a-provider"]) {
       expect(parseOhMyPiProvider(gone), gone).toBe(DEFAULT_OH_MY_PI_PROVIDER);
     }
     expect(parseOhMyPiProvider(undefined)).toBe(DEFAULT_OH_MY_PI_PROVIDER);

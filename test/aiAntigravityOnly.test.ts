@@ -97,7 +97,8 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
   });
 
   it("사라진 제공자 id 는 기본 제공자로 끌어온다", () => {
-    for (const stale of ["zai", "xiaomi", "zenmux", "deepseek", "anthropic", "openai"]) {
+    // xiaomi·anthropic 은 abaa03e78f(2026-11-02) 로 레지스트리에 들어왔으므로 더 이상 «사라진» id 가 아니다.
+    for (const stale of ["zai", "zenmux", "deepseek", "openai"]) {
       storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: stale }));
 
       expect(loadAiConfig().providerId, stale).toBe(ANTIGRAVITY_PROVIDER_ID);
