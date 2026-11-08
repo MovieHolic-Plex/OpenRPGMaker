@@ -1,0 +1,78 @@
+{
+  "set": "fallen-drops-mobile",
+  "note": "폴른 스타 전리품 표시 QA — 전투 결과 창의 드롭(이름·개수), 필드 보물상자·숨은 물건의 획득 문구. 픽스처는 fallen-battle-fixture.mjs 가 구운 play.json 에 트룹마다 qa_fight_* 이벤트를 붙인 것. 가시등 멧돼지(enemy_fs_elite_thornback)는 상급 회복약 100%, 발렌 피날레는 그을린 장갑·심판의 검 100%라 드롭이 확정이다. 폰 세로(390x844, 터치·모바일 컨텍스트) — 결과 창 아이템 줄이 실제 폰 크기에서 읽히는지.",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checkpoints": [
+    {
+      "id": "thornback-drop",
+      "label": "가시등 멧돼지 승리 — 상급 회복약 드롭 확정",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 60
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 60
+        }
+      ],
+      "startEventId": "qa_fight_elite_thornback",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-command-grid",
+              "timeoutMs": 60000
+            }
+          ]
+        },
+        {
+          "id": "result",
+          "note": "공격만 눌러 이긴 뒤 결과 창 — 드롭 줄을 본다",
+          "ops": [
+            {
+              "kind": "battle",
+              "fallback": "attack",
+              "timeoutMs": 120000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-result-confirm",
+              "timeoutMs": 20000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4000
+            },
+            {
+              "kind": "evalToFile",
+              "out": "verify-shots/fallen-drops-mobile/thornback-result.json",
+              "fn": "() => ({ rows: [...document.querySelectorAll('.battle-result-reward-row')].map((r) => ({ kind: r.dataset.rewardKind ?? null, text: r.textContent.replace(/\\s+/g, ' ').trim(), revealed: r.dataset.revealed })), summary: document.querySelector('[data-testid=battle-result-summary]')?.textContent ?? null, inventory: window.__oprnDebug.readState().inventory })"
+            }
+          ],
+          "shot": true
+        }
+      ]
+    }
+  ],
+  "context": {
+    "hasTouch": true,
+    "isMobile": true
+  }
+}

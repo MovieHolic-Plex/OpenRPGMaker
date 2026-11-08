@@ -19,6 +19,14 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ShopGoods } from "@/player/playSceneShopGoods";
 import type { CraftShopRow } from "@/project/craftShop";
 import { el } from "@/util/dom";
+import { itemEffectSummary } from "@/player/playerStatusMenuDetailRenderer";
+
+/** 산출물의 효과 한 줄. 자료집 아이템 값에서 가방 상세와 같은 글로 만든다. 효과가 없거나 아이템이 아니면 undefined. */
+function outputEffect(row: CraftShopRow): string | undefined {
+  const project = store.getCurrent();
+  const item = project.database.items.find((entry) => entry.id === row.outputItemId);
+  return item ? itemEffectSummary(project, item) : undefined;
+}
 
 type CraftShopStep = Extract<StepResult, { kind: "craftShop" }>;
 
@@ -93,12 +101,14 @@ function recipeRow(row: CraftShopRow, gold: string): HTMLButtonElement {
     button.dataset.disabled = "true";
   }
   const cost = row.goldCost > 0 ? ` · ${row.goldCost}${gold}` : "";
-  button.setAttribute("aria-label", `${row.name}${row.disabledReason ? ` · ${row.disabledReason}` : ` · ${row.maxCrafts}번 가능`}${cost}`);
+  const effect = outputEffect(row);
+  button.setAttribute("aria-label", `${row.name}${effect ? ` · ${effect}` : ""}${row.disabledReason ? ` · ${row.disabledReason}` : ` · ${row.maxCrafts}번 가능`}${cost}`);
   button.append(
     shopItemIcon(iconGoods(row.outputItemId, row.name, row.iconResourceId)),
     el("span", { class: "runtime-shop-item-main", children: [
       el("span", { class: "runtime-shop-item-name", text: row.name }),
       el("span", { class: "runtime-shop-item-type", text: row.outputCount > 1 ? `${row.outputCount}개씩` : "제작" }),
+      ...(effect ? [el("span", { class: "runtime-craft-row-effect", text: effect, dataset: { testid: `craft-shop-row-${row.recipeId}-effect` } })] : []),
     ] }),
     el("span", {
       class: "runtime-shop-item-owned runtime-craft-row-max",
@@ -113,6 +123,7 @@ function detail(row: CraftShopRow | undefined, sessionGold: number, count: numbe
   const card = el("div", { class: "runtime-shop-detail runtime-craft-detail", dataset: { testid: "craft-shop-detail" } });
   if (!row) return card;
   const ready = !row.disabledReason;
+  const effect = outputEffect(row);
   card.append(el("div", { class: `runtime-craft-hero${ready ? " is-ready" : ""}`, dataset: { testid: "craft-shop-hero" }, children: [
     el("span", { class: "runtime-craft-hero-frame", children: [
       shopItemIcon(iconGoods(row.outputItemId, row.name, row.iconResourceId), "runtime-craft-hero-icon"),
@@ -120,6 +131,7 @@ function detail(row: CraftShopRow | undefined, sessionGold: number, count: numbe
     ] }),
     el("div", { class: "runtime-craft-hero-copy", children: [
       el("div", { class: "runtime-craft-hero-name", text: row.name }),
+      ...(effect ? [el("div", { class: "runtime-craft-effect", text: effect, dataset: { testid: "craft-shop-effect" } })] : []),
       el("div", { class: "runtime-craft-hero-owned", text: `보유 ${row.owned}`, dataset: { testid: "craft-shop-owned" } }),
       ...(row.description ? [el("div", { class: "runtime-craft-desc", text: row.description })] : []),
     ] }),
