@@ -235,7 +235,7 @@ describe("make_chase_scene tool", () => {
     expect(seeded.ok, seeded.summary).toBe(true);
     const result = runTool(ctx, "make_chase_scene", {
       mapId,
-      chaser: { at: { x: 6, y: 6 }, graphic: { query: "monster" }, speed: 3 },
+      chaser: { at: { x: 6, y: 6 }, graphic: { query: "monster" }, speed: 1 },
       pursuit: { scope: "map", doorDelayMs: 1000, searchMs: 4000, onLost: "return", tracking: "persistent" },
       killOnTouch: true,
       hidingSpots: [{ x: 2, y: 2 }, { x: 8, y: 3 }],
@@ -251,7 +251,8 @@ describe("make_chase_scene tool", () => {
       expect(page?.trigger.kind).toBe("action");
     }
     const chaser = map.events.find((event) => event.pages?.some((page) => page.movement.type === "chase"));
-    expect(chaser?.pages?.[0]?.movement).toMatchObject({ speed: 3, frequency: 8, pursuit: { tracking: "persistent" } });
+    expect(chaser?.pages?.[0]?.movement).toMatchObject({ speed: 1, frequency: 8, pursuit: { tracking: "persistent" } });
+    // 추격 한 칸은 쉬지 않고 이어 걷는 박자다(4127a63455) — speed 3 ≈182ms 는 이제 느린 추격자가 아니고, 경고는 주인공 걷기의 절반 미만(speed 1 ≈327ms)부터다.
     expect((result.diff?.warnings ?? []).join(" ")).toMatch(/주인공 걷기\(160ms\/칸\)의 \d+%/);
   });
 });
