@@ -76,7 +76,8 @@ describe("Database record tab partial rendering", () => {
     expect(findByTestId(host, "db-actor-studio")?.textContent).toContain("주인공");
     expect(findByTestId(host, "db-actor-studio-summary")).toBeNull();
     expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("캐릭터");
-    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("직업");
+    // 75f5319ace: 직업은 목록 열이 아니라 행 부제·인스펙터가 말한다 — 표 머리는 캐릭터 열(+값이 갈리는 선택 열)만 갖는다.
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).not.toContain("직업");
     // 레벨·HP·맵 표시 열은 주인공마다 값이 다를 때만 선다(visibleActorColumns — databasePartySimplify.test.ts).
     expect(host.querySelector(".db-studio-table-pane")).not.toBeNull();
     expect(host.querySelector(".db-studio-inspector-pane")).not.toBeNull();

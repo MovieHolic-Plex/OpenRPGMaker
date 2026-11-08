@@ -243,8 +243,8 @@ describe("team workflow UI", () => {
     document.body.append(history, identity);
 
     expect(history.className).toContain("is-icon-only");
-    expect(history.getAttribute("aria-label")).toBe("커밋 히스토리");
-    expect(history.textContent?.includes("히스토리")).toBe(false);
+    expect(history.getAttribute("aria-label")).toBe("저장 기록");
+    expect(history.textContent?.includes("기록")).toBe(false);
     expect(identity.className).toContain("is-icon-only");
     expect(findByTestId(fakeElement(identity), "topbar-identity-label")?.textContent).toBe("게스트");
   });

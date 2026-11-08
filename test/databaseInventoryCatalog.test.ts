@@ -117,17 +117,19 @@ it("retains both kinds and the selected row in gallery mode", () => {
   expect(control("db-record-card-sword").getAttribute("aria-pressed")).toBe("true");
   expect(control("db-field-name")).toHaveProperty("value", "달빛 검");
 });
-it("requires fresh delete confirmation after changing the selected kind", () => {
+// 69756ade51 (IS-091): 삭제는 확인 없이 바로 실행되고 Ctrl+Z 가 되살린다 — 한 번 누르면 선택한 한 건만 지운다.
+it("deletes one record per press and follows the selected kind afterwards", () => {
   control("db-delete-selected").click();
+  expect(store.getCurrent().database.items.map((record) => record.id)).toEqual(["book"]);
   control("db-record-row-sword").click();
-  // When: the first delete click on the equipment must only arm confirmation.
+  // When: the next press targets the newly selected equipment, not the item deleted before.
   control("db-delete-selected").click();
   // Then
-  expect(store.getCurrent().database.items).toHaveLength(2);
-  expect(store.getCurrent().database.equipment).toHaveLength(2);
+  expect(store.getCurrent().database.items.map((record) => record.id)).toEqual(["book"]);
+  expect(store.getCurrent().database.equipment.map((record) => record.id)).toEqual(["shield"]);
 });
-it("deletes only the selected collection after confirmation", () => {
-  control("db-record-row-sword").click(); control("db-delete-selected").click();
+it("deletes only the selected collection's record on a single press", () => {
+  control("db-record-row-sword").click();
   // When
   control("db-delete-selected").click();
   // Then
@@ -139,7 +141,7 @@ it("retains the reference guard on equipment deletion", () => {
   store.update((project) => { const actor = project.database.actors[0]; if (actor) actor.initialEquipment.weapon = "sword"; });
   control("db-record-row-sword").click();
   // When
-  control("db-delete-selected").click(); control("db-delete-selected").click();
+  control("db-delete-selected").click();
   // Then
   expect(store.getCurrent().database.equipment.map((record) => record.id)).toEqual(["sword", "shield"]);
 });

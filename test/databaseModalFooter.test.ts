@@ -43,7 +43,8 @@ describe("database modal footer — honest auto-save UI", () => {
     openDatabaseModal("actors");
 
     const labels = footerButtons().map((button) => button.textContent);
-    expect(labels).toEqual(["닫기", "지금 저장", "되돌리기", "도움말"]);
+    // 1255da55cc: DOM 순서는 도움말(왼쪽 끝 보조 링크) · 되돌리기 · 닫기 · 주 버튼 「지금 저장」이다.
+    expect(labels).toEqual(["도움말", "되돌리기", "닫기", "지금 저장"]);
     expect(document.querySelector("[data-testid='database-footer-cancel']")).toBeNull();
 
     const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);
@@ -68,18 +69,17 @@ describe("database modal footer — honest auto-save UI", () => {
     expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor X");
   });
 
-  it("Escape still offers restore-to-open for store edits", () => {
+  // 1255da55cc: 레코드 편집은 자동 저장이 이어받으므로 Escape 도 X·「닫기」처럼 바로 닫고 편집을 남긴다.
+  // 닫기를 붙잡는 것은 스토어 밖의 설정집 카드 초안뿐이다.
+  it("Escape closes like 닫기 and keeps store edits without a restore prompt", () => {
     openDatabaseModal("actors");
     const actorId = store.getCurrent().database.actors[0]?.id ?? "";
     updateDatabaseRecord("actors", actorId, { name: "Dirty Actor" });
 
     document.dispatchEvent(Object.assign(new Event("keydown"), { key: "Escape" }));
 
-    const prompt = document.querySelector<HTMLElement>("[data-testid='database-dirty-prompt']");
-    expect(prompt?.textContent).toContain("이 세션에서 바뀐 내용이 있습니다");
-    // 「되돌리기」는 Ctrl+Z 한 단계의 이름이고, 세션 전체 복구는 「복구」로 분리했다.
-    const discardButton = document.querySelector<HTMLElement>("[data-testid='database-dirty-discard']");
-    expect(discardButton?.textContent).toBe("열 때 상태로 복구하고 닫기");
-    expect(document.querySelector("[data-testid='database-modal']")).not.toBeNull();
+    expect(document.querySelector("[data-testid='database-dirty-prompt']")).toBeNull();
+    expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
+    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor");
   });
 });
