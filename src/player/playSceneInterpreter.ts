@@ -63,6 +63,7 @@ import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyEventRelocationStep, placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { recoverPlayerFromTerrain } from "@/project/terrainLandingRecovery";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
+import { recordSceneSafetyStop } from "@/player/playSceneSafetyStop";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
@@ -320,6 +321,7 @@ export async function runCommands(
     isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
     onFriendshipChanged: (npcKey, delta) => showRelationshipPulse(scene, npcKey, delta),
+    onSafetyStop: (stop) => recordSceneSafetyStop(scene, stop),
   });
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
