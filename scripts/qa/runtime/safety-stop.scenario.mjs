@@ -33,11 +33,11 @@ export default {
     },
     {
       id: "endless-loop-stopped",
-      note: "탈출 없는 반복을 조사하면 반복 예산에서 빠져나오고 기록이 남는다",
-      ops: [{ kind: "face", dir: "up" }, { kind: "action" }, { kind: "waitForBodyText", text: "ev_endless_loop", timeoutMs: 20000 }],
+      note: "탈출 없는 반복을 조사하면 명령 예산에서 멈추고 기록이 남는다(반복 예산 10만 회보다 명령 예산이 먼저 찬다)",
+      ops: [{ kind: "face", dir: "up" }, { kind: "action" }, { kind: "waitForBodyText", text: "명령을 100000번", timeoutMs: 30000 }],
       expect: {
         visibleText: { "runtime-safety-stop": "ev_endless_loop" },
-        pageAssertions: [{ id: "loop-stop-record", fn: stopsOf("loop-budget", "ev_endless_loop") }],
+        pageAssertions: [{ id: "loop-stop-record", fn: stopsOf("instruction-budget", "ev_endless_loop") }],
       },
       shot: true,
     },
