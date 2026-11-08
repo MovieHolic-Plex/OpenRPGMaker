@@ -953,7 +953,11 @@ function collectMatches(root: FakeNode, selector: string, matches: FakeElement[]
 }
 
 function matchesSelector(element: FakeElement, selector: string): boolean {
-  const simpleSelector = selector.trim().split(/\s+/).at(-1) ?? selector;
+  const trimmed = selector.trim().split(/\s+/).at(-1) ?? selector;
+  // `.class:not(:disabled)` 같은 접미사: 태그 뒤에서만 풀리던 것을 모든 단순 선택자에 적용한다(컨트롤러의 .status-menu-detail-action:not(:disabled)).
+  const notDisabled = trimmed.endsWith(":not(:disabled)") && !/^[a-zA-Z]+:not\(:disabled\)$/u.test(trimmed);
+  if (notDisabled && (element.disabled || element.getAttribute("disabled") !== null)) return false;
+  const simpleSelector = notDisabled ? trimmed.slice(0, -":not(:disabled)".length) : trimmed;
   if (simpleSelector.startsWith(".")) return element.className.split(/\s+/).includes(simpleSelector.slice(1));
   const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
   if (testId) return element.dataset.testid === testId;
