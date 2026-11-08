@@ -11,6 +11,7 @@ import path from "node:path";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
 import { hiddenReason } from "../lib/hidden.mjs";
+import { cutsceneOnScreen, isStuck, spendsStep } from "../lib/stuck.mjs";
 
 const job = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
 const OUT = process.argv[3];
@@ -63,6 +64,7 @@ await page.addInitScript((b) => {
 }, boot);
 // The overflow measurement asks the same rule the tests pin (lib/hidden.mjs); an init script is not subject to the page CSP.
 await page.addInitScript({ content: `window.__qaHiddenReason = ${hiddenReason.toString()};` });
+await page.addInitScript({ content: `window.__qaCutsceneOnScreen = ${cutsceneOnScreen.toString()};` });
 
 const sleep = (ms) => page.waitForTimeout(ms);
 const visible = (sel) => page.locator(sel).first().isVisible().catch(() => false);
@@ -83,6 +85,7 @@ async function readState() {
       menu: ids.has("main-menu"), grid: ids.has("battle-command-grid"), result: ids.has("battle-result-summary") || ids.has("battle-result-party"),
       transition: !!document.querySelector(".battle-transition-overlay, [data-testid='title-transition'], [data-testid='play-loading-overlay']"),
       missingResource: text("[data-testid='missing-resource-error']"),
+      cutscene: (() => { try { return window.__qaCutsceneOnScreen(document); } catch { return false; } })(),
       missingTextures: (() => { try { return window.__oprnMissingTextures?.()?.count ?? null; } catch { return null; } })(),
     };
   });
@@ -238,9 +241,12 @@ async function driveUntilFree({ maxSteps = 40, label = "ev" } = {}) {
     const now = sig(s);
     if (now === last) same += 1; else { same = 0; sameSince = Date.now(); }
     last = now;
+    // A cutscene holding still must reach its stuck cap rather than run out the step budget (HARD_MS still bounds it).
+    if (!spendsStep({ same, cutscene: s.cutscene === true })) step -= 1;
     // Stuck = no visible change for 6 polls AND 15 s: cutscenes with move routes and waits legitimately hold the
-    // same state for several seconds while `running` is true.
-    if (same >= 6 && Date.now() - sameSince >= 15000) {
+    // same state for several seconds while `running` is true. With a cutscene on screen the wait stretches to a fixed
+    // cap (lib/stuck.mjs), so a cutscene waiting on its own timing is not a hang but a frozen one still is.
+    if (isStuck({ same, unchangedMs: Date.now() - sameSince, cutscene: s.cutscene === true })) {
       // Before calling it stuck, try the plain keyboard path: if Enter moves the game where touch/mouse did not,
       // the defect is "this input mode is ignored here", not a soft-lock.
       if (job.input !== "keyboard") {
