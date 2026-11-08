@@ -90,8 +90,8 @@ describe("enemy faction assignment panel", () => {
 
     expect(select?.value).toBe("enemy");
     expect(effective?.dataset.effectiveFactionId).toBe("enemy");
-    expect(effective?.textContent).toContain("미저장 · enemy로 전투");
-    expect(findByTestId(host, "db-enemy-faction-default-clears")?.textContent).toContain("저장된 소속 진영 값이 삭제");
+    expect(effective?.textContent).toContain("미저장 · 기본 적 진영으로 전투");
+    expect(findByTestId(host, "db-enemy-faction-default-clears")?.textContent).toContain("저장된 소속 진영 값을 지웁니다");
     expect(findByTestId(host, "db-enemy-faction-guide")?.textContent).toContain("[진영] 탭");
     expect(firstEnemy().factionId).toBeUndefined();
   });
@@ -111,10 +111,10 @@ describe("enemy faction assignment panel", () => {
     expect(select?.textContent).toContain("deleted_guard · 존재하지 않는 진영");
     expect(effective?.dataset.storedFactionId).toBe("deleted_guard");
     expect(effective?.dataset.effectiveFactionId).toBe("enemy");
-    expect(effective?.textContent).toContain("존재하지 않는 진영deleted_guard저장됨 · enemy로 전투");
+    expect(effective?.textContent).toContain("존재하지 않는 진영deleted_guard저장됨 · 기본 적 진영으로 전투");
     expect(missing?.textContent).toContain("저장된 진영 ID 'deleted_guard'가 존재하지 않는 진영");
-    expect(missing?.textContent).toContain("런타임에서는 enemy로 전투");
-    expect(findByTestId(host, "db-enemy-hero")?.textContent).toContain("진영 deleted_guard (존재하지 않음 · enemy로 전투)");
+    expect(missing?.textContent).toContain("런타임에서는 기본 적 진영으로 전투");
+    expect(findByTestId(host, "db-enemy-hero")?.textContent).toContain("진영 deleted_guard · 존재하지 않는 진영 · 기본 적 진영으로 전투");
     expect(JSON.stringify(firstEnemy())).toBe(before);
     expect(firstEnemy().factionId).toBe("deleted_guard");
   });
@@ -173,7 +173,7 @@ describe("enemy faction assignment panel", () => {
     if (!select) throw new Error("missing faction select");
 
     expect(findByTestId(host, "db-enemy-faction-effective")?.textContent).toContain("레코드에 저장됨");
-    expect(findByTestId(host, "db-enemy-faction-default-clears")?.textContent).toContain("저장된 소속 진영 값이 삭제");
+    expect(findByTestId(host, "db-enemy-faction-default-clears")?.textContent).toContain("저장된 소속 진영 값을 지웁니다");
 
     changeSelect(select, "bandit");
     const changed = findByTestId(host, "db-picker-enemy-faction");
@@ -181,7 +181,7 @@ describe("enemy faction assignment panel", () => {
     changeSelect(changed, "enemy");
 
     expect(firstEnemy().factionId).toBeUndefined();
-    expect(findByTestId(host, "db-enemy-faction-effective")?.textContent).toContain("미저장 · enemy로 전투");
+    expect(findByTestId(host, "db-enemy-faction-effective")?.textContent).toContain("미저장 · 기본 적 진영으로 전투");
   });
 
   it("clears the authored key when returning to the effective enemy default and explains that behavior", () => {
@@ -194,13 +194,13 @@ describe("enemy faction assignment panel", () => {
     if (!select) throw new Error("missing faction select");
 
     expect(findByTestId(host, "db-enemy-faction-default-clears")?.textContent).toBe(
-      "적 (enemy) · 기본값을 선택하면 저장된 소속 진영 값이 삭제됩니다.",
+      "기본값을 고르면 저장된 소속 진영 값을 지웁니다.",
     );
     changeSelect(select, "enemy");
 
     expect(firstEnemy().factionId).toBeUndefined();
     expect(findByTestId(host, "db-enemy-faction-effective")?.dataset.effectiveFactionId).toBe("enemy");
-    expect(findByTestId(host, "db-enemy-faction-effective")?.textContent).toContain("미저장 · enemy로 전투");
+    expect(findByTestId(host, "db-enemy-faction-effective")?.textContent).toContain("미저장 · 기본 적 진영으로 전투");
   });
 
   it("reads player and peer stances from the resolved runtime faction table", () => {

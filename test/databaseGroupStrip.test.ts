@@ -38,7 +38,7 @@ afterEach(() => {
 });
 
 describe("자료집 그룹 띠", () => {
-  it("띠를 누르면 보는 구획이 바뀌고 활성 탭은 그대로다", () => {
+  it("띠를 누르면 보는 구획이 바뀌고 활성 탭은 그 그룹의 첫 탭으로 간다", () => {
     const root = host();
     expect(viewed(root)).toBe("party");
     expect(inView(root, "db-tab-classes")).toBe("1");
@@ -52,8 +52,8 @@ describe("자료집 그룹 띠", () => {
     const strip = root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!;
     expect(strip.getAttribute("aria-pressed")).toBe("true");
     expect(root.querySelector<HTMLElement>('[data-testid="db-group-strip-party"]')!.getAttribute("aria-pressed")).toBe("false");
-    // 탭은 사용자가 고를 때까지 바뀌지 않는다.
-    expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-classes");
+    // 8684ab7daf: 그룹을 바꾸면 본문·크럼도 그 그룹으로 간다 — 기억한 탭이 없으면 첫 보이는 탭(빈 프로젝트는 첫 탭)에 착지한다.
+    expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-enemies");
   });
 
   it("다른 구획의 탭을 고르면 그 탭 그룹이 계속 보인다", () => {
