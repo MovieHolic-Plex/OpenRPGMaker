@@ -24,8 +24,13 @@ describe("craft window in the portrait window panel", () => {
   it("gives the craft overlay the whole window room at 1x", () => {
     const room = ruleBody(".player-layout .play-viewport[data-window-panel] > .runtime-overlay.runtime-shop-overlay.runtime-craft-shop-overlay");
     expect(room).toMatch(/width:\s*var\(--panel-room-w\)/);
-    expect(room).toMatch(/height:\s*var\(--panel-room-h\)/);
+    // 메뉴 단추 줄 위가 아니라 화면 아래 안전 영역 위까지(2026-11-08: 382×478 에서 제작법 3줄 → 382×828 에서 5줄).
+    expect(room).toMatch(/height:\s*calc\(100% - var\(--panel-room-top\) - var\(--touch-band-bottom, 0px\) - 8px\)/);
     expect(room).toMatch(/top:\s*var\(--panel-room-top\)/);
     expect(room).toMatch(/transform:\s*none/);
+  });
+
+  it("hides the touch pad and fullscreen toggle while the craft window takes the controls band", () => {
+    expect(ruleBody(".player-layout .play-viewport[data-window-panel]:has(> .runtime-craft-shop-overlay) > :is(.touch-pad, .play-fullscreen-toggle)")).toMatch(/display:\s*none/);
   });
 });
