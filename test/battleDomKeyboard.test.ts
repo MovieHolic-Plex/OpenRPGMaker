@@ -388,7 +388,8 @@ describe("battle dom keyboard and status rows", () => {
     expect(status?.textContent).toContain("F 자동 켜짐");
     ime("ShiftLeft");
     ime("ShiftLeft", {}, "keyup");
-    expect(status?.textContent).toContain("Shift 1.8×");
+    // 자동 전투를 켜면 1× 에서 1.8× 로 올리고(toggleAutoBattle), Shift 가 그 다음 단(3×)으로 돌린다.
+    expect(status?.textContent).toContain("Shift 3×");
 
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
