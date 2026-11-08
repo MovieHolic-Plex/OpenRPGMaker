@@ -31,7 +31,8 @@ for (const flow of ["gauge", "strict"] as const) describe(`battle simulation inp
       { kind: "face", dir: "right" }, { kind: "interact" },
     ] });
     expect(result.ok).toBe(false);
-    expect(result.failureReason).toContain("BATTLE_EVENT_INPUT_REQUIRED");
+    // run_scene_test 는 예외 대신 답 없는 전투 선택지를 이름 붙여 실패시킨다(1089e93649, battleChoice 스텝).
+    expect(result.failureReason).toContain("선택지에 낼 답이 없습니다");
     expect(result.session.battleResult).toBeUndefined();
     expect(result.session.variables.mapTail).toBeUndefined();
   });
@@ -93,7 +94,7 @@ for (const flow of ["gauge", "strict"] as const) describe(`battle simulation inp
       ? runSceneTest(project, { mapId: project.startMapId, start: { x: 0, y: 0 },
         steps: [{ kind: "face", dir: "right" }, { kind: "interact" }] })
       : runWalkthrough(project, [{ do: "interact", eventId: "battle" }]);
-    expect(result.failureReason).toContain("BATTLE_EVENT_INPUT_REQUIRED");
+    expect(result.failureReason).toContain(runner === "scene" ? "선택지에 낼 답이 없습니다" : "BATTLE_EVENT_INPUT_REQUIRED");
     expect(result.session.battleResult).toBeUndefined();
     expect(result.session.variables.mapTail).toBeUndefined();
   });
