@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { listAudioResources, type AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import * as generatedRegistry from "@/assets/generatedAssetResourceResolver";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
@@ -34,7 +35,7 @@ describe("shared audio resource catalog", () => {
   it.each(["music", "sound"] as const)("preserves all builtin IDs and their order when listing %s", (kind) => {
     // Given
     const sources = {
-      music: [...BGM_CATALOG, ...CC0_MUSIC_ASSETS, ...EASYRPG_MUSIC_ASSETS],
+      music: [...BGM_CATALOG, ...CC0_MUSIC_ASSETS, ...OPRN_BGM_ASSETS, ...EASYRPG_MUSIC_ASSETS],
       sound: [...SE_CATALOG, ...CC0_SOUND_ASSETS, ...EASYRPG_SOUND_ASSETS],
     };
     const expectedIds = [...new Set(sources[kind].map(entry => entry.id))];

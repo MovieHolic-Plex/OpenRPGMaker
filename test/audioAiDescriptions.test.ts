@@ -6,6 +6,7 @@ import { audioAiDraftDescription, getAudioAiDescription } from "@/assets/audioAi
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { SE_CATALOG } from "@/assets/seCatalog";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { searchResources } from "@/assets/resourceSearch";
@@ -110,7 +111,7 @@ describe("shared AI audio draft integration", () => {
 
   it.each(["music", "sound"] as const)("preserves builtin ordering and tags for %s", kind => {
     const sources = {
-      music: [...BGM_CATALOG, ...CC0_MUSIC_ASSETS, ...EASYRPG_MUSIC_ASSETS],
+      music: [...BGM_CATALOG, ...CC0_MUSIC_ASSETS, ...OPRN_BGM_ASSETS, ...EASYRPG_MUSIC_ASSETS],
       sound: [...SE_CATALOG, ...CC0_SOUND_ASSETS, ...EASYRPG_SOUND_ASSETS],
     };
     const ids = [...new Set(sources[kind].map(entry => entry.id))];
@@ -120,10 +121,12 @@ describe("shared AI audio draft integration", () => {
       const bgm = BGM_CATALOG.find(entry => entry.id === resource.id);
       const se = SE_CATALOG.find(entry => entry.id === resource.id);
       const cc0 = [...CC0_MUSIC_ASSETS, ...CC0_SOUND_ASSETS].find(entry => entry.id === resource.id);
+      const oprn = OPRN_BGM_ASSETS.find(entry => entry.id === resource.id);
       const legacy = [...EASYRPG_MUSIC_ASSETS, ...EASYRPG_SOUND_ASSETS].find(entry => entry.id === resource.id);
       if (bgm) expect(resource.tags).toEqual([...bgm.tags, bgm.category, bgm.titleEn, bgm.trackCode]);
       else if (se) expect(resource.tags).toEqual([...se.tags, se.category, se.baseName]);
       else if (cc0) expect(resource.tags).toEqual(["cc0", kind]);
+      else if (oprn) expect(resource.tags).toEqual(["oprn-bgm", "ai-generated", kind]);
       else if (legacy) expect(resource.tags).toEqual(moodTagsForAsset(legacy));
     }
   });

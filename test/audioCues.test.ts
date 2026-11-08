@@ -130,7 +130,8 @@ describe("대사 글자음", () => {
     project.system.seCues = { textBlip: "snd_blip" };
     let now = 0;
     const voice = createTextBlipVoice(project, () => now)!;
-    voice.speak("안"); now += 1; voice.speak("녕"); now += TEXT_BLIP_MIN_GAP_MS; voice.speak(" "); voice.speak("하");
+    // 안(1번째·소리) 녕(2번째·건너뜀) 공백(건너뜀) 하(3번째·간격 안이라 막힘) 세(4번째·건너뜀) 요(5번째·간격 밖이라 소리).
+    voice.speak("안"); now += 1; voice.speak("녕"); voice.speak(" "); voice.speak("하");
     now += 1; voice.speak("세"); now += TEXT_BLIP_MIN_GAP_MS; voice.speak("요");
     expect(played.map((p) => p.resourceId)).toEqual(["snd_blip", "snd_blip"]);
     expect(played.every((p) => p.channel === "se" && !p.loop)).toBe(true);
