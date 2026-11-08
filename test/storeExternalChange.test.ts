@@ -36,6 +36,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.useRealTimers();
   const { _resetEditActivityForTest } = await import("@/editor/editActivityLog");
   _resetEditActivityForTest();
   session?.dispose();
@@ -65,7 +66,10 @@ describe("external (coding agent) saves reach the open editor", () => {
     expect(store.getCurrent().maps[second]!.name).toBe("에이전트가 바꾼 이름");
   });
 
+  // refreshFromHost 는 저장이 날아가는 중이면 false 로 물러난다. 빈 프로젝트가 커서 병합 차이 계산이 느린 러너에서는 그 사이
+  // 1.5초 자동저장 타이머가 먼저 울려 저장이 시작되므로, 사람 편집이 있는 두 경우는 타이머를 멈춘 채 병합 계약만 본다.
   it("unsaved edits on another map survive and stay dirty", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     const { first, second } = mapIds();
     store.update((draft) => { draft.maps[first]!.name = "저장 안 된 사람 편집"; });
     await externalSave((draft) => { draft.maps[second]!.name = "에이전트 편집"; });
@@ -79,6 +83,7 @@ describe("external (coding agent) saves reach the open editor", () => {
   });
 
   it("the same map edited by both keeps the unsaved human edit and names it", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     const { first } = mapIds();
     store.update((draft) => { draft.maps[first]!.name = "사람 편집"; });
     await externalSave((draft) => { draft.maps[first]!.name = "에이전트 편집"; });
