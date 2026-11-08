@@ -305,6 +305,16 @@
 .player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active.choices-framed:not(.balloon-active) > .dialogue-box.choices {
   opacity: 0.999;
 }
+/* 독 안 선택지 칸은 틀 아래(빈 독 띠)로 내리고 줄을 누르기 좋게 44px 로 둔다 — 틀 위(bottom:100%)로 뜨면 무대(지도) 위에
+   걸쳐 0.8배로 줄어 줄 높이가 20px 였다(2026-11-08 390×844 실측, 모바일 세로 VQA 「선택지 156×20」). 독은 이미 1배다. */
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active.choices-framed.position-bottom:not(.balloon-active) > .dialogue-box.choices {
+  top: calc(100% + 4px);
+  bottom: auto;
+  max-height: none;
+}
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active.choices-framed:not(.balloon-active) > .dialogue-box.choices .choice-btn {
+  min-height: 44px;
+}
 
 /* ── 세로 창 칸(data-window-panel, 2026-10-24) ──
    폰 세로는 무대가 1배보다 작아(0.67~0.9배) 메뉴 글자가 8~10px 였다. 무대가 1배 미만이면 ESC 메뉴·상점 창을
