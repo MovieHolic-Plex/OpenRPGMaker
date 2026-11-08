@@ -30,7 +30,7 @@ describe("battle result head loot", () => {
     const [first, second] = project.database.items;
     const panel = battleResultPanel({
       result: "victory",
-      actors: [{ recordId: DEFAULT_ACTOR_ID, id: DEFAULT_ACTOR_ID, name: "주인공", hp: 20, maxHp: 20, level: 1 }],
+      actors: [{ recordId: DEFAULT_ACTOR_ID, id: DEFAULT_ACTOR_ID, name: "주인공", hp: 20, maxHp: 20, level: 1, skillIds: [] }],
       rewards: { exp: 12, gold: 48, items: [first!.id, first!.id, second!.id] },
       eventState: { gold: 10, inventory: {} },
       participatingActorIds: [DEFAULT_ACTOR_ID],
