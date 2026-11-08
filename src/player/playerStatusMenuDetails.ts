@@ -604,7 +604,9 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     const skills = learnedSkills(project, session, actor);
     return {
       label: actor.name,
-      value: skills.length > 0 ? skills.map((skill) => skill.name).join(", ") : "스킬 없음",
+      // 이름을 다 잇으면 폴른 스타 마법사 행이 1890px 로 늘어 열 경계에서 잘렸다(2026-11-08 QA). 개수만 보이고
+      // 전체 목록은 파티원을 고른 뒤의 스킬 화면(한 줄에 하나)이 보여 준다.
+      value: skills.length > 0 ? `스킬 ${skills.length}개` : "스킬 없음",
       description: actor.nickname || "스킬 목록을 봅니다",
       testId: `status-menu-skill-actor-${actor.id}`,
       onActivate: options.onSelectSkillActor ? () => options.onSelectSkillActor?.(actor.id) : undefined,
