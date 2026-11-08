@@ -719,7 +719,8 @@ describe("author_mystery_case — 대사 앞 「이름:」", () => {
   it("줄 앞 화자를 그 줄의 이름표로 옮기고, 남이 말하는 동안 지목 인물 얼굴을 내렸다가 다시 올린다", () => {
     const project = fixture();
     const spec = caseSpec(project.startMapId, (s) => {
-      s.accuser.graphic = { query: "신사" };
+      // 얼굴이 따라 움직이는지 보려면 짝 얼굴이 있는 칩이어야 한다 — query "신사" 의 중절모 신사(People2 #0)는 e2b78c6ddf 이후 얼굴 없음이라 명시한다.
+      s.accuser.graphic = { textureKey: "tex_easyrpg_charset_people1", characterIndex: 2 };
       s.accuser.intro = ["탐정: '(모두가 거실에 모였다.)'", "경비대장 로버트: 자, 시작하지."];
       s.endings.solved.lines = ["탐정: '범인은 당신입니다, 토마스.'", "집사 토마스: “…들켰군요.”", "자네 말이 맞았네."];
     });
