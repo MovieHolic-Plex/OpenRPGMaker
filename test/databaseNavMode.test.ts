@@ -94,8 +94,8 @@ describe("database navigation", () => {
       if (child.classList.contains("db-tab") && child.dataset.count) expect(child.hidden).toBe(false);
     }
 
-    // 접기 줄을 누르면 그 그룹의 빈 탭이 펼쳐진다.
-    fold.click();
+    // 8684ab7daf: 접기 줄은 이름마다 단추다 — 줄 자체가 아니라 「+N」 단추(또는 탭 이름 단추)를 눌러야 그 그룹의 빈 탭이 펼쳐진다.
+    findByTestId(fold, "db-tab-fold-all-life")!.click();
     expect(tabsInLife.every((tab) => !tab.hidden)).toBe(true);
     expect(fold.hidden).toBe(true);
     expect(life.getAttribute("aria-expanded")).toBe("true");
@@ -146,7 +146,7 @@ describe("database navigation", () => {
     expect(findByTestId(host, "db-tab-skills")?.hidden).toBe(true);
 
     // 「모두 보기」 클릭 시 해당 그룹의 숨긴 탭이 모두 펼쳐진다.
-    battleFold.click();
+    findByTestId(battleFold, "db-tab-fold-all-battle")!.click();
     expect(battleFold.hidden).toBe(true);
     expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(false);
   });

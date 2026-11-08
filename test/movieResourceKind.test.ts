@@ -76,7 +76,10 @@ describe("movie ResourceKind", () => {
     const categoryKinds = RESOURCE_MANAGER_CATEGORIES.map((category) => category.kind);
 
     expect(categoryKinds).toContain(MOVIE_KIND);
-    expect([...categoryKinds].sort()).toEqual(RESOURCE_PROFILE_SPECS.map((spec) => spec.kind).sort());
+    // 86c04a1f34: 「icon」(스토어 32px 아이콘 한 장)은 아이콘·이미지 고르개에서만 쓰는 통이미지 종류라 리소스 매니저 분류 칸이 없다.
+    // 다른 등재 종류가 칸을 잃으면 이 비교가 그대로 잡는다 — 칸 없는 종류는 이 한 줄에만 적는다.
+    const PICKER_ONLY_KINDS = new Set<string>(["icon"]);
+    expect([...categoryKinds].sort()).toEqual(RESOURCE_PROFILE_SPECS.map((spec) => spec.kind).filter((kind) => !PICKER_ONLY_KINDS.has(kind)).sort());
   });
 
   it("동영상 가져오기 규칙이 동영상 컨테이너만 받는다", () => {

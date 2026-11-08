@@ -17,7 +17,12 @@ describe('Character reference paths use the audited walking chip', () => {
     expect(searchResources('charset', 'golem').map(row => row.id).sort()).toEqual([
       'charset:tex_easyrpg_charset_monster2:4', 'charset:tex_easyrpg_charset_monster4:5',
     ]);
-    expect(searchResources('charset', '흑발 여성 마법사')).toEqual([]);
+    // 5de42f955f: RefmapDoll 에 실제 흑발 여성 마법사 칩이 생겼다. 계약은 「다른 머리색을 흑발로 우기지 않는다」: 원본 EasyRPG 칩은 나오지 않고,
+    // 나오는 칩은 모두 검은 머리 태그를 가진다.
+    const blackHair = searchResources('charset', '흑발 여성 마법사');
+    expect(blackHair.filter(row => row.id.startsWith('charset:tex_easyrpg_charset_'))).toEqual([]);
+    expect(blackHair.length).toBeGreaterThan(0);
+    expect(blackHair.every(row => row.tags.includes('검은 머리'))).toBe(true);
     expect(searchResources('charset', 'animal').filter(row => row.id.includes('tex_farming_'))).toHaveLength(2);
   });
   it('keeps the full resource result beyond the NPC tool limit', () => {
