@@ -86,7 +86,8 @@ function monsterSheetCells(sheet: PixelEnemySheet, name: string): HTMLElement {
     const swatch = el("span", { class: "db-monster-sheet-cell-image", attrs: { "aria-hidden": "true" }, dataset: { grid: sheet.grid ?? "" } });
     swatch.style.setProperty("--monster-sheet-url", url);
     swatch.style.backgroundPosition = `${(index % cols) * (100 / (cols - 1))}% ${Math.floor(index / cols) * (100 / (rows - 1))}%`;
-    item.append(swatch, el("small", { text: absent ? `${CELL_LABELS[cell]} · 없음` : CELL_LABELS[cell] }));
+    const label = sheet.grid === "4x4" && cell === "weak" ? "빈사(안 씀)" : CELL_LABELS[cell];
+    item.append(swatch, el("small", { text: absent ? `${label} · 없음` : label }));
     grid.append(item);
   }
   return grid;

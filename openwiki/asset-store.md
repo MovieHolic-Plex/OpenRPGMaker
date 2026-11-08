@@ -98,7 +98,7 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 
 `pixelEnemySheet.grid: "4x4"`(생략 = `"3x3"`)이면 시트는 4cell×4cell, 시트 그림 meta `frames: 16`. 칸 번호는 격자 폭과 무관한 **행 우선 번호**다:
 0 idle_a · 1 idle_b · 2 idle_c · 3 windup · 4 move · 5 attack · 6 recover · 7 hit · 8 dead(0~8 = 3×3 과 같은 이름·순서) ·
-9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
+9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak(런타임 미사용 — 그리지 않아도 된다, 아래) · 14 intro · 15 예약(완전 투명). 기준선·가운데·알파 규칙은 3×3 과 같다.
 
 ```json
 "pixelEnemySheet": { "sheetResourceId": "slime-sheet", "cell": 64, "motion": "hop", "idleFrameMs": 220, "skillCell": true, "grid": "4x4", "missingCells": [12, 13] }
@@ -106,7 +106,7 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 
 - `missingCells`(선택, 9~14 만, 중복 금지, grid 4x4 에만): 그리지 못한 확장 칸. 0~8 은 비울 수 없다.
 - 검사: `monsterSheetProblems`(grid·missingCells·frames 9/16), `storeMonsterSheetSizeProblems`(시트 n·cell), 칸 채움 `storeMonsterSheetCellProblems`(0~8·적지 않은 9~14 는 그려져 있어야, 15·missingCells 는 알파 0). 칸 채움은 PNG 를 풀 수 있는 곳에서 돈다 — 스토어 서버 `checkBlobs`(`src/png.ts decodePng`), `scripts/store/agentStore.mts`(pngjs), 편집기 넣기 `prepareManifestItem`(`createImageBitmap`, 못 풀면 건너뜀).
-- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·weak·intro → 그 동작을 하지 않는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
+- 런타임 대체(`pixelEnemyFrame`·`PIXEL_ENEMY_EXTRA_FALLBACK`): attack_mid 없음 → windup 에서 바로 attack, cast_charge → windup, cast_release → attack, guard·intro → 그 동작을 하지 않는다. **16칸 시트의 13 weak 칸은 그려 있어도 전투가 쓰지 않는다**(2026-11-08 오너 결정 — HP 25% 이하에서 weak 와 대기가 번갈아 깜빡였다). 새 시트는 13을 `missingCells` 에 넣어 비워도 되고, 이미 그린 시트·팩도 그대로 받는다. 동작 설명은 [전투 런타임](runtime-battle.md) 「16칸 시트」.
 - 조수: 16칸 소재에 `battleCells: 16` 이 더 붙는다(`monsterBattleCells`), `store_install` 요약이 16칸 수를 센다.
 - 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
 - 테스트 `test/enemyPixelSheet16.test.ts`.
@@ -123,7 +123,7 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 | 18 | stunned | 행동을 막거나 게이지를 얼리는 상태(`stateBehavior().restrictsAction \|\| freezesGauge`, `data-battler-restricted`)가 걸려 있는 쉬는 칸 | 보통 대기 루프 |
 | 19 | enrage | HP ≤ 50% 이고 > 25% 인 쉬는 칸, `idle_b` 와 번갈아(`retro-pixel-enemy-enrage-20`) | 보통 대기 루프 |
 
-- 쉬는 칸 우선순위: guard > stunned > weak > enrage > idle. stunned 중에는 weak·enrage 번갈이를 끈다. 상태 이름·id 로 판정하지 않는다.
+- 5×4 의 13 weak 칸은 HP ≤ 25% 에서 `idle_b` 와 번갈아 쓴다. 쉬는 칸 우선순위는 guard > stunned > weak > enrage > idle. stunned 중에는 weak·enrage 번갈이를 끈다. 상태 이름·id 로 판정하지 않는다.
 - `missingCells`(선택): 4×4 는 9~14, 5×4 는 9~19. 5×4 에는 늘 투명한 예약 칸이 없다(`storeMonsterSheetCellProblems` 가 격자별로 본다).
 - 검사: 시트 크기 5·cell × 4·cell, `meta.frames` 20, 칸 채움은 0~8 과 적지 않은 9~19.
 - CSS: `[data-pixel-grid="5x4"]` 배경 500% 400%, 대기 루프 `retro-pixel-enemy-idle-20`(칸 0·1·2·1 = 0·25·50·25%), weak = 75% 66.667%, enrage = 100% 100%. 자료집은 `[data-grid="5x4"]`.
