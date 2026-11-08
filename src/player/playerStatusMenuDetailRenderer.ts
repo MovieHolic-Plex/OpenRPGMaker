@@ -15,6 +15,25 @@ export type StatusMenuDetailPanelOptions = {
   readonly side?: HTMLElement;
 };
 
+/** 키 이름(↑↓←→·Enter·Esc)이 든 안내 마디. 터치 기기에는 그 키가 없어 mobileUi.css 가 이 마디만 숨긴다. */
+const KEY_CLAUSE = /[↑↓←→]|\bEnter\b|\bEsc\b/u;
+
+/**
+ * 안내를 「 · 」·문장 끝에서 나눠 키 마디를 표시한다. 구분자는 다음 마디 앞에 그대로 붙여 두므로 이어 붙이면 원문과 같다(데스크톱 글자 불변).
+ * 터치에서는 키 마디만 숨기고 키와 무관한 안내(「파티원을 선택하세요」)는 남긴다.
+ */
+export function statusMenuHintClauses(hint: string): { readonly text: string; readonly key: boolean }[] {
+  return hint.split(/(?=\s+·\s+)|(?<=\.)(?=\s+\S)/u).filter(Boolean).map((text) => ({ text, key: KEY_CLAUSE.test(text) }));
+}
+
+function renderHint(hint: string): HTMLElement {
+  const clauses = statusMenuHintClauses(hint);
+  const node = el("div", { class: "status-menu-detail-hint" });
+  for (const clause of clauses) node.append(el("span", { class: clause.key ? "status-menu-hint-key" : "", text: clause.text }));
+  if (clauses.length > 0 && clauses.every((clause) => clause.key)) node.classList.add("is-keys-only");
+  return node;
+}
+
 const detailContexts = new WeakMap<HTMLElement, { project: Project; detail: StatusMenuDetail; showcase: boolean }>();
 
 /** Cursor movement keeps the list, its focus and its scroll position alive. */
@@ -128,7 +147,7 @@ export function renderStatusMenuDetailPanel(
       text: detail.emptyLabel ?? detail.hint ?? "",
       attrs: { id: "life-ledger-tab-panel", role: detail.tabs ? "tabpanel" : "status" },
     }));
-    if (detail.hint) panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
+    if (detail.hint) panel.append(renderHint(detail.hint));
     appendSideColumn(panel, options.side);
     return panel;
   }
@@ -172,7 +191,7 @@ export function renderStatusMenuDetailPanel(
   // 조작 가능한 목록에서는 힌트 줄을 그리지 않는다 — 힌트가 행 하나 몫(14px)을 먹어
   // 장비 슬롯 5개 중 3.5개만 보이고 넷째 행이 가로로 잘렸다(실측). 안내는 푸터가 맡는다.
   if (detail.hint && !interactiveList) {
-    panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
+    panel.append(renderHint(detail.hint));
   }
   return panel;
 }

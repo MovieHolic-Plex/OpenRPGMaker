@@ -18,6 +18,9 @@
     .main-menu-controls,
     .runtime-shop-key
   ) { display: none !important; }
+  /* 상태 메뉴 상세 안내는 키와 무관한 말(「파티원을 선택하세요」)도 있어 통째로 숨기지 않는다 — 키 마디(↑↓←→·Enter·Esc)만.
+     playerStatusMenuDetailRenderer.statusMenuHintClauses. 키 마디뿐인 안내는 줄째 없앤다. */
+  .play-viewport:is([data-mobile-ui], [data-touch-ui]) :is(.status-menu-hint-key, .status-menu-detail-hint.is-keys-only) { display: none; }
 
   /* 전체화면 토글: 보이는 크기는 그대로 두고 눌림 영역만 44px 로. */
   .play-viewport[data-touch-ui] > .play-fullscreen-toggle::after { content: ""; position: absolute; inset: -11px; }
