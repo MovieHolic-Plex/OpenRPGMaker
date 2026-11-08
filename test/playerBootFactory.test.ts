@@ -78,6 +78,9 @@ vi.mock("@/app/phaserRuntime", () => ({
   ensurePhaser: vi.fn(async () => ({
     AUTO: fakePhaser.AUTO,
     Scale: { NONE: fakePhaser.NONE, RESIZE: 30, NO_CENTER: 0 },
+    // createPlayGame 이 부팅 전에 ImageFile.prototype·WebGLRenderer.prototype 을 패치한다(80b1e1aa24) — 가짜 Phaser 에도 그 자리를 둔다.
+    Loader: { FILE_PROCESSING: 5, FileTypes: { ImageFile: function ImageFile() {} } },
+    Renderer: { WebGL: { WebGLRenderer: function WebGLRenderer() {} } },
     // startEditGame 이 편집 렌더 게이트에 Core.Events 이름을 넘긴다 — 가짜 게임은 step/loop 가 없어 게이트가 바로 빠진다.
     Core: { Events: { PRE_STEP: "prestep", STEP: "step", POST_STEP: "poststep", PRE_RENDER: "prerender", POST_RENDER: "postrender", DESTROY: "destroy", VISIBLE: "visible", RESUME: "resume" } },
     Game: fakePhaser.FakeGame,
