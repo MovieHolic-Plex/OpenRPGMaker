@@ -13302,6 +13302,14 @@
     "cc0-bgm-inn",
     "cc0-bgm-dungeon",
     "cc0-bgm-battle",
+    "oprn-bgm-ct2-battle-v1-1",
+    "oprn-bgm-gal-portraitboss-v0-1",
+    "oprn-bgm-dfk-battlefield-v1-1",
+    "oprn-bgm-dfk-battlefield-v0-1",
+    "oprn-bgm-dfk-battlefield-v0-0",
+    "oprn-bgm-dfk-boss-v0-0",
+    "oprn-bgm-dfk-boss-v1-0",
+    "oprn-bgm-ct2-finalboss-v0-1",
     "easyrpg-music-battle-1",
     "easyrpg-music-boss-3",
     "easyrpg-music-castle-1",
@@ -13345,7 +13353,7 @@
   "tags": {
    "div": 13,
    "label": 2,
-   "option": 320,
+   "option": 328,
    "select": 2,
    "small": 1,
    "span": 1
@@ -13658,6 +13666,16 @@
     "cc0-se-osx-plop-01",
     "cc0-se-osx-plop-02",
     "cc0-sound-ui-confirm",
+    "cc0-sound-fs-op-star-swell",
+    "cc0-sound-fs-op-star-crack",
+    "cc0-sound-fs-op-meteor-roar",
+    "cc0-sound-fs-op-impact",
+    "cc0-sound-fs-op-night-air",
+    "cc0-sound-fs-op-smolder",
+    "cc0-sound-fs-op-pod-hum",
+    "cc0-sound-fs-op-bell",
+    "cc0-sound-fs-op-title-rise",
+    "cc0-sound-fs-op-title-hit",
     "cc0-sound-monster-ui-cursor",
     "cc0-sound-monster-ui-confirm",
     "cc0-sound-monster-ui-cancel",
@@ -13818,7 +13836,7 @@
   "tags": {
    "div": 13,
    "label": 2,
-   "option": 409,
+   "option": 419,
    "select": 2,
    "small": 1,
    "span": 1
@@ -14789,8 +14807,8 @@
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "hide-screen-intent": "화면 숨기기화면을 어둡게 가립니다.",
-   "hide-screen-preview": "화면 숨김 (페이드 아웃)맵 화면을 가립니다."
+   "hide-screen-intent": "화면 숨기기#ms 동안 화면을 검게 페이드한 뒤 다음 명령으로 넘어갑니다.",
+   "hide-screen-preview": "화면 숨김 (페이드 아웃 · #ms)#ms 동안 화면이 점점 검게 덮입니다. 페이드가 끝난 뒤에 다음 명령이 실행됩니다."
   },
   "testidCount": 4,
   "controlCount": 0
@@ -14831,8 +14849,8 @@
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "show-screen-intent": "화면 표시숨긴 화면을 다시 표시합니다.",
-   "show-screen-preview": "화면 표시 (페이드 인)가려진 화면을 다시 보여줍니다."
+   "show-screen-intent": "화면 표시#ms 동안 검은 화면을 걷은 뒤 다음 명령으로 넘어갑니다.",
+   "show-screen-preview": "화면 표시 (페이드 인 · #ms)#ms 동안 검은 화면이 걷힙니다. 페이드가 끝난 뒤에 다음 명령이 실행됩니다."
   },
   "testidCount": 4,
   "controlCount": 0
@@ -16263,6 +16281,7 @@
     "pirate_isles",
     "sengoku_edo",
     "sky_island",
+    "beodeul_wave_places",
     "steampunk_city",
     "modern_campus",
     "sf_station",
@@ -16299,7 +16318,7 @@
   "tags": {
    "div": 10,
    "optgroup": 3,
-   "option": 49,
+   "option": 50,
    "p": 3,
    "select": 1,
    "span": 4
@@ -16855,36 +16874,66 @@
  "m2-078-open-menu-screen": {
   "testids": [
    "event-command-edit-summary",
+   "m2-command-actorId-record-select",
+   "m2-command-actorId-record-selected-name",
    "m2-command-body-m2-078-open-menu-screen",
+   "m2-command-screen-option-select",
    "m2-open-menu-screen-intent"
   ],
   "classes": [
    "cream-command-form",
    "cream-command-form-head",
    "empty-hint",
+   "field",
    "m2-command-body",
    "m2-command-intent-body",
    "m2-command-intent-card",
-   "m2-command-intent-title"
+   "m2-command-intent-title",
+   "m2-record-picker",
+   "m2-record-selected-name"
   ],
-  "controls": {},
-  "selectOptions": {},
-  "labels": [],
+  "controls": {
+   "m2-command-actorId-record-select": "select{}",
+   "m2-command-screen-option-select": "select{}"
+  },
+  "selectOptions": {
+   "m2-command-actorId-record-select": [
+    "",
+    "actor_hero",
+    "actor_guardian",
+    "actor_mage"
+   ],
+   "m2-command-screen-option-select": [
+    "",
+    "monster-box",
+    "skills"
+   ]
+  },
+  "labels": [
+   "배우 ID (스킬 장착, 비우면 파티장)",
+   "화면"
+  ],
   "tags": {
-   "div": 7,
-   "p": 1
+   "div": 11,
+   "label": 2,
+   "option": 7,
+   "p": 1,
+   "select": 2
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-command-actorId-record-select": "select",
+   "m2-command-actorId-record-selected-name": "div",
    "m2-command-body-m2-078-open-menu-screen": "div",
+   "m2-command-screen-option-select": "select",
    "m2-open-menu-screen-intent": "div"
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-open-menu-screen-intent": "메뉴 화면 열기플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다."
+   "m2-open-menu-screen-intent": "메뉴 화면 열기플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 「스킬 장착」을 고르면 그 배우의 스킬 장착 화면이 바로 열리고, 닫으면 이벤트가 이어집니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다."
   },
-  "testidCount": 3,
-  "controlCount": 0
+  "testidCount": 6,
+  "controlCount": 2
  },
  "m2-079-change-menu-access": {
   "testids": [
@@ -19231,6 +19280,14 @@
     "cc0-bgm-inn",
     "cc0-bgm-dungeon",
     "cc0-bgm-battle",
+    "oprn-bgm-ct2-battle-v1-1",
+    "oprn-bgm-gal-portraitboss-v0-1",
+    "oprn-bgm-dfk-battlefield-v1-1",
+    "oprn-bgm-dfk-battlefield-v0-1",
+    "oprn-bgm-dfk-battlefield-v0-0",
+    "oprn-bgm-dfk-boss-v0-0",
+    "oprn-bgm-dfk-boss-v1-0",
+    "oprn-bgm-ct2-finalboss-v0-1",
     "easyrpg-music-battle-1",
     "easyrpg-music-boss-3",
     "easyrpg-music-castle-1",
@@ -19520,6 +19577,16 @@
     "cc0-se-osx-plop-01",
     "cc0-se-osx-plop-02",
     "cc0-sound-ui-confirm",
+    "cc0-sound-fs-op-star-swell",
+    "cc0-sound-fs-op-star-crack",
+    "cc0-sound-fs-op-meteor-roar",
+    "cc0-sound-fs-op-impact",
+    "cc0-sound-fs-op-night-air",
+    "cc0-sound-fs-op-smolder",
+    "cc0-sound-fs-op-pod-hum",
+    "cc0-sound-fs-op-bell",
+    "cc0-sound-fs-op-title-rise",
+    "cc0-sound-fs-op-title-hit",
     "cc0-sound-monster-ui-cursor",
     "cc0-sound-monster-ui-confirm",
     "cc0-sound-monster-ui-cancel",
@@ -19679,7 +19746,7 @@
    "div": 15,
    "input": 2,
    "label": 4,
-   "option": 729,
+   "option": 747,
    "select": 2,
    "small": 1,
    "span": 1
@@ -20777,6 +20844,7 @@
    "m2-command-durationMs-input",
    "m2-command-durationMs-note",
    "m2-command-mode-option-select",
+   "m2-command-riders-option-select",
    "m2-command-se-input",
    "m2-command-wait-checkbox",
    "m2-command-width-input",
@@ -20799,6 +20867,7 @@
    "m2-command-distance-input": "input[number]{}",
    "m2-command-durationMs-input": "input[number]{}",
    "m2-command-mode-option-select": "select{}",
+   "m2-command-riders-option-select": "select{}",
    "m2-command-se-input": "input[text]{}",
    "m2-command-wait-checkbox": "input[checkbox]{checked}",
    "m2-command-width-input": "input[number]{}",
@@ -20814,6 +20883,10 @@
     "depart",
     "arrive",
     "move"
+   ],
+   "m2-command-riders-option-select": [
+    "party",
+    "none"
    ]
   },
   "labels": [
@@ -20826,14 +20899,15 @@
    "방식",
    "방향",
    "시간(ms)",
-   "움직이는 칸 수"
+   "움직이는 칸 수",
+   "타는 사람"
   ],
   "tags": {
-   "div": 23,
+   "div": 24,
    "input": 8,
-   "label": 10,
-   "option": 5,
-   "select": 2
+   "label": 11,
+   "option": 7,
+   "select": 3
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -20846,6 +20920,7 @@
    "m2-command-durationMs-input": "input",
    "m2-command-durationMs-note": "div",
    "m2-command-mode-option-select": "select",
+   "m2-command-riders-option-select": "select",
    "m2-command-se-input": "input",
    "m2-command-wait-checkbox": "input",
    "m2-command-width-input": "input",
@@ -20860,8 +20935,8 @@
    "m2-command-durationMs-note": "적용 범위 #~#",
    "m2-command-width-note": "적용 범위 #~#"
   },
-  "testidCount": 16,
-  "controlCount": 10
+  "testidCount": 17,
+  "controlCount": 11
  },
  "m2-227-journal-line": {
   "testids": [

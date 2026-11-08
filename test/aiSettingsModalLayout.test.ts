@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -49,6 +49,10 @@ const REQUIRED_TEST_IDS = [
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
+// aiSettingsModal 은 import 그래프가 무겁다 — 첫 시험의 동적 import 가 ci(워커 1개)에서 45초 걸려 15초 상한을 넘겼고, 나머지 일곱 시험은 각각 30~80ms 였다
+// (ci-vitest-files 42446009926). 모듈 로드를 hookTimeout(90초) 쪽으로 옮겨 시험 시간에서 뺀다.
+beforeAll(async () => { await import("@/editor/panels/aiSettingsModal"); });
+
 beforeEach(() => {
   vi.clearAllMocks();
   fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
@@ -91,7 +95,8 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     // 「역할별 모델 직접 지정」 표로 압축됐고, 모델 페인은 품질 프리셋으로 시작한다.
     const modal = await openModal();
     const expected = [
-      ["connection", "연결", "AI 제공자와 로그인 상태를 관리합니다."],
+      // abaa03e78f(2026-11-02) 가 연결 절 부제를 지웠다 — 제목만 확인한다.
+      ["connection", "연결", ""],
       ["presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다."],
       ["image", "그림·도트 모델", "쓰는 모델이 따로 있습니다."],
       ["behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다."],
@@ -180,7 +185,8 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
     findByTestId(modal, "ai-settings-connection-check")?.click();
     await vi.waitFor(() => {
-      expect(summary?.textContent).toBe("Google · 사용 준비됨");
+      // 「연결 확인」 뒤에는 확인 시각이 붙는다(C-67, 92a6aba61e) — 시각 문자열은 로케일·시계에 따라 달라 형식만 본다.
+      expect(summary?.textContent).toMatch(/^Google · 사용 준비됨 · .+ 확인함$/u);
     });
     expect(summary?.dataset.tone).toBe("ready");
     expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("연결됨");
@@ -192,7 +198,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
 
     // 「지금 저장」버튼은 없다 — 수동 저장이 있으면 자동 저장이 안 되는 것처럼 보인다.
     expect(findByTestId(modal, "ai-config-save")).toBeNull();
-    expect(hint?.textContent).toBe("변경 사항은 자동으로 저장됩니다.");
+    expect(hint?.textContent).toBe("자동 저장");
 
     const maxTokens = findByTestId(modal, "ai-config-maxtokens");
     if (!maxTokens) throw new Error("maxTokens field missing");

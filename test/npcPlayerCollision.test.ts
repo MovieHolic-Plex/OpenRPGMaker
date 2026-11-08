@@ -100,7 +100,11 @@ describe("NPC-player character collision", () => {
     if (!mover) throw new Error("missing mover");
 
     updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs); // setThrough
-    updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs); // move onto player
+    // A page route strolls (naturalStroll): after an instant command the next step waits
+    // moveIntervalMs * pauseScale, and pauseScale is drawn from the session RNG in [0.6, 1.5]
+    // (strollPauseScale). One plain interval only covers scales <= 1, so this test failed whenever
+    // the unseeded draw was larger. Advance by the pause the mover actually drew so the step always runs.
+    updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs * (mover.pauseScale ?? 1)); // move onto player
 
     expect(scene.eventPositions.npc).toEqual({ x: 2, y: 1, direction: "right" });
   });

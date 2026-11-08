@@ -39,7 +39,7 @@ describe("world canon spread view", () => {
     expect(findByTestId(host, "db-world-canon-help")).toBeNull();
     // 발췌 카운터는 본문 카드 힌트에 남는다.
     const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
-    expect(hint?.textContent).toContain("0자를 본다");
+    expect(hint?.textContent).toContain("지금 0자");
   });
 
   it("shows law answers as question cards with conversational state", () => {

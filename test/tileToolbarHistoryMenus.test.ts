@@ -535,8 +535,10 @@ describe("펼쳐보기 폭 규칙의 캐스케이드 승자", () => {
       { value: winner.value, selector: winner.selector },
       `승자가 뒤집혔다 — 걸린 규칙: ${declarations.map((entry) => `${entry.source} ${entry.selector} → ${entry.value}`).join(" | ")}`,
     ).toEqual({
-      value: "var(--space-5)",
-      selector: '.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle',
+      // 3a9d9682e7(HIG C-34·C-35): 도구가 32px 표적이 되면서 시트 끝에 같은 명시도의 펼쳐보기 24px 규칙이 다시 붙었다 —
+      // 그 마지막 세대가 이긴다. 값은 여전히 24px(최소 과녀)다.
+      value: "24px",
+      selector: ".editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool.oprn-tile-history-toggle",
     });
   });
 
@@ -557,7 +559,8 @@ describe("펼쳐보기 폭 규칙의 캐스케이드 승자", () => {
     const winner = declarations.reduce((best, next) =>
       next.weight > best.weight || (next.weight === best.weight && next.order > best.order) ? next : best);
 
-    expect(winner.value).toBe("26px");
+    // 3a9d9682e7: 도구 단추는 32px 정사각형 표적이다(펼쳐보기만 폭 24px).
+    expect(winner.value).toBe("32px");
     expect(winner.selector).not.toContain("history");
   });
 });

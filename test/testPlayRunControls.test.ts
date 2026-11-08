@@ -188,7 +188,25 @@ describe("test play skip-title option", () => {
 });
 
 describe("test play skip-opening option", () => {
+  it("skips the untouched seed opening by default, and plays one the author wrote (856a0cba21, HIG C-93)", async () => {
+    await openTestPlayModal();
+    expect(checkbox("test-play-skip-opening").checked).toBe(true);
+    expect(lastRenderOptions().shouldPlayOpening?.()).toBe(false);
+
+    closeTestPlayModal();
+    const authored = createBlankProject();
+    authored.system.opening!.scenes[0]!.narration = "직접 쓴 오프닝";
+    store.replaceProject(authored);
+    await openTestPlayModal();
+    expect(checkbox("test-play-skip-opening").checked).toBe(false);
+    expect(lastRenderOptions().shouldPlayOpening?.()).toBe(true);
+  });
+
   it("keeps the opening independent of the title choice and remembers it", async () => {
+    // 기본값이 «오프닝 재생» 인 것은 직접 쓴 오프닝뿐이다 — 씨앗 오프닝은 건너뛰는 쪽이 기본이다.
+    const authored = createBlankProject();
+    authored.system.opening!.scenes[0]!.narration = "직접 쓴 오프닝";
+    store.replaceProject(authored);
     await openTestPlayModal();
     const skipOpening = checkbox("test-play-skip-opening");
     // 기본값은 «오프닝 재생» — 기존 동작을 조용히 바꾸지 않는다.

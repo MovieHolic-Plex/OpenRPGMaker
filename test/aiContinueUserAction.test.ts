@@ -13,6 +13,10 @@ import { sendAiAssistantMessage } from "@/editor/aiAssistantBridge";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
+// createBlankProject(~63MB)·조수 세션을 ci 러너(워커 1개)에서 처음 만드는 시험이 13~17초 걸려 vitest 기본 15초 상한에 걸린다
+// (ci-vitest-files 42446009926 실측). 같은 사정의 aiChatPanelSettings.test.ts 선례대로 이 파일만 예산을 늘린다.
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/editor/panels/aiPiAgentCommand")>()),
   runPiCommand: vi.fn(async () => true),

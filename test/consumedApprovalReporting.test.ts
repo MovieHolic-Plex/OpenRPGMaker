@@ -132,7 +132,7 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(typeof result.review?.revision).toBe("number");
       expect(f.session.getResultReview()).toEqual(result.review);
     } finally { f.done(); }
-  }, 60_000);
+  }, 180_000); // ci 실측 47~70초(42446009926) — 60초 상한 밖.
 
   it("a later rejected turn never replays the consumed approval", async () => {
     const f = priceFixture();
@@ -152,7 +152,7 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(333);
       expect(f.session.isDraftReviewApproved()).toBe(false);
     } finally { f.done(); }
-  }, 60_000);
+  }, 180_000); // ci 실측 47~70초(42446009926) — 60초 상한 밖.
 
   it("cancellation before any apply preserves no approval to report", async () => {
     const f = priceFixture();
@@ -172,7 +172,7 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(before).not.toBe(333);
       expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(before);
     } finally { f.done(); }
-  }, 60_000);
+  }, 180_000); // ci 실측 47~70초(42446009926) — 60초 상한 밖.
 
   it("consumed authority stays unusable: no approval replay for later work", async () => {
     const f = priceFixture();
@@ -188,5 +188,5 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(second.stoppedReason).toBe("final");
       expect(second.review ?? f.session.getResultReview()).toBeNull();
     } finally { f.done(); }
-  }, 60_000);
+  }, 180_000); // ci 실측 47~70초(42446009926) — 60초 상한 밖.
 });

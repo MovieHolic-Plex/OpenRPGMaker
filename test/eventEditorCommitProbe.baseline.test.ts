@@ -14,7 +14,8 @@
 // 요약: 표면 축은 "컨트롤이 있는가"만 봐서 배선 삭제 · 분기 소실 · x↔y 결선 교환 3개 변이를
 // 전부 초록으로 통과시켰다.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
+import { prepareScriptCompiler } from "@/editor/script/compile";
 import { assertSurfaceGate, type FloorMetrics } from "./surfaceGateSupport";
 import {
   captureAllCommitRuns,
@@ -49,6 +50,17 @@ type NoCommitAllowlist = {
   readonly intentional: Record<string, readonly string[]>;
   readonly UNTRIAGED: Record<string, readonly string[]>;
 };
+
+// 스크립트 명령 폼은 렌더 뒤에 queueMicrotask 와 prepareScriptCompiler().then 으로 DOM 을 다시 만진다. probeMany 는
+// 동기로 끝나며 가짜 DOM 을 걷어 내므로, 그 뒤에 도는 콜백이 HTMLElement/document 없음으로 미처리 오류 5건을 냈고
+// vitest 가 exit 1 로 표면 축을 떨어뜨렸다(ci-full 42455389382 static). 파일 전체에 바깥 가짜 DOM 을 깔아 두고
+// 컴파일러 적재와 남은 마이크로태스크가 끝난 뒤에 걷는다. 프로브 자체는 안쪽에 자기 가짜 DOM 을 따로 깐다.
+const restoreOuterDom = installFakeDom();
+afterAll(async () => {
+  await prepareScriptCompiler().catch(() => undefined);
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  restoreOuterDom();
+});
 
 // 축 전체를 한 번만 실행해 4개 테스트가 공유한다(렌더 300여 회, 0.5초 미만).
 const run = captureAllCommitRuns();

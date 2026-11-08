@@ -12,7 +12,7 @@ import { battleResultPanel, rewardValue } from "@/player/battleDirectorDom";
 function snapshotWithRewards(exp: number, gold: number): BattleSnapshot {
   return {
     result: "victory",
-    actors: [{ recordId: DEFAULT_ACTOR_ID, id: DEFAULT_ACTOR_ID, name: "주인공", hp: 20, maxHp: 20, level: 1 }],
+    actors: [{ recordId: DEFAULT_ACTOR_ID, id: DEFAULT_ACTOR_ID, name: "주인공", hp: 20, maxHp: 20, level: 1, skillIds: [] }],
     rewards: { exp, gold, items: [] },
     eventState: { gold: 10, inventory: {} },
     participatingActorIds: [DEFAULT_ACTOR_ID],

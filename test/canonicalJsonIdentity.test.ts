@@ -1,8 +1,12 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { canonicalJsonOf, canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 import { authoredIdentity, composeProjectIdentity, contentIdentity, projectIdentityParts } from "@/project/authoredProjectBaseline";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+
+// createBlankProject() builds the ~63MB blank project; each test here builds it (beforeEach/inline) and CI runs 4 workers at once, so
+// single tests measured 8-15s+ — past vitest's 15s default. Same per-file budget other blank-project files use (e.g. actionAcceptanceProof).
+vi.setConfig({ testTimeout: 120_000 });
 
 // 체크포인트 적용 권위는 이 문자열의 **동일성**에 산다. 빠른 경로는 예전 왕복과 글자까지 같아야 한다.
 const roundtrip = (value: unknown): string => canonicalJsonString(JSON.parse(JSON.stringify(value)));

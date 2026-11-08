@@ -158,7 +158,8 @@ describe("저장본은 불러올 때 짝으로 교정된다", () => {
     const custom = project.database.actors.find((a) => a.id === "actor_hero")!;
     custom.faceResourceId = CUSTOM_FACE;
     const map = project.maps[project.startMapId]!;
-    const pattern = charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 });
+    // people2#0(중절모 신사)은 2026-10-31 부터 얼굴 없음이다(근사 짝을 빌리지 않는다) — 짝이 있는 people2#1(수녀 → people1-09)로 확인한다.
+    const pattern = charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 });
     map.events.push({ id: "ev_saved_npc", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [{
       id: "p0", name: "신사", conditions: [], trigger: { kind: "action" }, priority: "same", overlapForbidden: true,
       movement: { type: "fixed", speed: 3, frequency: 3 },
@@ -176,11 +177,11 @@ describe("저장본은 불러올 때 짝으로 교정된다", () => {
     expect(guardian.faceResourceId).toBe("easyrpg-faceset-actor1-08");
     expect(custom.faceResourceId).toBe(CUSTOM_FACE);
     const saved = map.events.find((e) => e.id === "ev_saved_npc");
-    expect(faces(saved)).toEqual(["easyrpg-faceset-people2-06", "easyrpg-faceset-actor1-00"]);
+    expect(faces(saved)).toEqual(["easyrpg-faceset-people1-09", "easyrpg-faceset-actor1-00"]);
     // 저장 → 다시 불러오기 → 두 번째 교정은 아무것도 바꾸지 않는다(멱등).
     const reloaded = deserialize(serialize(project));
     expect(repairFaceMatches(reloaded)).toEqual({ actors: 0, eventFaces: 0 });
-    expect(faces(reloaded.maps[project.startMapId]!.events.find((e) => e.id === "ev_saved_npc"))[0]).toBe("easyrpg-faceset-people2-06");
+    expect(faces(reloaded.maps[project.startMapId]!.events.find((e) => e.id === "ev_saved_npc"))[0]).toBe("easyrpg-faceset-people1-09");
   });
 
   it("얼굴 없음 그림의 첫 얼굴은 뺀다", () => {

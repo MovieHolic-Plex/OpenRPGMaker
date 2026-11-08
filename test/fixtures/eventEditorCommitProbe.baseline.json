@@ -37,12 +37,14 @@
   "probes": {
    "event-choice-prompt": "replaceCommand {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}],\"prompt\":\"__p_9fe488__\"}",
    "event-choice-option-1": "replaceCommand x2 {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"__p_ef6098__\"}]}",
+   "event-choice-showWhen-enabled-1": "replaceCommand {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"showWhen\":{\"kind\":\"switch\",\"switchId\":\"\",\"value\":false},\"text\":\"a\"}]}",
+   "event-choice-enableWhen-enabled-1": "replaceCommand {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"enableWhen\":{\"amount\":50,\"kind\":\"gold\",\"op\":\">=\"},\"text\":\"a\"}]}",
    "event-choice-cancel-disallow": "radio-uncheck",
    "event-choice-cancel-choice1": "replaceCommand {\"cancelBehavior\":\"choice1\",\"cancelBranch\":\"<undefined>\",\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}",
    "event-choice-cancel-branch": "replaceCommand {\"cancelBehavior\":\"branch\",\"cancelBranch\":[],\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}"
   },
-  "probeCount": 5,
-  "commitCount": 4,
+  "probeCount": 7,
+  "commitCount": 6,
   "noCommitCount": 0
  },
  "presentItem": {
@@ -433,6 +435,18 @@
   "commitCount": 2,
   "noCommitCount": 0
  },
+ "openCraftShop": {
+  "probes": {
+   "craft-shop-title": "replaceCommand {\"kind\":\"openCraftShop\",\"recipeIds\":[\"recipe1\"],\"title\":\"__p_03fd58__\"}",
+   "craft-shop-speaker": "replaceCommand {\"kind\":\"openCraftShop\",\"recipeIds\":[\"recipe1\"],\"speaker\":\"__p_d45b85__\"}",
+   "craft-shop-all-recipes": "replaceCommand {\"kind\":\"openCraftShop\"}",
+   "craft-shop-recipe-recipe1": "replaceCommand {\"kind\":\"openCraftShop\",\"recipeIds\":[]}",
+   "craft-shop-recipe-recipe2": "replaceCommand {\"kind\":\"openCraftShop\",\"recipeIds\":[\"recipe1\",\"recipe2\"]}"
+  },
+  "probeCount": 5,
+  "commitCount": 5,
+  "noCommitCount": 0
+ },
  "applyItemUpgrade": {
   "probes": {
    "apply-item-upgrade-select": "replaceCommand {\"kind\":\"applyItemUpgrade\",\"upgradeId\":\"upgrade2\"}",
@@ -667,10 +681,11 @@
    "show-picture-blend-select": "replaceCommand {\"blendMode\":\"multiply\",\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
    "show-picture-rotation-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":7664,\"scale\":100,\"x\":0,\"y\":0}",
    "show-picture-duration-input": "replaceCommand {\"durationMs\":7820,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
-   "show-picture-easing-select": "replaceCommand {\"durationMs\":0,\"easing\":\"easeInOut\",\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}"
+   "show-picture-easing-select": "replaceCommand {\"durationMs\":0,\"easing\":\"easeInOut\",\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-wait": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"waitForPicture\":true,\"x\":0,\"y\":0}"
   },
-  "probeCount": 12,
-  "commitCount": 11,
+  "probeCount": 13,
+  "commitCount": 12,
   "noCommitCount": 1
  },
  "erasePicture": {
@@ -683,11 +698,13 @@
  },
  "playAudio": {
   "probes": {
+   "play-audio-volume": "replaceCommand {\"kind\":\"playAudio\",\"loop\":false,\"resourceId\":\"res1\",\"volume\":95}",
+   "play-audio-fade": "replaceCommand {\"fadeInMs\":10200,\"kind\":\"playAudio\",\"loop\":false,\"resourceId\":\"res1\"}",
    "play-audio-search": "no-commit",
    "play-audio-resource-select": "replaceCommand {\"kind\":\"playAudio\",\"loop\":false,\"resourceId\":\"easyrpg-sound-wind8\"}"
   },
-  "probeCount": 2,
-  "commitCount": 1,
+  "probeCount": 4,
+  "commitCount": 3,
   "noCommitCount": 1
  },
  "stopAudio": {
@@ -765,6 +782,24 @@
   "probes": {},
   "probeCount": 0,
   "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "planSchedule": {
+  "probes": {
+   "plan-schedule-schedule-id-picker": "single-option",
+   "plan-schedule-slot-count-input": "replaceCommand {\"kind\":\"planSchedule\",\"scheduleId\":\"sched1\",\"slotCount\":9}"
+  },
+  "probeCount": 2,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "runSchedule": {
+  "probes": {
+   "run-schedule-schedule-id-picker": "single-option",
+   "run-schedule-slot-variable-id-select": "replaceCommand {\"kind\":\"runSchedule\",\"scheduleId\":\"sched1\",\"slotVariableId\":\"var_0020\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 1,
   "noCommitCount": 0
  },
  "spawnFieldEnemy": {
@@ -931,5 +966,14 @@
   "probeCount": 2,
   "commitCount": 2,
   "noCommitCount": 0
+ },
+ "script": {
+  "probes": {
+   "script-name-input": "no-commit",
+   "script-source-input": "no-commit"
+  },
+  "probeCount": 2,
+  "commitCount": 0,
+  "noCommitCount": 2
  }
 }

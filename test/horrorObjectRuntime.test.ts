@@ -9,6 +9,7 @@ import { isHorrorState } from '@/project/horrorState';
 import { lintHorrorAuthoring } from '@/project/lint/horrorAuthoringLint';
 import type { GameEvent } from '@/project/types';
 import type { AutonomousMover } from '@/player/playSceneTypes';
+import { CHASE_LEGACY_SEARCH_MIN_MS } from '@/project/chaseTempo';
 
 function fixture() {
   const project = createBlankProject();
@@ -71,7 +72,8 @@ describe('horror authoring and runtime contracts', () => {
     toggleHiding(world, view('closet'));
     expect(world.session.horror!.hiding!.witnessedBy).toEqual([]);
     expect(pursuitTarget(world, view('monster'), mover, 500)).toEqual({ x: 3, y: 5, searching: true });
-    expect(pursuitTarget(world, view('monster'), mover, 600)).toEqual({ mapId: world.map.id, x: 7, y: 5, searching: true });
+    // 박자(chaseStepMs)를 적지 않은 추격자의 수색은 CHASE_LEGACY_SEARCH_MIN_MS 아래로 내려가지 않는다(4127a63455) — 저작 searchMs 1000 은 그보다 짧다.
+    expect(pursuitTarget(world, view('monster'), mover, CHASE_LEGACY_SEARCH_MIN_MS)).toEqual({ mapId: world.map.id, x: 7, y: 5, searching: true });
     world.positions.monster = { x: 7, y: 5 };
     world.session.eventLocations.monster = { mapId: world.map.id, x: 7, y: 5 };
     expect(pursuitTarget(world, view('monster'), mover, 20)).toBeNull();

@@ -244,8 +244,11 @@ describe("native upsert page contract", () => {
     });
     assert(result.ok, result.summary);
     const event = ctx.project.maps[mapId]?.events.find(entry => entry.id === "high_level");
-    expect(event?.pages?.[0]?.commands).toContainEqual(expect.objectContaining({
-      kind: "choices", options: [{ text: "OPTION", branch: [{ kind: "text", body: "BRANCH" }] }],
-    }));
+    // 얼굴은 이 인물이 말하는 줄 앞에만 놓인다(placeSpeakerFace) — 화자 없는 갈래 줄 앞에는 얼굴을 비우는 changeFace 가 먼저 들어간다.
+    // 계약은 «선택지가 SimplePage 에서 네이티브 choices 로 컴파일되고 갈래 명령이 보존된다» 이므로 갈래 안의 그 줄을 본다.
+    const choices = event?.pages?.[0]?.commands.find((command): command is Extract<typeof command, { kind: "choices" }> => command.kind === "choices");
+    expect(choices?.options).toHaveLength(1);
+    expect(choices?.options[0]?.text).toBe("OPTION");
+    expect(choices?.options[0]?.branch.filter(command => command.kind !== "changeFace")).toEqual([{ kind: "text", body: "BRANCH" }]);
   });
 });

@@ -16,6 +16,6 @@ describe("promptTargetName", () => {
   it("still clips a long event name, which may carry id-like noise", () => {
     const project = { maps: {} } as never;
     const view = { event: { id: "ev_x", name: "아주아주아주아주긴조사대상이름", x: 1, y: 1 }, page: { commands: [] } } as unknown as RuntimeEventView;
-    expect(promptTargetName(project, view, "Z 조사")).toBe("아주아주아주아주긴조사대상…");
+    expect(promptTargetName(project, view, "Z 조사")).toBe("아주아주아주아주긴조사…"); // 12자 넘는 이름은 11자 + 「…」(promptTargetName clip)
   });
 });

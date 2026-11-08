@@ -100,7 +100,7 @@ describe("Complete character reference census regressions", () => {
 
   it("offers source-linked original face portraits and searches non-base expressions", async () => {
     const p = project();
-    const npc = (await tool("list_npc_graphics").run(p,{query:"갈색 머리 청년"})).data as {matches:{textureKey:string;characterIndex:number;portraitOptions:{mode:string;note?:string}[]}[]};
+    const npc = (await tool("list_npc_graphics").run(p,{query:"청년 용사"})).data as {matches:{textureKey:string;characterIndex:number;portraitOptions:{mode:string;note?:string}[]}[]};
     const options = npc.matches.find(row=>row.textureKey==="tex_easyrpg_charset_actor1" && row.characterIndex===0)?.portraitOptions;
     expect(options?.map(row=>row.mode)).toEqual(["face","bust","full"]);
     expect(options?.[2]?.note).toContain("별도 그림");

@@ -246,10 +246,16 @@ function memoryStorage(): Storage {
   } as Storage;
 }
 
+/** fakeDom 의 querySelector 는 [data-testid^=…] / [*=…] 부분 일치를 모른다(항상 빈 결과) — testid 를 모아서 거른다. */
+function hasTestId(root: HTMLElement, match: (testId: string) => boolean): boolean {
+  return Array.from(root.querySelectorAll<HTMLElement>("[data-testid]")).some((element) => match(element.dataset.testid ?? ""));
+}
+
 type ControllerHarness = { controller: ReturnType<typeof createPlayerStatusMenuController>; layout: HTMLElement };
 
 function mountController(skin: MenuUiStyle): ControllerHarness {
-  const project = createBlankProject();
+  // 전투 없는 게임은 첫 화면이 이야기 개요라 파티·스킬 흐름이 다르다(combatPresence, #3660) — render() 처럼 전투가 있는 게임으로 만든다.
+  const project = withCombat(createBlankProject());
   project.system.menuUiStyle = skin;
   store.replaceProject(project);
   const session = startSession(project);
@@ -371,16 +377,16 @@ describe("status menu skins — controller", () => {
       expect(controller.handleKey("ArrowRight")).toBe(true);
       expect(controller.handleKey("Enter")).toBe(true);
       let menu = findByTestId(layout, "main-menu")!;
-      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).toBeNull();
-      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(hasTestId(menu, (id) => id.startsWith("status-menu-skill-actor-"))).toBe(false);
+      expect(hasTestId(menu, (id) => id.includes("skill_attack"))).toBe(true);
       expect(controller.handleKey("Enter")).toBe(true);
       menu = findByTestId(layout, "main-menu")!;
       expect(findByTestId(menu, "status-menu-message")?.textContent).toBe("공격은 전투에서 사용합니다.");
-      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(hasTestId(menu, (id) => id.includes("skill_attack"))).toBe(true);
       expect(controller.handleKey("Escape")).toBe(true);
       menu = findByTestId(layout, "main-menu")!;
-      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).not.toBeNull();
-      expect(menu.querySelector("[data-testid*='skill_attack']")).toBeNull();
+      expect(hasTestId(menu, (id) => id.startsWith("status-menu-skill-actor-"))).toBe(true);
+      expect(hasTestId(menu, (id) => id.includes("skill_attack"))).toBe(false);
     } finally {
       if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
       else delete (globalThis as { window?: unknown }).window;

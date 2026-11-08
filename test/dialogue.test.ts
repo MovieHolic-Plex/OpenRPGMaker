@@ -144,7 +144,9 @@ describe("narration speaker", () => {
     expect(nameplateSpeaker("용사의 \\v[1]", context)).toBe("용사의 3");
     expect(nameplateSpeaker("마을 촌장", context)).toBe("마을 촌장");
     expect(nameplateSpeaker("내레이션", context)).toBeUndefined();
-    expect(nameplateSpeaker("\\n[99]", context)).toBe("\\n[99]");
+    // 기본 DB 배우가 99명을 넘는다(retro 로스터) — 없는 번호는 목록 끝 다음으로 잡는다.
+    const missing = `\\n[${project.database.actors.length + 1}]`;
+    expect(nameplateSpeaker(missing, context)).toBe(missing);
     expect(resolveDialogueSpeakerName("\\n[1]", context)).toBe("민수");
   });
 
@@ -272,7 +274,9 @@ describe("dialogue control playback", () => {
     await vi.advanceTimersByTimeAsync(1);
     await vi.advanceTimersByTimeAsync(1);
     expect(dialogueBody(host)).toBe("ABCD");
-    await vi.advanceTimersByTimeAsync(159);
+    // 153492679c: 흘림은 예정표(typeDue)를 따른다. D 는 예정 시각 184ms 에 나왔으므로(0ms 빠르게 구간 포함)
+    // E 는 그보다 \s[20] 한 칸(160ms) 뒤인 344ms 에 나온다 — 0ms 타이머가 쓴 시간을 더하지 않는다.
+    await vi.advanceTimersByTimeAsync(157);
     expect(dialogueBody(host)).toBe("ABCD");
     await vi.advanceTimersByTimeAsync(1);
     expect(dialogueBody(host)).toBe("ABCDE");

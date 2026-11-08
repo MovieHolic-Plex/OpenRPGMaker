@@ -228,11 +228,11 @@ describe("flag literacy 벤치마크 태스크", () => {
     }
   });
 
-  it("태스크 초기 프로젝트는 lint error 없이 시작한다", () => {
-    for (const task of FLAG_BENCH_TASKS) {
-      const errors = projectLint(task.initialProject()).filter((issue) => issue.severity === "error");
-      expect(errors, `${task.id}: ${errors.map((issue) => issue.message).join(" / ")}`).toHaveLength(0);
-    }
+  // 태스크마다 새 프로젝트를 만들고 lint 하는 데 CI 에서 약 1.5초가 든다. 한 테스트에서 8개를 돌리면 12.5초로
+  // 15초 상한에 걸렸다(ci-full 42454195330 shard 3). 태스크마다 따로 돌린다 — 단언은 그대로다.
+  it.each(FLAG_BENCH_TASKS.map((task) => [task.id, task] as const))("태스크 초기 프로젝트는 lint error 없이 시작한다 (%s)", (_id, task) => {
+    const errors = projectLint(task.initialProject()).filter((issue) => issue.severity === "error");
+    expect(errors, `${task.id}: ${errors.map((issue) => issue.message).join(" / ")}`).toHaveLength(0);
   });
 
   it("태스크 전체가 9개 축을 모두 최소 한 번은 겨냥한다", () => {

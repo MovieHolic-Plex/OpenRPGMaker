@@ -31,16 +31,21 @@ function authored(ts: TilesetDef, tile: number, layer: "lower" | "upper", solid:
 }
 
 function expectStableReload(p: Project): void {
-  const fresh = deserialize(serialize(p));
+  // 번들 타일셋을 모두 가진 프로젝트(직렬화 약 2.7MB)를 한 번만 직렬화해 두 번 읽는다 — 같은 바이트를 다시 만들 이유가 없다.
+  const saved = serialize(p);
+  const fresh = deserialize(saved);
   ensureBundledTilesets(fresh);
-  expect(fresh.tilesets).toEqual(deserialize(serialize(p)).tilesets);
+  expect(fresh.tilesets).toEqual(deserialize(saved).tilesets);
   expect(serializeForComparison(fresh)).toBe(serializeForComparison(p));
   const second = deserialize(serialize(fresh));
   ensureBundledTilesets(second);
   expect(serializeForComparison(second)).toBe(serializeForComparison(fresh));
 }
 
-describe("generate_map palette authority", () => {
+// 각 칸은 번들 타일셋 전체를 가진 프로젝트를 만들고(structuredClone 포함) 저장→재로드→정규화 비교를 세 번 한다.
+// CI(ci-vitest-files 42445017387)에서 이 칸들이 혼자 돌아도 13.6~14.9s 였다 — 기본 15s 한도에 붙어 ci-full 부하에서 넘는다.
+// 멈춤이 아니라 실제 작업량이다. 재로드 계약을 줄이지 않고 한도만 작업량에 맞춘다.
+describe("generate_map palette authority", { timeout: 60_000 }, () => {
   // (은퇴) 「합본 마을 지하실 재현」 — 합본 마을 생성 프로필이 2026-10-07 정리로 지워졌다. 남은 팔레트 계약은 아래가 지킨다.
   it("generates the cave on the surviving profile without changing any shared tile rules", () => {
     const ctx = { project: project() };

@@ -285,21 +285,20 @@ describe("piAgent mapBundle", () => {
   // 경계 고정: 옮기는 것은 «덧댄 것» 뿐이다. 기존 이식을 갈아치우거나 타일셋의 다른 데이터를
   // 고치는 것은 범위 밖 편집이라 버리고 보고해야 한다 — 저작 범위 규칙과 같은 모양이다
   // (`authorVillageScope.allowedTargetTilesetChange`).
-  it("기존 이식 교체와 타일셋의 다른 변경은 옮기지 않고 spill 로 보고한다", () => {
+  // 두 변형을 한 테스트에서 돌리면 빈 프로젝트(타일셋 포함 수십 MB) 복제·병합이 두 번이라 CI 에서 12~16초가 걸려 15초 상한에
+  // 걸렸다(ci-full 42454195330 shard 9). 변형마다 따로 돌려 한 테스트가 한 번만 병합한다 — 단언은 그대로다.
+  it.each(["교체", "이름변경"] as const)("기존 이식 교체와 타일셋의 다른 변경은 옮기지 않고 spill 로 보고한다 (%s)", (variant) => {
     const base = seed();
     const tilesetId = base.maps.map_east!.tilesetId;
     base.tilesets[tilesetId]!.tileGrafts = [{ targetTile: 443, sourceChipset: "tex_a", sourceTile: 443 }];
 
-    const 교체 = clone(base);
-    교체.tilesets[tilesetId]!.tileGrafts = [{ targetTile: 443, sourceChipset: "tex_다른것", sourceTile: 7 }];
-    const 이름변경 = clone(base);
-    이름변경.tilesets[tilesetId]!.name = "남의 타일셋";
+    const project = clone(base);
+    if (variant === "교체") project.tilesets[tilesetId]!.tileGrafts = [{ targetTile: 443, sourceChipset: "tex_다른것", sourceTile: 7 }];
+    else project.tilesets[tilesetId]!.name = "남의 타일셋";
 
-    for (const project of [교체, 이름변경]) {
-      const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project }]);
-      expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["tilesets"] }]);
-      expect(merged.project.tilesets[tilesetId]).toEqual(base.tilesets[tilesetId]);
-    }
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project }]);
+    expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["tilesets"] }]);
+    expect(merged.project.tilesets[tilesetId]).toEqual(base.tilesets[tilesetId]);
   });
 
   // 불변식. 이 한 줄이 있었으면 mapTree 거짓 보고는 애초에 못 나왔다 — 「버렸다」고 말한 키는

@@ -26,6 +26,9 @@
    "changeFace :: event-command-face-ai-prompt": "AI 그림 생성 위젯의 프롬프트 칸(aiImageGenerateField.ts:122-125, testid `${prefix}-prompt`). 리스너가 없고 값은 형제 버튼 `${prefix}-generate` 의 click 핸들러(280-294)만 읽어 생성 큐에 넣는다. 그림이 만들어지면 onInserted 로 리소스 id 가 폼에 꽂히므로 커밋은 그 경로가 한다 — 프롬프트 타이핑 자체는 커맨드를 바꾸지 않는다.",
    "showPicture :: show-picture-ai-prompt": "같은 위젯의 showPicture 쪽 인스턴스(showPictureAiField.ts → aiImageGenerateField, testidPrefix 'show-picture-ai')."
   },
+  "UNTRIAGED 근거": {
+   "script :: script-name-input / script-source-input": "Not dead wiring: change → commit() in commandBodyScript.ts awaits the script compiler (Promise + prepareScriptCompiler) before replaceCommand, and the probe only observes synchronous commits. Left UNTRIAGED (not intentional) until the probe can await async commits or the form commits synchronously."
+  },
   "UNTRIAGED 메모": {
    "(비었음)": "UNTRIAGED 로 올라왔던 2건은 2026-08-30 에 고쳤다. 기록: (1) inputNumber :: input-number-prompt — latestCmd() 가 라이브 DOM 을 읽어 commitPrompt 의 무변경 가드가 자기 자신과 비교했다. 커밋한 문구를 따로 기억하는 committedPrompt + commit() 단일 창구로 고쳤다. (2) moveEvent :: move-route-skippable-checkbox — 리스너가 아예 없었다. repeat/wait/skippable 세 체크박스를 같은 루프로 묶어 apply()+renderPreview() 를 함께 걸었다(wait 는 커밋만 하고 미리보기 배지를 안 그리던 절반 결함도 같이 닫혔다). 두 건 다 커밋 프로브가 no-commit → replaceCommand 로 잡아냈다."
   }
@@ -80,5 +83,10 @@
    "show-picture-ai-prompt"
   ]
  },
- "UNTRIAGED": {}
+ "UNTRIAGED": {
+  "script": [
+   "script-name-input",
+   "script-source-input"
+  ]
+ }
 }

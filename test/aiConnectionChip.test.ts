@@ -61,13 +61,14 @@ describe("AI 연결 칩", () => {
     expect(opened).toEqual(["settings"]);
   });
 
-  it("ready 면 눌러도 설정을 열지 않는다 — 열어도 할 게 없다", () => {
+  it("ready 여도 누르면 설정을 연다 — 연결 상태·계정을 보는 길이다 (C-67, 92a6aba61e)", () => {
     currentStatus = { ...currentStatus, kind: "ready", label: "Google 연결됨", title: "연결됨" };
     const opened: string[] = [];
     const chip = mount(() => opened.push("settings"));
+    // 눌러도 되는 «다음 행동 안내»(is-actionable) 는 ready 에서 꺼져 있지만, 버튼은 언제나 설정을 연다.
     expect(chip.element.classList.contains("is-actionable")).toBe(false);
     (chip.element as HTMLButtonElement).click();
-    expect(opened).toEqual([]);
+    expect(opened).toEqual(["settings"]);
     currentStatus = { ...currentStatus, kind: "disconnected", label: "Google 로그인 필요" };
   });
 

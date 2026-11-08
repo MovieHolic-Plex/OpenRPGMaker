@@ -53,10 +53,10 @@ describe("database navigation", () => {
     expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBeNull();
   });
 
-  it("keeps 6 grouped navigation domains (story, party, battle, map, life, system)", () => {
+  it("keeps 6 grouped navigation domains (story, party, battle, space, life, system)", () => {
     const host = renderPanel();
     const groups = host.querySelectorAll(".db-tab-group-label").map((group) => group.textContent);
-    expect(groups).toEqual(["이야기", "파티", "전투", "맵", "생활", "시스템"]);
+    expect(groups).toEqual(["이야기", "파티", "전투", "공간", "생활", "시스템"]);
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
 
@@ -68,7 +68,7 @@ describe("database navigation", () => {
     const life = findByTestId(host, "db-tab-group-life");
     if (!world || !life) throw new Error("missing group header");
 
-    expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("맵");
+    expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("공간");
     expect(world.dataset.tabCount).toBeUndefined();
 
     const railChildren = (host.querySelector(".db-tabs") as FakeElement).children;
@@ -94,8 +94,9 @@ describe("database navigation", () => {
       if (child.classList.contains("db-tab") && child.dataset.count) expect(child.hidden).toBe(false);
     }
 
-    // 접기 줄을 누르면 그 그룹의 빈 탭이 펼쳐진다.
-    fold.click();
+    // 8684ab7daf: 접기 줄은 이름마다 단추다 — 줄 자체가 아니라 「+N」 단추(또는 탭 이름 단추)를 눌러야 그 그룹의 빈 탭이 펼쳐진다.
+    // fakeDom 의 click() 은 버블링하지 않는다 — 접기 줄의 위임 핸들러에 닿도록 버블링 클릭을 보낸다.
+    findByTestId(fold, "db-tab-fold-all-life")!.dispatchEvent(new Event("click", { bubbles: true }));
     expect(tabsInLife.every((tab) => !tab.hidden)).toBe(true);
     expect(fold.hidden).toBe(true);
     expect(life.getAttribute("aria-expanded")).toBe("true");
@@ -111,7 +112,7 @@ describe("database navigation", () => {
     expect(findByTestId(nav, "db-tab-spatial-tiles")?.closest("details")).toBeNull();
   });
 
-  it("interview.genre 가 있는 프로젝트는 장르 프로필 탭을 「숨긴 탭 N개 · 모두 보기」로 접고 클릭·점프 시 펼친다", () => {
+  it("interview.genre 가 있는 프로젝트는 장르 프로필 탭을 「숨긴 탭 N개」로 접고 클릭·점프 시 펼친다", () => {
     store.update((project) => {
       project.gameDesignBrief = {
         version: 1,
@@ -138,15 +139,15 @@ describe("database navigation", () => {
     const battleFold = findByTestId(host, "db-tab-fold-battle")!;
     const partyFold = findByTestId(host, "db-tab-fold-party")!;
     expect(battleFold.hidden).toBe(false);
-    expect(battleFold.textContent).toContain("숨긴 탭 9개 · 모두 보기");
+    expect(battleFold.textContent).toContain("숨긴 탭 9개");
     expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(true);
     expect(partyFold.hidden).toBe(false);
-    expect(partyFold.textContent).toContain("숨긴 탭 2개 · 모두 보기");
+    expect(partyFold.textContent).toContain("숨긴 탭 2개");
     expect(findByTestId(host, "db-tab-classes")?.hidden).toBe(true);
     expect(findByTestId(host, "db-tab-skills")?.hidden).toBe(true);
 
     // 「모두 보기」 클릭 시 해당 그룹의 숨긴 탭이 모두 펼쳐진다.
-    battleFold.click();
+    findByTestId(battleFold, "db-tab-fold-all-battle")!.dispatchEvent(new Event("click", { bubbles: true }));
     expect(battleFold.hidden).toBe(true);
     expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(false);
   });

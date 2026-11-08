@@ -238,7 +238,9 @@ describe("shared MP validation and target UI", () => {
     expect(button?.title ?? "").toBe("");
     expect(button?.getAttribute("aria-label")).toContain(`필요 ${cost}`);
     expect(button?.getAttribute("aria-label")).toContain("MP 부족");
-    expect(button?.textContent ?? "").toContain("MP 부족");
+    // 루트 명령의 긴 사유(> ROOT_INLINE_REASON_MAX)는 버튼 안 줄이 아니라 커서가 설 때 질문 줄에 보인다(09c3fd1fba).
+    expect(button?.dataset.battleCommandInertReason).toContain("MP 부족");
+    expect(button?.querySelector(".battle-command-reason")).toBeNull();
 
     // 커서는 비활성 행을 건너뛰지 않는다. 확인키를 눌러도 아무 일이 일어나지 않는다.
     const phaseBefore = runtime.snapshot().phase;
@@ -250,6 +252,8 @@ describe("shared MP validation and target UI", () => {
       pressKey("ArrowDown");
     }
     expect(visited).toContain("actor-command-skill");
+    // 커서가 서면 사유가 눈에 보이는 질문 줄에 뜬다.
+    expect(controller.root.querySelector("[data-testid='battle-skill-hint']")?.textContent ?? "").toContain("MP 부족");
     pressKey("Enter");
     expect(runtime.snapshot().phase).toBe(phaseBefore);
     controller.destroy();

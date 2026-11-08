@@ -83,7 +83,8 @@ describe("normal session exact route declaration adoption", () => {
     expect(toolResults(fresh.events, "complete_work_item").map(result => result.ok)).toEqual([true]);
     expect(f.session.getVerificationSnapshot().requirements.map(check => check.status)).toEqual(["passed", "passed"]);
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
-  });
+    // Four full session turns (the siblings run three or one); 10.6-17.7 s on CI against the 15 s default.
+  }, 30_000);
 
   it("does not treat a conflicting retained checkId as a successfully adopted replacement scope", async () => {
     const f = routeSession();

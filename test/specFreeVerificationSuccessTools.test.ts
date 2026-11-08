@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
@@ -19,6 +19,10 @@ import { createBlankProject } from "@/project/defaults/defaultProject";
  * 이제 검증 계약은 `verificationChecks` 만 담고, 스펙 없는 `successTools` 는 원래 의미대로
  * "이 툴을 성공시켜라"로만 판정한다.
  */
+// createBlankProject(~63MB)·조수 세션을 ci 러너(워커 1개)에서 처음 만드는 시험이 13~17초 걸려 vitest 기본 15초 상한에 걸린다
+// (ci-vitest-files 42446009926 실측). 같은 사정의 aiChatPanelSettings.test.ts 선례대로 이 파일만 예산을 늘린다.
+vi.setConfig({ testTimeout: 120_000 });
+
 const CHAT_CONFIG = {
   authMode: "apiKey" as const,
   baseUrl: "x",

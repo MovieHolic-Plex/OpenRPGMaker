@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { capResultImages, CLI_CONTEXT_EXHAUSTED_PREFIX, compactCliToolList, isCliApiErrorText, isCliContextExhaustedError, isCliContextExhaustedText, schemaShapeProblem } from "@/ai/piAgent/cliContextBudget";
 
-const command = { type: "object", description: "명령", properties: Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`k${i}`, { type: "string", description: `긴 설명 ${"가".repeat(80)} ${i}` }])) };
+// 큰 하위 스키마 — 깊은 칸의 description 은 stripDeep 이 걷으므로(J79) 크기를 enum 값(손대지 않는 자리)으로 만든다.
+const command = { type: "object", description: "명령", properties: Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`k${i}`, { type: "string", enum: [`긴 선택지 ${"가".repeat(80)} ${i}`] }])) };
 
 describe("compactCliToolList (J79)", () => {
   it("drops deep descriptions but keeps top-level ones", () => {

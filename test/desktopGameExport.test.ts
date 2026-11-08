@@ -110,12 +110,8 @@ describe("Desktop & Steam Depot Game Export", () => {
     expect(appIdText.trim()).toBe("480");
   });
 
-  it("starts the Linux and macOS desktop launchers instead of flatpak-spawn", async () => {
-    const project = createBlankProject();
-    project.meta.title = "ChronoBell";
-  it("escapes cmd and Steam VDF metacharacters in the game title", async () => {
-    const project = createBlankProject();
-    project.meta.title = "Dungeons & Dragons\n%PATH%";    const runtime = await createRuntimeManifest(
+  async function runtimeFixtureFetch(project: ReturnType<typeof createBlankProject>) {
+    const runtime = await createRuntimeManifest(
       [
         { name: "web/player.html", bytes: encoder.encode("<!doctype html><html><head></head><body><div id='app'></div></body></html>") },
         { name: "web/player.js", bytes: encoder.encode("console.log('player');") },
@@ -139,6 +135,14 @@ describe("Desktop & Steam Depot Game Export", () => {
       if (!hit) throw new Error(`Missing fixture path: ${path}`);
       return hit;
     };
+
+    return fetchBytes;
+  }
+
+  it("starts the Linux and macOS desktop launchers instead of flatpak-spawn", async () => {
+    const project = createBlankProject();
+    project.meta.title = "ChronoBell";
+    const fetchBytes = await runtimeFixtureFetch(project);
 
     const linux = await createDesktopSteamExportPackage(project, { platform: "linux64-steamos", fetchBytes });
     const linuxZip = new Uint8Array(await linux.blob.arrayBuffer());
@@ -167,15 +171,17 @@ describe("Desktop & Steam Depot Game Export", () => {
     expect(macScript).toContain('open -a "Google Chrome" --args --app="${APP_URL}" --start-fullscreen --window-size=1280,720 || open "${APP_PATH}"');
     expect(readStoredZipUnixMode(macZip, "ChronoBell.app/Contents/MacOS/ChronoBell")).toBe(0o100755);
     expect(readStoredZipUnixMode(macZip, "ChronoBell.app/Contents/Info.plist")).toBeUndefined();
+  });
+
+  it("escapes cmd and Steam VDF metacharacters in the game title", async () => {
+    const project = createBlankProject();
+    project.meta.title = "Dungeons & Dragons\n%PATH%";
+    const fetchBytes = await runtimeFixtureFetch(project);
     const result = await createDesktopSteamExportPackage(project, {
       platform: "win64-steam",
       versionLabel: '1.0 "beta"',
       executableName: "ChronoBell",
-      fetchBytes: async (path) => {
-        const hit = fileMap.get(path);
-        if (!hit) throw new Error(`Missing fixture path: ${path}`);
-        return hit;
-      },
+      fetchBytes,
     });
     const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
     const bat = decoder.decode(readStoredZipEntry(zipBytes, "Launch-ChronoBell.bat")!);
@@ -186,7 +192,8 @@ describe("Desktop & Steam Depot Game Export", () => {
     expect(vdf).toContain(String.raw`"Desc" "Dungeons & Dragons %PATH% (win64-steam) v1.0 \"beta\""`);
     const input = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/steam_input_manifest.vdf")!);
     expect(input).toContain(String.raw`"Set_GameControls" "Dungeons & Dragons %PATH% 기본 조작"`);
-    expect(vdf.split("\n").filter((line) => line.includes('"Desc"'))).toHaveLength(1);  });
+    expect(vdf.split("\n").filter((line) => line.includes('"Desc"'))).toHaveLength(1);
+  });
 
   it("bridges localStorage save slots into saves/*.oprn-save.json for Steam Auto-Cloud", () => {
     expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:1")).toBe("saves/slot-01.oprn-save.json");

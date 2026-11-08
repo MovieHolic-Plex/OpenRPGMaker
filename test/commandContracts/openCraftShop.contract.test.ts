@@ -35,7 +35,10 @@ describe("openCraftShop interpreter contract", () => {
 
     const first = asShop(interp.start());
     expect(first.rows.map((row) => [row.recipeId, row.disabledReason ?? null])).toEqual([["smelt", null], ["big", "재료 부족: 광석 5"]]);
-    expect(first.rows[0]!.ingredients).toEqual([{ itemId: "ore", name: "광석", need: 2, have: 4 }]);
+    // 재료 줄은 아이템의 아이콘(iconResourceId → imageResourceId)도 싣는다(144b3c68f7 이후 craftShop.ts) — 복제한 기본 아이템의 아이콘이 따라온다.
+    const oreItem = project.database.items.find((item) => item.id === "ore")!;
+    const iconResourceId = oreItem.iconResourceId ?? oreItem.imageResourceId;
+    expect(first.rows[0]!.ingredients).toEqual([{ itemId: "ore", name: "광석", need: 2, have: 4, ...(iconResourceId ? { iconResourceId } : {}) }]);
     expect(first.notice).toBeUndefined();
 
     const second = asShop(interp.resume("smelt"));

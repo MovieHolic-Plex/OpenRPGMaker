@@ -197,8 +197,9 @@ describe("publishing modal controls", () => {
     webTarget.click();
     expect(preview.textContent).toContain("player.html");
     expect(preview.textContent).toContain("project.json");
-    expect(preview.textContent).not.toContain("steam_appid.txt");
-    expect(preview.textContent).not.toContain("game.pak");
+    // 웹 미리보기는 「Steam … 는 이 압축에 넣지 않습니다」 안내 줄에 이 낱말들을 적는다(a92829920f) — 목록 항목으로 들어 있지 않음을 본다.
+    expect(preview.textContent).not.toContain("├── steam_appid.txt");
+    expect(preview.textContent).not.toContain("resources/game.pak");
     expect(note.hasAttribute("hidden")).toBe(false);
     expect(appId.disabled).toBe(true);
     expect(buildBtn.textContent).toContain("웹 서버 번들");

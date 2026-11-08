@@ -2,6 +2,23 @@ import { describe, expect, it } from "vitest";
 import { deserialize, serialize, serializePretty } from "@/project/io";
 import { spatialOpaqueIdFixtures, spatialProject, spatialWire } from "./support/spatialSchemaFixture";
 
+// 컴팩트 serialize 는 번들 타일셋을 번들과의 차이만 저장한다(3e6c80e13a, 빈 프로젝트 78MB → 4.4MB) — 타일셋 칸은 wire 글자가 아니라
+// 다시 읽은 값(deserialize)으로 비교하고, 공간 저작 데이터와 나머지 프로젝트 칸은 wire 그대로 비교한다.
+const withoutTilesets = (value: unknown): unknown => {
+  const { tilesets: _tilesets, ...rest } = value as Record<string, unknown>;
+  return rest;
+};
+
+// 다시 읽은 두 프로젝트를 비교한다. 번들 타일셋 diff 를 되돌리면(restoreBundledTilesetDiffs) 칸 메타에 값이 undefined 인 키(tags·terrainTag 등)가
+// 남는데, 직접 만든 쪽에는 그 키가 없다 — 값이 있는 데이터는 같고 undefined 키만 다르다(실측: 타일셋 밖 차이 0, 타일셋 안 차이는 전부 undefined 키).
+// 타일셋은 toEqual(undefined 키 무시), 공간 저작 데이터를 포함한 나머지는 toStrictEqual 로 그대로 비교한다.
+const expectSameLoaded = (actual: unknown, expected: unknown): void => {
+  const a = actual as Record<string, unknown>;
+  const e = expected as Record<string, unknown>;
+  expect(withoutTilesets(a)).toStrictEqual(withoutTilesets(e));
+  expect(a.tilesets).toEqual(e.tilesets);
+};
+
 describe.each([serialize, serializePretty])("opaque spatial serialization with %s", write => {
   it.each(spatialOpaqueIdFixtures())("preserves complete authored data when $scenario roundtrips", ({ project, document }) => {
     // Given: the boundary accepts each opaque ID before the save under test.
@@ -12,8 +29,8 @@ describe.each([serialize, serializePretty])("opaque spatial serialization with %
     const wire = write(input);
     // Then: wire data, reload and caller state retain every field, including raw archive bytes.
     expect(JSON.parse(wire).spatialAuthoring).toStrictEqual(document);
-    expect(JSON.parse(wire)).toStrictEqual(JSON.parse(JSON.stringify(before)));
-    expect(deserialize(wire)).toStrictEqual(before);
+    expect(withoutTilesets(JSON.parse(wire))).toStrictEqual(withoutTilesets(JSON.parse(JSON.stringify(before))));
+    expectSameLoaded(deserialize(wire), before);
     expect(input).toStrictEqual(before);
   });
 
@@ -33,8 +50,8 @@ describe.each([serialize, serializePretty])("opaque spatial serialization with %
     // When
     const wire = write(source);
     // Then
-    expect(JSON.parse(wire)).toStrictEqual(JSON.parse(JSON.stringify(expected)));
-    expect(deserialize(wire)).toStrictEqual(deserialize(JSON.stringify(expected)));
+    expect(withoutTilesets(JSON.parse(wire))).toStrictEqual(withoutTilesets(JSON.parse(JSON.stringify(expected))));
+    expectSameLoaded(deserialize(wire), deserialize(JSON.stringify(expected)));
     expect(source).toStrictEqual(before);
   });
 
@@ -53,8 +70,8 @@ describe.each([serialize, serializePretty])("opaque spatial serialization with %
     const wire = write(source);
     // Then: structural location, not object identity, determines retirement.
     expect(JSON.parse(wire).ownerMirror.terrainTemplates).toStrictEqual(legacyTileset.terrainTemplates);
-    expect(JSON.parse(wire)).toStrictEqual(JSON.parse(JSON.stringify({ ...project, ownerMirror: legacyTileset })));
-    expect(deserialize(wire)).toStrictEqual(accepted);
+    expect(withoutTilesets(JSON.parse(wire))).toStrictEqual(withoutTilesets(JSON.parse(JSON.stringify({ ...project, ownerMirror: legacyTileset }))));
+    expectSameLoaded(deserialize(wire), accepted);
     expect(source).toStrictEqual(before);
   });
 });

@@ -121,8 +121,16 @@ describe("모든 generateAiImage 호출처가 용도를 넘긴다", () => {
     for (const file of files) {
       if (file.endsWith("src/ai/imageGenerationClient.ts")) continue;
       const text = readFileSync(file, "utf8");
-      for (const match of text.matchAll(/generateAiImage\)?\(\{[^}]*\}\)?/gs)) {
-        if (!/purpose/.test(match[0])) offenders.push(`${file}: ${match[0].slice(0, 80)}`);
+      // 인자 객체 전체를 중괄호 균형으로 읽는다 — `[^}]*` 는 referenceImages:[{…}] 같은 중첩 객체에서 첫 `}` 로 끊겨
+      // 그 뒤의 purpose 를 놓친다(battleBackdropGeneration, e71e87cf80).
+      for (const match of text.matchAll(/generateAiImage\)?\(\{/g)) {
+        let depth = 0, end = match.index! + match[0].length - 1;
+        for (; end < text.length; end += 1) {
+          if (text[end] === "{") depth += 1;
+          else if (text[end] === "}" && --depth === 0) break;
+        }
+        const call = text.slice(match.index!, end + 1);
+        if (!/purpose/.test(call)) offenders.push(`${file}: ${call.slice(0, 80)}`);
       }
     }
     expect(offenders).toEqual([]);

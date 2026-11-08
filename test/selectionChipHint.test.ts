@@ -5,9 +5,16 @@ import {
   notifyRightDragRegionSelected,
   resetSelectionChipHintForTests,
   RIGHT_DRAG_REGION_HINT_KEY,
+  RIGHT_DRAG_REGION_HINT_TEXT,
   SELECTION_CHIP_HINT_KEY,
+  SELECTION_CHIP_HINT_TEXT,
   setRightDragRegionHintStorage,
 } from "@/editor/selectionChipHint";
+
+// e9d308b43a: 선택 액션 바의 「AI 작업」 단추는 옆에 뜨는 AI 지시 줄로 바뀌었다 — 안내도 그 줄을 가리킨다.
+// 문구는 계약이 아니므로 내보낸 상수 그대로를 비교한다(없어진 라벨을 다시 가리키지 않는지만 따로 본다).
+const SELECT_HINT = SELECTION_CHIP_HINT_TEXT;
+const RIGHT_DRAG_HINT = RIGHT_DRAG_REGION_HINT_TEXT;
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 class MemoryStorage implements Storage {
@@ -65,14 +72,14 @@ describe("선택 도구 AI 칩 힌트", () => {
     editorState.set({ tool: "select" });
 
     const toastNode = findByTestId(fakeBody(), "toast");
-    expect(toastNode?.textContent).toContain("AI 작업");
+    expect(toastNode?.textContent).toContain(SELECT_HINT);
     expect(storage.getItem(SELECTION_CHIP_HINT_KEY)).toBe("1");
 
     // 다른 도구로 갔다가 다시 select — 재노출 없음.
     if (toastNode) toastNode.textContent = "";
     editorState.set({ tool: "erase" });
     editorState.set({ tool: "select" });
-    expect(findByTestId(fakeBody(), "toast")?.textContent).not.toContain("AI 작업");
+    expect(findByTestId(fakeBody(), "toast")?.textContent ?? "").not.toContain(SELECT_HINT);
   });
 
   it("이미 본 사용자는 처음부터 토스트가 없다", () => {
@@ -117,13 +124,14 @@ describe("우클릭 드래그 영역 힌트", () => {
     notifyRightDragRegionSelected();
 
     const toastNode = findByTestId(fakeBody(), "toast");
-    // 문구는 화면에 실제로 있는 라벨만 쓴다 — 「AI 작업」은 액션 바의 첫 버튼이다.
-    expect(toastNode?.textContent).toContain("AI 작업");
+    // 문구는 화면에 실제로 있는 것만 가리킨다 — 액션 바의 「AI 작업」 단추는 없어졌다(e9d308b43a).
+    expect(toastNode?.textContent).toContain(RIGHT_DRAG_HINT);
+    expect(toastNode?.textContent).not.toContain("AI 작업");
     expect(storage.getItem(RIGHT_DRAG_REGION_HINT_KEY)).toBe("1");
 
     if (toastNode) toastNode.textContent = "";
     notifyRightDragRegionSelected();
-    expect(findByTestId(fakeBody(), "toast")?.textContent).not.toContain("AI 작업");
+    expect(findByTestId(fakeBody(), "toast")?.textContent ?? "").not.toContain(RIGHT_DRAG_HINT);
   });
 
   it("이미 본 사용자는 처음부터 토스트가 없다", () => {
@@ -139,7 +147,7 @@ describe("우클릭 드래그 영역 힌트", () => {
 
     notifyRightDragRegionSelected();
 
-    expect(findByTestId(fakeBody(), "toast")?.textContent).toContain("AI 작업");
+    expect(findByTestId(fakeBody(), "toast")?.textContent).toContain(RIGHT_DRAG_HINT);
     expect(RIGHT_DRAG_REGION_HINT_KEY).not.toBe(SELECTION_CHIP_HINT_KEY);
   });
 });

@@ -9,6 +9,7 @@ import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { createBlankProject } from "@/project/defaults";
+import { actorExperienceFloor } from "@/project/actorModel";
 
 type Interpreter = ReturnType<typeof createInterpreter>;
 type InterpreterResult = ReturnType<Interpreter["start"]>;
@@ -155,11 +156,15 @@ it("배우 상태 명령을 세션에 반영한다", () => {
     { kind: "recoverAll", actorId: "" },
   ];
 
-  drain(createInterpreter(commands, session, createBlankProject()));
+  const project = createBlankProject();
+  drain(createInterpreter(commands, session, project));
 
   expect(session.actorVitals.actor_hero).toMatchObject({ hp: 80, mp: 20 });
   expect(session.actorVitals.actor_mage).toMatchObject({ hp: 50, mp: 30 });
-  expect(session.actorExperience?.actor_hero).toBe(12);
+  // 60dae212ea: 레벨을 올리면 EXP 도 그 레벨 바닥으로 올라간다(RPG 만들기 ChangeLevel). +12 는 바닥에 묻힌다.
+  const levelSevenFloor = actorExperienceFloor(project, "actor_hero", 7);
+  expect(levelSevenFloor).toBeGreaterThan(12);
+  expect(session.actorExperience?.actor_hero).toBe(levelSevenFloor);
   expect(session.actorLevels?.actor_hero).toBe(7);
   expect(session.actorEquipment?.actor_hero?.weapon).toBe("equip_sword");
 });

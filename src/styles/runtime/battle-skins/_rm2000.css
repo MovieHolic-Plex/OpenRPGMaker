@@ -606,7 +606,7 @@
 /* 단, 못 쓰는 루트 명령은 이유 한 마디를 남긴다 — 흐린 「아이템」만 보이고 왜 못 쓰는지는 ARIA 에만 있었다(HIG C-95). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command[data-battle-command-inert="true"] .battle-command-text small:last-of-type {
   display: inline-block;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1;
   margin-left: 6px;
   opacity: 0.9;

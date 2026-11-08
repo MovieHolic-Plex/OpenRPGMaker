@@ -32,7 +32,7 @@ try {
   }
   await page.addStyleTag({content: "canvas {width:320px;height:240px}"});
   await page.addScriptTag({ content: 'window.__name = (fn) => fn;\n' + bundle.outputFiles[0]!.text });
-  const effects = JSON.parse(readFileSync(resolve(root, "verify-shots/title-opening/art/forestMorning.effects.json"), "utf8")).effects;
+  const effects = JSON.parse(readFileSync(resolve(root, "test/fixtures/titleEffects/forestMorning.effects.json"), "utf8")).effects;
   const result = await page.evaluate(async (effects) => {
     const drawStats = new WeakMap<WebGL2RenderingContext, {particle: number; color: number}>();
     const originalDraw = WebGL2RenderingContext.prototype.drawArrays;

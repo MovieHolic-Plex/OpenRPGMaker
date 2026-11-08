@@ -36,9 +36,16 @@ describe("올린 battleCharset 시트", () => {
     expect(actor.querySelector(".battle-actor-image")).toBeNull();
     const sprite = actor.querySelector<HTMLElement>(".battle-actor-sprite")!;
     expect(sprite.style.backgroundSize).toBe("288px 768px");
+    // 기본 스킨(retro2003)은 도트 연출(battleRetroMotion)이 칸을 소유한다 — 의미 포즈만으로는 idle 로 서고,
+    // 공격 칸은 비트(retroBeat+retroFrame), 쓰러짐 칸은 retroKo 정착 뒤에 그려진다. 그 상태를 직접 세워 칸 좌표만 잰다.
+    actor.dataset.retroBeat = "impact";
+    actor.dataset.retroFrame = "attack";
     applyBattlerPoseForTest(actor, "attack");
     expect(actor.dataset.battlePoseFrame).toBe("attack");
     expect(sprite.style.backgroundPosition).toBe("-96px 0px");
+    delete actor.dataset.retroBeat;
+    delete actor.dataset.retroFrame;
+    actor.dataset.retroKo = "settled";
     applyBattlerPoseForTest(actor, "dead");
     expect(sprite.style.backgroundPosition).toBe("-96px -96px");
   });

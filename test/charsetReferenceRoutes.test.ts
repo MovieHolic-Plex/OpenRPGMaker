@@ -8,11 +8,21 @@ import reviewed from '@/assets/sharedCharacterGraphics.json';
 
 describe('Character reference paths use the audited walking chip', () => {
   it('resource search finds both golems and the king, and rejects different hair', () => {
-    expect(searchResources('charset', 'king').map(row => row.id)).toEqual(['charset:tex_easyrpg_charset_people3:0']);
+    // 5de42f955f: RefmapDoll 왕족 칩이 영어 역할 낱말(king)로도 걸리므로 「king」 결과는 원본 왕 칩 하나가 아니다.
+    // 계약은 같다: 원본 EasyRPG 시트에서는 왕 칩 하나만 나오고, 나머지는 모두 RefmapDoll 변형 칩이다.
+    const king = searchResources('charset', 'king').map(row => row.id);
+    expect(king).toContain('charset:tex_easyrpg_charset_people3:0');
+    expect(king.filter(id => id.startsWith('charset:tex_easyrpg_charset_'))).toEqual(['charset:tex_easyrpg_charset_people3:0']);
+    expect(king.filter(id => !id.startsWith('charset:tex_easyrpg_charset_')).every(id => id.startsWith('charset:tex_oprn_charset_refmap_doll'))).toBe(true);
     expect(searchResources('charset', 'golem').map(row => row.id).sort()).toEqual([
       'charset:tex_easyrpg_charset_monster2:4', 'charset:tex_easyrpg_charset_monster4:5',
     ]);
-    expect(searchResources('charset', '흑발 여성 마법사')).toEqual([]);
+    // 5de42f955f: RefmapDoll 에 실제 흑발 여성 마법사 칩이 생겼다. 계약은 「다른 머리색을 흑발로 우기지 않는다」: 원본 EasyRPG 칩은 나오지 않고,
+    // 나오는 칩은 모두 검은 머리 태그를 가진다.
+    const blackHair = searchResources('charset', '흑발 여성 마법사');
+    expect(blackHair.filter(row => row.id.startsWith('charset:tex_easyrpg_charset_'))).toEqual([]);
+    expect(blackHair.length).toBeGreaterThan(0);
+    expect(blackHair.every(row => row.tags.includes('검은 머리'))).toBe(true);
     expect(searchResources('charset', 'animal').filter(row => row.id.includes('tex_farming_'))).toHaveLength(2);
   });
   it('keeps the full resource result beyond the NPC tool limit', () => {

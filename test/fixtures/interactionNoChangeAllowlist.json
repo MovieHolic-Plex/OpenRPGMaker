@@ -88,7 +88,9 @@
    "evolve-monster-species-select"
   ],
   "fork": [
-   "event-condition-switch-target>select#0"
+   "event-condition-mode",
+   "event-condition-switch-target>select#0",
+   "event-condition-switch-value"
   ],
   "getFriendship": [
    ":root>select#0"
@@ -157,6 +159,9 @@
   "runControl": [
    "event-command-run-seed-auto"
   ],
+  "runSchedule": [
+   "run-schedule-slot-variable-id-select"
+  ],
   "setEventGraphicPattern": [
    "npc-direction-down>input#0",
    "npc-direction-left>input#0",
@@ -193,7 +198,8 @@
    "show-picture-duration-input",
    "show-picture-id-input",
    "show-picture-resource-input",
-   "show-picture-rotation-input"
+   "show-picture-rotation-input",
+   "show-picture-wait"
   ],
   "spawnFieldEnemy": [
    "event-command-spawn-switch",
@@ -208,6 +214,7 @@
    "trade-monster-to-select"
   ],
   "transfer": [
+   "transfer-door-mode",
    "transfer-player-direction-down",
    "transfer-player-direction-left",
    "transfer-player-direction-right",

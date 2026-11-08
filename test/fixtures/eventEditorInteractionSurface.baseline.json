@@ -10,7 +10,7 @@
    "event-command-text-context": "no-change",
    "event-command-text-emotion": "no-change",
    "event-command-text-position": "no-change",
-   "event-command-text-speaker": "testid 신규 1종 [ecp-message-speaker] | 태그 개수 [div 35→36] | 검증텍스트 변경 2개 [event-command-preview-body: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\", event-command-text-live-preview: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\"] | 클래스 신규 5개 [ecp-message-speaker, ecp-message-speaker-nameplate, has-speaker, speaker, speake…(절단: 총 312자)",
+   "event-command-text-speaker": "testid 신규 1종 [ecp-message-speaker] | 태그 개수 [div 36→37] | 검증텍스트 변경 2개 [event-command-preview-body: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\", event-command-text-live-preview: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\"] | 클래스 신규 5개 [ecp-message-speaker, ecp-message-speaker-nameplate, has-speaker, speaker, speake…(절단: 총 312자)",
    "event-command-text-speaker-actor": "no-change",
    "event-command-text-style": "no-change"
   },
@@ -76,6 +76,7 @@
     "event-command-text-presentation",
     "event-command-text-speaker",
     "event-command-text-speaker-actor",
+    "event-command-text-speaker-actor-name",
     "event-command-text-staging",
     "event-command-text-style",
     "event-command-text-tag-big",
@@ -150,6 +151,7 @@
     "event-command-text-section-head",
     "event-command-text-speaker-field",
     "event-command-text-speaker-hint",
+    "event-command-text-speaker-row",
     "event-command-text-staging-field",
     "event-command-text-style-label",
     "event-command-text-tag",
@@ -217,6 +219,7 @@
     "event-command-text-position-segment-top": "button{}",
     "event-command-text-speaker": "input[text]{}",
     "event-command-text-speaker-actor": "input[text]{}",
+    "event-command-text-speaker-actor-name": "button{}",
     "event-command-text-style": "select{}",
     "event-command-text-tag-big": "button{}",
     "event-command-text-tag-color": "button{}",
@@ -324,7 +327,6 @@
     "더 많은 문장 효과필요할 때만",
     "듣는 인물",
     "말풍선",
-    "말하는 사람비워 두면 이름표를 숨깁니다.",
     "말하는 인물",
     "말할 때 듣는 쪽을 본다",
     "멀리서 부르기",
@@ -350,6 +352,7 @@
     "일반 대사",
     "자동 넘김 (키 입력 없이 다음)",
     "자동(안 가림)",
+    "주인공 이름",
     "지우기",
     "코너 대사",
     "편지·책",
@@ -358,16 +361,16 @@
     "흘림 대사"
    ],
    "tags": {
-    "button": 55,
+    "button": 56,
     "details": 2,
-    "div": 35,
+    "div": 36,
     "input": 6,
     "label": 7,
     "option": 42,
     "p": 2,
     "section": 2,
     "select": 5,
-    "small": 2,
+    "small": 3,
     "span": 77,
     "strong": 1,
     "summary": 2,
@@ -434,6 +437,7 @@
     "event-command-text-presentation": "div",
     "event-command-text-speaker": "input",
     "event-command-text-speaker-actor": "input",
+    "event-command-text-speaker-actor-name": "button",
     "event-command-text-staging": "div",
     "event-command-text-style": "select",
     "event-command-text-tag-big": "button",
@@ -465,8 +469,8 @@
     "event-command-text-limit-hint": "최대 #줄 / #자 권장",
     "event-command-text-live-preview": "문장 표시hello▼"
    },
-   "testidCount": 84,
-   "controlCount": 67
+   "testidCount": 85,
+   "controlCount": 68
   },
   "classes": [
    "body",
@@ -519,6 +523,7 @@
    "event-command-text-section-head",
    "event-command-text-speaker-field",
    "event-command-text-speaker-hint",
+   "event-command-text-speaker-row",
    "event-command-text-staging-field",
    "event-command-text-style-label",
    "event-command-text-tag",
@@ -12814,8 +12819,10 @@
    "event-choice-cancel-branch": "컨트롤 값 변경 2개 [event-choice-cancel-branch: input[radio]{}→input[radio]{checked}, event-choice-cancel-disallow: input[radio]{checked}→input[radio]{}]",
    "event-choice-cancel-choice1": "컨트롤 값 변경 2개 [event-choice-cancel-choice1: input[radio]{}→input[radio]{checked}, event-choice-cancel-disallow: input[radio]{checked}→input[radio]{}]",
    "event-choice-cancel-disallow": "self-only 컨트롤 값 변경 1개 [event-choice-cancel-disallow: input[radio]{checked}→input[radio]{}]",
+   "event-choice-enableWhen-enabled-1": "self-only 컨트롤 값 변경 1개 [event-choice-enableWhen-enabled-1: input[checkbox]{hidden}→input[checkbox]{checked,hidden}]",
    "event-choice-option-1": "no-change",
-   "event-choice-prompt": "no-change"
+   "event-choice-prompt": "no-change",
+   "event-choice-showWhen-enabled-1": "self-only 컨트롤 값 변경 1개 [event-choice-showWhen-enabled-1: input[checkbox]{hidden}→input[checkbox]{checked,hidden}]"
   },
   "initial": {
    "testids": [
@@ -12824,9 +12831,17 @@
     "event-choice-cancel-branch",
     "event-choice-cancel-choice1",
     "event-choice-cancel-disallow",
+    "event-choice-conditions-1",
+    "event-choice-conditions-toggle-1",
+    "event-choice-enableWhen-1",
+    "event-choice-enableWhen-enabled-1",
+    "event-choice-enableWhen-sentence-1",
     "event-choice-option-1",
     "event-choice-prompt",
     "event-choice-remove-1",
+    "event-choice-showWhen-1",
+    "event-choice-showWhen-enabled-1",
+    "event-choice-showWhen-sentence-1",
     "event-command-choices-inline-editor",
     "event-command-edit-summary"
    ],
@@ -12838,6 +12853,11 @@
     "event-command-cancel-fieldset",
     "event-command-cancel-row",
     "event-command-choice-add",
+    "event-command-choice-condition-head",
+    "event-command-choice-condition-slot",
+    "event-command-choice-condition-toggle",
+    "event-command-choice-conditions",
+    "event-command-choice-item",
     "event-command-choice-remove",
     "event-command-choice-row",
     "event-command-choice-row-index",
@@ -12856,29 +12876,35 @@
     "event-choice-cancel-branch": "input[radio]{}",
     "event-choice-cancel-choice1": "input[radio]{}",
     "event-choice-cancel-disallow": "input[radio]{checked}",
+    "event-choice-conditions-toggle-1": "button{}",
+    "event-choice-enableWhen-enabled-1": "input[checkbox]{hidden}",
     "event-choice-option-1": "input[text]{}",
     "event-choice-prompt": "input[text]{}",
-    "event-choice-remove-1": "button{disabled}"
+    "event-choice-remove-1": "button{disabled}",
+    "event-choice-showWhen-enabled-1": "input[checkbox]{hidden}"
    },
    "selectOptions": {},
    "labels": [
     "따로 처리",
     "삭제",
     "선택지 1",
+    "이 조건일 때만 고를 수 있다",
+    "이 조건일 때만 보인다",
+    "조건",
     "질문",
     "추가 (1/5)",
     "취소",
     "취소 없음"
    ],
    "tags": {
-    "button": 2,
-    "div": 8,
-    "fieldset": 1,
-    "input": 5,
-    "label": 4,
+    "button": 3,
+    "div": 10,
+    "fieldset": 3,
+    "input": 7,
+    "label": 6,
     "legend": 1,
-    "p": 1,
-    "span": 5
+    "p": 3,
+    "span": 7
    },
    "tagByTestid": {
     "event-choice-add": "button",
@@ -12886,9 +12912,17 @@
     "event-choice-cancel-branch": "input",
     "event-choice-cancel-choice1": "input",
     "event-choice-cancel-disallow": "input",
+    "event-choice-conditions-1": "div",
+    "event-choice-conditions-toggle-1": "button",
+    "event-choice-enableWhen-1": "fieldset",
+    "event-choice-enableWhen-enabled-1": "input",
+    "event-choice-enableWhen-sentence-1": "p",
     "event-choice-option-1": "input",
     "event-choice-prompt": "input",
     "event-choice-remove-1": "button",
+    "event-choice-showWhen-1": "fieldset",
+    "event-choice-showWhen-enabled-1": "input",
+    "event-choice-showWhen-sentence-1": "p",
     "event-command-choices-inline-editor": "div",
     "event-command-edit-summary": "div"
    },
@@ -12896,8 +12930,8 @@
     "event-choice-branch-list-note": "각 선택지 본문은 왼쪽 목록에서 고칩니다.",
     "event-command-edit-summary": "선택지 표시"
    },
-   "testidCount": 10,
-   "controlCount": 7
+   "testidCount": 18,
+   "controlCount": 10
   },
   "classes": [
    "btn",
@@ -12907,6 +12941,11 @@
    "event-command-cancel-fieldset",
    "event-command-cancel-row",
    "event-command-choice-add",
+   "event-command-choice-condition-head",
+   "event-command-choice-condition-slot",
+   "event-command-choice-condition-toggle",
+   "event-command-choice-conditions",
+   "event-command-choice-item",
    "event-command-choice-remove",
    "event-command-choice-row",
    "event-command-choice-row-index",
@@ -12920,7 +12959,7 @@
    "event-oprn-fieldset",
    "small"
   ],
-  "probeCount": 5,
+  "probeCount": 7,
   "reactingCount": 2
  },
  "presentItem": {
@@ -13026,9 +13065,9 @@
  },
  "fork": {
   "reactions": {
-   "event-condition-mode": "no-change",
-   "event-condition-switch-target>select#0": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
-   "event-condition-switch-value": "no-change",
+   "event-condition-mode": "검증텍스트 변경 1개 [event-condition-eval-summary: \"sw# 켜짐\"→\"변수 선택 # 이상\"]",
+   "event-condition-switch-target>select#0": "검증텍스트 변경 1개 [event-condition-eval-summary: \"sw# 켜짐\"→\"sw_# 켜짐\"] | 라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
+   "event-condition-switch-value": "검증텍스트 변경 1개 [event-condition-eval-summary: \"sw# 켜짐\"→\"sw# 꺼짐\"]",
    "event-fork-else-enabled": "self-only 컨트롤 값 변경 1개 [event-fork-else-enabled: input[checkbox]{checked}→input[checkbox]{}]"
   },
   "initial": {
@@ -13257,7 +13296,7 @@
    "then"
   ],
   "probeCount": 4,
-  "reactingCount": 1
+  "reactingCount": 3
  },
  "wait": {
   "reactions": {
@@ -13795,6 +13834,9 @@
      "changeTile",
      "callCommonEvent",
      "callMapEvent",
+     "planSchedule",
+     "runSchedule",
+     "script",
      "battleProcessing",
      "learnSkill",
      "changeExp",
@@ -13812,6 +13854,7 @@
      "changeGold",
      "changeItem",
      "craftRecipe",
+     "openCraftShop",
      "applyItemUpgrade",
      "equipTool",
      "openChest",
@@ -13866,7 +13909,7 @@
    "tags": {
     "button": 2,
     "div": 8,
-    "option": 87,
+    "option": 91,
     "p": 2,
     "select": 1,
     "span": 2
@@ -14586,15 +14629,15 @@
  },
  "transfer": {
   "reactions": {
-   "transfer-door-mode": "no-change",
-   "transfer-player-direction-down": "컨트롤 값 변경 2개 [transfer-player-direction-down: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
-   "transfer-player-direction-left": "컨트롤 값 변경 2개 [transfer-player-direction-left: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
+   "transfer-door-mode": "검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 유지 / 페이드: 검정 / 문 열림\"]",
+   "transfer-player-direction-down": "컨트롤 값 변경 2개 [transfer-player-direction-down: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 아래 / 페이드: 검정\"]",
+   "transfer-player-direction-left": "컨트롤 값 변경 2개 [transfer-player-direction-left: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 왼쪽 / 페이드: 검정\"]",
    "transfer-player-direction-retain": "self-only 컨트롤 값 변경 1개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
-   "transfer-player-direction-right": "컨트롤 값 변경 2개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}, transfer-player-direction-right: input[radio]{}→input[radio]{checked}]",
-   "transfer-player-direction-up": "컨트롤 값 변경 2개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}, transfer-player-direction-up: input[radio]{}→input[radio]{checked}]",
+   "transfer-player-direction-right": "컨트롤 값 변경 2개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}, transfer-player-direction-right: input[radio]{}→input[radio]{checked}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 오른쪽 / 페이드: 검정\"]",
+   "transfer-player-direction-up": "컨트롤 값 변경 2개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}, transfer-player-direction-up: input[radio]{}→input[radio]{checked}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 위 / 페이드: 검정\"]",
    "transfer-player-fade-black": "self-only 컨트롤 값 변경 1개 [transfer-player-fade-black: input[radio]{checked}→input[radio]{}]",
-   "transfer-player-fade-none": "컨트롤 값 변경 2개 [transfer-player-fade-black: input[radio]{checked}→input[radio]{}, transfer-player-fade-none: input[radio]{}→input[radio]{checked}]",
-   "transfer-player-fade-white": "컨트롤 값 변경 2개 [transfer-player-fade-black: input[radio]{checked}→input[radio]{}, transfer-player-fade-white: input[radio]{}→input[radio]{checked}]"
+   "transfer-player-fade-none": "컨트롤 값 변경 2개 [transfer-player-fade-black: input[radio]{checked}→input[radio]{}, transfer-player-fade-none: input[radio]{}→input[radio]{checked}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 유지 / 페이드: 없음\"]",
+   "transfer-player-fade-white": "컨트롤 값 변경 2개 [transfer-player-fade-black: input[radio]{checked}→input[radio]{}, transfer-player-fade-white: input[radio]{}→input[radio]{checked}] | 검증텍스트 변경 1개 [transfer-command-summary: \"빈 맵 (#, #) / 유지 / 페이드: 검정\"→\"빈 맵 (#, #) / 유지 / 페이드: 흰색\"]"
   },
   "initial": {
    "testids": [
@@ -14750,7 +14793,7 @@
    "transfer-player-zoom-button"
   ],
   "probeCount": 9,
-  "reactingCount": 6
+  "reactingCount": 7
  },
  "moveEvent": {
   "reactions": {
@@ -16339,38 +16382,9 @@
     "RefmapDoll32",
     "RefmapDoll320",
     "RefmapDoll321",
-    "RefmapDoll322",
-    "RefmapDoll323",
-    "RefmapDoll324",
-    "RefmapDoll325",
-    "RefmapDoll326",
-    "RefmapDoll327",
-    "RefmapDoll328",
-    "RefmapDoll329",
     "RefmapDoll33",
-    "RefmapDoll330",
-    "RefmapDoll331",
-    "RefmapDoll332",
-    "RefmapDoll333",
-    "RefmapDoll334",
-    "RefmapDoll335",
-    "RefmapDoll336",
-    "RefmapDoll337",
-    "RefmapDoll338",
-    "RefmapDoll339",
     "RefmapDoll34",
-    "RefmapDoll340",
-    "RefmapDoll341",
-    "RefmapDoll342",
-    "RefmapDoll343",
-    "RefmapDoll344",
-    "RefmapDoll345",
-    "RefmapDoll346",
-    "RefmapDoll347",
-    "RefmapDoll348",
-    "RefmapDoll349",
     "RefmapDoll35",
-    "RefmapDoll350",
     "RefmapDoll36",
     "RefmapDoll37",
     "RefmapDoll38",
@@ -16503,7 +16517,7 @@
     "패턴"
    ],
    "tags": {
-    "button": 67,
+    "button": 388,
     "div": 16,
     "fieldset": 2,
     "input": 8,
@@ -16511,7 +16525,7 @@
     "legend": 2,
     "option": 2,
     "select": 1,
-    "span": 56
+    "span": 377
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
@@ -16925,8 +16939,8 @@
     "event-command-edit-summary": "모습 바꾸기",
     "event-command-frame-walk-preview": ""
    },
-   "testidCount": 85,
-   "controlCount": 76
+   "testidCount": 406,
+   "controlCount": 397
   },
   "classes": [
    "active",
@@ -19552,6 +19566,69 @@
   "probeCount": 2,
   "reactingCount": 1
  },
+ "openCraftShop": {
+  "reactions": {
+   "craft-shop-all-recipes": "self-only 컨트롤 값 변경 1개 [craft-shop-all-recipes: input[checkbox]{}→input[checkbox]{checked}]",
+   "craft-shop-speaker": "no-change",
+   "craft-shop-title": "no-change"
+  },
+  "initial": {
+   "testids": [
+    "craft-shop-all-recipes",
+    "craft-shop-form",
+    "craft-shop-speaker",
+    "craft-shop-title",
+    "event-command-edit-summary"
+   ],
+   "classes": [
+    "cream-command-form",
+    "cream-command-form-head",
+    "inline-field",
+    "rich-command-form",
+    "rich-form-hint",
+    "rich-form-row"
+   ],
+   "controls": {
+    "craft-shop-all-recipes": "input[checkbox]{}",
+    "craft-shop-speaker": "input[text]{}",
+    "craft-shop-title": "input[text]{}"
+   },
+   "selectOptions": {},
+   "labels": [
+    "모든 제작법(새로 만든 것도 자동 포함)",
+    "장인 이름",
+    "창 제목"
+   ],
+   "tags": {
+    "div": 3,
+    "input": 3,
+    "label": 3,
+    "span": 5
+   },
+   "tagByTestid": {
+    "craft-shop-all-recipes": "input",
+    "craft-shop-form": "span",
+    "craft-shop-speaker": "input",
+    "craft-shop-title": "input",
+    "event-command-edit-summary": "div"
+   },
+   "texts": {
+    "event-command-edit-summary": "제작 공방"
+   },
+   "testidCount": 5,
+   "controlCount": 3
+  },
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "inline-field",
+   "rich-command-form",
+   "rich-form-hint",
+   "rich-form-row"
+  ],
+  "probeCount": 3,
+  "reactingCount": 0
+ },
  "applyItemUpgrade": {
   "reactions": {
    "apply-item-upgrade-result-variable>select#0": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
@@ -21534,7 +21611,7 @@
  },
  "showAnimation": {
   "reactions": {
-   "show-animation-animationId-select": "testid 소실 3종 [show-animation-frame-cell, show-animation-frame-layer, show-animation-play] | testid 신규 1종 [show-animation-preview-fallback] | 태그 개수 [button 6→5, span 9→6] | 컨트롤 소실 1개 [show-animation-play] | 검증텍스트 신규 1개 [show-animation-preview-fallback] | 검증텍스트 변경 2개 [show-animation-preview: \"재생타격 · 플…(절단: 총 712자)",
+   "show-animation-animationId-select": "testid 소실 3종 [show-animation-frame-cell, show-animation-frame-layer, show-animation-play] | testid 신규 1종 [show-animation-preview-fallback] | 태그 개수 [button 7→6, span 9→6] | 컨트롤 소실 1개 [show-animation-play] | 검증텍스트 신규 1개 [show-animation-preview-fallback] | 검증텍스트 변경 2개 [show-animation-preview: \"재생타격 · 플…(절단: 총 730자)",
    "show-animation-event-id-input": "no-change",
    "show-animation-target-kind-select": "컨트롤 값 변경 1개 [show-animation-event-id-input: input[text]{hidden}→input[text]{}] | 검증텍스트 변경 1개 [show-animation-preview: \"재생타격 · 플레이어재생이 끝날 때까지 대기\"→\"재생타격 · 이벤트 (현재/미선택)재생이 끝날 때까지 대기\"]",
    "show-animation-wait-select": "검증텍스트 변경 1개 [show-animation-preview: \"재생타격 · 플레이어재생이 끝날 때까지 대기\"→\"재생타격 · 플레이어대기 없이 다음 명령 진행\"]",
@@ -21551,6 +21628,7 @@
     "show-animation-event-id-input",
     "show-animation-frame-cell",
     "show-animation-frame-layer",
+    "show-animation-pixel-fx",
     "show-animation-play",
     "show-animation-position-field",
     "show-animation-preview",
@@ -21602,6 +21680,7 @@
     "page3-preview-animation",
     "page3-preview-stage",
     "page3-preview-stage-label",
+    "pixel-fx-pick-button",
     "record-picker",
     "record-picker-card",
     "record-picker-card-copy",
@@ -21618,6 +21697,7 @@
    "controls": {
     "show-animation-animationId-select": "select{}",
     "show-animation-event-id-input": "input[text]{hidden}",
+    "show-animation-pixel-fx": "button{}",
     "show-animation-play": "button{}",
     "show-animation-target-kind-select": "select{hidden}",
     "show-animation-target-kind-select-segment-event": "button{}",
@@ -21652,10 +21732,11 @@
     "예",
     "이벤트",
     "좌표",
-    "주인공"
+    "주인공",
+    "픽셀 효과…"
    ],
    "tags": {
-    "button": 6,
+    "button": 7,
     "div": 22,
     "h4": 1,
     "input": 3,
@@ -21674,6 +21755,7 @@
     "show-animation-event-id-input": "input",
     "show-animation-frame-cell": "div",
     "show-animation-frame-layer": "div",
+    "show-animation-pixel-fx": "button",
     "show-animation-play": "button",
     "show-animation-position-field": "div",
     "show-animation-preview": "div",
@@ -21695,8 +21777,8 @@
     "show-animation-preview": "재생타격 · 플레이어재생이 끝날 때까지 대기",
     "show-animation-preview-stage": "재생"
    },
-   "testidCount": 23,
-   "controlCount": 12
+   "testidCount": 24,
+   "controlCount": 13
   },
   "classes": [
    "actor-m2-command-body",
@@ -21736,6 +21818,7 @@
    "page3-preview-animation",
    "page3-preview-stage",
    "page3-preview-stage-label",
+   "pixel-fx-pick-button",
    "record-picker",
    "record-picker-card",
    "record-picker-card-copy",
@@ -21930,6 +22013,7 @@
    "show-picture-resource-input": "검증텍스트 변경 1개 [show-picture-preview: \"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #%res#\"→\"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #% pro\"]",
    "show-picture-rotation-input": "검증텍스트 변경 1개 [show-picture-preview: \"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #%res#\"→\"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #% · #\"]",
    "show-picture-scale-input": "no-change",
+   "show-picture-wait": "컨트롤 값 변경 1개 [show-picture-wait: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 1개 [show-picture-preview: \"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #%res#\"→\"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #% · 끝\"]",
    "show-picture-x-input": "no-change",
    "show-picture-y-input": "no-change"
   },
@@ -21962,6 +22046,7 @@
     "show-picture-resource-picker",
     "show-picture-rotation-input",
     "show-picture-scale-input",
+    "show-picture-wait",
     "show-picture-x-input",
     "show-picture-y-input"
    ],
@@ -22024,6 +22109,7 @@
     "show-picture-resource-picker": "button{}",
     "show-picture-rotation-input": "input[number]{}",
     "show-picture-scale-input": "input[number]{}",
+    "show-picture-wait": "input[checkbox]{}",
     "show-picture-x-input": "input[number]{}",
     "show-picture-y-input": "input[number]{}"
    },
@@ -22049,19 +22135,20 @@
     "우",
     "좌",
     "중앙",
+    "페이드·이동이 끝난 뒤에 다음 명령을 시작합니다. 끄면 그림이 움직이는 동안 대사가 바로 이어집니다.",
     "하단",
     "회전 · 서서히"
    ],
    "tags": {
     "button": 7,
     "details": 1,
-    "div": 39,
-    "input": 10,
-    "label": 1,
+    "div": 41,
+    "input": 11,
+    "label": 2,
     "option": 8,
     "p": 4,
     "select": 2,
-    "span": 3,
+    "span": 4,
     "summary": 1
    },
    "tagByTestid": {
@@ -22092,6 +22179,7 @@
     "show-picture-resource-picker": "button",
     "show-picture-rotation-input": "input",
     "show-picture-scale-input": "input",
+    "show-picture-wait": "input",
     "show-picture-x-input": "input",
     "show-picture-y-input": "input"
    },
@@ -22102,8 +22190,8 @@
     "show-picture-preview-marker": "자리 pic#",
     "show-picture-preview-stage": "자리 pic#"
    },
-   "testidCount": 29,
-   "controlCount": 19
+   "testidCount": 30,
+   "controlCount": 20
   },
   "classes": [
    "actor-m2-chip",
@@ -22146,8 +22234,8 @@
    "small",
    "visually-hidden"
   ],
-  "probeCount": 12,
-  "reactingCount": 4
+  "probeCount": 13,
+  "reactingCount": 5
  },
  "erasePicture": {
   "reactions": {
@@ -22233,8 +22321,10 @@
  },
  "playAudio": {
   "reactions": {
+   "play-audio-fade": "no-change",
    "play-audio-resource-select": "no-change",
-   "play-audio-search": "태그 개수 [option 408→2] | select 선택지 변경 1개 [play-audio-resource-select: 408→2종]"
+   "play-audio-search": "태그 개수 [option 418→2] | select 선택지 변경 1개 [play-audio-resource-select: 418→2종]",
+   "play-audio-volume": "no-change"
   },
   "initial": {
    "testids": [
@@ -22244,9 +22334,11 @@
     "event-command-edit-summary",
     "play-audio-channel-bgm",
     "play-audio-channel-hint",
+    "play-audio-channel-note",
     "play-audio-channel-row",
     "play-audio-channel-se",
     "play-audio-command-body",
+    "play-audio-fade",
     "play-audio-meta",
     "play-audio-preview",
     "play-audio-resource-picker",
@@ -22254,7 +22346,8 @@
     "play-audio-result-count",
     "play-audio-search",
     "play-audio-status",
-    "play-audio-stop"
+    "play-audio-stop",
+    "play-audio-volume"
    ],
    "classes": [
     "active",
@@ -22270,6 +22363,8 @@
     "play-audio-label",
     "play-audio-meta",
     "play-audio-meta-name",
+    "play-audio-mix-hint",
+    "play-audio-mix-row",
     "play-audio-resource-select",
     "play-audio-result-count",
     "play-audio-search",
@@ -22280,11 +22375,13 @@
    "controls": {
     "play-audio-channel-bgm": "button{}",
     "play-audio-channel-se": "button{}",
+    "play-audio-fade": "input[number]{}",
     "play-audio-preview": "button{}",
     "play-audio-resource-picker": "button{}",
     "play-audio-resource-select": "select{}",
     "play-audio-search": "input[search]{}",
-    "play-audio-stop": "button{}"
+    "play-audio-stop": "button{}",
+    "play-audio-volume": "input[number]{}"
    },
    "selectOptions": {
     "play-audio-resource-select": [
@@ -22549,6 +22646,16 @@
      "cc0-se-osx-plop-01",
      "cc0-se-osx-plop-02",
      "cc0-sound-ui-confirm",
+     "cc0-sound-fs-op-star-swell",
+     "cc0-sound-fs-op-star-crack",
+     "cc0-sound-fs-op-meteor-roar",
+     "cc0-sound-fs-op-impact",
+     "cc0-sound-fs-op-night-air",
+     "cc0-sound-fs-op-smolder",
+     "cc0-sound-fs-op-pod-hum",
+     "cc0-sound-fs-op-bell",
+     "cc0-sound-fs-op-title-rise",
+     "cc0-sound-fs-op-title-hit",
      "cc0-sound-monster-ui-cursor",
      "cc0-sound-monster-ui-confirm",
      "cc0-sound-monster-ui-cancel",
@@ -22701,17 +22808,22 @@
    "labels": [
     "미리 듣기",
     "배경음",
+    "음량 (%)",
     "정지",
+    "페이드인 (초)",
     "효과음",
     "효과음 목록 열기…"
    ],
    "tags": {
     "button": 5,
-    "div": 16,
-    "input": 1,
-    "option": 408,
+    "div": 17,
+    "input": 3,
+    "label": 2,
+    "option": 418,
+    "p": 2,
     "select": 1,
-    "small": 1
+    "small": 1,
+    "span": 2
    },
    "tagByTestid": {
     "audio-description": "div",
@@ -22720,9 +22832,11 @@
     "event-command-edit-summary": "div",
     "play-audio-channel-bgm": "button",
     "play-audio-channel-hint": "div",
+    "play-audio-channel-note": "p",
     "play-audio-channel-row": "div",
     "play-audio-channel-se": "button",
     "play-audio-command-body": "div",
+    "play-audio-fade": "input",
     "play-audio-meta": "div",
     "play-audio-preview": "button",
     "play-audio-resource-picker": "button",
@@ -22730,15 +22844,17 @@
     "play-audio-result-count": "div",
     "play-audio-search": "input",
     "play-audio-status": "div",
-    "play-audio-stop": "button"
+    "play-audio-stop": "button",
+    "play-audio-volume": "input"
    },
    "texts": {
     "event-command-edit-summary": "소리 재생",
-    "play-audio-channel-hint": "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
+    "play-audio-channel-hint": "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 곡을 바꿔도 음량·페이드·환경음은 유지됩니다. 미리 듣기는 그 음량으로 재생됩니다.",
+    "play-audio-channel-note": "",
     "play-audio-preview": "미리 듣기"
    },
-   "testidCount": 17,
-   "controlCount": 7
+   "testidCount": 20,
+   "controlCount": 9
   },
   "classes": [
    "active",
@@ -22754,6 +22870,8 @@
    "play-audio-label",
    "play-audio-meta",
    "play-audio-meta-name",
+   "play-audio-mix-hint",
+   "play-audio-mix-row",
    "play-audio-resource-select",
    "play-audio-result-count",
    "play-audio-search",
@@ -22761,7 +22879,7 @@
    "primary",
    "warn"
   ],
-  "probeCount": 2,
+  "probeCount": 4,
   "reactingCount": 1
  },
  "stopAudio": {
@@ -23510,6 +23628,9 @@
      "changeTile",
      "callCommonEvent",
      "callMapEvent",
+     "planSchedule",
+     "runSchedule",
+     "script",
      "battleProcessing",
      "learnSkill",
      "changeExp",
@@ -23527,6 +23648,7 @@
      "changeGold",
      "changeItem",
      "craftRecipe",
+     "openCraftShop",
      "applyItemUpgrade",
      "equipTool",
      "openChest",
@@ -23595,7 +23717,7 @@
     "div": 21,
     "input": 8,
     "label": 8,
-    "option": 87,
+    "option": 91,
     "p": 1,
     "select": 1,
     "span": 8
@@ -23748,6 +23870,206 @@
   ],
   "probeCount": 0,
   "reactingCount": 0
+ },
+ "planSchedule": {
+  "reactions": {
+   "plan-schedule-schedule-id-picker": "single-option",
+   "plan-schedule-slot-count-input": "no-change"
+  },
+  "initial": {
+   "testids": [
+    "event-command-edit-summary",
+    "plan-schedule-editor",
+    "plan-schedule-schedule-id-picker",
+    "plan-schedule-schedule-id-picker-card",
+    "plan-schedule-slot-count-input",
+    "plan-schedule-slot-count-minus",
+    "plan-schedule-slot-count-plus"
+   ],
+   "classes": [
+    "cream-command-form",
+    "cream-command-form-head",
+    "empty",
+    "record-picker",
+    "record-picker-card",
+    "record-picker-card-name",
+    "rich-command-form",
+    "rich-form-row",
+    "rich-record-initial",
+    "rich-stepper",
+    "rich-stepper-button",
+    "schema-command-form",
+    "schema-field",
+    "schema-field-label"
+   ],
+   "controls": {
+    "plan-schedule-schedule-id-picker": "select{}",
+    "plan-schedule-slot-count-input": "input[number]{}",
+    "plan-schedule-slot-count-minus": "button{}",
+    "plan-schedule-slot-count-plus": "button{}"
+   },
+   "selectOptions": {
+    "plan-schedule-schedule-id-picker": [
+     ""
+    ]
+   },
+   "labels": [
+    "+",
+    "−"
+   ],
+   "tags": {
+    "button": 2,
+    "div": 3,
+    "input": 1,
+    "option": 1,
+    "select": 1,
+    "span": 10
+   },
+   "tagByTestid": {
+    "event-command-edit-summary": "div",
+    "plan-schedule-editor": "span",
+    "plan-schedule-schedule-id-picker": "select",
+    "plan-schedule-schedule-id-picker-card": "span",
+    "plan-schedule-slot-count-input": "input",
+    "plan-schedule-slot-count-minus": "button",
+    "plan-schedule-slot-count-plus": "button"
+   },
+   "texts": {
+    "event-command-edit-summary": "일정표 짜기"
+   },
+   "testidCount": 7,
+   "controlCount": 4
+  },
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-form-row",
+   "rich-record-initial",
+   "rich-stepper",
+   "rich-stepper-button",
+   "schema-command-form",
+   "schema-field",
+   "schema-field-label"
+  ],
+  "probeCount": 2,
+  "reactingCount": 0
+ },
+ "runSchedule": {
+  "reactions": {
+   "run-schedule-schedule-id-picker": "single-option",
+   "run-schedule-slot-variable-id-select": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]"
+  },
+  "initial": {
+   "testids": [
+    "event-command-edit-summary",
+    "event-variable-picker-open",
+    "run-schedule-editor",
+    "run-schedule-schedule-id-picker",
+    "run-schedule-schedule-id-picker-card",
+    "run-schedule-slot-variable-id-select"
+   ],
+   "classes": [
+    "btn",
+    "cream-command-form",
+    "cream-command-form-head",
+    "empty",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
+    "record-picker",
+    "record-picker-card",
+    "record-picker-card-name",
+    "rich-command-form",
+    "rich-form-row",
+    "rich-record-initial",
+    "schema-command-form",
+    "schema-field",
+    "schema-field-label",
+    "small"
+   ],
+   "controls": {
+    "event-variable-picker-open": "button{}",
+    "run-schedule-schedule-id-picker": "select{}",
+    "run-schedule-slot-variable-id-select": "select{}"
+   },
+   "selectOptions": {
+    "run-schedule-schedule-id-picker": [
+     ""
+    ],
+    "run-schedule-slot-variable-id-select": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ]
+   },
+   "labels": [
+    "(선택)"
+   ],
+   "tags": {
+    "button": 1,
+    "div": 3,
+    "option": 22,
+    "select": 2,
+    "span": 10
+   },
+   "tagByTestid": {
+    "event-command-edit-summary": "div",
+    "event-variable-picker-open": "button",
+    "run-schedule-editor": "span",
+    "run-schedule-schedule-id-picker": "select",
+    "run-schedule-schedule-id-picker-card": "span",
+    "run-schedule-slot-variable-id-select": "select"
+   },
+   "texts": {
+    "event-command-edit-summary": "일정표 실행"
+   },
+   "testidCount": 6,
+   "controlCount": 3
+  },
+  "classes": [
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-form-row",
+   "rich-record-initial",
+   "schema-command-form",
+   "schema-field",
+   "schema-field-label",
+   "small"
+  ],
+  "probeCount": 2,
+  "reactingCount": 1
  },
  "spawnFieldEnemy": {
   "reactions": {

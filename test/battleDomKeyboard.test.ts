@@ -37,9 +37,28 @@ function untilActorCommand(runtime: ReturnType<typeof createBattleRuntime>): voi
   }
 }
 
+/**
+ * 플레이어가 Shift 로 고른 배속은 다음 전투에 이어진다(battleDom 의 모듈 상태 chosenBattleSpeed, 75d78ab5f1).
+ * 같은 파일의 앞 테스트가 Shift 를 눌러 두면 뒤 테스트가 1× 가 아닌 배속으로 시작하므로, 테스트마다 1× 로 되돌린다.
+ */
+function resetChosenBattleSpeed(): void {
+  vi.useFakeTimers();
+  const { controller } = setup();
+  const status = controller.root.querySelector("[data-testid='battle-playback-status']");
+  for (let step = 0; step < 3 && !/Shift 1×$/.test(status?.textContent ?? ""); step += 1) {
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Shift", bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Shift", bubbles: true }));
+  }
+  expect(status?.textContent).toMatch(/Shift 1×$/);
+  controller.destroy();
+  vi.useRealTimers();
+  document.body.innerHTML = "";
+}
+
 describe("battle dom keyboard and status rows", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
+    resetChosenBattleSpeed();
   });
 
   it("shows keyboard AUTO/speed status and removes the host cover on teardown", () => {
@@ -365,21 +384,30 @@ describe("battle dom keyboard and status rows", () => {
     expect(commands[0]?.dataset.battleCommandCursor).toBeUndefined();
 
     const status = controller.root.querySelector("[data-testid='battle-playback-status']");
-    ime("KeyF");
-    expect(status?.textContent).toContain("F 자동 켜짐");
-    ime("ShiftLeft");
-    ime("ShiftLeft", {}, "keyup");
-    expect(status?.textContent).toContain("Shift 1.8×");
 
+    const rootCursorId = controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+    expect(rootCursorId).toBe(commands[1]?.dataset.testid);
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
     ime("KeyX");
+    // 목록을 닫으면 커서는 열기 전에 서 있던 루트 행으로 돌아온다(bcd30259ce 「submenu back cursor」).
+    expect(controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid).toBe(rootCursorId);
+    ime("ArrowUp");
     expect(controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.dataset.battleCommandCursor).toBe("true");
 
     const confirmed = vi.fn();
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.addEventListener("click", confirmed, { once: true });
     ime("KeyZ");
     expect(confirmed).toHaveBeenCalledTimes(1);
+
+    // 자동 전투를 켜면 명령 카드가 스스로 행동을 고르므로(toggleAutoBattle → checkAutoBattleStep) F·Shift 확인은 메뉴 키 단계 뒤에 한다.
+    // Shift 를 먼저 눌러 1.8× 로 올려 두면 AUTO 가 배속을 건드리지 않는다.
+    ime("ShiftLeft");
+    ime("ShiftLeft", {}, "keyup");
+    expect(status?.textContent).toContain("Shift 1.8×");
+    ime("KeyF");
+    expect(status?.textContent).toContain("F 자동 켜짐");
+    expect(status?.textContent).toContain("Shift 1.8×");
     controller.destroy();
   });
 
@@ -412,7 +440,9 @@ describe("gen1+RM dead-attack guard UI and scroll cue", () => {
     expect(attack?.getAttribute("aria-disabled")).toBe("true");
     expect(attack?.dataset.previewOnly).toBe("true");
     expect(attack?.getAttribute("aria-label")).toContain("통상 공격을 쓸 수 없습니다");
-    expect(attack?.textContent ?? "").toContain("통상 공격을 쓸 수 없습니다");
+    // 루트 명령의 긴 사유(> ROOT_INLINE_REASON_MAX)는 버튼 안 줄이 아니라 커서가 설 때 질문 줄에 보인다(09c3fd1fba).
+    expect(attack?.dataset.battleCommandInertReason).toContain("통상 공격을 쓸 수 없습니다");
+    expect(attack?.querySelector(".battle-command-reason")).toBeNull();
     // 그리고 런타임도 같은 규칙으로 막는다 — 버튼이 아니라 계약이 정본이다.
     runtime.beginActorCommand({ kind: "attack" });
     expect(runtime.snapshot().phase).toBe("actorCommand");

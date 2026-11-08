@@ -11,7 +11,10 @@ describe("person ghosts get a person chip, not the sheet ghost (J66)", () => {
   it("a multi-word query with no all-term match returns the closest chips instead of nothing", () => {
     const top = findNpcGraphicMatches("하얀 드레스 여자 유령")[0]?.entry;
     expect(top?.gender).toBe("female");
-    expect(top?.appearance).toMatch(/흰 드레스/u);
+    // 2026-10-28 RefmapDoll(#3882) 카탈로그가 들어온 뒤 1등은 「흰 밑단의 주황·금색 드레스」 칸이다 — 「흰 드레스」 연속 문구는 더 이상 보장되지 않는다.
+    // J66 의 계약은 «사람 칩(여성·드레스)이 시트 유령보다 먼저 온다» 이므로 드레스와 흰색 낱말이 각각 설명에 있는지만 본다.
+    expect(top?.appearance).toMatch(/드레스/u);
+    expect(top?.appearance).toMatch(/흰/u);
   });
 
   it("list_npc_graphics searches the person and says to draw the ghost with blendMode add", () => {

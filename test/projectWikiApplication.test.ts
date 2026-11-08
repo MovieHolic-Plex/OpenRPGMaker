@@ -8,6 +8,10 @@ import { recordProjectCommit } from "@/project/projectCommitLog";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { manualWikiNote, wikiActivity } from "./fixtures/wikiActivity";
 
+// createBlankProject() builds the ~63MB blank project; each test here builds it (beforeEach/inline) and CI runs 4 workers at once, so
+// single tests measured 8-15s+ — past vitest's 15s default. Same per-file budget other blank-project files use (e.g. actionAcceptanceProof).
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/project/projectCommitLog", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/project/projectCommitLog")>(),
   recordProjectCommit: vi.fn(async () => ({

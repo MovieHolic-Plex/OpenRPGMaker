@@ -115,13 +115,13 @@ describe("database world canon view", () => {
   it("updates the excerpt counter while typing the body", () => {
     const host = renderTab();
     const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
-    expect(hint?.textContent).toContain("0자를 본다");
+    expect(hint?.textContent).toContain("지금 0자");
     // 상한(20,000) 안쪽은 잘리지 않는다 — 예전엔 600자 상한이라 700자에서 잘렸다.
     setInput(host, "db-world-canon-body", "가".repeat(19_500));
-    expect(hint?.textContent).not.toContain("발췌 밖");
+    expect(hint?.textContent).not.toContain("읽지 않습니다");
     // 상한을 넘기면 몇 자가 남는지 고지한다.
     setInput(host, "db-world-canon-body", "가".repeat(20_700));
-    expect(hint?.textContent).toContain("뒤 700자는 발췌 밖");
+    expect(hint?.textContent).toContain("뒤 700자는 읽지 않습니다");
   });
 
   it("updates the body-card excerpt counter while typing without a rerender", () => {
@@ -131,7 +131,7 @@ describe("database world canon view", () => {
     setInput(host, "db-world-canon-body", "가".repeat(20_700));
     const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
     // 표시는 실제 전달 상한과 같은 상수에서 온다.
-    expect(hint?.textContent).toContain("뒤 700자는 발췌 밖");
+    expect(hint?.textContent).toContain("뒤 700자는 읽지 않습니다");
   });
 
   it("rejects an absence past the cap with feedback instead of silently dropping", () => {

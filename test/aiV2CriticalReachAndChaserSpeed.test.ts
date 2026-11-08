@@ -4,7 +4,7 @@ import type { Project } from "../src/project/types";
 
 const chaserProject = (movement: Record<string, unknown>): Project => ({
   maps: { m: { id: "m", name: "복도", width: 10, height: 10, events: [{ id: "ev_c", name: "그림자", x: 1, y: 1, pages: [{ movement, commands: [{ kind: "gameOver" }] }] }] },
-} as unknown as Project);
+} } as unknown as Project);
 
 describe("slow chasers (J77)", () => {
   it("flags a chaser that rests 240ms between steps", () => {

@@ -37,7 +37,7 @@ describe("UX2 committed-event count projection", () => {
     clone.mockClear();
     const stages = journey.evaluateAuthoringJourney(project, journey.emptyAuthoringJourneyProgress(), []);
     expect(expected).toBe(3);
-    expect(stages.find((stage) => stage.id === "event")?.detail).toBe(`커밋 ${expected}개`);
+    expect(stages.find((stage) => stage.id === "event")?.detail).toBe(`이벤트 ${expected}개`);
     expect(clone).not.toHaveBeenCalled();
   });
 
@@ -52,10 +52,10 @@ describe("UX2 committed-event count projection", () => {
     readDraft.mockClear();
     const map = project.maps[project.startMapId]!;
     const painted = { ...project, maps: { ...project.maps, [map.id]: { ...map, lowerTiles: map.lowerTiles.slice() } } };
-    expect(journey.evaluateAuthoringJourney(painted, progress, []).find((stage) => stage.id === "event")?.detail).toBe("커밋 1개");
+    expect(journey.evaluateAuthoringJourney(painted, progress, []).find((stage) => stage.id === "event")?.detail).toBe("이벤트 1개");
     expect(readDraft).not.toHaveBeenCalled();
     painted.maps[map.id]!.events = [...events, event("two")];
-    expect(journey.evaluateAuthoringJourney(painted, progress, []).find((stage) => stage.id === "event")?.detail).toBe("커밋 2개");
+    expect(journey.evaluateAuthoringJourney(painted, progress, []).find((stage) => stage.id === "event")?.detail).toBe("이벤트 2개");
     painted.maps[map.id]!.events = [{ ...event("new"), draft: { kind: "new" } }];
     expect(journey.evaluateAuthoringJourney(painted, progress, []).find((stage) => stage.id === "event")?.completion).toBeNull();
   });
@@ -92,7 +92,7 @@ describe("UX2 collapsed and unchanged Progress", () => {
     find("sidebar-progress").click();
     expect(evaluate).toHaveBeenCalledTimes(1);
     expect(find("left-progress-pane").hidden).toBe(false);
-    expect(find("left-progress-event").textContent).toContain("커밋 1개");
+    expect(find("left-progress-event").textContent).toContain("이벤트 1개");
   });
 
   it("preserves visible stage nodes on unchanged paint output and replaces them after a real event change", () => {
@@ -103,7 +103,7 @@ describe("UX2 collapsed and unchanged Progress", () => {
     store.updateMap(store.getCurrent().startMapId, (map) => { map.events.push(event("added")); });
     flush();
     expect(find("left-progress-event")).not.toBe(first);
-    expect(find("left-progress-event").textContent).toContain("커밋 1개");
+    expect(find("left-progress-event").textContent).toContain("이벤트 1개");
     workspace.dispose();
     const evaluate = vi.spyOn(journey, "evaluateAuthoringJourney");
     paint(); flush();

@@ -26,14 +26,41 @@ describe("editor keyboard shortcuts", () => {
     } as unknown as KeyboardEvent;
   }
 
-  it("F5/F6/F7 switch to lower/upper/event layers", () => {
-    expect(handleEditorKey(keyEvent("F5"))).toBe(true);
+  // bce1173bc0: 레이어 키는 Shift+1/2/3 (+ F7 = 이벤트). F5(새로고침)·F6(주소창 이동)은 브라우저 키라 가로채지 않는다.
+  function shiftDigit(digit: 1 | 2 | 3): KeyboardEvent {
+    return {
+      key: "!@#"[digit - 1],
+      code: `Digit${digit}`,
+      shiftKey: true,
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      target: undefined,
+      preventDefault: () => {},
+    } as unknown as KeyboardEvent;
+  }
+
+  it("Shift+1/2/3 switch to lower/upper/event layers and F7 still picks the event layer", () => {
+    editorState.set({ layer: "upper", tool: "paint" });
+    expect(handleEditorKey(shiftDigit(1))).toBe(true);
     expect(editorState.get().layer).toBe("lower");
-    expect(handleEditorKey(keyEvent("F6"))).toBe(true);
+    expect(handleEditorKey(shiftDigit(2))).toBe(true);
     expect(editorState.get().layer).toBe("upper");
+    expect(handleEditorKey(shiftDigit(3))).toBe(true);
+    expect(editorState.get().layer).toBe("event");
+    expect(editorState.get().tool).toBe("event");
+
+    editorState.set({ layer: "lower", tool: "paint" });
     expect(handleEditorKey(keyEvent("F7"))).toBe(true);
     expect(editorState.get().layer).toBe("event");
     expect(editorState.get().tool).toBe("event");
+  });
+
+  it("F5/F6 are left to the browser and do not change the layer", () => {
+    editorState.set({ layer: "upper", tool: "paint" });
+    expect(handleEditorKey(keyEvent("F5"))).toBe(false);
+    expect(handleEditorKey(keyEvent("F6"))).toBe(false);
+    expect(editorState.get().layer).toBe("upper");
   });
 
   it("number keys 1..7 select tools", () => {

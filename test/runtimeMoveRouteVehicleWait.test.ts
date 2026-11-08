@@ -48,7 +48,8 @@ function parkedTruckSim(): TransitSim {
   const sim = createTransitSim({
     routes: [{ id: "ew", kind: "road", path: [{ x: -6, y: 4 }, { x: 20, y: 4 }], vehicles: ["mc-veh-truck-a"], headwaySec: 1000 }],
   } as unknown as Parameters<typeof createTransitSim>[0], { width: 12, height: 12 }, 0);
-  sim.vehicles.push({ key: 99, routeIndex: 0, def: sim.routes[0]!.vehicles[0]!, pos: 8, wait: 0, stopAt: null, served: [], blockedSec: 0 });
+  // 경로 칸 i 의 x 는 -6 + i 이고 오른쪽으로 가는 길이 4 의 몸은 머리 칸 기준 x-3..x 를 덮는다 — 머리가 (5,4) 에 오는 pos 11 이어야 걷는 줄 x=5 의 (5,4)를 덮는다(pos 8 은 x -1..2 라 아무것도 막지 않는다).
+  sim.vehicles.push({ key: 99, routeIndex: 0, def: sim.routes[0]!.vehicles[0]!, pos: 11, wait: 0, stopAt: null, served: [], blockedSec: 0 });
   return sim;
 }
 
@@ -111,7 +112,8 @@ describe("명령 경로: 지나가는 차가 다음 칸을 덮으면 걸음을 �
     const sim = parkedTruckSim();
     const s = scene(project, map, sim);
     const mover = start(s, 6);
-    tick(s, 12000);
+    // 차 대기는 걸음마다 3초다(막힌 걸음을 소비하면 transitWaitMs 가 0 으로 돌아간다): 칸 (5,4) 앞 y=3 에서 남은 4걸음 × 3초 + 걷는 시간.
+    tick(s, 20000);
     expect(mover.step >= mover.moves.length || !s.autonomousNPCs.has("walker"), "경로가 소진되어 무버가 끝났다").toBe(true);
   });
 

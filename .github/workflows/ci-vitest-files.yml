@@ -50,6 +50,12 @@ jobs:
 
       - run: npm ci
 
+      # ci-full 의 정적 잡과 같다 — *.browser.test.ts 의 bench 가 chromium 을 띄운다. 없으면
+      # 「Executable doesn't exist ... chrome-headless-shell」로 테스트 전에 죽는다(42472679539).
+      - name: Playwright 브라우저
+        if: contains(inputs.files, '.browser.test.ts')
+        run: npx playwright install --with-deps chromium
+
       - name: vitest (지정 파일만)
         env:
           FILES: ${{ inputs.files }}

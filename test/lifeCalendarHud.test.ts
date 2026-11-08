@@ -95,8 +95,11 @@ describe("lifeCalendarHudLines", () => {
     expect(walks.n).toBe(6);
 
     project.system.timeSystem = { enabled: true, daysPerSeason: 40 };
-    expect(lifeCalendarHudLines(project, session)[1]).toBe("생일 오늘 · 늦은, 봄, 하루");
+    // 40일 계절이 되면 「늦은」의 봄 40일 생일이 색인에 들어오지만(28일 계절에서는 범위 밖) 오늘은 봄 1일이라 오늘 줄은 그대로다.
+    expect(lifeCalendarHudLines(project, session)[1]).toBe("생일 오늘 · 봄, 하루");
     expect(walks.n).toBe(8);
+    session.gameTime = { year: 1, season: "spring", day: 40, hour: 6, minute: 0 };
+    expect(lifeCalendarHudLines(project, session)[1]).toBe("생일 오늘 · 늦은");
   });
 
   it("shows the weather line from the saved day and does not rescan events while the minute holds", () => {

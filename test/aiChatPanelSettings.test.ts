@@ -107,13 +107,14 @@ describe("설정 자동 저장", () => {
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
     expect(providers).not.toBeNull();
     // 예전에는 68종을 종류 구분 없이 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞였다).
-    // 지금 목록은 로그인 경로가 실재하는 두 구독 제공자뿐이다.
-    expect(providers?.querySelectorAll("option").length).toBe(2);
+    // 2026-11-02 abaa03e78f 이후 목록은 레지스트리 전체(OMP 가 로그인해 둔 제공자 포함)다.
+    expect(providers?.querySelectorAll("option").length).toBe(OH_MY_PI_PROVIDERS.length);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
     // 「구독 로그인」 배지는 지웠다 — 카드 필·상태 줄과 같은 말을 세 번째로 되풀이했다.
-    expect(modal.textContent).toContain("API 키는 필요 없어요");
+    // 안내 문장은 abaa03e78f 로 「<계정> 계정으로 로그인」 한 줄이 됐다 — 키 입력칸이 없다는 사실은 위 단언이 고정한다.
+    expect(modal.textContent).toMatch(/계정으로 (로그인|연결됨)/u);
     expect(modal.textContent).toContain("역할별 모델 직접 지정");
   });
 
@@ -138,7 +139,7 @@ describe("설정 자동 저장", () => {
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 두 구독 제공자만 담는다", () => {
+  it("설정 제공자 목록은 레지스트리 전체를 담고 앞의 둘은 Google·ChatGPT 다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     // 「연결 방식」종류 카드는 사라졌다 — 갈릴 목록이 없으므로 목록은 그대로 두 제공자다.
     const panel = renderPanel();
@@ -148,7 +149,8 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(["google-antigravity", "openai-codex"]);
+    expect(values()).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
+    expect(values().slice(0, 2)).toEqual(["google-antigravity", "openai-codex"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
