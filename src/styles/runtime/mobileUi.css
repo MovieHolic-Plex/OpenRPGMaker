@@ -368,6 +368,53 @@
 .player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-party { grid-auto-columns: minmax(0, 1fr); }
 .player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-party-next { white-space: normal; text-align: center; }
 .player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-summary { gap: 10px; padding: 0 12px; }
+/* 도트 전투 명령·파티 창(HUD): 같은 이중 배율(0.42~0.46배) 때문에 명령 줄 15px·HP/MP 글자 5px 였고 화면 아래 64% 는 비어 있었다
+   (2026-11-08 autopilot-usability R1, 실제 플레이어 360×780·390×844 실측). 결과 창처럼 무대 아래 띠(무대 바닥~세로 방 바닥, 최소 160px)에
+   0.7배(글자 14px, 줄 63×0.7=44px)로 꺼낸다 — 1배·0.8배는 명령·스킬 이름과 HP 숫자가 잘렸다. 왼쪽 45% 명령(또는 적 목록), 오른쪽 파티. grid-area: auto 가 없으면 절대 위치의 기준이 장면이 아니라 자기 격자 칸이 된다. 줄은 44px 이라 손가락으로 누른다. 장면 격자의 192px HUD 줄은 비운다.
+   결과 창이 뜨면 이 띠는 숨긴다(결과 창이 같은 방을 쓴다). 가로·데스크톱은 창 칸이 없어 걸리지 않는다. */
+.player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-command-host),
+.player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-command-host) > .battle-scene { overflow: visible; }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] {
+  --battle-hud-height: 0px;
+  --hud-band-top: calc(var(--play-stage-top) + var(--play-stage-height) + 4px);
+  --hud-band-h: max(160px, calc(var(--panel-room-top) + var(--panel-room-h) - var(--hud-band-top)));
+  --hud-zoom: 0.7;
+  --hud-inv: calc(var(--hud-zoom) / (var(--play-scale) * var(--battle-stage-scale)));
+}
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] > :is(.battle-command-host, .battle-enemy-list-panel, .battle-party) {
+  position: absolute;
+  grid-area: auto;
+  top: calc((var(--hud-band-top) - var(--play-stage-top) - var(--battle-stage-offset-y) * var(--play-scale)) / (var(--play-scale) * var(--battle-stage-scale)));
+  height: calc(var(--hud-band-h) / var(--hud-zoom));
+  right: auto;
+  bottom: auto;
+  overflow-y: auto;
+  transform: scale(var(--hud-inv));
+  transform-origin: 0 0;
+  z-index: 3;
+}
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] > :is(.battle-command-host, .battle-enemy-list-panel) {
+  left: calc((var(--panel-room-left) - var(--play-stage-left) - var(--battle-stage-offset-x) * var(--play-scale)) / (var(--play-scale) * var(--battle-stage-scale)));
+  width: calc((var(--panel-room-w) * 0.45 - 3px) / var(--hud-zoom));
+}
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] > .battle-party {
+  left: calc((var(--panel-room-left) + var(--panel-room-w) * 0.45 + 3px - var(--play-stage-left) - var(--battle-stage-offset-x) * var(--play-scale)) / (var(--play-scale) * var(--battle-stage-scale)));
+  width: calc((var(--panel-room-w) * 0.55 - 3px) / var(--hud-zoom));
+}
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] { --battle-command-row-height: 63px; }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-party .battle-actor-status { min-height: 63px; }
+/* 띠 안 파티 행(0.7배, 행 폭 264~286px)은 한 줄에 이름·HP·MP·TP 가 다 안 들어가 이름이 한 글자로 잘렸다.
+   두 줄로 접는다: 위 줄 이름(한글 4자까지 통째)+상태+TP, 아래 줄 HP·MP. 행은 63px(×0.7=44px) 그대로. */
+.player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status {
+  grid-template-areas: "name state tp" "hpnum mpnum mpnum";
+  grid-template-columns: minmax(0, 1fr) auto 56px;
+  grid-template-rows: 30px 30px;
+  row-gap: 0;
+  align-content: center;
+}
+.player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-name { min-width: 4.5em; line-height: 30px; }
+.player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-hp { overflow: visible; }
+.player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-result-pixel) .battle-scene > :is(.battle-command-host, .battle-enemy-list-panel, .battle-party) { display: none; }
 /* 칸 폭(320)에서는 목록 옆 128px 쇼케이스 열이 목록 이름을 한두 자로 잘랐다 — 쇼케이스를 목록 아래 전체 폭으로 내리고,
    능력치 변화는 두 칸씩. 값은 게임 px(칸 안 1배 = 화면 px). */
 .play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {
