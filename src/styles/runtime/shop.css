@@ -1183,7 +1183,8 @@
   display: grid;
   grid-template-columns: 5.5em 2.8em 1.8em 2.8em 1.4em minmax(0, 1fr);
   align-items: center;
-  min-height: 1.6em;
+  /* 1.6em 이면 네 번째 줄(민첩성)이 비교 창 아래 테두리에 잘렸다(1440×900 실측 651 > 634, 2026-11-08 폴른 스타 QA V052). */
+  min-height: 1.3em;
   font-variant-numeric: tabular-nums;
 }
 .runtime-shop-statement-key { color: var(--shop-ink-dim); }
