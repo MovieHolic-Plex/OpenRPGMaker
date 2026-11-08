@@ -18,11 +18,14 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
   // 예전 이름(createScarloxyPokemonDemoProject)은 그 모듈에 없고 저장소 어디에도 export 되지 않는다.
   // 이 오류는 player QA 서버가 없어 page.goto 가 먼저 죽는 동안(ERR_CONNECTION_REFUSED) 가려져 있었다.
   // 전투 무리(troop_pkmn_grass_a)는 configureScarloxyPokemonDemoProject 가 넣으므로 그 설정을 직접 적용한다.
-  const [defaults,demo,shim,runtime,warm,dom]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/project/defaults/scarloxyPokemonDemoGame.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts'].map(imp));
+  const [defaults,demo,shim,runtime,warm,dom,readiness]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/project/defaults/scarloxyPokemonDemoGame.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts','/src/player/battleReadiness.ts'].map(imp));
   const project=defaults.createScarloxyDemoProject();demo.configureScarloxyPokemonDemoProject(project);shim.setExportedProject(project);
   const battle=runtime.createBattleRuntime({project,troopId:'troop_pkmn_grass_a',canEscape:true,canLose:true,rng:()=>0.5});
   const host=document.createElement('div');host.className='player-layout system-shell';host.style.cssText='position:relative;width:640px;height:480px';document.body.replaceChildren(host);
-  (window as any).bench={host,battle,warm,dom};
+  // The effect sheets mountBattleScene hands to whenBattleStageReady as extraUrls (battleDom.ts) — requested on purpose
+  // only after the stage art. Same function, same snapshot and project as the mount, so the set cannot drift from it.
+  const effectSheetUrls=[...readiness.battleAnimationSheetUrls(battle.snapshot(),project)];
+  (window as any).bench={host,battle,warm,dom,effectSheetUrls};
  });
  break; } catch(error) { if(attempt===2 || !String(error).includes('Failed to fetch dynamically imported module'))throw error; await page.reload(); } }
  const cdp=await page.context().newCDPSession(page);await cdp.send('Performance.enable');
@@ -60,7 +63,8 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  const c=await metrics();await settleImages();
  const mountPhase=await phaseEntries(mountStart);
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').filter((x:any)=>x.initiatorType==='img'||x.initiatorType==='css').map((x:any)=>({url:x.name,bytes:x.transferSize,decoded:x.decodedBodySize})));
- rows.push({round,variant,warm,mount,phases:{warm:warmPhase,mount:mountPhase},warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,resources});
+ const effectSheetUrls=await page.evaluate(()=>(window as any).bench.effectSheetUrls as string[]);
+ rows.push({round,variant,warm,mount,effectSheetUrls,phases:{warm:warmPhase,mount:mountPhase},warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,resources});
  if(round===0 && variant==='current' && process.env.BATTLE_WARMUP_SCREENSHOT)await page.screenshot({path:process.env.BATTLE_WARMUP_SCREENSHOT});
  console.log(JSON.stringify(rows.at(-1)));
  await page.evaluate(()=>{const b=(window as any).bench;b.controller.destroy();b.battle.cancel();});await page.close();
