@@ -384,15 +384,6 @@ describe("battle dom keyboard and status rows", () => {
     expect(commands[0]?.dataset.battleCommandCursor).toBeUndefined();
 
     const status = controller.root.querySelector("[data-testid='battle-playback-status']");
-    ime("KeyF");
-    expect(status?.textContent).toContain("F 자동 켜짐");
-    ime("ShiftLeft");
-    ime("ShiftLeft", {}, "keyup");
-    // 자동 전투를 켜면 1× 에서 1.8× 로 올리고(toggleAutoBattle), Shift 가 그 다음 단(3×)으로 돌린다.
-    expect(status?.textContent).toContain("Shift 3×");
-    // 자동 전투가 켜져 있으면 명령 카드가 스스로 행동을 고른다 — 아래 메뉴 키 확인은 AUTO 를 끄고 한다.
-    ime("KeyF");
-    expect(status?.textContent).toContain("F 자동 꺼짐");
 
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
@@ -403,6 +394,15 @@ describe("battle dom keyboard and status rows", () => {
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.addEventListener("click", confirmed, { once: true });
     ime("KeyZ");
     expect(confirmed).toHaveBeenCalledTimes(1);
+
+    // 자동 전투를 켜면 명령 카드가 스스로 행동을 고르므로(toggleAutoBattle → checkAutoBattleStep) F·Shift 확인은 메뉴 키 단계 뒤에 한다.
+    // Shift 를 먼저 눌러 1.8× 로 올려 두면 AUTO 가 배속을 건드리지 않는다.
+    ime("ShiftLeft");
+    ime("ShiftLeft", {}, "keyup");
+    expect(status?.textContent).toContain("Shift 1.8×");
+    ime("KeyF");
+    expect(status?.textContent).toContain("F 자동 켜짐");
+    expect(status?.textContent).toContain("Shift 1.8×");
     controller.destroy();
   });
 
