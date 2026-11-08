@@ -112,7 +112,8 @@ describe("map tree panel", () => {
     expect(pieces.join("")).toBe(meta?.textContent);
     expect(pieces.some((piece) => piece.includes("×") && piece.includes("이벤트"))).toBe(false);
     expect(pieces).toContain(`이벤트 ${project.maps[project.startMapId]?.events.length ?? 0}개`);
-    expect(pieces).toContain(expect.stringMatching(/^문 \d+개$/));
+    // toContain 은 배열을 엄격 비교(===)하므로 비대칭 매처(expect.stringMatching)를 받지 않는다 — 조각을 직접 골라 잔다.
+    expect(pieces.filter((piece) => /^문 \d+개$/.test(piece))).toHaveLength(1);
   });
 
   it("헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)", () => {

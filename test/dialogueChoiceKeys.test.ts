@@ -50,8 +50,10 @@ describe("choice cursor keys", () => {
     expect(selectedId()).toBe("runtime-choice-1");
     press("w");
     expect(selectedId()).toBe("runtime-choice-0");
+    // 1e5e3ff99f: ←→(A·D)는 받지 않는다 — 패드 스틱이 대각선이면 ArrowDown 과 ArrowRight 가 한꺼번에 와서
+    // 둘 다 「다음」이면 한 줄을 건너뛴다. 세로 목록은 W/S · ↑↓ 만 움직인다.
     press("d");
-    expect(selectedId()).toBe("runtime-choice-1");
+    expect(selectedId()).toBe("runtime-choice-0");
     press("a");
     expect(selectedId()).toBe("runtime-choice-0");
     press("W");
@@ -95,8 +97,9 @@ describe("choice cursor keys", () => {
     } finally {
       clock.mockRestore();
     }
+    // 커서는 두 줄 내려왔다(새 누름 1 + 간격을 넘긴 반복 1) — 결정은 그 줄을 고른다.
     press("Enter");
-    await expect(pending).resolves.toBe(1);
+    await expect(pending).resolves.toBe(2);
   });
 
   it("still walks the list while a gamepad stick is held", async () => {
