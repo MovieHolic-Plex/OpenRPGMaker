@@ -50,7 +50,8 @@ describe("테스트 안전 레일", () => {
     try {
       const result = runSceneTest(project, { mapId: map.id, start: { x: 1, y: 2 }, steps: [{ kind: "face", dir: "up" }, { kind: "interact" }] });
       expect(result.ok).toBe(false);
-      expect(result.safetyStops).toEqual([expect.objectContaining({ kind: "loop-budget", eventId: "ev_spin", mapId: map.id })]);
+      // 본문이 명령 하나뿐이어도 반복 한 바퀴가 명령 둘(본문 + 반복 재진입)이라 명령 예산(10만)이 반복 예산(10만 회)보다 먼저 찬다.
+      expect(result.safetyStops).toEqual([expect.objectContaining({ kind: "instruction-budget", eventId: "ev_spin", mapId: map.id })]);
       expect(result.failureReason).toBe(result.safetyStops![0]!.message);
     } finally {
       consoleWarn.mockRestore();
