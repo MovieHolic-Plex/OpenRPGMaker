@@ -2899,7 +2899,7 @@
       "test/aiToolCapabilityIndex.test.ts": "drift",
       "test/aiToolCatalogBudget.test.ts": "drift",
       "test/aiToolExposureHybrid.test.ts": "drift",
-      "test/aiWorkItemOutcomeGateSmoke.test.ts": "drift",
+      "test/aiWorkItemOutcomeGateSmoke.test.ts": "timeout",
       "test/approachCorrection.test.ts": "drift",
       "test/assistantNativeReadDelivery.test.ts": "drift",
       "test/assistantProposalAssembly.test.ts": "drift",
