@@ -10,6 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { installFakeDom } from "./fakeDom";
+import { resetAiRecordDbForTest } from "@/ai/aiRecordDb";
 
 const observed = vi.hoisted(() => ({ activity: vi.fn(async () => ({})), gate: vi.fn() }));
 vi.mock("@/ai/activityLog", async (original) => ({
@@ -32,6 +33,7 @@ beforeEach(() => {
 afterEach(() => {
   getPendingRegionApply()?.discard();
   clearAgentBlueprint(); clearAgentGhostPreview(); restoreDom?.(); vi.restoreAllMocks();
+  resetAiRecordDbForTest();
 });
 
 function setup() {
