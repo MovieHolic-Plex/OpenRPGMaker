@@ -157,7 +157,10 @@ describe("project acceptance parser/evaluator seam", () => {
 
   it("checks a uniquely targeted added item's exact name/price and preserves the prior title", () => {
     let project = writeTitle(createBlankProject());
-    const item = { id: "item_added", name: "Added item", price: 37 };
+    // 9cc4375646(2026-11-05): 이름에 맞는 아이콘이 없으면 upsert_item 이 meta.oprnPlaceholderIcons 에 「대신 쓴 그림」 표식을 적는다 —
+    // projectPreserve(scope=project) 는 그 meta 변화를 허용 목록 밖으로 본다. 이 시험은 «이름·가격 + 직전 제목 보존» 이음매를 보므로
+    // 번들 아이콘 낱말(potion)에 맞는 이름을 써서 표식이 생기지 않게 한다. 표식 + preserve 상호작용은 제품 후보로 따로 보고한다.
+    const item = { id: "item_added", name: "Added potion", price: 37 };
     const ledger = ledgerFor(project, [
       { kind: "itemValues", itemId: item.id, name: item.name, price: item.price },
       { kind: "projectPreserve", scope: "project", allowedChanges: [{ kind: "itemAddition", itemId: item.id }] },
