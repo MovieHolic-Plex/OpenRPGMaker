@@ -29,7 +29,12 @@ describe("battle style preparation in the exported player", () => {
       const warmBytes = sum(current.phases.warm, "bytes");
       const mountBytes = sum(current.phases.mount, "bytes");
       expect(sum(current.phases.warm, "decoded")).toBeGreaterThan(0);
-      expect(mountBytes).toBeLessThan(Math.max(4_096, warmBytes * 0.1));
+      // The bench's rows are not printed by this test, so a failure only showed two numbers. Name what the
+      // mount phase downloaded (and what warm requested) so the gap can be traced from the CI log alone.
+      const top = (entries: any[]): string => [...entries].sort((a, b) => (b.bytes ?? 0) - (a.bytes ?? 0)).slice(0, 12)
+        .map((entry) => `${entry.bytes ?? 0}B ${String(entry.url).replace(/^https?:\/\/[^/]+/, "")}`).join("; ");
+      expect(mountBytes, `mount re-downloaded: ${top(current.phases.mount)} | warm requested (${warmBytes}B): ${top(current.phases.warm)}`)
+        .toBeLessThan(Math.max(4_096, warmBytes * 0.1));
       expect([...urls(current.phases.warm), ...urls(current.phases.mount)].sort()).toEqual(urls(cold.phases.mount));
     } finally {
       rmSync(output, { force: true });
