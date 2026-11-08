@@ -154,7 +154,8 @@ describe("aiConfig 저장/로드", () => {
     const { loadAiConfig, AI_CONFIG_STORAGE_KEY } = await loadClient();
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       authMode: "chatgpt",
-      providerId: "anthropic",
+      // anthropic 은 abaa03e78f(2026-11-02) 로 등록된 제공자라 사라진 id 로 쓰지 않는다.
+      providerId: "zai",
       model: "claude-opus-4-8",
       liteModel: "claude-opus-4-8",
     }));

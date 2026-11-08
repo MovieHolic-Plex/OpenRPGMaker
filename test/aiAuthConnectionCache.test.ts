@@ -69,6 +69,15 @@ async function settleNextFetch(status: ChatGptAuthStatus): Promise<void> {
   await request?.promise;
 }
 
+/**
+ * 패널은 선택 제공자 조회 뒤에 비선택 카드마다 상태 필 조회를 하나씩 낸다. abaa03e78f(2026-11-02) 로 제공자가
+ * 17종이 되어 그 조회가 16건이다 — 공유 캐시 re-warm 보다 먼저 줄을 서므로 정확히 그 수만큼 먼저 비운다.
+ */
+async function settleCardPillFetches(status: ChatGptAuthStatus): Promise<void> {
+  const { OH_MY_PI_PROVIDERS } = await import("@/ai/ohMyPiProviders");
+  for (let i = 0; i < OH_MY_PI_PROVIDERS.length - 1; i += 1) await settleNextFetch(status);
+}
+
 async function renderAuthPanel(): Promise<{ root: FakeElement; dispose: () => void }> {
   const { defaultAiConfig } = await import("@/ai/llmClient");
   const { renderAiAuthSettings } = await import("@/editor/panels/aiAuthSettings");
@@ -92,6 +101,7 @@ describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => 
 
     const { root, dispose } = await renderAuthPanel();
     await settleNextFetch({ connected: false }); // panel initial status
+    await settleCardPillFetches({ connected: false }); // 비선택 제공자 카드 필 조회
     await settleNextFetch({ connected: false }); // applyStatus shared-cache re-warm
     expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("disconnected");
 
@@ -124,7 +134,7 @@ describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => 
 
     const { dispose } = await renderAuthPanel();
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // panel status
-    await settleNextFetch({ connected: false }); // 비선택 제공자 카드 필 조회
+    await settleCardPillFetches({ connected: false }); // 비선택 제공자 카드 필 조회
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // reset generation re-warm
     expect(getAiConnectionStatus().kind).toBe("ready");
 

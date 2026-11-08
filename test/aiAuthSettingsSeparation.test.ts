@@ -112,13 +112,15 @@ describe("연결 방식은 제공자 카드다", () => {
     dispose();
   });
 
-  it("제공자 목록은 두 구독 제공자 그대로다", async () => {
-    // 예전 계약은 "Antigravity 하나뿐, select 는 비활성" 이었다. Codex 가 1급 선택지가 됐으므로
-    // 목록은 둘이다. select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
+  it("제공자 목록은 레지스트리 전체이고 앞의 둘은 Google·ChatGPT 다", async () => {
+    // 예전 계약은 "Antigravity 하나뿐", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
+    // select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
+    const { providers } = await loadDeps();
     const { root, dispose } = await render();
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
-    expect(optionValues(select)).toEqual(["google-antigravity", "openai-codex"]);
+    expect(optionValues(select)).toEqual(providers.OH_MY_PI_PROVIDERS.map((provider) => provider.id));
+    expect(optionValues(select).slice(0, 2)).toEqual(["google-antigravity", "openai-codex"]);
     expect(select?.disabled).toBe(false);
     // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
     expect(select?.getAttribute("hidden")).toBe("");
@@ -158,11 +160,12 @@ describe("API 키 입력칸은 어느 제공자에도 없다", () => {
     dispose();
   });
 
-  it("두 제공자 모두 'API 키가 필요 없다'고 안내한다", async () => {
+  it("두 제공자 모두 계정 로그인으로 안내한다 (키 입력 없음)", async () => {
+    // abaa03e78f(2026-11-02) 가 안내 문장을 「<계정> 계정으로 로그인」 한 줄로 줄였다. 키 입력칸이 없다는 사실은 위 DOM 부재 단언이 고정한다.
     for (const providerId of ["google-antigravity", "openai-codex"]) {
       const { root, dispose } = await render(providerId);
       expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "", providerId)
-        .toContain("API 키는 필요 없어요");
+        .toContain("계정으로 로그인");
       dispose();
     }
   });
@@ -688,7 +691,7 @@ describe("OAuth 빠른 선택", () => {
     dispose();
   });
 
-  it("화살표가 두 카드 사이를 순환한다", async () => {
+  it("화살표가 카드 사이를 순환한다 (앞의 둘 사이 이동 + 끝에서 처음으로)", async () => {
     const { root, dispose } = await render();
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
@@ -698,9 +701,17 @@ describe("OAuth 빠른 선택", () => {
     expect(codex?.getAttribute("tabindex")).toBe("0");
     expect(gemini?.getAttribute("aria-checked")).toBe("false");
 
-    findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
+    // 카드가 17장이 된 뒤(abaa03e78f)로는 둘째에서 ArrowDown 이 셋째로 간다 — 되돌아오기는 ArrowUp 으로 본다.
+    findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowUp"));
     expect(gemini?.getAttribute("aria-checked")).toBe("true");
     expect(gemini?.getAttribute("tabindex")).toBe("0");
+
+    // 첫 카드에서 ArrowUp 은 마지막 카드로 감싼다.
+    const { providers } = await loadDeps();
+    const last = providers.OH_MY_PI_PROVIDERS.at(-1)!.id;
+    findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowUp"));
+    expect(findByTestId(root, `ai-auth-quick-${last}`)?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("aria-checked")).toBe("false");
     dispose();
   });
 
@@ -724,11 +735,16 @@ describe("OAuth 빠른 선택", () => {
   it("오래된 제공자 상태 응답이 새 선택의 상태·저장·연결 해제 크롬을 덮어쓰지 않는다 (결함 5)", async () => {
     let resolveA!: (value: unknown) => void;
     let resolveB!: (value: unknown) => void;
-    fetchChatGptAuthStatus
-      // 호출 순서: (1) 선택 제공자 mount 조회 (2) 비선택 카드 필 조회 (3) 카드 클릭 후 재조회.
-      .mockImplementationOnce(() => new Promise((resolve) => { resolveA = resolve; }))
-      .mockImplementationOnce(() => new Promise(() => undefined))
-      .mockImplementationOnce(() => new Promise((resolve) => { resolveB = resolve; }));
+    const { providers } = await loadDeps();
+    // 호출 순서: (1) 선택 제공자 mount 조회 (2..N) 비선택 카드 필 조회(레지스트리 N-1장, abaa03e78f 이후 16장) (N+1) 카드 클릭 후 재조회.
+    const mountCalls = providers.OH_MY_PI_PROVIDERS.length;
+    let statusCalls = 0;
+    fetchChatGptAuthStatus.mockImplementation(() => {
+      statusCalls += 1;
+      if (statusCalls === 1) return new Promise((resolve) => { resolveA = resolve; });
+      if (statusCalls <= mountCalls) return new Promise(() => undefined);
+      return new Promise((resolve) => { resolveB = resolve; });
+    });
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
 
@@ -817,7 +833,7 @@ describe("OAuth 빠른 선택", () => {
     select.dispatchEvent(new Event("change"));
 
     expect(findByTestId(root, "ai-auth-quick-openai-codex")?.getAttribute("aria-checked")).toBe("true");
-    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("ChatGPT 계정으로 로그인합니다.");
+    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("ChatGPT 계정으로 로그인");
     dispose();
   });
 
@@ -825,9 +841,9 @@ describe("OAuth 빠른 선택", () => {
     const { root, dispose } = await render();
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const text = gemini?.textContent ?? "";
-    expect(text).toContain("Google 계정으로 로그인합니다.");
+    // abaa03e78f: 카드 힌트는 「Google 계정」 한 줄, 부제는 모델 계열 「Gemini」 뿐이다(C-71 — 내부 연결 방식 이름 Antigravity 는 뺐다).
     expect(text).toContain("Google 계정");
-    expect(text).toContain("Gemini · Antigravity");
+    expect(text).toContain("Gemini");
     expect(text.toLowerCase()).not.toMatch(/subscription|구독|cli\b/);
     expect(text).not.toMatch(/Gemini\s+CLI/iu);
     dispose();
@@ -848,7 +864,7 @@ describe("OAuth 빠른 선택", () => {
     expect(googleCard).toContain("Google 계정");
     expect(codexCard).toContain("ChatGPT 계정");
     expect(findByTestId(root, "ai-auth-card-sub-openai-codex")?.textContent).toBe("Codex");
-    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("Google 계정으로 로그인합니다.");
+    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("Google 계정으로 로그인");
     // 옛 이름은 어디에도 제목으로 남지 않는다(보조 줄의 제품명만 허용).
     for (const text of [googleCard, codexCard, findByTestId(root, "ai-auth-provider-help")?.textContent ?? ""]) {
       expect(text).not.toMatch(/Google Gemini|Google Antigravity|OpenAI Codex/u);
