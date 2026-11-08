@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import {
@@ -49,6 +50,8 @@ describe("runtime move route commands", () => {
     });
 
     registerPageMoveRoutes(scene);
+    // 배너는 이름이 있는 음원만 띄운다(리소스 id 는 플레이어에게 보이지 않는다).
+    store.getCurrent().resourceProfiles.push({ kind: "sound", assetId: "se_route_chime", name: "경로 종소리" });
     const sprite = mockSprite();
     const overlays: Record<string, string> = {};
     const markerUpdates: string[] = [];
@@ -90,7 +93,7 @@ describe("runtime move route commands", () => {
     expect(mover.opacity).toBe(255);
     expect(sprite.alpha).toBe(1);
     expect(sprite.texture.key).toBe("tex_easyrpg_charset_people1");
-    expect(overlays["audio-indicator"]).toBe("se_route_chime");
+    expect(overlays["audio-indicator"]).toBe("경로 종소리");
     expect(markerUpdates.length).toBeGreaterThan(0);
   });
 

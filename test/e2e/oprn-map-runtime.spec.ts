@@ -86,7 +86,7 @@ function runtimeProject(): Project {
       },
       uploaded: {},
     },
-    resourceProfiles: [],
+    resourceProfiles: [{ kind: "music", assetId: "bgm_1", name: "지도 둘의 곡" }],
     tilesets: {
       tiles_default: {
         id: "tiles_default",
@@ -336,7 +336,7 @@ test("map runtime schedules events without mutating authoring project data", asy
 
   await tapKey(page, "Space");
   await expect(page.getByTestId("picture-overlay")).toContainText("pic_1");
-  await expect(page.getByTestId("audio-indicator")).toContainText("bgm_1");
+  await expect(page.getByTestId("audio-indicator")).toContainText("지도 둘의 곡");
   await expect(page.getByTestId("dialogue-box")).toContainText("map two hook");
   await page.screenshot({ path: testInfo.outputPath("map-runtime.png"), fullPage: true });
 
