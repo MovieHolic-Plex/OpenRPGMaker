@@ -53,10 +53,24 @@
 ## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
-- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 `fast` 체크가 초록이어야 `--match-head-commit` 으로 머지한다.
+- **잡이 둘이다 (2026-11-08):** `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크:app·parity·앱 빌드)와
+  `fast-static`(jp_city 핀·타입체크:electron-store·배럴·호스티드 계약·런타임 에셋·CSS 래칫·openwiki 인덱스).
+  둘은 서로를 기다리지 않고 다른 러너에서 동시에 돈다. 왜: 성공 10판 실측에서 단계 합(중앙 440초)과
+  벽시계(중앙 448초)가 거의 같았다 — 전부 직렬이었고, 가장 긴 사슬은 parity(200초)+앱 빌드였다.
+  정적 검사를 떼면 임계 경로가 약 338초가 된다.
+- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 **`fast` 와 `fast-static` 이 모두**
+  초록이어야 `--match-head-commit` 으로 머지한다. `fast` 이름은 브랜치 보호가 보는 이름이라 그대로 둔다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
 - 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
+- **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
+  «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의
+  503·504 로 죽었다(PR 코드와 무관). ci-fast·desktop-release·windows-worker-smoke 가 같은 판을 쓴다 —
+  ci-fast 가 «릴리스와 같은 컴파일러»를 검증한다는 전제가 그것이다. 올릴 때는 `BUN_VERSION` 을 세 파일에서 같이 고친다.
+- **CSS 래칫 실패는 대개 PR 자신의 CSS 변경 + 기준선 미갱신이다** (2026-11-08: 14건 중 12건이 css-winners,
+  1건 surfaces, 1건 hex). 게이트는 결정적이다(깨끗한 origin/main 에서 두 번 돌려 출력 md5 동일).
+  그래서 `verify-gates.mjs --only css` 는 실패한 하위 게이트마다 그 기준선을 다시 뜨는 **정확한 한 줄**을
+  `::error::` 어노테이션으로 찍는다. `gates:css:save` 는 budget 만 저장하므로 그 이름만 보고 믿지 마라.
 
 ## 그림 블라인드 검수의 Argon 은 `scripts/qa/argon-vqa.py` 로 (2026-10-25)
 

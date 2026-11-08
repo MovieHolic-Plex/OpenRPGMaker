@@ -135,14 +135,29 @@ jobs:
           cache: npm
 
       # 호스티드 러너에는 bun 이 없다. AI 워커(oh-my-pi-worker)를 이 단계에서 컴파일한다.
+      #
+      # 설치를 고정판 npm 패키지로 바꾼 이유 (2026-11-08): 옛 명령 `curl -fsSL https://bun.sh/install | bash`
+      # 는 «latest» 를 GitHub 릴리스에서 받고 재시도가 없다 — ci-fast 에서 18/100 판이
+      # `releases/latest/…/bun-linux-x64.zip` 의 503·504 로 죽었다. 판을 고정해야 ci-fast 가
+      # 검증하는 컴파일러와 릴리스가 실제로 쓰는 컴파일러가 같아진다(그 동일성이 이 게이트의 존재 이유다).
       - name: bun
         if: steps.preflight.outputs.needed == 'true'
+        env:
+          BUN_VERSION: '1.4.2'
         run: |
           sudo apt-get update
           sudo apt-get install -y p7zip-full
-          curl -fsSL https://bun.sh/install | bash
-          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
-          "$HOME/.bun/bin/bun" --version
+          for attempt in 1 2 3; do
+            if timeout 180 npm install -g "bun@${BUN_VERSION}"; then break; fi
+            if [ "$attempt" = 3 ]; then echo "::error::bun@${BUN_VERSION} 설치가 3회 실패했다."; exit 1; fi
+            echo "::warning::bun@${BUN_VERSION} 설치 실패 (시도 ${attempt}/3) — $((attempt * 10))초 뒤 재시도한다."
+            sleep $((attempt * 10))
+          done
+          bun --version
+          if [ "$(bun --version)" != "${BUN_VERSION}" ]; then
+            echo "::error::bun 이 ${BUN_VERSION} 이 아니다: $(bun --version)"
+            exit 1
+          fi
 
       # 체크아웃은 source_ref(기본: 릴리스 태그)다. 빌드 절차는 이 파일에 둔다 — 태그 쪽
       # 스크립트가 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.

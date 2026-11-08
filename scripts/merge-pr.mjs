@@ -19,7 +19,11 @@
 // 이 스크립트는 테스트를 돌리지 않는다. GitHub API 만 읽는다.
 import { execFileSync } from "node:child_process";
 
-const REQUIRED_CHECK = "fast";
+// 머지 조건은 ci-fast 워크플로의 **잡 이름들**이다 (2026-11-08).
+// `fast` 는 저장소 브랜치 보호에도 등록된 이름이라 그대로 두고, 2026-11-08 에 정적 검사를
+// `fast-static` 으로 떼어 내 두 잡을 병렬로 돌린다. 둘 다 초록이어야 머지한다 —
+// 예전과 같은 게이트를, 더 짧은 임계 경로로 지키기 위해서다(옛 구현은 앞의 `fast` 만 봤다).
+const REQUIRED_CHECKS = ["fast", "fast-static"];
 const POLL_MS = 20_000;
 
 function usage(message) {
@@ -59,7 +63,8 @@ function prState(pr) {
 }
 
 function fastCheckRuns(repo, sha) {
-  const raw = gh(["api", `repos/${repo}/commits/${sha}/check-runs?per_page=100`, "-q", `[.check_runs[] | select(.name == "${REQUIRED_CHECK}")]`]);
+  const names = REQUIRED_CHECKS.map((n) => `"${n}"`).join(",");
+  const raw = gh(["api", `repos/${repo}/commits/${sha}/check-runs?per_page=100`, "-q", `[.check_runs[] | select(.name as $n | [${names}] | index($n))]`]);
   return JSON.parse(raw || "[]");
 }
 
@@ -87,16 +92,28 @@ async function main() {
     }
     const sha = state.headRefOid;
     const runs = fastCheckRuns(repo, sha);
-    // 같은 sha 에 push·pull_request 두 판이 있을 수 있다. 가장 최근 것을 본다.
-    runs.sort((a, b) => String(b.started_at ?? "").localeCompare(String(a.started_at ?? "")));
-    const run = runs[0];
+    // 같은 sha 에 push·pull_request 두 판이 있을 수 있다. 체크 이름마다 가장 최근 것만 본다.
+    const latest = new Map();
+    for (const run of runs.sort((a, b) => String(a.started_at ?? "").localeCompare(String(b.started_at ?? "")))) {
+      latest.set(run.name, run);
+    }
+    const missing = REQUIRED_CHECKS.filter((name) => !latest.has(name));
+    const pending = [...latest.values()].filter((run) => run.status !== "completed");
+    const failed = [...latest.values()].filter((run) => run.status === "completed" && run.conclusion !== "success");
 
-    if (!run) {
-      note(`${sha.slice(0, 10)} 에 ci-fast 체크가 아직 없다. 기다린다.`);
-    } else if (run.status !== "completed") {
-      note(`${sha.slice(0, 10)} ci-fast ${run.status} — 기다린다. ${run.html_url}`);
-    } else if (run.conclusion === "success") {
-      note(`${sha.slice(0, 10)} ci-fast 초록. 머지한다.`);
+    if (missing.length) {
+      note(`${sha.slice(0, 10)} 에 ci-fast 체크가 아직 없다 (${missing.join(", ")}). 기다린다.`);
+    } else if (pending.length) {
+      note(`${sha.slice(0, 10)} ci-fast ${pending.map((r) => `${r.name}:${r.status}`).join(" ")} — 기다린다. ${pending[0].html_url}`);
+    } else if (failed.length) {
+      process.stderr.write(
+        `merge-pr: ${sha.slice(0, 10)} ci-fast ${failed.map((r) => `${r.name}=${r.conclusion}`).join(" ")}. 머지하지 않는다.\n` +
+          failed.map((r) => `  로그: gh run view --job ${r.id} --log-failed   (${r.html_url})`).join("\n") +
+          "\n  고쳐서 푸시한 뒤 이 명령을 다시 부른다.\n",
+      );
+      process.exit(1);
+    } else {
+      note(`${sha.slice(0, 10)} ci-fast 초록 (${REQUIRED_CHECKS.join(", ")}). 머지한다.`);
       const args = ["pr", "merge", options.pr, options.method, "--match-head-commit", sha];
       if (options.deleteBranch) args.push("--delete-branch");
       try {
@@ -113,13 +130,6 @@ async function main() {
       }
       process.stdout.write(`merge-pr #${options.pr}: 머지됨 (${sha.slice(0, 10)}).\n`);
       return;
-    } else {
-      process.stderr.write(
-        `merge-pr: ${sha.slice(0, 10)} ci-fast ${run.conclusion}. 머지하지 않는다.\n` +
-          `  로그: gh run view --job ${run.id} --log-failed   (${run.html_url})\n` +
-          "  고쳐서 푸시한 뒤 이 명령을 다시 부른다.\n",
-      );
-      process.exit(1);
     }
 
     if (Date.now() > deadline) {
