@@ -20,6 +20,9 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 const boot = vi.hoisted(() => ({ game: undefined as unknown }));
 vi.mock("@/app/phaserRuntime", () => ({ ensurePhaser: async () => ({
   AUTO: 0, Scale: { NONE: 0 },
+  // createPlayGame 이 부팅 전에 ImageFile.prototype·WebGLRenderer.prototype 을 패치한다(80b1e1aa24) — 가짜 Phaser 에도 그 자리를 둔다.
+  Loader: { FILE_PROCESSING: 5, FileTypes: { ImageFile: function ImageFile() {} } },
+  Renderer: { WebGL: { WebGLRenderer: function WebGLRenderer() {} } },
   Game: function (config: { callbacks: { preBoot(game: unknown): void } }) {
     config.callbacks.preBoot(boot.game); return boot.game;
   },
