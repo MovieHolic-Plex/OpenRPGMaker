@@ -7,7 +7,19 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { installMemoryProjectSession, type MemoryProjectSession } from "./support/projectSession";
 
+// createBlankProject() is large and the CI runner is shared: single tests here measured >15s (vitest's default).
+vi.setConfig({ testTimeout: 120_000 });
+
 let session: MemoryProjectSession | null = null;
+
+type AutoSaveInternals = { autoSaveDelayMs: number; autoSaveTimer: ReturnType<typeof setTimeout> | null };
+const internals = store as unknown as AutoSaveInternals;
+const defaultAutoSaveDelayMs = internals.autoSaveDelayMs;
+function holdAutoSave(): void { internals.autoSaveDelayMs = 3_600_000; }
+function releaseAutoSave(): void {
+  internals.autoSaveDelayMs = defaultAutoSaveDelayMs;
+  if (internals.autoSaveTimer) { clearTimeout(internals.autoSaveTimer); internals.autoSaveTimer = null; }
+}
 
 function withSecondMap(project: Project): { project: Project; first: string; second: string } {
   const first = Object.keys(project.maps)[0]!;
@@ -36,7 +48,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  vi.useRealTimers();
+  releaseAutoSave();
   const { _resetEditActivityForTest } = await import("@/editor/editActivityLog");
   _resetEditActivityForTest();
   session?.dispose();
@@ -67,9 +79,10 @@ describe("external (coding agent) saves reach the open editor", () => {
   });
 
   // refreshFromHost 는 저장이 날아가는 중이면 false 로 물러난다. 빈 프로젝트가 커서 병합 차이 계산이 느린 러너에서는 그 사이
-  // 1.5초 자동저장 타이머가 먼저 울려 저장이 시작되므로, 사람 편집이 있는 두 경우는 타이머를 멈춘 채 병합 계약만 본다.
+  // 1.5초 자동저장 타이머가 먼저 울려 저장이 시작되므로, 사람 편집이 있는 두 경우는 자동저장 지연을 늘려 병합 계약만 본다
+  // (타이머 전체를 가짜로 바꾸면 병합이 쓰는 양보 타이머까지 멈춘다).
   it("unsaved edits on another map survive and stay dirty", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    holdAutoSave();
     const { first, second } = mapIds();
     store.update((draft) => { draft.maps[first]!.name = "저장 안 된 사람 편집"; });
     await externalSave((draft) => { draft.maps[second]!.name = "에이전트 편집"; });
@@ -83,7 +96,7 @@ describe("external (coding agent) saves reach the open editor", () => {
   });
 
   it("the same map edited by both keeps the unsaved human edit and names it", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    holdAutoSave();
     const { first } = mapIds();
     store.update((draft) => { draft.maps[first]!.name = "사람 편집"; });
     await externalSave((draft) => { draft.maps[first]!.name = "에이전트 편집"; });
