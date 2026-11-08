@@ -12,7 +12,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
-import { layerSwitcherKey, makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
+import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
@@ -50,7 +50,8 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
   function clickTool(testid: string): void {
     renderTilePalette(container);
     // 레이어 줄(높이·바닥·상위·이벤트)은 머리줄(menu.ts)이 소유한다 — 같은 부품을 붙여 누른다.
-    if (testid.startsWith("layer-")) container.append(makeLeftLayerSwitcher(layerSwitcherKey(editorState.get())));
+    // bce1173bc0: 부품은 [지형 붓 단추, 레이어 radiogroup] 둘을 돌려준다 — 머리줄(menu.ts)처럼 둘 다 붙인다.
+    if (testid.startsWith("layer-")) container.append(...makeLeftLayerSwitcher(editorState.get()));
     const button = container.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
     if (!button) throw new Error(`도구막대에 testid 없음: ${testid}`);
     button.click();

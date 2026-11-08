@@ -207,8 +207,15 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
 
     const ids = commandIds(openMenu(topbar, "menu-project"));
     expect(ids).toContain("menu-project-samples");
-    expect(ids).toContain("menu-project-export");
-    expect(ids).toContain("menu-project-export-web");
+    // bce1173bc0: 내보내기 항목은 「내보내기」 하위 메뉴 하나에 모였다 — 최상위에는 그 입구만 있다.
+    expect(ids).toContain("menu-project-export-group");
+    expect(ids).not.toContain("menu-project-export");
+    expect(ids).not.toContain("menu-project-export-web");
+    const body = () => fake(document.body as unknown as HTMLElement);
+    findByTestId(body(), "menu-project-export-group")?.click();
+    const exportIds = commandIds(findByTestId(body(), "menu-popup-project-export"));
+    expect(exportIds).toContain("menu-project-export");
+    expect(exportIds).toContain("menu-project-export-web");
     for (const demo of [
       "menu-project-sample-adventure",
       "menu-project-sky-stair",
