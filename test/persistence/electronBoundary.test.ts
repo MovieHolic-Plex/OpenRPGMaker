@@ -28,6 +28,8 @@ const ELECTRON_TO_SRC_ALLOWLIST = [
   "src/assetStore/gamePublish",
   "src/assetStore/bridgeTypes",
   "src/concepts/format",
+  // 게임 짓기 규칙 한 곳(#4372, 02ec82b1e8) — import 가 하나도 없는 순수 모듈이고 electron/main/agentHost.ts 가 에이전트 모드 스킬로 쓴다.
+  "src/ai/agentRules",
   // 번들 타일셋 차이 저장(#3774) — electron/local-store/store.ts 가 차이 보기 표지(BUNDLED_TILESET_DIFF)를 읽는다.
   "src/project/bundledTilesetDiff",
 ] as const;
