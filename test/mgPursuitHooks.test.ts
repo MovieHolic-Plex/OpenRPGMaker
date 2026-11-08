@@ -1,5 +1,6 @@
 // 명작 공백 #28(2026-09-27) — 추격 포기·문 따라옴 훅(스위치). Ao Oni·Corpse Party 의 「따돌렸다」「문이 열린다」 연출.
 import { describe, expect, it } from "vitest";
+import { CHASE_LEGACY_SEARCH_MIN_MS } from "@/project/chaseTempo";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { deserialize, serialize } from "@/project/io";
@@ -39,7 +40,8 @@ describe("#28 추격 훅", () => {
     toggleHiding(world, view("closet"));
     pursuitTarget(world, view("monster"), mover, 600);
     expect(world.session.switches.sw_lost ?? false).toBe(false);
-    expect(pursuitTarget(world, view("monster"), mover, 600)).toBeNull();
+    // 박자를 적지 않은 추격자의 수색은 CHASE_LEGACY_SEARCH_MIN_MS 아래로 내려가지 않는다(4127a63455) — 저작 searchMs 1000 보다 길다.
+    expect(pursuitTarget(world, view("monster"), mover, CHASE_LEGACY_SEARCH_MIN_MS)).toBeNull();
     expect(world.session.switches.sw_lost).toBe(true);
     expect(world.session.horror!.pursuits.monster!.active).toBe(false);
     // 숨기를 풀고 다시 보이면 끈다.
