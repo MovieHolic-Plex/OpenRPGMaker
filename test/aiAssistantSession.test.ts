@@ -492,7 +492,7 @@ describe("자율 실행 드라이버", () => {
     statuses = statusTexts(session);
     expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS * 2);
     expect(statuses.filter((t) => t.includes("agent_run_budget_exhausted")).length).toBe(2);
-  }, 600000);
+  }, 1_200_000); // 48 단계 × 2 라운드 — 형제 (b)(48 단계)가 ci 에서 286초라 96 단계는 600초 상한을 넘는다(42446009926: 605s 에서 시간 초과).
 });
 
 // ── 마일스톤 자동 적용(todo 4: 완료 항목 → 제안 스냅샷 경로로 자동 적용) ─────────────
@@ -1007,7 +1007,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
       .toEqual(["result_review", "milestone_applied"]);
     expect(store.getCurrent().meta?.title).toBe("t2");
-  }, 60000);
+  }, 180_000); // ci 실측: 같은 묶음의 통과 시험이 50~57초 — 60초 상한은 운에 달렸다(42446009926).
 
   it("(a-2) final 레이어에 play_walkthrough 가 없으면 verify_quest×전체 questId 폴백이 돈다", async () => {
     const { AssistantSession, createBlankProject } = await load();
@@ -1095,7 +1095,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(result.review?.status).toBe("approved");
     expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
       .toEqual(["result_review", "milestone_applied"]);
-  }, 60000);
+  }, 180_000); // ci 실측: 같은 묶음의 통과 시험이 50~57초 — 60초 상한은 운에 달렸다(42446009926).
 
   it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
     const { AssistantSession, createBlankProject } = await load();
@@ -1155,7 +1155,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     // 저작은 정상 반영되고 턴은 스크립트대로 최종화된다.
     expect(store.getCurrent().meta?.title).toBe("t1");
     expect(result.stoppedReason).toBe("final");
-  }, 60000);
+  }, 180_000); // ci 실측: 같은 묶음의 통과 시험이 50~57초 — 60초 상한은 운에 달렸다(42446009926).
 
   /**
    * 3항목 계획을 2턴(자동 계속)에 걸쳐 완료하는 스크립트 — run-end 증명 테스트 공용.

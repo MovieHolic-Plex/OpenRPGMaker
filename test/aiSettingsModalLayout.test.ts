@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -48,6 +48,10 @@ const REQUIRED_TEST_IDS = [
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
+
+// aiSettingsModal 은 import 그래프가 무겁다 — 첫 시험의 동적 import 가 ci(워커 1개)에서 45초 걸려 15초 상한을 넘겼고, 나머지 일곱 시험은 각각 30~80ms 였다
+// (ci-vitest-files 42446009926). 모듈 로드를 hookTimeout(90초) 쪽으로 옮겨 시험 시간에서 뺀다.
+beforeAll(async () => { await import("@/editor/panels/aiSettingsModal"); });
 
 beforeEach(() => {
   vi.clearAllMocks();
