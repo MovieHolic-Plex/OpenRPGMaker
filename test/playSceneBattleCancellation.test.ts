@@ -67,9 +67,8 @@ describe("playBattle cancellation boundary", () => {
     expect(session.variables.second).toBeUndefined();
     key("ArrowDown"); key("z");
     await vi.advanceTimersByTimeAsync(30_000);
-    expect(host.querySelector("[data-testid='battle-result-panel']")?.getAttribute("data-battle-result")).toBe("escape");
-    key("Enter");
-    await vi.advanceTimersByTimeAsync(30_000);
+    // 전투 이벤트의 「전투 중단」(m2-107-force-escape)이 끝낸 전투는 「후퇴」 결과 상자 없이 바로 필드로 돌아간다(574cd06132, endedByEvent).
+    expect(host.querySelector("[data-testid='battle-result-panel']")).toBeNull();
     expect(await pending).toBe("escape");
     expect(session.variables.second).toBe(1);
     expect(session.variables.first).toBeUndefined();
@@ -95,9 +94,10 @@ describe("playBattle cancellation boundary", () => {
     const pending = playBattle(scene, step, 0);
     await openChoice(host);
     key("ArrowDown"); key("Enter");
-    await vi.advanceTimersByTimeAsync(30_000);
-    expect(host.querySelector("[data-testid='battle-result-panel']")).not.toBeNull();
-    key("Enter");
+    // 전투 이벤트가 끝낸 전투는 결과 상자가 없다(574cd06132) — 결과는 마이크로태스크로 바로 호스트에 넘어간다.
+    // 그 넘김을 한 번 흘려보낸 뒤(= 결과 수락) 호스트를 걷어도 보상·상태 기록 전에 취소돼야 한다.
+    expect(host.querySelector("[data-testid='battle-result-panel']")).toBeNull();
+    await Promise.resolve();
     destroyBattleSceneOnHost(host);
     await vi.advanceTimersByTimeAsync(30_000);
     expect(await pending).toBeNull();
