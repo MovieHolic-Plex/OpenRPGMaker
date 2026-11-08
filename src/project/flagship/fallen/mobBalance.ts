@@ -516,6 +516,7 @@ function battleTroopIds(event: GameEvent): string[] {
 
 export function applyFallenMobBalance(project: Project, exec: Exec): void {
   for (const w of applyFallenMobStats(project)) console.warn(`[fallen-star mob] ${w}`);
+  for (const w of applyFallenTrashWeakness(project)) console.warn(`[fallen-star mob] ${w}`);
   for (const split of FS_TROOP_SPLITS) {
     let changed = 0;
     const swap = (cs: readonly Command[] | undefined): void => {
@@ -552,4 +553,79 @@ export function applyFallenMobBalance(project: Project, exec: Exec): void {
       project.maps[p.mapId]!.events.push(original);
     }
   }
+}
+
+
+// ── 잡몹 약점 보정(2026-11-08, autopilot-usability) ─────────────────────
+/**
+ * 오너 결정(2026-11-08 #dev): 「잡몹도 약점 배율을 주고 HP 는 조금만 올린다」.
+ * 근거: 이야기 순서 50부대를 「특성을 모르는 / 아는」 두 자동 전투 정책으로 200판씩 잰 표에서 잡몹 41부대가 모두 밴드 밖(모름 >40% 또는 앎 >70%)이었다
+ * (http://mdc-server:18301/autopilot-usability.html). 지식 의존 부대(도깨비불·재의 회수자·달빛의 용)·보스·결투·우두머리는 넣지 않는다.
+ * 규칙: 아래 무리의 적 중 **다른 무리에 나오지 않는 적만**(같은 적을 보스·우두머리 무리와 나눠 쓰면 건드리지 않는다) 약점 B(×1.5)를 A(×2)로,
+ * 최대 HP 를 ×1.15. 전역 속성 배율(elements.damageMultipliers)은 바꾸지 않는다 — 보스·지식 의존 부대까지 움직이므로(ultrabrain 판정).
+ */
+export const FS_WEAKNESS_TRASH_TROOPS: readonly string[] = [
+  "troop_fs_wolves",
+  "troop_fs_spiders",
+  "troop_fs_edge_boar",
+  "troop_fs_edge_hornets",
+  "troop_fs_stream_crabs",
+  "troop_fs_stream_eels",
+  "troop_fs_thicket_moths",
+  "troop_fs_glade_poachers",
+  "troop_fs_inq_zeal",
+  "troop_fs_inq_shieldwall",
+  "troop_fs_inq_bolts",
+  "troop_fs_inq_false_prisoner",
+  "troop_fs_inq_phalanx",
+  "troop_fs_inq_vigil",
+  "troop_fs_inq_kennel",
+  "troop_fs_inq_penance",
+  "troop_fs_inq_patrol",
+  "troop_fs_inq_ledge",
+  "troop_fs_inq_alarm",
+  "troop_fs2_curfew_patrol",
+  "troop_fs2_ash_wisps",
+  "troop_fs2_ash_wisps_pair",
+  "troop_fs2_ash_crows",
+  "troop_fs2_cinder_golem",
+  "troop_fs2_starved_dogs",
+  "troop_fs2_ash_snakes",
+  "troop_fs2_fort_dogs",
+  "troop_fs2_fort_knights",
+  "troop_fs2_fort_crossbows",
+  "troop_fs2_fort_dogs_out",
+  "troop_fs2_fort_knights_out",
+  "troop_fs2_frost_wolves",
+  "troop_fs2_frost_bats",
+  "troop_fs2_frost_mixed",
+  "troop_fs2_tower_sentinel",
+  "troop_fs2_tower_moths",
+  "troop_fs2_tower_bats",
+  "troop_fs2_tower_spiders",
+  "troop_fs2_tower_snakes",
+  "troop_fs2_frost_wolves_lake",
+  "troop_fs2_frost_bats_lake",
+];
+export const FS_WEAKNESS_TRASH_HP = 1.15;
+
+export function applyFallenTrashWeakness(project: Project): string[] {
+  const db = project.database;
+  const trash = new Set(FS_WEAKNESS_TRASH_TROOPS);
+  const warnings: string[] = [];
+  const shared = new Set<string>();
+  for (const troop of db.troops) if (!trash.has(troop.id)) for (const id of troop.enemyIds) shared.add(id);
+  const targets = new Set<string>();
+  for (const id of FS_WEAKNESS_TRASH_TROOPS) {
+    const troop = db.troops.find((t) => t.id === id);
+    if (!troop) { warnings.push(`잡몹 약점 보정: 무리 없음 ${id}`); continue; }
+    for (const enemyId of troop.enemyIds) if (!shared.has(enemyId)) targets.add(enemyId);
+  }
+  for (const enemyId of targets) {
+    const enemy = db.enemies.find((e) => e.id === enemyId);
+    if (!enemy) { warnings.push(`잡몹 약점 보정: 적 없음 ${enemyId}`); continue; }
+    for (const [elementId, grade] of Object.entries(enemy.elementRates ?? {})) if (grade === "B") enemy.elementRates[elementId] = "A";
+    enemy.stats = { ...enemy.stats, maxHp: Math.round(enemy.stats.maxHp * FS_WEAKNESS_TRASH_HP) };
+  }
+  return warnings;
 }
