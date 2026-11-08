@@ -88,7 +88,9 @@ describe("place_npc graphic 표기 견고성(#12)", () => {
   });
   it("칩 id 가 문자열이 아니면 인자 오류로 알린다(TypeError 가 아니다)", () => {
     const ctx = ctxOf(createBlankProject());
-    const result = runTool(ctx, "place_npc", { mapId: ctx.project.startMapId, name: "청년", x: 6, y: 6, graphic: { characterIndex: 1 } }, { dryRun: false });
+    // characterIndex 만 단 지정은 빈 지정으로 걷혀 투명 NPC 가 되므로(e0558bdafc compactGraphicSpec) 실제 비문자열 칩 id 로 시험한다.
+    const args = { mapId: ctx.project.startMapId, name: "청년", x: 6, y: 6, graphic: { textureKey: 123, characterIndex: 1 } };
+    const result = runTool(ctx, "place_npc", args as never, { dryRun: false });
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result.issues)).not.toContain("trim");
   });
