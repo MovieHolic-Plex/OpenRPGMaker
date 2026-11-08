@@ -145,6 +145,7 @@ with open(OUT, "w") as f:
     f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: UploadedPixelEnemySheetMeta[\"cell\"];\n")
     f.write('  readonly grid: "3x3" | "4x4";\n')
     f.write('  readonly motion: UploadedPixelEnemySheetMeta["motion"];\n  readonly idleFrameMs: number;\n')
+    f.write("  /** 4×4 시트에서 그리지 않고 비워 둔 확장 칸(9~14). pixelEnemyFrame 이 대체 칸으로 물린다. */\n  readonly missingCells?: readonly number[];\n")
     f.write("  readonly portrait: string;\n  readonly sheet: string;\n}\n\n")
     f.write("export const FS_MONSTER_SHEETS_16: readonly FallenMonsterSheet16[] = [\n")
     for e in entries:

@@ -1,0 +1,6 @@
+[GIF] Frost wolf enemy — dash, 4 frames
+Attached is the approved sprite of this monster: pixel art upscaled 8x with nearest-neighbour (each art pixel = one 8x8 block), no smoothing, on a magenta background.
+The monster: a lean frost wolf: dark slate-blue fur, a darker navy saddle over the back, pale ice-blue crystals on the shoulders and on the tip of the tail, pale grey-blue muzzle and chest, small cyan eyes, fangs, dark navy outline.
+Make an animation of THE SAME MONSTER for a side-view turn-based RPG battle (16-bit JRPG): same character design, same proportions, same colours (do not add, shift or recolour any colour; keep every colour exactly as in the attached image in every frame), same pixel size (8x8 blocks), crisp hard edges, no anti-aliasing, no extra limbs or accessories, no blood. It faces RIGHT, same scale as the attached sprite in every frame, ground line at the same height.
+Motion: running forward to the right in a low fast gallop: body stretched long, front legs reaching forward, hind legs pushing back, ears flat, tail streaming behind.
+Make ONE animated GIF, looping, about 760x420. Flat solid magenta (#FF00FF) background in every frame. No text, no shadow, no scenery, no watermark. Output the GIF file itself.
