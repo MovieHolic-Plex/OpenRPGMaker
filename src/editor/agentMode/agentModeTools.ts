@@ -118,7 +118,8 @@ async function drawObjectNow(request: ObjectGenRequest, turn: AgentTurn | null):
   } catch (error) {
     return { text: `generate_missing_object failed — nothing was drawn: ${error instanceof Error ? error.message : String(error)}. Do not claim it was drawn; place the closest stock object and report «could not draw, used stock».`, isError: true };
   }
-  const made = `Drew 「${baked.title}」 and baked it into tileset ${baked.tilesetId} as ${baked.objectId} (${baked.columns}×${baked.rows} cells, ${baked.seconds}s).`;
+  const similar = request.similar?.length ? ` Note: similarly named stock objects exist (not a refusal): ${request.similar.map((row) => `${row.id}(${row.name})`).join(", ")}.` : "";
+  const made = `Drew 「${baked.title}」 and baked it into tileset ${baked.tilesetId} as ${baked.objectId} (${baked.columns}×${baked.rows} cells, ${baked.seconds}s).${similar}`;
   if (!request.base) return { text: `${made} Place it with stamp_tileset_object({mapId:"${request.mapId}", objectId:"${baked.objectId}", base:{x,y}}).`, isError: false };
   const placed = await callAgentModeTool("stamp_tileset_object", { mapId: request.mapId, objectId: baked.objectId, base: request.base }, turn);
   return { text: `${made}\nPlacing at (${request.base.x},${request.base.y}): ${placed.text}`, isError: false, ...(placed.changed ? { changed: placed.changed } : {}) };
