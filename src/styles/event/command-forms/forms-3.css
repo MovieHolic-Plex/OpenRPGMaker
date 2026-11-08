@@ -88,7 +88,21 @@
   background: var(--bg-raised, #FFFDF8);
   display: grid;
   gap: 12px;
+  /* 암묵 열은 「말하는 사람」 입력칸+「주인공 이름」 단추의 최소 내용 폭으로 늘어 폰 폭(390)에서 카드 밖으로 13px 잘렸다
+     (2026-11-08 autopilot-usability E10). 열을 카드 폭에 묶는다. */
+  grid-template-columns: minmax(0, 1fr);
   padding: 12px;
+}
+
+/* 「누가 누구에게」 줄의 인물 선택 칸은 인라인 스타일로 줄바꿈만 하고 줄어들지 않아, 선택지 이름이 길면 폰 폭에서 카드 밖으로 나갔다(E10). */
+.event-command-text-staging-field > label {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.event-command-text-staging-field > label > :is(select, input:not([type="checkbox"])) {
+  max-width: 100%;
+  min-width: 0;
 }
 
 .event-command-text-speaker-field,
