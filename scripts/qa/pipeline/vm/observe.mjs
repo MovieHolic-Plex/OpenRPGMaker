@@ -3,7 +3,9 @@
 // selected. The DOM text of the same moment is given as ground truth so pixel-font misreads are caught at source.
 //
 // usage: node vm/observe.mjs --frames <observe-frames.json> --run <runDir> --out <observations.jsonl> [--pool 16]
-// env:   OC_JSON=/root/vqa-sinkiru/oc.json (baseUrl, apiKey)
+// env:   OC_JSON=/root/vqa-sinkiru/oc-exempt.json (baseUrl, apiKey). This is OUR key (omo provider `oc`,
+//        sha256 prefix 0e4b4369), not the shared /root/vqa-sinkiru/oc.json that hits the daily cap. The file is mode 600;
+//        the key never reaches this log, the run directory or any error string.
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
@@ -17,11 +19,19 @@ const { values } = parseArgs({
     out: { type: "string" },
     pool: { type: "string", default: "16" },
     model: { type: "string", default: "deepseek-v4.1-flash-free" },
+    // deepseek-v4.1-flash-free allows 32k output. At 16k the reply was truncated mid-answer on most frames
+    // (measured 2026-11-07: 12 of 22 capped and unparsable), which silently dropped half the VQA track.
+    "max-tokens": { type: "string", default: "24000" },
   },
 });
-const oc = JSON.parse(fs.readFileSync(process.env.OC_JSON ?? "/root/vqa-sinkiru/oc.json", "utf8"));
+const KEY_FILE = process.env.OC_JSON ?? "/root/vqa-sinkiru/oc-exempt.json";
+const oc = JSON.parse(fs.readFileSync(KEY_FILE, "utf8"));
+const mode = fs.statSync(KEY_FILE).mode & 0o777;
+if (mode & 0o077) throw new Error(`${KEY_FILE} must not be readable by group/other (mode ${mode.toString(8)})`);
+const keyId = oc.keyId ?? "unknown";
 const log = usageLedger(path.join(values.run, "usage.jsonl"));
 const chat = ocClient({ baseUrl: oc.baseUrl, apiKey: oc.apiKey, model: values.model, effort: "max", log, stage: "observe" });
+console.log(JSON.stringify({ stage: "observe", keyFile: KEY_FILE, keyId, mode: mode.toString(8), base: oc.baseUrl }));
 const frames = JSON.parse(fs.readFileSync(values.frames, "utf8"));
 const done = new Set(fs.existsSync(values.out) ? fs.readFileSync(values.out, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l).key) : []);
 const todo = frames.filter((f) => !done.has(`${f.jobId}/${f.seq}`));
@@ -40,7 +50,10 @@ export const CHECKS = {
   C15: "캐릭터가 벽·물 위·맵 밖에 있음",
   C16: "컷신 구도(초상이 인물을 가림, 대사창이 주인공을 가림)",
 };
-const SYS = "너는 게임 화면 QA 관찰자다. 이미지와 함께 주어진 'DOM 글자'는 그 순간 화면에 실제로 출력된 글자다. 화면의 글자를 인용할 때는 반드시 DOM 글자와 대조하고, DOM 글자와 다르게 읽었다면 그것은 너의 오독이니 보고하지 마라. 도트 그림체, 의도된 어두운 연출, 비활성 회색 항목, 화면 가장자리 여백은 결함이 아니다. 확실히 보이는 결함만 보고한다. 출력은 JSON 하나.";
+const SYS = "너는 게임 화면 QA 관찰자다. 이미지와 함께 주어진 'DOM 글자'는 그 순간 화면에 실제로 출력된 글자다. 화면의 글자를 인용할 때는 반드시 DOM 글자와 대조하고, DOM 글자와 다르게 읽었다면 그것은 너의 오독이니 보고하지 마라. 도트 그림체, 의도된 어두운 연출, 비활성 회색 항목, 화면 가장자리 여백은 결함이 아니다. 확실히 보이는 결함만 보고한다.\n\n**도구를 부르지 마라.** 어떤 명령도 실행하지 않고, <tool_call>·<invoke>·<function_call>·마크다운 코드블록·설명문을 쓰지 않는다. 너의 답은 JSON 객체 하나뿐이며, 그 앞뒤에 다른 글자를 붙이지 않는다.";
+// Why: deepseek-v4.1-flash-free sometimes answers with a tool-call envelope instead of the JSON, which reads as an
+// unparsable observation and silently drops that frame from the VQA track (measured 2026-11-07: 244 of 400).
+const SYS_RETRY = "출력은 JSON 객체 하나다. 도구 호출·XML 태그·코드블록·설명 금지. 첫 글자는 { 이고 마지막 글자는 } 다.";
 
 async function small(file) {
   return sharp(file).resize({ width: 960, withoutEnlargement: true }).jpeg({ quality: 76 }).toBuffer();
@@ -58,10 +71,11 @@ async function observe(f) {
     '형식: {"issues":[{"check":"C01","where":"화면 위치","desc":"무엇이 어떻게 잘못됐는지(근거)","quote":"관련 화면 글자 그대로 또는 빈칸","confidence":0.0-1.0}]} 결함이 없으면 {"issues":[]}',
   ].join("\n");
   const messages = [{ role: "system", content: SYS }, { role: "user", content: [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: `data:image/jpeg;base64,${img.toString("base64")}` } }] }];
-  let res = await chat(messages, { maxTokens: 12000 });
+  let res = await chat(messages, { maxTokens: Number(values["max-tokens"]) });
   let parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   if (res.ok && !parsed) {
-    res = await chat([...messages, { role: "user", content: "분석 없이 JSON 한 줄만." }], { maxTokens: 6000 });
+    // Retry with the hard no-tools system message: the usual failure is a tool-call envelope or prose before the JSON.
+    res = await chat([{ role: "system", content: SYS_RETRY }, ...messages.slice(1), { role: "user", content: "위 프레임을 다시 판정해 JSON 하나만 출력해." }], { maxTokens: 8000 });
     parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   }
   return { key: `${f.jobId}/${f.seq}`, ok: !!parsed, error: res.ok ? (parsed ? null : "unparsed") : res.error, issues: (parsed?.issues ?? []).filter((i) => CHECKS[i.check]).slice(0, 4) };

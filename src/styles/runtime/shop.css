@@ -693,7 +693,7 @@
 }
 /* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
    @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
-@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay, .runtime-craft-shop-overlay) {
   .runtime-shop-overlay {
     --shop-text-small: 10px;
     --shop-text-title: 14px;
@@ -1260,7 +1260,7 @@
 }
 /* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
    @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
-@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay, .runtime-craft-shop-overlay) {
   .runtime-shop-overlay.runtime-shop-preset-pixel { --shop-gap: 2px; padding: 2px; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 0.75; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto auto; }

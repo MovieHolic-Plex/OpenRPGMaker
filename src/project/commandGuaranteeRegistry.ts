@@ -171,6 +171,7 @@ export const COMMAND_GUARANTEES = {
   changeGold: guarantee("economy", { quick: true, support: troopFull }),
   changeItem: guarantee("economy", { quick: true, support: troopFull }),
   craftRecipe: guarantee("economy", { stability: "experimental", quick: true }),
+  openCraftShop: guarantee("commerce", { ...playerPause, stability: "experimental", quick: true }),
   applyItemUpgrade: guarantee("economy", { stability: "experimental", quick: true }),
   equipTool: guarantee("economy", { stability: "experimental", quick: true }),
   openChest: guarantee("commerce", {

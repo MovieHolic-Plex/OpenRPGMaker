@@ -246,6 +246,12 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 
 **게임(런타임)을 브라우저로 QA 할 때 편집기 셸을 통과하지 마라. 전용 하네스가 있다.**
 
+**출하된 데모 한 편을 넓게(맵·이벤트·상점·엔딩·전투·적대적 입력) 훑을 때는 `scripts/qa/pipeline/qa.mjs` 하나다.**
+`npm run qa:runtime` 은 시나리오 하나를 반복할 때 쓰고, 여러 맵·모든 부대를 한 번에 도는 일은 파이프라인이 한다
+(계획→플레이→결정적 검사→관찰 모델→검토→보고서, VM 미러 전용·운영 호스트 요청 0). 사용법·산출물·수정 큐 규칙은
+`scripts/qa/pipeline/README.md`. 체크포인트 레벨은 `scripts/qa/pipeline/data/story-levels.json`(이야기 순서 누적)을 쓰고,
+그 표는 `scripts/qa/runtime/fs-story-levels.mts` 로 다시 낸다 — 부대 레벨을 손으로 정하지 마라.
+
 ```bash
 npm run qa:runtime          # 반복 작업 (--project <path> --scenario <name> --headed)
 npm run qa:runtime:gate     # 게이트: 두 시나리오

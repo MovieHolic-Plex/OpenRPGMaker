@@ -87,6 +87,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
     case "craftRecipe":
       return { kind: "craftRecipe", recipeId: "" };
+    case "openCraftShop":
+      return { kind: "openCraftShop" };
     case "applyItemUpgrade":
       return { kind: "applyItemUpgrade", upgradeId: "" };
     case "equipTool":

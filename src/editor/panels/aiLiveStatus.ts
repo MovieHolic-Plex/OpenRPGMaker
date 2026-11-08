@@ -117,6 +117,8 @@ export function createAiLiveStatus(options: { readonly baseProject: Project }): 
         : liveStatusHeadline({ action: fallback, done, planned: planned.length });
     line.textContent = text;
     toggle.disabled = steps.length === 0 && planned.length === 0;
+    // 단계 없이 끝난 턴(연결 실패·시작 거부)은 「요청을 읽고 있어요」를 남기지 않는다 — 실패 안내는 대화 쪽에 있다.
+    root.hidden = finished && steps.length === 0;
   };
 
   const thumb = (step: LiveStep, which: "before" | "after"): HTMLElement => {

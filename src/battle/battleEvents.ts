@@ -1014,6 +1014,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "setTime":
       case "sleepUntilMorning":
       case "craftRecipe":
+      case "openCraftShop":
       case "applyItemUpgrade":
       case "equipTool":
       case "changeLifeSkillExp":

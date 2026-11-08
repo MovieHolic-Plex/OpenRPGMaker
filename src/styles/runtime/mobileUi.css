@@ -322,13 +322,52 @@
   transform: scale(var(--panel-unscale));
   transform-origin: 0 0;
 }
-.player-layout .play-viewport[data-window-panel] > .runtime-overlay.runtime-shop-overlay:not(.emerald-shop-overlay) {
+.player-layout .play-viewport[data-window-panel] > .runtime-overlay.runtime-shop-overlay:not(.emerald-shop-overlay):not(.runtime-craft-shop-overlay) {
   left: var(--panel-cx);
   top: var(--panel-cy);
   width: var(--panel-w);
   height: var(--panel-h);
   transform: translate(-50%, -50%) scale(var(--panel-scale));
 }
+/* 제작 창(openCraftShop)은 320 칸에 넣지 않는다 — 목록·상세 두 열이 무너져 이름이 한 글자씩 줄을 바꾨다(2026-11-07 실제 플레이어 390×844).
+   칸이 들어갈 세로 방 통째(노치 아래~메뉴 단추 줄 위, 화면 폭, playSurface panel.room)를 1배로 쓴다. 창 안 배치는 commerce.css 의
+   세로 컨테이너 질의(목록 위·상세 아래, 누를 것 44px)가 맡는다. */
+.player-layout .play-viewport[data-window-panel] > .runtime-overlay.runtime-shop-overlay.runtime-craft-shop-overlay {
+  inset: auto;
+  left: var(--panel-room-left);
+  top: var(--panel-room-top);
+  width: var(--panel-room-w);
+  /* 메뉴 단추 줄 위에서 끊으면(382×478) 아래 절반이 조작 띠로 비고 제작법이 3줄만 보였다(2026-11-08) — 화면 아래 안전 영역 위까지 쓴다.
+     만들기·나가기가 화면 아래쪽(엄지 자리)으로 내려온다. */
+  height: calc(100% - var(--panel-room-top) - var(--touch-band-bottom, 0px) - 8px);
+  transform: none;
+}
+/* 제작 창이 열린 동안은 조작 띠를 걷는다 — 창이 그 자리를 쓰고, 줄·수량·만들기·나가기는 손가락으로 바로 누른다(나가기 = 닫기).
+   실물 패드·키보드는 그대로 들어간다. */
+.player-layout .play-viewport[data-window-panel]:has(> .runtime-craft-shop-overlay) > :is(.touch-pad, .play-fullscreen-toggle) { display: none; }
+/* 도트 전투 결과 창: 무대(0.61배) 안의 전투 무대(0.75배) 안이라 폰 세로에서 390×219 우표가 되고 글자가 5~6px 였다(2026-11-08 실제 플레이어 실측 0.457배).
+   제작 창처럼 칸이 들어갈 세로 방(panel.room)에 1배로 꺼낸다 — 좌표는 두 배율을 되나눈 전투 장면 좌표, 크기는 화면 px 그대로.
+   조작 띠는 그대로 두므로 A 가 확인이다. 가로·데스크톱은 창 칸이 없어 이 규칙이 걸리지 않는다. */
+.player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-result-pixel),
+.player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-result-pixel) > .battle-scene { overflow: visible; }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel {
+  left: calc((var(--panel-room-left) - var(--play-stage-left) - var(--battle-stage-offset-x) * var(--play-scale)) / (var(--play-scale) * var(--battle-stage-scale)));
+  top: calc((var(--panel-room-top) - var(--play-stage-top) - var(--battle-stage-offset-y) * var(--play-scale)) / (var(--play-scale) * var(--battle-stage-scale)));
+  right: auto;
+  bottom: auto;
+  width: var(--panel-room-w);
+  height: var(--panel-room-h);
+  gap: 8px;
+  padding: 8px;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  transform: scale(calc(1 / (var(--play-scale) * var(--battle-stage-scale))));
+  transform-origin: 0 0;
+}
+/* 폭 382 에서: 전리품은 한 열(두 열이면 이름이 「상…」), 파티 카드는 남는 폭을 나눠 「다음 Lv까지」가 겹치지 않게, 머리 줄은 틈을 줄인다. */
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-cards { grid-template-columns: minmax(0, 1fr); }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-party { grid-auto-columns: minmax(0, 1fr); }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-party-next { white-space: normal; text-align: center; }
+.player-layout .play-viewport[data-window-panel] .battle-scene:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-summary { gap: 10px; padding: 0 12px; }
 /* 칸 폭(320)에서는 목록 옆 128px 쇼케이스 열이 목록 이름을 한두 자로 잘랐다 — 쇼케이스를 목록 아래 전체 폭으로 내리고,
    능력치 변화는 두 칸씩. 값은 게임 px(칸 안 1배 = 화면 px). */
 .play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {

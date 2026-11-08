@@ -285,6 +285,23 @@ function cssGate() {
     ["check-dead-css-classes.mjs", run("node", ["scripts/check-dead-css-classes.mjs"])],
   ];
   const failures = checks.filter(([, r]) => r.code !== 0).map(([n, r]) => `${n} exit=${r.code}`);
+  // 실패한 하위 게이트마다 **그 게이트의 기준선 갱신 명령을 한 줄로** 찍는다 (2026-11-08).
+  // ci-fast 실패 14건 중 12건이 «PR 이 시트를 고쳤는데 css-winners 기준선을 안 뜼 것» 이었다 —
+  // 스크립트가 이미 자기 명령을 출력하지만(예: check-css-winners 의 "의도한 변경이면 …") verify-gates
+  // 요약에서는 출력 안쪽에 묻히고, gates:css:save 는 budget 만 저장해 오해를 만들었다.
+  // 판정은 그대로고 **안내만** 바꾼다. GitHub 어너테이션(`::error::`)으로 달아 로그 상단에 보이게 한다.
+  const SAVE_HINT = {
+    "check-css-budget.mjs": "node scripts/check-css-budget.mjs --save-baseline",
+    "check-css-live-classes.mjs": "CSS_LIVE_BASELINE_UPDATE=1 node scripts/check-css-live-classes.mjs --save-baseline",
+    "check-css-surfaces.mjs": "node scripts/check-css-surfaces.mjs --baseline",
+    "check-css-winners.mjs": "node scripts/check-css-winners.mjs --save-baseline",
+    "check-css-graph.mjs": "기준선이 없다 — ALLOWLIST 에서 고치거나 --print-baseline 출력을 붙여넣어라",
+    "check-dead-css-classes.mjs": "node scripts/check-dead-css-classes.mjs --write-baseline  (정말 불필요한 스타일이면 새 클래스를 지워라)",
+  };
+  const hints = failures.map((f) => {
+    const script = f.split(" ")[0];
+    return `::error::${script} 실패 — 의도한 변경이면 이 한 줄로 기준선을 다시 뜬 뒤 diff 를 PR 에 올려라: ${SAVE_HINT[script] ?? "(이 게이트는 기준선 저장 플래그가 없다)"}`;
+  });
   return {
     name: "css",
     exitCode: failures.length === 0 ? 0 : 1,
@@ -295,7 +312,7 @@ function cssGate() {
     winnersExitCode: checks[4][1].code,
     deadClassesExitCode: checks[5][1].code,
     failures,
-    out: checks.map(([, r]) => r.out).join("").trimEnd(),
+    out: [...hints, checks.map(([, r]) => r.out).join("")].join("\n").trimEnd(),
   };
 }
 

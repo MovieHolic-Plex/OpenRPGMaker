@@ -382,3 +382,26 @@
     white-space: normal;
   }
 }
+
+
+/* 폰 폭(390)에서 자료집 목록·상세 두 열(최소 300px+320px)이 창(약 330px)을 넘어 상세 칸이 화면 밖(x=357~677)으로 잘렸다
+   (2026-11-08 autopilot-usability E6). 520 이하에서는 목록 위·상세 아래 한 열로 쌓고 작업영역 전체를 세로로 스크롤한다.
+   선택자를 겹쳐 쓴 것은 위 캐릭터 :has() 열 규칙(특이도 0,6,0)을 이기기 위해서다(이 규칙 0,7,0) — !important 없이. */
+@media (max-width: 520px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body > .oprn-record-workspace.oprn-record-workspace.oprn-record-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-workspace.oprn-record-workspace > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* 목록 칸의 암묵 열이 도구줄·표의 최소 내용 폭(392px)으로 늘어 오른쪽이 잘렸다 — 칸 폭에 맞춘다. */
+  .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-workspace.oprn-record-workspace > .oprn-record-list-pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

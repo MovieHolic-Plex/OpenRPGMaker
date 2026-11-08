@@ -18,8 +18,7 @@ const { values } = parseArgs({
 });
 const jobs = JSON.parse(fs.readFileSync(values.jobs, "utf8"));
 const POOL = Number(values.pool);
-const CEIL = Number(values["mem-ceiling-gb"]) * 1024 ** 3;
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+const CEIL = Number(values["mem-ceiling-gb"]) * 1024 ** 3;const HERE = path.dirname(new URL(import.meta.url).pathname);
 fs.mkdirSync(path.join(values.out, "jobs"), { recursive: true });
 const progress = path.join(values.out, "play-progress.jsonl");
 const done = new Set(fs.existsSync(progress) ? fs.readFileSync(progress, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l).id) : []);
@@ -51,8 +50,7 @@ await new Promise((resolve) => {
       active += 1;
       peak = Math.max(peak, active);
       const started = Date.now();
-      const child = spawn(process.execPath, [path.join(HERE, "player.mjs"), path.join(dir, "job.json"), dir], { env: process.env, stdio: ["ignore", "pipe", "pipe"] });
-      let tail = "";
+      const child = spawn(process.execPath, [path.join(HERE, "player.mjs"), path.join(dir, "job.json"), dir], { env: process.env, stdio: ["ignore", "pipe", "pipe"] });      let tail = "";
       child.stdout.on("data", (d) => { tail = (tail + d).slice(-600); });
       child.stderr.on("data", (d) => { tail = (tail + d).slice(-600); });
       const kill = setTimeout(() => child.kill("SIGKILL"), (job.hardMs ?? 240000) + 90000);

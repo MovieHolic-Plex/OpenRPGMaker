@@ -280,6 +280,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return collection === "lifeSkills" && command.skillId === id;
     case "craftRecipe":
       return collection === "craftRecipes" && command.recipeId === id;
+    case "openCraftShop":
+      return collection === "craftRecipes" && (command.recipeIds?.includes(id) ?? false);
     case "applyItemUpgrade":
       return collection === "itemUpgrades" && command.upgradeId === id;
     // ── 아래 넷은 로드 검증기(commandReferenceValidation)가 이미 하드 참조로 다루는데

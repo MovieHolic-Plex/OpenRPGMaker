@@ -15,6 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { battleFanfareFor, levelUpBanner, newlyUnlockedCombos, playFanfareCue, skillLearnedCard } from "@/player/battleFanfareDom";
 import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, emeraldShortName, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
@@ -805,6 +806,11 @@ function syncPixelLoot(panel: HTMLElement, snapshot: BattleSnapshot): void {
     if (entry) {
       const before = snapshot.eventState.inventory[entry[0]] ?? 0;
       owned = [`보유 ${before} → ${before + entry[1]}`];
+      // 드롭이 글자 한 줄뿐이라 잡힌 것을 못 알아챘다(오너 2026-11-08). 자료집 아이콘을 이름 앞에 붙인다.
+      const icon = lootIcon(entry[0]);
+      if (icon) row.prepend(icon);
+      // 두 칸 줄에 아이콘이 들어가면 이름이 「그을…」로 잘렸다(1440 실측). 한 개면 「획득」 채움 글을 숨기고 이름에 자리를 준다.
+      if (entry[1] === 1) row.dataset.lootSingle = "true";
     }
     if (owned) row.append(el("span", { class: "battle-result-reward-owned", children: owned }));
   }
@@ -1224,6 +1230,15 @@ function duelEndRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
 
 function skillName(skillId: string): string {
   return store.getCurrent().database.skills.find((skill) => skill.id === skillId)?.name ?? skillId;
+}
+
+function lootIcon(itemId: string): HTMLElement | undefined {
+  const project = store.getCurrent();
+  const record = project.database.items.find((item) => item.id === itemId) ?? (project.database.equipment ?? []).find((entry) => entry.id === itemId);
+  const resourceId = record?.iconResourceId ?? record?.imageResourceId;
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
+  if (!url) return undefined;
+  return el("span", { class: "battle-result-loot-icon", attrs: { "aria-hidden": "true", style: `background-image: url("${url}")` }, dataset: { testid: `battle-result-loot-icon-${itemId}` } });
 }
 
 function itemName(itemId: string): string {

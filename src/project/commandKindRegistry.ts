@@ -50,6 +50,7 @@ export const COMMAND_KINDS = [
   "changeGold",
   "changeItem",
   "craftRecipe",
+  "openCraftShop",
   "applyItemUpgrade",
   "equipTool",
   "openChest",

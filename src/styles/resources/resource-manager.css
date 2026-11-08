@@ -455,6 +455,30 @@
   }
 }
 
+/* 폰 폭(390)에서 위 760 규칙의 두 열(132px+180px)도 넘쳐 탭·검색·보기 단추가 화면 밖(x 343~630)이고 분류 이름이 「전투 애…」로 잘렸다
+   (2026-11-08 autopilot-usability E5). 520 이하에서는 한 열로 쌓고, 분류 목록은 높이를 줄여 위에 두고, 툴바는 줄바꿈한다. */
+@media (max-width: 520px) {
+  .rm-classic-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .rm-classic-shell > .rm-category-list {
+    max-height: 168px;
+  }
+
+  .rm-modern-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .rm-modern-search-wrapper {
+    flex: 1 1 100%;
+    order: 3;
+  }
+}
+
 
 .rm-profile-audio-badge {
   align-items: center;

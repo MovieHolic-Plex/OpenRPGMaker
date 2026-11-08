@@ -37,6 +37,26 @@ export const EXAMINE_FEEDBACK_RULE =
 export const NEW_PLAYER_PLAYTEST_RULE =
   "Before you report done, play it once as a first-time player: start from the new-game opening, follow only the «현재 목표» line and what you can SEE on screen, and reach an ending. Every step of that play must be one of: the objective line says where to go, or you can see the thing to walk to. If you needed a coordinate, an event id, or the project files to move on, a new player cannot — fix the map (visible entrance, sparkle, objective with «where») and play again from the start. On the editing side of OPRN this play is the goal, because a new player cannot read the database. Verify it with run_scene_test through the whole path plus the critic's screen check.";
 
+// 2026-11-07 terra-fun-game 판정: 파일럿 Terra 게임이 «끝까지는 간다»인데 판단·보상 연출이 0이었다(fun 3/10, choice 0 · payoff 1 · again 0).
+// 그래서 «끝까지 간다» 다음 층—— 플레이어가 판단하고, 누르면 화면이 반응하고, 클라이맥스가 연출로 보인다 —— 를 같은 단일 소스에 넣는다.
+export const PLAY_LOOP_RULE =
+  "A game that only walks to an ending is a tutorial, not a game. Before you call it done, the whole path must contain at least one decision the player makes and sees the result of. Author it with a real instrument, not prose: list_puzzle_presets then author_map_puzzle (or compile_puzzle kind:switch-sequence|password|item-gate|push-switches) for the gate, and put the reward inside a branch so the outcome differs. One gate on the way to the ending is the minimum; two is better than one.";
+
+export const ACTION_FEEDBACK_RULE =
+  "Every pickup, unlock and switch-on must be SEEN, not only said. Text alone ('반짝!', '숲이 환하게 빛났어요') reads as nothing happened. Attach the picture to the act: place_pixel_fx / set_event_pixel_fx (fire, sparkle, glow, water) at the spot, attach_pixel_fx for skill and item effects in battle, set_game_audio for field BGM plus the pickup and clear sounds, and a file dialog line from the speaker who reacts. The judge called exactly this out: an ending line said the forest lit up while the field stayed the same.";
+
+export const CLIMAX_STAGING_RULE =
+  "Stage the turn and the ending with script_cutscene (beats: dialogue, camera move, wait, transfer, triggerEnding) or script_cutscene_preset (memory_opening|bedside_monologue|ending_fade). A climax delivered as one dialogue line gets a payoff score of 1; the same beat with a 3-5 second staged scene (light, character entrance, music change, then the ending card) is what players remember. Keep each staged scene under 10 seconds and never stage a scene that the ending card already shows.";
+
+export const OBJECTIVE_MATCHES_PICTURE_RULE =
+  "The thing the objective line names must look like that thing on the map. If the objective says 별나무 (star tree) the player must not find a treasure chest sprite; if it says 창고 the entrance must read as a warehouse. Pick the sprite or tile that matches the words, or change the words to match the picture — a mismatch sent a judge looking at the wrong object and cost the game two major defects.";
+
+export const REWARD_LOOP_RULE =
+  "A reward the player cannot use later is decoration. Check the PRODUCER→CONSUMER link in the saved game, not the number of reward commands: something a player action gives (an item, gold, a skill, or a switch/variable set by that action) must be read again later — by a shop's stock or price, a page condition, a door/gate condition, a battle branch or a later event's requirement. A star shard that only goes back in a dialogue line, or a chest whose contents no later event ever reads, is a zero; adding one changeItem just to have one is also a zero. Before you finish, open the saved project and confirm at least one such link exists (e.g. the reward branch sets a switch or gives an item that a later page condition or compile_puzzle gate reads). Judges called exactly this out: a shard that only went back to the quest giver, and a market square with crates but no merchant.";
+
+export const PROGRESSION_RULE =
+  "If the game has any fight or challenge, the player must END stronger than they started, and the difficulty must follow: a starting party (set_party), one skill or weapon gained on the way (upsert_skill / upsert_equipment inside the reward branch), and a second encounter that needs it (place_battle_blocker or a battleProcessing branch with a different troop from upsert_troop). Growth the player never feels is a zero, and so is an HUD number that never changes — either give the number a meaning the player discovers, or hide it with set_field_hud.";
+
 // 맞춤 기물 — 2026-11-07 agent-custom-tiles. Terra 게임 15판에서 없는 기물 그리기 호출 0회, 같은 테마끼리 맵 타일 겹침 평균 0.52(고양이 6판 0.89~1.00),
 // 재사용 상위는 버들항 나무·덤불·여관·우물. 오너: 「되도록이면 새로 만들게 하는 게 나을지도 .. 규격에 맞춰서」.
 
@@ -120,7 +140,23 @@ export const AGENT_RULES_SECTIONS: readonly { readonly title: string; readonly l
     ],
   },
   {
-    title: "6. Draw the objects that make this setting unique",
+    title: "6. Make it fun, not just finishable",
+    lines: [
+      PLAY_LOOP_RULE,
+      ACTION_FEEDBACK_RULE,
+      CLIMAX_STAGING_RULE,
+      OBJECTIVE_MATCHES_PICTURE_RULE,
+    ],
+  },
+  {
+    title: "7. Rewards have to be usable and the player has to grow",
+    lines: [
+      REWARD_LOOP_RULE,
+      PROGRESSION_RULE,
+    ],
+  },
+  {
+    title: "8. Draw the objects that make this setting unique",
     lines: [
       THEME_SIGNATURE_RULE,
       CUSTOM_OBJECT_SPEC_RULE,

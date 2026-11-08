@@ -1256,7 +1256,7 @@ function itemEligibilityFact(project: Project, item: ItemRecord): string {
   return "usable";
 }
 
-function itemEffectTokens(project: Project, item: ItemRecord): string[] {
+export function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   const tokens: string[] = [];
   if (item.hpRecovery.flat > 0) tokens.push(`hp:${item.hpRecovery.flat}`);
   if (item.hpRecovery.percentMax > 0) tokens.push(`hp%:${item.hpRecovery.percentMax}`);

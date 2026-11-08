@@ -81,9 +81,9 @@ describe("independent image settings", () => {
     expect(view.get("ai-config-image-status").dataset.availability).toBe("unsupported");
   });
 
-  it("backfills old chat-only settings with the actual image route", () => {
+  it("backfills old chat-only settings with the ChatGPT image route", () => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "openai-codex", model: "gpt-5.6-sol" }));
-    expect(loadAiConfig()).toMatchObject({ imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" });
+    expect(loadAiConfig()).toMatchObject({ imageProviderId: "openai-codex", imageModel: "codex-image-default" });
   });
 
   it("preserves an unsupported saved image choice across chat changes and reopening", () => {

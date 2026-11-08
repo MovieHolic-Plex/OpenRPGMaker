@@ -11,7 +11,7 @@ export type FastForwardStep = Exclude<StepResult, { kind: "done" }>;
 export type FastForwardAction = "skip" | "apply" | "stop";
 
 const STOP_KINDS: ReadonlySet<string> = new Set([
-  "choices", "inputNumber", "enterHeroName", "inputWait", "presentItem", "planSchedule", "timedChoice", "quickTimeEvent",
+  "choices", "inputNumber", "enterHeroName", "inputWait", "presentItem", "craftShop", "planSchedule", "timedChoice", "quickTimeEvent",
   "teleportMenu", "shop", "inn", "openChest", "openSaveMenu", "openLoadMenu", "openMenuScreen",
   "battleProcessing", "tacticsBattle", "transfer", "sleepUntilMorning", "gameOver", "returnToTitle",
 ]);

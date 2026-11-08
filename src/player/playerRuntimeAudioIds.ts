@@ -5,7 +5,8 @@
  * 그런데 UI 효과음과 전투 효과음은 프로젝트가 아니라 **소스에 박힌 id** 로 재생된다 —
  * runtimeJuice 의 RUNTIME_JUICE_SPECS, battleJuice 의 BATTLE_SFX/SFX_FALLBACK,
  * playSceneActionCombat 의 SE_* 상수, playerStatusMenuMutations 의 아이템 사용음,
- * mapBgm 의 FALLBACK_BGM_RESOURCE_ID 가 그것이다. 훑기로는 보이지 않으므로 내보낼 때
+ * mapBgm 의 FALLBACK_BGM_RESOURCE_ID, project/containerFx·mapDoorKinds·eventCommands/liftRide 의
+ * cc0-se 기본 효과음이 그것이다. 훑기로는 보이지 않으므로 내보낼 때
  * 명시적으로 얹어야 한다.
  *
  * 실측으로 잡은 결함이다: 오디오 카탈로그를 사용처 집계에서 빼자 내보낸 게임이 타이틀에서
@@ -60,4 +61,27 @@ export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freez
   "easyrpg-sound-shot1",
   "easyrpg-sound-teleport2",
   "easyrpg-sound-wind8",
+  // containerFx — 상자·자루·항아리 여는 소리와 획득 팝업음(2026-11-08 폴른 스타 출하본 보급 상자 획득음 404 로 발견)
+  "cc0-se-orp-inventory-cloth",
+  "cc0-se-orp-inventory-cloth-heavy",
+  "cc0-se-orp-inventory-coin",
+  "cc0-se-ors-item-misc-01",
+  "cc0-se-ors-item-stone-02",
+  "cc0-se-ors-wood-03",
+  "cc0-se-osx-wooded-box-open",
+  "cc0-se-osx-wooden-01",
+  "cc0-se-osx-wooden-02",
+  // mapDoorKinds · playSceneDoorway — 문 종류별 여닫는 소리
+  "cc0-se-orp-inventory-armor-light",
+  "cc0-se-ors-creature-slime-03",
+  "cc0-se-ors-item-wood-03",
+  "cc0-se-osx-dishes-02",
+  "cc0-se-osx-door-close-01",
+  "cc0-se-osx-door-open",
+  "cc0-se-osx-tools-01",
+  // liftRide · playSceneLiftRide — 승강기 운행·정지음
+  "cc0-se-osx-machine-02",
+  "cc0-se-osx-machine-03",
+  // characterLanding — 착지음
+  "cc0-se-osx-slam-01",
 ]);

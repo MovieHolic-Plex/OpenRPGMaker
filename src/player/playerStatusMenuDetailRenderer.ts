@@ -1,8 +1,8 @@
 import { renderCampaignRegionMap } from "@/player/playerMonsterCampaignMenu";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
+import { itemEffectTokens, type StatusMenuDetail, type StatusMenuDetailEntry, type StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
 import { HELD_ITEM_KIND_LABELS } from "@/battle/heldItems";
-import type { HeldItemEffectKind, Project } from "@/project/types";
+import type { HeldItemEffectKind, ItemRecord, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { keepWholeRows } from "@/player/runtimeTextFit";
 
@@ -433,6 +433,12 @@ function renderItemFactRows(project: Project, fact: StatusMenuDetailFact): HTMLE
 function itemFactDisplay(project: Project, fact: StatusMenuDetailFact): string {
   if (fact.id === "type") return ITEM_TYPE_LABEL[fact.value] ?? fact.value;
   return formatItemEffectTokens(project, fact.value.split(",").filter(Boolean));
+}
+
+/** 아이템 효과 한 줄(가방 상세 「효과」 줄과 같은 글), 예: 「HP +40 · HP 25%」. 효과가 없으면 undefined. 제작 공방 창이 쓴다. */
+export function itemEffectSummary(project: Project, item: ItemRecord): string | undefined {
+  const tokens = itemEffectTokens(project, item);
+  return tokens.length === 1 && tokens[0] === "none" ? undefined : formatItemEffectTokens(project, tokens);
 }
 
 function formatItemEffectTokens(project: Project, tokens: readonly string[]): string {

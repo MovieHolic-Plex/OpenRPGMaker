@@ -10,6 +10,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
+import { hiddenReason } from "../lib/hidden.mjs";
+import { cutsceneOnScreen, isStuck, spendsStep } from "../lib/stuck.mjs";
 
 const job = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
 const OUT = process.argv[3];
@@ -60,6 +62,9 @@ await page.addInitScript((b) => {
   try { Object.defineProperty(window, "__OPENRPG_BOOT__", { value: b, writable: false, configurable: false, enumerable: true }); }
   catch { window.__OPENRPG_BOOT__ = b; }
 }, boot);
+// The overflow measurement asks the same rule the tests pin (lib/hidden.mjs); an init script is not subject to the page CSP.
+await page.addInitScript({ content: `window.__qaHiddenReason = ${hiddenReason.toString()};` });
+await page.addInitScript({ content: `window.__qaCutsceneOnScreen = ${cutsceneOnScreen.toString()};` });
 
 const sleep = (ms) => page.waitForTimeout(ms);
 const visible = (sel) => page.locator(sel).first().isVisible().catch(() => false);
@@ -80,6 +85,7 @@ async function readState() {
       menu: ids.has("main-menu"), grid: ids.has("battle-command-grid"), result: ids.has("battle-result-summary") || ids.has("battle-result-party"),
       transition: !!document.querySelector(".battle-transition-overlay, [data-testid='title-transition'], [data-testid='play-loading-overlay']"),
       missingResource: text("[data-testid='missing-resource-error']"),
+      cutscene: (() => { try { return window.__qaCutsceneOnScreen(document); } catch { return false; } })(),
       missingTextures: (() => { try { return window.__oprnMissingTextures?.()?.count ?? null; } catch { return null; } })(),
     };
   });
@@ -100,9 +106,14 @@ async function domDump() {
       const r = el.getBoundingClientRect();
       if (r.width < 2 || r.height < 2) continue;
       const cs = getComputedStyle(el);
-      if (cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
-      // Screen-reader-only text (clip / 1px box) is not drawn for players.
-      if ((cs.clip && cs.clip !== "auto") || (cs.clipPath && cs.clipPath !== "none") || /sr-only|visually-hidden/.test(el.className)) continue;
+      // Text the player cannot see (display:none / visually hidden on itself or an ancestor) is not measured.
+      const chain = [];
+      for (let n = el; n && n !== app.parentElement; n = n.parentElement) {
+        const s = n === el ? cs : getComputedStyle(n);
+        const box = n.getBoundingClientRect();
+        chain.push({ cls: typeof n.className === "string" ? n.className : "", display: s.display, visibility: s.visibility, opacity: s.opacity, clip: s.clip, clipPath: s.clipPath, overflow: s.overflow + " " + s.overflowX + " " + s.overflowY, w: box.width, h: box.height });
+      }
+      if (window.__qaHiddenReason(chain)) continue;
       // An item scrolled out of a scrolling list is not "off screen": the list is the viewport for it.
       let scroller = el.parentElement;
       while (scroller && scroller !== app) {
@@ -230,9 +241,12 @@ async function driveUntilFree({ maxSteps = 40, label = "ev" } = {}) {
     const now = sig(s);
     if (now === last) same += 1; else { same = 0; sameSince = Date.now(); }
     last = now;
+    // A cutscene holding still must reach its stuck cap rather than run out the step budget (HARD_MS still bounds it).
+    if (!spendsStep({ same, cutscene: s.cutscene === true })) step -= 1;
     // Stuck = no visible change for 6 polls AND 15 s: cutscenes with move routes and waits legitimately hold the
-    // same state for several seconds while `running` is true.
-    if (same >= 6 && Date.now() - sameSince >= 15000) {
+    // same state for several seconds while `running` is true. With a cutscene on screen the wait stretches to a fixed
+    // cap (lib/stuck.mjs), so a cutscene waiting on its own timing is not a hang but a frozen one still is.
+    if (isStuck({ same, unchangedMs: Date.now() - sameSince, cutscene: s.cutscene === true })) {
       // Before calling it stuck, try the plain keyboard path: if Enter moves the game where touch/mouse did not,
       // the defect is "this input mode is ignored here", not a soft-lock.
       if (job.input !== "keyboard") {
@@ -317,6 +331,138 @@ async function menuTour() {
   for (let i = 0; i < 3 && (await readState()).menu; i += 1) { await cancel(); await sleep(300); }
 }
 
+/**
+ * Adversarial input track. Each case does what a real player does on purpose and records what the game answered:
+ * dialogue mashed through every input at once, menus opened mid-battle, a shop attempted with no gold, the party
+ * shoved into every map edge, save/load in a loop, and mixed keyboard+mouse+touch in one session.
+ * A finding is not "the script broke" but "the game got stuck / fell out of a screen / lost state" — those show up
+ * in the settled frames and the deterministic checks the triage stage runs over this trace.
+ */
+async function adversarialScript(kind) {
+  const s0 = await readState();
+  await snap(`adv-${kind}-start`);
+  if (kind === "mash-dialogue") {
+    // Enter, arrows and a click at the same time: a dialogue that reads "press" as a state machine should advance and
+    // never dead-end; an event that only handles one input shows up as a stuck frame.
+    for (let i = 0; i < 30; i += 1) {
+      note(`mash:${i}`);
+      await Promise.all([
+        page.keyboard.press("Enter").catch(() => {}),
+        page.keyboard.press(i % 2 ? "ArrowDown" : "ArrowRight").catch(() => {}),
+        page.mouse.click(700, 500).catch(() => {}),
+      ]);
+      await sleep(120);
+      if (i % 6 === 0) await snap(`adv-mash-${i}`);
+      const s = await readState();
+      if (s.screen === "ending" || s.screen === "gameover") break;
+    }
+    await snap("adv-mash-end");
+  } else if (kind === "mash-dialogue-touch") {
+    for (let i = 0; i < 24; i += 1) {
+      note(`mash-touch:${i}`);
+      const box = await page.locator("[data-testid='dialogue-box']").first().boundingBox().catch(() => null);
+      if (box) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
+      else await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
+      await sleep(150);
+      if (i % 8 === 0) await snap(`adv-touch-mash-${i}`);
+    }
+    await snap("adv-touch-mash-end");
+  } else if (kind === "menu-mid-battle" || kind === "menu-mid-battle-mouse") {
+    // Enter the fight, then open the menu / cancel in the middle of command selection, then keep fighting.
+    for (let i = 0; i < 40 && Date.now() - T0 < HARD_MS && (await readState()).screen !== "battle"; i += 1) {
+      const s = await readState();
+      if (s.choices) await pickChoice(0); else if (s.dialogue) await confirm(); else await sleep(700);
+    }
+    await snap("adv-battle-open");
+    for (let round = 0; round < 4; round += 1) {
+      note(`adv-battle:menu ${round}`);
+      await page.keyboard.press("Escape"); await sleep(250);
+      await snap(`adv-battle-menu-${round}`);
+      await page.keyboard.press("Escape"); await sleep(200);
+      await page.keyboard.press("ArrowDown"); await sleep(120);
+      if (kind === "menu-mid-battle-mouse") {
+        for (const sel of ["[data-testid='actor-command-fight']", "[data-testid='actor-command-item']"]) {
+          if (await visible(sel)) { await page.locator(sel).first().click({ timeout: 2000 }).catch(() => {}); await sleep(200); }
+        }
+      }
+      await page.keyboard.press("Enter"); await sleep(900);
+      await page.keyboard.press("Enter"); await sleep(1400);
+      await snap(`adv-battle-round-${round}`);
+      if ((await readState()).screen !== "battle") break;
+    }
+    summary.after = await driveUntilFree({ maxSteps: 20, label: "adv-after-battle" });
+  } else if (kind === "broke-shopper" || kind === "broke-shopper-touch") {
+    // Walk to the shopkeeper and try to buy with zero gold: the game must refuse, not go negative or hang.
+    await driveUntilFree({ maxSteps: 10, label: "adv-shop-enter" });
+    for (let i = 0; i < 25 && Date.now() - T0 < HARD_MS * 0.6; i += 1) {
+      const s = await readState();
+      if (s.screen === "shop") break;
+      if (s.choices) await pickChoice(0);
+      else if (s.dialogue) await confirm();
+      else {
+        // Try every direction and the interact key; a shopkeeper indoors is usually adjacent.
+        for (const dir of ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"]) { await move(dir, 220); await confirm(); await sleep(120); if ((await readState()).screen === "shop") break; }
+      }
+      await sleep(400);
+    }
+    const at = await readState();
+    summary.shopReached = at.screen === "shop";
+    await snap("adv-shop-open");
+    if (at.screen === "shop") {
+      for (const key of ["Enter", "ArrowDown", "Enter", "Enter", "ArrowDown", "Enter"]) {
+        note(`broke-shop:${key}`);
+        await page.keyboard.press(key);
+        await sleep(400);
+        await snap(`adv-shop-${key}`);
+      }
+      for (let i = 0; i < 6 && (await readState()).screen === "shop"; i += 1) { await cancel(); await sleep(300); }
+    }
+    await snap("adv-shop-end");
+  } else if (kind === "map-edges" || kind === "map-edges-mouse") {
+    // Shove into each edge for a while; the player must stop at the border, never leave the map or the camera.
+    for (const dir of ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"]) {
+      note(`edge:${dir}`);
+      for (let i = 0; i < 6; i += 1) await move(dir, 500);
+      const s = await snap(`adv-edge-${dir.toLowerCase()}`);
+      const map = s.state;
+      summary[`edge${dir.replace("Arrow", "")}`] = map ? { x: map.x, y: map.y, screen: map.screen } : null;
+    }
+    await snap("adv-edge-end");
+  } else if (kind === "save-load") {
+    // Open the save menu three times, saving and cancelling alternately; the session must survive every round.
+    for (let round = 0; round < 3; round += 1) {
+      note(`save-load:${round}`);
+      await driveUntilFree({ maxSteps: 8, label: `adv-save-${round}` });
+      await page.keyboard.press("Escape"); await sleep(600);
+      await snap(`adv-save-menu-${round}`);
+      for (let i = 0; i < 4; i += 1) { await page.keyboard.press("ArrowDown"); await sleep(150); }
+      await page.keyboard.press("Enter"); await sleep(700);
+      await snap(`adv-save-detail-${round}`);
+      await page.keyboard.press("Enter"); await sleep(900);
+      await snap(`adv-save-confirm-${round}`);
+      await page.keyboard.press("Enter"); await sleep(900);
+      await snap(`adv-save-done-${round}`);
+      for (let i = 0; i < 3; i += 1) { await page.keyboard.press("Escape"); await sleep(300); }
+      await snap(`adv-save-close-${round}`);
+    }
+  } else if (kind === "mixed-input") {
+    // Keyboard for one action, a click for the next, a tap for the third — a state machine that reads them from
+    // different places dead-ends here.
+    for (let i = 0; i < 18; i += 1) {
+      const s = await readState();
+      note(`mixed:${i}:${s.screen}`);
+      if (i % 3 === 0) await page.keyboard.press("Enter").catch(() => {});
+      else if (i % 3 === 1) await page.mouse.click(vp.width / 2, vp.height * 0.62).catch(() => {});
+      else await page.touchscreen.tap(vp.width / 2, vp.height * 0.62).catch(() => {});
+      await sleep(350);
+      if (i % 4 === 0) await snap(`adv-mixed-${i}`);
+      if (s.dialogue) { await page.keyboard.press("ArrowDown").catch(() => {}); await sleep(120); }
+    }
+    await snap("adv-mixed-end");
+  }
+  return { kind, start: s0?.screen ?? null };
+}
+
 const summary = { id: job.id, kind: job.kind, input: job.input, viewport: job.viewportName, plant: job.plant ?? null, target: job.target ?? null };
 try {
   await page.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded", timeout: 120000 });
@@ -356,6 +502,8 @@ try {
     }
     summary.result = await battle({ maxTurns: 10 });
     summary.after = await driveUntilFree({ maxSteps: 24, label: "after-battle" });
+  } else if (job.script === "adversarial") {
+    summary.result = await adversarialScript(job.adversarial);
   } else {
     await snap("start");
     summary.result = await driveUntilFree({ maxSteps: 50, label: "ev" });

@@ -1,0 +1,107 @@
+{
+  "set": "craft-shop-touch",
+  "note": "폴른 스타 니나의 공방(fs_workshop) — 제작 공방 명령 QA. 니나 (11,3), 플레이어는 바로 아래에서 위를 본다. 폰(터치·모바일 컨텍스트) — 실제 플레이어 세로 창 칸 경로를 탄다.",
+  "query": {
+    "demo": "fallen-star",
+    "e2eVitals": "1"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checkpoints": [
+    {
+      "id": "nina-workshop",
+      "label": "니나의 공방 — 재료 일부·30G",
+      "mapId": "fs_workshop",
+      "x": 11,
+      "y": 4,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true
+      },
+      "selfSwitches": {
+        "ev_fs_workshop_nina": {
+          "A": true
+        }
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "items": {
+        "item_fs_wisp_ember": 2,
+        "item_fs_spider_silk": 2,
+        "item_fs_venom_sac": 1,
+        "item_fs_wolf_fang": 1
+      },
+      "gold": 30
+    },
+    {
+      "id": "esc-menu",
+      "label": "니나의 공방 — ESC 메뉴(대조군)",
+      "mapId": "fs_workshop",
+      "x": 11,
+      "y": 4,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true
+      },
+      "selfSwitches": {
+        "ev_fs_workshop_nina": {
+          "A": true
+        }
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "items": {
+        "item_fs_wisp_ember": 2,
+        "item_fs_spider_silk": 2,
+        "item_fs_venom_sac": 1,
+        "item_fs_wolf_fang": 1
+      },
+      "gold": 30
+    },
+    {
+      "id": "apothecary-shop",
+      "label": "약재상 오든 — 상점(대조군)",
+      "mapId": "fs_apothecary",
+      "x": 4,
+      "y": 13,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "gold": 300
+    }
+  ],
+  "context": {
+    "hasTouch": true,
+    "isMobile": true
+  },
+  "projectFixture": "dist/demos/chrono-bell.project.json"
+}

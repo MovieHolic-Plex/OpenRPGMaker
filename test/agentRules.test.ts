@@ -19,6 +19,12 @@ import {
   SET_OBJECTIVE_DESCRIPTION,
   TODO_LOOP_LINE,
   EXAMINE_FEEDBACK_RULE,
+  ACTION_FEEDBACK_RULE,
+  CLIMAX_STAGING_RULE,
+  OBJECTIVE_MATCHES_PICTURE_RULE,
+  PLAY_LOOP_RULE,
+  PROGRESSION_RULE,
+  REWARD_LOOP_RULE,
   agentRulesPromptLines,
   renderAgentRulesSkill,
 } from "@/ai/agentRules";
@@ -67,8 +73,10 @@ describe("게임 짓기 규칙 — 단일 소스", () => {
       expect(skill).toContain(constant);
     }
     for (const rule of [MARK_ENTRANCES_RULE, EXAMINE_FEEDBACK_RULE, NEW_PLAYER_PLAYTEST_RULE]) expect(skill).toContain(rule);
+    for (const rule of [PLAY_LOOP_RULE, ACTION_FEEDBACK_RULE, CLIMAX_STAGING_RULE, OBJECTIVE_MATCHES_PICTURE_RULE]) expect(skill).toContain(rule);
+    for (const rule of [REWARD_LOOP_RULE, PROGRESSION_RULE]) expect(skill).toContain(rule);
     expect(skill.startsWith(`---\nname: ${AGENT_RULES_SKILL_ID}\n`)).toBe(true);
-    expect(AGENT_RULES_SECTIONS.length).toBe(6);
+    expect(AGENT_RULES_SECTIONS.length).toBe(8);
   });
 
   it("에이전트 모드 시스템 지시가 규칙을 싣고, 작업 폴더 파일도 같은 글이다", async () => {

@@ -49,6 +49,7 @@ const EXPECTED_COMMAND_KINDS = [
   "changeGold",
   "changeItem",
   "craftRecipe",
+  "openCraftShop",
   "applyItemUpgrade",
   "equipTool",
   "openChest",
@@ -132,6 +133,7 @@ describe("event editor command labels", () => {
 
   it.each([
     ["craftRecipe", "command-add-craft", "제작"],
+    ["openCraftShop", "command-add-craft-shop", "제작 공방"],
     ["applyItemUpgrade", "command-add-upgrade", "업그레이드"],
     ["equipTool", "command-add-equip-tool", "도구 장착"],
     ["openChest", "command-add-open-chest", "보관 상자"],

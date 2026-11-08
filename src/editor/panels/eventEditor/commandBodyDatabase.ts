@@ -749,6 +749,59 @@ export function craftRecipeBody(
   return wrap;
 }
 
+export function openCraftShopBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "openCraftShop" }>
+): HTMLElement {
+  const project = store.getCurrent();
+  const recipes = craftRecipesOf(project);
+  const itemName = (id: string): string => project.database.items.find((entry) => entry.id === id)?.name ?? id;
+  let current = cmd;
+  const commit = (patch: Partial<Extract<Command, { kind: "openCraftShop" }>>): void => {
+    const next = { ...current, ...patch };
+    const clean: Extract<Command, { kind: "openCraftShop" }> = {
+      kind: "openCraftShop",
+      ...(next.recipeIds !== undefined ? { recipeIds: next.recipeIds } : {}),
+      ...(next.title?.trim() ? { title: next.title.trim() } : {}),
+      ...(next.speaker?.trim() ? { speaker: next.speaker.trim() } : {}),
+    };
+    current = clean;
+    context.actions.replaceCommand(context.path, clean);
+  };
+  const textInput = (value: string | undefined, placeholder: string, testid: string, key: "title" | "speaker"): HTMLInputElement => {
+    const input = el("input", { attrs: { type: "text", placeholder }, dataset: { testid } }) as HTMLInputElement;
+    input.value = value ?? "";
+    input.addEventListener("change", () => commit({ [key]: input.value }));
+    return input;
+  };
+  const all = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "craft-shop-all-recipes" } }) as HTMLInputElement;
+  all.checked = cmd.recipeIds === undefined;
+  const boxes = recipes.map((recipe) => {
+    const box = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `craft-shop-recipe-${recipe.id}` } }) as HTMLInputElement;
+    box.checked = cmd.recipeIds === undefined || cmd.recipeIds.includes(recipe.id);
+    box.disabled = all.checked;
+    box.addEventListener("change", () => commit({ recipeIds: recipes.filter((_, index) => boxEls[index]?.checked).map((entry) => entry.id) }));
+    const gold = recipe.goldCost ? ` · ${recipe.goldCost}G` : "";
+    return { box, row: el("label", { class: "inline-field rich-form-row", children: [box, el("span", { text: `${recipe.name?.trim() || itemName(recipe.outputItemId)} ← ${recipe.ingredients.map((g) => `${itemName(g.itemId)} ${g.count}`).join("·")}${gold}` })] }) };
+  });
+  const boxEls = boxes.map((entry) => entry.box);
+  all.addEventListener("change", () => {
+    for (const box of boxEls) { box.disabled = all.checked; box.checked = all.checked || box.checked; }
+    commit({ recipeIds: all.checked ? undefined : recipes.filter((_, index) => boxEls[index]?.checked).map((entry) => entry.id) });
+  });
+  const wrap = el("span", { class: "rich-command-form cream-command-form", dataset: { testid: "craft-shop-form" } });
+  wrap.append(
+    el("label", { class: "inline-field rich-form-row", children: [el("span", { text: "창 제목" }), textInput(cmd.title, "예: 니나의 공방", "craft-shop-title", "title")] }),
+    el("label", { class: "inline-field rich-form-row", children: [el("span", { text: "장인 이름" }), textInput(cmd.speaker, "예: 공방 장인 니나", "craft-shop-speaker", "speaker")] }),
+    el("label", { class: "inline-field rich-form-row", children: [all, el("span", { text: "모든 제작법(새로 만든 것도 자동 포함)" })] }),
+    ...boxes.map((entry) => entry.row),
+  );
+  if (recipes.length === 0) {
+    wrap.append(el("span", { class: "rich-form-hint", text: "등록된 레시피가 없습니다. 시스템에서 레시피를 먼저 만드세요." }));
+  }
+  return wrap;
+}
+
 export function applyItemUpgradeBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "applyItemUpgrade" }>

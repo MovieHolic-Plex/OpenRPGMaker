@@ -164,6 +164,199 @@
   color: var(--runtime-window-highlight);
 }
 
+/* ── 제작 공방(openCraftShop): 상점 창 틀(runtime-shop-*) 위의 전용 제작 화면 — 목록 | 상세(산출물 큰 틀·재료 칸) · 수량 · 만들기/나가기 ──
+   움직임은 장식이다. .is-still(운영체제 움직임 줄이기 · 플레이어 「메뉴 움직임 줄이기」)이면 전부 끄고 같은 정보만 남긴다. */
+.runtime-craft-shop-overlay { --craft-ember: #f59a2c; --craft-ember-soft: color-mix(in srgb, var(--craft-ember) 22%, transparent); }
+.runtime-craft-shell { position: relative; isolation: isolate; }
+.runtime-craft-shell::before {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 55%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 70% 100% at 50% 100%, var(--craft-ember-soft), transparent 70%);
+}
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell::before { animation: runtime-craft-glow 3.2s ease-in-out infinite alternate; }
+.runtime-craft-shell .runtime-shop-topbar { padding: 8px 16px; gap: 12px; }
+.runtime-craft-shell .runtime-shop-merchant-avatar { width: 36px; height: 36px; }
+.runtime-craft-shell .runtime-shop-brand-title { font-size: var(--shop-text-section); }
+.runtime-craft-shell .runtime-shop-gold { flex-direction: row; align-items: center; gap: 6px; }
+.runtime-craft-shell .runtime-shop-gold svg { width: 18px; height: 18px; color: var(--craft-ember); }
+.runtime-craft-shell .runtime-shop-gold-value { font-size: var(--shop-text-section); }
+.runtime-craft-shell .runtime-shop-prompt-panel { padding: 8px 16px; }
+.runtime-craft-shell .runtime-shop-keyhints { padding-top: 4px; }
+.runtime-craft-shell .runtime-shop-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+.runtime-craft-shell .runtime-shop-side { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.runtime-craft-shell .runtime-shop-detail-panel { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 10px 12px; }
+.runtime-craft-shop-overlay.runtime-shop-overlay { padding: 12px; }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell .runtime-shop-item-row { transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease; }
+.runtime-craft-shell .runtime-shop-item-row.selected { box-shadow: 0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft); }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-shell .runtime-shop-item-row.selected { transform: translateX(2px); }
+.runtime-craft-row.is-unaffordable .runtime-shop-item-name,
+.runtime-craft-row.is-unaffordable .runtime-shop-item-icon { opacity: 0.5; }
+.runtime-craft-row-max { font-variant-numeric: tabular-nums; }
+.runtime-craft-row:not(.is-unaffordable) .runtime-craft-row-max { color: var(--craft-ember); font-weight: 700; }
+
+.runtime-craft-detail { display: flex; flex-direction: column; gap: 8px; }
+.runtime-craft-hero { display: flex; align-items: center; gap: var(--shop-space-4); min-width: 0; }
+.runtime-craft-hero-frame {
+  position: relative; flex: none; display: grid; place-items: center;
+  width: 72px; height: 72px; border-radius: var(--shop-radius-small);
+  background: radial-gradient(circle at 50% 60%, var(--craft-ember-soft), var(--shop-inset) 70%);
+  border: 2px solid var(--shop-line-strong);
+  box-shadow: inset 0 0 18px var(--shop-card);
+}
+.runtime-craft-hero.is-ready .runtime-craft-hero-frame {
+  border-color: color-mix(in srgb, var(--craft-ember) 70%, var(--shop-line-strong));
+  box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft);
+}
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-hero.is-ready .runtime-craft-hero-frame { animation: runtime-craft-ready 1.8s ease-in-out infinite alternate; }
+.runtime-craft-hero-icon { width: 80%; height: 80%; border: 0; background-color: transparent; background-size: 85%; }
+.runtime-craft-hero-yield {
+  position: absolute; right: -6px; bottom: -6px; padding: 0 6px; border-radius: 999px;
+  background: var(--craft-ember); color: var(--shop-inset); font-weight: 800; font-size: var(--shop-text-small); font-variant-numeric: tabular-nums;
+}
+.runtime-craft-hero-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.runtime-craft-hero-name { font-size: var(--shop-text-title); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.runtime-craft-hero-owned { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-craft-desc { color: var(--shop-ink-dim); font-size: var(--shop-text-small); line-height: 1.4; }
+/* 산출물 효과 한 줄(「HP +40 · HP 25%」). 설명이 숨는 낮은 화면에서도 남는다. 목록 줄은 한 줄 말줄임. */
+.runtime-craft-effect { color: var(--shop-gain); font-size: var(--shop-text-small); font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.runtime-craft-row-effect { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--shop-gain); font-size: var(--shop-text-small); font-weight: 700; line-height: 1.2; }
+
+.runtime-craft-needs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px; }
+.runtime-craft-need {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center; column-gap: 6px; padding: 3px 6px; border-radius: var(--shop-radius-small);
+  background: var(--shop-inset); border: 1px solid var(--shop-line);
+}
+.runtime-craft-need-icon { width: 26px; height: 26px; }
+.runtime-craft-coin { display: grid; place-items: center; color: var(--craft-ember); }
+.runtime-craft-coin svg { width: 18px; height: 18px; }
+.runtime-craft-need-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--shop-text-small); color: var(--shop-ink-dim); }
+.runtime-craft-need-count { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--shop-ink); }
+.runtime-craft-need-mark {
+  display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  font-size: 12px; font-weight: 900;
+}
+.runtime-craft-need.is-met { border-color: color-mix(in srgb, var(--shop-gain) 45%, var(--shop-line)); }
+.runtime-craft-need.is-met .runtime-craft-need-mark { background: var(--shop-gain); color: var(--shop-inset); }
+.runtime-craft-need.is-short { border-color: var(--shop-loss); background: color-mix(in srgb, var(--shop-loss) 12%, var(--shop-inset)); }
+.runtime-craft-need.is-short .runtime-craft-need-count { color: var(--shop-loss); }
+.runtime-craft-need.is-short .runtime-craft-need-mark { background: var(--shop-loss); color: var(--shop-inset); }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-need.is-short { animation: runtime-craft-short 1.2s ease-in-out infinite; }
+
+.runtime-craft-prompt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.runtime-craft-status-line { display: flex; flex-direction: column; flex: 1 1 12em; min-width: 0; }
+.runtime-craft-status.is-ok { color: var(--shop-gain); font-weight: 800; }
+.runtime-craft-status.is-fail { color: var(--shop-loss); font-weight: 800; }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-status.is-ok { animation: runtime-craft-toast 600ms cubic-bezier(.2,1.4,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .runtime-craft-status.is-shake { animation: runtime-craft-shake 360ms ease both; }
+.runtime-craft-reason { color: var(--shop-loss); font-size: var(--shop-text-small); }
+.runtime-craft-count { display: inline-flex; align-items: center; gap: 4px; }
+.runtime-craft-count[hidden], .runtime-craft-reason[hidden] { display: none; }
+.runtime-craft-step { min-width: 2em; padding: 0 6px; }
+.runtime-craft-count-value { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+.runtime-craft-shell .runtime-shop-confirm:not(:disabled) {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--craft-ember) 35%, var(--shop-card)), var(--shop-card));
+  border-color: var(--craft-ember);
+}
+.runtime-craft-shell .runtime-shop-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.runtime-craft-flyer { position: absolute; z-index: 5; margin: 0; pointer-events: none; box-shadow: 0 0 12px var(--craft-ember); }
+.runtime-craft-burst { z-index: 6; }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-icon { animation: runtime-craft-pop 520ms 480ms cubic-bezier(.2,1.6,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-yield { animation: runtime-craft-pop 420ms 760ms cubic-bezier(.2,1.6,.4,1) both; }
+.runtime-craft-shop-overlay:not(.is-still) .is-crafted .runtime-craft-hero-frame { animation: runtime-craft-flash 700ms 420ms ease-out both; }
+@keyframes runtime-craft-flash { 0% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 0 var(--craft-ember); } 30% { box-shadow: inset 0 0 30px color-mix(in srgb, var(--craft-ember) 45%, white), 0 0 36px var(--craft-ember); } 100% { box-shadow: inset 0 0 18px var(--shop-card), 0 0 16px var(--craft-ember-soft); } }
+
+@keyframes runtime-craft-glow { from { opacity: .55; } to { opacity: 1; } }
+@keyframes runtime-craft-ready { from { box-shadow: inset 0 0 18px var(--shop-card), 0 0 8px var(--craft-ember-soft); } to { box-shadow: inset 0 0 18px var(--shop-card), 0 0 20px color-mix(in srgb, var(--craft-ember) 40%, transparent); } }
+@keyframes runtime-craft-short { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--shop-loss) 45%, transparent); } }
+@keyframes runtime-craft-pop { 0% { transform: scale(.2); opacity: 0; } 70% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes runtime-craft-toast { 0% { transform: translateY(6px) scale(.96); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes runtime-craft-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+/* 움직임은 전부 :not(.is-still) 아래에만 있다 — .is-still 은 OS 움직임 줄이기·플레이어 설정 둘 다에서 JS 가 붙인다(craftStill). */
+/* ── 크기 맞춤: 창은 플레이 화면 전체를 덮고(무대 상자가 아니라 — 폰 세로에서 390×219 우표가 됐다), 자기 크기(컨테이너)로 글자·배치를 고른다.
+   글자는 크기마다 하한이 있다(본문 12px · 작은 글 11px). 목록은 JS(fitWholeRows)가 통째 줄만 보이게 높이를 자르고 ▲▼ 로 더 있음을 알린다. */
+/* 세로 창 칸(mobileUi.css data-window-panel)은 상점을 320×300 논리 칸에 그려 축소한다 — 제작 창은 화면 폭을 그대로 쓴다(폰 세로 390×219 우표 해소). */
+.player-layout .play-viewport:is([data-window-panel], :not([data-window-panel])) > .runtime-overlay.runtime-shop-overlay.runtime-craft-shop-overlay {
+  inset: 0; left: 0; top: 0; transform: none; width: 100%; height: 100%;
+  display: flex; align-items: stretch; justify-content: center;
+  padding: clamp(4px, 1.4vmin, 12px);
+  container: craft / size;
+}
+.player-layout .play-viewport > .runtime-shop-overlay.runtime-craft-shop-overlay > .runtime-shop-shell.runtime-craft-shell {
+  --shop-text-small: clamp(11px, min(1.9cqw, 2.9cqh), 16px);
+  --shop-text-body: clamp(12px, min(2.2cqw, 3.4cqh), 19px);
+  --shop-text-section: clamp(13px, min(2.5cqw, 3.8cqh), 21px);
+  --shop-text-title: clamp(14px, min(3cqw, 4.6cqh), 26px);
+  --shop-art-row: clamp(22px, min(5cqw, 7.5cqh), 44px);
+  --craft-pad: clamp(4px, min(1.2cqw, 1.8cqh), 14px);
+  width: min(100%, 1100px); height: 100%; max-height: 100%;
+  font-size: var(--shop-text-body);
+}
+.runtime-craft-shell :is(.runtime-shop-item-name, .runtime-craft-need-count, .runtime-craft-count-value, .runtime-shop-confirm, .runtime-shop-cancel, .runtime-craft-step, .runtime-shop-status, .runtime-shop-gold-value) { font-size: var(--shop-text-body); }
+.runtime-craft-shell :is(.runtime-shop-item-type, .runtime-craft-row-max, .runtime-craft-need-name, .runtime-craft-reason, .runtime-craft-hero-owned, .runtime-craft-desc, .runtime-shop-gold-label, .runtime-shop-quantity-label, .runtime-shop-brand-sub, .runtime-shop-keyhints, .runtime-shop-keyhints *, .runtime-craft-more) { font-size: var(--shop-text-small); }
+.runtime-craft-shell .runtime-shop-brand-title, .runtime-craft-hero-name { font-size: var(--shop-text-title); }
+.runtime-craft-shell .runtime-shop-topbar { padding: var(--craft-pad) calc(var(--craft-pad) * 1.5); gap: var(--craft-pad); }
+.runtime-craft-shell .runtime-shop-merchant-avatar { width: calc(var(--shop-art-row) * 0.9); height: calc(var(--shop-art-row) * 0.9); }
+.runtime-craft-shell .runtime-shop-list-panel, .runtime-craft-shell .runtime-shop-detail-panel { padding: var(--craft-pad); gap: 4px; }
+.runtime-craft-shell .runtime-shop-prompt-panel { padding: var(--craft-pad) calc(var(--craft-pad) * 1.5); }
+.runtime-craft-shell .runtime-shop-item-list { position: relative; flex: 1 1 auto; scroll-snap-type: y mandatory; scrollbar-width: thin; }
+.runtime-craft-shell .runtime-shop-item-row { min-height: 0; padding-block: calc(var(--craft-pad) * 0.6); scroll-snap-align: start; flex: none; }
+.runtime-craft-shell .runtime-shop-item-row .runtime-shop-item-icon { width: var(--shop-art-row); height: var(--shop-art-row); }
+.runtime-craft-more { display: flex; justify-content: space-between; gap: 8px; color: var(--craft-ember); font-weight: 800; line-height: 1.2; min-height: 1.2em; }
+.runtime-craft-more[hidden] { display: none; }
+.runtime-craft-more > [data-off="1"] { visibility: hidden; }
+.runtime-craft-hero-frame { width: calc(var(--shop-art-row) * 1.6); height: calc(var(--shop-art-row) * 1.6); }
+.runtime-craft-needs { grid-template-columns: repeat(auto-fill, minmax(min(100%, 12em), 1fr)); }
+.runtime-craft-need-icon { width: calc(var(--shop-art-row) * 0.8); height: calc(var(--shop-art-row) * 0.8); }
+/* 재료 이름은 줄임표로 자르지 않는다(「늑대…」가 됐다) — 모자라면 두 줄로 감다. */
+.runtime-craft-need-name { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.15; }
+.runtime-craft-shell .runtime-shop-item-name { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; }
+.runtime-craft-shell :is(.runtime-shop-confirm, .runtime-shop-cancel) { min-height: calc(var(--shop-art-row) * 1.1); padding-inline: 1em; }
+
+/* 낮은 화면(320×240 등): 부제·설명·키 안내를 빼서 목록과 재료에 자리를 준다. */
+@container craft (max-height: 360px) {
+  .runtime-craft-shell :is(.runtime-shop-brand-sub, .runtime-shop-keyhints, .runtime-craft-desc, .runtime-shop-gold-label, .runtime-shop-item-type, .runtime-craft-row-effect) { display: none; }
+  .runtime-craft-shell .runtime-shop-merchant-avatar { display: none; }
+  /* 목록 칸을 넓힌다. 그래도 길면 이름은 두 줄로 감다(통째 줄 맞춤은 가장 큰 줄 기준). */
+  .runtime-craft-shell .runtime-shop-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@container craft (max-height: 600px) {
+  .runtime-craft-shell :is(.runtime-shop-brand-sub, .runtime-craft-desc) { display: none; }
+}
+/* 세로 폰: 목록 위 · 상세 아래, 화면 폭을 다 쓰고 누를 것은 44px 이상.
+   9/10: 실제 플레이어 폰 세로의 창 방(노치 아래~메뉴 단추 줄 위)은 382×478(0.80)·404×560 쯤이라 3/4 로는 안 걸렸다. 가로·데스크톱 크기는 모두 1 이상. */
+@container craft (max-aspect-ratio: 9/10) {
+  .player-layout .play-viewport > .runtime-shop-overlay.runtime-craft-shop-overlay > .runtime-shop-shell.runtime-craft-shell {
+    --shop-text-small: 13px; --shop-text-body: 15px; --shop-text-section: 16px; --shop-text-title: 18px;
+    --shop-art-row: 34px; --craft-pad: 8px;
+  }
+  .runtime-craft-shell .runtime-shop-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 11fr) minmax(0, 9fr); }
+  .runtime-craft-shell .runtime-shop-keyhints { display: none; }
+  .runtime-craft-shell .runtime-shop-item-row { min-height: 48px; }
+  .runtime-craft-shell :is(.runtime-shop-confirm, .runtime-shop-cancel, .runtime-craft-step) { min-height: 44px; min-width: 44px; }
+  .runtime-craft-shell .runtime-craft-prompt { flex-direction: column; align-items: stretch; }
+  .runtime-craft-shell .runtime-craft-status-line { flex: none; }
+  .runtime-craft-shell .runtime-shop-prompt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .runtime-craft-shell .runtime-craft-count { justify-content: center; }
+}
+/* 낮은 세로 방(실제 플레이어 폰 세로의 창 방 382×478): 목록이 두 줄, 재료가 한 줄만 보였다 — 머리·그림을 줄이고 재료는 두 칸씩,
+   수량·단추는 한 줄. 누를 것은 그대로 44px, 글자는 12px 이상. */
+@container craft (max-aspect-ratio: 9/10) and (max-height: 600px) {
+  .player-layout .play-viewport > .runtime-shop-overlay.runtime-craft-shop-overlay > .runtime-shop-shell.runtime-craft-shell {
+    --shop-text-small: 12px; --shop-text-body: 14px; --shop-text-section: 14px; --shop-text-title: 16px;
+    --shop-art-row: 26px; --craft-pad: 6px;
+  }
+  .runtime-craft-shell .runtime-shop-merchant-avatar { display: none; }
+  .runtime-craft-shell .runtime-shop-main { grid-template-rows: minmax(0, 11fr) minmax(0, 9fr); }
+  .runtime-craft-shell .runtime-shop-item-row { min-height: 44px; padding-block: 2px; }
+  .runtime-craft-shell .runtime-craft-detail { gap: 4px; }
+  .runtime-craft-shell .runtime-craft-needs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .runtime-craft-shell .runtime-craft-prompt { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .runtime-craft-shell .runtime-craft-status-line { flex: 1 1 100%; }
+  .runtime-craft-shell .runtime-shop-prompt-actions { flex: 1 1 auto; }
+}
+
 /* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */
 .runtime-chest-overlay {
   position: absolute;

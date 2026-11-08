@@ -38,6 +38,10 @@
    격자 칸은 map-panel.modern.css 의 6칸(갈매기·손잡이·썸네일·이름·표식·메뉴) 순서를 그대로 쓰고 폭만 바꾼다. */
 .editor-layout .map-sidebar-section .map-tree-panel { --map-row-handle: 0px; --map-row-thumb: 18px; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-item { grid-template-columns: var(--map-row-toggle) 0 0 minmax(0, 1fr) 0 auto; }
+/* 「시작」 표식은 시작 맵 행에만 있어 다른 행은 자식이 5개다 — 그러면 행 메뉴 ⋮ 가 0 폭 표식 칸에 들어가 행 밖(왼쪽 열 크기 조절 손잡이 위)으로
+   삐져나가 누를 수 없었다(2026-11-08 autopilot-usability E12: 탭 지점 elementFromPoint = resizer-left, 1440·390 모두). 늘 마지막 칸에 둔다. */
+.editor-layout .map-sidebar-section .map-tree-panel .map-item > .map-tree-action,
+.editor-layout .map-sidebar-section .map-tree-panel .map-item > .map-tree-more { grid-column: -2 / -1; }
 .editor-layout .map-sidebar-section .map-tree-panel .map-tree-drag-handle,
 .editor-layout .map-sidebar-section .map-tree-panel .start-mark { visibility: hidden; width: 0; min-width: 0; padding: 0; overflow: hidden; }
 /* 목업 행에는 썸네일이 없다 — 캔버스는 DOM 에 남기되(e2e 가 그린 그림을 읽는다) 칸을 0 으로 접고 겹쳐 그리지 않는다. */

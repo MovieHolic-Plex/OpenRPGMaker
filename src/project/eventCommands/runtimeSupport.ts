@@ -133,7 +133,7 @@ export function commandRuntimeSupportDescriptor(
       case "triggerEnding": case "setLighting": case "addLight": case "removeLight":
       case "showEmote": case "setWeather": case "addFollower": case "removeFollower":
       case "giveMonster": case "evolveMonster": case "openChest": case "advanceTime":
-      case "setTime": case "sleepUntilMorning": case "craftRecipe": case "applyItemUpgrade":
+      case "setTime": case "sleepUntilMorning": case "craftRecipe": case "openCraftShop": case "applyItemUpgrade":
       case "equipTool": case "changeLifeSkillExp": case "moveMonster": case "openSaveMenu": case "planSchedule": case "runSchedule": case "script":
       case "spawnFieldEnemy": case "despawnFieldEnemy": case "tacticsBattle": case "advanceCropGrowth": case "runControl":
       case "playMovie":

@@ -1,0 +1,75 @@
+{
+  "set": "fallen-drops",
+  "note": "폴른 스타 전리품 표시 QA — 전투 결과 창의 드롭(이름·개수), 필드 보물상자·숨은 물건의 획득 문구. 픽스처는 fallen-battle-fixture.mjs 가 구운 play.json 에 트룹마다 qa_fight_* 이벤트를 붙인 것. 가시등 멧돼지(enemy_fs_elite_thornback)는 상급 회복약 100%, 발렌 피날레는 그을린 장갑·심판의 검 100%라 드롭이 확정이다.",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": { "width": 1440, "height": 900 },
+  "checkpoints": [
+    {
+      "id": "thornback-drop",
+      "label": "가시등 멧돼지 승리 — 상급 회복약 드롭 확정",
+      "mapId": "fs_forest_edge", "x": 14, "y": 22, "facing": "up",
+      "switches": { "sw_fs_main_started": true, "sw_fs_valen_marched": true },
+      "party": [{ "actorId": "actor_hero", "level": 60 }, { "actorId": "actor_fs_elena", "level": 60 }],
+      "startEventId": "qa_fight_elite_thornback",
+      "beats": [
+        { "id": "battle", "note": "전투 시작", "ops": [{ "kind": "waitFor", "testid": "battle-command-grid", "timeoutMs": 60000 }] },
+        { "id": "result", "note": "공격만 눌러 이긴 뒤 결과 창 — 드롭 줄을 본다", "ops": [
+          { "kind": "battle", "fallback": "attack", "timeoutMs": 120000 },
+          { "kind": "waitFor", "testid": "battle-result-confirm", "timeoutMs": 20000 },
+          { "kind": "hold", "dir": null, "ms": 4000 },
+          { "kind": "evalToFile", "out": "verify-shots/fallen-drops/thornback-result.json", "fn": "() => ({ rows: [...document.querySelectorAll('.battle-result-reward-row')].map((r) => ({ kind: r.dataset.rewardKind ?? null, text: r.textContent.replace(/\\s+/g, ' ').trim(), revealed: r.dataset.revealed })), summary: document.querySelector('[data-testid=battle-result-summary]')?.textContent ?? null, inventory: window.__oprnDebug.readState().inventory })" }
+        ], "shot": true }
+      ]
+    },
+    {
+      "id": "finale-drop",
+      "label": "발렌·수호상 피날레 승리 — 두 개 이상 드롭",
+      "mapId": "fs_forest_edge", "x": 14, "y": 22, "facing": "up",
+      "switches": { "sw_fs_main_started": true, "sw_fs_valen_marched": true },
+      "party": [{ "actorId": "actor_hero", "level": 80 }, { "actorId": "actor_fs_elena", "level": 80 }],
+      "startEventId": "qa_fight_finale",
+      "beats": [
+        { "id": "battle", "note": "전투 시작", "ops": [{ "kind": "waitFor", "testid": "battle-command-grid", "timeoutMs": 60000 }] },
+        { "id": "result", "note": "이긴 뒤 결과 창", "ops": [
+          { "kind": "battle", "fallback": "attack", "timeoutMs": 240000 },
+          { "kind": "waitFor", "testid": "battle-result-confirm", "timeoutMs": 20000 },
+          { "kind": "hold", "dir": null, "ms": 5000 },
+          { "kind": "evalToFile", "out": "verify-shots/fallen-drops/finale-result.json", "fn": "() => ({ rows: [...document.querySelectorAll('.battle-result-reward-row')].map((r) => ({ kind: r.dataset.rewardKind ?? null, text: r.textContent.replace(/\\s+/g, ' ').trim(), revealed: r.dataset.revealed })), inventory: window.__oprnDebug.readState().inventory })" }
+        ], "shot": true }
+      ]
+    },
+    {
+      "id": "thicket-chest",
+      "label": "덤불숲 보물상자 — 불씨 병 · 60G",
+      "mapId": "fs_forest_thicket", "x": 4, "y": 12, "facing": "up",
+      "switches": { "sw_fs_main_started": true },
+      "party": [{ "actorId": "actor_hero", "level": 6 }],
+      "beats": [
+        { "id": "open", "note": "위의 상자를 연다 → 획득 문구", "ops": [
+          { "kind": "hold", "dir": null, "ms": 1200 },
+          { "kind": "action" },
+          { "kind": "waitFor", "testid": "dialogue-box", "timeoutMs": 8000 },
+          { "kind": "hold", "dir": null, "ms": 1500 }
+        ], "shot": true }
+      ]
+    },
+    {
+      "id": "edge-hidden",
+      "label": "숲 어귀 숨은 물건 — 투지 강장제 · 30G",
+      "mapId": "fs_forest_edge", "x": 14, "y": 12, "facing": "up",
+      "switches": { "sw_fs_main_started": true },
+      "party": [{ "actorId": "actor_hero", "level": 6 }],
+      "beats": [
+        { "id": "found", "note": "나무뿌리 → 대사 넘김 → 획득 문구", "ops": [
+          { "kind": "hold", "dir": null, "ms": 1200 },
+          { "kind": "action" },
+          { "kind": "waitFor", "testid": "dialogue-box", "timeoutMs": 8000 },
+          { "kind": "hold", "dir": null, "ms": 600 },
+          { "kind": "key", "key": "z" },
+          { "kind": "waitForText", "testid": "dialogue-box", "text": "주웠다", "timeoutMs": 8000 },
+          { "kind": "hold", "dir": null, "ms": 1200 }
+        ], "shot": true }
+      ]
+    }
+  ]
+}
