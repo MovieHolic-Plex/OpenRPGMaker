@@ -192,6 +192,7 @@ import { STORE_TOOLS } from "./storeTools";
 import { STORE_ICON_TOOLS } from "./storeIconTools";
 import { TIMED_ESCAPE_TOOLS } from "./timedEscapeTools";
 import { OBJECT_GEN_TOOLS } from "./objectGenTool";
+import { QUICK_TERRAIN_TOOLS } from "./quickTerrainTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
 
 export { PLACEMENT_TOOLS };
@@ -430,6 +431,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...STORE_TOOLS,
   ...STORE_ICON_TOOLS,
   ...OBJECT_GEN_TOOLS,
+  // 2026-11-08 실험 2(B3): 공방 「빠른 지형」을 조수·에이전트에게도 연다(재질 색만 바꾼 지형 그룹).
+  ...withDomain(QUICK_TERRAIN_TOOLS, "tile"),
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
   ...KIT_AREA_TOOLS,
