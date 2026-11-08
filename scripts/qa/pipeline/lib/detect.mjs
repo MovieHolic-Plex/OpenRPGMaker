@@ -4,6 +4,10 @@
 
 const IGNORE_NET = /favicon|items\/shared|pixel-enemy/;
 const IGNORE_CONSOLE = /AudioContext|play\(\) failed|autoplay|NotAllowedError|webgl|GL_|GPU stall/i;
+// Store builds ship pictures as lazy bundles `packs/pNNN.json` (src/project/storeGamePacks.ts); the player cancels the
+// ones it no longer needs when a scene moves on (src/player/preloadPacks.ts). Only that exact name is exempt from the
+// abort rule — any other aborted .json (project.json, a map, a data file) is still a defect.
+export const ABORTED_PACK_REQUEST = /\/packs\/p\d{3}\.json(?:\?|$)/;
 
 function frameRef(job, row) {
   return { job: job.id, seq: row.seq, file: row.file, label: row.label };
@@ -30,7 +34,7 @@ export function detectRun(runs) {
         if (IGNORE_NET.test(n.url)) continue;
         // The browser aborts media and blob requests when music switches or a scene unmounts; only HTTP errors and
         // failures of non-media assets are defects.
-        if (n.kind === "failed" && /ERR_ABORTED/.test(n.why ?? "") && (/^blob:/.test(n.url) || /\.(mp3|ogg|wav|m4a)(\?|$)/.test(n.url))) continue;
+        if (n.kind === "failed" && /ERR_ABORTED/.test(n.why ?? "") && (/^blob:/.test(n.url) || /\.(mp3|ogg|wav|m4a)(\?|$)/.test(n.url) || ABORTED_PACK_REQUEST.test(n.url))) continue;
         const asset = n.url.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+/, "");
         add({ ...base, check: "asset-request", severity: "visual", claim: `${n.status ?? n.why} ${asset}`, key: `net|${asset}`, evidence: ev, state: row.state });
       }
