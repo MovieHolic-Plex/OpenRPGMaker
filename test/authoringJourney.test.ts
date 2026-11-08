@@ -18,6 +18,14 @@ const {
 } = await import("@/editor/authoringJourney");
 const { renderAuthoringJourney } = await import("@/editor/panels/authoringJourneyStrip");
 
+// 035e8e5feb: 새 맵은 기본 바닥으로 태어나 「타일이 깔린 맵」(map-tiles)으로 센다 — 승인만으로는 완료가 아님을 보려면 타일을 비운 맵이 필요하다.
+function clearMapTiles(project: ReturnType<typeof createBlankProject>): void {
+  for (const map of Object.values(project.maps)) {
+    map.lowerTiles = map.lowerTiles.map(() => -1);
+    map.upperTiles = map.upperTiles.map(() => -1);
+  }
+}
+
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
   get length(): number { return this.values.size; }
@@ -34,6 +42,7 @@ describe("genre-neutral authoring journey", () => {
   // Break caught: a decorative checklist claims an acknowledgement is authored completion.
   it("distinguishes authored evidence, reference issues, and non-completing manual acknowledgement", () => {
     const project = createBlankProject();
+    clearMapTiles(project);
     project.maps[project.startMapId]!.events.push({
       id: "committed",
       x: 1,
@@ -52,6 +61,7 @@ describe("genre-neutral authoring journey", () => {
     expect(journey.find((stage) => stage.id === "project")?.completion).toBe("project");
     expect(journey.find((stage) => stage.id === "map")?.completion).toBeNull();
     expect(journey.find((stage) => stage.id === "map")?.acknowledgement).toBe("acknowledged");
+    expect(evaluateAuthoringJourney(createBlankProject(), emptyAuthoringJourneyProgress()).find((stage) => stage.id === "map")?.completion).toBe("map-tiles");
     expect(journey.find((stage) => stage.id === "event")?.completion).toBe("committed-event");
     expect(journey.find((stage) => stage.id === "data")?.completion).toBe("database-change");
     expect(journey.find((stage) => stage.id === "data")?.referenceIssueCount).toBeGreaterThan(0);
@@ -178,6 +188,8 @@ describe("genre-neutral authoring journey", () => {
     storage.setItem("oprn:authoring-journey:v1:legacy", JSON.stringify({ manualCompleted: ["map"] }));
     const migrated = loadAuthoringJourneyProgress("legacy", storage);
     expect(migrated.manualAcknowledged).toEqual(["map"]);
-    expect(evaluateAuthoringJourney(createBlankProject(), migrated).find((stage) => stage.id === "map")?.completion).toBeNull();
+    const untiled = createBlankProject();
+    clearMapTiles(untiled);
+    expect(evaluateAuthoringJourney(untiled, migrated).find((stage) => stage.id === "map")?.completion).toBeNull();
   });
 });
