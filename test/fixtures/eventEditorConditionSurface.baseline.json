@@ -1170,6 +1170,7 @@
    "event-condition-mode",
    "event-condition-timer-id",
    "event-condition-timer-minutes",
+   "event-condition-timer-op",
    "event-condition-timer-seconds",
    "event-fork-body-hint",
    "event-fork-branch-summary",
@@ -1210,6 +1211,7 @@
    "event-condition-mode": "select{}",
    "event-condition-timer-id": "select{}",
    "event-condition-timer-minutes": "input[number]{}",
+   "event-condition-timer-op": "select{}",
    "event-condition-timer-seconds": "input[number]{}",
    "event-fork-else-enabled": "input[checkbox]{checked}"
   },
@@ -1256,6 +1258,14 @@
    "event-condition-timer-id": [
     "timer1",
     "timer2"
+   ],
+   "event-condition-timer-op": [
+    "==",
+    ">=",
+    "<=",
+    ">",
+    "<",
+    "!="
    ]
   },
   "labels": [
@@ -1265,10 +1275,10 @@
    "div": 15,
    "input": 3,
    "label": 2,
-   "option": 39,
+   "option": 45,
    "p": 3,
    "section": 2,
-   "select": 2,
+   "select": 3,
    "span": 5
   },
   "tagByTestid": {
@@ -1283,6 +1293,7 @@
    "event-condition-mode": "select",
    "event-condition-timer-id": "select",
    "event-condition-timer-minutes": "input",
+   "event-condition-timer-op": "select",
    "event-condition-timer-seconds": "input",
    "event-fork-body-hint": "p",
    "event-fork-branch-summary": "div",
@@ -1296,15 +1307,15 @@
    "event-command-edit-summary": "조건 분기",
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "타이머 # #초 이하",
-   "event-condition-hint": "타이머 남은 시간이 지정 초 이하인지 검사합니다.",
+   "event-condition-hint": "타이머 남은 시간을 비교합니다. 연산자를 적지 않으면 지정 초 이하입니다. 꺼진 타이머는 #초로 읽습니다.",
    "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
    "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
    "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
    "event-fork-summary-then": "조건이 맞을 때 · #개 명령",
-   "event-fork-timer-warning": "타이머 # · #초 이하 조건은 타이머가 꺼져 있어도 참입니다. 타이머를 켜는 명령 뒤에 두거나 임계값을 올리세요."
+   "event-fork-timer-warning": "타이머 # · #초 이하 조건은 타이머가 꺼져 있으면 남은 시간을 #초로 읽어 참이 됩니다. 타이머를 켜기 전에도 이 조건이 맞습니다."
   },
-  "testidCount": 19,
-  "controlCount": 5
+  "testidCount": 20,
+  "controlCount": 6
  },
  "fork:timePhase": {
   "testids": [
