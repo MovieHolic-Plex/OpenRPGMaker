@@ -249,7 +249,8 @@ function memoryStorage(): Storage {
 type ControllerHarness = { controller: ReturnType<typeof createPlayerStatusMenuController>; layout: HTMLElement };
 
 function mountController(skin: MenuUiStyle): ControllerHarness {
-  const project = createBlankProject();
+  // 전투 없는 게임은 첫 화면이 이야기 개요라 파티·스킬 흐름이 다르다(combatPresence, #3660) — render() 처럼 전투가 있는 게임으로 만든다.
+  const project = withCombat(createBlankProject());
   project.system.menuUiStyle = skin;
   store.replaceProject(project);
   const session = startSession(project);
