@@ -173,7 +173,7 @@
   z-index: 90;
 }
 .player-layout .play-stage > .runtime-overlay[data-testid="runtime-safety-stop"] {
-  border-color: #e3b341;
+  border-color: var(--runtime-glass-accent);
 }
 .player-layout .play-stage > .game-over-panel {
   max-width: min(90%, var(--play-visible-width));
