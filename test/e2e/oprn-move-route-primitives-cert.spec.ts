@@ -68,7 +68,7 @@ test("loop17 certifies move route primitive authoring persistence and runtime ef
   await screenshot(page, "007-runtime-before-route.png");
 
   await page.getByTestId("event-ev_route_controller").click();
-  await expect(page.getByTestId("audio-indicator")).toContainText("se_route_chime", { timeout: 15_000 });
+  await expect(page.getByTestId("audio-indicator")).toContainText("경로 종소리", { timeout: 15_000 });
   await expect.poll(async () => (await runtimeState(page)).events.ev_route_target?.x, { timeout: 20_000 }).toBe(3);
   await expect.poll(async () => (await runtimeState(page)).events.ev_route_target?.y, { timeout: 20_000 }).toBe(2);
   const throughState = await runtimeState(page);
@@ -234,7 +234,7 @@ function moveRouteProject(): Project {
     version: 3,
     meta: { title: "Loop17 Move Route", author: "e2e", terms: { gold: "G" } },
     assets: { sprites: { npc_target: sprite("npc_target", "tex_easyrpg_charset_people1"), tex_easyrpg_charset_people1: sprite("tex_easyrpg_charset_people1", "tex_easyrpg_charset_actor1") }, uploaded: {} },
-    resourceProfiles: [],
+    resourceProfiles: [{ kind: "sound", assetId: "se_route_chime", name: "경로 종소리" }],
     tilesets: { tiles_default: { id: "tiles_default", name: "Default", image: { type: "bundled", id: "tex_tiles_default" }, tileSize: 16, tilesPerRow: 8, count: 8, passability: Array.from({ length: 8 }, () => PASSABLE), priority: ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"], terrain: Array.from({ length: 8 }, () => 0) } },
     switches: [{ id: "sw_route_seen", name: "Route Seen" }],
     variables: [],

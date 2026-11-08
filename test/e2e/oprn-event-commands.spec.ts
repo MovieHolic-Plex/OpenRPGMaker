@@ -915,6 +915,8 @@ test("editor-authored picture and audio commands render and clear in play mode",
   await writeEvidence("002-picture-audio-visible-authoring.json", JSON.stringify({ commands: visibleCommands }, null, 2));
 
   const playable = makeBattleProject();
+  // 배너는 이름이 있는 음원만 띄운다 — 이름 없는 id 는 숨겨지므로 스크린샷 대상이 생기게 이름을 붙인다.
+  playable.resourceProfiles.push({ kind: "music", assetId: "bgm_visible", name: "보이는 곡" });
   playable.maps.map_cmd.events = [{
     id: authored.id,
     x: 0,

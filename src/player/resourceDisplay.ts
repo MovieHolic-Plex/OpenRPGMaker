@@ -7,20 +7,19 @@ export function resourceDisplayName(resourceId: string | undefined, fallback: st
   return name && name.length > 0 ? name : fallback;
 }
 
-/** 엔진에 들어 있는 공용 음원(CC0 카탈로그·EasyRPG RTP) id. 플레이어에게 보일 이름이 아니다. */
-const BUNDLED_AUDIO_ID = /^(cc0|easyrpg)-/u;
-
 /**
- * 「지금 흐르는 곡」 배너 글자. 저자가 붙인 이름이 있으면 그 이름, 저자가 올린 음원이면 그 id,
- * 공용 음원인데 이름이 없으면 undefined(배너를 띄우지 않는다).
- * 폴른 스타 출하본에서 대사창 위에 「cc0-bgm-rtp-emo-002」 가 그대로 보였다(2026-11-08 QA V049·D024).
+ * 「지금 흐르는 곡」 배너 글자. 순서: 저자가 붙인 이름(resourceProfiles) → 올린 음원의 이름(assets.uploaded[id].name).
+ * 둘 다 없으면 undefined(배너를 띄우지 않는다) — 리소스 id 는 어떤 경우에도 플레이어에게 보이지 않는다.
+ * 폴른 스타 출하본에서 대사창 위에 「cc0-bgm-rtp-emo-002」 가 그대로 보였고(2026-11-08 QA V049·D024),
+ * 몬스터 원정 예제에서는 「mx_audio_town」 이 HUD·전투·메뉴에 계속 보였다(terra-autopilot 엔진 갭).
  */
 export function audioIndicatorText(resourceId: string | undefined): string | undefined {
   const id = resourceId?.trim();
   if (!id) return undefined;
   const named = resourceDisplayName(id, "");
   if (named) return named;
-  return BUNDLED_AUDIO_ID.test(id) ? undefined : id;
+  const uploadedName = store.getCurrent().assets.uploaded[id]?.name?.trim();
+  return uploadedName && uploadedName !== id ? uploadedName : undefined;
 }
 
 /** 루프 음원 배너를 띄운다. 보일 이름이 없으면 이전 곡의 배너도 걷는다(지금 곡과 다른 글자가 남지 않게). */

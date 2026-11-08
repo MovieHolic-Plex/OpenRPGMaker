@@ -14,6 +14,9 @@ import { FakeElement, installFakeDom } from "./fakeDom";
 // 리소스 id 가 게임 화면에 박혀 남는다 (2026-08-30 브라우저 QA 실측).
 function mkScene() {
   const project = createBlankProject();
+  // 배너는 이름이 있는 음원만 띄운다(리소스 id 는 플레이어에게 보이지 않는다).
+  project.resourceProfiles.push({ kind: "music", assetId: "bgm_town", name: "마을 곡" });
+  store.replaceProject(project);
   const session = startSession(project, 3);
   const host = new FakeElement("div");
   const dialogue = {
