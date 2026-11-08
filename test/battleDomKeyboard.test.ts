@@ -390,6 +390,9 @@ describe("battle dom keyboard and status rows", () => {
     ime("ShiftLeft", {}, "keyup");
     // 자동 전투를 켜면 1× 에서 1.8× 로 올리고(toggleAutoBattle), Shift 가 그 다음 단(3×)으로 돌린다.
     expect(status?.textContent).toContain("Shift 3×");
+    // 자동 전투가 켜져 있으면 명령 카드가 스스로 행동을 고른다 — 아래 메뉴 키 확인은 AUTO 를 끄고 한다.
+    ime("KeyF");
+    expect(status?.textContent).toContain("F 자동 꺼짐");
 
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
