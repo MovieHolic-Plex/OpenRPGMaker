@@ -6,7 +6,7 @@ import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioId
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import { describe, expect, it } from "vitest";
 
-const AUDIO_ID_PATTERN = /"(easyrpg-sound|easyrpg-music|cc0-bgm)-[a-z0-9-]+"/g;
+const AUDIO_ID_PATTERN = /"(easyrpg-sound|easyrpg-music|cc0-bgm|cc0-se)-[a-z0-9-]+"/g;
 const PLAYER_DIR = "src/player";
 // 목록 파일 자신과 카탈로그 정의는 「재생」 이 아니라 「선언」 이다.
 const NOT_PLAYBACK = new Set(["playerRuntimeAudioIds.ts"]);
@@ -24,7 +24,13 @@ function playerSourceFiles(dir: string): string[] {
 
 // 플레이어가 재생하지만 src/player 밖으로 옮긴 정의 — FALLBACK_BGM_RESOURCE_ID 는 project/mapMusic.ts 로 옮겨
 // player/mapBgm.ts 가 다시 내보낸다(공개 기준 커밋 0d4f13e7c8 시점부터).
-const PLAYER_PLAYBACK_FILES_OUTSIDE_PLAYER = ["src/project/mapMusic.ts"];
+// containerFx·mapDoorKinds·liftRide 는 플레이어가 기본값으로 재생하는 cc0-se 표다(상자 획득음이 출하본에서 404 였다, 2026-11-08).
+const PLAYER_PLAYBACK_FILES_OUTSIDE_PLAYER = [
+  "src/project/mapMusic.ts",
+  "src/project/containerFx.ts",
+  "src/project/mapDoorKinds.ts",
+  "src/project/eventCommands/liftRide.ts",
+];
 
 function hardcodedIdsInPlayerSource(): Map<string, string[]> {
   const found = new Map<string, string[]>();
