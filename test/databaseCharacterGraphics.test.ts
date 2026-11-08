@@ -7,6 +7,10 @@ import { listCharacterSprites, type CharacterGraphicsDocument } from "@/project/
 import { emptySharedCharacterGraphics, sharedCharacterGraphicsProject, validateSharedCharacterGraphics } from "@/project/sharedCharacterGraphics";
 import { resetMapEditHistory, getMapEditHistoryState } from "@/editor/mapEditHistory";
 
+// createBlankProject() builds the ~63MB blank project; each test here builds it (beforeEach/inline) and CI runs 4 workers at once, so
+// single tests measured 8-15s+ — past vitest's 15s default. Same per-file budget other blank-project files use (e.g. actionAcceptanceProof).
+vi.setConfig({ testTimeout: 120_000 });
+
 const textureKey = "tex_easyrpg_charset_people1";
 const faceId = "easyrpg-faceset-actor2-15";
 let saved: CharacterGraphicsDocument;
