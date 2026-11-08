@@ -57,7 +57,8 @@ describe("pixel window menu (default skin)", () => {
     expect(plan.changes.map((change) => [change.slotId, change.equipmentId])).toEqual([["weapon", "equip_steel_sword"]]);
     const attack = plan.statDelta.find((delta) => delta.label === "공격")!;
     expect(attack.next - attack.current).toBe(20 - 8);
-    expect(plan.gain).toBe(12);
+    // 강철 검은 공격 +12 를 주지만 민첩 −1 도 낸다(0b13578d30 이후 음수 장비 보정이 0 으로 깎이지 않는다) — 합계는 12 − 1 = 11.
+    expect(plan.gain).toBe(11);
     // 가방이 비면 바꿀 것이 없다.
     session.inventory = {};
     expect(bestEquipmentPlan({ project, session }, hero)!.changes).toEqual([]);
@@ -69,7 +70,7 @@ describe("pixel window menu (default skin)", () => {
       const { project, session } = fourParty();
       session.inventory = { equip_steel_sword: 1 };
       const slots = renderWithFakeDom(() => renderPlayerStatusMenu({ project, session, slots: [], actions, mode: "function", selectedCommand: "equipment", equipmentActorId: "actor_hero" }));
-      expect(findByTestId(slots, "status-menu-equipment-optimize")?.textContent).toContain("합계 +12");
+      expect(findByTestId(slots, "status-menu-equipment-optimize")?.textContent).toContain("합계 +11");
       const candidates = renderWithFakeDom(() => renderPlayerStatusMenu({ project, session, slots: [], actions, mode: "function", selectedCommand: "equipment", equipmentActorId: "actor_hero", equipmentSlotId: "weapon", selectedDetailActionIndex: 1 }));
       expect(findByTestId(candidates, "status-menu-equipment-item-equip_steel_sword")?.textContent).toContain("공격+12");
       expect(findByTestId(candidates, "status-menu-stat-delta-공격")?.textContent).toContain("▲12");
