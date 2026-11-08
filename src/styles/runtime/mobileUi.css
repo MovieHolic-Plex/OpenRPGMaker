@@ -337,9 +337,14 @@
   left: var(--panel-room-left);
   top: var(--panel-room-top);
   width: var(--panel-room-w);
-  height: var(--panel-room-h);
+  /* 메뉴 단추 줄 위에서 끊으면(382×478) 아래 절반이 조작 띠로 비고 제작법이 3줄만 보였다(2026-11-08) — 화면 아래 안전 영역 위까지 쓴다.
+     만들기·나가기가 화면 아래쪽(엄지 자리)으로 내려온다. */
+  height: calc(100% - var(--panel-room-top) - var(--touch-band-bottom, 0px) - 8px);
   transform: none;
 }
+/* 제작 창이 열린 동안은 조작 띠를 걷는다 — 창이 그 자리를 쓰고, 줄·수량·만들기·나가기는 손가락으로 바로 누른다(나가기 = 닫기).
+   실물 패드·키보드는 그대로 들어간다. */
+.player-layout .play-viewport[data-window-panel]:has(> .runtime-craft-shop-overlay) > :is(.touch-pad, .play-fullscreen-toggle) { display: none; }
 /* 칸 폭(320)에서는 목록 옆 128px 쇼케이스 열이 목록 이름을 한두 자로 잘랐다 — 쇼케이스를 목록 아래 전체 폭으로 내리고,
    능력치 변화는 두 칸씩. 값은 게임 px(칸 안 1배 = 화면 px). */
 .play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {
