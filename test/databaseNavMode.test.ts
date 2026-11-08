@@ -95,7 +95,8 @@ describe("database navigation", () => {
     }
 
     // 8684ab7daf: 접기 줄은 이름마다 단추다 — 줄 자체가 아니라 「+N」 단추(또는 탭 이름 단추)를 눌러야 그 그룹의 빈 탭이 펼쳐진다.
-    findByTestId(fold, "db-tab-fold-all-life")!.click();
+    // fakeDom 의 click() 은 버블링하지 않는다 — 접기 줄의 위임 핸들러에 닿도록 버블링 클릭을 보낸다.
+    findByTestId(fold, "db-tab-fold-all-life")!.dispatchEvent(new Event("click", { bubbles: true }));
     expect(tabsInLife.every((tab) => !tab.hidden)).toBe(true);
     expect(fold.hidden).toBe(true);
     expect(life.getAttribute("aria-expanded")).toBe("true");
@@ -146,7 +147,7 @@ describe("database navigation", () => {
     expect(findByTestId(host, "db-tab-skills")?.hidden).toBe(true);
 
     // 「모두 보기」 클릭 시 해당 그룹의 숨긴 탭이 모두 펼쳐진다.
-    findByTestId(battleFold, "db-tab-fold-all-battle")!.click();
+    findByTestId(battleFold, "db-tab-fold-all-battle")!.dispatchEvent(new Event("click", { bubbles: true }));
     expect(battleFold.hidden).toBe(true);
     expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(false);
   });
