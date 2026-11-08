@@ -386,7 +386,7 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
  * 몬스터 전투 도트 시트(전투가 움직이는 3×3 또는 4×4 칸). 몬스터 에셋의 meta.pixelEnemySheet 는 프로젝트의 공방 시트와 같은 계약이다
  * (src/project/types/base.ts UploadedPixelEnemySheetMeta, 런타임 src/assets/pixelEnemySheets.ts projectPixelEnemySheet).
  * sheetResourceId 는 같은 팩의 picture 에셋이고, 그림은 (n·cell)×(n·cell)(grid 3x3 → n=3 기본, 4x4 → n=4), 초상(몬스터 에셋)은 cell×cell 이다.
- * 4x4 칸 번호(행 우선): 0~8 = 3×3 과 같은 9칸, 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak · 14 intro · 15 예약(투명).
+ * 4x4 칸 번호(행 우선): 0~8 = 3×3 과 같은 9칸, 9 attack_mid · 10 cast_charge · 11 cast_release · 12 guard · 13 weak(전투 미사용) · 14 intro · 15 예약(투명).
  * missingCells(9~14 만)는 그리지 않은 칸 — 완전 투명이어야 하고, 적지 않은 9~14 칸은 비어 있으면 안 된다(storeMonsterSheetCellProblems).
  */
 export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;

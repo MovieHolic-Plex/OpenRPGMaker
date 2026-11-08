@@ -681,7 +681,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
       - 통상 공격: windup → **attack_mid**(근접은 다가가기 끝 82%, 제자리 공격은 다가가기 뒤쪽) → attack (`withAttackMid`).
       - 몬스터 기술: `retroMonsterSkillCellKind` — 공격력 피해는 9칸 그대로, 그 밖(마력 피해·회복·상태)은 windup→**cast_charge**, 방출→**cast_release**, 방어를 올리는 자기 지원 기술(단단해지기)은 방출을 **guard** 로(`retroSkillChoreography` `monsterSheetCell`).
       - 막기: 적은 방어 명령이 없어 `data-battler-guarded`(방어 명령 또는 `runtimeEffects.defenseMultiplier>1` 상태)가 기준이다. 막는 중 맞으면 guard 160ms → hit. 쉬는 칸은 방어 명령 중(`data-battler-defending`)일 때 guard.
-      - 빈사: HP≤25%(`data-battler-weak`) 대기는 weak ↔ idle_b 를 번갈아(`retro-pixel-enemy-weak-16`, 감속 모드는 weak 정지).
+      - 빈사: **쓰지 않는다(2026-11-08 오너 결정).** HP≤25%(`data-battler-weak`)여도 대기는 보통 대기 루프 그대로다. 예전에는 weak ↔ idle_b 를 번갈아 두 모습이 깜빡이는 것처럼 보였다. `ENEMY_WEAK_REST_CELL_ENABLED`(battleRetroMotion.ts)가 끄고, 시트 계약의 13번 칸은 남아 있어 그 칸을 그린 시트도 그대로 유효하다(쓰이지 않을 뿐).
       - 등장: `retroBattleIntro` 가 인트로 시작에 적마다 140ms 엇갈려 intro 칸을 520ms(보스 = 쓰러짐 연출 bossSink 는 900ms) 보인다. 감속 모드는 하지 않는다.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.

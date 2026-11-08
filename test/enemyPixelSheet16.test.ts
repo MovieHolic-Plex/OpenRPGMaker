@@ -257,11 +257,12 @@ describe("16-cell runtime cells", { timeout: 90_000 }, () => {
     expect(image.dataset.pixelCell).toBe("hit");
   });
 
-  it("weak replaces the idle loop at HP ≤ 25%, and missing guard/weak/intro cells simply do nothing", () => {
+  it("a low-HP 16-cell enemy keeps the plain idle loop even with a weak cell, and missing guard/weak/intro cells simply do nothing", () => {
+    // Owner decision 2026-11-08: weak ↔ idle_b at HP ≤ 25% read as flicker between two looks.
     const full = field16();
     full.golem.dataset.battlerWeak = "true";
     expect(retroPixelEnemyCell(full.golem)).toBe("idle");
-    expect(full.golem.dataset.pixelWeak).toBe("true");
+    expect(full.golem.dataset.pixelWeak).toBeUndefined();
     const missing = field16("noGuardWeakIntro");
     missing.golem.dataset.battlerWeak = "true";
     missing.golem.dataset.battlerDefending = "true";
