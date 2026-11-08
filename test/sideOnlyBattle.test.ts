@@ -67,10 +67,10 @@ describe("몬스터 그림 생성 금지", () => {
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "generate_image_asset", { kind: "monster", prompt: "눈 덮인 산에서 포효하는 얼음 늑대", tags: ["늑대"] });
     expect(result.ok).toBe(false);
-    expect(result.issues?.map((issue) => issue.code)).toContain("invalid-kind");
+    expect(result.issues?.map((issue) => issue.code)).toContain("invalid-args");
     // 유효한 kind 는 kind 거절이 아니다. 이 실행 경로엔 생성기가 없어 하드 오류(image-generation-unavailable)로 끝난다(b3e9e1d206) — 성공으로 읽히지 않는다.
     const backdrop = runTool(ctx, "generate_image_asset", { kind: "backdrop", prompt: "불타는 화산 동굴" });
-    expect(backdrop.issues?.map((issue) => issue.code)).not.toContain("invalid-kind");
+    expect(backdrop.issues?.map((issue) => issue.code)).not.toContain("invalid-args");
     expect(backdrop.issues?.map((issue) => issue.code)).toContain("image-generation-unavailable");
   });
 });
