@@ -172,6 +172,15 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
 
 계단 키트는 앞 칸(approach)이 빈 바닥이어야 찍히고, 층 이동은 이동 칸(trigger)에, 도착은 앞 칸에 계단을 등지고 둔다. `list_hand_interior_parts`·`list_spatial_designs` 행의 `entrance`, 칩셋 참고문서 「계단 입구」. 상세 `openwiki/stair-entrance-contract.md`.
 
+## 테마 지형 만들기 `request_quick_terrain` (2026-11-08)
+
+조수가 「과자 땅」「초콜릿 강」「젤리 길」처럼 **테마 지형**을 요청받았을 때 쓰는 도구. 공방의 「빠른 지형」(`src/project/workshopQuickTerrain.ts` + `src/editor/workshop/oneClick/quickTerrain.ts`)과 **같은 길**을 조수에게 연다 — 지금 맵 칩셋에 이미 있는 오토타일(물·운하 / 길 포석 / 모랫길)의 모양(가장자리 변형·움직이는 칸)은 그대로 두고 재질 색만 바꿔 같은 칩셋에 새 그룹으로 덧붙인다. 새로 그리는 것이 아니라 색을 바꾸는 길이라 이음매가 원본과 같다.
+
+- **도구**(`src/editor/tools/quickTerrainTool.ts`, read 도구 · `fillsCurrentMapId` · 도메인 tile): 인자 `text`(재질 한 낱말 — 재질 낱말 15종 + 색 낱말) · `need`(사용자 원래 요청) · `mapId`(선택). 도구는 **그림을 만들지 않는다** — canvas 읽기·쓰기는 브라우저 일이라 요청만 돌려주고, 그 data 가 `workshop-quick-terrain-request` 다. 칩셋에 바탕으로 삼을 물·길 오토타일 모양이 없으면 `no-quick-terrain-source` 로 거절한다(→ `ask_missing_tiles`).
+- **카드**(`src/editor/panels/aiStoreCard.ts` 의 `quickTerrainCard`): 붙자마자 공방과 같은 `makeQuickTerrain(text, tilesetId)` 을 불러 굽고 미리 보기(4배 썸네일)·그룹 id·붓 타일을 보여 준다. 실패는 숨기지 않고 이유를 그대로 적은 뒤 「[공방 지형을 만들지 못함]」 후속 요청으로 「있는 지형으로」 를 잇는다.
+- **후속 요청**: 성공하면 「[공방 지형을 칩셋에 넣음] … 그룹 id … 붓 타일 N」 이 오고 조수는 `paint_tiles{mapId, layer:"1", mode:"fill"|"rect", tile:N}` 로 칠한다(이웃 칸에 맞춰 자동 성형). 그래서 `request_quick_terrain` 과 `paint_tiles` 는 **항상 같이** 게임·지형 도구 묶음에 실린다(`V2_GAME_TOOLS`·`V2_TERRAIN_TOOLS`) — 붓 없이 요청만 실으면 아무것도 못 칠한다.
+- **재질 한계**: 목록 15종(용암·독·늪·핏물·깊은 물·얼음·눈·모래·돌·풀·흙·물) 밖 재질(비스킷·젤리·초콜릿)은 색 낱말로 고르거나 `ask_missing_tiles` 로 묻는다. 칩셋에 그 색이 없으면 결과는 칩셋 색으로 나온다.
+- **이 도구가 생긴 이유(실측)**: terra-new-tileset 3판(2026-11-08)에서 새 타일셋 0·공방 기물 0. 원인은 모델이 아니라 「지형을 만들 길이 화면에만 있었다」 였다(전략 페이지 B3).
 ## 없는 기물 그리기 `generate_missing_object` (2026-10-21)
 
 조수가 기물 하나를 놓아 달라는 요청을 받았는데 칩셋에 그 물건이 없을 때, 공방 object-gen 실행기를 사용자 자기 AI 계정으로 돌려 후보를 그리고 고른 것을 **그 맵 칩셋의 공방 칸**으로 구워 놓는다. 스킬 `assistant-skills/missing-object-generation/SKILL.md`, 정책 한 줄 `OBJECT_GEN_POLICY_LINE`(`src/ai/promptPolicies.ts`, Pi 시스템 프롬프트 공간 작업에 실린다).
