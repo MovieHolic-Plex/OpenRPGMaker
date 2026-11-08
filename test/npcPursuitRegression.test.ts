@@ -93,9 +93,10 @@ describe('door travel uses authored cadence and current phase', () => {
     const f = pursuitFixture(); f.playerAt(5, 2);
     updateAutonomousNPCs(f.scene, 800); updateAutonomousNPCs(f.scene, 160);
     expect(f.mover().activeMove).toMatchObject({ toX: 3, elapsedMs: 160 });
-    f.queue(); f.enter(f.b);
     // 쫓는 걸음은 칸 사이에 서지 않는 박자(chaseCellMs)로 미끄러진다 — 끝나지 않은 걸음의 남은 시간은 그 걸음 자신의 길이로 잰다(4127a63455).
+    // f.enter 가 무버를 비우므로 걸음 길이는 그 전에 읽는다.
     const tween = f.mover().activeMove?.durationMs ?? STEP_MS;
+    f.queue(); f.enter(f.b);
     const expectedMs = (tween - 160) + 2 * (800 + STEP_MS) + 500;
     advancePursuitDoors(f.world(), expectedMs - 1);
     expect(f.scene.session.eventLocations.pursuer?.mapId).toBe(f.a.id);
