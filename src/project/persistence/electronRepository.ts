@@ -1,3 +1,4 @@
+import { collectLoadRepairs } from "@/project/loadRepairReport";
 import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
 import { afterBootSettled } from "@/util/bootSettled";
@@ -286,7 +287,7 @@ export function createElectronRepository(): ElectronRepository {
     loadedSha = sha256 ?? null;
     return {
       authority: { mode: "legacy", target },
-      project: deserialize(serialized),
+      project: collectLoadRepairs(() => deserialize(serialized)),
       sha256: sha256 ?? null,
       projectId: target.projectId,
     };
@@ -379,7 +380,7 @@ export function createElectronRepository(): ElectronRepository {
       if ([...tilesetShas, ...assetShas].some((sha) => !blobs.has(sha))) continue;
       restoreAssetBlobs(folded.document, blobs);
       const tree = unfoldedDocumentTree(folded, blobs, (id) => reusable.get(id));
-      const project = withLazyBundledTilesets(eagerTilesets, () => deserializeParsed(tree));
+      const project = collectLoadRepairs(() => withLazyBundledTilesets(eagerTilesets, () => deserializeParsed(tree)));
       // 검증·정규화를 지난 뒤의 객체와 **그 순간의** 요약을 기억한다(deserializeParsed 는 파싱한 트리를 그대로 채택한다).
       // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
       // 스토어의 정규화 전 요약(normalizeCurrentProject)이 같은 객체의 노드 기억을 그대로 쓴다

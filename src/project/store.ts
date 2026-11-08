@@ -1,3 +1,4 @@
+import { adoptLatestLoadRepairReport, openedLoadRepairReport, type LoadRepairReport } from "@/project/loadRepairReport";
 import { bootMark } from "@/util/bootMarks";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
@@ -359,6 +360,7 @@ class ProjectStore {
         } else {
           if (options.deferBootNormalization === true) this.repository.preferDeferredDigests?.();
           const { project, authority, target } = await this.readRemoteProject();
+          adoptLatestLoadRepairReport();
           bootMark("project-read");
           if (!project && target !== null && isLocalTarget(target)) {
             // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
@@ -584,6 +586,11 @@ class ProjectStore {
     this.loaded = state.loaded;
     if (state.remotePersistenceEnabled !== undefined) this.remotePersistenceEnabled = state.remotePersistenceEnabled;
     if (state.disabledReason !== undefined) this.remotePersistenceDisabledReason = state.disabledReason;
+  }
+
+  /** 마지막 로드가 조용히 고친 것. 고친 것이 없으면 total 0. 아직 로드 전이면 null. */
+  getLoadRepairReport(): LoadRepairReport | null {
+    return openedLoadRepairReport();
   }
 
   getCurrent(): Project {

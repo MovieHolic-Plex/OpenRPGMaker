@@ -6,12 +6,32 @@ import { defaultEquipmentRecords } from "../../defaults/defaultDatabaseEquipment
 import { defaultItemRecords } from "../../defaults/defaultDatabaseItemRecords";
 import { defaultSkillRecords } from "../../defaults/defaultDatabaseStarterRecords";
 import type { BattleAnimationRecord, Project } from "../../types";
+import { beginLoadRepairReport, finishLoadRepairReport, noteLoadRepair, withoutLoadRepairReport, type LoadRepairReport } from "../../loadRepairReport";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function deserializeStoredProjectJson(value: unknown, sourceText?: string | (() => string)): Project {
+  return deserializeStoredProjectJsonWithReport(value, sourceText).project;
+}
+
+/**
+ * 저장 행을 열면서 고친 것을 종류별로 센 보고와 함께 돌려준다. 복구본이 검증에 실패해 원본을 열었으면
+ * 보고는 그 원본 경로(참조 정리만)에서 다시 센다 — 버린 복구본의 수리는 보고하지 않는다.
+ */
+export function deserializeStoredProjectJsonWithReport(value: unknown, sourceText?: string | (() => string)): { readonly project: Project; readonly report: LoadRepairReport } {
+  beginLoadRepairReport();
+  try {
+    const project = deserializeRepaired(value, sourceText);
+    return { project, report: finishLoadRepairReport() };
+  } catch (error) {
+    finishLoadRepairReport();
+    throw error;
+  }
+}
+
+function deserializeRepaired(value: unknown, sourceText?: string | (() => string)): Project {
   try {
     // Repair mutates. Callers that still need the pre-repair tree pass no source text, and
     // this clones first. A save that already holds the original JSON string can repair the
@@ -24,6 +44,8 @@ export function deserializeStoredProjectJson(value: unknown, sourceText?: string
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
     const original = typeof sourceText === "function" ? sourceText() : sourceText;
+    finishLoadRepairReport();
+    beginLoadRepairReport();
     return deserialize(original ?? JSON.stringify(value));
   }
 }
@@ -37,7 +59,7 @@ function repairStoredProjectJson(value: unknown): unknown {
 export function repairStoredLoadFoundation(value: unknown): void {
   if (!isRecord(value)) return;
   pruneInvalidVillageInfoDocuments(value);
-  removeLegacySpriteReferences(value);
+  if (removeLegacySpriteReferences(value)) noteLoadRepair("removed", "legacy-sprite-reference", "폐기된 옛 스프라이트 참조");
   appendMissingResourceProfiles(value, defaultResourceProfiles());
 
   // store.ts도 로드 뒤 같은 ensure를 호출한다. 여기서는 복구 아이템/스킬을 검증하기 전에
@@ -50,7 +72,7 @@ function repairStoredItemCatalog(value: unknown): void {
   // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
   // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
   // 옛 아이템 껍데기가 있을 때만 탄다. 정상 프로젝트는 이 전체 검증을 건너뛴다.
-  const referencedItemIds = collectProjectItemReferenceIds(deserializeParsed(structuredClone(value)));
+  const referencedItemIds = withoutLoadRepairReport(() => collectProjectItemReferenceIds(deserializeParsed(structuredClone(value))));
 
   // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
   // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
@@ -100,9 +122,13 @@ function repairUntouchedDefaultItemCatalogStubs(
   );
   database.items = database.items.flatMap((record) => {
     if (!isRecord(record) || typeof record.id !== "string" || !isUntouchedLegacyItemStub(record)) return [record];
-    if (authoredItemIds.has(record.id)) return [];
+    if (authoredItemIds.has(record.id)) {
+      noteLoadRepair("removed", "item-stub-duplicate", "저작 아이템과 겹친 옛 기본 아이템 껍데기", record.id);
+      return [];
+    }
     const current = itemDefaults.get(record.id);
     if (current) {
+      noteLoadRepair("replaced", "item-stub-default", "옛 기본 아이템 껍데기를 지금 기본 아이템으로", record.id);
       const replacement = filteredLoadRepairItem(current, database);
       for (const skillId of [replacement.skillId, replacement.learnedSkillId, replacement.activateSkillId]) {
         if (typeof skillId === "string") requiredSkillIds.add(skillId);
@@ -110,7 +136,12 @@ function repairUntouchedDefaultItemCatalogStubs(
       return [replacement];
     }
     if (!RETIRED_EQUIPMENT_ITEM_STUB_IDS.has(record.id)) return [record];
-    return referencedItemIds.has(record.id) ? [retiredEquipmentItemReplacement(record)] : [];
+    if (referencedItemIds.has(record.id)) {
+      noteLoadRepair("replaced", "item-stub-retired-equipment", "옛 장비 아이템 껍데기를 장비 안내 항목으로", record.id);
+      return [retiredEquipmentItemReplacement(record)];
+    }
+    noteLoadRepair("removed", "item-stub-retired-equipment-unused", "쓰이지 않는 옛 장비 아이템 껍데기", record.id);
+    return [];
   });
   return requiredSkillIds;
 }
@@ -156,6 +187,7 @@ function appendMissingLoadRepairSkills(
     if (typeof skill.elementId === "string" && !elementIds.has(skill.elementId)) delete skill.elementId;
     database.skills.push(skill);
     skillIds.add(defaultSkill.id);
+    noteLoadRepair("added", "skill-default-for-item", "복구한 아이템이 쓰는 기본 스킬", defaultSkill.id);
   }
 }
 
@@ -197,9 +229,11 @@ function filterStateEffects(record: Record<string, unknown>, stateIds: ReadonlyS
 
 function ensureLoadRepairBattleAnimations(project: Record<string, unknown>): void {
   if (!isRecord(project.database) || !Array.isArray(project.database.battleAnimations)) return;
-  ensureBundledBattleAnimations({
-    database: { battleAnimations: project.database.battleAnimations as BattleAnimationRecord[] },
-  });
+  const animations = project.database.battleAnimations as BattleAnimationRecord[];
+  const before = animations.length;
+  if (ensureBundledBattleAnimations({ database: { battleAnimations: animations } })) {
+    noteLoadRepair("added", "battle-animation-default", "빠진 기본 전투 애니메이션", undefined, Math.max(1, animations.length - before));
+  }
 }
 
 function hasUntouchedLegacyItemStub(project: Record<string, unknown>): boolean {
@@ -220,7 +254,9 @@ function pruneInvalidVillageInfoDocuments(project: Record<string, unknown>): voi
   const mapIds = new Set(Object.keys(project.maps));
   project.villageInfoDocuments = project.villageInfoDocuments.filter((entry) => {
     if (!isRecord(entry)) return true;
-    return typeof entry.mapId !== "string" || mapIds.has(entry.mapId);
+    const kept = typeof entry.mapId !== "string" || mapIds.has(entry.mapId);
+    if (!kept) noteLoadRepair("removed", "village-info-missing-map", "없는 맵의 마을 정보 문서", String(entry.mapId));
+    return kept;
   });
 }
 
@@ -231,6 +267,7 @@ function appendMissingResourceProfiles(project: Record<string, unknown>, default
     if (!profile.assetId || assetIds.has(profile.assetId)) continue;
     target.push(cloneRecord(profile));
     assetIds.add(profile.assetId);
+    noteLoadRepair("added", "resource-profile-default", "빠진 기본 자원 정보", profile.assetId);
   }
 }
 

@@ -604,4 +604,42 @@
       animation: none;
     }
   }
+  /* 로드 복구 보고(loadRepairNotice.ts) — 종류 표시 · 무엇 · 몇 건 · 어디. */
+  .load-repair-card {
+    max-width: 560px;
+  }
+  .load-repair-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .load-repair-row {
+    align-items: baseline;
+    display: grid;
+    font-size: var(--font-13);
+    gap: 2px var(--space-2);
+    grid-template-columns: auto 1fr auto;
+  }
+  .load-repair-kind {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    font-size: var(--font-12);
+    padding: 0 6px;
+  }
+  .load-repair-kind.is-removed {
+    border-color: var(--warning);
+    color: var(--warning);
+  }
+  .load-repair-count {
+    color: var(--text-2);
+  }
+  .load-repair-where {
+    color: var(--text-2);
+    font-size: var(--font-12);
+    grid-column: 2 / -1;
+    overflow-wrap: anywhere;
+  }
 }
