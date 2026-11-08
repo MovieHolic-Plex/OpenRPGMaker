@@ -66,7 +66,7 @@ export function monsterResourcePreview(resource: MonsterResource, project: Proje
 
 const CELL_LABELS: Readonly<Record<keyof typeof PIXEL_ENEMY_CELL_INDEX, string>> = {
   idle_a: "대기 a", idle_b: "대기 b", idle_c: "대기 c", windup: "준비", move: "이동", attack: "공격", recover: "복귀", hit: "피격", dead: "쓰러짐",
-  attack_mid: "공격 중간", cast_charge: "시전 모으기", cast_release: "시전 방출", guard: "막기", weak: "빈사", intro: "등장",
+  attack_mid: "공격 중간", cast_charge: "시전 모으기", cast_release: "시전 방출", guard: "막기", weak: "빈사(안 씀)", intro: "등장",
 };
 
 /** 4×4 시트의 15칸(15번 예약 칸 제외)을 작은 격자로. 칸 그림은 같은 시트 URL 의 배경 위치로 자른다. */

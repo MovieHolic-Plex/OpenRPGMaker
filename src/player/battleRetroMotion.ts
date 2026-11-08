@@ -852,19 +852,25 @@ function nodePixelSheet(node: HTMLElement): PixelEnemySheet | undefined {
   return pixelEnemySheet(node.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet);
 }
 
+/**
+ * HP 25% 이하 16칸 적의 빈사 대기(weak ↔ idle_b 번갈이)를 끈다 — 오너 결정(2026-11-08): 두 모습이 번갈아 깜빡이는
+ * 것처럼 보였다. 시트 계약의 13번 weak 칸은 남겨 두므로 그 칸을 그린 시트·스토어 팩은 그대로 유효하고, 칸만 쓰이지 않는다.
+ */
+const ENEMY_WEAK_REST_CELL_ENABLED: boolean = false;
+
 /** 16칸 시트가 그 확장 칸을 그렸는가. 3×3 시트·빠진 칸(missingCells)은 false — 그 동작은 일어나지 않는다. */
 function nodeHasCell(node: HTMLElement, cell: PixelEnemyExtraCell): boolean {
   return node.dataset.pixelGrid === "4x4" && pixelEnemyHasCell(nodePixelSheet(node), cell);
 }
 
 /**
- * 행동하지 않는 동안의 칸. 16칸 시트만 바뀐다: 방어 중 → guard, HP 25% 이하 → weak 와 idle_b 를 번갈아(숨이 가쁜 대기),
- * 그 밖은 CSS 대기 루프("idle"). weak 번갈이는 data-pixel-weak 가 CSS 로 돈다(27-retro-motion.css).
+ * 행동하지 않는 동안의 칸. 16칸 시트만 바뀐다: 방어 중 → guard, 그 밖은 CSS 대기 루프("idle").
+ * HP 25% 이하도 보통 대기다(ENEMY_WEAK_REST_CELL_ENABLED). 켜면 data-pixel-weak 가 CSS weak 번갈이를 돌린다(27-retro-motion.css).
  */
 function pixelEnemyRestCell(node: HTMLElement): RetroMonsterCell | "idle" {
   if (node.dataset.pixelGrid !== "4x4") return "idle";
   if (node.dataset.battlerDefending === "true" && nodeHasCell(node, "guard")) return "guard";
-  const weak = node.dataset.battlerWeak === "true" && nodeHasCell(node, "weak");
+  const weak = ENEMY_WEAK_REST_CELL_ENABLED && node.dataset.battlerWeak === "true" && nodeHasCell(node, "weak");
   if (weak) node.dataset.pixelWeak = "true";
   else delete node.dataset.pixelWeak;
   return "idle";
