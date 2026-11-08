@@ -20,13 +20,14 @@ import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
 import { createObjectGenCard } from "./aiObjectGenCard";
+import { isQuickTerrainRequest, type QuickTerrainRequest } from "@/editor/tools/quickTerrainTool";
 import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreMusicChoice, type StoreSoundChoice, type StoreGamePostProposal, type StorePublishProposal, type StoreReviewReplyProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
 import { storeGameProjectKey } from "@/project/storeGameRelease";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object", "store_find_music", "store_find_sound"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object", "store_find_music", "store_find_sound", "request_quick_terrain"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {
@@ -632,7 +633,45 @@ function soundChoiceCard(choice: StoreSoundChoice, followUp: StoreCardFollowUp):
   return view.root;
 }
 
+
+/**
+ * 2026-11-08 실험 2(B3): 조수의 「빠른 지형」 요청 카드.
+ * 도구(request_quick_terrain)는 요청만 돌려주고, 이 카드가 공방과 같은 길(oneClick/quickTerrain.ts 의 makeQuickTerrain)로
+ * 지금 칩셋의 오토타일 모양에 재질 색을 입혀 새 그룹으로 넣는다 — 몇 초. 다 넣으면 그룹 id·붓 타일을 후속 요청으로 돌려준다.
+ * 실패는 숨기지 않는다: 왜 못 만들었는지(원본 모양 없음·그림 못 읽음)를 그대로 말하고 조수에게 «있는 지형으로» 를 잇게 한다.
+ */
+function quickTerrainCard(request: QuickTerrainRequest, followUp: StoreCardFollowUp): HTMLElement {
+  const status = el("p", { class: "ai-tileset-change-status", attrs: { role: "status" } });
+  const preview = el("div", { class: "ai-store-results", dataset: { testid: "ai-store-quick-terrain-preview" } });
+  const view = shell("빠른 지형", `「${request.text}」 지형을 만듭니다`, "ai-store-quick-terrain-card", [
+    el("p", { class: "ai-tileset-change-reason", text: request.need }),
+    el("p", { class: "ai-tileset-change-detail", text: `칩셋 ${request.tilesetName} 의 「${request.sourceName ?? "기존 지형"}」 모양에 ${request.materialName ?? "재질"} 색을 입혀 새 지형 그룹으로 넣어요. 이음매는 원본과 같습니다.` }),
+    status,
+    preview,
+  ], []);
+  let started = false;
+  void (async () => {
+    if (started) return;
+    started = true;
+    status.textContent = "만드는 중…";
+    try {
+      const { makeQuickTerrain } = await import("@/editor/workshop/oneClick/quickTerrain");
+      const done = await makeQuickTerrain(request.text, request.tilesetId);
+      const image = el("img", { attrs: { src: done.thumbUrl, alt: `${done.title} 미리 보기` } });
+      preview.append(image);
+      status.textContent = `넣었어요 — 그룹 ${done.groupId} · 붓 타일 ${done.brushTile} · ${done.ms}ms`;
+      followUp(`[공방 지형을 칩셋에 넣음] 「${done.title}」(${done.material})을 칩셋 ${done.tilesetId} 에 새 오토타일 그룹 ${done.groupId} 으로 넣었다. 붓 타일 ${done.brushTile}(${done.sourceName} 모양을 본뜬 재질). 이제 paint_tiles{mapId:"${request.mapId}", layer:"1", mode:"fill" 또는 "rect", tile:${done.brushTile}} 로 맵을 칠하라 — 이웃 칸에 맞춰 자동으로 가장자리가 성형된다. 같은 그룹을 다시 만들지 말고, 다른 재질이 더 필요하면 request_quick_terrain 을 그 재질로 한 번 더 부른다. 원래 요청: ${request.need}`);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      status.textContent = `만들지 못했어요: ${reason}`;
+      followUp(`[공방 지형을 만들지 못함] 「${request.text}」 ${request.tilesetId} — 이유: ${reason}. 다시 부르지 말고, 있는 타일로 가장 가까운 테마를 만들거나 ask_missing_tiles 로 묻고 보고에 «지형을 만들지 못함»으로 적어라. 원래 요청: ${request.need}`);
+    }
+  })();
+  return view.root;
+}
+
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
+  if (isQuickTerrainRequest(request)) return quickTerrainCard(request, followUp);
   if (request.kind === "store-sound-choice") return soundChoiceCard(request, followUp);
   if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);

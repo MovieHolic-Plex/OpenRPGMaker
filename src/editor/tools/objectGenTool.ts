@@ -30,7 +30,13 @@ const TILE = 16;
 /** 제목 끝 낱말이 사람·동물이면 캐릭터 요청이다(「상인 좌판」처럼 사람 낱말이 앞에 오는 물건은 통과). */
 const PERSON_HEAD = /^(사람|캐릭터|주민|행인|npc|병사|경비병?|상인|아이|소녀|소년|노인|할머니|할아버지|남자|여자|기사|마법사|왕|공주|선원|어부|농부|점원|손님|고양이|개|강아지|말|새|몬스터|person|people|character|villager|guard|merchant|npc|cat|dog|horse|monster)$/iu;
 /** 제목 끝 낱말이 지형·바닥·벽 칸이면 칸 타일 요청이다(깔개·러그 같은 바닥 무늬 물건은 flat 으로 통과). */
-const TERRAIN_HEAD = /^(바닥|돌바닥|마루|벽|벽면|외벽|땅|흙|잔디|풀밭|물|바다|강|호수|길|도로|보도|타일|지형|모래|절벽|천장|지붕|floor|wall|ground|grass|water|road|path|terrain|tile|tiles|ceiling|roof|cliff)$/iu;
+const TERRAIN_HEAD = /^(바닥|돌바닥|마루|벽|벽면|외벽|땅|흙|잔디|풀밭|물|바다|강|호수|길|도로|보도|타일|타일셋|지형|지형지물|모래|절벽|천장|지붕|floor|wall|ground|grass|water|road|path|terrain|tile|tiles|tileset|ceiling|roof|cliff)$/iu;
+/**
+ * 「새 타일셋」·「전용 타일」처럼 지형 «한 벌» 을 달라는 요청인가(끝 낱말이 타일셋이 아니어도).
+ * 2026-11-08 terra-new-tileset 3판: 「과자 나라 전용 타일셋」이 1×1 바닥 기물 카드로 가서 공방 3/4 관문에서 떨어졌다 —
+ * 기물 하나로 그릴 수 없는 요청이므로 object-gen 이 아니라 지형 길(ask_missing_tiles / request_quick_terrain)로 보낸다.
+ */
+const TILESET_REQUEST = /(전용|새|새로운|커스텀|나만의|테마)\s*(의\s*)?타일셋|타일셋\s*(을|를|하나|새로|전용)|새\s*타일|지형\s*타일셋|tileset|custom tiles?/iu;
 
 /** 3/4 관문 조언 배지가 쓸 종류(object-gate rules.ts 의 종류 중 기물에 해당하는 것). */
 const GATE_KINDS = ["tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box", "structure", "figure", "organic", "flat", "wall_mounted", "other"] as const;
@@ -68,18 +74,27 @@ const squash = (text: string): string => text.replace(/[\s·,/()]+/gu, "").toLow
 type Existing = { readonly id: string; readonly name: string; readonly how: string };
 
 /** 이름이 맞는 이미 있는 기물 — 칩셋 구조 킷(어떤 출처든)과 손 도트 실내 가구. 이름 전체 또는 끝 낱말(2글자 이상)이 들어 있으면 맞다. */
-function existingMatches(project: Project, tileset: TilesetDef, title: string): Existing[] {
+function existingMatches(project: Project, tileset: TilesetDef, title: string): { existing: Existing[]; near: Existing[] } {
   const full = squash(title);
   const head = words(title).at(-1) ?? "";
-  const needles = [full, ...(head.length >= 2 && squash(head) !== full ? [squash(head)] : [])].filter((needle) => needle.length >= 2);
-  if (!needles.length) return [];
+  // 2026-11-08 실험 2(B1, terra-new-tileset 3판): 끝 낱말 하나만 맞으면 «같은 물건»으로 보고 새로 그리기를 거절했다.
+  // 「막대사탕 나무」가 나무 벤치·도마·기둥·침엽수를, 「사탕지팡이 울타리»가 산울타리를 «이미 있다»로 불러 3판 모두 그리기 0회였다.
+  // 끝 낱말은 같은 재질을 말할 뿐이라 그것만으로는 같은 물건이 아니다 — 그래서 «전체 이름» 또는 «이름의 앞 낱말(종류를 정하는 말)»
+  // 이 맞을 때만 이미 있는 것으로 친다. 앞 낱말까지 다른 것(막대사탕 나무 vs 나무 벤치)은 안내로만 남기고 그리게 둔다.
+  const nameHead = words(title)[0] ?? "";
+  const needles = [full, ...(nameHead.length >= 2 && squash(nameHead) !== full ? [squash(nameHead)] : [])].filter((needle) => needle.length >= 2);
+  if (!needles.length) return { existing: [], near: [] };
   const hit = (text: string): boolean => needles.some((needle) => squash(text).includes(needle));
+  /** 끝 낱말만 겹치는 것 — 거절은 안 하고 안내로만 돌려준다. */
+  const tailHit = (text: string): boolean => head.length >= 2 && squash(text).includes(squash(head));
   const out: Existing[] = [];
+  const near: Existing[] = [];
   for (const kit of tileset.structureKits ?? []) {
     if (kit.width > 8 || kit.height > 8) continue; // 건물·구역 킷은 기물이 아니다
-    if (hit(kit.name ?? "") || hit(kit.id)) {
-      out.push({ id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object" });
-    }
+    const name = kit.name ?? kit.id;
+    const how = kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object";
+    if (hit(name) || hit(kit.id)) out.push({ id: kit.id, name, how });
+    else if (tailHit(name) || tailHit(kit.id)) near.push({ id: kit.id, name, how });
   }
   if (tileset.id === ATLAS_BIOME_INTERIOR_ID) {
     for (const needle of new Set([title.trim(), head])) {
@@ -95,7 +110,7 @@ function existingMatches(project: Project, tileset: TilesetDef, title: string): 
       } catch { /* 부품 사전을 못 읽어도 칩셋 킷 검사는 남는다 */ }
     }
   }
-  return out.slice(0, 8);
+  return { existing: out.slice(0, 8), near: near.slice(0, 4) };
 }
 
 function intArg(value: unknown, name: string, min: number, max: number, fallback: number): number {
@@ -172,7 +187,11 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
       throw new ToolError(`「${title}」은(는) 사람·동물이다 — 이 도구는 캐릭터를 그리지 않는다. 사람은 캐릭터 칩(이벤트 그림)으로 놓는다(place_npc 등).`, { code: "people-not-generated" });
     }
     if (TERRAIN_HEAD.test(head)) {
-      throw new ToolError(`「${title}」은(는) 지형·바닥·벽 칸이다 — 이 도구는 기물 하나만 그린다. 칸 타일이 없으면 ask_missing_tiles 로 묻는다.`, { code: "terrain-not-object" });
+      throw new ToolError(`「${title}」은(는) 지형·바닥·벽 칸이다 — 이 도구는 기물 하나만 그린다. 칸 타일이 없으면 ask_missing_tiles 로 묻거나 request_quick_terrain{text} 로 재질만 바꾼 지형 그룹을 만든다.`, { code: "terrain-not-object" });
+    }
+    // 「전용 타일셋」류는 기물 하나가 아니다 — 공방 기물로 가면 3/4 관문에서 떨어진다(실측 3판). 지형 길로 보낸다.
+    if (TILESET_REQUEST.test(title) || TILESET_REQUEST.test(need)) {
+      throw new ToolError(`「${title}」은(는) 지형 한 벌(타일셋) 요청이다 — 기물 하나로 그리지 않는다. 지형은 request_quick_terrain{text} 로 지금 칩셋의 오토타일 모양에 재질 색을 입히거나, 정말 새 그림이 필요하면 ask_missing_tiles 로 묻는다. 그 뒤 기물 몇 개는 generate_missing_object 로 따로 그린다.`, { code: "tileset-not-object" });
     }
     const objectKind = (OBJECT_GEN_KINDS as readonly string[]).includes(String(args.objectKind)) ? args.objectKind as ObjectGenKind : null;
     if (!objectKind) throw new ToolError(`objectKind 는 ${OBJECT_GEN_KINDS.join("·")} 중 하나다.`, { code: "invalid-args" });
@@ -211,7 +230,8 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
       base = { x, y };
     }
     const notThese = new Set(Array.isArray(args.notThese) ? args.notThese.filter((id): id is string => typeof id === "string") : []);
-    const existing = options.skipExisting ? [] : existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
+    const matched = options.skipExisting ? { existing: [], near: [] } : existingMatches(project, tileset, title);
+    const existing = matched.existing.filter((row) => !notThese.has(row.id));
     if (existing.length) {
       throw new ToolError(
         `「${title}」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${existing.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
@@ -227,10 +247,14 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
       ...(gateKind ? { gateKind } : {}),
       footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted, ...(decided.reference ? {} : { reference: false }) },
     };
+    // 끝 낱말만 겹치는 기물은 «비슷한 것이 있다»로만 알린다 — 거절하지 않는다(B1).
+    const nearLine = matched.near.length && !options.skipExisting
+      ? ` 비슷한 이름의 기물은 있으나 재질·종류가 달라 새로 그린다: ${matched.near.map((row) => `${row.id}(${row.name})`).join(" · ")}.`
+      : "";
     const sizeLine = `크기 ${tilesW}×${tilesH + drawnOver}칸 = 발밑 ${tilesH}줄(막힘)${drawnOver ? ` + 위 ${drawnOver}줄(캐릭터 위에 그려짐${rise !== drawnOver * TILE ? `, ${rise}px` : ""})` : ""}`
       + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 「알아서 고르기」가 검수 통과 후보를 넣으면 물체 id 가 후속 요청으로 온다(못 그리면 「[공방에서 못 그림]」). 사용자에게 고르라고 하지 말고, 없는 물건이 더 있으면 지금 이어서 부르고, 남은 짓기(다른 방·길·물건)는 이 턴에 마저 끝낸다. 그렸다·놓았다고 말하지 않는다.`,
+      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}).${nearLine} 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 「알아서 고르기」가 검수 통과 후보를 넣으면 물체 id 가 후속 요청으로 온다(못 그리면 「[공방에서 못 그림]」). 사용자에게 고르라고 하지 말고, 없는 물건이 더 있으면 지금 이어서 부르고, 남은 짓기(다른 방·길·물건)는 이 턴에 마저 끝낸다. 그렸다·놓았다고 말하지 않는다.`,
       data: request,
     };
   }

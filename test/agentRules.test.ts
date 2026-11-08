@@ -22,6 +22,7 @@ import {
   ACTION_FEEDBACK_RULE,
   CLIMAX_STAGING_RULE,
   OBJECTIVE_MATCHES_PICTURE_RULE,
+  OPENING_AND_LENGTH_RULE,
   PLAY_LOOP_RULE,
   PROGRESSION_RULE,
   REWARD_LOOP_RULE,
@@ -75,8 +76,10 @@ describe("게임 짓기 규칙 — 단일 소스", () => {
     for (const rule of [MARK_ENTRANCES_RULE, EXAMINE_FEEDBACK_RULE, NEW_PLAYER_PLAYTEST_RULE]) expect(skill).toContain(rule);
     for (const rule of [PLAY_LOOP_RULE, ACTION_FEEDBACK_RULE, CLIMAX_STAGING_RULE, OBJECTIVE_MATCHES_PICTURE_RULE]) expect(skill).toContain(rule);
     for (const rule of [REWARD_LOOP_RULE, PROGRESSION_RULE]) expect(skill).toContain(rule);
+    // 2026-11-08 실험 2b: 채점이 두 번 가리킨 «첫 1분 목표·10분 분량» 하한도 같은 원문에서 나간다.
+    expect(skill).toContain(OPENING_AND_LENGTH_RULE);
     expect(skill.startsWith(`---\nname: ${AGENT_RULES_SKILL_ID}\n`)).toBe(true);
-    expect(AGENT_RULES_SECTIONS.length).toBe(7);
+    expect(AGENT_RULES_SECTIONS.length).toBe(8);
   });
 
   it("에이전트 모드 시스템 지시가 규칙을 싣고, 작업 폴더 파일도 같은 글이다", async () => {

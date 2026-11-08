@@ -15,6 +15,7 @@ import type { PreparedStoreItem } from "@/editor/assetStore/storeApply";
 import { addStoreProfiles } from "@/editor/assetStore/storeProfiles";
 import { aiMadeAssets, applyPackToProject } from "@/assetStore/pack";
 import { isObjectGenRequest, type ObjectGenRequest } from "@/editor/workshop/objectRequest";
+import { type QuickTerrainRequest } from "./quickTerrainTool";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
 import { registerSfxStyleApply } from "./musicAuthoringTools";
@@ -670,12 +671,13 @@ export interface StoreReviewReplyProposal {
 }
 
 /** 조수 카드 요청 — 스토어 넷 + 없는 기물 그리기(generate_missing_object, objectGenTool.ts). 카드는 aiStoreCard.ts 가 갈라 띄운다. */
-export type StoreCardRequest = MissingTilesQuestion | StoreMusicChoice | StoreSoundChoice | StorePublishProposal | StoreVisibilityProposal | StoreGamePostProposal | StoreReviewReplyProposal | ObjectGenRequest;
+export type StoreCardRequest = MissingTilesQuestion | StoreMusicChoice | StoreSoundChoice | StorePublishProposal | StoreVisibilityProposal | StoreGamePostProposal | StoreReviewReplyProposal | ObjectGenRequest | QuickTerrainRequest;
 
 export function isStoreCardRequest(value: unknown): value is StoreCardRequest {
   const kind = (value as { kind?: unknown } | null)?.kind;
   if (kind === "store-music-choice") return (value as StoreMusicChoice).autoInstall !== true && Array.isArray((value as StoreMusicChoice).tracks) && (value as StoreMusicChoice).tracks.length > 0;
   if (kind === "store-sound-choice") return (value as StoreSoundChoice).autoInstall !== true && Array.isArray((value as StoreSoundChoice).sounds) && (value as StoreSoundChoice).sounds.length > 0;
+  if (kind === "workshop-quick-terrain-request") return typeof (value as QuickTerrainRequest).text === "string" && typeof (value as QuickTerrainRequest).tilesetId === "string";
   return kind === "store-missing-tiles" || kind === "store-publish-proposal" || kind === "store-visibility-proposal" || kind === "store-game-post-proposal" || kind === "store-review-reply-proposal" || isObjectGenRequest(value);
 }
 
