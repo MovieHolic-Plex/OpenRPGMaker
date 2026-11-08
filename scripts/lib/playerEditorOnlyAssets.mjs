@@ -26,6 +26,7 @@ export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
   "src/assets/beodeulGroundReferences.json": "whole",
   "src/assets/beodeulMassingReferences.json": "whole",
   "src/assets/beodeulReviewedReferences.json": "whole",
+  "src/assets/beodeulWavePlacesReferences.json": "whole",
   "src/assets/desertEastReferences.json": "whole",
   "src/assets/emeraldMonsterReferences.json": "whole",
   "src/assets/gothicManorReferences.json": "whole",
