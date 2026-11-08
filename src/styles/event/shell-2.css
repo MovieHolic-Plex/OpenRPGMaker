@@ -373,6 +373,23 @@
   margin-left: auto;
 }
 
+/* 폰 폭(390)에서 액션 묶음(안내·테스트·최소화·전체 보기·닫기, 291px)이 줄어들지 않아 전체 보기·닫기가 창 밖(x=360·396)으로 잘렸다
+ * (2026-11-08 autopilot-usability E7). 520 이하에서는 묶음이 줄어들고 가로로 밀리되, 창 단추는 오른쪽 끝에 붙여 둔다. */
+@media (max-width: 520px) {
+  .event-editor-modal-window .event-editor-modal-header > .header-actions {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .event-editor-modal-window .event-editor-modal-header .event-editor-window-controls {
+    background: var(--bg-raised);
+    position: sticky;
+    right: 0;
+  }
+}
+
 .event-editor-modal-window .event-editor-modal-header > .meta {
   flex: 0 1 auto;
   min-width: 0;
