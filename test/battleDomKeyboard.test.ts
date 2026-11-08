@@ -385,9 +385,14 @@ describe("battle dom keyboard and status rows", () => {
 
     const status = controller.root.querySelector("[data-testid='battle-playback-status']");
 
+    const rootCursorId = controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+    expect(rootCursorId).toBe(commands[1]?.dataset.testid);
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
     ime("KeyX");
+    // 목록을 닫으면 커서는 열기 전에 서 있던 루트 행으로 돌아온다(bcd30259ce 「submenu back cursor」).
+    expect(controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid).toBe(rootCursorId);
+    ime("ArrowUp");
     expect(controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.dataset.battleCommandCursor).toBe("true");
 
     const confirmed = vi.fn();
