@@ -1,0 +1,78 @@
+{
+  "set": "battle-result-phone",
+  "note": "전투 결과 창 글자 크기 실측(가시등 멧돼지 승리, 상급 회복약 확정 드롭). 폰 세로 터치.",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checkpoints": [
+    {
+      "id": "thornback-drop",
+      "label": "가시등 멧돼지 승리 — 상급 회복약 드롭 확정",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 60
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 60
+        }
+      ],
+      "startEventId": "qa_fight_elite_thornback",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-command-grid",
+              "timeoutMs": 60000
+            }
+          ]
+        },
+        {
+          "id": "result",
+          "note": "공격만 눌러 이긴 뒤 결과 창 — 드롭 줄을 본다",
+          "ops": [
+            {
+              "kind": "battle",
+              "fallback": "attack",
+              "timeoutMs": 120000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-result-confirm",
+              "timeoutMs": 20000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4000
+            },
+            {
+              "kind": "evalToFile",
+              "out": "verify-shots/battle-result-phone/result.json",
+              "fn": "() => { const p = document.querySelector('[data-testid=battle-result-panel]'); if (!p) return { panel: null };\n  const box = (e) => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]; };\n  const texts = [...p.querySelectorAll('*')].filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden');\n  const glyphs = texts.map((e) => { const range = document.createRange(); const t = [...e.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim()); range.selectNodeContents(t); const r = range.getBoundingClientRect(); const k = r.height / (parseFloat(getComputedStyle(e).lineHeight) || r.height); return { text: t.textContent.trim().slice(0, 20), cls: e.className, fontPx: parseFloat(getComputedStyle(e).fontSize), screenFontPx: Math.round(parseFloat(getComputedStyle(e).fontSize) * (p.getBoundingClientRect().width / (p.offsetWidth || 1)) * 10) / 10, lineBoxH: Math.round(r.height * 10) / 10 }; });\n  const screenFonts = glyphs.map((g) => g.screenFontPx);\n  const vp = document.querySelector('.play-viewport');\n  return { viewport: [innerWidth, innerHeight], panel: box(p), scale: Math.round((p.getBoundingClientRect().width / (p.offsetWidth || 1)) * 1000) / 1000, minScreenFont: Math.min(...screenFonts), maxScreenFont: Math.max(...screenFonts), glyphs, confirm: box(document.querySelector('[data-testid=battle-result-confirm]')), layout: vp?.dataset.touchLayout ?? null, rows: [...document.querySelectorAll('.battle-result-reward-row')].map((r) => r.textContent.replace(/\\s+/g, ' ').trim()) }; }"
+            }
+          ],
+          "shot": true
+        }
+      ]
+    }
+  ],
+  "context": {
+    "hasTouch": true,
+    "isMobile": true
+  }
+}
