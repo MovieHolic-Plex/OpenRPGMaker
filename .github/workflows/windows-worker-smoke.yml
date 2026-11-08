@@ -39,10 +39,20 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      # 고정판 npm 설치 — 옛 `curl -fsSL https://bun.sh/install | bash` 는 «latest» 를 GitHub 릴리스에서
+      # 받고 재시도가 없어 503·504 로 죽었다(ci-fast 에서 18/100 판, 2026-11-08 실측). 여기서도 같은 이유로
+      # 고정판을 쓰고, 컴파일러 판을 ci-fast·desktop-release 와 맞춘다.
       - name: bun
+        env:
+          BUN_VERSION: '1.4.2'
         run: |
-          curl -fsSL https://bun.sh/install | bash
-          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+          for attempt in 1 2 3; do
+            if timeout 180 npm install -g "bun@${BUN_VERSION}"; then break; fi
+            if [ "$attempt" = 3 ]; then echo "::error::bun@${BUN_VERSION} 설치가 3회 실패했다."; exit 1; fi
+            echo "::warning::bun@${BUN_VERSION} 설치 실패 (시도 ${attempt}/3) — $((attempt * 10))초 뒤 재시도한다."
+            sleep $((attempt * 10))
+          done
+          bun --version
       - run: npm ci --ignore-scripts
       - name: 워커·애드온 만들기 (릴리스와 같은 스크립트)
         run: node scripts/build-electron.mjs

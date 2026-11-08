@@ -60,13 +60,30 @@ jobs:
       # 그래서 #4373 이 scripts/lib/piAgentRuntime.ts 에 없는 경로(`../src/...`)를 넣은 채 머지됐고,
       # desktop-release 가 2026-11-06 22:05Z 부터 매번 실패해 v0.408.0 이 빈 채 latest 가 됐다(404).
       # 릴리스와 같은 엔트리포인트·플래그로 컴파일해 못 푸는 import 를 머지 전에 잡는다.
-      # 실측 2026-11-07: bun 설치 포함 약 5초(3366 모듈), 산출물은 $RUNNER_TEMP 에만 둔다.
+      #
+      # 설치 경로를 바꾼 이유 (2026-11-08 실측, 최근 100판): 이 단계 실패 18건이 **전부**
+      # `Failed to download bun from "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip"`
+      # (curl 22 + 503/504)였다. 옛 명령 `curl -fsSL https://bun.sh/install | bash` 는 «latest» 를
+      # GitHub 릴리스에서 받고 재시도도 없다 — PR 코드와 무관한 실패이고, 그 18판은 초록이 될 수 없었다.
+      # 이제 npm 레지스트리에서 **고정판**을 받는다: (1) 버전이 고정되어 릴리스와 같은 컴파일러를 쓰고,
+      # (2) npm ci 가 이미 쓰는 레지스트리라 별도 CDN 장애에 걸리지 않으며, (3) ci-full·ci-vitest-files 가
+      # 처음부터 쓰던 방식과 같다. 컴파일 대상·플래그는 릴리스와 동일하게 그대로 둔다(무엇을 굽는지는 불변).
       - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
+        env:
+          BUN_VERSION: '1.4.2'
         run: |
           set -euo pipefail
-          curl -fsSL https://bun.sh/install | bash
-          export PATH="$HOME/.bun/bin:$PATH"
+          for attempt in 1 2 3; do
+            if timeout 180 npm install -g "bun@${BUN_VERSION}"; then break; fi
+            if [ "$attempt" = 3 ]; then echo "::error::bun@${BUN_VERSION} 설치가 3회 실패했다."; exit 1; fi
+            echo "::warning::bun@${BUN_VERSION} 설치 실패 (시도 ${attempt}/3) — $((attempt * 10))초 뒤 재시도한다."
+            sleep $((attempt * 10))
+          done
           bun --version
+          if [ "$(bun --version)" != "${BUN_VERSION}" ]; then
+            echo "::error::bun 이 ${BUN_VERSION} 이 아니다: $(bun --version)"
+            exit 1
+          fi
           bun build scripts/oh-my-pi-worker.ts \
             --compile --target=bun-linux-x64 \
             --outfile="$RUNNER_TEMP/oh-my-pi-worker"
