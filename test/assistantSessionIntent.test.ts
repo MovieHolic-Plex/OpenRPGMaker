@@ -358,7 +358,9 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(result.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change",
       // PR #733 added the visual-evidence receipt to every outcome.
       imageAttached: false, visualDelivery: { attempted: 0, attached: 0 } });
-  });
+    // Same session round-trip as every sibling case in this file, which all carry 30000; this one was the
+    // only case left on the 15 s default and ran 7-16.6 s on CI (timed out in main 42214641997, 42426102942).
+  }, 30000);
 
   it("선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다", async () => {
     const { AssistantSession, createBlankProject } = await load();
