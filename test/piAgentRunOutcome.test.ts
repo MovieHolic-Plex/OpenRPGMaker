@@ -127,7 +127,11 @@ vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: c
 vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), getDbPersistenceStatus: () => ({ kind: "disabled" }), whenBootNormalized: async () => {}, subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
 // 실제 결정 카드를 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => h.confirmAnswer }));
-vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
+// 부분 목: 이 실행 경로가 끌어오는 모듈(chatgptOAuthClient 등)이 DEFAULT_CHATGPT_BASE_URL 같은 다른 내보내기를 읽는다.
+vi.mock("@/ai/llmClient", async importOriginal => ({
+  ...await importOriginal<typeof import("@/ai/llmClient")>(),
+  loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }),
+}));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),

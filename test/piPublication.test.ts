@@ -17,7 +17,11 @@ vi.mock("@/editor/tools/applyChangesetToStore", () => ({
 }));
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 vi.mock("@/editor/tools/spatialToolState", () => ({ adoptSpatialToolProof() {} }));
-vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => { h.confirms++; return h.confirm; } }));
+// 7cd26810ba(2026-10-29) 이후 발행은 requestAssistantDecisionDetailed({accepted, via}) 와 열린 카드 대장(registerAssistantDecision)을 쓴다.
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({
+  requestAssistantDecisionDetailed: async () => { h.confirms++; return { accepted: h.confirm, via: "button" as const }; },
+  registerAssistantDecision: () => () => {},
+}));
 vi.mock("@/editor/panels/aiChangePreview", () => ({ openWideChangeViewer() {} }));
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: (actions: any) => {
   h.prompt = actions;
