@@ -37,9 +37,28 @@ function untilActorCommand(runtime: ReturnType<typeof createBattleRuntime>): voi
   }
 }
 
+/**
+ * 플레이어가 Shift 로 고른 배속은 다음 전투에 이어진다(battleDom 의 모듈 상태 chosenBattleSpeed, 75d78ab5f1).
+ * 같은 파일의 앞 테스트가 Shift 를 눌러 두면 뒤 테스트가 1× 가 아닌 배속으로 시작하므로, 테스트마다 1× 로 되돌린다.
+ */
+function resetChosenBattleSpeed(): void {
+  vi.useFakeTimers();
+  const { controller } = setup();
+  const status = controller.root.querySelector("[data-testid='battle-playback-status']");
+  for (let step = 0; step < 3 && !/Shift 1×$/.test(status?.textContent ?? ""); step += 1) {
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Shift", bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Shift", bubbles: true }));
+  }
+  expect(status?.textContent).toMatch(/Shift 1×$/);
+  controller.destroy();
+  vi.useRealTimers();
+  document.body.innerHTML = "";
+}
+
 describe("battle dom keyboard and status rows", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
+    resetChosenBattleSpeed();
   });
 
   it("shows keyboard AUTO/speed status and removes the host cover on teardown", () => {
@@ -412,7 +431,9 @@ describe("gen1+RM dead-attack guard UI and scroll cue", () => {
     expect(attack?.getAttribute("aria-disabled")).toBe("true");
     expect(attack?.dataset.previewOnly).toBe("true");
     expect(attack?.getAttribute("aria-label")).toContain("통상 공격을 쓸 수 없습니다");
-    expect(attack?.textContent ?? "").toContain("통상 공격을 쓸 수 없습니다");
+    // 루트 명령의 긴 사유(> ROOT_INLINE_REASON_MAX)는 버튼 안 줄이 아니라 커서가 설 때 질문 줄에 보인다(09c3fd1fba).
+    expect(attack?.dataset.battleCommandInertReason).toContain("통상 공격을 쓸 수 없습니다");
+    expect(attack?.querySelector(".battle-command-reason")).toBeNull();
     // 그리고 런타임도 같은 규칙으로 막는다 — 버튼이 아니라 계약이 정본이다.
     runtime.beginActorCommand({ kind: "attack" });
     expect(runtime.snapshot().phase).toBe("actorCommand");
