@@ -81,5 +81,7 @@ describe("project package", () => {
     expect(reloaded.startMapId).toBe(project.startMapId);
     expect(Object.keys(reloaded.maps)).toHaveLength(Object.keys(project.maps).length);
     expect(reloaded.assets.uploaded).toEqual(project.assets.uploaded);
-  });
+    // Two package round trips (read, write, read again) of a full blank project: 7.7-15.3 s on CI over the last 15
+    // runs, against a 15 s default. One read+write round trip in this file already passes 15_000.
+  }, 30_000);
 });
