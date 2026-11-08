@@ -29,6 +29,11 @@ describe("pixel battle HUD in the portrait window panel", () => {
     expect(row * zoom).toBeGreaterThanOrEqual(44);
   });
 
+  it("folds party rows to name above HP so names are not cut to one syllable", () => {
+    const row = ruleBody('.player-layout .play-viewport[data-window-panel] .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status');
+    expect(row).toMatch(/grid-template-areas:\s*"name state tp" "hpnum mpnum mpnum"/);
+  });
+
   it("hides the HUD band while the result window owns the room", () => {
     expect(ruleBody(".player-layout .play-viewport[data-window-panel] .battle-stage:has(.battle-result-pixel) .battle-scene > :is(.battle-command-host, .battle-enemy-list-panel, .battle-party)")).toMatch(/display:\s*none/);
   });
