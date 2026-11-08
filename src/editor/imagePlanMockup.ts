@@ -195,7 +195,7 @@ interface Drawn { readonly blob: Blob; readonly model: string; read: ImagePlanRe
 
 async function drawOne(scene: ImagePlanScene, signal?: AbortSignal): Promise<Drawn | null> {
   try {
-    const image = await generateAiImage({ prompt: imagePlanPrompt(scene), providerId: RECOMMENDED_IMAGE_PROVIDER_ID, model: RECOMMENDED_IMAGE_MODEL, ...(signal ? { signal } : {}) });
+    const image = await generateAiImage({ prompt: imagePlanPrompt(scene), purpose: "object-form-reference", providerId: RECOMMENDED_IMAGE_PROVIDER_ID, model: RECOMMENDED_IMAGE_MODEL, ...(signal ? { signal } : {}) });
     const blob = toBlob(image.dataUrl);
     let read: ImagePlanRead | null = null;
     try {
