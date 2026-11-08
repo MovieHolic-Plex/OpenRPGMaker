@@ -160,6 +160,8 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   reportBootStage("editor");
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
+  // 불러오면서 조용히 고친 것이 있으면 알린다(ED5 #4). 조수는 run_lint 의 data.loadRepair 로 같은 값을 읽는다.
+  void import("@/editor/panels/loadRepairNotice").then(({ announceLoadRepairs }) => announceLoadRepairs(store.getLoadRepairReport()));
 }
 
 /**
