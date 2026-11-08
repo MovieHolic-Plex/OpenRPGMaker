@@ -24,6 +24,7 @@ import { createLeftWorkshopPane } from "./leftWorkshopPane";
 import { createMapSidebarSection } from "./mapSidebarSection";
 
 const COLLAPSED_KEY = "oprn:left-column-collapsed";
+const NARROW_START_WIDTH = 700;
 type PaneSurface = { readonly root: HTMLElement; show(): void; dispose(): void };
 
 const journeyScope = (): string => {
@@ -46,6 +47,9 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   try {
     collapsed = localStorage.getItem(COLLAPSED_KEY) === "1";
   } catch { /* restricted storage */ }
+  // 폰 폭(390)에서 왼쪽 열 최소 220px 가 캔버스를 약 160px 로 눌러 맵을 그릴 수 없었다(2026-11-08 autopilot-usability E1).
+  // 좁은 창으로 시작하면 접힌 채로 연다 — 저장된 선호는 덮지 않으므로(persist 안 함) 넓은 창에서는 그대로다.
+  if (typeof window !== "undefined" && window.innerWidth > 0 && window.innerWidth < NARROW_START_WIDTH) collapsed = true;
 
   const search = el("input", {
     class: "left-column-search-input",
