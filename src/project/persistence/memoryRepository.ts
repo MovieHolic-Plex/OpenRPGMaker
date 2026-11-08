@@ -1,3 +1,4 @@
+import { collectLoadRepairs } from "@/project/loadRepairReport";
 import { removeLegacySpriteReferences } from "../defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { deserialize, serialize } from "../io";
@@ -55,7 +56,7 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
 
   const snapshotOf = (row: MemoryProjectRow, target: ProjectTarget, includeProjectId: boolean): ProjectSnapshot => ({
     authority: { mode: "legacy", target: { ...target } },
-    project: deserialize(row.serialized),
+    project: collectLoadRepairs(() => deserialize(row.serialized)),
     sha256: row.sha256,
     projectId: includeProjectId ? row.projectId : null,
   });

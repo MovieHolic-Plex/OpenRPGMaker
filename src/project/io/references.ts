@@ -7,6 +7,7 @@ import { placementRecord } from "../spatialPlacements";
 import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
+import { noteLoadRepair } from "../loadRepairReport";
 import { wildTroopIdForSpecies } from "../wildTroops";
 import { structurePlacementBeforeIsWellFormed, structureRectFitsMap } from "../structurePlacements";
 import {
@@ -441,20 +442,32 @@ export function repairProjectReferences(project: Project): void {
   // 미선언 스위치를 가리키던 구형 저장본(dew-village fixture 포함)을 자동치유.
   ensureItemSwitchDefs(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
+    noteLoadRepair("removed", "day-end-missing-common-event", "없는 공용 이벤트를 가리키던 하루 끝 훅", project.system.timeSystem.onDayEnd);
     const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
     project.system.timeSystem = rest;
   }
-  project.mapConnections = (project.mapConnections ?? []).filter((connection) => mapIds.has(connection.from.mapId) && mapIds.has(connection.to.mapId));
+  const connections = project.mapConnections ?? [];
+  project.mapConnections = connections.filter((connection) => mapIds.has(connection.from.mapId) && mapIds.has(connection.to.mapId));
+  noteLoadRepair("removed", "map-connection-missing-map", "없는 맵을 잇던 맵 연결", undefined, connections.length - project.mapConnections.length);
   for (const actor of project.database.actors) {
-    if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) delete actor.unarmedAnimationId;
+    if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) {
+      noteLoadRepair("removed", "actor-missing-animation", "없는 전투 애니메이션을 가리키던 배우 맨손 공격", actor.id);
+      delete actor.unarmedAnimationId;
+    }
   }
   for (const klass of project.database.classes) {
-    if (klass.animationId && !animationIds.has(klass.animationId)) delete klass.animationId;
+    if (klass.animationId && !animationIds.has(klass.animationId)) {
+      noteLoadRepair("removed", "class-missing-animation", "없는 전투 애니메이션을 가리키던 직업 공격", klass.id);
+      delete klass.animationId;
+    }
   }
   // 존재하지 않는 속성을 가리키는 스킬 elementId는 로드 실패 대신 제거한다 — 타입 상성(9b) 검증
   // 추가로 기존 저장본(skill_leaf 등)이 열리지 않던 사고의 재발 방지.
   for (const skill of project.database.skills) {
-    if (skill.elementId && !elementIdExists(project, skill.elementId)) delete skill.elementId;
+    if (skill.elementId && !elementIdExists(project, skill.elementId)) {
+      noteLoadRepair("removed", "skill-missing-element", "없는 속성을 가리키던 스킬 속성", skill.id);
+      delete skill.elementId;
+    }
   }
   // 삭제된 속성(database.elements) 을 가리키는 actor/enemy/class 의 elementRates 잔재 제거.
   // 요소 개수 축소로 잘린 id 가 잔존하다가, 같은 ordinal 로 재생성될 때 stale 등급이 소생하는
@@ -465,6 +478,7 @@ export function repairProjectReferences(project: Project): void {
   const prune = new PruneStats();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
+      prune.owner = `${map.id}/${event.id}`;
       repairNpcScheduleReferences(event, project.maps, prune);
       event.commands = pruneDanglingCommandRefs(event.commands, commonEventIds, mapIds, eventIds, prune);
       for (const page of event.pages ?? []) {
@@ -474,13 +488,16 @@ export function repairProjectReferences(project: Project): void {
     }
   }
   for (const troop of project.database.troops) {
+    prune.owner = `troop/${troop.id}`;
     for (const page of troop.battleEventPages) page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, eventIds, prune);
     mapTroopAfterBattleLists(troop, (commands) => pruneDanglingCommandRefs(commands, commonEventIds, mapIds, eventIds, prune));
   }
   for (const commonEvent of project.commonEvents) {
+    prune.owner = `common/${commonEvent.id}`;
     commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, eventIds, prune);
   }
   prune.warnIfAny();
+  prune.report();
 }
 
 function repairP2References(project: Project): void {
@@ -549,6 +566,22 @@ class PruneStats {
   removedCommonEventCalls = 0;
   removedScheduleDestinations = 0;
   repairedEmoteTargets = 0;
+  owner = "";
+  readonly owners = { mapCommands: new Set<string>(), commonEventCalls: new Set<string>(), emoteTargets: new Set<string>(), living: new Set<string>(), schedule: new Set<string>() };
+
+  report(): void {
+    const note = (code: string, kind: "removed" | "replaced", label: string, count: number, owners: Set<string>) => {
+      if (count <= 0) return;
+      const list = [...owners];
+      noteLoadRepair(kind, code, label, list[0], count);
+      for (const owner of list.slice(1)) noteLoadRepair(kind, code, label, owner, 0);
+    };
+    note("command-missing-map", "removed", "없는 맵으로 가는 이동·타일 변경 명령", this.removedMapCommands, this.owners.mapCommands);
+    note("command-missing-common-event", "removed", "없는 공용 이벤트 호출", this.removedCommonEventCalls, this.owners.commonEventCalls);
+    note("living-missing-map", "removed", "없는 맵의 생활 이동 목적지", this.removedLivingDestinations, this.owners.living);
+    note("schedule-missing-map", "removed", "없는 맵의 NPC 일정 목적지", this.removedScheduleDestinations, this.owners.schedule);
+    note("emote-missing-target", "replaced", "없는 이벤트를 가리키던 감정 표시 대상(현재 이벤트로)", this.repairedEmoteTargets, this.owners.emoteTargets);
+  }
 
   warnIfAny(): void {
     const total = this.removedMapCommands
@@ -577,6 +610,7 @@ function repairLivingDestinations(
   if (!living) return;
   const kept = living.destinations.filter((destination) => mapIds.has(destination.mapId));
   stats.removedLivingDestinations += living.destinations.length - kept.length;
+  if (kept.length < living.destinations.length) stats.owners.living.add(stats.owner);
   living.destinations = kept;
   // 목적지가 모두 사라진 생활 이동은 제자리로 강등(빈 목적지 순회 방지 — mapDeletion과 동일 정책).
   if (kept.length === 0 && page.movement.type === "living") {
@@ -1420,6 +1454,7 @@ function repairNpcScheduleReferences(
     );
   });
   stats.removedScheduleDestinations += event.schedule.length - kept.length;
+  if (kept.length < event.schedule.length) stats.owners.schedule.add(stats.owner);
   event.schedule = kept;
 }
 
@@ -1571,15 +1606,18 @@ function pruneDanglingCommandRefs(
   for (const command of commands) {
     if (command.kind === "callCommonEvent" && !commonEventIds.has(command.commonEventId)) {
       stats.removedCommonEventCalls += 1;
+      stats.owners.commonEventCalls.add(stats.owner);
       continue;
     }
     if ((command.kind === "transfer" || command.kind === "changeTile") && !mapIds.has(command.mapId)) {
       stats.removedMapCommands += 1;
+      stats.owners.mapCommands.add(stats.owner);
       continue;
     }
     if (command.kind === "showEmote" && typeof command.target === "object"
       && command.target.eventId.trim().length > 0 && !eventIds.has(command.target.eventId)) {
       stats.repairedEmoteTargets += 1;
+      stats.owners.emoteTargets.add(stats.owner);
       pruned.push({ ...command, target: { eventId: "" } });
       continue;
     }
