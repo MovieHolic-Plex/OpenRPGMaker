@@ -22,6 +22,9 @@ describe("whole-game rekick signs", () => {
     expect(signs.length).toBe(2);
     expect(wholeGameRekickPrompt(signs)).toContain("이어 짓기");
     p.endings.push({ id: "ending_stay", name: "항구에 남는 두 사람", conditions: [], priority: 10 });
+    // 엔딩을 부르는 이벤트가 있어야 끝낼 수 있는 게임이다(615f5a3e60) — 뼈대 이벤트의 한 줄을 실제 엔딩 호출로 바꾼다.
+    const seg = p.maps[p.startMapId!]!.events.find((ev) => ev.id === "ev_seg")!;
+    seg.name = "항구의 이별"; seg.pages = [{ commands: [{ kind: "triggerEnding", endingId: "ending_stay" }] }] as never;
     expect(unbuiltGameSigns(p, "바닷가 카페 연애 게임 만들어 줘. 엔딩까지.")).toHaveLength(0);
   });
   // 2026-11-05 gpt-only-game (Terra alone): 「좀비 생존 게임 만들어줘」 ended with an opening only — no ending, only the blank start map.
@@ -31,7 +34,7 @@ describe("whole-game rekick signs", () => {
     const noMap = "플레이할 맵이 없다 — 손대지 않은 빈 시작 맵뿐이다";
     expect(unbuiltGameSigns(p, "짧은 모험 게임 만들어 줘. 엔딩까지.")).toEqual(["엔딩이 하나도 없다", noMap]);
     expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual(["엔딩이 하나도 없다", noMap]);
-    p.maps[p.startMapId!]!.events.push({ id: "ev_gate", name: "대피소 문", x: 2, y: 2, pages: [] } as never);
+    p.maps[p.startMapId!]!.events.push({ id: "ev_gate", name: "대피소 문", x: 2, y: 2, pages: [{ commands: [{ kind: "triggerEnding", endingId: "ending_escape" }] }] } as never);
     p.endings = [{ id: "ending_escape", name: "대피 성공", conditions: [], priority: 0 }];
     expect(unbuiltGameSigns(p, "좀비 생존 게임 만들어줘")).toEqual([]);
   });
@@ -59,7 +62,7 @@ describe("whole-game rekick signs", () => {
     const p = createBlankProject() as Project;
     p.endings = [{ id: "ending_home", name: "집으로", conditions: [], priority: 0 }];
     const map = p.maps[p.startMapId!]!;
-    map.events.push({ id: "ev_sign", name: "표지판", x: 2, y: 2, pages: [] } as never);
+    map.events.push({ id: "ev_sign", name: "표지판", x: 2, y: 2, pages: [{ commands: [{ kind: "triggerEnding", endingId: "ending_home" }] }] } as never);
     const signs = unbuiltGameSigns(p, "마을 모험 게임 만들어줘");
     expect(signs.some((s) => s.includes("편집기 기본") && s.includes("제목"))).toBe(true);
     expect(signs.some((s) => s.includes("오프닝"))).toBe(true);
