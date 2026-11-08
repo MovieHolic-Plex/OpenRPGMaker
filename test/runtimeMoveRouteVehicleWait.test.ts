@@ -112,7 +112,8 @@ describe("명령 경로: 지나가는 차가 다음 칸을 덮으면 걸음을 �
     const sim = parkedTruckSim();
     const s = scene(project, map, sim);
     const mover = start(s, 6);
-    tick(s, 12000);
+    // 차 대기는 걸음마다 3초다(막힌 걸음을 소비하면 transitWaitMs 가 0 으로 돌아간다): 칸 (5,4) 앞 y=3 에서 남은 4걸음 × 3초 + 걷는 시간.
+    tick(s, 20000);
     expect(mover.step >= mover.moves.length || !s.autonomousNPCs.has("walker"), "경로가 소진되어 무버가 끝났다").toBe(true);
   });
 
