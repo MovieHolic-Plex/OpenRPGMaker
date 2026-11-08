@@ -80,9 +80,14 @@ function preloadImages(scene: HTMLElement): void {
   if (typeof Image !== "function") return;
   const urls = new Set<string>();
   for (const image of scene.querySelectorAll<HTMLImageElement>("img")) if (image.src) urls.add(image.src);
+  // Computed, not inline: stylesheet images (the window skin is `border-image-source: var(--runtime-window-skin)`) and
+  // CSS-variable backgrounds never appear in node.style. Called only while the stage is attached and right after the
+  // caller's offsetHeight read, so this reads already-resolved styles and forces no extra layout.
   for (const node of scene.querySelectorAll<HTMLElement>("*")) {
-    const match = /url\("?([^")]+)"?\)/u.exec(node.style.backgroundImage);
-    if (match?.[1]) urls.add(match[1]);
+    const computed = getComputedStyle(node);
+    for (const value of [computed.backgroundImage, computed.borderImageSource]) {
+      for (const match of (value ?? "").matchAll(/url\("?([^")]+)"?\)/gu)) if (match[1]) urls.add(match[1]);
+    }
   }
   for (const url of urls) {
     const probe = new Image();
